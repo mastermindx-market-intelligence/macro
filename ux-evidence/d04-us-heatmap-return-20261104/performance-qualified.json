@@ -1,0 +1,1802 @@
+{
+  "schema": "d04.us_heatmap_lifecycle.v1",
+  "mode": "instrumented-timing",
+  "observed_at_utc": "2026-11-04T19:55:35.181263+00:00",
+  "source_head": "61844ffd1b6e53d8e63122141b1125b3d6219bd3",
+  "source_sha256": {
+    "templates/heatmap.js": "d72dc15379b621d65d5fd9cd631dc69060642d51c85d89f327e42510244d60ec",
+    "site/heatmap.js": "d72dc15379b621d65d5fd9cd631dc69060642d51c85d89f327e42510244d60ec",
+    "templates/sector_heatmap.html.j2": "610099544295a3b512aa889a52422ce8a1dc3429d249e6b502456e17670c9775",
+    "site/sector_heatmap.html": "fc7b84f01b45c5e57380be4befe2f3e2a45ff71540598f91a310c9c5a1cbf1ce",
+    "scripts/verify_us_heatmap_lifecycle_browser.py": "e82734ac2d7b4d13ae9497dfde139af7f999117f1df3e7adabc9e2d1372a86f6"
+  },
+  "environment": {
+    "os": "26.5",
+    "machine": "arm64",
+    "cpu": "Apple M2 Ultra",
+    "cpu_throttle_rate": 4,
+    "overlay_round_trips": true,
+    "network": "loopback, no network throttling; external requests blocked",
+    "terminal_fixture": "Existing MM_TERMINAL_BASE configured to match committed app-origin links; that origin is fulfilled by a labelled fixture without network/account/data access.",
+    "browser": "151.0.7922.34"
+  },
+  "method": "Input/click capture to second animation frame; real generated assets and committed snapshots. CDP counters at identical warmed S&P List state after discarding debugger console handles and forced GC. Diagnostic wrappers count history writes, keyed geometry reads, refresh listeners and intervals.",
+  "limitations": [
+    "Local instrumented lab proxy, not field INP/LCP/CLS, physical devices, production Terminal, sustained polling cadence or whole A063 acceptance.",
+    "CPU throttling is a controlled stress condition, not an equivalence to named hardware.",
+    "Bounded-cycle counters cannot prove absence of every memory leak."
+  ],
+  "data": {
+    "sp500": {
+      "tiles": 503,
+      "member_contexts": 0,
+      "asof": "2026-11-02",
+      "source": "daily-close"
+    },
+    "themes": {
+      "tiles": 268,
+      "member_contexts": 2339,
+      "asof": "2026-11-03",
+      "source": "finviz-themes"
+    }
+  },
+  "viewports": [
+    {
+      "width": 1440,
+      "initial_heatmap_frame_ms": 2027.1999999284744,
+      "actions": [
+        {
+          "label": "sp500:query:a",
+          "event": "input",
+          "next_frame_ms": 111.39999997615814,
+          "history_writes": 1,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "sp500:query:ap",
+          "event": "input",
+          "next_frame_ms": 32.10000002384186,
+          "history_writes": 1,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "sp500:query:aapl",
+          "event": "input",
+          "next_frame_ms": 25.399999976158142,
+          "history_writes": 1,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "sp500:query:clear",
+          "event": "input",
+          "next_frame_ms": 154.69999992847443,
+          "history_writes": 1,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "sp500:query:technology",
+          "event": "input",
+          "next_frame_ms": 23.399999976158142,
+          "history_writes": 1,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "sp500:query:no-such-company",
+          "event": "input",
+          "next_frame_ms": 18.299999952316284,
+          "history_writes": 1,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "sp500:query:clear",
+          "event": "input",
+          "next_frame_ms": 129,
+          "history_writes": 1,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "sp500:show-map",
+          "event": "click",
+          "next_frame_ms": 142.39999997615814,
+          "history_writes": 1,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "sp500:show-list",
+          "event": "click",
+          "next_frame_ms": 135.80000007152557,
+          "history_writes": 1,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "themes:query:a",
+          "event": "input",
+          "next_frame_ms": 368.39999997615814,
+          "history_writes": 1,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "themes:query:ap",
+          "event": "input",
+          "next_frame_ms": 106.29999995231628,
+          "history_writes": 1,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "themes:query:aapl",
+          "event": "input",
+          "next_frame_ms": 51.10000002384186,
+          "history_writes": 1,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "themes:query:clear",
+          "event": "input",
+          "next_frame_ms": 399.60000002384186,
+          "history_writes": 1,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "themes:query:technology",
+          "event": "input",
+          "next_frame_ms": 32.700000047683716,
+          "history_writes": 1,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "themes:query:no-such-company",
+          "event": "input",
+          "next_frame_ms": 13.300000071525574,
+          "history_writes": 1,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "themes:query:clear",
+          "event": "input",
+          "next_frame_ms": 365.7000000476837,
+          "history_writes": 1,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "themes-expanded:query:a",
+          "event": "input",
+          "next_frame_ms": 589.2000000476837,
+          "history_writes": 1,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "themes-expanded:query:clear",
+          "event": "input",
+          "next_frame_ms": 823.1000000238419,
+          "history_writes": 1,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "themes:show-map",
+          "event": "click",
+          "next_frame_ms": 296.7000000476837,
+          "history_writes": 1,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "themes:show-list",
+          "event": "click",
+          "next_frame_ms": 336.7999999523163,
+          "history_writes": 1,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "cycle:themes",
+          "event": "click",
+          "next_frame_ms": 380.1999999284744,
+          "history_writes": 2,
+          "keyed_box_reads": 2
+        },
+        {
+          "label": "cycle:sp500",
+          "event": "click",
+          "next_frame_ms": 183.80000007152557,
+          "history_writes": 2,
+          "keyed_box_reads": 2
+        },
+        {
+          "label": "cycle:themes",
+          "event": "click",
+          "next_frame_ms": 301.7999999523163,
+          "history_writes": 2,
+          "keyed_box_reads": 2
+        },
+        {
+          "label": "cycle:sp500",
+          "event": "click",
+          "next_frame_ms": 198.89999997615814,
+          "history_writes": 2,
+          "keyed_box_reads": 2
+        },
+        {
+          "label": "cycle:themes",
+          "event": "click",
+          "next_frame_ms": 272.59999990463257,
+          "history_writes": 2,
+          "keyed_box_reads": 2
+        },
+        {
+          "label": "cycle:sp500",
+          "event": "click",
+          "next_frame_ms": 191.69999992847443,
+          "history_writes": 2,
+          "keyed_box_reads": 2
+        },
+        {
+          "label": "cycle:themes",
+          "event": "click",
+          "next_frame_ms": 323.3000000715256,
+          "history_writes": 2,
+          "keyed_box_reads": 2
+        },
+        {
+          "label": "cycle:sp500",
+          "event": "click",
+          "next_frame_ms": 190.10000002384186,
+          "history_writes": 2,
+          "keyed_box_reads": 2
+        },
+        {
+          "label": "cycle:themes",
+          "event": "click",
+          "next_frame_ms": 338.10000002384186,
+          "history_writes": 2,
+          "keyed_box_reads": 2
+        },
+        {
+          "label": "cycle:sp500",
+          "event": "click",
+          "next_frame_ms": 167.09999990463257,
+          "history_writes": 2,
+          "keyed_box_reads": 2
+        },
+        {
+          "label": "cycle:themes",
+          "event": "click",
+          "next_frame_ms": 307.3000000715256,
+          "history_writes": 2,
+          "keyed_box_reads": 2
+        },
+        {
+          "label": "cycle:sp500",
+          "event": "click",
+          "next_frame_ms": 191.79999995231628,
+          "history_writes": 2,
+          "keyed_box_reads": 2
+        },
+        {
+          "label": "cycle:themes",
+          "event": "click",
+          "next_frame_ms": 306.1999999284744,
+          "history_writes": 2,
+          "keyed_box_reads": 2
+        },
+        {
+          "label": "cycle:sp500",
+          "event": "click",
+          "next_frame_ms": 169.10000002384186,
+          "history_writes": 2,
+          "keyed_box_reads": 2
+        },
+        {
+          "label": "cycle:themes",
+          "event": "click",
+          "next_frame_ms": 262.3000000715256,
+          "history_writes": 2,
+          "keyed_box_reads": 2
+        },
+        {
+          "label": "cycle:sp500",
+          "event": "click",
+          "next_frame_ms": 163.30000007152557,
+          "history_writes": 2,
+          "keyed_box_reads": 2
+        }
+      ],
+      "lifecycle": [
+        {
+          "hm_refresh_listeners": 1,
+          "hm_adds": 3,
+          "hm_removes": 2,
+          "active_intervals": 3,
+          "dom_elements": 5302,
+          "heatmap_nodes": 3424,
+          "keyed_rows": 503,
+          "frame_count": 1,
+          "history_writes": 31,
+          "box_reads": 8,
+          "documents": 10,
+          "nodes": 47030,
+          "jsEventListeners": 256,
+          "retired_tm_collected": null,
+          "label": "warmed",
+          "js_heap_used_bytes": 5602032,
+          "heatmap_requests": {
+            "sp500": 1,
+            "themes": 1
+          }
+        },
+        {
+          "hm_refresh_listeners": 1,
+          "hm_adds": 5,
+          "hm_removes": 4,
+          "active_intervals": 3,
+          "dom_elements": 5302,
+          "heatmap_nodes": 3424,
+          "keyed_rows": 503,
+          "frame_count": 1,
+          "history_writes": 38,
+          "box_reads": 16,
+          "documents": 10,
+          "nodes": 79672,
+          "jsEventListeners": 284,
+          "retired_tm_collected": false,
+          "label": "cycle-1",
+          "js_heap_used_bytes": 5739164,
+          "heatmap_requests": {
+            "sp500": 1,
+            "themes": 1
+          }
+        },
+        {
+          "hm_refresh_listeners": 1,
+          "hm_adds": 11,
+          "hm_removes": 10,
+          "active_intervals": 3,
+          "dom_elements": 5302,
+          "heatmap_nodes": 3424,
+          "keyed_rows": 503,
+          "frame_count": 1,
+          "history_writes": 59,
+          "box_reads": 40,
+          "documents": 10,
+          "nodes": 177598,
+          "jsEventListeners": 368,
+          "retired_tm_collected": false,
+          "label": "cycle-4",
+          "js_heap_used_bytes": 6134404,
+          "heatmap_requests": {
+            "sp500": 1,
+            "themes": 1
+          }
+        },
+        {
+          "hm_refresh_listeners": 1,
+          "hm_adds": 19,
+          "hm_removes": 18,
+          "active_intervals": 3,
+          "dom_elements": 5302,
+          "heatmap_nodes": 3424,
+          "keyed_rows": 503,
+          "frame_count": 1,
+          "history_writes": 87,
+          "box_reads": 72,
+          "documents": 10,
+          "nodes": 308166,
+          "jsEventListeners": 480,
+          "retired_tm_collected": false,
+          "label": "cycle-8",
+          "js_heap_used_bytes": 6516752,
+          "heatmap_requests": {
+            "sp500": 1,
+            "themes": 1
+          }
+        }
+      ],
+      "retired_tm_collected": false,
+      "page_errors": [],
+      "console_events": [],
+      "longtasks": [
+        {
+          "start_ms": 823.5999999046326,
+          "duration_ms": 56
+        },
+        {
+          "start_ms": 1039.5,
+          "duration_ms": 107
+        },
+        {
+          "start_ms": 1302.5999999046326,
+          "duration_ms": 255
+        },
+        {
+          "start_ms": 1559.6999999284744,
+          "duration_ms": 278
+        },
+        {
+          "start_ms": 2227.7999999523163,
+          "duration_ms": 54
+        },
+        {
+          "start_ms": 2362.399999976158,
+          "duration_ms": 158
+        },
+        {
+          "start_ms": 2520.5,
+          "duration_ms": 64
+        },
+        {
+          "start_ms": 2668.5,
+          "duration_ms": 92
+        },
+        {
+          "start_ms": 2943.7999999523163,
+          "duration_ms": 166
+        },
+        {
+          "start_ms": 3232.1999999284744,
+          "duration_ms": 100
+        },
+        {
+          "start_ms": 3509.7999999523163,
+          "duration_ms": 123
+        },
+        {
+          "start_ms": 3831.5,
+          "duration_ms": 125
+        },
+        {
+          "start_ms": 4165.399999976158,
+          "duration_ms": 178
+        },
+        {
+          "start_ms": 4504.299999952316,
+          "duration_ms": 330
+        },
+        {
+          "start_ms": 5044.899999976158,
+          "duration_ms": 364
+        },
+        {
+          "start_ms": 5538.399999976158,
+          "duration_ms": 67
+        },
+        {
+          "start_ms": 5676,
+          "duration_ms": 54
+        },
+        {
+          "start_ms": 5789.299999952316,
+          "duration_ms": 324
+        },
+        {
+          "start_ms": 6114.099999904633,
+          "duration_ms": 75
+        },
+        {
+          "start_ms": 6357,
+          "duration_ms": 291
+        },
+        {
+          "start_ms": 6649.099999904633,
+          "duration_ms": 70
+        },
+        {
+          "start_ms": 7466,
+          "duration_ms": 476
+        },
+        {
+          "start_ms": 7942.799999952316,
+          "duration_ms": 106
+        },
+        {
+          "start_ms": 8104.699999928474,
+          "duration_ms": 640
+        },
+        {
+          "start_ms": 8745,
+          "duration_ms": 185
+        },
+        {
+          "start_ms": 9179.5,
+          "duration_ms": 264
+        },
+        {
+          "start_ms": 9704.099999904633,
+          "duration_ms": 313
+        },
+        {
+          "start_ms": 10181.199999928474,
+          "duration_ms": 208
+        },
+        {
+          "start_ms": 10790.5,
+          "duration_ms": 144
+        },
+        {
+          "start_ms": 12077.799999952316,
+          "duration_ms": 104
+        },
+        {
+          "start_ms": 12774.199999928474,
+          "duration_ms": 337
+        },
+        {
+          "start_ms": 13625.699999928474,
+          "duration_ms": 193
+        },
+        {
+          "start_ms": 14133.799999952316,
+          "duration_ms": 78
+        },
+        {
+          "start_ms": 14498.199999928474,
+          "duration_ms": 59
+        },
+        {
+          "start_ms": 15041.5,
+          "duration_ms": 267
+        },
+        {
+          "start_ms": 15810.599999904633,
+          "duration_ms": 176
+        },
+        {
+          "start_ms": 16301.599999904633,
+          "duration_ms": 97
+        },
+        {
+          "start_ms": 16699.699999928474,
+          "duration_ms": 66
+        },
+        {
+          "start_ms": 16992.099999904633,
+          "duration_ms": 243
+        },
+        {
+          "start_ms": 17656.899999976158,
+          "duration_ms": 170
+        },
+        {
+          "start_ms": 18136.599999904633,
+          "duration_ms": 62
+        },
+        {
+          "start_ms": 18490.299999952316,
+          "duration_ms": 56
+        },
+        {
+          "start_ms": 18775.699999928474,
+          "duration_ms": 293
+        },
+        {
+          "start_ms": 19555,
+          "duration_ms": 168
+        },
+        {
+          "start_ms": 20093.099999904633,
+          "duration_ms": 110
+        },
+        {
+          "start_ms": 20496.899999976158,
+          "duration_ms": 62
+        },
+        {
+          "start_ms": 21295.899999976158,
+          "duration_ms": 296
+        },
+        {
+          "start_ms": 22057.099999904633,
+          "duration_ms": 145
+        },
+        {
+          "start_ms": 22522.799999952316,
+          "duration_ms": 100
+        },
+        {
+          "start_ms": 22912.899999976158,
+          "duration_ms": 72
+        },
+        {
+          "start_ms": 23214.099999904633,
+          "duration_ms": 275
+        },
+        {
+          "start_ms": 23951.099999904633,
+          "duration_ms": 171
+        },
+        {
+          "start_ms": 24418.699999928474,
+          "duration_ms": 53
+        },
+        {
+          "start_ms": 24761.299999952316,
+          "duration_ms": 61
+        },
+        {
+          "start_ms": 25079,
+          "duration_ms": 282
+        },
+        {
+          "start_ms": 25778,
+          "duration_ms": 146
+        },
+        {
+          "start_ms": 26204.399999976158,
+          "duration_ms": 58
+        },
+        {
+          "start_ms": 26549.299999952316,
+          "duration_ms": 51
+        },
+        {
+          "start_ms": 26813,
+          "duration_ms": 233
+        },
+        {
+          "start_ms": 27446.599999904633,
+          "duration_ms": 145
+        },
+        {
+          "start_ms": 27878.699999928474,
+          "duration_ms": 56
+        },
+        {
+          "start_ms": 28218.699999928474,
+          "duration_ms": 60
+        }
+      ],
+      "timing_summary": {
+        "samples": 36,
+        "median_next_frame_ms": 190.89999997615814,
+        "maximum_next_frame_ms": 823.1000000238419
+      },
+      "lifecycle_deltas": {
+        "hm_refresh_listeners": 0,
+        "active_intervals": 0,
+        "dom_elements": 0,
+        "heatmap_nodes": 0,
+        "documents": 0,
+        "nodes": 261136,
+        "jsEventListeners": 224,
+        "js_heap_used_bytes": 914720
+      },
+      "invariants": {
+        "one_live_heatmap_refresh_listener": true,
+        "stable_intervals": true,
+        "stable_live_heatmap_nodes": true,
+        "no_extra_heatmap_requests": true,
+        "no_page_errors": true
+      },
+      "retention_qualification": "UNQUALIFIED: locator/expect actions retain targets under DevTools console in the measured driver. Use --retention-only for clean by-value collection proof; raw counters are retained here."
+    },
+    {
+      "width": 390,
+      "initial_heatmap_frame_ms": 1370,
+      "actions": [
+        {
+          "label": "sp500:query:a",
+          "event": "input",
+          "next_frame_ms": 139.70000004768372,
+          "history_writes": 1,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "sp500:query:ap",
+          "event": "input",
+          "next_frame_ms": 31.799999952316284,
+          "history_writes": 1,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "sp500:query:aapl",
+          "event": "input",
+          "next_frame_ms": 14.899999976158142,
+          "history_writes": 1,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "sp500:query:clear",
+          "event": "input",
+          "next_frame_ms": 125.89999997615814,
+          "history_writes": 1,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "sp500:query:technology",
+          "event": "input",
+          "next_frame_ms": 19.699999928474426,
+          "history_writes": 1,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "sp500:query:no-such-company",
+          "event": "input",
+          "next_frame_ms": 14.799999952316284,
+          "history_writes": 1,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "sp500:query:clear",
+          "event": "input",
+          "next_frame_ms": 122,
+          "history_writes": 1,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "themes:query:a",
+          "event": "input",
+          "next_frame_ms": 287,
+          "history_writes": 1,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "themes:query:ap",
+          "event": "input",
+          "next_frame_ms": 97.5,
+          "history_writes": 1,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "themes:query:aapl",
+          "event": "input",
+          "next_frame_ms": 58.39999997615814,
+          "history_writes": 1,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "themes:query:clear",
+          "event": "input",
+          "next_frame_ms": 412.3000000715256,
+          "history_writes": 1,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "themes:query:technology",
+          "event": "input",
+          "next_frame_ms": 41.5,
+          "history_writes": 1,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "themes:query:no-such-company",
+          "event": "input",
+          "next_frame_ms": 12,
+          "history_writes": 1,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "themes:query:clear",
+          "event": "input",
+          "next_frame_ms": 555.2000000476837,
+          "history_writes": 1,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "themes-expanded:query:a",
+          "event": "input",
+          "next_frame_ms": 702.2999999523163,
+          "history_writes": 1,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "themes-expanded:query:clear",
+          "event": "input",
+          "next_frame_ms": 972.3999999761581,
+          "history_writes": 1,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "cycle:themes",
+          "event": "click",
+          "next_frame_ms": 340.3000000715256,
+          "history_writes": 2,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "cycle:sp500",
+          "event": "click",
+          "next_frame_ms": 190.30000007152557,
+          "history_writes": 2,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "cycle:themes",
+          "event": "click",
+          "next_frame_ms": 307.89999997615814,
+          "history_writes": 2,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "cycle:sp500",
+          "event": "click",
+          "next_frame_ms": 162.70000004768372,
+          "history_writes": 2,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "cycle:themes",
+          "event": "click",
+          "next_frame_ms": 281.7000000476837,
+          "history_writes": 2,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "cycle:sp500",
+          "event": "click",
+          "next_frame_ms": 215.5,
+          "history_writes": 2,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "cycle:themes",
+          "event": "click",
+          "next_frame_ms": 288.60000002384186,
+          "history_writes": 2,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "cycle:sp500",
+          "event": "click",
+          "next_frame_ms": 171.89999997615814,
+          "history_writes": 2,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "cycle:themes",
+          "event": "click",
+          "next_frame_ms": 305.5,
+          "history_writes": 2,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "cycle:sp500",
+          "event": "click",
+          "next_frame_ms": 180,
+          "history_writes": 2,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "cycle:themes",
+          "event": "click",
+          "next_frame_ms": 263.2999999523163,
+          "history_writes": 2,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "cycle:sp500",
+          "event": "click",
+          "next_frame_ms": 186.29999995231628,
+          "history_writes": 2,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "cycle:themes",
+          "event": "click",
+          "next_frame_ms": 283.7999999523163,
+          "history_writes": 2,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "cycle:sp500",
+          "event": "click",
+          "next_frame_ms": 168.10000002384186,
+          "history_writes": 2,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "cycle:themes",
+          "event": "click",
+          "next_frame_ms": 328.60000002384186,
+          "history_writes": 2,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "cycle:sp500",
+          "event": "click",
+          "next_frame_ms": 196.60000002384186,
+          "history_writes": 2,
+          "keyed_box_reads": 0
+        }
+      ],
+      "lifecycle": [
+        {
+          "hm_refresh_listeners": 1,
+          "hm_adds": 3,
+          "hm_removes": 2,
+          "active_intervals": 3,
+          "dom_elements": 5301,
+          "heatmap_nodes": 3424,
+          "keyed_rows": 503,
+          "frame_count": 0,
+          "history_writes": 24,
+          "box_reads": 3,
+          "documents": 2,
+          "nodes": 44982,
+          "jsEventListeners": 250,
+          "retired_tm_collected": null,
+          "label": "warmed",
+          "js_heap_used_bytes": 5055344,
+          "heatmap_requests": {
+            "sp500": 2,
+            "themes": 2
+          }
+        },
+        {
+          "hm_refresh_listeners": 1,
+          "hm_adds": 5,
+          "hm_removes": 4,
+          "active_intervals": 3,
+          "dom_elements": 5301,
+          "heatmap_nodes": 3424,
+          "keyed_rows": 503,
+          "frame_count": 0,
+          "history_writes": 30,
+          "box_reads": 6,
+          "documents": 2,
+          "nodes": 77616,
+          "jsEventListeners": 278,
+          "retired_tm_collected": false,
+          "label": "cycle-1",
+          "js_heap_used_bytes": 5209164,
+          "heatmap_requests": {
+            "sp500": 2,
+            "themes": 2
+          }
+        },
+        {
+          "hm_refresh_listeners": 1,
+          "hm_adds": 11,
+          "hm_removes": 10,
+          "active_intervals": 3,
+          "dom_elements": 5301,
+          "heatmap_nodes": 3424,
+          "keyed_rows": 503,
+          "frame_count": 0,
+          "history_writes": 48,
+          "box_reads": 15,
+          "documents": 2,
+          "nodes": 175518,
+          "jsEventListeners": 362,
+          "retired_tm_collected": false,
+          "label": "cycle-4",
+          "js_heap_used_bytes": 5564952,
+          "heatmap_requests": {
+            "sp500": 2,
+            "themes": 2
+          }
+        },
+        {
+          "hm_refresh_listeners": 1,
+          "hm_adds": 19,
+          "hm_removes": 18,
+          "active_intervals": 3,
+          "dom_elements": 5301,
+          "heatmap_nodes": 3424,
+          "keyed_rows": 503,
+          "frame_count": 0,
+          "history_writes": 72,
+          "box_reads": 27,
+          "documents": 2,
+          "nodes": 306054,
+          "jsEventListeners": 474,
+          "retired_tm_collected": false,
+          "label": "cycle-8",
+          "js_heap_used_bytes": 5918260,
+          "heatmap_requests": {
+            "sp500": 2,
+            "themes": 2
+          }
+        }
+      ],
+      "retired_tm_collected": false,
+      "page_errors": [],
+      "console_events": [],
+      "longtasks": [
+        {
+          "start_ms": 484.10000002384186,
+          "duration_ms": 133
+        },
+        {
+          "start_ms": 1369.3000000715256,
+          "duration_ms": 124
+        },
+        {
+          "start_ms": 1697,
+          "duration_ms": 81
+        },
+        {
+          "start_ms": 1778.8999999761581,
+          "duration_ms": 58
+        },
+        {
+          "start_ms": 1959.1000000238419,
+          "duration_ms": 130
+        },
+        {
+          "start_ms": 2184.899999976158,
+          "duration_ms": 96
+        },
+        {
+          "start_ms": 2479.899999976158,
+          "duration_ms": 124
+        },
+        {
+          "start_ms": 2604,
+          "duration_ms": 236
+        },
+        {
+          "start_ms": 3083,
+          "duration_ms": 283
+        },
+        {
+          "start_ms": 3446,
+          "duration_ms": 76
+        },
+        {
+          "start_ms": 3661.399999976158,
+          "duration_ms": 344
+        },
+        {
+          "start_ms": 4005.8000000715256,
+          "duration_ms": 66
+        },
+        {
+          "start_ms": 4235.800000071526,
+          "duration_ms": 424
+        },
+        {
+          "start_ms": 4660.700000047684,
+          "duration_ms": 126
+        },
+        {
+          "start_ms": 5560.700000047684,
+          "duration_ms": 575
+        },
+        {
+          "start_ms": 6135.800000071526,
+          "duration_ms": 119
+        },
+        {
+          "start_ms": 6310.5,
+          "duration_ms": 813
+        },
+        {
+          "start_ms": 7124.300000071526,
+          "duration_ms": 153
+        },
+        {
+          "start_ms": 7461.399999976158,
+          "duration_ms": 157
+        },
+        {
+          "start_ms": 7798.300000071526,
+          "duration_ms": 98
+        },
+        {
+          "start_ms": 9037.700000047684,
+          "duration_ms": 71
+        },
+        {
+          "start_ms": 9687.200000047684,
+          "duration_ms": 309
+        },
+        {
+          "start_ms": 10374.300000071526,
+          "duration_ms": 177
+        },
+        {
+          "start_ms": 10774.399999976158,
+          "duration_ms": 91
+        },
+        {
+          "start_ms": 11172.300000071526,
+          "duration_ms": 85
+        },
+        {
+          "start_ms": 11824.399999976158,
+          "duration_ms": 282
+        },
+        {
+          "start_ms": 12487,
+          "duration_ms": 149
+        },
+        {
+          "start_ms": 12827.200000047684,
+          "duration_ms": 75
+        },
+        {
+          "start_ms": 13210.200000047684,
+          "duration_ms": 66
+        },
+        {
+          "start_ms": 13462.700000047684,
+          "duration_ms": 261
+        },
+        {
+          "start_ms": 14045.399999976158,
+          "duration_ms": 203
+        },
+        {
+          "start_ms": 14467.399999976158,
+          "duration_ms": 66
+        },
+        {
+          "start_ms": 14833.800000071526,
+          "duration_ms": 68
+        },
+        {
+          "start_ms": 15121.800000071526,
+          "duration_ms": 267
+        },
+        {
+          "start_ms": 15705.700000047684,
+          "duration_ms": 153
+        },
+        {
+          "start_ms": 16066.5,
+          "duration_ms": 88
+        },
+        {
+          "start_ms": 16462.399999976158,
+          "duration_ms": 55
+        },
+        {
+          "start_ms": 17204.399999976158,
+          "duration_ms": 281
+        },
+        {
+          "start_ms": 17832.700000047684,
+          "duration_ms": 163
+        },
+        {
+          "start_ms": 18213.5,
+          "duration_ms": 81
+        },
+        {
+          "start_ms": 18591.800000071526,
+          "duration_ms": 59
+        },
+        {
+          "start_ms": 18832.100000023842,
+          "duration_ms": 240
+        },
+        {
+          "start_ms": 19375,
+          "duration_ms": 170
+        },
+        {
+          "start_ms": 19730.800000071526,
+          "duration_ms": 62
+        },
+        {
+          "start_ms": 20089,
+          "duration_ms": 81
+        },
+        {
+          "start_ms": 20371.800000071526,
+          "duration_ms": 261
+        },
+        {
+          "start_ms": 20930.5,
+          "duration_ms": 153
+        },
+        {
+          "start_ms": 21269.700000047684,
+          "duration_ms": 77
+        },
+        {
+          "start_ms": 21641.700000047684,
+          "duration_ms": 66
+        },
+        {
+          "start_ms": 21926.700000047684,
+          "duration_ms": 304
+        },
+        {
+          "start_ms": 22544.700000047684,
+          "duration_ms": 182
+        },
+        {
+          "start_ms": 22957.600000023842,
+          "duration_ms": 87
+        },
+        {
+          "start_ms": 23353.300000071526,
+          "duration_ms": 59
+        }
+      ],
+      "timing_summary": {
+        "samples": 32,
+        "median_next_frame_ms": 188.30000001192093,
+        "maximum_next_frame_ms": 972.3999999761581
+      },
+      "lifecycle_deltas": {
+        "hm_refresh_listeners": 0,
+        "active_intervals": 0,
+        "dom_elements": 0,
+        "heatmap_nodes": 0,
+        "documents": 0,
+        "nodes": 261072,
+        "jsEventListeners": 224,
+        "js_heap_used_bytes": 862916
+      },
+      "invariants": {
+        "one_live_heatmap_refresh_listener": true,
+        "stable_intervals": true,
+        "stable_live_heatmap_nodes": true,
+        "no_extra_heatmap_requests": true,
+        "no_page_errors": true
+      },
+      "retention_qualification": "UNQUALIFIED: locator/expect actions retain targets under DevTools console in the measured driver. Use --retention-only for clean by-value collection proof; raw counters are retained here."
+    },
+    {
+      "width": 320,
+      "initial_heatmap_frame_ms": 1400.2000000476837,
+      "actions": [
+        {
+          "label": "sp500:query:a",
+          "event": "input",
+          "next_frame_ms": 144.79999995231628,
+          "history_writes": 1,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "sp500:query:ap",
+          "event": "input",
+          "next_frame_ms": 46,
+          "history_writes": 1,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "sp500:query:aapl",
+          "event": "input",
+          "next_frame_ms": 18.300000071525574,
+          "history_writes": 1,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "sp500:query:clear",
+          "event": "input",
+          "next_frame_ms": 181.80000007152557,
+          "history_writes": 1,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "sp500:query:technology",
+          "event": "input",
+          "next_frame_ms": 28.899999976158142,
+          "history_writes": 1,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "sp500:query:no-such-company",
+          "event": "input",
+          "next_frame_ms": 26.09999990463257,
+          "history_writes": 1,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "sp500:query:clear",
+          "event": "input",
+          "next_frame_ms": 177.69999992847443,
+          "history_writes": 1,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "themes:query:a",
+          "event": "input",
+          "next_frame_ms": 365.6999999284744,
+          "history_writes": 1,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "themes:query:ap",
+          "event": "input",
+          "next_frame_ms": 102.59999990463257,
+          "history_writes": 1,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "themes:query:aapl",
+          "event": "input",
+          "next_frame_ms": 44.89999997615814,
+          "history_writes": 1,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "themes:query:clear",
+          "event": "input",
+          "next_frame_ms": 402.5,
+          "history_writes": 1,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "themes:query:technology",
+          "event": "input",
+          "next_frame_ms": 36.90000009536743,
+          "history_writes": 1,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "themes:query:no-such-company",
+          "event": "input",
+          "next_frame_ms": 12.900000095367432,
+          "history_writes": 1,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "themes:query:clear",
+          "event": "input",
+          "next_frame_ms": 492.5,
+          "history_writes": 1,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "themes-expanded:query:a",
+          "event": "input",
+          "next_frame_ms": 736.0999999046326,
+          "history_writes": 1,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "themes-expanded:query:clear",
+          "event": "input",
+          "next_frame_ms": 802.6000000238419,
+          "history_writes": 1,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "cycle:themes",
+          "event": "click",
+          "next_frame_ms": 410.10000002384186,
+          "history_writes": 2,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "cycle:sp500",
+          "event": "click",
+          "next_frame_ms": 215.10000002384186,
+          "history_writes": 2,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "cycle:themes",
+          "event": "click",
+          "next_frame_ms": 401,
+          "history_writes": 2,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "cycle:sp500",
+          "event": "click",
+          "next_frame_ms": 210.60000002384186,
+          "history_writes": 2,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "cycle:themes",
+          "event": "click",
+          "next_frame_ms": 305.2999999523163,
+          "history_writes": 2,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "cycle:sp500",
+          "event": "click",
+          "next_frame_ms": 197.39999997615814,
+          "history_writes": 2,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "cycle:themes",
+          "event": "click",
+          "next_frame_ms": 280.5,
+          "history_writes": 2,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "cycle:sp500",
+          "event": "click",
+          "next_frame_ms": 164.5,
+          "history_writes": 2,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "cycle:themes",
+          "event": "click",
+          "next_frame_ms": 366.8000000715256,
+          "history_writes": 2,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "cycle:sp500",
+          "event": "click",
+          "next_frame_ms": 190.09999990463257,
+          "history_writes": 2,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "cycle:themes",
+          "event": "click",
+          "next_frame_ms": 409.89999997615814,
+          "history_writes": 2,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "cycle:sp500",
+          "event": "click",
+          "next_frame_ms": 222.10000002384186,
+          "history_writes": 2,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "cycle:themes",
+          "event": "click",
+          "next_frame_ms": 346.89999997615814,
+          "history_writes": 2,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "cycle:sp500",
+          "event": "click",
+          "next_frame_ms": 193,
+          "history_writes": 2,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "cycle:themes",
+          "event": "click",
+          "next_frame_ms": 270.5,
+          "history_writes": 2,
+          "keyed_box_reads": 0
+        },
+        {
+          "label": "cycle:sp500",
+          "event": "click",
+          "next_frame_ms": 206.39999997615814,
+          "history_writes": 2,
+          "keyed_box_reads": 0
+        }
+      ],
+      "lifecycle": [
+        {
+          "hm_refresh_listeners": 1,
+          "hm_adds": 3,
+          "hm_removes": 2,
+          "active_intervals": 3,
+          "dom_elements": 5301,
+          "heatmap_nodes": 3424,
+          "keyed_rows": 503,
+          "frame_count": 0,
+          "history_writes": 24,
+          "box_reads": 3,
+          "documents": 2,
+          "nodes": 44982,
+          "jsEventListeners": 250,
+          "retired_tm_collected": null,
+          "label": "warmed",
+          "js_heap_used_bytes": 5055804,
+          "heatmap_requests": {
+            "sp500": 3,
+            "themes": 3
+          }
+        },
+        {
+          "hm_refresh_listeners": 1,
+          "hm_adds": 5,
+          "hm_removes": 4,
+          "active_intervals": 3,
+          "dom_elements": 5301,
+          "heatmap_nodes": 3424,
+          "keyed_rows": 503,
+          "frame_count": 0,
+          "history_writes": 30,
+          "box_reads": 6,
+          "documents": 2,
+          "nodes": 77616,
+          "jsEventListeners": 278,
+          "retired_tm_collected": false,
+          "label": "cycle-1",
+          "js_heap_used_bytes": 5209600,
+          "heatmap_requests": {
+            "sp500": 3,
+            "themes": 3
+          }
+        },
+        {
+          "hm_refresh_listeners": 1,
+          "hm_adds": 11,
+          "hm_removes": 10,
+          "active_intervals": 3,
+          "dom_elements": 5301,
+          "heatmap_nodes": 3424,
+          "keyed_rows": 503,
+          "frame_count": 0,
+          "history_writes": 48,
+          "box_reads": 15,
+          "documents": 2,
+          "nodes": 175518,
+          "jsEventListeners": 362,
+          "retired_tm_collected": false,
+          "label": "cycle-4",
+          "js_heap_used_bytes": 5565292,
+          "heatmap_requests": {
+            "sp500": 3,
+            "themes": 3
+          }
+        },
+        {
+          "hm_refresh_listeners": 1,
+          "hm_adds": 19,
+          "hm_removes": 18,
+          "active_intervals": 3,
+          "dom_elements": 5301,
+          "heatmap_nodes": 3424,
+          "keyed_rows": 503,
+          "frame_count": 0,
+          "history_writes": 72,
+          "box_reads": 27,
+          "documents": 2,
+          "nodes": 306054,
+          "jsEventListeners": 474,
+          "retired_tm_collected": false,
+          "label": "cycle-8",
+          "js_heap_used_bytes": 6282632,
+          "heatmap_requests": {
+            "sp500": 3,
+            "themes": 3
+          }
+        }
+      ],
+      "retired_tm_collected": false,
+      "page_errors": [],
+      "console_events": [],
+      "longtasks": [
+        {
+          "start_ms": 510.5,
+          "duration_ms": 151
+        },
+        {
+          "start_ms": 785.6000000238419,
+          "duration_ms": 55
+        },
+        {
+          "start_ms": 1280.3000000715256,
+          "duration_ms": 62
+        },
+        {
+          "start_ms": 1399.7000000476837,
+          "duration_ms": 159
+        },
+        {
+          "start_ms": 1818.4000000953674,
+          "duration_ms": 94
+        },
+        {
+          "start_ms": 1912.5,
+          "duration_ms": 50
+        },
+        {
+          "start_ms": 2112.3000000715256,
+          "duration_ms": 149
+        },
+        {
+          "start_ms": 2459.2000000476837,
+          "duration_ms": 144
+        },
+        {
+          "start_ms": 2906.5,
+          "duration_ms": 168
+        },
+        {
+          "start_ms": 3075.9000000953674,
+          "duration_ms": 274
+        },
+        {
+          "start_ms": 3668.100000023842,
+          "duration_ms": 311
+        },
+        {
+          "start_ms": 3979.7000000476837,
+          "duration_ms": 51
+        },
+        {
+          "start_ms": 4121.900000095367,
+          "duration_ms": 84
+        },
+        {
+          "start_ms": 4330,
+          "duration_ms": 341
+        },
+        {
+          "start_ms": 4671.5,
+          "duration_ms": 65
+        },
+        {
+          "start_ms": 4893.800000071526,
+          "duration_ms": 362
+        },
+        {
+          "start_ms": 5256.800000071526,
+          "duration_ms": 131
+        },
+        {
+          "start_ms": 6075.600000023842,
+          "duration_ms": 574
+        },
+        {
+          "start_ms": 6649.900000095367,
+          "duration_ms": 151
+        },
+        {
+          "start_ms": 6866.700000047684,
+          "duration_ms": 647
+        },
+        {
+          "start_ms": 7514.900000095367,
+          "duration_ms": 157
+        },
+        {
+          "start_ms": 7924.700000047684,
+          "duration_ms": 195
+        },
+        {
+          "start_ms": 8319.200000047684,
+          "duration_ms": 151
+        },
+        {
+          "start_ms": 9613,
+          "duration_ms": 74
+        },
+        {
+          "start_ms": 10405.5,
+          "duration_ms": 375
+        },
+        {
+          "start_ms": 11254.100000023842,
+          "duration_ms": 188
+        },
+        {
+          "start_ms": 11721.400000095367,
+          "duration_ms": 94
+        },
+        {
+          "start_ms": 12152.5,
+          "duration_ms": 96
+        },
+        {
+          "start_ms": 12818.200000047684,
+          "duration_ms": 366
+        },
+        {
+          "start_ms": 13626.800000071526,
+          "duration_ms": 189
+        },
+        {
+          "start_ms": 14059.300000071526,
+          "duration_ms": 103
+        },
+        {
+          "start_ms": 14478,
+          "duration_ms": 84
+        },
+        {
+          "start_ms": 14793.200000047684,
+          "duration_ms": 284
+        },
+        {
+          "start_ms": 15393.800000071526,
+          "duration_ms": 182
+        },
+        {
+          "start_ms": 15853.400000095367,
+          "duration_ms": 92
+        },
+        {
+          "start_ms": 16268.5,
+          "duration_ms": 53
+        },
+        {
+          "start_ms": 16502.900000095367,
+          "duration_ms": 257
+        },
+        {
+          "start_ms": 17032.5,
+          "duration_ms": 151
+        },
+        {
+          "start_ms": 17379,
+          "duration_ms": 81
+        },
+        {
+          "start_ms": 17757.300000071526,
+          "duration_ms": 53
+        },
+        {
+          "start_ms": 18545.800000071526,
+          "duration_ms": 328
+        },
+        {
+          "start_ms": 19305.300000071526,
+          "duration_ms": 176
+        },
+        {
+          "start_ms": 19725.5,
+          "duration_ms": 115
+        },
+        {
+          "start_ms": 20157.200000047684,
+          "duration_ms": 68
+        },
+        {
+          "start_ms": 20437.200000047684,
+          "duration_ms": 384
+        },
+        {
+          "start_ms": 21166.300000071526,
+          "duration_ms": 206
+        },
+        {
+          "start_ms": 21616.900000095367,
+          "duration_ms": 86
+        },
+        {
+          "start_ms": 22004.700000047684,
+          "duration_ms": 58
+        },
+        {
+          "start_ms": 22285,
+          "duration_ms": 319
+        },
+        {
+          "start_ms": 22926.700000047684,
+          "duration_ms": 182
+        },
+        {
+          "start_ms": 23307,
+          "duration_ms": 76
+        },
+        {
+          "start_ms": 23695,
+          "duration_ms": 57
+        },
+        {
+          "start_ms": 23933.900000095367,
+          "duration_ms": 249
+        },
+        {
+          "start_ms": 24479.600000023842,
+          "duration_ms": 195
+        },
+        {
+          "start_ms": 24870.800000071526,
+          "duration_ms": 68
+        },
+        {
+          "start_ms": 25231.600000023842,
+          "duration_ms": 77
+        }
+      ],
+      "timing_summary": {
+        "samples": 32,
+        "median_next_frame_ms": 208.5,
+        "maximum_next_frame_ms": 802.6000000238419
+      },
+      "lifecycle_deltas": {
+        "hm_refresh_listeners": 0,
+        "active_intervals": 0,
+        "dom_elements": 0,
+        "heatmap_nodes": 0,
+        "documents": 0,
+        "nodes": 261072,
+        "jsEventListeners": 224,
+        "js_heap_used_bytes": 1226828
+      },
+      "invariants": {
+        "one_live_heatmap_refresh_listener": true,
+        "stable_intervals": true,
+        "stable_live_heatmap_nodes": true,
+        "no_extra_heatmap_requests": true,
+        "no_page_errors": true
+      },
+      "retention_qualification": "UNQUALIFIED: locator/expect actions retain targets under DevTools console in the measured driver. Use --retention-only for clean by-value collection proof; raw counters are retained here."
+    }
+  ],
+  "all_invariants_passed": true
+}

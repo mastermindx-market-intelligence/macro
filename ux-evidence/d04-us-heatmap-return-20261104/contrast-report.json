@@ -1,0 +1,152 @@
+{
+  "observed_at_utc": "2026-11-04T12:10:04.270186+00:00",
+  "browser": "151.0.7922.34",
+  "method": "Computed opaque element background and resolved sRGB foreground; WCAG relative luminance; color(srgb) values normalized, rgb() divided by 255",
+  "scope": "New US Theme disclosure directional, zero and missing-value labels only; not a page accessibility certification",
+  "source_sha256": {
+    "templates/heatmap.js": "4d8611faf74ab7c54b3c920380e7b8ed885c5ec5de62d8c8a6f60cfa02a8b5c8",
+    "site/heatmap.js": "4d8611faf74ab7c54b3c920380e7b8ed885c5ec5de62d8c8a6f60cfa02a8b5c8",
+    "templates/sector_heatmap.html.j2": "610099544295a3b512aa889a52422ce8a1dc3429d249e6b502456e17670c9775",
+    "site/sector_heatmap.html": "fc7b84f01b45c5e57380be4befe2f3e2a45ff71540598f91a310c9c5a1cbf1ce",
+    "scripts/verify_us_heatmap_return_browser.py": "9dab50fa37e46cb7c980e1924956fa880c4dad655bb64fb2f109cc074ebfcc3f"
+  },
+  "states": [
+    {
+      "theme": "dark",
+      "locale": "en",
+      "values": [
+        {
+          "text": "0.00%",
+          "foreground": "color(srgb 0.270588 0.721569 0.45098)",
+          "background": "rgb(21, 24, 32)",
+          "selector": ".hm-mrow-th .hm-mpc.up",
+          "contrast": 7.062
+        },
+        {
+          "text": "−2.00%",
+          "foreground": "color(srgb 0.878431 0.392157 0.392157)",
+          "background": "rgb(21, 24, 32)",
+          "selector": ".hm-mrow-th .hm-mpc.dn",
+          "contrast": 5.219
+        },
+        {
+          "text": "0.00%",
+          "foreground": "color(srgb 0.270588 0.721569 0.45098)",
+          "background": "rgb(21, 24, 32)",
+          "selector": ".hm-member-row[href=\"stock.html#MEM00\"] .hm-mpc",
+          "contrast": 7.062
+        },
+        {
+          "text": "No data",
+          "foreground": "rgb(139, 147, 161)",
+          "background": "rgb(21, 24, 32)",
+          "selector": ".hm-member-row[href=\"stock.html#MEM39\"] .hm-mpc",
+          "contrast": 5.734
+        }
+      ]
+    },
+    {
+      "theme": "dark",
+      "locale": "zh",
+      "values": [
+        {
+          "text": "0.00%",
+          "foreground": "color(srgb 0.878431 0.392157 0.392157)",
+          "background": "rgb(21, 24, 32)",
+          "selector": ".hm-mrow-th .hm-mpc.up",
+          "contrast": 5.219
+        },
+        {
+          "text": "−2.00%",
+          "foreground": "color(srgb 0.270588 0.721569 0.45098)",
+          "background": "rgb(21, 24, 32)",
+          "selector": ".hm-mrow-th .hm-mpc.dn",
+          "contrast": 7.062
+        },
+        {
+          "text": "0.00%",
+          "foreground": "color(srgb 0.878431 0.392157 0.392157)",
+          "background": "rgb(21, 24, 32)",
+          "selector": ".hm-member-row[href=\"stock.html#MEM00\"] .hm-mpc",
+          "contrast": 5.219
+        },
+        {
+          "text": "暂无数据",
+          "foreground": "rgb(139, 147, 161)",
+          "background": "rgb(21, 24, 32)",
+          "selector": ".hm-member-row[href=\"stock.html#MEM39\"] .hm-mpc",
+          "contrast": 5.734
+        }
+      ]
+    },
+    {
+      "theme": "light",
+      "locale": "en",
+      "values": [
+        {
+          "text": "0.00%",
+          "foreground": "color(srgb 0.143922 0.459373 0.325882)",
+          "background": "rgb(255, 255, 255)",
+          "selector": ".hm-mrow-th .hm-mpc.up",
+          "contrast": 5.594
+        },
+        {
+          "text": "−2.00%",
+          "foreground": "color(srgb 0.710745 0.246588 0.26102)",
+          "background": "rgb(255, 255, 255)",
+          "selector": ".hm-mrow-th .hm-mpc.dn",
+          "contrast": 5.587
+        },
+        {
+          "text": "0.00%",
+          "foreground": "color(srgb 0.143922 0.459373 0.325882)",
+          "background": "rgb(255, 255, 255)",
+          "selector": ".hm-member-row[href=\"stock.html#MEM00\"] .hm-mpc",
+          "contrast": 5.594
+        },
+        {
+          "text": "No data",
+          "foreground": "rgb(76, 90, 108)",
+          "background": "rgb(255, 255, 255)",
+          "selector": ".hm-member-row[href=\"stock.html#MEM39\"] .hm-mpc",
+          "contrast": 7.032
+        }
+      ]
+    },
+    {
+      "theme": "light",
+      "locale": "zh",
+      "values": [
+        {
+          "text": "0.00%",
+          "foreground": "color(srgb 0.710745 0.246588 0.26102)",
+          "background": "rgb(255, 255, 255)",
+          "selector": ".hm-mrow-th .hm-mpc.up",
+          "contrast": 5.587
+        },
+        {
+          "text": "−2.00%",
+          "foreground": "color(srgb 0.143922 0.459373 0.325882)",
+          "background": "rgb(255, 255, 255)",
+          "selector": ".hm-mrow-th .hm-mpc.dn",
+          "contrast": 5.594
+        },
+        {
+          "text": "0.00%",
+          "foreground": "color(srgb 0.710745 0.246588 0.26102)",
+          "background": "rgb(255, 255, 255)",
+          "selector": ".hm-member-row[href=\"stock.html#MEM00\"] .hm-mpc",
+          "contrast": 5.587
+        },
+        {
+          "text": "暂无数据",
+          "foreground": "rgb(76, 90, 108)",
+          "background": "rgb(255, 255, 255)",
+          "selector": ".hm-member-row[href=\"stock.html#MEM39\"] .hm-mpc",
+          "contrast": 7.032
+        }
+      ]
+    }
+  ],
+  "minimum_ratio": 5.219
+}

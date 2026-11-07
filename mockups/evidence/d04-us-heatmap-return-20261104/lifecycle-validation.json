@@ -1,0 +1,205 @@
+{
+  "schema": "d04.us_heatmap_lifecycle.validation.v1",
+  "recorded_at": "2026-11-04T19:57:46.833832+00:00",
+  "source_parent": "61844ffd1b6e53d8e63122141b1125b3d6219bd3",
+  "source_sha256": {
+    "templates/heatmap.js": "d72dc15379b621d65d5fd9cd631dc69060642d51c85d89f327e42510244d60ec",
+    "site/heatmap.js": "d72dc15379b621d65d5fd9cd631dc69060642d51c85d89f327e42510244d60ec",
+    "templates/sector_heatmap.html.j2": "610099544295a3b512aa889a52422ce8a1dc3429d249e6b502456e17670c9775",
+    "site/sector_heatmap.html": "789e0c091c9c63224fde60308c3299b722ed97a6d27479b233bfbe1771cf7d65",
+    "scripts/verify_us_heatmap_return_browser.py": "b0633239479884c88b95a24580dbbfae26ccff08aed7bd954e12dce2eeba218e",
+    "scripts/verify_us_heatmap_lifecycle_browser.py": "e82734ac2d7b4d13ae9497dfde139af7f999117f1df3e7adabc9e2d1372a86f6"
+  },
+  "checks": [
+    {
+      "name": "shared-heatmap-node",
+      "command": [
+        "node",
+        "--test",
+        "tests/test_china_heatmap_observations_ui.cjs",
+        "tests/test_china_heatmap_refresh.cjs",
+        "tests/test_china_heatmap_observation_refresh.cjs"
+      ],
+      "exit_code": 0,
+      "seconds": 0.29,
+      "stdout": "✔ same-minute quote correction updates return, interval disclosure and coverage together (18.191542ms)\n✔ old source cannot downgrade an accepted observation-truth contract (3.663417ms)\n✔ incoherent observation snapshot (missing tile metadata) never partially replaces current (3.782667ms)\n✔ incoherent observation snapshot (wrong observation session) never partially replaces current (2.954541ms)\n✔ incoherent observation snapshot (non-null return with missing status) never partially replaces current (3.963416ms)\n✔ incoherent observation snapshot (numeric return with null status) never partially replaces current (5.312459ms)\n✔ incoherent observation snapshot (valid current quote cannot claim a missing current endpoint) never partially replaces current (3.389458ms)\n✔ incoherent observation snapshot (missing coverage) never partially replaces current (2.925709ms)\n✔ incoherent observation snapshot (invented coverage count) never partially replaces current (2.424375ms)\n✔ incoherent observation snapshot (wrong denominator) never partially replaces current (2.356334ms)\n✔ incoherent observation snapshot (wrong schema) never partially replaces current (3.974125ms)\n✔ incoherent observation snapshot (reference session after observation) never partially replaces current (2.513541ms)\n✔ incoherent observation snapshot (unequal reference session) never partially replaces current (2.26375ms)\n✔ incoherent observation snapshot (last observation after asof) never partially replaces current (2.94225ms)\n✔ legacy payload can upgrade to complete observation metadata (4.091625ms)\n✔ missing current quote discloses last observation, never suspended (4.290791ms)\n✔ missing reference labels reference rather than assuming missing today (1.541333ms)\n✔ valid zero remains a valid interval (0.862292ms)\n✔ never observed uses explicit wording (1.915167ms)\n✔ invalid prices have unusable quote disclosure (1.216834ms)\n✔ unknown schema refuses precision (1.42075ms)\n✔ legacy payloads remain untouched (0.96775ms)\n✔ other markets remain untouched (0.602375ms)\n✔ hostile date content cannot inject HTML (2.066375ms)\n✔ malformed valid state with null return cannot claim valid interval (1.372833ms)\n✔ selected timeframe uses its own reference (1.151792ms)\n✔ coverage exposes member denominator and missing names (0.71625ms)\n✔ bad coverage accounting is not displayed as success (0.479625ms)\n✔ coverage is not automatically inherited by other markets (0.690792ms)\n✔ future last observation cannot be presented as historical evidence (0.461459ms)\n✔ reference cannot be after the current endpoint (0.429459ms)\n✔ tile session must agree with payload session (0.425791ms)\n✔ old session cannot overwrite a newer session even with newer generation stamp (10.97025ms)\n✔ same-session correction with equal minute timestamp is rendered (2.159042ms)\n✔ older same-session generation cannot overwrite newer accepted content (2.152792ms)\n✔ removing optional board breadth really removes it (3.112208ms)\n✔ removing optional non-contract metadata does not leave stale data (2.301542ms)\n✔ all observers retain root identity and see complete matching snapshot (3.568042ms)\n✔ generation-only update does not redraw identical content (2.019833ms)\n✔ object property order does not manufacture a semantic revision (2.471208ms)\n✔ zero is a real correction and never becomes missing (2.56675ms)\n✔ missing observation correction stays null not zero (2.684ms)\n✔ invalid refresh (wrong market) keeps accepted data and emits no repaint (2.961375ms)\n✔ invalid refresh (wrong source) keeps accepted data and emits no repaint (1.0235ms)\n✔ invalid refresh (wrong map) keeps accepted data and emits no repaint (1.242667ms)\n✔ invalid refresh (impossible day) keeps accepted data and emits no repaint (1.723167ms)\n✔ invalid refresh (missing generation) keeps accepted data and emits no repaint (3.62075ms)\n✔ invalid refresh (invalid generation) keeps accepted data and emits no repaint (4.045167ms)\n✔ invalid refresh (generation predates observation) keeps accepted data and emits no repaint (1.21275ms)\n✔ invalid refresh (duplicate ticker) keeps accepted data and emits no repaint (1.359625ms)\n✔ invalid refresh (empty ticker) keeps accepted data and emits no repaint (4.505166ms)\n✔ invalid refresh (missing count) keeps accepted data and emits no repaint (1.41175ms)\n✔ invalid refresh (wrong count) keeps accepted data and emits no repaint (1.982042ms)\n✔ invalid refresh (numeric text return) keeps accepted data and emits no repaint (1.391875ms)\n✔ invalid refresh (boolean return) keeps accepted data and emits no repaint (1.987959ms)\n✔ invalid refresh (negative tile size) keeps accepted data and emits no repaint (2.515ms)\n✔ invalid refresh (missing performance object) keeps accepted data and emits no repaint (1.587584ms)\n✔ invalid refresh (injected client timeframe) keeps accepted data and emits no repaint (2.744292ms)\n✔ invalid refresh (injected URL) keeps accepted data and emits no repaint (1.775625ms)\n✔ invalid refresh (invalid optional board) keeps accepted data and emits no repaint (1.636875ms)\n✔ invalid refresh (prototype key) keeps accepted data and emits no repaint (3.043583ms)\n✔ empty replacement retains last-known content without relabelling it (1.407209ms)\n✔ a failed initial load does not permanently poison cached promise (2.352625ms)\n✔ invalid first snapshot is not accepted as China data (0.842583ms)\n✔ transient refresh failure is followed by successful later refresh (2.065792ms)\n✔ two timer ticks cannot open overlapping China requests (2.738208ms)\n✔ hung refresh is aborted, keeps last data, and later tick can recover (2.818667ms)\n✔ late response after timeout cannot mutate accepted snapshot (3.449708ms)\n✔ one refresher remains owned per URL (1.46525ms)\n✔ hidden tabs do not fetch (4.243917ms)\n✔ query-string China URL is still identity-validated (1.019459ms)\n✔ us legacy refresh remains timestamp-driven and does not use China validation (2.402375ms)\n✔ hk legacy refresh remains timestamp-driven and does not use China validation (2.417625ms)\n✔ canada legacy refresh remains timestamp-driven and does not use China validation (1.349625ms)\n✔ render-critical shape (timeframes is object) is rejected before committing (1.609084ms)\n✔ render-critical shape (timeframe has no identity) is rejected before committing (1.533333ms)\n✔ render-critical shape (timeframe availability is string) is rejected before committing (1.330375ms)\n✔ render-critical shape (duplicate timeframe) is rejected before committing (1.351166ms)\n✔ render-critical shape (sectors is object) is rejected before committing (1.716ms)\n✔ render-critical shape (sector has no identity) is rejected before committing (1.218625ms)\n✔ render-critical shape (duplicate sector) is rejected before committing (2.000834ms)\n✔ render-critical shape (default timeframe missing from catalog) is rejected before committing (2.662584ms)\n✔ overflow JSON numeric values cannot enter a snapshot (1.68675ms)\n✔ JSON body read timeout is bounded as well as response headers (3.790916ms)\n✔ first-load timeout is evicted and can retry without new timers (1.780792ms)\n✔ non-OK status response preserves old data (1.127458ms)\n✔ syntax error parsing JSON preserves old data (1.208458ms)\n✔ overlapping mounts share one initial request and same state object (0.847125ms)\n✔ new payload private arbitrary state is not reflected to client (1.204583ms)\nℹ tests 89\nℹ suites 0\nℹ pass 89\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 223.562875\n",
+      "stderr": ""
+    },
+    {
+      "name": "python-regression-and-hygiene",
+      "command": [
+        "python3",
+        "-m",
+        "pytest",
+        "-q",
+        "tests/test_heatmap_label_ink.py",
+        "tests/test_china_heatmap_gate.py",
+        "tests/test_terminal_overlay_contract.py",
+        "tests/test_check_script_import_pinning.py",
+        "tests/test_no_module_level_logging_disable.py"
+      ],
+      "exit_code": 0,
+      "seconds": 151.01,
+      "stdout": "........................................................................ [ 85%]\n............                                                             [100%]\n84 passed in 134.95s (0:02:14)\n",
+      "stderr": ""
+    },
+    {
+      "name": "design-system",
+      "command": [
+        "python3",
+        "scripts/check_design_system.py",
+        "--mode",
+        "enforce-added",
+        "--diff-file",
+        "-"
+      ],
+      "exit_code": 0,
+      "seconds": 5.73,
+      "stdout": "::notice title=design-system::R0 enforce-added: 0 blocking finding(s) (25317 further pre-existing, non-blocking finding(s) in the estate — run --mode report for the full census)\ndesign-system ratchet — mode=enforce-added blocking=0 (estate pre-existing, non-blocking: 25317)\n",
+      "stderr": ""
+    },
+    {
+      "name": "runtime-style",
+      "command": [
+        "python3",
+        "scripts/check_runtime_style_injection.py"
+      ],
+      "exit_code": 0,
+      "seconds": 1.47,
+      "stdout": "runtime style injection guard OK (275 .js files scanned, 44 injecting, 88 total hits — all within frozen allowances)\n",
+      "stderr": ""
+    },
+    {
+      "name": "ui-visual-evidence",
+      "command": [
+        "python3",
+        "scripts/check_ui_visual_evidence.py",
+        "--diff-file",
+        "-"
+      ],
+      "exit_code": 0,
+      "seconds": 1.45,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "name": "javascript-syntax",
+      "command": [
+        "node",
+        "--check",
+        "templates/heatmap.js"
+      ],
+      "exit_code": 0,
+      "seconds": 0.06,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "name": "diff-whitespace",
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0,
+      "seconds": 1.42,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "source_unchanged_through_checks": true,
+  "all_source_checks_passed": true,
+  "finalized_at": "2026-11-04T20:04:42.420952+00:00",
+  "protected_law_pin": "700eef54bca4a2dc4e30d94a6b30dcfa733ad57c",
+  "source_checks_input_sha256": {
+    "templates/heatmap.js": "d72dc15379b621d65d5fd9cd631dc69060642d51c85d89f327e42510244d60ec",
+    "site/heatmap.js": "d72dc15379b621d65d5fd9cd631dc69060642d51c85d89f327e42510244d60ec",
+    "templates/sector_heatmap.html.j2": "610099544295a3b512aa889a52422ce8a1dc3429d249e6b502456e17670c9775",
+    "site/sector_heatmap.html": "fc7b84f01b45c5e57380be4befe2f3e2a45ff71540598f91a310c9c5a1cbf1ce",
+    "scripts/verify_us_heatmap_return_browser.py": "b0633239479884c88b95a24580dbbfae26ccff08aed7bd954e12dce2eeba218e",
+    "scripts/verify_us_heatmap_lifecycle_browser.py": "e82734ac2d7b4d13ae9497dfde139af7f999117f1df3e7adabc9e2d1372a86f6"
+  },
+  "post_source_checks": [
+    {
+      "name": "post-stamp-ui-evidence",
+      "command": [
+        "python3",
+        "scripts/check_ui_visual_evidence.py",
+        "--diff-file",
+        "-"
+      ],
+      "exit_code": 0,
+      "seconds": 1.45,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "name": "post-stamp-diff-whitespace",
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0,
+      "seconds": 0.98,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "post_check_asset_stamp": {
+    "receipt": "../../../ux-evidence/d04-us-heatmap-return-20261104/cache-stamp.json",
+    "only_hash_query_changed": true,
+    "checked_html_sha256": "fc7b84f01b45c5e57380be4befe2f3e2a45ff71540598f91a310c9c5a1cbf1ce",
+    "final_html_sha256": "789e0c091c9c63224fde60308c3299b722ed97a6d27479b233bfbe1771cf7d65",
+    "actual_browser_url": "http://127.0.0.1:49845/heatmap.js?v=d72dc153",
+    "served_script_sha256": "d72dc15379b621d65d5fd9cd631dc69060642d51c85d89f327e42510244d60ec",
+    "same_runtime_script_css_and_visible_markup": true
+  },
+  "browser": {
+    "report": "../../../ux-evidence/d04-us-heatmap-return-20261104/lifecycle-functional/browser-report.json",
+    "observed_at": "2026-11-04T20:03:11.612265+00:00",
+    "passed": 45,
+    "screenshots": 29,
+    "page_errors": [],
+    "all_final_source_hashes_match": true
+  },
+  "performance": {
+    "report": "../../../ux-evidence/d04-us-heatmap-return-20261104/performance-qualified.json",
+    "actions": 100,
+    "viewports": [
+      1440,
+      390,
+      320
+    ],
+    "product_js_and_probe_hashes_match": true,
+    "html_difference_only_later_verified_cache_stamp": true,
+    "memory_counters_in_timing_mode": "UNQUALIFIED_DRIVER_TARGET_RETENTION",
+    "field_web_vitals_accepted": false
+  },
+  "retention": {
+    "report": "../../../ux-evidence/d04-us-heatmap-return-20261104/retention-qualified.json",
+    "cycles_per_viewport": 3,
+    "viewports": [
+      1440,
+      390,
+      320
+    ],
+    "all_invariants_passed": true,
+    "product_js_and_probe_hashes_match": true,
+    "html_difference_only_later_verified_cache_stamp": true,
+    "raw_heap_retaining_path": "../../../ux-evidence/d04-us-heatmap-return-20261104/retention-path.json"
+  },
+  "visual_self_check": {
+    "images": [
+      "lifecycle-functional/accessible-theme-members-desktop.png",
+      "lifecycle-functional/accessible-touch-320-zh-light.png",
+      "lifecycle-functional/document-return-1365-en-dark.png"
+    ],
+    "result": "PASS for preserved List/disclosure/search/return presentation; same CSS and visible markup. Current functional images inspected after final cache stamp.",
+    "canonical_baseline": "Existing 24 accepted rest/focus/hover captures from the List slice; retained without recapture because this phase does not change CSS or visible row markup.",
+    "no_full_page_accessibility_or_programme_acceptance_claim": true
+  },
+  "all_scoped_checks_passed": true,
+  "whole_d04_cases_promoted": 0,
+  "release_state": "HOLD_DRAFT_NO_MERGE_NO_DEPLOY"
+}

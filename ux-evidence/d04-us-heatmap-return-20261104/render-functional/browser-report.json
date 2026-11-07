@@ -1,0 +1,1469 @@
+{
+  "observed_at_utc": "2026-11-05T03:17:57.288234+00:00",
+  "browser": "151.0.7922.34",
+  "scope": "Local generated page with synthetic feeds; labelled same-origin detail and cross-origin local Terminal message fixtures; bfcache disabled",
+  "passed": 45,
+  "cases": [
+    {
+      "name": "document-return-1365-en-dark",
+      "status": "PASS",
+      "detail": {
+        "exact_url": true,
+        "logical_anchor": "AAPL",
+        "extra_D04_history_entries": 0
+      }
+    },
+    {
+      "name": "document-return-1365-en-light",
+      "status": "PASS",
+      "detail": {
+        "exact_url": true,
+        "logical_anchor": "AAPL",
+        "extra_D04_history_entries": 0
+      }
+    },
+    {
+      "name": "document-return-1365-zh-dark",
+      "status": "PASS",
+      "detail": {
+        "exact_url": true,
+        "logical_anchor": "AAPL",
+        "extra_D04_history_entries": 0
+      }
+    },
+    {
+      "name": "document-return-1365-zh-light",
+      "status": "PASS",
+      "detail": {
+        "exact_url": true,
+        "logical_anchor": "AAPL",
+        "extra_D04_history_entries": 0
+      }
+    },
+    {
+      "name": "overlay-return-390-en-dark",
+      "status": "PASS",
+      "detail": {
+        "exact_url": true,
+        "logical_anchor": "AAPL",
+        "extra_D04_history_entries": 0
+      }
+    },
+    {
+      "name": "overlay-return-390-en-light",
+      "status": "PASS",
+      "detail": {
+        "exact_url": true,
+        "logical_anchor": "AAPL",
+        "extra_D04_history_entries": 0
+      }
+    },
+    {
+      "name": "overlay-return-390-zh-dark",
+      "status": "PASS",
+      "detail": {
+        "exact_url": true,
+        "logical_anchor": "AAPL",
+        "extra_D04_history_entries": 0
+      }
+    },
+    {
+      "name": "overlay-return-390-zh-light",
+      "status": "PASS",
+      "detail": {
+        "exact_url": true,
+        "logical_anchor": "AAPL",
+        "extra_D04_history_entries": 0
+      }
+    },
+    {
+      "name": "per-map-controls-and-class-cleanup",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "A-B-A-delayed-response-single-live-view",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "timeframe-explicit-choice-disabled",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "timeframe-explicit-choice-removed",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "timeframe-explicit-choice-all",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "changed-feed-missing-item-group-fallback",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "late-load-preserves-deliberate-user-focus",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "mobile-retained-query-applied",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "foreign-history-primitive",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "foreign-history-array",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "foreign-history-malformed",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "return-owner-opt-out-regional",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "return-owner-opt-out-embedded",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "return-owner-opt-out-shared-shell",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "native-fragment-entry-configuration-back-forward",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "document-return-across-responsive-layout",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "unavailable-payload-retains-intent-empty",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "unavailable-payload-retains-intent-error",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "committed-feed-renderer-compatibility",
+      "status": "PASS",
+      "detail": {
+        "sp500": {
+          "tiles": 503,
+          "asof": "2026-11-02",
+          "source": "daily-close"
+        },
+        "themes": {
+          "tiles": 268,
+          "asof": "2026-11-03",
+          "source": "finviz-themes"
+        }
+      }
+    },
+    {
+      "name": "culled-company-keyboard-list-query-detail-return",
+      "status": "PASS",
+      "detail": {
+        "symbol": "TINY",
+        "same_origin_node": true,
+        "desktop_focus": true,
+        "history_owner": "MDXTerminalOverlay",
+        "scroll_before_activation": 0,
+        "supplied_rows": 37,
+        "matched_rows_and_full_scope": true
+      }
+    },
+    {
+      "name": "complete-theme-members-keyboard-search-overlay-return",
+      "status": "PASS",
+      "detail": {
+        "symbol": "MEM39",
+        "same_origin_node": true,
+        "desktop_focus": true,
+        "history_owner": "MDXTerminalOverlay",
+        "scroll_before_activation": 0,
+        "supplied_members": 40,
+        "missing_not_zero": true
+      }
+    },
+    {
+      "name": "accessible-touch-320-en-dark",
+      "status": "PASS",
+      "detail": {
+        "stock": {
+          "symbol": "TINY",
+          "same_origin_node": true,
+          "desktop_focus": false,
+          "history_owner": "MDXTerminalOverlay",
+          "scroll_before_activation": 422
+        },
+        "theme_member": {
+          "symbol": "MEM39",
+          "same_origin_node": true,
+          "desktop_focus": false,
+          "history_owner": "MDXTerminalOverlay",
+          "scroll_before_activation": 642
+        },
+        "geometry": {
+          "viewport": 320,
+          "width": 320,
+          "targets": [
+            {
+              "label": "S&P 500标普500",
+              "width": 86.375,
+              "height": 44
+            },
+            {
+              "label": "Themes主题",
+              "width": 83.40625,
+              "height": 44
+            },
+            {
+              "label": "1 day1天",
+              "width": 47.34375,
+              "height": 44
+            },
+            {
+              "label": "1 week1周",
+              "width": 57.015625,
+              "height": 44
+            },
+            {
+              "label": "1 month1月",
+              "width": 63.171875,
+              "height": 44
+            },
+            {
+              "label": "Find a company or theme member",
+              "width": 236,
+              "height": 44
+            },
+            {
+              "label": "Members成员数",
+              "width": 78.921875,
+              "height": 44
+            },
+            {
+              "label": "Biggest move涨跌幅",
+              "width": 102.828125,
+              "height": 44
+            },
+            {
+              "label": "A–Z字母",
+              "width": 46.5625,
+              "height": 44
+            },
+            {
+              "label": "−2.00%Fixture theme 01 / 40 supplied members⌄",
+              "width": 288,
+              "height": 60.5
+            },
+            {
+              "label": "No dataMEM39Complete supplied member 39›",
+              "width": 270,
+              "height": 77
+            }
+          ]
+        },
+        "physical_device": false
+      }
+    },
+    {
+      "name": "accessible-touch-320-en-light",
+      "status": "PASS",
+      "detail": {
+        "stock": {
+          "symbol": "TINY",
+          "same_origin_node": true,
+          "desktop_focus": false,
+          "history_owner": "MDXTerminalOverlay",
+          "scroll_before_activation": 422
+        },
+        "theme_member": {
+          "symbol": "MEM39",
+          "same_origin_node": true,
+          "desktop_focus": false,
+          "history_owner": "MDXTerminalOverlay",
+          "scroll_before_activation": 422
+        },
+        "geometry": {
+          "viewport": 320,
+          "width": 320,
+          "targets": [
+            {
+              "label": "S&P 500标普500",
+              "width": 86.375,
+              "height": 44
+            },
+            {
+              "label": "Themes主题",
+              "width": 83.40625,
+              "height": 44
+            },
+            {
+              "label": "1 day1天",
+              "width": 47.34375,
+              "height": 44
+            },
+            {
+              "label": "1 week1周",
+              "width": 57.015625,
+              "height": 44
+            },
+            {
+              "label": "1 month1月",
+              "width": 63.171875,
+              "height": 44
+            },
+            {
+              "label": "Find a company or theme member",
+              "width": 236,
+              "height": 44
+            },
+            {
+              "label": "Members成员数",
+              "width": 78.921875,
+              "height": 44
+            },
+            {
+              "label": "Biggest move涨跌幅",
+              "width": 102.828125,
+              "height": 44
+            },
+            {
+              "label": "A–Z字母",
+              "width": 46.5625,
+              "height": 44
+            },
+            {
+              "label": "−2.00%Fixture theme 01 / 40 supplied members⌄",
+              "width": 288,
+              "height": 60.5
+            },
+            {
+              "label": "No dataMEM39Complete supplied member 39›",
+              "width": 270,
+              "height": 77
+            }
+          ]
+        },
+        "physical_device": false
+      }
+    },
+    {
+      "name": "accessible-touch-320-zh-dark",
+      "status": "PASS",
+      "detail": {
+        "stock": {
+          "symbol": "TINY",
+          "same_origin_node": true,
+          "desktop_focus": false,
+          "history_owner": "MDXTerminalOverlay",
+          "scroll_before_activation": 427
+        },
+        "theme_member": {
+          "symbol": "MEM39",
+          "same_origin_node": true,
+          "desktop_focus": false,
+          "history_owner": "MDXTerminalOverlay",
+          "scroll_before_activation": 427
+        },
+        "geometry": {
+          "viewport": 320,
+          "width": 320,
+          "targets": [
+            {
+              "label": "S&P 500标普500",
+              "width": 83.625,
+              "height": 44
+            },
+            {
+              "label": "Themes主题",
+              "width": 58,
+              "height": 44
+            },
+            {
+              "label": "1 day1天",
+              "width": 44,
+              "height": 44
+            },
+            {
+              "label": "1 week1周",
+              "width": 44,
+              "height": 44
+            },
+            {
+              "label": "1 month1月",
+              "width": 44,
+              "height": 44
+            },
+            {
+              "label": "查找公司或主题成员",
+              "width": 236,
+              "height": 44
+            },
+            {
+              "label": "Members成员数",
+              "width": 60,
+              "height": 44
+            },
+            {
+              "label": "Biggest move涨跌幅",
+              "width": 60,
+              "height": 44
+            },
+            {
+              "label": "A–Z字母",
+              "width": 48,
+              "height": 44
+            },
+            {
+              "label": "−2.00%示例主题 01 / 40 来源成员⌄",
+              "width": 288,
+              "height": 60.5
+            },
+            {
+              "label": "暂无数据MEM39完整来源成员 39›",
+              "width": 270,
+              "height": 60.5
+            }
+          ]
+        },
+        "physical_device": false
+      }
+    },
+    {
+      "name": "accessible-touch-320-zh-light",
+      "status": "PASS",
+      "detail": {
+        "stock": {
+          "symbol": "TINY",
+          "same_origin_node": true,
+          "desktop_focus": false,
+          "history_owner": "MDXTerminalOverlay",
+          "scroll_before_activation": 427
+        },
+        "theme_member": {
+          "symbol": "MEM39",
+          "same_origin_node": true,
+          "desktop_focus": false,
+          "history_owner": "MDXTerminalOverlay",
+          "scroll_before_activation": 557
+        },
+        "geometry": {
+          "viewport": 320,
+          "width": 320,
+          "targets": [
+            {
+              "label": "S&P 500标普500",
+              "width": 83.625,
+              "height": 44
+            },
+            {
+              "label": "Themes主题",
+              "width": 58,
+              "height": 44
+            },
+            {
+              "label": "1 day1天",
+              "width": 44,
+              "height": 44
+            },
+            {
+              "label": "1 week1周",
+              "width": 44,
+              "height": 44
+            },
+            {
+              "label": "1 month1月",
+              "width": 44,
+              "height": 44
+            },
+            {
+              "label": "查找公司或主题成员",
+              "width": 236,
+              "height": 44
+            },
+            {
+              "label": "Members成员数",
+              "width": 60,
+              "height": 44
+            },
+            {
+              "label": "Biggest move涨跌幅",
+              "width": 60,
+              "height": 44
+            },
+            {
+              "label": "A–Z字母",
+              "width": 48,
+              "height": 44
+            },
+            {
+              "label": "−2.00%示例主题 01 / 40 来源成员⌄",
+              "width": 288,
+              "height": 60.5
+            },
+            {
+              "label": "暂无数据MEM39完整来源成员 39›",
+              "width": 270,
+              "height": 60.5
+            }
+          ]
+        },
+        "physical_device": false
+      }
+    },
+    {
+      "name": "accessible-touch-390-en-dark",
+      "status": "PASS",
+      "detail": {
+        "stock": {
+          "symbol": "TINY",
+          "same_origin_node": true,
+          "desktop_focus": false,
+          "history_owner": "MDXTerminalOverlay",
+          "scroll_before_activation": 446
+        },
+        "theme_member": {
+          "symbol": "MEM39",
+          "same_origin_node": true,
+          "desktop_focus": false,
+          "history_owner": "MDXTerminalOverlay",
+          "scroll_before_activation": 446
+        },
+        "geometry": {
+          "viewport": 390,
+          "width": 390,
+          "targets": [
+            {
+              "label": "S&P 500标普500",
+              "width": 86.375,
+              "height": 44
+            },
+            {
+              "label": "Themes主题",
+              "width": 83.40625,
+              "height": 44
+            },
+            {
+              "label": "1 day1天",
+              "width": 47.34375,
+              "height": 44
+            },
+            {
+              "label": "1 week1周",
+              "width": 57.015625,
+              "height": 44
+            },
+            {
+              "label": "1 month1月",
+              "width": 63.171875,
+              "height": 44
+            },
+            {
+              "label": "Find a company or theme member",
+              "width": 306,
+              "height": 44
+            },
+            {
+              "label": "Members成员数",
+              "width": 78.921875,
+              "height": 44
+            },
+            {
+              "label": "Biggest move涨跌幅",
+              "width": 102.828125,
+              "height": 44
+            },
+            {
+              "label": "A–Z字母",
+              "width": 46.5625,
+              "height": 44
+            },
+            {
+              "label": "−2.00%Fixture theme 01 / 40 supplied members⌄",
+              "width": 358,
+              "height": 60.5
+            },
+            {
+              "label": "No dataMEM39Complete supplied member 39›",
+              "width": 340,
+              "height": 60.5
+            }
+          ]
+        },
+        "physical_device": false
+      }
+    },
+    {
+      "name": "accessible-touch-390-en-light",
+      "status": "PASS",
+      "detail": {
+        "stock": {
+          "symbol": "TINY",
+          "same_origin_node": true,
+          "desktop_focus": false,
+          "history_owner": "MDXTerminalOverlay",
+          "scroll_before_activation": 446
+        },
+        "theme_member": {
+          "symbol": "MEM39",
+          "same_origin_node": true,
+          "desktop_focus": false,
+          "history_owner": "MDXTerminalOverlay",
+          "scroll_before_activation": 577
+        },
+        "geometry": {
+          "viewport": 390,
+          "width": 390,
+          "targets": [
+            {
+              "label": "S&P 500标普500",
+              "width": 86.375,
+              "height": 44
+            },
+            {
+              "label": "Themes主题",
+              "width": 83.40625,
+              "height": 44
+            },
+            {
+              "label": "1 day1天",
+              "width": 47.34375,
+              "height": 44
+            },
+            {
+              "label": "1 week1周",
+              "width": 57.015625,
+              "height": 44
+            },
+            {
+              "label": "1 month1月",
+              "width": 63.171875,
+              "height": 44
+            },
+            {
+              "label": "Find a company or theme member",
+              "width": 306,
+              "height": 44
+            },
+            {
+              "label": "Members成员数",
+              "width": 78.921875,
+              "height": 44
+            },
+            {
+              "label": "Biggest move涨跌幅",
+              "width": 102.828125,
+              "height": 44
+            },
+            {
+              "label": "A–Z字母",
+              "width": 46.5625,
+              "height": 44
+            },
+            {
+              "label": "−2.00%Fixture theme 01 / 40 supplied members⌄",
+              "width": 358,
+              "height": 60.5
+            },
+            {
+              "label": "No dataMEM39Complete supplied member 39›",
+              "width": 340,
+              "height": 60.5
+            }
+          ]
+        },
+        "physical_device": false
+      }
+    },
+    {
+      "name": "accessible-touch-390-zh-dark",
+      "status": "PASS",
+      "detail": {
+        "stock": {
+          "symbol": "TINY",
+          "same_origin_node": true,
+          "desktop_focus": false,
+          "history_owner": "MDXTerminalOverlay",
+          "scroll_before_activation": 580
+        },
+        "theme_member": {
+          "symbol": "MEM39",
+          "same_origin_node": true,
+          "desktop_focus": false,
+          "history_owner": "MDXTerminalOverlay",
+          "scroll_before_activation": 580
+        },
+        "geometry": {
+          "viewport": 390,
+          "width": 390,
+          "targets": [
+            {
+              "label": "S&P 500标普500",
+              "width": 83.625,
+              "height": 44
+            },
+            {
+              "label": "Themes主题",
+              "width": 58,
+              "height": 44
+            },
+            {
+              "label": "1 day1天",
+              "width": 44,
+              "height": 44
+            },
+            {
+              "label": "1 week1周",
+              "width": 44,
+              "height": 44
+            },
+            {
+              "label": "1 month1月",
+              "width": 44,
+              "height": 44
+            },
+            {
+              "label": "查找公司或主题成员",
+              "width": 306,
+              "height": 44
+            },
+            {
+              "label": "Members成员数",
+              "width": 60,
+              "height": 44
+            },
+            {
+              "label": "Biggest move涨跌幅",
+              "width": 60,
+              "height": 44
+            },
+            {
+              "label": "A–Z字母",
+              "width": 48,
+              "height": 44
+            },
+            {
+              "label": "−2.00%示例主题 01 / 40 来源成员⌄",
+              "width": 358,
+              "height": 60.5
+            },
+            {
+              "label": "暂无数据MEM39完整来源成员 39›",
+              "width": 340,
+              "height": 60.5
+            }
+          ]
+        },
+        "physical_device": false
+      }
+    },
+    {
+      "name": "accessible-touch-390-zh-light",
+      "status": "PASS",
+      "detail": {
+        "stock": {
+          "symbol": "TINY",
+          "same_origin_node": true,
+          "desktop_focus": false,
+          "history_owner": "MDXTerminalOverlay",
+          "scroll_before_activation": 580
+        },
+        "theme_member": {
+          "symbol": "MEM39",
+          "same_origin_node": true,
+          "desktop_focus": false,
+          "history_owner": "MDXTerminalOverlay",
+          "scroll_before_activation": 557
+        },
+        "geometry": {
+          "viewport": 390,
+          "width": 390,
+          "targets": [
+            {
+              "label": "S&P 500标普500",
+              "width": 83.625,
+              "height": 44
+            },
+            {
+              "label": "Themes主题",
+              "width": 58,
+              "height": 44
+            },
+            {
+              "label": "1 day1天",
+              "width": 44,
+              "height": 44
+            },
+            {
+              "label": "1 week1周",
+              "width": 44,
+              "height": 44
+            },
+            {
+              "label": "1 month1月",
+              "width": 44,
+              "height": 44
+            },
+            {
+              "label": "查找公司或主题成员",
+              "width": 306,
+              "height": 44
+            },
+            {
+              "label": "Members成员数",
+              "width": 60,
+              "height": 44
+            },
+            {
+              "label": "Biggest move涨跌幅",
+              "width": 60,
+              "height": 44
+            },
+            {
+              "label": "A–Z字母",
+              "width": 48,
+              "height": 44
+            },
+            {
+              "label": "−2.00%示例主题 01 / 40 来源成员⌄",
+              "width": 358,
+              "height": 60.5
+            },
+            {
+              "label": "暂无数据MEM39完整来源成员 39›",
+              "width": 340,
+              "height": 60.5
+            }
+          ]
+        },
+        "physical_device": false
+      }
+    },
+    {
+      "name": "accessible-touch-1440-en-dark",
+      "status": "PASS",
+      "detail": {
+        "stock": {
+          "symbol": "TINY",
+          "same_origin_node": true,
+          "desktop_focus": true,
+          "history_owner": "MDXTerminalOverlay",
+          "scroll_before_activation": 0
+        },
+        "theme_member": {
+          "symbol": "MEM39",
+          "same_origin_node": true,
+          "desktop_focus": true,
+          "history_owner": "MDXTerminalOverlay",
+          "scroll_before_activation": 0
+        },
+        "geometry": {
+          "viewport": 1440,
+          "width": 1440,
+          "targets": [
+            {
+              "label": "S&P 500标普500",
+              "width": 86.375,
+              "height": 44
+            },
+            {
+              "label": "Themes主题",
+              "width": 83.40625,
+              "height": 44
+            },
+            {
+              "label": "1 day1天",
+              "width": 47.34375,
+              "height": 44
+            },
+            {
+              "label": "1 week1周",
+              "width": 57.015625,
+              "height": 44
+            },
+            {
+              "label": "1 month1月",
+              "width": 63.171875,
+              "height": 44
+            },
+            {
+              "label": "Map热力图",
+              "width": 50.328125,
+              "height": 44
+            },
+            {
+              "label": "List列表",
+              "width": 48.234375,
+              "height": 44
+            },
+            {
+              "label": "Find a company or theme member",
+              "width": 315.421875,
+              "height": 44
+            },
+            {
+              "label": "Members成员数",
+              "width": 78.921875,
+              "height": 44
+            },
+            {
+              "label": "Biggest move涨跌幅",
+              "width": 102.828125,
+              "height": 44
+            },
+            {
+              "label": "A–Z字母",
+              "width": 46.5625,
+              "height": 44
+            },
+            {
+              "label": "−2.00%Fixture theme 01 / 40 supplied members⌄",
+              "width": 450.65625,
+              "height": 60.5
+            },
+            {
+              "label": "No dataMEM39Complete supplied member 39›",
+              "width": 432.65625,
+              "height": 60.5
+            }
+          ]
+        },
+        "physical_device": false
+      }
+    },
+    {
+      "name": "accessible-touch-1440-en-light",
+      "status": "PASS",
+      "detail": {
+        "stock": {
+          "symbol": "TINY",
+          "same_origin_node": true,
+          "desktop_focus": true,
+          "history_owner": "MDXTerminalOverlay",
+          "scroll_before_activation": 0
+        },
+        "theme_member": {
+          "symbol": "MEM39",
+          "same_origin_node": true,
+          "desktop_focus": true,
+          "history_owner": "MDXTerminalOverlay",
+          "scroll_before_activation": 0
+        },
+        "geometry": {
+          "viewport": 1440,
+          "width": 1440,
+          "targets": [
+            {
+              "label": "S&P 500标普500",
+              "width": 86.375,
+              "height": 44
+            },
+            {
+              "label": "Themes主题",
+              "width": 83.40625,
+              "height": 44
+            },
+            {
+              "label": "1 day1天",
+              "width": 47.34375,
+              "height": 44
+            },
+            {
+              "label": "1 week1周",
+              "width": 57.015625,
+              "height": 44
+            },
+            {
+              "label": "1 month1月",
+              "width": 63.171875,
+              "height": 44
+            },
+            {
+              "label": "Map热力图",
+              "width": 50.328125,
+              "height": 44
+            },
+            {
+              "label": "List列表",
+              "width": 48.234375,
+              "height": 44
+            },
+            {
+              "label": "Find a company or theme member",
+              "width": 315.421875,
+              "height": 44
+            },
+            {
+              "label": "Members成员数",
+              "width": 78.921875,
+              "height": 44
+            },
+            {
+              "label": "Biggest move涨跌幅",
+              "width": 102.828125,
+              "height": 44
+            },
+            {
+              "label": "A–Z字母",
+              "width": 46.5625,
+              "height": 44
+            },
+            {
+              "label": "−2.00%Fixture theme 01 / 40 supplied members⌄",
+              "width": 450.65625,
+              "height": 60.5
+            },
+            {
+              "label": "No dataMEM39Complete supplied member 39›",
+              "width": 432.65625,
+              "height": 60.5
+            }
+          ]
+        },
+        "physical_device": false
+      }
+    },
+    {
+      "name": "accessible-touch-1440-zh-dark",
+      "status": "PASS",
+      "detail": {
+        "stock": {
+          "symbol": "TINY",
+          "same_origin_node": true,
+          "desktop_focus": true,
+          "history_owner": "MDXTerminalOverlay",
+          "scroll_before_activation": 0
+        },
+        "theme_member": {
+          "symbol": "MEM39",
+          "same_origin_node": true,
+          "desktop_focus": true,
+          "history_owner": "MDXTerminalOverlay",
+          "scroll_before_activation": 0
+        },
+        "geometry": {
+          "viewport": 1440,
+          "width": 1440,
+          "targets": [
+            {
+              "label": "S&P 500标普500",
+              "width": 83.625,
+              "height": 44
+            },
+            {
+              "label": "Themes主题",
+              "width": 58,
+              "height": 44
+            },
+            {
+              "label": "1 day1天",
+              "width": 44,
+              "height": 44
+            },
+            {
+              "label": "1 week1周",
+              "width": 44,
+              "height": 44
+            },
+            {
+              "label": "1 month1月",
+              "width": 44,
+              "height": 44
+            },
+            {
+              "label": "Map热力图",
+              "width": 64.28125,
+              "height": 44
+            },
+            {
+              "label": "List列表",
+              "width": 51,
+              "height": 44
+            },
+            {
+              "label": "查找公司或主题成员",
+              "width": 334.59375,
+              "height": 44
+            },
+            {
+              "label": "Members成员数",
+              "width": 60,
+              "height": 44
+            },
+            {
+              "label": "Biggest move涨跌幅",
+              "width": 60,
+              "height": 44
+            },
+            {
+              "label": "A–Z字母",
+              "width": 48,
+              "height": 44
+            },
+            {
+              "label": "−2.00%示例主题 01 / 40 来源成员⌄",
+              "width": 450.65625,
+              "height": 60.5
+            },
+            {
+              "label": "暂无数据MEM39完整来源成员 39›",
+              "width": 432.65625,
+              "height": 60.5
+            }
+          ]
+        },
+        "physical_device": false
+      }
+    },
+    {
+      "name": "accessible-touch-1440-zh-light",
+      "status": "PASS",
+      "detail": {
+        "stock": {
+          "symbol": "TINY",
+          "same_origin_node": true,
+          "desktop_focus": true,
+          "history_owner": "MDXTerminalOverlay",
+          "scroll_before_activation": 0
+        },
+        "theme_member": {
+          "symbol": "MEM39",
+          "same_origin_node": true,
+          "desktop_focus": true,
+          "history_owner": "MDXTerminalOverlay",
+          "scroll_before_activation": 0
+        },
+        "geometry": {
+          "viewport": 1440,
+          "width": 1440,
+          "targets": [
+            {
+              "label": "S&P 500标普500",
+              "width": 83.625,
+              "height": 44
+            },
+            {
+              "label": "Themes主题",
+              "width": 58,
+              "height": 44
+            },
+            {
+              "label": "1 day1天",
+              "width": 44,
+              "height": 44
+            },
+            {
+              "label": "1 week1周",
+              "width": 44,
+              "height": 44
+            },
+            {
+              "label": "1 month1月",
+              "width": 44,
+              "height": 44
+            },
+            {
+              "label": "Map热力图",
+              "width": 64.28125,
+              "height": 44
+            },
+            {
+              "label": "List列表",
+              "width": 51,
+              "height": 44
+            },
+            {
+              "label": "查找公司或主题成员",
+              "width": 334.59375,
+              "height": 44
+            },
+            {
+              "label": "Members成员数",
+              "width": 60,
+              "height": 44
+            },
+            {
+              "label": "Biggest move涨跌幅",
+              "width": 60,
+              "height": 44
+            },
+            {
+              "label": "A–Z字母",
+              "width": 48,
+              "height": 44
+            },
+            {
+              "label": "−2.00%示例主题 01 / 40 来源成员⌄",
+              "width": 450.65625,
+              "height": 60.5
+            },
+            {
+              "label": "暂无数据MEM39完整来源成员 39›",
+              "width": 432.65625,
+              "height": 60.5
+            }
+          ]
+        },
+        "physical_device": false
+      }
+    },
+    {
+      "name": "accessible-touch-900-en-light",
+      "status": "PASS",
+      "detail": {
+        "stock": {
+          "symbol": "TINY",
+          "same_origin_node": true,
+          "desktop_focus": true,
+          "history_owner": "MDXTerminalOverlay",
+          "scroll_before_activation": 46
+        },
+        "theme_member": {
+          "symbol": "MEM39",
+          "same_origin_node": true,
+          "desktop_focus": true,
+          "history_owner": "MDXTerminalOverlay",
+          "scroll_before_activation": 106
+        },
+        "geometry": {
+          "viewport": 900,
+          "width": 900,
+          "targets": [
+            {
+              "label": "S&P 500标普500",
+              "width": 86.375,
+              "height": 44
+            },
+            {
+              "label": "Themes主题",
+              "width": 83.40625,
+              "height": 44
+            },
+            {
+              "label": "1 day1天",
+              "width": 47.34375,
+              "height": 44
+            },
+            {
+              "label": "1 week1周",
+              "width": 57.015625,
+              "height": 44
+            },
+            {
+              "label": "1 month1月",
+              "width": 63.171875,
+              "height": 44
+            },
+            {
+              "label": "Map热力图",
+              "width": 50.328125,
+              "height": 44
+            },
+            {
+              "label": "List列表",
+              "width": 48.234375,
+              "height": 44
+            },
+            {
+              "label": "Find a company or theme member",
+              "width": 165.015625,
+              "height": 44
+            },
+            {
+              "label": "Members成员数",
+              "width": 78.921875,
+              "height": 44
+            },
+            {
+              "label": "Biggest move涨跌幅",
+              "width": 102.828125,
+              "height": 44
+            },
+            {
+              "label": "A–Z字母",
+              "width": 46.5625,
+              "height": 44
+            },
+            {
+              "label": "−2.00%Fixture theme 01 / 40 supplied members⌄",
+              "width": 426,
+              "height": 60.5
+            },
+            {
+              "label": "No dataMEM39Complete supplied member 39›",
+              "width": 408,
+              "height": 60.5
+            }
+          ]
+        },
+        "physical_device": false
+      }
+    },
+    {
+      "name": "accessible-touch-900-zh-dark",
+      "status": "PASS",
+      "detail": {
+        "stock": {
+          "symbol": "TINY",
+          "same_origin_node": true,
+          "desktop_focus": true,
+          "history_owner": "MDXTerminalOverlay",
+          "scroll_before_activation": 26
+        },
+        "theme_member": {
+          "symbol": "MEM39",
+          "same_origin_node": true,
+          "desktop_focus": true,
+          "history_owner": "MDXTerminalOverlay",
+          "scroll_before_activation": 506
+        },
+        "geometry": {
+          "viewport": 900,
+          "width": 900,
+          "targets": [
+            {
+              "label": "S&P 500标普500",
+              "width": 83.625,
+              "height": 44
+            },
+            {
+              "label": "Themes主题",
+              "width": 58,
+              "height": 44
+            },
+            {
+              "label": "1 day1天",
+              "width": 44,
+              "height": 44
+            },
+            {
+              "label": "1 week1周",
+              "width": 44,
+              "height": 44
+            },
+            {
+              "label": "1 month1月",
+              "width": 44,
+              "height": 44
+            },
+            {
+              "label": "Map热力图",
+              "width": 64.28125,
+              "height": 44
+            },
+            {
+              "label": "List列表",
+              "width": 51,
+              "height": 44
+            },
+            {
+              "label": "查找公司或主题成员",
+              "width": 174.046875,
+              "height": 44
+            },
+            {
+              "label": "Members成员数",
+              "width": 60,
+              "height": 44
+            },
+            {
+              "label": "Biggest move涨跌幅",
+              "width": 60,
+              "height": 44
+            },
+            {
+              "label": "A–Z字母",
+              "width": 48,
+              "height": 44
+            },
+            {
+              "label": "−2.00%示例主题 01 / 40 来源成员⌄",
+              "width": 426,
+              "height": 60.5
+            },
+            {
+              "label": "暂无数据MEM39完整来源成员 39›",
+              "width": 408,
+              "height": 60.5
+            }
+          ]
+        },
+        "physical_device": false
+      }
+    },
+    {
+      "name": "list-live-theme-language-resize-and-native-reload-focus",
+      "status": "PASS",
+      "detail": null
+    },
+    {
+      "name": "optional-presentation-and-disclosure-state-validation",
+      "status": "PASS",
+      "detail": null
+    }
+  ],
+  "screenshots": [
+    "document-return-1365-en-dark.png",
+    "document-return-1365-en-light.png",
+    "document-return-1365-zh-dark.png",
+    "document-return-1365-zh-light.png",
+    "overlay-return-390-en-dark.png",
+    "overlay-return-390-en-light.png",
+    "overlay-return-390-zh-dark.png",
+    "overlay-return-390-zh-light.png",
+    "timeframe-disabled.png",
+    "timeframe-removed.png",
+    "timeframe-all.png",
+    "mobile-retained-query.png",
+    "committed-feed-desktop.png",
+    "accessible-dense-list-desktop.png",
+    "accessible-theme-members-desktop.png",
+    "accessible-touch-320-en-dark.png",
+    "accessible-touch-320-en-light.png",
+    "accessible-touch-320-zh-dark.png",
+    "accessible-touch-320-zh-light.png",
+    "accessible-touch-390-en-dark.png",
+    "accessible-touch-390-en-light.png",
+    "accessible-touch-390-zh-dark.png",
+    "accessible-touch-390-zh-light.png",
+    "accessible-touch-1440-en-dark.png",
+    "accessible-touch-1440-en-light.png",
+    "accessible-touch-1440-zh-dark.png",
+    "accessible-touch-1440-zh-light.png",
+    "accessible-touch-900-en-light.png",
+    "accessible-touch-900-zh-dark.png"
+  ],
+  "page_errors": [],
+  "sha256": {
+    "templates/heatmap.js": "46dacb96574564d619cee764a23bdbef9c1748fcfe117ca88b2967f395b0f3e0",
+    "site/heatmap.js": "46dacb96574564d619cee764a23bdbef9c1748fcfe117ca88b2967f395b0f3e0",
+    "templates/sector_heatmap.html.j2": "610099544295a3b512aa889a52422ce8a1dc3429d249e6b502456e17670c9775",
+    "site/sector_heatmap.html": "9dbdfa0dcbd6bfdcb442595cae4ed82fdd7d1cf9b86e7ce1717723117f29ed93",
+    "scripts/verify_us_heatmap_return_browser.py": "b0633239479884c88b95a24580dbbfae26ccff08aed7bd954e12dce2eeba218e"
+  }
+}

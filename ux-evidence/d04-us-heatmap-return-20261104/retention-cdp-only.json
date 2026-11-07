@@ -1,0 +1,40 @@
+{
+  "schema": "d04.retention_cdp.v1",
+  "at": "2026-11-04T19:50:50.626184+00:00",
+  "method": "Native CDP Page.navigate / by-value Runtime.evaluate only for document actions and reads; no Playwright locator/action/expect calls, no timing/event/interval/geometry wrappers, no overlay. Existing assets and unchanged committed feeds.",
+  "product_sha256": "1cf6f377e7384c729d665df49618a0220e66887ef372d6c1fbd938bd30612d93",
+  "snapshots": [
+    {
+      "documents": 9,
+      "nodes": 8439,
+      "jsEventListeners": 195,
+      "live": 5266,
+      "collected": null,
+      "label": "warmed"
+    },
+    {
+      "documents": 9,
+      "nodes": 8439,
+      "jsEventListeners": 195,
+      "live": 5266,
+      "collected": true,
+      "label": "cycle-1"
+    },
+    {
+      "documents": 9,
+      "nodes": 8439,
+      "jsEventListeners": 195,
+      "live": 5266,
+      "collected": true,
+      "label": "cycle-2"
+    },
+    {
+      "documents": 9,
+      "nodes": 8439,
+      "jsEventListeners": 195,
+      "live": 5266,
+      "collected": true,
+      "label": "cycle-3"
+    }
+  ]
+}

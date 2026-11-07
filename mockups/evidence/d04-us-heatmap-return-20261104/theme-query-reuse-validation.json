@@ -1,0 +1,244 @@
+{
+  "schema": "d04.us_heatmap_theme_query_reuse.validation.v1",
+  "recorded_at": "2026-11-05T03:20:35.754369+00:00",
+  "source_parent": "3acd4fb0efe00793fc9987f1a6e45a512b26e5dd",
+  "protected_law_pin": "70187bb1660e8a7c3038271bb9f8924b5e525cb0",
+  "source_sha256": {
+    "templates/heatmap.js": "46dacb96574564d619cee764a23bdbef9c1748fcfe117ca88b2967f395b0f3e0",
+    "site/heatmap.js": "46dacb96574564d619cee764a23bdbef9c1748fcfe117ca88b2967f395b0f3e0",
+    "templates/sector_heatmap.html.j2": "610099544295a3b512aa889a52422ce8a1dc3429d249e6b502456e17670c9775",
+    "site/sector_heatmap.html": "9dbdfa0dcbd6bfdcb442595cae4ed82fdd7d1cf9b86e7ce1717723117f29ed93",
+    "scripts/verify_us_heatmap_return_browser.py": "b0633239479884c88b95a24580dbbfae26ccff08aed7bd954e12dce2eeba218e",
+    "scripts/verify_us_heatmap_lifecycle_browser.py": "d846a1e959b7cfb62cb32fa376b81355081b8c6ec0286ac6d86f68bbf8605f4b",
+    "scripts/verify_us_heatmap_list_reuse_browser.py": "35ca626c58417eee9c65744ad0f87f4044d9d20dc7b370eac80d30ff424e3862"
+  },
+  "generated_script": "heatmap.js?v=46dacb96",
+  "checks": [
+    {
+      "name": "shared-heatmap-node",
+      "passed": 89,
+      "exit_code": 0
+    },
+    {
+      "name": "focused-python-contracts-and-helper-hygiene",
+      "passed": 84,
+      "seconds": 105.91,
+      "exit_code": 0
+    },
+    {
+      "name": "affected-return-browser",
+      "passed": 45,
+      "screenshots": 29,
+      "page_errors": [],
+      "exit_code": 0
+    },
+    {
+      "name": "accepted-parent-semantic-parity",
+      "comparisons": 90,
+      "contexts": 3,
+      "all_passed": true
+    },
+    {
+      "name": "syntax-diff-asset-equality",
+      "exit_code": 0
+    },
+    {
+      "name": "design-system-enforce-added",
+      "base": "bb3b7273f1e9ccb869b6500c97871093eb22005a",
+      "blocking": 0,
+      "exit_code": 0
+    },
+    {
+      "name": "runtime-style-injection",
+      "exit_code": 0
+    },
+    {
+      "name": "ui-visual-evidence",
+      "exit_code": 0
+    }
+  ],
+  "performance_comparison": [
+    {
+      "action": "themes:query:a",
+      "before_ms": 216.6,
+      "after_ms": 83.8,
+      "before_list_html_writes": 1,
+      "after_list_html_writes": 0,
+      "before_html_ms": 60.9,
+      "after_html_ms": 0
+    },
+    {
+      "action": "themes:query:aapl",
+      "before_ms": 47.7,
+      "after_ms": 28.4,
+      "before_list_html_writes": 1,
+      "after_list_html_writes": 0,
+      "before_html_ms": 4.3,
+      "after_html_ms": 0
+    },
+    {
+      "action": "themes-expanded:query:a",
+      "before_ms": 512.4,
+      "after_ms": 121,
+      "before_list_html_writes": 1,
+      "after_list_html_writes": 0,
+      "before_html_ms": 87.5,
+      "after_html_ms": 0
+    },
+    {
+      "action": "themes-expanded:query:clear",
+      "before_ms": 678.2,
+      "after_ms": 175.6,
+      "before_list_html_writes": 1,
+      "after_list_html_writes": 0,
+      "before_html_ms": 109.8,
+      "after_html_ms": 0
+    }
+  ],
+  "same_probe_before": {
+    "samples": 26,
+    "median_next_frame_ms": 126.65000003576279,
+    "maximum_next_frame_ms": 678.2000000476837
+  },
+  "same_probe_after": {
+    "samples": 26,
+    "median_next_frame_ms": 128.55000001192093,
+    "maximum_next_frame_ms": 292.5
+  },
+  "qualified_stress": [
+    {
+      "width": 1440,
+      "timing": {
+        "samples": 36,
+        "median_next_frame_ms": 141.64999997615814,
+        "maximum_next_frame_ms": 391.1999999284744
+      },
+      "invariants": {
+        "one_live_heatmap_refresh_listener": true,
+        "stable_intervals": true,
+        "stable_live_heatmap_nodes": true,
+        "no_extra_heatmap_requests": true,
+        "no_page_errors": true
+      }
+    },
+    {
+      "width": 390,
+      "timing": {
+        "samples": 32,
+        "median_next_frame_ms": 145.55000001192093,
+        "maximum_next_frame_ms": 292.39999997615814
+      },
+      "invariants": {
+        "one_live_heatmap_refresh_listener": true,
+        "stable_intervals": true,
+        "stable_live_heatmap_nodes": true,
+        "no_extra_heatmap_requests": true,
+        "no_page_errors": true
+      }
+    },
+    {
+      "width": 320,
+      "timing": {
+        "samples": 32,
+        "median_next_frame_ms": 143.3499999642372,
+        "maximum_next_frame_ms": 288.60000002384186
+      },
+      "invariants": {
+        "one_live_heatmap_refresh_listener": true,
+        "stable_intervals": true,
+        "stable_live_heatmap_nodes": true,
+        "no_extra_heatmap_requests": true,
+        "no_page_errors": true
+      }
+    }
+  ],
+  "clean_retention": [
+    {
+      "width": 1440,
+      "deltas": {
+        "live": 0,
+        "heatmap_nodes": 0,
+        "documents": 0,
+        "nodes": 0,
+        "jsEventListeners": 0,
+        "js_heap_used_bytes": 135684
+      },
+      "invariants": {
+        "stable_live_heatmap_nodes": true,
+        "retired_view_collected": true,
+        "no_retained_dom_growth": true,
+        "no_event_listener_growth": true,
+        "no_extra_heatmap_requests": true,
+        "no_page_errors": true
+      }
+    },
+    {
+      "width": 390,
+      "deltas": {
+        "live": 0,
+        "heatmap_nodes": 0,
+        "documents": 0,
+        "nodes": 0,
+        "jsEventListeners": 0,
+        "js_heap_used_bytes": 132108
+      },
+      "invariants": {
+        "stable_live_heatmap_nodes": true,
+        "retired_view_collected": true,
+        "no_retained_dom_growth": true,
+        "no_event_listener_growth": true,
+        "no_extra_heatmap_requests": true,
+        "no_page_errors": true
+      }
+    },
+    {
+      "width": 320,
+      "deltas": {
+        "live": 0,
+        "heatmap_nodes": 0,
+        "documents": 0,
+        "nodes": 0,
+        "jsEventListeners": 0,
+        "js_heap_used_bytes": 132108
+      },
+      "invariants": {
+        "stable_live_heatmap_nodes": true,
+        "retired_view_collected": true,
+        "no_retained_dom_growth": true,
+        "no_event_listener_growth": true,
+        "no_extra_heatmap_requests": true,
+        "no_page_errors": true
+      }
+    }
+  ],
+  "actual_visual_self_qa": [
+    "list-reuse/reuse-1440-en-dark.png",
+    "list-reuse/reuse-390-zh-light.png",
+    "list-reuse/reuse-320-en-light.png",
+    "render-functional/accessible-theme-members-desktop.png",
+    "render-functional/accessible-touch-320-en-light.png"
+  ],
+  "evidence_sha256": {
+    "ux-evidence/d04-us-heatmap-return-20261104/performance-render-before.json": "220ef8ea45f828d3b03219889630b7c11e0b4f834c2b26bcb006687d413e0139",
+    "ux-evidence/d04-us-heatmap-return-20261104/performance-render-candidate.json": "e0e7e06d2c7afc0df32d67d557f3975e9c32921dcbdf599b1f03ab008f8dde73",
+    "ux-evidence/d04-us-heatmap-return-20261104/performance-render-qualified.json": "6b67f5fe1bb8aaea6a7eb10757b63dad33a82d4b59a0028498080059ad21cae7",
+    "ux-evidence/d04-us-heatmap-return-20261104/retention-render-qualified.json": "d2001aee2dd626b3b5f5d0473a4c4f25a8d849986c3f5a68dafb3e172c058ab6",
+    "ux-evidence/d04-us-heatmap-return-20261104/list-reuse/report.json": "27f6968c185a943375b0f8a5368f51a1f48a3764edd3de4b5a4d8089d36e2340",
+    "ux-evidence/d04-us-heatmap-return-20261104/render-functional/browser-report.json": "ca8b9b538e8989287a8b1dbc3fb16e6c341665a620e508f31db2bba4a3deb6b2"
+  },
+  "limitations": [
+    "Controlled local Chromium with fourfold CPU throttling; observations are not field INP/p75 or production acceptance.",
+    "The complete comparable 26-action median did not improve: 126.65 to 128.55 ms. Query-tail improvement is the bounded claim.",
+    "Full initial List construction and mode/data/language/theme/sort/timeframe changes still render complete lists. Warm ordinary clear reached 292.5 ms; the wider desktop probe reached 391.2 ms.",
+    "Timing-mode node/listener counters are UNQUALIFIED_DRIVER_TARGET_RETENTION. Only the separate by-value CDP retention mode supports collection conclusions.",
+    "Refresh-notification parity uses the same provided snapshot, not a live-feed freshness claim.",
+    "Inherited full programme, real destination/auth, F02 strict freeze, D23 persistence and release holds remain."
+  ],
+  "publication": {
+    "carrier": "macro PR #10719",
+    "operation": "d04-us-heatmap-return-20261104",
+    "state_at_validation": "uncommitted candidate on exact parent; candidate digests above bind results",
+    "parent_ci": "ci 41903893475 and fences 41903893354 success",
+    "candidate_ci": "not yet submitted"
+  }
+}

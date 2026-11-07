@@ -1,0 +1,658 @@
+{
+  "schema": "d04.us_heatmap_lifecycle.v1",
+  "mode": "instrumented-timing",
+  "observed_at_utc": "2026-11-05T03:07:32.159698+00:00",
+  "source_head": "3acd4fb0efe00793fc9987f1a6e45a512b26e5dd",
+  "source_sha256": {
+    "templates/heatmap.js": "46dacb96574564d619cee764a23bdbef9c1748fcfe117ca88b2967f395b0f3e0",
+    "site/heatmap.js": "46dacb96574564d619cee764a23bdbef9c1748fcfe117ca88b2967f395b0f3e0",
+    "templates/sector_heatmap.html.j2": "610099544295a3b512aa889a52422ce8a1dc3429d249e6b502456e17670c9775",
+    "site/sector_heatmap.html": "9dbdfa0dcbd6bfdcb442595cae4ed82fdd7d1cf9b86e7ce1717723117f29ed93",
+    "scripts/verify_us_heatmap_lifecycle_browser.py": "d846a1e959b7cfb62cb32fa376b81355081b8c6ec0286ac6d86f68bbf8605f4b"
+  },
+  "environment": {
+    "os": "26.5",
+    "machine": "arm64",
+    "cpu": "Apple M2 Ultra",
+    "cpu_throttle_rate": 4,
+    "overlay_round_trips": false,
+    "network": "loopback, no network throttling; external requests blocked",
+    "terminal_fixture": "Existing MM_TERMINAL_BASE configured to match committed app-origin links; that origin is fulfilled by a labelled fixture without network/account/data access.",
+    "browser": "151.0.7922.34"
+  },
+  "method": "Input/click capture to second animation frame; real generated assets and committed snapshots. CDP counters at identical warmed S&P List state after discarding debugger console handles and forced GC. Diagnostic wrappers count history writes, keyed geometry reads, refresh listeners, intervals and list innerHTML assignment duration. Per-action CDP script/layout/style/task deltas include driver input preparation and must not be summed with overlapping event/assignment measurements.",
+  "limitations": [
+    "Local instrumented lab proxy, not field INP/LCP/CLS, physical devices, production Terminal, sustained polling cadence or whole A063 acceptance.",
+    "CPU throttling is a controlled stress condition, not an equivalence to named hardware.",
+    "Bounded-cycle counters cannot prove absence of every memory leak."
+  ],
+  "data": {
+    "sp500": {
+      "tiles": 503,
+      "member_contexts": 0,
+      "asof": "2026-11-02",
+      "source": "daily-close"
+    },
+    "themes": {
+      "tiles": 268,
+      "member_contexts": 2339,
+      "asof": "2026-11-03",
+      "source": "finviz-themes"
+    }
+  },
+  "viewports": [
+    {
+      "width": 1440,
+      "initial_heatmap_frame_ms": 1349.5999999046326,
+      "actions": [
+        {
+          "label": "sp500:query:a",
+          "event": "input",
+          "next_frame_ms": 91.09999990463257,
+          "history_writes": 1,
+          "keyed_box_reads": 0,
+          "list_html_writes": 1,
+          "list_html_ms": 9.5,
+          "browser_duration_delta_ms": {
+            "ScriptDuration": 18.843,
+            "LayoutDuration": 27.93000000000001,
+            "RecalcStyleDuration": 19.86199999999999,
+            "TaskDuration": 137.5439999999999
+          }
+        },
+        {
+          "label": "sp500:query:ap",
+          "event": "input",
+          "next_frame_ms": 27.600000023841858,
+          "history_writes": 1,
+          "keyed_box_reads": 0,
+          "list_html_writes": 1,
+          "list_html_ms": 4.399999976158142,
+          "browser_duration_delta_ms": {
+            "ScriptDuration": 10.417000000000009,
+            "LayoutDuration": 6.05,
+            "RecalcStyleDuration": 3.587000000000007,
+            "TaskDuration": 47.36099999999999
+          }
+        },
+        {
+          "label": "sp500:query:aapl",
+          "event": "input",
+          "next_frame_ms": 13.300000071525574,
+          "history_writes": 1,
+          "keyed_box_reads": 0,
+          "list_html_writes": 1,
+          "list_html_ms": 1.0999999046325684,
+          "browser_duration_delta_ms": {
+            "ScriptDuration": 4.1559999999999935,
+            "LayoutDuration": 1.875000000000071,
+            "RecalcStyleDuration": 0.2520000000000022,
+            "TaskDuration": 22.78200000000008
+          }
+        },
+        {
+          "label": "sp500:query:clear",
+          "event": "input",
+          "next_frame_ms": 114.20000004768372,
+          "history_writes": 1,
+          "keyed_box_reads": 0,
+          "list_html_writes": 1,
+          "list_html_ms": 7.300000071525574,
+          "browser_duration_delta_ms": {
+            "ScriptDuration": 14.586999999999989,
+            "LayoutDuration": 44.950999999999965,
+            "RecalcStyleDuration": 23.511000000000003,
+            "TaskDuration": 134.185
+          }
+        },
+        {
+          "label": "sp500:query:technology",
+          "event": "input",
+          "next_frame_ms": 18.700000047683716,
+          "history_writes": 1,
+          "keyed_box_reads": 0,
+          "list_html_writes": 1,
+          "list_html_ms": 4.300000071525574,
+          "browser_duration_delta_ms": {
+            "ScriptDuration": 7.499000000000006,
+            "LayoutDuration": 2.873999999999932,
+            "RecalcStyleDuration": 0.8159999999999834,
+            "TaskDuration": 39.40600000000005
+          }
+        },
+        {
+          "label": "sp500:query:no-such-company",
+          "event": "input",
+          "next_frame_ms": 16,
+          "history_writes": 1,
+          "keyed_box_reads": 0,
+          "list_html_writes": 1,
+          "list_html_ms": 0.2999999523162842,
+          "browser_duration_delta_ms": {
+            "ScriptDuration": 3.064000000000011,
+            "LayoutDuration": 1.4180000000000303,
+            "RecalcStyleDuration": 0.8380000000000054,
+            "TaskDuration": 19.896000000000136
+          }
+        },
+        {
+          "label": "sp500:query:clear",
+          "event": "input",
+          "next_frame_ms": 104.40000009536743,
+          "history_writes": 1,
+          "keyed_box_reads": 0,
+          "list_html_writes": 1,
+          "list_html_ms": 6.400000095367432,
+          "browser_duration_delta_ms": {
+            "ScriptDuration": 12.409999999999977,
+            "LayoutDuration": 44.25699999999999,
+            "RecalcStyleDuration": 23.330000000000016,
+            "TaskDuration": 115.88999999999983
+          }
+        },
+        {
+          "label": "sp500:show-map",
+          "event": "click",
+          "next_frame_ms": 136.10000002384186,
+          "history_writes": 1,
+          "keyed_box_reads": 0,
+          "list_html_writes": 1,
+          "list_html_ms": 10.100000023841858,
+          "browser_duration_delta_ms": {
+            "ScriptDuration": 31.598000000000013,
+            "LayoutDuration": 33.465999999999994,
+            "RecalcStyleDuration": 43.213,
+            "TaskDuration": 236.71500000000023
+          }
+        },
+        {
+          "label": "sp500:show-list",
+          "event": "click",
+          "next_frame_ms": 146.70000004768372,
+          "history_writes": 1,
+          "keyed_box_reads": 0,
+          "list_html_writes": 1,
+          "list_html_ms": 10.300000071525574,
+          "browser_duration_delta_ms": {
+            "ScriptDuration": 24.795000000000012,
+            "LayoutDuration": 56.118,
+            "RecalcStyleDuration": 40.071000000000026,
+            "TaskDuration": 288.39400000000023
+          }
+        },
+        {
+          "label": "themes:query:a",
+          "event": "input",
+          "next_frame_ms": 83.80000007152557,
+          "history_writes": 1,
+          "keyed_box_reads": 0,
+          "list_html_writes": 0,
+          "list_html_ms": 0,
+          "browser_duration_delta_ms": {
+            "ScriptDuration": 21.334999999999994,
+            "LayoutDuration": 14.847999999999972,
+            "RecalcStyleDuration": 27.71499999999999,
+            "TaskDuration": 133.80700000000002
+          }
+        },
+        {
+          "label": "themes:query:ap",
+          "event": "input",
+          "next_frame_ms": 58,
+          "history_writes": 1,
+          "keyed_box_reads": 0,
+          "list_html_writes": 0,
+          "list_html_ms": 0,
+          "browser_duration_delta_ms": {
+            "ScriptDuration": 20.69700000000002,
+            "LayoutDuration": 9.295999999999971,
+            "RecalcStyleDuration": 10.258999999999963,
+            "TaskDuration": 81.25999999999989
+          }
+        },
+        {
+          "label": "themes:query:aapl",
+          "event": "input",
+          "next_frame_ms": 28.399999976158142,
+          "history_writes": 1,
+          "keyed_box_reads": 0,
+          "list_html_writes": 0,
+          "list_html_ms": 0,
+          "browser_duration_delta_ms": {
+            "ScriptDuration": 7.041999999999993,
+            "LayoutDuration": 3.0640000000001777,
+            "RecalcStyleDuration": 1.2810000000000321,
+            "TaskDuration": 42.26699999999983
+          }
+        },
+        {
+          "label": "themes:query:clear",
+          "event": "input",
+          "next_frame_ms": 284.3000000715256,
+          "history_writes": 1,
+          "keyed_box_reads": 0,
+          "list_html_writes": 0,
+          "list_html_ms": 0,
+          "browser_duration_delta_ms": {
+            "ScriptDuration": 33.45299999999995,
+            "LayoutDuration": 124.66099999999992,
+            "RecalcStyleDuration": 63.377999999999936,
+            "TaskDuration": 308.7609999999996
+          }
+        },
+        {
+          "label": "themes:query:technology",
+          "event": "input",
+          "next_frame_ms": 32.59999990463257,
+          "history_writes": 1,
+          "keyed_box_reads": 0,
+          "list_html_writes": 0,
+          "list_html_ms": 0,
+          "browser_duration_delta_ms": {
+            "ScriptDuration": 22.083000000000077,
+            "LayoutDuration": 1.358999999999888,
+            "RecalcStyleDuration": 2.6170000000000915,
+            "TaskDuration": 67.99999999999962
+          }
+        },
+        {
+          "label": "themes:query:no-such-company",
+          "event": "input",
+          "next_frame_ms": 12.899999976158142,
+          "history_writes": 1,
+          "keyed_box_reads": 0,
+          "list_html_writes": 0,
+          "list_html_ms": 0,
+          "browser_duration_delta_ms": {
+            "ScriptDuration": 4.897999999999958,
+            "LayoutDuration": 1.3770000000001836,
+            "RecalcStyleDuration": 0.07599999999996498,
+            "TaskDuration": 22.802999999999685
+          }
+        },
+        {
+          "label": "themes:query:clear",
+          "event": "input",
+          "next_frame_ms": 292.5,
+          "history_writes": 1,
+          "keyed_box_reads": 0,
+          "list_html_writes": 0,
+          "list_html_ms": 0,
+          "browser_duration_delta_ms": {
+            "ScriptDuration": 22.419999999999995,
+            "LayoutDuration": 112.0629999999998,
+            "RecalcStyleDuration": 84.63299999999995,
+            "TaskDuration": 310.2550000000006
+          }
+        },
+        {
+          "label": "themes-expanded:query:a",
+          "event": "input",
+          "next_frame_ms": 121,
+          "history_writes": 1,
+          "keyed_box_reads": 0,
+          "list_html_writes": 0,
+          "list_html_ms": 0,
+          "browser_duration_delta_ms": {
+            "ScriptDuration": 26.09500000000009,
+            "LayoutDuration": 12.790999999999997,
+            "RecalcStyleDuration": 4.937999999999998,
+            "TaskDuration": 162.5830000000006
+          }
+        },
+        {
+          "label": "themes-expanded:query:clear",
+          "event": "input",
+          "next_frame_ms": 175.60000002384186,
+          "history_writes": 1,
+          "keyed_box_reads": 0,
+          "list_html_writes": 0,
+          "list_html_ms": 0,
+          "browser_duration_delta_ms": {
+            "ScriptDuration": 14.54499999999992,
+            "LayoutDuration": 45.699999999999854,
+            "RecalcStyleDuration": 34.96499999999991,
+            "TaskDuration": 215.55299999999988
+          }
+        },
+        {
+          "label": "themes:show-map",
+          "event": "click",
+          "next_frame_ms": 247.89999997615814,
+          "history_writes": 1,
+          "keyed_box_reads": 0,
+          "list_html_writes": 1,
+          "list_html_ms": 48.10000002384186,
+          "browser_duration_delta_ms": {
+            "ScriptDuration": 70.92900000000002,
+            "LayoutDuration": 71.41699999999985,
+            "RecalcStyleDuration": 71.44499999999998,
+            "TaskDuration": 312.33299999999974
+          }
+        },
+        {
+          "label": "themes:show-list",
+          "event": "click",
+          "next_frame_ms": 240.70000004768372,
+          "history_writes": 1,
+          "keyed_box_reads": 0,
+          "list_html_writes": 1,
+          "list_html_ms": 72.69999992847443,
+          "browser_duration_delta_ms": {
+            "ScriptDuration": 109.15600000000003,
+            "LayoutDuration": 59.40200000000018,
+            "RecalcStyleDuration": 37.769000000000055,
+            "TaskDuration": 336.91799999999984
+          }
+        },
+        {
+          "label": "cycle:themes",
+          "event": "click",
+          "next_frame_ms": 268.7999999523163,
+          "history_writes": 2,
+          "keyed_box_reads": 2,
+          "list_html_writes": 1,
+          "list_html_ms": 67.39999997615814,
+          "browser_duration_delta_ms": {
+            "ScriptDuration": 11.320999999999914,
+            "LayoutDuration": 62.04300000000007,
+            "RecalcStyleDuration": 44.97000000000006,
+            "TaskDuration": 327.7429999999999
+          }
+        },
+        {
+          "label": "cycle:sp500",
+          "event": "click",
+          "next_frame_ms": 150.29999995231628,
+          "history_writes": 2,
+          "keyed_box_reads": 2,
+          "list_html_writes": 1,
+          "list_html_ms": 5.599999904632568,
+          "browser_duration_delta_ms": {
+            "ScriptDuration": 17.272999999999982,
+            "LayoutDuration": 51.01599999999995,
+            "RecalcStyleDuration": 35.93299999999999,
+            "TaskDuration": 213.33800000000025
+          }
+        },
+        {
+          "label": "cycle:themes",
+          "event": "click",
+          "next_frame_ms": 266.7999999523163,
+          "history_writes": 2,
+          "keyed_box_reads": 2,
+          "list_html_writes": 1,
+          "list_html_ms": 67.60000002384186,
+          "browser_duration_delta_ms": {
+            "ScriptDuration": 9.152000000000049,
+            "LayoutDuration": 65.15599999999999,
+            "RecalcStyleDuration": 41.398999999999965,
+            "TaskDuration": 312.08600000000075
+          }
+        },
+        {
+          "label": "cycle:sp500",
+          "event": "click",
+          "next_frame_ms": 148.89999997615814,
+          "history_writes": 2,
+          "keyed_box_reads": 2,
+          "list_html_writes": 1,
+          "list_html_ms": 7,
+          "browser_duration_delta_ms": {
+            "ScriptDuration": 14.558999999999989,
+            "LayoutDuration": 50.95000000000005,
+            "RecalcStyleDuration": 38.451000000000015,
+            "TaskDuration": 212.8209999999999
+          }
+        },
+        {
+          "label": "cycle:themes",
+          "event": "click",
+          "next_frame_ms": 283.60000002384186,
+          "history_writes": 2,
+          "keyed_box_reads": 2,
+          "list_html_writes": 1,
+          "list_html_ms": 59.89999997615814,
+          "browser_duration_delta_ms": {
+            "ScriptDuration": 8.448000000000011,
+            "LayoutDuration": 82.10800000000008,
+            "RecalcStyleDuration": 37.846999999999966,
+            "TaskDuration": 320.3300000000002
+          }
+        },
+        {
+          "label": "cycle:sp500",
+          "event": "click",
+          "next_frame_ms": 152.79999995231628,
+          "history_writes": 2,
+          "keyed_box_reads": 2,
+          "list_html_writes": 1,
+          "list_html_ms": 6.299999952316284,
+          "browser_duration_delta_ms": {
+            "ScriptDuration": 15.677999999999969,
+            "LayoutDuration": 50.69299999999988,
+            "RecalcStyleDuration": 34.762000000000185,
+            "TaskDuration": 210.5650000000008
+          }
+        }
+      ],
+      "lifecycle": [
+        {
+          "hm_refresh_listeners": 1,
+          "hm_adds": 3,
+          "hm_removes": 2,
+          "active_intervals": 3,
+          "dom_elements": 5266,
+          "heatmap_nodes": 3424,
+          "keyed_rows": 503,
+          "frame_count": 0,
+          "history_writes": 28,
+          "box_reads": 4,
+          "documents": 9,
+          "nodes": 46963,
+          "jsEventListeners": 251,
+          "retired_tm_collected": null,
+          "label": "warmed",
+          "js_heap_used_bytes": 5215712,
+          "heatmap_requests": {
+            "sp500": 1,
+            "themes": 1
+          }
+        },
+        {
+          "hm_refresh_listeners": 1,
+          "hm_adds": 5,
+          "hm_removes": 4,
+          "active_intervals": 3,
+          "dom_elements": 5266,
+          "heatmap_nodes": 3424,
+          "keyed_rows": 503,
+          "frame_count": 0,
+          "history_writes": 32,
+          "box_reads": 8,
+          "documents": 9,
+          "nodes": 79605,
+          "jsEventListeners": 279,
+          "retired_tm_collected": false,
+          "label": "cycle-1",
+          "js_heap_used_bytes": 5393308,
+          "heatmap_requests": {
+            "sp500": 1,
+            "themes": 1
+          }
+        },
+        {
+          "hm_refresh_listeners": 1,
+          "hm_adds": 9,
+          "hm_removes": 8,
+          "active_intervals": 3,
+          "dom_elements": 5266,
+          "heatmap_nodes": 3424,
+          "keyed_rows": 503,
+          "frame_count": 0,
+          "history_writes": 40,
+          "box_reads": 16,
+          "documents": 9,
+          "nodes": 144889,
+          "jsEventListeners": 335,
+          "retired_tm_collected": false,
+          "label": "cycle-3",
+          "js_heap_used_bytes": 5779768,
+          "heatmap_requests": {
+            "sp500": 1,
+            "themes": 1
+          }
+        }
+      ],
+      "retired_tm_collected": false,
+      "page_errors": [],
+      "console_events": [],
+      "longtasks": [
+        {
+          "start_ms": 576.6999999284744,
+          "duration_ms": 121
+        },
+        {
+          "start_ms": 811,
+          "duration_ms": 203
+        },
+        {
+          "start_ms": 1017,
+          "duration_ms": 226
+        },
+        {
+          "start_ms": 1349.3999999761581,
+          "duration_ms": 65
+        },
+        {
+          "start_ms": 1639.5999999046326,
+          "duration_ms": 134
+        },
+        {
+          "start_ms": 1773.6999999284744,
+          "duration_ms": 57
+        },
+        {
+          "start_ms": 1907.1999999284744,
+          "duration_ms": 75
+        },
+        {
+          "start_ms": 2138.0999999046326,
+          "duration_ms": 87
+        },
+        {
+          "start_ms": 2356.5999999046326,
+          "duration_ms": 106
+        },
+        {
+          "start_ms": 2584.899999976158,
+          "duration_ms": 113
+        },
+        {
+          "start_ms": 2946,
+          "duration_ms": 120
+        },
+        {
+          "start_ms": 3245.5999999046326,
+          "duration_ms": 118
+        },
+        {
+          "start_ms": 3439,
+          "duration_ms": 234
+        },
+        {
+          "start_ms": 3816.1999999284744,
+          "duration_ms": 58
+        },
+        {
+          "start_ms": 4073.0999999046326,
+          "duration_ms": 211
+        },
+        {
+          "start_ms": 4285.299999952316,
+          "duration_ms": 70
+        },
+        {
+          "start_ms": 4505,
+          "duration_ms": 219
+        },
+        {
+          "start_ms": 4724.099999904633,
+          "duration_ms": 76
+        },
+        {
+          "start_ms": 5506.899999976158,
+          "duration_ms": 72
+        },
+        {
+          "start_ms": 5633.599999904633,
+          "duration_ms": 98
+        },
+        {
+          "start_ms": 5732,
+          "duration_ms": 79
+        },
+        {
+          "start_ms": 5969.899999976158,
+          "duration_ms": 235
+        },
+        {
+          "start_ms": 6342.699999928474,
+          "duration_ms": 220
+        },
+        {
+          "start_ms": 6696.199999928474,
+          "duration_ms": 163
+        },
+        {
+          "start_ms": 7451.799999952316,
+          "duration_ms": 246
+        },
+        {
+          "start_ms": 8131.299999952316,
+          "duration_ms": 159
+        },
+        {
+          "start_ms": 8787.299999952316,
+          "duration_ms": 239
+        },
+        {
+          "start_ms": 9460.5,
+          "duration_ms": 131
+        },
+        {
+          "start_ms": 9818.599999904633,
+          "duration_ms": 248
+        },
+        {
+          "start_ms": 10489.299999952316,
+          "duration_ms": 133
+        }
+      ],
+      "timing_summary": {
+        "samples": 26,
+        "median_next_frame_ms": 128.55000001192093,
+        "maximum_next_frame_ms": 292.5
+      },
+      "lifecycle_deltas": {
+        "hm_refresh_listeners": 0,
+        "active_intervals": 0,
+        "dom_elements": 0,
+        "heatmap_nodes": 0,
+        "documents": 0,
+        "nodes": 97926,
+        "jsEventListeners": 84,
+        "js_heap_used_bytes": 564056
+      },
+      "invariants": {
+        "one_live_heatmap_refresh_listener": true,
+        "stable_intervals": true,
+        "stable_live_heatmap_nodes": true,
+        "no_extra_heatmap_requests": true,
+        "no_page_errors": true
+      },
+      "retention_qualification": "UNQUALIFIED: locator/expect actions retain targets under DevTools console in the measured driver. Use --retention-only for clean by-value collection proof; raw counters are retained here."
+    }
+  ],
+  "all_invariants_passed": true
+}

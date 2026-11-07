@@ -22,6 +22,52 @@
   .hm-head h1 { font-size:23px; margin:0; font-weight:800; letter-spacing:-.015em; }
   .hm-head .sub { color:var(--muted); font-size:12.5px; margin-top:5px; max-width:74ch; line-height:1.5; }
   .hm-foot { color:var(--muted); font-size:11px; margin:14px 2px 0; line-height:1.6; }
+  .hm-return-note { color:var(--text); margin:var(--sp-3,12px) 0; max-width:90ch; }
+  /* US standalone access uses the existing row, disclosure and segmented controls. */
+  #heatmap-full.hm-us-page .hm-presentation { display:flex; gap:var(--sp-1,4px); }
+  #heatmap-full.hm-us-page :is(.hm-mt,.hm-tf,.hm-sortb,.hm-pb) { min-height:var(--sp-8,44px); min-width:var(--sp-8,44px); }
+  #heatmap-full.hm-us-page .hm-pb { color:var(--muted); background:var(--panel); border:1px solid var(--gbtn-brd,var(--line)); border-radius:var(--r-ctl,8px); padding:var(--sp-2,8px) var(--sp-3,12px); font-size:var(--fs-sm); }
+  #heatmap-full.hm-us-page .hm-pb[aria-pressed="true"] { color:var(--text); background:var(--panel2); font-weight:var(--fw-bold,700); }
+  #heatmap-full.hm-us-page :is(button,a,summary,input):focus-visible { outline:2px solid var(--link); outline-offset:2px; }
+  #heatmap-full.hm-us-page .hm-search { display:flex; flex:1 1 180px; min-width:0; padding:0 var(--sp-3,12px); }
+  #heatmap-full.hm-us-page .hm-search input { min-height:var(--sp-8,44px); font-size:var(--fs-body); }
+  #heatmap-full.hm-us-page .hm-search:focus-within { outline:2px solid var(--link); outline-offset:2px; }
+  #heatmap-full.hm-us-page .hm-search .mag { display:none; }
+  #heatmap-full.hm-us-page .hm-read-src { display:inline; }
+  #heatmap-full.hm-us-page .hm-list .hm-sort { display:flex; flex-wrap:wrap; }
+  #heatmap-full.hm-us-page .hm-list-status { color:var(--muted); font-size:var(--fs-sm); margin:var(--sp-3,12px) 0; }
+  #heatmap-full.hm-us-page .hm-list .hm-tm-wrap { border:0; border-radius:0; background:transparent; box-shadow:none; overflow:visible; }
+  #heatmap-full.hm-us-page .hm-list .hm-hint { display:none; }
+  #heatmap-full.hm-us-page .hm-list .hm-tm { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:var(--sp-4,16px); align-items:start; border:0; border-radius:0; overflow:visible; }
+  #heatmap-full.hm-us-page .hm-list .hm-mgrp { margin:0; min-width:0; }
+  #heatmap-full.hm-us-page .hm-mhd { flex-wrap:wrap; }
+  #heatmap-full.hm-us-page .hm-mhd .nm { overflow-wrap:anywhere; }
+  #heatmap-full.hm-us-page .hm-group-count { margin-left:auto; color:var(--muted); font-variant-numeric:tabular-nums; }
+  #heatmap-full.hm-us-page .hm-mrow { min-height:var(--sp-8,44px); }
+  #heatmap-full.hm-us-page a.hm-mrow:hover { background:var(--panel2); }
+  #heatmap-full.hm-us-page .hm-mid :is(b,span) { white-space:normal; overflow:visible; overflow-wrap:anywhere; }
+  #heatmap-full.hm-us-page .hm-members { margin:0; border:0; border-radius:0; background:transparent; }
+  #heatmap-full.hm-us-page .hm-members .hm-mpc { background:var(--panel); text-shadow:none; }
+  #heatmap-full.hm-us-page .hm-members .hm-mpc:not(.up):not(.dn) { color:var(--muted); }
+  #heatmap-full.hm-us-page .hm-members:last-child:not([open]) > summary,
+  #heatmap-full.hm-us-page .hm-members:last-child > .hm-member-list { border-radius:0 0 var(--r-ctl,8px) var(--r-ctl,8px); }
+  #heatmap-full.hm-us-page .hm-members > summary { cursor:pointer; list-style:none; border-radius:0; }
+  #heatmap-full.hm-us-page .hm-members > summary::-webkit-details-marker { display:none; }
+  #heatmap-full.hm-us-page .hm-members[open] > summary { background:var(--panel2); }
+  #heatmap-full.hm-us-page .hm-disclosure-mark { flex:none; color:var(--text); font-size:var(--fs-md); }
+  #heatmap-full.hm-us-page .hm-members[open] .hm-disclosure-mark { transform:rotate(180deg); }
+  #heatmap-full.hm-us-page .hm-member-list { padding:0 var(--sp-2,8px) var(--sp-2,8px); background:var(--panel2); border:1px solid var(--line); border-top:0; }
+  #heatmap-full.hm-us-page .hm-member-empty { margin:0; padding:var(--sp-3,12px); color:var(--muted); }
+  #heatmap-full.hm-us-page .hm-empty { grid-column:1 / -1; padding:var(--sp-4,16px); color:var(--muted); }
+  @media (max-width:1100px) { #heatmap-full.hm-us-page .hm-list .hm-tm { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+  @media (max-width:760px) { #heatmap-full.hm-us-page .hm-list .hm-tm { grid-template-columns:minmax(0,1fr); } }
+  @media (max-width:560px) {
+    #heatmap-full.hm-us-page .hm-presentation { display:none; }
+    #heatmap-full.hm-us-page .hm-search { flex-basis:100%; }
+    #heatmap-full.hm-us-page .hm-tfs { width:100%; }
+    #heatmap-full.hm-us-page .hm-list .hm-hint { display:none; }
+  }
+
 </style>
 </head>
 <body>
@@ -36,7 +82,7 @@
     </div>
   </div>
 
-  <div id="heatmap-full" data-hm-maps='[{"key":"sp500","icon":"🔥","label_en":"S&amp;P 500","label_zh":"标普500","url":"marketdata/sp500_heatmap.json"},{"key":"themes","icon":"🧭","label_en":"Themes","label_zh":"主题","url":"marketdata/themes_heatmap.json"}]'></div>
+  <div id="heatmap-full" data-hm-history="us-v1" data-hm-maps='[{"key":"sp500","label_en":"S&amp;P 500","label_zh":"标普500","url":"marketdata/sp500_heatmap.json"},{"key":"themes","label_en":"Themes","label_zh":"主题","url":"marketdata/themes_heatmap.json"}]'></div>
 
   <div id="rotation-strip"></div>
 

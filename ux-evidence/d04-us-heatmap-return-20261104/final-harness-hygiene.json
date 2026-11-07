@@ -1,0 +1,17 @@
+{
+  "recorded_utc": "2026-11-04T19:28:09.740765+00:00",
+  "name": "final-harness-import-and-logging-hygiene",
+  "command": [
+    "python3",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_check_script_import_pinning.py",
+    "tests/test_no_module_level_logging_disable.py"
+  ],
+  "exit_code": 0,
+  "seconds": 91.61,
+  "stdout": "...............                                                          [100%]\n15 passed in 80.24s (0:01:20)\n",
+  "stderr": "",
+  "harness_sha256": "b0633239479884c88b95a24580dbbfae26ccff08aed7bd954e12dce2eeba218e"
+}
