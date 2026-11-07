@@ -63,6 +63,9 @@ import pandas as pd
 
 from engine.ledger_lane import nightly_advance_enabled
 from lib import config
+from lib.market_session import (
+    calendar_verified, cash_market_for_symbol, expected_session, is_session_date,
+)
 
 # Pinned stoch construction — reused verbatim (never re-implemented). bars_for +
 # tool_dates(bars, "S") is the S-family (Stoch-RSI<20 cross) firing rule; both call
@@ -73,7 +76,8 @@ log = logging.getLogger(__name__)
 
 LEDGER_SCHEMA = "personality_gate_shadow.ledger/v1"
 STATE_SCHEMA = "personality_gate_shadow.v1"
-FORWARD_BASIS = "first_seen_next_session_close/v1"  # New rows only; historic v1 stays frozen
+FORWARD_BASIS = "first_seen_next_session_close/v2"  # Calendar-certified new rows only
+OBSERVATION_CLOCK = "as_of_date_utc_midnight_lower_bound/v1"
 FILL_CAPTURE_MAX_CALENDAR_DAYS = 7  # after the first eligible T+1 session; otherwise abstain
 
 # The incumbent uniform gate fires on the 2W Stoch-RSI bar (mag7_washout /
@@ -197,7 +201,14 @@ def _scan(root: Path | None, as_of: str) -> tuple[list[dict], dict]:
             census["bad_rung"] += 1
             continue
         close = _closes(root, sym)
-        if close is None:
+        # Admit the observation's tape BEFORE either indicator or entry lookup.
+        # A stored future tail must not change an earlier published source event.
+        try:
+            if close is not None:
+                close = close.loc[close.index <= pd.Timestamp(as_of).normalize()]
+        except (ValueError, TypeError):
+            close = None
+        if close is None or close.empty:
             census["no_prices"] += 1
             continue
         census["covered"] += 1
@@ -272,27 +283,65 @@ def _entry_row(close: pd.Series, e: int | None) -> dict | None:
 # --------------------------------------------------------------------------- #
 # Deferred DUAL-ruler grading (nightly-gated; frozen-until-matured).          #
 # --------------------------------------------------------------------------- #
-def _grade_entry(close: pd.Series, execution: dict) -> dict | None:
-    """Score an already-frozen, first-seen T+1 CLOSE mark (research, not a fill).
+def _verified_session_dates(market: str, start: pd.Timestamp, count: int,
+                            direction: int = 1) -> list[pd.Timestamp] | None:
+    """Project the incumbent calendar; never infer a holiday from missing tape."""
+    if not calendar_verified(market, start.year):
+        return None
+    dates: list[pd.Timestamp] = []
+    day = start
+    for _ in range(count * 14 + 31):
+        day += pd.Timedelta(days=direction)
+        if not calendar_verified(market, day.year):
+            return None
+        if is_session_date(market, day.date()):
+            dates.append(day)
+            if len(dates) == count:
+                return dates[::-1] if direction < 0 else dates
+    return None
 
-    The marker's earlier chart label is deliberately never the performance basis.
-    A frozen observed price avoids retroactive repricing at horizon maturity.
+
+def _completed_through(market: str, as_of: str) -> pd.Timestamp | None:
+    """A date-only observation proves at most its UTC-midnight lower bound.
+
+    This does not invent an end-of-day collection timestamp or certify vendor
+    finality. The existing market calendar supplies its own settle buffer.
+    """
+    stamp = pd.Timestamp(as_of)
+    if pd.isna(stamp):
+        return None
+    clock = pd.Timestamp(stamp.date(), tz="UTC")
+    if not calendar_verified(market, clock.year):
+        return None
+    last = expected_session(market, clock.to_pydatetime())
+    return pd.Timestamp(last) if calendar_verified(market, last.year) else None
+
+
+def _grade_entry(close: pd.Series, execution: dict) -> dict | None:
+    """Score a frozen research mark on 63 exact, completed market sessions.
+
+    The caller clips to its completed-session observation boundary. A missing
+    session withholds the grade; a later available row cannot move the horizon.
     """
     if execution.get("basis") != FORWARD_BASIS:
         return None
     try:
         date = pd.Timestamp(execution["entry_date"])
-        e = int(close.index.searchsorted(date))
-        if e >= len(close) or pd.Timestamp(close.index[e]) != date:
-            return None  # refuse positional fallbacks after data corrections
+        market = execution["market"]
         entry_px = float(execution["entry_px"])
+        if pd.isna(date) or not np.isfinite(entry_px) or entry_px <= 0:
+            return None
+        future = _verified_session_dates(market, date, HORIZON)
+        if future is None or not is_session_date(market, date.date()):
+            return None
+        win = close.reindex([date, *future]).to_numpy(dtype=float, copy=True)
     except (KeyError, ValueError, TypeError, IndexError):
         return None
-    if e + HORIZON >= len(close) or not np.isfinite(entry_px) or entry_px <= 0:
+    if not np.isfinite(win).all() or (win <= 0).any():
         return None
-    win = close.iloc[e: e + HORIZON + 1]
+    win[0] = entry_px  # the frozen observed entry, never today's revised entry
     out = {
-        "fwd63": round((float(close.iloc[e + HORIZON]) / entry_px - 1) * 100, 2),
+        "fwd63": round((float(win[-1]) / entry_px - 1) * 100, 2),
         "mae63": round((float(win.min()) / entry_px - 1) * 100, 2),
         "prox": None, "td_to_trough": None, "timing_label": None,
         "grade_basis": FORWARD_BASIS,
@@ -300,74 +349,93 @@ def _grade_entry(close: pd.Series, execution: dict) -> dict | None:
         "execution_date": execution["entry_date"],
         "execution_price": entry_px,
     }
-    if e >= PROX:
-        w = close.iloc[e - PROX: e + PROX + 1].to_numpy(dtype=float)
-        lo = float(w.min())
-        if not np.isfinite(lo) or lo <= 0:
-            return None
-        out["prox"] = round((entry_px / lo - 1) * 100, 2)
-        tdt = int(np.argmin(w)) - PROX
-        out["td_to_trough"] = tdt
-        out["timing_label"] = ("called_low" if -2 <= tdt <= 5
-                               else "confirmed_reset" if tdt < -2 else "early")
+    past = _verified_session_dates(market, date, PROX, direction=-1)
+    if past is not None:
+        w = close.reindex([*past, date, *future[:PROX]]).to_numpy(dtype=float, copy=True)
+        if np.isfinite(w).all() and (w > 0).all():
+            w[PROX] = entry_px
+            lo = float(w.min())
+            out["prox"] = round((entry_px / lo - 1) * 100, 2)
+            tdt = int(np.argmin(w)) - PROX
+            out["td_to_trough"] = tdt
+            out["timing_label"] = ("called_low" if -2 <= tdt <= 5
+                                   else "confirmed_reset" if tdt < -2 else "early")
     return out
 
 
 def _capture_next_close(close: pd.Series, row: dict, side: str,
                         as_of: str) -> dict | str | None:
-    """Freeze first observed T+1 close, or disclose a missed capture.
+    """Observe the exact next completed cash session within the capture window.
 
-    A late nightly replay cannot pretend a historical price was first observed
-    on the next session. This is research-price marking, NOT broker fill proof.
+    A missing/null expected session is not a holiday and cannot slide to a later
+    row. Late observations retain their actual captured_asof. This calendar-
+    completed research-price mark is neither vendor-finality nor broker-fill proof.
     """
     source = row.get(f"{side}_entry")
     if not isinstance(source, dict) or not source.get("entry_date"):
         return None
+    market = cash_market_for_symbol(row.get("sym"))
+    if market is None:
+        return "unsupported_cash_market"
     try:
-        known = max(pd.Timestamp(row["first_seen_asof"]).normalize(),
-                    pd.Timestamp(source["entry_date"]).normalize())
+        known_dates = [pd.Timestamp(row["first_seen_asof"]),
+                       pd.Timestamp(source["entry_date"])]
         if side == "tailored":
-            known = max(known, pd.Timestamp(row["codex_asof"]).normalize())
-        now = pd.Timestamp(as_of).normalize()
+            known_dates.append(pd.Timestamp(row["codex_asof"]))
+        observed = pd.Timestamp(as_of)
+        if any(pd.isna(d) for d in [*known_dates, observed]):
+            return "invalid_known_at"
+        known = max(pd.Timestamp(d.date()) for d in known_dates)
+        now = pd.Timestamp(observed.date())
     except (KeyError, ValueError, TypeError):
         return "invalid_known_at"
     if now < known:
         return None
-    e = int(close.index.searchsorted(known, side="right"))
-    if e >= len(close):
-        return None
-    date = pd.Timestamp(close.index[e]).normalize()
-    if date > now:
-        return None
+    expected = _verified_session_dates(market, known, 1)
+    if expected is None:
+        return "unverified_cash_calendar"
+    date = expected[0]
+    # The clock starts at the calendar date even if no price row ever arrives.
     if (now - date).days > FILL_CAPTURE_MAX_CALENDAR_DAYS:
         return "missed_first_close_observation"
-    price = float(close.iloc[e])
+    completed = _completed_through(market, as_of)
+    if completed is None:
+        return "unverified_cash_calendar"
+    if date > completed:
+        return None
+    try:
+        price = float(close.loc[date])
+        e = int(close.index.get_loc(date))
+    except (KeyError, ValueError, TypeError, IndexError):
+        return None
     if not np.isfinite(price) or price <= 0:
-        return "unusable_close"
+        return None  # may arrive/correct within the original, unextended window
     return {
         "basis": FORWARD_BASIS, "first_seen_asof": row["first_seen_asof"],
         "source_entry_date": source["entry_date"],
-        "entry_date": str(date.date()), "entry_idx": int(e),
+        "entry_date": str(date.date()), "entry_idx": e,
         "entry_px": round(price, 4), "captured_asof": as_of,
+        "market": market, "observation_clock": OBSERVATION_CLOCK,
+        "completed_through": str(completed.date()),
     }
 
 
 def _grade_one(root: Path | None, row: dict, *, as_of: str) -> bool:
-    """Two-stage first-seen grading; legacy rows remain IMMUTABLE.
+    """Two-stage first-seen grading; legacy and uncertified v1 values stay frozen.
 
     1. Capture the next closed-session mark within seven calendar days.
-    2. Wait 63 more completed daily sessions before recording a grade.
+    2. Require 63 exact completed market-session closes before recording a grade.
     """
     if row.get("grade_basis") != FORWARD_BASIS or row.get("graded"):
         return False
+    market = cash_market_for_symbol(row.get("sym"))
     close = _closes(root, str(row.get("sym")))
     if close is None:
-        return False
+        close = pd.Series(dtype=float, index=pd.DatetimeIndex([]))
     try:
-        close = close.loc[close.index <= pd.Timestamp(as_of).normalize()]
+        completed = _completed_through(market, as_of) if market else None
+        close = close.loc[close.index <= completed] if completed is not None else close.iloc[:0]
     except (ValueError, TypeError):
-        return False
-    if close.empty:
         return False
     changed = False
     for side in ("uniform", "tailored"):
@@ -382,7 +450,8 @@ def _grade_one(root: Path | None, row: dict, *, as_of: str) -> bool:
                 row[f"{side}_execution_skip"] = candidate
                 changed = True
         execution = row.get(f"{side}_execution")
-        if execution is not None and row.get(f"{side}_grade") is None:
+        if (execution is not None and execution.get("market") == market
+                and row.get(f"{side}_grade") is None):
             grade = _grade_entry(close, execution)
             if grade is not None:
                 row[f"{side}_grade"] = grade
@@ -602,9 +671,11 @@ def update(root: Path | None = None, *, as_of: str | None = None) -> dict | None
                 "later under dual rulers (fwd63 + timing). Display/shadow tier only: "
                 "it NEVER gates, ranks, sizes, or alters any Prophet, washout, or board "
                 "decision. Promotion of any gate change needs its own prereg + ruling. "
-                "Legacy chart-date grades are PIT-preserved but EXCLUDED from "
-                "prospective timing. Only first-seen, promptly captured T+1 close "
-                "and 63 subsequent sessions can grade newly published events. "
+                "Legacy chart-date and uncertified v1 grade values are preserved but "
+                "EXCLUDED from prospective timing. New v2 rows require the exact "
+                "next calendar-completed close and 63 exact completed sessions. "
+                "Date-only observations use a UTC-midnight lower bound; "
+                "captured_asof records late observation, not vendor finality. "
                 "Neither arm creates trading, rank, or gate authority."
             ),
         }
