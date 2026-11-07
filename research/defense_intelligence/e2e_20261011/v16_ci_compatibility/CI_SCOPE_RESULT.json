@@ -1,0 +1,9 @@
+{
+  "conclusion": "passed",
+  "tests": 3,
+  "subject_manifest": "ef699bd38eea3ab818a26ea8d0c9f1d49428eae2:.github/ci/legacy-jobs.yml",
+  "source_change_during_execution": "publisher baseline evidence changed after first two checks; no CI manifest/planner/test source changed",
+  "log": "ci-scope-green.log",
+  "observed_at": "2026-10-14T13:53:21.495911+00:00",
+  "scope": "Exact missing import closure, curated-exclusive inventory, always-on gates; hosted whole CI still required"
+}

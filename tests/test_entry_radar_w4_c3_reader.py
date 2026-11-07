@@ -1634,3 +1634,155 @@ def test_TTID1_live_health_projects_hash_not_raw_response(tmp_path):
     assert len(arrival["response_content_sha256"]) == 64
     assert "raw_rows" not in arrival
     assert "response_rows" not in arrival
+
+
+# TTI-D1 recovery: malformed provenance, numbers, encoding and clocks must
+# not become qualified minute evidence or break a valid transport response.
+from datetime import tzinfo as _TTID1TzInfo
+
+
+class _TTID1NoOffsetTZ(_TTID1TzInfo):
+    def utcoffset(self, dt):
+        return None
+
+    def dst(self, dt):
+        return None
+
+    def tzname(self, dt):
+        return "unavailable"
+
+
+@pytest.mark.parametrize("vintage", [None, False, 0, [], {}, b"retained"])
+def test_TTID1_non_text_vintage_cannot_qualify_a_resolution(vintage):
+    from dataclasses import replace
+    start = datetime(2026, 9, 17, 14, 0, tzinfo=timezone.utc)
+    tape = replace(_tti_tape(start, {1: {"h": 101.2}}), vintage=vintage)
+    got = mr.resolve_long_barrier_order(
+        tape, interval_start=start, interval_end=start + timedelta(minutes=5),
+        entry=100.0, target=101.0, adverse=99.0)
+    assert got.status == "unavailable"
+    assert got.reason == "source_vintage_missing"
+    assert got.complete_window is False
+    assert got.source_vintage == ""
+    assert got.source_clock_proven is False
+
+
+def test_TTID1_valid_text_vintage_preserves_original_identity_bytes():
+    from dataclasses import replace
+    start = datetime(2026, 9, 17, 14, 0, tzinfo=timezone.utc)
+    vintage = "  retained-vendor-revision:2026-09-17  "
+    tape = replace(_tti_tape(start, {1: {"h": 101.2}}), vintage=vintage)
+    got = mr.resolve_long_barrier_order(
+        tape, interval_start=start, interval_end=start + timedelta(minutes=5),
+        entry=100.0, target=101.0, adverse=99.0)
+    assert got.status == "target_first"
+    assert got.source_vintage == vintage
+    assert got.authority == "research_resolution_only"
+
+
+@pytest.mark.parametrize("field", ["o", "h", "l", "c", "v"])
+def test_TTID1_overflowing_minute_number_is_unavailable(field):
+    start = datetime(2026, 9, 17, 14, 0, tzinfo=timezone.utc)
+    tape = _tti_tape(start, {0: {field: 10 ** 400}, 1: {"h": 101.2}})
+    got = mr.resolve_long_barrier_order(
+        tape, interval_start=start, interval_end=start + timedelta(minutes=5),
+        entry=100.0, target=101.0, adverse=99.0)
+    assert got.status == "unavailable"
+    assert got.reason == "invalid_minute_ohlcv"
+    assert got.complete_window is False
+    assert got.minutes_inspected == 0
+
+
+@pytest.mark.parametrize("field", ["entry", "target", "adverse"])
+def test_TTID1_overflowing_caller_barrier_has_typed_refusal(field):
+    start = datetime(2026, 9, 17, 14, 0, tzinfo=timezone.utc)
+    kwargs = {"entry": 100.0, "target": 101.0, "adverse": 99.0}
+    kwargs[field] = 10 ** 400
+    with pytest.raises(mr.MinuteResolutionError, match="finite_positive_barriers_required"):
+        mr.resolve_long_barrier_order(
+            _tti_tape(start), interval_start=start,
+            interval_end=start + timedelta(minutes=5), **kwargs)
+
+
+@pytest.mark.parametrize("boundary", ["start", "end", "both"])
+def test_TTID1_none_offset_interval_has_typed_refusal(boundary):
+    start = datetime(2026, 9, 17, 14, 0, tzinfo=timezone.utc)
+    end = start + timedelta(minutes=5)
+    invalid_start = start.replace(tzinfo=_TTID1NoOffsetTZ()) if boundary != "end" else start
+    invalid_end = end.replace(tzinfo=_TTID1NoOffsetTZ()) if boundary != "start" else end
+    with pytest.raises(mr.MinuteResolutionError, match="timezone_aware_interval_required"):
+        mr.resolve_long_barrier_order(
+            _tti_tape(start), interval_start=invalid_start, interval_end=invalid_end,
+            entry=100.0, target=101.0, adverse=99.0)
+
+
+def test_TTID1_none_offset_minute_is_unavailable_before_order_comparison():
+    from dataclasses import replace
+    start = datetime(2026, 9, 17, 14, 0, tzinfo=timezone.utc)
+    tape = _tti_tape(start, {1: {"h": 101.2}})
+    invalid = replace(tape.minutes[0], start=start.replace(tzinfo=_TTID1NoOffsetTZ()))
+    tape = replace(tape, minutes=(invalid, *tape.minutes[1:]))
+    got = mr.resolve_long_barrier_order(
+        tape, interval_start=start, interval_end=start + timedelta(minutes=5),
+        entry=100.0, target=101.0, adverse=99.0)
+    assert got.status == "unavailable"
+    assert got.reason == "invalid_minute_timestamp"
+    assert got.complete_window is False
+
+
+@pytest.mark.parametrize("boundary", ["request", "response"])
+def test_TTID1_none_offset_receipt_clock_is_refused_at_its_boundary(tmp_path, boundary):
+    session = NEXT_SESSION
+    start = datetime(2026, 8, 17, 14, 0, tzinfo=timezone.utc)
+    invalid = start.replace(tzinfo=_TTID1NoOffsetTZ())
+    rows = _minute_vendor_rows(session, 2)
+    transport = Recorder(lambda _day: rows)
+    reader = vm.VendorMinuteReader(
+        transport=transport, state_dir=tmp_path, sleep_seconds=0.0)
+    clock = _ReceiptClock(invalid) if boundary == "request" else _ReceiptClock(start, invalid)
+    with pytest.raises(vm.VendorMinutesError, match="timezone-aware"):
+        reader.read_with_receipt("WASH", session, now_fn=clock)
+    assert len(transport.calls) == (0 if boundary == "request" else 1)
+    assert reader.latest_fetch_receipt() is None
+    assert reader.fetched_n == 0
+    assert reader.errors == (0 if boundary == "request" else 1)
+
+
+@pytest.mark.parametrize("invalid", ["\ud800", "\udfff"])
+@pytest.mark.parametrize("location", ["value", "key"])
+def test_TTID1_unencodable_raw_metadata_keeps_tape_and_nulls_only_identity(
+    tmp_path, invalid, location
+):
+    session = NEXT_SESSION
+    rows = _minute_vendor_rows(session, 2)
+    if location == "value":
+        rows[0]["unused_metadata"] = invalid
+    else:
+        rows[0][invalid] = "unused_metadata"
+    reader = vm.VendorMinuteReader(
+        transport=lambda _path, _params: list(rows), state_dir=tmp_path,
+        sleep_seconds=0.0)
+    plain = vm.VendorMinuteReader(
+        transport=lambda _path, _params: list(rows), sleep_seconds=0.0)
+    expected = plain("WASH", session)
+    start = datetime(2026, 8, 17, 14, 0, tzinfo=timezone.utc)
+    tape, receipt = reader.read_with_receipt(
+        "WASH", session, now_fn=_ReceiptClock(start, start + timedelta(seconds=1)))
+    assert tape == expected
+    assert receipt.returned_rows == receipt.parsed_rows == 2
+    assert receipt.response_content_sha256 is None
+    assert reader.latest_fetch_receipt() is receipt
+    assert reader.errors == 0
+    assert receipt.historical_availability_proven is False
+    assert receipt.authority == "source_arrival_observation_only"
+
+
+def test_TTID1_valid_unicode_raw_metadata_retains_exact_canonical_digest(tmp_path):
+    import hashlib
+    rows = _minute_vendor_rows(NEXT_SESSION, 2)
+    rows[0]["unused_metadata"] = "研究 – receipt \U0001f426"
+    receipt = _receipt_for_rows(tmp_path, rows)
+    expected = hashlib.sha256(json.dumps(
+        rows, sort_keys=True, separators=(",", ":"), ensure_ascii=False,
+        allow_nan=False).encode("utf-8")).hexdigest()
+    assert receipt.response_content_sha256 == expected

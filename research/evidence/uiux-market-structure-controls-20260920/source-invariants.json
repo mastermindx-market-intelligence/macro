@@ -1,0 +1,18 @@
+{
+  "base_head": "da216f856dc4eacf42e71c6edc1b1fc27e1700ad",
+  "template_sha256": "954bc042367aa5ce1cad062d1382d9ea95c9b09aa2519ab6cad59021a2fba954",
+  "served_html_sha256": "4a75ee5a8ace8be889b98cdf690fd89e090da608c21db5434b15073412d8c05f",
+  "embedded_histories": {
+    "GAMMA": "94abad1c5ff9bf7994d367be298105ae748364f22d216be9205b89bfc98cc669",
+    "SYS": "85a0621213f3eac7d3a4363013db9516c294e7d40e16f212c7ca77d08e54930c",
+    "COR": "7b57b3ab95533ee4ad7c8fdb4cd4647d4b6f53e14dc32729588e5fcc889a6b96"
+  },
+  "history_bytes_and_chart_geometry_functions": "identical to base",
+  "numeric_geometry": "all 11 choices match base in all 8 native browser cases",
+  "existing_preference_keys": [
+    "msp-gex-range",
+    "msp-sys-range",
+    "msp-cor-range"
+  ],
+  "data_model_auth_shared_theme_changes": false
+}

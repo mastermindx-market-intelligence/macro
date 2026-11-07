@@ -77,16 +77,26 @@ class MinuteResolution:
 
 
 def _finite(value: object) -> bool:
-    return (
-        isinstance(value, (int, float))
-        and not isinstance(value, bool)
-        and math.isfinite(float(value))
-    )
+    if not isinstance(value, (int, float)) or isinstance(value, bool):
+        return False
+    try:
+        return math.isfinite(float(value))
+    except OverflowError:
+        return False
+
+
+def _aware_datetime(value: object) -> bool:
+    if not isinstance(value, datetime):
+        return False
+    try:
+        return value.tzinfo is not None and value.utcoffset() is not None
+    except (TypeError, ValueError, OverflowError):
+        return False
 
 
 def _contract(interval_start: datetime, interval_end: datetime,
               entry: float, target: float, adverse: float) -> None:
-    if interval_start.tzinfo is None or interval_end.tzinfo is None:
+    if not _aware_datetime(interval_start) or not _aware_datetime(interval_end):
         raise MinuteResolutionError("timezone_aware_interval_required")
     if interval_end - interval_start != timedelta(minutes=WINDOW_MINUTES):
         raise MinuteResolutionError("exact_five_minute_interval_required")
@@ -103,7 +113,8 @@ def _unavailable(tape: ch.SessionTape, *, reason: str,
     return MinuteResolution(
         status="unavailable", reason=reason, event_minute_start=None,
         minutes_inspected=minutes_inspected, complete_window=False,
-        source_vintage=tape.vintage, price_basis=tape.price_basis,
+        source_vintage=tape.vintage if isinstance(tape.vintage, str) else "",
+        price_basis=tape.price_basis,
         interval_start=interval_start, interval_end=interval_end,
         entry=float(entry), target=float(target), adverse=float(adverse),
     )
@@ -139,7 +150,7 @@ def resolve_long_barrier_order(
     order unknowable.
     """
     _contract(interval_start, interval_end, entry, target, adverse)
-    if not str(tape.vintage).strip():
+    if not isinstance(tape.vintage, str) or not tape.vintage.strip():
         return _unavailable(
             tape, reason="source_vintage_missing",
             interval_start=interval_start, interval_end=interval_end,
@@ -161,6 +172,13 @@ def resolve_long_barrier_order(
     offset_seconds = (interval_start - session_open).total_seconds()
     if offset_seconds % (WINDOW_MINUTES * 60) != 0:
         raise MinuteResolutionError("session_five_minute_grid_required")
+
+    if any(not _aware_datetime(bar.start) for bar in tape.minutes):
+        return _unavailable(
+            tape, reason="invalid_minute_timestamp",
+            interval_start=interval_start, interval_end=interval_end,
+            entry=entry, target=target, adverse=adverse,
+        )
 
     window = tuple(
         bar for bar in tape.minutes

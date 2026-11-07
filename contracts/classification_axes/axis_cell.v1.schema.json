@@ -1,0 +1,472 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "axis_cell.v1",
+  "title": "AxisCell v1",
+  "description": "One display-only classification reading for a subject at a caller-supplied as_of. quality is always display_only. The forbidden-key rule (no dict key at any depth whose lower-cased name contains weight, share, score, rank, or exposure_pct) and the point-in-time rule (an available or stale cell whose observed_at or effective_at date is after as_of is invalid) are enforced in Python by engine/classification_axes/cell.py::validate_cell. This schema does not express those two rules.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "axis",
+    "subject_id",
+    "status",
+    "reason_code",
+    "value",
+    "unit",
+    "observed_at",
+    "effective_at",
+    "as_of",
+    "freshness",
+    "quality",
+    "labels",
+    "source",
+    "provenance",
+    "rights_context"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "axis_cell.v1"
+    },
+    "axis": {
+      "enum": [
+        "sic_industry",
+        "geography",
+        "macro_sensitivity",
+        "business_model",
+        "lifecycle",
+        "value_chain"
+      ]
+    },
+    "subject_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "enum": [
+        "available",
+        "unknown",
+        "unavailable",
+        "stale",
+        "not_applicable",
+        "rights_blocked"
+      ]
+    },
+    "reason_code": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "value": {},
+    "unit": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "observed_at": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string",
+          "pattern": "^(?:(?:[0-9]{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12][0-9]|3[01])|(?:0[469]|11)-(?:0[1-9]|[12][0-9]|30)|02-(?:0[1-9]|1[0-9]|2[0-8])))|(?:(?:[0-9]{2}(?:0[48]|[2468][048]|[13579][26])|(?:[02468][048]|[13579][26])00)-02-29))(?:[T ].*)?$"
+        }
+      ]
+    },
+    "effective_at": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string",
+          "pattern": "^(?:(?:[0-9]{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12][0-9]|3[01])|(?:0[469]|11)-(?:0[1-9]|[12][0-9]|30)|02-(?:0[1-9]|1[0-9]|2[0-8])))|(?:(?:[0-9]{2}(?:0[48]|[2468][048]|[13579][26])|(?:[02468][048]|[13579][26])00)-02-29))(?:[T ].*)?$"
+        }
+      ]
+    },
+    "as_of": {
+      "type": "string",
+      "pattern": "^(?:(?:[0-9]{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12][0-9]|3[01])|(?:0[469]|11)-(?:0[1-9]|[12][0-9]|30)|02-(?:0[1-9]|1[0-9]|2[0-8])))|(?:(?:[0-9]{2}(?:0[48]|[2468][048]|[13579][26])|(?:[02468][048]|[13579][26])00)-02-29))$"
+    },
+    "freshness": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "age_days",
+            "max_age_days"
+          ],
+          "properties": {
+            "age_days": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "max_age_days": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        }
+      ]
+    },
+    "quality": {
+      "const": "display_only"
+    },
+    "labels": {
+      "type": "array",
+      "uniqueItems": true,
+      "enum": [
+        [],
+        [
+          "NO_MAPPING"
+        ],
+        [
+          "house_curated"
+        ],
+        [
+          "proxy_not_micro_membership"
+        ],
+        [
+          "read_time_composition"
+        ],
+        [
+          "source_local"
+        ],
+        [
+          "NO_MAPPING",
+          "house_curated"
+        ],
+        [
+          "NO_MAPPING",
+          "proxy_not_micro_membership"
+        ],
+        [
+          "NO_MAPPING",
+          "read_time_composition"
+        ],
+        [
+          "NO_MAPPING",
+          "source_local"
+        ],
+        [
+          "house_curated",
+          "proxy_not_micro_membership"
+        ],
+        [
+          "house_curated",
+          "read_time_composition"
+        ],
+        [
+          "house_curated",
+          "source_local"
+        ],
+        [
+          "proxy_not_micro_membership",
+          "read_time_composition"
+        ],
+        [
+          "proxy_not_micro_membership",
+          "source_local"
+        ],
+        [
+          "read_time_composition",
+          "source_local"
+        ],
+        [
+          "NO_MAPPING",
+          "house_curated",
+          "proxy_not_micro_membership"
+        ],
+        [
+          "NO_MAPPING",
+          "house_curated",
+          "read_time_composition"
+        ],
+        [
+          "NO_MAPPING",
+          "house_curated",
+          "source_local"
+        ],
+        [
+          "NO_MAPPING",
+          "proxy_not_micro_membership",
+          "read_time_composition"
+        ],
+        [
+          "NO_MAPPING",
+          "proxy_not_micro_membership",
+          "source_local"
+        ],
+        [
+          "NO_MAPPING",
+          "read_time_composition",
+          "source_local"
+        ],
+        [
+          "house_curated",
+          "proxy_not_micro_membership",
+          "read_time_composition"
+        ],
+        [
+          "house_curated",
+          "proxy_not_micro_membership",
+          "source_local"
+        ],
+        [
+          "house_curated",
+          "read_time_composition",
+          "source_local"
+        ],
+        [
+          "proxy_not_micro_membership",
+          "read_time_composition",
+          "source_local"
+        ],
+        [
+          "NO_MAPPING",
+          "house_curated",
+          "proxy_not_micro_membership",
+          "read_time_composition"
+        ],
+        [
+          "NO_MAPPING",
+          "house_curated",
+          "proxy_not_micro_membership",
+          "source_local"
+        ],
+        [
+          "NO_MAPPING",
+          "house_curated",
+          "read_time_composition",
+          "source_local"
+        ],
+        [
+          "NO_MAPPING",
+          "proxy_not_micro_membership",
+          "read_time_composition",
+          "source_local"
+        ],
+        [
+          "house_curated",
+          "proxy_not_micro_membership",
+          "read_time_composition",
+          "source_local"
+        ],
+        [
+          "NO_MAPPING",
+          "house_curated",
+          "proxy_not_micro_membership",
+          "read_time_composition",
+          "source_local"
+        ]
+      ]
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "owner",
+        "artifact",
+        "field"
+      ],
+      "properties": {
+        "owner": {
+          "type": "string",
+          "minLength": 1
+        },
+        "artifact": {
+          "type": "string",
+          "minLength": 1
+        },
+        "field": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "provenance": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "rights_context": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "license_class",
+            "basis"
+          ],
+          "properties": {
+            "license_class": {
+              "type": "string",
+              "minLength": 1
+            },
+            "basis": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "available"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "reason_code": {
+            "type": "null"
+          },
+          "value": {
+            "not": {
+              "type": "null"
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "unknown"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "reason_code": {
+            "enum": [
+              "value_missing",
+              "history_not_supported"
+            ]
+          },
+          "value": {
+            "type": "null"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "unavailable"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "reason_code": {
+            "enum": [
+              "owner_missing",
+              "owner_unavailable",
+              "owner_degraded"
+            ]
+          },
+          "value": {
+            "type": "null"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "stale"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "reason_code": {
+            "const": "owner_stale"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "not_applicable"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "reason_code": {
+            "enum": [
+              "not_applicable",
+              "retired_entity",
+              "superseded_entity"
+            ]
+          },
+          "value": {
+            "type": "null"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "rights_blocked"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "reason_code": {
+            "const": "rights_blocked"
+          },
+          "value": {
+            "type": "null"
+          }
+        }
+      }
+    }
+  ]
+}

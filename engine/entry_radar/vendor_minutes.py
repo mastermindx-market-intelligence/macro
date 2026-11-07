@@ -138,7 +138,15 @@ def _utc_iso(value: datetime | None) -> str | None:
 
 
 def _aware_receipt_clock(value: datetime) -> datetime:
-    if not isinstance(value, datetime) or value.tzinfo is None:
+    try:
+        aware = (
+            isinstance(value, datetime)
+            and value.tzinfo is not None
+            and value.utcoffset() is not None
+        )
+    except (TypeError, ValueError, OverflowError):
+        aware = False
+    if not aware:
         raise VendorMinutesError("minute fetch receipt clock must be timezone-aware")
     return value
 
@@ -157,9 +165,10 @@ def _response_content_sha256(rows: Sequence[Mapping[str, Any]]) -> str | None:
             list(rows), sort_keys=True, separators=(",", ":"),
             ensure_ascii=False, allow_nan=False,
         )
+        encoded = canonical.encode("utf-8")
     except (TypeError, ValueError, OverflowError):
         return None
-    return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+    return hashlib.sha256(encoded).hexdigest()
 
 
 @dataclass(frozen=True, slots=True)
