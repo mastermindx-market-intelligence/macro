@@ -94,6 +94,21 @@
         regimeEl.style.display = 'block';
       }
 
+      // An event-first watch is useful BEFORE a formal directional thesis exists. Render
+      // it before the no-theses return so early research state does not disappear merely
+      // because it is (correctly) unscored.
+      if (brief && brief.emerging_watch && watchEl) {
+        var sourceBound = Array.isArray(brief.emerging_watch_evidence_refs) &&
+          brief.emerging_watch_evidence_refs.length > 0;
+        var watchStatus = sourceBound
+          ? ' · ' + L('source-bound · context only · unscored', '来源已绑定 · 仅供背景 · 不计分')
+          : ' · ' + L('context only · unscored', '仅供背景 · 不计分');
+        watchEl.innerHTML = '<b>' + L('Emerging-narrative watch', '新兴叙事观察') + ':</b> ' +
+          L(esc(watchEn(brief.emerging_watch)), esc(watchZh(brief.emerging_watch))) +
+          '<span class="muted">' + watchStatus + '</span>';
+        watchEl.style.display = 'block';
+      }
+
       if (!brief || !theses.length) {
         if (emptyEl) emptyEl.style.display = 'block';
         return;
@@ -121,12 +136,6 @@
                    : (by ? '<div class="fals"><b>' + L('Check', '检验') + '</b>' + by + '</div>' : '')) +
           '</div>';
       }).join('');
-
-      if (brief.emerging_watch && watchEl) {
-        watchEl.innerHTML = '<b>🔭 ' + L('Emerging-narrative watch', '新兴叙事观察') + ':</b> ' +
-          L(esc(watchEn(brief.emerging_watch)), esc(watchZh(brief.emerging_watch)));
-        watchEl.style.display = 'block';
-      }
 
       // adversarial panel transparency — what each analyst argued (collapsed)
       var panel = brief.panel || {};

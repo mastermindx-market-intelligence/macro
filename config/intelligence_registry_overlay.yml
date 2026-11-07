@@ -458,12 +458,16 @@ engines:
       value: descriptive
   engine/thematic_desk.py::qualitative-intelligence:
     output_class:
-      rationale: data/thematic_desk/theses.jsonl asserts a directional lean on a THEME via its proxy
-        against the REGIONAL benchmark (theme_rel_return check, not the siblings' SPY rel_return — engine/thematic_desk.py::_derive_check),
-        produced by a multi-analyst LLM panel plus crowding-skeptic adjudication (::_run_panel, ::_adjudicate)
-        and graded on the machine-checkable falsifier. This ledger alone also persists thesis/evidence/dissent
-        prose, but the authority-bearing product is the structured falsifiable forecast — predictive
-        by product.
+      rationale: data/thematic_desk/theses.jsonl is one append-only owner with two explicitly
+        separated record types. record_type=thesis asserts a directional lean on a THEME via its
+        proxy against the REGIONAL benchmark (theme_rel_return check, not the siblings' SPY
+        rel_return — engine/thematic_desk.py::_derive_check), produced by the LLM desk and graded
+        only when it carries an admissible machine-checkable falsifier. record_type=emerging_watch
+        is descriptive/context-only research state with no lean, falsifier, check_by, QLedger
+        registration, score, size, or trade authority; scorer/placebo consumers exclude it.
+        Display evidence may be compact while the thesis row retains wider source-bound evidence
+        and counterevidence. The authority-bearing product remains the structured falsifiable
+        thesis subset — predictive by product.
       value: predictive
   engine/track_record.py::setup-species:
     output_class:
