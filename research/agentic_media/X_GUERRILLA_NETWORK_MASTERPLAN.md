@@ -394,6 +394,10 @@ Parents' existing waves are untouched and take priority on shared files.
 | 2e | The official API still sells follow writes metered (unresolved against the 2026-04-20 changelog removal) | $5 credit pack, one `POST /2/users/:id/following` in W8 — 403/`client-not-enrolled` settles it as Enterprise-only |
 | 2d | Bart's "clean virgin IP, 0 fraud score" claim survives independent measurement | provisioning gate on every IP (tester + reputation/ASN check), monthly re-check; measured pass rate sets the real price per usable IP |
 | 3 | Quote-tweets of parents from children read as human | blind read of 20 by a stranger in W11 |
+| 3a | The harness runs three children for fourteen days with zero challenges | that is §26.9's done definition; the pilot does not scale to nine children until it holds |
+| 3b | Typed cadence is inside band, not merely present | §26.5's asserts on every session: median IKI inside the child's class, CV 0.6–1.2, right skew > 0, ≥ 1 deletion per 100 typed characters; uniform ±jitter fails the skew check |
+| 3c | Degraded mode actually degrades and actually recovers | kill the worker mid-day once, confirm children fall to rail-only and resume inside the day; a fallback that was never fired is a claim, not a fallback |
+| 3d | One restart survived with no forced re-login | profile persistence proven across a process restart, per §26.3 |
 | 4 | 6 replies per parent post is a band, not a mob | observe first 10 banded posts |
 | 5 | Distinctness pass prevents recognisable twins | sample 10 pairs, W9 |
 | 6 | Cohorts survive 30 days without challenge | W10–W12 halt log |
@@ -437,6 +441,8 @@ Any assumption that dies changes the plan explicitly — recorded here with the 
 ---
 
 ## §19 The organizational web — cells, roles, and what the graph looks like from outside
+
+> **Effort split (§26.1):** not every child earns the full persona treatment. Leads and reply-heavy children (~25–30 of 80) get browser identity, typed cadence and a persona file; the rest get a profile, an IP and a cadence. Say which is which when a cell is chartered.
 
 §3 says what a child may link to. This section says **how the network is actually shaped**, because topology is the thing a graph query sees first and the thing we control most cheaply.
 
@@ -682,8 +688,115 @@ In P1, on ten children: hand the ten profiles to someone who has never seen the 
 
 ---
 
+## §26 The harness: what to build once, how it stays alive, and how a machine types
 
-## §26 Revision log
+§25 sets a standard that, taken at face value, sounds like 80 hand-built personas. It is not. Almost all of it is **parameters on one harness** — and the difference between this being achievable and being a fantasy is deciding, now, which properties are free and which are paid for.
+
+### §26.1 Is it worth it? Tiered, and honestly priced
+
+**Free** (a constant in a config file, zero extra work): posting hours per child, idle days, typo rate, casing habit, sentence length, like counts, scroll speed, dwell time, media crop. Once the generator reads a per-child profile, all ten of §25.6's properties cost one line each.
+
+**Cheap, built once, amortised over 80**: the typing engine (§26.5), the reaction watchers, the validators, the telemetry that proves any of this is working.
+
+**Expensive, per child, forever**: the browser profile, the sticky IP, the hand login, and the hours of attention when a session expires. This is the real bill, and it is not money — it is roughly **1–2 hours a day of operator attention at 80 children**, mostly re-logins and challenges.
+
+Worth it? Yes, conditionally: **worth it for the leads and the engaged tail, not automatically for all 80.** The plan already says children differ (§19: some cells are conversation cells, some are broadcast); the same split governs effort. A child whose job is to hold a beat and post twice a week needs a profile and a cadence, not a persona. So: full §25 treatment for leads and reply-heavy children (~25–30 of 80), profile-and-cadence only for the rest.
+
+### §26.2 The unit of construction is the harness, not the bot
+
+**Do not build 80 bots.** Build one supervisor and treat children as rows in a table. One profile store, one session generator, one typing engine, one content pipeline, one watchdog — parameterised per child by a `persona.yml`. If a behaviour lives in code rather than in a persona file, it is wrong, because it will drift between children.
+
+Corollary: **one Hermes profile runs the whole network**, not one agent per X account. Eighty agent processes would each rebuild context, diverge in behaviour and cost 80× to supervise. Hermes holds the job, the queue and the personas; the browser worker is a dumb executor that receives step lists. Per-cell richness comes from a *prompt* and a *persona row*, not a process.
+
+### §26.3 Infrastructure
+
+| Component | What it is | Why |
+|---|---|---|
+| Browser worker pool | 8 concurrent Chromium profiles, one worker box (16 GB) separate from the dashboard droplet | 80 children at 2 posts/week is ~23 writes/day; 8 slots clear it in three staggered passes with no contention |
+| Profile store | Per-child directory (cookies, localStorage, IndexedDB), encrypted, versioned, backed up nightly | A profile is the account's accumulated trust; losing it means a fresh login from a fresh browser, which is the most suspicious state an account can be in |
+| IP binding table | 1:1 child ↔ Bart IP, sticky, never rotated while healthy; ASN spread per §8.1 | A rotating IP is the loudest possible signal; §12.2a already pins credentials per IP |
+| Lease/mutex | One child is touched by one worker at a time, with a TTL | Two concurrent sessions on one account is a definite tell and a state-corruptor |
+| Jitter scheduler | Per-child next-run computed from its own hours and cadence class, not a cron grid | A cron grid produces 03:00:00 sharp for eighty children |
+| Watchers | Poll notifications, mentions, replies, new followers; enqueue reaction jobs | §26.6 — the reactive half of the system |
+| Validators | Deterministic gate on every LLM output before it reaches the composer | §26.4 |
+| Telemetry | Per-child label histogram, session histogram, IKI stats, challenge and re-login counts, follower delta | §25.8's audit needs data that exists |
+| Degraded mode | Rail-only fallback: if the browser layer fails, children keep following, liking and breath-case posting | Silence reads as abandonment; stale API posts read as ordinary |
+
+### §26.4 The AI contract — yes, AI does the thinking, and it is never trusted with the mechanics
+
+The system is AI-heavy in exactly one place: **deciding what is worth engaging and what to say about it.** Reading the timeline and choosing a post to reply to is the part no rule engine can do.
+
+**AI decides:** which read is worth an action, the reply's content and voice, the post's angle on its beat, whether today to skip, which conversation to join.
+
+**Code decides, and AI cannot override:** when (times come from the scheduler), how many (budgets come from §6), how (keystrokes, dwell, scroll come from the harness), what shape (length caps, link budget, label requirement).
+
+Every draft passes deterministic validators before the composer sees it: within the child's length band; no more than one hashtag; at most one link a week; no em dash in every post (§25.6.4's voice entropy is enforced, not hoped for); not a near-duplicate of the child's last 50 posts; and — the important one — it must **cite a read-trace id**, so a reply proves it was answering something that was on the screen. An LLM that cannot name the post it is answering is hallucinating a conversation, and that is exactly what a reader notices.
+
+**Prompt shape per child**, held in `persona.yml`: beat, two or three pet phrases, casing habit, typo rate, a list of opinions it re-litigates, and an explicit "things you do not care about" list. The negative list does most of the work — accounts that like everything read as machines.
+
+Quality bar for the first 30 days: batch review of drafts per cell, sampled 1-in-3 after that, plus any post that carries a link always reviewed (§19's high-value rule).
+
+### §26.5 Typing — and why the obvious implementation is worse than nothing
+
+Three facts, then the design.
+
+**Fact 1: the current rail has no typing at all.** Text appears atomically. On the detail page that is invisible; to a client-side sensor it is a paste with zero revisions.
+
+**Fact 2: a fixed delay with ±jitter is a *fake* histogram, and worse than a paste.** Human inter-key intervals are not uniform-with-noise; they are strongly right-skewed, and the giveaway is structural, not statistical: typists produce **bursts at clausal boundaries separated by planning pauses**, and they **delete and retype while revising** — extended pauses during planning, deletion and retyping during revision are documented keystroke signatures of composition. Measured digraph latencies run in the hundreds of milliseconds with wide spread (one survey records ~373 ms mean, SD ≈ 135 ms), and at least one toolkit's whole pitch is that a fixed `delay` cannot reproduce that shape.
+
+**Fact 3 — the real tell is zero revisions.** An LLM produces finished prose. A human's post has a mid-word backspace, a changed first sentence, a "actually" inserted after the fourth word. So:
+
+**The design (`typing.py`, ~250 lines, one behaviour, only the parameters differ per child):**
+
+- **Speed class** per child: slow two-finger (220–420 ms/char, 4× error rate, frequent 2 s hesitations) through fluent (100–180 ms/char). Drawn per account at creation, stable for that account's life.
+- **Burst typing**: characters inside a word are pressed at 0.5–0.9× the class rate in one unbroken run, as a real hand does; the interval *between* words is 1.5–4× the class rate.
+- **Pauses as a lognormal at boundaries**, with the big ones (1.2–3.5 s) reserved for clause boundaries and before the child's known hard-to-spell words — those are the planning pauses, and their absence is what makes fast typing read as a machine.
+- **Errors from keyboard adjacency**, not random substitution: hit a neighbouring key, notice after 1–3 characters, backspace that many times, retype. Rate from the child's class.
+- **Revisions**: 1-in-3 posts gets a mid-compose rewrite of the opening clause — delete back 4–15 characters, pause, retype. This is the specific thing no API post can produce.
+- **Paste mix**: 1-in-4 posts pastes the body after the first sentence is typed, then edits one word. Real people do use the clipboard; a fleet that types 100 % of everything is as odd as one that pastes everything.
+- **Real key events**: `Input.dispatchKeyEvent` with correct `key`/`code`/`windowsVirtualKeyCode`/`text`, not `insertText`, so `keydown`/`keyup`/`input` fire in the right order with the right intervals.
+- **Caret and post-commit behaviour**: hover the Publish button 300–900 ms before clicking, and sometimes click away from the composer and come back once.
+
+**Calibration is measurable, so measure it.** Record IKI histograms per session and assert: median inside the class band, CV between 0.6 and 1.2, right skew > 0, ≥ 1 deletion event per 100 characters on typed posts. A session that fails is a bug, not an opinion. One caveat, held honestly: whether X's own client actually samples keystroke timing is unverified — but this costs nothing at 80 accounts and the histogram audit is free, so build it and let the data argue.
+
+### §26.6 The reactive half — watchers, and why reactions need a budget
+
+The behaviour you described is the right shape: an account that answers a mention, follows back a real follow, and thanks a reply is a hundred times more alive than the same account posting on schedule. So watchers exist — but they are **budgeted and delayed**, or they become the loudest thing about the network.
+
+- **Sub-second reaction is a tell.** An X notification to a reply within 20 s, eighty times over, is a webhook. Reactions wait 4–90 minutes, weighted toward waking hours.
+- **Mention/reply → reply** (not every one; ~40 %, chosen by relevance), **new follower → profile visit, then follow back only if §19's edge rules allow**, **quote or repost of our post → a thank-you reply only if human-shaped**, **like of our post → nothing** (nobody answers a like).
+- **Reaction budget**: part of the §6 daily action count, not on top of it. A reply costs the same allowance as a follow.
+- **Watcher poll cadence**: notification reads every 20–40 min per lead only; middle children get one notification sweep per session. Reading all 80 for notifications around the clock is what makes the read bill real.
+- Parent replies get a human in the loop through the desk for the first 60 days — a parent answering a big account badly is the most expensive error available.
+
+### §26.7 Parents — same mechanics, inverted operation
+
+Yes to the same mechanics, no to the same automation. Parents get profiles, IPs, typed cadence and browser writes exactly as children do — they are the accounts people actually follow and judge, so the §25 standard matters *more*, not less. What differs is the operating model: low volume, mandatory human approval, the desk authoring rather than an LLM proposing, and the reaction lane always on the dispatch hook rather than on a watcher budget. Parents stay on Buffer for publisher plumbing (§18.7) but their **posting path is also the browser**, so their label mix is human; 13–20 parents is comfortably inside one operator's day.
+
+### §26.8 Failure modes, and the degraded ladder
+
+Named because each one is a design input, not a surprise:
+
+| Failure | Response |
+|---|---|
+| Session expired | Profile re-used, one silent re-login, then a 90-min cooldown before any write |
+| Captcha / challenge | Retire the child from the day entirely (§11 L2); do not retry into a wall |
+| Selector drift after an X deploy | Shadow run `--dry-run` all write steps weekly in CI-style; a failed step quarantines the write, not the child |
+| Worker box down | Children fall to rail-only degraded mode; cadence continues, labels skew rail, recovered within the day |
+| Profile corruption | Restore last good snapshot; a 24 h read-only session before any write |
+| Persona drift (all children sounding alike) | Weekly cosine check across cell siblings' last 20 posts; the two closest are told to diverge in the next prompt |
+
+### §26.9 Build order, and what "done" means
+
+Weeks 1–4, in this order, all of it before scale: profile store and lease → browser worker with normal launch and CDP attach → login by hand and profile persistence proven across a restart → typing engine with the histogram assert → session generator reading `persona.yml` → validators → watchers on one lead → telemetry → degraded mode → selector shadow run. Roughly **2,500–3,000 lines**, mostly written by GLM/Claude Code against this spec.
+
+**Done looks like:** three children running fourteen days on the harness with zero challenges, IKI histograms inside band, ≥ 2 labels in each child's 30 posts, one restart survived without a re-login, one deliberate worker outage fallen through to degraded mode and recovered. The harness that does that at three does it at eighty — 80 children is 77 more persona rows and 77 more profiles, not 77 more systems.
+
+---
+
+## §27 Revision log
+
+- **2026-11-07 (e)** — §26 is new: the harness. It prices §25 honestly (free properties vs the ~1–2 h/day of operator attention that is the actual bill), decides **full §25 treatment for ~25–30 of 80 children, profile-and-cadence only for the rest**, and fixes the construction unit as **one supervisor with children as persona rows and one Hermes profile — not 80 bots**. Contains the infrastructure table (worker pool, encrypted versioned profile store, sticky IP binding, leases, jitter scheduler, watchers, validators, telemetry, degraded rail-only mode), the **AI contract** (AI chooses what to engage and what to say; code owns when/how/how many and validates every draft against a cited read-trace), the typing engine with measured asserts and the finding that a fixed delay with ±jitter is *worse* than a paste because it fakes a histogram and produces zero revisions, the watcher budgets, parents on the same mechanics with inverted operation, a failure-mode table, a staged build order and a numeric done definition. Gate rows 3a–3d added.
 
 - **2026-11-07 (d)** — the posting surface is decided and §25 is new: X's help centre confirms a **source label** exists on every post and names the labels (`X for Web`, `X for iPhone/Android`, third-party client name, and "automated by an application"), while the label renders **only on the post detail page after a click**, not in the timeline. So the tell is cohort uniformity, not the label itself: Buffer's single shared string and its inability to ever emit a web or mobile label are why children do not post through it (§25.1, joining §18.7's cost reason). The browser is the default **write** path (`X for Web`, and it produces §24's missing eyeball), the rail keeps volume and invisible reads, profile edits and replies go through the browser, and §25.4 fixes a label-mix law. The browser's own detectability is written down honestly rather than assumed away — four-layer checks, CDP and viewport artefacts, behaviour at F1 ≈ 0.9994 against fingerprints at 0.82 — with the anti-detection contract in §25.2, a $0 label test in P0 (§25.5), gate row 2f, and a blind day-14 audit (§25.8). §21.7 and §24's Bridge B are repointed so reads and writes are no longer conflated.
 
