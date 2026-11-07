@@ -15636,6 +15636,7 @@ jobs:
       # inference, so a file missing here is one whose change never starts this
       # job; test_curated_exclusive_scopes_cover_their_own_import_closure reds on it.
       - "scripts/__init__.py"
+      - "tests/__init__.py"
       - "scripts/workflow_run_source.py"
       - "scripts/worktree_sparse.py"
       - "config/sparse_worktree.json"
