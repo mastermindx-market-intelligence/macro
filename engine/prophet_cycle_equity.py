@@ -86,7 +86,7 @@ def _utc(value: Any, name: str) -> datetime:
 
 
 def _iso(dt: datetime) -> str:
-    return dt.astimezone(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")
+    return dt.astimezone(timezone.utc).isoformat(timespec="auto").replace("+00:00", "Z")
 
 
 def _false_authority(value: Mapping[str, Any], name: str) -> None:
@@ -368,7 +368,18 @@ def build_funding_path(
     ids = [item["event_id"] for item in parsed]
     if len(ids) != len(set(ids)):
         raise CycleEquityError("duplicate_funding_event_id")
-    parsed.sort(key=lambda item: (item["effective_at"], item["event_id"]))
+    parsed.sort(key=lambda item: (
+        _utc(item["effective_at"], "funding_event_effective_at_invalid"),
+        item["event_id"],
+    ))
+
+    # Survival starts at the decision cut, before any later financing arrives.
+    if accessible_cash is not None and accessible_cash < cash_floor:
+        breaches.append({
+            "event_id": None,
+            "effective_at": _iso(decision),
+            "shortfall_to_operating_cash_floor": cash_floor - accessible_cash,
+        })
 
     for event in parsed:
         when = _utc(event["effective_at"], "funding_event_effective_at_invalid")
@@ -413,6 +424,16 @@ def build_funding_path(
             total_shares += event["shares_issued"]
 
         headroom = accessible_cash - cash_floor
+        for value, reason in (
+            (accessible_cash, "funding_cash_invalid"),
+            (restricted_balance, "funding_restricted_cash_invalid"),
+            (debt, "funding_debt_invalid"),
+            (total_shares, "funding_common_shares_invalid"),
+            (original_ending_shares, "funding_cohort_shares_invalid"),
+            (cohort_contributions, "funding_cohort_contributions_invalid"),
+            (headroom, "funding_cash_floor_headroom_invalid"),
+        ):
+            _number(value, reason)
         if headroom < 0:
             breaches.append({
                 "event_id": event["event_id"],
@@ -594,8 +615,16 @@ def recovery_scenario(
             "original_cohort_shares_invalid",
             positive=True,
         )
-        original_purchase_cost = purchase_price * original_shares
-        total_contributed = original_purchase_cost + additional
+        original_purchase_cost = _number(
+            purchase_price * original_shares,
+            "original_purchase_cost_invalid",
+            positive=True,
+        )
+        total_contributed = _number(
+            original_purchase_cost + additional,
+            "original_total_contributed_invalid",
+            positive=True,
+        )
         if terminal_value is not None:
             scenario_return = (terminal_value - total_contributed) / total_contributed
 
@@ -608,6 +637,17 @@ def recovery_scenario(
             required_equity_total = (total_contributed / cohort_ending) * ending_shares
             required_ev_original = max(required_equity_original - cash_v + debt_v + senior, 0.0)
             required_ev_total = max(required_equity_total - cash_v + debt_v + senior, 0.0)
+
+    for value, reason in (
+        (common_equity, "common_equity_value_invalid"),
+        (per_share, "ending_value_per_share_invalid"),
+        (terminal_value, "original_cohort_terminal_value_invalid"),
+        (scenario_return, "scenario_return_invalid"),
+        (required_ev_original, "original_purchase_recovery_hurdle_invalid"),
+        (required_ev_total, "total_contributed_recovery_hurdle_invalid"),
+    ):
+        if value is not None:
+            _number(value, reason)
 
     return {
         "schema": RECOVERY_SCHEMA,
@@ -653,6 +693,15 @@ def inventory_sales_diagnostic(
     prior_ratio = pi / ps
     current_ratio = ci / cs
     ratio_change = current_ratio / prior_ratio - 1 if prior_ratio > 0 else None
+    for value, reason in (
+        (inventory_change, "inventory_change_invalid"),
+        (sales_change, "sales_change_invalid"),
+        (prior_ratio, "prior_inventory_to_sales_invalid"),
+        (current_ratio, "current_inventory_to_sales_invalid"),
+        (ratio_change, "inventory_to_sales_change_invalid"),
+    ):
+        if value is not None:
+            _number(value, reason)
 
     if inventory_change is not None and inventory_change < 0 and sales_change < inventory_change:
         state = "INVENTORY_DOWN_SALES_DOWN_FASTER"
@@ -805,7 +854,10 @@ def cycle_equity_brief(case: Mapping[str, Any]) -> dict[str, Any]:
     end_shares = end.get("common_shares")
     if end_shares is not None:
         end_shares_value = _number(end_shares, "brief_end_shares_invalid", positive=True)
-        change = end_shares_value / start_shares - 1
+        change = _number(
+            end_shares_value / start_shares - 1,
+            "brief_share_count_change_invalid",
+        )
         if change > 0:
             add(
                 counters,

@@ -35,7 +35,7 @@ price feed, evaluator, portfolio store, or policy engine.
 
 `build_funding_path` processes only events whose information was available by
 the decision cut. It distinguishes observed facts from scenario assumptions and
-orders events by their effective date.
+orders events by their effective UTC time, preserving accepted subsecond precision.
 
 Supported event semantics are:
 
@@ -52,8 +52,9 @@ carries both cash and the new debt claim. Debt conversion adds shares and remove
 debt but creates no cash. Original-cohort participation in a new issue requires
 an explicit additional cash contribution.
 
-The path checks the operating-cash floor **after each dated event**. A later
-financing event does not erase an earlier shortfall.
+The path checks the operating-cash floor **at the decision cut and after each
+dated event**. A later financing event does not erase an earlier shortfall.
+An initial shortfall has a null event ID because it precedes the event sequence.
 
 A claim that the issuer is funded through the modeled recovery date is withheld
 unless:
@@ -193,7 +194,10 @@ The next source integration should be narrow:
 
 Do not create another financing store to make this easy.
 
-## Verification
+## Original implementation verification
+
+The following receipt belongs to the original implementation and its 45-test
+Cycle suite. It is historical evidence, not execution of the November repair.
 
 Local affected battery:
 
@@ -221,8 +225,32 @@ source bytes are restored:
 Mutation receipt:
 `research/prophet_v4/cycle_equity_v1/fault_discrimination.json`.
 
-The test suite is registered into the existing render/engine guard lane; no new CI
-job or dependency was introduced.
+The original registration was in the data-gated render/engine guard lane. That
+registration did not establish execution in ordinary PR code CI.
+
+## Source recovery — 2026-11-07
+
+The bounded repair checks the initial accessible-cash floor before later funding,
+retains subsecond UTC event order and the exact recovery cutoff, and rejects
+non-finite derived funding, recovery, inventory and brief values with
+`CycleEquityError`. Purchase cost must remain finite and strictly positive before
+it can be used as the denominator of a scenario return.
+
+The original tests remain unchanged. Added cases cover initial restricted and
+unrestricted cash shortfalls, later-financing non-erasure, the exact-floor
+control, fractional-second ordering with mixed timestamp precision and time
+zones, the recovery cutoff, and finite-input overflow/underflow.
+
+The suite is now enrolled in the existing code-gated `washout-turn-organ` job,
+with its exact module, test and cash-runway fixture paths. No new job, dependency,
+packing budget or execution policy is introduced. The old data-only enrollment
+is not carried into the current-main integration.
+
+These repairs were prepared by source inspection. Exact-head hosted CI results
+are recorded in the PR; this note does not claim a new local test run. The
+original 292-pass battery and three-mutant receipt above are retained as dated
+evidence. Source-qualified issuer integration, D5/product delivery, authenticated
+served proof and empirical validation remain separate original obligations.
 
 ## Capability boundary
 

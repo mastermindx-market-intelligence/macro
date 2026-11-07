@@ -702,3 +702,151 @@ class TestCycleEquityBrief:
         case["rank_authority"] = True
         with pytest.raises(CycleEquityError, match="authority_escalation"):
             cycle_equity_brief(case)
+
+
+class TestDecisionFloorClockAndFiniteArithmetic:
+    @pytest.mark.parametrize("later_financing", [False, True])
+    @pytest.mark.parametrize("restricted_balance", [0.0, 90.0])
+    def test_decision_cash_shortfall_is_not_erased(self, later_financing, restricted_balance):
+        from engine.prophet_cycle_equity import cycle_equity_brief
+
+        kwargs = full_kwargs(capital_need=capital_need(cash=10.0))
+        if restricted_balance:
+            kwargs["capital_need"] = capital_need(cash=100.0)
+            kwargs["restricted_cash"] = {
+                "state": "observed",
+                "amount": restricted_balance,
+                "included_in_reported_cash": True,
+                "source_ref": "issuer:restricted-cash-note",
+                "available_at": DECISION,
+            }
+        if later_financing:
+            kwargs["funding_events"] = [
+                event("debt_draw", "later-financing", "2026-11-01T00:00:00Z",
+                      principal=100.0, fees=0.0),
+            ]
+        case = build_cycle_equity_case(**kwargs, enterprise_value=2_000.0)
+        path = case["funding"]
+        assert path["path_state"] == "BREACHED_BEFORE_RECOVERY"
+        assert path["breaches"][0] == {
+            "event_id": None,
+            "effective_at": DECISION,
+            "shortfall_to_operating_cash_floor": 10.0,
+        }
+        assert path["ending"]["accessible_cash"] == (110.0 if later_financing else 10.0)
+        assert case["recovery"]["original_cohort_terminal_value"] is None
+        assert cycle_equity_brief(case)["summary_state"] == "FUNDING_GAP"
+
+    def test_starting_exactly_at_floor_remains_funded(self):
+        path = build_funding_path(**full_kwargs(capital_need=capital_need(cash=20.0)))
+        assert path["path_state"] == "FUNDED_TO_RECOVERY"
+        assert path["breaches"] == []
+
+    @pytest.mark.parametrize(
+        "payment_at,financing_at,normalized_payment",
+        [
+            ("2026-11-01T00:00:00.100000Z", "2026-11-01T00:00:00.200000Z",
+             "2026-11-01T00:00:00.100000Z"),
+            ("2026-11-01T00:00:00Z", "2026-11-01T00:00:00.100000Z",
+             "2026-11-01T00:00:00Z"),
+            ("2026-10-31T19:00:00.100000-05:00", "2026-11-01T00:00:00.200000Z",
+             "2026-11-01T00:00:00.100000Z"),
+        ],
+    )
+    def test_subsecond_payment_precedes_later_financing(
+        self, payment_at, financing_at, normalized_payment
+    ):
+        path = build_funding_path(**full_kwargs(funding_events=[
+            event("debt_draw", "a-financing", financing_at, principal=100.0, fees=0.0),
+            event("cash_obligation", "z-payment", payment_at, amount=90.0),
+        ]))
+        assert [item["event_id"] for item in path["timeline"]] == ["z-payment", "a-financing"]
+        assert path["timeline"][0]["effective_at"] == normalized_payment
+        assert path["timeline"][1]["effective_at"] == financing_at
+        assert path["path_state"] == "BREACHED_BEFORE_RECOVERY"
+        assert path["breaches"][0]["shortfall_to_operating_cash_floor"] == 10.0
+        assert path["ending"]["accessible_cash"] == 110.0
+
+    def test_subsecond_event_after_recovery_is_excluded(self):
+        recovery_at = "2027-06-30T20:00:00.100000Z"
+        path = build_funding_path(**full_kwargs(
+            recovery_at=recovery_at,
+            schedule_complete_through=recovery_at,
+            funding_events=[
+                event("cash_obligation", "after-recovery",
+                      "2027-06-30T20:00:00.200000Z", amount=90.0),
+            ],
+        ))
+        assert path["recovery_at"] == recovery_at
+        assert path["timeline"] == []
+        assert path["path_state"] == "FUNDED_TO_RECOVERY"
+        assert path["ending"]["accessible_cash"] == 100.0
+
+    @pytest.mark.parametrize(
+        "cash,minimum_cash,change,reason",
+        [
+            (1e308, 20.0, 1e308, "funding_cash_invalid"),
+            (100.0, 1e308, -1e308, "funding_cash_floor_headroom_invalid"),
+        ],
+    )
+    def test_finite_funding_inputs_cannot_emit_infinite_results(
+        self, cash, minimum_cash, change, reason
+    ):
+        with pytest.raises(CycleEquityError, match=reason):
+            build_funding_path(**full_kwargs(
+                capital_need=capital_need(cash=cash),
+                minimum_operating_cash=minimum_cash,
+                funding_events=[
+                    event("operating_cash_change", "large-change",
+                          "2026-11-01T00:00:00Z", amount=change),
+                ],
+            ))
+
+    def test_finite_recovery_inputs_cannot_emit_infinite_common_equity(self):
+        path = build_funding_path(**full_kwargs(capital_need=capital_need(cash=1e308)))
+        with pytest.raises(CycleEquityError, match="common_equity_value_invalid"):
+            recovery_scenario(path, enterprise_value=1e308)
+
+    def test_purchase_cost_overflow_is_a_typed_refusal(self):
+        path = build_funding_path(**full_kwargs())
+        with pytest.raises(CycleEquityError, match="original_purchase_cost_invalid"):
+            recovery_scenario(
+                path, enterprise_value=2_000.0, original_purchase_price_per_share=1e308
+            )
+
+    def test_purchase_cost_underflow_cannot_reach_return_division(self):
+        path = build_funding_path(**full_kwargs(
+            share_count_observation=share_count(shares=1e-200),
+            original_cohort_shares=1e-200,
+        ))
+        with pytest.raises(CycleEquityError, match="original_purchase_cost_invalid"):
+            recovery_scenario(
+                path, enterprise_value=0.0, original_purchase_price_per_share=1e-200
+            )
+
+    def test_inventory_ratio_overflow_is_a_typed_refusal(self):
+        with pytest.raises(CycleEquityError, match="current_inventory_to_sales_invalid"):
+            inventory_sales_diagnostic(
+                prior_inventory=1.0,
+                current_inventory=1e308,
+                prior_sales=1.0,
+                current_sales=1e-308,
+            )
+
+    def test_brief_share_count_change_overflow_is_a_typed_refusal(self):
+        from engine.prophet_cycle_equity import cycle_equity_brief
+
+        case = build_cycle_equity_case(
+            **full_kwargs(
+                share_count_observation=share_count(shares=1e-308),
+                original_cohort_shares=1e-308,
+                funding_events=[
+                    event("equity_raise", "large-raise", "2026-11-01T00:00:00Z",
+                          gross_proceeds=1e308, fees=0.0, issue_price=1.0,
+                          shares_issued=1e308),
+                ],
+            ),
+            enterprise_value=0.0,
+        )
+        with pytest.raises(CycleEquityError, match="brief_share_count_change_invalid"):
+            cycle_equity_brief(case)
