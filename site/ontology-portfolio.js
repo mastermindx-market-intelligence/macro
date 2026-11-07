@@ -112,9 +112,11 @@ export function mountPortfolio(root) {
       : listSelect?.value ? ['Compare selected Watchlist', '对照所选观察列表'] : ['Read my Watchlists', '读取我的观察列表'])));
   }
   let reading = null, operation = null, epoch = 0, disposed = false, subscription = null;
+  let unavailableOwner = null;
   const messages = {
     idle: ['Read your saved Portfolio against this path’s dated screen membership.', '将已保存的投资组合与该路径的历史筛选成员进行对照。'],
     no_reading: ['Load a current path reading before reading your Portfolio.', '请先加载当前路径读数，再读取投资组合。'],
+    reading_unavailable: ['The dated screen membership is unavailable for this path reading. The observed path remains available above.', '此路径读数的带日期筛选成员名单不可用。上方仍可查看已观测路径。'],
     loading: ['Reading your saved Portfolio and resolving its security identities…', '正在读取已保存的投资组合并核实证券身份…'],
     signed_out: ['Sign in to read your private Portfolio.', '登录后读取您的私有投资组合。'],
     forbidden: ['This account does not include this path’s private research.', '此账户未包含该路径的私有研究权限。'],
@@ -152,12 +154,13 @@ export function mountPortfolio(root) {
       clearTimeout(old.timer); old.reject(new Error('PORTFOLIO_CANCELLED'));
     }
   }
-  function clear() { stop(); resetLists(); status(reading ? 'idle' : 'no_reading'); }
-  function invalidate() { reading = null; clear(); }
+  function emptyState() { return unavailableOwner && unavailableOwner === canonical() ? 'reading_unavailable' : 'no_reading'; }
+  function clear() { stop(); resetLists(); status(reading ? 'idle' : emptyState()); }
+  function invalidate() { reading = null; unavailableOwner = null; clear(); }
   function authChanged() {
     // A same-owner token refresh clears private rows, but need not strand the
     // selected public path. Account changes discard that selection as well.
-    if (reading && reading.owner_id === canonical()) clear(); else invalidate();
+    if ((reading && reading.owner_id === canonical()) || (unavailableOwner && unavailableOwner === canonical())) clear(); else invalidate();
   }
   function check(op) {
     if (disposed || op.id !== epoch || op.abort.signal.aborted || performance.now() >= op.deadline
@@ -364,13 +367,15 @@ export function mountPortfolio(root) {
   }
   function receive(event) {
     invalidate(); const r = event.detail;
-    if (!r || !CHAINS.includes(r.chain) || !HASH.test(r.source_manifest_hash) || !day(r.asof)
-        || r.owner_id !== canonical() || !r.owner_id || !Array.isArray(r.channels) || r.channels.length > 100
+    if (!r || !CHAINS.includes(r.chain) || r.owner_id !== canonical() || !r.owner_id) return;
+    if (!HASH.test(r.source_manifest_hash) || !day(r.asof) || !Array.isArray(r.channels) || r.channels.length > 100
         || !(r.identity_sha256 === null || /^[a-f0-9]{64}$/.test(r.identity_sha256))
         || r.channels.some(c => !c || typeof c.id !== 'string' || c.id.length > 128 || !c.label
           || typeof c.label.en !== 'string' || typeof c.label.zh !== 'string'
           || c.label.en.length > 256 || c.label.zh.length > 256)
-        || new Set(r.channels.map(c => c.id)).size !== r.channels.length) return;
+        || new Set(r.channels.map(c => c.id)).size !== r.channels.length) {
+      unavailableOwner = r.owner_id; status('reading_unavailable'); return;
+    }
     reading = { ...r, channels: r.channels.map(c => ({ id: c.id, label: { ...c.label } })) }; status('idle');
   }
   root.addEventListener('ontology-reading', receive);
@@ -382,7 +387,7 @@ export function mountPortfolio(root) {
     if (!['portfolio', 'watchlist'].includes(selected)) return;
     kind = selected; clear();
   }
-  function selectList() { stop(); status(reading ? 'choose_list' : 'no_reading'); }
+  function selectList() { stop(); status(reading ? 'choose_list' : emptyState()); }
   for (const b of kindButtons) b.addEventListener('click', changeKind);
   listSelect?.addEventListener('change', selectList);
   button.addEventListener('click', read); clearButton.addEventListener('click', clear);

@@ -61,6 +61,11 @@ def test_the_public_shell_contains_no_current_owner_reading():
     selector = 'data-ontology-chain="oil_inflation_duration_derate"'
     assert page.count(selector) == 1
     page = page.replace(selector, 'data-ontology-chain=""')
+    # The disabled generic assumption selector carries only an instrument id,
+    # just as the public JS constructor did. It contains no observed value.
+    instrument = 'value="yahoo:CL=F"'
+    assert page.count(instrument) == 1
+    page = page.replace(instrument, 'value=""')
     forbidden = (
         "chain_state", "value_receipt", "base_rate", "p_confirm",
         "ontology_explorer_snapshot", "source_manifest_hash",

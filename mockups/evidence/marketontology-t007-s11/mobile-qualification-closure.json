@@ -1,0 +1,33 @@
+{
+  "task": "T007.S11 mobile qualification overlap closure",
+  "verdict": "PASS_SCOPED_VISUAL_REPAIR",
+  "manifest": "/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/codex-mo-t007-s11-parity-20261104-3cb847f03d0fbc30/mockups/evidence/marketontology-t007-s11/manifest.json",
+  "manifest_sha256": "06e0be1f31dbe0b94064276adff21cee7aed03423cce17a0b1ba07ca4f1a0233",
+  "actually_viewed": [
+    {
+      "file": "images/eb80a4b9b9dbc65b.png",
+      "sha256": "eb80a4b9b9dbc65b63a45fa9e1c6c6ef09ea9e337adfe82b858c679422f7c422",
+      "theme": "dark",
+      "locale": "en",
+      "viewport": "mobile"
+    },
+    {
+      "file": "images/44acf84b6a39ba20.png",
+      "sha256": "44acf84b6a39ba20750eb2f7d30dd67d48c95fb2d52c8c95ce4734e0bb4d0f41",
+      "theme": "light",
+      "locale": "en",
+      "viewport": "mobile"
+    },
+    {
+      "file": "images/f01e88a286857ac2.png",
+      "sha256": "f01e88a286857ac2cf8a7976408e8aa8368719d3a4cc38eceab409b562697272",
+      "theme": "light",
+      "locale": "zh",
+      "viewport": "mobile"
+    }
+  ],
+  "finding_closure": "English dark/light verification chip now has its own unobscured line to the left of floating Brain launcher. No clipping; status text complete. Chinese light wrap remains readable and clear.",
+  "prior_verdict_reused": "/tmp/mo-s11-nonauthor-visual-review-20261104.json, desktop and full composition; no broad re-review or tests",
+  "scope": "Only page-local qualification-row spacing repair; fixture images, not live production or nine-F04/scientific acceptance",
+  "new_findings": []
+}

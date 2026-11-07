@@ -37,6 +37,17 @@ BOARD = acceptance_matrix(UNIVERSE, RIGHTS)["coverage_board"]
 DISPLAY_OF = {state: CAPABILITY_DISPLAY[state] for state in BOARD["by_state_total"]}
 
 
+# The default no-arg production page is immutable: render it once per module
+# invocation (same reuse pattern as the scanner sibling fixture).
+_PAGE = {}
+
+
+def _production_html():
+    if "prod" not in _PAGE:
+        _PAGE["prod"] = FX.render_production_page()
+    return _PAGE["prod"]
+
+
 def _payload(tmp_path, horizon="1m", basis="usd_unhedged"):
     observations = FX.observation_set(tmp_path)
     workspace = attach_surveillance(build_workspace_overviews(None), observations=observations)
@@ -140,7 +151,7 @@ def test_a8_cells_total_rows_times_columns_and_legend_sums(tmp_path):
     for state, count in BOARD["by_state_total"].items():
         if count:
             assert CAPABILITY_DISPLAY[state] in rendered_states, state
-    text = _visible_text(_coverage_panel(FX.render_production_page()))
+    text = _visible_text(_coverage_panel(_production_html()))
     assert f"{matrix['cells_total']} cells" in text, text[:400]
 
 
@@ -162,7 +173,7 @@ def test_a8b_builder_asserts_legend_sum(tmp_path):
 
 def test_a8c_no_percentage_no_score_anywhere(tmp_path):
     payload, _observations = _payload(tmp_path)
-    text = _visible_text(_coverage_panel(FX.render_production_page()))
+    text = _visible_text(_coverage_panel(_production_html()))
     assert "%" not in text.replace("100%", "")
     assert not re.search(r"\d+(\.\d+)?%", text)
     assert "score" not in text.lower()
@@ -175,7 +186,7 @@ def test_a8d_clock_only_when_a_qualified_observation_backs_the_cell(tmp_path):
         identity = observation["identity"]
         if identity["horizon"] == "1m" and observation["state"] == "qualified":
             qualified.add(identity["market_id"])
-    cells = _cov_cells(_coverage_panel(FX.render_production_page()))
+    cells = _cov_cells(_coverage_panel(_production_html()))
     assert cells, "no coverage cells parsed"
     clock_cells = {(cell["for"], cell["col"]) for cell, _inner in cells if cell["for"]}
     for cell, inner in cells:
@@ -199,7 +210,7 @@ def test_a8e_ez_aggregate_row_and_no_data_markets(tmp_path):
     ez = matrix["ez_row"]
     assert ez["id"] == "EZ" and ez["kind"] == "aggregate"
     assert all(cell["excluded"] for cell in ez["cells"].values())
-    panel = _coverage_panel(FX.render_production_page())
+    panel = _coverage_panel(_production_html())
     ez_cells = {cell["col"]: inner for cell, inner in _cov_cells(panel) if cell["for"] == "EZ"}
     assert set(ez_cells) == set(BOARD["columns"]), sorted(ez_cells)
     for col, inner in ez_cells.items():
@@ -231,7 +242,7 @@ def test_a8f_question_impact_integers_from_capabilities(tmp_path):
              if any(CAPABILITY_DISPLAY[cells[col]["state"]] not in usable
                     for col in ("yield_10y", "cds_5y", "usd_funding")))
     assert impact[3] == q3
-    text = _visible_text(_coverage_panel(FX.render_production_page()))
+    text = _visible_text(_coverage_panel(_production_html()))
     assert f"Q3" in text and str(impact[3]) in text
 
 
@@ -246,7 +257,7 @@ def test_a8g_recovery_log_lists_unconfirmed_rows(tmp_path):
         row = expected[line["id"]]
         if row.get("next_action"):
             assert row["next_action"] == line["reason"][0]
-    panel = _coverage_panel(FX.render_production_page())
+    panel = _coverage_panel(_production_html())
     for line_id in list(ids)[:4]:
         assert line_id in panel
 
@@ -269,7 +280,7 @@ def test_a12_matrix_bound_to_the_im16_coverage_board(tmp_path):
             rendered = rows[jid]["cells"][col]
             assert rendered["state"] == CAPABILITY_DISPLAY[cell["state"]], (jid, col)
             assert rendered["reason_token"] == cell["reason"], (jid, col)
-    panel = _coverage_panel(FX.render_production_page())
+    panel = _coverage_panel(_production_html())
     lookup = {(cell["for"], cell["col"]): cell["state"]
               for cell, _inner in _cov_cells(panel) if cell["for"]}
     for jid, board_row in BOARD["cells"].items():
@@ -300,7 +311,99 @@ def test_a12c_session_column_and_use_column(tmp_path):
         assert [c for c in caps if c] == expected or caps == [], (jid, caps, expected)
         if not caps:
             assert row["use_copy"] == ("Nothing admitted yet", "尚无已准入数据"), jid
-    panel = _coverage_panel(FX.render_production_page())
+    panel = _coverage_panel(_production_html())
     assert "Asia/Tokyo" in panel
     assert "Nothing admitted yet" in panel and "尚无已准入数据" in panel
     assert 'session_calendar_unadmitted' in panel
+
+# ------------------------------------------------- mocked render-reuse controls
+
+
+class _RendererStub:
+    """Counts render_production_page() calls; never touches the real renderer."""
+
+    def __init__(self, page="<html>prod-page</html>", fail=None):
+        self.calls = 0
+        self.page = page
+        self.fail = fail
+
+    def render_production_page(self):
+        self.calls += 1
+        if self.fail is not None:
+            raise self.fail
+        return self.page
+
+
+def _render_namespaces(fx):
+    """AST-extract _PAGE/_production_html from this same file into fresh
+    namespaces so the controls below exercise per-invocation cache behaviour
+    with a mock FX, without importing the repository."""
+    import ast
+    tree = ast.parse(Path(__file__).read_text(encoding="utf-8"))
+    body = [node for node in tree.body
+            if (isinstance(node, ast.Assign)
+                and any(isinstance(target, ast.Name) and target.id == "_PAGE"
+                        for target in node.targets))
+            or (isinstance(node, ast.FunctionDef) and node.name == "_production_html")]
+    assert len(body) == 2, [getattr(node, "name", None) for node in body]
+    namespace = {"FX": fx}
+    exec(compile(ast.Module(body=body, type_ignores=[]),
+                 "<_production_html-extract>", "exec"), namespace)
+    return namespace
+
+
+def test_render_reuse_default_page_renders_once_across_eight_accesses(monkeypatch):
+    stub = _RendererStub()
+    monkeypatch.setattr(sys.modules[__name__], "FX", stub)
+    monkeypatch.setattr(sys.modules[__name__], "_PAGE", {})
+    pages = [_production_html() for _ in range(8)]
+    assert stub.calls == 1, stub.calls
+    assert all(page is pages[0] for page in pages)
+    assert pages[0] == "<html>prod-page</html>"
+
+
+def test_render_reuse_independent_module_invocations_do_not_share_cached_bytes():
+    alpha = _RendererStub("<html>alpha-page</html>")
+    beta = _RendererStub("<html>beta-page</html>")
+    one = _render_namespaces(alpha)
+    two = _render_namespaces(beta)
+    assert one["_PAGE"] == {} and two["_PAGE"] == {}
+    page_one = one["_production_html"]()
+    page_two = two["_production_html"]()
+    assert alpha.calls == 1 and beta.calls == 1
+    assert page_one == "<html>alpha-page</html>"
+    assert page_two == "<html>beta-page</html>"
+    assert page_one != page_two
+    assert one["_PAGE"]["prod"] is page_one
+    assert two["_PAGE"]["prod"] is page_two
+
+
+def test_render_reuse_each_cov_cells_access_starts_fresh_parser_state():
+    page = ('<div class="intl-gs__covrow" data-gs-cov-row="US">'
+            '<span class="intl-gs__covcell" data-col="index_close"'
+            ' data-gs-state="qualified" data-gs-cell-for="US"'
+            ' data-gs-cov-row="US" title="clock">x</span></div>')
+    first = _cov_cells(page)
+    second = _cov_cells(page)
+    assert first == second and len(first) == 1, (len(first), len(second))
+    assert first[0][0]["col"] == "index_close" and first[0][0]["for"] == "US"
+    shifted = _cov_cells(page.replace('data-col="index_close"', 'data-col="fx_fix"'))
+    assert [cell[0]["col"] for cell in shifted] == ["fx_fix"]
+
+
+def test_render_reuse_failed_render_is_not_cached_and_keeps_exception_identity():
+    import pytest
+    failure = RuntimeError("render exploded")
+    stub = _RendererStub(fail=failure)
+    namespace = _render_namespaces(stub)
+    with pytest.raises(RuntimeError) as raised:
+        namespace["_production_html"]()
+    assert raised.value is failure
+    assert namespace["_PAGE"] == {}, namespace["_PAGE"]
+    stub.fail = None
+    stub.page = "<html>recovered-page</html>"
+    recovered = namespace["_production_html"]()
+    assert recovered == "<html>recovered-page</html>"
+    assert stub.calls == 2, stub.calls
+    assert namespace["_production_html"]() is recovered
+    assert stub.calls == 2, stub.calls

@@ -216,6 +216,45 @@ def test_ontology_trace_assets_are_public_but_the_snapshot_api_stays_paid():
     assert "always=True" in api_source
 
 
+def test_ontology_consumer_modules_are_exact_public_code_assets():
+    """The public shell must load its reviewed modules, never their private data."""
+    modules = {
+        "/ontology-portfolio.js", "/ontology-scenario.js", "/ontology-company.js",
+        "/ontology-theme.js", "/ontology-research.js", "/ontology-radar-research.js",
+    }
+    imports = {"/ontology-company-contract.js", "/ontology-company-controller.js"}
+    assets = modules | imports | {"/ontology-company.css"}
+    shell = (ROOT / "templates" / "ontology.html.j2").read_text()
+    module_names = set(re.findall(r'<script type="module" src="[^"\n]*?(ontology-[\w-]+\.js)"', shell))
+    assert {"/" + name for name in module_names} == modules
+    assert 'ontology-company.css"' in shell
+    discovered_imports = set()
+    for asset in modules | imports:
+        source = (ROOT / "templates" / asset[1:]).read_text()
+        discovered_imports.update("/" + name for name in re.findall(
+            r'''(?:from\s*|import\s*)['"]\./(ontology-[\w-]+\.js)(?:\?[^'"]*)?['"]''', source))
+    assert discovered_imports == imports
+    assert assets <= set(POLICY["public"]["exact"])
+    assert assets.isdisjoint(POLICY["free_registered"]["exact"])
+    for matcher in ("reg_asset", "reg_asset_err", "public_static", "public_versioned"):
+        block = re.search(rf"@{matcher}\s*\{{(.*?)^\s*\}}", CADDY, flags=re.S | re.M)
+        assert block, matcher
+        directive = "not path" if matcher.startswith("reg_asset") else "path"
+        paths = {p for line in block.group(1).splitlines()
+                 if line.lstrip().startswith(directive + " ")
+                 for p in shlex.split(line.strip()[len(directive):])}
+        assert assets <= paths, matcher
+        assert not any(p.startswith("/ontology") and "*" in p for p in paths)
+    public_exact = set(POLICY["public"]["exact"])
+    adjacent = {p + suffix for p in assets for suffix in (".map", "/private", ".json")}
+    assert adjacent.isdisjoint(public_exact)
+    assert not any(p.startswith(("/api/ontology", "/api/company-intelligence/private"))
+                   for p in public_exact)
+    assert not any(p.startswith("/ontology") for p in POLICY["public"]["prefixes"])
+    for asset in assets:
+        assert (ROOT / "templates" / asset[1:]).read_bytes() == (SITE / asset[1:]).read_bytes()
+
+
 def test_retired_movers_route_redirects_to_the_consolidated_hub_section():
     redirect_lines = [
         line.strip()

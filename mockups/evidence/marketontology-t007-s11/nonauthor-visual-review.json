@@ -1,0 +1,127 @@
+{
+  "task": "T007.S11 bounded non-author visual review of root composition",
+  "verdict": "PASS_BOUNDED_ROOT_COMPOSITION_VISUAL",
+  "reviewer_native": "01a1a4ae-81f9-7223-89b1-2acbccc137e7",
+  "original_root": "01a128b5-e26b-7b12-94b5-231bfe0b8036",
+  "manifest": "/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/codex-mo-t007-s11-parity-20261104-3cb847f03d0fbc30/mockups/evidence/marketontology-t007-s11/manifest.json",
+  "manifest_sha256": "cc2254a0152e6c149fe24e95d020d010cebc6f4f02ad6a15309d8447b5860892",
+  "target": {
+    "kind": "rendered_fixture",
+    "production_proof": "none",
+    "fixture": "fixture.json",
+    "fixture_sha256": "32e2639ecb19556c211c08d8672458f8e94d912ac8537eaee2569049454eab68",
+    "fixture_recipe": "tests/ontology_explorer_fixtures.py",
+    "network": "loopback static files and synthetic ontology API only; no credentials",
+    "construction_inputs": {
+      "templates/ontology.html.j2": "f64b8c40d14e6957552af9669e02a541d990bf92d0364c65be6a3bc00711095d",
+      "templates/ontology.js": "7693cc87d2ee36038168a4e97d180280f1eff9138e674b46b28d50b3b63d793e",
+      "templates/ontology.css": "30a267e6fcbd732727dfc97f07140f5dc08ad5f6f2df1cde35697eafe6b204a1",
+      "templates/theme.css": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757",
+      "templates/theme.js": "918e7acece23ab6df8211305a938e569f0de4184c0fd9c0b2f1e56c50e3cac4d",
+      "templates/mm_brain.js": "49017d0dc5cb4bfa0e66a6c2f332b01060d54bb667b2fbd18911bf3c95e47c8a"
+    },
+    "adapter_sha256": "03fcd6078765ac05c33d3148026b3f6fdad036b98c627960d50a4526646291b0"
+  },
+  "hash_verification": "all24 current manifest-listed image hashes matched; orphan files excluded",
+  "actually_viewed": [
+    {
+      "viewport": "desktop",
+      "theme": "dark",
+      "locale": "en",
+      "force_state": null,
+      "file": "images/8dbd1382685bd64d.png",
+      "sha256": "8dbd1382685bd64d443ee13b9132d68b3e827ae7912619eb143c8f8cc2e83908"
+    },
+    {
+      "viewport": "desktop",
+      "theme": "light",
+      "locale": "en",
+      "force_state": null,
+      "file": "images/91c7ff50625ea75f.png",
+      "sha256": "91c7ff50625ea75fa31e98a90607bd262b2bc8eeb2b8370317f6f1a5b89f829d"
+    },
+    {
+      "viewport": "desktop",
+      "theme": "dark",
+      "locale": "zh",
+      "force_state": null,
+      "file": "images/897f6f40346ef1d9.png",
+      "sha256": "897f6f40346ef1d9c2901e0dab462a17ccee91730435785831f27f7609f0e104"
+    },
+    {
+      "viewport": "desktop",
+      "theme": "light",
+      "locale": "zh",
+      "force_state": null,
+      "file": "images/2c1079784a3a45f7.png",
+      "sha256": "2c1079784a3a45f740ee0d5b9452f2c36d5b010a2ed2a9f10500b79583433975"
+    },
+    {
+      "viewport": "mobile",
+      "theme": "dark",
+      "locale": "en",
+      "force_state": null,
+      "file": "images/be2228c02611d50e.png",
+      "sha256": "be2228c02611d50e45a599f443fe5b75e9a6b6a09d0be0ffe5c02bc9825a1ef8"
+    },
+    {
+      "viewport": "mobile",
+      "theme": "light",
+      "locale": "en",
+      "force_state": null,
+      "file": "images/4a8555ffe8954394.png",
+      "sha256": "4a8555ffe89543940075103ef85b4e52939ade6d6c85ceee904dcb3b448e1e51"
+    },
+    {
+      "viewport": "mobile",
+      "theme": "dark",
+      "locale": "zh",
+      "force_state": null,
+      "file": "images/d3f2bd413c6a0a4f.png",
+      "sha256": "d3f2bd413c6a0a4f2bb27e792f0a0e9f6bad1eb703563e63a05ad395f6f510b4"
+    },
+    {
+      "viewport": "mobile",
+      "theme": "light",
+      "locale": "zh",
+      "force_state": null,
+      "file": "images/126193e20a1bc754.png",
+      "sha256": "126193e20a1bc754c505aa3a9ca94e0aecb5128fe8bd28f5ab11deb19dbdcd9c"
+    },
+    {
+      "viewport": "desktop",
+      "theme": "dark",
+      "locale": "en",
+      "force_state": "step-focus",
+      "file": "images/b1e46c55b59483f3--step-focus.png",
+      "sha256": "b1e46c55b59483f388d89acb48a26c656fd6a3aea502fa500d1de2b9ce81d64b"
+    }
+  ],
+  "accepted_scope": [
+    "Root-authored selected-path cards and exactly one selected evidence panel with adjoining existing Brain handoff on desktop",
+    "Mobile selected/unselected path recomposition and selected evidence then Brain handoff without horizontal clipping in EN/ZH",
+    "Deliberate dark graphite versus light white material/shadow treatment with readable hierarchy",
+    "Initialized Scenario controls and truthful selected-reading Portfolio ready presentation, seen across all8 normal axis cells",
+    "Complete visible desktop keyboard focus ring on selected card"
+  ],
+  "findings": [
+    {
+      "severity": "nonblocking",
+      "scope": "shared floating Brain launcher / English mobile first viewport",
+      "evidence": [
+        "images/be2228c02611d50e.png",
+        "images/4a8555ffe8954394.png"
+      ],
+      "finding": "Launcher at bottom-right partly obscures the Verification unavailable chip. ZH mobile chip row is higher and unobscured.",
+      "recommendation": "Preserve this existing shared-widget issue as a bounded follow-up; avoid covering verification/qualification ink at 390px. No global navigation or Brain redesign required for this supplier.",
+      "release_disposition": "not a new selected-composition blocker; parent may resolve proportionately without repeating unchanged matrix"
+    }
+  ],
+  "limits": [
+    "Fixture rendering only; no production, entitlement, actual private read, numeric scenario or scientific acceptance",
+    "All9 full F04 capabilities remain outside this verdict",
+    "Only8 normal images and1 focus image visually inspected; all24 hashes checked, not24 visual-state claims",
+    "Reviewer authored bootstrap supplier code; this is non-author judgment of root-authored JS/CSS composition. Root separately reviewed supplier changes; this is not independent approval of reviewer-authored logic.",
+    "No image outside current manifest inspected or used"
+  ]
+}

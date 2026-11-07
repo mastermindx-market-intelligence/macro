@@ -253,7 +253,7 @@ def test_x2_browser_sdk_only_account_or_token_change_clears_assumption(browser, 
 ROOT = Path(__file__).resolve().parents[1]
 ONTOLOGY_JS = ROOT / "templates" / "ontology.js"
 ONTOLOGY_CSS = ROOT / "templates" / "ontology.css"
-THEME_CSS = ROOT / "site" / "theme.css"
+THEME_CSS = ROOT / "templates" / "theme.css"
 
 SHELL = """<!doctype html>
 <html lang="en" data-lang="en" data-theme="light">
@@ -361,7 +361,7 @@ def _open(
         lambda route: route.fulfill(
             status=200,
             content_type="text/css",
-            path=str(ROOT / "site" / "product-nav-icons.css"),
+            path=str(ROOT / "templates" / "product-nav-icons.css"),
         ),
     )
     page.route(
@@ -403,7 +403,7 @@ def _open(
     if reading_expected and (responses is None or (responses and responses[0].get("status") == 200)):
         page.wait_for_selector("#ox-steps .ox-leg", state="attached")
         page.evaluate("document.getElementById('ox-steps').open = true")
-        page.wait_for_selector("#ox-steps .ox-brain-action", state="visible")
+        page.wait_for_selector("#ox-steps .ox-brain-action:visible", state="visible")
     return context, page
 
 
@@ -1291,3 +1291,55 @@ def test_gap_target_predicate_renders_boolean_structure_and_zero_threshold(brows
         assert ('must include' if language=='en' else '须包含') in text
         assert page.evaluate('document.documentElement.scrollWidth<=innerWidth')
     finally:ctx.close()
+
+@pytest.mark.parametrize('width,theme,language', [(1440,'dark','en'), (1440,'light','zh'), (390,'dark','zh'), (390,'light','en')])
+def test_s11_selected_step_composes_evidence_and_existing_brain(browser, synthetic_snapshot, width, theme, language):
+    ctx, page = _open(browser, synthetic_snapshot, width=width, height=900)
+    try:
+        page.evaluate('v=>{document.documentElement.dataset.theme=v[0];document.documentElement.dataset.lang=v[1]}', [theme, language])
+        assert page.locator('[data-inspector-step]:visible').count() == 1
+        page.locator('[data-select-step="n3"]').click()
+        page.wait_for_function('document.activeElement.id === "ox-leg-n3"')
+        assert page.locator('[data-select-step="n3"]').get_attribute('aria-pressed') == 'true'
+        assert page.locator('[data-inspector-step]:visible').get_attribute('id') == 'ox-leg-n3'
+        selected = page.locator('#ox-leg-n3')
+        assert selected.locator('.ox-step-metric').count() == len(synthetic_snapshot['path']['legs'][2]['receipts'])
+        assert selected.locator('.ox-step-context').is_visible()
+        selected.locator('.ox-brain-action').click()
+        assert page.evaluate('window.MM_BRAIN_CFG.getOntologySelection().node_id') == 'n3'
+        assert page.evaluate('window.__brainOpens') == 1
+        assert page.evaluate('window.MM_BRAIN_CFG.onClose()') is True
+        assert page.evaluate('document.activeElement.classList.contains("ox-brain-action")')
+        assert page.evaluate('document.documentElement.scrollWidth <= innerWidth')
+        assert page.locator('h1').count() == 1
+    finally:
+        ctx.close()
+
+
+def test_s11_changing_step_invalidates_old_brain_context(browser, synthetic_snapshot):
+    ctx, page = _open(browser, synthetic_snapshot, width=1440, height=900)
+    try:
+        page.locator('[data-select-step="n1"]').click()
+        page.locator('#ox-leg-n1 .ox-brain-action').click()
+        assert page.evaluate('window.MM_BRAIN_CFG.getOntologySelection().node_id') == 'n1'
+        page.locator('[data-select-step="n3"]').click()
+        assert page.evaluate('window.MM_BRAIN_CFG.getOntologySelection()') is None
+        assert page.evaluate('window.MM_BRAIN_CFG.onClose()') is False
+        assert page.evaluate('window.__brainOpens') == 1
+        page.locator('#ox-leg-n3 .ox-brain-action').click()
+        assert page.evaluate('window.MM_BRAIN_CFG.getOntologySelection().node_id') == 'n3'
+        assert page.evaluate('window.MM_BRAIN_CFG.onClose()') is True
+    finally:
+        ctx.close()
+
+@pytest.mark.parametrize('value,expected', [('up','up'), ('strengthening','strengthening'), ('EM equities','EM equities'), (False,'false'), (None,'Value unavailable')])
+def test_s11_metric_preserves_published_categorical_values(browser, synthetic_snapshot, value, expected):
+    import copy
+    snapshot=copy.deepcopy(synthetic_snapshot)
+    snapshot['path']['legs'][0]['receipts'][0]['value']=value
+    ctx,page=_open(browser,snapshot,width=1440,height=900)
+    try:
+        page.locator('[data-select-step="n1"]').click()
+        assert page.locator('#ox-leg-n1 .ox-step-value .l-en').first.inner_text()==expected
+    finally:
+        ctx.close()

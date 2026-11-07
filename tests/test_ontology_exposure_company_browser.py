@@ -318,17 +318,30 @@ def test_dollar_native_definition_on_macro_shell_keeps_proxy_and_scenario_limits
         assert page.locator('[data-ontology-chain][aria-current=page]').get_attribute('data-ontology-chain')==chain
         assert page.locator('#ox-steps [id^="ox-leg-"]').count()==3
         page.locator('#ox-root details').evaluate_all('nodes=>nodes.forEach(n=>n.open=true)')
-        text=page.locator('#ox-root').inner_text()
+        # The rail now exposes one evidence panel at a time. Inspect each real
+        # selection instead of requiring hidden sibling panels in innerText.
+        selected={}
+        assert page.locator('[data-select-step]').count()==3
+        for leg in snapshot['path']['legs']:
+            node_id=leg['node_id']
+            button=page.locator(f'[data-select-step="{node_id}"]')
+            button.click()
+            panel=page.locator(f'#ox-leg-{node_id}')
+            panel.wait_for(state='visible')
+            assert button.get_attribute('aria-pressed')=='true'
+            assert page.locator('[data-inspector-step]:visible').count()==1
+            selected[node_id]=panel.inner_text()
+        text=page.locator('#ox-root').inner_text()+'\n'+'\n'.join(selected.values())
         assert ('includes EM equities' if language=='en' else '包含 新兴市场股票') in text
         assert ('Observed value unavailable in this view' if language=='en' else '此视图无法显示观测值') in text
         assert ('Owner verdict: met' if language=='en' else '来源判定：已满足') in text
         assert ('Observed: not published' if language=='en' else '读数：未发布') not in text
         assert ('proxy' if language=='en' else '代理') in text
         assert ('stated assumption' if language=='en' else '明示假设') in text
-        terminal=page.locator('#ox-leg-em_derate').inner_text()
+        terminal=selected['em_derate']
         assert 'FXI' in terminal and 'SPY' in terminal and '63' in terminal
         assert ('China large-cap' if language=='en' else '中国大型股') in terminal
-        assert ('not an observed cause' if language=='en' else '并非该条件中已观测到的原因') in page.locator('#ox-leg-dollar_spike').inner_text()
+        assert ('not an observed cause' if language=='en' else '并非该条件中已观测到的原因') in selected['dollar_spike']
         page.wait_for_function("document.querySelector('[data-scenario-result]').dataset.state==='path_unavailable'")
         assert page.locator('#ox-scenario [type=submit]').is_disabled()
         page.locator('#ox-scenario [name=magnitude]').fill('12')

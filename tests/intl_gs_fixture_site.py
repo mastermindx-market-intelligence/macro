@@ -176,10 +176,10 @@ def render_states_page():
     return template.render(**_fixture_snapshot_context())
 
 
-def write_site(out_dir, *, stub_coverage=False):
+def prepare_shared_site(out_dir):
+    """Write the state page and shared assets, leaving intl.html to its owner."""
     out = Path(out_dir)
     out.mkdir(parents=True, exist_ok=True)
-    (out / "intl.html").write_text(render_intl_page(stub_coverage=stub_coverage), encoding="utf-8")
     (out / "intl-gs-states.html").write_text(render_states_page(), encoding="utf-8")
     copied = 0
     for pattern in ("*.css", "*.js"):
@@ -205,6 +205,12 @@ def write_site(out_dir, *, stub_coverage=False):
         copied += 1
     return copied
 
+
+def write_site(out_dir, *, stub_coverage=False):
+    out = Path(out_dir)
+    out.mkdir(parents=True, exist_ok=True)
+    (out / "intl.html").write_text(render_intl_page(stub_coverage=stub_coverage), encoding="utf-8")
+    return prepare_shared_site(out)
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])

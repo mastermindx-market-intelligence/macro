@@ -1,0 +1,8 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/ontology.css
+  - templates/ontology.js
+  - templates/ontology.html.j2
+  - templates/ontology-scenario.js
+  - templates/ontology-portfolio.js
+manifest: mockups/evidence/marketontology-t007-s11/manifest.json
