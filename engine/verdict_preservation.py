@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import logging
+import re
 from pathlib import Path
 from typing import Any
 
@@ -60,6 +61,7 @@ _DNC_ZH = [
     "D0 的 E* 与第 40 周数值",
     "任何趋势持续性校准画像或影子字段",
 ]
+_OWNER_REF_RE = re.compile(r"^(WS|DEC|DSC|DNR):[A-Z0-9][A-Z0-9-]*$")
 
 
 def _unavailable(msg: str, *args: Any) -> dict[str, Any]:
@@ -92,6 +94,8 @@ def _validate_row(row: Any) -> bool:
     for qk in ("qualifiers_en", "qualifiers_zh", "plain_en", "plain_zh", "owner_ref"):
         if not isinstance(row[qk], str):
             return False
+    if not _OWNER_REF_RE.fullmatch(row["owner_ref"]):
+        return False
     if row["consume_as"] != "display-tier":
         return False
     return True
@@ -138,7 +142,7 @@ def _pin_ok(root: Path, source_path: str, source_line: int, status_literal: str)
         return False
     try:
         text = resolved.read_text(encoding="utf-8")
-    except OSError:
+    except (OSError, UnicodeDecodeError):
         return False
     lines = text.splitlines()
     if source_line < 1 or source_line > len(lines):
@@ -153,7 +157,7 @@ def build_verdict_preservation(root: Path) -> dict[str, Any]:
 
     try:
         data = json.loads(registry_path.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError) as exc:
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
         return _unavailable("verdict_preservation registry unreadable: %s", exc)
 
     if not _validate_registry(data):
