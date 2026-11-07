@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-07T13:26:08.843668+00:00",
+  "generated_at": "2026-11-07T19:44:43.994143+00:00",
   "grade_horizons": [
     5,
     21,
@@ -5091,7 +5091,7 @@
       }
     }
   },
-  "ladder_states_at": "2026-11-07T13:29:24.919966+00:00",
+  "ladder_states_at": "2026-11-07T19:46:45.376964+00:00",
   "promotion_readiness": {
     "altdata": {
       "5": {
@@ -7919,7 +7919,7 @@
       }
     }
   },
-  "promotion_readiness_at": "2026-11-07T13:33:19.233512+00:00",
+  "promotion_readiness_at": "2026-11-07T19:49:14.065052+00:00",
   "promotion_readiness_receipt": {
     "schema": "mastermind.qledger.readiness_receipt.v1",
     "producer": "scripts/grade_qledger.py:run_readiness_post_step",
@@ -7932,18 +7932,18 @@
         "identity_kind": "host_local_stat",
         "identity": [
           16777232,
-          2014503647,
-          104914141,
-          1794057920796310576,
-          1794057920796310576
+          2019312860,
+          104914245,
+          1794080659291831030,
+          1794080659291831030
         ]
       },
       "grades": [
         16777232,
-        2008976968,
+        2018368613,
         84673825,
-        1794057953512607849,
-        1794057953512607849
+        1794080675123850572,
+        1794080675123850572
       ],
       "qual_ladder": {
         "present": true,
