@@ -68,8 +68,7 @@ _AUDIT_DIR = ("data", "metabolism", "audit")
 
 _LLM_CFG: dict[str, Any] = {
     "provider_order": ["oauth", "anthropic"],
-    # This audit original is explicitly Opus-pinned. A translated Codex
-    # model cannot qualify its committed model identity.
+    # This original is Opus-pinned; automatic Codex insertion is not this policy.
     "codex_provider": False,
     "oauth_token_env": "CLAUDE_CODE_OAUTH_TOKEN",
     "oauth_pool_lane": "metabolism-audit",
@@ -350,6 +349,17 @@ def _observed_usage(response: Any) -> dict[str, int] | None:
     return observed or None
 
 
+def _audit_transport(cfg):
+    """The existing audit transport policy bound before any provider effect."""
+    return {"lane": "metabolism-audit", "usage_lane": cfg.get("usage_lane"),
+            "provider_order": list(cfg.get("provider_order") or ["oauth"]),
+            "model": cfg.get("opus_model"),
+            "codex_provider": cfg.get("codex_provider", True),
+            "oauth_pool_lane": cfg.get("oauth_pool_lane"),
+            "oauth_token_env": cfg.get("oauth_token_env"),
+            "api_key_env": cfg.get("api_key_env")}
+
+
 def _call_llm_auditor(
     proposal: dict[str, Any],
     diff_text: str,
@@ -359,143 +369,113 @@ def _call_llm_auditor(
     pr_number: int = 1,
     owned: dict[str, Any] | None = None,
 ) -> tuple[str | None, float | None, list[str], str, str | None, dict[str, Any] | None]:
-    """Call the opus auditor.
-
-    Returns (llm_verdict, confidence, findings, rationale, error_reason,
-    observation).
-
-    The observation is the response-boundary receipt: the actual raw text, the
-    actual content shape, the actual stop reason, the actually observed
-    serving model, the actually serving provider and the actually reported
-    usage. Nothing is substituted for an observation that was not made: a
-    missing model stays missing and a missing raw reply stays missing.
-
-    On any failure -> verdict None, error_reason set.
-    NEVER raises.
-    """
+    """Dispatch the committed request and retain actual response evidence."""
     scope = ["pr:" + str(pr_number)]
-    cfg = copy.deepcopy(_LLM_CFG)
-    guard_native_route(_repo_root(root), "audit", str(pr_number), scope, cfg=cfg,
-                       owned=owned)
+    frozen_cfg = copy.deepcopy(_LLM_CFG)
+    guard_native_route(_repo_root(root), "audit", str(pr_number), scope,
+                       cfg=frozen_cfg, owned=owned)
     observed: dict[str, Any] = {"text": None, "served_model": None, "provider": None,
                                 "stop_reason": None, "content_shape": None, "usage": None}
+    response_observed = False
     try:
         from engine import llm_auth
 
+        inspection = owned.get("inspection") if owned is not None else None
         if owned is not None:
-            inspection = owned.get("inspection")
-            if (type(inspection) is not dict
-                    or inspection.get("transport_identity") != _audit_transport_identity(cfg)):
-                return None, None, [], "", "owned_transport_changed", observed
-        providers = [dict(provider) for provider in llm_auth.build_providers(
-            cfg, opus_model=cfg.get("opus_model"))]
-        if owned is not None and any(
-                provider.get("model") != owned["inspection"]["model"] for provider in providers):
-            return None, None, [], "", "owned_provider_model_changed", observed
-        if not providers:
-            return None, None, [], "", "no_provider", observed
-
-        if owned is not None:
-            # The frozen owned request is the committed request: a retry
-            # dispatches it exactly as it was claimed, never re-derived from
-            # mutable configuration or current inputs. Anything else is not
-            # the claimed call and is refused before the provider seam.
             request = owned.get("request")
             if (type(request) is not dict
                     or request.get("response_contract") != "complete-text-v1"
                     or type(request.get("system")) is not str or not request["system"]
                     or type(request.get("user")) is not str or not request["user"]
                     or type(request.get("max_tokens")) is not int
-                    or request["max_tokens"] < 1):
-                return None, None, [], "", "owned_request_not_frozen", observed
+                    or request["max_tokens"] < 1
+                    or type(inspection) is not dict
+                    or inspection.get("transport_identity")
+                       != fabric_digest(_audit_transport(frozen_cfg))):
+                raise FabricHeld("metabolism_audit_dispatch_binding_changed")
             system_content = request["system"]
             user_content = request["user"]
             max_tokens = request["max_tokens"]
         else:
             system_content = _AUDIT_SYSTEM
             user_content = _build_user_prompt(proposal, diff_text, immutable_paths)
-            max_tokens = int(_LLM_CFG.get("max_tokens", 4000))
+            max_tokens = int(frozen_cfg.get("max_tokens", 4000))
+
+        # The saved transport commitment is checked before provider construction,
+        # including its account-lane and credential-reference policy.
+        providers = [dict(provider) for provider in llm_auth.build_providers(
+            frozen_cfg, opus_model=frozen_cfg.get("opus_model"))]
+        if owned is not None and any(provider.get("model") != inspection["model"]
+                                     for provider in providers):
+            raise FabricHeld("metabolism_audit_dispatch_model_changed")
+        if not providers:
+            return None, None, [], "", "no_provider", observed
 
         def _do_call(client: Any, model: str) -> tuple:
+            nonlocal response_observed
+            if owned is not None and model != inspection["model"]:
+                raise FabricHeld("metabolism_audit_dispatch_model_changed")
             resp = client.messages.create(
-                model=model,
-                max_tokens=max_tokens,
-                system=system_content,
+                model=model, max_tokens=max_tokens, system=system_content,
                 messages=[{"role": "user", "content": user_content}],
-                # temperature removed - rejected (400) on opus-4.7+ per Anthropic API
             )
-            # The serving model is what the response actually reports. The
-            # model that was requested is never substituted for it.
+            response_observed = True
             observed["served_model"] = getattr(resp, "model", None)
             observed["stop_reason"] = getattr(resp, "stop_reason", None)
             blocks = getattr(resp, "content", None)
             shape: list[str] = []
+            text_parts: list[str] = []
             if isinstance(blocks, (list, tuple)):
                 for block in blocks:
                     kind = getattr(block, "type", None)
                     shape.append(kind if type(kind) is str else "unknown")
+                    if kind == "text" and type(getattr(block, "text", None)) is str:
+                        text_parts.append(block.text)
             observed["content_shape"] = shape
             observed["usage"] = _observed_usage(resp)
-            # Retain the bounded actual text before classifying completion.
-            # Error responses are evidence, never accepted verdicts.
-            text_out = "".join(
-                block.text for block in (blocks if isinstance(blocks, (list, tuple)) else ())
-                if getattr(block, "type", "") == "text"
-                and type(getattr(block, "text", None)) is str)
-            raw_text = text_out.encode("utf-8", "replace")
-            observed["text"] = raw_text[:_AUDIT_REPLY_BYTE_LIMIT].decode("utf-8", "ignore") or None
+            raw = "".join(text_parts)
+            raw_bytes = raw.encode("utf-8")
+            # A held result retains a bounded actual prefix; it is never parsed
+            # as a complete verdict after the size refusal.
+            observed["text"] = raw_bytes[:_AUDIT_REPLY_BYTE_LIMIT].decode("utf-8", "ignore") or None
+            if len(raw_bytes) > _AUDIT_REPLY_BYTE_LIMIT:
+                return None, "metabolism_audit_response_oversized", resp
             stop = observed["stop_reason"]
-            if len(raw_text) > _AUDIT_REPLY_BYTE_LIMIT:
-                return observed["text"], "metabolism_audit_response_too_large", resp
             if stop == "refusal":
-                return observed["text"], "stop_refusal", resp
+                return None, "stop_refusal", resp
             if stop != "end_turn":
-                # A truncated or otherwise unfinished reply is not a complete
-                # text result and can never approve.
-                return observed["text"], "stop_" + str(stop or "unknown"), resp
+                return None, "stop_" + str(stop or "unknown"), resp
             if not shape or any(kind != "text" for kind in shape):
-                # A mixed text/tool reply is not one complete text result.
-                return observed["text"], "metabolism_audit_response_not_text_only", resp
-            return observed["text"], None, resp
+                return None, "metabolism_audit_response_not_text_only", resp
+            return (raw or None), None, resp
 
         text, reason, provider_used = native_provider_call(
             _repo_root(root), "audit", str(pr_number), scope, providers, _do_call,
-            context="metabolism_audit", cfg=cfg, owned=owned)
-        observed["text"] = text
-        # The provider that actually served the reply, not the first
-        # configured rung of the waterfall.
-        observed["provider"] = provider_used
-        if owned is not None:
-            # A retry must be served by the committed model and provider of
-            # the claimed call, proven at the response boundary. A reply
-            # served by anything else is not the claimed call's result,
-            # whatever the transport reported.
-            from scripts.metabolism_journal import _served_model_matches  # type: ignore[import]
-            inspection = owned.get("inspection")
-            committed_model = inspection.get("model") if type(inspection) is dict else None
-            committed_provider = inspection.get("provider") if type(inspection) is dict else None
-            committed_basis = inspection.get("cost_basis") if type(inspection) is dict else None
-            if ((committed_model and not _served_model_matches(observed["served_model"], inspection))
-                    or (committed_provider and committed_basis != "incumbent_inference"
-                        and provider_used != committed_provider)):
+            context="metabolism_audit", cfg=frozen_cfg, owned=owned)
+        if observed["text"] is None and type(text) is str:
+            # Preserve text returned by the existing boundary even when no
+            # model/provider observation accompanied it; it cannot approve.
+            observed["text"] = text
+        if response_observed:
+            observed["provider"] = provider_used
+        if owned is not None and response_observed:
+            from scripts.metabolism_journal import _served_model_matches
+            if (not _served_model_matches(observed["served_model"], inspection)
+                    or (inspection["cost_basis"] != "incumbent_inference"
+                        and provider_used != inspection["provider"])):
                 return None, None, [], "", "committed_model_not_served", observed
-        if reason:
-            return None, None, [], "", reason, observed
-        if not text:
-            return None, None, [], "", "empty_reply", observed
-
+        if reason or not text:
+            return None, None, [], "", reason or "empty_reply", observed
         parsed = _parse_llm_reply(text)
         if parsed is None:
             return None, None, [], "", "llm_error", observed
-
         return (parsed["verdict"], parsed["confidence"], parsed["findings"],
                 parsed["rationale"], None, observed)
-
     except FabricHeld:
         raise
-    except Exception as exc:  # noqa: BLE001
-        guard_native_route(_repo_root(root), "audit", str(pr_number), scope, cfg=_LLM_CFG,
-                           owned=owned)
+    except Exception as exc:
+        guard_native_route(_repo_root(root), "audit", str(pr_number), scope,
+                           cfg=frozen_cfg, owned=owned)
         if str(getattr(exc, "code", "")).startswith("fabric_"):
             raise FabricHeld("metabolism_selected_recipe_requires_original") from exc
         log.warning("audit: LLM auditor call failed: %s", exc)
@@ -613,13 +593,6 @@ def _audit_facts(pr_number: int, proposal: dict[str, Any], diff_text: str,
     }
 
 
-def _audit_transport_identity(cfg: dict[str, Any]) -> str:
-    return fabric_digest({"lane": "metabolism-audit", "usage_lane": cfg.get("usage_lane"),
-                          "provider_order": list(cfg.get("provider_order") or ["oauth"]),
-                          "model": cfg.get("opus_model"),
-                          "codex_provider": cfg.get("codex_provider", True)})
-
-
 def _audit_inspection() -> dict[str, Any]:
     """The audit purpose's own workload decision, kept in its native form.
 
@@ -635,34 +608,31 @@ def _audit_inspection() -> dict[str, Any]:
     except Exception as exc:  # noqa: BLE001
         raise FabricHeld("metabolism_audit_workload_decision_unavailable") from exc
     provider_order = list(_LLM_CFG.get("provider_order") or ["oauth"])
+    transport = _audit_transport(_LLM_CFG)
     return {"provider": str(provider_order[0]),
             "model": str(_LLM_CFG.get("opus_model") or ""),
             "cap_id": "metabolism-audit", "capability_id": "metabolism_audit",
             "cost_basis": "incumbent_inference", "workload_policy": decision.receipt(),
-            "transport_identity": _audit_transport_identity(_LLM_CFG)}
+            "transport_identity": fabric_digest(transport)}
 
 
 def _audit_receipt(operation_id: str, inspection: dict[str, Any],
                    observation: dict[str, Any] | None, *, close: dict[str, Any] | None,
                    effect_unknown: bool) -> dict[str, Any]:
-    """The response receipt of one retained original.
-
-    Every field is what the response boundary actually reported. A missing
-    model, a missing raw reply or an unreported usage stays missing, and the
-    response shape travels with the receipt so a recovered original can be
-    re-verified without a new call.
-    """
+    """Retain each observed field independently; unknown is never a zero."""
     observation = observation if type(observation) is dict else {}
     served = observation.get("served_model")
     provider = observation.get("provider")
-    reported = observation.get("usage") or {}
-    input_tokens = reported.get("input_tokens")
-    output_tokens = reported.get("output_tokens")
-    known = type(input_tokens) is int and type(output_tokens) is int
-    usage = {"input_tokens": input_tokens if known else None,
-             "output_tokens": output_tokens if known else None,
-             "completed_input_tokens": input_tokens if known else 0,
-             "completed_output_tokens": output_tokens if known else 0,
+    reported = observation.get("usage")
+    reported = reported if type(reported) is dict else {}
+    def count(name):
+        value = reported.get(name)
+        return value if type(value) is int and value >= 0 else None
+    input_tokens, output_tokens = count("input_tokens"), count("output_tokens")
+    known = input_tokens is not None and output_tokens is not None
+    usage = {"input_tokens": input_tokens, "output_tokens": output_tokens,
+             "completed_input_tokens": input_tokens if input_tokens is not None else 0,
+             "completed_output_tokens": output_tokens if output_tokens is not None else 0,
              "usage_state": "known" if known else "unknown"}
     shape = observation.get("content_shape")
     response = {"stop_reason": observation.get("stop_reason"),
@@ -671,8 +641,7 @@ def _audit_receipt(operation_id: str, inspection: dict[str, Any],
             "requested_model": inspection["model"], "served_model": served,
             "observation": {"request_id": operation_id + ":brain:0",
                             "serving_model": served,
-                            "input_tokens": input_tokens if type(input_tokens) is int and input_tokens >= 0 else None,
-                            "output_tokens": output_tokens if type(output_tokens) is int and output_tokens >= 0 else None},
+                            "input_tokens": input_tokens, "output_tokens": output_tokens},
             "usage": usage, "close": copy.deepcopy(close),
             "effect_unknown": effect_unknown, "response": response}
 
@@ -691,27 +660,28 @@ def _audit_logical(pr_number: int, proposal: dict[str, Any], diff_text: str,
 
 
 def _saved_audit_original(root, pr_number, proposal, diff_text, head_sha, proposal_id):
-    """Look up new and historical facts before any replacement claim."""
+    """Recover either exact retained identity without rewriting its facts."""
     from scripts.metabolism_journal import saved_original_for
     logical = _audit_logical(pr_number, proposal, diff_text, head_sha, proposal_id)
     scope = _audit_scope(pr_number)
     saved = saved_original_for(_repo_root(root), "audit", str(pr_number), logical, scope)
-    if saved is not None:
+    if "proposal_id" not in logical["facts"]:
         return logical, saved
     legacy = copy.deepcopy(logical)
     legacy["facts"].pop("proposal_id")
-    saved = saved_original_for(_repo_root(root), "audit", str(pr_number), legacy, scope)
-    if saved is not None:
-        business = saved.get("business")
-        if (saved["state"] != "complete" or type(business) is not dict
+    historical = saved_original_for(_repo_root(root), "audit", str(pr_number), legacy, scope)
+    if saved is not None and historical is not None:
+        raise FabricHeld("metabolism_audit_original_ambiguous")
+    if historical is not None:
+        business = historical.get("business")
+        if (historical["state"] != "complete" or type(business) is not dict
                 or type(business.get("intent")) is not dict
                 or type(business.get("outcome")) is not dict
                 or business["intent"].get("proposal_id") != logical["facts"]["proposal_id"]
                 or business["outcome"].get("proposal_id") != logical["facts"]["proposal_id"]):
             raise FabricHeld("metabolism_audit_legacy_proposal_unbound")
-        return legacy, saved
-    return logical, None
-
+        return legacy, historical
+    return logical, saved
 
 
 def _audit_response_complete(observation: dict[str, Any] | None) -> bool:
@@ -737,13 +707,25 @@ def _audit_response_complete(observation: dict[str, Any] | None) -> bool:
     return type(provider) is str and bool(provider.strip())
 
 
-
 def _audit_intent(record: dict[str, Any], pr_number: int) -> dict[str, Any]:
-    """Use the existing audit owner's one publication grammar."""
-    from scripts.metabolism_journal import audit_publication_expected
-    if record.get("pr_number") != pr_number:
-        raise FabricHeld("metabolism_audit_operation_mismatch")
-    return audit_publication_expected(record)
+    """The exact publication intent of one audit verdict."""
+    from engine.neuralweb.governance import event_identity  # type: ignore[import]
+    from scripts.metabolism_journal import audit_publication_decision_digest
+    target = f"metabolism_pr:{pr_number}"
+    ts = str(record.get("ts") or "")
+    return {
+        "event_type": "metabolism_audit",
+        "target": target,
+        "event_id": event_identity("metabolism_audit", target, ts),
+        "ts": ts,
+        "head_sha": record.get("head_sha"),
+        "proposal_id": record.get("proposal_id"),
+        "verdict": record.get("verdict"),
+        "deterministic_ok": record.get("deterministic_ok"),
+        "llm_verdict": record.get("llm_verdict"),
+        "confidence": record.get("confidence"),
+        "decision_digest": audit_publication_decision_digest(record),
+    }
 
 
 def _audit_outcome(published: dict[str, Any], intent: dict[str, Any],
@@ -777,96 +759,54 @@ def _hold_operation(operation, reason: str) -> None:
 
 def _publish_with_original(operation, published: dict[str, Any], pr_number: int,
                            root: Path | None, observation: dict[str, Any] | None) -> dict[str, Any]:
-    """Publish one model verdict through the retained original that owns it.
-
-    The exact publication intent is owned before the single append, the
-    append is acknowledged durably, and the verdict and its acknowledgement
-    become visible in one owner commit.
-    """
-    intent = _audit_intent(published, pr_number)
-    operation.publication_intent(
-        intent,
-        owner_updates={"publication": {**intent, "state": "pending"}})
+    """Publish model state, exact verdict and retained history in one owner."""
+    from scripts.metabolism_journal import audit_publication_entry
+    entry = audit_publication_entry(
+        published, operation.record["logical"],
+        original_operation_id=operation.record["operation_id"])
+    intent = entry["intent"]
+    operation.publication_intent(intent, owner_updates={"publication": entry})
     receipt = _append_governance_event(published, root)
     if not receipt or receipt.get("event_id") != intent["event_id"]:
         _hold_operation(operation, "metabolism_audit_governance_unacknowledged")
         raise FabricHeld("metabolism_audit_governance_unacknowledged")
-    from scripts.metabolism_journal import validate_audit_publication
-    try:
-        validate_audit_publication(
-            {**intent, "state": "acknowledged", "receipt": receipt},
-            pr_number, record=published)
-    except FabricHeld:
-        _hold_operation(operation, "metabolism_audit_governance_unacknowledged")
-        raise
+    acknowledged = audit_publication_entry(
+        published, operation.record["logical"],
+        original_operation_id=operation.record["operation_id"],
+        state="acknowledged", receipt=receipt)
     operation.complete(
         _audit_outcome(published, intent, observation, receipt),
-        owner_updates={**{key: published[key] for key in published
-                          if key in _AUDIT_RECORD_FIELDS},
-                       "publication": {**intent, "state": "acknowledged",
-                                       "receipt": receipt}})
+        owner_updates={**published, "publication": acknowledged})
     return published
+
 
 
 def _publish_without_original(published: dict[str, Any], pr_number: int,
-                              root: Path | None) -> dict[str, Any]:
-    """Publish one decision that owns no retained model original.
-
-    A deterministic zero-model decision and the incumbent's typed-verdict seam
-    both land here. The intent is owned before the append, a pending intent of
-    the same decision is reused instead of a second append, and the verdict
-    and its acknowledgement become visible in one owner commit.
-    """
+                              root: Path | None, *, logical) -> dict[str, Any]:
+    """Reconcile the frozen zero-model event; an old result never becomes current."""
     from scripts.metabolism_journal import audit_publication_commit, audit_publication_intent
-    intent = _audit_intent(published, pr_number)
-    intent = audit_publication_intent(
-        _repo_root(root), pr_number, intent,
-        replace_acknowledged=(published["verdict"] == "reject"
-                              and published["deterministic_ok"] is False
-                              and published["llm_verdict"] is None
-                              and published["confidence"] is None))
-    # A retried publication keeps the original publication time.
-    published["ts"] = intent["ts"]
-    # A retained digest alone cannot authorize an append. Qualify every
-    # retained intent field against this exact decision before the effect.
-    from scripts.metabolism_journal import validate_audit_publication
-    validate_audit_publication(intent, pr_number, record=published, require_ack=False)
-    if intent.get("state") == "acknowledged":
-        # The same decision is already published and acknowledged under
-        # this exact event identity. Reconcile idempotently against the
-        # retained receipt — never mint a second intent or append a second
-        # event — and let a changed projection conflict explicitly.
-        audit_publication_commit(_repo_root(root), pr_number, published,
-                                 event_id=intent["event_id"],
-                                 receipt=intent.get("receipt"))
-        return published
-    receipt = _append_governance_event(published, root)
-    if not receipt or receipt.get("event_id") != intent["event_id"]:
+    entry = audit_publication_intent(
+        _repo_root(root), pr_number, _audit_intent(published, pr_number),
+        logical=logical, record=published)
+    frozen = copy.deepcopy(entry["record"])
+    if entry["state"] == "acknowledged":
+        return frozen
+    receipt = _append_governance_event(frozen, root)
+    if not receipt or receipt.get("event_id") != entry["intent"]["event_id"]:
         raise FabricHeld("metabolism_audit_governance_unacknowledged")
-    audit_publication_commit(_repo_root(root), pr_number, published,
-                             event_id=intent["event_id"], receipt=receipt)
-    return published
+    audit_publication_commit(
+        _repo_root(root), pr_number, frozen,
+        event_id=entry["intent"]["event_id"], receipt=receipt)
+    return frozen
 
 
 
 def _completed_original_result(operation, pr_number: int, root: Path | None,
-                               record: dict[str, Any]) -> dict[str, Any]:
-    """Recover the qualified original, never manufacture a result from a caller."""
-    from scripts.metabolism_journal import audit_original_result, audit_owner_result
-    original = operation.record
-    owned = audit_owner_result(_repo_root(root), pr_number)
-    if owned["status"] != "audited":
-        raise FabricHeld("metabolism_audit_owner_reconcile_failed")
-    if owned["original"] is not None and owned["original"]["operation_id"] == original["operation_id"]:
-        if owned["original"] != original:
-            raise FabricHeld("metabolism_audit_owner_reconcile_failed")
-        return dict(owned["record"])
-    # A positively qualified different-head projection may supersede this
-    # original. Its own retained ACK must still qualify its frozen result.
-    published = audit_original_result(original, pr_number)
-    if owned["record"]["head_sha"] == published["head_sha"]:
-        raise FabricHeld("metabolism_audit_owner_reconcile_failed")
-    return published
+                                record: dict[str, Any]) -> dict[str, Any]:
+    """Recover one original against one qualified owner snapshot, without writes."""
+    from scripts.metabolism_journal import audit_retained_original_result
+    return audit_retained_original_result(_repo_root(root), pr_number, operation.record)
+
 
 
 def _audit_through_original(pr_number, proposal, diff_text, head_sha, root, record,
@@ -1063,8 +1003,16 @@ def audit_pr(
         # inspection, secret, nonce or admission happens. A held original is
         # never cleared to permit a replay.
         from scripts.metabolism_journal import saved_original_for
+        requested_logical = _audit_logical(pr_number, proposal, diff_text, head_sha, _proposal_id)
         logical, saved = _saved_audit_original(
             root, pr_number, proposal, diff_text, head_sha, _proposal_id)
+        from scripts.metabolism_journal import audit_saved_publication
+        publication = audit_saved_publication(_repo_root(root), pr_number, requested_logical)
+        if publication is not None:
+            if publication["state"] == "acknowledged":
+                return copy.deepcopy(publication["record"])
+            return _publish_without_original(
+                copy.deepcopy(publication["record"]), pr_number, root, logical=logical)
         scope = _audit_scope(pr_number)
         if saved is None:
             guard_native_route(_repo_root(root), "audit", str(pr_number), scope,
@@ -1174,7 +1122,7 @@ def audit_pr(
                 # A zero-model decision publishes through the audit owner with
                 # its own durable governance event. No model receipt is
                 # invented for it.
-                published = _publish_without_original(record, pr_number, root)
+                published = _publish_without_original(record, pr_number, root, logical=logical)
                 return published
 
             # ── LLM ADVERSARIAL REVIEW, THROUGH THE RETAINED ORIGINAL ────────
@@ -1199,7 +1147,7 @@ def audit_pr(
         record["rationale"] = f"audit_pr exception (fail-closed): {exc}"[:200]
         record["ts"] = _publication_ts()
         try:
-            return _publish_without_original(record, pr_number, root)
+            return _publish_without_original(record, pr_number, root, logical=logical)
         except FabricHeld as held:
             return {**record, "status": "held", "rationale": str(held)}
         except Exception:  # noqa: BLE001

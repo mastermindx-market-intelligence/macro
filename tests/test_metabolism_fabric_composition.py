@@ -1372,24 +1372,30 @@ def test_the_governance_append_is_durable_and_never_duplicated(tmp_path):
 
 
 def test_the_audit_publication_intent_is_owned_before_the_append(tmp_path):
-    """The exact intent is persisted before any external append."""
-    record = {"schema": "metabolism.audit.v1", "pr_number": 1, "head_sha": "sha1",
-              "proposal_id": "p1", "verdict": "reject", "deterministic_ok": False,
-              "llm_verdict": None, "confidence": None, "findings": ["fixture refusal"],
-              "rationale": "deterministic fixture", "ts": "2026-11-07T00:00:00.000000+00:00"}
-    intent = journal.audit_publication_expected(record)
-    owned = journal.audit_publication_intent(tmp_path, 1, intent)
-    assert owned["state"] == "pending"
+    """The exact request, verdict and intent are owned before any append."""
+    record = {
+        "schema": "metabolism.audit.v1", "pr_number": 1, "proposal_id": "p1",
+        "head_sha": "sha1", "verdict": "reject", "deterministic_ok": False,
+        "llm_verdict": None, "confidence": None, "findings": ["foreign_file:other.py"],
+        "rationale": "A deterministic containment finding.",
+        "ts": "2026-11-07T00:00:00.000000+00:00",
+    }
+    logical = audit._audit_logical(1, {"proposal_id": "p1"}, "diff", "sha1")
+    intent = audit._audit_intent(record, 1)
+    owned = journal.audit_publication_intent(
+        tmp_path, 1, intent, logical=logical, record=record)
+    assert owned["state"] == "pending" and owned["record"] == record
     document = journal.read_owner_state(tmp_path, "audit", "1")
-    assert document["publication"]["event_id"] == intent["event_id"]
-    # A new caller's candidate timestamp never replaces the owned event.
-    later = journal.audit_publication_expected(
-        {**record, "ts": "2026-11-07T00:00:01.000000+00:00"})
-    again = journal.audit_publication_intent(tmp_path, 1, later)
-    assert again["ts"] == intent["ts"] and again["event_id"] == intent["event_id"]
+    assert document["publication"]["current"]["intent"] == intent
+    later = {**record, "ts": "2026-11-07T01:00:00.000000+00:00"}
+    again = journal.audit_publication_intent(
+        tmp_path, 1, audit._audit_intent(later, 1), logical=logical, record=later)
+    assert again["record"] == record
+    other = {**record, "head_sha": "sha2"}
+    other_logical = audit._audit_logical(1, {"proposal_id": "p1"}, "different diff", "sha2")
     with pytest.raises(journal.FabricHeld, match="metabolism_audit_publication_held"):
-        journal.audit_publication_intent(tmp_path, 1,
-                                         {**intent, "decision_digest": "c" * 64})
+        journal.audit_publication_intent(
+            tmp_path, 1, audit._audit_intent(other, 1), logical=other_logical, record=other)
     with pytest.raises(journal.FabricHeld, match="metabolism_audit_publication_missing"):
-        journal.audit_publication_commit(tmp_path, 1, record,
-                                         event_id="d" * 16, receipt={"event_id": "d" * 16})
+        journal.audit_publication_commit(
+            tmp_path, 1, record, event_id="d" * 16, receipt={"event_id": "d" * 16})

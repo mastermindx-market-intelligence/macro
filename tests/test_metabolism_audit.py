@@ -908,7 +908,7 @@ class TestTypedAuditResult:
         monkeypatch.delenv("MM_PROVIDER_APPLICATION_MODE", raising=False)
         monkeypatch.delenv("MM_PROVIDER_WORKLOAD_PROFILE", raising=False)
         monkeypatch.setattr(llm_auth, "build_providers",
-                            lambda *a, **kw: [{"name": "fixture", "model": "claude-opus-4-8"}])
+                            lambda *a, **kw: [{"model": audit._LLM_CFG["opus_model"]}])
         monkeypatch.setattr(audit, "native_provider_call",
                             lambda *a, **kw: (json.dumps(self.reply(confidence=True)), None, None))
         value = audit._call_llm_auditor(
@@ -995,6 +995,28 @@ def _provider_calls(providers) -> int:
 
 # ── The retained original: recovery, publication and the held truth ───────────
 
+def _tamper_owned_audit_fixture(root, pr_number, updates):
+    """Inject foreign bytes after proving the normal writer refused them."""
+    from scripts.metabolism_journal import FabricHeld
+    path = root / f"data/metabolism/audit/{pr_number}.json"
+    before = path.read_bytes()
+    with pytest.raises(FabricHeld, match="custody_owned"):
+        update_owner_state(root, "audit", str(pr_number), updates)
+    assert path.read_bytes() == before
+    document = json.loads(before)
+    document.update(updates)
+    path.write_text(json.dumps(document))
+
+def _as_scalar_publication_fixture(document):
+    """Represent the qualified d7b layout without rewriting any original."""
+    entry = document["publication"]["current"]
+    scalar = {**entry["intent"], "state": entry["state"]}
+    if entry["state"] == "acknowledged":
+        scalar["receipt"] = entry["receipt"]
+    document["publication"] = scalar
+    return document
+
+
 class TestRetainedOriginal:
     """The audit owner keeps the request, the original and the publication."""
 
@@ -1050,7 +1072,8 @@ class TestRetainedOriginal:
         from scripts import metabolism_journal as journal
         proposal, diff = self._proposal(), self._diff()
         # A competing claim on the same scope, for a different request.
-        journal.FabricInvocation(d, "audit", "41", {"facts": {"other": True}},
+        journal.FabricInvocation(d, "audit", "41",
+                                 ma._audit_logical(41, proposal, diff, "other-head"),
                                  ["pr:41"], "system", "user", 800,
                                  inspection=ma._audit_inspection(),
                                  selection={"mode": "incumbent_inference", "host_profile": None})
@@ -1173,7 +1196,7 @@ class TestRetainedOriginal:
         owned = audit_owner_result(d, 44)
         assert owned["status"] == "audited"
         # Forge a top-level approval over the completed rejection.
-        update_owner_state(d, "audit", "44", {
+        _tamper_owned_audit_fixture(d, 44, {
             "verdict": "approve", "llm_verdict": "approve", "confidence": 0.99,
             "rationale": "looks good"})
         forged = audit_owner_result(d, 44)
@@ -1191,13 +1214,13 @@ class TestRetainedOriginal:
         with _provider_seam(_FakeResponse(text=self._reply(findings=["one"]))):
             approved = ma.audit_pr(45, proposal, diff, "sha45", root=d)
         assert approved["verdict"] == "approve"
+        original_bytes = (d / "data/metabolism/audit/45.json").read_bytes()
         for field, value in (("findings", ["two"]), ("confidence", 0.1),
                              ("rationale", "different")):
-            update_owner_state(d, "audit", "45", {field: value})
+            _tamper_owned_audit_fixture(d, 45, {field: value})
             held = audit_owner_result(d, 45)
             assert held["status"] == "held", field
-            update_owner_state(d, "audit", "45", {
-                "findings": ["one"], "confidence": 0.9, "rationale": "ok"})
+            (d / "data/metabolism/audit/45.json").write_bytes(original_bytes)
 
     def test_a_genuine_legacy_record_still_works(self):
         """A record with no retained operation keeps its explicit compatibility."""
@@ -1394,8 +1417,8 @@ class TestRetainedOriginal:
         assert operations[0]["business"]["outcome"]["target"] == "metabolism_pr:59"
         assert operations[0]["text"] == self._reply()
         assert operations[0]["receipt"]["usage"]["usage_state"] == "known"
-        assert stored["publication"]["state"] == "acknowledged"
-        assert stored["publication"]["event_id"]
+        assert stored["publication"]["current"]["state"] == "acknowledged"
+        assert stored["publication"]["current"]["intent"]["event_id"]
 
     def test_malformed_reply_cannot_publish_an_approval(self):
         """A whole-response that does not decode strictly cannot approve."""
@@ -1436,7 +1459,7 @@ class TestRetainedOriginal:
         with _provider_seam(_FakeResponse(stop_reason="max_tokens")):
             held = ma.audit_pr(62, proposal, diff, "sha62", root=d)
         assert held["status"] == "held"
-        update_owner_state(d, "audit", "62", {
+        _tamper_owned_audit_fixture(d, 62, {
             "schema": "metabolism.audit.v1", "pr_number": 62, "proposal_id": "p1",
             "head_sha": "sha62", "verdict": "approve", "deterministic_ok": True,
             "llm_verdict": "approve", "confidence": 0.9, "findings": [],
@@ -1447,11 +1470,35 @@ class TestRetainedOriginal:
         assert mau._already_audited(62, "sha62", d) is False
 
 
+    @pytest.mark.parametrize("field,value", [
+        ("head_sha", "foreign-head"), ("proposal_id", "foreign-proposal"),
+        ("verdict", "approve"), ("confidence", 0.8),
+    ])
+    def test_changed_pending_intent_is_held_before_governance_append(self, field, value):
+        import engine.metabolism.audit as ma
+        from scripts import metabolism_journal as journal
+        importlib.reload(ma)
+        root = _tmp_root()
+        diff = _make_diff(["engine/foreign.py"])
+        with patch.object(ma, "_append_governance_event", return_value=None):
+            first = ma.audit_pr(81, self._proposal(), diff, "sha81", root=root)
+        assert first["status"] == "held"
+        _, path = journal._owner_path(root, "audit", "81")
+        document = json.loads(path.read_text())
+        document["publication"]["current"]["intent"][field] = value
+        path.write_text(json.dumps(document))
+        before = path.read_bytes()
+        with patch.object(ma, "_append_governance_event") as append:
+            second = ma.audit_pr(81, self._proposal(), diff, "sha81", root=root)
+            append.assert_not_called()
+        assert second["status"] == "held" and path.read_bytes() == before
+        assert not (root / "data/neuralweb/governance.jsonl").exists()
+
     @pytest.mark.parametrize("mutation", [
         "receipt_subset", "receipt_target", "receipt_timestamp", "receipt_evidence_type",
         "publication_target", "publication_null", "original_intent",
         "original_ack", "outcome_head", "outcome_proposal", "outcome_timestamp",
-        "response_stop", "response_shape",
+        "response_stop", "response_shape", "response_provider",
     ])
     def test_completed_publication_correlation_cannot_be_forged(self, mutation):
         """Both public replay and merge consume the full original/ACK binding."""
@@ -1467,9 +1514,9 @@ class TestRetainedOriginal:
         _, path = journal._owner_path(root, "audit", "70")
         document = json.loads(path.read_text())
         original = next(iter(document[journal._FABRIC_KEY]["records"].values()))
-        publication = document["publication"]
+        publication = document["publication"]["current"]
         if mutation == "receipt_subset":
-            publication["receipt"] = {"event_id": publication["event_id"]}
+            publication["receipt"] = {"event_id": publication["intent"]["event_id"]}
         elif mutation == "receipt_target":
             publication["receipt"]["target"] = "metabolism_pr:999"
         elif mutation == "receipt_timestamp":
@@ -1477,7 +1524,7 @@ class TestRetainedOriginal:
         elif mutation == "receipt_evidence_type":
             publication["receipt"]["evidence"]["deterministic_ok"] = 1
         elif mutation == "publication_target":
-            publication["target"] = "metabolism_pr:999"
+            publication["intent"]["target"] = "metabolism_pr:999"
         elif mutation == "publication_null":
             document["publication"] = None
         elif mutation == "original_intent":
@@ -1492,8 +1539,10 @@ class TestRetainedOriginal:
             original["business"]["outcome"]["ts"] = "2026-01-01T00:00:00+00:00"
         elif mutation == "response_stop":
             original["receipt"]["response"]["stop_reason"] = "max_tokens"
-        else:
+        elif mutation == "response_shape":
             original["receipt"]["response"]["content_shape"].append("tool_use")
+        else:
+            original["receipt"]["provider"] = None
         path.write_text(json.dumps(document))
         before = path.read_bytes()
         assert journal.audit_owner_result(root, 70)["status"] == "held", mutation
@@ -1503,49 +1552,6 @@ class TestRetainedOriginal:
         assert result["status"] == "held", mutation
         assert _provider_calls(providers) == 0
         assert path.read_bytes() == before
-
-    @pytest.mark.parametrize("publication", [None, {"state": "pending"}])
-    def test_present_invalid_publication_is_never_legacy_absence(self, publication):
-        import engine.metabolism.audit as ma
-        from scripts import metabolism_journal as journal
-        importlib.reload(ma)
-        root = _tmp_root()
-        result = ma.audit_pr(71, self._proposal(), _make_diff(["engine/foreign.py"]), "sha71", root=root)
-        assert result["verdict"] == "reject"
-        _, path = journal._owner_path(root, "audit", "71")
-        document = json.loads(path.read_text())
-        document["publication"] = publication
-        path.write_text(json.dumps(document))
-        assert journal.audit_owner_result(root, 71)["status"] == "held"
-
-    def test_older_completed_original_keeps_its_own_ack_and_projection(self):
-        import engine.metabolism.audit as ma
-        from scripts import metabolism_journal as journal
-        importlib.reload(ma)
-        root = _tmp_root()
-        with _provider_seam(_FakeResponse(text=self._reply())):
-            first = ma.audit_pr(72, self._proposal(), self._diff(), "sha72", root=root,
-                                proposal_id="explicit-original")
-        first_original = self._operation(root, 72)
-        assert first_original["logical"]["facts"]["proposal_id"] == "explicit-original"
-        with _provider_seam(_FakeResponse(text=self._reply(verdict="reject"))):
-            second = ma.audit_pr(72, self._proposal(), self._diff(), "sha72b", root=root)
-        assert second["verdict"] == "reject"
-        _, path = journal._owner_path(root, "audit", "72")
-        before = path.read_bytes()
-        with _provider_seam(_FakeResponse(text=self._reply())) as providers:
-            recovered = ma.audit_pr(72, self._proposal(), self._diff(), "sha72", root=root,
-                                    proposal_id="explicit-original")
-        assert recovered == first
-        assert _provider_calls(providers) == 0 and path.read_bytes() == before
-        document = json.loads(before)
-        document[journal._FABRIC_KEY]["records"][first_original["operation_id"]][
-            "business"]["outcome"].pop("governance_receipt")
-        path.write_text(json.dumps(document))
-        with _provider_seam(_FakeResponse(text=self._reply())) as providers:
-            held = ma.audit_pr(72, self._proposal(), self._diff(), "sha72", root=root,
-                              proposal_id="explicit-original")
-        assert held["status"] == "held" and _provider_calls(providers) == 0
 
     def test_deterministic_successor_does_not_borrow_or_erase_old_model_original(self):
         import engine.metabolism.audit as ma
@@ -1603,37 +1609,39 @@ class TestRetainedOriginal:
         assert original["receipt"]["served_model"] == response.model
         assert original["receipt"]["response"]["stop_reason"] == response.stop_reason
 
-    def test_partial_usage_and_missing_provider_remain_observed_unknowns(self):
+    def test_foreign_descriptor_model_is_held_before_any_provider_send(self):
         import engine.metabolism.audit as ma
         importlib.reload(ma)
         root = _tmp_root()
-        response = _FakeResponse(text=self._reply(), usage=(11, None))
-        with _provider_seam(response):
-            result = ma.audit_pr(76, self._proposal(), self._diff(), "sha76", root=root)
-        assert result["verdict"] == "approve"
-        original = self._operation(root, 76)
-        assert original["receipt"]["observation"]["input_tokens"] == 11
-        assert original["receipt"]["observation"]["output_tokens"] is None
-        assert original["receipt"]["usage"]["usage_state"] == "unknown"
-        unknown = ma._audit_receipt("fixture", original["inspection"],
-            {"provider": None, "usage": {"input_tokens": 11}},
-            close=None, effect_unknown=True)
-        assert unknown["provider"] is None
-        assert unknown["observation"]["input_tokens"] == 11
-        assert unknown["observation"]["output_tokens"] is None
-
-    @pytest.mark.parametrize("zero_model", [True, False])
-    def test_two_fully_successful_identical_calls_keep_one_event(self, zero_model):
-        import engine.metabolism.audit as ma
-        importlib.reload(ma)
-        root = _tmp_root()
-        diff = _make_diff(["engine/foreign.py"]) if zero_model else self._diff()
         with _provider_seam(_FakeResponse(text=self._reply())) as providers:
-            first = ma.audit_pr(77, self._proposal(), diff, "sha77", root=root)
-            second = ma.audit_pr(77, self._proposal(), diff, "sha77", root=root)
-        assert first == second
-        assert _provider_calls(providers) == (0 if zero_model else 1)
-        assert len((root / "data/neuralweb/governance.jsonl").read_text().splitlines()) == 1
+            providers[0]["model"] = "foreign-model"
+            result = ma.audit_pr(80, self._proposal(), self._diff(), "sha80", root=root)
+        assert result["status"] == "held" and _provider_calls(providers) == 0
+
+    def test_late_model_claim_blocks_zero_model_publication_before_append(self):
+        import engine.metabolism.audit as ma
+        from scripts import metabolism_journal as journal
+        importlib.reload(ma)
+        root = _tmp_root()
+        actual = ma._publish_without_original
+        claims = []
+        def late_claim(published, pr_number, owner_root, **kwargs):
+            claims.append(journal.FabricInvocation(
+                root, "audit", str(pr_number),
+                ma._audit_logical(pr_number, self._proposal(), self._diff(), "model-head"),
+                ma._audit_scope(pr_number), ma._AUDIT_SYSTEM, "frozen model prompt", 4000,
+                inspection=ma._audit_inspection(),
+                selection={"mode": "incumbent_inference", "host_profile": None}))
+            return actual(published, pr_number, owner_root, **kwargs)
+        with patch.object(ma, "_publish_without_original", side_effect=late_claim), \
+             patch.object(ma, "_append_governance_event") as append:
+            result = ma.audit_pr(82, self._proposal(), _make_diff(["engine/foreign.py"]),
+                                 "deterministic-head", root=root)
+            append.assert_not_called()
+        assert result["status"] == "held"
+        document = journal.read_owner_state(root, "audit", "82")
+        assert "publication" not in document
+        assert next(iter(document[journal._FABRIC_KEY]["records"].values())) == claims[0].record
 
     def test_mutable_prompt_and_tokens_cannot_change_the_claimed_request(self):
         import engine.metabolism.audit as ma
@@ -1675,65 +1683,58 @@ class TestRetainedOriginal:
             llm_auth.build_providers.assert_not_called()
         assert result["status"] == "held" and _provider_calls(providers) == 0
 
-    def test_foreign_descriptor_model_is_held_before_any_provider_send(self):
-        import engine.metabolism.audit as ma
-        importlib.reload(ma)
-        root = _tmp_root()
-        with _provider_seam(_FakeResponse(text=self._reply())) as providers:
-            providers[0]["model"] = "foreign-model"
-            result = ma.audit_pr(80, self._proposal(), self._diff(), "sha80", root=root)
-        assert result["status"] == "held" and _provider_calls(providers) == 0
-
-
-    @pytest.mark.parametrize("field,value", [
-        ("head_sha", "foreign-head"), ("proposal_id", "foreign-proposal"),
-        ("verdict", "approve"), ("confidence", 0.8),
-    ])
-    def test_changed_pending_intent_is_held_before_governance_append(self, field, value):
+    def test_older_completed_original_keeps_its_own_ack_and_projection(self):
         import engine.metabolism.audit as ma
         from scripts import metabolism_journal as journal
         importlib.reload(ma)
         root = _tmp_root()
-        diff = _make_diff(["engine/foreign.py"])
-        with patch.object(ma, "_append_governance_event", return_value=None):
-            first = ma.audit_pr(81, self._proposal(), diff, "sha81", root=root)
-        assert first["status"] == "held"
-        _, path = journal._owner_path(root, "audit", "81")
+        with _provider_seam(_FakeResponse(text=self._reply())):
+            first = ma.audit_pr(72, self._proposal(), self._diff(), "sha72", root=root,
+                                proposal_id="explicit-original")
+        first_original = self._operation(root, 72)
+        assert first_original["logical"]["facts"]["proposal_id"] == "explicit-original"
+        with _provider_seam(_FakeResponse(text=self._reply(verdict="reject"))):
+            second = ma.audit_pr(72, self._proposal(), self._diff(), "sha72b", root=root)
+        assert second["verdict"] == "reject"
+        _, path = journal._owner_path(root, "audit", "72")
+        # Retain the exact d7b scalar layout: older originals own their ACK,
+        # while only the current publication is projected and no history exists.
         document = json.loads(path.read_text())
-        document["publication"][field] = value
+        _as_scalar_publication_fixture(document)
         path.write_text(json.dumps(document))
         before = path.read_bytes()
-        with patch.object(ma, "_append_governance_event") as append:
-            second = ma.audit_pr(81, self._proposal(), diff, "sha81", root=root)
-            append.assert_not_called()
-        assert second["status"] == "held" and path.read_bytes() == before
-        assert not (root / "data/neuralweb/governance.jsonl").exists()
+        with _provider_seam(_FakeResponse(text=self._reply())) as providers:
+            recovered = ma.audit_pr(72, self._proposal(), self._diff(), "sha72", root=root,
+                                    proposal_id="explicit-original")
+        assert recovered == first
+        assert _provider_calls(providers) == 0 and path.read_bytes() == before
+        document = json.loads(before)
+        document[journal._FABRIC_KEY]["records"][first_original["operation_id"]][
+            "business"]["outcome"].pop("governance_receipt")
+        path.write_text(json.dumps(document))
+        with _provider_seam(_FakeResponse(text=self._reply())) as providers:
+            held = ma.audit_pr(72, self._proposal(), self._diff(), "sha72", root=root,
+                              proposal_id="explicit-original")
+        assert held["status"] == "held" and _provider_calls(providers) == 0
 
-
-    def test_late_model_claim_blocks_zero_model_publication_before_append(self):
+    def test_partial_usage_and_missing_provider_remain_observed_unknowns(self):
         import engine.metabolism.audit as ma
-        from scripts import metabolism_journal as journal
         importlib.reload(ma)
         root = _tmp_root()
-        actual = ma._publish_without_original
-        claims = []
-        def late_claim(published, pr_number, owner_root):
-            claims.append(journal.FabricInvocation(
-                root, "audit", str(pr_number),
-                ma._audit_logical(pr_number, self._proposal(), self._diff(), "model-head"),
-                ma._audit_scope(pr_number), ma._AUDIT_SYSTEM, "frozen model prompt", 4000,
-                inspection=ma._audit_inspection(),
-                selection={"mode": "incumbent_inference", "host_profile": None}))
-            return actual(published, pr_number, owner_root)
-        with patch.object(ma, "_publish_without_original", side_effect=late_claim), \
-             patch.object(ma, "_append_governance_event") as append:
-            result = ma.audit_pr(82, self._proposal(), _make_diff(["engine/foreign.py"]),
-                                 "deterministic-head", root=root)
-            append.assert_not_called()
-        assert result["status"] == "held"
-        document = journal.read_owner_state(root, "audit", "82")
-        assert "publication" not in document
-        assert next(iter(document[journal._FABRIC_KEY]["records"].values())) == claims[0].record
+        response = _FakeResponse(text=self._reply(), usage=(11, None))
+        with _provider_seam(response):
+            result = ma.audit_pr(76, self._proposal(), self._diff(), "sha76", root=root)
+        assert result["verdict"] == "approve"
+        original = self._operation(root, 76)
+        assert original["receipt"]["observation"]["input_tokens"] == 11
+        assert original["receipt"]["observation"]["output_tokens"] is None
+        assert original["receipt"]["usage"]["usage_state"] == "unknown"
+        unknown = ma._audit_receipt("fixture", original["inspection"],
+            {"provider": None, "usage": {"input_tokens": 11}},
+            close=None, effect_unknown=True)
+        assert unknown["provider"] is None
+        assert unknown["observation"]["input_tokens"] == 11
+        assert unknown["observation"]["output_tokens"] is None
 
     def test_pending_zero_model_publication_blocks_new_model_claim(self):
         import engine.metabolism.audit as ma
@@ -1764,12 +1765,546 @@ class TestRetainedOriginal:
                   "ts": "2026-11-07T12:00:00+00:00"}
         def publish_before_claim(*args, **kwargs):
             result = actual(*args, **kwargs)
-            journal.audit_publication_intent(root, 84, journal.audit_publication_expected(record))
+            journal.audit_publication_intent(
+                root, 84, journal.audit_publication_expected(record), record=record,
+                logical=ma._audit_logical(84, self._proposal(), "frozen deterministic diff", "deterministic-head"))
             return result
         with patch.object(journal, "operation_record", side_effect=publish_before_claim), \
              _provider_seam(_FakeResponse(text=self._reply())) as providers:
             result = ma.audit_pr(84, self._proposal(), self._diff(), "model-head", root=root)
         assert result["status"] == "held" and _provider_calls(providers) == 0
         document = journal.read_owner_state(root, "audit", "84")
-        assert document["publication"]["state"] == "pending"
+        assert document["publication"]["current"]["state"] == "pending"
         assert journal._records(document) == {}
+
+    @pytest.mark.parametrize("publication", [None, {"state": "pending"}])
+    def test_present_invalid_publication_is_never_legacy_absence(self, publication):
+        import engine.metabolism.audit as ma
+        from scripts import metabolism_journal as journal
+        importlib.reload(ma)
+        root = _tmp_root()
+        result = ma.audit_pr(71, self._proposal(), _make_diff(["engine/foreign.py"]), "sha71", root=root)
+        assert result["verdict"] == "reject"
+        _, path = journal._owner_path(root, "audit", "71")
+        document = json.loads(path.read_text())
+        document["publication"] = publication
+        path.write_text(json.dumps(document))
+        assert journal.audit_owner_result(root, 71)["status"] == "held"
+
+    @pytest.mark.parametrize("zero_model", [True, False])
+    def test_two_fully_successful_identical_calls_keep_one_event(self, zero_model):
+        import engine.metabolism.audit as ma
+        importlib.reload(ma)
+        root = _tmp_root()
+        diff = _make_diff(["engine/foreign.py"]) if zero_model else self._diff()
+        with _provider_seam(_FakeResponse(text=self._reply())) as providers:
+            first = ma.audit_pr(77, self._proposal(), diff, "sha77", root=root)
+            second = ma.audit_pr(77, self._proposal(), diff, "sha77", root=root)
+        assert first == second
+        assert _provider_calls(providers) == (0 if zero_model else 1)
+        assert len((root / "data/neuralweb/governance.jsonl").read_text().splitlines()) == 1
+
+
+def _root_audit_operation(root, pr_number):
+    from scripts.metabolism_journal import _records
+    document = json.loads((root / "data" / "metabolism" / "audit" /
+                           (str(pr_number) + ".json")).read_text())
+    return next(iter(_records(document).values()))
+
+
+def test_retry_repeats_every_governance_ancestor_sync_before_ack(tmp_path, monkeypatch):
+    from engine.neuralweb import governance
+    actual = governance._fsync_directory
+    failure = {"path": tmp_path / "data"}
+    seen = []
+
+    def sync(directory):
+        seen.append(directory)
+        if directory == failure["path"]:
+            raise OSError("synthetic directory sync failure")
+        actual(directory)
+
+    monkeypatch.setattr(governance, "_fsync_directory", sync)
+    kwargs = dict(target="metabolism_pr:701", authored_by="metabolism_audit",
+                  evidence={"head_sha": "h701"}, root=tmp_path,
+                  event_id="same-owned-event", ts="2026-11-07T00:00:00+00:00",
+                  durable=True)
+    assert governance.append_event("metabolism_audit", **kwargs) is False
+    ledger = tmp_path / "data" / "neuralweb" / "governance.jsonl"
+    assert len(ledger.read_text().splitlines()) == 1
+    failure["path"] = tmp_path
+    seen.clear()
+    assert governance.append_event("metabolism_audit", **kwargs) is False
+    assert tmp_path / "data" in seen and tmp_path in seen
+    assert len(ledger.read_text().splitlines()) == 1
+    failure["path"] = None
+    seen.clear()
+    assert governance.append_event("metabolism_audit", **kwargs) is True
+    assert seen == [ledger.parent, ledger.parent.parent, ledger.parent.parent.parent]
+    assert len(ledger.read_text().splitlines()) == 1
+
+
+@pytest.mark.parametrize("mixed", [False, True])
+def test_held_reply_retains_text_and_independently_known_usage(mixed):
+    import engine.metabolism.audit as ma
+    importlib.reload(ma)
+    root = _tmp_root()
+    proposal = _minimal_proposal("p702")
+    diff = _make_diff(["engine/foo.py"], n_lines=3)
+    text = json.dumps({"verdict": "approve", "confidence": 0.9,
+                       "findings": [], "rationale": "observed response"})
+    response = _FakeResponse(
+        text=text, usage=(123, None),
+        stop_reason="end_turn" if mixed else "max_tokens",
+        blocks=[_FakeBlock(text), _FakeBlock("", "tool_use")] if mixed else None,
+    )
+    with _provider_seam(response) as providers:
+        result = ma.audit_pr(702, proposal, diff, "h702", root=root)
+    assert result["status"] == "held"
+    assert _provider_calls(providers) == 1
+    operation = _root_audit_operation(root, 702)
+    assert operation["state"] == "held"
+    assert operation["text"] == text
+    usage = operation["receipt"]["usage"]
+    assert usage == {"input_tokens": 123, "output_tokens": None,
+                     "completed_input_tokens": 123, "completed_output_tokens": 0,
+                     "usage_state": "unknown"}
+    assert operation["receipt"]["provider"] == "anthropic"
+    with patch.object(ma, "_call_llm_auditor", side_effect=AssertionError("no resend")):
+        assert ma.audit_pr(702, proposal, diff, "h702", root=root)["status"] == "held"
+    assert _root_audit_operation(root, 702) == operation
+
+
+def test_unobserved_provider_is_not_substituted_from_inspection():
+    import engine.metabolism.audit as ma
+    inspection = {"provider": "configured-only", "model": "requested-only"}
+    receipt = ma._audit_receipt("operation", inspection, None,
+                                close=None, effect_unknown=True)
+    assert receipt["provider"] is None
+    assert receipt["served_model"] is None
+    assert receipt["usage"]["input_tokens"] is None
+    assert receipt["usage"]["output_tokens"] is None
+
+
+@pytest.mark.parametrize("key,value", [
+    ("provider_order", ["anthropic"]),
+    ("opus_model", "a-different-model"),
+    ("oauth_pool_lane", "a-different-account-lane"),
+])
+def test_changed_dispatch_policy_is_refused_before_provider_construction(key, value):
+    import engine.metabolism.audit as ma
+    from engine import llm_auth
+    importlib.reload(ma)
+    root = _tmp_root()
+    original = ma._call_llm_auditor
+
+    def changed_after_claim(*args, **kwargs):
+        ma._LLM_CFG[key] = value
+        return original(*args, **kwargs)
+
+    with patch.object(ma, "_call_llm_auditor", side_effect=changed_after_claim), \
+         patch.object(llm_auth, "build_providers",
+                      side_effect=AssertionError("credentials must remain untouched")) as build:
+        result = ma.audit_pr(703, _minimal_proposal("p703"),
+                             _make_diff(["engine/foo.py"], n_lines=3),
+                             "h703", root=root)
+    assert result["status"] == "held"
+    assert result["rationale"] == "metabolism_audit_dispatch_binding_changed"
+    assert build.call_count == 0
+
+
+def test_resolved_wrong_model_is_refused_before_messages_create():
+    import engine.metabolism.audit as ma
+    importlib.reload(ma)
+    root = _tmp_root()
+    with _provider_seam(_FakeResponse()) as providers:
+        providers[0]["model"] = "a-different-model"
+        result = ma.audit_pr(704, _minimal_proposal("p704"),
+                             _make_diff(["engine/foo.py"], n_lines=3),
+                             "h704", root=root)
+    assert result["status"] == "held"
+    assert _provider_calls(providers) == 0
+
+
+class TestAuditPublicationHistory:
+    @staticmethod
+    def reply():
+        return json.dumps({"verdict": "approve", "confidence": 0.91,
+                           "findings": [], "rationale": "The exact request was reviewed."})
+
+    @staticmethod
+    def document(root, pr=901):
+        return json.loads((root / f"data/metabolism/audit/{pr}.json").read_text())
+
+    @staticmethod
+    def rows(root):
+        path = root / "data/neuralweb/governance.jsonl"
+        return path.read_text().splitlines() if path.exists() else []
+
+    @staticmethod
+    def request(head, *, clean=False):
+        proposal = _minimal_proposal("proposal-" + head)
+        diff = _make_diff(["engine/foo.py" if clean else "engine/UNDECLARED.py"])
+        return proposal, diff
+
+    def test_zero_heads_replay_frozen_history_without_policy_or_publication(self):
+        import engine.metabolism.audit as ma
+        importlib.reload(ma)
+        root = _tmp_root()
+        pa, da = self.request("a")
+        pb, db = self.request("b")
+        first = ma.audit_pr(901, pa, da, "head-a", root=root)
+        second = ma.audit_pr(901, pb, db, "head-b", root=root)
+        assert "status" not in first and "status" not in second
+        before = (root / "data/metabolism/audit/901.json").read_bytes()
+        rows = self.rows(root)
+        with patch.object(ma, "guard_native_route", side_effect=AssertionError("route rediscovered")), \
+             patch.object(ma, "_audit_max_diff_lines", side_effect=AssertionError("policy rediscovered")), \
+             patch.object(ma, "_append_governance_event", side_effect=AssertionError("event replayed")):
+            replay = ma.audit_pr(901, pa, da, "head-a", root=root)
+            changed = ma.audit_pr(901, pa, da, "head-a", root=root, proposal_id="changed-caller-id")
+        assert replay == first
+        assert changed["status"] == "held"
+        assert (root / "data/metabolism/audit/901.json").read_bytes() == before
+        assert self.rows(root) == rows and len(rows) == 2
+        owned = audit_owner_result(root, 901)
+        assert owned["status"] == "audited" and owned["record"] == second
+
+    def test_model_then_zero_head_keeps_original_and_replays_its_receipt(self):
+        import engine.metabolism.audit as ma
+        importlib.reload(ma)
+        root = _tmp_root()
+        pa, da = self.request("a", clean=True)
+        pb, db = self.request("b")
+        with _provider_seam(_FakeResponse(text=self.reply())) as providers:
+            first = ma.audit_pr(901, pa, da, "head-a", root=root)
+            assert _provider_calls(providers) == 1
+        second = ma.audit_pr(901, pb, db, "head-b", root=root)
+        assert first["verdict"] == "approve" and "status" not in second
+        assert audit_owner_result(root, 901)["record"] == second
+        before = (root / "data/metabolism/audit/901.json").read_bytes()
+        with _provider_seam(_FakeResponse(text=self.reply())) as providers, \
+             patch.object(ma, "_append_governance_event", side_effect=AssertionError("append replay")), \
+             patch.object(ma, "_audit_inspection", side_effect=AssertionError("inspection replay")):
+            assert ma.audit_pr(901, pa, da, "head-a", root=root) == first
+            assert _provider_calls(providers) == 0
+        assert (root / "data/metabolism/audit/901.json").read_bytes() == before
+        assert len(self.rows(root)) == 2
+
+    def test_zero_then_model_publication_preserves_completed_history(self):
+        import engine.metabolism.audit as ma
+        importlib.reload(ma)
+        root = _tmp_root()
+        pa, da = self.request("a")
+        pb, db = self.request("b", clean=True)
+        first = ma.audit_pr(901, pa, da, "head-a", root=root)
+        with _provider_seam(_FakeResponse(text=self.reply())):
+            second = ma.audit_pr(901, pb, db, "head-b", root=root)
+        assert second["verdict"] == "approve" and "status" not in second
+        document = self.document(root)
+        publications = document["publication"]
+        assert len(publications["completed"]) == 1
+        assert next(iter(publications["completed"].values()))["record"] == first
+        assert publications["current"]["record"] == second
+        assert publications["current"]["original_operation_id"]
+        assert audit_owner_result(root, 901)["record"] == second
+
+    def test_pending_next_head_holds_current_reader_and_reconciles_frozen_record(self):
+        import engine.metabolism.audit as ma
+        importlib.reload(ma)
+        root = _tmp_root()
+        pa, da = self.request("a")
+        pb, db = self.request("b")
+        first = ma.audit_pr(901, pa, da, "head-a", root=root)
+        with patch.object(ma, "_append_governance_event", side_effect=KeyboardInterrupt("after intent")):
+            with pytest.raises(KeyboardInterrupt, match="after intent"):
+                ma.audit_pr(901, pb, db, "head-b", root=root)
+        document = self.document(root)
+        frozen = document["publication"]["current"]["record"]
+        assert audit_owner_result(root, 901)["status"] == "held"
+        assert document["head_sha"] == "head-a" and len(self.rows(root)) == 1
+        assert ma.audit_pr(901, pa, da, "head-a", root=root) == first
+        with patch.object(ma, "_audit_max_diff_lines", side_effect=AssertionError("policy replay")), \
+             patch.object(ma, "guard_native_route", side_effect=AssertionError("route replay")):
+            recovered = ma.audit_pr(901, pb, db, "head-b", root=root)
+        assert recovered == frozen
+        assert len(self.rows(root)) == 2
+        assert audit_owner_result(root, 901)["record"] == frozen
+
+    def test_same_head_changed_request_and_stale_commit_cannot_replace_current(self):
+        import engine.metabolism.audit as ma
+        from scripts import metabolism_journal as journal
+        importlib.reload(ma)
+        root = _tmp_root()
+        pa, da = self.request("a")
+        first = ma.audit_pr(901, pa, da, "head-a", root=root)
+        old = self.document(root)["publication"]["current"]
+        changed = dict(pa, rationale="different request at the same head")
+        assert ma.audit_pr(901, changed, da, "head-a", root=root)["status"] == "held"
+        pb, db = self.request("b")
+        second = ma.audit_pr(901, pb, db, "head-b", root=root)
+        before = (root / "data/metabolism/audit/901.json").read_bytes()
+        with pytest.raises(journal.FabricHeld, match="publication_missing"):
+            journal.audit_publication_commit(
+                root, 901, first, event_id=old["intent"]["event_id"], receipt=old["receipt"])
+        with pytest.raises(journal.FabricHeld, match="custody_owned"):
+            journal.update_owner_state(root, "audit", "901", first)
+        assert (root / "data/metabolism/audit/901.json").read_bytes() == before
+        assert audit_owner_result(root, 901)["record"] == second
+
+    @pytest.mark.parametrize("path", [
+        ("intent", "event_type"), ("intent", "target"), ("intent", "event_id"),
+        ("intent", "ts"), ("intent", "head_sha"), ("intent", "proposal_id"),
+        ("intent", "verdict"), ("intent", "deterministic_ok"),
+        ("intent", "llm_verdict"), ("intent", "confidence"), ("intent", "decision_digest"),
+        ("receipt", "event_type"), ("receipt", "target"), ("receipt", "event_id"),
+        ("receipt", "ts"), ("receipt", "evidence", "head_sha"),
+        ("receipt", "evidence", "proposal_id"), ("receipt", "evidence", "verdict"),
+        ("receipt", "evidence", "deterministic_ok"),
+        ("receipt", "evidence", "llm_verdict"), ("receipt", "evidence", "confidence"),
+        ("record", "findings"), ("record", "rationale"),
+        ("logical", "facts", "pr_number"), ("logical", "facts", "head_sha"),
+    ])
+    def test_every_publication_field_is_bound_even_with_a_matching_event_id(self, path):
+        import engine.metabolism.audit as ma
+        importlib.reload(ma)
+        root = _tmp_root()
+        proposal, diff = self.request("a")
+        ma.audit_pr(901, proposal, diff, "head-a", root=root)
+        document = self.document(root)
+        target = document["publication"]["current"]
+        for key in path[:-1]:
+            target = target[key]
+        value = target[path[-1]]
+        target[path[-1]] = (0 if type(value) is bool else
+                           True if type(value) is int else
+                           ["foreign finding"] if type(value) is list else "foreign")
+        (root / "data/metabolism/audit/901.json").write_text(json.dumps(document))
+        assert audit_owner_result(root, 901)["status"] == "held"
+        with patch.object(ma, "_append_governance_event", side_effect=AssertionError("replayed")), \
+             patch.object(ma, "guard_native_route", side_effect=AssertionError("rediscovered")):
+            assert ma.audit_pr(901, proposal, diff, "head-a", root=root)["status"] == "held"
+        assert len(self.rows(root)) == 1
+
+    def test_completed_model_cannot_hide_a_corrupt_retained_publication(self):
+        import engine.metabolism.audit as ma
+        importlib.reload(ma)
+        root = _tmp_root()
+        proposal, diff = self.request("a", clean=True)
+        with _provider_seam(_FakeResponse(text=self.reply())):
+            assert ma.audit_pr(901, proposal, diff, "head-a", root=root)["verdict"] == "approve"
+        document = self.document(root)
+        document["publication"]["current"]["receipt"]["target"] = "metabolism_pr:other"
+        (root / "data/metabolism/audit/901.json").write_text(json.dumps(document))
+        with _provider_seam(_FakeResponse(text=self.reply())) as providers:
+            result = ma.audit_pr(901, proposal, diff, "head-a", root=root)
+            assert result["status"] == "held" and _provider_calls(providers) == 0
+        assert audit_owner_result(root, 901)["status"] == "held"
+
+    def test_zero_model_claim_wins_race_before_model_claim(self):
+        import engine.metabolism.audit as ma
+        from scripts import metabolism_journal as journal
+        importlib.reload(ma)
+        root = _tmp_root()
+        pa, da = self.request("a", clean=True)
+        pb, db = self.request("b")
+        actual = ma._audit_inspection
+        def inspect_after_competing_zero_claim():
+            inspection = actual()
+            with patch.object(ma, "_append_governance_event", return_value=None):
+                assert ma.audit_pr(901, pb, db, "head-b", root=root)["status"] == "held"
+            return inspection
+        with patch.object(ma, "_audit_inspection", side_effect=inspect_after_competing_zero_claim), \
+             _provider_seam(_FakeResponse(text=self.reply())) as providers:
+            result = ma.audit_pr(901, pa, da, "head-a", root=root)
+            assert result["status"] == "held" and _provider_calls(providers) == 0
+        document = self.document(root)
+        assert not journal._records(document)
+        assert document["publication"]["current"]["record"]["head_sha"] == "head-b"
+
+    def test_model_claim_wins_race_before_zero_model_publication(self):
+        import engine.metabolism.audit as ma
+        from scripts import metabolism_journal as journal
+        importlib.reload(ma)
+        root = _tmp_root()
+        pa, da = self.request("a", clean=True)
+        pb, db = self.request("b")
+        actual = ma._publish_without_original
+        def publish_after_competing_model_claim(record, pr_number, root_arg, *, logical):
+            journal.FabricInvocation(
+                root, "audit", "901", ma._audit_logical(901, pa, da, "head-a"),
+                ma._audit_scope(901), ma._AUDIT_SYSTEM, "frozen test request", 4000,
+                cfg=ma._LLM_CFG, inspection=ma._audit_inspection(),
+                selection={"mode": "incumbent_inference", "host_profile": journal.host_profile()})
+            return actual(record, pr_number, root_arg, logical=logical)
+        with patch.object(ma, "_publish_without_original", side_effect=publish_after_competing_model_claim):
+            result = ma.audit_pr(901, pb, db, "head-b", root=root)
+        assert result["status"] == "held"
+        document = self.document(root)
+        assert "publication" not in document and len(journal._records(document)) == 1
+        assert self.rows(root) == []
+
+    @pytest.mark.parametrize("field", [
+        "schema", "pr_number", "proposal_id", "head_sha", "verdict",
+        "deterministic_ok", "llm_verdict", "confidence", "findings", "rationale", "ts",
+    ])
+    def test_current_projection_drift_blocks_replay_and_next_head(self, field):
+        import engine.metabolism.audit as ma
+        importlib.reload(ma)
+        root = _tmp_root()
+        pa, da = self.request("a", clean=True)
+        pb, db = self.request("b")
+        with _provider_seam(_FakeResponse(text=self.reply())):
+            assert ma.audit_pr(901, pa, da, "head-a", root=root)["verdict"] == "approve"
+        document = self.document(root)
+        value = document[field]
+        document[field] = (0 if type(value) is bool else
+                           True if type(value) is int else
+                           0.01 if type(value) is float else
+                           ["foreign finding"] if type(value) is list else "foreign")
+        path = root / "data/metabolism/audit/901.json"
+        path.write_text(json.dumps(document))
+        before = path.read_bytes()
+        assert audit_owner_result(root, 901)["status"] == "held"
+        with _provider_seam(_FakeResponse(text=self.reply())) as providers, \
+             patch.object(ma, "_append_governance_event", side_effect=AssertionError("append")), \
+             patch.object(ma, "_audit_inspection", side_effect=AssertionError("inspection")):
+            assert ma.audit_pr(901, pa, da, "head-a", root=root)["status"] == "held"
+            assert ma.audit_pr(901, pb, db, "head-b", root=root)["status"] == "held"
+            assert _provider_calls(providers) == 0
+        assert path.read_bytes() == before
+        assert len(self.rows(root)) == 1
+
+
+class TestAuditHistoryCompatibility:
+    def request(self, root, *, head="compat-head", proposal_id=None):
+        from engine.metabolism import audit as ma
+        return ma.audit_pr(991, TestRetainedOriginal._proposal(),
+                           TestRetainedOriginal._diff(), head, root=root,
+                           proposal_id=proposal_id)
+
+    def state(self, root):
+        from scripts import metabolism_journal as journal
+        _, path = journal._owner_path(root, "audit", "991")
+        return path, json.loads(path.read_text())
+
+    def test_changed_public_proposal_override_holds_before_any_new_effect(self):
+        from engine.metabolism import audit as ma
+        importlib.reload(ma)
+        root = _tmp_root()
+        with _provider_seam(_FakeResponse(text=TestRetainedOriginal._reply())):
+            first = self.request(root, proposal_id="first-override")
+        assert first["proposal_id"] == "first-override"
+        path, document = self.state(root)
+        before = path.read_bytes()
+        ledger = root / "data/neuralweb/governance.jsonl"
+        ledger_before = ledger.read_bytes()
+        with _provider_seam(_FakeResponse(text=TestRetainedOriginal._reply())) as providers, \
+             patch.object(ma, "_append_governance_event") as append:
+            changed = self.request(root, proposal_id="second-override")
+        assert changed.get("status") == "held"
+        assert document["publication"]["current"]["logical"]["facts"]["proposal_id"] == "first-override"
+        assert _provider_calls(providers) == 0
+        append.assert_not_called()
+        assert path.read_bytes() == before and ledger.read_bytes() == ledger_before
+
+    @pytest.mark.parametrize("legacy_facts", [False, True])
+    def test_scalar_completed_original_replays_without_rewriting_identity(self, legacy_facts):
+        from engine.metabolism import audit as ma
+        from scripts import metabolism_journal as journal
+        import scripts.metabolism_merge as merge
+        importlib.reload(ma)
+        root = _tmp_root()
+        actual = ma._audit_logical
+        def historical(*args, **kwargs):
+            logical = actual(*args, **kwargs)
+            logical["facts"].pop("proposal_id")
+            return logical
+        with patch.object(ma, "_audit_logical", side_effect=historical if legacy_facts else actual), \
+             _provider_seam(_FakeResponse(text=TestRetainedOriginal._reply())):
+            first = self.request(root, proposal_id="retained-override")
+        path, document = self.state(root)
+        originals = json.loads(json.dumps(document[journal._FABRIC_KEY]))
+        _as_scalar_publication_fixture(document)
+        path.write_text(json.dumps(document))
+        before = path.read_bytes()
+        ledger = root / "data/neuralweb/governance.jsonl"
+        ledger_before = ledger.read_bytes()
+        assert journal.audit_owner_result(root, 991)["status"] == "audited"
+        assert merge._audit_approved(991, "compat-head", root=root)[0] is True
+        with _provider_seam(_FakeResponse(text=TestRetainedOriginal._reply())) as providers, \
+             patch.object(ma, "_append_governance_event") as append:
+            recovered = self.request(root, proposal_id="retained-override")
+            refused = self.request(root, proposal_id="different-override")
+        assert recovered == first and refused["status"] == "held"
+        assert _provider_calls(providers) == 0
+        append.assert_not_called()
+        assert path.read_bytes() == before and ledger.read_bytes() == ledger_before
+        assert json.loads(before)[journal._FABRIC_KEY] == originals
+
+    @pytest.mark.parametrize("damage", ["old_ack", "old_stop", "old_shape", "old_provider", "current_ack", "current_pending", "current_projection"])
+    def test_scalar_superseded_original_never_uses_a_corrupt_recovery_fallback(self, damage):
+        from engine.metabolism import audit as ma
+        from scripts import metabolism_journal as journal
+        importlib.reload(ma)
+        root = _tmp_root()
+        with _provider_seam(_FakeResponse(text=TestRetainedOriginal._reply())):
+            self.request(root, head="older-head", proposal_id="older-proposal")
+        _, old_doc = self.state(root)
+        old_id = old_doc["publication"]["current"]["original_operation_id"]
+        with _provider_seam(_FakeResponse(text=TestRetainedOriginal._reply(verdict="reject"))):
+            self.request(root, head="current-head")
+        path, document = self.state(root)
+        _as_scalar_publication_fixture(document)
+        old = document[journal._FABRIC_KEY]["records"][old_id]
+        if damage == "old_ack":
+            old["business"]["outcome"]["governance_receipt"]["target"] = "metabolism_pr:999"
+        elif damage == "old_stop": old["receipt"]["response"]["stop_reason"] = "max_tokens"
+        elif damage == "old_shape": old["receipt"]["response"]["content_shape"] = ["text", "tool_use"]
+        elif damage == "old_provider": old["receipt"]["provider"] = None
+        elif damage == "current_ack": document["publication"]["receipt"] = {"event_id": document["publication"]["event_id"]}
+        elif damage == "current_pending":
+            document["publication"]["state"] = "pending"
+            document["publication"].pop("receipt")
+        else: document["head_sha"] = "corrupt-projection"
+        path.write_text(json.dumps(document))
+        before = path.read_bytes()
+        ledger = root / "data/neuralweb/governance.jsonl"
+        ledger_before = ledger.read_bytes()
+        with _provider_seam(_FakeResponse(text=TestRetainedOriginal._reply())) as providers, \
+             patch.object(ma, "_append_governance_event") as append:
+            result = self.request(root, head="older-head", proposal_id="older-proposal")
+        assert result["status"] == "held"
+        assert _provider_calls(providers) == 0
+        append.assert_not_called()
+        assert path.read_bytes() == before and ledger.read_bytes() == ledger_before
+
+    def test_both_legacy_and_current_request_identities_are_ambiguous(self):
+        from engine.metabolism import audit as ma
+        from scripts import metabolism_journal as journal
+        importlib.reload(ma)
+        first_root, second_root = _tmp_root(), _tmp_root()
+        with _provider_seam(_FakeResponse(text=TestRetainedOriginal._reply())):
+            self.request(first_root, proposal_id="same-proposal")
+        actual = ma._audit_logical
+        def historical(*args, **kwargs):
+            logical = actual(*args, **kwargs)
+            logical["facts"].pop("proposal_id")
+            return logical
+        with patch.object(ma, "_audit_logical", side_effect=historical), \
+             _provider_seam(_FakeResponse(text=TestRetainedOriginal._reply())):
+            self.request(second_root, proposal_id="same-proposal")
+        path, document = self.state(first_root)
+        _, historical_document = self.state(second_root)
+        old_entry = historical_document["publication"]["current"]
+        document[journal._FABRIC_KEY]["records"].update(historical_document[journal._FABRIC_KEY]["records"])
+        document["publication"]["completed"][journal._audit_entry_key(old_entry)] = old_entry
+        path.write_text(json.dumps(document))
+        before = path.read_bytes()
+        with _provider_seam(_FakeResponse(text=TestRetainedOriginal._reply())) as providers, \
+             patch.object(ma, "_append_governance_event") as append:
+            result = self.request(first_root, proposal_id="same-proposal")
+        assert result["status"] == "held"
+        assert _provider_calls(providers) == 0
+        append.assert_not_called()
+        assert path.read_bytes() == before
