@@ -243,7 +243,7 @@ def test_script_only_attaches_after_save_and_optional_failure_preserves_publishi
     result=SimpleNamespace(health=health,payload=payload,committed=mode!='not_committed',timings={},exit_code=0)
     ledger=SimpleNamespace(save=lambda:calls.append('save'))
     monkeypatch.setattr(script.LP,'assert_published_spec_hashes',lambda:None)
-    monkeypatch.setattr(script.LP,'load_pack',lambda _:pack)
+    monkeypatch.setattr(script.LP,'load_pack',lambda _, *, receipt=None:pack)
     monkeypatch.setattr(script.LL.LiveEpisodeLedger,'load',lambda _:ledger)
     monkeypatch.setattr(script.LL,'EventSpool',lambda:None)
     monkeypatch.setattr(script,'load_quotes',lambda _:{'source':'synthetic'})
