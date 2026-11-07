@@ -12463,6 +12463,8 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      # S28: exact current publication continuation read closure.
+      - "lib/intl_durable_publication.py"
       - "app/options_scenario_http_admission.py"
       - "app/investigation_native_capture.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
@@ -14989,6 +14991,11 @@ jobs:
     # narrow those.
     scope: exclusive
     paths:
+      # S28: exact current publication continuation read closure.
+      - "lib/intl_durable_publication.py"
+      - "scripts/build_feeds.py"
+      - "scripts/publish_r2.py"
+      - "scripts/render_intl_durable.py"
       - "lib/intl_annual_publication.py"
       - "lib/intl_boe_publication.py"
       - "lib/intl_boe_source.py"
@@ -19203,6 +19210,12 @@ jobs:
     # ticker-cluster time-confound law and the altdata_brain.py article3 convention.
     scope: exclusive
     paths:
+      # S28: exact current publication continuation read closure.
+      - "engine/thetadata_store.py"
+      - "lib/intl_durable_publication.py"
+      - "scripts/build_feeds.py"
+      - "scripts/publish_r2.py"
+      - "scripts/render_intl_durable.py"
       - "lib/intl_annual_publication.py"
       - "lib/intl_boe_publication.py"
       - "lib/intl_boe_source.py"
@@ -23803,6 +23816,12 @@ jobs:
     # Explicit measured closure: avoid unrelated opaque fallback selection.
     scope: exclusive
     paths:
+      # S28: exact current publication continuation read closure.
+      - "engine/thetadata_store.py"
+      - "lib/intl_durable_publication.py"
+      - "scripts/build_feeds.py"
+      - "scripts/publish_r2.py"
+      - "scripts/render_intl_durable.py"
       - "lib/intl_annual_publication.py"
       - "lib/intl_boe_publication.py"
       - "lib/intl_boe_source.py"
@@ -24156,6 +24175,12 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      # S28: exact current publication continuation read closure.
+      - "engine/thetadata_store.py"
+      - "lib/intl_durable_publication.py"
+      - "scripts/build_feeds.py"
+      - "scripts/publish_r2.py"
+      - "scripts/render_intl_durable.py"
       - "lib/intl_annual_publication.py"
       - "lib/intl_boe_publication.py"
       - "lib/intl_boe_source.py"
@@ -27827,6 +27852,11 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      # S28: exact current publication continuation read closure.
+      - "engine/thetadata_store.py"
+      - "scripts/build_feeds.py"
+      - "scripts/publish_r2.py"
+      - "scripts/render_intl_durable.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "engine/intraday_greeks.py"
       - "engine/options_nbbo_cohort.py"
@@ -35594,6 +35624,11 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      # S28: exact current publication continuation read closure.
+      - "lib/intl_durable_publication.py"
+      - "scripts/build_feeds.py"
+      - "scripts/publish_r2.py"
+      - "scripts/render_intl_durable.py"
       - "lib/intl_annual_publication.py"
       - "lib/intl_boe_publication.py"
       - "lib/intl_boe_source.py"
@@ -37112,6 +37147,10 @@ jobs:
     # the declared-scope coverage audit re-checks them on every load.
     scope: exclusive
     paths:
+      # S28: exact current publication continuation read closure.
+      - "scripts/build_feeds.py"
+      - "scripts/publish_r2.py"
+      - "scripts/render_intl_durable.py"
       - engine/rate_futures_repricing.py
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
@@ -47269,6 +47308,10 @@ jobs:
     # An unlisted closure file is an uncovered path. No tests/** catch-all.
     scope: exclusive
     paths:
+      # S28: exact current publication continuation read closure.
+      - "scripts/build_feeds.py"
+      - "scripts/publish_r2.py"
+      - "scripts/render_intl_durable.py"
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
       - engine/entry_radar/replay/identity_observation_snapshot.py
@@ -47574,6 +47617,10 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      # S28: exact current publication continuation read closure.
+      - "scripts/build_feeds.py"
+      - "scripts/publish_r2.py"
+      - "scripts/render_intl_durable.py"
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
       - engine/entry_radar/replay/identity_observation_snapshot.py
@@ -47838,6 +47885,8 @@ jobs:
     # the nightly engine shell). No data/** fallback.
     scope: exclusive
     paths:
+      # S28: exact current publication continuation read closure.
+      - "lib/intl_durable_publication.py"
       # RIC Y1 (2026-10-14): engine/yield_momentum.py imports the B0 basis contract.
       - "engine/rates_command_basis.py"
       - "lib/us_cash_calendar.py"
@@ -48006,6 +48055,8 @@ jobs:
     # read or run; an unlisted closure file is an uncovered path. No
     # tests/** catch-all.
     paths:
+      # S28: exact current publication continuation read closure.
+      - "lib/intl_durable_publication.py"
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
       - "engine/company_intelligence/rms_segment_profile.py"
@@ -50747,6 +50798,12 @@ jobs:
     # The qledger-cluster-honest-ci code owner retains grader/readiness suites.
     scope: exclusive
     paths:
+      # S28: exact current publication continuation read closure.
+      - "engine/thetadata_store.py"
+      - "lib/intl_durable_publication.py"
+      - "scripts/build_feeds.py"
+      - "scripts/publish_r2.py"
+      - "scripts/render_intl_durable.py"
       - "lib/intl_annual_publication.py"
       - "lib/intl_boe_publication.py"
       - "lib/intl_boe_source.py"
