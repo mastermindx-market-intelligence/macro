@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import re
+import json
 
 import pytest
 from jinja2 import Environment, FileSystemLoader, StrictUndefined
@@ -55,10 +56,12 @@ def test_2_every_row_carries_bilingual_strings_and_valid_state(tmp_path):
 
 
 def test_3_techmat_present_and_none():
-    # techmat has no producers declared at all — verify from the frozen registry
-    # directly (no filesystem needed) that its axes are unset.
+    # Annual physical context now has a native producer; this does not supply
+    # commodity prices or complete semiconductor production-chain coverage.
     techmat = next(f for f in FAMILIES if f["id"] == "techmat")
-    assert techmat["price"] is None and techmat["supply"] is None
+    assert techmat["price"] is None
+    assert techmat["supply"]["producer"] == "engine/critical_minerals_supply.py"
+    assert techmat["supply"]["contract"] == "critical_minerals_supply.v1"
 
 
 def test_3b_techmat_row_state_is_none(tmp_path):
@@ -68,6 +71,44 @@ def test_3b_techmat_row_state_is_none(tmp_path):
     assert techmat["state"] == "none"
     assert techmat["price_en"] == "Not covered yet"
     assert techmat["supply_en"] == "Not covered yet"
+
+
+def _minerals_artifact(root, *, partial=False, promoted=False):
+    (root / "engine" / "critical_minerals_supply.py").write_text("# native producer present\n")
+    source = json.loads((_REPO_ROOT / "tests/fixtures/usgs_mcs/display_context.json").read_text())
+    if partial:
+        source["commodities"] = {"cobalt": source["commodities"]["cobalt"]}
+    if promoted:
+        source["authority"]["may_size"] = True
+    path = root / "data/neuralweb/critical_minerals_supply.json"
+    path.parent.mkdir(parents=True)
+    path.write_text(json.dumps(source))
+
+
+def test_annual_minerals_source_does_not_claim_prices_or_complete_supply_chain(tmp_path):
+    root = _fake_root(tmp_path)
+    _minerals_artifact(root)
+    row = next(r for r in compute_coverage_matrix(root)["rows"] if r["id"] == "techmat")
+    assert row["state"] == "partial"
+    assert row["state_en"] == "Supply context only"
+    assert row["price_en"] == "Not covered yet"
+    assert "4 of 4" in row["supply_en"] and "remain uncovered" in row["supply_en"]
+    assert row["sources"][0]["source_en"] in PUBLIC_SOURCES
+
+
+def test_partial_minerals_source_counts_only_the_qualified_rows(tmp_path):
+    root = _fake_root(tmp_path)
+    _minerals_artifact(root, partial=True)
+    row = next(r for r in compute_coverage_matrix(root)["rows"] if r["id"] == "techmat")
+    assert row["state"] == "partial" and "1 of 4" in row["supply_en"]
+    assert "4 of 4" not in row["supply_en"]
+
+
+def test_artifact_existence_cannot_promote_minerals_authority(tmp_path):
+    root = _fake_root(tmp_path)
+    _minerals_artifact(root, promoted=True)
+    row = next(r for r in compute_coverage_matrix(root)["rows"] if r["id"] == "techmat")
+    assert row["state"] == "none" and row["sources"] == []
 
 
 def test_4_covered_axis_names_existing_producer_and_public_source(tmp_path):

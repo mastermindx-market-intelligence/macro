@@ -1,0 +1,990 @@
+{
+  "pr": 9791,
+  "merge": "c3c67487f42e1c54986b2e95dca327946fdc5ed0",
+  "merged_at": "2026-10-19T21:52:31Z",
+  "implementation_blob": "f92be10fc37455fd427829f0f964c5ef581b3a80",
+  "head": "a0153871732eeb4c3f24e733216d30ab89465f91",
+  "tested_tree": "ff3996daeb00dd92c50f93865d685c4cd5044f5d",
+  "base": "521306fe92f8990add6a8b351749bc17f8c814fb",
+  "plan_sha256": "2f6d0a326f72d5e4746dac5225d6c4ba528b47370d1bb0d64bb65e215a0f1564",
+  "logical_jobs": 258,
+  "passed_proof_units": 554,
+  "infrastructure_findings": 0,
+  "landed_files_verified": 8,
+  "stage_costs": {
+    "run_id": 39324251115,
+    "created_at": "2026-10-19T21:02:08Z",
+    "head": "a0153871732eeb4c3f24e733216d30ab89465f91",
+    "status": "completed",
+    "conclusion": "success",
+    "run_to_gate_seconds": 2527.0,
+    "summed_job_wall_minutes": 362.56666666666666,
+    "last_pack_to_gate_start_seconds": 3.0,
+    "jobs": [
+      {
+        "name": "contract-delta",
+        "wall_seconds": 774.0,
+        "started_at": "2026-10-19T21:02:11Z",
+        "completed_at": "2026-10-19T21:15:05Z",
+        "steps": [
+          {
+            "name": "Set up job",
+            "seconds": 1.0
+          },
+          {
+            "name": "Run actions/checkout@v4",
+            "seconds": 139.0
+          },
+          {
+            "name": "Run actions/setup-python@v5",
+            "seconds": 7.0
+          },
+          {
+            "name": "install control-plane dependencies",
+            "seconds": 2.0
+          },
+          {
+            "name": "resolve the exact tested PR merge base",
+            "seconds": 0.0
+          },
+          {
+            "name": "fetch the exact tested PR merge base",
+            "seconds": 1.0
+          },
+          {
+            "name": "differential contract-delta gate",
+            "seconds": 619.0
+          },
+          {
+            "name": "Post Run actions/setup-python@v5",
+            "seconds": 0.0
+          },
+          {
+            "name": "Post Run actions/checkout@v4",
+            "seconds": 1.0
+          },
+          {
+            "name": "Complete job",
+            "seconds": 0.0
+          }
+        ]
+      },
+      {
+        "name": "ci-plan",
+        "wall_seconds": 110.0,
+        "started_at": "2026-10-19T21:02:11Z",
+        "completed_at": "2026-10-19T21:04:01Z",
+        "steps": [
+          {
+            "name": "Set up job",
+            "seconds": 1.0
+          },
+          {
+            "name": "Run actions/checkout@v4",
+            "seconds": 85.0
+          },
+          {
+            "name": "Run actions/setup-python@v5",
+            "seconds": 8.0
+          },
+          {
+            "name": "bind the exact tested tree and base",
+            "seconds": 0.0
+          },
+          {
+            "name": "install isolated pack runner",
+            "seconds": 5.0
+          },
+          {
+            "name": "bind exact tested-tree path inventory",
+            "seconds": 1.0
+          },
+          {
+            "name": "plan the CI packs once",
+            "seconds": 3.0
+          },
+          {
+            "name": "publish the changed-file list",
+            "seconds": 1.0
+          },
+          {
+            "name": "publish the authoritative semantic plan",
+            "seconds": 1.0
+          },
+          {
+            "name": "Post Run actions/setup-python@v5",
+            "seconds": 1.0
+          },
+          {
+            "name": "Post Run actions/checkout@v4",
+            "seconds": 0.0
+          },
+          {
+            "name": "Complete job",
+            "seconds": 0.0
+          }
+        ]
+      },
+      {
+        "name": "ci-pack-0",
+        "wall_seconds": 2396.0,
+        "started_at": "2026-10-19T21:04:04Z",
+        "completed_at": "2026-10-19T21:44:00Z",
+        "steps": [
+          {
+            "name": "Set up job",
+            "seconds": 2.0
+          },
+          {
+            "name": "Run actions/checkout@v4",
+            "seconds": 229.0
+          },
+          {
+            "name": "Run actions/setup-python@v5",
+            "seconds": 7.0
+          },
+          {
+            "name": "Run actions/setup-node@v4",
+            "seconds": 5.0
+          },
+          {
+            "name": "install isolated pack runner",
+            "seconds": 3.0
+          },
+          {
+            "name": "download the authoritative semantic plan",
+            "seconds": 1.0
+          },
+          {
+            "name": "download the planner's changed-file list",
+            "seconds": 1.0
+          },
+          {
+            "name": "publish the changed-file handle",
+            "seconds": 0.0
+          },
+          {
+            "name": "validate and run legacy CI pack",
+            "seconds": 2142.0
+          },
+          {
+            "name": "publish this pack's raw semantic fragment",
+            "seconds": 1.0
+          },
+          {
+            "name": "Post Run actions/setup-node@v4",
+            "seconds": 0.0
+          },
+          {
+            "name": "Post Run actions/setup-python@v5",
+            "seconds": 0.0
+          },
+          {
+            "name": "Post Run actions/checkout@v4",
+            "seconds": 1.0
+          },
+          {
+            "name": "Complete job",
+            "seconds": 0.0
+          }
+        ]
+      },
+      {
+        "name": "ci-pack-11",
+        "wall_seconds": 1486.0,
+        "started_at": "2026-10-19T21:04:03Z",
+        "completed_at": "2026-10-19T21:28:49Z",
+        "steps": [
+          {
+            "name": "Set up job",
+            "seconds": 2.0
+          },
+          {
+            "name": "Run actions/checkout@v4",
+            "seconds": 255.0
+          },
+          {
+            "name": "Run actions/setup-python@v5",
+            "seconds": 8.0
+          },
+          {
+            "name": "Run actions/setup-node@v4",
+            "seconds": 4.0
+          },
+          {
+            "name": "install isolated pack runner",
+            "seconds": 3.0
+          },
+          {
+            "name": "download the authoritative semantic plan",
+            "seconds": 0.0
+          },
+          {
+            "name": "download the planner's changed-file list",
+            "seconds": 1.0
+          },
+          {
+            "name": "publish the changed-file handle",
+            "seconds": 0.0
+          },
+          {
+            "name": "validate and run legacy CI pack",
+            "seconds": 1208.0
+          },
+          {
+            "name": "publish this pack's raw semantic fragment",
+            "seconds": 1.0
+          },
+          {
+            "name": "Post Run actions/setup-node@v4",
+            "seconds": 0.0
+          },
+          {
+            "name": "Post Run actions/setup-python@v5",
+            "seconds": 0.0
+          },
+          {
+            "name": "Post Run actions/checkout@v4",
+            "seconds": 0.0
+          },
+          {
+            "name": "Complete job",
+            "seconds": 0.0
+          }
+        ]
+      },
+      {
+        "name": "ci-pack-1",
+        "wall_seconds": 1718.0,
+        "started_at": "2026-10-19T21:04:03Z",
+        "completed_at": "2026-10-19T21:32:41Z",
+        "steps": [
+          {
+            "name": "Set up job",
+            "seconds": 1.0
+          },
+          {
+            "name": "Run actions/checkout@v4",
+            "seconds": 222.0
+          },
+          {
+            "name": "Run actions/setup-python@v5",
+            "seconds": 7.0
+          },
+          {
+            "name": "Run actions/setup-node@v4",
+            "seconds": 4.0
+          },
+          {
+            "name": "install isolated pack runner",
+            "seconds": 4.0
+          },
+          {
+            "name": "download the authoritative semantic plan",
+            "seconds": 0.0
+          },
+          {
+            "name": "download the planner's changed-file list",
+            "seconds": 1.0
+          },
+          {
+            "name": "publish the changed-file handle",
+            "seconds": 0.0
+          },
+          {
+            "name": "validate and run legacy CI pack",
+            "seconds": 1475.0
+          },
+          {
+            "name": "publish this pack's raw semantic fragment",
+            "seconds": 1.0
+          },
+          {
+            "name": "Post Run actions/setup-node@v4",
+            "seconds": 0.0
+          },
+          {
+            "name": "Post Run actions/setup-python@v5",
+            "seconds": 0.0
+          },
+          {
+            "name": "Post Run actions/checkout@v4",
+            "seconds": 0.0
+          },
+          {
+            "name": "Complete job",
+            "seconds": 1.0
+          }
+        ]
+      },
+      {
+        "name": "ci-pack-8",
+        "wall_seconds": 2168.0,
+        "started_at": "2026-10-19T21:04:04Z",
+        "completed_at": "2026-10-19T21:40:12Z",
+        "steps": [
+          {
+            "name": "Set up job",
+            "seconds": 2.0
+          },
+          {
+            "name": "Run actions/checkout@v4",
+            "seconds": 236.0
+          },
+          {
+            "name": "Run actions/setup-python@v5",
+            "seconds": 8.0
+          },
+          {
+            "name": "Run actions/setup-node@v4",
+            "seconds": 4.0
+          },
+          {
+            "name": "install isolated pack runner",
+            "seconds": 4.0
+          },
+          {
+            "name": "download the authoritative semantic plan",
+            "seconds": 1.0
+          },
+          {
+            "name": "download the planner's changed-file list",
+            "seconds": 1.0
+          },
+          {
+            "name": "publish the changed-file handle",
+            "seconds": 0.0
+          },
+          {
+            "name": "validate and run legacy CI pack",
+            "seconds": 1906.0
+          },
+          {
+            "name": "publish this pack's raw semantic fragment",
+            "seconds": 1.0
+          },
+          {
+            "name": "Post Run actions/setup-node@v4",
+            "seconds": 0.0
+          },
+          {
+            "name": "Post Run actions/setup-python@v5",
+            "seconds": 0.0
+          },
+          {
+            "name": "Post Run actions/checkout@v4",
+            "seconds": 1.0
+          },
+          {
+            "name": "Complete job",
+            "seconds": 0.0
+          }
+        ]
+      },
+      {
+        "name": "ci-pack-7",
+        "wall_seconds": 1462.0,
+        "started_at": "2026-10-19T21:04:04Z",
+        "completed_at": "2026-10-19T21:28:26Z",
+        "steps": [
+          {
+            "name": "Set up job",
+            "seconds": 2.0
+          },
+          {
+            "name": "Run actions/checkout@v4",
+            "seconds": 370.0
+          },
+          {
+            "name": "Run actions/setup-python@v5",
+            "seconds": 8.0
+          },
+          {
+            "name": "Run actions/setup-node@v4",
+            "seconds": 4.0
+          },
+          {
+            "name": "install isolated pack runner",
+            "seconds": 3.0
+          },
+          {
+            "name": "download the authoritative semantic plan",
+            "seconds": 1.0
+          },
+          {
+            "name": "download the planner's changed-file list",
+            "seconds": 1.0
+          },
+          {
+            "name": "publish the changed-file handle",
+            "seconds": 0.0
+          },
+          {
+            "name": "validate and run legacy CI pack",
+            "seconds": 1066.0
+          },
+          {
+            "name": "publish this pack's raw semantic fragment",
+            "seconds": 1.0
+          },
+          {
+            "name": "Post Run actions/setup-node@v4",
+            "seconds": 0.0
+          },
+          {
+            "name": "Post Run actions/setup-python@v5",
+            "seconds": 0.0
+          },
+          {
+            "name": "Post Run actions/checkout@v4",
+            "seconds": 1.0
+          },
+          {
+            "name": "Complete job",
+            "seconds": 0.0
+          }
+        ]
+      },
+      {
+        "name": "ci-pack-4",
+        "wall_seconds": 2054.0,
+        "started_at": "2026-10-19T21:04:04Z",
+        "completed_at": "2026-10-19T21:38:18Z",
+        "steps": [
+          {
+            "name": "Set up job",
+            "seconds": 1.0
+          },
+          {
+            "name": "Run actions/checkout@v4",
+            "seconds": 285.0
+          },
+          {
+            "name": "Run actions/setup-python@v5",
+            "seconds": 7.0
+          },
+          {
+            "name": "Run actions/setup-node@v4",
+            "seconds": 5.0
+          },
+          {
+            "name": "install isolated pack runner",
+            "seconds": 3.0
+          },
+          {
+            "name": "download the authoritative semantic plan",
+            "seconds": 1.0
+          },
+          {
+            "name": "download the planner's changed-file list",
+            "seconds": 1.0
+          },
+          {
+            "name": "publish the changed-file handle",
+            "seconds": 0.0
+          },
+          {
+            "name": "validate and run legacy CI pack",
+            "seconds": 1744.0
+          },
+          {
+            "name": "publish this pack's raw semantic fragment",
+            "seconds": 2.0
+          },
+          {
+            "name": "Post Run actions/setup-node@v4",
+            "seconds": 0.0
+          },
+          {
+            "name": "Post Run actions/setup-python@v5",
+            "seconds": 0.0
+          },
+          {
+            "name": "Post Run actions/checkout@v4",
+            "seconds": 0.0
+          },
+          {
+            "name": "Complete job",
+            "seconds": 0.0
+          }
+        ]
+      },
+      {
+        "name": "ci-pack-6",
+        "wall_seconds": 1583.0,
+        "started_at": "2026-10-19T21:04:03Z",
+        "completed_at": "2026-10-19T21:30:26Z",
+        "steps": [
+          {
+            "name": "Set up job",
+            "seconds": 2.0
+          },
+          {
+            "name": "Run actions/checkout@v4",
+            "seconds": 245.0
+          },
+          {
+            "name": "Run actions/setup-python@v5",
+            "seconds": 7.0
+          },
+          {
+            "name": "Run actions/setup-node@v4",
+            "seconds": 5.0
+          },
+          {
+            "name": "install isolated pack runner",
+            "seconds": 3.0
+          },
+          {
+            "name": "download the authoritative semantic plan",
+            "seconds": 2.0
+          },
+          {
+            "name": "download the planner's changed-file list",
+            "seconds": 1.0
+          },
+          {
+            "name": "publish the changed-file handle",
+            "seconds": 0.0
+          },
+          {
+            "name": "validate and run legacy CI pack",
+            "seconds": 1312.0
+          },
+          {
+            "name": "publish this pack's raw semantic fragment",
+            "seconds": 1.0
+          },
+          {
+            "name": "Post Run actions/setup-node@v4",
+            "seconds": 0.0
+          },
+          {
+            "name": "Post Run actions/setup-python@v5",
+            "seconds": 0.0
+          },
+          {
+            "name": "Post Run actions/checkout@v4",
+            "seconds": 1.0
+          },
+          {
+            "name": "Complete job",
+            "seconds": 0.0
+          }
+        ]
+      },
+      {
+        "name": "ci-pack-2",
+        "wall_seconds": 1332.0,
+        "started_at": "2026-10-19T21:04:04Z",
+        "completed_at": "2026-10-19T21:26:16Z",
+        "steps": [
+          {
+            "name": "Set up job",
+            "seconds": 2.0
+          },
+          {
+            "name": "Run actions/checkout@v4",
+            "seconds": 207.0
+          },
+          {
+            "name": "Run actions/setup-python@v5",
+            "seconds": 8.0
+          },
+          {
+            "name": "Run actions/setup-node@v4",
+            "seconds": 5.0
+          },
+          {
+            "name": "install isolated pack runner",
+            "seconds": 3.0
+          },
+          {
+            "name": "download the authoritative semantic plan",
+            "seconds": 1.0
+          },
+          {
+            "name": "download the planner's changed-file list",
+            "seconds": 1.0
+          },
+          {
+            "name": "publish the changed-file handle",
+            "seconds": 0.0
+          },
+          {
+            "name": "validate and run legacy CI pack",
+            "seconds": 1061.0
+          },
+          {
+            "name": "publish this pack's raw semantic fragment",
+            "seconds": 1.0
+          },
+          {
+            "name": "Post Run actions/setup-node@v4",
+            "seconds": 0.0
+          },
+          {
+            "name": "Post Run actions/setup-python@v5",
+            "seconds": 1.0
+          },
+          {
+            "name": "Post Run actions/checkout@v4",
+            "seconds": 0.0
+          },
+          {
+            "name": "Complete job",
+            "seconds": 0.0
+          }
+        ]
+      },
+      {
+        "name": "ci-pack-10",
+        "wall_seconds": 1837.0,
+        "started_at": "2026-10-19T21:04:04Z",
+        "completed_at": "2026-10-19T21:34:41Z",
+        "steps": [
+          {
+            "name": "Set up job",
+            "seconds": 2.0
+          },
+          {
+            "name": "Run actions/checkout@v4",
+            "seconds": 250.0
+          },
+          {
+            "name": "Run actions/setup-python@v5",
+            "seconds": 11.0
+          },
+          {
+            "name": "Run actions/setup-node@v4",
+            "seconds": 4.0
+          },
+          {
+            "name": "install isolated pack runner",
+            "seconds": 3.0
+          },
+          {
+            "name": "download the authoritative semantic plan",
+            "seconds": 1.0
+          },
+          {
+            "name": "download the planner's changed-file list",
+            "seconds": 1.0
+          },
+          {
+            "name": "publish the changed-file handle",
+            "seconds": 0.0
+          },
+          {
+            "name": "validate and run legacy CI pack",
+            "seconds": 1558.0
+          },
+          {
+            "name": "publish this pack's raw semantic fragment",
+            "seconds": 1.0
+          },
+          {
+            "name": "Post Run actions/setup-node@v4",
+            "seconds": 0.0
+          },
+          {
+            "name": "Post Run actions/setup-python@v5",
+            "seconds": 0.0
+          },
+          {
+            "name": "Post Run actions/checkout@v4",
+            "seconds": 1.0
+          },
+          {
+            "name": "Complete job",
+            "seconds": 0.0
+          }
+        ]
+      },
+      {
+        "name": "ci-pack-3",
+        "wall_seconds": 1061.0,
+        "started_at": "2026-10-19T21:04:04Z",
+        "completed_at": "2026-10-19T21:21:45Z",
+        "steps": [
+          {
+            "name": "Set up job",
+            "seconds": 3.0
+          },
+          {
+            "name": "Run actions/checkout@v4",
+            "seconds": 217.0
+          },
+          {
+            "name": "Run actions/setup-python@v5",
+            "seconds": 9.0
+          },
+          {
+            "name": "Run actions/setup-node@v4",
+            "seconds": 4.0
+          },
+          {
+            "name": "install isolated pack runner",
+            "seconds": 3.0
+          },
+          {
+            "name": "download the authoritative semantic plan",
+            "seconds": 1.0
+          },
+          {
+            "name": "download the planner's changed-file list",
+            "seconds": 1.0
+          },
+          {
+            "name": "publish the changed-file handle",
+            "seconds": 0.0
+          },
+          {
+            "name": "validate and run legacy CI pack",
+            "seconds": 818.0
+          },
+          {
+            "name": "publish this pack's raw semantic fragment",
+            "seconds": 1.0
+          },
+          {
+            "name": "Post Run actions/setup-node@v4",
+            "seconds": 0.0
+          },
+          {
+            "name": "Post Run actions/setup-python@v5",
+            "seconds": 0.0
+          },
+          {
+            "name": "Post Run actions/checkout@v4",
+            "seconds": 0.0
+          },
+          {
+            "name": "Complete job",
+            "seconds": 0.0
+          }
+        ]
+      },
+      {
+        "name": "ci-pack-5",
+        "wall_seconds": 2379.0,
+        "started_at": "2026-10-19T21:04:03Z",
+        "completed_at": "2026-10-19T21:43:42Z",
+        "steps": [
+          {
+            "name": "Set up job",
+            "seconds": 2.0
+          },
+          {
+            "name": "Run actions/checkout@v4",
+            "seconds": 210.0
+          },
+          {
+            "name": "Run actions/setup-python@v5",
+            "seconds": 8.0
+          },
+          {
+            "name": "Run actions/setup-node@v4",
+            "seconds": 5.0
+          },
+          {
+            "name": "install isolated pack runner",
+            "seconds": 4.0
+          },
+          {
+            "name": "download the authoritative semantic plan",
+            "seconds": 1.0
+          },
+          {
+            "name": "download the planner's changed-file list",
+            "seconds": 0.0
+          },
+          {
+            "name": "publish the changed-file handle",
+            "seconds": 0.0
+          },
+          {
+            "name": "validate and run legacy CI pack",
+            "seconds": 2144.0
+          },
+          {
+            "name": "publish this pack's raw semantic fragment",
+            "seconds": 1.0
+          },
+          {
+            "name": "Post Run actions/setup-node@v4",
+            "seconds": 0.0
+          },
+          {
+            "name": "Post Run actions/setup-python@v5",
+            "seconds": 0.0
+          },
+          {
+            "name": "Post Run actions/checkout@v4",
+            "seconds": 0.0
+          },
+          {
+            "name": "Complete job",
+            "seconds": 0.0
+          }
+        ]
+      },
+      {
+        "name": "ci-pack-9",
+        "wall_seconds": 1382.0,
+        "started_at": "2026-10-19T21:04:04Z",
+        "completed_at": "2026-10-19T21:27:06Z",
+        "steps": [
+          {
+            "name": "Set up job",
+            "seconds": 1.0
+          },
+          {
+            "name": "Run actions/checkout@v4",
+            "seconds": 219.0
+          },
+          {
+            "name": "Run actions/setup-python@v5",
+            "seconds": 8.0
+          },
+          {
+            "name": "Run actions/setup-node@v4",
+            "seconds": 4.0
+          },
+          {
+            "name": "install isolated pack runner",
+            "seconds": 3.0
+          },
+          {
+            "name": "download the authoritative semantic plan",
+            "seconds": 2.0
+          },
+          {
+            "name": "download the planner's changed-file list",
+            "seconds": 0.0
+          },
+          {
+            "name": "publish the changed-file handle",
+            "seconds": 0.0
+          },
+          {
+            "name": "validate and run legacy CI pack",
+            "seconds": 1137.0
+          },
+          {
+            "name": "publish this pack's raw semantic fragment",
+            "seconds": 1.0
+          },
+          {
+            "name": "Post Run actions/setup-node@v4",
+            "seconds": 0.0
+          },
+          {
+            "name": "Post Run actions/setup-python@v5",
+            "seconds": 1.0
+          },
+          {
+            "name": "Post Run actions/checkout@v4",
+            "seconds": 0.0
+          },
+          {
+            "name": "Complete job",
+            "seconds": 0.0
+          }
+        ]
+      },
+      {
+        "name": "trusted-ci",
+        "wall_seconds": 0.0,
+        "started_at": "2026-10-19T21:04:01Z",
+        "completed_at": "2026-10-19T21:04:01Z",
+        "steps": []
+      },
+      {
+        "name": "ci-gate",
+        "wall_seconds": 12.0,
+        "started_at": "2026-10-19T21:44:03Z",
+        "completed_at": "2026-10-19T21:44:15Z",
+        "steps": [
+          {
+            "name": "Set up job",
+            "seconds": 1.0
+          },
+          {
+            "name": "check out the one shared semantic-proof law",
+            "seconds": 3.0
+          },
+          {
+            "name": "download the authoritative semantic plan",
+            "seconds": 0.0
+          },
+          {
+            "name": "download every raw semantic pack fragment",
+            "seconds": 1.0
+          },
+          {
+            "name": "reconcile complete semantic evidence",
+            "seconds": 1.0
+          },
+          {
+            "name": "publish final semantic evidence",
+            "seconds": 1.0
+          },
+          {
+            "name": "summarize semantic verdict",
+            "seconds": 0.0
+          },
+          {
+            "name": "enforce semantic verdict",
+            "seconds": 0.0
+          },
+          {
+            "name": "enforce contract-delta verdict",
+            "seconds": 0.0
+          },
+          {
+            "name": "Post check out the one shared semantic-proof law",
+            "seconds": 0.0
+          },
+          {
+            "name": "Complete job",
+            "seconds": 0.0
+          }
+        ]
+      }
+    ]
+  },
+  "retained_ancestry_notices": [
+    "ci-pack-8\tvalidate and run legacy CI pack\t2026-10-19T21:22:00.0409119Z ##[notice]exact tested-tree ancestry incomplete at depth 2; deepening to 8",
+    "ci-pack-4\tvalidate and run legacy CI pack\t2026-10-19T21:27:05.8679856Z ##[notice]exact tested-tree ancestry incomplete at depth 2; deepening to 8",
+    "ci-pack-6\tvalidate and run legacy CI pack\t2026-10-19T21:08:39.7665767Z ##[notice]exact tested-tree ancestry incomplete at depth 2; deepening to 8",
+    "ci-pack-10\tvalidate and run legacy CI pack\t2026-10-19T21:08:41.1077333Z ##[notice]exact tested-tree ancestry incomplete at depth 2; deepening to 8",
+    "ci-pack-10\tvalidate and run legacy CI pack\t2026-10-19T21:31:56.0396276Z ##[notice]exact tested-tree ancestry already complete; retaining local history",
+    "ci-pack-5\tvalidate and run legacy CI pack\t2026-10-19T21:39:40.6425133Z ##[notice]exact tested-tree ancestry incomplete at depth 2; deepening to 8"
+  ],
+  "command_total_seconds": 15075.190283,
+  "install_total_seconds": 1679.589295,
+  "install_groups": 177,
+  "comparison_to_prior_global": {
+    "other": "/Volumes/Mastermind/ci-pack-throughput-20261019/post-plan-39309256542/ci-plan.json",
+    "same_selected": true,
+    "changed_definitions": [
+      "fif-kernel-guards",
+      "prelaunch-hardening",
+      "research-vault"
+    ],
+    "added": [],
+    "removed": []
+  },
+  "natural_snapshot": {
+    "at": "2026-10-19T21:54Z",
+    "discovered": 1,
+    "pending": 1,
+    "completed": 0
+  },
+  "limitations": [
+    "One hosted reuse notice proves behavior, not counterfactual saved time.",
+    "Three execution definitions differ from prior natural 258-job global run; no exact proof match.",
+    "No causal fleet p95 gain, cost neutrality or 30 percent target established."
+  ]
+}

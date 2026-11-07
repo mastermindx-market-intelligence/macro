@@ -1,0 +1,7 @@
+{
+  "observed_at": "2026-10-20T19:13:26.369073+00:00",
+  "state": "PREWRITE_REFUSAL",
+  "source_sha256": "e6b21e3d87a360afccfba2fff9ee87ae40ca6eaece0059112cc173132a772443",
+  "reason": "ticker-news-qbus has same dependency added independently by both parents; raw union can contain both occurrences. Max-parent multiplicity assertion was too strong. No output journal, backup or worktree writes occurred.",
+  "next": "Preserve exact raw hunk union and assert every multiplicity falls between max-parent and additive-parent-minus-base; do not delete or normalize declarations"
+}

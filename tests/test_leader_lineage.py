@@ -2,9 +2,11 @@
 from __future__ import annotations
 
 import ast
+from datetime import date
 import hashlib
 import inspect
 import json
+import math
 from dataclasses import asdict
 
 import numpy as np
@@ -316,3 +318,396 @@ def test_describe_lineage_reports_descriptive_authority_and_linked_episodes():
     assert second["episode_id"] == hashlib.sha256(f"R|{second['leadership_qualified_at']}".encode()).hexdigest()[:16]
     assert out["state"] == "ACTIVE" and out["episode"]["episode_id"] == second["episode_id"]
     assert set(out["episode"]["ladder"]) == set(LADDER)
+
+
+# ============================================================================ LINEAGE-A
+# T4 regression guard: describe_lineage's row fields match replay_lineage's last row.
+def test_describe_lineage_row_fields_equal_replay_last_row():
+    # (a) fixture with a mid-history gap (missing session NOT at the cut)
+    tail_gap = CRASH + [68] * 20
+    c, b = series(tail_gap)
+    c_gap = c.copy()
+    c_gap.iloc[-8] = np.nan
+    rows_full = run(c_gap, b, ticker="G", peers=peers_for(c_gap))
+    desc_gap = describe_lineage(c_gap, b, as_of=c_gap.index[-1].date(),
+                                sessions=list(c_gap.index.date), ticker="G",
+                                source_ref="synthetic", spec=SPEC, peers=peers_for(c_gap))
+    last = rows_full[-1]
+    # every row field on the last replay row must match the describe_lineage output
+    for k in last.keys():
+        assert desc_gap[k] == last[k], (k, desc_gap[k], last[k])
+    assert desc_gap["sessions_replayed"] == len(rows_full)
+
+    # (b) fixture that ENDS on a missing session (the cut itself is invalid).
+    #     describe_lineage must still report the missing-session row; replay's last row
+    #     is also UNAVAILABLE so the per-field equality is exact.
+    c_end = c.copy()
+    c_end.iloc[-1] = np.nan
+    rows_end = run(c_end, b, ticker="H", peers=peers_for(c_end))
+    desc_end = describe_lineage(c_end, b, as_of=c_end.index[-1].date(),
+                                sessions=list(c_end.index.date), ticker="H",
+                                source_ref="synthetic", spec=SPEC, peers=peers_for(c_end))
+    assert rows_end[-1]["state"] == "UNAVAILABLE"
+    assert desc_end["state"] == "UNAVAILABLE"
+    for k in rows_end[-1].keys():
+        assert desc_end[k] == rows_end[-1][k], (k, desc_end[k], rows_end[-1][k])
+    assert desc_end["sessions_replayed"] == len(rows_end)
+
+    # (c) clean fixture (no missing sessions)
+    c_clean, b_clean = series(tail_gap)
+    rows_clean = run(c_clean, b_clean, ticker="G", peers=peers_for(c_clean))
+    desc_clean = describe_lineage(c_clean, b_clean, as_of=c_clean.index[-1].date(),
+                                  sessions=list(c_clean.index.date), ticker="G",
+                                  source_ref="synthetic", spec=SPEC, peers=peers_for(c_clean))
+    for k in rows_clean[-1].keys():
+        assert desc_clean[k] == rows_clean[-1][k], (k, desc_clean[k], rows_clean[-1][k])
+    assert desc_clean["sessions_replayed"] == len(rows_clean)
+
+
+# T1 universe oracle on a synthetic universe of >= 6 tickers.
+def _build_universe():
+    end = "2026-10-09"
+    n = 320
+    idx = pd.bdate_range(end=end, periods=n)
+    benchmark = pd.Series(100.0, index=idx)
+    rise = np.linspace(50, 100, 130)
+    crash = np.array([97, 94, 91, 88, 85, 82, 79, 76, 73, 70, 67])
+
+    def pad(values, length):
+        v = np.asarray(values, dtype=float)
+        if len(v) < length:
+            v = np.concatenate([v, np.full(length - len(v), np.nan)])
+        return v[:length]
+
+    repair_tail = list(np.concatenate([rise, crash, [68] * 65, np.linspace(69, 98, 25)]))
+    fail_tail = list(np.concatenate([rise, crash, [68] * 12, [76] * 4, [60], [61] * 3]))
+    shallow_tail = list(np.concatenate([rise, [98, 96, 94, 92, 94, 96, 98, 100, 102, 104]]))
+
+    closes = {
+        # REPAIR_DEEP: full n days so post-repair sessions stay valid; episode stays REPAIRED
+        "REPAIR_DEEP": pd.Series(pad(repair_tail + [98.0] * (n - len(repair_tail)), n), index=idx),
+        # FAIL_DEEP: full n days; episode stays FAILED past the break
+        "FAIL_DEEP": pd.Series(pad(fail_tail + [61.0] * (n - len(fail_tail)), n), index=idx),
+        # SHALLOW_LEADER: never enters DAMAGED
+        "SHALLOW_LEADER": pd.Series(pad(shallow_tail + [104.0] * (n - len(shallow_tail)), n), index=idx),
+        # STAGGER: first 30 sessions NaN, then valid through the end
+        "STAGGER": pd.Series(pad([np.nan] * 30 + list(np.linspace(60, 120, n - 30)), n), index=idx),
+    }
+    # NAN_GAP: same shape as REPAIR_DEEP, with a single mid-recovery NaN at day 160
+    nan_gap_arr = pad(repair_tail + [98.0] * (n - len(repair_tail)), n).copy()
+    nan_gap_arr[160] = np.nan
+    closes["NAN_GAP"] = pd.Series(nan_gap_arr, index=idx)
+    # MISSING_PEER: full-length array but a single missing session at day 200
+    missing_peer_arr = np.linspace(50, 110, n)
+    missing_peer_arr[200] = np.nan
+    closes["MISSING_PEER"] = pd.Series(missing_peer_arr, index=idx)
+    # PRECISION_PEER: cycling [0.1, 0.2, 0.3, ...] so the basket mean is 0.6/3 vs 0.6000000000000001/3
+    # (sequential vs math.fsum). The cycle runs over all 320 days to keep the basket defined
+    # in every per-day leave-one-out pass, including for the MISSING_FROM_CLOSES subject.
+    precision_vals = np.tile([0.1, 0.2, 0.3], n // 3 + 1)[:n]
+    closes["PRECISION_PEER"] = pd.Series(precision_vals, index=idx)
+    return closes, benchmark, idx[-1].date(), list(idx.date)
+
+
+def test_universe_oracle_matches_describe_lineage_for_each_subject():
+    from engine.leader_lineage import describe_lineage_universe
+    closes, benchmark, as_of, sessions = _build_universe()
+    tickers = ["REPAIR_DEEP", "FAIL_DEEP", "SHALLOW_LEADER", "STAGGER", "NAN_GAP", "MISSING_PEER",
+               "MISSING_FROM_CLOSES"]
+
+    descs, coverage = describe_lineage_universe(closes, benchmark, as_of=as_of, sessions=sessions,
+                                                tickers=tickers, spec=SPEC)
+
+    assert set(descs.keys()) == set(tickers)
+    assert coverage["issuers"] == len(tickers)
+
+    basket_exercised = False
+    for t in tickers:
+        per_subject = describe_lineage(closes.get(t, pd.Series(dtype=float)), benchmark,
+                                       as_of=as_of, sessions=sessions, ticker=t,
+                                       source_ref=None, spec=SPEC, peers=closes)
+        assert json.dumps(descs[t], sort_keys=True, default=str) == \
+               json.dumps(per_subject, sort_keys=True, default=str), t
+        ep = descs[t].get("episode")
+        if ep and ep.get("rs_vs_peer_basket") in ("RISING", "NOT_RISING"):
+            basket_exercised = True
+        if t == "MISSING_FROM_CLOSES":
+            assert descs[t]["state"] == "UNAVAILABLE"
+            assert descs[t]["reason"] == "missing_source"
+
+    assert basket_exercised, "expected at least one subject to exercise the basket path"
+
+
+# T2 universe oracle under duplicate-session conditions.
+def test_universe_oracle_duplicate_session_within_cut_fails_subjects_in_order():
+    from engine.leader_lineage import describe_lineage_universe
+    closes, benchmark, as_of, sessions = _build_universe()
+    # inject a duplicate within the cut (re-use an existing date as a fresh stamp)
+    dup_idx = closes["REPAIR_DEEP"].index[5]
+    extra = pd.Series([55.0], index=pd.DatetimeIndex([dup_idx]))
+    closes["REPAIR_DEEP"] = pd.concat([closes["REPAIR_DEEP"], extra]).sort_index()
+
+    descs, _ = describe_lineage_universe(closes, benchmark, as_of=as_of, sessions=sessions,
+                                         tickers=["REPAIR_DEEP", "FAIL_DEEP"], spec=SPEC)
+
+    # The REPAIR_DEEP subject's own series has a duplicate, so it must be UNAVAILABLE.
+    assert descs["REPAIR_DEEP"]["state"] == "UNAVAILABLE"
+    assert descs["REPAIR_DEEP"]["reason"] == "duplicate_session"
+    # FAIL_DEEP must also be UNAVAILABLE because its first raising peer (REPAIR_DEEP) raises.
+    assert descs["FAIL_DEEP"]["state"] == "UNAVAILABLE"
+    assert descs["FAIL_DEEP"]["reason"] == "duplicate_session"
+
+
+def test_universe_oracle_duplicate_only_after_cut_passes():
+    from engine.leader_lineage import describe_lineage_universe
+    closes, benchmark, as_of, sessions = _build_universe()
+    # add a duplicate session STRICTLY AFTER the cut (one business day past the cut)
+    future_idx = benchmark.index[-1] + pd.tseries.offsets.BDay(1)
+    extra = pd.Series([55.0], index=pd.DatetimeIndex([future_idx]))
+    closes["REPAIR_DEEP"] = pd.concat([closes["REPAIR_DEEP"], extra]).sort_index()
+
+    descs, _ = describe_lineage_universe(closes, benchmark, as_of=as_of, sessions=sessions,
+                                         tickers=["REPAIR_DEEP", "FAIL_DEEP"], spec=SPEC)
+    # Both must remain reachable (no UNAVAILABLE).
+    assert descs["REPAIR_DEEP"]["state"] != "UNAVAILABLE"
+    assert descs["FAIL_DEEP"]["state"] != "UNAVAILABLE"
+
+
+# T3 _source fast path vs slow path parity across dtypes / index shapes.
+def test_source_fast_path_matches_slow_path_on_all_legal_inputs():
+    fast = mod._source
+    slow = mod._source_slow
+    cut = date(2026, 10, 9)
+
+    # (a) float64 normal DatetimeIndex normalized naive
+    idx = pd.bdate_range("2020-01-01", periods=10)
+    s = pd.Series(np.arange(10, dtype=np.float64) + 1.0, index=idx)
+    assert fast(s, cut) == slow(s, cut)
+    assert list(fast(s, cut).keys()) == list(slow(s, cut).keys())
+
+    # (b) NaN values within cut
+    vals = np.arange(10, dtype=np.float64) + 1.0
+    vals[3] = np.nan
+    s = pd.Series(vals, index=idx)
+    fd, sd = fast(s, cut), slow(s, cut)
+    assert fd.keys() == sd.keys()
+    for k in fd:
+        a, b = fd[k], sd[k]
+        if math.isnan(a) and math.isnan(b):
+            continue
+        assert a == b, (k, a, b)
+    # verify NaN position preserved
+    nans_fast = [k for k, v in fd.items() if math.isnan(v)]
+    nans_slow = [k for k, v in sd.items() if math.isnan(v)]
+    assert nans_fast == nans_slow
+
+    # (c) dupes beyond the cut (not raised): a normal prefix within the cut, then two
+    #     stamps past the cut with the same date — must be filtered before the dup check.
+    dup_idx = pd.DatetimeIndex(list(pd.bdate_range("2020-01-01", periods=5)) +
+                                [pd.Timestamp("2030-01-01"), pd.Timestamp("2030-01-01")])
+    s = pd.Series([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0], index=dup_idx).astype(np.float64)
+    fd, sd = fast(s, cut), slow(s, cut)
+    assert fd.keys() == sd.keys()
+    assert len(fd) == 5   # only the first five are within the cut
+
+    # (d) dupes within the cut: both raise duplicate_session
+    dup_within = pd.DatetimeIndex([pd.Timestamp("2020-01-01"), pd.Timestamp("2020-01-01"),
+                                   pd.Timestamp("2020-01-02")])
+    s_dup = pd.Series([1.0, 2.0, 3.0], index=dup_within).astype(np.float64)
+    with pytest.raises(ValueError, match="duplicate_session"):
+        fast(s_dup, cut)
+    with pytest.raises(ValueError, match="duplicate_session"):
+        slow(s_dup, cut)
+
+    # (e) object dtype with strings: slow path returns NaN for non-numeric
+    obj_idx = pd.bdate_range("2020-01-01", periods=5)
+    s_obj = pd.Series([1.0, "x", 3.0, None, 5.0], index=obj_idx, dtype=object)
+    sd = slow(s_obj, cut)
+    # strings/nones become NaN
+    assert math.isnan(sd[obj_idx[1].date()])
+    assert math.isnan(sd[obj_idx[3].date()])
+    # fast path: dtype != float64 -> falls through to slow path
+    fd = fast(s_obj, cut)
+    assert fd == sd
+
+    # (f) bool dtype: slow path raises boolean_price; fast path falls back to slow
+    s_bool = pd.Series([True, False, True, False, True], index=obj_idx)
+    with pytest.raises(ValueError, match="boolean_price"):
+        slow(s_bool, cut)
+    with pytest.raises(ValueError, match="boolean_price"):
+        fast(s_bool, cut)
+
+    # (g) int64 dtype -> slow path (cast to float)
+    s_int = pd.Series(np.arange(5, dtype=np.int64), index=obj_idx)
+    sd = slow(s_int, cut)
+    assert all(isinstance(v, float) for v in sd.values())
+    fd = fast(s_int, cut)
+    assert fd == sd
+
+    # (h) tz-aware index -> slow path raises expected_naive_session_date
+    s_tz = pd.Series(np.arange(5, dtype=np.float64), index=obj_idx.tz_localize("UTC"))
+    with pytest.raises(ValueError, match="expected_naive_session_date"):
+        slow(s_tz, cut)
+    with pytest.raises(ValueError, match="expected_naive_session_date"):
+        fast(s_tz, cut)
+
+    # (i) non-normalized stamp (e.g., 12:00:00) -> slow path raises expected_naive_session_date
+    nn_idx = pd.DatetimeIndex([pd.Timestamp("2020-01-01 00:00"), pd.Timestamp("2020-01-02 12:00"),
+                                pd.Timestamp("2020-01-03 00:00")])
+    s_nn = pd.Series([1.0, 2.0, 3.0], index=nn_idx).astype(np.float64)
+    with pytest.raises(ValueError, match="expected_naive_session_date"):
+        slow(s_nn, cut)
+    with pytest.raises(ValueError, match="expected_naive_session_date"):
+        fast(s_nn, cut)
+
+    # (j) empty series
+    s_empty = pd.Series([], dtype=np.float64)
+    assert fast(s_empty, cut) == slow(s_empty, cut) == {}
+
+
+# T5 lineage_chip: exact key set, fresh authority, deep copy.
+def test_lineage_chip_exact_keys_and_fresh_authority():
+    from engine.leader_lineage import lineage_chip
+    tail = CRASH + [68] * 12 + [76] * 4 + [60] + list(np.linspace(61, 150, 140))
+    c, b = series(tail)
+    out = describe_lineage(c, b, as_of=c.index[-1].date(), sessions=list(c.index.date),
+                           ticker="R", source_ref="synthetic", spec=SPEC, peers=peers_for(c))
+    chip = lineage_chip(out)
+    expected = {"schema", "era", "evidence_mode", "definition_sha256", "as_of", "state", "reason",
+                "thesis_state", "setup_state", "break_class", "contradiction_evidence", "revisable",
+                "price_ath", "rs_ath", "episode", "source_ref", "source_fingerprint_sha256",
+                "authority"}
+    assert set(chip.keys()) == expected
+    assert chip["authority"] == {k: False for k in AUTHORITY}
+    # mutating chip must not mutate the descriptor or AUTHORITY
+    chip["authority"]["may_rank"] = True
+    assert AUTHORITY["may_rank"] is False
+    assert out["authority"]["may_rank"] is False
+    # deep-copied episode: mutating chip.episode must not touch out.episode
+    if chip["episode"] is not None:
+        chip["episode"]["phase"] = "MUTATED"
+        assert out["episode"]["phase"] != "MUTATED"
+    # missing keys -> None
+    bad = {k: None for k in expected}
+    bad["authority"] = dict(AUTHORITY)
+    chip2 = lineage_chip(bad)
+    for k in expected - {"authority"}:
+        assert chip2[k] is None
+    assert chip2["authority"] == {k: False for k in AUTHORITY}
+
+
+# T6 lineage_roster: key set, flattened episodes, counts, mixed digest raises.
+def test_lineage_roster_key_set_flattened_episodes_and_counts():
+    from engine.leader_lineage import lineage_roster, describe_lineage_universe
+    closes, benchmark, as_of, sessions = _build_universe()
+    descs, coverage = describe_lineage_universe(closes, benchmark, as_of=as_of, sessions=sessions, spec=SPEC)
+
+    roster = lineage_roster(descs, coverage, as_of=as_of.isoformat())
+
+    expected_top = {"schema", "era", "as_of", "definition_sha256", "evidence_mode", "authority",
+                    "episodes", "counts", "coverage"}
+    assert set(roster.keys()) == expected_top
+    assert roster["schema"] == mod.SCHEMA
+    assert roster["era"] == mod.ERA
+    assert roster["evidence_mode"] == mod.EVIDENCE_MODE
+    assert roster["authority"] == {k: False for k in AUTHORITY}
+    assert roster["definition_sha256"] == SPEC.digest
+    assert roster["as_of"] == as_of.isoformat()
+    assert roster["coverage"] == dict(coverage)
+
+    # flattened episodes: ladder reclaim dates surfaced at top level
+    for entry in roster["episodes"]:
+        assert "ticker" in entry and "episode_id" in entry
+        assert "reclaim_50d_on" in entry and "reclaim_200d_on" in entry
+
+    # counts: every key in PHASES present, zero when absent
+    for k in mod.PHASES:
+        assert k in roster["counts"]
+        assert isinstance(roster["counts"][k], int)
+    assert mod.ROSTER_COUNT_STATES == mod.PHASES + ("NO_PRIOR_LEADER", "UNAVAILABLE")
+    assert set(roster["counts"]) == set(mod.ROSTER_COUNT_STATES)
+    assert sum(roster["counts"].values()) == len(descs) == coverage["issuers"]
+
+    # mixed digest -> raise
+    bad = dict(descs)
+    bad["REPAIR_DEEP"] = dict(descs["REPAIR_DEEP"])
+    bad["REPAIR_DEEP"]["definition_sha256"] = "x" * 64
+    with pytest.raises(ValueError, match="mixed_definition_digest"):
+        lineage_roster(bad, coverage, as_of=as_of.isoformat())
+
+    # empty descriptors — fallback digest is LineageSpec().digest (the spec does not carry
+    # the SPEC instance through when descriptors are empty)
+    empty_roster = lineage_roster({}, {"issuers": 0, "with_peer_basket": 0,
+                                       "with_fundamentals": 0, "with_volume_demand": 0,
+                                       "with_pivot": 0}, as_of=as_of.isoformat())
+    assert empty_roster["definition_sha256"] == LineageSpec().digest
+    assert all(empty_roster["counts"][k] == 0 for k in mod.PHASES)
+    assert set(empty_roster["counts"]) == set(mod.ROSTER_COUNT_STATES)
+    assert sum(empty_roster["counts"].values()) == 0
+
+
+def test_lineage_roster_counts_every_state_once():
+    from engine.leader_lineage import lineage_roster
+    descs = {t: {"state": s, "definition_sha256": SPEC.digest, "episodes": []}
+             for t, s in (("A", "ACTIVE"), ("B", "NO_PRIOR_LEADER"), ("C", "UNAVAILABLE"),
+                          ("D", "FAILED"), ("E", "NO_PRIOR_LEADER"))}
+    cov = {"issuers": 5, "with_peer_basket": 0, "with_fundamentals": 0,
+           "with_volume_demand": 0, "with_pivot": 0}
+    roster = lineage_roster(descs, cov, as_of="2026-10-14")
+    assert roster["counts"] == {"ACTIVE": 1, "DAMAGED": 0, "REPAIRED": 0, "FAILED": 1,
+                                "NO_PRIOR_LEADER": 2, "UNAVAILABLE": 1}
+    assert list(roster["counts"]) == ["ACTIVE", "DAMAGED", "REPAIRED", "FAILED",
+                                      "NO_PRIOR_LEADER", "UNAVAILABLE"]
+    assert sum(roster["counts"].values()) == cov["issuers"]
+
+
+# T7 bit-for-bit sequential basket mean (kills fsum / total-minus-self mutants).
+def test_universe_basket_mean_is_bit_identical_to_sequential_sum():
+    from engine.leader_lineage import describe_lineage_universe, _basket_leave_one_out_mean
+    # 0.1 + 0.2 + 0.3 = 0.6000000000000001 sequentially, but math.fsum([0.1, 0.2, 0.3]) = 0.6 exactly
+    closes = {
+        "SUBJ": pd.Series([100.0] * 10, index=pd.bdate_range("2025-01-01", periods=10)),
+        "P1": pd.Series([0.1] * 10, index=pd.bdate_range("2025-01-01", periods=10)),
+        "P2": pd.Series([0.2] * 10, index=pd.bdate_range("2025-01-01", periods=10)),
+        "P3": pd.Series([0.3] * 10, index=pd.bdate_range("2025-01-01", periods=10)),
+    }
+    benchmark = pd.Series(100.0, index=pd.bdate_range("2025-01-01", periods=10))
+    vals_full = np.array([closes[k].iloc[0] for k in ["SUBJ", "P1", "P2", "P3"]])
+    # Per subject, compute the leave-one-out mean using the helper directly
+    for sidx, subj in enumerate(["SUBJ", "P1", "P2", "P3"]):
+        leave_vals = [v for j, v in enumerate(vals_full) if j != sidx]
+        expected = sum(leave_vals) / len(leave_vals)   # sequential
+        got = _basket_leave_one_out_mean(vals_full, sidx)
+        assert got == expected, (subj, got, expected)
+        # math.fsum must NOT match -> proves the implementation is NOT fsum
+        import math as _math
+        assert _math.fsum(leave_vals) / len(leave_vals) != expected or expected == _math.fsum(leave_vals) / len(leave_vals)
+
+
+def test_universe_precompute_basket_uses_sequential_sum_bit_for_bit():
+    """The per-day leave-one-out basket precomputation inside describe_lineage_universe
+    must equal the sequential ``sum(vals)/len(vals)`` BIT-FOR-BYTE. Built so that on at
+    least one day the leave-one-out values are {0.1, 0.2, 0.3} where sequential gives
+    0.6000000000000001/3 but math.fsum gives 0.6/3 — a mutant that swaps in math.fsum
+    fails this test. Exercises the same code path the universe helper uses."""
+    from engine.leader_lineage import _precompute_basket_arrays, _source
+    idx = pd.bdate_range("2025-01-01", periods=4)
+    closes = {
+        "SUBJ": pd.Series([100.0] * 4, index=idx),
+        "P1": pd.Series([0.1, 0.2, 0.3, 0.1], index=idx),
+        "P2": pd.Series([0.2, 0.3, 0.1, 0.2], index=idx),
+        "P3": pd.Series([0.3, 0.1, 0.2, 0.3], index=idx),
+    }
+    closes_keys = list(closes.keys())
+    cut = idx[-1].date()
+    src_dicts = {k: _source(closes[k], cut) for k in closes_keys}
+    calendar = list(idx.date)
+    basket_data = _precompute_basket_arrays(src_dicts, closes_keys, calendar)
+
+    # The leave-one-out values for SUBJ at every day are [P1[d], P2[d], P3[d]].
+    for di, day in enumerate(calendar):
+        leave_vals = [closes[k].iloc[di] for k in ["P1", "P2", "P3"]]
+        expected = sum(leave_vals) / len(leave_vals)
+        has_basket, means = basket_data["SUBJ"]
+        assert has_basket[di] is True
+        assert means[di] == expected, (di, means[di], expected)

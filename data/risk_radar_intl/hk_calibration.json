@@ -1,29 +1,29 @@
 {
   "prob_cal": {
     "h5": {
-      "calm": 0.035,
-      "watch": 0.08,
-      "caution": 0.09,
+      "calm": 0.001,
+      "watch": 0.001,
+      "caution": 0.001,
       "elevated": 0.1,
-      "risk-off": 0.16
+      "risk-off": 0.11
     },
     "h10": {
-      "calm": 0.11,
-      "watch": 0.17,
-      "caution": 0.19,
+      "calm": 0.001,
+      "watch": 0.001,
+      "caution": 0.003,
       "elevated": 0.22,
-      "risk-off": 0.35
+      "risk-off": 0.3
     },
     "h21": {
-      "calm": 0.311,
-      "watch": 0.311,
-      "caution": 0.34,
+      "calm": 0.308,
+      "watch": 0.308,
+      "caution": 0.308,
       "elevated": 0.42,
-      "risk-off": 0.54
+      "risk-off": 0.49
     }
   },
-  "n_graded": 25,
-  "brier_before": 0.1955,
-  "brier_after": 0.1949,
-  "updated": "2026-10-09T16:11:18+00:00"
+  "n_graded": 42,
+  "brier_before": 0.2192,
+  "brier_after": 0.2142,
+  "updated": "2026-11-06T15:42:44+00:00"
 }
