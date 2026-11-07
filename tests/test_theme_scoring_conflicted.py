@@ -630,12 +630,12 @@ class TestAllocationTemplateParses:
     def test_allocation_slow_book_copy_present(self):
         """FT-R11 replacement copy must be present in allocation.html.j2."""
         src = (TEMPLATE_DIR / "allocation.html.j2").read_text(encoding="utf-8")
-        assert "slow book" in src.lower() or "A slow book" in src
+        assert "Slow-moving view" in src
 
     def test_allocation_slow_book_zh_copy_present(self):
         """FT-R11 replacement ZH copy must be present in allocation.html.j2."""
         src = (TEMPLATE_DIR / "allocation.html.j2").read_text(encoding="utf-8")
-        assert "慢速账本" in src
+        assert "慢速视角" in src
 
 
 # ---------------------------------------------------------------------------

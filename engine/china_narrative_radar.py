@@ -302,12 +302,12 @@ def build_radar() -> dict:
 def _provenance() -> dict:
     return {
         "momentum": (
-            "descriptive positioning lens — one-regime in backtest (#754/#773), "
-            "NOT validated alpha"
+            "descriptive positioning lens, one market regime in backtest, "
+            "not a proven source of excess return"
         ),
         "global_ai": (
-            "validated weekly directional confirmer for CPO basket (#773, t=3.27 "
-            "cpo; pre-2024 split survives; other AI-supply baskets: partial/2024+-only/weak "
-            "— honesty tags per basket)"
+            "weekly directional confirmer for the CPO basket: t=3.27 over the "
+            "full 241-week backtest, t=1.36 over the 124 weeks from 2024; other "
+            "AI-supply baskets: partial, 2024+ only or weak, tagged per basket"
         ),
     }

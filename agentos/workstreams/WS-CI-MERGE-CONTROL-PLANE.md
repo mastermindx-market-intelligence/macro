@@ -330,6 +330,29 @@ waves:
       Python labels agree among treatments but physical performance is uncontrolled.
       Retain12packs/two weights/parser source. Next source slice requires qualified
       residual profiling and current FIF carrier custody; no speculative shards.
+  - id: W-ACCELERATION-20261104
+    title: Cross-repo minute-level CI plan and runner assessment (Mastermind #917)
+    status: in_progress
+    note: >
+      Fable CEO receiver session 6e051448 adjudicated the measured CI speed
+      options for Mastermind, Macro and Terminal on 2026-11-04. All three
+      repositories are public; Macro PR CI is hosted; the sweeper is bounded
+      by MAX_IN_FLIGHT_PR_PROOFS after a check-definition commit stales every
+      armed green, not by its cron. First packet delivered as Mastermind
+      PR 2044 (six-shard re-pin). Macro-side next actions X1 (scoped
+      staleness rule), X2 (adaptive in-flight cap) and X3 (native queue
+      premise re-test) are sequenced after PR 10652 and PR 10682.
+      Current continuation: agentos/handoffs/WS-CI-MERGE-CONTROL-PLANE-2026-11-04-ACCELERATION.md.
+      Chairman recommissioned end-to-end acceleration on 2026-11-07. The
+      consolidated architecture and acceptance ledger are Mastermind PR 2191,
+      docs/CI_LIGHTNING_ARCHITECTURE.md; they extend this wave and the existing
+      Phase 4 delivery plan. Incumbent Mastermind PR 2065 and Terminal PR 1297
+      were integrated in their original source workspaces and published for
+      native qualification. Five-minute full-suite p95 remains a proposed
+      acceptance target, not a measured outcome. Macro PR 10755 is merged;
+      preserve PR 10674 original uncertain effect and PR 10656 release hold.
+      The remaining Macro progression is 10674, then 10745, then incumbent
+      sweeper/update-branch reproof of 10735; do not duplicate or bulk-arm it.
 next_action: >
   W-TRANSPORT and W-PR-EVENT-CAUSALITY are closed. Do not reopen either for a
   new CI-speed, runner, branch-protection, or cancellation-system proposal.
