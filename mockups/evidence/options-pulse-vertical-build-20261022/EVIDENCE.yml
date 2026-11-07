@@ -1,0 +1,5 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/_options_pulse_css.j2
+  - templates/_options_pulse.html.j2
+manifest: mockups/evidence/options-pulse-vertical-build-20261022/manifest.json

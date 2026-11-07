@@ -58,6 +58,10 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "data/options_flow/signing_gate.json"
+      - "engine/options_pulse.py"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
       - "scripts/calibrate_rate_inflation.py"
       - "collectors/__init__.py"
       - "collectors/_drip.py"
@@ -295,6 +299,10 @@ jobs:
     # Keep generated-site identities even when absent from a local sparse checkout.
     # Canonical closure and ancestor tests enforce this exact curated scope.
     paths:
+      - "data/options_flow/signing_gate.json"
+      - "engine/options_pulse.py"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -1657,6 +1665,8 @@ jobs:
     # Suite/install/timeout and packing ceilings remain unchanged.
     scope: exclusive
     paths:
+      - "templates/_options_pulse.html.j2"
+      - "templates/_options_pulse_css.j2"
       - "admin/**"
       - "app/**"
       - "app/__init__.py"
@@ -2464,6 +2474,10 @@ jobs:
     # C19 WP32 P5/P6: generation-correction identity coherence + warm-cache denial silence on a synthetic ticker (offline).
     timeout-minutes: 10
     paths:
+      - "data/options_flow/signing_gate.json"
+      - "engine/options_pulse.py"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -3539,6 +3553,10 @@ jobs:
     # C19 WP22: DHI non-AAPL integrated-answer traversal on the published event workspace (offline).
     timeout-minutes: 10
     paths:
+      - "data/options_flow/signing_gate.json"
+      - "engine/options_pulse.py"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
       - "scripts/company_intelligence_publication_evidence.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
@@ -6197,6 +6215,10 @@ jobs:
     # suites read can still start this job.
     scope: exclusive
     paths:
+      - "data/options_flow/signing_gate.json"
+      - "engine/options_pulse.py"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
       - "engine/entry_radar/__init__.py"
       - "engine/entry_radar/replay/__init__.py"
       - "engine/entry_radar/replay/identity_observation_snapshot.py"
@@ -7614,6 +7636,9 @@ jobs:
     # Intelligence binder, crosswalk) and the app the transport mounts on.
     scope: exclusive
     paths:
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
+      - "data/options_flow/signing_gate.json"
       # Derived-closure coverage (compose with origin/main 7abc73b9): these
       # concrete paths enter this job's own import closure through upstream
       # modules. `scope: exclusive` means declared paths REPLACE inference,
@@ -8133,6 +8158,10 @@ jobs:
     # opaque fallback patterns to this hermetic job.
     scope: exclusive
     paths:
+      - "engine/options_pulse.py"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
+      - "data/options_flow/signing_gate.json"
       - "engine/neuralweb/options_selection_context.py"
       - "tests/test_options_selection_context.py"
       - "tests/fixtures/options_selection_question/terminal-mint-v1.json"
@@ -9263,6 +9292,9 @@ jobs:
     # 846 tracked / 127 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - "engine/options_pulse.py"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
       - "engine/options_statistics_state.py"
       - "engine/options_hub_retention.py"
       - "engine/options_scenario_capture.py"
@@ -10089,6 +10121,12 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/options_pulse.py"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
+      - "data/options_flow/signing_gate.json"
+      - "templates/_options_pulse.html.j2"
+      - "templates/_options_pulse_css.j2"
       - "scripts/build_aibrief.py"
       - "scripts/__init__.py"
       - "tests/__init__.py"
@@ -10408,6 +10446,8 @@ jobs:
           tests/test_stock_technicals.py
           tests/test_aibrief_page.py
           tests/test_aibrief_w4_panels.py
+          tests/test_options_pulse.py
+          tests/test_aibrief_options_pulse.py
           tests/test_aibrief_countdown_qual.py
           tests/test_market_reference.py
           tests/test_validated_claims_thirdparty.py
@@ -10644,6 +10684,10 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/options_pulse.py"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
+      - "data/options_flow/signing_gate.json"
       - "tests/test_intl_gs_dislocations_view.py"
       - "tests/intl_gs_dislocations_browser.test.cjs"
       - "tests/intl_gs_dislocations_fixture.py"
@@ -10996,6 +11040,10 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "data/options_flow/signing_gate.json"
+      - "engine/options_pulse.py"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
       - app/__init__.py
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py
@@ -11367,6 +11415,10 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "data/options_flow/signing_gate.json"
+      - "engine/options_pulse.py"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
       - app/__init__.py
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py
@@ -12373,6 +12425,10 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      - "data/options_flow/signing_gate.json"
+      - "engine/options_pulse.py"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -14897,6 +14953,9 @@ jobs:
     # narrow those.
     scope: exclusive
     paths:
+      - "data/options_flow/signing_gate.json"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py
       - "lib/rotation_observation_notification.py"
@@ -15482,6 +15541,10 @@ jobs:
     runs-on: ubuntu-latest
     scope: exclusive
     paths:
+      - "templates/_options_pulse.html.j2"
+      - "templates/_options_pulse_css.j2"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
       - app/__init__.py
       - app/deploy/ohlc_origin_known_hosts
       - "lib/us_cash_calendar.py"
@@ -16615,6 +16678,10 @@ jobs:
     # Dynamic Ontology assets and canonical navigation are included explicitly.
     scope: exclusive
     paths:
+      - "engine/options_pulse.py"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
+      - "data/options_flow/signing_gate.json"
       - "scripts/company_intelligence_publication_evidence.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
@@ -18634,6 +18701,11 @@ jobs:
     # new import fails the closure-coverage audit by name — add it here.
     scope: exclusive
     paths:
+      - "data/options_flow/signing_gate.json"
+      - "templates/_options_pulse.html.j2"
+      - "templates/_options_pulse_css.j2"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
       - "tests/test_uk_policy_brain.py"
       - "tests/fixtures/uk_policy_govuk_sample.json"
       - ".github/workflows/whitehouse-sentinel.yml"
@@ -19087,6 +19159,10 @@ jobs:
     # ticker-cluster time-confound law and the altdata_brain.py article3 convention.
     scope: exclusive
     paths:
+      - "engine/options_pulse.py"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
+      - "data/options_flow/signing_gate.json"
       - engine/entry_radar/replay/identity_observation_snapshot.py
       - engine/neuralweb/market_memory_identity_candidate.py
       - collectors/yahoo.py
@@ -20841,6 +20917,9 @@ jobs:
     # site/** and data/** edits otherwise do not select it, because they cannot
     # move its verdict.
     paths:
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
+      - "data/options_flow/signing_gate.json"
       - "collectors/__init__.py"
       - "collectors/base.py"
       - "collectors/yahoo.py"
@@ -22398,6 +22477,10 @@ jobs:
     # Static closure plus observed runtime config/test-support reads and package
     # initializers; AST/render fallbacks do not make the packing probes inputs.
     paths:
+      - "engine/options_pulse.py"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
+      - "data/options_flow/signing_gate.json"
       # SIC-D-B12 2026-10-21 (#7646): hazard-parity import closure (engine/hazard_parity -> scripts/build_hazard_panel + scripts/fit_cycle_hazard, their engine/W41 census reads).
       - "engine/grading_stats.py"
       - "engine/hazard_parity.py"
@@ -23041,6 +23124,10 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "data/options_flow/signing_gate.json"
+      - "engine/options_pulse.py"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
       - "engine/intl_transmission_evidence.py"
       - "config/intl_transmission_channels_v1.json"
       - "tests/test_intl_transmission_evidence.py"
@@ -23197,6 +23284,10 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/options_pulse.py"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
+      - "data/options_flow/signing_gate.json"
       - "app/__init__.py"
       - "app/deploy/ohlc_origin_known_hosts"
       - "collectors/__init__.py"
@@ -23636,6 +23727,10 @@ jobs:
     # Explicit measured closure: avoid unrelated opaque fallback selection.
     scope: exclusive
     paths:
+      - "data/options_flow/signing_gate.json"
+      - "engine/options_pulse.py"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
       - app/__init__.py
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py
@@ -23971,6 +24066,10 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      - "data/options_flow/signing_gate.json"
+      - "engine/options_pulse.py"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
       - engine/entry_radar/replay/identity_observation_snapshot.py
@@ -25214,6 +25313,10 @@ jobs:
     # Static closure plus observed runtime config/test-support reads and package
     # initializers; AST/render fallbacks do not make the packing probes inputs.
     paths:
+      - "engine/options_pulse.py"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
+      - "data/options_flow/signing_gate.json"
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
       # SIC-D-B12 2026-10-21 (#7646): hazard-parity import closure (engine/hazard_parity -> scripts/build_hazard_panel + scripts/fit_cycle_hazard, their engine/W41 census reads).
@@ -26569,6 +26672,10 @@ jobs:
     # RIC E0 frozen-spec retrospective runners (2026-10-14): M0 coherent requalification (H1, family ric_mri_coherent_requal_v1, n=13) and X0 release reaction (H3, family ric_x0_release_reaction_v1, n=8). Both ran ONCE against frozen protocols; these suites pin the runners' rules, receipts and committed results. Hermetic: synthetic fixtures and committed research/ receipts only, no network, no data/ reads or writes, no ledger writes.
     timeout-minutes: 10
     paths:
+      - "data/options_flow/signing_gate.json"
+      - "engine/options_pulse.py"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
       - "collectors/yahoo.py"
       - "config/delisted_symbols.yml"
       - "lib/delisted_symbols.py"
@@ -26987,6 +27094,10 @@ jobs:
     # Full tracked-tree import/read closure plus Jinja and committed page assets.
     # Preserve the existing 36 suites and add 6 guarded backend suites while removing unrelated opaque fallback fanout.
     paths:
+      - "data/options_flow/signing_gate.json"
+      - "engine/options_pulse.py"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
       - "engine/options_hub_retention.py"
       - "engine/entry_radar/__init__.py"
       - "engine/entry_radar/replay/__init__.py"
@@ -27624,6 +27735,9 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      - "engine/options_pulse.py"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "engine/intraday_greeks.py"
       - "engine/options_nbbo_cohort.py"
@@ -28476,6 +28590,9 @@ jobs:
     # 846 tracked / 74 concrete.
     scope: exclusive
     paths:
+      - "engine/options_pulse.py"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "engine/intraday_greeks.py"
       - "engine/options_nbbo_cohort.py"
@@ -29085,6 +29202,9 @@ jobs:
     # Derived with infer_job_scopes for both suites; no packing ceilings changed.
     scope: exclusive
     paths:
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
+      - "data/options_flow/signing_gate.json"
       - "app/**"
       - "collectors/**"
       - "config/**"
@@ -30230,6 +30350,7 @@ jobs:
     # (data/neuralweb/confluence_graph.json) would otherwise lose its owner.
     scope: exclusive
     paths:
+      - "site/gex/QQQ.json"
       - "collectors/__init__.py"
       - "collectors/base.py"
       - "collectors/yahoo.py"
@@ -30786,6 +30907,10 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "data/options_flow/signing_gate.json"
+      - "engine/options_pulse.py"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -31862,6 +31987,10 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "data/options_flow/signing_gate.json"
+      - "engine/options_pulse.py"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
       - app/__init__.py
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py
@@ -32662,6 +32791,9 @@ jobs:
     # the five scripts are closure imports, not tree scans.
     scope: exclusive
     paths:
+      - "data/options_flow/signing_gate.json"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
       - "scripts/company_intelligence_publication_evidence.py"
       - "tests/test_company_intelligence_event_workspace.py"
       - "tests/test_government_revenue_dossier_validation_memo.py"
@@ -33505,6 +33637,9 @@ jobs:
     # no named closure file was removed.
     scope: exclusive
     paths:
+      - "engine/options_pulse.py"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "engine/intraday_greeks.py"
       - "engine/options_nbbo_cohort.py"
@@ -34143,6 +34278,9 @@ jobs:
     # fallback domains that otherwise select unrelated homepage/Prophet probes.
     scope: exclusive
     paths:
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
+      - "data/options_flow/signing_gate.json"
       - "admin/**"
       - "app/**"
       - "collectors/**"
@@ -34783,6 +34921,10 @@ jobs:
     # it); the ceilings stay fixed.
     # The ancestor inits are declared so this job adds no census rows.
     paths:
+      - "engine/options_pulse.py"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
+      - "data/options_flow/signing_gate.json"
       - "app/__init__.py"
       - "app/deploy/ohlc_origin_known_hosts"
       - "collectors/__init__.py"
@@ -35389,6 +35531,10 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "data/options_flow/signing_gate.json"
+      - "engine/options_pulse.py"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
       - collectors/rate_futures.py
       - engine/rate_futures_repricing.py
       - engine/entry_radar/__init__.py
@@ -36737,6 +36883,8 @@ jobs:
     runs-on: ubuntu-latest
     scope: exclusive
     paths:
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
       - app/__init__.py
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py
@@ -36889,6 +37037,9 @@ jobs:
     # the declared-scope coverage audit re-checks them on every load.
     scope: exclusive
     paths:
+      - "engine/options_pulse.py"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
       - engine/rate_futures_repricing.py
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
@@ -40017,6 +40168,9 @@ jobs:
     # 846 tracked / 74 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - "engine/options_pulse.py"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "engine/intraday_greeks.py"
       - "engine/options_nbbo_cohort.py"
@@ -40568,6 +40722,10 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "data/options_flow/signing_gate.json"
+      - "engine/options_pulse.py"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -42233,6 +42391,10 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "data/options_flow/signing_gate.json"
+      - "engine/options_pulse.py"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
       # SIC-D-B12 2026-10-21 (#7646): hazard-parity import closure (engine/hazard_parity -> scripts/build_hazard_panel + scripts/fit_cycle_hazard, their engine/W41 census reads).
@@ -43898,6 +44060,10 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "data/options_flow/signing_gate.json"
+      - "engine/options_pulse.py"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -45172,6 +45338,10 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/options_pulse.py"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
+      - "data/options_flow/signing_gate.json"
       - "contracts/capital_structure_projection.schema.json"
       - "contracts/evidence_foundation/block.v1.schema.json"
       - "contracts/evidence_foundation/recipe.v1.schema.json"
@@ -47010,6 +47180,9 @@ jobs:
     # An unlisted closure file is an uncovered path. No tests/** catch-all.
     scope: exclusive
     paths:
+      - "data/options_flow/signing_gate.json"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
       - engine/entry_radar/replay/identity_observation_snapshot.py
@@ -47315,6 +47488,9 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
+      - "data/options_flow/signing_gate.json"
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
       - engine/entry_radar/replay/identity_observation_snapshot.py
@@ -48274,6 +48450,11 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/options_pulse.py"
+      - "lib/nyse_calendar.py"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
+      - "data/options_flow/signing_gate.json"
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
       - engine/entry_radar/replay/identity_observation_snapshot.py
@@ -48408,6 +48589,11 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/options_pulse.py"
+      - "lib/nyse_calendar.py"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
+      - "data/options_flow/signing_gate.json"
       - engine/__init__.py
       - engine/basket_breadth_divergence.py
       - engine/catalyst_tone.py
@@ -48984,6 +49170,10 @@ jobs:
     # test_curated_exclusive_scopes_cover_their_own_import_closure.
     timeout-minutes: 10
     paths:
+      - "data/options_flow/signing_gate.json"
+      - "engine/options_pulse.py"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
       - research/single_name_intelligence/common/**
       - research/single_name_intelligence/evaluation/**
       - research/single_name_intelligence/us_stress/**
@@ -49251,6 +49441,10 @@ jobs:
     # test_curated_exclusive_scopes_cover_their_own_import_closure.
     timeout-minutes: 20
     paths:
+      - "data/options_flow/signing_gate.json"
+      - "engine/options_pulse.py"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
       - "research/single_name_intelligence/**"
       - "contracts/single_name_intelligence/**"
       - "config/single_name_intelligence/**"
@@ -50058,6 +50252,10 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "data/options_flow/signing_gate.json"
+      - "engine/options_pulse.py"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
       - "scripts/calibrate_rate_inflation.py"
       - "collectors/__init__.py"
       - "collectors/_drip.py"
@@ -50488,6 +50686,10 @@ jobs:
     # The qledger-cluster-honest-ci code owner retains grader/readiness suites.
     scope: exclusive
     paths:
+      - "engine/options_pulse.py"
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
+      - "data/options_flow/signing_gate.json"
       - "admin/press_audience.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
@@ -52058,6 +52260,9 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "site/gex/QQQ.json"
+      - "site/options_intel_brief.json"
+      - "data/options_flow/signing_gate.json"
       - "admin/**"
       - "app/**"
       - "collectors/**"
