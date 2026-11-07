@@ -415,3 +415,126 @@ def test_native_purpose_cannot_be_set_in_an_owner_configuration_record(binding):
     save()
     with pytest.raises(owner.ApplicationFabricBindingError): make().inspect()
     assert events == []
+
+
+# The source-qualified AUTO implementations still require independent current
+# application data and capability authority before a credential can be opened.
+_AUTO_SOURCE_AUTHORITIES = (
+    ("shared_fabric", "native_fabric_application_auto_v1", None, "admin-orchestrator", "site_interactive"),
+    ("mastermind_text_fabric", "native_fabric_mastermind_text_auto_v1", "mastermind_text_fabric", "mastermind-text", "site_batch"),
+    ("mastermind_chat_fabric", "native_fabric_mastermind_chat_auto_v1", "mastermind_chat_fabric", "mastermind-chat", "site_interactive"),
+    ("macro_brain_fabric", "native_fabric_macro_brain_auto_v1", "macro_brain_fabric", "brain", "site_interactive"),
+    ("macro_ask_fabric", "native_fabric_macro_ask_auto_v1", "macro_ask_fabric", "ask-brain", "site_interactive"),
+    ("macro_batch_fabric", "native_fabric_macro_batch_auto_v1", None, "master-brain", "site_batch"),
+    ("macro_analysis_fabric", "native_fabric_macro_analysis_auto_v1", None, "cortex", "lobe_analysis"),
+    ("macro_portfolio_fabric", "native_fabric_macro_portfolio_auto_v1", None, "research-portfolio", "portfolio_analysis"),
+)
+
+
+def _configured_auto_source(binding, authority):
+    root, _, document, manifest, events, save, _, _ = binding
+    record, transport_id, service_mode, lane, workload = authority
+    base = owner._APPLICATION_FABRIC_TRANSPORTS[transport_id]
+    assert base.qualified and base.application_allowed
+    row = {key: getattr(base, key) for key in owner._APPLICATION_IDENTITY_FIELDS}
+    row.update(
+        transport_id=transport_id, enabled=True, application_allowed=True,
+        qualification=owner.PROFILE_QUALIFIED_CANARY,
+        qualification_ref="fixture:source-support-runtime-gates",
+        qualified_until=time.time() + 3600, admin_pool_view=False,
+        route_scope={"schema": "mastermind.application_route_scope.v1", "pools": ["go"]},
+    )
+    document["application_fabric_modes"] = {record: row}
+    if record != "shared_fabric":
+        shared_id = "native_fabric_application_auto_v1"
+        shared = owner._APPLICATION_FABRIC_TRANSPORTS[shared_id]
+        document["application_fabric_modes"]["shared_fabric"] = {
+            **row, **{key: getattr(shared, key) for key in owner._APPLICATION_IDENTITY_FIELDS},
+            "transport_id": shared_id, "enabled": False, "application_allowed": False,
+        }
+    capability = {
+        "capability_id": base.capability_id, "secret_ref": base.secret_ref,
+        "kill_state": "active", "allowed_lanes": [lane],
+    }
+    manifest["capabilities"] = [capability]
+    save()
+    factory = owner.make_application_fabric_factory(
+        mode_id="shared_fabric", lane=lane, root=root,
+        workload_cfg={"provider_order": ["fabric"], "workload_profile": workload},
+        service_mode_id=service_mode,
+    )
+    return factory, row, capability, document, manifest, events, save
+
+
+@pytest.mark.parametrize("authority", _AUTO_SOURCE_AUTHORITIES, ids=lambda row: row[0])
+@pytest.mark.parametrize("gate", [
+    "empty", "disabled", "unqualified", "permission", "reference", "expiry",
+    "capability_missing", "capability_killed", "capability_lane", "capability_ref",
+])
+def test_auto_source_support_cannot_supply_runtime_authority(binding, authority, gate):
+    factory, row, capability, document, manifest, events, save = _configured_auto_source(binding, authority)
+    assert factory.inspect() is not None
+    assert events == []
+    if gate == "empty":
+        document["application_fabric_modes"] = {}
+    elif gate == "disabled":
+        row["enabled"] = False
+    elif gate == "unqualified":
+        row["qualification"] = "UNQUALIFIED_PENDING_CANARY"
+    elif gate == "permission":
+        row["application_allowed"] = False
+    elif gate == "reference":
+        row["qualification_ref"] = None
+    elif gate == "expiry":
+        row["qualified_until"] = time.time() - 1
+    elif gate == "capability_missing":
+        manifest["capabilities"] = []
+    elif gate == "capability_killed":
+        capability["kill_state"] = "killed"
+    elif gate == "capability_lane":
+        capability["allowed_lanes"] = ["unrelated-consumer"]
+    elif gate == "capability_ref":
+        capability["secret_ref"] = "OTHER_SYNTHETIC_TOKEN"
+    save()
+    with pytest.raises(owner.ApplicationFabricBindingError):
+        factory.inspect()
+    with pytest.raises(owner.ApplicationFabricBindingError):
+        factory()
+    assert events == []
+
+
+@pytest.mark.parametrize("authority", _AUTO_SOURCE_AUTHORITIES, ids=lambda row: row[0])
+def test_auto_source_inspection_rechecks_real_capability_after_revocation(binding, authority):
+    factory, _, capability, _, _, events, save = _configured_auto_source(binding, authority)
+    inspection = factory.inspect()
+    assert inspection is not None
+    assert events == []
+    capability["kill_state"] = "killed"
+    save()
+    with pytest.raises(owner.ApplicationFabricBindingError):
+        factory.inspect()
+    with pytest.raises(owner.ApplicationFabricBindingError):
+        factory()
+    assert events == []
+
+
+@pytest.mark.parametrize("fault", ["empty", "disabled", "metadata_permission", "capability_killed", "capability_ref"])
+def test_auto_admin_metadata_requires_its_own_current_authority(binding, fault):
+    factory, row, capability, document, _, events, save = _configured_auto_source(
+        binding, _AUTO_SOURCE_AUTHORITIES[0]
+    )
+    row["admin_pool_view"] = True
+    if fault == "empty":
+        document["application_fabric_modes"] = {}
+    elif fault == "disabled":
+        row["enabled"] = False
+    elif fault == "metadata_permission":
+        row["admin_pool_view"] = False
+    elif fault == "capability_killed":
+        capability["kill_state"] = "killed"
+    elif fault == "capability_ref":
+        capability["secret_ref"] = "OTHER_SYNTHETIC_TOKEN"
+    save()
+    with pytest.raises(owner.ApplicationFabricBindingError):
+        factory.prepare_admin_pool_reader()
+    assert events == []

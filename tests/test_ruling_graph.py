@@ -426,9 +426,13 @@ def test_trusted_pc_route_requires_two_parent_tested_merge(tmp_path):
     assert "invalid base-replay identity" in rejected_replay.stdout
     assert git("rev-parse", "HEAD") in rejected_replay.stdout
 
-def test_cortex_private_usage_fixture_is_visible_and_exactly_classified(raw_data):
+@pytest.mark.parametrize("fixture_name", [
+    "test_cortex_auto_fabric_composition.py",
+    "test_metabolism_fabric_composition.py",
+])
+def test_private_usage_fixture_is_visible_and_exactly_classified(raw_data, fixture_name):
     """The real synthetic ledger assertions remain visible to the privacy owner."""
-    fixture = _REPO_ROOT / "tests" / "test_cortex_auto_fabric_composition.py"
+    fixture = _REPO_ROOT / "tests" / fixture_name
     findings = _conflict_mod._check_h2(
         raw_data, [fixture], _REPO_ROOT, _conflict_mod._load_allowlist(_REPO_ROOT)
     )
@@ -443,6 +447,9 @@ def test_cortex_private_usage_fixture_is_visible_and_exactly_classified(raw_data
     (("scripts", "production_writer.py"), "cost_basis"),
     (("tests", "test_cortex_auto_fabric_composition_near.py"), "cost_basis"),
     (("tests", "test_cortex_auto_fabric_composition.py"), "fill_price"),
+    (("tests", "test_metabolism_fabric_composition_near.py"), "cost_basis"),
+    (("tests", "test_metabolism_fabric_composition.py"), "fill_price"),
+    (("tests", "test_ruling_graph_near.py"), "cost_basis"),
 ])
 def test_private_usage_classification_does_not_exempt_other_publication(
     raw_data, tmp_path, parts, token,

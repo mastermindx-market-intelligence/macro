@@ -70,8 +70,7 @@ def auto_workloads(auto_services, monkeypatch):
     for record, row in state.records.items():
         transport_id = row["transport_id"]
         base = owner._APPLICATION_FABRIC_TRANSPORTS[transport_id]
-        selected = replace(base, base_url=f"http://127.0.0.1:{native.server.server_port}/v1",
-                           qualified=True, application_allowed=True)
+        selected = replace(base, base_url=f"http://127.0.0.1:{native.server.server_port}/v1")
         monkeypatch.setitem(owner._APPLICATION_FABRIC_TRANSPORTS, transport_id, selected)
         row.update({key: getattr(selected, key) for key in owner._APPLICATION_IDENTITY_FIELDS})
     state.bindings, state.grants = tuple(bindings), tuple(grants)
