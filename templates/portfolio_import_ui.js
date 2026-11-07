@@ -96,6 +96,7 @@
   var completed = false;
   var hardBlocked = false;
   var previousFocus = null;
+  var previewGeneration = 0;
 
   function api() { return window.PortfolioImport || null; }
   function store() {
@@ -114,6 +115,8 @@
   }
   function open() {
     var dlg = el('dlg-import'); if (!dlg || hardBlocked) return;
+    previewGeneration += 1;
+    var review = el('pfi_review'); if (review) review.disabled = false;
     previousFocus = document.activeElement;
     dlg.classList.add('open');
     document.documentElement.classList.add('mx5-dlg-lock');
@@ -124,6 +127,7 @@
   function close() {
     if (saving) return;
     var dlg = el('dlg-import'); if (!dlg) return;
+    previewGeneration += 1;
     dlg.classList.remove('open');
     document.documentElement.classList.remove('mx5-dlg-lock');
     if (previousFocus && previousFocus.focus) { try { previousFocus.focus(); } catch (e) {} }
@@ -180,11 +184,13 @@
   function parseReview() {
     var contract = api(), input = el('pfi_paste'), button = el('pfi_review');
     if (!contract || !input) { setStatus(L('failed'), 'bad'); return; }
+    var generation = ++previewGeneration;
     if (button) { button.disabled = true; button.textContent = L('reviewing'); }
     var load = window.SD && window.SD.loadIndexes
       ? window.SD.loadIndexes(['us', 'cn', 'hk', 'ca', 'intl'])
       : Promise.resolve(null);
     Promise.resolve(load).catch(function () { return null; }).then(function (index) {
+      if (generation !== previewGeneration) return;
       coverageMap = index && index.byTicker ? index.byTicker : null;
       draft = contract.parse(input.value, { isCovered: coverage });
       editErrors = [];
