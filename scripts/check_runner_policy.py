@@ -935,6 +935,10 @@ def evaluate(root: Path, registry_path: Path, workflows_dir: Path) -> list[Findi
             "HEAD_REPOSITORY": "${{ github.event.pull_request.head.repo.full_name }}",
             "BASE_REF": "${{ github.base_ref }}",
             "EVENT_PR_NUMBER": "${{ github.event.pull_request.number }}",
+            "EVENT_TESTED_SHA": "${{ github.sha }}",
+            "EVENT_BASE_SHA": "${{ github.event.pull_request.base.sha }}",
+            "EVENT_HEAD_SHA": "${{ github.event.pull_request.head.sha }}",
+            "EVENT_HEAD_REF": "${{ github.event.pull_request.head.ref }}",
             "DISPATCH_PR_NUMBER": "${{ inputs.pr_number }}",
             "REQUESTED_ROUTE": "${{ vars.CI_EXECUTION_ROUTE }}",
         }
@@ -948,12 +952,19 @@ def evaluate(root: Path, registry_path: Path, workflows_dir: Path) -> list[Findi
             'test "$HEAD_REPOSITORY" = "$REPOSITORY" || {',
             'test "$BASE_REF" = main || {',
             'test "$CALLER_WORKFLOW_REF" = "$expected_caller_ref" || {',
+            '[[ "$event_sha_value" =~ ^[0-9a-f]{40}$ ]] || {',
+            'test -n "$EVENT_HEAD_REF" || {',
+            'git check-ref-format --branch "$EVENT_HEAD_REF" >/dev/null || {',
         } <= gate_lines
         trust_outputs_are_exact = trust_gate.get("outputs") == {
             "control_sha": "${{ steps.admit.outputs.control_sha }}",
             "pr_number": "${{ steps.admit.outputs.pr_number }}",
             "mode": "${{ steps.admit.outputs.mode }}",
             "semantic_workflow": "${{ steps.admit.outputs.semantic_workflow }}",
+            "event_tested_sha": "${{ steps.admit.outputs.event_tested_sha }}",
+            "event_base_sha": "${{ steps.admit.outputs.event_base_sha }}",
+            "event_head_sha": "${{ steps.admit.outputs.event_head_sha }}",
+            "event_head_ref": "${{ steps.admit.outputs.event_head_ref }}",
             "execution_route": "${{ steps.admit.outputs.execution_route }}",
         }
         plan_text = str(plan_job)
