@@ -6,7 +6,7 @@
   "prior_published_head": "8d26633704b73dec6a948744cc2bdb28fb3beeb8",
   "member_count": 109,
   "aggregate_sha256": "be78e1816e40af5a99bddbf8d6ec883a51bed3fc906c00659cc7351c7afb6dd8",
-  "aggregate_rule": "SHA256 of sorted lines: member sha256 + space + relative path + LF",
+  "aggregate_rule": "SHA256 of lines ordered by member relative path: member sha256 + space + relative path + LF",
   "manifest_self_excluded": true,
   "members": [
     {
