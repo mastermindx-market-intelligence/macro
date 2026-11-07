@@ -677,6 +677,9 @@ class _ApplicationFabricTransport:
     native_recipe_digest: str | None = None
     metadata_read: bool = False
     automatic: bool = False
+    # Source-owned purpose classification. The wire protocol also carries
+    # ordinary HTTP inference and cannot establish native-agent authority.
+    execution_surface: str = "inference"
 
 
 # Closed application implementations remain held until independently qualified
@@ -799,6 +802,45 @@ _APPLICATION_FABRIC_TRANSPORTS = {
         provider_id=None, model=None, cost_basis="unknown",
         cap_id="fabric:macro_portfolio", capability_id="fabric_application_macro_portfolio",
         protocol="native_application_v1", automatic=True),
+    # Hermes primary turns use the same APPLICATION owner and exact native
+    # protocol. These are distinct internal service identities, not provider
+    # keys or enrollment. Ordinary application qualification remains held.
+    "native_go_hermes_secretary_v1": _ApplicationFabricTransport(
+        base_url="http://127.0.0.2:50142/v1",
+        secret_ref="HERMES_SECRETARY_FABRIC_APPLICATION_TOKEN",
+        provider_id="go",
+        model="deepseek-v4.1-flash",
+        cost_basis="unknown",
+        cap_id="fabric:go_hermes_secretary",
+        capability_id="fabric_application_go_hermes_secretary",
+        protocol="native_application_v1",
+        qualified=False,
+        application_allowed=False,
+        metadata_read=False,
+    ),
+    "native_go_hermes_meta_v1": _ApplicationFabricTransport(
+        base_url="http://127.0.0.3:50142/v1",
+        secret_ref="HERMES_META_FABRIC_APPLICATION_TOKEN",
+        provider_id="go",
+        model="deepseek-v4.1-flash",
+        cost_basis="unknown",
+        cap_id="fabric:go_hermes_meta",
+        capability_id="fabric_application_go_hermes_meta",
+        protocol="native_application_v1",
+        qualified=False,
+        application_allowed=False,
+        metadata_read=False,
+    ),
+    "native_fabric_hermes_secretary_auto_v1": _ApplicationFabricTransport(
+        base_url="http://127.0.0.2:50142/v1", secret_ref="HERMES_SECRETARY_FABRIC_APPLICATION_TOKEN",
+        provider_id=None, model=None, cost_basis="unknown",
+        cap_id="fabric:go_hermes_secretary", capability_id="fabric_application_go_hermes_secretary",
+        protocol="native_application_v1", automatic=True),
+    "native_fabric_hermes_meta_auto_v1": _ApplicationFabricTransport(
+        base_url="http://127.0.0.3:50142/v1", secret_ref="HERMES_META_FABRIC_APPLICATION_TOKEN",
+        provider_id=None, model=None, cost_basis="unknown",
+        cap_id="fabric:go_hermes_meta", capability_id="fabric_application_go_hermes_meta",
+        protocol="native_application_v1", automatic=True),
 }
 _APPLICATION_MODE_IDS = frozenset({"shared_fabric"})
 @dataclass(frozen=True)
@@ -823,6 +865,12 @@ _SERVICE_FABRIC_RELATIONS = {
         None, "lobe_analysis", None, "native_fabric_macro_analysis_auto_v1"),
     "macro_portfolio_fabric": _ServiceFabricRelation(
         None, "portfolio_analysis", None, "native_fabric_macro_portfolio_auto_v1"),
+    "hermes_secretary_fabric": _ServiceFabricRelation(
+        "hermes-secretary", "site_interactive", "native_go_hermes_secretary_v1",
+        "native_fabric_hermes_secretary_auto_v1"),
+    "hermes_meta_fabric": _ServiceFabricRelation(
+        "hermes-meta-ceo", "site_interactive", "native_go_hermes_meta_v1",
+        "native_fabric_hermes_meta_auto_v1"),
 }
 _APPLICATION_RECORD_KEYS = _APPLICATION_MODE_IDS | frozenset(_SERVICE_FABRIC_RELATIONS)
 _APPLICATION_ID = re.compile(r"\A[A-Za-z0-9][A-Za-z0-9._:/-]{0,127}\Z")
@@ -1029,17 +1077,32 @@ class ApplicationFabricFactory:
             cfg["workload_profile"] = self._profile
         return cfg
 
-    def workload_decision(self):
-        from engine.provider_workload_policy import HOST_PROFILE_ENV, decide_workload
-
-        decision = decide_workload(
-            self.workload_configuration(), host_profile=os.environ.get(HOST_PROFILE_ENV),
-            policy_path=self.root / "config/provider_workloads.v1.json",
+    def _decide_workload(self, transport, cfg):
+        from engine.provider_workload_policy import (
+            HOST_PROFILE_ENV, decide_native_workload, decide_workload,
         )
+
+        options = {"host_profile": os.environ.get(HOST_PROFILE_ENV),
+                   "policy_path": self.root / "config/provider_workloads.v1.json"}
+        if transport.execution_surface == "native_agent":
+            # The existing fixed native recipe remains mandatory. No native
+            # AUTO service authority or production qualification is invented.
+            if (transport.automatic or transport.protocol != "native_application_v1"
+                    or type(transport.native_recipe_digest) is not str
+                    or re.fullmatch(r"[0-9a-f]{64}", transport.native_recipe_digest) is None):
+                _application_refuse("fabric_application_native_purpose_contract_invalid")
+            return decide_native_workload(cfg, **options)
+        if transport.execution_surface != "inference":
+            _application_refuse("fabric_application_execution_surface_invalid")
+        decision = decide_workload(cfg, **options)
         # None is legacy migration, never permission to construct Fabric.
         if decision is None or decision.allowed_order != ("fabric",) or decision.denied_order:
             _application_refuse("fabric_application_workload_denied")
         return decision
+
+    def workload_decision(self):
+        mode = _application_fabric_mode(self._effective_record_id(), self.root)
+        return self._decide_workload(mode.transport, self.workload_configuration())
 
     def _eligibility(self, caller_cfg: Mapping[str, Any] | None = None):
         """The ONE owner/workload/capability/qualification check set.
@@ -1057,34 +1120,23 @@ class ApplicationFabricFactory:
         """
         self._request_timeout(caller_cfg)
         mode = _application_fabric_mode(self._effective_record_id(), self.root)
-        decision = self.workload_decision()
+        transport = mode.transport
+        decision = self._decide_workload(transport, self.workload_configuration())
         if caller_cfg is not None:
             if not isinstance(caller_cfg, Mapping):
                 _application_refuse("fabric_application_workload_invalid")
             if "workload_profile" in caller_cfg:
-                from engine.provider_workload_policy import (
-                    HOST_PROFILE_ENV, WorkloadDecision, decide_workload,
-                )
-
                 # The explicit Fabric branch has already selected one transport.
                 # Preserve the actual caller's selector, including null/empty;
                 # its legacy waterfall cannot add another selected transport.
-                caller = decide_workload(
+                caller = self._decide_workload(transport,
                     {"workload_profile": caller_cfg["workload_profile"],
                      "provider_order": ["fabric"]},
-                    host_profile=os.environ.get(HOST_PROFILE_ENV),
-                    policy_path=self.root / "config/provider_workloads.v1.json",
                 )
-                if caller is None or caller.allowed_order != ("fabric",) or caller.denied_order:
-                    _application_refuse("fabric_application_workload_denied")
                 if (caller.policy_hash, caller.policy_revision) != (decision.policy_hash, decision.policy_revision):
                     _application_refuse("fabric_application_policy_changed")
-                decision = WorkloadDecision(
-                    decision.policy_revision, decision.policy_hash,
-                    tuple(dict.fromkeys((*decision.profiles, *caller.profiles))),
-                    ("fabric",), (),
-                )
-        transport = mode.transport
+                decision = replace(decision,
+                    profiles=tuple(dict.fromkeys((*decision.profiles, *caller.profiles))))
         if self._requested_model is not None and (not transport.automatic
                 or type(self._requested_model) is not str
                 or _APPLICATION_ID.fullmatch(self._requested_model) is None):
@@ -1135,7 +1187,7 @@ class ApplicationFabricFactory:
                 or mode.admin_pool_view is not True or transport.metadata_read is not True
                 or transport.protocol != "native_application_v1"):
             _application_refuse("fabric_application_metadata_not_permitted")
-        decision = self.workload_decision()
+        decision = self._decide_workload(transport, self.workload_configuration())
         self._capability(transport)
         return mode, transport, self._commit_inspection(self._inspection_identity(transport, decision, mode.route_scope, self._requested_model))
 
@@ -1181,6 +1233,8 @@ class ApplicationFabricFactory:
                 "protocol": transport.protocol,
                 **({"native_recipe_digest": transport.native_recipe_digest}
                    if transport.native_recipe_digest is not None else {}),
+                **({"execution_surface": transport.execution_surface}
+                   if transport.execution_surface != "inference" else {}),
             }, sort_keys=True, separators=(",", ":"), allow_nan=False).encode()).hexdigest(),
         }
 

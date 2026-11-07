@@ -1,0 +1,39 @@
+name: Hermes APPLICATION owner composition
+
+on:
+  pull_request:
+    paths:
+      - 'engine/fabric_inference_client.py'
+      - 'engine/provider_production_modes.py'
+      - 'tests/test_hermes_primary_fabric_*.py'
+      - '.github/workflows/hermes-application-owner.yml'
+  merge_group:
+    types: [checks_requested]
+
+permissions:
+  contents: read
+
+jobs:
+  qualified-role-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          sparse-checkout: |
+            engine
+            lib
+            config
+            tests
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install fixture dependencies
+        run: python -m pip install --disable-pip-version-check pytest PyYAML
+      - name: Verify source-held identities and numeric role endpoints
+        run: >-
+          python -B -m pytest -q --tb=short --noconftest -o addopts=
+          tests/test_hermes_primary_fabric_identity.py
+          tests/test_hermes_primary_fabric_endpoint.py
+          tests/test_fabric_service_identity.py

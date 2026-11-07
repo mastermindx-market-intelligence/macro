@@ -1,0 +1,73 @@
+{
+  "base_commit": "3c510817d9543b5b124a1b73277aa115883c7da7",
+  "changes": [
+    "Source-owned native execution surface uses the existing native-purpose decision, fixed recipe and original APPLICATION factory/client.",
+    "Hermes fixed/AUTO/exact service records and exact numeric loopback aliases remain source-held and inference-only.",
+    "The two E3 paths in the 3c510817 parent are unchanged."
+  ],
+  "diff_check": "passed after removing two incoming blank EOF lines; behavior AST unchanged",
+  "incumbent_hermes_source": "915189b2538c8b952a53e921ba170459cd1eb624",
+  "original_operation_replaced": false,
+  "paid_calls": 0,
+  "post_test_formatting": [
+    {
+      "after_sha256": "0817202d609637ce024b5f4f1bbe6ba4507825424649f407a235bdf5ef441b8e",
+      "ast_identical": true,
+      "before_sha256": "70fb47f5e44cfebbed86709fedc2ae0fa816a96763fc497dc5c55df82f2604f0",
+      "change": "Remove incoming blank line at EOF only",
+      "path": "engine/fabric_inference_client.py"
+    },
+    {
+      "after_sha256": "240d297d04be51e98bf5e51aa11e8907b44874e84fd5840e7745e7ebd24fd68b",
+      "ast_identical": true,
+      "before_sha256": "86195abb16bb50a7b9c82be33185217ca6b8503f829e53b9d2a86844044a2c7c",
+      "change": "Remove incoming blank line at EOF only",
+      "path": "engine/provider_production_modes.py"
+    }
+  ],
+  "prior_non_green": [
+    {
+      "log": "s3-native-purpose-tests.log",
+      "reason": "Four test expectation errors corrected; six sparse CI fixture dependencies then materialized."
+    },
+    {
+      "log": "s3-macro-joined-tests.log",
+      "reason": "Collection required exact incumbent tests/test_fabric_inference_client.py; subsequently materialized."
+    }
+  ],
+  "production_activation": false,
+  "remaining": [
+    "Current protected release and installer gates",
+    "Fresh account/model entitlement and hard included-only/Extra Usage OFF boundary",
+    "Actual installed generation and real original application plus consumed delegated child results",
+    "J-derived native compiler/profile/parser binding remains held on original result custody"
+  ],
+  "schema": "mastermind.fabric_application_s3_source_composition.v1",
+  "source_only": true,
+  "tests": [
+    {
+      "context": "Eight affected factory/client/workload/Hermes suites; 451 successful cases, one missing CI source module in sparse fixture.",
+      "log_sha256": "08cfe1e77366cd8abe2a02008a582b08cde9786e152c0dfa28331b99c158ca69",
+      "name": "s3-macro-joined-final-tests",
+      "totals": {
+        "errors": 0,
+        "failures": 1,
+        "skipped": 0,
+        "tests": 452
+      },
+      "xml_sha256": "308fed41eeba2eab6d0736c6c5aadb373dfb71ce38713da8b08fca88a759e209"
+    },
+    {
+      "context": "Only the previously blocked CI-contract case after completing the exact 3c510817 source fixture.",
+      "log_sha256": "b67d79cbad68a9691431af6457548339bc77964bf0f4c2c38fbf8b924d2bc10d",
+      "name": "s3-macro-ci-guard-tests",
+      "totals": {
+        "errors": 0,
+        "failures": 0,
+        "skipped": 0,
+        "tests": 1
+      },
+      "xml_sha256": "ecaf271b62cc2273fef56d6d03a1dd8c1a83bf0119b83b2dbce3bbf78098dbc5"
+    }
+  ]
+}
