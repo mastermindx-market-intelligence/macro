@@ -251,6 +251,54 @@ def _read_narrative_tickers(root: Path) -> tuple[dict, list[str]]:
     return active, stale
 
 
+def _json_pointer_token(value: str) -> str:
+    """Escape one RFC 6901 JSON Pointer token."""
+    return value.replace("~", "~0").replace("/", "~1")
+
+
+def _leadership_observation_ref(theme_name: str, observation: dict) -> dict:
+    """Return the compact consumer receipt for one deduplicated observation."""
+    schema = observation.get("schema") or "subsector_rotation.closed_session_leadership.unknown"
+    receipt = observation.get("measurement_receipt") or {}
+    clocks = receipt.get("clocks") or {}
+    observation_clock = (
+        observation.get("asof")
+        or clocks.get("observation_session")
+        or observation.get("requested_asof")
+        or clocks.get("input_snapshot_asof")
+    )
+    evidence_family_id = f"{schema}:{theme_name}"
+    return {
+        "observation_key": theme_name,
+        "evidence_family_id": evidence_family_id,
+        "observation_id": f"{evidence_family_id}:{observation_clock or 'UNKNOWN'}",
+        "json_pointer": (
+            "/subsector_leadership_observations/"
+            f"{_json_pointer_token(theme_name)}"
+        ),
+        "schema": observation.get("schema"),
+        "status": observation.get("status"),
+        "asof": observation.get("asof"),
+        "measurement_receipt": observation.get("measurement_receipt"),
+    }
+
+
+def _unavailable_leadership_observation(meta: dict) -> dict:
+    """Project one producer-level failure into the attempted theme consumer."""
+    receipt_keys = (
+        "schema", "benchmark", "windows_sessions", "basis", "permissions", "is_context_only",
+        "is_forecast", "bar_status", "clocks", "source_records",
+    )
+    return {
+        "schema": meta.get("schema"),
+        "status": "UNAVAILABLE",
+        "asof": meta.get("asof"),
+        "requested_asof": meta.get("requested_asof"),
+        "reason_codes": list(meta.get("reason_codes") or []),
+        "measurement_receipt": {key: meta.get(key) for key in receipt_keys if key in meta},
+    }
+
+
 def _read_subsector(root: Path) -> tuple[dict, list[str]]:
     """Read subsector_rotation.json.  Returns ({theme_name: quad_rollup}, stale_legs)."""
     path = root / _SUBSECTOR_PATH
@@ -262,15 +310,60 @@ def _read_subsector(root: Path) -> tuple[dict, list[str]]:
     if _is_stale(asof):
         stale.append(f"subsector_rotation: stale (as_of={asof})")
     themes_list = data.get("themes", [])
+    leadership_meta = data.get("closed_session_leadership")
+    if not isinstance(leadership_meta, dict):
+        leadership_meta = {}
+    requested_themes = set(
+        leadership_meta.get("requested_themes")
+        or leadership_meta.get("covered_themes")
+        or []
+    )
+    producer_unavailable = leadership_meta.get("status") == "UNAVAILABLE"
+
     by_name: dict = {}
     for t in themes_list:
         if isinstance(t, dict) and "theme" in t:
-            by_name[t["theme"]] = {
+            theme_name = t["theme"]
+            row = {
                 "quadrant": t.get("quadrant"),
                 "rs": t.get("rs"),
                 "accel_z": t.get("z_accel"),
                 "emerging_score": t.get("emerging_score"),
             }
+            observation = t.get("leadership_observation")
+            if (
+                not isinstance(observation, dict)
+                and producer_unavailable
+                and theme_name in requested_themes
+            ):
+                observation = _unavailable_leadership_observation(leadership_meta)
+            if isinstance(observation, dict):
+                # Keep one private payload for artifact-level dedupe.  The legacy
+                # internal key remains readable to health/evaluation consumers, but
+                # _compose_theme strips it from each canonical theme block.
+                row["leadership_observation"] = observation
+                row["_leadership_observation_payload"] = observation
+                row["leadership_observation_ref"] = _leadership_observation_ref(
+                    theme_name, observation
+                )
+                receipt = observation.get("measurement_receipt") or {}
+                clocks = receipt.get("clocks") or {}
+                observation_asof = (
+                    observation.get("asof") or clocks.get("observation_session")
+                )
+                if observation.get("status") == "UNAVAILABLE":
+                    reasons = list(observation.get("reason_codes") or [])
+                    reason_text = ",".join(reasons) if reasons else "reason_unknown"
+                    stale.append(
+                        f"subsector_rotation leadership[{theme_name}]: "
+                        f"UNAVAILABLE ({reason_text})"
+                    )
+                elif _is_stale(observation_asof):
+                    stale.append(
+                        f"subsector_rotation leadership[{theme_name}]: "
+                        f"stale (as_of={observation_asof})"
+                    )
+            by_name[theme_name] = row
     return by_name, stale
 
 
@@ -399,7 +492,12 @@ def _compose_theme(
     for sk in subsector_keys:
         sr = subsector_by_name.get(sk)
         if sr:
-            subsector_blocks.append({"key": sk, **sr})
+            public_sr = {
+                key: value
+                for key, value in sr.items()
+                if not key.startswith("_") and key != "leadership_observation"
+            }
+            subsector_blocks.append({"key": sk, **public_sr})
 
     # Rollup: dominant quadrant (most common among subsector keys)
     rollup_quadrant: str | None = None
@@ -466,6 +564,7 @@ def compose(root: Path | None = None) -> dict:
             "generated_at": now_str,
             "authority": AUTHORITY_BLOCK,
             "themes": [],
+            "subsector_leadership_observations": {},
             "stale_legs": [f"theme_crosswalk: {xwalk_err}"],
             "error": "crosswalk unavailable — no theme blocks composed",
         }
@@ -490,6 +589,11 @@ def compose(root: Path | None = None) -> dict:
 
     subsector_by_name, sl6 = _read_subsector(root)
     all_stale_legs.extend(sl6)
+    subsector_leadership_observations = {
+        theme_name: row["_leadership_observation_payload"]
+        for theme_name, row in subsector_by_name.items()
+        if isinstance(row.get("_leadership_observation_payload"), dict)
+    }
 
     divergence_log_data, sl7 = _read_divergence_log(root)
     all_stale_legs.extend(sl7)
@@ -533,6 +637,7 @@ def compose(root: Path | None = None) -> dict:
         "authority": AUTHORITY_BLOCK,
         "n_themes": len(theme_blocks),
         "themes": theme_blocks,
+        "subsector_leadership_observations": subsector_leadership_observations,
         "stale_legs": all_stale_legs,
         "sources": {
             "theme_crosswalk": _CROSSWALK_PATH,
