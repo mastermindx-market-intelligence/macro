@@ -5319,6 +5319,8 @@ CURATED_EXCLUSIVE = {
     # exact 55-file non-wildcard import closure plus the eight Jinja templates the
     # render tests load at runtime (T25 AUDIT-N3 A1, 2026-11-04); no ceiling moved.
     "global-liquidity-transmission",
+    # Options scenario contract: keep the ordinary code job explicitly scoped.
+    "options-scenario-contract",
 }
 
 
@@ -5604,9 +5606,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_914),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_933),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_672),
+    ("templates/index.html", 137, 5_937),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_956),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_695),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5614,6 +5616,61 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-07 (PR #10837, explicit synthetic harness enrollment): natural
+    contract run 42423716907 / job 128557542513 measured exact head
+    7921a9c1a6feedcf5209590b7c02012728ce7eec against base
+    b626135f8987ee724cdb7e0c639734835a4afe67 on tested merge
+    b095e1574342f5909d7ac9c10ae82fbc1d79dd1f. The existing
+    marketing-social-publisher command intentionally gained ten synthetic
+    suites: +20 estimator units, no new run step or newly selected job.
+    The measured shapes were index137/5914->5934, free137/5933->5953 and
+    Prophet131/5672->5692, all ten packs. Existing suites remain enrolled.
+
+    Compose only this exact +20 into maind492ab036efb's incoming ceilings
+    5917/5936/5675:5937/5956/5695, preserving its independently accepted
+    three-unit increment and every earlier provenance paragraph below.
+    The current marketing owner block is byte-identical to the measured
+    base before this lane's enrollment. All current sibling jobs are preserved.
+    Keep job ceilings137/138/131, ten packs, assertions, selectors,
+    commands, packages, timeouts and admission/concurrency controls.
+    This is arithmetic composition of measured planner weights, not a
+    new full-tree measurement or execution-time claim. Natural successor
+    CI must qualify the newly composed tree; no padding is added.
+
+    2026-11-07 (PR #8869, current-main conflict composition): preserve the
+    independently accepted QTUM enrollment increment below while retaining
+    current main abab066981e46860b1be51dcb05883aed1a6b5b0's later gateway and
+    GSC provenance. Current catalog bba5d6d1e73c6db56500867494c03eb3e27167bc
+    has the exact original unrun-scoring-engine base block. Restore only its
+    accepted five-line offline proof step; all 392 owner IDs remain unchanged.
+    Compose the accepted +3 planning-weight contribution into current ceilings:
+    index 5914 -> 5917, free-content 5933 -> 5936, Prophet 5672 -> 5675.
+    Keep job ceilings 137 / 138 / 131, ten packs, every assertion, selector,
+    timeout, suite and admission limit. This is source arithmetic, not a new
+    planner execution or pytest result; natural CI must qualify this new tree.
+
+    2026-11-07 (PR #8869, dormant QTUM parser enrollment): the source-preserving
+    union on receiver 4380697dcd5d was measured by the unchanged production packing
+    calculation at local inventory-binding commit ec0187a2782a / tree
+    b93594112a589dd599ab75505cb5a4f9a7a6899f. The original result was FAIL with
+    exactly three weight-only breaches. Against the accepted source-bound #8899
+    receiver component, the ordered selected job IDs are identical on every probe,
+    with no entrant or exit:
+
+        templates/index.html          137 jobs, 5,912 -> 5,915 weight, 10 packs
+        scripts/build_free_content.py 137 jobs, 5,929 -> 5,932 weight, 10 packs
+        engine/prophet/plan_book.py   131 jobs, 5,670 -> 5,673 weight, 10 packs
+
+    The sole manifest-owner change is the accepted offline QTUM suite in existing
+    unrun-scoring-engine, whose unchanged estimator rises 57 -> 60. Fund exactly
+    these three additional planning-weight units on each probe, with no padding.
+    Retain the existing job ceilings 137 / 138 / 131, ten-pack bound, all 390 owner
+    entries, all suites, selectors, declared weights, duration overrides, timeouts
+    and admission limits, including the already merged #8899 provenance coverage.
+    These are planning estimates, not measured execution times. This local
+    production calculation is not a pytest run or hosted CI result; it does not
+    replace the required checks of the containing published source.
 
     P5.T9.S5 (2026-11-07): compose accepted retained-GSC coverage with
     protected59e035e39607, preserving its gateway and prior provenance
