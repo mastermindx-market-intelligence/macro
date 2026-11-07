@@ -1,0 +1,29 @@
+"""Build a curated research case from explicitly entered source facts; no ingestion."""
+from pathlib import Path
+import json
+from resources_catalyst_r3_capital import visible_events,reconcile_capital,settle_warrants,first_transition_cif
+ROOT=Path(__file__).resolve().parent
+sources=[
+ dict(id='march_capital',date='2022-03-28',title='Issuer: early insider warrant exercise',url='https://finance.yahoo.com/news/g-mining-ventures-announces-early-195000634.html',scope='Issuer ACCESS wire, indexed primary text; exact common/warrant anchor. Rounded cumulative exercise and proceeds are not exact deltas.'),
+ dict(id='tranche_one',date='2022-07-22',title='Issuer: first tranche closed',url='https://www.accesswire.com/709488/G-Mining-Ventures-Announces-Closing-of-First-Tranche-of-Private-Placement-Financing',scope='Indexed issuer release; first tranche, outstanding warrants and cashless provision. Full executed certificate not read. Direct open returned cache miss.'),
+ dict(id='ci_late_disclosure',date='2022-07-25',title='CI GAM: historical transactions',url='https://www.cifinancial.com/ci-gam/ca/en/newsroom/press-releases/securityholder-early-warning-news-release.html',scope='Direct counterparty original read; April secondary sale and exercise, disclosed in July. Earliest disclosure anywhere is not established.'),
+ dict(id='tranche_two',date='2022-09-07',title='Issuer: both placement tranches closed',url='https://www.nasdaq.com/press-release/g-mining-ventures-closes-us%24116-million-private-placement-financing-2022-09-07',scope='Issuer ACCESS wire; actual second tranche and cumulative figure. The aggregate is not another issuance.'),
+ dict(id='aif_later_capital',date='2023-04-28',title='2023 AIF reporting 2022 year-end capitalization',url='https://s21.q4cdn.com/753203377/files/doc_financials/2022/ar/ANNUAL-INFORMATION-FORM-2023.pdf',scope='Capital prose PDF page67; warrant prose page14. Option-table screenshot failed. No full technical or executed-agreement acceptance.'),
+ dict(id='unit_change_proposal',date='2024-11-06',title='Issuer: proposed exercise on later share units',url='https://www.prnewswire.com/news-releases/g-mining-ventures-announces-proposed-exercise-of-share-purchase-warrants-held-by-franco-nevada-302298013.html',scope='Separate later unit-control case; proposal is not actual exercise. No automatic historical security mapping.'),
+ dict(id='fnv_actual_exercise',date=None,title='FNV FY2024 annual disclosure of December exercise',url='https://www.sec.gov/Archives/edgar/data/1456346/000155837025003388/fnv-20241231xex99d3.htm',scope='Later counterparty filing reports Dec4 2024 exercise. Exact filing timestamp not extracted; never admitted to a historical date view.'),
+ dict(id='competing_risks_method',date='2016-02-09',title='Austin, Lee and Fine: competing risks methods',url='https://pubmed.ncbi.nlm.nih.gov/26858290/',scope='Primary paper abstract and bibliographic record. Method reference only; no clinical rates imported into mining. PMC fulltext served a browser challenge and was not bypassed.')]
+def e(key,kind,count,eff,known,source):return dict(id=key,kind=kind,count=count,effective_on=eff,known_on=known,recorded_on='2026-09-27',basis='GMIN_2022_common',source_id=source)
+events=[e('CI_secondary','secondary_trade',710000,'2022-04-12','2022-07-25','ci_late_disclosure'),e('CI_exercise','common_issue',5286417,'2022-04-25','2022-07-25','ci_late_disclosure'),e('T1','common_issue',160062500,'2022-07-22','2022-07-22','tranche_one'),e('W_FNV','warrant_issue',11500000,'2022-07-22','2022-07-22','tranche_one'),e('T2','common_issue',29004265,'2022-09-07','2022-09-07','tranche_two'),e('T1_T2_aggregate','reported_total',189066765,'2022-09-07','2022-09-07','tranche_two')]
+views={}
+for day in ('2022-07-18','2022-07-22','2022-07-25','2022-09-07','2023-04-28'):
+ later=day>='2023-04-28'
+ views[day]=dict(source_ids=[s['id'] for s in sources if s['date'] is not None and s['date']<=day and s['id'] not in ('competing_risks_method','unit_change_proposal')],events=visible_events(events,day),bridge=reconcile_capital(241895914,events,'2022-03-28',day,'GMIN_2022_common',447517060 if later else None,False),intraday_eligible=False,public_reconstruction=True,historical_system_possession=False)
+toy=[dict(id='A',time=1,cause='equity_extinguished'),dict(id='B',time=1,cause='equity_extinguished'),dict(id='C',time=2,cause='delivery'),dict(id='D',time=2,cause='delivery')]
+case=dict(classification='CURATED_RESEARCH_NOT_PRODUCTION',sources=sources,date_precision='calendar_disclosure_date_only',raw_source_archived=False,native_security_id=None,native_asset_id=None,events=events,views=views,
+ warrant_inventory=dict(march_reported=73959770,july_new_rights=11500000,july_reported=48969770,identified_exercise=5286417,net_reduction_to_reconcile=36490000,remaining_net_reduction=31203583,cause_of_residual='UNASSIGNED_NOT_ISSUER_ERROR'),
+ warrant_settlement=dict(cash_2022=settle_warrants(11500000,'1','1.90','cash',True),cashless_2022=settle_warrants(11500000,'1','1.90','cashless',True),later_unit_control=settle_warrants(11500000,'.25','1.90','cash',True),eligible_assumption=True,notice_and_legal_conditions_qualified=False),
+ toy_cohort=dict(label='INVENTED_FOUR_CASE_METHOD_COUNTEREXAMPLE',rows=toy,correct=first_transition_cif(toy,2),incorrect_after_deleting_competitors='1.0',mining_calibration=False),
+ estimates=dict(exact_financing_cutoff_basic=None,fully_diluted_shares=None,equity_value=None,event_probability=None,expected_return=None,reference_price=None,can_rank=False,can_gate=False,can_size=False,can_originate=False,can_open_entry=False))
+(ROOT/'R3_CAPITAL_AND_COHORT_RESEARCH_CASE.json').write_text(json.dumps(case,default=str,indent=2)+'\n')
+print(json.dumps({d:v['bridge']['covered_total'] for d,v in views.items()}))
+print('residual',views['2023-04-28']['bridge']['unexplained_net_movement'])

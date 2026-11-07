@@ -1,0 +1,365 @@
+{
+  "metadata": {
+    "sampling_design": "RETROSPECTIVE_PURPOSEFUL_AUDIT",
+    "scope": "Proposed TSX/TSXV gold-development disclosure window2018-2022; global project locations.",
+    "identifiers": "All keys in this fixture are human research labels; NO canonical issuer/security/asset/event IDs have been minted or bound.",
+    "first_incident_search_coverage": "UNQUALIFIED",
+    "historical_listing_roster_complete": false,
+    "researcher_outcome_blind": false,
+    "population_success_rate": null,
+    "fitted_probability": null,
+    "expected_return": null,
+    "raw_sources_archived": false,
+    "production_admission": false,
+    "native_Paper_applied": false,
+    "date_basis": "Calendar disclosure dates. No exchange first-known timestamp or historical system-possession proof.",
+    "primary_model_horizons_months": [
+      12,
+      24
+    ],
+    "Cote_conflict": "Conflicting operating-date assertions remain CONFLICT even though both fall after the24month deadline. Public declaration and contractual trigger retain separate target identities."
+  },
+  "events": [
+    {
+      "id": "pg_commercial",
+      "project_key": "madsen",
+      "target": "issuer_commercial",
+      "kind": "attained_first",
+      "lower": "2021-08-01",
+      "upper": "2021-08-01",
+      "known_on": "2021-08-03",
+      "recorded_on": "2026-09-27",
+      "source_ref": "PG_COMMERCIAL"
+    },
+    {
+      "id": "pg_suspension",
+      "project_key": "madsen",
+      "target": "operating_suspension",
+      "kind": "attained_first",
+      "lower": "2022-10-24",
+      "upper": "2022-10-24",
+      "known_on": "2022-10-24",
+      "recorded_on": "2026-09-27",
+      "source_ref": "PG_SUSPEND"
+    },
+    {
+      "id": "pg_ccaa",
+      "project_key": "madsen",
+      "target": "court_protection",
+      "kind": "attained_first",
+      "lower": "2022-10-31",
+      "upper": "2022-10-31",
+      "known_on": "2022-10-31",
+      "recorded_on": "2026-09-27",
+      "source_ref": "PG_CCAA"
+    },
+    {
+      "id": "goose_first",
+      "project_key": "goose",
+      "target": "first_gold",
+      "kind": "attained_first",
+      "lower": "2025-06-30",
+      "upper": "2025-06-30",
+      "known_on": "2025-06-30",
+      "recorded_on": "2026-09-27",
+      "source_ref": "GOOSE_FIRST"
+    },
+    {
+      "id": "premier_first",
+      "project_key": "premier",
+      "target": "first_gold",
+      "kind": "attained_first",
+      "lower": "2024-04-20",
+      "upper": "2024-04-20",
+      "known_on": "2024-04-22",
+      "recorded_on": "2026-09-27",
+      "source_ref": "PREMIER_FIRST"
+    },
+    {
+      "id": "premier_suspend",
+      "project_key": "premier",
+      "target": "operating_suspension",
+      "kind": "attained_first",
+      "lower": "2024-09-06",
+      "upper": "2024-09-06",
+      "known_on": "2024-09-06",
+      "recorded_on": "2026-09-27",
+      "source_ref": "PREMIER_SUSPEND"
+    },
+    {
+      "id": "cote_announcement",
+      "project_key": "cote",
+      "target": "public_commercial_declaration",
+      "kind": "attained_first",
+      "lower": "2024-08-02",
+      "upper": "2024-08-02",
+      "known_on": "2024-08-02",
+      "recorded_on": "2026-09-27",
+      "source_ref": "COTE_DECLARE"
+    },
+    {
+      "id": "cote_operating_q2",
+      "project_key": "cote",
+      "target": "operating_commercial",
+      "kind": "attained_first",
+      "lower": "2024-08-02",
+      "upper": "2024-08-02",
+      "known_on": "2024-08-08",
+      "recorded_on": "2026-09-27",
+      "source_ref": "COTE_Q2"
+    },
+    {
+      "id": "cote_operating_q3",
+      "project_key": "cote",
+      "target": "operating_commercial",
+      "kind": "attained_first",
+      "lower": "2024-08-01",
+      "upper": "2024-08-01",
+      "known_on": "2024-11-07",
+      "recorded_on": "2026-09-27",
+      "source_ref": "COTE_Q3"
+    },
+    {
+      "id": "cote_contract",
+      "project_key": "cote",
+      "target": "joint_venture_commercial",
+      "kind": "attained_first",
+      "lower": "2024-09-01",
+      "upper": "2024-09-01",
+      "known_on": "2024-11-07",
+      "recorded_on": "2026-09-27",
+      "source_ref": "COTE_Q3"
+    }
+  ],
+  "worked_labels": {
+    "puregold_24m": {
+      "state": "ACHIEVED",
+      "value": true,
+      "target": "issuer_commercial",
+      "project_key": "madsen",
+      "horizon": "2021-08-07",
+      "label_asof": "2026-09-27",
+      "time_mode": "public_reconstruction",
+      "admissible_sources": [
+        "PG_COMMERCIAL"
+      ],
+      "first_interval": [
+        "2021-08-01",
+        "2021-08-01"
+      ],
+      "event_probability": null,
+      "expected_return": null,
+      "can_rank": false
+    },
+    "puregold_24m_as_known_then": {
+      "state": "ACHIEVED",
+      "value": true,
+      "target": "issuer_commercial",
+      "project_key": "madsen",
+      "horizon": "2021-08-07",
+      "label_asof": "2021-08-07",
+      "time_mode": "public_reconstruction",
+      "admissible_sources": [
+        "PG_COMMERCIAL"
+      ],
+      "first_interval": [
+        "2021-08-01",
+        "2021-08-01"
+      ],
+      "event_probability": null,
+      "expected_return": null,
+      "can_rank": false
+    },
+    "puregold_24m_system_possession": {
+      "state": "UNKNOWN",
+      "value": null,
+      "target": "issuer_commercial",
+      "project_key": "madsen",
+      "horizon": "2021-08-07",
+      "label_asof": "2021-08-07",
+      "time_mode": "system_replay",
+      "admissible_sources": [],
+      "first_interval": null,
+      "event_probability": null,
+      "expected_return": null,
+      "can_rank": false
+    },
+    "goose_first_gold_24m_build": {
+      "state": "NOT_ACHIEVED_BY_HORIZON",
+      "value": false,
+      "target": "first_gold",
+      "project_key": "goose",
+      "horizon": "2024-09-07",
+      "label_asof": "2026-09-27",
+      "time_mode": "public_reconstruction",
+      "admissible_sources": [
+        "GOOSE_FIRST"
+      ],
+      "first_interval": [
+        "2025-06-30",
+        "2025-06-30"
+      ],
+      "event_probability": null,
+      "expected_return": null,
+      "can_rank": false
+    },
+    "premier_first_gold_24m_original_finance": {
+      "state": "NOT_ACHIEVED_BY_HORIZON",
+      "value": false,
+      "target": "first_gold",
+      "project_key": "premier",
+      "horizon": "2022-12-10",
+      "label_asof": "2026-09-27",
+      "time_mode": "public_reconstruction",
+      "admissible_sources": [
+        "PREMIER_FIRST"
+      ],
+      "first_interval": [
+        "2024-04-20",
+        "2024-04-20"
+      ],
+      "event_probability": null,
+      "expected_return": null,
+      "can_rank": false
+    },
+    "premier_first_gold_24m_refinance": {
+      "state": "ACHIEVED",
+      "value": true,
+      "target": "first_gold",
+      "project_key": "premier",
+      "horizon": "2024-12-12",
+      "label_asof": "2026-09-27",
+      "time_mode": "public_reconstruction",
+      "admissible_sources": [
+        "PREMIER_FIRST"
+      ],
+      "first_interval": [
+        "2024-04-20",
+        "2024-04-20"
+      ],
+      "event_probability": null,
+      "expected_return": null,
+      "can_rank": false
+    },
+    "cote_operating_date_conflict": {
+      "state": "CONFLICT",
+      "value": null,
+      "target": "operating_commercial",
+      "project_key": "cote",
+      "horizon": "2022-07-21",
+      "label_asof": "2026-09-27",
+      "time_mode": "public_reconstruction",
+      "admissible_sources": [
+        "COTE_Q2",
+        "COTE_Q3"
+      ],
+      "first_interval": null,
+      "event_probability": null,
+      "expected_return": null,
+      "can_rank": false
+    },
+    "cote_declared": {
+      "state": "NOT_ACHIEVED_BY_HORIZON",
+      "value": false,
+      "target": "public_commercial_declaration",
+      "project_key": "cote",
+      "horizon": "2022-07-21",
+      "label_asof": "2026-09-27",
+      "time_mode": "public_reconstruction",
+      "admissible_sources": [
+        "COTE_DECLARE"
+      ],
+      "first_interval": [
+        "2024-08-02",
+        "2024-08-02"
+      ],
+      "event_probability": null,
+      "expected_return": null,
+      "can_rank": false
+    },
+    "cote_contract": {
+      "state": "NOT_ACHIEVED_BY_HORIZON",
+      "value": false,
+      "target": "joint_venture_commercial",
+      "project_key": "cote",
+      "horizon": "2022-07-21",
+      "label_asof": "2026-09-27",
+      "time_mode": "public_reconstruction",
+      "admissible_sources": [
+        "COTE_Q3"
+      ],
+      "first_interval": [
+        "2024-09-01",
+        "2024-09-01"
+      ],
+      "event_probability": null,
+      "expected_return": null,
+      "can_rank": false
+    }
+  },
+  "original_windows": [
+    {
+      "project": "goose",
+      "source_ref": "GOOSE_BUILD",
+      "wording": "first production Q1 2025",
+      "normalized_start": "2025-01-01",
+      "normalized_end": "2025-03-31",
+      "target_alias_to_first_gold": "REQUIRES_REVIEW_NOT_AUTOMATIC_COMMERCIAL_LABEL"
+    },
+    {
+      "project": "cote",
+      "source_ref": "COTE_BUILD",
+      "wording": "commercial production H2 2023",
+      "normalized_start": "2023-07-01",
+      "normalized_end": "2023-12-31",
+      "precise_operating_definition_match": "UNQUALIFIED"
+    },
+    {
+      "project": "valentine",
+      "source_ref": "VAL_BUILD",
+      "wording": "first gold early2025",
+      "normalized_start": null,
+      "normalized_end": null,
+      "reason": "do_not_coerce_early_to_Q1"
+    }
+  ],
+  "claims": [
+    {
+      "project": "goose",
+      "original_claim": "sabina_entry_common",
+      "status": "SHARE_SETTLEMENT_REPORTED",
+      "settlement_effective": "2023-04-19",
+      "known_on": "2023-04-19",
+      "recorded_on": "2026-09-27",
+      "source_ref": "SABINA_EXCHANGE",
+      "successor_name": "B2Gold common",
+      "shares_per_old_share": "0.3867",
+      "native_corporate_action_id": null,
+      "actual_wealth": null,
+      "illustrative_successor_price": "10",
+      "illustrative_currency": "CAD",
+      "illustrative_gross_value": "3.8670",
+      "actual_market_observation": false,
+      "entry_price": null,
+      "return_value": null
+    },
+    {
+      "project": "madsen",
+      "original_claim": "puregold_entry_common",
+      "status": "COURT_PROTECTION_REPORTED",
+      "source_ref": "PG_CCAA",
+      "legal_extinction": null,
+      "recovery_amount": null,
+      "return_value": null
+    },
+    {
+      "project": "premier",
+      "original_claim": "ascot_entry_common",
+      "status": "OPERATIONAL_SUSPENSION_REPORTED",
+      "source_ref": "PREMIER_SUSPEND",
+      "legal_extinction": null,
+      "recovery_amount": null,
+      "return_value": null
+    }
+  ]
+}

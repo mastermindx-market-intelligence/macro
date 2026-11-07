@@ -1,0 +1,353 @@
+{
+  "metadata": {
+    "sampling_design": "RETROSPECTIVE_PURPOSEFUL_AUDIT",
+    "scope": "Proposed TSX/TSXV gold-development disclosure window2018-2022; global project locations.",
+    "identifiers": "All keys in this fixture are human research labels; NO canonical issuer/security/asset/event IDs have been minted or bound.",
+    "first_incident_search_coverage": "UNQUALIFIED",
+    "historical_listing_roster_complete": false,
+    "researcher_outcome_blind": false,
+    "population_success_rate": null,
+    "fitted_probability": null,
+    "expected_return": null,
+    "raw_sources_archived": false,
+    "production_admission": false,
+    "native_Paper_applied": false,
+    "date_basis": "Calendar disclosure dates. No exchange first-known timestamp or historical system-possession proof.",
+    "primary_model_horizons_months": [
+      12,
+      24
+    ],
+    "Cote_conflict": "Conflicting operating-date assertions remain CONFLICT even though both fall after the24month deadline. Public declaration and contractual trigger retain separate target identities."
+  },
+  "observations": [
+    {
+      "observation_key": "pg_build",
+      "project_key": "madsen",
+      "issuer_key": "puregold",
+      "claim_key": "puregold_entry_common",
+      "source_ref": "PG_BUILD",
+      "known_on": "2019-08-07",
+      "effective_lower": "2019-08-07",
+      "effective_upper": "2019-08-07",
+      "listing_venue": "TSXV",
+      "primary_product": "gold",
+      "stage_kind": "BUILD_APPROVED",
+      "prior_stage_entry": null
+    },
+    {
+      "observation_key": "cote_build",
+      "project_key": "cote",
+      "issuer_key": "iamgold",
+      "claim_key": "iamgold_entry_common",
+      "source_ref": "COTE_BUILD",
+      "known_on": "2020-07-21",
+      "effective_lower": "2020-07-21",
+      "effective_upper": "2020-07-21",
+      "listing_venue": "TSX",
+      "primary_product": "gold",
+      "stage_kind": "BUILD_APPROVED",
+      "prior_stage_entry": null
+    },
+    {
+      "observation_key": "goose_finance",
+      "project_key": "goose",
+      "issuer_key": "sabina",
+      "claim_key": "sabina_entry_common",
+      "source_ref": "GOOSE_FINANCE",
+      "known_on": "2022-02-08",
+      "effective_lower": "2022-02-08",
+      "effective_upper": "2022-02-08",
+      "listing_venue": "TSX",
+      "primary_product": "gold",
+      "stage_kind": "FINANCING_ATTEMPT",
+      "prior_stage_entry": null
+    },
+    {
+      "observation_key": "goose_build",
+      "project_key": "goose",
+      "issuer_key": "sabina",
+      "claim_key": "sabina_entry_common",
+      "source_ref": "GOOSE_BUILD",
+      "known_on": "2022-09-07",
+      "effective_lower": "2022-09-07",
+      "effective_upper": "2022-09-07",
+      "listing_venue": "TSX",
+      "primary_product": "gold",
+      "stage_kind": "BUILD_APPROVED",
+      "prior_stage_entry": null
+    },
+    {
+      "observation_key": "val_build",
+      "project_key": "valentine",
+      "issuer_key": "marathon",
+      "claim_key": "marathon_entry_common",
+      "source_ref": "VAL_BUILD",
+      "known_on": "2022-09-01",
+      "effective_lower": "2022-09-01",
+      "effective_upper": "2022-09-01",
+      "listing_venue": "TSX",
+      "primary_product": "gold",
+      "stage_kind": "BUILD_APPROVED",
+      "prior_stage_entry": null
+    },
+    {
+      "observation_key": "premier_finance",
+      "project_key": "premier",
+      "issuer_key": "ascot",
+      "claim_key": "ascot_entry_common",
+      "source_ref": "PREMIER_FINANCE",
+      "known_on": "2020-12-10",
+      "effective_lower": "2020-12-10",
+      "effective_upper": "2020-12-10",
+      "listing_venue": "TSX",
+      "primary_product": "gold",
+      "stage_kind": "FINANCING_ATTEMPT",
+      "prior_stage_entry": null
+    },
+    {
+      "observation_key": "premier_refinance",
+      "project_key": "premier",
+      "issuer_key": "ascot",
+      "claim_key": "ascot_entry_common",
+      "source_ref": "PREMIER_REFINANCE",
+      "known_on": "2022-12-12",
+      "effective_lower": "2022-12-12",
+      "effective_upper": "2022-12-12",
+      "listing_venue": "TSX",
+      "primary_product": "gold",
+      "stage_kind": "FINANCING_ATTEMPT",
+      "prior_stage_entry": true
+    },
+    {
+      "observation_key": "eagle_finance",
+      "project_key": "eagle",
+      "issuer_key": "victoria",
+      "claim_key": "victoria_entry_common",
+      "source_ref": "EAGLE_FINANCE",
+      "known_on": "2018-03-08",
+      "effective_lower": "2018-03-08",
+      "effective_upper": "2018-03-08",
+      "listing_venue": "TSXV",
+      "primary_product": "gold",
+      "stage_kind": "FINANCING_ATTEMPT",
+      "prior_stage_entry": true
+    },
+    {
+      "observation_key": "greenstone_condition",
+      "project_key": "greenstone",
+      "issuer_key": "equinox",
+      "claim_key": "equinox_entry_common",
+      "source_ref": "GREENSTONE_CONDITION",
+      "known_on": "2021-11-03",
+      "effective_lower": "2021-10-27",
+      "effective_upper": "2021-10-27",
+      "listing_venue": "TSX",
+      "primary_product": "gold",
+      "stage_kind": "BUILD_CONDITIONAL",
+      "prior_stage_entry": null
+    },
+    {
+      "observation_key": "magino_build",
+      "project_key": "magino",
+      "issuer_key": "argonaut",
+      "claim_key": "argonaut_entry_common",
+      "source_ref": "MAGINO_BUILD",
+      "known_on": "2020-10-14",
+      "effective_lower": "2020-10-14",
+      "effective_upper": "2020-10-14",
+      "listing_venue": "TSX",
+      "primary_product": "gold",
+      "stage_kind": "BUILD_APPROVED",
+      "prior_stage_entry": null
+    },
+    {
+      "observation_key": "blackwater_finance",
+      "project_key": "blackwater",
+      "issuer_key": "artemis",
+      "claim_key": "artemis_entry_common",
+      "source_ref": "BLACKWATER_FINANCE",
+      "known_on": "2022-02-24",
+      "effective_lower": "2022-02-24",
+      "effective_upper": "2022-02-24",
+      "listing_venue": "TSXV",
+      "primary_product": "gold",
+      "stage_kind": "FINANCING_ATTEMPT",
+      "prior_stage_entry": null
+    },
+    {
+      "observation_key": "blackwater_early",
+      "project_key": "blackwater",
+      "issuer_key": "artemis",
+      "claim_key": "artemis_entry_common",
+      "source_ref": "BLACKWATER_EARLY",
+      "known_on": "2022-09-29",
+      "effective_lower": "2022-09-29",
+      "effective_upper": "2022-09-29",
+      "listing_venue": "TSXV",
+      "primary_product": "gold",
+      "stage_kind": "EARLY_WORKS",
+      "prior_stage_entry": null
+    },
+    {
+      "observation_key": "yaqui_build",
+      "project_key": "la_yaqui_grande",
+      "issuer_key": "alamos",
+      "claim_key": "alamos_entry_common",
+      "source_ref": "YAQUI_BUILD",
+      "known_on": "2020-07-28",
+      "effective_lower": "2020-07-28",
+      "effective_upper": "2020-07-28",
+      "listing_venue": "TSX",
+      "primary_product": "gold",
+      "stage_kind": "BUILD_APPROVED",
+      "prior_stage_entry": null
+    },
+    {
+      "observation_key": "sugar_prior",
+      "project_key": "sugar_zone",
+      "issuer_key": "harte",
+      "claim_key": "harte_entry_common",
+      "source_ref": "SUGAR_PRIOR",
+      "known_on": "2019-04-02",
+      "effective_lower": "2017-09-01",
+      "effective_upper": "2017-09-30",
+      "listing_venue": "TSX",
+      "primary_product": "gold",
+      "stage_kind": "CONTINUED_CONSTRUCTION",
+      "prior_stage_entry": true
+    },
+    {
+      "observation_key": "tz_finance",
+      "project_key": "tocantinzinho",
+      "issuer_key": "gmining",
+      "claim_key": "gmining_entry_common",
+      "source_ref": "TZ_FINANCE",
+      "known_on": "2022-07-18",
+      "effective_lower": "2022-07-18",
+      "effective_upper": "2022-07-18",
+      "listing_venue": "TSXV",
+      "primary_product": "gold",
+      "stage_kind": "FINANCING_ATTEMPT",
+      "prior_stage_entry": null
+    }
+  ],
+  "dispositions": {
+    "pg_build": {
+      "scope": "MATCHED_OBSERVATION",
+      "stratum": "construction_decision",
+      "incident": "UNVERIFIED",
+      "reason": "within_observed_scope",
+      "production_admission": false
+    },
+    "cote_build": {
+      "scope": "MATCHED_OBSERVATION",
+      "stratum": "construction_decision",
+      "incident": "UNVERIFIED",
+      "reason": "within_observed_scope",
+      "production_admission": false
+    },
+    "goose_finance": {
+      "scope": "MATCHED_OBSERVATION",
+      "stratum": "financing_attempt",
+      "incident": "UNVERIFIED",
+      "reason": "within_observed_scope",
+      "production_admission": false
+    },
+    "goose_build": {
+      "scope": "MATCHED_OBSERVATION",
+      "stratum": "construction_decision",
+      "incident": "UNVERIFIED",
+      "reason": "within_observed_scope",
+      "production_admission": false
+    },
+    "val_build": {
+      "scope": "MATCHED_OBSERVATION",
+      "stratum": "construction_decision",
+      "incident": "UNVERIFIED",
+      "reason": "within_observed_scope",
+      "production_admission": false
+    },
+    "premier_finance": {
+      "scope": "MATCHED_OBSERVATION",
+      "stratum": "financing_attempt",
+      "incident": "UNVERIFIED",
+      "reason": "within_observed_scope",
+      "production_admission": false
+    },
+    "premier_refinance": {
+      "scope": "MATCHED_OBSERVATION",
+      "stratum": "financing_attempt",
+      "incident": "PREVALENT",
+      "reason": "within_observed_scope",
+      "production_admission": false
+    },
+    "eagle_finance": {
+      "scope": "MATCHED_OBSERVATION",
+      "stratum": "financing_attempt",
+      "incident": "PREVALENT",
+      "reason": "within_observed_scope",
+      "production_admission": false
+    },
+    "greenstone_condition": {
+      "scope": "MATCHED_OBSERVATION",
+      "stratum": "conditional_build",
+      "incident": "UNVERIFIED",
+      "reason": "within_observed_scope",
+      "production_admission": false
+    },
+    "magino_build": {
+      "scope": "MATCHED_OBSERVATION",
+      "stratum": "construction_decision",
+      "incident": "UNVERIFIED",
+      "reason": "within_observed_scope",
+      "production_admission": false
+    },
+    "blackwater_finance": {
+      "scope": "MATCHED_OBSERVATION",
+      "stratum": "financing_attempt",
+      "incident": "UNVERIFIED",
+      "reason": "within_observed_scope",
+      "production_admission": false
+    },
+    "blackwater_early": {
+      "scope": "MATCHED_OBSERVATION",
+      "stratum": "preparatory_observation",
+      "incident": "UNVERIFIED",
+      "reason": "within_observed_scope",
+      "production_admission": false
+    },
+    "yaqui_build": {
+      "scope": "MATCHED_OBSERVATION",
+      "stratum": "construction_decision",
+      "incident": "UNVERIFIED",
+      "reason": "within_observed_scope",
+      "production_admission": false
+    },
+    "sugar_prior": {
+      "scope": "OUT_OF_SCOPE",
+      "stratum": "prevalent_build_observation",
+      "incident": "PREVALENT",
+      "reason": "outside_occurrence_or_publication_window",
+      "production_admission": false
+    },
+    "tz_finance": {
+      "scope": "MATCHED_OBSERVATION",
+      "stratum": "financing_attempt",
+      "incident": "UNVERIFIED",
+      "reason": "within_observed_scope",
+      "production_admission": false
+    }
+  },
+  "summary": {
+    "observations": 15,
+    "projects": 12,
+    "issuers": 12,
+    "claims": 12,
+    "sources": 15,
+    "enrollment_sha256": "d1004fca1ff5168aa533c06bd9f70a79ce188cbadbe6b12a2ec105306760ece0",
+    "sampling_design": "RETROSPECTIVE_PURPOSEFUL_AUDIT",
+    "population_success_rate": null,
+    "empirically_qualified": false,
+    "can_rank": false
+  }
+}
