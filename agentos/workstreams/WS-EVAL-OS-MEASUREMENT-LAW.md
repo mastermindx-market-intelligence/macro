@@ -49,12 +49,14 @@ waves:
       is required only where governed policy names a defensible counterfactual. stock_desk and
       demand_chain are matched-control-required; thematic_desk is benchmark-only. #5665/#5672
       repaired demand-chain wiring/replay semantics.
-next_action: >
+next_action: >-
   Preserve all three accepted general clocks. Verify current original scheduled producer/grader
   and cohort/control qualification through their existing owners; do not restart the superseded
-  thematic first-clock task. Continue final composed adversarial acceptance and staged metric-
-  validity qualification on PR #6651. The latest inspected scheduled collect failed and its
-  older persisted status cannot qualify that run.
+  thematic first-clock task. Reuse the source accepted through merged PR #6651 and continue final
+  composed adversarial acceptance and staged metric-validity qualification on the current existing
+  owners. Reconcile reusable receipts and live path/effect state before new work; do not reopen6651
+  or infer P1 START. Keep the recorded failed-run/persisted-status qualifications dated and require
+  an actual current owner receipt for any new run.
 owns_paths:
   - engine/qledger.py
   - engine/qledger_validity.py
@@ -85,7 +87,18 @@ artifacts:
   - research/PREREG_P0D_MATCHED_CONTROL_CONTRACT.md
   - agentos/handoffs/EVAL-OS-E1-THEMATIC-COHORT-RECOVERY-2026-08-29.md
   - research/EVAL_OS_CONTINUATION_2026-10-12.md
+  - agentos/handoffs/EVAL-OS-P1-PROMOTION-INTEGRITY-ACCEPTANCE-2026-08-30.md
+
 ---
+
+**2026-11-05 source-state reconciliation.** PR #6651 merged on October24 as
+`4579f45e2b3e5dd0c98125fd4d28f4a25a7b009e`. Reuse accepted source and existing
+current-owner evidence; do not reopen its source release or infer a P1 START.
+The linked P1 handoff preserves the full ten-mutation matrix. W4 remains in
+progress, and all existing clock, cohort, control and natural-run qualifications
+are retained. Older run observations and proposed placements below retain their
+recorded epochs; this update does not assert new runtime state or new acceptance.
+
 
 ## Reconciliation — 2026-08-27
 
