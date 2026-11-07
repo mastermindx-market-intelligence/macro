@@ -1,0 +1,87 @@
+{
+  "artifact_role": "Research evidence, not runtime authority or a model promotion",
+  "analysis_source": "mastermindx-market-intelligence/macro@c37c4e37b20ada935f32516a2a31428d558430c3",
+  "skillpack_source": "mastermindx-market-intelligence/Mastermind@8ba7deedde164c90298d3e88785d98e02fa5e2d2",
+  "method": "Full untruncated committed JSON ledgers; statistics from rounded published rows; no price regeneration, costs, paired-shadow comparison or historical Top-K inference",
+  "us": {
+    "as_of": "2026-09-14", "grain": "episode", "metric": "managed_10_session_pnl",
+    "headline": {"matured": 874, "origin_dates": 31, "win_pct": 50.1, "mean_pct": 0.01, "profit_factor": 1.01},
+    "current_definition": "us_prophet_v3",
+    "current_definition_observed": {"matured": 240, "origin_dates": 10, "unique_tickers": 200, "first_origin": "2026-08-17", "last_origin": "2026-08-28", "wins": 83, "win_pct": 34.58, "mean_pnl_pct": -2.0958, "median_pnl_pct": -2.0, "mean_spy_excess_pct": -1.8334, "positive_excess_pct": 33.75, "profit_factor": 0.403},
+    "older_definitions": [
+      {"definition": "us_prophet_v2", "n": 112, "dates": 3, "wins": 36, "win_pct": 32.14, "mean_pnl_pct": -2.8848},
+      {"definition": "us_prophet_v1", "n": 68, "dates": 1, "wins": 39, "win_pct": 57.35, "mean_pnl_pct": 1.7779},
+      {"definition": "confluence", "n": 280, "dates": 9, "wins": 178, "win_pct": 63.57, "mean_pnl_pct": 2.3739},
+      {"definition": "bottoming-alignment", "n": 174, "dates": 8, "wins": 100, "win_pct": 57.47, "mean_pnl_pct": 0.3029}
+    ],
+    "current_exit_groups": [
+      {"exit": "horizon", "n": 179, "mean_pnl_pct": -2.4888},
+      {"exit": "target", "n": 46, "mean_pnl_pct": 2.5152},
+      {"exit": "stop", "n": 15, "mean_pnl_pct": -11.5467}
+    ],
+    "limitations": ["Different definition cohorts occur on different dates; not a model horse race", "Ten origin-date groups are not 240 independent observations", "Popup rank/sector are latest-appearance metadata, not admission-time features", "Exit-group analysis is outcome-conditioned, not a causal exit-policy test", "SPY excess is not sector/factor-adjusted alpha"]
+  },
+  "china": {
+    "ledger_as_of": "2026-09-14", "definition": "cn_prophet_v4", "grain": "episode",
+    "metric": "10_session_CSI300_excess", "matured": 159, "origin_dates": 11, "unique_tickers": 143,
+    "wins": 70, "win_pct": 44.03, "mean_excess_pct": -0.5971, "median_excess_pct": -0.98,
+    "latest_board_as_of": "2026-09-15", "latest_buy_rows": 16, "latest_watch_rows": 25,
+    "requested_order": "intel_interest_then_v3_score", "effective_order": "cn_prophet_v3_score",
+    "order_mode": "v3_coverage_fallback", "intel_order_active": false,
+    "ranked_input_rows": 1616, "measured_rows": 1612, "unavailable_rows": 4,
+    "unavailable_reasons": {"no_edge_evidence": 4},
+    "all_latest_buy_and_watch_rows_have_interest": true,
+    "controlled_interest_scores": {"base": 63.89, "near_high": 50.83, "far_below_high": 78.2, "strong_rs": 39.88, "weak_rs": 63.89, "rolling_over": 38.88},
+    "controlled_inputs": {"altdata": {"side": "accumulate", "convergence": 0.8, "conviction100": 80}, "base_trajectory": {"off_high_pct": -10, "rs_20d": 0, "ret_20d": 8, "rolling_over": false}, "overrides": {"near_high": {"off_high_pct": -2}, "far_below_high": {"off_high_pct": -20}, "strong_rs": {"rs_20d": 20}, "weak_rs": {"rs_20d": -10}, "rolling_over": {"rolling_over": true}}},
+    "limitation": "Controlled heuristic tests establish arithmetic, not predictive benefit; definition-level results do not identify active-ordering treatment"
+  },
+  "hk": {
+    "as_of": "2026-09-15", "definition": "hk_prophet_v2", "grain": "board_day",
+    "metric": "21_session_HSI_excess", "matured": 95, "origin_dates": 9, "unique_tickers": 33,
+    "wins": 42, "win_pct": 44.21, "mean_excess_pct": -1.5892,
+    "current_definition_parquet_rows": 421,
+    "nonnull_mfe": {"5": 326, "10": 277, "21": 95, "63": 0},
+    "native_pit_regime_nonnull": 0, "popup_suspended_flags": 81,
+    "limitation": "Repeated board-days are not independent trades; suspension flags can include immature healthy names"
+  },
+  "canada": {
+    "as_of": "2026-09-15", "definition": "ca_prophet_branch_b_v1", "grain": "board_day",
+    "metric": "21_session_TSX_excess", "popup_rows": 251, "matured": 0,
+    "current_definition_parquet_rows": 267,
+    "nonnull_mfe": {"5": 192, "10": 135, "21": 0, "63": 0},
+    "native_pit_regime_nonnull": 0, "popup_suspended_flags": 59,
+    "calendar_control": {"first_signal": "2026-08-19", "fill": "2026-08-20", "price_cut": "2026-09-15", "forward_sessions": 17, "excluded_holiday": "2026-09-07", "first_calendar_complete_H21": "2026-09-21"},
+    "correction": "Zero current H21 outcomes are expected at this cut; the earlier assumption of a broken maturation pipeline is withdrawn",
+    "limitation": "September 21 requires complete prices and the real natural pipeline; not a delivery guarantee"
+  },
+  "exact_source_probes": {
+    "mechanism_probe": {"pid": 1733, "exit_code": 0, "checks": 16, "desired_conditions_met": 13, "known_contract_failures": 3, "meaning": "Characterization completed, defects not fixed"},
+    "failures": [
+      {"test": "negative SUE at age 1", "documented_expectation": false, "observed": true},
+      {"test": "positive SUE at age 0", "documented_expectation": true, "observed": false},
+      {"test": "uninterrupted recent series classified as not suspended", "documented_expectation": false, "observed_is_suspended": true}
+    ],
+    "sue_current_board_exposure": {"board_rows": 50, "sue_readings": 7, "negative_or_day_zero_cases_observed": 0, "upstream_reachability_and_historical_frequency": "not yet resolved"},
+    "rank_clock_probe": {"pid": 21680, "exit_code": 0, "first_episode_date": "2026-08-17", "rank_before": 1, "rank_after_later_board": 99, "sector_before": "InitialSector", "sector_after_later_board": "LaterSector", "episode_date_entry_pnl_and_definition_unchanged": true},
+    "capture_correction": "track_scoring.capture is median realized-return / positive-MFE, not universe runner recall"
+  },
+  "combined_reproducer": {
+    "source_commit": "a25d51d97e087be84e6fc843385258a13f8a0202",
+    "file": "research/prophet_v4/global_upgrade/reproduce_run2.py",
+    "verification_launch_pid": 73549,
+    "verification_state": "RETURN_UNAVAILABLE_HOST_DISCONNECTED",
+    "device": "3f5ce987-e3eb-40a3-af9f-4b0ae54919cc",
+    "next_action": "Reconcile same PID output or exact local results file before repeating. No alternative-host rerun. Original separate probes remain independently verified."
+  },
+  "source_git_blobs": {
+    "us_track_ledger": "8936a655604eb2855b6a32d9820b8ca0b1eda095",
+    "cn_track_ledger": "40ee54f0f4f464bb9c69aa24a516011e958c80b0",
+    "hk_track_ledger": "f3829dd28cf28c969b9dd4bab4c549f34946a734",
+    "ca_track_ledger": "dd7628f26fd1341e4752477ffd6c6c2b861408c4",
+    "china_standouts": "0edba42f31af0539bed991f1b2c46e96ace7e5f4",
+    "china_intel_interest": "cb7e1895c75a560b09f8207de8aa58bc4389bafe",
+    "us_prophet_fusion": "210e070103b36f10bbbf19981420a17bb9fdc4fc",
+    "board_ledger": "004dc416819f2bc2b6887b2c3d7534410fd6fcb4",
+    "grade_us_board": "68ef9eb7620f0592e3cd02d66a3eae2ab0998dce"
+  }
+}
