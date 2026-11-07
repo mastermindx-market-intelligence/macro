@@ -4651,6 +4651,8 @@ CURATED_EXCLUSIVE = {
     # closure is empty (stdlib only): the scope is the suite + the registration
     # store + the prose registration, nothing else.
     "prophet-us-b4-prereg-registration",
+    # W3 frozen post-floor reader owns its exact synthetic code closure.
+    "prophet-w3-guardrail",
     "earnings-economic-dossier",
     # 2026-09-30: CDV-1 Task 2 owns truthful private PG acquisition currentness.
     "earnings-economic-source-selection",

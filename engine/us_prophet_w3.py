@@ -569,6 +569,14 @@ def load_paired(root: Any = None) -> pd.DataFrame:
     return _load_grain("paired", root)
 
 
+def load_paired_stamp(root: Any, stamp_date: str) -> pd.DataFrame:
+    """Read one stamp's paired grain. Does not union ineligible or unmatured stamps."""
+    stamp = str(stamp_date)[:10]
+    if len(stamp) != 10:
+        raise W3IntegrityError(f"invalid W3 paired stamp_date {stamp_date!r}")
+    return _read_part("paired", stamp, root)
+
+
 def load_family(root: Any = None) -> pd.DataFrame:
     return _load_grain("family", root)
 
