@@ -1,0 +1,78 @@
+{
+  "canonical_ids_invented": false,
+  "nested_generated_inventory": "unqualified at fresh head; existing exporter owner must refresh",
+  "rows": [
+    {
+      "route": "/gmi.html",
+      "primary_session": "D13",
+      "repo": "macro",
+      "source": "templates/gmi_map.html.j2",
+      "source_pin": "143bdfe08ac2444fde9fcb2263aa0c1d3d03dcc0",
+      "disposition": "product; absent from registry and shell projection"
+    },
+    {
+      "route": "/gmi-index.html",
+      "primary_session": "D13",
+      "repo": "macro",
+      "source": "templates/gmi_index.html.j2",
+      "source_pin": "143bdfe08ac2444fde9fcb2263aa0c1d3d03dcc0",
+      "disposition": "product; absent from registry and shell projection"
+    },
+    {
+      "route": "/gmi-issuer-mu.html",
+      "primary_session": "D13",
+      "repo": "macro",
+      "source": "templates/gmi_issuer.html.j2",
+      "source_pin": "143bdfe08ac2444fde9fcb2263aa0c1d3d03dcc0",
+      "disposition": "issuer archetype; current concrete Micron instance"
+    },
+    {
+      "route": "/gmi-relationships.html",
+      "primary_session": "D13",
+      "repo": "macro",
+      "source": "templates/gmi_relationships.html.j2",
+      "source_pin": "143bdfe08ac2444fde9fcb2263aa0c1d3d03dcc0",
+      "disposition": "product; proposed/admitted relationship distinction"
+    },
+    {
+      "route": "/gmi-coverage.html",
+      "primary_session": "D13",
+      "repo": "macro",
+      "source": "templates/gmi_coverage.html.j2",
+      "source_pin": "143bdfe08ac2444fde9fcb2263aa0c1d3d03dcc0",
+      "disposition": "product; measured/unmeasured coverage distinction"
+    },
+    {
+      "route": "/gmi-states.html",
+      "primary_session": "D13",
+      "repo": "macro",
+      "source": "templates/gmi_states.html.j2",
+      "source_pin": "143bdfe08ac2444fde9fcb2263aa0c1d3d03dcc0",
+      "disposition": "state specimens; qualify user-facing navigation purpose"
+    },
+    {
+      "route": "/expectation_surface.html",
+      "primary_session": "D07",
+      "repo": "macro",
+      "source": "templates/expectation_surface.html.j2",
+      "source_pin": "143bdfe08ac2444fde9fcb2263aa0c1d3d03dcc0",
+      "disposition": "descriptive-only; financial_influence=false; k3e_admissible=false; absent from shell projection"
+    },
+    {
+      "route": "/options/equity-replay",
+      "primary_session": "D08",
+      "repo": "mastermind-terminal",
+      "source": "terminal/app/(shell)/options/equity-replay/page.tsx",
+      "source_pin": "e0ae63e43965ec1d1c93405ee903fd92b63e3470",
+      "disposition": "real entitlement-gated source module; not among current 17 native projection paths"
+    },
+    {
+      "route": "/dev/options-plan",
+      "primary_session": "D08",
+      "repo": "mastermind-terminal",
+      "source": "terminal/app/dev/options-plan/page.tsx",
+      "source_pin": "e0ae63e43965ec1d1c93405ee903fd92b63e3470",
+      "disposition": "dev-only harness; production returns 404; exclude customer navigation"
+    }
+  ]
+}

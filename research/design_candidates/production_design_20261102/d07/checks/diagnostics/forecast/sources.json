@@ -1,0 +1,46 @@
+{
+  "repository": "mastermindx-market-intelligence/mastermind-terminal",
+  "commit": "3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9",
+  "files": [
+    {
+      "local_path": "sources/ForecastPage.tsx",
+      "source_path": "terminal/components/fin/ForecastPage.tsx",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/components/fin/ForecastPage.tsx",
+      "git_blob": "ef781f5f763ee77a70b15ac9278be9d79357ac88",
+      "sha256": "d8784b341d21e2076f2c58cd485c348c01a3aee01c8f2591b66282e8167f09e0",
+      "bytes": 44147
+    },
+    {
+      "local_path": "sources/finFormat.ts",
+      "source_path": "terminal/lib/finFormat.ts",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/lib/finFormat.ts",
+      "git_blob": "97a7fc601016c5575ebe1531b23c953f9de2aa77",
+      "sha256": "caf690e4d96ae70c47a8a7d2c00fc89dddb5122f3cd72c9e44b781ed50c78f05",
+      "bytes": 8086
+    },
+    {
+      "local_path": "sources/gen_fund_cn.py",
+      "source_path": "ingest/gen_fund_cn.py",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/ingest/gen_fund_cn.py",
+      "git_blob": "eaa974c278ded18d4f20b29684fd7cbec2b01f14",
+      "sha256": "2fb10e47869570800ec85a466733e465977c6524fa0253454e9a5e2675e469e7",
+      "bytes": 59458
+    },
+    {
+      "local_path": "../statements/sources/terminal/lib/finStatementMath.ts",
+      "source_path": "terminal/lib/finStatementMath.ts",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/lib/finStatementMath.ts",
+      "git_blob": "9bf1e3077a66d65f2546261cb9efa7b27140fda5",
+      "sha256": "81d9d6aab076b165dec07045533015344b215ee67672d6985cf44acb9beab3b2",
+      "bytes": 29784
+    },
+    {
+      "local_path": "../statements/sources/terminal/lib/markets.ts",
+      "source_path": "terminal/lib/markets.ts",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/lib/markets.ts",
+      "git_blob": "6168662381b7d0a32af90eb262ae2c8862883a1b",
+      "sha256": "6a113c2faa6237f134792f0988d44e657f9fa182fecff9c57eef2919964a50f0",
+      "bytes": 19574
+    }
+  ]
+}

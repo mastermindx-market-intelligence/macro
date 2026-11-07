@@ -1,0 +1,550 @@
+[
+  {
+    "page_id": "p-2-0",
+    "state": "OBSERVED",
+    "document": {
+      "basic_info": {
+        "fileName": "Sector Intelligence · R4 · Astra Pro · 2026-11-02",
+        "pageName": "Page 1",
+        "pageId": "p-1-0",
+        "url": "https://app.paper.design/file/01M6FAXA774QT1VRDMAG7DFQ2W/p-1-0",
+        "rootNodeId": "root_node_p-1-0",
+        "nodeCount": 41,
+        "artboardCount": 1,
+        "artboards": [
+          {
+            "id": "1-0",
+            "name": "Terminal · Sector Breadth · Rotation groups",
+            "childCount": 4,
+            "width": 960,
+            "height": 590,
+            "worldX": -480,
+            "worldY": -295
+          }
+        ],
+        "pages": [
+          {
+            "type": "page",
+            "id": "p-1-0",
+            "name": "Page 1",
+            "icon": null,
+            "isActive": true
+          },
+          {
+            "type": "page",
+            "id": "p-3-0",
+            "name": "D05 · Production journey · provisional",
+            "icon": "design",
+            "isActive": false
+          },
+          {
+            "type": "page",
+            "id": "p-2-0",
+            "name": "R4 · M1",
+            "icon": null,
+            "isActive": false
+          }
+        ],
+        "fontFamilies": [
+          "Inter",
+          "IBM Plex Mono",
+          "PingFang SC",
+          "System Sans-Serif"
+        ],
+        "tokens": {
+          "items": []
+        },
+        "fileId": "01M6FAXA774QT1VRDMAG7DFQ2W",
+        "contentHash": {
+          "tokens": "811c9dc5"
+        }
+      },
+      "identity": {
+        "kind": "file-id",
+        "id": "01M6FAXA774QT1VRDMAG7DFQ2W"
+      },
+      "snapshot_sha256": "1c484f29d4be54409903a3e29b58663daf461d5476f7023c70e0ddc8bc5a4759",
+      "write_binding_ready": true,
+      "binding_error": null
+    },
+    "info": {
+      "fileName": "Sector Intelligence · R4 · Astra Pro · 2026-11-02",
+      "pageName": "R4 · M1",
+      "pageId": "p-2-0",
+      "url": "https://app.paper.design/file/01M6FAXA774QT1VRDMAG7DFQ2W/p-2-0",
+      "rootNodeId": "root_node_p-2-0",
+      "nodeCount": 11511,
+      "artboardCount": 24,
+      "artboards": [
+        {
+          "id": "19-0",
+          "name": "R4 · Brief · desktop · dark · EN",
+          "childCount": 6,
+          "width": 1440,
+          "height": null,
+          "worldX": 0,
+          "worldY": 0
+        },
+        {
+          "id": "214-0",
+          "name": "R4 · Brief · desktop · dark · ZH",
+          "childCount": 6,
+          "width": 1440,
+          "height": null,
+          "worldX": 0,
+          "worldY": 9600
+        },
+        {
+          "id": "2AD-0",
+          "name": "R4 · Brief · desktop · light · ZH",
+          "childCount": 6,
+          "width": 1440,
+          "height": null,
+          "worldX": 0,
+          "worldY": 14400
+        },
+        {
+          "id": "1QN-0",
+          "name": "R4 · Brief · desktop · light · EN",
+          "childCount": 6,
+          "width": 1440,
+          "height": null,
+          "worldX": 0,
+          "worldY": 4800
+        },
+        {
+          "id": "BV-0",
+          "name": "R4 · Cycles workspace (in-shell) · desktop · dark · EN",
+          "childCount": 5,
+          "width": 1440,
+          "height": null,
+          "worldX": 1520,
+          "worldY": 0
+        },
+        {
+          "id": "35L-0",
+          "name": "R4 · Cycles workspace (in-shell) · desktop · dark · ZH",
+          "childCount": 5,
+          "width": 1440,
+          "height": null,
+          "worldX": 1520,
+          "worldY": 9600
+        },
+        {
+          "id": "3OW-0",
+          "name": "R4 · Cycles workspace (in-shell) · desktop · light · ZH",
+          "childCount": 5,
+          "width": 1440,
+          "height": null,
+          "worldX": 1520,
+          "worldY": 14400
+        },
+        {
+          "id": "2KT-0",
+          "name": "R4 · Cycles workspace (in-shell) · desktop · light · EN",
+          "childCount": 5,
+          "width": 1440,
+          "height": null,
+          "worldX": 1520,
+          "worldY": 4800
+        },
+        {
+          "id": "TW-0",
+          "name": "R4 · Component sheet · desktop · dark · EN",
+          "childCount": 9,
+          "width": 1440,
+          "height": null,
+          "worldX": 3040,
+          "worldY": 0
+        },
+        {
+          "id": "49N-0",
+          "name": "R4 · Component sheet · desktop · light · EN",
+          "childCount": 9,
+          "width": 1440,
+          "height": null,
+          "worldX": 3040,
+          "worldY": 4800
+        },
+        {
+          "id": "4UU-0",
+          "name": "R4 · Component sheet · desktop · dark · ZH",
+          "childCount": 9,
+          "width": 1440,
+          "height": null,
+          "worldX": 3040,
+          "worldY": 9600
+        },
+        {
+          "id": "5I6-0",
+          "name": "R4 · Component sheet · desktop · light · ZH",
+          "childCount": 9,
+          "width": 1440,
+          "height": null,
+          "worldX": 3040,
+          "worldY": 14400
+        },
+        {
+          "id": "656-0",
+          "name": "R4 · Brief · mobile · dark · EN",
+          "childCount": 11,
+          "width": 390,
+          "height": null,
+          "worldX": 4720,
+          "worldY": 0
+        },
+        {
+          "id": "7DB-0",
+          "name": "R4 · Brief · mobile · dark · ZH",
+          "childCount": 11,
+          "width": 390,
+          "height": null,
+          "worldX": 6600,
+          "worldY": 0
+        },
+        {
+          "id": "7YK-0",
+          "name": "R4 · Brief · mobile · light · ZH",
+          "childCount": 11,
+          "width": 390,
+          "height": null,
+          "worldX": 7540,
+          "worldY": 0
+        },
+        {
+          "id": "6PT-0",
+          "name": "R4 · Brief · mobile · light · EN",
+          "childCount": 11,
+          "width": 390,
+          "height": null,
+          "worldX": 5660,
+          "worldY": 0
+        },
+        {
+          "id": "6DC-0",
+          "name": "R4 · Cycles · mobile · dark · EN",
+          "childCount": 13,
+          "width": 390,
+          "height": null,
+          "worldX": 5190,
+          "worldY": 0
+        },
+        {
+          "id": "7KW-0",
+          "name": "R4 · Cycles · mobile · dark · ZH",
+          "childCount": 13,
+          "width": 390,
+          "height": null,
+          "worldX": 7070,
+          "worldY": 0
+        },
+        {
+          "id": "87M-0",
+          "name": "R4 · Cycles · mobile · light · ZH",
+          "childCount": 13,
+          "width": 390,
+          "height": null,
+          "worldX": 8010,
+          "worldY": 0
+        },
+        {
+          "id": "6YW-0",
+          "name": "R4 · Cycles · mobile · light · EN",
+          "childCount": 13,
+          "width": 390,
+          "height": null,
+          "worldX": 6130,
+          "worldY": 0
+        },
+        {
+          "id": "8M0-0",
+          "name": "R4 · States board · desktop · dark · EN",
+          "childCount": 3,
+          "width": 1440,
+          "height": null,
+          "worldX": 8480,
+          "worldY": 0
+        },
+        {
+          "id": "9F8-0",
+          "name": "R4 · States board · desktop · light · EN",
+          "childCount": 3,
+          "width": 1440,
+          "height": null,
+          "worldX": 10000,
+          "worldY": 0
+        },
+        {
+          "id": "9QG-0",
+          "name": "R4 · States board · desktop · dark · ZH",
+          "childCount": 3,
+          "width": 1440,
+          "height": null,
+          "worldX": 11520,
+          "worldY": 0
+        },
+        {
+          "id": "A1O-0",
+          "name": "R4 · States board · mobile · dark · EN",
+          "childCount": 3,
+          "width": 390,
+          "height": null,
+          "worldX": 13040,
+          "worldY": 0
+        }
+      ],
+      "pages": [
+        {
+          "type": "page",
+          "id": "p-1-0",
+          "name": "Page 1",
+          "icon": null,
+          "isActive": true
+        },
+        {
+          "type": "page",
+          "id": "p-3-0",
+          "name": "D05 · Production journey · provisional",
+          "icon": "design",
+          "isActive": false
+        },
+        {
+          "type": "page",
+          "id": "p-2-0",
+          "name": "R4 · M1",
+          "icon": null,
+          "isActive": false
+        }
+      ],
+      "fontFamilies": [
+        "Inter",
+        "IBM Plex Mono",
+        "PingFang SC",
+        "System Sans-Serif"
+      ],
+      "tokens": {
+        "items": []
+      }
+    }
+  },
+  {
+    "page_id": "p-3-0",
+    "state": "OBSERVED",
+    "document": {
+      "basic_info": {
+        "fileName": "Sector Intelligence · R4 · Astra Pro · 2026-11-02",
+        "pageName": "Page 1",
+        "pageId": "p-1-0",
+        "url": "https://app.paper.design/file/01M6FAXA774QT1VRDMAG7DFQ2W/p-1-0",
+        "rootNodeId": "root_node_p-1-0",
+        "nodeCount": 41,
+        "artboardCount": 1,
+        "artboards": [
+          {
+            "id": "1-0",
+            "name": "Terminal · Sector Breadth · Rotation groups",
+            "childCount": 4,
+            "width": 960,
+            "height": 590,
+            "worldX": -480,
+            "worldY": -295
+          }
+        ],
+        "pages": [
+          {
+            "type": "page",
+            "id": "p-1-0",
+            "name": "Page 1",
+            "icon": null,
+            "isActive": true
+          },
+          {
+            "type": "page",
+            "id": "p-3-0",
+            "name": "D05 · Production journey · provisional",
+            "icon": "design",
+            "isActive": false
+          },
+          {
+            "type": "page",
+            "id": "p-2-0",
+            "name": "R4 · M1",
+            "icon": null,
+            "isActive": false
+          }
+        ],
+        "fontFamilies": [
+          "Inter",
+          "IBM Plex Mono",
+          "PingFang SC",
+          "System Sans-Serif"
+        ],
+        "tokens": {
+          "items": []
+        },
+        "fileId": "01M6FAXA774QT1VRDMAG7DFQ2W",
+        "contentHash": {
+          "tokens": "811c9dc5"
+        }
+      },
+      "identity": {
+        "kind": "file-id",
+        "id": "01M6FAXA774QT1VRDMAG7DFQ2W"
+      },
+      "snapshot_sha256": "1c484f29d4be54409903a3e29b58663daf461d5476f7023c70e0ddc8bc5a4759",
+      "write_binding_ready": true,
+      "binding_error": null
+    },
+    "info": {
+      "fileName": "Sector Intelligence · R4 · Astra Pro · 2026-11-02",
+      "pageName": "D05 · Production journey · provisional",
+      "pageId": "p-3-0",
+      "url": "https://app.paper.design/file/01M6FAXA774QT1VRDMAG7DFQ2W/p-3-0",
+      "rootNodeId": "root_node_p-3-0",
+      "nodeCount": 1448,
+      "artboardCount": 12,
+      "artboards": [
+        {
+          "id": "ACW-0",
+          "name": "D05 A01 · US rotation evidence · 1440 light · provisional",
+          "childCount": 2,
+          "width": 1440,
+          "height": null,
+          "worldX": 0,
+          "worldY": 0
+        },
+        {
+          "id": "AKO-0",
+          "name": "D05 A02 · Cycles · 390 dark EN · provisional",
+          "childCount": 2,
+          "width": 390,
+          "height": null,
+          "worldX": 1520,
+          "worldY": 0
+        },
+        {
+          "id": "AMY-0",
+          "name": "D05 A03 · China THS · 390 light ZH · provisional",
+          "childCount": 3,
+          "width": 390,
+          "height": null,
+          "worldX": 1990,
+          "worldY": 0
+        },
+        {
+          "id": "AOT-0",
+          "name": "D05 A04 · Canada sector · 1024 light · modal evidence",
+          "childCount": 3,
+          "width": 1024,
+          "height": 900,
+          "worldX": 2460,
+          "worldY": 0
+        },
+        {
+          "id": "ARB-0",
+          "name": "D05 A05 · Taxonomy · 768 light · no ranking",
+          "childCount": 2,
+          "width": 768,
+          "height": null,
+          "worldX": 3564,
+          "worldY": 0
+        },
+        {
+          "id": "ATF-0",
+          "name": "D05 A06 · Namespaced group to Company · 1440 light",
+          "childCount": 2,
+          "width": 1440,
+          "height": 960,
+          "worldX": 4412,
+          "worldY": 0
+        },
+        {
+          "id": "AXK-0",
+          "name": "D05 A07 · Narrative Rotation & dated thesis · 1440 light",
+          "childCount": 2,
+          "width": 1440,
+          "height": null,
+          "worldX": 5932,
+          "worldY": 0
+        },
+        {
+          "id": "B1V-0",
+          "name": "D05 A08 · 320 dark ZH · failure and save states",
+          "childCount": 3,
+          "width": 320,
+          "height": null,
+          "worldX": 7452,
+          "worldY": 0
+        },
+        {
+          "id": "B4G-0",
+          "name": "D05 A10 · Breadth & fund flows · 1280 dark",
+          "childCount": 2,
+          "width": 1280,
+          "height": null,
+          "worldX": 7852,
+          "worldY": 0
+        },
+        {
+          "id": "BB2-0",
+          "name": "D05 A11 · R4 Brief retained in shared shell · 1440 light",
+          "childCount": 2,
+          "width": 1440,
+          "height": null,
+          "worldX": 9212,
+          "worldY": 0
+        },
+        {
+          "id": "BIJ-0",
+          "name": "D05 A12 · Broad rotation & entry evidence · 1440 EN light",
+          "childCount": 2,
+          "width": 1440,
+          "height": null,
+          "worldX": 10732,
+          "worldY": 0
+        },
+        {
+          "id": "BML-0",
+          "name": "D05 A09 · Readme & Build Contract · acceptance held",
+          "childCount": 8,
+          "width": 1600,
+          "height": null,
+          "worldX": 12252,
+          "worldY": 0
+        }
+      ],
+      "pages": [
+        {
+          "type": "page",
+          "id": "p-1-0",
+          "name": "Page 1",
+          "icon": null,
+          "isActive": true
+        },
+        {
+          "type": "page",
+          "id": "p-3-0",
+          "name": "D05 · Production journey · provisional",
+          "icon": "design",
+          "isActive": false
+        },
+        {
+          "type": "page",
+          "id": "p-2-0",
+          "name": "R4 · M1",
+          "icon": null,
+          "isActive": false
+        }
+      ],
+      "fontFamilies": [
+        "Inter",
+        "IBM Plex Mono",
+        "PingFang SC",
+        "System Sans-Serif"
+      ],
+      "tokens": {
+        "items": []
+      }
+    }
+  }
+]

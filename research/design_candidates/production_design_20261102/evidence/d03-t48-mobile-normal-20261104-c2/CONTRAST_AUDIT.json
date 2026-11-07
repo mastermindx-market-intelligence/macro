@@ -1,0 +1,72 @@
+{
+  "schema": "d03.t48_text_contrast_static/v1",
+  "date_utc": "2026-11-04",
+  "source": "Paper native get_jsx; final boards 8-state matrix",
+  "method": "For each Text div with inline color, identify nearest parent or own explicit backgroundColor in Paper JSX, compute sRGB relative luminance contrast. Thresholds: 4.5 normal, 3 large (>=24px or >=18.66px bold).",
+  "limitations": [
+    "Static JSX geometry/color only; no live browser computed-style overrides",
+    "No non-text/SVG contrast, focus rings, keyboard, reduced motion or assistive-technology proof",
+    "No full WCAG certification or final acceptance"
+  ],
+  "before": {
+    "light_boards": 4,
+    "failures_each": 18,
+    "failed_text_node_exposures": 72
+  },
+  "after": {
+    "total_text_nodes": 568,
+    "failed": 0,
+    "min_light": 5.02,
+    "min_dark": 5.93
+  },
+  "states": [
+    {
+      "state": "390-light-en",
+      "textNodes": 71,
+      "failed": 0,
+      "minRatio": 5.02
+    },
+    {
+      "state": "390-dark-en",
+      "textNodes": 71,
+      "failed": 0,
+      "minRatio": 5.93
+    },
+    {
+      "state": "390-light-zh",
+      "textNodes": 71,
+      "failed": 0,
+      "minRatio": 5.02
+    },
+    {
+      "state": "390-dark-zh",
+      "textNodes": 71,
+      "failed": 0,
+      "minRatio": 5.93
+    },
+    {
+      "state": "320-light-en",
+      "textNodes": 71,
+      "failed": 0,
+      "minRatio": 5.02
+    },
+    {
+      "state": "320-dark-en",
+      "textNodes": 71,
+      "failed": 0,
+      "minRatio": 5.93
+    },
+    {
+      "state": "320-light-zh",
+      "textNodes": 71,
+      "failed": 0,
+      "minRatio": 5.02
+    },
+    {
+      "state": "320-dark-zh",
+      "textNodes": 71,
+      "failed": 0,
+      "minRatio": 5.93
+    }
+  ]
+}

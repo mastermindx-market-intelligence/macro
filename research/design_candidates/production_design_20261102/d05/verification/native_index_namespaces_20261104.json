@@ -1,0 +1,387 @@
+{
+  "schema": "d05.native-index-namespace-proof.v1",
+  "macro_head": "4802d1b1e2e53061c42f57e78223ab4e45b16c3a",
+  "fixture_only": true,
+  "native_builder": "render_index_pages",
+  "render_cases": [
+    {
+      "namespace": "nasdaq",
+      "pages": 2,
+      "same_slug_isolated": true,
+      "pruned_only_owned_orphan": true
+    },
+    {
+      "namespace": "russell",
+      "pages": 2,
+      "same_slug_isolated": true,
+      "pruned_only_owned_orphan": true
+    }
+  ],
+  "failure_cases": [
+    {
+      "namespace": "nasdaq",
+      "source_state": "missing",
+      "render_count": 0,
+      "previous_detail_bytes_preserved": true
+    },
+    {
+      "namespace": "nasdaq",
+      "source_state": "malformed",
+      "render_count": 0,
+      "previous_detail_bytes_preserved": true
+    },
+    {
+      "namespace": "nasdaq",
+      "source_state": "empty",
+      "render_count": 0,
+      "previous_detail_bytes_preserved": true
+    },
+    {
+      "namespace": "russell",
+      "source_state": "missing",
+      "render_count": 0,
+      "previous_detail_bytes_preserved": true
+    },
+    {
+      "namespace": "russell",
+      "source_state": "malformed",
+      "render_count": 0,
+      "previous_detail_bytes_preserved": true
+    },
+    {
+      "namespace": "russell",
+      "source_state": "empty",
+      "render_count": 0,
+      "previous_detail_bytes_preserved": true
+    }
+  ],
+  "sources": {
+    "build_subsector_confluence.py": {
+      "sha256": "0eb56920141b7a9a14e84a14dbe0d19cc3a3da65964127585c8e1d95091b4ece",
+      "git_blob": "d5e6b675cb5d05a15d8744c3fbf8639eecb12237",
+      "bytes": 23412
+    },
+    "subsector_detail.html.j2": {
+      "sha256": "ca7a9609ca69a9aa21cd071071c8b0c48b035dcafaba655abde6fa168a07c5f9",
+      "git_blob": "b595dcf2ed6560d6913c975614ddfae64e9561e5",
+      "bytes": 22464
+    },
+    "chart.js": {
+      "sha256": "a31b8e5aa13fafc13605047c05fc0bfb3656f70a9a56dc0e5b2f0bfa78858099",
+      "git_blob": "3e3f538f9ca7fbeba24cd6f4ff2a8943f720ad1e",
+      "bytes": 55162
+    },
+    "lightweight-charts-v5.js": {
+      "sha256": "c0992580867c4912cc9385b3c2728315bcc1a76c7f1087dca908430fccdf31d7",
+      "git_blob": "fcd07f3a170237ac48b62d2c45bfc861d213575e",
+      "bytes": 196203
+    }
+  },
+  "cases": [
+    {
+      "path": "subsector_nasdaq/collision-proof.html",
+      "width": 1440,
+      "height": 1000,
+      "theme": "dark",
+      "lang": "en",
+      "passed": true,
+      "actual": {
+        "theme": "dark",
+        "lang": "en",
+        "ohlc": "../subsectorohlc_nasdaq",
+        "signals": "../subsector_signals_nasdaq",
+        "source": "nasdaq",
+        "lastClose": 114.3,
+        "observed": "2026-10-28",
+        "rendered": "2099-01-01 00:00 UTC",
+        "key": "collision-proof",
+        "kind": "subsector",
+        "kindLabel": "Nasdaq-100 sub-industry",
+        "tickerLinks": [
+          "../stock.html#NDQFIX",
+          "../stock.html#NDQFIX"
+        ],
+        "back": "../subsectors.html",
+        "canvasCount": 15
+      },
+      "native_data_requests": [
+        "http://localhost:8765/d05-index-fixtures/subsectorohlc_nasdaq/collision-proof.json",
+        "http://localhost:8765/d05-index-fixtures/subsector_signals_nasdaq/collision-proof.json"
+      ],
+      "screenshot": "1440-dark-en-nasdaq-collision-proof.png",
+      "screenshot_digest": {
+        "sha256": "c3248e5ba3d9f779e785e8092934842911a1b8ecdcb740d9b135862d3e546f25",
+        "git_blob": "1c249c8b40dc329323399ff199fe7b845075c36a",
+        "bytes": 166034
+      }
+    },
+    {
+      "path": "subsector_nasdaq/amalg-proof.html",
+      "width": 1440,
+      "height": 1000,
+      "theme": "dark",
+      "lang": "en",
+      "passed": true,
+      "actual": {
+        "theme": "dark",
+        "lang": "en",
+        "ohlc": "../subsectorohlc_nasdaq",
+        "signals": "../subsector_signals_nasdaq",
+        "source": "nasdaq",
+        "lastClose": 114.3,
+        "observed": "2026-10-28",
+        "rendered": "2099-01-01 00:00 UTC",
+        "key": "amalg-proof",
+        "kind": "sector",
+        "kindLabel": "Nasdaq-100 complex",
+        "tickerLinks": [
+          "../stock.html#NDQFIX",
+          "../stock.html#NDQFIX"
+        ],
+        "back": "../subsectors.html",
+        "canvasCount": 15
+      },
+      "native_data_requests": [
+        "http://localhost:8765/d05-index-fixtures/subsectorohlc_nasdaq/amalg-proof.json",
+        "http://localhost:8765/d05-index-fixtures/subsector_signals_nasdaq/amalg-proof.json"
+      ],
+      "screenshot": "1440-dark-en-nasdaq-amalg-proof.png",
+      "screenshot_digest": {
+        "sha256": "cc13f49cc6cda9b5fcfa9246cd34be19d19b763584b283b79e3afef5d28b69ad",
+        "git_blob": "5d3ff100439f41f0d03c9680aedcf51cd8f8d954",
+        "bytes": 165470
+      }
+    },
+    {
+      "path": "subsector_russell/collision-proof.html",
+      "width": 1440,
+      "height": 1000,
+      "theme": "dark",
+      "lang": "en",
+      "passed": true,
+      "actual": {
+        "theme": "dark",
+        "lang": "en",
+        "ohlc": "../subsectorohlc_russell",
+        "signals": "../subsector_signals_russell",
+        "source": "russell",
+        "lastClose": 64.3,
+        "observed": "2026-10-29",
+        "rendered": "2099-01-01 00:00 UTC",
+        "key": "collision-proof",
+        "kind": "subsector",
+        "kindLabel": "Russell-2000 sub-industry",
+        "tickerLinks": [
+          "../stock.html#RUSFIX",
+          "../stock.html#RUSFIX"
+        ],
+        "back": "../subsectors.html",
+        "canvasCount": 15
+      },
+      "native_data_requests": [
+        "http://localhost:8765/d05-index-fixtures/subsectorohlc_russell/collision-proof.json",
+        "http://localhost:8765/d05-index-fixtures/subsector_signals_russell/collision-proof.json"
+      ],
+      "screenshot": "1440-dark-en-russell-collision-proof.png",
+      "screenshot_digest": {
+        "sha256": "7095e1c58eb5681e8c4f500046a2a824f809cd2e1ba84feaa1f0b40445f73d14",
+        "git_blob": "e089d06d20cde29b35107c59bebcad68d16225b1",
+        "bytes": 166056
+      }
+    },
+    {
+      "path": "subsector_russell/amalg-proof.html",
+      "width": 1440,
+      "height": 1000,
+      "theme": "dark",
+      "lang": "en",
+      "passed": true,
+      "actual": {
+        "theme": "dark",
+        "lang": "en",
+        "ohlc": "../subsectorohlc_russell",
+        "signals": "../subsector_signals_russell",
+        "source": "russell",
+        "lastClose": 64.3,
+        "observed": "2026-10-29",
+        "rendered": "2099-01-01 00:00 UTC",
+        "key": "amalg-proof",
+        "kind": "sector",
+        "kindLabel": "Russell-2000 complex",
+        "tickerLinks": [
+          "../stock.html#RUSFIX",
+          "../stock.html#RUSFIX"
+        ],
+        "back": "../subsectors.html",
+        "canvasCount": 15
+      },
+      "native_data_requests": [
+        "http://localhost:8765/d05-index-fixtures/subsectorohlc_russell/amalg-proof.json",
+        "http://localhost:8765/d05-index-fixtures/subsector_signals_russell/amalg-proof.json"
+      ],
+      "screenshot": "1440-dark-en-russell-amalg-proof.png",
+      "screenshot_digest": {
+        "sha256": "aae4ae610d718bcf710ebd7501656227f07b5ec2e882ca9c6c6071cc23f6826f",
+        "git_blob": "f02fff17193fbe7d124938bd62ac1f98d424e566",
+        "bytes": 165497
+      }
+    },
+    {
+      "path": "subsector_nasdaq/collision-proof.html",
+      "width": 390,
+      "height": 844,
+      "theme": "light",
+      "lang": "zh",
+      "passed": true,
+      "actual": {
+        "theme": "light",
+        "lang": "zh",
+        "ohlc": "../subsectorohlc_nasdaq",
+        "signals": "../subsector_signals_nasdaq",
+        "source": "nasdaq",
+        "lastClose": 114.3,
+        "observed": "2026-10-28",
+        "rendered": "2099-01-01 00:00 UTC",
+        "key": "collision-proof",
+        "kind": "subsector",
+        "kindLabel": "Nasdaq-100 sub-industry",
+        "tickerLinks": [
+          "../stock.html#NDQFIX",
+          "../stock.html#NDQFIX"
+        ],
+        "back": "../subsectors.html",
+        "canvasCount": 15
+      },
+      "native_data_requests": [
+        "http://localhost:8765/d05-index-fixtures/subsectorohlc_nasdaq/collision-proof.json",
+        "http://localhost:8765/d05-index-fixtures/subsector_signals_nasdaq/collision-proof.json"
+      ],
+      "screenshot": "390-light-zh-nasdaq-collision-proof.png",
+      "screenshot_digest": {
+        "sha256": "c349c47376342498637141c235b3c2b739e1623b7f6e35d8f65b70b5d2d20da4",
+        "git_blob": "bda283041b2058cf28a21a0fa6b6f7b535c0fa6e",
+        "bytes": 113374
+      }
+    },
+    {
+      "path": "subsector_nasdaq/amalg-proof.html",
+      "width": 390,
+      "height": 844,
+      "theme": "light",
+      "lang": "zh",
+      "passed": true,
+      "actual": {
+        "theme": "light",
+        "lang": "zh",
+        "ohlc": "../subsectorohlc_nasdaq",
+        "signals": "../subsector_signals_nasdaq",
+        "source": "nasdaq",
+        "lastClose": 114.3,
+        "observed": "2026-10-28",
+        "rendered": "2099-01-01 00:00 UTC",
+        "key": "amalg-proof",
+        "kind": "sector",
+        "kindLabel": "Nasdaq-100 complex",
+        "tickerLinks": [
+          "../stock.html#NDQFIX",
+          "../stock.html#NDQFIX"
+        ],
+        "back": "../subsectors.html",
+        "canvasCount": 15
+      },
+      "native_data_requests": [
+        "http://localhost:8765/d05-index-fixtures/subsectorohlc_nasdaq/amalg-proof.json",
+        "http://localhost:8765/d05-index-fixtures/subsector_signals_nasdaq/amalg-proof.json"
+      ],
+      "screenshot": "390-light-zh-nasdaq-amalg-proof.png",
+      "screenshot_digest": {
+        "sha256": "d27c387b88a3aa5bd3d5c72cdc7e3b0d19e191535e4e1ad78a8b3f7c23a7a53e",
+        "git_blob": "daaad2279353c9889847d44a9cc4059683e68498",
+        "bytes": 113037
+      }
+    },
+    {
+      "path": "subsector_russell/collision-proof.html",
+      "width": 390,
+      "height": 844,
+      "theme": "light",
+      "lang": "zh",
+      "passed": true,
+      "actual": {
+        "theme": "light",
+        "lang": "zh",
+        "ohlc": "../subsectorohlc_russell",
+        "signals": "../subsector_signals_russell",
+        "source": "russell",
+        "lastClose": 64.3,
+        "observed": "2026-10-29",
+        "rendered": "2099-01-01 00:00 UTC",
+        "key": "collision-proof",
+        "kind": "subsector",
+        "kindLabel": "Russell-2000 sub-industry",
+        "tickerLinks": [
+          "../stock.html#RUSFIX",
+          "../stock.html#RUSFIX"
+        ],
+        "back": "../subsectors.html",
+        "canvasCount": 15
+      },
+      "native_data_requests": [
+        "http://localhost:8765/d05-index-fixtures/subsectorohlc_russell/collision-proof.json",
+        "http://localhost:8765/d05-index-fixtures/subsector_signals_russell/collision-proof.json"
+      ],
+      "screenshot": "390-light-zh-russell-collision-proof.png",
+      "screenshot_digest": {
+        "sha256": "faf03e8ad9baaf099590b63d10e672928dd8111e396559750766f79f145aaecf",
+        "git_blob": "bee42baaac78115c702ad0ede8638ce4c44b6d6b",
+        "bytes": 113785
+      }
+    },
+    {
+      "path": "subsector_russell/amalg-proof.html",
+      "width": 390,
+      "height": 844,
+      "theme": "light",
+      "lang": "zh",
+      "passed": true,
+      "actual": {
+        "theme": "light",
+        "lang": "zh",
+        "ohlc": "../subsectorohlc_russell",
+        "signals": "../subsector_signals_russell",
+        "source": "russell",
+        "lastClose": 64.3,
+        "observed": "2026-10-29",
+        "rendered": "2099-01-01 00:00 UTC",
+        "key": "amalg-proof",
+        "kind": "sector",
+        "kindLabel": "Russell-2000 complex",
+        "tickerLinks": [
+          "../stock.html#RUSFIX",
+          "../stock.html#RUSFIX"
+        ],
+        "back": "../subsectors.html",
+        "canvasCount": 15
+      },
+      "native_data_requests": [
+        "http://localhost:8765/d05-index-fixtures/subsectorohlc_russell/amalg-proof.json",
+        "http://localhost:8765/d05-index-fixtures/subsector_signals_russell/amalg-proof.json"
+      ],
+      "screenshot": "390-light-zh-russell-amalg-proof.png",
+      "screenshot_digest": {
+        "sha256": "47e85567c546ca7fa85a6e7de20734957dcb99c0712022959f3704e2517b2519",
+        "git_blob": "c700b672c46d7bd53907acbc05046e1a4ab01a77",
+        "bytes": 113485
+      }
+    }
+  ],
+  "errors": [],
+  "limits": [
+    "Controlled source and display fixtures; not current index membership or market data.",
+    "Shared navigation include omitted in this standalone template proof.",
+    "Company href and board return href checked; no new authenticated Company or save acceptance.",
+    "Synthetic prices and sessions; native calendar/marker/scientific qualification remains separate."
+  ],
+  "passed": true,
+  "recorded_utc": "2026-11-04T12:09:10.717443+00:00"
+}

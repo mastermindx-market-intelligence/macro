@@ -1,0 +1,358 @@
+[
+  [
+    "empty route",
+    "",
+    {
+      "kind": "company"
+    }
+  ],
+  [
+    "explicit company",
+    "view=company",
+    {
+      "kind": "company"
+    }
+  ],
+  [
+    "listing + page",
+    "symbol=BRK.B&page=statements",
+    {
+      "kind": "company",
+      "symbol": "BRK.B",
+      "page": "statements"
+    }
+  ],
+  [
+    "legacy pane",
+    "symbol=NVDA&pane=earnings",
+    {
+      "kind": "company",
+      "symbol": "NVDA",
+      "page": "earnings"
+    }
+  ],
+  [
+    "page wins over pane",
+    "view=company&page=intelligence&pane=earnings",
+    {
+      "kind": "company",
+      "page": "intelligence"
+    }
+  ],
+  [
+    "empty page present masks pane",
+    "page=&pane=earnings",
+    {
+      "kind": "company"
+    }
+  ],
+  [
+    "first of repeated symbols",
+    "symbol=0700.HK&symbol=NVDA",
+    {
+      "kind": "company",
+      "symbol": "0700.HK"
+    }
+  ],
+  [
+    "first of repeated pages",
+    "page=forecast&page=earnings",
+    {
+      "kind": "company",
+      "page": "forecast"
+    }
+  ],
+  [
+    "pass unsupported page name to workspace",
+    "page=unlisted",
+    {
+      "kind": "company",
+      "page": "unlisted"
+    }
+  ],
+  [
+    "foreign field ignored",
+    "unrelated=keep&symbol=600519.SS",
+    {
+      "kind": "company",
+      "symbol": "600519.SS"
+    }
+  ],
+  [
+    "malformed listing forwarded to workspace guard",
+    "symbol=BAD%2FPATH",
+    {
+      "kind": "company",
+      "symbol": "BAD/PATH"
+    }
+  ],
+  [
+    "blank view",
+    "view=",
+    {
+      "kind": "unsupported",
+      "reason": "invalid_view"
+    }
+  ],
+  [
+    "whitespace view",
+    "view=%20%20",
+    {
+      "kind": "unsupported",
+      "reason": "invalid_view"
+    }
+  ],
+  [
+    "identical repeated view",
+    "view=company&view=company",
+    {
+      "kind": "unsupported",
+      "reason": "invalid_view"
+    }
+  ],
+  [
+    "conflicting view",
+    "view=theses&view=company",
+    {
+      "kind": "unsupported",
+      "reason": "invalid_view"
+    }
+  ],
+  [
+    "unknown view",
+    "view=earnings",
+    {
+      "kind": "unsupported",
+      "reason": "unsupported_view"
+    }
+  ],
+  [
+    "thesis outside view",
+    "thesis=123e4567-e89b-42d3-a456-426614174000",
+    {
+      "kind": "unsupported",
+      "reason": "thesis_requires_theses"
+    }
+  ],
+  [
+    "thesis on company",
+    "view=company&thesis=123e4567-e89b-42d3-a456-426614174000",
+    {
+      "kind": "unsupported",
+      "reason": "thesis_requires_theses"
+    }
+  ],
+  [
+    "plain theses",
+    "view=theses&symbol=BRK.B",
+    {
+      "kind": "theses",
+      "symbol": "BRK.B"
+    }
+  ],
+  [
+    "encoded index symbol",
+    "view=theses&symbol=%5EGSPC",
+    {
+      "kind": "theses",
+      "symbol": "^GSPC"
+    }
+  ],
+  [
+    "thesis UUID lowercased",
+    "view=theses&thesis=123E4567-E89B-42D3-A456-426614174000",
+    {
+      "kind": "theses",
+      "thesisId": "123e4567-e89b-42d3-a456-426614174000"
+    }
+  ],
+  [
+    "empty thesis",
+    "view=theses&thesis=",
+    {
+      "kind": "invalid_thesis"
+    }
+  ],
+  [
+    "bad thesis",
+    "view=theses&thesis=broken",
+    {
+      "kind": "invalid_thesis"
+    }
+  ],
+  [
+    "nonadmitted UUID version",
+    "view=theses&thesis=123e4567-e89b-72d3-a456-426614174000",
+    {
+      "kind": "invalid_thesis"
+    }
+  ],
+  [
+    "bad RFC variant",
+    "view=theses&thesis=123e4567-e89b-42d3-1456-426614174000",
+    {
+      "kind": "invalid_thesis"
+    }
+  ],
+  [
+    "duplicate same thesis",
+    "view=theses&thesis=123e4567-e89b-42d3-a456-426614174000&thesis=123e4567-e89b-42d3-a456-426614174000",
+    {
+      "kind": "invalid_thesis"
+    }
+  ],
+  [
+    "investigations library",
+    "view=investigations&symbol=NVDA",
+    {
+      "kind": "investigations",
+      "symbol": "NVDA"
+    }
+  ],
+  [
+    "investigation ID head",
+    "view=investigations&investigation=123E4567-E89B-42D3-A456-426614174000",
+    {
+      "kind": "investigations",
+      "investigationId": "123e4567-e89b-42d3-a456-426614174000"
+    }
+  ],
+  [
+    "earliest revision",
+    "view=investigations&investigation=123e4567-e89b-42d3-a456-426614174000&revision=1",
+    {
+      "kind": "investigations",
+      "investigationId": "123e4567-e89b-42d3-a456-426614174000",
+      "revision": 1
+    }
+  ],
+  [
+    "upper bound revision",
+    "view=investigations&investigation=123e4567-e89b-42d3-a456-426614174000&revision=2147483647",
+    {
+      "kind": "investigations",
+      "investigationId": "123e4567-e89b-42d3-a456-426614174000",
+      "revision": 2147483647
+    }
+  ],
+  [
+    "orphan revision",
+    "view=investigations&revision=7",
+    {
+      "kind": "unsupported",
+      "reason": "invalid_view"
+    }
+  ],
+  [
+    "investigation outside view",
+    "view=company&investigation=123e4567-e89b-42d3-a456-426614174000",
+    {
+      "kind": "unsupported",
+      "reason": "invalid_view"
+    }
+  ],
+  [
+    "revision outside view",
+    "view=theses&revision=2",
+    {
+      "kind": "unsupported",
+      "reason": "invalid_view"
+    }
+  ],
+  [
+    "thesis on investigations",
+    "view=investigations&thesis=123e4567-e89b-42d3-a456-426614174000",
+    {
+      "kind": "unsupported",
+      "reason": "thesis_requires_theses"
+    }
+  ],
+  [
+    "duplicate same investigation",
+    "view=investigations&investigation=123e4567-e89b-42d3-a456-426614174000&investigation=123e4567-e89b-42d3-a456-426614174000",
+    {
+      "kind": "unsupported",
+      "reason": "invalid_view"
+    }
+  ],
+  [
+    "malformed investigation",
+    "view=investigations&investigation=bad",
+    {
+      "kind": "unsupported",
+      "reason": "invalid_view"
+    }
+  ],
+  [
+    "duplicate revision",
+    "view=investigations&investigation=123e4567-e89b-42d3-a456-426614174000&revision=2&revision=2",
+    {
+      "kind": "unsupported",
+      "reason": "invalid_view"
+    }
+  ],
+  [
+    "invalid revision \"0\"",
+    "view=investigations&investigation=123e4567-e89b-42d3-a456-426614174000&revision=0",
+    {
+      "kind": "unsupported",
+      "reason": "invalid_view"
+    }
+  ],
+  [
+    "invalid revision \"-1\"",
+    "view=investigations&investigation=123e4567-e89b-42d3-a456-426614174000&revision=-1",
+    {
+      "kind": "unsupported",
+      "reason": "invalid_view"
+    }
+  ],
+  [
+    "invalid revision \"01\"",
+    "view=investigations&investigation=123e4567-e89b-42d3-a456-426614174000&revision=01",
+    {
+      "kind": "unsupported",
+      "reason": "invalid_view"
+    }
+  ],
+  [
+    "invalid revision \"1.5\"",
+    "view=investigations&investigation=123e4567-e89b-42d3-a456-426614174000&revision=1.5",
+    {
+      "kind": "unsupported",
+      "reason": "invalid_view"
+    }
+  ],
+  [
+    "invalid revision \"2147483648\"",
+    "view=investigations&investigation=123e4567-e89b-42d3-a456-426614174000&revision=2147483648",
+    {
+      "kind": "unsupported",
+      "reason": "invalid_view"
+    }
+  ],
+  [
+    "invalid revision \"00000000001\"",
+    "view=investigations&investigation=123e4567-e89b-42d3-a456-426614174000&revision=00000000001",
+    {
+      "kind": "unsupported",
+      "reason": "invalid_view"
+    }
+  ],
+  [
+    "invalid revision \"1e2\"",
+    "view=investigations&investigation=123e4567-e89b-42d3-a456-426614174000&revision=1e2",
+    {
+      "kind": "unsupported",
+      "reason": "invalid_view"
+    }
+  ],
+  [
+    "invalid revision \"\"",
+    "view=investigations&investigation=123e4567-e89b-42d3-a456-426614174000&revision=",
+    {
+      "kind": "unsupported",
+      "reason": "invalid_view"
+    }
+  ]
+]

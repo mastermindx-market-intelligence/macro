@@ -1,0 +1,650 @@
+{
+  "kind": "original Paper references inspected for D07; not approvals or revision IDs",
+  "observation_date_utc": "2026-11-03",
+  "pages": [
+    {
+      "file": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "page": "p-S-0",
+      "url": "https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-S-0",
+      "page_name": "Company · Production Suite · R3",
+      "node_count": 1466,
+      "boards": [
+        {
+          "id": "1BEK-0",
+          "name": "01 · R3 · Intelligence Brief · Desktop",
+          "children": 2,
+          "width": 1440,
+          "height": null
+        },
+        {
+          "id": "1CD3-0",
+          "name": "06 · R3 · Lab Expectations · Desktop",
+          "children": 2,
+          "width": 1440,
+          "height": null
+        },
+        {
+          "id": "1CIP-0",
+          "name": "07 · R3 · Lab Valuation · Desktop",
+          "children": 2,
+          "width": 1440,
+          "height": null
+        },
+        {
+          "id": "1COB-0",
+          "name": "08 · R3 · Lab Replay · Desktop",
+          "children": 2,
+          "width": 1440,
+          "height": null
+        },
+        {
+          "id": "1BKQ-0",
+          "name": "02 · R3 · Financials · Desktop",
+          "children": 2,
+          "width": 1440,
+          "height": null
+        },
+        {
+          "id": "1BQC-0",
+          "name": "03 · R3 · Earnings · Desktop",
+          "children": 2,
+          "width": 1440,
+          "height": null
+        },
+        {
+          "id": "1BVY-0",
+          "name": "04 · R3 · Market · Desktop",
+          "children": 2,
+          "width": 1440,
+          "height": null
+        },
+        {
+          "id": "1C1K-0",
+          "name": "05 · R3 · Ownership · Desktop",
+          "children": 2,
+          "width": 1440,
+          "height": null
+        },
+        {
+          "id": "1D9K-0",
+          "name": "09 · R3 · Lab Expectations · Mobile",
+          "children": 0,
+          "width": 390,
+          "height": 844
+        }
+      ]
+    },
+    {
+      "file": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "page": "p-M-1",
+      "url": "https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-M-1",
+      "page_name": "Company R2 · Chinese Mobile + 320px Variants",
+      "node_count": 3521,
+      "boards": [
+        {
+          "id": "AS7-0",
+          "name": "24 · R2 · Mobile Brief · Dark ZH",
+          "children": 3,
+          "width": 390,
+          "height": null
+        },
+        {
+          "id": "AYN-0",
+          "name": "25 · R2 · Mobile Evidence · Dark ZH",
+          "children": 6,
+          "width": 390,
+          "height": null
+        },
+        {
+          "id": "B63-0",
+          "name": "26 · R2 · Mobile Brief · Light ZH",
+          "children": 3,
+          "width": 390,
+          "height": null
+        },
+        {
+          "id": "BCJ-0",
+          "name": "27 · R2 · Mobile Evidence · Light ZH",
+          "children": 6,
+          "width": 390,
+          "height": null
+        },
+        {
+          "id": "11UI-0",
+          "name": "63 · R2 · Mobile Results + Analysis · Light ZH",
+          "children": 4,
+          "width": 390,
+          "height": null
+        },
+        {
+          "id": "11XD-0",
+          "name": "64 · R2 · Mobile Research + Relationships · Light ZH",
+          "children": 4,
+          "width": 390,
+          "height": null
+        },
+        {
+          "id": "120Q-0",
+          "name": "65 · R2 · Mobile Results + Analysis · Dark ZH",
+          "children": 4,
+          "width": 390,
+          "height": null
+        },
+        {
+          "id": "123K-0",
+          "name": "66 · R2 · Mobile Research + Relationships · Dark ZH",
+          "children": 4,
+          "width": 390,
+          "height": null
+        },
+        {
+          "id": "17TO-0",
+          "name": "108 · R2 · Mobile Expectations · Light ZH",
+          "children": 4,
+          "width": 390,
+          "height": null
+        },
+        {
+          "id": "17Z2-0",
+          "name": "109 · R2 · Mobile Expectations · Dark ZH",
+          "children": 4,
+          "width": 390,
+          "height": null
+        },
+        {
+          "id": "181U-0",
+          "name": "110 · R2 · Mobile Valuation Lab · Light ZH",
+          "children": 4,
+          "width": 390,
+          "height": null
+        },
+        {
+          "id": "185T-0",
+          "name": "111 · R2 · Mobile Valuation Lab · Dark ZH",
+          "children": 4,
+          "width": 390,
+          "height": null
+        },
+        {
+          "id": "13MY-0",
+          "name": "80 · R2 · Mobile Call + Q&A · Transcript Unavailable · Light ZH",
+          "children": 4,
+          "width": 390,
+          "height": 2300
+        },
+        {
+          "id": "13MZ-0",
+          "name": "81 · R2 · Mobile Sources + Coverage · Light ZH",
+          "children": 4,
+          "width": 390,
+          "height": 2300
+        },
+        {
+          "id": "1498-0",
+          "name": "82 · R2 · Mobile Call + Q&A · Transcript Unavailable · Dark ZH",
+          "children": 4,
+          "width": 390,
+          "height": 2300
+        },
+        {
+          "id": "14BV-0",
+          "name": "83 · R2 · Mobile Sources + Coverage · Dark ZH",
+          "children": 4,
+          "width": 390,
+          "height": 2300
+        },
+        {
+          "id": "16Z7-0",
+          "name": "103 · R2 · 320 · Results + Analysis · Light ZH",
+          "children": 4,
+          "width": 320,
+          "height": null
+        },
+        {
+          "id": "16Z8-0",
+          "name": "104 · R2 · 320 · Research + Evidence · Light ZH",
+          "children": 4,
+          "width": 320,
+          "height": null
+        },
+        {
+          "id": "175F-0",
+          "name": "105 · R2 · 320 · Results + Analysis · Dark ZH",
+          "children": 4,
+          "width": 320,
+          "height": null
+        },
+        {
+          "id": "1787-0",
+          "name": "106 · R2 · 320 · Research + Evidence · Dark ZH",
+          "children": 4,
+          "width": 320,
+          "height": null
+        },
+        {
+          "id": "18CG-0",
+          "name": "113 · R2 · Mobile Company Change Ledger · Light ZH",
+          "children": 4,
+          "width": 390,
+          "height": null
+        }
+      ]
+    },
+    {
+      "file": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "page": "p-Q-0",
+      "url": "https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-Q-0",
+      "page_name": "Returns Calendar · Terminal + Stock Dossier",
+      "node_count": 623,
+      "boards": [
+        {
+          "id": "1BBQ-0",
+          "name": "START HERE · Returns Calendar · Terminal + Dossier",
+          "children": 4,
+          "width": 1440,
+          "height": 680
+        },
+        {
+          "id": "1AVD-0",
+          "name": "00 · Returns Calendar · Stock Dossier · Desktop",
+          "children": 1,
+          "width": 1440,
+          "height": 1000
+        },
+        {
+          "id": "1AZW-0",
+          "name": "01 · Returns Calendar · Stock Dossier · Mobile",
+          "children": 1,
+          "width": 390,
+          "height": 844
+        },
+        {
+          "id": "1B3F-0",
+          "name": "02 · Returns Calendar · Early Close",
+          "children": 1,
+          "width": 760,
+          "height": 440
+        },
+        {
+          "id": "1B4J-0",
+          "name": "03 · Returns Calendar · Rail Entry · 360",
+          "children": 1,
+          "width": 360,
+          "height": 320
+        },
+        {
+          "id": "1B5H-0",
+          "name": "HOLD · v2 Desktop 613W-0 · source p-15",
+          "children": 0,
+          "width": 1440,
+          "height": 900
+        },
+        {
+          "id": "1B5I-0",
+          "name": "05 · Returns v2 · Mobile Study · 390",
+          "children": 1,
+          "width": 390,
+          "height": 1290
+        },
+        {
+          "id": "1BAE-0",
+          "name": "06 · Returns v2 · Expanded Sessions + Recovery",
+          "children": 1,
+          "width": 900,
+          "height": 620
+        }
+      ]
+    },
+    {
+      "file": "01M5EX8RTPR7YEZD2A144XED2S",
+      "page": "p-1-0",
+      "url": "https://app.paper.design/file/01M5EX8RTPR7YEZD2A144XED2S/p-1-0",
+      "page_name": "Expectation Surface · R1",
+      "node_count": 4504,
+      "boards": [
+        {
+          "id": "6-0",
+          "name": "ES/1440/Dark/EN",
+          "children": 2,
+          "width": 1440,
+          "height": 4068
+        },
+        {
+          "id": "1SD-0",
+          "name": "ES/1440/Dark/ZH",
+          "children": 2,
+          "width": 1440,
+          "height": 3906
+        },
+        {
+          "id": "WI-0",
+          "name": "ES/1440/Light/EN",
+          "children": 2,
+          "width": 1440,
+          "height": 3140
+        },
+        {
+          "id": "2NZ-0",
+          "name": "ES/390/Dark/EN",
+          "children": 2,
+          "width": 390,
+          "height": 6304
+        },
+        {
+          "id": "392-0",
+          "name": "ES/390/Light/ZH",
+          "children": 2,
+          "width": 390,
+          "height": 6058
+        }
+      ]
+    },
+    {
+      "file": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "page": "p-A-1",
+      "url": "https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-A-1",
+      "page_name": "07 · Company · Research, Results + Sources",
+      "node_count": 4714,
+      "boards": [
+        {
+          "id": "CH-0",
+          "name": "21 · DESKTOP · Dark · Intelligence · Focus",
+          "children": 16,
+          "width": 1440,
+          "height": null
+        },
+        {
+          "id": "WZ6-0",
+          "name": "56 · STATE · Theme Context · Historical Event Boundary",
+          "children": 17,
+          "width": 1440,
+          "height": null
+        },
+        {
+          "id": "V5B-0",
+          "name": "55 · STATE · Theme Context · Verified Receipt",
+          "children": 17,
+          "width": 1440,
+          "height": null
+        },
+        {
+          "id": "5VX-0",
+          "name": "41 · TABLET · Dark · Brief",
+          "children": 8,
+          "width": 820,
+          "height": null
+        },
+        {
+          "id": "4FW-0",
+          "name": "51 · MOBILE · Dark · Brief",
+          "children": 8,
+          "width": 390,
+          "height": null
+        },
+        {
+          "id": "XAC-0",
+          "name": "57 · MOBILE STATE · Theme Context · Verified Receipt",
+          "children": 10,
+          "width": 390,
+          "height": null
+        },
+        {
+          "id": "3XG-0",
+          "name": "22 · DESKTOP · Dark · Results + Outlook",
+          "children": 24,
+          "width": 1440,
+          "height": null
+        },
+        {
+          "id": "6TD-0",
+          "name": "42 · TABLET · Results + Outlook · Preferred",
+          "children": 8,
+          "width": 820,
+          "height": null
+        },
+        {
+          "id": "4Z3-0",
+          "name": "52 · MOBILE · Results + Outlook · Preferred",
+          "children": 8,
+          "width": 390,
+          "height": null
+        },
+        {
+          "id": "2VY-0",
+          "name": "23 · DESKTOP · Dark · Call + Q&A",
+          "children": 25,
+          "width": 1440,
+          "height": null
+        },
+        {
+          "id": "6NJ-0",
+          "name": "43 · TABLET · Call + Q&A · Preferred",
+          "children": 8,
+          "width": 820,
+          "height": null
+        },
+        {
+          "id": "4UW-0",
+          "name": "53 · MOBILE · Call + Q&A · Preferred",
+          "children": 8,
+          "width": 390,
+          "height": null
+        },
+        {
+          "id": "3FK-0",
+          "name": "24 · DESKTOP · Dark · Sources + Method",
+          "children": 24,
+          "width": 1440,
+          "height": null
+        },
+        {
+          "id": "6IP-0",
+          "name": "44 · TABLET · Sources + Method · Preferred",
+          "children": 8,
+          "width": 820,
+          "height": null
+        },
+        {
+          "id": "4QR-0",
+          "name": "54 · MOBILE · Sources + Method · Preferred",
+          "children": 8,
+          "width": 390,
+          "height": null
+        }
+      ]
+    },
+    {
+      "file": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "page": "p-B-1",
+      "url": "https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-B-1",
+      "page_name": "08 · Company · Financials, Market + Ownership",
+      "node_count": 2407,
+      "boards": [
+        {
+          "id": "1AN-0",
+          "name": "30 · DESKTOP · Dark · Overview",
+          "children": 7,
+          "width": 1440,
+          "height": 900
+        },
+        {
+          "id": "57U-0",
+          "name": "60 · MOBILE · Overview",
+          "children": 7,
+          "width": 390,
+          "height": 1000
+        },
+        {
+          "id": "7L5-0",
+          "name": "31 · DESKTOP · Dark · Financials",
+          "children": 8,
+          "width": 1440,
+          "height": 1056
+        },
+        {
+          "id": "5FS-0",
+          "name": "61 · MOBILE · Financials",
+          "children": 8,
+          "width": 390,
+          "height": 1160
+        },
+        {
+          "id": "7TH-0",
+          "name": "32 · DESKTOP · Dark · Earnings",
+          "children": 8,
+          "width": 1440,
+          "height": 1092
+        },
+        {
+          "id": "538-0",
+          "name": "62 · MOBILE · Earnings",
+          "children": 9,
+          "width": 390,
+          "height": 1100
+        },
+        {
+          "id": "81Q-0",
+          "name": "33 · DESKTOP · Dark · Market",
+          "children": 10,
+          "width": 1440,
+          "height": 1060
+        },
+        {
+          "id": "5BC-0",
+          "name": "63 · MOBILE · Market",
+          "children": 7,
+          "width": 390,
+          "height": 1080
+        },
+        {
+          "id": "7DH-0",
+          "name": "34 · DESKTOP · Dark · Ownership",
+          "children": 8,
+          "width": 1440,
+          "height": 1078
+        },
+        {
+          "id": "682-0",
+          "name": "46 · TABLET · Ownership · Preferred",
+          "children": 8,
+          "width": 820,
+          "height": null
+        },
+        {
+          "id": "4MG-0",
+          "name": "56 · MOBILE · Ownership · Preferred",
+          "children": 8,
+          "width": 390,
+          "height": null
+        }
+      ]
+    },
+    {
+      "file": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "page": "p-L-1",
+      "url": "https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-L-1",
+      "page_name": "Company R2 · C01 Source, Lineage + Evidence States",
+      "node_count": 3308,
+      "boards": [
+        {
+          "id": "KY3-1",
+          "name": "17 · R2 STATE · Desktop C01 Evidence · Dark ZH",
+          "children": 10,
+          "width": 1440,
+          "height": 1140
+        },
+        {
+          "id": "N87-1",
+          "name": "22 · R2 STATE · Desktop C01 Sources · Dark ZH",
+          "children": 10,
+          "width": 1440,
+          "height": 1140
+        },
+        {
+          "id": "NEF-1",
+          "name": "23 · R2 STATE · Desktop C01 Lineage · Dark ZH",
+          "children": 10,
+          "width": 1440,
+          "height": 1140
+        },
+        {
+          "id": "PZZ-0",
+          "name": "38 · R2 STATE · Desktop C01 Source Access Restricted · Dark ZH",
+          "children": 10,
+          "width": 1440,
+          "height": 1140
+        },
+        {
+          "id": "Q6K-0",
+          "name": "39 · R2 STATE · Desktop C01 Revision History Unavailable · Dark ZH",
+          "children": 10,
+          "width": 1440,
+          "height": 1140
+        },
+        {
+          "id": "LTD-1",
+          "name": "19 · R2 STATE · Desktop C01 Evidence · Light ZH",
+          "children": 10,
+          "width": 1440,
+          "height": 1140
+        },
+        {
+          "id": "MAS-1",
+          "name": "20 · R2 STATE · Desktop C01 Sources · Light ZH",
+          "children": 10,
+          "width": 1440,
+          "height": 1140
+        },
+        {
+          "id": "P9W-0",
+          "name": "28 · R2 STATE · Desktop C01 Source Access Restricted · Light ZH",
+          "children": 10,
+          "width": 1440,
+          "height": 1140
+        },
+        {
+          "id": "MH0-1",
+          "name": "21 · R2 STATE · Desktop C01 Lineage · Light ZH",
+          "children": 10,
+          "width": 1440,
+          "height": 1140
+        },
+        {
+          "id": "TBM-0",
+          "name": "41 · R2 STATE · Desktop C01 Context Changed · Dark ZH",
+          "children": 11,
+          "width": 1440,
+          "height": 1140
+        },
+        {
+          "id": "T4X-0",
+          "name": "40 · R2 STATE · Desktop C01 Context Changed · Light ZH",
+          "children": 11,
+          "width": 1440,
+          "height": 1140
+        },
+        {
+          "id": "PGG-0",
+          "name": "29 · R2 STATE · Desktop C01 Revision History Unavailable · Light ZH",
+          "children": 10,
+          "width": 1440,
+          "height": 1140
+        },
+        {
+          "id": "NOA-1",
+          "name": "24 · BUILDER · C01 Evidence Drawer + Invalidation Contract",
+          "children": 5,
+          "width": 1440,
+          "height": 1980
+        },
+        {
+          "id": "U2C-0",
+          "name": "42 · C01 · Review + Recalculation Outcomes",
+          "children": 3,
+          "width": 1760,
+          "height": null
+        }
+      ]
+    }
+  ]
+}

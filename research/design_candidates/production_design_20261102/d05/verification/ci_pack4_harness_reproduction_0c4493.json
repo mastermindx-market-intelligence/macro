@@ -1,0 +1,92 @@
+{
+  "source_ref": "0c4493c7025f7c1c0f9e558860d5e4ba33457cd1",
+  "source_blobs": {
+    "tests/test_si_workspace_shell.py": "9d40017add0d844de5decc854091f0f370a4b158",
+    "templates/si_workspace.js": "ac426abc3a8a49a6d1023cc53b8eedb00a23c57a"
+  },
+  "source_files_modified": false,
+  "scope": "isolated in-memory reproduction; incumbent source writer retains ownership",
+  "cases": [
+    {
+      "hashes": [
+        "#si-measured",
+        "#overview",
+        "#confluence"
+      ],
+      "expected": {
+        "#si-measured": [
+          "map",
+          "si-measured"
+        ],
+        "#overview": [
+          "overview",
+          null
+        ],
+        "#confluence": [
+          "confluence",
+          null
+        ]
+      },
+      "actual": {
+        "#si-measured": [
+          "map",
+          "si-measured"
+        ],
+        "#overview": [
+          "overview",
+          null
+        ],
+        "#confluence": [
+          "confluence",
+          null
+        ]
+      },
+      "result": "PASS",
+      "seconds": 3.077
+    },
+    {
+      "hashes": [
+        "si-heat-section",
+        "accumulation-section",
+        "actnow-section"
+      ],
+      "expected": {
+        "si-heat-section": [
+          "explore",
+          "theme-heat-section"
+        ],
+        "accumulation-section": [
+          "moving",
+          "accumulation-section"
+        ],
+        "actnow-section": [
+          "overview",
+          "actnow-section"
+        ]
+      },
+      "actual": {
+        "si-heat-section": [
+          "explore",
+          "theme-heat-section"
+        ],
+        "accumulation-section": [
+          "moving",
+          "accumulation-section"
+        ],
+        "actnow-section": [
+          "overview",
+          "actnow-section"
+        ]
+      },
+      "result": "PASS",
+      "seconds": 0.077
+    }
+  ],
+  "baseline": {
+    "result": "EXPECTED_FAILURE_REPRODUCED",
+    "cause": "ReferenceError: URL is not defined",
+    "seconds": 3.064
+  },
+  "repair": "Only provide browser host WHATWG URL plus stable absolute location.href. Original routing assertions and real timers retained. No product code edits, caught exceptions, skips, or auth/source bypass.",
+  "result": "HOSTED_FAILURE_REPRODUCED_AND_MINIMAL_HOST_FIX_PROVEN"
+}

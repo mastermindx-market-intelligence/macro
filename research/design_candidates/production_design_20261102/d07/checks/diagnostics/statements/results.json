@@ -1,0 +1,535 @@
+{
+  "diagnostic": "d07_statement_helper_source_baseline",
+  "status": "BASELINE_REPRODUCED",
+  "commit": "3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9",
+  "runtime": "v24.22.1",
+  "fixtureNature": "Synthetic source-shaped inputs. This run does not certify producer outputs, UI wording, browser behavior or visual acceptance.",
+  "sourceIntegrity": {
+    "files": 4,
+    "checks": 12,
+    "identities": [
+      {
+        "path": "terminal/lib/finStatementMath.ts",
+        "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/lib/finStatementMath.ts",
+        "git_blob": "9bf1e3077a66d65f2546261cb9efa7b27140fda5",
+        "sha256": "81d9d6aab076b165dec07045533015344b215ee67672d6985cf44acb9beab3b2",
+        "bytes": 29784
+      },
+      {
+        "path": "terminal/lib/finStatements.ts",
+        "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/lib/finStatements.ts",
+        "git_blob": "d6b0cff78c94f6c4cead423122cf4fcd6a5f19d5",
+        "sha256": "be18116d51b66222cf78247c5882b43abc6967cb82a9a09232c77fe8b6c343d2",
+        "bytes": 6411
+      },
+      {
+        "path": "terminal/lib/markets.ts",
+        "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/lib/markets.ts",
+        "git_blob": "6168662381b7d0a32af90eb262ae2c8862883a1b",
+        "sha256": "6a113c2faa6237f134792f0988d44e657f9fa182fecff9c57eef2919964a50f0",
+        "bytes": 19574
+      },
+      {
+        "path": "terminal/lib/fund.ts",
+        "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9/terminal/lib/fund.ts",
+        "git_blob": "7d60914b44d123bc30e63dc7a0652b9ea24aa9a1",
+        "sha256": "37bb8a8631fcc5ee0dd748079e17397dfa520a707eb07f164de95122c0b25808",
+        "bytes": 27726
+      }
+    ]
+  },
+  "counts": {
+    "cases": 22,
+    "assertions": 69,
+    "reproduced": 22,
+    "mismatches": 0,
+    "expectedUndesirableBaselines": 1,
+    "uiAssertions": 0
+  },
+  "unsupported": [
+    "S05 annual-only CN forecast rendering and optional third target are owned by gen_fund_cn.py and ForecastPage.tsx, outside these statement helpers.",
+    "Proposed comparison-reason wording is untested. The comparison helpers return number-or-null without a typed reason.",
+    "Canonical HK null EPS retention is tested. The upstream producer's decision to emit that null is not executed here.",
+    "Source access, filing clocks, real payload coverage and browser/Paper interactions are outside this isolated helper diagnostic."
+  ],
+  "cases": [
+    {
+      "id": "ST01",
+      "task": "S01",
+      "label": "Canonical annual comparison and Revenue history agree",
+      "expectation": "SOURCE_BEHAVIOR",
+      "status": "BASELINE_REPRODUCED",
+      "assertions": 3,
+      "observed": {
+        "prior": 0,
+        "changes": [
+          null,
+          20
+        ],
+        "points": [
+          {
+            "period": "FY2025",
+            "value": 100000000,
+            "yoy": null
+          },
+          {
+            "period": "FY2026",
+            "value": 120000000,
+            "yoy": 20
+          }
+        ]
+      }
+    },
+    {
+      "id": "ST02",
+      "task": "S03",
+      "label": "True zero, null slot and zero denominator stay distinct",
+      "expectation": "SOURCE_BEHAVIOR",
+      "status": "BASELINE_REPRODUCED",
+      "assertions": 3,
+      "observed": {
+        "changes": [
+          null,
+          -100,
+          null,
+          null
+        ],
+        "points": [
+          {
+            "period": "FY2025",
+            "value": 100000000,
+            "yoy": null
+          },
+          {
+            "period": "FY2026",
+            "value": 0,
+            "yoy": -100
+          },
+          {
+            "period": "FY2027",
+            "value": 50000000,
+            "yoy": null
+          },
+          {
+            "period": "FY2028",
+            "value": null,
+            "yoy": null
+          }
+        ],
+        "coverage": 3
+      }
+    },
+    {
+      "id": "ST03",
+      "task": "S03",
+      "label": "A real flat comparison remains numeric zero",
+      "expectation": "SOURCE_BEHAVIOR",
+      "status": "BASELINE_REPRODUCED",
+      "assertions": 1,
+      "observed": {
+        "changes": [
+          null,
+          0
+        ]
+      }
+    },
+    {
+      "id": "ST04",
+      "task": "S02",
+      "label": "Duration mismatch blocks otherwise matching identity",
+      "expectation": "SOURCE_BEHAVIOR",
+      "status": "BASELINE_REPRODUCED",
+      "assertions": 2,
+      "observed": {
+        "prior": null,
+        "changes": [
+          null,
+          null
+        ]
+      }
+    },
+    {
+      "id": "ST05",
+      "task": "S02",
+      "label": "Different or unknown comparison bases block growth",
+      "expectation": "SOURCE_BEHAVIOR",
+      "status": "BASELINE_REPRODUCED",
+      "assertions": 3,
+      "observed": [
+        {
+          "basis": [
+            "synthetic_A",
+            "synthetic_B"
+          ],
+          "prior": null
+        },
+        {
+          "basis": [
+            null,
+            "synthetic_B"
+          ],
+          "prior": null
+        },
+        {
+          "basis": [
+            "synthetic_A",
+            null
+          ],
+          "prior": null
+        }
+      ]
+    },
+    {
+      "id": "ST06",
+      "task": "S02",
+      "label": "Quarter identity cannot substitute for a full year",
+      "expectation": "SOURCE_BEHAVIOR",
+      "status": "BASELINE_REPRODUCED",
+      "assertions": 1,
+      "observed": {
+        "prior": null
+      }
+    },
+    {
+      "id": "ST07",
+      "task": "S02",
+      "label": "Ambiguous prior fiscal identity blocks order-based choice",
+      "expectation": "SOURCE_BEHAVIOR",
+      "status": "BASELINE_REPRODUCED",
+      "assertions": 2,
+      "observed": {
+        "prior": null
+      }
+    },
+    {
+      "id": "ST08",
+      "task": "S02",
+      "label": "Ambiguous current fiscal identity is also refused",
+      "expectation": "SOURCE_BEHAVIOR",
+      "status": "BASELINE_REPRODUCED",
+      "assertions": 2,
+      "observed": {
+        "prior": null
+      }
+    },
+    {
+      "id": "ST09",
+      "task": "S02",
+      "label": "Partial identity cannot fall back when qualification metadata exists",
+      "expectation": "SOURCE_BEHAVIOR",
+      "status": "BASELINE_REPRODUCED",
+      "assertions": 2,
+      "observed": {
+        "partialIdentityPrior": null,
+        "unknownDurationPrior": null
+      }
+    },
+    {
+      "id": "ST10",
+      "task": "S02",
+      "label": "Mixed YTD and discrete quarters retain their cadence and values",
+      "expectation": "SOURCE_BEHAVIOR",
+      "status": "BASELINE_REPRODUCED",
+      "assertions": 3,
+      "observed": {
+        "cadence": "mixed",
+        "revenue": [
+          300,
+          120
+        ],
+        "comparison": [
+          null,
+          null
+        ]
+      }
+    },
+    {
+      "id": "ST11",
+      "task": "S04",
+      "label": "Canonical HK H1/H2 is normalized once and keeps producer EPS null",
+      "expectation": "SOURCE_BEHAVIOR",
+      "status": "BASELINE_REPRODUCED",
+      "assertions": 8,
+      "observed": {
+        "cadence": "semiannual",
+        "producerNormalized": true,
+        "revenue": [
+          60000000,
+          80000000
+        ],
+        "eps": [
+          1.2,
+          null
+        ],
+        "history": [
+          {
+            "period": "H1 2026",
+            "value": 60000000,
+            "yoy": null
+          },
+          {
+            "period": "H2 2026",
+            "value": 80000000,
+            "yoy": null
+          }
+        ]
+      }
+    },
+    {
+      "id": "ST12",
+      "task": "S04",
+      "label": "Half-year YoY follows fiscal identity across calendar years",
+      "expectation": "SOURCE_BEHAVIOR",
+      "status": "BASELINE_REPRODUCED",
+      "assertions": 3,
+      "observed": {
+        "changes": [
+          null,
+          null,
+          20,
+          25
+        ]
+      }
+    },
+    {
+      "id": "ST13",
+      "task": "S04",
+      "label": "Legacy HK/CN helper differences additive flows and withholds derived EPS",
+      "expectation": "SOURCE_BEHAVIOR",
+      "status": "BASELINE_REPRODUCED",
+      "assertions": 8,
+      "observed": [
+        {
+          "ticker": "0700.HK",
+          "revenue": [
+            100,
+            120,
+            110,
+            120,
+            120,
+            140,
+            130,
+            140
+          ],
+          "eps": [
+            0.1,
+            null,
+            null,
+            null,
+            0.12,
+            null,
+            null,
+            null
+          ],
+          "netIncome": [
+            10,
+            5,
+            -10,
+            15,
+            12,
+            6,
+            -11,
+            17
+          ]
+        },
+        {
+          "ticker": "600519.SS",
+          "revenue": [
+            100,
+            120,
+            110,
+            120,
+            120,
+            140,
+            130,
+            140
+          ],
+          "eps": [
+            0.1,
+            null,
+            null,
+            null,
+            0.12,
+            null,
+            null,
+            null
+          ],
+          "netIncome": [
+            10,
+            5,
+            -10,
+            15,
+            12,
+            6,
+            -11,
+            17
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ST14",
+      "task": "S04",
+      "label": "Legacy missing cumulative base is null at the start and year boundary",
+      "expectation": "SOURCE_BEHAVIOR",
+      "status": "BASELINE_REPRODUCED",
+      "assertions": 1,
+      "observed": {
+        "values": [
+          null,
+          110,
+          120,
+          null,
+          130
+        ]
+      }
+    },
+    {
+      "id": "ST15",
+      "task": "S02",
+      "label": "Pre-metadata annual and four-quarter compatibility remains",
+      "expectation": "SOURCE_BEHAVIOR",
+      "status": "BASELINE_REPRODUCED",
+      "assertions": 3,
+      "observed": {
+        "annual": [
+          null,
+          20
+        ],
+        "quarterly": [
+          null,
+          null,
+          null,
+          null,
+          50,
+          50,
+          50,
+          50
+        ]
+      }
+    },
+    {
+      "id": "ST16",
+      "task": "S04",
+      "label": "Growing US quarter values cannot activate cumulative differencing",
+      "expectation": "SOURCE_BEHAVIOR",
+      "status": "BASELINE_REPRODUCED",
+      "assertions": 3,
+      "observed": {
+        "market": "us",
+        "cumulative": false,
+        "revenue": [
+          100,
+          220,
+          330,
+          450,
+          120,
+          260,
+          390,
+          530
+        ]
+      }
+    },
+    {
+      "id": "ST17",
+      "task": "S01/S04",
+      "label": "Statement basis fallback selects only a transport with periods",
+      "expectation": "SOURCE_BEHAVIOR",
+      "status": "BASELINE_REPRODUCED",
+      "assertions": 5,
+      "observed": {
+        "annualOnly": "annual",
+        "interimOnly": "quarterly",
+        "neither": "quarterly"
+      }
+    },
+    {
+      "id": "ST18",
+      "task": "S06",
+      "label": "Bank statement labels and expenses use financial-family semantics",
+      "expectation": "SOURCE_BEHAVIOR",
+      "status": "BASELINE_REPRODUCED",
+      "assertions": 4,
+      "observed": {
+        "mode": "financial",
+        "topLine": "Total operating income",
+        "expenses": [
+          70
+        ],
+        "industrial": false
+      }
+    },
+    {
+      "id": "ST19",
+      "task": "S06",
+      "label": "Mixed historical statement families retain per-period expense meaning",
+      "expectation": "SOURCE_BEHAVIOR",
+      "status": "BASELINE_REPRODUCED",
+      "assertions": 4,
+      "observed": {
+        "mode": "mixed",
+        "topLine": "Revenue / total operating income",
+        "expenses": [
+          40,
+          80
+        ]
+      }
+    },
+    {
+      "id": "ST20",
+      "task": "S06",
+      "label": "Ambiguous source family follows the conservative mixed path",
+      "expectation": "SOURCE_BEHAVIOR",
+      "status": "BASELINE_REPRODUCED",
+      "assertions": 3,
+      "observed": {
+        "mode": "mixed",
+        "disclosure": "The source row contains multiple complete statement formats with no verifiable primary format. It is treated as ambiguous and family-specific industrial rows are omitted."
+      }
+    },
+    {
+      "id": "ST21",
+      "task": "S03",
+      "label": "Vendor gap disclosure is scoped to the selected statement block",
+      "expectation": "SOURCE_BEHAVIOR",
+      "status": "BASELINE_REPRODUCED",
+      "assertions": 2,
+      "observed": {
+        "income": {
+          "rows": [
+            "EBITDA"
+          ],
+          "fullFrom": null,
+          "vendorPeriods": 1
+        },
+        "cashflow": null,
+        "ebitda": [
+          null
+        ]
+      }
+    },
+    {
+      "id": "ST22",
+      "task": "S02/S04",
+      "label": "Legacy missing Q2 permits a six-month subtraction under Q3",
+      "expectation": "EXPECTED_UNDESIRABLE_BASELINE",
+      "status": "BASELINE_REPRODUCED",
+      "assertions": 3,
+      "observed": {
+        "inputPrior": {
+          "period": "Q1 2025",
+          "value": 120
+        },
+        "inputCurrent": {
+          "period": "Q3 2025",
+          "value": 390
+        },
+        "selectedOutput": {
+          "period": "Q3 2025",
+          "value": 270
+        },
+        "requiredDisposition": "Source owner must qualify the missing cumulative base or duration before this can be shown as a discrete quarter. No live incidence measured."
+      }
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "exit_code": 0,
+  "duration_seconds": 17.601,
+  "completed_at_utc": "2026-11-04T09:40:11.137981+00:00",
+  "command": [
+    "python3",
+    "/tmp/d03-foresight-compose-20261104-pdzh_wxi/proof/verify_composition_browser.py",
+    "--repo",
+    "/tmp/d03-foresight-compose-20261104-pdzh_wxi",
+    "--out",
+    "/tmp/d03-foresight-compose-20261104-pdzh_wxi/proof/browser-complete-assets"
+  ]
+}

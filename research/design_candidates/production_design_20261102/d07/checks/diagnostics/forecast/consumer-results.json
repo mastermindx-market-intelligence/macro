@@ -1,0 +1,332 @@
+{
+  "status": "SOURCE_BEHAVIOR_REPRODUCED",
+  "source_commit": "3cc8da8432d8d2d4e4cb597f49c4eaa95f1980c9",
+  "method": "Three unchanged function bodies, Node native type stripping, unchanged formatting/math imports",
+  "cases": 13,
+  "assertions": 32,
+  "integrity_checks": 15,
+  "component_render_assertions": 0,
+  "browser_assertions": 0,
+  "limitations": [
+    "React component mount blocked by npm E403 during dependency setup",
+    "Controlled fixtures establish source behavior only",
+    "Estimate timing and rights require the existing data owner"
+  ],
+  "results": [
+    {
+      "id": "FC01",
+      "label": "Every supplied annual target is retained",
+      "evidence_class": "SOURCE_BEHAVIOR",
+      "status": "BASELINE_REPRODUCED",
+      "assertions": 3,
+      "observed": {
+        "labels": [
+          "2026",
+          "2027",
+          "2028"
+        ],
+        "reported": [
+          null,
+          null,
+          null
+        ],
+        "estimate": [
+          6,
+          7,
+          8
+        ],
+        "surprise": [
+          null,
+          null,
+          null
+        ]
+      }
+    },
+    {
+      "id": "FC02",
+      "label": "Every supplied annual target is retained",
+      "evidence_class": "SOURCE_BEHAVIOR",
+      "status": "BASELINE_REPRODUCED",
+      "assertions": 3,
+      "observed": {
+        "labels": [
+          "2026",
+          "2027"
+        ],
+        "reported": [
+          null,
+          null
+        ],
+        "estimate": [
+          6,
+          7
+        ],
+        "surprise": [
+          null,
+          null
+        ]
+      }
+    },
+    {
+      "id": "FC03",
+      "label": "Every supplied annual target is retained",
+      "evidence_class": "SOURCE_BEHAVIOR",
+      "status": "BASELINE_REPRODUCED",
+      "assertions": 3,
+      "observed": {
+        "labels": [
+          "2026",
+          "2028"
+        ],
+        "reported": [
+          null,
+          null
+        ],
+        "estimate": [
+          6,
+          8
+        ],
+        "surprise": [
+          null,
+          null
+        ]
+      }
+    },
+    {
+      "id": "FC04",
+      "label": "Every supplied annual target is retained",
+      "evidence_class": "SOURCE_BEHAVIOR",
+      "status": "BASELINE_REPRODUCED",
+      "assertions": 3,
+      "observed": {
+        "labels": [
+          "2028"
+        ],
+        "reported": [
+          null
+        ],
+        "estimate": [
+          8
+        ],
+        "surprise": [
+          null
+        ]
+      }
+    },
+    {
+      "id": "FC05",
+      "label": "Null quarterly estimates retain actual history",
+      "evidence_class": "SOURCE_BEHAVIOR",
+      "status": "BASELINE_REPRODUCED",
+      "assertions": 3,
+      "observed": {
+        "labels": [
+          "Q1 2026"
+        ],
+        "reported": [
+          2
+        ],
+        "estimate": [
+          null
+        ],
+        "surprise": [
+          null
+        ]
+      }
+    },
+    {
+      "id": "FC06",
+      "label": "Absent estimate block retains annual helper actuals",
+      "evidence_class": "SOURCE_BEHAVIOR",
+      "status": "BASELINE_REPRODUCED",
+      "assertions": 3,
+      "observed": {
+        "labels": [
+          "FY2025"
+        ],
+        "reported": [
+          5
+        ],
+        "estimate": [
+          null
+        ],
+        "surprise": [
+          null
+        ]
+      }
+    },
+    {
+      "id": "FC07",
+      "label": "All-null annual values retain known target identities",
+      "evidence_class": "SOURCE_BEHAVIOR",
+      "status": "BASELINE_REPRODUCED",
+      "assertions": 2,
+      "observed": {
+        "labels": [
+          "2026",
+          "2027",
+          "2028"
+        ],
+        "reported": [
+          null,
+          null,
+          null
+        ],
+        "estimate": [
+          null,
+          null,
+          null
+        ],
+        "surprise": [
+          null,
+          null,
+          null
+        ]
+      }
+    },
+    {
+      "id": "FC08",
+      "label": "Zero denominators and signed EPS retain arithmetic semantics",
+      "evidence_class": "SOURCE_BEHAVIOR",
+      "status": "BASELINE_REPRODUCED",
+      "assertions": 2,
+      "observed": {
+        "labels": [
+          "2024",
+          "2025"
+        ],
+        "reported": [
+          0,
+          -1
+        ],
+        "estimate": [
+          0,
+          -2
+        ],
+        "surprise": [
+          null,
+          50
+        ]
+      }
+    },
+    {
+      "id": "FC09",
+      "label": "Unclocked forward average fills an actual-period comparator",
+      "evidence_class": "EXPECTED_UNDESIRABLE_BASELINE",
+      "status": "BASELINE_REPRODUCED",
+      "assertions": 2,
+      "observed": {
+        "labels": [
+          "2026"
+        ],
+        "reported": [
+          10
+        ],
+        "estimate": [
+          8
+        ],
+        "surprise": [
+          25
+        ]
+      }
+    },
+    {
+      "id": "FC10",
+      "label": "Different raw period labels remain distinct",
+      "evidence_class": "SOURCE_BEHAVIOR",
+      "status": "BASELINE_REPRODUCED",
+      "assertions": 2,
+      "observed": {
+        "labels": [
+          "FY2026",
+          "2026"
+        ],
+        "reported": [
+          10,
+          null
+        ],
+        "estimate": [
+          null,
+          8
+        ],
+        "surprise": [
+          null,
+          null
+        ]
+      }
+    },
+    {
+      "id": "FC11",
+      "label": "Distinct consensus and report populations pass through",
+      "evidence_class": "SOURCE_BEHAVIOR",
+      "status": "BASELINE_REPRODUCED",
+      "assertions": 2,
+      "observed": {
+        "periods": [
+          "2026 E"
+        ],
+        "detail": [
+          {
+            "label": "Actual",
+            "values": [
+              null
+            ]
+          },
+          {
+            "label": "Average",
+            "values": [
+              6
+            ]
+          },
+          {
+            "label": "High",
+            "values": [
+              9
+            ]
+          },
+          {
+            "label": "Low",
+            "values": [
+              8
+            ]
+          },
+          {
+            "label": "# estimates",
+            "values": [
+              2
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "FC12",
+      "label": "Chinese report-count label currently says institution count",
+      "evidence_class": "EXPECTED_UNDESIRABLE_BASELINE",
+      "status": "BASELINE_REPRODUCED",
+      "assertions": 2,
+      "observed": {
+        "label": "预测机构数",
+        "values": [
+          null
+        ]
+      }
+    },
+    {
+      "id": "FC13",
+      "label": "Actual table helper computes retained actuals without estimates",
+      "evidence_class": "SOURCE_BEHAVIOR",
+      "status": "BASELINE_REPRODUCED",
+      "assertions": 2,
+      "observed": {
+        "periods": [
+          "FY2025"
+        ],
+        "eps": [
+          5
+        ],
+        "component_early_return": "SOURCE_INSPECTED_SEPARATELY"
+      }
+    }
+  ]
+}
