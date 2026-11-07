@@ -18,7 +18,7 @@
     "refused_rows": [],
     "retained": 0
   },
-  "generated_at": "2026-11-06T11:54:36.088344+00:00",
+  "generated_at": "2026-11-06T14:11:37.849080+00:00",
   "graph_agreement": {
     "extra_in_graph": [],
     "extra_in_graph_count": 0,
@@ -36,7 +36,7 @@
       "attention_share_display": null,
       "attention_share_formula_id": null,
       "belief_time": "2026-11-06",
-      "computed_at": "2026-11-06T11:54:36.088344+00:00",
+      "computed_at": "2026-11-06T14:11:37.849080+00:00",
       "confidence_basis": "activity_history.v1",
       "date_provenance": "activity_history",
       "dst": "theme:hbm_packaging",
