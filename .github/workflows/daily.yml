@@ -2219,6 +2219,32 @@ jobs:
         run: |
           python -m engine.credit_momentum \
             || echo "::warning::credit_momentum engine failed (non-fatal)"
+      - name: timings band — revisions-drip (W2)
+        run: python3 scripts/nightly_timings.py mark --band revisions-drip || echo "::warning::timings band mark failed (non-fatal)"
+      - name: analyst revisions drip (collectors.equity_revisions; non-fatal)
+        # 2026-11-07 (#7646 root cause): moved here from scripts/build_stock_library.py, where
+        # it ran INSIDE build_site on the engine job's render path — 102 min of build_site's
+        # 143 min / the 170-min engine-core band on 2026-11-06, the one step that carried the
+        # engine job past the runner kill (Mastermind #1632) six nights running. House law:
+        # accrual steps go in collect_tail. Drips the <=200 STALEST names (<6d-fresh skipped),
+        # checkpointing data/revisions/latest.parquet + history.parquet every 25 names, plus
+        # the SRC-A1 expectation stores — all covered by `git add data/` in "commit tail data"
+        # below. The engine job sets MACRO_REVISIONS_DRIP=collect_tail so build_site reads the
+        # committed parquet instead of dripping (one-night lag for the refreshed names, inside
+        # the 6-day freshness window). KEEP THIS LINE BARE: no argv means the config cap
+        # (equity_profile.per_build, 200); an argv is for ad-hoc backfills only.
+        # PLACEMENT: last before the commit, so a budget blowout truncates only this step
+        # (timeout + continue-on-error) and never the cheap organs ahead of it; a truncated
+        # night keeps its checkpointed names and re-drips the stalest next night. BUDGET:
+        # measured 102 min at ~30 s/name on 2026-11-06 → 120-min bound; with the observed
+        # job (21-25 min) that is ~125-145 min against the 200-min cap and the 85% tripwire
+        # at 170. If the drip starts hitting its bound nightly, fix ITS per-name cost — do not
+        # silently raise the bound.
+        timeout-minutes: 120
+        continue-on-error: true
+        run: |
+          python -m collectors.equity_revisions \
+            || echo "::warning::equity_revisions drip failed (non-fatal)"
       - name: timings band — commit (W2)
         run: python3 scripts/nightly_timings.py mark --band commit || echo "::warning::timings band mark failed (non-fatal)"
       - name: commit tail data
@@ -2294,6 +2320,15 @@ jobs:
                               # build_confluence_strength, archive_signals,
                               # archive_context_snapshots, build_thematic_state,
                               # grade_thematic) can advance their ledgers.
+      MACRO_REVISIONS_DRIP: collect_tail   # 2026-11-07 (#7646 root cause): the analyst-revision
+                              # yfinance drip (collectors.equity_revisions, ~100 min/night at the
+                              # 200-name cap) no longer runs inside build_site on this job's
+                              # render path — collect_tail's "analyst revisions drip" step owns
+                              # it and commits data/revisions/; build_site reads the committed
+                              # parquet. Evidence: engine-core band 170 min on 2026-11-06, of
+                              # which build_site 143 min and its `revisions` ledger line 102 min.
+                              # The "build_site ~24m" reading in the timeout comment above is
+                              # the 2026-08-08 measurement; by 2026-11 build_site was 143 min.
     steps:
       - name: timings — job start mark (W2)
         run: date +%s > "${RUNNER_TEMP}/nightly-timings-${GITHUB_RUN_ID}-${GITHUB_JOB}-start"

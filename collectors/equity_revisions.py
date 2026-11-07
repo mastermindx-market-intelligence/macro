@@ -71,7 +71,7 @@ import math
 import os
 from pathlib import Path
 import re
-from typing import Any, Callable
+from typing import Any, Callable, Mapping
 
 import pandas as pd
 
@@ -80,6 +80,23 @@ from lib.nyse_calendar import session_date
 
 log = logging.getLogger("equity_revisions")
 _FRESH_DAYS = 6
+
+# ── Nightly drip ownership (2026-11-07, macro #7646 root cause) ──────────────
+# This drip used to run INSIDE scripts/build_stock_library.py on the daily.yml
+# engine job's render path: 102 of build_site's 143 minutes on 2026-11-06 (the
+# engine-core band was 170 min), the one step that carried the engine job past
+# the runner kill six nights running. daily.yml's collect_tail job now runs
+# `python -m collectors.equity_revisions` (house law: accrual steps live in
+# collect_tail) and the engine job sets MACRO_REVISIONS_DRIP=collect_tail so
+# build_site reads the committed data/revisions/latest.parquet instead of
+# dripping — a one-night lag for the <=200 names refreshed that night, inside
+# the 6-day freshness window. Unset (ad-hoc local builds) keeps the historical
+# behaviour: the stock library drips. The CLI is always an owner: invoking it
+# is the intent. Progress is checkpointed every PERSIST_EVERY names so a
+# step-timeout-truncated night keeps what it fetched (resumable by freshness).
+DRIP_OWNER_ENV = "MACRO_REVISIONS_DRIP"
+DEFAULT_DRIP_OWNER = "build_site"
+PERSIST_EVERY = 25
 
 # SRC-A1 is a source-owner append-only accrual.  These files deliberately sit
 # beside, rather than inside, the legacy revision-breadth artifacts below.
@@ -741,6 +758,62 @@ def _universe() -> list[str]:
     return sorted(set(tk))
 
 
+def nightly_drip_owner(environ: Mapping[str, str] | None = None) -> str:
+    """Which nightly job owns the drip: ``MACRO_REVISIONS_DRIP`` or the historical
+    in-build-site default when unset/blank."""
+    env = os.environ if environ is None else environ
+    return (env.get(DRIP_OWNER_ENV) or "").strip() or DEFAULT_DRIP_OWNER
+
+
+def per_build_cap() -> int:
+    """The nightly cap — the same config key the stock-library drip always read."""
+    return int(config.load().get("equity_profile", {}).get("per_build", 200))
+
+
+def drip_if_owner(
+    caller: str,
+    *,
+    max_new: int | None = None,
+    environ: Mapping[str, str] | None = None,
+) -> int | None:
+    """Run :func:`fetch_revisions` only when ``caller`` owns the nightly drip.
+
+    Returns the drip's count, or ``None`` when another owner (the collect_tail
+    job) is dripping tonight and ``caller`` should read the committed parquet.
+    """
+    owner = nightly_drip_owner(environ)
+    if owner != caller:
+        log.info(
+            "revisions: drip skipped in %s — %s=%s owns the nightly drip; reading the committed parquet",
+            caller, DRIP_OWNER_ENV, owner,
+        )
+        return None
+    return fetch_revisions(max_new=per_build_cap() if max_new is None else max_new)
+
+
+def _persist_snapshot(
+    out_dir: Path, latest: pd.DataFrame, rows: dict[str, dict], today: pd.Timestamp
+) -> tuple[pd.DataFrame, int]:
+    """Merge ``rows`` into latest.parquet and append them to history.parquet.
+
+    Idempotent per (date, ticker): re-persisting the same rows changes nothing,
+    so a chunked drip and a single end-of-run write leave identical stores.
+    Returns the merged latest frame and the history row count.
+    """
+    new = pd.DataFrame.from_dict(rows, orient="index")
+    merged = new if latest.empty else pd.concat([latest[~latest.index.isin(new.index)], new])
+    merged.to_parquet(out_dir / "latest.parquet")
+    # append a dated snapshot for forward PIT accrual
+    hist_p = out_dir / "history.parquet"
+    snap = new.copy(); snap["date"] = today
+    snap = snap.reset_index(names="ticker")
+    if hist_p.exists():
+        snap = pd.concat([pd.read_parquet(hist_p), snap], ignore_index=True)
+        snap = snap.drop_duplicates(subset=["date", "ticker"], keep="last")
+    snap.to_parquet(hist_p)
+    return merged, len(snap)
+
+
 def fetch_revisions(
     max_new: int = 200,
     *,
@@ -749,7 +822,8 @@ def fetch_revisions(
     system_observed_at: object | None = None,
 ) -> int:
     """Drip up to ``max_new`` STALEST names; update latest.parquet + append a dated
-    snapshot to history.parquet. Best-effort — any per-name failure is skipped."""
+    snapshot to history.parquet. Best-effort — any per-name failure is skipped.
+    Progress is checkpointed every ``PERSIST_EVERY`` fetched names."""
     out_dir = config.data_dir() / "revisions"
     out_dir.mkdir(parents=True, exist_ok=True)
     latest_p = out_dir / "latest.parquet"
@@ -778,6 +852,8 @@ def fetch_revisions(
     except Exception as exc:  # noqa: BLE001 - preserve legacy revisions availability
         log.warning("SRC-A1 expectation accrual skipped (%s)", type(exc).__name__)
         expectation_result = {"attempts": 0, "observations": 0}
+    chunk: dict[str, dict] = {}
+    hist_rows = 0
     for t in todo:
         try:
             r = _one(t)
@@ -786,30 +862,41 @@ def fetch_revisions(
         if r:
             r["asof"] = today
             rows[t] = r
+            chunk[t] = r
+        if len(chunk) >= PERSIST_EVERY:
+            latest, hist_rows = _persist_snapshot(out_dir, latest, chunk, today)
+            chunk = {}
+    if chunk:
+        latest, hist_rows = _persist_snapshot(out_dir, latest, chunk, today)
     if not rows:
         log.info(
             "revisions: drip fetched 0 of %d (SRC-A1 attempts=%d observations=%d)",
             len(todo), expectation_result["attempts"], expectation_result["observations"],
         )
         return 0
-    new = pd.DataFrame.from_dict(rows, orient="index")
-    merged = new if latest.empty else pd.concat([latest[~latest.index.isin(new.index)], new])
-    merged.to_parquet(latest_p)
-    # append a dated snapshot for forward PIT accrual
-    hist_p = out_dir / "history.parquet"
-    snap = new.copy(); snap["date"] = today
-    snap = snap.reset_index(names="ticker")
-    if hist_p.exists():
-        snap = pd.concat([pd.read_parquet(hist_p), snap], ignore_index=True)
-        snap = snap.drop_duplicates(subset=["date", "ticker"], keep="last")
-    snap.to_parquet(hist_p)
     log.info(
         "revisions: +%d names (latest now %d, history %d rows; SRC-A1 attempts=%d observations=%d)",
-        len(rows), len(merged), len(snap), expectation_result["attempts"], expectation_result["observations"],
+        len(rows), len(latest), hist_rows, expectation_result["attempts"], expectation_result["observations"],
     )
     return len(rows)
 
 
-if __name__ == "__main__":
+def main(argv: list[str] | None = None) -> int:
+    """CLI entry point — daily.yml's collect_tail runs it BARE.
+
+    No argument means the nightly cap (``equity_profile.per_build``, 200 — the
+    same key the in-build-site drip always read); an integer argument overrides
+    it for ad-hoc backfills. (The pre-2026-11-07 bare default was a 50-name smoke
+    cap, which would have silently starved the store once the nightly moved here.)
+    """
+    import sys
+    args = list(sys.argv[1:] if argv is None else argv)
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
-    fetch_revisions(int(__import__("sys").argv[1]) if len(__import__("sys").argv) > 1 else 50)
+    cap = int(args[0]) if args else per_build_cap()
+    log.info("revisions: CLI drip cap %d (%s)", cap, "argv" if args else "config equity_profile.per_build")
+    fetch_revisions(max_new=cap)
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
