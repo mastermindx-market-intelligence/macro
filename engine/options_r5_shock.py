@@ -139,7 +139,8 @@ def _source_digest(work: pd.DataFrame) -> str:
             if value is None or pd.isna(value):
                 return "NA"
             if isinstance(value, (float, int, np.floating, np.integer)):
-                return format(float(value), ".12g")
+                # Bind every bit consumed by the floating-point calculation.
+                return float(value).hex()
             return str(value)
         lines.append("\t".join(canon(getattr(row, col)) for col in columns))
     return hashlib.sha256(("\n".join(lines) + ("\n" if lines else "")).encode()).hexdigest()

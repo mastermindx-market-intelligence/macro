@@ -1,175 +1,176 @@
 {
   "schema": "stock_desk.v1",
-  "as_of": "2026-09-17",
-  "generated_at": "2026-09-19T09:50:39.057522+00:00",
+  "as_of": "2026-11-06",
+  "generated_at": "2026-11-07T10:36:52.442333+00:00",
   "degraded": null,
   "notes": [
     {
-      "id": "2026-09-17-EGBN-20260919095039-1",
-      "ticker": "EGBN",
-      "name": null,
-      "lean": "constructive",
-      "conviction": "low",
-      "horizon_d": 21,
-      "thesis": "Building a base with SUE positive (validated leg) and momentum present; entry axis unblocked with off-high and RSI supportive. The constructive lean rests on the risk reshapes: entry is not extended and cycle is not blocked, not on cross-sectional rank.",
-      "evidence": [
-        "SUE z 0.96, fresh 42 days",
-        "Momentum z 1.15",
-        "Entry z 0.91, off-high -3.2%, state TURN SIGNALED",
-        "Cycle not blocked; calm regime"
-      ],
-      "dissent": "Accounting quality flagged 'watch' and overall quality z negative, suggesting underlying fundamentals may be weaker than the surface momentum.",
-      "falsifier": {
-        "text": "Price breaks back below its recent base and closes lower on the cycle ladder, or SUE freshness decays past 60 days with no new positive surprise.",
-        "check": {
-          "kind": "rel_return",
-          "subject_ticker": "EGBN",
-          "vs": "SPY",
-          "op": "<",
-          "threshold": -0.05,
-          "horizon_d": 21
-        }
-      },
-      "check_by": "2026-10-16",
-      "engine_verdict": "Constructive \u2014 building a base"
-    },
-    {
-      "id": "2026-09-17-SONO-20260919095039-2",
-      "ticker": "SONO",
-      "name": null,
-      "lean": "constructive",
-      "conviction": "medium",
-      "horizon_d": 21,
-      "thesis": "Strongest confluence on the list: validated insider buying and positive SUE, clean accounting, and building a base with FRESH BUY state. Entry not blocked; risk legs are the support. Bar is honest: a constructive lean here is a relative call, not an alpha claim.",
-      "evidence": [
-        "Insider z 1.5 (validated leg)",
-        "SUE z 0.57, fresh 22 days",
-        "Quality z 1.935, accounting clean",
-        "FRESH BUY, off-high -16.1%"
-      ],
-      "dissent": "Off-high -16.1% means this has already dropped meaningfully; if insider buying stalls or the base fails, the 'building base' read becomes just a breakdown pattern.",
-      "falsifier": {
-        "text": "Price makes a lower low below the recent base, or a new filing shows insiders selling instead of buying.",
-        "check": {
-          "kind": "rel_return",
-          "subject_ticker": "SONO",
-          "vs": "SPY",
-          "op": "<",
-          "threshold": -0.05,
-          "horizon_d": 21
-        }
-      },
-      "check_by": "2026-10-16",
-      "engine_verdict": "Constructive \u2014 building a base"
-    },
-    {
-      "id": "2026-09-17-WAT-20260919095039-3",
-      "ticker": "WAT",
-      "name": null,
+      "id": "2026-11-06-CNMD-20261107103652-1",
+      "ticker": "CNMD",
+      "name": "CONMED Corporation",
       "lean": "neutral",
       "conviction": "low",
-      "horizon_d": 21,
-      "thesis": "No clear edge: SUE sharply negative and momentum flat, with the engine's own verdict neutral. Extended (off-high 0.0%) with a deteriorating Health Care basket caution. No bearish strong enough to short, no constructive leg to stand on.",
+      "horizon_d": 20,
+      "thesis": "The board holds a Neutral verdict on a half-size bottoming setup. The cycle is mixed, the recent swing low is promising, but the weekly timeframe has not turned and the last cycle was left-translated (topped early) \u2014 a bearish structural tell that caps conviction. No bearish verdict, no chase: neutral is the honest read.",
       "evidence": [
-        "SUE z -2.81",
-        "Selection z -0.26, drivers empty",
-        "Cautions: Health Care basket deteriorating",
-        "HOLD \u2014 EXTENDED, off-high 0.0%"
+        "verdict: Neutral \u2014 no clear edge",
+        "ladder: BOTTOMING (TURN SIGNALED) but weekly not yet confirmed",
+        "cycle.translation: left \u2014 bearish structural tell",
+        "entry_tag: HALF SIZE \u2014 engine itself is sizing down",
+        "technical: price back above 10-day; RSI 61 not overbought"
       ],
-      "dissent": "Momentum z is only 0.01 and off-high 0.0% shows the price held its highs; a resilient leader could grind higher despite weak SUE.",
+      "dissent": "A rapid weekly-turn confirmation + a clean daily close above the 50dma could ignite a powerful bottoming recovery, leaving neutral on the sidelines while the name rips higher.",
       "falsifier": {
-        "text": "SUE stabilizes or turns positive and momentum z breaks above 0.3 with price making a new high on volume.",
+        "text": "Weekly timeframe turns with a sustained daily close above the 50-day average.",
         "check": {
           "kind": "soft",
           "reason": "neutral lean \u2014 not scored"
         }
       },
-      "check_by": "2026-10-16",
+      "check_by": "2026-12-04",
       "engine_verdict": "Neutral \u2014 no clear edge"
     },
     {
-      "id": "2026-09-17-PLUS-20260919095039-4",
-      "ticker": "PLUS",
-      "name": null,
+      "id": "2026-11-06-UHS-20261107103652-2",
+      "ticker": "UHS",
+      "name": "Universal Health Services",
       "lean": "neutral",
       "conviction": "low",
-      "horizon_d": 21,
-      "thesis": "Verdict is neutral despite a FRESH BUY entry: negative SUE and negative momentum offset the positive revisions. Accounting flagged watch. The fresh-buy entry supports not shorting, but there is no validated bull leg to lean constructive.",
+      "horizon_d": 20,
+      "thesis": "The board holds a Neutral verdict with a mixed regime and a half-size setup. Fundamentals are solid (NI growth +30.4%, ROE 20.5%), but the name is extended off its 52-week low (-19.7%), the basket is crowded, and no validated edge clears the bar. Neutral reflects the balanced risk, not a bearish signal.",
       "evidence": [
-        "SUE z -1.52",
-        "Momentum z -0.34",
-        "Entry z 0.91, FRESH BUY",
-        "Accounting quality watch"
+        "verdict: Neutral \u2014 no clear edge",
+        "basket caution: Health Care crowded and stretched \u2014 cap size",
+        "cautions: broad tape under stress",
+        "factors: low_beta +0.854, low_vol +0.35 \u2014 defensive tilt, not explosive",
+        "selection z: -0.35 \u2014 no edge from earnings/revisions"
       ],
-      "dissent": "Positive revisions (z 0.94) and a tailwind profile could mean the negative SUE is already known and the price has reset to an attractive entry.",
+      "dissent": "Deep value (z +0.94) with a powerful NI growth trend could decouple from the crowded Health Care basket and outperform once the tape stabilizes.",
       "falsifier": {
-        "text": "Price holds the FRESH BUY level and SUE turns positive on the next earnings print.",
+        "text": "A breakout to a new 20-day high accompanied by sector-relative strength.",
         "check": {
           "kind": "soft",
           "reason": "neutral lean \u2014 not scored"
         }
       },
-      "check_by": "2026-10-16",
+      "check_by": "2026-12-04",
       "engine_verdict": "Neutral \u2014 no clear edge"
     },
     {
-      "id": "2026-09-17-GATX-20260919095039-5",
-      "ticker": "GATX",
-      "name": null,
+      "id": "2026-11-06-RGLD-20261107103652-3",
+      "ticker": "RGLD",
+      "name": "Royal Gold",
       "lean": "constructive",
       "conviction": "low",
       "horizon_d": 21,
-      "thesis": "Building a base with a positive SUE (validated leg) and constructive band from the engine. Entry is not blocked and off-high -10.2% leaves room. Accounting watch is the only caution and keeps conviction low.",
+      "thesis": "Fresh buy zone with a bullish weekly regime and tailwind driver. The SUE z is positive (+0.71) and fresh, and the technicals are with-trend. However, accounting quality is flagged 'watch' and macro liquidity is contracting \u2014 two headwinds that demand low conviction despite the constructive lean.",
       "evidence": [
-        "SUE z 0.66, fresh 19 days",
-        "Entry z 0.91, TURN SIGNALED",
-        "Constructive verdict, cycle not blocked",
-        "Accounting quality watch"
+        "verdict: Neutral \u2014 no clear edge (but drivers: tailwind present)",
+        "ladder_state: FRESH BUY \u2014 BUY NOW entry tag",
+        "regime_label: BULLISH \u2014 with-trend daily long",
+        "tailwind z: +0.38 (pct 56)",
+        "SUE z: +0.71, fresh_days: 69"
       ],
-      "dissent": "Accounting quality flagged watch with negative quality z, and momentum is essentially flat (0.03), so the 'base' may not actually hold.",
+      "dissent": "Gold miners carry massive macro-sensitivity; if net liquidity continues tightening and the USD firms, RGLD's bullish regime can reverse violently and punish a constructive lean.",
       "falsifier": {
-        "text": "Price slices below the base and closes at a new relative low, or the next filing shows deteriorating receivables/inventory turns.",
+        "text": "Daily close below the 10-day average after a failed retest of the 50dma.",
         "check": {
           "kind": "rel_return",
-          "subject_ticker": "GATX",
+          "subject_ticker": "RGLD",
           "vs": "SPY",
           "op": "<",
           "threshold": -0.05,
           "horizon_d": 21
         }
       },
-      "check_by": "2026-10-16",
-      "engine_verdict": "Constructive \u2014 building a base"
+      "check_by": "2026-12-07",
+      "engine_verdict": "Neutral \u2014 no clear edge"
     },
     {
-      "id": "2026-09-17-USPH-20260919095039-6",
-      "ticker": "USPH",
-      "name": null,
+      "id": "2026-11-06-TMDX-20261107103652-4",
+      "ticker": "TMDX",
+      "name": "TransMedics Group, Inc.",
       "lean": "cautious",
-      "conviction": "medium",
-      "horizon_d": 21,
-      "thesis": "Engine verdict is 'Lagging \u2014 relative weakness'; bare signal is genuine (SUE negative, momentum negative, revisions negative). The extension leg supports staying out, but the actual bearish signal justifies a cautious directional lean. Track record shows cautious leans on weak names hit ~76%.",
+      "conviction": "low",
+      "horizon_d": 20,
+      "thesis": "Lagging verdict with accounting warn and weak selection z (-1.10). SUE is deeply negative (-1.24) and revisions are poor (-1.12). Despite the recent swing low and momentum cross, the structural weakness and relative underperformance justify a cautious lean against the S&P 500.",
       "evidence": [
-        "SUE z -1.28",
-        "Momentum z -0.8",
-        "Revisions z -0.5",
-        "Verdict: Lagging \u2014 relative weakness",
-        "Accounting quality watch"
+        "verdict: Lagging \u2014 relative weakness",
+        "selection z: -1.10 (pct 34)",
+        "SUE z: -1.24, fresh_days: 69",
+        "revisions z: -1.12",
+        "accounting: warn"
       ],
-      "dissent": "Entry is not blocked and off-high is only -9.1%, so the decline may be shallow; a mean-reversion in revisions would remove the bearish edge quickly.",
+      "dissent": "Explosive NI growth (+436%) and strong margin (31.4%) could re-rate the name hard if the company proves accounting concerns unfounded and the lagging factor is a false flag.",
       "falsifier": {
-        "text": "Price reclaims its 50-day and SUE/revisions flip positive on the next earnings, or a high-volume strong up-day breaks the lagging pattern.",
+        "text": "A close above the 200-day moving average with a simultaneous improvement in SUE to positive.",
         "check": {
           "kind": "rel_return",
-          "subject_ticker": "USPH",
+          "subject_ticker": "TMDX",
           "vs": "SPY",
           "op": ">",
           "threshold": 0.05,
-          "horizon_d": 21
+          "horizon_d": 20
         }
       },
-      "check_by": "2026-10-16",
+      "check_by": "2026-12-04",
       "engine_verdict": "Lagging \u2014 relative weakness"
+    },
+    {
+      "id": "2026-11-06-STEP-20261107103652-5",
+      "ticker": "STEP",
+      "name": "StepStone Group",
+      "lean": "cautious",
+      "conviction": "low",
+      "horizon_d": 20,
+      "thesis": "Lagging verdict with negative selection z (-1.03), poor SUE (-0.81), and weak revisions (-0.99). The fresh buy cycle is contradicted by the -37.4% off-high and the below-200dma position. Accounting is 'watch'. Relative weakness plus deterioration warrants a cautious lean.",
+      "evidence": [
+        "verdict: Lagging \u2014 relative weakness",
+        "selection z: -1.03 (pct 35)",
+        "SUE z: -0.81, fresh_days: 69",
+        "revisions z: -0.99",
+        "technical: below 200dma, -37.4% off 52-week high"
+      ],
+      "dissent": "Quality composite (+0.64) and tailwind (+0.40) could stabilize the name, and the financials sector may bounce hard if rate-cut expectations resurface.",
+      "falsifier": {
+        "text": "A daily close above the 200-day moving average with a positive SUE crossover.",
+        "check": {
+          "kind": "rel_return",
+          "subject_ticker": "STEP",
+          "vs": "SPY",
+          "op": ">",
+          "threshold": 0.05,
+          "horizon_d": 20
+        }
+      },
+      "check_by": "2026-12-04",
+      "engine_verdict": "Lagging \u2014 relative weakness"
+    },
+    {
+      "id": "2026-11-06-NTES-20261107103652-6",
+      "ticker": "NTES",
+      "name": "NetEase (ADR)",
+      "lean": "neutral",
+      "conviction": "low",
+      "horizon_d": 20,
+      "thesis": "Neutral verdict with a mixed regime and half-size setup. The seasonality is unusually strong (Nov +8% avg), but the cycle is left-translated and the board shows 'HOLD \u2014 EXTENDED'. The entry z is positive (+0.29), but the macro-risk flag and the lack of a quality signal argue for neutrality over direction.",
+      "evidence": [
+        "verdict: Neutral \u2014 no clear edge",
+        "entry z: +0.29 (pct 55) \u2014 best supporting leg",
+        "board: HOLD \u2014 EXTENDED",
+        "cycle.translation: left \u2014 bearish structural tell",
+        "seasonality: Nov +8.0% avg, up 59% of years (n=27)"
+      ],
+      "dissent": "The powerful November seasonal tailwind plus a strong entry z could produce outsized relative performance that neutral misses entirely.",
+      "falsifier": {
+        "text": "A daily close below the 10-day average after a failed attempt to hold the 50-day average.",
+        "check": {
+          "kind": "soft",
+          "reason": "neutral lean \u2014 not scored"
+        }
+      },
+      "check_by": "2026-12-04",
+      "engine_verdict": "Neutral \u2014 no clear edge"
     }
   ],
   "disclaimer": "Accountable AI judgment on the deterministic top picks. The cross-sectional rank has no validated forward edge; these leans are fallible, falsifiable conditionals graded against reality \u2014 never position sizes. See the track record."

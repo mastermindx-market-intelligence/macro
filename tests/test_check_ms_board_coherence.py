@@ -67,6 +67,41 @@ def test_garbled_board_is_loud():
     assert v and "unparseable" in v[0]
 
 
+def test_styled_live_thesis_class_still_catches_cross_band_contradiction():
+    html = guard._board(
+        "Risk-on", 61,
+        "Risk-off — stress is elevated; defend capital first.",
+        "", "→ Mixed if risk appetite breaks down."
+    ).replace('class="v-thesis"', 'class="v-thesis ms-green"')
+    v = guard.check_text("styled-thesis", html)
+    assert any(line.startswith("(c)") for line in v), v
+
+
+def test_styled_thesis_with_other_attributes_still_catches_contradiction():
+    html = guard._board(
+        "Risk-on", 61,
+        "Risk-off — stress is elevated; defend capital first.",
+        "", "→ Mixed if risk appetite breaks down."
+    ).replace(
+        'class="v-thesis"',
+        'data-live="1" class="ms-green v-thesis emphasized" aria-live="polite"',
+    )
+    v = guard.check_text("attributed-styled-thesis", html)
+    assert any(line.startswith("(c)") for line in v), v
+
+
+def test_participation_qualified_risk_on_theses_remain_in_formal_risk_on_band():
+    for headline in (
+        "Broad risk-on — participation confirms the move.",
+        "Selective risk-on — participation is weak.",
+        "Risk-on — participation is unverified.",
+    ):
+        html = guard._board(
+            "Risk-on", 61, headline, "", "→ Mixed if risk appetite breaks down."
+        ).replace('class="v-thesis"', 'class="v-thesis ms-green"')
+        assert guard.check_text("qualified-risk-on", html) == []
+
+
 def test_macro_path_cannot_lag_settled_board_date():
     html = """
     <span id="regime-asof">2026-09-14</span>
@@ -113,7 +148,25 @@ def test_bands_match_engine():
 def test_headline_prefixes_match_engine():
     label_of = {k: v[0] for k, v in ms._LABEL.items()}
     for verdict, (head_en, _zh) in ms._HEADLINES.items():
-        assert head_en.startswith(guard.HEADLINE_PREFIX[label_of[verdict]])
+        assert head_en.startswith(guard.HEADLINE_ALLOWED_PREFIX[label_of[verdict]])
+
+    asof = "2026-09-18"
+    fresh = {"pct_above_200": {"asof": asof, "stale": False}}
+    for breadth in (0, 50, 75):
+        comps = [{"key": "breadth", "score": breadth, "degraded": False}]
+        head_en, _ = ms._headline_for(
+            "RISK_ON",
+            comps,
+            market="us",
+            asof=asof,
+            input_vintages=fresh,
+        )
+        assert head_en.startswith(guard.HEADLINE_ALLOWED_PREFIX["Risk-on"])
+
+    unverified, _ = ms._headline_for(
+        "RISK_ON", [], market="us", asof=asof, input_vintages={}
+    )
+    assert unverified.startswith(guard.HEADLINE_ALLOWED_PREFIX["Risk-on"])
 
 
 def test_note_strings_match_engine():
@@ -188,3 +241,14 @@ def test_heal_from_reports_unhealable(tmp_path):
     )
     assert res.returncode == 1
     assert "STILL INCOHERENT" in res.stdout
+
+
+def test_board_score_parser_accepts_runtime_metadata_after_id():
+    html = """<section class="ms-verdict">
+      <p class="v-thesis"><span class="l-en">Risk-on — the tape is constructive.</span></p>
+      <p class="v-flip"><span class="l-en">→ Mixed if risk appetite breaks down.</span></p>
+      <span class="v-score" id="ms-score" data-measured-score="61">61</span>
+      <p class="v-word" id="ms-word"><span class="l-en">Risk-on</span></p>
+      <span id="ms-tick" style="left:61%"></span>
+    </section>"""
+    assert guard.check_text("site/macro.html", html) == []

@@ -263,6 +263,16 @@ is the flatness bug (doctrine §5.8).
 
 §1's reserved-hue law governs *when* color may appear; this section governs *how*.
 
+**Chairman amendment, 2026-10-18 — no colored container-edge accents.** Cards,
+panels, rows, callouts, navigation selections, and banners must not use colored
+left borders, inset stripes, pseudo-element rails, or an equivalent decorative
+edge. Do not relocate the stripe to another edge. Use even neutral borders,
+quiet fills, spacing, typography, and explicit accessible selection/status
+labels. Semantic color belongs in labeled status text/icons and actual chart
+marks. Neutral dividers and complete keyboard focus outlines remain permitted.
+This supersedes the former 3px state-rail callout/highlight idiom in this document,
+the specimen, and older packets; apply it to all new or touched surfaces.
+
 - **Fill-grade vs text-grade.** The raw state palette is fill-grade (tints, bars, borders,
   ≥3:1 non-text uses). Any state printed as text ≤18px uses its `--ink-*` rung. This is the
   estate's deepest accessibility machinery — never bypass it with a literal.
@@ -549,7 +559,7 @@ names (`.ladder`→`.mx-ladder`, `.chg-row`→`.mx-chg-row`, `.empty`→`.mx-emp
 | ChartFrame | illus (`lib/illus.py` + `illus.css/js`); every chart's caption answers a stated question | **KEEP/EXTEND** (compliance sweep via factory) |
 | Empty / Loading / Error / Stale | `.mx-empty` + mandatory `.mx-empty-why` (5 sanctioned causes, packet §F.3); skeletons at true geometry; error names what failed AND what still works, with retry; `.dtp` behind-states | **NEW** (packet PR-0, renamed) |
 | TierLock | `.mx-tier-gate` + F.1 slot contract (slot-4 `.mx-tier-plan` text via the `--ink-tier` rung) + unified ghost rule | **KEEP/EXTEND** |
-| Callout | **NEW `.mx-callout`** — quiet tint + 3px state rail + deepened ink (the light-safe highlight idiom); replaces accent-tinted highlight rows | **NEW (DS-PR-0)** |
+| Callout | **NEW `.mx-callout`** — quiet fill + even neutral border + strong text with a labeled state icon/ink; no colored edge (Chairman amendment 2026-10-18); replaces accent-tinted highlight rows | **NEW (DS-PR-0)** |
 | Detail disclosure | **NEW `.mx-disc`** — styled `<details>`: summary states content + reason to open; used for methodology/receipts | **NEW (DS-PR-0)** |
 | Icon | `_icons.html.j2` + base CSS reconciled into theme.css (§6, stroke 1.8) | **KEEP/EXTEND** |
 | Buttons | `.gbtn` family (+`-cta/-quiet/-sm/-lg/-pill/-icon`) | **KEEP** |
@@ -595,7 +605,7 @@ structure — surface, border, whitespace, controlled shadow.** Component law:
 | Card / panel | `--panel` on `#0f1115`, hairline `--line`, `--card-shadow` micro-edge | white on `#f7f8fa`, 16%-ink hairline, soft `--card-shadow`; canvas stays deeper than panel |
 | Raised / nested | `--panel2` luminance step | `#eef1f6` tint step + hairline; shadow only if interactive |
 | Glow / bloom (hover, CTA halo) | `color-mix(--link …)` soft bloom | **ring, not glow**: 1px `--link`-mix border + tight shadow; blooms become pastel stains on white |
-| Accent rails / highlight rows | accent-tinted row fill | `.mx-callout` idiom: ≤8% tint + 3px rail + deepened ink (highlighter smear ban) |
+| Selected / highlight rows | quiet neutral fill + stronger text; even neutral border | `.mx-callout` idiom: restrained neutral fill + even hairline + stronger text; labeled semantic ink for status, no colored edge (Chairman amendment 2026-10-18) |
 | Gradients / aurora | jewel-tone alphas (20/16/14%) | airy alphas (9/8/7%) — same geometry, lighter ink |
 | Charts (illus) | ink strokes on transparent, waterline dual-tint | same geometry; series use light twins; gridlines from light `--line`; **no dark slates** |
 | Legacy Plotly slates | native dark | keep `--chart-bg:#11151c` island until migrated (approved exception §16) |

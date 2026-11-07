@@ -1,0 +1,23 @@
+{
+  "schema": "research_screener.v1",
+  "tier": "research_priority_only",
+  "as_of": null,
+  "order": "name",
+  "orderings": [
+    "name",
+    "next_catalyst_date"
+  ],
+  "nulls": [
+    {
+      "lens": "theme",
+      "en": "Theme lens isn't available yet.",
+      "zh": "主题视角尚未提供。"
+    },
+    {
+      "lens": "exposure",
+      "en": "Sign in to see which of these you hold.",
+      "zh": "登录后即可看到你持有其中哪些。"
+    }
+  ],
+  "rows": []
+}

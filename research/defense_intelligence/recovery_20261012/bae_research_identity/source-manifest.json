@@ -1,0 +1,84 @@
+{
+  "root": "01a13300-c75b-79c3-83f9-79b3b4c01dc7",
+  "parent": "01a133b6-7eeb-7120-bd12-d17d677d19b4",
+  "current_verified_head": "008acddd8a7492455f2cb7e3b042f1568c5fac2b",
+  "files": [
+    {
+      "path": "engine/government_revenue/identity_atlas.py",
+      "base_sha256": "3819e53db88bab470533e88ca96fa31e89288c013fbcb5751de3b2d8c8baeb9e",
+      "artifact_sha256": "4e3868308818112314c9fbf2d64733bef0abb62551831b8244f8446c97d361d9",
+      "bytes": 44164
+    },
+    {
+      "path": "data/government_revenue/identity_atlas_curated.json",
+      "base_sha256": "95b2e65a96f8b8da59bcf02b474e12401e2eb802b1fd4e99041b9b081b6bae70",
+      "artifact_sha256": "c5794362161d81cfd4e434dbfdc52559e986c5bd514022d3c05143ee143eea2b",
+      "bytes": 16792
+    },
+    {
+      "path": "contracts/government_revenue/government_revenue_identity_atlas.v1.schema.json",
+      "base_sha256": "65791ffc95a36b9e8f3d3cf8aab99472198d4bfbc3d2aa65699b64e168370a5e",
+      "artifact_sha256": "df57d2105c09a2e831f413113469649d6da1f73594efda060d3a766cc9096920",
+      "bytes": 23007
+    },
+    {
+      "path": "templates/government-revenue-dossiers.js",
+      "base_sha256": "a295b0794a331bd36b999c0a9b622079351c9d10e379e3bec86161749b871fd1",
+      "artifact_sha256": "a6f4102e673ba3172921d0bb54cd6b0035336520e92cfc0fca78e837e5f6ae18",
+      "bytes": 135007
+    },
+    {
+      "path": "tests/test_government_revenue_archetype_context.py",
+      "base_sha256": "80fce3a155ece0448213204765c217b8db0503e117d2ff234b82e813e314e9ae",
+      "artifact_sha256": "5e7a7869f0607dc4bec00be6373438b419554e4cdb0c8efb5cafc257e0d01136",
+      "bytes": 11163
+    },
+    {
+      "path": "tests/test_government_revenue_archetype_ui.py",
+      "base_sha256": "16710edcd6b6be0a1ae02a3f564d4cb7b0d8b8a41d5833549bc3224a9e9756be",
+      "artifact_sha256": "ed688cb841a95612d5138ffd18ebf220788408883a66f14c2cb08b95fd05100d",
+      "bytes": 10108
+    },
+    {
+      "path": "tests/fixtures/government_revenue/archetypes/identity_atlas_curated.json",
+      "base_sha256": "7c0cf38e78e9b81d6c77fb3acf35760dc4b34011e7c41d4cfc31c6f542ddcffd",
+      "artifact_sha256": "e7de38cf3ff6f6c9f90a0e646d881d66bfc21b1540eac01616b5b09c09b66a85",
+      "bytes": 8273
+    },
+    {
+      "path": "tests/test_government_revenue_identity_subject_journey.py",
+      "base_sha256": "fe72cfa878b123526d2234f982f014e9950622e66cf7ceaa11f50fe415837342",
+      "artifact_sha256": "be48270ca9c94b1fdadb9bae2c525fd8809c35cb685d8f4362201961122338df",
+      "bytes": 6551
+    },
+    {
+      "path": "tests/fixtures/government_revenue/archetypes/source_supported_ui_atlas.json",
+      "base_sha256": null,
+      "artifact_sha256": "7bfbb0a463c3a8147cc181942aafe2e81acf8614fb760e81ff644a0edb495c9a",
+      "bytes": 27918
+    }
+  ],
+  "patch_sha256": "bc1b8239c0afe2516c16f4d36d9cd1fb878f597da6b9942d442acc10c8649608",
+  "sources": [
+    {
+      "path": "/Volumes/Mastermind/evidence/defense-archetypes-01a13300/qualification/sources/dataos-bae-cik-observation.json",
+      "sha256": "4e3c77cd11156abbf82c62159a09efc24d3028e44434696e6f7fb43a1931552b"
+    },
+    {
+      "path": "/Volumes/Mastermind/evidence/defense-archetypes-01a13300/qualification/sources/jpm-bae-program.json",
+      "sha256": "4a55f871a39d1c04d45d3fa969ba5b987aa22413d0b51066fe68c8d54ba115ed"
+    },
+    {
+      "path": "/Volumes/Mastermind/evidence/defense-archetypes-01a13300/qualification/sources/sec-bae-filer.json",
+      "sha256": "4ea876211b586f0f84d2acd63d68fcaea1fd90e4cd0c83209d84c4888c4afb04"
+    }
+  ],
+  "shared_source_mutated": false,
+  "source_representation": "bounded reviewed extracts; no raw-response/body-right claim",
+  "production_acceptance": "pending root installation and O5 actual published journey",
+  "verification": {
+    "log_sha256": "dbe4fec3c50e7893caf43bb131b919e6bab1e3d22bb9d01c31813c20add3510a",
+    "summary": "66 passed in 6.84s"
+  },
+  "acceptance_sha256": "fae04adf707743db64929712c55a91c6cbf89961f3e4bc1344b813bd7c4db209"
+}

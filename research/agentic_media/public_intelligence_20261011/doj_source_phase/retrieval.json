@@ -1,0 +1,29 @@
+{
+  "observed_at": "2026-10-14T03:50:59.521472+00:00",
+  "retrievals": [
+    {
+      "path": "rss.xml",
+      "url": "https://www.justice.gov/news/rss?m=1",
+      "status": 200,
+      "content_type": "application/rss+xml; charset=utf-8",
+      "bytes": 20466,
+      "sha256": "7e3c848cf4b38d9dcde99a8d7ecba4413bb937df06c4cc453e80a3625cd2c6a7"
+    },
+    {
+      "path": "release.html",
+      "url": "https://www.justice.gov/opa/pr/cvs-agrees-pay-315m-illegally-filling-unlawful-opioid-prescriptions-and-submitting-false",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "bytes": 98671,
+      "sha256": "ad08e9652445dfb628b5b220d21878477eb10efb8605aa04ab0ad326347f3847"
+    },
+    {
+      "path": "policy.html",
+      "url": "https://www.justice.gov/legalpolicies",
+      "status": 200,
+      "content_type": "text/html; charset=UTF-8",
+      "bytes": 68701,
+      "sha256": "dd99df630bfd52d5ba46a8e258198ed20d32518eb042d5163d15c37127982770"
+    }
+  ]
+}

@@ -164,3 +164,115 @@ def test_vault_pass_routes_reheal_to_json_only_republish(tmp_path, monkeypatch):
     assert pub.residecared == ["REHEAL"]       # already-vaulted → JSON-only re-publish
     # both are now (re)marked vaulted
     assert db.get_by_blob_id(conn, "REHEAL")["vaulted_at"] is not None
+
+
+# Optional old-row heal work qualification: actual package/SQLite, synthetic client.
+class _BoundedHealClient(HealClient):
+    def __init__(self, n=400, elapsed=1.0):
+        super().__init__()
+        self.elapsed = elapsed
+        self.clock = 0.0
+        self.walked = []
+        self.PAPERS = [dict(pathId=f"bounded-{i}", parent="brk", name="Synthetic report",
+                            type="application/pdf", t=T, size=100, institution="GS")
+                       for i in range(n)]
+
+    def walk_papers(self, **kwargs):
+        for item in self.PAPERS[:kwargs["limit"]]:
+            self.walked.append(item["pathId"])
+            yield item
+
+    def item_extra(self, item_id):
+        self.clock += self.elapsed
+        return super().item_extra(item_id)
+
+
+def _bounded_heal_case(tmp_path, monkeypatch, *, n=400, elapsed=1.0):
+    import importlib
+    from types import SimpleNamespace
+    module = importlib.import_module("marketdesk_extractor.discover")
+    cfg = _cfg(tmp_path, monkeypatch)
+    conn = db.connect(cfg.database_url)
+    db.init_db(conn)
+    client = _BoundedHealClient(n=n, elapsed=elapsed)
+    conn.executemany(
+        "INSERT INTO papers(blob_id,title,status,marketdesk_summary,vault_key,vaulted_at) VALUES(?,?,?,?,?,?)",
+        [(item["pathId"], "Synthetic report", "COMPLETE", None, "synthetic-key", "old")
+         for item in client.PAPERS],
+    )
+    conn.commit()
+    # Replace only this module's clock, not Python's global time or pytest clock.
+    monkeypatch.setattr(module, "time", SimpleNamespace(time=lambda: T, monotonic=lambda: client.clock))
+    return module, cfg, conn, client
+
+
+def test_bounded_wide_heal_returns_to_tick_with_complete_scan(tmp_path, monkeypatch):
+    from types import SimpleNamespace
+    from marketdesk_extractor.trickle import _refresh_queue
+    module, cfg, conn, client = _bounded_heal_case(tmp_path, monkeypatch)
+    state = SimpleNamespace(authed=True, client=client, name="synthetic")
+    _refresh_queue(cfg, conn, [state], since_hours=336, heal_limit=300, limit=5000)
+    assert client.clock == 60.0
+    assert len(client.extra_calls) == 60
+    assert len(client.walked) == 400
+    assert conn.execute("SELECT count(*)FROM papers").fetchone()[0] == 400
+    assert conn.execute("SELECT count(*)FROM papers WHERE vaulted_at='old'").fetchone()[0] == 400
+    conn.close()
+
+
+def test_bounded_empty_fast_heals_obey_attempt_quota(tmp_path, monkeypatch):
+    module, cfg, conn, client = _bounded_heal_case(tmp_path, monkeypatch, elapsed=0.0)
+    result = module.discover(cfg, conn, client, limit=5000, heal_limit=300, heal_budget_s=60.0)
+    assert result.healed == 0
+    assert result.heal_attempted == len(client.extra_calls) == 300
+    assert result.heal_deferred == 100
+    assert result.total_scanned == 400
+    conn.close()
+
+
+def test_bounded_successful_quota_and_republication_remain_exact(tmp_path, monkeypatch):
+    module, cfg, conn, client = _bounded_heal_case(tmp_path, monkeypatch, elapsed=0.001)
+    client.extra = {"summary": "Synthetic complete summary"}
+    result = module.discover(cfg, conn, client, limit=5000, heal_limit=300, heal_budget_s=60.0)
+    assert result.healed == result.heal_attempted == 300
+    assert result.heal_deferred == 0
+    assert conn.execute("SELECT count(*)FROM papers WHERE vaulted_at IS NULL").fetchone()[0] == 300
+    assert conn.execute("SELECT count(*)FROM papers WHERE vaulted_at='old'").fetchone()[0] == 100
+    conn.close()
+
+
+def test_bounded_heal_budget_does_not_skip_new_summary_or_latest_feed(tmp_path, monkeypatch):
+    module, cfg, conn, client = _bounded_heal_case(tmp_path, monkeypatch)
+    new = dict(pathId="new-tree", parent="brk", name="New synthetic report", type="application/pdf", t=T, size=100, institution="GS")
+    client.PAPERS.append(new)
+    client.latest = lambda: ["new-feed"]
+    client.provision = lambda ids: [dict(new, pathId=key)for key in ids]
+    result = module.discover(cfg, conn, client, limit=5000, heal_limit=300, heal_budget_s=2.0)
+    assert client.extra_calls == ["bounded-0", "bounded-1", "new-tree", "new-feed"]
+    assert result.heal_attempted == 2 and result.heal_elapsed_s == 2.0
+    assert result.discovered_new == 2 and result.total_scanned == 402
+    assert db.get_by_blob_id(conn, "new-tree") is not None
+    assert db.get_by_blob_id(conn, "new-feed") is not None
+    conn.close()
+
+
+def test_bounded_heal_soft_budget_admits_one_overrun_only(tmp_path, monkeypatch):
+    module, cfg, conn, client = _bounded_heal_case(tmp_path, monkeypatch, elapsed=10.0)
+    result = module.discover(cfg, conn, client, limit=5000, heal_limit=300, heal_budget_s=5.0)
+    assert result.heal_attempted == 1
+    assert result.heal_elapsed_s == 10.0
+    assert result.heal_deferred == 399
+    assert result.total_scanned == 400
+    conn.close()
+
+
+def test_unopted_manual_and_narrow_heal_semantics_remain_exact(tmp_path, monkeypatch):
+    from types import SimpleNamespace
+    from marketdesk_extractor.trickle import _refresh_queue
+    module, cfg, conn, client = _bounded_heal_case(tmp_path, monkeypatch)
+    # Narrow caller's ordinary scan limit remains unchanged; choose400 to isolate healing.
+    object.__setattr__(cfg, "max_articles_per_run", 400)
+    _refresh_queue(cfg, conn, [SimpleNamespace(authed=True, client=client, name="synthetic")])
+    assert len(client.extra_calls) == len(client.walked) == 400
+    assert client.clock == 400.0
+    conn.close()
