@@ -359,3 +359,107 @@ def test_workload_guard_executes_in_the_real_pull_request_code_packs():
     assert not step.get("continue-on-error", False)
     assert next(j for j in load_legacy_jobs(manifest)
                 if j.job_id == "capability-broker").gate == "data"
+
+
+@pytest.mark.parametrize("profile", [
+    "development_agent", "lobe_maintenance", "fable_orchestration",
+])
+def test_native_purpose_uses_separate_content_only_decision(profile, isolated_boundaries):
+    from engine.provider_workload_policy import (
+        DECISION_SCHEMA, ProviderWorkloadPolicyError, decide_native_workload, decide_workload,
+    )
+
+    cfg = {"workload_profile": profile, "provider_order": ["fabric"]}
+    decision = decide_native_workload(cfg, host_profile=profile)
+    assert decision.profiles == (profile,)
+    receipt = decision.receipt()
+    assert receipt == {
+        "schema": DECISION_SCHEMA, "policy_revision": decision.policy_revision,
+        "policy_hash": decision.policy_hash, "profiles": [profile],
+        "execution_surface": "native_agent", "allowed_order": [], "denied_order": [],
+    }
+    assert len(decision.policy_hash) == 64
+    with pytest.raises(ProviderWorkloadPolicyError, match="NATIVE_AGENT_PATH_REQUIRED"):
+        decide_workload(cfg)
+    assert isolated_boundaries == {"secrets": [], "codex": 0}
+
+
+@pytest.mark.parametrize("caller,host", [
+    ("site_interactive", None), ("site_batch", "development_agent"),
+    ("development_agent", "site_interactive"), ("portfolio_analysis", "lobe_maintenance"),
+])
+def test_native_decision_does_not_promote_inference_or_mixed_host_profile(
+    caller, host, isolated_boundaries,
+):
+    from engine.provider_workload_policy import ProviderWorkloadPolicyError, decide_native_workload
+
+    with pytest.raises(ProviderWorkloadPolicyError, match="INFERENCE_WORKLOAD_PATH_REQUIRED"):
+        decide_native_workload({"workload_profile": caller, "provider_order": ["fabric"]},
+                               host_profile=host)
+    assert isolated_boundaries == {"secrets": [], "codex": 0}
+
+
+@pytest.mark.parametrize("order", [None, [], ["oauth"], ["codex"], ["anthropic"],
+                                  ["fabric", "deepseek"], "fabric"])
+def test_native_decision_cannot_enter_legacy_provider_or_waterfall(order, isolated_boundaries):
+    from engine.provider_workload_policy import ProviderWorkloadPolicyError, decide_native_workload
+
+    cfg = {"workload_profile": "development_agent"}
+    if order is not None:
+        cfg["provider_order"] = order
+    with pytest.raises(ProviderWorkloadPolicyError, match="NATIVE_WORKLOAD_TRANSPORT_REQUIRED"):
+        decide_native_workload(cfg)
+    assert isolated_boundaries == {"secrets": [], "codex": 0}
+
+
+def test_native_profile_selectors_are_required_and_unknown_is_refused(isolated_boundaries):
+    from engine.provider_workload_policy import ProviderWorkloadPolicyError, decide_native_workload
+
+    with pytest.raises(ProviderWorkloadPolicyError, match="NATIVE_WORKLOAD_PROFILE_REQUIRED"):
+        decide_native_workload({"provider_order": ["fabric"]})
+    with pytest.raises(ProviderWorkloadPolicyError, match="WORKLOAD_PROFILE_UNKNOWN"):
+        decide_native_workload({"provider_order": ["fabric"], "workload_profile": "unknown"})
+    assert isolated_boundaries == {"secrets": [], "codex": 0}
+
+
+def test_native_decision_intersects_the_actual_host_and_caller_without_duplicates():
+    from engine.provider_workload_policy import decide_native_workload
+
+    cfg = {"workload_profile": "lobe_maintenance", "provider_order": ["fabric"]}
+    assert decide_native_workload(cfg, host_profile="development_agent").profiles == (
+        "development_agent", "lobe_maintenance",
+    )
+    assert decide_native_workload(cfg, host_profile="lobe_maintenance").profiles == (
+        "lobe_maintenance",
+    )
+
+
+def test_native_purpose_reads_fresh_policy_and_does_not_mint_provider_permission(
+    tmp_path, isolated_boundaries,
+):
+    from engine.provider_workload_policy import (
+        DEFAULT_POLICY_PATH, ProviderWorkloadPolicyError, decide_native_workload,
+    )
+
+    path = tmp_path / "policy.json"
+    document = json.loads(DEFAULT_POLICY_PATH.read_text())
+    path.write_text(json.dumps(document))
+    cfg = {"workload_profile": "development_agent", "provider_order": ["fabric"]}
+    first = decide_native_workload(cfg, policy_path=path)
+    document["revision"] += 1
+    path.write_text(json.dumps(document))
+    second = decide_native_workload(cfg, policy_path=path)
+    assert second.policy_revision == first.policy_revision + 1
+    assert second.policy_hash != first.policy_hash
+    assert first.receipt()["allowed_order"] == second.receipt()["allowed_order"] == []
+    document["profiles"]["development_agent"]["allowed_providers"] = ["fabric"]
+    path.write_text(json.dumps(document))
+    with pytest.raises(ProviderWorkloadPolicyError, match="WORKLOAD_POLICY_NATIVE_TRANSPORT_INVALID"):
+        decide_native_workload(cfg, policy_path=path)
+    document["profiles"]["development_agent"] = {
+        "execution_surface": "inference", "allowed_providers": ["fabric"],
+    }
+    path.write_text(json.dumps(document))
+    with pytest.raises(ProviderWorkloadPolicyError, match="INFERENCE_WORKLOAD_PATH_REQUIRED"):
+        decide_native_workload(cfg, policy_path=path)
+    assert isolated_boundaries == {"secrets": [], "codex": 0}

@@ -310,25 +310,83 @@ def _build_user_prompt(
     )
 
 
-def _parse_llm_reply(text: str) -> dict[str, Any] | None:
-    """Parse auditor JSON reply robustly (mirrors adjudicate._parse_judgments style)."""
-    if not text:
+_AUDIT_REPLY_BYTE_LIMIT = 64 * 1024
+_AUDIT_FINDING_LIMIT = 64
+_AUDIT_FINDING_CHAR_LIMIT = 2 * 1024
+_AUDIT_RATIONALE_CHAR_LIMIT = 8 * 1024
+
+
+def _validated_audit_reply(value: Any) -> dict[str, Any] | None:
+    """The native/legacy response is data; malformed fields cannot grant approval."""
+    import math
+
+    if (type(value) is not dict
+            or set(value) != {"verdict", "confidence", "findings", "rationale"}
+            or type(value["verdict"]) is not str
+            or value["verdict"] not in {"approve", "reject"}):
+        return None
+    confidence = value["confidence"]
+    if (type(confidence) not in (int, float) or not 0 <= confidence <= 1
+            or not math.isfinite(confidence)):
+        return None
+    findings, rationale = value["findings"], value["rationale"]
+    if (type(findings) is not list or len(findings) > _AUDIT_FINDING_LIMIT
+            or type(rationale) is not str or not rationale.strip()
+            or len(rationale) > _AUDIT_RATIONALE_CHAR_LIMIT):
+        return None
+    if any(type(f) is not str or not f.strip() or len(f) > _AUDIT_FINDING_CHAR_LIMIT
+           for f in findings):
+        return None
+    for text in [*findings, rationale]:
+        if any(ord(c) < 32 and c not in "\n\t" or ord(c) == 127 for c in text):
+            return None
+        try:
+            text.encode("utf-8")
+        except UnicodeError:
+            return None
+    return {
+        "verdict": value["verdict"], "confidence": confidence,
+        "findings": list(findings), "rationale": rationale,
+    }
+
+
+def _parse_llm_reply(text: str, *, strict: bool = False) -> dict[str, Any] | None:
+    """Decode a bounded typed verdict; native originals use strict whole-JSON mode."""
+    if type(text) is not str or not text:
+        return None
+    try:
+        if len(text.encode("utf-8")) > _AUDIT_REPLY_BYTE_LIMIT:
+            return None
+    except UnicodeError:
         return None
     s = text.strip()
-    # Strip markdown fences
-    if s.startswith("```"):
+    # Legacy formatting remains readable. A selected native original must
+    # validate the actual entire result and cannot repair a partial response.
+    if not strict and s.startswith("```"):
         s = re.sub(r"^```[a-zA-Z]*\n?", "", s)
         s = re.sub(r"\n?```$", "", s).strip()
-    # Try raw then bracketed
-    for cand in (s, _slice_braced(s)):
-        if not cand:
+
+    def unique(pairs):
+        result = {}
+        for key, value in pairs:
+            if key in result:
+                raise ValueError("duplicate audit member")
+            result[key] = value
+        return result
+
+    def nonfinite(_value):
+        raise ValueError("nonfinite audit value")
+
+    for candidate in ((s,) if strict else (s, _slice_braced(s))):
+        if not candidate:
             continue
         try:
-            data = json.loads(cand)
-            if isinstance(data, dict) and "verdict" in data:
-                return data
-        except Exception:  # noqa: BLE001
+            data = json.loads(candidate, object_pairs_hook=unique, parse_constant=nonfinite)
+        except (ValueError, TypeError, RecursionError):
             continue
+        validated = _validated_audit_reply(data)
+        if validated is not None:
+            return validated
     return None
 
 
@@ -392,13 +450,8 @@ def _call_llm_auditor(
         if parsed is None:
             return None, None, [], "", "llm_error"
 
-        verdict = str(parsed.get("verdict") or "reject").lower()
-        if verdict not in ("approve", "reject"):
-            verdict = "reject"
-        confidence = float(parsed.get("confidence") or 0.0)
-        findings = [str(f) for f in (parsed.get("findings") or [])]
-        rationale = str(parsed.get("rationale") or "")
-        return verdict, confidence, findings, rationale, None
+        return (parsed["verdict"], parsed["confidence"], parsed["findings"],
+                parsed["rationale"], None)
 
     except FabricHeld:
         raise
