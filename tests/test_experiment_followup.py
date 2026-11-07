@@ -167,7 +167,7 @@ const payload = JSON.parse(process.argv[2]);
 const begin = source.indexOf('/* ---- EXPERIMENTS & DATA COLLECTION');
 const end = source.indexOf('/* ---- SITE ACCESS GATE', begin);
 if (begin < 0 || end < begin) throw Error('Renderer boundary missing');
-const view = {innerHTML: '', querySelectorAll: () => []};
+const view = {innerHTML: '', querySelector: () => null, querySelectorAll: () => []};
 const context = {RENDER: {}, api: async () => payload, $: () => view,
  card: (title, body) => `<section><h2>${title}</h2>${body}</section>`,
  esc: x => String(x ?? '').replaceAll('&', '&amp;').replaceAll('<', '&lt;'),

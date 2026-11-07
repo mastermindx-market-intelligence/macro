@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-08-31T18:21:23Z",
+ "accession": "0001375365-26-000022",
+ "cik": "0001375365",
+ "doc_byte_length": 3990484,
+ "doc_sha256": "ec08d63ef6fd7b9969cd7a6aed03ff9cf6877b1f3d7bc9247bf9aae1303d9036",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-08-31",
+ "form": "10-K",
+ "period_of_report": "2026-06-30",
+ "primary_document": "smci-20260630.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 3919502,
+  "byte_start": 3919092,
+  "normalized": "Sublicense, dated June 14, 2024, by and between Super Micro Computer, Inc. and Lambda, Inc. (Incorporated by reference to Exhibit 10.3 from the Company’s Current Report on Form 8-K (Commission File No. 001-33383) filed with the Securities and Exchange Commission on June 21, 2024)",
+  "normalized_sha256": "ef07740113c1066793d6b648ad09425b53cd04a1863199a658eb4206a1713802",
+  "raw": "Sublicense, dated June 14, 2024, by and between Super Micro Computer, Inc. and Lambda, Inc.</a></span><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:112%\"> (Incorporated by reference to Exhibit 10.3 from the Company&#8217;s Current Report on Form 8-K (Commission File No. 001-33383) filed with the Securities and Exchange Commission on June 21, 2024) ",
+  "raw_sha256": "881cf9bfcba3f093f7ae6f03716415b5f2ddc56491257177d6fdfe66df1e2144"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1375365/000137536526000022/smci-20260630.htm",
+ "xbrl_contexts": []
+}

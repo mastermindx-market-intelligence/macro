@@ -2,6 +2,7 @@
 
 Verifies:
 - Schema compliance: every per-ticker JSON has the required top-level keys.
+- data_through is each ticker's actual last input bar, not generated_utc.
 - window_start is present and is a valid ISO date string.
 - PIT integrity: every fire date <= last bar date for that ticker.
 - Fire dates are real bar dates (not invented dates).
@@ -74,6 +75,10 @@ class TestTechEventsExportIntegration:
         tmp_dir = tmp_path_factory.mktemp("tech_events_test")
 
         universe = _make_mini_universe(n_tickers=3, n_bars=600)
+        # Intentionally different ending bars: per-ticker source clocks must not
+        # collapse to one global latest bar or the build's wall-clock time.
+        universe["BBBB"] = universe["BBBB"].iloc[:-3].copy()
+        universe["CCCC"] = universe["CCCC"].iloc[:-9].copy()
         df_spx = pd.DataFrame({"close": pd.Series(dtype=float)})
         name_map = {t: t for t in universe.keys()}
 
@@ -108,13 +113,17 @@ class TestTechEventsExportIntegration:
 
     def test_per_ticker_schema(self, export_result):
         tmp_dir, te_by_ticker, events_dir, universe = export_result
-        required_keys = {"ticker", "generated_utc", "window_start", "signals"}
+        required_keys = {"ticker", "generated_utc", "data_through", "window_start", "signals"}
         for ticker in universe.keys():
             with open(events_dir / f"{ticker}.json") as f:
                 d = json.load(f)
             missing = required_keys - set(d.keys())
             assert not missing, f"{ticker}: missing keys {missing}"
             assert d["ticker"] == ticker
+            # Publication is not input freshness. Verify the exact ticker's
+            # final bar, even when a fresh build processes stale historical data.
+            assert datetime.strptime(d["data_through"], "%Y-%m-%d").date()
+            assert d["data_through"] == str(universe[ticker].index[-1].date())
             # window_start is a valid date string
             _dt = datetime.strptime(d["window_start"], "%Y-%m-%d")
             assert isinstance(d["signals"], dict)

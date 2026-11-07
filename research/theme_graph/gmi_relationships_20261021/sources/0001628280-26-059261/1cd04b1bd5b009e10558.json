@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-08-27T20:22:52Z",
+ "accession": "0001628280-26-059261",
+ "cik": "0001387467",
+ "doc_byte_length": 2239148,
+ "doc_sha256": "6d4c95e6af58015d107d47bb66895a3cd9fc36f1626e928c225ad7a841ec49a0",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-08-27",
+ "form": "10-K",
+ "period_of_report": "2026-06-30",
+ "primary_document": "aosl-20260630.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 240196,
+  "byte_start": 239565,
+  "normalized": "In order to take advantage of the expertise of end-customer fulfillment logistics and shorter payment cycles, we sell most of our products through distributors. As of June 30, 2026, 2025 and 2024, our two largest distributors were WPG Holdings Limited, or WPG, and Promate Electronic Co. Ltd., or Promate. Sales to WPG and Promate accounted for 53.0% and 19.3% of our revenue, respectively, for the fiscal year ended June 30, 2026, 51.3% and 22.1% of our revenue, respectively, for the fiscal year ended June 30, 2025, and 46.0% and 25.0% of our revenue, respectively, for the fiscal year ended June 30, 2024.",
+  "normalized_sha256": "f275d11eade83a1d31c2a5bab84ee286fc638059fa50f3080437c697d52c163d",
+  "raw": "In order to take advantage of the expertise of end-customer fulfillment logistics and shorter payment cycles, we sell most of our products through distributors.  As of June&#160;30, 2026, 2025 and 2024, our two largest distributors were WPG Holdings Limited, or WPG, and Promate Electronic Co. Ltd., or Promate.  Sales to WPG and Promate accounted for 53.0% and 19.3% of our revenue, respectively, for the fiscal year ended June&#160;30, 2026, 51.3% and 22.1% of our revenue, respectively, for the fiscal year ended June&#160;30, 2025, and 46.0% and 25.0% of our revenue, respectively, for the fiscal year ended June&#160;30, 2024.",
+  "raw_sha256": "1cd04b1bd5b009e10558672944f2da440cde6b025d07053b73b08773c0b08b44"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1387467/000162828026059261/aosl-20260630.htm",
+ "xbrl_contexts": []
+}

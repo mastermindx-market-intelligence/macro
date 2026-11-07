@@ -1,0 +1,226 @@
+{
+  "schema": "mastermind.p0_evidence.v2",
+  "generated_at": "2026-09-25T02:57:13Z",
+  "tool": {
+    "module_ref": "scripts/capture_aibrief_band_evidence.py",
+    "module_sha256": "9281e09f44e7e325e9469a4c9a0dc587f7544db0f2a115c4b172d1056a313399"
+  },
+  "target": "aibrief.html#am_edition_band",
+  "head": "21a0a50075efd64f7efd4ce12a5c344d6dc1d98b",
+  "axes": {
+    "viewports": {
+      "desktop": [
+        1440,
+        900
+      ],
+      "mobile": [
+        390,
+        844
+      ]
+    },
+    "locales": [
+      "en",
+      "zh"
+    ],
+    "themes": [
+      "dark",
+      "light"
+    ],
+    "access": [
+      "anonymous"
+    ],
+    "subjects": [
+      "band"
+    ]
+  },
+  "aliases": {
+    "band-dark-en-desktop.png": "shots/40b050f58686c8fa51cf71ab43f9c0d42a00a9f33dd5d14b9dbfc7821a246e58.png",
+    "band-dark-en-mobile.png": "shots/62f8076cb26460c646fe18674b01b8ca352fd83fc9982e8be0ec35842ea7fd7b.png",
+    "band-dark-zh-desktop.png": "shots/587feb8f3aa4eb1475eba6c056421720e7f99706eab31289b69bee12037c2fe6.png",
+    "band-dark-zh-mobile.png": "shots/202b22a13c0fa8613f0c8ce3574ebcc103dfe2a5dbe4ae6bfc0e2bf5df9b8c2d.png",
+    "band-light-en-desktop.png": "shots/fe3a2a080671591588563c98d6e9d934723093c54b18d6d025da5bdf76ed86cb.png",
+    "band-light-en-mobile.png": "shots/0a16eef873897473f5cfa80966e44fb347b748919335c9410cd0d9ac90371644.png",
+    "band-light-zh-desktop.png": "shots/60b1206a8b50663d1bc7e70f5e7583f8539540019a6914a362524978a4d70b19.png",
+    "band-light-zh-mobile.png": "shots/d08697cc5211d9c8c19d24437665c3cd5cfc67ee80ee7f454ec2e0b8441df444.png"
+  },
+  "excluded": [],
+  "outcome": "captured",
+  "totals": {
+    "rest_cells": 4,
+    "rest_required": 2,
+    "pages": 1
+  },
+  "honesty": {
+    "access": "anonymous only",
+    "authority": "This tool captures screenshots; it scores nothing.",
+    "page": "templates/aibrief.html.j2 rendered with a hand-built am_edition panel fixture in scratch space; never writes to site/ or data/."
+  },
+  "pages": [
+    {
+      "page_id": "aibrief.html#am_edition_band",
+      "route": "/aibrief.html#am_edition_band",
+      "registry_route": "/aibrief.html#am_edition_band",
+      "route_kind": "aibrief_band",
+      "subject": "band",
+      "selector": "div.panel:has(span.eyebrow):has-text('Morning Orientation')",
+      "states": [
+        {
+          "viewport": "desktop",
+          "locale": "en",
+          "theme": "dark",
+          "access": "anonymous",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "force_state": null,
+          "subject": "band",
+          "captured": true,
+          "file": "shots/40b050f58686c8fa51cf71ab43f9c0d42a00a9f33dd5d14b9dbfc7821a246e58.png",
+          "alias": "band-dark-en-desktop.png",
+          "sha256": "40b050f58686c8fa51cf71ab43f9c0d42a00a9f33dd5d14b9dbfc7821a246e58",
+          "bytes": 22974,
+          "width": 1100,
+          "height": 92,
+          "applied_theme": "dark",
+          "applied_locale": "en"
+        },
+        {
+          "viewport": "mobile",
+          "locale": "en",
+          "theme": "dark",
+          "access": "anonymous",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "force_state": null,
+          "subject": "band",
+          "captured": true,
+          "file": "shots/62f8076cb26460c646fe18674b01b8ca352fd83fc9982e8be0ec35842ea7fd7b.png",
+          "alias": "band-dark-en-mobile.png",
+          "sha256": "62f8076cb26460c646fe18674b01b8ca352fd83fc9982e8be0ec35842ea7fd7b",
+          "bytes": 23499,
+          "width": 354,
+          "height": 215,
+          "applied_theme": "dark",
+          "applied_locale": "en"
+        },
+        {
+          "viewport": "desktop",
+          "locale": "zh",
+          "theme": "dark",
+          "access": "anonymous",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "force_state": null,
+          "subject": "band",
+          "captured": true,
+          "file": "shots/587feb8f3aa4eb1475eba6c056421720e7f99706eab31289b69bee12037c2fe6.png",
+          "alias": "band-dark-zh-desktop.png",
+          "sha256": "587feb8f3aa4eb1475eba6c056421720e7f99706eab31289b69bee12037c2fe6",
+          "bytes": 20128,
+          "width": 1100,
+          "height": 91,
+          "applied_theme": "dark",
+          "applied_locale": "zh"
+        },
+        {
+          "viewport": "mobile",
+          "locale": "zh",
+          "theme": "dark",
+          "access": "anonymous",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "force_state": null,
+          "subject": "band",
+          "captured": true,
+          "file": "shots/202b22a13c0fa8613f0c8ce3574ebcc103dfe2a5dbe4ae6bfc0e2bf5df9b8c2d.png",
+          "alias": "band-dark-zh-mobile.png",
+          "sha256": "202b22a13c0fa8613f0c8ce3574ebcc103dfe2a5dbe4ae6bfc0e2bf5df9b8c2d",
+          "bytes": 34303,
+          "width": 354,
+          "height": 165,
+          "applied_theme": "dark",
+          "applied_locale": "zh"
+        },
+        {
+          "viewport": "desktop",
+          "locale": "en",
+          "theme": "light",
+          "access": "anonymous",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "force_state": null,
+          "subject": "band",
+          "captured": true,
+          "file": "shots/fe3a2a080671591588563c98d6e9d934723093c54b18d6d025da5bdf76ed86cb.png",
+          "alias": "band-light-en-desktop.png",
+          "sha256": "fe3a2a080671591588563c98d6e9d934723093c54b18d6d025da5bdf76ed86cb",
+          "bytes": 22633,
+          "width": 1100,
+          "height": 92,
+          "applied_theme": "light",
+          "applied_locale": "en"
+        },
+        {
+          "viewport": "mobile",
+          "locale": "en",
+          "theme": "light",
+          "access": "anonymous",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "force_state": null,
+          "subject": "band",
+          "captured": true,
+          "file": "shots/0a16eef873897473f5cfa80966e44fb347b748919335c9410cd0d9ac90371644.png",
+          "alias": "band-light-en-mobile.png",
+          "sha256": "0a16eef873897473f5cfa80966e44fb347b748919335c9410cd0d9ac90371644",
+          "bytes": 22512,
+          "width": 354,
+          "height": 215,
+          "applied_theme": "light",
+          "applied_locale": "en"
+        },
+        {
+          "viewport": "desktop",
+          "locale": "zh",
+          "theme": "light",
+          "access": "anonymous",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "force_state": null,
+          "subject": "band",
+          "captured": true,
+          "file": "shots/60b1206a8b50663d1bc7e70f5e7583f8539540019a6914a362524978a4d70b19.png",
+          "alias": "band-light-zh-desktop.png",
+          "sha256": "60b1206a8b50663d1bc7e70f5e7583f8539540019a6914a362524978a4d70b19",
+          "bytes": 19590,
+          "width": 1100,
+          "height": 91,
+          "applied_theme": "light",
+          "applied_locale": "zh"
+        },
+        {
+          "viewport": "mobile",
+          "locale": "zh",
+          "theme": "light",
+          "access": "anonymous",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "force_state": null,
+          "subject": "band",
+          "captured": true,
+          "file": "shots/d08697cc5211d9c8c19d24437665c3cd5cfc67ee80ee7f454ec2e0b8441df444.png",
+          "alias": "band-light-zh-mobile.png",
+          "sha256": "d08697cc5211d9c8c19d24437665c3cd5cfc67ee80ee7f454ec2e0b8441df444",
+          "bytes": 34270,
+          "width": 354,
+          "height": 165,
+          "applied_theme": "light",
+          "applied_locale": "zh"
+        }
+      ],
+      "metrics": {},
+      "console_errors": [],
+      "failed_responses": [],
+      "gaps": []
+    }
+  ]
+}

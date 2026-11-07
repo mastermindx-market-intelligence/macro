@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-09-10T20:19:53Z",
+ "accession": "0001327567-26-000023",
+ "cik": "0001327567",
+ "doc_byte_length": 3083418,
+ "doc_sha256": "ac942050fd717d48832169f8520be1c348cd1006e694e0ba646bafaffc7a2226",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-09-10",
+ "form": "10-K",
+ "period_of_report": "2026-07-31",
+ "primary_document": "panw-20260731.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 444916,
+  "byte_start": 444452,
+  "normalized": "We also sell our VM-Series virtual firewalls and Cloud NGFW via various cloud marketplaces. For example, our VM-Series virtual firewalls are sold on Amazon’s AWS Marketplace, Microsoft’s Azure Marketplace, Alphabet’s Google Cloud Marketplace, and Oracle Corporation’s Oracle Cloud Marketplace either directly to end-customers or as part of the respective cloud hosting service provider’s offerings under a usage-based licensing model.",
+  "normalized_sha256": "97194e71f8c4c4969b3dd97db3169b0e9ad5fb9f135b5408907d4b10160e8c31",
+  "raw": "We also sell our VM-Series virtual firewalls and Cloud NGFW via various cloud marketplaces. For example, our VM-Series virtual firewalls are sold on Amazon&#8217;s AWS Marketplace, Microsoft&#8217;s Azure Marketplace, Alphabet&#8217;s Google Cloud Marketplace, and Oracle Corporation&#8217;s Oracle Cloud Marketplace either directly to end-customers or as part of the respective cloud hosting service provider&#8217;s offerings under a usage-based licensing model.",
+  "raw_sha256": "1b4164a1d60a09c0938f011b48b0c4fd8e7bbe22c9e279c717985327e1af6c20"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1327567/000132756726000023/panw-20260731.htm",
+ "xbrl_contexts": []
+}

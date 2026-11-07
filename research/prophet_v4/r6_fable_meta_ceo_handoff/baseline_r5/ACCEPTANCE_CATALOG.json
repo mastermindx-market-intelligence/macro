@@ -1,0 +1,2238 @@
+{
+  "document_kind": "REQUIRED_ACCEPTANCE_CASE_CROSSWALK_NOT_TEST_REPORT",
+  "counts": {
+    "R3_inherited": 36,
+    "R4_inherited": 48,
+    "R5_added": 42,
+    "entries": 126
+  },
+  "independence_note": "Entries may overlap semantically. This is not independent test N or a statistical sample.",
+  "all_execution_status": "NOT_EXECUTED",
+  "cases": [
+    {
+      "id": "R3:A01",
+      "origin": "R3",
+      "original_case": {
+        "execution_status": "NOT_EXECUTED",
+        "expected": "Separate identities/authority; no field mutation under the v1 ID.",
+        "id": "A01",
+        "setup": "Read the accepted control definition and a proposed enriched research selector.",
+        "slice": "EL0",
+        "source_refs": [
+          "S1"
+        ],
+        "title": "Frozen control versus proposed selector"
+      },
+      "build_units": [
+        "B00"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R3:A02",
+      "origin": "R3",
+      "original_case": {
+        "execution_status": "NOT_EXECUTED",
+        "expected": "Existing owner either supplies accepted validity or explicit refusal; no date relabel.",
+        "id": "A02",
+        "setup": "Use real prior completed-session owner evidence and next-session RTH quote.",
+        "slice": "EL0",
+        "source_refs": [
+          "S6",
+          "S7"
+        ],
+        "title": "Completed source used during following RTH"
+      },
+      "build_units": [
+        "B00"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R3:A03",
+      "origin": "R3",
+      "original_case": {
+        "execution_status": "NOT_EXECUTED",
+        "expected": "Reject positive decision proof and preserve the reason.",
+        "id": "A03",
+        "setup": "Provide a source emitted after decision or outside accepted validity.",
+        "slice": "EL0",
+        "source_refs": [
+          "S6",
+          "S7"
+        ],
+        "title": "Future emission or expired validity"
+      },
+      "build_units": [
+        "B00"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R3:A04",
+      "origin": "R3",
+      "original_case": {
+        "execution_status": "NOT_EXECUTED",
+        "expected": "Refuse unsupported live policy; historical study requires its accepted policy.",
+        "id": "A04",
+        "setup": "Evaluate an execution session outside 2026 through current control.",
+        "slice": "EL0",
+        "source_refs": [
+          "S7"
+        ],
+        "title": "Unsupported calendar era"
+      },
+      "build_units": [
+        "B00"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R3:A05",
+      "origin": "R3",
+      "original_case": {
+        "execution_status": "NOT_EXECUTED",
+        "expected": "Show owner suppression with original identity; no synthetic B1 episode.",
+        "id": "A05",
+        "setup": "Provide Radar/Door nomination with no current anchored B1 episode.",
+        "slice": "EL1",
+        "source_refs": [
+          "S2",
+          "S3"
+        ],
+        "title": "Unanchored independent nomination"
+      },
+      "build_units": [
+        "B03"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R3:A06",
+      "origin": "R3",
+      "original_case": {
+        "execution_status": "NOT_EXECUTED",
+        "expected": "No independent origination until B1 owner accepts that contract.",
+        "id": "A06",
+        "setup": "Provide a proposed new expert without an accepted anchor/rearm contract.",
+        "slice": "EL1",
+        "source_refs": [
+          "S2",
+          "S3"
+        ],
+        "title": "Additional expert anchor"
+      },
+      "build_units": [
+        "B03"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R3:A07",
+      "origin": "R3",
+      "original_case": {
+        "execution_status": "NOT_EXECUTED",
+        "expected": "Complete accounting, searchable row, null score when never scored.",
+        "id": "A07",
+        "setup": "Take a permitted source row outside Featured/board cap.",
+        "slice": "EL1",
+        "source_refs": [
+          "S12"
+        ],
+        "title": "Displaced candidate remains visible"
+      },
+      "build_units": [
+        "B03"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R3:A08",
+      "origin": "R3",
+      "original_case": {
+        "execution_status": "NOT_EXECUTED",
+        "expected": "Only real source observations shown; missing 4H is not inferred.",
+        "id": "A08",
+        "setup": "Request daily/two-day/basket/reset and absent four-hour observation.",
+        "slice": "EL1",
+        "source_refs": [
+          "S4",
+          "S5"
+        ],
+        "title": "Actual trigger roster"
+      },
+      "build_units": [
+        "B03"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R3:A09",
+      "origin": "R3",
+      "original_case": {
+        "execution_status": "NOT_EXECUTED",
+        "expected": "Refuse incorrect join; symbol equality is not episode identity.",
+        "id": "A09",
+        "setup": "Mix alias or episode generation from another source snapshot.",
+        "slice": "EL1",
+        "source_refs": [
+          "S2",
+          "S3",
+          "S14"
+        ],
+        "title": "Identity and generation mismatch"
+      },
+      "build_units": [
+        "B03"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R3:A10",
+      "origin": "R3",
+      "original_case": {
+        "execution_status": "NOT_EXECUTED",
+        "expected": "Preserve visibility and named absence; no fabricated zero/negative fact.",
+        "id": "A10",
+        "setup": "Remove transcript or optional group evidence from otherwise valid row.",
+        "slice": "EL2",
+        "source_refs": [
+          "S1",
+          "S11"
+        ],
+        "title": "Optional family absent"
+      },
+      "build_units": [
+        "B04"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R3:A11",
+      "origin": "R3",
+      "original_case": {
+        "execution_status": "NOT_EXECUTED",
+        "expected": "Label non-PIT or refuse research admission, never historical contemporaneous truth.",
+        "id": "A11",
+        "setup": "Join current membership to an older decision.",
+        "slice": "EL2",
+        "source_refs": [
+          "S10"
+        ],
+        "title": "Current-only membership in historical query"
+      },
+      "build_units": [
+        "B04"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R3:A12",
+      "origin": "R3",
+      "original_case": {
+        "execution_status": "NOT_EXECUTED",
+        "expected": "Disclose constituent contribution and separately compute eligible leave-one-out control.",
+        "id": "A12",
+        "setup": "Make subject stock drive most group performance.",
+        "slice": "EL2",
+        "source_refs": [
+          "S10"
+        ],
+        "title": "Self-confirming group"
+      },
+      "build_units": [
+        "B04"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R3:A13",
+      "origin": "R3",
+      "original_case": {
+        "execution_status": "NOT_EXECUTED",
+        "expected": "Peer support not estimable/partial, not automatically neutral or strong.",
+        "id": "A13",
+        "setup": "Provide one member or incomplete weights.",
+        "slice": "EL2",
+        "source_refs": [
+          "S10"
+        ],
+        "title": "Single-member/sparse group"
+      },
+      "build_units": [
+        "B04"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R3:A14",
+      "origin": "R3",
+      "original_case": {
+        "execution_status": "NOT_EXECUTED",
+        "expected": "Deduplicated evidence lineage, no repeated independent vote.",
+        "id": "A14",
+        "setup": "Same underlying group feeds several chips/narratives.",
+        "slice": "EL2",
+        "source_refs": [
+          "S10",
+          "S11"
+        ],
+        "title": "Overlapping thematic evidence"
+      },
+      "build_units": [
+        "B04"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R3:A15",
+      "origin": "R3",
+      "original_case": {
+        "execution_status": "NOT_EXECUTED",
+        "expected": "No positive action/recommendation produced by the client.",
+        "id": "A15",
+        "setup": "Provide high research priority with B4 missing basis or chase refusal.",
+        "slice": "EL3",
+        "source_refs": [
+          "S1",
+          "S8"
+        ],
+        "title": "Score cannot waive blocker"
+      },
+      "build_units": [
+        "B07"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R3:A16",
+      "origin": "R3",
+      "original_case": {
+        "execution_status": "NOT_EXECUTED",
+        "expected": "Visible control/experimental status; no commercial BUY, sizing or origination.",
+        "id": "A16",
+        "setup": "Produce computational ENTRY_OPEN using control-only strategy.",
+        "slice": "EL3",
+        "source_refs": [
+          "S1",
+          "S8"
+        ],
+        "title": "Shadow entry-open disclosure"
+      },
+      "build_units": [
+        "B07"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R3:A17",
+      "origin": "R3",
+      "original_case": {
+        "execution_status": "NOT_EXECUTED",
+        "expected": "Same episode/strategy/source clocks appear in table and drawer.",
+        "id": "A17",
+        "setup": "Use accepted real evidence through existing private transport.",
+        "slice": "EL3",
+        "source_refs": [
+          "S11",
+          "S12"
+        ],
+        "title": "Complete current row plus detail"
+      },
+      "build_units": [
+        "B07"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R3:A18",
+      "origin": "R3",
+      "original_case": {
+        "execution_status": "NOT_EXECUTED",
+        "expected": "Refresh by content identity, preserve original history, no mixed-generation hydration.",
+        "id": "A18",
+        "setup": "Change accepted content while market date stays constant.",
+        "slice": "EL3",
+        "source_refs": [
+          "S12"
+        ],
+        "title": "Corrected same-date data"
+      },
+      "build_units": [
+        "B07"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R3:A19",
+      "origin": "R3",
+      "original_case": {
+        "execution_status": "NOT_EXECUTED",
+        "expected": "Owner readback proves membership; portfolio and other lists unchanged.",
+        "id": "A19",
+        "setup": "Deliberately add symbol to chosen existing list through WatchStore.",
+        "slice": "EL3",
+        "source_refs": [
+          "S13"
+        ],
+        "title": "Watch add succeeds"
+      },
+      "build_units": [
+        "B07"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R3:A20",
+      "origin": "R3",
+      "original_case": {
+        "execution_status": "NOT_EXECUTED",
+        "expected": "No fabricated success; correct bound list; no unrelated membership deletion.",
+        "id": "A20",
+        "setup": "Simulate owner rejection or list switch during request.",
+        "slice": "EL3",
+        "source_refs": [
+          "S13"
+        ],
+        "title": "Watch add fails or user changes lists"
+      },
+      "build_units": [
+        "B07"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R3:A21",
+      "origin": "R3",
+      "original_case": {
+        "execution_status": "NOT_EXECUTED",
+        "expected": "Do not claim durable cross-device episode thesis/notes.",
+        "id": "A21",
+        "setup": "Save symbol where only symbol membership is supported.",
+        "slice": "EL3",
+        "source_refs": [
+          "S13"
+        ],
+        "title": "Episode note is not cloud membership"
+      },
+      "build_units": [
+        "B07"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R3:A22",
+      "origin": "R3",
+      "original_case": {
+        "execution_status": "NOT_EXECUTED",
+        "expected": "No paid rows leak; existing owner auth/error semantics respected.",
+        "id": "A22",
+        "setup": "Traverse real protected route and payload for these callers.",
+        "slice": "EL3",
+        "source_refs": [
+          "S11",
+          "S12"
+        ],
+        "title": "Anonymous, expired and unentitled sessions"
+      },
+      "build_units": [
+        "B07"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R3:A23",
+      "origin": "R3",
+      "original_case": {
+        "execution_status": "NOT_EXECUTED",
+        "expected": "Suppress/label rights limitation without new auth bypass.",
+        "id": "A23",
+        "setup": "Use entitled user lacking permissible display rights for a field.",
+        "slice": "EL3",
+        "source_refs": [
+          "S11"
+        ],
+        "title": "Vendor right absent despite paid login"
+      },
+      "build_units": [
+        "B07"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R3:A24",
+      "origin": "R3",
+      "original_case": {
+        "execution_status": "NOT_EXECUTED",
+        "expected": "Critical validity updated; focus/selection stable; reordered list applied coherently.",
+        "id": "A24",
+        "setup": "Apply a new rank generation while a row is focused.",
+        "slice": "EL3",
+        "source_refs": [
+          "S11",
+          "S12"
+        ],
+        "title": "Reorder during focused reading"
+      },
+      "build_units": [
+        "B07"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R3:A25",
+      "origin": "R3",
+      "original_case": {
+        "execution_status": "NOT_EXECUTED",
+        "expected": "No overflow/obscured focus; meaningful accessible status; no every-tick speech.",
+        "id": "A25",
+        "setup": "Exercise required form factors, themes, languages and status announcements.",
+        "slice": "EL3",
+        "source_refs": [
+          "S11",
+          "S12"
+        ],
+        "title": "Accessibility/mobile/locales"
+      },
+      "build_units": [
+        "B07"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R3:A26",
+      "origin": "R3",
+      "original_case": {
+        "execution_status": "NOT_EXECUTED",
+        "expected": "No outcome-selected exclusion of never-confirmed/no-entry/unpriced cases.",
+        "id": "A26",
+        "setup": "Capture original admitted research cohort before comparing policies.",
+        "slice": "EL4",
+        "source_refs": [
+          "S2",
+          "S3"
+        ],
+        "title": "First origin and never-confirmers"
+      },
+      "build_units": [
+        "B06"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R3:A27",
+      "origin": "R3",
+      "original_case": {
+        "execution_status": "NOT_EXECUTED",
+        "expected": "Keep units distinct and disclose zero/many matches; no silent frozen regrade.",
+        "id": "A27",
+        "setup": "Join legacy grade key and B1 identity.",
+        "slice": "EL4",
+        "source_refs": [
+          "S3"
+        ],
+        "title": "Native marks and episode labels"
+      },
+      "build_units": [
+        "B06"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R3:A28",
+      "origin": "R3",
+      "original_case": {
+        "execution_status": "NOT_EXECUTED",
+        "expected": "No double spread; no guaranteed limit fill; unresolved sequencing remains named.",
+        "id": "A28",
+        "setup": "Exercise spread/fill/basis and dual-hit bars on actual admissible tape.",
+        "slice": "EL4",
+        "source_refs": [
+          "S7",
+          "S8"
+        ],
+        "title": "Costs and ambiguous barrier sequence"
+      },
+      "build_units": [
+        "B06"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R3:A29",
+      "origin": "R3",
+      "original_case": {
+        "execution_status": "NOT_EXECUTED",
+        "expected": "No probability label on raw rank margin; maturity/coverage disclosed.",
+        "id": "A29",
+        "setup": "Use ranker relevance outputs beside calibrated risk/return heads.",
+        "slice": "EL5",
+        "source_refs": [
+          "S1"
+        ],
+        "title": "Rank output versus probability"
+      },
+      "build_units": [
+        "B11"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R3:A30",
+      "origin": "R3",
+      "original_case": {
+        "execution_status": "NOT_EXECUTED",
+        "expected": "Original prediction immutable; current forecast uses its own admissible cutoff.",
+        "id": "A30",
+        "setup": "Observe same episode at first origin and later registered landmark.",
+        "slice": "EL5",
+        "source_refs": [
+          "S3"
+        ],
+        "title": "Origin versus landmark"
+      },
+      "build_units": [
+        "B11"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R3:A31",
+      "origin": "R3",
+      "original_case": {
+        "execution_status": "NOT_EXECUTED",
+        "expected": "Time-safe folds and effective evidence accounting; no independent-N inflation.",
+        "id": "A31",
+        "setup": "Use overlapping episodes/dates and repeated intraday samples.",
+        "slice": "EL5",
+        "source_refs": [
+          "S3"
+        ],
+        "title": "Leakage and repeated observations"
+      },
+      "build_units": [
+        "B11"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R3:A32",
+      "origin": "R3",
+      "original_case": {
+        "execution_status": "NOT_EXECUTED",
+        "expected": "Do not waive confluence; require separately accepted entry species/version.",
+        "id": "A32",
+        "setup": "Provide pre-confluence early evidence under unchanged control.",
+        "slice": "EL6",
+        "source_refs": [
+          "S1",
+          "S4",
+          "S8"
+        ],
+        "title": "Earlier trigger lacks entry permission"
+      },
+      "build_units": [
+        "B12"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R3:A33",
+      "origin": "R3",
+      "original_case": {
+        "execution_status": "NOT_EXECUTED",
+        "expected": "No automatic exit solely from new-entry status; apply holding owner.",
+        "id": "A33",
+        "setup": "Produce RAN_DONT_CHASE for an existing holding.",
+        "slice": "EL7",
+        "source_refs": [
+          "S1",
+          "S8"
+        ],
+        "title": "New-entry ran while position remains valid"
+      },
+      "build_units": [
+        "B13"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R3:A34",
+      "origin": "R3",
+      "original_case": {
+        "execution_status": "NOT_EXECUTED",
+        "expected": "Preserve original thesis/policy; explicit new evaluation not retrospective excuse.",
+        "id": "A34",
+        "setup": "Attempt to change sleeve/horizon after adverse result.",
+        "slice": "EL7",
+        "source_refs": [
+          "S1"
+        ],
+        "title": "Tactical loss relabeled long term"
+      },
+      "build_units": [
+        "B13"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R3:A35",
+      "origin": "R3",
+      "original_case": {
+        "execution_status": "NOT_EXECUTED",
+        "expected": "Distinct unknown-data and breach states; no stale-data safety claim.",
+        "id": "A35",
+        "setup": "Remove current quote then separately provide actual binding breach.",
+        "slice": "EL7",
+        "source_refs": [
+          "S8"
+        ],
+        "title": "Data gap versus thesis breach"
+      },
+      "build_units": [
+        "B13"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R3:A36",
+      "origin": "R3",
+      "original_case": {
+        "execution_status": "NOT_EXECUTED",
+        "expected": "User completes workflow; exact source/served byte identities and second refresh proven.",
+        "id": "A36",
+        "setup": "Use accepted release/source generation with entitled real browser then ordinary scheduled refresh.",
+        "slice": "EL8",
+        "source_refs": [
+          "S11",
+          "S12",
+          "S13"
+        ],
+        "title": "Real final production path"
+      },
+      "build_units": [
+        "B26"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R4:SH01",
+      "origin": "R4",
+      "original_case": {
+        "execution_status": "NOT_EXECUTED",
+        "id": "SH01",
+        "production_proof": false,
+        "required_behavior": "Unknown strategy identity is not passed as the existing Early Leadership control",
+        "slice": "S0"
+      },
+      "build_units": [
+        "B00"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R4:SH02",
+      "origin": "R4",
+      "original_case": {
+        "execution_status": "NOT_EXECUTED",
+        "id": "SH02",
+        "production_proof": false,
+        "required_behavior": "New source event without accepted B1 anchor stays a nomination, not a surrogate episode",
+        "slice": "S0"
+      },
+      "build_units": [
+        "B00"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R4:SH03",
+      "origin": "R4",
+      "original_case": {
+        "execution_status": "NOT_EXECUTED",
+        "id": "SH03",
+        "production_proof": false,
+        "required_behavior": "Later source correction preserves earlier source-known decision belief",
+        "slice": "S1"
+      },
+      "build_units": [
+        "B08"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R4:SH04",
+      "origin": "R4",
+      "original_case": {
+        "execution_status": "NOT_EXECUTED",
+        "id": "SH04",
+        "production_proof": false,
+        "required_behavior": "Historical event discovery reports current-manifest selection limits",
+        "slice": "S1"
+      },
+      "build_units": [
+        "B08"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R4:SH05",
+      "origin": "R4",
+      "original_case": {
+        "execution_status": "NOT_EXECUTED",
+        "id": "SH05",
+        "production_proof": false,
+        "required_behavior": "Optional absent evidence differs from measured neutral and adverse evidence",
+        "slice": "S2"
+      },
+      "build_units": [
+        "B04"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R4:SH06",
+      "origin": "R4",
+      "original_case": {
+        "execution_status": "NOT_EXECUTED",
+        "id": "SH06",
+        "production_proof": false,
+        "required_behavior": "Unpromoted model or computational availability cannot grant product trading authority",
+        "slice": "S2"
+      },
+      "build_units": [
+        "B04"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R4:SH07",
+      "origin": "R4",
+      "original_case": {
+        "execution_status": "NOT_EXECUTED",
+        "id": "SH07",
+        "production_proof": false,
+        "required_behavior": "No parallel outcome/quote/geometry/thesis owner is introduced",
+        "slice": "S0"
+      },
+      "build_units": [
+        "B00"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R4:SH08",
+      "origin": "R4",
+      "original_case": {
+        "execution_status": "NOT_EXECUTED",
+        "id": "SH08",
+        "production_proof": false,
+        "required_behavior": "Public availability, system capture, model vintage and user visibility remain separate",
+        "slice": "S1"
+      },
+      "build_units": [
+        "B08"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R4:ER01",
+      "origin": "R4",
+      "original_case": {
+        "execution_status": "NOT_EXECUTED",
+        "id": "ER01",
+        "production_proof": false,
+        "required_behavior": "Actual and expectation with different fiscal periods are not compared as a beat",
+        "slice": "ER1"
+      },
+      "build_units": [
+        "B08"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R4:ER02",
+      "origin": "R4",
+      "original_case": {
+        "execution_status": "NOT_EXECUTED",
+        "id": "ER02",
+        "production_proof": false,
+        "required_behavior": "GAAP and issuer-adjusted values need explicit compatible definition",
+        "slice": "ER1"
+      },
+      "build_units": [
+        "B08"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R4:ER03",
+      "origin": "R4",
+      "original_case": {
+        "execution_status": "NOT_EXECUTED",
+        "id": "ER03",
+        "production_proof": false,
+        "required_behavior": "Currency, units, segment and share basis mismatch is disclosed",
+        "slice": "ER1"
+      },
+      "build_units": [
+        "B08"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R4:ER04",
+      "origin": "R4",
+      "original_case": {
+        "execution_status": "NOT_EXECUTED",
+        "id": "ER04",
+        "production_proof": false,
+        "required_behavior": "Absent/unlicensed consensus does not become zero or a statistical-forecast consensus",
+        "slice": "ER1"
+      },
+      "build_units": [
+        "B08"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R4:ER05",
+      "origin": "R4",
+      "original_case": {
+        "execution_status": "NOT_EXECUTED",
+        "id": "ER05",
+        "production_proof": false,
+        "required_behavior": "Contributor departure can change mean without a matched upward revision",
+        "slice": "ER1"
+      },
+      "build_units": [
+        "B08"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R4:ER06",
+      "origin": "R4",
+      "original_case": {
+        "execution_status": "NOT_EXECUTED",
+        "id": "ER06",
+        "production_proof": false,
+        "required_behavior": "No common contributor yields unmeasured matched revision, not zero",
+        "slice": "ER1"
+      },
+      "build_units": [
+        "B08"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R4:ER07",
+      "origin": "R4",
+      "original_case": {
+        "execution_status": "NOT_EXECUTED",
+        "id": "ER07",
+        "production_proof": false,
+        "required_behavior": "Fixed-period estimate changes are separated from forward-horizon roll",
+        "slice": "ER1"
+      },
+      "build_units": [
+        "B08"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R4:ER08",
+      "origin": "R4",
+      "original_case": {
+        "execution_status": "NOT_EXECUTED",
+        "id": "ER08",
+        "production_proof": false,
+        "required_behavior": "Near-zero/negative expectation does not manufacture a percent beat",
+        "slice": "ER1"
+      },
+      "build_units": [
+        "B08"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R4:ER09",
+      "origin": "R4",
+      "original_case": {
+        "execution_status": "NOT_EXECUTED",
+        "id": "ER09",
+        "production_proof": false,
+        "required_behavior": "Guidance withdrawal/range change is not an ordinary raise/cut scalar",
+        "slice": "ER1"
+      },
+      "build_units": [
+        "B08"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R4:ER10",
+      "origin": "R4",
+      "original_case": {
+        "execution_status": "NOT_EXECUTED",
+        "id": "ER10",
+        "production_proof": false,
+        "required_behavior": "Release, call, filing and later estimate observations use their own known clocks",
+        "slice": "ER2"
+      },
+      "build_units": [
+        "B14"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R4:ER11",
+      "origin": "R4",
+      "original_case": {
+        "execution_status": "NOT_EXECUTED",
+        "id": "ER11",
+        "production_proof": false,
+        "required_behavior": "Post-event revision cannot be substituted for pre-event expectation",
+        "slice": "ER2"
+      },
+      "build_units": [
+        "B14"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R4:ER12",
+      "origin": "R4",
+      "original_case": {
+        "execution_status": "NOT_EXECUTED",
+        "id": "ER12",
+        "production_proof": false,
+        "required_behavior": "Same-event correction does not mint a new independent opportunity",
+        "slice": "ER2"
+      },
+      "build_units": [
+        "B14"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R4:ER13",
+      "origin": "R4",
+      "original_case": {
+        "execution_status": "NOT_EXECUTED",
+        "id": "ER13",
+        "production_proof": false,
+        "required_behavior": "Post-release fill cannot earn the pre-fill announcement gap",
+        "slice": "ER3"
+      },
+      "build_units": [
+        "B15"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R4:ER14",
+      "origin": "R4",
+      "original_case": {
+        "execution_status": "NOT_EXECUTED",
+        "id": "ER14",
+        "production_proof": false,
+        "required_behavior": "Never-confirmed/no-pullback/unpriced events remain in the policy accounting",
+        "slice": "ER3"
+      },
+      "build_units": [
+        "B15"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R4:ER15",
+      "origin": "R4",
+      "original_case": {
+        "execution_status": "NOT_EXECUTED",
+        "id": "ER15",
+        "production_proof": false,
+        "required_behavior": "Next earnings event does not erase original forecast or reset its outcome horizon",
+        "slice": "ER4"
+      },
+      "build_units": [
+        "B15"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R4:ER16",
+      "origin": "R4",
+      "original_case": {
+        "execution_status": "NOT_EXECUTED",
+        "id": "ER16",
+        "production_proof": false,
+        "required_behavior": "Loss in a tactical/earnings trade cannot silently become a Cycle Capture position",
+        "slice": "ER4"
+      },
+      "build_units": [
+        "B15"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R4:CC01",
+      "origin": "R4",
+      "original_case": {
+        "execution_status": "NOT_EXECUTED",
+        "id": "CC01",
+        "production_proof": false,
+        "required_behavior": "Domain readiness is evaluated without selecting on future returns",
+        "slice": "CC1"
+      },
+      "build_units": [
+        "B16"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R4:CC02",
+      "origin": "R4",
+      "original_case": {
+        "execution_status": "NOT_EXECUTED",
+        "id": "CC02",
+        "production_proof": false,
+        "required_behavior": "Broad Census computers/electronics data is not labeled granular semiconductor evidence",
+        "slice": "CC1"
+      },
+      "build_units": [
+        "B16"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R4:CC03",
+      "origin": "R4",
+      "original_case": {
+        "execution_status": "NOT_EXECUTED",
+        "id": "CC03",
+        "production_proof": false,
+        "required_behavior": "Industry/segment membership and classifications are point-in-time or explicitly current-only",
+        "slice": "CC1"
+      },
+      "build_units": [
+        "B16"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R4:CC04",
+      "origin": "R4",
+      "original_case": {
+        "execution_status": "NOT_EXECUTED",
+        "id": "CC04",
+        "production_proof": false,
+        "required_behavior": "Revised industrial series cannot overwrite an original-vintage observation",
+        "slice": "CC1"
+      },
+      "build_units": [
+        "B16"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R4:CC05",
+      "origin": "R4",
+      "original_case": {
+        "execution_status": "NOT_EXECUTED",
+        "id": "CC05",
+        "production_proof": false,
+        "required_behavior": "Lower absolute inventory is distinguished from higher inventory relative to sales",
+        "slice": "CC1"
+      },
+      "build_units": [
+        "B16"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R4:CC06",
+      "origin": "R4",
+      "original_case": {
+        "execution_status": "NOT_EXECUTED",
+        "id": "CC06",
+        "production_proof": false,
+        "required_behavior": "Order cancellations and nominal-price effects are not unqualified demand improvement",
+        "slice": "CC1"
+      },
+      "build_units": [
+        "B16"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R4:CC07",
+      "origin": "R4",
+      "original_case": {
+        "execution_status": "NOT_EXECUTED",
+        "id": "CC07",
+        "production_proof": false,
+        "required_behavior": "Dated debt maturity can breach liquidity before headline cash runway expires",
+        "slice": "CC2"
+      },
+      "build_units": [
+        "B17"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R4:CC08",
+      "origin": "R4",
+      "original_case": {
+        "execution_status": "NOT_EXECUTED",
+        "id": "CC08",
+        "production_proof": false,
+        "required_behavior": "Restricted cash and conditional facilities cannot be assumed fully usable",
+        "slice": "CC2"
+      },
+      "build_units": [
+        "B17"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R4:CC09",
+      "origin": "R4",
+      "original_case": {
+        "execution_status": "NOT_EXECUTED",
+        "id": "CC09",
+        "production_proof": false,
+        "required_behavior": "Operating cash/obligations and financing proceeds are not double-counted",
+        "slice": "CC2"
+      },
+      "build_units": [
+        "B17"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R4:CC10",
+      "origin": "R4",
+      "original_case": {
+        "execution_status": "NOT_EXECUTED",
+        "id": "CC10",
+        "production_proof": false,
+        "required_behavior": "Higher enterprise value with dilution can lower per-share value",
+        "slice": "CC2"
+      },
+      "build_units": [
+        "B17"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R4:CC11",
+      "origin": "R4",
+      "original_case": {
+        "execution_status": "NOT_EXECUTED",
+        "id": "CC11",
+        "production_proof": false,
+        "required_behavior": "Original shares cancelled in restructuring do not inherit new-equity recovery",
+        "slice": "CC2"
+      },
+      "build_units": [
+        "B17"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R4:CC12",
+      "origin": "R4",
+      "original_case": {
+        "execution_status": "NOT_EXECUTED",
+        "id": "CC12",
+        "production_proof": false,
+        "required_behavior": "Joint recovery/funding/payoff is not a product of unverified independent scores",
+        "slice": "CC3"
+      },
+      "build_units": [
+        "B18"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R4:CC13",
+      "origin": "R4",
+      "original_case": {
+        "execution_status": "NOT_EXECUTED",
+        "id": "CC13",
+        "production_proof": false,
+        "required_behavior": "Future-smoothed economic state is excluded from live historical signal claims",
+        "slice": "CC3"
+      },
+      "build_units": [
+        "B18"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R4:CC14",
+      "origin": "R4",
+      "original_case": {
+        "execution_status": "NOT_EXECUTED",
+        "id": "CC14",
+        "production_proof": false,
+        "required_behavior": "Failed/delisted/censored cases and common-cycle dependence are retained",
+        "slice": "CC3"
+      },
+      "build_units": [
+        "B18"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R4:CC15",
+      "origin": "R4",
+      "original_case": {
+        "execution_status": "NOT_EXECUTED",
+        "id": "CC15",
+        "production_proof": false,
+        "required_behavior": "New-add chase refusal does not automatically terminate a valid core hold",
+        "slice": "CC4"
+      },
+      "build_units": [
+        "B19"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R4:CC16",
+      "origin": "R4",
+      "original_case": {
+        "execution_status": "NOT_EXECUTED",
+        "id": "CC16",
+        "production_proof": false,
+        "required_behavior": "Binding structural/funding invalidation cannot be waived by bullish narrative",
+        "slice": "CC4"
+      },
+      "build_units": [
+        "B19"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R4:UX01",
+      "origin": "R4",
+      "original_case": {
+        "execution_status": "NOT_EXECUTED",
+        "id": "UX01",
+        "production_proof": false,
+        "required_behavior": "Earnings drawer shows actual/prior/expectation basis and distinct source clocks",
+        "slice": "ER2"
+      },
+      "build_units": [
+        "B14"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R4:UX02",
+      "origin": "R4",
+      "original_case": {
+        "execution_status": "NOT_EXECUTED",
+        "id": "UX02",
+        "production_proof": false,
+        "required_behavior": "Cycle drawer shows funding milestone, assumptions and original-equity scenario",
+        "slice": "CC2"
+      },
+      "build_units": [
+        "B17"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R4:UX03",
+      "origin": "R4",
+      "original_case": {
+        "execution_status": "NOT_EXECUTED",
+        "id": "UX03",
+        "production_proof": false,
+        "required_behavior": "Uncalibrated forecasts render as unavailable/accruing, not invented probabilities",
+        "slice": "S2"
+      },
+      "build_units": [
+        "B04"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R4:UX04",
+      "origin": "R4",
+      "original_case": {
+        "execution_status": "NOT_EXECUTED",
+        "id": "UX04",
+        "production_proof": false,
+        "required_behavior": "Watch saves only to selected existing list and verifies actual owner readback",
+        "slice": "JOIN"
+      },
+      "build_units": [
+        "B26"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R4:UX05",
+      "origin": "R4",
+      "original_case": {
+        "execution_status": "NOT_EXECUTED",
+        "id": "UX05",
+        "production_proof": false,
+        "required_behavior": "Notes and episode actions are not falsely presented as cloud-persisted",
+        "slice": "JOIN"
+      },
+      "build_units": [
+        "B26"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R4:UX06",
+      "origin": "R4",
+      "original_case": {
+        "execution_status": "NOT_EXECUTED",
+        "id": "UX06",
+        "production_proof": false,
+        "required_behavior": "Shared event across sleeves does not duplicate portfolio exposure or independent N",
+        "slice": "JOIN"
+      },
+      "build_units": [
+        "B26"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R4:UX07",
+      "origin": "R4",
+      "original_case": {
+        "execution_status": "NOT_EXECUTED",
+        "id": "UX07",
+        "production_proof": false,
+        "required_behavior": "Rights/entitlement restrictions apply to numbers and generated explanations",
+        "slice": "JOIN"
+      },
+      "build_units": [
+        "B26"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R4:UX08",
+      "origin": "R4",
+      "original_case": {
+        "execution_status": "NOT_EXECUTED",
+        "id": "UX08",
+        "production_proof": false,
+        "required_behavior": "Accepted source to entitled browser and subsequent ordinary refresh preserve correction/identity truth",
+        "slice": "JOIN"
+      },
+      "build_units": [
+        "B26"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R5:A01",
+      "origin": "R5",
+      "title": "No hidden candidate deletion",
+      "setup": "A source-qualified nomination is cap-displaced or lacks a B1 anchor.",
+      "required_behavior": "Original source count, suppression and searchable observation remain; no surrogate episode or fabricated score.",
+      "build_units": [
+        "B02",
+        "B03"
+      ],
+      "requirements": [
+        "R01",
+        "R02"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R5:A02",
+      "origin": "R5",
+      "title": "No surrogate identity",
+      "setup": "Two securities share an issuer or a ticker alias changes.",
+      "required_behavior": "Resolve exact security/epoch and B1 generation, not string equality or a newly synthesized ticker-date key.",
+      "build_units": [
+        "B02",
+        "B04"
+      ],
+      "requirements": [
+        "R02"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R5:A03",
+      "origin": "R5",
+      "title": "Corrected same-date source",
+      "setup": "Payload changes without a new market date.",
+      "required_behavior": "Coherent generation changes reach preview/private hydration; prior decision is preserved.",
+      "build_units": [
+        "B01",
+        "B03",
+        "B23"
+      ],
+      "requirements": [
+        "R03",
+        "R34"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R5:A04",
+      "origin": "R5",
+      "title": "Prior-session validity",
+      "setup": "Yesterday qualified technical source meets current RTH quote.",
+      "required_behavior": "Accepted explicit validity/expiry law or honest refusal, never relabeled source date.",
+      "build_units": [
+        "B05"
+      ],
+      "requirements": [
+        "R03",
+        "R14"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R5:A05",
+      "origin": "R5",
+      "title": "Expired or retracted validity",
+      "setup": "Previously valid entry facts expire or retract while UI remains open.",
+      "required_behavior": "Current action becomes unavailable with clear reason; old decision is retained as history.",
+      "build_units": [
+        "B05",
+        "B21",
+        "B23"
+      ],
+      "requirements": [
+        "R14",
+        "R25"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R5:A06",
+      "origin": "R5",
+      "title": "Historical event omissions",
+      "setup": "Current manifest lacks an old event previously in the universe.",
+      "required_behavior": "Historical study refuses full-event-population claim until owner history is qualified.",
+      "build_units": [
+        "B08",
+        "B06"
+      ],
+      "requirements": [
+        "R04",
+        "R07"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R5:A07",
+      "origin": "R5",
+      "title": "Model vintage leakage",
+      "setup": "Modern model is run on old documents with unknowable training chronology.",
+      "required_behavior": "Extraction versus prediction class and retrospective status are explicit; no PIT forecasting certification from prompt dates.",
+      "build_units": [
+        "B04",
+        "B11"
+      ],
+      "requirements": [
+        "R04",
+        "R19"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R5:A08",
+      "origin": "R5",
+      "title": "Optional intelligence missing",
+      "setup": "Options/estimates/transcript unavailable for a supported name.",
+      "required_behavior": "Base research remains useful with named missingness; mandatory entry fact absence still blocks action.",
+      "build_units": [
+        "B04",
+        "B11"
+      ],
+      "requirements": [
+        "R05",
+        "R13"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R5:A09",
+      "origin": "R5",
+      "title": "Source rights to prose",
+      "setup": "Unlicensed consensus present in a worker or server-side context.",
+      "required_behavior": "No prohibited value leaks through anonymous JSON, generated narration or cached account responses.",
+      "build_units": [
+        "B04",
+        "B08",
+        "B25"
+      ],
+      "requirements": [
+        "R04",
+        "R29"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R5:A10",
+      "origin": "R5",
+      "title": "Self-generated group strength",
+      "setup": "One member drives an otherwise flat group.",
+      "required_behavior": "Peer-excluding-member control is distinct, with actual weights and no independent evidence double-credit.",
+      "build_units": [
+        "B09",
+        "B10"
+      ],
+      "requirements": [
+        "R06",
+        "R12"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R5:A11",
+      "origin": "R5",
+      "title": "Historical member leakage",
+      "setup": "Today-known baskets omit failed historical constituents.",
+      "required_behavior": "PIT membership or explicit non-PIT limitation; no promotional historical inference on biased frame.",
+      "build_units": [
+        "B09",
+        "B18"
+      ],
+      "requirements": [
+        "R04",
+        "R08"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R5:A12",
+      "origin": "R5",
+      "title": "Source granularity mismatch",
+      "setup": "Electronics aggregate is presented as memory-subtheme observation.",
+      "required_behavior": "Claim remains at real aggregate scope; unavailable granularity is disclosed.",
+      "build_units": [
+        "B09",
+        "B16"
+      ],
+      "requirements": [
+        "R04",
+        "R08"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R5:A13",
+      "origin": "R5",
+      "title": "False consensus revision",
+      "setup": "Contributor exits while remaining estimates are unchanged.",
+      "required_behavior": "Aggregate change and matched revision reported separately; matched absence is unknown.",
+      "build_units": [
+        "B08",
+        "B15"
+      ],
+      "requirements": [
+        "R07"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R5:A14",
+      "origin": "R5",
+      "title": "Period and accounting mismatch",
+      "setup": "GAAP versus adjusted estimates or different fiscal dates are compared.",
+      "required_behavior": "No beat/miss unless exact comparable owner semantics established.",
+      "build_units": [
+        "B08",
+        "B15"
+      ],
+      "requirements": [
+        "R07"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R5:A15",
+      "origin": "R5",
+      "title": "Funding precedes recovery",
+      "setup": "Debt maturity falls before modeled recovery despite simple runway.",
+      "required_behavior": "Dated obligations reveal funding limit; scenario assumptions cannot be described as committed facilities.",
+      "build_units": [
+        "B17",
+        "B18"
+      ],
+      "requirements": [
+        "R08"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R5:A16",
+      "origin": "R5",
+      "title": "Old equity canceled",
+      "setup": "Business recovers after old shares canceled and new equity issued.",
+      "required_behavior": "Old security terminal value is preserved; no performance splice into replacement equity.",
+      "build_units": [
+        "B17",
+        "B18",
+        "B22"
+      ],
+      "requirements": [
+        "R08",
+        "R18"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R5:A17",
+      "origin": "R5",
+      "title": "Original and current predictions",
+      "setup": "Later favorable evidence appears on an existing episode.",
+      "required_behavior": "New landmark observation; original ranking/forecast remains immutable and visible.",
+      "build_units": [
+        "B06",
+        "B11",
+        "B22"
+      ],
+      "requirements": [
+        "R10",
+        "R34"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R5:A18",
+      "origin": "R5",
+      "title": "Rank is not probability",
+      "setup": "Rank relevance rises to a high value without calibration.",
+      "required_behavior": "UI labels rank/priority only; no win probability or return target invented.",
+      "build_units": [
+        "B11",
+        "B20"
+      ],
+      "requirements": [
+        "R11",
+        "R13"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R5:A19",
+      "origin": "R5",
+      "title": "Selected-cohort calibration",
+      "setup": "Pooled model calibrated but displayed top-K poorly calibrated.",
+      "required_behavior": "Top-K/sleeve/horizon failure appears in qualification; no pooled-only confidence claim.",
+      "build_units": [
+        "B11",
+        "B15",
+        "B22"
+      ],
+      "requirements": [
+        "R13"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R5:A20",
+      "origin": "R5",
+      "title": "Implicit confluence waiver",
+      "setup": "Earlier 1D/4H observation is used with unchanged EL control.",
+      "required_behavior": "No entry bypass; separate accepted early-entry policy and study are required.",
+      "build_units": [
+        "B05",
+        "B12"
+      ],
+      "requirements": [
+        "R14"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R5:A21",
+      "origin": "R5",
+      "title": "Missed confirmation denominator",
+      "setup": "Only eventual confirmers are retained in early-entry evaluation.",
+      "required_behavior": "Evaluator rejects selected population and preserves all original opportunities.",
+      "build_units": [
+        "B06",
+        "B10",
+        "B12"
+      ],
+      "requirements": [
+        "R17"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R5:A22",
+      "origin": "R5",
+      "title": "Price-row/session mismatch",
+      "setup": "Missing daily bars shift a positional horizon.",
+      "required_behavior": "Expected session endpoint and actual coverage differ visibly; no silent H10-session label.",
+      "build_units": [
+        "B06",
+        "B22"
+      ],
+      "requirements": [
+        "R15",
+        "R18"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R5:A23",
+      "origin": "R5",
+      "title": "Unknown path versus cash",
+      "setup": "Unpriced episode and known no-entry policy share a report.",
+      "required_behavior": "Unpriced remains unknown; only valid no-entry follows declared cash accounting.",
+      "build_units": [
+        "B06",
+        "B22"
+      ],
+      "requirements": [
+        "R17",
+        "R18"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R5:A24",
+      "origin": "R5",
+      "title": "Ambiguous barrier order",
+      "setup": "Same OHLC bar crosses both target and invalidation.",
+      "required_behavior": "Order unresolved without actual finer evidence; conservative sensitivity is labeled assumption.",
+      "build_units": [
+        "B06",
+        "B12"
+      ],
+      "requirements": [
+        "R15",
+        "R18"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R5:A25",
+      "origin": "R5",
+      "title": "Entry MAE versus giveback",
+      "setup": "Path rallies then falls sharply while above entry.",
+      "required_behavior": "Entry adverse excursion, peak drawdown and realized capture remain distinct metrics.",
+      "build_units": [
+        "B06",
+        "B13",
+        "B22"
+      ],
+      "requirements": [
+        "R16",
+        "R18"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R5:A26",
+      "origin": "R5",
+      "title": "Row-count leakage",
+      "setup": "Thousands of rows/date are split with a small sample gap.",
+      "required_behavior": "Whole dates/episodes and outcome intervals define split; immature labels do not train.",
+      "build_units": [
+        "B06",
+        "B11"
+      ],
+      "requirements": [
+        "R19"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R5:A27",
+      "origin": "R5",
+      "title": "Duplicate policies and repeated instants",
+      "setup": "Identical configurations and many ticks inflate apparent sample count.",
+      "required_behavior": "Explicit semantic aliases and dependence; no new independent episode or test credit.",
+      "build_units": [
+        "B06"
+      ],
+      "requirements": [
+        "R19",
+        "R35"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R5:A28",
+      "origin": "R5",
+      "title": "No-harm fallacy",
+      "setup": "Wide interval includes zero and material downside.",
+      "required_behavior": "Declared non-inferiority bound fails or remains inconclusive; absence of significance does not pass.",
+      "build_units": [
+        "B11",
+        "B15",
+        "B18"
+      ],
+      "requirements": [
+        "R35"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R5:A29",
+      "origin": "R5",
+      "title": "Mature stock new-entry refusal",
+      "setup": "Held position remains valid but a new entry would chase.",
+      "required_behavior": "New-entry and held-position actions differ correctly; no automatic exit from RAN.",
+      "build_units": [
+        "B13",
+        "B19",
+        "B20"
+      ],
+      "requirements": [
+        "R16",
+        "R20"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R5:A30",
+      "origin": "R5",
+      "title": "Retroactive strategy change",
+      "setup": "Losing tactical position is retitled Cycle Capture.",
+      "required_behavior": "Original strategy persists; any new thesis is explicit and cannot rewrite its old outcome.",
+      "build_units": [
+        "B13",
+        "B19",
+        "B24"
+      ],
+      "requirements": [
+        "R16",
+        "R34"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R5:A31",
+      "origin": "R5",
+      "title": "Focus-safe update",
+      "setup": "User reviews a row as rank generation updates.",
+      "required_behavior": "Selection/focus preserved; update offered; material invalidation still visible without stale action.",
+      "build_units": [
+        "B20",
+        "B21"
+      ],
+      "requirements": [
+        "R20",
+        "R23"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R5:A32",
+      "origin": "R5",
+      "title": "Art directions and language",
+      "setup": "1440/390 EN/ZH dark/light with long labels and degraded data.",
+      "required_behavior": "Separate materials, readable contrast, keyboard use, no overflow, same semantic action/authority.",
+      "build_units": [
+        "B20",
+        "B25"
+      ],
+      "requirements": [
+        "R23"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R5:A33",
+      "origin": "R5",
+      "title": "Truthful Watch save",
+      "setup": "Save to nondefault list with network ambiguity.",
+      "required_behavior": "Owner readback/list scope; no invented success or retry on uncertain write; portfolio unchanged.",
+      "build_units": [
+        "B07",
+        "B21",
+        "B24"
+      ],
+      "requirements": [
+        "R24"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R5:A34",
+      "origin": "R5",
+      "title": "Thesis persistence claim",
+      "setup": "Local notes exist but cloud episode action is unsupported.",
+      "required_behavior": "UI states actual durability; unsupported cloud thesis not offered until owner extension accepted.",
+      "build_units": [
+        "B13",
+        "B19",
+        "B21"
+      ],
+      "requirements": [
+        "R24"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R5:A35",
+      "origin": "R5",
+      "title": "Alert provenance and stale delivery",
+      "setup": "Duplicate trigger, revoked evidence or stale queued alert.",
+      "required_behavior": "Existing dedupe/revocation/current validity prevents false fresh action; original delivery record preserved.",
+      "build_units": [
+        "B21",
+        "B23"
+      ],
+      "requirements": [
+        "R25"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R5:A36",
+      "origin": "R5",
+      "title": "Correlated duplicate exposure",
+      "setup": "Three sleeves identify one security and overlapping groups.",
+      "required_behavior": "One actual position lineage; opportunity views are not separate capital/independent trials.",
+      "build_units": [
+        "B24"
+      ],
+      "requirements": [
+        "R26"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R5:A37",
+      "origin": "R5",
+      "title": "No feasible portfolio claim from averages",
+      "setup": "Candidate mean improves while liquidity/capital constraints untested.",
+      "required_behavior": "Only appropriate episode/policy metrics claimed; portfolio/capacity remains unproven.",
+      "build_units": [
+        "B24",
+        "B22"
+      ],
+      "requirements": [
+        "R26"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R5:A38",
+      "origin": "R5",
+      "title": "Performance and entitlement",
+      "setup": "Cold/warm loads, busy updates and account entitlement variants.",
+      "required_behavior": "Measured mobile/desktop field budgets and actual private-path response behavior; no protected cross-account cache leak.",
+      "build_units": [
+        "B23",
+        "B25"
+      ],
+      "requirements": [
+        "R27",
+        "R29"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R5:A39",
+      "origin": "R5",
+      "title": "Rollback stale green",
+      "setup": "New head withdrawn while old snapshot carried ENTRY_OPEN.",
+      "required_behavior": "Current B4 reevaluation or unavailable action; no stale permission restored from cache.",
+      "build_units": [
+        "B23",
+        "B26"
+      ],
+      "requirements": [
+        "R28",
+        "R34"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R5:A40",
+      "origin": "R5",
+      "title": "Source review independence",
+      "setup": "Old check belongs to another head or builder supplies own review.",
+      "required_behavior": "Exact-head evidence and genuine independent gate; preserve existing review operation and custody.",
+      "build_units": [
+        "B00",
+        "B25"
+      ],
+      "requirements": [
+        "R31",
+        "R32",
+        "R33"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R5:A41",
+      "origin": "R5",
+      "title": "Negative scientific result",
+      "setup": "Research packet fails or has inadequate power.",
+      "required_behavior": "Record rejected/inconclusive result without threshold shopping; protect useful unaffected product work and honest claims.",
+      "build_units": [
+        "B10",
+        "B15",
+        "B18",
+        "B27"
+      ],
+      "requirements": [
+        "R30",
+        "R35",
+        "R36"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    },
+    {
+      "id": "R5:A42",
+      "origin": "R5",
+      "title": "Full US ordinary-path acceptance",
+      "setup": "Three initial advertised sleeves and later roadmap evaluated at release.",
+      "required_behavior": "Every advertised persona task and ordinary refresh proved, unresolved claims visible, regions deferred until accepted US boundary.",
+      "build_units": [
+        "B25",
+        "B26",
+        "B27",
+        "B28"
+      ],
+      "requirements": [
+        "R33",
+        "R36"
+      ],
+      "execution_status": "NOT_EXECUTED",
+      "production_proven": false
+    }
+  ]
+}

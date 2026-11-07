@@ -1,0 +1,89 @@
+{#- Accumulation watch panel — moved whole from dashboard.html.j2 (S2 §1.4a).
+    Nested inside sector_central.html.j2 #si-movement; must not mint a new L1.
+    Self-contained t()/help() so both hosts (and a direct render) work. td() is
+    an env global on both builders. -#}
+{% macro t(en, zh='') -%}
+<span class="l-en">{{ en }}</span><span class="l-zh">{{ zh if zh else en }}</span>
+{%- endmacro %}
+{% macro help(en, zh='') -%}
+<span class="help" tabindex="0" role="button">?<span class="tip"><span class="l-en">{{ en }}</span><span class="l-zh">{{ zh if zh else en }}</span></span></span>
+{%- endmacro %}
+{%- set _acc = accumulation if (accumulation is defined and accumulation) else [] -%}
+{%- set _acc_n = _acc | length -%}
+{%- set _acc_uni = accumulation_universe_n if (accumulation_universe_n is defined and accumulation_universe_n) else none -%}
+{%- set _acc_rows = _acc[:8] -%}
+{%- set _acc_asof = none -%}
+{%- if _acc_n and _acc[0].get('window') -%}
+{%- set _acc_asof = _acc[0].window.split('..')[1] -%}
+{%- endif -%}
+<style id="accumulation-watch-css">
+/* post-stack: consolidate */
+/* Self-sufficient on every sector_central branch (board-less fail-soft included).
+   help/tip used to arrive only via _us_act_now_board; tbl-scroll was scoped to
+   #si-confluence. */
+#accumulation .help { display: inline-flex; align-items: center; justify-content: center;
+  width: 15px; height: 15px; border-radius: var(--r-full, 50%); border: 1px solid var(--muted);
+  color: var(--muted); font-size: 10px; font-weight: 600; cursor: help;
+  position: relative; vertical-align: middle; margin-left: 5px; flex: none; }
+#accumulation .help:focus-visible { outline: 2px solid var(--ink-info); outline-offset: 2px; }
+#accumulation .help .tip { display: none; position: absolute; bottom: 140%; left: 50%;
+  transform: translateX(-50%); width: 330px;
+  background: var(--panel); border: 1px solid var(--line);
+  padding: 10px 13px; border-radius: var(--r-ctl, 8px);
+  z-index: 60; font-size: 12px; line-height: 1.5; color: var(--text);
+  text-align: left; font-weight: 400; text-transform: none;
+  letter-spacing: normal; box-shadow: var(--popover-shadow);
+  pointer-events: auto; cursor: auto; white-space: normal;
+  max-height: min(60vh, 420px); overflow-y: auto; overscroll-behavior: contain; }
+#accumulation .help.tip-open .tip { display: block; }
+@media (hover: hover) and (pointer: fine) {
+  #accumulation .help:hover::before { content: ''; position: absolute; bottom: 100%; left: -30px; right: -30px; height: 10px; }
+  #accumulation .help:hover .tip { display: block; }
+}
+#accumulation .tbl-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+#accumulation .tbl-scroll table { min-width: 640px; }
+#accumulation .tbl-scroll th, #accumulation .tbl-scroll td { white-space: nowrap; }
+#accumulation h2 { flex-wrap: wrap; align-items: baseline; }
+#accumulation h2 .muted { float: none; display: inline-block; margin-left: auto; }
+#accumulation h2 .l-en, #accumulation h2 .l-zh { min-width: 12ch; flex: 1 1 auto; }
+</style>
+<div class="panel span12" id="accumulation">
+  <h2>{{ t('Accumulation watch — sector ETFs', '增持监测 — 板块 ETF') }}
+    {{ help("Each sector SPDR's top-10 holdings. Beyond price = the weight a stock gained above what its own price move explains — a sign real money flowed in, not just drift. Est. $ flow applies that to the fund's assets (approximate). ✅ = accumulation plus a forming buy setup. Caveat: these are passive index funds, so this is index-rebalancing flow, not a manager's conviction. Thresholds are still settling as daily snapshots build up.", "每只板块 SPDR 的前十大持仓。剔除价格后 = 个股权重增长中超出其自身价格涨幅所能解释的部分 — 代表确有真实资金流入，而非随行就市。估算资金流 = 该残差乘以基金资产（近似值）。✅ = 增持且出现正在形成的买入形态。提示：这些是被动指数基金，故此为指数再平衡资金流，而非主动经理的信念。随着每日快照积累，阈值仍在校准中。") }}
+    {%- if _acc_asof -%}
+    <span class="dtp-asof"><span class="l-en">as of {{ _acc_asof }}</span><span class="l-zh">截至 {{ _acc_asof }}</span></span>
+    {%- endif -%}
+    {%- if _acc_uni and _acc_uni > 8 -%}
+    <span class="muted" style="font-size:12px;font-weight:400;float:right"><span class="l-en">Top 8 · {{ _acc_uni }} tracked</span><span class="l-zh">前 8 · 共 {{ _acc_uni }} 项跟踪</span></span>
+    {%- elif _acc_n > 8 -%}
+    <span class="muted" style="font-size:12px;font-weight:400;float:right"><span class="l-en">Top 8</span><span class="l-zh">前 8</span></span>
+    {%- endif -%}
+  </h2>
+  <p style="font-size:12.5px;color:color-mix(in srgb,var(--text) 72%,transparent);margin:2px 0 12px;line-height:1.5;max-width:78ch"><span class="l-en">Holdings gaining ETF weight faster than price alone explains — a heads-up on quiet accumulation, not a buy list.</span><span class="l-zh">板块 ETF 中权重增长快于价格本身的持仓 — 悄然增持的提示信号，而非买入清单。</span></p>
+  {% if _acc_n %}
+    <div class="tbl-scroll"><table>
+      <tr>
+        <th class="l">{{ t('sector', '板块') }}</th>
+        <th class="l">{{ t('stock', '个股') }}</th>
+        <th data-tip-en="The holding's change in index weight over the window (percentage points)" data-tip-zh="持仓在窗口期内指数权重的变化（百分点）">{{ t('weight change', '权重变化') }}</th>
+        <th style="color:var(--text);font-weight:700" data-tip-en="The accumulation signal: weight gained beyond what the stock's own price move explains — real buying flowed in" data-tip-zh="增持信号：超出个股自身价格涨幅所能解释的权重增长 — 有真实买盘流入">{{ t('beyond price', '剔除价格后') }}</th>
+        <th data-tip-en="Beyond-price weight applied to the fund's assets — approximate" data-tip-zh="将剔除价格后的权重乘以基金资产得出 — 近似值">{{ t('est. $ flow', '估算资金流') }}</th>
+        <th class="l" data-tip-en="The stock's own cycle state; ✅ = accumulation with a forming buy setup" data-tip-zh="个股自身的周期状态；✅ = 增持同时出现正在形成的买入形态">{{ t('setup', '形态') }}</th>
+      </tr>
+      {% for a in _acc_rows %}
+      <tr>
+        <td class="l muted">{{ a.fund }} · {{ td(a.sector) }}</td>
+        <td class="l"><a href="stock.html#{{ a.ticker }}"><b>{{ a.ticker }}</b></a> <span class="muted">{{ a.name }}</span></td>
+        <td class="{{ 'pos' if a.raw_change >= 0 else 'neg' }}">{{ "%+.2f" | format(a.raw_change) }}pp</td>
+        <td class="{{ 'pos' if a.active_change >= 0 else 'neg' }}"><b>{{ "%+.2f" | format(a.active_change) }}pp</b></td>
+        <td class="muted"{% if a.get('flow_mn') is not none %} data-sort="{{ a.flow_mn }}"{% endif %}>{{ a.flow_str }}</td>
+        <td class="l">
+          {% if a.ladder %}<span class="pill st-{{ a.ladder.state | replace(' ', '_') }}">{{ td(a.ladder.label) }}</span>{% if a.confirmed %} ✅{% endif %}{% else %}<span class="muted"><span class="l-en">no signal yet</span><span class="l-zh">暂无信号</span></span>{% endif %}{% if a.vol and a.vol.surging %} <span class="muted" data-tip-en="volume {{ a.vol.ratio }}× its recent average" data-tip-zh="成交量为其近期均值的 {{ a.vol.ratio }} 倍"><span class="l-en">vol</span><span class="l-zh">量</span></span>{% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </table></div>
+  {% else %}
+    <p class="muted">{{ t('Building — needs at least two daily holdings snapshots per fund (collection began 2026-06-11). Decomposed accumulation signals appear once a second snapshot lands.', '构建中 — 每只基金至少需要两个每日持仓快照（采集自 2026-06-11 开始）。第二个快照落地后将显示拆解后的增持信号。') }}</p>
+  {% endif %}
+</div>
