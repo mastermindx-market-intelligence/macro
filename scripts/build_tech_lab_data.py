@@ -452,6 +452,9 @@ def build_all(
         tech_events_by_ticker[ticker] = {
             "ticker": ticker,
             "generated_utc": _now.strftime("%Y-%m-%dT%H:%M:%SZ"),
+            # Actual last input bar, not this build's publication clock. Consumers
+            # must not treat freshly regenerated historical data as a live state.
+            "data_through": last_bar_date,
             "window_start": window_start_date,
             "signals": _te_signals,
         }
