@@ -925,8 +925,8 @@ def _build_maturity_wall(cm_path: Path | None) -> list[dict]:
 def build_corp_credit_vm(data_root: Path | None = None) -> dict:
     """Build the vm.corp_credit dict for the bonds template.
 
-    Null-safe: when credit_momentum.json is missing or any sub-key is absent,
-    renders accruing states with plain-word 'building history' copy.
+    An unreadable or invalid root artifact is unavailable, not a low-stress
+    reading. Usable snapshots retain their existing per-field accruing states.
     Never raises.
 
     Returns a dict that the template can reference as vm.corp_credit.
@@ -935,18 +935,19 @@ def build_corp_credit_vm(data_root: Path | None = None) -> dict:
 
     _ACCRUING_AS_OF = "building history"
     empty = {
+        "source_available": False,
         "accruing": True,
-        "as_of": _ACCRUING_AS_OF,
+        "as_of": None,
         "authority": {"rank": False, "size": False, "gate": False, "escalate": False},
         "hero": {
-            "state_en": "Credit stress: low",
-            "state_zh": "信用压力：低",
-            "pill_en": "Watch — don't chase",
-            "pill_zh": "观望 · 勿追",
+            "state_en": "Credit reading unavailable",
+            "state_zh": "信用读数不可用",
+            "pill_en": "Source unavailable",
+            "pill_zh": "数据源不可用",
             "pill_css": "stance-amber",
-            "hero_cs": "cs-amber",
-            "subtitle_en": "Company-bond stress is low; AI borrowing costs bear watching.",
-            "subtitle_zh": "整体压力仍低；AI公司的借贷成本值得关注。",
+            "hero_cs": "cs-neutral",
+            "subtitle_en": "The credit source could not be read. A credit assessment is unavailable.",
+            "subtitle_zh": "无法读取信用数据源，当前无法提供信用状况研判。",
         },
         "gauges": [],
         "themes": [],
@@ -957,7 +958,7 @@ def build_corp_credit_vm(data_root: Path | None = None) -> dict:
         "divergence_ready": False,
         "divergence_ready_date": None,
         "divergence_last_obs": None,
-        "footer_as_of": _ACCRUING_AS_OF,
+        "footer_as_of": None,
     }
 
     # locate credit_momentum.json
@@ -975,6 +976,9 @@ def build_corp_credit_vm(data_root: Path | None = None) -> dict:
     try:
         cm = json.loads(cm_path.read_text(encoding="utf-8"))
     except Exception:  # noqa: BLE001
+        return empty
+
+    if not isinstance(cm, dict) or not cm:
         return empty
 
     as_of = cm.get("as_of") or _ACCRUING_AS_OF
@@ -1031,6 +1035,7 @@ def build_corp_credit_vm(data_root: Path | None = None) -> dict:
     divergence_last_obs = _series_last_obs(cm_path)
 
     return {
+        "source_available": True,
         "accruing": accruing_flag,
         "as_of": as_of,
         "authority": authority,
@@ -1548,7 +1553,8 @@ def _build_corp_credit_bond_health(cc_vm: dict) -> dict:
     return {
         "as_of": cc_vm.get("as_of"),
         "authority": cc_vm.get("authority") or {"rank": False, "size": False, "gate": False, "escalate": False},
-        "market_state": cc_vm.get("hero", {}).get("state_en"),
+        "market_state": (None if cc_vm.get("source_available") is False
+                         else cc_vm.get("hero", {}).get("state_en")),
         "themes": themes_out,
         "breadth": {
             # Both shares use _share suffix semantics (fractions, not percentages).

@@ -193,3 +193,139 @@ def test_pooled_gate_requires_ci_to_exclude_zero_for_evidence():
                                "date": pd.Timestamp(f"201{i}-07-01"), "dist_p": float(rng.random())})
     res_n = gate._pooled_gate(rows_noise, "dist_p")
     assert res_n["evidence"] is False
+
+
+# ──────────────────── 4 · W31 BLOCKED STATS + COHORT-HONEST NARRATIVE ────────────────────
+
+def _iid_setup_and_price(seed: int = 5):
+    grid = pd.date_range("2012-01-31", periods=180, freq="ME")
+    rng = np.random.default_rng(seed)
+    setup = pd.Series(rng.normal(size=len(grid)), index=grid)
+    mpx = pd.Series(100.0 * np.cumprod(1.0 + 0.01 * rng.normal(size=len(grid))), index=grid)
+    return setup, mpx
+
+
+def _block(h=6, lift=0.21, lo=0.0427, hi=0.389, cond=0.71, base=0.5, n=20, n_eff=6.4):
+    return {"h": h, "base_rate": base, "cond_rate": cond, "lift": lift, "lift_ci_lo": lo,
+            "lift_ci_hi": hi, "n_months": n, "n_eff": n_eff, "n_base_months": 120}
+
+
+def test_w31_overlap_blocks_group_h_consecutive_month_ends():
+    idx = pd.date_range("2019-01-31", periods=24, freq="ME")
+    b6 = pw._overlap_blocks(idx, 6)
+    assert len(b6) == 24 and len(np.unique(b6)) == 4
+    for lab in np.unique(b6):
+        pos = np.flatnonzero(b6 == lab)
+        assert len(pos) == 6 and (np.diff(pos) == 1).all(), "an h-block is h consecutive months"
+    assert len(np.unique(pw._overlap_blocks(idx, 3))) == 8
+    # January of two different years never share a block (the label carries the year).
+    assert b6[0] != b6[12]
+
+
+def test_w31_bootstrap_resamples_h_month_blocks_not_single_months(monkeypatch):
+    seen = {}
+    real = pw.gs.block_bootstrap_ci
+
+    def spy(dates, vals, mask, **kw):
+        seen["labels"] = np.asarray(dates)
+        return real(dates, vals, mask, **kw)
+
+    monkeypatch.setattr(pw.gs, "block_bootstrap_ci", spy)
+    setup, mpx = _iid_setup_and_price()
+    c = pw._conditional(setup, mpx, 6)
+    assert c is not None
+    labels = seen["labels"]
+    n_blocks = len(np.unique(labels))
+    assert n_blocks <= int(np.ceil(c["n_base_months"] / 6)) + 1, "one label per h-month block"
+    assert n_blocks < c["n_base_months"] / 3, "a per-month label leaves the overlap unblocked"
+
+
+def test_w31_n_eff_counts_the_horizon_in_month_positions():
+    setup, mpx = _iid_setup_and_price()
+    for h in (3, 6):
+        c = pw._conditional(setup, mpx, h)
+        assert c is not None
+        # h*21 'trading bars' on a monthly grid made every stamp overlap → n_eff ≈ 1-3.
+        assert c["n_months"] / h <= c["n_eff"] < c["n_months"], (h, c["n_months"], c["n_eff"])
+
+
+def test_w31_tilt_follows_the_lift_band_not_todays_tercile():
+    # banks-shaped block (band wholly above 0) while today sits OUTSIDE the high cohort.
+    en, zh = pw._conditional_sentence(_block(), in_cohort=False)
+    assert "leaned the 6-month odds UP" in en and "the band excludes the base rate" in en
+    assert "Today is outside that cohort." in en
+    assert "偏上" in zh and "区间不含基准" in zh and "今日不在此区间" in zh
+    assert pw._lean(_block()) == 1
+
+
+def test_w31_band_including_zero_reads_neutral_both_signs():
+    for lift, lo, hi in ((-0.085, -0.2424, 0.0958), (0.083, -0.0831, 0.262)):
+        b = _block(lift=lift, lo=lo, hi=hi)
+        en, zh = pw._conditional_sentence(b, in_cohort=True)
+        assert pw._lean(b) == 0
+        assert "roughly neutral on the 6-month odds" in en and "the band includes" in en
+        assert " UP " not in en and "DOWN" not in en and "outside that cohort" not in en
+        assert "大致中性" in zh and "区间包含基准" in zh and "今日不在" not in zh
+
+
+def test_w31_band_wholly_below_zero_reads_down():
+    b = _block(lift=-0.2, lo=-0.35, hi=-0.05, cond=0.3)
+    en, zh = pw._conditional_sentence(b, in_cohort=True)
+    assert pw._lean(b) == -1
+    assert "leaned the 6-month odds DOWN" in en and "outside that cohort" not in en
+    assert "偏下" in zh and "今日不在" not in zh
+
+
+def test_w31_point_lift_must_agree_with_the_band():
+    assert pw._lean(_block(lift=-0.01, lo=0.02, hi=0.3)) == 0
+    assert pw._lean(_block(lift=0.01, lo=-0.3, hi=-0.02)) == 0
+
+
+def test_w31_horizon_comes_from_the_block_h3_fallback():
+    en, zh = pw._conditional_sentence(_block(h=3), in_cohort=True)
+    assert "3-month odds" in en and "forward-3m" in en and "6-month" not in en
+    assert "未来3个月" in zh and "未来6个月" not in zh
+
+
+def test_w31_missing_band_says_too_few_blocks():
+    b = _block(lo=None, hi=None)
+    en, zh = pw._conditional_sentence(b, in_cohort=True)
+    assert pw._lean(b) == 0
+    assert "too few blocks for a band" in en and "roughly neutral" in en
+    assert "分块不足" in zh
+    assert pw._conditional_sentence(None, in_cohort=True) == ("", "")
+
+
+def _fake_sector(monkeypatch, seed: int):
+    grid = pd.date_range("2008-01-31", periods=240, freq="ME")
+    rng = np.random.default_rng(seed)
+    cols = ["ppi_yoy", "breadth_pct200", "dist_200d", "dd_from_high", "credit_impulse", "tsf_yoy"]
+    panel = pd.DataFrame({c: np.cumsum(rng.normal(size=len(grid))) for c in cols}, index=grid)
+    days = pd.bdate_range("2008-01-01", "2027-12-31")
+    px = pd.Series(100.0 * np.cumprod(1.0 + 0.01 * rng.normal(size=len(days))), index=days)
+    basket = {"en": "Test sector", "zh": "测试板块", "bbg": "TEST", "etf": "TST"}
+    monkeypatch.setattr(pw.csi, "GS_BASKETS", {"zz": basket})
+    monkeypatch.setattr(pw.csi, "gs_index", lambda key: px)
+    monkeypatch.setattr(pw.csi, "benchmark_close", lambda: px)
+    monkeypatch.setattr(pw.csi, "driver_panel", lambda g=None: panel.reindex(g))
+    monkeypatch.setattr(pw.csi, "sector_technicals", lambda c, b, g: pd.DataFrame(index=g))
+    monkeypatch.setattr(pw.csi, "zigzag_turns", lambda c, pct=0.25: [])
+
+
+def test_w31_pathway_narrative_carries_the_cohort_clause(monkeypatch):
+    terciles = set()
+    for seed in (1, 2, 3, 4, 5, 6, 7, 8):
+        _fake_sector(monkeypatch, seed)
+        r = pw.pathway_for("zz")
+        assert r is not None
+        c = r["conditional"].get("h6") or r["conditional"].get("h3")
+        if c is None:
+            continue
+        tercile = r["setup"]["tercile"]
+        terciles.add(tercile)
+        en, zh = pw._conditional_sentence(c, tercile == "high")
+        assert en.strip() and en in r["narrative_en"] and zh in r["narrative_zh"]
+        assert ("Today is outside that cohort." in r["narrative_en"]) == (tercile != "high")
+        assert ("今日不在此区间" in r["narrative_zh"]) == (tercile != "high")
+        assert f"{c['h']}-month odds" in r["narrative_en"]
+    assert "high" in terciles and terciles - {"high"}, terciles

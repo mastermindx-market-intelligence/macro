@@ -15,8 +15,9 @@ data DOES support, as honest, display-only conditioning context:
      theory-backed lead cluster (credit accelerating + / PPI falling + / mean-reversion
      from a washout + / contrarian washed-breadth +), summarized as an EMPIRICAL
      conditional probability: "when the setup looked like today, the N-month forward
-     return was positive X% of the time vs a Y% base rate" (Wilson CI, sample n). This
-     is the engine.fx_regime pattern — conditioning, not a switch, not alpha.
+     return was positive X% of the time vs a Y% base rate" (h-month-blocked bootstrap band on
+     the lift, n_months and n_eff). This is the engine.fx_regime pattern — conditioning, not a
+     switch, not alpha.
 
 All standardization is EXPANDING/causal (leak-free) so the historical conditional and
 the live reading are computed the same way (house rule: live == backtest).
@@ -123,6 +124,12 @@ def _setup_series(panel: pd.DataFrame) -> tuple[pd.Series, dict]:
     return setup, info
 
 
+def _overlap_blocks(index: pd.DatetimeIndex, h: int) -> np.ndarray:
+    """Bootstrap block label per month-end stamp: consecutive, non-overlapping h-month blocks
+    on a fixed calendar phase, so the h stamps whose forward windows overlap move together."""
+    return np.array([(d.year * 12 + d.month - 1) // h for d in index], dtype=np.int64)
+
+
 def _conditional(setup: pd.Series, mpx: pd.Series, h: int) -> dict | None:
     """Empirical conditional: when the setup looked like today (high tercile), how often was
     the h-month forward return positive vs the base rate.
@@ -134,6 +141,11 @@ def _conditional(setup: pd.Series, mpx: pd.Series, h: int) -> dict | None:
     rows move together) on the (conditional − base) hit-rate GAP, and report n_months (matured
     stamps) and n_eff (grading_stats.effective_n overlap deflator) — never the raw overlapping n
     as if it were independent.
+
+    W31 fixes: the bootstrap block is h consecutive month-ends (a per-month label made every row
+    its own block, so overlapping windows were resampled as if unrelated), and n_eff counts the
+    horizon in POSITIONS on the month-end calendar (h), not h*21 trading bars — on a monthly
+    calendar h*21 made every stamp overlap every other and pinned n_eff near 1.
     """
     fwd = mpx.shift(-h) / mpx - 1.0
     sub = pd.concat([setup.rename("s"), fwd.rename("f")], axis=1).dropna()
@@ -156,14 +168,17 @@ def _conditional(setup: pd.Series, mpx: pd.Series, h: int) -> dict | None:
     k = int((hi["f"] > 0).sum()); n = len(hi)
     cond_rate = k / n
 
-    # Date-blocked bootstrap CI on the hit-rate GAP (cond − base). Stamps are month-end so
-    # blocking whole dates handles the h-month serial overlap (ruling A2 / grading_stats).
-    dates = np.array([d.strftime("%Y-%m") for d in sub.index])
+    # Blocked bootstrap CI on the hit-rate GAP (cond − base). Each forward window spans h
+    # month-ends, so rows are grouped into consecutive h-month blocks and whole blocks are
+    # resampled together (ruling A2 / grading_stats) — a per-month label would not block the
+    # h-month serial overlap at all.
+    blocks = _overlap_blocks(sub.index, h)
     hits = (sub["f"].to_numpy(dtype=float) > 0).astype(float)
-    gap_ci = gs.block_bootstrap_ci(dates, hits, hi_mask, stat="mean")
-    # Overlap-deflated effective n for the high-setup cohort (Newey-West style; ~n/h here).
+    gap_ci = gs.block_bootstrap_ci(blocks, hits, hi_mask, stat="mean")
+    # Overlap-deflated effective n for the high-setup cohort (Newey-West style). The calendar is
+    # the month-end stamp grid, so the horizon is h POSITIONS on it — not h*21 trading bars.
     cal = pd.DatetimeIndex(sub.index)
-    n_eff = round(float(gs.effective_n(hi.index.values, h * 21, cal)), 1)
+    n_eff = round(float(gs.effective_n(hi.index.values, h, cal)), 1)
 
     return {
         "h": h, "base_rate": round(base_rate, 3), "cond_rate": round(cond_rate, 3),
@@ -176,6 +191,47 @@ def _conditional(setup: pd.Series, mpx: pd.Series, h: int) -> dict | None:
         "med_fwd_pct": round(float(hi["f"].median()) * 100, 1),
         "base_med_pct": round(base_med * 100, 1),
     }
+
+
+def _lean(c: dict | None) -> int:
+    """+1 / −1 only when the blocked-bootstrap lift band sits wholly above / below 0 and the
+    point lift agrees; 0 otherwise (no band, or the band includes the base rate)."""
+    if not c or c.get("lift_ci_lo") is None or c.get("lift_ci_hi") is None:
+        return 0
+    if c["lift_ci_lo"] > 0 and c["lift"] > 0:
+        return 1
+    if c["lift_ci_hi"] < 0 and c["lift"] < 0:
+        return -1
+    return 0
+
+
+def _conditional_sentence(c: dict | None, in_cohort: bool) -> tuple[str, str]:
+    """(en, zh) narrative clause for one conditional block. The cohort is ALWAYS the high-setup
+    months, so the clause names that cohort, takes its direction from the lift band (never from
+    today's tercile) and its horizon from the block's own h (h3 when h6 is missing)."""
+    if not c:
+        return "", ""
+    h, lean = int(c["h"]), _lean(c)
+    has_band = c.get("lift_ci_lo") is not None and c.get("lift_ci_hi") is not None
+    cond_pct, base_pct = int(c["cond_rate"] * 100), int(c["base_rate"] * 100)
+    rate = (f"forward-{h}m positive {cond_pct}% of the time vs {base_pct}% base, "
+            f"n_months={c['n_months']}, n_eff≈{c['n_eff']}")
+    band_en = ("the band excludes the base rate" if lean else
+               "the band includes the base rate" if has_band else "too few blocks for a band")
+    if lean:
+        en = (f" Months with a high driver setup historically leaned the {h}-month odds "
+              f"{'UP' if lean > 0 else 'DOWN'} ({rate}; {band_en}).")
+    else:
+        en = (f" Months with a high driver setup were historically roughly neutral on the "
+              f"{h}-month odds ({rate}; {band_en}).")
+    if not in_cohort:
+        en += " Today is outside that cohort."
+    zh_dir = "偏上" if lean > 0 else "偏下" if lean < 0 else "大致中性"
+    zh_band = ("区间不含基准" if lean else "区间包含基准" if has_band else "分块不足，无区间")
+    zh = (f"历史上高位配置月份，未来{h}个月上涨占比约 {cond_pct}%"
+          f"（基准 {base_pct}%，月度样本 {c['n_months']}，有效 n≈{c['n_eff']}），"
+          f"整体{zh_dir}（{zh_band}）。" + ("" if in_cohort else "今日不在此区间。"))
+    return en, zh
 
 
 def _current_pctile(s: pd.Series) -> float | None:
@@ -271,35 +327,25 @@ def pathway_for(key: str) -> dict | None:
     bull = [l["label_en"] for l in legs_now if l["stance"] == "bullish"]
     bear = [l["label_en"] for l in legs_now if l["stance"] == "bearish"]
     h6 = cond.get("h6") or cond.get("h3")
-    # honest tilt: only "tilts up/down" when the block-bootstrap lift CI actually excludes 0.
-    ci_excludes_zero = bool(h6 and h6.get("lift_ci_lo") is not None
-                            and (h6["lift_ci_lo"] > 0 or h6["lift_ci_hi"] < 0))
-    tilt_en = ("leaned the 6-month odds UP" if (h6 and h6["lift"] > 0.05 and tercile == "high")
-               else "leaned the odds DOWN" if (h6 and tercile == "low" and h6["lift"] > 0.05)
-               else "was roughly neutral")
+    # honest tilt: direction comes from the high-setup cohort's lift band alone (UP / DOWN only
+    # when the blocked-bootstrap band excludes 0); today's tercile only says whether today is in
+    # that cohort.
+    cond_en, cond_zh = _conditional_sentence(h6, tercile == "high")
     # cohort-window disclosure: the composite is only defined once all legs are live.
     cohort_from = composition["cohort_from"]
     era_note_en = (f" Composite from {cohort_from} (all {composition['n_required_legs']} legs live)."
                    if cohort_from else "")
     era_note_zh = (f"（复合指标自 {cohort_from} 起，全部 {composition['n_required_legs']} 项因子齐备）"
                    if cohort_from else "")
-    ci_note_en = ("" if not h6 else
-                  (" the band excludes the base rate" if ci_excludes_zero
-                   else " but the band does not exclude the base rate"))
     narrative_en = (f"{b['en']} sits at cycle position {pos['score']:.0f}/100 ({pos['label']}). "
-                    f"Today's driver setup is in its {tercile} third"
-                    + (f" — historically that {tilt_en}"
-                       + (f" (forward-6m positive {int(h6['cond_rate']*100)}% of the time vs "
-                          f"{int(h6['base_rate']*100)}% base, n_months={h6['n_months']}, "
-                          f"n_eff≈{h6['n_eff']};{ci_note_en})." if h6 else ".")
-                       if h6 else ".")
+                    f"Today's driver setup is in its {tercile} third."
+                    + cond_en
                     + era_note_en
                     + (f" Bullish legs: {', '.join(bull)}." if bull else "")
                     + (f" Headwinds: {', '.join(bear)}." if bear else ""))
     narrative_zh = (f"{b['zh']}周期位置 {pos['score']:.0f}/100（{pos['label_zh']}）。"
                     f"当前驱动配置处于历史{'高' if tercile=='high' else '低' if tercile=='low' else '中'}位区间。"
-                    + (f"历史上此类配置下，未来6个月上涨概率约 {int(h6['cond_rate']*100)}%"
-                       f"（基准 {int(h6['base_rate']*100)}%，月度样本 {h6['n_months']}，有效 n≈{h6['n_eff']}）。" if h6 else "")
+                    + cond_zh
                     + era_note_zh)
 
     return {
