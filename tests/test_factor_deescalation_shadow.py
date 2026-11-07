@@ -1270,3 +1270,145 @@ class TestSelftest:
     def test_selftest_passes(self) -> None:
         rc = boundaries_main(["--selftest"])
         assert rc == 0, "check_factor_boundaries --selftest returned non-zero"
+
+
+class TestStsiFixedGovernanceEmission:
+    """Controlled STSI producer scope: no blanket module or reader permission."""
+
+    @staticmethod
+    def _source():
+        return (REPO_ROOT / "engine/neuralweb/sector_federation.py").read_text(encoding="utf-8")
+
+    @staticmethod
+    def _violations(source, path="engine/neuralweb/sector_federation.py"):
+        return _check_b(REPO_ROOT, extra_files={path: source})
+
+    def test_reviewed_emissions_are_the_only_exception(self):
+        assert self._violations(self._source()) == []
+
+    def test_comment_and_whitespace_do_not_change_the_seal(self):
+        assert self._violations("# non-authoritative formatting\n\n" + self._source() + "\n") == []
+
+    def test_python_empty_type_params_drift_is_normalized(self):
+        import ast
+        from scripts.check_factor_boundaries import _stsi_ast_fingerprint
+        node = ast.parse("def f(x: str) -> str:\n    return x\n").body[0]
+        node._fields = tuple(field for field in node._fields if field != "type_params")
+        before = _stsi_ast_fingerprint(node)
+        node._fields += ("type_params",)
+        node.type_params = []
+        assert _stsi_ast_fingerprint(node) == before
+        node.type_params = [ast.Name(id="MeaningfulGeneric", ctx=ast.Load())]
+        assert _stsi_ast_fingerprint(node) != before
+
+    def test_current_module_seal_survives_only_empty_type_params_drift(self):
+        import ast
+        from scripts.check_factor_boundaries import _stsi_ast_fingerprint
+        tree = ast.parse(self._source(), type_comments=True)
+        before = _stsi_ast_fingerprint(tree)
+        definitions = [node for node in ast.walk(tree) if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef))]
+        for node in definitions:
+            node._fields = tuple(field for field in node._fields if field != "type_params")
+        assert _stsi_ast_fingerprint(tree) == before
+        for node in definitions:
+            node._fields += ("type_params",)
+            node.type_params = []
+        assert _stsi_ast_fingerprint(tree) == before
+
+    @pytest.mark.parametrize("old,new", [
+        ('["observe", "explain"]', '["observe", "execute_trade"]'),
+        ('["observe", "explain"]', 'list(("observe", "explain"))'),
+        ('["observe", "explain"]', 'actions'),
+        ('"allowed_actions":', '"allowed_" + "actions":'),
+        ('"allowed_actions":', 'action_key:'),
+        ('def _governance(', 'def _renamed_governance('),
+        ('def _governance(subject,', 'def _governance(subject: object,'),
+        ('def _governance(', '@decorator\ndef _governance('),
+        ('"may_trade": False', '"may_trade": True'),
+        ('"llm_may_originate_signals": False', '"llm_may_originate_signals": True'),
+        ('"execute_trade",', '"explain",'),
+        ('"publication_tier": "SHADOW"', '"publication_tier": "LIVE"'),
+        ('owner.validate_contract(document)', 'pass'),
+        ('packet["packet_hash"] = owner.canonical_json_sha256(packet)',
+         'packet["packet_hash"] = owner.canonical_json_sha256(packet); alias = packet["authority_caps"]; alias.update({"may_trade": True})'),
+    ])
+    def test_meaningful_authority_or_dataflow_change_fails_closed(self, old, new):
+        source = self._source()
+        assert old in source
+        assert self._violations(source.replace(old, new, 1))
+
+    def test_same_line_read_cannot_hide_behind_emission(self):
+        import ast
+        tree = ast.parse(self._source())
+        function = next(node for node in tree.body if isinstance(node, ast.FunctionDef) and node.name == "_governance")
+        assignment = next(node for node in function.body if isinstance(node, ast.Assign) and any(isinstance(target, ast.Name) and target.id == "packet" for target in node.targets))
+        code = ast.unparse(assignment)
+        source = ast.unparse(tree)
+        assert code in source
+        source = source.replace(code, code + '; observed = packet["authority_caps"]["allowed_actions"]', 1)
+        assert self._violations(source)
+
+    @pytest.mark.parametrize("suffix", [
+        '\nobserved = document.get("allowed_actions")\n',
+        '\ndef unrelated():\n    return {"allowed_actions": ["observe", "explain"]}\n',
+        '\n_CAPS["may_trade"] = True\n',
+        '\nalias = _DENIALS\nalias.clear()\n',
+        '\n_governance = replacement\n',
+        '\n_governance.__code__ = replacement.__code__\n',
+    ])
+    def test_reads_outside_function_and_module_mutations_are_refused(self, suffix):
+        assert self._violations(self._source() + suffix)
+
+    def test_identical_source_at_another_path_is_not_admitted(self):
+        assert self._violations(self._source(), "engine/neuralweb/other_composer.py")
+
+    @pytest.mark.parametrize("source", [
+        'import engine.neuralweb.sector_federation as composer\ncomposer._governance = replacement\n',
+        'from engine.neuralweb.sector_federation import _governance as emitter\nemitter.__code__ = replacement.__code__\n',
+        'from engine.neuralweb import sector_federation as composer\nalias = composer\nalias._governance = replacement\n',
+        'from engine.neuralweb import sector_federation as composer\nfrom builtins import setattr as put\nsetter = put\nsetter(composer, "_governance", replacement)\n',
+        'import engine.neuralweb.sector_federation as composer\nsetattr(composer, "_gover" + "nance", replacement)\n',
+        'import engine.neuralweb.sector_federation as composer\ngetattr(composer, dynamic_key)\n',
+        'import engine.neuralweb.sector_federation as composer\nnamespace = vars(composer)\nnamespace["_governance"] = replacement\n',
+        'import sys\nmodule = sys.modules["engine.neuralweb.sector_federation"]\nmodule._governance = replacement\n',
+        'import importlib\nmodule = importlib.import_module("engine.neuralweb.sector_federation")\nmodule._governance = replacement\n',
+    ])
+    def test_external_symbols_retain_incumbent_static_limit(self, source):
+        # No new Python alias/dataflow policy: these were not rejected by base.
+        # This is a limitation control, not a supported mutation permission.
+        assert self._violations(source, "engine/stsi_mutator.py") == []
+
+    @pytest.mark.parametrize("replacement,trade", [(replacement, trade) for replacement in [
+        '"_".join(("allowed", "actions")): ["execute_trade"],',
+        '"renamed_receipt": ["observe", "explain"],',
+        '',
+    ] for trade in (False, True)])
+    def test_missing_tokens_cannot_escape_named_postimage_seal(self, replacement, trade):
+        source = self._source()
+        entry = '"allowed_actions": ["observe", "explain"],'
+        assert source.count(entry) == 2
+        source = source.replace(entry, replacement)
+        if trade:
+            source = source.replace('"may_trade": False', '"may_trade": True')
+        assert "allowed_actions" not in source
+        failures = self._violations(source)
+        assert any(item.pattern == "STSI reviewed AST mismatch" for item in failures)
+
+    def test_invalid_named_syntax_without_token_fails_closed(self):
+        failures = self._violations("def invalid(\n")
+        assert any(item.pattern == "STSI reviewed AST mismatch" for item in failures)
+
+    @pytest.mark.parametrize("source", [
+        'import engine.neuralweb.sector_federation as composer\ncomposer._governance = replacement\nimport unrelated_owner as composer\n',
+        'import engine.neuralweb.sector_federation as composer\ncomposer._governance = replacement\ndef unrelated():\n    import unrelated_owner as composer\n',
+        'import engine.neuralweb.sector_federation as composer\ndef update_unrelated(composer):\n    composer._governance = replacement\n',
+    ])
+    def test_unrelated_scope_and_shadow_behavior_unchanged(self, source):
+        assert self._violations(source, "engine/stsi_independent_case.py") == []
+
+    def test_external_authority_read_still_rejected(self):
+        assert self._violations('observed = document["allowed_actions"]\n', "engine/stsi_mutator.py")
+
+    def test_unrelated_private_name_is_not_reserved(self):
+        source = 'import unrelated_owner as owner\nowner._governance = replacement\n'
+        assert self._violations(source, "engine/unrelated.py") == []

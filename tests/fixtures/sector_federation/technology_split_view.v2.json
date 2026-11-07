@@ -1,0 +1,344 @@
+{
+  "notice": "CONTROLLED SYNTHETIC OWNER-SHAPED INPUTS; no raw market publication, rights or natural capture claim.",
+  "baskets": {
+    "as_of": "2026-09-18",
+    "baskets": [
+      {
+        "id": "us_sector_tech",
+        "ticker": "XLK",
+        "name": "Technology",
+        "kind": "sector"
+      }
+    ]
+  },
+  "action_board": {
+    "schema": "sector_intelligence_action_board.v1",
+    "as_of": "2026-09-18",
+    "generated_utc": "2026-09-18T20:00:00Z",
+    "baskets_sha256": "b4c574ef445dd2c72ff0825117a3efaf807ee541050b5dde6783401e5605345c",
+    "action_board": {
+      "buy_now": [
+        {
+          "kind": "sector",
+          "ticker": "XLK",
+          "label": "BUY ZONE",
+          "tag": "BUY NOW"
+        }
+      ],
+      "buy_soon": [],
+      "on_the_run": [],
+      "take_profits": [],
+      "hold": [],
+      "avoid": []
+    }
+  },
+  "sector_central": {
+    "as_of": "2026-09-18",
+    "sectors": [
+      {
+        "id": "xlk",
+        "ticker": "XLK",
+        "kind": "sector",
+        "name": "Technology",
+        "name_zh": "科技",
+        "conviction": {
+          "score": 40,
+          "label_en": "Cautious",
+          "label_zh": "谨慎"
+        },
+        "cycle": {
+          "phase": "Downturn",
+          "phaseLabel": "Rolling over"
+        },
+        "rotation": {
+          "state": "MONEY ROTATING IN",
+          "state_plain_en": "Money rotating in",
+          "state_plain_zh": "资金流入",
+          "score": 9.3
+        },
+        "split_view": true,
+        "split_copy_en": "Slow clock cautious; fast tape constructive.",
+        "split_copy_zh": "慢周期谨慎，快线偏强。",
+        "heat": {
+          "adv": 20,
+          "dec": 29,
+          "breadth_pct": 41
+        }
+      }
+    ]
+  },
+  "subsector_confluence": {
+    "as_of": "2026-09-18",
+    "subsectors": [
+      {
+        "key": "semiconductors",
+        "kind": "subsector",
+        "label": "Semiconductors",
+        "label_zh": "半导体",
+        "sector": "Technology",
+        "class": "entry_now",
+        "entry": {
+          "tier": "T1",
+          "buyable": true,
+          "eligible": true,
+          "fresh_bars": 1
+        },
+        "regime": {
+          "state": "EXTENDED",
+          "side": "avoid"
+        },
+        "reliability": "high",
+        "n_priced": 14,
+        "n_members": 14,
+        "as_of": "2026-09-18"
+      }
+    ]
+  },
+  "subsector_rotation": {
+    "asof": "2026-09-18",
+    "timeframes": [
+      "1W",
+      "1M"
+    ],
+    "subsectors": [
+      {
+        "key": "semiconductors",
+        "name": "Semiconductors",
+        "theme": "Semiconductors",
+        "quadrant": "improving"
+      }
+    ],
+    "themes": [
+      {
+        "theme": "Semiconductors",
+        "quadrant": "leading"
+      }
+    ],
+    "sectors": [
+      {
+        "key": "XLK",
+        "name": "Technology",
+        "quadrant": "improving"
+      }
+    ]
+  },
+  "theme_state": {
+    "schema": "neuralweb.theme_state.v1",
+    "as_of": "2026-09-18",
+    "themes": [
+      {
+        "theme_id": "ai_semiconductors",
+        "name_en": "AI Semiconductors",
+        "name_zh": "AI半导体",
+        "foresight": {
+          "stage": "WATCH",
+          "entry_ready": false
+        },
+        "subsector_keys": [
+          "semiconductors"
+        ]
+      }
+    ]
+  },
+  "theme_crosswalk": {
+    "version": 1,
+    "themes": [
+      {
+        "id": "ai_semiconductors",
+        "name_en": "AI Semiconductors",
+        "name_zh": "AI半导体",
+        "primary_basket_id": "ai_semiconductors",
+        "subsector_keys": [
+          "semiconductors"
+        ],
+        "theme_node_id": "theme:ai_semiconductors"
+      }
+    ]
+  },
+  "heatmap": {
+    "asof": "2026-09-18",
+    "size_basis": "marketcap",
+    "currency": "USD",
+    "tiles": [
+      {
+        "t": "CONTROL0",
+        "sector": "Technology",
+        "size": 50
+      },
+      {
+        "t": "CONTROL1",
+        "sector": "Technology",
+        "size": 20
+      },
+      {
+        "t": "CONTROL2",
+        "sector": "Technology",
+        "size": 10
+      },
+      {
+        "t": "CONTROL3",
+        "sector": "Technology",
+        "size": 5
+      },
+      {
+        "t": "CONTROL4",
+        "sector": "Technology",
+        "size": 5
+      },
+      {
+        "t": "CONTROL5",
+        "sector": "Technology",
+        "size": 4
+      },
+      {
+        "t": "CONTROL6",
+        "sector": "Technology",
+        "size": 3
+      },
+      {
+        "t": "CONTROL7",
+        "sector": "Technology",
+        "size": 2
+      },
+      {
+        "t": "CONTROL8",
+        "sector": "Technology",
+        "size": 1
+      },
+      {
+        "t": "OTHER",
+        "sector": "Energy",
+        "size": 1000000
+      }
+    ]
+  },
+  "optional_leadership": null,
+  "optional_entry_context": null,
+  "same_horizon_owner_read": null,
+  "input_receipts": [
+    {
+      "source_id": "site-action-board",
+      "path": "site/basketdata/action_board.json",
+      "sha256": "2aa2f99258f571d72691e77e44d458adc878c73ad311821d11f9669190d8f58e",
+      "as_of": "2026-09-18",
+      "observed_at": "2026-09-18T20:00:00Z",
+      "clock_grain": "instant",
+      "freshness_role": "market_observation",
+      "freshness_state": "fresh",
+      "required": true,
+      "state": "available",
+      "null_reasons": {}
+    },
+    {
+      "source_id": "site-baskets",
+      "path": "site/basketdata/baskets.json",
+      "sha256": "b4c574ef445dd2c72ff0825117a3efaf807ee541050b5dde6783401e5605345c",
+      "as_of": "2026-09-18",
+      "observed_at": "2026-09-18T19:55:00Z",
+      "clock_grain": "session",
+      "freshness_role": "market_observation",
+      "freshness_state": "fresh",
+      "required": true,
+      "state": "available",
+      "null_reasons": {}
+    },
+    {
+      "source_id": "site-sector-central",
+      "path": "site/sectordata/sector_central.json",
+      "sha256": "ff12dd0c5ab6ee221acae2ecbd4925da2952ddcd0df6fd690776c7ea50fa45b9",
+      "as_of": "2026-09-18",
+      "observed_at": "2026-09-18T19:55:00Z",
+      "clock_grain": "session",
+      "freshness_role": "market_observation",
+      "freshness_state": "fresh",
+      "required": true,
+      "state": "available",
+      "null_reasons": {}
+    },
+    {
+      "source_id": "site-subsector-confluence",
+      "path": "site/marketdata/subsector_confluence.json",
+      "sha256": "8e8c57a6297ccbabd812f4cd639899145fe757080b54d2fd249c52d25ed8ad90",
+      "as_of": "2026-09-18",
+      "observed_at": "2026-09-18T19:55:00Z",
+      "clock_grain": "session",
+      "freshness_role": "market_observation",
+      "freshness_state": "fresh",
+      "required": true,
+      "state": "available",
+      "null_reasons": {}
+    },
+    {
+      "source_id": "site-subsector-rotation",
+      "path": "site/marketdata/subsector_rotation.json",
+      "sha256": "261b6318069f2fe8f1bc497e11f805b17789cb11fb67c7d7e071c959f290d2e0",
+      "as_of": "2026-09-18",
+      "observed_at": "2026-09-18T19:55:00Z",
+      "clock_grain": "session",
+      "freshness_role": "market_observation",
+      "freshness_state": "fresh",
+      "required": true,
+      "state": "available",
+      "null_reasons": {}
+    },
+    {
+      "source_id": "site-theme-lanes",
+      "path": "site/basketdata/theme_lanes.json",
+      "sha256": null,
+      "as_of": null,
+      "observed_at": null,
+      "clock_grain": "session",
+      "freshness_role": "optional_context",
+      "freshness_state": "unknown",
+      "required": false,
+      "state": "unavailable",
+      "null_reasons": {
+        "sha256": "SOURCE_MISSING",
+        "as_of": "SOURCE_MISSING",
+        "observed_at": "SOURCE_MISSING"
+      }
+    },
+    {
+      "source_id": "site-theme-state",
+      "path": "site/neuralwebdata/theme_state.json",
+      "sha256": "6aa44d80ed1509f2da92d9cbcfa5abd7cf6dd748626a833f34c6a4fc038a1338",
+      "as_of": "2026-09-18",
+      "observed_at": "2026-09-18T19:55:00Z",
+      "clock_grain": "session",
+      "freshness_role": "market_observation",
+      "freshness_state": "fresh",
+      "required": true,
+      "state": "available",
+      "null_reasons": {}
+    },
+    {
+      "source_id": "sp500-heatmap",
+      "path": "site/marketdata/sp500_heatmap.json",
+      "sha256": "7744d10cf4ed4a662608168f8933cd590d02e4de26387f5f56c5814e1590da0e",
+      "as_of": "2026-09-18",
+      "observed_at": "2026-09-18T19:55:00Z",
+      "clock_grain": "session",
+      "freshness_role": "market_observation",
+      "freshness_state": "fresh",
+      "required": true,
+      "state": "available",
+      "null_reasons": {}
+    },
+    {
+      "source_id": "theme-crosswalk",
+      "path": "config/theme_crosswalk.yml",
+      "sha256": "50edc84ec70c92369f5c5dd1e99618dd7f3ed85467851ec3c2447c8bacb28341",
+      "as_of": null,
+      "observed_at": null,
+      "clock_grain": "static",
+      "freshness_role": "static_config",
+      "freshness_state": "not_applicable",
+      "required": true,
+      "state": "available",
+      "null_reasons": {
+        "as_of": "NOT_APPLICABLE",
+        "observed_at": "OWNER_CLOCK_UNAVAILABLE"
+      }
+    }
+  ]
+}
