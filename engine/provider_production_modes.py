@@ -805,6 +805,19 @@ _APPLICATION_FABRIC_TRANSPORTS = {
     # Hermes primary turns use the same APPLICATION owner and exact native
     # protocol. These are distinct internal service identities, not provider
     # keys or enrollment. Ordinary application qualification remains held.
+    "native_go_hermes_attended_v1": _ApplicationFabricTransport(
+        base_url="http://127.0.0.1:50142/v1",
+        secret_ref="HERMES_ATTENDED_FABRIC_APPLICATION_TOKEN",
+        provider_id="go",
+        model="glm-5.3-flash",
+        cost_basis="unknown",
+        cap_id="fabric:go_hermes_attended",
+        capability_id="fabric_application_go_hermes_attended",
+        protocol="native_application_v1",
+        qualified=False,
+        application_allowed=False,
+        metadata_read=False,
+    ),
     "native_go_hermes_secretary_v1": _ApplicationFabricTransport(
         base_url="http://127.0.0.2:50142/v1",
         secret_ref="HERMES_SECRETARY_FABRIC_APPLICATION_TOKEN",
@@ -871,6 +884,8 @@ _SERVICE_FABRIC_RELATIONS = {
     "hermes_meta_fabric": _ServiceFabricRelation(
         "hermes-meta-ceo", "site_interactive", "native_go_hermes_meta_v1",
         "native_fabric_hermes_meta_auto_v1"),
+    "hermes_attended_fabric": _ServiceFabricRelation(
+        "hermes-attended", "hermes_attended", "native_go_hermes_attended_v1"),
 }
 _APPLICATION_RECORD_KEYS = _APPLICATION_MODE_IDS | frozenset(_SERVICE_FABRIC_RELATIONS)
 _APPLICATION_ID = re.compile(r"\A[A-Za-z0-9][A-Za-z0-9._:/-]{0,127}\Z")

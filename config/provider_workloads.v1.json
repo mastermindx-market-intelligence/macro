@@ -1,8 +1,14 @@
 {
   "schema": "mastermind.provider_workloads.v1",
-  "revision": 2,
+  "revision": 3,
   "owner_program": "shared-ai-provider-control",
   "profiles": {
+    "hermes_attended": {
+      "execution_surface": "inference",
+      "allowed_providers": [
+        "fabric"
+      ]
+    },
     "site_interactive": {
       "execution_surface": "inference",
       "allowed_providers": [
