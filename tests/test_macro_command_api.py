@@ -771,3 +771,50 @@ assert response.headers['cache-control'] == 'private, no-store'
 '''
     subprocess.run([sys.executable, "-c", code], cwd=ROOT, check=True,
                    capture_output=True, text=True)
+
+
+def test_business_legacy_api_qualifies_clock_aliases_without_rewriting_body(tmp_path, monkeypatch):
+    import copy
+    original = _snapshot_for
+    raw = json.loads((ROOT / "site/macrodata/workspaces/business_activity/US/latest.json").read_text())
+    monkeypatch.setitem(globals(), "_snapshot_for", lambda workspace_id, **kw:
+        copy.deepcopy(raw) if workspace_id == "business_activity" else original(workspace_id, **kw))
+    pages = (_page("business_activity"), _page("liquidity_regime"))
+    served = Served(tmp_path / "site.served", pages)
+    served.rewrite_manifest(lambda manifest: [row.update({"built_at": served.snapshots[row["workspace"]]["generation"]["built_at"]})
+                                            for row in manifest["workspaces"].values()])
+    client = _make_client(monkeypatch, served, pages)
+    before = served.tree_digest()
+    response = client.get(COMMAND_PATH)
+    assert response.status_code == 200
+    _assert_private_output(response)
+    rows = {row["workspace_id"]: row for row in response.json()["workspaces"]}
+    business = rows["business_activity"]
+    assert business["failure"] is None and business["state"] == "CURRENT"
+    assert business["effective_date"] is None and business["calculation_as_of"] is None
+    assert business["clock_qualification"]["presence_only"] is True
+    assert business["clock_qualification"]["reference_period"] == "2026-11-30"
+    assert business["clock_qualification"]["tone"] == "neutral"
+    assert business["content_sha256"] == raw["generation"]["content_sha256"]
+    artifact = business["clock_qualification"]["source_artifact"]
+    assert artifact["sha256"] == raw["generation"]["content_sha256"]
+    assert artifact["path"] == "macrodata/workspaces/business_activity/US/latest.json"
+    contract.validate(served.snapshots["business_activity"])
+    assert "snapshot" not in business
+    assert all(c["source_asof"] is None for c in business["availability"]["required"])
+    other = rows["liquidity_regime"]
+    assert set(other) == ROW_KEYS and "clock_qualification" not in other
+    assert other["availability"] == served.snapshots["liquidity_regime"]["availability"]
+    assert other["effective_date"] == served.snapshots["liquidity_regime"]["headline"]["effective_date"]
+    assert served.tree_digest() == before
+
+    # A body changed under the retained manifest/hash must be refused before
+    # any legacy projection can lend it a qualification or raw-artifact receipt.
+    body_path = served.body_path("business_activity")
+    tampered = json.loads(body_path.read_text())
+    tampered["metrics"]["items"][0]["observed_at"] = "2026-11-02"
+    body_path.write_text(json.dumps(tampered))
+    refused = {r["workspace_id"]: r for r in client.get(COMMAND_PATH).json()["workspaces"]}["business_activity"]
+    assert refused["failure"] is not None
+    assert refused["content_sha256"] is None
+    assert "clock_qualification" not in refused
