@@ -1189,12 +1189,34 @@ entries:
   - id: BL-G092
     match:
       any_of:
+        - 'mastermind.{0,30}trend.{0,30}persistence'
+    reason: >
+      NULL ON MODEL VALUE (pre-registered Wave B2, run once 2026-10-03)
+      — added to a model of trailing returns, beta and detailed
+      volatility, the features lift out-of-sample rank IC against
+      forward maximum
+    source: 'Mastermind `research/TREND_PERSISTENCE_READOUT.md` §11 (Mastermind PR 1155) + `DEC:TREND-PERSISTENCE-STOPS-AT-WAVE-B`'
+
+  - id: BL-G093
+    match:
+      any_of:
+        - 'mastermind.{0,30}trend.{0,30}persistence'
+    reason: >
+      C1-NULL (pre-registered Wave C development pass, run once
+      2026-10-05T00:06Z at Mastermind master 1644ace945a8) — three
+      cells scored, none met the five carry conditions; against the
+      gating baseline B*
+    source: 'Mastermind `research/data/trend_persistence_c1_result.json` + `_c1_attempt.json` (Mastermind PR 1252; instrument PR 1230) + `DEC:TREND-PERSISTENCE-STOPS-AT-WAVE-C`'
+
+  - id: BL-G094
+    match:
+      any_of:
         - 'ticker.{0,30}cluster.{0,30}bootstrap'
     reason: >
       FORBIDDEN estimator — anti-conservative, effective N = months
     source: 'DT-R14; `TIME_CONFOUND_EXPOSURE_AUDIT` (#1755)'
 
-  - id: BL-G093
+  - id: BL-G095
     match:
       any_of:
         - 'factor.{0,30}apparatus.{0,30}applied'
@@ -1203,7 +1225,7 @@ entries:
       absolute)
     source: 'Oracle reversion metric reframe (#1458)'
 
-  - id: BL-G094
+  - id: BL-G096
     match:
       any_of:
         - 'pooled.{0,30}inference.{0,30}across'
@@ -1211,7 +1233,7 @@ entries:
       FORBIDDEN without era split
     source: 'DT-R16 era-split law (#1751)'
 
-  - id: BL-G095
+  - id: BL-G097
     match:
       any_of:
         - 'closing.{0,30}factor.{0,30}family'
@@ -1219,7 +1241,7 @@ entries:
       INCOMPLETE — diagnose mechanism + pre-registered pairlets first
     source: 'Factor-kill interaction feedback law'
 
-  - id: BL-G096
+  - id: BL-G098
     match:
       any_of:
         - 'estimator.{0,30}shortcuts'
@@ -1227,7 +1249,7 @@ entries:
       Constrained per R1-M estimator law
     source: 'Nontech-bottom program'
 
-  - id: BL-G097
+  - id: BL-G099
     match:
       any_of:
         - 'hashing.{0,30}clock.{0,30}into'
@@ -1238,7 +1260,7 @@ entries:
       clock sile
     source: '`research/FILING_FORENSICS_SEC_STORE_MINT_ADJUDICATION_2026-08-08.md`; diagnosed PR #4986 (2026-08-08); conforms to the pre-registered `first_observed_at` + single "latest retrieval receipt" contract '
 
-  - id: BL-G098
+  - id: BL-G100
     match:
       any_of:
         - 'healing.{0,30}reviewed.{0,30}manifest'
@@ -1249,7 +1271,7 @@ entries:
       re-time itself. (b)
     source: '`research/GOVERNMENT_REVENUE_CANDIDATE_CENSUS_ADJUDICATION_2026-08-13.md`; `tests/government_revenue_candidate_fixture.py` (`canonical_candidate_census`, the clock-axis precedent from #4406); handoff '
 
-  - id: BL-G099
+  - id: BL-G101
     match:
       any_of:
         - 'exact.{0,30}label.{0,30}adverse'
@@ -1260,7 +1282,7 @@ entries:
       exact configuration
     source: '`research/PSS_RH1_RELIEF_HAZARD_PROSPECTIVE_CHARTER.md`; `data/personality_timing/relief_hazard_manifest_v1.json` (family `pss_rh1_relief_hazard_prospective`, frozen 2026-07-27)'
 
-  - id: BL-G100
+  - id: BL-G102
     match:
       any_of:
         - 'first.{0,30}real.{0,30}sector'
@@ -1271,7 +1293,7 @@ entries:
       +0.50-ATR re
     source: '`research/PSS_CR1_CHALLENGE_RESILIENCE_PROSPECTIVE_CHARTER.md`; `data/personality_timing/challenge_resilience_manifest_v1.json` (family `pss_cr1_challenge_resilience_prospective`, frozen 2026-07-27)'
 
-  - id: BL-G101
+  - id: BL-G103
     match:
       any_of:
         - 'correlation.{0,30}dispersion.{0,30}overlay'
@@ -1282,7 +1304,7 @@ entries:
       thresholds. Joint
     source: '`research/PSS_CD1_CORRELATION_DISPERSION_PROSPECTIVE_CHARTER.md`; `data/personality_timing/crowding_hazard_manifest_v1.json` (family `pss_cd1_correlation_dispersion_prospective`, frozen 2026-07-27)'
 
-  - id: BL-G102
+  - id: BL-G104
     match:
       any_of:
         - 'finra.{0,30}short.{0,30}marked'
@@ -1293,7 +1315,7 @@ entries:
       rolling-three-session q75,
     source: '`research/PSS_AF1_FINRA_ABSORPTION_PROSPECTIVE_CHARTER.md`; `data/personality_timing/flow_absorption_manifest_v1.json` (family `pss_af1_finra_absorption_witness_prospective`, frozen 2026-07-27)'
 
-  - id: BL-G103
+  - id: BL-G105
     match:
       any_of:
         - 'ontology.{0,30}acceptance'
@@ -1301,7 +1323,7 @@ entries:
       HOLD — peak gate IQR 48.8 > 25
     source: 'Open PR #1639 (do not accidentally revive)'
 
-  - id: BL-G104
+  - id: BL-G106
     match:
       any_of:
         - 'theta.{0,30}tape'
@@ -1311,7 +1333,7 @@ entries:
       restrictions retained.
     source: 'Final3-lobes program (2026-07-06); Chairman research reopening 2026-10-02: DEC:OPTIONS-HISTORICAL-REVIVAL-RESEARCH-ONLY and research/options_estate/OPTIONS_HISTORICAL_REVIVAL_CHARTER_V1.md'
 
-  - id: BL-G105
+  - id: BL-G107
     match:
       any_of:
         - 'disp.{0,30}gate'
@@ -1319,7 +1341,7 @@ entries:
       DEFER ×2-replicated
     source: 'Final3-lobes program (#1696)'
 
-  - id: BL-G106
+  - id: BL-G108
     match:
       any_of:
         - 'price.{0,30}memory.{0,30}trials'
@@ -1328,7 +1350,7 @@ entries:
       60% floor at execution)
     source: 'PM0 prereg (#1761) + EI-PM0 run (2026-07-10)'
 
-  - id: BL-G107
+  - id: BL-G109
     match:
       any_of:
         - 'g1'
@@ -1336,7 +1358,7 @@ entries:
       DEFERRED
     source: 'Long-hold thesis program (#1507/#1588)'
 
-  - id: BL-G108
+  - id: BL-G110
     match:
       any_of:
         - 'options'
@@ -1344,7 +1366,7 @@ entries:
       PARKED until preconditions (1)+(2)
     source: 'Options→NW masterplan'
 
-  - id: BL-G109
+  - id: BL-G111
     match:
       any_of:
         - 'codeowners.{0,30}branch.{0,30}protection'
@@ -1352,7 +1374,7 @@ entries:
       DEFERRED to RF codegen lane scope
     source: 'ABM-R3; `RF_CODEGEN_LANE_FOR_FABLE.md`'
 
-  - id: BL-G110
+  - id: BL-G112
     match:
       any_of:
         - 'ticker.{0,30}multi.{0,30}label'
@@ -1361,7 +1383,7 @@ entries:
       revenue-geography ingestion + own adjudication
     source: 'TI-R2, `TECH_INTERNALS_CODEX_ADJUDICATION_BY_FABLE.md`'
 
-  - id: BL-G111
+  - id: BL-G113
     match:
       any_of:
         - 'public.{0,30}breakaway.{0,30}desk'
@@ -1370,7 +1392,7 @@ entries:
       its own wave
     source: '`WINNER_AUTOPSY_MASTERPLAN_BY_FABLE.md` §8'
 
-  - id: BL-G112
+  - id: BL-G114
     match:
       any_of:
         - 'winner.{0,30}autopsy.{0,30}short'
@@ -1379,7 +1401,7 @@ entries:
       settlement date)
     source: 'WA-R (docket adjudication), aligns NEXTL-U19'
 
-  - id: BL-G113
+  - id: BL-G115
     match:
       any_of:
         - 'full.{0,30}graph.{0,30}causal'
@@ -1389,7 +1411,7 @@ entries:
       clock
     source: 'CHF-R14, `CAUSAL_HYPOTHESIS_FACTORY_MASTERPLAN_BY_FABLE.md`'
 
-  - id: BL-G114
+  - id: BL-G116
     match:
       any_of:
         - 'dedicated.{0,30}machine.{0,30}registration'
@@ -1399,7 +1421,7 @@ entries:
       stands (QS-U2)
     source: 'CHF-R2, `CAUSAL_HYPOTHESIS_FACTORY_MASTERPLAN_BY_FABLE.md`'
 
-  - id: BL-G115
+  - id: BL-G117
     match:
       any_of:
         - 'ignition.{0,30}radar.{0,30}user'
@@ -1410,7 +1432,7 @@ entries:
       narrow-theme
     source: 'Operator ruling 2026-07-23 + `POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md` §2'
 
-  - id: BL-G116
+  - id: BL-G118
     match:
       any_of:
         - 'pooled.{0,30}widening.{0,30}factor'
@@ -1421,7 +1443,7 @@ entries:
       rank AUTHORITY, not displ
     source: 'FUW charter `research/FACTOR_UNIVERSE_WIDENING_CHARTER.md` §3–§11; harness `scripts/factor_universe_widening_phase0.py`; tripwire `tests/test_factor_universe_hold.py` (2026-08-06)'
 
-  - id: BL-G117
+  - id: BL-G119
     match:
       any_of:
         - 'provisional.{0,30}quality.{0,30}hold'
@@ -1432,7 +1454,7 @@ entries:
       Its s
     source: 'PR #4781 (severance + `ec_source_state`/`ec_coverage` disclosure); `research/PROPHET_STAGE_QUALITY_PREREG.md` §6 auto-demote clause; `research/reports/PROPHET_STAGE_QUALITY_RESULTS.md` §Adjudication; '
 
-  - id: BL-G118
+  - id: BL-G120
     match:
       any_of:
         - 'period.{0,30}basis.{0,30}four'
@@ -1443,7 +1465,7 @@ entries:
       "annual YoY" on `sit
     source: 'PR #4961; pinned by `tests/test_forensic_detector_crosspin.py` §7 `test_period_and_point_in_time_models_are_pinned_as_unresolved_divergences` (2026-08-07)'
 
-  - id: BL-G119
+  - id: BL-G121
     match:
       any_of:
         - 'what.{0,30}negative.{0,30}prior'
@@ -1454,7 +1476,7 @@ entries:
       pairs it ha
     source: 'PR #4961; pinned row-by-row with rationale in `tests/test_forensic_detector_crosspin.py` §6b `PINNED_THREE_WAY_DISAGREEMENTS` family "negative prior denominator" (2026-08-07)'
 
-  - id: BL-G120
+  - id: BL-G122
     match:
       any_of:
         - 'accruals.{0,30}trending.{0,30}registered'
@@ -1465,7 +1487,7 @@ entries:
       adding the
     source: 'PR #4961; pinned by `tests/test_forensic_detector_crosspin.py` §7 `test_accruals_has_no_moat_sensor_and_that_gap_is_still_open` and by `NON_MOAT_DETECTOR_IDS` in test 1 (2026-08-07)'
 
-  - id: BL-G121
+  - id: BL-G123
     match:
       any_of:
         - 'unified.{0,30}macro.{0,30}dashboard'

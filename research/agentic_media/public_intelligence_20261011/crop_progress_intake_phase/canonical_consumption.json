@@ -1,0 +1,48 @@
+{
+  "observed_at": "2026-10-14T16:59:14.424504+00:00",
+  "source_id": "usda-nass-2026-10-13-crop-progress",
+  "source_sha256": "ecdbbb595fb63ce179dbf0aad57541c28aec53e988489a376b2a1d002304968c",
+  "reads": [
+    {
+      "key": "research_vault/catalog.json",
+      "present": true,
+      "sha256": "d11960cb1564b6ed75da0acf6c29b5fe4936a50700f64f14fff85f858a88a5d8"
+    },
+    {
+      "key": "research_inbox/_processed/usda-nass-2026-10-13-crop-progress.json",
+      "present": true,
+      "sha256": "acd9514fcc54b0703c23dddf5be8e358d59d3dc9f523db6a9bcd2a6bccbb06bf"
+    },
+    {
+      "key": "research_inbox/usda-nass-2026-10-13-crop-progress.json",
+      "present": true,
+      "sha256": "0ab7784c57118c7f6b7c1f92c9de9f2736c271a1d60c0e27583a46cadd4a5e6d"
+    },
+    {
+      "key": "research_vault/usda-nass-2026-10-13-crop-progress.pdf",
+      "present": true,
+      "sha256": "ecdbbb595fb63ce179dbf0aad57541c28aec53e988489a376b2a1d002304968c"
+    },
+    {
+      "key": "research_vault/fulltext/v1/usda-nass-2026-10-13-crop-progress/ecdbbb595fb63ce179dbf0aad57541c28aec53e988489a376b2a1d002304968c/v1-05b88d4d1e4a6efa.json",
+      "present": true,
+      "sha256": "ad801f16319a3d9c3ffe92eb29eb4b53c36adddd3b402e18e7d041a569f6b22b"
+    }
+  ],
+  "catalog_rows": 1,
+  "state": "CANONICAL_SOURCE_AND_FULLTEXT_VERIFIED",
+  "writes": 0,
+  "provider_calls": 0,
+  "publication": false,
+  "stock_ticker": null,
+  "press_draft_accepted": false,
+  "published_at": "2026-10-13",
+  "pages": 16,
+  "summary_points": 8,
+  "fulltext_chars": 97441,
+  "fulltext_sha256": "347816f8ace3d6a4be6333019982d620be64af38d8dae471fdc44374e4e34789",
+  "installed_head_before": "c2e685a0a6ad512bc6e20aa6bcef2673e2f62981",
+  "installed_head_after": "c2e685a0a6ad512bc6e20aa6bcef2673e2f62981",
+  "stable_installed_head": true,
+  "local_fixture": false
+}

@@ -1,0 +1,1819 @@
+{
+  "archive_ref": "web_test_runs:market-time-machine-20261015-stock-research-v2/manifest.json",
+  "coverage": {
+    "absence_interpretation": "not an exchange-calendar or listing-inception proof",
+    "benchmark_observed_dates": 8482,
+    "by_symbol": {
+      "AAPL": {
+        "absent_date_sample": [],
+        "absent_on_benchmark_observed_dates": 0,
+        "absent_sample_truncated": false,
+        "dates_outside_benchmark_observations": 0,
+        "first_observed_date": "1993-01-29",
+        "identity_basis": "exact_vendor_symbol_not_canonical_historical_identity",
+        "input_observations_including_warmup": 9261,
+        "last_observed_date": "2026-10-09",
+        "observations": 8482
+      },
+      "ADBE": {
+        "absent_date_sample": [],
+        "absent_on_benchmark_observed_dates": 0,
+        "absent_sample_truncated": false,
+        "dates_outside_benchmark_observations": 0,
+        "first_observed_date": "1993-01-29",
+        "identity_basis": "exact_vendor_symbol_not_canonical_historical_identity",
+        "input_observations_including_warmup": 9261,
+        "last_observed_date": "2026-10-09",
+        "observations": 8482
+      },
+      "AMAT": {
+        "absent_date_sample": [],
+        "absent_on_benchmark_observed_dates": 0,
+        "absent_sample_truncated": false,
+        "dates_outside_benchmark_observations": 0,
+        "first_observed_date": "1993-01-29",
+        "identity_basis": "exact_vendor_symbol_not_canonical_historical_identity",
+        "input_observations_including_warmup": 9261,
+        "last_observed_date": "2026-10-09",
+        "observations": 8482
+      },
+      "AMD": {
+        "absent_date_sample": [],
+        "absent_on_benchmark_observed_dates": 0,
+        "absent_sample_truncated": false,
+        "dates_outside_benchmark_observations": 0,
+        "first_observed_date": "1993-01-29",
+        "identity_basis": "exact_vendor_symbol_not_canonical_historical_identity",
+        "input_observations_including_warmup": 9261,
+        "last_observed_date": "2026-10-09",
+        "observations": 8482
+      },
+      "AMZN": {
+        "absent_date_sample": [
+          "1993-01-29",
+          "1993-02-01",
+          "1993-02-02",
+          "1993-02-03",
+          "1993-02-04",
+          "1993-02-05",
+          "1993-02-08",
+          "1993-02-09",
+          "1993-02-10",
+          "1993-02-11",
+          "1993-02-12",
+          "1993-02-16",
+          "1993-02-17",
+          "1993-02-18",
+          "1993-02-19",
+          "1993-02-22",
+          "1993-02-23",
+          "1993-02-24",
+          "1993-02-25",
+          "1993-02-26"
+        ],
+        "absent_on_benchmark_observed_dates": 1085,
+        "absent_sample_truncated": true,
+        "dates_outside_benchmark_observations": 0,
+        "first_observed_date": "1997-05-15",
+        "identity_basis": "exact_vendor_symbol_not_canonical_historical_identity",
+        "input_observations_including_warmup": 7397,
+        "last_observed_date": "2026-10-09",
+        "observations": 7397
+      },
+      "ARM": {
+        "absent_date_sample": [
+          "1993-01-29",
+          "1993-02-01",
+          "1993-02-02",
+          "1993-02-03",
+          "1993-02-04",
+          "1993-02-05",
+          "1993-02-08",
+          "1993-02-09",
+          "1993-02-10",
+          "1993-02-11",
+          "1993-02-12",
+          "1993-02-16",
+          "1993-02-17",
+          "1993-02-18",
+          "1993-02-19",
+          "1993-02-22",
+          "1993-02-23",
+          "1993-02-24",
+          "1993-02-25",
+          "1993-02-26"
+        ],
+        "absent_on_benchmark_observed_dates": 7711,
+        "absent_sample_truncated": true,
+        "dates_outside_benchmark_observations": 0,
+        "first_observed_date": "2023-09-14",
+        "identity_basis": "exact_vendor_symbol_not_canonical_historical_identity",
+        "input_observations_including_warmup": 771,
+        "last_observed_date": "2026-10-09",
+        "observations": 771
+      },
+      "ASML": {
+        "absent_date_sample": [
+          "1993-01-29",
+          "1993-02-01",
+          "1993-02-02",
+          "1993-02-03",
+          "1993-02-04",
+          "1993-02-05",
+          "1993-02-08",
+          "1993-02-09",
+          "1993-02-10",
+          "1993-02-11",
+          "1993-02-12",
+          "1993-02-16",
+          "1993-02-17",
+          "1993-02-18",
+          "1993-02-19",
+          "1993-02-22",
+          "1993-02-23",
+          "1993-02-24",
+          "1993-02-25",
+          "1993-02-26"
+        ],
+        "absent_on_benchmark_observed_dates": 537,
+        "absent_sample_truncated": true,
+        "dates_outside_benchmark_observations": 0,
+        "first_observed_date": "1995-03-16",
+        "identity_basis": "exact_vendor_symbol_not_canonical_historical_identity",
+        "input_observations_including_warmup": 7945,
+        "last_observed_date": "2026-10-09",
+        "observations": 7945
+      },
+      "ATVI": {
+        "absent_date_sample": [
+          "1993-01-29",
+          "1993-02-01",
+          "1993-02-02",
+          "1993-02-03",
+          "1993-02-04",
+          "1993-02-05",
+          "1993-02-08",
+          "1993-02-09",
+          "1993-02-10",
+          "1993-02-11",
+          "1993-02-12",
+          "1993-02-16",
+          "1993-02-17",
+          "1993-02-18",
+          "1993-02-19",
+          "1993-02-22",
+          "1993-02-23",
+          "1993-02-24",
+          "1993-02-25",
+          "1993-02-26"
+        ],
+        "absent_on_benchmark_observed_dates": 935,
+        "absent_sample_truncated": true,
+        "dates_outside_benchmark_observations": 0,
+        "first_observed_date": "1993-10-25",
+        "identity_basis": "exact_vendor_symbol_not_canonical_historical_identity",
+        "input_observations_including_warmup": 7547,
+        "last_observed_date": "2023-10-13",
+        "observations": 7547
+      },
+      "AVGO": {
+        "absent_date_sample": [
+          "1993-01-29",
+          "1993-02-01",
+          "1993-02-02",
+          "1993-02-03",
+          "1993-02-04",
+          "1993-02-05",
+          "1993-02-08",
+          "1993-02-09",
+          "1993-02-10",
+          "1993-02-11",
+          "1993-02-12",
+          "1993-02-16",
+          "1993-02-17",
+          "1993-02-18",
+          "1993-02-19",
+          "1993-02-22",
+          "1993-02-23",
+          "1993-02-24",
+          "1993-02-25",
+          "1993-02-26"
+        ],
+        "absent_on_benchmark_observed_dates": 4161,
+        "absent_sample_truncated": true,
+        "dates_outside_benchmark_observations": 0,
+        "first_observed_date": "2009-08-06",
+        "identity_basis": "exact_vendor_symbol_not_canonical_historical_identity",
+        "input_observations_including_warmup": 4321,
+        "last_observed_date": "2026-10-09",
+        "observations": 4321
+      },
+      "BABA": {
+        "absent_date_sample": [
+          "1993-01-29",
+          "1993-02-01",
+          "1993-02-02",
+          "1993-02-03",
+          "1993-02-04",
+          "1993-02-05",
+          "1993-02-08",
+          "1993-02-09",
+          "1993-02-10",
+          "1993-02-11",
+          "1993-02-12",
+          "1993-02-16",
+          "1993-02-17",
+          "1993-02-18",
+          "1993-02-19",
+          "1993-02-22",
+          "1993-02-23",
+          "1993-02-24",
+          "1993-02-25",
+          "1993-02-26"
+        ],
+        "absent_on_benchmark_observed_dates": 5450,
+        "absent_sample_truncated": true,
+        "dates_outside_benchmark_observations": 0,
+        "first_observed_date": "2014-09-19",
+        "identity_basis": "exact_vendor_symbol_not_canonical_historical_identity",
+        "input_observations_including_warmup": 3032,
+        "last_observed_date": "2026-10-09",
+        "observations": 3032
+      },
+      "BAC": {
+        "absent_date_sample": [],
+        "absent_on_benchmark_observed_dates": 0,
+        "absent_sample_truncated": false,
+        "dates_outside_benchmark_observations": 0,
+        "first_observed_date": "1993-01-29",
+        "identity_basis": "exact_vendor_symbol_not_canonical_historical_identity",
+        "input_observations_including_warmup": 9261,
+        "last_observed_date": "2026-10-09",
+        "observations": 8482
+      },
+      "BIDU": {
+        "absent_date_sample": [
+          "1993-01-29",
+          "1993-02-01",
+          "1993-02-02",
+          "1993-02-03",
+          "1993-02-04",
+          "1993-02-05",
+          "1993-02-08",
+          "1993-02-09",
+          "1993-02-10",
+          "1993-02-11",
+          "1993-02-12",
+          "1993-02-16",
+          "1993-02-17",
+          "1993-02-18",
+          "1993-02-19",
+          "1993-02-22",
+          "1993-02-23",
+          "1993-02-24",
+          "1993-02-25",
+          "1993-02-26"
+        ],
+        "absent_on_benchmark_observed_dates": 3154,
+        "absent_sample_truncated": true,
+        "dates_outside_benchmark_observations": 0,
+        "first_observed_date": "2005-08-05",
+        "identity_basis": "exact_vendor_symbol_not_canonical_historical_identity",
+        "input_observations_including_warmup": 5328,
+        "last_observed_date": "2026-10-09",
+        "observations": 5328
+      },
+      "CAT": {
+        "absent_date_sample": [],
+        "absent_on_benchmark_observed_dates": 0,
+        "absent_sample_truncated": false,
+        "dates_outside_benchmark_observations": 0,
+        "first_observed_date": "1993-01-29",
+        "identity_basis": "exact_vendor_symbol_not_canonical_historical_identity",
+        "input_observations_including_warmup": 9261,
+        "last_observed_date": "2026-10-09",
+        "observations": 8482
+      },
+      "COIN": {
+        "absent_date_sample": [
+          "1993-01-29",
+          "1993-02-01",
+          "1993-02-02",
+          "1993-02-03",
+          "1993-02-04",
+          "1993-02-05",
+          "1993-02-08",
+          "1993-02-09",
+          "1993-02-10",
+          "1993-02-11",
+          "1993-02-12",
+          "1993-02-16",
+          "1993-02-17",
+          "1993-02-18",
+          "1993-02-19",
+          "1993-02-22",
+          "1993-02-23",
+          "1993-02-24",
+          "1993-02-25",
+          "1993-02-26"
+        ],
+        "absent_on_benchmark_observed_dates": 7102,
+        "absent_sample_truncated": true,
+        "dates_outside_benchmark_observations": 0,
+        "first_observed_date": "2021-04-14",
+        "identity_basis": "exact_vendor_symbol_not_canonical_historical_identity",
+        "input_observations_including_warmup": 1380,
+        "last_observed_date": "2026-10-09",
+        "observations": 1380
+      },
+      "COST": {
+        "absent_date_sample": [],
+        "absent_on_benchmark_observed_dates": 0,
+        "absent_sample_truncated": false,
+        "dates_outside_benchmark_observations": 0,
+        "first_observed_date": "1993-01-29",
+        "identity_basis": "exact_vendor_symbol_not_canonical_historical_identity",
+        "input_observations_including_warmup": 9261,
+        "last_observed_date": "2026-10-09",
+        "observations": 8482
+      },
+      "CRM": {
+        "absent_date_sample": [
+          "1993-01-29",
+          "1993-02-01",
+          "1993-02-02",
+          "1993-02-03",
+          "1993-02-04",
+          "1993-02-05",
+          "1993-02-08",
+          "1993-02-09",
+          "1993-02-10",
+          "1993-02-11",
+          "1993-02-12",
+          "1993-02-16",
+          "1993-02-17",
+          "1993-02-18",
+          "1993-02-19",
+          "1993-02-22",
+          "1993-02-23",
+          "1993-02-24",
+          "1993-02-25",
+          "1993-02-26"
+        ],
+        "absent_on_benchmark_observed_dates": 2871,
+        "absent_sample_truncated": true,
+        "dates_outside_benchmark_observations": 0,
+        "first_observed_date": "2004-06-23",
+        "identity_basis": "exact_vendor_symbol_not_canonical_historical_identity",
+        "input_observations_including_warmup": 5611,
+        "last_observed_date": "2026-10-09",
+        "observations": 5611
+      },
+      "CVX": {
+        "absent_date_sample": [],
+        "absent_on_benchmark_observed_dates": 0,
+        "absent_sample_truncated": false,
+        "dates_outside_benchmark_observations": 0,
+        "first_observed_date": "1993-01-29",
+        "identity_basis": "exact_vendor_symbol_not_canonical_historical_identity",
+        "input_observations_including_warmup": 9261,
+        "last_observed_date": "2026-10-09",
+        "observations": 8482
+      },
+      "DE": {
+        "absent_date_sample": [],
+        "absent_on_benchmark_observed_dates": 0,
+        "absent_sample_truncated": false,
+        "dates_outside_benchmark_observations": 0,
+        "first_observed_date": "1993-01-29",
+        "identity_basis": "exact_vendor_symbol_not_canonical_historical_identity",
+        "input_observations_including_warmup": 9261,
+        "last_observed_date": "2026-10-09",
+        "observations": 8482
+      },
+      "FCX": {
+        "absent_date_sample": [
+          "1993-01-29",
+          "1993-02-01",
+          "1993-02-02",
+          "1993-02-03",
+          "1993-02-04",
+          "1993-02-05",
+          "1993-02-08",
+          "1993-02-09",
+          "1993-02-10",
+          "1993-02-11",
+          "1993-02-12",
+          "1993-02-16",
+          "1993-02-17",
+          "1993-02-18",
+          "1993-02-19",
+          "1993-02-22",
+          "1993-02-23",
+          "1993-02-24",
+          "1993-02-25",
+          "1993-02-26"
+        ],
+        "absent_on_benchmark_observed_dates": 616,
+        "absent_sample_truncated": true,
+        "dates_outside_benchmark_observations": 0,
+        "first_observed_date": "1995-07-10",
+        "identity_basis": "exact_vendor_symbol_not_canonical_historical_identity",
+        "input_observations_including_warmup": 7866,
+        "last_observed_date": "2026-10-09",
+        "observations": 7866
+      },
+      "GOOGL": {
+        "absent_date_sample": [
+          "1993-01-29",
+          "1993-02-01",
+          "1993-02-02",
+          "1993-02-03",
+          "1993-02-04",
+          "1993-02-05",
+          "1993-02-08",
+          "1993-02-09",
+          "1993-02-10",
+          "1993-02-11",
+          "1993-02-12",
+          "1993-02-16",
+          "1993-02-17",
+          "1993-02-18",
+          "1993-02-19",
+          "1993-02-22",
+          "1993-02-23",
+          "1993-02-24",
+          "1993-02-25",
+          "1993-02-26"
+        ],
+        "absent_on_benchmark_observed_dates": 2911,
+        "absent_sample_truncated": true,
+        "dates_outside_benchmark_observations": 0,
+        "first_observed_date": "2004-08-19",
+        "identity_basis": "exact_vendor_symbol_not_canonical_historical_identity",
+        "input_observations_including_warmup": 5571,
+        "last_observed_date": "2026-10-09",
+        "observations": 5571
+      },
+      "GS": {
+        "absent_date_sample": [
+          "1993-01-29",
+          "1993-02-01",
+          "1993-02-02",
+          "1993-02-03",
+          "1993-02-04",
+          "1993-02-05",
+          "1993-02-08",
+          "1993-02-09",
+          "1993-02-10",
+          "1993-02-11",
+          "1993-02-12",
+          "1993-02-16",
+          "1993-02-17",
+          "1993-02-18",
+          "1993-02-19",
+          "1993-02-22",
+          "1993-02-23",
+          "1993-02-24",
+          "1993-02-25",
+          "1993-02-26"
+        ],
+        "absent_on_benchmark_observed_dates": 1580,
+        "absent_sample_truncated": true,
+        "dates_outside_benchmark_observations": 0,
+        "first_observed_date": "1999-05-04",
+        "identity_basis": "exact_vendor_symbol_not_canonical_historical_identity",
+        "input_observations_including_warmup": 6902,
+        "last_observed_date": "2026-10-09",
+        "observations": 6902
+      },
+      "INTC": {
+        "absent_date_sample": [],
+        "absent_on_benchmark_observed_dates": 0,
+        "absent_sample_truncated": false,
+        "dates_outside_benchmark_observations": 0,
+        "first_observed_date": "1993-01-29",
+        "identity_basis": "exact_vendor_symbol_not_canonical_historical_identity",
+        "input_observations_including_warmup": 9261,
+        "last_observed_date": "2026-10-09",
+        "observations": 8482
+      },
+      "JD": {
+        "absent_date_sample": [
+          "1993-01-29",
+          "1993-02-01",
+          "1993-02-02",
+          "1993-02-03",
+          "1993-02-04",
+          "1993-02-05",
+          "1993-02-08",
+          "1993-02-09",
+          "1993-02-10",
+          "1993-02-11",
+          "1993-02-12",
+          "1993-02-16",
+          "1993-02-17",
+          "1993-02-18",
+          "1993-02-19",
+          "1993-02-22",
+          "1993-02-23",
+          "1993-02-24",
+          "1993-02-25",
+          "1993-02-26"
+        ],
+        "absent_on_benchmark_observed_dates": 5367,
+        "absent_sample_truncated": true,
+        "dates_outside_benchmark_observations": 0,
+        "first_observed_date": "2014-05-22",
+        "identity_basis": "exact_vendor_symbol_not_canonical_historical_identity",
+        "input_observations_including_warmup": 3115,
+        "last_observed_date": "2026-10-09",
+        "observations": 3115
+      },
+      "JNJ": {
+        "absent_date_sample": [],
+        "absent_on_benchmark_observed_dates": 0,
+        "absent_sample_truncated": false,
+        "dates_outside_benchmark_observations": 0,
+        "first_observed_date": "1993-01-29",
+        "identity_basis": "exact_vendor_symbol_not_canonical_historical_identity",
+        "input_observations_including_warmup": 9261,
+        "last_observed_date": "2026-10-09",
+        "observations": 8482
+      },
+      "JPM": {
+        "absent_date_sample": [],
+        "absent_on_benchmark_observed_dates": 0,
+        "absent_sample_truncated": false,
+        "dates_outside_benchmark_observations": 0,
+        "first_observed_date": "1993-01-29",
+        "identity_basis": "exact_vendor_symbol_not_canonical_historical_identity",
+        "input_observations_including_warmup": 9261,
+        "last_observed_date": "2026-10-09",
+        "observations": 8482
+      },
+      "KLAC": {
+        "absent_date_sample": [],
+        "absent_on_benchmark_observed_dates": 0,
+        "absent_sample_truncated": false,
+        "dates_outside_benchmark_observations": 0,
+        "first_observed_date": "1993-01-29",
+        "identity_basis": "exact_vendor_symbol_not_canonical_historical_identity",
+        "input_observations_including_warmup": 9203,
+        "last_observed_date": "2026-10-09",
+        "observations": 8482
+      },
+      "KO": {
+        "absent_date_sample": [],
+        "absent_on_benchmark_observed_dates": 0,
+        "absent_sample_truncated": false,
+        "dates_outside_benchmark_observations": 0,
+        "first_observed_date": "1993-01-29",
+        "identity_basis": "exact_vendor_symbol_not_canonical_historical_identity",
+        "input_observations_including_warmup": 9261,
+        "last_observed_date": "2026-10-09",
+        "observations": 8482
+      },
+      "LITE": {
+        "absent_date_sample": [
+          "1993-01-29",
+          "1993-02-01",
+          "1993-02-02",
+          "1993-02-03",
+          "1993-02-04",
+          "1993-02-05",
+          "1993-02-08",
+          "1993-02-09",
+          "1993-02-10",
+          "1993-02-11",
+          "1993-02-12",
+          "1993-02-16",
+          "1993-02-17",
+          "1993-02-18",
+          "1993-02-19",
+          "1993-02-22",
+          "1993-02-23",
+          "1993-02-24",
+          "1993-02-25",
+          "1993-02-26"
+        ],
+        "absent_on_benchmark_observed_dates": 5669,
+        "absent_sample_truncated": true,
+        "dates_outside_benchmark_observations": 0,
+        "first_observed_date": "2015-08-04",
+        "identity_basis": "exact_vendor_symbol_not_canonical_historical_identity",
+        "input_observations_including_warmup": 2813,
+        "last_observed_date": "2026-10-09",
+        "observations": 2813
+      },
+      "LLY": {
+        "absent_date_sample": [],
+        "absent_on_benchmark_observed_dates": 0,
+        "absent_sample_truncated": false,
+        "dates_outside_benchmark_observations": 0,
+        "first_observed_date": "1993-01-29",
+        "identity_basis": "exact_vendor_symbol_not_canonical_historical_identity",
+        "input_observations_including_warmup": 9261,
+        "last_observed_date": "2026-10-09",
+        "observations": 8482
+      },
+      "LRCX": {
+        "absent_date_sample": [],
+        "absent_on_benchmark_observed_dates": 0,
+        "absent_sample_truncated": false,
+        "dates_outside_benchmark_observations": 0,
+        "first_observed_date": "1993-01-29",
+        "identity_basis": "exact_vendor_symbol_not_canonical_historical_identity",
+        "input_observations_including_warmup": 9203,
+        "last_observed_date": "2026-10-09",
+        "observations": 8482
+      },
+      "MA": {
+        "absent_date_sample": [
+          "1993-01-29",
+          "1993-02-01",
+          "1993-02-02",
+          "1993-02-03",
+          "1993-02-04",
+          "1993-02-05",
+          "1993-02-08",
+          "1993-02-09",
+          "1993-02-10",
+          "1993-02-11",
+          "1993-02-12",
+          "1993-02-16",
+          "1993-02-17",
+          "1993-02-18",
+          "1993-02-19",
+          "1993-02-22",
+          "1993-02-23",
+          "1993-02-24",
+          "1993-02-25",
+          "1993-02-26"
+        ],
+        "absent_on_benchmark_observed_dates": 3356,
+        "absent_sample_truncated": true,
+        "dates_outside_benchmark_observations": 0,
+        "first_observed_date": "2006-05-25",
+        "identity_basis": "exact_vendor_symbol_not_canonical_historical_identity",
+        "input_observations_including_warmup": 5126,
+        "last_observed_date": "2026-10-09",
+        "observations": 5126
+      },
+      "META": {
+        "absent_date_sample": [
+          "1993-01-29",
+          "1993-02-01",
+          "1993-02-02",
+          "1993-02-03",
+          "1993-02-04",
+          "1993-02-05",
+          "1993-02-08",
+          "1993-02-09",
+          "1993-02-10",
+          "1993-02-11",
+          "1993-02-12",
+          "1993-02-16",
+          "1993-02-17",
+          "1993-02-18",
+          "1993-02-19",
+          "1993-02-22",
+          "1993-02-23",
+          "1993-02-24",
+          "1993-02-25",
+          "1993-02-26"
+        ],
+        "absent_on_benchmark_observed_dates": 4863,
+        "absent_sample_truncated": true,
+        "dates_outside_benchmark_observations": 0,
+        "first_observed_date": "2012-05-18",
+        "identity_basis": "exact_vendor_symbol_not_canonical_historical_identity",
+        "input_observations_including_warmup": 3619,
+        "last_observed_date": "2026-10-09",
+        "observations": 3619
+      },
+      "MSFT": {
+        "absent_date_sample": [],
+        "absent_on_benchmark_observed_dates": 0,
+        "absent_sample_truncated": false,
+        "dates_outside_benchmark_observations": 0,
+        "first_observed_date": "1993-01-29",
+        "identity_basis": "exact_vendor_symbol_not_canonical_historical_identity",
+        "input_observations_including_warmup": 9261,
+        "last_observed_date": "2026-10-09",
+        "observations": 8482
+      },
+      "MU": {
+        "absent_date_sample": [],
+        "absent_on_benchmark_observed_dates": 0,
+        "absent_sample_truncated": false,
+        "dates_outside_benchmark_observations": 0,
+        "first_observed_date": "1993-01-29",
+        "identity_basis": "exact_vendor_symbol_not_canonical_historical_identity",
+        "input_observations_including_warmup": 9261,
+        "last_observed_date": "2026-10-09",
+        "observations": 8482
+      },
+      "NEM": {
+        "absent_date_sample": [],
+        "absent_on_benchmark_observed_dates": 0,
+        "absent_sample_truncated": false,
+        "dates_outside_benchmark_observations": 0,
+        "first_observed_date": "1993-01-29",
+        "identity_basis": "exact_vendor_symbol_not_canonical_historical_identity",
+        "input_observations_including_warmup": 9261,
+        "last_observed_date": "2026-10-09",
+        "observations": 8482
+      },
+      "NFLX": {
+        "absent_date_sample": [
+          "1993-01-29",
+          "1993-02-01",
+          "1993-02-02",
+          "1993-02-03",
+          "1993-02-04",
+          "1993-02-05",
+          "1993-02-08",
+          "1993-02-09",
+          "1993-02-10",
+          "1993-02-11",
+          "1993-02-12",
+          "1993-02-16",
+          "1993-02-17",
+          "1993-02-18",
+          "1993-02-19",
+          "1993-02-22",
+          "1993-02-23",
+          "1993-02-24",
+          "1993-02-25",
+          "1993-02-26"
+        ],
+        "absent_on_benchmark_observed_dates": 2347,
+        "absent_sample_truncated": true,
+        "dates_outside_benchmark_observations": 0,
+        "first_observed_date": "2002-05-23",
+        "identity_basis": "exact_vendor_symbol_not_canonical_historical_identity",
+        "input_observations_including_warmup": 6135,
+        "last_observed_date": "2026-10-09",
+        "observations": 6135
+      },
+      "NVDA": {
+        "absent_date_sample": [
+          "1993-01-29",
+          "1993-02-01",
+          "1993-02-02",
+          "1993-02-03",
+          "1993-02-04",
+          "1993-02-05",
+          "1993-02-08",
+          "1993-02-09",
+          "1993-02-10",
+          "1993-02-11",
+          "1993-02-12",
+          "1993-02-16",
+          "1993-02-17",
+          "1993-02-18",
+          "1993-02-19",
+          "1993-02-22",
+          "1993-02-23",
+          "1993-02-24",
+          "1993-02-25",
+          "1993-02-26"
+        ],
+        "absent_on_benchmark_observed_dates": 1510,
+        "absent_sample_truncated": true,
+        "dates_outside_benchmark_observations": 0,
+        "first_observed_date": "1999-01-22",
+        "identity_basis": "exact_vendor_symbol_not_canonical_historical_identity",
+        "input_observations_including_warmup": 6972,
+        "last_observed_date": "2026-10-09",
+        "observations": 6972
+      },
+      "ORCL": {
+        "absent_date_sample": [],
+        "absent_on_benchmark_observed_dates": 0,
+        "absent_sample_truncated": false,
+        "dates_outside_benchmark_observations": 0,
+        "first_observed_date": "1993-01-29",
+        "identity_basis": "exact_vendor_symbol_not_canonical_historical_identity",
+        "input_observations_including_warmup": 9261,
+        "last_observed_date": "2026-10-09",
+        "observations": 8482
+      },
+      "PG": {
+        "absent_date_sample": [],
+        "absent_on_benchmark_observed_dates": 0,
+        "absent_sample_truncated": false,
+        "dates_outside_benchmark_observations": 0,
+        "first_observed_date": "1993-01-29",
+        "identity_basis": "exact_vendor_symbol_not_canonical_historical_identity",
+        "input_observations_including_warmup": 9261,
+        "last_observed_date": "2026-10-09",
+        "observations": 8482
+      },
+      "PLTR": {
+        "absent_date_sample": [
+          "1993-01-29",
+          "1993-02-01",
+          "1993-02-02",
+          "1993-02-03",
+          "1993-02-04",
+          "1993-02-05",
+          "1993-02-08",
+          "1993-02-09",
+          "1993-02-10",
+          "1993-02-11",
+          "1993-02-12",
+          "1993-02-16",
+          "1993-02-17",
+          "1993-02-18",
+          "1993-02-19",
+          "1993-02-22",
+          "1993-02-23",
+          "1993-02-24",
+          "1993-02-25",
+          "1993-02-26"
+        ],
+        "absent_on_benchmark_observed_dates": 6968,
+        "absent_sample_truncated": true,
+        "dates_outside_benchmark_observations": 0,
+        "first_observed_date": "2020-09-30",
+        "identity_basis": "exact_vendor_symbol_not_canonical_historical_identity",
+        "input_observations_including_warmup": 1514,
+        "last_observed_date": "2026-10-09",
+        "observations": 1514
+      },
+      "SGEN": {
+        "absent_date_sample": [
+          "1993-01-29",
+          "1993-02-01",
+          "1993-02-02",
+          "1993-02-03",
+          "1993-02-04",
+          "1993-02-05",
+          "1993-02-08",
+          "1993-02-09",
+          "1993-02-10",
+          "1993-02-11",
+          "1993-02-12",
+          "1993-02-16",
+          "1993-02-17",
+          "1993-02-18",
+          "1993-02-19",
+          "1993-02-22",
+          "1993-02-23",
+          "1993-02-24",
+          "1993-02-25",
+          "1993-02-26"
+        ],
+        "absent_on_benchmark_observed_dates": 2583,
+        "absent_sample_truncated": true,
+        "dates_outside_benchmark_observations": 0,
+        "first_observed_date": "2001-03-09",
+        "identity_basis": "exact_vendor_symbol_not_canonical_historical_identity",
+        "input_observations_including_warmup": 5899,
+        "last_observed_date": "2026-10-09",
+        "observations": 5899
+      },
+      "SPY": {
+        "absent_date_sample": [],
+        "absent_on_benchmark_observed_dates": 0,
+        "absent_sample_truncated": false,
+        "dates_outside_benchmark_observations": 0,
+        "first_observed_date": "1993-01-29",
+        "identity_basis": "exact_vendor_symbol_not_canonical_historical_identity",
+        "input_observations_including_warmup": 8482,
+        "last_observed_date": "2026-10-09",
+        "observations": 8482
+      },
+      "TSLA": {
+        "absent_date_sample": [
+          "1993-01-29",
+          "1993-02-01",
+          "1993-02-02",
+          "1993-02-03",
+          "1993-02-04",
+          "1993-02-05",
+          "1993-02-08",
+          "1993-02-09",
+          "1993-02-10",
+          "1993-02-11",
+          "1993-02-12",
+          "1993-02-16",
+          "1993-02-17",
+          "1993-02-18",
+          "1993-02-19",
+          "1993-02-22",
+          "1993-02-23",
+          "1993-02-24",
+          "1993-02-25",
+          "1993-02-26"
+        ],
+        "absent_on_benchmark_observed_dates": 4386,
+        "absent_sample_truncated": true,
+        "dates_outside_benchmark_observations": 0,
+        "first_observed_date": "2010-06-29",
+        "identity_basis": "exact_vendor_symbol_not_canonical_historical_identity",
+        "input_observations_including_warmup": 4096,
+        "last_observed_date": "2026-10-09",
+        "observations": 4096
+      },
+      "TSM": {
+        "absent_date_sample": [
+          "1993-01-29",
+          "1993-02-01",
+          "1993-02-02",
+          "1993-02-03",
+          "1993-02-04",
+          "1993-02-05",
+          "1993-02-08",
+          "1993-02-09",
+          "1993-02-10",
+          "1993-02-11",
+          "1993-02-12",
+          "1993-02-16",
+          "1993-02-17",
+          "1993-02-18",
+          "1993-02-19",
+          "1993-02-22",
+          "1993-02-23",
+          "1993-02-24",
+          "1993-02-25",
+          "1993-02-26"
+        ],
+        "absent_on_benchmark_observed_dates": 1187,
+        "absent_sample_truncated": true,
+        "dates_outside_benchmark_observations": 0,
+        "first_observed_date": "1997-10-09",
+        "identity_basis": "exact_vendor_symbol_not_canonical_historical_identity",
+        "input_observations_including_warmup": 7295,
+        "last_observed_date": "2026-10-09",
+        "observations": 7295
+      },
+      "TWTR": {
+        "absent_date_sample": [
+          "1993-01-29",
+          "1993-02-01",
+          "1993-02-02",
+          "1993-02-03",
+          "1993-02-04",
+          "1993-02-05",
+          "1993-02-08",
+          "1993-02-09",
+          "1993-02-10",
+          "1993-02-11",
+          "1993-02-12",
+          "1993-02-16",
+          "1993-02-17",
+          "1993-02-18",
+          "1993-02-19",
+          "1993-02-22",
+          "1993-02-23",
+          "1993-02-24",
+          "1993-02-25",
+          "1993-02-26"
+        ],
+        "absent_on_benchmark_observed_dates": 6222,
+        "absent_sample_truncated": true,
+        "dates_outside_benchmark_observations": 0,
+        "first_observed_date": "2013-11-07",
+        "identity_basis": "exact_vendor_symbol_not_canonical_historical_identity",
+        "input_observations_including_warmup": 2260,
+        "last_observed_date": "2022-10-28",
+        "observations": 2260
+      },
+      "UNH": {
+        "absent_date_sample": [],
+        "absent_on_benchmark_observed_dates": 0,
+        "absent_sample_truncated": false,
+        "dates_outside_benchmark_observations": 0,
+        "first_observed_date": "1993-01-29",
+        "identity_basis": "exact_vendor_symbol_not_canonical_historical_identity",
+        "input_observations_including_warmup": 9203,
+        "last_observed_date": "2026-10-09",
+        "observations": 8482
+      },
+      "V": {
+        "absent_date_sample": [
+          "1993-01-29",
+          "1993-02-01",
+          "1993-02-02",
+          "1993-02-03",
+          "1993-02-04",
+          "1993-02-05",
+          "1993-02-08",
+          "1993-02-09",
+          "1993-02-10",
+          "1993-02-11",
+          "1993-02-12",
+          "1993-02-16",
+          "1993-02-17",
+          "1993-02-18",
+          "1993-02-19",
+          "1993-02-22",
+          "1993-02-23",
+          "1993-02-24",
+          "1993-02-25",
+          "1993-02-26"
+        ],
+        "absent_on_benchmark_observed_dates": 3812,
+        "absent_sample_truncated": true,
+        "dates_outside_benchmark_observations": 0,
+        "first_observed_date": "2008-03-19",
+        "identity_basis": "exact_vendor_symbol_not_canonical_historical_identity",
+        "input_observations_including_warmup": 4670,
+        "last_observed_date": "2026-10-09",
+        "observations": 4670
+      },
+      "WFC": {
+        "absent_date_sample": [],
+        "absent_on_benchmark_observed_dates": 0,
+        "absent_sample_truncated": false,
+        "dates_outside_benchmark_observations": 0,
+        "first_observed_date": "1993-01-29",
+        "identity_basis": "exact_vendor_symbol_not_canonical_historical_identity",
+        "input_observations_including_warmup": 9261,
+        "last_observed_date": "2026-10-09",
+        "observations": 8482
+      },
+      "WMT": {
+        "absent_date_sample": [],
+        "absent_on_benchmark_observed_dates": 0,
+        "absent_sample_truncated": false,
+        "dates_outside_benchmark_observations": 0,
+        "first_observed_date": "1993-01-29",
+        "identity_basis": "exact_vendor_symbol_not_canonical_historical_identity",
+        "input_observations_including_warmup": 9261,
+        "last_observed_date": "2026-10-09",
+        "observations": 8482
+      },
+      "XLNX": {
+        "absent_date_sample": [
+          "2022-02-15",
+          "2022-02-16",
+          "2022-02-17",
+          "2022-02-18",
+          "2022-02-22",
+          "2022-02-23",
+          "2022-02-24",
+          "2022-02-25",
+          "2022-02-28",
+          "2022-03-01",
+          "2022-03-02",
+          "2022-03-03",
+          "2022-03-04",
+          "2022-03-07",
+          "2022-03-08",
+          "2022-03-09",
+          "2022-03-10",
+          "2022-03-11",
+          "2022-03-14",
+          "2022-03-15"
+        ],
+        "absent_on_benchmark_observed_dates": 1167,
+        "absent_sample_truncated": true,
+        "dates_outside_benchmark_observations": 0,
+        "first_observed_date": "1993-01-29",
+        "identity_basis": "exact_vendor_symbol_not_canonical_historical_identity",
+        "input_observations_including_warmup": 7978,
+        "last_observed_date": "2022-02-14",
+        "observations": 7315
+      },
+      "XOM": {
+        "absent_date_sample": [],
+        "absent_on_benchmark_observed_dates": 0,
+        "absent_sample_truncated": false,
+        "dates_outside_benchmark_observations": 0,
+        "first_observed_date": "1993-01-29",
+        "identity_basis": "exact_vendor_symbol_not_canonical_historical_identity",
+        "input_observations_including_warmup": 9261,
+        "last_observed_date": "2026-10-09",
+        "observations": 8482
+      }
+    },
+    "first_observed_date": "1993-01-29",
+    "last_observed_date": "2026-10-09",
+    "market_session_completeness_proven": false,
+    "observed_dates": 8482,
+    "requested_end_after_last_observation": true,
+    "selected_proxy_count": 51,
+    "state_rows": 345032
+  },
+  "historical_membership_proven": false,
+  "original_source_archive_writes": 0,
+  "producer_commit": "685d5d9231ef843821693fb558acd399eb2a2bae",
+  "provider_calls": 0,
+  "qualification": "RETROSPECTIVE_EXPLORATORY_EXPLICIT_SELECTED_VENDOR_SYMBOLS",
+  "receipt": {
+    "artifact_id": "mmhist_f97006c665c3e9a4fca8240767f8203f179eaa305f62338b6788839aa3b1e397",
+    "data_bytes": 50920157,
+    "files": 68,
+    "manifest_bytes": 82043,
+    "manifest_sha256": "43da330274bb1728e627d59781afea0a158139bccfa782d08e92a9b97d81bcec",
+    "outcome_rows": 345032,
+    "state_rows": 345032
+  },
+  "schema": "market_memory.stock_research_archive_proof.v1",
+  "source_selection": {
+    "ambiguous": [],
+    "candidate_count": 51,
+    "missing": [
+      {
+        "reason": "NO_NONEMPTY_NORMALIZED_CAPTURE_FOR_EXACT_VENDOR_SYMBOL",
+        "vendor_symbol": "COHR"
+      },
+      {
+        "reason": "NO_NONEMPTY_NORMALIZED_CAPTURE_FOR_EXACT_VENDOR_SYMBOL",
+        "vendor_symbol": "CRCL"
+      },
+      {
+        "reason": "NO_NONEMPTY_NORMALIZED_CAPTURE_FOR_EXACT_VENDOR_SYMBOL",
+        "vendor_symbol": "SIVB"
+      },
+      {
+        "reason": "NO_NONEMPTY_NORMALIZED_CAPTURE_FOR_EXACT_VENDOR_SYMBOL",
+        "vendor_symbol": "FRC"
+      }
+    ],
+    "qualification": "CANDIDATE_SOURCE_REFERENCES_ONLY; canonical reader validation remains required",
+    "requested_symbols": [
+      "SPY",
+      "AAPL",
+      "MSFT",
+      "NVDA",
+      "AMD",
+      "INTC",
+      "AVGO",
+      "MU",
+      "ARM",
+      "TSM",
+      "ASML",
+      "AMAT",
+      "LRCX",
+      "KLAC",
+      "LITE",
+      "COHR",
+      "AMZN",
+      "GOOGL",
+      "META",
+      "ORCL",
+      "CRM",
+      "ADBE",
+      "NFLX",
+      "TSLA",
+      "PLTR",
+      "COIN",
+      "CRCL",
+      "BABA",
+      "JD",
+      "BIDU",
+      "JPM",
+      "BAC",
+      "GS",
+      "WFC",
+      "V",
+      "MA",
+      "XOM",
+      "CVX",
+      "CAT",
+      "DE",
+      "FCX",
+      "NEM",
+      "WMT",
+      "COST",
+      "PG",
+      "KO",
+      "JNJ",
+      "UNH",
+      "LLY",
+      "TWTR",
+      "ATVI",
+      "XLNX",
+      "SGEN",
+      "SIVB",
+      "FRC"
+    ],
+    "sources": [
+      {
+        "sources": [
+          {
+            "capture_at": "2026-10-11T17:30:21.553370+00:00",
+            "normalized_rows": 8482,
+            "receipt_ref": "receipts/eod-bars/2026-10-11/8437e68dd80cb4ef-053850f36ac9f76a27019993.json",
+            "receipt_sha256": "71eeaee2eb4bcd7eb52864502b96f2e879d261524082d20eec0d813f1ab05f7e",
+            "request_path": "/tiingo/daily/SPY/prices?endDate=2026-10-09&startDate=1993-01-29"
+          }
+        ],
+        "vendor_symbol": "SPY"
+      },
+      {
+        "sources": [
+          {
+            "capture_at": "2026-10-11T17:30:19.402715+00:00",
+            "normalized_rows": 11547,
+            "receipt_ref": "receipts/eod-bars/2026-10-11/546ee273538f27eb-61396ecc372db9af6f474b43.json",
+            "receipt_sha256": "774cde3d3eda8d847c043f4c88843fcec6542d13ce261a5ac7f081c62ea04d54",
+            "request_path": "/tiingo/daily/AAPL/prices?endDate=2026-10-09&startDate=1980-12-12"
+          }
+        ],
+        "vendor_symbol": "AAPL"
+      },
+      {
+        "sources": [
+          {
+            "capture_at": "2026-10-12T11:57:35.703918+00:00",
+            "normalized_rows": 10223,
+            "receipt_ref": "receipts/eod-bars/2026-10-12/3ef1a887da0015e1-8051efc21fee2941cc476530.json",
+            "receipt_sha256": "ad62f86108bdd930c9be143c50cc60087009736b752c9ebaa966d7e13ba6355b",
+            "request_path": "/tiingo/daily/MSFT/prices?endDate=2026-10-09&startDate=1986-03-13"
+          }
+        ],
+        "vendor_symbol": "MSFT"
+      },
+      {
+        "sources": [
+          {
+            "capture_at": "2026-10-12T12:09:36.996574+00:00",
+            "normalized_rows": 6972,
+            "receipt_ref": "receipts/eod-bars/2026-10-12/4b4dafff4286f5b7-97069921d3206a5763706116.json",
+            "receipt_sha256": "47ba982f308259e835ae0a8db995ade76baa1301cd6ccd0490038afd58609201",
+            "request_path": "/tiingo/daily/NVDA/prices?endDate=2026-10-09&startDate=1999-01-22"
+          }
+        ],
+        "vendor_symbol": "NVDA"
+      },
+      {
+        "sources": [
+          {
+            "capture_at": "2026-10-11T17:09:18.711257+00:00",
+            "normalized_rows": 10976,
+            "receipt_ref": "receipts/eod-bars/2026-10-11/177fe185a6311c81-d92170ca607c11ebcdde1297.json",
+            "receipt_sha256": "1084df2e6b47ef08be0dd54f8edfcdf14cf69b941ff083c2798a1ce53ac8a4e2",
+            "request_path": "/tiingo/daily/AMD/prices?endDate=2026-10-09&startDate=1983-03-21"
+          },
+          {
+            "capture_at": "2026-10-11T17:07:39.349502+00:00",
+            "normalized_rows": 252,
+            "receipt_ref": "receipts/eod-bars/2026-10-11/98e699542466f830-14d79da1b35bdce61876ca82.json",
+            "receipt_sha256": "e35d326bb9cf6b683d34fddee7e2e22d46985446613ee155605e780bb7fad558",
+            "request_path": "/tiingo/daily/AMD/prices?endDate=2000-12-31&startDate=2000-01-01"
+          }
+        ],
+        "vendor_symbol": "AMD"
+      },
+      {
+        "sources": [
+          {
+            "capture_at": "2026-10-12T11:22:47.664396+00:00",
+            "normalized_rows": 11737,
+            "receipt_ref": "receipts/eod-bars/2026-10-12/ac26000d235892a6-1d3b4be75245c0f921c5aa4f.json",
+            "receipt_sha256": "2841ee093752084851dae14e346e6b5ea0d22fbf1e248acdebadcbf0949ea0eb",
+            "request_path": "/tiingo/daily/INTC/prices?endDate=2026-10-09&startDate=1980-03-17"
+          }
+        ],
+        "vendor_symbol": "INTC"
+      },
+      {
+        "sources": [
+          {
+            "capture_at": "2026-10-11T21:57:00.573424+00:00",
+            "normalized_rows": 4321,
+            "receipt_ref": "receipts/eod-bars/2026-10-11/e3ebdce6019d62a3-6dea6e48b3d91dd482a102d4.json",
+            "receipt_sha256": "a050f8fc7232fc5f885a2dc548782f2bfc27f0121a64f999e6bc6f45aa941d09",
+            "request_path": "/tiingo/daily/AVGO/prices?endDate=2026-10-09&startDate=2009-08-06"
+          }
+        ],
+        "vendor_symbol": "AVGO"
+      },
+      {
+        "sources": [
+          {
+            "capture_at": "2026-10-12T11:58:47.027456+00:00",
+            "normalized_rows": 9420,
+            "receipt_ref": "receipts/eod-bars/2026-10-12/531cc393959b664d-ae0fd12ad602ba3ca9bfa0e7.json",
+            "receipt_sha256": "bcf921a30bc694444e72428e2fb6cb3f414e5dc21d4247fed1ab2973a4e8164c",
+            "request_path": "/tiingo/daily/MU/prices?endDate=2026-10-09&startDate=1989-05-16"
+          }
+        ],
+        "vendor_symbol": "MU"
+      },
+      {
+        "sources": [
+          {
+            "capture_at": "2026-10-11T21:05:51.076751+00:00",
+            "normalized_rows": 771,
+            "receipt_ref": "receipts/eod-bars/2026-10-11/d46b1eee2071feb6-d394ea80c8eaac9d55213fdf.json",
+            "receipt_sha256": "58a4dabb04249c29774f1cf529b6a02c851b94a2483820803e0837ce2ed8917d",
+            "request_path": "/tiingo/daily/ARM/prices?endDate=2026-10-09&startDate=2023-09-14"
+          }
+        ],
+        "vendor_symbol": "ARM"
+      },
+      {
+        "sources": [
+          {
+            "capture_at": "2026-10-12T17:13:49.353885+00:00",
+            "normalized_rows": 7295,
+            "receipt_ref": "receipts/eod-bars/2026-10-12/f55af23aea9b0e50-b6c3304ce3a39f85578e107c.json",
+            "receipt_sha256": "ca08ca47ac0bee9a831cef00a7356f851825b7e5efa3bb2dc1bd35aaa6c59a77",
+            "request_path": "/tiingo/daily/TSM/prices?endDate=2026-10-09&startDate=1997-10-09"
+          }
+        ],
+        "vendor_symbol": "TSM"
+      },
+      {
+        "sources": [
+          {
+            "capture_at": "2026-10-11T21:19:35.378774+00:00",
+            "normalized_rows": 7945,
+            "receipt_ref": "receipts/eod-bars/2026-10-11/c6e810a0ce0ad344-cf2dd7d9657e032978503307.json",
+            "receipt_sha256": "724cd378dcd0cf5c79c821bf180be65a19e627e16887bd73549b2e166512d11b",
+            "request_path": "/tiingo/daily/ASML/prices?endDate=2026-10-09&startDate=1995-03-16"
+          }
+        ],
+        "vendor_symbol": "ASML"
+      },
+      {
+        "sources": [
+          {
+            "capture_at": "2026-10-11T20:15:27.263725+00:00",
+            "normalized_rows": 10604,
+            "receipt_ref": "receipts/eod-bars/2026-10-11/bc6e83f9e4f03345-02182e8c4d94184ce78bfbed.json",
+            "receipt_sha256": "861455693fced86f2b676f8382e05e663eee5446c7606828e3a03feac7a06f7e",
+            "request_path": "/tiingo/daily/AMAT/prices?endDate=2026-10-09&startDate=1984-09-07"
+          }
+        ],
+        "vendor_symbol": "AMAT"
+      },
+      {
+        "sources": [
+          {
+            "capture_at": "2026-10-12T11:43:20.803001+00:00",
+            "normalized_rows": 9203,
+            "receipt_ref": "receipts/eod-bars/2026-10-12/bbb1ddf09db0ffe4-affe4e3ca915fe7f1650242a.json",
+            "receipt_sha256": "303c49b4854d4fb95a38f3a070397d620a34595d0809fe0362087cca42ac3881",
+            "request_path": "/tiingo/daily/LRCX/prices?endDate=2026-10-09&startDate=1990-03-26"
+          }
+        ],
+        "vendor_symbol": "LRCX"
+      },
+      {
+        "sources": [
+          {
+            "capture_at": "2026-10-12T11:32:53.811944+00:00",
+            "normalized_rows": 9203,
+            "receipt_ref": "receipts/eod-bars/2026-10-12/14c699da5536b766-b5fffec819316ea892c20523.json",
+            "receipt_sha256": "32191bed46fa4c944ca180f27a17684f7084da4ccf83905bbf9d47c6027f1a08",
+            "request_path": "/tiingo/daily/KLAC/prices?endDate=2026-10-09&startDate=1990-03-26"
+          }
+        ],
+        "vendor_symbol": "KLAC"
+      },
+      {
+        "sources": [
+          {
+            "capture_at": "2026-10-12T11:40:31.051174+00:00",
+            "normalized_rows": 2813,
+            "receipt_ref": "receipts/eod-bars/2026-10-12/eb075698f7eab8c7-046c4307cb0da3d6b8a8afca.json",
+            "receipt_sha256": "92ac84f8ef7b855f2eb61fcadc45b2e8bc5770ad98e84bcb338df44a69508a9b",
+            "request_path": "/tiingo/daily/LITE/prices?endDate=2026-10-09&startDate=2015-08-04"
+          }
+        ],
+        "vendor_symbol": "LITE"
+      },
+      {
+        "sources": [
+          {
+            "capture_at": "2026-10-11T20:26:52.153060+00:00",
+            "normalized_rows": 7397,
+            "receipt_ref": "receipts/eod-bars/2026-10-11/0da22e11a135e72c-5a2df514350394a220ef2690.json",
+            "receipt_sha256": "1aa28d03b7dff91504dfbf41308eb0c69b1fbf2b2a307905c823feb53d4cbec5",
+            "request_path": "/tiingo/daily/AMZN/prices?endDate=2026-10-09&startDate=1997-05-15"
+          }
+        ],
+        "vendor_symbol": "AMZN"
+      },
+      {
+        "sources": [
+          {
+            "capture_at": "2026-10-12T10:59:41.471606+00:00",
+            "normalized_rows": 5571,
+            "receipt_ref": "receipts/eod-bars/2026-10-12/7368487cffaa5c81-b85273e42c9c3dc8518502be.json",
+            "receipt_sha256": "739a972a751c7d078a27eb046580036d6d7e1435524b5abb5602115e893ddd0e",
+            "request_path": "/tiingo/daily/GOOGL/prices?endDate=2026-10-09&startDate=2004-08-19"
+          }
+        ],
+        "vendor_symbol": "GOOGL"
+      },
+      {
+        "sources": [
+          {
+            "capture_at": "2026-10-12T11:50:01.854864+00:00",
+            "normalized_rows": 3619,
+            "receipt_ref": "receipts/eod-bars/2026-10-12/78be8fc55e4a418f-b36b8f509c5abfe8268b0f85.json",
+            "receipt_sha256": "649be469a09ad43ca589a14a1cac09600e1958fc619682e95a5f8e42035c47fc",
+            "request_path": "/tiingo/daily/META/prices?endDate=2026-10-09&startDate=2012-05-18"
+          }
+        ],
+        "vendor_symbol": "META"
+      },
+      {
+        "sources": [
+          {
+            "capture_at": "2026-10-12T16:06:47.997939+00:00",
+            "normalized_rows": 10224,
+            "receipt_ref": "receipts/eod-bars/2026-10-12/5a7d781dcc059baa-e46de61f001e07ba7577f434.json",
+            "receipt_sha256": "bf34c6674e474db7221f86d60a866124e72e21cfa0d530541302ac6518838cde",
+            "request_path": "/tiingo/daily/ORCL/prices?endDate=2026-10-09&startDate=1986-03-12"
+          }
+        ],
+        "vendor_symbol": "ORCL"
+      },
+      {
+        "sources": [
+          {
+            "capture_at": "2026-10-12T14:16:22.694194+00:00",
+            "normalized_rows": 5611,
+            "receipt_ref": "receipts/eod-bars/2026-10-12/50f1e87eaeb0cc48-f0e361af2dfd1832ca749bf0.json",
+            "receipt_sha256": "78995dbdbbd1e5fc026b686d69c8a4f1476e67991b55af8e090c89a3037fde06",
+            "request_path": "/tiingo/daily/CRM/prices?endDate=2026-10-09&startDate=2004-06-23"
+          }
+        ],
+        "vendor_symbol": "CRM"
+      },
+      {
+        "sources": [
+          {
+            "capture_at": "2026-10-11T18:29:25.078819+00:00",
+            "normalized_rows": 10116,
+            "receipt_ref": "receipts/eod-bars/2026-10-11/26ab2c32ded9dff3-df01a20a89c159afd9ecadb9.json",
+            "receipt_sha256": "da36d2d638583cdc6bfd6495f1e082b4b3f8c15abeff13f91174487f65f7f959",
+            "request_path": "/tiingo/daily/ADBE/prices?endDate=2026-10-09&startDate=1986-08-14"
+          }
+        ],
+        "vendor_symbol": "ADBE"
+      },
+      {
+        "sources": [
+          {
+            "capture_at": "2026-10-12T12:04:27.081642+00:00",
+            "normalized_rows": 6135,
+            "receipt_ref": "receipts/eod-bars/2026-10-12/9a816ef2ce390bd4-73f4b16008663b18e5b44d50.json",
+            "receipt_sha256": "adfe4d4e2b7d552252423191f5f42f03d0e7a957527e555366d563a565bdf491",
+            "request_path": "/tiingo/daily/NFLX/prices?endDate=2026-10-09&startDate=2002-05-23"
+          }
+        ],
+        "vendor_symbol": "NFLX"
+      },
+      {
+        "sources": [
+          {
+            "capture_at": "2026-10-12T13:38:03.787412+00:00",
+            "normalized_rows": 4096,
+            "receipt_ref": "receipts/eod-bars/2026-10-12/f566a6186cc8feb4-a0874fd3fadc7ff1cfba6cb8.json",
+            "receipt_sha256": "45495b05a7fcd5895351851b824e1a6e5edc3d1e8bdabdd8b27f118256988d4c",
+            "request_path": "/tiingo/daily/TSLA/prices?endDate=2026-10-09&startDate=2010-06-29"
+          }
+        ],
+        "vendor_symbol": "TSLA"
+      },
+      {
+        "sources": [
+          {
+            "capture_at": "2026-10-12T12:31:15.069333+00:00",
+            "normalized_rows": 1514,
+            "receipt_ref": "receipts/eod-bars/2026-10-12/3347e553ec8e1b6a-95f6a6afad8ddee871378704.json",
+            "receipt_sha256": "e6178e80eedbd15b0738fc28ceb6249148ee431cf417608df1e5c866002de520",
+            "request_path": "/tiingo/daily/PLTR/prices?endDate=2026-10-09&startDate=2020-09-30"
+          }
+        ],
+        "vendor_symbol": "PLTR"
+      },
+      {
+        "sources": [
+          {
+            "capture_at": "2026-10-12T10:36:45.681746+00:00",
+            "normalized_rows": 1380,
+            "receipt_ref": "receipts/eod-bars/2026-10-12/acf27ef103871bbb-9b6ff8308e45e9eba418efe8.json",
+            "receipt_sha256": "03875926927f4a26e0178a28692d3ab715750190b420f6a682b40cb679779366",
+            "request_path": "/tiingo/daily/COIN/prices?endDate=2026-10-09&startDate=2021-04-14"
+          }
+        ],
+        "vendor_symbol": "COIN"
+      },
+      {
+        "sources": [
+          {
+            "capture_at": "2026-10-11T22:14:55.880229+00:00",
+            "normalized_rows": 3032,
+            "receipt_ref": "receipts/eod-bars/2026-10-11/290daf635b5569f6-38ecea621638a7a331b92e5c.json",
+            "receipt_sha256": "91ed24a87829f861e4e3e25630d12d5e92444719d56f8480aa5d4c40154adff4",
+            "request_path": "/tiingo/daily/BABA/prices?endDate=2026-10-09&startDate=2014-09-19"
+          }
+        ],
+        "vendor_symbol": "BABA"
+      },
+      {
+        "sources": [
+          {
+            "capture_at": "2026-10-12T11:28:39.365894+00:00",
+            "normalized_rows": 3115,
+            "receipt_ref": "receipts/eod-bars/2026-10-12/b049675bd44c3d72-841492c9e5975856fea88729.json",
+            "receipt_sha256": "b78b5d91b7fdb3cb31fbc3657869b08dea6e64de70272e717bc371cdb4c4964b",
+            "request_path": "/tiingo/daily/JD/prices?endDate=2026-10-09&startDate=2014-05-22"
+          }
+        ],
+        "vendor_symbol": "JD"
+      },
+      {
+        "sources": [
+          {
+            "capture_at": "2026-10-12T00:17:57.117407+00:00",
+            "normalized_rows": 5328,
+            "receipt_ref": "receipts/eod-bars/2026-10-12/d0d775ad727390b2-85e24fcbd4ae2605abd7016e.json",
+            "receipt_sha256": "1b10b8f15985bad702e93e93fb49bebf8066eac68f4c961710a2a7b72bb709af",
+            "request_path": "/tiingo/daily/BIDU/prices?endDate=2026-10-09&startDate=2005-08-05"
+          }
+        ],
+        "vendor_symbol": "BIDU"
+      },
+      {
+        "sources": [
+          {
+            "capture_at": "2026-10-12T15:11:46.750002+00:00",
+            "normalized_rows": 10778,
+            "receipt_ref": "receipts/eod-bars/2026-10-12/fd9551332882241f-87d11604483ee812ba554b78.json",
+            "receipt_sha256": "0dfcebbe123203ddb36dec0269af69985bee37e7633da25753cce2131f85d601",
+            "request_path": "/tiingo/daily/JPM/prices?endDate=2026-10-09&startDate=1983-12-30"
+          }
+        ],
+        "vendor_symbol": "JPM"
+      },
+      {
+        "sources": [
+          {
+            "capture_at": "2026-10-11T22:15:22.621366+00:00",
+            "normalized_rows": 10170,
+            "receipt_ref": "receipts/eod-bars/2026-10-11/d4c6e2e0c7c966fe-7c78bcc3261268416385a0f2.json",
+            "receipt_sha256": "9442980177c812ff7fcb67f69353b9654e8c706d2196c592b6ee2d7f9e38d51f",
+            "request_path": "/tiingo/daily/BAC/prices?endDate=2026-10-09&startDate=1986-05-29"
+          }
+        ],
+        "vendor_symbol": "BAC"
+      },
+      {
+        "sources": [
+          {
+            "capture_at": "2026-10-12T14:40:00.234519+00:00",
+            "normalized_rows": 6902,
+            "receipt_ref": "receipts/eod-bars/2026-10-12/0f34d9a6f9374431-d7aebea5c98b55bcfa4ccf5d.json",
+            "receipt_sha256": "943689c562241e7c26892d18b9f0a49bddbea949b42fbcef2550b9a24ebcfa7b",
+            "request_path": "/tiingo/daily/GS/prices?endDate=2026-10-09&startDate=1999-05-04"
+          }
+        ],
+        "vendor_symbol": "GS"
+      },
+      {
+        "sources": [
+          {
+            "capture_at": "2026-10-12T17:32:52.536828+00:00",
+            "normalized_rows": 13703,
+            "receipt_ref": "receipts/eod-bars/2026-10-12/dd932cae92b7d0e8-555d54d85a96fd3ad4ebf916.json",
+            "receipt_sha256": "c90af0cf4615f1abb11e9a0b964ebd92e4bbf54829258519335482bf8221984d",
+            "request_path": "/tiingo/daily/WFC/prices?endDate=2026-10-09&startDate=1972-06-01"
+          }
+        ],
+        "vendor_symbol": "WFC"
+      },
+      {
+        "sources": [
+          {
+            "capture_at": "2026-10-12T17:23:35.387756+00:00",
+            "normalized_rows": 4670,
+            "receipt_ref": "receipts/eod-bars/2026-10-12/c47aeb239e3b1fb7-8f7965cf37eb48c7309f62d6.json",
+            "receipt_sha256": "1477da7b556c0965d5998ddd2b952b673ecbe347f1b3f03646969895fd0c035f",
+            "request_path": "/tiingo/daily/V/prices?endDate=2026-10-09&startDate=2008-03-19"
+          }
+        ],
+        "vendor_symbol": "V"
+      },
+      {
+        "sources": [
+          {
+            "capture_at": "2026-10-12T15:29:29.471884+00:00",
+            "normalized_rows": 5126,
+            "receipt_ref": "receipts/eod-bars/2026-10-12/66f7f492217d271c-316bae6c1dc8320c3b18a595.json",
+            "receipt_sha256": "7c7860c2ea73031dd99ff35115e16c1f7a90048434649a962889e3d15fc204e5",
+            "request_path": "/tiingo/daily/MA/prices?endDate=2026-10-09&startDate=2006-05-25"
+          }
+        ],
+        "vendor_symbol": "MA"
+      },
+      {
+        "sources": [
+          {
+            "capture_at": "2026-10-12T17:39:59.279406+00:00",
+            "normalized_rows": 14313,
+            "receipt_ref": "receipts/eod-bars/2026-10-12/0adf26cd67ba9a3b-0f0999ed0416a70d93163217.json",
+            "receipt_sha256": "98ae9a520ec8b3ff8ac343549c3b22114ea58e453f751a1dd4053c3a4eabc339",
+            "request_path": "/tiingo/daily/XOM/prices?endDate=2026-10-09&startDate=1970-01-02"
+          }
+        ],
+        "vendor_symbol": "XOM"
+      },
+      {
+        "sources": [
+          {
+            "capture_at": "2026-10-12T14:21:36.134090+00:00",
+            "normalized_rows": 14313,
+            "receipt_ref": "receipts/eod-bars/2026-10-12/1c36a2f17f65d655-f2c64cb6c1d160dc5fcecbd3.json",
+            "receipt_sha256": "82ea4eb91f835a849090dc685d9163b66d59102bac478e9f07cc32ce3b29a4ec",
+            "request_path": "/tiingo/daily/CVX/prices?endDate=2026-10-09&startDate=1970-01-02"
+          }
+        ],
+        "vendor_symbol": "CVX"
+      },
+      {
+        "sources": [
+          {
+            "capture_at": "2026-10-12T02:59:27.638910+00:00",
+            "normalized_rows": 16300,
+            "receipt_ref": "receipts/eod-bars/2026-10-12/54f1f129ab36a25d-9a86c038768ae70747ffdbba.json",
+            "receipt_sha256": "c517bafbb73c832fa911b1b701903c7633bb19371934629992116693a50c3aa5",
+            "request_path": "/tiingo/daily/CAT/prices?endDate=2026-10-09&startDate=1962-01-02"
+          }
+        ],
+        "vendor_symbol": "CAT"
+      },
+      {
+        "sources": [
+          {
+            "capture_at": "2026-10-12T02:53:00.699818+00:00",
+            "normalized_rows": 13703,
+            "receipt_ref": "receipts/eod-bars/2026-10-12/437dc2775713dddb-0dfbb99404452c17b794a5f1.json",
+            "receipt_sha256": "8d6f46f3de18f750d07c5937820fc05df51d34a5b9b2db927c84caf235ea621d",
+            "request_path": "/tiingo/daily/DE/prices?endDate=2026-10-09&startDate=1972-06-01"
+          }
+        ],
+        "vendor_symbol": "DE"
+      },
+      {
+        "sources": [
+          {
+            "capture_at": "2026-10-12T09:55:01.321999+00:00",
+            "normalized_rows": 7866,
+            "receipt_ref": "receipts/eod-bars/2026-10-12/3eb9f32134de9642-8dbaa58e1efe592133b265e7.json",
+            "receipt_sha256": "bea2bf4d73f508545a9dd978e3f21f3ed398eb80d344a108a34454a4e9a5104e",
+            "request_path": "/tiingo/daily/FCX/prices?endDate=2026-10-09&startDate=1995-07-10"
+          }
+        ],
+        "vendor_symbol": "FCX"
+      },
+      {
+        "sources": [
+          {
+            "capture_at": "2026-10-12T15:50:08.894539+00:00",
+            "normalized_rows": 10965,
+            "receipt_ref": "receipts/eod-bars/2026-10-12/56132eb7d5643cfa-c22b2cf2c38ca0b29b1aa22f.json",
+            "receipt_sha256": "2787da14794169096bbf0936acde93d8077645ac581af0a4a9c98019a6a82c59",
+            "request_path": "/tiingo/daily/NEM/prices?endDate=2026-10-09&startDate=1983-04-06"
+          }
+        ],
+        "vendor_symbol": "NEM"
+      },
+      {
+        "sources": [
+          {
+            "capture_at": "2026-10-12T13:57:35.611126+00:00",
+            "normalized_rows": 13643,
+            "receipt_ref": "receipts/eod-bars/2026-10-12/8fdd2d06d23d6e2e-cbaf08a2cf6d21e868d96f34.json",
+            "receipt_sha256": "0209002e39a5cce2dd98804c90d567df160709286fe85dc95b3b3c0c0b5b42f5",
+            "request_path": "/tiingo/daily/WMT/prices?endDate=2026-10-09&startDate=1972-08-25"
+          }
+        ],
+        "vendor_symbol": "WMT"
+      },
+      {
+        "sources": [
+          {
+            "capture_at": "2026-10-12T10:37:59.279122+00:00",
+            "normalized_rows": 10142,
+            "receipt_ref": "receipts/eod-bars/2026-10-12/23665053264fd884-8b597d1256fd36ab64cd865d.json",
+            "receipt_sha256": "b8f9ddc81d767d546e592a33bb3a0fd5386a2324b7f31a5a06ab12bccc4d99e0",
+            "request_path": "/tiingo/daily/COST/prices?endDate=2026-10-09&startDate=1986-07-09"
+          }
+        ],
+        "vendor_symbol": "COST"
+      },
+      {
+        "sources": [
+          {
+            "capture_at": "2026-10-12T16:13:49.513340+00:00",
+            "normalized_rows": 14313,
+            "receipt_ref": "receipts/eod-bars/2026-10-12/e5c0773357a5cf3b-5568e009b5b4e9015f98465a.json",
+            "receipt_sha256": "60548400da15d79d1d5c9a398502315e5d1601ea26e3e5ed05fdcb0e03fb5f3a",
+            "request_path": "/tiingo/daily/PG/prices?endDate=2026-10-09&startDate=1970-01-02"
+          }
+        ],
+        "vendor_symbol": "PG"
+      },
+      {
+        "sources": [
+          {
+            "capture_at": "2026-10-12T15:18:38.785471+00:00",
+            "normalized_rows": 16300,
+            "receipt_ref": "receipts/eod-bars/2026-10-12/dc7c449d9530f19d-7cd52d05cf9e6c404690d3a4.json",
+            "receipt_sha256": "338fc173ec21317d9d9664016fbfac4605f30bfb41178e3c780b456ee18bc385",
+            "request_path": "/tiingo/daily/KO/prices?endDate=2026-10-09&startDate=1962-01-02"
+          }
+        ],
+        "vendor_symbol": "KO"
+      },
+      {
+        "sources": [
+          {
+            "capture_at": "2026-10-12T15:10:51.189897+00:00",
+            "normalized_rows": 14313,
+            "receipt_ref": "receipts/eod-bars/2026-10-12/856253eb541c3167-fc6efdf92262426e87e757b5.json",
+            "receipt_sha256": "c3f71d045b50ed04798bd437f921f97155066d1c8fd984d3e43968df8be07672",
+            "request_path": "/tiingo/daily/JNJ/prices?endDate=2026-10-09&startDate=1970-01-02"
+          }
+        ],
+        "vendor_symbol": "JNJ"
+      },
+      {
+        "sources": [
+          {
+            "capture_at": "2026-10-12T17:19:54.082988+00:00",
+            "normalized_rows": 9203,
+            "receipt_ref": "receipts/eod-bars/2026-10-12/7455fe7f85244f25-6a90ce8523d33403113e5edd.json",
+            "receipt_sha256": "30b3c4713674e76c353c7c3ffcfdc44dbc26319bd9761842c19d18384219c0a8",
+            "request_path": "/tiingo/daily/UNH/prices?endDate=2026-10-09&startDate=1990-03-26"
+          }
+        ],
+        "vendor_symbol": "UNH"
+      },
+      {
+        "sources": [
+          {
+            "capture_at": "2026-10-12T15:25:46.405680+00:00",
+            "normalized_rows": 13703,
+            "receipt_ref": "receipts/eod-bars/2026-10-12/5634e31557f8f02e-db0d4dd2630e21792bfabb58.json",
+            "receipt_sha256": "fc3aa42cf08bc07b59b831db1c4788213feadea9069f77c6b32039310c19d12a",
+            "request_path": "/tiingo/daily/LLY/prices?endDate=2026-10-09&startDate=1972-06-01"
+          }
+        ],
+        "vendor_symbol": "LLY"
+      },
+      {
+        "sources": [
+          {
+            "capture_at": "2026-10-12T17:16:22.106046+00:00",
+            "normalized_rows": 2260,
+            "receipt_ref": "receipts/eod-bars/2026-10-12/40113b80f3ee7535-e616c7b205a3cbc2f28dd66a.json",
+            "receipt_sha256": "f5f164d3d55272167c68d5f89540a17b0969405d555ea8780c2e75787b523c82",
+            "request_path": "/tiingo/daily/TWTR/prices?endDate=2022-10-28&startDate=2013-11-07"
+          }
+        ],
+        "vendor_symbol": "TWTR"
+      },
+      {
+        "sources": [
+          {
+            "capture_at": "2026-10-11T21:49:08.406251+00:00",
+            "normalized_rows": 7547,
+            "receipt_ref": "receipts/eod-bars/2026-10-11/b5de56010d016176-440ab6691a1bfdd1046d27dc.json",
+            "receipt_sha256": "ca1f5554d4d7aff286b05418f63446b1f9d03d7cc4b5e72db4cbfc8c5840fba4",
+            "request_path": "/tiingo/daily/ATVI/prices?endDate=2023-10-13&startDate=1993-10-25"
+          }
+        ],
+        "vendor_symbol": "ATVI"
+      },
+      {
+        "sources": [
+          {
+            "capture_at": "2026-10-12T14:01:03.346461+00:00",
+            "normalized_rows": 7978,
+            "receipt_ref": "receipts/eod-bars/2026-10-12/c1540d46d91fdd83-8499d00abbb5f16e58f3008e.json",
+            "receipt_sha256": "cccc69dd5fba7382d4b94b8557034cd351a657f5e09169706a90027dae8bbde7",
+            "request_path": "/tiingo/daily/XLNX/prices?endDate=2022-02-14&startDate=1990-06-18"
+          }
+        ],
+        "vendor_symbol": "XLNX"
+      },
+      {
+        "sources": [
+          {
+            "capture_at": "2026-10-12T13:08:59.459136+00:00",
+            "normalized_rows": 5899,
+            "receipt_ref": "receipts/eod-bars/2026-10-12/dd2032c8a3bcc63b-2f879dc725489e12737c0691.json",
+            "receipt_sha256": "6965cc0c3b1e923c01278d735ea84ed4ca467b9e21dfcb764d21db386e7ce3d2",
+            "request_path": "/tiingo/daily/SGEN/prices?endDate=2026-10-09&startDate=2001-03-09"
+          }
+        ],
+        "vendor_symbol": "SGEN"
+      }
+    ]
+  },
+  "strict_pit_proven": false
+}

@@ -1,0 +1,12 @@
+{
+  "completed_utc": "2026-10-21T11:34:25.744329+00:00",
+  "purpose": "complete fixed comparator and common-roster diagnostics after independent review",
+  "signal_or_parameter_changes": 0,
+  "original_csv_files_unchanged": true,
+  "code_sha256": "8529ce3f6bc390fab3bafac19ed93614aa63993b1330f0e496c81db208ef0371",
+  "outputs": {
+    "top_exit_comparators.csv": "9825b6a4d842bc57c8175b8b19c53ab5db661aa4d5ebaa73a2551c18749415b5",
+    "shared_nonoverlap.csv": "f452e371c6a8b3d857e4ba4ec5900ea2b60e17244f5a8a694cf0ec38a18b2676",
+    "gate_contrasts.csv": "e1f28a628d02f76b367a159306c8e9d7d471a05eff5913cf84fa03b62cfc0f4c"
+  }
+}

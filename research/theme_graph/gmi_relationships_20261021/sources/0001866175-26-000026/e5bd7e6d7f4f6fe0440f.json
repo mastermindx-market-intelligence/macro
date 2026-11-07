@@ -1,0 +1,38 @@
+{
+ "accepted_at": "2026-02-25T21:53:43Z",
+ "accession": "0001866175-26-000026",
+ "cik": "0001866175",
+ "doc_byte_length": 4341503,
+ "doc_sha256": "a5d01bd384222e652ef5586ea6381c3cdd85c57b128d1146ddcce4a20a655125",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-25",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "crgy-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 2212459,
+  "byte_start": 2211087,
+  "normalized": "ConocoPhillips13.5%16.5%*",
+  "normalized_sha256": "f99584fe8a193158d37d4c458ba298950c810a28841a57247e6cbbb1036274ef",
+  "raw": "<tr><td colspan=\"3\" style=\"background-color:#ffffff;padding:2px 1pt;text-align:left;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:100%\">ConocoPhillips</span></td><td colspan=\"3\" style=\"background-color:#ffffff;padding:2px 1pt;text-align:center;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:100%\"><ix:nonFraction unitRef=\"number\" contextRef=\"c-118\" decimals=\"3\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-684\">13.5</ix:nonFraction>%</span></td><td colspan=\"3\" style=\"background-color:#ffffff;padding:0 1pt\"/><td colspan=\"3\" style=\"background-color:#ffffff;padding:2px 1pt;text-align:center;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:100%\"><ix:nonFraction unitRef=\"number\" contextRef=\"c-119\" decimals=\"3\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-685\">16.5</ix:nonFraction>%</span></td><td colspan=\"3\" style=\"background-color:#ffffff;padding:0 1pt\"/><td colspan=\"3\" style=\"background-color:#ffffff;padding:2px 1pt;text-align:center;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:100%\">*</span></td></tr>",
+  "raw_sha256": "e5bd7e6d7f4f6fe0440f12abd229cc13852b620f88f763dfe9942bd0deb2c371"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1866175/000186617526000026/crgy-20251231.htm",
+ "xbrl_contexts": [
+  {
+   "byte_end": 55649,
+   "byte_start": 54967,
+   "context_ref": "c-118",
+   "raw": "<xbrli:context id=\"c-118\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001866175</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">crgy:ConocoPhillipsMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:RevenueFromContractWithCustomerMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2025-01-01</xbrli:startDate><xbrli:endDate>2025-12-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "74cd4aadc0f30bdee855be4dbd07fda704516c6742f5a7a803cb341b309075fe"
+  },
+  {
+   "byte_end": 56331,
+   "byte_start": 55649,
+   "context_ref": "c-119",
+   "raw": "<xbrli:context id=\"c-119\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001866175</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">crgy:ConocoPhillipsMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:RevenueFromContractWithCustomerMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2024-01-01</xbrli:startDate><xbrli:endDate>2024-12-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "7e7ebb83a3f92656f99582262b1cedadbd3e20f7f33076ece30bfa08e789b6cb"
+  }
+ ]
+}
