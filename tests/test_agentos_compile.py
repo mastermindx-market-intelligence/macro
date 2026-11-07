@@ -1816,3 +1816,56 @@ def test_continuity_helper_cases_have_canonical_collection():
                      if name.startswith("test_") and callable(value)
                      and globals().get(name) is not value)
     assert not missing, f"Continuity cases absent from canonical collection: {missing}"
+
+
+# The owner emits compact machine JSON; the native reader keeps those bytes verbatim.
+def _context_wire_fixture(monkeypatch, tmp_path, payload):
+    cli = _load_cli()
+    root = tmp_path / "agentos"
+    _workstream(root, "TARGET")
+    monkeypatch.setattr(cli, "compile_bundle", lambda *a, **kw: payload)
+    return cli, ["compile-context", "--root", str(root), "--workstream", "TARGET",
+                 "--now", FROZEN]
+
+
+def test_compile_context_compact_wire_preserves_complete_json(monkeypatch, tmp_path, capsys):
+    payload = {
+        "schema": "context_bundle.v1",
+        "target": {"workstream": "WS:TARGET", "candidates": []},
+        "sections": [{"items": [{"excerpt": "\u4fdd\u7559\nDo not replay unknown effects.",
+                                    "source": None, "execution_authority": False}]}],
+        "degraded": ["Named source is unavailable"],
+        "excluded": [{"path": "old.md", "reason": "older_handoff"}],
+        "omitted_due_to_budget": [{"path": "large.md", "tokens": 1200}],
+        "acceptance_basis": {"accepted": False, "unknown": None},
+    }
+    cli, args = _context_wire_fixture(monkeypatch, tmp_path, payload)
+    assert cli.main(args + ["--json"]) == 0
+    emitted = capsys.readouterr().out
+    assert json.loads(emitted) == payload
+    assert emitted.count("\n") == 1
+    assert "\u4fdd\u7559" in emitted
+    assert "\n  " in cli._dump_json(payload), "other JSON command formatting changed"
+
+
+def test_compile_context_compact_wire_avoids_format_only_overflow(monkeypatch, tmp_path, capsys):
+    payload = {"schema": "context_bundle.v1", "sections": [{"items": [
+        {"kind": "constraint", "path": f"laws/{i}.md",
+         "excerpt": "Preserve source and unknown effects; do not infer execution authority."}
+        for i in range(180)
+    ]}], "excluded": [], "omitted_due_to_budget": [], "degraded": []}
+    cli, args = _context_wire_fixture(monkeypatch, tmp_path, payload)
+    assert cli.main(args) == 0
+    emitted = capsys.readouterr().out
+    assert json.loads(emitted) == payload, "compact output lost source data"
+    # Synthetic envelope boundary; real cross-repo adapter proof is a separate receipt.
+    limit, envelope = 32 * 1024, 2048
+    assert len(cli._dump_json(payload).encode("utf-8")) + envelope > limit
+    assert len(emitted.encode("utf-8")) + envelope < limit
+
+
+def test_compile_context_compact_wire_leaves_text_renderer_unchanged(monkeypatch, tmp_path, capsys):
+    cli, args = _context_wire_fixture(monkeypatch, tmp_path, {"fixture": True})
+    monkeypatch.setattr(cli, "render_bundle", lambda value: "human-readable context\n")
+    assert cli.main(args + ["--text"]) == 0
+    assert capsys.readouterr().out == "human-readable context\n"
