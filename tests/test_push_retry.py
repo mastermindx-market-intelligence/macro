@@ -583,6 +583,7 @@ def test_daily_engine_core_checkpoint_is_fully_declared_in_dag():
             "scripts.check_commodity_publication",
             ["--heal-from", "$COMMODITY_ACCEPTED"],
         ),
+        ("checkpoint_core_postrebase_build_commodities", "scripts.build_commodities", None),
         ("checkpoint_core_postrebase_inject_data_base", "scripts.inject_data_base", None),
         ("checkpoint_core_postrebase_externalize_css", "scripts.externalize_css", None),
         ("checkpoint_core_postrebase_optimize_assets", "scripts.optimize_assets", None),
@@ -590,6 +591,11 @@ def test_daily_engine_core_checkpoint_is_fully_declared_in_dag():
             "checkpoint_core_postrebase_check_template_site_sync",
             "scripts.check_template_site_sync",
             ["--fix"],
+        ),
+        (
+            "checkpoint_core_postrebase_gold_render_audit",
+            "scripts.audit_china_gold_premium",
+            ["--strict-render"],
         ),
         (
             "checkpoint_core_commodity_candidate",
