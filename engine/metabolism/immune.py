@@ -267,34 +267,38 @@ def check_dead_cron(
         return {"found": False, "dead_lanes": [], "summary": f"dead-cron check error: {exc}"}
 
 
+
+QUEUE_PROJECTION_STALE_AFTER_MINUTES = 26 * 60
+# Historical name retained for callers: this bounds additional child-detail
+# reads only. Workflow age does not establish child queue age or expiration,
+# and crossing this read window must not clear an unverified projection.
+
+
 def check_queue_stuck(
     runs_list: list[dict[str, Any]],
     cfg: dict[str, Any],
 ) -> dict[str, Any]:
-    """Detect Actions queue saturation (runs queued > queue_stuck_min minutes).
+    """Detect queued workflow projections that need attention.
 
-    Parameters
-    ----------
-    runs_list:
-        Pre-fetched list of workflow run dicts with at minimum:
-          - status      : 'queued'|'in_progress'|'completed'
-          - created_at  : ISO-8601 timestamp
-          - name        : workflow name
-    cfg:
-        Lane-health config dict.
+    created_at measures workflow age, not a child's queue duration. Callers may
+    annotate child-job evidence after inspecting the complete returned states:
+    active_children and terminal_children clear a wrapper; queued_children
+    remains a finding. Missing or incomplete child evidence is unverified and
+    never cleared merely because the workflow is old.
 
-    Returns dict with:
-        found: bool
-        stuck_count: int
-        stuck_runs: list[str]   — run names / ids
-        summary: str
-    NEVER-RAISE.
+    The configured age threshold selects findings; it does not establish how
+    long an observed child has waited. NEVER-RAISE.
     """
     try:
         threshold_min = int(cfg.get("queue_stuck_min") or 40)
         now = datetime.now(timezone.utc)
 
         stuck: list[str] = []
+        observed_queued = 0
+        unverified = 0
+        ignored_active = 0
+        ignored_terminal = 0
+
         for run in (runs_list or []):
             if str(run.get("status") or "").lower() != "queued":
                 continue
@@ -303,26 +307,63 @@ def check_queue_stuck(
                 continue
             try:
                 created = datetime.fromisoformat(created_raw.replace("Z", "+00:00"))
-                queued_min = (now - created).total_seconds() / 60.0
-                if queued_min > threshold_min:
-                    label = run.get("name") or str(run.get("id") or "unknown")
-                    stuck.append(f"{label} ({queued_min:.0f}m)")
+                workflow_age_min = (now - created).total_seconds() / 60.0
             except Exception:  # noqa: BLE001
                 continue
 
+            projection = str(run.get("_queue_projection_state") or "").lower()
+            if projection == "active_children":
+                ignored_active += 1
+                continue
+            if projection == "terminal_children":
+                ignored_terminal += 1
+                continue
+
+            if workflow_age_min > threshold_min:
+                label = run.get("name") or str(run.get("id") or "unknown")
+                if projection == "queued_children":
+                    observed_queued += 1
+                    evidence = "observed queued child"
+                else:
+                    unverified += 1
+                    evidence = "unverified queued projection"
+                stuck.append(
+                    f"{label} (workflow age {workflow_age_min:.0f}m; {evidence})"
+                )
+
+        cleared = f"; cleared active={ignored_active}, terminal={ignored_terminal}"
         return {
             "found": bool(stuck),
             "stuck_count": len(stuck),
             "stuck_runs": stuck,
+            # Retained for callers; workflow age alone no longer clears a run.
+            "ignored_stale_count": 0,
+            "ignored_active_count": ignored_active,
+            "ignored_terminal_count": ignored_terminal,
+            "observed_queued_count": observed_queued,
+            "unverified_count": unverified,
             "summary": (
-                f"queue-stuck: {len(stuck)} run(s) queued >{threshold_min}min: {stuck}"
-                if stuck else f"queue-stuck: no runs queued >{threshold_min}min"
+                f"queue-stuck: {len(stuck)} queued projection(s) with workflow age "
+                f">{threshold_min}min: observed queued={observed_queued}, "
+                f"unverified={unverified}; {stuck}{cleared}"
+                if stuck
+                else f"queue-stuck: no queued projections needing attention with "
+                f"workflow age >{threshold_min}min{cleared}"
             ),
         }
     except Exception as exc:  # noqa: BLE001
         log.warning("immune.check_queue_stuck: %s", exc)
-        return {"found": False, "stuck_count": 0, "stuck_runs": [], "summary": f"queue-stuck check error: {exc}"}
-
+        return {
+            "found": False,
+            "stuck_count": 0,
+            "stuck_runs": [],
+            "ignored_stale_count": 0,
+            "ignored_active_count": 0,
+            "ignored_terminal_count": 0,
+            "observed_queued_count": 0,
+            "unverified_count": 0,
+            "summary": f"queue-stuck check error: {exc}",
+        }
 
 def check_runner_offline(
     runners_list: list[dict[str, Any]],
