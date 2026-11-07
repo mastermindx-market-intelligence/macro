@@ -49,13 +49,14 @@ import pandas as pd
 from engine.greeks import npdf
 from engine.options_structure import validate_matrix
 from engine.thetadata_store import (
+    OPTIONS_MATRIX_SESSION_MAX_LAG as _AUTO_SESSION_MAX_LAG,
+    latest_options_matrix_session,
     _load_parquets,
     _normalise_date,
     eod_matrix_for_date,
     eod_sessions_before,
     eod_volume_history_before,
 )
-from lib.nyse_calendar import sessions_apart
 
 log = logging.getLogger(__name__)
 
@@ -87,14 +88,6 @@ _MIN_CONFIDENCE = 0.15          # spec explicit
 _UNUSUAL_LOOKBACK_SESSIONS = 30
 _UNUSUAL_MIN_SAMPLES = 10
 _UNUSUAL_RATIO_THRESHOLD = 3.0
-
-# Automatic source-session selection is recovery from small publication skew,
-# not permission to relabel arbitrarily old structure as current.  Five NYSE
-# session steps covers ordinary vendor lag/holiday repair while refusing stale
-# roots such as the observed multi-week INTC gap.
-_AUTO_SESSION_MAX_LAG = 5
-_AUTO_SESSION_PROBE_LIMIT = 16
-
 
 # ============================================================================ #
 # helpers
@@ -681,49 +674,12 @@ def build_matrix(
     )
     latest_oi_date = max(oi_dates) if oi_dates else None
     requested_date = asof
-    selection_greeks_by_year: dict[int, pd.DataFrame] = {}
     if asof is None:
         if latest_oi_date is None:
             log.warning("options_matrix: no OI data for %s — returning thin-chain null", root)
             return _null_payload(root, asof_ts, "no OI data in store")
-        # OPRA's next publication can exist before that day's EOD/Greeks. Select
-        # a same-session tuple through the existing narrow EOD-session reader;
-        # never splice newer OI into an older, relabelled price snapshot.  The
-        # recovery is bounded by NYSE SESSION distance, not by "number of rows
-        # available in a stale store", so a multi-week gap is refused.
-        cutoff = (pd.Timestamp(latest_oi_date) + pd.Timedelta(days=1)).date().isoformat()
-        eod_dates = eod_sessions_before(
-            cutoff, root, limit=_AUTO_SESSION_PROBE_LIMIT, store=store
-        )
-        latest_oi_session = pd.Timestamp(latest_oi_date).date()
-        candidates = []
-        for candidate in sorted(set(eod_dates) & oi_dates, reverse=True):
-            lag = sessions_apart(pd.Timestamp(candidate).date(), latest_oi_session)
-            if lag is not None and lag <= _AUTO_SESSION_MAX_LAG:
-                candidates.append(candidate)
-
-        # Load/normalise each candidate YEAR once.  The previous loop rebuilt a
-        # full-year Greeks frame for every candidate and made the unhealthy path
-        # the most expensive one.
-        greek_sessions_with_spot: set[str] = set()
-        for candidate_year in sorted({pd.Timestamp(d).year for d in candidates}):
-            greek_frame = _load_parquets("greeks", root, [candidate_year], store)
-            if greek_frame.empty or "date" not in greek_frame.columns:
-                continue
-            greek_frame = _normalise_date(greek_frame)
-            selection_greeks_by_year[candidate_year] = greek_frame
-            if "underlying_price" not in greek_frame.columns:
-                continue
-            spot_values = pd.to_numeric(greek_frame["underlying_price"], errors="coerce")
-            valid_spot = np.isfinite(spot_values) & (spot_values > 0)
-            greek_sessions_with_spot.update(
-                _valid_sessions(greek_frame.loc[valid_spot, "date"])
-            )
-
-        for candidate in candidates:
-            if candidate in greek_sessions_with_spot:
-                asof = candidate
-                break
+        # The scheduler and builder share the same bounded OI/EOD/spot truth.
+        asof = latest_options_matrix_session(root, store=store)
         if asof is None:
             return _null_payload(
                 root,
@@ -755,11 +711,9 @@ def build_matrix(
     eod_t1 = eod_matrix_for_date(asof, root, store)
 
     # ── greeks for IV ───────────────────────────────────────────────────────
-    greeks_all = selection_greeks_by_year.get(year)
-    if greeks_all is None:
-        greeks_all = _load_parquets("greeks", root, [year], store)
-        if not greeks_all.empty:
-            greeks_all = _normalise_date(greeks_all)
+    greeks_all = _load_parquets("greeks", root, [year], store)
+    if not greeks_all.empty:
+        greeks_all = _normalise_date(greeks_all)
     greeks_t1 = greeks_all[greeks_all["date"] == asof].copy() if not greeks_all.empty else pd.DataFrame()
 
     # ── spot ─────────────────────────────────────────────────────────────────

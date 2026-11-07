@@ -523,6 +523,104 @@ def store_root(override: str | Path | None = None) -> Path:
     return p
 
 
+# Automatic matrix selection permits small publication skew, never an
+# arbitrarily old common session. Both the runner and builder use this owner.
+OPTIONS_MATRIX_SESSION_MAX_LAG = 5
+_OPTIONS_MATRIX_SESSION_PROBE_LIMIT = 16
+
+
+def latest_options_matrix_session(
+    root: str,
+    store: str | Path | None = None,
+) -> str | None:
+    """Return the newest bounded common OI/EOD/positive-underlying session.
+
+    OI can advance before EOD/Greeks settle. The scheduler and automatic matrix
+    builder share this selector, including the five-NYSE-session limit relative
+    to the latest OI publication. Projected Arrow reads keep the readiness probe
+    out of the broad parquet cache; each candidate Greeks year is read once.
+    """
+    root_key = str(root).upper()
+    base = store_root(store)
+    oi_dir = base / "oi" / root_key
+    greeks_dir = base / "greeks" / root_key
+    if not oi_dir.is_dir() or not greeks_dir.is_dir():
+        return None
+
+    import pyarrow.compute as pc  # noqa: PLC0415
+    import pyarrow.parquet as pq  # noqa: PLC0415
+    from lib.nyse_calendar import sessions_apart  # noqa: PLC0415
+
+    def _canonical_dates(values) -> set[str]:
+        dates: set[str] = set()
+        for value in pc.unique(values).to_pylist():
+            if value is None:
+                continue
+            try:
+                stamp = pd.Timestamp(value)
+            except Exception:  # noqa: BLE001 — malformed values are non-sessions
+                continue
+            if not pd.isna(stamp):
+                dates.add(stamp.date().isoformat())
+        return dates
+
+    # Include OI-only newer shards in the lag anchor. Restricting this census to
+    # years shared with Greeks could make a stale previous year look current.
+    oi_dates: set[str] = set()
+    for path in sorted(oi_dir.glob("*.parquet"), reverse=True):
+        if not path.stem.isdigit():
+            continue
+        try:
+            oi = pq.read_table(path, columns=["date"])
+            oi_dates.update(_canonical_dates(oi.column("date")))
+        except Exception as exc:  # noqa: BLE001 — match the store's partial-shard handling
+            log.debug("options-matrix OI session skip %s: %s", path, exc)
+    if not oi_dates:
+        return None
+
+    latest_oi = pd.Timestamp(max(oi_dates))
+    cutoff = (latest_oi + pd.Timedelta(days=1)).date().isoformat()
+    eod_dates = eod_sessions_before(
+        cutoff, root_key, limit=_OPTIONS_MATRIX_SESSION_PROBE_LIMIT, store=store
+    )
+    candidates: set[str] = set()
+    for candidate in set(eod_dates) & oi_dates:
+        lag = sessions_apart(pd.Timestamp(candidate).date(), latest_oi.date())
+        if lag is not None and lag <= OPTIONS_MATRIX_SESSION_MAX_LAG:
+            candidates.add(candidate)
+
+    for year in sorted({pd.Timestamp(date).year for date in candidates}, reverse=True):
+        path = greeks_dir / f"{year}.parquet"
+        if not path.is_file():
+            continue
+        try:
+            greeks = pq.read_table(path, columns=["date", "underlying_price"])
+        except Exception as exc:  # noqa: BLE001 — partial/corrupt years are unusable
+            log.debug("options-matrix Greeks session skip %s: %s", path, exc)
+            continue
+        if greeks.num_rows == 0:
+            continue
+
+        spot = greeks.column("underlying_price")
+        try:
+            valid_spot = pc.and_(
+                pc.is_valid(spot),
+                pc.and_(pc.is_finite(spot), pc.greater(spot, 0)),
+            )
+            greek_dates = pc.filter(greeks.column("date"), valid_spot)
+        except Exception:  # noqa: BLE001 — retain main's numeric coercion for legacy shards
+            prices = pd.to_numeric(pd.Series(spot.to_pylist()), errors="coerce")
+            greek_dates = [
+                date for date, price in zip(greeks.column("date").to_pylist(), prices)
+                if np.isfinite(price) and price > 0
+            ]
+        common = candidates & _canonical_dates(greek_dates)
+        if common:
+            return max(common)
+
+    return None
+
+
 # --------------------------------------------------------------------------- #
 # low-level parquet loader (graceful on missing root/year)                     #
 # --------------------------------------------------------------------------- #
