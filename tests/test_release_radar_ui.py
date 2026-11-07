@@ -95,7 +95,8 @@ def _rr_section_src() -> str:
     Anchored on stable functional markers, not prose: the section starts at the
     RR stylesheet (`<style id="rr-css">`, immediately followed by the
     `id="release-radar"` panel and its script IIFE) and ends at the closing
-    `</script>` after the RR script's last symbol (`window.mmOpenFirstRR`).
+    `</script>` after the demand loader (`window.mmLoadReleaseRadar`). The
+    paired static runtime is then included for the same semantic assertions.
     Anchoring on the first "RELEASE RADAR" occurrence previously matched an
     unrelated CSS comment and silently widened the scan to ~7200 lines of
     non-RR surfaces (spurious MRI-R5 hit, fixed in PR #2508).
@@ -104,11 +105,13 @@ def _rr_section_src() -> str:
     idx_start = src.find('<style id="rr-css">')
     if idx_start < 0:
         pytest.skip('Release Radar block (<style id="rr-css">) not found in template source')
-    idx_tail = src.find("window.mmOpenFirstRR = function", idx_start)
-    assert idx_tail > idx_start, "RR script tail marker (window.mmOpenFirstRR) not found after rr-css"
+    idx_tail = src.find("window.mmLoadReleaseRadar = function", idx_start)
+    assert idx_tail > idx_start, "RR loader marker (window.mmLoadReleaseRadar) not found after rr-css"
     idx_end = src.find("</script>", idx_tail)
     assert idx_end > idx_tail, "closing </script> after RR script tail not found"
-    section = src[idx_start:idx_end + len("</script>")]
+    runtime = (ROOT / "templates" / "release_radar.js").read_text(encoding="utf-8")
+    assert "window.mmOpenFirstRR = function" in runtime, "RR runtime tail marker missing"
+    section = src[idx_start:idx_end + len("</script>")] + "\n" + runtime
     # Guard against the window silently shrinking past the panel or script body.
     assert 'id="release-radar"' in section, "RR panel div missing from anchored section"
     assert "function renderModal" in section, "RR renderModal missing from anchored section"
@@ -199,7 +202,7 @@ def test_fixture_nfp_v3_shadow_claim_withdrawn():
 
 def test_dashboard_renders_no_number_for_a_withdrawn_shadow_claim():
     """The v3 row short-circuits on claim_withdrawn before any point/interval markup."""
-    src = (Path(__file__).resolve().parents[1] / "templates" / "dashboard.html.j2").read_text(encoding="utf-8")
+    src = (Path(__file__).resolve().parents[1] / "templates" / "release_radar.js").read_text(encoding="utf-8")
     start = src.index("function v3FactorRow(v3, isClaims, isNfp){")
     body = src[start:src.index("/* ---- MRI-R39a", start)]
     branch = body[body.index("if (v3.claim_withdrawn){"):body.index("var useK")]
