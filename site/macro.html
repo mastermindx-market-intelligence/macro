@@ -5206,8 +5206,8 @@
         
         
         <span class="plf-chip">
-          <span class="l-en">4 speeches this week</span>
-          <span class="l-zh">本周4次政策发声</span>
+          <span class="l-en">3 speeches this week</span>
+          <span class="l-zh">本周3次政策发声</span>
         </span>
         
       </div>
@@ -6484,22 +6484,19 @@
   
 
 <section class="riskdlg-context" id="risk-envelope-band" aria-labelledby="gde-title"
-         data-bundle-id="58e90cd4074817bc" data-settled-session="2026-11-05" data-coherence="ALIGNED">
+         data-bundle-id="dd8430ef1aa2f91b" data-settled-session="2026-11-05" data-coherence="MIXED">
   <div class="gde-head">
     <h3 id="gde-title"><span class="l-en">Market internals</span><span class="l-zh">市场内部</span></h3>
     <span class="gde-scope"><span class="l-en">Broad US market</span><span class="l-zh">美国大盘</span></span>
     <span class="gde-coherence">
-      <span class="l-en">Signals align</span><span class="l-zh">信号一致</span>
-      
+      <span class="l-en">Incomplete picture</span><span class="l-zh">信号不全</span>
     </span>
   </div>
   <div class="gde-reads">
-    <div class="gde-read" style="--gde-c: var(--ink-down)">
+    <div class="gde-read" style="--gde-c: var(--ink-3)">
       <span class="gde-q"><span class="l-en">Trend</span><span class="l-zh">趋势</span></span>
       <strong class="gde-a">
-        
-        <span class="l-en">Risk-off</span><span class="l-zh">避险</span><span class="gde-arr" aria-hidden="true">▼</span>
-        
+        <span class="l-en">Unavailable</span><span class="l-zh">暂无读数</span>
       </strong>
     </div>
     <div class="gde-read" style="--gde-c: var(--ink-warn)">
@@ -6507,6 +6504,8 @@
       <strong class="gde-a"><span class="l-en">Fragile</span><span class="l-zh">脆弱</span></strong>
     </div>
   </div>
+  
+  <p class="gde-context-line"><span class="l-en">Some inputs are unavailable; this is not an all-clear.</span><span class="l-zh">部分数据缺失，不代表风险已解除。</span></p>
   
   
   
@@ -6522,7 +6521,7 @@
     
   
   <p class="gde-causes"><span class="l-en">AI-hardware leaders: damaged · Growth scare / defensive rotation: building</span><span class="l-zh">AI硬件龙头：受损 · 增长恐慌/防御轮动：积聚中</span></p>
-  
+  <p class="gde-input-caveat"><span class="l-en">Trend includes older inputs.</span><span class="l-zh">趋势读数含较早数据。</span></p>
   
   <div class="gde-ew" id="gde-ew" role="group" aria-labelledby="gde-ew-title" data-ew-state="unavailable" data-ew-scope="tech_leadership" data-observation-id="">
     <p class="gde-ew-head"><span class="gde-ew-scope" id="gde-ew-title"><span class="l-en">US Technology leadership</span><span class="l-zh">美国科技领涨</span></span> <span class="gde-ew-state"><span class="l-en">Unavailable</span><span class="l-zh">暂不可用</span></span></p>
@@ -6563,7 +6562,7 @@
           
           <div class="gde-ew-brief-h">
             <h4 class="gde-disc-h"><span class="l-en">Market trend</span><span class="l-zh">市场趋势</span></h4>
-            <p class="gde-context-line"><span class="l-en">Risk-off · Broad US market · Source: Market state · Session 2026-11-05 · Quality: current session</span><span class="l-zh">避险 · 美国大盘 · 来源：市场状态 · 数据交易日2026-11-05 · 质量：本交易日</span></p>
+            <p class="gde-context-line"><span class="l-en">Unavailable · Broad US market · Source: Market state · Session 2026-11-05 · Quality: older read</span><span class="l-zh">暂无读数 · 美国大盘 · 来源：市场状态 · 数据交易日2026-11-05 · 质量：较早读数</span></p>
           </div>
           <div class="gde-ew-brief-h">
             <h4 class="gde-disc-h"><span class="l-en">Transition fragility</span><span class="l-zh">转折脆弱度</span></h4>
@@ -6617,7 +6616,7 @@
                   <td class="l" role="cell" data-label-en="Source" data-label-zh="来源"><span class="l-en">Market state</span><span class="l-zh">市场状态</span></td><td class="tnum" role="cell" data-label-en="Its own read" data-label-zh="自身读数"><span class="gde-cell">RISK_OFF · 37</span></td>
                   <td class="tnum" role="cell" data-label-en="As of" data-label-zh="数据日期"><span class="gde-cell">2026-11-05</span></td>
                   <td role="cell" data-label-en="Freshness" data-label-zh="新鲜度">
-                    <span class="l-en">This session</span><span class="l-zh">本交易日</span>
+                    <span class="gde-warn"><span class="l-en">Older than this session</span><span class="l-zh">早于本交易日</span></span>
                      <span class="gde-req"><span class="l-en">required</span><span class="l-zh">必需</span></span>
                   </td>
                 </tr>
@@ -6656,9 +6655,9 @@
           
 
           <p class="gde-receipt tnum">
-            grey-deer-v1-2026-08-19 · bundle 58e90cd4074817bc ·
-            coverage FRESH ·
-            coherence ALIGNED (scope market_reads) ·
+            grey-deer-v1-2026-08-19 · bundle dd8430ef1aa2f91b ·
+            coverage DEGRADED ·
+            coherence MIXED (scope market_reads) ·
             stage FRAGILE (observed_settled_evidence) ·
             stage_since null (no_episode_lifecycle_in_v0) ·
             engine/risk_envelope.py
@@ -7965,13 +7964,13 @@
         </div>
         <div class="plx-jaw-counts">
           <div class="plx-jaw-count-box">
-            <div class="plx-jaw-count-num">4</div>
+            <div class="plx-jaw-count-num">3</div>
             <div class="plx-jaw-count-lbl">
               <span class="l-en">speeches 7d</span><span class="l-zh">7日发声</span>
             </div>
           </div>
           <div class="plx-jaw-count-box">
-            <div class="plx-jaw-count-num">13</div>
+            <div class="plx-jaw-count-num">12</div>
             <div class="plx-jaw-count-lbl">
               <span class="l-en">speeches 30d</span><span class="l-zh">30日发声</span>
             </div>
@@ -7981,7 +7980,7 @@
         
         
         
-        <div class="plx-jaw-bar-track"><div class="plx-jaw-bar-fill" style="width:31%"></div></div>
+        <div class="plx-jaw-bar-track"><div class="plx-jaw-bar-fill" style="width:25%"></div></div>
         
         <div class="plx-jaw-ts">
           <span class="l-en">Last event: 2026-11-05</span>
@@ -8398,24 +8397,6 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
           
           
           
-          <a class="nbx-item" href="https://seekingalpha.com/news/4667876-sui-group-holdings-gaap-eps-of-0_59?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener">
-            <div class="nbx-top">
-              <span class="nbx-theme"><span class="l-en">Earnings</span><span class="l-zh">业绩</span></span>
-              <span class="nbx-title"><span class="l-en">SUI Group Holdings GAAP EPS of $0.59</span><span class="l-zh">SUI Group Holdings GAAP每股收益0.59美元</span></span>
-            </div>
-            <div class="nbx-meta">
-              <span class="nbx-src">news_rss</span>
-              <span class="nbx-dot">·</span>
-              <span class="nbx-date">Nov 6</span>
-              <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
-            </div>
-            
-          </a>
-          
-          
-          
-          
-          
           <a class="nbx-item" href="https://www.cnbc.com/2026/11/03/ferrari-race-earnings-q3-2026.html" target="_blank" rel="noopener">
             <div class="nbx-top">
               <span class="nbx-theme"><span class="l-en">Earnings</span><span class="l-zh">业绩</span></span>
@@ -8425,6 +8406,24 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
               <span class="nbx-src">news_rss</span>
               <span class="nbx-dot">·</span>
               <span class="nbx-date">Nov 3</span>
+              <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
+            </div>
+            
+          </a>
+          
+          
+          
+          
+          
+          <a class="nbx-item" href="https://seekingalpha.com/news/4667876-sui-group-holdings-gaap-eps-of-0_59?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener">
+            <div class="nbx-top">
+              <span class="nbx-theme"><span class="l-en">Earnings</span><span class="l-zh">业绩</span></span>
+              <span class="nbx-title"><span class="l-en">SUI Group Holdings GAAP EPS of $0.59</span><span class="l-zh">SUI Group Holdings GAAP每股收益0.59美元</span></span>
+            </div>
+            <div class="nbx-meta">
+              <span class="nbx-src">news_rss</span>
+              <span class="nbx-dot">·</span>
+              <span class="nbx-date">Nov 6</span>
               <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
             </div>
             
@@ -8470,24 +8469,6 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
           
           
           
-          <a class="nbx-item" href="https://seekingalpha.com/news/4667877-aersale-expects-35m-737-sale-to-close-before-year-end-while-signaling-a-significantly?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener">
-            <div class="nbx-top">
-              <span class="nbx-theme"><span class="l-en">Stocks</span><span class="l-zh">个股</span></span>
-              <span class="nbx-title"><span class="l-en">AerSale expects $35M 737 sale to close before year-end while signaling a significantly stronger Q4</span><span class="l-zh">AerSale预计年底前完成3500万美元的737出售交易，同时预示第四季度将显著走强</span></span>
-            </div>
-            <div class="nbx-meta">
-              <span class="nbx-src">news_rss</span>
-              <span class="nbx-dot">·</span>
-              <span class="nbx-date">Nov 6</span>
-              <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
-            </div>
-            
-          </a>
-          
-          
-          
-          
-          
           <a class="nbx-item" href="https://www.bea.gov/news/2026/real-personal-consumption-expenditures-state-and-real-personal-income-state-2024" target="_blank" rel="noopener">
             <div class="nbx-top">
               <span class="nbx-theme"><span class="l-en">Inflation</span><span class="l-zh">通胀</span></span>
@@ -8497,6 +8478,24 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
               <span class="nbx-src">official</span>
               
               
+              <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
+            </div>
+            
+          </a>
+          
+          
+          
+          
+          
+          <a class="nbx-item" href="https://seekingalpha.com/news/4667877-aersale-expects-35m-737-sale-to-close-before-year-end-while-signaling-a-significantly?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener">
+            <div class="nbx-top">
+              <span class="nbx-theme"><span class="l-en">Stocks</span><span class="l-zh">个股</span></span>
+              <span class="nbx-title"><span class="l-en">AerSale expects $35M 737 sale to close before year-end while signaling a significantly stronger Q4</span><span class="l-zh">AerSale预计年底前完成3500万美元的737出售交易，同时预示第四季度将显著走强</span></span>
+            </div>
+            <div class="nbx-meta">
+              <span class="nbx-src">news_rss</span>
+              <span class="nbx-dot">·</span>
+              <span class="nbx-date">Nov 6</span>
               <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
             </div>
             
@@ -12024,9 +12023,9 @@ The dominant driver is the chip-stock unwind. A hawkish Fed, restrictive real yi
     </table>
       </div>
     <p class="muted"><span class="l-en">A failed source never crashes the dashboard — affected signals just lose confidence until it heals.
-       Generated 2026-11-06 16:21 UTC · <a href="aibrief.html">AI daily brief</a> ·
+       Generated 2026-11-06 23:02 UTC · <a href="aibrief.html">AI daily brief</a> ·
        <a href="history.html">history & charts</a></span><span class="l-zh">数据源失败绝不会让仪表盘崩溃 — 受影响的信号只是降低置信度，直到其恢复。
-       生成于 2026-11-06 16:21 UTC · <a href="aibrief.html">AI每日简报</a> ·
+       生成于 2026-11-06 23:02 UTC · <a href="aibrief.html">AI每日简报</a> ·
        <a href="history.html">历史与图表</a></span></p>
     </template>
   </details>
