@@ -1,0 +1,44 @@
+{
+  "schema": "PB_C.github_publication_receipt.v1",
+  "operation": "PB-C-STRATEGIC-ANNOUNCEMENT-ORCHESTRATION-20261007",
+  "disposition": "PROSPECTIVE_ONLY",
+  "repository": "mastermindx-market-intelligence/macro",
+  "pull_request": 8565,
+  "branch": "research/pb-c-announcement-study-20261007",
+  "research_content_head_before_receipt": "84d94e4606d5c0dc92d7a76d8cc71e5de4ec7b0f",
+  "original_protocol_commit": "22a6ab802791848b496ac895ec3335d8ffe34d4d",
+  "panel_and_code_freeze_commit": "f856691e4578db7029646bba1c5e90949e009de5",
+  "principal_report": "research/policy_behavior/pro_returns/PB-C/PB_C_RESULTS.md",
+  "package_manifest": "research/policy_behavior/pro_returns/PB-C/PACKAGE_SHA256.json",
+  "handoff": "research/policy_behavior/pro_returns/PB-C/PB_G_HANDOFF.md",
+  "headline_results": {
+    "total_roots": 94,
+    "research_roots": 91,
+    "material_candidates": 54,
+    "main_broad_sample_roots": 46,
+    "main_three_session_pairs": 22,
+    "main_three_session_null_mean": 21.5448,
+    "main_three_session_upper_tail_p": 0.48285171482851713,
+    "prior_notice_calendar_roots": 31,
+    "prior_notice_three_session_pairs": 95,
+    "prior_notice_null_mean": 57.1754,
+    "prior_notice_upper_tail_p": 0.0005999400059994001
+  },
+  "claim_dispositions": {
+    "C1": "NOT_ESTIMABLE",
+    "C2": "NOT_ESTIMABLE",
+    "C3": "PRIMARY_PROXY_UNSUPPORTED_SUBGROUP_HINT_UNVALIDATED",
+    "C4": "NOT_MEASURED",
+    "C5": "SERIOUS_EXPLANATION_SURVIVES"
+  },
+  "verification": {
+    "separate_directory_reproduction": "PASS_BYTE_IDENTICAL",
+    "numerical_review": "PASS_RECONCILED_DECLARED_CASES",
+    "repository_scope": "research/policy_behavior/pro_returns/PB-C/",
+    "production_effects": false,
+    "merge_performed": false,
+    "deployment_performed": false,
+    "trading_authority": false
+  },
+  "note": "This receipt records publication of the completed PB-C research return to the existing draft PR. Creating this receipt advances the branch by one metadata-only commit; research results and definitions are unchanged."
+}

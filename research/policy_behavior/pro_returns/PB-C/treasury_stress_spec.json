@@ -1,0 +1,30 @@
+{
+  "derived_from_parent_protocol_sha256": "a2e42071c1de29be8d90b643d15566fc796296b8b9672f5ad7ea8dcf7e5ec4d0",
+  "protocol_freeze_utc": "2026-10-07 02:58:22 UTC",
+  "instruments": {
+    "nominal2y": [
+      "daily_treasury_yield_curve",
+      "BC_2YEAR"
+    ],
+    "real10y": [
+      "daily_treasury_real_yield_curve",
+      "TC_10YEAR"
+    ]
+  },
+  "window": [
+    "2025-01-01",
+    "2025-12-31"
+  ],
+  "warmup_start": "2024-10-01",
+  "shock": "yield[t] - yield[t-5 NYSE sessions] >=0.25 percentage points, separately for each instrument",
+  "session_alignment": "At each NYSE session, last Treasury observation date on/before session; preserve source age",
+  "exposure": "At calendar date d, any shock on previous 5 or 10 NYSE sessions strictly before d",
+  "onset": "Qualifying shock preceded by at least 10 consecutive non-shock NYSE sessions",
+  "vintage": "Current retrieved historical values; original release timestamps/vintages not certified",
+  "calendar_sources": [
+    "https://ir.theice.com/press/news-details/2023/NYSE-Group-Announces-2024-2025-and-2026-Holiday-and-Early-Closings-Calendar/default.aspx",
+    "https://ir.theice.com/press/news-details/2024/NYSE-Group-Announces-2025-2026-and-2027-Holiday-and-Early-Closings-Calendar/default.aspx",
+    "https://ir.theice.com/press/news-details/2024/The-New-York-Stock-Exchange-Will-Close-Markets-on-January-9-to-Honor-the-Passing-of-Former-President-Jimmy-Carter-on-National-Day-of-Mourning/default.aspx"
+  ],
+  "draft_reconciliation": "A pre-protocol nominal-10y helper was interrupted (exit130), produced no rate/result artifact, and was replaced. Nominal10y is not used."
+}

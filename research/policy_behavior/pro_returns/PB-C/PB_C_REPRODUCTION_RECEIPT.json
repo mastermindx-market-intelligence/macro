@@ -1,0 +1,28 @@
+{
+  "status": "PASS",
+  "scope": "Independent-directory offline rerun of frozen calculations, not population or source-truth validation",
+  "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "numpy": "2.3.5",
+  "bit_generator": "PCG64",
+  "master_seed": 20261007,
+  "simulations_per_case": 10000,
+  "cases": 23,
+  "source_downloads_during_reproduction": 0,
+  "output_checks": {
+    "PB_C_ANALYSIS_RESULTS.json": {
+      "byte_identical": true,
+      "sha256": "ac336dda9fea2fce4b0291835c97b2276beba730e87a72d7b2b4c35d3aefea07"
+    },
+    "PB_C_DESCRIPTIVE_AUDIT.json": {
+      "byte_identical": true,
+      "sha256": "4db210311a902a43e8151006a2c0b202e7f24c498ddabb201edda6f6547628d3"
+    }
+  },
+  "numerical_review": "PB_C_NUMERICAL_INTERPRETATION_REVIEW.md",
+  "publication_input_freeze_commit": "f856691e4578db7029646bba1c5e90949e009de5",
+  "protocol_publication_normalization": {
+    "numerical_and_definition_objects_unchanged": true,
+    "only_result_change": "canonical protocol byte digest restored to original Git file",
+    "details": "PB_C_PUBLICATION_CORRECTIONS.md"
+  }
+}

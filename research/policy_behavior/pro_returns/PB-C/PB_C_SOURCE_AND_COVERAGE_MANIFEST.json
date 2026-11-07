@@ -1,0 +1,2690 @@
+{
+  "schema": "PB_C.source_coverage.v1",
+  "retrieved_at": "2026-10-07",
+  "status": "SOURCE_VERIFIED_SELECTED_PANEL_NOT_COMPLETE_CENSUS",
+  "coverage": [
+    {
+      "issuer": "AAPL",
+      "scope": [
+        "2025-01-01",
+        "2025-12-31"
+      ],
+      "status": "PARTIAL",
+      "global_no_announcement_days": "UNKNOWN",
+      "source_frame_complete": false,
+      "first_results_audit_found": true,
+      "first_results_exhaustive_archive_certified": false,
+      "root_ids": [
+        "PBC-TECH-CAL-AAPL-2025-01-30",
+        "PBC-TECH-AAPL-US-INVESTMENT-20250224",
+        "PBC-N-AAPL-20250414-WATCH",
+        "PBC-N-AAPL-20250415-FILMMAKERS",
+        "PBC-N-AAPL-20250416-ENVIRONMENT",
+        "PBC-TECH-AAPL-MP-20250715",
+        "PBC-TECH-AAPL-US-EXPANSION-20250806"
+      ],
+      "material_roots_including_joint": 3,
+      "search_scope": "Official issuer/counterparty/government 2025 result releases and event-species searches; primary-original opening required, no returns filters."
+    },
+    {
+      "issuer": "MSFT",
+      "scope": [
+        "2025-01-01",
+        "2025-12-31"
+      ],
+      "status": "PARTIAL",
+      "global_no_announcement_days": "UNKNOWN",
+      "source_frame_complete": false,
+      "first_results_audit_found": true,
+      "first_results_exhaustive_archive_certified": false,
+      "root_ids": [
+        "PBC-TECH-MSFT-AI-CAPEX-20250103",
+        "PBC-TECH-MSFT-OPENAI-20250121",
+        "PBC-TECH-ORCL-STARGATE-20250121",
+        "PBC-TECH-CAL-MSFT-2025-01-29",
+        "PBC-TECH-MSFT-OPENAI-20250911",
+        "PBC-TECH-MSFT-OPENAI-20251028"
+      ],
+      "material_roots_including_joint": 5,
+      "search_scope": "Official issuer/counterparty/government 2025 result releases and event-species searches; primary-original opening required, no returns filters."
+    },
+    {
+      "issuer": "AMZN",
+      "scope": [
+        "2025-01-01",
+        "2025-12-31"
+      ],
+      "status": "PARTIAL",
+      "global_no_announcement_days": "UNKNOWN",
+      "source_frame_complete": false,
+      "first_results_audit_found": true,
+      "first_results_exhaustive_archive_certified": false,
+      "root_ids": [
+        "PBC-TECH-CAL-AMZN-2025-02-06",
+        "PBC-TECH-AMZN-HUMAIN-20250513",
+        "PBC-TECH-AMZN-OPENAI-20251103"
+      ],
+      "material_roots_including_joint": 2,
+      "search_scope": "Official issuer/counterparty/government 2025 result releases and event-species searches; primary-original opening required, no returns filters."
+    },
+    {
+      "issuer": "GOOG",
+      "scope": [
+        "2025-01-01",
+        "2025-12-31"
+      ],
+      "status": "PARTIAL",
+      "global_no_announcement_days": "UNKNOWN",
+      "source_frame_complete": false,
+      "first_results_audit_found": true,
+      "first_results_exhaustive_archive_certified": false,
+      "root_ids": [
+        "PBC-TECH-CAL-GOOG-2025-02-04",
+        "PBC-TECH-GOOG-WIZ-20250318",
+        "PBC-TECH-GOOG-ADTECH-RULING-20250417"
+      ],
+      "material_roots_including_joint": 2,
+      "search_scope": "Official issuer/counterparty/government 2025 result releases and event-species searches; primary-original opening required, no returns filters."
+    },
+    {
+      "issuer": "META",
+      "scope": [
+        "2025-01-01",
+        "2025-12-31"
+      ],
+      "status": "PARTIAL",
+      "global_no_announcement_days": "UNKNOWN",
+      "source_frame_complete": false,
+      "first_results_audit_found": true,
+      "first_results_exhaustive_archive_certified": false,
+      "root_ids": [
+        "PBC-TECH-CAL-META-2025-01-29",
+        "PBC-TECH-META-CONSTELLATION-20250603",
+        "PBC-TECH-META-HYPERION-JV-20251021"
+      ],
+      "material_roots_including_joint": 2,
+      "search_scope": "Official issuer/counterparty/government 2025 result releases and event-species searches; primary-original opening required, no returns filters."
+    },
+    {
+      "issuer": "NVDA",
+      "scope": [
+        "2025-01-01",
+        "2025-12-31"
+      ],
+      "status": "PARTIAL",
+      "global_no_announcement_days": "UNKNOWN",
+      "source_frame_complete": false,
+      "first_results_audit_found": true,
+      "first_results_exhaustive_archive_certified": false,
+      "root_ids": [
+        "PBC-TECH-ORCL-STARGATE-20250121",
+        "PBC-TECH-CAL-NVDA-2025-02-26",
+        "PBC-TECH-NVDA-US-MANUFACTURING-20250414",
+        "PBC-TECH-NVDA-H20-EXPORT-20250415",
+        "PBC-TECH-NVDA-HUMAIN-20250513",
+        "PBC-TECH-NVDA-INTC-20250918",
+        "PBC-TECH-NVDA-OPENAI-20250922"
+      ],
+      "material_roots_including_joint": 6,
+      "search_scope": "Official issuer/counterparty/government 2025 result releases and event-species searches; primary-original opening required, no returns filters."
+    },
+    {
+      "issuer": "TSLA",
+      "scope": [
+        "2025-01-01",
+        "2025-12-31"
+      ],
+      "status": "PARTIAL",
+      "global_no_announcement_days": "UNKNOWN",
+      "source_frame_complete": false,
+      "first_results_audit_found": true,
+      "first_results_exhaustive_archive_certified": false,
+      "root_ids": [
+        "PBC-TECH-CAL-TSLA-2025-01-29",
+        "PBC-TECH-TSLA-CYBERTRUCK-RECALL-20250319"
+      ],
+      "material_roots_including_joint": 1,
+      "search_scope": "Official issuer/counterparty/government 2025 result releases and event-species searches; primary-original opening required, no returns filters."
+    },
+    {
+      "issuer": "AMD",
+      "scope": [
+        "2025-01-01",
+        "2025-12-31"
+      ],
+      "status": "PARTIAL",
+      "global_no_announcement_days": "UNKNOWN",
+      "source_frame_complete": false,
+      "first_results_audit_found": true,
+      "first_results_exhaustive_archive_certified": false,
+      "root_ids": [
+        "PBC-TECH-CAL-AMD-2025-02-04",
+        "PBC-TECH-AMD-MI308-EXPORT-20250416",
+        "PBC-TECH-AMD-HUMAIN-20250513",
+        "PBC-TECH-AMD-BUYBACK-20250514",
+        "PBC-TECH-AMD-SANMINA-20250519",
+        "PBC-TECH-AMD-OPENAI-20251006"
+      ],
+      "material_roots_including_joint": 5,
+      "search_scope": "Official issuer/counterparty/government 2025 result releases and event-species searches; primary-original opening required, no returns filters."
+    },
+    {
+      "issuer": "INTC",
+      "scope": [
+        "2025-01-01",
+        "2025-12-31"
+      ],
+      "status": "PARTIAL",
+      "global_no_announcement_days": "UNKNOWN",
+      "source_frame_complete": false,
+      "first_results_audit_found": true,
+      "first_results_exhaustive_archive_certified": false,
+      "root_ids": [
+        "PBC-TECH-CAL-INTC-2025-01-30",
+        "PBC-TECH-INTC-ALTERA-20250414",
+        "PBC-TECH-INTC-SOFTBANK-20250818",
+        "PBC-TECH-INTC-USG-20250822",
+        "PBC-TECH-NVDA-INTC-20250918"
+      ],
+      "material_roots_including_joint": 4,
+      "search_scope": "Official issuer/counterparty/government 2025 result releases and event-species searches; primary-original opening required, no returns filters."
+    },
+    {
+      "issuer": "AVGO",
+      "scope": [
+        "2025-01-01",
+        "2025-12-31"
+      ],
+      "status": "PARTIAL",
+      "global_no_announcement_days": "UNKNOWN",
+      "source_frame_complete": false,
+      "first_results_audit_found": true,
+      "first_results_exhaustive_archive_certified": false,
+      "root_ids": [
+        "PBC-TECH-CAL-AVGO-2025-03-06",
+        "PBC-TECH-AVGO-BUYBACK-20250407",
+        "PBC-TECH-AVGO-OPENAI-20251013"
+      ],
+      "material_roots_including_joint": 2,
+      "search_scope": "Official issuer/counterparty/government 2025 result releases and event-species searches; primary-original opening required, no returns filters."
+    },
+    {
+      "issuer": "MU",
+      "scope": [
+        "2025-01-01",
+        "2025-12-31"
+      ],
+      "status": "PARTIAL",
+      "global_no_announcement_days": "UNKNOWN",
+      "source_frame_complete": false,
+      "first_results_audit_found": true,
+      "first_results_exhaustive_archive_certified": false,
+      "root_ids": [
+        "PBC-TECH-MU-SINGAPORE-HBM-20250108",
+        "PBC-TECH-CAL-MU-2025-03-20",
+        "PBC-TECH-MU-US-EXPANSION-20250612",
+        "PBC-TECH-MU-CRUCIAL-EXIT-20251203"
+      ],
+      "material_roots_including_joint": 3,
+      "search_scope": "Official issuer/counterparty/government 2025 result releases and event-species searches; primary-original opening required, no returns filters."
+    },
+    {
+      "issuer": "TSM",
+      "scope": [
+        "2025-01-01",
+        "2025-12-31"
+      ],
+      "status": "PARTIAL",
+      "global_no_announcement_days": "UNKNOWN",
+      "source_frame_complete": false,
+      "first_results_audit_found": true,
+      "first_results_exhaustive_archive_certified": false,
+      "root_ids": [
+        "PBC-TECH-CAL-TSM-2025-01-16",
+        "PBC-TECH-TSM-US-EXPANSION-20250303"
+      ],
+      "material_roots_including_joint": 1,
+      "search_scope": "Official issuer/counterparty/government 2025 result releases and event-species searches; primary-original opening required, no returns filters."
+    },
+    {
+      "issuer": "QCOM",
+      "scope": [
+        "2025-01-01",
+        "2025-12-31"
+      ],
+      "status": "PARTIAL",
+      "global_no_announcement_days": "UNKNOWN",
+      "source_frame_complete": false,
+      "first_results_audit_found": true,
+      "first_results_exhaustive_archive_certified": false,
+      "root_ids": [
+        "PBC-TECH-CAL-QCOM-2025-02-05",
+        "PBC-TECH-QCOM-ALPHAWAVE-20250609",
+        "PBC-D-ADBE-20251119-HUMAIN-QCOM"
+      ],
+      "material_roots_including_joint": 2,
+      "search_scope": "Official issuer/counterparty/government 2025 result releases and event-species searches; primary-original opening required, no returns filters."
+    },
+    {
+      "issuer": "ANET",
+      "scope": [
+        "2025-01-01",
+        "2025-12-31"
+      ],
+      "status": "PARTIAL",
+      "global_no_announcement_days": "UNKNOWN",
+      "source_frame_complete": false,
+      "first_results_audit_found": true,
+      "first_results_exhaustive_archive_certified": false,
+      "root_ids": [
+        "PBC-C-ANET-20250218-EARNINGS",
+        "PBC-D-ANET-20250730-INDIA-PLAN"
+      ],
+      "material_roots_including_joint": 1,
+      "search_scope": "Official 2025 partnership/manufacturing and quarterly-result searches; India investment release opened."
+    },
+    {
+      "issuer": "VRT",
+      "scope": [
+        "2025-01-01",
+        "2025-12-31"
+      ],
+      "status": "PARTIAL",
+      "global_no_announcement_days": "UNKNOWN",
+      "source_frame_complete": false,
+      "first_results_audit_found": true,
+      "first_results_exhaustive_archive_certified": false,
+      "root_ids": [
+        "PBC-C-VRT-20250212-EARNINGS",
+        "PBC-D-VRT-20250303-TECOGEN",
+        "PBC-D-VRT-20250722-OKLO"
+      ],
+      "material_roots_including_joint": 2,
+      "search_scope": "Official 2025 cooling/power collaborations; Tecogen and Oklo originals opened."
+    },
+    {
+      "issuer": "DELL",
+      "scope": [
+        "2025-01-01",
+        "2025-12-31"
+      ],
+      "status": "PARTIAL",
+      "global_no_announcement_days": "UNKNOWN",
+      "source_frame_complete": false,
+      "first_results_audit_found": true,
+      "first_results_exhaustive_archive_certified": false,
+      "root_ids": [
+        "PBC-C-DELL-20250227-EARNINGS"
+      ],
+      "material_roots_including_joint": 0,
+      "search_scope": "Official earnings, AI partnership, financing/capacity searches; later blogs and undated customer pages do not establish first deal dates."
+    },
+    {
+      "issuer": "HPE",
+      "scope": [
+        "2025-01-01",
+        "2025-12-31"
+      ],
+      "status": "PARTIAL",
+      "global_no_announcement_days": "UNKNOWN",
+      "source_frame_complete": false,
+      "first_results_audit_found": true,
+      "first_results_exhaustive_archive_certified": false,
+      "root_ids": [
+        "PBC-D-HPE-20250130-DOJ-CHALLENGE",
+        "PBC-C-HPE-20250306-EARNINGS",
+        "PBC-D-HPE-20250627-DOJ-SETTLEMENT"
+      ],
+      "material_roots_including_joint": 2,
+      "search_scope": "Official earnings and DOJ acquisition case searches; adverse complaint and conditional settlement originals opened."
+    },
+    {
+      "issuer": "COHR",
+      "scope": [
+        "2025-01-01",
+        "2025-12-31"
+      ],
+      "status": "PARTIAL",
+      "global_no_announcement_days": "UNKNOWN",
+      "source_frame_complete": false,
+      "first_results_audit_found": true,
+      "first_results_exhaustive_archive_certified": false,
+      "root_ids": [
+        "PBC-C-COHR-20250205-EARNINGS",
+        "PBC-D-COHR-20250813-ADVENT-DIVESTITURE"
+      ],
+      "material_roots_including_joint": 1,
+      "search_scope": "Official earnings, debt/refinancing and divestiture searches; sale agreement opened, refinancing lead only retrospective filing."
+    },
+    {
+      "issuer": "LITE",
+      "scope": [
+        "2025-01-01",
+        "2025-12-31"
+      ],
+      "status": "PARTIAL",
+      "global_no_announcement_days": "UNKNOWN",
+      "source_frame_complete": false,
+      "first_results_audit_found": true,
+      "first_results_exhaustive_archive_certified": false,
+      "root_ids": [
+        "PBC-C-LITE-20250203-PRELIMINARY",
+        "PBC-C-LITE-20250206-EARNINGS",
+        "PBC-D-LITE-20250807-US-CAPACITY"
+      ],
+      "material_roots_including_joint": 1,
+      "search_scope": "Official results/leadership, capex and optical expansion searches; preliminary/full calendar edge preserved."
+    },
+    {
+      "issuer": "ETN",
+      "scope": [
+        "2025-01-01",
+        "2025-12-31"
+      ],
+      "status": "PARTIAL",
+      "global_no_announcement_days": "UNKNOWN",
+      "source_frame_complete": false,
+      "first_results_audit_found": true,
+      "first_results_exhaustive_archive_certified": false,
+      "root_ids": [
+        "PBC-C-ETN-20250131-EARNINGS",
+        "PBC-D-ETN-20250603-SIEMENS-ENERGY"
+      ],
+      "material_roots_including_joint": 1,
+      "search_scope": "Official earnings and Siemens Energy data-center collaboration searches; both originals opened."
+    },
+    {
+      "issuer": "ORCL",
+      "scope": [
+        "2025-01-01",
+        "2025-12-31"
+      ],
+      "status": "PARTIAL",
+      "global_no_announcement_days": "UNKNOWN",
+      "source_frame_complete": false,
+      "first_results_audit_found": true,
+      "first_results_exhaustive_archive_certified": false,
+      "root_ids": [
+        "PBC-TECH-ORCL-STARGATE-20250121",
+        "PBC-TECH-CAL-ORCL-2025-03-10",
+        "PBC-TECH-ORCL-STARGATE-EXPANSION-20250722"
+      ],
+      "material_roots_including_joint": 2,
+      "search_scope": "Official issuer/counterparty/government 2025 result releases and event-species searches; primary-original opening required, no returns filters."
+    },
+    {
+      "issuer": "LMT",
+      "scope": [
+        "2025-01-01",
+        "2025-12-31"
+      ],
+      "status": "PARTIAL",
+      "global_no_announcement_days": "UNKNOWN",
+      "source_frame_complete": false,
+      "first_results_audit_found": true,
+      "first_results_exhaustive_archive_certified": false,
+      "root_ids": [
+        "PBC-C-LMT-20250128-EARNINGS",
+        "PBC-D-LMT-20250321-AIR-FORCE-LOSS"
+      ],
+      "material_roots_including_joint": 1,
+      "search_scope": "Official results and Air Force competition/contract searches; adverse statement and Boeing counterpart opened."
+    },
+    {
+      "issuer": "RTX",
+      "scope": [
+        "2025-01-01",
+        "2025-12-31"
+      ],
+      "status": "PARTIAL",
+      "global_no_announcement_days": "UNKNOWN",
+      "source_frame_complete": false,
+      "first_results_audit_found": true,
+      "first_results_exhaustive_archive_certified": false,
+      "root_ids": [
+        "PBC-C-RTX-20250128-EARNINGS",
+        "PBC-D-RTX-20250923-LTAMDS"
+      ],
+      "material_roots_including_joint": 1,
+      "search_scope": "Official results and 2025 defense award searches; LTAMDS award issuer original opened."
+    },
+    {
+      "issuer": "NOC",
+      "scope": [
+        "2025-01-01",
+        "2025-12-31"
+      ],
+      "status": "PARTIAL",
+      "global_no_announcement_days": "UNKNOWN",
+      "source_frame_complete": false,
+      "first_results_audit_found": true,
+      "first_results_exhaustive_archive_certified": false,
+      "root_ids": [
+        "PBC-C-NOC-20250130-EARNINGS"
+      ],
+      "material_roots_including_joint": 0,
+      "search_scope": "Official results and 2025 defense/Triton contract searches; no additional eligible material root selected from bounded results."
+    },
+    {
+      "issuer": "MP",
+      "scope": [
+        "2025-01-01",
+        "2025-12-31"
+      ],
+      "status": "PARTIAL",
+      "global_no_announcement_days": "UNKNOWN",
+      "source_frame_complete": false,
+      "first_results_audit_found": true,
+      "first_results_exhaustive_archive_certified": false,
+      "root_ids": [
+        "PBC-C-MP-20250220-EARNINGS",
+        "PBC-D-MP-20250710-DOD-PACKAGE",
+        "PBC-TECH-AAPL-MP-20250715",
+        "PBC-D-MP-20250716-COMMON-OFFERING"
+      ],
+      "material_roots_including_joint": 3,
+      "search_scope": "Official results, government support, offtake and equity financing searches; package, supply and financing originals opened."
+    },
+    {
+      "issuer": "ALB",
+      "scope": [
+        "2025-01-01",
+        "2025-12-31"
+      ],
+      "status": "PARTIAL",
+      "global_no_announcement_days": "UNKNOWN",
+      "source_frame_complete": false,
+      "first_results_audit_found": true,
+      "first_results_exhaustive_archive_certified": false,
+      "root_ids": [
+        "PBC-C-ALB-20250212-EARNINGS"
+      ],
+      "material_roots_including_joint": 0,
+      "search_scope": "Official results, capex reduction, restructuring and financing searches; no additional material root selected."
+    },
+    {
+      "issuer": "CSCO",
+      "scope": [
+        "2025-01-01",
+        "2025-12-31"
+      ],
+      "status": "PARTIAL",
+      "global_no_announcement_days": "UNKNOWN",
+      "source_frame_complete": false,
+      "first_results_audit_found": true,
+      "first_results_exhaustive_archive_certified": false,
+      "root_ids": [
+        "PBC-C-CSCO-20250212-EARNINGS",
+        "PBC-D-CSCO-20250513-HUMAIN"
+      ],
+      "material_roots_including_joint": 1,
+      "search_scope": "Official results, buyback and HUMAIN infrastructure searches; May13 original opened."
+    },
+    {
+      "issuer": "IBM",
+      "scope": [
+        "2025-01-01",
+        "2025-12-31"
+      ],
+      "status": "PARTIAL",
+      "global_no_announcement_days": "UNKNOWN",
+      "source_frame_complete": false,
+      "first_results_audit_found": true,
+      "first_results_exhaustive_archive_certified": false,
+      "root_ids": [
+        "PBC-C-IBM-20250129-EARNINGS",
+        "PBC-D-IBM-20250428-US-INVESTMENT-PLAN"
+      ],
+      "material_roots_including_joint": 1,
+      "search_scope": "Official results and U.S. investment-plan searches; Apr28 original opened."
+    },
+    {
+      "issuer": "TXN",
+      "scope": [
+        "2025-01-01",
+        "2025-12-31"
+      ],
+      "status": "PARTIAL",
+      "global_no_announcement_days": "UNKNOWN",
+      "source_frame_complete": false,
+      "first_results_audit_found": true,
+      "first_results_exhaustive_archive_certified": false,
+      "root_ids": [
+        "PBC-C-TXN-20250123-EARNINGS",
+        "PBC-D-TXN-20250618-US-FABS"
+      ],
+      "material_roots_including_joint": 1,
+      "search_scope": "Official results, manufacturing-plan and CHIPS award searches; June18 and pre-event Dec20,2024 originals opened."
+    },
+    {
+      "issuer": "ADBE",
+      "scope": [
+        "2025-01-01",
+        "2025-12-31"
+      ],
+      "status": "PARTIAL",
+      "global_no_announcement_days": "UNKNOWN",
+      "source_frame_complete": false,
+      "first_results_audit_found": true,
+      "first_results_exhaustive_archive_certified": false,
+      "root_ids": [
+        "PBC-C-ADBE-20250312-EARNINGS",
+        "PBC-D-ADBE-20250318-PUBLICIS",
+        "PBC-D-ADBE-20251119-HUMAIN-QCOM"
+      ],
+      "material_roots_including_joint": 2,
+      "search_scope": "Official earnings, partnership/investment searches; Adobe Summit and HUMAIN originals opened as unselected candidates. Initial broad adobe.com query had stock-content noise."
+    },
+    {
+      "issuer": "CAT",
+      "scope": [
+        "2025-01-01",
+        "2025-12-31"
+      ],
+      "status": "PARTIAL",
+      "global_no_announcement_days": "UNKNOWN",
+      "source_frame_complete": false,
+      "first_results_audit_found": true,
+      "first_results_exhaustive_archive_certified": false,
+      "root_ids": [
+        "PBC-C-CAT-20250130-EARNINGS",
+        "PBC-D-CAT-20250821-HUNT-POWER"
+      ],
+      "material_roots_including_joint": 1,
+      "search_scope": "Official earnings and data-center power partnership searches; Hunt original opened."
+    },
+    {
+      "issuer": "DE",
+      "scope": [
+        "2025-01-01",
+        "2025-12-31"
+      ],
+      "status": "PARTIAL",
+      "global_no_announcement_days": "UNKNOWN",
+      "source_frame_complete": false,
+      "first_results_audit_found": true,
+      "first_results_exhaustive_archive_certified": false,
+      "root_ids": [
+        "PBC-C-DE-20250213-EARNINGS"
+      ],
+      "material_roots_including_joint": 0,
+      "search_scope": "Official results, manufacturing investment/capacity searches; no additional root selected."
+    },
+    {
+      "issuer": "PG",
+      "scope": [
+        "2025-01-01",
+        "2025-12-31"
+      ],
+      "status": "PARTIAL",
+      "global_no_announcement_days": "UNKNOWN",
+      "source_frame_complete": false,
+      "first_results_audit_found": true,
+      "first_results_exhaustive_archive_certified": false,
+      "root_ids": [
+        "PBC-C-PG-20250122-EARNINGS"
+      ],
+      "material_roots_including_joint": 0,
+      "search_scope": "Official results and manufacturing-investment/capex searches; no additional root selected."
+    },
+    {
+      "issuer": "KO",
+      "scope": [
+        "2025-01-01",
+        "2025-12-31"
+      ],
+      "status": "PARTIAL",
+      "global_no_announcement_days": "UNKNOWN",
+      "source_frame_complete": false,
+      "first_results_audit_found": true,
+      "first_results_exhaustive_archive_certified": false,
+      "root_ids": [
+        "PBC-C-KO-20250211-EARNINGS"
+      ],
+      "material_roots_including_joint": 0,
+      "search_scope": "Official results and capacity/investment searches; outside-window plant stories excluded."
+    },
+    {
+      "issuer": "HON",
+      "scope": [
+        "2025-01-01",
+        "2025-12-31"
+      ],
+      "status": "PARTIAL",
+      "global_no_announcement_days": "UNKNOWN",
+      "source_frame_complete": false,
+      "first_results_audit_found": true,
+      "first_results_exhaustive_archive_certified": false,
+      "root_ids": [
+        "PBC-C-HON-20250206-EARNINGS"
+      ],
+      "material_roots_including_joint": 0,
+      "search_scope": "Official results, strategic review and separation searches; preannounced earnings-linked update retained."
+    },
+    {
+      "issuer": "PEP",
+      "scope": [
+        "2025-01-01",
+        "2025-12-31"
+      ],
+      "status": "PARTIAL",
+      "global_no_announcement_days": "UNKNOWN",
+      "source_frame_complete": false,
+      "first_results_audit_found": true,
+      "first_results_exhaustive_archive_certified": false,
+      "root_ids": [
+        "PBC-C-PEP-20250204-EARNINGS"
+      ],
+      "material_roots_including_joint": 0,
+      "search_scope": "Official results, plants/capex/restructuring searches; later retrospective or outside-window stories excluded."
+    }
+  ],
+  "source_registry": [
+    {
+      "url": "https://about.fb.com/news/2025/06/meta-constellation-partner-clean-energy-project/",
+      "root_ids": [
+        "PBC-TECH-META-CONSTELLATION-20250603"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK",
+        "CONTEMPORANEOUS_LINK_NOT_PREEVENT"
+      ],
+      "web_refs": [
+        "turn55view3"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://about.fb.com/news/2025/10/meta-blue-owl-capital-develop-hyperion-data-center/",
+      "root_ids": [
+        "PBC-TECH-META-HYPERION-JV-20251021"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK",
+        "CONTEMPORANEOUS_LINK_NOT_PREEVENT"
+      ],
+      "web_refs": [
+        "turn56view1"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://blog.google/company-news/inside-google/company-announcements/google-agreement-acquire-wiz/",
+      "root_ids": [
+        "PBC-TECH-GOOG-WIZ-20250318"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK",
+        "CONTEMPORANEOUS_LINK_NOT_PREEVENT"
+      ],
+      "web_refs": [
+        "turn55view1"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://blogs.microsoft.com/blog/2025/01/21/microsoft-and-openai-evolve-partnership-to-drive-the-next-phase-of-ai/",
+      "root_ids": [
+        "PBC-TECH-MSFT-OPENAI-20250121"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK",
+        "CONTEMPORANEOUS_LINK_NOT_PREEVENT"
+      ],
+      "web_refs": [
+        "turn54view1"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://blogs.microsoft.com/blog/2025/09/11/a-joint-statement-from-microsoft-and-openai/",
+      "root_ids": [
+        "PBC-TECH-MSFT-OPENAI-20250911"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK"
+      ],
+      "web_refs": [
+        "turn106view0"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://blogs.microsoft.com/blog/2025/10/28/the-next-chapter-of-the-microsoft-openai-partnership/",
+      "root_ids": [
+        "PBC-TECH-MSFT-OPENAI-20251028"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK",
+        "CONTEMPORANEOUS_LINK_NOT_PREEVENT"
+      ],
+      "web_refs": [
+        "turn56view0"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://blogs.microsoft.com/on-the-issues/2025/01/03/the-golden-opportunity-for-american-ai/",
+      "root_ids": [
+        "PBC-TECH-MSFT-AI-CAPEX-20250103"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK",
+        "CONTEMPORANEOUS_LINK_NOT_PREEVENT"
+      ],
+      "web_refs": [
+        "turn54view0"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://blogs.nvidia.com/blog/nvidia-manufacture-american-made-ai-supercomputers-us/",
+      "root_ids": [
+        "PBC-TECH-NVDA-US-MANUFACTURING-20250414"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK",
+        "CONTEMPORANEOUS_LINK_NOT_PREEVENT"
+      ],
+      "web_refs": [
+        "turn63view0"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://boeing.mediaroom.com/2025-03-21-U-S-Air-Force-Selects-Boeing-for-Next-Generation-Air-Dominance-Fighter-Platform",
+      "root_ids": [
+        "PBC-D-LMT-20250321-AIR-FORCE-LOSS"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK"
+      ],
+      "web_refs": [
+        "turn83view1"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://investor.atmeta.com/investor-news/press-release-details/2025/Meta-Reports-Fourth-Quarter-and-Full-Year-2024-Results/default.aspx",
+      "root_ids": [
+        "PBC-TECH-CAL-META-2025-01-29"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK"
+      ],
+      "web_refs": [
+        "turn22view0"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://investor.atmeta.com/investor-news/press-release-details/2025/Meta-to-Announce-Fourth-Quarter-and-Full-Year-2024-Results/default.aspx",
+      "root_ids": [
+        "PBC-TECH-CAL-META-2025-01-29"
+      ],
+      "purposes": [
+        "ADVANCE_CALENDAR_NOTICE"
+      ],
+      "web_refs": [
+        "turn94view2"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://investor.lumentum.com/financial-news-releases/news-details/2025/Lumentum-Announces-Fiscal-Second-Quarter-2025-Financial-Results/default.aspx",
+      "root_ids": [
+        "PBC-C-LITE-20250206-EARNINGS"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK"
+      ],
+      "web_refs": [
+        "turn20view0"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://investor.lumentum.com/financial-news-releases/news-details/2025/Lumentum-Announces-Leadership-Transition/default.aspx",
+      "root_ids": [
+        "PBC-C-LITE-20250203-PRELIMINARY"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK"
+      ],
+      "web_refs": [
+        "turn41view1"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://investor.lumentum.com/financial-news-releases/news-details/2025/Lumentum-Announces-Reporting-Date-for-Fourth-Quarter-and-Fiscal-Year-2025-Results/",
+      "root_ids": [
+        "PBC-D-LITE-20250807-US-CAPACITY"
+      ],
+      "purposes": [
+        "KNOWN_CALENDAR_CONTEXT"
+      ],
+      "web_refs": [
+        "turn84view1"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://investor.lumentum.com/financial-news-releases/news-details/2025/Lumentum-Expands-U-S--Manufacturing-for-AI-Driven-Co-Packaged-Optics/",
+      "root_ids": [
+        "PBC-D-LITE-20250807-US-CAPACITY"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK"
+      ],
+      "web_refs": [
+        "turn83view4"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://investor.lumentum.com/financial-news-releases/news-details/2025/Lumentum-to-Announce-Fiscal-Second-Quarter-2025-Financial-Results-on-February-6-2025/default.aspx",
+      "root_ids": [
+        "PBC-C-LITE-20250206-EARNINGS"
+      ],
+      "purposes": [
+        "ADVANCE_CALENDAR_NOTICE"
+      ],
+      "web_refs": [
+        "turn20view5"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://investor.northropgrumman.com/node/42491",
+      "root_ids": [
+        "PBC-C-NOC-20250130-EARNINGS"
+      ],
+      "purposes": [
+        "ADVANCE_CALENDAR_NOTICE"
+      ],
+      "web_refs": [
+        "turn25view7"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://investor.northropgrumman.com/static-files/15b693ec-12e4-4300-bbdc-288db7cbb0fb",
+      "root_ids": [
+        "PBC-C-NOC-20250130-EARNINGS"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK"
+      ],
+      "web_refs": [
+        "turn28view6"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://investor.oracle.com/investor-news/news-details/2025/Oracle-Sets-the-Date-for-its-Third-Quarter-Fiscal-Year-2025-Earnings-Announcement/default.aspx",
+      "root_ids": [
+        "PBC-TECH-CAL-ORCL-2025-03-10"
+      ],
+      "purposes": [
+        "ADVANCE_CALENDAR_NOTICE"
+      ],
+      "web_refs": [
+        "turn94view1"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://investor.ti.com/news-releases/news-release-details/ti-reports-q4-2024-and-2024-financial-results-and-shareholder",
+      "root_ids": [
+        "PBC-C-TXN-20250123-EARNINGS"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK"
+      ],
+      "web_refs": [
+        "turn28view1"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://investor.ti.com/node/36661",
+      "root_ids": [
+        "PBC-C-TXN-20250123-EARNINGS"
+      ],
+      "purposes": [
+        "ADVANCE_CALENDAR_NOTICE"
+      ],
+      "web_refs": [
+        "turn28view5"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://investors.albemarle.com/news-and-events/news/news-details/2025/Albemarle-Reports-Fourth-Quarter-and-Full-Year-2024-Results/default.aspx",
+      "root_ids": [
+        "PBC-C-ALB-20250212-EARNINGS"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK"
+      ],
+      "web_refs": [
+        "turn25view0"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://investors.broadcom.com/news-releases/news-release-details/broadcom-inc-announce-first-quarter-fiscal-year-2025-financial",
+      "root_ids": [
+        "PBC-TECH-CAL-AVGO-2025-03-06"
+      ],
+      "purposes": [
+        "ADVANCE_CALENDAR_NOTICE"
+      ],
+      "web_refs": [
+        "turn94view0"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://investors.broadcom.com/news-releases/news-release-details/broadcom-inc-announces-10-billion-share-repurchase-0",
+      "root_ids": [
+        "PBC-TECH-AVGO-BUYBACK-20250407"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK"
+      ],
+      "web_refs": [
+        "turn79view0"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://investors.broadcom.com/news-releases/news-release-details/broadcom-inc-announces-first-quarter-fiscal-year-2025-financial",
+      "root_ids": [
+        "PBC-TECH-CAL-AVGO-2025-03-06"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK"
+      ],
+      "web_refs": [
+        "turn23view1"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://investors.broadcom.com/news-releases/news-release-details/openai-and-broadcom-announce-strategic-collaboration-deploy-10",
+      "root_ids": [
+        "PBC-TECH-AVGO-OPENAI-20251013"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK"
+      ],
+      "web_refs": [
+        "turn79view1"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://investors.caterpillar.com/news/news-details/2025/Caterpillar-and-Hunt-Energy-Company-L-P--Sign-Long-Term-Strategic-Agreement-to-Deliver-Power-Solutions-for-Data-Centers/default.aspx",
+      "root_ids": [
+        "PBC-D-CAT-20250821-HUNT-POWER"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK"
+      ],
+      "web_refs": [
+        "turn75view2"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://investors.coca-colacompany.com/news-events/press-releases/detail/1128/coca-cola-reports-fourth-quarter-and-full-year-2024-results",
+      "root_ids": [
+        "PBC-C-KO-20250211-EARNINGS"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK"
+      ],
+      "web_refs": [
+        "turn35view1"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://investors.delltechnologies.com/news-releases/news-release-details/dell-technologies-delivers-fourth-quarter-and-full-year-fiscal-2",
+      "root_ids": [
+        "PBC-C-DELL-20250227-EARNINGS"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK"
+      ],
+      "web_refs": [
+        "turn15view2"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://investors.delltechnologies.com/node/17371/pdf",
+      "root_ids": [
+        "PBC-C-DELL-20250227-EARNINGS"
+      ],
+      "purposes": [
+        "ADVANCE_CALENDAR_NOTICE"
+      ],
+      "web_refs": [
+        "turn44view0"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://investors.lockheedmartin.com/news-releases/news-release-details/lockheed-martin-announces-fourth-quarter-and-full-year-2024",
+      "root_ids": [
+        "PBC-C-LMT-20250128-EARNINGS"
+      ],
+      "purposes": [
+        "ADVANCE_CALENDAR_NOTICE"
+      ],
+      "web_refs": [
+        "turn20view7"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://investors.micron.com/news/press-release/2025/Micron-Announces-Exit-from-Crucial-Consumer-Business-12-03-2025/default.aspx",
+      "root_ids": [
+        "PBC-TECH-MU-CRUCIAL-EXIT-20251203"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK"
+      ],
+      "web_refs": [
+        "turn79view4"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://investors.micron.com/news/press-release/2025/Micron-Breaks-Ground-on-New-HBM-Advanced-Packaging-Facility-in-Singapore-01-08-2025/default.aspx",
+      "root_ids": [
+        "PBC-TECH-MU-SINGAPORE-HBM-20250108"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK",
+        "CONTEMPORANEOUS_LINK_NOT_PREEVENT"
+      ],
+      "web_refs": [
+        "turn79view2"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://investors.micron.com/news/press-release/2025/Micron-Technology-Inc--Reports-Results-for-the-Second-Quarter-of-Fiscal-2025-03-20-2025/default.aspx",
+      "root_ids": [
+        "PBC-TECH-CAL-MU-2025-03-20"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK"
+      ],
+      "web_refs": [
+        "turn23view2"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://investors.micron.com/news/press-release/2025/Micron-and-Trump-Administration-Announce-Expanded-U-S--Investments-in-Leading-Edge-DRAM-Manufacturing-and-RD-06-12-2025/default.aspx",
+      "root_ids": [
+        "PBC-TECH-MU-US-EXPANSION-20250612"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK",
+        "CONTEMPORANEOUS_LINK_NOT_PREEVENT"
+      ],
+      "web_refs": [
+        "turn79view3"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://investors.mpmaterials.com/investor-news/news-details/2025/MP-Materials-Announces-Commencement-of-Proposed-500-Million-Public-Offering-of-Common-Stock/default.aspx",
+      "root_ids": [
+        "PBC-D-MP-20250716-COMMON-OFFERING"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK"
+      ],
+      "web_refs": [
+        "turn80view0"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://investors.mpmaterials.com/investor-news/news-details/2025/MP-Materials-Announces-Date-for-Fourth-Quarter-2024-Financial-Results-and-Webcast/default.aspx",
+      "root_ids": [
+        "PBC-C-MP-20250220-EARNINGS"
+      ],
+      "purposes": [
+        "ADVANCE_CALENDAR_NOTICE"
+      ],
+      "web_refs": [
+        "turn25view5"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://investors.mpmaterials.com/investor-news/news-details/2025/MP-Materials-Reports-Fourth-Quarter-and-Full-Year-2024-Results/default.aspx",
+      "root_ids": [
+        "PBC-C-MP-20250220-EARNINGS",
+        "PBC-D-MP-20250710-DOD-PACKAGE",
+        "PBC-D-MP-20250716-COMMON-OFFERING"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK",
+        "PRE_EVENT_GOVERNMENT_LINKAGE"
+      ],
+      "web_refs": [
+        "turn25view1",
+        "turn86view0"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://investors.vertiv.com/news/news-details/2025/Vertiv-Announces-Date-of-Fourth-Quarter-and-Full-Year-2024-Earnings-Release-and-Conference-Call/default.aspx",
+      "root_ids": [
+        "PBC-C-VRT-20250212-EARNINGS"
+      ],
+      "purposes": [
+        "ADVANCE_CALENDAR_NOTICE"
+      ],
+      "web_refs": [
+        "turn15view6"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://investors.vertiv.com/news/news-details/2025/Vertiv-Reports-Strong-Fourth-Quarter-2024-Results/default.aspx",
+      "root_ids": [
+        "PBC-C-VRT-20250212-EARNINGS"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK"
+      ],
+      "web_refs": [
+        "turn15view1"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://ir.aboutamazon.com/news-release/news-release-details/2025/Amazon-com-Announces-Fourth-Quarter-Results/default.aspx",
+      "root_ids": [
+        "PBC-TECH-CAL-AMZN-2025-02-06"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK"
+      ],
+      "web_refs": [
+        "turn21view2"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://ir.amd.com/financial-information/sec-filings/content/0000002488-25-000039/amd-20250415.htm",
+      "root_ids": [
+        "PBC-TECH-AMD-MI308-EXPORT-20250416"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK",
+        "CONTEMPORANEOUS_LINK_NOT_PREEVENT"
+      ],
+      "web_refs": [
+        "turn63view3"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://ir.amd.com/financial-information/sec-filings/content/0001193125-25-122121/d831221dex991.htm",
+      "root_ids": [
+        "PBC-TECH-AMD-SANMINA-20250519"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK",
+        "CONTEMPORANEOUS_LINK_NOT_PREEVENT"
+      ],
+      "web_refs": [
+        "turn65view0"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://ir.amd.com/financial-information/sec-filings/content/0001193125-25-230895/d28189dex41.htm",
+      "root_ids": [
+        "PBC-TECH-AMD-OPENAI-20251006"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK"
+      ],
+      "web_refs": [
+        "turn65view2"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://ir.amd.com/news-events/press-releases/detail/1235/amd-to-report-fiscal-fourth-quarter-and-full-year-2024-financial-results",
+      "root_ids": [
+        "PBC-TECH-CAL-AMD-2025-02-04"
+      ],
+      "purposes": [
+        "ADVANCE_CALENDAR_NOTICE"
+      ],
+      "web_refs": [
+        "turn91view2"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://ir.amd.com/news-events/press-releases/detail/1236/amd-reports-fourth-quarter-and-full-year-2024-financial-results",
+      "root_ids": [
+        "PBC-TECH-CAL-AMD-2025-02-04"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK"
+      ],
+      "web_refs": [
+        "turn22view3"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://ir.amd.com/news-events/press-releases/detail/1250/amd-and-humain-form-strategic-10b-collaboration-to-advance-global-ai",
+      "root_ids": [
+        "PBC-TECH-AMD-HUMAIN-20250513"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK",
+        "CONTEMPORANEOUS_LINK_NOT_PREEVENT"
+      ],
+      "web_refs": [
+        "turn88view0"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://ir.amd.com/news-events/press-releases/detail/1251/amd-announces-new-6-billion-share-repurchase-authorization",
+      "root_ids": [
+        "PBC-TECH-AMD-BUYBACK-20250514"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK",
+        "CONTEMPORANEOUS_LINK_NOT_PREEVENT"
+      ],
+      "web_refs": [
+        "turn63view4"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://ir.amd.com/news-events/press-releases/detail/1260/amd-and-openai-announce-strategic-partnership-to-deploy-6-gigawatts-of-amd-gpus",
+      "root_ids": [
+        "PBC-TECH-AMD-OPENAI-20251006"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK",
+        "CONTEMPORANEOUS_LINK_NOT_PREEVENT"
+      ],
+      "web_refs": [
+        "turn67view1"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://ir.amd.com/news-events/press-releases?page=2&year=2025",
+      "root_ids": [
+        "PBC-TECH-AMD-HUMAIN-20250513",
+        "PBC-TECH-AMD-BUYBACK-20250514",
+        "PBC-TECH-AMD-SANMINA-20250519"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK"
+      ],
+      "web_refs": [
+        "turn85view0"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://ir.coherent.com/news-releases/news-release-details/coherent-corp-reports-fourth-quarter-and-full-year-fiscal-2025",
+      "root_ids": [
+        "PBC-D-COHR-20250813-ADVENT-DIVESTITURE"
+      ],
+      "purposes": [
+        "KNOWN_CALENDAR_CONTEXT"
+      ],
+      "web_refs": [
+        "turn109view2"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://ir.tesla.com/press-release/tesla-fourth-quarter-2024-production-deliveries-and-deployments",
+      "root_ids": [
+        "PBC-TECH-CAL-TSLA-2025-01-29"
+      ],
+      "purposes": [
+        "ADVANCE_CALENDAR_NOTICE"
+      ],
+      "web_refs": [
+        "turn88view2"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://ir.tesla.com/press-release/tesla-releases-fourth-quarter-and-full-year-2024-financial-results",
+      "root_ids": [
+        "PBC-TECH-CAL-TSLA-2025-01-29"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK"
+      ],
+      "web_refs": [
+        "turn22view2"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://mpmaterials.com/news/mp-materials-and-apple-announce-500-million-partnership-to-produce-recycled-rare-earth-magnets-in-the-united-states/",
+      "root_ids": [
+        "PBC-TECH-AAPL-MP-20250715"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK"
+      ],
+      "web_refs": [
+        "turn75view0"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://mpmaterials.com/news/mp-materials-announces-transformational-public-private-partnership-with-the-department-of-defense-to-accelerate-u-s-rare-earth-magnet-independence",
+      "root_ids": [
+        "PBC-D-MP-20250710-DOD-PACKAGE"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK"
+      ],
+      "web_refs": [
+        "turn86view1"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://news.adobe.com/news/2025/03/publicis-groupe-and-adobe-expand-global-partnership",
+      "root_ids": [
+        "PBC-D-ADBE-20250318-PUBLICIS"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK",
+        "KNOWN_CALENDAR_CONTEXT"
+      ],
+      "web_refs": [
+        "turn109view0"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://news.adobe.com/news/2025/11/humain-adobe-announce-global-strategic-partnership",
+      "root_ids": [
+        "PBC-D-ADBE-20251119-HUMAIN-QCOM"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK",
+        "KNOWN_CALENDAR_CONTEXT"
+      ],
+      "web_refs": [
+        "turn109view1"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://news.lockheedmartin.com/2025-01-28-Lockheed-Martin-Reports-Fourth-Quarter-and-Full-Year-2024-Financial-Results",
+      "root_ids": [
+        "PBC-C-LMT-20250128-EARNINGS",
+        "PBC-D-LMT-20250321-AIR-FORCE-LOSS"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK",
+        "PRE_EVENT_GOVERNMENT_LINKAGE"
+      ],
+      "web_refs": [
+        "turn20view2"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://news.lockheedmartin.com/2025-03-21-Statement",
+      "root_ids": [
+        "PBC-D-LMT-20250321-AIR-FORCE-LOSS"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK"
+      ],
+      "web_refs": [
+        "turn83view3"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://news.microsoft.com/source/2025/01/09/microsoft-announces-quarterly-earnings-release-date-62/",
+      "root_ids": [
+        "PBC-TECH-CAL-MSFT-2025-01-29"
+      ],
+      "purposes": [
+        "ADVANCE_CALENDAR_NOTICE"
+      ],
+      "web_refs": [
+        "turn87view2"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://newsroom.cisco.com/c/r/newsroom/en/us/a/y2025/m02/cisco-reports-second-quarter-earnings.html",
+      "root_ids": [
+        "PBC-C-CSCO-20250212-EARNINGS"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK"
+      ],
+      "web_refs": [
+        "turn25view2"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://newsroom.cisco.com/c/r/newsroom/en/us/a/y2025/m02/cisco-schedules-conference-call-for-q2-fiscal-year-2025-financial-results.html",
+      "root_ids": [
+        "PBC-C-CSCO-20250212-EARNINGS"
+      ],
+      "purposes": [
+        "ADVANCE_CALENDAR_NOTICE"
+      ],
+      "web_refs": [
+        "turn25view6"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://newsroom.cisco.com/c/r/newsroom/en/us/a/y2025/m05/cisco-expands-partnership-with-saudi-arabia-to-power-the-ai-future.html",
+      "root_ids": [
+        "PBC-D-CSCO-20250513-HUMAIN"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK",
+        "KNOWN_CALENDAR_CONTEXT"
+      ],
+      "web_refs": [
+        "turn76view0"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://newsroom.ibm.com/2025-01-15-ibm-to-announce-fourth-quarter-2024-financial-results",
+      "root_ids": [
+        "PBC-C-IBM-20250129-EARNINGS"
+      ],
+      "purposes": [
+        "ADVANCE_CALENDAR_NOTICE"
+      ],
+      "web_refs": [
+        "turn35view8"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://newsroom.ibm.com/2025-01-29-IBM-RELEASES-FOURTH-QUARTER-RESULTS?os=v",
+      "root_ids": [
+        "PBC-C-IBM-20250129-EARNINGS"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK"
+      ],
+      "web_refs": [
+        "turn28view2"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://newsroom.ibm.com/2025-04-28-ibm-unveils-150-billion-investment-in-america-to-accelerate-technology-opportunity?ftag=MSFd61514f",
+      "root_ids": [
+        "PBC-D-IBM-20250428-US-INVESTMENT-PLAN"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK"
+      ],
+      "web_refs": [
+        "turn86view4"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://nvidianews.nvidia.com/news/humain-and-nvidia-announce-strategic-partnership-to-build-ai-factories-of-the-future-in-saudi-arabia",
+      "root_ids": [
+        "PBC-TECH-NVDA-HUMAIN-20250513"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK",
+        "CONTEMPORANEOUS_LINK_NOT_PREEVENT"
+      ],
+      "web_refs": [
+        "turn63view1"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://nvidianews.nvidia.com/news/nvidia-and-intel-to-develop-ai-infrastructure-and-personal-computing-products",
+      "root_ids": [
+        "PBC-TECH-NVDA-INTC-20250918"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK",
+        "CONTEMPORANEOUS_LINK_NOT_PREEVENT"
+      ],
+      "web_refs": [
+        "turn61view3"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://nvidianews.nvidia.com/news/nvidia-announces-financial-results-for-fourth-quarter-and-fiscal-2025",
+      "root_ids": [
+        "PBC-TECH-CAL-NVDA-2025-02-26"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK"
+      ],
+      "web_refs": [
+        "turn22view1"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://nvidianews.nvidia.com/news/nvidia-sets-conference-call-for-fourth-quarter-financial-results-6908112",
+      "root_ids": [
+        "PBC-TECH-CAL-NVDA-2025-02-26"
+      ],
+      "purposes": [
+        "ADVANCE_CALENDAR_NOTICE"
+      ],
+      "web_refs": [
+        "turn91view1"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://openai.com/index/announcing-the-stargate-project/",
+      "root_ids": [
+        "PBC-TECH-ORCL-STARGATE-20250121"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK",
+        "CONTEMPORANEOUS_LINK_NOT_PREEVENT"
+      ],
+      "web_refs": [
+        "turn81view1"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://openai.com/index/aws-and-openai-partnership/",
+      "root_ids": [
+        "PBC-TECH-AMZN-OPENAI-20251103"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK"
+      ],
+      "web_refs": [
+        "turn81view3"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://openai.com/index/joint-statement-from-openai-and-microsoft/",
+      "root_ids": [
+        "PBC-TECH-MSFT-OPENAI-20250911"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK"
+      ],
+      "web_refs": [
+        "turn106view1"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://openai.com/index/openai-nvidia-systems-partnership/",
+      "root_ids": [
+        "PBC-TECH-NVDA-OPENAI-20250922"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK",
+        "CONTEMPORANEOUS_LINK_NOT_PREEVENT"
+      ],
+      "web_refs": [
+        "turn61view4"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://openai.com/index/stargate-advances-with-partnership-with-oracle/",
+      "root_ids": [
+        "PBC-TECH-ORCL-STARGATE-EXPANSION-20250722"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK",
+        "CONTEMPORANEOUS_LINK_NOT_PREEVENT"
+      ],
+      "web_refs": [
+        "turn81view2"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://pr.tsmc.com/english/news/3201",
+      "root_ids": [
+        "PBC-TECH-CAL-TSM-2025-01-16"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK"
+      ],
+      "web_refs": [
+        "turn23view3"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://pr.tsmc.com/english/news/3210",
+      "root_ids": [
+        "PBC-TECH-TSM-US-EXPANSION-20250303"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK",
+        "CONTEMPORANEOUS_LINK_NOT_PREEVENT"
+      ],
+      "web_refs": [
+        "turn79view5"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://press.aboutamazon.com/2025/1/amazon-com-to-webcast-fourth-quarter-2024-financial-results-conference-call",
+      "root_ids": [
+        "PBC-TECH-CAL-AMZN-2025-02-06"
+      ],
+      "purposes": [
+        "ADVANCE_CALENDAR_NOTICE"
+      ],
+      "web_refs": [
+        "turn87view3"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://press.aboutamazon.com/2025/5/aws-and-humain-announce-groundbreaking-ai-zone-to-accelerate-ai-adoption-in-saudi-arabia-and-globally",
+      "root_ids": [
+        "PBC-TECH-AMZN-HUMAIN-20250513"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK",
+        "CONTEMPORANEOUS_LINK_NOT_PREEVENT"
+      ],
+      "web_refs": [
+        "turn55view0"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://s22.q4cdn.com/253594569/files/doc_financials/2024/q4/DE-4Q24-Earnings-Call-Presentation.pdf",
+      "root_ids": [
+        "PBC-C-DE-20250213-EARNINGS"
+      ],
+      "purposes": [
+        "ADVANCE_CALENDAR_NOTICE"
+      ],
+      "web_refs": [
+        "turn49view0"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://static.nhtsa.gov/odi/rcl/2025/RCAK-25V170-3909.pdf",
+      "root_ids": [
+        "PBC-TECH-TSLA-CYBERTRUCK-RECALL-20250319"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK",
+        "CONTEMPORANEOUS_LINK_NOT_PREEVENT"
+      ],
+      "web_refs": [
+        "turn67view3"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://static.nhtsa.gov/odi/rcl/2025/RCLRPT-25V170-9407.PDF",
+      "root_ids": [
+        "PBC-TECH-TSLA-CYBERTRUCK-RECALL-20250319"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK"
+      ],
+      "web_refs": [
+        "turn67view4"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://www.aboutamazon.com/news/aws/aws-open-ai-workloads-compute-infrastructure",
+      "root_ids": [
+        "PBC-TECH-AMZN-OPENAI-20251103"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK",
+        "CONTEMPORANEOUS_LINK_NOT_PREEVENT"
+      ],
+      "web_refs": [
+        "turn54view3"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://www.albemarle.com/us/en/news/albemarle-corporation-release-fourth-quarter-2024-earnings-results-wednesday-february-12-2025",
+      "root_ids": [
+        "PBC-C-ALB-20250212-EARNINGS"
+      ],
+      "purposes": [
+        "ADVANCE_CALENDAR_NOTICE"
+      ],
+      "web_refs": [
+        "turn25view4"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://www.apple.com/newsroom/2025/01/apple-reports-first-quarter-results/",
+      "root_ids": [
+        "PBC-TECH-CAL-AAPL-2025-01-30"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK"
+      ],
+      "web_refs": [
+        "turn21view0"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://www.apple.com/newsroom/2025/02/apple-will-spend-more-than-500-billion-usd-in-the-us-over-the-next-four-years/",
+      "root_ids": [
+        "PBC-TECH-AAPL-US-INVESTMENT-20250224"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK",
+        "CONTEMPORANEOUS_LINK_NOT_PREEVENT"
+      ],
+      "web_refs": [
+        "turn53view0"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://www.apple.com/newsroom/2025/04/apple-surpasses-60-percent-reduction-in-global-greenhouse-gas-emissions/",
+      "root_ids": [
+        "PBC-N-AAPL-20250416-ENVIRONMENT"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK"
+      ],
+      "web_refs": [
+        "turn74view2"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://www.apple.com/newsroom/2025/04/get-active-with-apple-watch/",
+      "root_ids": [
+        "PBC-N-AAPL-20250414-WATCH"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK"
+      ],
+      "web_refs": [
+        "turn78view1"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://www.apple.com/newsroom/2025/04/meet-four-emerging-filmmakers-bending-cultural-and-creative-lines-with-iphone-16-pro-max/",
+      "root_ids": [
+        "PBC-N-AAPL-20250415-FILMMAKERS"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK"
+      ],
+      "web_refs": [
+        "turn78view0"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://www.apple.com/newsroom/2025/07/apple-expands-us-supply-chain-with-500-million-usd-commitment/",
+      "root_ids": [
+        "PBC-TECH-AAPL-MP-20250715"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK",
+        "CONTEMPORANEOUS_LINK_NOT_PREEVENT"
+      ],
+      "web_refs": [
+        "turn53view1"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://www.apple.com/newsroom/2025/08/apple-corning-to-manufacture-all-iphone-apple-watch-cover-glass-in-kentucky/",
+      "root_ids": [
+        "PBC-TECH-AAPL-US-EXPANSION-20250806"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK"
+      ],
+      "web_refs": [
+        "turn53view3"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://www.apple.com/newsroom/2025/08/apple-increases-us-commitment-to-600-billion-usd-announces-ambitious-program/",
+      "root_ids": [
+        "PBC-TECH-AAPL-US-EXPANSION-20250806"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK",
+        "CONTEMPORANEOUS_LINK_NOT_PREEVENT"
+      ],
+      "web_refs": [
+        "turn53view2"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://www.arista.com/en/company/news/press-release/21091-pr-01212025",
+      "root_ids": [
+        "PBC-C-ANET-20250218-EARNINGS"
+      ],
+      "purposes": [
+        "ADVANCE_CALENDAR_NOTICE"
+      ],
+      "web_refs": [
+        "turn15view5"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://www.arista.com/en/company/news/press-release/21096-pr-20250218",
+      "root_ids": [
+        "PBC-C-ANET-20250218-EARNINGS"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK"
+      ],
+      "web_refs": [
+        "turn15view0"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://www.arista.com/en/company/news/press-release/22031-pr-20250730",
+      "root_ids": [
+        "PBC-D-ANET-20250730-INDIA-PLAN"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK"
+      ],
+      "web_refs": [
+        "turn93view0"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://www.businesswire.com/news/home/20250303097288/en/Adobe-to-Announce-Q1-FY2025-Earnings-Results-on-March-12",
+      "root_ids": [
+        "PBC-C-ADBE-20250312-EARNINGS",
+        "PBC-D-ADBE-20250318-PUBLICIS"
+      ],
+      "purposes": [
+        "ADVANCE_CALENDAR_NOTICE",
+        "PRIOR_CONTEXT_CALENDAR"
+      ],
+      "web_refs": [
+        "turn98view0",
+        "turn109view3"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://www.caterpillar.com/en/news/corporate-press-releases/h/4Q-full-year-earnings-advisory.html",
+      "root_ids": [
+        "PBC-C-CAT-20250130-EARNINGS"
+      ],
+      "purposes": [
+        "ADVANCE_CALENDAR_NOTICE"
+      ],
+      "web_refs": [
+        "turn28view4"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://www.caterpillar.com/en/news/corporate-press-releases/h/4q24-results-caterpillar-inc.html",
+      "root_ids": [
+        "PBC-C-CAT-20250130-EARNINGS"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK"
+      ],
+      "web_refs": [
+        "turn28view0"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://www.coca-colacompany.com/media-center/coca-cola-company-announces-timing-of-fourth-quarter-and-full-year-2024-earnings-release",
+      "root_ids": [
+        "PBC-C-KO-20250211-EARNINGS"
+      ],
+      "purposes": [
+        "ADVANCE_CALENDAR_NOTICE"
+      ],
+      "web_refs": [
+        "turn35view6"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://www.coherent.com/news/press-releases/coherent-announces-agreement-to-sell-aerospace-and-defense-business-to-advent",
+      "root_ids": [
+        "PBC-D-COHR-20250813-ADVENT-DIVESTITURE"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK"
+      ],
+      "web_refs": [
+        "turn107view1"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://www.coherent.com/news/press-releases/fy2025-second-quarter-conference-call-announced",
+      "root_ids": [
+        "PBC-C-COHR-20250205-EARNINGS"
+      ],
+      "purposes": [
+        "ADVANCE_CALENDAR_NOTICE"
+      ],
+      "web_refs": [
+        "turn15view9"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://www.coherent.com/news/press-releases/second-quarter-fiscal-year-2025-results",
+      "root_ids": [
+        "PBC-C-COHR-20250205-EARNINGS"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK"
+      ],
+      "web_refs": [
+        "turn15view4"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://www.eaton.com/ae/en-gb/company/news-insights/news-releases/2025/eaton-and-siemens-energy-join-forces-to-provide-power-and-technology.html",
+      "root_ids": [
+        "PBC-D-ETN-20250603-SIEMENS-ENERGY"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK"
+      ],
+      "web_refs": [
+        "turn76view2"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://www.eaton.com/sg/en-us/company/news-insights/news-releases/2025/eaton-to-announce-fourth-quarter-2024-earnings-on-january-31--20.html",
+      "root_ids": [
+        "PBC-C-ETN-20250131-EARNINGS"
+      ],
+      "purposes": [
+        "ADVANCE_CALENDAR_NOTICE"
+      ],
+      "web_refs": [
+        "turn20view6"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://www.honeywell.com/us/en/news/press-releases/2025/01/honeywell-to-release-fourth-quarter-financial-results-and-announce-2025-outlook-during-its-investor-conference-call-on-thursday-february-6",
+      "root_ids": [
+        "PBC-C-HON-20250206-EARNINGS"
+      ],
+      "purposes": [
+        "ADVANCE_CALENDAR_NOTICE"
+      ],
+      "web_refs": [
+        "turn35view5"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://www.honeywell.com/us/en/news/press-releases/2025/02/honeywell-announces-fourth-quarter-and-full-year-2024-results-issues-2025-guidance",
+      "root_ids": [
+        "PBC-C-HON-20250206-EARNINGS"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK"
+      ],
+      "web_refs": [
+        "turn35view0"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://www.hpe.com/us/en/newsroom/press-release/2025/02/hewlett-packard-enterprise-to-present-live-audio-webcast-of-fiscal-2025-first-quarter-earnings-conference-call.html",
+      "root_ids": [
+        "PBC-C-HPE-20250306-EARNINGS"
+      ],
+      "purposes": [
+        "ADVANCE_CALENDAR_NOTICE"
+      ],
+      "web_refs": [
+        "turn15view8"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://www.hpe.com/us/en/newsroom/press-release/2025/03/hewlett-packard-enterprise-reports-fiscal-2025-first-quarter-results.html",
+      "root_ids": [
+        "PBC-C-HPE-20250306-EARNINGS"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK"
+      ],
+      "web_refs": [
+        "turn15view3"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://www.hpe.com/us/en/newsroom/press-release/2025/06/hpe-and-juniper-networks-reach-settlement-with-us-department-of-justice.html",
+      "root_ids": [
+        "PBC-D-HPE-20250627-DOJ-SETTLEMENT"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK"
+      ],
+      "web_refs": [
+        "turn95view0"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://www.intc.com/filings-reports/all-sec-filings/content/0001193125-25-079727/d901587dex991.htm",
+      "root_ids": [
+        "PBC-TECH-INTC-ALTERA-20250414"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK",
+        "CONTEMPORANEOUS_LINK_NOT_PREEVENT"
+      ],
+      "web_refs": [
+        "turn65view3"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://www.intc.com/news-events/press-releases/detail/1726/intel-reports-fourth-quarter-and-full-year-2024-financial",
+      "root_ids": [
+        "PBC-TECH-CAL-INTC-2025-01-30"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK"
+      ],
+      "web_refs": [
+        "turn23view0"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://www.intc.com/news-events/press-releases/detail/1746/softbank-group-and-intel-corporation-sign-2b-investment",
+      "root_ids": [
+        "PBC-TECH-INTC-SOFTBANK-20250818"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK",
+        "CONTEMPORANEOUS_LINK_NOT_PREEVENT"
+      ],
+      "web_refs": [
+        "turn65view4"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://www.intc.com/news-events/press-releases/detail/1748/intel-and-trump-administration-reach-historic-agreement-to",
+      "root_ids": [
+        "PBC-TECH-INTC-USG-20250822"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK",
+        "CONTEMPORANEOUS_LINK_NOT_PREEVENT"
+      ],
+      "web_refs": [
+        "turn67view0"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://www.intel.com/content/www/us/en/newsroom/news/intel-report-fourth-quarter-full-year-2024-financial-results.html",
+      "root_ids": [
+        "PBC-TECH-CAL-INTC-2025-01-30"
+      ],
+      "purposes": [
+        "ADVANCE_CALENDAR_NOTICE"
+      ],
+      "web_refs": [
+        "turn87view4"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://www.justice.gov/atr/case-document/proposed-final-judgment-296",
+      "root_ids": [
+        "PBC-D-HPE-20250627-DOJ-SETTLEMENT"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK"
+      ],
+      "web_refs": [
+        "turn83view0"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://www.justice.gov/atr/media/1406596/dl",
+      "root_ids": [
+        "PBC-D-HPE-20250627-DOJ-SETTLEMENT"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK"
+      ],
+      "web_refs": [
+        "turn84view3"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://www.justice.gov/opa/pr/department-justice-prevails-landmark-antitrust-case-against-google",
+      "root_ids": [
+        "PBC-TECH-GOOG-ADTECH-RULING-20250417"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK",
+        "CONTEMPORANEOUS_LINK_NOT_PREEVENT"
+      ],
+      "web_refs": [
+        "turn55view2"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://www.justice.gov/opa/pr/justice-department-requires-divestitures-and-licensing-commitments-hpes-acquisition-juniper",
+      "root_ids": [
+        "PBC-D-HPE-20250627-DOJ-SETTLEMENT"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK"
+      ],
+      "web_refs": [
+        "turn80view1"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://www.justice.gov/opa/pr/justice-department-sues-block-hewlett-packard-enterprises-proposed-14-billion-acquisition",
+      "root_ids": [
+        "PBC-D-HPE-20250130-DOJ-CHALLENGE"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK"
+      ],
+      "web_refs": [
+        "turn71view1"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2025-Q2/press-release-webcast",
+      "root_ids": [
+        "PBC-TECH-CAL-MSFT-2025-01-29"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK"
+      ],
+      "web_refs": [
+        "turn21view1"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://www.oracle.com/news/announcement/q3fy25-earnings-release-2025-03-10/",
+      "root_ids": [
+        "PBC-TECH-CAL-ORCL-2025-03-10"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK"
+      ],
+      "web_refs": [
+        "turn26view1"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://www.pepsico.com/newsroom/press-releases/2024/pepsico-announces-timing-and-availability-of-fourth-quarter-and-full-year-2024-financial-results",
+      "root_ids": [
+        "PBC-C-PEP-20250204-EARNINGS"
+      ],
+      "purposes": [
+        "ADVANCE_CALENDAR_NOTICE"
+      ],
+      "web_refs": [
+        "turn35view7"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://www.pginvestor.com/news/news-details/2024/PG-to-Webcast-Discussion-of-Second-Quarter-202425-Earnings-Results-on-January-22/default.aspx",
+      "root_ids": [
+        "PBC-C-PG-20250122-EARNINGS"
+      ],
+      "purposes": [
+        "ADVANCE_CALENDAR_NOTICE"
+      ],
+      "web_refs": [
+        "turn41view0"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://www.pginvestor.com/news/news-details/2025/PG-Announces-Fiscal-Year-2025-Second-Quarter-Results/default.aspx",
+      "root_ids": [
+        "PBC-C-PG-20250122-EARNINGS"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK"
+      ],
+      "web_refs": [
+        "turn35view2"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://www.qualcomm.com/news/releases/2025/01/qualcomm-schedules-first-quarter-fiscal-2025-earnings-release-an",
+      "root_ids": [
+        "PBC-TECH-CAL-QCOM-2025-02-05"
+      ],
+      "purposes": [
+        "ADVANCE_CALENDAR_NOTICE"
+      ],
+      "web_refs": [
+        "turn91view0"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://www.qualcomm.com/news/releases/2025/06/qualcomm-to-acquire-alphawave-semi",
+      "root_ids": [
+        "PBC-TECH-QCOM-ALPHAWAVE-20250609"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK"
+      ],
+      "web_refs": [
+        "turn81view0"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://www.rtx.com/news/2025/09/23/rtx-awarded-contract-for-ltamds",
+      "root_ids": [
+        "PBC-D-RTX-20250923-LTAMDS"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK"
+      ],
+      "web_refs": [
+        "turn62view3"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://www.rtx.com/news/news-center/2025/01/07/rtx-to-release-fourth-quarter-results-on-january-28-2025",
+      "root_ids": [
+        "PBC-C-RTX-20250128-EARNINGS"
+      ],
+      "purposes": [
+        "ADVANCE_CALENDAR_NOTICE"
+      ],
+      "web_refs": [
+        "turn20view8"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://www.rtx.com/news/news-center/2025/01/28/rtx-reports-2024-results-and-announces-2025-outlook",
+      "root_ids": [
+        "PBC-C-RTX-20250128-EARNINGS",
+        "PBC-D-RTX-20250923-LTAMDS"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK",
+        "PRE_EVENT_GOVERNMENT_LINKAGE"
+      ],
+      "web_refs": [
+        "turn20view3"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581025000082/0001045810-25-000082-index.htm",
+      "root_ids": [
+        "PBC-TECH-NVDA-H20-EXPORT-20250415"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK"
+      ],
+      "web_refs": [
+        "turn67view2"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581025000082/nvda-20250409.htm",
+      "root_ids": [
+        "PBC-TECH-NVDA-H20-EXPORT-20250415"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK",
+        "CONTEMPORANEOUS_LINK_NOT_PREEVENT"
+      ],
+      "web_refs": [
+        "turn61view1"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://www.sec.gov/Archives/edgar/data/1318605/000162828025002993/exhibit991.htm",
+      "root_ids": [
+        "PBC-TECH-CAL-TSLA-2025-01-29"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK"
+      ],
+      "web_refs": [
+        "turn92view0"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://www.sec.gov/Archives/edgar/data/1551182/000155118225000003/etn12312024exhibit99.htm",
+      "root_ids": [
+        "PBC-C-ETN-20250131-EARNINGS"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK"
+      ],
+      "web_refs": [
+        "turn49view1"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204425000010/googexhibit991q42024.htm",
+      "root_ids": [
+        "PBC-TECH-CAL-GOOG-2025-02-04"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK"
+      ],
+      "web_refs": [
+        "turn21view3"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://www.sec.gov/Archives/edgar/data/315189/000155837025000892/de-20250213xex99d1.htm",
+      "root_ids": [
+        "PBC-C-DE-20250213-EARNINGS"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK"
+      ],
+      "web_refs": [
+        "turn35view3"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://www.sec.gov/Archives/edgar/data/77476/000007747625000008/q420248-kxexhibit991.htm",
+      "root_ids": [
+        "PBC-C-PEP-20250204-EARNINGS"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK"
+      ],
+      "web_refs": [
+        "turn35view4"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://www.sec.gov/Archives/edgar/data/796343/000079634325000052/adbeex991q125.htm",
+      "root_ids": [
+        "PBC-C-ADBE-20250312-EARNINGS"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK"
+      ],
+      "web_refs": [
+        "turn35view9"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://www.sec.gov/Archives/edgar/data/804328/000080432825000010/qcom122924erex991.htm",
+      "root_ids": [
+        "PBC-TECH-CAL-QCOM-2025-02-05"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK"
+      ],
+      "web_refs": [
+        "turn26view0"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://www.ti.com/about-ti/newsroom/news-releases/2024/2024-12-20-texas-instruments-announces-award-agreement-for-chips-and-science-act-funding.html",
+      "root_ids": [
+        "PBC-C-TXN-20250123-EARNINGS",
+        "PBC-D-TXN-20250618-US-FABS"
+      ],
+      "purposes": [
+        "PRE_EVENT_GOVERNMENT_LINKAGE"
+      ],
+      "web_refs": [
+        "turn84view0"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://www.ti.com/about-ti/newsroom/news-releases/2025/texas-instruments-plans-to-invest-more-than--60-billion-to-manufacture-billions-of-foundational-semiconductors-in-the-us.html",
+      "root_ids": [
+        "PBC-D-TXN-20250618-US-FABS"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK"
+      ],
+      "web_refs": [
+        "turn86view3"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://www.vertiv.com/en-us/about/news-and-events/corporate-news/oklo-and-vertiv-announce-collaboration-to-advance-power-and-cooling-solutions-for-hyperscale-and-colocation-data-centers-in-the-united-states/",
+      "root_ids": [
+        "PBC-D-VRT-20250722-OKLO"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK"
+      ],
+      "web_refs": [
+        "turn86view2"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://www.vertiv.com/en-us/about/news-and-events/corporate-news/vertiv-and-tecogen-forge-global-partnership-to-enhance-cooling-solutions-for-power-constrained-data-centers/",
+      "root_ids": [
+        "PBC-D-VRT-20250303-TECOGEN"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK"
+      ],
+      "web_refs": [
+        "turn107view0"
+      ],
+      "opened_by_extractor": true
+    },
+    {
+      "url": "https://www.whitehouse.gov/releases/2025/03/another-historic-investment-secured-under-president-trump/",
+      "root_ids": [
+        "PBC-TECH-TSM-US-EXPANSION-20250303"
+      ],
+      "purposes": [
+        "EVENT_CONTENT_OR_CLOCK"
+      ],
+      "web_refs": [
+        "turn81view4"
+      ],
+      "opened_by_extractor": true
+    }
+  ],
+  "unique_registry_urls": 143,
+  "search_query_families": [
+    "Issuer + first quarterly/fourth-quarter 2024/first-quarter fiscal-2025 results + 2025; calendar-year ordering rather than fiscal-year label.",
+    "Issuer official 2025 archive + investment/partnership/buyback/capacity/financing/government/exits/restrictions; mixed and adverse announcements retained.",
+    "Counterparty original followups for OpenAI infrastructure, Nvidia/Intel, Apple/MP, AMD/Sanmina and government export/safety/legal disclosures.",
+    "Exact candidate-title followup and page find/open to validate date, economic conditionality and terms.",
+    "Issuer earnings scheduling announcements published before each control date."
+  ],
+  "search_log_limit": "Query families and retained source/access decisions are preserved; this file is not a verbatim complete tool-query transcript. Source frames were search-driven and incomplete.",
+  "access_limitations": [
+    {
+      "url": "https://digitalassets.tesla.com/tesla-contents/image/upload/IR/TSLA-Q4-2024-Update.pdf",
+      "status": "WEB_FETCH_TOO_LARGE",
+      "fallback": "Original SEC exhibit 0001628280-25-002993 opened and used; later recast reports excluded."
+    },
+    {
+      "url": "https://investors.micron.com/node/48446/pdf",
+      "status": "WEB_OPEN_INTERNAL_ERROR",
+      "effect": "Micron scheduling preannouncement not admitted; first earnings release itself remains scheduled calendar-control by report type."
+    },
+    {
+      "url": "https://investor.qualcomm.com/news-events/press-releases/news-details/2025/Qualcomm-Schedules-First-Quarter-Fiscal-2025-Earnings-Release-and-Conference-Call/default.aspx",
+      "status": "RENDERED_METADATA_INCOMPLETE",
+      "fallback": "Qualcomm newsroom January 22 original opened and used."
+    },
+    {
+      "source_url": "https://www.defense.gov/News/Releases/Release/Article/2941793/dod-awards-35-million-to-mp-materials-to-build-us-heavy-rare-earth-separation-c/",
+      "status": "BLOCKED_OR_INACCESSIBLE_IN_INITIAL_OPEN",
+      "effect": "Not used as dated pre-event linkage; MP Feb20 results provide separate opened prior public evidence.",
+      "source_ref": "turn62view2"
+    },
+    {
+      "source_url": "https://investors.delltechnologies.com/news-releases/news-release-details/dell-technologies-hold-conference-call-feb-27-discuss-fourth",
+      "status": "HTML_SCHEDULE_OPEN_FAILED_403",
+      "effect": "Issuer schedule PDF https://investors.delltechnologies.com/node/17371/pdf opened instead.",
+      "source_ref": "turn15view7"
+    },
+    {
+      "source_url": "https://www.af.mil/News/Article-Display/Article/4131094/statement-by-chief-of-staff-of-the-air-force-gen-david-allvin-on-the-usaf-ngad/",
+      "status": "INTERNAL_OPEN_ERROR",
+      "effect": "Boeing award original and Lockheed adverse statement opened; matching to NGAD explicitly an inference."
+    },
+    {
+      "source_url": "https://www.hpe.com/us/en/newsroom/press-release/2025/06/hpe-reaches-settlement-with-us-department-of-justice-on-proposed-acquisition-of-juniper-networks.html",
+      "status": "GUESSED_SLUG_INACCESSIBLE",
+      "effect": "Correct issuer URL subsequently discovered and opened as turn95view0."
+    }
+  ],
+  "initially_omitted_known_candidates_admitted_before_tests": [
+    {
+      "ticker": "VRT",
+      "date": "2025-03-03",
+      "url": "https://www.vertiv.com/en-us/about/news-and-events/corporate-news/vertiv-and-tecogen-forge-global-partnership-to-enhance-cooling-solutions-for-power-constrained-data-centers/",
+      "source_ref": "turn76view1",
+      "source_opened": true,
+      "disposition": "NOT_IN_15_ROOT_MATERIAL_PANEL",
+      "reason": "Commercial chiller portfolio collaboration without disclosed minimum order; retained as a search lead. Arista quantified investment target increased issuer diversity."
+    },
+    {
+      "ticker": "COHR",
+      "date": "2025-08-13",
+      "url": "https://www.coherent.com/news/press-releases/coherent-announces-agreement-to-sell-aerospace-and-defense-business-to-advent",
+      "source_ref": "turn93view1",
+      "source_opened": true,
+      "disposition": "NOT_IN_MATERIAL_PANEL",
+      "reason": "$400m business disposal coincides with full earnings; M&A disposal is outside the frozen explicit species list. Do not relabel as discretionary financing solely because proceeds reduce debt."
+    },
+    {
+      "ticker": "ADBE",
+      "date": "2025-03-18",
+      "url": "https://news.adobe.com/news/2025/03/publicis-groupe-and-adobe-expand-global-partnership",
+      "source_ref": "turn95view2",
+      "source_opened": true,
+      "disposition": "KNOWN_SUMMIT_CANDIDATE_NOT_IN_PANEL",
+      "reason": "Conference-linked expanded partnership, no disclosed economics; shown local clock09:00 but timezone absent. Useful calendar confound example if parent explicitly extends panel."
+    },
+    {
+      "ticker": "ADBE",
+      "date": "2025-11-19",
+      "url": "https://news.adobe.com/news/2025/11/humain-adobe-announce-global-strategic-partnership",
+      "source_ref": "turn95view1",
+      "source_opened": true,
+      "disposition": "KNOWN_FORUM_CANDIDATE_NOT_IN_PANEL_CROSS_AGENT_DEDUP_REQUIRED",
+      "reason": "Adobe-HUMAIN announcement includes Qualcomm infrastructure and identifies U.S.-Saudi Investment Forum; one underlying program. Shown10:00 clock lacks timezone; no disclosed financial amount.",
+      "related_issuers": [
+        "QCOM"
+      ],
+      "cross_agent_dedup_key": "ADBE-QCOM-HUMAIN-2025-11-19"
+    },
+    {
+      "ticker": "MSFT",
+      "date": "2025-09-11",
+      "status": "ADMITTED_BY_A11",
+      "root_event_id": "PBC-TECH-MSFT-OPENAI-20250911"
+    }
+  ],
+  "initial_candidate_disposition_note": "The four control candidate records retain original exclusion reasoning for audit. All four are included in the final event panel by A11; their old dispositions are superseded.",
+  "separate_negative_window_audit": "PB_C_NEGATIVE_WINDOW_AUDIT.json",
+  "asof_version_limit": "Current original pages and archives were inspected in2026. No complete historical as-of versions, deletion history or globally earliest public clocks are certified."
+}
