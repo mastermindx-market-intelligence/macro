@@ -128,7 +128,7 @@
         "worker_source_commit": "43d7a09c36c7d0a2c5ab2003bbc629d7d06798ca",
         "response_sha256": "f9825784f4cad04e367cd47930e1a7e4f89bf442f4d4af6662eaec14919b3235",
         "exact_source_retrieved": true,
-        "result_accepted": false
+        "result_accepted": true
       }
     ],
     "retry_allowed": false
@@ -140,14 +140,14 @@
     "Current dossier v1 remains unchanged with null forecasts and all authority false.",
     "No deployment, service restart, provider invocation, portfolio-policy change or trade was performed for this evidence receipt."
   ],
-  "observed_at_utc": "2026-11-07T06:05:00Z",
+  "observed_at_utc": "2026-11-07T06:13:00Z",
   "terminal_ui": {
     "pr": 1333,
     "head": "ba65c3a1caa4ceffc90ea826b839f806ae457273",
     "base": "df432b7da0222e0641aa1aff1c05b74cc499b5e7",
     "published_and_read_back": true,
     "ci_run": 42343740607,
-    "ci_last_observed": "IN_PROGRESS",
+    "ci_last_observed": "unit_job_failed_existing_options_capture_502",
     "queue_requested": false,
     "focused_tests_passed": 184,
     "playwright_cases_passed": 39,
@@ -155,7 +155,22 @@
     "typescript": "PASS",
     "eslint": "PASS",
     "production_authenticated": false,
-    "evidence_url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/tree/ba65c3a1caa4ceffc90ea826b839f806ae457273/docs/evidence/persistent-sector-leadership-2026-11-07"
+    "evidence_url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/tree/ba65c3a1caa4ceffc90ea826b839f806ae457273/docs/evidence/persistent-sector-leadership-2026-11-07",
+    "ci_failure": {
+      "run": 42343740607,
+      "attempt": 1,
+      "job": 128316931260,
+      "checkout": "103179b83134fe133726d423f2e940223cbf44cf",
+      "test": "optionsLevelAxisEvidence.test.ts",
+      "signature": "desktop-compact retained two HTTP/console 502 errors from /api/brain/me",
+      "passed_tests": 20123,
+      "failed_tests": 1,
+      "skipped_tests": 50,
+      "todo_tests": 4,
+      "artifact": 13563586363,
+      "manifest_sha256": "33b117ef07eed41acfc0fa72640300e44581acdf1d979f8c1ebbbe8d49434410",
+      "repair_commission": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1333#issuecomment-6703186621"
+    }
   },
   "macro_ui": {
     "candidate_parent": "65df4b24b255d89f815208f00e4b6e158b85c2c8",
@@ -188,13 +203,44 @@
     }
   },
   "holdings_integration": {
-    "state": "parent_fixes_pending_before_integration",
+    "state": "integrated_and_parent_qualified_locally",
+    "worker_source": "43d7a09c36c7d0a2c5ab2003bbc629d7d06798ca",
     "preimages_match": true,
-    "required_fixes": [
-      "complete explicitly formatted issuer calendar dates",
-      "canonical requested source URL bound to fund"
+    "parent_repairs": [
+      "strict complete issuer dates: ISO, explicit US month/day/four-digit-year, English month-name day and year; no inferred/relative components",
+      "exact canonical requested SSGA URL bound to supported fund; drift-tested mirror"
     ],
-    "provider_invocation_performed": false
+    "regression_before": {
+      "process": 77663,
+      "failed": 11,
+      "passed": 14,
+      "network_blocked": true
+    },
+    "qualification": {
+      "process": 80645,
+      "passed": 95,
+      "skipped": 1,
+      "skip_reason": "tracked XLK snapshot omitted by sparse checkout",
+      "real_xlsx_engine_test": "PASS",
+      "network_blocked": true
+    },
+    "skipped_case_requalified": {
+      "process": 83906,
+      "passed": 1,
+      "source_blob": "b4c56a80b3966225cdff8d8de30c130281f921e9",
+      "snapshot_sha256": "25c6ccede05cd9a505bb5349c8191c0189ed48cda08a16deee522939ebe6a159",
+      "network_blocked": true
+    },
+    "source_sha256": {
+      "collectors/sector_holdings.py": "87303563dfd7607b108a6f1511a7211ea4f9af11b67ed3ccf8b61db84ddeffee",
+      "scripts/build_sector_holdings_coverage.py": "47bee19412f92d0402636086ce8648a8698eb47d96452db4175f40074e8d1233",
+      "tests/test_healthcare_dispersion_w0b.py": "08cfbdffb7305a9733249847c4e49aa7bd6b13a98257bb27f6a88aa1ebd4f7c0",
+      "tests/test_sector_holdings_coverage.py": "bd80132872c476126061c845414d1ffecdd676f0dc0ea54058ad51ed8d083c8a"
+    },
+    "default_coverage_v1_unchanged": true,
+    "six_column_history_contract_preserved": true,
+    "provider_invocation_performed": false,
+    "mechanism_or_history_admission": false
   },
   "terminal_runtime_adoption": {
     "installed_commit": "db06eacd8938cf44588d3906bca95bfd7122b74b",
@@ -209,6 +255,43 @@
     "current_containing_release_manifest_qualified": false,
     "current_install_lease_qualified": false,
     "deployment_performed": false,
-    "sql_migrations_applied": false
-  }
+    "sql_migrations_applied": false,
+    "repair_queue": {
+      "requested_once": true,
+      "process": 67334,
+      "head": "45cf59a1e999ae77871237d024ebb33df6dba9c0",
+      "id": "MQE_lQDOTOzwKM8AAAABNbKmpc4ABTs-zgPMmDs",
+      "observed_state": "QUEUED",
+      "position": 1,
+      "runtime_clearance": false
+    }
+  },
+  "macro_adoption_publication": {
+    "local_ui_commit": "5a496270f6a4d38791da403f8b50f213047d4cc4",
+    "original_push_action": "a4764ca4e855324291cbb3b548fb76290ef237c0f81f46c749722213ce4aa63e",
+    "effect_state": "EFFECT_UNKNOWN",
+    "code": "PUSH_RESULT_UNCERTAIN",
+    "remote_head_observed": "65df4b24b255d89f815208f00e4b6e158b85c2c8",
+    "retry_performed": false,
+    "same_owner_reconciliation": "installed publisher lacks retained journal/action-specific recovery and forward-only entrance",
+    "independent_local_descendant_work_permitted": true
+  },
+  "next_paid_children": [
+    {
+      "run_id": "psl6-portfolio-continuity-20261107-c4",
+      "controller_pid": 72014,
+      "commission": "https://github.com/mastermindx-market-intelligence/Mastermind/issues/1202#issuecomment-6703176081",
+      "controller_created": true,
+      "root_verified": false,
+      "worker_start_proven": false
+    },
+    {
+      "run_id": "psl-ci-capture-isolation-20261107-c4",
+      "controller_pid": 74224,
+      "commission": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1333#issuecomment-6703186621",
+      "controller_created": true,
+      "root_verified": false,
+      "worker_start_proven": false
+    }
+  ]
 }

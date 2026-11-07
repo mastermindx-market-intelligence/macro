@@ -1,0 +1,45 @@
+{
+  "state": "integrated_and_parent_qualified_locally",
+  "worker_source": "43d7a09c36c7d0a2c5ab2003bbc629d7d06798ca",
+  "preimages_match": true,
+  "parent_repairs": [
+    "strict complete issuer dates: ISO, explicit US month/day/four-digit-year, English month-name day and year; no inferred/relative components",
+    "exact canonical requested SSGA URL bound to supported fund; drift-tested mirror"
+  ],
+  "regression_before": {
+    "process": 77663,
+    "failed": 11,
+    "passed": 14,
+    "network_blocked": true
+  },
+  "qualification": {
+    "process": 80645,
+    "passed": 95,
+    "skipped": 1,
+    "skip_reason": "tracked XLK snapshot omitted by sparse checkout",
+    "real_xlsx_engine_test": "PASS",
+    "network_blocked": true
+  },
+  "skipped_case_requalified": {
+    "process": 83906,
+    "passed": 1,
+    "source_blob": "b4c56a80b3966225cdff8d8de30c130281f921e9",
+    "snapshot_sha256": "25c6ccede05cd9a505bb5349c8191c0189ed48cda08a16deee522939ebe6a159",
+    "network_blocked": true
+  },
+  "source_sha256": {
+    "collectors/sector_holdings.py": "87303563dfd7607b108a6f1511a7211ea4f9af11b67ed3ccf8b61db84ddeffee",
+    "scripts/build_sector_holdings_coverage.py": "47bee19412f92d0402636086ce8648a8698eb47d96452db4175f40074e8d1233",
+    "tests/test_healthcare_dispersion_w0b.py": "08cfbdffb7305a9733249847c4e49aa7bd6b13a98257bb27f6a88aa1ebd4f7c0",
+    "tests/test_sector_holdings_coverage.py": "bd80132872c476126061c845414d1ffecdd676f0dc0ea54058ad51ed8d083c8a"
+  },
+  "default_coverage_v1_unchanged": true,
+  "six_column_history_contract_preserved": true,
+  "provider_invocation_performed": false,
+  "mechanism_or_history_admission": false,
+  "verification_logs_sha256": {
+    "holdings-parent-regression-before.txt": "3a706886ba8a344942865ea0b536cfad11ca609bd87e1e2cbaa0773b004326db",
+    "holdings-parent-qualification.txt": "f357fa338ec4f2adca6a705374c21311c8084aaa30d08522911034654760b53a",
+    "holdings-real-store-qualification.txt": "2f8ffca39aa0fb73466d7e5acb126ab087d3b2760d75f93c55be409305d035b8"
+  }
+}
