@@ -5473,9 +5473,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_912),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_927),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_668),
+    ("templates/index.html", 137, 5_918),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_933),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_674),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5483,6 +5483,21 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-06 portfolio finite weights/stages/earnings (#10203): completed
+    contract-delta run 42281995435 / job 128113078053 measured tested merge
+    219e5fee5244f65e31bc743ad356010aa23cce17 against exact base
+    1fd7370d5b7dce81ede343dc672ab3295c2afb2e. Each probe retains its selected
+    jobs and adds exactly six estimated-weight units: index 5912 -> 5918,
+    free-content 5927 -> 5933, Prophet 5668 -> 5674; no new selected jobs.
+    All 389 manifest job blocks were compared; only data-base-shim changes,
+    adding the three portfolio weight-boundary, earnings-window and stage-
+    identity suites to its incumbent builder command (weight 23 -> 29).
+    Retain every suite, separate semantic step and repository-integrity check.
+    Fund only this measured coverage addition; job/pack ceilings, selectors,
+    execution timeouts, observed-weight overrides and admission limits stay
+    unchanged. These are planner estimates, not measured execution times or
+    a settlement claim for the original uncertain exact-base runner replay.
 
     P12.T32.S3 (2026-11-04): fresh canonical paired source measurements,
     candidate 5f0f047b160b against real base b4df44260aef, using the same
