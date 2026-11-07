@@ -155,3 +155,6 @@
 {"date":"2026-11-06","theme":"Social Media","donor":"socialniche","receiver":"socialgaming","confidence":0.465,"both_confirmed":false}
 {"date":"2026-11-06","theme":"Wearables","donor":"wearablesimmersive","receiver":"wearablessmartwatches","confidence":0.338,"both_confirmed":false}
 {"date":"2026-11-06","theme":"Commodities Energy","donor":"commenergyoil","receiver":"commenergybiofuels","confidence":0.288,"both_confirmed":false}
+{"date":"2026-11-06","theme":"Software","donor":"softwaresecurity","receiver":"softwaregaming","confidence":0.76,"both_confirmed":true}
+{"date":"2026-11-06","theme":"Social Media","donor":"socialniche","receiver":"socialadvertising","confidence":0.479,"both_confirmed":true}
+{"date":"2026-11-06","theme":"Wearables","donor":"wearablesimmersive","receiver":"wearablessoftware","confidence":0.328,"both_confirmed":false}
