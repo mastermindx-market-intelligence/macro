@@ -5603,9 +5603,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_914),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_931),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_672),
+    ("templates/index.html", 137, 5_916),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_933),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_674),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5613,6 +5613,16 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    PR #10727 conflict composition with protected335e5cc3 (2026-11-07):
+    Preserve both independent enrollments: the receiver's #10710 gateway+2
+    and this PR's already qualified brain-desks composition-suite+2. The
+    current 5914/5931/5672 include only the former; add only the latter's two
+    units to expect 5916/5933/5674. These are arithmetic source expectations,
+    not a new planner measurement. Current-head hosted contract-delta must
+    qualify the combined source. Keep job ceilings137/138/131, ten packs,
+    all current commands, selectors, timeouts and admission limits unchanged.
+    The separate historical paired measurements remain recorded below.
 
     PR #10727 composition with protected85e299 (2026-11-07): preserve the
     accepted #8899 provenance-suite enrollment and all current CODE owners.
@@ -5628,6 +5638,27 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     units; preserve every job-count, pack, timeout and admission bound. The
     three probes match the hosted contract-delta shape; these estimates are
     not runtime evidence. Sparse filesystem-only measurements are not used.
+
+    Current-main composition (2026-11-07, PR10710): preserve the original
+    P15.T2.S3 paired measurement below; this paragraph is arithmetic composition,
+    not a new planner run or execution-time measurement. Protected main7fdd55fe
+    carries index5912/free5929/plan-book5670, including the independent merged
+    free-content contribution. Add only this PR's own measured gateway+2 to
+    each selected probe:5914/5931/5672. Do not import unmerged sibling funding.
+    All job-count ceilings, ten-pack bounds, selectors, timeouts, suites and
+    admission limits remain unchanged; natural current-head CI must qualify
+    the composed source.
+
+    P15.T2.S3 (2026-11-04): paired manifest measurements against protected
+    355527d7d9de at candidate1184ddc9, using the same scope compiler and source
+    tree, have identical selected job IDs (no entrants/exits) for all probes:
+    index137/5912->5914, free-content137/5927->5929, plan-book131/5668->5670.
+    The sole selected-weight delta is unrun-brain-gateway108->110, from adding
+    test_options_question_widget_browser.py to its existing browser command.
+    The separate options-matrix-code39->41 does not select on these probes.
+    Fund exactly these two measured units, retaining every suite, job-count
+    ceiling, selector, ten-pack bound, timeout and admission limit. No padding;
+    these are planning weights, not measured execution times.
 
     PR #8899 provenance coverage (2026-11-06): exact-head CI 42231847099,
     contract job 127939433316, head b0708d5ae2a4 against base 9a867da6f866:
