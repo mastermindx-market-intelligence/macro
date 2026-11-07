@@ -128,6 +128,7 @@ class AccountState:
     driver_dead_ticks: int = 0
     reopen_failures: int = 0
     browser_start_failed: bool = False
+    silent_relogin_attempted: bool = False
 
     @property
     def name(self) -> str:
@@ -637,8 +638,11 @@ def _refresh_queue(
     }
     if limit is not None:
         kwargs["limit"] = limit
+    def _discover():
+        return discover(cfg, conn, authed.client, since_hours=since_hours, **kwargs)
+
     try:
-        res = discover(cfg, conn, authed.client, since_hours=since_hours, **kwargs)
+        res = _discover()
         log.info(
             "trickle discover (via %s, since=%dh): %s",
             authed.name, since_hours, res.summary(),
@@ -647,6 +651,22 @@ def _refresh_queue(
         # Park the account rather than logging a soft warning: a logged-out
         # discovery returns a clean-looking scanned=0, which is indistinguishable
         # from a quiet news day and is precisely what hid the 2026-08-07 lapse.
+        # One silent Firebase restore is allowed first (no password); a second
+        # SessionExpired still parks.
+        ctx = getattr(authed.session, "context", None) if authed.session else None
+        if ctx is not None and not authed.silent_relogin_attempted:
+            from .auth import try_silent_relogin
+            authed.silent_relogin_attempted = True
+            if try_silent_relogin(ctx, cfg):
+                try:
+                    res = _discover()
+                    log.info(
+                        "trickle discover after silent relogin (via %s, since=%dh): %s",
+                        authed.name, since_hours, res.summary(),
+                    )
+                    return
+                except SessionExpired as retry_exc:
+                    e = retry_exc
         authed.authed = False
         log.error("[%s] SESSION EXPIRED during discovery: %s", authed.name, e)
     except Exception as e:  # noqa: BLE001

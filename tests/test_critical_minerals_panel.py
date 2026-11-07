@@ -68,3 +68,61 @@ def test_legacy_page_without_new_context_keeps_honest_unavailable_panel():
     env = Environment(loader=FileSystemLoader(TEMPLATES), autoescape=True, undefined=StrictUndefined)
     html = env.from_string(MACRO + '{% include "_critical_minerals_context.html.j2" %}').render()
     assert "unknown, not zero" in html and "0%" not in html
+
+
+def sourced_context():
+    data = context()
+    row = data["rows"][0]
+    row["import_sources"] = [
+        {"country_en": "Canada", "country_zh": "加拿大", "pct": "28"},
+        {"country_en": "Japan", "country_zh": "日本", "pct": "22"}]
+    row["world_output"] = {"amount": "900", "unit_en": "metric tons", "unit_zh": "公吨"}
+    data["has_import_sources"] = True
+    return data
+
+
+def test_import_sources_and_world_production_render_in_both_languages():
+    html = render(sourced_context())
+    assert '<span class="l-en">Canada</span><span class="l-zh">加拿大</span> 28%' in html
+    assert "US import sources 2021–24" in html and "美国进口来源 2021–24" in html
+    assert "World production" in html and "全球产量" in html and "900" in html
+    assert '<span class="l-zh">公吨</span>' in html
+    assert "different measures and different years" in html
+    assert "两者是不同的度量，年份也不同" in html
+
+
+def test_source_line_has_no_trailing_separator_and_counts_entries_minus_one():
+    html = render(sourced_context())
+    tail = html.split("US import sources 2021–24", 1)[1].split("</p>", 1)[0]
+    assert tail.count(" · ") == 1
+    assert "·" not in tail.split("22%", 1)[1]
+
+
+def test_rows_without_the_fields_write_nothing():
+    html = render(context())
+    assert "US import sources" not in html and "World production" not in html
+    assert "different measures" not in html
+    assert "美国进口来源" not in html and "全球产量" not in html
+
+
+def test_each_line_renders_only_when_its_own_field_is_present():
+    without_world = sourced_context()
+    without_world["rows"][0]["world_output"] = None
+    html = render(without_world)
+    assert '<span class="l-en">US import sources' in html
+    assert '<span class="l-en">World production</span>' not in html
+    without_sources = sourced_context()
+    without_sources["rows"][0]["import_sources"] = None
+    without_sources["has_import_sources"] = False
+    html = render(without_sources)
+    assert '<span class="l-en">World production</span>' in html
+    assert '<span class="l-en">US import sources' not in html
+
+
+def test_added_source_and_note_lines_carry_no_banned_word():
+    html = render(sourced_context())
+    line = html.split("US import sources 2021–24", 1)[1].split("</p>", 1)[0]
+    note = "Import sources show" + html.split("Import sources show", 1)[1].split("</p>", 1)[0]
+    for text in (line, note):
+        for word in ["实时", "申报", "证伪", "validated", "已验证", "forecast", "falsifier"]:
+            assert word not in text

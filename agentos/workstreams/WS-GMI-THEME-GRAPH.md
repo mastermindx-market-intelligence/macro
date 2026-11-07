@@ -410,16 +410,30 @@ landmines:
     plus the job-level if: always() && needs.et_gate.outputs.run != 'false' idiom
     (DSC:DAILY-ENGINE-RESULT-IS-FAILURE-AFTER-ITS-COMMIT).
 next_action: >
-  2026-10-21 Chairman completion commission is RUNNING under seat 6f14c2da (live checkpoint:
-  agentos/handoffs/GMI-THEME-GRAPH-2026-10-21-completion-commission.md). Micro expansion
-  ratified additively (303 micros, DEC:GMI-MICRO-EXPANSION-2026-10-21-ADDITIVE-FROZEN-68);
-  integration PR #10017 merged (cf6fd11f) and proven by main baseline 39736520949; every
-  ORCH-PIPE wave merged (last #10025 -> e6f6088e) with M3 recorded NOT MET on the frozen
-  proof; the coverage proof reads the activity ledger by default (#10029); the first M1
-  activity witness is receipt-bound on main (#10026 -> 61f82f58) and MEMBER_OF waits on a
-  Chairman graph_membership_use ruling; ORCH-REL still runs (#9986); ORCH-DESIGN delivered
-  draft #10054 and is in seat-requested repair round 2; UI and verification orchestrators
-  follow the design acceptance. The prior remainder below still
+  2026-11-02 ship checkpoint (agentos/handoffs/GMI-THEME-GRAPH-2026-11-02-completion-ship.md):
+  O5 verdicts + G-UI-8 (#10530 -> 501dd034), the S3 relationship_edges/v1 envelope
+  wiring (#10556 -> 36cea924, O6) and the nav entry (#10520 -> 0d56cffc) are MERGED and
+  land-checked; the taxonomy owner-disposition contract (#10563 -> d0fed53e, O7) carries
+  research/theme_graph/micro_owner_dispositions.yml with zero rows and the coverage
+  proof's owner_review block, so remainder (2) below is now a data act for the taxonomy
+  owner, not a missing implementation. PRODUCTION_PROOF is held: the six site/gmi*.html
+  are live on www.mastermind-x.com (render 41445582969; live bytes == main), and #10583
+  (-> f3d4eb62) made /gmi.css and /gmi.js public so the open shells render styled
+  (they sat behind the default-deny asset gate as 401 JSON). The post-authority main
+  baseline waits on two foreign reds (tests/test_macro_command_panels.py data drift,
+  macro-suite owner; tests/test_markets_regime_strip.py render-sync). The envelope DEC ratify-or-replace is an EXACT_HUMAN_GATE asked
+  once on #agent-dispatch (ts 1793619136.295869). O5/O6/O7 are consumed: DO_NOT_REDO.
+  Earlier 2026-11-02 state: the 2026-10-21 Chairman completion commission has returned all five
+  orchestrators. Both integration PRs are merged (#10482 -> 17040f00 relationships; #10099
+  -> fd27c31a GMI explorer, six site/gmi*.html pages); the nav entry is #10520; O5's
+  independent verdicts are recorded in research/theme_graph/GMI_O5_VERIFICATION_VERDICTS_2026-11-02.md,
+  boundary 3 (no promotion) MET, boundaries 1 (D2E/W3B/W3C) and 2 (descriptive plus the
+  8.2 envelope) NOT MET with every remainder owner-named (live checkpoint
+  agentos/handoffs/GMI-THEME-GRAPH-2026-11-02.md). Micro expansion ratified additively
+  (303 micros, DEC:GMI-MICRO-EXPANSION-2026-10-21-ADDITIVE-FROZEN-68); the coverage proof
+  reads the activity ledger by default (#10029) and no longer double-counts an explicit
+  --activity-proposals path; the first M1 activity witness is receipt-bound on main
+  (#10026 -> 61f82f58) and MEMBER_OF waits on a Chairman graph_membership_use ruling. The prior remainder below still
   states the incumbent-owner acts. Recovery steps 2 through 8 of research/theme_graph/GMI_PROGRAM_RECOVERY_2026-10-16.md
   §9 are merged and recorded (waves RECOVERY-S2..S8); the seat lane is complete and
   DO_NOT_REDO. The descriptive product is accepted as a MEASURED, OPEN record

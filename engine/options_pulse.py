@@ -47,7 +47,7 @@ from lib import nyse_calendar
 
 # ── identity ────────────────────────────────────────────────────────────────
 PULSE_SCHEMA = "options.pulse/v1"
-PROJECTOR_VERSION = "options-pulse-projector/1.0.0"
+PROJECTOR_VERSION = "options-pulse-projector/1.0.1"
 
 # ── input bounds (a card is not a data lake) ────────────────────────────────
 MAX_SOURCE_BYTES = 8 * 1024 * 1024
@@ -190,9 +190,10 @@ def build_pulse(
         raise PulseInputError("now must be a tz-aware datetime (the caller owns the clock)")
     symbol = symbol.strip().upper()
 
+    reference_session_injected = reference_session is not None
     if reference_session is None:
         reference_session = nyse_calendar.expected_last_session(now)
-    if not isinstance(reference_session, date):
+    if not isinstance(reference_session, date) or isinstance(reference_session, datetime):
         raise PulseInputError("reference_session must be a date or None")
 
     pulse: dict[str, Any] = {
@@ -223,7 +224,7 @@ def build_pulse(
             "reference_session": reference_session.isoformat(),
             "sessions_behind": None,
             "freshness": "unknown",
-            "reference_session_injected": False,
+            "reference_session_injected": reference_session_injected,
         },
         "identity": {"name_en": None, "name_zh": None, "group": None},
         "gamma": _gamma_unavailable(),
@@ -249,7 +250,7 @@ def build_pulse(
                 "每 1% 变动的线性假设局部敏感度",
             ],
         },
-        "flow": _flow_block(intel, gate, reference_session, now),
+        "flow": _flow_block(intel, gate, reference_session),
     }
 
     reasons = pulse["unavailable_reasons"]
@@ -285,11 +286,9 @@ def build_pulse(
         return _finish(pulse, now, reference_session)
 
     assessment = pulse["assessment"]
-    assessment["reference_session_injected"] = True
 
     # A source dated beyond the caller's reference session is rejected outright.
-    # (sessions_behind cannot detect this: past a reference session it measures an
-    # EMPTY range and returns 0, which would read as "current" — a silent lie.)
+    # Compare against that exact declared session, never an unrelated wall clock.
     if asof > assessment["reference_session"]:
         reasons.append(
             f"source_future: source session {asof} is ahead of the reference session "
@@ -298,26 +297,25 @@ def build_pulse(
         return _finish(pulse, now, reference_session)
 
     try:
-        behind = nyse_calendar.sessions_behind(date.fromisoformat(asof), now)
+        behind = nyse_calendar.sessions_apart(date.fromisoformat(asof), reference_session)
     except Exception:  # noqa: BLE001 — a calendar fault is a degrade, never a raise
         behind = None
     assessment["sessions_behind"] = behind
 
     if behind is None:
         assessment["freshness"] = "unknown"
+        gap_en = " — distance to the reference session could not be determined."
+        gap_zh = " — 无法确定与参考交易日的间隔。"
     elif behind == 0:
         assessment["freshness"] = "current_session"
+        gap_en = " — matches the reference session."
+        gap_zh = " — 与参考交易日一致。"
     else:
         assessment["freshness"] = "delayed"
-    pulse["source"]["context_label_en"] = (
-        f"Delayed end-of-day context, session {asof}"
-        + (f" — {behind} session(s) behind the reference session."
-           if behind else " — matches the reference session.")
-    )
-    pulse["source"]["context_label_zh"] = (
-        f"延迟的收盘（EOD）背景，交易日 {asof}"
-        + (f" — 落后参考交易日 {behind} 个交易日。" if behind else " — 与参考交易日一致。")
-    )
+        gap_en = f" — {behind} session(s) behind the reference session."
+        gap_zh = f" — 落后参考交易日 {behind} 个交易日。"
+    pulse["source"]["context_label_en"] = f"Delayed end-of-day context, session {asof}" + gap_en
+    pulse["source"]["context_label_zh"] = f"延迟的收盘（EOD）背景，交易日 {asof}" + gap_zh
 
     summary = gex.get("summary")
     summary = summary if isinstance(summary, dict) else {}
@@ -345,14 +343,14 @@ def build_pulse(
     spot = profile_spot if profile_spot is not None else summary_spot
     assert spot is not None  # guarded above
 
-    # ── 5. profile: same owner as the displayed curve AND the displayed crossing
+    # ── 5. profile: preserve its curve and owner-reported flip metadata
     curve = _read_profile(profile, spot, reasons)
     if curve is None:
         return _finish(pulse, now, reference_session)
 
-    profile_flip = _num(profile.get("flip"))
-    summary_flip = _num(summary.get("gamma_flip"))
-    crossing = _crossing(curve, profile_flip, spot, summary_flip)
+    profile_flip = _pos(profile.get("flip"))
+    summary_flip = _pos(summary.get("gamma_flip"))
+    crossing = _crossing(profile_flip, spot, summary_flip)
 
     pulse["chart"] = _chart(curve, spot, crossing.get("spot"))
 
@@ -448,17 +446,19 @@ def _read_profile(profile: dict, spot: float, reasons: list[str]) -> dict | None
     }
 
 
-def _crossing(curve: dict, profile_flip: float | None, spot: float,
+def _crossing(profile_flip: float | None, spot: float,
               summary_flip: float | None) -> dict:
-    """The displayed crossing comes from the SAME owner as the displayed curve.
+    """Retain the profile owner's reported level without verifying a crossing.
 
-    When the two published owners disagree, the disagreement is surfaced, never
-    silently resolved by averaging the two numbers.
+    A flip field is metadata, not proof that the sampled curve changes sign.
+    No replacement crossing model or blended estimate is introduced here.
     """
     out: dict[str, Any] = {
         "available": profile_flip is not None,
         "spot": profile_flip,
         "owner": "gex.profile",
+        "basis": "OWNER_REPORTED_UNVERIFIED" if profile_flip is not None else "NOT_REPORTED",
+        "verified_from_curve": False,
         "dist_pct": None if profile_flip is None else round(100.0 * (profile_flip - spot) / spot, 2),
         "disagreement": {
             "present": False,
@@ -478,20 +478,15 @@ def _crossing(curve: dict, profile_flip: float | None, spot: float,
                 "summary_flip": summary_flip,
                 "delta": delta,
                 "note_en": (
-                    f"The curve owner and the summary owner disagree on the crossing by "
-                    f"{delta:+.4f}. This card shows the profile's own crossing ({profile_flip}), "
-                    f"because it is the same object the curve above is drawn from."
+                    f"The profile and summary owners report flip levels differing by "
+                    f"{delta:+.4f}. This card retains the profile's reported level "
+                    f"({profile_flip}); a zero crossing has not been verified."
                 ),
                 "note_zh": (
-                    f"曲线来源与摘要来源的交叉点相差 {delta:+.4f}。本卡片显示曲线自身的交叉点"
-                    f"（{profile_flip}），因为上方曲线正由该对象绘制。"
+                    f"曲线来源与摘要来源报告的翻转位相差 {delta:+.4f}。本卡片保留曲线来源"
+                    f"报告的数值（{profile_flip}）；零轴交叉尚未经核验。"
                 ),
             }
-    elif profile_flip is None:
-        out["disagreement"]["note_en"] = (
-            "No crossing on this profile; the curve does not change sign over the plotted range."
-        )
-        out["disagreement"]["note_zh"] = "该曲线在所绘区间内无交叉点，符号未发生变化。"
     return out
 
 
@@ -605,7 +600,7 @@ def _concentrations(walls: dict, spot: float) -> dict:
 
 
 # ── flow (signed direction is withheld) ─────────────────────────────────────
-def _flow_block(intel: Any, gate: Any, reference_session: date, now_utc: datetime) -> dict:
+def _flow_block(intel: Any, gate: Any, reference_session: date) -> dict:
     out: dict[str, Any] = {
         "available": False,
         "withheld_note_en": FLOW_WITHHELD,
@@ -658,12 +653,22 @@ def _flow_block(intel: Any, gate: Any, reference_session: date, now_utc: datetim
             out["reasons"].append("intel_brief_stale: brief carries no parseable as-of session")
         else:
             try:
-                behind = nyse_calendar.sessions_behind(
-                    date.fromisoformat(out["intel_as_of_session"]), now_utc)
+                behind = nyse_calendar.sessions_apart(
+                    date.fromisoformat(out["intel_as_of_session"]), reference_session)
             except Exception:  # noqa: BLE001
                 behind = None
             out["intel_sessions_behind"] = behind
-            if behind is not None and behind > 0:
+            if out["intel_as_of_session"] > reference_session.isoformat():
+                out["reasons"].append(
+                    f"intel_brief_future: brief session {out['intel_as_of_session']} "
+                    f"is ahead of the reference session {reference_session.isoformat()}"
+                )
+            elif behind is None:
+                out["reasons"].append(
+                    "intel_session_gap_unknown: distance from the brief session to "
+                    f"the reference session {reference_session.isoformat()} could not be determined"
+                )
+            elif behind > 0:
                 # Historical provenance is preserved verbatim; only the DIRECTIONAL
                 # read is suppressed. A stale brief is never reinterpreted as zero.
                 out["reasons"].append(
@@ -756,12 +761,18 @@ def _narrative(pulse: dict) -> dict:
     crossing = g.get("crossing") or {}
     if crossing.get("available"):
         en.append(
-            f"The curve crosses zero at {crossing['spot']:.2f}, "
-            f"{crossing['dist_pct']:+.2f}% from spot."
+            f"The profile owner reports a flip level of {crossing['spot']:.2f}, "
+            f"{crossing['dist_pct']:+.2f}% from spot; its zero crossing is unverified."
         )
         zh.append(
-            f"曲线在 {crossing['spot']:.2f} 处穿越零轴，距现价 {crossing['dist_pct']:+.2f}%。"
+            f"曲线来源报告的翻转位为 {crossing['spot']:.2f}，距现价 "
+            f"{crossing['dist_pct']:+.2f}%；其零轴交叉未经核验。"
         )
+    else:
+        en.append(
+            "No usable flip level was reported; this does not establish whether the curve changes sign."
+        )
+        zh.append("来源未报告可用的翻转位；这不能证明曲线是否发生符号变化。")
     dis = crossing.get("disagreement") or {}
     if dis.get("present"):
         en.append(dis["note_en"])
@@ -829,6 +840,8 @@ def _context(pulse: dict, *, max_chars: int = 2400) -> dict:
         "gamma_basis": g["regime_basis"],
         "crossing_spot": (g.get("crossing") or {}).get("spot"),
         "crossing_owner": (g.get("crossing") or {}).get("owner"),
+        "crossing_basis": (g.get("crossing") or {}).get("basis", "NOT_REPORTED"),
+        "crossing_verified": (g.get("crossing") or {}).get("verified_from_curve", False),
         "call_wall": c.get("call_wall"),
         "put_wall": c.get("put_wall"),
         "hedge_up_1pct_bn": h["up_1pct_bn"],
@@ -904,6 +917,7 @@ def _gamma_unavailable() -> dict:
         "n_strikes": None,
         "profile_points": 0,
         "crossing": {"available": False, "spot": None, "owner": None, "dist_pct": None,
+                     "basis": "NOT_REPORTED", "verified_from_curve": False,
                      "disagreement": {"present": False, "profile_flip": None,
                                       "summary_flip": None, "delta": None,
                                       "note_en": "", "note_zh": ""}},

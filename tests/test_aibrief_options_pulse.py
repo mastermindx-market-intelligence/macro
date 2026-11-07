@@ -17,6 +17,7 @@ import copy
 import json
 import re
 from datetime import date, datetime, timezone
+from html.parser import HTMLParser
 from pathlib import Path
 
 import jinja2
@@ -29,6 +30,13 @@ from scripts import build_aibrief
 
 NOW = datetime(2026, 10, 22, 18, 30, tzinfo=timezone.utc)
 ASOF = "2026-10-21"
+
+
+@pytest.fixture(autouse=True)
+def bounded_event_calendar(monkeypatch):
+    """Render tests use a deterministic calendar; no provider fetch is needed."""
+    from engine import event_calendar
+    monkeypatch.setattr(event_calendar, "high_impact_strip", lambda **kwargs: [])
 
 GATE = {"scored": False, "direction_reliable": False, "asof": "2026-06-21"}
 INTEL = {"schema": "options.intel_brief/v1", "model_version": "intel_brief_heuristic/v1.2",
@@ -458,21 +466,97 @@ def test_builder_never_refuses_to_build_over_bad_options_bytes(tmp_path, monkeyp
 
 
 # ─────────────────────────── shared projector ────────────────────────────────
-def test_display_and_model_context_share_one_projector():
-    """The page card and the master_brain context must be the SAME projection,
-    never two interpretations of one payload."""
+@pytest.mark.parametrize("clock,expected_gap", [
+    (datetime(2026, 11, 6, 18, 30, tzinfo=timezone.utc), 0),
+    (datetime(2026, 11, 6, 23, 30, tzinfo=timezone.utc), 1),
+])
+def test_display_and_model_context_share_one_projector(tmp_path, monkeypatch, clock, expected_gap):
+    """Both actual callers consume identical synthetic bytes at one clock."""
     from engine import master_brain
 
-    raw = (config.ROOT / "site" / "gex" / "QQQ.json").read_bytes()
+    class FrozenClock(datetime):
+        @classmethod
+        def now(cls, tz=None):
+            return clock.astimezone(tz) if tz is not None else clock.replace(tzinfo=None)
+
+    monkeypatch.setattr(build_aibrief, "datetime", FrozenClock)
+    monkeypatch.setattr(master_brain, "datetime", FrozenClock)
+    artifacts = {
+        "site/gex/QQQ.json": _payload(asof="2026-11-05"),
+        "site/options_intel_brief.json": dict(INTEL, as_of_session="2026-11-05"),
+        "data/options_flow/signing_gate.json": dict(GATE, asof="2026-11-05"),
+    }
+    raw = {}
+    for rel, payload in artifacts.items():
+        path = tmp_path / rel
+        path.parent.mkdir(parents=True, exist_ok=True)
+        raw[rel] = json.dumps(payload).encode("utf-8")
+        path.write_bytes(raw[rel])
     direct = op.build_pulse(
-        symbol="QQQ", gex=json.loads(raw), gex_file="site/gex/QQQ.json",
-        gex_digest=op.digest_bytes(raw), now=NOW,
-        reference_session=date(2026, 10, 21))
-    ctx = master_brain.gather_state(config.ROOT).get("options_pulse")
-    assert ctx is not None
-    assert ctx["symbol"] == direct["symbol"]
-    assert ctx["call_wall"] == direct["concentrations"]["call_wall"]
-    assert ctx["put_wall"] == direct["concentrations"]["put_wall"]
-    assert ctx["net_gamma_bn_per_1pct"] == direct["gamma"]["net_gamma_bn_per_1pct"]
-    assert ctx["authority"] == direct["authority"]
+        symbol="QQQ", gex=artifacts["site/gex/QQQ.json"],
+        gex_file="site/gex/QQQ.json", gex_digest=op.digest_bytes(raw["site/gex/QQQ.json"]),
+        intel=artifacts["site/options_intel_brief.json"],
+        intel_digest=op.digest_bytes(raw["site/options_intel_brief.json"]),
+        gate=artifacts["data/options_flow/signing_gate.json"],
+        gate_digest=op.digest_bytes(raw["data/options_flow/signing_gate.json"]),
+        now=clock,
+    )
+    displayed = build_aibrief._gather_options_pulse(tmp_path / "site", tmp_path / "data")
+    ctx = master_brain.gather_state(tmp_path).get("options_pulse")
+    assert displayed is not None
+    assert direct["available"] is True
+    assert direct["source"]["asof"] == "2026-11-05"
+    assert direct["assessment"]["sessions_behind"] == expected_gap
+    assert displayed == direct
+    assert ctx == direct["context"]
     assert ctx["display_only"] is True
+    for rel, content in raw.items():
+        assert (tmp_path / rel).read_bytes() == content
+
+
+def test_options_rules_remain_inside_one_valid_style_element():
+    class StyleBoundary(HTMLParser):
+        def __init__(self):
+            super().__init__()
+            self.blocks = []
+            self.active = False
+
+        def handle_starttag(self, tag, attrs):
+            if tag == "style":
+                assert not self.active, "nested style element"
+                self.active = True
+                self.blocks.append("")
+
+        def handle_data(self, data):
+            if self.active:
+                self.blocks[-1] += data
+
+        def handle_endtag(self, tag):
+            if tag == "style":
+                assert self.active, "style closes outside its owning element"
+                self.active = False
+
+    parser = StyleBoundary()
+    parser.feed(_render(_pulse()))
+    parser.close()
+    assert parser.active is False
+    assert len(parser.blocks) == 1
+    css = parser.blocks[0]
+    rules = re.sub(r"/\*.*?\*/", "", css, flags=re.S)
+    assert "<style" not in rules.lower()
+    assert re.search(r"\.opulse\s*\{\s*margin-top:18px;", css)
+    assert ".opulse:first-child" in css
+
+
+def test_flip_markup_qualifies_the_reported_level_and_missing_metadata():
+    html = _render(_pulse())
+    assert "Reported flip level" in html
+    assert "unverified against curve" in html
+    assert "owner-reported flip level (unverified)" in html
+    assert "curve's own zero crossing" not in html
+    payload = _payload()
+    payload["profile"]["flip"] = None
+    payload["profile"]["gamma_bn"][-1] = 1.0
+    absent = _render(_pulse(payload))
+    assert "not reported" in absent
+    assert "curve does not change sign" not in absent

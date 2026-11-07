@@ -556,6 +556,7 @@ def test_model_context_carries_no_source_free_prose():
         "gamma_regime": {"positive", "negative", "zero"},
         "gamma_basis": {None, "assumption"},
         "crossing_owner": {None, "gex.profile"},
+        "crossing_basis": {"NOT_REPORTED", "OWNER_REPORTED_UNVERIFIED"},
         "hedge_basis": {"LINEAR_ASSUMPTION_BASED_SENSITIVITY"},
     }
     facts = json.loads(_build()["context"]["_facts"])
@@ -583,3 +584,98 @@ def test_console_side_effects_are_never_imported():
     src = inspect.getsource(op)
     for banned in ("import subprocess", "os.system", "eval(", "exec("):
         assert banned not in src
+
+# Regression cases for the recovered source; fixtures contain no provider data.
+@pytest.mark.parametrize("reference,expected", [
+    (date(2026, 10, 16), 0),
+    (date(2026, 10, 19), 1),
+    (date(2026, 10, 22), 4),
+])
+def test_explicit_session_controls_both_source_gaps(reference, expected):
+    intel = dict(INTEL, as_of_session="2026-10-16")
+    p = _build(_payload(asof="2026-10-16"), intel=intel,
+               now=NOW, reference_session=reference)
+    assert p["assessment"]["sessions_behind"] == expected
+    assert p["flow"]["intel_sessions_behind"] == expected
+    assert p["assessment"]["reference_session_injected"] is True
+    assert p["assessment"]["reference_session"] == reference.isoformat()
+
+
+def test_reference_injection_receipt_describes_the_caller():
+    assert _build()["assessment"]["reference_session_injected"] is False
+    p = _build(None, reference_session=date(2026, 10, 21))
+    assert p["assessment"]["reference_session_injected"] is True
+
+
+@pytest.mark.parametrize("fault", ["exception", "non_session"])
+def test_unknown_calendar_gap_never_claims_a_session_match(monkeypatch, fault):
+    reference = date(2026, 10, 18) if fault == "non_session" else date(2026, 10, 21)
+    if fault == "exception":
+        def broken_calendar(*args):
+            raise ValueError("controlled calendar failure")
+        monkeypatch.setattr(op.nyse_calendar, "sessions_apart", broken_calendar)
+    p = _build(_payload(asof="2026-10-16"),
+               intel=dict(INTEL, as_of_session="2026-10-16"),
+               reference_session=reference)
+    assert p["assessment"]["sessions_behind"] is None
+    assert p["assessment"]["freshness"] == "unknown"
+    assert "could not be determined" in p["source"]["context_label_en"]
+    assert "无法确定" in p["source"]["context_label_zh"]
+    assert "matches" not in p["source"]["context_label_en"]
+    assert "一致" not in p["source"]["context_label_zh"]
+    assert p["flow"]["intel_sessions_behind"] is None
+    assert any(r.startswith("intel_session_gap_unknown:") for r in p["flow"]["reasons"])
+
+
+def test_future_intel_is_explicit_and_never_current_or_signed():
+    p = _build(intel=dict(INTEL, as_of_session="2026-10-22"),
+               gate={"direction_reliable": True, "asof": ASOF},
+               reference_session=date(2026, 10, 21))
+    assert p["flow"]["intel_sessions_behind"] is None
+    assert any(r.startswith("intel_brief_future:") for r in p["flow"]["reasons"])
+    assert p["flow"]["available"] is False
+
+
+def test_datetime_is_not_a_date_only_reference_session():
+    with pytest.raises(op.PulseInputError):
+        _build(reference_session=NOW)
+
+
+def test_reported_flip_is_unverified_even_when_curve_has_one_sign():
+    payload = _payload(flip=103.7)
+    assert all(y < 0 for y in payload["profile"]["gamma_bn"])
+    p = _build(payload)
+    crossing = p["gamma"]["crossing"]
+    assert crossing["spot"] == 103.7
+    assert crossing["basis"] == "OWNER_REPORTED_UNVERIFIED"
+    assert crossing["verified_from_curve"] is False
+    assert p["context"]["crossing_basis"] == crossing["basis"]
+    assert p["context"]["crossing_verified"] is False
+    narrative = " ".join(p["narrative"]["en"])
+    assert "reports a flip level" in narrative and "unverified" in narrative
+    assert "curve crosses zero" not in narrative
+    assert p["chart"]["flip_x"] is not None
+
+
+def test_missing_flip_metadata_does_not_prove_the_curve_has_no_crossing():
+    payload = _payload()
+    payload["profile"]["gamma_bn"][-1] = 1.0
+    p = _build(payload)
+    assert p["available"] is True
+    assert p["gamma"]["crossing"]["spot"] is None
+    assert p["gamma"]["crossing"]["basis"] == "NOT_REPORTED"
+    assert p["chart"]["flip_x"] is None
+    narrative = " ".join(p["narrative"]["en"])
+    assert "does not establish" in narrative
+    assert "does not change sign" not in narrative
+
+
+@pytest.mark.parametrize("bad", [0, -1, True, "103.7", float("nan"), float("inf")])
+def test_unusable_reported_flip_is_unavailable_metadata(bad):
+    payload = _payload()
+    payload["profile"]["flip"] = bad
+    p = _build(payload)
+    assert p["available"] is True
+    assert p["gamma"]["crossing"]["available"] is False
+    assert p["gamma"]["crossing"]["spot"] is None
+    assert p["context"]["crossing_basis"] == "NOT_REPORTED"

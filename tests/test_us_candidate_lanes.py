@@ -922,6 +922,10 @@ POOL_ALLOWLIST = frozenset({
     "engine/us_context_vector.py",
     "scripts/build_stock_library.py",
     "scripts/build_site.py",  # display-only, protected consumer; no scoring or admission
+    # Offline release-proof checker (#8108): reads a saved DOM snapshot and
+    # us_standouts.json, prints PASS/FAIL per check and writes a receipt to the path
+    # it is given. Nothing in engine/, scripts/ or app/ calls it, so it decides nothing.
+    "scripts/prophet_journey_reconcile.py",
 })
 
 #: Modules that DECIDE things.  If any of them ever learns the pool exists, the fence is

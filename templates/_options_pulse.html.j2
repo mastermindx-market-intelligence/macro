@@ -86,14 +86,14 @@
       </dd>
     </div>
     <div class="opulse-fact">
-      <dt>{{ t('Zero crossing', '零轴交叉') }}</dt>
+      <dt>{{ t('Reported flip level', '来源报告的翻转位') }}</dt>
       <dd>
         {% if _g.crossing.available %}{{ '%.2f'|format(_g.crossing.spot) }}
-        {% else %}{{ t('none on this curve', '该曲线无') }}{% endif %}
+        {% else %}{{ t('not reported', '未报告') }}{% endif %}
         <span class="opulse-unit">
           {% if _g.crossing.available %}
-            {{ '%+.2f'|format(_g.crossing.dist_pct) }}% {{ t('from spot', '距现价') }}
-          {% else %}{{ t('curve does not change sign', '曲线符号未变') }}{% endif %}
+            {{ '%+.2f'|format(_g.crossing.dist_pct) }}% {{ t('from spot', '距现价') }} · {{ t('unverified against curve', '未经曲线核验') }}
+          {% else %}{{ t('crossing not verified', '零轴交叉未经核验') }}{% endif %}
         </span>
       </dd>
     </div>
@@ -102,7 +102,7 @@
   {% if _g.crossing.disagreement.present %}
   <div class="opulse-withheld" style="margin-top:10px">
     <dl style="margin:0">
-      <dt>{{ t('Two owners disagree on the crossing', '两个来源对交叉点不一致') }}</dt>
+      <dt>{{ t('Two owners report different flip levels', '两个来源报告的翻转位不同') }}</dt>
       <dd>
         <span class="l-en">{{ _g.crossing.disagreement.note_en|e }}</span>
         <span class="l-zh">{{ _g.crossing.disagreement.note_zh|e }}</span>
@@ -161,8 +161,8 @@
       <span class="l-en">{{ t('Estimated dealer-gamma profile — an exposure curve as a function of spot, NOT a closing-price density.', '估计的做市商 gamma 曲线 — 是随现价变化的敞口曲线，并非收盘价密度。') }}</span>
       <span class="l-zh">{{ t('Estimated dealer-gamma profile — an exposure curve as a function of spot, NOT a closing-price density.', '估计的做市商 gamma 曲线 — 是随现价变化的敞口曲线，并非收盘价密度。') }}</span>
       {% if _ch.flip_x is not none %}
-      · <span class="l-en">{{ t('dashed amber line marks this curve\'s own zero crossing', '琥珀色虚线标示该曲线自身的零轴交叉') }}</span>
-      <span class="l-zh">{{ t('dashed amber line marks this curve\'s own zero crossing', '琥珀色虚线标示该曲线自身的零轴交叉') }}</span>
+      · <span class="l-en">{{ t('dashed amber line marks the owner-reported flip level (unverified)', '琥珀色虚线标示来源报告的翻转位（未经核验）') }}</span>
+      <span class="l-zh">{{ t('dashed amber line marks the owner-reported flip level (unverified)', '琥珀色虚线标示来源报告的翻转位（未经核验）') }}</span>
       {% endif %}
     </p>
   </div>
