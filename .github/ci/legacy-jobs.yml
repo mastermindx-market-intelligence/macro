@@ -9041,6 +9041,8 @@ jobs:
       - "engine/intelligence_workspace/scenario_source_resolution.py"
       - "engine/options_hub_retention.py"
       - "tests/test_options_hub_retention.py"
+      - "tests/test_options_hub.py"
+      - "tests/test_options_expiry_support.py"
       - "tests/test_scenario_source_resolution.py"
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
@@ -9244,7 +9246,7 @@ jobs:
       - name: install matrix-test deps
         run: pip install pytest pyyaml numpy pandas scipy pyarrow jsonschema fastapi httpx requests rjsmin==1.2.5
       - name: options matrix source/session/publication contracts
-        run: python -m pytest tests/test_options_matrix.py tests/test_options_matrix_retention.py tests/test_observe_options_matrix_publication.py tests/test_qualify_options_matrix_older_snapshot.py tests/test_observe_options_matrix_identity.py tests/test_options_selection_composition.py tests/test_observe_options_matrix_selection.py tests/test_options_use.py tests/test_options_hub_retention.py tests/test_scenario_source_resolution.py tests/test_options_scenario_capture.py tests/test_options_auth.py tests/test_options_selection_context.py tests/test_options_scenarios.py tests/test_scenario_initial_capture.py tests/test_options_scenario_source_arrival.py tests/test_options_scenario_delivery.py tests/test_options_plan_api.py tests/test_options_plan_install.py -q
+        run: python -m pytest tests/test_options_matrix.py tests/test_options_matrix_retention.py tests/test_observe_options_matrix_publication.py tests/test_qualify_options_matrix_older_snapshot.py tests/test_observe_options_matrix_identity.py tests/test_options_selection_composition.py tests/test_observe_options_matrix_selection.py tests/test_options_use.py tests/test_options_hub_retention.py tests/test_scenario_source_resolution.py tests/test_options_scenario_capture.py tests/test_options_auth.py tests/test_options_selection_context.py tests/test_options_scenarios.py tests/test_scenario_initial_capture.py tests/test_options_scenario_source_arrival.py tests/test_options_scenario_delivery.py tests/test_options_plan_api.py tests/test_options_plan_install.py tests/test_options_hub.py tests/test_options_expiry_support.py -q
 
   flow-surface:
     if: ${{ false }}
@@ -20597,6 +20599,7 @@ jobs:
       - "lib/config.py"
       - "lib/pages.py"
       - "lib/site_assets.py"
+      - "scripts/__init__.py"
       - "scripts/build_research_screener.py"
       - "scripts/check_template_site_sync.py"
       - "scripts/optimize_assets.py"
@@ -21978,6 +21981,7 @@ jobs:
       - scripts/linear_projector_p1_offline.py
       - templates/_navlinks.html.j2
       - templates/intelligence_hub.html.j2
+      - templates/ontology-theme.js
       - tests/__init__.py
       - tests/agent_eval_continuity_cases.py
       - tests/linear_portfolio_plan_cases.py
@@ -21998,6 +22002,7 @@ jobs:
       - tests/test_agentos_project_proposal.py
       - tests/test_agentos_standing_instructions.py
       - tests/test_project_knowledge_recipes.py
+      - tests/test_project_discovery_correction.py
       - tests/test_agentos_status.py
       - tests/test_b_rec2_wave_boundary_records.py
       - tests/test_b_rec3_wave_boundary_records.py
@@ -22005,6 +22010,9 @@ jobs:
       - tests/test_f02_owner_map_receipts.py
       - tests/test_mo_b_ledger_reconciliation_2026_09_18.py
       - tests/test_w9b_rec_ns.py
+      - tests/test_tfg1_r3_source_truth.py
+      - research/earnings_intelligence/e3/tfg1_development_boundary_identity_adjudication_r2.json
+      - research/earnings_intelligence/e3/tfg1_development_boundary_identity_adjudication_r3.json
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -22034,7 +22042,11 @@ jobs:
             tests/test_agentos_project_plan_owner.py \
             tests/test_agentos_project_proposal.py \
             tests/test_agentos_standing_instructions.py \
-            tests/test_project_knowledge_recipes.py -q
+            tests/test_project_knowledge_recipes.py \
+            tests/test_project_discovery_correction.py -q
+
+      - name: E3-FMT R3 source-truth and sealed-holdout integrity
+        run: python -m pytest tests/test_tfg1_r3_source_truth.py -q
 
   capability-broker:
     if: ${{ false }}
