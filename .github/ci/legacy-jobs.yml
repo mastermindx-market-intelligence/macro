@@ -2419,6 +2419,7 @@ jobs:
       - "tests/test_integrated_answer_clock.py"
       - "tests/test_integrated_answer_consumer_receipt.py"
       - "tests/test_integrated_answer_cs_context_leg.py"
+      - "tests/test_integrated_answer_provenance.py"
       - "tests/test_integrated_answer_v0.py"
       - "tools/**"
       - "worker/**"
@@ -2432,7 +2433,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest fastapi httpx pyyaml requests pandas numpy pyarrow jsonschema
       - name: integrated answer v0 composer
-        run: python -m pytest tests/test_integrated_answer_v0.py tests/test_integrated_answer_clock.py tests/test_integrated_answer_consumer_receipt.py tests/test_integrated_answer_cs_context_leg.py -q
+        run: python -m pytest tests/test_integrated_answer_v0.py tests/test_integrated_answer_clock.py tests/test_integrated_answer_consumer_receipt.py tests/test_integrated_answer_cs_context_leg.py tests/test_integrated_answer_provenance.py -q
 
   c19-wp19-integrated-answer-pins:
     if: ${{ false }}
