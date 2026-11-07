@@ -194,3 +194,65 @@ a second publisher, manufacture a new parent/job identity, migrate an uncertain
 effect, or declare the Paper/product scope complete. This checkpoint grants no
 new runtime or release authority. The assigned receiver continues the original
 commission when the named dependency or writer boundary changes.
+
+## §5 Real fleet observations — 2026-11-07 11:08–11:13 UTC
+
+A bounded read-only inventory used the original registered SSH aliases once per
+host, with BatchMode and strict host-key checking. Every SSH observation exited
+0. Original Studio processes: ubuntu0 inventory PID79415; remaining hosts and
+local M2 inventory PID81214; one bounded service-state/failure diagnostic
+PID93543. No worker request, provider call, service restart, deletion, enrollment,
+limit change or release activation occurred. These observations do not retry the
+refused paid census run.
+
+| Original host key | Logical CPUs | Available memory GiB | Root free GiB | Native dsh on noninteractive PATH | Registry lane ceiling |
+| --- | ---: | ---: | ---: | --- | ---: |
+| ubuntu0 | 32 | 25.41 | 19.66 | not found | 32 |
+| ubuntu1 | 24 | 52.75 | 61.65 | /home/longr/.local/bin/dsh | 18 |
+| ubuntu2 | 32 | 23.71 | 52.01 | /home/ubuntu2/.local/bin/dsh | 32 |
+| ubuntu3 | 32 | 27.56 | 139.59 | /home/ubuntu3/.local/bin/dsh | 32 |
+| ubuntu4 | 32 | 13.07 | 863.89 | not found | 2 |
+
+The five machines returned distinct OS machine-id SHA256 values; this is not
+hardware identity or proof of five independent physical failure domains. The
+152 logical CPUs and 116 configured registry lanes are inventory, not admitted
+active-task capacity. Missing PATH entries do not prove software is absent from
+other installations. All five expose cgroup controllers, but that does not
+establish enforcement for a native worker.
+
+Ubuntu1 has an active
+mastermind-executive-remote-worker-gateway.service, whose installed description
+still says UNENROLLED_HOST_REF, plus active hermes-egress.service. The existing
+hermes-runtime-mmsecretary.service is failed with ExecMainStatus=78/CONFIG
+(last exit 2026-11-06 06:58:22 UTC). The bounded journal tail confirmed that
+configuration exit but did not establish its root cause. Preserve this original
+service and source owner; do not restart or invent enrollment to pass a check.
+The inspected gateway, egress and failed Hermes units report
+CPUQuotaPerSecUSec=infinity, MemoryHigh=infinity and MemoryMax=infinity.
+These are unit settings: ancestor-cgroup/effective limits were not verified.
+The gateway reports Restart=no. Active processes alone do not prove a
+persistent admitted workforce service.
+
+The existing mastermind-linux-hygiene.service is failed on ubuntu0, ubuntu2
+and ubuntu3. Its own latest retained receipts show cleanup NOT_APPLIED with
+HELD_UNBOUND_CACHE_TARGET / manager_target_handoff_unproven; ubuntu2/3 also
+skip untrusted cache paths. Ubuntu0 and ubuntu2 report CRITICAL with 19.66 and
+52.19 GiB free at the earlier hygiene samples, below the configured 75 GiB
+Fabric reserve. Ubuntu3 reports CAUTION despite 139.59 GiB free; the ownership
+hold remains. All three receipts say Fabric admission UNVERIFIED and reclaimed
+bytes zero. Aged worktree counts are explicitly observation-only and are not
+deletion authorization. No cleanup or retry was performed.
+
+M2's concurrent read-only sample reports 24 logical CPUs, 192 GiB total memory,
+356.48 GiB free on /Volumes/Mastermind and load averages
+41.07 / 38.86 / 34.85. This single sample does not establish UI latency,
+responsiveness under admitted load, per-worker memory or a safe worker count.
+
+The next useful production proof remains one enrolled native-parent round trip
+through existing Executive/Capacity/Router authorities. Ubuntu3 is a plausible
+DeepSeek qualification candidate from PATH and headroom alone, subject to the
+incumbent admission, ownership, confinement and effective-limit checks. Ubuntu4
+has headroom but no discovered native dsh launcher and a registry ceiling of
+two; it must not be silently promoted into a 32-worker host. Keep 25/50/100
+production measurements unproven until original owner admission and bounded
+service/resource behavior are demonstrated.
