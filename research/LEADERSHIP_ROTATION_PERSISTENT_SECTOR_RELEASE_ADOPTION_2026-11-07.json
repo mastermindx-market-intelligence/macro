@@ -3,7 +3,7 @@
   "evidence_only": true,
   "observed_on_utc": "2026-11-07",
   "mission_state": "MORE_WORK_EXISTS",
-  "governing_mastermind_sha": "d2f72b2d0d3066502adef103afa847904a70b18d",
+  "governing_mastermind_sha": "5f8c13da926011fb5fdc8cea21287b532ac968db",
   "producer": {
     "operation_id": "persistent-sector-leadership-adoption-20261107-c4",
     "branch": "sol/web-persistent-sector-leadership-adoption-20261107-c4",
@@ -140,14 +140,14 @@
     "Current dossier v1 remains unchanged with null forecasts and all authority false.",
     "No deployment, service restart, provider invocation, portfolio-policy change or trade was performed for this evidence receipt."
   ],
-  "observed_at_utc": "2026-11-07T06:13:00Z",
+  "observed_at_utc": "2026-11-07 06:52:17 UTC",
   "terminal_ui": {
     "pr": 1333,
-    "head": "ba65c3a1caa4ceffc90ea826b839f806ae457273",
+    "head": "fa79003d23cc08216ced65935e80b0e95a54a285",
     "base": "df432b7da0222e0641aa1aff1c05b74cc499b5e7",
     "published_and_read_back": true,
-    "ci_run": 42343740607,
-    "ci_last_observed": "unit_job_failed_existing_options_capture_502",
+    "ci_run": 42347628408,
+    "ci_last_observed": "in_progress_natural_ci_after_qualified_capture_repair",
     "queue_requested": false,
     "focused_tests_passed": 184,
     "playwright_cases_passed": 39,
@@ -155,7 +155,7 @@
     "typescript": "PASS",
     "eslint": "PASS",
     "production_authenticated": false,
-    "evidence_url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/tree/ba65c3a1caa4ceffc90ea826b839f806ae457273/docs/evidence/persistent-sector-leadership-2026-11-07",
+    "evidence_url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/tree/fa79003d23cc08216ced65935e80b0e95a54a285/docs/evidence/persistent-sector-leadership-2026-11-07",
     "ci_failure": {
       "run": 42343740607,
       "attempt": 1,
@@ -170,6 +170,17 @@
       "artifact": 13563586363,
       "manifest_sha256": "33b117ef07eed41acfc0fa72640300e44581acdf1d979f8c1ebbbe8d49434410",
       "repair_commission": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1333#issuecomment-6703186621"
+    },
+    "ci_capture_repair": {
+      "worker_commit": "2c112d5e3fd57237b0e7cc04de1e8b5edc6af0f6",
+      "parent_commit": "fa79003d23cc08216ced65935e80b0e95a54a285",
+      "published_readback": true,
+      "parent_real_browser_tests_passed": 6,
+      "typegen": "PASS",
+      "typecheck": "PASS",
+      "eslint": "PASS",
+      "scope": "exact same-origin GET account companion; unrelated requests and writes retain actual errors",
+      "fabric_accepted": true
     }
   },
   "macro_ui": {
@@ -247,7 +258,8 @@
     "installed_owner_sha256": "c7e9309d738687a0e10647e46166e24063d0a234460f3a26c5febc047d3cba81",
     "original_attempts": {
       "44380": "CLOSED65",
-      "66573": "CLOSED65"
+      "66573": "CLOSED65",
+      "47239": "CLOSED65"
     },
     "repair_pr": 1331,
     "repair_head": "45cf59a1e999ae77871237d024ebb33df6dba9c0",
@@ -261,9 +273,28 @@
       "process": 67334,
       "head": "45cf59a1e999ae77871237d024ebb33df6dba9c0",
       "id": "MQE_lQDOTOzwKM8AAAABNbKmpc4ABTs-zgPMmDs",
-      "observed_state": "QUEUED",
+      "observed_state": "MERGED",
       "position": 1,
       "runtime_clearance": false
+    },
+    "repair_merge_commit": "b0bda003b7abdc13364c18d342f8752455ea1627",
+    "repair_merged_at": "2026-11-07T06:28:59Z",
+    "new_exact_target_attempt": {
+      "target": "b0bda003b7abdc13364c18d342f8752455ea1627",
+      "process": 47239,
+      "remote_pid": 1647260,
+      "archive_sha256": "6091ed4355d58a0d5ed5ad0855f07191df8ee925ec5c77cd516c5f21f097bcf9",
+      "owner_sha256": "4b46330f19f000ac7aa2cc3990de93d1c5e6e92b763458d958e4f4335da4284b",
+      "driver_sha256": "cf65b7c4e017d933fe1728994eb00096df507c294f453cb6628b4e7560c2af01",
+      "fresh_preflight": "CLEAN",
+      "policy_canonical_sha256": "0d0ec2dafc2a7ffbd7ceeba5f6d5cb0c2790d97670097df3e7bd08c3244bb76a",
+      "exit": 65,
+      "refusal": "unsupported-launch-environment-override",
+      "diagnosed_source": "manager.Environment PATH",
+      "build_lock_released": true,
+      "candidate_reset_build_restart": false,
+      "receipt": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1331#issuecomment-6703436041",
+      "followup_transport": "SSH CONNECTION_TIMED_OUT, diagnostic PID75156; no retry"
     }
   },
   "macro_adoption_publication": {
@@ -290,8 +321,47 @@
       "controller_pid": 74224,
       "commission": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1333#issuecomment-6703186621",
       "controller_created": true,
+      "root_verified": true,
+      "worker_start_proven": true,
+      "state": "TERMINAL_ACCEPTED_INTEGRATED_PUBLISHED",
+      "response_sha256": "779a255f92b0d81723aa83f6997c068cf668f5599f9fbb3ea8032ab3c8461f05"
+    },
+    {
+      "run_id": "psl-c4-publisher-successor-20261107-c4",
+      "controller_pid": 97554,
+      "commission": "https://github.com/mastermindx-market-intelligence/Mastermind/issues/1202#issuecomment-6703278631",
+      "controller_created": true,
+      "root_verified": false,
+      "worker_start_proven": false
+    },
+    {
+      "run_id": "psl-member-evidence-20261107-c4",
+      "controller_pid": 89405,
+      "commission": "https://github.com/mastermindx-market-intelligence/Mastermind/issues/1202#issuecomment-6703553476",
+      "controller_created": true,
       "root_verified": false,
       "worker_start_proven": false
     }
-  ]
+  ],
+  "current_member_identity_evidence": {
+    "path": "research/evidence/persistent-sector-current-member-identity-20261107.json",
+    "sha256": "13fa054d9db9934c3a90df04d29d791f740bf584f9ca891cb467237b639ed0d8",
+    "symbols": [
+      "NVDA",
+      "MU"
+    ],
+    "identity_mode": "current",
+    "current_candidate_owner": "PASS",
+    "registered_reference_generation": "7308bc1dc500645e4629881b7f306f64211cb05d",
+    "frozen_older_reader": "refused; exact cause not retained",
+    "authenticated_runtime": false,
+    "historical_member_identity": false,
+    "disclosure_availability": false
+  },
+  "retained_generation_capture_qualification": {
+    "carrier": "https://github.com/mastermindx-market-intelligence/macro/pull/10780#issuecomment-6703481878",
+    "qualified_cases_across_two_runs": 96,
+    "production_reader_changed": false,
+    "index_and_ci_refusal_fences_preserved": true
+  }
 }

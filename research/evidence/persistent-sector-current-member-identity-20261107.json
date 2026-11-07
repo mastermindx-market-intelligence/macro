@@ -1,0 +1,163 @@
+{
+  "schema": "mastermind.psl.current_member_identity_evidence.v1",
+  "recorded_at": "2026-11-07 06:51:16 UTC",
+  "proof_scope": "local incumbent current-candidate owner, registered snapshot; not authenticated deployed HTTP",
+  "source_workspace_head": "83dbfddd8efd8c66e6ab72f927166b211db4279e",
+  "registered_snapshot_head": "3dd5556be110c0d94c3b83988d8bb06002d82570",
+  "reference_generation": "7308bc1dc500645e4629881b7f306f64211cb05d",
+  "source_sha256": {
+    "engine/company_intelligence/current_context_runtime.py": "b5a55cdfa5fd3bf15e5f2554b9185fe517671c267bca5dfecfb4d6929276d8bb",
+    "engine/company_intelligence/current_company_context.py": "ec1bb25a7d1f46f502259ca3d62d222b3fe9265740aad341d5dc89ba7d684be9",
+    "lib/dataos/identity.py": "47914bca76cf80101c25fcbd7c29455dd99fbc697373e5183fca505376f6e507"
+  },
+  "legacy_membership_observation": {
+    "fund": "XLK",
+    "member_date": "2026-10-22",
+    "ref": "macro_snapshot:sector_holdings/XLK.parquet",
+    "file_version": "statv1:32c562bc6c244f2068573032b1165db48b361102bbf446166cecec5d5b4b6530",
+    "query_receipt": "67c1b6e82e1aaa6c7188981e0d33cdbd77c947d18abe8fc53fc68d424b0de5a1",
+    "members": [
+      {
+        "ticker": "NVDA",
+        "rank": 1,
+        "weight_pct": 15.41
+      },
+      {
+        "ticker": "MU",
+        "name": "MICRON TECHNOLOGY INC",
+        "rank": 6,
+        "weight_pct": 3.85
+      }
+    ],
+    "capture_metadata_available": false,
+    "native_member_identifier_available": false,
+    "historical_identity_proven": false
+  },
+  "current_bindings": [
+    {
+      "execution_pid": 60599,
+      "response": {
+        "schema": "company_intelligence.private_company_context/v1",
+        "identity_mode": "current",
+        "query": {
+          "namespace": "store",
+          "symbol": "NVDA"
+        },
+        "security_id": "SEC:US-XNAS-NVDA",
+        "issuer_binding": {
+          "issuer_id": "ISS:US-XNAS-NVDA",
+          "evidenced_cik": "0001045810",
+          "identity_snapshot_reference": {
+            "schema": "company_intelligence.current_issuer_identity/v1",
+            "sha256": "079c49074dc8e7c5929fcda4cfced0c365bdba577738f5ef9b337ae76fb2f932",
+            "byte_length": 636
+          }
+        },
+        "identity_receipt": {
+          "schema": "company_intelligence.current_issuer_identity/v1",
+          "identity_mode": "current",
+          "issuer_id": "ISS:US-XNAS-NVDA",
+          "evidenced_cik": "0001045810",
+          "source_commit": "7308bc1dc500645e4629881b7f306f64211cb05d",
+          "sources": {
+            "security_master": {
+              "sha256": "d486830a6e545ad4fce6c08f65d53fb8fa0ca091a9959d5ef22ac64a9e6c27a6",
+              "byte_length": 106630
+            },
+            "vendor_aliases": {
+              "sha256": "ff8a32df8e47d88149d8ac8d8ae54b9b117a3c44cd34cfcd57eebcf0de816306",
+              "byte_length": 60065
+            },
+            "issuer_master": {
+              "sha256": "e440a3947126f94bdce5c4dd27c4787c79cc5d53dc684e5916c6a4d2b499ba07",
+              "byte_length": 65917
+            }
+          },
+          "evidence_source": "sec_company_tickers",
+          "evidence_snapshot": "2026-08-18"
+        }
+      }
+    },
+    {
+      "execution_pid": 93442,
+      "response": {
+        "schema": "company_intelligence.private_company_context/v1",
+        "identity_mode": "current",
+        "query": {
+          "namespace": "store",
+          "symbol": "MU"
+        },
+        "security_id": "SEC:US-XNAS-MU",
+        "issuer_binding": {
+          "issuer_id": "ISS:US-XNAS-MU",
+          "evidenced_cik": "0000723125",
+          "identity_snapshot_reference": {
+            "schema": "company_intelligence.current_issuer_identity/v1",
+            "sha256": "5c0fd26150873471f042aec1be986f685a099fc173b9febcaf63841bfd585c93",
+            "byte_length": 634
+          }
+        },
+        "identity_receipt": {
+          "schema": "company_intelligence.current_issuer_identity/v1",
+          "identity_mode": "current",
+          "issuer_id": "ISS:US-XNAS-MU",
+          "evidenced_cik": "0000723125",
+          "source_commit": "7308bc1dc500645e4629881b7f306f64211cb05d",
+          "sources": {
+            "security_master": {
+              "sha256": "d486830a6e545ad4fce6c08f65d53fb8fa0ca091a9959d5ef22ac64a9e6c27a6",
+              "byte_length": 106630
+            },
+            "vendor_aliases": {
+              "sha256": "ff8a32df8e47d88149d8ac8d8ae54b9b117a3c44cd34cfcd57eebcf0de816306",
+              "byte_length": 60065
+            },
+            "issuer_master": {
+              "sha256": "e440a3947126f94bdce5c4dd27c4787c79cc5d53dc684e5916c6a4d2b499ba07",
+              "byte_length": 65917
+            }
+          },
+          "evidence_source": "sec_company_tickers",
+          "evidence_snapshot": "2026-08-18"
+        }
+      }
+    }
+  ],
+  "existing_disclosure_subject": {
+    "source_decision": "research/theme_graph/issuer_disclosures_20261011/C01_NATIVE_OWNER.json",
+    "subject_id": "ISS:US-XNAS-MU",
+    "object_id": "ISS:US-XNAS-NVDA",
+    "fact_id": "integration:a67d5c6168617d71c5b1eedb241fc8518d3a8473476fe2a0889b73a5e3ff718f",
+    "source_published_date": "2024-02-26",
+    "lifecycle": "planned",
+    "amount": null,
+    "economic_share": null,
+    "qualifier": "Planned integration on the source date; not current planning, shipment, commercial magnitude or a causal explanation of XLK leadership."
+  },
+  "older_installed_reader": {
+    "release": "e5e84272bc9128e2577f907de4d4960e84950a9b",
+    "result": "CURRENT_IDENTITY_UNAVAILABLE",
+    "failed_stage": "producer_receipt_and_bundle_qualification",
+    "exception": "IdentityError",
+    "exact_cause": "not retained; not inferred",
+    "source_difference": "Runtime qualifier byte-identical; identity dependency vocabulary differs. Current candidate success does not rewrite frozen-reader refusal."
+  },
+  "next_consumer": {
+    "run_id": "psl-member-evidence-20261107-c4",
+    "brief": "https://github.com/mastermindx-market-intelligence/Mastermind/issues/1202#issuecomment-6703553476",
+    "mount": "Existing CompanyIntelligencePrivate inside selected-sector member journey",
+    "contract": "sector dossier v1 unchanged; private auth/entitlement/source owner unchanged"
+  },
+  "remaining": [
+    "Currently served holdings/feed provenance instead of legacy local example",
+    "Existing deployment-owner current private disclosure pointer/manifest and native fact qualification",
+    "Authenticated entitled existing BFF/API and mounted browser proof",
+    "Sector explanation, alternatives/falsifiers, descriptive risk and earlier admissible cut remain original scope"
+  ],
+  "effects": {
+    "provider_acquisition": false,
+    "source_or_reference_rewrite": false,
+    "private_disclosure_read": false,
+    "runtime_mutation": false
+  }
+}
