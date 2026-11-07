@@ -76,7 +76,10 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: main
+          # Replay publishing needs full commit ancestry; historical blobs are
+          # not needed eagerly on disk-limited self-hosted runners.
           fetch-depth: 0
+          filter: blob:none
 
       - name: Python 3.12 venv
         shell: bash

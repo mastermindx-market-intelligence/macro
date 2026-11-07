@@ -36,7 +36,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          # Preserve full commit ancestry for merged-worktree validation, but
+          # avoid downloading every historical blob on disk-limited CI runners.
+          # Checkout lazily fetches only current working-tree blobs on demand.
           fetch-depth: 0
+          filter: blob:none
 
       - name: python 3.12 (Homebrew venv - self-hosted runner)
         run: |
