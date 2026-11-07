@@ -42,10 +42,10 @@ PINS = {
 }
 
 
-@pytest.fixture
-def native(monkeypatch):
-    root = Path(SOURCE_ROOT).resolve() / "ops/native_fabric/quota_continuity"
-    for relative, expected in PINS.items():
+def native_fixture(source_root, pins, *, module_name):
+    """Load the same real native fixture from one explicitly pinned source."""
+    root = Path(source_root).resolve() / "ops/native_fabric/quota_continuity"
+    for relative, expected in pins.items():
         raw = (root / relative).read_bytes()
         assert hashlib.sha1(b"blob " + str(len(raw)).encode() + b"\0" + raw).hexdigest() == expected, relative
     original_path = list(sys.path)
@@ -54,7 +54,7 @@ def native(monkeypatch):
         loaded = sys.modules.get(name)
         if loaded is not None:
             assert Path(loaded.__file__).resolve() == root / "candidate" / (name + ".py")
-    spec = importlib.util.spec_from_file_location("_native_application_pair_8af",
+    spec = importlib.util.spec_from_file_location(module_name,
         root / "tests/test_go_application_handler_composition.py")
     module = importlib.util.module_from_spec(spec)
     sys.modules[spec.name] = module
@@ -67,6 +67,11 @@ def native(monkeypatch):
         fixture.doCleanups()
         sys.modules.pop(spec.name, None)
         sys.path[:] = original_path
+
+
+@pytest.fixture
+def native(monkeypatch):
+    yield from native_fixture(SOURCE_ROOT, PINS, module_name="_native_application_pair_8af")
 
 
 @pytest.fixture
