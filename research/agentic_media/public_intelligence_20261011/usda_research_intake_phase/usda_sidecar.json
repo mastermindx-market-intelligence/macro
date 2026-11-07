@@ -1,0 +1,28 @@
+{
+  "schema": "research_vault.sidecar.v1",
+  "id": "usda-2026-10-09-wasde-676",
+  "title": "World Agricultural Supply and Demand Estimates, October 2026 (WASDE 676)",
+  "institution": "U.S. Department of Agriculture",
+  "published_at": "2026-10-09T16:00:00Z",
+  "side": "independent",
+  "desk": "Agriculture",
+  "language": "en",
+  "source_filename": "wasde1026.pdf",
+  "tags": [
+    "agriculture",
+    "wheat",
+    "corn",
+    "soybeans",
+    "forecast"
+  ],
+  "tickers": [],
+  "top_pick": false,
+  "summary_points": [
+    "USDA projects U.S. wheat ending stocks of 740 million bushels for 2026/27, up 23 million from its previous outlook but still 20% below the prior year.",
+    "USDA forecasts U.S. corn production of 16.0 billion bushels for 2026/27, up 234 million bushels, with yield raised by 2.7 bushels to 181.2 bushels per acre.",
+    "USDA projects U.S. corn ending stocks of 1.8 billion bushels for 2026/27, an increase of 282 million bushels from the previous outlook.",
+    "USDA forecasts U.S. soybean production of 4.56 billion bushels for 2026/27, up 27 million, with a yield of 53.1 bushels per acre.",
+    "USDA projects U.S. soybean ending stocks of 315 million bushels for 2026/27, up 5 million, and leaves its season-average soybean price forecast at $12.00 per bushel.",
+    "These are USDA marketing-year estimates and projections released on October 9, 2026; they are not current spot prices or company earnings forecasts."
+  ]
+}

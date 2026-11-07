@@ -1,0 +1,52 @@
+{
+  "schema": "prophet.management_state/v1",
+  "id": "ATO-BULL-20260706",
+  "asof": "2026-11-07",
+  "phase": "overtime",
+  "detection_phase": "overtime",
+  "management_confidence": 45.8,
+  "raw_confidence": 46.0,
+  "delta_vs_base": -14.2,
+  "recommended_action": null,
+  "human_state": "Closed",
+  "components": {
+    "validity": 100.0,
+    "progress": 43.1,
+    "pace": 4.7,
+    "retention": 75.3,
+    "overlay": 33.0
+  },
+  "geometry": {
+    "dist_to_stop_r": 1.816,
+    "dist_to_t1_r": 0.684,
+    "dist_to_t2_r": 2.184,
+    "horizon_pct_used": 142.2,
+    "p1": 0.5442,
+    "p2": 0.2721,
+    "p3": null,
+    "move_r": 0.816,
+    "mfe_r": 1.084,
+    "mae_r": -1.843
+  },
+  "rr_ratio": 1.5,
+  "rr_grade": "ACCEPTABLE",
+  "change_reason": "",
+  "confidence_ceiling": 92,
+  "authority": "trade-management-only-NOT-pick-rank",
+  "authority_tier": "display",
+  "reliability": {
+    "management_confidence": "display \u2014 no forward ledger has passed yet",
+    "recommended_action": "withheld \u2014 canonical forward ledger has closed this plan",
+    "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
+  },
+  "_mfe": 7.199999999999989,
+  "_mae": -12.234997558593761,
+  "_max_p1": 0.7228915662650606,
+  "_first_trigger_ts": "2026-09-09",
+  "_first_t1_ts": null,
+  "_first_t2_ts": null,
+  "days_elapsed": 64,
+  "tau": 1.4222,
+  "closed": true,
+  "outcome": "INVALIDATED"
+}

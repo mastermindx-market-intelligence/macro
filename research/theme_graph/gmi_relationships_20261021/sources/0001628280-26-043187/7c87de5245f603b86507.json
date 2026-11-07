@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-06-15T20:13:39Z",
+ "accession": "0001628280-26-043187",
+ "cik": "0001774170",
+ "doc_byte_length": 2694933,
+ "doc_sha256": "988c653d5a39d8deda643e523eb61f2e3b0e4cc9ffab52dc8a40b9ddce049c81",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-06-15",
+ "form": "10-K",
+ "period_of_report": "2026-03-31",
+ "primary_document": "aiot-20260331.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 321467,
+  "byte_start": 321161,
+  "normalized": "Some of our global customers that benefit from our combined solutions to power their specific AIoT and machine-to-machine mobility needs include Holcim, Ford, Avis, Walmart, Toyota, and XPO Logistics. No individual customer generates revenue equal to or greater than 10% of our consolidated total revenue.",
+  "normalized_sha256": "514b82f52e1b55aeb8ff5a20d47f281bd8638884a53c4e05e9208e538e745603",
+  "raw": " Some of our global customers that benefit from our combined solutions to power their specific AIoT and machine-to-machine mobility needs include Holcim, Ford, Avis, Walmart, Toyota, and XPO Logistics. No individual customer generates revenue equal to or greater than 10% of our consolidated total revenue.",
+  "raw_sha256": "7c87de5245f603b86507a6a791702c7a7a4c8bd53281d60018d2f55d1eca63bd"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1774170/000162828026043187/aiot-20260331.htm",
+ "xbrl_contexts": []
+}

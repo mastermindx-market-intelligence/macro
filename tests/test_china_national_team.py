@@ -259,5 +259,137 @@ def test_raising_evaluator_recovers_to_own_key(monkeypatch):
         assert any(g.startswith(f"{key}: evaluator error") for g in s["gaps"])
 
 
+# --------------------------------------------------------------------------- #
+# P0 #2 — quiet receipts describe what IS true; never firing verbs.
+# Same commit: buyback value_fmt uses {pct:+.0f}% (no literal +-N%).
+# --------------------------------------------------------------------------- #
+_FIRING_VERBS = ("accelerating", "turning up", "easing", "回升", "加速")
+
+
+def _blob(tell: dict) -> str:
+    return " ".join(str(tell.get(k) or "") for k in
+                    ("receipt_en", "receipt_zh", "value_fmt"))
+
+
+def _assert_quiet_clean(tell: dict) -> None:
+    assert tell["state"] != "firing", tell
+    blob, low = _blob(tell), _blob(tell).lower()
+    for w in _FIRING_VERBS:
+        hay = low if w.isascii() else blob
+        assert w not in hay, f"{tell['key']} quiet receipt contains {w!r}: {blob}"
+
+
+def test_quiet_tells_do_not_claim_firing_copy(monkeypatch, tmp_path):
+    monkeypatch.setattr(nt, "_data_root", lambda: str(tmp_path))
+
+    # margin: last session down — quiet, names the fall.
+    mdir = tmp_path / "china_margin"
+    mdir.mkdir(parents=True, exist_ok=True)
+    idx = pd.date_range("2026-08-01", periods=10, freq="B")
+    bal = pd.Series([100, 99, 98, 97, 96, 95, 94, 93, 92, 60], index=idx)
+    pd.DataFrame({"fin_balance": bal}).to_parquet(mdir / "balance.parquet")
+    margin, _ = nt._eval_margin_recovery()
+    assert margin["state"] == "quiet"
+    assert margin["receipt_en"] == "Margin balance fell ¥3.2bn last session"
+    assert "¥" in margin["receipt_en"] and "bn" in margin["receipt_en"]
+    assert "亿" not in margin["receipt_en"]
+    assert margin["receipt_zh"] == "两融余额上一交易日减少32亿"
+    _assert_quiet_clean(margin)
+
+    # rose branch also converts 亿→¥bn; prior 5d slope up so the tell stays quiet.
+    bal_up = pd.Series([100, 101, 102, 103, 104, 105, 106, 107, 108, 140], index=idx)
+    pd.DataFrame({"fin_balance": bal_up}).to_parquet(mdir / "balance.parquet")
+    margin_up, _ = nt._eval_margin_recovery()
+    assert margin_up["state"] == "quiet"
+    assert margin_up["receipt_en"] == "Margin balance rose ¥3.2bn last session"
+    assert "¥" in margin_up["receipt_en"] and "bn" in margin_up["receipt_en"]
+    assert "亿" not in margin_up["receipt_en"]
+    assert margin_up["receipt_zh"] == "两融余额上一交易日增加32亿"
+    _assert_quiet_clean(margin_up)
+
+    # buyback: w/w deceleration — quiet, signed pct, never +-N%.
+    ledger = pd.DataFrame({
+        "date": pd.to_datetime(
+            ["2026-08-03", "2026-08-04", "2026-08-10", "2026-08-11"]
+        ),
+        "n_board_proposal": [10.0, 10.0, 8.0, 8.0],
+    })
+    buyback, _ = nt._eval_buyback_cascade(ledger)
+    assert buyback["state"] == "quiet"
+    assert buyback["value_fmt"] == "-20%"
+    assert "+-" not in buyback["value_fmt"]
+    assert buyback["receipt_en"] == "SOE buyback proposals -20% w/w"
+    assert buyback["receipt_zh"] == "国企回购预案环比-20%"
+    _assert_quiet_clean(buyback)
+
+    # pboc: stance tightening, z not in the stress cell — quiet, no "easing".
+    monkeypatch.setattr(nt, "_fr007_z", lambda: 0.40)
+    import engine.china_pboc_stance as pboc
+    monkeypatch.setattr(pboc, "snapshot",
+                        lambda asof=None: {"stance": "tightening"})
+    pboc_tell, _ = nt._eval_pboc_posture()
+    assert pboc_tell["state"] == "quiet"
+    assert pboc_tell["receipt_en"] == "FR007 z +0.40 — posture tell not firing"
+    assert pboc_tell["receipt_zh"] == "FR007 z +0.40 — 姿态信号未触发"
+    assert "stress-support" not in pboc_tell["receipt_en"]
+    assert "easing into" not in pboc_tell["receipt_en"]
+    assert "资金偏紧" not in pboc_tell["receipt_zh"]
+    _assert_quiet_clean(pboc_tell)
+
+
+def test_firing_tells_still_use_firing_verbs(monkeypatch, tmp_path):
+    """Positive control: the banned quiet tokens MUST appear when the tell fires."""
+    monkeypatch.setattr(nt, "_data_root", lambda: str(tmp_path))
+    mdir = tmp_path / "china_margin"
+    mdir.mkdir(parents=True, exist_ok=True)
+    idx = pd.date_range("2026-08-01", periods=8, freq="B")
+    # 5d trend into prior session is down; last tick is up → recovery fire.
+    bal = pd.Series([100, 98, 96, 94, 92, 90, 88, 96], index=idx)
+    pd.DataFrame({"fin_balance": bal}).to_parquet(mdir / "balance.parquet")
+    margin, _ = nt._eval_margin_recovery()
+    assert margin["state"] == "firing"
+    assert "turning up" in margin["receipt_en"]
+    assert "回升" in margin["receipt_zh"]
+
+    ledger = pd.DataFrame({
+        "date": pd.to_datetime(
+            ["2026-08-03", "2026-08-04", "2026-08-10", "2026-08-11"]
+        ),
+        "n_board_proposal": [5.0, 5.0, 8.0, 8.0],
+    })
+    buyback, _ = nt._eval_buyback_cascade(ledger)
+    assert buyback["state"] == "firing"
+    assert "accelerating" in buyback["receipt_en"]
+    assert "加速" in buyback["receipt_zh"]
+    assert "+-" not in (buyback["value_fmt"] or "")
+
+    monkeypatch.setattr(nt, "_fr007_z", lambda: -1.50)
+    import engine.china_pboc_stance as pboc
+    monkeypatch.setattr(pboc, "snapshot",
+                        lambda asof=None: {"stance": "easing"})
+    pboc_tell, _ = nt._eval_pboc_posture()
+    assert pboc_tell["state"] == "firing"
+    assert "easing" in pboc_tell["receipt_en"]
+
+
+def test_market_rescue_quiet_zh_is_lexicon_not_english_slug(monkeypatch):
+    import engine.china_policy_transmission as tr
+    monkeypatch.setattr(tr, "snapshot",
+                        lambda: {"policy_impulse": "neutral"})
+    tell, _ = nt._eval_market_rescue()
+    assert tell["state"] == "quiet"
+    assert "neutral" not in tell["receipt_zh"]  # no English slug
+    assert "中性" in tell["receipt_zh"]
+    assert tell["receipt_zh"].startswith("政策脉冲：")
+
+    monkeypatch.setattr(tr, "snapshot",
+                        lambda: {"policy_impulse": "easing"})
+    tell2, _ = nt._eval_market_rescue()
+    assert tell2["state"] == "quiet"
+    _assert_quiet_clean(tell2)
+    assert "宽松" in tell2["receipt_zh"]
+    assert "easing" not in tell2["receipt_zh"]
+
+
 if __name__ == "__main__":
     raise SystemExit(pytest.main([__file__, "-q"]))
