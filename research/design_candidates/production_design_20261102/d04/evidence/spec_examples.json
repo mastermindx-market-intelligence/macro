@@ -1,0 +1,160 @@
+{
+  "schema": "d04.spec_examples.v1",
+  "qualification": "Illustrative arithmetic and width examples only; no trading/model validation or application execution.",
+  "comparisons": [
+    {
+      "id": "coverage_illusion",
+      "members": [
+        "DEMO-A",
+        "DEMO-B",
+        "DEMO-C",
+        "DEMO-D",
+        "DEMO-E",
+        "DEMO-F",
+        "DEMO-G",
+        "DEMO-H",
+        "DEMO-I",
+        "DEMO-J"
+      ],
+      "before": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        -1,
+        -1
+      ],
+      "after": [
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        null,
+        null
+      ],
+      "threshold": 0,
+      "expected": {
+        "matched_n": 8,
+        "matched_change_pp": 0,
+        "before_observed_advancing_pct": 80,
+        "after_observed_advancing_pct": 100,
+        "possible_change_pp": [
+          0,
+          20
+        ]
+      }
+    },
+    {
+      "id": "missing_member_not_removed",
+      "members": [
+        "DEMO-A",
+        "DEMO-B",
+        "DEMO-C",
+        "DEMO-D"
+      ],
+      "before": [
+        1,
+        -1,
+        -1,
+        1
+      ],
+      "after": [
+        2,
+        2,
+        2,
+        null
+      ],
+      "threshold": 0,
+      "expected": {
+        "matched_n": 3,
+        "matched_change_pp": 66.66666666666667,
+        "before_observed_advancing_pct": 50,
+        "after_observed_advancing_pct": 100,
+        "possible_change_pp": [
+          25,
+          50
+        ]
+      }
+    }
+  ],
+  "month_mean": {
+    "monthly": [
+      {
+        "wins": 1,
+        "fires": 1
+      },
+      {
+        "wins": 1,
+        "fires": 9
+      }
+    ],
+    "expected_month_mean_pct": 55.55555555555556,
+    "expected_pooled_pct": 20
+  },
+  "thresholds": {
+    "values_pp": [
+      -0.05,
+      0,
+      0.05,
+      0.051
+    ],
+    "expected_strict_gt_zero": 2,
+    "expected_macro_gt_005": 1
+  },
+  "capitalization": {
+    "rows": [
+      {
+        "cap": 100,
+        "return_pct": 2
+      },
+      {
+        "cap": 300,
+        "return_pct": -1
+      },
+      {
+        "cap": null,
+        "return_pct": 10
+      }
+    ],
+    "expected_eligible_cap_weighted_pct": -0.25,
+    "note": "Missing cap has no invented weight; arithmetic example only."
+  },
+  "candidate_shell": {
+    "version": "F01-F02-SHELL/1.0.0-candidate.4",
+    "viewports": [
+      320,
+      390,
+      768,
+      1024,
+      1280,
+      1440,
+      1600
+    ],
+    "expected_useful_widths": [
+      288,
+      358,
+      728,
+      788,
+      1008,
+      1168,
+      1328
+    ],
+    "dock_width": 320,
+    "dock_gap": 24,
+    "minimum_primary": 640,
+    "expected_wide_with_dock": {
+      "1280": 664,
+      "1440": 824,
+      "1600": 984
+    },
+    "qualification": "Calculated candidate geometry, not actual accepted viewport evidence."
+  }
+}

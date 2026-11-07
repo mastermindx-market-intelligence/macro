@@ -1,0 +1,196 @@
+{
+  "schema": "d04.publication_readback.v1",
+  "artifact_commit": "b49118e18a7446f47634a1d5611d1f807d5d5ce5",
+  "parent": "966a5b79aeb8bf932eb7c128e08f189002492466",
+  "repository": "mastermindx-market-intelligence/macro",
+  "branch": "sol/confluence-screener-paper-rig-20260922",
+  "pr": 7727,
+  "pr_state_at_readback": "open/draft/unmerged",
+  "files_read_back": 30,
+  "total_bytes": 1826479,
+  "all_exact_bytes_match": true,
+  "observed_before_utc": "2026-11-04 01:16:01 UTC",
+  "record_scope": "Attests the first D04 source artifact commit. This receipt and subsequent foundation-delta amendment are later files; no self-referential final-commit proof is claimed.",
+  "files": [
+    {
+      "path": "README.md",
+      "git_blob_sha": "693a048eb9cfb91c252e753d5e6d1cf64bcb0885",
+      "bytes": 12884,
+      "exact_bytes": true
+    },
+    {
+      "path": "BUILD_AND_ACCEPTANCE.md",
+      "git_blob_sha": "5570fd0b58bea6957a8a036b0139196fa52b702f",
+      "bytes": 17872,
+      "exact_bytes": true
+    },
+    {
+      "path": "CAPABILITY_LEDGER.md",
+      "git_blob_sha": "1c7ae1de60b89dc876c296999fa7b6e11d33ad29",
+      "bytes": 38591,
+      "exact_bytes": true
+    },
+    {
+      "path": "COMPATIBILITY.md",
+      "git_blob_sha": "25529a214ccfe01d524f3b3ac435132caed2a65d",
+      "bytes": 9251,
+      "exact_bytes": true
+    },
+    {
+      "path": "PAPER_REVIEW_AND_GATES.md",
+      "git_blob_sha": "0397a81bac665eccdb1196ef13bc491e525cb964",
+      "bytes": 17996,
+      "exact_bytes": true
+    },
+    {
+      "path": "PRODUCT_AND_UX.md",
+      "git_blob_sha": "36d68260fdad12dd43b2ad7901e1c853eeeafe03",
+      "bytes": 26444,
+      "exact_bytes": true
+    },
+    {
+      "path": "REVIEW_CONTINUITY.md",
+      "git_blob_sha": "023a24f32dca7f62b2137bd1dee94b1ffa6eefed",
+      "bytes": 8112,
+      "exact_bytes": true
+    },
+    {
+      "path": "ROUTES_AND_DATA.md",
+      "git_blob_sha": "244364e57f77ab6cf831165085b94cae9246562b",
+      "bytes": 32008,
+      "exact_bytes": true
+    },
+    {
+      "path": "SOURCE_INDEX.md",
+      "git_blob_sha": "4db8b08d12cad1e24ad6ecc84cb71b69bd3de38d",
+      "bytes": 18113,
+      "exact_bytes": true
+    },
+    {
+      "path": "acceptance_cases.json",
+      "git_blob_sha": "81c23a5c06b267cf351746e0a4100a7dc0f39d60",
+      "bytes": 60157,
+      "exact_bytes": true
+    },
+    {
+      "path": "capabilities.json",
+      "git_blob_sha": "ad2826b784a1e66dfbe8daffe332da0338c87e89",
+      "bytes": 104853,
+      "exact_bytes": true
+    },
+    {
+      "path": "compatibility.json",
+      "git_blob_sha": "d48afcc0f02f8d63f9334010dfe7941c4b235493",
+      "bytes": 7526,
+      "exact_bytes": true
+    },
+    {
+      "path": "evidence/advisory_scope.json",
+      "git_blob_sha": "64736ac7760ef939e9dafdab4c623e033dfeab82",
+      "bytes": 1200,
+      "exact_bytes": true
+    },
+    {
+      "path": "evidence/browser_observations.json",
+      "git_blob_sha": "79de33e3e0a4f3ed7f69800225818b9fb81914e3",
+      "bytes": 4668,
+      "exact_bytes": true
+    },
+    {
+      "path": "evidence/captures.json",
+      "git_blob_sha": "0a424f9cb2e69d54d666303154b21b593260eb1e",
+      "bytes": 4632,
+      "exact_bytes": true
+    },
+    {
+      "path": "evidence/manifest.json",
+      "git_blob_sha": "62fdd41a78b3c1e4305f06a7992f51fe57744caa",
+      "bytes": 4883,
+      "exact_bytes": true
+    },
+    {
+      "path": "evidence/paper_LMF-1.jpg",
+      "git_blob_sha": "b6e243a1ceafbf81ff871c1a65df392e0fd3edd6",
+      "bytes": 205851,
+      "exact_bytes": true
+    },
+    {
+      "path": "evidence/paper_S5V-0.jpg",
+      "git_blob_sha": "b87626a39a5e732ca84ce0678a9ed92aab804e30",
+      "bytes": 259642,
+      "exact_bytes": true
+    },
+    {
+      "path": "evidence/paper_SIT-0.jpg",
+      "git_blob_sha": "845a22223be7a59220ec99e1ad0bf22e4f67175b",
+      "bytes": 108184,
+      "exact_bytes": true
+    },
+    {
+      "path": "evidence/paper_TW0-0.jpg",
+      "git_blob_sha": "a0652813e4b3160e89253a17834c9cbd22b81c8f",
+      "bytes": 50862,
+      "exact_bytes": true
+    },
+    {
+      "path": "evidence/paper_YAJ-1.jpg",
+      "git_blob_sha": "6fdb8b998fe386fcf1666ed0e3b6ad6a87fabfb8",
+      "bytes": 213302,
+      "exact_bytes": true
+    },
+    {
+      "path": "evidence/paper_YLY-1.jpg",
+      "git_blob_sha": "a2a37e24564f78360bad718b81ae682417f2d876",
+      "bytes": 138514,
+      "exact_bytes": true
+    },
+    {
+      "path": "evidence/paper_boards.json",
+      "git_blob_sha": "418f5299c7ba67efdc8c69aa8dc226f50e615db1",
+      "bytes": 29046,
+      "exact_bytes": true
+    },
+    {
+      "path": "evidence/production_confluence_desktop.jpg",
+      "git_blob_sha": "f7e28720509218e5bc7aae9c2652294640bd9904",
+      "bytes": 113922,
+      "exact_bytes": true
+    },
+    {
+      "path": "evidence/production_heatmap_loaded.jpg",
+      "git_blob_sha": "37775483446afb98ecb96fa1793ca37d76bf1611",
+      "bytes": 286176,
+      "exact_bytes": true
+    },
+    {
+      "path": "evidence/source_extracts.json",
+      "git_blob_sha": "539f54df119ac59a842eb5c06975266513d74369",
+      "bytes": 10980,
+      "exact_bytes": true
+    },
+    {
+      "path": "evidence/spec_examples.json",
+      "git_blob_sha": "c84ed9cf15c5334316f1bd9ac1f41032a807bdf6",
+      "bytes": 2877,
+      "exact_bytes": true
+    },
+    {
+      "path": "evidence/verification_report.json",
+      "git_blob_sha": "ed2276863f4089d75a858a9d37a7d314a7258266",
+      "bytes": 5276,
+      "exact_bytes": true
+    },
+    {
+      "path": "review_continuity.json",
+      "git_blob_sha": "e12c6c61642552b196f83db4f6620a0aaa1333c7",
+      "bytes": 19142,
+      "exact_bytes": true
+    },
+    {
+      "path": "verify_spec.py",
+      "git_blob_sha": "f70fdb181a198e952ca7d4bf90bac4fd4a3176c8",
+      "bytes": 13515,
+      "exact_bytes": true
+    }
+  ]
+}

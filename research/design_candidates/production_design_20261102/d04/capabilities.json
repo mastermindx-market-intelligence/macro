@@ -1,0 +1,2647 @@
+{
+  "schema": "d04.capabilities.v1",
+  "version": "D04-SPEC/0.1.0",
+  "count": 113,
+  "counts": {
+    "RETAIN": 75,
+    "RELOCATE": 3,
+    "IMPROVE": 30,
+    "BLOCKED_DATA": 5
+  },
+  "removal_count": 0,
+  "review_state": "draft; no capability approval implied",
+  "capabilities": [
+    {
+      "id": "D04-C001",
+      "group": "Shared discovery and route context",
+      "capability": "Ten distinct canonical analytical jobs",
+      "baseline": {
+        "routes": [
+          "all ten canonical routes"
+        ],
+        "source_section": "S01, S03, S10, S14",
+        "paper_references": [
+          "all62 retained reference identities"
+        ],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "RETAIN",
+      "successor": "Existing canonical routes listed in ROUTES_AND_DATA.md",
+      "reason": "A navigation rationalization must preserve deep analytical tasks.",
+      "dependency": "D04; qualified F01/F02 for composition; existing source owner for implementation",
+      "acceptance_ids": [
+        "D04-A001",
+        "D04-A072"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C002",
+      "group": "Shared discovery and route context",
+      "capability": "Repeated local scope/context controls",
+      "baseline": {
+        "routes": [
+          "all ten canonical routes"
+        ],
+        "source_section": "S01, S03, S10, S14",
+        "paper_references": [
+          "all62 retained reference identities"
+        ],
+        "qualification": "Proposed consolidation of existing controls, not an implemented shared store."
+      },
+      "disposition": "RELOCATE",
+      "successor": "Shared domain context bar within /discover, with per-view semantic adapters; public routes retain their compatibility entries",
+      "reason": "Reduce repetition only where object and field meanings match; final composition is proposed.",
+      "dependency": "F01/F02; D04; owning views",
+      "acceptance_ids": [
+        "D04-A030",
+        "D04-A047",
+        "D04-A059"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C003",
+      "group": "Shared discovery and route context",
+      "capability": "Global entity search versus local result filter",
+      "baseline": {
+        "routes": [
+          "all ten canonical routes"
+        ],
+        "source_section": "S01, S03, S10, S14",
+        "paper_references": [
+          "all62 retained reference identities"
+        ],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "RETAIN",
+      "successor": "F01 global search; labeled local list filter in each analytical object",
+      "reason": "Avoid a second search or identity plane.",
+      "dependency": "F01; D07",
+      "acceptance_ids": [
+        "D04-A007",
+        "D04-A059"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C004",
+      "group": "Shared discovery and route context",
+      "capability": "Exact filter, range, selection, comparison and scroll return",
+      "baseline": {
+        "routes": [
+          "all ten canonical routes"
+        ],
+        "source_section": "S01, S03, S10, S14",
+        "paper_references": [
+          "all62 retained reference identities"
+        ],
+        "qualification": "Existing links/local state and Paper return intentions; portable full-context integration proposed."
+      },
+      "disposition": "IMPROVE",
+      "successor": "Existing F01/router history seam plus proposed versioned ReturnContext",
+      "reason": "Current production state coverage is incomplete; preserve valid context through company research.",
+      "dependency": "F01; D07; D04",
+      "acceptance_ids": [
+        "D04-A042",
+        "D04-A043"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C005",
+      "group": "Shared discovery and route context",
+      "capability": "Deep-link hashes, query values and route receivers",
+      "baseline": {
+        "routes": [
+          "all ten canonical routes"
+        ],
+        "source_section": "S01, S03, S10, S14",
+        "paper_references": [
+          "all62 retained reference identities"
+        ],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "RETAIN",
+      "successor": "COMPATIBILITY.md receiver matrix and stable canonical entries",
+      "reason": "Preserve shared links and browser navigation rather than rewriting all users to a default.",
+      "dependency": "D04; qualified F01/F02 for composition; existing source owner for implementation",
+      "acceptance_ids": [
+        "D04-A002",
+        "D04-A003",
+        "D04-A004",
+        "D04-A005",
+        "D04-A006",
+        "D04-A071"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C006",
+      "group": "Shared discovery and route context",
+      "capability": "Six Discover panes and active-pane lifetime",
+      "baseline": {
+        "routes": [
+          "all ten canonical routes"
+        ],
+        "source_section": "S01, S03, S10, S14",
+        "paper_references": [
+          "all62 retained reference identities"
+        ],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "RETAIN",
+      "successor": "/discover?tab=screener|heatmap|sectors|leaders|radar|rs-pivot",
+      "reason": "Keep non-heatmap research dimensions and owning mounts; no new D04 ownership of them.",
+      "dependency": "D05 and current Leaders/Radar/RS owners; F01",
+      "acceptance_ids": [
+        "D04-A005",
+        "D04-A063"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C007",
+      "group": "Shared discovery and route context",
+      "capability": "Cross-region native classification and currency",
+      "baseline": {
+        "routes": [
+          "all ten canonical routes"
+        ],
+        "source_section": "S01, S03, S10, S14",
+        "paper_references": [
+          "all62 retained reference identities"
+        ],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "RETAIN",
+      "successor": "Current region/asset filter and source-qualified classification controls",
+      "reason": "Do not collapse native namespaces into US sectors.",
+      "dependency": "D19/D20; D05",
+      "acceptance_ids": [
+        "D04-A030",
+        "D04-A068"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C008",
+      "group": "Shared discovery and route context",
+      "capability": "Unsupported regional universe parity",
+      "baseline": {
+        "routes": [
+          "all ten canonical routes"
+        ],
+        "source_section": "S01, S03, S10, S14",
+        "paper_references": [
+          "all62 retained reference identities"
+        ],
+        "qualification": "Unproven parity; not a currently working feature removed by D04."
+      },
+      "disposition": "BLOCKED_DATA",
+      "successor": "Unavailable-universe state retaining supported filters and regional links",
+      "reason": "There is no evidence for universal US-feature parity.",
+      "dependency": "D19/D20 qualify universe; D13 membership; interim show unsupported with scope retained.",
+      "acceptance_ids": [
+        "D04-A055",
+        "D04-A068"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C009",
+      "group": "Shared discovery and route context",
+      "capability": "Public/member/plan-required boundaries and return",
+      "baseline": {
+        "routes": [
+          "all ten canonical routes"
+        ],
+        "source_section": "S01, S03, S10, S14",
+        "paper_references": [
+          "all62 retained reference identities"
+        ],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "RETAIN",
+      "successor": "Current route gates and source-protected payload adapters",
+      "reason": "A common visual shell cannot change entitlement.",
+      "dependency": "F01 auth seam; existing API owners",
+      "acceptance_ids": [
+        "D04-A012",
+        "D04-A020",
+        "D04-A056"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C010",
+      "group": "Shared discovery and route context",
+      "capability": "Research shortlist without automatic activation",
+      "baseline": {
+        "routes": [
+          "all ten canonical routes"
+        ],
+        "source_section": "S01, S03, S10, S14",
+        "paper_references": [
+          "all62 retained reference identities"
+        ],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "RETAIN",
+      "successor": "Explicit shortlist/save controls; separate owner-approved monitoring entry",
+      "reason": "Navigation or save does not create an alert, portfolio position or order.",
+      "dependency": "D23; owning alert/research product",
+      "acceptance_ids": [
+        "D04-A044",
+        "D04-A067"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C011",
+      "group": "Confluence ranked evidence",
+      "capability": "Runtime daily answer/count above the fold",
+      "baseline": {
+        "routes": [
+          "macro:confluence_screener"
+        ],
+        "source_section": "S04, S16",
+        "paper_references": [
+          "01M2WGNCX9475G79JRKJTCM08P/p-A-0",
+          "01M2WGNCX9475G79JRKJTCM08P/p-H-1"
+        ],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "IMPROVE",
+      "successor": "Dedicated answer slot with source-bound count in every primary variant",
+      "reason": "Inherited PRC-001/VTC-001 and R2-HERO-ANSWER stay open until real composition.",
+      "dependency": "D04; qualified F01/F02 for composition; existing source owner for implementation",
+      "acceptance_ids": [
+        "D04-A011",
+        "D04-A058"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C012",
+      "group": "Confluence ranked evidence",
+      "capability": "Eligible top-three builder rank and stable ties",
+      "baseline": {
+        "routes": [
+          "macro:confluence_screener"
+        ],
+        "source_section": "S04, S16",
+        "paper_references": [
+          "01M2WGNCX9475G79JRKJTCM08P/p-A-0",
+          "01M2WGNCX9475G79JRKJTCM08P/p-H-1"
+        ],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "RETAIN",
+      "successor": "Comparable rank1–3 rows; source rank labels",
+      "reason": "UI filters must not manufacture ranking or alter eligibility.",
+      "dependency": "D04; qualified F01/F02 for composition; existing source owner for implementation",
+      "acceptance_ids": [
+        "D04-A008",
+        "D04-A013"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C013",
+      "group": "Confluence ranked evidence",
+      "capability": "Variable-depth structured D/W recipe legs",
+      "baseline": {
+        "routes": [
+          "macro:confluence_screener"
+        ],
+        "source_section": "S04, S16",
+        "paper_references": [
+          "01M2WGNCX9475G79JRKJTCM08P/p-A-0",
+          "01M2WGNCX9475G79JRKJTCM08P/p-H-1"
+        ],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "RETAIN",
+      "successor": "Explicit builder-owned leg rows with adequate height",
+      "reason": "Preserve actual recipe depth without unsupported timeframe identities.",
+      "dependency": "D04; qualified F01/F02 for composition; existing source owner for implementation",
+      "acceptance_ids": [
+        "D04-A009"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C014",
+      "group": "Confluence ranked evidence",
+      "capability": "Recent and older validation side by side",
+      "baseline": {
+        "routes": [
+          "macro:confluence_screener"
+        ],
+        "source_section": "S04, S16",
+        "paper_references": [
+          "01M2WGNCX9475G79JRKJTCM08P/p-A-0",
+          "01M2WGNCX9475G79JRKJTCM08P/p-H-1"
+        ],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "IMPROVE",
+      "successor": "Same evidence columns/stack grammar on every rank",
+      "reason": "Recent/older rate, sample size and months must be directly comparable.",
+      "dependency": "D04; qualified F01/F02 for composition; existing source owner for implementation",
+      "acceptance_ids": [
+        "D04-A010",
+        "D04-A058",
+        "D04-A074"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C015",
+      "group": "Confluence ranked evidence",
+      "capability": "Sample basis, fire history, frequency and edge pp",
+      "baseline": {
+        "routes": [
+          "macro:confluence_screener"
+        ],
+        "source_section": "S04, S16",
+        "paper_references": [
+          "01M2WGNCX9475G79JRKJTCM08P/p-A-0",
+          "01M2WGNCX9475G79JRKJTCM08P/p-H-1"
+        ],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "RETAIN",
+      "successor": "Evidence row and accessible expanded source details",
+      "reason": "Preserve n_test/n_train, months, fires and temporal basis; units remain distinct.",
+      "dependency": "D04; qualified F01/F02 for composition; existing source owner for implementation",
+      "acceptance_ids": [
+        "D04-A010",
+        "D04-A057"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C016",
+      "group": "Confluence ranked evidence",
+      "capability": "Unavoidable honesty about historical rates and entry meaning",
+      "baseline": {
+        "routes": [
+          "macro:confluence_screener"
+        ],
+        "source_section": "S04, S16",
+        "paper_references": [
+          "01M2WGNCX9475G79JRKJTCM08P/p-A-0",
+          "01M2WGNCX9475G79JRKJTCM08P/p-H-1"
+        ],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "IMPROVE",
+      "successor": "Plain-language glance-tier caveat adjacent to primary answer",
+      "reason": "Disclosure cannot hide a critical qualification.",
+      "dependency": "D04; qualified F01/F02 for composition; existing source owner for implementation",
+      "acceptance_ids": [
+        "D04-A011",
+        "D04-A052"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C017",
+      "group": "Confluence ranked evidence",
+      "capability": "Rank-1 free matching identities and wrapping links",
+      "baseline": {
+        "routes": [
+          "macro:confluence_screener"
+        ],
+        "source_section": "S04, S16",
+        "paper_references": [
+          "01M2WGNCX9475G79JRKJTCM08P/p-A-0",
+          "01M2WGNCX9475G79JRKJTCM08P/p-H-1"
+        ],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "RETAIN",
+      "successor": "DEMO-proven ticker/company link grammar, current real identity adapter at runtime",
+      "reason": "Free useful path must stay usable with many/long names.",
+      "dependency": "D04; qualified F01/F02 for composition; existing source owner for implementation",
+      "acceptance_ids": [
+        "D04-A012",
+        "D04-A014"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C018",
+      "group": "Confluence ranked evidence",
+      "capability": "Public counts and comparable evidence for paid rows",
+      "baseline": {
+        "routes": [
+          "macro:confluence_screener"
+        ],
+        "source_section": "S04, S16",
+        "paper_references": [
+          "01M2WGNCX9475G79JRKJTCM08P/p-A-0",
+          "01M2WGNCX9475G79JRKJTCM08P/p-H-1"
+        ],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "RETAIN",
+      "successor": "Rank2/3 same evidence grammar with identity lock area",
+      "reason": "Entitlement hides identities, not public evidence structure.",
+      "dependency": "D04; qualified F01/F02 for composition; existing source owner for implementation",
+      "acceptance_ids": [
+        "D04-A012",
+        "D04-A058"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C019",
+      "group": "Confluence ranked evidence",
+      "capability": "Protected identity hydration, CTA, failure and expiry",
+      "baseline": {
+        "routes": [
+          "macro:confluence_screener"
+        ],
+        "source_section": "S04, S16",
+        "paper_references": [
+          "01M2WGNCX9475G79JRKJTCM08P/p-A-0",
+          "01M2WGNCX9475G79JRKJTCM08P/p-H-1"
+        ],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "IMPROVE",
+      "successor": "Existing protected payload read with honest pending/denied/error copy",
+      "reason": "Prevent false unlock or name leakage; don't interpret the hydrated browser state as public bytes.",
+      "dependency": "D04; qualified F01/F02 for composition; existing source owner for implementation",
+      "acceptance_ids": [
+        "D04-A012",
+        "D04-A056",
+        "D04-A075"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C020",
+      "group": "Confluence ranked evidence",
+      "capability": "Presentation filters and filter-empty distinction",
+      "baseline": {
+        "routes": [
+          "macro:confluence_screener"
+        ],
+        "source_section": "S04, S16",
+        "paper_references": [
+          "01M2WGNCX9475G79JRKJTCM08P/p-A-0",
+          "01M2WGNCX9475G79JRKJTCM08P/p-H-1"
+        ],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "RETAIN",
+      "successor": "Optional labeled filter on published ranked rows",
+      "reason": "Retain only truthful scope; filter-empty never rewrites global zero.",
+      "dependency": "D04; qualified F01/F02 for composition; existing source owner for implementation",
+      "acceptance_ids": [
+        "D04-A008",
+        "D04-A013"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C021",
+      "group": "Confluence ranked evidence",
+      "capability": "Freshness, as-of and provenance",
+      "baseline": {
+        "routes": [
+          "macro:confluence_screener"
+        ],
+        "source_section": "S04, S16",
+        "paper_references": [
+          "01M2WGNCX9475G79JRKJTCM08P/p-A-0",
+          "01M2WGNCX9475G79JRKJTCM08P/p-H-1"
+        ],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "IMPROVE",
+      "successor": "Visible source-date anchor plus detail",
+      "reason": "Raw missing payload/default-zero behavior needs an explicit unavailable state.",
+      "dependency": "D04; qualified F01/F02 for composition; existing source owner for implementation",
+      "acceptance_ids": [
+        "D04-A011",
+        "D04-A057"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C022",
+      "group": "Confluence ranked evidence",
+      "capability": "Brand, dark identity and language-sensitive colors",
+      "baseline": {
+        "routes": [
+          "macro:confluence_screener"
+        ],
+        "source_section": "S04, S16",
+        "paper_references": [
+          "01M2WGNCX9475G79JRKJTCM08P/p-A-0",
+          "01M2WGNCX9475G79JRKJTCM08P/p-H-1"
+        ],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "IMPROVE",
+      "successor": "F01 brand and F02 dark/light tokens, nonsemantic convergence motif",
+      "reason": "Correct MASTERMINDX and preserve character without colored container borders.",
+      "dependency": "F01/F02",
+      "acceptance_ids": [
+        "D04-A051",
+        "D04-A052",
+        "D04-A059"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C023",
+      "group": "Confluence ranked evidence",
+      "capability": "Focus, hover, loading, empty, stale and disabled specimens",
+      "baseline": {
+        "routes": [
+          "macro:confluence_screener"
+        ],
+        "source_section": "S04, S16",
+        "paper_references": [
+          "01M2WGNCX9475G79JRKJTCM08P/p-A-0",
+          "01M2WGNCX9475G79JRKJTCM08P/p-H-1"
+        ],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "IMPROVE",
+      "successor": "Actual editable state scenes with localized copy",
+      "reason": "State labels in a frame are not demonstrated interaction.",
+      "dependency": "D04; qualified F01/F02 for composition; existing source owner for implementation",
+      "acceptance_ids": [
+        "D04-A053",
+        "D04-A055",
+        "D04-A058"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C024",
+      "group": "Confluence ranked evidence",
+      "capability": "24 legacy mappings and distinct #sc/#theme/regional #b contracts",
+      "baseline": {
+        "routes": [
+          "macro:confluence_screener"
+        ],
+        "source_section": "S04, S16, S19",
+        "paper_references": [
+          "01M2WGNCX9475G79JRKJTCM08P/p-A-0",
+          "01M2WGNCX9475G79JRKJTCM08P/p-H-1"
+        ],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "RETAIN",
+      "successor": "Exact current receiver and anchor inventory; missing retired-anchor adapters remain explicit",
+      "reason": "Current executable table has24, correcting the handoff's23; preserve source receiver ownership and distinguish US b- paths from regional #b fragments.",
+      "dependency": "D04; qualified F01/F02 for composition; existing source owner for implementation",
+      "acceptance_ids": [
+        "D04-A002",
+        "D04-A003",
+        "D04-A004"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C025",
+      "group": "Confluence ranked evidence",
+      "capability": "All predecessor findings and conditions",
+      "baseline": {
+        "routes": [
+          "macro:confluence_screener"
+        ],
+        "source_section": "S04, S16",
+        "paper_references": [
+          "01M2WGNCX9475G79JRKJTCM08P/p-A-0",
+          "01M2WGNCX9475G79JRKJTCM08P/p-H-1"
+        ],
+        "qualification": "Existing review obligation, not a customer-facing feature."
+      },
+      "disposition": "RETAIN",
+      "successor": "Existing RIG continuity, all25 CARRIED_BLOCK until evidence-backed resolution",
+      "reason": "No prose remedy or agent advice closes an inherited review finding.",
+      "dependency": "Existing RIG owner and admitted independent reviewers",
+      "acceptance_ids": [
+        "D04-A065",
+        "D04-A066"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C026",
+      "group": "Top Picks and Movers",
+      "capability": "Top Picks, Sectors and Sector index navigation",
+      "baseline": {
+        "routes": [
+          "macro:discovery",
+          "macro:movers"
+        ],
+        "source_section": "S05, S15",
+        "paper_references": [],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "RETAIN",
+      "successor": "Existing sections with consistent Discover entry labels",
+      "reason": "Preserve alternate scan paths.",
+      "dependency": "D04; qualified F01/F02 for composition; existing source owner for implementation",
+      "acceptance_ids": [
+        "D04-A015"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C027",
+      "group": "Top Picks and Movers",
+      "capability": "Top conviction and Avoid universes",
+      "baseline": {
+        "routes": [
+          "macro:discovery",
+          "macro:movers"
+        ],
+        "source_section": "S05, S15",
+        "paper_references": [],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "RETAIN",
+      "successor": "Distinct rank sides and source evidence",
+      "reason": "Avoid is not a negative color rendering of the same shortlist.",
+      "dependency": "D04; qualified F01/F02 for composition; existing source owner for implementation",
+      "acceptance_ids": [
+        "D04-A015"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C028",
+      "group": "Top Picks and Movers",
+      "capability": "Hide-stretch and sector filters",
+      "baseline": {
+        "routes": [
+          "macro:discovery",
+          "macro:movers"
+        ],
+        "source_section": "S05, S15",
+        "paper_references": [],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "RETAIN",
+      "successor": "Scope controls with clear applied state",
+      "reason": "Retain research filtering while rank stays source-owned.",
+      "dependency": "D04; qualified F01/F02 for composition; existing source owner for implementation",
+      "acceptance_ids": [
+        "D04-A015",
+        "D04-A016"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C029",
+      "group": "Top Picks and Movers",
+      "capability": "Conviction/alpha versus BUY entry timing, trend and extension",
+      "baseline": {
+        "routes": [
+          "macro:discovery",
+          "macro:movers"
+        ],
+        "source_section": "S05, S15",
+        "paper_references": [],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "RETAIN",
+      "successor": "Dense rank table with separate evidence fields",
+      "reason": "A highly ranked company need not be an immediate entry.",
+      "dependency": "D04; qualified F01/F02 for composition; existing source owner for implementation",
+      "acceptance_ids": [
+        "D04-A015",
+        "D04-A057"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C030",
+      "group": "Top Picks and Movers",
+      "capability": "Source date, signal validity and generation time",
+      "baseline": {
+        "routes": [
+          "macro:discovery",
+          "macro:movers"
+        ],
+        "source_section": "S05, S15",
+        "paper_references": [],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "IMPROVE",
+      "successor": "Separate observation/valid-through/generated labels",
+      "reason": "Avoid treating stale signals as current from a recent build stamp.",
+      "dependency": "D04; qualified F01/F02 for composition; existing source owner for implementation",
+      "acceptance_ids": [
+        "D04-A016",
+        "D04-A057"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C031",
+      "group": "Top Picks and Movers",
+      "capability": "Stock detail links and exact return",
+      "baseline": {
+        "routes": [
+          "macro:discovery",
+          "macro:movers"
+        ],
+        "source_section": "S05, S15",
+        "paper_references": [],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "IMPROVE",
+      "successor": "Current stock.html#ticker seam with F01/D07 qualified return adapter",
+      "reason": "Keep entity identity and original shortlist position.",
+      "dependency": "F01; D07",
+      "acceptance_ids": [
+        "D04-A007",
+        "D04-A042"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C032",
+      "group": "Top Picks and Movers",
+      "capability": "Movers, gainers/losers, activity and return analyzer",
+      "baseline": {
+        "routes": [
+          "macro:discovery",
+          "macro:movers"
+        ],
+        "source_section": "S05, S15",
+        "paper_references": [],
+        "qualification": "Current relocated destination observed in browser and source."
+      },
+      "disposition": "RELOCATE",
+      "successor": "Existing /stocks/index.html#today-movers through /movers.html fixed replacement",
+      "reason": "This is the current shipped/source destination; preserve rich Stocks-hub functions.",
+      "dependency": "Stocks hub owner; D04 compatibility",
+      "acceptance_ids": [
+        "D04-A006",
+        "D04-A071"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C033",
+      "group": "Curated baskets and detailed research",
+      "capability": "Basket catalog and active theme links",
+      "baseline": {
+        "routes": [
+          "macro:baskets",
+          "macro:basket_family"
+        ],
+        "source_section": "S07",
+        "paper_references": [],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "RELOCATE",
+      "successor": "Existing sector_central.html#actnow-section plus basket/<id>.html; #ne-* retained",
+      "reason": "Retain current compatibility receiver instead of reviving a duplicate basket desk.",
+      "dependency": "D05; D13; D04",
+      "acceptance_ids": [
+        "D04-A003"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C034",
+      "group": "Curated baskets and detailed research",
+      "capability": "All49 stable current basket IDs",
+      "baseline": {
+        "routes": [
+          "macro:baskets",
+          "macro:basket_family"
+        ],
+        "source_section": "S07",
+        "paper_references": [],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "RETAIN",
+      "successor": "Exact generated /basket/<id>.html family",
+      "reason": "Do not retain a stale48-count label or rename valid IDs.",
+      "dependency": "D04; qualified F01/F02 for composition; existing source owner for implementation",
+      "acceptance_ids": [
+        "D04-A003",
+        "D04-A018"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C035",
+      "group": "Curated baskets and detailed research",
+      "capability": "Equal-weight monthly construction",
+      "baseline": {
+        "routes": [
+          "macro:baskets",
+          "macro:basket_family"
+        ],
+        "source_section": "S07",
+        "paper_references": [],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "RETAIN",
+      "successor": "Method/legend and detail history",
+      "reason": "Construction affects interpretation of performance and comparison.",
+      "dependency": "D04; qualified F01/F02 for composition; existing source owner for implementation",
+      "acceptance_ids": [
+        "D04-A018",
+        "D04-A024"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C036",
+      "group": "Curated baskets and detailed research",
+      "capability": "Index-inclusion mask versus actual curation date",
+      "baseline": {
+        "routes": [
+          "macro:baskets",
+          "macro:basket_family"
+        ],
+        "source_section": "S07",
+        "paper_references": [],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "IMPROVE",
+      "successor": "Separate added and curated_added provenance display",
+      "reason": "Back-projected membership is not a historical watch record.",
+      "dependency": "D13 membership; basket producer",
+      "acceptance_ids": [
+        "D04-A018"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C037",
+      "group": "Curated baskets and detailed research",
+      "capability": "True point-in-time historical membership before first recorded snapshot",
+      "baseline": {
+        "routes": [
+          "macro:baskets",
+          "macro:basket_family"
+        ],
+        "source_section": "S07",
+        "paper_references": [],
+        "qualification": "Data unavailable for earlier periods; no historical-membership claim."
+      },
+      "disposition": "BLOCKED_DATA",
+      "successor": "Qualified back-projected context plus actual available snapshots/changelog",
+      "reason": "Absent historical custody cannot be reconstructed as actual holdings.",
+      "dependency": "D13 and basket producer; interim mark back-projected, show real curation/snapshot dates.",
+      "acceptance_ids": [
+        "D04-A018",
+        "D04-A068"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C038",
+      "group": "Curated baskets and detailed research",
+      "capability": "Group breadth, earnings and co-movement read",
+      "baseline": {
+        "routes": [
+          "macro:baskets",
+          "macro:basket_family"
+        ],
+        "source_section": "S07",
+        "paper_references": [],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "RETAIN",
+      "successor": "Basket summary and evidence detail",
+      "reason": "Preserve the basket's diagnostic context.",
+      "dependency": "D04; qualified F01/F02 for composition; existing source owner for implementation",
+      "acceptance_ids": [
+        "D04-A019"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C039",
+      "group": "Curated baskets and detailed research",
+      "capability": "Health, gated act-now and standout/within-basket context",
+      "baseline": {
+        "routes": [
+          "macro:baskets",
+          "macro:basket_family"
+        ],
+        "source_section": "S07",
+        "paper_references": [],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "RETAIN",
+      "successor": "Distinct theme-health, entry and member-research views",
+      "reason": "Do not turn research priority into unsupported numeric potential.",
+      "dependency": "D04; qualified F01/F02 for composition; existing source owner for implementation",
+      "acceptance_ids": [
+        "D04-A019",
+        "D04-A067"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C040",
+      "group": "Curated baskets and detailed research",
+      "capability": "Cycles, multi-timeframe and flow evidence",
+      "baseline": {
+        "routes": [
+          "macro:baskets",
+          "macro:basket_family"
+        ],
+        "source_section": "S07",
+        "paper_references": [],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "RETAIN",
+      "successor": "Deep evidence sections and linked member detail",
+      "reason": "Preserve analytical depth beyond the first fold.",
+      "dependency": "D04; qualified F01/F02 for composition; existing source owner for implementation",
+      "acceptance_ids": [
+        "D04-A019"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C041",
+      "group": "Curated baskets and detailed research",
+      "capability": "Timing/risk, bull age, overbought, clean entry, rollover and flip distance",
+      "baseline": {
+        "routes": [
+          "macro:baskets",
+          "macro:basket_family"
+        ],
+        "source_section": "S07",
+        "paper_references": [],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "RETAIN",
+      "successor": "Timing/risk section with display-only qualification",
+      "reason": "Maintain action-relevant context without creating an order trigger.",
+      "dependency": "D04; qualified F01/F02 for composition; existing source owner for implementation",
+      "acceptance_ids": [
+        "D04-A019",
+        "D04-A067"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C042",
+      "group": "Curated baskets and detailed research",
+      "capability": "Score composition, performance, breadth and score history",
+      "baseline": {
+        "routes": [
+          "macro:baskets",
+          "macro:basket_family"
+        ],
+        "source_section": "S07",
+        "paper_references": [],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "RETAIN",
+      "successor": "Comparison/history sections with named bases",
+      "reason": "Different scores and horizons remain interpretable.",
+      "dependency": "D04; qualified F01/F02 for composition; existing source owner for implementation",
+      "acceptance_ids": [
+        "D04-A019",
+        "D04-A057"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C043",
+      "group": "Curated baskets and detailed research",
+      "capability": "Sortable holdings, research-priority order and refreshed disclosure/focus",
+      "baseline": {
+        "routes": [
+          "macro:baskets",
+          "macro:basket_family"
+        ],
+        "source_section": "S07",
+        "paper_references": [],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "RETAIN",
+      "successor": "Dense member table and source-defined expandable rows",
+      "reason": "Preserve task state after refresh and detail exploration.",
+      "dependency": "D04; qualified F01/F02 for composition; existing source owner for implementation",
+      "acceptance_ids": [
+        "D04-A019",
+        "D04-A042"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C044",
+      "group": "Curated baskets and detailed research",
+      "capability": "Membership changelog, cross-market references and exact back path",
+      "baseline": {
+        "routes": [
+          "macro:baskets",
+          "macro:basket_family"
+        ],
+        "source_section": "S07",
+        "paper_references": [],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "RETAIN",
+      "successor": "Existing detail provenance and ../sector_central.html#actnow-section; region-qualified links",
+      "reason": "Shared regional template does not prove equal data coverage.",
+      "dependency": "D05; D13; D19/D20",
+      "acceptance_ids": [
+        "D04-A003",
+        "D04-A007",
+        "D04-A018",
+        "D04-A068"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C045",
+      "group": "Quant Lab",
+      "capability": "AI-versus-rest breadth split",
+      "baseline": {
+        "routes": [
+          "macro:advanced"
+        ],
+        "source_section": "S06",
+        "paper_references": [],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "RETAIN",
+      "successor": "#vsb-breadth-split-section",
+      "reason": "Maintain comparison cohort and qualification.",
+      "dependency": "D04; qualified F01/F02 for composition; existing source owner for implementation",
+      "acceptance_ids": [
+        "D04-A017",
+        "D04-A069"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C046",
+      "group": "Quant Lab",
+      "capability": "Cross-asset concentration, PC1 and63-day correlation",
+      "baseline": {
+        "routes": [
+          "macro:advanced"
+        ],
+        "source_section": "S06",
+        "paper_references": [],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "RETAIN",
+      "successor": "#cross-asset matrix",
+      "reason": "Retain source horizon and concentration meaning.",
+      "dependency": "D04; qualified F01/F02 for composition; existing source owner for implementation",
+      "acceptance_ids": [
+        "D04-A017",
+        "D04-A069"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C047",
+      "group": "Quant Lab",
+      "capability": "Risk budget",
+      "baseline": {
+        "routes": [
+          "macro:advanced"
+        ],
+        "source_section": "S06",
+        "paper_references": [],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "RETAIN",
+      "successor": "#risk-budget",
+      "reason": "Keep portfolio risk context distinct from ranking.",
+      "dependency": "D04; qualified F01/F02 for composition; existing source owner for implementation",
+      "acceptance_ids": [
+        "D04-A017",
+        "D04-A069"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C048",
+      "group": "Quant Lab",
+      "capability": "Stress replay",
+      "baseline": {
+        "routes": [
+          "macro:advanced"
+        ],
+        "source_section": "S06",
+        "paper_references": [],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "RETAIN",
+      "successor": "#stress-replay",
+      "reason": "Retain scenario/assumption context.",
+      "dependency": "D04; qualified F01/F02 for composition; existing source owner for implementation",
+      "acceptance_ids": [
+        "D04-A017",
+        "D04-A069"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C049",
+      "group": "Quant Lab",
+      "capability": "Factor IC scorecard",
+      "baseline": {
+        "routes": [
+          "macro:advanced"
+        ],
+        "source_section": "S06",
+        "paper_references": [],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "RETAIN",
+      "successor": "#factor-scorecard",
+      "reason": "Preserve sample and evaluation meaning.",
+      "dependency": "D04; qualified F01/F02 for composition; existing source owner for implementation",
+      "acceptance_ids": [
+        "D04-A017",
+        "D04-A069"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C050",
+      "group": "Quant Lab",
+      "capability": "Dials, votes and weakest-link context",
+      "baseline": {
+        "routes": [
+          "macro:advanced"
+        ],
+        "source_section": "S06",
+        "paper_references": [],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "RETAIN",
+      "successor": "#dials",
+      "reason": "Maintain multi-signal analytical structure.",
+      "dependency": "D04; qualified F01/F02 for composition; existing source owner for implementation",
+      "acceptance_ids": [
+        "D04-A017",
+        "D04-A069"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C051",
+      "group": "Quant Lab",
+      "capability": "Market internals",
+      "baseline": {
+        "routes": [
+          "macro:advanced"
+        ],
+        "source_section": "S06",
+        "paper_references": [],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "RETAIN",
+      "successor": "#internals",
+      "reason": "Keep underlying breadth/participation diagnostics.",
+      "dependency": "D04; qualified F01/F02 for composition; existing source owner for implementation",
+      "acceptance_ids": [
+        "D04-A017"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C052",
+      "group": "Quant Lab",
+      "capability": "Size and style",
+      "baseline": {
+        "routes": [
+          "macro:advanced"
+        ],
+        "source_section": "S06",
+        "paper_references": [],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "RETAIN",
+      "successor": "#size-style",
+      "reason": "Preserve cross-sectional segmentation.",
+      "dependency": "D04; qualified F01/F02 for composition; existing source owner for implementation",
+      "acceptance_ids": [
+        "D04-A017"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C053",
+      "group": "Quant Lab",
+      "capability": "Sector ETF accumulation",
+      "baseline": {
+        "routes": [
+          "macro:advanced"
+        ],
+        "source_section": "S06",
+        "paper_references": [],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "RETAIN",
+      "successor": "#accumulation",
+      "reason": "Retain holdings/accumulation context.",
+      "dependency": "D04; qualified F01/F02 for composition; existing source owner for implementation",
+      "acceptance_ids": [
+        "D04-A017",
+        "D04-A021"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C054",
+      "group": "Quant Lab",
+      "capability": "Holdings flows",
+      "baseline": {
+        "routes": [
+          "macro:advanced"
+        ],
+        "source_section": "S06",
+        "paper_references": [],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "RETAIN",
+      "successor": "#holdings",
+      "reason": "Do not replace with generic ETF prices.",
+      "dependency": "D04; qualified F01/F02 for composition; existing source owner for implementation",
+      "acceptance_ids": [
+        "D04-A017",
+        "D04-A021"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C055",
+      "group": "ETF and fund moves",
+      "capability": "Public non-graded stance, rotation backdrop and honest totals",
+      "baseline": {
+        "routes": [
+          "macro:etfs"
+        ],
+        "source_section": "S08",
+        "paper_references": [],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "RETAIN",
+      "successor": "Free ETF header/overview",
+      "reason": "Public entry remains useful without exposing graded records.",
+      "dependency": "D04; qualified F01/F02 for composition; existing source owner for implementation",
+      "acceptance_ids": [
+        "D04-A020"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C056",
+      "group": "ETF and fund moves",
+      "capability": "Full fund coverage directory and footer",
+      "baseline": {
+        "routes": [
+          "macro:etfs"
+        ],
+        "source_section": "S08",
+        "paper_references": [],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "RETAIN",
+      "successor": "Coverage directory with source freshness",
+      "reason": "Preserve breadth of research universe.",
+      "dependency": "D04; qualified F01/F02 for composition; existing source owner for implementation",
+      "acceptance_ids": [
+        "D04-A020",
+        "D04-A021"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C057",
+      "group": "ETF and fund moves",
+      "capability": "Protected graded board and fresh/add/trim views",
+      "baseline": {
+        "routes": [
+          "macro:etfs"
+        ],
+        "source_section": "S08",
+        "paper_references": [],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "RETAIN",
+      "successor": "Existing tier_payload.v1 hydration from shared partials",
+      "reason": "Keep row parity and correct access boundary.",
+      "dependency": "D04; qualified F01/F02 for composition; existing source owner for implementation",
+      "acceptance_ids": [
+        "D04-A020"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C058",
+      "group": "ETF and fund moves",
+      "capability": "Consensus favored, fund coverage and trajectories",
+      "baseline": {
+        "routes": [
+          "macro:etfs"
+        ],
+        "source_section": "S08",
+        "paper_references": [],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "RETAIN",
+      "successor": "Current engine-owned evidence and history context",
+      "reason": "Preserve consensus and trajectory dimensions.",
+      "dependency": "D04; qualified F01/F02 for composition; existing source owner for implementation",
+      "acceptance_ids": [
+        "D04-A020",
+        "D04-A021"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C059",
+      "group": "ETF and fund moves",
+      "capability": "Share change versus weight change versus price drift",
+      "baseline": {
+        "routes": [
+          "macro:etfs"
+        ],
+        "source_section": "S08",
+        "paper_references": [],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "IMPROVE",
+      "successor": "Explicit units, filing clock and comparison labels",
+      "reason": "A price move cannot stand in for a holdings decision.",
+      "dependency": "D04; qualified F01/F02 for composition; existing source owner for implementation",
+      "acceptance_ids": [
+        "D04-A021",
+        "D04-A057"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C060",
+      "group": "ETF and fund moves",
+      "capability": "Stock-linked fund flows and return",
+      "baseline": {
+        "routes": [
+          "macro:etfs"
+        ],
+        "source_section": "S08",
+        "paper_references": [],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "RETAIN",
+      "successor": "Current stockdata/fund_flows.json consumer and company detail seam",
+      "reason": "Preserve source/stock relationships.",
+      "dependency": "D07; fund-flow producer",
+      "acceptance_ids": [
+        "D04-A007",
+        "D04-A021",
+        "D04-A042"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C061",
+      "group": "Macro market and theme heatmaps",
+      "capability": "S&P company map and theme/subtheme map",
+      "baseline": {
+        "routes": [
+          "macro:sector_heatmap"
+        ],
+        "source_section": "S09",
+        "paper_references": [],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "RETAIN",
+      "successor": "Two map modes with distinct hierarchy/identity",
+      "reason": "Tiles represent different objects; keep meaning visible.",
+      "dependency": "D04; qualified F01/F02 for composition; existing source owner for implementation",
+      "acceptance_ids": [
+        "D04-A022",
+        "D04-A023"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C062",
+      "group": "Macro market and theme heatmaps",
+      "capability": "503-tile S&P snapshot and provider sector labels",
+      "baseline": {
+        "routes": [
+          "macro:sector_heatmap"
+        ],
+        "source_section": "S09",
+        "paper_references": [],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "RETAIN",
+      "successor": "Source-qualified sector grouping",
+      "reason": "Mixed provider labels cannot be silently collapsed.",
+      "dependency": "D04; qualified F01/F02 for composition; existing source owner for implementation",
+      "acceptance_ids": [
+        "D04-A022"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C063",
+      "group": "Macro market and theme heatmaps",
+      "capability": "Timeframe metadata including disabled intraday",
+      "baseline": {
+        "routes": [
+          "macro:sector_heatmap"
+        ],
+        "source_section": "S09",
+        "paper_references": [],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "RETAIN",
+      "successor": "Timeframe control honors available flag",
+      "reason": "A populated historical value does not establish availability.",
+      "dependency": "D04; qualified F01/F02 for composition; existing source owner for implementation",
+      "acceptance_ids": [
+        "D04-A022"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C064",
+      "group": "Macro market and theme heatmaps",
+      "capability": "Market-cap weighted sector aggregate versus median/count basis",
+      "baseline": {
+        "routes": [
+          "macro:sector_heatmap"
+        ],
+        "source_section": "S09",
+        "paper_references": [],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "RETAIN",
+      "successor": "Measure-specific legend and aggregate explanation",
+      "reason": "Prevent misleading comparisons between different aggregation rules.",
+      "dependency": "D04; qualified F01/F02 for composition; existing source owner for implementation",
+      "acceptance_ids": [
+        "D04-A024"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C065",
+      "group": "Macro market and theme heatmaps",
+      "capability": "Theme hierarchy, overlap and look-through counts",
+      "baseline": {
+        "routes": [
+          "macro:sector_heatmap"
+        ],
+        "source_section": "S09",
+        "paper_references": [],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "IMPROVE",
+      "successor": "40-group/268-subtheme source example with deduplicated company view",
+      "reason": "2339 appearances are not2339 distinct instruments.",
+      "dependency": "D13; heatmap producer",
+      "acceptance_ids": [
+        "D04-A023",
+        "D04-A068"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C066",
+      "group": "Macro market and theme heatmaps",
+      "capability": "Membership date versus price date and unknown coverage",
+      "baseline": {
+        "routes": [
+          "macro:sector_heatmap"
+        ],
+        "source_section": "S09",
+        "paper_references": [],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "IMPROVE",
+      "successor": "Visible clock/coverage strip and detail provenance",
+      "reason": "Older theme membership must remain visible beside newer prices.",
+      "dependency": "D04; qualified F01/F02 for composition; existing source owner for implementation",
+      "acceptance_ids": [
+        "D04-A023",
+        "D04-A057"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C067",
+      "group": "Macro market and theme heatmaps",
+      "capability": "Color scale, neutral deadband and locale palette",
+      "baseline": {
+        "routes": [
+          "macro:sector_heatmap"
+        ],
+        "source_section": "S09",
+        "paper_references": [],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "RETAIN",
+      "successor": "Declared1D/longer-window bins, +/-0.05pp breadth and EN/ZH convention",
+      "reason": "Preserve actual mathematical/locale semantics.",
+      "dependency": "D04; qualified F01/F02 for composition; existing source owner for implementation",
+      "acceptance_ids": [
+        "D04-A024",
+        "D04-A046",
+        "D04-A052"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C068",
+      "group": "Macro market and theme heatmaps",
+      "capability": "Sort cap/move/A–Z, local search and mobile list",
+      "baseline": {
+        "routes": [
+          "macro:sector_heatmap"
+        ],
+        "source_section": "S09",
+        "paper_references": [],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "RETAIN",
+      "successor": "Current map toolbar and meaningful table/list equivalent",
+      "reason": "Retain dense scan and offscreen access.",
+      "dependency": "D04; qualified F01/F02 for composition; existing source owner for implementation",
+      "acceptance_ids": [
+        "D04-A024",
+        "D04-A025",
+        "D04-A050"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C069",
+      "group": "Macro market and theme heatmaps",
+      "capability": "Member/header popovers and payload-owned stock link",
+      "baseline": {
+        "routes": [
+          "macro:sector_heatmap"
+        ],
+        "source_section": "S09",
+        "paper_references": [],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "RETAIN",
+      "successor": "Accessible inspector/table action using stock_url",
+      "reason": "Do not hardcode stock.html when payload specifies Terminal.",
+      "dependency": "D04; qualified F01/F02 for composition; existing source owner for implementation",
+      "acceptance_ids": [
+        "D04-A007",
+        "D04-A022",
+        "D04-A053"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C070",
+      "group": "Macro market and theme heatmaps",
+      "capability": "No-cache refresh, live1D overlay and rotation link",
+      "baseline": {
+        "routes": [
+          "macro:sector_heatmap"
+        ],
+        "source_section": "S09",
+        "paper_references": [],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "RETAIN",
+      "successor": "Existing refresh/provenance and sector_central.html#si-movement",
+      "reason": "Different windows/feed freshness remain explicit.",
+      "dependency": "D05; heatmap producer",
+      "acceptance_ids": [
+        "D04-A024",
+        "D04-A029",
+        "D04-A057"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C071",
+      "group": "Terminal heatmap and comparison",
+      "capability": "PRICE/FLOW layers and MAP/TABLE views",
+      "baseline": {
+        "routes": [
+          "terminal:discover"
+        ],
+        "source_section": "S10, S12, S13",
+        "paper_references": [
+          "01M3NSZGE8JWN2EZCSF0DT05RM/p-8-1",
+          "01M3NSZGE8JWN2EZCSF0DT05RM/p-N-1",
+          "01M3NSZGE8JWN2EZCSF0DT05RM/p-O-1"
+        ],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "RETAIN",
+      "successor": "Existing view/layer controls with explicit reset behavior",
+      "reason": "Preserve analytical distinction and equivalent table access.",
+      "dependency": "D04; qualified F01/F02 for composition; existing source owner for implementation",
+      "acceptance_ids": [
+        "D04-A025",
+        "D04-A027",
+        "D04-A028"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C072",
+      "group": "Terminal heatmap and comparison",
+      "capability": "Legacy CAP price×volume, USD CAP and EQUAL sizing",
+      "baseline": {
+        "routes": [
+          "terminal:discover"
+        ],
+        "source_section": "S10, S12, S13",
+        "paper_references": [
+          "01M3NSZGE8JWN2EZCSF0DT05RM/p-8-1",
+          "01M3NSZGE8JWN2EZCSF0DT05RM/p-N-1",
+          "01M3NSZGE8JWN2EZCSF0DT05RM/p-O-1"
+        ],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "IMPROVE",
+      "successor": "Named size options plus source explanation",
+      "reason": "CAP proxy is not market capitalization; missing USD cap is not a tiny cap.",
+      "dependency": "D04; qualified F01/F02 for composition; existing source owner for implementation",
+      "acceptance_ids": [
+        "D04-A026"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C073",
+      "group": "Terminal heatmap and comparison",
+      "capability": "Precise USD-cap financial observation date",
+      "baseline": {
+        "routes": [
+          "terminal:discover"
+        ],
+        "source_section": "S10, S12, S13",
+        "paper_references": [
+          "01M3NSZGE8JWN2EZCSF0DT05RM/p-8-1",
+          "01M3NSZGE8JWN2EZCSF0DT05RM/p-N-1",
+          "01M3NSZGE8JWN2EZCSF0DT05RM/p-O-1"
+        ],
+        "qualification": "Unresolved field, not a disabled sizing capability."
+      },
+      "disposition": "BLOCKED_DATA",
+      "successor": "Display known provider/cache provenance and unknown financial as-of",
+      "reason": "Current cache does not establish a quote-time financial measurement.",
+      "dependency": "Market-cap producer; interim do not invent date or substitute quote timestamp.",
+      "acceptance_ids": [
+        "D04-A026",
+        "D04-A057"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C074",
+      "group": "Terminal heatmap and comparison",
+      "capability": "Full-scope breadth versus500 rendered tiles",
+      "baseline": {
+        "routes": [
+          "terminal:discover"
+        ],
+        "source_section": "S10, S12, S13",
+        "paper_references": [
+          "01M3NSZGE8JWN2EZCSF0DT05RM/p-8-1",
+          "01M3NSZGE8JWN2EZCSF0DT05RM/p-N-1",
+          "01M3NSZGE8JWN2EZCSF0DT05RM/p-O-1"
+        ],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "IMPROVE",
+      "successor": "Separate eligible/scoped/drawn counts; search/table access to remainder",
+      "reason": "Rendering limits must not become analytical denominator limits.",
+      "dependency": "D04; qualified F01/F02 for composition; existing source owner for implementation",
+      "acceptance_ids": [
+        "D04-A025",
+        "D04-A027"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C075",
+      "group": "Terminal heatmap and comparison",
+      "capability": "Flow net premium/DOI/0DTE/fresh-contract/lean context",
+      "baseline": {
+        "routes": [
+          "terminal:discover"
+        ],
+        "source_section": "S10, S12, S13",
+        "paper_references": [
+          "01M3NSZGE8JWN2EZCSF0DT05RM/p-8-1",
+          "01M3NSZGE8JWN2EZCSF0DT05RM/p-N-1",
+          "01M3NSZGE8JWN2EZCSF0DT05RM/p-O-1"
+        ],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "RETAIN",
+      "successor": "Units and caveats within flow inspector/table",
+      "reason": "Direction is soft evidence, not a probability or forecast.",
+      "dependency": "D04; qualified F01/F02 for composition; existing source owner for implementation",
+      "acceptance_ids": [
+        "D04-A028"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C076",
+      "group": "Terminal heatmap and comparison",
+      "capability": "Manifest fallback, freshness and bounded quote overlay",
+      "baseline": {
+        "routes": [
+          "terminal:discover"
+        ],
+        "source_section": "S10, S12, S13",
+        "paper_references": [
+          "01M3NSZGE8JWN2EZCSF0DT05RM/p-8-1",
+          "01M3NSZGE8JWN2EZCSF0DT05RM/p-N-1",
+          "01M3NSZGE8JWN2EZCSF0DT05RM/p-O-1"
+        ],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "IMPROVE",
+      "successor": "Existing adapters with consistent field-specific freshness labels",
+      "reason": "Resolve EOD-versus-top200 delayed-live ambiguity and preserve last-good data.",
+      "dependency": "D04; qualified F01/F02 for composition; existing source owner for implementation",
+      "acceptance_ids": [
+        "D04-A027",
+        "D04-A029",
+        "D04-A061",
+        "D04-A063"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C077",
+      "group": "Terminal heatmap and comparison",
+      "capability": "Matched-cohort comparison with missing-member bounds",
+      "baseline": {
+        "routes": [
+          "terminal:discover"
+        ],
+        "source_section": "S10, S12, S13",
+        "paper_references": [
+          "01M3NSZGE8JWN2EZCSF0DT05RM/p-8-1",
+          "01M3NSZGE8JWN2EZCSF0DT05RM/p-N-1",
+          "01M3NSZGE8JWN2EZCSF0DT05RM/p-O-1"
+        ],
+        "qualification": "Existing Paper candidate capability; integrated product behavior proposed."
+      },
+      "disposition": "IMPROVE",
+      "successor": "Shared comparison tray/table within existing heatmap object",
+      "reason": "Paper comparison honesty must survive integration; observed denominator change is not a trend.",
+      "dependency": "D04; D13 membership; source adapters",
+      "acceptance_ids": [
+        "D04-A045",
+        "D04-A046"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C078",
+      "group": "Terminal heatmap and comparison",
+      "capability": "Fixed/live typed heatmap saved view",
+      "baseline": {
+        "routes": [
+          "terminal:discover"
+        ],
+        "source_section": "S10, S12, S13",
+        "paper_references": [
+          "01M3NSZGE8JWN2EZCSF0DT05RM/p-8-1",
+          "01M3NSZGE8JWN2EZCSF0DT05RM/p-N-1",
+          "01M3NSZGE8JWN2EZCSF0DT05RM/p-O-1"
+        ],
+        "qualification": "Existing Paper/candidate source; implementation/adoption unproved."
+      },
+      "disposition": "BLOCKED_DATA",
+      "successor": "D23-adopted v2 on existing thesis-saved-view owner, then clear save-type UI",
+      "reason": "Draft#778 contract/migration is not a deployed capability.",
+      "dependency": "D23; interim retain supported existing saves, explain unavailable typed save.",
+      "acceptance_ids": [
+        "D04-A037",
+        "D04-A038",
+        "D04-A039"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C079",
+      "group": "Terminal heatmap and comparison",
+      "capability": "Original-request save recovery and account boundary",
+      "baseline": {
+        "routes": [
+          "terminal:discover"
+        ],
+        "source_section": "S10, S12, S13",
+        "paper_references": [
+          "01M3NSZGE8JWN2EZCSF0DT05RM/p-8-1",
+          "01M3NSZGE8JWN2EZCSF0DT05RM/p-N-1",
+          "01M3NSZGE8JWN2EZCSF0DT05RM/p-O-1"
+        ],
+        "qualification": "Existing Paper and draft typed contract, not production-proven recovery."
+      },
+      "disposition": "IMPROVE",
+      "successor": "D23/current owner recovery UI with original owner/request/fingerprint",
+      "reason": "Retain Paper uncertainty semantics without creating another queue.",
+      "dependency": "D23",
+      "acceptance_ids": [
+        "D04-A038",
+        "D04-A048"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C080",
+      "group": "Terminal heatmap and comparison",
+      "capability": "Selection/inspector and close-return continuity",
+      "baseline": {
+        "routes": [
+          "terminal:discover"
+        ],
+        "source_section": "S10, S12, S13",
+        "paper_references": [
+          "01M3NSZGE8JWN2EZCSF0DT05RM/p-8-1",
+          "01M3NSZGE8JWN2EZCSF0DT05RM/p-N-1",
+          "01M3NSZGE8JWN2EZCSF0DT05RM/p-O-1"
+        ],
+        "qualification": "Existing local selection/Paper intent; integrated exact return proposed."
+      },
+      "disposition": "IMPROVE",
+      "successor": "Shared selection identity and overlay/dock matched to available width",
+      "reason": "Do not lose comparison or focus when inspection changes form.",
+      "dependency": "D04; qualified F01/F02 for composition; existing source owner for implementation",
+      "acceptance_ids": [
+        "D04-A042",
+        "D04-A043",
+        "D04-A049"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C081",
+      "group": "Stock Screener and saved screens",
+      "capability": "Market, asset, sector, signal, uptrend and unpriced filters",
+      "baseline": {
+        "routes": [
+          "terminal:discover"
+        ],
+        "source_section": "S18, S12",
+        "paper_references": [],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "RETAIN",
+      "successor": "Current Stock Screener filter model",
+      "reason": "Preserve all criteria and unknown-value choices.",
+      "dependency": "D04; qualified F01/F02 for composition; existing source owner for implementation",
+      "acceptance_ids": [
+        "D04-A030"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C082",
+      "group": "Stock Screener and saved screens",
+      "capability": "Currency-qualified liquidity and USD market-cap floors",
+      "baseline": {
+        "routes": [
+          "terminal:discover"
+        ],
+        "source_section": "S18, S12",
+        "paper_references": [],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "RETAIN",
+      "successor": "Current bound-currency filters and explicit market change behavior",
+      "reason": "Prevent currency reinterpretation of a numeric floor.",
+      "dependency": "D04; qualified F01/F02 for composition; existing source owner for implementation",
+      "acceptance_ids": [
+        "D04-A030"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C083",
+      "group": "Stock Screener and saved screens",
+      "capability": "52-week and day-move conditions",
+      "baseline": {
+        "routes": [
+          "terminal:discover"
+        ],
+        "source_section": "S18, S12",
+        "paper_references": [],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "RETAIN",
+      "successor": "Current w52/move controls and explainable chips",
+      "reason": "Retain near-high/drawdown and up/down/absolute-move dimensions.",
+      "dependency": "D04; qualified F01/F02 for composition; existing source owner for implementation",
+      "acceptance_ids": [
+        "D04-A030"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C084",
+      "group": "Stock Screener and saved screens",
+      "capability": "Native taxonomy, stale-classification opt-in and density",
+      "baseline": {
+        "routes": [
+          "terminal:discover"
+        ],
+        "source_section": "S18, S12",
+        "paper_references": [],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "RETAIN",
+      "successor": "Source-qualified taxonomy selector and device density preference",
+      "reason": "Native data namespaces and intentional stale opt-in remain.",
+      "dependency": "D04; qualified F01/F02 for composition; existing source owner for implementation",
+      "acceptance_ids": [
+        "D04-A030",
+        "D04-A068"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C085",
+      "group": "Stock Screener and saved screens",
+      "capability": "Seven current built-in preset IDs",
+      "baseline": {
+        "routes": [
+          "terminal:discover"
+        ],
+        "source_section": "S18, S12",
+        "paper_references": [],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "RETAIN",
+      "successor": "psBuys/psGainers/psDecliners/psNearHigh/psDrawdown/psCn/psHk",
+      "reason": "Stable presets remain independently reachable.",
+      "dependency": "D04; qualified F01/F02 for composition; existing source owner for implementation",
+      "acceptance_ids": [
+        "D04-A030",
+        "D04-A033"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C086",
+      "group": "Stock Screener and saved screens",
+      "capability": "Technical snapshot, timeframe, position, signals, bar limits and chips",
+      "baseline": {
+        "routes": [
+          "terminal:discover"
+        ],
+        "source_section": "S18, S12",
+        "paper_references": [],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "RETAIN",
+      "successor": "Current technicalScreenControls and bounded technical scan",
+      "reason": "No OHLC recomputation or silent loss of advanced conditions.",
+      "dependency": "D04; qualified F01/F02 for composition; existing source owner for implementation",
+      "acceptance_ids": [
+        "D04-A031"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C087",
+      "group": "Stock Screener and saved screens",
+      "capability": "Five fundamental fields with period/family evidence",
+      "baseline": {
+        "routes": [
+          "terminal:discover"
+        ],
+        "source_section": "S18, S12",
+        "paper_references": [],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "RETAIN",
+      "successor": "Current fundamental scan and lazy evidence drawer",
+      "reason": "Maintain TTM/fiscal-year units, exclusions and unknown logic.",
+      "dependency": "D04; qualified F01/F02 for composition; existing source owner for implementation",
+      "acceptance_ids": [
+        "D04-A031",
+        "D04-A032"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C088",
+      "group": "Stock Screener and saved screens",
+      "capability": "Device preset create/apply/delete and12-record limit",
+      "baseline": {
+        "routes": [
+          "terminal:discover"
+        ],
+        "source_section": "S18, S12",
+        "paper_references": [],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "IMPROVE",
+      "successor": "Labeled On this device preset with accurate supported-field disclosure",
+      "reason": "Current presets omit fundamental/technical conditions; storage failure must not appear saved.",
+      "dependency": "D04; qualified F01/F02 for composition; existing source owner for implementation",
+      "acceptance_ids": [
+        "D04-A033"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C089",
+      "group": "Stock Screener and saved screens",
+      "capability": "Current account Smart Screen save/reopen",
+      "baseline": {
+        "routes": [
+          "terminal:discover"
+        ],
+        "source_section": "S18, S12",
+        "paper_references": [],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "RETAIN",
+      "successor": "Existing /api/smart-screens owner, workspace_settings scr_screen records",
+      "reason": "Preserve grammar1/2 support and account scope.",
+      "dependency": "Smart Screens owner; D23 boundary",
+      "acceptance_ids": [
+        "D04-A034",
+        "D04-A035"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C090",
+      "group": "Stock Screener and saved screens",
+      "capability": "Fundamental grammar, explain and entered/left on demand",
+      "baseline": {
+        "routes": [
+          "terminal:discover"
+        ],
+        "source_section": "S18, S12",
+        "paper_references": [],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "RETAIN",
+      "successor": "Current SmartScreensPanel and three-valued predicate engine",
+      "reason": "Unknown observation is not an exit event; no alert implied.",
+      "dependency": "D04; qualified F01/F02 for composition; existing source owner for implementation",
+      "acceptance_ids": [
+        "D04-A032",
+        "D04-A034",
+        "D04-A035"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C091",
+      "group": "Stock Screener and saved screens",
+      "capability": "Explicit device import and10-account-screen limit",
+      "baseline": {
+        "routes": [
+          "terminal:discover"
+        ],
+        "source_section": "S18, S12",
+        "paper_references": [],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "RETAIN",
+      "successor": "Existing user-initiated import and capacity feedback",
+      "reason": "No automatic migration or duplicate account object.",
+      "dependency": "D04; qualified F01/F02 for composition; existing source owner for implementation",
+      "acceptance_ids": [
+        "D04-A034",
+        "D04-A048"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C092",
+      "group": "Stock Screener and saved screens",
+      "capability": "ACK/pending state, revision conflict and newer-schema read-only",
+      "baseline": {
+        "routes": [
+          "terminal:discover"
+        ],
+        "source_section": "S18, S12",
+        "paper_references": [],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "RETAIN",
+      "successor": "Current mm.smartScreens owner-scoped client/CAS",
+      "reason": "Do not replace working recovery with D04 state machinery.",
+      "dependency": "D04; qualified F01/F02 for composition; existing source owner for implementation",
+      "acceptance_ids": [
+        "D04-A035",
+        "D04-A064"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C093",
+      "group": "Stock Screener and saved screens",
+      "capability": "Current thesis saved filters and create/rename/delete",
+      "baseline": {
+        "routes": [
+          "terminal:discover"
+        ],
+        "source_section": "S18, S12",
+        "paper_references": [],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "RETAIN",
+      "successor": "Existing /api/thesis-saved-views and rms_saved_view records",
+      "reason": "Distinguish current thesis object from screen and typed heatmap.",
+      "dependency": "D23",
+      "acceptance_ids": [
+        "D04-A036",
+        "D04-A048"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C094",
+      "group": "Stock Screener and saved screens",
+      "capability": "Saving technical conditions into Smart Screens",
+      "baseline": {
+        "routes": [
+          "terminal:discover"
+        ],
+        "source_section": "S18, S12",
+        "paper_references": [],
+        "qualification": "Unimplemented save support, not removal of current technical screening."
+      },
+      "disposition": "BLOCKED_DATA",
+      "successor": "Explicit unsupported-content explanation; retain technical controls as local research state",
+      "reason": "Current grammar excludes technical predicates; do not advertise retention that does not exist.",
+      "dependency": "Smart Screens owner and D23; interim show exact omitted fields before save.",
+      "acceptance_ids": [
+        "D04-A031",
+        "D04-A034",
+        "D04-A048"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C095",
+      "group": "Dislocations",
+      "capability": "Confirmed/Forming/Ended with seven episode states",
+      "baseline": {
+        "routes": [
+          "terminal:dislocations"
+        ],
+        "source_section": "S11",
+        "paper_references": [],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "RETAIN",
+      "successor": "Existing episode groups and source lifecycle",
+      "reason": "State grouping is not a new score or valuation screen.",
+      "dependency": "D04; qualified F01/F02 for composition; existing source owner for implementation",
+      "acceptance_ids": [
+        "D04-A040"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C096",
+      "group": "Dislocations",
+      "capability": "Free watchlist and paid Market universes",
+      "baseline": {
+        "routes": [
+          "terminal:dislocations"
+        ],
+        "source_section": "S11",
+        "paper_references": [],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "RETAIN",
+      "successor": "Current access-scoped view control",
+      "reason": "Personal watchlist access must not become paid by redesign.",
+      "dependency": "D04; qualified F01/F02 for composition; existing source owner for implementation",
+      "acceptance_ids": [
+        "D04-A041",
+        "D04-A056"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C097",
+      "group": "Dislocations",
+      "capability": "Episode identity, detector lineage and knowable-at sort",
+      "baseline": {
+        "routes": [
+          "terminal:dislocations"
+        ],
+        "source_section": "S11",
+        "paper_references": [],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "RETAIN",
+      "successor": "Episode rows and evidence inspector",
+      "reason": "One ticker may have several episodes; preserve provenance.",
+      "dependency": "D04; qualified F01/F02 for composition; existing source owner for implementation",
+      "acceptance_ids": [
+        "D04-A040",
+        "D04-A057"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C098",
+      "group": "Dislocations",
+      "capability": "Delayed bars, freshness, rate-limit and polling status",
+      "baseline": {
+        "routes": [
+          "terminal:dislocations"
+        ],
+        "source_section": "S11",
+        "paper_references": [],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "IMPROVE",
+      "successor": "Field-specific freshness and visible retry countdown",
+      "reason": "One-minute polling does not imply one-minute bars.",
+      "dependency": "D04; qualified F01/F02 for composition; existing source owner for implementation",
+      "acceptance_ids": [
+        "D04-A041",
+        "D04-A061"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C099",
+      "group": "Dislocations",
+      "capability": "Catalyst coverage and evidence refs",
+      "baseline": {
+        "routes": [
+          "terminal:dislocations"
+        ],
+        "source_section": "S11",
+        "paper_references": [],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "RETAIN",
+      "successor": "Evidence drawer with coverage/fresh_until/relevant_until",
+      "reason": "No catalyst is not the same as unavailable coverage.",
+      "dependency": "D04; qualified F01/F02 for composition; existing source owner for implementation",
+      "acceptance_ids": [
+        "D04-A041",
+        "D04-A057"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C100",
+      "group": "Dislocations",
+      "capability": "Stale-empty, null scores and risk geometry",
+      "baseline": {
+        "routes": [
+          "terminal:dislocations"
+        ],
+        "source_section": "S11",
+        "paper_references": [],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "IMPROVE",
+      "successor": "Unknown/partial state with supplied risk fields only",
+      "reason": "Do not invent opportunity numbers or call a stale-empty market quiet.",
+      "dependency": "D04; qualified F01/F02 for composition; existing source owner for implementation",
+      "acceptance_ids": [
+        "D04-A041"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C101",
+      "group": "Dislocations",
+      "capability": "Chart/company entry and exact episode return",
+      "baseline": {
+        "routes": [
+          "terminal:dislocations"
+        ],
+        "source_section": "S11",
+        "paper_references": [],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "IMPROVE",
+      "successor": "Current terminal?symbol path plus versioned return seam",
+      "reason": "Return to same episode/group and viewport, even after data refresh.",
+      "dependency": "F01; D07",
+      "acceptance_ids": [
+        "D04-A007",
+        "D04-A040",
+        "D04-A042"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C102",
+      "group": "Cross-cutting Paper and accessibility obligations",
+      "capability": "Dark/light and EN/ZH material state parity",
+      "baseline": {
+        "routes": [
+          "all ten canonical routes"
+        ],
+        "source_section": "S01, S13, S14, S16",
+        "paper_references": [
+          "all62 retained reference identities"
+        ],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "RETAIN",
+      "successor": "Qualified F02 variants and localized product copy",
+      "reason": "Preserve established variants while replacing old shared chrome.",
+      "dependency": "F01/F02; D04",
+      "acceptance_ids": [
+        "D04-A051",
+        "D04-A052"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C103",
+      "group": "Cross-cutting Paper and accessibility obligations",
+      "capability": "Dense map/table visual compression",
+      "baseline": {
+        "routes": [
+          "all ten canonical routes"
+        ],
+        "source_section": "S01, S13, S14, S16",
+        "paper_references": [
+          "all62 retained reference identities"
+        ],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "RETAIN",
+      "successor": "Primary analytical object, meaningful comparisons, no generic card replacement",
+      "reason": "Source and Paper density is a functional capability.",
+      "dependency": "D04; qualified F01/F02 for composition; existing source owner for implementation",
+      "acceptance_ids": [
+        "D04-A025",
+        "D04-A058",
+        "D04-A060"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C104",
+      "group": "Cross-cutting Paper and accessibility obligations",
+      "capability": "Mobile full journey, overlay/dock and useful content widths",
+      "baseline": {
+        "routes": [
+          "all ten canonical routes"
+        ],
+        "source_section": "S01, S13, S14, S16",
+        "paper_references": [
+          "all62 retained reference identities"
+        ],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "IMPROVE",
+      "successor": "Qualified shell at320/390/768/1024/1280/1440/1600",
+      "reason": "Old standalone mobile screenshots cannot prove shared-shell task completion.",
+      "dependency": "F01/F02",
+      "acceptance_ids": [
+        "D04-A049",
+        "D04-A050"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C105",
+      "group": "Cross-cutting Paper and accessibility obligations",
+      "capability": "Keyboard/table equivalence, visible focus and touch targets",
+      "baseline": {
+        "routes": [
+          "all ten canonical routes"
+        ],
+        "source_section": "S01, S13, S14, S16",
+        "paper_references": [
+          "all62 retained reference identities"
+        ],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "IMPROVE",
+      "successor": "Semantic table/list path and localized accessible controls",
+      "reason": "Every analytical task remains possible without precise tile pointing.",
+      "dependency": "D04; qualified F01/F02 for composition; existing source owner for implementation",
+      "acceptance_ids": [
+        "D04-A025",
+        "D04-A053"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C106",
+      "group": "Cross-cutting Paper and accessibility obligations",
+      "capability": "Loading/zero/filter-empty/partial/stale/error/access states",
+      "baseline": {
+        "routes": [
+          "all ten canonical routes"
+        ],
+        "source_section": "S01, S13, S14, S16",
+        "paper_references": [
+          "all62 retained reference identities"
+        ],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "IMPROVE",
+      "successor": "Actual editable state specimens tied to read contracts",
+      "reason": "Beautiful exceptional states cannot substitute for normal task proof.",
+      "dependency": "D04; qualified F01/F02 for composition; existing source owner for implementation",
+      "acceptance_ids": [
+        "D04-A055",
+        "D04-A056"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C107",
+      "group": "Cross-cutting Paper and accessibility obligations",
+      "capability": "Reduced motion,400% zoom and contained overflow",
+      "baseline": {
+        "routes": [
+          "all ten canonical routes"
+        ],
+        "source_section": "S01, S13, S14, S16",
+        "paper_references": [
+          "all62 retained reference identities"
+        ],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "IMPROVE",
+      "successor": "F02 motion/access patterns and actual reflow evidence",
+      "reason": "Preserve task access across density and movement preferences.",
+      "dependency": "F02",
+      "acceptance_ids": [
+        "D04-A054"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C108",
+      "group": "Cross-cutting Paper and accessibility obligations",
+      "capability": "Saved/pending/failed/uncertain state truth",
+      "baseline": {
+        "routes": [
+          "all ten canonical routes"
+        ],
+        "source_section": "S01, S13, S14, S16",
+        "paper_references": [
+          "all62 retained reference identities"
+        ],
+        "qualification": "Existing source capability; visual and runtime parity not assumed."
+      },
+      "disposition": "IMPROVE",
+      "successor": "Existing owner state machine with explicit localized feedback",
+      "reason": "No navigation or timeout falsely confirms or cancels a write.",
+      "dependency": "D23 and existing save owners",
+      "acceptance_ids": [
+        "D04-A035",
+        "D04-A038",
+        "D04-A044",
+        "D04-A048"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C109",
+      "group": "Cross-cutting Paper and accessibility obligations",
+      "capability": "Read me, adjacent annotations and immutable review artifacts",
+      "baseline": {
+        "routes": [
+          "all ten canonical routes"
+        ],
+        "source_section": "S01, S13, S14, S16",
+        "paper_references": [
+          "all62 retained reference identities"
+        ],
+        "qualification": "Specification prepared; no native page created."
+      },
+      "disposition": "IMPROVE",
+      "successor": "Prepared in-Paper content plus committed source contract; native creation waits for exact admission",
+      "reason": "Editable explanation and actual after captures remain an owed deliverable.",
+      "dependency": "P00; F01/F02; D04; independent reviewers",
+      "acceptance_ids": [
+        "D04-A065",
+        "D04-A066",
+        "D04-A070"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C110",
+      "group": "Adjacent D05-owned compatibility capabilities",
+      "capability": "Four Subsector Confluence datasets and benchmarks",
+      "baseline": {
+        "routes": [
+          "D04 incoming compatibility → D05 /sector_central.html#confluence"
+        ],
+        "source_section": "S19",
+        "paper_references": [],
+        "qualification": "Existing source and incoming-link dependency; D04 does not take ownership of D05 composition."
+      },
+      "disposition": "RETAIN",
+      "successor": "D05 Sector Central Confluence view via existing #sc-app/#sc-top and dataset detail paths",
+      "reason": "S&P subsectors, baskets, Nasdaq and Russell retain distinct payloads and detail paths; QQQ/IWM RS is within-index.",
+      "dependency": "D05 source/interaction owner; D13 membership; D04 incoming compatibility",
+      "acceptance_ids": [
+        "D04-A002",
+        "D04-A073"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C111",
+      "group": "Adjacent D05-owned compatibility capabilities",
+      "capability": "Subsector verdict, buy-ready/avoid and double-confluence picks",
+      "baseline": {
+        "routes": [
+          "D04 incoming compatibility → D05 /sector_central.html#confluence"
+        ],
+        "source_section": "S19",
+        "paper_references": [],
+        "qualification": "Existing source and incoming-link dependency; D04 does not take ownership of D05 composition."
+      },
+      "disposition": "RETAIN",
+      "successor": "D05 Sector Central Confluence view via existing #sc-app/#sc-top and dataset detail paths",
+      "reason": "Keep timing-map research jobs separate from technical-combination ranking.",
+      "dependency": "D05 source/interaction owner; D13 membership; D04 incoming compatibility",
+      "acceptance_ids": [
+        "D04-A002",
+        "D04-A073"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C112",
+      "group": "Adjacent D05-owned compatibility capabilities",
+      "capability": "Subsector leadership, sector backdrop and Nasdaq internals",
+      "baseline": {
+        "routes": [
+          "D04 incoming compatibility → D05 /sector_central.html#confluence"
+        ],
+        "source_section": "S19",
+        "paper_references": [],
+        "qualification": "Existing source and incoming-link dependency; D04 does not take ownership of D05 composition."
+      },
+      "disposition": "RETAIN",
+      "successor": "D05 Sector Central Confluence view via existing #sc-app/#sc-top and dataset detail paths",
+      "reason": "Preserve index context, relative strength, breadth/dispersion, display-only states and missing-artifact behavior.",
+      "dependency": "D05 source/interaction owner; D13 membership; D04 incoming compatibility",
+      "acceptance_ids": [
+        "D04-A002",
+        "D04-A073"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    },
+    {
+      "id": "D04-C113",
+      "group": "Adjacent D05-owned compatibility capabilities",
+      "capability": "Subsector full searchable/sortable table and per-tab state",
+      "baseline": {
+        "routes": [
+          "D04 incoming compatibility → D05 /sector_central.html#confluence"
+        ],
+        "source_section": "S19",
+        "paper_references": [],
+        "qualification": "Existing source and incoming-link dependency; D04 does not take ownership of D05 composition."
+      },
+      "disposition": "RETAIN",
+      "successor": "D05 Sector Central Confluence view via existing #sc-app/#sc-top and dataset detail paths",
+      "reason": "Retain full group access, scroll generation and correct background-tab lazy initialization.",
+      "dependency": "D05 source/interaction owner; D13 membership; D04 incoming compatibility",
+      "acceptance_ids": [
+        "D04-A002",
+        "D04-A073"
+      ],
+      "reviewer_decision": "NOT_REVIEWED; no removal approved; affected inherited conditions remain CARRIED_BLOCK"
+    }
+  ]
+}

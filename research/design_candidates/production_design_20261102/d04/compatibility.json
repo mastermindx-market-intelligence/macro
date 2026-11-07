@@ -1,0 +1,276 @@
+{
+  "schema": "d04.compatibility.v1",
+  "source_pin": "df691495abb1c2ba8f61e5624126cb17ad14e056",
+  "terminal_source_pin": "2ded360882b9c721e690907ff363b553781fb920",
+  "handoff_stated_legacy_count": 23,
+  "verified_current_legacy_count": 24,
+  "source_path": "templates/si_workspace.js",
+  "source_blob": "2c7667c39b5a2a5171b5ef036ef45206fb0702fc",
+  "owner": "D05 Sector Central; D04 preserves incoming compatibility",
+  "canonical_routes": [
+    {
+      "canonical_id": "macro:advanced",
+      "path": "/advanced.html",
+      "access": "public",
+      "purpose": "Quant Lab"
+    },
+    {
+      "canonical_id": "macro:basket_family",
+      "path": "/basket/<id>.html",
+      "access": "public",
+      "purpose": "49 catalog detail IDs"
+    },
+    {
+      "canonical_id": "macro:baskets",
+      "path": "/baskets.html",
+      "access": "public compatibility receiver",
+      "purpose": "Sector Central/detail gateway"
+    },
+    {
+      "canonical_id": "macro:confluence_screener",
+      "path": "/confluence_screener.html",
+      "access": "public evidence; protected identities",
+      "purpose": "Technical combinations"
+    },
+    {
+      "canonical_id": "macro:discovery",
+      "path": "/discovery.html",
+      "access": "public",
+      "purpose": "Top Picks"
+    },
+    {
+      "canonical_id": "macro:etfs",
+      "path": "/etfs.html",
+      "access": "public overview; protected graded rows",
+      "purpose": "Fund moves"
+    },
+    {
+      "canonical_id": "macro:movers",
+      "path": "/movers.html",
+      "access": "public compatibility receiver",
+      "purpose": "Stocks hub movers"
+    },
+    {
+      "canonical_id": "macro:sector_heatmap",
+      "path": "/sector_heatmap.html",
+      "access": "public",
+      "purpose": "S&P / themes"
+    },
+    {
+      "canonical_id": "terminal:discover",
+      "path": "/discover",
+      "access": "signed_in",
+      "purpose": "Six current tabs"
+    },
+    {
+      "canonical_id": "terminal:dislocations",
+      "path": "/dislocations",
+      "access": "signed_in; watchlist free/Market paid",
+      "purpose": "Episodes"
+    }
+  ],
+  "sector_central_legacy": [
+    {
+      "fragment": "#actnow-section",
+      "view": "overview",
+      "target_id": "actnow-section",
+      "source_table": "LEGACY_ANCHORS"
+    },
+    {
+      "fragment": "#regime",
+      "view": "overview",
+      "target_id": "regime",
+      "source_table": "LEGACY_ANCHORS"
+    },
+    {
+      "fragment": "#grader",
+      "view": "overview",
+      "target_id": "grader",
+      "source_table": "LEGACY_ANCHORS"
+    },
+    {
+      "fragment": "#si-map",
+      "view": "map",
+      "target_id": "si-map",
+      "source_table": "LEGACY_ANCHORS"
+    },
+    {
+      "fragment": "#rotmap-section",
+      "view": "map",
+      "target_id": "rotmap-section",
+      "source_table": "LEGACY_ANCHORS"
+    },
+    {
+      "fragment": "#sc-cyclemap",
+      "view": "map",
+      "target_id": "sc-cyclemap",
+      "source_table": "LEGACY_ANCHORS"
+    },
+    {
+      "fragment": "#board",
+      "view": "map",
+      "target_id": "board",
+      "source_table": "LEGACY_ANCHORS"
+    },
+    {
+      "fragment": "#si-movement",
+      "view": "moving",
+      "target_id": "si-movement",
+      "source_table": "LEGACY_ANCHORS"
+    },
+    {
+      "fragment": "#rc-events-mount",
+      "view": "moving",
+      "target_id": "rc-events-mount",
+      "source_table": "LEGACY_ANCHORS"
+    },
+    {
+      "fragment": "#rotation-app",
+      "view": "moving",
+      "target_id": "rotation-app",
+      "source_table": "LEGACY_ANCHORS"
+    },
+    {
+      "fragment": "#si-money",
+      "view": "money",
+      "target_id": "si-money",
+      "source_table": "LEGACY_ANCHORS"
+    },
+    {
+      "fragment": "#internals-section",
+      "view": "money",
+      "target_id": "internals-section",
+      "source_table": "LEGACY_ANCHORS"
+    },
+    {
+      "fragment": "#scc-leadership",
+      "view": "money",
+      "target_id": "scc-leadership",
+      "source_table": "LEGACY_ANCHORS"
+    },
+    {
+      "fragment": "#explore-section",
+      "view": "explore",
+      "target_id": "explore-section",
+      "source_table": "LEGACY_ANCHORS"
+    },
+    {
+      "fragment": "#table-section",
+      "view": "explore",
+      "target_id": "table-section",
+      "source_table": "LEGACY_ANCHORS"
+    },
+    {
+      "fragment": "#chart-section",
+      "view": "explore",
+      "target_id": "chart-section",
+      "source_table": "LEGACY_ANCHORS"
+    },
+    {
+      "fragment": "#forming-narratives",
+      "view": "explore",
+      "target_id": "forming-narratives",
+      "source_table": "LEGACY_ANCHORS"
+    },
+    {
+      "fragment": "#tm-mount",
+      "view": "explore",
+      "target_id": "tm-mount",
+      "source_table": "LEGACY_ANCHORS"
+    },
+    {
+      "fragment": "#confluence",
+      "view": "confluence",
+      "target_id": "si-confluence",
+      "source_table": "LEGACY_ANCHORS"
+    },
+    {
+      "fragment": "#sc-app",
+      "view": "confluence",
+      "target_id": "sc-app",
+      "source_table": "LEGACY_ANCHORS"
+    },
+    {
+      "fragment": "#sc-top",
+      "view": "confluence",
+      "target_id": "sc-top",
+      "source_table": "LEGACY_ANCHORS"
+    },
+    {
+      "fragment": "#accumulation-section",
+      "view": "moving",
+      "target_id": "accumulation-section",
+      "source_table": "LEGACY_ANCHORS_S2"
+    },
+    {
+      "fragment": "#si-heat-section",
+      "view": "explore",
+      "target_id": "theme-heat-section",
+      "source_table": "LEGACY_ANCHORS_S2"
+    },
+    {
+      "fragment": "#si-measured",
+      "view": "map",
+      "target_id": "si-measured",
+      "source_table": "LEGACY_ANCHORS_S2"
+    }
+  ],
+  "discover_tabs": [
+    "screener",
+    "heatmap",
+    "sectors",
+    "leaders",
+    "radar",
+    "rs-pivot"
+  ],
+  "advanced_anchors": [
+    "#vsb-breadth-split-section",
+    "#cross-asset",
+    "#risk-budget",
+    "#stress-replay",
+    "#factor-scorecard",
+    "#dials",
+    "#internals",
+    "#size-style",
+    "#accumulation",
+    "#holdings"
+  ],
+  "special_families": [
+    {
+      "entry": "/sector_central.html#theme-<id>",
+      "owner": "Existing resolveThemeHash; D05/D13",
+      "behavior": "Workspace yields to theme resolver; valid theme replaces to basket/<encoded-id>.html."
+    },
+    {
+      "entry": "/baskets.html#theme-<id>",
+      "owner": "Basket gateway/build-supplied theme_ids",
+      "behavior": "Catalog validated; valid basket detail, invalid sector_central.html#actnow-section; verify multiple-script sequencing."
+    },
+    {
+      "entry": "/baskets.html#ne-<signature>",
+      "owner": "Sector Central forming-narrative subsystem",
+      "behavior": "Forward fragment; do not consume as ordinary workspace tab."
+    },
+    {
+      "entry": "/sector_central.html#read-<id>",
+      "owner": "Existing workspace pendingTrace",
+      "behavior": "Overview then asynchronously open/center matching .rvx-trow[data-mlc-bid]."
+    },
+    {
+      "entry": "subsector/b-<key>.html",
+      "owner": "Subsector baskets dataset; D05",
+      "behavior": "Path prefix, not a US #b-* fragment."
+    },
+    {
+      "entry": "../sector_cycles_china.html#b-<bid>",
+      "owner": "China cycles; build_theme_detail.py regional receiver",
+      "behavior": "Actual regional #b-* family; no universal US resolver inferred."
+    },
+    {
+      "entry": "/movers.html",
+      "owner": "Stocks hub compatibility",
+      "behavior": "Fixed replace to /stocks/index.html#today-movers; deliberately discard old query/hash."
+    }
+  ],
+  "status": "SOURCE_VERIFIED; migration behavior tests NOT_RUN"
+}

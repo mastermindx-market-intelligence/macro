@@ -1,0 +1,162 @@
+[
+  {
+    "theme": "dark",
+    "lang": "en",
+    "name": "desktop",
+    "width": 1440,
+    "height": 960,
+    "path": "/private/tmp/mmx-confluence-production/production-dark-en-desktop.png",
+    "geometry": {
+      "url": "https://www.mastermind-x.com/confluence_screener.html",
+      "theme": "dark",
+      "lang": "en",
+      "innerWidth": 1440,
+      "innerHeight": 960,
+      "scrollWidth": 1440,
+      "scrollHeight": 2135,
+      "title": "Signals Lining Up — 2026-09-21 | MastermindX",
+      "hero": "3 setups lining up today",
+      "locked": 2
+    }
+  },
+  {
+    "theme": "dark",
+    "lang": "en",
+    "name": "mobile",
+    "width": 390,
+    "height": 844,
+    "path": "/private/tmp/mmx-confluence-production/production-dark-en-mobile.png",
+    "geometry": {
+      "url": "https://www.mastermind-x.com/confluence_screener.html",
+      "theme": "dark",
+      "lang": "en",
+      "innerWidth": 390,
+      "innerHeight": 844,
+      "scrollWidth": 390,
+      "scrollHeight": 3313,
+      "title": "Signals Lining Up — 2026-09-21 | MastermindX",
+      "hero": "3 setups lining up today",
+      "locked": 2
+    }
+  },
+  {
+    "theme": "dark",
+    "lang": "zh",
+    "name": "desktop",
+    "width": 1440,
+    "height": 960,
+    "path": "/private/tmp/mmx-confluence-production/production-dark-zh-desktop.png",
+    "geometry": {
+      "url": "https://www.mastermind-x.com/confluence_screener.html",
+      "theme": "dark",
+      "lang": "zh",
+      "innerWidth": 1440,
+      "innerHeight": 960,
+      "scrollWidth": 1440,
+      "scrollHeight": 1985,
+      "title": "Signals Lining Up — 2026-09-21 | MastermindX",
+      "hero": "3 组信号今日共振",
+      "locked": 2
+    }
+  },
+  {
+    "theme": "dark",
+    "lang": "zh",
+    "name": "mobile",
+    "width": 390,
+    "height": 844,
+    "path": "/private/tmp/mmx-confluence-production/production-dark-zh-mobile.png",
+    "geometry": {
+      "url": "https://www.mastermind-x.com/confluence_screener.html",
+      "theme": "dark",
+      "lang": "zh",
+      "innerWidth": 390,
+      "innerHeight": 844,
+      "scrollWidth": 390,
+      "scrollHeight": 2841,
+      "title": "Signals Lining Up — 2026-09-21 | MastermindX",
+      "hero": "3 组信号今日共振",
+      "locked": 2
+    }
+  },
+  {
+    "theme": "light",
+    "lang": "en",
+    "name": "desktop",
+    "width": 1440,
+    "height": 960,
+    "path": "/private/tmp/mmx-confluence-production/production-light-en-desktop.png",
+    "geometry": {
+      "url": "https://www.mastermind-x.com/confluence_screener.html",
+      "theme": "light",
+      "lang": "en",
+      "innerWidth": 1440,
+      "innerHeight": 960,
+      "scrollWidth": 1440,
+      "scrollHeight": 2126,
+      "title": "Signals Lining Up — 2026-09-21 | MastermindX",
+      "hero": "3 setups lining up today",
+      "locked": 2
+    }
+  },
+  {
+    "theme": "light",
+    "lang": "en",
+    "name": "mobile",
+    "width": 390,
+    "height": 844,
+    "path": "/private/tmp/mmx-confluence-production/production-light-en-mobile.png",
+    "geometry": {
+      "url": "https://www.mastermind-x.com/confluence_screener.html",
+      "theme": "light",
+      "lang": "en",
+      "innerWidth": 390,
+      "innerHeight": 844,
+      "scrollWidth": 390,
+      "scrollHeight": 3301,
+      "title": "Signals Lining Up — 2026-09-21 | MastermindX",
+      "hero": "3 setups lining up today",
+      "locked": 2
+    }
+  },
+  {
+    "theme": "light",
+    "lang": "zh",
+    "name": "desktop",
+    "width": 1440,
+    "height": 960,
+    "path": "/private/tmp/mmx-confluence-production/production-light-zh-desktop.png",
+    "geometry": {
+      "url": "https://www.mastermind-x.com/confluence_screener.html",
+      "theme": "light",
+      "lang": "zh",
+      "innerWidth": 1440,
+      "innerHeight": 960,
+      "scrollWidth": 1440,
+      "scrollHeight": 1976,
+      "title": "Signals Lining Up — 2026-09-21 | MastermindX",
+      "hero": "3 组信号今日共振",
+      "locked": 2
+    }
+  },
+  {
+    "theme": "light",
+    "lang": "zh",
+    "name": "mobile",
+    "width": 390,
+    "height": 844,
+    "path": "/private/tmp/mmx-confluence-production/production-light-zh-mobile.png",
+    "geometry": {
+      "url": "https://www.mastermind-x.com/confluence_screener.html",
+      "theme": "light",
+      "lang": "zh",
+      "innerWidth": 390,
+      "innerHeight": 844,
+      "scrollWidth": 390,
+      "scrollHeight": 2832,
+      "title": "Signals Lining Up — 2026-09-21 | MastermindX",
+      "hero": "3 组信号今日共振",
+      "locked": 2
+    }
+  }
+]
