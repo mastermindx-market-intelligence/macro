@@ -23,9 +23,10 @@ ROOT = Path(__file__).resolve().parent.parent
 # edit that this packet must not make fails T9 even if git is unavailable.
 GOLDEN_V1_SHA256 = "a8fef1b18bce0246bc884ef8c18c84a348cacb7f7ec1cdc42ed3dd3abf14493f"
 
-# sha256 of V1's two files at this head. Fleet law: tests never read git history.
+# Source pin includes the P17.T26 finite-value guard repair. The valid-input
+# HTML golden below is unchanged. Fleet law: tests never read git history.
 GOLDEN_V1_FILE_SHA256 = {
-    "engine/valuation_scenario.py": "66340a2d03c171239547fea288b11b4bd5cdf698736d5f4bee6a019c73510d27",
+    "engine/valuation_scenario.py": "dab97bf3b53cffa1687f558624fe13ad8e865a128ee7631966a8edfa9dd26ed7",
     "templates/_valuation_scenario.html.j2": "6571613442a840588c19cb208a36f2aaf80eb3b0e85c74e3e9fdf1410353ceac",
 }
 
