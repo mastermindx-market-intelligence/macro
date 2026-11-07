@@ -55830,6 +55830,23 @@ jobs:
       - "lib/tsx_calendar.py"
       - "lib/us_cash_calendar.py"
       - "tests/__init__.py"
+      # Shared provider response observation reaches this finite dependency set.
+      - "config/metabolism_budget.yml"
+      - "config/provider_production_modes.v1.json"
+      - "config/provider_workloads.v1.json"
+      - "engine/_text_scrub.py"
+      - "engine/earnings_qual.py"
+      - "engine/earnings_transcript_intake.py"
+      - "engine/fabric_inference_client.py"
+      - "engine/llm_auth.py"
+      - "engine/metabolism/__init__.py"
+      - "engine/metabolism/budget_gate.py"
+      - "engine/neuralweb/capability_broker.py"
+      - "engine/ollama_provider.py"
+      - "engine/provider_capacity.py"
+      - "engine/provider_health.py"
+      - "engine/provider_production_modes.py"
+      - "engine/provider_workload_policy.py"
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
