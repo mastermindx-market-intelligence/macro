@@ -104,6 +104,10 @@ _ATTEMPT_COLUMNS = [
 _OBSERVATION_TYPES = (
     "average", "median", "high", "low", "covering_analyst_count", "growth", "year_ago",
 )
+_LINEAGE_KEY_COLUMNS = (
+    "provider", "provider_record_class", "ticker_compat", "metric",
+    "horizon_label_raw", "observation_type",
+)
 _FIELD_ALIASES = {
     "average": ("avg", "average", "mean"),
     "median": ("median",),
@@ -381,22 +385,43 @@ def _write_parquet(path: Path, frame: pd.DataFrame, columns: list[str]) -> None:
     temporary.replace(path)
 
 
-def _apply_lineage(rows: list[dict[str, Any]], existing: pd.DataFrame) -> None:
+def _latest_lineage(existing: pd.DataFrame) -> dict[tuple, dict[str, Any]]:
+    """Index the frozen history once, retaining the incumbent stable tie rule.
+
+    Null-valued observations never displace good evidence. A missing key cannot
+    match the former equality filters. Sorting is stable with null clocks last,
+    exactly as in the former per-key sort; the last tied row remains the owner.
+    """
+    if existing.empty:
+        return {}
+    columns = [*_LINEAGE_KEY_COLUMNS, "value", "system_observed_at", "period_end",
+               "unit", "currency", "basis", "observation_id"]
+    eligible = existing.loc[existing["value"].notna(), columns]
+    eligible = eligible.dropna(subset=list(_LINEAGE_KEY_COLUMNS))
+    newest = (eligible.sort_values("system_observed_at", kind="stable")
+              .drop_duplicates(subset=list(_LINEAGE_KEY_COLUMNS), keep="last"))
+    return {
+        tuple(row[column] for column in _LINEAGE_KEY_COLUMNS): row
+        for row in newest.to_dict(orient="records")
+    }
+
+
+def _apply_lineage(
+    rows: list[dict[str, Any]], existing: pd.DataFrame, *,
+    prior_by_key: dict[tuple, dict[str, Any]] | None = None,
+) -> None:
     """Mark changed values as append-only supersessions; nulls never replace good rows."""
     if existing.empty:
         return
-    key_columns = ["provider", "provider_record_class", "ticker_compat", "metric", "horizon_label_raw", "observation_type"]
+    if prior_by_key is None:
+        prior_by_key = _latest_lineage(existing)
     for row in rows:
         if row["value"] is None:
             row["correction_state"] = "missing"
             continue
-        prior = existing
-        for column in key_columns:
-            prior = prior[prior[column] == row[column]]
-        prior = prior[prior["value"].notna()]
-        if prior.empty:
+        newest = prior_by_key.get(tuple(row[column] for column in _LINEAGE_KEY_COLUMNS))
+        if newest is None:
             continue
-        newest = prior.sort_values("system_observed_at", kind="stable").iloc[-1]
         # Mutation gate 3: a fiscal rollover is not a revision.  horizon_label_raw
         # is a RELATIVE provider label (e.g. "0q" always means "the current
         # quarter"), so the same key can legitimately refer to a different
@@ -462,6 +487,12 @@ def accrue_expectation_observations(
     attempts_path = out_dir / "expectation_attempts.parquet"
     existing_observations = _read_parquet(observations_path, _OBSERVATION_COLUMNS)
     existing_attempts = _read_parquet(attempts_path, _ATTEMPT_COLUMNS)
+    # These lookups describe only the history loaded at invocation entry. Keep
+    # them fixed while accumulating the batch, preserving the existing replay
+    # and lineage semantics without rescanning growing history for every row.
+    observation_ids = set(existing_observations["observation_id"].dropna().astype(str))
+    attempt_ids = set(existing_attempts["attempt_id"].dropna().astype(str))
+    prior_by_key = _latest_lineage(existing_observations)
     new_observations: list[dict[str, Any]] = []
     new_attempts: list[dict[str, Any]] = []
 
@@ -495,7 +526,7 @@ def accrue_expectation_observations(
             status, http_status, error_class, error_detail = _safe_http_failure(exc)
             payload_hash = None
             attempt_id = _canonical_sha256((session_id, _EXPECTATION_PROVIDER, ticker, payload_hash))
-            if attempt_id not in set(existing_attempts["attempt_id"].dropna().astype(str)):
+            if attempt_id not in attempt_ids:
                 new_attempts.append({
                     "attempt_id": attempt_id, "collection_session_id": session_id,
                     "provider": _EXPECTATION_PROVIDER, "ticker_compat": ticker,
@@ -510,7 +541,7 @@ def accrue_expectation_observations(
         payload = {record_class: _frame_payload(frame) for record_class, frame in sorted(frames.items())}
         payload_hash = _canonical_sha256(payload)
         attempt_id = _canonical_sha256((session_id, _EXPECTATION_PROVIDER, ticker, payload_hash))
-        if attempt_id in set(existing_attempts["attempt_id"].dropna().astype(str)):
+        if attempt_id in attempt_ids:
             continue
         system_observed_at = _iso8601()
         response_rows = _expectation_rows(
@@ -518,10 +549,10 @@ def accrue_expectation_observations(
             payload_hash=payload_hash, frames=frames, provider_observed_at=provider_observed_at,
             system_observed_at=system_observed_at, period_end_by_horizon=period_end_by_horizon,
         )
-        _apply_lineage(response_rows, existing_observations)
+        _apply_lineage(response_rows, existing_observations, prior_by_key=prior_by_key)
         deduped_rows = [
             row for row in response_rows
-            if row["observation_id"] not in set(existing_observations["observation_id"].dropna().astype(str))
+            if row["observation_id"] not in observation_ids
         ]
         valid_metrics = {row["metric"] for row in response_rows if row["value"] is not None}
         malformed_response = any(
@@ -813,3 +844,4 @@ def fetch_revisions(
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
     fetch_revisions(int(__import__("sys").argv[1]) if len(__import__("sys").argv) > 1 else 50)
+
