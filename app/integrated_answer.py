@@ -1,6 +1,8 @@
 """Package I v0 — default-off integrated answer composer (display-only, read-only)."""
 from __future__ import annotations
 
+from concurrent.futures import ThreadPoolExecutor, wait
+import contextvars
 from datetime import datetime, timedelta, timezone
 import hashlib
 import json
@@ -8,6 +10,7 @@ import os
 from pathlib import Path
 import subprocess
 import threading
+from time import monotonic
 from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, Response
@@ -26,6 +29,11 @@ REPO = Path(__file__).resolve().parents[1]
 router = APIRouter()
 
 STALE_DAYS = 4
+
+# Under EdgeOne's roughly 30 s origin budget: a slow leg degrades, the page still answers.
+COMPOSE_DEADLINE_SECONDS = 20.0
+COMPOSE_DEADLINE_REASON = "compose_deadline_exceeded"
+COMPOSE_CAPACITY_REASON = "compose_capacity_exhausted"
 
 CONSUMER_RECEIPT_VERSION = "c19-wp08-v1"
 CONSUMED_RECEIPTS_HEADER = "X-Integrated-Answer-Consumed-Receipts"
@@ -174,6 +182,15 @@ _k3e_cached_bundle: tuple[Any, Any, Any] | None = None
 _chip_lock = threading.Lock()
 _chip_cached_day: str | None = None
 _chip_cached_value: dict[str, dict[str, Any]] | None = None
+
+# The pool bounds only work that is executing. Queued submissions are retained in the
+# pool's own queue until a worker drains them — canceling a future does not remove them —
+# so _leg_admission also caps retained submissions (executing plus queued) at the same
+# envelope, four concurrent composes of seven read legs. A compose past the cap degrades
+# its remaining legs instead of enqueueing submissions that would outlive the request.
+_leg_pool = ThreadPoolExecutor(max_workers=28, thread_name_prefix="integrated-answer-leg")
+_MAX_RETAINED_READ_LEGS = 4 * 7
+_leg_admission = threading.BoundedSemaphore(_MAX_RETAINED_READ_LEGS)
 
 
 def _require_enabled() -> None:
@@ -335,9 +352,13 @@ def _k3e_source() -> tuple[Any, Any, Any]:
     with _k3e_lock:
         if _k3e_cached_rev == rev and _k3e_cached_bundle is not None:
             return _k3e_cached_bundle
-        from scripts.query_k3e_expectation_surface import load_frozen_source
+        from scripts.query_k3e_expectation_surface import load_frozen_source, rebind_frozen_source
 
-        bundle = load_frozen_source(REPO, rev)
+        bundle = None
+        if _k3e_cached_bundle is not None:
+            bundle = rebind_frozen_source(REPO, rev, _k3e_cached_bundle)
+        if bundle is None:
+            bundle = load_frozen_source(REPO, rev)
         _k3e_cached_rev = rev
         _k3e_cached_bundle = bundle
         return bundle
@@ -959,16 +980,88 @@ def _leg_fixed_absent(leg_id: str, degraded_reason: str) -> dict[str, Any]:
     return leg
 
 
+def _run_leg_read(
+    admission: threading.BoundedSemaphore,
+    abandoned: threading.Event,
+    deadline: float,
+    leg_id: str,
+    context: contextvars.Context,
+    read: Any,
+    args: tuple[Any, ...],
+) -> Any:
+    """Keep the admission slot until this queued or running work actually drains."""
+    try:
+        if abandoned.is_set() or monotonic() >= deadline:
+            return _leg_fixed_absent(leg_id, COMPOSE_DEADLINE_REASON)
+        return context.run(read, *args)
+    finally:
+        # Release the same owner acquired at submission, even if a test replaces
+        # the module's pool/admission pair before an outstanding read returns.
+        admission.release()
+
+
+def _read_legs(calls: list[tuple[str, Any, tuple[Any, ...]]]) -> list[dict[str, Any]]:
+    deadline = monotonic() + COMPOSE_DEADLINE_SECONDS
+    pool, admission = _leg_pool, _leg_admission
+    submissions: list[tuple[int, str, threading.Event, Any]] = []
+    legs: dict[int, dict[str, Any]] = {}
+    try:
+        for index, (leg_id, read, args) in enumerate(calls):
+            if monotonic() >= deadline:
+                legs[index] = _leg_fixed_absent(leg_id, COMPOSE_DEADLINE_REASON)
+                continue
+            if not admission.acquire(blocking=False):
+                legs[index] = _leg_fixed_absent(leg_id, COMPOSE_CAPACITY_REASON)
+                continue
+            abandoned = threading.Event()
+            try:
+                future = pool.submit(
+                    _run_leg_read, admission, abandoned, deadline, leg_id,
+                    contextvars.copy_context(), read, args,
+                )
+            except BaseException:
+                admission.release()
+                raise
+            submissions.append((index, leg_id, abandoned, future))
+        if submissions:
+            _done, late_futures = wait(
+                [entry[3] for entry in submissions],
+                timeout=max(0.0, deadline - monotonic()),
+            )
+            # Mark every late submission before retrieving a completed result:
+            # an earlier exception must not leave later queued reads runnable.
+            for _index, _leg_id, abandoned, future in submissions:
+                if future in late_futures:
+                    abandoned.set()
+            for index, leg_id, _abandoned, future in submissions:
+                if future in late_futures:
+                    legs[index] = _leg_fixed_absent(leg_id, COMPOSE_DEADLINE_REASON)
+                else:
+                    legs[index] = future.result()
+        return [legs[index] for index in range(len(calls))]
+    except BaseException:
+        # Submission, wait, or result failure abandons the request's remaining
+        # work. Queued wrappers release only when drained; running reads cannot
+        # be killed and keep their slot until they actually exit.
+        for _index, _leg_id, abandoned, _future in submissions:
+            abandoned.set()
+        raise
+
+
 def _compose_page_with_receipts(ticker: str) -> tuple[dict[str, Any], list[dict[str, Any]]]:
     composed_at = _utc_now()
     legs = [
-        _leg_financial_facts(ticker, composed_at),
-        _leg_earnings_expectation(ticker, composed_at),
-        _leg_capital_structure(ticker, composed_at),
-        _leg_publication_seam(),
-        _leg_event_workspace(ticker, composed_at),
-        _leg_theme_tape(),
-        _leg_company_theme_exposure(ticker, composed_at),
+        *_read_legs(
+            [
+                ("financial_facts", _leg_financial_facts, (ticker, composed_at)),
+                ("earnings_expectation", _leg_earnings_expectation, (ticker, composed_at)),
+                ("capital_structure", _leg_capital_structure, (ticker, composed_at)),
+                ("publication_seam", _leg_publication_seam, ()),
+                ("event_workspace", _leg_event_workspace, (ticker, composed_at)),
+                ("theme_tape", _leg_theme_tape, ()),
+                ("company_theme_exposure", _leg_company_theme_exposure, (ticker, composed_at)),
+            ]
+        ),
         _leg_fixed_absent(
             "basket_labels",
             "not_read_in_v0:owner_not_recorded;direct_site_json_reads_forbidden(I-R2)",
