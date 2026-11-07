@@ -1,0 +1,18 @@
+{
+  "schema": "mastermind.tiingo.vendor_cohort_receipt.v1",
+  "source": "fund-meta",
+  "vendor": "tiingo",
+  "source_sha256": "09661546d71ee1b30b2f33bfc0e10107d0b5002dcf6745715df7c6bbc4fff451",
+  "source_observed_at_utc": "2026-10-11T17:12:47.449358+00:00",
+  "cohort_semantics": "CURRENT_VENDOR_REFERENCE_SNAPSHOT_ONLY",
+  "historical_pit_membership_eligible": false,
+  "canonical_dataos_identity": false,
+  "total_rows_seen": 20352,
+  "unkeyed_rows": 0,
+  "permaTicker_count": 20352,
+  "active_count": 7812,
+  "inactive_count": 12540,
+  "activity_unclassified": 0,
+  "permatickers_sha256": "c8dc67539ec700f507b676f0b9b121f6d364930561009eaaccb7acf3efdfd84f",
+  "permatickers_path": "cohorts/fundamentals/09661546d71ee1b30b2f33bfc0e10107d0b5002dcf6745715df7c6bbc4fff451/permatickers.txt"
+}

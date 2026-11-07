@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-03-30T21:43:24Z",
+ "accession": "0001628280-26-022073",
+ "cik": "0001853860",
+ "doc_byte_length": 1498444,
+ "doc_sha256": "af12c98aa45776ac2aa7bad9bf446257e31a139e4098b3d2eb5ea8eb046e1118",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-30",
+ "form": "40-F",
+ "period_of_report": "2025-12-31",
+ "primary_document": "erocopper-mdax2025q4.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 645130,
+  "byte_start": 644826,
+  "normalized": "The Company has a precious metals purchase agreement (the \"Xavantina Gold Stream\") with RGLD Gold AG (\"Royal Gold\"), a wholly-owned subsidiary of Royal Gold, Inc., whereby the Company is obligated to sell a portion of its gold production from the Xavantina Operations at contract prices.",
+  "normalized_sha256": "ef65d198e097d1bc633a82049e0a2e383c951749cc3c9dca60d0494860a61ba8",
+  "raw": "The Company has a precious metals purchase agreement (the &#34;Xavantina Gold Stream&#34;) with RGLD Gold AG (&#34;Royal Gold&#34;), a wholly-owned subsidiary of Royal Gold, Inc., whereby the Company is obligated to sell a portion of its gold production from the Xavantina Operations at contract prices. ",
+  "raw_sha256": "46b0b98c2bd5c72e1c3d3a37f7436ab2dbc85d1d692f9a23140510b4d8cf7b74"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1853860/000162828026022073/erocopper-mdax2025q4.htm",
+ "xbrl_contexts": []
+}

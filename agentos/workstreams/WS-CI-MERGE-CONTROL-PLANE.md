@@ -22,6 +22,7 @@ discoveries:
   - "DSC:CI-SELF-MOD-FENCE-ARGV-BYPASSES-BOUNDED-TRANSPORT"
   - "DSC:REUSABLE-WORKFLOW-CALL-AND-HOST-HOOK-USE-DIFFERENT-REF-SHAPES"
   - "DSC:SEALED-PC-CI-REPLAY-AND-PORTABILITY-NEED-EXPLICIT-RUNTIME-BINDINGS"
+  - "DSC:CI-PROMISOR-OBJECT-FETCH-TRUNCATION"
 waves:
   - id: W-TRANSPORT
     title: Bounded changed-files transport across CI and self-mod fences
@@ -236,6 +237,215 @@ waves:
       across client behavior, and projects the caller's PR branch identity into
       the detached trusted executor. Repaired exact execution/parity/gate proof
       remains owed.
+  - id: W-THROUGHPUT-20261019
+    title: Measured CI throughput and bounded planner/weight trials
+    status: in_progress
+    note: >
+      Chairman's October 19 commission is assigned to Codex session
+      01a153e8-3c85-7bb2-af63-7f477b570512. The 40-run baseline retains 22
+      noncancelled first attempts, 17 cancellations and one separate rerun.
+      Successful first-attempt run-to-gate p50/p95 is 3196/4074 seconds.
+      Initial trial removes duplicate named-suite closure traversal within one
+      planner command; twelve packs and all semantic/gate contracts remain.
+      Existing PR 8126 is already delivered and PR 8094 remains separate.
+      Research and limitations: research/ci_pack_throughput_20261019/README.md.
+      Current continuation: agentos/handoffs/WS-CI-MERGE-CONTROL-PLANE-2026-10-19-THROUGHPUT.md.
+      PR 9722 merged as 7736fd72895fc24e55bf2d4bbc7b1f4e94203414 with full
+      hosted proof. First broad trial took 78.1 minutes, including 825 seconds
+      of post-pack queueing; packing-contract group 740.414 seconds versus a
+      historical 847.738-second median is descriptive, not a causal gain.
+      Natural cohort has 37 verified first-attempt completions, two selected-set
+      matches but zero execution-proof matches and nine pending; no causal gain.
+      A twelve-pack replay of all 255 measured job costs supports a bounded
+      FIF/earnings weight calibration: modeled maximum command time
+      2085.4 to 1532.3 seconds, excluding install/checkout/queue effects.
+      Trial PR9763 incorporated landed Defense heal PR9758. The next run
+      passed Defense but found a missing schema identifier from PR9765 on
+      both candidate and base. A one-field schema registry repair reproduces
+      three failures before and passes181 affected tests after. PR9763 merged as
+      38d2dac36faabfff04f8efe5ee28e5c8dfa1c5ae after all257 jobs and active checks
+      passed in run39298424658. Source landing verified; observer50933 consumed.
+      Weighted full trial48.82min/371.70 summed job minutes, versus78.08/337.38
+      earlier with different work; no causal gain or cost neutrality established.
+      Exact-run command replay2694.53 to2266.33sec supports retaining two weights,
+      not additional expansion. Collect a separate post18:49:48Z natural cohort;
+      Report PR9780 merged576e21dc2e46bea739465c84a33ffbdf2135cd78, source verified.
+      Weighted20:48 cohort32runs/19verified completions/9pending/4cancelled;
+      scoped-success N13 p50/p95 2106/3941sec, summed wall215.68/399.37min.
+      No exact baseline proof matches; nine completions select neither calibrated
+      job. One exploratory adjacent-window exact pair is unexposed and has
+      different failure/success outcomes, so cannot estimate the weights' benefit.
+      Successful tail has3205sec execution wrapper with two exact-ancestry
+      depth8->32 waits691/726sec. Next bounded trial rechecks existing ancestry
+      before fetching, preventing a later consumer from re-shallowing complete
+      history. Real shallow-Git regression fails before, nine recovery tests pass
+      after;199 authority tests plus repaired mock pass, manifest validates.
+      PR9791 merged c3c67487f42e1c54986b2e95dca327946fdc5ed0 at21:52:31Z;
+      run39324251115 passed258 jobs/554proof units and all active checks.
+      All eight source/test/report blobs verified. One real ruling-graph reuse
+      notice, five necessary deepening paths; no cache, proof relaxation or shards.
+      Trial42.12min/362.57 summed wall min; FIF commands2120.20sec critical.
+      Reuse was noncritical; no causal target or cost-neutrality claim.
+      Collect a separate post21:52:31Z cohort under blob
+      f92be10fc37455fd427829f0f964c5ef581b3a80 and exact merge ancestry.
+      At23:56Z29runs:12verified successes,13pending,4cancelled. ScopedN11
+      p50/p951981/2863sec, wall196.25/278.23min. No original/weighted full
+      proof matches; one original selected-set match has two changed definitions.
+      Natural39330880213 confirms reuse in noncritical pack8. Two other runs
+      have potential reuse on critical packs; inspect before attributing savings.
+      Report9801 merged368c4c3a660215a0bf4809c9b8ff5e65098f413a;6blobs verified.
+      Fixed00:55 snapshot45runs/31eligible completions(29success,2failure),
+      7pending/7cancelled. ScopedN27 p50/p951966/2863sec, wall186.47/278.23min;
+      zero original/weighted proof matches. Both targeted critical-pack logs show
+      reuse, without counterfactual saved seconds. FIF alone critical9times and
+      control-plane alone8times; no outer-shard expansion justified.
+      PR9479/9797 failures are candidate-specific with passing isolated bases;
+      preserve their carriers. Hold the cohort fixed. Six slowest scoped successes
+      are FIF-alone critical. Exact-source72tests pass403.73sec; focused profile
+      identifies repeated ASCII and direct-text scans in the SEC parser.
+      Fourth trial replaces the byte loop with isascii and uses the existing
+      event index before the unchanged owner filter; no semantic/proof/shard change.
+      Parser214tests pass, new scan regression fails before, two complete filing
+      outputs match. Alternating local CPU0.8960 to0.6836sec is descriptive only.
+      Same72tests pass335.45sec vs403.73before. PR9813 merged9c7df3786fc3856fbb692da301584b4b443ab66d
+      at2026-10-20T04:57:13Z; seven blobs verified. Final39364786931 passes
+      96jobs/299proof units/zero infrastructure findings and all active checks.
+      Three green trial FIF commands1581.75/2093.14/1573.07sec show variation.
+      Next: separate natural parser cohort with exact parser plus planner blobs
+      and merge ancestry; earlier00:55 cohort remains fixed.
+      Fixed parser05:54 cohort16runs has5qualified completions(3success2failure),
+      11pending/0cancelled/0reruns. Success p50/p951860/2218sec,wall228.50/252.18min;
+      failure first-step-completion950.5/1002sec. Zero original-baseline proof matches.
+      Exact secondary pairs differ in outcome; one artifact-upload failure and one
+      AgentOS candidate/base-signature mismatch, with existing repair carriers retained.
+      No causal fleet30percent or cost-neutrality claim.
+      Report9850 merged6793c010048996193d3d98876b486910c7982e3c;75selected jobs,
+      active gates and6authored blobs verified. Fixed07:54 parser snapshot57runs:
+      36qualified completions(29success7failure),18pending3cancelled. ScopedN24
+      success p50/p951895/2553sec,wall177.675/253.95min;zero baseline proof matches.
+      Three103job successful treatments share ONE old-parser control. Gate times
+      2066/2581/2553sec versus2007control; summed wall lower, no causal claim.
+      Treated FIF commands1594.096/2151.041/2089.544sec versus1329.857control;
+      treated2681passes versus2680control. Primary command dominates; image and
+      Python labels agree among treatments but physical performance is uncontrolled.
+      Retain12packs/two weights/parser source. Next source slice requires qualified
+      residual profiling and current FIF carrier custody; no speculative shards.
+  - id: W-ACCELERATION-20261104
+    title: Cross-repo minute-level CI plan and runner assessment (Mastermind #917)
+    status: in_progress
+    note: >
+      Fable CEO receiver session 6e051448 adjudicated the measured CI speed
+      options for Mastermind, Macro and Terminal on 2026-11-04. All three
+      repositories are public; Macro PR CI is hosted; the sweeper is bounded
+      by MAX_IN_FLIGHT_PR_PROOFS after a check-definition commit stales every
+      armed green, not by its cron. First packet delivered as Mastermind
+      PR 2044 (six-shard re-pin). Macro-side next actions X1 (scoped
+      staleness rule), X2 (adaptive in-flight cap) and X3 (native queue
+      premise re-test) are sequenced after PR 10652 and PR 10682.
+      Current continuation: agentos/handoffs/WS-CI-MERGE-CONTROL-PLANE-2026-11-04-ACCELERATION.md.
+      Chairman recommissioned end-to-end acceleration on 2026-11-07. The
+      master architecture extends this wave and existing Phase 4 without a new
+      planner, queue, runtime or acceptance owner. Its current immutable milestone is
+      https://github.com/mastermindx-market-intelligence/Mastermind/blob/8b549d74e3977e7e37749b623a224e30423c75d6/docs/CI_LIGHTNING_ARCHITECTURE.md
+      in original PR 2191, document blob fe76fd084820340609338131d452adff405db56c.
+      It retains explicit 300s full-verdict budgets, fresh-work and exact-source
+      reuse boundaries, rollback proofs and natural-cohort acceptance. Five-minute
+      p95 and complete three-repository delivery remain unachieved.
+      Accepted continuity PR 10825 remains efdf3577bb35607bb02a4a0a1900adb91a3784c6;
+      original PR 10827 carries this bounded follow-up, preserving all other waves.
+      Mastermind PR 2065 publishes c85441b0d717ca8a429672d87e820aae2ad95f9c.
+      Required 42385010390 succeeded in 17m26s; serial 42385010193 succeeded in
+      37m01s, both at actual tested merge 63c5a4236a5e0eed75c0e51abdf0c3ae714b32e8.
+      Required produced 24 valid completion receipts, 2,332 selected modules and
+      70,461 collected/finished outer cases. These completion receipts are distinct
+      from case-evidence completeness: 312 parallel companion rows were incomplete.
+      Two tests temporarily patch shared json.dumps during call reporting; observer
+      bounds tests also changed the live outer observer's module-global limits.
+      Local commit ce7ab5c955cd50b670ba7b1dc22bdbc1b64d3f8b captures serializer
+      and limits at observer construction and retains fail-closed behavior.
+      Its final four-file invocation passed 537 tests with zero failure/error/skip,
+      36.333s controller time, all four module rows complete. It is not pushed yet.
+      All serial companion rows remained incomplete. Required used pytest 9.2.0;
+      RWE's existing lock used 9.1.1, whose automatic parameter IDs can embed full
+      input values. A bounded collect-only probe found seven IDs above 16KiB,
+      including IDs above one MiB, but exited 2 and is not full-collection proof.
+      Align the existing shared pytest profile and both incumbent locks, then use
+      the existing RWE processes 0/4 experiment sequentially at one exact source,
+      lock, interpreter and package proof. No new identity normalizer, relaxed
+      limits, collector or environment owner. RWE default remains 0; actual
+      complete native module/case/outcome parity is still required.
+      Prior actuator required 42377942847 failed despite six zero-exit children;
+      later green does not prove its cause. c854 retains finite refusal codes.
+      The earlier RWE four-process initializer custody failure remains separate;
+      preserve first/finally error and bounded node/field diagnosis before relocation.
+      The historical gateway Release HOLD also remains. A controlled local
+      Gateway ACL-bracket diagnostic passed two checks in 70.762s: actual directory
+      metadata churn after real ACL observation causes the unchanged nine-field
+      comparator to retain a LOCKED transaction without public target/config/prior
+      mutation; a fresh stable control publishes both successors and preserves
+      predecessor history. This proves the injected source mechanism, not original
+      native causality or installed Root acceptance. Exact code and result are in
+      https://github.com/mastermindx-market-intelligence/Mastermind/blob/8b549d74e3977e7e37749b623a224e30423c75d6/docs/CI_GATEWAY_ACL_BRACKET_DIAGNOSTIC_20261107.md.
+      Terminal PR 1297 is accepted as 90ddc1390e89f60677a55ed854e8368accbc252d.
+      Terminal PR 1334 is accepted as 81ff9cb82bc90e166746802b83ed9daa0df4a97c.
+      DO_NOT_REDO either scope or News preparation. Original PR 1338 first-link
+      repair 030c84c98944a6d4c145695e7aeda5bd32eac015 preserves immediate valid
+      Company-to-Thesis origin, same-company picker clearing and later valid return.
+      Initial-render red proof, 116 unit passes, lint/typecheck and original ontology
+      browser selection 22 passed / 38 expected skips / zero retry/flakes remain.
+      Native 42382143589 at actual merge 30e7a4bd94b74711619b3db922b0111818c5113f
+      finished with all 12 browser jobs green: 4,693 selected, 3,691 passed,
+      999 skipped, three unrelated flaky cases, zero final failures. Not all broad
+      skip reasons were audited. J1 passed first attempt on all three viewports.
+      The required aggregate failed only the source-bound B-F11-10a evidence lock.
+      Original operation ci-lightning-terminal-context-20261107-c2 now publishes
+      2a99682df136c5501dbda03f95f3bcd2913245aa with the original owner recapture.
+      Six new bilingual responsive crops were visually inspected; 1,878 source
+      hashes matched, the old six crops and historical records remain unchanged.
+      The scoped witness records the actual local Node 26 runtime and no live
+      PID/CWD snapshot claim. Five evidence plus fourteen navigation tests passed.
+      New CI 42387278303 tests synthetic merge 125efd80d89ed4e7018d54bb32054df381296d09.
+      Unit job 128447979878 now succeeds: 20,405 passed, 50 skipped, three todo,
+      1,156 passing files and six skipped; full typecheck succeeds. This includes
+      all five evidence and fourteen navigation tests. Browser matrix and final
+      aggregate were still pending at the current bounded observation.
+      The independent source leaves preserve held PR 1223's original uncertain
+      create-commit and shared runtime/config/workflow ownership fence.
+      Options unchanged-source trace-on/off/on observations were 31.722/about8.6/
+      about16.6 seconds per case. These support recording-cost investigation,
+      not a hosted causal-speed claim. Held PR 1223 already authors on-first-retry
+      tracing; preserve that original work. Original assertions/reloads/crops remain.
+      Macro PR 10788 publishes eb3077311d4e819a26c04466774c76bd68db9a5c,
+      parents original 7bb and accepted b48181718f0e08fb1b73bdfdc43c03e3aa20229c.
+      Accepted PR 10834's actual-template cohort fixture is integrated verbatim;
+      accepted PR 10781 code/data routing remains. The test-only NBBO repair proves
+      actual kernel contention, forwards early worker errors, releases in finally
+      and consumes all workers. Production owner is unchanged. Local owner proof
+      passed 231 tests plus 110 subtests; routing passed 252 with two existing
+      sparse mockups skips; accepted commodity 30 DOM journeys and presentation pass.
+      Native CI 42385192083 remains the current source qualification; consume the
+      complete aggregate before superseding it. Prior 42375466781 failed in64m48s
+      at actual 33adac3070ee9d951aa6cfbeb27d93950ad0a4a9: 320 logical jobs,
+      690 passed steps, one NBBO pr_regression, one commodity unknown, zero infra.
+      Those historical classifications remain.
+      Local calibration-only commit 4281c1886f52a93913f6eec85f9f4407fd738fb6
+      replaces stale native command weights: FIF B1707, International852,
+      ontology350, GovRev candidate436, BioCatalyst308 seconds. It preserves
+      commands/dependencies/selector/timeouts, 120 FIF modules, 44/37/39 ownership,
+      the 1,139-path closure and current process admission. Five existing planner
+      tests passed in141.55s pytest time, including deterministic plans, selected
+      identity preservation and assignment hash. It is not pushed yet; wait for
+      original eb307 native completion before the one fenced nonforce push.
+      The old slow pack6 had no FIF: 54m57s total, 51m32s validation, 179s checkout.
+      Existing issue6351 / W-SELFHOSTED-BRIDGE owns acquisition. Whole-suite service
+      and capacity remain open; calibrated weights are not achieved wall time.
+      Macro PR 10755 is accepted. Preserve PR 10674 original operation26751 as
+      EFFECT_UNKNOWN, then existing 10745-to-10735 progression; no bulk arming.
+      PR 10656 remains held and main admission OFF. Explicit Macro/Terminal
+      rule-read403s are not retried through another carrier. Dev remains Terminal's
+      accepted full-suite path; compiled authority parity and broader reuse receive
+      no unproved latency credit. No self-merge, queue request, autonomous-runner
+      claim or external messaging is part of this milestone.
 next_action: >
   W-TRANSPORT and W-PR-EVENT-CAUSALITY are closed. Do not reopen either for a
   new CI-speed, runner, branch-protection, or cancellation-system proposal.
