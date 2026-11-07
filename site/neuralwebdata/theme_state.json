@@ -1,7 +1,7 @@
 {
   "schema": "neuralweb.theme_state.v1",
   "as_of": "2026-11-07",
-  "generated_at": "2026-11-07T10:05:33Z",
+  "generated_at": "2026-11-07T13:53:52Z",
   "authority": {
     "is_context_only": true,
     "may_rank": false,
@@ -132,10 +132,10 @@
       },
       "divergence_board": {
         "quadrant": "confirmed",
-        "divergence": 0.0,
+        "divergence": 0.2353,
         "narrative_pct": 0.9412,
-        "money_pct": 0.9412,
-        "asof": "2026-11-06",
+        "money_pct": 0.7059,
+        "asof": "2026-11-07",
         "source": "data/foresight/divergence_log.jsonl"
       },
       "basket_ids": [
@@ -288,10 +288,10 @@
       },
       "divergence_board": {
         "quadrant": "hidden-opportunity",
-        "divergence": -0.4706,
+        "divergence": -0.4118,
         "narrative_pct": 0.4118,
-        "money_pct": 0.8824,
-        "asof": "2026-11-06",
+        "money_pct": 0.8235,
+        "asof": "2026-11-07",
         "source": "data/foresight/divergence_log.jsonl"
       },
       "basket_ids": [
@@ -571,7 +571,7 @@
       "foresight": {
         "stage": "WATCH",
         "tier": "P",
-        "score": 32.8,
+        "score": 36.7,
         "entry_ready": false,
         "bottleneck_band": "NEUTRAL",
         "source": "site/basketdata/foresight_cascade.json"
@@ -652,7 +652,7 @@
       "foresight": {
         "stage": "BROADENING (text)",
         "tier": "P",
-        "score": 50.0,
+        "score": 49.1,
         "entry_ready": false,
         "bottleneck_band": "TIGHT (text)",
         "source": "site/basketdata/foresight_cascade.json"
@@ -725,7 +725,7 @@
       "foresight": {
         "stage": "WATCH",
         "tier": "P",
-        "score": 45.0,
+        "score": 42.3,
         "entry_ready": false,
         "bottleneck_band": "NEUTRAL",
         "source": "site/basketdata/foresight_cascade.json"
@@ -836,7 +836,7 @@
       "foresight": {
         "stage": "BROADENING (fingerprint)",
         "tier": "P",
-        "score": 52.7,
+        "score": 52.1,
         "entry_ready": false,
         "bottleneck_band": "TIGHTENING (fingerprint)",
         "source": "site/basketdata/foresight_cascade.json"
@@ -988,9 +988,9 @@
       "name_en": "Space & Satellites",
       "name_zh": "太空与卫星",
       "foresight": {
-        "stage": "PRECIPICE (fingerprint)",
+        "stage": "BROADENING (fingerprint)",
         "tier": "P",
-        "score": 58.9,
+        "score": 55.0,
         "entry_ready": false,
         "bottleneck_band": "TIGHTENING (fingerprint)",
         "source": "site/basketdata/foresight_cascade.json"
@@ -1210,7 +1210,7 @@
       "foresight": {
         "stage": "WATCH",
         "tier": "P",
-        "score": 37.1,
+        "score": 35.9,
         "entry_ready": false,
         "bottleneck_band": "LOOSE",
         "source": "site/basketdata/foresight_cascade.json"
@@ -1340,7 +1340,7 @@
       "foresight": {
         "stage": "WATCH",
         "tier": "P",
-        "score": 41.2,
+        "score": 42.4,
         "entry_ready": false,
         "bottleneck_band": "NEUTRAL",
         "source": "site/basketdata/foresight_cascade.json"
@@ -1389,7 +1389,7 @@
       "foresight": {
         "stage": "WATCH",
         "tier": "P",
-        "score": 35.8,
+        "score": 36.4,
         "entry_ready": false,
         "bottleneck_band": "LOOSE",
         "source": "site/basketdata/foresight_cascade.json"
@@ -1455,7 +1455,7 @@
   },
   "schema_version": 1,
   "produced_by": "scripts/build_thematic_state.py",
-  "produced_at": "2026-11-07T10:05:35Z",
-  "inputs_hash": "sha256:2913ee5cf5a303c28ab3bce3071f2c02823ce30ca7306d18932e49d6caa6b253",
+  "produced_at": "2026-11-07T13:53:53Z",
+  "inputs_hash": "sha256:600c144465edfefc4616650801ae30289bcf0cddcab6bec6f4eed35152dc6838",
   "tier": "display"
 }
