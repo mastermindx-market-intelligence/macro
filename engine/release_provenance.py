@@ -263,42 +263,32 @@ def compute_coverage_flags(
         # ------------------------------------------------------------------ #
         # fresh_proxy_coverage
         # ------------------------------------------------------------------ #
-        # Use explicit fresh_legs list from provenance if provided.
-        # Otherwise approximate as present-leg share (documented approximation).
-        fresh_legs: list[str] = prov.get("fresh_legs") or []
-        _fresh_approximated = len(fresh_legs) == 0  # noqa: SIM108
-
-        if fresh_legs and weights and isinstance(weights, dict):
-            total_weight = sum(float(v) for v in weights.values() if v is not None)
-            if total_weight > 0:
-                fresh_weight = sum(
-                    float(weights.get(leg, 0.0) or 0.0)
-                    for leg in fresh_legs
-                    if leg in all_legs
-                )
-                fresh_proxy_coverage = fresh_weight / total_weight
-            else:
-                fresh_proxy_coverage = 0.0
-        elif fresh_legs:
-            if n_total == 0:
-                fresh_proxy_coverage = 0.0
-            else:
-                n_fresh = sum(1 for leg in fresh_legs if leg in set(all_legs))
-                fresh_proxy_coverage = n_fresh / n_total
+        # Explicit empty means no fresh legs; only missing/null uses the
+        # legacy present-leg approximation. Count each eligible leg once.
+        declared_fresh = prov.get("fresh_legs")
+        _fresh_approximated = declared_fresh is None
+        if _fresh_approximated:
+            fresh_legs = [
+                leg for leg in all_legs
+                if _classify_leg(leg, rev_opt, unrev, absent) == _STATUS_PRESENT
+            ]
         else:
-            # Approximation: present-leg share as proxy for fresh coverage.
-            # Documented per MRI-R26: when pit_provenance carries no fresh_legs
-            # list, this is a coarse lower bound (revision_optimistic legs may
-            # or may not be fresh for the current reference month).
-            if n_total == 0:
-                fresh_proxy_coverage = 0.0
-            else:
-                n_present = sum(
-                    1
-                    for leg in all_legs
-                    if _classify_leg(leg, rev_opt, unrev, absent) == _STATUS_PRESENT
-                )
-                fresh_proxy_coverage = n_present / n_total
+            fresh_legs = sorted({
+                leg for leg in declared_fresh
+                if leg in all_legs
+                and _classify_leg(leg, rev_opt, unrev, absent) != _STATUS_ABSENT
+            })
+
+        # Use the same denominator/basis as weight_coverage, including when
+        # freshness is approximated. This remains descriptive metadata only.
+        if weights and isinstance(weights, dict):
+            total_weight = sum(float(v) for v in weights.values() if v is not None)
+            fresh_proxy_coverage = (
+                sum(float(weights.get(leg, 0.0) or 0.0) for leg in fresh_legs)
+                / total_weight if total_weight > 0 else 0.0
+            )
+        else:
+            fresh_proxy_coverage = len(fresh_legs) / n_total if n_total else 0.0
 
         # ------------------------------------------------------------------ #
         # non_vintaged_share

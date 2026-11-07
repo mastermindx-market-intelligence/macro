@@ -1018,3 +1018,256 @@ class TestVintagedLegsCoverageHonesty:
         # input_manifest must be present and identical
         assert "input_manifest" in r1, "input_manifest key missing from CPI core projection"
         assert r1.get("input_manifest") == r2.get("input_manifest"), "input_manifest not stable"
+
+# ---------------------------------------------------------------------------
+# Freshness-set contract — the declared fresh_legs list is a SET over the
+# declared, non-absent inputs (producer-side contract, not a forecast change).
+# ---------------------------------------------------------------------------
+
+_MISSING = object()
+
+
+class TestFreshnessSetContract:
+    """MRI-R26 freshness-set contract for engine.release_provenance.
+
+    A DECLARED ``fresh_legs`` list is a SET over the declared, non-absent
+    inputs:
+
+      * explicit ``[]`` means ZERO fresh legs — it is NOT the legacy
+        missing/null approximation;
+      * a repeated leg counts once;
+      * an absent leg never contributes freshness (absence precedence wins);
+      * a leg outside the declared input set cannot inflate freshness;
+      * supplied weights use the SAME weight basis and denominator as
+        ``weight_coverage``, including inside the missing/null approximation.
+
+    A MISSING or NULL ``fresh_legs`` keeps the documented legacy present-leg
+    approximation. All of these are descriptive metadata only: they never
+    change point/interval/confidence.
+    """
+
+    @staticmethod
+    def _proj(fresh=_MISSING, absent=(), rev_opt=(), unrev=(), legs=("a", "b")):
+        pit = {
+            "revision_optimistic_legs": list(rev_opt),
+            "unrevised_legs": list(unrev),
+            "absent_legs": list(absent),
+            "vintaged_legs": [],
+            "display_only": True,
+            "authority": False,
+        }
+        if fresh is not _MISSING:
+            pit["fresh_legs"] = fresh
+        return {
+            "release": "cpi_headline",
+            "asof": "2026-11-05",
+            "pit_provenance": pit,
+            "input_manifest": {leg: 0.1 for leg in legs},
+            "point": 0.42,
+            "p10": 0.10,
+            "p25": 0.25,
+            "p50": 0.40,
+            "p75": 0.60,
+            "p90": 0.90,
+            "confidence": 0.5,
+            "display_only": True,
+            "authority": False,
+        }
+
+    # -- explicit empty ----------------------------------------------------
+
+    def test_explicit_empty_is_zero_not_approximation(self):
+        """fresh_legs=[] declares zero fresh legs — it is not the legacy approximation."""
+        from engine.release_provenance import compute_coverage_flags
+        result = compute_coverage_flags(self._proj(fresh=[]), None)
+        assert result["fresh_proxy_coverage"] == pytest.approx(0.0), (
+            "an explicitly empty fresh_legs list must yield zero freshness"
+        )
+        assert result["_fresh_approximated"] is False, (
+            "an explicitly empty fresh_legs list is a declaration, not an approximation"
+        )
+
+    def test_explicit_empty_weighted_is_zero(self):
+        """Weighted calls read an explicitly empty list the same way."""
+        from engine.release_provenance import compute_coverage_flags
+        result = compute_coverage_flags(self._proj(fresh=[]), None, {"a": 3.0, "b": 1.0})
+        assert result["fresh_proxy_coverage"] == pytest.approx(0.0)
+        assert result["_fresh_approximated"] is False
+
+    # -- duplicates --------------------------------------------------------
+
+    def test_duplicate_legs_count_once(self):
+        """A repeated leg is one leg, not three."""
+        from engine.release_provenance import compute_coverage_flags
+        result = compute_coverage_flags(self._proj(fresh=["a", "a", "a"]), None)
+        assert result["fresh_proxy_coverage"] == pytest.approx(0.5), (
+            "duplicate fresh legs must not inflate the freshness fraction"
+        )
+        assert result["_fresh_approximated"] is False
+
+    def test_duplicate_legs_weighted_count_once(self):
+        """Duplicates cannot multiply a leg's weight."""
+        from engine.release_provenance import compute_coverage_flags
+        result = compute_coverage_flags(
+            self._proj(fresh=["a", "a", "a"]), None, {"a": 3.0, "b": 1.0}
+        )
+        assert result["fresh_proxy_coverage"] == pytest.approx(0.75)
+
+    # -- absent precedence -------------------------------------------------
+
+    def test_absent_leg_never_contributes_freshness(self):
+        """An absent leg contributes freshness only if it is absent from the list."""
+        from engine.release_provenance import compute_coverage_flags
+        result = compute_coverage_flags(self._proj(fresh=["a"], absent=["a"]), None)
+        assert result["fresh_proxy_coverage"] == pytest.approx(0.0), (
+            "absence precedence must win over an explicit fresh_legs entry"
+        )
+        assert result["_fresh_approximated"] is False
+
+    def test_absent_leg_weighted_never_contributes_freshness(self):
+        from engine.release_provenance import compute_coverage_flags
+        result = compute_coverage_flags(
+            self._proj(fresh=["a"], absent=["a"]), None, {"a": 3.0, "b": 1.0}
+        )
+        assert result["fresh_proxy_coverage"] == pytest.approx(0.0)
+
+    def test_mixed_absent_precedence(self):
+        """A present leg stays fresh when a sibling leg is absent."""
+        from engine.release_provenance import compute_coverage_flags
+        result = compute_coverage_flags(self._proj(fresh=["a", "b"], absent=["b"]), None)
+        assert result["fresh_proxy_coverage"] == pytest.approx(0.5)
+
+    def test_mixed_absent_precedence_weighted(self):
+        from engine.release_provenance import compute_coverage_flags
+        result = compute_coverage_flags(
+            self._proj(fresh=["a", "b"], absent=["b"]), None, {"a": 3.0, "b": 1.0}
+        )
+        assert result["fresh_proxy_coverage"] == pytest.approx(0.75)
+
+    # -- unknown legs ------------------------------------------------------
+
+    def test_unknown_leg_cannot_inflate_freshness(self):
+        """A leg outside the declared input set contributes nothing."""
+        from engine.release_provenance import compute_coverage_flags
+        result = compute_coverage_flags(self._proj(fresh=["outside"]), None)
+        assert result["fresh_proxy_coverage"] == pytest.approx(0.0)
+        assert result["_fresh_approximated"] is False
+
+    def test_unknown_leg_weighted_cannot_inflate_freshness(self):
+        from engine.release_provenance import compute_coverage_flags
+        result = compute_coverage_flags(
+            self._proj(fresh=["outside"]), None, {"a": 3.0, "b": 1.0}
+        )
+        assert result["fresh_proxy_coverage"] == pytest.approx(0.0)
+
+    # -- legacy approximation (missing / null) -----------------------------
+
+    def test_missing_fresh_legs_keeps_legacy_present_approximation(self):
+        """Missing fresh_legs keeps the documented present-leg approximation."""
+        from engine.release_provenance import compute_coverage_flags
+        result = compute_coverage_flags(self._proj(absent=["b"]), None)
+        assert result["fresh_proxy_coverage"] == pytest.approx(0.5), (
+            "a missing fresh_legs list must keep the legacy present-leg approximation"
+        )
+        assert result["_fresh_approximated"] is True
+
+    def test_null_fresh_legs_keeps_legacy_present_approximation(self):
+        """An explicit null is the legacy approximation, not a declaration of zero."""
+        from engine.release_provenance import compute_coverage_flags
+        result = compute_coverage_flags(self._proj(fresh=None, absent=["b"]), None)
+        assert result["fresh_proxy_coverage"] == pytest.approx(0.5)
+        assert result["_fresh_approximated"] is True
+
+    def test_weighted_approximation_uses_the_coverage_weight_basis(self):
+        """Weights apply to the approximation on the same basis as weight_coverage."""
+        from engine.release_provenance import compute_coverage_flags
+        weights = {"a": 3.0, "b": 1.0}
+        result = compute_coverage_flags(self._proj(absent=["b"]), None, weights)
+        assert result["_fresh_approximated"] is True
+        assert result["fresh_proxy_coverage"] == pytest.approx(0.75), (
+            "the weighted approximation must use the coverage weight denominator"
+        )
+        assert result["fresh_proxy_coverage"] == pytest.approx(result["weight_coverage"])
+
+    def test_weighted_approximation_equals_weight_coverage_when_all_covered_are_present(self):
+        from engine.release_provenance import compute_coverage_flags
+        weights = {"a": 3.0, "b": 1.0}
+        result = compute_coverage_flags(self._proj(), None, weights)
+        assert result["_fresh_approximated"] is True
+        assert result["fresh_proxy_coverage"] == pytest.approx(result["weight_coverage"])
+
+    def test_weighted_approximation_never_exceeds_weight_coverage(self):
+        """Revision-optimistic and unrevised legs are covered but not 'present'."""
+        from engine.release_provenance import compute_coverage_flags
+        weights = {"a": 3.0, "b": 1.0, "c": 2.0}
+        result = compute_coverage_flags(self._proj(rev_opt=["c"]), None, weights)
+        assert result["fresh_proxy_coverage"] <= result["weight_coverage"]
+        assert result["fresh_proxy_coverage"] == pytest.approx(4.0 / 6.0)
+
+    # -- degenerate inputs -------------------------------------------------
+
+    def test_no_declared_inputs_is_zero(self):
+        """No declared inputs → zero freshness, not a division error."""
+        from engine.release_provenance import compute_coverage_flags
+        result = compute_coverage_flags(self._proj(fresh=[], legs=()), None)
+        assert result["fresh_proxy_coverage"] == pytest.approx(0.0)
+
+    def test_zero_weights_is_zero(self):
+        """Zero total weight → zero freshness, not NaN."""
+        from engine.release_provenance import compute_coverage_flags
+        result = compute_coverage_flags(self._proj(fresh=["a"]), None, {"a": 0.0, "b": 0.0})
+        assert result["fresh_proxy_coverage"] == pytest.approx(0.0)
+        assert result["weight_coverage"] == pytest.approx(0.0)
+
+    # -- valid unique controls ---------------------------------------------
+
+    def test_valid_unique_subset_controls(self):
+        """Valid explicit subsets keep their plain fraction."""
+        from engine.release_provenance import compute_coverage_flags
+        assert compute_coverage_flags(self._proj(fresh=["a"]), None)["fresh_proxy_coverage"] == pytest.approx(0.5)
+        assert compute_coverage_flags(self._proj(fresh=["a", "b"]), None)["fresh_proxy_coverage"] == pytest.approx(1.0)
+        assert compute_coverage_flags(self._proj(fresh=["b"]), None)["fresh_proxy_coverage"] == pytest.approx(0.5)
+
+    def test_revision_optimistic_and_unrevised_legs_are_not_absent(self):
+        """A non-absent leg may be declared fresh whatever its other status is."""
+        from engine.release_provenance import compute_coverage_flags
+        for status in ({"rev_opt": ["a"]}, {"unrev": ["a"]}):
+            result = compute_coverage_flags(self._proj(fresh=["a"], **status), None)
+            assert result["fresh_proxy_coverage"] == pytest.approx(0.5), status
+
+    # -- immutability + bounds ---------------------------------------------
+
+    def test_inputs_are_not_mutated(self):
+        """The producer must not mutate the projection or the weights dict."""
+        from engine.release_provenance import compute_coverage_flags
+        proj = self._proj(fresh=["a", "a", "b"], absent=["c"])
+        weights = {"a": 3.0, "b": 1.0, "c": 2.0}
+        proj_before = copy.deepcopy(proj)
+        weights_before = copy.deepcopy(weights)
+        compute_coverage_flags(proj, None, weights)
+        assert proj == proj_before, "compute_coverage_flags mutated the projection"
+        assert weights == weights_before, "compute_coverage_flags mutated the weights dict"
+
+    def test_freshness_is_bounded_by_coverage_in_every_case(self):
+        """Freshness stays a fraction and never exceeds the covered share."""
+        from engine.release_provenance import compute_coverage_flags
+        cases = [
+            (self._proj(fresh=[]), None),
+            (self._proj(fresh=["a", "a"]), None),
+            (self._proj(fresh=["a"], absent=["a"]), None),
+            (self._proj(fresh=["outside"]), None),
+            (self._proj(absent=["b"]), None),
+            (self._proj(fresh=None, absent=["b"]), None),
+            (self._proj(fresh=["a"]), {"a": 3.0, "b": 1.0}),
+            (self._proj(fresh=["a", "a"], absent=["b"]), {"a": 3.0, "b": 1.0}),
+            (self._proj(absent=["b"]), {"a": 3.0, "b": 1.0}),
+            (self._proj(fresh=["a"]), {"a": 0.0, "b": 0.0}),
+        ]
+        for proj, weights in cases:
+            result = compute_coverage_flags(proj, None, weights)
+            fresh = result["fresh_proxy_coverage"]
+            assert 0.0 <= fresh <= 1.0, f"fresh_proxy_coverage={fresh} out of [0,1]"
+            assert fresh <= result["weight_coverage"] + 1e-12, (
+                f"fresh_proxy_coverage={fresh} exceeds weight_coverage="
+                f"{result['weight_coverage']}"
+            )
