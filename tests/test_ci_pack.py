@@ -5604,9 +5604,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_914),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_933),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_672),
+    ("templates/index.html", 137, 5_916),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_935),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_674),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5614,6 +5614,22 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    PR8333 (2026-11-07): own hosted contract-delta run42296647367,
+    job128163508766, measured base574ce2822b4a against head0ba0333a028c:
+    index137/5912->5914, free-content137/5927->5929, Prophet131/5668->5670.
+    No newly selected job IDs; all probes retain ten packs. The only
+    prophet-lab owner delta registers the unchanged OLI suite in its existing
+    paths and pytest command, contributing exactly two planning-weight units.
+    Current main60dbeffbc710 retains that same owner without the two OLI
+    registration lines and unchanged planner3cbed589. Carry only this own +2
+    onto current ceilings5914/5933/5672, yielding5916/5935/5674; do not copy
+    old whole-file limits or import unmerged sibling funding. This is
+    arithmetic composition, not a new planner or runtime measurement.
+    Preserve all job-count ceilings, ten-pack bound, selectors, assertions,
+    suites, timeouts, admission limits and prior accounting below. Natural
+    successor CI must qualify this distinct correction; the original
+    ci-base-replay-cxp_tnca descendant settlement remains UNKNOWN.
 
     P5.T9.S5 (2026-11-07): compose accepted retained-GSC coverage with
     protected59e035e39607, preserving its gateway and prior provenance
