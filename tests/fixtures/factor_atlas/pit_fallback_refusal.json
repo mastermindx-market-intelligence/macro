@@ -1,0 +1,210 @@
+{
+  "request": {
+    "basket_id": "mag7",
+    "history_mode": "PIT_AS_KNOWN",
+    "start": "2026-01-28",
+    "end": "2026-01-30",
+    "measurement_cutoff": "2026-02-12T00:00:00Z",
+    "purpose": "internal_research",
+    "weighting": "equal",
+    "rebalance": "monthly"
+  },
+  "owner_inputs": {
+    "evidence_kind": "SYNTHETIC_FIXTURE",
+    "code_ref": "fixture:native-code/v1",
+    "input_revision": "fixture:inputs/v1",
+    "correction_of": null,
+    "construction": {
+      "inception": "2026-01-28",
+      "owner_ref": "fixture:basket-method/v1"
+    },
+    "calendar": {
+      "ref": "fixture:XNYS-calendar/v1",
+      "sessions": [
+        {
+          "date": "2026-01-28",
+          "close_at": "2026-01-28T21:00:00Z"
+        },
+        {
+          "date": "2026-01-29",
+          "close_at": "2026-01-29T21:00:00Z"
+        },
+        {
+          "date": "2026-01-30",
+          "close_at": "2026-01-30T21:00:00Z"
+        }
+      ],
+      "rebalance_dates": [
+        "2026-01-28"
+      ]
+    },
+    "current_roster": {
+      "basket_id": "mag7",
+      "members": [
+        "SEC:US-XNYS-AAA",
+        "SEC:US-XNYS-BBB",
+        "SEC:US-XNYS-CCC"
+      ],
+      "pit": false,
+      "basis": "current_membership",
+      "source_shape": "membership",
+      "collection_state": "COMPLETE",
+      "known_at": "2026-01-27T20:00:00Z",
+      "snapshot_ref": "fixture:current-roster/v1",
+      "source_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "asof": "2026-01-30",
+      "snapshot_date": "2026-01-27",
+      "effective_from": "2026-01-27",
+      "effective_to": null
+    },
+    "pit_rosters": {
+      "2026-01-28": {
+        "basket_id": "mag7",
+        "members": [
+          "SEC:US-XNYS-AAA",
+          "SEC:US-XNYS-BBB",
+          "SEC:US-XNYS-CCC"
+        ],
+        "pit": false,
+        "basis": "pit_snapshot",
+        "source_shape": "membership",
+        "collection_state": "COMPLETE",
+        "known_at": "2026-01-27T20:00:00Z",
+        "snapshot_ref": "fixture:pit/2026-01-28",
+        "source_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "asof": "2026-01-28",
+        "snapshot_date": "2026-01-27",
+        "effective_from": "2026-01-27",
+        "effective_to": null
+      }
+    },
+    "decision_cutoffs": {
+      "2026-01-28": "2026-01-28T20:59:00Z"
+    },
+    "identity": {
+      "SEC:US-XNYS-AAA": {
+        "owner_ref": "fixture:alias/SEC:US-XNYS-AAA",
+        "known_at": "2026-01-01T00:00:00Z",
+        "valid_from": "2026-01-01",
+        "valid_to": null
+      },
+      "SEC:US-XNYS-BBB": {
+        "owner_ref": "fixture:alias/SEC:US-XNYS-BBB",
+        "known_at": "2026-01-01T00:00:00Z",
+        "valid_from": "2026-01-01",
+        "valid_to": null
+      },
+      "SEC:US-XNYS-CCC": {
+        "owner_ref": "fixture:alias/SEC:US-XNYS-CCC",
+        "known_at": "2026-01-01T00:00:00Z",
+        "valid_from": "2026-01-01",
+        "valid_to": null
+      },
+      "SEC:US-XNYS-DDD": {
+        "owner_ref": "fixture:alias/SEC:US-XNYS-DDD",
+        "known_at": "2026-01-01T00:00:00Z",
+        "valid_from": "2026-01-01",
+        "valid_to": null
+      }
+    },
+    "prices": {
+      "SEC:US-XNYS-AAA": {
+        "evidence": {
+          "ticker": "AAA",
+          "source": "baskets_ohlcv",
+          "source_path": "fixture:prices/SEC:US-XNYS-AAA",
+          "column": "close",
+          "basis": "tradj",
+          "receipt_state": "EXACT_ENCODED_OBJECT",
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "content_bytes": 100,
+          "adjustment_asof": "2026-02-11T22:00:00Z",
+          "session": "regular",
+          "venue_scope": "consolidated",
+          "observed_at": "2026-02-11T22:00:00Z"
+        },
+        "corporate_action_ref": "fixture:actions/v1",
+        "currency": "USD",
+        "values": {
+          "2026-01-28": 100.0,
+          "2026-01-29": 100.0,
+          "2026-01-30": 100.0
+        }
+      },
+      "SEC:US-XNYS-BBB": {
+        "evidence": {
+          "ticker": "BBB",
+          "source": "baskets_ohlcv",
+          "source_path": "fixture:prices/SEC:US-XNYS-BBB",
+          "column": "close",
+          "basis": "tradj",
+          "receipt_state": "EXACT_ENCODED_OBJECT",
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "content_bytes": 100,
+          "adjustment_asof": "2026-02-11T22:00:00Z",
+          "session": "regular",
+          "venue_scope": "consolidated",
+          "observed_at": "2026-02-11T22:00:00Z"
+        },
+        "corporate_action_ref": "fixture:actions/v1",
+        "currency": "USD",
+        "values": {
+          "2026-01-28": 100.0,
+          "2026-01-29": 100.0,
+          "2026-01-30": 100.0
+        }
+      },
+      "SEC:US-XNYS-CCC": {
+        "evidence": {
+          "ticker": "CCC",
+          "source": "baskets_ohlcv",
+          "source_path": "fixture:prices/SEC:US-XNYS-CCC",
+          "column": "close",
+          "basis": "tradj",
+          "receipt_state": "EXACT_ENCODED_OBJECT",
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "content_bytes": 100,
+          "adjustment_asof": "2026-02-11T22:00:00Z",
+          "session": "regular",
+          "venue_scope": "consolidated",
+          "observed_at": "2026-02-11T22:00:00Z"
+        },
+        "corporate_action_ref": "fixture:actions/v1",
+        "currency": "USD",
+        "values": {
+          "2026-01-28": 100.0,
+          "2026-01-29": 100.0,
+          "2026-01-30": 100.0
+        }
+      },
+      "SEC:US-XNYS-DDD": {
+        "evidence": {
+          "ticker": "DDD",
+          "source": "baskets_ohlcv",
+          "source_path": "fixture:prices/SEC:US-XNYS-DDD",
+          "column": "close",
+          "basis": "tradj",
+          "receipt_state": "EXACT_ENCODED_OBJECT",
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "content_bytes": 100,
+          "adjustment_asof": "2026-02-11T22:00:00Z",
+          "session": "regular",
+          "venue_scope": "consolidated",
+          "observed_at": "2026-02-11T22:00:00Z"
+        },
+        "corporate_action_ref": "fixture:actions/v1",
+        "currency": "USD",
+        "values": {
+          "2026-01-28": 100.0,
+          "2026-01-29": 100.0,
+          "2026-01-30": 100.0
+        }
+      }
+    },
+    "rights": {
+      "status": "QUALIFIED",
+      "purpose": "internal_research",
+      "owner_ref": "fixture:rights/v1"
+    }
+  }
+}

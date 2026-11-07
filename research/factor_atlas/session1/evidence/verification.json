@@ -1,0 +1,104 @@
+{
+  "schema": {
+    "draft": "2020-12",
+    "structurally_valid": true,
+    "synthetic_example_valid": true,
+    "finite_json_duplicate_keys_and_cross_field_checks": true,
+    "authenticates_references": false,
+    "native_interface_accepted": false
+  },
+  "scope": "ORIGINAL_SYNTHETIC_MATHEMATICS_AND_PROPOSED_CONTRACT_ONLY",
+  "verified_at_utc": "2026-10-09T03:09:21.416872Z",
+  "environment": {
+    "python": "3.13.5 (main, Jul 15 2026, 20:25:40) [GCC 14.2.0]",
+    "implementation": "CPython",
+    "platform": "Linux x86_64",
+    "jsonschema": "4.26.0"
+  },
+  "red_stage": [
+    {
+      "command": "python -m unittest discover -s conformance -p test_oracle.py -v",
+      "exit_code": 1,
+      "executed_test_methods": 60,
+      "record": "evidence/conformance_red.log",
+      "interpretation": "Expected assertions failed against None-returning placeholders; no import-error substitute"
+    },
+    {
+      "command": "python -m unittest discover -s conformance -p test_contract.py -v",
+      "exit_code": 1,
+      "executed_test_methods": 23,
+      "record": "evidence/contract_red.log",
+      "interpretation": "All 23 contract assertions failed against the placeholder"
+    }
+  ],
+  "final_suite": {
+    "unique_tests": 83,
+    "mathematical_and_pit_predicate_tests": 60,
+    "candidate_contract_tests": 23,
+    "runs": [
+      {
+        "pythonhashseed": 1,
+        "command": "PYTHONHASHSEED=1 python -B -m unittest discover -s conformance -v",
+        "exit_code": 0,
+        "tests": 83,
+        "failures": 0,
+        "errors": 0,
+        "log": "evidence/tests_hashseed_1.log"
+      },
+      {
+        "pythonhashseed": 777,
+        "command": "PYTHONHASHSEED=777 python -B -m unittest discover -s conformance -v",
+        "exit_code": 0,
+        "tests": 83,
+        "failures": 0,
+        "errors": 0,
+        "log": "evidence/tests_hashseed_777.log"
+      }
+    ]
+  },
+  "deterministic_reproduction": {
+    "command_template": "PYTHONHASHSEED=<1 or 777> python -B conformance/reproduce.py",
+    "fresh_processes": 2,
+    "byte_identical": true,
+    "sha256": "cce7e5595376fe97d4f30d61d1193452d158ff966e1d57fbd251be0dc4b391bf",
+    "result_files": [
+      "evidence/synthetic_result_hashseed_1.json",
+      "evidence/synthetic_result_hashseed_777.json"
+    ],
+    "scope_limit": "Same current Python/environment and exact local code/policy/schema; not cross-platform byte identity or native data replay"
+  },
+  "proven_behaviors": [
+    "drift versus daily reset",
+    "missing held return withheld and chain gap preserved",
+    "known corporate-action claim arithmetic",
+    "infeasible caps refused",
+    "strict weight and finite-number checks",
+    "exact h-session count",
+    "breadth separate count and weight coverage",
+    "concentration and linked attribution",
+    "downside denominator and fractional-tail definitions",
+    "necessary PIT knowledge/public/effective clocks",
+    "outcome measurement cutoff distinct from selection",
+    "null/status/authority/duplicate-key envelope rejection",
+    "correction identity changes without numeric change"
+  ],
+  "not_proven": [
+    "real rights-cleared basket return history",
+    "native incumbent regression or exact-head tests",
+    "actual PIT/alias/corporate-action historical coverage",
+    "owner receipt authenticity or data-use permission",
+    "independent native review",
+    "CI/merge/deployment",
+    "actual chart/API compatibility",
+    "authenticated production browser acceptance",
+    "LIQN return-method parity"
+  ],
+  "source_register_validation": {
+    "source_files": 24,
+    "public_sources": 9,
+    "known_hash_shapes_valid": true
+  },
+  "remote_modifications": [],
+  "uncertain_modifying_effects": [],
+  "canonical_persistence": "NOT_CANONICALLY_PERSISTED"
+}

@@ -1,0 +1,234 @@
+{
+  "schema": "factor_atlas_read.v0",
+  "contract_status": "PROPOSED",
+  "status": "READY",
+  "reasons": [],
+  "descriptor": {
+    "semantic_ref": "fixture:semantic:house-basket",
+    "cohort_ref": "fixture:cohort:three-names",
+    "factor_class": "house_basket",
+    "relationship": "DIRECT"
+  },
+  "request": {
+    "history_mode": "PIT_AS_KNOWN",
+    "window": {
+      "start": "2026-09-02T20:00:00Z",
+      "end": "2026-09-03T20:00:00Z",
+      "reference_sessions": 1,
+      "alignment": "EXACT"
+    },
+    "measurement_cutoff": "2026-09-04T00:00:00Z",
+    "current_roster_snapshot_ref": null
+  },
+  "series_spec": {
+    "method_ref": "fixture:method:monthly-drift",
+    "measurement_kind": "portfolio_index",
+    "return_kind": "TOTAL",
+    "price_basis": "tradj",
+    "currency": "USD",
+    "calendar_ref": "fixture:calendar:one",
+    "session_ref": "fixture:session:rth",
+    "venue_ref": "fixture:venue:one",
+    "weighting": "equal",
+    "rebalance": "monthly",
+    "between_rebalances": "drift",
+    "dividend_reinvestment": "constituent_total_return",
+    "costs_ref": "fixture:costs:explicit-gross-no-costs",
+    "gross_leverage": 1.0,
+    "base_level": 100.0
+  },
+  "owner_receipt_refs": {
+    "membership": [
+      "fixture:membership:unverified-placeholder"
+    ],
+    "identity": [
+      "fixture:identity:unverified-placeholder"
+    ],
+    "prices": [
+      "fixture:prices:unverified-placeholder"
+    ],
+    "actions": [
+      "fixture:actions:unverified-placeholder"
+    ],
+    "rights": [
+      "fixture:rights:unverified-placeholder"
+    ],
+    "calendar": [
+      "fixture:calendar:unverified-placeholder"
+    ]
+  },
+  "calculation": {
+    "input_manifest_sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+    "result_core_sha256": "2222222222222222222222222222222222222222222222222222222222222222",
+    "code_commit": "0000000000000000000000000000000000000000",
+    "dependency_lock_sha256": "3333333333333333333333333333333333333333333333333333333333333333",
+    "metrics_policy_ref": "fixture:metrics-policy:v0",
+    "revision_ref": "fixture:revision:original",
+    "supersedes_ref": null,
+    "correction_reason": null,
+    "materialized_at": "2026-09-04T00:00:01Z"
+  },
+  "observations": [
+    {
+      "interval_start": "2026-09-02T20:00:00Z",
+      "interval_end": "2026-09-03T20:00:00Z",
+      "selection_cutoff": "2026-09-02T13:00:00Z",
+      "membership_revision_ref": "fixture:membership:one",
+      "return": {
+        "value": 0.05,
+        "unit": "return_fraction",
+        "status": "READY",
+        "reasons": [],
+        "n_observations": 1,
+        "requested_window": {
+          "start": "2026-09-02T20:00:00Z",
+          "end": "2026-09-03T20:00:00Z",
+          "reference_sessions": 1,
+          "alignment": "EXACT"
+        },
+        "actual_window": {
+          "start": "2026-09-02T20:00:00Z",
+          "end": "2026-09-03T20:00:00Z",
+          "reference_sessions": 1,
+          "alignment": "EXACT"
+        },
+        "coverage": {
+          "eligible_count": 3,
+          "observed_count": 3,
+          "count_fraction": 1.0,
+          "weight_fraction": 1.0
+        },
+        "method_ref": "fixture:method:monthly-drift",
+        "source_refs": [
+          "fixture:price:one"
+        ]
+      },
+      "index_level": {
+        "value": 105.0,
+        "unit": "index_level",
+        "status": "READY",
+        "reasons": [],
+        "n_observations": 1,
+        "requested_window": {
+          "start": "2026-09-02T20:00:00Z",
+          "end": "2026-09-03T20:00:00Z",
+          "reference_sessions": 1,
+          "alignment": "EXACT"
+        },
+        "actual_window": {
+          "start": "2026-09-02T20:00:00Z",
+          "end": "2026-09-03T20:00:00Z",
+          "reference_sessions": 1,
+          "alignment": "EXACT"
+        },
+        "coverage": {
+          "eligible_count": 3,
+          "observed_count": 3,
+          "count_fraction": 1.0,
+          "weight_fraction": 1.0
+        },
+        "method_ref": "fixture:method:monthly-drift",
+        "source_refs": [
+          "fixture:price:one"
+        ]
+      }
+    }
+  ],
+  "metrics": {
+    "advance_breadth": {
+      "value": 0.6666666666666666,
+      "unit": "fraction",
+      "status": "READY",
+      "reasons": [],
+      "n_observations": 1,
+      "requested_window": {
+        "start": "2026-09-02T20:00:00Z",
+        "end": "2026-09-03T20:00:00Z",
+        "reference_sessions": 1,
+        "alignment": "EXACT"
+      },
+      "actual_window": {
+        "start": "2026-09-02T20:00:00Z",
+        "end": "2026-09-03T20:00:00Z",
+        "reference_sessions": 1,
+        "alignment": "EXACT"
+      },
+      "coverage": {
+        "eligible_count": 3,
+        "observed_count": 3,
+        "count_fraction": 1.0,
+        "weight_fraction": 1.0
+      },
+      "method_ref": "fixture:method:monthly-drift",
+      "source_refs": [
+        "fixture:price:one"
+      ]
+    },
+    "hhi": {
+      "value": 0.3333333333333333,
+      "unit": "fraction",
+      "status": "READY",
+      "reasons": [],
+      "n_observations": 1,
+      "requested_window": {
+        "start": "2026-09-02T20:00:00Z",
+        "end": "2026-09-03T20:00:00Z",
+        "reference_sessions": 1,
+        "alignment": "EXACT"
+      },
+      "actual_window": {
+        "start": "2026-09-02T20:00:00Z",
+        "end": "2026-09-03T20:00:00Z",
+        "reference_sessions": 1,
+        "alignment": "EXACT"
+      },
+      "coverage": {
+        "eligible_count": 3,
+        "observed_count": 3,
+        "count_fraction": 1.0,
+        "weight_fraction": 1.0
+      },
+      "method_ref": "fixture:method:monthly-drift",
+      "source_refs": [
+        "fixture:price:one"
+      ]
+    },
+    "effective_number": {
+      "value": 3.0,
+      "unit": "effective_count",
+      "status": "READY",
+      "reasons": [],
+      "n_observations": 1,
+      "requested_window": {
+        "start": "2026-09-02T20:00:00Z",
+        "end": "2026-09-03T20:00:00Z",
+        "reference_sessions": 1,
+        "alignment": "EXACT"
+      },
+      "actual_window": {
+        "start": "2026-09-02T20:00:00Z",
+        "end": "2026-09-03T20:00:00Z",
+        "reference_sessions": 1,
+        "alignment": "EXACT"
+      },
+      "coverage": {
+        "eligible_count": 3,
+        "observed_count": 3,
+        "count_fraction": 1.0,
+        "weight_fraction": 1.0
+      },
+      "method_ref": "fixture:method:monthly-drift",
+      "source_refs": [
+        "fixture:price:one"
+      ]
+    }
+  },
+  "authority": {
+    "may_rank": false,
+    "may_gate": false,
+    "may_size": false,
+    "may_escalate": false,
+    "may_write_portfolio": false,
+    "may_write_theme_state": false
+  }
+}

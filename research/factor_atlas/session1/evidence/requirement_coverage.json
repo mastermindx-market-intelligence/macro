@@ -1,0 +1,77 @@
+{
+  "schema": "factor_atlas_session1_requirement_coverage.v0",
+  "role": "commission_delivery_evidence_not_a_lifecycle_or_authority_record",
+  "requirements": [
+    {
+      "id": "A",
+      "requirement": "Complete factor classes and semantic/cohort/series/owner rules",
+      "state": "RESEARCH_SPECIFIED",
+      "artifact": "01_FACTOR_MODEL_AND_PIT_RESEARCH.md#4"
+    },
+    {
+      "id": "B",
+      "requirement": "Return mathematics and action/basis/missingness/financing conventions",
+      "state": "RESEARCH_SPECIFIED_AND_SYNTHETICALLY_CHECKED",
+      "artifact": "01_FACTOR_MODEL_AND_PIT_RESEARCH.md#5",
+      "limit": "No real source history or cost model qualified"
+    },
+    {
+      "id": "C",
+      "requirement": "Analytics, seasonality, multi-horizon and attribution catalogue",
+      "state": "RESEARCH_SPECIFIED",
+      "artifact": "contracts/metrics_policy.v0.json",
+      "limit": "Not a built native analytics suite"
+    },
+    {
+      "id": "D",
+      "requirement": "PIT availability and correction science",
+      "state": "RESEARCH_SPECIFIED_AND_NECESSARY_CONDITIONS_CHECKED",
+      "artifact": "01_FACTOR_MODEL_AND_PIT_RESEARCH.md#6",
+      "limit": "Actual complete historical collection/identity coverage not measured"
+    },
+    {
+      "id": "E",
+      "requirement": "Metric admission minimums and null behavior",
+      "state": "CANDIDATE_POLICY_AND_CONTRACT_CHECKED",
+      "artifact": "contracts/factor_read_model.v0.schema.json",
+      "limit": "Proposed defaults, not owner-approved or empirically optimized"
+    },
+    {
+      "id": "CENSUS",
+      "requirement": "Current implementation/tests/branches/publication reconciliation",
+      "state": "PARTIAL_SOURCE_BOUND_CENSUS",
+      "artifact": "evidence/source_register.json",
+      "limit": "Targeted reads; current affected heads/custody, full PIT parquet/identity census and served coverage unresolved"
+    },
+    {
+      "id": "LIQN",
+      "requirement": "Historical/ranking/composition/heatmap/comparison/spread reverse engineering",
+      "state": "PUBLIC_EVIDENCE_LIMITED",
+      "artifact": "03_LIQN_EVIDENCE_AND_COMPARISON.md",
+      "limit": "Only first-party landing metadata/sign-in verified; no numeric method parity study"
+    },
+    {
+      "id": "PILOT",
+      "requirement": "Native rights-cleared read-only pilot on separate branch/PR",
+      "state": "NOT_STARTED_GATED",
+      "artifact": "02_IMPLEMENTATION_HANDOFF.md",
+      "limit": "Procedure/custody/data rights/action and interface gates"
+    },
+    {
+      "id": "HANDOFF",
+      "requirement": "Executable handoff when implementation blocked",
+      "state": "DELIVERED_AS_CONVERSATION_ARTIFACT",
+      "artifact": "02_IMPLEMENTATION_HANDOFF.md",
+      "limit": "NOT_CANONICALLY_PERSISTED; no accepted owner carrier or independent review"
+    },
+    {
+      "id": "CONSUMER",
+      "requirement": "Actual accepted consumer/browser compatibility",
+      "state": "NOT_PROVEN",
+      "artifact": "02_IMPLEMENTATION_HANDOFF.md",
+      "limit": "No Atlas gateway feed at pinned source; no native type/browser proof"
+    }
+  ],
+  "production_acceptance_score": null,
+  "production_acceptance_reason": "No production score awarded from research or fixture evidence"
+}
