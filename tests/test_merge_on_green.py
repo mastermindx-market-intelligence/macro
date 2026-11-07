@@ -815,8 +815,13 @@ def _fake_api(
     annotations=None,
     hold_comments=None,
     hold_comments_status=200,
+    live_labels=None,
 ):
     """Route every `_request` call by method+URL and record what was sent.
+
+    `live_labels` maps a pull number to the label tuple its live re-read carries
+    (default: `merge-on-green` only), so a test can make the authorized payload
+    agree — or deliberately disagree — with the listing the sweep ordered on.
 
     `update_status` defaults to 422 — GitHub's "I cannot fast-forward this"
     answer — so a test that does not opt in keeps the old behaviour: a refused
@@ -998,7 +1003,7 @@ def _fake_api(
             if pull_status >= 400:
                 return pull_status, None
             number = int(url.rstrip("/").rsplit("/", 1)[1])
-            live = _pull(number)
+            live = _pull(number, labels=(live_labels or {}).get(number, ("merge-on-green",)))
             live.update({"state": "open", "draft": False, "merged": False})
             live.update(dict(pull_payload or {}))
             return pull_status, live
@@ -9075,6 +9080,382 @@ def test_a_stale_proof_refresh_also_draws_on_the_capped_slots(monkeypatch, capsy
     assert not [c for c in calls if c[0] == "POST" and c[1].endswith("/labels")], (
         "a stale proof with no slot left must not be blamed for a conflict"
     )
+
+
+# ── S8 (2026-11-06): the breaker must not deadlock its own repair through the cap ──
+#
+# Observed live 2026-11-06 01:44Z (sweeps 42145276056 / 42145126686): main was red
+# on one copy-law atom; its labelled repair #10759 was green and approved but its
+# proof had gone stale because an unrelated manifest edit landed on main. The
+# repo-wide census found 17 in-flight pull-request ci.yml runs against the flat cap
+# of 8, so the sweep had "0/0 effective CI workload slot(s)" and deferred the repair
+# — while the runs holding those slots were refreshes of older armed pulls that
+# could not merge until the repair did. Nothing could move. The reserve below is
+# the bounded escape: one update-branch per sweep for the labelled repair, only
+# while the baseline is red, still inside serialized authority and the attempt cap.
+
+# One clean proof run whose pull-request associations name every pull these tests
+# sweep, so `exact_proof_base` resolves each one (the fixture default names 4242 only).
+_S8_CLEAN_RUN = _run("ci-pack-1", conclusion="success", pr_numbers=(7195, 10759, 10760))
+_STALE_MAIN = (("2026-08-05T13:00:00Z", ["engine/signal_quality.py"]),)  # ci-trigger-closure: data — fixture changed-file name, never opened
+
+
+def _red_main_budget(max_refreshes=0):
+    budget = MOG.SweepBudget("read", max_refreshes=max_refreshes)
+    budget.refresh_authorized = True
+    budget.repair_reserve_authorized = True
+    return budget
+
+
+_S8_REPAIR_LABELS = ("merge-on-green", MOG.MAIN_RED_REPAIR_LABEL)
+# The live authorized read must carry the repair label too: the reserve reads the
+# label from that payload only (a stale listing label buys nothing).
+_S8_LIVE_LABELS = {10759: _S8_REPAIR_LABELS, 10760: _S8_REPAIR_LABELS}
+
+
+def _repair_pull(number=10759):
+    return _pull(number, labels=_S8_REPAIR_LABELS)
+
+
+def _sweep_stale(pull, budget):
+    return MOG.sweep_pull(
+        "acme/widgets",
+        pull,
+        "read",
+        "write",
+        _freshness(commits=_STALE_MAIN),
+        _proof(),
+        budget,
+    )
+
+
+def test_the_main_red_repair_takes_the_reserved_refresh_when_workload_slots_are_spent(
+    monkeypatch, capsys
+):
+    """At 0/0 ordinary slots under a red baseline, the labelled repair gets exactly
+    one update-branch; an ordinary stale pull before it and a second labelled repair
+    after it are both deferred exactly as before."""
+    pages = {1: {"total_count": 1, "check_runs": [_S8_CLEAN_RUN]}}
+    calls = _fake_api(
+        monkeypatch,
+        check_pages=pages,
+        update_status=202,
+        main_commits=_STALE_MAIN,
+        live_labels=_S8_LIVE_LABELS,
+    )
+    budget = _red_main_budget()
+    verdicts = [
+        _sweep_stale(pull, budget)
+        for pull in (_pull(7195), _repair_pull(10759), _repair_pull(10760))
+    ]
+    assert verdicts == ["refresh-deferred", "re-proving", "refresh-deferred"]
+    updated = [c for c in calls if c[1].endswith("/update-branch")]
+    assert len(updated) == 1 and "/pulls/10759/" in updated[0][1]
+    assert (budget.refreshes_used, budget.repair_reserve_used, budget.refresh_attempts_used) == (0, 1, 1)
+    out = capsys.readouterr().out
+    assert "using the reserved repair refresh (1/1 this sweep)" in out
+    assert "PR #7195: " in out and "0/0 effective CI workload slot(s)" in out
+
+
+def test_the_reserved_repair_refresh_exists_only_while_the_baseline_is_red(monkeypatch):
+    """Under a green or pending baseline the repair label buys no extra workload:
+    the sweep leaves ``repair_reserve_authorized`` False and the old cap holds."""
+    pages = {1: {"total_count": 1, "check_runs": [_S8_CLEAN_RUN]}}
+    calls = _fake_api(
+        monkeypatch,
+        check_pages=pages,
+        update_status=202,
+        main_commits=_STALE_MAIN,
+        live_labels=_S8_LIVE_LABELS,
+    )
+    budget = _red_main_budget()
+    budget.repair_reserve_authorized = False
+    assert _sweep_stale(_repair_pull(), budget) == "refresh-deferred"
+    assert not [c for c in calls if c[1].endswith("/update-branch")]
+    assert budget.repair_reserve_used == 0
+
+
+def test_the_reserved_repair_refresh_still_needs_serialized_authority_and_attempts(
+    monkeypatch,
+):
+    """The reserve widens the workload cap by one; it never bypasses the serialized
+    refresh authority or the never-refunded attempt counter."""
+    pages = {1: {"total_count": 1, "check_runs": [_S8_CLEAN_RUN]}}
+    calls = _fake_api(
+        monkeypatch,
+        check_pages=pages,
+        update_status=202,
+        main_commits=_STALE_MAIN,
+        live_labels=_S8_LIVE_LABELS,
+    )
+    unauthorized = _red_main_budget()
+    unauthorized.refresh_authorized = False
+    assert _sweep_stale(_repair_pull(), unauthorized) == "refresh-deferred"
+    exhausted = _red_main_budget()
+    exhausted.refresh_attempts_used = exhausted.max_refresh_attempts
+    assert _sweep_stale(_repair_pull(), exhausted) == "refresh-deferred"
+    assert not [c for c in calls if c[1].endswith("/update-branch")]
+    assert unauthorized.repair_reserve_used == exhausted.repair_reserve_used == 0
+
+
+def test_a_definitive_conflict_on_the_repair_refunds_the_reserve_not_an_ordinary_slot(
+    monkeypatch,
+):
+    """A refund after GitHub proves the write created no run must return the slot
+    that was taken — the reserve — and never manufacture an ordinary one."""
+    pages = {1: {"total_count": 1, "check_runs": [_S8_CLEAN_RUN]}}
+    _fake_api(
+        monkeypatch,
+        check_pages=pages,
+        update_status=422,
+        main_commits=_STALE_MAIN,
+        live_labels=_S8_LIVE_LABELS,
+    )
+    budget = _red_main_budget()
+    _sweep_stale(_repair_pull(), budget)
+    assert (budget.refreshes_used, budget.repair_reserve_used, budget.refresh_attempts_used) == (0, 0, 1)
+    # The reserve is whole again: a second labelled repair in the same sweep may use it.
+    assert budget.repair_reserve_available(True)
+
+
+def test_a_stale_listing_label_does_not_grant_the_reserve_once_the_live_pull_dropped_it(
+    monkeypatch,
+):
+    """The listing the sweep ordered on still says `main-red-repair`; the fresh
+    authorized read no longer does. The label was removed in between, so the pull is
+    an ordinary one for the reserve: deferred at 0/0, no update-branch written."""
+    pages = {1: {"total_count": 1, "check_runs": [_S8_CLEAN_RUN]}}
+    calls = _fake_api(
+        monkeypatch, check_pages=pages, update_status=202, main_commits=_STALE_MAIN
+    )  # no live_labels: the live payload carries merge-on-green only
+    budget = _red_main_budget()
+    assert _sweep_stale(_repair_pull(), budget) == "refresh-deferred"
+    assert not [c for c in calls if c[1].endswith("/update-branch")]
+    assert budget.repair_reserve_used == 0 and budget.repair_reserve_available(True)
+
+
+def test_a_foreign_refresh_lease_in_the_single_slot_band_falls_back_to_the_reserve(
+    monkeypatch, capsys
+):
+    """With exactly one census slot the durable lease is required. Another pull
+    owns it, so the ordinary path cannot claim; under a red baseline the labelled
+    repair still gets its one refresh through the reserve instead of waiting a full
+    CI run for the lease to drain — the same deadlock, one slot higher."""
+    pages = {1: {"total_count": 1, "check_runs": [_S8_CLEAN_RUN]}}
+    calls = _fake_api(
+        monkeypatch,
+        check_pages=pages,
+        update_status=202,
+        main_commits=_STALE_MAIN,
+        live_labels=_S8_LIVE_LABELS,
+    )
+    budget = _red_main_budget(max_refreshes=1)
+    budget.requires_refresh_lease = True
+    lease = MOG.RefreshLease(
+        "acme/widgets", "read", "write",
+        owner_number=7195,
+        owner_updated_at=dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        generation_head_sha="a" * 40,
+        generation_id="b" * 32,
+    )
+    # A foreign association alone is not reliable proof: the generation
+    # register must still bind the observed owner before the repair can bypass it.
+    monkeypatch.setattr(lease, "record_is_current", lambda: True)
+    budget.refresh_lease = lease
+    assert _sweep_stale(_repair_pull(), budget) == "re-proving"
+    updated = [c for c in calls if c[1].endswith("/update-branch")]
+    assert len(updated) == 1 and "/pulls/10759/" in updated[0][1]
+    assert (budget.refreshes_used, budget.repair_reserve_used, budget.refresh_attempts_used) == (0, 1, 1)
+    assert budget.last_take_used_reserve
+    assert "using the reserved repair refresh (1/1 this sweep)" in capsys.readouterr().out
+    # An ordinary pull behind the same foreign lease is still deferred: the fallback
+    # is for the labelled repair only.
+    assert budget.take_refresh(_pull(7300), repair_candidate=False) is False
+    assert budget.refreshes_used == 0
+
+
+@pytest.mark.parametrize("failure_stage", ["generation-write", "label-readback"])
+def test_s8_ambiguous_lease_claim_never_grants_a_second_refresh(
+    monkeypatch, failure_stage
+):
+    """A failed generation/label write may already have happened on GitHub.
+    The red-baseline reserve must NOT hide that uncertainty with update-branch."""
+    pages = {1: {"total_count": 1, "check_runs": [_S8_CLEAN_RUN]}}
+    calls = _fake_api(
+        monkeypatch, check_pages=pages, update_status=202,
+        main_commits=_STALE_MAIN, live_labels=_S8_LIVE_LABELS,
+    )
+    budget = _red_main_budget(max_refreshes=1)
+    budget.requires_refresh_lease = True
+    lease = MOG.RefreshLease("acme/widgets", "read", "write")
+    if failure_stage == "generation-write":
+        # The real claim sets claim_attempted BEFORE writing the generation.
+        # False could follow a successful write with a lost response/readback.
+        monkeypatch.setattr(lease, "_write_generation_record", lambda *_a: False)
+    else:
+        # Generation write may have succeeded; a lost label response plus a
+        # negative direct readback still leaves the effect unsettled.
+        monkeypatch.setattr(lease, "_write_generation_record", lambda *_a: True)
+        monkeypatch.setattr(lease, "_issue_has_claim_labels", lambda *_a: False)
+    budget.refresh_lease = lease
+    assert _sweep_stale(_repair_pull(), budget) == "refresh-deferred"
+    assert lease.claim_attempted
+    assert not [call for call in calls if call[1].endswith("/update-branch")]
+    assert (budget.refreshes_used, budget.repair_reserve_used, budget.refresh_attempts_used) == (0, 0, 0)
+    assert not budget.repair_reserve_available(True, _repair_pull())
+
+
+def test_s8_claim_ambiguity_also_blocks_zero_slot_reserve_without_a_new_claim():
+    """No fresh write is authorized by falling into the 0/0 reserve path after
+    an earlier ambiguous lease attempt in this same serialized sweep."""
+    budget = _red_main_budget(max_refreshes=0)
+    lease = MOG.RefreshLease("acme/widgets", "read", "write")
+    lease.claim_attempted = True
+    budget.refresh_lease = lease
+    assert budget.take_refresh(_repair_pull(), repair_candidate=True) is False
+    assert budget.repair_reserve_used == budget.refresh_attempts_used == 0
+
+
+def test_s8_zero_slot_reserve_fires_with_the_prepared_clean_lease_main_always_passes(
+    monkeypatch,
+):
+    """``main()`` always hands the budget a ``RefreshLease`` (never ``None``). The
+    0/0 reserve must still fire for the labelled repair when that lease is readable,
+    unowned and unclaimed; otherwise S8 would be dead in production while the
+    ``lease=None`` unit tests stayed green (round-3 review, M9)."""
+    pages = {1: {"total_count": 1, "check_runs": [_S8_CLEAN_RUN]}}
+    calls = _fake_api(
+        monkeypatch, check_pages=pages, update_status=202,
+        main_commits=_STALE_MAIN, live_labels=_S8_LIVE_LABELS,
+    )
+    budget = _red_main_budget(max_refreshes=0)
+    lease = MOG.RefreshLease("acme/widgets", "read", "write")
+    budget.refresh_lease = lease
+    assert budget.repair_reserve_available(True, _repair_pull())
+    assert _sweep_stale(_repair_pull(), budget) == "re-proving"
+    updated = [c for c in calls if c[1].endswith("/update-branch")]
+    assert len(updated) == 1 and "/pulls/10759/" in updated[0][1]
+    # The reserve never writes the lease: no generation, no label, no claim.
+    assert not lease.claim_attempted
+    assert (budget.refreshes_used, budget.repair_reserve_used, budget.refresh_attempts_used) == (0, 1, 1)
+    # One reserve per sweep: a second labelled repair is deferred.
+    assert budget.take_refresh(_repair_pull(10760), repair_candidate=True) is False
+    assert budget.repair_reserve_used == 1
+
+
+def test_s8_unreadable_lease_denies_the_zero_slot_reserve_even_when_authorized():
+    """``main()`` already withholds authorization behind an unreadable lease; the
+    budget must refuse on its own too, so an out-of-band caller that authorizes
+    the reserve cannot write past a register it could not read (round-3, M3)."""
+    budget = _red_main_budget(max_refreshes=0)
+    budget.refresh_lease = MOG.RefreshLease("acme/widgets", "read", "write", readable=False)
+    assert not budget.repair_reserve_available(True, _repair_pull())
+    assert budget.take_refresh(_repair_pull(), repair_candidate=True) is False
+    assert budget.repair_reserve_used == budget.refresh_attempts_used == 0
+    assert not budget.last_take_used_reserve
+
+
+def test_s8_a_declined_claim_on_a_free_lease_never_falls_through_to_the_reserve(
+    monkeypatch,
+):
+    """Single-slot band, free lease, and ``claim()`` declines before any write
+    (here: this repair's generation was already released earlier in the same
+    sweep, i.e. it already had its one update). The pull is deferred; the reserve,
+    although itself still available, is not handed out as a second attempt for a
+    pull the lease just refused (round-3, M1)."""
+    pages = {1: {"total_count": 1, "check_runs": [_S8_CLEAN_RUN]}}
+    calls = _fake_api(
+        monkeypatch, check_pages=pages, update_status=202,
+        main_commits=_STALE_MAIN, live_labels=_S8_LIVE_LABELS,
+    )
+    budget = _red_main_budget(max_refreshes=1)
+    budget.requires_refresh_lease = True
+    lease = MOG.RefreshLease("acme/widgets", "read", "write")
+    lease.released_numbers.add(10759)
+    budget.refresh_lease = lease
+    assert budget.repair_reserve_available(True, _repair_pull())
+    assert _sweep_stale(_repair_pull(), budget) == "refresh-deferred"
+    assert not lease.claim_attempted
+    assert not [c for c in calls if c[1].endswith("/update-branch")]
+    assert (budget.refreshes_used, budget.repair_reserve_used, budget.refresh_attempts_used) == (0, 0, 0)
+    assert not budget.last_take_used_reserve
+
+
+@pytest.mark.parametrize("stale", ["missing-generation", "changed-generation", "expired-owner"])
+def test_s8_foreign_owner_requires_current_generation_before_reserved_refresh(
+    monkeypatch, stale
+):
+    """A listed foreign owner is not an authenticated authorization shortcut."""
+    pages = {1: {"total_count": 1, "check_runs": [_S8_CLEAN_RUN]}}
+    calls = _fake_api(
+        monkeypatch, check_pages=pages, update_status=202,
+        main_commits=_STALE_MAIN, live_labels=_S8_LIVE_LABELS,
+    )
+    budget = _red_main_budget(max_refreshes=1)
+    budget.requires_refresh_lease = True
+    lease = MOG.RefreshLease(
+        "acme/widgets", "read", "write", owner_number=7195,
+        owner_updated_at=(
+            "2020-01-01T00:00:00Z" if stale == "expired-owner"
+            else dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+        ),
+        generation_head_sha=("" if stale == "missing-generation" else "a" * 40),
+        generation_id=("" if stale == "missing-generation" else "b" * 32),
+    )
+    monkeypatch.setattr(lease, "record_is_current", lambda: stale != "changed-generation")
+    budget.refresh_lease = lease
+    assert _sweep_stale(_repair_pull(), budget) == "refresh-deferred"
+    assert not lease.claim_attempted
+    assert not [call for call in calls if call[1].endswith("/update-branch")]
+    assert budget.repair_reserve_used == budget.refresh_attempts_used == 0
+
+
+@pytest.mark.parametrize(
+    ("baseline", "census", "lease_readable", "expected"),
+    [
+        ("red", 17, True, True),
+        ("green", 17, True, False),
+        ("pending", 17, True, False),
+        ("red", None, True, False),  # census unreadable: zero NEW workload, repair included
+        ("red", 17, False, False),  # lease unreadable: same
+    ],
+)
+def test_the_sweep_authorizes_the_reserve_only_for_a_red_baseline_with_a_readable_census(
+    monkeypatch, baseline, census, lease_readable, expected
+):
+    """The one line that wires the reserve to the baseline, exercised through
+    ``main()``: red + readable census -> authorized; anything else -> not."""
+    monkeypatch.setenv("GH_REPO", "acme/widgets")
+    monkeypatch.setenv("READ_TOKEN", "read")
+    monkeypatch.setenv("MERGE_TOKEN", "write")
+    monkeypatch.setattr(MOG, "labeled_pulls", lambda *_a: [_repair_pull()])
+    monkeypatch.setattr(MOG, "integration_baseline_state", lambda *_a: (baseline, "run"))
+    monkeypatch.setattr(MOG.ProofFreshness, "build", classmethod(lambda *_a, **_k: _freshness()))
+    monkeypatch.setattr(MOG, "serialized_refresh_authority", lambda *_a, **_k: True)
+    monkeypatch.setattr(
+        MOG,
+        "prepare_refresh_lease",
+        lambda repo, read, write, pulls: (
+            MOG.RefreshLease(repo, read, write, readable=lease_readable),
+            pulls,
+        ),
+    )
+
+    def in_flight(*_a):
+        if census is None:
+            raise RuntimeError("census API down")
+        return census
+
+    monkeypatch.setattr(MOG, "in_flight_pr_proofs", in_flight)
+    seen: list[bool] = []
+
+    def record(_repo, _pull, _read, _write, _freshness, _proof, budget, *_a, **_k):
+        seen.append(budget.repair_reserve_authorized)
+        return "refresh-deferred"
+
+    monkeypatch.setattr(MOG, "sweep_pull", record)
+    MOG.main()
+    assert seen == [expected], (baseline, census, lease_readable, seen)
 
 
 def test_update_branch_is_fail_closed_when_no_serialized_budget_is_passed(

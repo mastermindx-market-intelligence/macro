@@ -46,6 +46,12 @@ looks at PRs. Pending, red, missing, or non-ancestral baseline evidence pauses
 ordinary merges. Exactly one explicitly labelled `main-red-repair` PR may be
 considered per sweep, and it still needs every one of its own checks green. That
 is the escape hatch which prevents a circuit breaker from deadlocking its repair.
+Its refresh is reserved the same way (S8, 2026-11-06): while the baseline is red
+and the workload census was actually read, at most one EXTRA CI run per sweep is
+admitted for that labelled repair even when the census leaves no ordinary slot,
+because the runs holding those slots belong to pulls that cannot merge until the
+repair does. (A definitive no-op refunds the reserve, so the bound is +1 workload,
+not literally one write.)
 
 TOKENS. Reads use `READ_TOKEN` (in Actions the job's own `GITHUB_TOKEN`, whose
 per-repository quota is separate from the shared account pool that
@@ -407,6 +413,21 @@ MAX_IN_FLIGHT_PR_PROOFS = 8
 # a negative allowance back to eight.  That directly defeated the repo-wide circuit
 # breaker and re-created the CI stampede it was meant to stop.
 HIGH_LOAD_LEASE_THRESHOLD = 1
+#: S8 (2026-11-06): one extra CI run per sweep reserved for the tier-0
+#: `main-red-repair` candidate while the integration baseline is red and the
+#: workload census was readable, admitted even when that census leaves zero
+#: ordinary slots (a definitive no-op refunds it; the bound is +1 workload). Observed
+#: live 2026-11-06 01:44Z (sweeps 42145276056 / 42145126686): 17 in-flight
+#: pull-request ci.yml runs against the flat cap of 8 left "0/0 effective CI
+#: workload slot(s)", so the one pull request that repairs main's red atom
+#: (#10759: green, approved, stale only because an unrelated manifest edit had
+#: landed on main) could not be refreshed, every ordinary pull stayed
+#: baseline-blocked behind it, and the refreshes holding those 17 slots belonged
+#: to older armed pulls that cannot merge until the repair does. The breaker had
+#: deadlocked its own repair through the workload cap. One reserved slot bounds
+#: the extra load at +1 run per sweep, only while main is red, for one labelled
+#: pull; `repair_slot_used` still admits a single repair candidate per pass.
+REPAIR_REFRESH_RESERVE = 1
 ACTIVE_PR_PROOF_STATUSES = ("queued", "in_progress", "pending", "requested", "waiting")
 # Adaptive headroom ABOVE the flat cap, never a flat raise.  The flat 8 was sized
 # against a pool pinned at 180/180 on 2026-08-11; the repository now sits on the
@@ -4241,6 +4262,7 @@ class SweepBudget:
         recheck_every: int = BUDGET_RECHECK_EVERY,
         max_refreshes: int = MAX_REFRESHES_PER_SWEEP,
         max_refresh_attempts: int = MAX_REFRESHES_PER_SWEEP,
+        repair_reserve: int = REPAIR_REFRESH_RESERVE,
     ) -> None:
         self.token = token
         self.floor = floor
@@ -4251,6 +4273,13 @@ class SweepBudget:
         self.max_refresh_attempts = max_refresh_attempts
         self.refreshes_used = 0
         self.refresh_attempts_used = 0
+        # S8: the reserved repair refresh (see REPAIR_REFRESH_RESERVE). The sweep
+        # authorizes it from the integration-baseline verdict; it is never on by
+        # default so an out-of-band caller cannot widen the cap.
+        self.repair_reserve = max(0, int(repair_reserve))
+        self.repair_reserve_used = 0
+        self.repair_reserve_authorized = False
+        self.last_take_used_reserve = False
         self.refresh_context = ""
         self.refresh_lease: RefreshLease | None = None
         self.requires_refresh_lease = False
@@ -4317,7 +4346,9 @@ class SweepBudget:
             )
         return True, ""
 
-    def take_refresh(self, pull: dict[str, Any] | None = None) -> bool:
+    def take_refresh(
+        self, pull: dict[str, Any] | None = None, *, repair_candidate: bool = False
+    ) -> bool:
         """Reserve one workload slot and one bounded `update-branch` attempt.
 
         The workload slot is refundable when GitHub affirmatively proves that the
@@ -4325,24 +4356,103 @@ class SweepBudget:
         attempt counter is never refunded, so a sweep still cannot hammer an
         arbitrary number of conflicting heads. At saturation, the durable lease must
         be affirmed before either counter is consumed or a write is sent.
+
+        S8 (2026-11-06): when the ordinary workload slots are spent — including
+        the ``0/0`` a saturated repo-wide census leaves — the labelled
+        ``main-red-repair`` pull (``repair_candidate``, the label the sweep ordered
+        tier 0 on) may still take the single reserved slot, but only
+        while the sweep established a red integration baseline
+        (``repair_reserve_authorized``), at most ``repair_reserve`` times per sweep,
+        and still inside ``refresh_authorized`` and the bounded attempt budget. The
+        reserve does not claim the durable lease: it is at most one extra CI run per
+        sweep for one labelled pull (a definitive no-op refunds it), and the sweep
+        itself is serialized by refresh authority. In the single-slot band the
+        reserve is reached only when another pull holds the durable lease, and
+        then only after ``repair_reserve_available`` authenticates that owner: a
+        complete generation record, younger than the lease max age, that the
+        register still affirms on a fresh read. A free lease is claimed, never
+        bypassed: a claim that declines or fails (possibly EFFECT_UNKNOWN) defers
+        the pull for this sweep instead of falling through to the reserve.
         """
+        self.last_take_used_reserve = False
         if (
             not self.refresh_authorized
-            or self.refreshes_used >= self.max_refreshes
             or self.refresh_attempts_used >= self.max_refresh_attempts
         ):
             return False
+        if self.refreshes_used >= self.max_refreshes:
+            return self._take_repair_reserve(repair_candidate, pull)
         if self.requires_refresh_lease:
-            if pull is None or self.refresh_lease is None:
+            lease = self.refresh_lease
+            if pull is None or lease is None:
                 return False
-            if not self.refresh_lease.claim(pull):
+            if lease.owner_number is not None and not lease.owns(pull):
+                # A known, still-current foreign owner cannot be claimed. The
+                # reserved repair may coexist only after authenticating that
+                # pre-existing generation without issuing a lease write.
+                return self._take_repair_reserve(repair_candidate, pull)
+            if not lease.claim(pull):
+                # claim() sets claim_attempted before any generation/label write.
+                # A false result may be EFFECT_UNKNOWN: never turn it into an
+                # independent reserved update-branch without reconciliation.
                 return False
         self.refreshes_used += 1
         self.refresh_attempts_used += 1
         return True
 
+    def _take_repair_reserve(
+        self, repair_candidate: bool, pull: dict[str, Any] | None = None
+    ) -> bool:
+        if not self.repair_reserve_available(repair_candidate, pull):
+            return False
+        self.repair_reserve_used += 1
+        self.refresh_attempts_used += 1
+        self.last_take_used_reserve = True
+        return True
+
+    def repair_reserve_available(
+        self, repair_candidate: bool, pull: dict[str, Any] | None = None
+    ) -> bool:
+        """The red-baseline repair gets one reserve only without an uncertain
+        lease effect. A foreign owner must have a complete, current generation;
+        any lease claim attempted this sweep (failed, ambiguous or successful, by
+        any pull), same-owner reuse or an unreadable record never qualifies."""
+        if not (
+            repair_candidate
+            and self.repair_reserve_authorized
+            and self.repair_reserve_used < self.repair_reserve
+        ):
+            return False
+        lease = self.refresh_lease
+        if lease is None:
+            return True
+        if not lease.readable or lease.claim_attempted:
+            return False
+        if lease.owner_number is None:
+            # A clean, unclaimed lease has no generation to compete with the
+            # capped repair. Partial/ambiguous ownership fails closed.
+            return not (
+                lease.generation_head_sha or lease.generation_id or lease.owner_acquired_at
+            )
+        if (
+            pull is None
+            or lease.owns(pull)
+            or lease.generation_record is None
+            or lease.owner_exceeded_max_age()
+        ):
+            return False
+        try:
+            return lease.record_is_current()
+        except Exception:
+            # A failing read is not evidence that the foreign owner disappeared.
+            return False
+
     def refund_refresh(self) -> None:
         """Return workload capacity after a definitive no-op; keep attempt charged."""
+        if self.last_take_used_reserve:
+            if self.repair_reserve_used > 0:
+                self.repair_reserve_used -= 1
+            return
         if self.refreshes_used > 0:
             self.refreshes_used -= 1
 
@@ -6879,9 +6989,24 @@ def attempt_update_branch(
             "refresh — no update-branch write attempted, no refresh budget spent.",
         )
         return "declined"
-    if not budget.take_refresh(live):
+    # The repair label is read from the fresh authorized payload only: it is the
+    # same read that already decides the arm label, and a label present in the
+    # older listing but gone from the live pull was removed in between — the
+    # reserve must not honor a label the pull no longer carries.
+    repair_candidate = MAIN_RED_REPAIR_LABEL in label_names(live)
+    if not budget.take_refresh(live, repair_candidate=repair_candidate):
         return refresh_deferred(pull.get("number"), why, budget)
-    if budget.requires_refresh_lease:
+    if budget.last_take_used_reserve:
+        _annotate(
+            "notice",
+            "merge-on-green",
+            f"PR #{pull.get('number')}: ordinary CI workload slots are spent "
+            f"({budget.refreshes_used}/{budget.max_refreshes}), but this is the "
+            f"`{MAIN_RED_REPAIR_LABEL}` candidate under a red integration baseline; "
+            f"using the reserved repair refresh ({budget.repair_reserve_used}/"
+            f"{budget.repair_reserve} this sweep).",
+        )
+    if budget.requires_refresh_lease and not budget.last_take_used_reserve:
         live, disposition = live_authorized_pull(
             repo, live, token, require_refresh_lease=True
         )
@@ -8553,6 +8678,17 @@ def main() -> int:
             f"Could not establish integration-baseline state: {exc}; no PRs swept.",
         )
         return 1
+
+    # S8 (2026-11-06): the reserved repair refresh exists only while main is red
+    # AND the repo-wide workload census was actually read. Under any other baseline
+    # the repair label buys no extra workload, and an unreadable census or lease
+    # still means zero NEW workload for every pull, repair included — the reserve
+    # bounds a saturated census that was observed, never one that could not be.
+    budget.repair_reserve_authorized = (
+        baseline_state == "red"
+        and active_pr_proofs is not None
+        and bool(refresh_lease.readable)
+    )
 
     semantic_main = None
     semantic_main_gap = ""
