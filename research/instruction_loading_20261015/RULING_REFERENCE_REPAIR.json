@@ -1,0 +1,20 @@
+{
+  "original_head": "723ffb92cbdff916e6e9e8d70b38e357be180686",
+  "hosted_failure_run": 38692854953,
+  "failed_rulings": [
+    "HOUSE-U1",
+    "HOUSE-U2",
+    "HOUSE-U3",
+    "HOUSE-U4",
+    "HOUSE-U5"
+  ],
+  "changed_field_only": "source_doc",
+  "ruling_bodies_quotes_permissions_unchanged": true,
+  "new_sources": {
+    "HOUSE-U1": "docs/agent_guides/CLAUDE_MODEL_ROUTING.md",
+    "HOUSE-U2": "docs/agent_guides/CLAUDE_MODEL_ROUTING.md",
+    "HOUSE-U3": "docs/agent_guides/CLAUDE_HOUSE_LAWS.md",
+    "HOUSE-U4": "docs/agent_guides/CLAUDE_HOUSE_LAWS.md",
+    "HOUSE-U5": "docs/agent_guides/CLAUDE_HOUSE_LAWS.md"
+  }
+}

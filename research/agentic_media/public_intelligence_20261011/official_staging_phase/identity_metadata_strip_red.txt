@@ -1,0 +1,55 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+_______________ test_emit_refusal_survives_source_metadata_strip _______________
+
+candidate = {'root': PosixPath('/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-1709/test_emit...5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-1709/test_emit_refusal_survives_sou0/qualification.json'), ...}
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10f642c30>
+
+    def test_emit_refusal_survives_source_metadata_strip(candidate, monkeypatch):
+        _stub_writer(monkeypatch)
+        out = _stage(candidate, monkeypatch)
+        path = candidate['root'] / out['staging_path']
+        record = json.loads(path.read_text())
+        assert record['status'] == 'passed'
+        for holder in (record, record['slot']):
+            for key in ('provenance', 'sources', 'seed_refs', 'source_revisions'):
+                holder.pop(key, None)
+        path.write_text(json.dumps(record))
+        before = _emit_snapshot(candidate['root'])
+        result = R.run_emit(candidate['root'], candidate['cfg'])
+>       assert result['emitted'] == 0
+E       assert 1 == 0
+
+tests/test_press_official_staging.py:673: AssertionError
+----------------------------- Captured stdout call -----------------------------
+::notice title=press_staging::press staging: 1 passed, 0 quarantined of 1 planned (tokens 0/240000)
+::notice title=press_official_staged::official feed candidate staged PRIVATELY: press-external-d067882437a8 status passed (public article approval: false — no emit path)
+::warning title=press_emit_unowned_asset::press emit produced asset(s) outside the workflow's git-add scope: site/assets/css/17c15c21.css, site/assets/css/1bf883af.css, site/assets/css/2f22a3ae.css, site/assets/css/3c29bc85.css, site/assets/css/449e4bdf.css, site/assets/css/5cce99be.css, site/assets/css/7c678f79.css, site/assets/css/7ecb10a8.css, site/assets/css/84206821.css, site/assets/css/9090e257.css, site/assets/css/f1bd9987.css — commit them or the estate drift check will go red.
+::notice title=press_emit::press emit: 1 article(s) published; 8 file(s) written under site/blog/
+------------------------------ Captured log call -------------------------------
+WARNING  engine.press.desk_planner:desk_planner.py:384 press.desk_planner: canonical earnings-call ledger gap: data/chronicle/earnings_call_events.jsonl absent
+________ test_published_slot_identity_blocks_replay_without_source_refs ________
+
+candidate = {'root': PosixPath('/private/var/folders/sb/h3rq5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-1709/test_publ...5rvj1b3_r18p6w9swyp80000gn/T/pytest-of-chriswong/pytest-1709/test_published_slot_identity_b0/qualification.json'), ...}
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10f72d6a0>
+
+    def test_published_slot_identity_blocks_replay_without_source_refs(candidate, monkeypatch):
+        calls = _stub_writer(monkeypatch)
+        slot_id = S._stable_slot_id(_plan_offline(candidate))
+        row = {'id': slot_id, 'desk': 'brief', 'ts': '2026-10-13T21:00:00Z',
+               'sources': [], 'seed_refs': [], 'slug': 'prior-official'}
+        (candidate['root'] / 'data/press/published.jsonl').write_text(json.dumps(row)+'\n')
+        out = _stage(candidate, monkeypatch)
+>       assert out['staged'] is False and calls['n'] == 0
+E       assert (True is False)
+
+tests/test_press_official_staging.py:685: AssertionError
+----------------------------- Captured stdout call -----------------------------
+::notice title=press_staging::press staging: 1 passed, 0 quarantined of 1 planned (tokens 0/240000)
+::notice title=press_official_staged::official feed candidate staged PRIVATELY: press-external-d067882437a8 status passed (public article approval: false — no emit path)
+
+NOTE: sparse worktree — mockups, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_press_official_staging.py::test_emit_refusal_survives_source_metadata_strip
+FAILED tests/test_press_official_staging.py::test_published_slot_identity_blocks_replay_without_source_refs
+2 failed, 36 deselected in 29.99s

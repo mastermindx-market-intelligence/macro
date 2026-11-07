@@ -1,6 +1,6 @@
 <!-- DO NOT EDIT BY HAND — regenerate with: python3 scripts/build_ruling_graph.py -->
 <!-- Source: config/ruling_graph.yml -->
-<!-- source_sha256: c662a479620d53031269c12ce04aa2e15ddcfce81f0cffb4dea3bd224e3bc8d6 -->
+<!-- source_sha256: 5efdd5ed88a1a319369d92a9b85f821088d9914038024476bf2e5357e9b2bb3a -->
 
 # Neural Web Case Law
 
@@ -3140,7 +3140,7 @@ Total rulings: 501
   - use sonnet for final adjudication
   - use haiku for anything needing judgment
 
-**Source:** `CLAUDE.md`
+**Source:** `docs/agent_guides/CLAUDE_MODEL_ROUTING.md`
 > The main session may run a frontier model (Fable/Opus). **Never let fan-outs inherit it.** Workflow `agent()` calls and Agent-tool spawns inherit the session model unless you pass `model:` explicitly — under ultracode that silently burns frontier tokens on mechanical work. Route every spawn:
 
 *Owner program: house-law*
@@ -3159,7 +3159,7 @@ Total rulings: 501
   - bypass model_routing_guard.py
   - spawn without explicit model or pinned agent type
 
-**Source:** `CLAUDE.md`
+**Source:** `docs/agent_guides/CLAUDE_MODEL_ROUTING.md`
 > Enforcement: a PreToolUse hook (`.claude/hooks/model_routing_guard.py`, wired in `.claude/settings.json`) denies Agent/Task spawns without an explicit model, `fable` spawns outside the orchestrator+FABLE-WHY gate, fable-pinned agent frontmatter outside that gate, and Workflow scripts whose `agent()` calls carry no `model:`/`agentType` routing (or route to fable without a script-level FABLE-WHY line).
 
 *Owner program: house-law*
@@ -3180,7 +3180,7 @@ Total rulings: 501
   - touch main checkout git state
   - work outside worktrees
 
-**Source:** `CLAUDE.md`
+**Source:** `docs/agent_guides/CLAUDE_HOUSE_LAWS.md`
 > branch off **fresh `origin/main`** (never reuse a squash-merged branch); finish via commit → push → PR → same-day squash-merge. Stash stack is repo-global — never bare `git stash`/`pop`. Main checkout is often occupied by other agents; work in worktrees, never touch main checkout's git state.
 
 *Owner program: house-law*
@@ -3205,7 +3205,7 @@ Total rulings: 501
 
 **Unblock condition:** Pass gauntlet; register gate before publishing.
 
-**Source:** `CLAUDE.md`
+**Source:** `docs/agent_guides/CLAUDE_HOUSE_LAWS.md`
 > display-only until gauntleted; pre-registered gates; nulls printed, not hidden. The word "validated" in user-facing text is CI-enforced (`scripts/check_validated_claims.py`). LLMs may only de-escalate calibrated keys — never originate signals, scores, or escalations.
 
 *Owner program: house-law*
@@ -3224,7 +3224,7 @@ Total rulings: 501
   - intraday lane writes to data/
   - non-nightly advancement of forward ledgers
 
-**Source:** `CLAUDE.md`
+**Source:** `docs/agent_guides/CLAUDE_HOUSE_LAWS.md`
 > nightly is the sole advancer of forward ledgers; intraday lanes discard `data/` writes.
 
 *Owner program: house-law*
