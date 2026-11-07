@@ -3686,6 +3686,7 @@ def test_get_watchlist_store_unreachable(tmp_path):
     with patch.object(gw, "_sb_get", return_value=None):
         r = gw._tool_get_watchlist({}, tmp_path, user_id="u1")
     assert r["available"] is False
+    assert r["error"] == "portfolio_store_unavailable"
     assert "unreachable" in r["note"]
 
 
@@ -3717,6 +3718,7 @@ def test_get_watchlist_rows_return_symbols_no_composite(tmp_path):
     assert r["symbols"] == ["NVDA", "AMD"]
     assert r["counts"]["n_symbols"] == 2
     assert r["counts"]["n_open_positions"] == 1
+    assert r["truncated"] == {"watchlist": False, "positions": False}
     # named board states, not numbers
     states = {row["symbol"]: row["board_state"] for row in r["watchlist"]}
     assert states["NVDA"] == "on the buy board"
@@ -8078,3 +8080,140 @@ def test_sync_exhausted_recovery_does_not_ship_earlier_tool_narration(tmp_path):
     assert len(client.calls) == 3
     assert usage["input_tokens"] == 2798
     assert usage["output_tokens"] == 12000
+
+
+# Original #7658 residual private-state regressions, retained on current main.
+
+def test_sb_get_rejects_non_list_json_as_unavailable(monkeypatch):
+    """A successful HTTP response with an invalid PostgREST shape is not an empty table.
+
+    Table GETs must return a JSON list. Treating an object/error envelope as iterable
+    rows lets private Portfolio readers silently manufacture zero holdings.
+    """
+    monkeypatch.setenv("SUPABASE_URL", "https://example.supabase.co")
+    monkeypatch.setenv("SUPABASE_SERVICE_ROLE_KEY", "service-role-test")
+    response = MagicMock()
+    response.__enter__.return_value.read.return_value = b'{"message":"unexpected shape"}'
+    response.__exit__.return_value = False
+    with patch.object(gw.urllib.request, "urlopen", return_value=response):
+        assert gw._sb_get("portfolio_positions?select=id") is None
+
+
+@pytest.mark.parametrize("failed_prefix", ["watchlist_symbols?", "portfolio_positions?"])
+def test_get_watchlist_child_store_failure_is_unavailable(tmp_path, failed_prefix):
+    """A failed child read is unknown private state, not a successful zero count."""
+    def _fake_sb_get(path: str):
+        if path.startswith("watchlists?"):
+            return [{"id": "list-1", "name": "Main", "position": 0}]
+        if path.startswith(failed_prefix):
+            return None
+        if path.startswith("watchlist_symbols?"):
+            return [{"symbol": "NVDA", "position": 0}]
+        if path.startswith("portfolio_positions?"):
+            return []
+        return None
+
+    with patch.object(gw, "_sb_get", side_effect=_fake_sb_get):
+        result = gw._tool_get_watchlist({}, tmp_path, user_id="u1")
+
+    assert result["available"] is False
+    assert result["error"] == "portfolio_store_unavailable"
+    assert "counts" not in result
+
+
+def test_get_watchlist_reports_full_position_total_but_bounds_details(tmp_path):
+    """The 30-row response budget must not rewrite a 35-position account as 30."""
+    rows = [
+        {"ticker": f"T{i:02d}", "shares": i + 1, "entry_price": 100 + i,
+         "entry_date": "2026-01-01"}
+        for i in range(35)
+    ]
+
+    def _fake_sb_get(path: str):
+        if path.startswith("watchlists?"):
+            return []
+        if path.startswith("portfolio_positions?"):
+            return rows
+        return []
+
+    with patch.object(gw, "_sb_get", side_effect=_fake_sb_get):
+        result = gw._tool_get_watchlist({}, tmp_path, user_id="u1")
+
+    assert result["available"] is True
+    assert result["counts"]["n_open_positions"] == 35
+    assert len(result["positions"]) == 30
+    assert result["truncated"]["positions"] is True
+
+
+def test_get_watchlist_reports_full_symbol_total_but_bounds_overlay(tmp_path):
+    """Watchlist membership stays complete while the decorated detail plane remains bounded."""
+    rows = [{"symbol": f"T{i:02d}", "position": i} for i in range(35)]
+
+    def _fake_sb_get(path: str):
+        if path.startswith("watchlists?"):
+            return [{"id": "list-1", "name": "Main", "position": 0}]
+        if path.startswith("watchlist_symbols?"):
+            return rows
+        if path.startswith("portfolio_positions?"):
+            return []
+        return None
+
+    with patch.object(gw, "_sb_get", side_effect=_fake_sb_get):
+        result = gw._tool_get_watchlist({}, tmp_path, user_id="u1")
+
+    assert result["counts"]["n_symbols"] == 35
+    assert len(result["symbols"]) == 35
+    assert len(result["watchlist"]) == 30
+    assert result["truncated"]["watchlist"] is True
+    assert result["truncated"]["positions"] is False
+
+
+def test_get_watchlist_position_only_name_gets_board_and_stage_overlays(tmp_path):
+    """A holding need not also be watched to receive the overlays the tool promises."""
+    factordata = tmp_path / "site" / "factordata"
+    factordata.mkdir(parents=True)
+    (factordata / "us_standouts.json").write_text(
+        json.dumps({"buy": [{"ticker": "NVDA"}], "watch": [], "laggards": []})
+    )
+    stage_dir = tmp_path / "data" / "stage_analysis" / "backfill"
+    stage_dir.mkdir(parents=True)
+    import pandas as pd
+    pd.DataFrame([{"ticker": "NVDA", "stage_flag": 2}]).to_parquet(
+        stage_dir / "equitydesk_overview.parquet", index=False
+    )
+
+    def _fake_sb_get(path: str):
+        if path.startswith("watchlists?"):
+            return []
+        if path.startswith("portfolio_positions?"):
+            return [{"ticker": "NVDA", "shares": 10, "entry_price": 100.0,
+                     "entry_date": "2026-01-01"}]
+        return []
+
+    with patch.object(gw, "_sb_get", side_effect=_fake_sb_get):
+        result = gw._tool_get_watchlist({}, tmp_path, user_id="u1")
+
+    assert result["positions"][0]["board_state"] == "on the buy board"
+    assert result["positions"][0]["stage"] == "advancing"
+
+
+
+@pytest.mark.parametrize("payload, expected", [
+    (b"[]", []),
+    (b'[{"id":"position-1"}]', [{"id": "position-1"}]),
+    (b"null", None),
+    (b"invalid JSON", None),
+    (b"true", None),
+    (b"17", None),
+    (b'"rows"', None),
+    (b'{"message":"unexpected shape"}', None),
+])
+def test_sb_get_preserves_list_or_unavailable_boundary(monkeypatch, payload, expected):
+    """The shape guard preserves real lists and rejects non-row HTTP-200 bodies."""
+    monkeypatch.setenv("SUPABASE_URL", "https://example.supabase.co")
+    monkeypatch.setenv("SUPABASE_SERVICE_ROLE_KEY", "service-role-test")
+    response = MagicMock()
+    response.__enter__.return_value.read.return_value = payload
+    response.__exit__.return_value = False
+    with patch.object(gw.urllib.request, "urlopen", return_value=response):
+        assert gw._sb_get("portfolio_positions?select=id") == expected
