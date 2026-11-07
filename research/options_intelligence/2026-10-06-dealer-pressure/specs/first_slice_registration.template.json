@@ -1,0 +1,137 @@
+{
+  "schema": "mastermind.dealer_pressure.research_registration_template/v1",
+  "status": "PROPOSED_NOT_REGISTERED",
+  "research_date": "2026-10-06",
+  "existing_registration_preserved": "P5 v1 SPY/QQQ/IWM next10minute variance; B1-RI/B2-RI",
+  "new_cohort": "SPX/SPXW covered option book -> admitted ES cash-session target",
+  "study_id": null,
+  "approved_source_receipts": [],
+  "approved_rights_receipts": [],
+  "data_grade": null,
+  "decision_grid": {
+    "step_seconds": 60,
+    "start_after_open_seconds": 900,
+    "end_before_close_seconds": 900,
+    "consumer_availability_required": true
+  },
+  "primary": {
+    "horizon_seconds": 900,
+    "targets": [
+      "normalized_downside_excursion",
+      "normalized_upside_excursion"
+    ],
+    "quantiles": [
+      0.1,
+      0.5,
+      0.9
+    ],
+    "loss": "mean_pinball_across_quantiles_and_sides_then_equal_session_weight",
+    "contrast": "registered inventory/full-reprice augmentation versus development-selected strongest simpler research adapter"
+  },
+  "arms": [
+    "M0 explicit OI scenarios",
+    "M1 public-flow plus capacity scenarios",
+    "M5 actual-release participant-informed state",
+    "separate final-vintage higher-information diagnostic"
+  ],
+  "cohorts": [
+    "0DTE",
+    "1-7_calendar_days",
+    "8plus_calendar_days"
+  ],
+  "sample_plan": {
+    "feasibility_sessions": [
+      60,
+      120
+    ],
+    "formal_target_minimum_sessions": 250,
+    "formal_count_is_not_power_guarantee": true,
+    "proposed_train_calibrate_test_sessions": [
+      120,
+      20,
+      20
+    ],
+    "final_untouched_holdout_sessions_if_history_permits": 60
+  },
+  "proposed_hurdles": {
+    "minimum_useful_relative_loss_gain": 0.02,
+    "one_sided_session_block_confidence_level": 0.95,
+    "point_gain_above_useful_threshold_and_lower_bound_above_zero": true,
+    "stress_close_relative_loss_noninferiority_margin": 0.02,
+    "requires_owner_preregistration_before_outcomes": true
+  },
+  "futility": "Endpoint-specific. Broader scoped reconstruction stops only when F1/F2/F3 exclude preregistered useful gains with adequate coverage/precision, or an explicit cost decision leaves remaining questions unresolved. Imprecise null inconclusive.",
+  "secondary_targets": [
+    "remaining-session extrema",
+    "new LOD/HOD probabilities",
+    "frozen-zone touch/hold/break/gap-through",
+    "ES16:00 mark",
+    "separately qualified SPX index close/extrema",
+    "paired native-incumbent candidate outcomes"
+  ],
+  "label_maturity_required_before_model_freeze": true,
+  "correction_vintages_separate": true,
+  "frozen_original_zones": true,
+  "model_search_budget": null,
+  "source_gap_thresholds": null,
+  "authority": {
+    "production_changes": false,
+    "data_purchase": false,
+    "trading": false,
+    "portfolio": false,
+    "prophet": false,
+    "ranking": false,
+    "entry_policy": false,
+    "deployment": false
+  },
+  "required_family_verdicts": {
+    "F1": {
+      "horizon_seconds": 900,
+      "targets": [
+        "normalized_downside_excursion",
+        "normalized_upside_excursion"
+      ],
+      "quantiles": [
+        0.1,
+        0.5,
+        0.9
+      ],
+      "loss": "mean_pinball_across_quantiles_and_sides_then_equal_session_weight",
+      "contrast": "registered inventory/full-reprice augmentation versus development-selected strongest simpler research adapter"
+    },
+    "F2": {
+      "target": "normalized_remaining_session_upside_downside_ES_excursions",
+      "origins_minutes_before_cash_close": [
+        60,
+        30,
+        15
+      ],
+      "quantiles": [
+        0.1,
+        0.5,
+        0.9
+      ],
+      "loss": "mean_pinball_equal_sides_origins_and_sessions",
+      "proposed_useful_relative_gain": 0.02
+    },
+    "F3": {
+      "target": "signed_normalized_ES_cash_close_return",
+      "origins_minutes_before_cash_close": [
+        60,
+        30,
+        15
+      ],
+      "quantiles": [
+        0.1,
+        0.25,
+        0.5,
+        0.75,
+        0.9
+      ],
+      "loss": "mean_pinball_equal_origins_and_sessions",
+      "proposed_useful_relative_gain": 0.02
+    },
+    "inference": "Preregister familywise claims/bounds; no secondary relabeling as primary. Close non-inferiority is not positive closing value."
+  },
+  "incumbent_reconciliation": "MAS-260 / Macro #7328 price-volatility and observed-outcome owners; preserve recorded GEX promotion refusal and local/unpushed source custody."
+}

@@ -1,0 +1,1098 @@
+{
+  "schema": "mastermind.synthetic_dealer_pressure_witness/v1",
+  "label": "SYNTHETIC \u2014 no observed dealer book, no alpha, no market backtest",
+  "generated_at_UTC": "2026-10-06T22:58:33.649800+00:00",
+  "script_sha256": "2f4a3b906189044035f999dc9cef4c0f4f4034f412fee798dfb9e6ece7a46711",
+  "model_conventions": {
+    "pricing": "European Black-Scholes with continuous carry; no American exercise or settlement transition simulated",
+    "day_count": "ACT/365F, 31,536,000 seconds per year",
+    "spot": 6000.0,
+    "r_synthetic": 0.04,
+    "q_synthetic": 0.015,
+    "IV_units": "decimal annualized; +1.2 percentage points = +0.012",
+    "charm": "advancing calendar-year derivative; -dDelta/dremaining_year",
+    "inventory": "invented signed contracts; no posterior or observed OI allocation",
+    "vol_surface": "per-expiry flat starting IV, frozen strike IV plus parallel shock",
+    "fixing": "invented positive economic remaining times; no actual series calendar or expiry crossing",
+    "dollar_conversion": "common-index hedge-unit difference times endpoint index level; not cash consideration"
+  },
+  "book": [
+    {
+      "id": "SPXW_0D_C_5975",
+      "product": "SPXW_PM",
+      "cohort": "0DTE",
+      "strike": 5975,
+      "right": "C",
+      "remaining_minutes": 60,
+      "iv": 0.2,
+      "multiplier": 100,
+      "initial_h": -160,
+      "inventory_change": 0
+    },
+    {
+      "id": "SPXW_0D_P_5975",
+      "product": "SPXW_PM",
+      "cohort": "0DTE",
+      "strike": 5975,
+      "right": "P",
+      "remaining_minutes": 60,
+      "iv": 0.2,
+      "multiplier": 100,
+      "initial_h": -260,
+      "inventory_change": 0
+    },
+    {
+      "id": "SPXW_0D_C_6000",
+      "product": "SPXW_PM",
+      "cohort": "0DTE",
+      "strike": 6000,
+      "right": "C",
+      "remaining_minutes": 60,
+      "iv": 0.2,
+      "multiplier": 100,
+      "initial_h": -400,
+      "inventory_change": -35
+    },
+    {
+      "id": "SPXW_0D_P_6000",
+      "product": "SPXW_PM",
+      "cohort": "0DTE",
+      "strike": 6000,
+      "right": "P",
+      "remaining_minutes": 60,
+      "iv": 0.2,
+      "multiplier": 100,
+      "initial_h": -380,
+      "inventory_change": 20
+    },
+    {
+      "id": "SPXW_0D_C_6025",
+      "product": "SPXW_PM",
+      "cohort": "0DTE",
+      "strike": 6025,
+      "right": "C",
+      "remaining_minutes": 60,
+      "iv": 0.2,
+      "multiplier": 100,
+      "initial_h": -240,
+      "inventory_change": 0
+    },
+    {
+      "id": "SPXW_0D_P_6025",
+      "product": "SPXW_PM",
+      "cohort": "0DTE",
+      "strike": 6025,
+      "right": "P",
+      "remaining_minutes": 60,
+      "iv": 0.2,
+      "multiplier": 100,
+      "initial_h": -120,
+      "inventory_change": 0
+    },
+    {
+      "id": "SPXW_3D_C_5950",
+      "product": "SPXW_PM",
+      "cohort": "1-7D",
+      "strike": 5950,
+      "right": "C",
+      "remaining_minutes": 4380,
+      "iv": 0.22,
+      "multiplier": 100,
+      "initial_h": 80,
+      "inventory_change": 0.0
+    },
+    {
+      "id": "SPXW_3D_P_5950",
+      "product": "SPXW_PM",
+      "cohort": "1-7D",
+      "strike": 5950,
+      "right": "P",
+      "remaining_minutes": 4380,
+      "iv": 0.22,
+      "multiplier": 100,
+      "initial_h": 80,
+      "inventory_change": 0.0
+    },
+    {
+      "id": "SPXW_3D_C_6050",
+      "product": "SPXW_PM",
+      "cohort": "1-7D",
+      "strike": 6050,
+      "right": "C",
+      "remaining_minutes": 4380,
+      "iv": 0.22,
+      "multiplier": 100,
+      "initial_h": 120,
+      "inventory_change": 0.0
+    },
+    {
+      "id": "SPXW_3D_P_6050",
+      "product": "SPXW_PM",
+      "cohort": "1-7D",
+      "strike": 6050,
+      "right": "P",
+      "remaining_minutes": 4380,
+      "iv": 0.22,
+      "multiplier": 100,
+      "initial_h": 120,
+      "inventory_change": 0.0
+    },
+    {
+      "id": "SPX_30D_C_5800",
+      "product": "SPX_AM",
+      "cohort": "8+D",
+      "strike": 5800,
+      "right": "C",
+      "remaining_minutes": 43260,
+      "iv": 0.24,
+      "multiplier": 100,
+      "initial_h": 60,
+      "inventory_change": 0.0
+    },
+    {
+      "id": "SPX_30D_P_5800",
+      "product": "SPX_AM",
+      "cohort": "8+D",
+      "strike": 5800,
+      "right": "P",
+      "remaining_minutes": 43260,
+      "iv": 0.24,
+      "multiplier": 100,
+      "initial_h": 60,
+      "inventory_change": 0.0
+    },
+    {
+      "id": "SPX_30D_C_6200",
+      "product": "SPX_AM",
+      "cohort": "8+D",
+      "strike": 6200,
+      "right": "C",
+      "remaining_minutes": 43260,
+      "iv": 0.24,
+      "multiplier": 100,
+      "initial_h": 40,
+      "inventory_change": 0.0
+    },
+    {
+      "id": "SPX_30D_P_6200",
+      "product": "SPX_AM",
+      "cohort": "8+D",
+      "strike": 6200,
+      "right": "P",
+      "remaining_minutes": 43260,
+      "iv": 0.24,
+      "multiplier": 100,
+      "initial_h": 40,
+      "inventory_change": 0.0
+    }
+  ],
+  "witnesses": {
+    "identifiability": {
+      "label": "SYNTHETIC \u2014 no observed dealer book, no alpha, no market backtest",
+      "cases": [
+        {
+          "case": "dealer buyer, nondealer seller",
+          "observables": {
+            "prior_OI": 0,
+            "quantity": 10,
+            "bid": 9.9,
+            "ask": 10.0,
+            "trade_price": 10.0,
+            "buyer_opens": 1,
+            "seller_opens": 1,
+            "following_OI": 10
+          },
+          "dealer_inventory_change": 10
+        },
+        {
+          "case": "two nondealers",
+          "observables": {
+            "prior_OI": 0,
+            "quantity": 10,
+            "bid": 9.9,
+            "ask": 10.0,
+            "trade_price": 10.0,
+            "buyer_opens": 1,
+            "seller_opens": 1,
+            "following_OI": 10
+          },
+          "dealer_inventory_change": 0
+        },
+        {
+          "case": "nondealer buyer, dealer seller",
+          "observables": {
+            "prior_OI": 0,
+            "quantity": 10,
+            "bid": 9.9,
+            "ask": 10.0,
+            "trade_price": 10.0,
+            "buyer_opens": 1,
+            "seller_opens": 1,
+            "following_OI": 10
+          },
+          "dealer_inventory_change": -10
+        }
+      ],
+      "interpretation": "Ask execution and OI0=0 do not identify dealer side. No probabilities assigned."
+    },
+    "buy_to_close": {
+      "initial_signed_h": -5,
+      "buy_to_close_contracts": 5,
+      "final_signed_h": 0,
+      "signed_change": 5,
+      "OI_change_if_seller_opens": 0
+    },
+    "endpoint_and_cash": {
+      "B0": -450.0,
+      "B1": -630.0,
+      "target_change": -180.0,
+      "endpoint_trade_notional_USD": -1076220.0,
+      "marked_holdings_difference_USD": -1066770.0,
+      "old_hedge_revaluation_USD": 9450.0,
+      "hypothetical_cash_equity_consideration_USD": 1076220.0,
+      "SPX_synthetic_cash_consideration": null,
+      "futures_cash_consideration": null,
+      "scope": "Cash=-price*shares only for a cash-equity purchase/sale; futures notional is not margin, cash or P&L."
+    },
+    "four_factor_shapley": {
+      "factors": [
+        "spot",
+        "volatility",
+        "calendar_time",
+        "inventory"
+      ],
+      "corner_evaluations": 16,
+      "B_corners_by_bitmask": {
+        "0": 4660.361939362557,
+        "1": -43237.224639877415,
+        "2": 4584.697283776489,
+        "3": -42857.857274922186,
+        "4": 4735.306076225376,
+        "5": -44342.47965557283,
+        "6": 4679.82251398462,
+        "7": -44311.02609192616,
+        "8": 7411.795799232505,
+        "9": -41161.22125265672,
+        "10": 7336.12426748182,
+        "11": -40766.19478254424,
+        "12": 7486.47752448746,
+        "13": -42308.96586879396,
+        "14": 7430.988347873217,
+        "15": -42267.34372480213
+      },
+      "attribution_hedge_units": {
+        "spot": -48730.81036227919,
+        "volatility": 43.08963277716528,
+        "calendar_time": -643.3426524306128,
+        "inventory": 2403.3577177679545
+      },
+      "attribution_endpoint_USD": {
+        "spot": -291361515.15606725,
+        "volatility": 257632.9143746712,
+        "calendar_time": -3846545.718882634,
+        "inventory": 14369675.7945346
+      },
+      "target_change": -46927.705664164685,
+      "endpoint_USD": -280580752.16604066,
+      "rule": "Shapley decomposes B in a fixed risk coordinate, NOT S*B. Every USD contribution is valued at S1."
+    },
+    "general_h_m_delta_decomposition": {
+      "h0": [
+        12.0,
+        -20.0
+      ],
+      "h1": [
+        10.0,
+        -23.0
+      ],
+      "m0": [
+        100.0,
+        50.0
+      ],
+      "m1": [
+        150.0,
+        20.0
+      ],
+      "delta0": [
+        0.4,
+        -0.3
+      ],
+      "delta1": [
+        0.55,
+        -0.2
+      ],
+      "r0": [
+        40.0,
+        -15.0
+      ],
+      "r1": [
+        82.5,
+        -4.0
+      ],
+      "exact_target_change": -137.0,
+      "repricing_term": -290.0,
+      "inventory_term": 35.0,
+      "interaction_term": 118.0,
+      "incorrect_fixed_multiplier_result": -4.263256414560601e-14,
+      "pure_rebase_common_risk_change": 0.0,
+      "scope": "Algebra in a fixed risk coordinate. Actual adjusted deliverables require canonical reference rebasing or a risk vector."
+    },
+    "path_net_and_turnover": {
+      "direct_target_holdings": [
+        0.0,
+        10.0
+      ],
+      "oscillating_target_holdings": [
+        0.0,
+        8.0,
+        -3.0,
+        10.0
+      ],
+      "net_change_both": 10,
+      "direct_turnover": 10.0,
+      "oscillating_turnover": 32.0,
+      "scope": "Hypothetical exact tracking of target units; no inferred real execution."
+    },
+    "cross_product_units": {
+      "assumptions": "Standard products, long option delta 0.5, matched futures/index sensitivity a_f=1, basis risk excluded only for this unit witness.",
+      "SPX_1_contract_USD_per_SPX_point": 50.0,
+      "XSP_10_contracts_USD_per_SPX_point": 50.0,
+      "hedge_ES_contracts": -1,
+      "NDX_1_contract_USD_per_NDX_point": 50.0,
+      "XND_100_contracts_USD_per_NDX_point": 50.0,
+      "hedge_NQ_contracts": -2.5,
+      "one_ES_option_half_delta_hedge_ES": -0.5,
+      "one_NQ_option_half_delta_hedge_NQ": -0.5,
+      "warning": "No actual hedge ratio, current basis, dealer allocation or ownership inferred."
+    },
+    "tte_floor": {
+      "zero_carry_ATM_rows": [
+        {
+          "true_seconds_to_fixing": 1,
+          "floored_seconds": 3600,
+          "true_iv": 0.2,
+          "refit_iv": 0.0033333333333430445,
+          "actual_price_index_points": 0.08524874778504454,
+          "fixed_IV_floor_price_index_points": 5.114923894193453,
+          "refit_price_index_points": 0.08524874778504454,
+          "actual_gamma_per_index_point": 1.8669475762879006,
+          "fixed_IV_floor_gamma_per_index_point": 0.031115775182914335,
+          "refit_gamma_per_index_point": 1.8669475762824617,
+          "fixed_IV_gamma_ratio": 0.01666665715637427,
+          "refit_gamma_ratio": 0.9999999999970867
+        },
+        {
+          "true_seconds_to_fixing": 5,
+          "floored_seconds": 3600,
+          "true_iv": 0.2,
+          "refit_iv": 0.007453559924996138,
+          "actual_price_index_points": 0.19062199500285715,
+          "fixed_IV_floor_price_index_points": 5.114923894193453,
+          "refit_price_index_points": 0.19062199500285715,
+          "actual_gamma_per_index_point": 0.8349243376721384,
+          "fixed_IV_floor_gamma_per_index_point": 0.031115775182914335,
+          "refit_gamma_per_index_point": 0.8349243376724925,
+          "fixed_IV_gamma_ratio": 0.03726777838297128,
+          "refit_gamma_ratio": 1.000000000000424
+        },
+        {
+          "true_seconds_to_fixing": 15,
+          "floored_seconds": 3600,
+          "true_iv": 0.2,
+          "refit_iv": 0.012909944487355966,
+          "actual_price_index_points": 0.33016698021083357,
+          "fixed_IV_floor_price_index_points": 5.114923894193453,
+          "refit_price_index_points": 0.33016698021083357,
+          "actual_gamma_per_index_point": 0.48204379034370376,
+          "fixed_IV_floor_gamma_per_index_point": 0.031115775182914335,
+          "refit_gamma_per_index_point": 0.48204379034378186,
+          "fixed_IV_gamma_ratio": 0.0645496857468662,
+          "refit_gamma_ratio": 1.000000000000162
+        },
+        {
+          "true_seconds_to_fixing": 60,
+          "floored_seconds": 3600,
+          "true_iv": 0.2,
+          "refit_iv": 0.02581988897473132,
+          "actual_price_index_points": 0.6603339588518793,
+          "fixed_IV_floor_price_index_points": 5.114923894193453,
+          "refit_price_index_points": 0.6603339588518793,
+          "actual_gamma_per_index_point": 0.24102189345223216,
+          "fixed_IV_floor_gamma_per_index_point": 0.031115775182914335,
+          "refit_gamma_per_index_point": 0.24102189345209027,
+          "fixed_IV_gamma_ratio": 0.12909937241481814,
+          "refit_gamma_ratio": 0.9999999999994114
+        },
+        {
+          "true_seconds_to_fixing": 300,
+          "floored_seconds": 3600,
+          "true_iv": 0.2,
+          "refit_iv": 0.0577350269189921,
+          "actual_price_index_points": 1.476551601115716,
+          "fixed_IV_floor_price_index_points": 5.114923894193453,
+          "refit_price_index_points": 1.476551601115716,
+          "actual_gamma_per_index_point": 0.10778826346344833,
+          "fixed_IV_floor_gamma_per_index_point": 0.031115775182914335,
+          "refit_gamma_per_index_point": 0.10778826346339325,
+          "fixed_IV_gamma_ratio": 0.28867498355668275,
+          "refit_gamma_ratio": 0.999999999999489
+        },
+        {
+          "true_seconds_to_fixing": 900,
+          "floored_seconds": 3600,
+          "true_iv": 0.2,
+          "refit_iv": 0.10000000000000478,
+          "actual_price_index_points": 2.55746231203193,
+          "fixed_IV_floor_price_index_points": 5.114923894193453,
+          "refit_price_index_points": 2.55746231203193,
+          "actual_gamma_per_index_point": 0.06223157700605285,
+          "fixed_IV_floor_gamma_per_index_point": 0.031115775182914335,
+          "refit_gamma_per_index_point": 0.06223157700604987,
+          "fixed_IV_gamma_ratio": 0.49999978595894995,
+          "refit_gamma_ratio": 0.9999999999999521
+        },
+        {
+          "true_seconds_to_fixing": 1800,
+          "floored_seconds": 3600,
+          "true_iv": 0.2,
+          "refit_iv": 0.1414213562373118,
+          "actual_price_index_points": 3.6167977149016224,
+          "fixed_IV_floor_price_index_points": 5.114923894193453,
+          "refit_price_index_points": 3.6167977149016224,
+          "actual_gamma_per_index_point": 0.044004363825750833,
+          "fixed_IV_floor_gamma_per_index_point": 0.031115775182914335,
+          "refit_gamma_per_index_point": 0.04400436382575012,
+          "fixed_IV_gamma_ratio": 0.707106579386696,
+          "refit_gamma_ratio": 0.9999999999999838
+        },
+        {
+          "true_seconds_to_fixing": 3599,
+          "floored_seconds": 3600,
+          "true_iv": 0.2,
+          "refit_iv": 0.1999722202929342,
+          "actual_price_index_points": 5.1142134390274805,
+          "fixed_IV_floor_price_index_points": 5.114923894193453,
+          "refit_price_index_points": 5.1142134390274805,
+          "actual_gamma_per_index_point": 0.03112009772383964,
+          "fixed_IV_floor_gamma_per_index_point": 0.031115775182914335,
+          "refit_gamma_per_index_point": 0.031120097723840837,
+          "fixed_IV_gamma_ratio": 0.9998611013061828,
+          "refit_gamma_ratio": 1.0000000000000384
+        },
+        {
+          "true_seconds_to_fixing": 3600,
+          "floored_seconds": 3600,
+          "true_iv": 0.2,
+          "refit_iv": 0.1999999999999657,
+          "actual_price_index_points": 5.114923894193453,
+          "fixed_IV_floor_price_index_points": 5.114923894193453,
+          "refit_price_index_points": 5.114923894193453,
+          "actual_gamma_per_index_point": 0.031115775182914335,
+          "fixed_IV_floor_gamma_per_index_point": 0.031115775182914335,
+          "refit_gamma_per_index_point": 0.031115775182919667,
+          "fixed_IV_gamma_ratio": 1.0,
+          "refit_gamma_ratio": 1.0000000000001714
+        },
+        {
+          "true_seconds_to_fixing": 3601,
+          "floored_seconds": 3601,
+          "true_iv": 0.2,
+          "refit_iv": 0.20000000000000423,
+          "actual_price_index_points": 5.115634250693347,
+          "fixed_IV_floor_price_index_points": 5.115634250693347,
+          "refit_price_index_points": 5.115634250693347,
+          "actual_gamma_per_index_point": 0.031111454442671927,
+          "fixed_IV_floor_gamma_per_index_point": 0.031111454442671927,
+          "refit_gamma_per_index_point": 0.031111454442671268,
+          "fixed_IV_gamma_ratio": 1.0,
+          "refit_gamma_ratio": 0.9999999999999788
+        }
+      ],
+      "zero_carry_identity": "At fixed S,K and r=q=0, price depends on sigma*sqrt(tau); same-price refitting preserves delta/gamma while fixed-IV time flooring does not.",
+      "nonzero_carry_15s_diagnostic": {
+        "r": 0.04,
+        "q": 0.015,
+        "refit_iv": 0.012573771696993516,
+        "exact_gamma": 0.48204378224716105,
+        "same_price_refit_gamma": 0.4948185128486852,
+        "refit_gamma_ratio": 1.0265011832368665
+      },
+      "scope": "The exact equality is a special zero-carry identity, NOT a universal empirical or model-independent near-expiry claim."
+    }
+  },
+  "commission_scenario": {
+    "label": "SYNTHETIC \u2014 no observed dealer book, no alpha, no market backtest",
+    "initial_spot": 6000.0,
+    "scenario_spot": 5979.0,
+    "spot_change_percent": -0.35,
+    "IV_change_decimal": 0.012,
+    "IV_change_percentage_points": 1.2,
+    "elapsed_calendar_minutes": 20.0,
+    "initial_target_hedge_units": 4660.361939362557,
+    "final_target_fixed_inventory": -44311.02609192616,
+    "final_target_changed_inventory": -42267.34372480213,
+    "fixed_inventory_hedge_change": -48971.38803128874,
+    "joint_hedge_change": -46927.7056641647,
+    "joint_endpoint_notional_USD": -280580752.1660407,
+    "first_order_joint_hedge_change": -52896.97726089754,
+    "first_order_joint_endpoint_notional_USD": -316271027.0429064,
+    "exact_minus_linear_endpoint_USD": 35690274.876865655,
+    "by_cohort": {
+      "0DTE": {
+        "contract_series_count": 6,
+        "fixed_inventory_hedge_change": -51714.976669402015,
+        "joint_hedge_change": -49671.29430227799,
+        "joint_endpoint_notional_USD": -296984668.6333201
+      },
+      "1-7D": {
+        "contract_series_count": 4,
+        "fixed_inventory_hedge_change": 2370.1627534758736,
+        "joint_hedge_change": 2370.1627534758736,
+        "joint_endpoint_notional_USD": 14171203.103032248
+      },
+      "8+D": {
+        "contract_series_count": 4,
+        "fixed_inventory_hedge_change": 373.4258846374153,
+        "joint_hedge_change": 373.4258846374148,
+        "joint_endpoint_notional_USD": 2232713.364247103
+      }
+    },
+    "inventory_sign_alternatives": {
+      "front_short_back_long": {
+        "fixed_inventory_hedge_change": -48971.38803128871,
+        "endpoint_notional_USD": -292799929.0390752,
+        "probability_weight": null
+      },
+      "front_long_back_long": {
+        "fixed_inventory_hedge_change": 54458.56530751531,
+        "endpoint_notional_USD": 325607761.97363406,
+        "probability_weight": null
+      },
+      "call_long_put_short": {
+        "fixed_inventory_hedge_change": -2072.6938357025792,
+        "endpoint_notional_USD": -12392636.44366572,
+        "probability_weight": null
+      }
+    },
+    "hedge_unit_definition": "USD sensitivity per SPX index point; a modeled common-index coordinate, not executable SPX shares.",
+    "execution_or_forecast_claim": false
+  },
+  "assertion_count": 62,
+  "assertions_passed": 62,
+  "checks": [
+    {
+      "name": "identical_OI_dealer buyer, nondealer seller",
+      "passed": true,
+      "actual": 10.0,
+      "expected": 10.0,
+      "absolute_error": 0.0,
+      "absolute_tolerance": 1e-08,
+      "relative_tolerance": 1e-10
+    },
+    {
+      "name": "identical_OI_two nondealers",
+      "passed": true,
+      "actual": 10.0,
+      "expected": 10.0,
+      "absolute_error": 0.0,
+      "absolute_tolerance": 1e-08,
+      "relative_tolerance": 1e-10
+    },
+    {
+      "name": "identical_OI_nondealer buyer, dealer seller",
+      "passed": true,
+      "actual": 10.0,
+      "expected": 10.0,
+      "absolute_error": 0.0,
+      "absolute_tolerance": 1e-08,
+      "relative_tolerance": 1e-10
+    },
+    {
+      "name": "same_observation_different_dealer_change",
+      "passed": true
+    },
+    {
+      "name": "observations_identical",
+      "passed": true
+    },
+    {
+      "name": "buy_to_close_increases_h",
+      "passed": true,
+      "actual": 5.0,
+      "expected": 5.0,
+      "absolute_error": 0.0,
+      "absolute_tolerance": 1e-08,
+      "relative_tolerance": 1e-10
+    },
+    {
+      "name": "buy_to_close_eliminates_short",
+      "passed": true,
+      "actual": 0.0,
+      "expected": 0.0,
+      "absolute_error": 0.0,
+      "absolute_tolerance": 1e-08,
+      "relative_tolerance": 1e-10
+    },
+    {
+      "name": "buy_to_close_mixed_transaction_has_zero_OI_change",
+      "passed": true,
+      "actual": 0.0,
+      "expected": 0.0,
+      "absolute_error": 0.0,
+      "absolute_tolerance": 1e-08,
+      "relative_tolerance": 1e-10
+    },
+    {
+      "name": "opening_probability_gate_would_be_wrong",
+      "passed": true
+    },
+    {
+      "name": "endpoint_target_units",
+      "passed": true,
+      "actual": -180.0,
+      "expected": -180.0,
+      "absolute_error": 0.0,
+      "absolute_tolerance": 1e-08,
+      "relative_tolerance": 1e-10
+    },
+    {
+      "name": "old_hedge_revaluation_identity",
+      "passed": true,
+      "actual": 9450.0,
+      "expected": 9450.0,
+      "absolute_error": 0.0,
+      "absolute_tolerance": 1e-08,
+      "relative_tolerance": 1e-10
+    },
+    {
+      "name": "marked_holdings_change_is_not_trade_notional",
+      "passed": true
+    },
+    {
+      "name": "cash_equity_consideration_has_opposite_sign",
+      "passed": true,
+      "actual": 1076220.0,
+      "expected": 1076220.0,
+      "absolute_error": 0.0,
+      "absolute_tolerance": 1e-08,
+      "relative_tolerance": 1e-10
+    },
+    {
+      "name": "synthetic_index_and_futures_cash_not_inferred",
+      "passed": true
+    },
+    {
+      "name": "shapley_uses_exactly_16_corners",
+      "passed": true
+    },
+    {
+      "name": "four_factor_shapley_sums_to_target_change",
+      "passed": true,
+      "actual": -46927.705664164685,
+      "expected": -46927.705664164685,
+      "absolute_error": 0.0,
+      "absolute_tolerance": 1e-08,
+      "relative_tolerance": 1e-10
+    },
+    {
+      "name": "shapley_endpoint_dollars_use_common_endpoint_price",
+      "passed": true,
+      "actual": -280580752.1660406,
+      "expected": -280580752.16604066,
+      "absolute_error": 5.960464477539063e-08,
+      "absolute_tolerance": 1e-05,
+      "relative_tolerance": 1e-10
+    },
+    {
+      "name": "shapley_full_corner_matches_direct",
+      "passed": true,
+      "actual": -46927.705664164685,
+      "expected": -46927.705664164685,
+      "absolute_error": 0.0,
+      "absolute_tolerance": 1e-08,
+      "relative_tolerance": 1e-10
+    },
+    {
+      "name": "h_multiplier_delta_general_identity",
+      "passed": true,
+      "actual": -137.0,
+      "expected": -137.0,
+      "absolute_error": 0.0,
+      "absolute_tolerance": 1e-08,
+      "relative_tolerance": 1e-10
+    },
+    {
+      "name": "general_symmetric_allocation",
+      "passed": true,
+      "actual": -137.0,
+      "expected": -137.0,
+      "absolute_error": 0.0,
+      "absolute_tolerance": 1e-08,
+      "relative_tolerance": 1e-10
+    },
+    {
+      "name": "fixed_multiplier_formula_is_not_general",
+      "passed": true
+    },
+    {
+      "name": "pure_reference_rebase_has_zero_common_risk_change",
+      "passed": true,
+      "actual": 40.0,
+      "expected": 40.0,
+      "absolute_error": 0.0,
+      "absolute_tolerance": 1e-08,
+      "relative_tolerance": 1e-10
+    },
+    {
+      "name": "direct_path_telescopes",
+      "passed": true,
+      "actual": 10.0,
+      "expected": 10.0,
+      "absolute_error": 0.0,
+      "absolute_tolerance": 1e-08,
+      "relative_tolerance": 1e-10
+    },
+    {
+      "name": "oscillating_path_telescopes",
+      "passed": true,
+      "actual": 10.0,
+      "expected": 10.0,
+      "absolute_error": 0.0,
+      "absolute_tolerance": 1e-08,
+      "relative_tolerance": 1e-10
+    },
+    {
+      "name": "direct_turnover",
+      "passed": true,
+      "actual": 10.0,
+      "expected": 10.0,
+      "absolute_error": 0.0,
+      "absolute_tolerance": 1e-08,
+      "relative_tolerance": 1e-10
+    },
+    {
+      "name": "oscillating_turnover",
+      "passed": true,
+      "actual": 32.0,
+      "expected": 32.0,
+      "absolute_error": 0.0,
+      "absolute_tolerance": 1e-08,
+      "relative_tolerance": 1e-10
+    },
+    {
+      "name": "equal_net_does_not_equal_gross",
+      "passed": true
+    },
+    {
+      "name": "SPX_10XSP_common_sensitivity",
+      "passed": true,
+      "actual": 50.0,
+      "expected": 50.0,
+      "absolute_error": 0.0,
+      "absolute_tolerance": 1e-08,
+      "relative_tolerance": 1e-10
+    },
+    {
+      "name": "one_SPX_half_delta_ES_hedge",
+      "passed": true,
+      "actual": -1.0,
+      "expected": -1.0,
+      "absolute_error": 0.0,
+      "absolute_tolerance": 1e-08,
+      "relative_tolerance": 1e-10
+    },
+    {
+      "name": "NDX_100XND_common_sensitivity",
+      "passed": true,
+      "actual": 50.0,
+      "expected": 50.0,
+      "absolute_error": 0.0,
+      "absolute_tolerance": 1e-08,
+      "relative_tolerance": 1e-10
+    },
+    {
+      "name": "one_NDX_half_delta_NQ_hedge",
+      "passed": true,
+      "actual": -2.5,
+      "expected": -2.5,
+      "absolute_error": 0.0,
+      "absolute_tolerance": 1e-08,
+      "relative_tolerance": 1e-10
+    },
+    {
+      "name": "ES_option_no_extra_100",
+      "passed": true,
+      "actual": -0.5,
+      "expected": -0.5,
+      "absolute_error": 0.0,
+      "absolute_tolerance": 1e-08,
+      "relative_tolerance": 1e-10
+    },
+    {
+      "name": "NQ_option_no_extra_100",
+      "passed": true,
+      "actual": -0.5,
+      "expected": -0.5,
+      "absolute_error": 0.0,
+      "absolute_tolerance": 1e-08,
+      "relative_tolerance": 1e-10
+    },
+    {
+      "name": "same_price_refit_price_1s",
+      "passed": true,
+      "actual": 0.08524874778504454,
+      "expected": 0.08524874778504454,
+      "absolute_error": 0.0,
+      "absolute_tolerance": 2e-09,
+      "relative_tolerance": 1e-09
+    },
+    {
+      "name": "zero_carry_same_price_gamma_1s",
+      "passed": true,
+      "actual": 1.8669475762824617,
+      "expected": 1.8669475762879006,
+      "absolute_error": 5.438982597638642e-12,
+      "absolute_tolerance": 2e-09,
+      "relative_tolerance": 1e-08
+    },
+    {
+      "name": "same_price_refit_price_5s",
+      "passed": true,
+      "actual": 0.19062199500285715,
+      "expected": 0.19062199500285715,
+      "absolute_error": 0.0,
+      "absolute_tolerance": 2e-09,
+      "relative_tolerance": 1e-09
+    },
+    {
+      "name": "zero_carry_same_price_gamma_5s",
+      "passed": true,
+      "actual": 0.8349243376724925,
+      "expected": 0.8349243376721384,
+      "absolute_error": 3.5416114485542494e-13,
+      "absolute_tolerance": 2e-09,
+      "relative_tolerance": 1e-08
+    },
+    {
+      "name": "same_price_refit_price_15s",
+      "passed": true,
+      "actual": 0.33016698021083357,
+      "expected": 0.33016698021083357,
+      "absolute_error": 0.0,
+      "absolute_tolerance": 2e-09,
+      "relative_tolerance": 1e-09
+    },
+    {
+      "name": "zero_carry_same_price_gamma_15s",
+      "passed": true,
+      "actual": 0.48204379034378186,
+      "expected": 0.48204379034370376,
+      "absolute_error": 7.810418978237976e-14,
+      "absolute_tolerance": 2e-09,
+      "relative_tolerance": 1e-08
+    },
+    {
+      "name": "same_price_refit_price_60s",
+      "passed": true,
+      "actual": 0.6603339588518793,
+      "expected": 0.6603339588518793,
+      "absolute_error": 0.0,
+      "absolute_tolerance": 2e-09,
+      "relative_tolerance": 1e-09
+    },
+    {
+      "name": "zero_carry_same_price_gamma_60s",
+      "passed": true,
+      "actual": 0.24102189345209027,
+      "expected": 0.24102189345223216,
+      "absolute_error": 1.41886502547095e-13,
+      "absolute_tolerance": 2e-09,
+      "relative_tolerance": 1e-08
+    },
+    {
+      "name": "same_price_refit_price_300s",
+      "passed": true,
+      "actual": 1.476551601115716,
+      "expected": 1.476551601115716,
+      "absolute_error": 0.0,
+      "absolute_tolerance": 2e-09,
+      "relative_tolerance": 1e-09
+    },
+    {
+      "name": "zero_carry_same_price_gamma_300s",
+      "passed": true,
+      "actual": 0.10778826346339325,
+      "expected": 0.10778826346344833,
+      "absolute_error": 5.508093980921558e-14,
+      "absolute_tolerance": 2e-09,
+      "relative_tolerance": 1e-08
+    },
+    {
+      "name": "same_price_refit_price_900s",
+      "passed": true,
+      "actual": 2.55746231203193,
+      "expected": 2.55746231203193,
+      "absolute_error": 0.0,
+      "absolute_tolerance": 2e-09,
+      "relative_tolerance": 1e-09
+    },
+    {
+      "name": "zero_carry_same_price_gamma_900s",
+      "passed": true,
+      "actual": 0.06223157700604987,
+      "expected": 0.06223157700605285,
+      "absolute_error": 2.976785484776201e-15,
+      "absolute_tolerance": 2e-09,
+      "relative_tolerance": 1e-08
+    },
+    {
+      "name": "same_price_refit_price_1800s",
+      "passed": true,
+      "actual": 3.6167977149016224,
+      "expected": 3.6167977149016224,
+      "absolute_error": 0.0,
+      "absolute_tolerance": 2e-09,
+      "relative_tolerance": 1e-09
+    },
+    {
+      "name": "zero_carry_same_price_gamma_1800s",
+      "passed": true,
+      "actual": 0.04400436382575012,
+      "expected": 0.044004363825750833,
+      "absolute_error": 7.147060721024445e-16,
+      "absolute_tolerance": 2e-09,
+      "relative_tolerance": 1e-08
+    },
+    {
+      "name": "same_price_refit_price_3599s",
+      "passed": true,
+      "actual": 5.1142134390274805,
+      "expected": 5.1142134390274805,
+      "absolute_error": 0.0,
+      "absolute_tolerance": 2e-09,
+      "relative_tolerance": 1e-09
+    },
+    {
+      "name": "zero_carry_same_price_gamma_3599s",
+      "passed": true,
+      "actual": 0.031120097723840837,
+      "expected": 0.03112009772383964,
+      "absolute_error": 1.1969591984239969e-15,
+      "absolute_tolerance": 2e-09,
+      "relative_tolerance": 1e-08
+    },
+    {
+      "name": "same_price_refit_price_3600s",
+      "passed": true,
+      "actual": 5.114923894193453,
+      "expected": 5.114923894193453,
+      "absolute_error": 0.0,
+      "absolute_tolerance": 2e-09,
+      "relative_tolerance": 1e-09
+    },
+    {
+      "name": "zero_carry_same_price_gamma_3600s",
+      "passed": true,
+      "actual": 0.031115775182919667,
+      "expected": 0.031115775182914335,
+      "absolute_error": 5.332539965152705e-15,
+      "absolute_tolerance": 2e-09,
+      "relative_tolerance": 1e-08
+    },
+    {
+      "name": "same_price_refit_price_3601s",
+      "passed": true,
+      "actual": 5.115634250693347,
+      "expected": 5.115634250693347,
+      "absolute_error": 0.0,
+      "absolute_tolerance": 2e-09,
+      "relative_tolerance": 1e-09
+    },
+    {
+      "name": "zero_carry_same_price_gamma_3601s",
+      "passed": true,
+      "actual": 0.031111454442671268,
+      "expected": 0.031111454442671927,
+      "absolute_error": 6.591949208711867e-16,
+      "absolute_tolerance": 2e-09,
+      "relative_tolerance": 1e-08
+    },
+    {
+      "name": "fixed_IV_floor_suppresses_1s_gamma",
+      "passed": true
+    },
+    {
+      "name": "TTE_floor_inactive_after_one_hour",
+      "passed": true,
+      "actual": 1.0,
+      "expected": 1.0,
+      "absolute_error": 0.0,
+      "absolute_tolerance": 1e-08,
+      "relative_tolerance": 1e-10
+    },
+    {
+      "name": "nonzero_carry_refit_preserves_price",
+      "passed": true,
+      "actual": 0.3302026506344191,
+      "expected": 0.3302026506344191,
+      "absolute_error": 0.0,
+      "absolute_tolerance": 2e-09,
+      "relative_tolerance": 1e-10
+    },
+    {
+      "name": "gamma_matches_delta_spot_bump",
+      "passed": true,
+      "actual": 0.003326599805506479,
+      "expected": 0.003326599801728447,
+      "absolute_error": 3.7780321406055695e-12,
+      "absolute_tolerance": 1e-09,
+      "relative_tolerance": 1e-06
+    },
+    {
+      "name": "vanna_uses_decimal_IV",
+      "passed": true,
+      "actual": 0.15048666343459816,
+      "expected": 0.15048666370531816,
+      "absolute_error": 2.707200019713696e-10,
+      "absolute_tolerance": 1e-08,
+      "relative_tolerance": 1e-06
+    },
+    {
+      "name": "calendar_charm_advances_time",
+      "passed": true,
+      "actual": -2.505882082302015,
+      "expected": -2.505882081186517,
+      "absolute_error": 1.1154983603489654e-09,
+      "absolute_tolerance": 1e-06,
+      "relative_tolerance": 1e-06
+    },
+    {
+      "name": "cohort_joint_sum",
+      "passed": true,
+      "actual": -46927.7056641647,
+      "expected": -46927.7056641647,
+      "absolute_error": 0.0,
+      "absolute_tolerance": 1e-08,
+      "relative_tolerance": 1e-10
+    },
+    {
+      "name": "commission_direct_joint_reprice",
+      "passed": true,
+      "actual": -46927.7056641647,
+      "expected": -46927.705664164685,
+      "absolute_error": 1.4551915228366852e-11,
+      "absolute_tolerance": 1e-08,
+      "relative_tolerance": 1e-10
+    },
+    {
+      "name": "inventory_alternatives_can_reverse_pressure_sign",
+      "passed": true
+    }
+  ],
+  "artifacts": {
+    "script": "dealer_pressure_witness.py",
+    "results": "results.json",
+    "figure": "dealer_pressure_synthetic.png",
+    "method": "METHOD.md"
+  }
+}
