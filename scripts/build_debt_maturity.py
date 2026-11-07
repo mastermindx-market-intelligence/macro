@@ -201,11 +201,11 @@ def resolve_cik(ticker: str) -> str | None:
         raw_cik = ticker_cik_map.get(ticker)
         if raw_cik is None:
             return None
-        # a float64 parquet column (e.g. 320193.0) must round-trip cleanly --
-        # never string()-and-strip a float repr, which leaves a trailing ".0".
+        # Use the same exact identity grammar as the ledger. _canon accepts
+        # integral parquet floats (320193.0), without truncating fractions or
+        # coercing booleans into another issuer's CIK.
         try:
-            cik_int = int(float(raw_cik))
-            return _canon(cik_int)
+            return _canon(raw_cik)
         except (TypeError, ValueError):
             return None
     return None
