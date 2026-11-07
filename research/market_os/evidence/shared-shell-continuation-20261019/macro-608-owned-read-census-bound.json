@@ -1,0 +1,6 @@
+{
+  "at": "2026-10-20T19:06:36.836100+00:00",
+  "scope": "Terminate only our optional all-history read census; no Git writer/service/installer effect",
+  "ps": "94572 94506 git -C /Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27 rev-list --objects --no-object-names --missing=print df3cba80e5ff43e3411209381b32d9d4df06bd1f\n",
+  "signalled": true
+}

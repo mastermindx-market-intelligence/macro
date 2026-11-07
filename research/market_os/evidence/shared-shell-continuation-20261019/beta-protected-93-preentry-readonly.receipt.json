@@ -1,0 +1,16 @@
+{
+  "started_at": "2026-10-20T00:51:35.362332+00:00",
+  "readonly": true,
+  "application_A": "e45bde2cac07ac3b29285ff70c40d68900fad62c",
+  "protected_owner_R": "93e303cc32566e72fb086af6d04ba3aa41866c5c",
+  "owner_source_sha256": "c6759cc653e0f19102a015ec52842795bde24eb85766d2e73f3024b4eefe409d",
+  "owner_source_bytes": 207242,
+  "probe_source_sha256": "2552c6ee20c22e06ba22fd629be5a11ea5367f7eaf28094d7c8f8ae774ccd541",
+  "finished_at": "2026-10-20T00:51:36.141373+00:00",
+  "exit": 0,
+  "stdout_sha256": "a7b6a356de4465289cab7dcb7c96e1c1e3af14762e4f00f7070abf2416fd0a30",
+  "stdout_bytes": 17074,
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_bytes": 0,
+  "owner_invoked": false
+}
