@@ -12487,6 +12487,7 @@ jobs:
       - "scripts/fif_coverage_proof.py"
       - "scripts/fif_finding_judgments.py"
       - "scripts/fif_latency_benchmark.py"
+      - "scripts/ci/run_fif_kernel_suites.py"
       - "scripts/fif_pack_quality_report.py"
       - "scripts/fif_recovery_drill.py"
       - "scripts/fif_specialist_packs.py"
@@ -13524,9 +13525,17 @@ jobs:
           python-version: "3.12"
       - name: install minimal deps
         run: pip install pytest pandas numpy pyarrow pyyaml requests fastapi httpx jsonschema jinja2
+      # Hosted dispatch 41580998932 (main 428b42ce): this one pytest step ran
+      # 05:03:04Z–06:16:54Z (73m50s) and was the critical path of an 81-minute
+      # full suite. ubuntu-latest has more than one core; the step used one.
+      # Run 41601828795 then tried two shared pytest-xdist workers. The same
+      # suite finished in 22m52s with 4027 passes, and two files failed because
+      # they shared a process. Each file now gets its own interpreter. Two
+      # interpreters run at once. The count is pinned in the runner.
       - name: FIF kernel suites (class A, hermetic)
         run: >
-          python -m pytest
+          python scripts/ci/run_fif_kernel_suites.py
+          --workers 2
           tests/test_fif_a1_journey_ledger.py
           tests/test_fif_specialist_packs.py
           tests/test_fif_excel_refresh_harness.py
@@ -13647,7 +13656,6 @@ jobs:
           tests/test_fundamental_forensics_bare_year_columns.py
           tests/test_fundamental_forensics_ui.py
           tests/test_fundamental_forensics_wave2_operator.py
-          -q
       # tests/test_fif_p2_evidence_capture.py (FIF P2 #9011, 2026-10-12): its tree-only and
       # fixture-built tests run here on the code gate. The three that build or query the
       # kernel over nightly-advanced data/edgar, data/universe, data/breadth and
