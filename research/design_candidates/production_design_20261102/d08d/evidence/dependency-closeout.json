@@ -1,0 +1,24 @@
+{
+  "observedDateUTC": "2026-11-04",
+  "foundation": {
+    "pr": "https://github.com/mastermindx-market-intelligence/macro/pull/10645",
+    "head": "99df25eec943be94ffdfa46019dee7f510c93b3d",
+    "draft": true,
+    "merged": false,
+    "semanticVersion": "F01-F02-SHELL/1.0.0-candidate.4",
+    "semanticFreeze": "8926b16af4e0c3e5310cdb4cf057390ec04d18ff",
+    "jointFinalReleased": false,
+    "sourceApprovalIsNotNativeApproval": true
+  },
+  "paperPublishedAction": "Mutate the explicitly approved active Paper design. Never auto-retry this action.\n\nCaller must have current write permission and exclusive design-task ownership.\nFile creation/open transitions, native exports, node deletion and token deletion are intentionally not permitted. This tool is part of plugin `Mastermind Paper`.\n\nMCP server instructions: Inspect the active Paper document first. Read the catalog for exact upstream schemas. A snapshot is a drift guard, not permission or a document revision. Only one design operator may own a desktop document at a time. Never retry EFFECT_UNKNOWN; reconcile the original operation with the same carrier.",
+  "paperMutationAttempted": false,
+  "adjacentReturn": [
+    {
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/10649#issuecomment-6619632039",
+      "created_at": "2026-11-04T01:02:36Z",
+      "classification": "D08A PARTIAL/BLOCKED_RETURN; no D08D acceptance inferred"
+    }
+  ],
+  "d08Interface": "D08-OPTIONS/1.0.0",
+  "d08InterfacePin": "d0516e1bad9cb5982d43d20c4167d0355cb70e2c"
+}

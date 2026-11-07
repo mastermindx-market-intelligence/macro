@@ -1,0 +1,942 @@
+{
+  "scope": "Local source-artifact checks only; no production, native Paper, accessibility or formal review acceptance",
+  "dateUTC": "2026-11-04",
+  "result": "PASS",
+  "checkCount": 133,
+  "checks": [
+    {
+      "check": "JSON parseability",
+      "result": "PASS",
+      "detail": 10
+    },
+    {
+      "check": "Audited source manifest",
+      "result": "PASS",
+      "detail": "31 unique observed source paths"
+    },
+    {
+      "check": "Source identities",
+      "result": "PASS",
+      "detail": "All31 bind the same Terminal commit and an exact blob SHA"
+    },
+    {
+      "check": "Capability ledger",
+      "result": "PASS",
+      "detail": {
+        "RETAIN": 25,
+        "IMPROVE": 21,
+        "RELOCATE": 1,
+        "BLOCKED_DATA": 5
+      }
+    },
+    {
+      "check": "Ledger table agrees with JSON",
+      "result": "PASS",
+      "detail": "52 identical IDs"
+    },
+    {
+      "check": "Acceptance specification identifiers",
+      "result": "PASS",
+      "detail": "76 unique future cases; NOT_RUN"
+    },
+    {
+      "check": "Gherkin specification",
+      "result": "PASS",
+      "detail": "16 scenarios; no executed steps"
+    },
+    {
+      "check": "Frozen first-pass image",
+      "result": "PASS",
+      "detail": "equity-1440-dark-en.png"
+    },
+    {
+      "check": "Frozen first-pass image",
+      "result": "PASS",
+      "detail": "equity-390-light-en.png"
+    },
+    {
+      "check": "Frozen first-pass image",
+      "result": "PASS",
+      "detail": "equity-evidence-1024-light-en.png"
+    },
+    {
+      "check": "Frozen first-pass image",
+      "result": "PASS",
+      "detail": "equity-evidence-390-light-en.png"
+    },
+    {
+      "check": "Frozen first-pass image",
+      "result": "PASS",
+      "detail": "futures-1440-dark-en.png"
+    },
+    {
+      "check": "Frozen first-pass image",
+      "result": "PASS",
+      "detail": "futures-320-dark-en.png"
+    },
+    {
+      "check": "Frozen first-pass image",
+      "result": "PASS",
+      "detail": "futures-390-dark-en.png"
+    },
+    {
+      "check": "Frozen first-pass image",
+      "result": "PASS",
+      "detail": "futures-footprint-1440-light-en.png"
+    },
+    {
+      "check": "Frozen first-pass image",
+      "result": "PASS",
+      "detail": "state-atlas-1440-light-en.png"
+    },
+    {
+      "check": "First-pass input count",
+      "result": "PASS",
+      "detail": 9
+    },
+    {
+      "check": "Supporting study count",
+      "result": "PASS",
+      "detail": 14
+    },
+    {
+      "check": "SVG/PNG rendered dimensions",
+      "result": "PASS",
+      "detail": {
+        "file": "studies/advanced-replay-1440-dark-en.png",
+        "pixels": [
+          1440,
+          1556
+        ]
+      }
+    },
+    {
+      "check": "SVG/PNG rendered dimensions",
+      "result": "PASS",
+      "detail": {
+        "file": "studies/equity-1440-dark-en.png",
+        "pixels": [
+          1440,
+          1100
+        ]
+      }
+    },
+    {
+      "check": "SVG/PNG rendered dimensions",
+      "result": "PASS",
+      "detail": {
+        "file": "studies/equity-390-light-en.png",
+        "pixels": [
+          390,
+          1334
+        ]
+      }
+    },
+    {
+      "check": "SVG/PNG rendered dimensions",
+      "result": "PASS",
+      "detail": {
+        "file": "studies/equity-evidence-1024-light-en.png",
+        "pixels": [
+          1024,
+          1100
+        ]
+      }
+    },
+    {
+      "check": "SVG/PNG rendered dimensions",
+      "result": "PASS",
+      "detail": {
+        "file": "studies/equity-evidence-390-light-en.png",
+        "pixels": [
+          390,
+          1220
+        ]
+      }
+    },
+    {
+      "check": "SVG/PNG rendered dimensions",
+      "result": "PASS",
+      "detail": {
+        "file": "studies/equity-source-1024-light-en.png",
+        "pixels": [
+          1024,
+          1360
+        ]
+      }
+    },
+    {
+      "check": "SVG/PNG rendered dimensions",
+      "result": "PASS",
+      "detail": {
+        "file": "studies/futures-1440-dark-en.png",
+        "pixels": [
+          1440,
+          1100
+        ]
+      }
+    },
+    {
+      "check": "SVG/PNG rendered dimensions",
+      "result": "PASS",
+      "detail": {
+        "file": "studies/futures-320-dark-en.png",
+        "pixels": [
+          320,
+          1334
+        ]
+      }
+    },
+    {
+      "check": "SVG/PNG rendered dimensions",
+      "result": "PASS",
+      "detail": {
+        "file": "studies/futures-390-dark-en.png",
+        "pixels": [
+          390,
+          1334
+        ]
+      }
+    },
+    {
+      "check": "SVG/PNG rendered dimensions",
+      "result": "PASS",
+      "detail": {
+        "file": "studies/futures-controls-390-dark-en.png",
+        "pixels": [
+          390,
+          1400
+        ]
+      }
+    },
+    {
+      "check": "SVG/PNG rendered dimensions",
+      "result": "PASS",
+      "detail": {
+        "file": "studies/futures-evidence-390-dark-en.png",
+        "pixels": [
+          390,
+          1320
+        ]
+      }
+    },
+    {
+      "check": "SVG/PNG rendered dimensions",
+      "result": "PASS",
+      "detail": {
+        "file": "studies/futures-footprint-1440-light-en.png",
+        "pixels": [
+          1440,
+          1100
+        ]
+      }
+    },
+    {
+      "check": "SVG/PNG rendered dimensions",
+      "result": "PASS",
+      "detail": {
+        "file": "studies/journey-chooser-return-1440-light-en.png",
+        "pixels": [
+          1440,
+          1430
+        ]
+      }
+    },
+    {
+      "check": "SVG/PNG rendered dimensions",
+      "result": "PASS",
+      "detail": {
+        "file": "studies/state-atlas-1440-light-en.png",
+        "pixels": [
+          1440,
+          1592
+        ]
+      }
+    },
+    {
+      "check": "SVG/PNG rendered dimensions",
+      "result": "PASS",
+      "detail": {
+        "file": "review-input/equity-1440-dark-en.png",
+        "pixels": [
+          1440,
+          900
+        ]
+      }
+    },
+    {
+      "check": "SVG/PNG rendered dimensions",
+      "result": "PASS",
+      "detail": {
+        "file": "review-input/equity-390-light-en.png",
+        "pixels": [
+          390,
+          844
+        ]
+      }
+    },
+    {
+      "check": "SVG/PNG rendered dimensions",
+      "result": "PASS",
+      "detail": {
+        "file": "review-input/equity-evidence-1024-light-en.png",
+        "pixels": [
+          1024,
+          900
+        ]
+      }
+    },
+    {
+      "check": "SVG/PNG rendered dimensions",
+      "result": "PASS",
+      "detail": {
+        "file": "review-input/equity-evidence-390-light-en.png",
+        "pixels": [
+          390,
+          844
+        ]
+      }
+    },
+    {
+      "check": "SVG/PNG rendered dimensions",
+      "result": "PASS",
+      "detail": {
+        "file": "review-input/futures-1440-dark-en.png",
+        "pixels": [
+          1440,
+          900
+        ]
+      }
+    },
+    {
+      "check": "SVG/PNG rendered dimensions",
+      "result": "PASS",
+      "detail": {
+        "file": "review-input/futures-320-dark-en.png",
+        "pixels": [
+          320,
+          844
+        ]
+      }
+    },
+    {
+      "check": "SVG/PNG rendered dimensions",
+      "result": "PASS",
+      "detail": {
+        "file": "review-input/futures-390-dark-en.png",
+        "pixels": [
+          390,
+          844
+        ]
+      }
+    },
+    {
+      "check": "SVG/PNG rendered dimensions",
+      "result": "PASS",
+      "detail": {
+        "file": "review-input/futures-footprint-1440-light-en.png",
+        "pixels": [
+          1440,
+          900
+        ]
+      }
+    },
+    {
+      "check": "SVG/PNG rendered dimensions",
+      "result": "PASS",
+      "detail": {
+        "file": "review-input/state-atlas-1440-light-en.png",
+        "pixels": [
+          1440,
+          1208
+        ]
+      }
+    },
+    {
+      "check": "Relative Markdown target",
+      "result": "PASS",
+      "detail": "README.md: SOURCE_EVIDENCE.md"
+    },
+    {
+      "check": "Relative Markdown target",
+      "result": "PASS",
+      "detail": "README.md: FEATURE_LEDGER.md"
+    },
+    {
+      "check": "Relative Markdown target",
+      "result": "PASS",
+      "detail": "README.md: WORKFLOW_INTERACTION.md"
+    },
+    {
+      "check": "Relative Markdown target",
+      "result": "PASS",
+      "detail": "README.md: TEMPORAL_BACKEND_CONTRACT.md"
+    },
+    {
+      "check": "Relative Markdown target",
+      "result": "PASS",
+      "detail": "README.md: RESPONSIVE_SPEC.md"
+    },
+    {
+      "check": "Relative Markdown target",
+      "result": "PASS",
+      "detail": "README.md: BUILD_ROLLBACK.md"
+    },
+    {
+      "check": "Relative Markdown target",
+      "result": "PASS",
+      "detail": "README.md: ACCEPTANCE_TESTS.md"
+    },
+    {
+      "check": "Relative Markdown target",
+      "result": "PASS",
+      "detail": "README.md: acceptance.feature"
+    },
+    {
+      "check": "Relative Markdown target",
+      "result": "PASS",
+      "detail": "README.md: REVIEW_RETURN.md"
+    },
+    {
+      "check": "Relative Markdown target",
+      "result": "PASS",
+      "detail": "README.md: studies/index.html"
+    },
+    {
+      "check": "Relative Markdown target",
+      "result": "PASS",
+      "detail": "README.md: evidence/"
+    },
+    {
+      "check": "Relative Markdown target",
+      "result": "PASS",
+      "detail": "README.md: review/"
+    },
+    {
+      "check": "Relative Markdown target",
+      "result": "PASS",
+      "detail": "README.md: REVIEW_RETURN.md"
+    },
+    {
+      "check": "Relative Markdown target",
+      "result": "PASS",
+      "detail": "WORKFLOW_INTERACTION.md: SOURCE_EVIDENCE.md"
+    },
+    {
+      "check": "Relative Markdown target",
+      "result": "PASS",
+      "detail": "TEMPORAL_BACKEND_CONTRACT.md: SOURCE_EVIDENCE.md"
+    },
+    {
+      "check": "Relative Markdown target",
+      "result": "PASS",
+      "detail": "TEMPORAL_BACKEND_CONTRACT.md: evidence/source-manifest.json"
+    },
+    {
+      "check": "Relative Markdown target",
+      "result": "PASS",
+      "detail": "SOURCE_EVIDENCE.md: evidence/live-access.json"
+    },
+    {
+      "check": "Relative Markdown target",
+      "result": "PASS",
+      "detail": "SOURCE_EVIDENCE.md: evidence/before-futures-paywall.png"
+    },
+    {
+      "check": "Relative Markdown target",
+      "result": "PASS",
+      "detail": "SOURCE_EVIDENCE.md: evidence/before-equity-paywall.png"
+    },
+    {
+      "check": "Relative Markdown target",
+      "result": "PASS",
+      "detail": "SOURCE_EVIDENCE.md: evidence/source-manifest.json"
+    },
+    {
+      "check": "Relative Markdown target",
+      "result": "PASS",
+      "detail": "SOURCE_EVIDENCE.md: evidence/paper-reference-inventory.json"
+    },
+    {
+      "check": "Relative Markdown target",
+      "result": "PASS",
+      "detail": "SOURCE_EVIDENCE.md: evidence/reference-options-investigate-FG2-0.jpg"
+    },
+    {
+      "check": "Relative Markdown target",
+      "result": "PASS",
+      "detail": "SOURCE_EVIDENCE.md: evidence/paper-admission.json"
+    },
+    {
+      "check": "Relative Markdown target",
+      "result": "PASS",
+      "detail": "RESPONSIVE_SPEC.md: studies/index.html"
+    },
+    {
+      "check": "Relative Markdown target",
+      "result": "PASS",
+      "detail": "RESPONSIVE_SPEC.md: studies/futures-1440-dark-en.png"
+    },
+    {
+      "check": "Relative Markdown target",
+      "result": "PASS",
+      "detail": "RESPONSIVE_SPEC.md: studies/futures-footprint-1440-light-en.png"
+    },
+    {
+      "check": "Relative Markdown target",
+      "result": "PASS",
+      "detail": "RESPONSIVE_SPEC.md: studies/equity-1440-dark-en.png"
+    },
+    {
+      "check": "Relative Markdown target",
+      "result": "PASS",
+      "detail": "RESPONSIVE_SPEC.md: studies/equity-evidence-1024-light-en.png"
+    },
+    {
+      "check": "Relative Markdown target",
+      "result": "PASS",
+      "detail": "RESPONSIVE_SPEC.md: studies/futures-390-dark-en.png"
+    },
+    {
+      "check": "Relative Markdown target",
+      "result": "PASS",
+      "detail": "RESPONSIVE_SPEC.md: studies/futures-320-dark-en.png"
+    },
+    {
+      "check": "Relative Markdown target",
+      "result": "PASS",
+      "detail": "RESPONSIVE_SPEC.md: studies/equity-390-light-en.png"
+    },
+    {
+      "check": "Relative Markdown target",
+      "result": "PASS",
+      "detail": "RESPONSIVE_SPEC.md: studies/equity-evidence-390-light-en.png"
+    },
+    {
+      "check": "Relative Markdown target",
+      "result": "PASS",
+      "detail": "RESPONSIVE_SPEC.md: studies/state-atlas-1440-light-en.png"
+    },
+    {
+      "check": "Relative Markdown target",
+      "result": "PASS",
+      "detail": "RESPONSIVE_SPEC.md: studies/advanced-replay-1440-dark-en.png"
+    },
+    {
+      "check": "Relative Markdown target",
+      "result": "PASS",
+      "detail": "RESPONSIVE_SPEC.md: studies/futures-controls-390-dark-en.png"
+    },
+    {
+      "check": "Relative Markdown target",
+      "result": "PASS",
+      "detail": "RESPONSIVE_SPEC.md: studies/futures-evidence-390-dark-en.png"
+    },
+    {
+      "check": "Relative Markdown target",
+      "result": "PASS",
+      "detail": "RESPONSIVE_SPEC.md: studies/equity-source-1024-light-en.png"
+    },
+    {
+      "check": "Relative Markdown target",
+      "result": "PASS",
+      "detail": "RESPONSIVE_SPEC.md: studies/journey-chooser-return-1440-light-en.png"
+    },
+    {
+      "check": "Relative Markdown target",
+      "result": "PASS",
+      "detail": "RESPONSIVE_SPEC.md: review-input/first-pass-artifacts.json"
+    },
+    {
+      "check": "Relative Markdown target",
+      "result": "PASS",
+      "detail": "RESPONSIVE_SPEC.md: REVIEW_RETURN.md"
+    },
+    {
+      "check": "Relative Markdown target",
+      "result": "PASS",
+      "detail": "RESPONSIVE_SPEC.md: WORKFLOW_INTERACTION.md"
+    },
+    {
+      "check": "Relative Markdown target",
+      "result": "PASS",
+      "detail": "REVIEW_RETURN.md: review/PRODUCT_FIRST_PASS.md"
+    },
+    {
+      "check": "Relative Markdown target",
+      "result": "PASS",
+      "detail": "REVIEW_RETURN.md: review/VISUAL_FIRST_PASS.md"
+    },
+    {
+      "check": "Relative Markdown target",
+      "result": "PASS",
+      "detail": "REVIEW_RETURN.md: review/POST_FREEZE_ADVISORY.md"
+    },
+    {
+      "check": "Relative Markdown target",
+      "result": "PASS",
+      "detail": "REVIEW_RETURN.md: review-input/first-pass-artifacts.json"
+    },
+    {
+      "check": "Relative Markdown target",
+      "result": "PASS",
+      "detail": "FEATURE_LEDGER.md: SOURCE_EVIDENCE.md"
+    },
+    {
+      "check": "Relative Markdown target",
+      "result": "PASS",
+      "detail": "FEATURE_LEDGER.md: REVIEW_RETURN.md"
+    },
+    {
+      "check": "Gallery target",
+      "result": "PASS",
+      "detail": "../README.md"
+    },
+    {
+      "check": "Gallery target",
+      "result": "PASS",
+      "detail": "../RESPONSIVE_SPEC.md"
+    },
+    {
+      "check": "Gallery target",
+      "result": "PASS",
+      "detail": "advanced-replay-1440-dark-en.svg"
+    },
+    {
+      "check": "Gallery target",
+      "result": "PASS",
+      "detail": "advanced-replay-1440-dark-en.png"
+    },
+    {
+      "check": "Gallery target",
+      "result": "PASS",
+      "detail": "advanced-replay-1440-dark-en.png"
+    },
+    {
+      "check": "Gallery target",
+      "result": "PASS",
+      "detail": "equity-1440-dark-en.svg"
+    },
+    {
+      "check": "Gallery target",
+      "result": "PASS",
+      "detail": "equity-1440-dark-en.png"
+    },
+    {
+      "check": "Gallery target",
+      "result": "PASS",
+      "detail": "equity-1440-dark-en.png"
+    },
+    {
+      "check": "Gallery target",
+      "result": "PASS",
+      "detail": "equity-390-light-en.svg"
+    },
+    {
+      "check": "Gallery target",
+      "result": "PASS",
+      "detail": "equity-390-light-en.png"
+    },
+    {
+      "check": "Gallery target",
+      "result": "PASS",
+      "detail": "equity-390-light-en.png"
+    },
+    {
+      "check": "Gallery target",
+      "result": "PASS",
+      "detail": "equity-evidence-1024-light-en.svg"
+    },
+    {
+      "check": "Gallery target",
+      "result": "PASS",
+      "detail": "equity-evidence-1024-light-en.png"
+    },
+    {
+      "check": "Gallery target",
+      "result": "PASS",
+      "detail": "equity-evidence-1024-light-en.png"
+    },
+    {
+      "check": "Gallery target",
+      "result": "PASS",
+      "detail": "equity-evidence-390-light-en.svg"
+    },
+    {
+      "check": "Gallery target",
+      "result": "PASS",
+      "detail": "equity-evidence-390-light-en.png"
+    },
+    {
+      "check": "Gallery target",
+      "result": "PASS",
+      "detail": "equity-evidence-390-light-en.png"
+    },
+    {
+      "check": "Gallery target",
+      "result": "PASS",
+      "detail": "equity-source-1024-light-en.svg"
+    },
+    {
+      "check": "Gallery target",
+      "result": "PASS",
+      "detail": "equity-source-1024-light-en.png"
+    },
+    {
+      "check": "Gallery target",
+      "result": "PASS",
+      "detail": "equity-source-1024-light-en.png"
+    },
+    {
+      "check": "Gallery target",
+      "result": "PASS",
+      "detail": "futures-1440-dark-en.svg"
+    },
+    {
+      "check": "Gallery target",
+      "result": "PASS",
+      "detail": "futures-1440-dark-en.png"
+    },
+    {
+      "check": "Gallery target",
+      "result": "PASS",
+      "detail": "futures-1440-dark-en.png"
+    },
+    {
+      "check": "Gallery target",
+      "result": "PASS",
+      "detail": "futures-320-dark-en.svg"
+    },
+    {
+      "check": "Gallery target",
+      "result": "PASS",
+      "detail": "futures-320-dark-en.png"
+    },
+    {
+      "check": "Gallery target",
+      "result": "PASS",
+      "detail": "futures-320-dark-en.png"
+    },
+    {
+      "check": "Gallery target",
+      "result": "PASS",
+      "detail": "futures-390-dark-en.svg"
+    },
+    {
+      "check": "Gallery target",
+      "result": "PASS",
+      "detail": "futures-390-dark-en.png"
+    },
+    {
+      "check": "Gallery target",
+      "result": "PASS",
+      "detail": "futures-390-dark-en.png"
+    },
+    {
+      "check": "Gallery target",
+      "result": "PASS",
+      "detail": "futures-controls-390-dark-en.svg"
+    },
+    {
+      "check": "Gallery target",
+      "result": "PASS",
+      "detail": "futures-controls-390-dark-en.png"
+    },
+    {
+      "check": "Gallery target",
+      "result": "PASS",
+      "detail": "futures-controls-390-dark-en.png"
+    },
+    {
+      "check": "Gallery target",
+      "result": "PASS",
+      "detail": "futures-evidence-390-dark-en.svg"
+    },
+    {
+      "check": "Gallery target",
+      "result": "PASS",
+      "detail": "futures-evidence-390-dark-en.png"
+    },
+    {
+      "check": "Gallery target",
+      "result": "PASS",
+      "detail": "futures-evidence-390-dark-en.png"
+    },
+    {
+      "check": "Gallery target",
+      "result": "PASS",
+      "detail": "futures-footprint-1440-light-en.svg"
+    },
+    {
+      "check": "Gallery target",
+      "result": "PASS",
+      "detail": "futures-footprint-1440-light-en.png"
+    },
+    {
+      "check": "Gallery target",
+      "result": "PASS",
+      "detail": "futures-footprint-1440-light-en.png"
+    },
+    {
+      "check": "Gallery target",
+      "result": "PASS",
+      "detail": "journey-chooser-return-1440-light-en.svg"
+    },
+    {
+      "check": "Gallery target",
+      "result": "PASS",
+      "detail": "journey-chooser-return-1440-light-en.png"
+    },
+    {
+      "check": "Gallery target",
+      "result": "PASS",
+      "detail": "journey-chooser-return-1440-light-en.png"
+    },
+    {
+      "check": "Gallery target",
+      "result": "PASS",
+      "detail": "state-atlas-1440-light-en.svg"
+    },
+    {
+      "check": "Gallery target",
+      "result": "PASS",
+      "detail": "state-atlas-1440-light-en.png"
+    },
+    {
+      "check": "Gallery target",
+      "result": "PASS",
+      "detail": "state-atlas-1440-light-en.png"
+    },
+    {
+      "check": "Supporting Python syntax",
+      "result": "PASS",
+      "detail": "Static source helpers only; no product code"
+    }
+  ],
+  "studyCount": 14,
+  "firstPassCount": 9,
+  "sourceCount": 31,
+  "ledgerCount": 52,
+  "acceptanceCases": 76,
+  "acceptanceExecutionStatus": "NOT_RUN",
+  "gherkinScenarios": 16,
+  "dimensions": [
+    {
+      "file": "studies/advanced-replay-1440-dark-en.png",
+      "width": 1440,
+      "height": 1556
+    },
+    {
+      "file": "studies/equity-1440-dark-en.png",
+      "width": 1440,
+      "height": 1100
+    },
+    {
+      "file": "studies/equity-390-light-en.png",
+      "width": 390,
+      "height": 1334
+    },
+    {
+      "file": "studies/equity-evidence-1024-light-en.png",
+      "width": 1024,
+      "height": 1100
+    },
+    {
+      "file": "studies/equity-evidence-390-light-en.png",
+      "width": 390,
+      "height": 1220
+    },
+    {
+      "file": "studies/equity-source-1024-light-en.png",
+      "width": 1024,
+      "height": 1360
+    },
+    {
+      "file": "studies/futures-1440-dark-en.png",
+      "width": 1440,
+      "height": 1100
+    },
+    {
+      "file": "studies/futures-320-dark-en.png",
+      "width": 320,
+      "height": 1334
+    },
+    {
+      "file": "studies/futures-390-dark-en.png",
+      "width": 390,
+      "height": 1334
+    },
+    {
+      "file": "studies/futures-controls-390-dark-en.png",
+      "width": 390,
+      "height": 1400
+    },
+    {
+      "file": "studies/futures-evidence-390-dark-en.png",
+      "width": 390,
+      "height": 1320
+    },
+    {
+      "file": "studies/futures-footprint-1440-light-en.png",
+      "width": 1440,
+      "height": 1100
+    },
+    {
+      "file": "studies/journey-chooser-return-1440-light-en.png",
+      "width": 1440,
+      "height": 1430
+    },
+    {
+      "file": "studies/state-atlas-1440-light-en.png",
+      "width": 1440,
+      "height": 1592
+    },
+    {
+      "file": "review-input/equity-1440-dark-en.png",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "review-input/equity-390-light-en.png",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "file": "review-input/equity-evidence-1024-light-en.png",
+      "width": 1024,
+      "height": 900
+    },
+    {
+      "file": "review-input/equity-evidence-390-light-en.png",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "file": "review-input/futures-1440-dark-en.png",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "review-input/futures-320-dark-en.png",
+      "width": 320,
+      "height": 844
+    },
+    {
+      "file": "review-input/futures-390-dark-en.png",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "file": "review-input/futures-footprint-1440-light-en.png",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "review-input/state-atlas-1440-light-en.png",
+      "width": 1440,
+      "height": 1208
+    }
+  ],
+  "localMarkdownLinks": 47,
+  "visualInspection": "Root inspected rendered study captures and repaired observed issues; no independent final reference approval"
+}

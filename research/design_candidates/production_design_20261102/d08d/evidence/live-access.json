@@ -1,0 +1,44 @@
+{
+  "observationWindow": "2026-11-03–04 UTC in connected browser; HTTP status codes not separately captured",
+  "environment": "beta.mastermind-x.com; existing browser session; no login/trial/purchase or account change",
+  "observations": [
+    {
+      "url": "https://beta.mastermind-x.com/options/futures",
+      "result": "OptionsPaywall after shell hydration",
+      "copy": "Unlock the Options desk. Live options flow, chains, exposure (GEX) and unusual activity. Access requires an Essential or Pro plan.",
+      "screenshot": "before-futures-paywall.png"
+    },
+    {
+      "url": "https://beta.mastermind-x.com/options/equity-replay?symbol=NVDA",
+      "result": "same OptionsPaywall after shell hydration",
+      "screenshot": "before-equity-paywall.png"
+    },
+    {
+      "url": "https://beta.mastermind-x.com/dev/options-plan",
+      "result": "404 — Page not found",
+      "dom": "- main:\n  - heading \"404 — Page not found\" [level=1]\n  - paragraph: This page doesn't exist or has moved. Head back to the chart.\n  - link \"Go to chart\":\n    - /url: /terminal\n    - generic: Go to chart\n- alert"
+    },
+    {
+      "url": "https://beta.mastermind-x.com/api/futures?pair=ES&interval=1&rows=1&expiry=all&mapping=ratio",
+      "body": {
+        "error": "access_required"
+      },
+      "dom": "- generic: \"{\\\"error\\\":\\\"access_required\\\"}\""
+    },
+    {
+      "url": "https://beta.mastermind-x.com/api/large-trades?sym=NVDA",
+      "body": {
+        "state": "unavailable",
+        "reason": "feed_not_published"
+      },
+      "dom": "- generic: \"{\\\"state\\\":\\\"unavailable\\\",\\\"reason\\\":\\\"feed_not_published\\\"}\""
+    }
+  ],
+  "inferencesExcluded": [
+    "No entitled normal-data journey proven",
+    "No account tier or guest identity independently established",
+    "No captured HTTP status code asserted",
+    "API source response is not a session/history catalog",
+    "No source SHA established from served deployment"
+  ]
+}
