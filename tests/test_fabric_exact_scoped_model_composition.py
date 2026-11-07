@@ -41,7 +41,7 @@ NATIVE_PINS = {
     "source/pool_status.py": "02922043357d63b4bcfa3791899df27a5c42be12",
     "tests/_offline_boundary.py": "e511ab65fe1cd30bf4d2addac6700ca43c3468da",
     "tests/test_go_application_handler_composition.py": "13ebd6bcee5167926807d7ccdc63bcabed0cf1b1",
-    "tests/test_application_turn_admission.py": "8487163bb0904f8b95f0a9b326efa1622cd0ad0e",
+    "tests/test_application_turn_admission.py": "4cc542888358bf6b46a1e78c581af5ef2f7178aa",
     "tests/test_application_registered_pool_selection.py": "754d6d8c1a6391fcfefdbd26417f87944403ea2b",
     "tests/test_application_registered_pool_composition.py": "3c1bb6f596fa8821af19c71eb2ea2327147b19eb",
     "tests/test_application_auto_request.py": "6e990aa3be10cea5dc6ee19c621bd0b3583de909",

@@ -2435,6 +2435,7 @@ jobs:
       - "tests/test_integrated_answer_clock.py"
       - "tests/test_integrated_answer_consumer_receipt.py"
       - "tests/test_integrated_answer_cs_context_leg.py"
+      - "tests/test_integrated_answer_provenance.py"
       - "tests/test_integrated_answer_v0.py"
       - "tools/**"
       - "worker/**"
@@ -2448,7 +2449,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest fastapi httpx pyyaml requests pandas numpy pyarrow jsonschema
       - name: integrated answer v0 composer
-        run: python -m pytest tests/test_integrated_answer_v0.py tests/test_integrated_answer_clock.py tests/test_integrated_answer_consumer_receipt.py tests/test_integrated_answer_cs_context_leg.py -q
+        run: python -m pytest tests/test_integrated_answer_v0.py tests/test_integrated_answer_clock.py tests/test_integrated_answer_consumer_receipt.py tests/test_integrated_answer_cs_context_leg.py tests/test_integrated_answer_provenance.py -q
 
   c19-wp19-integrated-answer-pins:
     if: ${{ false }}
@@ -25218,6 +25219,8 @@ jobs:
       - "engine/theme_graph/membership_evidence.py"
       - "research/theme_graph/microtheme_membership_candidates_2026-10-08.json"
       - "research/theme_graph/micro_member_research_addendum_20261016/**"
+      # Read-only 103+46 composition; no graph/member admission.
+      - "research/theme_graph/MICRO_CURATOR_READINESS_2026-10-16.md"
       - "engine/theme_graph/ontology_inventory.py"
       - "engine/theme_graph/proposal_worklist.py"
       - "engine/theme_graph/security_navigation.py"
@@ -25236,6 +25239,7 @@ jobs:
       - "tests/test_theme_graph_local_plane.py"
       - "tests/test_theme_graph_micro_membership_research.py"
       - "tests/test_theme_graph_micro_member_addendum.py"
+      - "tests/test_theme_graph_micro_curator_readiness.py"
       - "tests/test_theme_graph_materialize.py"
       - "tests/test_theme_graph_membership_lifecycle.py"
       - "collectors/equity_earnings.py"
@@ -25340,7 +25344,7 @@ jobs:
       - name: dt_contra_state + subsector membership test suites
         run: python -m pytest tests/test_dt_contra_state.py tests/test_build_subsector_membership.py -q
       - name: GMI history integrity and refusal before publication
-        run: TZ=UTC python -m pytest tests/test_gmi_history_integrity.py tests/test_gmi_operating_proof.py tests/test_gmi_activity_membership_admission.py tests/test_basket_membership_pit.py tests/test_theme_graph_membership_lifecycle.py tests/test_theme_graph_materialize.py tests/test_theme_graph_activity_membership_history.py tests/test_theme_graph_local_plane.py tests/test_theme_graph_micro_membership_research.py tests/test_theme_graph_micro_member_addendum.py tests/test_theme_graph_contracts.py tests/test_theme_graph_structural_owner_binding.py tests/test_theme_graph_relation_action_resolver.py tests/test_gmi_activity_proposal_ledger.py tests/test_gmi_activity_history_bridge.py -q
+        run: TZ=UTC python -m pytest tests/test_gmi_history_integrity.py tests/test_gmi_operating_proof.py tests/test_gmi_activity_membership_admission.py tests/test_basket_membership_pit.py tests/test_theme_graph_membership_lifecycle.py tests/test_theme_graph_materialize.py tests/test_theme_graph_activity_membership_history.py tests/test_theme_graph_local_plane.py tests/test_theme_graph_micro_membership_research.py tests/test_theme_graph_micro_member_addendum.py tests/test_theme_graph_micro_curator_readiness.py tests/test_theme_graph_contracts.py tests/test_theme_graph_structural_owner_binding.py tests/test_theme_graph_relation_action_resolver.py tests/test_gmi_activity_proposal_ledger.py tests/test_gmi_activity_history_bridge.py -q
       - name: GMI local and canonical state contract and cutoff reader
         run: TZ=UTC python -m pytest tests/test_theme_graph_state.py -q
       - name: GMI sealed owner, generation integrity, and read-only accepted publications
@@ -25369,6 +25373,9 @@ jobs:
     scope: exclusive
     # Exact Git-tree closure, including subprocess JS inputs and observed data domains.
     paths:
+      - collectors/__init__.py
+      - engine/codex_lane/__init__.py
+      - tests/__init__.py
       - "collectors/base.py"
       - "collectors/fred.py"
       - "collectors/holdings.py"
@@ -26148,6 +26155,24 @@ jobs:
     scope: exclusive
     # Exact Git-tree closure, including subprocess JS inputs and observed data domains.
     paths:
+      - collectors/biocatalyst/__init__.py
+      - engine/biocatalyst/__init__.py
+      - engine/catalyst_opportunity/__init__.py
+      - engine/codex_lane/__init__.py
+      - engine/context_index/__init__.py
+      - engine/earnings_release/__init__.py
+      - engine/entry_radar/replay/__init__.py
+      - engine/institutional_census/__init__.py
+      - engine/intelligence_workspace/adapters/__init__.py
+      - engine/market_os/__init__.py
+      - engine/medtech/__init__.py
+      - engine/news_impact/__init__.py
+      - engine/oracle/__init__.py
+      - engine/press/__init__.py
+      - engine/price_pressure/__init__.py
+      - engine/research_intelligence/__init__.py
+      - engine/seasonality/__init__.py
+      - tests/__init__.py
       - "app/__init__.py"
       - "app/account_actions.py"
       - "app/account_prefs.py"
@@ -31604,6 +31629,7 @@ jobs:
     # (data/neuralweb/confluence_graph.json) would otherwise lose its owner.
     scope: exclusive
     paths:
+      - engine/codex_lane/__init__.py
       - "engine/codex_lane/runner.py"
       - "engine/metabolism/__init__.py"
       - "engine/metabolism/budget_gate.py"
@@ -36117,6 +36143,10 @@ jobs:
     # Exact named dependency closure; retain all commands and only drop opaque fallback.
     scope: exclusive
     paths:
+      - engine/codex_lane/__init__.py
+      - engine/seasonality/__init__.py
+      - lib/dataos/__init__.py
+      - tests/__init__.py
       - "scripts/metabolism_journal.py"
       - "collectors/__init__.py"
       - "collectors/_drip.py"
@@ -40359,6 +40389,19 @@ jobs:
     gate: code
     # Exact Git-tree closure, including subprocess JS inputs and observed data domains.
     paths:
+      - collectors/biocatalyst/__init__.py
+      - engine/biocatalyst/__init__.py
+      - engine/catalyst_opportunity/__init__.py
+      - engine/codex_lane/__init__.py
+      - engine/context_index/__init__.py
+      - engine/earnings_release/__init__.py
+      - engine/institutional_census/__init__.py
+      - engine/intelligence_workspace/adapters/__init__.py
+      - engine/market_os/__init__.py
+      - engine/medtech/__init__.py
+      - engine/news_impact/__init__.py
+      - engine/price_pressure/__init__.py
+      - engine/seasonality/__init__.py
       - ".claude/hooks/model_routing_guard.py"
       - ".claude/settings.json"
       - "admin/__init__.py"

@@ -4406,6 +4406,10 @@ def test_workspace_runtime_contracts_can_start_the_ci_that_validates_them() -> N
 # ---------------------------------------------------------------------------
 
 CURATED_EXCLUSIVE = {
+    # Existing Fabric closures already declare these exclusive jobs.
+    'billing-emails',
+    'sa-w4-improvement-lanes',
+    'unrun-brain-gateway',
     # The Fabric consumer join retains this desk job's complete named closure.
     "unrun-brain-desks",
     # GDELT leaf suites own their exact import/read closure.
@@ -5546,6 +5550,19 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     owner/startup proof adds six planner weight seconds above the prior
     consumer composition. Fund only these measured six seconds; preserve
     job-count, pack, runtime, admission and all required test bounds.
+
+    PR #8899 provenance coverage (2026-11-06): exact-head CI 42231847099,
+    contract job 127939433316, head b0708d5ae2a4 against base 9a867da6f866:
+    index137jobs/5912->5912, free137jobs/5927->5929, Prophet131jobs/5668->5670,
+    all ten packs and identical selected job IDs (no entrants or exits).
+    The sole manifest delta enrolls tests/test_integrated_answer_provenance.py
+    in the existing integrated-answer-v0 owner alongside all four accepted
+    suites. Its unchanged planner estimate rises10->12 from that fifth literal
+    test path; no observed-runtime override or dependency-scope change.
+    Fund only the two additional planning-weight units on free-content and
+    Prophet. Preserve the homepage, every job-count ceiling, ten-pack bound,
+    selectors, suites, timeouts and admission limits. These are planner
+    estimates, not measured execution times.
 
     P12.T32.S3 (2026-11-04): fresh canonical paired source measurements,
     candidate 5f0f047b160b against real base b4df44260aef, using the same
