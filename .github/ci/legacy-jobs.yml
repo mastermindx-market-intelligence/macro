@@ -11870,6 +11870,51 @@ jobs:
       - "scripts/worktree_sparse.py"
       - "config/sparse_worktree.json"
       - "tests/test_stock_dashboard_first_frame.py"
+      # Finite P0B qualification reads these exact source/scene inputs.
+      # Inactive scenes retain strict bindings; no new browser claim.
+      - "mockups/evidence/prophet-p0b-zero-fouc/digest-refresh/**"
+      - "site/account.js"
+      - "site/chart_i18n.js"
+      - "site/charts.js"
+      - "site/dashboard-icons.css"
+      - "site/fonts/Inter-400.woff2"
+      - "site/fonts/Inter-500.woff2"
+      - "site/fonts/Inter-600.woff2"
+      - "site/fonts/Inter-700.woff2"
+      - "site/fonts/Inter-800.woff2"
+      - "site/fonts/Inter-900.woff2"
+      - "site/illus.css"
+      - "site/illus.js"
+      - "site/live.js"
+      - "site/live_config.js"
+      - "site/logo_config.js"
+      - "site/mtf.js"
+      - "site/nav_market.js"
+      - "site/navigation-refresh.css"
+      - "site/product-nav-icons.css"
+      - "site/stock-logos.js"
+      - "site/stocktable.js"
+      - "site/tablesort.js"
+      - "site/theme.css"
+      - "site/theme.js"
+      - "templates/_aibrief_body.html.j2"
+      - "templates/_aibrief_css.j2"
+      - "templates/_cmd_hero.css.j2"
+      - "templates/_decision_card.html.j2"
+      - "templates/_icons.html.j2"
+      - "templates/_lens.html.j2"
+      - "templates/_market_state.css.j2"
+      - "templates/_navlinks.html.j2"
+      - "templates/_prophet_card.html.j2"
+      - "templates/_risk_radar_card.css.j2"
+      - "templates/_risk_radar_card.html.j2"
+      - "templates/_risk_radar_dlg.css.j2"
+      - "templates/_risk_radar_dlg.html.j2"
+      - "templates/_seo_head.html.j2"
+      - "templates/_site_nav.html.j2"
+      # The real checker invocation can read the complete strict scene;
+      # include that conditional closure and the full receipt inventory.
+      - "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout*.json"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -15706,6 +15751,74 @@ jobs:
       - "lib/intl_global_observation_adapter.py"
       - "templates/_navlinks.html.j2"
       - "templates/theme.css"
+      # Finite P0B qualification reads these exact source/scene inputs.
+      # Inactive scenes retain strict bindings; no new browser claim.
+      - "site/charts.js"
+      - "site/chart_i18n.js"
+      - "site/mtf.js"
+      - "site/illus.js"
+      - "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json"
+      - "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json"
+      # The real checker invocation can read the complete strict scene;
+      # include that conditional closure and the full receipt inventory.
+      - "mockups/evidence/prophet-p0b-zero-fouc/digest-refresh/**"
+      - "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/canadabasketdata/baskets.json"
+      - "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/canadabasketdata/sector_pulse_canada.json"
+      - "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/live/overlay.json"
+      - "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/live/quotes.json"
+      - "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/marketdata/rotation_events_hk.json"
+      - "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/p0b-font-pin/cjk-400.woff2"
+      - "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/p0b-font-pin/cjk-700.woff2"
+      - "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/p0b-font-pin/emoji.woff2"
+      - "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/p0b-font-pin/font-pin.json"
+      - "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/p0b-font-pin/pin.css"
+      - "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/p0b-font-pin/symbol-400.woff2"
+      - "mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data/p0b-font-pin/symbol-700.woff2"
+      - "mockups/evidence/prophet-p0b-zero-fouc/inputs/canada-action-fixture.json"
+      - "mockups/evidence/prophet-p0b-zero-fouc/inputs/canada-owner-fixture.json"
+      - "mockups/evidence/prophet-p0b-zero-fouc/inputs/hk-action-fixture.json"
+      - "mockups/evidence/prophet-p0b-zero-fouc/inputs/hk-owner-fixture.json"
+      - "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout*.json"
+      - "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json"
+      - "site/account.js"
+      - "site/canada-stock-v36.js"
+      - "site/dashboard-icons.css"
+      - "site/dashboard-icons.js"
+      - "site/fonts/Inter-400.woff2"
+      - "site/fonts/Inter-500.woff2"
+      - "site/fonts/Inter-600.woff2"
+      - "site/fonts/Inter-700.woff2"
+      - "site/fonts/Inter-800.woff2"
+      - "site/fonts/Inter-900.woff2"
+      - "site/hk-stock-v36.js"
+      - "site/illus.css"
+      - "site/live.js"
+      - "site/live_config.js"
+      - "site/logo_config.js"
+      - "site/nav_market.js"
+      - "site/navigation-refresh.css"
+      - "site/product-nav-icons.css"
+      - "site/stock-logos.js"
+      - "site/stocktable.js"
+      - "site/tablesort.js"
+      - "site/theme.css"
+      - "site/theme.js"
+      - "templates/_aibrief_body.html.j2"
+      - "templates/_aibrief_css.j2"
+      - "templates/_cmd_hero.css.j2"
+      - "templates/_decision_card.html.j2"
+      - "templates/_icons.html.j2"
+      - "templates/_lens.html.j2"
+      - "templates/_market_state.css.j2"
+      - "templates/_prophet_card.html.j2"
+      - "templates/_risk_radar_card.css.j2"
+      - "templates/_risk_radar_card.html.j2"
+      - "templates/_risk_radar_dlg.css.j2"
+      - "templates/_risk_radar_dlg.html.j2"
+      - "templates/_seo_head.html.j2"
+      - "templates/_site_nav.html.j2"
+      - "templates/canada.html.j2"
+      - "templates/hk.html.j2"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -21246,13 +21359,11 @@ jobs:
   p0b-receipt-closure:
     if: ${{ false }}  # executed inside ci-pack — NOT a disabled gate; see the ci-pack job.
     gate: code
-    # ui.p0b_receipt_closure (config/house_law_checks.yml). A change to any
-    # path the committed P0B browser receipts pin
-    # (mockups/evidence/prophet-p0b-zero-fouc/mobile-layout*.json:
-    # construction_inputs, loaded_assets, verifier.path, and
-    # rendered-fixture.json's recipe inputs) must re-mint those receipts in
-    # the same diff, or tests/test_stock_dashboard_first_frame.py reds on pure
-    # main and every fresh merge-ref inherits it (#7500, #7603, #6872).
+    # ui.p0b_receipt_closure (config/house_law_checks.yml). Strict receipt
+    # pins remain the default. A sidecar is eligible only for one explicitly
+    # qualified complete helper vector and exact raw receipt scene. Unknown
+    # scenes receive no overlay; strict retirement never grants eligibility.
+    # Full first-frame self-binding tests remain required.
     #
     # OWN JOB, deliberately (2026-09-24, #6872 postmortem). The gate first
     # shipped as trailing steps on design-governance (#7613). Two defects:

@@ -20,6 +20,8 @@ import pytest
 from bs4 import BeautifulSoup
 from jinja2 import Environment
 
+from scripts import check_p0b_receipt_closure as receipt_closure
+
 
 ROOT = Path(__file__).resolve().parents[1]
 BROWSER_RECEIPT = ROOT / "scripts" / "verify_stock_dashboard_mobile_layout.cjs"
@@ -1590,7 +1592,11 @@ def test_committed_browser_receipts_are_self_binding_fixture_proof(
     assert browser["construction_inputs"][f"templates/{template}"] == _sha256(
         ROOT / "templates" / template
     )
-    for relative, digest in browser["loaded_assets"].items():
+    effective_assets = receipt_closure.effective_loaded_assets(
+        ROOT, BROWSER_RECEIPTS[market].relative_to(ROOT).as_posix(), browser
+    )
+    assert set(effective_assets) == set(browser["loaded_assets"])
+    for relative, digest in effective_assets.items():
         assert _sha256(ROOT / relative) == digest
     assert browser["loaded_assets"]["site/stock-dashboard.css"] == _sha256(
         ROOT / "site" / "stock-dashboard.css"
@@ -1992,6 +1998,576 @@ def test_committed_browser_receipts_are_self_binding_fixture_proof(
         } == expected_quote_states
         assert all(row["pass"] for row in quote_cases.values())
     assert all("screenshot" not in row for row in browser["states"])
+
+
+
+# Finite digest-refresh qualification. The policy is an exact complete helper
+# vector plus the exact outer browser receipts, never a path-only exemption.
+# The initial vector is byte-identical to the captured helpers. This diagnostic
+# does not qualify future source edits or replay the receipts' 64-case matrices.
+DIGEST_ONLY_ASSETS = {
+    "site/charts.js", "site/chart_i18n.js", "site/mtf.js", "site/illus.js",
+}
+DIGEST_ONLY_EXPORTS = {
+    "site/charts.js": set(),
+    "site/chart_i18n.js": set(),
+    "site/mtf.js": {"hydrateMTF", "renderMTF"},
+    "site/illus.js": {"ilxMount", "ilxReveal"},
+}
+DIGEST_ONLY_TOKENS = {
+    "js-plotly-plot": re.compile(r"js-plotly-plot"),
+    "Plotly": re.compile(r"Plotly"),
+    "__CHART_SWAP__": re.compile(r"__CHART_SWAP__"),
+    "data-mtf": re.compile(r"data-mtf"),
+    "hydrateMTF": re.compile(r"hydrateMTF"),
+    "renderMTF": re.compile(r"renderMTF"),
+    "ilxMount": re.compile(r"ilxMount"),
+    "ilxReveal": re.compile(r"ilxReveal"),
+    "ilx": re.compile(r"(?<![\w-])ilx(?![\w-])"),
+}
+DIGEST_ONLY_TOKEN_ALLOWANCE = {
+    "site/theme.js": {"js-plotly-plot", "Plotly", "hydrateMTF"},
+    "templates/hk.html.j2": {"ilxReveal", "ilx"},
+    "templates/canada.html.j2": {"ilxReveal", "ilx"},
+}
+PROBE_PHASES = ["load", "DOMContentLoaded", "load-event", "reached-exports", "other-events"]
+RECEIPT_PAGES = {"mobile-layout.json": "hk_", "mobile-layout-canada.json": "canada_"}
+DIALOG_ROOT_SELECTOR = ".hkx-dlg, .cax-dlg, dialog, [role=dialog]"
+
+
+def _receipt_payloads() -> dict[str, dict]:
+    return {name: json.loads(_read(EVIDENCE_DIR / name)) for name in RECEIPT_PAGES}
+
+
+def _pinned_sources() -> set[str]:
+    return {
+        path
+        for payload in _receipt_payloads().values()
+        for block in ("construction_inputs", "loaded_assets")
+        for path in payload[block]
+        if path.endswith((".js", ".j2", ".html"))
+    }
+
+
+def _diagnostic_qualification() -> dict | None:
+    """Select an exact recorded scene; a historical policy may legitimately be inactive."""
+    receipts = {
+        (EVIDENCE_DIR / name).relative_to(ROOT).as_posix(): _sha256(EVIDENCE_DIR / name)
+        for name in RECEIPT_PAGES
+    }
+    assets = {path: _sha256(ROOT / path) for path in DIGEST_ONLY_ASSETS}
+    matches = [
+        row for row in receipt_closure.QUALIFIED_DIGEST_SCENES
+        if row["receipts"] == receipts and row["assets"] == assets
+    ]
+    assert len(matches) <= 1, "conflicting source/receipt qualifications"
+    return matches[0] if matches else None
+
+
+def _assert_inactive_qualification_is_strict() -> None:
+    """A positive fallback assertion, not a skipped or simulated diagnostic run."""
+    measurements, record, errors = receipt_closure.qualification_status(ROOT)
+    assert measurements == {} and record is None and errors
+    assert receipt_closure.refreshable_measurements(ROOT) == {}
+    for name, payload in _receipt_payloads().items():
+        rel = (EVIDENCE_DIR / name).relative_to(ROOT).as_posix()
+        assert receipt_closure.effective_loaded_assets(ROOT, rel, payload) == payload["loaded_assets"]
+
+
+@pytest.fixture(scope="module")
+def rendered_fixture_pages(tmp_path_factory: pytest.TempPathFactory) -> dict[str, str]:
+    """Run the unchanged public recipe and reproduce all six recorded HTML hashes."""
+    out_dir = tmp_path_factory.mktemp("p0b-qualified-helper-fixture")
+    receipt = out_dir / "rendered-fixture.json"
+    run = subprocess.run(
+        [sys.executable, str(FIXTURE_RECIPE), "--market", "all",
+         "--out-dir", str(out_dir), "--receipt", str(receipt)],
+        cwd=ROOT, capture_output=True, text=True, timeout=60, check=False,
+    )
+    assert run.returncode == 0, run.stderr
+    actual = json.loads(receipt.read_text(encoding="utf-8"))
+    recorded = json.loads(_read(EVIDENCE_DIR / "rendered-fixture.json"))
+    assert actual["markets"] == recorded["markets"]
+    assert actual["runtime"] == recorded["runtime"]
+    outputs = {
+        row["output"]: row["output_sha256"]
+        for market in recorded["markets"].values()
+        for row in market["owner_cases"].values()
+    }
+    assert len(outputs) == 6
+    for name, digest in outputs.items():
+        assert _sha256(out_dir / name) == digest, name
+    return {name: (out_dir / name).read_text(encoding="utf-8") for name in sorted(outputs)}
+
+
+def test_digest_qualification_starts_with_captured_helper_byte_identity() -> None:
+    """Retain the historical baseline record without requiring its scene to stay active."""
+    assert set(receipt_closure.REFRESHABLE_LOADED_ASSETS) == DIGEST_ONLY_ASSETS
+    assert "site/tablesort.js" not in DIGEST_ONLY_ASSETS
+    initial = [row for row in receipt_closure.QUALIFIED_DIGEST_SCENES
+               if row["basis"] == "captured_helper_byte_identity_20261107"]
+    assert len(initial) == 1
+    assert set(initial[0]["assets"]) == DIGEST_ONLY_ASSETS
+    record = _diagnostic_qualification()
+    if record is None:
+        _assert_inactive_qualification_is_strict()
+        return
+    if record != initial[0]:
+        return  # Later policy records carry their own source qualification.
+    loaded = set()
+    for payload in _receipt_payloads().values():
+        assert not DIGEST_ONLY_ASSETS & set(payload["construction_inputs"])
+        for asset in DIGEST_ONLY_ASSETS & set(payload["loaded_assets"]):
+            assert record["assets"][asset] == payload["loaded_assets"][asset]
+            loaded.add(asset)
+    assert loaded == DIGEST_ONLY_ASSETS
+
+
+def test_qualified_receipt_scene_binds_all_actual_layout_inputs() -> None:
+    """Full checkout CI validates binary inputs whether qualification is active or inactive."""
+    diagnostic = _diagnostic_qualification()
+    measurements, record, errors = receipt_closure.qualification_status(ROOT)
+    if diagnostic is None:
+        _assert_inactive_qualification_is_strict()
+        receipts, _hashes, inventory_errors = receipt_closure._receipt_inventory(ROOT)
+        assert inventory_errors == [], inventory_errors
+        strict_errors = receipt_closure._receipt_drift(ROOT, receipts, {})
+        assert strict_errors == [], strict_errors
+    else:
+        assert errors == [], errors
+        assert record == diagnostic
+        assert set(measurements) == DIGEST_ONLY_ASSETS
+
+
+def test_rendered_fixture_gives_qualified_helpers_no_static_targets(
+    rendered_fixture_pages: dict[str, str],
+) -> None:
+    if _diagnostic_qualification() is None:
+        _assert_inactive_qualification_is_strict()
+        return
+    for name, html in rendered_fixture_pages.items():
+        soup = BeautifulSoup(html, "html.parser")
+        assert soup.select(".js-plotly-plot, [data-mtf], .ilx") == [], name
+        assert soup.find_all("script", src=re.compile("plotly", re.I)) == [], name
+        # Every actual dialog is a subtree of this same target-free page.
+        for dialog in soup.select(DIALOG_ROOT_SELECTOR):
+            assert dialog.select(".js-plotly-plot, [data-mtf], .ilx") == [], name
+
+
+def test_qualified_helpers_keep_the_recorded_caller_closure() -> None:
+    """A regression aid for these exact bytes, not a universal JS call-graph proof."""
+    if _diagnostic_qualification() is None:
+        _assert_inactive_qualification_is_strict()
+        return
+    sources = _pinned_sources()
+    assert DIGEST_ONLY_ASSETS <= sources
+    verifier = _read(BROWSER_RECEIPT)
+    for asset in DIGEST_ONLY_ASSETS:
+        assert Path(asset).name not in verifier
+    for relative in sorted(sources - DIGEST_ONLY_ASSETS):
+        found = {name for name, rx in DIGEST_ONLY_TOKENS.items() if rx.search(_read(ROOT / relative))}
+        assert found <= DIGEST_ONLY_TOKEN_ALLOWANCE.get(relative, set()), (relative, found)
+    theme = _read(ROOT / "site/theme.js")
+    assert theme.count("if(window.hydrateMTF)window.hydrateMTF();") == 3
+    assert "new CustomEvent('langchange',{detail:lg})" in theme
+    for market, target in (("hk", "d"), ("canada", "el")):
+        source = _read(ROOT / "templates" / f"{market}.html.j2")
+        assert "if(window.ilxReveal){ ilxReveal(document); }" in source
+        assert "setTimeout(go,60)" in source
+        assert f"setTimeout(function(){{ilxReveal({target});}},340)" in source
+
+
+def test_digest_refresh_sidecars_are_consistent() -> None:
+    assert receipt_closure.sidecar_findings(ROOT) == []
+
+
+# Only the exact qualified source may enter this finite model. Unsupported
+# observations and asynchronous work refuse; they never receive invented browser
+# values. Final prototype descriptor snapshots are diagnostic, not a claim to
+# detect all transient JS effects. The source/scene policy is the eligibility gate.
+INERTNESS_PROBE = r"""'use strict';
+const vm = require('vm');
+const fs = require('fs');
+const crypto = require('crypto');
+const BUILTINS = ['Array','Object','String','Number','Boolean','RegExp','Date','Math','JSON',
+  'isFinite','parseFloat','parseInt','NaN','Infinity','undefined'];
+
+function prototypeState(intrinsics) {
+  const out = new Map();
+  for (const [name, ctor] of Object.entries(intrinsics)) {
+    if (!ctor || !ctor.prototype) continue;
+    const proto = ctor.prototype;
+    out.set(name, {proto, parent: Object.getPrototypeOf(proto),
+      entries: Reflect.ownKeys(proto).map(key => [key, Object.getOwnPropertyDescriptor(proto, key)])});
+  }
+  return out;
+}
+function changedPrototype(before, after) {
+  if (!after || before.proto !== after.proto || before.parent !== after.parent ||
+      before.entries.length !== after.entries.length) return true;
+  return before.entries.some(([key, value], i) => {
+    const [otherKey, other] = after.entries[i];
+    return key !== otherKey || ['value','get','set','writable','enumerable','configurable']
+      .some(field => value[field] !== other[field]);
+  });
+}
+
+function probe(run) {
+  const rep = {page:run.page, asset:run.asset, lang:run.lang, theme:run.theme,
+    viewport:run.viewport, initialReadyState:run.readyState, mutations:[], unmodeled:[],
+    errors:[], queries:[], exports:[], phases:[], calls:[], pending:[]};
+  const source = fs.readFileSync(run.path, 'utf8');
+  const actual = crypto.createHash('sha256').update(source, 'utf8').digest('hex');
+  if (actual !== run.expectedSha256) {
+    rep.unmodeled.push('unqualified source digest; script was not executed');
+    return rep;
+  }
+  const listeners = [];
+  const pending = new Map();
+  let timerId = 0, readyState = run.readyState;
+  const attrs = Object.assign({}, run.htmlAttrs);
+  function unsupported(label) {
+    rep.unmodeled.push(label);
+    throw new Error('unsupported observation/work: ' + label);
+  }
+  function strict(label, value) {
+    return new Proxy(value, {
+      get(t, p) {
+        if (p === Symbol.unscopables) return undefined;
+        if (Object.prototype.hasOwnProperty.call(t, p)) return t[p];
+        return unsupported('read ' + label + '.' + String(p));
+      },
+      has(t, p) {
+        if (Object.prototype.hasOwnProperty.call(t, p)) return true;
+        return unsupported('has ' + label + '.' + String(p));
+      },
+      ownKeys() { return unsupported('ownKeys ' + label); },
+      getOwnPropertyDescriptor() { return unsupported('descriptor ' + label); },
+      getPrototypeOf() { return unsupported('prototype read ' + label); },
+      set(t,p) { rep.mutations.push('set ' + label + '.' + String(p)); return true; },
+      defineProperty(t,p) { rep.mutations.push('define ' + label + '.' + String(p)); return true; },
+      deleteProperty(t,p) { rep.mutations.push('delete ' + label + '.' + String(p)); return true; },
+      setPrototypeOf() { rep.mutations.push('prototype write ' + label); return false; },
+    });
+  }
+  function listen(target, type, fn) {
+    if (!['DOMContentLoaded','load','langchange'].includes(type) || typeof fn !== 'function')
+      return unsupported('listener ' + target + ':' + type);
+    listeners.push({target,type,fn});
+  }
+  function unlisten(target, type, fn) {
+    for (let i=listeners.length-1;i>=0;i--)
+      if (listeners[i].target===target && listeners[i].type===type && listeners[i].fn===fn)
+        listeners.splice(i,1);
+  }
+  function query(scope, kind, sel) {
+    rep.queries.push({scope,kind,sel:String(sel)});
+    return kind === 'qsa' ? [] : null;
+  }
+  function pageNode(label, nodeAttrs, tag) {
+    const own = Object.assign({}, nodeAttrs);
+    const value = {
+      nodeType:1, nodeName:tag.toUpperCase(), tagName:tag.toUpperCase(),
+      getAttribute:n => Object.prototype.hasOwnProperty.call(own,n) ? own[n] : null,
+      hasAttribute:n => Object.prototype.hasOwnProperty.call(own,n),
+      querySelectorAll:sel => query(label,'qsa',sel),
+      querySelector:sel => query(label,'qs',sel),
+      addEventListener:(type,fn) => listen(label,type,fn),
+      removeEventListener:(type,fn) => unlisten(label,type,fn),
+    };
+    for (const name of ['setAttribute','removeAttribute','appendChild','removeChild','append',
+      'prepend','remove','replaceChildren','insertAdjacentHTML','replaceWith'])
+      value[name] = () => { rep.mutations.push(label + '.' + name); };
+    return strict(label,value);
+  }
+  // Root attributes are the verifier-served language/theme axes, including font insertion
+  // on the Python query side. No geometry, media, computed style or font API is fabricated.
+  const htmlValue = {
+    getAttribute:n => Object.prototype.hasOwnProperty.call(attrs,n) ? attrs[n] : null,
+    hasAttribute:n => Object.prototype.hasOwnProperty.call(attrs,n),
+    querySelectorAll:sel => query('html','qsa',sel),
+    querySelector:sel => query('html','qs',sel),
+  };
+  const html = strict('html',htmlValue);
+  const head = pageNode('head',run.headAttrs || {},'head');
+  const body = pageNode('body',run.bodyAttrs || {},'body');
+  const dialogs = (run.dialogs || []).map((d,i) => pageNode('dialog#'+i,d.attrs,d.tag));
+  const docValue = {
+    get readyState() { return readyState; },
+    documentElement:html, head, body,
+    querySelectorAll:sel => query('document','qsa',sel),
+    querySelector:sel => query('document','qs',sel),
+    getElementById:id => query('document','id',id),
+    addEventListener:(type,fn) => listen('document',type,fn),
+    removeEventListener:(type,fn) => unlisten('document',type,fn),
+  };
+  const document = strict('document',docValue);
+  function schedule(name, fn, delay) {
+    const id = ++timerId;
+    pending.set(id, {name, delay});
+    unsupported(name + ': scheduling is outside the empty-target qualification');
+    return id;
+  }
+  function clear(id) { pending.delete(id); }
+  function IntersectionObserver() {
+    return strict('IntersectionObserver', {
+      observe:() => unsupported('IntersectionObserver.observe requires a real target'),
+      unobserve:() => unsupported('IntersectionObserver.unobserve'),
+      disconnect:() => unsupported('IntersectionObserver.disconnect'),
+      takeRecords:() => unsupported('IntersectionObserver.takeRecords'),
+    });
+  }
+  const win = {
+    document, IntersectionObserver,
+    setTimeout:(fn,ms) => schedule('setTimeout',fn,ms), clearTimeout:clear,
+    setInterval:(fn,ms) => schedule('setInterval',fn,ms), clearInterval:clear,
+    requestAnimationFrame:fn => schedule('requestAnimationFrame',fn,null),
+    cancelAnimationFrame:clear,
+    queueMicrotask:() => unsupported('queueMicrotask'),
+    getComputedStyle:() => unsupported('getComputedStyle'),
+    matchMedia:() => unsupported('matchMedia'),
+    addEventListener:(type,fn) => listen('window',type,fn),
+    removeEventListener:(type,fn) => unlisten('window',type,fn),
+  };
+  const context = vm.createContext({}, {codeGeneration:{strings:false,wasm:false}, microtaskMode:'afterEvaluate'});
+  const intrinsics = vm.runInContext('({' + BUILTINS.join(',') + '})',context);
+  const selfNames = new Set(['window','self','globalThis']);
+  const absent = new Set(['Plotly']);
+  let windowProxy;
+  windowProxy = new Proxy(win, {
+    // Intercept unknown bare names too, including typeof. Unknown does not mean absent.
+    has(t,p) {
+      if (p === 'IntersectionObserver' || selfNames.has(p) ||
+          Object.prototype.hasOwnProperty.call(t,p) ||
+          Object.prototype.hasOwnProperty.call(intrinsics,p) || absent.has(p)) return true;
+      unsupported('has window.' + String(p));
+      return true;
+    },
+    get(t,p) {
+      if (p === Symbol.unscopables) return undefined;
+      if (selfNames.has(p)) return windowProxy;
+      if (Object.prototype.hasOwnProperty.call(t,p)) return t[p];
+      if (absent.has(p)) return undefined;
+      if (Object.prototype.hasOwnProperty.call(intrinsics,p)) return intrinsics[p];
+      return unsupported('read window.' + String(p));
+    },
+    set(t,p,v) { rep.exports.push(String(p)); t[p]=v; return true; },
+    ownKeys() { return unsupported('ownKeys window'); },
+    getOwnPropertyDescriptor() { return unsupported('descriptor window'); },
+    getPrototypeOf() { return unsupported('prototype read window'); },
+    defineProperty(t,p) { rep.mutations.push('define window.'+String(p)); return false; },
+    deleteProperty(t,p) { rep.mutations.push('delete window.'+String(p)); return false; },
+    setPrototypeOf() { rep.mutations.push('prototype write window'); return false; },
+  });
+  context.__win = windowProxy;
+  const before = prototypeState(intrinsics);
+  function invoke(fn, receiver, args, label) {
+    context.__callback=fn; context.__receiver=receiver; context.__args=args;
+    try {
+      const result=vm.runInContext('__callback.apply(__receiver,__args)',context,{timeout:1000});
+      if (result && typeof result.then === 'function') unsupported('unowned asynchronous return: '+label);
+    } catch(e) { rep.errors.push(label + ': ' + String(e)); }
+  }
+  function dispatch(target,type,detail) {
+    for (const l of listeners.slice()) if (l.target===target && l.type===type)
+      invoke(l.fn,target==='window'?windowProxy:document,
+        [{type,detail,target:target==='window'?windowProxy:document}],target+':'+type);
+  }
+  function phase(name) {
+    rep.phases.push(name);
+    if (pending.size) rep.unmodeled.push('pending work at '+name);
+  }
+  try {
+    vm.runInContext('(function(){with(__win){\n'+source+'\n}}).call(__win)',context,
+      {filename:run.asset,timeout:1000});
+  } catch(e) { rep.errors.push('load: '+String(e)); }
+  phase('load');
+  if (readyState==='loading') {
+    readyState='interactive'; dispatch('document','DOMContentLoaded',undefined);
+  }
+  phase('DOMContentLoaded');
+  readyState='complete'; dispatch('window','load',undefined);
+  phase('load-event');
+  if (typeof win.hydrateMTF==='function') {
+    rep.calls.push({name:'hydrateMTF',root:'default'});
+    invoke(win.hydrateMTF,windowProxy,[],'hydrateMTF()');
+  }
+  if (typeof win.ilxReveal==='function') {
+    rep.calls.push({name:'ilxReveal',root:'document'});
+    invoke(win.ilxReveal,windowProxy,[document],'ilxReveal(document)');
+    dialogs.forEach((d,i) => {
+      rep.calls.push({name:'ilxReveal',root:'dialog#'+i});
+      invoke(win.ilxReveal,windowProxy,[d],'ilxReveal(dialog#'+i+')');
+    });
+  }
+  phase('reached-exports');
+  attrs['data-lang']=run.lang==='zh'?'en':'zh';
+  attrs.lang=attrs['data-lang']==='zh'?'zh-CN':'en';
+  dispatch('document','langchange',attrs['data-lang']); // actual payload is a string
+  if (typeof win.hydrateMTF==='function')
+    invoke(win.hydrateMTF,windowProxy,[],'theme/language hydrateMTF()');
+  phase('other-events');
+  const after=prototypeState(intrinsics);
+  for (const [name,state] of before)
+    if (changedPrototype(state,after.get(name))) rep.mutations.push(name+'.prototype final descriptors');
+  rep.pending=[...pending.values()];
+  rep.exports=[...new Set(rep.exports)].sort();
+  return rep;
+}
+const spec=JSON.parse(fs.readFileSync(0,'utf8'));
+process.stdout.write(JSON.stringify(spec.runs.map(probe)));
+"""
+
+
+def _attrs(tag) -> dict[str, str]:
+    return {key: " ".join(value) if isinstance(value, list) else value for key, value in tag.attrs.items()}
+
+
+def _served_probe_soup(html: str, lang: str, theme: str):
+    """Represent the existing verifier's declared static axes and font insertion."""
+    soup = BeautifulSoup(html, "html.parser")
+    assert soup.html is not None and soup.head is not None
+    soup.html["lang"] = "zh-CN" if lang == "zh" else "en"
+    soup.html["data-lang"] = lang
+    soup.html["data-theme"] = theme
+    link = soup.new_tag("link", rel="stylesheet", href="/p0b-font-pin/pin.css")
+    soup.head.insert(0, link)
+    return soup
+
+
+def _digest_only_scripts(soup) -> set[str]:
+    return {
+        asset for node in soup.find_all("script", src=True)
+        if (asset := "site/" + node["src"].split("?")[0].rsplit("/", 1)[-1]) in DIGEST_ONLY_ASSETS
+    }
+
+
+def _probe_runs(page: str, html: str, sources: dict[str, Path] | None = None) -> list[dict]:
+    qualification = _diagnostic_qualification()
+    assert qualification is not None, "finite diagnostic is not applicable to this scene"
+    runs = []
+    for lang in ("en", "zh"):
+        for theme in ("dark", "light"):
+            soup = _served_probe_soup(html, lang, theme)
+            dialogs = [{"tag": node.name, "attrs": _attrs(node)} for node in soup.select(DIALOG_ROOT_SELECTOR)]
+            for width, height in ((390, 844), (1440, 900)):
+                for ready_state in ("loading", "complete"):
+                    for asset in sorted(_digest_only_scripts(soup)):
+                        runs.append({
+                            "page": page, "asset": asset, "lang": lang, "theme": theme,
+                            "viewport": {"width": width, "height": height, "device_scale_factor": 1},
+                            "readyState": ready_state, "path": str((sources or {}).get(asset, ROOT / asset)),
+                            "expectedSha256": qualification["assets"][asset],
+                            "htmlAttrs": _attrs(soup.html), "headAttrs": _attrs(soup.head),
+                            "bodyAttrs": _attrs(soup.body), "dialogs": dialogs,
+                        })
+    return runs
+
+
+def _run_probe(runs: list[dict], tmp_path: Path) -> list[dict]:
+    node = shutil.which("node")
+    assert node, "node is required for the stock-dashboard code gate"
+    script = tmp_path / "p0b_qualified_helper_probe.cjs"
+    script.write_text(INERTNESS_PROBE, encoding="utf-8")
+    run = subprocess.run(
+        [node, str(script)], input=json.dumps({"runs": runs}),
+        capture_output=True, text=True, timeout=120, check=False,
+    )
+    assert run.returncode == 0, run.stderr
+    reports = json.loads(run.stdout)
+    assert len(reports) == len(runs)
+    return reports
+
+
+def _probe_findings(report: dict, soup) -> list[str]:
+    where = f"{report['page']} {report['asset']} {report['lang']} {report['theme']} {report['viewport']['width']} {report['initialReadyState']}"
+    findings = [
+        f"{where}: {kind} {item}"
+        for kind in ("errors", "mutations", "unmodeled", "pending")
+        for item in report[kind]
+    ]
+    if report["phases"] != PROBE_PHASES:
+        findings.append(f"{where}: phases {report['phases']}")
+    if set(report["exports"]) != DIGEST_ONLY_EXPORTS[report["asset"]]:
+        findings.append(f"{where}: globals {report['exports']}")
+    for query in report["queries"]:
+        scope = query["scope"]
+        if scope == "document":
+            root = soup
+        elif scope in ("html", "head", "body"):
+            root = soup.find(scope)
+        elif scope.startswith("dialog#"):
+            root = soup.select(DIALOG_ROOT_SELECTOR)[int(scope.removeprefix("dialog#"))]
+        else:
+            root = None
+        try:
+            assert root is not None
+            hits = soup.find_all(id=query["sel"]) if query["kind"] == "id" else root.select(query["sel"])
+        except Exception as exc:
+            findings.append(f"{where}: unanswerable selector {query}: {exc}")
+        else:
+            if hits:
+                findings.append(f"{where}: selector {query} matches {len(hits)} actual node(s)")
+    return findings
+
+
+def test_qualified_helpers_complete_the_declared_empty_target_trace(
+    rendered_fixture_pages: dict[str, str], tmp_path: Path,
+) -> None:
+    """Exact-source diagnostics across six pages and declared axes; no browser replay."""
+    if _diagnostic_qualification() is None:
+        _assert_inactive_qualification_is_strict()
+        return
+    for receipt, payload in _receipt_payloads().items():
+        pages = [html for name, html in rendered_fixture_pages.items() if name.startswith(RECEIPT_PAGES[receipt])]
+        assert len(pages) == 3
+        for html in pages:
+            assert _digest_only_scripts(BeautifulSoup(html, "html.parser")) == (
+                DIGEST_ONLY_ASSETS & set(payload["loaded_assets"])
+            )
+        assert payload["viewport"]["device_scale_factor"] == 1
+        assert payload["desktop_viewport"]["device_scale_factor"] == 1
+    runs = [run for name, html in rendered_fixture_pages.items() for run in _probe_runs(name, html)]
+    assert len(runs) == (3 * 3 + 3 * 4) * 2 * 2 * 2 * 2
+    reports = _run_probe(runs, tmp_path)
+    soups = {
+        (name, lang, theme): _served_probe_soup(html, lang, theme)
+        for name, html in rendered_fixture_pages.items()
+        for lang in ("en", "zh") for theme in ("dark", "light")
+    }
+    findings = [
+        item for report in reports
+        for item in _probe_findings(report, soups[(report["page"], report["lang"], report["theme"])])
+    ]
+    assert findings == [], "\n".join(findings)
+    dialog_calls = [call for report in reports for call in report["calls"] if call["root"].startswith("dialog#")]
+    assert dialog_calls, "actual template dialog callers must be exercised"
+    for report, run in zip(reports, runs):
+        if report["asset"] == "site/illus.js":
+            assert len([c for c in report["calls"] if c["root"].startswith("dialog#")]) == len(run["dialogs"])
+
+
+@pytest.mark.parametrize("prefix", [
+    "throw new Error('would execute an unqualified revision');\n",
+    "const old=Array.prototype.push; Array.prototype.push=function(){}; Array.prototype.push=old;\n",
+    "setInterval(function(){ document.body.remove(); },1);\n",
+    "if (getComputedStyle(document.body).display) document.body.remove();\n",
+])
+def test_diagnostic_rejects_unknown_bytes_before_executing_them(
+    prefix: str, tmp_path: Path,
+) -> None:
+    asset = "site/charts.js"
+    copy = tmp_path / "unqualified-charts.js"
+    copy.write_text(prefix + _read(ROOT / asset), encoding="utf-8")
+    initial = next(row for row in receipt_closure.QUALIFIED_DIGEST_SCENES
+                   if row["basis"] == "captured_helper_byte_identity_20261107")
+    runs = [{"page": "hk_stocks.html", "asset": asset, "lang": "en", "theme": "dark",
+             "viewport": {"width": 390, "height": 844, "device_scale_factor": 1},
+             "readyState": "loading", "path": str(copy),
+             "expectedSha256": initial["assets"][asset]}]
+    report = _run_probe(runs, tmp_path)[0]
+    assert report["unmodeled"] == ["unqualified source digest; script was not executed"]
+    assert report["errors"] == report["mutations"] == report["queries"] == report["exports"] == report["phases"] == []
 
 
 def test_visual_manifest_preserves_history_and_appends_bounded_repair() -> None:
