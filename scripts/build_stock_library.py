@@ -1853,7 +1853,8 @@ def _read_original_selection_native_relation(raw, *, selection_index, started_at
         root = Path(__file__).resolve().parent.parent
         episode_root = root / "data/us_prophet_rank/episodes"
         try:
-            source_rows, source_receipts = read_today_candidate_source_rows(root)
+            source_rows, source_receipts = read_today_candidate_source_rows(
+                root, market_session=binding["market_session"])
             token = attest_candidate_episode_store_bytes(episode_root)
             snapshot = load_candidate_episode_store_snapshot(episode_root)
         except (OSError, ValueError, TypeError) as exc:
@@ -1909,7 +1910,8 @@ def _read_original_selection_native_relation(raw, *, selection_index, started_at
         # This check runs at the original interleaving point. Nothing yielded
         # above can mutate these captured native inputs or redirect this read.
         try:
-            _, after_receipts = read_today_candidate_source_rows(root)
+            _, after_receipts = read_today_candidate_source_rows(
+                root, market_session=binding["market_session"])
             if (after_receipts != source_receipts
                     or attest_candidate_episode_store_bytes(episode_root) != token):
                 raise refuse("CANDIDATE_SNAPSHOT_CHANGED")
@@ -1957,7 +1959,8 @@ def read_today_candidate_projection(repo_root, *, expected_source_sha256, expect
         return unavailable("SELECTION_BINDING_MISMATCH")
     try:
         # Emission and native reconciliation remain their existing owners' work.
-        source_rows, source_receipts = read_today_candidate_source_rows(root)
+        source_rows, source_receipts = read_today_candidate_source_rows(
+            root, market_session=binding["market_session"])
         episode_root = root / "data/us_prophet_rank/episodes"
         token = attest_candidate_episode_store_bytes(episode_root)
         snapshot = load_candidate_episode_store_snapshot(episode_root)
@@ -1981,7 +1984,8 @@ def read_today_candidate_projection(repo_root, *, expected_source_sha256, expect
     try:
         if source_path.read_bytes() != raw:
             return unavailable("SOURCE_SNAPSHOT_CHANGED")
-        _, after_receipts = read_today_candidate_source_rows(root)
+        _, after_receipts = read_today_candidate_source_rows(
+            root, market_session=binding["market_session"])
         if after_receipts != source_receipts or attest_candidate_episode_store_bytes(episode_root) != token:
             return unavailable("CANDIDATE_SNAPSHOT_CHANGED")
         if source_path.read_bytes() != raw:

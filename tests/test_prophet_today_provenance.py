@@ -304,13 +304,19 @@ def test_source_reader_schema_union_and_unreadable_part_refuse_partial_binding(t
     assert _read_today(tmp_path, source)["reason_codes"] == ["CANDIDATE_SNAPSHOT_UNAVAILABLE"]
 
 
-@pytest.mark.parametrize("race", ["added_part", "deleted_part", "changed_part", "changed_source", "b1_head"])
+@pytest.mark.parametrize("race", ["added_part", "deleted_part", "changed_part",
+                                 "changed_historical_part", "changed_source", "b1_head"])
 def test_request_snapshot_race_discards_all_native_inputs(tmp_path, monkeypatch, race):
     source, candidate = _native_today(tmp_path, monkeypatch)
+    historical = candidate.parent / "2026-10.parquet"
+    if race == "changed_historical_part":
+        pd.DataFrame([{"stamp_date": "2026-10-01", "ticker": "OLD"}]).to_parquet(
+            historical, index=False)
     real = context_owner.read_today_candidate_source_rows
     reads = []
 
-    def captured(root):
+    def captured(root, *, market_session=None):
+        assert market_session == "2026-11-27"
         reads.append(root)
         if len(reads) == 2:
             if race == "added_part":
@@ -321,12 +327,15 @@ def test_request_snapshot_race_discards_all_native_inputs(tmp_path, monkeypatch,
                 frame = pd.read_parquet(candidate)
                 frame["extra_provenance"] = "changed"
                 frame.to_parquet(candidate, index=False)
+            elif race == "changed_historical_part":
+                pd.DataFrame([{"stamp_date": "2026-10-01", "ticker": "CHANGED"}]).to_parquet(
+                    historical, index=False)
             elif race == "changed_source":
                 source.write_bytes(source.read_bytes() + b" ")
             else:
                 writer.reconcile(repo_root=tmp_path, nightly=True, replay=False,
                                  recorded_at="2026-11-27T18:07:00Z", correction_path=None)
-        return real(root)
+        return real(root, market_session=market_session)
 
     monkeypatch.setattr(context_owner, "read_today_candidate_source_rows", captured)
     result = _read_today(tmp_path, source)
@@ -335,10 +344,15 @@ def test_request_snapshot_race_discards_all_native_inputs(tmp_path, monkeypatch,
     assert len(reads) == 2
 
 
-def test_duplicate_source_records_cannot_attest_a_single_native_candidate(tmp_path, monkeypatch):
+@pytest.mark.parametrize("placement", ["same_part", "historical_part"])
+def test_duplicate_source_records_cannot_attest_a_single_native_candidate(
+        tmp_path, monkeypatch, placement):
     source, candidate = _native_today(tmp_path, monkeypatch)
     frame = pd.read_parquet(candidate)
-    pd.concat([frame, frame], ignore_index=True).to_parquet(candidate, index=False)
+    if placement == "same_part":
+        pd.concat([frame, frame], ignore_index=True).to_parquet(candidate, index=False)
+    else:
+        frame.to_parquet(candidate.parent / "2026-10.parquet", index=False)
     result = _read_today(tmp_path, source)
     assert result["candidates"][0]["reason_codes"] == ["CANDIDATE_SOURCE_AMBIGUOUS"]
 
@@ -791,11 +805,12 @@ def test_source_race_after_owner_reads_still_discards_the_whole_response(tmp_pat
     real = context_owner.read_today_candidate_source_rows
     reads = []
 
-    def captured(root):
+    def captured(root, *, market_session=None):
+        assert market_session == "2026-11-27"
         reads.append(root)
         if len(reads) == 2:
             source.write_bytes(source.read_bytes() + b" ")
-        return real(root)
+        return real(root, market_session=market_session)
 
     monkeypatch.setattr(context_owner, "read_today_candidate_source_rows", captured)
     result = _read_today(tmp_path, source)
@@ -874,11 +889,12 @@ def test_final_source_guard_refusal_still_reports_completion_clock(tmp_path, mon
     actual = context_owner.read_today_candidate_source_rows
     reads = []
 
-    def race(root):
+    def race(root, *, market_session=None):
+        assert market_session == "2026-11-27"
         reads.append(root)
         if len(reads) == 2:
             source.write_bytes(source.read_bytes() + b" ")
-        return actual(root)
+        return actual(root, market_session=market_session)
 
     monkeypatch.setattr(context_owner, "read_today_candidate_source_rows", race)
     result = _read_today(tmp_path, source)

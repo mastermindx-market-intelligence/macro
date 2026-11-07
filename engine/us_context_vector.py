@@ -266,7 +266,7 @@ def load_candidates(root: Any = None, *, months: Iterable[str] | None = None,
     return pd.concat(frames, ignore_index=True)
 
 
-def read_today_candidate_source_rows(root):
+def read_today_candidate_source_rows(root, *, market_session: str | None = None):
     """Capture native candidate bytes for original Today provenance; no selection.
 
     Uses the existing B1 intake byte reader and canonical source normalization.
@@ -281,7 +281,7 @@ def read_today_candidate_source_rows(root):
     rows = []
     receipts = []
     for part in parts:
-        captured, receipt = _records_snapshot(part)
+        captured, receipt = _records_snapshot(part, candidate_market_session=market_session)
         rows.extend(candidate_source_row(row) for row in captured)
         receipts.append(receipt)
     return rows, receipts
