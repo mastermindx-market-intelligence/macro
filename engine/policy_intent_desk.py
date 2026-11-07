@@ -321,7 +321,7 @@ def _fabric_prepare(brief, context, root):
          "key": "id", "guard": "nightly", "keep_first": False, "eligible": eligible},
         {"kind": "json", "path": "data/regime/policy_intent.json", "value": brief}]
     if context["site_present"]:
-        effects.append({"kind": "json", "path": "site/policy_intent.json",
+        effects.append({"kind": "json", "path": "site/policy_intent.json",  # ci-trigger-closure: data — publication destination, not a source input
                         "value": {k: v for k, v in brief.items() if k != "raw_text"}})
     return effects
 
