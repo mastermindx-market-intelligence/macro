@@ -1,0 +1,1099 @@
+{
+  "source_head": "e73ed3b5c5c19205ee669bc64f7a4aab9f729e81",
+  "base_build_source_head": "e73ed3b5c5c19205ee669bc64f7a4aab9f729e81",
+  "static_asset_followup": null,
+  "public_html_sha256": "f78487726aff58ff1d8ee3deb34a773feeb9f8ac98ac781b3534e6be26942d86",
+  "essential_payload_sha256": "b61b6e4aa03678b4e84e1e4ec96cf745d4a95deaed6ad4b30ba993a631bc8b3f",
+  "public_html_bytes": 793152,
+  "essential_payload_bytes": 9686340,
+  "public_today_articles": 0,
+  "public_rich_cards": 0,
+  "public_pool_rows": 3,
+  "private_top_level": {
+    "schema": "str",
+    "page": "str",
+    "gated": "bool",
+    "required_tier": "str",
+    "built": "str",
+    "total": "int",
+    "preview": "int",
+    "locked": "int",
+    "as_of": "str",
+    "cards_html": "str",
+    "preview_cards_html": "str",
+    "rows": "list",
+    "today_cards_html": "str",
+    "today_preview": "int",
+    "today_total": "int",
+    "today_rows_meta": "list",
+    "today_source_binding": "dict",
+    "panels": "dict",
+    "candidate_pool_html": "str",
+    "candidate_pool_source": "dict",
+    "leader_observations_html": "str",
+    "leaders_html": "str",
+    "ran_html": "str",
+    "actnow_html": "str",
+    "tape_html": "str",
+    "plv_names": "dict",
+    "what_changed_html": "str",
+    "passed_html": "str",
+    "life_gate": "dict",
+    "plan_cards_html": "str"
+  },
+  "scope": "Normal producer HTML unchanged; anonymous offline browser; no premium payload served; no live/authenticated acceptance.",
+  "build_modules": [
+    {
+      "module": "scripts.build_site",
+      "argv": [
+        "scripts.build_site",
+        "--no-refresh-stock-library",
+        "--frozen-us-board-sha256",
+        "7ad850e62d1cf7f78c0b9d3c9bb5d05366ffa51b1c19619ac1f18e30402d6812",
+        "--frozen-us-gate-sha256",
+        "91981e86d0cbea1f9e021e43fcd15ffc256a1c94048602e6a338aab2bc544d22"
+      ],
+      "exit": 0,
+      "seconds": 725.71
+    },
+    {
+      "module": "scripts.inject_data_base",
+      "argv": [
+        "scripts.inject_data_base"
+      ],
+      "exit": 0,
+      "seconds": 8.72
+    },
+    {
+      "module": "scripts.externalize_css",
+      "argv": [
+        "scripts.externalize_css"
+      ],
+      "exit": 0,
+      "seconds": 13.61
+    },
+    {
+      "module": "scripts.optimize_assets",
+      "argv": [
+        "scripts.optimize_assets"
+      ],
+      "exit": 0,
+      "seconds": 42.09
+    }
+  ],
+  "capture_adapter": {
+    "base_tool_sha256": "0b4b7f4b12e6d5e0b4f0952a67fd3410507014e780fb046f2e77bcb050d5a08d",
+    "reason": "Bind actual frozen-native source_head receipt and exercise direct public Sources, without changing producer receipt or serving protected payload."
+  },
+  "cells": [
+    {
+      "case": "1440-light-en",
+      "metrics": {
+        "viewport": 1440,
+        "documentWidth": 1440,
+        "bodyWidth": 1440,
+        "pageHeight": 4480,
+        "h1": "Prophet\nUS stocks",
+        "theme": "light",
+        "lang": "en",
+        "grid": null,
+        "columns": null,
+        "empty": {
+          "rect": {
+            "x": 40,
+            "y": 689.015625,
+            "width": 1360,
+            "height": 277.421875
+          },
+          "text": "PUBLIC PREVIEW · ACCESS LEVEL\nFeatured setups are outside this preview.\nThis access level does not display Featured names. It does not mean no setups exist.\nOpen Screener ↗\n\nBrowse available candidates in Screener. Protected setup details and Save remain account-gated."
+        },
+        "protectedControls": 0,
+        "cards": [],
+        "headings": [
+          {
+            "text": "",
+            "y": 112.87203216552734
+          },
+          {
+            "text": "Prophet\nUS stocks",
+            "y": 195
+          },
+          {
+            "text": "Opportunity workspace",
+            "y": 425.796875
+          },
+          {
+            "text": "TODAY",
+            "y": 613.015625
+          },
+          {
+            "text": "Leaders / waiting for entry",
+            "y": 1401.828125
+          },
+          {
+            "text": "Market context",
+            "y": 2343.796875
+          },
+          {
+            "text": "WHERE THE REGIME IS HEADED · BASE-EFFECT FORWARD PATH",
+            "y": 2448.140625
+          },
+          {
+            "text": "What to act on now 38 grouped ? Theme heat & reasons → Sector Intelligence",
+            "y": 2650.171875
+          },
+          {
+            "text": "Market breadth — S&P 1500 ?",
+            "y": 3300.75
+          },
+          {
+            "text": "Sector buy/sell setups — short-term timing ?",
+            "y": 3564.03125
+          },
+          {
+            "text": "TURN SETUPS — EARLY BOTTOMING SIGNS BY STOCK ?",
+            "y": 4018.625
+          },
+          {
+            "text": "REAL FUND MOVES — STRONGEST CONVICTION ?\nSEE ALL 40 ACCUMULATING →\nACCUMULATION WATCH → SECTOR INTELLIGENCE",
+            "y": 4159.125
+          }
+        ],
+        "visibleDialogs": 2
+      },
+      "page_errors": [],
+      "failed_local_responses": [
+        {
+          "url": "http://127.0.0.1:56710/live/basket_pulse.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:56710/basketdata/baskets.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:56710/live/prophet_live.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:56710/live/breadth.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:56710/live/quotes.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:56710/live/overlay.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:56710/live/risk_state.json?t=1794065813817",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:56710/live/release_publications.json",
+          "status": 404
+        }
+      ],
+      "blocked_external_urls": [
+        "http://127.0.0.1:56710/premiumdata/us_stocks.json",
+        "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev/stockdata/mtf_upturn.json"
+      ],
+      "screenshot": "normal-page-1440-light-en.png",
+      "screenshot_sha256": "f28ce4ea6668d4bbf3326dcc112888b36ae8b3923d9d871268117362db298c14",
+      "native_sources": {
+        "entry_surface": "screener",
+        "same_card_id": "po-screener-1",
+        "selected_sources": true,
+        "close_focus": true,
+        "protected_plan_controls": 0,
+        "screenshot": "native-sources-1440-light-en.png",
+        "screenshot_sha256": "777dcc8e23733d64f410649775cdf4d21fca6503d0775476100262d35afb577e"
+      }
+    },
+    {
+      "case": "1440-light-zh",
+      "metrics": {
+        "viewport": 1440,
+        "documentWidth": 1440,
+        "bodyWidth": 1440,
+        "pageHeight": 4375,
+        "h1": "Prophet\n美国股票",
+        "theme": "light",
+        "lang": "zh-CN",
+        "grid": null,
+        "columns": null,
+        "empty": {
+          "rect": {
+            "x": 40,
+            "y": 688.796875,
+            "width": 1360,
+            "height": 228.234375
+          },
+          "text": "公开预览 · 访问权限\n精选形态不在当前预览范围内。\n当前访问权限不展示精选股票，但并不意味着没有相关形态。\n打开筛选器 ↗\n\n前往筛选器浏览可查看的候选股票。受限形态详情和保存功能仍需相应账户权限。"
+        },
+        "protectedControls": 0,
+        "cards": [],
+        "headings": [
+          {
+            "text": "",
+            "y": 112.87203216552734
+          },
+          {
+            "text": "Prophet\n美国股票",
+            "y": 195
+          },
+          {
+            "text": "机会工作台",
+            "y": 425.796875
+          },
+          {
+            "text": "今日",
+            "y": 611.796875
+          },
+          {
+            "text": "领涨股 / 等待入场条件",
+            "y": 1334.625
+          },
+          {
+            "text": "市场背景",
+            "y": 2277.59375
+          },
+          {
+            "text": "周期将去往何处 · 基数效应前瞻路径",
+            "y": 2381.9375
+          },
+          {
+            "text": "当前可操作 38 个已分组 ? 主题热度与详情 → 行业情报页",
+            "y": 2583.96875
+          },
+          {
+            "text": "市场广度 — 标普1500 ?",
+            "y": 3217.046875
+          },
+          {
+            "text": "板块买卖配置 — 短线择时 ?",
+            "y": 3475.484375
+          },
+          {
+            "text": "拐点形态 — 个股早期筑底迹象 ?",
+            "y": 3913.578125
+          },
+          {
+            "text": "基金真实动作 — 信念最强 ?\n查看全部 40 项增持 →\n增持监测 → 行业情报页",
+            "y": 4054.078125
+          }
+        ],
+        "visibleDialogs": 2
+      },
+      "page_errors": [],
+      "failed_local_responses": [
+        {
+          "url": "http://127.0.0.1:56710/live/basket_pulse.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:56710/basketdata/baskets.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:56710/live/prophet_live.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:56710/live/quotes.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:56710/live/breadth.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:56710/live/overlay.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:56710/live/risk_state.json?t=1794065816664",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:56710/live/release_publications.json",
+          "status": 404
+        }
+      ],
+      "blocked_external_urls": [
+        "http://127.0.0.1:56710/premiumdata/us_stocks.json",
+        "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev/stockdata/mtf_upturn.json"
+      ],
+      "screenshot": "normal-page-1440-light-zh.png",
+      "screenshot_sha256": "f2134b8e75488a7b13ba2cd6b6301c8d9a5ce1b0c692f7be6b9192a007192937",
+      "native_sources": {
+        "entry_surface": "screener",
+        "same_card_id": "po-screener-1",
+        "selected_sources": true,
+        "close_focus": true,
+        "protected_plan_controls": 0,
+        "screenshot": "native-sources-1440-light-zh.png",
+        "screenshot_sha256": "55c6324a12149605ab1abf4e2431f3d01fbfc8b8e8934789d0d8cb3c09b17822"
+      }
+    },
+    {
+      "case": "1440-dark-en",
+      "metrics": {
+        "viewport": 1440,
+        "documentWidth": 1440,
+        "bodyWidth": 1440,
+        "pageHeight": 4470,
+        "h1": "Prophet\nUS stocks",
+        "theme": "dark",
+        "lang": "en",
+        "grid": null,
+        "columns": null,
+        "empty": {
+          "rect": {
+            "x": 40,
+            "y": 689.015625,
+            "width": 1360,
+            "height": 277.421875
+          },
+          "text": "PUBLIC PREVIEW · ACCESS LEVEL\nFeatured setups are outside this preview.\nThis access level does not display Featured names. It does not mean no setups exist.\nOpen Screener ↗\n\nBrowse available candidates in Screener. Protected setup details and Save remain account-gated."
+        },
+        "protectedControls": 0,
+        "cards": [],
+        "headings": [
+          {
+            "text": "",
+            "y": 112.87203216552734
+          },
+          {
+            "text": "Prophet\nUS stocks",
+            "y": 195
+          },
+          {
+            "text": "Opportunity workspace",
+            "y": 425.796875
+          },
+          {
+            "text": "TODAY",
+            "y": 613.015625
+          },
+          {
+            "text": "Leaders / waiting for entry",
+            "y": 1401.828125
+          },
+          {
+            "text": "Market context",
+            "y": 2343.796875
+          },
+          {
+            "text": "WHERE THE REGIME IS HEADED · BASE-EFFECT FORWARD PATH",
+            "y": 2448.140625
+          },
+          {
+            "text": "What to act on now 38 grouped ? Theme heat & reasons → Sector Intelligence",
+            "y": 2650.171875
+          },
+          {
+            "text": "Market breadth — S&P 1500 ?",
+            "y": 3290.75
+          },
+          {
+            "text": "Sector buy/sell setups — short-term timing ?",
+            "y": 3554.03125
+          },
+          {
+            "text": "TURN SETUPS — EARLY BOTTOMING SIGNS BY STOCK ?",
+            "y": 4008.625
+          },
+          {
+            "text": "REAL FUND MOVES — STRONGEST CONVICTION ?\nSEE ALL 40 ACCUMULATING →\nACCUMULATION WATCH → SECTOR INTELLIGENCE",
+            "y": 4149.125
+          }
+        ],
+        "visibleDialogs": 2
+      },
+      "page_errors": [],
+      "failed_local_responses": [
+        {
+          "url": "http://127.0.0.1:56710/live/basket_pulse.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:56710/basketdata/baskets.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:56710/live/prophet_live.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:56710/live/quotes.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:56710/live/overlay.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:56710/live/breadth.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:56710/live/risk_state.json?t=1794065819439",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:56710/live/release_publications.json",
+          "status": 404
+        }
+      ],
+      "blocked_external_urls": [
+        "http://127.0.0.1:56710/premiumdata/us_stocks.json",
+        "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev/stockdata/mtf_upturn.json"
+      ],
+      "screenshot": "normal-page-1440-dark-en.png",
+      "screenshot_sha256": "0c98e59e806cfe80d416c0ae4b133bfbc65993a31c782a395871764d165442f7",
+      "native_sources": {
+        "entry_surface": "screener",
+        "same_card_id": "po-screener-1",
+        "selected_sources": true,
+        "close_focus": true,
+        "protected_plan_controls": 0,
+        "screenshot": "native-sources-1440-dark-en.png",
+        "screenshot_sha256": "06325fd352b34585a3ea0a6a828d175b46058c36d872257c248b1e375782b4ee"
+      }
+    },
+    {
+      "case": "1440-dark-zh",
+      "metrics": {
+        "viewport": 1440,
+        "documentWidth": 1440,
+        "bodyWidth": 1440,
+        "pageHeight": 4365,
+        "h1": "Prophet\n美国股票",
+        "theme": "dark",
+        "lang": "zh-CN",
+        "grid": null,
+        "columns": null,
+        "empty": {
+          "rect": {
+            "x": 40,
+            "y": 688.796875,
+            "width": 1360,
+            "height": 228.234375
+          },
+          "text": "公开预览 · 访问权限\n精选形态不在当前预览范围内。\n当前访问权限不展示精选股票，但并不意味着没有相关形态。\n打开筛选器 ↗\n\n前往筛选器浏览可查看的候选股票。受限形态详情和保存功能仍需相应账户权限。"
+        },
+        "protectedControls": 0,
+        "cards": [],
+        "headings": [
+          {
+            "text": "",
+            "y": 112.87203216552734
+          },
+          {
+            "text": "Prophet\n美国股票",
+            "y": 195
+          },
+          {
+            "text": "机会工作台",
+            "y": 425.796875
+          },
+          {
+            "text": "今日",
+            "y": 611.796875
+          },
+          {
+            "text": "领涨股 / 等待入场条件",
+            "y": 1334.625
+          },
+          {
+            "text": "市场背景",
+            "y": 2277.59375
+          },
+          {
+            "text": "周期将去往何处 · 基数效应前瞻路径",
+            "y": 2381.9375
+          },
+          {
+            "text": "当前可操作 38 个已分组 ? 主题热度与详情 → 行业情报页",
+            "y": 2583.96875
+          },
+          {
+            "text": "市场广度 — 标普1500 ?",
+            "y": 3207.046875
+          },
+          {
+            "text": "板块买卖配置 — 短线择时 ?",
+            "y": 3465.484375
+          },
+          {
+            "text": "拐点形态 — 个股早期筑底迹象 ?",
+            "y": 3903.578125
+          },
+          {
+            "text": "基金真实动作 — 信念最强 ?\n查看全部 40 项增持 →\n增持监测 → 行业情报页",
+            "y": 4044.078125
+          }
+        ],
+        "visibleDialogs": 2
+      },
+      "page_errors": [],
+      "failed_local_responses": [
+        {
+          "url": "http://127.0.0.1:56710/live/basket_pulse.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:56710/basketdata/baskets.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:56710/live/prophet_live.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:56710/live/quotes.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:56710/live/breadth.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:56710/live/overlay.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:56710/live/risk_state.json?t=1794065822166",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:56710/live/release_publications.json",
+          "status": 404
+        }
+      ],
+      "blocked_external_urls": [
+        "http://127.0.0.1:56710/premiumdata/us_stocks.json",
+        "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev/stockdata/mtf_upturn.json"
+      ],
+      "screenshot": "normal-page-1440-dark-zh.png",
+      "screenshot_sha256": "ba6ab4432f99c515fe4feea4701deb7cc80946dcf1a79044a8567e9b3dce03e1",
+      "native_sources": {
+        "entry_surface": "screener",
+        "same_card_id": "po-screener-1",
+        "selected_sources": true,
+        "close_focus": true,
+        "protected_plan_controls": 0,
+        "screenshot": "native-sources-1440-dark-zh.png",
+        "screenshot_sha256": "90827a4d3a58245cc115b8cc8e4eccada5734b0a571bcc555d45e18accce483e"
+      }
+    },
+    {
+      "case": "390-light-en",
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "bodyWidth": 390,
+        "pageHeight": 7139,
+        "h1": "Prophet\nUS stocks",
+        "theme": "light",
+        "lang": "en",
+        "grid": null,
+        "columns": null,
+        "empty": {
+          "rect": {
+            "x": 18,
+            "y": 811.703125,
+            "width": 354,
+            "height": 276.171875
+          },
+          "text": "PUBLIC PREVIEW · ACCESS LEVEL\nFeatured setups are outside this preview.\nThis access level does not display Featured names. It does not mean no setups exist.\nOpen Screener ↗\n\nBrowse available candidates in Screener. Protected setup details and Save remain account-gated."
+        },
+        "protectedControls": 0,
+        "cards": [],
+        "headings": [
+          {
+            "text": "",
+            "y": 103.87203216552734
+          },
+          {
+            "text": "Prophet\nUS stocks",
+            "y": 237.75
+          },
+          {
+            "text": "Opportunity workspace",
+            "y": 502.234375
+          },
+          {
+            "text": "TODAY",
+            "y": 704.703125
+          },
+          {
+            "text": "Leaders / waiting for entry",
+            "y": 1747.609375
+          },
+          {
+            "text": "Market context",
+            "y": 3100.21875
+          },
+          {
+            "text": "WHERE THE REGIME IS HEADED · BASE-EFFECT FORWARD PATH",
+            "y": 3253.015625
+          },
+          {
+            "text": "What to act on now 38 grouped ? Theme heat & reasons → Sector Intelligence",
+            "y": 3624.546875
+          },
+          {
+            "text": "Market breadth — S&P 1500 ?",
+            "y": 5265.625
+          },
+          {
+            "text": "Sector buy/sell setups — short-term timing ?",
+            "y": 5814.25
+          },
+          {
+            "text": "TURN SETUPS — EARLY BOTTOMING SIGNS BY STOCK ?",
+            "y": 6523.1875
+          },
+          {
+            "text": "REAL FUND MOVES — STRONGEST CONVICTION ?\nSEE ALL 40 ACCUMULATING →\nACCUMULATION WATCH → SECTOR INTELLIGENCE",
+            "y": 6733.6875
+          }
+        ],
+        "visibleDialogs": 2
+      },
+      "page_errors": [],
+      "failed_local_responses": [
+        {
+          "url": "http://127.0.0.1:56710/live/basket_pulse.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:56710/basketdata/baskets.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:56710/live/prophet_live.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:56710/live/quotes.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:56710/live/breadth.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:56710/live/overlay.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:56710/live/risk_state.json?t=1794065824672",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:56710/live/release_publications.json",
+          "status": 404
+        }
+      ],
+      "blocked_external_urls": [
+        "http://127.0.0.1:56710/premiumdata/us_stocks.json",
+        "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev/stockdata/mtf_upturn.json"
+      ],
+      "screenshot": "normal-page-390-light-en.png",
+      "screenshot_sha256": "1b309d6e790b9ebe6ef492e09c169f570bff275527973b60220405b5771717cc",
+      "native_sources": {
+        "entry_surface": "screener",
+        "same_card_id": "po-screener-1",
+        "selected_sources": true,
+        "close_focus": true,
+        "protected_plan_controls": 0,
+        "screenshot": "native-sources-390-light-en.png",
+        "screenshot_sha256": "5e700c227c74bd161a2ce722657fb835ab39752bcdb65c5d360be1f21d0933b3"
+      }
+    },
+    {
+      "case": "390-light-zh",
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "bodyWidth": 390,
+        "pageHeight": 6617,
+        "h1": "Prophet\n美国股票",
+        "theme": "light",
+        "lang": "zh-CN",
+        "grid": null,
+        "columns": null,
+        "empty": {
+          "rect": {
+            "x": 18,
+            "y": 757.734375,
+            "width": 354,
+            "height": 253.671875
+          },
+          "text": "公开预览 · 访问权限\n精选形态不在当前预览范围内。\n当前访问权限不展示精选股票，但并不意味着没有相关形态。\n打开筛选器 ↗\n\n前往筛选器浏览可查看的候选股票。受限形态详情和保存功能仍需相应账户权限。"
+        },
+        "protectedControls": 0,
+        "cards": [],
+        "headings": [
+          {
+            "text": "",
+            "y": 103.87203216552734
+          },
+          {
+            "text": "Prophet\n美国股票",
+            "y": 237.75
+          },
+          {
+            "text": "机会工作台",
+            "y": 467.234375
+          },
+          {
+            "text": "今日",
+            "y": 669.484375
+          },
+          {
+            "text": "领涨股 / 等待入场条件",
+            "y": 1551.296875
+          },
+          {
+            "text": "市场背景",
+            "y": 2780.5
+          },
+          {
+            "text": "周期将去往何处 · 基数效应前瞻路径",
+            "y": 2874.046875
+          },
+          {
+            "text": "当前可操作 38 个已分组 ? 主题热度与详情 → 行业情报页",
+            "y": 3199.828125
+          },
+          {
+            "text": "市场广度 — 标普1500 ?",
+            "y": 4806.03125
+          },
+          {
+            "text": "板块买卖配置 — 短线择时 ?",
+            "y": 5312.3125
+          },
+          {
+            "text": "拐点形态 — 个股早期筑底迹象 ?",
+            "y": 6093.90625
+          },
+          {
+            "text": "基金真实动作 — 信念最强 ?\n查看全部 40 项增持 →\n增持监测 → 行业情报页",
+            "y": 6281.90625
+          }
+        ],
+        "visibleDialogs": 2
+      },
+      "page_errors": [],
+      "failed_local_responses": [
+        {
+          "url": "http://127.0.0.1:56710/live/basket_pulse.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:56710/basketdata/baskets.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:56710/live/prophet_live.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:56710/live/quotes.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:56710/live/breadth.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:56710/live/overlay.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:56710/live/risk_state.json?t=1794065827042",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:56710/live/release_publications.json",
+          "status": 404
+        }
+      ],
+      "blocked_external_urls": [
+        "http://127.0.0.1:56710/premiumdata/us_stocks.json",
+        "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev/stockdata/mtf_upturn.json"
+      ],
+      "screenshot": "normal-page-390-light-zh.png",
+      "screenshot_sha256": "e21ea8a9669fca4b0319ee9acc014499f7b9bbb8ab1255d93033d71a4cf922a9",
+      "native_sources": {
+        "entry_surface": "screener",
+        "same_card_id": "po-screener-1",
+        "selected_sources": true,
+        "close_focus": true,
+        "protected_plan_controls": 0,
+        "screenshot": "native-sources-390-light-zh.png",
+        "screenshot_sha256": "69fe8957ebf3aa3d19d84ba87394ae7862ebb458830d9d6282b369c664d2a464"
+      }
+    },
+    {
+      "case": "390-dark-en",
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "bodyWidth": 390,
+        "pageHeight": 7129,
+        "h1": "Prophet\nUS stocks",
+        "theme": "dark",
+        "lang": "en",
+        "grid": null,
+        "columns": null,
+        "empty": {
+          "rect": {
+            "x": 18,
+            "y": 811.703125,
+            "width": 354,
+            "height": 276.171875
+          },
+          "text": "PUBLIC PREVIEW · ACCESS LEVEL\nFeatured setups are outside this preview.\nThis access level does not display Featured names. It does not mean no setups exist.\nOpen Screener ↗\n\nBrowse available candidates in Screener. Protected setup details and Save remain account-gated."
+        },
+        "protectedControls": 0,
+        "cards": [],
+        "headings": [
+          {
+            "text": "",
+            "y": 103.87203216552734
+          },
+          {
+            "text": "Prophet\nUS stocks",
+            "y": 237.75
+          },
+          {
+            "text": "Opportunity workspace",
+            "y": 502.234375
+          },
+          {
+            "text": "TODAY",
+            "y": 704.703125
+          },
+          {
+            "text": "Leaders / waiting for entry",
+            "y": 1747.609375
+          },
+          {
+            "text": "Market context",
+            "y": 3100.21875
+          },
+          {
+            "text": "WHERE THE REGIME IS HEADED · BASE-EFFECT FORWARD PATH",
+            "y": 3253.015625
+          },
+          {
+            "text": "What to act on now 38 grouped ? Theme heat & reasons → Sector Intelligence",
+            "y": 3624.546875
+          },
+          {
+            "text": "Market breadth — S&P 1500 ?",
+            "y": 5255.625
+          },
+          {
+            "text": "Sector buy/sell setups — short-term timing ?",
+            "y": 5804.25
+          },
+          {
+            "text": "TURN SETUPS — EARLY BOTTOMING SIGNS BY STOCK ?",
+            "y": 6513.1875
+          },
+          {
+            "text": "REAL FUND MOVES — STRONGEST CONVICTION ?\nSEE ALL 40 ACCUMULATING →\nACCUMULATION WATCH → SECTOR INTELLIGENCE",
+            "y": 6723.6875
+          }
+        ],
+        "visibleDialogs": 2
+      },
+      "page_errors": [],
+      "failed_local_responses": [
+        {
+          "url": "http://127.0.0.1:56710/live/basket_pulse.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:56710/basketdata/baskets.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:56710/live/prophet_live.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:56710/live/quotes.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:56710/live/overlay.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:56710/live/breadth.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:56710/live/risk_state.json?t=1794065829588",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:56710/live/release_publications.json",
+          "status": 404
+        }
+      ],
+      "blocked_external_urls": [
+        "http://127.0.0.1:56710/premiumdata/us_stocks.json",
+        "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev/stockdata/mtf_upturn.json"
+      ],
+      "screenshot": "normal-page-390-dark-en.png",
+      "screenshot_sha256": "f18c7b181e9a5ad975afcdf6d8ba4023aacd8cddacecfe15df147309f3726bc6",
+      "native_sources": {
+        "entry_surface": "screener",
+        "same_card_id": "po-screener-1",
+        "selected_sources": true,
+        "close_focus": true,
+        "protected_plan_controls": 0,
+        "screenshot": "native-sources-390-dark-en.png",
+        "screenshot_sha256": "bdba59046d485cf3d5c45a123fa924c572877c9f14d1a3db9733593ffd6a41f4"
+      }
+    },
+    {
+      "case": "390-dark-zh",
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "bodyWidth": 390,
+        "pageHeight": 6607,
+        "h1": "Prophet\n美国股票",
+        "theme": "dark",
+        "lang": "zh-CN",
+        "grid": null,
+        "columns": null,
+        "empty": {
+          "rect": {
+            "x": 18,
+            "y": 757.734375,
+            "width": 354,
+            "height": 253.671875
+          },
+          "text": "公开预览 · 访问权限\n精选形态不在当前预览范围内。\n当前访问权限不展示精选股票，但并不意味着没有相关形态。\n打开筛选器 ↗\n\n前往筛选器浏览可查看的候选股票。受限形态详情和保存功能仍需相应账户权限。"
+        },
+        "protectedControls": 0,
+        "cards": [],
+        "headings": [
+          {
+            "text": "",
+            "y": 103.87203216552734
+          },
+          {
+            "text": "Prophet\n美国股票",
+            "y": 237.75
+          },
+          {
+            "text": "机会工作台",
+            "y": 467.234375
+          },
+          {
+            "text": "今日",
+            "y": 669.484375
+          },
+          {
+            "text": "领涨股 / 等待入场条件",
+            "y": 1551.296875
+          },
+          {
+            "text": "市场背景",
+            "y": 2780.5
+          },
+          {
+            "text": "周期将去往何处 · 基数效应前瞻路径",
+            "y": 2874.046875
+          },
+          {
+            "text": "当前可操作 38 个已分组 ? 主题热度与详情 → 行业情报页",
+            "y": 3199.828125
+          },
+          {
+            "text": "市场广度 — 标普1500 ?",
+            "y": 4796.03125
+          },
+          {
+            "text": "板块买卖配置 — 短线择时 ?",
+            "y": 5302.3125
+          },
+          {
+            "text": "拐点形态 — 个股早期筑底迹象 ?",
+            "y": 6083.90625
+          },
+          {
+            "text": "基金真实动作 — 信念最强 ?\n查看全部 40 项增持 →\n增持监测 → 行业情报页",
+            "y": 6271.90625
+          }
+        ],
+        "visibleDialogs": 2
+      },
+      "page_errors": [],
+      "failed_local_responses": [
+        {
+          "url": "http://127.0.0.1:56710/live/basket_pulse.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:56710/basketdata/baskets.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:56710/live/prophet_live.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:56710/live/quotes.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:56710/live/breadth.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:56710/live/overlay.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:56710/live/risk_state.json?t=1794065831939",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:56710/live/release_publications.json",
+          "status": 404
+        }
+      ],
+      "blocked_external_urls": [
+        "http://127.0.0.1:56710/premiumdata/us_stocks.json",
+        "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev/stockdata/mtf_upturn.json"
+      ],
+      "screenshot": "normal-page-390-dark-zh.png",
+      "screenshot_sha256": "071e7179a883304a14f25cfe87e966ac18fd3202886179dc0eebef23bb863935",
+      "native_sources": {
+        "entry_surface": "screener",
+        "same_card_id": "po-screener-1",
+        "selected_sources": true,
+        "close_focus": true,
+        "protected_plan_controls": 0,
+        "screenshot": "native-sources-390-dark-zh.png",
+        "screenshot_sha256": "b9b5842497efc2e9382e1ca5b56e6dffb13d4317bf6e8809a5f2265ec009366c"
+      }
+    }
+  ],
+  "completed_at": 1794065834.503392
+}

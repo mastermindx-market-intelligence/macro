@@ -1,0 +1,27 @@
+{
+  "changed": [
+    "site/factordata/signal_gate.json",
+    "site/factordata/us_standouts.json"
+  ],
+  "old": {
+    "site/factordata/signal_gate.json": {
+      "bytes": 779707,
+      "sha256": "3453873981f10775dfbb64e60c23f778fabcbef7ce517550857389d6d7992695"
+    },
+    "site/factordata/us_standouts.json": {
+      "bytes": 2017523,
+      "sha256": "38b6de8f797d9629bb1604801ff3fe1f4712a3280f8784a30a1471bcc6dbe3a2"
+    }
+  },
+  "new": {
+    "site/factordata/signal_gate.json": {
+      "bytes": 779986,
+      "sha256": "91981e86d0cbea1f9e021e43fcd15ffc256a1c94048602e6a338aab2bc544d22"
+    },
+    "site/factordata/us_standouts.json": {
+      "bytes": 2023154,
+      "sha256": "7ad850e62d1cf7f78c0b9d3c9bb5d05366ffa51b1c19619ac1f18e30402d6812"
+    }
+  },
+  "unchanged_count": 1913
+}
