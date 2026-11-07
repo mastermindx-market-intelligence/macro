@@ -1,0 +1,89 @@
+{
+  "completed_at": "2026-10-20T00:07:28.094729+00:00",
+  "environment": {
+    "python": "/private/tmp/prophet-wmko-test-env-20261018/bin/python",
+    "version": "3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.0.0 (clang-2100.1.1.101)]",
+    "yfinance": "/private/tmp/prophet-wmko-test-env-20261018/lib/python3.14/site-packages/yfinance/__init__.py"
+  },
+  "head": "aa7322918a2cacc99c2b5bcb0b5bd0181a331022",
+  "merge_head": "ec836731b5f3ef6fa630ffbc5f3887e42e2137db",
+  "pr_before": {
+    "comments": 4,
+    "head": "aa7322918a2cacc99c2b5bcb0b5bd0181a331022",
+    "labels": [
+      "merge-blocked"
+    ]
+  },
+  "protected_mastermind_pin": "d5cce731a23588ddbf4df806bd9e8dcfa5eecf24",
+  "raw31_preserved": true,
+  "results": [
+    {
+      "argv": [
+        "/private/tmp/prophet-wmko-test-env-20261018/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_us_turn_watch.py",
+        "tests/test_us_turn_watch_v2.py",
+        "tests/test_prophet_early_observations.py",
+        "tests/test_prophet_early_observations_v2.py",
+        "tests/test_prophet_observations_api.py",
+        "tests/test_prophet_wmko_delivery_contract.py",
+        "tests/test_yahoo_universe_backfill.py",
+        "tests/test_us_scan_tier.py",
+        "tests/test_us_leader_pullback_coverage.py",
+        "-q",
+        "-ra"
+      ],
+      "elapsed_seconds": 31.781,
+      "exit_code": 1,
+      "name": "backend_battery",
+      "started_at": "2026-10-20T00:06:45.896229+00:00",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "efe3c1e42e6e55dd871218f6249632c01820965710cb444f3a870e22663bac4f",
+      "summary_lines": [
+        "6 failed, 387 passed, 1 skipped, 7 warnings in 29.28s"
+      ]
+    },
+    {
+      "argv": [
+        "/private/tmp/prophet-wmko-test-env-20261018/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_deploy_update_self_heal.py::test_api_load_time_import_closure_is_covered_by_restart_regex",
+        "-q",
+        "-ra"
+      ],
+      "elapsed_seconds": 9.459,
+      "exit_code": 0,
+      "name": "restart_closure",
+      "started_at": "2026-10-20T00:07:17.678085+00:00",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "f72eb5fa4bff0bf0b283cbde688c9fe665e7a57d3eac9a8e18fb39a5317cf156",
+      "summary_lines": [
+        "1 passed, 2 warnings in 8.21s"
+      ]
+    },
+    {
+      "argv": [
+        "bash",
+        "-n",
+        "app/deploy/update.sh"
+      ],
+      "elapsed_seconds": 0.012,
+      "exit_code": 0,
+      "name": "owner_shell_syntax",
+      "started_at": "2026-10-20T00:07:27.137259+00:00",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "summary_lines": []
+    }
+  ],
+  "root": "prophet-wmko-miss-20261018",
+  "scope": "Existing backend battery and precise restart closure on the original resolved integration; no source edit, commit, push, CI dispatch, production mutation or live proof.",
+  "source_tree_unchanged": true,
+  "started_at": "2026-10-20T00:06:45.895460+00:00",
+  "success": false,
+  "test_log_sha256": "230ac350b70f4866cd5d9bffd622ed40510ed64cb7874578f32a2a33a89ed078",
+  "tested_index_tree": "dd5737c6f653d3dd155c1bb803693fdaf97b77b5",
+  "unstaged_tracked_paths": []
+}

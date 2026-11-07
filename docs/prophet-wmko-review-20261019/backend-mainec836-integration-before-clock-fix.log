@@ -1,0 +1,361 @@
+{"environment": {"python": "/private/tmp/prophet-wmko-test-env-20261018/bin/python", "version": "3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.0.0 (clang-2100.1.1.101)]", "yfinance": "/private/tmp/prophet-wmko-test-env-20261018/lib/python3.14/site-packages/yfinance/__init__.py"}, "head": "aa7322918a2cacc99c2b5bcb0b5bd0181a331022", "merge_head": "ec836731b5f3ef6fa630ffbc5f3887e42e2137db", "pr_before": {"comments": 4, "head": "aa7322918a2cacc99c2b5bcb0b5bd0181a331022", "labels": ["merge-blocked"]}, "protected_mastermind_pin": "d5cce731a23588ddbf4df806bd9e8dcfa5eecf24", "results": [], "root": "prophet-wmko-miss-20261018", "scope": "Existing backend battery and precise restart closure on the original resolved integration; no source edit, commit, push, CI dispatch, production mutation or live proof.", "started_at": "2026-10-20T00:06:45.895460+00:00", "tested_index_tree": "dd5737c6f653d3dd155c1bb803693fdaf97b77b5", "type": "run_start"}
+{"type": "command_start", "name": "backend_battery", "argv": ["/private/tmp/prophet-wmko-test-env-20261018/bin/python", "-m", "pytest", "tests/test_us_turn_watch.py", "tests/test_us_turn_watch_v2.py", "tests/test_prophet_early_observations.py", "tests/test_prophet_early_observations_v2.py", "tests/test_prophet_observations_api.py", "tests/test_prophet_wmko_delivery_contract.py", "tests/test_yahoo_universe_backfill.py", "tests/test_us_scan_tier.py", "tests/test_us_leader_pullback_coverage.py", "-q", "-ra"], "started_at": "2026-10-20T00:06:45.896229+00:00"}
+.............................................................F....FFF..F [ 18%]
+F....................................................................... [ 36%]
+........................................................................ [ 54%]
+...........................s............................................ [ 73%]
+........................................................................ [ 91%]
+..................................                                       [100%]
+=================================== FAILURES ===================================
+______________ test_short_history_names_are_excluded_and_counted _______________
+
+tmp_path = PosixPath('/private/tmp/pytest-of-chriswong/pytest-3081/test_short_history_names_are_e0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10b45be00>
+
+    def test_short_history_names_are_excluded_and_counted(tmp_path, monkeypatch):
+        """The bar floor is a COUNT in coverage, not a silent drop."""
+        root = tmp_path / "data"
+        (root / TW.DECK_STORE).mkdir(parents=True)
+        (root / "baskets").mkdir(parents=True)
+        (root / "baskets" / "membership.json").write_text(json.dumps({"baskets": {}}))
+        idx = pd.date_range(end=_FIXTURE_END, periods=50, freq="B")
+        pd.DataFrame({"close": np.linspace(10, 12, 50)}, index=idx).to_parquet(
+            root / TW.DECK_STORE / "SHORT.parquet")
+        _write_universe_contract(root)
+        art = TW.compute_deck(root, tmp_path / "site")
+>       assert art["coverage"]["skipped_short_history"] == 1
+E       assert 0 == 1
+
+tests/test_us_turn_watch.py:846: AssertionError
+----------------------------- Captured stdout call -----------------------------
+::warning title=us-turn-watch::no us_basket_turn state readable — the group-turn trigger is UNEVALUATED for this run
+::warning title=us-turn-watch-universe::v2 contract unavailable ([Errno 2] No such file or directory: '/private/tmp/pytest-of-chriswong/pytest-3081/test_short_history_names_are_e0/config/us_turn_watch_universe.v2.json')
+::warning title=us-turn-watch-universe::v2 contract required after 2026-10-19 but missing or invalid — deck fails closed
+________________ test_compute_deck_end_to_end_on_a_frozen_store ________________
+
+tmp_path = PosixPath('/private/tmp/pytest-of-chriswong/pytest-3081/test_compute_deck_end_to_end_o0')
+
+    def test_compute_deck_end_to_end_on_a_frozen_store(tmp_path):
+        root = tmp_path / "data"
+        site = tmp_path / "site"
+        (root / TW.DECK_STORE).mkdir(parents=True)
+        (root / "baskets").mkdir(parents=True)
+    
+        def _write(stem, vals):
+            idx = pd.date_range(end=_FIXTURE_END, periods=len(vals), freq="B")
+            pd.DataFrame({"close": vals}, index=idx).to_parquet(
+                root / TW.DECK_STORE / f"{stem}.parquet")
+    
+        _write("WASH", _WASHOUT)
+        _write("LEAD", _LEADER_PULLBACK)
+        _write("CALM", _UPTREND)
+        _write(TW.BENCHMARK, [100.0 * (1.0 + 0.0002) ** i for i in range(len(_UPTREND))])
+        (root / "baskets" / "membership.json").write_text(json.dumps({"baskets": {
+            "test_theme": {"name": "Test Theme", "name_zh": "测试主题",
+                           "members": [{"ticker": "WASH", "added": "2020-01-01",
+                                        "removed": None}]}}}))
+        (site / "basketdata").mkdir(parents=True)
+        (site / "basketdata" / "us_basket_turn.json").write_text(json.dumps({
+            "baskets": {"test_theme": {"state": "TURNING", "days_in_state": 3,
+                                       "data_session": _FIXTURE_END}}}))
+    
+        _write_universe_contract(root)
+        art = TW.compute_deck(root, site)
+    
+        assert art["schema"] == TW.SCHEMA
+        assert art["anchor_era"] == TW.ANCHOR_ERA
+>       assert art["selection_era"] == TW.SELECTION_ERA
+E       AssertionError: assert None == 'anticipation-v1-2026-08-08'
+E        +  where 'anticipation-v1-2026-08-08' = TW.SELECTION_ERA
+
+tests/test_us_turn_watch.py:943: AssertionError
+----------------------------- Captured stdout call -----------------------------
+::warning title=us-turn-watch-universe::v2 contract unavailable ([Errno 2] No such file or directory: '/private/tmp/pytest-of-chriswong/pytest-3081/test_compute_deck_end_to_end_o0/config/us_turn_watch_universe.v2.json')
+::warning title=us-turn-watch-universe::v2 contract required after 2026-10-19 but missing or invalid — deck fails closed
+__________ test_beyond_cap_rows_carry_their_reason_not_a_bare_ticker ___________
+
+tmp_path = PosixPath('/private/tmp/pytest-of-chriswong/pytest-3081/test_beyond_cap_rows_carry_the0')
+
+    def test_beyond_cap_rows_carry_their_reason_not_a_bare_ticker(tmp_path):
+        """RECALL CONTRACT: the deck is optimised for recall and the operator is the second-stage
+        filter — a beyond-cap name stripped to a bare ticker cannot be filtered on anything.  Each
+        carries WHY it triggered and WHICH group it sits in; full rows stay capped.
+        """
+        root = tmp_path / "data"
+        site = tmp_path / "site"
+        (root / TW.DECK_STORE).mkdir(parents=True)
+        (root / "baskets").mkdir(parents=True)
+    
+        def _write(stem, vals):
+            idx = pd.date_range(end=_FIXTURE_END, periods=len(vals), freq="B")
+            pd.DataFrame({"close": vals}, index=idx).to_parquet(
+                root / TW.DECK_STORE / f"{stem}.parquet")
+    
+        members = []
+        for i in range(6):
+            tk = f"WSH{i}"
+            _write(tk, _WASHOUT)
+            members.append({"ticker": tk, "added": "2020-01-01", "removed": None})
+        _write(TW.BENCHMARK, [100.0 * (1.0 + 0.0002) ** i for i in range(len(_UPTREND))])
+        (root / "baskets" / "membership.json").write_text(json.dumps({"baskets": {
+            "test_theme": {"name": "Test Theme", "name_zh": "测试主题", "members": members}}}))
+        (site / "basketdata").mkdir(parents=True)
+        (site / "basketdata" / "us_basket_turn.json").write_text(json.dumps({
+            "baskets": {"test_theme": {"state": "TURNING", "days_in_state": 3,
+                                       "data_session": _FIXTURE_END}}}))
+    
+        _write_universe_contract(root)
+        art = TW.compute_deck(root, site, cap=2, lane_floor=1)
+        beyond = art["beyond_cap"]
+>       assert beyond, "the cap did not push any name beyond the deck"
+E       AssertionError: the cap did not push any name beyond the deck
+E       assert []
+
+tests/test_us_turn_watch.py:995: AssertionError
+----------------------------- Captured stdout call -----------------------------
+::warning title=us-turn-watch-universe::v2 contract unavailable ([Errno 2] No such file or directory: '/private/tmp/pytest-of-chriswong/pytest-3081/test_beyond_cap_rows_carry_the0/config/us_turn_watch_universe.v2.json')
+::warning title=us-turn-watch-universe::v2 contract required after 2026-10-19 but missing or invalid — deck fails closed
+_ test_compute_deck_with_candidates_keeps_private_uncapped_rows_out_of_public_artifact _
+
+tmp_path = PosixPath('/private/tmp/pytest-of-chriswong/pytest-3081/test_compute_deck_with_candida0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10af9c280>
+capsys = <_pytest.capture.CaptureFixture object at 0x10afcccd0>
+
+    def test_compute_deck_with_candidates_keeps_private_uncapped_rows_out_of_public_artifact(
+            tmp_path, monkeypatch, capsys):
+        """A cap must hide full rows only from the public document, never from the intake.
+    
+        MUTATION CHECK: returning ``deck`` here, or adding ``all_triggered`` to the public
+        artifact, makes this test fail.  The six equal synthetic closes all trigger through
+        their turning basket; cap=2 therefore gives this seam four full private rows to protect.
+        """
+        root = tmp_path / "data"
+        site = tmp_path / "site"
+        (root / TW.DECK_STORE).mkdir(parents=True)
+        (root / "baskets").mkdir(parents=True)
+    
+        def _write(stem, values):
+            idx = pd.date_range(end=_FIXTURE_END, periods=len(values), freq="B")
+            pd.DataFrame({"close": values}, index=idx).to_parquet(
+                root / TW.DECK_STORE / f"{stem}.parquet")
+    
+        members = []
+        for i in range(6):
+            ticker = f"SIDE{i}"
+            _write(ticker, _WASHOUT)
+            members.append({"ticker": ticker, "added": "2020-01-01", "removed": None})
+        _write(TW.BENCHMARK, [100.0 * (1.0 + 0.0002) ** i for i in range(len(_UPTREND))])
+        (root / "baskets" / "membership.json").write_text(json.dumps({"baskets": {
+            "test_theme": {"name": "Test Theme", "name_zh": "测试主题", "members": members}}}))
+        (site / "basketdata").mkdir(parents=True)
+        (site / "basketdata" / "us_basket_turn.json").write_text(json.dumps({"baskets": {
+            "test_theme": {"state": "TURNING", "days_in_state": 3, "data_session": _FIXTURE_END}}}))
+    
+        _write_universe_contract(root)
+        from types import SimpleNamespace
+        from scripts.build_turn_watch import write_candidate_episode_input
+    
+        slow_runtime = TW.RUNTIME_WARN_SECONDS + 0.25
+        clock = iter([1000.0, 1066.58, 2000.0, 2000.0 + slow_runtime])
+        monkeypatch.setattr(TW, "time", SimpleNamespace(time=lambda: next(clock)))
+        artifact, rows = TW.compute_deck_with_candidates(root, site, cap=2, lane_floor=1)
+        public = TW.compute_deck(root, site, cap=2, lane_floor=1)
+        assert artifact["runtime_seconds"] == 66.58
+        assert public["runtime_seconds"] == slow_runtime
+        assert "::warning title=us-turn-watch-runtime::" in capsys.readouterr().out
+        assert TW.artifact_bytes(artifact) == TW.artifact_bytes(public)
+        first_public = TW.write_artifact(artifact, site).read_bytes()
+        first_input = write_candidate_episode_input(artifact, rows, root).read_bytes()
+        assert "runtime_seconds" not in json.loads(first_public)
+        assert TW.write_artifact(public, site).read_bytes() == first_public
+        assert write_candidate_episode_input(public, rows, root).read_bytes() == first_input
+>       assert len(rows) == artifact["coverage"]["triggered"] == 6
+E       assert 0 == 6
+
+tests/test_us_turn_watch.py:1055: AssertionError
+__________ test_bulk_does_not_build_discarded_untriggered_context[0] ___________
+
+tmp_path = PosixPath('/private/tmp/pytest-of-chriswong/pytest-3081/test_bulk_does_not_build_disca0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10af46eb0>
+active_count = 0
+
+    @pytest.mark.parametrize("active_count", (0, 3))
+    def test_bulk_does_not_build_discarded_untriggered_context(tmp_path, monkeypatch, active_count):
+        """Every name keeps trigger/RS participation; detail work follows the uncapped union."""
+        root, site = tmp_path / "data", tmp_path / "site"
+        (root / TW.DECK_STORE).mkdir(parents=True)
+        (root / "baskets").mkdir()
+        (site / "basketdata").mkdir(parents=True)
+        active = [f"ACT{i}" for i in range(active_count)]
+        names = ["QUIET", TW.BENCHMARK] + active
+        close = _series(_UPTREND)
+        for ticker in names:
+            close.to_frame("close").to_parquet(root / TW.DECK_STORE / f"{ticker}.parquet")
+        (root / "baskets/membership.json").write_text(json.dumps({"baskets": {
+            "test_theme": {"name": "Test", "members": [{"ticker": t} for t in active]}}}))
+        (site / "basketdata/us_basket_turn.json").write_text(json.dumps({"baskets": {
+            "test_theme": {"state": "TURNING", "days_in_state": 1, "data_session": _FIXTURE_END}}}))
+        _write_universe_contract(root)
+        monkeypatch.setattr(TW, "dot_signature", lambda c: pd.Series(False, index=c.index))
+        monkeypatch.setattr(TW, "pre_confluence_2d", lambda c, market: (
+            pd.Series(False, index=c.index), pd.Series(np.nan, index=c.index)))
+        monkeypatch.setattr(TW, "_leader_stream", lambda c, bench, rs: (
+            pd.Series(False, index=c.index), "test_false_stream"))
+        cross_sections = []
+        original_cross = TW._leader_rs_cross_section
+        def cross(closes, benchmark):
+            cross_sections.append(set(closes))
+            return original_cross(closes, benchmark)
+        monkeypatch.setattr(TW, "_leader_rs_cross_section", cross)
+        context_calls = []
+        original_context = TW.slow_tier_cell
+        def context(*args, **kwargs):
+            context_calls.append(1)
+            return original_context(*args, **kwargs)
+        monkeypatch.setattr(TW, "slow_tier_cell", context)
+        artifact, rows = TW.compute_deck_with_candidates(root, site, cap=1, lane_floor=1)
+>       assert cross_sections == [set(names)], "do not shrink the cross-sectional universe"
+E       AssertionError: do not shrink the cross-sectional universe
+E       assert [set()] == [{'QUIET', 'SPY'}]
+E         
+E         At index 0 diff: set() != {'QUIET', 'SPY'}
+E         Use -v to get more diff
+
+tests/test_us_turn_watch.py:1124: AssertionError
+----------------------------- Captured stdout call -----------------------------
+::warning title=us-turn-watch-universe::v2 contract unavailable ([Errno 2] No such file or directory: '/private/tmp/pytest-of-chriswong/pytest-3081/test_bulk_does_not_build_disca0/config/us_turn_watch_universe.v2.json')
+::warning title=us-turn-watch-universe::v2 contract required after 2026-10-19 but missing or invalid — deck fails closed
+------------------------------- Sparse worktree --------------------------------
+This checkout omits data, mockups, site, verify_shots. If this failure is an artifact of that, sparse worktree — data not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+__________ test_bulk_does_not_build_discarded_untriggered_context[3] ___________
+
+tmp_path = PosixPath('/private/tmp/pytest-of-chriswong/pytest-3081/test_bulk_does_not_build_disca1')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10ae02740>
+active_count = 3
+
+    @pytest.mark.parametrize("active_count", (0, 3))
+    def test_bulk_does_not_build_discarded_untriggered_context(tmp_path, monkeypatch, active_count):
+        """Every name keeps trigger/RS participation; detail work follows the uncapped union."""
+        root, site = tmp_path / "data", tmp_path / "site"
+        (root / TW.DECK_STORE).mkdir(parents=True)
+        (root / "baskets").mkdir()
+        (site / "basketdata").mkdir(parents=True)
+        active = [f"ACT{i}" for i in range(active_count)]
+        names = ["QUIET", TW.BENCHMARK] + active
+        close = _series(_UPTREND)
+        for ticker in names:
+            close.to_frame("close").to_parquet(root / TW.DECK_STORE / f"{ticker}.parquet")
+        (root / "baskets/membership.json").write_text(json.dumps({"baskets": {
+            "test_theme": {"name": "Test", "members": [{"ticker": t} for t in active]}}}))
+        (site / "basketdata/us_basket_turn.json").write_text(json.dumps({"baskets": {
+            "test_theme": {"state": "TURNING", "days_in_state": 1, "data_session": _FIXTURE_END}}}))
+        _write_universe_contract(root)
+        monkeypatch.setattr(TW, "dot_signature", lambda c: pd.Series(False, index=c.index))
+        monkeypatch.setattr(TW, "pre_confluence_2d", lambda c, market: (
+            pd.Series(False, index=c.index), pd.Series(np.nan, index=c.index)))
+        monkeypatch.setattr(TW, "_leader_stream", lambda c, bench, rs: (
+            pd.Series(False, index=c.index), "test_false_stream"))
+        cross_sections = []
+        original_cross = TW._leader_rs_cross_section
+        def cross(closes, benchmark):
+            cross_sections.append(set(closes))
+            return original_cross(closes, benchmark)
+        monkeypatch.setattr(TW, "_leader_rs_cross_section", cross)
+        context_calls = []
+        original_context = TW.slow_tier_cell
+        def context(*args, **kwargs):
+            context_calls.append(1)
+            return original_context(*args, **kwargs)
+        monkeypatch.setattr(TW, "slow_tier_cell", context)
+        artifact, rows = TW.compute_deck_with_candidates(root, site, cap=1, lane_floor=1)
+>       assert cross_sections == [set(names)], "do not shrink the cross-sectional universe"
+E       AssertionError: do not shrink the cross-sectional universe
+E       assert [set()] == [{'ACT0', 'AC...UIET', 'SPY'}]
+E         
+E         At index 0 diff: set() != {'QUIET', 'ACT0', 'ACT2', 'SPY', 'ACT1'}
+E         Use -v to get more diff
+
+tests/test_us_turn_watch.py:1124: AssertionError
+----------------------------- Captured stdout call -----------------------------
+::warning title=us-turn-watch-universe::v2 contract unavailable ([Errno 2] No such file or directory: '/private/tmp/pytest-of-chriswong/pytest-3081/test_bulk_does_not_build_disca1/config/us_turn_watch_universe.v2.json')
+::warning title=us-turn-watch-universe::v2 contract required after 2026-10-19 but missing or invalid — deck fails closed
+------------------------------- Sparse worktree --------------------------------
+This checkout omits data, mockups, site, verify_shots. If this failure is an artifact of that, sparse worktree — data not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=============================== warnings summary ===============================
+../../../../../../opt/homebrew/lib/python3.14/site-packages/fastapi/testclient.py:1
+  /opt/homebrew/lib/python3.14/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+tests/test_prophet_observations_api.py::test_real_auth_chain_denies_before_query_or_source_read[401]
+  /Volumes/Mastermind 2/agent-workspaces/macro/web/prophet-wmko-coverage-20261018/app/tape.py:434: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    @app.on_event("startup")
+
+tests/test_prophet_observations_api.py::test_real_auth_chain_denies_before_query_or_source_read[401]
+tests/test_prophet_observations_api.py::test_real_auth_chain_denies_before_query_or_source_read[401]
+  /opt/homebrew/lib/python3.14/site-packages/fastapi/applications.py:4681: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    return self.router.on_event(event_type)  # ty: ignore[deprecated]
+
+tests/test_prophet_observations_api.py::test_real_auth_chain_denies_before_query_or_source_read[401]
+  /Volumes/Mastermind 2/agent-workspaces/macro/web/prophet-wmko-coverage-20261018/app/tape.py:438: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    @app.on_event("shutdown")
+
+../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-5ef0ebf2-a314-4a45-aa87-8497d55b3615/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-5ef0ebf2-a314-4a45-aa87-8497d55b3615/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions'
+    warnings.warn(
+
+../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-5ef0ebf2-a314-4a45-aa87-8497d55b3615/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-5ef0ebf2-a314-4a45-aa87-8497d55b3615/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework'
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+
+NOTE: sparse worktree — data, mockups, site, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+SKIPPED [1] tests/test_yahoo_universe_backfill.py:211: data/yahoo/SPY.parquet not in this checkout
+FAILED tests/test_us_turn_watch.py::test_short_history_names_are_excluded_and_counted
+FAILED tests/test_us_turn_watch.py::test_compute_deck_end_to_end_on_a_frozen_store
+FAILED tests/test_us_turn_watch.py::test_beyond_cap_rows_carry_their_reason_not_a_bare_ticker
+FAILED tests/test_us_turn_watch.py::test_compute_deck_with_candidates_keeps_private_uncapped_rows_out_of_public_artifact
+FAILED tests/test_us_turn_watch.py::test_bulk_does_not_build_discarded_untriggered_context[0]
+FAILED tests/test_us_turn_watch.py::test_bulk_does_not_build_discarded_untriggered_context[3]
+6 failed, 387 passed, 1 skipped, 7 warnings in 29.28s
+
+{"type": "command_end", "name": "backend_battery", "argv": ["/private/tmp/prophet-wmko-test-env-20261018/bin/python", "-m", "pytest", "tests/test_us_turn_watch.py", "tests/test_us_turn_watch_v2.py", "tests/test_prophet_early_observations.py", "tests/test_prophet_early_observations_v2.py", "tests/test_prophet_observations_api.py", "tests/test_prophet_wmko_delivery_contract.py", "tests/test_yahoo_universe_backfill.py", "tests/test_us_scan_tier.py", "tests/test_us_leader_pullback_coverage.py", "-q", "-ra"], "started_at": "2026-10-20T00:06:45.896229+00:00", "elapsed_seconds": 31.781, "exit_code": 1, "stdout_sha256": "efe3c1e42e6e55dd871218f6249632c01820965710cb444f3a870e22663bac4f", "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "summary_lines": ["6 failed, 387 passed, 1 skipped, 7 warnings in 29.28s"]}
+{"type": "command_start", "name": "restart_closure", "argv": ["/private/tmp/prophet-wmko-test-env-20261018/bin/python", "-m", "pytest", "tests/test_deploy_update_self_heal.py::test_api_load_time_import_closure_is_covered_by_restart_regex", "-q", "-ra"], "started_at": "2026-10-20T00:07:17.678085+00:00"}
+.                                                                        [100%]
+=============================== warnings summary ===============================
+../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-a8d5b371-bfb0-4ae0-be10-8e4dbd85b503/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-a8d5b371-bfb0-4ae0-be10-8e4dbd85b503/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions'
+    warnings.warn(
+
+../../../../../../Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95
+  /Users/chriswong/Library/Python/3.14/lib/python/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/tmp/pytest-of-chriswong/garbage-a8d5b371-bfb0-4ae0-be10-8e4dbd85b503/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/tmp/pytest-of-chriswong/garbage-a8d5b371-bfb0-4ae0-be10-8e4dbd85b503/test_runtime_manifest_seals_ex0/worker-browser-b1/runtime/browsers/chromium-1237/Chromium.app/Contents/Frameworks/Chromium Framework.framework'
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+1 passed, 2 warnings in 8.21s
+
+{"type": "command_end", "name": "restart_closure", "argv": ["/private/tmp/prophet-wmko-test-env-20261018/bin/python", "-m", "pytest", "tests/test_deploy_update_self_heal.py::test_api_load_time_import_closure_is_covered_by_restart_regex", "-q", "-ra"], "started_at": "2026-10-20T00:07:17.678085+00:00", "elapsed_seconds": 9.459, "exit_code": 0, "stdout_sha256": "f72eb5fa4bff0bf0b283cbde688c9fe665e7a57d3eac9a8e18fb39a5317cf156", "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "summary_lines": ["1 passed, 2 warnings in 8.21s"]}
+{"type": "command_start", "name": "owner_shell_syntax", "argv": ["bash", "-n", "app/deploy/update.sh"], "started_at": "2026-10-20T00:07:27.137259+00:00"}
+
+{"type": "command_end", "name": "owner_shell_syntax", "argv": ["bash", "-n", "app/deploy/update.sh"], "started_at": "2026-10-20T00:07:27.137259+00:00", "elapsed_seconds": 0.012, "exit_code": 0, "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "summary_lines": []}
+{"type": "run_complete", "success": false, "completed_at": "2026-10-20T00:07:28.094729+00:00", "source_tree_unchanged": true}

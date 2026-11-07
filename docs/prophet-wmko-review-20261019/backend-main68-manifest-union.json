@@ -1,0 +1,27 @@
+{
+  "canonical_jobs": 327,
+  "concurrent_union_fields": [
+    "/jobs/c19-wp22-dhi-traversal/paths",
+    "/jobs/fif-kernel-guards/paths",
+    "/jobs/ticker-news-qbus/paths",
+    "/jobs/crypto-assistant-context/paths",
+    "/jobs/bea-gvc-current-descriptive-consumer/paths",
+    "/jobs/c19-wp32-integrated-answer-correction-denial-pins/paths",
+    "/jobs/research-price-panel/paths"
+  ],
+  "preserved_jobs": 13,
+  "preserved_last_repair_declarations": 49,
+  "preserved_suites": {
+    "tests/test_prophet_early_observations_v2.py": [
+      "prophet-lab"
+    ],
+    "tests/test_prophet_wmko_delivery_contract.py": [
+      "prophet-lab"
+    ],
+    "tests/test_us_turn_watch_v2.py": [
+      "prophet-lab"
+    ]
+  },
+  "rg_exit": 0,
+  "semantic_union_passed": true
+}
