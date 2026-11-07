@@ -371,42 +371,27 @@ waves:
       production-proven and return to Sol. D6-C+ and D7+ remain
       UNAUTHORIZED. D5 unchanged (BUILT_NOT_PROVEN).
   - id: D6-C0
-    title: Remaining-rail rebaseline and architecture freeze — capability ledger, official-union rail selection, one recommended vertical
-    status: in_progress
+    title: Remaining-rail rebaseline and architecture freeze
+    status: done
     depends_on: [D6-B]
-    claim: claude/defense-procurement-v3-d6c0-rebaseline (Fable COO session, first child wave of defense-procurement-v3-program-control-20260827-sol-coo-001, claimed 2026-08-27)
-    next_action: >
-      HOLD-FOR-SOL. Records/research only; no runtime, product, data, or
-      source mutation occurred. Carrier freezes
-      research/defense_intelligence/DEFENSE_D6C0_REBASELINE_AND_ARCHITECTURE_FREEZE_2026-08-27.md
-      against Macro main 4ac1c60e408f and Skillpack Mastermind@b901dee0
-      (docs/sol_skills byte-identical to the dispatch pin d508e30c).
-      Capability ledger: SBIR/STTR DARK_OR_DISCONNECTED (built, registered in
-      synapse.yml/dag.yml/collect.py/append_only_artifacts.json/legacy-jobs.yml
-      since PR #5012 on 2026-08-09, yet zero committed artifacts, zero product
-      consumers, zero contract schema files against five contract names in
-      code); DoD/service contract announcements REJECTED_BY_DESIGN as
-      population authority per the D0R registry; GAO protest, DOT&E/IG and
-      DLA/DIBBS NOT_BUILT; DIU/AFWERX/OTA SPEC_ONLY. Recommendation is ONE
-      vertical — complete SBIR/STTR to PROVEN_LIVE — chosen because it is the
-      only remaining rail with a documented open machine-readable population
-      authority, which the binding D6-B official-union law requires; the
-      higher-value adverse-event rails would rest on WAF-protected web as
-      population, which that law forbids. Its lower investor value is stated
-      in the freeze rather than argued away, and three named conditions would
-      flip the recommendation to GAO. Gate 0 of any authorized SBIR wave is to
-      reproduce the SBIR.gov response FROM THE RUNNER using the header
-      discipline in collectors/fms_notifications_live.py:503-507; if the
-      source refuses under documented terms the lawful outcome is to record
-      SBIR REJECTED_BY_DESIGN with evidence and return to Sol, never a blind
-      retry or failover. Any user-facing consumer must be sized against the
-      302,890 B live-lane peak of site/government_revenue.html (214 bytes
-      under the 303,104 fence), not the ~25.9 KB visible at HEAD, and the
-      fence must not be bumped. Collision census clean: zero of 37 open PRs
-      touch any owns_paths entry, verified twice against origin/main with the
-      instrument positive-controlled. No implementation rail is
-      self-authorized; D7 is not started; D5 remains BUILT_NOT_PROVEN and
-      untouched. Awaiting Sol ruling on the recommended vertical.
+    pr: [6590]
+    next_action: Accepted historical architecture. Reuse it and the existing FMS schedule; do not repeat D6-C0. The October 11 included-scope contract governs the remaining rails.
+  - id: REL-A
+    title: Restore trust and the quartet investor journey
+    status: in_progress
+    next_action: Recover the original publisher-history result lawfully and prove natural source-to-entitled-product convergence. Preserve accepted proof and financial releases.
+  - id: REL-B
+    title: Broaden economic evidence and six themes
+    status: in_progress
+    next_action: Complete exact admitted supplier/services evidence and individual theme adequacy. Preserve source refusals and the held commercial-space review; rendered narratives are not adequacy.
+  - id: REL-C
+    title: Independently adjudicate research families
+    status: in_progress
+    next_action: Retain Stage1 NO_GO separately from FIN1/EQUITY1 NOT_EVALUABLE and prospective zero evaluated. Recover Q3 through its original carrier; no trial restart or invented forecast.
+  - id: REL-D
+    title: Complete saved research, privacy, international, recovery and performance acceptance
+    status: in_progress
+    next_action: Qualify additive server serving-attribution source, then its release and installation. Keep P2 restoration/export, two-tenant privacy, browser and full A42 acceptance as separate unclosed obligations.
 landmines:
   - "Live page is government_revenue.html (underscore). government-revenue.html 404s."
   - "Access (site_full / 401 locked) is independent of epistemics (display/context_only). Do not conflate them."
@@ -432,6 +417,7 @@ do_not_redo:
   - "Do not hand-advance the candidate ledger. Do not change recipient mappings to make counts nicer."
   - "Do not re-baseline. Do not revive an et_gate mutex."
 decisions:
+  - DEC:DEFENSE-JOURNEY-FIRST-COMPLETION-20261105
   - DEC:D5-OWNER-IS-GOVREV-ONTOLOGY-PLUS-COMPOSED-DOSSIER
   - DEC:D5-PILOT-IS-VIRGINIA-CLASS-SSN
   - DEC:D0R-RED-TEAM-ADJUDICATION-2026-08-17
@@ -450,18 +436,34 @@ discoveries:
   - DSC:CANDIDATE-ID-RACE-BETWEEN-GOVREV-LANES
   - DSC:GOVREV-CANDIDATE-RADAR-STAYS-LOCKED-AFTER-SITE-FULL-200
   - DSC:GOVREV-AGENCY-STRINGIFY-IS-COLLECTOR-THEN-ACTION-OMIT
+artifacts:
+  - research/DEFENSE_PROCUREMENT_INTELLIGENCE_OS_V3_FINANCIAL_ALPHA_SUPERINTELLIGENCE_MASTERPLAN_2026-08-16.md
+  - research/defense_intelligence/A42_SERVING_OBSERVABILITY.md
+  - agentos/handoffs/DEFENSE-PROCUREMENT-V3-2026-11-05.md
 next_action: >
-  Continue the explicit October 12 Chairman commission through original PR7175
-  and sole implementation carrier PR9066. Integrate accepted source and product
-  changes, seal one coherent publisher generation, qualify protected release,
-  verify installed entitled journeys and adjudicate remaining included cases.
-  Preserve Terminal PR778 custody, unsettled Fabric effects and actual source,
-  review and release gates. The current checkpoint is
-  agentos/handoffs/DEFENSE-PROCUREMENT-V3-2026-10-13-e2e-recovery.md.
-  Do not redo D6-C0 or the existing FMS schedule.
+  Continue the November 5 Catalyst/Defense A–D completion reset from
+  agentos/handoffs/DEFENSE-PROCUREMENT-V3-2026-11-05.md. First finish qualified
+  release and installed adoption of the independent serving-attribution change,
+  while the current Fabric reconciliation function resolves the exact legacy
+  P2/publisher result capability. Prioritize the original quartet customer
+  journey, international saved research and economic breadth. Preserve #7175,
+  Chrome and source refusals, unknown operations, financial no-replay, six
+  EVIDENCE_INSUFFICIENT themes and zero evaluated research outcomes. The original
+  thirty-task/forty-five-case contract is not reduced by component acceptance.
+
 ---
 
-## Current commissioned continuation — 2026-10-13
+## Current commissioned continuation — 2026-11-05
+
+Chris explicitly reconfirmed Catalyst Intelligence / Defense A–D as this root's
+mission. Options remains excluded. See DEC:DEFENSE-JOURNEY-FIRST-COMPLETION-20261105
+and the latest dated handoff for the original plan, current acceptance layers,
+exact recovery dependencies and next useful work. Historical acceptance below is
+retained. Original #7175 is preserved; #9066 is a historical merged component,
+not the current sole implementation carrier. No source-only or installed-file
+milestone closes the full investor product.
+
+## Historical commissioned continuation — 2026-10-13
 
 
 The Chairman's direct October 12 assignment authorizes recovery and completion of

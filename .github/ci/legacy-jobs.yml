@@ -32674,6 +32674,27 @@ jobs:
     # the five scripts are closure imports, not tree scans.
     scope: exclusive
     paths:
+      # Full incumbent closure census also reaches these exact dependencies.
+      - "scripts/w2044_warn_ticker_map.csv"
+      - "site/allocationdata/allocation.json"
+      - "site/darkpool_eod.json"
+      - "site/flow/index.json"
+      - "site/government-revenue-data/dossiers.json"
+      - "tests/test_build_government_revenue.py"
+      - "tests/test_government_program_ontology.py"
+      - "tests/test_government_revenue_award_events.py"
+      - "tests/test_government_revenue_dossiers.py"
+      # P16.T5.S1: exact NoStore route-test import closure (CI42015618004).
+      - "scripts/notify_turn_events.py"
+      - "scripts/check_surface_freshness.py"
+      - "scripts/build_theme_detail.py"
+      - "scripts/build_theme_addons.py"
+      - "scripts/build_radar_page.py"
+      - "scripts/build_baskets.py"
+      - "scripts/build_anticipation.py"
+      - "scripts/build_allocation.py"
+      - "scripts/build_ai_adjacency_tag.py"
+      - "research/defense_intelligence/evidence/fixtures/d5-representability-fixtures.json"
       - "scripts/company_intelligence_publication_evidence.py"
       - "tests/test_company_intelligence_event_workspace.py"
       - "tests/test_government_revenue_dossier_validation_memo.py"
@@ -32985,6 +33006,7 @@ jobs:
       - "tests/test_government_revenue_reader_identity.py"
       - "tests/test_government_revenue_api.py"
       - "tests/test_government_revenue_api_auth.py"
+      - "tests/test_government_revenue_serving_observability.py"
       - "templates/government-revenue-briefcase.js"
       - "templates/government-revenue-briefcase-ui.js"
       - "tests/test_government_revenue_defense_owner_adapter.py"
@@ -33142,7 +33164,7 @@ jobs:
       - name: Complete owner snapshot restoration and mutation fences
         run: python -m pytest tests/test_restore_event_workspace_owner.py tests/test_restore_defense_market_owner.py tests/test_financial_owner_symlink_guard.py -q
       - name: Tenant isolation and immutable reader selection
-        run: python -m pytest tests/test_government_revenue_briefcase_ui.py tests/test_government_revenue_reader_identity.py tests/test_government_revenue_api.py tests/test_government_revenue_api_auth.py -q
+        run: python -m pytest tests/test_government_revenue_briefcase_ui.py tests/test_government_revenue_reader_identity.py tests/test_government_revenue_api.py tests/test_government_revenue_api_auth.py tests/test_government_revenue_serving_observability.py -q
       - name: Qualified issuer segment facts and owner refresh
         run: python -m pytest tests/test_government_revenue_defense_owner_adapter.py tests/test_defense_refresh_cohort.py tests/test_defense_reported_financial_profiles.py tests/test_defense_space_profiles.py -q
       - name: Adverse evidence, ownership terms and complete source retention

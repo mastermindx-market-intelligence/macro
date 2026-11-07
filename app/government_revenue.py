@@ -30,11 +30,12 @@ import json
 import os
 import re
 import threading
+import time
 from datetime import datetime
 from pathlib import Path
 from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
-from fastapi import APIRouter, Depends, Header, HTTPException, Query
+from fastapi import APIRouter, Depends, Header, HTTPException, Query, Response
 
 from engine.government_revenue.defense_economics import validate_defense_economics_payload
 from engine.government_revenue.research_state import load_research_state
@@ -299,7 +300,48 @@ def _dod_budget_source_url(value: object) -> str | None:
     return safe
 
 
-def _load_dossiers() -> dict:
+_DOSSIER_PROCESS_SEED = os.urandom(32)
+
+
+def _dossier_success_headers(response: Response | None, observation: dict | None,
+                             payload: dict, started: float) -> None:
+    """Attach bounded serving evidence only after a successful public projection.
+
+    The route span starts after authentication and excludes HTTP serialization,
+    proxy/network and rendering. These observations are not an A42 verdict.
+    """
+    if response is None or observation is None:
+        return
+    generation = payload.get("content_id", "")
+    if not isinstance(generation, str) or not re.fullmatch(r"grd1-[0-9a-f]{24}", generation):
+        return
+    try:
+        # Forked workers inherit the random seed, but must have different epochs.
+        # Neither the seed nor the raw OS process identity is exposed.
+        epoch = hashlib.sha256(_DOSSIER_PROCESS_SEED + str(os.getpid()).encode("ascii")).hexdigest()[:24]
+        phases = {key: observation.get(key, 0.0) for key in
+                  ("stat", "lock_wait", "read_decode", "validate")}
+        phases["route"] = (time.perf_counter() - started) * 1000.0
+        if observation["cache"] not in {"hit", "miss"} or any(
+            not isinstance(value, (float, int)) or not 0 <= value < float("inf")
+            for value in phases.values()
+        ):
+            return
+        values = {
+            "x-govrev-generation": generation,
+            "x-govrev-cache": observation["cache"],
+            "x-govrev-process-epoch": epoch,
+            "server-timing": ", ".join(f"govrev_{key};dur={value:.3f}" for key, value in phases.items()),
+        }
+        # Construct every byte before mutation; telemetry failure cannot invalidate
+        # an otherwise valid dossier. Repeated Server-Timing fields are additive.
+        extra = [(key.encode("ascii"), value.encode("ascii")) for key, value in values.items()]
+    except (KeyError, TypeError, ValueError, OverflowError):
+        return
+    response.raw_headers.extend(extra)
+
+
+def _load_dossiers(observation: dict | None = None) -> dict:
     """Load one byte-identical, schema-validated dossier generation or fail closed.
 
     Both canonical and site twins are required.  Serving one after a partial
@@ -308,6 +350,7 @@ def _load_dossiers() -> dict:
     than a stale best-effort response.
     """
     canonical, site = _DOSSIER_PATHS
+    started = time.perf_counter() if observation is not None else 0.0
     try:
         canonical_state = canonical.stat()
         site_state = site.stat()
@@ -319,9 +362,17 @@ def _load_dossiers() -> dict:
         site_state.st_mtime_ns,
         site_state.st_size,
     )
+    if observation is not None:
+        observation["stat"] = (time.perf_counter() - started) * 1000.0
+        started = time.perf_counter()
     with _LOCK:
+        if observation is not None:
+            observation["lock_wait"] = (time.perf_counter() - started) * 1000.0
         if _DOSSIER_CACHE["payload"] is not None and _DOSSIER_CACHE["state"] == state:
+            if observation is not None:
+                observation["cache"] = "hit"
             return _DOSSIER_CACHE["payload"]
+        started = time.perf_counter() if observation is not None else 0.0
         try:
             canonical_bytes = canonical.read_bytes()
             site_bytes = site.read_bytes()
@@ -330,6 +381,9 @@ def _load_dossiers() -> dict:
             raise HTTPException(status_code=503, detail="government revenue dossier artifact unreadable") from exc
         if canonical_bytes != site_bytes:
             raise HTTPException(status_code=503, detail="government revenue dossier artifact twin mismatch")
+        if observation is not None:
+            observation["read_decode"] = (time.perf_counter() - started) * 1000.0
+            started = time.perf_counter()
         if (
             not isinstance(payload, dict)
             or payload.get("contract") != DOSSIER_CONTRACT
@@ -338,6 +392,9 @@ def _load_dossiers() -> dict:
         ):
             raise HTTPException(status_code=503, detail="government revenue dossier artifact schema mismatch")
         _DOSSIER_CACHE.update(state=state, payload=payload)
+        if observation is not None:
+            observation["validate"] = (time.perf_counter() - started) * 1000.0
+            observation["cache"] = "miss"
         return payload
 
 
@@ -2225,14 +2282,16 @@ def budget_program(program_key: str) -> dict:
 
 
 @router.get("/api/government-revenue/dossier/company/{ticker}")
-def dossier_company(ticker: str) -> dict:
+def dossier_company(ticker: str, response: Response = None) -> dict:
     """Return precomputed collection-scope metadata, not issuer attribution."""
+    started = time.perf_counter()
     ticker = _validated_ticker(ticker)
-    payload = _load_dossiers()
+    observation = {} if response is not None else None
+    payload = _load_dossiers() if observation is None else _load_dossiers(observation)
     row = _dossier_company_map(payload).get(ticker)
     if row is None:
         raise HTTPException(status_code=404, detail="company collection scope not covered")
-    return _scrub_public({
+    result = _scrub_public({
         "schema_version": payload.get("schema_version"),
         "content_id": payload.get("content_id"),
         "as_of": payload.get("as_of"),
@@ -2241,6 +2300,8 @@ def dossier_company(ticker: str) -> dict:
         "freshness": payload.get("freshness"),
         "company": _public_dossier_company(row),
     })
+    _dossier_success_headers(response, observation, payload, started)
+    return result
 
 
 def _award_sort_key(row: dict, sort: str) -> tuple:
@@ -2266,10 +2327,13 @@ def company_awards(
     sort: str = Query(default="effective_desc", pattern=r"^(effective_desc|obligation_desc|current_value_desc|ceiling_desc)$"),
     cursor: str | None = Query(default=None),
     limit: int = Query(default=50, ge=1, le=100),
+    response: Response = None,
 ) -> dict:
     """Cursor through precomputed award history using official stored fields only."""
+    started = time.perf_counter()
     ticker = _validated_ticker(ticker)
-    payload = _load_dossiers()
+    observation = {} if response is not None else None
+    payload = _load_dossiers() if observation is None else _load_dossiers(observation)
     company_row = _dossier_company_map(payload).get(ticker)
     if company_row is None:
         raise HTTPException(status_code=404, detail="company collection scope not covered")
@@ -2309,7 +2373,7 @@ def company_awards(
     )
     page = filtered[offset:offset + limit]
     next_offset = offset + len(page)
-    return _dossier_envelope(
+    result = _dossier_envelope(
         payload,
         results=[_public_dossier_award(row) for row in page],
         next_cursor=(
@@ -2318,6 +2382,8 @@ def company_awards(
         ),
         total=len(filtered),
     )
+    _dossier_success_headers(response, observation, payload, started)
+    return result
 
 
 @router.get("/api/government-revenue/award/{award_key}/actions")
