@@ -1,0 +1,11 @@
+{
+  "archive_sha256": "9998783a84888ca19c60b1fb271edade01b296cfa38063668ae67417134d2956",
+  "archive_bytes": 713052,
+  "archive_members": 39,
+  "verified_members": 38,
+  "curated_json_sha256": "0f8f2634248a095683be8a88317ab3424f38970cd4b7fc5310ea4158910c285e",
+  "research_report_sha256": "c09bb68e55cb1597a71f3133d83baf579494c12ec66055a8ebb3c233b2e03784",
+  "tests_passed": 35,
+  "source_pin": "7d60119c4e1dab35a65f0d80cc3234140bac17ef",
+  "v11_reference": "3fd72eaf53990b88b5073f59f04c37dfba8f7d4b"
+}

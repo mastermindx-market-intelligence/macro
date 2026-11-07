@@ -1,58 +1,35 @@
 {
   "schema": "special_sits_context.v1",
   "asof": "2026-11-07",
-  "built": "2026-11-07T08:22:30Z",
+  "built": "2026-11-07T13:08:07Z",
   "is_context_only": true,
   "disclaimer": "Context only — event tracking + display-tier setup ranking, never a signal or sizing input.",
   "counts": {
-    "total": 1588,
-    "new_today": 55,
+    "total": 1587,
+    "new_today": 54,
     "grade_a": 0,
-    "grade_b": 2,
+    "grade_b": 1,
     "with_arb": 11,
-    "cross_border": 546
+    "cross_border": 545
   },
   "top_setups": [
     {
-      "ticker": "MKC",
-      "company": "McCormick & Company, Incorporated",
-      "category": "Activist Campaigns",
+      "ticker": "FOX",
+      "company": "Fox Corporation",
+      "category": "Acquisitions",
       "stage": "",
       "grade": "B",
-      "score": 62.0,
-      "tier": "T1",
-      "mc_musd": 13200.0,
+      "score": 59.0,
+      "tier": "T2",
+      "mc_musd": 21900.0,
       "date_filed": "2026-06-21",
       "why": [
         "Buy setup live",
-        "Sector in favor",
-        "On active buy list"
+        "EDGAR filing confirmed"
       ],
       "why_zh": [
         "买点设置已触发",
-        "板块获看好",
-        "列于当前买入名单"
-      ]
-    },
-    {
-      "ticker": "DNLI",
-      "company": "Denali Therapeutics Inc.",
-      "category": "Divestitures",
-      "stage": "",
-      "grade": "B",
-      "score": 60.0,
-      "tier": "T1",
-      "mc_musd": 3700.0,
-      "date_filed": "2026-06-21",
-      "why": [
-        "Buy setup live",
-        "Deeply oversold (weeks)",
-        "Strong history for this event type"
-      ],
-      "why_zh": [
-        "买点设置已触发",
-        "周线深度超卖",
-        "此类事件历史表现强"
+        "EDGAR披露已确认"
       ]
     },
     {
@@ -65,48 +42,6 @@
       "tier": "T2",
       "mc_musd": null,
       "date_filed": "2026-11-03",
-      "why": [
-        "Buy setup live",
-        "Deeply oversold (weeks)",
-        "EDGAR filing confirmed"
-      ],
-      "why_zh": [
-        "买点设置已触发",
-        "周线深度超卖",
-        "EDGAR披露已确认"
-      ]
-    },
-    {
-      "ticker": "HTO",
-      "company": "H2O AMERICA",
-      "category": "Capital Returns",
-      "stage": "announced",
-      "grade": "C",
-      "score": 51.0,
-      "tier": "T1",
-      "mc_musd": 2273.643361456032,
-      "date_filed": "2026-11-02",
-      "why": [
-        "Buy setup live",
-        "Deeply oversold (weeks)",
-        "Sector leading rotation"
-      ],
-      "why_zh": [
-        "买点设置已触发",
-        "周线深度超卖",
-        "板块领跑轮动"
-      ]
-    },
-    {
-      "ticker": "NMRA",
-      "company": "Neumora Therapeutics, Inc.",
-      "category": "Delistings",
-      "stage": "notice",
-      "grade": "C",
-      "score": 50.4,
-      "tier": "T1",
-      "mc_musd": null,
-      "date_filed": "2026-10-30",
       "why": [
         "Buy setup live",
         "Deeply oversold (weeks)",
@@ -252,13 +187,6 @@
       },
       {
         "kind": "new",
-        "ticker": "ELPW",
-        "category": "Rights Offerings",
-        "from": null,
-        "to": "live"
-      },
-      {
-        "kind": "new",
         "ticker": "BIPC",
         "category": "Restructuring",
         "from": null,
@@ -308,10 +236,10 @@
       },
       {
         "kind": "new",
-        "ticker": "AUUD",
-        "category": "Other",
+        "ticker": "ELPW",
+        "category": "Issuer Tenders",
         "from": null,
-        "to": "announced"
+        "to": "live"
       },
       {
         "kind": "new",
@@ -326,13 +254,6 @@
         "category": "Going-Private",
         "from": null,
         "to": "live"
-      },
-      {
-        "kind": "new",
-        "ticker": "HKD",
-        "category": "Divestitures",
-        "from": null,
-        "to": "de-SPAC"
       },
       {
         "kind": "new",
@@ -476,13 +397,6 @@
       },
       {
         "kind": "new",
-        "ticker": "WPM",
-        "category": "Capital Returns",
-        "from": null,
-        "to": "announced"
-      },
-      {
-        "kind": "new",
         "ticker": "ATMU",
         "category": "Capital Returns",
         "from": null,
@@ -503,6 +417,13 @@
         "to": "announced"
       },
       {
+        "kind": "stage",
+        "ticker": "nan",
+        "category": "Acquisitions",
+        "from": "registered",
+        "to": "announced"
+      },
+      {
         "kind": "new",
         "ticker": "AIFU",
         "category": "Acquisitions",
@@ -515,6 +436,13 @@
         "category": "Acquisitions",
         "from": null,
         "to": "announced"
+      },
+      {
+        "kind": "new",
+        "ticker": "HKD",
+        "category": "Acquisitions",
+        "from": null,
+        "to": "de-SPAC"
       },
       {
         "kind": "new",
@@ -602,6 +530,13 @@
       },
       {
         "kind": "new",
+        "ticker": "KHC",
+        "category": "Divestitures",
+        "from": null,
+        "to": "announced"
+      },
+      {
+        "kind": "new",
         "ticker": "TMUS",
         "category": "Deal Terminations",
         "from": null,
@@ -609,8 +544,8 @@
       },
       {
         "kind": "new",
-        "ticker": "KHC",
-        "category": "Divestitures",
+        "ticker": "KGS",
+        "category": "Capital Returns",
         "from": null,
         "to": "announced"
       },
@@ -622,11 +557,11 @@
         "to": "C"
       },
       {
-        "kind": "grade_up",
-        "ticker": "NMRA",
-        "category": "Delistings",
-        "from": null,
-        "to": "C"
+        "kind": "grade_down",
+        "ticker": "HTO",
+        "category": "Capital Returns",
+        "from": "C",
+        "to": null
       },
       {
         "kind": "terminal",
@@ -650,14 +585,21 @@
         "to": null
       },
       {
+        "kind": "grade_down",
+        "ticker": "MKC",
+        "category": "Activist Campaigns",
+        "from": "B",
+        "to": null
+      },
+      {
         "kind": "grade_up",
-        "ticker": "DNLI",
-        "category": "Divestitures",
+        "ticker": "FOX",
+        "category": "Acquisitions",
         "from": null,
         "to": "B"
       }
     ],
-    "n": 62
+    "n": 63
   },
   "prev_state": {
     "asof": "2026-11-06",
@@ -6961,10 +6903,6 @@
       "stage": "de-SPAC",
       "grade": null
     },
-    "ELPW|Rights Offerings": {
-      "stage": "live",
-      "grade": null
-    },
     "BIPC|Restructuring": {
       "stage": "announced",
       "grade": null
@@ -6993,11 +6931,11 @@
       "stage": "announced",
       "grade": null
     },
-    "AUUD|Other": {
-      "stage": "announced",
+    "nan|Issuer Tenders": {
+      "stage": "live",
       "grade": null
     },
-    "nan|Issuer Tenders": {
+    "ELPW|Issuer Tenders": {
       "stage": "live",
       "grade": null
     },
@@ -7007,10 +6945,6 @@
     },
     "BWIN|Going-Private": {
       "stage": "live",
-      "grade": null
-    },
-    "HKD|Divestitures": {
-      "stage": "de-SPAC",
       "grade": null
     },
     "TU|Divestitures": {
@@ -7105,10 +7039,6 @@
       "stage": "announced",
       "grade": null
     },
-    "WPM|Capital Returns": {
-      "stage": "announced",
-      "grade": null
-    },
     "ATMU|Capital Returns": {
       "stage": "announced",
       "grade": null
@@ -7121,12 +7051,20 @@
       "stage": "announced",
       "grade": null
     },
+    "nan|Acquisitions": {
+      "stage": "announced",
+      "grade": null
+    },
     "AIFU|Acquisitions": {
       "stage": "announced",
       "grade": null
     },
     "AKZOF|Acquisitions": {
       "stage": "announced",
+      "grade": null
+    },
+    "HKD|Acquisitions": {
+      "stage": "de-SPAC",
       "grade": null
     },
     "AMTD|Acquisitions": {
@@ -7254,6 +7192,10 @@
       "grade": null
     },
     "nan|Divestitures": {
+      "stage": "announced",
+      "grade": null
+    },
+    "KHC|Divestitures": {
       "stage": "announced",
       "grade": null
     },
@@ -7649,6 +7591,10 @@
       "stage": "announced",
       "grade": null
     },
+    "KGS|Capital Returns": {
+      "stage": "announced",
+      "grade": null
+    },
     "AUDC|Capital Returns": {
       "stage": "announced",
       "grade": null
@@ -7711,10 +7657,6 @@
     },
     "nan|Activist Campaigns": {
       "stage": "proxy-fight",
-      "grade": null
-    },
-    "nan|Acquisitions": {
-      "stage": "registered",
       "grade": null
     },
     "JBDI|Acquisitions": {
@@ -8143,7 +8085,7 @@
     },
     "HTO|Capital Returns": {
       "stage": "announced",
-      "grade": "C"
+      "grade": null
     },
     "BCLYF|Capital Returns": {
       "stage": "announced",
@@ -12919,7 +12861,7 @@
     },
     "MKC|Activist Campaigns": {
       "stage": "",
-      "grade": "B"
+      "grade": null
     },
     "BWXT|Activist Campaigns": {
       "stage": "",
@@ -13187,7 +13129,7 @@
     },
     "FOX|Acquisitions": {
       "stage": "",
-      "grade": null
+      "grade": "B"
     },
     "EZJ.L|Acquisitions": {
       "stage": "",
