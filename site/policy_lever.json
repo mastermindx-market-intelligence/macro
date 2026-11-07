@@ -1,21 +1,21 @@
 {
   "schema": "policy_lever.v1",
-  "as_of": "2026-11-06",
+  "as_of": "2026-11-05",
   "favored_complex": {
     "basket": [
       "SMH",
       "SOXX"
     ],
     "basket_incomplete": false,
-    "drawdown_pct": -34.09,
-    "drawdown_z": -3.54,
-    "as_of": "2026-11-06",
-    "note": "Semis complex (SMH/SOXX equal-weight) is -34.1% from the trailing-120-day peak. Depth of the drawdown is the structural context for rotation-reversal conditions.",
-    "note_zh": "\u534a\u5bfc\u4f53\u7ec4\u5408\uff08SMH/SOXX\u7b49\u6743\uff09\u8ddd\u8fc7\u53bb120\u65e5\u9ad8\u70b9-34.1%\u3002\u56de\u64a4\u6df1\u5ea6\u662f\u8f6e\u52a8\u53cd\u8f6c\u6761\u4ef6\u7684\u7ed3\u6784\u6027\u80cc\u666f\u3002"
+    "drawdown_pct": -36.36,
+    "drawdown_z": -3.93,
+    "as_of": "2026-11-05",
+    "note": "Semis complex (SMH/SOXX equal-weight) is -36.4% from the trailing-120-day peak. Depth of the drawdown is the structural context for rotation-reversal conditions.",
+    "note_zh": "\u534a\u5bfc\u4f53\u7ec4\u5408\uff08SMH/SOXX\u7b49\u6743\uff09\u8ddd\u8fc7\u53bb120\u65e5\u9ad8\u70b9-36.4%\u3002\u56de\u64a4\u6df1\u5ea6\u662f\u8f6e\u52a8\u53cd\u8f6c\u6761\u4ef6\u7684\u7ed3\u6784\u6027\u80cc\u666f\u3002"
   },
   "jawboning": {
     "n_7d": 4,
-    "n_30d": 12,
+    "n_30d": 11,
     "last_alert_ts": "2026-11-06T15:56:31+00:00",
     "last_alert_summary": "US manufacturing renaissance claims gain traction \u2014 reflation tailwind, tariff risk persists",
     "last_alert_summary_zh": "\u7f8e\u56fd\u5236\u9020\u4e1a\u590d\u5174\u8bba\u636e\u589e\u5f3a\u2014\u2014\u518d\u901a\u80c0\u5229\u597d\uff0c\u5173\u7a0e\u98ce\u9669\u72b9\u5b58"
@@ -31,15 +31,15 @@
       "name_zh": "\u4f0a\u6717/\u77f3\u6cb9",
       "asset": "CL=F",
       "arming": {
-        "stoch_k": 9.62,
-        "stoch_d": 4.87,
-        "stoch_curl": true,
+        "stoch_k": 6.92,
+        "stoch_d": 13.42,
+        "stoch_curl": false,
         "macd_curl": false,
         "basing": false,
         "days_in_base": 0,
-        "flatness": 0.1122,
+        "flatness": 0.0938,
         "armed": false,
-        "stoch_curl_recent": true,
+        "stoch_curl_recent": false,
         "stoch_traverse": false,
         "armed_recent": false,
         "armed_recent_window": 10,
