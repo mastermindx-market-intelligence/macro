@@ -395,7 +395,9 @@ MAX_REFRESHES_PER_SWEEP = 8
 # sweep per minute.  Each refreshed pull request launches one ci.yml run with 12
 # hosted jobs (plus fences), and on 2026-08-11 the shared pool was already pinned at
 # 180/180.  Count every active pull-request ci.yml run — ordinary session work and
-# controller re-proofs alike — and add no refreshes above this repo-wide ceiling.
+# controller re-proofs alike — and add no ordinary refreshes above this repo-wide
+# ceiling (the S9 saturation floor below is the one bounded exception: a single
+# lease-serialized refresh under its own hard ceiling, never a raised allowance).
 # Eight proof runs are roughly half the hosted pool, leaving real capacity for the
 # sessions the controller exists to serve.  This is intentionally conservative:
 # an ordinary in-flight proof consumes the same runners as a controller-created one.
@@ -472,13 +474,16 @@ ADAPTIVE_LATER_WAVE_JOB_PREFIXES = ("ci-pack-", "ci-gate")
 # serving; a pool that REFUSES (queued run or waiting hosted job) is not.  When the
 # ordinary allowance is zero, admit ONE refresh per sweep, serialized by the durable
 # lease (one slot is inside HIGH_LOAD_LEASE_THRESHOLD, so racing sweep generations
-# cannot both spend it), only while (a) the census was actually read and sampled at
-# least one mature run, (b) it shows no refusal evidence, and (c) fewer than
-# REFRESH_FLOOR_PROOF_CEILING proofs are in flight -- the half-headroom cap the
-# adaptive policy already trusts on a single served run.  Controller refreshes count
-# toward that ceiling like any other proof, so the floor can never push the pool
-# past it; it only keeps the queue draining at one proof per sweep when sessions'
-# own pushes alone would hold the allowance at zero indefinitely.
+# cannot both spend it), only while (a) the census was actually read and witnessed
+# the hosted pool picking work up (a served later-wave job, or a slow pickup -- a
+# slow job HAS started; a mature run with neither is no evidence of capacity),
+# (b) it shows no refusal evidence, and (c) fewer than REFRESH_FLOOR_PROOF_CEILING
+# proofs are in flight -- the same half-headroom cap the adaptive policy grants on
+# a single served run.  Controller refreshes count toward that ceiling like any
+# other proof, so the floor can never push the pool past it.  Because the lease is
+# held until its owner's proof settles (or the lease max age), the floor drains at
+# one controller proof per proof LIFETIME, not one per sweep -- enough to keep the
+# queue moving when sessions' own pushes alone would hold the allowance at zero.
 REFRESH_FLOOR_PER_SWEEP = 1
 REFRESH_FLOOR_PROOF_CEILING = MAX_IN_FLIGHT_PR_PROOFS + (
     ADAPTIVE_PROOF_CAP_MAX - MAX_IN_FLIGHT_PR_PROOFS
@@ -3291,8 +3296,9 @@ def refresh_floor_allowance(
 ) -> tuple[int, str]:
     """``(slots, detail)`` for a sweep whose ordinary allowance came out at zero.
 
-    Never more than ``REFRESH_FLOOR_PER_SWEEP``; zero without a readable, sampled
-    census, on any refusal evidence, or at/above ``REFRESH_FLOOR_PROOF_CEILING``.
+    Never more than ``REFRESH_FLOOR_PER_SWEEP``; zero without a readable census
+    that witnessed a pickup (served run or slow job), on any refusal evidence, or
+    at/above ``REFRESH_FLOOR_PROOF_CEILING``.
     """
     if census is None:
         return 0, "floor withheld: hosted pool census not read"
@@ -3301,8 +3307,11 @@ def refresh_floor_allowance(
             f"floor withheld: hosted pool refused {census.queued_runs} queued "
             f"run(s), {census.refused_jobs} waiting hosted job(s)"
         )
-    if census.sampled_runs <= 0:
-        return 0, "floor withheld: no mature run witnessed the hosted pool"
+    if census.sampled_runs <= 0 or (census.served_runs <= 0 and census.slow_jobs <= 0):
+        return 0, (
+            "floor withheld: no hosted pickup witnessed "
+            f"({census.sampled_runs} mature run(s) sampled, none served or slow)"
+        )
     if effective_proofs >= REFRESH_FLOOR_PROOF_CEILING:
         return 0, (
             f"floor withheld: {effective_proofs} proof(s) in flight, at or above "

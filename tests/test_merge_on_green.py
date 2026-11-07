@@ -5577,7 +5577,11 @@ def test_adaptive_census_exception_degrades_to_the_flat_cap_without_deferring(
         (None, 12, 0, "census not read"),
         (_census(queued_runs=1, served_runs=0), 12, 0, "refused 1 queued run(s)"),
         (_census(refused_jobs=2, served_runs=1), 12, 0, "2 waiting hosted job(s)"),
-        (_census(sampled_runs=0, served_runs=0), 12, 0, "no mature run witnessed"),
+        (_census(sampled_runs=0, served_runs=0), 12, 0, "no hosted pickup witnessed"),
+        # Sampled but neither served nor slow: no later-wave hosted job was seen
+        # starting, so there is no capacity witness either way -- floor closed.
+        (_census(sampled_runs=2, served_runs=0), 9, 0, "2 mature run(s) sampled, none served or slow"),
+        (_census(sampled_runs=1, served_runs=1), 9, 1, "saturation floor: 1 lease-serialized"),
         (_census(slow_jobs=1, served_runs=2), 12, 0, "at or above the floor ceiling 12"),
         (_census(slow_jobs=1, served_runs=2), 40, 0, "at or above the floor ceiling 12"),
         (_census(slow_jobs=1, served_runs=2), 11, 1, "saturation floor: 1 lease-serialized"),
@@ -5659,10 +5663,11 @@ def test_s9_floor_never_reads_a_second_census_and_stays_closed_past_the_widest_c
 
 
 def test_s9_floor_stays_closed_when_the_census_read_itself_failed(monkeypatch, capsys):
-    """A RateLimited census degrades to the flat cap (unchanged); at 12 proofs that
-    is zero, and a floor without job-level evidence would be the repealed clamp."""
+    """A RateLimited census degrades to the flat cap (unchanged); at 9 proofs that
+    is zero, and a floor without job-level evidence would be the repealed clamp.
+    9 is UNDER the floor ceiling, so only the missing census keeps it closed."""
     _main_harness(monkeypatch, [_pull(1)])
-    monkeypatch.setattr(MOG, "in_flight_pr_proofs", lambda *_a: 12)
+    monkeypatch.setattr(MOG, "in_flight_pr_proofs", lambda *_a: 9)
 
     def rate_limited(*_a, **_k):
         raise MOG.RateLimited("core budget exhausted")
