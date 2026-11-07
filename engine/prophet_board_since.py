@@ -40,6 +40,8 @@ import threading
 from pathlib import Path
 from typing import AbstractSet, Any, Iterable, Mapping, Sequence
 
+from engine import us_board_snapshots
+
 _ISO = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 _REPO_ROOT = Path(__file__).resolve().parents[1]
 
@@ -278,14 +280,15 @@ US_MEMBERSHIP_LANES = ("buy", "watch", "leaders", "laggards", "ran")
 US_STARTS_AT_INCEPTION = False
 
 _us_obs_cache_lock = threading.Lock()
-_us_obs_cache: dict[tuple[str, float, int], list[Observation]] = {}
+_us_obs_cache: dict[tuple[tuple[str, float, int], ...], list[Observation]] = {}
 
 
 def observations_from_us_snapshots_jsonl(
     path: Path, visible_lanes: Sequence[str] = US_MEMBERSHIP_LANES,
 ) -> list[Observation]:
     """Stream `data/us_board_ledger/snapshots.jsonl` line-by-line (never a whole-file
-    read — the file is ~33MB). Memoized per-process keyed by (path, mtime, size) so a
+    read — the file is ~33MB) (base plus snapshots_parts/, engine/us_board_snapshots.py).
+    Memoized per-process keyed by each physical file's (path, mtime, size) so a
     second call in the same build (the two _attach_board_display_chips call sites)
     does not re-parse the file.
 
@@ -299,40 +302,44 @@ def observations_from_us_snapshots_jsonl(
     forever because the earlier line's copy of it never got removed from the
     unioned set."""
     try:
-        st = path.stat()
+        stamped: list[tuple[str, float, int]] = []
+        for p in us_board_snapshots.physical_paths(path):
+            st = p.stat()
+            stamped.append((str(p), st.st_mtime, st.st_size))
+        key = tuple(stamped)
     except OSError:
         return []
-    key = (str(path), st.st_mtime, st.st_size)
+    if not key:
+        return []
     with _us_obs_cache_lock:
         cached = _us_obs_cache.get(key)
     if cached is not None:
         return cached
     by_date: dict[str, set[str]] = {}
     try:
-        with path.open("r", encoding="utf-8") as fh:
-            for line in fh:
-                line = line.strip()
-                if not line:
-                    continue
-                try:
-                    snap = json.loads(line)
-                except json.JSONDecodeError:
-                    continue
-                if not isinstance(snap, dict):
-                    continue
-                iso = _iso_from_value(snap.get("as_of"))
-                if not iso:
-                    continue
-                ids: set[str] = set()
-                for lane in visible_lanes:
-                    for row in snap.get(lane) or []:
-                        if isinstance(row, dict):
-                            tk = _clean_id(row.get("ticker"))
-                            if tk:
-                                ids.add(tk)
-                # Last line per ISO date wins (replace, not union) — see the S3
-                # docstring note above.
-                by_date[iso] = ids
+        for line in us_board_snapshots.iter_lines(path):
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                snap = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            if not isinstance(snap, dict):
+                continue
+            iso = _iso_from_value(snap.get("as_of"))
+            if not iso:
+                continue
+            ids: set[str] = set()
+            for lane in visible_lanes:
+                for row in snap.get(lane) or []:
+                    if isinstance(row, dict):
+                        tk = _clean_id(row.get("ticker"))
+                        if tk:
+                            ids.add(tk)
+            # Last line per ISO date wins (replace, not union) — see the S3
+            # docstring note above.
+            by_date[iso] = ids
     except OSError:
         return []
     result = [(d, frozenset(by_date[d])) for d in sorted(by_date)]

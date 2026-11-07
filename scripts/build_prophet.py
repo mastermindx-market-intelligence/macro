@@ -68,6 +68,7 @@ _REPO = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(_REPO))
 
 from engine import ledger_lane
+from engine import us_board_snapshots
 from engine.prophet_bridge import (
     ADMITTED_STATUSES,
     LEGACY_N_CANDIDATES,
@@ -938,17 +939,16 @@ def _load_board_snapshots(path: Path) -> dict:
     """as_of → board snapshot dict from the append-only JSONL. Fail-soft {}."""
     snaps: dict = {}
     try:
-        with path.open(encoding="utf-8") as fh:
-            for line in fh:
-                line = line.strip()
-                if not line:
-                    continue
-                try:
-                    d = json.loads(line)
-                except Exception:  # noqa: BLE001 — one bad line never kills the file
-                    continue
-                if d.get("as_of"):
-                    snaps[d["as_of"]] = d
+        for line in us_board_snapshots.iter_lines(path):
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                d = json.loads(line)
+            except Exception:  # noqa: BLE001 — one bad line never kills the file
+                continue
+            if d.get("as_of"):
+                snaps[d["as_of"]] = d
     except Exception as e:  # noqa: BLE001
         log.warning("build_prophet: showcase snapshots unreadable: %s", e)
     return snaps

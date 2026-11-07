@@ -32,6 +32,7 @@ _HERE = Path(__file__).resolve().parent
 _ROOT = _HERE.parent
 sys.path.insert(0, str(_ROOT))
 
+from engine import us_board_snapshots  # noqa: E402
 from lib import config  # noqa: E402
 from lib.pages import write_page  # noqa: E402
 
@@ -307,34 +308,33 @@ def _compute_board_series(snapshots_path: Path) -> dict:
     """
     try:
         series = []
-        if not snapshots_path.exists():
+        if not us_board_snapshots.exists(snapshots_path):
             return {"accruing": True, "reason": "snapshots.jsonl absent", "series": []}
-        with open(snapshots_path) as fh:
-            for line in fh:
-                line = line.strip()
-                if not line:
-                    continue
-                snap = json.loads(line)
-                as_of = snap.get("as_of", "")
-                board = snap.get("board")
-                if isinstance(board, list):
-                    by_lane: dict[str, int] = {}
-                    for entry in board:
-                        lane = entry.get("lane", "unknown")
-                        by_lane[lane] = by_lane.get(lane, 0) + 1
-                    total = len(board)
-                else:
-                    # Real rows carry lane LISTS, not a board list (TR-3).
-                    by_lane = {ln: len(snap[ln]) for ln in _BOARD_LANES
-                               if isinstance(snap.get(ln), list)}
-                    total = sum(by_lane.values())
-                series.append(
-                    {
-                        "as_of": as_of,
-                        "total": total,
-                        "by_lane": by_lane,
-                    }
-                )
+        for line in us_board_snapshots.iter_lines(snapshots_path):
+            line = line.strip()
+            if not line:
+                continue
+            snap = json.loads(line)
+            as_of = snap.get("as_of", "")
+            board = snap.get("board")
+            if isinstance(board, list):
+                by_lane: dict[str, int] = {}
+                for entry in board:
+                    lane = entry.get("lane", "unknown")
+                    by_lane[lane] = by_lane.get(lane, 0) + 1
+                total = len(board)
+            else:
+                # Real rows carry lane LISTS, not a board list (TR-3).
+                by_lane = {ln: len(snap[ln]) for ln in _BOARD_LANES
+                           if isinstance(snap.get(ln), list)}
+                total = sum(by_lane.values())
+            series.append(
+                {
+                    "as_of": as_of,
+                    "total": total,
+                    "by_lane": by_lane,
+                }
+            )
         series.sort(key=lambda row: row["as_of"])
         return {"series": series, "accruing": len(series) < 3}
     except Exception as exc:  # noqa: BLE001

@@ -34,6 +34,7 @@ from typing import NamedTuple
 _ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(_ROOT))
 
+from engine import us_board_snapshots  # noqa: E402
 from lib import config, hk_calendar, nyse_calendar  # noqa: E402
 
 log = logging.getLogger("check_surface_freshness")
@@ -296,11 +297,11 @@ def check_candidates_freshness(root: Path, now: datetime | None = None) -> int |
     del now  # differential check — wall clock does not enter the comparison
     board_path = root / "data" / "us_board_ledger" / "snapshots.jsonl"
     store = root / "data" / "us_prophet_rank" / "candidates"
-    if not board_path.exists():
-        return None   # thin/sparse checkout, or no board yet — nothing to compare
     board_as_of: date | None = None
     try:
-        raw_lines = board_path.read_text(encoding="utf-8").splitlines()
+        if not us_board_snapshots.exists(board_path):
+            return None   # thin/sparse checkout, or no board yet — nothing to compare
+        raw_lines = us_board_snapshots.read_lines(board_path)
     except Exception as e:  # noqa: BLE001 — an unreadable ledger is another sentinel's subject
         log.debug("candidates freshness: board ledger unreadable (%s)", e)
         raw_lines = []

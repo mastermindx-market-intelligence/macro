@@ -75,6 +75,8 @@ from typing import Any
 REPO_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(REPO_ROOT))
 
+from engine import us_board_snapshots  # noqa: E402
+
 log = logging.getLogger(__name__)
 
 
@@ -139,14 +141,19 @@ def _load_book_spec(book_path: Path | None, engine_id: str | None) -> tuple[dict
 
 
 def _load_us_snapshots(data_dir: Path) -> tuple[list[dict], str | None]:
-    """Load US board snapshots from data/us_board_ledger/snapshots.jsonl.
+    """Load US board snapshots from data/us_board_ledger/snapshots.jsonl
+    (base plus snapshots_parts/, engine/us_board_snapshots.py).
     Returns (rows, error_reason). rows is empty list on data_gap (not None)."""
     snap_path = data_dir / "us_board_ledger" / "snapshots.jsonl"
-    if not snap_path.exists():
+    try:
+        present = us_board_snapshots.exists(snap_path)
+    except us_board_snapshots.SnapshotLedgerError as e:
+        return [], f"us_snapshots_read_error:{e}"
+    if not present:
         return [], f"us_snapshots_absent:{snap_path}"
     rows = []
     try:
-        for line in snap_path.read_text(encoding="utf-8").splitlines():
+        for line in us_board_snapshots.read_lines(snap_path):
             line = line.strip()
             if not line:
                 continue
