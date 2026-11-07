@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "AEIS-BULL-20260922",
-  "asof": "2026-11-01",
+  "asof": "2026-11-07",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 10.1,
@@ -14,19 +14,19 @@
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 52.9
+    "overlay": 39.0
   },
   "geometry": {
-    "dist_to_stop_r": -0.573,
+    "dist_to_stop_r": -1.256,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 82.2,
-    "p1": -1.0485,
-    "p2": -0.5242,
+    "horizon_pct_used": 95.6,
+    "p1": -1.5041,
+    "p2": -0.7521,
     "p3": null,
-    "move_r": -1.573,
+    "move_r": -2.256,
     "mfe_r": 0.671,
-    "mae_r": -1.725
+    "mae_r": -2.566
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -40,13 +40,13 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 24.579998779296886,
-  "_mae": -63.224993896484364,
+  "_mae": -94.03999633789061,
   "_max_p1": 0.4471123015788427,
   "_first_trigger_ts": "2026-10-01",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 37,
-  "tau": 0.8222,
+  "days_elapsed": 43,
+  "tau": 0.9556,
   "closed": true,
   "outcome": "INVALIDATED"
 }

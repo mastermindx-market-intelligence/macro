@@ -270,7 +270,7 @@
         {{ help("The WEEKLY (investor) cycle is the bigger rhythm — ~16-26 weeks, containing several daily cycles. It sets the tide the daily cycles swim in; early weeks = more upside room, late weeks = treat rallies cautiously.", "周线（投资者）周期是更大的节奏 — 约 16-26 周，包含数个日线周期。它决定了日线周期所处的大势；早期周次=上行空间更大，晚期周次=对反弹保持谨慎。") }}</div>{% endif %}
       {% if cp.translation %}<div class="muted">{{ t(cp.translation, cp.translation_zh) }}</div>{% endif %}
     </div>
-    {% if s.cycle.failed_cycle %}<p class="neg" style="margin:6px 0 0">⚠ {{ t('Failed cycle: price is below the low that started this cycle — historically the larger trend is rolling over in ~80% of such cases.', '周期失败：价格已跌破启动本周期的低点 — 历史上约 80% 的此类情形中，更大的趋势正在转向。') }}</p>{% endif %}
+    {% if s.cycle.failed_cycle %}<p class="neg" style="margin:6px 0 0">⚠ {{ t('Failed cycle: price is below the low that started this cycle. How often the larger trend then rolls over has not been measured here.', '周期失败：价格已跌破启动本周期的低点。此后更大趋势掉头向下的频率，本站尚未测算。') }}</p>{% endif %}
     <details style="margin-top:8px"><summary>{{ t('full reasoning', '完整推理') }}</summary>
       <p class="muted" style="margin:6px 0">{{ t(s.ladder.why, s.ladder.why_zh) }} {{ t('Next:', '下一步：') }} {{ t(s.ladder.next, s.ladder.next_zh) }}</p>
     </details>
@@ -373,8 +373,16 @@
   </div>
   {% endif %}
 
+  {% if s.holdings %}
   <div class="panel">
-    <h2>{{ t('Top 10 holdings — each analyzed on its own cycle', '前 10 大持仓 — 各自按其周期分析') }}
+    {% set n = s.holdings|length %}
+    {% set weights = s.holdings|map(attribute='weight_pct')|list %}
+    {% set counted = weights|select('number')|list %}
+    {% set have_share = counted|length == n %}
+    {% set share = (counted|sum|round|int) if have_share else none %}
+    {% set holdings_en = ('Top ' ~ n ~ ' holdings, ' ~ share ~ '% of the fund — each analyzed on its own cycle') if have_share else ('Top ' ~ n ~ ' holdings — each analyzed on its own cycle') %}
+    {% set holdings_zh = ('前 ' ~ n ~ ' 大持仓，合计占基金 ' ~ share ~ '% — 各自按其周期分析') if have_share else ('前 ' ~ n ~ ' 大持仓 — 各自按其周期分析') %}
+    <h2>{{ t(holdings_en, holdings_zh) }}
       {{ help("Every holding gets the same treatment as the ETF: daily-cycle position, multi-timeframe momentum, and a ladder state. The states carry measured base rates (table at the bottom). Weight = % of the ETF this stock represents — the top names drive the fund.", "每只持仓都与 ETF 同样处理：日线周期位置、跨周期动量及阶梯状态。各状态附有实测基准胜率（见底部表格）。权重=该股票占 ETF 的百分比 — 前几大成分股主导基金走势。") }}
     </h2>
     {% for h in s.holdings %}
@@ -405,6 +413,7 @@
     </div>
     {% endfor %}
   </div>
+  {% endif %}
 
   <div class="panel">
     <h2>{{ t('How much to trust these states — measured, not promised', '这些状态有多可信 — 实测得出，而非承诺') }}
