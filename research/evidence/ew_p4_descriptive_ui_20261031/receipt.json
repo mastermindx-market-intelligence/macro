@@ -1,7 +1,7 @@
 {
   "scope": "EW-P4.T1 descriptive early-warning observation UI (consumer-only), two hosts, synthetic fixtures",
   "production_authenticated": false,
-  "source_revision": "92cb5e1babdf45f7ecb5bdb104f810e2b6aed84a",
+  "source_revision": "4a47ca4c02e76cbc81cf9da3baeab9047a9a8718",
   "base": "1d253e1d25f22c61d1bcf8126b13b0229f26ccbd",
   "capture_mode": "dialog_unclipped_static_harness",
   "capture_mode_note": "#dlg-risk rendered in normal flow with its max-height/overflow removed so the whole band is captured; live dialog scrolls",
@@ -1992,9 +1992,9 @@
     "radar-states": "contact-radar-states.html"
   },
   "pr_source_equivalence": {
-    "note": "Actual full 68-case isolated Chromium recapture from integrated source commit 92cb5e1babdf45f7ecb5bdb104f810e2b6aed84a; all 31 render inputs verified byte-for-byte against the Git tree before evidence publication; 2 screenshot PNGs and 1 contact-sheet artifacts genuinely changed. This is source evidence only, not signed-in production acceptance.",
-    "pr_branch": "claude/ssd-sector-intelligence-macro-7646-82cb8b-35c697a089b670b0",
-    "pr_parent_of_evidence_commit": "92cb5e1babdf45f7ecb5bdb104f810e2b6aed84a",
+    "note": "Shots were re-rendered by the edge-stripe sweep (PR #10654; local Playwright Chromium, the same probe) at source_revision, the merge of main 2fbee062 into that branch. Both sides had changed bound render inputs: the branch removed the container edge stripes from templates/theme.css, site/theme.css and templates/dashboard.html.j2, and main's #10106 (Release Radar countdown) changed templates/dashboard.html.j2 again, so neither earlier capture depicted the merged tree. Band, glance, fixtures and probe are byte-identical to the previous capture; the PR head carries byte-identical render inputs (equal git blob ids below), so the shots depict the PR source. tests/test_ew_p4_descriptive_ui.py re-checks every blob on the tree CI checks out.",
+    "pr_branch": "claude/ssd-confident-khayyam-877b44-37f024569f201e61",
+    "pr_parent_of_evidence_commit": "4a47ca4c02e76cbc81cf9da3baeab9047a9a8718",
     "render_files": [
       {
         "path": "site/rotation_events.js",
@@ -2142,14 +2142,14 @@
       },
       {
         "path": "templates/theme.css",
-        "blob_at_source_revision": "619436f58d37a222d1db7021ba9d52bb3a05a7fa",
-        "blob_on_pr_branch": "619436f58d37a222d1db7021ba9d52bb3a05a7fa",
+        "blob_at_source_revision": "21d30e25df658cb03a95b08f76ec797b4035e5ed",
+        "blob_on_pr_branch": "21d30e25df658cb03a95b08f76ec797b4035e5ed",
         "equal": true
       },
       {
         "path": "templates/dashboard.html.j2",
-        "blob_at_source_revision": "4a890c3224898639f680d6b0cefe836a0238d269",
-        "blob_on_pr_branch": "4a890c3224898639f680d6b0cefe836a0238d269",
+        "blob_at_source_revision": "03e640486a8aece8ea1e7d9dafc1a98691a99132",
+        "blob_on_pr_branch": "03e640486a8aece8ea1e7d9dafc1a98691a99132",
         "equal": true
       },
       {
@@ -2172,8 +2172,8 @@
       },
       {
         "path": "site/theme.css",
-        "blob_at_source_revision": "619436f58d37a222d1db7021ba9d52bb3a05a7fa",
-        "blob_on_pr_branch": "619436f58d37a222d1db7021ba9d52bb3a05a7fa",
+        "blob_at_source_revision": "21d30e25df658cb03a95b08f76ec797b4035e5ed",
+        "blob_on_pr_branch": "21d30e25df658cb03a95b08f76ec797b4035e5ed",
         "equal": true
       },
       {

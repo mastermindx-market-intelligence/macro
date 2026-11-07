@@ -82,6 +82,18 @@ virtual.on("jsdomError",e => consoleErrors.push(e.message));
 const dom = new JSDOM(html,{url:"https://www.mastermind-x.com/commodities.html?ret=https%3A%2F%2Fevil.example",runScripts:"outside-only",pretendToBeVisual:true,virtualConsole:virtual});
 const {window:w} = dom;
 const d = w.document;
+// The company-return journeys test commodity-workspace.js, not the day's market state. A
+// failed or dormant gold chain publishes no equity cohort, so the live render can carry no
+// company link; give the gold chain one link of the published shape in that case only.
+if(!d.querySelector('section.cw-chain[data-cw-chain-asset="gold"] a[data-cw-company-href]')){
+  const goldChain=d.querySelector('section.cw-chain[data-cw-chain-asset="gold"]');
+  assert.ok(goldChain,'gold relationship chain');
+  const href='https://app.mastermind-x.com/analysis?symbol=A&page=intelligence&mo_from=transmission&mo_chain=real_rate_peak_gold_rerate&mo_channel=real_rate_beneficiary&mo_asof=2026-11-03&mo_security=SEC%3AUS-XNYS-A';
+  const link=d.createElement('a');
+  Object.assign(link,{href,target:'_blank',rel:'noopener',textContent:'A'});link.dataset.cwCompanyHref=href;
+  goldChain.append(link);
+  console.log('NOTE live render has no gold company link; using one fixture link of the published shape');
+}
 w.HTMLElement.prototype.scrollIntoView=function(){};
 w.scrollTo=function(){};
 w.Blob=Blob;

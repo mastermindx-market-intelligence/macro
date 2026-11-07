@@ -530,7 +530,7 @@
     "browser_receipts": {
       "hk": {
         "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json",
-        "sha256": "0f5a10ede4f0c1eef0a3bfdbbefa35595ee5c8e29bc30a16ea0fed0f0e7ecd88",
+        "sha256": "56e62a84022fd98c9bc08375e8503b31f65d3dfad96b533d6988fce5937b72ad",
         "pass": true,
         "primary_cases": 48,
         "degraded_control_cases": 16,
@@ -538,7 +538,7 @@
       },
       "ca": {
         "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json",
-        "sha256": "43332248be25ac3aac2033798372a4fb038afbb387f439c6bedac300c1913c04",
+        "sha256": "2a0fabac1e1dbb2a3a56c7ebb075f08931db7105e3da9a186b77e557fa466e8f",
         "pass": true,
         "primary_cases": 48,
         "degraded_control_cases": 16,
@@ -555,74 +555,74 @@
       "path": "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json",
       "sha256": "9063fd33a84ea466cdcf910a3b5beadd846701e49c8b30a81b0e6f14bb169840"
     },
-    "generated_at": "2026-11-05T08:31:02.001090+00:00",
+    "generated_at": "2026-11-07T16:22:52.384479+00:00",
     "operation": "prophet-cockpit-p0b-zero-fouc-20260904-sol-001",
     "pass": true,
     "schema": "mastermind.prophet_p0b_owner_empty_repair_extension.v1",
     "screenshots": [
       {
         "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-en-dark-1440.png",
-        "sha256": "ade62307efa7ddafa567441583f03d7ee2dd7b3680db78eb212019268d806ea7"
+        "sha256": "7048c261e9535ea2fa5feacba8ab940792ca4aadda281ea21ec1f57f8767b555"
       },
       {
         "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-en-dark-390.png",
-        "sha256": "03ba26d36856cdf2c835bb321bb57831973aad1c7ece3d7afd8fe8bb8ed81d38"
+        "sha256": "ddb2d7b49cd4de3725cc31d6ca0b4d9446d6f02d721551edac4ab78ab049f2a6"
       },
       {
         "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-en-light-1440.png",
-        "sha256": "b996abdbf5aae4d7a55276a938ba6a822775838d1c611106771f89cc1458b989"
+        "sha256": "e85d49798254a61f6b887ea20d027e34c3f1108ffcbefdc389b936b63678f69f"
       },
       {
         "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-en-light-390.png",
-        "sha256": "66dc760f2045cca44acbc1c9edf776db64944ad91315abfcabef8c11245d46dc"
+        "sha256": "9f944dbe4115cdf884a5720212738ae642e68bbe3458fd24d3d19c2c87c3ecd5"
       },
       {
         "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-zh-dark-1440.png",
-        "sha256": "a3f57adb6ff11aa48da7000f7c189b3f7992d8b9390bfd58ba73eb64cf12e305"
+        "sha256": "e813c0a107e84fc5d14171d70fd3c48cb48d7e0f07569736460785e2533e6a81"
       },
       {
         "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-zh-dark-390.png",
-        "sha256": "af87ee7b5f61a5d157f24bd170774e35ca07a1a50a3d44250df9b9cbe608d406"
+        "sha256": "e96848b8fe3f43aa1ca24734cc6b55912e32d66fe9f5756440d931ee5fbb378d"
       },
       {
         "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-zh-light-1440.png",
-        "sha256": "4b00a7db2396f5e05580f363a4c43b72dc62db1488870e2f5c7564eed2c5aaa8"
+        "sha256": "6052f6ad85abd249e25af063a17fdc6e45b227f8f10f3b2ac0ffc694ed0bef27"
       },
       {
         "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-zh-light-390.png",
-        "sha256": "be0078ac9f3338a520e7499acf74ac951ba2c6f98cb9b6acde0244826235c49e"
+        "sha256": "9ed12a860bd47a1b8a65020963c2484d49c881c8a365d83969a35a7c8b6e5c63"
       },
       {
         "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-en-dark-1440.png",
-        "sha256": "b40a32fa441061df9084ebf3124bfd9a5a68c0f3e2a345ca7e2190a64bba329b"
+        "sha256": "14f4dd0017a68d774f0e2864ad5c2f35e64b658888c3a914e4843c4a8314599a"
       },
       {
         "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-en-dark-390.png",
-        "sha256": "1c2204158f4c2fac691f48233071261f81847b520573c0dad8bfb62ac80d5ab2"
+        "sha256": "922cf10507933952b318bca84fa1424c91b58bd1acdcbe4b7a5321e7b1a932d8"
       },
       {
         "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-en-light-1440.png",
-        "sha256": "c4ee452f3d6d6186ebc455c2d0639ff743ebf0eeb458aae146665af8871b7c08"
+        "sha256": "98b7f55c4f7898302ac626182857182e4a4f315f611b41b536a5ca7048142354"
       },
       {
         "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-en-light-390.png",
-        "sha256": "0ace436eee66a23d9a17599576e450bab9d8261372bf79e06d60db1f2c5c3781"
+        "sha256": "ff6522cda44fd965fdd35b1257bf8035aa89df20243579c31277d738ff6daf84"
       },
       {
         "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-zh-dark-1440.png",
-        "sha256": "90f53a081d9894dd3686a82dd1ed7928bf0bca7a11e0b5ad76fb24c7fd2c05dd"
+        "sha256": "67a6fb1225e2178e1dbee99f52cb28669e83b7b1e2aa6b85511b5d032244675f"
       },
       {
         "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-zh-dark-390.png",
-        "sha256": "23ee47f3ba841b058238651d1b431a1f6ab43a9e8b8d4a9d857c011833b118da"
+        "sha256": "d01da8020f17ccc65a580db4a30630da95898a682a7d43c54d8441a205c8c110"
       },
       {
         "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-zh-light-1440.png",
-        "sha256": "1ed5e63b902c9ca542197345ed451e15f6b329231ae851ee579c0712780894cc"
+        "sha256": "36bf210f348da9e8eccad56413dd86089fd30606d404c9d023747396ea11fedf"
       },
       {
         "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-zh-light-390.png",
-        "sha256": "10f6384e6c435b440015a4535f60e3feb69506fef3a2f4012f977251a229154a"
+        "sha256": "1231773dbc10f4ab8b1d4f944928607eed26f000864846ff0eed5e5e11785a16"
       }
     ],
     "totals": {
@@ -632,16 +632,6 @@
       "degraded_control_cases": 32,
       "total_cases": 128,
       "screenshots": 16
-    },
-    "source_composition": {
-      "recorded_at": "2026-11-07",
-      "kind": "metadata_only",
-      "source_head": "cdc1eaa6b263806118cb3057a14b722d1fe18bca",
-      "source_manifest_git_blob_sha": "cbfd706b737dbf45623a4f1c9b56f7ccd83051f1",
-      "source_manifest_sha256": "6e386d93c4523ff0a24bc3b28cd242e6bdfe57f962ba1f7ca74b7cad585bc0c7",
-      "composed_base_head": "7fdd55fe2947fb597b3f5ac47993f956cfb5c842",
-      "qualification": "Original 2026-11-05 capture time and all browser measurements, rendered HTML, screenshots, verifier and browser identity remain unchanged. The prior capture extension is retained verbatim in repair_extension_history. Derived browser-receipt integrity hashes and accepted current-main fixture provenance are composed without a new browser execution. Each browser receipt records its original capture bindings and the current metadata bindings. Proof remains browser fixture only; canonical build unavailable; production none.",
-      "new_browser_execution": false
     }
   },
   "repair_extension_history": [
@@ -2772,6 +2762,128 @@
       },
       "prior_manifest_sha256": "6e386d93c4523ff0a24bc3b28cd242e6bdfe57f962ba1f7ca74b7cad585bc0c7",
       "source_head": "cdc1eaa6b263806118cb3057a14b722d1fe18bca"
+    },
+    {
+      "extension": {
+        "browser_receipts": {
+          "hk": {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json",
+            "sha256": "0f5a10ede4f0c1eef0a3bfdbbefa35595ee5c8e29bc30a16ea0fed0f0e7ecd88",
+            "pass": true,
+            "primary_cases": 48,
+            "degraded_control_cases": 16,
+            "screenshots": 8
+          },
+          "ca": {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json",
+            "sha256": "43332248be25ac3aac2033798372a4fb038afbb387f439c6bedac300c1913c04",
+            "pass": true,
+            "primary_cases": 48,
+            "degraded_control_cases": 16,
+            "screenshots": 8
+          }
+        },
+        "claims": {
+          "source_contract": "browser_fixture",
+          "browser_fixture": "reproducible",
+          "canonical_build": "unavailable",
+          "production": "none"
+        },
+        "fixture_receipt": {
+          "path": "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json",
+          "sha256": "9063fd33a84ea466cdcf910a3b5beadd846701e49c8b30a81b0e6f14bb169840"
+        },
+        "generated_at": "2026-11-05T08:31:02.001090+00:00",
+        "operation": "prophet-cockpit-p0b-zero-fouc-20260904-sol-001",
+        "pass": true,
+        "schema": "mastermind.prophet_p0b_owner_empty_repair_extension.v1",
+        "screenshots": [
+          {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-en-dark-1440.png",
+            "sha256": "ade62307efa7ddafa567441583f03d7ee2dd7b3680db78eb212019268d806ea7"
+          },
+          {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-en-dark-390.png",
+            "sha256": "03ba26d36856cdf2c835bb321bb57831973aad1c7ece3d7afd8fe8bb8ed81d38"
+          },
+          {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-en-light-1440.png",
+            "sha256": "b996abdbf5aae4d7a55276a938ba6a822775838d1c611106771f89cc1458b989"
+          },
+          {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-en-light-390.png",
+            "sha256": "66dc760f2045cca44acbc1c9edf776db64944ad91315abfcabef8c11245d46dc"
+          },
+          {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-zh-dark-1440.png",
+            "sha256": "a3f57adb6ff11aa48da7000f7c189b3f7992d8b9390bfd58ba73eb64cf12e305"
+          },
+          {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-zh-dark-390.png",
+            "sha256": "af87ee7b5f61a5d157f24bd170774e35ca07a1a50a3d44250df9b9cbe608d406"
+          },
+          {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-zh-light-1440.png",
+            "sha256": "4b00a7db2396f5e05580f363a4c43b72dc62db1488870e2f5c7564eed2c5aaa8"
+          },
+          {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-zh-light-390.png",
+            "sha256": "be0078ac9f3338a520e7499acf74ac951ba2c6f98cb9b6acde0244826235c49e"
+          },
+          {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-en-dark-1440.png",
+            "sha256": "b40a32fa441061df9084ebf3124bfd9a5a68c0f3e2a345ca7e2190a64bba329b"
+          },
+          {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-en-dark-390.png",
+            "sha256": "1c2204158f4c2fac691f48233071261f81847b520573c0dad8bfb62ac80d5ab2"
+          },
+          {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-en-light-1440.png",
+            "sha256": "c4ee452f3d6d6186ebc455c2d0639ff743ebf0eeb458aae146665af8871b7c08"
+          },
+          {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-en-light-390.png",
+            "sha256": "0ace436eee66a23d9a17599576e450bab9d8261372bf79e06d60db1f2c5c3781"
+          },
+          {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-zh-dark-1440.png",
+            "sha256": "90f53a081d9894dd3686a82dd1ed7928bf0bca7a11e0b5ad76fb24c7fd2c05dd"
+          },
+          {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-zh-dark-390.png",
+            "sha256": "23ee47f3ba841b058238651d1b431a1f6ab43a9e8b8d4a9d857c011833b118da"
+          },
+          {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-zh-light-1440.png",
+            "sha256": "1ed5e63b902c9ca542197345ed451e15f6b329231ae851ee579c0712780894cc"
+          },
+          {
+            "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-zh-light-390.png",
+            "sha256": "10f6384e6c435b440015a4535f60e3feb69506fef3a2f4012f977251a229154a"
+          }
+        ],
+        "totals": {
+          "markets": 2,
+          "owner_cases_per_market": 3,
+          "primary_cases": 96,
+          "degraded_control_cases": 32,
+          "total_cases": 128,
+          "screenshots": 16
+        },
+        "source_composition": {
+          "recorded_at": "2026-11-07",
+          "kind": "metadata_only",
+          "source_head": "cdc1eaa6b263806118cb3057a14b722d1fe18bca",
+          "source_manifest_git_blob_sha": "cbfd706b737dbf45623a4f1c9b56f7ccd83051f1",
+          "source_manifest_sha256": "6e386d93c4523ff0a24bc3b28cd242e6bdfe57f962ba1f7ca74b7cad585bc0c7",
+          "composed_base_head": "7fdd55fe2947fb597b3f5ac47993f956cfb5c842",
+          "qualification": "Original 2026-11-05 capture time and all browser measurements, rendered HTML, screenshots, verifier and browser identity remain unchanged. The prior capture extension is retained verbatim in repair_extension_history. Derived browser-receipt integrity hashes and accepted current-main fixture provenance are composed without a new browser execution. Each browser receipt records its original capture bindings and the current metadata bindings. Proof remains browser fixture only; canonical build unavailable; production none.",
+          "new_browser_execution": false
+        }
+      },
+      "prior_manifest_sha256": "7e5e8174ab9e3c6bc34464d18bd330c9bc6503f5449478ec6edd9104417f88ba",
+      "source_head": "335e5cc3eb222a4c19cb11e90e29ec6c6723c2b0"
     }
   ],
   "schema": "mastermind.p0_evidence.v2",

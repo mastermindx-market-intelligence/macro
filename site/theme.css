@@ -1646,8 +1646,6 @@ html[data-lang="zh"] .lang-toggle .zh-opt { color: #fff; }
 @media (prefers-reduced-motion:reduce) { .lst-ovl, .lst-ovl-modal { transition:none; } }
 .lst-ovl-hd { --lane:var(--muted); position:relative; display:flex; align-items:flex-start;
   gap:10px; padding:14px 16px 11px; border-bottom:1px solid var(--line); }
-.lst-ovl-hd::before { content:""; position:absolute; top:0; left:0; right:0; height:3px;
-  background:linear-gradient(90deg, var(--lane), transparent 70%); }
 .lst-ovl-title { font-size:13px; font-weight:700; letter-spacing:.06em; text-transform:uppercase;
   color:var(--lane); line-height:1.3; }
 .lst-ovl-count { margin-left:6px; font-size:11px; font-weight:600; color:var(--muted);
@@ -1749,13 +1747,9 @@ body.lst-ovl-lock .act-pop { z-index:12000; }
 @media (max-width:560px)  { .anv2-grid { grid-template-columns:1fr; } }
 /* individual lane card */
 .anv2-lane { background:var(--panel); border:1px solid var(--line); border-radius:14px; overflow:hidden; display:flex; flex-direction:column; }
-/* accent top bar */
+/* lane header — identity rides the title ink + icon, never an edge bar
+   (Chairman rule 2026-10-18, docs/DESIGN_DOCTRINE.md §3) */
 .anv2-lane-hd { padding:10px 13px 8px; border-bottom:1px solid var(--line); position:relative; }
-.anv2-lane-hd::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; border-radius:14px 14px 0 0; background:var(--anv2-accent,var(--muted)); }
-.anv2-lane--buy   { --anv2-accent: var(--up); }
-.anv2-lane--pull  { --anv2-accent: var(--info); }
-.anv2-lane--bot   { --anv2-accent: var(--warn); }
-.anv2-lane--red   { --anv2-accent: var(--down); }
 .anv2-lane-title { font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; display:flex; align-items:center; gap:5px; white-space:nowrap; }
 .anv2-lane--buy   .anv2-lane-title { color:var(--ink-up); }
 .anv2-lane--pull  .anv2-lane-title { color:var(--ink-info); }

@@ -5312,6 +5312,10 @@ CURATED_EXCLUSIVE = {
     # closure through tests/test_macro_risk_dialog.py, declared verbatim plus what the
     # suite reads by name; the curated-closure guard audits it like its parent.
     "ew-p4-descriptive-ui",
+    # Chairman rule 2026-10-18 container edge-stripe guard: the suite reads three
+    # templates by Path.read_text and imports only re/pathlib, so its paths: are
+    # the whole closure. Kept out of template-site-sync, so no probe ceiling moves.
+    "container-edge-stripe-guard",
     # GLT T22 (2026-11-03): tests/test_global_liquidity_views.py reaches the
     # macro-suite view/label helpers and scripts/build_macro_suite_pages.py, so
     # inference smeared this job's scan roots onto templates/index.html (138

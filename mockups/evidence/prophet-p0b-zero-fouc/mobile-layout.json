@@ -30,7 +30,7 @@
     "stylesheet": "/p0b-font-pin/pin.css",
     "served_html_transform": "<link rel=\"stylesheet\" href=\"/p0b-font-pin/pin.css\"> inserted after the <head> start tag of every served owner page",
     "audited_pages": 177,
-    "audited_nodes": 250663,
+    "audited_nodes": 250234,
     "platform_fonts": [],
     "custom_fonts": [
       "DejaVu Sans",
@@ -575,7 +575,7 @@
     "site/stock-logos.js": "cc29be531bc08e655464b6c0d384e1a46041aeb31caf7d982e926681fda7cb49",
     "site/stocktable.js": "eedfe64934bec3f37aa878ac4b45695f30293cd2ba28a9307c2ebe1fba19b964",
     "site/tablesort.js": "62f1b5ef9c2a26c292424aa407dbcffd0dbd9d5f6e4b0443c6e9b4ca74368a42",
-    "site/theme.css": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757",
+    "site/theme.css": "5d5a8a67b93e8b073d7234df566bda996fb78c5d2655e85005a2bba87e884260",
     "site/theme.js": "aa83d371263aa05e866a6a79a9f425f4c16b1cdedc8845ae78f1f8ee52ff3b71"
   },
   "viewport": {
@@ -3228,7 +3228,7 @@
         "screenshot": {
           "filename": "owner-empty-hk-watch-only-en-dark-390.png",
           "width": 390,
-          "sha256": "1c2204158f4c2fac691f48233071261f81847b520573c0dad8bfb62ac80d5ab2",
+          "sha256": "922cf10507933952b318bca84fa1424c91b58bd1acdcbe4b7a5321e7b1a932d8",
           "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-en-dark-390.png"
         },
         "console_exceptions": [],
@@ -4612,7 +4612,7 @@
         "screenshot": {
           "filename": "owner-empty-hk-watch-only-en-dark-1440.png",
           "width": 1440,
-          "sha256": "b40a32fa441061df9084ebf3124bfd9a5a68c0f3e2a345ca7e2190a64bba329b",
+          "sha256": "14f4dd0017a68d774f0e2864ad5c2f35e64b658888c3a914e4843c4a8314599a",
           "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-en-dark-1440.png"
         },
         "console_exceptions": [],
@@ -5996,7 +5996,7 @@
         "screenshot": {
           "filename": "owner-empty-hk-watch-only-en-light-390.png",
           "width": 390,
-          "sha256": "0ace436eee66a23d9a17599576e450bab9d8261372bf79e06d60db1f2c5c3781",
+          "sha256": "ff6522cda44fd965fdd35b1257bf8035aa89df20243579c31277d738ff6daf84",
           "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-en-light-390.png"
         },
         "console_exceptions": [],
@@ -7380,7 +7380,7 @@
         "screenshot": {
           "filename": "owner-empty-hk-watch-only-en-light-1440.png",
           "width": 1440,
-          "sha256": "c4ee452f3d6d6186ebc455c2d0639ff743ebf0eeb458aae146665af8871b7c08",
+          "sha256": "98b7f55c4f7898302ac626182857182e4a4f315f611b41b536a5ca7048142354",
           "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-en-light-1440.png"
         },
         "console_exceptions": [],
@@ -8764,7 +8764,7 @@
         "screenshot": {
           "filename": "owner-empty-hk-watch-only-zh-dark-390.png",
           "width": 390,
-          "sha256": "23ee47f3ba841b058238651d1b431a1f6ab43a9e8b8d4a9d857c011833b118da",
+          "sha256": "d01da8020f17ccc65a580db4a30630da95898a682a7d43c54d8441a205c8c110",
           "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-zh-dark-390.png"
         },
         "console_exceptions": [],
@@ -10148,7 +10148,7 @@
         "screenshot": {
           "filename": "owner-empty-hk-watch-only-zh-dark-1440.png",
           "width": 1440,
-          "sha256": "90f53a081d9894dd3686a82dd1ed7928bf0bca7a11e0b5ad76fb24c7fd2c05dd",
+          "sha256": "67a6fb1225e2178e1dbee99f52cb28669e83b7b1e2aa6b85511b5d032244675f",
           "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-zh-dark-1440.png"
         },
         "console_exceptions": [],
@@ -11532,7 +11532,7 @@
         "screenshot": {
           "filename": "owner-empty-hk-watch-only-zh-light-390.png",
           "width": 390,
-          "sha256": "10f6384e6c435b440015a4535f60e3feb69506fef3a2f4012f977251a229154a",
+          "sha256": "1231773dbc10f4ab8b1d4f944928607eed26f000864846ff0eed5e5e11785a16",
           "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-zh-light-390.png"
         },
         "console_exceptions": [],
@@ -12916,7 +12916,7 @@
         "screenshot": {
           "filename": "owner-empty-hk-watch-only-zh-light-1440.png",
           "width": 1440,
-          "sha256": "1ed5e63b902c9ca542197345ed451e15f6b329231ae851ee579c0712780894cc",
+          "sha256": "36bf210f348da9e8eccad56413dd86089fd30606d404c9d023747396ea11fedf",
           "path": "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-zh-light-1440.png"
         },
         "console_exceptions": [],
@@ -15596,33 +15596,5 @@
       "screenshot_width": 390,
       "pass": true
     }
-  ],
-  "source_composition": {
-    "recorded_at": "2026-11-07",
-    "kind": "metadata_only",
-    "source_head": "cdc1eaa6b263806118cb3057a14b722d1fe18bca",
-    "source_receipt": {
-      "path": "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json",
-      "git_blob_sha": "4a2c9d435ccf85a5cef0a73f599d8e1b7b88a411",
-      "sha256": "f48a73964b8d898bdb3ba37ea8c3ba3ebe3d4cdf42dc55b37b194589fa9e18de"
-    },
-    "capture_generated_at": "2026-11-05T08:31:02.001090+00:00",
-    "captured_fixture_receipt": {
-      "path": "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json",
-      "sha256": "949339f37416890fba72a9831dcdecac0235533fdc4baf7737b080ddd90ef1d3"
-    },
-    "captured_construction_inputs": {
-      "templates/_risk_radar_card.html.j2": "61c410f540c0bcd2db90c6244725a0cd20576fa5b3ca8afc2991efed19882c7d"
-    },
-    "composed_base_head": "7fdd55fe2947fb597b3f5ac47993f956cfb5c842",
-    "current_fixture_receipt": {
-      "path": "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json",
-      "sha256": "9063fd33a84ea466cdcf910a3b5beadd846701e49c8b30a81b0e6f14bb169840"
-    },
-    "current_construction_inputs": {
-      "templates/_risk_radar_card.html.j2": "59be92c3718219838fb679abc32077020973b0a7c863ef477f200729bc5109a7"
-    },
-    "qualification": "The accepted source capture is reused at the rendered HTML and loaded browser asset boundary. All three rendered owner-case HTML digests, input HTML, verifier, browser, fonts, measurements and screenshots are preserved. The accepted theme.js from that capture is composed unchanged; fixture and construction hashes above bind current accepted main metadata. These file-integrity bindings are not a new browser execution or a new canonical-build or production proof.",
-    "new_browser_execution": false
-  }
+  ]
 }

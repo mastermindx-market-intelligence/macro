@@ -2149,6 +2149,32 @@ PLAIN_PRODUCER: tuple[tuple[str, dict[str, str]], ...] = (
             "开工同比下降 13.5%，许可同比上升 2.4%。许可减开工为年化 +194 千套。",
         ),
     ),
+    # Business-activity depth/breadth contradiction
+    # (engine/market_os/macro_workspaces/business_activity.py
+    # `_detect_contradiction`): its upper-case DEPTH/BREADTH read as state
+    # tokens, so the page fell back to the placeholder sentence.
+    (
+        "The leading tier's 6-month momentum has crossed the calibrated recession-risk DEPTH",
+        _pair(
+            "Leading indicators have fallen far enough to meet the recession-risk "
+            "depth test, but too few of them are falling to meet the breadth test. "
+            "The weakness is concentrated, so no recession-risk signal is called "
+            "until both tests are met.",
+            "领先指标的跌幅已达到衰退风险的深度门槛，但下跌的分项还不够多，未达到广度门槛。"
+            "走弱较为集中，因此在两项门槛同时满足前不判定衰退风险信号。",
+        ),
+    ),
+    (
+        "BREADTH (the share of leading legs weakening) has crossed the calibrated recession-risk",
+        _pair(
+            "Enough leading indicators are weakening to meet the recession-risk "
+            "breadth test, but their combined fall is not yet deep enough to meet "
+            "the depth test. The weakness is broad but shallow, so no "
+            "recession-risk signal is called until both tests are met.",
+            "走弱的领先指标已足够多，达到衰退风险的广度门槛，但整体跌幅尚未达到深度门槛。"
+            "走弱广泛但较浅，因此在两项门槛同时满足前不判定衰退风险信号。",
+        ),
+    ),
 )
 
 # Short labels: rewrite in place, never a generic pointer.

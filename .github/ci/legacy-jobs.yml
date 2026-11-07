@@ -21482,6 +21482,32 @@ jobs:
       - name: design-system foundations (site type ramp at :root + shared .mx-* primitives)
         run: python -m pytest tests/test_design_system_foundations.py -q
 
+  container-edge-stripe-guard:
+    if: ${{ false }}  # executed inside ci-pack — NOT a disabled gate; see the ci-pack job.
+    gate: code
+    # Chairman rule 2026-10-18 (docs/DESIGN_DOCTRINE.md §3): no colored container
+    # edge stripe. Static scan of templates/theme.css, dashboard.html.j2 and
+    # intraday_flow.html.j2 (pseudo bars, inset stripes, shrink-only rail ratchet).
+    # scope: exclusive — the suite reads exactly these three templates via
+    # Path.read_text and imports only re/pathlib, so paths: is its whole closure.
+    # Kept out of template-site-sync so ordinary code PRs do not select it.
+    scope: exclusive
+    paths:
+      - templates/dashboard.html.j2
+      - templates/intraday_flow.html.j2
+      - templates/theme.css
+      - tests/test_container_edge_stripes.py
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest
+      - name: container edge-stripe guard (no pseudo bars / inset stripes; rail ratchet)
+        run: python -m pytest tests/test_container_edge_stripes.py -q
+
   data-base-shim:
     if: ${{ false }}
     gate: code
@@ -36486,7 +36512,10 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 html5lib openpyxl scikit-learn jsonschema==4.26.0 rjsmin==1.2.5
+        # soupsieve 4.0 (2026-11-03) no longer matches selectors inside <template>
+        # contents; the Prophet .pvs-body-source contracts select into them.
+        # Drop this pin once #10669 (template-scoped Prophet reads) is on main.
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 soupsieve==2.9.2 html5lib openpyxl scikit-learn jsonschema==4.26.0 rjsmin==1.2.5
       - name: US candidate and plan source-date truth (PR-time gated journey)
         run: >-
           python -m pytest tests/test_p0_prophet_candidate_board.py -q -k "candidate_heading_discloses_source_date or gated_candidate_journey or historical_plan_wall_does_not"
