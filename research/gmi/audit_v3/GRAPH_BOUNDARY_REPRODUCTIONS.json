@@ -1,0 +1,167 @@
+{
+  "source_pin": "bebcb24db8707f93c3acca470590fead13e78dbd",
+  "mode": "standard Pro audit; no Deep Research",
+  "results": [
+    {
+      "id": "G1",
+      "evidence_type": "injected read-failure control-flow reproduction",
+      "details": {
+        "prior_file_existed": true,
+        "replacement_writer_calls": 1,
+        "replacement_node_ids": [
+          "theme:new"
+        ],
+        "append_returned_rows_added": 1,
+        "strict_reader_refused_same_exception": true,
+        "scope": "Does not decode corrupt parquet or mutate a production store; proves destructive replacement path is reached."
+      }
+    },
+    {
+      "id": "G1b",
+      "evidence_type": "injected read-failure control-flow reproduction",
+      "details": {
+        "incumbent_PIT_owner_replacement_writer_calls": 1,
+        "replacement_row_count": 1,
+        "append_returned_rows_added": 1
+      }
+    },
+    {
+      "id": "G2",
+      "evidence_type": "pure owner-to-graph composition reproduction",
+      "details": {
+        "complete_second_document_has_observed_empty_basket": true,
+        "owner_asof_result": {
+          "basket_id": "a",
+          "suite": "baskets_china_ths",
+          "asof": "2026-10-02",
+          "members": [],
+          "pit": true,
+          "basis": "pit_snapshot",
+          "snapshot_date": "2026-10-02",
+          "source_shape": null,
+          "note": "basket not present in the 2026-10-02 snapshot"
+        },
+        "graph_intervals": [
+          {
+            "basket_id": "a",
+            "ticker": "A.SZ",
+            "valid_from": "2026-10-01",
+            "valid_to": null,
+            "source_shape": "membership",
+            "closed_by": null
+          }
+        ],
+        "result": "Owner reports no members; graph retains A.SZ with an open-ended interval."
+      }
+    },
+    {
+      "id": "G3",
+      "evidence_type": "pure owner-to-graph composition reproduction",
+      "details": {
+        "owner_asof_members": [
+          "B.SZ"
+        ],
+        "graph_intervals": [
+          {
+            "basket_id": "a",
+            "ticker": "A.SZ",
+            "valid_from": "2026-10-03",
+            "valid_to": null,
+            "source_shape": "membership",
+            "closed_by": null
+          },
+          {
+            "basket_id": "a",
+            "ticker": "B.SZ",
+            "valid_from": "2026-10-03",
+            "valid_to": null,
+            "source_shape": "membership",
+            "closed_by": null
+          }
+        ],
+        "result": "Graph mints an active membership for a source row already removed before the snapshot."
+      }
+    },
+    {
+      "id": "G4",
+      "evidence_type": "pure rights-registry revision reproduction",
+      "details": {
+        "before_downgrade": true,
+        "same_process_after_downgrade": true,
+        "after_manual_cache_clear": false,
+        "unknown_family_licensing_tuple": [
+          true,
+          false,
+          false
+        ],
+        "scope": "Long-lived-process revocation behavior; no observed production revocation incident."
+      }
+    },
+    {
+      "id": "G5",
+      "evidence_type": "exact pinned artifact plus actual reader reproduction",
+      "details": {
+        "narrative_rows": 6,
+        "narrative_legs_shape": "dict",
+        "actual_reader_ticker_map": {},
+        "upstream_recommended_rows": 30,
+        "membership_baskets": 49,
+        "baskets_with_tickers_field": 0,
+        "current_theme_state_null_narratives": 18,
+        "reader_stale_reasons": [],
+        "result": "Two incompatible schema assumptions independently prevent the incumbent narrative overlap path."
+      }
+    },
+    {
+      "id": "G6",
+      "evidence_type": "pure append-history semantics reproduction",
+      "details": {
+        "first_rows_written": 1,
+        "same_day_correction_rows_written": 0,
+        "retained_stage": "first",
+        "fields": [
+          "as_of",
+          "divergence_quadrant",
+          "evidence_z",
+          "foresight_stage",
+          "prev_hash",
+          "radar_lifecycle",
+          "schema",
+          "scoring_lifecycle",
+          "theme_id",
+          "ts"
+        ],
+        "scope": "Documented daily first-write semantics, not a new defect allegation; insufficient as a complete future evidence snapshot/correction record."
+      }
+    },
+    {
+      "id": "G7",
+      "evidence_type": "pure clock-boundary reproduction",
+      "details": {
+        "future_source_date": "2099-01-01",
+        "classified_stale": false,
+        "scope": "Temporal qualification limitation: future-dated source is not refused by this freshness check."
+      }
+    },
+    {
+      "id": "G8",
+      "evidence_type": "positive D2D pure reader reproduction",
+      "details": {
+        "old_cutoff_relation_count": 1,
+        "later_cutoff_relation_count": 0,
+        "old_cutoff_proposal_status": "proposed",
+        "later_cutoff_curation_state": "RATIFIED_NOT_MATERIALIZED",
+        "unmapped_source_local_concept_retained": true,
+        "fuzzy_label_lookup_refused": true,
+        "scope": "Proves reader behavior only, not production invocation or completion of all frozen D2D objectives."
+      }
+    },
+    {
+      "id": "G9",
+      "evidence_type": "positive strict JSON reader reproduction",
+      "details": {
+        "duplicate_JSON_key_refused": true
+      }
+    }
+  ]
+}
