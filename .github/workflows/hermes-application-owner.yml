@@ -3,6 +3,8 @@ name: Hermes APPLICATION owner composition
 on:
   pull_request:
     paths:
+      - 'config/provider_production_modes.v1.json'
+      - 'engine/neuralweb/capability_broker.py'
       - 'engine/fabric_inference_client.py'
       - 'engine/provider_production_modes.py'
       - 'engine/llm_auth.py'
