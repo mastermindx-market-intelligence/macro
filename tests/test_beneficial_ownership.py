@@ -3,6 +3,7 @@ and the activist-vs-aggregation regime grading."""
 from __future__ import annotations
 
 import pandas as pd
+import pytest
 
 from collectors.beneficial_ownership import filer_from_header, parse_idx
 from engine.beneficial_ownership import classify_filer_type, regime_for, regime_map
@@ -82,6 +83,26 @@ def test_regime_no_flip_when_different_filers():
         {"form_type": "SC 13D", "date_filed": "2026-01-10", "filer": "Esc LP", "filer_type": "other"},
     ]))
     assert r["is_flip"] is False and r["signal"] == "high"   # still activist via the 13D
+
+
+@pytest.mark.parametrize("filer", [None, "", "   ", float("nan"), pd.NA])
+def test_regime_unknown_filer_sequence_is_not_a_same_filer_flip(filer):
+    r = regime_for(_df([
+        {"form_type": "SC 13G", "date_filed": "2025-06-01", "filer": filer},
+        {"form_type": "SC 13D", "date_filed": "2026-01-10", "filer": filer},
+    ]))
+    assert r["is_flip"] is False
+    assert r["state"] != "flip"
+    assert (r["n_13g"], r["n_13d"]) == (1, 1)
+
+
+def test_regime_without_filer_enrichment_does_not_invent_a_flip():
+    r = regime_for(_df([
+        {"form_type": "SC 13G", "date_filed": "2025-06-01"},
+        {"form_type": "SC 13D", "date_filed": "2026-01-10"},
+    ]))
+    assert r["is_flip"] is False
+    assert r["latest_form"] == "SC 13D"
 
 
 def test_regime_map_groups_by_ticker_and_drops_non_13dg():
