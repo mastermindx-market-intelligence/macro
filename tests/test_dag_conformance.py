@@ -1155,6 +1155,15 @@ jobs:
             assert token in text, token
         assert len(text) > len(raw)
 
+    def test_rotation_builder_runs_once_after_membership_before_tail_desks(self):
+        """Keep Radar eligible for the existing core checkpoint when tail desks time out."""
+        band = (REPO_ROOT / "scripts/ci/daily_engine_regional_desk_builders.sh").read_text()
+        cluster = band.split("cl_baskets() {", 1)[1].split("\n}", 1)[0]
+        steps = [line.split()[1] for line in cluster.splitlines()
+                 if line.lstrip().startswith("brun ")]
+        assert steps[:3] == ["baskets", "baskets_snapshot", "rotation_events"]
+        assert band.count(" scripts.build_rotation_events\n") == 1
+
     def test_theme_graph_guard_is_invoked_by_plain_literal_not_by_argument(self):
         """The delegated hard law rides the seam, not an argument.
 
