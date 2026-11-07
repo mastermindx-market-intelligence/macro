@@ -5,10 +5,10 @@ walk all history. It deepens the authoritative tested tree through a bounded
 ladder until the synthetic merge exposes both parents and their merge base.
 Current consumers then fetch their canonical base themselves.
 
-If exact tested-tree ancestry cannot be established, the established recovery
-ladder remains available: all branches -> main only -> a 30-day main window.
-Every current fetch-depth-0 consumer is pinned here so a future job cannot
-silently depend on the removed full-remote side effect.
+If exact tested-tree ancestry cannot be established within the finite ladder,
+fail closed. A successful fetch cannot replace the readiness postcondition,
+and unrelated branches/tags are not a recovery path. Every current consumer
+is pinned so future jobs cannot silently depend on a full-remote side effect.
 """
 from __future__ import annotations
 
@@ -119,144 +119,49 @@ def test_exact_tree_deepens_only_until_merge_ancestry_is_ready(
     assert "ancestry incomplete at depth 2; deepening to 8" in out
 
 
-def test_exact_tree_transport_failure_enters_legacy_all_branches_fallback(
-    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
-) -> None:
-    calls: list[list[str]] = []
-    readiness = iter([False])
-
-    def fake_run(cmd, **kwargs):  # noqa: ANN001, ANN003
-        calls.append(list(cmd))
-        if cmd[-1] == TESTED_TREE_SHA:
-            raise subprocess.CalledProcessError(1, cmd)
-        return subprocess.CompletedProcess(cmd, 0)
-
-    monkeypatch.setattr(run_ci_pack.subprocess, "run", fake_run)
-    monkeypatch.setattr(
-        run_ci_pack,
-        "_tested_tree_ancestry_ready",
-        lambda *_args, **_kwargs: next(readiness),
-    )
-    run_ci_pack._prepare_provided_actions(
-        _fetch_depth_zero_job(),
-        root=Path.cwd(),
-        tested_tree_sha=TESTED_TREE_SHA,
-    )
-    assert len(calls) == 2
-    assert "--depth=2" in calls[0]
-    assert "+refs/heads/*:refs/remotes/origin/*" in calls[1]
-    out = capsys.readouterr().out
-    assert "ancestry fetch failed at depth 2" in out
-
-
-def test_incomplete_exact_ancestry_through_bound_enters_legacy_fallback(
-    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
-) -> None:
-    calls: list[list[str]] = []
-
-    def fake_run(cmd, **kwargs):  # noqa: ANN001, ANN003
-        calls.append(list(cmd))
-        return subprocess.CompletedProcess(cmd, 0)
-
-    monkeypatch.setattr(run_ci_pack.subprocess, "run", fake_run)
-    monkeypatch.setattr(
-        run_ci_pack,
-        "_tested_tree_ancestry_ready",
-        lambda *_args, **_kwargs: False,
-    )
-    run_ci_pack._prepare_provided_actions(
-        _fetch_depth_zero_job(),
-        root=Path.cwd(),
-        tested_tree_sha=TESTED_TREE_SHA,
-    )
-
-    depths = list(run_ci_pack._EXACT_TESTED_TREE_DEPTHS)
-    assert len(calls) == len(depths) + 1
-    for call, depth in zip(calls[:-1], depths, strict=True):
-        assert f"--depth={depth}" in call
-        assert call[-1] == TESTED_TREE_SHA
-    assert "+refs/heads/*:refs/remotes/origin/*" in calls[-1]
-    out = capsys.readouterr().out
-    assert f"ancestry remained incomplete through depth {depths[-1]}" in out
-
-
-def test_deepen_falls_back_to_main_when_exact_and_all_branches_fetch_fail(
-    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
-) -> None:
-    calls: list[list[str]] = []
-
-    def fake_run(cmd, **kwargs):  # noqa: ANN001, ANN003
-        calls.append(list(cmd))
-        if cmd[-1] == TESTED_TREE_SHA:
-            raise subprocess.CalledProcessError(1, cmd)
-        if "+refs/heads/*:refs/remotes/origin/*" in cmd:
-            raise subprocess.CalledProcessError(1, cmd)
-        return subprocess.CompletedProcess(cmd, 0)
-
-    monkeypatch.setattr(run_ci_pack.subprocess, "run", fake_run)
-    monkeypatch.setattr(run_ci_pack, "_tested_tree_ancestry_ready", lambda *_: False)
-    run_ci_pack._prepare_provided_actions(
-        _fetch_depth_zero_job(),
-        root=Path.cwd(),
-        tested_tree_sha=TESTED_TREE_SHA,
-    )
-    assert len(calls) == 3
-    assert "--depth=2" in calls[0]
-    assert "+refs/heads/*:refs/remotes/origin/*" in calls[1]
-    assert "+refs/heads/main:refs/remotes/origin/main" in calls[2]
-    assert "--depth=2147483647" in calls[2]
-    out = capsys.readouterr().out
-    warning_lines = [line for line in out.splitlines() if "::warning" in line]
-    assert len(warning_lines) == 2
-
-
-def test_deepen_falls_back_to_shallow_window_when_main_deepen_fails(
-    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
-) -> None:
-    calls: list[list[str]] = []
-
-    def fake_run(cmd, **kwargs):  # noqa: ANN001, ANN003
-        calls.append(list(cmd))
-        if "--shallow-since=30 days ago" in cmd:
-            return subprocess.CompletedProcess(cmd, 0)
-        raise subprocess.CalledProcessError(1, cmd)
-
-    monkeypatch.setattr(run_ci_pack.subprocess, "run", fake_run)
-    monkeypatch.setattr(run_ci_pack, "_tested_tree_ancestry_ready", lambda *_: False)
-    run_ci_pack._prepare_provided_actions(
-        _fetch_depth_zero_job(),
-        root=Path.cwd(),
-        tested_tree_sha=TESTED_TREE_SHA,
-    )
-    assert len(calls) == 4
-    assert "--depth=2" in calls[0]
-    assert "+refs/heads/*:refs/remotes/origin/*" in calls[1]
-    assert "+refs/heads/main:refs/remotes/origin/main" in calls[2]
-    assert "--shallow-since=30 days ago" in calls[3]
-    assert "--tags" not in calls[3]
-    out = capsys.readouterr().out
-    warning_lines = [line for line in out.splitlines() if "::warning" in line]
-    assert len(warning_lines) == 3
-
-
-def test_deepen_raises_when_every_recovery_rung_fails(
+def test_exact_tree_transport_failure_stops_without_namespace_fallback(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     calls: list[list[str]] = []
 
     def fake_run(cmd, **kwargs):  # noqa: ANN001, ANN003
         calls.append(list(cmd))
-        raise subprocess.CalledProcessError(1, cmd)
+        raise subprocess.CalledProcessError(128, cmd)
 
     monkeypatch.setattr(run_ci_pack.subprocess, "run", fake_run)
     monkeypatch.setattr(run_ci_pack, "_tested_tree_ancestry_ready", lambda *_: False)
-    with pytest.raises(subprocess.CalledProcessError):
+    with pytest.raises(subprocess.CalledProcessError) as error:
         run_ci_pack._prepare_provided_actions(
-            _fetch_depth_zero_job(),
-            root=Path.cwd(),
-            tested_tree_sha=TESTED_TREE_SHA,
+            _fetch_depth_zero_job(), root=Path.cwd(), tested_tree_sha=TESTED_TREE_SHA,
         )
-    assert len(calls) == 4
+    assert error.value.returncode == 128
+    assert calls == [[
+        "git", "fetch", "--no-recurse-submodules", "--no-tags", "--depth=2",
+        "origin", TESTED_TREE_SHA,
+    ]]
+
+
+def test_successful_fetches_cannot_replace_required_exact_ancestry(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    calls: list[list[str]] = []
+
+    def fake_run(cmd, **kwargs):  # noqa: ANN001, ANN003
+        calls.append(list(cmd))
+        return subprocess.CompletedProcess(cmd, 0)
+
+    monkeypatch.setattr(run_ci_pack.subprocess, "run", fake_run)
+    monkeypatch.setattr(run_ci_pack, "_tested_tree_ancestry_ready", lambda *_: False)
+    with pytest.raises(RuntimeError, match=TESTED_TREE_SHA + ".*depth 8192"):
+        run_ci_pack._prepare_provided_actions(
+            _fetch_depth_zero_job(), root=Path.cwd(), tested_tree_sha=TESTED_TREE_SHA,
+        )
+    assert calls == [[
+        "git", "fetch", "--no-recurse-submodules", "--no-tags", f"--depth={depth}",
+        "origin", TESTED_TREE_SHA,
+    ] for depth in (2, 8, 32, 128, 512, 2048, 8192)]
+    # Canonical-main acquisition retains its independently accepted bound.
+    assert run_ci_pack._EXACT_TESTED_TREE_DEPTHS == (2, 8, 32, 128, 512, 2048)
 
 
 _INTERNATIONAL_CANONICAL_STEP = 'canonical base for the frozen-file guard (fail closed)'
@@ -552,3 +457,173 @@ def test_complete_history_survives_multiple_consumers_without_refetching(
     run_ci_pack._prepare_provided_actions(job, root=isolated, tested_tree_sha=tested)
     assert len(fetches) > len(first_fetches)
     assert run_ci_pack._tested_tree_ancestry_ready(isolated, env, tested)
+
+
+def test_exact_history_beyond_2048_preserves_subject_and_excludes_unrelated_objects(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A genuinely divergent PR must deepen past the old bound without all refs."""
+    remote = tmp_path / "remote.git"
+    root = tmp_path / "candidate"
+    real_run = subprocess.run
+    env = dict(run_ci_pack._trusted_git_environment(tmp_path))
+
+    def git(*args: str, cwd: Path = remote, data: str | None = None) -> str:
+        return real_run(
+            ["git", *args], cwd=cwd, env=env, input=data, text=True,
+            capture_output=True, check=True,
+        ).stdout.strip()
+
+    git("init", "--bare", str(remote), cwd=tmp_path)
+    stream = []
+    next_mark = 1
+
+    def blob(content: str) -> int:
+        nonlocal next_mark
+        mark = next_mark
+        next_mark += 1
+        stream.extend(["blob", f"mark :{mark}",
+                       f"data {len(content.encode())}", content])
+        return mark
+
+    def commit(ref: str, message: str, parent: int | None = None,
+               merge: int | None = None, files: tuple[str, ...] = ()) -> int:
+        nonlocal next_mark
+        mark = next_mark
+        next_mark += 1
+        stream.extend([
+            f"commit {ref}", f"mark :{mark}",
+            f"committer CI fixture <ci@example.invalid> {1700000000 + mark} +0000",
+            f"data {len(message.encode())}", message,
+        ])
+        if parent is not None:
+            stream.append(f"from :{parent}")
+        if merge is not None:
+            stream.append(f"merge :{merge}")
+        stream.extend(files)
+        stream.append("")
+        return mark
+
+    common_blob = blob("common fixture\n")
+    feature_blob = blob("feature fixture\n")
+    unrelated_blob = blob("unrelated object must remain absent\n")
+    base_mark = commit("refs/heads/base", "base", files=(
+        f"M 100644 :{common_blob} common.txt",))
+    tips = []
+    for branch in ("main", "feature"):
+        parent = base_mark
+        for index in range(2300):
+            message = f"{branch}-{index}\n\nFixture-Trailer: {branch}-{index}"
+            files = (f"M 100644 :{feature_blob} feature.txt",) if (
+                branch == "feature" and index == 0) else ()
+            parent = commit(f"refs/heads/{branch}", message, parent, files=files)
+        tips.append(parent)
+    commit("refs/heads/tested", "tested merge", tips[0], tips[1],
+           files=(f"M 100644 :{feature_blob} feature.txt",))
+    unrelated = commit("refs/heads/unrelated", "unrelated root", files=(
+        f"M 100644 :{unrelated_blob} unrelated.txt",))
+    stream.extend(["reset refs/tags/unrelated-tag", f"from :{unrelated}", ""])
+    git("fast-import", "--quiet", data="\n".join(stream) + "\n")
+
+    tested = git("rev-parse", "refs/heads/tested")
+    parents = git("rev-list", "--parents", "-n", "1", tested).split()[1:]
+    base = git("rev-parse", "refs/heads/base")
+    expected_tree = git("rev-parse", f"{tested}^{{tree}}")
+    unrelated_objects = [
+        git("rev-parse", "refs/heads/unrelated"),
+        git("rev-parse", "refs/heads/unrelated^{tree}"),
+        git("rev-parse", "refs/heads/unrelated:unrelated.txt"),
+    ]
+    expected_paths = git("diff", "--name-only", parents[0], tested)
+    expected_trailers = git("log", "--format=%B", f"{parents[0]}..{tested}")
+    assert expected_paths == "feature.txt"
+    assert expected_trailers.count("Fixture-Trailer: feature-") == 2300
+    git("clone", "--no-checkout", "--single-branch", "--no-tags", "--depth=2",
+        "--branch=tested", remote.as_uri(), str(root), cwd=tmp_path)
+    assert git("rev-parse", "--is-shallow-repository", cwd=root) == "true"
+    assert not (root / ".git/objects/info/alternates").exists()
+    for oid in unrelated_objects:
+        assert real_run(["git", "cat-file", "-e", oid], cwd=root,
+                        env=env, capture_output=True).returncode != 0
+    assert not run_ci_pack._tested_tree_ancestry_ready(root, env, tested)
+    fetches = []
+
+    def recording_run(cmd, **kwargs):  # noqa: ANN001, ANN003
+        if list(cmd[:2]) == ["git", "fetch"]:
+            command = list(cmd)
+            assert command[-2:] == ["origin", tested], "unrelated namespace acquisition"
+            assert "--no-tags" in command and "--tags" not in command
+            if "--depth=8192" in command:
+                assert not run_ci_pack._tested_tree_ancestry_ready(root, env, tested)
+            fetches.append(command)
+        return real_run(cmd, **kwargs)
+
+    monkeypatch.setattr(run_ci_pack.subprocess, "run", recording_run)
+    run_ci_pack._prepare_provided_actions(
+        _fetch_depth_zero_job(), root=root, tested_tree_sha=tested,
+    )
+    assert [next(arg for arg in call if arg.startswith("--depth="))
+            for call in fetches] == [
+        "--depth=2", "--depth=8", "--depth=32", "--depth=128",
+        "--depth=512", "--depth=2048", "--depth=8192",
+    ]
+    assert git("rev-parse", "HEAD", cwd=root) == tested
+    assert git("rev-parse", "HEAD^{tree}", cwd=root) == expected_tree
+    assert git("rev-list", "--parents", "-n", "1", tested, cwd=root).split() == [
+        tested, *parents]
+    assert git("merge-base", *parents, cwd=root) == base
+    assert git("diff", "--name-only", parents[0], tested, cwd=root) == expected_paths
+    assert git("log", "--format=%B", f"{parents[0]}..{tested}", cwd=root) == expected_trailers
+    assert git("show", f"{tested}:feature.txt", cwd=root) == "feature fixture"
+    for oid in unrelated_objects:
+        assert real_run(["git", "cat-file", "-e", oid], cwd=root,
+                        env=env, capture_output=True).returncode != 0
+    refs = git("for-each-ref", "--format=%(refname)", cwd=root)
+    assert "unrelated" not in refs
+    # A ready checkout must not need a reachable origin for the next consumer.
+    git("remote", "set-url", "origin", (tmp_path / "absent.git").as_uri(), cwd=root)
+    before = list(fetches)
+    run_ci_pack._prepare_provided_actions(
+        _fetch_depth_zero_job(), root=root, tested_tree_sha=tested,
+    )
+    assert fetches == before
+
+
+def test_disconnected_parent_histories_fail_after_successful_exact_fetches(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A transfer success cannot invent a common ancestor between two roots."""
+    remote = tmp_path / "remote.git"
+    root = tmp_path / "candidate"
+    real_run = subprocess.run
+    env = dict(run_ci_pack._trusted_git_environment(tmp_path))
+    env.update(GIT_AUTHOR_NAME="CI fixture", GIT_AUTHOR_EMAIL="ci@example.invalid",
+               GIT_COMMITTER_NAME="CI fixture", GIT_COMMITTER_EMAIL="ci@example.invalid")
+
+    def git(*args: str, cwd: Path = remote, data: str | None = None) -> str:
+        return real_run(["git", *args], cwd=cwd, env=env, input=data,
+                        text=True, capture_output=True, check=True).stdout.strip()
+
+    git("init", "--bare", str(remote), cwd=tmp_path)
+    tree = git("mktree", data="")
+    parents = [git("commit-tree", tree, data=name) for name in ("left", "right")]
+    tested = git("commit-tree", tree, "-p", parents[0], "-p", parents[1], data="merge")
+    git("update-ref", "refs/heads/main", tested)
+    git("symbolic-ref", "HEAD", "refs/heads/main")
+    git("clone", "--no-checkout", "--depth=1", remote.as_uri(), str(root), cwd=tmp_path)
+    fetches = []
+
+    def recording_run(cmd, **kwargs):  # noqa: ANN001, ANN003
+        if list(cmd[:2]) == ["git", "fetch"]:
+            fetches.append(list(cmd))
+        return real_run(cmd, **kwargs)
+
+    monkeypatch.setattr(run_ci_pack.subprocess, "run", recording_run)
+    with pytest.raises(RuntimeError, match=tested + ".*depth 8192"):
+        run_ci_pack._prepare_provided_actions(
+            _fetch_depth_zero_job(), root=root, tested_tree_sha=tested,
+        )
+    assert len(fetches) == 7
+    assert all(call[-2:] == ["origin", tested] and "--no-tags" in call for call in fetches)
+    assert git("rev-parse", "HEAD", cwd=root) == tested
+    assert not run_ci_pack._tested_tree_ancestry_ready(root, env, tested)
