@@ -21,7 +21,7 @@ def page():
             pytest.skip("Chromium unavailable")
         context=browser.new_context(viewport={"width":1440,"height":900},reduced_motion="reduce")
         page=context.new_page()
-        page.route("http://history.test/",lambda route:route.fulfill(content_type="text/html",body="<html data-lang='en'><head></head><body></body></html>"))
+        page.route("http://history.test/",lambda route:route.fulfill(content_type="text/html",body="<!doctype html><html data-lang='en'><head></head><body></body></html>"))
         page.goto("http://history.test/")
         page.evaluate("""() => {
           window.MDXAuth={onChange:fn=>{window.__onAuth=fn;fn({id:'user-A'});}};
@@ -304,11 +304,45 @@ def test_late_resumed_thread_cannot_attach_or_delete_next_accounts_run(page):
     assert not any('/runs/held-run-A/stream' in r['url'] for r in page.evaluate('window.__requests'))
 
 
+@pytest.mark.parametrize('next_focus', ['control', 'closed', 'initial'])
+def test_delayed_open_focus_respects_current_interaction(page, next_focus):
+    # Wait for the fixture's opening focus, then control the next deferred focus
+    # so the user interaction occurs before that callback deterministically.
+    expect(page.locator('#mmb-ta')).to_be_focused()
+    page.evaluate("""() => {
+      const outside=document.createElement('button');outside.id='outside-focus';
+      outside.textContent='Outside';document.body.appendChild(outside);
+      MMBrain.close();outside.focus();
+      const schedule=window.setTimeout;window.__openFocus=[];
+      window.setTimeout=(fn,delay,...args)=>{
+        if(delay===260){window.__openFocus.push(fn);return 0;}
+        return schedule(fn,delay,...args);
+      };
+      MMBrain.open();window.setTimeout=schedule;
+    }""")
+    assert page.evaluate('window.__openFocus.length') == 1
+    target=page.locator('.mmb-tools button[data-lane="fast"]')
+    if next_focus=='control':
+        target.focus()
+    elif next_focus=='closed':
+        page.evaluate('MMBrain.close()')
+        target=page.locator('#outside-focus')
+        target.focus()
+    else:
+        target=page.locator('#mmb-ta')
+    page.evaluate('window.__openFocus.forEach(fn=>fn())')
+    expect(target).to_be_focused()
+    assert all(r['method']=='GET' for r in page.evaluate('window.__requests'))
+
+
 @pytest.mark.parametrize('width',[320,390,560])
 @pytest.mark.parametrize('lang',['en','zh'])
 @pytest.mark.parametrize('text_scale',[1,2])
 def test_composer_controls_keep_touch_targets_and_reflow(page,width,lang,text_scale):
     page.set_viewport_size({'width':width,'height':844})
+    # open() hands focus to the composer 260ms after entry (focusPanel). Let that one-shot
+    # handoff land first, or it can take focus from a control between focus() and the check.
+    expect(page.locator('#mmb-ta')).to_be_focused()
     page.evaluate("""({lang,scale})=>{
       document.documentElement.dataset.lang=lang;document.dispatchEvent(new Event('langchange'));
       document.querySelector('[data-act=voice]').style.display='';
@@ -338,6 +372,47 @@ def test_composer_controls_keep_touch_targets_and_reflow(page,width,lang,text_sc
     if proof:
         folder=Path(proof);folder.mkdir(parents=True,exist_ok=True)
         page.screenshot(path=str(folder/f'{width}-{lang}-{text_scale}x-composer.png'))
+
+
+@pytest.mark.parametrize('width', [320, 390])
+@pytest.mark.parametrize('lang', ['en', 'zh'])
+@pytest.mark.parametrize('text_scale', [1, 2])
+def test_mobile_history_and_answer_controls_are_reachable(page, width, lang, text_scale):
+    page.locator(f'.mmb-ti[data-id="{A}"] .mmb-ti-body').click()
+    expect(page.locator('.mmb-msg')).to_contain_text('Exact retained answer A')
+    page.set_viewport_size({'width': width, 'height': 844})
+    page.evaluate('MMBrain.close();MMBrain.open();')
+    page.evaluate("""({lang,scale})=>{
+      document.documentElement.dataset.lang=lang;document.dispatchEvent(new Event('langchange'));
+      const nodes=Array.from(document.querySelectorAll('#mmb-root *')).filter(n=>n.namespaceURI==='http://www.w3.org/1999/xhtml');
+      const sizes=nodes.map(n=>parseFloat(getComputedStyle(n).fontSize));
+      nodes.forEach((n,i)=>{if(sizes[i])n.style.fontSize=(sizes[i]*scale)+'px';});
+    }""", {'lang': lang, 'scale': text_scale})
+
+    def check_targets(selector):
+        controls=page.locator(selector)
+        assert controls.count()>0
+        for control in controls.all():
+            control.click(trial=True)
+            box=control.bounding_box()
+            # Chromium can return 43.99999237060547 for a 44px CSS target.
+            # Preserve the accessibility threshold, allowing only subpixel float noise.
+            assert box and round(box['width'],4)>=44 and round(box['height'],4)>=44
+            assert box['x']>=0 and box['x']+box['width']<=width
+            assert control.evaluate('(node)=>{const b=node.getBoundingClientRect();const hit=document.elementFromPoint(b.x+b.width/2,b.y+b.height/2);return node===hit||node.contains(hit);}')
+            control.focus()
+            expect(control).to_be_focused()
+    check_targets('.mmb-head .mmb-icon:visible, .mmb-abtn:visible')
+    proof=os.environ.get('MM_BRAIN_HISTORY_PROOF_DIR')
+    if proof:
+        folder=Path(proof);folder.mkdir(parents=True,exist_ok=True)
+        page.screenshot(path=str(folder/f'{width}-{lang}-{text_scale}x-answer-actions.png'))
+    page.locator('[data-act="side"][title="Chats"]').click()
+    check_targets(f'.mmb-ti[data-id="{A}"] .mmb-ti-act:visible')
+    if proof:
+        page.screenshot(path=str(folder/f'{width}-{lang}-{text_scale}x-history-actions.png'))
+    assert page.evaluate('document.documentElement.scrollWidth<=innerWidth')
+    assert all(r['method']=='GET' for r in page.evaluate('window.__requests'))
 
 
 @pytest.mark.parametrize("action", ["account", "close", "new", "thread", "pagehide"])
@@ -397,3 +472,37 @@ def test_voice_error_aborts_and_late_end_cannot_release_a_new_session(page):
     page.evaluate("window.__speechInstances[0].onend();window.__speechInstances[0].onerror();MMBrain.close()")
     assert page.evaluate("window.__speechInstances[0].aborted") == 1
     assert page.evaluate("window.__speechInstances[1].aborted") == 1
+
+
+@pytest.mark.parametrize("width", [390, 820])
+def test_expanded_history_remains_reachable_after_phone_resize(page, width):
+    """Phone and tablet history overlays must return to the selected answer."""
+    page.set_viewport_size({"width": width, "height": 844})
+    menu = page.locator('.mmb-menu[data-act="side"]')
+    expect(menu).to_be_visible()
+    expect(page.locator('.mmb-threads')).to_be_hidden()
+    menu.click()
+    row = page.locator('#mmb-tlist .mmb-ti').first
+    expect(row).to_be_visible()
+    row.locator('.mmb-ti-body').click()
+    expect(page.locator('.mmb-msg.assistant')).to_be_visible()
+    expect(page.locator('.mmb-threads')).to_be_hidden()
+    assert not page.evaluate('document.documentElement.scrollWidth > innerWidth')
+
+
+def test_saved_response_has_accessible_heading_hierarchy_without_executable_markup(page):
+    """One- through six-marker headings use the same safe saved-answer renderer."""
+    text = '# Direct answer\nA readable first paragraph.\n## Evidence\nSupporting detail.\n### Next check\n<script>window.headingInjected=true</script>'
+    page.evaluate(r'''text => {
+      const old = window.fetch;
+      window.fetch = (url, options = {}) => /\/api\/brain\/threads\/[a-f0-9-]+$/.test(url)
+        ? Promise.resolve({ok:true,status:200,json:()=>Promise.resolve({thread:{id:'11111111-1111-1111-1111-111111111111'},messages:[{role:'assistant',content:text}]})})
+        : old(url, options);
+    }''', text)
+    page.locator('#mmb-tlist .mmb-ti').first.locator('.mmb-ti-body').click()
+    expect(page.get_by_role('heading', name='Direct answer', exact=True, level=2)).to_be_visible()
+    expect(page.get_by_role('heading', name='Evidence', exact=True, level=2)).to_be_visible()
+    expect(page.get_by_role('heading', name='Next check', exact=True, level=3)).to_be_visible()
+    expect(page.locator('.mmb-txt')).to_contain_text('<script>window.headingInjected=true</script>')
+    assert page.evaluate('window.headingInjected === undefined')
+    assert page.locator('.mmb-txt script').count() == 0

@@ -1,0 +1,28 @@
+✔ finance settles before all eight preserved secondary reads (6.706209ms)
+✔ typed finance failure still loads secondary panels (0.829375ms)
+✔ old finance cannot start secondary work after SIGNED_OUT (0.640583ms)
+✔ old finance cannot start secondary work after SIGNED_IN (1.440375ms)
+✔ selection changes are guarded before secondary continuation (1.764416ms)
+✔ same initial auth notification coalesces while and after settled (0.847375ms)
+✔ first promise is adopted once without another finance fetch (0.606959ms)
+✔ first promise from another subject is not adopted (0.352166ms)
+✔ early instance mounts once and stops fetching after page takes ownership (1.064208ms)
+✔ createGovernmentRevenueBudget standalone auth reload default remains active (2.942542ms)
+✔ createGovernmentRevenueBudget page owner suppresses duplicate auth fetch and invalidates old result (0.99325ms)
+✔ createGovernmentRevenueFms standalone auth reload default remains active (1.061ms)
+✔ createGovernmentRevenueFms page owner suppresses duplicate auth fetch and invalidates old result (0.789708ms)
+✔ actual early startup missing auth settles locked without network and releases every public tool (3.281167ms)
+✔ actual early startup disabled auth settles locked without network and releases every public tool (0.748834ms)
+✔ actual early typed403 settles then loads modules, with visible partial on one module failure (0.833084ms)
+✔ completed initial session starts finance before a delayed auth notification (4.085458ms)
+✔ newer SIGNED_OUT wins over pending initial session result (1.549417ms)
+✔ newer SIGNED_IN wins over pending initial session result (1.258166ms)
+✔ initial session result cannot reclaim finance from page owner (1.579834ms)
+ℹ tests 20
+ℹ suites 0
+ℹ pass 20
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 100.964708

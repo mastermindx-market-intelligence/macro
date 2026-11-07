@@ -1,0 +1,9 @@
+{
+  "observed_at": "2026-10-15T06:42:59.089258+00:00",
+  "followon_source": "f60f5b54c33566e6820e9e527400c1d1a41d241c",
+  "target_unpublished_a1": "2d0e6e334986eb73496c102a939ee4e24a688c63",
+  "returncode": 1,
+  "output": "4131352ce5875d4119ae59ca52b2d19418dedbbd\n100644 4f2706f605e77cd1fe813e3c507329c748799bee 1\t.github/ci/legacy-jobs.yml\n100644 e88bad48f6dbd265550ce4504e3c166bbb65e5f0 2\t.github/ci/legacy-jobs.yml\n100644 1151a19f4ebe4d70c44228dacc961ce7b846d1a3 3\t.github/ci/legacy-jobs.yml\n\nAuto-merging .github/ci/legacy-jobs.yml\nCONFLICT (content): Merge conflict in .github/ci/legacy-jobs.yml\nAuto-merging tests/test_ci_pack.py\n",
+  "error": "",
+  "effect": "Read-only preparation; no merge/rebase/ref/index effect and no release acceptance"
+}

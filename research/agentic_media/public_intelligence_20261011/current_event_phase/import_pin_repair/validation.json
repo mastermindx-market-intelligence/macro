@@ -1,0 +1,26 @@
+{
+  "failed_head": "5d06f81f068aa876743862a1d16b4687adca6422",
+  "ci_run": 38499512292,
+  "ci_job": 115644220448,
+  "controller_classification": "pr_regression",
+  "failure": "scripts/stage_official_feed_press.py conditional pin allows foreign repo package first",
+  "red_control": {
+    "command": "python3 -m pytest tests/test_press_official_staging.py -k file_path_cli -q",
+    "result": "1 failed, 38 deselected in 13.93s",
+    "observed_error": "RuntimeError: foreign repository package imported"
+  },
+  "repair": "unconditional sys.path.insert(0, str(_REPO)); existing baseline and waivers untouched",
+  "green_command": "python3 -m pytest tests/test_check_script_import_pinning.py tests/test_press_official_staging.py tests/test_press_run.py -q",
+  "green_result": "106 passed in 41.77s",
+  "manifest_change": {
+    "path": "scripts/stage_official_feed_press.py",
+    "old_sha256": "6409126cf87e338d7c22f470acfffa8d0ac349ada405ef483c7395456765b7d1",
+    "new_sha256": "523005e2e0f2c60b3229973a7a17cc4abb2f3d94dbbfd243ee5918b7e2583840"
+  },
+  "other_source_hashes_unchanged": 23,
+  "expected_page_manifest_unchanged": true,
+  "provider_calls": 0,
+  "publication": false,
+  "cutover": false,
+  "review": "Parent reviewed exact four-line source diff and adversarial CLI regression; accepted. No source/policy/CI waiver."
+}

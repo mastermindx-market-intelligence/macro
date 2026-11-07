@@ -54,6 +54,7 @@ from __future__ import annotations
 
 import json
 import logging
+import math
 from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -403,6 +404,19 @@ _LOOSENING_BANDS = {"LOOSE", "NEUTRAL", "AWAITING_DATA"}
 _SUPPORTIVE_BANDS = {"TIGHT", "SOLD_OUT", "TIGHTENING", "TIGHT (text)", "TIGHTENING (text)"}
 
 
+def _finite_sign_negative(value: Any) -> bool | None:
+    """Return the finite numeric sign, or None when it cannot be verified."""
+    if isinstance(value, bool):
+        return None
+    try:
+        number = float(value)
+    except (TypeError, ValueError, OverflowError):
+        return None
+    if not math.isfinite(number):
+        return None
+    return number < 0
+
+
 def _evaluate_criterion(
     criterion: dict,
     current_row: dict | None,
@@ -447,7 +461,9 @@ def _evaluate_criterion(
             lang_accel = current_row.get("language_accel")
         if lang_accel is None:
             return "UNVERIFIABLE"
-        current_neg = float(lang_accel) < 0
+        current_neg = _finite_sign_negative(lang_accel)
+        if current_neg is None:
+            return "UNVERIFIABLE"
         prev_count = sum(
             1 for u in prior[-CONSECUTIVE_NEEDED:]
             if u.get("criterion_kind") == kind and u.get("condition_met")
@@ -491,7 +507,9 @@ def _evaluate_criterion(
         rb = (current_row or {}).get("revision_breadth")
         if rb is None:
             return "UNVERIFIABLE"
-        current_neg = float(rb) < 0
+        current_neg = _finite_sign_negative(rb)
+        if current_neg is None:
+            return "UNVERIFIABLE"
         prev_count = sum(
             1 for u in prior[-CONSECUTIVE_NEEDED:]
             if u.get("criterion_kind") == kind and u.get("condition_met")
@@ -557,11 +575,26 @@ def _append_update_event(
 
 # ── LLM thesis evaluation (original heat-decay logic) ───────────────────────
 
+def _llm_broken_reasons(opened: dict, heat_now: float, phys_now: bool, n_now: int) -> list[str]:
+    """Which LLM kill condition(s) hold, in fixed order. Verdict-bearing: `_status_llm`
+    delegates its BROKEN test here, so a non-empty list IS the BROKEN verdict."""
+    h0 = opened.get("heat_at_open") or 0.0
+    drop = h0 - (heat_now or 0.0)
+    reasons: list[str] = []
+    if opened.get("physical_at_open") and not phys_now:
+        reasons.append("physical_lost")
+    if n_now < MIN_SURFACES:
+        reasons.append("below_quorum")
+    if drop >= BROKEN_DROP:
+        reasons.append("heat_drop")
+    return reasons
+
+
 def _status_llm(opened: dict, heat_now: float, phys_now: bool, n_now: int) -> str:
     """Original heat-decay logic for LLM theses."""
     h0 = opened.get("heat_at_open") or 0.0
     drop = h0 - (heat_now or 0.0)
-    if (opened.get("physical_at_open") and not phys_now) or n_now < MIN_SURFACES or drop >= BROKEN_DROP:
+    if _llm_broken_reasons(opened, heat_now, phys_now, n_now):
         return "BROKEN"
     n0 = opened.get("n_surfaces_at_open") or 0
     if drop >= WEAKEN_DROP or (n0 - n_now) >= 1:
@@ -669,6 +702,8 @@ def compute_thesis_monitor(convergence: dict | None, write_state: bool = True) -
         phys_now = bool(now.get("physical_confirmed"))
         n_now = now.get("n_signals") or 0
         llm_status = _status_llm(o, heat_now, phys_now, n_now)
+        reasons = (_llm_broken_reasons(o, heat_now, phys_now, n_now)
+                   if llm_status == "BROKEN" else [])
 
         if theme in det_by_theme:
             # B3: fold LLM data as enrichment onto the existing deterministic row
@@ -679,6 +714,7 @@ def compute_thesis_monitor(convergence: dict | None, write_state: bool = True) -
                 "llm_heat_now": round(heat_now, 3),
                 "llm_opened_asof": o.get("asof"),
                 "llm_kill_criteria": o.get("kill_criteria"),
+                "llm_broken_reasons": reasons,
             })
             n_llm_enriched += 1
         else:
@@ -693,6 +729,7 @@ def compute_thesis_monitor(convergence: dict | None, write_state: bool = True) -
                 "physical_now": phys_now,
                 "opened_asof": o.get("asof"),
                 "kill_criteria": o.get("kill_criteria"),
+                "broken_reasons": reasons,
             })
             n_llm_enriched += 1
 

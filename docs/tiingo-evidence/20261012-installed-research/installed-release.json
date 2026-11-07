@@ -1,0 +1,263 @@
+{
+  "schema": "tiingo.installed_research_delivery_evidence/v1",
+  "capability_state": "PARTIAL",
+  "capability": "The existing selected Data & Lab consumer discovers four produced Tiingo research contracts, reads EOD and three fundamental request modes, and returns a real canonical research Lab trial from source-pinned Tiingo history. The overall BOATS/history programme remains incomplete.",
+  "source": {
+    "pr": "https://github.com/mastermindx-market-intelligence/macro/pull/8986",
+    "tested_head": "9255dba36c9b8e62852582da2368134426d994c4",
+    "merge_commit": "0b204cde017b88a9fec03ddb583f6b5e02ea4886",
+    "merged_at": "2026-10-12T12:16:48Z",
+    "original_hosted_run": 38242194489,
+    "original_hosted_url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/38242194489",
+    "original_hosted_conclusion": "success",
+    "jobs": [
+      {
+        "name": "ci-plan",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "contract-delta",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "ci-pack-1",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "ci-pack-9",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "ci-pack-11",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "ci-pack-4",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "ci-pack-0",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "ci-pack-2",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "ci-pack-7",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "ci-pack-5",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "ci-pack-3",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "ci-pack-10",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "ci-pack-8",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "ci-pack-6",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "trusted-ci",
+        "status": "completed",
+        "conclusion": "skipped"
+      },
+      {
+        "name": "ci-gate",
+        "status": "completed",
+        "conclusion": "success"
+      }
+    ]
+  },
+  "immutable_release": {
+    "source_commit": "0b204cde017b88a9fec03ddb583f6b5e02ea4886",
+    "manifest_sha256": "089c50c8ec82c49e581ab3369e75fa37359b5dd710d7fb3e90516fded09e2eb0",
+    "release_sha256": "184af64b74acfcf61d452f9979402eb21598e80eaa65a3a8b42804e9f089aa2f",
+    "candidate_sha256": "381f3b12c4d80313acd518ac2d5571fe09bf3286009645a00dd15af64e5a809c",
+    "source_bytes": 55910163,
+    "file_count": 1883,
+    "access_bindings_unchanged": true,
+    "consumer_logic_unchanged": true
+  },
+  "installed_selection": {
+    "settled_at_utc": "2026-10-12T12:19:07.701561+00:00",
+    "launcher_sha256": "381f3b12c4d80313acd518ac2d5571fe09bf3286009645a00dd15af64e5a809c",
+    "full_export_and_volume_identity_verification": true,
+    "prior_selector_and_release_retained": true,
+    "observations": [
+      {
+        "action": "capabilities",
+        "implementation_revision": "0b204cde017b88a9fec03ddb583f6b5e02ea4886",
+        "production_qualification": "NOT_ESTABLISHED_BY_THIS_ADAPTER",
+        "response_sha256": "82a0be385589e192a017cb67f943280fc3f6c0c3e2f5b3359e072ce7975a2c67"
+      },
+      {
+        "action": "search",
+        "implementation_revision": "0b204cde017b88a9fec03ddb583f6b5e02ea4886",
+        "other_twenty_remain_proposed": true,
+        "produced_dataset_ids": [
+          "vendor.tiingo.raw.equity_eod",
+          "vendor.tiingo.raw.fundamentals",
+          "vendor.tiingo.research.eod",
+          "vendor.tiingo.research.fundamentals"
+        ],
+        "production_qualification": "NOT_ESTABLISHED_BY_THIS_ADAPTER",
+        "registered_contracts": 24,
+        "response_sha256": "a2079c09d77028d6eb2bd44e4b935534d54cc1b0f3e35513cd28f6c9173ffbf7"
+      },
+      {
+        "action": "read",
+        "implementation_revision": "0b204cde017b88a9fec03ddb583f6b5e02ea4886",
+        "production_qualification": "NOT_ESTABLISHED_BY_THIS_ADAPTER",
+        "query_receipt_sha256": "cf2e2f4b55a2fa54b4cf50c4ec4ef75279736c37a8159e5ce9ed01f668d054d2",
+        "response_sha256": "ea0a6eb78131a6b7f55ef470463457a12bdce77fe5244f34b2e86d6295158e75",
+        "row_count": 1,
+        "row_values_retained": false
+      }
+    ]
+  },
+  "candidate_canary": {
+    "settled_at_utc": "2026-10-12T12:18:12.921577+00:00",
+    "produced_dataset_ids": [
+      "vendor.tiingo.raw.equity_eod",
+      "vendor.tiingo.raw.fundamentals",
+      "vendor.tiingo.research.eod",
+      "vendor.tiingo.research.fundamentals"
+    ],
+    "registered_contracts": 24,
+    "other_twenty_remain_proposed": true,
+    "actual_version_pinned_eod_reads": 2,
+    "canonical_trial_returned": true,
+    "lab_run": {
+      "run_id": "run-20261012T121811Z-10dbb9c34b3a",
+      "state": "SUCCEEDED",
+      "exit_code": 0,
+      "request_sha256": "9ffe344cbd4ef49b25fffeb3052928fc1912a56fe15ff5a2bf68bc131464915e",
+      "completed_at": "2026-10-12T12:18:12.857289+00:00",
+      "wall_limit_seconds": 60,
+      "production_ledger_written": false
+    },
+    "actual_original_tiingo_bar_rows": 4050,
+    "date_window": [
+      "2002-08-02",
+      "2018-08-31"
+    ],
+    "actual_host_artifact_sha256": {
+      "request.json": "ecf8c310546657d300f1f5c70c9ba4b718141b517679ca6b98d302babb22becd",
+      "status.json": "e7b6a225f76ad398cff5a766695076b655dd0cea251ecac0b31b2d1df5411d6e",
+      "result.json": "4bf7a5495d23a1f231b15222716947c8b383b3d53f8c4823c18c66c9f506146c"
+    },
+    "actual_host_result_exactly_matches_returned_canonical_trial": true,
+    "original_tiingo_projection_checksum_reverified": true,
+    "temporary_declared_trial_ledger_only": true
+  },
+  "new_selected_fundamental_mode_reads": {
+    "observed_at_utc": "2026-10-12T12:22:23.380311+00:00",
+    "checks": [
+      {
+        "source": "fund-statements",
+        "requested_as_reported": false,
+        "ref": "tiingo:normalized/fund-statements/2026-10-12/f0166695ee727c83fdd55aa27c7110f6fb0b0da99e1e99344fc9f9079f507814.parquet",
+        "file_version": "statv1:1d67c6322219f464d85376f287762f50f8be8710e0511c683f061c9913f0e333",
+        "response_sha256": "98322cc4d4388142b19b53e4d9a4216c2958719c02539ca7b47db44572245e9c",
+        "query_receipt_sha256": "564498307d584922021a672de79636698761e830839362fbbe64da47e9c065b1",
+        "read_rows": 1,
+        "stored_lineage_and_request_dimension_joined": true,
+        "metric_values_read_or_retained": false
+      },
+      {
+        "source": "fund-statements",
+        "requested_as_reported": true,
+        "ref": "tiingo:normalized/fund-statements/2026-10-12/17b9c0be8b6a1f29bb77c476141fb0cc5c8aa3233c4823743cd8d39d1c2cb0f1.parquet",
+        "file_version": "statv1:6ff597a7c013065ad1e4dfa9358e23a813f7e7913618903ae5352727fb98dd9f",
+        "response_sha256": "29811f530d0b34cf7489c772d8372ee3928a91690e46b1175796578dbabcf20d",
+        "query_receipt_sha256": "961f2a506fdc6510388f4d2fbdf748716911e739bdfb4ada3adf98b76da147f3",
+        "read_rows": 1,
+        "stored_lineage_and_request_dimension_joined": true,
+        "metric_values_read_or_retained": false
+      },
+      {
+        "source": "fund-daily",
+        "requested_as_reported": null,
+        "ref": "tiingo:normalized/fund-daily/2026-10-12/3259bc27011229ae3d7b8a091302d687d16686040e01266f5e4e694155bf8104.parquet",
+        "file_version": "statv1:e5356726ad631e097b60c2675177a5d8cea92b5348eeb4795e8161e2168ce9c0",
+        "response_sha256": "635c666273a88100d17d29ea06b437a808b9daf5fec6ad4bb0cbcc5eec640554",
+        "query_receipt_sha256": "d9b885bf9de55a890a35fe2aa0078a9884226c4ee7973844d757612d527d12ee",
+        "read_rows": 1,
+        "stored_lineage_and_request_dimension_joined": true,
+        "metric_values_read_or_retained": false
+      }
+    ],
+    "originally_reported_and_revised_request_modes_preserved": true,
+    "provider_requests": 0,
+    "metric_values_read_or_retained": false
+  },
+  "bounded_archive_snapshot": {
+    "observed_at_utc": "2026-10-12T12:23:36.182173+00:00",
+    "reused_catalogue_sha256": "015cda96b828344e26f5937f426cbc40a7b8fe2edc9a023a342a3743799abcf0",
+    "eligible_us_usd_stock_etf_public_catalogue_candidates": 47689,
+    "accepted_nonempty_ticker_histories": 17103,
+    "accepted_distinct_bars": 36073078,
+    "candidate_capture_status_counts": {
+      "NONEMPTY_DESIRED_REQUEST_WINDOWS_CAPTURED": 17103,
+      "CAPTURED_EMPTY_RESPONSE": 33,
+      "UNCAPTURED_CATALOGUE_WINDOW": 30553
+    },
+    "current_finite_capture_complete": false,
+    "uncaptured_count_is_never_attempted_count": false,
+    "complete_vendor_history_proven": false,
+    "snapshot_coverage_sha256": "d7316286d87ccd327710ad3ae2e52181215f3aef7feb32fd12a32b8b1b4a52c7"
+  },
+  "remaining_gates": {
+    "terminal_pr": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/955",
+    "terminal_current_head": "0e63c97ddb5d60a19c4c6ade1487f1a662b73199",
+    "terminal_state": "OPEN",
+    "terminal_original_pull_request_workflow": 38237168665,
+    "terminal_original_current_head_dispatched_run": 38237161644,
+    "terminal_dispatched_run_conclusion": "success",
+    "maintainer_approval_not_retried": true,
+    "next_published_boats_open_utc": "2026-10-13T00:00:00Z",
+    "future_subscriber_or_scheduler_started": false,
+    "broader_fundamental_served_scope_proven": false,
+    "canonical_identity_admitted": false,
+    "pit_backtest_eligible": false,
+    "production_market_feed_qualified": false,
+    "responsive_live_boats_consumer_acceptance": false
+  },
+  "private_original_evidence_sha256": {
+    "macro-8986-merged-source-for-dataos-install.json": "dc93089b0da47b2b954c7629e2166385bb75351f546843ac8edf0bd7d82f0168",
+    "macro-8986-accepted-original-hosted-for-dataos-install.json": "ec2bb32521d84bdfa858f0571a4ce5093384dbe90f2b91478299678dbaaa8b12",
+    "tiingo-lab-8986-prepared-candidate.json": "479ca4c191ec3094f2d227a1ba422691af3cc83e7ea9f711820e1b028727b172",
+    "tiingo-lab-8986-selector-canary-accepted.json": "ecf484cefb74c6888660983b1d409036d7d8d7e7a7b0ea669fe5ba6b016770ce",
+    "tiingo-lab-8986-canonical-canary-original-host-join.json": "8c24f3bed03dd11ae381e1fc5ea3200809b116f17f8b3c2ee40350b565a86f83",
+    "tiingo-lab-8986-installed-accepted.json": "527b68060a8ec29e6b27b2adebdf79808ccb6c232800d37ca4be71c4aa3732e4",
+    "tiingo-lab-8986-installed-fundamental-modes-accepted.json": "ba53fa096d2905dcb8fb127277bf6727fbacb6d231a3af4cc936cddb0e000245",
+    "eod-qualified-catalogue-coverage-wave9-prefix09-delta.json": "d7316286d87ccd327710ad3ae2e52181215f3aef7feb32fd12a32b8b1b4a52c7",
+    "terminal-955-original-source-carrier-1212.json": "9943b8d8f38fd053a3459c388e2618e5ab57c201cd4739fa450a196e63d68187"
+  },
+  "verification": "Original exact-head hosted CI, unchanged-source architecture review, complete immutable file/mount verification, actual candidate and fresh selected launcher calls, source/query version checks, host request/status/result join and original raw-to-reader qualification. No licensed price/metric values, credentials, subscription IDs or vendor response bodies are published."
+}

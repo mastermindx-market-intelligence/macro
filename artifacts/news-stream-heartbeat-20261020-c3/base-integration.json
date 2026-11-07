@@ -1,0 +1,12 @@
+{
+  "recorded_at": "2026-10-20T18:59:51.453649+00:00",
+  "operation": "news-stream-heartbeat-20261020-c3",
+  "base_before": "aedcfebdee929fb1076a771ac9e89545aa607ed6",
+  "base_after": "e98d4e53265d2fb6d893c3286ddd6ca55df736d2",
+  "candidate_sources_unchanged": true,
+  "candidate_sha256": {
+    "app/ticker_news.py": "3cebb791f0900af96b1019e6e59edc9a6b079a2f4c14e87b3a081723c6c8d08e",
+    "tests/test_ticker_news_api.py": "862b0cad2785043486a7632d8a9de3e919286d89d522fcfdfcae34d1eff2e4f6"
+  },
+  "status": " M app/ticker_news.py\n M tests/test_ticker_news_api.py\n?? artifacts/news-stream-heartbeat-20261020-c3/\n"
+}

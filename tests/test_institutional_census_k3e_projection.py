@@ -20,7 +20,8 @@ SOURCE_CUTOFF = "2026-05-16T10:00:00Z"
 DECISION_CUTOFF = "2026-05-17T00:00:00Z"
 
 
-def _world(tmp_path, *, quantity="125000", quantity_type="SH", raw_sha_override=None):
+def _world(tmp_path, *, quantity="125000", quantity_type="SH", raw_sha_override=None,
+           manager_relationships=(), other_manager_count=0, second_filer=False):
     store = LocalStore(tmp_path / "store")
     raw = publish_raw_evidence(
         store,
@@ -52,7 +53,7 @@ def _world(tmp_path, *, quantity="125000", quantity_type="SH", raw_sha_override=
         "confidential_omitted": False,
         "table_entry_total": 1,
         "table_value_total_usd": 24500000000,
-        "other_manager_count": 0,
+        "other_manager_count": other_manager_count,
         "source_receipt_id": raw.receipt_id,
         "normalization_id": "norm_a10_fixture",
         "raw_sha256": raw_sha_override or raw.raw_object.sha256,
@@ -81,15 +82,30 @@ def _world(tmp_path, *, quantity="125000", quantity_type="SH", raw_sha_override=
         "voting_authority_none": 0,
         "row_hash": "b" * 64,
     }
+    filings = [filing]
+    receipts = [raw.receipt_id]
+    if second_filer:
+        second_accession = "0000000002-26-000001"
+        second_raw = publish_raw_evidence(
+            store, accession=second_accession, filer_cik="0000000002", form="13F-HR",
+            report_period=REPORT_PERIOD, accepted_at="2026-05-15T20:30:00Z",
+            retained_at="2026-05-15T20:32:00Z",
+            source_url="https://www.sec.gov/Archives/edgar/data/2/000000000226000001/index.json",
+            payload=b"other-filer-fixture", producer_version="k3e-a10-fixture/1.0.0",
+        )
+        filings.append({**filing, "accession": second_accession, "filer_cik": "0000000002",
+                        "source_receipt_id": second_raw.receipt_id,
+                        "raw_sha256": second_raw.raw_object.sha256})
+        receipts.append(second_raw.receipt_id)
     prepared = prepare_catalog_generation(
         report_period=REPORT_PERIOD,
         source_cutoff_at=SOURCE_CUTOFF,
         published_at=PUBLISHED_AT,
         producer_version="k3e-a10-fixture/1.0.0",
-        filings=[filing],
+        filings=filings,
         holdings=[holding],
-        manager_relationships=[],
-        source_receipt_ids=[raw.receipt_id],
+        manager_relationships=manager_relationships,
+        source_receipt_ids=receipts,
         coverage={"fixture": True, "complete": True},
     )
     generation = publish_catalog_generation(store, prepared)
@@ -330,3 +346,68 @@ def test_malformed_generation_id_pin_is_refused_without_holding(tmp_path):
     assert out["state"] == "REFUSED"
     assert out["holding"] is None
     assert out["refusals"] == ["INVALID_GENERATION_ID"]
+
+
+def _manager(*, accession=ACCESSION, kind="included_manager", table="OTHERMANAGER2",
+             sequence=1, ordinal=0, cik="0000000002"):
+    return {
+        "accession": accession, "relationship_kind": kind, "source_table": table,
+        "manager_sequence": sequence, "other_manager_sk": ordinal,
+        "manager_cik": cik, "manager_name": "Reported manager",
+        "form13f_file_number": "028-00002", "crd_number": "000000002",
+        "sec_file_number": "801-000002",
+    }
+
+
+def test_reporting_structure_preserves_reported_zero_and_unknown_count(tmp_path):
+    zero, _ = _world(tmp_path / "zero")
+    unknown, _ = _world(tmp_path / "unknown", other_manager_count=None)
+    structure = _project(zero)["reporting_structure"]
+    assert structure["accession"] == ACCESSION
+    assert structure["report_type"] == "13F HOLDINGS REPORT"
+    assert structure["form13f_file_number"] == "028-00001"
+    assert structure["other_manager_count"] == 0
+    assert _project(unknown)["reporting_structure"]["other_manager_count"] is None
+    assert structure["reported_by_manager"] == structure["included_manager"] == []
+    assert "REPORTED_MANAGER_COUNT_NOT_ECONOMIC_AFFILIATE_COUNT" in structure["limitations"]
+
+
+def test_reporting_structure_keeps_native_relationship_direction_and_ordinal(tmp_path):
+    rows = [
+        _manager(kind="reported_by_manager", table="OTHERMANAGER", ordinal=None),
+        _manager(ordinal=0), _manager(ordinal=1, cik="0000000003"),
+        _manager(accession="0000000002-26-000001", ordinal=2),
+    ]
+    store, _ = _world(tmp_path, manager_relationships=rows, other_manager_count=2, second_filer=True)
+    out = _project(store)
+    structure = out["reporting_structure"]
+    assert structure["reported_by_manager"] == [rows[0]]
+    assert structure["included_manager"] == rows[1:3]
+    assert [r["manager_sequence"] for r in structure["included_manager"]] == [1, 1]
+    assert [r["other_manager_sk"] for r in structure["included_manager"]] == [0, 1]
+    assert out["holding"]["investment_discretion"] == "SOLE"
+    assert out["state"] == "AVAILABLE_UNQUALIFIED"
+    assert out["k3e_admissible"] is out["financial_influence"] is False
+    assert not {"vehicle_class", "vehicle_epoch_id", "manager_complex_id"}.intersection(structure)
+
+
+def test_reporting_structure_does_not_classify_unknown_or_incoherent_relationship(tmp_path):
+    rows = [_manager(kind="economic_vehicle"),
+            _manager(kind="reported_by_manager", table="OTHERMANAGER2", ordinal=1)]
+    store, _ = _world(tmp_path, manager_relationships=rows)
+    structure = _project(store)["reporting_structure"]
+    assert structure["reported_by_manager"] == structure["included_manager"] == []
+    assert "UNCLASSIFIED_REPORTING_RELATIONSHIPS_PRESENT" in structure["limitations"]
+
+
+def test_reporting_structure_never_bypasses_owner_receipt_or_cutoff(tmp_path):
+    store, _ = _world(tmp_path / "good", manager_relationships=[_manager()])
+    bad, _ = _world(tmp_path / "bad", manager_relationships=[_manager()],
+                    raw_sha_override="f" * 64)
+    for out in [
+        _project(store, decision_cutoff="2026-05-16T11:59:59Z"),
+        _project(store, accession=AMEND_ACCESSION),
+        _project(store, infotable_sk=999), _project(bad),
+    ]:
+        assert out["valid"] is False
+        assert out["reporting_structure"] is None

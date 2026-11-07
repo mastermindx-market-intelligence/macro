@@ -1,0 +1,16 @@
+{
+  "schema": "mastermind.attended.canonical_beta_bootstrap_result.v1",
+  "started_at": "2026-10-20T01:22:30.178711+00:00",
+  "finished_at": "2026-10-20T01:31:21.932840+00:00",
+  "protected_owner_R": "93e303cc32566e72fb086af6d04ba3aa41866c5c",
+  "application_A": "e45bde2cac07ac3b29285ff70c40d68900fad62c",
+  "exit": 0,
+  "log": "/tmp/shared-shell-css-visual-20261019T1107/beta-protected-93-bootstrap.log",
+  "log_bytes": 15043,
+  "log_sha256": "b4de2cac7cbc581a44a9ee7c46af7e250d0cb28c5be453bb81054a5c911b2afa",
+  "invocation_sha256": "217a8eaebde011a2245b4fd6b4977079c9d943fb44968b8c25c808741d13daff",
+  "canonical_owner_output_observed": true,
+  "entry_refusal_observed": false,
+  "postread_due": true,
+  "bootstrap_retry_authorized": false
+}
