@@ -43,7 +43,10 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
+import math
 import os
+import re
+import stat
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -73,30 +76,156 @@ def _audit_path(root: Path | None = None) -> Path:
     return base / _AUDIT_REL
 
 
-# ── Manifest loader (cached per process, NEVER-RAISE) ────────────────────────
+# ── Coherent reference-manifest read (no retained grants, NEVER-RAISE) ────────
 
-_manifest_cache: dict[str, Any] | None = None
+_MAX_MANIFEST_BYTES = 1_048_576
+_MAX_MANIFEST_NODES = 32768
+_MAX_MANIFEST_DEPTH = 32
+_REF_NAME = re.compile(r"[A-Za-z_][A-Za-z0-9_]{0,255}\Z")
+
+
+def _manifest_identity(value: os.stat_result) -> tuple[int, int, int, int, int]:
+    return (value.st_dev, value.st_ino, value.st_size,
+            value.st_mtime_ns, value.st_ctime_ns)
+
+
+def _parse_manifest_bytes(raw: bytes) -> dict[str, Any]:
+    """Decode one explicit source document, not executable YAML or secrets.
+
+    Alias/merge indirection is refused in this permission-bearing manifest.
+    The current source format uses explicit rows. Counts and nesting are bound
+    during composition, before constructors can expand a malicious graph.
+    """
+    import yaml  # optional dependency; the public boundary remains NEVER-RAISE
+
+    class ManifestLoader(yaml.SafeLoader):
+        def __init__(self, stream):
+            super().__init__(stream)
+            self._manifest_depth = 0
+            self._manifest_nodes = 0
+
+        def compose_node(self, parent, index):
+            if self.check_event(yaml.events.AliasEvent):
+                raise ValueError("manifest_alias_refused")
+            self._manifest_nodes += 1
+            self._manifest_depth += 1
+            try:
+                if (self._manifest_nodes > _MAX_MANIFEST_NODES
+                        or self._manifest_depth > _MAX_MANIFEST_DEPTH):
+                    raise ValueError("manifest_shape_over_budget")
+                return super().compose_node(parent, index)
+            finally:
+                self._manifest_depth -= 1
+
+        def construct_mapping(self, node, deep=False):
+            if not isinstance(node, yaml.nodes.MappingNode):
+                raise ValueError("manifest_mapping_required")
+            result = {}
+            for key_node, value_node in node.value:
+                if key_node.tag == "tag:yaml.org,2002:merge":
+                    raise ValueError("manifest_merge_refused")
+                key = self.construct_object(key_node, deep=deep)
+                if type(key) is not str or key in result:
+                    raise ValueError("manifest_mapping_key_invalid")
+                result[key] = self.construct_object(value_node, deep=deep)
+            return result
+
+    loader = ManifestLoader(raw.decode("utf-8"))
+    try:
+        data = loader.get_single_data()
+    finally:
+        loader.dispose()
+    if type(data) is not dict:
+        raise ValueError("manifest_root_invalid")
+    # Keep the existing owner metadata and lane rules. Do not normalize a
+    # malformed scalar to an empty/healthy capability observation.
+    pending = [data]
+    count = 0
+    while pending:
+        value = pending.pop()
+        count += 1
+        if count > _MAX_MANIFEST_NODES:
+            raise ValueError("manifest_shape_over_budget")
+        if type(value) is dict:
+            pending.extend(value.values())
+        elif type(value) is list:
+            pending.extend(value)
+        elif type(value) is float and not math.isfinite(value):
+            raise ValueError("manifest_nonfinite")
+        elif type(value) is str:
+            value.encode("utf-8", errors="strict")
+    capabilities = data.get("capabilities")
+    if type(capabilities) is not list or len(capabilities) > 2048:
+        raise ValueError("manifest_capabilities_invalid")
+    seen = set()
+    for row in capabilities:
+        if type(row) is not dict:
+            raise ValueError("manifest_capability_invalid")
+        identity = row.get("capability_id")
+        if (type(identity) is not str or not 1 <= len(identity) <= 256
+                or identity != identity.strip() or identity in seen
+                or any(ord(char) < 32 for char in identity)):
+            raise ValueError("manifest_capability_identity_invalid")
+        seen.add(identity)
+        ref = row.get("secret_ref")
+        if ref is not None and (type(ref) is not str or _REF_NAME.fullmatch(ref) is None):
+            raise ValueError("manifest_reference_name_invalid")
+    return data
+
+
+def load_manifest_source(path: Path) -> dict[str, Any]:
+    """Read the caller's exact incumbent manifest; never cache a grant.
+
+    Used by the capability broker and key pool without changing either
+    caller's source-root selection. Missing, malformed, oversized or moving
+    source returns {}. Every call gets detached data; no caller can poison
+    another read. This resolves no credential and performs no rotation/write.
+    """
+    descriptor = None
+    try:
+        descriptor = os.open(path, os.O_RDONLY | os.O_NONBLOCK | os.O_NOFOLLOW)
+        before = os.fstat(descriptor)
+        if (not stat.S_ISREG(before.st_mode)
+                or not 0 < before.st_size <= _MAX_MANIFEST_BYTES):
+            raise ValueError("manifest_source_invalid")
+        chunks, size = [], 0
+        while True:
+            chunk = os.read(descriptor, min(65536, _MAX_MANIFEST_BYTES + 1 - size))
+            if not chunk:
+                break
+            size += len(chunk)
+            if size > _MAX_MANIFEST_BYTES:
+                raise ValueError("manifest_source_over_budget")
+            chunks.append(chunk)
+        expected = _manifest_identity(before)
+        if (size != before.st_size
+                or _manifest_identity(os.fstat(descriptor)) != expected
+                or _manifest_identity(os.stat(path, follow_symlinks=False)) != expected):
+            raise ValueError("manifest_source_changed")
+        data = _parse_manifest_bytes(b"".join(chunks))
+        # Recheck after parsing/validation, not merely after the byte read.
+        if (_manifest_identity(os.fstat(descriptor)) != expected
+                or _manifest_identity(os.stat(path, follow_symlinks=False)) != expected):
+            raise ValueError("manifest_source_changed")
+        return data
+    except Exception:  # noqa: BLE001 — preserve the incumbent NEVER-RAISE boundary
+        # Do not leak filenames, parser snippets, environment refs or contents.
+        log.warning("capability_broker: manifest source unavailable or invalid")
+        return {}
+    finally:
+        if descriptor is not None:
+            try:
+                os.close(descriptor)
+            except OSError:
+                pass
 
 
 def _load_manifest(root: Path | None = None) -> dict[str, Any]:
-    """Load and return the capability manifest.  Returns {} on any error."""
-    global _manifest_cache
-    if _manifest_cache is not None and root is None:
-        return _manifest_cache
-
+    """Read current reference policy on each new operation; no stale fallback."""
     try:
-        import yaml  # optional dep — graceful failure if absent
-        p = _manifest_path(root)
-        with open(p) as f:
-            data = yaml.safe_load(f) or {}
-        if root is None:
-            _manifest_cache = data
-        return data
-    except ImportError:
-        log.warning("capability_broker: pyyaml not installed; manifest unavailable")
-        return {}
-    except Exception as exc:  # noqa: BLE001
-        log.warning("capability_broker: could not load manifest: %s", exc)
+        return load_manifest_source(_manifest_path(root))
+    except Exception:  # noqa: BLE001
+        log.warning("capability_broker: manifest selection unavailable")
         return {}
 
 

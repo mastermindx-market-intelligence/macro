@@ -370,14 +370,17 @@ def _mm_pool_state(
 # ── Manifest helpers ─────────────────────────────────────────────────────────
 
 def _load_manifest(root: Path | None = None) -> dict[str, Any]:
-    """Load capability manifest.  Returns {} on error (NEVER-RAISE)."""
+    """Use the incumbent capability owner for the same selected source path.
+
+    No process-lifetime reference cache and no stale policy after read failure.
+    Preserve this caller's root selection; do not redirect to the broker module's
+    checkout or conflate missing source with healthy provider capacity.
+    """
     try:
-        import yaml
-        p = _manifest_path(root)
-        with open(p) as f:
-            return yaml.safe_load(f) or {}
-    except Exception as exc:  # noqa: BLE001
-        log.warning("key_pool._load_manifest: %s", exc)
+        from .capability_broker import load_manifest_source
+        return load_manifest_source(_manifest_path(root))
+    except Exception:  # noqa: BLE001 — existing NEVER-RAISE contract
+        log.warning("key_pool: manifest source unavailable or invalid")
         return {}
 
 

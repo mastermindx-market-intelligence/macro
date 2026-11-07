@@ -14181,6 +14181,7 @@ jobs:
     # provenance copy, so that module and its closure join the paths.
     paths:
       - "templates/china_altdata.html.j2"
+      - "engine/neuralweb/capability_broker.py"
       - "engine/china_narrative_radar.py"
       - "engine/china_sector_index.py"
       - "engine/china_sector_pathway.py"
@@ -14355,6 +14356,7 @@ jobs:
     # scope: exclusive pins the job to its static import closure plus ancestor inits.
     paths:
       - "templates/china_radar.html.j2"
+      - "engine/neuralweb/capability_broker.py"
       - "tests/test_china_radar_candidate_convergence.py"
       - "tests/test_china_radar_horizon_record.py"
       - "tests/test_china_radar_ledger_json_valid.py"
@@ -49998,6 +50000,7 @@ jobs:
       - "tests/test_commodity_presentation_render.py"
       - "tests/test_commodity_supply_context.py"
       - "tests/test_commodity_workspace_contracts.js"
+      - "tests/commodity_workspace_ui_fixture.py"
       - "tests/test_commodity_workspace_ui.js"
       - "tests/test_commodity_workspace_presentation.js"
     timeout-minutes: 7
@@ -50011,7 +50014,7 @@ jobs:
         with:
           node-version: "20"
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests jsonschema==4.26.0
       - name: install pinned DOM test dependency
         run: npm install --no-save --package-lock=false --prefix "${RUNNER_TEMP:?}/commodity-dom" jsdom@26.1.0
       - name: commodity research projection and physical-balance contracts
@@ -52111,6 +52114,7 @@ jobs:
       - "engine/gdelt_client.py"
       - "engine/macro_news.py"
       - "engine/macro_surprise.py"
+      - "engine/neuralweb/capability_broker.py"
       - "engine/neuralweb/key_pool.py"
       - "engine/news_common.py"
       - "engine/news_events.py"
