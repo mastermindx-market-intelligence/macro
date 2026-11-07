@@ -1538,6 +1538,237 @@ def _dated_context(document: Any) -> dict:
     return deepcopy(document)
 
 
+def _classification_context(document: Any) -> dict:
+    try:
+        return _checked_classification_context(document)
+    except (ValueError, TypeError, KeyError, AttributeError):
+        raise SectorViewUnavailable("invalid_sector_classification_context") from None
+
+
+def _checked_classification_context(document: Any) -> dict:
+    """Qualify the bounded descriptive capture, without admitting sector use.
+
+    Identity resolution remains with the native identity/association owners.
+    This transport only accepts the capture adapter's explicit LEGACY shape,
+    exact configured subset, source seals, separate clocks and false authority.
+    """
+    from engine.entry_radar.replay.identity_observation_snapshot import REFERENCE_ARTIFACTS
+    from engine.neuralweb.sector_map import GICS_TO_ETF
+    from lib.dataos.identity import IdentityError, parse_id, parse_listing_key
+    code = "invalid_sector_classification_context"
+
+    def require(condition):
+        if not condition:
+            raise SectorViewUnavailable(code)
+
+    # Bound hostile in-process containers before serialization or copying.
+    pending, seen, nodes = [(document, 0)], set(), 0
+    while pending:
+        value, depth = pending.pop()
+        nodes += 1
+        require(nodes <= 2048 and depth <= 9)
+        if type(value) in (dict, list):
+            require(id(value) not in seen and len(value) <= 64)
+            seen.add(id(value))
+            if type(value) is dict:
+                require(all(type(k) is str and len(k) <= 64 for k in value))
+            pending.extend((v, depth + 1) for v in
+                           (value.values() if type(value) is dict else value))
+        else:
+            require(value is None or type(value) in (str, int, bool))
+            if type(value) is str:
+                require(len(value) <= 512)
+                try:
+                    value.encode("utf-8")
+                except UnicodeError:
+                    require(False)
+
+    def keys(value, fields):
+        require(type(value) is dict and set(value) == set(fields.split()))
+
+    def text(value, limit=128):
+        require(type(value) is str and 0 < len(value) <= limit
+                and value == value.strip() and not any(ord(c) < 32 for c in value))
+        return value
+
+    def clock(value):
+        text(value, 64)
+        try:
+            stamp = datetime.fromisoformat(value.replace("Z", "+00:00"))
+            require(stamp.tzinfo is not None and stamp.utcoffset() is not None)
+            return stamp
+        except ValueError:
+            raise SectorViewUnavailable(code) from None
+
+    def count(value, maximum):
+        require(type(value) is int and 0 <= value <= maximum)
+
+    def digest(value):
+        require(type(value) is str and re.fullmatch(r"[0-9a-f]{64}", value) is not None)
+
+    def roster(value):
+        require(type(value) is list and len(value) <= 5)
+        for symbol in value:
+            text(symbol, 16)
+        require(len(set(value)) == len(value))
+
+    keys(document, "schema status theme_key configured_roster membership_roster missing_roster unclassified_rows_n capture association")
+    require(document["schema"] == "sector_classification_context/v1"
+            and document["theme_key"] == "memory_storage")
+    configured, membership, missing = (document[n] for n in
+        ("configured_roster", "membership_roster", "missing_roster"))
+    for values in (configured, membership, missing):
+        roster(values)
+    require(membership == [s for s in configured if s not in missing]
+            and missing == [s for s in configured if s not in membership])
+    count(document["unclassified_rows_n"], 15)
+    capture = document["capture"]
+    keys(capture, "mode status reason captured_at producer_receipt_sha256 artifact_sha256")
+    require(capture["mode"] == "LEGACY")
+    observed = clock(capture["captured_at"])
+    if capture["status"] != "captured":
+        reasons = ({"configured_roster_unavailable", "no_captured_membership_label",
+                    "captured_classification_rows_incomplete"}
+                   if capture["status"] == "not_attempted" else {
+                       "native_reference_requires_native_reader", "reference_resource_bound",
+                       "reference_writer_busy", "reference_capture_unavailable"})
+        require(capture["status"] in {"not_attempted", "unavailable"}
+                and capture["reason"] in reasons
+                and capture["producer_receipt_sha256"] is None
+                and capture["artifact_sha256"] is None
+                and document["association"] is None and document["status"] == "unavailable")
+        if capture["status"] == "not_attempted":
+            if capture["reason"] == "captured_classification_rows_incomplete":
+                require(bool(membership) and document["unclassified_rows_n"] > 0)
+            else:
+                require(not membership and document["unclassified_rows_n"] == 0)
+                require((capture["reason"] == "configured_roster_unavailable") == (not configured))
+        else:
+            require(bool(membership) and document["unclassified_rows_n"] == 0)
+        return deepcopy(document)
+
+    require(bool(membership) and capture["reason"] is None and document["unclassified_rows_n"] == 0)
+    digest(capture["producer_receipt_sha256"])
+    hashes = capture["artifact_sha256"]
+    require(type(hashes) is dict and set(hashes) == set(REFERENCE_ARTIFACTS))
+    for value in hashes.values():
+        digest(value)
+    association = document["association"]
+    keys(association, "schema status identity_mode lookup_on observed_at coverage associations source_attribution limitations authority")
+    require(association["schema"] == "sector_map.captured_associations/v1"
+            and association["identity_mode"] == "current"
+            and association["observed_at"] == capture["captured_at"])
+    require(date.fromisoformat(_session(association["lookup_on"])) <= observed.date())
+    limits = association["limitations"]
+    keys(limits, "current_sector_usable historically_admissible sector_membership_established sector_representativeness_established causal_claim")
+    require(all(v is False for v in limits.values()))
+    authority = association["authority"]
+    keys(authority, "may_rank may_gate may_size may_trade may_escalate may_publish")
+    require(all(v is False for v in authority.values()))
+    attrs = association["source_attribution"]
+    require(type(attrs) is list and len(attrs) == 5)
+    expected = {"vendor_aliases": "vendor_aliases.parquet", "issuer_master": "security_master.parquet"}
+    populations = {"breadth", "midcap_breadth", "smallcap_breadth"}
+    by_ref, seen_kind, seen_pop = {}, set(), set()
+    for attr in attrs:
+        fields = "kind source_ref raw_sha256 read_receipt_sha256 source_version generation_id captured_at source_effective_on source_available_at"
+        keys(attr, fields + (" population" if attr.get("kind") == "constituents" else ""))
+        require(attr["source_ref"] not in by_ref and attr["read_receipt_sha256"] is None
+                and attr["source_version"] is None and attr["source_effective_on"] is None
+                and attr["source_available_at"] is None and clock(attr["captured_at"]) <= observed)
+        digest(attr["raw_sha256"])
+        if attr["kind"] == "constituents":
+            pop = attr["population"]
+            require(pop in populations and pop not in seen_pop)
+            seen_pop.add(pop)
+            require(attr["source_ref"] == "breadth_member_generation/groups/" + pop + "/constituents.json")
+            require(_TOKEN.fullmatch(text(attr["generation_id"])) is not None)
+        else:
+            kind = attr["kind"]
+            require(kind in expected and kind not in seen_kind)
+            seen_kind.add(kind)
+            name = expected[kind]
+            require(attr["source_ref"] == "R/data/reference/" + name
+                    and attr["raw_sha256"] == hashes[name] and attr["generation_id"] is None
+                    and attr["captured_at"] == capture["captured_at"])
+        by_ref[attr["source_ref"]] = attr
+    require(seen_kind == set(expected) and seen_pop == populations
+            and len({a["generation_id"] for a in attrs if a["kind"] == "constituents"}) == 1)
+    rows = association["associations"]
+    require(type(rows) is list and len(rows) == len(membership))
+    counts = {"available": 0, "unavailable": 0, "conflict": 0}
+    reasons_allowed = {"ALIAS_UNAVAILABLE", "NONCANONICAL_SECURITY", "ALIAS_NOT_RECIPROCAL",
+        "MASTER_SECURITY_ABSENT", "SECURITY_NOT_ACTIVE", "ISSUER_NOT_RESOLVED", "IDENTITY_INCOMPLETE",
+        "IDENTITY_INCONSISTENT", "NATIVE_IDENTITY_REFUSED", "CLASSIFICATION_EFFECTIVE_AFTER_OBSERVATION",
+        "CLASSIFICATION_CONFLICT", "UNSUPPORTED_SECTOR", "NO_CAPTURED_CLASSIFICATION"}
+    for symbol, row in zip(membership, rows):
+        keys(row, "subject status security_id issuer_id listing_key sector sector_etf_proxy etf_security_id etf_identity_status source_observations duplicate_observations_n reason_codes")
+        keys(row["subject"], "vendor vendor_symbol")
+        require(row["subject"] == {"vendor": "membership", "vendor_symbol": symbol}
+                and row["status"] in counts and row["etf_security_id"] is None
+                and row["etf_identity_status"] == "not_supplied")
+        counts[row["status"]] += 1
+        sid, issuer, listing = (row[n] for n in ("security_id", "issuer_id", "listing_key"))
+        if sid is None:
+            require(issuer is None and listing is None)
+        else:
+            try:
+                kind, identity = parse_id(text(sid))
+                issuer_kind, issuer_key = parse_id(text(issuer))
+                require(kind == "security" and sid == "SEC:" + identity.render()
+                        and issuer_kind == "issuer" and issuer == "ISS:" + issuer_key.render()
+                        and parse_listing_key(text(listing)) == identity and listing == identity.render())
+            except IdentityError:
+                raise SectorViewUnavailable(code) from None
+        reasons = row["reason_codes"]
+        require(type(reasons) is list and len(reasons) <= len(reasons_allowed))
+        require(all(type(r) is str and r in reasons_allowed for r in reasons)
+                and reasons == sorted(set(reasons)))
+        # These verified populations contain each label once; this adapter does
+        # not accept an independently aggregated or padded population here.
+        require(type(row["duplicate_observations_n"]) is int and row["duplicate_observations_n"] == 0)
+        observations = row["source_observations"]
+        require(type(observations) is list and len(observations) <= 3)
+        row_refs, sectors = set(), set()
+        for item in observations:
+            keys(item, "source_ref population native_symbol native_name native_sector source_effective_on source_available_at captured_at binding_status")
+            ref = item["source_ref"]
+            require(ref in by_ref and ref not in row_refs)
+            row_refs.add(ref)
+            attr = by_ref[ref]
+            require(attr["kind"] == "constituents" and item["population"] == attr["population"]
+                    and item["native_symbol"] == symbol and item["source_effective_on"] is None
+                    and item["source_available_at"] is None and item["captured_at"] == attr["captured_at"]
+                    and item["binding_status"] == ("bound" if sid is not None else "unbound"))
+            text(item["native_name"], 512)
+            text(item["native_sector"])
+            if sid is not None:
+                sectors.add(item["native_sector"])
+        if row["status"] == "available":
+            require(sid is not None and not reasons and len(sectors) == 1
+                    and row["sector"] in GICS_TO_ETF and sectors == {row["sector"]}
+                    and row["sector_etf_proxy"] == GICS_TO_ETF[row["sector"]])
+        else:
+            require(row["sector"] is None and row["sector_etf_proxy"] is None and bool(reasons))
+            require((row["status"] == "conflict") == (len(sectors) > 1))
+            if row["status"] == "conflict":
+                require("CLASSIFICATION_CONFLICT" in reasons)
+    coverage = association["coverage"]
+    keys(coverage, "requested_n associated_n unavailable_n conflict_n duplicate_requests_n")
+    for value in coverage.values():
+        count(value, 5)
+    require(coverage == {"requested_n": len(rows), "associated_n": counts["available"],
+        "unavailable_n": counts["unavailable"], "conflict_n": counts["conflict"], "duplicate_requests_n": 0})
+    status = ("conflict" if counts["conflict"] else "available" if counts["available"] == len(rows)
+              else "partial" if counts["available"] else "unavailable")
+    require(association["status"] == status)
+    expected_status = "partial" if status == "available" and (missing or document["unclassified_rows_n"]) else status
+    require(document["status"] == expected_status)
+    require(len(json.dumps(document, ensure_ascii=False, allow_nan=False,
+                           separators=(",", ":")).encode("utf-8")) <= 32768)
+    return deepcopy(document)
+
+
 def _core(central: dict, source: str) -> tuple[dict, dict[str, str]]:
     code = "invalid_sector_core"
     rows, identities, tickers = [], {}, set()
@@ -1573,6 +1804,8 @@ def _core(central: dict, source: str) -> tuple[dict, dict[str, str]]:
         out["measured_read"] = _measured_read(central["measured_read"], source)
     if "dated_context" in central:
         out["dated_context"] = _dated_context(central["dated_context"])
+    if "captured_classification" in central:
+        out["captured_classification"] = _classification_context(central["captured_classification"])
     return out, identities
 
 
@@ -1721,6 +1954,11 @@ def project_sector_view(
         "series": series,
     }
     core, core_ids = _core(inputs.central, receipt.source_session)
+    if "captured_classification" in core:
+        captured = datetime.fromisoformat(core["captured_classification"]["capture"]["captured_at"].replace("Z", "+00:00"))
+        published = datetime.fromisoformat(receipt.published_at.replace("Z", "+00:00"))
+        if captured > published:
+            raise SectorViewUnavailable("classification_capture_after_publication")
     history = _history(inputs.cycles, receipt.source_session, core_ids)
     factor = inputs.handoff.get("factor_season")
     data = {

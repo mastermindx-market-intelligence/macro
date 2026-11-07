@@ -216,9 +216,17 @@ def test_captured_chain_publishes_once_and_reaches_actual_mounted_api(captured_i
         entry["as_of"] = SOURCE if entry["matches_session"] else DATED
     settings = args["auxiliary"].document("config")
     settings.update(_psl_ctx_config())
+    # A controlled theme roster whose members occur in the actual encoded
+    # breadth fixture. This is not a real company-to-sector evidence claim.
+    roster_map = {"MU": "T0000", "WDC": "T0001", "SNDK": "T9999", "STX": "T0002", "NTAP": "T8888"}
+    settings["themes"]["memory_storage"]["tickers"] = list(roster_map.values())
+    for member in regime["theme_revisions"]["themes"]["memory_storage"]["members"]:
+        member["ticker"] = roster_map[member["ticker"]]
     args = dict(args, auxiliary=_aux(config=settings, regime_latest=regime,
                                     public_risk_envelope=risk))
     roots = _write_local_capture_sources(args, tmp_path)
+    from tests.test_sector_classification_context import write_classification_reference
+    write_classification_reference(roots["R"])
     local = _read_local(args, roots)
     args = dict(args, **local.assembly_arguments())
     from types import SimpleNamespace
@@ -259,6 +267,9 @@ def test_captured_chain_publishes_once_and_reaches_actual_mounted_api(captured_i
         config_document=dated_inputs.config_document, public_risk_document=dated_inputs.public_risk_document,
         source_attribution=dated_inputs.source_attribution)
     assert central["dated_context"] == expected_dated
+    assert central["captured_classification"] == local.classification_context
+    assert central["captured_classification"]["association"]["coverage"]["associated_n"] == 3
+    assert central["captured_classification"]["status"] == "partial"
     assert expected_dated["status"] == "dated_context"
     assert expected_dated["observations"]["bottleneck"]["asof"] == "2026-09-01"
     assert expected_dated["observations"]["revision_state"]["n_covered"] == 3
@@ -294,6 +305,7 @@ def test_captured_chain_publishes_once_and_reaches_actual_mounted_api(captured_i
         projected = body["projection"]["data"]["core"]["measured_read"]["sector_window_measurements"]
         assert projected == measurements
         assert body["projection"]["data"]["core"]["dated_context"] == expected_dated
+        assert body["projection"]["data"]["core"]["captured_classification"] == local.classification_context
         assert len(projected["groups"]) == 11
         assert response.headers["cache-control"] == "private, no-store"
         assert response.headers["vary"] == "Cookie"

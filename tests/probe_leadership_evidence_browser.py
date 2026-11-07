@@ -594,6 +594,7 @@ def _run_native_wire(output: Path, generation_wire: Path, *, full_page: bool = F
     packet = json.loads(raw)
     assert packet["schema"] == "sector_generation.read/v1" and packet["audience"] == "preview"
     receipt = packet["projection"]["receipt"]
+    classification = packet["projection"]["data"]["core"].get("captured_classification")
     output.mkdir(parents=True, exist_ok=True)
     report = {"scope":("full_template_router_native_fetch_over_mounted_api_bytes" if full_page
                        else "shipped_panel_native_fetch_over_mounted_api_bytes"),
@@ -682,6 +683,29 @@ def _run_native_wire(output: Path, generation_wire: Path, *, full_page: bool = F
                             shot=output/f'{name}-{locale}-{theme}--native-context.png'
                             page.locator('#mr-context').screenshot(path=str(shot))
                             cell.update(facts=facts,screenshot=shot.name)
+                            if classification is not None:
+                                cl = page.locator('#mr-classification')
+                                assert cl.locator('[data-classification-state="ok"]').count() == 1
+                                assert cl.locator('[data-classification-member]').count() == len(classification['configured_roster'])
+                                cl_summary = cl.locator('details > summary')
+                                cl_summary.click();page.keyboard.press('Tab');cl_summary.focus()
+                                cl_facts = page.evaluate("""() => {
+                                  const root=document.querySelector('#mr-classification'),sum=root.querySelector('summary');
+                                  return {overflow:root.scrollWidth-root.clientWidth,
+                                    page_overflow:document.documentElement.scrollWidth-innerWidth,
+                                    summary_height:sum.getBoundingClientRect().height,
+                                    focus_visible:sum.matches(':focus-visible'),outline_width:getComputedStyle(sum).outlineWidth};
+                                }""")
+                                assert cl_facts['overflow']<=1 and cl_facts['page_overflow']<=1,cl_facts
+                                assert cl_facts['summary_height']>=44 and cl_facts['focus_visible'],cl_facts
+                                assert float(cl_facts['outline_width'].removesuffix('px'))>=2,cl_facts
+                                cl_shot=output/f'{name}-{locale}-{theme}--native-classification.png'
+                                cl.screenshot(path=str(cl_shot))
+                                cell['classification']={"facts":cl_facts,"screenshot":cl_shot.name,
+                                    "screenshot_sha256":hashlib.sha256(cl_shot.read_bytes()).hexdigest(),
+                                    "status":classification['status'],
+                                    "configured_n":len(classification['configured_roster']),
+                                    "missing_n":len(classification['missing_roster'])}
                             if full_page:
                                 whole = output/f'{name}-{locale}-{theme}--native-whole-page.png'
                                 page.screenshot(path=str(whole), full_page=True)
@@ -712,6 +736,8 @@ def _run_native_wire(output: Path, generation_wire: Path, *, full_page: bool = F
                                     document.dispatchEvent(new Event('langchange'));}""",other)
                             assert page.locator('#mr-list [data-g="XLK"][aria-pressed="true"]').count()==1
                             assert page.locator('#mr-context details[open]').count()==1
+                            if classification is not None:
+                                assert page.locator('#mr-classification details[open]').count()==1
                             assert len(requests)==1
                             if full_page:
                                 page.locator('.si-view-btn[data-view="overview"]').click()
@@ -720,11 +746,14 @@ def _run_native_wire(output: Path, generation_wire: Path, *, full_page: bool = F
                                 page.wait_for_selector('.si-view[data-view="map"].on')
                                 assert page.locator('#mr-list [data-g="XLK"][aria-pressed="true"]').count()==1
                                 assert page.locator('#mr-context details[open]').count()==1
+                                if classification is not None:
+                                    assert page.locator('#mr-classification details[open]').count()==1
                                 assert len(requests)==1
                             page.evaluate("window.dispatchEvent(new CustomEvent('mdx-auth',{detail:{event:'SIGNED_OUT',user:null}}))")
                             page.wait_for_selector('#si-measured[data-native-state="unauthorized"]')
                             assert page.locator('#mr-list .mr-row').count()==0
                             assert page.locator('#mr-context [data-dated-alternative]').count()==0
+                            assert page.locator('#mr-classification [data-classification-member]').count()==0
                             assert page.locator('#mr-exact [data-exact-value]').count()==0
                             page.locator('[data-native-retry]').click()
                             assert len(requests)==1  # Known signout cannot reuse cookies.
@@ -738,6 +767,7 @@ def _run_native_wire(output: Path, generation_wire: Path, *, full_page: bool = F
                                 "known_signout_retry_blocked":True,"http_401_withdrawal":True,
                                 "full_template_router":full_page,"native_settings_controls":full_page,
                                 "settings_visits_separate":full_page,
+                                "classification_capture_displayed":classification is not None,
                                 "browser_back_preserves_selection":full_page}
                             assert not errors,errors
                         except (PWError,AssertionError) as error:

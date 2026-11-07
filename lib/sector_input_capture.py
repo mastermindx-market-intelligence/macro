@@ -329,7 +329,8 @@ def assemble_sector_inputs(*, prices, member_ohlcv, member_captured_at,
                            auxiliary, previous, holdings, holdings_evidence,
                            amalgams, amalgam_input_lineage, reference_sessions,
                            evaluation_date, built_at, input_version,
-                           source_qualification, live_hazard_parity):
+                           source_qualification, live_hazard_parity,
+                           classification_context=None):
     """Map supplied captures to all five incumbent document builders.
 
     All reads, admission decisions and observation clocks arrive as values.
@@ -362,6 +363,12 @@ def assemble_sector_inputs(*, prices, member_ohlcv, member_captured_at,
     built = _instant(built_at)
     if built.date() < evaluation_date:
         raise SectorInputCaptureError("evaluation_after_build")
+    if classification_context is not None:
+        from engine.sector_native_view import _classification_context
+        classification_context = _classification_context(classification_context)
+        if _instant(datetime.fromisoformat(
+                classification_context["capture"]["captured_at"].replace("Z", "+00:00"))) > built:
+            raise SectorInputCaptureError("classification_capture_after_build")
     if (type(input_version) is not str
             or re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]{0,127}", input_version) is None
             or source_qualification not in {"accepted", "degraded", "stale"}):
@@ -398,6 +405,37 @@ def assemble_sector_inputs(*, prices, member_ohlcv, member_captured_at,
         source_revision=manifest.get("source_revision"), computed_at=manifest.get("computed_at"),
         require_current=False)
     prices = SectorPriceCaptures(yahoo, breadth, _instant(prices.captured_at))
+    if classification_context is not None:
+        configured = _configured_classification_roster(auxiliary.document("config"))
+        population_rows, present, unclassified = _classification_population_rows(breadth, configured)
+        expected_members = [symbol for symbol in configured if symbol in present]
+        if (classification_context["configured_roster"] != configured
+                or classification_context["membership_roster"] != expected_members
+                or classification_context["unclassified_rows_n"] != unclassified
+                or datetime.fromisoformat(classification_context["capture"]["captured_at"]
+                    .replace("Z", "+00:00")) < prices.captured_at):
+            raise SectorInputCaptureError("classification_capture_parent_mismatch")
+        association = classification_context["association"]
+        if association is not None:
+            if association["lookup_on"] != evaluation_date.isoformat():
+                raise SectorInputCaptureError("classification_lookup_date_mismatch")
+            for fact in association["source_attribution"]:
+                if fact["kind"] != "constituents":
+                    continue
+                member = "groups/" + fact["population"] + "/constituents.json"
+                if (fact["generation_id"] != breadth.snapshot.generation_id
+                        or fact["raw_sha256"] != hashlib.sha256(breadth.snapshot.members[member]).hexdigest()
+                        or datetime.fromisoformat(fact["captured_at"].replace("Z", "+00:00")) < prices.captured_at):
+                    raise SectorInputCaptureError("classification_capture_parent_mismatch")
+            for row in association["associations"]:
+                symbol = row["subject"]["vendor_symbol"]
+                actual_rows = {item["population"]: (item["native_symbol"], item["native_name"], item["native_sector"])
+                               for item in row["source_observations"]}
+                expected_rows = {group: (item["symbol"], item["name"], item["sector"])
+                                 for group, values in population_rows.items()
+                                 for item in values if item["symbol"] == symbol}
+                if actual_rows != expected_rows:
+                    raise SectorInputCaptureError("classification_capture_parent_mismatch")
     source = yahoo.cohort.source_session
     if (breadth.inputs.source_session != source or members.source_session != source
             or _source_date(source, "price") > evaluation_date):
@@ -654,7 +692,8 @@ def assemble_sector_inputs(*, prices, member_ohlcv, member_captured_at,
         grader_calls=auxiliary.table("central_calls"), grader_frozen=auxiliary.table("basket_frozen"),
         auxiliary_evidence=deepcopy(lineage), fusion_macro_beta_table=beta_table,
         sector_window_capture=sector_basket_documents.sector_window_capture_from_prices(prices),
-        dated_context_inputs=dated_context)
+        dated_context_inputs=dated_context,
+        classification_context=deepcopy(classification_context))
     identity = {"sector_view": {"schema": SECTOR_INPUT_SCHEMA, "source_session": source,
         "baseline_session": baseline, "input_version": input_version,
         "source_qualification": source_qualification}, "sector_capture": deepcopy(lineage)}
@@ -675,10 +714,157 @@ class SectorLocalCaptures:
     amalgam_input_lineage: dict
     reference_sessions: dict
     captured_at: datetime
+    classification_context: dict | None = None
 
     def assembly_arguments(self) -> dict:
         return {name: getattr(self, name) for name in (
-            "auxiliary", "amalgams", "amalgam_input_lineage", "reference_sessions")}
+            "auxiliary", "amalgams", "amalgam_input_lineage", "reference_sessions",
+            "classification_context")}
+
+
+def _configured_classification_roster(config_document):
+    """The bounded, exact configured example; never infer vendor namespaces."""
+    themes = config_document.get("themes") if type(config_document) is dict else None
+    theme = themes.get("memory_storage") if type(themes) is dict else None
+    roster = theme.get("tickers") if type(theme) is dict else None
+    valid = (type(roster) in (list, tuple) and 0 < len(roster) <= 5
+             and all(type(t) is str and 0 < len(t) <= 16 and t == t.strip()
+                     and not any(ord(c) < 32 for c in t) for t in roster)
+             and len(set(roster)) == len(roster))
+    return list(roster) if valid else []
+
+
+def _classification_population_rows(breadth, roster):
+    """Exact captured labels, with incomplete classification rows counted."""
+    populations, present, unclassified = {}, set(), 0
+    for group in ("breadth", "smallcap_breadth", "midcap_breadth"):
+        frame = breadth.inputs.constituents[group]
+        selected = frame[frame["symbol"].isin(roster)].to_dict("records")
+        present.update(row["symbol"] for row in selected)
+        populations[group] = []
+        for row in selected:
+            if (type(row["name"]) is str and 0 < len(row["name"]) <= 512
+                    and row["name"] == row["name"].strip()
+                    and type(row["sector"]) is str and 0 < len(row["sector"]) <= 128
+                    and row["sector"] == row["sector"].strip()
+                    and not any(ord(c) < 32 for c in row["name"] + row["sector"])):
+                populations[group].append(row)
+            else:
+                unclassified += 1
+    return populations, present, unclassified
+
+
+def read_sector_classification_context(*, repository_root, config_document,
+                                       breadth, lookup_on, clock):
+    """Optional descriptive association through the incumbent LEGACY reader.
+
+    This fixed producer path has no mode discovery or native-refusal fallback.
+    Only exact configured labels present in already captured native populations
+    become membership subjects. Complete reference bytes are acquired with
+    tighter owner-enforced bounds, projected here, then released before the
+    large auxiliary decode/build. No new deadline, source or publication owner.
+    """
+    import hashlib
+    import json
+    from datetime import date
+    from engine.entry_radar.replay.identity_observation_snapshot import (
+        ReferenceReadBounds, read_reference_generation)
+    from engine.neuralweb.sector_map import project_captured_sector_associations
+    from lib.dataos.identity import IdentityError, VendorAliasTable
+    from lib.breadth_member_generation_contract import VerifiedBreadthMemberGeneration
+
+    if (not isinstance(breadth, VerifiedBreadthMemberGeneration)
+            or type(lookup_on) is not date or not callable(clock)
+            or not isinstance(repository_root, Path) or not repository_root.is_absolute()):
+        raise SectorInputCaptureError("explicit_classification_capture_required")
+    stamp = _instant(clock())
+    if lookup_on > stamp.date():
+        raise SectorInputCaptureError("classification_lookup_after_capture")
+    roster = _configured_classification_roster(config_document)
+    out = {"schema": "sector_classification_context/v1", "status": "unavailable",
+        "theme_key": "memory_storage", "configured_roster": roster,
+        "membership_roster": [], "missing_roster": list(roster),
+        "unclassified_rows_n": 0,
+        "capture": {"mode": "LEGACY", "status": "not_attempted",
+            "reason": "configured_roster_unavailable", "captured_at": stamp.isoformat(),
+            "producer_receipt_sha256": None, "artifact_sha256": None},
+        "association": None}
+    if not roster:
+        return out
+    sources = []
+    population_rows, present, out["unclassified_rows_n"] = _classification_population_rows(breadth, roster)
+    for group, rows in population_rows.items():
+        member = "groups/" + group + "/constituents.json"
+        # These are the already captured immutable normalized JSON bytes.
+        # Their observation clock is this observation of the held value, not
+        # the earlier acquisition time of the upstream Parquet artifact.
+        captured = stamp
+        sources.append({"population": group, "vendor": "membership", "rows": rows,
+            "source_ref": "breadth_member_generation/" + member,
+            "generation_id": breadth.snapshot.generation_id,
+            "raw_sha256": hashlib.sha256(breadth.snapshot.members[member]).hexdigest(),
+            "captured_at": captured})
+    out["membership_roster"] = [t for t in roster if t in present]
+    out["missing_roster"] = [t for t in roster if t not in present]
+    if out["unclassified_rows_n"]:
+        # A missing name must not erase a conflicting sector label. Withhold
+        # this whole optional addendum rather than let its filtered rows create
+        # a positive association. Never fabricate a name to satisfy the helper.
+        out["capture"]["reason"] = "captured_classification_rows_incomplete"
+        return out
+    if not out["membership_roster"]:
+        out["capture"]["reason"] = "no_captured_membership_label"
+        return out
+    bounds = ReferenceReadBounds(artifact_bytes=4 * 1024**2, receipt_bytes=1024**2,
+        total_bytes=16 * 1024**2, rows=16_384, columns=64,
+        decoded_bytes=8 * 1024**2, string_bytes=4096, record_bytes=65_536)
+    try:
+        # Matches scripts.build_security_master.DEFAULT_OUT. Do not substitute
+        # a private company-context root or infer an HTTP-configurable mode.
+        reference = read_reference_generation(repository_root / "data" / "reference", bounds=bounds)
+        aliases = VendorAliasTable.from_records(reference.records("vendor_aliases.parquet"))
+        master = reference.records("security_master.parquet")
+        completed = _instant(clock())
+        if completed < stamp:
+            raise SectorInputCaptureError("classification_capture_clock_regressed")
+        hashes = {name: hashlib.sha256(raw).hexdigest() for name, raw in reference.artifact_bytes}
+        identity = {kind: {"source_ref": "R/data/reference/" + name,
+            "raw_sha256": hashes[name], "captured_at": completed}
+            for kind, name in (("vendor_aliases", "vendor_aliases.parquet"),
+                               ("issuer_master", "security_master.parquet"))}
+        association = project_captured_sector_associations(
+            subjects=[{"vendor": "membership", "vendor_symbol": t}
+                      for t in out["membership_roster"]],
+            constituent_sources=sources, alias_table=aliases, issuer_records=master,
+            identity_source=identity, lookup_on=lookup_on, observed_at=completed)
+        out["capture"] = {"mode": "LEGACY", "status": "captured", "reason": None,
+            "captured_at": completed.isoformat(),
+            "producer_receipt_sha256": hashlib.sha256(reference.receipt_bytes).hexdigest(),
+            "artifact_sha256": hashes}
+        out["association"] = association
+        out["status"] = association["status"]
+        if out["status"] == "available" and (out["missing_roster"] or out["unclassified_rows_n"]):
+            out["status"] = "partial"
+        if len(json.dumps(out, ensure_ascii=False, allow_nan=False, separators=(",", ":")).encode()) > 32 * 1024:
+            raise IdentityError("classification context result byte bound")
+    except (IdentityError, ValueError) as exc:
+        if isinstance(exc, SectorInputCaptureError):
+            raise
+        # Preserve measurements on a known optional input refusal. No second
+        # reader, synthetic identity inputs, previous positive or raw error leaks.
+        detail = str(exc)
+        reason = ("native_reference_requires_native_reader" if "native" in detail
+                  else "reference_resource_bound" if "bound" in detail
+                  else "reference_writer_busy" if "writer busy" in detail
+                  else "reference_capture_unavailable")
+        completed = _instant(clock())
+        if completed < stamp:
+            raise SectorInputCaptureError("classification_capture_clock_regressed")
+        out.update(status="unavailable", association=None)
+        out["capture"] = {"mode": "LEGACY", "status": "unavailable", "reason": reason,
+            "captured_at": completed.isoformat(), "producer_receipt_sha256": None,
+            "artifact_sha256": None}
+    return out
 
 
 def _observe_sector_source(path: Path, *, limit: int, clock):
@@ -810,6 +996,9 @@ def read_sector_local_captures(*, repository_root: Path, theme_root: Path,
             raise SectorInputCaptureError("captured_storage_roots_required")
         roots[label] = root(roots["R"] / setting)
 
+    classification = read_sector_classification_context(repository_root=roots["R"],
+        config_document=cfg, breadth=breadth, lookup_on=evaluation_date, clock=observed_clock)
+
     declarations = {}
     path_limits = {}
     for key, (kind, label) in aux.SOURCE_SPECS.items():
@@ -868,4 +1057,5 @@ def read_sector_local_captures(*, repository_root: Path, theme_root: Path,
                 "yahoo": yahoo.prior_identity(captured_at=prices.captured_at)},
         }
     reference = session_anchor.capture_reference_sessions("US", asof=evaluation_date)
-    return SectorLocalCaptures(auxiliary, amalgams, lineage, {"US": reference}, completed)
+    return SectorLocalCaptures(auxiliary, amalgams, lineage, {"US": reference}, completed,
+                               classification)

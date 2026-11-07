@@ -160,7 +160,7 @@ var setTimeout = function (fn, ms) { return __window.setTimeout(fn, ms); };
 var clearTimeout = function (id) { if(__timersLog[id-1])__timersLog[id-1].cancelled=true; };
 // ── the panel skeleton, in the shipped markup shape ────────────────────────────
 ['si-measured', 'mr-sub', 'mr-status', 'mr-body', 'mr-cov', 'mr-list',
- 'mr-unmeasured', 'mr-detail', 'mr-early', 'mr-exact', 'mr-context'].forEach(function (id) { mkEl(id); });
+ 'mr-unmeasured', 'mr-detail', 'mr-early', 'mr-exact', 'mr-context', 'mr-classification'].forEach(function (id) { mkEl(id); });
 __els['mr-body'].innerHTML = '<div class="mr-grid"><div class="rvx-card mr-listbox">' +
   '<div class="mr-cov" id="mr-cov"></div><ol class="mr-list" id="mr-list"></ol>' +
   '<ul class="mr-list mr-unmeasured" id="mr-unmeasured" hidden></ul></div>' +
@@ -179,6 +179,7 @@ if (CFG.central !== 'none' && CFG.central !== 'absent') {
 }
 if (CFG.lang) __docEl.attrs['data-lang'] = CFG.lang;
 if (D0 && Object.prototype.hasOwnProperty.call(CFG, 'dated_context')) D0.dated_context=CFG.dated_context;
+if (D0 && Object.prototype.hasOwnProperty.call(CFG, 'captured_classification')) D0.captured_classification=CFG.captured_classification;
 __setLoc(CFG.search || '', CFG.hash || '');
 __window.SECTOR_CENTRAL = D0;
 if (CFG.cycles) __window.SECTOR_CYCLES = CFG.cycles;
@@ -275,6 +276,7 @@ function obsClick() {
 }
 function collect() {
   return {body: html('mr-body'), sub: html('mr-sub'), status: html('mr-status'), context: html('mr-context'),
+          classification: html('mr-classification'),
           cov: html('mr-cov'), list: html('mr-list'), un: html('mr-unmeasured'),
           unHidden: elOf('mr-unmeasured') ? elOf('mr-unmeasured').hidden : null, detail: html('mr-detail'),
           hist: html('mr-hist'), early: html('mr-early'), rows: rows().map(function (r) {
@@ -1921,7 +1923,7 @@ def test_dated_context_escapes_owner_text_and_keeps_source_authority_separate():
 
 def _native_wire_fixture(*, generation="sector-browser-1", theme_name=None, no_read=False,
                          published_at="2026-11-06T02:00:00Z", qualification="stale", outage=False,
-                         exact_companion=True):
+                         exact_companion=True, classification=None):
     """Actual native-owner projection and actual wire bytes over controlled inputs.
 
     This proves transport/admission; these fixtures are not production evidence.
@@ -1945,6 +1947,8 @@ def _native_wire_fixture(*, generation="sector-browser-1", theme_name=None, no_r
         read.pop("sector_window_measurements")
     inputs.central.update(as_of=end, measured_read=read,
         dated_context=_dated_context_fixture())
+    if classification is not None:
+        inputs.central["captured_classification"] = classification
     if theme_name is not None:
         inputs.central["dated_context"]["theme"]["name"] = theme_name
     inputs.central["sectors"] = [{"id": row["group_id"].lower(),

@@ -739,6 +739,12 @@ html[data-theme="light"] .rvx-aurora b{opacity:.22}
 .mr-context .mr-dc-alternatives li{min-width:0;overflow-wrap:anywhere}
 .mr-context .mr-dc-alternatives h4{margin:0 0 4px;font-size:var(--fs-sm)}
 .mr-context .mr-dc-det>summary:focus-visible{outline:2px solid var(--ink-info);outline-offset:2px}
+.mr-classification .mr-cl-det>summary:focus-visible{outline:2px solid var(--ink-info);outline-offset:2px}
+.mr-classification .mr-ev-src dt{min-width:0;overflow-wrap:anywhere}
+.mr-cl-members{list-style:none;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:10px;margin:12px 0}
+.mr-cl-members li{min-width:0;padding:12px;border:1px solid var(--line);border-radius:8px;overflow-wrap:anywhere}
+.mr-cl-members h4{margin:0 0 6px;font-size:var(--fs-sm)}
+.mr-cl-members p{margin:4px 0;font-size:var(--fs-sm)}
 @media(max-width:760px){.mr-xwindows{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:560px){
 .mr-exact{padding:12px}.mr-xwindows{grid-template-columns:minmax(0,1fr)}
@@ -2278,6 +2284,7 @@ html[data-theme="light"] .mr-spark-line{stroke-width:1.75}
       </div>
       <div id="mr-exact" hidden></div>
       <div id="mr-context" hidden></div>
+      <div id="mr-classification" hidden></div>
     </section>
     {# ── Cycle clock — the sector_cycles overlay, embedded (window.SECTOR_CYCLES) ── #}
 <section class="scc-cycle cyc-page sc-page" id="sc-cyclemap">
@@ -3632,6 +3639,9 @@ if(document.readyState!=='loading') __siBoot(); else document.addEventListener('
     if(read && Object.prototype.hasOwnProperty.call(read,'sector_dossiers') && evValidate(read).state!=='ok') throw new Error('invalid');
     if(read && Object.prototype.hasOwnProperty.call(read,'sector_window_measurements') && EXACT_READER(data.core).state==='invalid') throw new Error('invalid');
     if(Object.prototype.hasOwnProperty.call(data.core,'dated_context') && !dcValidate(data.core.dated_context)) throw new Error('invalid');
+    if(Object.prototype.hasOwnProperty.call(data.core,'captured_classification') &&
+       (!clValidate(data.core.captured_classification) ||
+        Date.parse(data.core.captured_classification.capture.captured_at)>Date.parse(body.published_at))) throw new Error('invalid');
     return body;
   }
   function nativeClock(value) {
@@ -4081,23 +4091,24 @@ var __pslExact=(()=>{var rr=Object.create;var Ce=Object.defineProperty;var tr=Ob
       return kind===0?typeof v==='string':kind===3?typeof v==='boolean':num(v)&&(kind!==2||v>=0&&v%1===0);
     });});
   }
-  function dcBound(v) {
+  function dcBound(v, maxBytes) {
+    maxBytes=maxBytes||16384;
     var active=[], nodes=0, bytes=0;
     function walk(x,depth) {
       if(++nodes>16384 || depth>16) return false;
       if(x===null || typeof x==='boolean' || typeof x==='number') {
         if(typeof x==='number' && !isFinite(x)) return false;
-        bytes+=JSON.stringify(x).length; return bytes<=16384;
+        bytes+=JSON.stringify(x).length; return bytes<=maxBytes;
       }
       if(typeof x==='string') {
         if(x.length>16384) return false;
         try { bytes+=unescape(encodeURIComponent(JSON.stringify(x))).length; } catch(e){return false;}
-        return bytes<=16384;
+        return bytes<=maxBytes;
       }
       if(!isObj(x) && !Array.isArray(x) || active.indexOf(x)>=0) return false;
       var keys=Object.keys(x); if(keys.length>16384-nodes) return false;
       bytes+=2+Math.max(0,keys.length-1)+(Array.isArray(x)?0:keys.length);
-      if(bytes>16384) return false;
+      if(bytes>maxBytes) return false;
       active.push(x);
       for(var i=0;i<keys.length;i++) {
         if(!Array.isArray(x) && !walk(keys[i],depth+1) || !walk(x[keys[i]],depth+1)) return false;
@@ -4532,8 +4543,162 @@ var __pslExact=(()=>{var rr=Object.create;var Ce=Object.defineProperty;var tr=Ob
     }
     out.state = 'ok'; out.why = ''; out.dossier = d; return out;
   }
+  // This captured theme-member addendum is separate from sector explanations.
+  // It uses the same native receipt, authorization and withdrawal lifecycle.
+  var CL=null,CL_STATE='absent',CL_KEY='',CL_OPEN=false;
+  var CL_SECTORS={'Materials':['XLB','原材料'],'Communication Services':['XLC','通信服务'],
+    'Energy':['XLE','能源'],'Financials':['XLF','金融'],'Industrials':['XLI','工业'],
+    'Information Technology':['XLK','信息技术'],'Consumer Staples':['XLP','必需消费品'],
+    'Real Estate':['XLRE','房地产'],'Utilities':['XLU','公用事业'],'Health Care':['XLV','医疗保健'],
+    'Consumer Discretionary':['XLY','非必需消费品']};
+  function clValidate(d) {
+    try { return clChecked(d); } catch(e) { return null; }
+  }
+  function clChecked(d) {
+    function shape(v,words){return evKeys(v,words.split(' '));}
+    function text(v,n){return typeof v==='string' && v.length>0 && v.length<=n && v.trim()===v && !/[\x00-\x1f]/.test(v);}
+    function digest(v){return typeof v==='string' && /^[0-9a-f]{64}$/.test(v);}
+    function roster(v){return evStrings(v,5,function(t){return text(t,16);});}
+    function same(a,b){return JSON.stringify(a)===JSON.stringify(b);}
+    if(!dcBound(d,32768) || !shape(d,'schema status theme_key configured_roster membership_roster missing_roster unclassified_rows_n capture association') ||
+       d.schema!=='sector_classification_context/v1' || d.theme_key!=='memory_storage' ||
+       !roster(d.configured_roster) || !roster(d.membership_roster) || !roster(d.missing_roster) || !evInt(d.unclassified_rows_n,15))return null;
+    var configured=d.configured_roster,members=d.membership_roster,missing=d.missing_roster,c=d.capture,a=d.association;
+    if(!same(members,configured.filter(function(s){return missing.indexOf(s)<0;})) ||
+       !same(missing,configured.filter(function(s){return members.indexOf(s)<0;})) ||
+       !shape(c,'mode status reason captured_at producer_receipt_sha256 artifact_sha256') || c.mode!=='LEGACY' || !nativeClock(c.captured_at))return null;
+    if(c.status!=='captured') {
+      var reasons=c.status==='not_attempted'?['configured_roster_unavailable','no_captured_membership_label','captured_classification_rows_incomplete']:
+        ['native_reference_requires_native_reader','reference_resource_bound','reference_writer_busy','reference_capture_unavailable'];
+      if(['not_attempted','unavailable'].indexOf(c.status)<0 || reasons.indexOf(c.reason)<0 || c.producer_receipt_sha256!==null ||
+         c.artifact_sha256!==null || a!==null || d.status!=='unavailable')return null;
+      if(c.status==='not_attempted') {
+        if(c.reason==='captured_classification_rows_incomplete') {
+          if(!members.length || !d.unclassified_rows_n)return null;
+        } else if(members.length!==0 || d.unclassified_rows_n!==0 ||
+          (c.reason==='configured_roster_unavailable')!==(configured.length===0))return null;
+      } else if(!members.length || d.unclassified_rows_n!==0)return null;
+      return d;
+    }
+    if(!members.length || d.unclassified_rows_n!==0 || c.reason!==null || !digest(c.producer_receipt_sha256) ||
+       !shape(c.artifact_sha256,'security_master.parquet vendor_aliases.parquet issuer_master.parquet issuer_migrations.parquet security_migrations.parquet') ||
+       !Object.keys(c.artifact_sha256).every(function(k){return digest(c.artifact_sha256[k]);}) ||
+       !shape(a,'schema status identity_mode lookup_on observed_at coverage associations source_attribution limitations authority') ||
+       a.schema!=='sector_map.captured_associations/v1' || a.identity_mode!=='current' || a.observed_at!==c.captured_at ||
+       !evDay(a.lookup_on) || a.lookup_on>c.captured_at.slice(0,10) ||
+       !evExact(a.limitations,{current_sector_usable:false,historically_admissible:false,sector_membership_established:false,
+         sector_representativeness_established:false,causal_claim:false}) ||
+       !evExact(a.authority,{may_rank:false,may_gate:false,may_size:false,may_trade:false,may_escalate:false,may_publish:false}) ||
+       !Array.isArray(a.source_attribution) || a.source_attribution.length!==5 || !Array.isArray(a.associations) || a.associations.length!==members.length)return null;
+    var refs=Object.create(null),kinds=[],populations=[],generations=[],expected={vendor_aliases:'vendor_aliases.parquet',issuer_master:'security_master.parquet'};
+    var valid=a.source_attribution.every(function(s){
+      if(!shape(s,'kind source_ref raw_sha256 read_receipt_sha256 source_version generation_id captured_at source_effective_on source_available_at'+
+         (s.kind==='constituents'?' population':'')) || !text(s.source_ref,128) || refs[s.source_ref] || !digest(s.raw_sha256) ||
+         s.read_receipt_sha256!==null || s.source_version!==null || s.source_effective_on!==null || s.source_available_at!==null ||
+         !nativeClock(s.captured_at) || Date.parse(s.captured_at)>Date.parse(c.captured_at))return false;
+      if(s.kind==='constituents') {
+        if(['breadth','midcap_breadth','smallcap_breadth'].indexOf(s.population)<0 || populations.indexOf(s.population)>=0 ||
+           s.source_ref!=='breadth_member_generation/groups/'+s.population+'/constituents.json' ||
+           typeof s.generation_id!=='string' || !/^[A-Za-z0-9][A-Za-z0-9_.-]{0,127}$/.test(s.generation_id))return false;
+        populations.push(s.population);generations.push(s.generation_id);
+      } else {
+        if(!Object.prototype.hasOwnProperty.call(expected,s.kind) || kinds.indexOf(s.kind)>=0 || s.source_ref!=='R/data/reference/'+expected[s.kind] ||
+           s.raw_sha256!==c.artifact_sha256[expected[s.kind]] || s.generation_id!==null || s.captured_at!==c.captured_at)return false;
+        kinds.push(s.kind);
+      }
+      refs[s.source_ref]=s;return true;
+    });
+    if(!valid || kinds.length!==2 || populations.length!==3 || !generations.every(function(g){return g===generations[0];}))return null;
+    var counts={available:0,unavailable:0,conflict:0};
+    var reasonNames=['ALIAS_UNAVAILABLE','NONCANONICAL_SECURITY','ALIAS_NOT_RECIPROCAL','MASTER_SECURITY_ABSENT','SECURITY_NOT_ACTIVE',
+      'ISSUER_NOT_RESOLVED','IDENTITY_INCOMPLETE','IDENTITY_INCONSISTENT','NATIVE_IDENTITY_REFUSED',
+      'CLASSIFICATION_EFFECTIVE_AFTER_OBSERVATION','CLASSIFICATION_CONFLICT','UNSUPPORTED_SECTOR','NO_CAPTURED_CLASSIFICATION'];
+    valid=a.associations.every(function(r,i){
+      if(!shape(r,'subject status security_id issuer_id listing_key sector sector_etf_proxy etf_security_id etf_identity_status source_observations duplicate_observations_n reason_codes') ||
+         !evExact(r.subject,{vendor:'membership',vendor_symbol:members[i]}) || !Object.prototype.hasOwnProperty.call(counts,r.status) ||
+         r.etf_security_id!==null || r.etf_identity_status!=='not_supplied' || r.duplicate_observations_n!==0 ||
+         !evStrings(r.reason_codes,reasonNames.length,function(v){return reasonNames.indexOf(v)>=0;}) ||
+         !same(r.reason_codes,r.reason_codes.slice().sort()) || !Array.isArray(r.source_observations) || r.source_observations.length>3)return false;
+      if(r.security_id===null) {if(r.issuer_id!==null || r.listing_key!==null)return false;}
+      else if(!text(r.listing_key,124) || !/^[A-Z]{2}-[A-Z0-9]{4}-[A-Za-z0-9][A-Za-z0-9._-]*$/.test(r.listing_key) ||
+        r.security_id!=='SEC:'+r.listing_key || !text(r.issuer_id,128) || !/^ISS:[A-Z]{2}-[A-Z0-9]{4}-[A-Za-z0-9][A-Za-z0-9._-]*$/.test(r.issuer_id))return false;
+      var used=[],sectors=[];
+      if(!r.source_observations.every(function(o){
+        if(!shape(o,'source_ref population native_symbol native_name native_sector source_effective_on source_available_at captured_at binding_status'))return false;
+        var s=refs[o.source_ref];
+        if(!s || s.kind!=='constituents' || used.indexOf(o.source_ref)>=0 || o.population!==s.population || o.native_symbol!==members[i] ||
+           !text(o.native_name,512) || !text(o.native_sector,128) || o.source_effective_on!==null || o.source_available_at!==null ||
+           o.captured_at!==s.captured_at || o.binding_status!==(r.security_id===null?'unbound':'bound'))return false;
+        used.push(o.source_ref);if(r.security_id!==null && sectors.indexOf(o.native_sector)<0)sectors.push(o.native_sector);return true;
+      }))return false;
+      if(r.status==='available') {
+        if(r.security_id===null || r.reason_codes.length || sectors.length!==1 || sectors[0]!==r.sector ||
+           !Object.prototype.hasOwnProperty.call(CL_SECTORS,r.sector) || r.sector_etf_proxy!==CL_SECTORS[r.sector][0])return false;
+      } else if(r.sector!==null || r.sector_etf_proxy!==null || !r.reason_codes.length ||
+        (r.status==='conflict')!==(sectors.length>1) || r.status==='conflict' && r.reason_codes.indexOf('CLASSIFICATION_CONFLICT')<0)return false;
+      counts[r.status]++;return true;
+    });
+    if(!valid || !evExact(a.coverage,{requested_n:members.length,associated_n:counts.available,unavailable_n:counts.unavailable,
+       conflict_n:counts.conflict,duplicate_requests_n:0}))return null;
+    var status=counts.conflict?'conflict':counts.available===members.length?'available':counts.available?'partial':'unavailable';
+    return a.status===status && d.status===(status==='available' && (missing.length || d.unclassified_rows_n)?'partial':status)?d:null;
+  }
+  function clRefresh() {
+    CL=null;CL_STATE='absent';
+    if(PAGE_D && Object.prototype.hasOwnProperty.call(PAGE_D,'captured_classification')) {
+      CL=clValidate(PAGE_D.captured_classification);CL_STATE=CL?'ok':'invalid';
+    }
+    var key=NATIVE_KEY+'|'+String(SEL)+'|'+(CL?JSON.stringify(CL):CL_STATE);
+    if(key!==CL_KEY){CL_KEY=key;CL_OPEN=false;}
+    clRender();
+  }
+  function clRender() {
+    var host=document.getElementById('mr-classification');if(!host)return;
+    host.hidden=CL_STATE==='absent';if(host.hidden){host.innerHTML='';return;}
+    var h='<section class="mr-exact mr-classification" aria-labelledby="mr-cl-h" data-classification-state="'+esc(CL_STATE)+'">'+
+      '<h3 id="mr-cl-h">'+esc(L('Captured company classifications','已捕获的公司分类'))+'</h3>';
+    if(!CL){host.innerHTML=h+'<p class="mr-hint">'+esc(L('These classifications could not be checked and have been withdrawn.','这些分类无法校验，已撤回显示。'))+'</p></section>';return;}
+    var d=CL,a=d.association,rows=a?a.associations:[],covered=a?a.coverage.associated_n:0;
+    h+='<p class="mr-hint">'+esc(L('Configured Memory, HBM & Storage members','配置的存储、HBM与存储设备主题成员'))+'</p>'+
+      '<p class="mr-hint">'+esc(L('Classified / configured members: ','已分类 / 配置成员：')+covered+' / '+d.configured_roster.length)+
+      '</p><p class="mr-hint">'+esc(L('The source populations supply these descriptive labels. They do not establish current sector membership, sector-wide representation or a cause of price leadership.',
+      '这些描述性标签来自所捕获的来源群体，尚不能证明当前板块成员关系、对整个板块的代表性或领涨原因。'))+'</p><ul class="mr-cl-members">';
+    d.configured_roster.forEach(function(symbol){
+      var r=rows.filter(function(x){return x.subject.vendor_symbol===symbol;})[0];
+      var label=!r?L('No qualified captured classification','无合格的捕获分类'):r.status==='conflict'?L('Conflicting source classifications','来源分类存在冲突'):
+        r.status==='available'?L(r.sector,CL_SECTORS[r.sector][1]):L('Classification unavailable','分类暂不可用');
+      h+='<li data-classification-member="'+esc(symbol)+'"><h4>'+esc(symbol)+'</h4><p>'+esc(label)+'</p>';
+      if(r && r.status==='available')h+='<p>'+esc(L('Sector ETF proxy: ','板块ETF代理：')+r.sector_etf_proxy)+'</p>';
+      if(d.missing_roster.indexOf(symbol)>=0)h+='<p class="mr-hint">'+esc(L('Absent from the captured source populations.','未出现在所捕获的来源群体中。'))+'</p>';
+      h+='</li>';
+    });
+    h+='</ul><details class="mr-cl-det"'+(CL_OPEN?' open':'')+'><summary class="mr-ev-sum">'+
+      esc(L('Classification sources, dates and limits','分类来源、日期与限制'))+'</summary><div class="mr-ev-body"><dl class="mr-ev-src">';
+    function row(label,value){h+='<div><dt>'+esc(label)+'</dt><dd>'+esc(value)+'</dd></div>';}
+    row(L('Captured at','捕获时间'),d.capture.captured_at);
+    row(L('Reference capture','参考数据捕获'),d.capture.status==='captured'?L('Complete legacy reference files captured','已捕获完整的既有参考文件'):
+      d.capture.reason==='captured_classification_rows_incomplete'?L('Incomplete population rows; classifications withheld','来源群体行不完整，暂不提供分类判断'):
+      d.capture.status==='not_attempted'?L('No eligible captured membership labels','没有符合条件的捕获成员标签'):L('Reference capture unavailable','参考数据捕获不可用'));
+    if(a)row(L('Alias lookup date','别名查找日期'),a.lookup_on);
+    row(L('Source effective date / original availability','来源生效日期 / 原始可用时间'),L('Not established','尚未确立'));
+    if(d.unclassified_rows_n)row(L('Incomplete classification rows','分类信息不完整的来源行'),String(d.unclassified_rows_n));
+    rows.forEach(function(r){
+      if(r.security_id)row(r.subject.vendor_symbol+' · '+L('Security / issuer','证券 / 发行人'),r.security_id+' / '+r.issuer_id);
+      r.source_observations.forEach(function(o){row(r.subject.vendor_symbol+' · '+o.population,
+        o.native_name+' · '+L(o.native_sector,(CL_SECTORS[o.native_sector]||[])[1]||o.native_sector)+' · '+o.captured_at);});
+    });
+    if(a)a.source_attribution.forEach(function(s){
+      var label=s.kind==='constituents'?L('Population source: ','群体来源：')+s.population:
+        s.kind==='vendor_aliases'?L('Alias source','别名来源'):L('Issuer source','发行人来源');
+      row(label,s.source_ref+' · '+s.raw_sha256);
+    });
+    h+='</dl><p class="mr-hint">'+esc(L('The ETF is a sector proxy; its security identity is not supplied. These captures have no ranking, gating, sizing, trading, escalation or publication authority. Historical admissibility and freshness are not established.',
+      'ETF仅作为板块代理，未提供其证券身份。这些捕获不具有排名、准入、仓位、交易、升级或发布权限；历史时点准入与新鲜度尚未确立。'))+'</p></div></details></section>';
+    host.innerHTML=h;
+  }
   function evRefresh(read) {
     dcRefresh();
+    clRefresh();
     exRefresh();
     exRender();
     var r = evValidate(read);
@@ -5243,6 +5408,11 @@ var __pslExact=(()=>{var rr=Object.create;var Ce=Object.defineProperty;var tr=Ob
   // the node) cannot leave a stale open state behind; it never moves focus.
   root.addEventListener('toggle', function (e) {
     var t = e && e.target;
+    if(t && String(t.className||'').indexOf('mr-cl-det')>=0){
+      var clHost=document.getElementById('mr-classification');
+      if(clHost && clHost.contains && !clHost.contains(t))return;
+      CL_OPEN=t.open===true;return;
+    }
     if(t && String(t.className||'').indexOf('mr-dc-det')>=0){
       var dcHost=document.getElementById('mr-context');
       if(dcHost && dcHost.contains && !dcHost.contains(t))return;

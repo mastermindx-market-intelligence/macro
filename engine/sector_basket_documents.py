@@ -393,6 +393,7 @@ class SectorDocumentContext:
     fusion_macro_beta_table: Mapping | None = None
     sector_window_capture: SectorWindowCapture | None = None
     dated_context_inputs: SectorDatedContextInputs | None = None
+    classification_context: dict | None = None
 
 
 @dataclass(frozen=True)
@@ -608,6 +609,10 @@ def compose_sector_documents(*, basket_inputs, theme_inputs, allocation_inputs,
             public_risk_document=dated.public_risk_document,
             source_attribution=dated.source_attribution,
             decision_cutoff=dated.decision_cutoff)
+
+    if value.classification_context is not None:
+        from engine.sector_native_view import _classification_context
+        central_data["captured_classification"] = _classification_context(value.classification_context)
 
     # Grading observes the same admitted Yahoo panel and one captured frozen store.
     # It does not append today's calls, freeze basket levels or use computed charts.
