@@ -4611,6 +4611,10 @@ CURATED_EXCLUSIVE = {
     # plus the files they read. The cover-their-own-import-closure test and
     # check_ci_trigger_closure.py (both run in this job) keep that list honest.
     "ci-control-plane-contracts",
+    # 2026-11-04 (#917 CI acceleration): the control-plane job split three ways so
+    # the planner can spread its 1,000-2,000 s across packs; same paths, same gate.
+    "ci-control-plane-structure",
+    "ci-control-plane-census",
     "bot-session-recovery-browser",  # R5 Bot auth recovery: curated browser scope owns its two ancestor initializers.
     "live-flow-recovery-guards",
     # 2026-09-23 B-HEAL-CI-PACK-CEILING-2 (main integration-baseline red on
