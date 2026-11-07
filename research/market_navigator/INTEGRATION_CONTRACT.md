@@ -188,3 +188,27 @@ The application must call clear/dispose when its own account/entitlement scope c
 
 Native Paper design and the existing authenticated route remain prerequisite to
 production wiring. The old browser design study is not silently made a live product.
+
+
+## W3 response correlation amendment (2026-10-22)
+
+The initial foundation emitted `market_navigator.response/v1`, whose server
+binder authenticated the exact subject against its owned packet, but whose
+client envelope echoed only horizon, request ID and cutoff. Two independent
+controller instances can legitimately both issue `navigator-1`. Their
+responses must not be interchangeable across an account or instrument switch.
+
+The separate W3 code increment upgrades the wire to
+`market_navigator.response/v2`, adding only the SHA-256 of the exact expected
+subject. The client computes the same digest from its own requested subject
+using secure-origin Web Crypto before dispatch and compares it to the returned
+binding. Missing secure crypto or old v1 wire fails closed. No raw internal
+subject, source path or new account token is disclosed; the digest is
+**correlation, not authorization**. The existing server route must still
+authenticate the user, source generation, as-of rights and original subject.
+A malicious server that lies about its input cannot be made trusted with a
+hash echo, and this change grants no new endpoint or source-use permission.
+
+The standalone foundation's original v1 contract remains historically true
+at its frozen head. This W3 amendment applies only to the new child source
+head and requires its normal independent review and release gates.

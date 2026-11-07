@@ -41,6 +41,17 @@
   function unique(rows, key) {
     var seen = new Set(); rows.forEach(function(r){if (seen.has(r[key])) fail(); seen.add(r[key]);});
   }
+  async function subjectHash(subject) {
+    // This digest is a correlation check, NEVER authentication. No insecure
+    // origin fallback: do not render subject-specific content without binding.
+    if (typeof TextEncoder !== 'function' || typeof crypto === 'undefined' ||
+        !crypto.subtle || typeof crypto.subtle.digest !== 'function') fail();
+    var bytes = new TextEncoder().encode(subject);
+    var digest = await crypto.subtle.digest('SHA-256', bytes);
+    return Array.from(new Uint8Array(digest), function(b) {
+      return b.toString(16).padStart(2,'0');
+    }).join('');
+  }
   function authority(x) { obj(x,A); A.forEach(function(k){if (x[k] !== false) fail();}); }
   function evidence(x) {obj(x,['key','status']);id(x.key);member(x.status,OBS);}
   function condition(x) {
@@ -81,9 +92,12 @@
   }
   function freeze(x) { if(x && typeof x==='object'){Object.values(x).forEach(freeze);Object.freeze(x);} return x; }
   function validate(wire, request) {
-    obj(wire,['schema','request_id','requested_as_of','horizon','data']);
-    if(wire.schema!=='market_navigator.response/v1' || wire.request_id!==request.request_id ||
-       wire.requested_as_of!==request.as_of || wire.horizon!==request.horizon)fail();
+    obj(wire,['schema','request_id','requested_as_of','subject_binding_sha256','horizon','data']);
+    if(wire.schema!=='market_navigator.response/v2' || wire.request_id!==request.request_id ||
+       wire.requested_as_of!==request.as_of || wire.horizon!==request.horizon ||
+       wire.subject_binding_sha256!==request.subject_binding_sha256 ||
+       typeof request.subject_binding_sha256!=='string' ||
+       !/^[a-f0-9]{64}$/.test(wire.subject_binding_sha256))fail();
     if(typeof wire.request_id!=='string' || !REQUEST.test(wire.request_id))fail();
     clock(wire.requested_as_of,false);context(wire.data);
     if(wire.data.horizon!==request.horizon || micros(wire.data.as_of)!==micros(request.as_of))fail();
@@ -103,7 +117,12 @@
       member(query.horizon,H);clock(query.as_of,false);
       reset('loading');var turn=epoch;
       abort=new AbortController();
-      var request=freeze({request_id:'navigator-'+turn,subject:query.subject,horizon:query.horizon,as_of:query.as_of});
+      var digest;
+      try {digest=await subjectHash(query.subject);}
+      catch(_error) {if(turn===epoch && !disposed)options.render(freeze({status:'unavailable',data:null}));return;}
+      if(turn!==epoch || disposed)return;
+      var request=freeze({request_id:'navigator-'+turn,subject:query.subject,
+                          subject_binding_sha256:digest,horizon:query.horizon,as_of:query.as_of});
       var wire;
       try {wire=await options.read(request,abort.signal);}
       catch(_error) {if(turn===epoch && !disposed)options.render(freeze({status:'unavailable',data:null}));return;}

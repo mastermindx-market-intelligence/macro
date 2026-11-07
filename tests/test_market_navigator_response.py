@@ -20,6 +20,9 @@ def test_response_keeps_correlation_but_excludes_internal_subject():
     assert out['request_id']=='navigator-test' and out['data']['readiness']=='research_only'
     assert 'SPY:ARCX' not in json.dumps(out) and 'internal://' not in json.dumps(out)
     assert not any(out['data']['authority'].values())
+    from hashlib import sha256
+    assert out['schema']=='market_navigator.response/v2'
+    assert out['subject_binding_sha256']==sha256('SPY:ARCX'.encode()).hexdigest()
 
 
 @pytest.mark.parametrize('changes',[
