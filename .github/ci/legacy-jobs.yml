@@ -40400,6 +40400,9 @@ jobs:
     gate: code
     # Exact Git-tree closure, including subprocess JS inputs and observed data domains.
     paths:
+      - "admin/press_audience.py"
+      - "engine/marketing/seo_director.py"
+      - "engine/marketing/seo_search_console.py"
       - tests/test_fabric_exact_scoped_model_composition.py
       - collectors/biocatalyst/__init__.py
       - engine/biocatalyst/__init__.py
@@ -55949,6 +55952,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "scripts/metabolism_journal.py"
       - "admin/**"
       - "app/**"
       - "collectors/**"
