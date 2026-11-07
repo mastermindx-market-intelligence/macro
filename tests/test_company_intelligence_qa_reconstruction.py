@@ -239,7 +239,12 @@ def test_same_manager_before_and_after_analyst_followup_is_two_turns():
     assert turns[0]["span_indexes"] != turns[1]["span_indexes"]
 
 
-def test_operator_without_go_ahead_does_not_open_exchange():
+def test_question_bearing_handoff_opens_an_exchange_without_any_terminal_cue():
+    """TFG-1 R2: terminal cue phrases carry zero admission authority.
+
+    Supersedes the pre-R2 assertion that a handoff lacking "go ahead" could not open
+    an exchange. A named, question-bearing handoff is a separator in any dialect.
+    """
     segments = _synthetic_two_exchange_call()
     segments[2]["text"] = "Stand by for our first question from Jordan Blake from North Peak."
     result = _reconstruct(
@@ -249,9 +254,26 @@ def test_operator_without_go_ahead_does_not_open_exchange():
         document_id="tx:NOGA",
     )
     assert result["status"] == "ok"
-    assert result["qualifying_boundaries"] == [8]
-    assert len(result["exchanges"]) == 1
-    assert result["exchanges"][0]["questioner"]["name"] == "Riley Chen"
+    assert result["qualifying_boundaries"] == [2, 8]
+    assert [e["questioner"]["name"] for e in result["exchanges"]] == [
+        "Jordan Blake",
+        "Riley Chen",
+    ]
+
+
+def test_queue_instruction_naming_nobody_is_not_a_separator():
+    """A cue-bearing housekeeping segment that names no questioner opens nothing."""
+    segments = _synthetic_two_exchange_call()
+    segments[2]["text"] = (
+        "To ask a question, please press star one one. Please go ahead and queue up."
+    )
+    result = _reconstruct(
+        segments,
+        document_sha256="c" * 64,
+        event_id="evt_queue",
+        document_id="tx:QUEUE",
+    )
+    assert 2 not in result["qualifying_boundaries"]
 
 
 def test_unexpected_third_party_refuses_rather_than_dropping():
@@ -268,7 +290,7 @@ def test_unexpected_third_party_refuses_rather_than_dropping():
     assert result["exchanges"] == []
 
 
-def test_operator_intro_name_mismatch_refuses():
+def test_operator_intro_name_mismatch_stays_unresolved():
     segments = _synthetic_two_exchange_call()
     segments[3]["speaker"] = "Different Person"
     result = _reconstruct(
@@ -278,7 +300,7 @@ def test_operator_intro_name_mismatch_refuses():
         document_id="tx:MIS",
     )
     assert result["status"] == "failed"
-    assert result["failure"]["code"] == "operator_analyst_name_conflict"
+    assert result["failure"]["code"] == "speaker_unresolvable"
 
 
 def test_corrupt_source_hash_fails_replay():

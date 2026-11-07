@@ -295,6 +295,7 @@ jobs:
     # Keep generated-site identities even when absent from a local sparse checkout.
     # Canonical closure and ancestor tests enforce this exact curated scope.
     paths:
+      - engine/company_intelligence/qa_source_identity.py
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -2464,6 +2465,7 @@ jobs:
     # C19 WP32 P5/P6: generation-correction identity coherence + warm-cache denial silence on a synthetic ticker (offline).
     timeout-minutes: 10
     paths:
+      - engine/company_intelligence/qa_source_identity.py
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -3539,6 +3541,7 @@ jobs:
     # C19 WP22: DHI non-AAPL integrated-answer traversal on the published event workspace (offline).
     timeout-minutes: 10
     paths:
+      - engine/company_intelligence/qa_source_identity.py
       - "scripts/company_intelligence_publication_evidence.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
@@ -4631,6 +4634,7 @@ jobs:
     # the production adapters and the seat evaluator CLI (offline; every adapter is injected in tests).
     timeout-minutes: 10
     paths:
+      - engine/company_intelligence/qa_source_identity.py
       - "scripts/company_intelligence_publication_evidence.py"
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
@@ -6197,6 +6201,7 @@ jobs:
     # suites read can still start this job.
     scope: exclusive
     paths:
+      - engine/company_intelligence/qa_source_identity.py
       - "engine/entry_radar/__init__.py"
       - "engine/entry_radar/replay/__init__.py"
       - "engine/entry_radar/replay/identity_observation_snapshot.py"
@@ -7976,6 +7981,7 @@ jobs:
     # the equality suite reads.
     scope: exclusive
     paths:
+      - engine/company_intelligence/qa_source_identity.py
       - "config/earnings_story_promotion.yml"
       - "config/fundamental_forensics_disclosure_diff.v1.json"
       - "config/theme_graph_identity_breaks.yml"
@@ -8133,6 +8139,7 @@ jobs:
     # opaque fallback patterns to this hermetic job.
     scope: exclusive
     paths:
+      - engine/company_intelligence/qa_source_identity.py
       - "engine/neuralweb/options_selection_context.py"
       - "tests/test_options_selection_context.py"
       - "tests/fixtures/options_selection_question/terminal-mint-v1.json"
@@ -12375,6 +12382,7 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      - engine/company_intelligence/qa_source_identity.py
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -15266,6 +15274,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - engine/company_intelligence/qa_source_identity.py
       # The five suites and their measured import closure (inference's owned tier).
       - "tests/test_company_management_outlook_contract.py"
       - "tests/test_company_management_outlook.py"
@@ -16617,6 +16626,7 @@ jobs:
     # Dynamic Ontology assets and canonical navigation are included explicitly.
     scope: exclusive
     paths:
+      - engine/company_intelligence/qa_source_identity.py
       - "scripts/company_intelligence_publication_evidence.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
@@ -18665,6 +18675,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - engine/company_intelligence/qa_source_identity.py
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
       - "config/fundamental_forensics_disclosure_diff.v1.json"
@@ -18831,6 +18842,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - engine/company_intelligence/qa_source_identity.py
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
       - "config/fundamental_forensics_disclosure_diff.v1.json"
@@ -19089,6 +19101,7 @@ jobs:
     # ticker-cluster time-confound law and the altdata_brain.py article3 convention.
     scope: exclusive
     paths:
+      - engine/company_intelligence/qa_source_identity.py
       - engine/entry_radar/replay/identity_observation_snapshot.py
       - engine/neuralweb/market_memory_identity_candidate.py
       - collectors/yahoo.py
@@ -23980,6 +23993,7 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      - engine/company_intelligence/qa_source_identity.py
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
       - engine/entry_radar/replay/identity_observation_snapshot.py
@@ -26996,6 +27010,7 @@ jobs:
     # Full tracked-tree import/read closure plus Jinja and committed page assets.
     # Preserve the existing 36 suites and add 6 guarded backend suites while removing unrelated opaque fallback fanout.
     paths:
+      - engine/company_intelligence/qa_source_identity.py
       - "engine/options_hub_retention.py"
       - "engine/entry_radar/__init__.py"
       - "engine/entry_radar/replay/__init__.py"
@@ -28395,6 +28410,7 @@ jobs:
     # was doing all the rest of the selecting.
     scope: exclusive
     paths:
+      - engine/company_intelligence/qa_source_identity.py
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
       # Immutable Press dossier binding reaches the existing page inventory.
@@ -30795,6 +30811,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - engine/company_intelligence/qa_source_identity.py
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -33384,6 +33401,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - engine/company_intelligence/qa_source_identity.py
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
       - "engine/government_revenue/public_agreement.py"
@@ -35398,6 +35416,7 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - engine/company_intelligence/qa_source_identity.py
       - collectors/rate_futures.py
       - engine/rate_futures_repricing.py
       - engine/entry_radar/__init__.py
@@ -36898,6 +36917,7 @@ jobs:
     # the declared-scope coverage audit re-checks them on every load.
     scope: exclusive
     paths:
+      - engine/company_intelligence/qa_source_identity.py
       - engine/rate_futures_repricing.py
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
@@ -38161,6 +38181,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - engine/company_intelligence/qa_source_identity.py
+      - tests/test_company_intelligence_qa_source_identity_tfg1_r2.py
       - "scripts/company_intelligence_publication_evidence.py"
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
@@ -38230,6 +38252,8 @@ jobs:
         run: pip install pytest pyyaml requests
       - name: PG private acquisition source selection
         run: python -m pytest tests/test_pg_economic_source_selection.py -q
+      - name: Source-native Q&A identity evidence (synthetic)
+        run: python -m pytest tests/test_company_intelligence_qa_source_identity_tfg1_r2.py -q
 
   earnings-economic-private-publication:
     if: ${{ false }}
@@ -38237,6 +38261,7 @@ jobs:
     scope: exclusive
     timeout-minutes: 20
     paths:
+      - engine/company_intelligence/qa_source_identity.py
       - config/earnings_story_promotion.yml
       - config/fundamental_forensics_disclosure_diff.v1.json
       - config/site_access.yml
@@ -38342,6 +38367,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - engine/company_intelligence/qa_source_identity.py
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
       # Immutable Press dossier binding reaches the existing page inventory.
@@ -39690,6 +39716,7 @@ jobs:
     # exact uncovered file — add it here.
     scope: exclusive
     paths:
+      - engine/company_intelligence/qa_source_identity.py
       - "collectors/yahoo.py"
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
@@ -40577,6 +40604,7 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - engine/company_intelligence/qa_source_identity.py
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -43907,6 +43935,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - engine/company_intelligence/qa_source_identity.py
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -45181,6 +45210,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - engine/company_intelligence/qa_source_identity.py
       - "contracts/capital_structure_projection.schema.json"
       - "contracts/evidence_foundation/block.v1.schema.json"
       - "contracts/evidence_foundation/recipe.v1.schema.json"
@@ -47756,6 +47786,7 @@ jobs:
     # read or run; an unlisted closure file is an uncovered path. No
     # tests/** catch-all.
     paths:
+      - engine/company_intelligence/qa_source_identity.py
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
       - "engine/company_intelligence/rms_segment_profile.py"
@@ -47893,6 +47924,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - engine/company_intelligence/qa_source_identity.py
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
       - "tests/mining_casebook.py"
@@ -48010,6 +48042,7 @@ jobs:
     # is listed under `paths:` below).
     scope: exclusive
     paths:
+      - engine/company_intelligence/qa_source_identity.py
       - "scripts/company_intelligence_publication_evidence.py"
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
@@ -49557,6 +49590,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - engine/company_intelligence/qa_source_identity.py
       - "config/earnings_story_promotion.yml"
       - "config/fundamental_forensics_disclosure_diff.v1.json"
       - "config/theme_crosswalk.yml"
@@ -50497,6 +50531,7 @@ jobs:
     # The qledger-cluster-honest-ci code owner retains grader/readiness suites.
     scope: exclusive
     paths:
+      - engine/company_intelligence/qa_source_identity.py
       - "admin/press_audience.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
