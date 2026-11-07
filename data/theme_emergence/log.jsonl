@@ -37,3 +37,11 @@
 {"sic":"3690","sic_desc":"Miscellaneous Electrical Machinery, Equipment & Supplies","asof":"2026-09-16","ts":"2026-09-18T16:59:50.478010+00:00","n_new_filers":4,"velocity":3,"new_filers":["AETN","DFLI","EOSE","FLNC"]}
 {"sic":"4911","sic_desc":"Electric Services","asof":"2026-08-13","ts":"2026-09-18T16:59:50.478010+00:00","n_new_filers":3,"velocity":3,"new_filers":["FRVO","HDRN","OPTT"]}
 {"sic":"3679","sic_desc":"Electronic Components, NEC","asof":"2026-09-23","ts":"2026-09-25T18:40:59.753762+00:00","n_new_filers":3,"velocity":2,"new_filers":["ESP","LGL","VICR"]}
+{"sic":"5065","sic_desc":"Wholesale-Electronic Parts & Equipment, NEC","asof":"2026-10-14","ts":"2026-10-16T16:46:12.742675+00:00","n_new_filers":3,"velocity":3,"new_filers":["ARW","RELL","SPRS"]}
+{"sic":"2834","sic_desc":"Pharmaceutical Preparations","asof":"2026-10-27","ts":"2026-11-02T09:50:29.411952+00:00","n_new_filers":17,"velocity":10,"new_filers":["APVO","AXSM","BMRN","BNTC","CORT","HIND","HYPD","IBIO","IMNM","INO","MBIO","MNKD"]}
+{"sic":"3674","sic_desc":"Semiconductors & Related Devices","asof":"2026-10-29","ts":"2026-11-02T09:50:29.411952+00:00","n_new_filers":13,"velocity":5,"new_filers":["AAOI","CBRS","CRDO","CRUS","DIOD","GSIT","IPGP","MCHP","MRVL","OSIS","PENG","SHLS"]}
+{"sic":"7372","sic_desc":"Services-Prepackaged Software","asof":"2026-10-26","ts":"2026-11-02T09:50:29.411952+00:00","n_new_filers":6,"velocity":3,"new_filers":["BSY","CDNS","FSLY","NABL","PCTY","RBRK"]}
+{"sic":"3672","sic_desc":"Printed Circuit Boards","asof":"2026-10-28","ts":"2026-11-02T09:50:29.411952+00:00","n_new_filers":5,"velocity":5,"new_filers":["BHE","CLS","KE","PLXS","TTMI"]}
+{"sic":"3842","sic_desc":"Orthopedic, Prosthetic & Surgical Appliances & Supplies","asof":"2026-10-28","ts":"2026-11-02T09:50:29.411952+00:00","n_new_filers":3,"velocity":3,"new_filers":["ALGN","CDRE","HSCS"]}
+{"sic":"4911","sic_desc":"Electric Services","asof":"2026-10-28","ts":"2026-11-02T09:50:29.411952+00:00","n_new_filers":3,"velocity":3,"new_filers":["FRVO","HDRN","OPTT"]}
+{"sic":"3679","sic_desc":"Electronic Components, NEC","asof":"2026-10-26","ts":"2026-11-02T09:50:29.411952+00:00","n_new_filers":3,"velocity":2,"new_filers":["ESP","LGL","VICR"]}

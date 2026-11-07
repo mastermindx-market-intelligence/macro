@@ -426,32 +426,23 @@ def _coherent_zh(merged: dict, old: dict, new: dict, field: str) -> None:
 
 
 def _same_phrasing_subject(left: dict, right: dict) -> bool:
-    """Can wording about the old narrative still describe the incoming facts?
+    """Can retained wording still describe the finalized canonical facts?
 
-    Repeated coverage can add evidence without changing the narrative. A changed
-    body, actor, source count, event lane or market observation cannot inherit old
-    LLM wording. This is conservative: it cannot prove which input a model used.
-    This comparison is not a story identity, fact validator or publication gate.
+    Use the same pure fact normalization as the phrasing cache, including stage,
+    source names, the displayed lane and recent timeline. Keep the existing
+    conservative routing guards too. This compares fact views; it does not
+    reconstruct the original model input or replace editorial approval.
     """
-    for field, cap in (("headline", 320), ("brief", 520),
-                       ("event_class", 40), ("lane", 40)):
-        if _clean(left.get(field), cap) != _clean(right.get(field), cap):
+    for field in ("event_class", "lane"):
+        if _clean(left.get(field), 40) != _clean(right.get(field), 40):
             return False
+    from engine.marketing.intelligence_llm import _phrasing_fingerprint  # noqa: PLC0415
 
-    def tickers(packet: dict) -> set[str]:
-        raw = packet.get("tickers")
-        return {_clean(t, 16).upper().lstrip("$") for t in raw} if isinstance(raw, (list, tuple)) else set()
-
-    def market(packet: dict) -> tuple[str, str, str] | None:
-        raw = packet.get("market")
-        if not isinstance(raw, dict) or not raw.get("label"):
-            return None
-        return tuple(_clean(raw.get(k), cap) for k, cap in
-                     (("label", 60), ("basis", 60), ("as_of", 40)))
-
-    return (tickers(left) == tickers(right)
-            and left.get("source_count") == right.get("source_count")
-            and market(left) == market(right))
+    try:
+        return _phrasing_fingerprint(left, "") == _phrasing_fingerprint(right, "")
+    except (TypeError, ValueError):
+        # Malformed facts cannot support retaining generated wording.
+        return False
 
 
 def _merge_why(merged: dict, old: dict, new: dict, *, subject_changed: bool = False) -> None:
@@ -566,41 +557,6 @@ def _merge_packets(old: dict | None, new: dict, *, now: datetime | None = None,
         1,
     )
 
-    # CANONICAL DRAFTS: one slot per shape. Keying by draft id let tape-stamp
-    # drift accrete five near-identical wire drafts on one story and noise the
-    # review queue; keying by shape means a drifted redraft replaces its
-    # shape-mate. Unknown/future shapes ("analysis", an LLM shape) get their own
-    # slot generically — this dict is never a whitelist.
-    #
-    # Review N8: within a slot, a stored LLM phrasing OUTRANKS an incoming
-    # deterministic draft while the story's headline is unchanged — the LLM pass
-    # is budget-capped and cache-keyed, so most ticks re-arrive with only the
-    # deterministic wire text, and letting that evict the phrased copy silently
-    # reverted the story every quiet tick. A moved headline releases the slot:
-    # stale phrasing must not outlive the story facts it phrased. Every old LLM
-    # slot is retired on a material narrative change, including an analysis slot
-    # omitted by a failed/disabled/new reply. Publication records are untouched.
-    prospective = dict(merged, market=new.get("market"))
-    if isinstance(new.get("tickers"), (list, tuple)):
-        # An explicitly empty actor set cannot support old generated ticker
-        # wording. Keep the incumbent evidence/association merge unchanged.
-        prospective["tickers"] = new["tickers"]
-    subject_moved = not _same_phrasing_subject(old, prospective)
-    old_drafts = [row for row in (old.get("drafts") or [])
-                  if not (subject_moved and isinstance(row, dict)
-                          and str(row.get("origin") or "") == "llm")]
-    drafts: dict[str, dict] = {}
-    for row in old_drafts + list(new.get("drafts") or []):
-        if not isinstance(row, dict) or not row.get("id"):
-            continue
-        slot = str(row.get("shape") or "wire")
-        held = drafts.get(slot)
-        if (held is not None and not subject_moved
-                and str(held.get("origin") or "") == "llm"
-                and str(row.get("origin") or "") != "llm"):
-            continue
-        drafts[slot] = row
-    merged["drafts"] = list(drafts.values())[:6]
     # A market stamp is a fresh, threshold-gated session observation. Never
     # carry yesterday's/last-tick's stamp forward when the current quote is
     # quiet or stale.
@@ -630,13 +586,6 @@ def _merge_packets(old: dict | None, new: dict, *, now: datetime | None = None,
         verified=verified, source_count=int(merged["source_count"])
     )
     merged["context"] = merged_context
-    if any(d.get("status") == "review" for d in merged["drafts"]):
-        merged["stance"] = "Review the draft"
-    elif confirmed:
-        merged["stance"] = "Read the evidence"
-    else:
-        merged["stance"] = "Watch for confirmation"
-
     # TIMELINE: what changed on this story, in public words. Deterministic —
     # derived from the diff between the stored packet and the merged one, never
     # from a score. Newest first, bounded.
@@ -670,6 +619,50 @@ def _merge_packets(old: dict | None, new: dict, *, now: datetime | None = None,
             source_name=str(first_rows[-1].get("name") or "") if first_rows else "",
         )]
     merged["timeline"] = (events + history)[:cap]
+
+    # CANONICAL DRAFTS: one slot per shape. Keying by draft id let tape-stamp
+    # drift accrete five near-identical wire drafts on one story and noise the
+    # review queue; keying by shape means a drifted redraft replaces its
+    # shape-mate. Unknown/future shapes ("analysis", an LLM shape) get their own
+    # slot generically — this dict is never a whitelist.
+    #
+    # Review N8: within a slot, a stored LLM phrasing OUTRANKS an incoming
+    # deterministic draft while the finalized facts are unchanged — the LLM pass
+    # is budget-capped and cache-keyed, so most ticks re-arrive with only the
+    # deterministic wire text, and letting that evict the phrased copy silently
+    # reverted the story every quiet tick. Changed facts release the slot:
+    # stale phrasing must not outlive the story facts it phrased. Every old LLM
+    # slot is retired on a material narrative change, including an analysis slot
+    # omitted by a failed/disabled/new reply. Publication records are untouched.
+    # Stage, source union, fresh market and timeline are final at this point.
+    prospective = dict(merged)
+    if isinstance(new.get("tickers"), (list, tuple)):
+        # An explicitly empty actor set cannot support old generated ticker
+        # wording. Keep the incumbent evidence/association merge unchanged.
+        prospective["tickers"] = new["tickers"]
+    subject_moved = not _same_phrasing_subject(old, prospective)
+    old_drafts = [row for row in (old.get("drafts") or [])
+                  if not (subject_moved and isinstance(row, dict)
+                          and str(row.get("origin") or "") == "llm")]
+    drafts: dict[str, dict] = {}
+    for row in old_drafts + list(new.get("drafts") or []):
+        if not isinstance(row, dict) or not row.get("id"):
+            continue
+        slot = str(row.get("shape") or "wire")
+        held = drafts.get(slot)
+        if (held is not None and not subject_moved
+                and str(held.get("origin") or "") == "llm"
+                and str(row.get("origin") or "") != "llm"):
+            continue
+        drafts[slot] = row
+    merged["drafts"] = list(drafts.values())[:6]
+
+    if any(d.get("status") == "review" for d in merged["drafts"]):
+        merged["stance"] = "Review the draft"
+    elif confirmed:
+        merged["stance"] = "Read the evidence"
+    else:
+        merged["stance"] = "Watch for confirmation"
 
     # zh twins last: they must agree with the EN text the merge just settled on.
     _coherent_zh(merged, old, new, "headline")

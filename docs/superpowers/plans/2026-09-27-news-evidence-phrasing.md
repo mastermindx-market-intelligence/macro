@@ -38,3 +38,26 @@ Publish one bounded draft PR; fresh applicable CI and current-main integration a
 The desk suite previously ran only in marketing-engine (gate:data). It now runs once in the existing unrun-marketing-desk (gate:code); its old data-only occurrence is removed. No new CI job, runner, dependency installation or threshold is introduced.
 The unchanged Git-backed scope engine at main93b98bf4a4fad08c62ccc6cdb4a19b7c381a0435 qualifies the actual old/new job:285 ->312 named paths with all previous owners retained; fallback paths unchanged. Existing homepage/free-content/Prophet probe membership is unchanged (this job already selected all three). The job's honest estimated weight rises13 ->16 for its additional test step; no packing limit is raised. This is changed-job analysis, not a claim that the global CI census ran locally.
 The actual Git-qualified runtime source passes the complete91-case desk suite. Retained tests include real SQLite persistence, the Content Studio reader, recursive public-field exclusions, bilingual handling, number/call gates, cache budgets, snapshot expiry and old-browser-draft refusal. There is no UI layout change or new browser-capture claim.
+
+## 2026-11-07 finalized-fact correction
+
+The retention comparison now reuses the existing phrasing fact fingerprint after
+canonical evidence, market, stage and timeline finalization. Raw event class/lane
+and explicit empty incoming tickers retain their conservative retirement guards.
+Stance follows final draft selection. This compares canonical fact views, not a
+newly claimed receipt of the original model input.
+
+Focused regressions use the actual SQLite store, atomic snapshot and admin stale
+draft reread. They distinguish impact-driven stage changes, source display-name
+changes, model-visible lane changes and merge-produced or capped timeline changes.
+Unchanged bookkeeping and unordered equivalent facts retain generated wording.
+All old generated shapes retire together; no model/provider or outbox action is
+needed to reject the old IDs. One old quiet-arrival fixture now actually preserves
+its source facts; valid incoming replacements and bilingual fallback stay covered.
+
+The existing Intelligence Desk suite moves from marketing-engine's data gate to
+unrun-marketing-desk's code gate on the current catalog, preserving that owner's
+other steps, dependencies and four-minute limit. Historical packing numbers above
+remain historical. Natural current-head CI owns full-tree closure and packing
+qualification. This source correction does not change the daemon/press stream,
+withdrawal/PIT-history semantics, provider activation or production acceptance.

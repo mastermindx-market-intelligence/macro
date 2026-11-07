@@ -28,7 +28,7 @@ UNIVERSE
 --------
 engine.options_universe.gex_symbols() UNIONED with ETF_ANCHORS + INDEX_ROOTS.
 ETF anchors: SPY QQQ IWM DIA XLK XLF XLE XLI XLU XLV XLY XLP XLB XLC XLRE SMH SOXX
-             XBI KRE ARKK
+             XBI KRE ARKK GLD SLV TLT HYG
 Index roots: SPX, SPXW  (SPXW confirmed as distinct PM-settled weekly root — measured 2026-07-04)
 
 RESUMABILITY
@@ -94,7 +94,10 @@ import pandas as pd
 # Ensure repo root on path when run as a script
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from engine.thetadata_store import resolve_thetadata_store  # noqa: E402
+from engine.thetadata_store import (_unmounted_volume,  # noqa: E402
+                                    drained_store_candidates,
+                                    resolve_thetadata_store,
+                                    unmounted_store_candidates)
 
 log = logging.getLogger("backfill_thetadata_eod")
 
@@ -103,6 +106,7 @@ ETF_ANCHORS = [
     "SPY", "QQQ", "IWM", "DIA",
     "XLK", "XLF", "XLE", "XLI", "XLU", "XLV", "XLY", "XLP", "XLB", "XLC", "XLRE",
     "SMH", "SOXX", "XBI", "KRE", "ARKK",
+    "GLD", "SLV", "TLT", "HYG",
 ]
 # SPXW confirmed as a distinct root in /v3/option/list/symbols (measured 2026-07-04).
 # Included alongside SPX for full PM-settled weekly + AM-settled coverage.
@@ -280,6 +284,8 @@ def _pull_root_year(root: str, year: int, start: date, end: date, *,
     chunk-summary line per root-year per endpoint (rows, elapsed) for backfill log
     readability.
     """
+    from lib.options_source_receipts import dated_greek_request_options
+    greek_options = dated_greek_request_options(root)  # validate before any source call
     from collectors import thetadata as td
 
     log.info("pull_root_year: %s %d (%s → %s)", root, year, start, end)
@@ -342,7 +348,7 @@ def _pull_root_year(root: str, year: int, start: date, end: date, *,
     # avoids a re-backfill when T1 GEX/vanna/charm consumers come online.
     # Columns: delta/theta/vega/rho/epsilon/lambda (1st), gamma/vanna/charm/vomma/veta/vera (2nd),
     #          speed/zomma/color/ultima (3rd), implied_vol, iv_error, underlying_price.
-    greeks = td.bulk_greeks(root, 0, start, end, order=3)
+    greeks = td.bulk_greeks(root, 0, start, end, order=3, **greek_options)
     if greeks is None:
         log.warning("pull_root_year: %s %d — bulk_greeks returned None", root, year)
         return False
@@ -550,6 +556,14 @@ def main() -> int:
         _run_probe()
         return 0
 
+    # Fail before store preparation or the health probe. This does not enable
+    # the opt-in; absent configuration keeps every existing request unchanged.
+    from lib.options_source_receipts import dated_greek_request_options
+    try:
+        dated_greek_request_options("SPY")
+    except ValueError as exc:
+        ap.error(str(exc))
+
     # AD-1T1 §D/RF3 (R3): this process must lock-and-write the SAME store the
     # daily incremental lane resolves — the hub-ops-wt hazard is a backfill
     # accidentally minting a SECOND store the daily lane never sees. Resolve
@@ -574,7 +588,40 @@ def main() -> int:
                  "refusing to proceed while canonical resolution is uncertain "
                  "(no mutation)", type(e).__name__, e)
         return 1
+    if resolved is None:
+        # Unmounted volume is not a fresh install. Check before _store_dir(),
+        # which mkdirs — minting that directory would be the second store.
+        unmounted = unmounted_store_candidates()
+        if unmounted:
+            vols: list[str] = []
+            for candidate in unmounted:
+                try:
+                    vol = _unmounted_volume(candidate)
+                except OSError:
+                    vol = None
+                vols.append(str(vol if vol is not None else candidate))
+            log.error(
+                "backfill: the store's volume is unmounted and no second "
+                "store may be minted (unmounted volume path(s): %s).",
+                ", ".join(vols))
+            return 1
     own_store = _store_dir()
+    if resolved is None:
+        # AD-1T2b: `None` stopped meaning "no store anywhere". A DRAINED canonical
+        # store (tier dirs present, zero roots) no longer resolves, so the
+        # fresh-install exception below would let this process mint a SECOND store
+        # beside it — the exact hazard this block exists to prevent, now reachable
+        # through the path that used to be safe. A drained store is a store.
+        elsewhere = [d for d in drained_store_candidates()
+                     if Path(d).resolve() != Path(own_store).resolve()]
+        if elsewhere:
+            log.error("backfill: nothing RESOLVES, but a DRAINED store exists at "
+                      "%s, which disagrees with this process's own store %s — "
+                      "refusing to mint a second T1 store. That store is drained, "
+                      "not absent: point THETADATA_STORE / lib.config.data_dir() "
+                      "at it and re-run to refill it in place.",
+                      ", ".join(str(d) for d in elsewhere), own_store)
+            return 1
     if resolved is not None and Path(resolved).resolve() != Path(own_store).resolve():
         log.error("backfill: resolve_thetadata_store() resolved %s, which "
                  "DISAGREES with this process's own store %s — refusing to "
