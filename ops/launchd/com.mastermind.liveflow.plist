@@ -98,9 +98,19 @@
   -->
 
   <!--
-    Mac is on Pacific time; 06:25 PT = 09:25 ET year-round (5 min before the
-    9:30 ET open).  ET and PT share DST transitions so the offset (PT = ET - 3h)
-    is constant year-round.  If the Mac's timezone changes, update these entries.
+    The M1 service host currently uses fixed MST (-07:00), NOT Pacific time.
+    Eastern time changes between EDT (-04) and EST (-05), so one 06:25 local
+    fire reaches 09:25 EDT in summer but 08:25 EST in winter.  On 2026-11-02
+    that early RTH-only launch exited successfully, and KeepAlive correctly
+    did not respawn it, leaving live Flow dark for the trading session.
+
+    Fire both 06:25 and 07:25 local on weekdays: exactly one is 09:25 ET
+    across both DST seasons.  Both events target this ONE launchd job label;
+    while its summer RTH process is running, launchd does not create a second
+    instance for the later calendar event.  In winter, the early clean exit is
+    followed by the 07:25 local (09:25 EST) start.  Never use a second label,
+    poller, queue or KeepAlive-on-success to solve this.  Requalify these local
+    times before deploying on any host that does not use fixed MST.
   -->
   <key>StartCalendarInterval</key>
   <array>
@@ -128,6 +138,32 @@
     <dict>
       <key>Weekday</key><integer>5</integer>
       <key>Hour</key><integer>6</integer>
+      <key>Minute</key><integer>25</integer>
+    </dict>
+    <!-- Fixed-MST winter fire: 07:25 MST = 09:25 EST. -->
+    <dict>
+      <key>Weekday</key><integer>1</integer>
+      <key>Hour</key><integer>7</integer>
+      <key>Minute</key><integer>25</integer>
+    </dict>
+    <dict>
+      <key>Weekday</key><integer>2</integer>
+      <key>Hour</key><integer>7</integer>
+      <key>Minute</key><integer>25</integer>
+    </dict>
+    <dict>
+      <key>Weekday</key><integer>3</integer>
+      <key>Hour</key><integer>7</integer>
+      <key>Minute</key><integer>25</integer>
+    </dict>
+    <dict>
+      <key>Weekday</key><integer>4</integer>
+      <key>Hour</key><integer>7</integer>
+      <key>Minute</key><integer>25</integer>
+    </dict>
+    <dict>
+      <key>Weekday</key><integer>5</integer>
+      <key>Hour</key><integer>7</integer>
       <key>Minute</key><integer>25</integer>
     </dict>
   </array>

@@ -38,16 +38,29 @@ def _import_poller():
 
 class TestMaxConcurrent:
     def test_env_override(self, monkeypatch):
-        """LIVE_FLOW_MAX_CONCURRENT env overrides config/default."""
+        """The environment overrides the request, not the two-slot safety ceiling."""
         lf = _import_poller()
         monkeypatch.setenv(lf.MAX_CONCURRENT_ENV, "5")
-        assert lf._max_concurrent({}) == 5
+        assert lf._max_concurrent({}) == 2
+        monkeypatch.setenv(lf.MAX_CONCURRENT_ENV, "1")
+        assert lf._max_concurrent({"max_concurrent": 2}) == 1
+
+    def test_provider_concurrency_is_hard_capped_even_under_env_override(self, monkeypatch):
+        """A misconfigured launchd environment must never exceed Theta's 2 slots."""
+        lf = _import_poller()
+        monkeypatch.setenv(lf.MAX_CONCURRENT_ENV, "48")
+        assert lf._max_concurrent({"max_concurrent": 30}) == 2
+        monkeypatch.delenv(lf.MAX_CONCURRENT_ENV, raising=False)
+        assert lf._max_concurrent({"max_concurrent": 30}) == 2
+        monkeypatch.setenv(lf.MAX_CONCURRENT_ENV, "-3")
+        assert lf._max_concurrent({}) == 1
 
     def test_config_fallback(self, monkeypatch):
-        """When env is absent, config is used."""
+        """Config can lower the budget, but cannot override the ceiling."""
         lf = _import_poller()
         monkeypatch.delenv(lf.MAX_CONCURRENT_ENV, raising=False)
-        assert lf._max_concurrent({"max_concurrent": 3}) == 3
+        assert lf._max_concurrent({"max_concurrent": 3}) == 2
+        assert lf._max_concurrent({"max_concurrent": 1}) == 1
 
     def test_default_when_both_absent(self, monkeypatch):
         """When neither env nor config present, default is 2."""
@@ -63,6 +76,38 @@ class TestMaxConcurrent:
         result = lf._max_concurrent({"max_concurrent": 2})
         assert result == 2
 
+
+class TestRootFetchTiming:
+    def test_root_duration_reports_success_partial_and_failure_without_changing_results(
+        self, monkeypatch, caplog,
+    ):
+        """Measured worker duration is never represented as wire RTT or a source receipt."""
+        import logging
+
+        poller = _import_poller()
+        observed = []
+        complete = ("GOOG", object(), object())
+        partial = ("GOOGL", object(), None)
+        failed = ("AMD", None, None)
+        outcomes = {"GOOG": complete, "GOOGL": partial, "AMD": failed}
+
+        def fetch(root, session_date, start, end):
+            observed.append((root, session_date, start, end))
+            return outcomes[root]
+
+        monkeypatch.setattr(poller, "_fetch_root", fetch)
+        with caplog.at_level(logging.INFO):
+            for root, expected in outcomes.items():
+                assert poller._timed_fetch_root(root, "2026-11-02", "09:30:00", None) is expected
+        assert len(observed) == 3
+        messages = [r.getMessage() for r in caplog.records if "root_fetch_completed" in r.getMessage()]
+        assert len(messages) == 3
+        for root, state in (("GOOG", "complete"), ("GOOGL", "partial"), ("AMD", "failed")):
+            assert any(
+                f"root={root}" in msg and f"state={state}" in msg
+                and "worker_elapsed_sec=" in msg
+                for msg in messages
+            )
 
 # ─────────────────────────────────────────────────────────────────────────────
 # 4–5. two_tier_enabled
@@ -628,3 +673,81 @@ class TestProductionLiveFlowConfig:
         cfg = yaml.safe_load((repo_root / "config.yml").read_text())["live_flow"]
         assert cfg["top_names"] == 128
         assert cfg["max_concurrent"] == 2
+
+    def test_alphabet_share_classes_both_get_tier1_cycle_frequency(self, monkeypatch):
+        """GOOG must not be a four-cycle tail while GOOGL gets every cycle.
+
+        Production enables the existing two-tier scheduler. Both Alphabet options
+        roots need the same freshness tier; other priority stocks still rotate.
+        """
+        from engine import options_universe
+
+        poller = _import_poller()
+        cfg = yaml.safe_load((Path(__file__).resolve().parents[1] / "config.yml").read_text())["live_flow"]
+        monkeypatch.setenv(poller.TWO_TIER_ENV, "1")
+        monkeypatch.delenv(poller.MAX_CONCURRENT_ENV, raising=False)
+        monkeypatch.setattr(options_universe, "gex_symbols", lambda **_: ["SPY", "GOOG", "GOOGL", "AMD"])
+        configured = poller._resolve_universe(cfg)
+        assert {"GOOG", "GOOGL", "XOM"} <= set(configured)
+        assert poller._max_concurrent(cfg) == 2
+
+        seen_tail = []
+        for n in range(1, 5):
+            cycle, _slot = poller._select_cycle_roots(configured, n, cfg)
+            assert "GOOG" in cycle, f"Class C missed tier-1 cycle {n}"
+            assert "GOOGL" in cycle, f"Class A missed tier-1 cycle {n}"
+            assert len(cycle) == len(set(cycle))
+            seen_tail.append("XOM" in cycle)
+        assert seen_tail.count(True) == 1  # Long-tail rotation remains in force.
+
+    def test_priority_names_survive_missing_baskets(self, monkeypatch):
+        from engine import options_universe
+
+        poller = _import_poller()
+        config = yaml.safe_load((Path(__file__).resolve().parents[1] / "config.yml").read_text())
+        monkeypatch.setattr(options_universe, "baskets_universe", lambda **_: [])
+        roots = poller._resolve_universe(config["live_flow"])
+        required = {"GOOG", "GOOGL", "AMZN", "JPM", "XOM", "WMT", "UBER"}
+        assert required <= set(roots)
+        assert len(set(roots) & set(config["live_flow"]["priority_names"])) >= 40
+        assert not required.intersection(poller._etf_anchor_roots(config["live_flow"]))
+
+    def test_priority_and_basket_roots_share_one_budget(self, monkeypatch):
+        from engine import options_universe
+
+        poller = _import_poller()
+        monkeypatch.setattr(options_universe, "gex_symbols", lambda **_: ["SPY", "GOOG", "AMD", "MU"])
+        cfg = {"etf_anchors": ["spy", "SPY"], "priority_names": ["googl", "GOOG", "GOOG"], "top_names": 3}
+        assert poller._resolve_universe(cfg) == ["SPY", "GOOGL", "GOOG", "AMD"]
+        assert poller._resolve_universe({**cfg, "top_names": 0}) == ["SPY"]
+        assert poller._resolve_universe({"etf_anchors": ["SPY"], "top_names": 2}) == ["SPY", "GOOG", "AMD"]
+
+    def test_sparse_checkout_uses_deployed_membership_only_for_live_flow(self, monkeypatch, tmp_path):
+        import subprocess
+        from engine import options_universe
+
+        def git(*args):
+            subprocess.run(["git", "-C", str(tmp_path), *args], check=True, capture_output=True)
+
+        git("init", "-q")
+        membership = tmp_path / "data/baskets/membership.json"
+        membership.parent.mkdir(parents=True)
+        membership.write_text(json.dumps({"baskets": {"sample": {"members": [
+            {"ticker": "AAA"}, {"ticker": "BBB", "removed": "2026-01-02"},
+        ]}}}))
+        git("add", "data")
+        git("-c", "user.name=Test", "-c", "user.email=test@example.invalid", "commit", "-qm", "membership")
+        git("sparse-checkout", "set", "--cone", "scripts")
+        assert not membership.exists()
+        monkeypatch.setattr(options_universe.config, "ROOT", tmp_path)
+        monkeypatch.setattr(options_universe.config, "data_dir", lambda: tmp_path / "data")
+        monkeypatch.setattr(options_universe.config, "load", lambda: {
+            "polygon": {"gex": {"symbols": ["SPY"], "include_baskets": True}},
+        })
+        cfg = {"etf_anchors": ["SPY"], "priority_names": ["GOOG", "GOOGL"], "top_names": 3}
+        assert _import_poller()._resolve_universe(cfg) == ["SPY", "GOOG", "GOOGL", "AAA"]
+        assert options_universe.gex_symbols() == ["SPY"]
+        assert not membership.exists()
+        git("sparse-checkout", "disable")
+        membership.unlink()  # A deliberate deletion in a full checkout is authoritative.
+        assert _import_poller()._resolve_universe(cfg) == ["SPY", "GOOG", "GOOGL"]

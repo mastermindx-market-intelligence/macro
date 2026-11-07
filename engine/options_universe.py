@@ -17,6 +17,9 @@ from __future__ import annotations
 
 import json
 import logging
+import os
+from pathlib import Path
+import subprocess
 
 from lib import config
 
@@ -27,14 +30,38 @@ log = logging.getLogger(__name__)
 DEFAULT_ANCHORS = ["SPY", "QQQ", "IWM", "DIA", "NVDA", "AAPL", "TSLA", "AMD", "META", "MSFT"]
 
 
-def baskets_universe() -> list[str]:
+def _sparse_membership(path: Path) -> bytes | None:
+    """Read the deployed Git blob only for our skipped, tracked membership file."""
+    rel = "data/baskets/membership.json"
+    if path != config.ROOT / rel or not (config.ROOT / ".git").exists():
+        return None
+
+    env = {k: v for k, v in os.environ.items() if not k.startswith("GIT_")}
+    env.update(GIT_OPTIONAL_LOCKS="0", GIT_NO_LAZY_FETCH="1",
+               GIT_ALLOW_PROTOCOL="", GIT_TERMINAL_PROMPT="0")
+
+    def git(*args: str) -> bytes:
+        return subprocess.run(
+            ["git", "--no-replace-objects", "-C", str(config.ROOT), *args],
+            check=True, capture_output=True, timeout=15, env=env,
+        ).stdout
+
+    if git("ls-files", "-t", "--", rel).decode().strip() != f"S {rel}":
+        return None
+    return git("cat-file", "blob", f"HEAD:{rel}")
+
+
+def baskets_universe(*, include_sparse: bool = False) -> list[str]:
     """Active single-name tickers across every thematic basket (data/baskets/membership.json).
     'Active' = not removed (removed is None). Deduped, ordered. [] if the file is absent."""
     try:
         p = config.data_dir() / "baskets" / "membership.json"
-        if not p.exists():
+        if p.is_file():
+            doc = json.loads(p.read_bytes())
+        elif include_sparse and (raw := _sparse_membership(p)) is not None:
+            doc = json.loads(raw)
+        else:
             return []
-        doc = json.loads(p.read_text())
     except Exception as e:  # noqa: BLE001 — a missing/broken file must never break the build
         log.warning("options_universe: membership read failed (%s)", e)
         return []
@@ -54,7 +81,7 @@ def baskets_universe() -> list[str]:
     return list(seen)
 
 
-def gex_symbols(cfg: dict | None = None) -> list[str]:
+def gex_symbols(cfg: dict | None = None, *, include_sparse_baskets: bool = False) -> list[str]:
     """The effective options universe = config anchors (`polygon.gex.symbols`, or the
     DEFAULT_ANCHORS) optionally unioned with the baskets universe (`include_baskets`), deduped
     with anchors first, capped at `max_underlyings`. Anchors are never dropped by the cap (they
@@ -70,7 +97,8 @@ def gex_symbols(cfg: dict | None = None) -> list[str]:
             seen.add(u); out.append(u)
     n_anchors = len(out)
     if cfg.get("include_baskets", False):
-        for t in baskets_universe():
+        members = baskets_universe(include_sparse=True) if include_sparse_baskets else baskets_universe()
+        for t in members:
             if t not in seen:
                 seen.add(t); out.append(t)
     cap = int(cfg.get("max_underlyings", 400) or 400)
