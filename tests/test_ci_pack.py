@@ -3165,11 +3165,16 @@ def test_measured_heavy_weights_rebalance_without_changing_execution_proofs(
 ) -> None:
     """Calibration changes the attested assignment, never the work it proves."""
     calibrated = _full_plan()
-    for job_id in (*FIF_KERNEL_SIBLINGS, "earnings-economic-dossier"):
+    for job_id in (
+        *FIF_KERNEL_SIBLINGS, "earnings-economic-dossier",
+        "international-workspace-browser", "ontology-explorer",
+        "unrun-government-revenue-candidate-projection", "biocatalyst-serving",
+    ):
         monkeypatch.delitem(PACK.OBSERVED_COMMAND_SECONDS, job_id, raising=False)
     heuristic = _full_plan()
 
     assert calibrated.eligible_job_ids == heuristic.eligible_job_ids
+    assert calibrated.skipped_job_ids == heuristic.skipped_job_ids
     assert calibrated.pack_count == heuristic.pack_count == 12
     assert calibrated.nonempty_pack_indices == heuristic.nonempty_pack_indices
     assert calibrated.pack_jobs != heuristic.pack_jobs
