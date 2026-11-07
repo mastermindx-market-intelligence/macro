@@ -1,6 +1,21 @@
 {
   "application_engine_lib_config_unchanged_from": "445d86584a50cf39e90a7f16c1df40c704aa03dc",
-  "binding_contract_delta": "pending verification of repaired committed head",
+  "binding_contract_delta": {
+    "base": "0e48e731791fd86b6a31a9ccb7d3fb308c783aac",
+    "exit": 0,
+    "head": "f36b950e1194ae4cb3af81c3439a37107cf9a8e8",
+    "inherited": 0,
+    "introduced": 0,
+    "log_sha256": "2bbcdce1baabb1a738790564879b107fe922d6d28ce8a7221a386964a50fc4d0"
+  },
+  "completed_original_carrier_join": {
+    "incoming": "339e14b58e331a3eda16d619b3a97c324e7f4eca",
+    "incoming_tree": "c4e3eadb49b114816a9a380495b8ff8296194ac1",
+    "merge_provenance": "preserve both completed histories and later protected0e content",
+    "report_blob": "0295e0df0c2702955c2cf07b23d7129cd5c20af2",
+    "retained_report": "docs/reports/fabric-protected-seo-composition-20261107.json",
+    "source_and_tests": "all executable source and tests remain byte-identical to qualified f36; only retained evidence changes"
+  },
   "contract_delta_baseline": {
     "base": "0e48e731791fd86b6a31a9ccb7d3fb308c783aac",
     "head": "7fef0c1aae9a7daed8eef2596f4f5134e47df178",
