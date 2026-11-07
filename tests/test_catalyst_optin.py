@@ -360,17 +360,18 @@ def test_private_delivery_summary_exposes_rights_hold_after_partial_provider_acc
     """A blocked subscriber must not be hidden by an earlier successful send."""
     class Source:
         @staticmethod
-        def load_public_revision(event_id, generation):
-            return PublicRevision(
+        def load_public_revisions(event_id, generation):
+            return (PublicRevision(
                 event_id, generation, "2026-10-09T04:00:00+00:00",
                 "2026-10-09T03:00:00+00:00", "NVDA", "Revised source",
                 "Qualified correction", ("https://www.sec.gov/",),
-                True, True, True, True)
+                True, True, True, True),)
 
     class SimulatedBatch:
         revisions = Source()
         states = ()
-        def deliver(self, revision, now):
+        def deliver_generation(self, revisions, now):
+            assert isinstance(revisions, tuple) and len(revisions) == 1
             return [
                 {"user_ref": "u_no_pii_" + str(i), "state": state}
                 for i, state in enumerate(self.states)
@@ -400,15 +401,15 @@ def test_private_delivery_summary_exposes_rights_hold_after_partial_provider_acc
 def test_00_private_delivery_seam_needs_an_authoritative_revision_loader():
     from engine.marketing.catalyst_lifecycle import PublicRevision
     class Loader:
-        def load_public_revision(self, event_id, generation):
-            return PublicRevision(event_id, generation, "2026-10-09T04:00:00+00:00",
-                                  "2026-10-09T03:00:00+00:00", "NVDA", "Material update",
-                                  "New source update", ("https://www.sec.gov/",), True, True, True, True)
+        def load_public_revisions(self, event_id, generation):
+            return (PublicRevision(event_id, generation, "2026-10-09T04:00:00+00:00",
+                                   "2026-10-09T03:00:00+00:00", "NVDA", "Material update",
+                                   "New source update", ("https://www.sec.gov/",), True, True, True, True),)
     class ServiceStub:
         def __init__(self): self.revisions, self.calls = Loader(), []
-        def deliver(self, revision, now):
-            self.calls.append((revision, now))
-            return [{"user_ref": "u_opaque", "state": "PROVIDER_ACCEPTED", "event_id": revision.event_id}]
+        def deliver_generation(self, revisions, now):
+            self.calls.append((revisions, now))
+            return [{"user_ref": "u_opaque", "state": "PROVIDER_ACCEPTED", "event_id": revisions[0].event_id}]
     from app import catalyst_optin
     service=ServiceStub()
     catalyst_optin.configure(service)
@@ -558,3 +559,77 @@ def test_g6_verify_honeypot_rejected_before_flag_and_guard(web, monkeypatch):
     assert res.status_code == 400 and res.json()["detail"] == "ABUSE_CHECK_FAILED"
     assert calls == []
     assert service.verifies == []
+
+
+def _rev(ticker, **kwargs):
+    values = dict(event_id="event-123", generation=2, as_of_utc="2026-10-09T04:00:00+00:00",
+                  published_at_utc="2026-10-09T03:00:00+00:00", ticker=ticker,
+                  headline=f"{ticker} material update", what_changed="Guidance changed",
+                  source_urls=("https://www.sec.gov/",), material=True, public_safe=True,
+                  external_rights_confirmed=True, operator_approved=True)
+    values.update(kwargs)
+    return PublicRevision(**values)
+
+
+def test_b2_private_seam_hands_the_whole_generation_to_the_lifecycle():
+    """load_public_revisions (every per-ticker revision at once) is the producer contract;
+    a reader following two of its tickers is then mailed once (docket B04)."""
+    class Loader:
+        def load_public_revisions(self, event_id, generation):
+            return (_rev("NVDA"), _rev("AMD"))
+
+    class ServiceStub:
+        def __init__(self):
+            self.revisions, self.calls = Loader(), []
+
+        def deliver_generation(self, revisions, now):
+            self.calls.append(revisions)
+            return [{"user_ref": "u_opaque", "state": "PROVIDER_ACCEPTED"}]
+
+    service = ServiceStub()
+    catalyst_optin.configure(service)
+    try:
+        result = catalyst_optin.deliver_update("event-123", 2)
+        assert result["status"] == "PROVIDER_ACCEPTED"
+        assert [r.ticker for r in service.calls[0]] == ["NVDA", "AMD"]
+        for loaded in ((), [_rev("NVDA"), _rev("AMD", event_id="event-999")],
+                       (_rev("NVDA", generation=3),), "not a tuple", (object(),)):
+            service.revisions.load_public_revisions = lambda e, g, loaded=loaded: loaded
+            with pytest.raises(FunnelGate) as error:
+                catalyst_optin.deliver_update("event-123", 2)
+            assert error.value.code == "REVISION_OWNER_PROTOCOL_MISMATCH"
+
+        class SingleLoaderOnly:
+            # A producer that can only hand over one ticker at a time cannot
+            # attest the generation's width; the seam does not drip it (review S1).
+            def load_public_revision(self, event_id, generation):
+                return _rev("NVDA")
+        service.revisions = SingleLoaderOnly()
+        with pytest.raises(FunnelGate) as error:
+            catalyst_optin.deliver_update("event-123", 2)
+        assert error.value.code == "REVISION_OWNER_NOT_READY" and len(service.calls) == 1
+    finally:
+        catalyst_optin.configure(None)
+
+
+def test_b2_canonical_mailer_sends_one_consolidated_message_per_user():
+    from engine.marketing.catalyst_lifecycle import ConsentRecord, ConsolidatedRevision
+    mailer = FakeMailer()
+    sender = catalyst_optin.ExistingMailerDelivery(mailer, FakeMarketing(), enabled=lambda: True)
+    record = ConsentRecord(UID, "investor@example.com", "event-123", ("NVDA", "AMD"),
+                           "catalyst_event_updates/v1", "2026-10-09T02:00:00+00:00", "nonce",
+                           {"partner_id": "A"})
+    bundle = ConsolidatedRevision("event-123", 2, (_rev("NVDA"), _rev("AMD")))
+    assert sender.deliver(record, bundle, "catalyst:event-123:2:" + UID) == "sent"
+    assert len(mailer.calls) == 1
+    sent = mailer.calls[0]
+    assert sent["subject"] == "2 updates: AMD, NVDA" and sent["idem_key"] == "catalyst:event-123:2:" + UID
+    assert sent["html"].count("<h2>") == 2 and "AMD material update" in sent["text"]
+    assert sent["strict_ledger"] is True and sent["template"] == "catalyst_material_revision"
+    # A bundle the mailer did not assemble is re-validated, never trusted (review N3).
+    for bad in (ConsolidatedRevision("event-123", 2, (_rev("NVDA"), _rev("NVDA"))),
+                ConsolidatedRevision("event-123", 2, ()),
+                ConsolidatedRevision("event-123", 2, (_rev("NVDA"), _rev("AMD", operator_approved=False)))):
+        with pytest.raises(FunnelGate):
+            sender.deliver(record, bad, "catalyst:event-123:2:" + UID)
+    assert len(mailer.calls) == 1

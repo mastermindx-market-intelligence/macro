@@ -381,7 +381,7 @@ def test_actual_packet_scan_signed_optin_and_source_retraction_are_composed(monk
         def permitted(self):
             return True
         def deliver(self, record, revision, idem_key):
-            self.calls.append((record.user_id, revision.ticker, idem_key))
+            self.calls.append((record.user_id, revision.tickers, idem_key))
             return "sent"  # synthetic SMTP-owner adapter, NEVER a real send
 
     expected_event = {"id": None, "generation": 1}
@@ -526,8 +526,9 @@ def test_actual_packet_scan_signed_optin_and_source_retraction_are_composed(monk
                    for key, value in first_touch.items())
         assert "email" not in sent[0] and "9507e687" not in str(sent)
         assert len(sender.calls) == 1
+        assert sender.calls[0][1] == ("PFE",)
         assert sender.calls[0][2] == (
-            "catalyst:" + first["event_id"] + ":1:PFE:"
+            "catalyst:" + first["event_id"] + ":1:"
             "9507e687-116a-4d30-9c30-fdf45c9d91b2"
         )
         # Scoped revocation (following incumbent unsubscribe authorization)

@@ -18,10 +18,10 @@ from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel, Field
 
 from engine.marketing.catalyst_lifecycle import (
-    Confirmation, ConsentOwner, ConsentRecord, DeliveryAuthority, FunnelGate,
-    FunnelService, OtpIdentityAuthority, PublicRevision, SCOPE, ScanAuthority,
+    Confirmation, ConsentOwner, ConsentRecord, ConsolidatedRevision, DeliveryAuthority,
+    FunnelGate, FunnelService, OtpIdentityAuthority, PublicRevision, SCOPE, ScanAuthority,
     SuppressionAuthority, VerifiedIdentity,
-    first_touch, format_revision, normalize_email,
+    consolidate, first_touch, format_generation, normalize_email,
 )
 
 router = APIRouter(tags=["catalyst-optin"])
@@ -247,7 +247,9 @@ class ExistingMailerDelivery(DeliveryAuthority):
         except Exception:
             return False
 
-    def deliver(self, record: Any, revision: PublicRevision, idem_key: str) -> str:
+    def deliver(self, record: Any, revision: ConsolidatedRevision | PublicRevision,
+                idem_key: str) -> str:
+        """One message per (user, event, generation): every followed ticker at once."""
         if not self.permitted():
             return "skipped_no_smtp"
         mailer, marketing = self._owners()
@@ -255,7 +257,10 @@ class ExistingMailerDelivery(DeliveryAuthority):
         one_click = marketing.unsub_api_url(record.user_id)
         if not footer.startswith("https://") or not one_click.startswith("https://"):
             return "skipped_no_smtp"
-        subject, body, plain = format_revision(revision, footer)
+        # Re-validate whatever the caller built: the mailer never trusts a bundle
+        # it did not assemble (empty, duplicate, mixed or unapproved items).
+        bundle = consolidate(revision.items if isinstance(revision, ConsolidatedRevision) else revision)
+        subject, body, plain = format_generation(bundle, footer)
         try:
             return mailer.send(template="catalyst_material_revision", cls="marketing",
                                to_email=record.email, user_id=record.user_id,
@@ -466,13 +471,20 @@ def deliver_update(event_id: str, generation: int) -> dict:
         raise FunnelGate("INVALID_SCAN_EVENT", 400)
     if not isinstance(generation, int) or isinstance(generation, bool) or generation < 1:
         raise FunnelGate("INVALID_REVISION", 400)
-    loader = getattr(service.revisions, "load_public_revision", None)
+    # The producer hands over the WHOLE generation (every per-ticker revision) so
+    # that a reader following several of its tickers is mailed once (docket B04).
+    # load_public_revisions is the only accepted contract: a single-revision
+    # loader cannot attest that the generation has one ticker, and a drip of it
+    # would mail the first ticker and leave the rest ALREADY_CLAIMED.
+    loader = getattr(service.revisions, "load_public_revisions", None)
     if not callable(loader):
         raise FunnelGate("REVISION_OWNER_NOT_READY")
-    revision = loader(event_id, generation)
-    if not isinstance(revision, PublicRevision) or revision.event_id != event_id or revision.generation != generation:
+    revisions = loader(event_id, generation)
+    if (not isinstance(revisions, (tuple, list)) or not revisions or
+            not all(isinstance(r, PublicRevision) and r.event_id == event_id and r.generation == generation
+                    for r in revisions)):
         raise FunnelGate("REVISION_OWNER_PROTOCOL_MISMATCH")
-    receipts = service.deliver(revision, now=datetime.now(timezone.utc))
+    receipts = service.deliver_generation(tuple(revisions), now=datetime.now(timezone.utc))
     # All receipts are opaque and attribution-only; no recipient PII. Provider
     # acceptance is deliberately NOT called inbox delivery.
     states = {x["state"] for x in receipts}
