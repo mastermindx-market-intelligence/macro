@@ -33,6 +33,7 @@ from __future__ import annotations
 
 import json
 import math
+from datetime import date
 from pathlib import Path
 from typing import Any, Iterable, Mapping
 
@@ -47,6 +48,7 @@ from engine.market_ontology.mining_dependency_binding import (
     MiningResearchRefusal,
     validate_query as _validate_query_kernel,
 )
+from engine.market_ontology.mining_company_card import company_card_absences
 
 
 __all__ = [
@@ -171,6 +173,81 @@ MINING_DEFINITIONS: Mapping[str, Mapping[str, Any]] = _load_mining_definitions()
 def _order_rows_by_stable_source_identity(rows: Iterable[Mapping[str, Any]]) -> list[Mapping[str, Any]]:
     """Order rows by stable source identity; magnitude is never the key (PLAN:203)."""
     return sorted(rows, key=lambda row: str(row.get("stable_subject_id", "")))
+
+
+def _iso_date_in(text: str) -> str | None:
+    """First real calendar date (YYYY-MM-DD) in ``text``, or None; ISO dates compare as strings."""
+    for index in range(0, max(0, len(text) - 9)):
+        chunk = text[index:index + 10]
+        if (
+            chunk[4:5] == "-"
+            and chunk[7:8] == "-"
+            and chunk[0:4].isascii()
+            and chunk[0:4].isdigit()
+            and chunk[5:7].isascii()
+            and chunk[5:7].isdigit()
+            and chunk[8:10].isascii()
+            and chunk[8:10].isdigit()
+        ):
+            try:
+                date.fromisoformat(chunk)
+            except ValueError:
+                continue
+            return chunk
+    return None
+
+
+def _native_period(packet: Mapping[str, Any]) -> str:
+    """Carry a packet period onto the native block.
+
+    Casebook economics packets that predate this field have no period. They
+    publish ``not_reported`` rather than a fabricated quarter. A period the
+    packet did supply is copied unchanged.
+    """
+    raw = packet.get("period")
+    if isinstance(raw, str) and raw.strip():
+        return raw
+    return "not_reported"
+
+
+def _period_precedes_issuer_validity(
+    period: str,
+    packet_subject: str,
+    identity_results: Iterable[Mapping[str, Any]],
+) -> bool:
+    """True when ``period`` is before the packet subject's issuer ``valid_from``.
+
+    The identity row is the one whose ``stable_subject_id`` or ``cik`` equals
+    the packet subject. Only that packet is withheld. An accepted
+    ``time_valid_bridge`` on the matched row is the reversed arm. No matching
+    row, or no validity window, means this packet makes no historical-ownership
+    claim to refuse.
+    """
+    ident: Mapping[str, Any] | None = None
+    if packet_subject and packet_subject != "subject:unknown":
+        for row in identity_results:
+            if not isinstance(row, Mapping):
+                continue
+            sid = str(row.get("stable_subject_id") or "")
+            cik = str(row.get("cik") or "")
+            if packet_subject == sid or (cik != "" and packet_subject == cik):
+                ident = row
+                break
+    if not isinstance(ident, Mapping):
+        return False
+    if ident.get("time_valid_bridge") is True:
+        return False
+    valid_from = ident.get("valid_from")
+    if not isinstance(valid_from, str) or len(valid_from) < 10:
+        return False
+    found = _iso_date_in(period)
+    if found is None:
+        return False
+    return found < valid_from[:10]
+
+
+#: MGD-10. Exact limitation code. Matches the schema's ``omitted:`` pattern.
+_PERIOD_BEFORE_ISSUER_VALIDITY = "omitted:period_before_issuer_validity"
 
 
 def _signed_value(block: Mapping[str, Any]) -> Any:
@@ -568,6 +645,17 @@ def compose_mining_research(
             packet_sid = str(packet.get("stable_subject_id") or "")
             if not packet_sid or packet_sid == "subject:unknown":
                 packet_sid = identity_sid
+            period = _native_period(packet)
+            # MGD-10: withhold this packet only when the identity row whose
+            # stable_subject_id or cik equals the packet subject says the
+            # period precedes valid_from. time_valid_bridge on that row is
+            # the reversed arm.
+            if _period_precedes_issuer_validity(
+                period, packet_sid, bundle.identity_results
+            ):
+                if _PERIOD_BEFORE_ISSUER_VALIDITY not in limitations:
+                    limitations.append(_PERIOD_BEFORE_ISSUER_VALIDITY)
+                continue
             raw_blocks.append(
                 {
                     "stable_subject_id": packet_sid,
@@ -575,6 +663,7 @@ def compose_mining_research(
                     "value": value,
                     "sign": "+" if value >= 0 else "-",
                     "basis": str(packet.get("basis", "") or "fictional reported dollars"),
+                    "period": period,
                     # MINOR-H: an existing-but-empty source_label or selection_label
                     # degrades to a typed limitation rather than raising a raw
                     # ``jsonschema.ValidationError`` (R-MIN-31). The ``or`` chain
@@ -612,28 +701,45 @@ def compose_mining_research(
             if "missing_issuer" not in limitations:
                 limitations.append("missing_issuer")
             continue
-        companies.append(
-            {
-                "stable_subject_id": sid,
-                "name": str(ident.get("name", "")),
-                "cik": cik,
-                "role": "issuer",
-            }
-        )
+        company = {
+            "stable_subject_id": sid,
+            "name": str(ident.get("name", "")),
+            "cik": cik,
+            "role": "issuer",
+        }
+        # W10-3 — print the row's typed absences on the card. Opt-in: an
+        # identity row without ``typed_absences`` keeps today's four-key
+        # company object byte-for-byte (the T07 copper limitations pin
+        # is untouched; the card mints no limitation and no IssuerIdentity).
+        absences = company_card_absences(ident)
+        if absences:
+            company["absences"] = absences
+        companies.append(company)
 
     # Industrial views are pulled from interpretation_blocks verbatim and ordered by
     # stable_subject_id (PLAN:203). Duplicate local asset labels stay visible but are
     # never additional supply (MGD-12).
+    #
+    # W10-1 — the withdrawal that suppresses native_blocks suppresses this channel too.
+    # Every closed T04 limitation mapped from an omission (``changed_source`` included,
+    # see ``_suppress_native_blocks`` above) collapses the reported-economics list to [];
+    # publishing ``interpretation_blocks`` beside that empty panel paired stale causal text
+    # with withdrawn quantities — the exact pairing ``select_mining_evidence`` refuses with
+    # ``generation_changed`` for the evidence drawer, and the reason that refusal is the
+    # review gate for this panel. The contract explanation survives as the limitation; it
+    # never survives as causal text. A non-withdrawn bundle is untouched by this guard, so
+    # a present view still publishes.
     industrial_views: list[dict[str, Any]] = []
-    for view in bundle.interpretation_blocks:
-        industrial_views.append(
-            {
-                "stable_subject_id": str(view.get("stable_subject_id", "subject:unknown")),
-                "view_kind": str(view.get("view_kind", "industrial")),
-                "description": str(view.get("description", "")),
-                "evidence_refs": [str(r) for r in view.get("evidence_refs", [])],
-            }
-        )
+    if not _suppress_native_blocks:
+        for view in bundle.interpretation_blocks:
+            industrial_views.append(
+                {
+                    "stable_subject_id": str(view.get("stable_subject_id", "subject:unknown")),
+                    "view_kind": str(view.get("view_kind", "industrial")),
+                    "description": str(view.get("description", "")),
+                    "evidence_refs": [str(r) for r in view.get("evidence_refs", [])],
+                }
+            )
     industrial_views = _order_rows_by_stable_source_identity(industrial_views)
 
     # Evidence refs are derived from native_refs; authority is echoed on every object.

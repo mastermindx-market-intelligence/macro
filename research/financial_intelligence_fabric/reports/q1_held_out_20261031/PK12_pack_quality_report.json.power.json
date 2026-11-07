@@ -1,0 +1,51 @@
+[
+  {
+    "issuer": null,
+    "met": true,
+    "minimum_n": 1,
+    "observed_n": 3,
+    "rule": "pack, polarity=negative"
+  },
+  {
+    "issuer": null,
+    "met": false,
+    "minimum_n": 1,
+    "observed_n": 0,
+    "rule": "pack, format_class != ixbrl_inline"
+  },
+  {
+    "issuer": "AAPL",
+    "met": false,
+    "minimum_n": 1,
+    "observed_n": 0,
+    "rule": "PK12 x all five issuers"
+  },
+  {
+    "issuer": "BAC",
+    "met": false,
+    "minimum_n": 1,
+    "observed_n": 0,
+    "rule": "PK12 x all five issuers"
+  },
+  {
+    "issuer": "CAT",
+    "met": false,
+    "minimum_n": 1,
+    "observed_n": 0,
+    "rule": "PK12 x all five issuers"
+  },
+  {
+    "issuer": "GOOGL",
+    "met": true,
+    "minimum_n": 1,
+    "observed_n": 2,
+    "rule": "PK12 x all five issuers"
+  },
+  {
+    "issuer": "SNOW",
+    "met": true,
+    "minimum_n": 1,
+    "observed_n": 1,
+    "rule": "PK12 x all five issuers"
+  }
+]

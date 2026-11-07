@@ -149,16 +149,123 @@ def _origin_main_bytes(path: str) -> bytes | None:
     return result.stdout
 
 
+# --- G7: reviewed default-off host for shared chrome files ----------------
+
+_REVIEWED_DEFAULT_OFF_HOST: bytes = (
+    b'{% if all_tools_enabled is defined and all_tools_enabled is sameas true %}'
+    b'{% include "_all_tools_menu.html.j2" %}{% else %}{{ "\\n" }}{% endif %}\n'
+)
+
+
+def _assert_reviewed_default_off_host_only(upstream: bytes, local: bytes) -> None:
+    """Validate ``local`` differs from ``upstream`` only by appending the exact
+    reviewed default-off host suffix.
+
+    Contract:
+      * ``local`` contains the reviewed host bytes exactly once as a trailing
+        suffix.
+      * ``upstream`` contains the reviewed host bytes 0 or 1 times; when
+        present they must be a trailing suffix.
+      * After stripping that suffix from each applicable side, the remaining
+        bytes must compare equal.
+      * No whitespace, include, or token normalization is applied; the
+        default-off ``defined ... sameas true`` gate must remain exact.
+    """
+    if local.count(_REVIEWED_DEFAULT_OFF_HOST) != 1:
+        raise AssertionError(
+            "reviewed default-off host must appear exactly once in local "
+            f"(found {local.count(_REVIEWED_DEFAULT_OFF_HOST)})"
+        )
+    if not local.endswith(_REVIEWED_DEFAULT_OFF_HOST):
+        raise AssertionError("local must end with the reviewed default-off host suffix")
+
+    # ``origin/main`` has carried the reviewed host itself since the Shared Shell
+    # integration (#7949) merged, so the byte-for-byte recovery strips that one
+    # include from both sides; any other shared-chrome mutation still fails here.
+    upstream_count = upstream.count(_REVIEWED_DEFAULT_OFF_HOST)
+    if upstream_count > 1:
+        raise AssertionError(
+            "upstream must not contain duplicate reviewed default-off host "
+            f"(found {upstream_count})"
+        )
+
+    local_stripped = local.removesuffix(_REVIEWED_DEFAULT_OFF_HOST)
+    if upstream_count == 0:
+        if local_stripped != upstream:
+            raise AssertionError("local diverges from upstream outside G7 reviewed suffix")
+        return
+    if not upstream.endswith(_REVIEWED_DEFAULT_OFF_HOST):
+        raise AssertionError("upstream reviewed host must be a trailing suffix when present")
+    if local_stripped != upstream.removesuffix(_REVIEWED_DEFAULT_OFF_HOST):
+        raise AssertionError("local diverges from upstream outside G7 reviewed suffix")
+
+
 @pytest.mark.parametrize("path", ["templates/_site_nav.html.j2"])
-def test_shared_chrome_files_are_byte_unchanged_vs_origin_main(path: str) -> None:
-    """G7 pins shared chrome. `templates/theme.css` is the legal home for
-    P5 `--mc-*` mix tints (enforce-added), so it is no longer byte-frozen
-    against origin/main."""
+def test_shared_chrome_files_only_add_the_reviewed_default_off_host(path: str) -> None:
     upstream = _origin_main_bytes(path)
     if upstream is None:
         pytest.skip("git show origin/main could not be resolved in this environment")
     local = (ROOT / path).read_bytes()
-    assert local == upstream, f"{path} must be byte-unchanged (G7)"
+    _assert_reviewed_default_off_host_only(upstream, local)
+
+
+# --- Hermetic, in-memory regression cases for the G7 helper --------------
+# Pure bytes-in / assertion-out — no tmp files, rendered fixtures, or git
+# lookups. Accept cases must pass; reject cases must raise AssertionError.
+
+_BASE_CHROME = b"<!doctype html><html><body>{% include '_chrome_top.html.j2' %}\n"
+_OTHER_CHROME = b"<!doctype html><html><body>{% include '_chrome_other.html.j2' %}\n"
+_H = _REVIEWED_DEFAULT_OFF_HOST
+
+_ACCEPT_CASES = [
+    pytest.param(_BASE_CHROME, _BASE_CHROME + _H, id="accept-upstream-without-host"),
+    pytest.param(_BASE_CHROME + _H, _BASE_CHROME + _H, id="accept-upstream-with-host"),
+]
+
+_REJECT_CASES = [
+    pytest.param(_BASE_CHROME, _BASE_CHROME, id="reject-missing-candidate-host"),
+    pytest.param(_BASE_CHROME, _BASE_CHROME + _H + _H, id="reject-duplicate-candidate-host"),
+    pytest.param(_BASE_CHROME + _H + _H, _BASE_CHROME + _H, id="reject-duplicate-upstream-hosts"),
+    pytest.param(
+        _BASE_CHROME,
+        _BASE_CHROME
+        + b'{% if all_tools_enabled is defined and all_tools_enabled is sameas true %}'
+        b'{% include "_other_menu.html.j2" %}{% else %}{{ "\\n" }}{% endif %}\n',
+        id="reject-altered-host",
+    ),
+    pytest.param(
+        _BASE_CHROME,
+        _BASE_CHROME + b'{% include "_all_tools_menu.html.j2" %}\n',
+        id="reject-default-on-host",
+    ),
+    pytest.param(
+        _BASE_CHROME,
+        _BASE_CHROME
+        + b'{% if all_tools_enabled %}{% include "_all_tools_menu.html.j2" %}{% endif %}\n',
+        id="reject-unconditional-host",
+    ),
+    pytest.param(_BASE_CHROME, _H + _BASE_CHROME, id="reject-relocated-candidate-host"),
+    pytest.param(_H + _BASE_CHROME, _BASE_CHROME + _H, id="reject-relocated-upstream-host"),
+    pytest.param(
+        _BASE_CHROME, _OTHER_CHROME + _H,
+        id="reject-unrelated-chrome-mutation-upstream-without-host",
+    ),
+    pytest.param(
+        _BASE_CHROME + _H, _OTHER_CHROME + _H,
+        id="reject-unrelated-chrome-mutation-upstream-with-host",
+    ),
+]
+
+
+@pytest.mark.parametrize("upstream,local", _ACCEPT_CASES)
+def test_reviewed_default_off_host_helper_accepts(upstream: bytes, local: bytes) -> None:
+    _assert_reviewed_default_off_host_only(upstream, local)
+
+
+@pytest.mark.parametrize("upstream,local", _REJECT_CASES)
+def test_reviewed_default_off_host_helper_rejects(upstream: bytes, local: bytes) -> None:
+    with pytest.raises(AssertionError):
+        _assert_reviewed_default_off_host_only(upstream, local)
 
 
 # --------------------------------------------------------------------------
