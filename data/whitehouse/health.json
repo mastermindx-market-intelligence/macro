@@ -1,17 +1,10 @@
 {
   "schema": "wh_health.v1",
-  "as_of": "2026-11-03T15:07:48.696833+00:00",
-  "posts_seen": 7,
-  "seen_total": 313,
-  "evaluated": 1,
+  "as_of": "2026-11-07T02:46:55.503481+00:00",
+  "posts_seen": 16,
+  "seen_total": 327,
+  "evaluated": 0,
   "activated": 0,
   "provider": "Claude claude-opus-4-8 (subscription)",
-  "gate_scores": [
-    {
-      "id": "wh-2026-11-03-first-lady-melania-trump-to-convene-russian-and-ukrainian-representatives-at-the",
-      "importance": 15,
-      "activated": false,
-      "degraded_reason": "served_by:deepseek"
-    }
-  ]
+  "gate_scores": []
 }

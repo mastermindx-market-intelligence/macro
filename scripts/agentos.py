@@ -105,6 +105,7 @@ import argparse
 import datetime as _dt
 import fnmatch
 import hashlib
+import importlib.util
 import json
 import os
 import re
@@ -202,6 +203,32 @@ PROVENANCE_RE = re.compile(
     re.IGNORECASE,
 )
 BANNED_HANDOFF_PHRASES = ("see above", "as discussed", "see the discussion above")
+# Advisory only: text cannot establish whether an original publisher is a live
+# runner or an archived author. A sole ghost-parent next action is a handoff
+# quality finding, never an execution/lease-transfer decision (Agent OS I1).
+GHOST_ORIGINAL_WRITER_ACTION_RE = re.compile(
+    r"\b(?:only\s+(?:the\s+)?original\s+(?:writer|parent|publisher|session|chat)"
+    r"|(?:the\s+)?original\s+(?:writer|parent|publisher|session|chat)\s+(?:must|needs\s+to|has\s+to)"
+    r"|(?:requires?|depends\s+on)\s+(?:the\s+)?original\s+(?:writer|parent|publisher|session|chat)(?:['’]s)?"
+    r"|(?:return|hand)\s+(?:(?:this\s+work|the\s+work|work|it|this)\s+)?(?:back\s+)?to\s+"
+    r"(?:the\s+)?original\s+(?:writer|parent|publisher|session|chat)"
+    r"|(?:wait|waiting)\s+(?:for|on)\s+(?:the\s+)?original\s+"
+    r"(?:writer|parent|publisher|session|chat))\b",
+    re.IGNORECASE,
+)
+# A diagnostic must not mark instructions that expressly PREVENT a ghost handoff.
+GHOST_PARENT_NEGATION_RE = re.compile(
+    r"^\s*(?:do\s+not|don't|never)\s+(?:return|hand|wait)\b",
+    re.IGNORECASE,
+)
+# One authored next_action may include both the incumbent's specific held effect
+# and this receiver's independent recovery step; preserve that useful handoff.
+GHOST_SUCCESSOR_ACTION_RE = re.compile(
+    r"\b(?:current|currently\s+assigned|next|next\s+lawfully\s+assigned|present|assigned\s+successor)"
+    r"\s+(?:receiver|session|owner|agent|operator)\b.{0,180}?"
+    r"\b(?:inspect|verify|reconcile|advance|continue|run|repair|test|review|audit|check)\b",
+    re.IGNORECASE,
+)
 VERIFIED_FLOOR = "tests pass"
 
 STALE_DISCOVERY_DAYS = 90
@@ -978,8 +1005,154 @@ def _acceptance_contract_problems(rec: dict[str, Any], path: Path) -> list[Probl
     return out
 
 
+def _direction_record_problems(rec: dict[str, Any], path: Path, *, decision: bool) -> list[Problem]:
+    """Optional Direction facts, inline for existing sealed brief compatibility.
+
+    No new helper import, currentness registry, or execution authority is added.
+    The dedicated read separately captures its bounded lineage projection helper.
+    """
+    def ref(value: Any, prefix: str, limit: int) -> bool:
+        return (type(value) is str and value.startswith(prefix) and 2 <= len(value[len(prefix):]) <= limit
+                and re.fullmatch(r"[A-Z0-9]+(?:-[A-Z0-9]+)*", value[len(prefix):]) is not None)
+    valid = True
+    if not decision:
+        if "accepted_direction" not in rec:
+            return []
+        chosen = rec.get("accepted_direction")
+        valid = (ref(chosen, "DEC:", 128) and type(rec.get("decisions")) is list and chosen in rec["decisions"])
+    else:
+        if "direction" not in rec:
+            return []
+        value = rec.get("direction")
+        if type(value) is not dict or set(value) != {"schema", "state", "work_ref", "predecessor"}:
+            valid = False
+        else:
+            predecessor = value["predecessor"]
+            own = "DEC:" + str(rec.get("key", ""))
+            valid = (value["schema"] == "agentos.direction_acceptance.v1" and value["state"] == "ACCEPTED"
+                     and ref(value["work_ref"], "WS:", 64)
+                     and (predecessor is None or ref(predecessor, "DEC:", 128) and predecessor != own)
+                     and type(rec.get("affects")) is list and value["work_ref"] in rec["affects"]
+                     and "project_plan_adoption" not in rec
+                     and rec.get("supersedes", []) == ([] if predecessor is None else [predecessor]))
+        day = rec.get("decided_at")
+        try:
+            if type(day) is _dt.date:
+                pass
+            elif type(day) is str and re.fullmatch(r"\d{4}-\d{2}-\d{2}", day) is not None:
+                valid = valid and _dt.date.fromisoformat(day).isoformat() == day
+            else:
+                valid = False
+            for field, maximum in (("answer", 4096), ("rationale", 4096), ("decided_by", 256)):
+                text = rec.get(field)
+                valid = valid and type(text) is str and bool(text.strip()) and len(text.encode("utf-8")) <= maximum
+        except (ValueError, UnicodeError):
+            valid = False
+    return [] if valid else [Problem(path, "bad-direction", "INVALID_DIRECTION", hard=True)]
+
+
+def _archive_record_problems(rec: dict[str, Any], path: Path) -> list[Problem]:
+    """Explicit optional canonical archive declaration; no status inference."""
+    if "archive" not in rec:
+        return []
+    value = rec["archive"]
+    valid = type(value) is dict and set(value) == {"schema", "state", "archived_on", "archived_by", "reason"}
+    if valid:
+        valid = value["schema"] == "agentos.workstream_archive.v1" and value["state"] == "ARCHIVED"
+        day = value["archived_on"]
+        try:
+            valid = valid and ((type(day) is _dt.date) or (type(day) is str and re.fullmatch(r"\d{4}-\d{2}-\d{2}", day) is not None and _dt.date.fromisoformat(day).isoformat() == day))
+            for field, maximum in (("archived_by", 256), ("reason", 2000)):
+                text = value[field]
+                valid = valid and type(text) is str and bool(text.strip()) and len(text.encode("utf-8")) <= maximum
+        except (ValueError, UnicodeError):
+            valid = False
+    return [] if valid else [Problem(path, "bad-archive", "INVALID_ARCHIVE_DECLARATION", hard=True)]
+
+
+def _project_knowledge_problems(rec: dict[str, Any], path: Path, *, decision: bool) -> list[Problem]:
+    """Optional explicit project files/preferences; installed brief needs no helper."""
+    def actor(value: Any) -> bool:
+        return type(value) is str and re.fullmatch(r"workspace:[0-9a-f]{64}", value) is not None
+    def digest(value: Any) -> bool:
+        return type(value) is str and re.fullmatch(r"[0-9a-f]{64}", value) is not None
+    def text(value: Any, maximum: int) -> bool:
+        try:
+            return type(value) is str and bool(value.strip()) and len(value.encode("utf-8")) <= maximum
+        except UnicodeError:
+            return False
+    if decision:
+        if "project_preference" not in rec:
+            return []
+        value = rec["project_preference"]
+        valid = type(value) is dict and set(value) == {"schema", "work_ref", "kind", "value", "origin", "last_edit"}
+        if valid:
+            ref = value["work_ref"]
+            valid = (type(ref) is str and ref.startswith("WS:") and 2 <= len(ref[3:]) <= 64
+                     and re.fullmatch(r"[A-Z0-9]+(?:-[A-Z0-9]+)*", ref[3:]) is not None
+                     and value["schema"] == "agentos.project_preference.v1" and value["kind"] == "COMMUNICATION"
+                     and text(value["value"], 2000) and rec.get("answer") == value["value"]
+                     and rec.get("key") == "PROJECT-COMMUNICATION-PREFERENCE-" + ref[3:]
+                     and type(rec.get("affects")) is list and ref in rec["affects"])
+            origin, edit = value["origin"], value["last_edit"]
+            valid = (valid and type(origin) is dict and set(origin) == {"kind", "actor_ref", "source_ref", "source_revision"}
+                     and origin["kind"] == "USER_EDIT" and actor(origin["actor_ref"])
+                     and origin["source_ref"] is None and origin["source_revision"] is None
+                     and type(edit) is dict and set(edit) == {"actor_ref", "request_sha256"}
+                     and actor(edit["actor_ref"]) and digest(edit["request_sha256"]))
+        return [] if valid else [Problem(path, "bad-project-preference", "INVALID_PROJECT_PREFERENCE", hard=True)]
+    out = []
+    if "standing_instructions" in rec:
+        values = rec["standing_instructions"]
+        valid = type(values) is list and len(values) <= 16
+        refs = set()
+        if valid:
+            for row in values:
+                valid = type(row) is dict and set(row) == {"instruction_ref", "text"}
+                if not valid:
+                    break
+                ref, literal = row["instruction_ref"], row["text"]
+                valid = (type(ref) is str and ref.startswith("INS:") and 2 <= len(ref[4:]) <= 64
+                         and re.fullmatch(r"[A-Z0-9]+(?:-[A-Z0-9]+)*", ref[4:]) is not None and ref not in refs
+                         and text(literal, 16384) and len(literal) <= 4096
+                         and not any((ord(c) < 32 and c not in "\n\r\t") or ord(c) == 127 for c in literal))
+                if not valid:
+                    break
+                refs.add(ref)
+        if not valid:
+            out.append(Problem(path, "bad-standing-instructions", "INVALID_STANDING_INSTRUCTIONS", hard=True))
+    if "project_files" not in rec:
+        return out
+    values = rec["project_files"]
+    valid = type(values) is list and len(values) <= 32 and type(rec.get("artifacts")) is list
+    identities = set()
+    if valid:
+        for row in values:
+            valid = type(row) is dict and set(row) == {"file_id", "artifact_ref", "display_name", "media_type", "content_sha256", "origin"}
+            if not valid:
+                break
+            fid, name, media, origin = row["file_id"], row["display_name"], row["media_type"], row["origin"]
+            suffix = {"text/markdown": ".md", "text/plain": ".txt"}.get(media) if type(media) is str else None
+            valid = (digest(fid) and fid not in identities and text(name, 128)
+                     and not any(ord(c) < 32 or ord(c) == 127 or c in "/\\" for c in name)
+                     and suffix is not None and digest(row["content_sha256"])
+                     and row["artifact_ref"] == "agentos/project-files/WS-" + str(rec.get("key")) + "/" + fid + suffix
+                     and row["artifact_ref"] in rec["artifacts"]
+                     and type(origin) is dict and set(origin) == {"kind", "actor_ref", "request_sha256"}
+                     and origin["kind"] == "PRINCIPAL_UPLOAD" and actor(origin["actor_ref"]) and digest(origin["request_sha256"]))
+            if not valid:
+                break
+            identities.add(fid)
+    if not valid:
+        out.append(Problem(path, "bad-project-files", "INVALID_PROJECT_FILES", hard=True))
+    return out
+
+
 def check_workstream(rec: dict[str, Any], path: Path, programs: set[str] | None) -> list[Problem]:
     out: list[Problem] = _acceptance_contract_problems(rec, path)
+    out.extend(_direction_record_problems(rec, path, decision=False))
+    out.extend(_archive_record_problems(rec, path))
+    out.extend(_project_knowledge_problems(rec, path, decision=False))
     # `created` / `updated` are DERIVED from git by the generator (see git_dates) and are
     # deliberately NOT required here — see the module docstring on the conflict site.
     for field in ("key", "title", "objective", "status", "program",
@@ -1159,8 +1332,67 @@ def check_workstream(rec: dict[str, Any], path: Path, programs: set[str] | None)
     return out
 
 
+def _project_plan_contract() -> Any:
+    """Load the owner helper from this exact source tree, only when declared.
+
+    Captured legacy records need no new helper. A captured owner that declares the
+    extension must include its sibling helper; ambient PYTHONPATH is not authority.
+    """
+    source = Path(__file__).resolve().with_name("agentos_project_plan_contract.py")
+    spec = importlib.util.spec_from_file_location("_agentos_project_plan_contract", source)
+    if spec is None or spec.loader is None:
+        raise ImportError("PLAN_CONTRACT_UNAVAILABLE")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def _validated_project_plan_adoption(rec: dict[str, Any]) -> dict[str, Any]:
+    contract = _project_plan_contract()
+    value = rec.get("project_plan_adoption")
+    work_ref = value.get("work_ref") if isinstance(value, dict) else None
+    adoption = contract.validate_adoption(value, work_ref=work_ref)
+    affects = rec.get("affects")
+    if not isinstance(affects, list) or adoption["work_ref"] not in affects:
+        raise contract.PlanContentError("WORK_REF_MISMATCH")
+    predecessor = adoption["predecessor"]
+    if predecessor is not None:
+        if predecessor == "DEC:" + str(rec.get("key")):
+            raise contract.PlanContentError("LINEAGE_CONFLICT")
+        if not isinstance(rec.get("supersedes"), list) or predecessor not in rec["supersedes"]:
+            raise contract.PlanContentError("LINEAGE_INCOMPLETE")
+    return adoption
+
+
+def parse_project_plan_proposal(raw_bytes: bytes, *, work_ref: str) -> tuple[dict[str, Any], bytes]:
+    """Parse an already-captured artifact without normalizing candidate bytes.
+
+    The existing generic record splitter intentionally consumes whitespace after
+    its fence. Proposal content hashes require an exact byte boundary instead.
+    YAML interpretation still belongs to this existing Agent OS source owner.
+    No path/ref is resolved and this function cannot qualify a captured source.
+    """
+    contract = _project_plan_contract()
+    if type(raw_bytes) is not bytes or not 0 < len(raw_bytes) <= 262144:
+        raise contract.PlanContentError("CONTENT_OVER_BUDGET")
+    match = re.fullmatch(rb"---(?:\r\n|\n)(.*?)(?:\r\n|\n)---(?:\r\n|\n)(.*)",
+                         raw_bytes, re.DOTALL)
+    if match is None:
+        raise contract.PlanContentError("INVALID_PROPOSAL")
+    try:
+        header = _yaml_safe_load(match.group(1).decode("utf-8"))
+    except (UnicodeDecodeError, yaml.YAMLError):
+        raise contract.PlanContentError("INVALID_PROPOSAL") from None
+    candidate = match.group(2)
+    validated = contract.validate_proposal(header, work_ref=work_ref,
+                                            candidate_bytes=candidate)
+    return validated, candidate
+
+
 def check_decision(rec: dict[str, Any], path: Path) -> list[Problem]:
     out: list[Problem] = []
+    out.extend(_direction_record_problems(rec, path, decision=True))
+    out.extend(_project_knowledge_problems(rec, path, decision=True))
     for field in ("key", "question", "answer", "rationale", "alternatives",
                   "evidence", "affects", "confidence", "reversibility",
                   "decided_by", "decided_at"):
@@ -1182,6 +1414,15 @@ def check_decision(rec: dict[str, Any], path: Path) -> list[Problem]:
     # Same defect class as superseded_by, one field over: `_refs` silently drops a bare
     # key, so an unshaped `supersedes` entry used to skip the reciprocity check entirely.
     _check_citations(rec, "supersedes", "DEC", path, out)
+    if "project_plan_adoption" in rec:
+        try:
+            _validated_project_plan_adoption(rec)
+        except (ImportError, OSError):
+            out.append(Problem(path, "bad-project-plan-adoption",
+                               "PLAN_CONTRACT_UNAVAILABLE", hard=True))
+        except ValueError as exc:
+            # The helper emits closed value-free codes, never record content.
+            out.append(Problem(path, "bad-project-plan-adoption", str(exc), hard=True))
 
     alts = rec.get("alternatives")
     if isinstance(alts, list):
@@ -1203,6 +1444,26 @@ def check_decision(rec: dict[str, Any], path: Path) -> list[Problem]:
         out.append(Problem(path, "review-overdue",
                            f"review_by {review_by} has passed", hard=False))
     return out
+
+
+def select_project_plan_adoption(records: list[dict[str, Any]], *, work_ref: str) -> Any:
+    """Join already-captured DEC records through their actual owner validator.
+
+    This is a read projection, not a registry or permission. The caller owns the
+    capture and source revision; no record or referenced content is opened here.
+    """
+    contract = _project_plan_contract()
+    current = contract.select_current_adoption(records, work_ref=work_ref)
+    for rec in records:
+        if "project_plan_adoption" not in rec:
+            continue
+        metadata = rec.get("project_plan_adoption")
+        if (isinstance(metadata, dict) and metadata.get("work_ref") == work_ref
+                or isinstance(rec.get("affects"), list) and work_ref in rec["affects"]):
+            path = Path("agentos/decisions") / ("DEC-" + str(rec.get("key")) + ".md")
+            if any(problem.hard for problem in check_decision(rec, path)):
+                raise contract.PlanContentError("INVALID_ADOPTION")
+    return current
 
 
 def _evaluation_finding_error(value: Any) -> str | None:
@@ -1346,6 +1607,20 @@ def check_handoff(rec: dict[str, Any], path: Path) -> list[Problem]:
                             f"body says {phrase!r} — the next session cannot see 'above'",
                             hard=True)
                 )
+    actions = rec.get("next_actions")
+    if (isinstance(actions, list) and actions
+            and all(isinstance(item, str) and item.strip() for item in actions)
+            and all(GHOST_ORIGINAL_WRITER_ACTION_RE.search(item)
+                    and not GHOST_PARENT_NEGATION_RE.search(item)
+                    and not GHOST_SUCCESSOR_ACTION_RE.search(item)
+                    for item in actions)):
+        out.append(Problem(
+            path, "ghost-original-writer-only-action",
+            "next_actions may depend solely on an original writer/parent/publisher; the currently "
+            "assigned or next lawfully assigned receiver needs an executable source/effect "
+            "reconciliation step. Preserve real STARTed lease and EFFECT_UNKNOWN.",
+            hard=False,
+        ))
     return out
 
 
@@ -1652,6 +1927,7 @@ _ADVISORY_RULES = frozenset({
     "point-in-time-head",
     "narrative-head",
     "snapshot-absent",
+    "ghost-original-writer-only-action",
 })
 _RECORD_FOLDERS = frozenset({"workstreams", "decisions", "discoveries", "handoffs"})
 
@@ -1966,6 +2242,12 @@ def draft_handoff(payload: dict[str, Any]) -> str:
         "",
         "# Draft skeleton",
         "",
+        "Continuation rule: the currently assigned or next lawfully assigned receiver "
+        "gets an executable recovery action, not a referral to the original writer "
+        "or an archived parent chat. Inspect exact source PR/workspace and actual "
+        "writer/lease/effect evidence; advance permitted independent work while "
+        "real STARTed carriers and EFFECT_UNKNOWN remain fenced.",
+        "",
         f"Canonical path: `{canonical}`. Snapshot as_of `{as_of}`. "
         "The carriers list is the machine pin. Do not retype head SHAs, "
         "base SHAs, CI run ids, comment ids or review ids by hand.",
@@ -2066,6 +2348,13 @@ def draft_decision(payload: dict[str, Any]) -> str:
         if optional == "review_by":
             _require_iso_date(payload[optional], "review_by")
         rec[optional] = payload[optional]
+    if "project_plan_adoption" in payload:
+        try:
+            rec["project_plan_adoption"] = _validated_project_plan_adoption(payload)
+        except (ImportError, OSError):
+            _die("PLAN_CONTRACT_UNAVAILABLE")
+        except ValueError as exc:
+            _die(str(exc))
     path = f"agentos/decisions/DEC-{key}.md"
     text = (
         _yaml_frontmatter(rec)
