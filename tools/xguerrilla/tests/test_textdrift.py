@@ -15,9 +15,10 @@ import math
 
 import pytest
 
-from xguerrilla import config, textdrift
+from xguerrilla import textdrift
 
 THRESHOLD = 0.55
+REPORT_FIELDS = {"ok", "status", "worst", "n", "compared_pairs", "excluded", "window", "note"}
 
 
 def corpus(*sentences: str, repeats: int = 3) -> list[str]:
@@ -178,9 +179,12 @@ def test_audit_never_reports_cross_cell_similarity():
     }
     cells = {"desk.and.dusk": "SEA-01", "lowlit.austin": "ATX-01"}
     report = textdrift.audit(history, cells=cells)
-    assert report["ok"] is True
+    assert report["ok"] is False
+    assert report["status"] == "insufficient_data"
     assert report["worst"] == []
     assert report["n"] == 0
+    assert report["compared_pairs"] == 0
+    assert set(report["excluded"].values()) == {"no_cell_peer"}
 
 
 def test_audit_skips_child_under_three_posts_and_says_so():
@@ -194,13 +198,16 @@ def test_audit_skips_child_under_three_posts_and_says_so():
     assert "wren.mp4" in report["note"]
     assert "Skipped" in report["note"]
     assert report["n"] == 2
+    assert report["ok"] is False
+    assert report["status"] == "insufficient_data"
+    assert report["excluded"] == {"wren.mp4": "insufficient_posts"}
 
 
 def test_audit_reports_shape_and_honours_the_window():
     history = {h: corpus(f"{h} distinctive vocab word") for h in ("a.one", "b.two")}
     cells = {"a.one": "ATX-01", "b.two": "ATX-01"}
     report = textdrift.audit(history, cells=cells, window=5)
-    assert set(report) == {"ok", "worst", "n", "window", "note"}
+    assert set(report) == REPORT_FIELDS
     assert report["window"] == 5
     assert isinstance(report["note"], str) and report["note"]
 
@@ -227,6 +234,8 @@ def test_audit_takes_the_cell_off_the_persona_row():
 
 @pytest.fixture(scope="module")
 def personas() -> dict:
+    # Pure audit cases do not load persona/proxy/runtime configuration.
+    from xguerrilla import config
     return config.load_personas()
 
 
@@ -245,11 +254,12 @@ def test_audit_runs_over_the_five_real_personas(personas):
 
     alone = textdrift.audit(history, personas=personas)
     assert alone["n"] == 0  # one child per cell: no siblings to compare
-    assert alone["ok"] is True
+    assert alone["ok"] is False
+    assert alone["status"] == "insufficient_data"
     assert alone["worst"] == []
 
     shared = textdrift.audit(history, cells={handle: "ATX-01" for handle in personas})
-    assert set(shared) == {"ok", "worst", "n", "window", "note"}
+    assert set(shared) == REPORT_FIELDS
     assert shared["n"] == 5
     assert shared["window"] == 20
     assert shared["ok"] is (not shared["worst"])
@@ -276,3 +286,180 @@ def test_diverge_brief_is_plain_text_without_optional_personas():
     assert "a.one" in brief and "b.two" in brief
     for marker in ("|", "**", "#", "- "):
         assert marker not in brief
+
+
+# ---------------------------------------------------------------------------
+# 7. An audit must perform qualified comparisons before returning a clear result.
+# ---------------------------------------------------------------------------
+
+def _distinct_history():
+    return {"a": corpus("espresso grinder roast"),
+            "b": corpus("barbell squat progression")}
+
+
+@pytest.mark.parametrize("window", [-10, -1, 0, 1, 2, True, False, 3.0, "3", None])
+def test_audit_rejects_windows_that_cannot_support_the_minimum(window):
+    with pytest.raises(ValueError, match="window"):
+        textdrift.audit(_distinct_history(), cells={"a": "one", "b": "one"}, window=window)
+
+
+@pytest.mark.parametrize("threshold", [float("nan"), float("inf"), -float("inf"),
+                                       -0.01, 1.01, True, False, "0.55", None])
+def test_audit_rejects_unqualified_thresholds(threshold):
+    with pytest.raises(ValueError, match="threshold"):
+        textdrift.audit(_distinct_history(), cells={"a": "one", "b": "one"},
+                        threshold=threshold)
+
+
+def test_audit_empty_history_is_unavailable_not_clear():
+    report = textdrift.audit({})
+    assert report["status"] == "insufficient_data"
+    assert report["ok"] is False
+    assert report["n"] == report["compared_pairs"] == 0
+    assert report["worst"] == []
+    assert report["excluded"] == {}
+    assert "unavailable" in report["note"]
+
+
+def test_audit_unknown_cells_do_not_qualify():
+    report = textdrift.audit(_distinct_history())
+    assert report["status"] == "insufficient_data"
+    assert report["ok"] is False
+    assert report["n"] == report["compared_pairs"] == 0
+    assert report["excluded"] == {"a": "missing_cell", "b": "missing_cell"}
+
+
+@pytest.mark.parametrize("posts", [[], ["espresso"], ["espresso", "roast"],
+                                   ["", "", ""], ["the and", "with them", "are the"],
+                                   ["espresso", "the and", ""]])
+def test_audit_missing_or_uninformative_posts_cannot_count_as_comparisons(posts):
+    report = textdrift.audit({"a": posts, "b": corpus("barbell squat")},
+                            cells={"a": "one", "b": "one"})
+    assert report["ok"] is False
+    assert report["status"] == "insufficient_data"
+    assert report["n"] == report["compared_pairs"] == 0
+    assert report["worst"] == []
+    assert report["excluded"]["a"] in {"insufficient_posts", "insufficient_text"}
+    assert report["excluded"]["b"] == "no_cell_peer"
+
+
+def test_audit_clear_means_all_supplied_histories_were_compared():
+    report = textdrift.audit(_distinct_history(), cells={"a": "one", "b": "one"}, window=3)
+    assert report["ok"] is True
+    assert report["status"] == "clear"
+    assert report["n"] == 2
+    assert report["compared_pairs"] == 1
+    assert report["excluded"] == {}
+    assert report["worst"] == []
+    assert "incomplete" not in report["note"]
+
+
+def test_audit_partial_cell_coverage_is_not_a_clear_verdict():
+    history = {**_distinct_history(), "c": corpus("orchard apple blossom")}
+    report = textdrift.audit(history, cells={"a": "one", "b": "one", "c": "two"})
+    assert report["ok"] is False
+    assert report["status"] == "insufficient_data"
+    assert report["n"] == 2
+    assert report["compared_pairs"] == 1
+    assert report["excluded"] == {"c": "no_cell_peer"}
+    assert report["worst"] == []
+
+
+def test_audit_retains_observed_drift_when_another_history_is_unavailable():
+    history = {"a": corpus("orchard apple blossom"),
+               "b": corpus("orchard apple blossom"), "c": []}
+    report = textdrift.audit(history, cells={h: "one" for h in history})
+    assert report["ok"] is False
+    assert report["status"] == "drift"
+    assert report["n"] == 2
+    assert report["compared_pairs"] == 1
+    assert report["worst"] == [{"a": "a", "b": "b", "similarity": 1.0, "cell": "one"}]
+    assert report["excluded"] == {"c": "insufficient_posts"}
+    assert "incomplete" in report["note"]
+
+
+def test_audit_counts_only_within_cell_pairs_and_is_deterministic():
+    history = {**_distinct_history(), "c": corpus("orchard apple blossom"),
+               "d": corpus("violin concert music")}
+    cells = {"a": "one", "b": "one", "c": "two", "d": "two"}
+    report = textdrift.audit(history, cells=cells)
+    assert report["ok"] is True
+    assert report["status"] == "clear"
+    assert report["n"] == 4
+    assert report["compared_pairs"] == 2
+    assert report == textdrift.audit(dict(reversed(list(history.items()))), cells=cells)
+
+
+def test_audit_window_excludes_old_posts_without_filling_from_older_history():
+    history = {"a": corpus("shared copy vocabulary") + corpus("espresso roast grinder"),
+               "b": corpus("shared copy vocabulary") + corpus("barbell squat progression")}
+    report = textdrift.audit(history, cells={"a": "one", "b": "one"}, window=3)
+    assert report["ok"] is True
+    assert report["status"] == "clear"
+    history["a"][-2:] = ["the and", ""]
+    unavailable = textdrift.audit(history, cells={"a": "one", "b": "one"}, window=3)
+    assert unavailable["ok"] is False
+    assert unavailable["status"] == "insufficient_data"
+    assert unavailable["compared_pairs"] == 0
+
+
+def test_audit_threshold_is_inclusive_at_both_valid_endpoints():
+    history = _distinct_history()
+    cells = {"a": "one", "b": "one"}
+    zero = textdrift.audit(history, cells=cells, threshold=0.0)
+    assert zero["status"] == "drift"
+    assert zero["worst"][0]["similarity"] == 0.0
+    one = textdrift.audit({"a": history["a"], "b": history["a"]}, cells=cells, threshold=1.0)
+    assert one["status"] == "drift"
+    assert one["worst"][0]["similarity"] == 1.0
+
+
+@pytest.mark.parametrize("history", [None, [], {"a": "not a post list"},
+                                      {"a": [None, "espresso", "roast"]},
+                                      {"a": [1, 2, 3]}, {None: ["one"] * 3},
+                                      {" ": ["one"] * 3}])
+def test_audit_malformed_recent_evidence_raises_instead_of_passing(history):
+    with pytest.raises(ValueError):
+        textdrift.audit(history, cells={"a": "one"})
+
+
+@pytest.mark.parametrize("cells", [[], {"a": True}, {"a": 42}])
+def test_audit_rejects_malformed_cell_assignments(cells):
+    with pytest.raises(ValueError, match="cell"):
+        textdrift.audit(_distinct_history(), cells=cells)
+
+
+def test_audit_blank_cell_is_missing_and_persona_fallback_remains_explicit():
+    history = _distinct_history()
+    missing = textdrift.audit(history, cells={"a": " ", "b": "one"})
+    assert missing["ok"] is False
+    assert missing["excluded"]["a"] == "missing_cell"
+    personas = {"a": type("P", (), {"cell": "one"})(),
+                "b": type("P", (), {"cell": "other"})()}
+    report = textdrift.audit(history, cells={"a": " ", "b": "one"}, personas=personas)
+    assert report["ok"] is True
+    assert report["status"] == "clear"
+
+
+def test_audit_invalid_persona_cell_is_not_stringified_as_a_real_cell():
+    with pytest.raises(ValueError, match="cell"):
+        textdrift.audit(_distinct_history(),
+                        personas={h: type("P", (), {"cell": True})() for h in ("a", "b")})
+
+
+def test_audit_propagates_processing_errors_instead_of_manufacturing_success(monkeypatch):
+    def broken_profile(_):
+        raise RuntimeError("synthetic processing failure")
+    monkeypatch.setattr(textdrift, "profile", broken_profile)
+    with pytest.raises(RuntimeError, match="synthetic processing failure"):
+        textdrift.audit(_distinct_history(), cells={"a": "one", "b": "one"})
+
+
+def test_audit_does_not_mutate_input_histories_or_cell_assignments():
+    history = _distinct_history()
+    cells = {"a": "one", "b": "one"}
+    history_before = {h: list(posts) for h, posts in history.items()}
+    cells_before = dict(cells)
+    textdrift.audit(history, cells=cells)
+    assert history == history_before
+    assert cells == cells_before

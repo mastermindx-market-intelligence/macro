@@ -120,15 +120,21 @@ def _resolve_cells(
     cells: Mapping[str, str] | None,
     personas: Mapping[str, object] | None,
 ) -> dict[str, str]:
-    """Cell per handle: explicit ``cells`` wins, then the persona row, else ''."""
+    """Cell per handle: explicit nonblank cells wins, then the persona row."""
     resolved: dict[str, str] = {}
     for handle in post_history:
         cell = (cells or {}).get(handle)
+        if cell is not None and not isinstance(cell, str):
+            raise ValueError(f"cell for {handle!r} must be text or None")
+        cell = (cell or "").strip()
         if not cell and personas:
             persona = personas.get(handle)
             if persona is not None:
-                cell = str(getattr(persona, "cell", "") or "")
-        resolved[handle] = cell or ""
+                cell = getattr(persona, "cell", None)
+                if cell is not None and not isinstance(cell, str):
+                    raise ValueError(f"cell for {handle!r} must be text or None")
+                cell = (cell or "").strip()
+        resolved[handle] = cell
     return resolved
 
 
@@ -139,49 +145,87 @@ def audit(
     cells: Mapping[str, str] | None = None,
     personas: Mapping[str, object] | None = None,
 ) -> dict:
-    """Compare cell siblings over their last ``window`` posts.
+    """Compare cell siblings over their last window posts.
 
-    Returns ``{"ok", "worst", "n", "window", "note"}``. ``ok`` is False when any
-    sibling pair reaches ``threshold``. Children with fewer than ``MIN_POSTS``
-    posts in the window are excluded from the numbers and named in the note —
-    a two-post child gets no similarity rather than a fabricated one.
+    Status is clear, drift or insufficient_data. The ok field is True only
+    for a clear audit with complete coverage of the supplied histories.
+    A detected pair remains reported even when other children are excluded;
+    absent comparisons or partial coverage never qualify as a clear result.
+
+    Each compared child needs MIN_POSTS informative text posts in the window,
+    a known cell and a comparable sibling. The excluded map names other
+    children and their reasons; n counts compared children and compared_pairs
+    counts actual same-cell comparisons. No cross-cell pairs are inferred.
+
+    Window must be an integer >= MIN_POSTS and threshold a finite number in
+    [0, 1]. Invalid configuration or malformed recent input raises ValueError,
+    rather than returning a successful report. Existing result fields
+    (ok, worst, n, window, note) are retained.
     """
+    if isinstance(window, bool) or not isinstance(window, int) or window < MIN_POSTS:
+        raise ValueError(f"window must be an integer >= {MIN_POSTS}")
+    if (
+        isinstance(threshold, bool)
+        or not isinstance(threshold, (int, float))
+        or not 0.0 <= threshold <= 1.0
+        or not math.isfinite(threshold)
+    ):
+        raise ValueError("threshold must be a finite number in [0, 1]")
+    if not isinstance(post_history, Mapping):
+        raise ValueError("post_history must be a mapping")
+    if any(not isinstance(h, str) or not h.strip() for h in post_history):
+        raise ValueError("history handles must be nonblank text")
+    if cells is not None and not isinstance(cells, Mapping):
+        raise ValueError("cells must be a mapping or None")
+    if personas is not None and not isinstance(personas, Mapping):
+        raise ValueError("personas must be a mapping or None")
     resolved = _resolve_cells(post_history, cells, personas)
 
-    skipped: list[str] = []
+    excluded: dict[str, str] = {}
     by_cell: dict[str, list[str]] = {}
+    profiles: dict[str, dict[str, float]] = {}
     for handle in sorted(post_history):
-        recent = list(post_history[handle])[-window:]
+        history = post_history[handle]
+        if not isinstance(history, (list, tuple)):
+            raise ValueError(f"history for {handle!r} must be a list or tuple of text")
+        recent = list(history[-window:])
+        if any(not isinstance(text, str) for text in recent):
+            raise ValueError(f"recent posts for {handle!r} must be text")
         if len(recent) < MIN_POSTS:
-            skipped.append(handle)
+            excluded[handle] = "insufficient_posts"
             continue
-        cell = resolved.get(handle, "")
+        cell = resolved[handle]
         if not cell:
-            skipped.append(handle)
+            excluded[handle] = "missing_cell"
             continue
+        informative = [text for text in recent if vectorize([text])]
+        if len(informative) < MIN_POSTS:
+            excluded[handle] = "insufficient_text"
+            continue
+        profiles[handle] = profile(informative)
         by_cell.setdefault(cell, []).append(handle)
 
     flagged: list[dict] = []
     closest: tuple[str, str, float] | None = None
     compared = 0
-    thin_cells: list[str] = []
+    compared_pairs = 0
     for cell in sorted(by_cell):
         members = by_cell[cell]
         if len(members) < 2:
-            thin_cells.append(cell)
+            excluded[members[0]] = "no_cell_peer"
             continue
         compared += len(members)
-        cell_profiles = {
-            h: profile(list(post_history[h])[-window:]) for h in members
-        }
-        for a, b, sim in pairs(cell_profiles, threshold):
-            flagged.append({"a": a, "b": b, "similarity": round(sim, 4), "cell": cell})
-        for a, b, sim in pairs(cell_profiles, 0.0):
+        cell_pairs = pairs({h: profiles[h] for h in members}, 0.0)
+        compared_pairs += len(cell_pairs)
+        for a, b, sim in cell_pairs:
+            if sim >= threshold:
+                flagged.append({"a": a, "b": b, "similarity": round(sim, 4), "cell": cell})
             if closest is None or sim > closest[2]:
                 closest = (a, b, sim)
 
     flagged.sort(key=lambda row: (-row["similarity"], row["a"], row["b"]))
-
+    complete = compared_pairs > 0 and compared == len(post_history)
+    status = "drift" if flagged else ("clear" if complete else "insufficient_data")
     if flagged:
         top = flagged[0]
         note = (
@@ -190,28 +234,24 @@ def audit(
         )
     elif closest is not None:
         note = (
-            f"No sibling pair is above {threshold:.2f}; the closest is "
-            f"{closest[0]} and {closest[1]} at {closest[2]:.2f}. Hold the line."
-        )
-    elif thin_cells:
-        note = (
-            "No cell has two children with "
-            f"{MIN_POSTS}+ posts in the last {window}; add posts before "
-            "reading anything into these numbers."
+            f"No compared sibling pair reached {threshold:.2f}; the closest is "
+            f"{closest[0]} and {closest[1]} at {closest[2]:.2f}."
         )
     else:
-        note = f"No comparable children in the last {window} posts."
-
-    if skipped:
-        note += (
-            f" Skipped {len(skipped)} with fewer than {MIN_POSTS} posts in window "
-            f"or no known cell: {', '.join(sorted(skipped))}."
-        )
+        note = f"No comparable sibling pairs in the last {window} posts."
+    if not complete:
+        note += " Audit coverage is incomplete; a clear verdict is unavailable."
+    if excluded:
+        reasons = ", ".join(f"{h} ({excluded[h]})" for h in sorted(excluded))
+        note += f" Skipped {len(excluded)}: {reasons}."
 
     return {
-        "ok": not flagged,
+        "ok": status == "clear",
+        "status": status,
         "worst": flagged,
         "n": compared,
+        "compared_pairs": compared_pairs,
+        "excluded": dict(sorted(excluded.items())),
         "window": window,
         "note": note,
     }

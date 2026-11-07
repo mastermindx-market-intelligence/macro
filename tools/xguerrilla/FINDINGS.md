@@ -2,8 +2,9 @@
 
 Measured on the worker box `mini1` (macOS, Apple silicon), Python 3.14.7,
 Playwright 1.64.1, bundled Chromium 156.0.8078.4, harness at
-`/Users/mini1/macro/tools/xguerrilla`. Every number below came out of a run on
-that box; nothing here is an estimate. Date: 2026-11-07.
+`/Users/mini1/macro/tools/xguerrilla`. The measurements in sections 1–5 came
+from that box; none is an estimate. Date: 2026-11-07.
+The subsequent pure-audit correction in section 6 is separately attributed to C3.
 
 ## 1. Typing lands, exactly, on a real page
 
@@ -119,11 +120,45 @@ reports the empty field it really leaves; the GUI backend refuses to verify).
   `peekaboo` run in the pilot as the test.
 - **`snapshot()` retry timings** (4 attempts, backoff, focus on odd attempts)
   are unmeasured under real GUI contention; numbers were chosen, not fitted.
-- **`textdrift.audit(window<3)`** compares nothing because `MIN_POSTS = 3`; a
-  caller asking for a 2-post window gets a silent empty result. Documented in
-  `GATE.md`, not fixed.
+- **`textdrift.audit(window<3)` was corrected in the subsequent C3 source pass**
+  described in section 6. Invalid windows now raise; insufficient comparison
+  evidence cannot produce a clear audit. This does not qualify a live pilot.
 - **`Supervisor` has no `heartbeat`**, so `pilot_sim` re-stamps child health
   itself. The dry run therefore cannot catch a health-stamp bug.
 - **Clipboard route stays unusable headless.** If a real page must observe a
   `paste` event, the pilot has to run that step with the window shown, and
   verify by reading the value.
+
+## 6. Subsequent C3 correction: unavailable audit evidence is not success
+
+This source pass changes only `textdrift.py`, its focused tests and this record.
+It preserves the similarity calculation, same-cell scope and MIN_POSTS=3.
+The audit retains its existing result fields and adds `status`,
+`compared_pairs` and per-child `excluded` reasons. Status is `clear`, `drift`
+or `insufficient_data`; `ok` is true only when every supplied history is
+covered by real same-cell comparisons and no pair reaches the threshold.
+Observed drift remains reported when another history is unavailable.
+
+Windows must be integers at least three; thresholds must be finite values in
+[0, 1]. Malformed recent histories or cell assignments raise rather than being
+coerced into evidence. Each child needs three informative text posts in the
+actual window and an eligible sibling. Missing cells, short or uninformative
+histories and isolated cells are explicitly excluded. Processing exceptions
+propagate; they cannot manufacture a successful report.
+
+On original C3, Python 3.12 with pytest 9.1.1, the same private synthetic cases
+produced **17 passed / 48 failed** against original module blob
+`7d3508ac6235126a1a1412098ec558bbe8b26d34`, then **65 passed / 0 failed / 0 skipped**
+against candidate module blob `8c08d5387e0a1d5bc510c1c071473df36c5fc97f`.
+Two existing real-persona fixture cases were deliberately deselected; global
+runtime conftest was not loaded. Only the package initializer and text audit
+module were imported. All three fixture files remained unchanged during both
+runs, with zero network, subprocess, runtime-import or outside-write violations.
+This is focused source proof, not a rerun of the full harness or the mini1
+measurements above. See [the original-carrier source receipt](https://github.com/mastermindx-market-intelligence/Macro/pull/10837#issuecomment-6711766522).
+
+No drivers, proxy configuration, account/profile state, typing, scheduling,
+supervisor, simulation or external service ran or changed in this pass.
+The absent heartbeat, real fourteen-day pilot, platform/identity permissions
+and production acceptance remain open. PR #10837 remains Draft on its existing
+parent stack; parent #10829 must actually merge before retargeting/admission.
