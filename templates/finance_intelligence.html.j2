@@ -9,7 +9,12 @@
 <script>try{var t=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',t||'dark');var l=localStorage.getItem('lang')||(navigator.language||'').slice(0,2);if(l==='zh')document.documentElement.setAttribute('data-lang','zh');}catch(e){}</script>
 <title>Finance Intelligence — sector dossier — MastermindX</title>
 {% set seo_title = "Finance Intelligence — financial system dossier — MastermindX" %}
-{% set seo_desc = "Read how the financial system moves money, settles trades and prices assets — research context, not a trade call." %}
+{% set seo_desc = 'Read how the financial system moves money, settles trades and prices assets'
+    ~ ' — research context, not a trade call.' %}
+{% if not fi_read_url | default('') %}
+{% set seo_desc = 'A planned dossier on how the financial system moves money, settles trades'
+    ~ ' and prices assets. Not built yet; it shows no readings.' %}
+{% endif %}
 {% set seo_path = "finance_intelligence.html" %}
 {% include "_seo_head.html.j2" %}
 <link rel="stylesheet" href="theme.css">
@@ -20,11 +25,21 @@
 {% set nav_search_placeholder_zh = "搜索任意股票 — 美股、A 股、港股、加股等…" %}
 {% include "_site_nav.html.j2" %}
 
-<main id="fi-main" class="fi-shell" data-fi-mount="shell" data-fi-read-url="{{ fi_read_url | default('') }}">
+<main id="fi-main" class="fi-shell" data-fi-mount="shell"
+      data-fi-read-url="{{ fi_read_url | default('') }}"
+      {% if not fi_read_url | default('') %}data-state="not-connected"{% endif %}>
   <header class="fi-hero" aria-labelledby="fi-hero-title">
     <p class="fi-kicker">{{ t('Finance Intelligence', '金融情报') }}</p>
     <h1 id="fi-hero-title">{{ t('Finance Intelligence', '金融情报') }}</h1>
-    <p class="fi-deck">{{ t('Read how the financial system moves money, settles trades and prices assets — context only, not a trade call.', '阅读金融体系如何转移资金、结算交易并为资产定价 — 仅为背景，非交易指令。') }}</p>
+{% set deck_en = 'Read how the financial system moves money, settles trades and prices assets'
+    ~ ' — context only, not a trade call.' %}
+{% set deck_zh = '阅读金融体系如何转移资金、结算交易并为资产定价 — 仅为背景，非交易指令。' %}
+{% if not fi_read_url | default('') %}
+{% set deck_en = 'A planned dossier on how the financial system moves money, settles trades'
+    ~ ' and prices assets. This is planned scope, not yet a reading.' %}
+{% set deck_zh = '关于金融体系如何转移资金、结算交易并为资产定价的计划档案。这是计划范围，还不是读数。' %}
+{% endif %}
+    <p class="fi-deck">{{ t(deck_en, deck_zh) }}</p>
     <p class="fi-meta">
       <span class="fi-meta-asof l-en" data-fi-mount="hero-asof" hidden></span><span class="fi-meta-asof-zh l-zh" data-fi-mount="hero-asof-zh" hidden></span>
       <span aria-hidden="true">·</span>
@@ -33,6 +48,17 @@
       <span class="fi-chip" data-fi-mount="hero-outer" data-state-outer-dossier="" hidden></span>
     </p>
   </header>
+
+{% if not fi_read_url | default('') %}
+{% set unbuilt_en = 'No evidence service is connected, so nothing on this page is a reading of'
+    ~ ' the financial sector. It shows no observations or figures.' %}
+{% set unbuilt_zh = '证据服务尚未接入，因此本页内容都不是对金融板块的读数。本页没有观察或数字。' %}
+  <section class="fi-unbuilt" role="status"
+           aria-labelledby="fi-unbuilt-title" data-fi-mount="unbuilt">
+    <h2 id="fi-unbuilt-title">{{ t('This dossier is not built yet.', '本档案尚未建成。') }}</h2>
+    <p>{{ t(unbuilt_en, unbuilt_zh) }}</p>
+  </section>
+{% endif %}
 
   <nav class="fi-toc" aria-label="Section navigation" data-aria-en="Section navigation" data-aria-zh="章节导航">
     <ol>
@@ -142,13 +168,20 @@
   <section id="company-exposure" class="fi-section fi-panel fi-exposure" aria-labelledby="fi-exposure-title" data-fi-mount="company-exposure">
     <header class="fi-section-head">
       <h2 id="fi-exposure-title" class="fi-section-title">
+{% if fi_read_url | default('') %}
         <span class="l-en">Company exposure</span>
         <span class="l-zh">公司敞口</span>
+{% else %}
+        <span class="l-en">Names under study</span>
+        <span class="l-zh">研究中的名称</span>
+{% endif %}
       </h2>
+{% if fi_read_url | default('') %}
       <span class="fi-section-eyebrow">
         <span class="l-en">Role, basis, materiality — never a hidden score</span>
         <span class="l-zh">角色、口径、重要性 — 绝无暗藏分数</span>
       </span>
+{% endif %}
     </header>
 
     <div class="fi-exposure-table-wrap" data-fi-mount="exposure-table-wrap">
@@ -199,11 +232,16 @@
    No stock route, no href, no IDENTITY_VALIDATED, no fetch — this ul has
    no data-fi-mount, so the hydration painter never wipes it. Without the
    bridge context the loop renders nothing, as before this wave.          #}
-    <ul class="fi-hint-roster" role="list" data-aria-en="Research hint, not validated" data-aria-zh="研究线索，尚未确认">
+{% if hint_rows | default([]) %}
+    <p class="fi-hint-lede">{{
+        t('These names are research hints under study. None has been confirmed.',
+          '这些名称是研究中的线索，均未确认。') }}</p>
+{% endif %}
+    <ul class="fi-hint-roster" role="list" data-aria-en="Research hint, not confirmed" data-aria-zh="研究线索，尚未确认">
       {% for row in hint_rows | default([]) %}
       <li class="fi-hint-row" data-state-identity="{{ row.state }}" data-record-id="{{ row.record_id }}">
         <span class="fi-hint-symbol">{{ row.symbol }}</span>
-        <span class="fi-chip fi-identity-chip" data-identity="{{ row.state }}" data-state-marker="{{ row.state }}"><span class="l-en">Research hint, not validated</span><span class="l-zh">研究线索，尚未确认</span></span>
+        <span class="fi-chip fi-identity-chip" data-identity="{{ row.state }}" data-state-marker="{{ row.state }}"><span class="l-en">Research hint, not confirmed</span><span class="l-zh">研究线索，尚未确认</span></span>
         <span class="fi-hint-record">{{ row.record_id }}</span>
       </li>
       {% endfor %}

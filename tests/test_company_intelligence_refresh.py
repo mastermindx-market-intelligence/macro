@@ -92,6 +92,44 @@ def test_refresh_can_preserve_a_validated_output_tree_for_a_post_ci_sidecar(
     assert seen == {"build": output, "publish": output}
 
 
+@pytest.mark.parametrize("already_current", [True, False])
+def test_p1_successful_publish_noop_never_claims_a_new_promotion(tmp_path, monkeypatch, capsys, already_current):
+    import socket
+    from engine.company_intelligence.views import build_bundle, write_generation
+    from scripts import publish_company_intelligence_r2 as publisher
+    monkeypatch.setattr(socket.socket, "connect", lambda *a, **k: pytest.fail("network forbidden"))
+    monkeypatch.setattr(refresh, "ensure_earnings_inputs", lambda _source: {})
+    monkeypatch.setattr(refresh, "fetch_transcript_index", lambda _url, destination: destination.write_text("{}"))
+    def build(argv):
+        target = Path(argv[argv.index("--out-dir") + 1])
+        contexts, manifest = build_bundle([{
+            "document_ticker": "AAPL", "fiscal_year": 2026, "fiscal_quarter": 1,
+            "call_date": "2026-01-29", "earnings_call_sent": 0.2,
+            "raw_source_url": "https://example.test/source",
+        }], tx_index={"schema": "mastermind.tx-index/v1", "documents": [{
+            "ticker": "AAPL", "fiscal_year": 2026, "fiscal_quarter": 1, "present": True,
+        }]}, as_of="2026-02-02")
+        write_generation(target, contexts, manifest)
+        return 0
+    monkeypatch.setattr(refresh, "build_company_intelligence", build)
+    monkeypatch.setattr(publisher, "_client", lambda: None)
+    def publish(path, **kwargs):
+        class CurrentStore:
+            def get_object(self, *, Bucket, Key):
+                assert Key == "company_intelligence/manifest.json"
+                return {"Body": io.BytesIO((path / "manifest.json").read_bytes()), "ETag": "fixture"}
+            def put_object(self, **kwargs):
+                pytest.fail("already-current generation must not CREATE or promote anything")
+        return publisher.publish(path, s3=CurrentStore() if already_current else None,
+                                 bucket="fixture", **kwargs)
+    assert refresh.refresh(tmp_path / "work", fetch_scores=lambda **kwargs: 0,
+                           publish_generation=publish) == 0
+    output = capsys.readouterr().out
+    assert "immutable generation published" not in output
+    assert "root marker promoted" not in output
+    assert "generation validated; publish step returned success" in output
+
+
 def test_workflow_is_scheduled_off_render_and_handles_only_safe_cas_conflict() -> None:
     workflow = (Path(__file__).resolve().parents[1] / ".github/workflows/company-intelligence.yml").read_text(encoding="utf-8")
     assert 'cron: "17 */3 * * *"' in workflow
