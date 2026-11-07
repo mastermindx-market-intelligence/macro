@@ -1,0 +1,116 @@
+{
+  "schema": "toi.swing_research_recipe.v1",
+  "study_id": "swing-confluence-v1",
+  "families": [
+    "leader_pullback",
+    "range_reversal"
+  ],
+  "clock_pairs": [
+    {
+      "trigger_minutes": 15,
+      "setup_minutes": 60
+    },
+    {
+      "trigger_minutes": 30,
+      "setup_minutes": 120
+    },
+    {
+      "trigger_minutes": 30,
+      "setup_minutes": 180
+    },
+    {
+      "trigger_minutes": 30,
+      "setup_minutes": 130
+    },
+    {
+      "trigger_minutes": 30,
+      "setup_minutes": 195
+    },
+    {
+      "trigger_minutes": 60,
+      "setup_minutes": 240
+    }
+  ],
+  "session_example_minutes": 390,
+  "memory_modes": [
+    "fixed_bar_count",
+    "fixed_elapsed_kernel"
+  ],
+  "signal_bundles": [
+    "structure",
+    "structure_plus_momentum",
+    "structure_plus_participation"
+  ],
+  "holding_sessions": [
+    1,
+    2,
+    3,
+    5,
+    10
+  ],
+  "exit_rules": [
+    "fixed_horizon",
+    "causal_invalidation_then_time_cap"
+  ],
+  "cost_bps_one_way": [
+    5,
+    10,
+    20
+  ],
+  "primary_cost_bps_one_way": 10,
+  "baselines": [
+    "setup_only",
+    "trigger_only",
+    "matched_random",
+    "fixed_multiscale_no_selector"
+  ],
+  "random_seed": 17,
+  "max_planned_comparisons": 10000,
+  "dependencies": {
+    "source_admission": {
+      "owner": "WS:TECHNICAL-OPPORTUNITY-INTELLIGENCE",
+      "reference": "macro#7094@5bb1bc68c99146fab040aade04bbf1903c51e5b7",
+      "status": "HOLD"
+    },
+    "evidence_census": {
+      "owner": "WS:TECHNICAL-OPPORTUNITY-INTELLIGENCE",
+      "reference": "macro#7107@bad9ac6e93375c2132671330f7faaceae6a8c430",
+      "status": "HOLD"
+    },
+    "clock_memory": {
+      "owner": "WS:TEMPORAL-GRAIN-INTELLIGENCE",
+      "reference": "macro#6803@3052eaf9d691b30128e20b16ad30c75f3ae95280",
+      "status": "HOLD"
+    },
+    "pit_universe": {
+      "owner": "Data OS / Stock Identity",
+      "reference": null,
+      "status": "MISSING"
+    },
+    "setup_species": {
+      "owner": "Setup Species",
+      "reference": null,
+      "status": "MISSING"
+    },
+    "trial_registration": {
+      "owner": "TrialLedger / Evaluation OS",
+      "reference": null,
+      "status": "MISSING"
+    },
+    "intraday_evaluator": {
+      "owner": "TrialLedger / Evaluation OS",
+      "reference": null,
+      "status": "MISSING"
+    },
+    "event_availability": {
+      "owner": "Existing rates/release/auction owners",
+      "reference": null,
+      "status": "MISSING"
+    },
+    "chart_replay": {
+      "owner": "Terminal / Live Entry Radar",
+      "reference": null,
+      "status": "MISSING"
+    }
+  }
+}
