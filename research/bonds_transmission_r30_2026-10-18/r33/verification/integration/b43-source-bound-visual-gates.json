@@ -1,0 +1,59 @@
+{
+  "schema": "r33.local_process_receipt.v1",
+  "recorded_at": "2026-10-19T12:41:19.721994+00:00",
+  "source_head": "b43c084b0bb9c45213a133287f92e24e6dfdc0ad",
+  "source_tree": "7756ac300c7c399f49a888a902b20f563064162c",
+  "diff_base": "f4098574290136f1a3e8aa01d55fb54a6d4ec2f9",
+  "diff_sha256": "cf5f3777be0081389a4ed2ca2ce8c3afdfd398c541ca6461729a4f21e107629e",
+  "process_pid": 18705,
+  "scope": "cumulative R33 Bonds template/include delta against integrated main; local guard execution only",
+  "runs": [
+    {
+      "name": "visual",
+      "script": "scripts/check_ui_visual_evidence.py",
+      "script_sha256": "c1604698d38e6f6bb8079f468e11caa581d8efacc9ed53413c6c34a96f1dcf1a",
+      "argv": [
+        "python3",
+        "scripts/check_ui_visual_evidence.py",
+        "--diff-file",
+        "/tmp/mmx-r33-b43-ui-delta.diff",
+        "--repo-root",
+        "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/bonds-transmission-r33-20261018-c4"
+      ],
+      "child_pid": 18792,
+      "exit_code": 0,
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "output_tail": ""
+    },
+    {
+      "name": "design",
+      "script": "scripts/check_design_system.py",
+      "script_sha256": "dcacc3d8cb458e16f280fb6a8286fc1aa385105e663dc3afc495c69734e7e484",
+      "argv": [
+        "python3",
+        "scripts/check_design_system.py",
+        "--mode",
+        "enforce-added",
+        "--diff-file",
+        "/tmp/mmx-r33-b43-ui-delta.diff",
+        "--root",
+        "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/bonds-transmission-r33-20261018-c4"
+      ],
+      "child_pid": 18843,
+      "exit_code": 0,
+      "stdout_bytes": 279,
+      "stdout_sha256": "26d7d28b5896ed98bcb7ce871025a02e966f81691b703f2a9a49890389264ef5",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "output_tail": "::notice title=design-system::R0 enforce-added: 0 blocking finding(s) (25383 further pre-existing, non-blocking finding(s) in the estate \u2014 run --mode report for the full census)\ndesign-system ratchet \u2014 mode=enforce-added blocking=0 (estate pre-existing, non-blocking: 25383)"
+    }
+  ],
+  "production_origin_observed": false,
+  "head_after": "b43c084b0bb9c45213a133287f92e24e6dfdc0ad",
+  "worktree_clean_after": true,
+  "all_exit_zero": true,
+  "finished_at": "2026-10-19T12:41:25.844711+00:00"
+}

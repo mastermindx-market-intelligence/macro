@@ -1,0 +1,94 @@
+{
+  "schema": "r33.generated_publication_adapter_check.v1",
+  "source_tree": "e0ad5577c7d8bbe974e71c2c9ff1303b8ead876e",
+  "payload_sha256": "01fb77777e07aa8ff58f4346fa73c9d17029dd1e8b6fdca25cb829d3c63b904e",
+  "adapter_sha256": "eddd3b84b90a58c17333cdab6972d0a223e38f62b1f45aecefb189a8c511a5a2",
+  "result": {
+    "ok": true,
+    "state": "descriptive",
+    "fields": 22,
+    "available": 22,
+    "capabilities": {
+      "evaluate": false,
+      "forecast": false,
+      "retain": false,
+      "monitor": false
+    },
+    "confirmationCount": null,
+    "probability": null,
+    "matchedEvent": null,
+    "mixedComponentDates": true,
+    "componentDateRange": [
+      "2026-10-17",
+      "2026-10-30"
+    ],
+    "warnings": [],
+    "identity": {
+      "content": "09bfb6a022e1cca4b34bbdaef5527dbe222d8b33e657f693ba9c55d03443b851",
+      "snapshot": "44340eb60fb68023",
+      "buildTime": "2026-11-02T06:37:24Z",
+      "validationDate": "2026-11-01",
+      "inputs": {
+        "snapshot": {
+          "path": "data/macro_snapshots/latest.json",
+          "loaded_state": "loaded",
+          "representation": "parsed_json",
+          "sha256": "35369ef1f8d560de002a3e4830c801f9336973e97794074fd6a820fcebe6c62f",
+          "invalid_values": []
+        },
+        "world_state": {
+          "path": "data/neuralweb/world_state.json",
+          "loaded_state": "loaded",
+          "representation": "parsed_json",
+          "sha256": "5e4532b2d8b0c1ed7fb57d03fc5454eeccf0331d3571ec74ebb9c2966aff876e",
+          "invalid_values": []
+        },
+        "regime": {
+          "path": "data/regime/latest.json",
+          "loaded_state": "loaded",
+          "representation": "parsed_json",
+          "sha256": "9995a5bdeb1bfbabc6f4267633578064e0a6f1ee875147248d72cf3d4bd43a5f",
+          "invalid_values": []
+        },
+        "transitions": {
+          "path": "data/macro_snapshots/transitions.jsonl",
+          "loaded_state": "loaded",
+          "representation": "last_60_parsed_rows_in_loader_order",
+          "sha256": "e684c62b5fea91369a2991b0d4ede6232b62aaaab80e7245b99a86d9893cdbbf",
+          "invalid_values": []
+        }
+      }
+    },
+    "clocks": {
+      "snapshot": {
+        "asof": "2026-10-17",
+        "age_days": 15
+      },
+      "snapshot_oldest_component": {
+        "asof": "2026-10-14",
+        "age_days": 18
+      },
+      "rates_credit": {
+        "asof": "2026-10-20",
+        "age_days": 12
+      },
+      "cross_asset": {
+        "asof": "2026-10-21",
+        "age_days": 11
+      },
+      "regime": {
+        "asof": "2026-10-30",
+        "age_days": 2
+      },
+      "fx_dollar": {
+        "asof": "2026-10-21",
+        "age_days": 11
+      }
+    },
+    "errors": [],
+    "source_trigger_count": 1,
+    "adapter_present": true,
+    "companion_url_present": true
+  },
+  "scope": "Actual newly generated companion parsed by unchanged strict adapter in Node VM; not browser or production proof"
+}

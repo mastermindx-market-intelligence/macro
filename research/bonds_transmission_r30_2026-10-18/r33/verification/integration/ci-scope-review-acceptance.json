@@ -1,0 +1,12 @@
+{
+  "schema": "mastermind.fabric_mcp.v1",
+  "action": "fabric_accept",
+  "run_id": "r33-ci-registration-scope-review-20261019-c4",
+  "root_id": "bonds-transmission-r30-20261018-sol001",
+  "accepted": true,
+  "accepted_by": "deterministic",
+  "reviewed_response_sha256": "15eed437991a8e98ce5719c3032b09d7e74cae685546a598368169da34576c39",
+  "verification_summary": "Qualified scope proposal accepted. Parent completed closure and init coverage; 8 existing guards and 27 positive triggers pass. All suites and ceilings retained. Local proof only; no hosted CI, release or production acceptance.",
+  "legacy_acceptance_not_atomic_attestation": true,
+  "retry_allowed": false
+}
