@@ -1,6 +1,6 @@
 {
   "schema": "prophet_arena.scoreboard/v1",
-  "as_of": "2026-09-26",
+  "as_of": "2026-11-07",
   "tier": "display",
   "authority": {
     "tier": "display",
@@ -71,12 +71,8 @@
   "standing_line_zh": "\u5f71\u5b50\u8bb0\u5f55 \u2014 \u5b9e\u76d8\u7b56\u7565\u4ec5\u5728\u64cd\u4f5c\u8005\u6279\u51c6\u540e\u624d\u4f1a\u66f4\u6539",
   "headline_min_closed": 20,
   "harness_validity": {
-    "c0_plan_ids": [
-      "AEIS-BULL-20260922"
-    ],
-    "live_plan_ids": [
-      "AEIS-BULL-20260922"
-    ],
+    "c0_plan_ids": [],
+    "live_plan_ids": [],
     "c0_mismatch_count": 0,
     "missing_from_mirror": [],
     "extra_in_mirror": [],
@@ -89,21 +85,21 @@
       "label": "the live rule, mirrored",
       "label_zh": "\u5b9e\u76d8\u89c4\u5219\u955c\u50cf",
       "grain": "selection",
-      "n_open": 242,
-      "n_closed": 77,
-      "win_rate_pct": 45.9,
-      "avg_pct": -1.14,
-      "median_pct": -1.8,
-      "expired_share_pct": 14.3,
+      "n_open": 418,
+      "n_closed": 330,
+      "win_rate_pct": 48.9,
+      "avg_pct": -0.81,
+      "median_pct": -0.99,
+      "expired_share_pct": 30.0,
       "time_stopped_share_pct": 0.0,
       "outcomes": {
-        "EXPIRED": 11,
-        "INVALIDATED": 42,
-        "NO_ENTRY": 3,
-        "T1_HIT": 20,
-        "T2_HIT": 1
+        "EXPIRED": 99,
+        "INVALIDATED": 90,
+        "NO_ENTRY": 60,
+        "T1_HIT": 75,
+        "T2_HIT": 6
       },
-      "nights_recorded": 19,
+      "nights_recorded": 38,
       "reading": "readable \u2014 enough closed shadow plans for a headline",
       "readable": true
     },
@@ -112,29 +108,29 @@
       "label": "earlier entries first",
       "label_zh": "\u4f18\u5148\u8f83\u65e9\u5165\u573a",
       "grain": "selection",
-      "n_open": 80,
-      "n_closed": 18,
-      "win_rate_pct": 31.2,
-      "avg_pct": -6.69,
-      "median_pct": -4.28,
-      "expired_share_pct": 5.6,
+      "n_open": 78,
+      "n_closed": 88,
+      "win_rate_pct": 42.2,
+      "avg_pct": -3.07,
+      "median_pct": -2.42,
+      "expired_share_pct": 37.5,
       "time_stopped_share_pct": 0.0,
       "outcomes": {
-        "EXPIRED": 1,
-        "INVALIDATED": 11,
-        "NO_ENTRY": 2,
-        "T1_HIT": 4
+        "EXPIRED": 33,
+        "INVALIDATED": 20,
+        "NO_ENTRY": 24,
+        "T1_HIT": 11
       },
-      "nights_recorded": 18,
-      "reading": "too early to read \u2014 needs 20 closed shadow plans, has 18",
-      "readable": false,
+      "nights_recorded": 35,
+      "reading": "readable \u2014 enough closed shadow plans for a headline",
+      "readable": true,
       "vs_champion": {
-        "shared_nights": 9,
-        "n_policy": 16,
-        "n_champion": 60,
-        "avg_pct": -6.69,
-        "champion_avg_pct": -1.29,
-        "diff_pp": -5.39
+        "shared_nights": 20,
+        "n_policy": 64,
+        "n_champion": 215,
+        "avg_pct": -3.07,
+        "champion_avg_pct": -2.26,
+        "diff_pp": -0.81
       },
       "vs_champion_basis": "same-cohort \u2014 only the nights on which both this policy and the live rule started a plan that has since finished"
     },
@@ -143,29 +139,30 @@
       "label": "washout turns added",
       "label_zh": "\u7eb3\u5165\u8d85\u8dcc\u8f6c\u6298",
       "grain": "selection",
-      "n_open": 96,
-      "n_closed": 30,
-      "win_rate_pct": 46.4,
-      "avg_pct": -2.04,
-      "median_pct": -1.91,
-      "expired_share_pct": 23.3,
+      "n_open": 73,
+      "n_closed": 142,
+      "win_rate_pct": 40.5,
+      "avg_pct": -3.99,
+      "median_pct": -4.54,
+      "expired_share_pct": 38.0,
       "time_stopped_share_pct": 0.0,
       "outcomes": {
-        "EXPIRED": 7,
-        "INVALIDATED": 13,
-        "NO_ENTRY": 2,
-        "T1_HIT": 8
+        "EXPIRED": 54,
+        "INVALIDATED": 32,
+        "NO_ENTRY": 26,
+        "T1_HIT": 29,
+        "T2_HIT": 1
       },
-      "nights_recorded": 18,
+      "nights_recorded": 35,
       "reading": "readable \u2014 enough closed shadow plans for a headline",
       "readable": true,
       "vs_champion": {
-        "shared_nights": 12,
-        "n_policy": 28,
-        "n_champion": 67,
-        "avg_pct": -2.04,
-        "champion_avg_pct": -1.77,
-        "diff_pp": -0.26
+        "shared_nights": 28,
+        "n_policy": 115,
+        "n_champion": 259,
+        "avg_pct": -4.12,
+        "champion_avg_pct": -1.0,
+        "diff_pp": -3.11
       },
       "vs_champion_basis": "same-cohort \u2014 only the nights on which both this policy and the live rule started a plan that has since finished"
     },
@@ -174,29 +171,29 @@
       "label": "book size follows dispersion",
       "label_zh": "\u6301\u4ed3\u6570\u91cf\u968f\u79bb\u6563\u5ea6",
       "grain": "selection",
-      "n_open": 64,
-      "n_closed": 18,
-      "win_rate_pct": 37.5,
-      "avg_pct": -6.36,
-      "median_pct": -3.18,
-      "expired_share_pct": 16.7,
+      "n_open": 46,
+      "n_closed": 71,
+      "win_rate_pct": 40.4,
+      "avg_pct": -3.45,
+      "median_pct": -3.65,
+      "expired_share_pct": 43.7,
       "time_stopped_share_pct": 0.0,
       "outcomes": {
-        "EXPIRED": 3,
-        "INVALIDATED": 10,
-        "NO_ENTRY": 2,
-        "T1_HIT": 3
+        "EXPIRED": 31,
+        "INVALIDATED": 14,
+        "NO_ENTRY": 19,
+        "T1_HIT": 7
       },
-      "nights_recorded": 18,
-      "reading": "too early to read \u2014 needs 20 closed shadow plans, has 18",
-      "readable": false,
+      "nights_recorded": 33,
+      "reading": "readable \u2014 enough closed shadow plans for a headline",
+      "readable": true,
       "vs_champion": {
-        "shared_nights": 9,
-        "n_policy": 16,
-        "n_champion": 58,
-        "avg_pct": -6.36,
-        "champion_avg_pct": -1.08,
-        "diff_pp": -5.27
+        "shared_nights": 19,
+        "n_policy": 52,
+        "n_champion": 210,
+        "avg_pct": -3.45,
+        "champion_avg_pct": -2.49,
+        "diff_pp": -0.96
       },
       "vs_champion_basis": "same-cohort \u2014 only the nights on which both this policy and the live rule started a plan that has since finished"
     },
@@ -205,29 +202,30 @@
       "label": "weekly-aligned only",
       "label_zh": "\u4ec5\u9650\u5468\u7ebf\u540c\u5411",
       "grain": "selection",
-      "n_open": 38,
-      "n_closed": 15,
-      "win_rate_pct": 46.7,
-      "avg_pct": -2.35,
-      "median_pct": 0.0,
-      "expired_share_pct": 13.3,
+      "n_open": 46,
+      "n_closed": 52,
+      "win_rate_pct": 42.9,
+      "avg_pct": -2.6,
+      "median_pct": -1.53,
+      "expired_share_pct": 40.4,
       "time_stopped_share_pct": 0.0,
       "outcomes": {
-        "EXPIRED": 2,
-        "INVALIDATED": 11,
-        "T1_HIT": 1,
-        "T2_HIT": 1
+        "EXPIRED": 21,
+        "INVALIDATED": 16,
+        "NO_ENTRY": 10,
+        "T1_HIT": 3,
+        "T2_HIT": 2
       },
-      "nights_recorded": 16,
-      "reading": "too early to read \u2014 needs 20 closed shadow plans, has 15",
-      "readable": false,
+      "nights_recorded": 31,
+      "reading": "readable \u2014 enough closed shadow plans for a headline",
+      "readable": true,
       "vs_champion": {
-        "shared_nights": 9,
-        "n_policy": 15,
-        "n_champion": 52,
-        "avg_pct": -2.35,
-        "champion_avg_pct": -2.28,
-        "diff_pp": -0.07
+        "shared_nights": 21,
+        "n_policy": 42,
+        "n_champion": 211,
+        "avg_pct": -2.6,
+        "champion_avg_pct": -1.99,
+        "diff_pp": -0.6
       },
       "vs_champion_basis": "same-cohort \u2014 only the nights on which both this policy and the live rule started a plan that has since finished"
     },
@@ -236,32 +234,32 @@
       "label": "cut dead money at 21 sessions",
       "label_zh": "21\u4e2a\u4ea4\u6613\u65e5\u6b62\u635f\u79bb\u573a",
       "grain": "closure",
-      "n_open": 203,
-      "n_closed": 116,
-      "win_rate_pct": 27.4,
-      "avg_pct": -1.88,
-      "median_pct": -2.21,
-      "expired_share_pct": 2.6,
-      "time_stopped_share_pct": 51.7,
+      "n_open": 396,
+      "n_closed": 352,
+      "win_rate_pct": 38.2,
+      "avg_pct": -0.6,
+      "median_pct": -1.57,
+      "expired_share_pct": 6.5,
+      "time_stopped_share_pct": 35.2,
       "outcomes": {
-        "EXPIRED": 3,
-        "INVALIDATED": 29,
-        "NO_ENTRY": 3,
-        "T1_HIT": 20,
-        "T2_HIT": 1,
-        "time_stopped": 60
+        "EXPIRED": 23,
+        "INVALIDATED": 66,
+        "NO_ENTRY": 59,
+        "T1_HIT": 75,
+        "T2_HIT": 5,
+        "time_stopped": 124
       },
-      "nights_recorded": 19,
+      "nights_recorded": 38,
       "reading": "readable \u2014 enough closed shadow plans for a headline",
       "readable": true,
       "vs_champion": {
-        "n_paired": 74,
-        "avg_diff_pp": 1.51,
+        "n_paired": 270,
+        "avg_diff_pp": 0.61,
         "median_diff_pp": 0.0,
-        "better": 18,
-        "worse": 3,
-        "same": 53,
-        "unpaired_plans": 42
+        "better": 63,
+        "worse": 37,
+        "same": 170,
+        "unpaired_plans": 82
       },
       "vs_champion_basis": "per-plan paired \u2014 same plan ids and entries as the live rule, different exits"
     },
@@ -270,29 +268,29 @@
       "label": "almost-ready entries admitted",
       "label_zh": "\u7eb3\u5165\u300c\u5373\u5c06\u4e70\u5165\u300d\u6863",
       "grain": "selection",
-      "n_open": 81,
-      "n_closed": 20,
-      "win_rate_pct": 38.9,
-      "avg_pct": -5.07,
-      "median_pct": -3.18,
-      "expired_share_pct": 5.0,
+      "n_open": 78,
+      "n_closed": 91,
+      "win_rate_pct": 41.8,
+      "avg_pct": -2.88,
+      "median_pct": -2.32,
+      "expired_share_pct": 36.3,
       "time_stopped_share_pct": 0.0,
       "outcomes": {
-        "EXPIRED": 1,
-        "INVALIDATED": 11,
-        "NO_ENTRY": 2,
-        "T1_HIT": 6
+        "EXPIRED": 33,
+        "INVALIDATED": 21,
+        "NO_ENTRY": 24,
+        "T1_HIT": 13
       },
-      "nights_recorded": 18,
+      "nights_recorded": 35,
       "reading": "readable \u2014 enough closed shadow plans for a headline",
       "readable": true,
       "vs_champion": {
-        "shared_nights": 11,
-        "n_policy": 18,
-        "n_champion": 63,
-        "avg_pct": -5.07,
-        "champion_avg_pct": -1.38,
-        "diff_pp": -3.69
+        "shared_nights": 21,
+        "n_policy": 67,
+        "n_champion": 220,
+        "avg_pct": -2.88,
+        "champion_avg_pct": -2.16,
+        "diff_pp": -0.72
       },
       "vs_champion_basis": "same-cohort \u2014 only the nights on which both this policy and the live rule started a plan that has since finished"
     }
@@ -313,29 +311,31 @@
     }
   ],
   "tonight": {
-    "asof": "2026-09-26",
-    "standouts_as_of": "2026-09-25",
-    "price_through": "2026-09-25",
-    "observed_at_utc": "2026-09-27T05:09:25.668209+00:00",
+    "asof": "2026-11-07",
+    "standouts_as_of": "2026-11-05",
+    "price_through": "2026-11-05",
+    "observed_at_utc": "2026-11-07T04:07:33.304305+00:00",
     "source_delayed": false,
     "source_unknown": false,
     "source_basis": "panel_majority",
     "panel_mixed_vintage": false,
     "gate_go": false,
     "dispersion": {
-      "mode": "not_lean_in",
-      "state": "lean_out",
-      "artifact_as_of": "2026-09-26",
+      "mode": "lean_in",
+      "state": "lean_in",
+      "artifact_as_of": "2026-11-07",
       "stale_sessions": 0,
-      "cap": 6,
+      "cap": 12,
       "path": "data/dispersion/regime.json"
     },
     "door_w": {
       "ok": true,
-      "candidates": 4,
-      "rows": 4,
-      "skipped_no_prices": 0,
-      "skipped_tickers": [],
+      "candidates": 31,
+      "rows": 30,
+      "skipped_no_prices": 1,
+      "skipped_tickers": [
+        "XLU"
+      ],
       "reason": null,
       "door_w_disclosure": {
         "source": "baskets/membership.json",
@@ -344,186 +344,191 @@
         "reason": null,
         "evaluated": 713,
         "skipped": 4,
-        "state_turn": 67,
-        "fresh": 4,
-        "aligned": 4,
-        "asof_max": "2026-09-25",
+        "state_turn": 60,
+        "fresh": 32,
+        "aligned": 31,
+        "asof_max": "2026-11-06",
         "asof_mismatch": 0,
         "fresh_weeks_max": 2,
         "align_grids": [
           "2B",
           "3B"
         ],
-        "runtime_s": 22.2
+        "runtime_s": 21.5
       }
     },
     "policies": {
       "C0_champion_mirror": {
         "selected_tickers": [
-          "NVDA",
-          "LFUS",
-          "LRCX",
-          "CDNS",
-          "BHF",
-          "ROK",
-          "NPO",
-          "VKTX",
-          "SHW",
-          "TBBK",
-          "GAP",
-          "AEIS",
-          "ESI",
-          "PVH",
-          "OTTR",
-          "AEO",
-          "PL",
-          "EGBN",
-          "NVT",
-          "VFC",
-          "MAR",
-          "ONON",
-          "WABC",
+          "THC",
+          "HTO",
+          "RGLD",
+          "CNMD",
+          "NTES",
+          "TR",
+          "AGCO",
+          "JNJ",
+          "AWR",
+          "JD",
+          "SJM",
+          "VSEC",
+          "SKY",
+          "BNY",
+          "SBRA",
+          "BIDU",
+          "VTR",
+          "BKNG",
+          "TMUS",
+          "IART",
+          "PPLI",
           "BKSY",
-          "BKR",
-          "EU",
-          "TLN",
-          "PLAB",
-          "LMAT",
-          "KLAC",
-          "TNDM",
-          "RPM",
-          "PDFS",
-          "KMT",
-          "ELF",
-          "QDEL",
-          "TME",
-          "WS",
-          "NVR",
-          "PBH"
+          "DEA",
+          "ARCB",
+          "PLD",
+          "DOC",
+          "MOS",
+          "MTG",
+          "CFG",
+          "SNA",
+          "PPC",
+          "POR",
+          "GFI",
+          "GTY",
+          "CVNA",
+          "CBRE",
+          "MGM",
+          "FSM",
+          "BILI",
+          "IBOC",
+          "AIR",
+          "F",
+          "MRTN",
+          "SLG",
+          "CMCSA",
+          "GPK",
+          "FSLR",
+          "APO",
+          "NLY",
+          "ALB",
+          "CAR",
+          "UVV",
+          "GIS",
+          "CALM",
+          "MKC",
+          "WB"
         ],
-        "plan_ids": [
-          "AEIS-BULL-20260922"
-        ],
-        "n_plans": 1,
+        "plan_ids": [],
+        "n_plans": 0,
         "selection": {
-          "admitted": 40,
+          "admitted": 56,
           "cap": null,
           "cap_applied": false,
           "selection_basis": "lossless live champion mirror",
           "truncated": 0
         },
         "origination": {
-          "offered": 40,
-          "skipped_duplicate_id": 24,
-          "skipped_open_plan": 6,
-          "skipped_clock_provenance": 9,
+          "offered": 56,
+          "skipped_duplicate_id": 42,
+          "skipped_open_plan": 7,
+          "skipped_clock_provenance": 7,
           "skipped_no_spot": 0,
           "skipped_door_w_no_geometry": 0,
           "skipped_door_w_tickers": [],
-          "recorded_at": "2026-09-27",
-          "price_basis_date": "2026-09-25",
-          "clock_errors": [],
+          "recorded_at": "2026-11-07",
+          "price_basis_date": "2026-11-05",
+          "clock_errors": [
+            "price_basis_date '2026-11-05' is not the last completed NYSE session for recorded_at '2026-11-07' (2026-11-06); stale boards cannot originate plans"
+          ],
           "validation_failures": [
             {
-              "ticker": "LRCX",
-              "id": "LRCX-BULL-20260925",
+              "ticker": "THC",
+              "id": "THC-BULL-20261105",
               "stage": "clock_provenance",
               "errors": [
-                "formation_date '2026-09-25' postdates tier_event_date '2026-09-23'"
+                "price_basis_date '2026-11-05' is not the last completed NYSE session for recorded_at '2026-11-07' (2026-11-06); stale boards cannot originate plans",
+                "formation_date '2026-11-05' postdates tier_event_date '2026-11-04'"
               ]
             },
             {
-              "ticker": "BHF",
-              "id": "BHF-BULL-20260925",
+              "ticker": "AGCO",
+              "id": "AGCO-BULL-20261103",
               "stage": "clock_provenance",
               "errors": [
-                "formation_date '2026-09-25' postdates tier_event_date '2026-09-23'"
+                "price_basis_date '2026-11-05' is not the last completed NYSE session for recorded_at '2026-11-07' (2026-11-06); stale boards cannot originate plans",
+                "formation_date '2026-11-03' postdates tier_event_date '2026-11-02'"
               ]
             },
             {
-              "ticker": "ROK",
-              "id": "ROK-BULL-20260925",
+              "ticker": "VSEC",
+              "id": "VSEC-BULL-20261103",
               "stage": "clock_provenance",
               "errors": [
-                "formation_date '2026-09-25' postdates tier_event_date '2026-09-23'"
+                "price_basis_date '2026-11-05' is not the last completed NYSE session for recorded_at '2026-11-07' (2026-11-06); stale boards cannot originate plans",
+                "formation_date '2026-11-03' postdates tier_event_date '2026-11-02'"
               ]
             },
             {
-              "ticker": "NPO",
-              "id": "NPO-BULL-20260925",
+              "ticker": "BKNG",
+              "id": "BKNG-BULL-20261103",
               "stage": "clock_provenance",
               "errors": [
-                "formation_date '2026-09-25' postdates tier_event_date '2026-09-23'"
+                "price_basis_date '2026-11-05' is not the last completed NYSE session for recorded_at '2026-11-07' (2026-11-06); stale boards cannot originate plans",
+                "formation_date '2026-11-03' postdates tier_event_date '2026-11-02'"
               ]
             },
             {
-              "ticker": "VKTX",
-              "id": "VKTX-BULL-20260925",
+              "ticker": "TMUS",
+              "id": "TMUS-BULL-20261103",
               "stage": "clock_provenance",
               "errors": [
-                "formation_date '2026-09-25' postdates tier_event_date '2026-09-23'"
+                "price_basis_date '2026-11-05' is not the last completed NYSE session for recorded_at '2026-11-07' (2026-11-06); stale boards cannot originate plans",
+                "formation_date '2026-11-03' postdates tier_event_date '2026-11-02'"
               ]
             },
             {
-              "ticker": "ESI",
-              "id": "ESI-BULL-20260925",
+              "ticker": "IART",
+              "id": "IART-BULL-20261103",
               "stage": "clock_provenance",
               "errors": [
-                "formation_date '2026-09-25' postdates tier_event_date '2026-09-23'"
+                "price_basis_date '2026-11-05' is not the last completed NYSE session for recorded_at '2026-11-07' (2026-11-06); stale boards cannot originate plans",
+                "formation_date '2026-11-03' postdates tier_event_date '2026-11-02'"
               ]
             },
             {
-              "ticker": "PVH",
-              "id": "PVH-BULL-20260925",
+              "ticker": "PPC",
+              "id": "PPC-BULL-20261103",
               "stage": "clock_provenance",
               "errors": [
-                "formation_date '2026-09-25' postdates tier_event_date '2026-09-23'"
-              ]
-            },
-            {
-              "ticker": "VFC",
-              "id": "VFC-BULL-20260922",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-09-22' postdates tier_event_date '2026-09-21'"
-              ]
-            },
-            {
-              "ticker": "ONON",
-              "id": "ONON-BULL-20260925",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-09-25' postdates tier_event_date '2026-09-23'"
+                "price_basis_date '2026-11-05' is not the last completed NYSE session for recorded_at '2026-11-07' (2026-11-06); stale boards cannot originate plans",
+                "formation_date '2026-11-03' postdates tier_event_date '2026-11-02'"
               ]
             }
           ],
-          "originated": 1,
-          "validation_failed": 9
+          "originated": 0,
+          "validation_failed": 7
         },
-        "ledger_rows_appended": 1,
-        "ledger_closures_appended": 0
+        "ledger_rows_appended": 0,
+        "ledger_closures_appended": 6
       },
       "C1_buy_soon_first": {
         "selected_tickers": [
-          "NVDA",
-          "LFUS",
-          "LRCX",
-          "CDNS",
-          "BHF",
-          "ROK",
-          "NPO",
-          "VKTX",
-          "SHW",
-          "TBBK",
-          "GAP",
-          "AEIS"
+          "THC",
+          "HTO",
+          "RGLD",
+          "CNMD",
+          "NTES",
+          "TR",
+          "AGCO",
+          "JNJ",
+          "AWR",
+          "JD",
+          "SJM",
+          "VSEC"
         ],
-        "plan_ids": [
-          "AEIS-BULL-20260922"
-        ],
-        "n_plans": 1,
+        "plan_ids": [],
+        "n_plans": 0,
         "selection": {
-          "admitted": 40,
+          "admitted": 56,
           "cap": 12,
           "cap_applied": true,
           "act_level_2": 0,
@@ -531,89 +536,74 @@
         },
         "origination": {
           "offered": 12,
-          "skipped_duplicate_id": 5,
-          "skipped_open_plan": 1,
-          "skipped_clock_provenance": 5,
+          "skipped_duplicate_id": 7,
+          "skipped_open_plan": 2,
+          "skipped_clock_provenance": 3,
           "skipped_no_spot": 0,
           "skipped_door_w_no_geometry": 0,
           "skipped_door_w_tickers": [],
-          "recorded_at": "2026-09-27",
-          "price_basis_date": "2026-09-25",
-          "clock_errors": [],
+          "recorded_at": "2026-11-07",
+          "price_basis_date": "2026-11-05",
+          "clock_errors": [
+            "price_basis_date '2026-11-05' is not the last completed NYSE session for recorded_at '2026-11-07' (2026-11-06); stale boards cannot originate plans"
+          ],
           "validation_failures": [
             {
-              "ticker": "LRCX",
-              "id": "LRCX-BULL-20260925",
+              "ticker": "THC",
+              "id": "THC-BULL-20261105",
               "stage": "clock_provenance",
               "errors": [
-                "formation_date '2026-09-25' postdates tier_event_date '2026-09-23'"
+                "price_basis_date '2026-11-05' is not the last completed NYSE session for recorded_at '2026-11-07' (2026-11-06); stale boards cannot originate plans",
+                "formation_date '2026-11-05' postdates tier_event_date '2026-11-04'"
               ]
             },
             {
-              "ticker": "BHF",
-              "id": "BHF-BULL-20260925",
+              "ticker": "AGCO",
+              "id": "AGCO-BULL-20261103",
               "stage": "clock_provenance",
               "errors": [
-                "formation_date '2026-09-25' postdates tier_event_date '2026-09-23'"
+                "price_basis_date '2026-11-05' is not the last completed NYSE session for recorded_at '2026-11-07' (2026-11-06); stale boards cannot originate plans",
+                "formation_date '2026-11-03' postdates tier_event_date '2026-11-02'"
               ]
             },
             {
-              "ticker": "ROK",
-              "id": "ROK-BULL-20260925",
+              "ticker": "VSEC",
+              "id": "VSEC-BULL-20261103",
               "stage": "clock_provenance",
               "errors": [
-                "formation_date '2026-09-25' postdates tier_event_date '2026-09-23'"
-              ]
-            },
-            {
-              "ticker": "NPO",
-              "id": "NPO-BULL-20260925",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-09-25' postdates tier_event_date '2026-09-23'"
-              ]
-            },
-            {
-              "ticker": "VKTX",
-              "id": "VKTX-BULL-20260925",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-09-25' postdates tier_event_date '2026-09-23'"
+                "price_basis_date '2026-11-05' is not the last completed NYSE session for recorded_at '2026-11-07' (2026-11-06); stale boards cannot originate plans",
+                "formation_date '2026-11-03' postdates tier_event_date '2026-11-02'"
               ]
             }
           ],
-          "originated": 1,
-          "validation_failed": 5
+          "originated": 0,
+          "validation_failed": 3
         },
-        "ledger_rows_appended": 1,
+        "ledger_rows_appended": 0,
         "ledger_closures_appended": 0
       },
       "C3_door_w_union": {
         "selected_tickers": [
-          "NVDA",
-          "LFUS",
-          "LRCX",
-          "CDNS",
-          "BHF",
-          "ROK",
-          "NPO",
-          "VKTX",
-          "WMT",
-          "AZN",
-          "ECHO",
-          "LITE"
+          "THC",
+          "HTO",
+          "RGLD",
+          "CNMD",
+          "NTES",
+          "TR",
+          "AGCO",
+          "JNJ",
+          "CASY",
+          "LHX",
+          "TPR",
+          "O"
         ],
-        "plan_ids": [
-          "ECHO-BULL-20260925",
-          "LITE-BULL-20260925",
-          "WMT-BULL-20260925"
-        ],
-        "n_plans": 3,
+        "plan_ids": [],
+        "n_plans": 0,
         "selection": {
-          "admitted": 40,
+          "admitted": 56,
           "cap": 12,
           "cap_applied": true,
-          "door_w_offered": 4,
+          "door_w_offered": 30,
           "door_w_already_in_champion_pool": 0,
           "door_w_reserved_slots": 4,
           "door_w_selected": 4,
@@ -621,113 +611,120 @@
         },
         "origination": {
           "offered": 12,
-          "skipped_duplicate_id": 2,
+          "skipped_duplicate_id": 6,
           "skipped_open_plan": 2,
-          "skipped_clock_provenance": 5,
+          "skipped_clock_provenance": 4,
           "skipped_no_spot": 0,
           "skipped_door_w_no_geometry": 0,
           "skipped_door_w_tickers": [],
-          "recorded_at": "2026-09-27",
-          "price_basis_date": "2026-09-25",
-          "clock_errors": [],
+          "recorded_at": "2026-11-07",
+          "price_basis_date": "2026-11-05",
+          "clock_errors": [
+            "price_basis_date '2026-11-05' is not the last completed NYSE session for recorded_at '2026-11-07' (2026-11-06); stale boards cannot originate plans"
+          ],
           "validation_failures": [
             {
-              "ticker": "LRCX",
-              "id": "LRCX-BULL-20260925",
+              "ticker": "THC",
+              "id": "THC-BULL-20261105",
               "stage": "clock_provenance",
               "errors": [
-                "formation_date '2026-09-25' postdates tier_event_date '2026-09-23'"
+                "price_basis_date '2026-11-05' is not the last completed NYSE session for recorded_at '2026-11-07' (2026-11-06); stale boards cannot originate plans",
+                "formation_date '2026-11-05' postdates tier_event_date '2026-11-04'"
               ]
             },
             {
-              "ticker": "BHF",
-              "id": "BHF-BULL-20260925",
+              "ticker": "AGCO",
+              "id": "AGCO-BULL-20261103",
               "stage": "clock_provenance",
               "errors": [
-                "formation_date '2026-09-25' postdates tier_event_date '2026-09-23'"
+                "price_basis_date '2026-11-05' is not the last completed NYSE session for recorded_at '2026-11-07' (2026-11-06); stale boards cannot originate plans",
+                "formation_date '2026-11-03' postdates tier_event_date '2026-11-02'"
               ]
             },
             {
-              "ticker": "ROK",
-              "id": "ROK-BULL-20260925",
+              "ticker": "LHX",
+              "id": "LHX-BULL-20261105",
               "stage": "clock_provenance",
               "errors": [
-                "formation_date '2026-09-25' postdates tier_event_date '2026-09-23'"
+                "price_basis_date '2026-11-05' is not the last completed NYSE session for recorded_at '2026-11-07' (2026-11-06); stale boards cannot originate plans"
               ]
             },
             {
-              "ticker": "NPO",
-              "id": "NPO-BULL-20260925",
+              "ticker": "TPR",
+              "id": "TPR-BULL-20261105",
               "stage": "clock_provenance",
               "errors": [
-                "formation_date '2026-09-25' postdates tier_event_date '2026-09-23'"
-              ]
-            },
-            {
-              "ticker": "VKTX",
-              "id": "VKTX-BULL-20260925",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-09-25' postdates tier_event_date '2026-09-23'"
+                "price_basis_date '2026-11-05' is not the last completed NYSE session for recorded_at '2026-11-07' (2026-11-06); stale boards cannot originate plans"
               ]
             }
           ],
-          "originated": 3,
-          "validation_failed": 5
+          "originated": 0,
+          "validation_failed": 4
         },
         "ledger_rows_appended": 0,
         "ledger_closures_appended": 0
       },
       "C4_dispersion_cap": {
         "selected_tickers": [
-          "NVDA",
-          "LFUS",
-          "LRCX",
-          "CDNS",
-          "BHF",
-          "ROK"
+          "THC",
+          "HTO",
+          "RGLD",
+          "CNMD",
+          "NTES",
+          "TR",
+          "AGCO",
+          "JNJ",
+          "AWR",
+          "JD",
+          "SJM",
+          "VSEC"
         ],
         "plan_ids": [],
         "n_plans": 0,
         "selection": {
-          "admitted": 40,
-          "cap": 6,
+          "admitted": 56,
+          "cap": 12,
           "cap_applied": true
         },
         "origination": {
-          "offered": 6,
-          "skipped_duplicate_id": 2,
-          "skipped_open_plan": 1,
+          "offered": 12,
+          "skipped_duplicate_id": 7,
+          "skipped_open_plan": 2,
           "skipped_clock_provenance": 3,
           "skipped_no_spot": 0,
           "skipped_door_w_no_geometry": 0,
           "skipped_door_w_tickers": [],
-          "recorded_at": "2026-09-27",
-          "price_basis_date": "2026-09-25",
-          "clock_errors": [],
+          "recorded_at": "2026-11-07",
+          "price_basis_date": "2026-11-05",
+          "clock_errors": [
+            "price_basis_date '2026-11-05' is not the last completed NYSE session for recorded_at '2026-11-07' (2026-11-06); stale boards cannot originate plans"
+          ],
           "validation_failures": [
             {
-              "ticker": "LRCX",
-              "id": "LRCX-BULL-20260925",
+              "ticker": "THC",
+              "id": "THC-BULL-20261105",
               "stage": "clock_provenance",
               "errors": [
-                "formation_date '2026-09-25' postdates tier_event_date '2026-09-23'"
+                "price_basis_date '2026-11-05' is not the last completed NYSE session for recorded_at '2026-11-07' (2026-11-06); stale boards cannot originate plans",
+                "formation_date '2026-11-05' postdates tier_event_date '2026-11-04'"
               ]
             },
             {
-              "ticker": "BHF",
-              "id": "BHF-BULL-20260925",
+              "ticker": "AGCO",
+              "id": "AGCO-BULL-20261103",
               "stage": "clock_provenance",
               "errors": [
-                "formation_date '2026-09-25' postdates tier_event_date '2026-09-23'"
+                "price_basis_date '2026-11-05' is not the last completed NYSE session for recorded_at '2026-11-07' (2026-11-06); stale boards cannot originate plans",
+                "formation_date '2026-11-03' postdates tier_event_date '2026-11-02'"
               ]
             },
             {
-              "ticker": "ROK",
-              "id": "ROK-BULL-20260925",
+              "ticker": "VSEC",
+              "id": "VSEC-BULL-20261103",
               "stage": "clock_provenance",
               "errors": [
-                "formation_date '2026-09-25' postdates tier_event_date '2026-09-23'"
+                "price_basis_date '2026-11-05' is not the last completed NYSE session for recorded_at '2026-11-07' (2026-11-06); stale boards cannot originate plans",
+                "formation_date '2026-11-03' postdates tier_event_date '2026-11-02'"
               ]
             }
           ],
@@ -739,275 +736,299 @@
       },
       "C5_align2_gate": {
         "selected_tickers": [
-          "NVDA",
-          "GAP",
-          "EU"
+          "THC",
+          "NTES",
+          "TR",
+          "JD",
+          "SKY",
+          "SBRA",
+          "PPLI",
+          "PLD",
+          "PPC",
+          "BILI",
+          "CMCSA",
+          "GPK"
         ],
         "plan_ids": [],
         "n_plans": 0,
         "selection": {
-          "admitted": 40,
+          "admitted": 56,
           "cap": 12,
           "cap_applied": true,
           "align_gate": {
-            "admitted": 3,
-            "admitted_via_fallback": 1,
-            "excluded_misaligned": 37,
+            "admitted": 13,
+            "admitted_via_fallback": 11,
+            "excluded_misaligned": 43,
             "excluded_unreadable": 0,
             "basis": "event_atlas weekly align_class == 2 (its full value), falling back to align_now == 3 (its full value) when the name has no weekly event on record; a name the atlas cannot read is excluded, never admitted"
           },
-          "passed_gate": 3,
-          "excluded": 37
+          "passed_gate": 13,
+          "excluded": 43
         },
         "origination": {
-          "offered": 3,
-          "skipped_duplicate_id": 3,
-          "skipped_open_plan": 0,
-          "skipped_clock_provenance": 0,
+          "offered": 12,
+          "skipped_duplicate_id": 6,
+          "skipped_open_plan": 4,
+          "skipped_clock_provenance": 2,
           "skipped_no_spot": 0,
           "skipped_door_w_no_geometry": 0,
           "skipped_door_w_tickers": [],
-          "recorded_at": "2026-09-27",
-          "price_basis_date": "2026-09-25",
-          "clock_errors": [],
-          "validation_failures": [],
+          "recorded_at": "2026-11-07",
+          "price_basis_date": "2026-11-05",
+          "clock_errors": [
+            "price_basis_date '2026-11-05' is not the last completed NYSE session for recorded_at '2026-11-07' (2026-11-06); stale boards cannot originate plans"
+          ],
+          "validation_failures": [
+            {
+              "ticker": "THC",
+              "id": "THC-BULL-20261105",
+              "stage": "clock_provenance",
+              "errors": [
+                "price_basis_date '2026-11-05' is not the last completed NYSE session for recorded_at '2026-11-07' (2026-11-06); stale boards cannot originate plans",
+                "formation_date '2026-11-05' postdates tier_event_date '2026-11-04'"
+              ]
+            },
+            {
+              "ticker": "PPC",
+              "id": "PPC-BULL-20261103",
+              "stage": "clock_provenance",
+              "errors": [
+                "price_basis_date '2026-11-05' is not the last completed NYSE session for recorded_at '2026-11-07' (2026-11-06); stale boards cannot originate plans",
+                "formation_date '2026-11-03' postdates tier_event_date '2026-11-02'"
+              ]
+            }
+          ],
           "originated": 0,
-          "validation_failed": 0
+          "validation_failed": 2
         },
         "ledger_rows_appended": 0,
         "ledger_closures_appended": 0
       },
       "C6_time_stop_21": {
         "selected_tickers": [
-          "NVDA",
-          "LFUS",
-          "LRCX",
-          "CDNS",
-          "BHF",
-          "ROK",
-          "NPO",
-          "VKTX",
-          "SHW",
-          "TBBK",
-          "GAP",
-          "AEIS",
-          "ESI",
-          "PVH",
-          "OTTR",
-          "AEO",
-          "PL",
-          "EGBN",
-          "NVT",
-          "VFC",
-          "MAR",
-          "ONON",
-          "WABC",
+          "THC",
+          "HTO",
+          "RGLD",
+          "CNMD",
+          "NTES",
+          "TR",
+          "AGCO",
+          "JNJ",
+          "AWR",
+          "JD",
+          "SJM",
+          "VSEC",
+          "SKY",
+          "BNY",
+          "SBRA",
+          "BIDU",
+          "VTR",
+          "BKNG",
+          "TMUS",
+          "IART",
+          "PPLI",
           "BKSY",
-          "BKR",
-          "EU",
-          "TLN",
-          "PLAB",
-          "LMAT",
-          "KLAC",
-          "TNDM",
-          "RPM",
-          "PDFS",
-          "KMT",
-          "ELF",
-          "QDEL",
-          "TME",
-          "WS",
-          "NVR",
-          "PBH"
+          "DEA",
+          "ARCB",
+          "PLD",
+          "DOC",
+          "MOS",
+          "MTG",
+          "CFG",
+          "SNA",
+          "PPC",
+          "POR",
+          "GFI",
+          "GTY",
+          "CVNA",
+          "CBRE",
+          "MGM",
+          "FSM",
+          "BILI",
+          "IBOC",
+          "AIR",
+          "F",
+          "MRTN",
+          "SLG",
+          "CMCSA",
+          "GPK",
+          "FSLR",
+          "APO",
+          "NLY",
+          "ALB",
+          "CAR",
+          "UVV",
+          "GIS",
+          "CALM",
+          "MKC",
+          "WB"
         ],
-        "plan_ids": [
-          "AEIS-BULL-20260922"
-        ],
-        "n_plans": 1,
+        "plan_ids": [],
+        "n_plans": 0,
         "selection": {
-          "admitted": 40,
+          "admitted": 56,
           "cap": null,
           "cap_applied": false,
           "selection_basis": "identical to lossless C0 by construction",
           "truncated": 0
         },
         "origination": {
-          "offered": 40,
-          "skipped_duplicate_id": 24,
-          "skipped_open_plan": 6,
-          "skipped_clock_provenance": 9,
+          "offered": 56,
+          "skipped_duplicate_id": 42,
+          "skipped_open_plan": 7,
+          "skipped_clock_provenance": 7,
           "skipped_no_spot": 0,
           "skipped_door_w_no_geometry": 0,
           "skipped_door_w_tickers": [],
-          "recorded_at": "2026-09-27",
-          "price_basis_date": "2026-09-25",
-          "clock_errors": [],
+          "recorded_at": "2026-11-07",
+          "price_basis_date": "2026-11-05",
+          "clock_errors": [
+            "price_basis_date '2026-11-05' is not the last completed NYSE session for recorded_at '2026-11-07' (2026-11-06); stale boards cannot originate plans"
+          ],
           "validation_failures": [
             {
-              "ticker": "LRCX",
-              "id": "LRCX-BULL-20260925",
+              "ticker": "THC",
+              "id": "THC-BULL-20261105",
               "stage": "clock_provenance",
               "errors": [
-                "formation_date '2026-09-25' postdates tier_event_date '2026-09-23'"
+                "price_basis_date '2026-11-05' is not the last completed NYSE session for recorded_at '2026-11-07' (2026-11-06); stale boards cannot originate plans",
+                "formation_date '2026-11-05' postdates tier_event_date '2026-11-04'"
               ]
             },
             {
-              "ticker": "BHF",
-              "id": "BHF-BULL-20260925",
+              "ticker": "AGCO",
+              "id": "AGCO-BULL-20261103",
               "stage": "clock_provenance",
               "errors": [
-                "formation_date '2026-09-25' postdates tier_event_date '2026-09-23'"
+                "price_basis_date '2026-11-05' is not the last completed NYSE session for recorded_at '2026-11-07' (2026-11-06); stale boards cannot originate plans",
+                "formation_date '2026-11-03' postdates tier_event_date '2026-11-02'"
               ]
             },
             {
-              "ticker": "ROK",
-              "id": "ROK-BULL-20260925",
+              "ticker": "VSEC",
+              "id": "VSEC-BULL-20261103",
               "stage": "clock_provenance",
               "errors": [
-                "formation_date '2026-09-25' postdates tier_event_date '2026-09-23'"
+                "price_basis_date '2026-11-05' is not the last completed NYSE session for recorded_at '2026-11-07' (2026-11-06); stale boards cannot originate plans",
+                "formation_date '2026-11-03' postdates tier_event_date '2026-11-02'"
               ]
             },
             {
-              "ticker": "NPO",
-              "id": "NPO-BULL-20260925",
+              "ticker": "BKNG",
+              "id": "BKNG-BULL-20261103",
               "stage": "clock_provenance",
               "errors": [
-                "formation_date '2026-09-25' postdates tier_event_date '2026-09-23'"
+                "price_basis_date '2026-11-05' is not the last completed NYSE session for recorded_at '2026-11-07' (2026-11-06); stale boards cannot originate plans",
+                "formation_date '2026-11-03' postdates tier_event_date '2026-11-02'"
               ]
             },
             {
-              "ticker": "VKTX",
-              "id": "VKTX-BULL-20260925",
+              "ticker": "TMUS",
+              "id": "TMUS-BULL-20261103",
               "stage": "clock_provenance",
               "errors": [
-                "formation_date '2026-09-25' postdates tier_event_date '2026-09-23'"
+                "price_basis_date '2026-11-05' is not the last completed NYSE session for recorded_at '2026-11-07' (2026-11-06); stale boards cannot originate plans",
+                "formation_date '2026-11-03' postdates tier_event_date '2026-11-02'"
               ]
             },
             {
-              "ticker": "ESI",
-              "id": "ESI-BULL-20260925",
+              "ticker": "IART",
+              "id": "IART-BULL-20261103",
               "stage": "clock_provenance",
               "errors": [
-                "formation_date '2026-09-25' postdates tier_event_date '2026-09-23'"
+                "price_basis_date '2026-11-05' is not the last completed NYSE session for recorded_at '2026-11-07' (2026-11-06); stale boards cannot originate plans",
+                "formation_date '2026-11-03' postdates tier_event_date '2026-11-02'"
               ]
             },
             {
-              "ticker": "PVH",
-              "id": "PVH-BULL-20260925",
+              "ticker": "PPC",
+              "id": "PPC-BULL-20261103",
               "stage": "clock_provenance",
               "errors": [
-                "formation_date '2026-09-25' postdates tier_event_date '2026-09-23'"
-              ]
-            },
-            {
-              "ticker": "VFC",
-              "id": "VFC-BULL-20260922",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-09-22' postdates tier_event_date '2026-09-21'"
-              ]
-            },
-            {
-              "ticker": "ONON",
-              "id": "ONON-BULL-20260925",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-09-25' postdates tier_event_date '2026-09-23'"
+                "price_basis_date '2026-11-05' is not the last completed NYSE session for recorded_at '2026-11-07' (2026-11-06); stale boards cannot originate plans",
+                "formation_date '2026-11-03' postdates tier_event_date '2026-11-02'"
               ]
             }
           ],
-          "originated": 1,
-          "validation_failed": 9
+          "originated": 0,
+          "validation_failed": 7
         },
-        "ledger_rows_appended": 1,
-        "ledger_closures_appended": 0
+        "ledger_rows_appended": 0,
+        "ledger_closures_appended": 11
       },
       "C7_buy_soon_admitted": {
         "selected_tickers": [
-          "NVDA",
-          "LFUS",
-          "LRCX",
-          "CDNS",
-          "BHF",
-          "ROK",
-          "NPO",
-          "VKTX",
-          "SHW",
-          "TBBK",
-          "GAP",
-          "AEIS"
+          "THC",
+          "HTO",
+          "RGLD",
+          "CNMD",
+          "NTES",
+          "TR",
+          "AGCO",
+          "JNJ",
+          "AWR",
+          "JD",
+          "SJM",
+          "VSEC"
         ],
-        "plan_ids": [
-          "AEIS-BULL-20260922"
-        ],
-        "n_plans": 1,
+        "plan_ids": [],
+        "n_plans": 0,
         "selection": {
-          "admitted": 40,
+          "admitted": 56,
           "cap": 12,
           "cap_applied": true,
-          "admitted_with_widening": 42,
-          "buy_soon_in_board": 3,
-          "buy_soon_admitted_by_widening": 2,
+          "admitted_with_widening": 56,
+          "buy_soon_in_board": 0,
+          "buy_soon_admitted_by_widening": 0,
           "buy_soon_selected": 0,
           "widening": "the status-class gate is relaxed for buy_soon rows only; tone, band, tier, entry-signal presence and the champion's own ordering stay the champion's"
         },
         "origination": {
           "offered": 12,
-          "skipped_duplicate_id": 5,
-          "skipped_open_plan": 1,
-          "skipped_clock_provenance": 5,
+          "skipped_duplicate_id": 7,
+          "skipped_open_plan": 2,
+          "skipped_clock_provenance": 3,
           "skipped_no_spot": 0,
           "skipped_door_w_no_geometry": 0,
           "skipped_door_w_tickers": [],
-          "recorded_at": "2026-09-27",
-          "price_basis_date": "2026-09-25",
-          "clock_errors": [],
+          "recorded_at": "2026-11-07",
+          "price_basis_date": "2026-11-05",
+          "clock_errors": [
+            "price_basis_date '2026-11-05' is not the last completed NYSE session for recorded_at '2026-11-07' (2026-11-06); stale boards cannot originate plans"
+          ],
           "validation_failures": [
             {
-              "ticker": "LRCX",
-              "id": "LRCX-BULL-20260925",
+              "ticker": "THC",
+              "id": "THC-BULL-20261105",
               "stage": "clock_provenance",
               "errors": [
-                "formation_date '2026-09-25' postdates tier_event_date '2026-09-23'"
+                "price_basis_date '2026-11-05' is not the last completed NYSE session for recorded_at '2026-11-07' (2026-11-06); stale boards cannot originate plans",
+                "formation_date '2026-11-05' postdates tier_event_date '2026-11-04'"
               ]
             },
             {
-              "ticker": "BHF",
-              "id": "BHF-BULL-20260925",
+              "ticker": "AGCO",
+              "id": "AGCO-BULL-20261103",
               "stage": "clock_provenance",
               "errors": [
-                "formation_date '2026-09-25' postdates tier_event_date '2026-09-23'"
+                "price_basis_date '2026-11-05' is not the last completed NYSE session for recorded_at '2026-11-07' (2026-11-06); stale boards cannot originate plans",
+                "formation_date '2026-11-03' postdates tier_event_date '2026-11-02'"
               ]
             },
             {
-              "ticker": "ROK",
-              "id": "ROK-BULL-20260925",
+              "ticker": "VSEC",
+              "id": "VSEC-BULL-20261103",
               "stage": "clock_provenance",
               "errors": [
-                "formation_date '2026-09-25' postdates tier_event_date '2026-09-23'"
-              ]
-            },
-            {
-              "ticker": "NPO",
-              "id": "NPO-BULL-20260925",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-09-25' postdates tier_event_date '2026-09-23'"
-              ]
-            },
-            {
-              "ticker": "VKTX",
-              "id": "VKTX-BULL-20260925",
-              "stage": "clock_provenance",
-              "errors": [
-                "formation_date '2026-09-25' postdates tier_event_date '2026-09-23'"
+                "price_basis_date '2026-11-05' is not the last completed NYSE session for recorded_at '2026-11-07' (2026-11-06); stale boards cannot originate plans",
+                "formation_date '2026-11-03' postdates tier_event_date '2026-11-02'"
               ]
             }
           ],
-          "originated": 1,
-          "validation_failed": 5
+          "originated": 0,
+          "validation_failed": 3
         },
-        "ledger_rows_appended": 1,
+        "ledger_rows_appended": 0,
         "ledger_closures_appended": 0
       }
     }

@@ -23,7 +23,7 @@ It is not unblocked by #7950 alone.
 
 IN: wire the two positive witnesses (W-C copper, W-R rare-earth) to **T03's real emitted fact
 rows** instead of hand-written casebook packets; carry the consequences of that wiring through
-the closed schema; close MGD-08 clause 2.
+the closed schema. **MGD-08 clause 2 is no longer T04b's to close — it was DELIVERED 2026-09-27 (R-MIN-35); see §4.4.** T04b still owes the MGD-10 `period` arm (§4.3).
 
 OUT: any new definition (T04a owns the closed two), any route/client/mount (T05/T06, held
 behind #7870), any correction/replay semantics (T07), any live figure (G2 — no Freeport or MP
@@ -78,7 +78,21 @@ confusion at the composition layer.** Required, both arms:
 2. the REVERSED case: identical literals plus an accepted time-valid bridge → attribution
    minted. A one-armed pin is satisfiable by refusing everything.
 
-### 4.4 MGD-08 clause 2 — the pin R-MIN-34 authorises
+### 4.4 MGD-08 clause 2 — **DELIVERED 2026-09-27; DO NOT RE-PIN**
+
+> **CORRECTION ISSUED (R-MIN-35, amends R-MIN-34).** This section is CLOSED. The pin
+> shipped as `tests/test_mining_composition.py::test_mgd08_clause2_wholly_empty_economic_path_degrades_on_both_slices`,
+> and closing it required a BEHAVIOUR CHANGE, which the paragraph below denied was
+> needed. The measurement below was taken on the COPPER slice alone. On W-R a wholly
+> empty economic path returned **`ready`**, not `degraded`, over a panel whose
+> `native_blocks`, `derived` and `context_block_count` were all empty — the rare-earth
+> slice vocabulary mints `stream_threshold_unknown` on every payload, and that code
+> short-circuited `_summarize_status` to `ready` before the native-block channel was
+> consulted. `_summarize_status` now takes `has_economic_input` and the threshold clause
+> is scoped to it. A T04b lane must NOT re-write this pin and must NOT re-open the
+> question: the only arm still owed here is MGD-10's `period` arm in §4.3, which becomes
+> expressible exactly when T04b mints that field. Retained below for the audit trail.
+
 
 Measured at #7950 head: an empty economic path returns `status == "degraded"`,
 `native_blocks == []`, `limitations == ['omitted:expectations']` — identically so with
@@ -116,7 +130,7 @@ never reads, and the probe then reports a populated path while claiming an empty
    function — not by a copy of its output pasted into a fixture.
 3. `period` present on native blocks, the schema change declared in the PR body, `contract-delta`
    green.
-4. MGD-08 clause 2 and MGD-10 both pinned two-armed per §4.3/§4.4.
+4. MGD-10 pinned two-armed per §4.3. (**MGD-08 clause 2 is already DELIVERED — R-MIN-35, §4.4 — so it is NOT an item of T04b's completion; do not re-pin it.**)
 5. All authority flags literal false and echoed on every response and every evidence object;
    every return path validated by `validate_mining_research`.
 6. RED committed before GREEN; a mutation run whose survivors are each argued EQUIVALENT on the

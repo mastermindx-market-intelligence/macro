@@ -1,0 +1,7 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/transmission.html.j2
+  - engine/transmission_company_continuation.py
+  - scripts/build_transmission.py
+  - tests/test_transmission_cascade_monitor.py
+manifest: mockups/evidence/a-mo-j1a-company-continuation/manifest.json

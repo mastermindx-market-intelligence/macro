@@ -1,0 +1,319 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "certificate_id",
+    "store_profile",
+    "store_id",
+    "store_manifest_sha256",
+    "qualified_source_head",
+    "chain_links",
+    "verification",
+    "assurance",
+    "authority"
+  ],
+  "properties": {
+    "schema": {
+      "const": "market_memory.lineage_certificate.v1"
+    },
+    "certificate_id": {
+      "type": "string",
+      "pattern": "^mmcert_[a-f0-9]{64}$"
+    },
+    "store_profile": {
+      "enum": [
+        "market_memory.w1a.missing_only.v1",
+        "market_memory.trusted.macro_regime_canary.v1"
+      ]
+    },
+    "store_id": {
+      "type": "string",
+      "pattern": "^mmstore_[a-f0-9]{64}$"
+    },
+    "store_manifest_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "qualified_source_head": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "head_body_sha256",
+        "generation_id",
+        "generation_sha256",
+        "capture_count",
+        "observed_at"
+      ],
+      "properties": {
+        "head_body_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "generation_id": {
+          "type": "string",
+          "pattern": "^mmgeneration_[a-f0-9]{64}$"
+        },
+        "generation_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "capture_count": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4096
+        },
+        "observed_at": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$"
+        }
+      }
+    },
+    "chain_links": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 4097,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "generation_id",
+          "generation_sha256",
+          "previous_generation_id",
+          "capture_count"
+        ],
+        "properties": {
+          "generation_id": {
+            "type": "string",
+            "pattern": "^mmgeneration_[a-f0-9]{64}$"
+          },
+          "generation_sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "previous_generation_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^mmgeneration_[a-f0-9]{64}$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "capture_count": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 4096
+          }
+        }
+      }
+    },
+    "verification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "qualification_operation_ref",
+        "producer_code_sha256",
+        "producer_config_sha256",
+        "started_at",
+        "completed_at",
+        "per_batch_byte_limit",
+        "total_byte_limit",
+        "total_input_bytes",
+        "cpu_seconds_limit",
+        "wall_seconds_limit",
+        "batches",
+        "genesis_verified",
+        "all_append_one_links_verified",
+        "cycle_depth_count_verified",
+        "complete"
+      ],
+      "properties": {
+        "qualification_operation_ref": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "producer_code_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "producer_config_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "started_at": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$"
+        },
+        "completed_at": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$"
+        },
+        "per_batch_byte_limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 67108864
+        },
+        "total_byte_limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 536870912
+        },
+        "total_input_bytes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 536870912
+        },
+        "cpu_seconds_limit": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 30
+        },
+        "wall_seconds_limit": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 60
+        },
+        "batches": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 8194,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "input_object_count",
+              "input_bytes",
+              "first_source_generation_id",
+              "last_source_generation_id",
+              "boundary_newer_generation_id",
+              "boundary_older_generation_id",
+              "started_at",
+              "completed_at"
+            ],
+            "properties": {
+              "input_object_count": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "input_bytes": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 67108864
+              },
+              "first_source_generation_id": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "pattern": "^mmgeneration_[a-f0-9]{64}$"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "last_source_generation_id": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "pattern": "^mmgeneration_[a-f0-9]{64}$"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "boundary_newer_generation_id": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "pattern": "^mmgeneration_[a-f0-9]{64}$"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "boundary_older_generation_id": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "pattern": "^mmgeneration_[a-f0-9]{64}$"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "started_at": {
+                "type": "string",
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$"
+              },
+              "completed_at": {
+                "type": "string",
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,6})?Z$"
+              }
+            }
+          }
+        },
+        "genesis_verified": {
+          "type": "boolean",
+          "const": true
+        },
+        "all_append_one_links_verified": {
+          "type": "boolean",
+          "const": true
+        },
+        "cycle_depth_count_verified": {
+          "type": "boolean",
+          "const": true
+        },
+        "complete": {
+          "type": "boolean",
+          "const": true
+        }
+      }
+    },
+    "assurance": {
+      "const": "certified_publication_lineage_v1"
+    },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "external_origin_authenticated",
+        "external_clock_authenticated",
+        "ancestor_live_reread",
+        "may_train",
+        "may_trade"
+      ],
+      "properties": {
+        "external_origin_authenticated": {
+          "type": "boolean",
+          "const": false
+        },
+        "external_clock_authenticated": {
+          "type": "boolean",
+          "const": false
+        },
+        "ancestor_live_reread": {
+          "type": "boolean",
+          "const": false
+        },
+        "may_train": {
+          "type": "boolean",
+          "const": false
+        },
+        "may_trade": {
+          "type": "boolean",
+          "const": false
+        }
+      }
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mastermind-x.com/contracts/market_memory/lineage_certificate.v1.schema.json"
+}

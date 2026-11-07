@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-23T22:26:07Z",
+ "accession": "0001628280-26-010744",
+ "cik": "0001275014",
+ "doc_byte_length": 1969048,
+ "doc_sha256": "f5075f2f3a9444dfe5d38075229b6098d4a34430abe68f36837ae9c2e2a500c0",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-23",
+ "form": "10-K",
+ "period_of_report": "2025-12-26",
+ "primary_document": "uctt-20251226.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 228613,
+  "byte_start": 228038,
+  "normalized": "The majority of our total revenue comes from the highly concentrated semiconductor capital equipment industry (OEM customers), so we are dependent upon a small number of customers. Our two largest revenue customers in fiscal years 2025, 2024 and 2023 were Applied Materials, Inc. and Lam Research Corporation, each of which accounted for more than 10% of our total revenues in those three years. As a group, our respective year’s top two customers accounted for 58.7%, 54.5% and 57.4% of the Company’s revenues for fiscal years 2025, 2024 and 2023, respectively.",
+  "normalized_sha256": "269d6062f8068ea1a7b16ea8919284f01efc49afbfd5faec45e185212debe69e",
+  "raw": "The majority of our total revenue comes from the highly concentrated semiconductor capital equipment industry (OEM customers), so we are dependent upon a small number of customers. Our two largest revenue customers in fiscal years 2025, 2024 and 2023 were Applied Materials, Inc. and Lam Research Corporation, each of which accounted for more than 10% of our total revenues in those three years. As a group, our respective year&#8217;s top two customers accounted for 58.7%, 54.5% and 57.4% of the Company&#8217;s revenues for fiscal years 2025, 2024 and 2023, respectively. ",
+  "raw_sha256": "f803b27a55dec531aa4a0e562625248338ea519067fe3ec6abbc5105e59b6b83"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1275014/000162828026010744/uctt-20251226.htm",
+ "xbrl_contexts": []
+}

@@ -1,0 +1,23 @@
+{
+  "decision": "ACCEPT_SCOPED_INSPECTOR_PROJECTION_SOURCE",
+  "worker": "paper-01a1101f-inspector-review-r1",
+  "review_sha256": "7da362b9ba050cd805ef1bb62c777494b654facb80203536d9225d768240ebb4",
+  "source_hashes": {
+    "lib/intl_inspector_view.py": "bd9f90c138afd1c03cd9d5b4dcbf61e424a294df67779cdd592634ac6f22d9a7",
+    "tests/test_intl_inspector_view.py": "5e40e529d3299276292777e18fd9961b97a083ef8f8f7e5c48b6656677aabf32"
+  },
+  "parent_tests": 107,
+  "new_tests": 44,
+  "independent_tests": 44,
+  "independent_counterchecks": 124,
+  "limits": [
+    "Not mounted in product yet",
+    "No browser or production qualification claim"
+  ],
+  "root": "01a1101f-2a37-7320-9a9b-5df3ce1b890d",
+  "scope": "IM03-T1 pure Inspector consumer, not a mounted Inspector",
+  "evidence_root": "/Volumes/Mastermind/evidence/paper-waves-20261006-01a1101f/inspector",
+  "t1_contract_sha256": "20c18f01555b15190abd599b9835164d925123c2ae973b0f5a90370e3cebf900",
+  "t1_parent_amendments_sha256": "4b804bbdc7060736ebba6a2abfdafc292c14a8371156a253db6dfa2203b70d25",
+  "routing": "Bounded parent exception after pre-effect Fabric build refusal; independent Grok review through original stable Fabric root."
+}
