@@ -94,6 +94,7 @@ def aggregate_owner_windows(*, symbol: str, calendar: Mapping[date, tuple[Any, A
                    "bar_start_utc": start.isoformat(), "bar_end_utc": end.isoformat(),
                    "known_at_utc": None, "source_sha256": None, "ohlcv": None,
                    "status": "NOT_YET_OBSERVED", "refusals": [],
+                   "projection_cutoff_utc": cutoff.isoformat(),
                    "source_admitted": False}
             if end <= cutoff:
                 source = read_aggregate(symbol, start.isoformat(), end.isoformat(), cutoff.isoformat())
@@ -132,6 +133,7 @@ def aggregate_owner_windows(*, symbol: str, calendar: Mapping[date, tuple[Any, A
                          "bar_start_utc": start.isoformat(), "bar_end_utc": closing.isoformat(),
                          "known_at_utc": None, "source_sha256": None, "ohlcv": None,
                          "status": "STUB_EXCLUDED", "stub_minutes": stub,
+                         "projection_cutoff_utc": cutoff.isoformat(),
                          "refusals": ["NONFULL_SESSION_STUB"], "source_admitted": False})
     return rows
 
@@ -155,11 +157,17 @@ def oscillator_events(*, bars: list[dict[str, Any]], indicator: str,
                       decision_cutoff_utc: str,
                       supplied: Mapping[tuple[str, str], Mapping[str, Any]] | None = None,
                       prior_session_by_day: Mapping[date, date] | None = None,
+                      original_decisions: Mapping[tuple[str, str], Mapping[str, Any]] | None = None,
                       ) -> list[dict[str, Any]]:
     """Emit null-safe descriptive crossover states, never live trading signals.
 
-    Same opportunity clock and prior-day leader must be supplied; this module
-    neither ranks RS leaders nor applies the incumbent tactical Entry Engine.
+    Original opportunities supply the existing owner's candidate_id and
+    decision_at, keyed by (symbol, bar_end_utc). Every consumed source bar must
+    have been projected at that same decision, including indicator warmup.
+    A late flat projection cannot stand in for an unavailable original vintage.
+    Missing declarations retain null rows without discarding their warmup data.
+    These are consistency checks, not proof of historical declaration or delivery.
+    This module neither ranks RS leaders nor applies the tactical Entry Engine.
     A missing full 2H/3H window resets oscillator history rather than silently
     treating missing prices as no-trade or carrying a fabricated signal.
     """
@@ -171,8 +179,19 @@ def oscillator_events(*, bars: list[dict[str, Any]], indicator: str,
             or any(type(k) is not date or type(v) is not date or v >= k
                    for k, v in prior_session_by_day.items())):
         raise ValueError("invalid owner previous-session calendar mapping")
+    if original_decisions is not None and not isinstance(original_decisions, Mapping):
+        raise ValueError("original owner decisions must be a mapping")
+    declarations = original_decisions or {}
+    if any(not isinstance(key, tuple) or len(key) != 2 or
+           any(not isinstance(value, str) or not value.strip() for value in key)
+           for key in declarations):
+        raise ValueError("original decision keys require (symbol, bar_end_utc)")
+    decision_ids = [d.get("candidate_id") for d in declarations.values()
+                    if isinstance(d, Mapping) and isinstance(d.get("candidate_id"), str)]
+    duplicate_ids = {identity for identity in decision_ids if decision_ids.count(identity) > 1}
     cutoff = _instant(decision_cutoff_utc)
     lines = []
+    projection_cutoffs = set()
     events = []
     latest_source_known = None
     sorted_bars = sorted(bars, key=lambda b: (b["symbol"], b["bar_end_utc"]))
@@ -258,8 +277,27 @@ def oscillator_events(*, bars: list[dict[str, Any]], indicator: str,
                 raise ValueError("missing opening full bar from session")
         elif _instant(prev["bar_end_utc"]) != start:
             raise ValueError("missing or overlapping RTH bar observations")
+        declaration = declarations.get(bar_key)
+        candidate_id = decision = None
+        if isinstance(declaration, Mapping):
+            identity = declaration.get("candidate_id")
+            if isinstance(identity, str) and identity.strip() and identity not in duplicate_ids:
+                candidate_id = identity
+                try:
+                    declared = _instant(declaration.get("decision_at"))
+                    if (finish <= declared <= cutoff and
+                            declaration.get("session", bar["session_date"]) == bar["session_date"]):
+                        decision = declared
+                except ValueError:
+                    pass
+        event = {"symbol": sym, "bar_end_utc": bar["bar_end_utc"],
+                 "indicator": indicator, "candidate_id": candidate_id,
+                 "decision_at_utc": decision.isoformat() if decision is not None else None,
+                 "signal": None, "issued_at_utc": None, "inputs_known_at_utc": None,
+                 "source_admitted": False}
         if idx and sorted_bars[idx-1]["symbol"] != bar["symbol"]:
             lines = []
+            projection_cutoffs = set()
             latest_source_known = None
             current_session_unknown = False
         elif (idx and sorted_bars[idx-1]["symbol"] == bar["symbol"] and
@@ -269,6 +307,7 @@ def oscillator_events(*, bars: list[dict[str, Any]], indicator: str,
                 # adjacency. Without it, an omitted holiday/session could
                 # create a false crossover. No source claim is issued.
                 lines = []
+                projection_cutoffs = set()
                 latest_source_known = None
                 current_session_unknown = True
             else:
@@ -276,10 +315,9 @@ def oscillator_events(*, bars: list[dict[str, Any]], indicator: str,
         if status != "FULL_KNOWN":
             if status != "STUB_EXCLUDED":
                 lines = []
+                projection_cutoffs = set()
                 latest_source_known = None
-            events.append({"symbol": bar["symbol"], "bar_end_utc": bar["bar_end_utc"],
-                           "indicator": indicator, "state": "SOURCE_" + status,
-                           "signal": None, "issued_at_utc": None, "source_admitted": False})
+            events.append(dict(event, state="SOURCE_" + status))
             continue
         key = (bar["symbol"], bar["bar_end_utc"])
         ending = _instant(bar["bar_end_utc"])
@@ -289,31 +327,28 @@ def oscillator_events(*, bars: list[dict[str, Any]], indicator: str,
                 not _sha(bar.get("source_sha256")) or bar.get("refusals")):
             raise ValueError("inconsistent full bar/availability")
         if current_session_unknown:
-            events.append({"symbol": bar["symbol"], "bar_end_utc": bar["bar_end_utc"],
-                           "indicator": indicator,
-                           "state": "SOURCE_OWNER_PREDECESSOR_UNKNOWN",
-                           "signal": None, "issued_at_utc": None,
-                           "source_admitted": False})
+            events.append(dict(event, state="SOURCE_OWNER_PREDECESSOR_UNKNOWN"))
             continue
-        # A late restatement of ANY earlier source candle can change the
-        # recursive RSI/MACD history. Such a historical value was not known
-        # when this bar was first issued: refuse both CROSS and NO_CROSS
-        # rather than backdating a later-vintage result to an earlier clock.
-        # The actual owner must still supply as-issued per-event revisions;
-        # this check is an additional fail-closed local clock invariant.
-        # Keep the immutable observed prefix for subsequent *later* issues;
-        # an unavailable earlier event is a null, not an erased candle.
+        # Keep all valid warmup bars, even without original opportunity
+        # declarations. Their absence must not shorten or reset the recursion.
         lines.append(bar)
         if latest_source_known is None or known > latest_source_known:
             latest_source_known = known
-        if latest_source_known > known:
-            events.append({"symbol": bar["symbol"], "bar_end_utc": bar["bar_end_utc"],
-                           "indicator": indicator,
-                           "state": "SOURCE_HISTORICAL_REVISION_UNAVAILABLE",
-                           "signal": None, "issued_at_utc": None, "source_admitted": False})
+        try:
+            projection_cutoffs.add(_instant(bar.get("projection_cutoff_utc")))
+        except ValueError:
+            projection_cutoffs.add(None)
+        if decision is None:
+            events.append(dict(event, state="ORIGINAL_DECISION_UNAVAILABLE"))
+            continue
+        if latest_source_known > decision:
+            events.append(dict(event, state="SOURCE_HISTORICAL_REVISION_UNAVAILABLE"))
+            continue
+        if projection_cutoffs != {decision}:
+            events.append(dict(event, state="SOURCE_ORIGINAL_VINTAGE_UNAVAILABLE"))
             continue
         ready = False
-        oscillator_known = known
+        oscillator_known = latest_source_known
         if indicator == "SUPPLIED_LINES":
             obs = supplied.get(key)
             if isinstance(obs, Mapping) and all(type(obs.get(k)) in (int, float)
@@ -321,8 +356,8 @@ def oscillator_events(*, bars: list[dict[str, Any]], indicator: str,
                     and type(obs.get("oversold")) is bool and \
                     obs.get("source_sha256") == bar.get("source_sha256"):
                 try:
-                    oscillator_known = _instant(obs.get("known_at_utc"))
-                    ready = known <= oscillator_known <= cutoff
+                    current_line_known = _instant(obs.get("known_at_utc"))
+                    ready = known <= current_line_known <= decision
                 except ValueError:
                     ready = False
                 if ready:
@@ -338,12 +373,12 @@ def oscillator_events(*, bars: list[dict[str, Any]], indicator: str,
                                 for k in ("fast", "slow"))):
                         try:
                             prev_known = _instant(prev.get("known_at_utc"))
-                            ready = (_instant(previous_bar["known_at_utc"]) <= prev_known <= cutoff)
+                            ready = (_instant(previous_bar["known_at_utc"]) <= prev_known <= decision)
                         except ValueError:
                             ready = False
                         if ready:
                             line, sig, p_line, p_sig = (obs["fast"], obs["slow"], prev["fast"], prev["slow"])
-                            oscillator_known = max(oscillator_known, prev_known)
+                            oscillator_known = max(latest_source_known, current_line_known, prev_known)
                             flag = obs["oversold"]
                     else:
                         ready = False
@@ -361,7 +396,7 @@ def oscillator_events(*, bars: list[dict[str, Any]], indicator: str,
             cross = bool(p_line <= p_sig and line > sig and line < 0 and sig < 0 and flag)
             state = "CROSS_OBSERVED" if cross else "NO_CROSS"
         candidate = eligibility.get(key)
-        issued = oscillator_known
+        inputs_known = oscillator_known
         if not isinstance(candidate, Mapping):
             state, cross = "ELIGIBILITY_UNAVAILABLE", None
         else:
@@ -371,19 +406,45 @@ def oscillator_events(*, bars: list[dict[str, Any]], indicator: str,
             except (ValueError, TypeError, KeyError):
                 state, cross = "ELIGIBILITY_UNAVAILABLE", None
             else:
+                owner_previous = (prior_session_by_day.get(local_day)
+                                  if prior_session_by_day is not None else None)
                 if (type(candidate.get("is_leader")) is not bool or
-                        candidate.get("expected_prior_session") != candidate.get("asof_session") or
-                        asof >= date.fromisoformat(bar["session_date"]) or
-                        not _sha(candidate.get("receipt_sha256")) or owner_known > cutoff):
+                        owner_previous is None or asof != owner_previous or
+                        candidate.get("expected_prior_session") != owner_previous.isoformat() or
+                        asof >= local_day or
+                        not _sha(candidate.get("receipt_sha256")) or owner_known > decision):
                     state, cross = "ELIGIBILITY_UNAVAILABLE", None
                 else:
-                    issued = max(known, oscillator_known, owner_known)
+                    inputs_known = max(latest_source_known, oscillator_known, owner_known)
                     if not candidate["is_leader"]:
                         state, cross = "NOT_LEADER", None
-                    # Signal availability is the last source receipt, not bar close.
-                    # Do not infer a tradable fill from descriptive crossover state.
-        events.append({"symbol": bar["symbol"], "bar_end_utc": bar["bar_end_utc"],
-                       "indicator": indicator, "state": state, "signal": cross,
-                       "issued_at_utc": issued.isoformat() if cross is not None else None,
+                    # Preserve the declared opportunity clock separately from
+                    # the evidence watermark. Neither proves physical issuance
+                    # at that historical instant or an executable trade fill.
+        events.append(dict(event, state=state, signal=cross,
+                           issued_at_utc=decision.isoformat() if cross is not None else None,
+                           inputs_known_at_utc=inputs_known.isoformat() if cross is not None else None))
+    # A declared opportunity with no retained source row is unavailable,
+    # never silently removed from the original population. Do not fabricate
+    # candle geometry, a source receipt or an indicator value for that row.
+    for key in declarations.keys() - observed_keys:
+        declaration = declarations[key]
+        identity = decision = None
+        if isinstance(declaration, Mapping):
+            proposed = declaration.get("candidate_id")
+            if isinstance(proposed, str) and proposed.strip() and proposed not in duplicate_ids:
+                identity = proposed
+                try:
+                    declared = _instant(declaration.get("decision_at"))
+                    if _instant(key[1]) <= declared <= cutoff:
+                        decision = declared
+                except ValueError:
+                    pass
+        events.append({"symbol": key[0], "bar_end_utc": key[1], "indicator": indicator,
+                       "candidate_id": identity,
+                       "decision_at_utc": decision.isoformat() if decision is not None else None,
+                       "state": ("SOURCE_OPPORTUNITY_UNAVAILABLE" if decision is not None
+                                 else "ORIGINAL_DECISION_UNAVAILABLE"),
+                       "signal": None, "issued_at_utc": None, "inputs_known_at_utc": None,
                        "source_admitted": False})
-    return events
+    return sorted(events, key=lambda event: (event["symbol"], event["bar_end_utc"]))

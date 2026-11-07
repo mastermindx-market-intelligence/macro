@@ -26,14 +26,16 @@ research-only functions:
    owner-compatible adapter must preserve those existing refusals; it may
    not silently manufacture a boolean `source_admitted`.
 2. `oscillator_events(bars, indicator, eligibility, decision_cutoff_utc,
-   supplied=None, prior_session_by_day=None)` classifies known full-bar
+   supplied=None, prior_session_by_day=None, original_decisions=None)` classifies known full-bar
    oscillator crossovers using
    a caller-supplied previous-session leader receipt.
    `eligibility[(symbol, bar_end_utc)]` supplies
    `is_leader`, `known_at_utc`, `asof_session`,
    `expected_prior_session` and `receipt_sha256`. The expected prior
-   session comes from the existing exchange calendar owner; the candidate's
-   `asof_session` must equal it. Unknown/stale/future leader source remains
+   session comes from the existing exchange calendar owner; both candidate
+   date fields must equal `prior_session_by_day[current_session]`, including
+   the first observed session. Preserve the actual daily receipt date; never
+   rewrite it to the expected date. Unknown/stale/future leader source remains
    `ELIGIBILITY_UNAVAILABLE`, not a negative trade label. For *multi-session*
    oscillator history, the optional owner-supplied `prior_session_by_day`
    must map each observed session to its actual preceding exchange session.
@@ -52,8 +54,10 @@ research-only functions:
 
 Cross condition: previous fast <= previous slow; current fast > current
 slow; **both current lines below zero**; oversold qualifier true.
-Only fully known completed bars are scored. `issued_at_utc` is no
-earlier than the last observable bar, oscillator, and leader receipts.
+Only fully known completed bars are scored. `issued_at_utc` is the explicitly
+bound original decision clock; `inputs_known_at_utc` separately records the
+latest consumed bar, oscillator, and leader receipt. Neither field proves
+physical publication at that historical instant.
 No next-open fill, order, rank, risk, probability or live alert follows
 from `CROSS_OBSERVED`.
 
@@ -75,12 +79,54 @@ series of full bars and trailing stub. Missing terminal full windows and
 stubs are refused; multi-day history must retain an owner-derived
 predecessor mapping or abstain instead of treating a missing whole day
 as a bullish signal. A recursively computed historical RSI-MACD or price-MACD
-result whose **earlier input was revised after the purported event known-at**
-is `SOURCE_HISTORICAL_REVISION_UNAVAILABLE`, not a fabricated historical
-`CROSS_OBSERVED` or `NO_CROSS`. These checks do not replace immutable
-per-event first-seen receipts from the incumbent source owner. Periodic date
+result with any consumed input learned after its **immutable original decision**
+is `SOURCE_HISTORICAL_REVISION_UNAVAILABLE`. This includes a correction to the
+current candle as well as every consumed warmup candle. These checks do not
+replace immutable per-event first-seen receipts from the incumbent source owner. Periodic date
 changes, ET DST and exceptional session close are evaluated from
 owner-supplied calendar boundaries, not a fixed UTC offset.
+
+
+## Original decision and whole-prefix vintage
+
+The caller supplies `original_decisions[(symbol, bar_end_utc)]` with the existing
+owner's **nonempty unique `candidate_id` and timezone-aware `decision_at`**.
+The association and original declaration must come from the already-governed
+opportunity population. This pure consumer verifies consistency; it cannot
+authenticate that an asserted declaration was historically made. It never
+derives a decision from bar close, the selected revision's known-at, the
+projection cutoff, an input watermark or the current clock.
+
+For each predeclared decision D, call the existing owner through
+`aggregate_owner_windows(..., decision_utc=D, ...)` for the **entire required
+prefix**, including warmup. The wrapper records the actual callback cutoff as
+`projection_cutoff_utc` on every row. Pass that projection, the owner-derived
+previous-session mapping and the original declaration to `oscillator_events`.
+A typical call evaluates one declared opportunity; earlier rows remain as
+warmup and retain null events when they have no original declaration.
+A population with different original decisions requires independently
+owner-selected prefixes at those decisions. A single late snapshot cannot
+reconstruct all historical originals.
+
+Every consumed full bar's projection cutoff must equal D. A late projection,
+even with numerically unchanged prices, is `SOURCE_ORIGINAL_VINTAGE_UNAVAILABLE`.
+All raw input, eligibility, current supplied-line and previous supplied-line
+knowledge clocks must be visible by D. Missing/malformed originals remain
+`ORIGINAL_DECISION_UNAVAILABLE`; unavailable rows and future full windows/stubs
+stay in the declared population. Missing original declarations do not reset
+or shorten valid indicator warmup. Existing source gaps still reset continuity.
+
+This interface does not implement a restatement stream. Later genuinely new,
+separately identified original opportunities may use corrections visible by
+their own decision. Replacing the decision clock or projection binding on an
+old opportunity is not permitted. Supplied line digests still do not prove
+the external script/settings, full-lookback lineage or Pine parity.
+
+The synthetic regression fixtures freeze their calendar and original decisions
+before applying revisions/deletions. They use the actual unchanged Canon math,
+owner metadata preflight and minute revision selector, including current-candle,
+whole-prefix, stale-leader and finite later-opportunity controls. No fixture
+qualifies real market first-seen, Terminal basis or private data access.
 
 ## Offline reproduction (no external connection)
 
