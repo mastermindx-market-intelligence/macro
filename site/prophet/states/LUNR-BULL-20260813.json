@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "LUNR-BULL-20260813",
-  "asof": "2026-10-27",
+  "asof": "2026-11-07",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 10.5,
@@ -14,19 +14,19 @@
     "progress": 0.0,
     "pace": 0.0,
     "retention": 40.1,
-    "overlay": 53.0
+    "overlay": 33.0
   },
   "geometry": {
-    "dist_to_stop_r": -0.057,
+    "dist_to_stop_r": -0.062,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 157.8,
-    "p1": -0.7045,
-    "p2": -0.3523,
+    "horizon_pct_used": 182.2,
+    "p1": -0.7081,
+    "p2": -0.3541,
     "p3": null,
-    "move_r": -1.057,
+    "move_r": -1.062,
     "mfe_r": 0.0,
-    "mae_r": -1.098
+    "mae_r": -1.26
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -40,13 +40,13 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 0.0,
-  "_mae": -10.244999771118163,
+  "_mae": -11.760000114440917,
   "_max_p1": 0.0,
   "_first_trigger_ts": null,
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 71,
-  "tau": 1.5778,
+  "days_elapsed": 82,
+  "tau": 1.8222,
   "closed": true,
   "outcome": "NO_ENTRY"
 }

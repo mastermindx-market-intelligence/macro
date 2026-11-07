@@ -1,0 +1,62 @@
+{
+  "schema": "marketing.catalyst_source_purpose_basis/v1",
+  "basis_id": "SEC-ISSUER-EARNINGS-RELEASE-PUBLIC-FACTS-20261101",
+  "recorded_at": "2026-11-01T07:47:32Z",
+  "reviewer": "Marketing X Catalyst CEO seat (session ce215fa3), leadership continuity under the Chairman 2026-10-24 ruling; steward request on PR #7870 unanswered",
+  "evidence_kind": "published_source_reuse_policy",
+  "decision": "covered_for_described_use",
+  "rights_family": "sec_issuer_earnings_release_facts",
+  "related_policy_reading": "SEC-PUBLIC-FILING-FACT-USE-20261019 (research/theme_graph/sec_supplier_20261019/SEC_PUBLIC_FILING_FACT_USE.json) reads the same SEC policy pages; this basis does not extend or modify it",
+  "source_policy_evidence": [
+    {
+      "url": "https://www.sec.gov/about/webmaster-frequently-asked-questions",
+      "section": "General Questions: Is content on sec.gov free? Do I need permission to reuse EDGAR content?",
+      "finding": "The SEC states that Government-created content on sec.gov and EDGAR public filing content are free to access and reuse. The same page sets the fair-access rule: scripted access is allowed with a declared User-Agent, at no more than 10 requests per second.",
+      "verification": "Official page opened and read on 2026-11-01 by the seat; consistent with the 2026-10-19 reading recorded in SEC-PUBLIC-FILING-FACT-USE-20261019."
+    },
+    {
+      "url": "https://www.sec.gov/about/privacy-information#dissemination",
+      "section": "Website Dissemination",
+      "finding": "Information on the SEC website may be copied or further distributed without SEC permission; users are asked to cite the SEC as the source; the SEC seal, logos and artwork are not to be used; SEC and EDGAR marks may be referred to in text only without implying affiliation or approval.",
+      "verification": "Official page opened and read on 2026-11-01 by the seat."
+    }
+  ],
+  "source_class": {
+    "description": "The issuer's own EX-99.1 earnings-release exhibit of a Form 8-K or 8-K/A that reports Item 2.02, fetched from https://www.sec.gov/Archives/edgar/data/<issuer cik>/ under the fair-access rule and recorded with its original first-retrieval receipt and sha256.",
+    "document_identity": "exact archive URL plus retained sha256; one runtime grant per document",
+    "identity_rule": "The EDGAR filing index lists the document with Type exactly EX-99.1; the filer CIK in the archive path equals the issuer's CIK for the ticker; the form is 8-K or 8-K/A reporting Item 2.02. File-name matching alone never qualifies a document, and an EX-99.2 or 8-K main document gets no grant.",
+    "byte_retention": "none: document bytes are held in memory only for the cycle that hashes and parses them; the writer persists the URL, sha256, figures, filing clock and first-retrieval receipt id",
+    "excluded": [
+      "any exhibit other than the issuer's EX-99.1 earnings release",
+      "third-party documents filed under the same /Archives/ prefix (consents, opinions, reports by others)",
+      "SEC-generated index pages as a display source",
+      "any document not present in the pinned catalyst source snapshot"
+    ]
+  },
+  "permitted_use": {
+    "purpose": "catalyst_public_scan_first_value",
+    "audience": "public_anonymous",
+    "channel": "web display on /api/catalyst and /api/catalyst/scan, plus link-only partner pack",
+    "paid_product_display": false,
+    "fact_retention": true,
+    "source_attribution_required": true,
+    "attribution_text": "<Issuer>, Form 8-K Item 2.02 EX-99.1, filed with the SEC, with a link to the original sec.gov archive document",
+    "display_link": true,
+    "display_title": true,
+    "display_facts": "only figures and clocks verified against the document bytes at retrieval, with the sha256 recorded",
+    "source_quotation": false,
+    "source_body_export": false,
+    "rehost": false,
+    "email": false,
+    "reviewer_text": false
+  },
+  "scope_limits": [
+    "Facts stated by the issuer are displayed with attribution and a link to the original; no expression from the release is quoted, excerpted, rehosted or exported.",
+    "Copyright in issuer-authored exhibits stays with the issuer (they are not 17 U.S.C. 105 works); this basis relies on fact-only display plus the SEC reuse policy, not on a claim that the text is public domain.",
+    "No SEC seal, logo, artwork or trademark branding, and no wording that implies SEC affiliation, endorsement or approval.",
+    "No email, scheduled send, partner rehost or paid-product use is admitted by this record; each needs its own consent or rights decision.",
+    "Grants are minted per exact document by marketing.catalyst_source_adapter and expire at min(first retrieval + 7 days, mint time + 24 hours).",
+    "This is a documented source-policy review by the seat, not a Chairman grant, legal opinion, vendor license or economic-truth ruling. It does not extend DEC:COMMERCIAL-DATA-RIGHTS-CHAIRMAN-ATTESTATION-20261023, which does not name SEC EDGAR.",
+    "No live publication is established by this record; the public flags stay off until their operator turns them on."
+  ]
+}

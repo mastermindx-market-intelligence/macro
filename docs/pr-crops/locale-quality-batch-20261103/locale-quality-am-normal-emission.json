@@ -1,0 +1,24 @@
+{
+  "task": "P12.T41.S3",
+  "emitter": "scripts.build_am_edition.render_html_with_reason(retainedpayload) \u2192 lib.pages.write_page(site/am_edition.html), identical normalHTMLemission callchain usedby main without build_payload/acquisition",
+  "input": {
+    "path": "site/am_edition.json",
+    "bytes": 17664,
+    "sha256": "8f70c342f602af606e1e67bf2271ede0eb65d3476f8132eaf0920503c4b8ec93",
+    "same_exact_approved_fixture": true,
+    "generated_at_preserved": "2026-11-03T04:38:17.344477+00:00"
+  },
+  "title": "Morning Edition \u00b7 \u65e9\u95f4\u7248 \u2014 2026-11-03T04:38:17.344477+00:00",
+  "raw_render_sha256": "9f6384cb363d4dc965c725a348af52792f8ac493a51e79cd06af95bc4cc10d2b",
+  "before_emitted_sha256": "d1e433b09f76e5729e80ffaf9173031435aa80aa04f48e1a9e383e6db7827157",
+  "after_emitted_sha256": "25051917a6bc4fa189ac37bbae2ab3add491cbc6e0ffe3e25d83ae5cd5954fcc",
+  "output_bytes": 87566,
+  "payload_unchanged": true,
+  "network_attempts": [],
+  "browser": false,
+  "full_guard": "NOTRUN; Intl normalemission still unresolved",
+  "scope": "Actual normal local pagewriter output, not raw HTML patch, source publication/served/runtime claim",
+  "normal_pipeline_before_after_outside_title_equal": true,
+  "normal_pipeline_before_sha256": "042bf606dba85da06adb7bb536c7042bacb6bd6d62115d1fbb1b8d3c969169dc",
+  "method": "Baseline AM template through native Jinja env and SAME pages.inject_text\u2192inject_shared_shell_text chain; compare against actual write_page candidate output; no baseline write or source substitution."
+}

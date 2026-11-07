@@ -1515,14 +1515,23 @@ def _attach_china_gold_premium(
 # --------------------------------------------------------------------------- #
 # main
 # --------------------------------------------------------------------------- #
-def _decision_workspace(index_snap: dict, asof: str, physical_context: dict | None = None) -> dict | None:
+def _decision_workspace(index_snap: dict, asof: str, physical_context: dict | None = None,
+                        *, current_vm: dict | None = None) -> dict | None:
     """Render-only consumer of existing data; never invoke a collector or score."""
     try:
         from engine.commodity_workspace_adapter import workspace_from_publications
         snapshot = {"asof": asof, "members": index_snap.get("members", []),
                     "index": index_snap.get("index", {}), "breadth": index_snap.get("breadth", {})}
+        # Share the exact display projection used by this render and the later
+        # latest.json write. Do not revive a prior Gold reading when this VM is
+        # absent; unrelated ratio context keeps its independent publication clock.
+        premium = _china_gold_premium_machine_view(current_vm)
+        gold_publication = {"asof": asof, "gold_context": {}}
+        if premium is not None:
+            gold_publication["gold_context"]["china_physical_premium"] = premium
         return workspace_from_publications(snapshot, root=config.ROOT, data_root=config.data_dir(),
-                                           physical_context=physical_context)
+                                           physical_context=physical_context,
+                                           gold_publication=gold_publication)
     except Exception as exc:  # preserve the accepted legacy page if an optional projection fails
         log.warning("Commodity decision workspace unavailable (%s)", type(exc).__name__)
         return None
@@ -1738,7 +1747,8 @@ def main() -> int:
             critical_minerals=critical_minerals, petroleum_flow=petroleum_flow,
             commodity_workspace=_decision_workspace(
                 index_snap, _build_date.isoformat(),
-                next((a.get("supply") for a in assets if a["key"] == "oil"), None)))
+                next((a.get("supply") for a in assets if a["key"] == "oil"), None),
+                current_vm=vm))
     except Exception as _re:  # noqa: BLE001 — never crash the whole site build
         log.error("commodities template render failed (%s); skipping page write", _re)
         return 0
