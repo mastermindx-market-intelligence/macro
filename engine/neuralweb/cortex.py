@@ -416,6 +416,53 @@ def _fabric_source_valid(value: Any) -> bool:
             and type(value["spine_rows"]) is int and value["spine_rows"] >= -1)
 
 
+_FABRIC_AUTO_RUN_SCHEMA = "neuralweb.cortex_fabric_run.v2"
+
+
+def _fabric_auto_request(run: dict, step: dict) -> dict:
+    """Reconstruct the original request from this owner's retained input."""
+    from engine import fabric_inference_client as transport
+    payload = run["request_payload"]
+    _, raw = transport._request({"model": None, "request_id": step["request_id"],
+        "max_tokens": run["request"]["max_tokens"], "system": payload["system"],
+        "messages": run["messages"][:step["history_length"]], "tools": payload["tools"]}, None, False)
+    return transport._load_json(raw, unknown=False)
+
+
+def _fabric_auto_capture(run: dict, step: dict, provider: dict, *, require_success=False) -> None:
+    from engine import fabric_inference_client as transport, llm_auth
+    observation = llm_auth._fabric_routed_observation(
+        provider, llm_auth.fabric_observation(provider), step["request_id"])
+    if observation is None:
+        if require_success:
+            raise _CortexFabricHold("cortex_fabric_auto_observation_missing")
+        return
+    document = observation.document
+    original = _fabric_auto_request(run, step)
+    routed = transport._auto_request_digest(dict(original, model=document["routing"]["selected_model"]))
+    document = transport.validate_auto_observation(document, run["inspection"],
+        operation_id=run["operation_id"], request_id=step["request_id"],
+        request_digest=step["normalized_request_digest"], routed_request_digest=routed,
+        max_tokens=run["request"]["max_tokens"], expected_route=run["route_identity"],
+        require_success=require_success)
+    route_identity = transport.auto_route_identity(document["routing"])
+    if run["route_identity"] is None:
+        run["route_identity"] = route_identity
+    step["routed_request_digest"] = routed
+    step["application_observation"] = document
+
+
+def _fabric_actual_identity(run: dict) -> tuple:
+    if run.get("schema") != _FABRIC_AUTO_RUN_SCHEMA:
+        return run["inspection"]["model"], run["inspection"].get("provider")
+    observed = [step["observation"] for step in run["steps"]
+                if step["phase"] == "response" and step["observation"] is not None]
+    models = {row["serving_model"] for row in observed}
+    model = next(iter(models)) if len(models) == 1 else None
+    route = run["route_identity"]
+    return model, route["pool"] if route is not None else "unknown"
+
+
 def _fabric_validate_state(value: Any, root: Path | None = None) -> Any:
     if value is None or _fabric_source_valid(value):
         return value
@@ -430,6 +477,9 @@ def _fabric_validate_state(value: Any, root: Path | None = None) -> Any:
     fields = {"operation_id", "root", "source", "selection", "inspection", "request", "created_at", "probation",
               "phase", "messages", "steps", "tools", "census", "memo", "projection",
               "receipt", "failure", "business_complete"}
+    automatic = type(run) is dict and run.get("schema") == _FABRIC_AUTO_RUN_SCHEMA
+    if automatic:
+        fields |= {"schema", "request_payload", "route_identity"}
     if (type(run) is not dict or set(run) != fields
             or type(run["operation_id"]) is not str
             or not re.fullmatch(r"cortex:[0-9a-f]{32}", run["operation_id"])
@@ -455,6 +505,8 @@ def _fabric_validate_state(value: Any, root: Path | None = None) -> Any:
         raise _CortexFabricHold("cortex_fabric_run_invalid")
     from engine.provider_production_modes import ApplicationFabricFactory
     ApplicationFabricFactory._commit_inspection(run["inspection"])
+    if automatic != (run["inspection"].get("schema") == "mastermind.fabric_application_inspection.v2"):
+        raise _CortexFabricHold("cortex_fabric_run_variant_invalid")
     request = run["request"]
     if (type(request) is not dict or set(request) != {
             "system_sha256", "tools_sha256", "max_tokens", "max_tool_calls", "caller_cfg_sha256"}
@@ -463,9 +515,19 @@ def _fabric_validate_state(value: Any, root: Path | None = None) -> Any:
             or type(request["max_tokens"]) is not int or not 1 <= request["max_tokens"] <= 32768
             or type(request["max_tool_calls"]) is not int or not 1 <= request["max_tool_calls"] <= 256):
         raise _CortexFabricHold("cortex_fabric_request_invalid")
+    if automatic:
+        payload = run["request_payload"]
+        if (type(payload) is not dict or set(payload) != {"system", "tools"}
+                or type(payload["system"]) is not str or type(payload["tools"]) is not list
+                or _fabric_digest(payload["system"]) != request["system_sha256"]
+                or _fabric_digest(payload["tools"]) != request["tools_sha256"]
+                or run["route_identity"] is not None and type(run["route_identity"]) is not dict):
+            raise _CortexFabricHold("cortex_fabric_payload_invalid")
     for index, step in enumerate(run["steps"]):
-        if (type(step) is not dict or set(step) != {
-                "request_id", "history_length", "request_sha256", "phase", "response", "observation"}
+        step_fields = {"request_id", "history_length", "request_sha256", "phase", "response", "observation"}
+        if automatic:
+            step_fields |= {"normalized_request_digest", "routed_request_digest", "application_observation"}
+        if (type(step) is not dict or set(step) != step_fields
                 or step["request_id"] != f"{run['operation_id']}:brain:{index}"
                 or type(step["history_length"]) is not int
                 or not 1 <= step["history_length"] <= len(run["messages"])
@@ -482,7 +544,7 @@ def _fabric_validate_state(value: Any, root: Path | None = None) -> Any:
         if step["response"] is not None:
             response = step["response"]
             if (set(response) != {"model", "stop_reason", "content"}
-                    or response["model"] != run["inspection"]["model"]
+                    or not automatic and response["model"] != run["inspection"]["model"]
                     or response["stop_reason"] not in {"tool_use", "end_turn", "max_tokens"}
                     or type(response["content"]) is not list
                     or run["messages"][step["history_length"]:step["history_length"] + 1]
@@ -499,6 +561,31 @@ def _fabric_validate_state(value: Any, root: Path | None = None) -> Any:
                 or any(v is not None and (type(v) is not int or not 0 <= v <= 10 ** 12)
                        for v in (observation["input_tokens"], observation["output_tokens"]))):
             raise _CortexFabricHold("cortex_fabric_observation_invalid")
+        if automatic:
+            from engine import fabric_inference_client as transport
+            original = _fabric_auto_request(run, step)
+            if step["normalized_request_digest"] != transport._auto_request_digest(original):
+                raise _CortexFabricHold("cortex_fabric_normalized_request_changed")
+            document = step["application_observation"]
+            if document is None:
+                if step["routed_request_digest"] is not None or step["phase"] == "response":
+                    raise _CortexFabricHold("cortex_fabric_auto_observation_missing")
+            else:
+                routed = transport._auto_request_digest(dict(original, model=document["routing"]["selected_model"]))
+                document = transport.validate_auto_observation(document, run["inspection"],
+                    operation_id=run["operation_id"], request_id=step["request_id"],
+                    request_digest=step["normalized_request_digest"], routed_request_digest=routed,
+                    max_tokens=request["max_tokens"], expected_route=run["route_identity"],
+                    require_success=step["phase"] == "response")
+                if (step["routed_request_digest"] != routed
+                        or run["route_identity"] != transport.auto_route_identity(document["routing"])
+                        or observation != {"request_id": step["request_id"],
+                            "serving_model": document["serving_model"], **document["usage"]}
+                        or step["phase"] == "response" and step["response"]["model"] != document["serving_model"]):
+                    raise _CortexFabricHold("cortex_fabric_auto_observation_invalid")
+    if automatic and (run["route_identity"] is not None) != any(
+            step["application_observation"] is not None for step in run["steps"]):
+        raise _CortexFabricHold("cortex_fabric_route_identity_invalid")
     ids = set()
     completed_census = {}
     for tool in run["tools"]:
@@ -618,7 +705,8 @@ def _fabric_validate_state(value: Any, root: Path | None = None) -> Any:
                 or projection["result"] != {"written": str(Path(run["root"]) / "data/neuralweb/cortex/memo.json"),
                                              "as_of": run["created_at"]}
                 or document["run_status"].get("operation_id") != run["operation_id"]
-                or document["run_status"].get("model_used") != run["inspection"]["model"]
+                or document["run_status"].get("model_used") != _fabric_actual_identity(run)[0]
+                or automatic and document["run_status"].get("pool") != _fabric_actual_identity(run)[1]
                 or document["run_status"].get("close") != receipt.get("close")
                 or document["run_status"].get("usage") != receipt.get("usage")):
             raise _CortexFabricHold("cortex_fabric_projection_invalid")
@@ -727,6 +815,29 @@ def _fabric_commit(root: Path, prior: Any, run: dict) -> dict:
         if selected_prior and prior["fabric"]["operation_id"] != run["operation_id"] \
                 and prior["fabric"]["phase"] != "complete":
             raise _CortexFabricHold("cortex_fabric_original_held")
+        if run.get("schema") == _FABRIC_AUTO_RUN_SCHEMA:
+            previous = prior["fabric"] if selected_prior else None
+            if previous is not None and previous["operation_id"] == run["operation_id"]:
+                immutable = ("schema", "operation_id", "root", "source", "selection", "inspection",
+                             "request", "request_payload", "created_at", "probation")
+                if (any(previous.get(key) != run.get(key) for key in immutable)
+                        or previous["route_identity"] is not None and previous["route_identity"] != run["route_identity"]
+                        or run["messages"][:len(previous["messages"])] != previous["messages"]
+                        or len(run["steps"]) < len(previous["steps"])
+                        or previous["phase"] == "complete" and previous != run):
+                    raise _CortexFabricHold("cortex_fabric_original_identity_changed")
+                for old_step, next_step in zip(previous["steps"], run["steps"]):
+                    committed = ("request_id", "history_length", "request_sha256", "normalized_request_digest")
+                    if (any(old_step[key] != next_step[key] for key in committed)
+                            or old_step["phase"] == "response" and old_step != next_step
+                            or old_step["application_observation"] is not None
+                                and old_step["application_observation"] != next_step["application_observation"]
+                            or old_step["routed_request_digest"] is not None
+                                and old_step["routed_request_digest"] != next_step["routed_request_digest"]):
+                        raise _CortexFabricHold("cortex_fabric_original_step_changed")
+            elif (run["phase"] != "claimed" or run["steps"] or run["tools"]
+                    or run["route_identity"] is not None):
+                raise _CortexFabricHold("cortex_fabric_original_claim_required")
         value = {"schema": _FABRIC_STATE_SCHEMA,
                  "revision": prior["revision"] + 1 if selected_prior else 1,
                  "native_state": prior["native_state"] if selected_prior else prior,
@@ -3456,8 +3567,8 @@ def _fabric_receipt(provider: dict | None) -> dict | None:
     from engine import llm_auth
     return _fabric_clone({"usage": llm_auth.fabric_usage(provider),
         "last_observation": provider.get("_fabric_last_observation"),
-        "observations": [{"serving_model": m, "input_tokens": i, "output_tokens": o}
-                         for m, i, o in provider.get("_fabric_usage_observations", [])],
+        "observations": [{"serving_model": row[0], "input_tokens": row[1], "output_tokens": row[2]}
+                         for row in provider.get("_fabric_usage_observations", [])],
         "close": provider.get("_fabric_close"),
         "pending": bool(provider.get("_fabric_pending")),
         "native_disposition": provider.get("_fabric_native_disposition")})
@@ -3576,13 +3687,17 @@ def _fabric_run_status(root: Path, run: dict, *, closed: bool) -> dict:
     usage = (run["receipt"] or {}).get("usage", {})
     calls = len(run["tools"])
     degraded = not calls or not closed
+    automatic = run.get("schema") == _FABRIC_AUTO_RUN_SCHEMA
+    model, pool = _fabric_actual_identity(run)
     return {"status": "degraded" if degraded else ("warn" if stale or usage.get("usage_state") != "known" else "ok"),
         "degraded": degraded,
         "degradation_reason": "fabric_pending_close" if not closed else ("zero_tool_calls" if not calls else None),
-        "model_used": run["inspection"]["model"], "provider": "fabric",
+        "model_used": model, "provider": "fabric", **({"pool": pool} if automatic else {}),
         "operation_id": run["operation_id"],
-        "provider_attempts": [{"provider": "fabric", "model": run["inspection"]["model"],
-                               "ok": step["phase"] == "response"} for step in run["steps"]],
+        "provider_attempts": [{"provider": "fabric",
+            "model": (step["observation"] or {}).get("serving_model") if automatic else model,
+            **({"pool": (step["application_observation"] or {}).get("routing", {}).get("pool", "unknown")}
+               if automatic else {}), "ok": step["phase"] == "response"} for step in run["steps"]],
         "tool_call_batches": sum(s["response"] is not None and s["response"]["stop_reason"] == "tool_use" for s in run["steps"]),
         "individual_tool_calls": calls, "expected_min_tool_calls": 1,
         "context_stale": stale, "context_as_of": as_of,
@@ -3615,7 +3730,8 @@ def _run_fabric(root: Path, cfg: dict, mode_id: str, prior: Any, now_str: str) -
     factory = make_application_fabric_factory(mode_id=mode_id, lane="cortex",
                                              root=root, workload_cfg=startup)
     identity = factory.inspect(caller_cfg)
-    if "llm_model" in cfg and cfg["llm_model"] != identity["model"]:
+    automatic = identity.get("schema") == "mastermind.fabric_application_inspection.v2"
+    if "llm_model" in cfg and (automatic or cfg["llm_model"] != identity["model"]):
         raise _CortexFabricHold("cortex_fabric_required_model_mismatch")
     source = _compute_run_state_hash(root)
     schemas = _tool_schemas()
@@ -3636,6 +3752,10 @@ def _run_fabric(root: Path, cfg: dict, mode_id: str, prior: Any, now_str: str) -
            "steps": [], "tools": [], "census": {}, "memo": None,
            "projection": {"phase": "unsent", "params": None, "result": None},
            "receipt": None, "failure": None, "business_complete": False, "probation": probation}
+    if automatic:
+        run.update(schema=_FABRIC_AUTO_RUN_SCHEMA,
+                   request_payload={"system": _SYSTEM_PROMPT, "tools": _fabric_clone(schemas)},
+                   route_identity=None)
     doc = _fabric_commit(root, prior, run)
     provider = operation = None
     failure = None
@@ -3653,24 +3773,32 @@ def _run_fabric(root: Path, cfg: dict, mode_id: str, prior: Any, now_str: str) -
                     "request_sha256": _fabric_digest({"history": run["messages"], "request": request,
                                                       "inspection": identity}),
                     "phase": "intent", "response": None, "observation": None}
+            if automatic:
+                from engine import fabric_inference_client as transport
+                step.update(normalized_request_digest=transport._auto_request_digest(_fabric_auto_request(run, step)),
+                            routed_request_digest=None, application_observation=None)
             run["steps"].append(step)
             run["phase"] = "inference_pending"
             doc = _fabric_commit(root, doc, run)
             def call(client, model):
                 response = client.messages.create(model=model, max_tokens=max_tokens,
-                    system=_SYSTEM_PROMPT, messages=_fabric_clone(run["messages"]), tools=schemas)
+                    system=run["request_payload"]["system"] if automatic else _SYSTEM_PROMPT,
+                    messages=_fabric_clone(run["messages"]),
+                    tools=_fabric_clone(run["request_payload"]["tools"]) if automatic else schemas)
                 return response, None, response
             response, reason, used = llm_auth.make_call(operation.providers, call, context="cortex")
             if reason is not None or used != "fabric" or response is None:
                 raise _CortexFabricHold("cortex_fabric_result_missing")
             plain = _fabric_response_plain(response)
+            if automatic:
+                _fabric_auto_capture(run, step, provider, require_success=True)
             step.update(phase="response", response=plain,
                         observation=_fabric_clone(provider.get("_fabric_last_observation")))
             run["messages"].append({"role": "assistant", "content": plain["content"]})
             run["receipt"] = _fabric_receipt(provider)
             run["phase"] = "response"
             doc = _fabric_commit(root, doc, run)
-            batch = _fabric_tool_batch(run, plain, schemas)
+            batch = _fabric_tool_batch(run, plain, run["request_payload"]["tools"] if automatic else schemas)
             if plain["stop_reason"] == "max_tokens":
                 raise _CortexFabricHold("cortex_fabric_response_truncated")
             if not batch:
@@ -3723,18 +3851,34 @@ def _run_fabric(root: Path, cfg: dict, mode_id: str, prior: Any, now_str: str) -
         except BaseException as exc:
             caught = caught or exc
             failure = failure or "cortex_fabric_close_unknown"
-        run["receipt"] = _fabric_receipt(provider)
+        receipt_failed = False
+        try:
+            run["receipt"] = _fabric_receipt(provider)
+        except BaseException as exc:
+            if not automatic:
+                raise
+            caught = caught or exc
+            failure = failure or "cortex_fabric_receipt_invalid"
+            receipt_failed = True
         if run["steps"] and run["steps"][-1]["observation"] is None and provider is not None:
             observation = provider.get("_fabric_last_observation")
             if observation is not None and observation.get("request_id") == run["steps"][-1]["request_id"]:
                 run["steps"][-1]["observation"] = _fabric_clone(observation)
+        if automatic and run["steps"] and provider is not None:
+            try:
+                _fabric_auto_capture(run, run["steps"][-1], provider,
+                                     require_success=run["steps"][-1]["phase"] == "response")
+            except BaseException as exc:
+                caught = caught or exc
+                failure = failure or "cortex_fabric_auto_observation_invalid"
         close = (run["receipt"] or {}).get("close")
         if close != {"disposition": "closed", "closed": True, "effect_unknown": False, "attempted": True}:
             failure = failure or "cortex_fabric_close_unknown"
         run["failure"] = failure
         run["phase"] = "held" if failure else "finalizing"
         try:
-            doc = _fabric_commit(root, doc, run)
+            if not receipt_failed:
+                doc = _fabric_commit(root, doc, run)
         except Exception:
             # A prior write may have committed without its readback. Do not
             # reload/rebase a failed CAS or overwrite that original evidence.

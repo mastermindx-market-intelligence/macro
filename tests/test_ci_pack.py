@@ -4408,6 +4408,8 @@ def test_workspace_runtime_contracts_can_start_the_ci_that_validates_them() -> N
 CURATED_EXCLUSIVE = {
     # The Fabric consumer join retains this desk job's complete named closure.
     "unrun-brain-desks",
+    # GDELT leaf suites own their exact import/read closure.
+    "gdelt-news-leaves",
     # Installer simulations own their concrete source/read closure without
     # adding weight to unrelated ordinary-code packing probes.
     "earnings-worker-systemd",
@@ -5478,10 +5480,17 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # 12 weight seconds above protected ec67; job and ten-pack ceilings are unchanged.
 # Trusted application-owner composition at 26f62c1a adds six measured weight
 # seconds: 137/5930, 137/5945, 131/5686; all ten packs, no new selected jobs.
+# Paired five-service identity proof (2026-11-06) adds exactly 14 planning units
+# to unrun-brain-gateway: one command + four test-path mentions * 2 + five
+# 800-character buckets. Keep its verified 27-file fixture and both real suites.
+# Original hosted run 42245790043 measured 137/5974, 136/5985, 130/5726,
+# all ten packs; these are estimator units, not observed execution duration.
+# Fund +14 in each ceiling, retaining existing same-tree margins of 0/4/4.
+# Job counts, pack limit, selection and the estimator remain unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_960),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_975),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_716),
+    ("templates/index.html", 137, 5_974),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_989),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_730),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10

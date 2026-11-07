@@ -448,6 +448,80 @@ def _fabric_cache_state(path, logical_source):
     return _fabric_cache_value(_cache_read(path), logical_source)
 
 
+_AUTO_CACHE_ENTRY = "macro.specialty_fabric_entry.v2"
+_AUTO_CACHE_RECEIPT = "macro.specialty_fabric_receipt.v2"
+
+
+def _cache_auto_request(operation_id, system, user, maximum):
+    from engine import fabric_inference_client as transport
+    request_id = operation_id + ":brain:0"
+    _, raw = transport._request({"model": None, "request_id": request_id,
+        "max_tokens": maximum, "system": system,
+        "messages": [{"role": "user", "content": user}]}, None, False)
+    original = transport._load_json(raw, unknown=False)
+    return original, {"request_id": request_id, "digest": transport._auto_request_digest(original),
+                      "max_tokens": maximum}
+
+
+def _cache_auto_validate(row, original=None):
+    """Pure validation inside the incumbent specialty cache owner."""
+    from engine import fabric_inference_client as transport
+    inspection = transport.validate_auto_inspection(row["inspection"])
+    request = row["request"]
+    if (row["schema"] != _AUTO_CACHE_ENTRY or type(request) is not dict
+            or set(request) != {"request_id", "digest", "max_tokens"}
+            or request["request_id"] != row["operation_id"] + ":brain:0"
+            or type(request["digest"]) is not str
+            or re.fullmatch(r"[0-9a-f]{64}", request["digest"]) is None
+            or type(request["max_tokens"]) is not int or not 1 <= request["max_tokens"] <= 32768
+            or original is not None and (original["max_tokens"] != request["max_tokens"]
+                or transport._auto_request_digest(original) != request["digest"])):
+        raise ValueError("fabric_cache_request_invalid")
+    if row["state"] == "pending":
+        return
+    receipt = row["receipt"]
+    if receipt["schema"] != _AUTO_CACHE_RECEIPT or receipt["requested_model"] is not None:
+        raise ValueError("fabric_cache_receipt_invalid")
+    document = receipt["application_observation"]
+    if document is None:
+        if (receipt["routed_request_digest"] is not None or receipt["route_identity"] is not None
+                or receipt["provider"] != "unknown" or row["result"] is not None):
+            raise ValueError("fabric_cache_observation_invalid")
+    else:
+        routed = (transport._auto_request_digest(dict(original, model=document["routing"]["selected_model"]))
+                  if original is not None else receipt["routed_request_digest"])
+        document = transport.validate_auto_observation(document, inspection,
+            operation_id=row["operation_id"], request_id=request["request_id"],
+            request_digest=request["digest"], routed_request_digest=routed,
+            max_tokens=request["max_tokens"], expected_route=receipt["route_identity"],
+            require_success=row["result"] is not None)
+        if (document["effect_unknown"] and not receipt["effect_unknown"]
+                or receipt["routed_request_digest"] != routed
+                or receipt["route_identity"] != transport.auto_route_identity(document["routing"])
+                or receipt["provider"] != document["routing"]["pool"]
+                or receipt["served_model"] != document["serving_model"]
+                or receipt["observed_usage"] != {"request_id": request["request_id"],
+                    "serving_model": document["serving_model"], **document["usage"]}):
+            raise ValueError("fabric_cache_observation_invalid")
+    observed, usage = receipt["observed_usage"], receipt["usage"]
+    if observed is not None:
+        if any(observed[key] is not None and observed[key] > transport.MAX_NATIVE_TOKENS
+               for key in ("input_tokens", "output_tokens")):
+            raise ValueError("fabric_cache_usage_invalid")
+        complete = all(type(observed[key]) is int for key in ("input_tokens", "output_tokens"))
+        if usage is None or any(usage["completed_" + key] != (observed[key] if complete else 0)
+                              for key in ("input_tokens", "output_tokens")):
+            raise ValueError("fabric_cache_usage_invalid")
+    elif usage is not None and any(usage["completed_" + key] != 0
+                                  for key in ("input_tokens", "output_tokens")):
+        raise ValueError("fabric_cache_usage_invalid")
+    if (row["state"] == "terminal"
+            and (document is not None or receipt["close"]["attempted"] or row["result"] is not None)
+            and receipt["close"] != {"disposition": "closed", "closed": True,
+                                    "effect_unknown": False, "attempted": True}):
+        raise ValueError("fabric_cache_close_invalid")
+
+
 def _fabric_cache_value(state, logical_source):
     if state is None:
         return {"schema": "macro.specialty_fabric_cache.v1", "source": logical_source, "entries": []}
@@ -460,7 +534,9 @@ def _fabric_cache_value(state, logical_source):
     fields = {"operation_id", "input_digest", "mode_id", "inspection", "state",
               "text", "result", "result_digest", "receipt", "error"}
     for row in state["entries"]:
-        if (type(row) is not dict or set(row) != fields
+        automatic = type(row) is dict and row.get("schema") == _AUTO_CACHE_ENTRY
+        expected_fields = fields | {"schema", "request"} if automatic else fields
+        if (type(row) is not dict or set(row) != expected_fields
                 or type(row["operation_id"]) is not str
                 or re.fullmatch(r"[a-z][a-z0-9-]{0,31}:[0-9a-f]{32}", row["operation_id"]) is None
                 or type(row["input_digest"]) is not str
@@ -475,6 +551,9 @@ def _fabric_cache_value(state, logical_source):
                 or row["result"] is None and row["result_digest"] is not None
                 or row["state"] == "terminal" and type(row["receipt"]) is not dict):
             raise ValueError("fabric_cache_invalid")
+        if (not automatic and row["inspection"].get("schema") ==
+                "mastermind.fabric_application_inspection.v2"):
+            raise ValueError("fabric_cache_invalid")
         if row["state"] == "pending":
             if any(row[key] is not None for key in ("text", "result", "result_digest", "receipt", "error")):
                 raise ValueError("fabric_cache_invalid")
@@ -482,9 +561,11 @@ def _fabric_cache_value(state, logical_source):
             receipt = row["receipt"]
             receipt_fields = {"operation_id", "provider", "requested_model", "served_model", "observed_usage", "usage",
                       "close", "effect_unknown", "completed_at"}
+            if automatic:
+                receipt_fields |= {"schema", "application_observation", "routed_request_digest", "route_identity"}
             if (type(receipt) is not dict or set(receipt) != receipt_fields
                     or receipt["operation_id"] != row["operation_id"]
-                    or receipt["provider"] != row["inspection"].get("provider")
+                    or not automatic and receipt["provider"] != row["inspection"].get("provider")
                     or receipt["requested_model"] != row["inspection"].get("model")
                     or type(receipt["effect_unknown"]) is not bool
                     or type(receipt["completed_at"]) is not str
@@ -499,7 +580,7 @@ def _fabric_cache_value(state, logical_source):
                         or close["disposition"] in ("pending", "effect_unknown"))
                     or row["state"] == "held" and receipt["effect_unknown"] is not True
                     or row["result"] is not None and (not isinstance(row["text"], str)
-                        or receipt["served_model"] != receipt["requested_model"])
+                        or not automatic and receipt["served_model"] != receipt["requested_model"])
                     or row["result"] is None and not isinstance(row["error"], str)):
                 raise ValueError("fabric_cache_receipt_invalid")
             usage = receipt["usage"]
@@ -527,6 +608,8 @@ def _fabric_cache_value(state, logical_source):
                     or usage["usage_state"] == "unknown" and any(
                     usage[k] is not None for k in ("input_tokens", "output_tokens"))):
                 raise ValueError("fabric_cache_usage_invalid")
+        if automatic:
+            _cache_auto_validate(row)
         seen.add(row["input_digest"])
         operations.add(row["operation_id"])
     if sum(row["state"] != "terminal" for row in state["entries"]) > 1:
@@ -537,7 +620,8 @@ def _fabric_cache_value(state, logical_source):
 def _fabric_cached_document(*, path, root, logical_source, cfg, lane,
                             system, user, input_context, validate,
                             load_cache=None, store_cache=None, cache_root=None,
-                            allow_truncated=False):
+                            allow_truncated=False, local_mutex=None,
+                            startup_workload="site_batch"):
     """One caller-owned document operation in its existing cache envelope.
 
     The caller supplies the source key, cache path, task, prompt and validator.
@@ -548,16 +632,25 @@ def _fabric_cached_document(*, path, root, logical_source, cfg, lane,
     provider = operation = None
     # Presence must not become native fallback even if the cache is corrupt.
     try:
+        if startup_workload not in ("site_batch", "portfolio_analysis"):
+            raise ValueError("fabric_startup_workload_invalid")
         if type(allow_truncated) is not bool:
             raise ValueError("fabric_output_policy_invalid")
         if ((load_cache is None) != (store_cache is None)
                 or load_cache is not None and (not callable(load_cache) or not callable(store_cache))):
             raise ValueError("fabric_cache_owner_invalid")
         lock_root = root if cache_root is None else cache_root
+        @contextmanager
+        def locked_cache():
+            from contextlib import nullcontext
+            with (local_mutex if local_mutex is not None else nullcontext()):
+                with _cache_lock(path, lock_root):
+                    yield
         def read_state():
             return (_fabric_cache_state(path, logical_source) if load_cache is None
                     else _fabric_cache_value(load_cache(), logical_source))
         def save_state(state):
+            _fabric_cache_value(state, logical_source)
             if store_cache is None:
                 _cache_save(path, state)
             else:
@@ -565,7 +658,7 @@ def _fabric_cached_document(*, path, root, logical_source, cfg, lane,
         exists = os.path.lexists(path)
         if not exists and llm_auth.application_mode_id(cfg) is None:
             return None
-        with _cache_lock(path, lock_root):
+        with locked_cache():
             state = read_state()
             held = next((r for r in state["entries"] if r["state"] != "terminal"), None)
             if held is not None:
@@ -574,7 +667,7 @@ def _fabric_cached_document(*, path, root, logical_source, cfg, lane,
         if mode_id is None:
             return None
         selected_cfg = {**cfg, "provider_order": ["fabric"], "usage_lane": lane}
-        selected_cfg.setdefault("workload_profile", "site_batch")
+        selected_cfg.setdefault("workload_profile", startup_workload)
         bound = cfg.get("max_tokens", 1500)
         if type(bound) is not int or not 1 <= bound <= 32768:
             raise ValueError("fabric_token_bound_invalid")
@@ -582,13 +675,17 @@ def _fabric_cached_document(*, path, root, logical_source, cfg, lane,
             raise ValueError("fabric_input_invalid")
         from engine.provider_production_modes import make_application_fabric_factory
         factory = make_application_fabric_factory(mode_id=mode_id, lane=lane,
-            workload_cfg={**selected_cfg, "workload_profile": "site_batch"}, root=Path(root))
+            workload_cfg={**selected_cfg, "workload_profile": startup_workload}, root=Path(root))
         identity = factory.inspect(selected_cfg)
+        automatic = identity.get("schema") == "mastermind.fabric_application_inspection.v2"
         commitment = {"system": system, "user": user, "max_tokens": bound, "context": input_context}
+        if automatic:
+            commitment["application_inspection"] = identity
+            commitment["application_mode"] = mode_id
         if allow_truncated:
             commitment["output_policy"] = "preserve_valid_truncation"
         digest = _cache_hash(commitment)
-        with _cache_lock(path, lock_root):
+        with locked_cache():
             state = read_state()
             if any(r["state"] != "terminal" for r in state["entries"]):
                 return {"result": None, "receipt": None, "error": "fabric_original_held"}
@@ -596,6 +693,11 @@ def _fabric_cached_document(*, path, root, logical_source, cfg, lane,
             if prior is not None:
                 if prior["mode_id"] != mode_id or prior["inspection"] != identity:
                     raise ValueError("fabric_cache_identity_changed")
+                if automatic:
+                    original, request = _cache_auto_request(prior["operation_id"], system, user, bound)
+                    if prior.get("request") != request:
+                        raise ValueError("fabric_cache_request_changed")
+                    _cache_auto_validate(prior, original)
                 if prior["result"] is not None:
                     if validate(prior["text"]) != prior["result"]:
                         raise ValueError("fabric_cache_result_invalid")
@@ -605,6 +707,10 @@ def _fabric_cached_document(*, path, root, logical_source, cfg, lane,
             row = {"operation_id": lane[:32] + ":" + secrets.token_hex(16), "input_digest": digest,
                    "mode_id": mode_id, "inspection": identity, "state": "pending",
                    "text": None, "result": None, "result_digest": None, "receipt": None, "error": None}
+            original = None
+            if automatic:
+                original, request = _cache_auto_request(row["operation_id"], system, user, bound)
+                row.update(schema=_AUTO_CACHE_ENTRY, request=request)
             state["entries"].append(row)
             save_state(state)
         # No lock is held across credentials, bind, provider bytes or close.
@@ -653,23 +759,52 @@ def _fabric_cached_document(*, path, root, logical_source, cfg, lane,
         observation = provider.get("_fabric_last_observation") if provider is not None else None
         if observed_model is None and isinstance(observation, dict):
             observed_model = observation.get("serving_model")
-        receipt = {"operation_id": row["operation_id"], "provider": identity["provider"],
-                   "requested_model": identity["model"], "served_model": observed_model,
+        application_observation = routed_digest = route_identity = None
+        actual_provider = identity.get("provider")
+        if automatic:
+            from engine import fabric_inference_client as transport
+            value = llm_auth._fabric_routed_observation(provider,
+                llm_auth.fabric_observation(provider), row["request"]["request_id"]) if provider is not None else None
+            actual_provider = "unknown"
+            if value is not None:
+                document = value.document
+                routed_digest = transport._auto_request_digest(
+                    dict(original, model=document["routing"]["selected_model"]))
+                application_observation = transport.validate_auto_observation(document, identity,
+                    operation_id=row["operation_id"], request_id=row["request"]["request_id"],
+                    request_digest=row["request"]["digest"], routed_request_digest=routed_digest,
+                    max_tokens=bound, require_success=result is not None)
+                route_identity = transport.auto_route_identity(application_observation["routing"])
+                actual_provider = application_observation["routing"]["pool"]
+            if (result is not None and application_observation is None
+                    or (application_observation is not None or result is not None
+                        or isinstance(close, dict) and close.get("attempted") is True)
+                    and close != {"disposition": "closed", "closed": True,
+                                  "effect_unknown": False, "attempted": True}):
+                unknown = True
+            if not isinstance(close, dict):
+                close = {"disposition": "effect_unknown", "closed": False,
+                         "effect_unknown": True, "attempted": True}
+        receipt = {"operation_id": row["operation_id"], "provider": actual_provider,
+                   "requested_model": identity.get("model"), "served_model": observed_model,
                    "observed_usage": observation,
                    "usage": llm_auth.fabric_usage(provider) if provider is not None else None,
                    "close": close, "effect_unknown": unknown,
                    "completed_at": datetime.now(timezone.utc).isoformat()}
+        if automatic:
+            receipt.update(schema=_AUTO_CACHE_RECEIPT, application_observation=application_observation,
+                           routed_request_digest=routed_digest, route_identity=route_identity)
         row.update(state="held" if unknown else "terminal", text=text, result=result,
                    result_digest=_cache_hash(result) if result is not None else None,
                    receipt=receipt, error=error or ("fabric_close_unknown" if unknown else None))
-        with _cache_lock(path, lock_root):
+        with locked_cache():
             state = read_state()
             original = next(r for r in state["entries"] if r["operation_id"] == row["operation_id"])
             if original["state"] != "pending" or original["input_digest"] != digest:
                 raise ValueError("fabric_cache_original_changed")
             original.update(row)
             save_state(state)
-        return {"result": result, "receipt": receipt, "error": row["error"]}
+        return {"result": None if automatic and unknown else result, "receipt": receipt, "error": row["error"]}
     except Exception:
         # Any visible pending claim stays a barrier after lost save/ACK. A
         # cache or selected-mode error must never fall through to an SDK.
@@ -853,7 +988,9 @@ def digest_document(source_text: str, kind: str = "macro", doc_id: str | None = 
                        "confidence_floor": cfg.get("llm_min_confidence", "high")}, validate=validate)
     if selected is not None:
         receipt = selected["receipt"] or {}
-        rec.update(requested_model=rec["model"], model=receipt.get("served_model"),
+        requested = (receipt.get("requested_model") if receipt.get("schema") == _AUTO_CACHE_RECEIPT
+                     else rec["model"])
+        rec.update(requested_model=requested, model=receipt.get("served_model"),
                    fabric=receipt, degraded_reason=selected["error"])
         if selected["result"] is not None:
             rec.update(selected["result"])

@@ -10244,7 +10244,7 @@ def _create_failover(cands: list[dict], *, per_model_kwargs=None, **kwargs) -> t
             resp = cl.messages.create(model=p.get("model"), **{**kwargs, **_mk})
             if not exclusive:
                 _pool_record_success(p, resp)  # load-balancing ledger
-            return resp, (p.get("model") or "")
+            return resp, (getattr(resp, "model", None) if exclusive else (p.get("model") or ""))
         except Exception as exc:  # noqa: BLE001
             if exclusive:
                 raise llm_auth.fabric_failure(p, exc) from None
@@ -10277,6 +10277,18 @@ def _selected_turn_providers(lane, root, selected, factory, request_id, images):
         return []
 
 
+def _fabric_served_identity(provider):
+    """Read the original turn observation without selecting or dispatching."""
+    from engine import llm_auth
+    observation = llm_auth.fabric_observation(provider)
+    if provider.get("_fabric_auto_inspection") is None:
+        return {"provider": provider["provider"], "model": provider["model"]}
+    document = observation.document if observation is not None else None
+    return {"provider": document["routing"]["pool"] if document is not None else "unknown",
+            "model": document["serving_model"] if document is not None else
+                (provider.get("_fabric_last_observation") or {}).get("serving_model")}
+
+
 def _settle_fabric_usage(provider, *, usage_lane, stage, user_id, lane):
     """Use incumbent writers once, retaining known usage when a later step is unknown."""
     from engine import llm_auth  # noqa: PLC0415
@@ -10284,19 +10296,11 @@ def _settle_fabric_usage(provider, *, usage_lane, stage, user_id, lane):
     usage = llm_auth.fabric_usage(provider)
     observed = llm_auth._fabric_usage_delta(provider, (0, 0, 0))
     if observed is not None:
-        # Reuse the shared owner's observations, including a terminal error
-        # served by a different model. Do not relabel it as the bound recipe.
-        for group in observed.observations or (observed,):
-            try:
-                ai_costs.record_usage(
-                    lane=usage_lane, provider=provider["provider"], model=group.serving_model,
-                    key_id=provider["cap_id"], cost_basis=provider["cost_basis"], stage=stage,
-                    input_tokens=group.input_tokens, output_tokens=group.output_tokens,
-                    note="partial_known_usage; turn_total_unknown" if usage["usage_state"] != "known" else "",
-                    **({"est_cost_usd": 0.0} if provider["cost_basis"] in llm_auth._FREE_COST_BASES else {}),
-                )
-            except Exception:  # noqa: BLE001 — incumbent best-effort writer, no retry
-                log.warning("brain_gateway: Fabric usage settlement unavailable")
+        # The shared writer owns the actual pool/model/route attribution and
+        # explicit unknown billing. This caller retains its one settlement and
+        # independent per-user token counter.
+        llm_auth._capture_usage(
+            {**provider, "usage_lane": usage_lane, "usage_stage": stage}, observed, stage)
         _record_token_usage(user_id, lane, usage["completed_input_tokens"],
                             usage["completed_output_tokens"])
     return usage
@@ -11871,6 +11875,9 @@ def _run_brain_loop_stream(
         if not isinstance(usage, dict):
             usage = {}
         usage["latency"] = timing
+        if (providers and isinstance(providers[0], dict)
+                and providers[0].get("_fabric_auto_inspection") is not None):
+            fields.update(_fabric_served_identity(providers[0]))
         return "data: " + json.dumps({"type": "done", "route": timing["route"],
                                       "usage": usage, **fields}) + "\n\n"
 
@@ -14330,7 +14337,8 @@ def chat(
                 "filtered": False,
                 "degraded": True,
                 "is_context_only": True,
-                **({"usage": failed_usage} if fabric_selected is True else {}),
+                **({"usage": failed_usage, **_fabric_served_identity(providers[0])}
+                   if fabric_selected is True else {}),
             }
 
         # 7. Post-filter, output leak screen, then split off the [NEXT] suggestion block (W6d).
@@ -14372,6 +14380,9 @@ def chat(
             model=model, usage_lane=usage_lane, stage="brain-chat", user_id=user_id, lane=lane,
         )
 
+        if fabric_selected is True:
+            model = _fabric_served_identity(providers[0])["model"]
+
         # Build annotations list from collected annotate_chart payloads
         all_annotations: list[dict] = []
         for ann in annotations:
@@ -14394,7 +14405,7 @@ def chat(
             "latency": usage_dict.get("latency") or _new_turn_timing("deep"),
             "context_receipt": _ctx_receipt,
             "exact_source_receipt": source_attachment.resolved.receipt if source_attachment else None,
-            **({"usage": usage_dict} if fabric_selected is True else {}),
+            **({"usage": usage_dict, **_fabric_served_identity(providers[0])} if fabric_selected is True else {}),
         }
         if all_annotations:
             result["annotations"] = all_annotations
@@ -14891,7 +14902,9 @@ def chat_stream(
             else:
                 log.warning("brain_gateway: stream loop failed (%s)", exc)
             yield f"data: {json.dumps({'type': 'delta', 'text': _DEGRADED_USER_MSG})}\n\n"
-            yield f"data: {json.dumps({'type': 'done', 'citations': [], 'quota': quota_info, 'usage': failed_usage, 'filtered': False, 'degraded': True, 'is_context_only': True})}\n\n"
+            failed_identity = (_fabric_served_identity(providers[0])
+                               if fabric_selected is True else {})
+            yield f"data: {json.dumps({'type': 'done', 'citations': [], 'quota': quota_info, 'usage': failed_usage, 'filtered': False, 'degraded': True, 'is_context_only': True, **failed_identity})}\n\n"
         _stream_finished = True
     finally:
         try:
@@ -14932,12 +14945,13 @@ def chat_stream(
                 _log_brain_response(
                     question=clean_msg,
                     answer=(answer_out[0] if answer_out else ""),
-                    model=model, lane=lane, mode=mode,
+                    model=_fabric_served_identity(providers[0])["model"] if fabric_selected is True else model,
+                    lane=lane, mode=mode,
                     thread_id=effective_thread_id, user_id=user_id, user_email=user_email,
                     is_guest=is_guest, latency_ms=int((time.time() - _t0) * 1000),
                     input_tokens=in_tok, output_tokens=out_tok, context=context,
                     thinking=(thinking_out[0] if thinking_out else []),
-                    provider=providers[0]["provider"] if fabric_selected is True else None,
+                    provider=_fabric_served_identity(providers[0])["provider"] if fabric_selected is True else None,
                     flags={"degraded": bool(providers[0].get("_fabric_failure"))} if fabric_selected is True else None,
                     # W5 Contract M: the per-round breakdown behind that one latency_ms number.
                     latency=usage_dict.get("latency"),

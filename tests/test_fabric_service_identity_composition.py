@@ -34,9 +34,9 @@ MODEL = "fixture-model"
 NATIVE = "ops/native_fabric/quota_continuity/"
 PINS_NATIVE = {
     "candidate/commission_deadline.py": "fade630ed75c1b93334a5711a6df7a554fbd24ee",
-    "candidate/go_shim.py": "aaf6eeae023c3125772396cc961ec15f083796fc",
-    "candidate/lease_broker.py": "ba22a6fce4164730b0c2aaa8d0bd50f856118a74",
-    "candidate/go_lease_gateway.py": "c69a973104026be2bb18e8f1e696899f26ad737d",
+    "candidate/go_shim.py": "969ffaf84e23ef2d1c0398761943093c9b5c9456",
+    "candidate/lease_broker.py": "3c1360866b6a4fcdc2f9d72732d0439361e3d0c7",
+    "candidate/go_lease_gateway.py": "9a30985f744be11b8ce3f2514baef5b494b4471a",
     "candidate/go_lease_capability.py": "38856700331b3fb3a7706a5745e23fb7b3d18cf0",
     "candidate/provider_outcome.py": "981f35a01183e83fdb9f0b8a4175b290cdeb85f8",
     "candidate/quota_circuit.py": "1583a6ba773e56dbc3f295b65ffc08dea2d31d48",
@@ -247,7 +247,7 @@ def scoped_rows(state, principal):
 
 
 def test_pins_current_application_owner_not_historical_8af():
-    assert PINS_NATIVE["candidate/go_shim.py"] == "aaf6eeae023c3125772396cc961ec15f083796fc"
+    assert PINS_NATIVE["candidate/go_shim.py"] == "969ffaf84e23ef2d1c0398761943093c9b5c9456"
     assert PINS_NATIVE["candidate/go_shim.py"] != "2c7bb5a9719f4a94bd57a30b5c1bc90d171573df"
 
 

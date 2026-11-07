@@ -1256,7 +1256,7 @@ RENDER.overview = async () => {
       ${adminOverviewMetric("health", "Data pipeline", !healthKnown ? "Unavailable" : hh.healthy ? "Healthy" : "Needs attention", sourceDetail, !healthKnown || !hh.healthy ? "warn" : "ok")}
       ${adminOverviewMetric("system", "Background services", serviceValue, sv.available && serviceCounts ? `${sv.ok_count}/${sv.total} services running` : "Live service checks unavailable", !serviceKnown ? "" : sv.healthy ? "ok" : "bad")}
       ${adminOverviewMetric("system", "Server resources", serverValue, serverDetail)}
-      ${adminOverviewMetric("cost", "Estimated AI cost", costValue, costDetail)}
+      ${adminOverviewMetric("cost", "Legacy DeepSeek estimate", costValue, costDetail)}
     </div>
     <section class="admin-attention" aria-labelledby="admin-attention-title"><h2 id="admin-attention-title">Operational attention</h2>
       ${notices.length ? notices.map(n => `<button type="button" class="admin-notice" data-admin-go="${n.page}"><span class="led ${n.tone}"></span><span><strong>${esc(n.title)}</strong><span class="sub">${esc(n.detail)}</span></span><span aria-hidden="true">→</span></button>`).join("") : `<div class="admin-notice"><span class="led ok"></span><span>No issues reported by the available pipeline and service checks.</span></div>`}
@@ -3099,15 +3099,26 @@ RENDER.cost = async () => {
   }
 
   const T = u.totals || {}, W = u.windows || {};
+  const costValue = (bucket) => {
+    const b = bucket || {};
+    if (b.no_usd) return "Cost unavailable";
+    const calls = Number.isInteger(b.calls) ? b.calls : null;
+    const unpriced = Number.isInteger(b.unpriced_calls) ? b.unpriced_calls : null;
+    if (calls === 0 && b.calls_coverage_complete !== false && !(Number(b.usd) > 0)) return "No recorded calls";
+    if (unpriced > 0 && calls === unpriced && b.unpriced_coverage_complete !== false)
+      return `Unpriced · ${unpriced} calls`;
+    const amount = b.usd == null ? "Cost unavailable" : fmtUSD(b.usd);
+    return unpriced > 0 ? `${amount} known · ${unpriced} unpriced calls` : amount;
+  };
 
   // ── (a) headline spend ──
   const headHtml = `
-    <div class="sub" style="margin-bottom:10px">Every measured AI call across all lobes — unified from the usage ledger, the Mastermind bot, and Codex. Percentages are each lobe's share of spend, so a lobe that has become too heavy a burden stands out and you can decide whether to throttle it.</div>
+    <div class="sub" style="margin-bottom:10px">Observed usage from the ledger, Mastermind bot and Codex. Dollar amounts show known cost estimates; unpriced calls remain unpriced. Percentages describe the known priced cost. External source coverage is listed below.</div>
     <div class="grid">
-      ${card("30-day spend · all sources", `<div class="big">${fmtUSD(T.usd)}</div><div class="sub">${fmtTokens(T.tokens)} tokens · ${T.calls || 0} calls</div>`)}
-      ${card("Subscription-equivalent", `<div class="big">${fmtUSD(T.subscription_usd)}</div><div class="sub">OAuth / CLI flat-fee value — not billed</div>`)}
-      ${card("Metered (billed)", `<div class="big">${fmtUSD(T.metered_usd)}</div><div class="sub">API + DeepSeek pay-as-you-go</div>`)}
-      ${card("Ledger trend", `<div class="sub" style="line-height:1.8">today <b>${fmtUSD((W.today || {}).usd)}</b><br>7d <b>${fmtUSD((W.d7 || {}).usd)}</b> · 30d <b>${fmtUSD((W.d30 || {}).usd)}</b></div>`)}
+      ${card("30-day known cost estimate", `<div class="big">${costValue(T)}</div><div class="sub">${fmtTokens(T.tokens)} tokens · ${T.calls || 0} observed calls${T.calls_coverage_complete === false ? " · call coverage incomplete" : ""} · ${T.unpriced_calls || 0} unpriced ledger calls${T.unpriced_coverage_complete === false ? " · external price coverage incomplete" : ""}</div>`)}
+      ${card("Subscription-equivalent · ledger", `<div class="big">${costValue({calls: 0, ...(u.cost_basis || {}).subscription, usd: T.subscription_usd})}</div><div class="sub">Explicit subscription basis · equivalent value, not billed</div>`)}
+      ${card("Metered estimate · ledger", `<div class="big">${costValue({calls: 0, ...(u.cost_basis || {}).metered, usd: T.metered_usd})}</div><div class="sub">Explicit metered basis · external aggregates listed below</div>`)}
+      ${card("Ledger trend", `<div class="sub" style="line-height:1.8">today <b>${costValue(W.today)}</b><br>7d <b>${costValue(W.d7)}</b> · 30d <b>${costValue(W.d30)}</b></div>`)}
     </div>`;
 
   // ── (b) lobe leaderboard (centerpiece) ──
@@ -3117,22 +3128,22 @@ RENDER.cost = async () => {
     if (!lanes || !lanes.length) return `<div class="sub muted" style="margin:6px 0 2px">Single source — no finer lane breakdown.</div>`;
     return `<table style="margin-top:8px"><thead><tr><th>Sub-component (lane)</th><th class="r">USD</th><th class="r">% of $</th><th class="r">Tokens</th><th class="r">Calls</th></tr></thead><tbody>
       ${lanes.map(ln => {
-        const lu = ln.no_usd ? `<span class="muted">—</span>` : fmtUSD(ln.usd);
+        const lu = ln.no_usd ? `<span class="muted">Cost unavailable</span>` : costValue(ln);
         const stages = ln.stages || [];
-        const stageRows = stages.map(st => `<tr><td class="sub" style="padding-left:20px">↳ ${esc(st.name)}</td><td class="r sub">${fmtUSD(st.usd)}</td><td class="r sub">${st.pct_usd != null ? st.pct_usd + "%" : "—"}</td><td class="r sub">${fmtTokens(st.tokens)}</td><td class="r sub">${st.calls != null ? st.calls : "—"}</td></tr>`).join("");
+        const stageRows = stages.map(st => `<tr><td class="sub" style="padding-left:20px">↳ ${esc(st.name)}</td><td class="r sub">${costValue(st)}</td><td class="r sub">${st.pct_usd != null ? st.pct_usd + "%" : "—"}</td><td class="r sub">${fmtTokens(st.tokens)}</td><td class="r sub">${st.calls != null ? st.calls : "—"}</td></tr>`).join("");
         return `<tr><td class="mono">${esc(ln.name)}</td><td class="r">${lu}</td><td class="r">${ln.pct_usd != null ? ln.pct_usd + "%" : "—"}</td><td class="r">${fmtTokens(ln.tokens)}</td><td class="r">${ln.calls != null ? ln.calls : "—"}</td></tr>${stageRows}`;
       }).join("")}
       </tbody></table>`;
   };
   const lobeRows = lobes.map(l => {
-    const usd = l.no_usd ? `<span class="muted">—</span>` : `<b>${fmtUSD(l.usd)}</b>`;
+    const usd = l.no_usd ? `<span class="muted">Cost unavailable</span>` : `<b>${costValue(l)}</b>`;
     const burden = l.no_usd ? "" : (l.pct_usd >= 40 ? `<span class="statpill s-bad">high burden</span>` : l.pct_usd >= 20 ? `<span class="statpill s-warn">watch</span>` : "");
-    const shareTxt = l.no_usd ? `${fmtTokens(l.tokens)} tok · no $ (rate-limited plan)` : `${l.pct_usd}% of spend · ${fmtTokens(l.tokens)} tok (${l.pct_tokens}% of volume)`;
+    const shareTxt = l.no_usd ? `${fmtTokens(l.tokens)} tok · price unavailable` : `${l.pct_usd}% of known priced cost · ${fmtTokens(l.tokens)} tok (${l.pct_tokens}% of volume)`;
     return `<details class="lobe-row"${l === topBurden ? " open" : ""}>
       <summary>
         <div class="lobe-head"><b>${esc(l.name)}</b> ${srcBadge(l.source)} ${burden}<span style="flex:1"></span>${usd} <span class="sub">${l.no_usd ? "" : l.pct_usd + "%"}</span></div>
         <div class="meter" style="margin:6px 0 0">
-          <div class="top"><span class="sub">${l.calls || 0} calls</span><span class="sub">${shareTxt}</span></div>
+          <div class="top"><span class="sub">${l.calls == null ? "Call count unavailable" : l.calls + " calls"}</span><span class="sub">${shareTxt}</span></div>
           ${pctBar(l.no_usd ? l.pct_tokens : l.pct_usd)}
         </div>
       </summary>
@@ -3140,14 +3151,14 @@ RENDER.cost = async () => {
     </details>`;
   }).join("");
   const lobeHtml = `<div class="section">Cost by lobe <span class="cnt">${lobes.length}</span></div>
-    <div class="card sub muted" style="margin-bottom:8px">Ranked by 30-day cost. Bar = share of total spend (amber ≥20%, red ≥40%). Click a lobe to expand its engines / lanes. A lobe can rank high in <b>tokens</b> yet low in <b>cost</b> when it runs a cheap model (e.g. DeepSeek) — watch the $ column for burden.</div>
+    <div class="card sub muted" style="margin-bottom:8px">Ranked by known 30-day cost estimates. Bars show the share of known priced cost (amber ≥20%, red ≥40%). Expand a lobe to see its lanes and unpriced-call coverage. Token volume remains visible when price is unknown.</div>
     ${lobeRows || `<div class="card sub muted">No measured spend yet.</div>`}`;
 
   // ── (c) tracking coverage ──
   const covHtml = `<div class="section">Tracking coverage</div>
     <div class="card sub muted" style="margin-bottom:8px">What the totals above do — and don't — see. A "missing" or "stale" source is spend not yet fully captured here.</div>
     <table><thead><tr><th>Source</th><th>Status</th><th class="r">Updated</th><th class="r">30d USD</th><th>Notes</th></tr></thead><tbody>
-    ${(u.sources || []).map(s => `<tr><td><b>${esc(s.label)}</b></td><td>${statusPill(s.status)}</td><td class="r sub">${s.age_h != null ? fmtAge(s.age_h) + " ago" : "—"}</td><td class="r">${s.usd_30d != null ? fmtUSD(s.usd_30d) : `<span class="muted">—</span>`}</td><td class="sub">${esc(s.note || "")}</td></tr>`).join("")}
+    ${(u.sources || []).map(s => `<tr><td><b>${esc(s.label)}</b></td><td>${statusPill(s.status)}</td><td class="r sub">${s.age_h != null ? fmtAge(s.age_h) + " ago" : "—"}</td><td class="r">${s.usd_30d != null ? costValue({...s, usd: s.usd_30d}) : `<span class="muted">—</span>`}</td><td class="sub">${esc(s.note || "")}</td></tr>`).join("")}
     </tbody></table>`;
 
   // ── (d) provider / model / key breakdowns ──
@@ -3155,12 +3166,13 @@ RENDER.cost = async () => {
     if (!arr || !arr.length) return "";
     return `<div class="section">${title}</div>
       <table><thead><tr><th>${keyLabel}</th><th class="r">Calls</th><th class="r">Tokens</th><th class="r">USD</th><th class="r">% of $</th></tr></thead><tbody>
-      ${arr.map(b => `<tr><td class="mono">${esc(b.name)}</td><td class="r">${b.calls || 0}</td><td class="r">${fmtTokens(b.tokens || 0)}</td><td class="r">${fmtUSD(b.usd || 0)}</td><td class="r">${b.pct_usd != null ? b.pct_usd + "%" : "—"}</td></tr>`).join("")}
+      ${arr.map(b => `<tr><td class="mono">${esc(b.name)}</td><td class="r">${b.calls || 0}</td><td class="r">${fmtTokens(b.tokens || 0)}</td><td class="r">${costValue(b)}</td><td class="r">${b.pct_usd != null ? b.pct_usd + "%" : "—"}</td></tr>`).join("")}
       </tbody></table>`;
   };
   const breakdownsHtml = brkTable("By provider (ledger · 30d)", u.providers, "Provider")
     + brkTable("By model (ledger · 30d)", u.models, "Model")
-    + brkTable("By key / env var (ledger · 30d)", u.keys, "Key");
+    + brkTable("By key / env var (ledger · 30d)", u.keys, "Key")
+    + brkTable("Billing basis (ledger · 30d)", Object.entries(u.cost_basis || {}).map(([name, value]) => ({name, ...value})), "Basis");
 
   // ── (e) codex detail ──
   let codexHtml = "";

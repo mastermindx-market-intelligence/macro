@@ -1083,3 +1083,110 @@ def test_every_tone_word_has_zh_twin():
     words = set(eq._TONE_WORDS) | {"upbeat", "steady", "downbeat"}
     missing = [w for w in sorted(words) if i18n.tr(w) == w]
     assert not missing, f"tone words without a ZH twin in i18n.LEX: {missing}"
+
+
+@pytest.mark.parametrize("body,error_kind", [
+    ({"choices": []}, "empty"),
+    ({"choices": [{"message": {"content": ""}}]}, "empty"),
+    ({"choices": [{"message": {"content": {"invalid": "object"}}}]}, "bad_shape"),
+    ({"choices": [False]}, "bad_shape"),
+])
+def test_detailed_observation_survives_rejected_answer(monkeypatch, body, error_kind):
+    import requests
+
+    body = {**body, "model": "observed-model",
+            "usage": {"prompt_tokens": 9, "completion_tokens": 2, "total_tokens": 11}}
+    calls = []
+    class Response:
+        status_code = 200
+        def json(self):
+            return body
+    def post(*args, **kwargs):
+        calls.append(kwargs)
+        return Response()
+    monkeypatch.setattr(requests, "post", post)
+    result = eq._call_openai_compat_detailed("system", "user",
+        {"base_url": "http://127.0.0.1:11435/v1", "model": "requested"}, max_tokens=32)
+    assert len(calls) == 1
+    assert result.text is None and result.error_kind == error_kind
+    assert result.usage is None
+    assert result.observed_usage == {"prompt_tokens": 9, "completion_tokens": 2, "total_tokens": 11}
+    assert result.served_model == "observed-model" and result.status_code == 200
+
+
+@pytest.mark.parametrize("body", [
+    {},
+    {"usage": {"prompt_tokens": True, "completion_tokens": -1, "total_tokens": "2"}, "model": False},
+    {"usage": {"prompt_tokens": 3.5, "completion_tokens": [], "total_tokens": {}}, "model": ""},
+    {"usage": {"prompt_tokens": 3, "input_tokens": 4}, "model": " padded "},
+])
+def test_response_observation_does_not_coerce_unknowns(body):
+    assert eq._openai_response_observation(body) == (None, None)
+
+
+def test_detailed_invalid_json_retains_http_status_without_resending(monkeypatch):
+    import requests
+
+    calls = []
+    class Response:
+        status_code = 200
+        def json(self):
+            raise ValueError("invalid JSON")
+    def post(*args, **kwargs):
+        calls.append(kwargs)
+        return Response()
+    monkeypatch.setattr(requests, "post", post)
+    result = eq._call_openai_compat_detailed("system", "user",
+        {"base_url": "http://127.0.0.1:11435/v1", "model": "requested"}, max_tokens=32)
+    assert len(calls) == 1
+    assert result.text is None and result.reason == "openai_compat_error"
+    assert result.status_code == 200
+    assert result.observed_usage is None and result.served_model is None
+
+
+def test_detailed_http_error_retains_actual_response_metadata(monkeypatch):
+    import requests
+
+    class Response:
+        status_code = 429
+        def json(self):
+            return {"model": "actual-error-model", "usage": {"input_tokens": 7}}
+    monkeypatch.setattr(requests, "post", lambda *args, **kwargs: Response())
+    result = eq._call_openai_compat_detailed("system", "user",
+        {"base_url": "http://127.0.0.1:11435/v1", "model": "requested"}, max_tokens=32)
+    assert result.text is None and result.reason == "openai_compat_http_429"
+    assert result.usage is None and result.status_code == 429 and result.error_kind == "http"
+    assert result.served_model == "actual-error-model"
+    assert result.observed_usage == {"prompt_tokens": 7, "completion_tokens": None, "total_tokens": None}
+
+
+def test_detailed_transport_failure_has_no_invented_observation(monkeypatch):
+    import requests
+
+    calls = []
+    def post(*args, **kwargs):
+        calls.append(kwargs)
+        raise requests.exceptions.Timeout("synthetic timeout")
+    monkeypatch.setattr(requests, "post", post)
+    result = eq._call_openai_compat_detailed("system", "user",
+        {"base_url": "http://127.0.0.1:11435/v1", "model": "requested"}, max_tokens=32)
+    assert len(calls) == 1
+    assert result.status_code is None and result.error_kind == "timeout"
+    assert result.observed_usage is None and result.served_model is None
+
+
+def test_legacy_tuple_ignores_additive_observation(monkeypatch):
+    import inspect
+
+    result = eq.OpenAICompatResult("answer", None, {"prompt_tokens": 1},
+        200, None, {"prompt_tokens": 1, "completion_tokens": None, "total_tokens": None},
+        "served-model")
+    calls = []
+    def detailed(*args, **kwargs):
+        calls.append((args, kwargs))
+        return result
+    monkeypatch.setattr(eq, "_call_openai_compat_detailed", detailed)
+    assert list(inspect.signature(eq._call_openai_compat).parameters) == [
+        "system", "user", "oc_cfg", "max_tokens"]
+    assert eq._call_openai_compat("system", "user", {}, max_tokens=32) == ("answer", None)
+    assert len(calls) == 1

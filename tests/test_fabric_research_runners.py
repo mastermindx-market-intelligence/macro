@@ -503,5 +503,3 @@ def test_scheduled_unknown_cost_refuses_before_claim_credentials_or_provider(res
     assert "research_scheduled_nonmetered_qualification_required" in lane_status(state)["reason"]
     assert not journal(state).exists()
     assert not state.native.posts and not state.closes and not usages(state)
-
-

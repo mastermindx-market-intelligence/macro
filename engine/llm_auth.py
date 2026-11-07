@@ -47,6 +47,7 @@ the token string is never logged.
 from __future__ import annotations
 
 import inspect
+import json
 import logging
 import os
 import re
@@ -407,11 +408,29 @@ def build_fabric_provider(factory, *, request_id: str, workload_cfg=None,
             bound = factory()
     except Exception:
         raise FabricProviderError("fabric_binding_unavailable") from None
-    if not isinstance(bound, dict) or set(bound) != _FABRIC_BINDING_KEYS:
-        raise FabricProviderError("fabric_binding_invalid")
-    for name in ("model", "provider", "cap_id"):
-        if not isinstance(bound[name], str) or not _FABRIC_ID.fullmatch(bound[name]):
+    automatic = (type(bound) is dict
+                 and bound.get("schema") == "mastermind.fabric_application_binding.v2")
+    auto_identity = None
+    if automatic:
+        from engine.fabric_inference_client import FabricInferenceClient, validate_auto_inspection
+        if not owned_factory or set(bound) != {"schema", "client", "inspection"}:
             raise FabricProviderError("fabric_binding_invalid")
+        try:
+            auto_identity = validate_auto_inspection(bound["inspection"])
+        except Exception:
+            raise FabricProviderError("fabric_binding_invalid") from None
+        client = bound["client"]
+        if (type(client) is not FabricInferenceClient or client.auto_inspection != auto_identity
+                or client.model is not None or client.operation_id != request_id):
+            raise FabricProviderError("fabric_binding_invalid")
+        bound = {"client": client, "model": None, "provider": None,
+                 "cost_basis": "unknown", "cap_id": auto_identity["cap_id"]}
+    elif not isinstance(bound, dict) or set(bound) != _FABRIC_BINDING_KEYS:
+        raise FabricProviderError("fabric_binding_invalid")
+    if not automatic:
+        for name in ("model", "provider", "cap_id"):
+            if not isinstance(bound[name], str) or not _FABRIC_ID.fullmatch(bound[name]):
+                raise FabricProviderError("fabric_binding_invalid")
     if (not isinstance(bound["cost_basis"], str)
             or bound["cost_basis"] not in {"metered", "subscription", "local", "unknown"}):
         raise FabricProviderError("fabric_binding_invalid")
@@ -427,6 +446,10 @@ def build_fabric_provider(factory, *, request_id: str, workload_cfg=None,
         "_fabric_callback_lock": threading.Lock(),
         "_fabric_prior_admission_possible": prior_admission_possible,
     }
+    if automatic:
+        provider["_fabric_auto_inspection"] = json.dumps(auto_identity, sort_keys=True,
+            separators=(",", ":"), ensure_ascii=False, allow_nan=False)
+        provider["_fabric_application_observation"] = None
     provider["client"] = _FabricConsumerClient(bound["client"], provider)
     # The TRUSTED caller's declared spend sink travels with the bound
     # operation. Only the explicit "none" is honoured, and it means exactly
@@ -460,7 +483,7 @@ def fabric_request_kwargs(provider: dict, kwargs: dict) -> dict:
         raise FabricProviderError("fabric_operation_closed")
     if provider.get("_fabric_pending"):
         raise FabricProviderError("fabric_step_unsettled", effect_unknown=True)
-    if set(kwargs) - _FABRIC_CALL_KEYS or kwargs.get("model") != provider["model"]:
+    if set(kwargs) - _FABRIC_CALL_KEYS or "model" not in kwargs or kwargs["model"] != provider["model"]:
         raise FabricProviderError("fabric_request_invalid")
     if provider["_fabric_step"] >= 256:
         raise FabricProviderError("fabric_step_bound")
@@ -488,7 +511,44 @@ def fabric_request_kwargs(provider: dict, kwargs: dict) -> dict:
     return out
 
 
-def _fabric_observed_usage(provider: dict, usage, model, request_id) -> None:
+def _fabric_routed_observation(provider, value, request_id):
+    if provider.get("_fabric_auto_inspection") is None:
+        return None
+    from engine.fabric_inference_client import ApplicationObservation
+    if type(value) is not ApplicationObservation:
+        return None
+    try:
+        document = value.document
+        identity = json.loads(provider["_fabric_auto_inspection"])
+        route = document["routing"]
+        if (document["schema"] != "mastermind.fabric_application_observation.v2"
+                or document["turn_id"] != provider["_fabric_request_id"]
+                or document["request_id"] != request_id
+                or route["route_scope"] != identity["route_scope"]
+                or route["route_scope_digest"] != identity["route_scope_digest"]
+                or route["pool"] not in identity["route_scope"]["pools"]):
+            return None
+        return value
+    except (ValueError, TypeError, KeyError):
+        return None
+
+
+def fabric_observation(provider):
+    """Read the existing operation's immutable observation; never inspect or send."""
+    return provider.get("_fabric_application_observation") if is_fabric_provider(provider) else None
+
+
+def _fabric_observation_attribution(provider, observation):
+    route = observation.document["routing"] if observation is not None else None
+    value = {"provider": route["pool"] if route is not None else "unknown",
+             "cost_basis": "unknown", "cap_id": provider["cap_id"]}
+    if route is not None:
+        value.update({key: route[key] for key in ("selected_model", "mode", "protocol",
+            "driver", "profile", "source", "recipe_digest", "selection_digest")})
+    return json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False, allow_nan=False)
+
+
+def _fabric_observed_usage(provider: dict, usage, model, request_id, *, observation=None) -> None:
     """Retain one original observation in the existing operation's counters.
 
     This is bounded in-memory response bookkeeping, not a second usage ledger.
@@ -505,11 +565,18 @@ def _fabric_observed_usage(provider: dict, usage, model, request_id) -> None:
     model = model if isinstance(model, str) and _FABRIC_ID.fullmatch(model) else None
     provider["_fabric_last_observation"] = {"request_id": request_id, "serving_model": model,
         "input_tokens": values[0], "output_tokens": values[1]}
+    automatic = provider.get("_fabric_auto_inspection") is not None
+    if automatic:
+        observation = _fabric_routed_observation(provider, observation, request_id)
+        provider["_fabric_application_observation"] = observation
     if all(v is not None for v in values):
         provider["_fabric_input"] += values[0]
         provider["_fabric_output"] += values[1]
         provider["_fabric_known_responses"] += 1
-        provider.setdefault("_fabric_usage_observations", []).append((model, *values))
+        entry = (model, *values)
+        if automatic:
+            entry += (_fabric_observation_attribution(provider, observation),)
+        provider.setdefault("_fabric_usage_observations", []).append(entry)
     else:
         provider["_fabric_usage_known"] = False
 
@@ -523,7 +590,7 @@ def fabric_failure(provider: dict, exc: Exception) -> FabricProviderError:
     if isinstance(exc, FabricInferenceError):
         if exc.observed_usage is not None:
             _fabric_observed_usage(provider, exc.observed_usage,
-                exc.serving_model, exc.request_id)
+                exc.serving_model, exc.request_id, observation=exc.application_observation)
         if exc.disposition in {"terminal", "terminal_receipt_only"}:
             provider["_fabric_pending"] = False
         if exc.disposition == "terminal_receipt_only":
@@ -549,7 +616,18 @@ def fabric_response(provider: dict, response) -> None:
     """Validate before tools and retain real completed-step usage for settlement."""
     if not provider.get("_fabric_pending"):
         raise FabricProviderError("fabric_response_without_request")
-    if getattr(response, "model", None) != provider["model"]:
+    observation = None
+    expected_model = provider["model"]
+    if provider.get("_fabric_auto_inspection") is not None:
+        observation = _fabric_routed_observation(provider,
+            getattr(response, "application_observation", None), provider.get("_fabric_pending_request_id"))
+        if observation is None:
+            raise FabricProviderError("fabric_response_route_invalid", effect_unknown=True)
+        document = observation.document
+        expected_model = document["routing"]["selected_model"]
+        if document["serving_model"] != expected_model:
+            raise FabricProviderError("fabric_response_model_mismatch", effect_unknown=True)
+    if getattr(response, "model", None) != expected_model:
         raise FabricProviderError("fabric_response_model_mismatch", effect_unknown=True)
     content = getattr(response, "content", None)
     stop = getattr(response, "stop_reason", None)
@@ -574,7 +652,7 @@ def fabric_response(provider: dict, response) -> None:
     if len(tools) != len(set(tools)) or bool(tools) != (stop == "tool_use"):
         raise FabricProviderError("fabric_tool_response_invalid", effect_unknown=True)
     _fabric_observed_usage(provider, getattr(response, "usage", None), response.model,
-                           provider.get("_fabric_pending_request_id"))
+                           provider.get("_fabric_pending_request_id"), observation=observation)
     provider["_fabric_pending"] = False
     # Keep usage from a completed empty response, but prohibit hidden recovery.
     if not text_present and not tools:
@@ -597,8 +675,10 @@ def _fabric_usage_delta(provider, before):
         return None
     observations = provider.get("_fabric_usage_observations", [])[before[2]:]
     grouped = {}
-    for model, input_tokens, output_tokens in observations:
-        totals = grouped.setdefault(model, [0, 0])
+    for observation in observations:
+        model, input_tokens, output_tokens = observation[:3]
+        attribution = observation[3] if len(observation) == 4 else None
+        totals = grouped.setdefault((model, attribution), [0, 0])
         totals[0] += input_tokens
         totals[1] += output_tokens
     partial = fabric_usage(provider)["usage_state"] != "known"
@@ -606,12 +686,15 @@ def _fabric_usage_delta(provider, before):
     # terminal. Attribute each group to its actually observed model, without
     # changing the immutable provider binding or creating another ledger.
     groups = tuple(SimpleNamespace(input_tokens=values[0], output_tokens=values[1],
-        partial_unknown=partial, serving_model=model) for model, values in grouped.items())
+        partial_unknown=partial, serving_model=key[0],
+        fabric_attribution=json.loads(key[1]) if key[1] is not None else None)
+        for key, values in grouped.items())
     return SimpleNamespace(
         input_tokens=provider["_fabric_input"] - before[0],
         output_tokens=provider["_fabric_output"] - before[1],
         partial_unknown=partial,
-        serving_model=next(iter(grouped)) if len(grouped) == 1 else None,
+        serving_model=groups[0].serving_model if len(groups) == 1 else None,
+        fabric_attribution=groups[0].fabric_attribution if len(groups) == 1 else None,
         observations=groups if len(groups) > 1 else (),
     )
 
@@ -924,7 +1007,9 @@ def make_call(
                 context=context,
                 rung=row["rung"],
                 cap_id=row["cap_id"],
-                model=str(p.get("model") or ""),
+                model=str((fabric_observation(p).document["serving_model"]
+                    if p.get("_fabric_auto_inspection") is not None and fabric_observation(p) is not None
+                    else p.get("model")) or ""),
                 ok=ok,
                 latency_ms=latency_ms,
                 error_class=error_class or (skipped and f"skipped_{skipped}") or "",
@@ -1143,6 +1228,10 @@ def _capture_usage(p: dict, usage_obj, context: str) -> None:
         # default.  See LEDGER_PROVIDER for why the old `else` branch was a bug.
         name = p.get("name", "unknown")
         ai_provider, cost_basis = (p["provider"], p["cost_basis"]) if is_fabric_provider(p) else ledger_provider_for(name)
+        if p.get("_fabric_auto_inspection") is not None:
+            attribution = getattr(usage_obj, "fabric_attribution", None)
+            ai_provider = attribution["provider"] if type(attribution) is dict else "unknown"
+            cost_basis = "unknown"
 
         lane = p.get("usage_lane") or p.get("_usage_lane") or "unknown"
         cap_id = p.get("cap_id")
@@ -1170,6 +1259,11 @@ def _capture_usage(p: dict, usage_obj, context: str) -> None:
             cache_read_tokens=cr_tok,
             cache_creation_tokens=cc_tok,
             cost_basis=cost_basis,
+            **({"fabric_route": {key: attribution[key] for key in (
+                "selected_model", "mode", "protocol", "driver", "profile",
+                "source", "recipe_digest", "selection_digest")}}
+               if p.get("_fabric_auto_inspection") is not None
+               and type(attribution) is dict and "selection_digest" in attribution else {}),
             cycle_id=cycle_id,
             stage=stage,
             note=("partial_known_usage; turn_total_unknown"

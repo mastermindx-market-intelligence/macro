@@ -846,3 +846,149 @@ def test_local_qwen_cost_is_zero_not_unpriced(tmp_path, monkeypatch):
     assert row["provider"] == "openai_compat"
     assert row["cycle_id"] == "abc123"
     assert row["lane"] == "earnings_event_compiler"
+
+
+@pytest.fixture
+def qwen_observation_repo(tmp_path, monkeypatch):
+    import engine.company_intelligence.e3_shadow_compiler as e3
+
+    (tmp_path / "config").mkdir()
+    (tmp_path / "config/earnings_qual.yml").write_text(
+        "openai_compat:\n  base_url: http://127.0.0.1:11435/v1\n"
+        "  model: qwen3.5:9b\n  max_tokens: 1200\n",
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(e3, "resolve_qwen_openai_compat_cfg",
+                        lambda root, cfg: {**cfg, "base_url_source": "fixture"})
+    monkeypatch.setattr(e3, "preflight_qwen_endpoint", lambda cfg: {"status": "ok"})
+    monkeypatch.setattr(e3, "_record_health", lambda **kwargs: None)
+    return tmp_path
+
+
+def test_qwen_attempt_uses_one_detailed_call_and_actual_observation(
+    qwen_observation_repo, monkeypatch,
+):
+    import requests
+    import engine.company_intelligence.e3_shadow_compiler as e3
+
+    sent = []
+    class Response:
+        status_code = 200
+        def json(self):
+            return {"model": "actual-qwen-serving-id", "choices": [{"message": {"content": "[]"}}],
+                    "usage": {"prompt_tokens": 17, "completion_tokens": 0}}
+
+    def post(url, **kwargs):
+        sent.append((url, kwargs))
+        return Response()
+
+    monkeypatch.setattr(requests, "post", post)
+    attempt = e3._attempt_qwen("return JSON", qwen_observation_repo)
+    assert requests.post is post
+    assert len(sent) == 1
+    payload = sent[0][1]["json"]
+    assert payload == {
+        "model": "qwen3.5:9b",
+        "messages": [{"role": "system", "content": e3.SYSTEM_PROMPT},
+                     {"role": "user", "content": "return JSON\n\n/no_think"}],
+        "max_tokens": 4096, "temperature": 0, "stream": False, "reasoning_effort": "none",
+    }
+    assert attempt.status == "ok"
+    assert attempt.model == "qwen3.5:9b"
+    assert attempt.served_model == "actual-qwen-serving-id"
+    assert attempt.http_status == 200 and attempt.error_kind is None
+    assert (attempt.input_tokens, attempt.output_tokens) == (17, 0)
+    assert attempt.observed_usage["total_tokens"] is None
+
+
+def test_qwen_attempt_does_not_resend_after_helper_exception(qwen_observation_repo, monkeypatch):
+    import engine.company_intelligence.e3_shadow_compiler as e3
+    from engine import earnings_qual
+
+    calls = []
+    def after_send(**kwargs):
+        calls.append(kwargs)
+        raise RuntimeError("response observation failed after simulated send")
+
+    monkeypatch.setattr(earnings_qual, "_call_openai_compat_detailed", after_send)
+    attempt = e3._attempt_qwen("request", qwen_observation_repo)
+    assert len(calls) == 1
+    assert attempt.status == "provider_unavailable"
+    assert attempt.degraded_reason == "exception: RuntimeError"
+    assert attempt.input_tokens is None and attempt.output_tokens is None
+    assert attempt.served_model is None
+
+
+def test_qwen_concurrent_observations_do_not_intercept_unrelated_requests(
+    qwen_observation_repo, monkeypatch,
+):
+    from concurrent.futures import ThreadPoolExecutor
+    import threading
+    import requests
+    import engine.company_intelligence.e3_shadow_compiler as e3
+
+    barrier = threading.Barrier(3)
+    sent = []
+    lock = threading.Lock()
+    class Response:
+        status_code = 200
+        def __init__(self, name):
+            self.name = name
+        def json(self):
+            n = {"first": 11, "second": 22, "unrelated": 99}[self.name]
+            return {"model": "served-" + self.name,
+                    "choices": [{"message": {"content": json.dumps({"name": self.name})}}],
+                    "usage": {"input_tokens": n, "output_tokens": 1}}
+
+    def post(url, **kwargs):
+        assert requests.post is post
+        payload = kwargs["json"]
+        name = payload.get("outside") or payload["messages"][1]["content"].split("\n")[0]
+        with lock:
+            sent.append(name)
+        barrier.wait(timeout=10)
+        return Response(name)
+
+    monkeypatch.setattr(requests, "post", post)
+    with ThreadPoolExecutor(max_workers=3) as workers:
+        first = workers.submit(e3._attempt_qwen, "first", qwen_observation_repo)
+        second = workers.submit(e3._attempt_qwen, "second", qwen_observation_repo)
+        unrelated = workers.submit(requests.post, "https://fixture.invalid/unrelated",
+                                   json={"outside": "unrelated"})
+        a, b, c = first.result(timeout=15), second.result(timeout=15), unrelated.result(timeout=15)
+    assert sorted(sent) == ["first", "second", "unrelated"]
+    assert requests.post is post
+    assert (a.served_model, a.input_tokens) == ("served-first", 11)
+    assert (b.served_model, b.input_tokens) == ("served-second", 22)
+    assert c.json()["model"] == "served-unrelated"
+    assert a.observed_usage is not b.observed_usage
+
+
+def test_qwen_empty_answer_retains_observation_without_acceptance(qwen_observation_repo, monkeypatch):
+    import requests
+    import engine.company_intelligence.e3_shadow_compiler as e3
+
+    class Response:
+        status_code = 200
+        def json(self):
+            return {"model": "actual-empty-model", "choices": [],
+                    "usage": {"prompt_tokens": 13, "completion_tokens": 4}}
+    monkeypatch.setattr(requests, "post", lambda *args, **kwargs: Response())
+    attempt = e3._attempt_qwen("empty", qwen_observation_repo)
+    assert attempt.status == "provider_unavailable" and attempt.raw_response is None
+    assert attempt.error_kind == "empty" and attempt.http_status == 200
+    assert attempt.served_model == "actual-empty-model"
+    assert (attempt.input_tokens, attempt.output_tokens) == (13, 4)
+
+
+def test_qwen_unknown_usage_is_not_zero_in_existing_ledger(tmp_path, monkeypatch):
+    from engine.company_intelligence.e3_shadow_compiler import ModelAttempt, ledger_attempt
+
+    monkeypatch.delenv("AI_COSTS_SHARD", raising=False)
+    attempt = ModelAttempt(provider="openai_compat", model="requested",
+                           endpoint_class="remote", input_tokens=None,
+                           output_tokens=None, est_cost_usd=None)
+    ledger_attempt(attempt, tmp_path, "unknown-observation")
+    row = json.loads((tmp_path / "data/ai_costs/usage.jsonl").read_text().splitlines()[0])
+    assert row["input_tokens"] is None and row["output_tokens"] is None
+    assert row["est_cost_usd"] is None and row["cost_basis"] == "unknown"
