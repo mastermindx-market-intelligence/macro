@@ -192,3 +192,38 @@ touched.
   but it limits usefulness until the figure-yield follow-up lands. V binds
   revenue but not EPS.
 - The public HTTP surface stays 503 until the operator's flags-ON decision.
+
+## Figure binding yield (follow-up g)
+
+The census lives at
+[MARKETING_X_CATALYST_BINDER_CENSUS_20261101.md](MARKETING_X_CATALYST_BINDER_CENSUS_20261101.md).
+It covers 40 releases: the 20 pilot issuers, 2 latest Item 2.02 EX-99.1 each,
+bound in memory under D4 and recorded as hashes and URLs only.
+
+- **Yield.** `parsed` rose from 10 to 31 of 40 and projected public figures
+  from 14 to 54 (`eps_actual` 8 → 29, `rev_actual` 6 → 25). Nothing bound at
+  the base was lost or changed value.
+- **Binder changes.** Failure classes A–E, G, the span rule S, segment
+  footing T and share-class EPS K, each with a test in
+  `tests/test_earnings_release_binding.py`. The findings of both independent
+  reviews (nine, then N1–N8) are closed, each code fix as a fail-closed rule
+  with its test (census page, "Fail-closed hardening").
+- **Live six.** AMZN, MA, MSFT, GOOGL, KO and V, which production showed
+  UNAVAILABLE on the `main` binder (reader proof above; V lacked EPS), all project `eps_actual` and
+  `rev_actual` on this branch (re-fetched in memory via the writer's path).
+- **Silent breaks are visible.** `ReleaseFigureSet.outcome` names why a
+  release bound nothing. The cycle index carries it as `figure_outcome`,
+  validated against `parse_status`, and packets name it as
+  `source_figure_outcome_<code>`. A binder error (`parse_failed`:
+  `binder_exception` / `replay_failed` / `document_not_utf8`) now reads
+  differently from a release with nothing to project.
+- **Flags.** All stay OFF. No producer-file semantics of Filing Forensics
+  changed.
+
+Open follow-ups, each needing its own evidence:
+
+1. TSLA and UNH exhibits with no tables (`no_tables` / `no_candidate_rows`):
+   the figures need a non-table source.
+2. JPM: headline metrics outside dated tables (`no_period_columns`).
+3. JNJ: roster rows under undated headers (`no_period_columns`).
+4. PG fiscal-year vs Q4 tables refused as `value_ambiguous` (`all_refused`).

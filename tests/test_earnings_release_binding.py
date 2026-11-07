@@ -23,6 +23,7 @@ import hashlib
 from pathlib import Path
 import re
 import socket
+import time
 
 import pytest
 
@@ -468,6 +469,1219 @@ def test_two_rows_disagreeing_on_one_concept_drop_both() -> None:
     result = fig.extract_release_figures(document)
     assert result.figure("revenue") is None
     assert result.absence("revenue").reason == fig.AbsenceReason.VALUE_AMBIGUOUS.value
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Layouts the 40-release census proved unreadable, one class at a time.
+# research/MARKETING_X_CATALYST_BINDER_CENSUS_20261101.md names the real
+# releases behind each class; every body here is synthetic.
+# ─────────────────────────────────────────────────────────────────────────────
+
+_GAAP_CAPTION = "<div>CONDENSED CONSOLIDATED STATEMENTS OF OPERATIONS (Unaudited)</div>"
+_UNITS = "<div>(In millions, except per share amounts)</div>"
+_DATED = '<tr><td></td><td colspan="2">December 28, 2025</td></tr>'
+
+
+def _extract(body: str) -> fig.ReleaseFigureSet:
+    document = normalize_filing(
+        {"accession": ACCESSION, "entity_cik": str(CIK), "form": "8-K", "content": body}
+    )
+    return fig.extract_release_figures(document)
+
+
+def _statement(rows: str, *, caption: str = _GAAP_CAPTION, units: str = _UNITS) -> str:
+    return f"<html><body>{caption}{units}<table>{rows}</table></body></html>"
+
+
+@pytest.mark.parametrize(
+    "header",
+    [
+        # A year row under a "Three Months Ended September 30," caption row.
+        '<tr><td></td><td colspan="4">Three Months Ended September 30,</td></tr>'
+        '<tr><td></td><td colspan="2">2025</td><td colspan="2">2024</td></tr>',
+        # The period and its whole date in one cell.
+        '<tr><td></td><td colspan="2">Three Months Ended September 30, 2025</td>'
+        '<td colspan="2">Three Months Ended September 30, 2024</td></tr>',
+        # A numeric date.
+        '<tr><td></td><td colspan="2">9/30/2025</td><td colspan="2">9/30/2024</td></tr>',
+    ],
+    ids=["year-row", "date-tail", "slash-date"],
+)
+def test_class_a_a_dated_header_in_any_census_shape_names_the_period(header: str) -> None:
+    rows = header + (
+        "<tr><td>Total net sales</td><td>$</td><td>8,412</td><td>$</td><td>7,900</td></tr>"
+    )
+    revenue = _extract(_statement(rows)).figure("revenue")
+    assert revenue is not None
+    assert (revenue.value, revenue.period_end) == (8412.0, "2025-09-30")
+
+
+@pytest.mark.parametrize(
+    ("caption", "units"),
+    [
+        ("(in $ millions)", "usd_millions"),
+        ("($ in millions, except per share data)", "usd_millions"),
+        ("($ billions, except EPS)", "usd_billions"),
+    ],
+)
+def test_class_b_a_dollar_led_units_caption_declares_units_and_currency(
+    caption: str, units: str
+) -> None:
+    """The no-currency fixture above stays an absence; a "$" caption is a declaration."""
+    rows = "<tr><td></td><td>December 28, 2025</td></tr><tr><td>Total net sales</td><td>8,412</td></tr>"
+    revenue = _extract(_statement(rows, units=f"<div>{caption}</div>")).figure("revenue")
+    assert revenue is not None
+    assert (revenue.value, revenue.units, revenue.currency) == (8412.0, units, "USD")
+
+
+@pytest.mark.parametrize("cell", ["$8,412", "$ 8,412"])
+def test_class_c_a_currency_symbol_inside_the_value_cell_is_a_currency(cell: str) -> None:
+    rows = f"{_DATED}<tr><td>Total net sales</td><td colspan=\"2\">{cell}</td></tr>"
+    revenue = _extract(_statement(rows)).figure("revenue")
+    assert revenue is not None
+    assert (revenue.value, revenue.currency) == (8412.0, "USD")
+
+
+def test_class_c_a_negative_typeset_across_two_cells_reads_as_one_value() -> None:
+    rows = (
+        f"{_DATED}<tr><td>Net loss per share:</td></tr>"
+        "<tr><td>Diluted</td><td>$</td><td>(0.12</td><td>)</td></tr>"
+    )
+    eps = _extract(_statement(rows)).figure("eps_diluted")
+    assert eps is not None
+    assert eps.value == -0.12
+
+
+@pytest.mark.parametrize(
+    ("label", "cell", "concept", "value"),
+    [
+        ("Net operating revenues", "8,412", "revenue", 8412.0),
+        ("Sales to customers", "8,412", "revenue", 8412.0),
+        ("Net revenues1", "8,412", "revenue", 8412.0),
+        ("Diluted EPS", "1.23", "eps_diluted", 1.23),
+        ("EPS (diluted)", "1.23", "eps_diluted", 1.23),
+        ("EPS - basic", "1.25", "eps_basic", 1.25),
+    ],
+)
+def test_class_d_census_label_variants_name_their_concept(
+    label: str, cell: str, concept: str, value: float
+) -> None:
+    rows = f"{_DATED}<tr><td>{label}</td><td>$</td><td>{cell}</td></tr>"
+    figure = _extract(_statement(rows)).figure(concept)
+    assert figure is not None
+    assert figure.value == value
+
+
+@pytest.mark.parametrize(
+    "caption",
+    [
+        "CONSOLIDATED STATEMENTS OF EARNINGS",
+        "Consolidated Earnings Information",
+        "INCOME STATEMENTS (Unaudited)",
+    ],
+)
+def test_class_e_census_statement_titles_declare_gaap(caption: str) -> None:
+    rows = f"{_DATED}<tr><td>Total net sales</td><td>$</td><td>8,412</td></tr>"
+    revenue = _extract(_statement(rows, caption=f"<div>{caption}</div>")).figure("revenue")
+    assert revenue is not None
+    assert revenue.basis == fig.Basis.GAAP.value
+
+
+def test_class_e_prose_mentioning_a_basis_closes_the_section_it_follows() -> None:
+    """A footnote about non-GAAP measures is where a release turns to them."""
+    prose = (
+        "<p>Non-GAAP results exclude the impact of certain items, which are "
+        "explained in the reconciliations that follow.</p>"
+    )
+    rows = f"{_DATED}<tr><td>Total net sales</td><td>$</td><td>8,412</td></tr>"
+    result = _extract(_statement(rows, caption=_GAAP_CAPTION + prose))
+    assert result.figure("revenue") is None
+    assert result.absence("revenue").reason == fig.AbsenceReason.BASIS_UNDECLARED.value
+
+
+def test_class_e_a_basis_declared_inside_a_table_speaks_for_that_table_only() -> None:
+    body = f"""<html><body>{_GAAP_CAPTION}{_UNITS}
+      <table>{_DATED}<tr><td>Total net sales</td><td>$</td><td>8,412</td></tr></table>
+      {_UNITS}
+      <table><tr><td>Reconciliation of non-GAAP measures</td></tr>{_DATED}
+        <tr><td>Diluted EPS</td><td>$</td><td>1.30</td></tr></table>
+      {_UNITS}
+      <table>{_DATED}<tr><td>Operating income</td><td>$</td><td>2,100</td></tr></table>
+    </body></html>"""
+    result = _extract(body)
+    assert result.figure("revenue").basis == fig.Basis.GAAP.value
+    assert result.figure("eps_diluted").basis == fig.Basis.NON_GAAP.value
+    # Untitled after a reconciliation: unknown, never reverted to GAAP.
+    assert result.figure("operating_income") is None
+    assert result.absence("operating_income").reason == (
+        fig.AbsenceReason.BASIS_UNDECLARED.value
+    )
+
+
+def test_class_e_a_title_typeset_as_a_table_governs_like_a_caption() -> None:
+    """Regression guard: the base already read a table-typeset title; class E must not break it."""
+    title = (
+        "<table><tr><td>CONDENSED CONSOLIDATED STATEMENTS OF OPERATIONS</td></tr></table>"
+    )
+    rows = f"{_DATED}<tr><td>Total net sales</td><td>$</td><td>8,412</td></tr>"
+    revenue = _extract(_statement(rows, caption=title)).figure("revenue")
+    assert revenue is not None
+    assert revenue.basis == fig.Basis.GAAP.value
+
+
+def test_class_g_a_reconciliation_split_of_one_period_is_refused() -> None:
+    """As reported / impact / as adjusted: no position is THE value for the period."""
+    rows = (
+        '<tr><td></td><td colspan="3">Three Months Ended September 30, 2025</td></tr>'
+        "<tr><td></td><td>As Reported</td><td>Impact</td><td>As Adjusted</td></tr>"
+        "<tr><td>Diluted EPS</td><td>$1.10</td><td>$0.20</td><td>$1.30</td></tr>"
+    )
+    result = _extract(_statement(rows))
+    assert result.figure("eps_diluted") is None
+    assert result.absence("eps_diluted").reason == fig.AbsenceReason.VALUE_AMBIGUOUS.value
+
+
+def test_class_g_an_amount_and_percent_split_narrows_to_the_amount() -> None:
+    rows = (
+        '<tr><td></td><td colspan="2">Three Months Ended September 30, 2025</td></tr>'
+        "<tr><td></td><td>Amount</td><td>% of Net Sales</td></tr>"
+        "<tr><td>Total net sales</td><td>$8,412</td><td>100.0%</td></tr>"
+    )
+    revenue = _extract(_statement(rows)).figure("revenue")
+    assert revenue is not None
+    assert (revenue.value, revenue.period_end) == (8412.0, "2025-09-30")
+
+
+@pytest.mark.parametrize(
+    ("body", "outcome"),
+    [
+        ("<html><body><p>Acme reports results for the quarter.</p></body></html>",
+         fig.BindingOutcome.NO_TABLES),
+        (_statement(f"{_DATED}<tr><td>Employees</td><td>1,200</td></tr>"),
+         fig.BindingOutcome.NO_CANDIDATE_ROWS),
+        (_statement("<tr><td>Total net sales</td><td>$</td><td>8,412</td></tr>"),
+         fig.BindingOutcome.NO_PERIOD_COLUMNS),
+        (_statement(f"{_DATED}<tr><td>Total net sales</td><td>$</td><td>8,412</td></tr>",
+                    units=""),
+         fig.BindingOutcome.ALL_REFUSED),
+        (_statement(f"{_DATED}<tr><td>Total net sales</td><td>$</td><td>8,412</td></tr>"),
+         fig.BindingOutcome.FIGURES_BOUND),
+    ],
+    ids=["prose", "no-roster-row", "undated", "refused", "bound"],
+)
+def test_class_f_an_empty_figure_list_names_why_it_is_empty(
+    body: str, outcome: fig.BindingOutcome
+) -> None:
+    result = _extract(body)
+    assert result.outcome == outcome.value
+    assert bool(result.figures) is (outcome is fig.BindingOutcome.FIGURES_BOUND)
+    serialized = result.to_dict()
+    assert serialized["outcome"] == outcome.value
+    assert serialized["table_count"] == (0 if outcome is fig.BindingOutcome.NO_TABLES else 1)
+
+
+# A Q4 release heads its statement of operations with the quarter and its
+# cash-flow statement with the year, on the same period end.
+_CASH_FLOW_CAPTION = "<div>CONDENSED CONSOLIDATED STATEMENTS OF CASH FLOWS (Unaudited)</div>"
+
+
+def _quarter_beside_cash_flow(operations_header: str, cash_flow_header: str) -> str:
+    def table(caption: str, header: str, value: str) -> str:
+        return (
+            f'{caption}{_UNITS}<table><tr><td></td><td colspan="2">{header}</td></tr>'
+            f"<tr><td>Net income</td><td>$</td><td>{value}</td></tr></table>"
+        )
+
+    return (
+        "<html><body>"
+        + table(_GAAP_CAPTION, operations_header, "6,002")
+        + table(_CASH_FLOW_CAPTION, cash_flow_header, "23,504")
+        + "</body></html>"
+    )
+
+
+@pytest.mark.parametrize(
+    ("operations_header", "cash_flow_header"),
+    [
+        ("Three Months Ended December 28, 2025", "Twelve Months Ended December 28, 2025"),
+        ("13 Weeks Ended December 28, 2025", "52 Weeks Ended December 28, 2025"),
+        ("Three Months Ended December 28, 2025", "52 Weeks Ended December 28, 2025"),
+    ],
+    ids=["months", "weeks", "mixed"],
+)
+def test_the_quarter_wins_over_the_year_on_one_period_end(
+    operations_header: str, cash_flow_header: str
+) -> None:
+    result = _extract(_quarter_beside_cash_flow(operations_header, cash_flow_header))
+    net_income = result.figure("net_income")
+    assert net_income is not None
+    assert (net_income.value, net_income.period_end) == (6002.0, "2025-12-28")
+
+
+@pytest.mark.parametrize(
+    ("operations_header", "cash_flow_header"),
+    [
+        # Neither header says how long its period runs.
+        ("December 28, 2025", "December 28, 2025"),
+        # Only one does: the other could be the quarter.
+        ("December 28, 2025", "Twelve Months Ended December 28, 2025"),
+        # Two names for one span are one span, so the readings still disagree.
+        ("13 Weeks Ended December 28, 2025", "Three Months Ended December 28, 2025"),
+    ],
+    ids=["undeclared", "one-declared", "same-span"],
+)
+def test_disagreeing_readings_without_a_shorter_declared_span_are_refused(
+    operations_header: str, cash_flow_header: str
+) -> None:
+    result = _extract(_quarter_beside_cash_flow(operations_header, cash_flow_header))
+    assert result.figure("net_income") is None
+    assert result.absence("net_income").reason == fig.AbsenceReason.VALUE_AMBIGUOUS.value
+
+
+def test_a_quarter_count_header_declares_its_span() -> None:
+    """ "Two Quarters Ended" is six months, not one quarter, so the quarter still wins."""
+    result = _extract(_quarter_beside_cash_flow(
+        "Three Months Ended December 28, 2025", "Two Quarters Ended December 28, 2025"
+    ))
+    net_income = result.figure("net_income")
+    assert net_income is not None
+    assert net_income.value == 6002.0
+
+
+@pytest.mark.parametrize(
+    ("operations_header", "cash_flow_header"),
+    [
+        # Two spans in one header: the column could be either.
+        ("Three and Twelve Months Ended December 28, 2025",
+         "Three Months Ended December 28, 2025"),
+        # A year-to-date column is cumulative, whatever quarter it names.
+        ("Third Quarter Year to Date Ended December 28, 2025",
+         "Six Months Ended December 28, 2025"),
+    ],
+    ids=["two-spans", "year-to-date"],
+)
+def test_a_header_that_declares_no_single_span_is_never_the_longer_period(
+    operations_header: str, cash_flow_header: str
+) -> None:
+    result = _extract(_quarter_beside_cash_flow(operations_header, cash_flow_header))
+    assert result.figure("net_income") is None
+    assert result.absence("net_income").reason == fig.AbsenceReason.VALUE_AMBIGUOUS.value
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Live gaps (AMZN, MA, MSFT, GOOGL, KO, V) and the first review's findings.
+# Every body is synthetic; the census doc names the releases by hash and URL.
+# ─────────────────────────────────────────────────────────────────────────────
+
+@pytest.mark.parametrize(
+    "label",
+    [
+        "Diluted EPS excluding special items",
+        "Diluted EPS growth",
+        "Diluted earnings per share excluding acquisition costs",
+    ],
+)
+def test_an_eps_label_naming_a_different_number_is_not_eps(label: str) -> None:
+    result = _extract(_statement(f"{_DATED}<tr><td>{label}</td><td>$</td><td>1.23</td></tr>"))
+    assert result.figure("eps_diluted") is None
+    assert result.absence("eps_diluted").reason == fig.AbsenceReason.CONCEPT_NOT_PRESENT.value
+
+
+def _opening(name: str) -> str:
+    """A release's first line naming ``name`` as the reporter, by exchange ticker and verb."""
+    return f"{name} (NYSE: XYZ) today reported results." if name else ""
+
+
+def _eps_statement(label: str, issuer: str = "") -> str:
+    """One diluted EPS row, under a caption that opens with ``issuer`` when given."""
+    caption = (f"<div>{issuer}</div>" if issuer else "") + _GAAP_CAPTION
+    return _statement(f"{_DATED}<tr><td>{label}</td><td>$</td><td>1.23</td></tr>", caption=caption)
+
+
+@pytest.mark.parametrize(
+    ("issuer", "label"),
+    [
+        ("Acme Corporation", "Diluted earnings per share attributable to Acme common shareholders"),
+        ("", "Diluted EPS (GAAP)"),
+    ],
+)
+def test_an_eps_label_with_an_attribution_or_basis_tag_is_still_eps(issuer: str, label: str) -> None:
+    eps = _extract(_eps_statement(label, _opening(issuer))).figure("eps_diluted")
+    assert eps is not None
+    assert eps.value == 1.23
+
+
+_TWO_PERIODS = (
+    '<tr><td></td><td colspan="2">December 28, 2025</td>'
+    '<td colspan="2">December 29, 2024</td></tr>'
+)
+
+
+def test_a_row_with_more_values_than_period_columns_is_refused() -> None:
+    """An unheaded leading column ("4", a note number) must not read as the quarter."""
+    units = "<div>($ in millions, except per share data)</div>"
+    rows = _TWO_PERIODS + "<tr><td>Total net sales</td><td>4</td><td>8,412</td><td>7,900</td></tr>"
+    result = _extract(_statement(rows, units=units))
+    assert result.figure("revenue") is None
+    assert result.absence("revenue").reason == fig.AbsenceReason.PERIOD_UNDECLARED.value
+
+    rows = _TWO_PERIODS + "<tr><td>Total net sales</td><td>8,412</td><td>7,900</td></tr>"
+    assert _extract(_statement(rows, units=units)).figure("revenue").value == 8412.0
+
+
+@pytest.mark.parametrize(
+    "caption",
+    [
+        "ADJUSTED CONSOLIDATED STATEMENTS OF EARNINGS",
+        "Consolidated Statements of Earnings, Excluding Special Items",
+        "CONDENSED CONSOLIDATED STATEMENTS OF OPERATIONS (As Adjusted)",
+        "CONSOLIDATED STATEMENTS OF CASH FLOWS (excluding discontinued operations)",
+        "Consolidated Statements of Operations - Pro Forma",
+    ],
+)
+def test_a_statement_title_qualified_as_adjusted_declares_no_basis(caption: str) -> None:
+    """Neither the GAAP statement nor a declared non-GAAP measure: unknown basis."""
+    rows = f"{_DATED}<tr><td>Total net sales</td><td>$</td><td>8,412</td></tr>"
+    result = _extract(_statement(rows, caption=f"<div>{caption}</div>"))
+    assert result.figure("revenue") is None
+    assert result.absence("revenue").reason == fig.AbsenceReason.BASIS_UNDECLARED.value
+
+
+def test_a_units_qualifier_does_not_qualify_the_statement() -> None:
+    caption = "<div>Consolidated Statements of Operations (excluding per share data)</div>"
+    rows = f"{_DATED}<tr><td>Total net sales</td><td>$</td><td>8,412</td></tr>"
+    revenue = _extract(_statement(rows, caption=caption)).figure("revenue")
+    assert revenue is not None
+    assert revenue.basis == fig.Basis.GAAP.value
+
+
+def test_a_parenthesized_value_after_a_currency_cell_is_negative() -> None:
+    rows = f"{_DATED}<tr><td>Operating income</td><td>$</td><td>(5)</td></tr>"
+    assert _extract(_statement(rows)).figure("operating_income").value == -5.0
+    # "(1)" with no currency before it is still a footnote marker.
+    rows = f"{_DATED}<tr><td>Total net sales</td><td>(1)</td><td>$</td><td>8,412</td></tr>"
+    assert _extract(_statement(rows)).figure("revenue").value == 8412.0
+
+
+def test_a_placeholder_in_the_current_period_is_a_refused_roster_row() -> None:
+    """The row was read and holds no value: all_refused, not no_candidate_rows."""
+    rows = _TWO_PERIODS + "<tr><td>Diluted EPS</td><td>$</td><td>—</td><td>$</td><td>1.10</td></tr>"
+    result = _extract(_statement(rows))
+    assert result.figure("eps_diluted") is None
+    assert result.absence("eps_diluted").reason == fig.AbsenceReason.CONCEPT_NOT_PRESENT.value
+    assert result.outcome == fig.BindingOutcome.ALL_REFUSED.value
+
+
+def test_prose_comparing_against_gaap_is_not_a_gaap_caption() -> None:
+    body = f"""<html><body>
+      <div>RECONCILIATION OF GAAP TO NON-GAAP MEASURES</div>
+      <div>Compared with GAAP results</div>{_UNITS}
+      <table>{_DATED}<tr><td>Diluted EPS</td><td>$</td><td>1.30</td></tr></table>
+    </body></html>"""
+    result = _extract(body)
+    assert result.figure("eps_diluted") is None
+    assert result.absence("eps_diluted").reason == fig.AbsenceReason.BASIS_UNDECLARED.value
+
+
+def _segments(*lines: tuple[str, str]) -> str:
+    return "".join(
+        f"<tr><td>{segment}</td></tr><tr><td>Net sales</td><td>$</td><td>{value}</td></tr>"
+        for segment, value in lines
+    )
+
+
+def test_a_segment_breakdown_binds_the_line_its_segments_sum_to() -> None:
+    rows = _DATED + _segments(
+        ("North America", "5,000"), ("International", "3,000"), ("Consolidated", "8,000")
+    )
+    revenue = _extract(_statement(rows)).figure("revenue")
+    assert revenue is not None
+    assert revenue.value == 8000.0
+
+
+@pytest.mark.parametrize(
+    "body",
+    [
+        # Does not foot.
+        _statement(_DATED + _segments(
+            ("North America", "5,000"), ("International", "3,000"), ("Consolidated", "9,000")
+        )),
+        # Two amounts are a restatement, not a breakdown.
+        _statement(_DATED + _segments(("North America", "5,000"), ("Consolidated", "8,000"))),
+        # A negative line is an elimination the rule cannot tell from a component.
+        _statement(_DATED + _segments(
+            ("North America", "5,000"), ("International", "4,000"),
+            ("Eliminations", "(1,000)"), ("Consolidated", "8,000"),
+        )),
+        # Amounts in two scales do not add.
+        "<html><body>" + _GAAP_CAPTION + _UNITS
+        + f"<table>{_DATED}{_segments(('North America', '5,000'), ('International', '3,000'))}"
+        + "</table><div>(In thousands)</div>"
+        + f"<table>{_DATED}{_segments(('Consolidated', '8,000'))}</table></body></html>",
+    ],
+    ids=["no-footing", "two-amounts", "elimination", "mixed-scale"],
+)
+def test_a_breakdown_that_does_not_cleanly_foot_stays_ambiguous(body: str) -> None:
+    result = _extract(body)
+    assert result.figure("revenue") is None
+    assert result.absence("revenue").reason == fig.AbsenceReason.VALUE_AMBIGUOUS.value
+
+
+def _share_classes(headline: str | None, basic: tuple[str, str], diluted: tuple[str, str],
+                   *, direct: str = "") -> str:
+    head = f"<tr><td>Earnings per share</td><td>$</td><td>{headline}</td></tr>" if headline else ""
+    block = "".join(
+        f"<tr><td>{scope}</td></tr>"
+        f"<tr><td>Class A common stock</td><td>$</td><td>{class_a}</td></tr>"
+        f"<tr><td>Class B-1 common stock</td><td>$</td><td>{class_b}</td></tr>"
+        for scope, (class_a, class_b) in (
+            ("Basic earnings per share:", basic), ("Diluted earnings per share:", diluted)
+        )
+    )
+    return _statement(_DATED + direct + head + block)
+
+
+def test_the_headline_eps_names_which_share_class_is_the_release_eps() -> None:
+    result = _extract(_share_classes("3.19", ("3.19", "4.98"), ("3.19", "4.97")))
+    for concept in ("eps_basic", "eps_diluted"):
+        eps = result.figure(concept)
+        assert eps is not None
+        assert (eps.value, eps.basis) == (3.19, fig.Basis.GAAP.value)
+    assert not any(f.concept.startswith("_") for f in result.figures)
+    assert not any(a.concept.startswith("_") for a in result.absences)
+
+
+@pytest.mark.parametrize(
+    ("headline", "basic", "diluted"),
+    [
+        (None, ("3.19", "4.98"), ("3.19", "4.97")),     # no headline names a class
+        ("3.19", ("3.19", "3.19"), ("3.19", "3.19")),   # two classes equal it
+        ("3.19", ("3.19", "4.98"), ("3.18", "3.19")),   # basic and diluted disagree
+    ],
+    ids=["no-headline", "two-classes-match", "classes-disagree"],
+)
+def test_share_class_eps_without_one_matching_class_is_refused(
+    headline: str | None, basic: tuple[str, str], diluted: tuple[str, str]
+) -> None:
+    result = _extract(_share_classes(headline, basic, diluted))
+    assert result.figure("eps_diluted") is None
+    assert result.absence("eps_diluted").reason == fig.AbsenceReason.VALUE_AMBIGUOUS.value
+    assert not any(a.concept.startswith("_") for a in result.absences)
+
+
+def test_a_direct_eps_row_wins_over_share_class_rows() -> None:
+    direct = "<tr><td>Diluted EPS</td><td>$</td><td>3.10</td></tr>"
+    result = _extract(_share_classes("3.19", ("3.19", "4.98"), ("3.19", "4.97"), direct=direct))
+    assert result.figure("eps_diluted").value == 3.10
+    assert result.figure("eps_basic").value == 3.19
+
+
+def test_a_headline_eps_alone_binds_neither_basic_nor_diluted() -> None:
+    result = _extract(
+        _statement(f"{_DATED}<tr><td>Earnings per share</td><td>$</td><td>3.19</td></tr>")
+    )
+    assert result.figures == ()
+    assert result.absence("eps_diluted").reason == fig.AbsenceReason.CONCEPT_NOT_PRESENT.value
+    assert not any(a.concept.startswith("_") for a in result.absences)
+
+
+def test_a_bare_gaap_heading_opens_a_gaap_section() -> None:
+    body = f"""<html><body>
+      <div>GAAP</div>{_UNITS}
+      <table>{_DATED}<tr><td>Diluted EPS</td><td>$</td><td>3.19</td></tr></table>
+      <div>Non-GAAP</div>{_UNITS}
+      <table>{_DATED}<tr><td>Diluted EPS</td><td>$</td><td>3.17</td></tr></table>
+    </body></html>"""
+    result = _extract(body)
+    assert result.figure("eps_diluted", basis=fig.Basis.GAAP.value).value == 3.19
+    assert result.figure("eps_diluted", basis=fig.Basis.NON_GAAP.value).value == 3.17
+
+
+@pytest.mark.parametrize(
+    ("amount", "change", "change_cell"),
+    [("USD", "YoY Change", "12%"), ("Amount", "$ Change", "$512")],
+)
+def test_an_amount_and_change_split_narrows_to_the_amount(
+    amount: str, change: str, change_cell: str
+) -> None:
+    rows = (
+        '<tr><td></td><td colspan="2">Three Months Ended September 30, 2025</td></tr>'
+        f"<tr><td></td><td>{amount}</td><td>{change}</td></tr>"
+        f"<tr><td>Total net sales</td><td>$8,412</td><td>{change_cell}</td></tr>"
+    )
+    revenue = _extract(_statement(rows)).figure("revenue")
+    assert revenue is not None
+    assert revenue.value == 8412.0
+
+
+@pytest.mark.parametrize(
+    "eps_row",
+    ["", "<tr><td>Diluted EPS</td><td>$</td><td>—</td></tr>"],
+    ids=["no-eps-row", "eps-placeholder"],
+)
+def test_a_release_that_states_no_eps_fails_closed_on_eps(eps_row: str) -> None:
+    """The live fixes must not invent a figure the release does not state."""
+    rows = f"{_DATED}<tr><td>Total net sales</td><td>$</td><td>8,412</td></tr>{eps_row}"
+    result = _extract(_statement(rows))
+    assert result.figure("revenue").value == 8412.0
+    for concept in ("eps_basic", "eps_diluted"):
+        assert result.figure(concept) is None
+        assert result.absence(concept).reason == fig.AbsenceReason.CONCEPT_NOT_PRESENT.value
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# The second review's findings (N1-N8).
+# ─────────────────────────────────────────────────────────────────────────────
+
+@pytest.mark.parametrize(
+    "label",
+    [
+        "Diluted EPS attributable to discontinued operations",
+        "Diluted earnings per share attributable to continuing operations",
+        "Diluted EPS attributable to the Tax Act",
+        "Diluted EPS attributable to Acme - pro forma",
+        "Diluted EPS attributable to restructuring charges",
+        "Diluted EPS attributable to noncontrolling interests",
+        "Diluted EPS attributable to items affecting comparability",
+    ],
+)
+def test_an_eps_attributed_to_anything_but_the_parent_is_not_eps(label: str) -> None:
+    result = _extract(_statement(f"{_DATED}<tr><td>{label}</td><td>$</td><td>0.12</td></tr>"))
+    assert result.figure("eps_diluted") is None
+    assert result.absence("eps_diluted").reason == fig.AbsenceReason.CONCEPT_NOT_PRESENT.value
+
+
+@pytest.mark.parametrize(
+    ("issuer", "label"),
+    [
+        ("Walmart Inc.", "Diluted earnings per share attributable to Walmart"),
+        ("WALMART INC.", "Diluted earnings per share attributable to Walmart"),
+        ("The Coca-Cola Company", "Diluted EPS attributable to The Coca-Cola Company"),
+        ("The Procter &amp; Gamble Company",
+         "Diluted earnings per share attributable to Procter &amp; Gamble"),
+        ("Acme Holdings, Inc.", "Diluted EPS attributable to Acme Holdings common stockholders"),
+        ("Acme Holdings, Inc.", "Diluted EPS attributable to common stockholders of Acme Holdings"),
+        ("Acme, Inc.", "Diluted earnings per share attributable to common stockholders of Acme, Inc."),
+        ("", "Diluted EPS attributable to common stockholders"),
+        ("", "Diluted EPS attributable to the Company's common stockholders"),
+        ("", "Diluted EPS attributable to the Company"),
+        ("", "Diluted EPS attributable to the company"),
+    ],
+)
+def test_an_eps_attributed_to_the_parent_or_its_holders_is_eps(issuer: str, label: str) -> None:
+    eps = _extract(_eps_statement(label, _opening(issuer))).figure("eps_diluted")
+    assert eps is not None
+    assert eps.value == 1.23
+
+
+@pytest.mark.parametrize(
+    ("amount", "change"),
+    [("Adjusted", "Change"), ("Constant Currency", "Reported Change"),
+     ("As Adjusted", "% Change")],
+)
+def test_a_split_whose_remaining_column_is_another_measure_is_refused(
+    amount: str, change: str
+) -> None:
+    rows = (
+        '<tr><td></td><td colspan="2">Three Months Ended September 30, 2025</td></tr>'
+        f"<tr><td></td><td>{amount}</td><td>{change}</td></tr>"
+        "<tr><td>Total net sales</td><td>$8,412</td><td>12%</td></tr>"
+    )
+    result = _extract(_statement(rows))
+    assert result.figure("revenue") is None
+    assert result.absence("revenue").reason == fig.AbsenceReason.VALUE_AMBIGUOUS.value
+
+
+def test_a_split_that_names_its_non_gaap_amount_narrows_to_a_non_gaap_figure() -> None:
+    rows = (
+        '<tr><td></td><td colspan="2">Three Months Ended September 30, 2025</td></tr>'
+        "<tr><td></td><td>Non-GAAP</td><td>YoY Change</td></tr>"
+        "<tr><td>Total net sales</td><td>$8,412</td><td>12%</td></tr>"
+    )
+    revenue = _extract(_statement(rows)).figure("revenue")
+    assert revenue is not None
+    assert (revenue.value, revenue.basis) == (8412.0, fig.Basis.NON_GAAP.value)
+
+
+def test_footing_counts_every_reading_not_every_distinct_amount() -> None:
+    """1,000 + 2,000 + 2,000 is 5,000: the 3,000 segment is not the total."""
+    rows = _DATED + _segments(
+        ("North America", "1,000"), ("Europe", "2,000"), ("Asia", "2,000"), ("Other", "3,000")
+    )
+    result = _extract(_statement(rows))
+    assert result.figure("revenue") is None
+    assert result.absence("revenue").reason == fig.AbsenceReason.VALUE_AMBIGUOUS.value
+
+
+def test_a_total_stated_twice_still_foots() -> None:
+    rows = _DATED + _segments(
+        ("North America", "5,000"), ("International", "3,000"),
+        ("Consolidated", "8,000"), ("Total", "8,000"),
+    )
+    revenue = _extract(_statement(rows)).figure("revenue")
+    assert revenue is not None
+    assert revenue.value == 8000.0
+
+
+def test_a_placeholder_beside_a_change_column_is_a_refused_roster_row() -> None:
+    """The percent beside the placeholder must not hide the revenue row."""
+    rows = (
+        '<tr><td></td><td colspan="2">Three Months Ended September 30, 2025</td></tr>'
+        "<tr><td></td><td>Amount</td><td>% Change</td></tr>"
+        "<tr><td>Total net sales</td><td>—</td><td>12%</td></tr>"
+    )
+    result = _extract(_statement(rows))
+    assert result.figure("revenue") is None
+    assert result.absence("revenue").reason == fig.AbsenceReason.CONCEPT_NOT_PRESENT.value
+    assert result.outcome == fig.BindingOutcome.ALL_REFUSED.value
+
+
+def test_an_unclosed_parenthesis_is_a_value_whose_sign_cannot_be_read() -> None:
+    rows = _TWO_PERIODS + "<tr><td>Diluted EPS</td><td>$</td><td>(0.12</td><td>$</td><td>1.10</td></tr>"
+    result = _extract(_statement(rows))
+    assert result.figure("eps_diluted") is None
+    absence = result.absence("eps_diluted")
+    assert absence.reason == fig.AbsenceReason.VALUE_AMBIGUOUS.value
+    assert "parenthesis" in absence.detail
+    assert result.outcome == fig.BindingOutcome.ALL_REFUSED.value
+
+
+@pytest.mark.parametrize(
+    "caption",
+    [
+        "GAAP Results: Q3 2025 vs. Q3 2024",
+        "CONSOLIDATED STATEMENTS OF OPERATIONS Q4 FY25 versus Q4 FY24",
+        "CONSOLIDATED STATEMENTS OF OPERATIONS</div><div>Compared with GAAP results",
+    ],
+    ids=["periods-vs", "periods-versus", "gaap-compared-with-gaap"],
+)
+def test_a_comparison_of_periods_or_of_the_same_basis_keeps_the_section(caption: str) -> None:
+    rows = f"{_DATED}<tr><td>Total net sales</td><td>$</td><td>8,412</td></tr>"
+    revenue = _extract(_statement(rows, caption=f"<div>{caption}</div>")).figure("revenue")
+    assert revenue is not None
+    assert revenue.basis == fig.Basis.GAAP.value
+
+
+@pytest.mark.parametrize(
+    "header",
+    [
+        "Fourth Quarter and Fiscal Year Ended December 28, 2025",
+        "Q4 and Full Year Ended December 28, 2025",
+        "Twelve Weeks and Forty Weeks Ended December 28, 2025",
+        "Twenty-Six Weeks Ended December 28, 2025",
+    ],
+    ids=["quarter-and-year", "q4-and-full-year", "unlisted-week-count", "hyphenated-count"],
+)
+def test_a_header_joining_two_periods_or_an_unread_count_declares_no_span(header: str) -> None:
+    result = _extract(_quarter_beside_cash_flow(header, "Twelve Months Ended December 28, 2025"))
+    assert result.figure("net_income") is None
+    assert result.absence("net_income").reason == fig.AbsenceReason.VALUE_AMBIGUOUS.value
+
+
+def test_the_shortest_span_wins_only_when_it_is_a_quarter() -> None:
+    """Six months against twelve: two cumulative columns, neither is the quarter."""
+    result = _extract(_quarter_beside_cash_flow(
+        "Two Quarters Ended December 28, 2025", "Twelve Months Ended December 28, 2025"
+    ))
+    assert result.figure("net_income") is None
+    assert result.absence("net_income").reason == fig.AbsenceReason.VALUE_AMBIGUOUS.value
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# The delta review's findings (NF1-NF4).
+# ─────────────────────────────────────────────────────────────────────────────
+
+@pytest.mark.parametrize(
+    "caption",
+    [
+        "Core Results Compared With GAAP Results",
+        "Comparable Basis versus GAAP",
+        "Comparable EPS versus GAAP EPS",
+        "Pro Forma Results Compared With GAAP",
+        "Results Excluding Special Items Compared with GAAP",
+        "Underlying results compared to GAAP",
+    ],
+)
+def test_a_comparison_that_names_another_measure_leaves_the_section(caption: str) -> None:
+    """NF1: whatever the comparison sets against GAAP is not the GAAP statement."""
+    rows = f"{_DATED}<tr><td>Total net sales</td><td>$</td><td>8,412</td></tr>"
+    result = _extract(_statement(rows, caption=f"{_GAAP_CAPTION}<div>{caption}</div>"))
+    assert result.figure("revenue") is None
+    assert result.absence("revenue").reason == fig.AbsenceReason.BASIS_UNDECLARED.value
+
+
+@pytest.mark.parametrize(
+    "caption",
+    ["Compared with GAAP results", "Fourth Quarter 2025 compared with GAAP", "Q3 FY25 vs. GAAP"],
+)
+def test_a_comparison_of_only_periods_and_the_same_basis_keeps_the_gaap_section(caption: str) -> None:
+    rows = f"{_DATED}<tr><td>Total net sales</td><td>$</td><td>8,412</td></tr>"
+    revenue = _extract(_statement(rows, caption=f"{_GAAP_CAPTION}<div>{caption}</div>")).figure("revenue")
+    assert revenue is not None
+    assert revenue.basis == fig.Basis.GAAP.value
+
+
+@pytest.mark.parametrize(
+    "target",
+    [
+        "Goodwill Impairment", "Acquisition-Related Charges", "Litigation Settlement",
+        "Mark-to-Market Losses", "Participating Securities", "the Merger", "Spin-Off",
+        "COVID-19", "Foreign Currency", "Share Repurchases", "Net Income", "TCJA", "Core",
+        "Gain on Sale", "Q3 2025", "US Tax Reform", "Class A Common Stock", "Class A",
+        "Acme", "Acme Holdings", "Acme Pro-Forma", "Proforma",
+    ],
+)
+@pytest.mark.parametrize("issuer", ["", "Walmart Inc."], ids=["no-issuer", "other-issuer"])
+def test_an_eps_attributed_to_a_name_the_release_gives_no_company_is_not_eps(
+    target: str, issuer: str
+) -> None:
+    """NF2: a capitalized attribution is the parent only when the release names a company by it."""
+    result = _extract(_eps_statement(f"Diluted EPS attributable to {target}", _opening(issuer)))
+    assert result.figure("eps_diluted") is None
+    assert result.absence("eps_diluted").reason == fig.AbsenceReason.CONCEPT_NOT_PRESENT.value
+
+
+def test_an_eps_attributed_to_the_issuer_needs_the_release_to_name_the_issuer() -> None:
+    label = "Diluted earnings per share attributable to Walmart"
+    assert _extract(_eps_statement(label)).figure("eps_diluted") is None
+    assert _extract(_eps_statement(label, _opening("Walmart Inc."))).figure("eps_diluted").value == 1.23
+    # A corporate name with no ticker or reporting verb may be an advisor, so it names no issuer.
+    assert _extract(_eps_statement(label, "Walmart Inc.")).figure("eps_diluted") is None
+    # Only a trailing run of the corporate name is the issuer: "Acme" is not "Acme Holdings".
+    shareholders = "Diluted earnings per share attributable to Acme common shareholders"
+    opening = _opening("Acme Holdings, Inc.")
+    assert _extract(_eps_statement(shareholders, opening)).figure("eps_diluted") is None
+
+
+@pytest.mark.parametrize(
+    "caption",
+    [
+        "Consolidated Statements of Operations - Pro-Forma",
+        "Unaudited Pro-Forma Condensed Consolidated Statements of Operations",
+        "Consolidated Statements of Earnings - Comparable Basis",
+        "Consolidated Statements of Earnings - Core",
+        "Consolidated Statements of Operations, As Recast",
+        "Consolidated Statements of Earnings - Underlying",
+        "Consolidated Statements of Operations - Pro–Forma",
+        "Consolidated Statements of Operations - Pro‑Forma",
+    ],
+)
+def test_a_statement_title_qualified_as_another_basis_declares_no_basis(caption: str) -> None:
+    """NF4: pro-forma, comparable, core, underlying and recast statements are not GAAP."""
+    rows = f"{_DATED}<tr><td>Total net sales</td><td>$</td><td>8,412</td></tr>"
+    result = _extract(_statement(rows, caption=f"<div>{caption}</div>"))
+    assert result.figure("revenue") is None
+    assert result.absence("revenue").reason == fig.AbsenceReason.BASIS_UNDECLARED.value
+
+
+@pytest.mark.parametrize(
+    "header",
+    [
+        "Twenty–Six Weeks Ended December 28, 2025",
+        "Twenty—Six Weeks Ended December 28, 2025",
+        "Twenty Six Weeks Ended December 28, 2025",
+        "Thirty Nine Weeks Ended December 28, 2025",
+        "Fourth Quarter &amp; Fiscal Year Ended December 28, 2025",
+        "Fourth Quarter / Full Year Ended December 28, 2025",
+        "Quarter &amp; Year Ended December 28, 2025",
+        "Quarter Ended December 28, 2025 and Year Ended December 28, 2025",
+        "Three Months Ended, and Year Ended December 28, 2025",
+        "Twenty‐Six Weeks Ended December 28, 2025",
+        "Twenty‑Six Weeks Ended December 28, 2025",
+        "Twenty­Six Weeks Ended December 28, 2025",
+        "Twenty‒Six Weeks Ended December 28, 2025",
+        "Twenty−Six Weeks Ended December 28, 2025",
+        "Twenty - Six Weeks Ended December 28, 2025",
+        "Twenty – Six Weeks Ended December 28, 2025",
+        "Fourth Quarter / FY2025 Ended December 28, 2025",
+        "Fourth Quarter &amp; FY25 Ended December 28, 2025",
+        "Fourth Quarter and FY2025 Ended December 28, 2025",
+        "Fourth Quarter – Fiscal Year Ended December 28, 2025",
+        "Fourth Quarter; Fiscal Year Ended December 28, 2025",
+        "Fourth Quarter | Full Year Ended December 28, 2025",
+        "Fourth Quarter Plus Fiscal Year Ended December 28, 2025",
+        "Twenty\u200bSix Weeks Ended December 28, 2025",
+        "Twenty&#8203;Six Weeks Ended December 28, 2025",
+        "Twenty\ufeffSix Weeks Ended December 28, 2025",
+        "Twenty\u200eSix Weeks Ended December 28, 2025",
+        "Twenty\u2066Six Weeks Ended December 28, 2025",
+        "Twenty\u034fSix Weeks Ended December 28, 2025",
+    ],
+    ids=["en-dash-count", "em-dash-count", "spaced-count", "unlisted-spaced-count",
+         "ampersand-join", "slash-join", "bare-ampersand-join", "two-ended-clauses",
+         "comma-and-join", "hyphen-count", "non-breaking-hyphen-count", "soft-hyphen-count",
+         "figure-dash-count", "minus-count", "spaced-hyphen-count", "spaced-en-dash-count",
+         "slash-fy-join", "ampersand-fy-join", "and-fy-join", "en-dash-join", "semicolon-join",
+         "pipe-join", "plus-join", "zero-width-space-count", "entity-zero-width-count",
+         "byte-order-mark-count", "left-to-right-mark-count", "isolate-count",
+         "grapheme-joiner-count"],
+)
+def test_a_header_joining_periods_or_counting_in_an_unread_form_declares_no_span(header: str) -> None:
+    """NF3: every spelling of a count or a join the span reader cannot resolve refuses."""
+    result = _extract(_quarter_beside_cash_flow(header, "Twelve Months Ended December 28, 2025"))
+    assert result.figure("net_income") is None
+    assert result.absence("net_income").reason == fig.AbsenceReason.VALUE_AMBIGUOUS.value
+
+
+@pytest.mark.parametrize(
+    ("header", "months"),
+    [
+        ("Three Months Ended December 28, 2025 and December 29, 2024", 3),
+        ("Fourth Quarter Ended December 28, 2025", 3),
+        ("13 Weeks Ended December 28, 2025", 3),
+        ("Twelve Weeks Ended December 28, 2025", 3),
+        ("Sixteen Weeks Ended December 28, 2025", 4),
+        ("Six Months Ended December 28, 2025", 6),
+    ],
+)
+def test_a_single_period_header_still_declares_its_span(header: str, months: int) -> None:
+    """NF3 control: two dates of one period are not two periods."""
+    assert fig._declared_period_months(header) == months
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# The third delta review's findings: any dash is a hyphen, and the issuer is
+# the company the release names first.
+# ─────────────────────────────────────────────────────────────────────────────
+
+@pytest.mark.parametrize(
+    "caption",
+    ["Non‑GAAP Results", "Non–GAAP Results", "NON&#8209;GAAP RESULTS", "Non GAAP Results",
+     "Non‐GAAP Results", "Non−GAAP Results", "Non\u200b-GAAP Results", "Non&#8203;-GAAP Results",
+     "Non\ufeffGAAP Results", "Non\u2060GAAP Results", "Non\u200eGAAP Results",
+     "Non-\u2066GAAP Results", "Non\u034f-GAAP Results"],
+    ids=["non-breaking-hyphen", "en-dash", "entity-hyphen", "space", "hyphen", "minus",
+         "zero-width-space", "entity-zero-width-space", "byte-order-mark", "word-joiner",
+         "left-to-right-mark", "isolate", "grapheme-joiner"],
+)
+@pytest.mark.parametrize("after_gaap", [False, True], ids=["alone", "after-gaap"])
+def test_a_non_gaap_caption_spelled_with_any_dash_declares_non_gaap(caption: str, after_gaap: bool) -> None:
+    """A Unicode hyphen does not turn a non-GAAP section into a GAAP one."""
+    rows = f"{_DATED}<tr><td>Total net sales</td><td>$</td><td>8,412</td></tr>"
+    lead = _GAAP_CAPTION if after_gaap else ""
+    revenue = _extract(_statement(rows, caption=f"{lead}<div>{caption}</div>")).figure("revenue")
+    assert revenue is not None
+    assert (revenue.value, revenue.basis) == (8412.0, fig.Basis.NON_GAAP.value)
+
+
+@pytest.mark.parametrize(
+    "label",
+    ["Diluted EPS attributable to Goodwill Impairment Co.",
+     "Diluted EPS attributable to common stockholders of Goodwill Impairment Co."],
+)
+@pytest.mark.parametrize("issuer", ["", "Walmart Inc."], ids=["no-issuer", "other-issuer"])
+def test_an_eps_line_cannot_name_its_own_issuer(label: str, issuer: str) -> None:
+    """The name an attribution gives is what is checked, so it cannot also be the issuer."""
+    result = _extract(_eps_statement(label, _opening(issuer)))
+    assert result.figure("eps_diluted") is None
+    assert result.absence("eps_diluted").reason == fig.AbsenceReason.CONCEPT_NOT_PRESENT.value
+
+
+@pytest.mark.parametrize(
+    ("opening", "target"),
+    [
+        ("Walmart Inc. reports results.</div><div>Flipkart Ltd. is a subsidiary of Walmart.", "Flipkart"),
+        ("Acme Advisors LLC (NYSE: AAV) today announced a merger.</div><div>Walmart Inc. reports results.",
+         "Walmart"),
+        ("Walmart Inc. (NYSE: WMT) today reported results.</div><div>Flipkart Ltd. (NYSE: FLP) posted gains.",
+         "Flipkart"),
+    ],
+    ids=["subsidiary-named-later", "other-company-reports-first", "subsidiary-reports-later"],
+)
+def test_only_the_first_company_the_release_names_is_the_issuer(opening: str, target: str) -> None:
+    """Only the first company named as reporter is the issuer; another one first refuses (fail closed)."""
+    result = _extract(_eps_statement(f"Diluted EPS attributable to {target}", opening))
+    assert result.figure("eps_diluted") is None
+    assert result.absence("eps_diluted").reason == fig.AbsenceReason.CONCEPT_NOT_PRESENT.value
+
+
+@pytest.mark.parametrize(
+    "opening",
+    [
+        "Acme Advisors LLC advised on the offering.</div><div>Walmart Inc. reports results.",
+        "John Smith, Co-Founder of Acme, said.</div><div>Walmart Inc. (NYSE: WMT) today reported results.",
+        "Acme, a Delaware corporation, merged.</div><div>Walmart Inc. reports results.",
+    ],
+    ids=["advisor-without-cue", "co-founder", "delaware-corporation"],
+)
+def test_a_company_named_without_a_ticker_or_reporting_verb_is_not_the_issuer(opening: str) -> None:
+    """An advisor or merger partner is named without a cue; "Co-Founder" and "a Delaware corporation" name no one."""
+    eps = _extract(_eps_statement("Diluted EPS attributable to Walmart", opening)).figure("eps_diluted")
+    assert eps is not None
+    assert (eps.value, eps.basis) == (1.23, fig.Basis.GAAP.value)
+    result = _extract(_eps_statement("Diluted EPS attributable to Acme", opening))
+    assert result.figure("eps_diluted") is None
+    assert result.absence("eps_diluted").reason == fig.AbsenceReason.CONCEPT_NOT_PRESENT.value
+
+
+@pytest.mark.parametrize(
+    "opening",
+    ["NEW YORK--(BUSINESS WIRE)--Acme Corp. (NYSE: ACM) today reported results.",
+     "NEW YORK, Jan. 29, 2026 /PRNewswire/ -- Acme Corp. (NYSE: ACM) today reported results."],
+    ids=["business-wire", "pr-newswire"],
+)
+def test_the_issuer_is_named_directly_after_a_wire_dateline(opening: str) -> None:
+    """A wire service glues the dateline's dashes to the issuer's name, which still names it."""
+    eps = _extract(_eps_statement("Diluted EPS attributable to Acme", opening)).figure("eps_diluted")
+    assert eps is not None
+    assert (eps.value, eps.basis) == (1.23, fig.Basis.GAAP.value)
+
+
+def test_a_name_glued_to_a_hyphenated_word_is_not_the_issuer() -> None:
+    """"e-Commerce Co." is no company named "Commerce Co."."""
+    result = _extract(_eps_statement("Diluted EPS attributable to Commerce", _opening("Acme e-Commerce Co.")))
+    assert result.figure("eps_diluted") is None
+    assert result.absence("eps_diluted").reason == fig.AbsenceReason.CONCEPT_NOT_PRESENT.value
+
+
+@pytest.mark.parametrize(
+    ("opening", "label"),
+    [
+        ("<table><tr><td>Walmart Inc. reports results.</td></tr></table>",
+         "Diluted EPS attributable to Walmart"),
+        ("The Company and Walmart Inc. report results.", "Diluted EPS attributable to Walmart"),
+        ("JPMorgan Chase &amp; Co. reports results.",
+         "Diluted earnings per share attributable to JPMorgan Chase"),
+    ],
+    ids=["layout-table", "self-reference-first", "ampersand-co"],
+)
+def test_the_issuer_is_named_in_a_layout_table_after_a_self_reference_or_with_ampersand_co(
+    opening: str, label: str
+) -> None:
+    """Walmart sets its release in layout tables; "The Company" names no one; "& Co." is a suffix."""
+    eps = _extract(_eps_statement(label, opening)).figure("eps_diluted")
+    assert eps is not None
+    assert (eps.value, eps.basis) == (1.23, fig.Basis.GAAP.value)
+
+
+@pytest.mark.parametrize("hyphen", ["-", "‑"], ids=["hyphen", "non-breaking-hyphen"])
+def test_an_issuer_named_pro_forma_still_refuses_a_pro_forma_attribution(hyphen: str) -> None:
+    """The tail refuses any hyphenated pro forma, even when the release names a company by it."""
+    name = f"Acme Pro{hyphen}Forma"
+    result = _extract(_eps_statement(f"Diluted EPS attributable to {name}", _opening(f"{name} Inc.")))
+    assert result.figure("eps_diluted") is None
+    assert result.absence("eps_diluted").reason == fig.AbsenceReason.CONCEPT_NOT_PRESENT.value
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# The fourth delta review's findings: an attribution never vouches for its own
+# issuer, a scope row's attribution is checked like a label's, and every fold
+# site is pinned.
+# ─────────────────────────────────────────────────────────────────────────────
+
+@pytest.mark.parametrize(
+    "label",
+    [
+        "Diluted EPS Attributable To Goodwill Impairment Co.",
+        "DILUTED EPS ATTRIBUTABLE TO GOODWILL IMPAIRMENT CO.",
+        "Diluted Earnings Per Share Attributable To Acme Operating LLC",
+        "Diluted EPS Attributable To Common Stockholders Of SpinCo Inc.",
+    ],
+)
+@pytest.mark.parametrize("issuer", ["", "Walmart Inc."], ids=["no-issuer", "other-issuer"])
+def test_an_eps_line_in_any_case_cannot_name_its_own_issuer(label: str, issuer: str) -> None:
+    """M1: the attribution window reaches the name itself, so Title Case and capitals refuse too."""
+    result = _extract(_eps_statement(label, _opening(issuer)))
+    assert result.figure("eps_diluted") is None
+    assert result.absence("eps_diluted").reason == fig.AbsenceReason.CONCEPT_NOT_PRESENT.value
+
+
+def _scoped_eps_statement(scope: str, issuer: str = "") -> str:
+    """A bare ``Diluted`` row under a label-only per-share scope row, after a data row."""
+    rows = (
+        f"{_DATED}<tr><td>Total net sales</td><td>$</td><td>8,412</td></tr>"
+        f"<tr><td>{scope}</td></tr><tr><td>Diluted</td><td>$</td><td>1.23</td></tr>"
+    )
+    return _statement(rows, caption=(f"<div>{issuer}</div>" if issuer else "") + _GAAP_CAPTION)
+
+
+@pytest.mark.parametrize(
+    "scope",
+    [
+        "Earnings per share attributable to discontinued operations:",
+        "Earnings per share attributable to noncontrolling interests:",
+        "Earnings per share attributable to Acme Operating LLC:",
+        "Earnings per share attributable to Goodwill Impairment:",
+        "Earnings per share excluding special items:",
+        "Earnings per share from continuing operations:",
+        "Pro forma earnings per share:",
+        "Earnings per share of SpinCo Inc.:",
+        "SpinCo Inc. earnings per share:",
+        "Earnings per share for Acme Operating LLC:",
+        "Net income attributable to SpinCo Inc. per share:",
+        "Core earnings per share:",
+        "Operating earnings per share:",
+        "Cash earnings per share:",
+        "Comparable earnings per share:",
+        "Underlying earnings per share:",
+        "Distributable earnings per share:",
+        "FFO per share:",
+        "Earnings per share impact of goodwill impairment:",
+        "Earnings per share - Class B:",
+        "Earnings per share (Predecessor):",
+        "Earnings per share guidance:",
+        "Dividends declared per share:",
+        "Book value per share:",
+        "Earnings per share - Class B*:",
+        "Core earnings per share*:",
+        "Earnings per share guidance1:",
+    ],
+)
+def test_a_bare_diluted_row_under_a_component_or_foreign_scope_is_not_eps(scope: str) -> None:
+    """M2: a scope row naming a component, another company or another number refuses.
+
+    Before "per share" the row may say only a basis, basic or diluted, and net
+    income, earnings or loss; after it, only the closed EPS tail.
+    """
+    result = _extract(_scoped_eps_statement(scope, _opening("Walmart Inc.")))
+    assert result.figure("eps_diluted") is None
+    assert result.absence("eps_diluted").reason == fig.AbsenceReason.CONCEPT_NOT_PRESENT.value
+
+
+@pytest.mark.parametrize(
+    ("scope", "basis"),
+    [
+        ("Earnings per share:", fig.Basis.GAAP.value),
+        ("Earnings (loss) per share:", fig.Basis.GAAP.value),
+        ("Earnings per share (1):", fig.Basis.GAAP.value),
+        ("Earnings per share*:", fig.Basis.GAAP.value),
+        ("Earnings per share\u2020:", fig.Basis.GAAP.value),
+        ("Earnings per share1:", fig.Basis.GAAP.value),
+        ("Earnings per share\u00b9:", fig.Basis.GAAP.value),
+        ("Per share data*:", fig.Basis.GAAP.value),
+        ("Earnings per share attributable to common stockholders:", fig.Basis.GAAP.value),
+        ("Net income per share attributable to Walmart:", fig.Basis.GAAP.value),
+        ("Adjusted earnings per share:", fig.Basis.NON_GAAP.value),
+        ("Per share data:", fig.Basis.GAAP.value),
+        ("Earnings per share – diluted", fig.Basis.GAAP.value),
+        ("Basic and diluted net income per share:", fig.Basis.GAAP.value),
+        ("Net (loss) income per share:", fig.Basis.GAAP.value),
+        ("Earnings per share of common stock:", fig.Basis.GAAP.value),
+        ("Net income per common share:", fig.Basis.GAAP.value),
+        ("Earnings per share (basic and diluted):", fig.Basis.GAAP.value),
+    ],
+)
+def test_a_bare_diluted_row_under_the_issuers_eps_scope_is_eps(scope: str, basis: str) -> None:
+    """M2 control: the issuer's own EPS scope still binds its bare Diluted row.
+
+    A footnote mark before the colon (``(1)``, ``*``, a dagger, a glued or
+    superscript digit) is stepped over; the census found ``*`` on a live
+    statement.
+    """
+    eps = _extract(_scoped_eps_statement(scope, _opening("Walmart Inc."))).figure("eps_diluted")
+    assert eps is not None
+    assert (eps.value, eps.basis) == (1.23, basis)
+
+
+def test_a_scope_attributed_to_the_issuer_needs_the_release_to_name_the_issuer() -> None:
+    result = _extract(_scoped_eps_statement("Net income per share attributable to Walmart:"))
+    assert result.figure("eps_diluted") is None
+    assert result.absence("eps_diluted").reason == fig.AbsenceReason.CONCEPT_NOT_PRESENT.value
+
+
+@pytest.mark.parametrize("label", ["Diluted EPS (Non‑GAAP)", "Non‑GAAP diluted EPS"])
+def test_a_non_gaap_eps_label_with_a_non_breaking_hyphen_is_non_gaap(label: str) -> None:
+    """m3: the label is folded both to match its rule and to read its basis."""
+    eps = _extract(_eps_statement(label)).figure("eps_diluted")
+    assert eps is not None
+    assert (eps.value, eps.basis) == (1.23, fig.Basis.NON_GAAP.value)
+
+
+@pytest.mark.parametrize(
+    ("issuer", "label"),
+    [
+        ("The Coca‑Cola Company", "Diluted EPS attributable to Coca-Cola"),
+        ("The Coca-Cola Company", "Diluted EPS attributable to Coca‑Cola"),
+    ],
+    ids=["hyphen-in-issuer", "hyphen-in-label"],
+)
+def test_an_issuer_and_its_attribution_match_across_hyphen_spellings(issuer: str, label: str) -> None:
+    """m3: the release text and the EPS label are folded before the issuer is compared."""
+    eps = _extract(_eps_statement(label, _opening(issuer))).figure("eps_diluted")
+    assert eps is not None
+    assert (eps.value, eps.basis) == (1.23, fig.Basis.GAAP.value)
+
+
+def test_a_year_valued_row_with_a_hyphenated_roster_label_is_data_not_a_header() -> None:
+    """m3: a roster label says the row is data even when its values look like years."""
+    result = _extract(_statement(f"{_DATED}<tr><td>Non‑GAAP diluted EPS</td><td>2025</td></tr>"))
+    assert result.figure("eps_diluted") is None
+    # Read as data, the row is refused for its missing currency, not passed over as a header.
+    assert result.absence("eps_diluted").reason == fig.AbsenceReason.CURRENCY_UNDECLARED.value
+
+
+@pytest.mark.parametrize("text", ["per\u200b share", "per&#8203; share"], ids=["zero-width", "entity"])
+@pytest.mark.parametrize("where", ["label", "scope"])
+def test_a_per_share_line_holding_a_zero_width_character_is_eps(text: str, where: str) -> None:
+    """m3: the label and scope are folded to read the value as per-share and to match the rule."""
+    html = (_eps_statement(f"Diluted earnings {text}") if where == "label"
+            else _scoped_eps_statement(f"Earnings {text}:", _opening("Walmart Inc.")))
+    eps = _extract(html).figure("eps_diluted")
+    assert eps is not None
+    assert (eps.value, eps.basis) == (1.23, fig.Basis.GAAP.value)
+
+
+def test_a_non_gaap_scope_row_with_a_non_breaking_hyphen_is_non_gaap() -> None:
+    """m3: a scope row punctuated as prose is no caption, so its basis is read from the folded scope."""
+    scope = "Non‑GAAP earnings per share; diluted and basic:"
+    eps = _extract(_scoped_eps_statement(scope, _opening("Walmart Inc."))).figure("eps_diluted")
+    assert eps is not None
+    assert (eps.value, eps.basis) == (1.23, fig.Basis.NON_GAAP.value)
+
+@pytest.mark.parametrize(
+    ("scope", "basis"),
+    [("Canon GAAP basis:", fig.Basis.GAAP.value), ("Non GAAP basis:", fig.Basis.NON_GAAP.value)],
+)
+def test_the_non_of_a_word_ending_in_non_is_not_non_gaap(scope: str, basis: str) -> None:
+    """m3: "Canon GAAP" holds "non GAAP" inside a word, which is no non-GAAP declaration."""
+    rows = f"{_DATED}<tr><td>{scope}</td></tr><tr><td>Total net sales</td><td>$</td><td>8,412</td></tr>"
+    revenue = _extract(_statement(rows)).figure("revenue")
+    assert revenue is not None
+    assert (revenue.value, revenue.basis) == (8412.0, basis)
+
+
+@pytest.mark.parametrize(
+    "header",
+    ["Q4-FY26", "Q4 - Fiscal 2026", "Fourth Quarter - Fiscal 2026",
+     "Fourth Quarter – FY2025 Ended December 28, 2025", "Q4‑FY2026 Ended December 28, 2025"],
+    ids=["hyphen-fy", "spaced-hyphen-fiscal", "words-fiscal", "en-dash-fy", "non-breaking-hyphen-fy"],
+)
+def test_a_quarter_dashed_to_its_numbered_fiscal_year_is_one_quarter(header: str) -> None:
+    """m2: a dash before "FY26" or "Fiscal 2026" says which year the quarter is in."""
+    assert fig._declared_period_months(header) == 3
+
+
+@pytest.mark.parametrize(
+    "header",
+    ["Q4 FY26 and FY25", "Q4 FY26 / FY25", "Q4-FY26/FY25", "Q4-FY26 and FY25",
+     "Fourth Quarter - Fiscal 2026 and Fiscal Year Ended", "Fourth Quarter - Fiscal Year 2026",
+     "Q4-FY26 vs Q4-FY25", "Q4-FY26 vs. Q4-FY25", "Q4-FY26 compared to Q4-FY25",
+     "Q4 FY26 versus Q4 FY25", "Q4 FY26 vs Q4 FY25"],
+    ids=["and-fy", "slash-fy", "hyphen-then-slash-fy", "hyphen-then-and-fy",
+         "qualified-then-joined", "unnumbered-fiscal-year", "hyphen-vs", "hyphen-vs-dot",
+         "hyphen-compared-to", "spaced-versus", "spaced-vs"],
+)
+def test_a_quarter_dashed_to_a_second_period_still_names_two(header: str) -> None:
+    """m2 control: only a numbered fiscal year qualifies; another period still joins."""
+    assert fig._declared_period_months(header) is None
+
+
+def test_a_header_longer_than_a_period_name_declares_no_span() -> None:
+    """A header of hundreds of characters is no period name, and is refused before the slow join scan."""
+    started = time.perf_counter()
+    assert fig._declared_period_months("Three Months Ended December 28, 2025 " + "x " * 25000) is None
+    assert time.perf_counter() - started < 2.0
+    assert fig._declared_period_months("Three Months Ended December 28, 2025 " + "x" * 300) is None
+
+
+def test_a_quarter_dashed_to_its_fiscal_year_wins_over_the_year() -> None:
+    """m2: the qualified quarter is the quarter beside a twelve-month cash flow."""
+    result = _extract(_quarter_beside_cash_flow(
+        "Fourth Quarter - Fiscal 2026 Ended December 28, 2025",
+        "Twelve Months Ended December 28, 2025"))
+    net_income = result.figure("net_income")
+    assert net_income is not None
+    assert (net_income.value, net_income.period_end) == (6002.0, "2025-12-28")
 
 
 # ─────────────────────────────────────────────────────────────────────────────

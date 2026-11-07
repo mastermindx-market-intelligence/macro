@@ -121,6 +121,40 @@ class VerifiedDocumentObservation:
     status: str = "verified"
     official_published_at_utc: datetime | None = None
     official_publication_ref: str = ""
+    # Why the figure projection is what it is (one of FIGURE_OUTCOMES); empty
+    # when the observation owner predates the code.
+    figure_outcome: str = ""
+
+
+# Closed set of figure-projection outcomes, keyed to the source parse status.
+# "The release has no projectable figures" and "the binder could not read the
+# release" both leave ``verified_figures`` empty; the outcome says which.
+FIGURE_OUTCOMES: Mapping[str, str] = {
+    "figures_projected": "parsed",
+    # Bound, but no figure qualifies for a public field (basis/units/scale).
+    "figures_not_projectable": "no_figures",
+    # Earnings Release ``BindingOutcome`` values other than figures_bound.
+    "no_blocks": "no_figures",
+    "no_tables": "no_figures",
+    "no_candidate_rows": "no_figures",
+    "no_period_columns": "no_figures",
+    "all_refused": "no_figures",
+    "document_not_utf8": "parse_failed",
+    "binder_exception": "parse_failed",
+    "replay_failed": "parse_failed",
+}
+
+
+def bound_figure_outcome(bound_outcome: object, projected: int) -> str:
+    """Map a bound release and its projected-figure count to FIGURE_OUTCOMES."""
+    if projected:
+        return "figures_projected"
+    if bound_outcome == "figures_bound":
+        return "figures_not_projectable"
+    if isinstance(bound_outcome, str) and FIGURE_OUTCOMES.get(bound_outcome) == "no_figures":
+        return bound_outcome
+    # A bound set without a recognised outcome was not built by the extractor.
+    return "binder_exception"
 
 
 _SHA256_HEX = re.compile(r"^[0-9a-f]{64}$")
@@ -330,10 +364,14 @@ def observation_from_pinned_sec_archive(
         # Our public adapter only projects native, byte-bound results; if
         # parsing is unavailable no numeric evidence is admitted.
         validated_figures: list[VerifiedEarningsFigure] = []
+        # Names the step in progress, so a failure says where it happened.
+        figure_outcome = "binder_exception"
         try:
             from engine.earnings_release.binding import bind_release_document
             from engine.earnings_release.receipts import replay_receipt
+            figure_outcome = "document_not_utf8"
             body = verified_bytes.content.decode("utf-8")
+            figure_outcome = "binder_exception"
             bound = bind_release_document(
                 cik=cik, accession=filing_key.split(":", 1)[1],
                 body=body, form=manifest["filing"]["form"],
@@ -344,6 +382,7 @@ def observation_from_pinned_sec_archive(
             )
             if bound.revision.source_sha256 != selected["content_sha256"]:
                 return None
+            figure_outcome = "replay_failed"
             for f in bound.figures.figures:
                 candidate: tuple[str, str, float] | None = None
                 if (f.concept == "eps_diluted" and f.units == "per_share"
@@ -365,6 +404,8 @@ def observation_from_pinned_sec_archive(
                     document_sha256=selected["content_sha256"],
                     span_sha256=f.receipt.span_sha256,
                 ))
+            figure_outcome = bound_figure_outcome(bound.figures.outcome,
+                                                  len(validated_figures))
         except Exception:
             # A source may be a correctly retained but unreadable attachment.
             # It can establish document availability, not financial facts.
@@ -391,6 +432,7 @@ def observation_from_pinned_sec_archive(
             amends_filing_key=parent,
             verified_figures=tuple(validated_figures),
             official_published_at_utc=None,
+            figure_outcome=figure_outcome,
         )
     except Exception:
         # A degraded incumbent source reader cannot admit a public packet.
@@ -734,14 +776,17 @@ def build_event_packet(
     out["affected_tickers"].append({"ticker": ticker, "relationship": "DIRECT",
                                       "relation_evidence_ids": [], "relation_type": "issuer_filing"})
     if earnings:
+        figure_gap = False
         for field, basis, unit in (("eps_actual", source_event.get("_eps_basis"), "USD/share"),
                                    ("rev_actual", "reported", "USD")):
             value = _finite(source_event.get(field))
             if value is None or (field == "rev_actual" and value < 0):
                 out["missing_data"].append("missing_or_invalid_" + field)
+                figure_gap = True
                 continue
             if field == "eps_actual" and basis not in ("gaap", "adjusted"):
                 out["missing_data"].append("unqualified_eps_basis")
+                figure_gap = True
                 continue
             matched_figure = None
             if observation is not None:
@@ -761,6 +806,7 @@ def build_event_packet(
                         or not math.isclose(value, matches[0].value,
                                             rel_tol=1e-13, abs_tol=1e-8)):
                     out["missing_data"].append("no_replayed_source_figure_" + field)
+                    figure_gap = True
                     continue
                 matched_figure = matches[0]
             evid = _fingerprint(f"{event_id}:{generation}:{field}" +
@@ -774,6 +820,12 @@ def build_event_packet(
                 evidence["replayed_span_sha256"] = matched_figure.span_sha256
             out["evidence"].append(evidence)
             out["what_changed"].append({"text": copy, "evidence_ids": [evid]})
+        # Say WHY a source figure is absent: a release with nothing projectable
+        # and a binder failure must not read as the same PARTIAL.
+        outcome = getattr(observation, "figure_outcome", "")
+        if (figure_gap and outcome in FIGURE_OUTCOMES
+                and outcome != "figures_projected"):
+            out["missing_data"].append("source_figure_outcome_" + outcome)
         out["missing_data"].append("consensus_not_independently_evidenced")
     else:
         # Model/source headlines are not independent evidence of numbers,

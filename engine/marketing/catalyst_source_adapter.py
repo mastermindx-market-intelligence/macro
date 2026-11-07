@@ -21,6 +21,7 @@ from typing import Callable, Mapping, Sequence
 
 from engine.marketing.catalyst_admission import AdmittedEdgarSource
 from engine.marketing.catalyst_packets import (
+    FIGURE_OUTCOMES,
     PublicSourceGrant,
     VerifiedDocumentObservation,
     VerifiedEarningsFigure,
@@ -497,6 +498,11 @@ class _Reader:
                 span_sha256=figure.get("span_sha256"))
             for figure in (record.get("figures") or [])
             if isinstance(figure, Mapping))
+        # Passed through only when it agrees with the record's parse status.
+        outcome = record.get("figure_outcome")
+        if (not isinstance(outcome, str)
+                or FIGURE_OUTCOMES.get(outcome) != record.get("parse_status")):
+            outcome = ""
         return VerifiedDocumentObservation(
             source_id="sec:" + str(record.get("filing_key")),
             document_url=exhibit.get("source_url"),
@@ -509,6 +515,7 @@ class _Reader:
             filing_form=record.get("form"),
             amends_filing_key=lineage.get("amends_filing_key", ""),
             verified_figures=figures,
+            figure_outcome=outcome,
         )
 
     def source_coverage(self, start: datetime, end: datetime, now: datetime):

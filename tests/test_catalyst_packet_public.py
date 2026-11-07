@@ -1280,6 +1280,65 @@ def test_v2_forged_eps_and_revenue_never_gain_source_backed_claims():
     assert "99999999999" not in str(p)
 
 
+def test_v2_missing_figures_name_the_source_figure_outcome():
+    """Catches: a binder failure reading the same as a release without figures."""
+    from dataclasses import replace
+    raw = event()
+    raw.pop("publication_time_utc")
+    empty = replace(stage_a_receipt(), verified_figures=())
+    for outcome in ("no_period_columns", "binder_exception", "replay_failed"):
+        p = build(raw, document_observation=replace(empty, figure_outcome=outcome),
+                  rights_resolver=versioned_rights)
+        assert p["public_disposition"] == "UNAVAILABLE"
+        assert "no_replayed_source_figure_eps_actual" in p["missing_data"]
+        assert "source_figure_outcome_" + outcome in p["missing_data"]
+    # Unknown, pre-code (empty) and projected outcomes add no reason code.
+    for outcome in ("", "made_up_code", "figures_projected"):
+        p = build(raw, document_observation=replace(empty, figure_outcome=outcome),
+                  rights_resolver=versioned_rights)
+        assert not any(item.startswith("source_figure_outcome_")
+                       for item in p["missing_data"])
+    full = build(raw, document_observation=replace(
+        stage_a_receipt(), figure_outcome="figures_projected"),
+        rights_resolver=versioned_rights)
+    assert not any(item.startswith("source_figure_outcome_")
+                   for item in full["missing_data"])
+
+
+def test_figure_outcomes_cover_every_binder_outcome():
+    """Catches: a new binder outcome falling through to an unnamed empty list."""
+    from engine.earnings_release.figures import BindingOutcome
+    from engine.marketing.catalyst_packets import FIGURE_OUTCOMES, bound_figure_outcome
+    for outcome in BindingOutcome:
+        if outcome is BindingOutcome.FIGURES_BOUND:
+            continue
+        assert FIGURE_OUTCOMES[outcome.value] == "no_figures"
+        assert bound_figure_outcome(outcome.value, 0) == outcome.value
+    assert bound_figure_outcome("figures_bound", 0) == "figures_not_projectable"
+    assert bound_figure_outcome("figures_bound", 2) == "figures_projected"
+    assert bound_figure_outcome(None, 0) == "binder_exception"
+    assert bound_figure_outcome("not_a_binder_code", 0) == "binder_exception"
+    assert set(FIGURE_OUTCOMES.values()) == {"parsed", "no_figures", "parse_failed"}
+
+
+def test_pinned_observation_names_a_binder_failure(tmp_path, monkeypatch):
+    """Catches: the producer swallowing a binder exception into empty figures."""
+    import engine.earnings_release.binding as binding
+    from engine.marketing.catalyst_packets import observation_from_pinned_sec_archive
+    raw, authority, key, receipt = _pinned_sec_fixture(tmp_path)
+
+    def boom(*args, **kwargs):
+        raise RuntimeError("parser broke")
+
+    monkeypatch.setattr(binding, "bind_release_document", boom)
+    observation = observation_from_pinned_sec_archive(
+        raw, authority=authority, manifest_key=key,
+        first_retained_receipt_id=receipt.receipt_id, checked_at_utc=NOW)
+    assert observation is not None
+    assert observation.verified_figures == ()
+    assert observation.figure_outcome == "binder_exception"
+
+
 def test_v2_wrong_basis_cannot_relabel_adjusted_eps_as_gaap():
     raw = {**event(), "_eps_basis": "adjusted", "rev_actual": None}
     raw.pop("publication_time_utc")
