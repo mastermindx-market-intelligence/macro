@@ -5604,9 +5604,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_914),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_933),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_672),
+    ("templates/index.html", 137, 5_917),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_936),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_675),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5614,6 +5614,20 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    PR7694 (2026-11-07): its own hosted contract-delta run42402141866,
+    job128492021418, measured base33f418baa9ee552260c835ab200c09abce0c24b8
+    against head762c1101612903a7f33b6eba47a40caf104e1915. Adding the full
+    Immune suite as the fourth step of the existing metab-throttle-ux CODE
+    owner increases each already-selected probe by exactly three planning
+    weight units: index137/5914->5917, free-content137/5933->5936, and
+    Prophet131/5672->5675. Selected job identities and ten-pack counts are
+    unchanged; contract-delta reported newly selected: none on all probes.
+    Fund only this measured coverage increment. Preserve all job-count
+    ceilings, pack bounds, selectors, suites, timeouts and admission limits,
+    including the prior accepted GSC and gateway histories below. These
+    are planning weights, not elapsed-runtime measurements. No unmerged
+    sibling funding is included; successor natural CI remains required.
 
     P5.T9.S5 (2026-11-07): compose accepted retained-GSC coverage with
     protected59e035e39607, preserving its gateway and prior provenance
