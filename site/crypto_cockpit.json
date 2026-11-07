@@ -2,26 +2,26 @@
   "schema": "crypto.cockpit/v1",
   "contract_phase": "w0",
   "display_only": true,
-  "as_of": "2026-10-30",
-  "generated_at": "2026-10-31T00:54:45+00:00",
+  "as_of": "2026-11-06",
+  "generated_at": "2026-11-06T23:45:24+00:00",
   "hero": {
     "asset": "BTC-USD",
-    "price": 77164.5,
-    "change_24h_pct": -0.79,
+    "price": 75575.5,
+    "change_24h_pct": -0.52,
     "stance_en": "RISK-OFF",
     "stance_zh": "偏空",
-    "summary_en": "The big picture reads risk-off. Support comes from fundamentals and miners; the drag comes from the trend and stablecoin flows. Day-to-day direction is a coin flip — watch the dip-risk read below.",
-    "summary_zh": "大方向偏空。支撑来自基本面与矿工；拖累来自趋势与稳定币资金。未来几天的涨跌仍近乎抛硬币——先看下方的回撤风险读数。",
-    "master_score": -18,
-    "exposure_pct": 26,
+    "summary_en": "The big picture reads risk-off. Support comes from fundamentals and miners; the drag comes from momentum and the trend. Day-to-day direction is a coin flip — watch the dip-risk read below.",
+    "summary_zh": "大方向偏空。支撑来自基本面与矿工；拖累来自动量与趋势。未来几天的涨跌仍近乎抛硬币——先看下方的回撤风险读数。",
+    "master_score": -32,
+    "exposure_pct": 0,
     "gate_active": false
   },
   "decision": {
     "schema": "btc.decision/v1",
     "status": "ok",
-    "as_of": "2026-10-30",
+    "as_of": "2026-11-06",
     "integrity_ok": true,
-    "final_exposure_pct": 26,
+    "final_exposure_pct": 0,
     "errors": [],
     "authority_source": "btc.decision/v1.final.exposure_pct"
   },
@@ -35,9 +35,9 @@
         "label_en": "Momentum",
         "label_zh": "动量",
         "source": "master.board.momentum",
-        "state_en": "Neutral",
-        "state_zh": "中性",
-        "tone": "neutral",
+        "state_en": "Bearish",
+        "state_zh": "看空",
+        "tone": "bear",
         "grade": "DIRECTIONAL"
       },
       "spark_source": "signals.momentum",
@@ -57,9 +57,9 @@
           "label_en": "Impulse",
           "label_zh": "脉冲",
           "source": "master.board.impulse",
-          "state_en": "Exhausting",
-          "state_zh": "衰竭",
-          "tone": "bear",
+          "state_en": "Neutral",
+          "state_zh": "中性",
+          "tone": "neutral",
           "grade": "DIRECTIONAL"
         }
       ]
@@ -162,7 +162,7 @@
         "state_en": "Low",
         "state_zh": "低",
         "tone": "bull",
-        "as_of": "2026-10-30"
+        "as_of": "2026-11-06"
       },
       "spark_source": "signals.leverage_stress",
       "receipt_members": [
@@ -219,9 +219,9 @@
           "label_en": "Holder spread (STH/LTH)",
           "label_zh": "持有者价差",
           "source": "master.board.holders",
-          "state_en": "Accumulation",
-          "state_zh": "累积",
-          "tone": "bull",
+          "state_en": "Neutral",
+          "state_zh": "中性",
+          "tone": "neutral",
           "grade": "NEW"
         },
         {
@@ -257,9 +257,9 @@
           "label_en": "Conditional beta",
           "label_zh": "条件贝塔",
           "source": "master.board.beta",
-          "state_en": "Amplifies sell-offs",
-          "state_zh": "放大下跌",
-          "tone": "bear",
+          "state_en": "Limited downside",
+          "state_zh": "下行受限",
+          "tone": "bull",
           "grade": "CONFIRMED"
         }
       ]
