@@ -714,6 +714,52 @@ def test_a05c_stale_cross_ticker_response_never_overwrites_current_selection():
     assert "A05C_STALE_RESPONSE_FENCE=PASS" in done.stdout
 
 
+_A2_RECEIPT_BODY = r"""
+const cases=JSON.parse(process.argv[2]);
+const out={};
+(async ()=>{
+  for(const c of cases){
+    const dom=boot(async()=>({ok:true,status:200,json:async()=>c.payload}));
+    dom.elements['cs-tickers'].value='NVDA';
+    await dom.elements['cs-scan-form'].listeners.submit(SUBMIT);
+    out[c.name]={optinHidden:dom.elements['cs-optin'].hidden,
+      resultsHidden:dom.elements['cs-results'].hidden,
+      note:dom.elements['cs-results-note'].textContent,
+      error:dom.elements['cs-scan-error'].textContent};
+  }
+  console.log('A2_RECEIPT_GATE='+JSON.stringify(out));
+})().catch((e)=>{console.error(e.stack);process.exitCode=1;});
+"""
+
+
+def test_a2_live_v2_receipt_opens_optin_and_absent_receipt_keeps_it_hidden():
+    """Catches: templates/catalyst_scan.js dropping the live Stage A v2 receipt
+    (opt-in never offered) or inviting an email when the server minted no
+    token because the opt-in funnel is not reachable."""
+    signed = _wire_scan("NVDA", "SYNTHETIC NVDA fixture headline", "SYNTHETIC claim.")
+    signed["scan_receipt"] = "synthetic-fixture-receipt-not-a-token.signature"
+    unsigned = _wire_scan("NVDA", "SYNTHETIC NVDA fixture headline", "SYNTHETIC claim.")
+    mismatched = dict(signed, schema_version=1)
+    cases = [{"name": "signed_v2", "payload": signed},
+             {"name": "unsigned_v2", "payload": unsigned},
+             {"name": "mismatched_pair", "payload": mismatched}]
+    done = subprocess.run(
+        [shutil.which("node"), "-e", _JS_DOM_PREAMBLE + _A2_RECEIPT_BODY,
+         str(SOURCE_JS), json.dumps(cases)],
+        text=True, capture_output=True, timeout=30, check=False)
+    assert done.returncode == 0, done.stdout + done.stderr
+    line = next(l for l in done.stdout.splitlines() if l.startswith("A2_RECEIPT_GATE="))
+    out = json.loads(line.split("=", 1)[1])
+    assert out["signed_v2"]["optinHidden"] is False
+    assert out["signed_v2"]["resultsHidden"] is False
+    assert out["unsigned_v2"]["optinHidden"] is True
+    assert out["unsigned_v2"]["resultsHidden"] is False
+    assert "Email monitoring is not available" in out["unsigned_v2"]["note"]
+    assert out["mismatched_pair"]["optinHidden"] is True
+    assert out["mismatched_pair"]["resultsHidden"] is True
+    assert "incompatible scan" in out["mismatched_pair"]["error"]
+
+
 # ---------------------------------------------------------------- A07 ------
 
 _A07A_BODY = r"""
