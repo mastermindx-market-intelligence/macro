@@ -16517,6 +16517,7 @@ jobs:
       - "templates/_public_footer.html.j2"
       - "templates/_public_nav.html.j2"
       - "templates/_risk_envelope_band.html.j2"
+      - "templates/_risk_radar_card.html.j2"
       - "templates/_risk_radar_dlg.css.j2"
       - "templates/_risk_radar_dlg.html.j2"
       - "templates/_track_record_dlg.html.j2"
