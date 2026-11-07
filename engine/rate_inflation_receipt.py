@@ -292,15 +292,40 @@ def _finalise_receipt(
     previous_receipt: Mapping[str, Any] | None,
 ) -> dict[str, Any]:
     receipt["source_snapshot_hash"] = _source_snapshot_hash(receipt)
+    if not isinstance(previous_receipt, Mapping):
+        return receipt
+    source = previous_receipt.get("source")
+    capture = previous_receipt.get("capture")
     if (
-        isinstance(previous_receipt, Mapping)
-        and previous_receipt.get("source_snapshot_hash")
-        == receipt["source_snapshot_hash"]
-        and isinstance(previous_receipt.get("capture"), Mapping)
-        and previous_receipt["capture"].get("first_known_at")
+        previous_receipt.get("schema") != DFII10_RECEIPT_SCHEMA
+        or previous_receipt.get("measurement_only") is not True
+        or not _has_measurement_only_authority(previous_receipt.get("authority"))
+        or previous_receipt.get("source_snapshot_hash") != receipt["source_snapshot_hash"]
+        or not isinstance(source, Mapping)
+        or source.get("series_id") != DFII10_SERIES_ID
+        or source.get("path") != DFII10_CANONICAL_PATH
+        or source.get("identity_basis") != "exact_canonical_parquet_bytes"
+        or not isinstance(capture, Mapping)
+        or capture.get("availability_basis") != "conservative_owner_capture"
+        or capture.get("provider_release_time_inferred") is not False
+        or not all(isinstance(capture.get(key), str) and capture.get(key)
+                   for key in ("first_known_at", "captured_at"))
     ):
-        receipt["capture"]["first_known_at"] = str(
-            previous_receipt["capture"]["first_known_at"]
+        return receipt
+    try:
+        # A copied hash string cannot confer availability on a different or
+        # damaged source/session/endpoint/quality identity.
+        if _source_snapshot_hash(previous_receipt) != receipt["source_snapshot_hash"]:
+            return receipt
+        first_known = _utc_timestamp(capture["first_known_at"])
+        prior_captured = _utc_timestamp(capture["captured_at"])
+        captured = _utc_timestamp(receipt["capture"]["captured_at"])
+        current_first = _utc_timestamp(receipt["capture"]["first_known_at"])
+    except (KeyError, TypeError, ValueError, OverflowError):
+        return receipt
+    if first_known <= prior_captured <= captured:
+        receipt["capture"]["first_known_at"] = _utc_iso(
+            min(first_known, current_first)
         )
     return receipt
 
@@ -498,15 +523,14 @@ def build_dfii10_receipt_bundle(
     current: Mapping[str, Any],
     previous_bundle: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
-    """Keep current plus one prior decision-eligible qualified receipt.
+    """Keep current plus one valid receipt for the capture session's decisions.
 
-    Multiple changed source captures can occur after an intraday decision but
-    before the reconciler runs.  A naive "previous current" slot would let the
-    second same-night capture evict the prior-night receipt that was actually
-    known at the decision.  Candidates are therefore restricted to receipts
-    whose latest observation predates the current eligible session; among those
-    we keep the newest observation and then the latest correction known before
-    the next session.
+    Before settlement, the capture session is later than the eligible data
+    session. Prefer a qualified receipt known before that capture session, so
+    an intraday correction and subsequent settled capture do not erase the
+    earlier decision cut. The incumbent one-session age bound still applies.
+    With no such receipt, retain the newest valid fallback; never reconstruct
+    an unavailable historical version or add another history slot.
     """
     current_dict = dict(current)
     current_hash = current_dict.get("source_snapshot_hash")
@@ -514,56 +538,70 @@ def build_dfii10_receipt_bundle(
         current_eligible = _date(current_dict.get("eligible_session"))
     except (TypeError, ValueError):
         current_eligible = None
-    current_latest = current_dict.get("latest")
     try:
-        current_latest_day = (
-            _date(current_latest.get("observation_date"))
-            if isinstance(current_latest, Mapping)
-            else None
-        )
-    except (TypeError, ValueError):
-        current_latest_day = None
-    current_binds_eligible_session = (
-        current_dict.get("status") == "QUALIFIED"
-        and current_eligible is not None
-        and current_latest_day == current_eligible
-    )
+        from lib.nyse_calendar import session_date
 
-    history_candidates: list[tuple[date, pd.Timestamp, dict[str, Any]]] = []
-    seen_hashes: set[str] = set()
-    if isinstance(previous_bundle, Mapping):
+        current_captured = _utc_timestamp(current_dict["capture"]["captured_at"])
+        capture_session = session_date(current_captured.to_pydatetime())
+    except (KeyError, TypeError, ValueError, OverflowError):
+        current_captured = None
+        capture_session = None
+
+    history_candidates: list[tuple[date, pd.Timestamp, dict[str, Any], bool]] = []
+    if isinstance(previous_bundle, Mapping) and capture_session is not None:
         for slot in ("current", "previous_qualified"):
             candidate = previous_bundle.get(slot)
             if not isinstance(candidate, Mapping):
                 continue
             candidate_dict = dict(candidate)
-            candidate_hash = str(candidate_dict.get("source_snapshot_hash") or "")
-            if (
-                candidate_dict.get("status") != "QUALIFIED"
-                or not candidate_hash
-                or candidate_hash == current_hash
-                or candidate_hash in seen_hashes
-            ):
+            candidate_hash = candidate_dict.get("source_snapshot_hash")
+            if not candidate_hash or candidate_hash == current_hash:
                 continue
             latest = candidate_dict.get("latest")
             capture = candidate_dict.get("capture")
             if not isinstance(latest, Mapping) or not isinstance(capture, Mapping):
                 continue
+            if not all(isinstance(capture.get(key), str) and capture.get(key)
+                       for key in ("first_known_at", "captured_at")):
+                continue
             try:
                 latest_day = _date(latest.get("observation_date"))
                 first_known = _utc_timestamp(capture.get("first_known_at"))
-            except (TypeError, ValueError):
+                prior_captured = _utc_timestamp(capture.get("captured_at"))
+                if not first_known <= prior_captured <= current_captured:
+                    continue
+                if current_eligible is not None and latest_day > current_eligible:
+                    continue
+                # Reuse the consumer's complete identity, authority, numeric,
+                # canonical-window, clock and age checks; no second validator.
+                qualified = bind_dfii10_context(
+                    {
+                        "schema": DFII10_BUNDLE_SCHEMA,
+                        "series_id": DFII10_SERIES_ID,
+                        "measurement_only": True,
+                        "authority": dict(MEASUREMENT_ONLY_AUTHORITY),
+                        "current": candidate_dict,
+                    },
+                    decision_known_at=current_captured,
+                    decision_session=capture_session,
+                )
+                if qualified["status"] != "QUALIFIED":
+                    continue
+                pre_session = (
+                    latest_day < capture_session
+                    and session_date(first_known.to_pydatetime()) < capture_session
+                )
+            except (KeyError, TypeError, ValueError, OverflowError):
                 continue
-            if current_eligible is not None and latest_day > current_eligible:
-                continue
-            if current_binds_eligible_session and latest_day == current_eligible:
-                continue
-            seen_hashes.add(candidate_hash)
-            history_candidates.append((latest_day, first_known, candidate_dict))
+            history_candidates.append(
+                (latest_day, first_known, candidate_dict, pre_session)
+            )
 
+    preferred = [candidate for candidate in history_candidates if candidate[3]]
+    retained = preferred or history_candidates
     previous_qualified = (
-        max(history_candidates, key=lambda candidate: (candidate[0], candidate[1]))[2]
-        if history_candidates
+        max(retained, key=lambda candidate: (candidate[0], candidate[1]))[2]
+        if retained
         else None
     )
     return {
@@ -575,8 +613,8 @@ def build_dfii10_receipt_bundle(
         "previous_qualified": previous_qualified,
         "history_policy": "current_plus_one_prior_qualified_no_backfill",
         "history_selection": (
-            "latest qualified observation strictly before current eligible session; "
-            "latest first-known correction wins within that observation date"
+            "prefer latest valid observation and correction known before capture "
+            "session; otherwise latest valid receipt within one-session age bound"
         ),
         "revision_law": dict(REVISION_LAW),
     }
@@ -591,9 +629,17 @@ def build_dfii10_owner_bundle(
 ) -> dict[str, Any]:
     """Build the bundle embedded in the incumbent transmission contract.
 
-    This helper writes nothing.  ``scripts.build_transmission`` remains the sole
-    writer of ``data/transmission/latest.json``.
+    This helper writes nothing. scripts.build_transmission remains the sole
+    writer of data/transmission/latest.json.
     """
+    if not (
+        isinstance(previous_bundle, Mapping)
+        and previous_bundle.get("schema") == DFII10_BUNDLE_SCHEMA
+        and previous_bundle.get("series_id") == DFII10_SERIES_ID
+        and previous_bundle.get("measurement_only") is True
+        and _has_measurement_only_authority(previous_bundle.get("authority"))
+    ):
+        previous_bundle = None
     previous_receipt = (
         previous_bundle.get("current")
         if isinstance(previous_bundle, Mapping)
@@ -609,12 +655,18 @@ def build_dfii10_owner_bundle(
         )
     except Exception:
         # A calendar/import/programming failure is still explicit measurement
-        # absence.  It never becomes a zero, regime label, rank or gate.
+        # absence. It never becomes a zero, regime label, rank or gate.
         current = build_missing_dfii10_receipt(
             captured_at=captured_at,
             completed_sessions=list(completed_sessions or ()),
             missing_state="OWNER_CAPTURE_ERROR",
             previous_receipt=previous_receipt,
+        )
+    if isinstance(previous_bundle, Mapping):
+        # During a capture gap, the exact old source is in the retained slot.
+        # Validate it through the same finalizer before duplicate removal.
+        current = _finalise_receipt(
+            current, previous_bundle.get("previous_qualified")
         )
     return build_dfii10_receipt_bundle(current, previous_bundle)
 

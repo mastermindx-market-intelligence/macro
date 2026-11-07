@@ -1,0 +1,38 @@
+{
+ "accepted_at": "2026-03-23T20:05:50Z",
+ "accession": "0000088941-26-000005",
+ "cik": "0000088941",
+ "doc_byte_length": 3008268,
+ "doc_sha256": "21eb0d660130cf2e2abc0e60e366ff44116cb766f31be2c44f9c02a4e818af6a",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-23",
+ "form": "10-K",
+ "period_of_report": "2026-01-25",
+ "primary_document": "smtc-20260125.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 2609855,
+  "byte_start": 2608492,
+  "normalized": "Customer A11%10%*",
+  "normalized_sha256": "9d19263a1d74b14ef979d8191431c5f80b579302d6a808cbe01306f4e6829da2",
+  "raw": "<tr><td colspan=\"3\" style=\"background-color:#cceeff;padding:2px 1pt;text-align:left;vertical-align:top\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:100%\">Customer A</span></td><td colspan=\"3\" style=\"background-color:#cceeff;padding:2px 1pt;text-align:center;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:100%\"><ix:nonFraction unitRef=\"number\" contextRef=\"c-451\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-1901\">11</ix:nonFraction>%</span></td><td colspan=\"3\" style=\"background-color:#cceeff;padding:0 1pt\"/><td colspan=\"3\" style=\"background-color:#cceeff;padding:2px 1pt;text-align:center;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:100%\"><ix:nonFraction unitRef=\"number\" contextRef=\"c-452\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-1902\">10</ix:nonFraction>%</span></td><td colspan=\"3\" style=\"background-color:#cceeff;padding:0 1pt\"/><td colspan=\"3\" style=\"background-color:#cceeff;padding:2px 1pt;text-align:center;vertical-align:bottom\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:100%\">*</span></td></tr>",
+  "raw_sha256": "1605644b7f8aa48ceda84b029cdbbc6dd31e97cbc3a194153e6fe3d853166262"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/88941/000008894126000005/smtc-20260125.htm",
+ "xbrl_contexts": [
+  {
+   "byte_end": 222748,
+   "byte_start": 222087,
+   "context_ref": "c-451",
+   "raw": "<xbrli:context id=\"c-451\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0000088941</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">smtc:CustomerAMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:SalesRevenueNetMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2025-01-27</xbrli:startDate><xbrli:endDate>2026-01-25</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "db0c6e3b6646426befac67f18923b67ee1047164dbf1c45b07c7f534b34fb97a"
+  },
+  {
+   "byte_end": 223409,
+   "byte_start": 222748,
+   "context_ref": "c-452",
+   "raw": "<xbrli:context id=\"c-452\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0000088941</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">smtc:CustomerAMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:SalesRevenueNetMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2024-01-29</xbrli:startDate><xbrli:endDate>2025-01-26</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "4c088fa691d7c26e06583d7e49f9621d50d1f93936f27f211173ca16afd838bc"
+  }
+ ]
+}

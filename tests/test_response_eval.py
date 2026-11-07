@@ -1082,3 +1082,876 @@ def test_nothing_in_the_harness_writes_to_site():
         src = (ROOT / rel).read_text(encoding="utf-8")
         assert '"site"' not in src and "'site'" not in src, rel
         assert "site/" not in src.replace("site/ or", "").replace("to site/", ""), rel
+
+
+HISTORICAL_TEXT_CASES = [
+    "benchmark_gold_real_rate_2026-08-09.json",
+    "benchmark_capex_bind_2026-07-22.json",
+    "benchmark_mag7_forced_override_2026-07-11.json",
+    "benchmark_mag7_narration_2026-08-03.json",
+    "benchmark_healthcare_coherence_2026-07-13.json",
+    "benchmark_rotation_wiring_2026-07-16.json",
+    "benchmark_risk_breadth_2026-07-08.json",
+    "benchmark_treasury_liquidity_2026-07-02.json",
+    "benchmark_semiconductor_divergence_2026-07-08.json",
+    "benchmark_mag7_organ_causality_2026-07-11.json",
+    "benchmark_mag7_flow_calibration_2026-07-11.json",
+    "benchmark_mag7_narrative_denominator_2026-07-11.json",
+    "benchmark_fomc_qt_clock_2024-05-01.json",
+    "benchmark_snb_floor_rate_2015-01-15.json",
+    "benchmark_bls_survey_revision_2024-03-08.json",
+    "benchmark_gdp_growth_units_2024-04-25.json",
+    "benchmark_boj_ycc_band_2022-12-20.json",
+    "benchmark_ecb_rate_clock_2022-07-21.json",
+    "benchmark_boe_gilt_objective_2022-09-28.json",
+    "benchmark_wti_delivery_scope_2020-04-27.json",
+]
+
+
+@pytest.mark.parametrize("name", HISTORICAL_TEXT_CASES)
+def test_historical_text_case_uses_bound_source_and_explicit_runners(name):
+    case = ev.load_benchmark(name)
+    seen = []
+    judge = _fake_judge(_judge_reply("max"))
+    def answer(system, user):
+        seen.append((system, user))
+        return case["gold_standard_sentence"]
+    result = ev.run_benchmark(ROOT, judge, answer, name=name)
+    assert result["ok"] is True
+    assert result["replay_scope"] == "supplied_adjudication_text"
+    assert result["historical_source_availability"] == "unverified"
+    assert result["scope_limits"]
+    assert seen[0][1] == case["packet_digest_fixture"] + "\n\n" + case["question_en"]
+    for prop in case["expected_properties"]: assert prop["check"] in judge.calls[0]
+    for failure in case["known_failure_modes"]: assert failure in judge.calls[0]
+    # Injected PASS proves fixture/runner plumbing, not historical model quality.
+
+
+@pytest.mark.parametrize("mutation", ["future", "date", "source_hash", "excerpt", "excerpt_hash", "path", "packet", "cutoff", "availability"])
+def test_historical_text_case_refuses_bad_binding_before_callbacks(monkeypatch, mutation):
+    import copy
+    case = copy.deepcopy(ev.load_benchmark(HISTORICAL_TEXT_CASES[0]))
+    meta = case["historical_case"]
+    if mutation == "future": meta["input_facts"][0]["event_date"] = "2026-08-10"
+    elif mutation == "date": meta["input_facts"][0]["event_date"] = "not-a-date"
+    elif mutation == "source_hash": meta["source"]["sha256"] = "0" * 64
+    elif mutation == "excerpt": meta["input_facts"][0]["text"] += " unseen later information"
+    elif mutation == "excerpt_hash": meta["input_facts"][0]["sha256"] = "0" * 64
+    elif mutation == "path": meta["source"]["path"] = "data/qledger/grades.jsonl"
+    elif mutation == "packet": case["packet_digest_fixture"] += " Later price return."
+    elif mutation == "cutoff": meta["cutoff_date"] = "2026-08-09T23:59:00Z"
+    elif mutation == "availability": meta["historical_source_availability"] = "verified"
+    monkeypatch.setattr(ev, "load_benchmark", lambda name: case)
+    def forbidden(*args): pytest.fail("invalid historical case reached a callback")
+    result = ev.run_benchmark(ROOT, forbidden, forbidden, name=HISTORICAL_TEXT_CASES[0])
+    assert result["ok"] is False and result["error"].startswith("historical_case_")
+    assert result["scope_limits"]
+
+
+@pytest.mark.parametrize("answer,judge", [(None,None),(None,lambda p: None),(lambda s,u: None,None),(False,lambda p: None),(lambda s,u: None,False)])
+def test_historical_text_case_never_uses_default_model_callbacks(monkeypatch, answer, judge):
+    def forbidden(*args): pytest.fail("historical case reached implicit model or doctrine")
+    monkeypatch.setattr(ev, "answer_via_llm_auth", forbidden)
+    monkeypatch.setattr(ev, "judge_via_llm_auth", forbidden)
+    monkeypatch.setattr(ev, "benchmark_system_prompt", forbidden)
+    result = ev.run_benchmark(ROOT, judge, answer, name=HISTORICAL_TEXT_CASES[0])
+    assert result["ok"] is False
+    assert result["error"] == "historical_case_requires_explicit_runners"
+
+
+def test_historical_text_case_bad_source_file_never_blocks_or_falls_back(tmp_path, monkeypatch):
+    case = ev.load_benchmark(HISTORICAL_TEXT_CASES[0])
+    source = tmp_path / case["historical_case"]["source"]["path"]
+    source.parent.mkdir(parents=True)
+    import os
+    os.mkfifo(source)
+    def forbidden(*args): pytest.fail("unreadable source reached callback")
+    result = ev.run_benchmark(tmp_path, forbidden, forbidden, name=HISTORICAL_TEXT_CASES[0])
+    assert not result["ok"] and result["error"] == "historical_case_source_unavailable"
+
+
+@pytest.mark.parametrize("kind", ["oversized", "symlink", "directory"])
+def test_historical_text_case_source_admission_is_bounded(tmp_path, kind):
+    case = ev.load_benchmark(HISTORICAL_TEXT_CASES[0])
+    source = tmp_path / case["historical_case"]["source"]["path"]
+    source.parent.mkdir(parents=True)
+    if kind == "oversized": source.write_bytes(b"x" * 65537)
+    elif kind == "symlink": source.symlink_to(ROOT / case["historical_case"]["source"]["path"])
+    else: source.mkdir()
+    def forbidden(*args): pytest.fail("inadmissible source reached callback")
+    result = ev.run_benchmark(tmp_path, forbidden, forbidden, name=HISTORICAL_TEXT_CASES[0])
+    assert result["error"] == "historical_case_source_unavailable"
+
+
+def test_historical_text_case_binds_adjudication_separately_from_inputs(monkeypatch):
+    import copy
+    case = copy.deepcopy(ev.load_benchmark(HISTORICAL_TEXT_CASES[0]))
+    case["historical_case"]["adjudication_excerpt"]["text"] += " Wrong oracle"
+    monkeypatch.setattr(ev, "load_benchmark", lambda name: case)
+    def forbidden(*args): pytest.fail("unbound adjudication reached callback")
+    assert ev.run_benchmark(ROOT, forbidden, forbidden, name=HISTORICAL_TEXT_CASES[0])["error"] == "historical_case_excerpt_mismatch"
+
+
+@pytest.mark.parametrize("name", HISTORICAL_TEXT_CASES)
+def test_historical_text_case_missing_metadata_cannot_fall_back_to_live_models(monkeypatch, name):
+    import copy
+    case = copy.deepcopy(ev.load_benchmark(name))
+    del case["historical_case"]
+    monkeypatch.setattr(ev, "load_benchmark", lambda name: case)
+    def forbidden(*args): pytest.fail("malformed named historical case fell through to live defaults")
+    monkeypatch.setattr(ev, "answer_via_llm_auth", forbidden)
+    monkeypatch.setattr(ev, "judge_via_llm_auth", forbidden)
+    monkeypatch.setattr(ev, "benchmark_system_prompt", forbidden)
+    result = ev.run_benchmark(ROOT, name=name)
+    assert result["ok"] is False and result["error"] == "historical_case_metadata_invalid"
+    assert result["scope_limits"]
+
+
+def test_fomc_announcement_is_not_a_future_realized_observation(monkeypatch):
+    import copy
+    case = copy.deepcopy(ev.load_benchmark("benchmark_fomc_qt_clock_2024-05-01.json"))
+    # The announcement may describe a future rule, but a later observed fact is
+    # outside this supplied cutoff and must not reach either model callback.
+    case["historical_case"]["input_facts"][0]["event_date"] = "2024-06-01"
+    monkeypatch.setattr(ev, "load_benchmark", lambda name: case)
+    def forbidden(*args):
+        pytest.fail("a later realized observation reached a callback")
+    result = ev.run_benchmark(ROOT, forbidden, forbidden, name="benchmark_fomc_qt_clock_2024-05-01.json")
+    assert result["ok"] is False
+    assert result["error"] == "historical_case_fact_date_invalid"
+
+
+@pytest.mark.parametrize("status,expected_pass", [
+    ("verified", True), ("mismatch", False), ("not_assessed", False),
+])
+def test_explicit_native_source_verdict_gates_quality_pass_without_changing_rubric(
+    monkeypatch, status, expected_pass,
+):
+    """A requested source check cannot be outweighed by a perfect LLM score."""
+    secret_marker = "SOURCE_ONLY_NOT_JUDGE_INPUT"
+    context = {"receipt": {"private_test_marker": secret_marker},
+               "request_id": "same-request", "source_request_id": "same-request",
+               "symbol": "XYZ", "source_envelopes": [{"value": 314159.25}]}
+    seen = []
+    def verify(answer, receipt, **kwargs):
+        seen.append((answer, receipt, kwargs))
+        return {"status": status, "reason": "test_verdict", "checked_count": 0,
+                "references": [], "internal_qa_only": True}
+    monkeypatch.setattr(ev, "verify_native_numeric_response", verify, raising=False)
+    judge = _fake_judge(_judge_reply(total_each="max"))
+    row = _row()
+    result = ev.score_response(row, judge, native_source_context=context)
+    assert seen[0][0] == row["answer"]
+    assert seen[0][1] is context["receipt"]
+    assert result["passed"] is expected_pass
+    assert result["total"] == 100 and result["scores"] == ev.RUBRIC
+    assert result["tags"] == [] and result["hard_fail"] is False
+    assert result["source_verification"]["status"] == status
+    assert secret_marker not in judge.calls[0]
+    assert "314159.25" not in judge.calls[0]
+    assert secret_marker not in json.dumps(result)
+    assert "314159.25" not in json.dumps(result)
+
+
+def test_persisted_row_cannot_self_admit_native_source_context(monkeypatch):
+    def forbidden(*args, **kwargs):
+        raise AssertionError("persisted row was wrongly treated as same-request evidence")
+    monkeypatch.setattr(ev, "verify_native_numeric_response", forbidden, raising=False)
+    row = _row(native_source_context={"receipt": {"schema": "self_asserted"}})
+    result = ev.score_response(row, _fake_judge(_judge_reply(total_each="max")))
+    assert result["passed"] is True
+    assert "source_verification" not in result
+
+
+# Same-request source verification with synthetic canonical resolver outputs.
+import copy
+import json
+from types import SimpleNamespace
+from typing import Any, Callable
+
+import pytest
+
+# ---------------------------------------------------------------------------
+# Synthetic fixture constants
+# ---------------------------------------------------------------------------
+SYMBOL = "TEST"
+REQUEST_ID = "req-native-check-0001"
+REGISTRY_DIGEST = "c001" + "0" * 60
+OTHER_DIGEST = "d002" + "1" * 60
+STAMP = "2026-10-14T20:00:00.000000Z"
+OTHER_STAMP = "2026-10-13T20:00:00.000000Z"
+SECURITY_ENTITY = {"type": "security", "id": "SEC:TEST"}
+OTHER_SECURITY_ENTITY = {"type": "security", "id": "SEC:OTHER"}
+INDUSTRY_ENTITY = {"type": "industry", "id": "IND:TECH"}
+SOURCE_ID = "src.provider"
+
+FIELD_PRICE = "market.price.last"
+FIELD_RETURN_1M = "market.return.1m"
+FIELD_RETURN_3M = "market.return.3m"
+FIELD_RETURN_12M = "market.return.12m"
+FIELD_STAGE = "stage.current"
+FIELD_WEEKS = "stage.weeks_in_stage"
+FIELD_EPS_GROWTH = "earnings.latest.eps_growth_pct"
+FIELD_REVENUE_GROWTH = "earnings.latest.revenue_growth_pct"
+FIELD_INDUSTRY_RANK = "industry.rank.percentile"
+
+_UNITS = {
+    FIELD_PRICE: "USD",
+    FIELD_RETURN_1M: "percent",
+    FIELD_RETURN_3M: "percent",
+    FIELD_RETURN_12M: "percent",
+    FIELD_STAGE: "stage_code",
+    FIELD_WEEKS: "weeks",
+    FIELD_EPS_GROWTH: "percent",
+    FIELD_REVENUE_GROWTH: "percent",
+    FIELD_INDUSTRY_RANK: "percentile",
+}
+
+_canonical_cache: SimpleNamespace | None = None
+
+
+def _canonical() -> SimpleNamespace:
+    """Production imports are binding: missing source fails the suite."""
+    global _canonical_cache
+    if _canonical_cache is None:
+        from engine.intelligence_workspace.contracts import (
+            VALUE_SCHEMA, CanonicalEntity, EntityRequest, ResolutionRequest, semantic_fingerprint,
+        )
+        from engine.neuralweb.native_facts import (
+            NativeFactPlan, _render_fact, execute_native_fact_plan,
+        )
+        _canonical_cache = SimpleNamespace(
+            VALUE_SCHEMA=VALUE_SCHEMA, CanonicalEntity=CanonicalEntity,
+            EntityRequest=EntityRequest, ResolutionRequest=ResolutionRequest,
+            semantic_fingerprint=semantic_fingerprint, NativeFactPlan=NativeFactPlan,
+            _render_fact=_render_fact, execute_native_fact_plan=execute_native_fact_plan,
+        )
+    return _canonical_cache
+
+
+@pytest.fixture(scope="module")
+def verify() -> Callable[..., dict[str, Any]]:
+    return ev.verify_native_numeric_response
+
+
+# ---------------------------------------------------------------------------
+# Fixture construction through the canonical pipeline
+# ---------------------------------------------------------------------------
+class _FakeRuntime:
+    """Minimal resolver surface consumed by canonical execute_native_fact_plan."""
+
+    def __init__(self, envelopes: list[dict[str, Any]]) -> None:
+        canonical = _canonical()
+        self._by_field = {str(envelope["field_id"]): envelope for envelope in envelopes}
+        self.registry = SimpleNamespace(digest=REGISTRY_DIGEST)
+        admitted = canonical.CanonicalEntity(
+            type="security",
+            id=str(SECURITY_ENTITY["id"]),
+            universe="us_equity",
+            state="active",
+            alias_interpretation="current_alias_only",
+        )
+        self.identity_normalizer = SimpleNamespace(normalize_many=lambda requests: [admitted])
+
+    def resolve(self, request: Any) -> list[dict[str, Any]]:
+        return [self._by_field[str(field)] for field in request.field_ids]
+
+    def resolve_current_industry_relationship(self, entity: Any) -> dict[str, Any]:
+        return {
+            "to": {"id": str(INDUSTRY_ENTITY["id"])},
+            "source": {"source_id": SOURCE_ID},
+            "freshness": {"state": "fresh"},
+        }
+
+
+def _make_envelope(
+    field_id: str,
+    value: Any,
+    *,
+    entity: dict[str, str] | None = None,
+    digest: str = REGISTRY_DIGEST,
+) -> dict[str, Any]:
+    """One synthetic subscriber envelope, fingerprinted by canonical code."""
+    canonical = _canonical()
+    envelope: dict[str, Any] = {
+        "schema": canonical.VALUE_SCHEMA,
+        "registry_version": "1.0.0",
+        "registry_digest": digest,
+        "field_id": field_id,
+        "entity": dict(entity if entity is not None else SECURITY_ENTITY),
+        "value": value,
+        "status": "available",
+        "reason_code": None,
+        "unit": _UNITS[field_id],
+        "observed_at": STAMP,
+        "effective_at": STAMP,
+        "as_of": STAMP,
+        "generated_at": STAMP,
+        "freshness": {"state": "fresh", "policy": "owner_native"},
+        "quality": {"state": "ok", "issues": []},
+        "source": {
+            "source_id": SOURCE_ID,
+            "owner": "provider",
+            "license_class": "licensed",
+            "dataset_id": None,
+        },
+        "provenance": {"kind": "owner_field", "owner_field_key": field_id},
+        "consumer_uses": ["ai_fact"],
+        "audience": "subscriber",
+        "fact_fingerprint": "",
+    }
+    envelope["fact_fingerprint"] = canonical.semantic_fingerprint(envelope)
+    return envelope
+
+
+def _good_case(specs: list[tuple] | None = None) -> dict[str, Any]:
+    """Canonical answer + receipt + sources from the native pipeline itself."""
+    canonical = _canonical()
+    specs = list(specs if specs is not None else [(FIELD_PRICE, 0), (FIELD_RETURN_3M, -12.5)])
+    envelopes = [
+        _make_envelope(spec[0], spec[1], entity=spec[2] if len(spec) > 2 else None)
+        for spec in specs
+    ]
+    execution = canonical.execute_native_fact_plan(
+        canonical.NativeFactPlan(
+            symbol=SYMBOL,
+            field_ids=tuple(spec[0] for spec in specs),
+            explicit_entity=True,
+            effective_context_reason="explicit_request",
+        ),
+        runtime=_FakeRuntime(envelopes),
+    )
+    assert len(execution.receipt["clauses"]) == len(specs), "fixture must render fully"
+    assert execution.answer.startswith(f"{SYMBOL} — "), "fixture must use the native grammar"
+    return {"answer": execution.answer, "receipt": execution.receipt, "envelopes": envelopes}
+
+
+def _call(verify: Callable[..., dict[str, Any]], case: dict[str, Any], **overrides: Any) -> dict[str, Any]:
+    kwargs: dict[str, Any] = {
+        "request_id": REQUEST_ID,
+        "source_request_id": REQUEST_ID,
+        "symbol": SYMBOL,
+        "source_envelopes": case["envelopes"],
+    }
+    kwargs.update(overrides)
+    return verify(case["answer"], case["receipt"], **kwargs)
+
+
+def _set_item(mapping: Any, key: Any, value: Any) -> None:
+    mapping[key] = value
+
+
+def _pop_item(mapping: Any, key: Any) -> None:
+    mapping.pop(key, None)
+
+
+def _assert_failure(
+    result: dict[str, Any], status: str, reason: str
+) -> None:
+    assert result["status"] == status
+    assert result["reason"] == reason
+    assert result["checked_count"] == 0
+    assert result["references"] == []
+    assert result["internal_qa_only"] is True
+    assert set(result) == {"status", "reason", "checked_count", "references", "internal_qa_only"}
+
+
+# ---------------------------------------------------------------------------
+# Positive controls
+# ---------------------------------------------------------------------------
+def test_verified_zero_price_single_field(verify):
+    case = _good_case([(FIELD_PRICE, 0)])
+    result = _call(verify, case)
+    assert result == {
+        "status": "verified",
+        "reason": "numeric_response_verified",
+        "checked_count": 1,
+        "references": [
+            {
+                "field_id": FIELD_PRICE,
+                "fact_fingerprint": case["envelopes"][0]["fact_fingerprint"],
+            }
+        ],
+        "internal_qa_only": True,
+    }
+
+
+def test_verified_negative_numeric(verify):
+    case = _good_case([(FIELD_RETURN_3M, -12.5)])
+    result = _call(verify, case)
+    assert result["status"] == "verified"
+    assert result["checked_count"] == 1
+
+
+def test_verified_multifield(verify):
+    specs = [(FIELD_PRICE, 1234.5), (FIELD_RETURN_3M, -12.5), (FIELD_STAGE, 2)]
+    case = _good_case(specs)
+    result = _call(verify, case)
+    assert result["status"] == "verified"
+    assert result["checked_count"] == 3
+    assert [reference["field_id"] for reference in result["references"]] == [
+        spec[0] for spec in specs
+    ]
+
+
+def test_verified_eight_numeric_fields(verify):
+    specs = [
+        (FIELD_PRICE, 1234.5),
+        (FIELD_RETURN_1M, 2.5),
+        (FIELD_RETURN_3M, -12.5),
+        (FIELD_RETURN_12M, 40.25),
+        (FIELD_STAGE, 2),
+        (FIELD_WEEKS, 9),
+        (FIELD_EPS_GROWTH, 18.5),
+        (FIELD_REVENUE_GROWTH, 7.25),
+    ]
+    result = _call(verify, _good_case(specs))
+    assert result["status"] == "verified"
+    assert result["checked_count"] == 8
+    assert len(result["references"]) == 8
+
+
+def test_verified_accepts_tuple_container(verify):
+    case = _good_case([(FIELD_RETURN_12M, 3.5)])
+    result = verify(
+        case["answer"],
+        case["receipt"],
+        request_id=REQUEST_ID,
+        source_request_id=REQUEST_ID,
+        symbol=SYMBOL,
+        source_envelopes=tuple(case["envelopes"]),
+    )
+    assert result["status"] == "verified"
+
+
+def test_industry_entity_sources_are_not_assessed(verify):
+    case = _good_case(
+        [(FIELD_PRICE, 100.0), (FIELD_INDUSTRY_RANK, 77.0, INDUSTRY_ENTITY)]
+    )
+    _assert_failure(_call(verify, case), "not_assessed", "source_entity_not_security")
+
+
+# ---------------------------------------------------------------------------
+# Parameterized semantic mutations: every bound key, one defect at a time
+# ---------------------------------------------------------------------------
+def _append_copy(sequence: list) -> None:
+    sequence.append(copy.deepcopy(sequence[0]))
+
+
+def _reverse(sequence: list) -> None:
+    sequence.reverse()
+
+
+MUTATIONS: tuple[tuple[str, Callable[[dict], None], str, str], ...] = (
+    # Receipt fact packet: each semantic key the fingerprint binds.
+    ("fact_value", lambda c: _set_item(c["receipt"]["facts"][0], "value", 13.5), "mismatch", "fact_packet_mismatch"),
+    ("fact_value_type_confusion_int_vs_float", lambda c: _set_item(c["receipt"]["facts"][0], "value", 0.0), "mismatch", "fact_packet_mismatch"),
+    ("fact_entity", lambda c: _set_item(c["receipt"]["facts"][0], "entity", dict(OTHER_SECURITY_ENTITY)), "mismatch", "fact_packet_mismatch"),
+    ("fact_unit", lambda c: _set_item(c["receipt"]["facts"][0], "unit", "EUR"), "mismatch", "fact_packet_mismatch"),
+    ("fact_observed_at", lambda c: _set_item(c["receipt"]["facts"][0], "observed_at", OTHER_STAMP), "mismatch", "fact_packet_mismatch"),
+    ("fact_effective_at", lambda c: _set_item(c["receipt"]["facts"][0], "effective_at", OTHER_STAMP), "mismatch", "fact_packet_mismatch"),
+    ("fact_as_of", lambda c: _set_item(c["receipt"]["facts"][0], "as_of", OTHER_STAMP), "mismatch", "fact_packet_mismatch"),
+    ("fact_registry_digest", lambda c: _set_item(c["receipt"]["facts"][0], "registry_digest", OTHER_DIGEST), "mismatch", "fact_packet_mismatch"),
+    ("fact_status", lambda c: _set_item(c["receipt"]["facts"][0], "status", "stale"), "mismatch", "fact_packet_mismatch"),
+    ("fact_reason_code", lambda c: _set_item(c["receipt"]["facts"][0], "reason_code", "owner_stale"), "mismatch", "fact_packet_mismatch"),
+    ("fact_fingerprint", lambda c: _set_item(c["receipt"]["facts"][0], "fact_fingerprint", "f" * 64), "mismatch", "fact_packet_mismatch"),
+    ("fact_freshness_state", lambda c: _set_item(c["receipt"]["facts"][0]["freshness"], "state", "stale"), "mismatch", "fact_packet_mismatch"),
+    ("fact_source_id", lambda c: _set_item(c["receipt"]["facts"][0]["source"], "source_id", "src.forged"), "mismatch", "fact_packet_mismatch"),
+    ("fact_quality_state", lambda c: _set_item(c["receipt"]["facts"][0], "quality_state", "degraded"), "mismatch", "fact_packet_mismatch"),
+    ("fact_provenance_kind", lambda c: _set_item(c["receipt"]["facts"][0]["provenance"], "kind", "forged"), "mismatch", "fact_packet_mismatch"),
+    ("fact_extra_key", lambda c: _set_item(c["receipt"]["facts"][0], "extra", 1), "mismatch", "fact_packet_mismatch"),
+    ("fact_field_id", lambda c: _set_item(c["receipt"]["facts"][0], "field_id", FIELD_RETURN_1M), "mismatch", "facts_structure_mismatch"),
+    ("fact_clause_id", lambda c: _set_item(c["receipt"]["facts"][0], "clause_id", "c9"), "mismatch", "facts_structure_mismatch"),
+    ("fact_display_order", lambda c: _set_item(c["receipt"]["facts"][0], "display_order", 5), "mismatch", "facts_structure_mismatch"),
+    ("facts_extra", lambda c: _append_copy(c["receipt"]["facts"]), "mismatch", "facts_structure_mismatch"),
+    ("facts_missing", lambda c: c["receipt"]["facts"].pop(), "mismatch", "facts_structure_mismatch"),
+    ("facts_reordered", lambda c: _reverse(c["receipt"]["facts"]), "mismatch", "facts_structure_mismatch"),
+    # Receipt clauses: one-to-one with source order, ids, order, kind, hash, text.
+    ("clause_fingerprint", lambda c: _set_item(c["receipt"]["clauses"][0], "fact_fingerprint", "e" * 64), "mismatch", "fingerprint_mismatch"),
+    ("clause_text_edited", lambda c: _set_item(c["receipt"]["clauses"][0], "text", c["receipt"]["clauses"][0]["text"] + " (revised)"), "mismatch", "clause_text_mismatch"),
+    ("clause_text_none", lambda c: _set_item(c["receipt"]["clauses"][0], "text", None), "mismatch", "clause_text_mismatch"),
+    ("clause_receipt_kind", lambda c: _set_item(c["receipt"]["clauses"][0], "receipt_kind", "relationship_receipt"), "mismatch", "clause_structure_mismatch"),
+    ("clause_status", lambda c: _set_item(c["receipt"]["clauses"][0], "status", "unknown"), "mismatch", "clause_structure_mismatch"),
+    ("clause_display_order", lambda c: _set_item(c["receipt"]["clauses"][0], "display_order", 7), "mismatch", "clause_structure_mismatch"),
+    ("clause_id_renamed", lambda c: _set_item(c["receipt"]["clauses"][0], "clause_id", "x1"), "mismatch", "clause_structure_mismatch"),
+    ("clause_field_id", lambda c: _set_item(c["receipt"]["clauses"][0], "field_id", FIELD_RETURN_1M), "mismatch", "clause_structure_mismatch"),
+    ("clause_extra_key", lambda c: _set_item(c["receipt"]["clauses"][0], "weight", 1), "mismatch", "clause_structure_mismatch"),
+    ("clauses_extra", lambda c: _append_copy(c["receipt"]["clauses"]), "mismatch", "clause_structure_mismatch"),
+    ("clauses_missing", lambda c: c["receipt"]["clauses"].pop(), "mismatch", "clause_structure_mismatch"),
+    ("clauses_reordered", lambda c: _reverse(c["receipt"]["clauses"]), "mismatch", "clause_structure_mismatch"),
+    # Answer narrative: exact full string only.
+    ("answer_appended", lambda c: _set_item(c, "answer", c["answer"] + " Hope this helps!"), "mismatch", "answer_mismatch"),
+    ("answer_edited", lambda c: _set_item(c, "answer", c["answer"].replace("USD 0", "USD 1", 1)), "mismatch", "answer_mismatch"),
+    ("answer_truncated", lambda c: _set_item(c, "answer", c["answer"][:-5]), "mismatch", "answer_mismatch"),
+    ("answer_symbol_prefix_edited", lambda c: _set_item(c, "answer", "OTHER" + c["answer"][4:]), "mismatch", "answer_mismatch"),
+    # Receipt identity / registry blocks.
+    ("receipt_registry_digest", lambda c: _set_item(c["receipt"], "registry_digest", OTHER_DIGEST), "mismatch", "registry_mismatch"),
+    ("receipt_effective_symbol", lambda c: _set_item(c["receipt"]["effective_context"], "symbol", "OTHER"), "mismatch", "symbol_mismatch"),
+    ("receipt_requested_symbol", lambda c: _set_item(c["receipt"]["identity_admission"], "requested_symbol", "OTHER"), "mismatch", "symbol_mismatch"),
+    ("receipt_canonical_entity_id", lambda c: _set_item(c["receipt"]["canonical_entity"], "id", "SEC:OTHER"), "mismatch", "canonical_entity_mismatch"),
+    ("receipt_identity_security_id", lambda c: _set_item(c["receipt"]["identity_admission"], "canonical_security_id", "SEC:OTHER"), "mismatch", "canonical_entity_mismatch"),
+)
+
+
+@pytest.mark.parametrize(
+    ("name", "mutate", "status", "reason"),
+    MUTATIONS,
+    ids=[entry[0] for entry in MUTATIONS],
+)
+def test_semantic_mutation_is_rejected(verify, name, mutate, status, reason):
+    case = _good_case()
+    mutate(case)
+    _assert_failure(_call(verify, case), status, reason)
+
+
+# ---------------------------------------------------------------------------
+# Forgeries: self-consistent response evidence against unchanged sources
+# ---------------------------------------------------------------------------
+def test_forged_fingerprint_recomputed_over_changed_value(verify):
+    case = _good_case()
+    forged = _make_envelope(FIELD_RETURN_3M, 999.0)
+    fact = case["receipt"]["facts"][1]
+    fact["value"] = forged["value"]
+    fact["fact_fingerprint"] = forged["fact_fingerprint"]
+    _assert_failure(_call(verify, case), "mismatch", "fact_packet_mismatch")
+
+
+def test_forged_matched_receipt_and_answer_against_unchanged_source(verify):
+    """Even a fully re-rendered, internally consistent forgery must fail."""
+    canonical = _canonical()
+    case = _good_case([(FIELD_PRICE, 10.0), (FIELD_RETURN_3M, -12.5)])
+    forged = _make_envelope(FIELD_RETURN_3M, 999.0)
+    forged_packet = canonical.execute_native_fact_plan(
+        canonical.NativeFactPlan(
+            symbol=SYMBOL,
+            field_ids=(FIELD_RETURN_3M,),
+            explicit_entity=True,
+            effective_context_reason="explicit_request",
+        ),
+        runtime=_FakeRuntime([forged]),
+    )
+    case["receipt"]["facts"][1] = {
+        **forged_packet.receipt["facts"][0],
+        "clause_id": "c2",
+        "display_order": 1,
+    }
+    case["receipt"]["clauses"][1] = forged_packet.receipt["clauses"][0]
+    case["answer"] = (
+        f"{SYMBOL} — "
+        + "; ".join(clause["text"] for clause in case["receipt"]["clauses"])
+    )
+    _assert_failure(_call(verify, case), "mismatch", "fact_packet_mismatch")
+
+
+def test_restamped_source_hash_does_not_excuse_changed_value(verify):
+    canonical = _canonical()
+    case = _good_case()
+    envelope = case["envelopes"][1]
+    envelope["value"] = -99.0
+    envelope["fact_fingerprint"] = canonical.semantic_fingerprint(envelope)
+    _assert_failure(_call(verify, case), "mismatch", "fact_packet_mismatch")
+
+
+# ---------------------------------------------------------------------------
+# Caller assertion gates
+# ---------------------------------------------------------------------------
+@pytest.mark.parametrize(
+    ("overrides", "status", "reason"),
+    [
+        ({"request_id": ""}, "not_assessed", "request_id_malformed"),
+        ({"request_id": None}, "not_assessed", "request_id_malformed"),
+        ({"request_id": 7}, "not_assessed", "request_id_malformed"),
+        ({"request_id": "r" * 257}, "not_assessed", "request_id_malformed"),
+        ({"source_request_id": ""}, "not_assessed", "request_id_malformed"),
+        ({"request_id": "req-other"}, "mismatch", "request_id_mismatch"),
+        ({"symbol": ""}, "not_assessed", "symbol_malformed"),
+        ({"symbol": None}, "not_assessed", "symbol_malformed"),
+        ({"symbol": "S" * 257}, "not_assessed", "symbol_malformed"),
+    ],
+    ids=[
+        "request_id_empty",
+        "request_id_none",
+        "request_id_not_str",
+        "request_id_unbounded",
+        "source_request_id_empty",
+        "request_ids_differ",
+        "symbol_empty",
+        "symbol_none",
+        "symbol_unbounded",
+    ],
+)
+def test_caller_assertion_gates(verify, overrides, status, reason):
+    case = _good_case()
+    _assert_failure(_call(verify, case, **overrides), status, reason)
+
+
+@pytest.mark.parametrize(
+    "answer",
+    [None, "", "   ", 123, ["TEST — current price"], "x" * 8193],
+    ids=["none", "empty", "blank", "not_str", "not_str_list", "unbounded"],
+)
+def test_answer_malformed_is_not_assessed(verify, answer):
+    case = _good_case()
+    _assert_failure(
+        verify(
+            answer,
+            case["receipt"],
+            request_id=REQUEST_ID,
+            source_request_id=REQUEST_ID,
+            symbol=SYMBOL,
+            source_envelopes=case["envelopes"],
+        ),
+        "not_assessed",
+        "answer_malformed",
+    )
+
+
+# ---------------------------------------------------------------------------
+# Source evidence admission gates
+# ---------------------------------------------------------------------------
+SOURCE_MUTATIONS: tuple[tuple[str, Callable[[list], None], str], ...] = (
+    ("schema_wrong", lambda envs: _set_item(envs[0], "schema", "datapoint_value.v2"), "source_schema_unexpected"),
+    ("schema_missing", lambda envs: _pop_item(envs[0], "schema"), "source_schema_unexpected"),
+    ("audience_internal", lambda envs: _set_item(envs[0], "audience", "internal"), "source_audience_not_subscriber"),
+    ("audience_missing", lambda envs: _pop_item(envs[0], "audience"), "source_audience_not_subscriber"),
+    ("status_rights_blocked", lambda envs: _set_item(envs[0], "status", "rights_blocked"), "source_field_not_available"),
+    ("status_stale", lambda envs: _set_item(envs[0], "status", "stale"), "source_field_not_available"),
+    ("value_none", lambda envs: _set_item(envs[0], "value", None), "source_field_not_numeric"),
+    ("value_string", lambda envs: _set_item(envs[0], "value", "-12.5"), "source_field_not_numeric"),
+    ("value_bool", lambda envs: _set_item(envs[0], "value", True), "source_field_not_numeric"),
+    ("value_nan", lambda envs: _set_item(envs[0], "value", float("nan")), "source_field_not_numeric"),
+    ("value_inf", lambda envs: _set_item(envs[0], "value", float("inf")), "source_field_not_numeric"),
+    ("value_list", lambda envs: _set_item(envs[0], "value", [1.0]), "source_field_not_numeric"),
+    ("registry_digest_empty", lambda envs: _set_item(envs[0], "registry_digest", ""), "source_registry_digest_missing"),
+    ("registry_digest_none", lambda envs: _set_item(envs[0], "registry_digest", None), "source_registry_digest_missing"),
+    ("duplicate_fields", lambda envs: envs.append(copy.deepcopy(envs[0])), "source_field_duplicate"),
+    ("registry_inconsistent", lambda envs: _set_item(envs[1], "registry_digest", OTHER_DIGEST), "source_registry_inconsistent"),
+    ("entity_industry", lambda envs: _set_item(envs[0], "entity", dict(INDUSTRY_ENTITY)), "source_entity_not_security"),
+    ("entity_missing", lambda envs: _pop_item(envs[0], "entity"), "source_entity_not_security"),
+    ("entity_type_missing", lambda envs: _set_item(envs[0], "entity", {"id": SECURITY_ENTITY["id"]}), "source_entity_not_security"),
+    ("entity_inconsistent_across_sources", lambda envs: _set_item(envs[1], "entity", dict(OTHER_SECURITY_ENTITY)), "source_entity_inconsistent"),
+    ("fingerprint_stale", lambda envs: _set_item(envs[0], "fact_fingerprint", "b" * 64), "source_fingerprint_invalid"),
+    ("fingerprint_empty", lambda envs: _set_item(envs[0], "fact_fingerprint", ""), "source_fingerprint_invalid"),
+    ("source_block_missing", lambda envs: _pop_item(envs[0], "source"), "source_fingerprint_invalid"),
+    ("reason_code_missing", lambda envs: _pop_item(envs[0], "reason_code"), "source_fingerprint_invalid"),
+    ("freshness_missing", lambda envs: _pop_item(envs[0], "freshness"), "source_envelopes_malformed"),
+)
+
+
+@pytest.mark.parametrize(
+    ("name", "mutate", "reason"),
+    SOURCE_MUTATIONS,
+    ids=[entry[0] for entry in SOURCE_MUTATIONS],
+)
+def test_source_defect_is_not_assessed(verify, name, mutate, reason):
+    case = _good_case()
+    mutate(case["envelopes"])
+    _assert_failure(_call(verify, case), "not_assessed", reason)
+
+
+def _minimal_envelope(index: int) -> dict[str, Any]:
+    return {
+        "schema": "datapoint_value.v1",
+        "registry_digest": REGISTRY_DIGEST,
+        "field_id": f"synthetic.field.{index}",
+        "entity": dict(SECURITY_ENTITY),
+        "value": 1.0,
+        "status": "available",
+        "audience": "subscriber",
+        "fact_fingerprint": "0" * 64,
+    }
+
+
+@pytest.mark.parametrize(
+    "envelopes",
+    [
+        None,
+        42,
+        "envelopes",
+        {},
+        [],
+        ["not-a-mapping"],
+        [_minimal_envelope(index) for index in range(13)],
+    ],
+    ids=["none", "not_container", "string", "dict", "empty", "item_not_mapping", "thirteen"],
+)
+def test_source_container_malformed_is_not_assessed(verify, envelopes):
+    case = _good_case([(FIELD_PRICE, 1.0)])
+    result = verify(
+        case["answer"],
+        case["receipt"],
+        request_id=REQUEST_ID,
+        source_request_id=REQUEST_ID,
+        symbol=SYMBOL,
+        source_envelopes=envelopes,
+    )
+    _assert_failure(result, "not_assessed", "source_envelopes_malformed")
+
+
+# ---------------------------------------------------------------------------
+# Receipt admission gates
+# ---------------------------------------------------------------------------
+RECEIPT_MUTATIONS: tuple[tuple[str, Callable[[dict], None], str], ...] = (
+    ("schema_wrong", lambda r: _set_item(r, "schema", "brain.native_fact_receipt.v2"), "receipt_schema_unexpected"),
+    ("route_wrong", lambda r: _set_item(r, "route", "deep/research"), "receipt_route_unexpected"),
+    ("route_missing", lambda r: _pop_item(r, "route"), "receipt_route_unexpected"),
+    ("no_value_cache_flag_false", lambda r: _set_item(r, "request_scoped_no_value_cache", False), "receipt_cache_contract_violated"),
+    ("cache_hit_true", lambda r: _set_item(r, "cache", {"label": "request_scoped_no_value_cache", "hit": True}), "receipt_cache_contract_violated"),
+    ("cache_label_wrong", lambda r: _set_item(r, "cache", {"label": "value_cache", "hit": False}), "receipt_cache_contract_violated"),
+    ("cache_missing", lambda r: _pop_item(r, "cache"), "receipt_cache_contract_violated"),
+    ("facts_not_list", lambda r: _set_item(r, "facts", {}), "receipt_malformed"),
+    ("clauses_not_list", lambda r: _set_item(r, "clauses", None), "receipt_malformed"),
+    ("registry_digest_missing", lambda r: _pop_item(r, "registry_digest"), "receipt_malformed"),
+    ("effective_context_missing", lambda r: _pop_item(r, "effective_context"), "receipt_malformed"),
+    ("identity_admission_missing", lambda r: _pop_item(r, "identity_admission"), "receipt_malformed"),
+    ("canonical_entity_missing", lambda r: _pop_item(r, "canonical_entity"), "receipt_malformed"),
+)
+
+
+@pytest.mark.parametrize(
+    ("name", "mutate", "reason"),
+    RECEIPT_MUTATIONS,
+    ids=[entry[0] for entry in RECEIPT_MUTATIONS],
+)
+def test_receipt_defect_is_not_assessed(verify, name, mutate, reason):
+    case = _good_case()
+    mutate(case["receipt"])
+    _assert_failure(_call(verify, case), "not_assessed", reason)
+
+
+@pytest.mark.parametrize("receipt", [None, [], "receipt", 0], ids=["none", "list", "string", "int"])
+def test_receipt_not_a_mapping_is_not_assessed(verify, receipt):
+    case = _good_case()
+    _assert_failure(
+        verify(
+            case["answer"],
+            receipt,
+            request_id=REQUEST_ID,
+            source_request_id=REQUEST_ID,
+            symbol=SYMBOL,
+            source_envelopes=case["envelopes"],
+        ),
+        "not_assessed",
+        "receipt_malformed",
+    )
+
+
+# ---------------------------------------------------------------------------
+# Invariants: determinism, purity, closed shape, no leakage
+# ---------------------------------------------------------------------------
+def test_same_inputs_give_identical_results(verify):
+    case = _good_case()
+    assert _call(verify, case) == _call(verify, case)
+    mutated = copy.deepcopy(case)
+    mutated["receipt"]["facts"][0]["value"] = 13.5
+    first = _call(verify, mutated)
+    second = _call(verify, mutated)
+    assert first == second
+    assert first["status"] == "mismatch"
+
+
+def test_inputs_are_never_mutated(verify):
+    case = _good_case()
+    snapshot = copy.deepcopy(case)
+    assert _call(verify, case)["status"] == "verified"
+    mutated = copy.deepcopy(case)
+    mutated["answer"] += " tail"
+    _call(verify, mutated)
+    broken = copy.deepcopy(case)
+    broken["envelopes"][0]["value"] = None
+    _call(verify, broken)
+    assert case == snapshot
+
+
+def test_result_shape_is_closed_across_all_outcomes(verify):
+    canonical_receipt_case = _good_case()
+    verified = _call(verify, canonical_receipt_case)
+    mismatched = copy.deepcopy(canonical_receipt_case)
+    mismatched["answer"] += " tail"
+    bad_schema = copy.deepcopy(canonical_receipt_case)
+    bad_schema["receipt"]["schema"] = "brain.native_fact_receipt.v2"
+    for result in (verified, _call(verify, mismatched), _call(verify, bad_schema)):
+        assert set(result) == {"status", "reason", "checked_count", "references", "internal_qa_only"}
+        assert result["internal_qa_only"] is True
+        assert result["status"] in {"verified", "mismatch", "not_assessed"}
+        assert isinstance(result["reason"], str) and result["reason"]
+        if result["status"] == "verified":
+            assert result["checked_count"] == len(result["references"]) > 0
+        else:
+            assert result["checked_count"] == 0
+            assert result["references"] == []
+
+
+def test_references_carry_only_field_identity(verify):
+    case = _good_case()
+    result = _call(verify, case)
+    for reference in result["references"]:
+        assert set(reference) == {"field_id", "fact_fingerprint"}
+        assert isinstance(reference["field_id"], str)
+        assert isinstance(reference["fact_fingerprint"], str)
+
+
+def test_no_value_answer_or_source_leakage(verify):
+    case = _good_case([(FIELD_PRICE, 424242.5), (FIELD_RETURN_3M, -12.5)])
+    appended = copy.deepcopy(case)
+    appended["answer"] += " plus advice"
+    bad_schema = copy.deepcopy(case)
+    bad_schema["receipt"]["schema"] = "brain.native_fact_receipt.v2"
+    results = [
+        _call(verify, case),
+        _call(verify, appended),
+        _call(verify, bad_schema),
+    ]
+    for result in results:
+        blob = json.dumps(result)
+        assert "424242" not in blob, blob
+        assert SOURCE_ID not in blob, blob
+        assert "advice" not in blob, blob
+        # No answer narrative, clause text, or receipt/source content may leak;
+        # stable reason codes are contract vocabulary, not leakage.
+        assert "current price" not in blob, blob
+        assert "USD" not in blob, blob
+        assert "freshness" not in blob, blob
+        assert '"value"' not in blob, blob
+
+
+if __name__ == "__main__":
+    raise SystemExit(
+        "Run with pytest against a local engine repo: "
+        "python -m pytest native_checker_tests.py — no remote verification path exists."
+    )
+
+
+@pytest.mark.parametrize("mode,expected_status,expected_pass", [
+    ("valid", "verified", True),
+    ("changed_answer", "mismatch", False),
+    ("missing_sources", "not_assessed", False),
+])
+def test_scorer_uses_real_same_request_numeric_verifier(mode, expected_status, expected_pass):
+    case = _good_case([(FIELD_PRICE, 0), (FIELD_RETURN_3M, -12.5)])
+    context = {"receipt": case["receipt"], "request_id": REQUEST_ID,
+               "source_request_id": REQUEST_ID, "symbol": SYMBOL,
+               "source_envelopes": case["envelopes"]}
+    answer = case["answer"]
+    if mode == "changed_answer":
+        answer += "; a fabricated additional price: 99"
+    if mode == "missing_sources":
+        context["source_envelopes"] = []
+    result = ev.score_response(_row(answer=answer),
+                              _fake_judge(_judge_reply(total_each="max")),
+                              native_source_context=context)
+    assert result["source_verification"]["status"] == expected_status
+    assert result["passed"] is expected_pass
+    assert result["total"] == 100
+    assert "source_envelopes" not in result
+    assert "receipt" not in result
+
+
+def test_source_registry_digest_requires_sha256_shape(verify):
+    case = _good_case()
+    for envelope in case["envelopes"]:
+        envelope["registry_digest"] = "not-a-registry-digest"
+        envelope["fact_fingerprint"] = _canonical().semantic_fingerprint(envelope)
+    result = _call(verify, case)
+    assert result["status"] == "not_assessed"
+    assert result["checked_count"] == 0

@@ -1,0 +1,7 @@
+{
+  "observed_at": "2026-10-20T19:12:25.559315+00:00",
+  "state": "PREWRITE_REFUSAL",
+  "source_sha256": "7843b52f0c73a5cc9085a467b6397bfa0e800bfdfa993aa4349b9403f50a7cd8",
+  "reason": "bea-gvc-current-descriptive-consumer inherited duplicated path entries failed an unnecessary uniqueness assertion; no output journal/backup or worktree write had occurred",
+  "next": "V2 checks no path multiplicity exceeds either parent rather than deleting inherited declarations"
+}

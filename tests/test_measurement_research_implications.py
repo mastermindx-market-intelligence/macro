@@ -9,7 +9,7 @@ here — these tests consume the frozen envelope, they never re-derive it.
 
 What is pinned:
 1.  Absent/empty envelope renders no section at all (no empty shell, no zero).
-2.  Both real frozen cards render with stable, card-unique semantic anchors.
+2.  All three real frozen cards render with stable, card-unique semantic anchors.
 3.  Glance shows a plain-word state; typed quality/tier/family/authority
     codes live in Receipts, never as header chips.
 4.  The exact required stance line is present in EN and ZH.
@@ -102,6 +102,7 @@ def _render(**overrides) -> str:
             "cards": [],
         },
         "imce_prospective": {"available": False},
+        "verdict_preservation": {"available": False},
         "seasonality_record": {
             "available": False,
             "registered": 0,
@@ -169,7 +170,7 @@ def _expected_metric_value(metric: dict) -> str:
         return f"{value[0] * 100:.2f}% … {value[2] * 100:.2f}%"
     if unit in {"return_fraction", "fraction"}:
         return f"{value * 100:.3f}%"
-    if unit == "probability" and isinstance(value, (int, float)) and not isinstance(value, bool):
+    if unit in {"probability", "q_probability"} and isinstance(value, (int, float)) and not isinstance(value, bool):
         floor = metric.get("display_floor")
         draws = metric.get("draws")
         if isinstance(floor, (int, float)) and not isinstance(floor, bool) and value < floor:
@@ -186,6 +187,8 @@ def _expected_metric_value(metric: dict) -> str:
         return f"{value:.4f}"
     if unit in {"months", "events", "episodes", "draws", "tickers"}:
         return str(value)
+    if unit == "log_payroll_change_per_cpi_percentage_point":
+        return f"{value:.6f}"
     if isinstance(value, (int, float)) and not isinstance(value, bool):
         return f"{value:.4f}"
     return str(value)
@@ -333,14 +336,14 @@ def test_missing_envelope_key_does_not_crash_the_page():
 
 
 # ---------------------------------------------------------------------------
-# 2. The two real frozen cards
+# 2. The three real frozen cards
 # ---------------------------------------------------------------------------
 
 
-def test_both_real_cards_render_with_stable_unique_anchors(contract, real_section):
+def test_real_cards_render_with_stable_unique_anchors(contract, real_section):
     assert real_section, "Research Implications section did not render"
     families = [c["method_family"] for c in contract["cards"]]
-    assert set(families) == {"synthetic_control", "event_study"}
+    assert set(families) == {"synthetic_control", "event_study", "local_projections"}
     anchors = [_stable_anchor(card) for card in contract["cards"]]
     assert len(anchors) == len(set(anchors))
     for card, anchor in zip(contract["cards"], anchors, strict=True):
@@ -735,14 +738,14 @@ def test_filter_controls_exist_for_evidence_tier(contract, real_section):
 
 
 def test_real_pair_lede_is_derived_from_card_states(contract, real_section):
-    """Production pair: two cards, neither COMPLETE — the lede must say so."""
+    """Production envelope: all three retained diagnostics remain incomplete/failed."""
     n = len(contract["cards"])
     k = sum(1 for card in contract["cards"] if card["quality"] == "COMPLETE")
-    assert n == 2 and k == 0
-    assert "Neither card below is usable today." in real_section
-    assert "下方两张卡片今天均不可用。" in real_section
-    assert "None of the 2 cards below is usable today." not in real_section
-    assert "下方 2 张卡片今天均不可用。" not in real_section
+    assert n == 3 and k == 0
+    assert "None of the 3 cards below is usable today." in real_section
+    assert "下方 3 张卡片今天均不可用。" in real_section
+    assert "Neither card below is usable today." not in real_section
+    assert "下方两张卡片今天均不可用。" not in real_section
 
 
 def test_dom_order_equals_contract_order(contract, real_section):
@@ -843,8 +846,11 @@ def test_cutoff_names_the_through_date(contract, real_section):
         assert card["cutoff"] not in fig, (
             f"{card['method_family']} still prints the raw ISO {card['cutoff']}"
         )
-        assert "Data through" in fig
-        assert "数据截至" in fig
+        if card["method_family"] == "local_projections":
+            assert "Information cutoff" in fig and "信息截止时间" in fig
+        else:
+            assert "Data through" in fig
+            assert "数据截至" in fig
 
 
 def test_filters_are_not_sort_controls(real_section):
@@ -1638,6 +1644,7 @@ def test_glance_header_uses_review_plain_word_labels(contract, real_section):
     family_rows = {
         "synthetic_control": ("Method: synthetic control", "方法：合成对照"),
         "event_study": ("Method: event study", "方法：事件研究"),
+        "local_projections": ("Method: local projections", "方法：局部投影"),
     }
     for card in contract["cards"]:
         card_html = _isolate_card(real_section, card["method_family"])
@@ -1704,10 +1711,12 @@ def test_ric_null_code_class_is_not_dead_css():
     assert "var(--fig)" not in style
 
 
-def test_hub_template_links_to_research_implications_anchor():
+def test_hub_template_has_no_link_to_the_admin_only_measurement_page():
     hub = (REPO / "templates" / "intelligence_hub.html.j2").read_text(encoding="utf-8")
-    hrefs = re.findall(r'href="measurement\.html#ric-section"', hub)
-    assert len(hrefs) == 1
+    assert re.findall(r'href="measurement\.html', hub) == []
+    assert 'class="card rid"' not in hub
+    assert "ric-section" not in hub
+    assert "research_implications" not in hub
 
 
 def _render_hub(research_implications=None) -> str:
@@ -1827,38 +1836,20 @@ def test_ric_stance_rule_is_body_weight_and_last_line(real_section):
         assert 'class="ric-copy"' in card_html[last:]
 
 
-def test_hub_entry_count_matches_destination(contract, real_section):
-    """MINOR 3: hub title count is ric_cards|length, same data as the destination."""
+def test_destination_article_count_matches_contract(contract, real_section):
+    """MINOR 3: the destination article count mirrors the contract cards."""
     dest_n = len(contract["cards"])
     assert dest_n == real_section.count("<article")
-    hub_html = _render_hub(research_implications=contract)
-    m = re.search(
-        r'class="rid-t"><span class="l-en">(.*?)</span><span class="l-zh">(.*?)</span>',
-        hub_html,
-        flags=re.DOTALL,
-    )
-    assert m, "hub entry title missing"
-    en, zh = m.group(1), m.group(2)
-    assert f"what {dest_n} frozen" in en
-    assert ("study" in en and dest_n == 1) or ("studies" in en and dest_n != 1)
-    assert f"{dest_n} 项冻结研究的实际产出" in zh
-    one = _envelope([_minimal_card(family="event_study", quality="DIAGNOSTIC_ONLY")])
-    one_html = _render_hub(research_implications=one)
-    assert "what 1 frozen study actually produced" in one_html
-    assert "1 项冻结研究的实际产出" in one_html
 
 
-def test_hub_entry_omitted_when_card_count_is_zero():
-    """MINOR A: zero cards print nothing — no dead #ric-section, no '0 frozen studies'."""
+def test_hub_never_renders_a_research_implication_entry():
+    """MINOR A: empty and two-card envelopes both render no .rid entry — no ric-section, no 'frozen' copy, no measurement link."""
     empty = _render_hub(
         research_implications={
             "schema": "mastermind.research_implication_cards/v1",
             "cards": [],
         }
     )
-    assert "ric-section" not in empty
-    assert "0 frozen" not in empty
-    assert "0 项冻结" not in empty
     two = _render_hub(
         research_implications=_envelope(
             [
@@ -1867,9 +1858,12 @@ def test_hub_entry_omitted_when_card_count_is_zero():
             ]
         )
     )
-    assert two.count('href="measurement.html#ric-section"') == 1
-    assert "what 2 frozen studies actually produced" in two
-    assert "2 项冻结研究的实际产出" in two
+    for html in (empty, two):
+        assert "ric-section" not in html
+        assert "frozen" not in html
+        assert "项冻结" not in html
+        assert 'class="card rid"' not in html
+        assert "measurement.html" not in html
 
 
 def test_authority_receipt_names_a_set_flag_and_does_not_print_none():
@@ -1911,30 +1905,8 @@ def test_rendered_card_has_no_snake_case_slug(contract, real_section):
             assert hit is None, f"{card['method_family']} {cls} leaked {hit.group(0)!r}"
 
 
-def test_hub_entry_is_bilingual_and_inside_track_record_band():
+def test_hub_uses_the_product_nav_family():
     hub = (REPO / "templates" / "intelligence_hub.html.j2").read_text(encoding="utf-8")
-    m = re.search(r'<a class="card rid"[^>]*>(.*?)</a>', hub, flags=re.DOTALL)
-    assert m, "no .rid entry row found in the hub template"
-    row = m.group(1)
-    spans = re.findall(
-        r'class="(rid-k|rid-t|rid-d)">'
-        r'<span class="l-en">(.*?)</span><span class="l-zh">(.*?)</span>',
-        row,
-        flags=re.DOTALL,
-    )
-    assert [cls for cls, _en, _zh in spans] == ["rid-k", "rid-t", "rid-d"]
-    for _cls, en, zh in spans:
-        assert en.strip()
-        assert re.search(r"[一-鿿]", zh), f"ZH span has no Chinese: {zh!r}"
-    tr = re.search(
-        r'<div class="band"[^>]*>.*?Track record.*?</div>(.*?)(?=<div class="band"|$)',
-        hub,
-        flags=re.DOTALL,
-    )
-    assert tr and 'class="card rid"' in tr.group(1)
-    rid_pos = hub.find('class="card rid"')
-    window = hub[hub.rfind('<div class="band"', 0, rid_pos) : rid_pos]
-    assert window.count('<div class="band"') == 1
     assert "_site_nav.html.j2" in hub
     assert "_public_nav" not in hub
 
@@ -2027,3 +1999,28 @@ def test_f10a1_evidence_is_full_viewport_and_theme_differentiated():
         f"measurement dark/light frames are not theme-differentiated "
         f"(dark={dark_luma:.1f} light={light_luma:.1f})"
     )
+
+
+def test_lp_projection_uses_monthly_log_change_units_and_discloses_missing_recent_window(contract, real_section):
+    card = next(c for c in contract["cards"] if c["method_family"] == "local_projections")
+    html = _isolate_card(real_section, "local_projections")
+    assert "Method: local projections" in html and "方法：局部投影" in html
+    assert "log payroll / CPI pp" in html and "工资单对数 / CPI 百分点" in html
+    assert "2025" in html and "2026" in html
+    assert "13" in html and "332" in html
+    assert 'data-ric-null-code="effective_n"' in html
+    assert "332 monthly rows are not 332 independent episodes" in html
+    assert 'data-ric-code="effective_n"' not in html
+    assert "Information cutoff" in html and "信息截止时间" in html
+    assert "current-regime validity is unknown" in html
+    assert "当前制度有效性未知" in html
+    if card["ordered_effect_path"]:
+        callout = re.search(r'<div class="ric-path-callout">(.*?)</div>', html, re.S).group(1)
+        assert "monthly observations" in callout and "个月度观测期限" in callout
+        assert "CPI percentage point" in callout and "CPI 百分点" in callout
+        assert "%" not in callout and "events" not in callout and "day horizon" not in callout
+        assert "工资单对数变化 / CPI 百分点" in html
+        assert "横轴为月度观测期限" in html
+    assert 'data-ric-f="fam:local_projections"' in real_section
+    button = real_section.split('data-ric-f="fam:local_projections"', 1)[1].split('</button>', 1)[0]
+    assert "Local Projections" in button and "局部投影" in button

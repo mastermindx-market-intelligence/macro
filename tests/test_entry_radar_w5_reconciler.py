@@ -874,6 +874,7 @@ def test_bundle_preserves_pre_session_receipt_across_multiple_same_night_source_
         completed_sessions=through_sep9,
         captured_at="2026-09-09T21:00:00Z",
         source_content_sha256="b" * 64,
+        source_column="DFII10",
     )
     bundle = build_dfii10_receipt_bundle(sep9_first, bundle)
     assert bundle["previous_qualified"]["source_snapshot_hash"] == \
@@ -888,6 +889,7 @@ def test_bundle_preserves_pre_session_receipt_across_multiple_same_night_source_
         completed_sessions=through_sep9,
         captured_at="2026-09-09T22:00:00Z",
         source_content_sha256="c" * 64,
+        source_column="DFII10",
         previous_receipt=sep9_first,
     )
     bundle = build_dfii10_receipt_bundle(sep9_corrected, bundle)
@@ -904,6 +906,7 @@ def test_bundle_preserves_pre_session_receipt_across_multiple_same_night_source_
         completed_sessions=through_sep10,
         captured_at="2026-09-10T22:00:00Z",
         source_content_sha256="d" * 64,
+        source_column="DFII10",
         previous_receipt=sep9_corrected,
     )
     rolled = build_dfii10_receipt_bundle(sep10, bundle)
@@ -1027,3 +1030,223 @@ def test_owner_calendar_waits_for_settle_before_admitting_same_session_source(
     assert after_settle["eligible_session"] == "2026-09-08"
     assert after_settle["latest"]["observation_date"] == "2026-09-08"
     assert after_settle["prior_five_sessions"]["observation_date"] == "2026-08-31"
+
+
+# Exact retained-snapshot recovery and current-session decision protection.
+def _dfii10_restore_fixture(tmp_path, monkeypatch):
+    path = tmp_path / "data" / "fred" / "DFII10.parquet"
+    path.parent.mkdir(parents=True)
+    raw = {key: ("dfii10-private-fixture-" + key).encode() for key in "ABCDE"}
+    days = [day.isoformat() for day in LABOR_DAY_WINDOW]
+    values = [1.90, 1.89, 1.88, 1.87, 1.86, 1.84]
+    frames = {
+        raw["A"]: pd.DataFrame({"DFII10": values}, index=pd.to_datetime(days)),
+        raw["B"]: pd.DataFrame({"DFII10": values}, index=pd.to_datetime(days)),
+        raw["C"]: pd.DataFrame({"DFII10": values + [1.82]}, index=pd.to_datetime(days + ["2026-09-09"])),
+        raw["D"]: pd.DataFrame({"DFII10": values + [1.81]}, index=pd.to_datetime(days + ["2026-09-09"])),
+        raw["E"]: pd.DataFrame({"DFII10": values + [1.81, 1.80]}, index=pd.to_datetime(days + ["2026-09-09", "2026-09-10"])),
+    }
+    reads = []
+    def read_parquet(handle):
+        value = handle.read()
+        reads.append(value)
+        if value not in frames:
+            raise ValueError("synthetic unparsable source")
+        return frames[value].copy()
+    monkeypatch.setattr(pd, "read_parquet", read_parquet)
+    path.write_bytes(raw["A"])
+    def capture(at, previous=None):
+        before = {str(p.relative_to(tmp_path)): p.read_bytes() for p in tmp_path.rglob("*") if p.is_file()}
+        previous_before = copy.deepcopy(previous)
+        result = build_dfii10_owner_bundle(
+            tmp_path / "data", captured_at=at, previous_bundle=previous)
+        after = {str(p.relative_to(tmp_path)): p.read_bytes() for p in tmp_path.rglob("*") if p.is_file()}
+        assert after == before, "receipt owner must never write a second store"
+        assert previous == previous_before, "retained caller receipts are immutable"
+        assert result["current"]["capture"]["captured_at"] == at
+        assert not any(result["authority"].values())
+        assert not any(result["current"]["authority"].values())
+        return result
+    return path, raw, reads, capture
+
+
+def _dfii10_restore_decision_row(bundle):
+    record = _event(
+        ticker="ABCD", session="2026-09-09",
+        observed_at="2026-09-09T18:01:00Z")["record"]
+    record["signal_ts"] = "2026-09-09T17:55:00Z"
+    record["signal_known_ts"] = "2026-09-09T18:00:00Z"
+    row = rec._event_row(
+        record, session="2026-09-09", state=rec.STATE_WAITING,
+        dfii10_bundle=bundle, dfii10_load_state="LOADED")
+    assert row["episode_address"] == record["event_id"]
+    assert row["detector_id"] == record["detector_id"]
+    assert row["state"] == rec.STATE_WAITING
+    assert not any(json.loads(row["dfii10_context_json"])["authority"].values())
+    return row
+
+
+@pytest.mark.parametrize("gap", ["missing", "unparsable"])
+def test_dfii10_restore_exact_source_keeps_clock_and_public_w5_cut(tmp_path, monkeypatch, gap):
+    path, raw, reads, capture = _dfii10_restore_fixture(tmp_path, monkeypatch)
+    first = capture("2026-09-08T22:00:00Z")
+    if gap == "missing":
+        path.unlink()
+    else:
+        path.write_bytes(b"unparsable")
+    absent = capture("2026-09-09T17:00:00Z", first)
+    assert absent["current"]["status"] == "MISSING"
+    assert absent["previous_qualified"]["source_snapshot_hash"] == first["current"]["source_snapshot_hash"]
+    path.write_bytes(raw["A"])
+    restored = capture("2026-09-09T19:00:00Z", absent)
+    assert restored["current"]["source_snapshot_hash"] == first["current"]["source_snapshot_hash"]
+    assert restored["current"]["capture"]["first_known_at"] == "2026-09-08T22:00:00Z"
+    assert restored["previous_qualified"] is None
+    row = _dfii10_restore_decision_row(restored)
+    assert row["dfii10_context_status"] == "QUALIFIED"
+    assert row["dfii10_receipt_first_known_at"] == "2026-09-08T22:00:00Z"
+    assert row["dfii10_source_snapshot_hash"] == first["current"]["source_snapshot_hash"]
+    assert row["dfii10_delta_bp"] == -6.0
+    assert reads.count(raw["A"]) == 2
+
+
+@pytest.mark.parametrize("gap", ["missing", "unparsable"])
+def test_dfii10_restore_changed_source_preserves_earlier_cut_through_settlement(tmp_path, monkeypatch, gap):
+    path, raw, reads, capture = _dfii10_restore_fixture(tmp_path, monkeypatch)
+    first = capture("2026-09-08T22:00:00Z")
+    if gap == "missing":
+        path.unlink()
+    else:
+        path.write_bytes(b"unparsable")
+    absent = capture("2026-09-09T17:00:00Z", first)
+    path.write_bytes(raw["B"])
+    corrected = capture("2026-09-09T19:00:00Z", absent)
+    assert corrected["current"]["source_snapshot_hash"] != first["current"]["source_snapshot_hash"]
+    assert corrected["current"]["capture"]["first_known_at"] == "2026-09-09T19:00:00Z"
+    assert corrected["previous_qualified"]["source_snapshot_hash"] == first["current"]["source_snapshot_hash"]
+    assert _dfii10_restore_decision_row(corrected)["dfii10_source_snapshot_hash"] == first["current"]["source_snapshot_hash"]
+    path.write_bytes(raw["C"])
+    settled = capture("2026-09-09T22:00:00Z", corrected)
+    assert settled["current"]["latest"]["observation_date"] == "2026-09-09"
+    assert settled["previous_qualified"]["source_snapshot_hash"] == first["current"]["source_snapshot_hash"]
+    assert _dfii10_restore_decision_row(settled)["dfii10_source_snapshot_hash"] == first["current"]["source_snapshot_hash"]
+    path.write_bytes(raw["D"])
+    after_utc_midnight = capture("2026-09-10T02:00:00Z", settled)
+    assert after_utc_midnight["previous_qualified"]["source_snapshot_hash"] == first["current"]["source_snapshot_hash"]
+    assert _dfii10_restore_decision_row(after_utc_midnight)["dfii10_context_status"] == "QUALIFIED"
+    path.write_bytes(raw["E"])
+    next_session = capture("2026-09-10T22:00:00Z", after_utc_midnight)
+    assert next_session["previous_qualified"]["source_snapshot_hash"] == after_utc_midnight["current"]["source_snapshot_hash"]
+
+
+@pytest.mark.parametrize("slot", ["current", "previous_qualified"])
+@pytest.mark.parametrize("field,value", [
+    (("schema",), "foreign/v1"),
+    (("measurement_only",), False),
+    (("authority", "trading"), True),
+    (("source", "identity_basis"), "provider_guess"),
+    (("source", "series_id"), "DGS10"),
+    (("source", "path"), "data/foreign/DFII10.parquet"),
+    (("source", "column"), "foreign"),
+    (("source", "content_sha256"), "b" * 64),
+    (("eligible_session",), "2026-09-09"),
+    (("latest", "value_pct"), 9.99),
+    (("delta_bp",), 99.0),
+    (("bound_session_window",), ["2026-08-31", "2026-09-08"]),
+    (("status",), "STALE"),
+    (("missing_state",), "SOURCE_EMPTY"),
+    (("stale_state",), "STALE_AT_CAPTURE"),
+    (("completed_session_lag",), 1),
+    (("source_snapshot_hash",), "0" * 64),
+    (("capture", "availability_basis"), "provider_release"),
+    (("capture", "provider_release_time_inferred"), True),
+    (("capture", "first_known_at"), "not-a-clock"),
+    (("capture", "first_known_at"), 123),
+    (("capture", "first_known_at"), "2026-09-09T20:00:00Z"),
+    (("capture", "captured_at"), "2026-09-10T22:00:00Z"),
+])
+def test_dfii10_restore_invalid_retained_receipt_never_donates_clock(
+        tmp_path, monkeypatch, slot, field, value):
+    path, raw, reads, capture = _dfii10_restore_fixture(tmp_path, monkeypatch)
+    first = capture("2026-09-08T22:00:00Z")
+    previous = copy.deepcopy(first)
+    if slot == "previous_qualified":
+        path.unlink()
+        previous = capture("2026-09-09T17:00:00Z", first)
+        path.write_bytes(raw["A"])
+    damaged = previous[slot]
+    for key in field[:-1]:
+        damaged = damaged[key]
+    damaged[field[-1]] = value
+    restored = capture("2026-09-09T19:00:00Z", previous)
+    assert restored["current"]["status"] == "QUALIFIED"
+    assert restored["current"]["capture"]["first_known_at"] == "2026-09-09T19:00:00Z"
+    assert restored["current"]["source_snapshot_hash"] == first["current"]["source_snapshot_hash"]
+    assert _dfii10_restore_decision_row(restored)["dfii10_context_status"] == "UNAVAILABLE"
+
+
+@pytest.mark.parametrize("field,value", [
+    (("schema",), "foreign_bundle/v1"),
+    (("series_id",), "DGS10"),
+    (("measurement_only",), False),
+    (("authority", "ranking"), True),
+])
+def test_dfii10_restore_invalid_bundle_never_donates_clock(tmp_path, monkeypatch, field, value):
+    path, raw, reads, capture = _dfii10_restore_fixture(tmp_path, monkeypatch)
+    previous = capture("2026-09-08T22:00:00Z")
+    damaged = previous
+    for key in field[:-1]:
+        damaged = damaged[key]
+    damaged[field[-1]] = value
+    restored = capture("2026-09-09T19:00:00Z", previous)
+    assert restored["current"]["capture"]["first_known_at"] == "2026-09-09T19:00:00Z"
+    assert restored["previous_qualified"] is None
+
+
+def test_dfii10_restore_selects_earliest_valid_clock_from_both_retained_slots(tmp_path, monkeypatch):
+    path, raw, reads, capture = _dfii10_restore_fixture(tmp_path, monkeypatch)
+    first = capture("2026-09-08T22:00:00Z")
+    previous = copy.deepcopy(first)
+    previous["current"]["capture"] = {
+        **first["current"]["capture"],
+        "first_known_at": "2026-09-08T22:30:00Z",
+        "captured_at": "2026-09-08T23:00:00Z",
+    }
+    previous["previous_qualified"] = copy.deepcopy(first["current"])
+    restored = capture("2026-09-09T19:00:00Z", previous)
+    assert restored["current"]["capture"]["first_known_at"] == "2026-09-08T22:00:00Z"
+    assert restored["previous_qualified"] is None
+
+
+def test_dfii10_restore_does_not_prefer_stale_history_over_usable_same_eligible(tmp_path, monkeypatch):
+    path, raw, reads, capture = _dfii10_restore_fixture(tmp_path, monkeypatch)
+    stale = capture("2026-09-08T22:00:00Z")
+    path.write_bytes(raw["C"])
+    usable = capture("2026-09-10T17:00:00Z")
+    previous = copy.deepcopy(usable)
+    previous["previous_qualified"] = copy.deepcopy(stale["current"])
+    path.write_bytes(raw["D"])
+    restored = capture("2026-09-10T19:00:00Z", previous)
+    assert restored["current"]["eligible_session"] == "2026-09-09"
+    assert restored["previous_qualified"]["source_snapshot_hash"] == usable["current"]["source_snapshot_hash"]
+    context = bind_dfii10_context(
+        restored, decision_known_at="2026-09-10T18:00:00Z",
+        decision_session="2026-09-10")
+    assert context["status"] == "QUALIFIED"
+    assert context["source_snapshot_hash"] == usable["current"]["source_snapshot_hash"]
+    assert context["receipt_age_completed_sessions"] == 1
+
+
+@pytest.mark.parametrize("clock_update", [
+    {"first_known_at": 123},
+    {"first_known_at": 123, "captured_at": 456},
+])
+def test_dfii10_restore_non_string_history_clocks_are_not_pit_evidence(tmp_path, monkeypatch, clock_update):
+    path, raw, reads, capture = _dfii10_restore_fixture(tmp_path, monkeypatch)
+    previous = capture("2026-09-08T22:00:00Z")
+    previous["current"]["capture"].update(clock_update)
+    path.write_bytes(raw["B"])
+    restored = capture("2026-09-09T19:00:00Z", previous)
+    assert restored["current"]["capture"]["first_known_at"] == "2026-09-09T19:00:00Z"
+    assert restored["previous_qualified"] is None
+    assert _dfii10_restore_decision_row(restored)["dfii10_context_status"] == "UNAVAILABLE"

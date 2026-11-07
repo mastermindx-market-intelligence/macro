@@ -1,0 +1,4 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/_cycle_locked_slot.html.j2
+manifest: mockups/evidence/cycle-locked-slot/manifest.json
