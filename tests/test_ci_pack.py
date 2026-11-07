@@ -5379,6 +5379,75 @@ def test_eval_os_acceptance_runs_on_ordinary_code_prs() -> None:
     assert not selected, "The bounded acceptance job must not ride unrelated landing-page PRs"
 
 
+def test_c3_daily_leg_pit_has_one_code_owner_and_bounded_scope() -> None:
+    """Ordinary code packs must execute the feature's C3 regression."""
+    suite = "tests/test_entry_radar_w3_c3_4h_pit.py"  # ci-trigger-closure: data
+    jobs = PACK.load_legacy_jobs(MANIFEST)
+    owners = [
+        job.job_id
+        for job in jobs
+        if any(
+            suite in step.get("run", "").split()
+            for step in job.definition.get("steps", [])
+        )
+    ]
+    assert owners == ["entry-radar-rs-pullback-calendar"], owners
+    code_jobs = {
+        job.job_id: job for job in PACK.load_legacy_jobs(MANIFEST, gate="code")
+    }
+    job = code_jobs[owners[0]]
+    assert job.exclusive, "C3 enrollment must retain the bounded owner"
+    assert any(
+        {"pytest", "pyyaml", "pyarrow", "numpy", "pandas"}
+        <= set(shlex.split(step.get("run", "")))
+        for step in job.definition["steps"]
+    ), "The code job must install the C3 runtime and retain calendar dependencies"
+
+    for dependency in (
+        suite,
+        "engine/__init__.py",  # ci-trigger-closure: data
+        "engine/canon.py",  # ci-trigger-closure: data
+        "engine/conditions.py",  # ci-trigger-closure: data
+        "engine/entry_radar/__init__.py",  # ci-trigger-closure: data
+        "engine/entry_radar/c5_adapter.py",  # ci-trigger-closure: data
+        "engine/entry_radar/challengers.py",  # ci-trigger-closure: data
+        "engine/entry_radar/contracts.py",  # ci-trigger-closure: data
+        "engine/entry_radar/detectors.py",  # ci-trigger-closure: data
+        "engine/entry_radar/entry_events.py",  # ci-trigger-closure: data
+        "engine/entry_radar/four_hour.py",  # ci-trigger-closure: data
+        "engine/entry_radar/g0_adapter.py",  # ci-trigger-closure: data
+        "engine/entry_radar/indicator_core.py",  # ci-trigger-closure: data
+        "engine/entry_radar/indicator_ingest.py",  # ci-trigger-closure: data
+        "engine/entry_radar/readings.py",  # ci-trigger-closure: data
+        "engine/indicators.py",  # ci-trigger-closure: data
+        "engine/session_anchor.py",  # ci-trigger-closure: data
+        "engine/session_digest.py",  # ci-trigger-closure: data
+        "engine/stock_technicals.py",  # ci-trigger-closure: data
+        "engine/technicals.py",  # ci-trigger-closure: data
+        "lib/__init__.py",  # ci-trigger-closure: data
+        "lib/config.py",  # ci-trigger-closure: data
+        "lib/nyse_calendar.py",  # ci-trigger-closure: data
+        "lib/store.py",  # ci-trigger-closure: data
+        "tests/test_entry_radar_w3_c1c2_pit.py",  # ci-trigger-closure: data
+        "config.yml",  # ci-trigger-closure: data
+        "tests/__init__.py",  # ci-trigger-closure: data
+        "tests/conftest.py",  # ci-trigger-closure: data
+        "tests/fixtures/entry_radar/w3_c1c2_path.json",  # ci-trigger-closure: data
+        "tests/fixtures/entry_radar/w3_early_close_tape.json",  # ci-trigger-closure: data
+        "tests/fixtures/entry_radar/w3_provenance.json",  # ci-trigger-closure: data
+    ):
+        selected, reason = PACK.select_jobs([job], [dependency])
+        assert [item.job_id for item in selected] == [job.job_id], (dependency, reason)
+
+    for unrelated in (
+        "templates/index.html",  # ci-trigger-closure: data
+        "scripts/build_free_content.py",  # ci-trigger-closure: data
+        "engine/prophet/plan_book.py",  # ci-trigger-closure: data
+    ):
+        selected, reason = PACK.select_jobs([job], [unrelated])
+        assert not selected, (unrelated, reason)
+
+
 def test_qledger_scope_keeps_runtime_phrase_book_without_unrelated_builder() -> None:
     """The tuple-joined seed is a real input even when AST inference misses it."""
     job = next(job for job in PACK.load_legacy_jobs(MANIFEST, gate="code")

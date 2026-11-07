@@ -5859,7 +5859,7 @@ jobs:
       # comparison on the canonical sign. Hermetic: synthetic closes only, no data/, no
       # network, no dependency beyond this job's install line. Unnamed suites never run.
       - name: entry-radar W1+W2+W3+W4+W4.1+W5+W6 — probe universe, entry_event.v1 store, G0 parity, C1-C5 PIT battery, live pack + episode ledger + live evaluator, live-transport correction, W5 prereg gates + forward evidence, RP1 Research Priority
-        run: python -m pytest tests/test_entry_radar_w1.py tests/test_entry_radar_producers.py tests/test_entry_radar_g0_parity.py tests/test_entry_radar_events.py tests/test_entry_radar_w2_guards.py tests/test_entry_radar_w3_detectors.py tests/test_entry_radar_w3_c1c2_pit.py tests/test_entry_radar_w3_c3_4h_pit.py tests/test_entry_radar_w3_c4.py tests/test_entry_radar_w3_c5.py tests/test_entry_radar_w3_guards.py tests/test_entry_radar_w4_pack.py tests/test_entry_radar_w4_ledger.py tests/test_entry_radar_w4_live.py tests/test_entry_radar_quote_native_metadata.py tests/test_entry_radar_w4_pit.py tests/test_entry_radar_w4_liveness.py tests/test_entry_radar_w4_c3_reader.py tests/test_entry_radar_w4_lane.py tests/test_entry_radar_w41_transport.py tests/test_entry_radar_w5_gates.py tests/test_entry_radar_w5_battery.py tests/test_entry_radar_w5_reconciler.py tests/test_entry_radar_w5_data.py tests/test_entry_radar_w5_perf.py tests/test_entry_radar_w5_heartbeat.py tests/test_entry_radar_w6_priority.py tests/test_tactical_research.py tests/test_tactical_research_cli.py tests/test_entry_radar_catalyst_context.py tests/test_entry_radar_catalyst_attach.py tests/test_entry_radar_append_oracle.py tests/test_entry_radar_pack_fast_oracle.py tests/test_entry_radar_nomination_nonfinite.py tests/test_entry_radar_pack_stage_telemetry.py tests/test_entry_radar_refusal_quote_coverage.py tests/test_entry_radar_hist_append.py tests/test_entry_radar_pack_fingerprint_vec.py tests/test_entry_radar_pack_idempotent.py tests/test_entry_radar_pack_sink.py tests/test_entry_radar_pack_state.py -q tests/test_entry_radar_live_pack_script.py tests/test_entry_radar_pack_spool.py
+        run: python -m pytest tests/test_entry_radar_w1.py tests/test_entry_radar_producers.py tests/test_entry_radar_g0_parity.py tests/test_entry_radar_events.py tests/test_entry_radar_w2_guards.py tests/test_entry_radar_w3_detectors.py tests/test_entry_radar_w3_c1c2_pit.py tests/test_entry_radar_w3_c4.py tests/test_entry_radar_w3_c5.py tests/test_entry_radar_w3_guards.py tests/test_entry_radar_w4_pack.py tests/test_entry_radar_w4_ledger.py tests/test_entry_radar_w4_live.py tests/test_entry_radar_quote_native_metadata.py tests/test_entry_radar_w4_pit.py tests/test_entry_radar_w4_liveness.py tests/test_entry_radar_w4_c3_reader.py tests/test_entry_radar_w4_lane.py tests/test_entry_radar_w41_transport.py tests/test_entry_radar_w5_gates.py tests/test_entry_radar_w5_battery.py tests/test_entry_radar_w5_reconciler.py tests/test_entry_radar_w5_data.py tests/test_entry_radar_w5_perf.py tests/test_entry_radar_w5_heartbeat.py tests/test_entry_radar_w6_priority.py tests/test_tactical_research.py tests/test_tactical_research_cli.py tests/test_entry_radar_catalyst_context.py tests/test_entry_radar_catalyst_attach.py tests/test_entry_radar_append_oracle.py tests/test_entry_radar_pack_fast_oracle.py tests/test_entry_radar_nomination_nonfinite.py tests/test_entry_radar_pack_stage_telemetry.py tests/test_entry_radar_refusal_quote_coverage.py tests/test_entry_radar_hist_append.py tests/test_entry_radar_pack_fingerprint_vec.py tests/test_entry_radar_pack_idempotent.py tests/test_entry_radar_pack_sink.py tests/test_entry_radar_pack_state.py -q tests/test_entry_radar_live_pack_script.py tests/test_entry_radar_pack_spool.py
 
   p08-synthetic-composition:
     if: ${{ false }}  # executed inside the ordinary PR code pack
@@ -41922,10 +41922,23 @@ jobs:
   entry-radar-rs-pullback-calendar:
     if: ${{ false }}
     gate: code
-    # Both real-CLI suites have literal, reviewed input/import closures.
-    # Keep calendar and minute evidence off unrelated content PRs.
+    # Calendar/CLI and C3 PIT suites have bounded input/import closures.
+    # C3 needs a code owner: signal-contract is excluded from code packs.
+    # Keep this job off unrelated content and forecasting PRs.
     scope: exclusive
     paths:
+      - "collectors/base.py"
+      - "collectors/yahoo.py"
+      - "config/delisted_symbols.yml"
+      - "lib/cn_calendar.py"
+      - "lib/delisted_symbols.py"
+      - "lib/hk_calendar.py"
+      - "lib/market_observations.py"
+      - "lib/market_session.py"
+      - "lib/stooq.py"
+      - "lib/ticker_aliases.py"
+      - "lib/tsx_calendar.py"
+      - "lib/us_cash_calendar.py"
       - "engine/__init__.py"
       - "engine/entry_radar/__init__.py"
       - "engine/entry_radar/contracts.py"
@@ -41962,6 +41975,29 @@ jobs:
       - "tests/test_entry_radar_identity_observation_snapshot.py"
       - "tests/test_entry_radar_rs_pullback_native_identity.py"
       - "tests/test_market_memory_identity_candidate.py"
+      - "config.yml"
+      - "engine/canon.py"
+      - "engine/conditions.py"
+      - "engine/entry_radar/c5_adapter.py"
+      - "engine/entry_radar/challengers.py"
+      - "engine/entry_radar/detectors.py"
+      - "engine/entry_radar/entry_events.py"
+      - "engine/entry_radar/four_hour.py"
+      - "engine/entry_radar/g0_adapter.py"
+      - "engine/entry_radar/indicator_core.py"
+      - "engine/entry_radar/indicator_ingest.py"
+      - "engine/entry_radar/readings.py"
+      - "engine/indicators.py"
+      - "engine/session_anchor.py"
+      - "engine/stock_technicals.py"
+      - "engine/technicals.py"
+      - "lib/config.py"
+      - "lib/store.py"
+      - "tests/fixtures/entry_radar/w3_c1c2_path.json"
+      - "tests/fixtures/entry_radar/w3_early_close_tape.json"
+      - "tests/fixtures/entry_radar/w3_provenance.json"
+      - "tests/test_entry_radar_w3_c1c2_pit.py"
+      - "tests/test_entry_radar_w3_c3_4h_pit.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -41969,9 +42005,11 @@ jobs:
         with:
           python-version: "3.12"
       - name: install calendar test dependencies
-        run: pip install pytest pyyaml pyarrow
+        run: pip install pytest pyyaml pyarrow numpy pandas
       - name: observed calendar, retained minute evidence and actual CLI replay
         run: python -m pytest tests/test_entry_radar_rs_pullback_calendar.py tests/test_entry_radar_terminal_minute_observations.py tests/test_entry_radar_terminal_native_query.py tests/test_entry_radar_rs_pullback_native_identity.py -q
+      - name: C3 daily leg compute-once, prefix parity and point-in-time safety
+        run: python -m pytest tests/test_entry_radar_w3_c3_4h_pit.py -q
 
   zh-filing-term:
     # ui.zh_filing_term PR gate: 申报 must never reach user-facing Chinese copy.
