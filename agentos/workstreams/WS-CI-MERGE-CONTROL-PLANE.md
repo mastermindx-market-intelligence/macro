@@ -354,28 +354,48 @@ waves:
       The remaining Macro progression is 10674, then 10745, then incumbent
       sweeper/update-branch reproof of 10735; do not duplicate or bulk-arm it.
       Architecture and execution evidence remain source-linked at
-      https://github.com/mastermindx-market-intelligence/Mastermind/pull/2191
-      and the immutable checkpoint
-      https://github.com/mastermindx-market-intelligence/Mastermind/blob/10c875b875cc69b19c60d9468ab71de035ea131b/docs/CI_LIGHTNING_ARCHITECTURE.md.
-      The preceding continuity PR 10825 was accepted externally as
-      efdf3577bb35607bb02a4a0a1900adb91a3784c6; this is its additional delta.
-      Mastermind PR 2065 baseline 7a49a75341fbccf7cf3dc4898156718e21fcf38c
-      passed required run 42355985590 in 18m12s and shadow 42355985472.
-      Its new head b4406a06d553c1d210d5f5f466290961b5029ee9 divides modules
-      before collection within the same six-job/four-process budget, requires
-      exact child completion, and preserves private diagnostics and full
-      coverage: 2293 modules, zero exclusions. Focused host suites passed
-      710 and 386 cases with overlap; enabled paired Brain composition passed
-      all 23 cases after adopting protected historical-input custody.
-      Native required 42360062449 and shadow 42360062169 have started; neither
-      is acceptance. The independent gateway Release HOLD remains binding.
-      Terminal PR 1297 is full native green at
-      689757a5fecab76bac601efbef9178f8115ae01e, still about 64m13s.
-      Explicit branch-rule access denials block this session's Macro and
-      Terminal release verification; no alternate carrier or queue action.
-      Consume the new native critical path before the next source slice;
-      Terminal runtime profiling and Macro duration calibration remain ready.
-      Preserve the original uncertain effects and existing delivery owners.
+      https://github.com/mastermindx-market-intelligence/Mastermind/pull/2191;
+      the preceding immutable checkpoint is
+      https://github.com/mastermindx-market-intelligence/Mastermind/blob/6c490b1bdd16d03c538d8703fc487fd1e5375511/docs/CI_LIGHTNING_ARCHITECTURE.md.
+      Accepted continuity PR 10825 remains efdf3577bb35607bb02a4a0a1900adb91a3784c6.
+      The b440 first-precollection required and shadow runs both failed only
+      the old main-command expectation. Its repair and three measured inner
+      placements are published in original PR 2065 as
+      d6f21633b3ffdb60a05a14042d22e28545c7ae34. Focused proof passed486cases.
+      Required run42363117005 succeeded in18m48s on integrated
+      d0816673c522bbc2386a3eccd38940ac30b6c2dc with protected base
+      93861e9ab2e75176108bb357bd9e81b54307981d. All24child receipts were
+      complete;2298modules were selected with zero exclusions and69573case
+      occurrences. No prior runtime module disappeared; six new boundary
+      cases and238accepted-base cases explain the increase. Shard0 improved
+      from968s to512s, but shard3 took777s and started252s after job creation.
+      Source qualification took656s. Overall speed acceptance is not established.
+      Shadow42363117019 was last running. Gateway Release HOLD remains binding.
+      A same-source local native-custody scheduling experiment passed375unittests
+      and277cases under each four-worker mode: loadfile263.983s versus load224.879s.
+      Exact case multiset matched; no workflow scheduling change is published.
+      Terminal PR1334 publishes204db79b72ea23f824bce77e89ca7108c4b51121:
+      one News fixture navigation with unchanged test bodies and87-case inventory.
+      All responsive projects passed75cases with12expected skips and zero
+      failures; mobile reproduced all24named crops. Local mobile candidate200.638s
+      versus baseline230.111s and warm control284.867s is variable-load evidence,
+      not hosted p95 proof. Native run42364524142 is pending. Preserve green1297,
+      held1223 original create-commit uncertainty and existing delivery owners.
+      Macro10788 exact-head run42204345843 already measured FIF kernel siblings
+      at957.34s,1644.98s,1302.98s with4250passes and1skip in total. All three
+      containing packs passed, but the full318-job run failed elsewhere.
+      The current three closures contain1139paths, including8ancestor imports
+      absent from the old1131path closure. The120kernel modules are preserved.
+      Checkout steps took211s,419s,432s and materialized145069files. Fetch alone
+      took125.635s,355.961s,368.497s. Existing6351/W-SELFHOSTED-BRIDGE owns
+      pack materialization; do not substitute planner sparse paths into packs.
+      Next decisions use explicit300s critical-path budgets, measured task
+      granularity, current fetch/fixture costs and admitted capacity. Dev runtime
+      remains the accepted Terminal full-suite path; compiled authority parity
+      and broader reuse receive no unproved latency credit. Five-minute p95 and
+      full three-repository acceptance remain open. Preserve10674operation26751
+      EFFECT_UNKNOWN,10656hold/main-admissionOFF and Macro/Terminal rule-read403s.
+      No self-merge, queue request, alternate denied lookup or messaging occurred.
 next_action: >
   W-TRANSPORT and W-PR-EVENT-CAUSALITY are closed. Do not reopen either for a
   new CI-speed, runner, branch-protection, or cancellation-system proposal.
