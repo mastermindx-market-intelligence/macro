@@ -133,6 +133,86 @@ source keeps its historical session and expiry, regardless of viewing time.
 
 ## Current integration limit
 
+### Opt-in quote valuation composition (source only)
+
+`engine.options_scenario_admission.compose_quote_valuation_inputs` is a pure
+local composition seam for retained exact-series option and consolidated-stock
+quote-history CSV captures. It performs no request, store mutation, publication,
+registration or default producer opt-in. There is no production caller. It reuses
+the incumbent IV solver and returns inputs for the unchanged strict scenario
+admission; successful composition alone is not a scenario or source admission.
+
+Quote receipts use a separate exact profile in `theta_acquisition`: option and
+stock `/v3/*/history/quote`, `interval=tick`, a single explicit date, exact RTH
+millisecond start/end, and `venue=utp_cta` for the stock. Each option capture pins
+one exact call expiry/strike. The raw complete bytes, SHA256, length, actual request
+start and response-known-by clocks remain bound together. The existing EOD and
+snapshot receipt profiles are unchanged; a quote receipt cannot pass as an EOD
+Greek receipt. The collector is unchanged. A future admitted caller can reuse its
+existing bounded `_get_csv` raw-retention interface; this source seam neither
+provides such a caller nor activates endpoint access.
+
+The caller freezes the full supplied series membership, valuation `T`, positive
+maximum quote age, explicit feed-specific firm conditions/exchanges, and rates.
+The validator proves that the requested window ends at `T`, retains all tick
+events inside that window, and selects its last event at/before `T`. Future,
+duplicate, stale, missing, crossed or nonfirm selected books withhold the supplied
+cohort. It never substitutes the nearest future quote or an older good quote for
+an invalid latest book. Multiple chronological events are not duplicate members.
+Both bid and ask must have positive sizes and prices. Option conditions/exchanges
+are constrained by the incumbent OPRA constants; the underlying has a separately
+declared consolidated-stock condition policy, never an inferred OPRA policy.
+
+Raw option and stock event timestamps remain different when they actually differ.
+The explicit context observation clocks must already agree at model valuation
+`T`; the composer validates them and does not overwrite them. `quote_valuation`
+retains event, request/response, valuation and evaluation clocks separately. Actual
+later availability is retained. Historical data captured later is labelled
+`conditional_asof_reconstruction`, with `pit_qualified=false` and
+`historical_first_availability_established=false`. It is not proof that the book
+was available to Mastermind at `T`, simultaneous execution, a live executable
+quote, full-market coverage, observed dealer inventory or forecasting skill.
+
+Exact OI and terms must cover the entire declared supplied cohort. Economic expiry,
+known absence of a discrete dividend before expiry, ordinary American 100-share
+terms, explicit `r>=0` and `q=0` are required inputs. They are never defaulted.
+IV is derived from the admitted marks at the exact economic tenor with
+`implied_vol_vec`; unsolved/nonfinite members withhold the cohort. The incumbent
+sub-minute refusal is retained, with no tenor floor. Immutable source identity
+binds raw captures/receipts, selection, policy, terms, rates and derivation. This
+engineering seam does not authenticate caller-supplied provenance or grant rights.
+
+Derived IV also carries a `local_python_implementation_fingerprint/v1`. It binds
+the actually called solver/kernel code objects, module-scoped helper code and
+constants, function defaults, and Python/NumPy/SciPy versions. Code filenames and
+line tables are excluded so SSD/worktree placement does not change identity. The
+fingerprint is computed locally, not accepted from a caller's model-version text.
+It is included in the sealed source reference and IV model reference. It identifies
+the local implementation; it is not provider authentication, data admission, or PIT
+proof. A changed kernel/runtime identity withholds this source pending qualification.
+
+Before sealing, the composer also binds `derived_input_sha256` over the exact
+derived Greek and OI frames using the incumbent semantic input digest. Admission
+recomputes that digest from its actual frames and compares it with the sealed
+inner value. Refreshing only the separate outer `input_sha256` after changing IV,
+underlying price or OI cannot preserve the original derivation capsule.
+
+The existing scenario output retains the complete bounded capsule as
+`source.quote_valuation`, including raw events, transport/availability clocks,
+valuation/evaluation times, implementation identity and false PIT flags. Quote
+source references require a matching canonical capsule seal and local model
+identity; missing/tampered/oversized provenance returns explicit unavailable.
+Canonical capsule bytes are bounded to 256 KiB. Ordinary sources retain their
+existing output shape and all numerical/equal-valuation checks are preserved.
+
+The raw parser retains the existing selected-expiry bounds (256 KiB, 100 rows per
+response). No request cap/profile or runtime allowance is enlarged. A wholly fresh
+single-call input would require at least four physical market/reference GETs
+(option quote, stock quote, OI, reference), before any additional necessary facts.
+The three-GET selected-expiry ceiling is not sufficient or transferable permission.
+Actual request allowance, exact admission and unsettled effects require separate
+qualification before acquisition; this source-only change consumes none.
+
 The existing EOD loader does not supply exact per-series terms, model/unit/tenor
 receipts or all first-availability clocks. Therefore the normal producer now
 emits explicit unavailable qualification and counts, with `net`/`gross` null,

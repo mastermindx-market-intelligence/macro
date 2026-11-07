@@ -7,12 +7,15 @@ from __future__ import annotations
 
 from copy import deepcopy
 from datetime import date, datetime, timezone
-from decimal import Decimal
+from decimal import Decimal, InvalidOperation
 import hashlib
 import json
 import math
 import re
 from urllib.parse import urlsplit
+from zoneinfo import ZoneInfo
+import csv
+import io
 
 ACQUISITION_COLUMN = "_theta_acquisition"
 THETA_ENDPOINTS = {
@@ -24,6 +27,52 @@ THETA_SNAPSHOT_ENDPOINTS = {
     "second": "/v3/option/snapshot/greeks/second_order",
     "oi": "/v3/option/snapshot/open_interest",
 }
+THETA_QUOTE_ENDPOINTS = {
+    "option": "/v3/option/history/quote",
+    "stock": "/v3/stock/history/quote",
+}
+
+
+def _quote_decimal(value):
+    try:
+        return Decimal(str(value))
+    except (InvalidOperation, TypeError, ValueError) as exc:
+        raise ValueError("Malformed quote number") from exc
+
+
+def _quote_request(path, parameters):
+    """A separate exact tick-window profile; no legacy parameter widening."""
+    kind = next((k for k, endpoint in THETA_QUOTE_ENDPOINTS.items() if endpoint == path), None)
+    required = {"symbol", "date", "start_time", "end_time", "interval", "format"}
+    required |= {"expiration", "strike", "right"} if kind == "option" else {"venue"}
+    if (kind is None or not isinstance(parameters, dict) or set(parameters) != required
+            or parameters["symbol"] not in {"SPY", "QQQ"}
+            or parameters["interval"] != "tick" or parameters["format"] != "csv"):
+        raise ValueError("Unqualified quote request profile")
+    session = date.fromisoformat(parameters["date"])
+    if session.isoformat() != parameters["date"]:
+        raise ValueError("Noncanonical quote session")
+    window = []
+    for field in ("start_time", "end_time"):
+        text = parameters[field]
+        if not isinstance(text, str) or not re.fullmatch(r"\d{2}:\d{2}:\d{2}\.\d{3}", text):
+            raise ValueError("Explicit millisecond quote window required")
+        clock = datetime.fromisoformat(session.isoformat() + "T" + text)
+        # This initial profile stays inside RTH, avoiding DST folds/nonexistent clocks.
+        if not "09:30:00.000" <= text <= "16:00:00.000":
+            raise ValueError("Quote window outside supported RTH")
+        window.append(clock.replace(tzinfo=ZoneInfo("America/New_York")))
+    if window[0] > window[1]:
+        raise ValueError("Reversed quote window")
+    if kind == "option":
+        expiry = date.fromisoformat(parameters["expiration"])
+        strike = _quote_decimal(parameters["strike"])
+        if (expiry.isoformat() != parameters["expiration"] or expiry < session
+                or not strike.is_finite() or strike <= 0 or parameters["right"] != "call"):
+            raise ValueError("Exact call series required")
+    elif parameters["venue"] != "utp_cta":
+        raise ValueError("Explicit consolidated underlying venue required")
+    return kind, session, window
 # Persist explicit request parameters only, never credentials or inferred defaults.
 THETA_PARAMETERS = frozenset({"symbol", "expiration", "strike", "right", "start_date",
     "end_date", "format", "version", "annual_dividend", "annual_dividend_amount",
@@ -72,11 +121,17 @@ def instant(value):
     return out
 
 
-def theta_acquisition(path, parameters, raw, *, origin, received_at=None):
+def theta_acquisition(path, parameters, raw, *, origin, received_at=None, request_started_at=None):
     """Called after a complete successful CSV parse. No request is made here."""
+    quote = path in THETA_QUOTE_ENDPOINTS.values()
+    if quote:
+        _quote_request(path, parameters)
+        if (received_at is None or request_started_at is None
+                or instant(request_started_at) > instant(received_at)):
+            raise ValueError("Quote acquisition requires actual ordered transport clocks")
     snapshot = path in THETA_SNAPSHOT_ENDPOINTS.values()
     allowed = THETA_SNAPSHOT_PARAMETERS if snapshot else THETA_PARAMETERS
-    if (path not in (*THETA_ENDPOINTS.values(), *THETA_SNAPSHOT_ENDPOINTS.values())
+    if not quote and (path not in (*THETA_ENDPOINTS.values(), *THETA_SNAPSHOT_ENDPOINTS.values())
             or set(parameters) - allowed
             or (path in (THETA_ENDPOINTS["oi"], THETA_SNAPSHOT_ENDPOINTS["oi"]) and "version" in parameters)):
         raise ValueError("Unsupported native acquisition parameters")
@@ -95,7 +150,100 @@ def theta_acquisition(path, parameters, raw, *, origin, received_at=None):
         # A documented explicit floor remains a floor. Omitted version stays
         # unknown; this receipt never asserts an actual model/build or no-floor T.
         evidence["calculation_provenance"] = _snapshot_calculation_provenance(path, parameters)
+    if quote:
+        evidence.update(request_started_at=request_started_at, response_bytes=len(raw),
+                        observation_basis="raw_quote_history_ticks")
     return json.dumps(evidence, sort_keys=True, separators=(",", ":"), allow_nan=False)
+
+
+def quote_capture_at(raw, receipt, *, kind, root, session, valuation_at,
+                     max_age_seconds, allowed_conditions, allowed_exchanges):
+    """Validate retained bytes and select the last book event at/before T.
+
+    Pure local structural proof, not capture authentication, entitlement or PIT
+    admission. A later invalid book is never replaced with an older valid mark.
+    The fixed bounds match the incumbent selected-expiry profile.
+    """
+    def unique(pairs):
+        result = {}
+        for key, value in pairs:
+            if key in result:
+                raise ValueError("Duplicate receipt key")
+            result[key] = value
+        return result
+
+    if (kind not in THETA_QUOTE_ENDPOINTS or not isinstance(raw, bytes)
+            or not 0 < len(raw) <= 262144 or not isinstance(receipt, str)
+            or len(receipt) > 16384 or type(max_age_seconds) not in (int, float)
+            or not math.isfinite(max_age_seconds) or max_age_seconds <= 0):
+        raise ValueError("Invalid bounded quote capture")
+    policies = (allowed_conditions, allowed_exchanges)
+    if any(not isinstance(values, (list, tuple, set, frozenset)) or not values
+           or any(type(value) is not int or value < 0 for value in values) for values in policies):
+        raise ValueError("Explicit quote conditions and exchanges required")
+    rec = json.loads(receipt, object_pairs_hook=unique)
+    if (not isinstance(rec, dict) or rec.get("schema") != "thetadata.acquisition/v1"
+            or rec.get("endpoint") != THETA_QUOTE_ENDPOINTS[kind]
+            or rec.get("response_sha256") != hashlib.sha256(raw).hexdigest()
+            or rec.get("response_bytes") != len(raw)
+            or rec.get("availability_basis") != "collector_observed_known_by"
+            or rec.get("historical_first_availability_established") is not False
+            or rec.get("observation_basis") != "raw_quote_history_ticks"):
+        raise ValueError("Quote raw bytes/receipt mismatch")
+    _, day, window = _quote_request(rec["endpoint"], rec["parameters"])
+    target, received = instant(valuation_at), instant(rec["received_at"])
+    if (day.isoformat() != session or rec["parameters"]["symbol"] != root
+            or target != window[1] or received < target
+            or instant(rec["request_started_at"]) > received):
+        raise ValueError("Quote window/transport/valuation mismatch")
+    # Revalidate the origin without creating another receipt or reading a clock.
+    origin = urlsplit(rec.get("origin", ""))
+    if (origin.scheme not in {"http", "https"} or not origin.hostname or origin.username
+            or origin.password or origin.query or origin.fragment or origin.path not in {"", "/"}):
+        raise ValueError("Unqualified quote origin")
+    reader = csv.DictReader(io.StringIO(raw.decode("utf-8")))
+    required = {"timestamp", "bid", "ask", "bid_size", "ask_size", "bid_exchange",
+                "ask_exchange", "bid_condition", "ask_condition"}
+    if kind == "option":
+        required |= {"symbol", "expiration", "strike", "right"}
+    if (not reader.fieldnames or len(set(reader.fieldnames)) != len(reader.fieldnames)
+            or not required <= set(reader.fieldnames)):
+        raise ValueError("Missing/duplicate quote columns")
+    rows, seen = [], set()
+    for index, row in enumerate(reader):
+        if index >= 100 or None in row or any(value is None for value in row.values()):
+            raise ValueError("Quote row bound/shape refused")
+        if "symbol" in row and row["symbol"] != root:
+            raise ValueError("Foreign quote root")
+        if kind == "option" and (row["expiration"] != rec["parameters"]["expiration"]
+                or _quote_decimal(row["strike"]) != _quote_decimal(rec["parameters"]["strike"])
+                or row["right"].lower() != "call"):
+            raise ValueError("Foreign quote series")
+        event = datetime.fromisoformat(row["timestamp"])
+        if event.tzinfo is None:
+            event = event.replace(tzinfo=ZoneInfo("America/New_York"))
+        if event in seen or not window[0] <= event <= target:
+            raise ValueError("Duplicate or out-of-window quote event")
+        seen.add(event)
+        rows.append((event, row))
+    if not rows:
+        raise ValueError("Missing supplied quote member")
+    event, selected = max(rows, key=lambda value: value[0])
+    if (target - event).total_seconds() > max_age_seconds:
+        raise ValueError("Stale quote")
+    prices = [_quote_decimal(selected[field]) for field in ("bid", "ask")]
+    if any(not value.is_finite() or value <= 0 for value in prices) or prices[0] > prices[1]:
+        raise ValueError("Invalid or crossed quote")
+    for side in ("bid", "ask"):
+        values = [selected[side + suffix] for suffix in ("_size", "_exchange", "_condition")]
+        if any(not re.fullmatch(r"\d+", value) for value in values):
+            raise ValueError("Invalid quote integer fields")
+        size, exchange, condition = map(int, values)
+        if size <= 0 or exchange not in allowed_exchanges or condition not in allowed_conditions:
+            raise ValueError("Nonfirm/unknown quote mark")
+    return {"event_at": event.isoformat(), "raw_event_at": selected["timestamp"],
+            "mid": float(sum(prices) / 2), "row": selected, "receipt": rec,
+            "receipt_text": receipt, "valuation_at": target.isoformat()}
 
 
 def native_snapshot_acquisitions(frame, root, kind, *, now=None):
