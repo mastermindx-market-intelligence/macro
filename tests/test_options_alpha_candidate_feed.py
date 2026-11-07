@@ -2481,3 +2481,181 @@ def test_publication_receipt_snapshot_cannot_prove_overwritten_history(tmp_path,
     )
     assert entry["first_receipt_id"] == current["receipt"]["receipt_id"]
     assert entry["first_consumer_published_at"] is None
+
+
+# Synthetic source preparation integration. No runtime receipt or quote capture.
+def _expression_source_fixture(tmp_path, monkeypatch):
+    specs = _episodes_for(True, count=2)
+    snapshot = _build_campaign_snapshot(tmp_path, episodes_specs=specs, monkeypatch=monkeypatch)
+    micro = {s["source_event_id"]: _micro_for(s["source_event_id"], available_at=s["available_at"])
+             for s in specs}
+    feed = compose_candidate_feed(**_composer_kwargs(
+        snapshot, micro_map=micro, activation=ACTIVATION_RECEIPT))
+    return feed, snapshot
+
+
+def _prepare_expression_source(feed, snapshot, **overrides):
+    from engine.options_alpha_expression_formation import prepare_expression_sources
+    args = dict(campaigns=snapshot, source_observed_at="2026-08-13T14:31:00Z",
+                campaigns_observed_at="2026-08-13T14:31:01Z",
+                selection_started_at="2026-08-13T14:32:00Z", decision_at="2026-08-13T14:32:01Z")
+    args.update(overrides)
+    return prepare_expression_sources(canonical_bytes(feed), **args)
+
+
+def test_expression_source_preserves_native_formation_and_refuses_unearned_terms(tmp_path, monkeypatch):
+    from engine import options_alpha_expression_formation as prep
+    from engine.options_alpha_expression_identity import contract_from_group
+    feed, snapshot = _expression_source_fixture(tmp_path, monkeypatch)
+    result = _prepare_expression_source(feed, snapshot)
+    row = result["records"][0]
+    candidate = feed["formed_candidates"][0]
+    assert row["binding"]["contract"] == contract_from_group(snapshot.rows[-1].value["group"])
+    assert row["binding"]["candidate_id"] == candidate["candidate_id"]
+    assert row["binding"]["candidate_decision_at"] == candidate["decision_at"]
+    assert row["binding"]["decision_at"] != candidate["decision_at"]
+    assert row["binding"]["formation_policy"]["policy_id"] != row["binding"]["oa3_ruler"]["policy_id"]
+    assert row["binding"]["formation_campaign_raw_sha256"] == snapshot.rows[-1].sha256
+    assert row["binding"]["feed_raw_sha256"] == hashlib.sha256(canonical_bytes(feed)).hexdigest()
+    assert row["decision_receipt_sha256"] == hashlib.sha256(prep.cohort.canonical_json_bytes(row["binding"])).hexdigest()
+    assert row["binding"]["multiplier"] is None and row["binding"]["standard_deliverable"] is None
+    assert row["expression"] is None and row["available_at"] is None and row["capture_request"] is None
+    assert row["selection_frozen_before_outcomes"] is None and not row["training_eligible"]
+    assert "SOURCE_CONTRACT_TERMS_UNAVAILABLE" in row["reasons"]
+    assert "PROSPECTIVE_ACTIVATION_FENCE_UNESTABLISHED" in row["reasons"]
+    assert all(v is False for v in result["authority"].values())
+    # An upstream test activation claim cannot activate the independent policy.
+    assert feed["activation"]["all_preconditions_cleared"] is True
+    assert result["activation"] == "not_performed"
+    policy = json.loads((ROOT / "research/options_estate/options_alpha_expression_selection_policy_v1.json").read_text())
+    assert policy == prep.POLICY
+    assert prep.POLICY_SHA256 == hashlib.sha256(prep.cohort.canonical_json_bytes(policy)).hexdigest()
+
+
+def test_expression_source_reads_formation_row_not_optional_enriched_context(tmp_path, monkeypatch):
+    feed, snapshot = _expression_source_fixture(tmp_path, monkeypatch)
+    group = copy.deepcopy(snapshot.rows[-1].value["group"])
+    group.update(strike=999, strike_key="999")
+    feed["formed_candidates"][0]["campaign_context"] = dict(
+        schema="options.alpha_candidate_campaign_context/v1",
+        campaign_revision_id=snapshot.rows[-1].value["campaign_revision_id"], group=group,
+        flow_side_counts=copy.deepcopy(snapshot.rows[-1].value["descriptive"]["flow_side_counts"]),
+        intent=copy.deepcopy(snapshot.rows[-1].value["intent"]))
+    result = _prepare_expression_source(feed, snapshot)
+    assert result["records"][0]["binding"]["contract"]["strike"] != "999"
+
+
+def test_expression_source_rejects_outcome_enrichment_without_consuming_values(tmp_path, monkeypatch):
+    from engine.options_alpha_expression_formation import ExpressionPreparationError
+    feed, snapshot = _expression_source_fixture(tmp_path, monkeypatch)
+    feed["formed_candidates"][0]["post_formation_outcomes"] = {"private_future_return": "not a formation input"}
+    with pytest.raises(ExpressionPreparationError, match="outcome-enriched"):
+        _prepare_expression_source(feed, snapshot)
+
+
+@pytest.mark.parametrize("field,value", [
+    ("source_observed_at", "2026-08-13T14:29:59Z"),
+    ("selection_started_at", "2026-08-13T14:30:59Z"),
+    ("decision_at", "2026-08-13T14:31:59Z"),
+    ("campaigns_observed_at", "2026-08-13T14:32:02Z"),
+    ("decision_at", "2026-08-13T14:32:01"),
+])
+def test_expression_source_refuses_backdated_or_naive_new_clocks(tmp_path, monkeypatch, field, value):
+    from engine.options_alpha_expression_formation import ExpressionPreparationError
+    feed, snapshot = _expression_source_fixture(tmp_path, monkeypatch)
+    with pytest.raises(ExpressionPreparationError):
+        _prepare_expression_source(feed, snapshot, **{field: value})
+
+
+def test_expression_source_binds_actual_native_prefix_and_identity(tmp_path, monkeypatch):
+    from engine.options_alpha_expression_formation import ExpressionPreparationError
+    feed, snapshot = _expression_source_fixture(tmp_path, monkeypatch)
+    bad = copy.deepcopy(feed)
+    bad["formed_candidates"][0]["frozen_formation"]["source_prefix_receipt"]["prefix_sha256"] = "0" * 64
+    with pytest.raises(ExpressionPreparationError, match="formation binding"):
+        _prepare_expression_source(bad, snapshot)
+    bad = copy.deepcopy(feed)
+    bad["formed_candidates"][0]["candidate_id"] = "oacnd_" + "0" * 24
+    with pytest.raises(ExpressionPreparationError, match="formation binding"):
+        _prepare_expression_source(bad, snapshot)
+    bad = copy.deepcopy(feed)
+    bad["formed_candidates"].append(copy.deepcopy(bad["formed_candidates"][0]))
+    with pytest.raises(ExpressionPreparationError, match="duplicate"):
+        _prepare_expression_source(bad, snapshot)
+
+
+def test_expression_source_does_not_freshen_missing_candidate_activation(tmp_path, monkeypatch):
+    feed, snapshot = _expression_source_fixture(tmp_path, monkeypatch)
+    feed["activation"]["all_preconditions_cleared"] = False
+    feed["activation"]["fence_state"] = "post_policy_freeze_pre_activation"
+    record = _prepare_expression_source(feed, snapshot)["records"][0]
+    assert "CANDIDATE_ACTIVATION_NOT_CLEARED" in record["reasons"]
+    assert record["expression"] is None
+
+
+def test_expression_source_matches_theta_identity_but_cannot_default_terms(tmp_path, monkeypatch):
+    feed, snapshot = _expression_source_fixture(tmp_path, monkeypatch)
+    group = snapshot.rows[-1].value["group"]
+    raw = canonical_bytes([dict(symbol=group["ticker"], expiration=group["expiration"],
+                                strike=group["strike"], right=group["right"])])
+    record = _prepare_expression_source(feed, snapshot, theta_contracts_raw=raw,
+                                       catalog_observed_at="2026-08-13T14:31:02Z")["records"][0]
+    evidence = record["binding"]["catalog_identity_evidence"]
+    assert evidence["identity_observed"] is True
+    assert evidence["multiplier"] is None and evidence["standard_deliverable"] is None
+    assert record["expression"] is None and record["capture_request"] is None
+
+
+def test_expression_source_cli_is_read_only_from_foreign_cwd(tmp_path, monkeypatch):
+    import subprocess
+    import sys
+    feed, snapshot = _expression_source_fixture(tmp_path / "fixture", monkeypatch)
+    feed_path, ledger_path = tmp_path / "feed.json", tmp_path / "campaigns.jsonl"
+    feed_path.write_bytes(canonical_bytes(feed))
+    ledger_path.write_bytes(snapshot.raw)
+    before = {p.name: p.read_bytes() for p in [feed_path, ledger_path]}
+    proc = subprocess.run([sys.executable, str(ROOT / "scripts/prepare_options_alpha_expression.py"),
+                           "--candidate-feed", str(feed_path), "--campaign-ledger", str(ledger_path)],
+                          cwd=tmp_path, capture_output=True, check=False, timeout=30)
+    assert proc.returncode == 0, proc.stderr.decode()
+    result = json.loads(proc.stdout)
+    assert result["records"][0]["expression"] is None
+    assert result["activation"] == result["outcome_write"] == "not_performed"
+    assert before == {p.name: p.read_bytes() for p in [feed_path, ledger_path]}
+
+
+def test_expression_source_refuses_in_memory_policy_activation(tmp_path, monkeypatch):
+    from engine import options_alpha_expression_formation as prep
+    feed, snapshot = _expression_source_fixture(tmp_path, monkeypatch)
+    monkeypatch.setitem(prep.POLICY["authority"], "may_activate", True)
+    with pytest.raises(prep.ExpressionPreparationError, match="frozen expression policy changed"):
+        _prepare_expression_source(feed, snapshot)
+
+
+def test_expression_source_retains_exact_original_feed_bytes(tmp_path, monkeypatch):
+    from engine.options_alpha_expression_formation import prepare_expression_sources
+    feed, snapshot = _expression_source_fixture(tmp_path, monkeypatch)
+    raw = json.dumps(feed, indent=2).encode()
+    row = prepare_expression_sources(
+        raw, campaigns=snapshot, source_observed_at="2026-08-13T14:31:00Z",
+        campaigns_observed_at="2026-08-13T14:31:01Z",
+        selection_started_at="2026-08-13T14:32:00Z", decision_at="2026-08-13T14:32:01Z",
+    )["records"][0]
+    assert row["binding"]["feed_raw_sha256"] == hashlib.sha256(raw).hexdigest()
+    assert row["binding"]["feed_raw_bytes"] == len(raw)
+    assert row["binding"]["feed_raw_sha256"] != hashlib.sha256(canonical_bytes(feed)).hexdigest()
+
+
+def test_expression_source_mismatched_catalog_does_not_replace_campaign_contract(tmp_path, monkeypatch):
+    feed, snapshot = _expression_source_fixture(tmp_path, monkeypatch)
+    group = snapshot.rows[-1].value["group"]
+    raw = canonical_bytes([dict(symbol=group["ticker"], expiration=group["expiration"],
+                                strike=999, right=group["right"])])
+    record = _prepare_expression_source(feed, snapshot, theta_contracts_raw=raw,
+                                       catalog_observed_at="2026-08-13T14:31:02Z")["records"][0]
+    assert record["binding"]["contract"]["strike"] != "999"
+    assert record["binding"]["catalog_identity_evidence"] is None
+    assert "CATALOG_IDENTITY_UNAVAILABLE" in record["reasons"]
+    assert "EXACT_CONTRACT_IDENTITY_UNAVAILABLE" not in record["reasons"]
+    assert record["binding"]["multiplier"] is None
+    assert record["expression"] is None and record["capture_request"] is None

@@ -1,0 +1,34 @@
+{
+  "schema": "options.alpha_expression_selection_policy/v1",
+  "policy_id": "oa_exact_campaign_contract_research/v1",
+  "policy_version": 1,
+  "status": "preregistered_inactive_source_preparation_only",
+  "selection": "every_new_accepted_candidate_exact_formation_campaign_contract",
+  "contract_choice": "no_chain_search_no_quote_or_outcome_predicates_no_ranking",
+  "population": "oa3.long_single_leg_h60_nbbo/v1",
+  "research_position": {
+    "position": "long",
+    "quantity_contracts": 1,
+    "single_leg": true,
+    "package": false
+  },
+  "terms": "actual_source_evidence_required_never_policy_or_root_defaults",
+  "clocks": "new_selection_act_and_durable_availability_never_source_clock_copy",
+  "prospective_fence": "protected_policy_and_real_activation_before_new_candidate_formation",
+  "outcomes": "never_input_to_formation_no_quote_access_before_freeze",
+  "persistence": "incumbent_candidate_and_campaign_owners_no_parallel_ledger",
+  "authority": {
+    "may_rank": false,
+    "may_score": false,
+    "may_gate": false,
+    "may_size": false,
+    "may_issue": false,
+    "may_trade": false,
+    "may_publish_pick": false,
+    "may_train_prophet": false,
+    "may_feed_neural_web": false,
+    "may_compute_option_pnl": false,
+    "may_activate": false,
+    "may_capture_quotes": false
+  }
+}

@@ -177,7 +177,7 @@ jobs:
       - name: self-mod-fence test suite
         id: self_mod_tests
         continue-on-error: true
-        run: python -m pytest tests/test_self_mod_fence.py tests/test_fence_checkout_contract.py -q
+        run: python -m pytest tests/test_self_mod_fence.py tests/test_fence_checkout_contract.py tests/test_fence_publication.py -q
 
       # #6601/#6633 proved malformed Agent OS records could merge before the
       # semantic pack reached them. Reuse the canonical whole-store validator
@@ -242,6 +242,8 @@ jobs:
         uses: actions/github-script@v7
         env:
           HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          RUN_ID: ${{ github.run_id }}
+          RUN_ATTEMPT: ${{ github.run_attempt }}
           SELF_MOD_SELFTEST: ${{ steps.self_mod_selftest.outcome }}
           SELF_MOD_LIVE: ${{ steps.self_mod_live.outcome }}
           SELF_MOD_TESTS: ${{ steps.self_mod_tests.outcome }}
@@ -251,7 +253,71 @@ jobs:
           GRADER_SELFTEST: ${{ steps.grader_selftest.outcome }}
           GRADER_LIVE: ${{ steps.grader_live.outcome }}
         with:
+          # Action-level retries are pinned to zero so the ONE-create/
+          # ONE-read recovery contract below stays the only path after a
+          # lost response; every call ALSO carries request: { retries: 0 }.
+          retries: 0
           script: |
+            // Response-loss recovery for the three required fence contexts.
+            //
+            // checks.create has NO server-side idempotency key. When the call throws
+            // (Original 500 / mid-flight network loss) the write MAY still have landed,
+            // so the old fire-and-forget loop could leave a required context
+            // permanently unreported — and a blind retry could double-write the same
+            // binding. The contract below:
+            //
+            //   * at most ONE create per context per invocation, always with an explicit
+            //     `request: { retries: 0 }` (no octokit-layer retry) and the step itself
+            //     pinned to action-level `retries: 0`;
+            //   * binding inputs are validated BEFORE any create: HEAD_SHA must be a full
+            //     40-hex commit SHA and RUN_ID / RUN_ATTEMPT must be canonical positive
+            //     integers (/^[1-9][0-9]*$/ — never "0", "007", a slash or any other
+            //     non-canonical text). The details_url is assembled from exactly those
+            //     validated parts, so re-comparing it against its own template would be
+            //     tautological — the only meaningful local check left on it is its https
+            //     shape;
+            //   * a thrown call OR a malformed success body is AMBIGUOUS and is resolved
+            //     with exactly ONE bounded, read-only listForRef page (exact head +
+            //     check_name, filter: all, per_page: 100, page: 1) — no paging, no
+            //     polling, no retry, no update;
+            //   * that page is trusted only while it is provably the LAST page: a
+            //     non-empty Link header (checked case-insensitively) fails closed BEFORE
+            //     total_count is even considered — a next page or a truncated list never
+            //     resolves an unknown, even when the count looks aligned;
+            //   * then EVERY row must be a real check-run object: a null, string, number
+            //     or array row rejects the whole page instead of being silently skipped.
+            //     The exact binding is found by CENSUS on external_id alone and must
+            //     appear EXACTLY once BEFORE any other field is validated; sibling
+            //     records from older runs (a different external_id) are normal and do
+            //     not block recovery. Only then is the full receipt validated (GitHub
+            //     Actions app 15368, repo, head, run, attempt, check name, terminal
+            //     status/conclusion, output title+summary, submitted details_url or
+            //     the strictly bound GitHub Actions check self-links). Any omitted or
+            //     mismatched field fails closed: absence NEVER means no-write;
+            //   * anything unresolvable raises a fixed EFFECT_UNKNOWN error and stops
+            //     every later create in this invocation. This is per-invocation only; it
+            //     does NOT assert global exactly-once;
+            //   * thrown error text is NEVER interpolated into logs or errors — failure
+            //     reasons are fixed internal classification tokens only, so an upstream
+            //     error body can never leak into the Actions log.
+            //
+            // external_id is PROVENANCE, not server idempotency: a deterministic,
+            // length-safe (sha256 hex, <= 64 chars) binding of repo/head/run/attempt/
+            // check and the canonical repo/run details_url.
+            const crypto = require('crypto');
+
+            const EXPECTED_APP_ID = 15368; // GitHub Actions app — see the workflow header.
+            const PAGE_SIZE = 100;
+
+            const HEAD_SHA = String(process.env.HEAD_SHA || '').toLowerCase();
+            const RUN_ID = String(process.env.RUN_ID || '');
+            const RUN_ATTEMPT = String(process.env.RUN_ATTEMPT || '');
+            const SERVER_URL = String(context.serverUrl || '').replace(/\/+$/, '');
+            const API_URL = String(context.apiUrl || '').replace(/\/+$/, '');
+            const OWNER = String((context.repo && context.repo.owner) || '');
+            const REPO = String((context.repo && context.repo.repo) || '');
+            const DETAILS_URL = `${SERVER_URL}/${OWNER}/${REPO}/actions/runs/${RUN_ID}`;
+
             const pass = values => values.every(value => ['success', 'skipped'].includes(value));
             const checks = [
               {
@@ -278,22 +344,233 @@ jobs:
                 ],
               },
             ];
-            for (const check of checks) {
-              const ok = pass(check.values);
-              await github.rest.checks.create({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                name: check.name,
-                head_sha: process.env.HEAD_SHA,
-                status: 'completed',
-                conclusion: ok ? 'success' : 'failure',
-                output: {
-                  title: `${check.name}: ${ok ? 'passed' : 'failed'}`,
-                  summary: check.values.join(', '),
-                },
-              });
+
+            // Every binding input is validated BEFORE any create is attempted:
+            // invalid input fails closed without touching the API.
+            function requireInput(value, label) {
+              if (value === '') {
+                throw new Error(`INVALID_INPUT: fence publish is missing ${label}; failing closed before any create`);
+              }
+              return value;
             }
 
+            function validateBindingInputs(name, externalId) {
+              requireInput(SERVER_URL, 'context.serverUrl');
+              requireInput(OWNER, 'context.repo.owner');
+              requireInput(REPO, 'context.repo.repo');
+              requireInput(HEAD_SHA, 'HEAD_SHA');
+              requireInput(RUN_ID, 'RUN_ID');
+              requireInput(RUN_ATTEMPT, 'RUN_ATTEMPT');
+              requireInput(name, 'check name');
+              if (!/^[0-9a-f]{40}$/.test(HEAD_SHA)) {
+                throw new Error(`INVALID_INPUT: HEAD_SHA is not a full commit SHA (${JSON.stringify(HEAD_SHA)}); failing closed before any create`);
+              }
+              // Run ids and attempts are canonical positive integers: 1, 2, 3, ... "0",
+              // a leading zero, a slash or any other text means this is not the trusted
+              // GitHub-provided binding and fails closed before any create.
+              if (!/^[1-9][0-9]*$/.test(RUN_ID)) {
+                throw new Error(`INVALID_INPUT: RUN_ID is not a canonical positive run id (${JSON.stringify(RUN_ID)}); failing closed before any create`);
+              }
+              if (!/^[1-9][0-9]*$/.test(RUN_ATTEMPT)) {
+                throw new Error(`INVALID_INPUT: RUN_ATTEMPT is not a canonical positive run attempt (${JSON.stringify(RUN_ATTEMPT)}); failing closed before any create`);
+              }
+              // DETAILS_URL was assembled above from exactly the parts validated here,
+              // so comparing it against its own template again would be tautological;
+              // the meaningful remaining local check is its https shape.
+              if (!/^https:\/\//.test(DETAILS_URL)) {
+                throw new Error('INVALID_INPUT: canonical repo/run details_url is not an https URL; failing closed before any create');
+              }
+              if (externalId.length > 64) {
+                throw new Error('INVALID_INPUT: external_id exceeds the 64 character check-run limit; failing closed before any create');
+              }
+            }
+
+            // Deterministic provenance for this exact repo/head/run/attempt/check
+            // plus the canonical repo/run details_url.
+            function externalId(name) {
+              const canonical = [
+                `repo=${OWNER}/${REPO}`,
+                `head=${HEAD_SHA}`,
+                `run=${RUN_ID}`,
+                `attempt=${RUN_ATTEMPT}`,
+                `check=${name}`,
+                `details_url=${DETAILS_URL}`,
+              ].join('\u0000');
+              return crypto.createHash('sha256').update(canonical, 'utf8').digest('hex');
+            }
+
+            // GitHub Actions can normalize details_url to the created check's own
+            // /runs/{check-id} URL. Accept only that exact same-repo self-link, with
+            // matching HTML/API identities; the external_id above still binds the
+            // submitted workflow run and attempt. Missing/mismatched links fail closed.
+            function detailsUrlMatches(record, expected) {
+              if (record.details_url === expected.details_url) return true;
+              if (!Number.isSafeInteger(record.id) || record.id <= 0) return false;
+              if (!/^https:\/\//.test(API_URL)) return false;
+              const checkUrl = `${SERVER_URL}/${OWNER}/${REPO}/runs/${record.id}`;
+              const apiUrl = `${API_URL}/repos/${OWNER}/${REPO}/check-runs/${record.id}`;
+              return record.details_url === checkUrl
+                && record.html_url === checkUrl
+                && record.url === apiUrl;
+            }
+
+            // Returns null only when `record` is a COMPLETE receipt that exactly
+            // matches the binding; otherwise a short reason. An API response that
+            // omits a field yields a reason — equality is never claimed across a
+            // missing field.
+            function receiptReason(record, expected) {
+              if (!record || typeof record !== 'object' || Array.isArray(record)) return 'response is not a check run object';
+              if (typeof record.name !== 'string' || record.name !== expected.name) return 'name';
+              if (typeof record.head_sha !== 'string' || record.head_sha.toLowerCase() !== HEAD_SHA) return 'head_sha';
+              if (!record.app || typeof record.app !== 'object' || record.app.id !== EXPECTED_APP_ID) return 'app is not the GitHub Actions app (15368)';
+              if (typeof record.external_id !== 'string' || record.external_id !== expected.external_id) return 'external_id';
+              if (record.status !== 'completed') return 'status is not terminal';
+              if (record.conclusion !== expected.conclusion) return 'conclusion';
+              if (!record.output || typeof record.output !== 'object' || Array.isArray(record.output)) return 'output';
+              if (record.output.title !== expected.title) return 'output.title';
+              if (record.output.summary !== expected.summary) return 'output.summary';
+              if (typeof record.details_url !== 'string' || !detailsUrlMatches(record, expected)) return 'details_url';
+              return null;
+            }
+
+            function unknown(expected, reason) {
+              core.error(`EFFECT_UNKNOWN: ${expected.name} on ${HEAD_SHA} (${reason})`);
+              throw new Error(`EFFECT_UNKNOWN: could not confirm ${expected.name} on ${HEAD_SHA}: ${reason}. No further fence context is created in this invocation.`);
+            }
+
+            // ONE create per context. Confirmed only on a COMPLETE, fully validated
+            // receipt; anything else — a thrown call OR a malformed success body — is
+            // ambiguous and needs the recovery read. A thrown call's message is never
+            // carried any further: only the fixed classification token below is.
+            async function createOnce(expected) {
+              let response;
+              try {
+                response = await github.rest.checks.create({
+                  owner: OWNER,
+                  repo: REPO,
+                  name: expected.name,
+                  head_sha: HEAD_SHA,
+                  status: 'completed',
+                  conclusion: expected.conclusion,
+                  external_id: expected.external_id,
+                  details_url: expected.details_url,
+                  output: { title: expected.title, summary: expected.summary },
+                  request: { retries: 0 },
+                });
+              } catch (err) {
+                return { confirmed: false, reason: 'create call threw' };
+              }
+              const reason = receiptReason(response && response.data, expected);
+              return reason === null
+                ? { confirmed: true }
+                : { confirmed: false, reason: `create returned a malformed receipt: ${reason}` };
+            }
+
+            // Value of a response's Link header, or '' when it is absent or empty.
+            // Header names are case-insensitive; both plain header objects and Headers
+            // instances are handled.
+            function linkHeaderValue(headers) {
+              if (!headers) return '';
+              if (typeof headers.get === 'function') {
+                const value = headers.get('link');
+                return value === null || value === undefined ? '' : String(value);
+              }
+              if (typeof headers === 'object') {
+                for (const key of Object.keys(headers)) {
+                  if (String(key).toLowerCase() === 'link') return String(headers[key]);
+                }
+              }
+              return '';
+            }
+
+            // The ONE bounded recovery read: read-only, exact head + check_name, first
+            // page only, no retry. The page proves the retained write only when it is
+            // provably the last page, every row is a real check-run object, the exact
+            // external_id binding appears EXACTLY once, and that single record fully
+            // matches the binding. Every other outcome is EFFECT_UNKNOWN.
+            async function reconcileOnce(expected, createReason) {
+              let response;
+              try {
+                response = await github.rest.checks.listForRef({
+                  owner: OWNER,
+                  repo: REPO,
+                  ref: HEAD_SHA,
+                  check_name: expected.name,
+                  filter: 'all',
+                  per_page: PAGE_SIZE,
+                  page: 1,
+                  request: { retries: 0 },
+                });
+              } catch (err) {
+                unknown(expected, `recovery read failed after ${createReason}`);
+                return;
+              }
+              // A non-empty Link header means this is not the whole list. Reject it
+              // BEFORE total_count is considered: a next page or a truncated list never
+              // resolves an unknown, even when the count on this page looks aligned.
+              if (linkHeaderValue(response && response.headers) !== '') {
+                unknown(expected, `recovery read page advertises more pages after ${createReason}`);
+                return;
+              }
+              const data = response && response.data;
+              if (!data || typeof data !== 'object' || Array.isArray(data)) {
+                unknown(expected, `recovery read returned no data after ${createReason}`);
+                return;
+              }
+              const runs = data.check_runs;
+              if (!Array.isArray(runs)
+                || typeof data.total_count !== 'number'
+                || !Number.isInteger(data.total_count)
+                || data.total_count !== runs.length
+                || runs.length > PAGE_SIZE) {
+                unknown(expected, `recovery read page is incomplete or malformed after ${createReason}`);
+                return;
+              }
+              // EVERY row must be a real check-run object BEFORE it can participate in
+              // the census: a null/string/number/array row makes the whole page
+              // untrustworthy and fails closed instead of being silently skipped.
+              for (const row of runs) {
+                if (!row || typeof row !== 'object' || Array.isArray(row)) {
+                  unknown(expected, `recovery read page contains a malformed row after ${createReason}`);
+                  return;
+                }
+              }
+              // Census on external_id ALONE, before any other field is validated.
+              // Sibling records from older runs with a different external_id are normal;
+              // the exact binding must appear EXACTLY once on this page.
+              const bound = runs.filter(record => record.external_id === expected.external_id);
+              if (bound.length === 0) {
+                // One page without our binding never proves no-write.
+                unknown(expected, `recovery read found no record for the exact binding after ${createReason}`);
+                return;
+              }
+              if (bound.length > 1) {
+                unknown(expected, `recovery read found ${bound.length} records for the exact binding after ${createReason}`);
+                return;
+              }
+              const reason = receiptReason(bound[0], expected);
+              if (reason !== null) {
+                unknown(expected, `recovery read found a conflicting exact-binding record (${reason}) after ${createReason}`);
+              }
+            }
+
+            for (const check of checks) {
+              const ok = pass(check.values);
+              const name = check.name;
+              const expected = {
+                name,
+                conclusion: ok ? 'success' : 'failure',
+                title: `${name}: ${ok ? 'passed' : 'failed'}`,
+                summary: check.values.join(', '),
+                details_url: DETAILS_URL,
+                external_id: externalId(name),
+              };
+              validateBindingInputs(name, expected.external_id);
+              const attempt = await createOnce(expected);
+              if (!attempt.confirmed) {
+                await reconcileOnce(expected, attempt.reason);
+              }
+            }
       - name: fail pack when any fence failed
         if: always()
         env:
