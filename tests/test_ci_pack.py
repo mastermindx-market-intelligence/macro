@@ -5473,9 +5473,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_912),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_929),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_670),
+    ("templates/index.html", 137, 5_915),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_932),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_673),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5483,6 +5483,29 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-07 (#8057 current-main composition): retain the independent
+    #8899 integrated-answer-v0 enrollment accepted on main 4380697d and
+    the #8057 complete Desk-suite transfer. Against main 67a5ddb98aca,
+    unchanged estimator metadata adds only the Desk owner's three units:
+    index 5912 -> 5915, free-content 5929 -> 5932, plan-book 5670 -> 5673.
+    These combined expectations compose the two hosted measurements below;
+    they are not a new full-tree measurement or runtime claim. The existing
+    full-checkout contract must qualify the resulting tree. Preserve every
+    suite, job-count ceiling, ten-pack bound, timeout and admission limit.
+
+    2026-11-07 (#8057): the full marketing intelligence desk suite moves
+    from the DATA marketing-engine invocation to the existing CODE
+    unrun-marketing-desk owner. Hosted contract-delta run 42342289504,
+    job 128312401279, measured head 0eff79e76ace against base 9d9183a39c4b:
+    index 137 jobs / 5912 -> 5915, free-content 137 / 5927 -> 5930,
+    plan-book 131 / 5668 -> 5671, all ten packs, no newly selected jobs.
+    The unchanged runner 3cbed589 estimates unrun-marketing-desk 13 -> 16
+    (one command plus one explicit test path); marketing-engine keeps its
+    observed 250 override. Preserve the complete suite and fund only those
+    three measured planning units. Job-count ceilings, ten-pack bounds,
+    execution timeouts, selectors and runner/admission limits stay fixed.
+    These are deterministic planner estimates, not measured runtimes.
 
     PR #8899 provenance coverage (2026-11-06): exact-head CI 42231847099,
     contract job 127939433316, head b0708d5ae2a4 against base 9a867da6f866:

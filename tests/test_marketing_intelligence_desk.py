@@ -1558,10 +1558,10 @@ def test_a_canned_why_never_overwrites_a_phrased_one(tmp_path):
     update_intelligence_desk([phrased], root=tmp_path, now=NOW, db_path=db,
                              snapshot_path=sink)
 
-    # A later tick rebuilds the packet from scratch, so it carries the CANNED
-    # line again — that must not win.
+    # A quiet same-source tick rebuilds the packet from scratch and carries
+    # the CANNED line again. Changed source facts are covered by retirement tests.
     payload = update_intelligence_desk(
-        [_confirmed_packet("fed-2", source="AP")], root=tmp_path,
+        [_confirmed_packet("fed-2")], root=tmp_path,
         now=NOW + timedelta(minutes=2), db_path=db, snapshot_path=sink,
     )
     story = payload["stories"][0]
@@ -1940,3 +1940,394 @@ def test_shipped_config_bounds_the_confirmed_group():
     assert 0 < cap < max_items, (
         "the confirmed bound only reserves developing slots while it is "
         "strictly inside the snapshot cap")
+
+
+# News#7953: changing facts must retire old model wording, even with the same title.
+# All calls below use the established fake provider boundary; none reaches a model.
+import pytest
+
+
+@pytest.mark.parametrize("field", ["brief", "tickers", "source_count", "market", "stage"])
+def test_revision_cache_reconsiders_changed_facts(monkeypatch, tmp_path, field):
+    import engine.marketing.intelligence_llm as ill
+    _built, calls = _arm_llm(monkeypatch, _GOOD_REPLY)
+    ill.attach_llm_drafts([_confirmed_packet()], _llm_cfg(), root=tmp_path, now=NOW)
+    revised = _confirmed_packet()
+    changes = {
+        "brief": "The committee changed its forward policy guidance.",
+        "tickers": ["QQQ"],
+        "source_count": 3,
+        "market": {"label": "SPY +0.8%", "basis": "session vs prior close", "as_of": "2026-07-29T18:01:00Z"},
+        "stage": "confirmed",
+    }
+    revised[field] = changes[field]
+    ill.attach_llm_drafts([revised], _llm_cfg(), root=tmp_path, now=NOW + timedelta(minutes=2))
+    assert len(calls) == 2, f"unchanged headline hid a change in {field}"
+
+
+def test_revision_cache_ignores_bookkeeping_and_unordered_source_rows(monkeypatch, tmp_path):
+    import engine.marketing.intelligence_llm as ill
+    from copy import deepcopy
+    _built, calls = _arm_llm(monkeypatch, _GOOD_REPLY)
+    first = _confirmed_packet()
+    first["evidence"].append(dict(first["evidence"][0], name="AP", event_id="ap-1"))
+    second = deepcopy(first)
+    ill.attach_llm_drafts([first], _llm_cfg(), root=tmp_path, now=NOW)
+    second["evidence"].reverse()
+    second["updated_at"] = "2026-07-29T18:02:00Z"
+    second["context"]["pace"] = "Active"
+    ill.attach_llm_drafts([second], _llm_cfg(), root=tmp_path, now=NOW + timedelta(minutes=2))
+    assert len(calls) == 1, "bookkeeping bought a duplicate analysis"
+
+
+def test_revision_cache_binds_requested_output_shapes(monkeypatch, tmp_path):
+    import engine.marketing.intelligence_llm as ill
+    _built, calls = _arm_llm(monkeypatch, _GOOD_REPLY)
+    ill.attach_llm_drafts([_confirmed_packet()], _llm_cfg(shapes=["wire"]), root=tmp_path, now=NOW)
+    revised = _confirmed_packet()
+    ill.attach_llm_drafts([revised], _llm_cfg(shapes=["analysis"]), root=tmp_path, now=NOW + timedelta(minutes=2))
+    assert len(calls) == 2
+    assert any(d["shape"] == "analysis" for d in revised["drafts"])
+
+
+def test_revision_cache_binds_the_phrasing_policy(monkeypatch, tmp_path):
+    import engine.marketing.intelligence_llm as ill
+    _built, calls = _arm_llm(monkeypatch, _GOOD_REPLY)
+    ill.attach_llm_drafts([_confirmed_packet()], _llm_cfg(), root=tmp_path, now=NOW)
+    monkeypatch.setattr(ill, "SYSTEM_PROMPT", ill.SYSTEM_PROMPT + "\nUse current evidence only.")
+    ill.attach_llm_drafts([_confirmed_packet()], _llm_cfg(), root=tmp_path, now=NOW + timedelta(minutes=2))
+    assert len(calls) == 2, "old-policy cache survived a policy revision"
+
+
+def test_revision_legacy_headline_cache_is_requalified_once(monkeypatch, tmp_path):
+    import engine.marketing.intelligence_llm as ill
+    _built, calls = _arm_llm(monkeypatch, _GOOD_REPLY)
+    packet = _confirmed_packet()
+    ill.save_cache(tmp_path, {packet["id"]: {"headline_sha1": ill.headline_fingerprint(packet["headline"]), "ts": NOW.isoformat()}})
+    for tick in range(2):
+        ill.attach_llm_drafts([_confirmed_packet()], _llm_cfg(), root=tmp_path, now=NOW + timedelta(minutes=tick))
+    assert len(calls) == 1, "legacy cache did not prove its facts, or caused repeated work"
+    assert len(ill.load_cache(tmp_path)) == 1, "migration created a second story/cache row"
+
+
+def test_revision_duplicate_story_arrivals_share_one_model_attempt(monkeypatch, tmp_path):
+    import engine.marketing.intelligence_llm as ill
+    _built, calls = _arm_llm(monkeypatch, _GOOD_REPLY)
+    packets = [_confirmed_packet(), _confirmed_packet(), _confirmed_packet()]
+    ill.attach_llm_drafts(packets, _llm_cfg(), root=tmp_path, now=NOW)
+    assert len(calls) == 1, "one tick bought the same story more than once"
+
+
+@pytest.mark.parametrize("field", ["headline", "brief", "tickers", "market", "source_count"])
+def test_revision_store_retires_old_why_and_analysis_without_a_model(monkeypatch, tmp_path, field):
+    import engine.marketing.intelligence_llm as ill
+    _built, calls = _arm_llm(monkeypatch, _GOOD_REPLY)
+    db, sink = tmp_path / "i.db", tmp_path / "i.json"
+    first = _confirmed_packet()
+    ill.attach_llm_drafts([first], _llm_cfg(), root=tmp_path, now=NOW)
+    first["why_it_matters_zh"] = "旧的模型解释。"
+    stale_ids = {d["id"] for d in first["drafts"] if d["origin"] == "llm"}
+    update_intelligence_desk([first], root=tmp_path, now=NOW, db_path=db, snapshot_path=sink)
+    revised = _confirmed_packet()
+    revised[field] = {
+        "headline": "Federal Reserve changes its guidance",
+        "source_count": 3,
+        "brief": "The committee changed its forward policy guidance.",
+        "tickers": ["QQQ"],
+        "market": {"label": "SPY +0.8%", "basis": "session vs prior close", "as_of": "2026-07-29T18:02:00Z"},
+    }[field]
+    payload = update_intelligence_desk([revised], root=tmp_path, now=NOW + timedelta(minutes=2), db_path=db, snapshot_path=sink)
+    stored = payload["stories"][0]
+    assert stored["why_it_matters_en"] == _CANNED_WHY_EN, "stale interpretation survived changed facts"
+    assert stored["why_it_matters_zh"] == _CANNED_WHY_ZH, "stale translated interpretation survived"
+    assert not stale_ids.intersection(d["id"] for d in stored["drafts"])
+    assert all(d["origin"] != "llm" for d in stored["drafts"])
+    assert len(calls) == 1, "retiring stale suggestions must not invoke a model"
+
+
+def test_revision_new_valid_why_replaces_the_retired_one(monkeypatch, tmp_path):
+    import engine.marketing.intelligence_llm as ill
+    db, sink = tmp_path / "i.db", tmp_path / "i.json"
+    _built, calls = _arm_llm(monkeypatch, _GOOD_REPLY)
+    first = _confirmed_packet()
+    ill.attach_llm_drafts([first], _llm_cfg(), root=tmp_path, now=NOW)
+    update_intelligence_desk([first], root=tmp_path, now=NOW, db_path=db, snapshot_path=sink)
+    revised = _confirmed_packet()
+    revised["brief"] = "The committee changed its forward policy guidance."
+    monkeypatch.setattr(ill, "_call_model", lambda *_a, **_k: {"why": "The committee changed its forward policy guidance."})
+    ill.attach_llm_drafts([revised], _llm_cfg(), root=tmp_path, now=NOW + timedelta(minutes=2))
+    payload = update_intelligence_desk([revised], root=tmp_path, now=NOW + timedelta(minutes=2), db_path=db, snapshot_path=sink)
+    assert payload["stories"][0]["why_it_matters_en"] == revised["brief"]
+    assert not any(d["shape"] == "analysis" for d in payload["stories"][0]["drafts"]), "old analysis survived because the new reply omitted its shape"
+
+
+def test_revision_rejected_new_copy_does_not_resurrect_old_analysis(monkeypatch, tmp_path):
+    import engine.marketing.intelligence_llm as ill
+    db, sink = tmp_path / "i.db", tmp_path / "i.json"
+    _built, calls = _arm_llm(monkeypatch, _GOOD_REPLY)
+    first = _confirmed_packet()
+    ill.attach_llm_drafts([first], _llm_cfg(), root=tmp_path, now=NOW)
+    update_intelligence_desk([first], root=tmp_path, now=NOW, db_path=db, snapshot_path=sink)
+    revised = _confirmed_packet()
+    revised["brief"] = "The committee changed its forward policy guidance."
+    monkeypatch.setattr(ill, "_call_model", lambda *_a, **_k: {"why": "Rates changed by 99.33%."})
+    ill.attach_llm_drafts([revised], _llm_cfg(), root=tmp_path, now=NOW + timedelta(minutes=2))
+    payload = update_intelligence_desk([revised], root=tmp_path, now=NOW + timedelta(minutes=2), db_path=db, snapshot_path=sink)
+    story = payload["stories"][0]
+    assert story["why_it_matters_en"] == _CANNED_WHY_EN
+    assert all(d["origin"] != "llm" for d in story["drafts"])
+    assert "99.33" not in json.dumps(story)
+
+
+
+def test_revision_expired_market_basis_retires_time_sensitive_model_copy(monkeypatch, tmp_path):
+    import engine.marketing.intelligence_llm as ill
+    _arm_llm(monkeypatch, json.dumps({"why": "SPY is up 0.8% this session.", "analysis": "SPY is up 0.8% this session."}))
+    packet = _confirmed_packet()
+    packet["market"] = {"label": "SPY +0.8%", "basis": "session vs prior close", "as_of": NOW.isoformat()}
+    ill.attach_llm_drafts([packet], _llm_cfg(), root=tmp_path, now=NOW)
+    assert packet["_why_phrased"] is True
+    db, sink = tmp_path / "i.db", tmp_path / "i.json"
+    update_intelligence_desk([packet], root=tmp_path, now=NOW, db_path=db, snapshot_path=sink)
+    store = IntelligenceStore(db)
+    try:
+        served = store.snapshot(now=NOW + timedelta(minutes=31))["stories"][0]
+    finally:
+        store.close()
+    assert served["market"] is None
+    assert served["why_it_matters_en"] == _CANNED_WHY_EN, "expired tape survives inside model text"
+    assert all(d["origin"] != "llm" for d in served["drafts"])
+
+
+
+def test_revision_desk_contract_has_one_existing_source_gate():
+    import yaml
+    jobs = yaml.safe_load((ROOT / ".github/ci/legacy-jobs.yml").read_text())["jobs"]
+    owners = [name for name, job in jobs.items()
+              if any("tests/test_marketing_intelligence_desk.py" in str(step.get("run", ""))
+                     for step in job.get("steps", []))]
+    assert owners == ["unrun-marketing-desk"], "story correctness must gate source PRs, not only nightly data health"
+    assert jobs[owners[0]]["gate"] == "code"
+
+
+
+def test_revision_budget_accounts_for_cached_duplicate_and_deferred_stories(monkeypatch, tmp_path):
+    import engine.marketing.intelligence_llm as ill
+    from copy import deepcopy
+    _built, calls = _arm_llm(monkeypatch, _GOOD_REPLY)
+    cached = _confirmed_packet()
+    cached["id"] = "cached-story"
+    ill.attach_llm_drafts([cached], _llm_cfg(), root=tmp_path, now=NOW)
+    ill.reset_stats()
+    fresh = _confirmed_packet()
+    fresh["id"] = "fresh-story"
+    later = _confirmed_packet()
+    later["id"] = "deferred-story"
+    ill.attach_llm_drafts([fresh, deepcopy(fresh), later, cached], _llm_cfg(max_per_tick=1), root=tmp_path, now=NOW)
+    result = ill.stats()
+    assert len(calls) == 2 and result["attempted"] == 1
+    assert result["eligible"] == 4
+    assert result["cached"] == 1
+    assert result.get("deduplicated") == 1
+    assert result.get("budget_skipped") == 1
+
+
+def test_revision_old_browser_draft_cannot_reach_the_existing_outbox(monkeypatch, tmp_path):
+    import engine.marketing.intelligence_llm as ill
+    from admin import marketing
+    _arm_llm(monkeypatch, _GOOD_REPLY)
+    first = _confirmed_packet()
+    ill.attach_llm_drafts([first], _llm_cfg(), root=tmp_path, now=NOW)
+    old_id = next(d["id"] for d in first["drafts"] if d["shape"] == "analysis")
+    db = tmp_path / "i.db"
+    sink = tmp_path / "data" / "marketing" / "press" / "intelligence.json"
+    update_intelligence_desk([first], root=tmp_path, now=NOW, db_path=db, snapshot_path=sink)
+    revised = _confirmed_packet()
+    revised["brief"] = "The committee changed its forward policy guidance."
+    update_intelligence_desk([revised], root=tmp_path, now=NOW + timedelta(minutes=2), db_path=db, snapshot_path=sink)
+    result = marketing.intelligence_approve(first["id"], old_id, root=tmp_path, now=NOW + timedelta(minutes=3))
+    assert result["ok"] is False and result.get("reason") == "draft_not_found", result
+    assert not (tmp_path / "data" / "marketing" / "outbox.jsonl").exists()
+
+
+
+def test_revision_explicitly_removed_tickers_retire_old_model_wording(monkeypatch, tmp_path):
+    import engine.marketing.intelligence_llm as ill
+    _arm_llm(monkeypatch, _GOOD_REPLY)
+    first = _confirmed_packet()
+    ill.attach_llm_drafts([first], _llm_cfg(), root=tmp_path, now=NOW)
+    db, sink = tmp_path / "i.db", tmp_path / "i.json"
+    update_intelligence_desk([first], root=tmp_path, now=NOW, db_path=db, snapshot_path=sink)
+    revised = _confirmed_packet()
+    revised["tickers"] = []
+    payload = update_intelligence_desk([revised], root=tmp_path, now=NOW + timedelta(minutes=2), db_path=db, snapshot_path=sink)
+    story = payload["stories"][0]
+    assert story["why_it_matters_en"] == _CANNED_WHY_EN
+    assert all(d["origin"] != "llm" for d in story["drafts"])
+
+
+def _revision_finalized_base():
+    packet = _confirmed_packet()
+    packet.update(stage="confirmed", _impact_band="normal",
+                  content_routes=["wire", "analysis"])
+    # A previously stored, model-visible history; clocks are not fact wording.
+    packet["timeline"] = [
+        {"kind": "stage", "at": "2026-07-29T17:59:00Z",
+         "label_en": "Confirmed", "label_zh": "已确认"},
+        {"kind": "new_source", "at": "2026-07-29T17:58:00Z",
+         "label_en": "Reuters added a report", "label_zh": "路透补充报道"},
+        {"kind": "first_report", "at": "2026-07-29T17:57:00Z",
+         "label_en": "First report", "label_zh": "首条报道"},
+    ]
+    return packet
+
+
+def _revision_seed_finalized_copy(monkeypatch, tmp_path, *, ordered_sets=False):
+    import engine.marketing.intelligence_llm as ill
+    built, calls = _arm_llm(monkeypatch, _GOOD_REPLY)
+    first = _revision_finalized_base()
+    if ordered_sets:
+        first["tickers"] = ["SPY", "QQQ"]
+        first["evidence"].append(dict(
+            first["evidence"][0], event_id="fed-ap",
+            name="AP", url="https://apnews.com/fed"))
+    ill.attach_llm_drafts([first], _llm_cfg(), root=tmp_path, now=NOW)
+    assert {d["shape"] for d in first["drafts"] if d["origin"] == "llm"} == {
+        "wire", "analysis"}
+    first["why_it_matters_zh"] = "旧的模型解释。"
+    # The store's slot rule is generic: an older third generated shape must
+    # retire too, even when the current phrasing pass does not request it.
+    analysis = next(d for d in first["drafts"] if d["shape"] == "analysis")
+    first["drafts"].append(dict(
+        analysis, id="older-generated-thread", shape="thread",
+        text_zh="旧的模型草稿。"))
+    return first, built, calls
+
+
+@pytest.mark.parametrize("change", [
+    "impact_stage", "source_name", "lane_label", "timeline_source", "timeline_cap",
+])
+def test_revision_finalized_facts_retire_copy_before_snapshot_and_approval(
+    monkeypatch, tmp_path, change,
+):
+    import engine.marketing.intelligence_llm as ill
+    from admin import marketing
+
+    first, built, calls = _revision_seed_finalized_copy(monkeypatch, tmp_path)
+    db = tmp_path / "i.db"
+    sink = tmp_path / "data" / "marketing" / "press" / "intelligence.json"
+    first_payload = update_intelligence_desk(
+        [first], root=tmp_path, now=NOW, db_path=db, snapshot_path=sink)
+    old_story = first_payload["stories"][0]
+    old_ids = {d["id"] for d in old_story["drafts"] if d["origin"] == "llm"}
+    assert len(old_ids) == 3
+
+    revised = _revision_finalized_base()
+    revised["drafts"] = []  # no accepted new replacement or review candidate
+    cfg = {}
+    if change == "impact_stage":
+        # Incoming stage stays confirmed; the merge itself must promote it.
+        revised["_impact_band"] = "high"
+        assert revised["stage"] == "confirmed"
+        expected_changed = {"stage", "recent_timeline"}
+    elif change == "source_name":
+        revised["evidence"][0]["name"] = "Reuters policy desk"
+        expected_changed = {"source_names"}
+    elif change == "lane_label":
+        revised["lane_label_en"] = "Central bank policy"
+        expected_changed = {"lane"}
+    elif change == "timeline_source":
+        # Same source name/set, count and stage. Only canonical timeline changes
+        # after a distinct source key arrives and the evidence union is settled.
+        revised["evidence"][0].update(
+            event_id="fed-second-wire", url="https://wire.example.net/fed")
+        expected_changed = {"recent_timeline"}
+    else:
+        cfg["timeline_max"] = 1
+        expected_changed = {"recent_timeline"}
+
+    payload = update_intelligence_desk(
+        [revised], root=tmp_path, now=NOW + timedelta(minutes=2),
+        cfg=cfg, db_path=db, snapshot_path=sink)
+    story = payload["stories"][0]
+    old_facts, new_facts = ill.build_fact_packet(old_story), ill.build_fact_packet(story)
+    assert {k for k in old_facts if old_facts[k] != new_facts[k]} == expected_changed
+    assert story["why_it_matters_en"] == _CANNED_WHY_EN, (
+        "stale finalized facts retained generated English")
+    assert story["why_it_matters_zh"] == _CANNED_WHY_ZH, (
+        "stale finalized facts retained generated Chinese")
+    assert story["drafts"] == [], "an old generated shape survived finalization"
+    assert story["stance"] == "Read the evidence", (
+        "review stance was computed before final draft retirement")
+
+    with sink.open() as stream:
+        assert json.load(stream) == payload
+    store = IntelligenceStore(db)
+    try:
+        stored = json.loads(store.db.execute(
+            "SELECT packet_json FROM stories WHERE story_id = ?", (first["id"],)
+        ).fetchone()[0])
+    finally:
+        store.close()
+    assert not stored.get("_why_phrased")
+    for key in ("why_it_matters_en", "why_it_matters_zh", "drafts", "stage", "timeline"):
+        assert stored[key] == story[key], key
+    for old_id in old_ids:
+        result = marketing.intelligence_approve(
+            first["id"], old_id, root=tmp_path, now=NOW + timedelta(minutes=3))
+        assert result["ok"] is False and result.get("reason") == "draft_not_found", result
+    assert not (tmp_path / "data" / "marketing" / "outbox.jsonl").exists()
+    assert len(built) == len(calls) == 1, "retirement must not buy another model call"
+
+
+@pytest.mark.parametrize("change", ["bookkeeping", "unordered_sets", "timeline_clock"])
+def test_revision_finalized_fact_controls_retain_copy(monkeypatch, tmp_path, change):
+    from copy import deepcopy
+    import engine.marketing.intelligence_llm as ill
+
+    first, built, calls = _revision_seed_finalized_copy(
+        monkeypatch, tmp_path, ordered_sets=True)
+    db, sink = tmp_path / "i.db", tmp_path / "i.json"
+    initial = update_intelligence_desk(
+        [first], root=tmp_path, now=NOW, db_path=db, snapshot_path=sink)["stories"][0]
+    revised = deepcopy(first)
+    revised.pop("_why_phrased")
+    revised["why_it_matters_en"], revised["why_it_matters_zh"] = _CANNED_WHY_EN, _CANNED_WHY_ZH
+    revised["drafts"] = _revision_finalized_base()["drafts"]
+    if change == "bookkeeping":
+        revised["updated_at"] = "2026-07-29T18:02:00Z"
+        revised["context"]["pace"] = "Cooling"
+    elif change == "unordered_sets":
+        revised["tickers"].reverse()
+        revised["evidence"].reverse()
+    else:
+        for row in revised["timeline"]:
+            row["at"] = "2026-07-29T18:02:00Z"
+    story = update_intelligence_desk(
+        [revised], root=tmp_path, now=NOW + timedelta(minutes=2),
+        db_path=db, snapshot_path=sink)["stories"][0]
+    assert ill._phrasing_fingerprint(initial, "") == ill._phrasing_fingerprint(story, "")
+    assert story["why_it_matters_en"] == initial["why_it_matters_en"]
+    assert story["why_it_matters_zh"] == initial["why_it_matters_zh"]
+    assert {d["id"] for d in story["drafts"]} == {d["id"] for d in initial["drafts"]}
+    assert story["stance"] == "Review the draft"
+    assert len(built) == len(calls) == 1
+
+
+@pytest.mark.parametrize("field", ["event_class", "lane"])
+def test_revision_finalized_comparison_preserves_routing_guards(monkeypatch, tmp_path, field):
+    first, _built, calls = _revision_seed_finalized_copy(monkeypatch, tmp_path)
+    db, sink = tmp_path / "i.db", tmp_path / "i.json"
+    update_intelligence_desk(
+        [first], root=tmp_path, now=NOW, db_path=db, snapshot_path=sink)
+    revised = _revision_finalized_base()
+    revised[field] = "company_news" if field == "event_class" else "companies"
+    revised["drafts"] = []
+    story = update_intelligence_desk(
+        [revised], root=tmp_path, now=NOW + timedelta(minutes=2),
+        db_path=db, snapshot_path=sink)["stories"][0]
+    assert story["why_it_matters_en"] != first["why_it_matters_en"]
+    assert story["why_it_matters_zh"] != first["why_it_matters_zh"]
+    assert story["drafts"] == []
+    assert story["stance"] == "Read the evidence"
+    assert len(calls) == 1
