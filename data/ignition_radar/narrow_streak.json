@@ -40,9 +40,9 @@
     "score": 0.955
   },
   "XLV": {
-    "streak": 1,
-    "last_date": "2026-08-19",
-    "score": 0.8904
+    "streak": 3,
+    "last_date": "2026-10-15",
+    "score": 0.9607
   },
   "crypto": {
     "streak": 3,
@@ -65,9 +65,9 @@
     "score": 1.0
   },
   "XLU": {
-    "streak": 2,
-    "last_date": "2026-09-08",
-    "score": 0.9906
+    "streak": 7,
+    "last_date": "2026-11-02",
+    "score": 0.9997
   },
   "reshoring": {
     "streak": 1,
@@ -78,5 +78,20 @@
     "streak": 1,
     "last_date": "2026-10-08",
     "score": 0.7574
+  },
+  "XLB": {
+    "streak": 1,
+    "last_date": "2026-10-19",
+    "score": 0.9936
+  },
+  "XLP": {
+    "streak": 2,
+    "last_date": "2026-10-30",
+    "score": 0.9993
+  },
+  "XLRE": {
+    "streak": 3,
+    "last_date": "2026-11-05",
+    "score": 0.9998
   }
 }

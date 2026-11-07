@@ -274,7 +274,11 @@ def main() -> int:
         from engine.baskets import compute_baskets as _compute_baskets
         baskets_payload = _compute_baskets() or {}
         activity = compute_real_activity(baskets_payload, news=True)
-        divergence_board = compute_divergence_board(cascade, activity, write_ledger=True)
+        from engine.research_vault.divergence_handoff import compute_with_capture
+        divergence_board = compute_with_capture(
+            cascade, activity, repo_root=Path(__file__).resolve().parent.parent,
+            compute=compute_divergence_board,
+        )
         if divergence_board:
             log.info(
                 "divergence board: %d themes in cross-section, quadrants=%s",
