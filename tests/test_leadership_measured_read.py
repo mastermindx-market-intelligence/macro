@@ -525,3 +525,268 @@ def test_fix_npb1_price_basis_reads_declared_basis():
         assert all(g["reconstruction"]["mode"] == "reconstructed_price_history"
                    and g["reconstruction"]["naturally_observed"] is False
                    for g in out["groups"])
+
+
+# --- Persistent Sector Leadership: opt-in, separately qualified dossiers -------
+# The legacy fixture and all preceding assertions remain unchanged. These tests
+# qualify raw owner metadata independently of the permissive legacy projection.
+
+def _qualified_dossier_payload():
+    payload = _build_cyc_payload()
+    payload["meta"]["rs_history"].update(
+        basis="tr", benchmark="SPY", mode="reconstructed_price_history",
+        naturally_observed=False,
+    )
+    return payload
+
+
+def _compose_dossier(payload=None, read=None, **kwargs):
+    compose_sector_dossiers = lrc._compose_sector_dossiers
+
+    if payload is None:
+        payload = _qualified_dossier_payload()
+    if read is None:
+        read = lrc.measured_group_read(payload)
+    return compose_sector_dossiers(
+        payload, read, expected_group_ids=us_sector_cohort(), **kwargs,
+    )
+
+
+def _dossier_rows(dossier):
+    return {row["group_id"]: row for row in dossier["groups"]}
+
+
+def _assert_dossier_withheld(dossier, reason):
+    assert dossier["measurement_status"] == "unavailable"
+    assert reason in dossier["diagnostics"]["qualification_reasons"]
+    assert all(value is None for row in dossier["groups"]
+               for value in row["relative_wealth_pct"].values())
+    assert all(counts["positive_n"] is None
+               for counts in dossier["cross_sector_breadth_counts"].values())
+    json.dumps(dossier, allow_nan=False)
+
+
+def test_dossier_opt_in_preserves_every_legacy_field_and_input():
+    import copy
+
+    payload = _qualified_dossier_payload()
+    rotation = _build_rotation_payload()
+    before = copy.deepcopy((payload, rotation))
+    legacy = lrc.measured_group_read(payload, rotation_payload=rotation)
+    enabled = lrc.measured_group_read(
+        payload, rotation_payload=rotation, include_sector_dossiers=True,
+    )
+    dossier = enabled.pop("sector_dossiers")
+    assert enabled == legacy
+    assert (payload, rotation) == before
+    assert "sector_dossiers" not in legacy
+    assert len(_serialize({**enabled, "sector_dossiers": dossier}).encode()) <= 32768
+    assert not _forbidden_keys(dossier)
+    json.dumps(dossier, allow_nan=False)
+
+
+@pytest.mark.parametrize("flag", [None, 0, 1, "false", [], {}])
+def test_dossier_opt_in_requires_explicit_boolean(flag):
+    with pytest.raises(ValueError, match="include_sector_dossiers"):
+        lrc.measured_group_read(_qualified_dossier_payload(), include_sector_dossiers=flag)
+
+
+def test_dossier_keeps_eleven_identities_zero_and_exact_native_windows():
+    dossier = _compose_dossier()
+    rows = _dossier_rows(dossier)
+    assert list(rows) == list(us_sector_cohort())
+    assert len(rows) == 11
+    assert rows["XLK"]["relative_wealth_pct"]["rs_63d"] == 0.0
+    assert rows["XLK"]["null_reasons"]["rs_63d"] is None
+    assert rows["XLU"]["status"] == rows["XLRE"]["status"] == "unavailable"
+    assert "thin_history" in rows["XLU"]["qualification_reasons"]
+    assert "missing_group" in rows["XLRE"]["qualification_reasons"]
+    assert dossier["windows_sessions"] == [21, 63]
+    assert dossier["unavailable_windows"] == {
+        "sessions": [5, 20], "reason": "not_supplied_by_owner",
+    }
+    assert dossier["cross_sector_breadth_counts"]["63"] == {
+        "expected_n": 11, "measured_n": 9, "positive_n": 5,
+    }
+    assert dossier["population"] == "eleven_sector_etf_proxies"
+    assert dossier["constituent_breadth"]["status"] == "unavailable"
+    assert dossier["constituent_concentration"]["status"] == "unavailable"
+    assert dossier["measurement_status"] == dossier["status"] == "partial"
+
+
+@pytest.mark.parametrize("value", [True, False, float("nan"), float("inf"),
+                                   -float("inf"), "3.2", [], {}])
+def test_dossier_rejects_malformed_measurements_without_losing_other_window(value):
+    payload = _qualified_dossier_payload()
+    next(row for row in payload["sectors"] if row["ticker"] == "XLK")["now"]["rs_63d"] = value
+    row = _dossier_rows(_compose_dossier(payload))["XLK"]
+    assert row["relative_wealth_pct"] == {"rs_21d": -0.5, "rs_63d": None}
+    assert row["null_reasons"]["rs_63d"] == "invalid_measurement"
+    assert row["status"] == "partial"
+
+
+@pytest.mark.parametrize("where", ["native", "projected"])
+def test_dossier_duplicate_identity_is_withheld_not_last_writer_wins(where):
+    import copy
+
+    payload = _qualified_dossier_payload()
+    read = lrc.measured_group_read(payload)
+    if where == "native":
+        duplicate = copy.deepcopy(next(row for row in payload["sectors"] if row["ticker"] == "XLK"))
+        duplicate["now"]["rs_63d"] = 900.0
+        payload["sectors"].append(duplicate)
+        read = lrc.measured_group_read(payload)
+    else:
+        read["groups"].append(copy.deepcopy(read["groups"][0]))
+    duplicate_id = "XLK" if where == "native" else read["groups"][0]["group_id"]
+    dossier = _compose_dossier(payload, read)
+    assert dossier["diagnostics"]["duplicate_groups"] == [duplicate_id]
+    row = _dossier_rows(dossier)[duplicate_id]
+    assert row["status"] == "unavailable"
+    assert "duplicate_group_identity" in row["qualification_reasons"]
+
+
+@pytest.mark.parametrize("path,value,reason", [
+    (("meta", "asOf"), None, "source_session_missing_or_invalid"),
+    (("meta", "asOf"), "2026-02-30", "source_session_missing_or_invalid"),
+    (("meta", "asOf"), "20261009", "source_session_missing_or_invalid"),
+    (("meta", "benchmark"), None, "benchmark_missing_or_invalid"),
+    (("meta", "benchmark"), "UNKNOWN", "benchmark_missing_or_invalid"),
+    (("meta", "rs_history", "as_of"), None, "history_session_missing_or_invalid"),
+    (("meta", "rs_history", "as_of"), "2026-10-08", "history_session_mismatch"),
+    (("meta", "rs_history", "basis"), None, "return_basis_not_qualified"),
+    (("meta", "rs_history", "basis"), "price", "return_basis_not_qualified"),
+    (("meta", "rs_history", "basis"), [], "return_basis_not_qualified"),
+    (("meta", "rs_history", "benchmark"), "QQQ", "benchmark_identity_mismatch"),
+    (("meta", "rs_history", "schema"), "other", "history_schema_not_qualified"),
+    (("meta", "rs_history", "mode"), None, "evidence_mode_not_qualified"),
+    (("meta", "rs_history", "naturally_observed"), True, "evidence_mode_not_qualified"),
+])
+def test_dossier_withholds_unqualified_source_contract(path, value, reason):
+    payload = _qualified_dossier_payload()
+    target = payload
+    for key in path[:-1]:
+        target = target[key]
+    target[path[-1]] = value
+    _assert_dossier_withheld(_compose_dossier(payload), reason)
+
+
+@pytest.mark.parametrize("key,value,reason", [
+    ("session_end", "2026-10-08", "source_session_mismatch"),
+    ("benchmark", "QQQ", "benchmark_identity_mismatch"),
+    ("cohort_id", "top_6", "cohort_identity_mismatch"),
+    ("price_basis", "price_only", "return_basis_mismatch"),
+])
+def test_dossier_rejects_incompatible_projection_generation(key, value, reason):
+    payload = _qualified_dossier_payload()
+    read = lrc.measured_group_read(payload)
+    read["generation"][key] = value
+    _assert_dossier_withheld(_compose_dossier(payload, read), reason)
+
+
+def test_dossier_checks_row_provenance_and_projection_values():
+    payload = _qualified_dossier_payload()
+    raw = next(row for row in payload["sectors"] if row["ticker"] == "XLK")
+    raw["series_provenance"] = {"rs_basis": "price", "benchmark": "QQQ"}
+    row = _dossier_rows(_compose_dossier(payload))["XLK"]
+    assert row["status"] == "unavailable"
+    assert set(row["qualification_reasons"]) == {
+        "row_return_basis_mismatch", "row_benchmark_mismatch",
+    }
+    del raw["series_provenance"]
+    read = lrc.measured_group_read(payload)
+    group = next(row for row in read["groups"] if row["group_id"] == "XLK")
+    group["current"]["rs_63d"] = 999.0
+    row = _dossier_rows(_compose_dossier(payload, read))["XLK"]
+    assert row["relative_wealth_pct"]["rs_63d"] is None
+    assert row["null_reasons"]["rs_63d"] == "measurement_projection_mismatch"
+
+
+@pytest.mark.parametrize("cutoff,reason", [
+    ("2026-10-08T23:59:00Z", "source_session_after_decision_cutoff"),
+    ("2026-10-09T00:00:00Z", "availability_time_missing"),
+    ("2026-11-06T10:00:00+00:00", "availability_time_missing"),
+    ("2026-11-06T10:00:00", "invalid_decision_cutoff"),
+    ("not-a-time", "invalid_decision_cutoff"),
+    (True, "invalid_decision_cutoff"),
+])
+def test_dossier_as_known_never_fabricates_original_availability(cutoff, reason):
+    dossier = _compose_dossier(decision_cutoff=cutoff)
+    _assert_dossier_withheld(dossier, reason)
+    assert dossier["availability"]["mode"] == "as_known"
+    assert dossier["availability"]["original_available_at"] is None
+    assert dossier["availability"]["historically_admissible"] is False
+
+
+def test_dossier_uses_only_actual_root_without_independence_or_trade_authority():
+    payload = _qualified_dossier_payload()
+    read = lrc.measured_group_read(payload, rotation_payload=_build_rotation_payload())
+    read["source_roots"] += ["engine.sector_cycles", "irrelevant.source"]
+    dossier = _compose_dossier(payload, read)
+    audit = dossier["dependency_audit"]
+    assert audit["source_roots"] == ["engine.sector_cycles"]
+    assert audit["source_family_count"] == 1
+    assert audit["independence"] == "not_established"
+    assert audit["shared_rolling_windows"] is True
+    assert all(value is False for value in dossier["authority"].values())
+    assert dossier["source_generation"]["id"] is None
+    assert dossier["source_generation"]["status"] == "unavailable"
+    assert dossier["compatibility_key"] == read["generation"]["id"]
+    assert dossier["freshness"]["status"] == "unverified"
+    assert dossier["history"]["naturally_observed"] is False
+    assert dossier["forecasts"] == {
+        "status": "not_qualified", "expected_return": None,
+        "persistence_estimate": None, "allocation_weight": None,
+    }
+    assert dossier["mechanism"]["status"] == dossier["risk"]["status"] == "unavailable"
+    read["source_roots"] = ["engine.rotation_events"]
+    _assert_dossier_withheld(_compose_dossier(payload, read), "measurement_source_root_missing")
+
+
+@pytest.mark.parametrize("bad", [None, False, 1, "bad", [], {"sectors": {}}])
+def test_dossier_malformed_inputs_degrade_to_bounded_missingness(bad):
+    compose_sector_dossiers = lrc._compose_sector_dossiers
+
+    dossier = compose_sector_dossiers(bad, bad, expected_group_ids=us_sector_cohort())
+    assert len(dossier["groups"]) == 11
+    assert dossier["measurement_status"] == "unavailable"
+    assert len(json.dumps(dossier, allow_nan=False).encode()) < 32768
+
+
+def test_dossier_bounds_input_before_indexing_and_excludes_outside_cohort():
+    MAX_INPUT_ROWS = lrc._DOSSIER_MAX_INPUT_ROWS
+
+    payload = _qualified_dossier_payload()
+    read = lrc.measured_group_read(payload)
+    payload["sectors"] = [{"ticker": "XLK"}] * (MAX_INPUT_ROWS + 1)
+    _assert_dossier_withheld(_compose_dossier(payload, read), "input_rows_exceed_bound")
+    payload = _qualified_dossier_payload()
+    payload["sectors"] += [{"ticker": "QQQ", "now": {"rs_63d": 999.0}}, None,
+                           {"ticker": ["XLK"]}]
+    dossier = _compose_dossier(payload)
+    assert dossier["diagnostics"]["outside_cohort"] == ["QQQ"]
+    assert dossier["diagnostics"]["malformed_source_rows"] == 2
+    assert len(dossier["groups"]) == 11
+    assert dossier["cross_sector_breadth_counts"]["63"]["measured_n"] == 9
+
+
+@pytest.mark.parametrize("provenance", [None, False, [], "total_return", {}])
+def test_dossier_explicit_malformed_provenance_cannot_become_absent(provenance):
+    payload = _qualified_dossier_payload()
+    next(row for row in payload["sectors"] if row["ticker"] == "XLK")["series_provenance"] = provenance
+    row = _dossier_rows(_compose_dossier(payload))["XLK"]
+    assert row["status"] == "unavailable"
+    assert "row_provenance_invalid" in row["qualification_reasons"]
+
+
+@pytest.mark.parametrize("value,expected", [(-100.1, None), (-200.0, None),
+                                           (-100.0, -100.0), (0.0, 0.0),
+                                           (1200.0, 1200.0)])
+def test_dossier_enforces_relative_wealth_domain_without_clipping_valid_values(value, expected):
+    payload = _qualified_dossier_payload()
+    next(row for row in payload["sectors"] if row["ticker"] == "XLK")["now"]["rs_63d"] = value
+    row = _dossier_rows(_compose_dossier(payload))["XLK"]
+    assert row["relative_wealth_pct"]["rs_63d"] == expected
+    assert row["null_reasons"]["rs_63d"] == (
+        "outside_relative_wealth_domain" if expected is None else None
+    )

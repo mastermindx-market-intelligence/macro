@@ -36,6 +36,7 @@ import copy
 import dataclasses
 import math
 import numbers
+import re
 from collections.abc import Mapping
 from dataclasses import dataclass, field
 from datetime import date, datetime, timezone
@@ -1646,13 +1647,19 @@ def _measured_read_reconstruction(rec, *, generation_mismatch: bool) -> dict:
 
 
 def measured_group_read(cycles_payload, *, rotation_payload=None, research_estimate=None,
-                        horizon: str = "rs_63d") -> dict:
+                        horizon: str = "rs_63d", include_sector_dossiers: bool = False) -> dict:
     """One bounded measured group read over the us_sectors_11 cohort (T17).
 
     Pure and total: malformed mapping inputs (None, non-mapping, missing keys)
     degrade to ``unavailable`` sub-objects, never raise; ``horizon`` outside
     ``{rs_21d, rs_63d}`` is a programmer error (ValueError).
+
+    ``include_sector_dossiers=True`` adds a strictly qualified dated projection.
+    The default preserves the frozen v1 producer/parser bytes. Consumer rollout
+    is explicit; this option grants no historical or trading authority.
     """
+    if type(include_sector_dossiers) is not bool:
+        raise ValueError("include_sector_dossiers must be a bool")
     if horizon not in _MEASURED_READ_HORIZON_SESSIONS:
         raise ValueError(
             f"horizon must be one of {sorted(_MEASURED_READ_HORIZON_SESSIONS)}, got {horizon!r}"
@@ -1837,7 +1844,7 @@ def measured_group_read(cycles_payload, *, rotation_payload=None, research_estim
     if rotation_payload is not None:
         roots.add("engine.rotation_events")
 
-    return {
+    result = {
         "schema": MEASURED_READ_SCHEMA,
         "definition_id": DEFINITION_ID,
         "status": status,
@@ -1868,4 +1875,289 @@ def measured_group_read(cycles_payload, *, rotation_payload=None, research_estim
         "confirmed_events": confirmed_events,
         "research_estimate": research_block,
         "source_roots": sorted(roots),
+    }
+    if include_sector_dossiers:
+        result["sector_dossiers"] = _compose_sector_dossiers(
+            cycles_payload, result, expected_group_ids=expected,
+        )
+    return result
+
+
+# ---------------------------------------------------------------------------
+# Persistent Sector Leadership: opt-in dated evidence, no new producer
+# ---------------------------------------------------------------------------
+
+_DOSSIER_SCHEMA = "leadership_rotation_context.sector_dossiers/v1"
+_DOSSIER_MAX_INPUT_ROWS = 128
+_DOSSIER_SOURCE = "engine.sector_cycles"
+_DOSSIER_BENCHMARK = re.compile(r"[A-Z][A-Z0-9.^-]{0,15}\Z")
+_DOSSIER_GROUP = re.compile(r"[A-Z][A-Z0-9]{0,7}\Z")
+
+
+def _dossier_text(value, limit=120):
+    if (not isinstance(value, str) or not value or len(value) > limit
+            or any(ord(c) < 32 for c in value)):
+        return None
+    return value
+
+
+def _dossier_day(value):
+    if not isinstance(value, str) or len(value) != 10:
+        return None
+    try:
+        parsed = date.fromisoformat(value)
+    except ValueError:
+        return None
+    return parsed if parsed.isoformat() == value else None
+
+
+def _dossier_number(value):
+    if isinstance(value, bool) or not isinstance(value, numbers.Real):
+        return None
+    try:
+        result = float(value)
+    except (ValueError, TypeError, OverflowError):
+        return None
+    return result if math.isfinite(result) else None
+
+
+def _dossier_cutoff(value):
+    if not isinstance(value, str) or len(value) > 64:
+        return None
+    try:
+        parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+        return parsed.astimezone(timezone.utc) if parsed.tzinfo is not None else None
+    except (ValueError, OverflowError):
+        return None
+
+
+def _dossier_index(rows, key, expected):
+    """Bound work before iteration; any duplicate identity is withheld."""
+    found, duplicates, outsiders = {}, set(), set()
+    malformed = 0
+    if not isinstance(rows, (list, tuple)):
+        return found, duplicates, [], 0, "missing_or_invalid_rows"
+    if len(rows) > _DOSSIER_MAX_INPUT_ROWS:
+        return found, duplicates, [], 0, "input_rows_exceed_bound"
+    for row in rows:
+        if not isinstance(row, Mapping):
+            malformed += 1
+            continue
+        identity = row.get(key)
+        if not isinstance(identity, str) or not _DOSSIER_GROUP.fullmatch(identity):
+            malformed += 1
+            continue
+        if identity not in expected:
+            outsiders.add(identity)
+            continue
+        if identity in found:
+            duplicates.add(identity)
+        else:
+            found[identity] = row
+    return found, duplicates, sorted(outsiders)[:11], malformed, None
+
+
+def _dossier_unavailable(reason, **fields):
+    return {"status": "unavailable", "reason": reason, **fields}
+
+
+def _compose_sector_dossiers(cycles_payload, measured_read, *,
+                            expected_group_ids, decision_cutoff=None):
+    """Compose all native cohort identities without inventing a forecast.
+
+    expected_group_ids is supplied by the incumbent us_sector_cohort() owner, not
+    by a client request. Invalid owner configuration is a programming error.
+    Data inputs degrade to explicit missingness. decision_cutoff must be an aware
+    ISO datetime; supplying it always withholds values until an owner-native
+    availability and correction contract is separately implemented.
+    """
+    if (not isinstance(expected_group_ids, (tuple, list))
+            or len(expected_group_ids) != 11
+            or any(not isinstance(x, str) or not _DOSSIER_GROUP.fullmatch(x)
+                   for x in expected_group_ids)
+            or len(set(expected_group_ids)) != 11):
+        raise ValueError("expected_group_ids must be the eleven native sector identities")
+    expected = tuple(expected_group_ids)
+    source, read = _as_mapping(cycles_payload), _as_mapping(measured_read)
+    meta = _as_mapping(source.get("meta"))
+    history = _as_mapping(meta.get("rs_history"))
+    generation = _as_mapping(read.get("generation"))
+    native, duplicate_native, outsiders, malformed, native_error = _dossier_index(
+        source.get("sectors"), "ticker", expected)
+    projected, duplicate_projected, _, malformed_read, read_error = _dossier_index(
+        read.get("groups"), "group_id", expected)
+
+    reasons = []
+    if read.get("schema") != MEASURED_READ_SCHEMA:
+        reasons.append("invalid_measured_read_schema")
+    if generation.get("cohort_id") != US_SECTOR_COHORT_ID:
+        reasons.append("cohort_identity_mismatch")
+    session = _dossier_day(meta.get("asOf"))
+    if session is None:
+        reasons.append("source_session_missing_or_invalid")
+    elif generation.get("session_end") != session.isoformat():
+        reasons.append("source_session_mismatch")
+    history_session = _dossier_day(history.get("as_of"))
+    if history_session is None:
+        reasons.append("history_session_missing_or_invalid")
+    elif session is not None and history_session != session:
+        reasons.append("history_session_mismatch")
+    benchmark = _dossier_text(meta.get("benchmark"), 16)
+    if (benchmark is None or not _DOSSIER_BENCHMARK.fullmatch(benchmark)
+            or benchmark in {"UNKNOWN", "NONE", "NULL"}):
+        benchmark = None
+        reasons.append("benchmark_missing_or_invalid")
+    elif (generation.get("benchmark") != benchmark
+          or history.get("benchmark") != benchmark):
+        reasons.append("benchmark_identity_mismatch")
+    basis = history.get("basis")
+    if not isinstance(basis, str) or basis != "tr":
+        reasons.append("return_basis_not_qualified")
+    elif generation.get("price_basis") != "total_return":
+        reasons.append("return_basis_mismatch")
+    if history.get("schema") != "sector_cycles.rs_history.v1":
+        reasons.append("history_schema_not_qualified")
+    if (history.get("mode") != "reconstructed_price_history"
+            or history.get("naturally_observed") is not False):
+        reasons.append("evidence_mode_not_qualified")
+    if native_error:
+        reasons.append(native_error)
+    if read_error:
+        reasons.append("measured_" + read_error)
+    # Only the source actually used here is attributed. Rotation roots carried by
+    # the wider reader are not independent confirmations of the same ETF returns.
+    raw_roots = read.get("source_roots")
+    root_present = (isinstance(raw_roots, (list, tuple))
+                    and len(raw_roots) <= 32
+                    and any(x == _DOSSIER_SOURCE for x in raw_roots if isinstance(x, str)))
+    if not root_present:
+        reasons.append("measurement_source_root_missing")
+
+    cut = _dossier_cutoff(decision_cutoff) if decision_cutoff is not None else None
+    availability_reason = "original_availability_not_supplied"
+    if decision_cutoff is not None:
+        if cut is None:
+            availability_reason = "invalid_decision_cutoff"
+        elif session is not None and session > cut.date():
+            availability_reason = "source_session_after_decision_cutoff"
+        else:
+            availability_reason = "availability_time_missing"
+        reasons.append(availability_reason)
+
+    rows = []
+    for group_id in expected:
+        raw, group = native.get(group_id), projected.get(group_id)
+        current = _as_mapping(_as_mapping(group).get("current"))
+        row_reasons = list(reasons)
+        if raw is None or group is None:
+            row_reasons.append("missing_group")
+        if group_id in duplicate_native or group_id in duplicate_projected:
+            row_reasons.append("duplicate_group_identity")
+        if raw is not None and raw.get("kind") not in (None, "sector"):
+            row_reasons.append("group_kind_mismatch")
+        if group is not None and group.get("group_kind") != "sector":
+            row_reasons.append("measured_group_kind_mismatch")
+        if (current.get("metric") != "relative_wealth_pct"
+                or current.get("units") != "pct"):
+            row_reasons.append("measurement_definition_mismatch")
+        now = _as_mapping(_as_mapping(raw).get("now"))
+        if now.get("thin_history") is True:
+            row_reasons.append("thin_history")
+        if raw is not None and "series_provenance" in raw:
+            provenance = raw["series_provenance"]
+            if not isinstance(provenance, Mapping) or not provenance:
+                row_reasons.append("row_provenance_invalid")
+            else:
+                if provenance.get("rs_basis") != "tr":
+                    row_reasons.append("row_return_basis_mismatch")
+                if provenance.get("benchmark") != benchmark:
+                    row_reasons.append("row_benchmark_mismatch")
+
+        values, nulls = {}, {}
+        for sessions in (21, 63):
+            field = f"rs_{sessions}d"
+            owner_value, projected_value = _dossier_number(now.get(field)), _dossier_number(current.get(field))
+            if row_reasons:
+                value, reason = None, row_reasons[0]
+            elif owner_value is None:
+                value = None
+                reason = "missing_input" if now.get(field) is None else "invalid_measurement"
+            elif owner_value < -100.0:
+                # Nonnegative group wealth / positive benchmark wealth cannot
+                # produce a relative-wealth percentage below -100.
+                value, reason = None, "outside_relative_wealth_domain"
+            elif projected_value is None or owner_value != projected_value:
+                value, reason = None, "measurement_projection_mismatch"
+            else:
+                value, reason = owner_value, None
+            values[field], nulls[field] = value, reason
+        count = sum(v is not None for v in values.values())
+        rows.append({
+            "group_id": group_id,
+            "name_en": _dossier_text(_as_mapping(group).get("name_en")),
+            "name_zh": _dossier_text(_as_mapping(group).get("name_zh")),
+            "status": "available" if count == 2 else "partial" if count else "unavailable",
+            "relative_wealth_pct": values,
+            "null_reasons": nulls,
+            "qualification_reasons": sorted(set(row_reasons)),
+        })
+
+    counts = {}
+    for sessions in (21, 63):
+        values = [row["relative_wealth_pct"][f"rs_{sessions}d"] for row in rows]
+        valid = [v for v in values if v is not None]
+        counts[str(sessions)] = {
+            "expected_n": len(expected), "measured_n": len(valid),
+            "positive_n": sum(v > 0 for v in valid) if valid else None,
+        }
+    available = sum(row["status"] == "available" for row in rows)
+    any_values = any(row["status"] != "unavailable" for row in rows)
+    return {
+        "schema": _DOSSIER_SCHEMA,
+        "status": "partial" if any_values else "unavailable",
+        "measurement_status": ("available" if available == len(expected)
+                               else "partial" if any_values else "unavailable"),
+        "cohort_id": US_SECTOR_COHORT_ID,
+        "population": "eleven_sector_etf_proxies",
+        "as_of": session.isoformat() if session else None,
+        "benchmark": benchmark,
+        "price_basis": "total_return" if basis == "tr" else None,
+        "units": "pct",
+        "windows_sessions": [21, 63],
+        "unavailable_windows": {"sessions": [5, 20], "reason": "not_supplied_by_owner"},
+        "absolute_returns": _dossier_unavailable("not_supplied_by_owner"),
+        "compatibility_key": _dossier_text(generation.get("id"), 160),
+        "source_generation": _dossier_unavailable("immutable_generation_not_supplied", id=None),
+        "availability": {
+            "mode": "as_known" if decision_cutoff is not None else "dated_snapshot",
+            "decision_cutoff": cut.isoformat() if cut else None,
+            "original_available_at": None,
+            "historically_admissible": False,
+            "reason": availability_reason,
+        },
+        "history": {"mode": "reconstructed_price_history", "naturally_observed": False},
+        "freshness": {"status": "unverified", "reason": "owner_freshness_receipt_not_supplied"},
+        "corrections": _dossier_unavailable("native_revision_selection_not_supplied"),
+        "authority": {"may_rank": False, "may_gate": False, "may_size": False,
+                      "may_trade": False, "may_escalate": False},
+        "forecasts": {"status": "not_qualified", "expected_return": None,
+                      "persistence_estimate": None, "allocation_weight": None},
+        "mechanism": _dossier_unavailable("no_qualified_evidence", owner="engine.theme_graph"),
+        "risk": _dossier_unavailable("no_qualified_risk_context", owner="engine.risk_envelope", scope=None),
+        "constituent_breadth": _dossier_unavailable("native_membership_not_supplied"),
+        "constituent_concentration": _dossier_unavailable("native_weights_not_supplied"),
+        "cross_sector_breadth_counts": counts,
+        "dependency_audit": {
+            "source_roots": [_DOSSIER_SOURCE] if root_present else [],
+            "source_family_count": 1 if root_present else 0,
+            "independence": "not_established",
+            "shared_rolling_windows": True, "constituent_overlap": "unknown",
+        },
+        "diagnostics": {
+            "qualification_reasons": reasons,
+            "duplicate_groups": sorted(duplicate_native | duplicate_projected),
+            "outside_cohort": outsiders,
+            "malformed_source_rows": malformed, "malformed_measured_rows": malformed_read,
+        },
+        "groups": rows,
     }
