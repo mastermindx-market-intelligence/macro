@@ -165,7 +165,7 @@
   },
   "schema_version": 1,
   "produced_by": "engine/neuralweb/marketing_governor.py",
-  "produced_at": "2026-11-07T12:42:59Z",
+  "produced_at": "2026-11-07T15:11:25Z",
   "inputs_hash": "sha256:73e2300f8487ae3a5f2e8ad789a26f3610af34451ed81521a877b90314aaad56",
   "tier": "display"
 }
