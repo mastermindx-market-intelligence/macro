@@ -1,0 +1,122 @@
+{
+  "schema": "macro.protected_seo_fabric_join.v1",
+  "parent": "913c8a874f21393e8f9b0a577ccb4863247b9903",
+  "protected": "2ac8eef3ca975b1045949b40c6244c5f4b209a1a",
+  "conflict_composition": {
+    "resolved": [
+      {
+        "path": ".github/ci/legacy-jobs.yml",
+        "before_sha256": "2d10142820f490ec07720a92d985ade62a95630db6a7f4d2f5d1cf388008774c",
+        "after_sha256": "89ae87368469a3bbbe3c3cdbf0805dbfd36eea391b86a6ce53180f4882cf781c",
+        "conflicts": 1
+      },
+      {
+        "path": "app/deploy/update.sh",
+        "before_sha256": "0391b1bcc65ba235f9dac87a0626a4b4dab041e3027934509c009ebb57db4701",
+        "after_sha256": "911ce1e975144d8ed7d2629cab97318ab8af0ffd229d669bf8f1244fe8d3edd2",
+        "conflicts": 1
+      },
+      {
+        "path": "tests/test_ci_pack.py",
+        "before_sha256": "d80aea925e6ed3de796acb3d94e3b4b825c35ad3a317c8a55e7d8e7d01282153",
+        "after_sha256": "cdb4ccd8b31f39767cd0f9d07197f96352abc073beea5d320d48a57058acf6cb",
+        "conflicts": 3
+      }
+    ],
+    "all_prior_test_selections_retained": true,
+    "job_count_and_pack_bounds_retained": true,
+    "budget_measurement_pending": true
+  },
+  "packing": {
+    "measurements": [
+      {
+        "probe": "templates/index.html",
+        "jobs": 134,
+        "weight": 5721,
+        "packs": 10,
+        "max_jobs": 137,
+        "max_weight": 5974,
+        "max_packs": 10,
+        "reason": "scoped to 1 changed file(s): 134/392 jobs (2 unscoped always-on, 132 scoped matches)"
+      },
+      {
+        "probe": "scripts/build_free_content.py",
+        "jobs": 134,
+        "weight": 5993,
+        "packs": 10,
+        "max_jobs": 138,
+        "max_weight": 5991,
+        "max_packs": 10,
+        "reason": "scoped to 1 changed file(s): 134/392 jobs (2 unscoped always-on, 132 scoped matches)"
+      },
+      {
+        "probe": "engine/prophet/plan_book.py",
+        "jobs": 127,
+        "weight": 5475,
+        "packs": 10,
+        "max_jobs": 131,
+        "max_weight": 5730,
+        "max_packs": 10,
+        "reason": "scoped to 1 changed file(s): 127/392 jobs (2 unscoped always-on, 125 scoped matches)"
+      }
+    ],
+    "original_breaches": [
+      [
+        "scripts/build_free_content.py",
+        "weight",
+        5993,
+        5991
+      ]
+    ],
+    "funded_weight_delta": 2,
+    "packing_test_sha256": "8e4c36bf7c173276378578a1b87e67b3a5e92a097d2352cad12386530dcdf262"
+  },
+  "initial_focused": {
+    "returncode": 1,
+    "seconds": 36.303,
+    "cases": {
+      "total": 532,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 4
+    },
+    "sha256": "24ec33a7c56a0e11cc33875d7a834b59bac7e4a54c62fffa76bc70d2d9dd75ef"
+  },
+  "bash_environment_correction": {
+    "returncode": 0,
+    "seconds": 1.886,
+    "bash": "GNU bash, version 5.3.15(1)-release (aarch64-apple-darwin24.6.0)",
+    "cases": {
+      "total": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "log_sha256": "ede6406d3238cee8afd3d31757a2bd92b43bfd35c52950a3da5fd6f03cfeb1f0",
+    "tail": "..                                                                       [100%]\n2 passed in 1.34s\n"
+  },
+  "scope_closure_repair_and_full_contract": {
+    "changes": {
+      "press-account-claim-consumer": [
+        "scripts/metabolism_journal.py"
+      ],
+      "unrun-brain-gateway": [
+        "admin/press_audience.py",
+        "engine/marketing/seo_director.py",
+        "engine/marketing/seo_search_console.py"
+      ]
+    },
+    "before_sha256": "89ae87368469a3bbbe3c3cdbf0805dbfd36eea391b86a6ce53180f4882cf781c",
+    "after_sha256": "3cf504a34e0bef1195462fdc05f810135facb72c810a9dcedacd9e863b07ea37",
+    "other_yaml_semantics_identical": true,
+    "protected_base": "2ac8eef3ca975b1045949b40c6244c5f4b209a1a",
+    "contract": {
+      "returncode": 0,
+      "seconds": 440.967,
+      "log_sha256": "957cd0c6411450b324d8d29af4292b89b071ed79cec6308fa4f94db221ec1d4c",
+      "tail": "contract-delta: probe templates/index.html: head 134 jobs / 5,721 s / 10 packs; base 137 jobs / 5,914 s / 10 packs; ceilings 137 / 5,974 / 10\ncontract-delta: probe scripts/build_free_content.py: head 134 jobs / 5,993 s / 10 packs; base 137 jobs / 5,933 s / 10 packs; ceilings 138 / 5,993 / 10\ncontract-delta: probe engine/prophet/plan_book.py: head 127 jobs / 5,475 s / 10 packs; base 131 jobs / 5,672 s / 10 packs; ceilings 131 / 5,730 / 10\ncontract-delta: head census seconds: closure_and_suites 282.2, probes 75.8, skip_only 24.7, trigger_gaps 42.3\ncontract-delta: base census seconds: closure_and_suites 271.0, probes 80.8, skip_only 24.4, trigger_gaps 41.9\ncontract-delta: 0 introduced, 0 inherited (base 2ac8eef3ca97)\ncontract-delta: wall 440.9 s\n"
+    }
+  },
+  "remaining_postgresql_tooling_skips": 4,
+  "scope": "Same original Macro source carrier; no deployment, grant, provider call, feature activation or alternate merge runner."
+}
