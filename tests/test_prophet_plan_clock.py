@@ -1437,6 +1437,30 @@ class TestPlanNativeSourceRead:
             "reason_codes"] == ["PLAN_SOURCE_SNAPSHOT_CHANGED"]
         snapshot.write_bytes(snapshot_bytes)
 
+    def test_historical_part_change_still_invalidates_native_read(self, tmp_path, monkeypatch):
+        from engine import us_context_vector as context_owner
+
+        plans, _binding, _path = _plan_fixture(tmp_path, monkeypatch, [
+            _buy_row("AAA", priority=90.0, anchor="2026-07-01")], tickers=["AAA"])
+        historical = tmp_path / "data/us_prophet_rank/candidates/2026-06.parquet"
+        pd.DataFrame([{"stamp_date": "2026-06-01", "ticker": "OLD"}]).to_parquet(
+            historical, index=False)
+        real_rows = context_owner.read_today_candidate_source_rows
+        reads = []
+
+        def racing_history(root, *, market_session=None):
+            assert market_session == _PLAN_SESSION
+            reads.append(root)
+            if len(reads) == 2:
+                pd.DataFrame([{"stamp_date": "2026-06-01", "ticker": "CHANGED"}]).to_parquet(
+                    historical, index=False)
+            return real_rows(root, market_session=market_session)
+
+        monkeypatch.setattr(context_owner, "read_today_candidate_source_rows", racing_history)
+        assert bp.read_plan_candidate_source(plans[0]["id"])["reason_codes"] == [
+            "CANDIDATE_SNAPSHOT_CHANGED"]
+        assert len(reads) == 2
+
     def test_ucv_part_and_b1_head_races_are_typed(self, tmp_path, monkeypatch):
         from engine import us_context_vector as context_owner  # noqa: PLC0415
 
@@ -1447,13 +1471,14 @@ class TestPlanNativeSourceRead:
         real_rows = context_owner.read_today_candidate_source_rows
         reads: list = []
 
-        def racing_part(root):
+        def racing_part(root, *, market_session=None):
+            assert market_session == _PLAN_SESSION
             reads.append(root)
             if len(reads) == 2:
                 frame = pd.read_parquet(part)
                 frame["extra_provenance"] = "changed"
                 frame.to_parquet(part, index=False)
-            return real_rows(root)
+            return real_rows(root, market_session=market_session)
 
         monkeypatch.setattr(context_owner, "read_today_candidate_source_rows", racing_part)
         assert bp.read_plan_candidate_source(plan_id)[
@@ -1463,7 +1488,8 @@ class TestPlanNativeSourceRead:
 
         heads: list = []
 
-        def racing_head(root):
+        def racing_head(root, *, market_session=None):
+            assert market_session == _PLAN_SESSION
             heads.append(root)
             if len(heads) == 2:
                 snapshot = load_candidate_episode_store_snapshot(_plan_episode_root(tmp_path))
@@ -1485,7 +1511,7 @@ class TestPlanNativeSourceRead:
                 _episode_writer.reconcile(repo_root=tmp_path, nightly=True, replay=False,
                                           recorded_at="2026-07-02T22:07:30Z",
                                           correction_path=corrections)
-            return real_rows(root)
+            return real_rows(root, market_session=market_session)
 
         monkeypatch.setattr(context_owner, "read_today_candidate_source_rows", racing_head)
         assert bp.read_plan_candidate_source(plan_id)[
@@ -1642,11 +1668,12 @@ class TestPlanNativeSourceReadGuards:
         snapshot = _plan_source_snapshot(tmp_path, binding)
         real_rows = context_owner.read_today_candidate_source_rows
         calls = []
-        def replace_at_recheck(root):
+        def replace_at_recheck(root, *, market_session=None):
+            assert market_session == _PLAN_SESSION
             calls.append(root)
             if len(calls) == 2:
                 snapshot.write_bytes(snapshot.read_bytes() + b" ")
-            return real_rows(root)
+            return real_rows(root, market_session=market_session)
         monkeypatch.setattr(context_owner, "read_today_candidate_source_rows", replace_at_recheck)
         assert bp.read_plan_candidate_source(plans[0]["id"])["reason_codes"] == [
             "PLAN_SOURCE_SNAPSHOT_CHANGED"]
@@ -1851,9 +1878,10 @@ class TestPlanNativeSourceReadOwnership:
             _buy_row("AAA", priority=90.0, anchor="2026-07-01")], tickers=["AAA"])
         real = owner.read_today_candidate_source_rows
         roots = []
-        def spy(root):
+        def spy(root, *, market_session=None):
+            assert market_session == _PLAN_SESSION
             roots.append(root)
-            return real(root)
+            return real(root, market_session=market_session)
         monkeypatch.setattr(owner, "read_today_candidate_source_rows", spy)
         monkeypatch.setattr(bp, "LEDGER_DIR", tmp_path / "unrelated-plan-root")
         with producer._read_original_selection_native_relation(
@@ -1886,9 +1914,10 @@ class TestPlanNativeSourceReadOwnership:
             if path == source_path:
                 events.append("gzip")
             return original_read(path)
-        def rows(root):
+        def rows(root, *, market_session=None):
+            assert market_session == _PLAN_SESSION
             events.append("native")
-            return original_rows(root)
+            return original_rows(root, market_session=market_session)
         monkeypatch.setattr(Path, "read_bytes", read)
         monkeypatch.setattr(owner, "read_today_candidate_source_rows", rows)
         result = bp.read_plan_candidate_source(plans[0]["id"])

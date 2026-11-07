@@ -44,9 +44,25 @@ def _file_receipt(path: Path, payload: bytes) -> dict[str, object]:
     return {"path": str(path), "sha256": "sha256:" + sha256(payload).hexdigest()}
 
 
-def _records_snapshot(path: Path) -> tuple[list[dict[str, object]], dict[str, object]]:
+def _records_snapshot(
+    path: Path, *, candidate_market_session: str | None = None,
+) -> tuple[list[dict[str, object]], dict[str, object]]:
     payload = path.read_bytes()
-    rows = pd.read_parquet(BytesIO(payload)).to_dict("records")
+    frame = pd.read_parquet(BytesIO(payload))
+    if candidate_market_session is not None:
+        # Decode every part and attest its complete immutable bytes as before.
+        # Only avoid expanding wide candidate rows that the native resolver's
+        # exact canonical session equality would discard. Do not parse dates:
+        # a date matches its ISO session, while a midnight timestamp does not.
+        if "stamp_date" in frame:
+            matches = [
+                _plain_value(_json_safe(value)) == candidate_market_session
+                for value in frame["stamp_date"].tolist()
+            ]
+            frame = frame.loc[matches]
+        else:
+            frame = frame.iloc[:0]
+    rows = frame.to_dict("records")
     return [_json_safe(dict(row)) for row in rows], _file_receipt(path, payload)
 
 

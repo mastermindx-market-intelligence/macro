@@ -6,6 +6,19 @@
 # Invoked as: bash scripts/ci/daily_engine_regime_dashboard.sh
 set -e  # mirror GitHub's default `bash -e {0}` step shell — daily.yml declares no shell:
 
+# This is the exact venv entry path qualified by the engine bootstrap.
+# A missing interpreter or dependency must fail before producer/receipt writes;
+# never search PATH for a replacement Python.
+case "${DAILY_ENGINE_PYTHON:-}" in
+  /*) ;;
+  *) echo "::error::qualified DAILY_ENGINE_PYTHON is required"; exit 1 ;;
+esac
+"$DAILY_ENGINE_PYTHON" -c 'import os, sys; expected = os.path.dirname(os.path.dirname(sys.argv[1])); os.path.samefile(sys.prefix, expected) or sys.exit("engine Python prefix does not match its venv"); import rjsmin, rcssmin' "$DAILY_ENGINE_PYTHON"
+# Keep the existing DAG's literal `python -m` module calls visible to its
+# conformance parser. Bash resolves this function before PATH, so no ambient
+# Python can intercept the qualified producer's module calls.
+python() { "$DAILY_ENGINE_PYTHON" "$@"; }
+
 set +e
 # Marker for the libraries-rebuild guard further down. The four non-US search
 # libraries are each built by their dashboard step (build_china / build_hk /
@@ -25,6 +38,7 @@ run_py() {
     echo "::error title=$label failed (rc=$rc)::$(tail -n 2 "$RUNNER_TEMP/step.log" | tr '\n' ' ' | tail -c 600)"
     { echo "### ❌ $label failed (rc=$rc)"; echo '<details><summary>traceback</summary>'; echo; echo '```'; tail -n 60 "$RUNNER_TEMP/step.log"; echo '```'; echo '</details>'; } >> "$GITHUB_STEP_SUMMARY"
   fi
+  return "$rc"
 }
 run_py "regime engine (engine.run)" engine.run
 # Shock de-escalation protocol (policy-shock W2-E / D3) — must run AFTER engine.run
@@ -101,7 +115,7 @@ run_py "filing forensics workbench (build_fundamental_forensics)" scripts.build_
 # degraded workspace, so a missing owner artifact degrades one workspace loudly
 # instead of killing the nightly.
 run_py "F01 macro workspace snapshots (build_macro_workspaces)" scripts.build_macro_workspaces
-run_py "macro dashboard + US stocks (build_site)" scripts.build_site
+run_py "macro dashboard + US stocks (build_site)" scripts.build_site || exit "$?"
 # B-F06-4 research screener — AFTER the stock library (build_stock_library runs
 # inside build_site and writes site/stockdata/*.json). Pure view over those
 # objects + valuation_scenario.v1 rows. Display-tier; under 60s.

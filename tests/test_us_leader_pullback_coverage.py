@@ -587,7 +587,9 @@ class TestNightlyDurability:
 
         required = "steps.leader_accepted_source.outputs.ready == 'true'"
         assert steps[dashboard_i].get("if") == required
-        assert steps[prophet_i].get("if") == required
+        assert steps[prophet_i].get("if") == (
+            required + " && steps.regime_dashboard.outcome == 'success'"
+        )
         acceptance = next(step for step in steps if step.get("id") == "prophet_board_acceptance")
         assert acceptance.get("if") == required
 

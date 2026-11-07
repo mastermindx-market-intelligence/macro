@@ -2303,11 +2303,20 @@ jobs:
       - run: git pull origin main
       - name: python 3.12 (Homebrew venv — self-hosted runner)
         run: |
-          VENV="$HOME/.cache/mm-venv-${RUNNER_NAME:-default}"
+          # Keep the existing per-runner environment in the runner-owned tool cache.
+          # Qualify and execute its entry path; never resolve it to the base Python.
+          : "${RUNNER_TOOL_CACHE:?runner tool cache is required}"
+          : "${RUNNER_NAME:?registered runner identity is required}"
+          case "$RUNNER_TOOL_CACHE" in /*) ;; *) echo "::error::runner tool cache must be absolute"; exit 1 ;; esac
+          case "$RUNNER_NAME" in *[!A-Za-z0-9_.-]*|.|..) echo "::error::invalid runner identity"; exit 1 ;; esac
+          VENV="$RUNNER_TOOL_CACHE/mm-venv-$RUNNER_NAME"
           [ -x "$VENV/bin/python" ] || /opt/homebrew/bin/python3.12 -m venv "$VENV"
-          echo "$VENV/bin" >> "$GITHUB_PATH"
+          "$VENV/bin/python" -c 'import os, sys; expected = sys.argv[1]; os.path.samefile(sys.prefix, expected) or sys.exit("engine Python prefix does not match its venv")' "$VENV"
           "$VENV/bin/python" -m pip install --quiet --upgrade pip
-      - run: pip install -r requirements.txt
+          "$VENV/bin/python" -m pip install -r requirements.txt
+          "$VENV/bin/python" -c 'import rjsmin, rcssmin, sys; print("Qualified engine Python:", sys.executable, "prefix:", sys.prefix)'
+          echo "DAILY_ENGINE_PYTHON=$VENV/bin/python" >> "$GITHUB_ENV"
+          echo "$VENV/bin" >> "$GITHUB_PATH"
       - name: timings band — restores-preamble (W2)
         run: python3 scripts/nightly_timings.py mark --band restores-preamble || echo "::warning::timings band mark failed (non-fatal)"
       - name: restore Filing Forensics disclosure projections (hard gate)
@@ -2655,11 +2664,10 @@ jobs:
       - name: run regime engine + build dashboard + daily brief (resilient)
         id: regime_dashboard
         if: steps.leader_accepted_source.outputs.ready == 'true'
-        # Self-diagnosing + deploy-resilient: each builder runs isolated; a failure
-        # is surfaced as a ::error:: annotation (readable on the run page + via the
-        # public check-runs API) AND appended to the run Summary with its traceback,
-        # but NEVER aborts the job — so the site still deploys (via the always()
-        # artifact upload) and one broken builder can't 404 the whole dashboard.
+        # Optional builders remain resilient. A failed US board producer returns
+        # nonzero, so dependent consumers can reject its untouched old board.
+        # Keep the rest of the nightly deploy available after that scoped failure.
+        continue-on-error: true
         env:
           # catalyst_tone (Tier-A FOMC/dislocation digest) runs INSIDE engine.run, so it
           # needs the DeepSeek key here too — not only on the master_brain step below.
@@ -2690,6 +2698,7 @@ jobs:
         # Body extracted verbatim to scripts/ci/daily_engine_regime_dashboard.sh (512KB processing-cap diet 2026-08-12 — tests/test_workflow_file_size.py).
         run: bash scripts/ci/daily_engine_regime_dashboard.sh
       - name: publish the provisional → nightly confirmation delta (R2 artifact)
+        if: steps.regime_dashboard.outcome == 'success'
         # W-L1. Runs HERE, after the build step, because that is the first moment
         # site/factordata/us_standouts.json is tonight's board of record — the same
         # document build_site just graded in-process for the render. Same function
@@ -2796,8 +2805,10 @@ jobs:
         run: python3 scripts/nightly_timings.py mark --band prophet || echo "::warning::timings band mark failed (non-fatal)"
       - name: Prophet nightly (plan refresh + ledger advancement; R2 after checkpoint)
         id: prophet_nightly
-        if: steps.leader_accepted_source.outputs.ready == 'true'
-        # AFTER build_site: reads site/factordata/us_standouts.json (just written).
+        if: steps.leader_accepted_source.outputs.ready == 'true' && steps.regime_dashboard.outcome == 'success'
+        # AFTER a successful build_site: never snapshot an untouched old board
+        # after a failed producer. This dependency does not redefine freshness.
+        # Reads site/factordata/us_standouts.json (just written).
         # Originates new prophet.trade_plan/v1 envelopes, runs the management engine
         # for every active plan, advances the forward outcome ledger (nightly is the
         # SOLE advancer — idempotent per plan ID). R2 publication is deliberately
