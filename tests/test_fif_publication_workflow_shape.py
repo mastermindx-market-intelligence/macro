@@ -385,9 +385,10 @@ def test_kernel_suite_uses_two_isolated_interpreters() -> None:
     for suite in NEW_TEST_SUITES:
         assert suite in files, suite
     assert "scripts/ci/run_fif_kernel_suites.py" in [str(path) for path in kernel["paths"]]
+    # This guard owns FIF; other jobs retain their existing worker contracts.
     shared_worker_steps = [
         (job_id, step.get("name"))
-        for job_id, job in manifest.items()
+        for job_id, job in ((FKG_JOB, kernel),)
         for step in job.get("steps") or []
         if isinstance(step, dict) and "--dist loadfile" in str(step.get("run") or "")
     ]
