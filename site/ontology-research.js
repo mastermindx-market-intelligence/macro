@@ -20,7 +20,26 @@ export function eventSelectionFromSearch(search) {
     return Object.freeze({date,ticker,side});
   } catch (_) { return null; }
 }
-function instant(v) { return typeof v==='string' && /(?:Z|[+-]\d\d:\d\d)$/.test(v) && Number.isFinite(Date.parse(v)); }
+function instant(v) {
+  // Date.parse normalizes impossible dates and 24:00. Validate the written
+  // calendar/time first; retain native offsets and fractional-second precision.
+  const m=typeof v==='string' && /^(\d{4}-\d{2}-\d{2})T(\d{2}):(\d{2})(?::(\d{2})(?:\.\d+)?)?(?:Z|[+-](\d{2}):(\d{2}))$/.exec(v);
+  return !!m && !m[1].startsWith('0000-') && day(m[1]) && +m[2]<24 && +m[3]<60
+    && (m[4]===undefined || +m[4]<60) && (m[5]===undefined || +m[5]<24 && +m[6]<60)
+    && Number.isFinite(Date.parse(v));
+}
+function instantAfter(a,b) {
+  // Called only after instant() validates both strings. Parse the whole second
+  // with its native offset, then compare every fractional digit without rounding.
+  const parts=v=>({whole:Date.parse(v.replace(/\.\d+/,'')),fraction:/\.(\d+)/.exec(v)?.[1]||''});
+  const left=parts(a),right=parts(b);
+  if(left.whole!==right.whole)return left.whole>right.whole;
+  for(let i=0;i<Math.max(left.fraction.length,right.fraction.length);i++){
+    const l=left.fraction[i]||'0',r=right.fraction[i]||'0';
+    if(l!==r)return l>r;
+  }
+  return false;
+}
 function cancel(reader) { try { void Promise.resolve(reader.cancel()).catch(()=>{}); } catch (_) {} }
 function field(dl,en,zh,value) { const row=node('div','ox-company-field');row.append(node('dt','',en,zh));const dd=node('dd');dd.textContent=value;row.append(dd);dl.append(row); }
 function pct(v) { return (v>0?'+':'')+(100*v).toFixed(2)+'%'; }
@@ -32,7 +51,8 @@ export function decodeResearch(value, selection) {
       || !['up','down'].includes(id.side) || !/^[A-Z0-9][A-Z0-9.-]{0,14}$/.test(id.ticker)
       || c.source?.artifact!=='data/price_pressure/latest.json' || c.source.schema!=='price_pressure.v1'
       || !HEX.test(c.source.snapshot_sha256) || !instant(c.source.generated_utc)
-      || !instant(clock?.captured_at) || Date.parse(c.source.generated_utc)>Date.parse(clock.captured_at)
+      || !instant(clock?.captured_at) || !clock.captured_at.endsWith('Z')
+      || instantAfter(c.source.generated_utc,clock.captured_at)
       || Date.parse(clock.captured_at)>Date.now()+1000 || id.date>clock.captured_at.slice(0,10)
       || clock.clock_class!=='system_recorded' || clock.historical_availability!=='unknown'
       || clock.scope!=='retrospective_captured_read' || !n
@@ -48,6 +68,7 @@ export function decodeResearch(value, selection) {
       || ['date','ticker','side'].some(p=>k.asof.t0_evidence_ref.native_identity?.[p]!==id[p])
       || k.asof.t0_evidence_ref.native_digest?.sha256!==c.source.snapshot_sha256
       || k.asof.t0_evidence_ref.recorded_clock?.value!==clock.captured_at
+      || k.asof.value!==clock.captured_at || k.asof.grain!=='datetime'
       || k.calibrated?.state!=='unavailable'
       || ['opportunity_score','confidence','probability','impact'].some(p=>k.calibrated[p]!==null)
       || ['transmission','company_context','valuation_context','path_timing','portfolio_intersection'].some(p=>k[p]?.state!=='unavailable')) fail();
