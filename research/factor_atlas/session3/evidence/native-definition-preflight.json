@@ -1,0 +1,111 @@
+{
+  "known_at_basis": "current byte observation; not historical PIT",
+  "market_data_obtained": false,
+  "native_definition": true,
+  "schema": "factor_atlas.s3.native_definition_preflight/v1",
+  "view": {
+    "asof": "2026-10-11T10:03:56.711963+00:00",
+    "authority": {
+      "display_only": true,
+      "position_sizing": false,
+      "prophet": false,
+      "publication": false
+    },
+    "basket_id": "mag7",
+    "coverage": {
+      "payload_count": 0,
+      "qualified_count": 0,
+      "qualified_weight": 0,
+      "reported_value_count": 0,
+      "reported_weight": 0.0,
+      "total_count": 7
+    },
+    "definition": {
+      "known_at": "2026-10-11T10:03:56.711963+00:00",
+      "sha256": "b968e9812f60494bd02bbc0d5ad4b8dc67dcb90a939426728e9db6befba9678a",
+      "source_ref": "git:773d6cc2f18fdbce5441e484abc16eb30d8ba3db:data/baskets/membership.json"
+    },
+    "hybrid_expected_move": null,
+    "legacy_covered_mean_iv": null,
+    "legacy_label": "unqualified mean of reported IV values; not certified IV30 or whole-basket risk",
+    "members": [
+      {
+        "eligible_for_hybrid_risk": false,
+        "legacy_atm_iv_decimal": null,
+        "qualified_iv30": null,
+        "reasons": [
+          "OWNER_PAYLOAD_MISSING"
+        ],
+        "root": "AAPL",
+        "weight": 0.14285714285714285
+      },
+      {
+        "eligible_for_hybrid_risk": false,
+        "legacy_atm_iv_decimal": null,
+        "qualified_iv30": null,
+        "reasons": [
+          "OWNER_PAYLOAD_MISSING"
+        ],
+        "root": "AMZN",
+        "weight": 0.14285714285714285
+      },
+      {
+        "eligible_for_hybrid_risk": false,
+        "legacy_atm_iv_decimal": null,
+        "qualified_iv30": null,
+        "reasons": [
+          "OWNER_PAYLOAD_MISSING"
+        ],
+        "root": "GOOGL",
+        "weight": 0.14285714285714285
+      },
+      {
+        "eligible_for_hybrid_risk": false,
+        "legacy_atm_iv_decimal": null,
+        "qualified_iv30": null,
+        "reasons": [
+          "OWNER_PAYLOAD_MISSING"
+        ],
+        "root": "META",
+        "weight": 0.14285714285714285
+      },
+      {
+        "eligible_for_hybrid_risk": false,
+        "legacy_atm_iv_decimal": null,
+        "qualified_iv30": null,
+        "reasons": [
+          "OWNER_PAYLOAD_MISSING"
+        ],
+        "root": "MSFT",
+        "weight": 0.14285714285714285
+      },
+      {
+        "eligible_for_hybrid_risk": false,
+        "legacy_atm_iv_decimal": null,
+        "qualified_iv30": null,
+        "reasons": [
+          "OWNER_PAYLOAD_MISSING"
+        ],
+        "root": "NVDA",
+        "weight": 0.14285714285714285
+      },
+      {
+        "eligible_for_hybrid_risk": false,
+        "legacy_atm_iv_decimal": null,
+        "qualified_iv30": null,
+        "reasons": [
+          "OWNER_PAYLOAD_MISSING"
+        ],
+        "root": "TSLA",
+        "weight": 0.14285714285714285
+      }
+    ],
+    "population_basis": "current_registry_membership_not_pit_backtest",
+    "qualified_mean_iv30": null,
+    "reasons": [
+      "SOURCE_QUOTE_QUALITY_AND_CLOCKS_NOT_SUPPLIED",
+      "CONSTANT_MATURITY_METHOD_NOT_CERTIFIED"
+    ],
+    "schema": "options_hub.factor_legacy_inspection/v1"
+  }
+}
