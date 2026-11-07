@@ -1,0 +1,41 @@
+FFFFFFF                                                                  [100%]
+=================================== FAILURES ===================================
+_ test_door_backlog_fractional_future_clock_waits[2026-11-30T21:05:00.100000Z-signal_ts] _
+tests/test_us_candidate_episode_reconciler.py:1580: in test_door_backlog_fractional_future_clock_waits
+    assert first["source_counts"]["doors"]["input"] == 0
+E   assert 1 == 0
+_ test_door_backlog_fractional_future_clock_waits[2026-11-30T21:05:00.100000Z-signal_known_ts] _
+tests/test_us_candidate_episode_reconciler.py:1580: in test_door_backlog_fractional_future_clock_waits
+    assert first["source_counts"]["doors"]["input"] == 0
+E   assert 1 == 0
+_ test_door_backlog_fractional_future_clock_waits[2026-11-30T21:05:00.100000Z-observed_at] _
+tests/test_us_candidate_episode_reconciler.py:1580: in test_door_backlog_fractional_future_clock_waits
+    assert first["source_counts"]["doors"]["input"] == 0
+E   assert 1 == 0
+_ test_door_backlog_fractional_future_clock_waits[2026-11-30T16:05:00.100000-05:00-signal_ts] _
+tests/test_us_candidate_episode_reconciler.py:1580: in test_door_backlog_fractional_future_clock_waits
+    assert first["source_counts"]["doors"]["input"] == 0
+E   assert 1 == 0
+_ test_door_backlog_fractional_future_clock_waits[2026-11-30T16:05:00.100000-05:00-signal_known_ts] _
+tests/test_us_candidate_episode_reconciler.py:1580: in test_door_backlog_fractional_future_clock_waits
+    assert first["source_counts"]["doors"]["input"] == 0
+E   assert 1 == 0
+_ test_door_backlog_fractional_future_clock_waits[2026-11-30T16:05:00.100000-05:00-observed_at] _
+tests/test_us_candidate_episode_reconciler.py:1580: in test_door_backlog_fractional_future_clock_waits
+    assert first["source_counts"]["doors"]["input"] == 0
+E   assert 1 == 0
+________ test_door_backlog_fractional_future_identity_stays_unconsumed _________
+tests/test_us_candidate_episode_reconciler.py:1594: in test_door_backlog_fractional_future_identity_stays_unconsumed
+    assert first["source_counts"]["doors"]["input"] == 0
+E   assert 1 == 0
+
+NOTE: sparse worktree — .agents, .claude, .codex, .cursor, .grok, .warp, admin, app, browser, calibration, content, contracts, data, docs, finviz_themes, knowledge, mockups, ops, orch, properties, reports, requirements, research, site, templates, tools, ux-evidence, verify_shots, worker not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_us_candidate_episode_reconciler.py::test_door_backlog_fractional_future_clock_waits[2026-11-30T21:05:00.100000Z-signal_ts]
+FAILED tests/test_us_candidate_episode_reconciler.py::test_door_backlog_fractional_future_clock_waits[2026-11-30T21:05:00.100000Z-signal_known_ts]
+FAILED tests/test_us_candidate_episode_reconciler.py::test_door_backlog_fractional_future_clock_waits[2026-11-30T21:05:00.100000Z-observed_at]
+FAILED tests/test_us_candidate_episode_reconciler.py::test_door_backlog_fractional_future_clock_waits[2026-11-30T16:05:00.100000-05:00-signal_ts]
+FAILED tests/test_us_candidate_episode_reconciler.py::test_door_backlog_fractional_future_clock_waits[2026-11-30T16:05:00.100000-05:00-signal_known_ts]
+FAILED tests/test_us_candidate_episode_reconciler.py::test_door_backlog_fractional_future_clock_waits[2026-11-30T16:05:00.100000-05:00-observed_at]
+FAILED tests/test_us_candidate_episode_reconciler.py::test_door_backlog_fractional_future_identity_stays_unconsumed
+7 failed, 80 deselected in 11.27s

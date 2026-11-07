@@ -1,0 +1,30 @@
+{
+  "operation": "prophet-door-intake-retention-20260922-sol-001",
+  "base": "758b052ff0278e9842fd1b392e0b04617124d1bb",
+  "procedure": "ce18ed4f1eaa28e65a616a90aecca5c5ce1c5a2e",
+  "tests": {
+    "initial_red_failed": 16,
+    "initial_red_control_passed": 1,
+    "clock_hardening_red": 5,
+    "final_owner_passed": 148,
+    "failed": 0,
+    "skipped": 0
+  },
+  "source_sha256": {
+    "scripts/reconcile_us_candidate_episodes.py": "3590e339f9c3d53b62f9ae7c69408fc93467514f0a1092838bf23d530a782199",
+    "tests/test_us_candidate_episode_reconciler.py": "304a8b2ec806ecc794cf26aaa53582f6899d98104504cd2c6df3ca181f0a7fcc"
+  },
+  "pr7477_merged": "758b052ff0278e9842fd1b392e0b04617124d1bb",
+  "pr7477_release_ruling": 5770525727,
+  "real_input_probe_scope": "Earlier candidate before final explicit-clock hardening; final repeat platform-blocked. No exact-final-source natural-run claim.",
+  "canonical_ledger_writes": false,
+  "rank_entry_size_changed": false,
+  "mission_complete": false,
+  "source_carrier": "claude/prophet-door-intake-retention-20260922",
+  "agentos_validation": {
+    "records": 1174,
+    "errors": 0,
+    "warnings": 401
+  },
+  "local_contract_delta": "unverified: CI planner requires sparse-omitted research/prophet_us_audit/reclaim_veto_packet.py; no waiver or guard edit"
+}

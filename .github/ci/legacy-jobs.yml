@@ -35377,6 +35377,7 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "research/prophet/cpu_leadership/door_retention_20260922/prove.py"
       - collectors/rate_futures.py
       - engine/rate_futures_repricing.py
       - engine/entry_radar/__init__.py
