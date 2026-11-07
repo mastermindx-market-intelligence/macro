@@ -880,23 +880,15 @@ def test_not_applicable_trade_is_unstated_not_e1(built: tuple[str, Path]) -> Non
 
 
 def test_credit_funding_e4_needs_the_capture_fixture_flag() -> None:
-    """P3 v5: withheld_command_tabs is fixture-only; credit/funding E4 needs the flag.
-
-    The fabricated view pins the workspace's availability to CURRENT because
-    the NEGATIVE control below (`closed_funding["empty"] is None`) is what a
-    stale base confounds, not the E4 assertion. E4 OUTRANKS E2: the withheld
-    check at build_macro_suite_pages.py:1281 short-circuits before the E2 path
-    in its `else` branch, so with the fixture flag on, E4 fires even on a
-    STALE_SOURCE base. With the flag OFF the fixture key is ignored, the tab
-    falls through to the real E2 path, and a stale base (the 2026-09-29
-    nightly was cancelled at collection, so capital_structure never published)
-    yields E2 instead of None. Pinning CURRENT removes that base-freshness
-    confound so the control states the gate rather than today's bake."""
+    """P3 v5: withheld_command_tabs is fixture-only; credit/funding E4 needs the flag."""
     entries = copy.deepcopy(_live_entries())
     for entry in entries:
         if entry["workspace_id"] == "capital_structure":
-            entry["snapshot"]["withheld_command_tabs"] = ["funding"]
+            # This test is about fixture-only E4 admission, not today's source
+            # freshness. Pin the workspace CURRENT so a live STALE_SOURCE E2
+            # cannot mask the behavior being asserted.
             entry["snapshot"]["availability"]["state"] = "CURRENT"
+            entry["snapshot"]["withheld_command_tabs"] = ["funding"]
     closed = builder._macro_command_sections(entries, page_built_at=BUILT_AT)
     closed_credit = next(s for s in closed if s["id"] == "credit")
     closed_funding = next(t for t in closed_credit["subtabs"] if t["id"] == "funding")
@@ -1970,6 +1962,8 @@ def _visible_blob(html: str, lang: str) -> str:
     return " ".join(parser.texts)
 
 
+@pytest.mark.data_gate
+@pytest.mark.needs_full_checkout("site")
 def test_rendered_sections_have_no_repeated_visible_sentence() -> None:
     """MINOR-E2: repeated-sentence check on the rendered hub, not the head."""
     html = (ROOT / "site" / "macro_monetary.html").read_text(encoding="utf-8")

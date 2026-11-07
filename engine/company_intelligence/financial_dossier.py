@@ -234,3 +234,234 @@ def _checked_identity_value(
     if reason:
         result["reason"] = reason
     return result
+
+# --------------------------------------------------------------------------------------
+# Required-versus-optional evidence view (Industrials T06: IND-D23, IND-R201, IND-R215,
+# IND-R218, IND-SF04, commissioned as ONE capability by Sol ruling 5894912727 on #7789).
+# --------------------------------------------------------------------------------------
+
+EVIDENCE_VIEW_VERSION = "v1"
+
+#: Conclusions this view may never originate. Withheld whenever the market expectation
+#: they would be measured against is absent. IND-R218 lets the operating economics be
+#: EXPLAINED without consensus; it forbids the conclusion, not the explanation.
+WITHHELD_CONCLUSIONS: frozenset[str] = frozenset(
+    {"mispricing", "valuation_gap", "probability", "rank", "entry", "size", "trade"}
+)
+
+#: Extensions whose ABSENCE is a disclosed limitation rather than a refusal. The theme
+#: graph belongs to another owner and is legitimately unbuilt here (IND-R201); consensus
+#: is third-party and often simply does not exist for a name (IND-R218).
+OPTIONAL_EXTENSIONS: frozenset[str] = frozenset({"theme_graph", "consensus"})
+
+#: Physical-production vocabulary that must never be attached to a service business
+#: (IND-SF04). A supplied key is REFUSED by name rather than echoed or silently dropped:
+#: dropping it would make a fabricated dependency indistinguishable from an absent one.
+_PHYSICAL_PRODUCTION_FIELDS: frozenset[str] = frozenset(
+    {"bom", "bill_of_materials", "wafer_starts", "wafer_measure", "production_stage", "stage"}
+)
+
+_SERVICE_MODELS: frozenset[str] = frozenset({"service"})
+
+#: Limitation prefixes that describe a MODEL MISMATCH rather than an evidence gap, and so
+#: must be disclosed without degrading the page verdict. A service company with no bill of
+#: materials is completely described, not partially evidenced (``IND-SF04`` clause 1). Kept
+#: as an explicit tuple, never a general rule: widening it is how a real gap gets
+#: reclassified as harmless.
+_NON_EVIDENCE_LIMITATION_PREFIXES: tuple[str, ...] = ("physical_model_refused:",)
+_DERIVATION_REF_FIELDS = ("formula", "formula_version", "operand_refs", "receipt_ref")
+
+
+def assemble_evidence_view(
+    *,
+    derivations: Mapping[str, Mapping[str, object]],
+    prose: Mapping[str, Iterable[str]] | None = None,
+    extensions: Mapping[str, object] | None = None,
+    business_model: str,
+    operating_model: Mapping[str, object] | None = None,
+) -> dict[str, object]:
+    """Compose one dossier view from already-derived result-to-cash values.
+
+    The view NEVER computes, re-rounds, re-signs or re-labels a number: each section
+    mirrors its derivation's own ``status`` and quotes its ``value`` verbatim, or reports
+    the refusal the derivation returned (R-IND ruling R3/R7). ``derivations`` values are
+    ``derive_result_cash`` results; this function does not call it, so it cannot disagree
+    with it.
+
+    The four behaviours it makes true, each the compliant half of an obligation whose
+    violating half is the thing that used to be possible:
+
+    * a section whose REQUIRED operand is unavailable is not ``ready``, carries no value,
+      and every prose block depending on it is withheld with that section named -- so a
+      missing number cannot surface as a zero, an invented figure, or a page that reports
+      success while one of its claims has no evidence (``IND-D23``);
+    * an absent OPTIONAL extension is disclosed as a limitation and leaves every section
+      that does not depend on it at its own status, so qualified operating analysis stays
+      usable when the theme graph is unbuilt (``IND-R201``);
+    * required refusal and optional absence stay distinct outcomes, never collapsing into
+      one (``IND-R215``);
+    * with consensus absent, every conclusion in :data:`WITHHELD_CONCLUSIONS` is withheld
+      by name while the operating explanation remains readable (``IND-R218``);
+    * a service business carries no physical-production field at all, and a supplied one
+      is refused by name rather than echoed (``IND-SF04``).
+
+    ``prose`` maps a prose block to the section names it asserts over, and lands in one of
+    three states, because "not ready" and "not readable" are different facts:
+
+    * ``ready`` - every section it asserts over is ``ready``;
+    * ``qualified`` - some section is ``limited``, so the supported figure stands and the
+      block is READABLE with the limitation attached (this is the half that keeps an
+      optional absence from reading like a refusal, ``IND-R215``);
+    * ``withheld`` - some section is ``refused``, or names a section that does not exist.
+
+    The dependency is declared by the caller because only the caller knows what its
+    sentences claim - inferring it from section names would let a renamed section silently
+    un-block prose. An undeclared section name fails CLOSED: a block asserting over
+    something absent is withheld, never published.
+
+    The returned ``status`` is the PAGE's own verdict, and it exists because two of these
+    obligations are about the page rather than a section - ``IND-D23``'s "no all-page false
+    success" and ``IND-R201``'s "no full-vertical acceptance". It is ``ready`` only when
+    the view carries no EVIDENCE limitation, ``incomplete`` when anything is refused or
+    withheld, and ``qualified`` in between: readable, disclosed, and explicitly not an
+    acceptance. A refused physical-production field is disclosed but does not degrade it -
+    see :data:`_NON_EVIDENCE_LIMITATION_PREFIXES`.
+    """
+    if not isinstance(derivations, Mapping):
+        raise TypeError("derivations must be a mapping of section name to derivation")
+    if business_model not in _SERVICE_MODELS | {"manufacturing"}:
+        raise ValueError("business_model must be 'service' or 'manufacturing'")
+
+    limitations: list[str] = []
+
+    sections: dict[str, object] = {}
+    for name in sorted(derivations):
+        derivation = derivations[name]
+        if not isinstance(derivation, Mapping):
+            raise TypeError(f"derivation for {name!r} must be a mapping")
+        status = derivation.get("status")
+        value = derivation.get("value")
+        # Quoted verbatim, with ONE exception that is not a recomputation: a `refused`
+        # derivation may not publish a number. `derive_result_cash` already returns None
+        # there, so this only fires out-of-contract - and a figure sitting under a refusal
+        # is worse than an invented one, because it looks derived. The drop is recorded, so
+        # it can never be a silent substitution (``IND-D23``).
+        if status == "refused" and value is not None:
+            limitations.append(f"value_dropped_under_refusal:{name}")
+            value = None
+        row: dict[str, object] = {
+            "status": status,
+            "value": value,
+            "limitations": list(derivation.get("limitations") or ()),
+        }
+        for field in _DERIVATION_REF_FIELDS:
+            row[field] = derivation.get(field)
+        sections[name] = row
+        if status != "ready":
+            limitations.append(f"section_not_ready:{name}")
+        for code in row["limitations"]:
+            limitations.append(f"section_limitation:{name}:{code}")
+
+    extension_states: dict[str, object] = {}
+    supplied = dict(extensions or {})
+    unknown_extensions = sorted(set(supplied) - OPTIONAL_EXTENSIONS)
+    for name in sorted(OPTIONAL_EXTENSIONS):
+        value = supplied.get(name)
+        if value is None:
+            extension_states[name] = {"state": "absent", "reason": "not_supplied"}
+            limitations.append(f"extension_absent:{name}")
+        elif isinstance(value, str):
+            # A typed absence: the caller knows it is gone and why.
+            reason = value if _valid_typed_absence(value) else "reason_unrecognised"
+            extension_states[name] = {"state": "absent", "reason": reason}
+            limitations.append(f"extension_absent:{name}")
+        else:
+            extension_states[name] = {"state": "present", "reason": None}
+
+    prose_blocks: dict[str, object] = {}
+    for block in sorted(prose or {}):
+        depends = list((prose or {})[block])
+        # An undeclared dependency BLOCKS. A block asserting over a section this view does
+        # not hold has no evidence at all, which is strictly worse than a refused one.
+        unknown_deps = {dep for dep in depends if dep not in sections}
+        blocking = sorted(
+            {
+                dep
+                for dep in depends
+                if dep in sections and sections[dep]["status"] == "refused"
+            }
+            | unknown_deps
+        )
+        qualifying = sorted(
+            dep
+            for dep in depends
+            if dep in sections and sections[dep]["status"] == "limited"
+        )
+        if blocking:
+            status = "withheld"
+        elif qualifying:
+            status = "qualified"
+        else:
+            status = "ready"
+        prose_blocks[block] = {
+            "status": status,
+            "blocked_by": blocking,
+            "qualified_by": qualifying,
+        }
+        for dep in blocking:
+            limitations.append(f"prose_withheld:{block}:{dep}")
+        if status == "qualified":
+            for dep in qualifying:
+                limitations.append(f"prose_qualified:{block}:{dep}")
+
+    # IND-R218: the conclusion is withheld exactly when the expectation it would be
+    # measured against is absent. Nothing here produces one when it is present either -
+    # this module never originates a conclusion at all; it reports which ones are barred.
+    consensus_absent = extension_states["consensus"]["state"] == "absent"
+    withheld = sorted(WITHHELD_CONCLUSIONS) if consensus_absent else []
+    if consensus_absent:
+        limitations.append("conclusions_withheld:no_consensus")
+
+    model: dict[str, object] = {"business_model": business_model}
+    refused_fields: list[str] = []
+    for key in sorted(operating_model or {}):
+        if business_model in _SERVICE_MODELS and key in _PHYSICAL_PRODUCTION_FIELDS:
+            refused_fields.append(key)
+            continue
+        model[key] = (operating_model or {})[key]
+    if refused_fields:
+        limitations.extend(f"physical_model_refused:{key}" for key in refused_fields)
+    model["refused_fields"] = refused_fields
+
+    for name in unknown_extensions:
+        limitations.append(f"unknown_extension:{name}")
+
+    # IND-D23 / IND-R201: the page may not read as a success while any part of it is
+    # missing. `ready` therefore requires an EMPTY limitation list rather than merely
+    # the absence of a refusal - an undisclosed absence is exactly the false success.
+    refused_anything = any(row["status"] == "refused" for row in sections.values())
+    withheld_anything = any(
+        block["status"] == "withheld" for block in prose_blocks.values()
+    )
+    evidence_limitations = [
+        code
+        for code in limitations
+        if not code.startswith(_NON_EVIDENCE_LIMITATION_PREFIXES)
+    ]
+    if refused_anything or withheld_anything:
+        status = "incomplete"
+    elif evidence_limitations:
+        status = "qualified"
+    else:
+        status = "ready"
+
+    return {
+        "view_version": EVIDENCE_VIEW_VERSION,
+        "status": status,
+        "sections": sections,
+        "prose": prose_blocks,
+        "extensions": extension_states,
+        "operating_model": model,
+        "withheld_conclusions": withheld,
+        "limitations": sorted(set(limitations)),
+    }

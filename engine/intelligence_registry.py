@@ -111,6 +111,7 @@ render as "could not look", never as "looked and found nothing". That is why an 
 from __future__ import annotations
 
 import ast
+from copy import deepcopy
 import json
 import re
 from dataclasses import dataclass
@@ -501,6 +502,119 @@ def max_authority(values: Iterable[str]) -> str:
 
 
 # ---------------------------------------------------------------------------
+# T12: a read-only requirement query over the current derived registry
+# ---------------------------------------------------------------------------
+
+
+def required_tier(registry: Mapping[str, Any] | None,
+                  changed_paths: Sequence[str]) -> dict[str, Any]:
+    """Report source-defined requirements for exact registered producer paths.
+
+    This is the narrow registry consumer described in the Evaluation architecture
+    section 7: display -> T1 and gate_size -> T3. Other authorities have no defined
+    mapping. It does not infer dependency impact, execute an evaluation, or establish
+    that a requirement passed. Callers own the loaded registry's source identity.
+
+    Partial coverage has no complete ``required_tier``; ``maximum_supported_tier``
+    retains the known requirement without silently dropping unresolved paths/owners.
+    Content debt (grades, lifecycle, prereg availability) cannot erase a requirement.
+    """
+    if (not isinstance(changed_paths, (list, tuple)) or any(
+        not isinstance(path, str) or not path or path.startswith("/")
+        or "\\" in path or any(part in {"", ".", ".."} for part in path.split("/"))
+        for path in changed_paths
+    )):
+        raise ValueError("changed_paths must contain exact canonical producer paths")
+    paths = sorted(set(changed_paths))
+    answer: dict[str, Any] = {
+        "schema": "intelligence_registry.required_tier.v1",
+        "scope": "exact_registered_producer_paths",
+        "policy_source": "research/MASTERMIND_INTELLIGENCE_EVALUATION_ARCHITECTURE.md#7-evaluation-tiers-and-the-agent-os-interface-parts-xviii-xxiii",
+        "status": "no_changes" if not paths else "unresolved",
+        "required_tier": None, "maximum_supported_tier": None,
+        "evaluation_status": "not_assessed",
+        "changed_paths": paths, "engines": [], "unresolved": [],
+    }
+    if not paths:
+        return answer
+    if (not isinstance(registry, Mapping) or registry.get("schema") != SCHEMA
+        or not isinstance(registry.get("engines"), list)
+        or not isinstance(registry.get("excluded"), list)
+        or any(not isinstance(row, Mapping)
+               for row in registry["engines"] + registry["excluded"])):
+        answer["unresolved"] = [{"path": path, "reason": "registry_unavailable"}
+                                for path in paths]
+        return answer
+
+    rows = registry["engines"]
+    exclusions = registry["excluded"]
+    # These are authority derivation rules (a)-(d) above, not a path policy.
+    rules = {"display": "d", "engine_input": "c", "user_ranking": "b", "gate_size": "a"}
+    policy = {"display": "T1", "gate_size": "T3"}
+    tiers: list[str] = []
+    identities = [row.get("engine_id") for row in rows + exclusions]
+    # Keep the canonical disjoint partition for the queried artifacts. Content
+    # debt on an unrelated row is irrelevant, but shared ownership is not.
+    artifact_ids = [artifact.get("id") if isinstance(artifact, Mapping) else artifact
+        for row in rows + exclusions
+        for artifact in (row.get("artifacts") if isinstance(row.get("artifacts"), list) else [])]
+
+    for path in paths:
+        matched = [row for row in rows if row.get("producer") == path]
+        excluded = [row for row in exclusions if row.get("producer") == path]
+        if not matched and not excluded:
+            answer["unresolved"].append({"path": path, "reason": "unmatched_producer"})
+        for row in excluded:
+            answer["unresolved"].append({"path": path, "reason": "excluded_producer",
+                "engine_id": row.get("engine_id"), "exclusion": row.get("reason")})
+        for row in matched:
+            authority = row.get("authority")
+            evidence = row.get("authority_evidence")
+            artifacts = row.get("artifacts")
+            eid, owner = row.get("engine_id"), row.get("owner_program")
+            identity_ok = (isinstance(owner, str) and bool(owner)
+                and isinstance(eid, str) and eid == engine_id_for(path, owner)
+                and identities.count(eid) == 1)
+            artifacts_ok = (isinstance(artifacts, list) and bool(artifacts)
+                and all(isinstance(a, Mapping) and isinstance(a.get("id"), str)
+                    and bool(a["id"]) and isinstance(a.get("artifact_authority"), str)
+                    and a["artifact_authority"] in rules
+                    and a.get("artifact_authority_rule") == rules[a["artifact_authority"]]
+                    and (a["artifact_authority"] != "gate_size" or
+                         a.get("tier") in ("scored", "confirmer"))
+                    and (a["artifact_authority"] != "display" or
+                         (a.get("tier") not in ("scored", "confirmer")
+                          and not a.get("scored_path_surfaces")))
+                    and artifact_ids.count(a["id"]) == 1
+                    for a in artifacts))
+            attribution_ok = False
+            if identity_ok and artifacts_ok and isinstance(authority, str) and authority in rules:
+                ids = [a["id"] for a in artifacts]
+                winners = sorted(a["id"] for a in artifacts if a["artifact_authority"] == authority)
+                attribution_ok = (len(ids) == len(set(ids))
+                    and authority == max_authority(a["artifact_authority"] for a in artifacts)
+                    and isinstance(evidence, Mapping) and evidence.get("rule") == rules[authority]
+                    and evidence.get("artifact_ids") == winners and bool(winners))
+            reason = ("authority_attribution_invalid" if not attribution_ok else
+                      "authority_policy_undefined" if authority not in policy else None)
+            tier = policy[authority] if reason is None else None
+            result = {"path": path, "engine_id": eid, "owner_program": owner,
+                "authority": authority, "authority_evidence": deepcopy(evidence),
+                "required_tier": tier, "reason": reason}
+            answer["engines"].append(result)
+            if reason:
+                answer["unresolved"].append({"path": path, "engine_id": eid, "reason": reason})
+            else:
+                tiers.append(tier)
+    if tiers:
+        answer["maximum_supported_tier"] = max(tiers)
+        answer["status"] = "partial" if answer["unresolved"] else "resolved"
+        if not answer["unresolved"]:
+            answer["required_tier"] = answer["maximum_supported_tier"]
+    return answer
+
+
+# ---------------------------------------------------------------------------
 # Ledger waterfall
 # ---------------------------------------------------------------------------
 
@@ -733,7 +847,7 @@ def bind_species(
     if engine_ledger == LEDGER_NONE:
         return {"validation_state": VALIDATION_STATE_DEFAULT, "bound": [], "reason": "no_ledger"}
 
-    bound: list[dict[str, str]] = []
+    bound: list[dict[str, Any]] = []
     for row in species:
         binding = ((row.get("ledger_binding") or {}).get("ledger")) or ""
         for token in _species_tokens(binding):
@@ -742,6 +856,17 @@ def bind_species(
                     {
                         "species_id": str(row.get("species_id")),
                         "validation_status": str(row.get("validation_status")),
+                        # Raw existing-owner context for readers, not empirical
+                        # qualification of another engine/task/cohort.
+                        "owner_scope": {
+                            "version": row.get("version"),
+                            "horizon_class": row.get("horizon_class"),
+                            "archetype_scope": row.get("archetype_scope"),
+                            "regime_scope": row.get("regime_scope"),
+                            "market_scope": row.get("market_scope"),
+                            "ledger": (row.get("ledger_binding") or {}).get("ledger"),
+                            "since": (row.get("ledger_binding") or {}).get("since"),
+                        },
                     }
                 )
                 break

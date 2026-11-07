@@ -1,0 +1,302 @@
+[
+  {
+    "ticker": "SPY",
+    "expected_sessions": 8481,
+    "missing_sessions": [],
+    "unexpected_sessions": []
+  },
+  {
+    "ticker": "QQQ",
+    "expected_sessions": 6939,
+    "missing_sessions": [],
+    "unexpected_sessions": []
+  },
+  {
+    "ticker": "IWM",
+    "expected_sessions": 6631,
+    "missing_sessions": [],
+    "unexpected_sessions": []
+  },
+  {
+    "ticker": "DIA",
+    "expected_sessions": 7225,
+    "missing_sessions": [],
+    "unexpected_sessions": []
+  },
+  {
+    "ticker": "XLK",
+    "expected_sessions": 6991,
+    "missing_sessions": [],
+    "unexpected_sessions": []
+  },
+  {
+    "ticker": "XLF",
+    "expected_sessions": 6991,
+    "missing_sessions": [],
+    "unexpected_sessions": []
+  },
+  {
+    "ticker": "XLE",
+    "expected_sessions": 6991,
+    "missing_sessions": [],
+    "unexpected_sessions": []
+  },
+  {
+    "ticker": "XLI",
+    "expected_sessions": 6991,
+    "missing_sessions": [],
+    "unexpected_sessions": []
+  },
+  {
+    "ticker": "XLY",
+    "expected_sessions": 6991,
+    "missing_sessions": [],
+    "unexpected_sessions": []
+  },
+  {
+    "ticker": "XLP",
+    "expected_sessions": 6991,
+    "missing_sessions": [],
+    "unexpected_sessions": []
+  },
+  {
+    "ticker": "XLU",
+    "expected_sessions": 6991,
+    "missing_sessions": [],
+    "unexpected_sessions": []
+  },
+  {
+    "ticker": "XLV",
+    "expected_sessions": 6991,
+    "missing_sessions": [],
+    "unexpected_sessions": []
+  },
+  {
+    "ticker": "XLB",
+    "expected_sessions": 6991,
+    "missing_sessions": [],
+    "unexpected_sessions": []
+  },
+  {
+    "ticker": "XLRE",
+    "expected_sessions": 2766,
+    "missing_sessions": [],
+    "unexpected_sessions": []
+  },
+  {
+    "ticker": "XLC",
+    "expected_sessions": 2088,
+    "missing_sessions": [],
+    "unexpected_sessions": []
+  },
+  {
+    "ticker": "SOXX",
+    "expected_sessions": 6347,
+    "missing_sessions": [],
+    "unexpected_sessions": []
+  },
+  {
+    "ticker": "AAPL",
+    "expected_sessions": 8481,
+    "missing_sessions": [],
+    "unexpected_sessions": []
+  },
+  {
+    "ticker": "MSFT",
+    "expected_sessions": 8481,
+    "missing_sessions": [],
+    "unexpected_sessions": []
+  },
+  {
+    "ticker": "NVDA",
+    "expected_sessions": 6971,
+    "missing_sessions": [],
+    "unexpected_sessions": []
+  },
+  {
+    "ticker": "AMD",
+    "expected_sessions": 8481,
+    "missing_sessions": [],
+    "unexpected_sessions": []
+  },
+  {
+    "ticker": "INTC",
+    "expected_sessions": 8481,
+    "missing_sessions": [],
+    "unexpected_sessions": []
+  },
+  {
+    "ticker": "MU",
+    "expected_sessions": 8481,
+    "missing_sessions": [],
+    "unexpected_sessions": []
+  },
+  {
+    "ticker": "AMZN",
+    "expected_sessions": 7396,
+    "missing_sessions": [],
+    "unexpected_sessions": []
+  },
+  {
+    "ticker": "GOOGL",
+    "expected_sessions": 5570,
+    "missing_sessions": [],
+    "unexpected_sessions": []
+  },
+  {
+    "ticker": "META",
+    "expected_sessions": 3618,
+    "missing_sessions": [],
+    "unexpected_sessions": []
+  },
+  {
+    "ticker": "TSLA",
+    "expected_sessions": 4095,
+    "missing_sessions": [],
+    "unexpected_sessions": []
+  },
+  {
+    "ticker": "JPM",
+    "expected_sessions": 8481,
+    "missing_sessions": [],
+    "unexpected_sessions": []
+  },
+  {
+    "ticker": "XOM",
+    "expected_sessions": 8481,
+    "missing_sessions": [],
+    "unexpected_sessions": []
+  },
+  {
+    "ticker": "CVX",
+    "expected_sessions": 8481,
+    "missing_sessions": [],
+    "unexpected_sessions": []
+  },
+  {
+    "ticker": "CAT",
+    "expected_sessions": 8481,
+    "missing_sessions": [],
+    "unexpected_sessions": []
+  },
+  {
+    "ticker": "FCX",
+    "expected_sessions": 7865,
+    "missing_sessions": [],
+    "unexpected_sessions": []
+  },
+  {
+    "ticker": "NEM",
+    "expected_sessions": 8481,
+    "missing_sessions": [],
+    "unexpected_sessions": []
+  },
+  {
+    "ticker": "KO",
+    "expected_sessions": 8481,
+    "missing_sessions": [],
+    "unexpected_sessions": []
+  },
+  {
+    "ticker": "PEP",
+    "expected_sessions": 8481,
+    "missing_sessions": [],
+    "unexpected_sessions": []
+  },
+  {
+    "ticker": "WMT",
+    "expected_sessions": 8481,
+    "missing_sessions": [],
+    "unexpected_sessions": []
+  },
+  {
+    "ticker": "WM",
+    "expected_sessions": 8481,
+    "missing_sessions": [],
+    "unexpected_sessions": []
+  },
+  {
+    "ticker": "JNJ",
+    "expected_sessions": 8481,
+    "missing_sessions": [],
+    "unexpected_sessions": []
+  },
+  {
+    "ticker": "PFE",
+    "expected_sessions": 8481,
+    "missing_sessions": [],
+    "unexpected_sessions": []
+  },
+  {
+    "ticker": "GLD",
+    "expected_sessions": 5506,
+    "missing_sessions": [],
+    "unexpected_sessions": []
+  },
+  {
+    "ticker": "SLV",
+    "expected_sessions": 5144,
+    "missing_sessions": [],
+    "unexpected_sessions": []
+  },
+  {
+    "ticker": "USO",
+    "expected_sessions": 5157,
+    "missing_sessions": [],
+    "unexpected_sessions": []
+  },
+  {
+    "ticker": "TLT",
+    "expected_sessions": 6088,
+    "missing_sessions": [],
+    "unexpected_sessions": []
+  },
+  {
+    "ticker": "IEF",
+    "expected_sessions": 6088,
+    "missing_sessions": [],
+    "unexpected_sessions": []
+  },
+  {
+    "ticker": "HYG",
+    "expected_sessions": 4906,
+    "missing_sessions": [],
+    "unexpected_sessions": []
+  },
+  {
+    "ticker": "EEM",
+    "expected_sessions": 5910,
+    "missing_sessions": [],
+    "unexpected_sessions": []
+  },
+  {
+    "ticker": "EFA",
+    "expected_sessions": 6316,
+    "missing_sessions": [],
+    "unexpected_sessions": []
+  },
+  {
+    "ticker": "EWJ",
+    "expected_sessions": 7690,
+    "missing_sessions": [],
+    "unexpected_sessions": []
+  },
+  {
+    "ticker": "FXI",
+    "expected_sessions": 5535,
+    "missing_sessions": [],
+    "unexpected_sessions": []
+  },
+  {
+    "ticker": "BTC-USD",
+    "expected_sessions": 4405,
+    "missing_sessions": [],
+    "unexpected_sessions": []
+  },
+  {
+    "ticker": "ETH-USD",
+    "expected_sessions": 3256,
+    "missing_sessions": [],
+    "unexpected_sessions": []
+  }
+]

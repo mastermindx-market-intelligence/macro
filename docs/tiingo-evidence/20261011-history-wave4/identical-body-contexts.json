@@ -1,0 +1,80 @@
+{
+  "groups": [
+    [
+      {
+        "raw_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "receipt_id": "aa7daad379ee5268293fa068f22c81821675a78a5f0096c278a9b596af858a51",
+        "request_path": "/tiingo/daily/ABDC/prices?endDate=2020-01-31&startDate=2014-05-09",
+        "symbol": "ABDC"
+      },
+      {
+        "raw_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "receipt_id": "80a25752133d7cffa96ff231357cafdc140bb048e6e06c54c1115e9811f4464d",
+        "request_path": "/tiingo/daily/AVYA/prices?endDate=2023-05-01&startDate=2017-12-19",
+        "symbol": "AVYA"
+      },
+      {
+        "raw_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "receipt_id": "08b23bc42335b23dc1fa259deb265b5e3b8c488a43bb473e2634290a9d6b0bc7",
+        "request_path": "/tiingo/daily/AUD/prices?endDate=2014-09-26&startDate=2007-11-30",
+        "symbol": "AUD"
+      },
+      {
+        "raw_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "receipt_id": "805d9284b8fccd60a07ea24317382ea83e3b21af8741e63525de6b024a39fcbb",
+        "request_path": "/tiingo/daily/AMSWA/prices?endDate=2024-10-01&startDate=1984-09-07",
+        "symbol": "AMSWA"
+      },
+      {
+        "raw_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "receipt_id": "561c386f9043bfbcad1b82b0a06f5ff5c889b0b35341ad4e6192ca3459fdf626",
+        "request_path": "/tiingo/daily/ACAMU/prices?endDate=2021-01-21&startDate=2019-02-22",
+        "symbol": "ACAMU"
+      },
+      {
+        "raw_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "receipt_id": "50cc898c9bbbf336104d93f23d096ad8d97b651e7a38f3e6b0c4dece45818d70",
+        "request_path": "/tiingo/daily/AGII/prices?endDate=2018-05-04&startDate=1986-11-14",
+        "symbol": "AGII"
+      },
+      {
+        "raw_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "receipt_id": "4da31e44f10a3342ff326fb7762f4db622864a5aa72fab5971a7800fe479645e",
+        "request_path": "/tiingo/daily/BABZ/prices?endDate=2014-09-26&startDate=2010-09-21",
+        "symbol": "BABZ"
+      }
+    ],
+    [
+      {
+        "raw_sha256": "6111d31d0e5116e7431f22e12b851d0770e3946d00b646e34fe532fb46d6f9d7",
+        "receipt_id": "72ce4069665ac5e60a68fda8b02cf456f4f59c8269915de45ff9df354ad097ff",
+        "request_path": "/tiingo/daily/AUVIQ/prices?endDate=2026-10-09&startDate=2026-05-28",
+        "symbol": "AUVIQ"
+      },
+      {
+        "raw_sha256": "6111d31d0e5116e7431f22e12b851d0770e3946d00b646e34fe532fb46d6f9d7",
+        "receipt_id": "94d476ab1bd5740b7a003f6464a7698dcf41d83556757f385ed0488b6e94c508",
+        "request_path": "/tiingo/daily/ADGL/prices?endDate=2026-10-09&startDate=2026-05-28",
+        "symbol": "ADGL"
+      }
+    ],
+    [
+      {
+        "raw_sha256": "d084418cbcea78899a72a5118824538a0b86ef9395fd91bd78b89b8632284525",
+        "receipt_id": "af7b9f9e04c669ae9cc6d70fa454c7d3bce2de4fe75acd5a44bcbe9bc758437d",
+        "request_path": "/tiingo/daily/ATGVF/prices?endDate=2026-10-09&startDate=2026-05-28",
+        "symbol": "ATGVF"
+      },
+      {
+        "raw_sha256": "d084418cbcea78899a72a5118824538a0b86ef9395fd91bd78b89b8632284525",
+        "receipt_id": "98ab37e25118421d09f08c0e0554eb75a0c7582b649f46dae87ddfe828ee6cfc",
+        "request_path": "/tiingo/daily/AVLPQ/prices?endDate=2026-10-09&startDate=2026-05-28",
+        "symbol": "AVLPQ"
+      }
+    ]
+  ],
+  "qualification_uses_existing_exact_receipt_selector": true,
+  "reader_content_only_refuses_ambiguity": true,
+  "schema": "tiingo_identical_body_contexts_observation.v1",
+  "source_or_assertion_changed": false
+}

@@ -1,0 +1,55 @@
+..F.                                                                     [100%]
+=================================== FAILURES ===================================
+_________ test_curated_exclusive_scopes_cover_their_own_import_closure _________
+
+    def test_curated_exclusive_scopes_cover_their_own_import_closure() -> None:
+        """Zero MISS: every file a curated job imports must still select it.
+    
+        `scope: exclusive` REPLACES inference, so the declared paths are the whole
+        scope — a closure file with no matching pattern is a job that stops running
+        when its own dependency changes, and reports green forever. The manifest's
+        load-time coverage audit only reaches the paths a job's COMMANDS name; the
+        transitive import closure is one layer deeper and is checked here.
+    
+        The computation itself is ``scripts.run_ci_pack.curated_exclusive_closure_findings``
+        — the same function ``scripts/check_contract_delta.py`` calls for the head side
+        of its PR-vs-base delta, so this test and that gate can never quietly diverge on
+        what "covered" means.
+        """
+>       misses_full = curated_exclusive_closure_findings(MANIFEST)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_ci_pack.py:4693: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+manifest_path = PosixPath('/Volumes/Mastermind/agent-workspaces/macro/web/gmi-economic-source-diagnostic-20261009-pro-004/.github/ci/legacy-jobs.yml')
+
+    def curated_exclusive_closure_findings(manifest_path: Path) -> dict[str, tuple[str, ...]]:
+        """``{job_id: uncovered closure paths}`` for every ``scope: exclusive`` job.
+    
+        This IS ``tests/test_ci_pack.py::
+        test_curated_exclusive_scopes_cover_their_own_import_closure``'s check, factored
+        out so that test and ``scripts/check_contract_delta.py`` import one copy instead
+        of drifting apart. ``scope: exclusive`` REPLACES inference, so the declared
+        ``paths:`` are the whole scope; a closure file matched by no declared pattern is
+        a job that silently stops running when its own dependency changes.
+    
+        Raises ``ValueError`` if a curated job derives no closure at all (curation
+        cannot be checked) — the same hard-fail posture the test's own ``assert``
+        took before this factoring, preserved so behavior does not change.
+        """
+        would_infer = inferred_as_if_not_exclusive(manifest_path)
+        declared = {job.job_id: job for job in load_legacy_jobs(manifest_path) if job.exclusive}
+        misses: dict[str, tuple[str, ...]] = {}
+        for job_id, job in sorted(declared.items()):
+            closure = [p for p in would_infer[job_id].paths if "*" not in p]
+            if not closure:
+>               raise ValueError(f"{job_id} derives no closure — curation cannot be checked")
+E               ValueError: gmi-source-diagnostic-kernel derives no closure — curation cannot be checked
+
+scripts/run_ci_pack.py:1729: ValueError
+
+NOTE: sparse worktree — data, mockups, site, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_ci_pack.py::test_curated_exclusive_scopes_cover_their_own_import_closure
+1 failed, 3 passed in 148.35s (0:02:28)
