@@ -409,6 +409,119 @@ iosRenderChips();console.log(el.innerHTML);'''
     assert 'Accruing (3)</span>' not in result.stdout
 
 
+def test_class_and_authority_chip_counts_match_the_rows_they_filter():
+    """Artifact multiplicity must not change the number promised by a row filter."""
+    node = shutil.which("node")
+    if node is None:
+        if os.environ.get("CI"):
+            raise AssertionError("Node is required for the Intelligence OS client contract")
+        pytest.skip("node unavailable")
+    source = APP.read_text(encoding="utf-8")
+    state = source[source.index("const IOS_STATE_CLS"):source.index(START)]
+    controls = source[source.index("const IOS ="):source.index("function iosHero(")]
+    harness = r"""
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const dataAttrs = o => Object.entries(o).map(([k,v]) => ' data-'+k+'="'+esc(v)+'"').join('');
+const document = {documentElement:{dataset:{lang:process.argv[2]}},addEventListener(){}};
+const elements = Object.fromEntries(['#iosChips','#iosTbl','#iosCnt','#iosPager'].map(k => [k,{innerHTML:'',textContent:''}]));
+const $ = selector => elements[selector] || null;
+const fmtNum = String;
+""" + _contract() + state + controls + r"""
+const rows = [
+  {engine_id:'null-many',canonical_t1:true,output_class:null,authority:null,n_artifacts:7,worst_state:null,evidence_status:'Degraded'},
+  {engine_id:'ranking-many',canonical_t1:true,output_class:'ranking',authority:'display',n_artifacts:3,worst_state:'healthy',evidence_status:'Accruing'},
+  {engine_id:'ranking-zero',canonical_t1:true,output_class:'ranking',authority:'engine_input',n_artifacts:0,worst_state:null,evidence_status:'Degraded'},
+  {engine_id:'registry-gap',canonical_t1:false,output_class:null,authority:'display',n_artifacts:4,worst_state:'unavailable',evidence_status:null},
+  {engine_id:'missing-values',canonical_t1:true,n_artifacts:2,worst_state:null,evidence_status:'Degraded'},
+];
+const data = {
+  census:{engines:5,canonical_engines:4,noncanonical_output_groups:1,artifacts:16,
+    by_output_class:{null:13,ranking:3},by_authority:{null:9,display:7}},
+  ceo_view:[{evidence_status:'Degraded',n_engines:3},{evidence_status:'Accruing',n_engines:1}],
+};
+IOS.rows = rows; IOS.data = data;
+const original = JSON.stringify({rows,data});
+const decode = s => s.replace(/&#39;/g,"'").replace(/&quot;/g,'"').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&amp;/g,'&');
+function chips() {
+  const result = {};
+  for (const match of elements['#iosChips'].innerHTML.matchAll(/<button\b([^>]*)>([\s\S]*?)<\/button>/g)) {
+    const attrs = match[1], action = attrs.match(/onclick="([^"]*)"/), value = attrs.match(/data-val="([^"]*)"/);
+    if (!action || !value) continue;
+    const on = decode(action[1]), kind = on.match(/iosSetFilter\('([^']+)'/);
+    if (!kind) continue;
+    const label = decode(match[2].replace(/<[^>]*>/g,''));
+    (result[kind[1]] ||= {})[decode(value[1])] = {count:Number(label.match(/\((\d+)\)$/)[1]),label,on};
+  }
+  return result;
+}
+function snapshot() {
+  return {count:Number(elements['#iosCnt'].textContent),
+    ids:Array.from(elements['#iosTbl'].innerHTML.matchAll(/data-ios-engine="([^"]*)"/g), m => decode(m[1])),
+    chips:chips()};
+}
+function click(chip, value) {
+  Function('iosSetFilter',chip.on).call({dataset:{val:value}},iosSetFilter);
+}
+iosRenderChips(); iosRenderTable();
+const initial = snapshot(), selections = {};
+for (const [kind,value] of [['output_class','null'],['output_class','ranking'],['authority','null'],['authority','display'],['authority','engine_input'],['evidence_status','Degraded']]) {
+  IOS.filter = {}; IOS.q = ''; IOS.page = 1;
+  if (!initial.chips[kind][value]) { selections[kind+':'+value] = {missing_chip:true}; continue; }
+  click(initial.chips[kind][value],value);
+  selections[kind+':'+value] = snapshot();
+}
+IOS.filter = {};
+click(initial.chips.output_class.null,'null');
+click(initial.chips.output_class.null,'null');
+const cleared = snapshot();
+IOS.filter = {};
+click(initial.chips.output_class.ranking,'ranking');
+click(initial.chips.authority.display,'display');
+console.log(JSON.stringify({initial,selections,cleared,combined:snapshot(),unchanged:original === JSON.stringify({rows,data})}));
+"""
+    with tempfile.TemporaryDirectory() as td:
+        path = Path(td) / "row-filter-contract.js"
+        path.write_text(harness, encoding="utf-8")
+        for language in ("en", "zh"):
+            run = subprocess.run(
+                [node, str(path), language], capture_output=True, text=True, check=False
+            )
+            assert run.returncode == 0, run.stdout + run.stderr
+            result = json.loads(run.stdout)
+            initial, selected = result["initial"], result["selections"]
+            assert initial["count"] == 5
+            expected = {
+                "output_class": {"null": 3, "ranking": 2},
+                "authority": {"null": 2, "display": 2, "engine_input": 1},
+                "state": {"null": 3, "healthy": 1, "unavailable": 1},
+            }
+            for kind, counts in expected.items():
+                assert {value: chip["count"] for value, chip in initial["chips"][kind].items()} == counts
+            expected_rows = {
+                "output_class:null": ["null-many", "registry-gap", "missing-values"],
+                "output_class:ranking": ["ranking-many", "ranking-zero"],
+                "authority:null": ["null-many", "missing-values"],
+                "authority:display": ["ranking-many", "registry-gap"],
+                "authority:engine_input": ["ranking-zero"],
+                "evidence_status:Degraded": ["null-many", "ranking-zero", "missing-values"],
+            }
+            for selection, ids in expected_rows.items():
+                assert selected[selection]["ids"] == ids
+                assert selected[selection]["count"] == len(ids)
+            assert sum(chip["count"] for chip in initial["chips"]["evidence_status"].values()) == 4
+            assert result["cleared"]["count"] == 5
+            assert result["combined"]["ids"] == ["ranking-many"]
+            # Like state/evidence chips, class/authority counts describe all rows
+            # before combined filters, not a new intersection-specific census.
+            assert result["combined"]["chips"]["authority"]["display"]["count"] == 2
+            assert result["combined"]["chips"]["output_class"]["ranking"]["count"] == 2
+            assert result["unchanged"] is True
+            # iosCopy emits both language spans; existing CSS chooses visibility.
+            label = initial["chips"]["output_class"]["null"]["label"]
+            assert "Not determined" in label and "尚未确定" in label
+            assert label.endswith(" (3)")
+
+
 def test_recorded_owner_disclosure_keeps_asof_and_unknown_separate_from_freshness():
     engine={'evidence_status':'Degraded','evidence_provider':{'recorded_snapshot':{'available':True,'recorded_at':'2026-01-01T00:00:00+00:00','evaluation_date':None,'named_generation_match':False,'current_source_qualification':'unavailable'}},'evidence_ruler':{'selected_qledger_rung':'21'},'evidence_measurement':{'by_horizon':{'21':{'evidence_basis':'matched_control','n_dates':0,'wilson_ci_low':None,'n_controlled_dates':0,'benchmark_baseline_hit_rate':0}}}}
     html=_run([{'engine':engine,'statuses':[],'bands':[]}])[0]['detail']
