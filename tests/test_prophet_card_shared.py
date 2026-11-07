@@ -608,14 +608,18 @@ def test_setup_table_same_row_body_and_clock_match_card_presenter():
         row, '2026-09-24', plan_rel=_plan_relation_for_row(relations, row))), 'html5lib')
     card = BeautifulSoup(str(m.body(
         row, 'board', '2026-09-24', plan_rel=_plan_relation_for_row(relations, row))), 'html5lib')
-    assert str(table.select_one('.pv-setup-body')) == str(card.select_one('.pv-setup-body'))
-    assert str(table.select_one('.pvs-plan-relation')) == str(card.select_one('.pvs-plan-relation'))
+    # soupsieve 4.0 (2026-11-03) no longer matches <template> contents from the
+    # document; selecting on the template element itself reaches them on 2.x and 4.x.
+    source = table.select_one('template.pvs-body-source')
+    assert source is not None
+    assert str(source.select_one('.pv-setup-body')) == str(card.select_one('.pv-setup-body'))
+    assert str(source.select_one('.pvs-plan-relation')) == str(card.select_one('.pvs-plan-relation'))
     action = table.select_one('details.pv-setup-table')
     assert action['data-setup-ticker'] == 'SAME_SYMBOL'
     assert action['data-setup-asof'] == '2026-09-24'
-    assert table.select_one('[data-entry-status]')['data-entry-status'] == 'bounce_wait'
-    assert table.select_one('[data-source-field="entry_signal.stop"] dd').text == '$90.00'
-    assert table.select_one('[data-source-field="hold.invalidation"] dd').text == '$85.00'
+    assert source.select_one('[data-entry-status]')['data-entry-status'] == 'bounce_wait'
+    assert source.select_one('[data-source-field="entry_signal.stop"] dd').text == '$90.00'
+    assert source.select_one('[data-source-field="hold.invalidation"] dd').text == '$85.00'
 
 
 def test_board_entry_read_shows_owner_clock_separate_from_quote_clock():
@@ -692,9 +696,13 @@ def test_setup_table_fallback_missing_values_never_enrich_from_other_population(
            'targets': [200.], 'plan_id': 'UNRELATED', 'price': None}
     s = BeautifulSoup(str(m.table_action(row, None)), 'html5lib')
     assert 'UNBOUND' not in s.text and 'UNRELATED' not in s.text
-    assert 'Not supplied' in s.select_one('[data-source-field="price"] dd').text
-    assert 'Not supplied' in s.select_one('[data-source-field="envelope.as_of"] dd').text
-    assert s.select_one('[data-entry-status]')['data-entry-status'] == ''
+    # soupsieve 4.0 (2026-11-03) no longer matches <template> contents from the
+    # document; selecting on the template element itself reaches them on 2.x and 4.x.
+    source = s.select_one('template.pvs-body-source')
+    assert source is not None
+    assert 'Not supplied' in source.select_one('[data-source-field="price"] dd').text
+    assert 'Not supplied' in source.select_one('[data-source-field="envelope.as_of"] dd').text
+    assert source.select_one('[data-entry-status]')['data-entry-status'] == ''
 
 
 def test_setup_table_keeps_native_navigation_and_one_detail_controller():

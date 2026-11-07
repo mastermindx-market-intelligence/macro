@@ -6,12 +6,19 @@
 # computed disposition, a count, a gate threshold or the frozen 68-micro denominator,
 # and the proof script never writes this file.
 #
-# Who writes rows: the named GMI taxonomy owner. A seat or agent may not self-review
-# (DEC:GMI-DESCRIPTIVE-PRODUCT-ACCEPTANCE-2026-10-19). This file ships with ZERO rows.
+# Who writes rows: the named GMI taxonomy owner. Since 2026-11-02 that is seat 6f14c2da
+# by Chairman delegation (DEC:GMI-TAXONOMY-OWNER-DELEGATED-TO-SEAT), which supersedes
+# only the "a seat may not self-review" clause of
+# DEC:GMI-DESCRIPTIVE-PRODUCT-ACCEPTANCE-2026-10-19. Compensating control: an independent,
+# non-authoring review before merge. A non-KEEP row records an owner decision only;
+# executing it is a separate lane and never changes the frozen 68-micro denominator.
+# Evidence for every row: research/theme_graph/micro_owner_review_2026-11-02.md
 #
 # Top level (exactly these three keys):
 #   schema: theme_graph.micro_owner_dispositions/v1
-#   owner:  null, or the taxonomy owner's name (a non-empty string)
+#   owner:  the taxonomy owner's name, a non-empty string (since 2026-11-02 the
+#           delegated seat; DEC:GMI-TAXONOMY-OWNER-DELEGATED-TO-SEAT). The reader
+#           still accepts null.
 #   rows:   a list of row mappings
 #
 # Row fields (any other key rejects the row):
@@ -42,5 +49,413 @@
 # Coverage gap: "<unreviewed>_OF_<observed>_UNREVIEWED" until every frozen micro
 # carries a valid row; the Taxonomy gate stays FAIL until then.
 schema: theme_graph.micro_owner_dispositions/v1
-owner: null
-rows: []
+owner: "GMI taxonomy owner — seat 6f14c2da (Chairman-delegated 2026-11-02, DEC:GMI-TAXONOMY-OWNER-DELEGATED-TO-SEAT)"
+rows:
+  - micro_id: theme:aerospace_components_aftermarket
+    disposition: KEEP
+    reviewer: "GMI taxonomy owner — seat 6f14c2da (Chairman-delegated 2026-11-02, DEC:GMI-TAXONOMY-OWNER-DELEGATED-TO-SEAT)"
+    decided_at: "2026-11-03T01:01:17+00:00"
+    evidence: research/theme_graph/micro_owner_review_2026-11-02.md#micro-aerospace_components_aftermarket
+    note: "KEEP; distinct coherent scope, no frozen near-duplicate."
+  - micro_id: theme:ai_interconnect_silicon
+    disposition: KEEP
+    reviewer: "GMI taxonomy owner — seat 6f14c2da (Chairman-delegated 2026-11-02, DEC:GMI-TAXONOMY-OWNER-DELEGATED-TO-SEAT)"
+    decided_at: "2026-11-03T01:01:17+00:00"
+    evidence: research/theme_graph/micro_owner_review_2026-11-02.md#micro-ai_interconnect_silicon
+    note: "KEEP; distinct coherent scope, no frozen near-duplicate."
+  - micro_id: theme:autonomous_systems_counter_uas
+    disposition: KEEP
+    reviewer: "GMI taxonomy owner — seat 6f14c2da (Chairman-delegated 2026-11-02, DEC:GMI-TAXONOMY-OWNER-DELEGATED-TO-SEAT)"
+    decided_at: "2026-11-03T01:01:17+00:00"
+    evidence: research/theme_graph/micro_owner_review_2026-11-02.md#micro-autonomous_systems_counter_uas
+    note: "KEEP; distinct coherent scope, no frozen near-duplicate."
+  - micro_id: theme:cardiorenal_metabolic_indications
+    disposition: KEEP
+    reviewer: "GMI taxonomy owner — seat 6f14c2da (Chairman-delegated 2026-11-02, DEC:GMI-TAXONOMY-OWNER-DELEGATED-TO-SEAT)"
+    decided_at: "2026-11-03T01:01:17+00:00"
+    evidence: research/theme_graph/micro_owner_review_2026-11-02.md#micro-cardiorenal_metabolic_indications
+    note: "LOW-CONFIDENCE KEEP: issuers likely coincide with glp1_incretin_therapies; revisit as MERGE or RENAME once populated."
+  - micro_id: theme:cloud_security
+    disposition: KEEP
+    reviewer: "GMI taxonomy owner — seat 6f14c2da (Chairman-delegated 2026-11-02, DEC:GMI-TAXONOMY-OWNER-DELEGATED-TO-SEAT)"
+    decided_at: "2026-11-03T01:01:17+00:00"
+    evidence: research/theme_graph/micro_owner_review_2026-11-02.md#micro-cloud_security
+    note: "KEEP; distinct coherent scope, no frozen near-duplicate."
+  - micro_id: theme:collaborative_robot_arms
+    disposition: KEEP
+    reviewer: "GMI taxonomy owner — seat 6f14c2da (Chairman-delegated 2026-11-02, DEC:GMI-TAXONOMY-OWNER-DELEGATED-TO-SEAT)"
+    decided_at: "2026-11-03T01:01:17+00:00"
+    evidence: research/theme_graph/micro_owner_review_2026-11-02.md#micro-collaborative_robot_arms
+    note: "KEEP; distinct from industrial_robot_arms by form factor and use case; watch member overlap."
+  - micro_id: theme:conventional_dram
+    disposition: KEEP
+    reviewer: "GMI taxonomy owner — seat 6f14c2da (Chairman-delegated 2026-11-02, DEC:GMI-TAXONOMY-OWNER-DELEGATED-TO-SEAT)"
+    decided_at: "2026-11-03T01:01:17+00:00"
+    evidence: research/theme_graph/micro_owner_review_2026-11-02.md#micro-conventional_dram
+    note: "KEEP; distinct coherent scope, no frozen near-duplicate."
+  - micro_id: theme:copper_mining
+    disposition: KEEP
+    reviewer: "GMI taxonomy owner — seat 6f14c2da (Chairman-delegated 2026-11-02, DEC:GMI-TAXONOMY-OWNER-DELEGATED-TO-SEAT)"
+    decided_at: "2026-11-03T01:01:17+00:00"
+    evidence: research/theme_graph/micro_owner_review_2026-11-02.md#micro-copper_mining
+    note: "KEEP; distinct coherent scope, no frozen near-duplicate."
+  - micro_id: theme:copper_wire_cable
+    disposition: KEEP
+    reviewer: "GMI taxonomy owner — seat 6f14c2da (Chairman-delegated 2026-11-02, DEC:GMI-TAXONOMY-OWNER-DELEGATED-TO-SEAT)"
+    decided_at: "2026-11-03T01:01:17+00:00"
+    evidence: research/theme_graph/micro_owner_review_2026-11-02.md#micro-copper_wire_cable
+    note: "KEEP; distinct coherent scope, no frozen near-duplicate."
+  - micro_id: theme:critical_mineral_mining_development
+    disposition: KEEP
+    reviewer: "GMI taxonomy owner — seat 6f14c2da (Chairman-delegated 2026-11-02, DEC:GMI-TAXONOMY-OWNER-DELEGATED-TO-SEAT)"
+    decided_at: "2026-11-03T01:01:17+00:00"
+    evidence: research/theme_graph/micro_owner_review_2026-11-02.md#micro-critical_mineral_mining_development
+    note: "LOW-CONFIDENCE KEEP: broad umbrella; per-commodity SPLIT considered and not proposed."
+  - micro_id: theme:custom_asic_silicon
+    disposition: KEEP
+    reviewer: "GMI taxonomy owner — seat 6f14c2da (Chairman-delegated 2026-11-02, DEC:GMI-TAXONOMY-OWNER-DELEGATED-TO-SEAT)"
+    decided_at: "2026-11-03T01:01:17+00:00"
+    evidence: research/theme_graph/micro_owner_review_2026-11-02.md#micro-custom_asic_silicon
+    note: "KEEP; distinct coherent scope, no frozen near-duplicate."
+  - micro_id: theme:defense_sensors_electronics_c2
+    disposition: KEEP
+    reviewer: "GMI taxonomy owner — seat 6f14c2da (Chairman-delegated 2026-11-02, DEC:GMI-TAXONOMY-OWNER-DELEGATED-TO-SEAT)"
+    decided_at: "2026-11-03T01:01:17+00:00"
+    evidence: research/theme_graph/micro_owner_review_2026-11-02.md#micro-defense_sensors_electronics_c2
+    note: "KEEP; distinct coherent scope, no frozen near-duplicate."
+  - micro_id: theme:diagnostic_reagents_kits
+    disposition: KEEP
+    reviewer: "GMI taxonomy owner — seat 6f14c2da (Chairman-delegated 2026-11-02, DEC:GMI-TAXONOMY-OWNER-DELEGATED-TO-SEAT)"
+    decided_at: "2026-11-03T01:01:17+00:00"
+    evidence: research/theme_graph/micro_owner_review_2026-11-02.md#micro-diagnostic_reagents_kits
+    note: "KEEP; distinct coherent scope, no frozen near-duplicate."
+  - micro_id: theme:direct_to_device_connectivity
+    disposition: KEEP
+    reviewer: "GMI taxonomy owner — seat 6f14c2da (Chairman-delegated 2026-11-02, DEC:GMI-TAXONOMY-OWNER-DELEGATED-TO-SEAT)"
+    decided_at: "2026-11-03T01:01:17+00:00"
+    evidence: research/theme_graph/micro_owner_review_2026-11-02.md#micro-direct_to_device_connectivity
+    note: "KEEP; distinct coherent scope, no frozen near-duplicate."
+  - micro_id: theme:earth_observation
+    disposition: KEEP
+    reviewer: "GMI taxonomy owner — seat 6f14c2da (Chairman-delegated 2026-11-02, DEC:GMI-TAXONOMY-OWNER-DELEGATED-TO-SEAT)"
+    decided_at: "2026-11-03T01:01:17+00:00"
+    evidence: research/theme_graph/micro_owner_review_2026-11-02.md#micro-earth_observation
+    note: "KEEP; distinct coherent scope, no frozen near-duplicate."
+  - micro_id: theme:endpoint_security
+    disposition: KEEP
+    reviewer: "GMI taxonomy owner — seat 6f14c2da (Chairman-delegated 2026-11-02, DEC:GMI-TAXONOMY-OWNER-DELEGATED-TO-SEAT)"
+    decided_at: "2026-11-03T01:01:17+00:00"
+    evidence: research/theme_graph/micro_owner_review_2026-11-02.md#micro-endpoint_security
+    note: "KEEP; distinct coherent scope, no frozen near-duplicate."
+  - micro_id: theme:etch_deposition_equipment
+    disposition: KEEP
+    reviewer: "GMI taxonomy owner — seat 6f14c2da (Chairman-delegated 2026-11-02, DEC:GMI-TAXONOMY-OWNER-DELEGATED-TO-SEAT)"
+    decided_at: "2026-11-03T01:01:17+00:00"
+    evidence: research/theme_graph/micro_owner_review_2026-11-02.md#micro-etch_deposition_equipment
+    note: "KEEP; distinct coherent scope, no frozen near-duplicate."
+  - micro_id: theme:fill_finish_delivery_devices
+    disposition: KEEP
+    reviewer: "GMI taxonomy owner — seat 6f14c2da (Chairman-delegated 2026-11-02, DEC:GMI-TAXONOMY-OWNER-DELEGATED-TO-SEAT)"
+    decided_at: "2026-11-03T01:01:17+00:00"
+    evidence: research/theme_graph/micro_owner_review_2026-11-02.md#micro-fill_finish_delivery_devices
+    note: "LOW-CONFIDENCE KEEP: possible SPLIT (fill-finish capacity vs pen/autoinjector devices) if member sets diverge."
+  - micro_id: theme:fuel_cycle
+    disposition: RENAME
+    reviewer: "GMI taxonomy owner — seat 6f14c2da (Chairman-delegated 2026-11-02, DEC:GMI-TAXONOMY-OWNER-DELEGATED-TO-SEAT)"
+    decided_at: "2026-11-03T01:01:17+00:00"
+    evidence: research/theme_graph/micro_owner_review_2026-11-02.md#micro-fuel_cycle
+    note: "RENAME to EN 'Nuclear fuel front end (mining to enrichment)' / ZH '核燃料循环前端（铀矿开采至浓缩）'. Scope unchanged."
+  - micro_id: theme:gallium_germanium_supply_chain
+    disposition: KEEP
+    reviewer: "GMI taxonomy owner — seat 6f14c2da (Chairman-delegated 2026-11-02, DEC:GMI-TAXONOMY-OWNER-DELEGATED-TO-SEAT)"
+    decided_at: "2026-11-03T01:01:17+00:00"
+    evidence: research/theme_graph/micro_owner_review_2026-11-02.md#micro-gallium_germanium_supply_chain
+    note: "KEEP; distinct coherent scope, no frozen near-duplicate."
+  - micro_id: theme:genomic_sequencing
+    disposition: KEEP
+    reviewer: "GMI taxonomy owner — seat 6f14c2da (Chairman-delegated 2026-11-02, DEC:GMI-TAXONOMY-OWNER-DELEGATED-TO-SEAT)"
+    decided_at: "2026-11-03T01:01:17+00:00"
+    evidence: research/theme_graph/micro_owner_review_2026-11-02.md#micro-genomic_sequencing
+    note: "KEEP; distinct coherent scope, no frozen near-duplicate."
+  - micro_id: theme:glp1_api_manufacturing
+    disposition: KEEP
+    reviewer: "GMI taxonomy owner — seat 6f14c2da (Chairman-delegated 2026-11-02, DEC:GMI-TAXONOMY-OWNER-DELEGATED-TO-SEAT)"
+    decided_at: "2026-11-03T01:01:17+00:00"
+    evidence: research/theme_graph/micro_owner_review_2026-11-02.md#micro-glp1_api_manufacturing
+    note: "KEEP; distinct coherent scope, no frozen near-duplicate."
+  - micro_id: theme:glp1_incretin_therapies
+    disposition: RENAME
+    reviewer: "GMI taxonomy owner — seat 6f14c2da (Chairman-delegated 2026-11-02, DEC:GMI-TAXONOMY-OWNER-DELEGATED-TO-SEAT)"
+    decided_at: "2026-11-03T01:01:17+00:00"
+    evidence: research/theme_graph/micro_owner_review_2026-11-02.md#micro-glp1_incretin_therapies
+    note: "RENAME to EN 'Injectable GLP-1 incretin therapies' / ZH '注射用 GLP-1 肠促胰岛素疗法'. Scope unchanged."
+  - micro_id: theme:gpu_merchant_accelerators
+    disposition: KEEP
+    reviewer: "GMI taxonomy owner — seat 6f14c2da (Chairman-delegated 2026-11-02, DEC:GMI-TAXONOMY-OWNER-DELEGATED-TO-SEAT)"
+    decided_at: "2026-11-03T01:01:17+00:00"
+    evidence: research/theme_graph/micro_owner_review_2026-11-02.md#micro-gpu_merchant_accelerators
+    note: "KEEP; distinct coherent scope, no frozen near-duplicate."
+  - micro_id: theme:grid_distribution_automation
+    disposition: KEEP
+    reviewer: "GMI taxonomy owner — seat 6f14c2da (Chairman-delegated 2026-11-02, DEC:GMI-TAXONOMY-OWNER-DELEGATED-TO-SEAT)"
+    decided_at: "2026-11-03T01:01:17+00:00"
+    evidence: research/theme_graph/micro_owner_review_2026-11-02.md#micro-grid_distribution_automation
+    note: "KEEP; distinct coherent scope, no frozen near-duplicate."
+  - micro_id: theme:hbm_packaging
+    disposition: RENAME
+    reviewer: "GMI taxonomy owner — seat 6f14c2da (Chairman-delegated 2026-11-02, DEC:GMI-TAXONOMY-OWNER-DELEGATED-TO-SEAT)"
+    decided_at: "2026-11-03T01:01:17+00:00"
+    evidence: research/theme_graph/micro_owner_review_2026-11-02.md#micro-hbm_packaging
+    note: "RENAME to EN 'HBM memory stacking & packaging' / ZH 'HBM 存储堆叠与封装'. Scope unchanged. Execution is deferred to a qualified C01 cutover that preserves generation 040b and D2E acceptance, and must re-bind actprop:287edbf7e04b8aba873b7493 (co:us:MU) to the new scope_version in the same act."
+  - micro_id: theme:hv_transformers_switchgear
+    disposition: KEEP
+    reviewer: "GMI taxonomy owner — seat 6f14c2da (Chairman-delegated 2026-11-02, DEC:GMI-TAXONOMY-OWNER-DELEGATED-TO-SEAT)"
+    decided_at: "2026-11-03T01:01:17+00:00"
+    evidence: research/theme_graph/micro_owner_review_2026-11-02.md#micro-hv_transformers_switchgear
+    note: "KEEP; distinct coherent scope, no frozen near-duplicate."
+  - micro_id: theme:identity_access_management
+    disposition: KEEP
+    reviewer: "GMI taxonomy owner — seat 6f14c2da (Chairman-delegated 2026-11-02, DEC:GMI-TAXONOMY-OWNER-DELEGATED-TO-SEAT)"
+    decided_at: "2026-11-03T01:01:17+00:00"
+    evidence: research/theme_graph/micro_owner_review_2026-11-02.md#micro-identity_access_management
+    note: "KEEP; distinct coherent scope, no frozen near-duplicate."
+  - micro_id: theme:industrial_motion_controls
+    disposition: KEEP
+    reviewer: "GMI taxonomy owner — seat 6f14c2da (Chairman-delegated 2026-11-02, DEC:GMI-TAXONOMY-OWNER-DELEGATED-TO-SEAT)"
+    decided_at: "2026-11-03T01:01:17+00:00"
+    evidence: research/theme_graph/micro_owner_review_2026-11-02.md#micro-industrial_motion_controls
+    note: "KEEP; note wording ('software layer') undersells the controls hardware in scope."
+  - micro_id: theme:industrial_robot_arms
+    disposition: KEEP
+    reviewer: "GMI taxonomy owner — seat 6f14c2da (Chairman-delegated 2026-11-02, DEC:GMI-TAXONOMY-OWNER-DELEGATED-TO-SEAT)"
+    decided_at: "2026-11-03T01:01:17+00:00"
+    evidence: research/theme_graph/micro_owner_review_2026-11-02.md#micro-industrial_robot_arms
+    note: "KEEP; distinct coherent scope, no frozen near-duplicate."
+  - micro_id: theme:launch_services
+    disposition: KEEP
+    reviewer: "GMI taxonomy owner — seat 6f14c2da (Chairman-delegated 2026-11-02, DEC:GMI-TAXONOMY-OWNER-DELEGATED-TO-SEAT)"
+    decided_at: "2026-11-03T01:01:17+00:00"
+    evidence: research/theme_graph/micro_owner_review_2026-11-02.md#micro-launch_services
+    note: "KEEP; distinct coherent scope, no frozen near-duplicate."
+  - micro_id: theme:life_science_lab_instruments
+    disposition: KEEP
+    reviewer: "GMI taxonomy owner — seat 6f14c2da (Chairman-delegated 2026-11-02, DEC:GMI-TAXONOMY-OWNER-DELEGATED-TO-SEAT)"
+    decided_at: "2026-11-03T01:01:17+00:00"
+    evidence: research/theme_graph/micro_owner_review_2026-11-02.md#micro-life_science_lab_instruments
+    note: "KEEP; distinct coherent scope, no frozen near-duplicate."
+  - micro_id: theme:liquid_biopsy_assays
+    disposition: KEEP
+    reviewer: "GMI taxonomy owner — seat 6f14c2da (Chairman-delegated 2026-11-02, DEC:GMI-TAXONOMY-OWNER-DELEGATED-TO-SEAT)"
+    decided_at: "2026-11-03T01:01:17+00:00"
+    evidence: research/theme_graph/micro_owner_review_2026-11-02.md#micro-liquid_biopsy_assays
+    note: "KEEP; distinct coherent scope, no frozen near-duplicate."
+  - micro_id: theme:liquid_cooling_thermal
+    disposition: KEEP
+    reviewer: "GMI taxonomy owner — seat 6f14c2da (Chairman-delegated 2026-11-02, DEC:GMI-TAXONOMY-OWNER-DELEGATED-TO-SEAT)"
+    decided_at: "2026-11-03T01:01:17+00:00"
+    evidence: research/theme_graph/micro_owner_review_2026-11-02.md#micro-liquid_cooling_thermal
+    note: "KEEP; broad segment row; expansion sub-segments (cold plate, immersion) are an expansion-tier follow-up."
+  - micro_id: theme:lithography_tools
+    disposition: KEEP
+    reviewer: "GMI taxonomy owner — seat 6f14c2da (Chairman-delegated 2026-11-02, DEC:GMI-TAXONOMY-OWNER-DELEGATED-TO-SEAT)"
+    decided_at: "2026-11-03T01:01:17+00:00"
+    evidence: research/theme_graph/micro_owner_review_2026-11-02.md#micro-lithography_tools
+    note: "KEEP; distinct coherent scope, no frozen near-duplicate."
+  - micro_id: theme:machine_vision
+    disposition: KEEP
+    reviewer: "GMI taxonomy owner — seat 6f14c2da (Chairman-delegated 2026-11-02, DEC:GMI-TAXONOMY-OWNER-DELEGATED-TO-SEAT)"
+    decided_at: "2026-11-03T01:01:17+00:00"
+    evidence: research/theme_graph/micro_owner_review_2026-11-02.md#micro-machine_vision
+    note: "KEEP; distinct coherent scope, no frozen near-duplicate."
+  - micro_id: theme:medical_imaging
+    disposition: KEEP
+    reviewer: "GMI taxonomy owner — seat 6f14c2da (Chairman-delegated 2026-11-02, DEC:GMI-TAXONOMY-OWNER-DELEGATED-TO-SEAT)"
+    decided_at: "2026-11-03T01:01:17+00:00"
+    evidence: research/theme_graph/micro_owner_review_2026-11-02.md#micro-medical_imaging
+    note: "KEEP; distinct coherent scope, no frozen near-duplicate."
+  - micro_id: theme:military_space_communications
+    disposition: KEEP
+    reviewer: "GMI taxonomy owner — seat 6f14c2da (Chairman-delegated 2026-11-02, DEC:GMI-TAXONOMY-OWNER-DELEGATED-TO-SEAT)"
+    decided_at: "2026-11-03T01:01:17+00:00"
+    evidence: research/theme_graph/micro_owner_review_2026-11-02.md#micro-military_space_communications
+    note: "KEEP; distinct coherent scope, no frozen near-duplicate."
+  - micro_id: theme:missile_propulsion_supply
+    disposition: KEEP
+    reviewer: "GMI taxonomy owner — seat 6f14c2da (Chairman-delegated 2026-11-02, DEC:GMI-TAXONOMY-OWNER-DELEGATED-TO-SEAT)"
+    decided_at: "2026-11-03T01:01:17+00:00"
+    evidence: research/theme_graph/micro_owner_review_2026-11-02.md#micro-missile_propulsion_supply
+    note: "KEEP; distinct coherent scope, no frozen near-duplicate."
+  - micro_id: theme:missiles_munitions_effects
+    disposition: KEEP
+    reviewer: "GMI taxonomy owner — seat 6f14c2da (Chairman-delegated 2026-11-02, DEC:GMI-TAXONOMY-OWNER-DELEGATED-TO-SEAT)"
+    decided_at: "2026-11-03T01:01:17+00:00"
+    evidence: research/theme_graph/micro_owner_review_2026-11-02.md#micro-missiles_munitions_effects
+    note: "KEEP; distinct coherent scope, no frozen near-duplicate."
+  - micro_id: theme:nand_enterprise_storage
+    disposition: RENAME
+    reviewer: "GMI taxonomy owner — seat 6f14c2da (Chairman-delegated 2026-11-02, DEC:GMI-TAXONOMY-OWNER-DELEGATED-TO-SEAT)"
+    decided_at: "2026-11-03T01:01:17+00:00"
+    evidence: research/theme_graph/micro_owner_review_2026-11-02.md#micro-nand_enterprise_storage
+    note: "LOW-CONFIDENCE RENAME to EN 'NAND flash & enterprise SSDs' / ZH 'NAND 闪存与企业级 SSD'. Scope unchanged."
+  - micro_id: theme:naval_shipbuilding
+    disposition: KEEP
+    reviewer: "GMI taxonomy owner — seat 6f14c2da (Chairman-delegated 2026-11-02, DEC:GMI-TAXONOMY-OWNER-DELEGATED-TO-SEAT)"
+    decided_at: "2026-11-03T01:01:17+00:00"
+    evidence: research/theme_graph/micro_owner_review_2026-11-02.md#micro-naval_shipbuilding
+    note: "KEEP; distinct coherent scope, no frozen near-duplicate."
+  - micro_id: theme:ndfeb_permanent_magnets
+    disposition: KEEP
+    reviewer: "GMI taxonomy owner — seat 6f14c2da (Chairman-delegated 2026-11-02, DEC:GMI-TAXONOMY-OWNER-DELEGATED-TO-SEAT)"
+    decided_at: "2026-11-03T01:01:17+00:00"
+    evidence: research/theme_graph/micro_owner_review_2026-11-02.md#micro-ndfeb_permanent_magnets
+    note: "KEEP; distinct coherent scope, no frozen near-duplicate."
+  - micro_id: theme:network_security
+    disposition: KEEP
+    reviewer: "GMI taxonomy owner — seat 6f14c2da (Chairman-delegated 2026-11-02, DEC:GMI-TAXONOMY-OWNER-DELEGATED-TO-SEAT)"
+    decided_at: "2026-11-03T01:01:17+00:00"
+    evidence: research/theme_graph/micro_owner_review_2026-11-02.md#micro-network_security
+    note: "KEEP; distinct coherent scope, no frozen near-duplicate."
+  - micro_id: theme:nitrogen_fertilizer_production
+    disposition: KEEP
+    reviewer: "GMI taxonomy owner — seat 6f14c2da (Chairman-delegated 2026-11-02, DEC:GMI-TAXONOMY-OWNER-DELEGATED-TO-SEAT)"
+    decided_at: "2026-11-03T01:01:17+00:00"
+    evidence: research/theme_graph/micro_owner_review_2026-11-02.md#micro-nitrogen_fertilizer_production
+    note: "KEEP; distinct coherent scope, no frozen near-duplicate."
+  - micro_id: theme:nuclear_components
+    disposition: KEEP
+    reviewer: "GMI taxonomy owner — seat 6f14c2da (Chairman-delegated 2026-11-02, DEC:GMI-TAXONOMY-OWNER-DELEGATED-TO-SEAT)"
+    decided_at: "2026-11-03T01:01:17+00:00"
+    evidence: research/theme_graph/micro_owner_review_2026-11-02.md#micro-nuclear_components
+    note: "KEEP; distinct coherent scope, no frozen near-duplicate."
+  - micro_id: theme:oral_glp1_formulations
+    disposition: KEEP
+    reviewer: "GMI taxonomy owner — seat 6f14c2da (Chairman-delegated 2026-11-02, DEC:GMI-TAXONOMY-OWNER-DELEGATED-TO-SEAT)"
+    decided_at: "2026-11-03T01:01:17+00:00"
+    evidence: research/theme_graph/micro_owner_review_2026-11-02.md#micro-oral_glp1_formulations
+    note: "KEEP; distinct coherent scope, no frozen near-duplicate."
+  - micro_id: theme:polysilicon_solar_feedstock
+    disposition: KEEP
+    reviewer: "GMI taxonomy owner — seat 6f14c2da (Chairman-delegated 2026-11-02, DEC:GMI-TAXONOMY-OWNER-DELEGATED-TO-SEAT)"
+    decided_at: "2026-11-03T01:01:17+00:00"
+    evidence: research/theme_graph/micro_owner_review_2026-11-02.md#micro-polysilicon_solar_feedstock
+    note: "KEEP; distinct coherent scope, no frozen near-duplicate."
+  - micro_id: theme:potash_phosphate_nutrients
+    disposition: KEEP
+    reviewer: "GMI taxonomy owner — seat 6f14c2da (Chairman-delegated 2026-11-02, DEC:GMI-TAXONOMY-OWNER-DELEGATED-TO-SEAT)"
+    decided_at: "2026-11-03T01:01:17+00:00"
+    evidence: research/theme_graph/micro_owner_review_2026-11-02.md#micro-potash_phosphate_nutrients
+    note: "KEEP; SPLIT into potash vs phosphate considered and not proposed (producer overlap)."
+  - micro_id: theme:precision_actuators_servo_motors
+    disposition: KEEP
+    reviewer: "GMI taxonomy owner — seat 6f14c2da (Chairman-delegated 2026-11-02, DEC:GMI-TAXONOMY-OWNER-DELEGATED-TO-SEAT)"
+    decided_at: "2026-11-03T01:01:17+00:00"
+    evidence: research/theme_graph/micro_owner_review_2026-11-02.md#micro-precision_actuators_servo_motors
+    note: "KEEP; distinct coherent scope, no frozen near-duplicate."
+  - micro_id: theme:precision_agriculture_platforms
+    disposition: KEEP
+    reviewer: "GMI taxonomy owner — seat 6f14c2da (Chairman-delegated 2026-11-02, DEC:GMI-TAXONOMY-OWNER-DELEGATED-TO-SEAT)"
+    decided_at: "2026-11-03T01:01:17+00:00"
+    evidence: research/theme_graph/micro_owner_review_2026-11-02.md#micro-precision_agriculture_platforms
+    note: "LOW-CONFIDENCE KEEP: scope coherent; placement under ag_fertilizer is questionable (re-parenting is outside the disposition rubric)."
+  - micro_id: theme:process_metrology_inspection
+    disposition: KEEP
+    reviewer: "GMI taxonomy owner — seat 6f14c2da (Chairman-delegated 2026-11-02, DEC:GMI-TAXONOMY-OWNER-DELEGATED-TO-SEAT)"
+    decided_at: "2026-11-03T01:01:17+00:00"
+    evidence: research/theme_graph/micro_owner_review_2026-11-02.md#micro-process_metrology_inspection
+    note: "KEEP; distinct coherent scope, no frozen near-duplicate."
+  - micro_id: theme:proteomics_discovery_platforms
+    disposition: KEEP
+    reviewer: "GMI taxonomy owner — seat 6f14c2da (Chairman-delegated 2026-11-02, DEC:GMI-TAXONOMY-OWNER-DELEGATED-TO-SEAT)"
+    decided_at: "2026-11-03T01:01:17+00:00"
+    evidence: research/theme_graph/micro_owner_review_2026-11-02.md#micro-proteomics_discovery_platforms
+    note: "KEEP; distinct coherent scope, no frozen near-duplicate."
+  - micro_id: theme:pv_cell_module_manufacturing
+    disposition: KEEP
+    reviewer: "GMI taxonomy owner — seat 6f14c2da (Chairman-delegated 2026-11-02, DEC:GMI-TAXONOMY-OWNER-DELEGATED-TO-SEAT)"
+    decided_at: "2026-11-03T01:01:17+00:00"
+    evidence: research/theme_graph/micro_owner_review_2026-11-02.md#micro-pv_cell_module_manufacturing
+    note: "KEEP; distinct coherent scope, no frozen near-duplicate."
+  - micro_id: theme:rare_earth_separation_refining
+    disposition: KEEP
+    reviewer: "GMI taxonomy owner — seat 6f14c2da (Chairman-delegated 2026-11-02, DEC:GMI-TAXONOMY-OWNER-DELEGATED-TO-SEAT)"
+    decided_at: "2026-11-03T01:01:17+00:00"
+    evidence: research/theme_graph/micro_owner_review_2026-11-02.md#micro-rare_earth_separation_refining
+    note: "KEEP; distinct coherent scope, no frozen near-duplicate."
+  - micro_id: theme:reactor_technology
+    disposition: KEEP
+    reviewer: "GMI taxonomy owner — seat 6f14c2da (Chairman-delegated 2026-11-02, DEC:GMI-TAXONOMY-OWNER-DELEGATED-TO-SEAT)"
+    decided_at: "2026-11-03T01:01:17+00:00"
+    evidence: research/theme_graph/micro_owner_review_2026-11-02.md#micro-reactor_technology
+    note: "LOW-CONFIDENCE KEEP: generic name; possible later RENAME to make the SMR/LWR designer scope explicit."
+  - micro_id: theme:refined_copper
+    disposition: KEEP
+    reviewer: "GMI taxonomy owner — seat 6f14c2da (Chairman-delegated 2026-11-02, DEC:GMI-TAXONOMY-OWNER-DELEGATED-TO-SEAT)"
+    decided_at: "2026-11-03T01:01:17+00:00"
+    evidence: research/theme_graph/micro_owner_review_2026-11-02.md#micro-refined_copper
+    note: "KEEP; distinct coherent scope, no frozen near-duplicate."
+  - micro_id: theme:remote_patient_monitoring
+    disposition: KEEP
+    reviewer: "GMI taxonomy owner — seat 6f14c2da (Chairman-delegated 2026-11-02, DEC:GMI-TAXONOMY-OWNER-DELEGATED-TO-SEAT)"
+    decided_at: "2026-11-03T01:01:17+00:00"
+    evidence: research/theme_graph/micro_owner_review_2026-11-02.md#micro-remote_patient_monitoring
+    note: "KEEP; distinct coherent scope, no frozen near-duplicate."
+  - micro_id: theme:satellite_broadband_services
+    disposition: KEEP
+    reviewer: "GMI taxonomy owner — seat 6f14c2da (Chairman-delegated 2026-11-02, DEC:GMI-TAXONOMY-OWNER-DELEGATED-TO-SEAT)"
+    decided_at: "2026-11-03T01:01:17+00:00"
+    evidence: research/theme_graph/micro_owner_review_2026-11-02.md#micro-satellite_broadband_services
+    note: "KEEP; distinct coherent scope, no frozen near-duplicate."
+  - micro_id: theme:satellite_ground_terminals
+    disposition: KEEP
+    reviewer: "GMI taxonomy owner — seat 6f14c2da (Chairman-delegated 2026-11-02, DEC:GMI-TAXONOMY-OWNER-DELEGATED-TO-SEAT)"
+    decided_at: "2026-11-03T01:01:17+00:00"
+    evidence: research/theme_graph/micro_owner_review_2026-11-02.md#micro-satellite_ground_terminals
+    note: "KEEP; distinct coherent scope, no frozen near-duplicate."
+  - micro_id: theme:solar_inverters
+    disposition: KEEP
+    reviewer: "GMI taxonomy owner — seat 6f14c2da (Chairman-delegated 2026-11-02, DEC:GMI-TAXONOMY-OWNER-DELEGATED-TO-SEAT)"
+    decided_at: "2026-11-03T01:01:17+00:00"
+    evidence: research/theme_graph/micro_owner_review_2026-11-02.md#micro-solar_inverters
+    note: "KEEP; distinct coherent scope, no frozen near-duplicate."
+  - micro_id: theme:solar_trackers_bos
+    disposition: KEEP
+    reviewer: "GMI taxonomy owner — seat 6f14c2da (Chairman-delegated 2026-11-02, DEC:GMI-TAXONOMY-OWNER-DELEGATED-TO-SEAT)"
+    decided_at: "2026-11-03T01:01:17+00:00"
+    evidence: research/theme_graph/micro_owner_review_2026-11-02.md#micro-solar_trackers_bos
+    note: "KEEP; distinct coherent scope, no frozen near-duplicate."
+  - micro_id: theme:structural_steel_electrification
+    disposition: KEEP
+    reviewer: "GMI taxonomy owner — seat 6f14c2da (Chairman-delegated 2026-11-02, DEC:GMI-TAXONOMY-OWNER-DELEGATED-TO-SEAT)"
+    decided_at: "2026-11-03T01:01:17+00:00"
+    evidence: research/theme_graph/micro_owner_review_2026-11-02.md#micro-structural_steel_electrification
+    note: "LOW-CONFIDENCE KEEP: name says structural steel, note says steel plate; investability thin; revisit as RENAME or RETIRE."
+  - micro_id: theme:surgical_implants_instruments
+    disposition: KEEP
+    reviewer: "GMI taxonomy owner — seat 6f14c2da (Chairman-delegated 2026-11-02, DEC:GMI-TAXONOMY-OWNER-DELEGATED-TO-SEAT)"
+    decided_at: "2026-11-03T01:01:17+00:00"
+    evidence: research/theme_graph/micro_owner_review_2026-11-02.md#micro-surgical_implants_instruments
+    note: "KEEP; distinct coherent scope, no frozen near-duplicate."
+  - micro_id: theme:surgical_robotics_systems
+    disposition: KEEP
+    reviewer: "GMI taxonomy owner — seat 6f14c2da (Chairman-delegated 2026-11-02, DEC:GMI-TAXONOMY-OWNER-DELEGATED-TO-SEAT)"
+    decided_at: "2026-11-03T01:01:17+00:00"
+    evidence: research/theme_graph/micro_owner_review_2026-11-02.md#micro-surgical_robotics_systems
+    note: "KEEP; distinct coherent scope, no frozen near-duplicate."
+  - micro_id: theme:transmission_hvdc_cabling
+    disposition: KEEP
+    reviewer: "GMI taxonomy owner — seat 6f14c2da (Chairman-delegated 2026-11-02, DEC:GMI-TAXONOMY-OWNER-DELEGATED-TO-SEAT)"
+    decided_at: "2026-11-03T01:01:17+00:00"
+    evidence: research/theme_graph/micro_owner_review_2026-11-02.md#micro-transmission_hvdc_cabling
+    note: "KEEP; distinct coherent scope, no frozen near-duplicate."
+  - micro_id: theme:ups_power_conversion
+    disposition: KEEP
+    reviewer: "GMI taxonomy owner — seat 6f14c2da (Chairman-delegated 2026-11-02, DEC:GMI-TAXONOMY-OWNER-DELEGATED-TO-SEAT)"
+    decided_at: "2026-11-03T01:01:17+00:00"
+    evidence: research/theme_graph/micro_owner_review_2026-11-02.md#micro-ups_power_conversion
+    note: "KEEP; distinct coherent scope, no frozen near-duplicate."
+  - micro_id: theme:wafer_fab_subsystems
+    disposition: KEEP
+    reviewer: "GMI taxonomy owner — seat 6f14c2da (Chairman-delegated 2026-11-02, DEC:GMI-TAXONOMY-OWNER-DELEGATED-TO-SEAT)"
+    decided_at: "2026-11-03T01:01:17+00:00"
+    evidence: research/theme_graph/micro_owner_review_2026-11-02.md#micro-wafer_fab_subsystems
+    note: "KEEP; distinct coherent scope, no frozen near-duplicate."
