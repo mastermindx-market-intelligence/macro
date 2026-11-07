@@ -923,6 +923,31 @@ def test_real_manifest_has_non_vacuous_derived_scopes(real_manifest_scopes) -> N
     assert ".claude/hooks/gh_quota_guard.py" in scoped["unrun-dark-guards"]  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
 
 
+@pytest.mark.parametrize("changed_path", [
+    "research/prophet_v4/regime_indicator_program_2026_10_02/intake_audit.py",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test
+    "research/prophet_v4/regime_indicator_program_2026_10_02/run_snapshot_audit.py",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test
+    "research/prophet_v4/regime_indicator_program_2026_10_02/native_primitive_probe.py",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test
+    "research/prophet_v4/regime_indicator_program_2026_10_02/etf_mechanism_pilot.py",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test
+    "research/prophet_v4/regime_indicator_program_2026_10_02/factorial_kernel_pilot.py",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test
+    "research/prophet_v4/regime_indicator_program_2026_10_02/test_intake_audit.py",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test
+    "research/prophet_v4/regime_indicator_program_2026_10_02/test_observation_basis.py",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test
+    "research/prophet_v4/regime_indicator_program_2026_10_02/test_native_primitive_probe.py",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test
+    "research/prophet_v4/regime_indicator_program_2026_10_02/test_etf_mechanism_pilot.py",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test
+    "research/prophet_v4/regime_indicator_program_2026_10_02/test_factorial_kernel_pilot.py",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test
+])
+def test_prophet_regime_research_edits_select_existing_code_owner(
+    real_manifest_scopes, changed_path: str,
+) -> None:
+    """Module-only and test-only edits must execute the synthetic research suite."""
+    jobs, summary = real_manifest_scopes
+    owner = next(job for job in jobs if job.job_id == "unrun-factor-research")
+    assert owner.gate == "code", summary
+    selected, reason = PACK.select_jobs(
+        [job for job in jobs if job.gate == "code"], [changed_path],
+    )
+    assert owner.job_id in {job.job_id for job in selected}, reason
+
+
 def test_derived_closure_follows_relative_first_party_imports() -> None:
     """Package-local imports are ownership edges, not optional implementation detail."""
     closure = suite_dependency_closure("tests/test_admin_modules.py")
@@ -5604,9 +5629,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_914),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_933),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_672),
+    ("templates/index.html", 137, 5_916),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_935),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_674),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5614,6 +5639,29 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    PR8303 current-main composition (2026-11-07): preserve frozen main
+    0cd9a4135c9b and every accepted GSC/gateway/provenance history below.
+    The paired measurement recorded next proves this program's own +2.
+    Its unrun-factor-research owner is byte-identical to current main
+    after removing only the accepted Node setup and five-suite step;
+    run_ci_pack stays3cbed58986d571e40af59eb03464e9419e8055a5. Carry only
+    that measured +2 onto current5914/5933/5672:5916/5935/5674. This is
+    arithmetic composition, not a fresh planner/runtime measurement.
+    Keep all ten original module/test-only planner cases, job counts,
+    ten-pack limit, selectors, timeouts and admission controls. No unmerged
+    sibling funding is included. Natural successor CI remains required;
+    the old baseline-replay descendant settlement remains unknown.
+
+    2026-11-07 #8303 research-suite enrollment: native contract-delta
+    run 42325898520 / job 128260994059 measured exact head 1a526199af9e
+    against base b2cc9808cbd0: index 137 jobs / 5912->5914,
+    free 137 jobs / 5927->5929, Prophet 131 jobs / 5668->5670, all ten packs,
+    newly selected jobs none. Existing unrun-factor-research fallback
+    weight 58->60 reflects one five-suite command and the next text band.
+    Raise only these measured weight ceilings by two; preserve job/pack,
+    timeout, admission, selection and every enrolled-suite bound.
+    This is source-derived planner cost, not a runtime measurement.
 
     P5.T9.S5 (2026-11-07): compose accepted retained-GSC coverage with
     protected59e035e39607, preserving its gateway and prior provenance
