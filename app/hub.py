@@ -202,3 +202,8 @@ def hub_tctx(root: str) -> dict[str, Any]:
     """
     root = _sanitize_root(root)
     return _hub_fetch(f"tickers_ctx/{root}.json")
+
+
+# Private Plan reads carry their own explicit auth; public hub feeds confer none.
+from app.options_plan import router as plan_router  # noqa: E402
+router.include_router(plan_router)

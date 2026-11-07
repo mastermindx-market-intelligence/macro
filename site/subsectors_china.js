@@ -55,10 +55,18 @@
   function cardHTML(g) {
     var e = g.entry || {}, r = g.regime || {};
     var col = (g['class'] === 'headwind') ? 'var(--down)' : (g['class'] === 'entry_now') ? 'var(--up)' : (g['class'] === 'forming') ? 'var(--info)' : (g['class'] === 'tailwind') ? 'var(--ok)' : (g['class'] === 'late') ? 'var(--orange)' : 'var(--line)';
+    var semi = g.ai_semis_confirmer;
+    var semiPill = '';
+    if (semi && semi.label_en) {
+      var zh = semi.label_zh == null ? null : esc(semi.label_zh);
+      semiPill = '<span class="pill">' + L(esc(semi.label_en), zh);
+      semiPill += '</span>';
+    }
     return '<a class="card" style="border-left-color:' + col + '" href="' + (g.chart_key ? detailHref(g) : '#') + '">'
       + '<div class="top"><div><div class="nm">' + nameCell(g.label, g.label_zh) + '</div><div class="sct">' + nameCell(g.sector, g.sector_zh) + ' · ' + (g.n_priced || g.n_members) + ' ' + L('names', '只') + relBadge(g) + '</div></div>' + tierBadge(e.tier) + '</div>'
       + '<div class="row2">' + regimePill(r) + (e.tier ? '<span class="pill buy">' + L('ENTRY', '入场') + '</span>' : '') + '<span style="color:var(--muted);font-size:11px">' + freshTxt(e) + '</span></div>'
       + '<div class="meta">' + (r.rs_60d != null ? L('vs CSI 300, 60d', '近60日 对沪深300') + ' ' + signed(r.rs_60d) : '') + '</div>'
+      + semiPill
       + '</a>';
   }
   function cardDeck(items) {
@@ -260,6 +268,16 @@
       + rowCollapse('<table class="tbl all-table"><thead><tr><th class="col-concept">' + L('Concept', '概念') + '</th><th class="col-entry">' + L('Entry', '入场') + '</th><th class="col-regime">' + L('State', '状态') + '</th><th class="col-fresh">' + L('How fresh', '新鲜度') + '</th><th class="col-rs">' + L('vs CSI 300', '对沪深300') + '</th><th class="col-n">' + L('Stocks', '只数') + '</th></tr></thead><tbody>' + body + '</tbody></table>', bs.length, ALL_CAP) + '</div>';
   }
 
+  function storedChip(obj, asOf) {
+    if (!obj || !obj.label_en) return '';
+    var zh = obj.label_zh == null ? null : esc(obj.label_zh);
+    var line = '<div>' + L(esc(obj.label_en), zh);
+    if (asOf) {
+      line += ' ' + L('as of ' + esc(asOf), '截至 ' + esc(asOf));
+    }
+    return line + '</div>';
+  }
+
   function render() {
     var app = document.getElementById('sc-app');
     if (!DATA || !DATA.ok) { app.innerHTML = '<div class="empty">' + L('No data yet — run the nightly build.', '暂无数据——请运行夜间构建。') + '</div>'; return; }
@@ -269,6 +287,11 @@
       ? ' · <span class="rel-low">' + cov.n_low_conf + ' ' + L('thin', '过薄') + '</span> / ' + reliable + ' ' + L('reliable', '可信')
       : '';
     document.getElementById('sc-asof').innerHTML = L('as of ' + (DATA.as_of || '—'), '截至 ' + (DATA.as_of || '—')) + (cov.n_baskets != null ? ' · ' + cov.n_baskets + ' ' + L('concepts', '概念') : '') + thinTxt;
+    var host = document.getElementById('sc-asof');
+    var sleeve = DATA.sleeve_chip || {};
+    host.innerHTML += storedChip(DATA.sleeve_chip, sleeve.radar_as_of);
+    var semis = DATA.ai_semis_confirmer || {};
+    host.innerHTML += storedChip(DATA.ai_semis_confirmer, semis.as_of);
     app.innerHTML = entryNowSection(DATA) + funnelSection(DATA) + allSection(DATA);
     wrapTbls(app);
     updateCardCollapses(app);

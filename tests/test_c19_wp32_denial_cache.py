@@ -20,6 +20,7 @@ from __future__ import annotations
 import json
 import time
 
+import pytest
 from fastapi import HTTPException
 
 import app.integrated_answer as integrated_answer
@@ -39,11 +40,16 @@ from tests.test_c19_wp32_correction import (
     _exposed_generation_ids,
     _publish,
 )
-from tests.test_integrated_answer_v0 import _patch_all_seams
+from tests.test_integrated_answer_v0 import _patch_all_seams, pin_capital_structure_leg
 
 TOKEN = {"Authorization": "Bearer wp32-token"}
 CANARY = "WP32-CACHE-CANARY"
 _SHA_NEEDLES = ('"legs"', '"ref"', '"consumed_receipt"')
+
+
+@pytest.fixture(autouse=True)
+def _pin_capital_structure_leg(monkeypatch: pytest.MonkeyPatch) -> None:
+    pin_capital_structure_leg(monkeypatch)
 
 
 def _warm_root(monkeypatch, tmp_path) -> str:
@@ -243,7 +249,7 @@ def test_p6_compose_wall_time_is_measured_and_reported(monkeypatch, tmp_path) ->
         page, entries = integrated_answer._compose_page_with_receipts(TICKER)
         samples_ms.append((time.perf_counter() - start) * 1000.0)
         assert page["ticker"] == TICKER
-        assert len(entries) == 6
+        assert len(entries) == 7
 
     ordered = sorted(samples_ms)
     median_ms = ordered[len(ordered) // 2]

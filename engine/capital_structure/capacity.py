@@ -161,6 +161,12 @@ BRANCHES = ("pessimistic", "optimistic")
 #: The ``other_assumptions`` key that declares mutually exclusive route groups.
 ROUTE_EXCLUSIVITY_KEY = "route_exclusivity"
 
+#: SPEC_V0 §1: the envelope blocker prefix for a joint solve the kernel refused.
+#: ``solve_joint`` refuses, evaluating nothing, when the exclusive groups give
+#: more branches than ``capacity_joint.MAX_BRANCHES``; the kernel's own text
+#: follows the prefix so the served body names the refusal verbatim.
+JOINT_SOLVE_REFUSED_PREFIX = "joint_solve_refused"
+
 #: SPEC_C2D §2.2: the ``other_assumptions`` key that binds an OUTSIDE registered
 #: route to a registration path of this envelope, as
 #: ``"<route_id>=<path_id>;<route_id>=<path_id>"`` -- ``;`` separates bindings,
@@ -368,6 +374,15 @@ def _nested(body: Any, *keys: str) -> Any:
     return node
 
 
+def _filing_instant(body: Any) -> datetime | None:
+    """A document-term row's FILING clock: the SEC acceptance of its filing.
+    Never an ingestion clock -- ``source_available_at`` is when we first saw
+    the document, so a backfilled original would outrank its own earlier-
+    captured amendment, and one backfill run stamps many filings alike
+    (the ``_filing_chronology_time`` rule of the event spine)."""
+    return _utc(_nested(body, "filing", "accepted_at"))
+
+
 def _text(value: Any) -> str | None:
     if isinstance(value, str) and value.strip():
         return value.strip()
@@ -535,8 +550,21 @@ def _read_records(state: CapitalState, cutoff: datetime) -> _StateRead:
             if schema == REGISTRATION_PATH_SCHEMA:
                 available = _utc(_nested(body, "origin", "mastermind_available_at"))
             elif schema == DOCUMENT_TERM_SCHEMA:
-                available = _utc(_nested(body, "point_in_time", "source_available_at")) or _utc(
-                    _nested(body, "filing", "accepted_at")
+                # A document-term row is then-known at the LATER of its own
+                # materialization instant and its source availability; the
+                # filing clock is only a fallback when neither is present.
+                record_stamps = [
+                    stamp
+                    for stamp in (
+                        _utc(_nested(body, "point_in_time", "available_at")),
+                        _utc(_nested(body, "point_in_time", "source_available_at")),
+                    )
+                    if stamp is not None
+                ]
+                available = (
+                    max(record_stamps)
+                    if record_stamps
+                    else _utc(_nested(body, "filing", "accepted_at"))
                 )
             elif schema in SHARE_COUNT_SCHEMAS:
                 available = _available_instant(body)
@@ -817,6 +845,17 @@ class _RoutePlan:
     evidence: tuple[EvidenceRef, ...]
 
 
+def _refusals(*solutions: JointSolution | None) -> tuple[str, ...]:
+    """The kernel refusal texts of the given solves, sorted and distinct.
+
+    ``solve_joint`` sets ``blockers`` only when it refuses to enumerate (SPEC_V0 §1),
+    so any blocker means that solve evaluated no branch at all.
+    """
+    return tuple(sorted({
+        text for solution in solutions if solution is not None for text in solution.blockers
+    }))
+
+
 def _unknown_bound(unit: str, note: str, share_basis: str | None = None) -> Quantity:
     if unit == "shares":
         return Quantity.unknown(unit, share_basis=share_basis or "issued_and_outstanding", note=note)
@@ -1054,6 +1093,8 @@ class _Builder:
         self._exclusive_groups()
         self._apply_actions()
         pessimistic, optimistic, ceiling = self._solve()
+        for text in _refusals(pessimistic, optimistic, ceiling):
+            self.blockers.append(f"{JOINT_SOLVE_REFUSED_PREFIX}:{text}")
         active = tuple(sorted(
             plan.route_id for plan in self.route_plans if plan.status in ACTIVE_ROUTE_STATUSES
         ))
@@ -1503,22 +1544,51 @@ class _Builder:
 
     def _fee_table(self, path: _ShelfPath) -> _FeeTable:
         rows: list[tuple[_Observation, str]] = []
+        # A total row the compiler found but could not observe (ambiguous or
+        # unavailable) still says the filing HAS a stated total, so a lone
+        # per-security row must not stand in for it.  Such a filing also
+        # joins the filing ordering below: when it is the latest, its
+        # unreadable total leaves the amount unknown rather than letting an
+        # earlier filing's amount stand.  An observed row stated in another
+        # currency or scale joins the ordering too (a total among them counts
+        # as unreadable), so a later amendment this evaluator cannot read
+        # still makes the earlier amount stale.  An amendment with no fee
+        # table at all emits no row and never displaces the original's amount.
+        # Every fee-table row of a filing is counted whatever its disposition,
+        # currency or scale, and a contradiction on any of them marks the
+        # filing contradicted: a row this evaluator cannot read is still part
+        # of the table, so a lone readable row beside it is never the total.
+        unobserved_totals: Counter[str] = Counter()
+        table_rows: Counter[str] = Counter()
+        contradicted: set[str] = set()
+        stated: list[tuple[str, datetime | None]] = []
         for observation in self.read.fee_rows:  # type: ignore[union-attr]
             body = observation.body
             if _text(_nested(body, "term", "name")) != FEE_TABLE_TERM_NAME:
                 continue
+            on_path = _text(_nested(body, "filing", "accession"))
+            if on_path is not None and on_path in path.accessions:
+                table_rows[on_path] += 1
+                if _sequence(_nested(body, "relationships", "contradiction_ids")):
+                    contradicted.add(on_path)
             if _text(_nested(body, "state", "disposition")) != "observed":
-                continue
-            normalized = body.get("normalized") if isinstance(body.get("normalized"), Mapping) else {}
-            currency = _text(normalized.get("currency"))
-            if currency is None or currency.upper() != "USD":
-                continue
-            raw_scale = normalized.get("scale")
-            scale = _decimal_or_none(raw_scale if isinstance(raw_scale, str) else str(raw_scale))
-            if scale is None or scale != 1:
+                if _text(_nested(body, "term", "scope")) == "registration_fee_table_total":
+                    unobserved = _text(_nested(body, "filing", "accession"))
+                    if unobserved is not None and unobserved in path.accessions:
+                        unobserved_totals[unobserved] += 1
+                        stated.append((unobserved, _filing_instant(body)))
                 continue
             accession = _text(_nested(body, "filing", "accession"))
             if accession is None or accession not in path.accessions:
+                continue
+            stated.append((accession, _filing_instant(body)))
+            normalized = body.get("normalized") if isinstance(body.get("normalized"), Mapping) else {}
+            currency = _text(normalized.get("currency"))
+            raw_scale = normalized.get("scale")
+            scale = _decimal_or_none(raw_scale if isinstance(raw_scale, str) else str(raw_scale))
+            if currency is None or currency.upper() != "USD" or scale is None or scale != 1:
+                if _text(_nested(body, "term", "scope")) == "registration_fee_table_total":
+                    unobserved_totals[accession] += 1
                 continue
             rows.append((observation, accession))
 
@@ -1545,36 +1615,112 @@ class _Builder:
                 )
             return _FeeTable(quantity, None, (), None, None, unknowns, blockers)
 
-        if not rows:
+        if not stated:
             return missing("no fee-table row for this registration is then-known")
-        latest = max(rows, key=lambda item: (item[0].available, item[1]))
-        accession = latest[1]
+        # The registered amount is the one stated by the LATEST FILING on the
+        # path, ranked by its SEC acceptance -- never by ``available`` (which
+        # also carries the materialization instant) nor by when we first saw
+        # the document.  A filing without an acceptance time, or two filings
+        # accepted at one instant, cannot be ordered, so the amount is
+        # unknown rather than picked by accession spelling.
+        filed: dict[str, datetime | None] = {}
+        for row_accession, stamp in stated:
+            if row_accession in filed:
+                previous = filed[row_accession]
+                stamp = None if previous is None or stamp is None else max(previous, stamp)
+            filed[row_accession] = stamp
+        if len(filed) == 1:
+            accession = next(iter(filed))
+        else:
+            clocks = [stamp for stamp in filed.values() if stamp is not None]
+            if len(clocks) < len(filed):
+                return missing(
+                    f"not every filing under {path.path_id} with a fee table carries a "
+                    "filing instant, so the latest one cannot be named",
+                    blockers=(f"fee_table_order_unknown:{path.path_id}",),
+                )
+            newest = max(clocks)
+            leaders = sorted(acc for acc, stamp in filed.items() if stamp == newest)
+            if len(leaders) > 1:
+                return missing(
+                    f"{len(leaders)} filings under {path.path_id} share the latest "
+                    "filing instant, so neither fee table can be chosen",
+                    blockers=(f"fee_table_order_tied:{path.path_id}",),
+                )
+            accession = leaders[0]
         group = [item for item in rows if item[1] == accession]
-        refs = _unique_refs(
-            [ref for item in group for ref in _span_refs(_nested(item[0].body, "evidence", "spans"))]
-        )
-        available = max(item[0].available for item in group)
-        contradicted = any(
-            _sequence(_nested(item[0].body, "relationships", "contradiction_ids")) for item in group
-        )
-        if contradicted:
+        if accession in contradicted:
             # SPEC_C1 §5: a contradicted fee table is reported as contradicted,
-            # never as merely unknown and never as a known amount.
+            # never as merely unknown and never as a known amount -- even when
+            # the contradicted row is one this evaluator cannot read.
             return missing(
                 f"the fee-table rows of {accession} carry a contradiction",
                 blockers=(f"fee_table_contradicted:{accession}",),
                 status="contradicted",
             )
-        if len(group) > 1:
+        if not group and not unobserved_totals[accession]:
             return missing(
-                f"{len(group)} fee-table rows in {accession} disagree about the registered amount",
+                f"the fee-table rows of {accession} are not stated in whole US dollars, "
+                "so the latest filing's amount cannot be read",
+                blockers=(f"fee_table_value_unusable:{accession}",),
+            )
+        # SPEC_C2 §5: the filing's own "Total Offering Amounts" row is the
+        # registered amount.  When the latest accession carries exactly one
+        # such total-scoped row, its value -- with its provenance and span
+        # evidence -- wins over the per-security rows, which are never summed.
+        # Two total rows (agreeing or not) cannot pick an amount.  With no
+        # total row a security row is the amount only when it is the filing's
+        # ONLY fee-table row: a sibling row in another currency or scale, or
+        # one the compiler could not observe, leaves the amount unknown.
+        total_rows = [
+            item
+            for item in group
+            if _text(_nested(item[0].body, "term", "scope")) == "registration_fee_table_total"
+        ]
+        if unobserved_totals[accession] and not total_rows:
+            return missing(
+                f"the fee-table total of {accession} is present but not readable as a "
+                "whole-dollar USD amount, so no per-security row may stand in for it",
+                blockers=(f"fee_table_total_indeterminate:{accession}",),
+            )
+        if len(total_rows) == 1 and not unobserved_totals[accession]:
+            chosen = total_rows
+        elif total_rows or table_rows[accession] != len(group):
+            chosen = []
+        else:
+            chosen = list(group)
+        if not chosen or len(chosen) > 1:
+            return missing(
+                f"{table_rows[accession]} fee-table rows in {accession} cannot name one "
+                "registered amount",
                 blockers=(f"fee_table_multi_row:{accession}",),
             )
-        value = _decimal_or_none(_nested(group[0][0].body, "normalized", "value"))
+        refs = _unique_refs(
+            [
+                ref
+                for item in chosen
+                for ref in _span_refs(_nested(item[0].body, "evidence", "spans"))
+            ]
+        )
+        available = max(item[0].available for item in chosen)
+        value = _decimal_or_none(_nested(chosen[0][0].body, "normalized", "value"))
         if value is None or value < 0:
             return missing(
                 f"the fee-table value of {accession} is not a nonnegative decimal",
                 blockers=(f"fee_table_value_not_decimal:{accession}",),
+            )
+        if value == 0:
+            # A deferred-fee automatic shelf (Rules 456(b)/457(r)) files its fee
+            # table quoting "$ 0.00": the document says zero, but that states no
+            # registered amount at all.  It is indeterminate, never a known $0.
+            if _text(_nested(chosen[0][0].body, "term", "scope")) == "registration_fee_table_total":
+                return missing(
+                    f"the fee-table total of {accession} quotes zero, which states no registered amount",
+                    blockers=(f"fee_table_total_indeterminate:{accession}",),
+                )
+            return missing(
+                f"the fee-table row of {accession} quotes zero, which states no registered amount",
+                blockers=(f"fee_table_value_indeterminate:{accession}",),
             )
         if not refs:
             return missing(
@@ -4060,6 +4206,14 @@ class _Builder:
         """§2.7: one aggregate.  Fixed actions are added; branch optima never are."""
         if self.contradiction is not None:
             return Quantity(unit="usd", status="contradicted", note=self.contradiction)
+        refused = _refusals(pessimistic, optimistic, ceiling)
+        if refused:
+            # SPEC_V0 §1: a refused solve evaluated no branch, so its zero floor
+            # and absent ceiling are placeholders, never a bound to quote.
+            return _unknown_bound(
+                "usd",
+                "joint solve refused (" + "; ".join(refused) + "); floor and ceiling unstated",
+            )
         fixed_pessimistic = self.fixed_totals["pessimistic"]
         fixed_optimistic = self.fixed_totals["optimistic"]
         ceiling_text = self._ceiling_text(ceiling)
@@ -4108,7 +4262,13 @@ class _Builder:
         )
 
     def _ceiling_text(self, ceiling: JointSolution) -> str:
-        """§2.7: the ceiling-call text an aggregate note quotes (``unbounded`` if none)."""
+        """§2.7: the ceiling-call text an aggregate note quotes (``unbounded`` if none).
+
+        A ceiling call the kernel refused evaluated nothing: it is ``unstated``,
+        never ``unbounded`` (SPEC_V0 §1).
+        """
+        if ceiling.blockers:
+            return "unstated"
         ceiling_raw = (
             ceiling.value if ceiling.determined else ceiling.ceiling_when_unknowns_relaxed
         )

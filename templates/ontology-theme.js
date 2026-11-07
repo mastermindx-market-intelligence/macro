@@ -163,11 +163,12 @@ export async function decodeTheme(value, reading, selected) {
   const ids = new Set(); let available = 0, pathCount = 0;
   for (const b of m.bindings) {
     const r = b.resolution;
+    const masterGenerated = currentMasterClock(r?.master_generated_at);
     if (!r || !str(r.node_id) || !r.node_id.startsWith('co:') || ids.has(r.node_id) || r.security_id !== selected.identity_id
         || !(r.issuer_id === null || str(r.issuer_id) && r.issuer_id.startsWith('ISS:'))
         || !str(r.listing_key) || !Number.isSafeInteger(r.graph_identity_epoch) || r.graph_identity_epoch < 1 || !str(r.master_code_version)
-        || !day(r.resolution_asof) || !stamp(r.computed_at) || !stamp(r.master_generated_at)
-        || time(r.computed_at) > Date.now() || Date.parse(r.resolution_asof) > Date.now()
+        || !day(r.resolution_asof) || !stamp(r.computed_at) || !Number.isFinite(masterGenerated)
+        || masterGenerated > Date.now() || time(r.computed_at) > Date.now() || Date.parse(r.resolution_asof) > Date.now()
         || !Array.isArray(b.paths) || b.paths.length > 128) fail();
     ids.add(r.node_id); pathCount += b.paths.length; if (pathCount > 256) fail();
     if (b.paths.length) { available++; if (b.status !== 'available' || b.reason !== null) fail(); }

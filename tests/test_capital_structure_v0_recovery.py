@@ -704,3 +704,360 @@ def _without_paths(payload: Any, paths: tuple[str, ...]) -> Any:
             node = node[part]
         node.pop(parts[-1], None)
     return cleaned
+
+
+# ===========================================================================
+# SPEC_V0 §3 items 2 and 3 (lane claude/cs-v2-v0b-lane): failed persistence
+# and restore exactness over the U2 saved-scenario API.
+#
+# Everything above this banner is items 1 and 4, byte-identical to the merged
+# lane.  Everything below appends the two remaining recovery proofs through the
+# SERVED paths: the U2 saved-scenario routes over the fake PostgREST transport
+# (imported by name from the U2 suites, never copied), the real builders for a
+# second published generation, and the closed restore vocabulary the engine
+# defines.  No new lock, ledger, queue or monitor: every case drives the
+# existing paths on fixture state in tmp_path, offline.
+# ===========================================================================
+
+from engine.capital_structure import saved_scenario_store as store  # noqa: E402
+from engine.capital_structure.issuer_state_contracts import stable_id  # noqa: E402
+from engine.capital_structure.saved_scenarios import RESTORE_OUTCOMES  # noqa: E402
+import tests.test_capital_structure_saved_scenario_api as saved_api  # noqa: E402
+from tests.test_capital_structure_saved_scenario_api import (  # noqa: E402
+    NOON_AS_OF,
+    SAVED_PATH,
+    _PartitionedStore,
+    _corrected_financials_inputs,
+    _save_body,
+    _saved_of_public,
+    _serve_noon_generation,
+    _serve_second_generation,
+    ledger_path,
+    moved,
+    moved_noon,
+    store_transport,
+)
+from tests.test_capital_structure_saved_scenarios import (  # noqa: E402
+    _FakePostgREST,
+    _change,
+    _changeset,
+    _row_for,
+)
+from tests.test_capital_structure_state_api import (  # noqa: E402
+    ISSUER_ONE as _U1_ISSUER_ONE,
+    _checked,
+    _detail,
+    built,
+    client,
+    served,
+    with_inputs,
+)
+
+_PARTIAL_USER = "paid-user"
+_PARTIAL_SAVED_ID = "saved_scenario:cs:" + "0" * 32
+
+
+def _canonical_sha256(payload: Any) -> str:
+    """The sha256 of one record's canonical JSON (the packet's byte identity)."""
+    return _sha256(_canonical(payload))
+
+
+class _FailsBeforeWrite(_PartitionedStore):
+    """The store that raises on the upsert write, before anything lands."""
+
+    def __init__(self, rows: list[dict[str, Any]]) -> None:
+        super().__init__(rows=rows)
+        self.write_attempts = 0
+
+    def __call__(
+        self,
+        method: str,
+        path: str,
+        body: Any = None,
+        prefer: str | None = None,
+        timeout: int = 6,
+    ) -> Any:
+        if method == "POST":
+            self.write_attempts += 1
+            raise TimeoutError(
+                "simulated saved-scenario store failure before the row landed"
+            )
+        return super().__call__(method, path, body=body, prefer=prefer, timeout=timeout)
+
+
+class _WritesPartialThenFails(_PartitionedStore):
+    """The hard stop mid-write: a partial row is recorded, then the write fails.
+
+    The fake's storage model makes the partial row expressible: ``rows`` is a
+    plain list, so the half-written row lands exactly as a stopped process
+    would have left it, and the failure raises after it.
+    """
+
+    def __init__(
+        self, rows: list[dict[str, Any]], partial_row: dict[str, Any]
+    ) -> None:
+        super().__init__(rows=rows)
+        self.partial_row = partial_row
+        self.write_attempts = 0
+
+    def __call__(
+        self,
+        method: str,
+        path: str,
+        body: Any = None,
+        prefer: str | None = None,
+        timeout: int = 6,
+    ) -> Any:
+        if method == "POST":
+            self.write_attempts += 1
+            self.rows.append(dict(self.partial_row))
+            raise TimeoutError(
+                "simulated saved-scenario store failure after a partial row landed"
+            )
+        return super().__call__(method, path, body=body, prefer=prefer, timeout=timeout)
+
+
+def _partial_row_of(saved_public: dict[str, Any]) -> dict[str, Any]:
+    """A half-written row: the record text stops mid-write, under the caller."""
+    row = _row_for(_saved_of_public(saved_public, _PARTIAL_USER))
+    row["saved_id"] = _PARTIAL_SAVED_ID
+    row["record"] = '{"schema": "capital_structure.saved_scena'
+    return row
+
+
+# ---------------------------------------------------------------------------
+# Item 2 — failed persistence (A46): a failed save is typed, never a half write
+# ---------------------------------------------------------------------------
+
+
+def test_v0_failed_saved_scenario_write_is_typed_and_prior_restores_exactly(
+    client: TestClient,
+    served: Any,
+    built: Any,
+    with_inputs: Any,
+    store_transport: _FakePostgREST,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # S1 is saved through the U2 API on the good transport and reads back
+    # through the served restore route: that is the prior state a failed save
+    # must leave byte-identically.
+    saved_public = _checked(client.post(SAVED_PATH, json=_save_body()), status=201)["saved"]
+    saved_id = str(saved_public["saved_id"])
+    store_transport.rows = [_row_for(_saved_of_public(saved_public, _PARTIAL_USER))]
+    first_read = _checked(client.get(f"{SAVED_PATH}/{saved_id}"), status=200)
+    before_sha = _canonical_sha256(first_read["saved"])
+    assert before_sha == _canonical_sha256(saved_public), (
+        f"the first read-back differs from the 201 record: {before_sha}"
+    )
+
+    # The same save again, with the store failing on the upsert write.  The
+    # route answers the typed failure it defines (app/capital_structure.py
+    # issuer_scenario_save: a write.state != "ok" is _STORE_UNAVAILABLE, 503).
+    failing = _FailsBeforeWrite(rows=[_row_for(_saved_of_public(saved_public, _PARTIAL_USER))])
+    monkeypatch.setattr(store, "_transport", failing)
+    refused = client.post(SAVED_PATH, json=_save_body())
+    assert refused.status_code == 503, (refused.status_code, refused.text[:200])
+    assert _detail(refused) == api._STORE_UNAVAILABLE, _detail(refused)
+    _checked(refused)
+    assert failing.write_attempts == 1, (
+        f"the store write was attempted {failing.write_attempts} times; "
+        "the adapter never retries"
+    )
+
+    # The prior saved scenario S1 reads back byte-identically.
+    monkeypatch.setattr(
+        store,
+        "_transport",
+        _PartitionedStore(rows=[_row_for(_saved_of_public(saved_public, _PARTIAL_USER))]),
+    )
+    after_read = _checked(client.get(f"{SAVED_PATH}/{saved_id}"), status=200)
+    after_sha = _canonical_sha256(after_read["saved"])
+    assert after_sha == before_sha, (
+        "a failed saved-scenario write moved the prior saved scenario: "
+        f"before sha256 {before_sha}, after sha256 {after_sha}, "
+        f"served saved_id {after_read['saved']['saved_id']!r}"
+    )
+
+
+def test_v0_failed_saved_scenario_write_leaves_no_half_record(
+    client: TestClient,
+    served: Any,
+    built: Any,
+    with_inputs: Any,
+    store_transport: _FakePostgREST,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    saved_public = _checked(client.post(SAVED_PATH, json=_save_body()), status=201)["saved"]
+    saved_id = str(saved_public["saved_id"])
+    good_row = _row_for(_saved_of_public(saved_public, _PARTIAL_USER))
+    store_transport.rows = [dict(good_row)]
+    before_sha = _canonical_sha256(saved_public)
+
+    # The upsert lands a partial row, then fails (the hard-stop shape).
+    failing = _WritesPartialThenFails(
+        rows=[dict(good_row)], partial_row=_partial_row_of(saved_public)
+    )
+    monkeypatch.setattr(store, "_transport", failing)
+    refused = client.post(SAVED_PATH, json=_save_body())
+    assert refused.status_code == 503, (refused.status_code, refused.text[:200])
+    assert _detail(refused) == api._STORE_UNAVAILABLE, _detail(refused)
+    _checked(refused)
+
+    # No half record is readable through get: the typed unavailable, never a
+    # partial body.
+    half = client.get(f"{SAVED_PATH}/{_PARTIAL_SAVED_ID}")
+    assert half.status_code == 503, (half.status_code, half.text[:200])
+    assert _detail(half) == api._STORE_UNAVAILABLE, _detail(half)
+    _checked(half)
+
+    # No half record is readable through list: the page is refused whole, so a
+    # half row can never ride out inside a partial listing.
+    listed = client.get(SAVED_PATH)
+    assert listed.status_code == 503, (listed.status_code, listed.text[:200])
+    assert _detail(listed) == api._STORE_UNAVAILABLE, _detail(listed)
+    _checked(listed)
+
+    # The prior scenario S1 still reads back byte-identically.
+    after_read = _checked(client.get(f"{SAVED_PATH}/{saved_id}"), status=200)
+    after_sha = _canonical_sha256(after_read["saved"])
+    assert after_sha == before_sha, (
+        "the failed write with a partial row moved the prior saved scenario: "
+        f"before sha256 {before_sha}, after sha256 {after_sha}, "
+        f"served saved_id {after_read['saved']['saved_id']!r}"
+    )
+
+
+# ---------------------------------------------------------------------------
+# Item 3 — restore exactness (A46): a restore after a new generation is exact
+# and the outcome set is closed
+# ---------------------------------------------------------------------------
+
+
+def test_v0_restore_after_new_generation_is_exact(
+    client: TestClient,
+    served: Any,
+    built: Any,
+    with_inputs: Any,
+    moved: saved_api._Moved,
+    ledger_path: Path,
+    store_transport: _FakePostgREST,
+) -> None:
+    saved_public = _checked(client.post(SAVED_PATH, json=_save_body()), status=201)["saved"]
+    saved_id = str(saved_public["saved_id"])
+    g1 = str(built.bundle["generation_id"])
+    store_transport.rows = [_row_for(_saved_of_public(saved_public, _PARTIAL_USER))]
+
+    # G2 publishes the way the U2 API tests do: the real builders over the
+    # fixture world plus one new issuer filing, with the real S1->S2 ledger.
+    served_generation = _serve_second_generation(served, built, moved, ledger_path)
+    assert served_generation != g1
+    body = _checked(client.get(f"{SAVED_PATH}/{saved_id}"), status=200)
+    assert set(body) == {"saved", "current", "unavailable", "restore", "changes"}
+    restore = body["restore"]
+    assert restore["outcome"] == "new_events", json.dumps(restore, sort_keys=True)
+    # The G1 source generation is reported exactly.
+    assert restore["from_generation_id"] == g1, (
+        f"restore reported source generation {restore['from_generation_id']!r}, "
+        f"saved on {g1!r}"
+    )
+    assert restore["to_generation_id"] == served_generation
+
+    # The saved block is byte-verbatim across the restore.
+    saved_block_sha = _canonical_sha256(body["saved"])
+    assert saved_block_sha == _canonical_sha256(saved_public), (
+        f"the saved block moved across a restore: {saved_block_sha}"
+    )
+
+    # The restored assumptions are EXACT: canonical-JSON equality and the same
+    # sha256 as the saved body's assumptions (the rebased anchor differs by
+    # nothing here — G2 keeps G1's as_of — so the served scenario record must
+    # be byte-identical to the saved one).
+    saved_scenario_sha = _canonical_sha256(saved_public["scenario"])
+    current_scenario_sha = _canonical_sha256(body["current"]["scenario"])
+    assert body["current"]["scenario"] == saved_public["scenario"], (
+        f"restored assumptions differ from the saved assumptions: saved sha256 "
+        f"{saved_scenario_sha}, current sha256 {current_scenario_sha}"
+    )
+    assert current_scenario_sha == saved_scenario_sha
+    # And the re-run binds the served generation it re-ran on.
+    assert body["current"]["view"]["generation_id"] == served_generation
+
+
+def test_v0_classify_restore_distinguishes_the_closed_outcome_set(
+    client: TestClient,
+    served: Any,
+    built: Any,
+    with_inputs: Any,
+    moved: saved_api._Moved,
+    moved_noon: saved_api._Moved,
+    ledger_path: Path,
+    store_transport: _FakePostgREST,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    saved_public = _checked(client.post(SAVED_PATH, json=_save_body()), status=201)["saved"]
+    saved_id = str(saved_public["saved_id"])
+    g1 = str(built.bundle["generation_id"])
+    store_transport.rows = [_row_for(_saved_of_public(saved_public, _PARTIAL_USER))]
+    outcomes: dict[str, str] = {}
+
+    def restored_outcome(label: str) -> str:
+        body = _checked(client.get(f"{SAVED_PATH}/{saved_id}"), status=200)
+        outcome = str(body["restore"]["outcome"])
+        # The closed set: every served outcome is a member the module defines.
+        assert outcome in RESTORE_OUTCOMES, (label, outcome, RESTORE_OUTCOMES)
+        # The byte-exactness the U2 restore-outcome test does not assert: the
+        # saved block is byte-verbatim in every outcome.
+        block_sha = _canonical_sha256(body["saved"])
+        assert block_sha == _canonical_sha256(saved_public), (
+            f"{label}: the saved block moved across a restore: {block_sha}"
+        )
+        return outcome
+
+    # no change — the same served state and inputs generations.
+    outcomes["no_change"] = restored_outcome("no_change")
+
+    # source outage — no bindable state generation is served.
+    served.state_path.write_text("{not-json", encoding="utf-8")
+    served.reset()
+    outcomes["source_outage"] = restored_outcome("source_outage")
+    served.state_path.write_text(built.state_body, encoding="utf-8")
+    served.reset()
+
+    # new events — G2 published with the real spanning ledger.
+    g2 = _serve_second_generation(served, built, moved, ledger_path)
+    outcomes["new_events"] = restored_outcome("new_events")
+    new_body = _checked(client.get(f"{SAVED_PATH}/{saved_id}"), status=200)
+    assert new_body["restore"]["from_generation_id"] == g1
+    assert new_body["restore"]["to_generation_id"] == g2
+
+    # correction — the nightly moved the cut AND a corrected observation was
+    # published, attributed by a ledger that spans saved->served.
+    noon = _serve_noon_generation(served, moved_noon)
+    _corrected_financials_inputs(served, built, NOON_AS_OF, noon)
+    corrected = _changeset(
+        _change(
+            "corrected_observation",
+            "correction_version_incremented",
+            issuer_id=_U1_ISSUER_ONE,
+            subject={
+                "logical_observation_id": stable_id("lifecycle", {"probe": "v0-correction"})
+            },
+            from_generation_id=g1,
+            to_generation_id=noon,
+        ),
+        from_generation_id=g1,
+        to_generation_id=noon,
+    )
+    monkeypatch.setattr(api, "_load_changes", lambda: corrected)
+    api._reset_changes_cache()
+    outcomes["correction"] = restored_outcome("correction")
+
+    # Each SPEC_V0-named outcome is distinguished, exactly once, by the merged
+    # name the module defines (RESTORE_OUTCOMES: the "new event" case is named
+    # "new_events").
+    assert outcomes == {
+        "no_change": "no_change",
+        "source_outage": "source_outage",
+        "new_events": "new_events",
+        "correction": "correction",
+    }, json.dumps(outcomes, sort_keys=True)
