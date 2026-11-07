@@ -1,8 +1,26 @@
 # Options platform integration · D08
 
+## Source publication qualification · 7 November 2026
+
+This package preserves the dated Phase 2A contract and evidence below. The current Chairman backlog assignment permits its bounded source landing on the original #10649 carrier. Only the 17 `d08/` files are composed onto main; the held parent programme package is excluded. This removes the unsupported stacked-base CI condition and repairs the outward assignment link without importing other owners' work. The common interface **D08-OPTIONS/1.0.0**, source maps, historical checks, receipts, compressed specimen and six images remain unchanged.
+
+### Later consumed source decisions
+
+- [F01 candidate.4 handoff 6617498479](https://github.com/mastermindx-market-intelligence/macro/pull/10649#issuecomment-6617498479) supersedes the candidate.1 geometry discrepancy in the original conformance report and calculation. Candidate.4 uses gutters16 at widths≤600,20 at600<w<1200 and24 at≥1200; continuous860/1200 rail boundaries; and the represented440px modal at768/1024. Docking still requires measured usable content≥984 and primary≥640 or the actual domain minimum. The retained 50/22 checks describe their original source/calculation inputs; they were not rerun against candidate.4 and do not establish current rendered geometry, a final joint release or RIG.
+- D08A–D08D subsequently returned bounded partial packages in this PR's history. [A→B→C qualification 6621668050](https://github.com/mastermindx-market-intelligence/macro/pull/10649#issuecomment-6621668050) keeps sourceList as provenance, not a separate contract-deduplication identity; a Surface matrix coordinate remains aggregate; C requires a separately resolved actual `doi | hot` row and its original unfiltered list. Original observation, later book and frozen pin stay distinct. Actual integrated host/book/return and access-safe restoration remain unproved. This consumes later source decisions without silently amending the frozen shared interface.
+- [D08C native integration warning 6652327320](https://github.com/mastermindx-market-intelligence/macro/pull/10649#issuecomment-6652327320) retains the potential stale-account Plan editor/payoff presentation gap and its original-source regression. Native #804 guards, D23 effects and the refused M2 fleet route remain with their existing owners; this documentation landing neither repairs nor admits that product panel.
+
+### Effects and acceptance retained
+
+The original Paper content operation `d08-paper-shell-desktop-20261103-02` was explicitly safety-refused and its target `01M3NSZGE8JWN2EZCSF0DT05RM / p-2-0 / 1N2L-0` read back as an empty Frame. No retry, equivalent replacement, alternate carrier or delegated bypass is authorized. The original blocked browser navigation, F01/F02 effect boundaries, #10494 Brief writer and separate child/Terminal effects are retained. Landing this source does not execute them.
+
+**Source-publication scope only; overall D08 remains PARTIAL.** Final native composition, applicable foundation/reference qualification, real entitled EN/ZH keyboard/touch journeys, native save/readback/reopen, QA01/RIG and production acceptance remain separate. The older Draft/no-retarget wording records the prior assignment; the current source-only disposition supersedes that ordinary procedural restriction without releasing these substantive holds. Fresh natural exact-head CI must qualify the new source composition before any individual source delivery admission.
+
+## Original Phase 2A contract
+
 **Phase 2A interface freeze · D08-OPTIONS/1.0.0 · 3 November 2026.** This version fixes the meaning of shared objects, routes, times, mutations and returns for D08A–D08D. It is an owner-issued specification baseline. Final compositions require the joint F01/F02 release, the assigned writers and subsequent review. Programme return **PARTIAL**. D08 reference **not submitted**. Implementation-entry decision **blocked by named dependencies**.
 
-[Slice interfaces and field requirements](SLICE_INTERFACES.json) · [View and producer ledger](SOURCE_MAP.md) · [Acceptance tests, Paper critique and delivery gates](VERIFICATION.md) · [Evidence manifest](evidence/baseline.json) · [Original assignment](../handoffs/D08-options.md)
+[Slice interfaces and field requirements](SLICE_INTERFACES.json) · [View and producer ledger](SOURCE_MAP.md) · [Acceptance tests, Paper critique and delivery gates](VERIFICATION.md) · [Evidence manifest](evidence/baseline.json) · [Original assignment](https://github.com/mastermindx-market-intelligence/macro/blob/d0516e1bad9cb5982d43d20c4167d0355cb70e2c/research/design_candidates/production_design_20261102/handoffs/D08-options.md)
 
 ## The investor's job
 

@@ -1,54 +1,5 @@
 # Mastermind full-site makeover and shared-shell adoption
 
-## Current design-audit wave — 2026-11-02
-
-This dated section supersedes the historical observations below for this commission; it does not grant design or release approval.
-The Chairman commissioned a Paper census, production-design assessment, organization plan and ready-to-deliver Astra Pro splitoffs.
-The Chairman will deliver those sessions and return for re-audit before product implementation. This audit has not launched them.
-
-Source-bound wave: `paper-production-audit-20261102`.
-Protected procedure pin: Mastermind `7f1242bfa90f0f0448e66e400e054bd5aa5fa15a`.
-Initial Macro observation/base: `5234bf95bfe8cf0b72ed5da29afec1fb43f0f4e0`.
-Fresh bounded Macro source delta: `143bdfe08ac2444fde9fcb2263aa0c1d3d03dcc0`.
-Terminal observation: `e0ae63e43965ec1d1c93405ee903fd92b63e3470`.
-Observations span November 2–3 UTC. This charter remains the whole-estate task-tree owner.
-WS:MARKET-OS remains a consumer; no new umbrella Agent OS workstream is invented.
-
-Deliverables: [audit and commissioning package](design_candidates/production_design_20261102/README.md),
-[36-session launch index](design_candidates/production_design_20261102/SESSION_INDEX.md),
-[organization rules](design_candidates/production_design_20261102/ORGANIZATION_RULES.md),
-[route crosswalk](design_candidates/production_design_20261102/census/ROUTE_COVERAGE.md),
-[re-audit contract](design_candidates/production_design_20261102/RE_AUDIT_CHECKLIST.md).
-Publication carrier: Macro draft PR #10617; documentation only, no merge or release.
-Readback: [publication receipt](design_candidates/production_design_20261102/evidence/PUBLICATION_RECEIPT.md).
-
-| Task | Scope | Completion evidence | Audit state |
-|---|---|---|---|
-| AUD-01 | Connected-team Paper census and classification | 29 files, 299 listed pages; 17 primary files expanded into 193 pages / 2,450 artboards; explicit visual/other-file limits | completed within recorded bounds |
-| AUD-02 | Route/source and accessible beta census | 348 canonical records assigned; 9 verified source additions/exclusions; current Terminal modules and Macro root pages reconciled | completed bounded audit; fresh nested inventory remains F03 dependency |
-| AUD-03 | Organization/archive and shared-shell requirements | exact page ownership/destination map, supported-operation gate, shell/system contracts | plan completed; physical application is not complete |
-| AUD-04 | Manual Astra Pro design-session briefs | P00, F01–F03, D01–D27, D08A–D08D, QA01 with source, scope, retention, builder and return contracts | completed; not launched |
-| AUD-05 | Independent package review and publication | architecture/programme/visual-handoff findings reconciled; validation and publication readback recorded in package | completed; exact source readback recorded in package |
-
-Execution children remain unlaunched. P00 qualifies the original Paper writing/resource path.
-F01/F02 jointly freeze shell/system v1; F03 maintains organization and coverage.
-D01–D27 cover product families; D08 is Options integration with four independently dispatchable slices.
-QA01 independently re-audits cross-product journeys before implementation commissioning.
-A blocked prerequisite or proposed organization ledger is PARTIAL/BLOCKED_RETURN, not SUCCESS.
-Receiving sessions resolve this package to one immutable commit and read all package dependencies at that pin.
-
-Paper reads succeeded. Current direct write qualification is false because observed catalog digest
-`16e6b93f0c51a1574ba8acee4df732052898707a04731d3817530971a88fdefd` differs from approved
-`1b9afff4c9bcf6f11f5ca2db301bf25ccdc442025344e2ec402459cedcd6a2db`.
-Folder/move/archive actions are not currently exposed and file-creation wording conflicts with classification.
-No Paper mutation was attempted. P00 recovers the existing #1011 adapter owner; no bypass or new access plane.
-F03 applies only qualified actions and preserves source-to-destination identity maps if supported moves create new IDs.
-
-The main census gained one concurrent Options Brief page (`p-25-0`) and recovered the 101st Forex board
-(`6NKK-0`) omitted by a 100-item response cap. Counts include historical/source/rejected/held work,
-not unique approved screens. Refined vase is the actual Intelligence Hub; the canonical system in Others remains protected.
-Historical #7949 is merged. Investor shell references are in MASTERMIND PAGES; Mastermind OS remains distinct.
-
 Status: CHAIRMAN-SCOPE CORRECTION / DESIGN + IMPLEMENTATION CHARTER / NOT PRODUCTION ACCEPTANCE.
 Date: 2026-10-08.
 Protected procedure: Mastermind master `c7e47c859eb2925c5626931fd511800773ba09ac`,
@@ -365,4 +316,3 @@ without pretending the held branch is shipped.
 
 This plan is a design/build charter under the existing migration factory,
 not an alternative governance, job, route, memory or publication owner.
-
