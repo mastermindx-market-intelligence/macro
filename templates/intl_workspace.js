@@ -1264,6 +1264,7 @@
       '[data-im-inspector-ledger],[data-im-inspector-field],[data-im-inspector-shell],[data-im-inspector-deeper-unavailable],'+
       '[data-im-macro-market],[data-im-risk-channel],[data-im-risk-row],[data-im-risk-prompt],[data-im-compare-panel],[data-im-compare-slot],[data-im-compare-status],[data-im-compare-cohort],[data-im-compare-controls],[data-im-compare-remove],[data-im-compare-pin],[data-im-compare-pin] option,'+
       '[data-im-chart-cohort],[data-im-chart-series],[data-im-chart-table-market],[data-im-chart-visible-count],[data-im-chart-selection-unavailable]';
+    selector += ',[data-im-investigate]';
     selector += ',[data-im-history-panel],[data-im-history-slot],[data-im-history-prompt],[data-im-history-tabs],[data-im-scenario-field],[data-im-scenario-fields],[data-im-scenario-tab],[data-im-scenario-context],[data-im-scenario-candidate-context],[data-im-scenario-confirm-context],[data-im-scenario-confirm-reset],[data-im-scenario-result],[data-im-scenario-empty],[data-im-scenario-usd],[data-im-scenario-contribution],[data-im-scenario-rows],[data-im-scenario-announcement],[data-im-scenario-error],[data-im-scenario-action]';
     return [root].concat(owned(root, selector)).map(function (node) {
       var attrs = [], text = false, value = false;
@@ -1295,6 +1296,7 @@
       if (node.matches('[data-im-macro-market]')) attrs.push('data-im-macro-selected');
       if (node.matches('[data-im-panel][data-view="risk"]')) attrs.push('data-im-risk-has-selection');
       if (node.matches('[data-im-risk-row]')) attrs.push('data-im-risk-selected');
+      if (node.matches('[data-im-investigate]')) attrs.push('href','hidden');
       if (node.matches('[data-im-risk-channel],[data-im-risk-prompt]')) attrs.push('hidden');
       if (node.matches('[data-im-risk-prompt]')) text = true;
       if (node.matches('[data-im-compare-panel]')) attrs.push('data-im-compare-state','data-im-compare-reason');
@@ -1371,6 +1373,75 @@
     }).map(function (panel) { return panel.getAttribute('data-view'); }));
   }
 
+  // Prepared immutable references supply qualification; local generation only vetoes.
+  function investigationDestination(controller,link,state) {
+    var panel=link.closest('[data-im-panel]');
+    if (!state || !panel || link.closest('[data-im-workspace]')!==controller.root ||
+        !panelValid(panel,controller.config,state.source_reference,controller.bindingVersion) ||
+        !['macro','risk'].includes(state.view) || panel.getAttribute('data-view')!==state.view ||
+        panel.getAttribute('data-horizon')!==state.horizon || panel.getAttribute('data-basis')!==state.currency_basis ||
+        panel.getAttribute('data-return-basis')!==state.return_basis) return null;
+    var context=link.getAttribute('data-im-investigation-context'), generation=link.getAttribute('data-im-investigation-generation');
+    var fingerprint=link.getAttribute('data-im-investigation-fingerprint'), field=link.getAttribute('data-im-investigation-field');
+    var raw=link.getAttribute('data-im-investigation-href');
+    if (!/^intl-workspace-context:sha256:[0-9a-f]{64}$/.test(context || '') ||
+        !validGeneration(generation) || generation!==state.source_reference ||
+        !/^[0-9a-f]{64}$/.test(fingerprint || '') || !/^[A-Z]{2}\.[a-z][a-z0-9_]{0,63}$/.test(field || '') ||
+        typeof raw!=='string' || raw.length>2048 || !raw.startsWith('/analysis?') || /[\u0000-\u0020\u007f\\#]/.test(raw)) return null;
+    try {
+      var target=new URL(raw,'https://app.mastermind-x.com'), params=target.searchParams;
+      var keys=['view','intl_context','intl_generation','intl_fingerprint','intl_field','intl_return'];
+      if (target.origin!=='https://app.mastermind-x.com' || target.pathname!=='/analysis' || target.hash || target.username || target.password ||
+          Array.from(params.keys()).length!==keys.length || keys.some(function(key){return params.getAll(key).length!==1;}) ||
+          params.get('view')!=='investigations' || params.get('intl_context')!==context || params.get('intl_generation')!==generation ||
+          params.get('intl_fingerprint')!==fingerprint || params.get('intl_field')!==field) return null;
+      var serialized=controller.reducer.serializeQuery(state);
+      if (!serialized.ok) return null;
+      var back='https://www.mastermind-x.com/intl.html?'+serialized.query;
+      // Copy only reducer-owned live navigation; no raw query, shell transport,
+      // caller Return, credentials, invented subject or clock. Native preflight
+      // still qualifies the exact original references, never this local stamp.
+      var navigation=new URL(back).searchParams, pins=navigation.get('pins');
+      if (back.length>2048 || /[%#\\]/.test(back) || navigation.get('group')!=='' ||
+          !/^(?:[A-Z]{2,3})?$/.test(navigation.get('market')) ||
+          !/^(?:[1-9][0-9]{0,2}[dwmy]|ytd)$/.test(navigation.get('horizon')) ||
+          !['local','usd_unhedged'].includes(navigation.get('basis')) || navigation.get('return_basis')!=='price' ||
+          (pins!=='' && (pins.split(',').length>4 || pins.split(',').some(function(pin){return !/^[A-Z]{2,3}$/.test(pin);})))) return null;
+      // Only Return changes. Context/generation/fingerprint/fields stay exact.
+      params.set('intl_return',back);
+      var relative=target.pathname+target.search;
+      return relative.length<=2048 ? {relative:relative,standalone:target.href} : null;
+    } catch (_) { return null; }
+  }
+
+  function paintInvestigationActions(controller,state) {
+    owned(controller.root,'[data-im-investigate]').forEach(function(link){
+      var target=investigationDestination(controller,link,state);
+      link.hidden=!target;
+      if (target) link.setAttribute('href',target.standalone);
+      else link.removeAttribute('href');
+    });
+  }
+
+  function investigationEvent(controller,event) {
+    if (event.type!=='click' || !event.target || !event.target.closest) return false;
+    var link=event.target.closest('[data-im-investigate]');
+    if (!link || link.closest('[data-im-workspace]')!==controller.root) return false;
+    var target=controller.live && investigationDestination(controller,link,controller.state);
+    if (!target || link.hidden || link.closest('[hidden]')) {event.preventDefault();return true;}
+    link.setAttribute('href',target.standalone);
+    if (event.defaultPrevented || (typeof event.button==='number' && event.button!==0) ||
+        event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return true;
+    var bridge=controller.environment.window.MMXSharedShell;
+    if (bridge) {
+      // Candidate presence owns queued/refused launches. Never fall through to
+      // standalone or a nested native frame when its admission is unavailable.
+      event.preventDefault();
+      try {if (typeof bridge.navigate==='function') bridge.navigate(target.relative,'push');} catch (_) {}
+    }
+    return true;
+  }
+
   function paint(controller, state, issues) {
     var root = controller.root;
     var library = controller.library;
@@ -1422,6 +1493,7 @@
       });
     });
     paintRisk(controller, state);
+    paintInvestigationActions(controller,state);
     paintLibrary(controller,state);
     paintCompare(controller,compare);
     paintInspectorFallbacks(controller,state);
@@ -1849,6 +1921,7 @@
   }
 
   function clickOrChange(controller, event) {
+    if (investigationEvent(controller,event)) return;
     if (gsMarketEvent(controller,event)) return;
     if (scenarioEvent(controller,event)) return;
     if (riskEvent(controller,event)) return;
