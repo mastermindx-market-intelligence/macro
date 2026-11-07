@@ -20,6 +20,10 @@ _WF = yaml.safe_load(DAILY)
 
 DRIP_STEP = "analyst revisions drip"
 _BARE_CLI = re.compile(r"python -m collectors\.equity_revisions\s*(\\\s*)?\|\|")
+_DEADLINE = re.compile(
+    r"export MACRO_REVISIONS_DEADLINE_EPOCH=\$\(\(\s*start\s*\+\s*\(\s*(\d+)\s*-\s*(\d+)\s*\)\s*\*\s*60\s*\)\)"
+)
+_START_STAMP = 'cat "${RUNNER_TEMP}/nightly-timings-${GITHUB_RUN_ID}-${GITHUB_JOB}-start"'
 
 
 def _steps(job: str) -> list[dict]:
@@ -69,6 +73,24 @@ def test_collect_tail_runs_the_drip_bare_bounded_and_before_the_commit():
         f"order W4={i_w4} drip={i_drip} commit={i_commit} — the drip is the one expensive "
         "accrual step and must sit LAST before the commit so a blowout truncates only itself"
     )
+
+
+def test_the_drip_gets_a_wall_clock_deadline_from_the_job_cap():
+    """The earlier step bounds already sum past the 200-min job cap on paper; the
+    cap comment says the STEP bounds guarantee the commit. So the drip must stop
+    by wall clock: job start (W2 stamp) + cap − a commit reserve of ≥20 min."""
+    steps = _steps("collect_tail")
+    _, drip = _step_index(steps, DRIP_STEP)
+    run = drip.get("run") or ""
+    assert _START_STAMP in run, "the deadline must be derived from the W2 job-start stamp"
+    m = _DEADLINE.search(run)
+    assert m, "the drip must export MACRO_REVISIONS_DEADLINE_EPOCH=$(( start + (CAP - RESERVE) * 60 ))"
+    cap, reserve = int(m.group(1)), int(m.group(2))
+    job_cap = _WF["jobs"]["collect_tail"]["timeout-minutes"]
+    assert cap == job_cap, f"deadline arithmetic uses cap {cap} but the job cap is {job_cap}"
+    assert reserve >= 20, f"commit reserve {reserve}m is too thin for the tail commit + push"
+    i_stamp, _ = _step_index(steps, "timings — job start mark")
+    assert i_stamp == 0, "the job-start stamp must be the job's first step"
 
 
 def test_the_drip_has_its_own_timings_band():

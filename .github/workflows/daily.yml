@@ -2239,10 +2239,19 @@ jobs:
         # measured 102 min at ~30 s/name on 2026-11-06 → 120-min bound; with the observed
         # job (21-25 min) that is ~125-145 min against the 200-min cap and the 85% tripwire
         # at 170. If the drip starts hitting its bound nightly, fix ITS per-name cost — do not
-        # silently raise the bound.
+        # silently raise the bound. DEADLINE: the step bounds ahead of this one already sum
+        # past the job cap on paper (tape-flow 75 + census 15 + scorers 60+50 + …), and the
+        # job-cap comment above says the STEP bounds, not the cap, are what guarantee the
+        # commit runs — so this step also hands the collector a wall-clock deadline of
+        # job start + cap − 30-min commit reserve (MACRO_REVISIONS_DEADLINE_EPOCH, read
+        # from the W2 job-start stamp). On a night where every earlier bound stacks, the
+        # drip stops starting names at that instant, flushes its checkpoint and exits 0,
+        # leaving the commit its reserve instead of the cancellation grace window.
         timeout-minutes: 120
         continue-on-error: true
         run: |
+          start=$(cat "${RUNNER_TEMP}/nightly-timings-${GITHUB_RUN_ID}-${GITHUB_JOB}-start" 2>/dev/null || date +%s)
+          export MACRO_REVISIONS_DEADLINE_EPOCH=$(( start + (200 - 30) * 60 ))
           python -m collectors.equity_revisions \
             || echo "::warning::equity_revisions drip failed (non-fatal)"
       - name: timings band — commit (W2)

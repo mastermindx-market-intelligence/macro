@@ -71,6 +71,8 @@ import math
 import os
 from pathlib import Path
 import re
+import signal
+import time
 from typing import Any, Callable, Mapping
 
 import pandas as pd
@@ -92,11 +94,18 @@ _FRESH_DAYS = 6
 # dripping — a one-night lag for the <=200 names refreshed that night, inside
 # the 6-day freshness window. Unset (ad-hoc local builds) keeps the historical
 # behaviour: the stock library drips. The CLI is always an owner: invoking it
-# is the intent. Progress is checkpointed every PERSIST_EVERY names so a
-# step-timeout-truncated night keeps what it fetched (resumable by freshness).
+# is the intent. Progress is checkpointed every PERSIST_EVERY names (atomic
+# tmp+rename writes, so a kill mid-write never leaves a torn parquet for the
+# tail commit to pick up) so a truncated night keeps what it fetched (resumable
+# by freshness). The step also passes a WALL-CLOCK DEADLINE (DEADLINE_ENV, unix
+# epoch seconds = job start + job cap - commit reserve): the loop stops starting
+# new names once it passes, so on a night where every earlier step-bound stacks
+# the drip yields the job's remaining minutes to "commit tail data" instead of
+# being cut by the job cap with the commit left to the cancellation grace window.
 DRIP_OWNER_ENV = "MACRO_REVISIONS_DRIP"
 DEFAULT_DRIP_OWNER = "build_site"
 PERSIST_EVERY = 25
+DEADLINE_ENV = "MACRO_REVISIONS_DEADLINE_EPOCH"
 
 # SRC-A1 is a source-owner append-only accrual.  These files deliberately sit
 # beside, rather than inside, the legacy revision-breadth artifacts below.
@@ -791,18 +800,47 @@ def drip_if_owner(
     return fetch_revisions(max_new=per_build_cap() if max_new is None else max_new)
 
 
+def drip_deadline(environ: Mapping[str, str] | None = None) -> float | None:
+    """Unix-epoch wall-clock deadline from ``DEADLINE_ENV``; None when unset/invalid."""
+    env = os.environ if environ is None else environ
+    raw = (env.get(DEADLINE_ENV) or "").strip()
+    if not raw:
+        return None
+    try:
+        return float(raw)
+    except ValueError:
+        log.warning("revisions: ignoring non-numeric %s=%r", DEADLINE_ENV, raw)
+        return None
+
+
+def _atomic_to_parquet(path: Path, frame: pd.DataFrame) -> None:
+    """Write ``frame`` (index kept) to ``path`` via tmp + ``os.replace``.
+
+    The drip is DESIGNED to be killed (step timeout / SIGTERM); a plain in-place
+    ``to_parquet`` cut mid-write leaves a torn file that "commit tail data"
+    (``if: always()``, ``git add data/``) would commit and every reader — this
+    collector's own resume, engine/run.py, demand_ledger, group_earnings,
+    altdata — would then choke on nightly until hand-repaired.
+    """
+    temporary = path.with_suffix(path.suffix + ".tmp")
+    frame.to_parquet(temporary)
+    os.replace(temporary, path)
+
+
 def _persist_snapshot(
     out_dir: Path, latest: pd.DataFrame, rows: dict[str, dict], today: pd.Timestamp
 ) -> tuple[pd.DataFrame, int]:
     """Merge ``rows`` into latest.parquet and append them to history.parquet.
 
     Idempotent per (date, ticker): re-persisting the same rows changes nothing,
-    so a chunked drip and a single end-of-run write leave identical stores.
-    Returns the merged latest frame and the history row count.
+    so a chunked drip and a single end-of-run write leave equivalent stores
+    (same rows and order; only the stored pandas index values can differ).
+    Both writes are atomic (tmp + rename). Returns the merged latest frame and
+    the history row count.
     """
     new = pd.DataFrame.from_dict(rows, orient="index")
     merged = new if latest.empty else pd.concat([latest[~latest.index.isin(new.index)], new])
-    merged.to_parquet(out_dir / "latest.parquet")
+    _atomic_to_parquet(out_dir / "latest.parquet", merged)
     # append a dated snapshot for forward PIT accrual
     hist_p = out_dir / "history.parquet"
     snap = new.copy(); snap["date"] = today
@@ -810,7 +848,7 @@ def _persist_snapshot(
     if hist_p.exists():
         snap = pd.concat([pd.read_parquet(hist_p), snap], ignore_index=True)
         snap = snap.drop_duplicates(subset=["date", "ticker"], keep="last")
-    snap.to_parquet(hist_p)
+    _atomic_to_parquet(hist_p, snap)
     return merged, len(snap)
 
 
@@ -820,10 +858,15 @@ def fetch_revisions(
     expectation_output_dir: Path | None = None,
     collection_session_id: str | None = None,
     system_observed_at: object | None = None,
+    deadline: float | None = None,
+    clock: Callable[[], float] = time.time,
 ) -> int:
     """Drip up to ``max_new`` STALEST names; update latest.parquet + append a dated
     snapshot to history.parquet. Best-effort — any per-name failure is skipped.
-    Progress is checkpointed every ``PERSIST_EVERY`` fetched names."""
+    Progress is checkpointed every ``PERSIST_EVERY`` fetched names and the pending
+    chunk is flushed on any exit, including an interrupt. ``deadline`` (unix epoch
+    seconds) stops the loop from STARTING another name once ``clock()`` passes it;
+    the names not reached stay stalest and lead the next night's drip."""
     out_dir = config.data_dir() / "revisions"
     out_dir.mkdir(parents=True, exist_ok=True)
     latest_p = out_dir / "latest.parquet"
@@ -854,20 +897,32 @@ def fetch_revisions(
         expectation_result = {"attempts": 0, "observations": 0}
     chunk: dict[str, dict] = {}
     hist_rows = 0
-    for t in todo:
-        try:
-            r = _one(t)
-        except Exception as e:  # noqa: BLE001
-            log.debug("revisions %s skipped: %s", t, e); continue
-        if r:
-            r["asof"] = today
-            rows[t] = r
-            chunk[t] = r
-        if len(chunk) >= PERSIST_EVERY:
+    unreached = 0
+    try:
+        for i, t in enumerate(todo):
+            if deadline is not None and clock() >= deadline:
+                unreached = len(todo) - i
+                log.warning(
+                    "revisions: wall-clock deadline reached after %d of %d names — "
+                    "%d left stalest for the next night", i, len(todo), unreached,
+                )
+                break
+            try:
+                r = _one(t)
+            except Exception as e:  # noqa: BLE001
+                log.debug("revisions %s skipped: %s", t, e); continue
+            if r:
+                r["asof"] = today
+                rows[t] = r
+                chunk[t] = r
+            if len(chunk) >= PERSIST_EVERY:
+                latest, hist_rows = _persist_snapshot(out_dir, latest, chunk, today)
+                chunk = {}
+    finally:
+        # also on KeyboardInterrupt / SystemExit (main() maps SIGTERM to the
+        # latter): the fetched-but-unpersisted tail of the chunk is kept.
+        if chunk:
             latest, hist_rows = _persist_snapshot(out_dir, latest, chunk, today)
-            chunk = {}
-    if chunk:
-        latest, hist_rows = _persist_snapshot(out_dir, latest, chunk, today)
     if not rows:
         log.info(
             "revisions: drip fetched 0 of %d (SRC-A1 attempts=%d observations=%d)",
@@ -893,9 +948,29 @@ def main(argv: list[str] | None = None) -> int:
     args = list(sys.argv[1:] if argv is None else argv)
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
     cap = int(args[0]) if args else per_build_cap()
-    log.info("revisions: CLI drip cap %d (%s)", cap, "argv" if args else "config equity_profile.per_build")
-    fetch_revisions(max_new=cap)
+    deadline = drip_deadline()
+    log.info(
+        "revisions: CLI drip cap %d (%s); deadline %s",
+        cap, "argv" if args else "config equity_profile.per_build",
+        "none" if deadline is None else f"{DEADLINE_ENV}={deadline:.0f} ({deadline - time.time():.0f}s away)",
+    )
+    _install_sigterm_flush()
+    fetch_revisions(max_new=cap, deadline=deadline)
     return 0
+
+
+def _sigterm_to_exit(signum, frame):  # noqa: ARG001 - signal handler signature
+    raise SystemExit(128 + signum)
+
+
+def _install_sigterm_flush() -> None:
+    """Make the step kill (SIGTERM) unwind the stack so fetch_revisions' ``finally``
+    flushes the pending chunk; the default SIGTERM action terminates without it.
+    Main-thread only (signal law); a no-op elsewhere."""
+    try:
+        signal.signal(signal.SIGTERM, _sigterm_to_exit)
+    except (ValueError, OSError):  # not the main thread / unsupported platform
+        log.debug("revisions: SIGTERM flush handler not installed")
 
 
 if __name__ == "__main__":

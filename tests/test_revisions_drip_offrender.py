@@ -139,18 +139,91 @@ def test_a_truncated_drip_keeps_its_checkpointed_names_and_resumes(monkeypatch, 
         revisions.fetch_revisions(max_new=200)
     latest = pd.read_parquet(tmp_path / "revisions" / "latest.parquet")
     history = pd.read_parquet(tmp_path / "revisions" / "history.parquet")
-    assert len(latest) == 50 and len(history) == 50, (
-        f"expected two 25-name checkpoints on disk, got latest={len(latest)} history={len(history)}"
+    assert len(latest) == 55 and len(history) == 55, (
+        "expected two 25-name checkpoints PLUS the 5-name pending chunk flushed by the "
+        f"finally, got latest={len(latest)} history={len(history)}"
     )
     assert list(latest.columns) == ["breadth", "n_analysts", "asof"]
     assert list(history.columns) == ["ticker", "breadth", "n_analysts", "asof", "date"]
+    assert not list((tmp_path / "revisions").glob("*.tmp")), "atomic writes must leave no temp file"
 
     monkeypatch.setattr(revisions, "_one", lambda t: {"breadth": 0.2, "n_analysts": 4})
-    assert revisions.fetch_revisions(max_new=200) == 10, "the resumed night must drip only the 10 unfetched names"
+    assert revisions.fetch_revisions(max_new=200) == 5, "the resumed night must drip only the 5 unfetched names"
     latest = pd.read_parquet(tmp_path / "revisions" / "latest.parquet")
     history = pd.read_parquet(tmp_path / "revisions" / "history.parquet")
     assert len(latest) == 60 and sorted(latest.index) == names
     assert len(history) == 60 and history["ticker"].is_unique
+
+
+def test_the_wall_clock_deadline_stops_the_loop_and_keeps_the_rest_stalest(monkeypatch, tmp_path):
+    """Review round 1 MAJOR: the collect_tail step bounds can stack past the job
+    cap, so the drip must yield by wall clock — persist what it has, exit 0, and
+    leave the unreached names for the next night."""
+    names = [f"T{i:03d}" for i in range(40)]
+    _hermetic(monkeypatch, tmp_path, names)
+    now = {"t": 1000.0}
+
+    def _one_30s(t):
+        now["t"] += 30.0
+        return {"breadth": 0.1, "n_analysts": 3}
+
+    monkeypatch.setattr(revisions, "_one", _one_30s)
+    # deadline 10 "minutes" after start → 20 names fetched before clock() >= deadline
+    n = revisions.fetch_revisions(max_new=200, deadline=1000.0 + 600.0, clock=lambda: now["t"])
+    assert n == 20, f"expected 20 names before the deadline, got {n}"
+    latest = pd.read_parquet(tmp_path / "revisions" / "latest.parquet")
+    assert len(latest) == 20 and sorted(latest.index) == names[:20]
+    # the next night (no deadline) drips exactly the 20 unreached names
+    assert revisions.fetch_revisions(max_new=200) == 20
+
+
+def test_deadline_env_parsing_and_cli_pass_through(monkeypatch):
+    assert revisions.drip_deadline({}) is None
+    assert revisions.drip_deadline({revisions.DEADLINE_ENV: " "}) is None
+    assert revisions.drip_deadline({revisions.DEADLINE_ENV: "nope"}) is None
+    assert revisions.drip_deadline({revisions.DEADLINE_ENV: "1762500000"}) == 1762500000.0
+    rec = _Recorder()
+    monkeypatch.setattr(revisions, "fetch_revisions", rec)
+    monkeypatch.setattr(revisions, "per_build_cap", lambda: 200)
+    monkeypatch.setattr(revisions, "_install_sigterm_flush", lambda: None)
+    monkeypatch.setenv(revisions.DEADLINE_ENV, "1762500000")
+    assert revisions.main([]) == 0
+    assert rec.calls[-1]["deadline"] == 1762500000.0
+    monkeypatch.delenv(revisions.DEADLINE_ENV)
+    assert revisions.main([]) == 0
+    assert rec.calls[-1]["deadline"] is None
+
+
+def test_checkpoint_writes_are_atomic_a_failed_write_keeps_the_old_store(monkeypatch, tmp_path):
+    """Review round 1 MAJOR: the step is designed to be killed; a torn in-place
+    parquet would be committed by `git add data/` and break every reader. A write
+    that dies mid-file must leave the previous store byte-for-byte intact."""
+    out = tmp_path / "revisions"; out.mkdir()
+    today = pd.Timestamp("2026-11-07")
+    latest, _ = revisions._persist_snapshot(out, pd.DataFrame(), {"AAA": {"breadth": 0.1, "n_analysts": 1, "asof": today}}, today)
+    before_latest = (out / "latest.parquet").read_bytes()
+    before_hist = (out / "history.parquet").read_bytes()
+
+    real = pd.DataFrame.to_parquet
+
+    def _torn(self, path, *a, **k):
+        real(self, path, *a, **k)
+        Path(path).write_bytes(b"PAR1torn")  # garbage lands in the TEMP file only
+        raise OSError("killed mid-write")
+
+    monkeypatch.setattr(pd.DataFrame, "to_parquet", _torn)
+    with pytest.raises(OSError):
+        revisions._persist_snapshot(out, latest, {"BBB": {"breadth": 0.2, "n_analysts": 2, "asof": today}}, today)
+    assert (out / "latest.parquet").read_bytes() == before_latest
+    assert (out / "history.parquet").read_bytes() == before_hist
+    assert len(pd.read_parquet(out / "latest.parquet")) == 1, "the old store must still parse"
+
+
+def test_sigterm_handler_unwinds_so_the_finally_flushes():
+    import signal
+    with pytest.raises(SystemExit) as exc:
+        revisions._sigterm_to_exit(signal.SIGTERM, None)
+    assert exc.value.code == 128 + signal.SIGTERM
 
 
 def test_checkpoints_are_idempotent_per_date_and_ticker(tmp_path):
