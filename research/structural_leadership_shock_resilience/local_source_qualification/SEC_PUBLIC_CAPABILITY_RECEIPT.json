@@ -1,0 +1,18 @@
+{
+  "acceptance_datetime_count": 1001,
+  "cik_present": true,
+  "earliest_recent_filing_date": "2015-09-17",
+  "economic_parent_proven": false,
+  "endpoint": "https://data.sec.gov/submissions/CIK0000320193.json",
+  "historical_gics_provided": false,
+  "operation": "new independent public source capability probe",
+  "provider": "SEC EDGAR",
+  "raw_payload_retained": false,
+  "recent_filing_count": 1001,
+  "report_date_count": 1001,
+  "retrieval_retries": 0,
+  "source_kind": "PUBLIC_REFERENCE_SAMPLE_NOT_SLR_POPULATION",
+  "source_object_sha256": "9e857480653678d3de03ed2b00962c9dc47721c3eca9476ee250046169d4c150",
+  "status": "PASS_ENDPOINT_ACCESS",
+  "ticker_count": 1
+}

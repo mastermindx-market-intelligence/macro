@@ -52198,3 +52198,25 @@ jobs:
       # nightly or wire data commit can move this verdict.
       - name: GDELT client + both news leaves — query bounds, structural rejection, cache fences
         run: python -m pytest tests/test_gdelt_client.py tests/test_macro_news.py tests/test_news_vector.py -q
+
+  slr-local-source-qualification:
+    # Outcome-blind diagnostics; no provider or scientific input admission.
+    # Detector and identity compatibility suites retain their existing code owners.
+    if: ${{ false }}
+    gate: code
+    paths:
+      - research/structural_leadership_shock_resilience/local_source_qualification/**
+      - tests/test_slr_local_source_qualification.py
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install source-qualification test dependencies
+        run: pip install pytest numpy pandas pyyaml pyarrow
+      - name: SLR source-qualification contracts
+        run: >-
+          PYTHONDONTWRITEBYTECODE=1 python -m pytest
+          tests/test_slr_local_source_qualification.py -q
