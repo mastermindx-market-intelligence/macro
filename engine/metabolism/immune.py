@@ -269,39 +269,33 @@ def check_dead_cron(
 
 
 QUEUE_PROJECTION_STALE_AFTER_MINUTES = 26 * 60
-# GitHub self-hosted jobs have a 24h queue lifetime. Keep a two-hour grace for
-# API propagation, then treat a still-queued run as a stale platform projection,
-# not fresh runner saturation. The original record remains evidence; this sensor
-# only refuses to turn it into a new operator page forever.
+# Historical name retained for callers: this bounds additional child-detail
+# reads only. Workflow age does not establish child queue age or expiration,
+# and crossing this read window must not clear an unverified projection.
 
 
 def check_queue_stuck(
     runs_list: list[dict[str, Any]],
     cfg: dict[str, Any],
 ) -> dict[str, Any]:
-    """Detect actionable Actions queued work without false saturation alarms.
+    """Detect queued workflow projections that need attention.
 
-    The run-list endpoint can retain stale queued projections long after the
-    underlying job is no longer actionable, and a workflow run can report
-    queued while child jobs are already running. Callers may annotate a run
-    with _queue_projection_state after inspecting its child jobs:
+    created_at measures workflow age, not a child's queue duration. Callers may
+    annotate child-job evidence after inspecting the complete returned states:
+    active_children and terminal_children clear a wrapper; queued_children
+    remains a finding. Missing or incomplete child evidence is unverified and
+    never cleared merely because the workflow is old.
 
-    - active_children   — at least one child is in progress; do not page.
-    - terminal_children — all observed children are terminal; do not page.
-    - queued_children   — at least one child is genuinely queued.
-
-    Unannotated recent queued runs remain conservative/actionable so a failed job
-    detail probe cannot hide a real queue incident. Runs older than the platform
-    queue lifetime plus grace are preserved as stale evidence but excluded here.
-
-    NEVER-RAISE.
+    The configured age threshold selects findings; it does not establish how
+    long an observed child has waited. NEVER-RAISE.
     """
     try:
         threshold_min = int(cfg.get("queue_stuck_min") or 40)
         now = datetime.now(timezone.utc)
 
         stuck: list[str] = []
-        ignored_stale = 0
+        observed_queued = 0
+        unverified = 0
         ignored_active = 0
         ignored_terminal = 0
 
@@ -313,14 +307,8 @@ def check_queue_stuck(
                 continue
             try:
                 created = datetime.fromisoformat(created_raw.replace("Z", "+00:00"))
-                queued_min = (now - created).total_seconds() / 60.0
+                workflow_age_min = (now - created).total_seconds() / 60.0
             except Exception:  # noqa: BLE001
-                continue
-
-            # GitHub should have terminalized a real queued job within 24h. A
-            # much older record is an API/history anomaly, not current capacity.
-            if queued_min > QUEUE_PROJECTION_STALE_AFTER_MINUTES:
-                ignored_stale += 1
                 continue
 
             projection = str(run.get("_queue_projection_state") or "").lower()
@@ -331,26 +319,36 @@ def check_queue_stuck(
                 ignored_terminal += 1
                 continue
 
-            if queued_min > threshold_min:
+            if workflow_age_min > threshold_min:
                 label = run.get("name") or str(run.get("id") or "unknown")
-                stuck.append(f"{label} ({queued_min:.0f}m)")
+                if projection == "queued_children":
+                    observed_queued += 1
+                    evidence = "observed queued child"
+                else:
+                    unverified += 1
+                    evidence = "unverified queued projection"
+                stuck.append(
+                    f"{label} (workflow age {workflow_age_min:.0f}m; {evidence})"
+                )
 
-        ignored = (
-            f"; ignored stale={ignored_stale}, active={ignored_active}, "
-            f"terminal={ignored_terminal}"
-        )
+        cleared = f"; cleared active={ignored_active}, terminal={ignored_terminal}"
         return {
             "found": bool(stuck),
             "stuck_count": len(stuck),
             "stuck_runs": stuck,
-            "ignored_stale_count": ignored_stale,
+            # Retained for callers; workflow age alone no longer clears a run.
+            "ignored_stale_count": 0,
             "ignored_active_count": ignored_active,
             "ignored_terminal_count": ignored_terminal,
+            "observed_queued_count": observed_queued,
+            "unverified_count": unverified,
             "summary": (
-                f"queue-stuck: {len(stuck)} actionable run(s) queued >{threshold_min}min: "
-                f"{stuck}{ignored}"
+                f"queue-stuck: {len(stuck)} queued projection(s) with workflow age "
+                f">{threshold_min}min: observed queued={observed_queued}, "
+                f"unverified={unverified}; {stuck}{cleared}"
                 if stuck
-                else f"queue-stuck: no actionable runs queued >{threshold_min}min{ignored}"
+                else f"queue-stuck: no queued projections needing attention with "
+                f"workflow age >{threshold_min}min{cleared}"
             ),
         }
     except Exception as exc:  # noqa: BLE001
@@ -362,6 +360,8 @@ def check_queue_stuck(
             "ignored_stale_count": 0,
             "ignored_active_count": 0,
             "ignored_terminal_count": 0,
+            "observed_queued_count": 0,
+            "unverified_count": 0,
             "summary": f"queue-stuck check error: {exc}",
         }
 

@@ -12,7 +12,7 @@ Runs every 2h (cron '15 */2 * * *').  Three independent responsibilities:
 
   B. LANE-HEALTH SENSORS (R-V8-4)
      - Dead cron (cancelled/timed_out latest run per schedule workflow)
-     - Queue saturation (runs queued > queue_stuck_min minutes)
+     - Queued workflow projections older than queue_stuck_min minutes
      - Offline self-hosted runners
      - Key-pool partial degradation (>50% cooling)
      Each fires once per day per condition (dedup via journal markers).
@@ -119,7 +119,9 @@ def _gh_json(args: list[str], timeout: int = 60) -> Any:
         return None
 
 
-def _gh_json_list(args: list[str], timeout: int = 60) -> list[dict]:
+def _gh_json_list(
+    args: list[str], timeout: int = 60, *, preserve_invalid: bool = False,
+) -> list[dict]:
     """Run a gh command and ALWAYS return a flat list of dicts.  NEVER raises.
 
     Handles all three output shapes produced by gh:
@@ -133,7 +135,10 @@ def _gh_json_list(args: list[str], timeout: int = 60) -> list[dict]:
     3. Single line (one object or one array, no --paginate):
        Treated as a one-element or multi-element flat result.
 
-    Empty output or errors → [].
+    Empty output or errors → []. With preserve_invalid, otherwise discarded
+    records become empty-dict placeholders so a caller can retain uncertainty.
+    These placeholders do not represent verified jobs. Other callers keep the
+    legacy default, which discards invalid records.
     """
     try:
         result = subprocess.run(
@@ -152,12 +157,19 @@ def _gh_json_list(args: list[str], timeout: int = 60) -> list[dict]:
             try:
                 obj = json.loads(line)
             except Exception:  # noqa: BLE001
+                if preserve_invalid:
+                    flat.append({})
                 continue
             if isinstance(obj, list):
-                flat.extend(item for item in obj if isinstance(item, dict))
+                if preserve_invalid:
+                    flat.extend(item if isinstance(item, dict) else {} for item in obj)
+                else:
+                    flat.extend(item for item in obj if isinstance(item, dict))
             elif isinstance(obj, dict):
                 flat.append(obj)
-            # scalars silently dropped
+            elif preserve_invalid:
+                flat.append({})
+            # The default continues to discard invalid records.
         return flat
     except Exception as exc:  # noqa: BLE001
         log.warning("immune._gh_json_list: %s", exc)
@@ -959,12 +971,12 @@ def _annotate_queue_health_runs(
     runs: list[dict[str, Any]],
     lane_cfg: dict[str, Any],
 ) -> list[dict[str, Any]]:
-    """Attach child-job truth to actionable queued run projections.
+    """Attach child evidence within the existing workflow-age read window.
 
-    Only runs old enough to cross the queue alert threshold but still younger
-    than GitHub's queue-lifetime grace cause a job-detail read. Ancient API
-    ghosts and fresh runs cost zero extra calls. A failed job-detail read leaves
-    the run unannotated so check_queue_stuck remains conservative.
+    Only runs above the alert threshold and at most 26 hours old cause a
+    job-detail read. This window limits reads; it is not proof that older
+    workflows have no queued children. Outside the window, or with failed,
+    empty or incomplete child evidence, the projection remains unverified.
     NEVER raises.
     """
     from datetime import datetime, timezone  # noqa: PLC0415
@@ -1008,11 +1020,12 @@ def _annotate_queue_health_runs(
                     "--paginate",
                 ],
                 timeout=60,
+                preserve_invalid=True,
             )
             statuses = [
                 str(job.get("status") or "").lower()
+                if isinstance(job, dict) else ""
                 for job in jobs
-                if isinstance(job, dict) and job.get("status")
             ]
             if not statuses:
                 continue
@@ -1023,12 +1036,14 @@ def _annotate_queue_health_runs(
             # real queue wait behind unrelated in-progress work.
             if "queued" in statuses:
                 run["_queue_projection_state"] = "queued_children"
+            elif any(status not in {"queued", "in_progress", "completed"}
+                     for status in statuses):
+                # Missing/invalid rows and unknown states cannot prove a clear.
+                continue
             elif "in_progress" in statuses:
                 run["_queue_projection_state"] = "active_children"
             elif all(status == "completed" for status in statuses):
                 run["_queue_projection_state"] = "terminal_children"
-            # Any unknown mixed status is deliberately left without a state:
-            # the pure detector will keep treating it conservatively.
 
         return annotated
     except Exception as exc:  # noqa: BLE001
@@ -1207,7 +1222,7 @@ def run_lane_health_checks(
             (
                 cooldown.get("queue_stuck_journal_key") or "immune.lane_health.queue_stuck",
                 check_queue_stuck(queue_runs, lane_cfg),
-                "Actions queued work detected",
+                "Actions queued projections need attention",
             ),
             (
                 cooldown.get("runner_offline_journal_key") or "immune.lane_health.runner_offline",
