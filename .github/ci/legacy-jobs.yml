@@ -7355,7 +7355,6 @@ jobs:
       - "tests/__init__.py"
       - "tests/conftest.py"
       - "tests/test_site_access_boundary.py"
-      - "tests/test_public_html_gate_timeout.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -7365,7 +7364,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest pyyaml
       - name: static serving boundary (Caddy <-> site_access.yml, no leaked artifacts)
-        run: python -m pytest tests/test_site_access_boundary.py tests/test_public_html_gate_timeout.py -q
+        run: python -m pytest tests/test_site_access_boundary.py -q
 
   sector-cycles-page:
     if: ${{ false }}
@@ -7524,6 +7523,7 @@ jobs:
       - "templates/plans.html.j2"
       - "templates/theme.js"
       - "tests/test_regwall_json_gate.py"
+      - "tests/test_public_html_gate_timeout.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -7534,6 +7534,8 @@ jobs:
         run: pip install pytest pyyaml
       - name: access boundary (Caddyfile public matchers <-> site_access.yml policy)
         run: python -m pytest tests/test_regwall_json_gate.py -q
+      - name: public HTML gate timeout scope (static, no serving action)
+        run: python -m pytest tests/test_public_html_gate_timeout.py -q
 
   semiconductor-b-boundary:
     if: ${{ false }}
