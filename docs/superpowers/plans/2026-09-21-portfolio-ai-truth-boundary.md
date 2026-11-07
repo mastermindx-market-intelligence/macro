@@ -195,3 +195,25 @@ Verify the deployed API process includes the merge, unauthenticated privacy boun
 - [ ] **Step 7: Closeout**
 
 Record exact merge/deploy/readback evidence and classify the outcome truthfully. Do not call CI, merge, or process restart alone production acceptance.
+
+## 2026-11-07 original-carrier residual composition
+
+Current main already contains the #8434 API/brief unavailable-state guards, factual
+helper, trusted prompt and three Portfolio changes regressions. Preserve those
+accepted paths and all current Brain source except the two residual functions.
+
+The original #7658 _sb_get list-shape boundary and _tool_get_watchlist fail-closed
+child-read handling, complete valid-row counts and position-only overlays are
+composed into current main. The five original missing Brain tests and two original
+assertions accompany them. Additional list/unavailable response controls preserve
+successful empty/populated reads without using a real store or credential.
+
+Focused proof imports the actual current Brain module and dependency closure,
+uses the existing private-read mocks, and reads synthetic board/Parquet fixtures.
+No Portfolio outage, provider, live data, deployment or new lifecycle plane is
+introduced. Original broad 483/898/118 proof remains historical.
+
+Keep this original carrier Draft/unarmed. The specific Source Continuity hold in
+5774215611 is not waived by source repair, an unrelated owner merge, pending CI or
+the generic Web review policy. Current source/custody resolution and new-head CI
+must qualify release separately; actual authenticated production proof remains owed.

@@ -49,7 +49,7 @@ from tests.test_portfolio_brief import BOOKS, TODAY, _ctx  # noqa: E402
 # The install set of the CI job that runs this file (portfolio-ctx). An import outside
 # this set passes locally and ERRORs on CI; pinned below against the workflow itself.
 PACK_DEPS = {"pytest", "pandas", "pyarrow", "jinja2", "fastapi", "httpx", "pydantic",
-             "yaml", "requests"}
+             "yaml", "requests", "rjsmin==1.2.5"}
 
 TICKERS = ["NVDA", "AVGO", "SMCI", "XOM"]
 
@@ -738,6 +738,9 @@ def test_changes_endpoint_503_without_ctx(monkeypatch, tmp_path):
     m.app.dependency_overrides.clear()
 
 
+# The next two tests are lifted verbatim from PR #7658 (Sol lane, 2026-09-22, head 4005b0c2),
+# which specified this exact contract and parked on a procedural gate. Landed here as the F08
+# producer-contract repair requested on macro#6819 by C2 (Terminal#169), 2026-10-04.
 def test_portfolio_endpoints_fail_closed_when_private_store_is_unavailable(monkeypatch, tmp_path):
     """Unknown holdings must not become an empty brief, change digest, or cached response."""
     m, client = _client(monkeypatch, tmp_path, ctx=_ctx(), holdings=[],
@@ -777,6 +780,7 @@ def test_portfolio_endpoints_keep_genuine_empty_watchlist_state(monkeypatch, tmp
                            headers={"Authorization": "Bearer x"})
         assert brief.status_code == 200, brief.text
         assert brief.json()["population"]["mode"] == "watchlist_union"
+        assert "add names" in brief.json()["headline"]["en"].lower()
 
         changes = client.post("/api/portfolio/changes", json={},
                               headers={"Authorization": "Bearer x"})
@@ -923,7 +927,8 @@ def test_two_error_paths_no_longer_claim_opposite_populations(monkeypatch, tmp_p
 
 
 def test_private_store_unavailable_note_and_prompt_forbid_false_empty_narration():
-    """Trusted prompt owns behavior; tool result remains factual data, never an instruction."""
+    """Trusted prompt owns behavior; the tool result stays factual data, never an
+    instruction (lifted from PR #7658's contract)."""
     import engine.neuralweb.brain_gateway as gw  # noqa: PLC0415
 
     result = gw._portfolio_store_unavailable("watchlist data unreachable")
@@ -959,8 +964,11 @@ def test_brain_gateway_loader_also_refuses_to_guess(monkeypatch, tmp_path):
                         else ([{"id": "L1"}] if "watchlists?" in path
                               else [{"symbol": "NVDA"}]))
     out = gw._tool_get_portfolio_brief({}, repo, user_id="u1")
-    assert out["available"] is False
+    # A failed private-store leg is now a typed unavailable result, never a composed
+    # zero-name brief the model could narrate as an empty book (macro#6819 C2, 2026-10-04).
+    assert out["available"] is False, out
     assert out["error"] == "portfolio_store_unavailable"
+    assert "population" not in out
 
     # genuinely empty positions → watchlist_union is correct and still reachable.
     monkeypatch.setattr(gw, "_sb_get",

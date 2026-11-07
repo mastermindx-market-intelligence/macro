@@ -1,0 +1,298 @@
+{
+  "head": "c99ee6cfdde62f00ac1a94c5918f298a43277fd9",
+  "compared": 58,
+  "mismatches": [],
+  "rows": [
+    {
+      "path": "about-research.html",
+      "match": true,
+      "render_sha256": "535cce84be376b4f70498fd4839d0e9fc3cce0be99786f9e65e2cd4e7ef9ca94"
+    },
+    {
+      "path": "blog/compound-growth-for-traders.html",
+      "match": true,
+      "render_sha256": "45886f7b905c89d51f8369b60111deacb6c9809c70db54c468906f07d67e74b0"
+    },
+    {
+      "path": "blog/congress-trades-are-not-realtime-signals.html",
+      "match": true,
+      "render_sha256": "90c19ba560ae700137a057fffbb46fc1c4a55c253aec083e20f4fa9eb45326d5"
+    },
+    {
+      "path": "blog/feed.xml",
+      "match": true,
+      "render_sha256": "b8afe5430fc72440a4188ecb2beceae6c847e0a2f3825123b64ce748d77b7d36"
+    },
+    {
+      "path": "blog/how-to-keep-a-trading-journal.html",
+      "match": true,
+      "render_sha256": "02a84b4212f73c15b8a5fa08b2ad3f66d2fbd3d961b446952dbed134ee8b95e2"
+    },
+    {
+      "path": "blog/index.html",
+      "match": true,
+      "render_sha256": "efaf64b8b0a409b55e7779f8f03b219610a3713b5515b40605036232696401a9"
+    },
+    {
+      "path": "blog/the-math-of-losing-streaks.html",
+      "match": true,
+      "render_sha256": "bd887b84ca777ceedbd6886cfaa35b2ada03a82505a7117adf0441b710cd2f9a"
+    },
+    {
+      "path": "blog/why-a-50-percent-loss-needs-a-100-percent-gain.html",
+      "match": true,
+      "render_sha256": "5719889527178d44b078d74f6af38dde9c09b8c79c896dd7adc84290e18eafd4"
+    },
+    {
+      "path": "blog/win-rate-is-overrated.html",
+      "match": true,
+      "render_sha256": "d97b71a988cbcdad84a19f22bd6037aa9d23da0fdf53837e6f6bb8a29f5ab73c"
+    },
+    {
+      "path": "disclaimer.html",
+      "match": true,
+      "render_sha256": "020809ad5f379805afa847677eb91b9cd8a2ebf58fef253c2cf57ab3e2a80a3d"
+    },
+    {
+      "path": "learn/index.html",
+      "match": true,
+      "render_sha256": "771514168be89536e4a386f1214b220470246fd6d1054e315d9340f25fabfee4"
+    },
+    {
+      "path": "learn/options/charm-and-time-drift.html",
+      "match": true,
+      "render_sha256": "09510ebf0e6c01643952984df7319aae4376fc40e3059b8bb60bbbfae347201d"
+    },
+    {
+      "path": "learn/options/dealer-hedging-mechanics.html",
+      "match": true,
+      "render_sha256": "d1b60307fdeb0bd137e2ebd4ee464b5dbaa3a8848b3048e0e76908a8a793e74b"
+    },
+    {
+      "path": "learn/options/gamma-flip-levels.html",
+      "match": true,
+      "render_sha256": "222b7df7310060700881d26367826b9b20772975b0d6b57b1c997fdf75f87f13"
+    },
+    {
+      "path": "learn/options/gamma-regimes.html",
+      "match": true,
+      "render_sha256": "084b8825d2b5a75ad2d9215b96b4c3ed543ec9fa9880b803d45b8fd094fd2180"
+    },
+    {
+      "path": "learn/options/market-makers-middleman.html",
+      "match": true,
+      "render_sha256": "d5573b53001e889d67f7e2fbf0bfb20a0bad3ed9e487a035b8eaf1c40db64a17"
+    },
+    {
+      "path": "learn/options/open-interest-limits.html",
+      "match": true,
+      "render_sha256": "dd9097fe19fa65df067eca08d1f56ab43cb5791288b0e19a49a17132bfe0398b"
+    },
+    {
+      "path": "learn/options/zero-dte-regime.html",
+      "match": true,
+      "render_sha256": "13aa3739d2b554cb24c0e69155288044bd096a3058d05449fb74a5f50f45d36e"
+    },
+    {
+      "path": "learn/ownership/insider-filings-form-4.html",
+      "match": true,
+      "render_sha256": "17cc38a5e5aa7f4511e0f6f7b35a8a96436d33574a938c876da5d4517f0e0c2c"
+    },
+    {
+      "path": "learn/risk/position-sizing.html",
+      "match": true,
+      "render_sha256": "041588646f2bf6e2386388d61600f47b94f45efcbd491825667c1fe8587ff6bd"
+    },
+    {
+      "path": "learn/risk/risk-reward-expectancy.html",
+      "match": true,
+      "render_sha256": "82eda6f70d80371c3d071650249fdd0a7a9345b6d0856c2cfba81e5e89238e04"
+    },
+    {
+      "path": "learn/technical/52-week-highs.html",
+      "match": true,
+      "render_sha256": "5185c06267c8f54335cc595231f4538bf89ecac37b4cd847885edcee98b6fd48"
+    },
+    {
+      "path": "learn/technical/macd.html",
+      "match": true,
+      "render_sha256": "ede46edd81461f239a5fab76d277fa136e28503d9558dc4c222b7b2b5c536c90"
+    },
+    {
+      "path": "learn/technical/market-breadth.html",
+      "match": true,
+      "render_sha256": "3de6a5aba7235ba9af110ee2376ad102806f5f8b18b842bf128b070f4518150d"
+    },
+    {
+      "path": "learn/technical/rsi.html",
+      "match": true,
+      "render_sha256": "3ddd4e63068f372fefa22be6af8d837b79cf23fca540509ae08ea01182057962"
+    },
+    {
+      "path": "learn/technical/vwap-anchored-vwap.html",
+      "match": true,
+      "render_sha256": "614811bcc5d21411cbf338eb95df9eec898fa22be7e98326c3f49641c82981d9"
+    },
+    {
+      "path": "privacy.html",
+      "match": true,
+      "render_sha256": "ec12d3eb8d4675009cb14b36df263d0bd68c42219c0573ce9035126930254644"
+    },
+    {
+      "path": "products/crypto-intelligence.html",
+      "match": true,
+      "render_sha256": "dcdbbbdc8ebd03507492e82dd485cb315580d1c2fdef1ee645900979f6e61df7"
+    },
+    {
+      "path": "products/index.html",
+      "match": true,
+      "render_sha256": "ac04ed9f7b318264d39a2f9d39180b3986ed90fdd18f5b866b98072d5f8ad118"
+    },
+    {
+      "path": "terms.html",
+      "match": true,
+      "render_sha256": "aa46b4add19dcb73aef985bad59f895b1a49b51a2e7e390af40ade25b62470c8"
+    },
+    {
+      "path": "tools/calculators/cagr.html",
+      "match": true,
+      "render_sha256": "097ad9cdb0cadf4878b3ee438091c8dca6a89d090050ea69ad3746930d634227"
+    },
+    {
+      "path": "tools/calculators/compounding.html",
+      "match": true,
+      "render_sha256": "090bafbaa1654e19c0ae1028daae4081b74ed6aafb9b4ee9c42f23e39d1c80ae"
+    },
+    {
+      "path": "tools/calculators/covered-call.html",
+      "match": true,
+      "render_sha256": "eb9b69a06eba2d6a4ccdc35efabef182c820224639cdfef2b8d901b036c8077c"
+    },
+    {
+      "path": "tools/calculators/dividend.html",
+      "match": true,
+      "render_sha256": "9b1e26fffdc607272aa4081607074ce99929df907d18b3c0b58b022b9ebebed4"
+    },
+    {
+      "path": "tools/calculators/dollar-cost-averaging.html",
+      "match": true,
+      "render_sha256": "3c71f968487679bc50890af54accd4630651e132bb44116d127369fea1f70e82"
+    },
+    {
+      "path": "tools/calculators/drawdown-recovery.html",
+      "match": true,
+      "render_sha256": "d479a594b94c4e07f733d284873a7019b0e9878b1a9ca479beaecc9f773465e3"
+    },
+    {
+      "path": "tools/calculators/forex-pip-value.html",
+      "match": true,
+      "render_sha256": "22490d711514c70b2a956892d754b0ea6781a64b84142b4f5cd9b32a551a8214"
+    },
+    {
+      "path": "tools/calculators/inflation.html",
+      "match": true,
+      "render_sha256": "3b72b8788f31790dd7f64068cd745dc9c689c3d4a7afc68e35184df5d23c7280"
+    },
+    {
+      "path": "tools/calculators/kelly-criterion.html",
+      "match": true,
+      "render_sha256": "f953a1cd01a52188d349fcce95984884ab1bc2bf0d9a8fc51cfb18ea11204661"
+    },
+    {
+      "path": "tools/calculators/margin.html",
+      "match": true,
+      "render_sha256": "9fc73306edb13b4ceaade7e13ed534182a53df4d66a58992d693f89a95af35ba"
+    },
+    {
+      "path": "tools/calculators/net-worth.html",
+      "match": true,
+      "render_sha256": "5952bbdd8378e75efa7391beaf823529bad21f0aeddebde755ae91c80d6ca441"
+    },
+    {
+      "path": "tools/calculators/options-profit.html",
+      "match": true,
+      "render_sha256": "dcc4aa54daa89e95daeb1c7b71d9153c421a9b8030f67af89e451c3767f19316"
+    },
+    {
+      "path": "tools/calculators/percentage-gain-loss.html",
+      "match": true,
+      "render_sha256": "96270f8c33bc24cc81ab26381c2dd413401a4c8a59548a717a7def537d195f07"
+    },
+    {
+      "path": "tools/calculators/portfolio-rebalancing.html",
+      "match": true,
+      "render_sha256": "c5ccc911db29299389cb121228ea9d84b3e3faceb8e4b91d67f82ec45c487cb2"
+    },
+    {
+      "path": "tools/calculators/position-size.html",
+      "match": true,
+      "render_sha256": "05ef49e66f80b2daebaa18f245b123d35d1a3969e4e9520f63773120e65b3dee"
+    },
+    {
+      "path": "tools/calculators/retirement.html",
+      "match": true,
+      "render_sha256": "fe2c10b42f8ae33c9fab363fd0545e686431cc80d4b3d8dd1f4776f05c796ac6"
+    },
+    {
+      "path": "tools/calculators/risk-of-ruin.html",
+      "match": true,
+      "render_sha256": "acaebda6f4486f8536c97b74c0061b80688214c9b92984032ab448c942e93fe9"
+    },
+    {
+      "path": "tools/calculators/risk-reward.html",
+      "match": true,
+      "render_sha256": "946d9ffac88fd443529397b7d499a6a67e34742a8aaf3050641b4f09b34836d5"
+    },
+    {
+      "path": "tools/calculators/roi.html",
+      "match": true,
+      "render_sha256": "fe54c5e89745c2f1e6b85a1241b8eb4a8e3a4cc7337f6faa8e5e395a8dc473c0"
+    },
+    {
+      "path": "tools/calculators/rule-of-72.html",
+      "match": true,
+      "render_sha256": "3106db2ec5d9d02e4980f2270c22286a281b29b4f0c0c8ab0cbe5e9cb210a28b"
+    },
+    {
+      "path": "tools/calculators/savings-goal.html",
+      "match": true,
+      "render_sha256": "250d81b268fa0a2c376022b1cd1cdde1d570354884d3bb72a17162bc2cdc95d6"
+    },
+    {
+      "path": "tools/calculators/sharpe-ratio.html",
+      "match": true,
+      "render_sha256": "9ae02ee0fe4c97ebdd6a55d24186862e06b8ef186a83b67eba10665c4e94ae07"
+    },
+    {
+      "path": "tools/calculators/short-selling.html",
+      "match": true,
+      "render_sha256": "bee930dce3a51614c08eecff9877e66b2b9bd5bb1dc3486a4596a18350e47a50"
+    },
+    {
+      "path": "tools/calculators/stock-average.html",
+      "match": true,
+      "render_sha256": "d9e73a84f00394496b4a2ce40a3746747f479c143a07ee4d8d86b3466f4ca03c"
+    },
+    {
+      "path": "tools/calculators/stop-loss-take-profit.html",
+      "match": true,
+      "render_sha256": "926716a50f934a206f9e9d3a5e288f382c75b611c820c8e53be14edf40c10b46"
+    },
+    {
+      "path": "tools/calculators/trade-profit.html",
+      "match": true,
+      "render_sha256": "5b7d410ce1a9a4d99a05b021cbbbdb63fcd1963f609a72307a82ebfe198e4ea7"
+    },
+    {
+      "path": "tools/index.html",
+      "match": true,
+      "render_sha256": "937b45ab0d3394b3df6b98877b6a1ab32466435bac77d1b2f534c12139bd03e5"
+    },
+    {
+      "path": "tools/spreadsheets/trading-journal.html",
+      "match": true,
+      "render_sha256": "1bc152016e0bd4e4efe4e4aa777ab2ba6197c6d70c62a703777dc791fd62c9d4"
+    }
+  ],
+  "method": "Existing renderer and normalization; exact committed asset bytes; canonical wh-banner normalization; isolated output only"
+}

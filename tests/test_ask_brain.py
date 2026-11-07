@@ -2540,3 +2540,12 @@ def test_context_ticker_current_move_uses_single_name_current_not_signal_route()
     profile = ab._question_profile("Why is it down today?", "AAPL")
     assert profile.name == "single_name_current"
     assert profile.seed_tools[0] == "get_market_events"
+
+
+
+def test_question_profile_specialist_macro_stays_ambiguous():
+    profile = ab._question_profile(
+        "Show me historical analogues for NVDA after CPI shocks", None
+    )
+    assert profile.name == "ambiguous"
+    assert profile.grounding_scope == "ambiguous"

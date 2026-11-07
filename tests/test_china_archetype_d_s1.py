@@ -82,7 +82,7 @@ def test_good_archetype_d_glance_patterns_are_synthesized_without_a_layout_wipe(
         'class="cnx-playbook-context"',
         "{{ t('Model headline','模型原始标题') }}",
         'class="cnx-row cnx-reason-row',
-        'class="cnx-lens"',
+        'class="cnx-lens lens-q"',
         'data-tip-en="{{ face.tip_en | e }}"',
         "{% set _ev_pool = [] %}",
         "{{ t('Macro News','宏观新闻') }}",
@@ -129,7 +129,7 @@ def test_what_to_do_glance_caps_reasons_without_truncating_the_dialog() -> None:
 
 
 def test_synthesized_reason_receipts_use_the_shared_lens_plane() -> None:
-    assert 'class="cnx-lens"' in TPL
+    assert 'class="cnx-lens lens-q"' in TPL
     assert 'aria-label="Why this read / 为什么"' in TPL
     assert 'data-tip-en="{{ face.tip_en | e }}"' in TPL
     assert 'data-tip-zh="{{ face.tip_zh | e }}"' in TPL
@@ -142,6 +142,32 @@ def test_synthesized_reason_receipts_use_the_shared_lens_plane() -> None:
     assert "e.preventDefault();card.click();" in TPL
 
 
+def test_regime_watch_stays_quiet_until_a_transition_is_building() -> None:
+    assert "{% if latest.pending_quad in ['Q1','Q2','Q3','Q4'] and latest.pending_days %}" in TPL
+    assert "watch →" in TPL
+    assert "预警 →" in TPL
+
+
+def test_four_driver_synthesis_reuses_the_existing_link_rail_and_deep_dialogs() -> None:
+    assert 'class="cnx-links" data-cn-driver-rail' in TPL
+    assert "{{ t('Why this regime','为什么这样判断') }}" in TPL
+    assert "cnx-driver-band" not in TPL
+    assert "cnx-driver-rail" not in TPL
+    assert "cny_yi_pair" not in TPL
+    assert "{{ t('bn','亿') }}" in TPL
+    for dialog in ("cnx-dlg-policy", "cnx-dlg-flows", "cnx-dlg-risk", "cnx-dlg-property"):
+        assert f'href="#{dialog}"' in TPL
+        assert f"cnxOpenDlg('{dialog}')" in TPL
+
+    # The synthesis is a glance layer only; the accepted deep module rows remain.
+    for marker in (
+        "ROW 2: Pullback Risk / Top Stocks + Sentiment + Sector Temperature",
+        "ROW 3: Policy Monitor + Connect Flows + Macro News",
+        "ROW 4: Property + AI Brief + Alerts Centre",
+    ):
+        assert marker in TPL
+
+
 def test_upcoming_events_prioritize_high_impact_without_replacing_the_card() -> None:
     assert "{% set _ev_pool = [] %}" in TPL
     assert "if c.importance == 'high'" in TPL
@@ -151,8 +177,10 @@ def test_upcoming_events_prioritize_high_impact_without_replacing_the_card() -> 
 
 
 def test_deep_link_rail_avoids_redundant_news_and_alert_shortcuts() -> None:
+    assert "{{ t('Go deeper','深入研究') }}" in TPL
     links = TPL.split('<div class="cnx-links">', 1)[1].split("</div>", 1)[0]
     assert 'href="china_policy_watch.html"' in links
+    assert 'href="flow_velocity.html"' in links
     assert 'href="china_news.html"' not in links
     assert 'href="alerts.html"' not in links
 
@@ -162,6 +190,58 @@ def test_live_only_index_tiles_show_loading_geometry_until_live_quote_arrives() 
         assert f'class="mx5-mkt-price nb-px mx-skel" data-sym="{symbol}"' in TPL
         assert f'class="mx5-mkt-delta nb-chg mx-skel" data-sym="{symbol}"' in TPL
     assert 'aria-busy="true"' in TPL
+
+
+def test_deep_dashboard_capability_inventory_cannot_be_silently_compressed() -> None:
+    from jinja2 import Environment, FileSystemLoader
+
+    # Chairman-accepted production depth: a future cleanup may improve these
+    # capabilities, but must not erase them under a smaller replacement shell.
+    for marker in (
+        "{{ t('What To Do','该怎么做') }}",
+        "{{ t('Upcoming Events','近期数据') }}",
+        "{{ t('Market Sentiment','市场情绪') }}",
+        "{{ t('Sector Temperature','板块温度') }}",
+        "{{ t('Policy Monitor','政策监控') }}",
+        "{{ t('Connect Flows','互联通资金') }}",
+        "{{ t('Macro News','宏观新闻') }}",
+        "{{ t('Property','房地产') }}",
+        "{{ t('AI Brief','AI 简报') }}",
+        "{{ t('Alerts Centre','警报中心') }}",
+        "MARKET TILES (C · US mx5 combined index face",
+    ):
+        assert marker in TPL
+
+    for dialog in (
+        "cnx-dlg-playbook",
+        "cnx-dlg-events",
+        "cnx-dlg-sentiment",
+        "cnx-dlg-sector",
+        "cnx-dlg-policy",
+        "cnx-dlg-flows",
+        "cnx-dlg-news",
+        "cnx-dlg-property",
+        "cnx-dlg-aibrief",
+        "cnx-dlg-alerts",
+    ):
+        assert f'id="{dialog}"' in TPL
+
+    # China delegates this dialog to the shared macro. Pin the live import/call
+    # and rendered China shell without requiring an inline implementation.
+    assert '{% import "_risk_radar_dlg.html.j2" as rrd %}' in TPL
+    assert "{{ rrd.risk_radar_dlg('cn'," in TPL
+    env = Environment(
+        loader=FileSystemLoader(str(ROOT / "templates")),
+        autoescape=False,
+    )
+    risk_dialog = env.get_template("_risk_radar_dlg.html.j2").module
+    risk_html = risk_dialog.risk_radar_dlg("cn", None)
+    assert 'id="cnx-dlg-risk"' in risk_html
+    assert 'role="dialog"' in risk_html
+
+    # The rejected page-level replacement shell must not return as publication law.
+    assert "L1-4 · Why — four drivers" not in TPL
+    assert "L1-6 · Go deeper" not in TPL
 
 
 def test_index_face_and_deep_racks_remain() -> None:
