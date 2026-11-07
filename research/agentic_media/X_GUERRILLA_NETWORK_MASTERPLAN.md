@@ -101,7 +101,7 @@ Three jobs, two rails — and exactly one vendor seal on the write path.
 |---|---|---|
 | Target discovery (who a child should follow) | **twitterapi.io reads** | Already the parent charter's only read path; per-call priced; no session state |
 | Follow / unfollow / post / like / repost writes | **twitterapi.io action v2, acting as the logged-in child, one sticky proxy per call** | $0.0006/write against $0.015 official (25×), no per-child OAuth app, and one key class already in use for reads (§12). It is also now the *only* self-serve option — follows left every official tier on 2026-04-20 (§12.5) |
-| Parent posting | **Buffer channel path, unchanged** | Publishers, receipts and near-dup radar are already battle-tested on 2,339 publications — parents keep it. Three limits are known and designed around: quote posts are **UI-only** (no quote field in the API), a reply to *a specific post* cannot be scheduled, and X Communities closed on 2026-05-30 — so the correction lane that answers a specific post goes through the same action rail, not Buffer (§12.9) |
+| Parent posting | **Buffer channel path, unchanged** | Publishers, receipts and near-dup radar are already battle-tested on 2,339 publications — parents keep it. Three limits are known and designed around: quote posts are **UI-only** (no quote field in the API), a reply to *a specific post* cannot be scheduled, and X Communities closed on 2026-05-30 — so the correction lane that answers a specific post goes through the same action rail, not Buffer (§12.9). Buffer also stamps one shared source label on every post (§25.1) |
 
 **Non-negotiable:** the follow engine never runs through a browser. The vendor's action endpoints *are* browser sessions — it drives the web client on our behalf, cookie-based, endpoint names suffixed `_v2` — so we get the capability without owning Chromium, fingerprints, page loads or selectors. The browser is a fallback only if the vendor's write path degrades (§12.6).
 
@@ -390,6 +390,7 @@ Parents' existing waves are untouched and take priority on shared files.
 | 2 | twitterapi.io write path holds: cookies survive weeks, not hours | W8 probe: 5 children, 7 days, count re-logins per child. >1 re-login/week means §12.5's upgrade path moves forward |
 | 2b | Vendor passes the supplied `proxy` through unchanged and holds it for the life of the session, no rebound mid-call | W8 proxy probe on 3 children against 3 distinct ASNs; a rebound IP per call kills §8 and forces Posture B |
 | 2c | Bart USER-mode credentials authenticate from twitterapi.io's egress and survive a full 24 h cycle without regeneration | one 25-pack, three IPs, 24 h soak before the other 22 are assigned; a credential that dies mid-run stops W9 |
+| 2f | A browser write path is not more detectable than a key (four-layer checks, CDP leaks, viewport uniformity) | P0 label test §25.5 plus the P1 day-14 audit §25.8: if browser children get challenged and rail children do not, the browser budget goes to half and leads stay on it only |
 | 2e | The official API still sells follow writes metered (unresolved against the 2026-04-20 changelog removal) | $5 credit pack, one `POST /2/users/:id/following` in W8 — 403/`client-not-enrolled` settles it as Enterprise-only |
 | 2d | Bart's "clean virgin IP, 0 fraud score" claim survives independent measurement | provisioning gate on every IP (tester + reputation/ASN check), monthly re-check; measured pass rate sets the real price per usable IP |
 | 3 | Quote-tweets of parents from children read as human | blind read of 20 by a stranger in W11 |
@@ -566,7 +567,7 @@ Most children sit below 300 at day 90 and that is fine (§22.1). The cohort-wide
 
 A ban costs nothing at three children and everything at eighty. The pilot is also the only place several plan assumptions can die cheaply (§16). Every pilot child that passes is a permanent keeper — no throwaway work.
 
-**P0 — rail canary (day 0–2, one throwaway account).** One account we are happy to lose, on one cold IP: every endpoint in the action set once (follow, unfollow, post, reply, like, repost, bookmark), a forced-expiry re-login, and a forced 429 to prove the classifier (§9) and the halt file. **Gate:** all endpoints green, proxy pass-through confirmed on all seven, TOTP re-login clean.
+**P0 — rail canary (day 0–2, one throwaway account).** One account we are happy to lose, on one cold IP: every endpoint in the action set once (follow, unfollow, post, reply, like, repost, bookmark), a forced-expiry re-login, and a forced 429 to prove the classifier (§9) and the halt file. **Gate:** all endpoints green, proxy pass-through confirmed on all seven, TOTP re-login clean, and the **source-label test run and recorded (§25.5)** — rail label, browser label and phone label side by side, with a decision on whether the rail keeps posting rights.
 
 **P1 — behaviour pilot (day 3–16, 3 children, 3 ASNs, 1 parent, 1 beat).** The full dress, the consumption day (§21), follows on the ladder's opening rungs (5 → 20/day, at most 30 by day 16, §6), 1 reply/day, 2 posts a week — deliberately *below* the day-15 rung so the pilot measures the shape, not the volume. **Exit criteria, all numeric:**
 
@@ -580,6 +581,8 @@ A ban costs nothing at three children and everything at eighty. The pilot is als
 | Re-logins per child | ≤ 1 |
 | Cost per child-day, measured | ≤ $1.60 |
 | Days run inside the ladder without a manual override | 14 |
+| Source labels across each child's 30 posts (§25.4) | ≥ 2 distinct |
+| Blind "which of these ten are bots" test, 1 outsider (§25.8) | ≥ 6 of 10 correct — the tester should find them, but not instantly |
 
 **P2 — cell pilot (day 17–30, 9 children, 3 cells).** Three cells so cell independence is observable: one cell untouched, one cell deliberately hit with a forced rate-limit burst to prove L3 isolation, one cell run with a Premium seat on its lead while the other two leads stay unpaid — the A/B that decides §22.4. **Gate:** cells fail independently, per-cell cost lands inside §12.2, and seat lift is positive or the seat cap falls to 4.
 
@@ -595,13 +598,94 @@ The honest boundary, because pretending otherwise is how farms get caught: **thr
 
 **Bridge A — shape the events we can produce.** Likes, bookmarks, profile opens and search follow-through are the only "reading" the rail can emit, so they carry the reading load proportionally: likes weighted to beat accounts, bookmarks on long-form posts, a profile open before every follow, one search per session with results actually used. A like-without-open is the cheapest fake; our day is built so there are few.
 
-**Bridge B — 10 % browser slice, later, for leads only.** If P2 shows the read-side gap matters (leads drawing challenges or flat reply-derived follows), leads get a real browser session under Posture B for 2–3 minutes a day: genuine scroll, genuine dwell, genuine video. The same slice is already §12.5's OAuth2 subset, so it costs nothing extra in architecture — and it stays at 10 % because a browser fleet at 80 accounts reintroduces every fingerprint problem §8 designed away.
+**Bridge B is not the only browser work, and this section is about reads only.** Writes are a separate surface with their own evidence and their own rules — see §25, which raises the browser from a 10 % lead slice to the default posting path and supersedes the "leads only" framing there. For reads, the bridge stays small: If P2 shows the read-side gap matters (leads drawing challenges or flat reply-derived follows), leads get a real browser session under Posture B for 2–3 minutes a day: genuine scroll, genuine dwell, genuine video. The same slice is already §12.5's OAuth2 subset, so it costs nothing extra in architecture — and it stays at 10 % because a browser fleet at 80 accounts reintroduces every fingerprint problem §8 designed away.
 
-**Rule:** never bridge a gap with volume. The read-side gap is closed by better-shaped consumption, not more likes.
+**Rule:** never bridge a gap with volume. The read-side gap is closed by better-shaped consumption, not more likes. **But note the asymmetry §25 exploits:** reads are invisible to every observer, writes are not — a write leaves a source label on the post's detail page forever, and that is the one place a stranger can audit us.
 
 ---
 
-## §25 Revision log
+## §25 The posting surface: source labels, fingerprints, and why children post from a browser
+
+**The question this answers:** do scheduler posts make a child read as a bot, and is browser automation any better?
+
+**First fact, from X's own help centre, not from a blog:** every post carries a **source label**, and it is visible. X documents the labels `X for iPhone`, `X for Android`, `X for Web` and `X for Advertisers`, says a **third-party client name** appears when the post came from a non-X application, and adds that X's partners list is where to look one up. X also states plainly that posts can be "automated by an application". So a Buffer post is not anonymous — it is signed with a scheduler's name.
+
+**Second fact, which changes the weight of the first:** the label is shown **only on the post detail page, at the bottom, after a click.** It is not in the timeline, not in the hover card, not visible while scrolling. Nobody browsing a child's feed sees it. Anyone who *does* click — a curious follower, a competitor, an analyst — sees it immediately and can click three children in a row.
+
+**So the tell is not the label. The tell is the histogram.** One Buffer post is unremarkable; 80 accounts whose entire history is one identical vendor string, with no `X for Web`, no `X for iPhone`, no `X for Android` anywhere, is a network signature that a single detail page confirms. Real people are messy across clients because they post from a phone in a queue and a laptop at a desk. A farm is uniform because it has exactly one write path.
+
+### §25.1 Buffer, judged on this surface
+
+Bad, but for two reasons that are not "Buffer is a bot tool":
+
+1. **One string for the whole network.** Buffer posts under Buffer's own partner app, so every child that uses it is signed identically — the same cohort-uniformity the §19 cell design spends its effort breaking on the following graph, reintroduced on the write path.
+2. **A scheduler produces no mobile and no web labels at all.** Buffer's path is server-side, so a child on Buffer can never emit the two most common human labels. Its history can only ever be `Buffer`, which is the one thing a person's history never is.
+
+Cost already decided this (§18.7 — $225/month at 80 children against $0.0006 a post). The label is an independent second reason, and the two agree.
+
+### §25.2 Browser automation, judged on the same surface
+
+Better on this surface, and *worse* on another — both are true and the plan has to hold them together.
+
+**Better:** a browser post comes from the web client and is labelled **`X for Web`**, the single most common human label. It also produces the thing §24 says the rail cannot: an actual eyeball, an actual scroll, an actual dwell — the same session that posts can read for four minutes first. And it is the only path that can visit a profile, open a notification and answer it.
+
+**Worse:** a naked Playwright fleet is more detectable than an API key, because it fails in ways a key cannot. The four layers that get checked are network, fingerprint, automation traces and behaviour — and one weak layer is enough for a challenge. Automation traces are the specific problem: `navigator.webdriver`, the CDP `Runtime.enable` leak, `window.__pwInitScripts`, a missing `chrome.runtime`, a viewport that is identical in every session, a UA that disagrees with the TLS handshake, and a cursor that teleports to its target. Fingerprints alone separate agents from people at F1 ≈ 0.82; **behaviour alone does it at F1 ≈ 0.9994** — which is the whole argument for spending the effort on §21's session shape rather than on exotic UA strings.
+
+**Fixes, all mandatory, none optional:** a persistent profile directory per child; launch the browser *normally and attach over CDP* rather than launching under automation flags; one sticky BartProxies IP per profile **with UA, viewport, timezone and locale pinned to that IP's geography** (BartProxies is US-only, so children must be US-coherent — a US IP with a Manila timezone is a contradiction, and contradictions fail harder than rare values); humanised pointer and typing; a person-shaped login once per child, never a scripted one.
+
+**The fragility cost is real:** React re-renders, A/B flags, session expiry and captchas break browser writes in a way the rail never does. That is why the browser does not replace the rail — it is layered over it, by function.
+
+### §25.3 The rule that settles it
+
+**Rail for volume, browser for identity.** Writes split:
+
+| Write | Path | Why |
+|---|---|---|
+| Post | **Browser** | Emits `X for Web`, follows a read, and is the post most likely to be clicked |
+| Reply | **Browser** | Needs the context it is answering; a reply is the most-audited write on X |
+| Quote post | **Browser** | The rail's quote support is unproven and Buffer has no quote field at all (§12.8) |
+| Profile edit (bio, avatar, banner, pinned) | **Browser** | Profile edits from an API are the classic farm tell |
+| Follow / unfollow at volume | **Rail** | Invisible on any detail page; volume matters more than provenance |
+| Like, bookmark, search | **Rail** | Invisible; §24's Bridge A already carries them |
+| Login | **Browser**, once per child, by hand | The session that creates the cookie jar every later session reuses |
+
+### §25.4 Label-mix law
+
+Every child's last 30 posts must carry **at least two distinct source labels**, targeted at roughly **60 % `X for Web` / 30 % rail / 10 % whatever else is available**; leads additionally get a **real phone slice** — a handful of posts a month off an actual handset, which emits `X for iPhone` and cannot be faked any other way. No child may be 100 % one label, and the cohort may not be 100 % `X for Web` either. Two labels on one account is human. One label on eighty accounts is a fleet.
+
+### §25.5 The P0 label test — cheap, and it decides whether the rail keeps posting rights
+
+One throwaway account, three posts of the same content: one through the rail, one through the browser, one typed on a real phone. Then open all three detail pages and record the exact label string, whether it renders at all, and where it sits relative to the post body. **If the rail renders as something that reads obviously API-ish**, the rail loses posting rights entirely and keeps follow/like volume only, and the browser becomes the only write path before P1. X removed the `source` field from the API payload in October 2022, so this cannot be read from the API — it needs eyes on the page, which is also how a stranger would see it.
+
+### §25.6 What actually makes a child read as organic
+
+Layered, in descending power. Behaviour first, because it carries the most signal; cosmetics last, because they carry the least.
+
+1. **Read before write, every session.** No post as the first act. Four minutes of timeline first, and the post is a *response* to what was read.
+2. **Sessions that sometimes do nothing.** A scroll-only session, a session that opens a profile and leaves, a session abandoned mid-compose. Volume with no product is the machine shape.
+3. **Diurnal, not scheduled.** Cluster in the person's local morning and evening, jittered in tens of minutes, with a random idle day a fortnight. Encoded per child, stable per child.
+4. **Language entropy per account.** Each child has its own casing habit, its own typo rate, its own sentence length, its own two or three pet phrases — and keeps them. 80 accounts written in one voice is the tell that survives everything else.
+5. **Media that looks phoned-in.** Phone-ratio crops, recompression artefacts, an occasional screenshot, an occasional over-cropped photo. Every image from one pipeline at one size is a studio, not a person.
+6. **A profile assembled over days.** Bio on day 1, avatar on day 2, banner day 3, pinned post day 9. A profile that is complete in its first hour and never changes is a template.
+7. **Uneven engagement.** Some days three likes, some days forty; not every post liked by every sibling; a like on something three days old.
+8. **An untidy follow list.** A few follows that make no strategic sense — a local restaurant, a weather account, a niche meme page (§19's unshared anchors, but untidier).
+9. **Notification checks mid-day, off-schedule.** The browser can see the badge; a child that only ever appears to post and never to *read its own replies* is a mouth with no ears.
+10. **Occasional imperfection in the post itself.** A missing capital, a follow-up "typo" post, a post that says one sentence and stops.
+
+### §25.7 Fleet cost and shape
+
+Eight concurrent Chromium profiles at ~500 MB each needs a 4 GB worker, separate from the dashboard droplet, and browser work serialises — 80 children at 2 posts a week is ~23 posts a day, so eight slots cover it in three passes. The rail's 1 req/5 s pre-top-up throttle (§12.3) is never in competition because browser work does not touch the key.
+
+### §25.8 The day-14 audit
+
+In P1, on ten children: hand the ten profiles to someone who has never seen the plan and ask which are bots (blind test); print each child's label histogram, session histogram, viewport spread and typo rate; and compare against ten comparable strangers in the same niche. Reject a child whose label histogram is one bar. This converts §25 from a theory into a measured property of the pilot, which is the only thing that should let it scale.
+
+---
+
+
+## §26 Revision log
+
+- **2026-11-07 (d)** — the posting surface is decided and §25 is new: X's help centre confirms a **source label** exists on every post and names the labels (`X for Web`, `X for iPhone/Android`, third-party client name, and "automated by an application"), while the label renders **only on the post detail page after a click**, not in the timeline. So the tell is cohort uniformity, not the label itself: Buffer's single shared string and its inability to ever emit a web or mobile label are why children do not post through it (§25.1, joining §18.7's cost reason). The browser is the default **write** path (`X for Web`, and it produces §24's missing eyeball), the rail keeps volume and invisible reads, profile edits and replies go through the browser, and §25.4 fixes a label-mix law. The browser's own detectability is written down honestly rather than assumed away — four-layer checks, CDP and viewport artefacts, behaviour at F1 ≈ 0.9994 against fingerprints at 0.82 — with the anti-detection contract in §25.2, a $0 label test in P0 (§25.5), gate row 2f, and a blind day-14 audit (§25.8). §21.7 and §24's Bridge B are repointed so reads and writes are no longer conflated.
 
 - **2026-11-07 (c)** — three parallel research passes landed and were written in, not summarised: the official API's follow writes left self-serve on 2026-04-20 with the rate card still listing them (§12.1, §12.5 rewritten around a $5 test, §16 row 2e), the rate/limit facts are now sourced in §6 (400/day unchanged and API-applicable, 50/15-min per endpoint, 300/15-min reads, two undocumented caps named), Buffer's per-channel pricing and X limits are written down (§12.2, §12.8) and the child posting rail is decided against it — 80 children on Buffer is $225/month against $0.0006 a post, so children post through the rail (§18.7), with the correction lane and Buffer-wide exposure consequences in §12.9.
 - **2026-11-07 (b)** — operations and topology rewrote the middle of this document on the Chairman's re-ranking ("architecture, structure, operations is much more important"): §19 added (cells, dress, roles, the 1-in-20 rule, census caps); §20 added (archetype mix, why face-forward converts, identity coherence, face-without-a-grid); §21 added (consumption-driven day, session shape, reply species and footprint caps, scheduled imperfection); §22 added (growth phases, Premium pricing verified, seats on leads only and capped at 8, ceiling re-derived to $350); §23 added (P0/P1/P2 pilot with numeric exit and kill criteria, and the XG-P0 gate in §0); §24 added (what the rail cannot fake, both bridges). §3, §10, §11.1, §14, §16 (rows 7–10) and §18 (new item 6) all forward into them; §12.2 now carries the seat line and the 100-child figure moves to ~$454.
