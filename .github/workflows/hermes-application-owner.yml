@@ -21,6 +21,11 @@ jobs:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
+          sparse-checkout: |
+            engine
+            lib
+            config
+            tests
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'

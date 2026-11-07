@@ -5,7 +5,7 @@ import time
 import pytest
 
 from engine import provider_production_modes as owner
-from test_fabric_service_identity import identity
+from tests.test_fabric_service_identity import identity
 
 
 ROLES = {
@@ -70,8 +70,35 @@ def test_hermes_relation_cannot_borrow_another_consumer_lane(identity, service_i
 def test_roles_never_share_capability_credential_or_attribution():
     transports = [owner._APPLICATION_FABRIC_TRANSPORTS[row[1]] for row in ROLES.values()]
     incumbents = [value for key, value in owner._APPLICATION_FABRIC_TRANSPORTS.items()
-                  if key not in {row[1] for row in ROLES.values()}]
+                  if key not in {row[1] for row in ROLES.values()}
+                  and key not in {owner._SERVICE_FABRIC_RELATIONS[s].automatic_transport_id for s in ROLES}]
     for field in ("secret_ref", "cap_id", "capability_id"):
         values = {getattr(t, field) for t in transports}
         assert len(values) == len(ROLES)
         assert values.isdisjoint({getattr(t, field) for t in incumbents})
+
+
+@pytest.mark.parametrize("service_id", ROLES)
+@pytest.mark.parametrize("pools", [["go"], ["bailian", "go"]])
+def test_auto_role_retains_original_identity_and_null_model(identity, service_id, pools):
+    _, _, events, install, qualify, make, _, _ = identity
+    lane, fixed_id, secret_ref = ROLES[service_id]
+    relation = owner._SERVICE_FABRIC_RELATIONS[service_id]
+    fixed = owner._APPLICATION_FABRIC_TRANSPORTS[fixed_id]
+    automatic = owner._APPLICATION_FABRIC_TRANSPORTS[relation.automatic_transport_id]
+    assert not automatic.qualified and not automatic.application_allowed and not automatic.metadata_read
+    for name in ("base_url", "secret_ref", "cap_id", "capability_id"):
+        assert getattr(automatic, name) == getattr(fixed, name)
+    scope = {"schema": "mastermind.application_route_scope.v1", "pools": pools}
+    transport, row = qualify(relation.automatic_transport_id, route_scope=scope)
+    install({service_id: row}, [{"capability_id": transport.capability_id,
+        "secret_ref": secret_ref, "kill_state": "active", "allowed_lanes": [lane]}])
+    factory = make(lane=lane, service_mode_id=service_id)
+    inspected = factory.inspect()
+    assert events == [] and inspected["requested_model"] is None and inspected["route_scope"] == scope
+    bound, _ = factory.with_inspection(inspected)._bind_with_workload(
+        operation_id="hermes:original-auto-admission", prior_admission_possible=False)
+    assert set(bound) == {"schema", "client", "inspection"}
+    assert bound["client"].model is None and bound["client"].auto_inspection == inspected
+    assert bound["client"].operation_id == "hermes:original-auto-admission"
+    assert events == [("credential", secret_ref), "client"]
