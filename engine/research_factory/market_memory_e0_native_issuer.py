@@ -31,7 +31,14 @@ _SCRIPT='scripts/market_memory_e0_native_issuer.py'
 _SCHEMA='contracts/market_memory/e0_native_issuer.v3.schema.json'
 FULL_SOURCE_PATHS=tuple(dict.fromkeys((*case._SOURCE_PATHS,_MODULE,_SCRIPT,_SCHEMA,
     'engine/research_factory/market_memory_e0_reserved_read.py',
-    'engine/research_factory/market_memory_e0_original_case.py')))
+    'engine/research_factory/market_memory_e0_original_case.py',
+    # The fixed helper dispatches both source purposes: qualify its complete
+    # shared runtime closure under the selected commit on either route.
+    'engine/research_factory/market_memory_e0_evaluation_issuer.py',
+    'engine/research_factory/market_memory_e0_evaluation_contract.py',
+    'engine/research_factory/market_memory_e0_evaluation_validation.py',
+    'engine/research_factory/market_memory_e0_source_dispatch.py',
+    'contracts/market_memory/e0_evaluation_source.v1.schema.json')))
 REQUEST='research_factory.market_memory_e0_native_issuer_request.v3'
 RESPONSE='research_factory.market_memory_e0_native_issuer_response.v3'
 ENVELOPE='research_factory.market_memory_e0_native_original_envelope.v3'

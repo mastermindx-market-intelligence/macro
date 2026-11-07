@@ -10,5 +10,5 @@ if (sys.platform!='linux' or os.geteuid()!=0 or len(sys.argv)!=1
     raise SystemExit(77)  # No private imports, output or exception dump.
 sys.dont_write_bytecode=True
 sys.path.insert(0,str(ROOT))
-from engine.research_factory.market_memory_e0_native_issuer import serve
+from engine.research_factory.market_memory_e0_source_dispatch import serve
 serve(sys.stdin.buffer,sys.stdout.buffer)

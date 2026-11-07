@@ -30,6 +30,7 @@ import sys
 from . import market_memory_contextual_registration as control
 from .market_memory_e0_access_history import (
     MAX_ACCESS_HISTORY_BYTES, MAX_ACCESS_RECORDS, validate_access_history,
+    validate_evaluation_access_history,
 )
 
 INSTALLED_ROOT = Path("/opt/macro")
@@ -198,6 +199,38 @@ def _verify_source(root: Path, commit: str, *, paths=_SOURCE_PATHS) -> None:
 
 
 def _load_selected_control(directory: Path, study_id: str, verify_source, *, clock, prepare=None):
+    """Unchanged legacy immutable-scope profile."""
+    return _load_selected_control_records(directory,study_id,verify_source,
+        clock=clock,prepare=prepare,_evaluation_history=False)
+
+
+def _load_selected_evaluation_control(directory: Path, study_id: str, verify_source, *, clock, prepare=None):
+    """Fixed NEW evaluation-scope profile; metadata checks are not authority.
+
+    No request controls this selector or supplies scope objects. Protected FD
+    reads below resolve every historical scope and its stable native purpose.
+    """
+    return _load_selected_control_records(directory,study_id,verify_source,
+        clock=clock,prepare=prepare,_evaluation_history=True)
+
+
+def _load_selected_evaluation_request(directory,study_id,raw_request,capability):
+    """Fixed prospective issuer path; no caller-defined preparation/terminal hook.
+
+    The private issuer binds directory/study/request itself. Authority comes
+    from current native grant/control/peer, never a supplied successful result.
+    """
+    from . import market_memory_e0_evaluation_issuer as evaluation
+    # The genuine peer must be current before opening any private metadata,
+    # as well as during preparation and the terminal phase below.
+    evaluation.case._peer_binding(capability)
+    return _load_selected_control_records(directory,study_id,evaluation._verify_source,
+        clock=evaluation._iso_clock,prepare=None,_evaluation_history=True,
+        _evaluation_request=(raw_request,capability))
+
+
+def _load_selected_control_records(directory,study_id,verify_source,*,clock,prepare,_evaluation_history,
+        _evaluation_request=None):
     """Trusted internal composition. Public entry binds every argument itself."""
     _require(type(study_id) is str and control._ID.fullmatch(study_id) is not None,
              "study_identity_invalid")
@@ -247,14 +280,62 @@ def _load_selected_control(directory: Path, study_id: str, verify_source, *, clo
             state, body = load(ref, "access_state", "access_state_id")
             reverse.append(body)
             ref = state["previous_state_ref"]
-        # History must qualify before any selected prelabel-domain preparation.
-        # The optional callable is trusted owner code, never a request argument.
-        validate_access_history(installation=records["installation"],
-                                history=list(reversed(reverse)), as_of=now)
-        prepared = None if prepare is None else prepare(
-            descriptor, selected, records, cached[refs["registration"]["sha256"]])
+        # History qualifies BEFORE selected evidence preparation. The only
+        # new profile is selected by the fixed internal native entry above.
+        ordered_history=list(reversed(reverse))
+        if _evaluation_history:
+            # Acquire public schemas before any terminal private/currentness
+            # boundary. Both history passes validate these same source bytes.
+            schema_documents=[]
+            for name in ('e0_evaluation_source.v1.schema.json','e0_native_bindings.v3.schema.json'):
+                with _directory(Path(__file__).resolve().parents[2]/'contracts/market_memory',private=False) as schema_fd:
+                    schema_documents.append(_read(schema_fd,name,128*1024,private=False))
+            schema_documents=tuple(schema_documents)
+            def reference_bytes(ref,expected_schema):
+                nonlocal total
+                ref=control._domain_reference(ref)
+                _require(ref['schema']==expected_schema and ref['bytes']<=control.MAX_CONTROL_BYTES,
+                         'evaluation_reference_kind')
+                digest=ref['sha256']
+                if digest not in cached:
+                    body=_read(descriptor,digest+'.json',control.MAX_CONTROL_BYTES)
+                    total+=len(body);_require(total<=MAX_ACCESS_HISTORY_BYTES,'selected_control_byte_limit')
+                    cached[digest]=body
+                body=cached[digest]
+                _require(len(body)==ref['bytes'] and hashlib.sha256(body).hexdigest()==digest,
+                         'evaluation_reference_bytes')
+                value=control._domain_json(body)
+                _require(control._domain_snapshot(value)[1]==body and value.get('schema')==ref['schema']
+                    and value.get('object_id')==ref['object_id'],'evaluation_reference_identity')
+                return body,value
+            scope_objects={};first_scope=None
+            for raw in ordered_history:
+                state=control.parse_e0_control_record(raw,kind='access_state')
+                body,scope=reference_bytes(state['scope_ref'],'research_factory.market_memory_e0_evaluation_scope.v1')
+                scope_objects[state['scope_ref']['sha256']]=body
+                if first_scope is None:first_scope=scope
+            purpose_body,_=reference_bytes(first_scope['purpose_ref'],'research_factory.market_memory_e0_evaluation_purpose.v1')
+            service_body,_=reference_bytes(records['installation']['admin_receipt_ref'],'research_factory.market_memory_e0_native_service.v3')
+            validate_evaluation_access_history(installation=records['installation'],history=ordered_history,as_of=now,
+                scope_objects=scope_objects,purpose_body=purpose_body,service_body=service_body,
+                source_commit=selected['source_commit'],schema_documents=schema_documents)
+        else:
+            validate_access_history(installation=records['installation'],history=ordered_history,as_of=now)
+        if _evaluation_request is not None:
+            _require(_evaluation_history and prepare is None,'fixed_evaluation_request_entry')
+            from . import market_memory_e0_evaluation_issuer as evaluation
+            raw_request,capability=_evaluation_request
+            prepared=evaluation._prepare_evaluation_request(descriptor,selected,records,
+                cached[refs['registration']['sha256']],raw_request,capability,schema_documents)
+        else:
+            prepared = None if prepare is None else prepare(
+                descriptor, selected, records, cached[refs["registration"]["sha256"]])
         _require(verify_source(selected["source_commit"]) is None, "source_verifier_contract")
-        if prepare is not None:
+        if _evaluation_request is not None:
+            # FIXED terminal dispatch, after real blocking source verification.
+            # No caller-provided callback or request-selectable verifier exists.
+            prepared=evaluation._finish_evaluation_request(descriptor,prepared,capability)
+        if prepare is not None or _evaluation_history:
             for digest, original in cached.items():
                 _require(_read(descriptor, digest + ".json", control.MAX_CONTROL_BYTES) == original,
                          "selected_control_record_changed")
@@ -263,15 +344,23 @@ def _load_selected_control(directory: Path, study_id: str, verify_source, *, clo
         final_now = clock()
         _require(control._clock(final_now) >= control._clock(now), "owner_clock_reversed")
         joined = control.validate_e0_control_join(**records, as_of=final_now)
-        checked = validate_access_history(installation=records["installation"],
-                                          history=list(reversed(reverse)), as_of=final_now)
+        if _evaluation_history:
+            checked=validate_evaluation_access_history(installation=records['installation'],history=ordered_history,as_of=final_now,
+                scope_objects=scope_objects,purpose_body=purpose_body,service_body=service_body,
+                source_commit=selected['source_commit'],schema_documents=schema_documents)
+        else:
+            checked=validate_access_history(installation=records['installation'],history=ordered_history,as_of=final_now)
         summary = {"schema": "research_factory.market_memory_e0_installed_control_inspection.v1",
                 "authority": "display_only", "study_id": study_id,
                 "source_commit": selected["source_commit"], "metadata_consistent": joined["metadata_consistent"],
                 "access_history": checked, "domain_payloads_read": False,
                 "reservation_store_read": False, "labels_read": False,
                 "provider_invoked": False, "runtime_writes": False, "operational_admission": False}
-        return summary if prepare is None else (prepared, selected_bytes)
+        if _evaluation_history:
+            summary.update(schema='research_factory.market_memory_e0_evaluation_control_inspection.v1',
+                domain_payloads_read=True,evaluation_scope_metadata_read=True,
+                current_selection_authenticated=False)
+        return summary if prepare is None and _evaluation_request is None else (prepared, selected_bytes)
 
 
 def inspect_selected_control(study_id: str) -> dict:
