@@ -1354,3 +1354,58 @@ def test_the_render_reservation_never_silently_claims_a_routable_slot() -> None:
                 f"pc-render claims label {label!r} that no host carries; declare it "
                 "in missing_labels so the reservation cannot read as live capacity"
             )
+
+
+@pytest.mark.parametrize(
+    "field",
+    ["EVENT_TESTED_SHA", "EVENT_BASE_SHA", "EVENT_HEAD_SHA", "EVENT_HEAD_REF"],
+)
+def test_p3bb_policy_rejects_rebound_authenticated_event_identity(
+    tmp_path: Path, field: str
+) -> None:
+    root, registry, workflows = fixture_tree(tmp_path)
+    path = workflows / "trusted-ci-executor.yml"
+    document = yaml.safe_load(path.read_text(encoding="utf-8"))
+    admit = next(
+        step for step in document["jobs"]["trust-gate"]["steps"]
+        if step.get("id") == "admit"
+    )
+    # Caller-supplied metadata must not replace the authenticated event value.
+    admit["env"][field] = "caller-controlled-identity"
+    path.write_text(yaml.safe_dump(document, sort_keys=False), encoding="utf-8")
+    result = run_guard(root, registry, workflows)
+    assert result.returncode == 1
+    assert "R13" in result.stdout
+
+
+@pytest.mark.parametrize(
+    "field",
+    ["event_tested_sha", "event_base_sha", "event_head_sha", "event_head_ref"],
+)
+def test_p3bb_policy_rejects_dropped_frozen_event_output(
+    tmp_path: Path, field: str
+) -> None:
+    root, registry, workflows = fixture_tree(tmp_path)
+    path = workflows / "trusted-ci-executor.yml"
+    document = yaml.safe_load(path.read_text(encoding="utf-8"))
+    del document["jobs"]["trust-gate"]["outputs"][field]
+    path.write_text(yaml.safe_dump(document, sort_keys=False), encoding="utf-8")
+    result = run_guard(root, registry, workflows)
+    assert result.returncode == 1
+    assert "R13" in result.stdout
+
+
+@pytest.mark.parametrize(
+    "guard",
+    [
+        '[[ "$event_sha_value" =~ ^[0-9a-f]{40}$ ]] || {',
+        'test -n "$EVENT_HEAD_REF" || {',
+        'git check-ref-format --branch "$EVENT_HEAD_REF" >/dev/null || {',
+    ],
+)
+def test_p3bb_policy_rejects_disabled_event_identity_refusal(
+    tmp_path: Path, guard: str
+) -> None:
+    result = _mutate_trusted_gate(tmp_path, guard, "true || { # " + guard)
+    assert result.returncode == 1
+    assert "R13" in result.stdout
