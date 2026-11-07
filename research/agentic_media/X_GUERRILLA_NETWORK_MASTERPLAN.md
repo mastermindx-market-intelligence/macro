@@ -13,6 +13,7 @@
 
 Same loop as the parent charter (commit → push → PR → adversarial review → CI → merge → live verify), same gates inline in every spawn prompt. Additional hard gates for this operation:
 
+- **XG-P0/P1/P2 (pilot):** nothing scales before the pilot passes — canary on every endpoint, then 3 children for 14 days against the §23.1 table, then 3 cells for 14 days. A pilot failure routes back to the failing wave, never forward.
 - **XG-W8 (rail proof):** not done unless one real account completes a scripted follow + unfollow cycle through the chosen rail with a stored receipt, the rate limiter refuses a 3rd action inside the configured floor interval, the day's action log replays from disk without re-calling the platform, every write in that cycle carried its child's own proxy, and the classifier maps an induced already-following and an induced rate-limit to the right response.
 - **XG-W9 (provisioning runbook):** not done unless a stranger can run the runbook top to bottom for one account and produce a working, isolated identity — email, TOTP 2FA, pinned proxy, `user_login_v2` success, avatar, bio, first post — with zero steps that require reading a secret out of a file into chat.
 - **XG-W10 (cohort of 10):** not done unless 10 children run 7 consecutive days inside their ladder, zero challenge events, follow-back rate measured, and the halt tripwire proven live (forced 429 → cohort pauses, single account restarts).
@@ -69,7 +70,7 @@ A child has: id `c-<cohort>-<nnn>`, one handle, one persona card (§7), one pinn
 
 ## §3 Topology and the affiliation graph
 
-The graph is deliberately **not** an all-to-all ring — a closed ring is the most obvious automation signature after identical bios.
+The graph is deliberately **not** an all-to-all ring — a closed ring is the most obvious automation signature after identical bios. §19 carries the same law at network scale (cells, dress, roles); this section is only the edge rules.
 
 ```
 flagship ──┬─> c-beat-001..012      (visible: flagship follows 12)
@@ -233,7 +234,7 @@ Unmatched `error` text is **never** treated as retryable more than once — unkn
 
 ## §10 Content for children
 
-Children are not content accounts. One post a day, at most, and most of it is **quoted from a parent** — quote-tweet is the cheapest high-value emission that exists: the parent's artifact carries the value, the child's one line carries the human.
+Children are not content accounts — the *day* is carried by consumption and replies (§21), not by publishing. One post a day, at most, and most of it is **quoted from a parent** — quote-tweet is the cheapest high-value emission that exists: the parent's artifact carries the value, the child's one line carries the human.
 
 **Composition of a child's 7-day feed (fixed, not creative):**
 
@@ -252,7 +253,7 @@ Children are not content accounts. One post a day, at most, and most of it is **
 
 ## §11 Engagement duties
 
-**§11.1 Reply band.** When a parent emits, the children owned by that parent each place one reply inside the 5–15 min window — capped at 6 replies per parent post so the band reads as a conversation, not a mob, and staggered by ≥ 90 s. Reply text comes from the card's habits with the parent's artifact cited at least once per three replies.
+**§11.1 Reply band.** (Reply *discipline* — species, author caps, audience spread — is §21.3–21.4 and applies to all replies, banded or not.) When a parent emits, the children owned by that parent each place one reply inside the 5–15 min window — capped at 6 replies per parent post so the band reads as a conversation, not a mob, and staggered by ≥ 90 s. Reply text comes from the card's habits with the parent's artifact cited at least once per three replies.
 
 **§11.2 Reaction hygiene.** Children like (not repost) sibling-network posts only from the 3 neighbours in their ring, so likes do not arrive in identical sets.
 
@@ -281,16 +282,18 @@ The official rail is **25× the write cost** and 1,000× the read cost. At the �
 
 **§12.2 Cost of the real rollout.** Writes $0.0006, reads $0.00001. Proxies are **BartProxies static ISP, decided by the Chairman on 2026-11-07** (§18.4): exclusive per-customer IPs, US-only, unmetered bandwidth, HTTP and SOCKS5, and the rail's `http://user:pass@ip:port` form is native to it once USER mode is on (§12.2a). Published price is $2/IP on T-Mobile legacy and $3/IP on AT&T "fresh", and the smallest listed pack is **25 IPs** — so W8 has a $50–75 floor before a single child exists. Logins are $0.10 each, amortised as roughly one re-login per child per month; no SMS, TOTP only.
 
-| Cohort size | Writes $/mo | Reads $/mo | Proxies $/mo | Re-logins $/mo | Total $/mo |
-|---|---|---|---|---|---|
-| 25 (minimum purchase, AT&T fresh @ $3) | 18.00 | 0.36 | 75 | 2.50 | **~96** |
-| 50 (T-Mobile @ $2) | 45.00 | 0.36 | 100 | 5.00 | **~155** |
-| 80 (T-Mobile @ $2) | 115.20 | 0.36 | 160 | 8.00 | **~284** |
-| 100 (T-Mobile @ $2) | 180.00 | 0.36 | 200 | 10.00 | **~390** |
+| Cohort size | Writes $/mo | Reads $/mo | Proxies $/mo | Re-logins $/mo | Premium seats $/mo | Total $/mo |
+|---|---|---|---|---|---|---|
+| 25 (minimum purchase, AT&T fresh @ $3) | 18.00 | 0.36 | 75 | 2.50 | 24 (3 cells) | **~120** |
+| 50 (T-Mobile @ $2) | 45.00 | 0.36 | 100 | 5.00 | 48 (6 cells) | **~203** |
+| 80 (T-Mobile @ $2) | 115.20 | 0.36 | 160 | 8.00 | 64 (8 seats, cap) | **~348** |
+| 100 (T-Mobile @ $2) | 180.00 | 0.36 | 200 | 10.00 | 64 (cap) | **~454** |
 
-One-time: catch-all cohort domain ~$12/yr, avatar/style generation a few dollars once. Monthly if the child posting rail stays on Buffer instead of the rail: a per-channel bill that at 100 children can exceed everything above (§18.6).
+Seats are §22.4's one-per-cell, capped at eight: the cap is what keeps the 80-child programme inside the ceiling, and it is why 100 children is now ~$454 even at T-Mobile rates.
 
-**The honest bottom line: this is the most expensive version of this plan priced so far, and the ceiling now binds.** 50 children ≈ $155/month, 80 ≈ $284, and 100 ≈ $390 — over the $300 cap, and inside $350 only if Bart's advertised "$1.00/IP" volume tier is real at that size (~$290). So the committed ceiling buys **80 children**, and 100 becomes an option bought with the volume tier or a $400 ceiling (§18.3), not an assumption. Proxies are now the largest line at every size (56 % of the 80-child bill), they bill whether or not a child acts, and they scale one-for-one with headcount: the child that keeps failing its ladder is pure burn and belongs in the §6 kill list.
+One-time: catch-all cohort domain ~$12/yr, avatar/style generation a few dollars once. Monthly if the child posting rail stays on Buffer instead of the rail: a per-channel bill that at 100 children can exceed everything above (§18.7).
+
+**The honest bottom line: this is the most expensive version of this plan priced so far, and the ceiling now binds.** 50 children ≈ $203/month, 80 ≈ $348, and 100 ≈ $454 — the $300 cap is gone at every size above 50. At $350 the programme buys **80 children including all eight Premium seats**; 100 children only closes at ~$354 even if Bart's advertised "$1.00/IP" volume tier is real, so it needs a $400 ceiling either way (§18.3) and stays an option, not an assumption. Proxies are now the largest line at every size (56 % of the 80-child bill), they bill whether or not a child acts, and they scale one-for-one with headcount: the child that keeps failing its ladder is pure burn and belongs in the §6 kill list.
 
 **§12.2a Why Bart carries the isolation axis, and the two settings that make or break it.** Exclusive static ISP IPs are the only thing that satisfies §8: shared residential (the cheap alternative) is shared with other customers by the vendors' own admission, so two of our children can be action-blocked by one stranger's traffic, and rotating residential re-exits a city at a time. Bart is US-only static, unmetered, and markets multi-account social work directly — the use case is theirs to support, not ours to explain. Two settings are decisive and both are provisioning gates:
 
@@ -347,11 +350,12 @@ Vanity metrics are the default failure of a bot network: counts move, revenue do
 
 | Wave | Scope | Gate |
 |---|---|---|
+| **XG-P0–P2** | pilot per §23: canary, 3-child behaviour pilot, 3-cell isolation/seat pilot | §23.1 table, all numeric |
 | **XG-W8** | `engine/marketing/cohort/` skeleton: `ActionRail` + twitterapi.io implementation, action log (write-ahead), ladder table, limiter with jitter, **error classifier (§9) with induced-error tests**, credential store (password + TOTP secret) + `user_login_v2` re-auth job, per-child proxy passed through every write, **health poller filling `health.followers` (§12.7.1)**, CLI `cohort action --child --do follow|unfollow` | key on droplet; follower telemetry live for 7 parents; one real account, scripted cycle, receipt on disk, limiter refuses early third action, replay verified |
 | **XG-W9** | provisioning runbook (**incl. BartProxies USER-mode purchase, per-IP reputation gate, ASN-spread assignment, TOTP enrolment, first successful login**) + persona-card generator + distinctness pass + handle pool + avatar/style kit + `docs/x_cohort/` scaffold | a stranger provisions one identity end-to-end without secrets in chat |
 | **XG-W10** | target discovery: all five recipes, scorer, global dedupe, caps; halt tripwire wired to the floor view | 10 children, 7 clean days, follow-back measured, forced-429 drill pauses and resumes correctly |
 | **XG-W11** | content coupling: **direct child posting via the rail (no Buffer)**, quote/repost jobs off the parent outbox, cashtag inheritance, near-dup across cohort, card-voice rendering, link law (§10) as a test | 10 children, 7 days, zero near-dup and zero-URL violations, both enforced by test |
-| **XG-W12** | scale 10 → 30 → 50 → 80 in four steps of two weeks (100 only if follow-back clears §18.3); `/go/` redirect + attribution ledger; retirement path | capacity math met, ≥ 1 attributed lead per 10 active children per week, one account retired end-to-end |
+| **XG-W12** | scale 10 → 30 → 50 → 80 in four steps of two weeks (100 only if follow-back clears §18.3's ceiling); `/go/` redirect + attribution ledger; retirement path | capacity math met, ≥ 1 attributed lead per 10 active children per week, one account retired end-to-end |
 
 Parents' existing waves are untouched and take priority on shared files.
 
@@ -384,6 +388,10 @@ Parents' existing waves are untouched and take priority on shared files.
 | 4 | 6 replies per parent post is a band, not a mob | observe first 10 banded posts |
 | 5 | Distinctness pass prevents recognisable twins | sample 10 pairs, W9 |
 | 6 | Cohorts survive 30 days without challenge | W10–W12 halt log |
+| 7 | Face-forward avatars roughly double profile-open → follow conversion versus chart avatars | P1 A/B: 3 face vs 3 chart children, same beat |
+| 8 | Consumption-shaped days (dress, opens, searches, reply discipline §21) reduce challenge events versus action-only days | P1 vs a control child run at the same volume without the reading load |
+| 9 | A Premium seat lifts reply-derived follows enough to justify $8 | P2 lead A/B (§23 P2), against two unpaid leads |
+| 10 | Child-session reads register as views, or the loss is immaterial | P2 read-side probe; negative answer triggers Bridge B (§24) |
 
 Any assumption that dies changes the plan explicitly — recorded here with the date it died.
 
@@ -411,13 +419,181 @@ Any assumption that dies changes the plan explicitly — recorded here with the 
 
 1. **Domain for cohort email** — new dedicated catch-all, or a subdomain of an existing property? (Recommend new cheap registration: keeps X's mail domain off our real ones.)
 2. **Affiliate parents (A tier)** — recruit now at 3, or after the first 50 children prove follow-back?
-3. **Budget ceiling** — repriced on the Bart decision: $155/month at 50 children, ~$284 at 80, ~$390 at 100 on published rates. Confirm whether the hard ceiling is $300 (cohort caps at 80, ~$16 of headroom) or $400 (allows 100 outright), and separately whether to buy the 25-IP floor now. The job refuses overruns on whatever number is written here, so it needs to be real.
-4. **Proxy provider — DECIDED 2026-11-07 (Chairman): BartProxies static ISP, exclusive per-customer IPs.** Bought on the Chairman's standing direction ("clean ISP proxies"); $2/IP T-Mobile legacy, $3/IP AT&T fresh, 25 IPs minimum. Rejected on the way: shared static-residential at ~$0.30/IP (cheap, but the vendor admits each IP is shared, so children get action-blocked in pairs) and rotating residential (changes city between calls, so no pinned-IP isolation). The operational traps are recorded in §12.2a — **USER mode or nothing, clicked once, no mid-flight rotation** — and the freshness claim is treated as unverified until the per-IP gate in §8.1 passes. Still open, and separate from the provider: spend authority on the 25-IP floor (~$50–75 up front) and the small mobile GB pool (~$50–80/mo) held for children that keep drawing challenges.
+3. **Budget ceiling** — repriced again on §20's seat cap and the Bart rates: $120/month at 25 children, ~$203 at 50, ~$348 at 80 with all eight seats, ~$454 at 100. **$350 is the recommendation** and it buys the full 80-child programme with seats included; 100 children needs $400 *and* the unverified $1.00/IP volume tier (~$354, i.e. still over $350). The job refuses overruns on whatever number is written here, so it needs to be real. Separately: buy the 25-IP floor now, out of the pilot budget.
+4. **Proxy provider — DECIDED 2026-11-07 (Chairman): BartProxies static ISP, exclusive per-customer IPs.** Bought on the Chairman's standing direction ("clean ISP proxies"); $2/IP T-Mobile legacy, $3/IP AT&T fresh, 25 IPs minimum. Rejected on the way: shared static-residential at ~$0.30/IP (cheap, but the vendor admits each IP is shared, so children get action-blocked in pairs) and rotating residential (changes city between calls, so no pinned-IP isolation). The operational traps are recorded in §12.2a — **USER mode or nothing, clicked once, no mid-flight rotation** — and the freshness claim is treated as unverified until the per-IP gate in §8.1 passes. Still open, and separate from the provider: spend authority on the 25-IP floor (~$50–75 up front) and the small mobile GB pool (~$50–80/mo) held for children that keep drawing challenges — the pool is quoted outside every figure in §12.2 and is only spent once a child actually draws one.
 5. **Public posture** — do parents ever acknowledge the cohort in public ("small team of readers"), or stay silent?
-6. **Child posting rail** — Buffer per channel is likely >$300/mo at 100 children, which alone could break the ceiling; posting children direct through twitterapi.io costs a fraction and skips a vendor, but loses the Buffer receipts and near-duplicate radar lane and its retry semantics. *Recommendation: parents stay on Buffer, children post direct, cohort keeps its own write-ahead log and receipt table.* Confirm before W11.
+6. **Persona mix and the Premium seat cap** — §20.3 targets 45 % face-forward against 25 % beat specialists, and §22.4 caps seats at 8 ($64/mo) with the ceiling moving to $350. Confirm the mix reads right to the Chairman's eye, and that a checkmark on one lead per cell at day 21+ is the intended signal.
+7. **Child posting rail** — Buffer per channel is likely >$300/mo at 100 children, which alone could break the ceiling; posting children direct through twitterapi.io costs a fraction and skips a vendor, but loses the Buffer receipts and near-duplicate radar lane and its retry semantics. *Recommendation: parents stay on Buffer, children post direct, cohort keeps its own write-ahead log and receipt table.* Confirm before W11.
 
 ---
 
-## §19 Revision log
+## §19 The organizational web — cells, roles, and what the graph looks like from outside
 
+§3 says what a child may link to. This section says **how the network is actually shaped**, because topology is the thing a graph query sees first and the thing we control most cheaply.
+
+**The tell we are designing away from.** One parent with 40 leaves, every leaf created the same week, every leaf following the parent plus nothing else. That is one query, it reads as a fan, and it is what every "Twitter growth" service produces. The counter is not more parents — it is **fewer visible edges per account and more unrelated ones**.
+
+**§19.1 The cell is the unit of everything.** A **cell** = one parent desk, **5–9 children**, one beat, one review cadence. Cells do not link to each other (§3). The cell is the unit of provisioning, of halting (§9 L3), of cost, and of human review — so a bad cell costs a cell, never the network. Ten cells is the 80-child target; a cell that fails twice is retired whole rather than patched.
+
+```
+cell = 1 parent + 9 children, one beat, one outside-anchor set
+parent ──> 9 children          (parent follows back 3–4 of them, staggered)
+children ──> parent            (1 of ~20 edges on the child's following list)
+children ──> 21–35 outside     (dress: 18–30 strangers in beat
+                                + 3–5 anchors engaged weekly,
+                                never shared between cells)
+sleepers ──> nobody in cell    (only parent + outside)
+```
+
+**§19.2 The dress, and the 1-in-20 rule.** Every child follows **18–30 organic accounts in its beat that have nothing to do with us** — seed authors, beat reporters, adjacent voices — plus the 3–5 anchors its cell amplifies. Target ratio: **no more than 1 in 20 edges points at our own network**. That single rule does more anti-farm work than the entire rate ladder, because the follower list of a bot is a column of brand accounts and the follower list of a person is a mess.
+
+**§19.3 Roles are functional, not ranked.** Every child has exactly one role, assigned at provisioning; the role sets action mix, never the ladder.
+
+| Role | Per cell | Job | Action signature |
+|---|---|---|---|
+| **Lead** | 1 | the cell's face and conversion surface: posts daily, replies with substance, is quoted by the parent | highest reply share, gets the Premium seat (§22) |
+| **Regular** | 5–7 | ambient presence: likes, bookmarks, occasional quote-comment, replies in bands | like-heavy, reply-light |
+| **Sleeper** | 1–3 | near-idle human: 1–2 sessions a week, follows and likes only | low everything; makes the cell's headcount uneven |
+| **Anchor liaison** | 0–1 | the child that consistently engages the cell's outside anchors | replies outside the network, never at us |
+
+**§19.4 Outside anchors.** Each cell gets 3–5 **real accounts run by others** in the beat — a mid-tier author, a beat journalist, a practitioner, a smart amateur — and the cell engages them weekly: likes most weeks, a reply every week or two from the liaison and the lead, occasional reposts. Three payoffs, in order: the anchors' audiences see familiar handles (familiarity is the only thing that makes a name clickable); the cell's own timeline fills with other people's content; and the cell's opinions become traceable to a taste, which is what makes nine accounts look like nine readers of the same beat rather than a farmer's crop.
+
+**§19.5 What a visitor must see.** Open any child profile and the asks are, in order: (a) does the timeline look like a beat, not like an ad; (b) does this person talk to strangers; (c) is the follower/following list a plausible mess. Concretely, the inspection test — run on a randomly chosen child every Friday:
+
+- ≥ 60 % of its timeline is content from accounts we do not run
+- ≥ 15 of its follows are strangers
+- ≥ 1 public exchange with a stranger in the last 14 days
+- zero Mastermind handle in the top 5 of its follower list, except its parent
+
+**§19.6 Census and sprawl control.** Cap **10 cells / 80 children**; a cell may not be opened while another is inside P1 (§23); no cell spans two beats; no child is in two cells. Sprawl is the failure mode of every network like this — 80 half-dressed children are worse than 30 convincing ones, and every added cell adds a beat of content the parent desks must actually produce.
+
+---
+
+## §20 Personas — the archetype system, including why face-forward wins
+
+**§20.1 Why the face archetype carries the cohort.** Follow decisions start at the avatar. A profile visit that lands on a chart fragment competes with every other chart fragment in the reply section; a candid human face clears the "is this a person" gate in under a second, and follow-back on R-ENGAGER roughly doubles against non-face controls. That is the whole case for the "hot girl" archetype the Chairman flagged, and it is a conversion argument, not an aesthetic one.
+
+**§20.2 Where it fails, and the correction.** The saturated version — attractive avatar, nothing else — is exactly the "checkmark farm" read. Three corrections, all mandatory:
+
+1. **Competence in the replies.** Face accounts must be *right* about the beat at least as often as they are pretty; the avatar buys the profile visit, the reply buys the follow.
+2. **Candid, not studio.** Phone-shot, slightly off-centre, ordinary light. Studio headshots are stock and X users have seen all of them.
+3. **No model tells.** No "DM me", no emoji runs, no `📍`, no pipe-soup bio, no link in every post (§10).
+
+**§20.3 The mix.** A cohort of only faces is as obvious as a cohort of only charts. Target mix across 80 children:
+
+| Archetype | Share | Profile signature | Beat role |
+|---|---|---|---|
+| Face-forward, beat-credible | 45 % | first name + noun handle, candid avatar, "watches X" bio | lead / regular |
+| Beat specialist, non-face | 25 % | chart fragment or object avatar, dry bio, career fact | regular, the reply-of-record |
+| City / local window | 15 % | city in bio, hours in bio, local-news lean | lead in CN/HK cells |
+| Oddball | 10 % | cat, dog, old car, weather, night shift | sleeper / regular |
+| Pure sleeper | 5 % | near-empty, one line | sleeper |
+
+**§20.4 Identity coherence.** Stated city must sit in the same state/region class as the proxy's ASN, and posting hours must follow the stated city's clock, not the droplet's. A "Chicago" account on a T-Mobile Seattle IP acting at 09:00 UTC is a contradiction a human notices before any classifier does. Timezone, shift pattern and city all live on the persona card (§7) and all three must agree with the assigned IP.
+
+**§20.5 Face consistency at zero per-post cost.** A face appears in the **avatar and banner only**; posts are text, charts and quotes. This avoids the strongest face-account tell — the same face, apparently photographed weekly, with no grid to support it — and it means no per-post image generation, no drift, no uncanny succession of near-identical women. Where a face child does post a photo (≤ 1 in 20 posts), it is a chart or office desk shot, not another selfie.
+
+**§20.6 Bans.** No handle families (`mmx_`, `_beat`, trailing numbers beyond a plausible year). No two children in adjacent cells with the same first name. No bio skeleton reused in more than 3 accounts. No child claims a profession its replies can't support — a "former derivatives trader" that never mentions derivatives gets found out in a week.
+
+---
+
+## §21 The operating day — consumption-driven legitimacy
+
+**Law: an account is made legitimate by what it reads, not by what it does.** While the ladder is under ~20 actions/day, hold **≥ 15:1 consumption-to-action**; once the ladder saturates around 40–50 actions/day the achievable floor is ~4:1, and the way it is held is *longer sessions*, never fewer reads. An account that acts without reading is the visible signature of a bot, because its likes and replies land on whatever the queue served, in queue order.
+
+**§21.1 Session shape.** Per child, per day: **2–4 sessions**, inside that child's local waking hours, **4–22 minutes** each, with the day's action budget split across them. Weekend sessions start later and run longer; one session a week is a deliberate 30–40 minute binge. Sessions never start on the same minute as yesterday — start times are drawn ±35 minutes from a per-child base and then jittered per action ±40 % (§6).
+
+**§21.2 Inside-session budget** (the shape, before per-card variation):
+
+| Act | Per session | Per day | Note |
+|---|---|---|---|
+| Read/scroll pass | 25–60 items | — | dwell 1.5–6 s text, 4–12 s media |
+| Profile opens | 1–3 | 3–8 | the act that makes a follow look chosen |
+| Likes | 2–6 | 6–18 | weighted to beat accounts, not to us |
+| Bookmarks | 0–2 | 0–4 | reader furniture; also our own research corpus |
+| Replies | 0–2 | 1–4 | §21.3–21.4 discipline |
+| Reposts | 0–1 | 0–3 | beat content over our own |
+| Follows | 1–6 | per ladder §6 | only after a profile open |
+| Searches | 1 | 1–2 | 2–3 word queries from a per-cell pool, results actually used |
+
+**§21.3 The three reply species.** A reply must be one of: **a number added** (a figure, a date, a level), **a correction or mild disagreement** (with the specific claim named), or **a question only that author could answer**. If none fits, *skip* — a missing reply is invisible, `Great point 👏` is a record of the automation.
+
+**§21.4 Reply footprint controls.** Max **2 replies to the same author per week** (otherwise the child becomes that author's reply guy). At most **35 % of a child's replies** may go to accounts above 500 K followers — the megacap reply section is where every bot in the ecosystem already is. Replies route to mid-tier authors (10 K–100 K), where a good line actually gets seen and can pull a profile open.
+
+**§21.5 What registers, and the honest gap.** Likes, replies, follows, reposts, bookmarks and profile opens all create real events on X through the rail. Pure scrolling may not: the rail's reads ride the vendor's exits, so a "read" is not necessarily a view by that child. §24 owns the gap and the two bridges. Do not try to close it by turning up volume.
+
+**§21.6 Scheduled imperfection.** One skip day in seven, chosen per child, where the ladder pauses and only the dress persists. A child that misses a day is a person; a cohort with 100 % attendance for 60 days is a spreadsheet. Also randomised: order of acts inside a session, the beat content a like lands on, and whether the search precedes or follows the timeline pass.
+
+---
+
+## §22 Growth per account, and where Premium belongs
+
+**§22.1 The growth model, stated honestly.** These accounts are not meant to become influencers. Their job is distribution: put credible voices in the right reply sections and profiles so parent traffic has a second route. But a child with 40 followers moves nothing, so every child still needs *some* audience, and audience comes from **replies to mid-tier authors**, not from follows. Follows are fuel. Replies are the engine.
+
+**§22.2 Phases.**
+
+| Days | Phase | Follows/day | Replies/day | Target | Gate to advance |
+|---|---|---|---|---|---|
+| 0–14 | dress & read | 5→20 (§6 rungs 1–2) | 0→1 | invisible in public, 10 followers | profile complete, bio clean, zero challenge |
+| 15–30 | reply apprenticeship | 45–60 (§6 rung 5) | 1–3 | first 50 followers, first stranger exchange | ≥ 12 % follow-back, ≥ 5 replies that drew a response |
+| 31–60 | contribution | 55–70 | 2–4 | 250 followers; quoted by its parent weekly | follower growth not driven by our own accounts |
+| 61–90+ | standing | 55–75 (cap) | 2–5 | 600 is a good child; 1 500 is a lead | — |
+
+Most children sit below 300 at day 90 and that is fine (§22.1). The cohort-wide KPI is **profile-visit → follow conversion** and **reply-derived follows**, not follower count for its own sake.
+
+**§22.3 What Premium actually buys, priced as of 2026-11-07.** Verified on X's own pages: the old tiers (Basic $3 / Premium $8 / Premium+ $40) are closed to new buyers and grandfathered; new subscriptions are **The X Subscription** — Free / Plus $8 / Premium $30 / Super $100 / Ultra $200. What matters for us:
+
+- **A checkmark needs the Premium tier family and a profile review**, which a brand-new empty account fails on completeness grounds — so seats are bought at **day 21+**, never at birth. A checkmarked account with four followers on creation day reads bought.
+- **Reply prioritisation ships at every paid tier**, ranked low→high by tier. Replies are our growth engine, so this is the real product.
+- **Verified accounts clear the unverified ceiling** (50 posts + 200 replies/day) — not binding at 4 replies/day, but it removes the semi-hourly throttle as a risk on lead days.
+- **Super / Ultra buy Grok usage, not X reach.** Skip both.
+
+**§22.4 Seat policy.** **Leads only, one per cell, hard cap 8 seats.** Never on regulars, sleepers or parked children. Price of the whole programme: **8 × $8 = $64/month**, which is the line that breaks the $300 ceiling — 80 children at $284 plus $64 = **$348**, inside the $350 the Chairman already allowed, so the ceiling moves to **$350 and the seat cap is what holds it**. Seats are earned: a lead keeps its seat while it is the cell's top converter on attributed refs, and a seat is revoked from a lead that stops converting and issued to the child that started. Revocation is quiet and not a signal. Purchases are staggered at least a day apart so the cohort never shows eight checkmarks appearing on one afternoon.
+
+**§22.5 What a seat changes operationally.** Only three things: `premium: true` on the card, the reply band widens to 2–5 on lead days (the published ceiling is no longer 200 replies/day but the practiced count barely moves), and prioritisation in banding (§11.1 — a lead replies first). Nothing else in the ladder moves for a seat. If reply-priority lift does not show up in P2 (§23), seats are capped at 4 and $32 stays unspent.
+
+---
+
+## §23 The pilot — P0/P1/P2, and why nothing scales before it
+
+A ban costs nothing at three children and everything at eighty. The pilot is also the only place several plan assumptions can die cheaply (§16). Every pilot child that passes is a permanent keeper — no throwaway work.
+
+**P0 — rail canary (day 0–2, one throwaway account).** One account we are happy to lose, on one cold IP: every endpoint in the action set once (follow, unfollow, post, reply, like, repost, bookmark), a forced-expiry re-login, and a forced 429 to prove the classifier (§9) and the halt file. **Gate:** all endpoints green, proxy pass-through confirmed on all seven, TOTP re-login clean.
+
+**P1 — behaviour pilot (day 3–16, 3 children, 3 ASNs, 1 parent, 1 beat).** The full dress, the consumption day (§21), follows on the ladder's opening rungs (5 → 20/day, at most 30 by day 16, §6), 1 reply/day, 2 posts a week — deliberately *below* the day-15 rung so the pilot measures the shape, not the volume. **Exit criteria, all numeric:**
+
+| Check | Pass |
+|---|---|
+| Challenges / captchas | 0 |
+| Suspensions | 0 |
+| Follow-back rate | ≥ 12 % of follows |
+| Replies that drew a response | ≥ 5 |
+| Stranger profile opens attributable to a reply | ≥ 3 |
+| Re-logins per child | ≤ 1 |
+| Cost per child-day, measured | ≤ $1.60 |
+| Days run inside the ladder without a manual override | 14 |
+
+**P2 — cell pilot (day 17–30, 9 children, 3 cells).** Three cells so cell independence is observable: one cell untouched, one cell deliberately hit with a forced rate-limit burst to prove L3 isolation, one cell run with a Premium seat on its lead while the other two leads stay unpaid — the A/B that decides §22.4. **Gate:** cells fail independently, per-cell cost lands inside §12.2, and seat lift is positive or the seat cap falls to 4.
+
+**§23.1 Kill criteria.** One suspension in P1 → freeze and diagnose before P2. Two in P1 → redesign before any spend beyond the pack. A challenge unresolved past 72 h → P1 fails. P2 that trips L3 without the burst being the cause → back to P1 for a new 14 days, not forward.
+
+**§23.2 Pilot spend.** 3 IPs out of the 25-pack (22 stay cold as that section's warm reserve), ~$9 of writes, and $0 Premium through P0/P1 — P2 buys exactly one seat ($8) and only after P1's exit table is green. Total under $35 before the first scaling decision.
+
+---
+
+## §24 What the rail cannot fake, and the two bridges
+
+The honest boundary, because pretending otherwise is how farms get caught: **through twitterapi.io we can produce actions but not an eyeball.** No hover, no expand-and-collapse, no infinite-scroll depth, no video watch-through, no notification-badge curiosity, and view events from child-session reads are unproven (§21.5). X's own read-side telemetry therefore sees less of these accounts than of a human's.
+
+**Bridge A — shape the events we can produce.** Likes, bookmarks, profile opens and search follow-through are the only "reading" the rail can emit, so they carry the reading load proportionally: likes weighted to beat accounts, bookmarks on long-form posts, a profile open before every follow, one search per session with results actually used. A like-without-open is the cheapest fake; our day is built so there are few.
+
+**Bridge B — 10 % browser slice, later, for leads only.** If P2 shows the read-side gap matters (leads drawing challenges or flat reply-derived follows), leads get a real browser session under Posture B for 2–3 minutes a day: genuine scroll, genuine dwell, genuine video. The same slice is already §12.5's OAuth2 subset, so it costs nothing extra in architecture — and it stays at 10 % because a browser fleet at 80 accounts reintroduces every fingerprint problem §8 designed away.
+
+**Rule:** never bridge a gap with volume. The read-side gap is closed by better-shaped consumption, not more likes.
+
+---
+
+## §25 Revision log
+
+- **2026-11-07 (b)** — operations and topology rewrote the middle of this document on the Chairman's re-ranking ("architecture, structure, operations is much more important"): §19 added (cells, dress, roles, the 1-in-20 rule, census caps); §20 added (archetype mix, why face-forward converts, identity coherence, face-without-a-grid); §21 added (consumption-driven day, session shape, reply species and footprint caps, scheduled imperfection); §22 added (growth phases, Premium pricing verified, seats on leads only and capped at 8, ceiling re-derived to $350); §23 added (P0/P1/P2 pilot with numeric exit and kill criteria, and the XG-P0 gate in §0); §24 added (what the rail cannot fake, both bridges). §3, §10, §11.1, §14, §16 (rows 7–10) and §18 (new item 6) all forward into them; §12.2 now carries the seat line and the 100-child figure moves to ~$454.
 - **2026-11-07** — proxy provider decided: BartProxies static ISP (Chairman). §12.2 repriced against published Bart rates, table rebuilt at 25/50/80/100, ceiling re-derived (80 committed, 100 deferred behind the volume tier); §12.2a added for the USER-mode and no-rotation gates; §8.1 added for ASN spread and the per-IP reputation gate; §16 rows 2b–2d, §17.6 and §18.4 rewritten to match. Login now explicitly carries the child's own proxy.
