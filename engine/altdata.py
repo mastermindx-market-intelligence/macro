@@ -54,7 +54,7 @@ DATASETS: dict[str, tuple[str, str, str, str]] = {
     "patents":        ("🔬", "US patents", "美国专利", "Date"),
     "flights":        ("✈️", "Corporate flights", "企业航班", "Date"),
     "corpdonors":     ("💸", "Corporate donors", "企业捐赠", "Uploaded"),
-    "news":           ("📰", "Quiver news feed", "Quiver新闻", "time"),
+    "news":           ("📰", "News feed", "新闻流", "time"),
     "congressholdings": ("📁", "Congress holdings", "国会持仓", "_collected"),
     "bills":          ("📑", "Bill summaries", "法案摘要", "_first_seen"),
     "appratings":     ("📱", "App ratings", "应用评分", "Time"),
@@ -1315,7 +1315,7 @@ def build_feed() -> dict:
         "generated_utc": now.isoformat(),
         "as_of": now.date().isoformat(),
         "schema": "altdata.feed.v1",
-        "source": "Quiver Quantitative (Trader plan)",
+        "source": "Alternative-data disclosures",
         "note": ("Deterministic alt-data signals + normalized event feed for the "
                  "reasoning brain. Display/context-only — not a scored axis."),
         "datasets": datasets,
