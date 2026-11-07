@@ -1578,3 +1578,459 @@ def test_verified_pair_checks_cross_binding_after_copy(native_store, monkeypatch
     monkeypatch.setattr(owner,"deepcopy",racing_copy)
     with pytest.raises(owner.CandidateStateContractError):
         result.verified_pair()
+
+
+# ---------------------------------------------------------------------------
+# Native B3 request batch (plural owner entry point). Every probe below drives
+# the real nightly writer over the shared intake fixtures exactly like the
+# singular probes above; only the plural request shape is new.
+# ---------------------------------------------------------------------------
+
+BETA_KEY = "candidate:2026-11-27:BETA:us_prophet_v3"
+BETA_ROW = {
+    "stamp_date": "2026-11-27",
+    "ticker": "BETA",
+    "board_definition": "us_prophet_v3",
+    "tier": "curated",
+}
+_BETA_IDENTITY = {
+    "security_master": {"issuer_id": "ISS:US-XNAS-BETA", "issuer_state": "ACTIVE",
+                        "listing_key": "US-XNAS-BETA", "security_id": "SEC:US-XNAS-BETA"},
+    "vendor_aliases": {"security_id": "SEC:US-XNAS-BETA", "valid_from": "2020-01-01",
+                       "valid_to": None, "vendor": "membership", "vendor_symbol": "BETA"},
+}
+
+
+def _identity_spine_with_beta(data):
+    reference = data / "reference"
+    reference.mkdir(parents=True)
+    for name in ("security_master", "vendor_aliases"):
+        rows = json.loads((FIXTURE_ROOT / f"{name}.json").read_text())
+        rows.append(_BETA_IDENTITY[name])
+        pd.DataFrame(rows).to_parquet(reference / f"{name}.parquet", index=False)
+
+
+def _multi_turn_watch_document(session, tickers=("ALFA", "BETA")):
+    document = {
+        "schema": "prophet.candidate_episode_input.turn_watch/v1",
+        "anchor_era": "anchor-v1",
+        "selection_era": "anticipation-v1",
+        "data_session": session,
+        "known_at": session + "T18:00:00Z",
+        "rows": [
+            {
+                "asof": session,
+                "ticker": ticker,
+                "reset": {"reset_low": 42.1, "reset_low_date": "2026-11-27"},
+                "triggers": {
+                    "dot_1d": {"evaluated": True, "fired": True, "last_date": session}
+                },
+            }
+            for ticker in tickers
+        ],
+    }
+    document["content_sha256"] = sha256(
+        canonical_json(
+            {key: value for key, value in document.items() if key != "content_sha256"}
+        ).encode("utf-8")
+    ).hexdigest()
+    return document
+
+
+def _build_multi_native_store(root, *, refreshed):
+    """Two candidate source keys; optional generation-local TURN WATCH for both."""
+    data = root / "data"
+    _identity_spine_with_beta(data)
+    turn_dir = data / "us_prophet_rank/episode_inputs/turn_watch"
+    turn_dir.mkdir(parents=True)
+    (turn_dir / "2026-11-27.json").write_text(
+        canonical_json(_multi_turn_watch_document("2026-11-27")) + "\n"
+    )
+    _run_reconcile(root, "2026-11-27T18:05:00Z")
+    if refreshed:
+        (turn_dir / "2026-11-28.json").write_text(
+            canonical_json(_multi_turn_watch_document("2026-11-28")) + "\n"
+        )
+    # Candidate keys first enter on the second ordinary reconciliation. Keys
+    # supplied in the TURN WATCH opening pass are correctly suppressed by B1.
+    _write_candidates(data, [CANDIDATE_ROW, BETA_ROW])
+    _run_reconcile(root, "2026-11-28T22:00:00Z")
+
+
+@pytest.fixture(scope="module")
+def multi_store(tmp_path_factory):
+    root = tmp_path_factory.mktemp("native_b3_multi_store")
+    _build_multi_native_store(root, refreshed=False)
+    return root
+
+
+@pytest.fixture(scope="module")
+def multi_refreshed_store(tmp_path_factory):
+    root = tmp_path_factory.mktemp("native_b3_multi_refreshed_store")
+    _build_multi_native_store(root, refreshed=True)
+    return root
+
+
+def _multi_bindings(snapshot):
+    return tuple(
+        (key, _candidate_relation(snapshot, key)["source_receipt"])
+        for key in (CANDIDATE_KEY, BETA_KEY)
+    )
+
+
+def _counted_native_seams(monkeypatch):
+    """Count the owner's complete validations, indexes and projections."""
+    calls = {"validate": 0, "index": 0, "project": 0}
+    real_validate = b3_owner.validate_candidate_episode_generation
+    real_index = b3_owner.index_turn_watch_events
+    real_project = b3_owner.project_candidate_states
+
+    def counted_validate(path, **kwargs):
+        calls["validate"] += 1
+        return real_validate(path, **kwargs)
+
+    def counted_index(snap):
+        calls["index"] += 1
+        return real_index(snap)
+
+    def counted_project(snap, **kwargs):
+        calls["project"] += 1
+        return real_project(snap, **kwargs)
+
+    monkeypatch.setattr(
+        b3_owner, "validate_candidate_episode_generation", counted_validate)
+    monkeypatch.setattr(b3_owner, "index_turn_watch_events", counted_index)
+    monkeypatch.setattr(b3_owner, "project_candidate_states", counted_project)
+    return calls
+
+
+def test_native_batch_matches_independent_singular_reads_exactly(
+    multi_refreshed_store, monkeypatch
+):
+    _set_assembly_clock(monkeypatch)
+    snapshot = _load_snapshot(multi_refreshed_store)
+    bindings = _multi_bindings(snapshot)
+    assert len(bindings) == 2
+    singular = [
+        b3_owner.build_native_factual_assessment_result(
+            snapshot, candidate_source_event_id=key, candidate_source_receipt=receipt
+        )
+        for key, receipt in bindings
+    ]
+    calls = _counted_native_seams(monkeypatch)
+    batch = b3_owner.build_native_factual_assessment_results(
+        snapshot, bindings=bindings
+    )
+    # Complete validator count 2 per batch (never per binding), one genuine
+    # TURN WATCH index, and one complete projection per binding: the projection
+    # work deliberately stays O(bindings x generation rows).
+    assert calls == {"validate": 2, "index": 1, "project": len(bindings)}
+    assert isinstance(batch, tuple) and len(batch) == len(bindings)
+    for result, one in zip(batch, singular, strict=True):
+        assert isinstance(result, b3_owner.NativeFactualAssessmentResult)
+        assert result.assessment == one.assessment
+        assert result.projection == one.projection
+        assert canonical_json(result.assessment) == canonical_json(one.assessment)
+        assert canonical_json(result.projection) == canonical_json(one.projection)
+        pair_assessment, pair_projection = result.verified_pair()
+        assert pair_assessment == one.assessment
+        assert pair_projection == one.projection
+
+
+def test_native_batch_assembles_one_complete_projection_per_binding(
+    multi_refreshed_store, monkeypatch
+):
+    _set_assembly_clock(monkeypatch)
+    snapshot = _load_snapshot(multi_refreshed_store)
+    batch = b3_owner.build_native_factual_assessment_results(
+        snapshot, bindings=_multi_bindings(snapshot)
+    )
+    episode_ids = []
+    for result in batch:
+        summary = result.assessment["summary"]
+        # Generation-local TURN WATCH emergence is genuine and per candidate.
+        assert summary["emergence_state"] == "TRIGGERED"
+        assert summary["emergence_source_system"] == "turn_watch"
+        episode_ids.append(result.assessment["episode_id"])
+        bound = [
+            row for row in result.projection["rows"]
+            if row["episode_id"] == result.assessment["episode_id"]
+        ]
+        others = [
+            row for row in result.projection["rows"]
+            if row["episode_id"] != result.assessment["episode_id"]
+        ]
+        assert len(bound) == 1
+        assert bound[0]["emergence_state"]["state"] == "TRIGGERED"
+        # No other candidate's emergence leaks into this binding's projection:
+        # the other rows stay UNESTIMABLE exactly as in a singular read.
+        assert all(
+            row["emergence_state"]["state"] == "UNESTIMABLE" for row in others
+        )
+    assert episode_ids[0] != episode_ids[1]
+    assert batch[0].projection is not batch[1].projection
+    assert batch[0].assessment["source_receipt"] != batch[1].assessment["source_receipt"]
+    selections = {
+        result.assessment["episode_id"]:
+            result.assessment["provenance"]["turn_watch"]["selected_relation_event_id"]
+        for result in batch
+    }
+    assert len(set(selections.values())) == 2
+
+
+def test_native_batch_reads_one_real_clock_per_binding(
+    multi_refreshed_store, monkeypatch
+):
+    snapshot = _load_snapshot(multi_refreshed_store)
+    bindings = _multi_bindings(snapshot)
+    reads = []
+
+    def staggered_now():
+        instant = datetime(2026, 11, 29, 18, 8, len(reads), tzinfo=timezone.utc)
+        reads.append(instant.isoformat().replace("+00:00", "Z"))
+        return instant
+
+    monkeypatch.setattr(b3_owner, "_assembly_now", staggered_now)
+    batch = b3_owner.build_native_factual_assessment_results(
+        snapshot, bindings=bindings
+    )
+    # Exactly one genuine clock read per binding, consumed in binding order.
+    assert len(reads) == len(bindings)
+    for result, stamp in zip(batch, reads, strict=True):
+        assert result.assessment["asof"] == stamp
+        assert result.projection["generated_at"] == stamp
+    # Staggered genuine clocks assemble genuinely different projections, and
+    # no result may be re-paired onto another binding's read.
+    assert batch[0].projection != batch[1].projection
+    with pytest.raises(CandidateStateContractError):
+        b3_owner.NativeFactualAssessmentResult(
+            deepcopy(batch[0].assessment), deepcopy(batch[1].projection)
+        )
+
+
+@pytest.mark.parametrize(
+    ("fixture_name", "expected_state", "expected_facts"),
+    [("multi_store", "UNESTIMABLE", 0), ("multi_refreshed_store", "TRIGGERED", 2)],
+)
+def test_native_batch_emergence_follows_generation_local_turn_watch_only(
+    fixture_name, expected_state, expected_facts, request, monkeypatch
+):
+    _set_assembly_clock(monkeypatch)
+    root = request.getfixturevalue(fixture_name)
+    snapshot = _load_snapshot(root)
+    batch = b3_owner.build_native_factual_assessment_results(
+        snapshot, bindings=_multi_bindings(snapshot)
+    )
+    assert len(batch) == 2
+    for result in batch:
+        summary = result.assessment["summary"]
+        assert summary["emergence_state"] == expected_state
+        turn_watch = result.assessment["provenance"]["turn_watch"]
+        assert turn_watch["facts"] == expected_facts
+        assert (turn_watch["selected_relation_event_id"] is None) == (
+            expected_state == "UNESTIMABLE"
+        )
+        assert (turn_watch["selected_known_at"] is None) == (
+            expected_state == "UNESTIMABLE"
+        )
+
+
+def test_native_batch_maps_bad_bindings_to_ordered_none_and_keeps_good_reads(
+    multi_refreshed_store, monkeypatch
+):
+    _set_assembly_clock(monkeypatch)
+    snapshot = _load_snapshot(multi_refreshed_store)
+    (alfa_key, alfa_receipt), (beta_key, beta_receipt) = _multi_bindings(snapshot)
+    bindings = (
+        (alfa_key, alfa_receipt),
+        ("candidate:2026-11-27:MISSING:us_prophet_v3", "sha256:" + "0" * 64),
+        (beta_key, beta_receipt),
+        (beta_key, "sha256:" + "f" * 64),
+        (123, beta_receipt),
+    )
+    batch = b3_owner.build_native_factual_assessment_results(
+        snapshot, bindings=bindings
+    )
+    # Per-binding refusal is an ordered None; good bindings keep genuine reads.
+    assert [result is None for result in batch] == [False, True, False, True, True]
+    singular = b3_owner.build_native_factual_assessment_result(
+        snapshot, candidate_source_event_id=alfa_key,
+        candidate_source_receipt=alfa_receipt)
+    assert batch[0].assessment == singular.assessment
+    assert batch[0].projection == singular.projection
+    kept_assessment, kept_projection = batch[2].verified_pair()
+    assert kept_assessment["episode_id"] == batch[2].assessment["episode_id"]
+    assert canonical_json(kept_projection) == canonical_json(batch[2].projection)
+
+
+@pytest.mark.parametrize("bad_bindings", [
+    [],
+    ["candidate:2026-11-27:ALFA:us_prophet_v3"],
+    ((CANDIDATE_KEY,),),
+    ((CANDIDATE_KEY, "sha256:" + "0" * 64, "extra"),),
+])
+def test_native_batch_refuses_invalid_top_level_binding_shape(
+    multi_store, monkeypatch, bad_bindings
+):
+    _set_assembly_clock(monkeypatch)
+    snapshot = _load_snapshot(multi_store)
+    with pytest.raises(CandidateStateContractError, match="bindings must be a tuple"):
+        b3_owner.build_native_factual_assessment_results(
+            snapshot, bindings=bad_bindings
+        )
+
+
+def test_native_batch_accepts_empty_bindings(multi_store, monkeypatch):
+    _set_assembly_clock(monkeypatch)
+    snapshot = _load_snapshot(multi_store)
+    assert b3_owner.build_native_factual_assessment_results(
+        snapshot, bindings=()
+    ) == ()
+
+
+def test_native_batch_returns_nothing_when_the_snapshot_mutates_mid_assembly(
+    multi_refreshed_store, monkeypatch
+):
+    _set_assembly_clock(monkeypatch)
+    snapshot = _load_snapshot(multi_refreshed_store)
+    bindings = _multi_bindings(snapshot)
+    real_project = b3_owner.project_candidate_states
+    projections = {"calls": 0}
+
+    def mutating_project(snap, **kwargs):
+        projections["calls"] += 1
+        if projections["calls"] == 1:
+            # Caller-side in-place mutation of the supplied snapshot content
+            # between the two bindings' assemblies.
+            snapshot.generation.events[0]["source_event_id"] = "candidate:tampered"
+        return real_project(snap, **kwargs)
+
+    monkeypatch.setattr(b3_owner, "project_candidate_states", mutating_project)
+    with pytest.raises(CandidateStateContractError):
+        b3_owner.build_native_factual_assessment_results(
+            snapshot, bindings=bindings
+        )
+    # Both bindings still assembled, yet nothing escapes: no partial batch.
+    assert projections["calls"] == len(bindings)
+
+
+def test_native_batch_discards_everything_when_the_producer_file_drifts(
+    multi_refreshed_store, tmp_path, monkeypatch
+):
+    _set_assembly_clock(monkeypatch)
+    copied = _copy_store(multi_refreshed_store, tmp_path)
+    snapshot = _load_snapshot(copied)
+    bindings = _multi_bindings(snapshot)
+    real_validate = b3_owner.validate_candidate_episode_generation
+    validations = {"calls": 0}
+
+    def drifting_validate(path, **kwargs):
+        validations["calls"] += 1
+        result = real_validate(path, **kwargs)
+        if validations["calls"] == 1:
+            # Producer-side ledger drift mid-assembly: one stored byte changes.
+            partition = sorted((path / "events").glob("*.jsonl"))[-1]
+            partition.write_bytes(partition.read_bytes() + b" ")
+        return result
+
+    monkeypatch.setattr(
+        b3_owner, "validate_candidate_episode_generation", drifting_validate
+    )
+    with pytest.raises(CandidateStateContractError, match="disk validation"):
+        b3_owner.build_native_factual_assessment_results(
+            snapshot, bindings=bindings
+        )
+    assert validations["calls"] == 2
+
+
+def test_native_batch_never_replaces_a_separate_later_request_reread(
+    multi_refreshed_store, monkeypatch
+):
+    _set_assembly_clock(monkeypatch)
+    snapshot = _load_snapshot(multi_refreshed_store)
+    bindings = _multi_bindings(snapshot)
+    calls = _counted_native_seams(monkeypatch)
+    first = b3_owner.build_native_factual_assessment_results(
+        snapshot, bindings=bindings
+    )
+    assert calls["validate"] == 2
+    # A separate later request independently validates again: nothing is
+    # cached, carried or reused across requests.
+    later = b3_owner.build_native_factual_assessment_result(
+        snapshot, candidate_source_event_id=bindings[0][0],
+        candidate_source_receipt=bindings[0][1])
+    assert calls["validate"] == 3
+    second = b3_owner.build_native_factual_assessment_results(
+        snapshot, bindings=bindings
+    )
+    assert calls["validate"] == 5
+    assert second == first
+    assert later.assessment == first[0].assessment
+    assert first[0] is not second[0]
+
+
+def test_native_batch_results_never_alias_each_other(
+    multi_refreshed_store, monkeypatch
+):
+    _set_assembly_clock(monkeypatch)
+    snapshot = _load_snapshot(multi_refreshed_store)
+    batch = b3_owner.build_native_factual_assessment_results(
+        snapshot, bindings=_multi_bindings(snapshot)
+    )
+    assert batch[0].assessment is not batch[1].assessment
+    assert batch[0].projection is not batch[1].projection
+    assert batch[0].assessment["provenance"] is not batch[1].assessment["provenance"]
+    assert batch[0].projection["rows"] is not batch[1].projection["rows"]
+    # Drifting one stored result cannot move the other's verified pair.
+    batch[0].projection["generated_at"] = "2027-01-01T00:00:00Z"
+    with pytest.raises(CandidateStateContractError):
+        batch[0].verified_pair()
+    pair_assessment, pair_projection = batch[1].verified_pair()
+    assert pair_projection["generated_at"] != "2027-01-01T00:00:00Z"
+    assert pair_assessment["episode_id"] == batch[1].assessment["episode_id"]
+    # A fresh request of the same generation is untouched by the drift.
+    fresh = b3_owner.build_native_factual_assessment_results(
+        snapshot, bindings=_multi_bindings(snapshot)
+    )
+    assert fresh[0].projection["generated_at"] != "2027-01-01T00:00:00Z"
+    assert canonical_json(fresh[1].projection) == canonical_json(batch[1].projection)
+
+
+@pytest.mark.parametrize("field,replacement", [
+    ("company_id", "ISS:TRANSIENT_CALLER_VALUE"),
+    ("episode_state", "EXPIRED"),
+])
+def test_native_batch_projects_detached_bytes_during_transient_caller_mutation(
+    multi_refreshed_store, monkeypatch, field, replacement
+):
+    _set_assembly_clock(monkeypatch)
+    snapshot = _load_snapshot(multi_refreshed_store)
+    bindings = _multi_bindings(snapshot)
+    expected = tuple(
+        b3_owner.build_native_factual_assessment_result(
+            snapshot, candidate_source_event_id=key, candidate_source_receipt=receipt
+        ).verified_pair()
+        for key, receipt in bindings
+    )
+    before = canonical_json(snapshot.generation.episodes)
+    target = snapshot.generation.episodes[0]
+    original = target[field]
+    calls = []
+
+    def transient_clock():
+        calls.append(1)
+        target[field] = replacement if len(calls) == 1 else original
+        return ASSEMBLY_NOW
+
+    monkeypatch.setattr(b3_owner, "_assembly_now", transient_clock)
+    try:
+        actual = b3_owner.build_native_factual_assessment_results(
+            snapshot, bindings=bindings
+        )
+    finally:
+        target[field] = original
+    assert len(calls) == len(bindings)
+    assert canonical_json(snapshot.generation.episodes) == before
+    # Both boundary validations see the original bytes; derivation must still
+    # be insulated from a caller mutation between those boundaries.
+    assert tuple(result.verified_pair() for result in actual) == expected
