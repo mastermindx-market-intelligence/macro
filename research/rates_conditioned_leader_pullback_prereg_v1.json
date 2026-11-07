@@ -1,0 +1,166 @@
+{
+  "schema": "mastermind.rates_conditioned_leader_pullback_prereg.v1",
+  "operation": "rates-conditioned-leader-pullback-prereg-20260919-sol-001",
+  "freeze_base": "6f35b67d4a2655f2e8409406646f88adf852c2b6",
+  "authority": {
+    "research_only": true,
+    "can_rank": false,
+    "can_score": false,
+    "can_gate": false,
+    "can_size": false,
+    "can_trade": false
+  },
+  "episode_source": "research/prophet_us_audit/early_admission_bakeoff_episodes.parquet",
+  "primary_trigger": "C2r",
+  "secondary_trigger": "C4",
+  "leader_like": {
+    "f_above200": true,
+    "f_rs63_operator": ">",
+    "f_rs63_value": 0
+  },
+  "rate_clock": {
+    "source_date_relation_to_decision": "strictly_before_T",
+    "primary_common_end_date": "R = latest finite date before T present in both DGS10 and DFII10",
+    "maximum_R_age_calendar_days": 4,
+    "nominal_real_5step_grid": "common finite DGS10/DFII10 observed-date intersection ending at R",
+    "d10_22": "DGS10 observed-source-session interval ending at R",
+    "d2_5": "DGS2 five-observation change only if DGS2 has finite observation at R",
+    "breakeven": "descriptive own-date only",
+    "source_rows_only": true,
+    "forward_fill_is_observation": false,
+    "historical_receipt_certified": false
+  },
+  "rate_series": {
+    "d10_5": "DGS10 5 observed-source-session bp change",
+    "d10_22": "DGS10 22 observed-source-session bp change",
+    "d2_5": "DGS2 5 observed-source-session bp change",
+    "dr10_5": "DFII10 5 observed-source-session bp change",
+    "dbe10_5": "T10YIE 5 observed-source-session bp change; descriptive only"
+  },
+  "states": {
+    "EASING_AFTER_PRESSURE": "d10_22>0 && d10_5<0 && dr10_5<=0",
+    "POLICY_CONFIRMED_RELIEF": "EASING_AFTER_PRESSURE && d2_5<=0",
+    "REACCELERATION": "d10_22>0 && d10_5>0 && dr10_5>=0",
+    "magnitude_sensitivity": "abs(d10_5)>=5"
+  },
+  "primary_metric": "date_clustered_false_bounce_rate_difference_pp",
+  "minimum_unique_decision_dates_per_arm": 30,
+  "supportive_diagnostic": {
+    "interval_must_exclude_zero": true,
+    "temporal_halves_same_sign": true,
+    "bh_q_max": 0.1,
+    "minimum_false_bounce_reduction_pp": 10
+  },
+  "suggestive_minimum_reduction_pp": 5,
+  "secondary_outcomes": [
+    "composite_false_start_42d",
+    "stop_A_survival",
+    "MFE_42",
+    "two_R_before_stop",
+    "fwd21",
+    "fwd42_descriptive",
+    "entry_vs_low",
+    "td_to_trough"
+  ],
+  "closed_primary_family": [
+    "C2r leader-like easing-vs-non-easing false-start difference",
+    "C2r leader-minus-nonleader interaction across rate states"
+  ],
+  "forbidden_in_this_trial": [
+    "leader_reset_study resurrection",
+    "rate RSI/StochRSI/MACD parameter search",
+    "Elliott-wave search",
+    "options-flow or dealer feature fusion",
+    "post-outcome cutoff optimization",
+    "same-day rate observations without qualified historical receipt",
+    "episode trigger-time movement",
+    "new evaluation ledger"
+  ],
+  "trial_ledger": {
+    "family": "rates_conditioned_leader_pullback_v1",
+    "declared_budget": 7,
+    "register_before_any_rate_episode_statistic": true,
+    "owner": "engine.trial_ledger",
+    "bh_q_max": 0.1,
+    "inferential_looks": [
+      "A1_C2r_leader_easing_vs_non_easing_false_bounce",
+      "A2_C2r_leader_minus_nonleader_interaction",
+      "A3_C2r_policy_confirmed_relief",
+      "A4_C2r_5bp_magnitude_sensitivity",
+      "A5_C2r_reacceleration_falsifier",
+      "A6_C4_leader_easing_vs_non_easing_false_bounce",
+      "A7_C4_leader_minus_nonleader_interaction"
+    ]
+  },
+  "inference": {
+    "primary_weighting": "equal_weight_per_eligible_decision_date",
+    "episode_weighted_estimate": "descriptive_only",
+    "cluster_unit": "decision_date",
+    "bootstrap_block": "calendar_quarter",
+    "bootstrap_resamples": 10000,
+    "bootstrap_seed": 20260919,
+    "temporal_split": "2020-07-01",
+    "minimum_unique_decision_dates_per_arm_overall": 30,
+    "minimum_unique_decision_dates_per_arm_each_half": 10,
+    "minimum_unique_quarters_per_arm_overall": 8,
+    "minimum_unique_quarters_per_arm_each_half": 3,
+    "p_value": {
+      "sidedness": "two_sided",
+      "method": "null_centered_calendar_quarter_block_bootstrap",
+      "formula": "(1 + count(abs(delta_null_boot) >= abs(delta_obs))) / (B + 1)"
+    }
+  },
+  "primary_outcome_definition": "existing Early Admission false_bounce: post-trigger low within +15 sessions breaches P_low by >2%",
+  "episode_schema": {
+    "source_rows_reported": 39877,
+    "decision_session_field": "date",
+    "construction_field": "construction",
+    "primary_outcome_field": "false_bounce",
+    "required_fields": [
+      "ticker",
+      "date",
+      "construction",
+      "false_bounce",
+      "f_above200",
+      "f_rs63",
+      "survive_a",
+      "mfe_42",
+      "reached_2r",
+      "fwd21"
+    ],
+    "reported_construction_rows": {
+      "C2r": 3630,
+      "C4": 11111
+    },
+    "primary_outcome_null_policy": "OUTCOME_TRUNCATED; exclude and count; never coerce to false",
+    "leader_missing_policy": "LEADER_STATE_UNAVAILABLE; exclude from leader/nonleader analysis and count",
+    "source_rule": "false_bounce requires full +15 sessions and equals min forward low < 0.98*P_low",
+    "primary_addon_value": false,
+    "addon_policy": "addon==true is descriptive-only and excluded from primary Ns/statistics/verdicts"
+  },
+  "primary_eligibility": [
+    "addon_false",
+    "false_bounce_non_null",
+    "leader_fields_available_for_stratum",
+    "primary_rate_endpoints_observed_by_T_minus_1"
+  ],
+  "input_identity": {
+    "episode": {
+      "path": "research/prophet_us_audit/early_admission_bakeoff_episodes.parquet",
+      "git_blob_sha": "86142b0f567044b4a3d2e307ca87a41029e83afa",
+      "sha256": "a55f3e3ecaef13efc6dc0a407375ee3d87e66b6dfb70eacb0c1d3b7249c6feb4",
+      "last_episode_date": "2026-08-10"
+    },
+    "rate_prefix_cutoff": "2026-08-10",
+    "rate_prefix_digest_algorithm": "ordered compact JSON of (YYYY-MM-DD,float.hex or null) source rows <= cutoff, SHA256",
+    "rate_prefix_sha256": {
+      "DGS2": "a9b2615177ad46e359bbd368a5d8e280b397c818e840e875091d36bf7ff85cfe",
+      "DGS10": "4e0ca7ac1542f9ff6ab7a93d323f71d85cd342028e1c89b6a09baef1e5db5e87",
+      "DFII10": "835a01fd88d029a4fb2fbbff1517a22e4d8e0c2138c00cda5c41cf03e1d6f57e",
+      "T10YIE": "cc6f9e6ecca3a8a512d2c7a4baa30d4646add347f628a838af798efc69ce90c6"
+    },
+    "appended_rate_tail_allowed": true,
+    "prefix_mismatch_action": "refuse before rate_episode_join"
+  },
+  "prejoin_feasibility_receipt": "research/RATES_CONDITIONED_LEADER_PULLBACK_PREJOIN_FEASIBILITY_2026-09-19.md"
+}
