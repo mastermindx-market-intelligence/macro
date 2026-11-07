@@ -24,6 +24,7 @@ from pathlib import Path
 from typing import Any
 
 import pandas as pd
+import pyarrow.parquet as pq
 
 from engine.stock_identity.replay import events as ev
 
@@ -71,9 +72,13 @@ def load_store(repo_root: str | Path, symbols: list[str] | None = None) -> pd.Da
     live = root / LIVE_DIR
     if live.is_dir():
         for f in sorted(live.glob("*.parquet")):
-            df = pd.read_parquet(f)
-            cols = [c for c in _KEEP if c in df.columns]
-            df = df[cols]
+            # Inspect only the footer schema before materializing allowed columns.
+            names = set(pq.read_schema(f).names)
+            missing = set(_KEY) - names
+            if missing:
+                raise ValueError(f"missing SEA classification keys: {sorted(missing)}")
+            cols = [c for c in _KEEP if c in names]
+            df = pd.read_parquet(f, columns=cols)
             if symbols is not None:
                 df = df[df["ticker"].isin(symbols)]
             frames.append(df)

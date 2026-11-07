@@ -60,7 +60,7 @@ def constants(family_key: str) -> dict[str, Any]:
     elif family_key == "stoch2w_cross":
         base |= {"stoch_len": canon.STOCH_LEN, "smooth_k": canon.SMOOTH_K,
                  "smooth_d": canon.SMOOTH_D, "band": STOCH2W_BAND, "grain": "2W",
-                 "rule": "%K crosses up through %D with both < 20 on the completed 2W bar",
+                 "rule": "%K crosses up through %D with both < 20 on the prior completed 2W bar",
                  "grid_anchor": "absolute week index (label.toordinal() // 7) // 2 over "
                                 "calendar-anchored W-FRI bars — never resample('2W-FRI'), "
                                 "which phases from the series' first row"}
@@ -146,7 +146,9 @@ def fires(
     if len(bars) >= canon.STOCH_LEN + canon.SMOOTH_K + canon.SMOOTH_D + 2:
         k2, d2 = canon.stoch_rsi_kd(pd.Series(bars["close"].to_numpy(dtype="float64")))
         sel = (
-            canon.crossover(k2, d2) & (k2 < STOCH2W_BAND) & (d2 < STOCH2W_BAND)
+            canon.crossover(k2, d2)
+            & (k2.shift(1) < STOCH2W_BAND)
+            & (d2.shift(1) < STOCH2W_BAND)
         ).fillna(False).to_numpy()
         for i in np.flatnonzero(sel):
             open_s, known = bars["open"].iloc[i], bars["known"].iloc[i]

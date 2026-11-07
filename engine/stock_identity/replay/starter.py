@@ -39,6 +39,7 @@ from pathlib import Path
 from typing import Any
 
 import pandas as pd
+import pyarrow.parquet as pq
 
 from engine.us_early_turn import (
     UNION_ADMISSION_ERA,
@@ -136,25 +137,19 @@ def investigate_licensing_context(
                 row["note"] = f"unreadable: {exc}"
                 evidence.append(row)
                 continue
+            if not isinstance(payload, dict):
+                row["note"] = "unrecognized context schema; PIT history not established"
+                evidence.append(row)
+                continue
             asof = payload.get("as_of") or payload.get("asof") or payload.get("data_session")
             row["as_of"] = str(asof) if asof is not None else None
             row["n_dated_vintages"] = 1 if asof is not None else 0
-            # A history-carrying artifact would key its states by DATE. These key by
-            # basket/ticker and carry exactly one as_of.
-            row["carries_history"] = any(
-                isinstance(v, dict) and any(
-                    str(k2)[:4].isdigit() and len(str(k2)) >= 8 for k2 in v
-                )
-                for v in payload.values() if isinstance(v, dict)
-            )
-            row["note"] = (
-                "single nightly vintage keyed by basket/ticker; no per-date state series"
-                if not row["carries_history"] else "date-keyed structure found"
-            )
+            # These producer contracts expose current state only. Date-shaped keys
+            # cannot qualify a different historical schema or its availability clock.
+            row["note"] = "current-context contract only; PIT state history not established"
         else:
             row["note"] = (
-                "absent from this checkout (sparse cone); it is a committed nightly "
-                "artifact whose content is overwritten each night"
+                "absent from this checkout; PIT state history not established"
             )
         evidence.append(row)
 
@@ -164,17 +159,18 @@ def investigate_licensing_context(
         row = {"artifact": rel, "role": key, "present_in_checkout": p.exists(),
                "n_snapshot_dates": None, "has_added_removed": None, "note": None}
         if p.exists() and rel.endswith(".parquet"):
-            df = pd.read_parquet(p)
-            row["n_snapshot_dates"] = int(df["snapshot_date"].nunique()) \
-                if "snapshot_date" in df.columns else 0
-            row["has_added_removed"] = bool(
-                {"added", "removed"}.issubset(set(df.columns))
-            )
-            row["note"] = (
-                "per-ticker [added, removed) intervals — PIT MEMBERSHIP exists. Membership "
-                "is not the licensed object; the licensed object is the basket's washout "
-                "STATE on a past date."
-            )
+            # Membership is not licensing state. Read schema flags without loading
+            # ticker/interval/outcome values; only snapshot dates support this count.
+            try:
+                names = set(pq.read_schema(p).names)
+                row["has_added_removed"] = {"added", "removed"}.issubset(names)
+                row["n_snapshot_dates"] = (
+                    int(pd.read_parquet(p, columns=["snapshot_date"])["snapshot_date"].nunique())
+                    if "snapshot_date" in names else 0
+                )
+                row["note"] = "membership metadata only; does not establish PIT licensing state"
+            except Exception as exc:  # noqa: BLE001 — unknown is not positive evidence
+                row["note"] = f"unreadable membership metadata: {exc}"
         membership.append(row)
 
     # A state history would have to exist as a dated store somewhere under data/.
@@ -182,7 +178,9 @@ def investigate_licensing_context(
         str(p.relative_to(root)) for p in (root / "data").glob("**/*basket_turn*")
     ) if (root / "data").is_dir() else []
 
-    reconstructable = any(e["carries_history"] for e in evidence) or bool(state_stores)
+    # Candidate paths are discovery hints only, never a qualified state-history
+    # contract. No admitted historical state reader exists in this investigator.
+    reconstructable = False
     verdict = {
         "question": (
             "is the STARTER licensing context (basket washout state OR leader-pullback "
@@ -202,13 +200,12 @@ def investigate_licensing_context(
         "membership_evidence": membership,
         "basket_state_history_stores_found": state_stores,
         "reasoning": (
-            "Both context artifacts are nightly-overwritten single-vintage JSON keyed by "
-            "basket/ticker with one as_of; neither is a dated series and no dated basket-"
-            "state store exists under data/. PIT membership DOES exist "
-            "(membership_history.parquet's added/removed intervals) but membership is not "
-            "what licenses a STARTER — the basket's washout STATE on the fire date is, and "
-            "recomputing that over history would be a new construction with its own gates, "
-            "not a read of a committed artifact."
+            "PIT licensing-state history is not established by the inspected current-"
+            "context contracts. Filename matches, date-shaped keys and membership "
+            "metadata do not qualify dated state values or their availability clocks. "
+            "NOT_PIT_RECONSTRUCTABLE means not qualified here, not proof that history "
+            "cannot exist elsewhere. A qualified historical producer contract requires "
+            "separate source review; no reconstruction or Class-R promotion is inferred."
         ),
     }
     return verdict
