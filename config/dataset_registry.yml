@@ -180,14 +180,17 @@ datasets:
       - scripts/stock_liquidity_profile.py
     conflict_policy: PRIMARY_ONLY
     quality_checks: [uniqueness, validity, freshness]
-    version: "1.0.0"
+    version: "1.1.0"
     schema:
+      open: {dtype: numeric, unit: quote_currency, basis: raw, renames_to: open_raw, nullable: true}
+      high: {dtype: numeric, unit: quote_currency, basis: raw, renames_to: high_raw, nullable: true}
+      low: {dtype: numeric, unit: quote_currency, basis: raw, renames_to: low_raw, nullable: true}
       close:
-        dtype: float64
+        dtype: numeric
         unit: quote_currency
         basis: raw
         renames_to: close_raw
-        nullable: false
+        nullable: true
         note: >
           MEASURED NVDA 2024-06-03 = 1150.00 — the price actually PRINTED, pre the 10:1
           split. Same column name as the two stores above, 10x the number.
@@ -204,7 +207,9 @@ datasets:
       limit-price / tick-size / exchange-rule work — see DNR:KILL-CN-ADJUSTED-TAPE-LEGAL-LIMIT,
       where using an adjusted tape for exactly that stop-shipped a whole program.
       Rights adopt the existing operator-confirmed enterprise record, not a new
-      grant. Currency and per-row publication/ingestion clocks are not declared
+      grant. _parse_day coerces all four OHLC fields to numeric and preserves
+      missing or invalid prices as null. Physical dtype depends on the values.
+      Currency and per-row publication/ingestion clocks are not declared
       by these daily files; the F08 liquidity projection must qualify its window
       separately and cannot infer USD or known_at from this registry entry.
 
