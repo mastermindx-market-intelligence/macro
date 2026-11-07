@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-11T12:26:45Z",
+ "accession": "0001628280-26-007117",
+ "cik": "0001065059",
+ "doc_byte_length": 2784448,
+ "doc_sha256": "dc63cf5e83aaafc0d10aa993ddc7b84fa627e2ae68e19ff26a14d551103f4f0e",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-11",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "leu-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 908067,
+  "byte_start": 907580,
+  "normalized": "Similarly, Centrus sells SWU and uranium through long-term and short-term contracts as well as spot sales. The Company’s purchase agreements are subject to fluctuations in market prices. Prices for the Company’s purchase agreements are generally determined by formulas using a combination of fixed and market-related pricing with more favorable pricing on the fixed price component as well as a pricing ceiling for the market-related component on its Orano Supply Agreement.",
+  "normalized_sha256": "9c8bc6636b639e9b6291d9da03368dc22e32ad326bc1b2382c43e17b76fb763e",
+  "raw": " Similarly, Centrus sells SWU and uranium through long-term and short-term contracts as well as spot sales. The Company&#8217;s purchase agreements are subject to fluctuations in market prices. Prices for the Company&#8217;s purchase agreements are generally determined by formulas using a combination of fixed and market-related pricing with more favorable pricing on the fixed price component as well as a pricing ceiling for the market-related component on its Orano Supply Agreement.",
+  "raw_sha256": "fe11eb4f0f02dcae497142b07b3d4a36e7bf80bfd59fcad11f0b92159f6e81b6"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1065059/000162828026007117/leu-20251231.htm",
+ "xbrl_contexts": []
+}

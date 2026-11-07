@@ -1,0 +1,13 @@
+{
+  "time": "2026-10-14T13:42:37.114851+00:00",
+  "pgid": 62235,
+  "owned_processes": [
+    "62235 62235 85669 /opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/Resources/Python.app/Contents/MacOS/Python scripts/ci/govrev_candidate_proof.py prove --root /Volumes/Mastermind/agent-workspaces/codex/ed19/macro-main --receipt /Volumes/Mastermind/evidence/defense-e2e-20261012-01a13300/v16-ci-compatibility/CANDIDATE_PROOF.json --log /Volumes/Mastermind/evidence/defense-e2e-20261012-01a13300/v16-ci-compatibility/full-proof.log",
+    "64760 62235 62235 /opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/Resources/Python.app/Contents/MacOS/Python -m pytest -p no:cacheprovider -o addopts= --color=no -n 2 --dist load --max-worker-restart=0 tests/test_government_revenue_candidates.py tests/test_government_revenue_candidate_projection.py tests/test_government_revenue_candidate_fixture.py -q -o junit_family=xunit2 --junitxml /Volumes/Mastermind/evidence/defense-e2e-20261012-01a13300/v16-ci-compatibility/full-proof.log.xml",
+    "65070 62235 64760 /opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/Resources/Python.app/Contents/MacOS/Python -u -c import sys;exec(eval(sys.stdin.readline()))",
+    "65119 62235 64760 /opt/homebrew/Cellar/python@3.12/3.12.13_4/Frameworks/Python.framework/Versions/3.12/Resources/Python.app/Contents/MacOS/Python -u -c import sys;exec(eval(sys.stdin.readline()))"
+  ],
+  "reason": "Newly demonstrated baseline source-closure mismatch requires source repair and invalidates this in-progress inventory; retain interrupted attempt and reprove after repair",
+  "signal": "SIGINT",
+  "ci_or_fabric_cancelled": false
+}

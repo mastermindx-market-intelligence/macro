@@ -265,7 +265,7 @@ def detect_multi_leg(event: dict, _session_events: list[dict]) -> bool:
 def detect_ladder(event: dict, session_events: list[dict]) -> bool:
     """LADDER: the same root+right+exp appears across >= 3 distinct strike levels.
 
-    Indicates accumulation or a structured ladder of strikes on one expiry.
+    Describes a strike pattern, without identifying position intent.
     """
     root  = event.get("root", "")
     right = event.get("right", "")
@@ -357,32 +357,32 @@ _DETECTORS: list[tuple[str, Any]] = [
 
 _BADGE_WHY: dict[str, tuple[str, str]] = {
     "LADDER":        (
-        "Same expiry appears across 3+ distinct strikes — possible staged accumulation.",
-        "同一到期日出现3个以上不同行权价——可能为梯形建仓。",
+        "Same underlying, option type and expiry across 3+ distinct strikes this session; opening or accumulation is not established.",
+        "本时段同一标的、期权类型与到期日横跨至少3个不同行权价；无法据此判定开仓或加仓。",
     ),
     "REPEAT_HITTER": (
-        "This root appeared in 3+ separate events this session — conviction reload pattern.",
-        "本交易日该标的出现3次以上独立流量事件——疑似反复加仓。",
+        "This underlying appeared in 3+ separate events this session; repeated trades do not identify opening or closing.",
+        "本交易日该标的出现至少3次独立流量事件；重复成交无法区分开仓或平仓。",
     ),
     "SIZE_VS_OI":    (
-        "Today's volume exceeds prior open interest — new positioning, cannot hide in existing OI.",
-        "今日成交量超过昨日未平仓量——新建头寸，无法隐入现有持仓。",
+        "Volume exceeds prior-day open interest on an event with premium >=$500K; the comparison does not identify opening or closing.",
+        "成交量超过前一日持仓量，且事件权利金≥50万美元；该比较无法区分开仓或平仓。",
     ),
     "WHALE":         (
-        "Single-event premium $1M+ (with z-score or $3M hard floor) — large capital commitment.",
-        "单笔权利金超过100万美元（含z分数条件或300万美元硬门槛）——大额资金投入。",
+        "Premium >=$3M, or >=$1M with an inferred buy lean and premium z-score >=2; the lean does not confirm the buyer or trade intent.",
+        "权利金≥300万美元；或≥100万美元、推断为买方倾向且权利金z分数≥2；该倾向不确认买方身份或交易意图。",
     ),
     "FRESH":         (
-        "Volume exceeds OI at ATM/near-OTM with 1–45 DTE — likely fresh directional positioning.",
-        "ATM/近虚值期权成交量超过未平仓量，剩余期限1–45天——疑似新建方向性头寸。",
+        "Volume exceeds prior-day open interest at ATM/near-OTM with 1–45 DTE; this does not identify opening or closing.",
+        "平值或近虚值期权成交量超过前一日持仓量，距到期1–45天；该比较无法区分开仓或平仓。",
     ),
     "Z_OUTLIER":     (
         "Premium z-score ≥ 3 vs 252-session baseline — unusually large for this root.",
         "权利金z分数≥3（相对252个交易日基准）——该标的权利金规模异常偏大。",
     ),
     "OI_CONFIRMED":  (
-        "Yesterday's flow confirmed: this contract built open interest overnight.",
-        "昨日流量获确认：该合约隔夜增加了未平仓量。",
+        "Legacy open-interest badge; the current source does not establish which trades opened or closed positions.",
+        "历史持仓量标记；当前数据源无法确认哪些成交属于开仓或平仓。",
     ),
 }
 

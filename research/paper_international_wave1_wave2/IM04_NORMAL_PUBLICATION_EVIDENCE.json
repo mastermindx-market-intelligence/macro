@@ -1,0 +1,80 @@
+{
+  "status": "LOCAL_ORDINARY_PUBLICATION_AND_REGENERATION_PASS_SCOPED",
+  "candidate": "c974ac6ada2b27ffb67b308243ec6d034f4a2926",
+  "source": "scripts/build_intl.py",
+  "source_sha256": "e3bd144b72c816eda7be773b3390f0a88e17784f8863785e2a3ac8c7a22a0319",
+  "input_files": 60,
+  "input_bytes": 3084390,
+  "countries_produced": [
+    "AU",
+    "EZ",
+    "GB",
+    "IN",
+    "JP",
+    "KR"
+  ],
+  "built_observation_date": "2026-10-06",
+  "runs": [
+    {
+      "files": {
+        "intl.html": {
+          "bytes": 2102797,
+          "sha256": "452127f62ccb25b970a1612ceda8f571d144efecc3cbb255fe9dbd80836e3466"
+        },
+        "intl_stocks.html": {
+          "bytes": 98836,
+          "sha256": "fb184bff300d2ded89e731a4fce016b5eabaf9d62bd6379e4e36a9145f26ed1f"
+        },
+        "intl_stock.html": {
+          "bytes": 123022,
+          "sha256": "0226dceb136bb636660b54afee16c86779df631526f6eee47f9bc0c9e35d2830"
+        }
+      },
+      "started": "2026-10-07T17:16:18.556645+00:00",
+      "finished": "2026-10-07T17:16:41.180233+00:00"
+    },
+    {
+      "files": {
+        "intl.html": {
+          "bytes": 2102797,
+          "sha256": "4344f168b0788576f6abfffbe64f29fa0b93ad350e2c0c547c0e33b88b5f7e26"
+        },
+        "intl_stocks.html": {
+          "bytes": 98836,
+          "sha256": "2f497f6826461f6330932d68677da76691e7d6e1d6beb2dd5a495526a343c303"
+        },
+        "intl_stock.html": {
+          "bytes": 123022,
+          "sha256": "ee79f4cb17242489cf7e46955745fec0d2b0825583fba9ba9cb05eee325e441b"
+        }
+      },
+      "started": "2026-10-07T17:20:39.423715+00:00",
+      "finished": "2026-10-07T17:21:01.318347+00:00"
+    }
+  ],
+  "browser_cases": [
+    16,
+    4
+  ],
+  "generation_nonces": [
+    "im-workspace-generation:7a735ccd-71cc-4feb-b9bf-b85cb5abc872",
+    "im-workspace-generation:99b72aa4-9ac6-43fe-8037-4ecc6bcfa8ca"
+  ],
+  "source_series_and_provenance_unchanged": true,
+  "receipts": {
+    "im04-normal-main-real-r1/first-publication/run-receipt.json": "5843d569609c38c78c3115f3defde5be82e2670bd09484e7cb6be0d93586e473",
+    "im04-normal-main-real-r1/run-receipt.json": "45edf83b924704f16d115162dc86defcca5ce610263b82f9f1e5d4114c456086",
+    "IM04_NORMAL_MAIN_BROWSER_R1.json": "32159d0d24ffc3ae0f2238d39f326eb13fbbd70e00fa5d6dc1c50369fe9ab694",
+    "IM04_NORMAL_MAIN_BROWSER_R2.json": "de91206fa758cc08b0a6b8807fb4d25b0cd91bf403b568cd7e1b52d38f61e264",
+    "im04-normal-main-real-r1/input-manifest.json": "5f17d2482f7b4fa40d1136881eb030a9496c6617d21b7ae3780a4dca90c71770"
+  },
+  "limits": [
+    "Copied real intl/intl_macro materializations only; missing other source families remain explicit. Six country records, not full seven-market coverage.",
+    "Actual unmodified main with isolated output root and existing intraday/render settings; no blocked write/network/subprocess effects.",
+    "External analytics was deliberately not exercised; no missing local assets in browser observations.",
+    "Current authenticated served production and subsequent production publication are still unproven."
+  ],
+  "source_scope_errors": [
+    "Missing China/HongKong/CNY source inputs; flow_regime missing close; central-bank calendar absent. These owner failures were retained as partial output and not claimed repaired."
+  ]
+}

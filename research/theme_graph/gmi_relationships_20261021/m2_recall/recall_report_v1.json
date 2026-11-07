@@ -1,0 +1,1569 @@
+{
+ "by_domain": {
+  "D1": {
+   "hit": 69,
+   "recall": 0.4423,
+   "ref": 156,
+   "wilson_95": [
+    0.3667,
+    0.5207
+   ]
+  },
+  "D2": {
+   "hit": 14,
+   "recall": 0.1707,
+   "ref": 82,
+   "wilson_95": [
+    0.1045,
+    0.2664
+   ]
+  }
+ },
+ "by_species": {
+  "component_dependency": {
+   "hit": 7,
+   "recall": 0.3889,
+   "ref": 18,
+   "wilson_95": [
+    0.2031,
+    0.6138
+   ]
+  },
+  "contract_manufacturing": {
+   "hit": 17,
+   "recall": 0.5862,
+   "ref": 29,
+   "wilson_95": [
+    0.4074,
+    0.7449
+   ]
+  },
+  "distribution": {
+   "hit": 5,
+   "recall": 0.2778,
+   "ref": 18,
+   "wilson_95": [
+    0.125,
+    0.5087
+   ]
+  },
+  "licensing": {
+   "hit": 18,
+   "recall": 0.2432,
+   "ref": 74,
+   "wilson_95": [
+    0.1598,
+    0.3521
+   ]
+  },
+  "supplier_customer": {
+   "hit": 36,
+   "recall": 0.3636,
+   "ref": 99,
+   "wilson_95": [
+    0.2756,
+    0.4618
+   ]
+  }
+ },
+ "caveat": "Misses outside both the harvester cue patterns and the recall lexicon are not measured.",
+ "corpus_sha256": "96e860d45c83d7d467e0a55abff6335ee8c05973b094038e9e504ea42aa2daed",
+ "counters": {
+  "PIPELINE_ROW_OUTSIDE_CORPUS": 1360,
+  "PIPELINE_ROW_SKIPPED": 313,
+  "RECALL_ANNOTATION_MISSING": 0
+ },
+ "extraction_sha256": {
+  "m2/D1a.jsonl": "1c0af84160f48e8e5cc42d56e475a3bb74ccbea7499f911ccd2faea82607fb50",
+  "m2/D1b.jsonl": "254361be15f03d09996f60ec13633db4f773c09458068c9f651df75137aa380b",
+  "m2/D2a.jsonl": "9dfc5d33d762c89e48691ab30b14a7ea9cc2b0a22c4a20fa6a77deaa0498bd77",
+  "m2/D2b.jsonl": "430b789741313adac718ef6ab463aa114dd2a287291511a3852c1081b323c51f",
+  "m2/P.jsonl": "20259ac087a515e83fc7b596f226c83889f3ad23e49be5078480163c16b03b76",
+  "swks_aapl_m1.jsonl": "d038bd884395a6d55036ef126ca75c013873c9bca7b3dc5dfb376062a67b810a"
+ },
+ "hits": 83,
+ "lexicon_sha256": "bb0add40bc10d88a6891eef2c4b7a339c321ec19bad2a536461f6e9d5157cc70",
+ "misses": [
+  {
+   "counterparty": "Fairbanks Gold Mining, Inc.",
+   "domain": "D2",
+   "issuer_id": "ISS:US-XASE-CTGO",
+   "key": "name:fairbanks gold mining inc",
+   "sentence_id": "rs:64a997a680edd3dffec5",
+   "species": "contract_manufacturing"
+  },
+  {
+   "counterparty": "Royal Gold",
+   "domain": "D2",
+   "issuer_id": "ISS:US-XASE-CTGO",
+   "key": "ISS:US-XNAS-RGLD",
+   "sentence_id": "rs:ea5c3ddcf55f8b3f7d8e",
+   "species": "licensing"
+  },
+  {
+   "counterparty": "Alaska Hardrock Inc.",
+   "domain": "D2",
+   "issuer_id": "ISS:US-XASE-CTGO",
+   "key": "name:alaska hardrock inc",
+   "sentence_id": "rs:990cc82786e51f279d7a",
+   "species": "licensing"
+  },
+  {
+   "counterparty": "Chulitna Mining Company",
+   "domain": "D2",
+   "issuer_id": "ISS:US-XASE-CTGO",
+   "key": "name:chulitna mining company",
+   "sentence_id": "rs:97f71863dc898858d1b3",
+   "species": "licensing"
+  },
+  {
+   "counterparty": "CIRI",
+   "domain": "D2",
+   "issuer_id": "ISS:US-XASE-CTGO",
+   "key": "name:ciri",
+   "sentence_id": "rs:951d8458cf7d1ebe9d86",
+   "species": "licensing"
+  },
+  {
+   "counterparty": "Daniel E.",
+   "domain": "D2",
+   "issuer_id": "ISS:US-XASE-CTGO",
+   "key": "name:daniel e",
+   "sentence_id": "rs:990cc82786e51f279d7a",
+   "species": "licensing"
+  },
+  {
+   "counterparty": "Enserch Processing Partners, Ltd.",
+   "domain": "D2",
+   "issuer_id": "ISS:US-XASE-CTGO",
+   "key": "name:enserch processing partners ltd",
+   "sentence_id": "rs:990cc82786e51f279d7a",
+   "species": "licensing"
+  },
+  {
+   "counterparty": "Hidefield Gold Limited Alaska",
+   "domain": "D2",
+   "issuer_id": "ISS:US-XASE-CTGO",
+   "key": "name:hidefield gold limited alaska",
+   "sentence_id": "rs:97f71863dc898858d1b3",
+   "species": "licensing"
+  },
+  {
+   "counterparty": "Keltic Enterprises Inc.",
+   "domain": "D2",
+   "issuer_id": "ISS:US-XASE-CTGO",
+   "key": "name:keltic enterprises inc",
+   "sentence_id": "rs:9ca1fd4e1bfa7bb6bbce",
+   "species": "licensing"
+  },
+  {
+   "counterparty": "KG Mining",
+   "domain": "D2",
+   "issuer_id": "ISS:US-XASE-CTGO",
+   "key": "name:kg mining",
+   "sentence_id": "rs:138cbbff2d379f50b5ea",
+   "species": "licensing"
+  },
+  {
+   "counterparty": "Mines Trust Company Inc.",
+   "domain": "D2",
+   "issuer_id": "ISS:US-XASE-CTGO",
+   "key": "name:mines trust company inc",
+   "sentence_id": "rs:97f71863dc898858d1b3",
+   "species": "licensing"
+  },
+  {
+   "counterparty": "RG Royalties, LLC",
+   "domain": "D2",
+   "issuer_id": "ISS:US-XASE-CTGO",
+   "key": "name:rg royalties llc",
+   "sentence_id": "rs:07fac365ba8b737c8146",
+   "species": "licensing"
+  },
+  {
+   "counterparty": "Tanya Stolz",
+   "domain": "D2",
+   "issuer_id": "ISS:US-XASE-CTGO",
+   "key": "name:tanya stolz",
+   "sentence_id": "rs:9ca1fd4e1bfa7bb6bbce",
+   "species": "licensing"
+  },
+  {
+   "counterparty": "Black Gold Transport",
+   "domain": "D2",
+   "issuer_id": "ISS:US-XASE-CTGO",
+   "key": "name:black gold transport",
+   "sentence_id": "rs:717f8e5c34de81161132",
+   "species": "supplier_customer"
+  },
+  {
+   "counterparty": "Royal Gold Inc.",
+   "domain": "D2",
+   "issuer_id": "ISS:US-XASE-EQX",
+   "key": "ISS:US-XNAS-RGLD",
+   "sentence_id": "rs:8a07aa92bd55afc959bc",
+   "species": "licensing"
+  },
+  {
+   "counterparty": "Franco-Nevada",
+   "domain": "D2",
+   "issuer_id": "ISS:US-XASE-EQX",
+   "key": "ISS:US-XNYS-FNV",
+   "sentence_id": "rs:17824920327c5848f24b",
+   "species": "licensing"
+  },
+  {
+   "counterparty": "Argonaut Gold Inc.",
+   "domain": "D2",
+   "issuer_id": "ISS:US-XASE-EQX",
+   "key": "name:argonaut gold inc",
+   "sentence_id": "rs:17824920327c5848f24b",
+   "species": "licensing"
+  },
+  {
+   "counterparty": "Essar Steel Algoma Inc.",
+   "domain": "D2",
+   "issuer_id": "ISS:US-XASE-EQX",
+   "key": "name:essar steel algoma inc",
+   "sentence_id": "rs:17824920327c5848f24b",
+   "species": "licensing"
+  },
+  {
+   "counterparty": "Glamis Associates",
+   "domain": "D2",
+   "issuer_id": "ISS:US-XASE-EQX",
+   "key": "name:glamis associates",
+   "sentence_id": "rs:b9aba94ac19c14cc7889",
+   "species": "licensing"
+  },
+  {
+   "counterparty": "Griffin Mining Limited",
+   "domain": "D2",
+   "issuer_id": "ISS:US-XASE-EQX",
+   "key": "name:griffin mining limited",
+   "sentence_id": "rs:17824920327c5848f24b",
+   "species": "licensing"
+  },
+  {
+   "counterparty": "Highlander",
+   "domain": "D2",
+   "issuer_id": "ISS:US-XASE-EQX",
+   "key": "name:highlander",
+   "sentence_id": "rs:f12e06f315434e592aef",
+   "species": "licensing"
+  },
+  {
+   "counterparty": "Inversiones Mineras S.A.",
+   "domain": "D2",
+   "issuer_id": "ISS:US-XASE-EQX",
+   "key": "name:inversiones mineras s a",
+   "sentence_id": "rs:a83b195015cbf8588474",
+   "species": "licensing"
+  },
+  {
+   "counterparty": "Kevin Keats",
+   "domain": "D2",
+   "issuer_id": "ISS:US-XASE-EQX",
+   "key": "name:kevin keats",
+   "sentence_id": "rs:7ed4957449749bbfd3f4",
+   "species": "licensing"
+  },
+  {
+   "counterparty": "Placer Dome Inc.",
+   "domain": "D2",
+   "issuer_id": "ISS:US-XASE-EQX",
+   "key": "name:placer dome inc",
+   "sentence_id": "rs:17824920327c5848f24b",
+   "species": "licensing"
+  },
+  {
+   "counterparty": "the community of Carrizalillo",
+   "domain": "D2",
+   "issuer_id": "ISS:US-XASE-EQX",
+   "key": "name:the community of carrizalillo",
+   "sentence_id": "rs:a3e2963503d263495ef0",
+   "species": "licensing"
+  },
+  {
+   "counterparty": "Unique Broadband Systems",
+   "domain": "D2",
+   "issuer_id": "ISS:US-XASE-EQX",
+   "key": "name:unique broadband systems",
+   "sentence_id": "rs:17824920327c5848f24b",
+   "species": "licensing"
+  },
+  {
+   "counterparty": "Customer 1",
+   "domain": "D2",
+   "issuer_id": "ISS:US-XASE-EQX",
+   "key": "name:customer 1",
+   "sentence_id": "rs:da069c2aba8ee8858852",
+   "species": "supplier_customer"
+  },
+  {
+   "counterparty": "Customer 2",
+   "domain": "D2",
+   "issuer_id": "ISS:US-XASE-EQX",
+   "key": "name:customer 2",
+   "sentence_id": "rs:fd379b69027cec62cbae",
+   "species": "supplier_customer"
+  },
+  {
+   "counterparty": "Customer 3",
+   "domain": "D2",
+   "issuer_id": "ISS:US-XASE-EQX",
+   "key": "name:customer 3",
+   "sentence_id": "rs:3c8d619411b760daa8e1",
+   "species": "supplier_customer"
+  },
+  {
+   "counterparty": "The Purchasers",
+   "domain": "D2",
+   "issuer_id": "ISS:US-XASE-EQX",
+   "key": "name:the purchasers",
+   "sentence_id": "rs:1b4159c01a0b4ae5c17e",
+   "species": "supplier_customer"
+  },
+  {
+   "counterparty": "Intel",
+   "domain": "D1",
+   "issuer_id": "ISS:US-XNAS-AMD",
+   "key": "ISS:US-XNAS-INTC",
+   "sentence_id": "rs:5d82c2d083f327519490",
+   "species": "component_dependency"
+  },
+  {
+   "counterparty": "Sanmina",
+   "domain": "D1",
+   "issuer_id": "ISS:US-XNAS-AMD",
+   "key": "ISS:US-XNAS-SANM",
+   "sentence_id": "rs:2815a43f0558052f9d3f",
+   "species": "contract_manufacturing"
+  },
+  {
+   "counterparty": "GF",
+   "domain": "D1",
+   "issuer_id": "ISS:US-XNAS-AMD",
+   "key": "name:gf",
+   "sentence_id": "rs:fa896b4759edcf5a9e7e",
+   "species": "contract_manufacturing"
+  },
+  {
+   "counterparty": "the ATMP JV",
+   "domain": "D1",
+   "issuer_id": "ISS:US-XNAS-AMD",
+   "key": "name:the atmp jv",
+   "sentence_id": "rs:8a002622e29813353feb",
+   "species": "contract_manufacturing"
+  },
+  {
+   "counterparty": "the ATMP JVs",
+   "domain": "D1",
+   "issuer_id": "ISS:US-XNAS-AMD",
+   "key": "name:the atmp jvs",
+   "sentence_id": "rs:4a3483c6fc023ae62ab7",
+   "species": "contract_manufacturing"
+  },
+  {
+   "counterparty": "THATIC JV",
+   "domain": "D1",
+   "issuer_id": "ISS:US-XNAS-AMD",
+   "key": "name:thatic jv",
+   "sentence_id": "rs:6d1f6d715daf3ff11953",
+   "species": "licensing"
+  },
+  {
+   "counterparty": "Microsoft",
+   "domain": "D1",
+   "issuer_id": "ISS:US-XNAS-AMD",
+   "key": "ISS:US-XNAS-MSFT",
+   "sentence_id": "rs:57185dfe31d991947ad5",
+   "species": "supplier_customer"
+  },
+  {
+   "counterparty": "Sony",
+   "domain": "D1",
+   "issuer_id": "ISS:US-XNAS-AMD",
+   "key": "ISS:US-XNYS-SONY",
+   "sentence_id": "rs:57185dfe31d991947ad5",
+   "species": "supplier_customer"
+  },
+  {
+   "counterparty": "Arm China",
+   "domain": "D1",
+   "issuer_id": "ISS:US-XNAS-ARM",
+   "key": "name:arm china",
+   "sentence_id": "rs:03df43abebf57ab72f8e",
+   "species": "distribution"
+  },
+  {
+   "counterparty": "Arm Technology (China) Co. Limited",
+   "domain": "D1",
+   "issuer_id": "ISS:US-XNAS-ARM",
+   "key": "name:arm technology china co limited",
+   "sentence_id": "rs:092ea05057c038c37b3c",
+   "species": "licensing"
+  },
+  {
+   "counterparty": "Qualcomm Inc.",
+   "domain": "D1",
+   "issuer_id": "ISS:US-XNAS-ARM",
+   "key": "name:qualcomm inc",
+   "sentence_id": "rs:d49238b5424ec74a0faa",
+   "species": "licensing"
+  },
+  {
+   "counterparty": "Ampere",
+   "domain": "D1",
+   "issuer_id": "ISS:US-XNAS-ARM",
+   "key": "name:ampere",
+   "sentence_id": "rs:2ef057c196ac4be419ba",
+   "species": "supplier_customer"
+  },
+  {
+   "counterparty": "Arm China",
+   "domain": "D1",
+   "issuer_id": "ISS:US-XNAS-ARM",
+   "key": "name:arm china",
+   "sentence_id": "rs:2826d0bf7635797c7663",
+   "species": "supplier_customer"
+  },
+  {
+   "counterparty": "Linaro",
+   "domain": "D1",
+   "issuer_id": "ISS:US-XNAS-ARM",
+   "key": "name:linaro",
+   "sentence_id": "rs:586b67d33a271521d98b",
+   "species": "supplier_customer"
+  },
+  {
+   "counterparty": "Mr. Fadell",
+   "domain": "D1",
+   "issuer_id": "ISS:US-XNAS-ARM",
+   "key": "name:mr fadell",
+   "sentence_id": "rs:8b2a7e022f8eb9878efc",
+   "species": "supplier_customer"
+  },
+  {
+   "counterparty": "Synopsys\u2019 Sentaurus TCAD software",
+   "domain": "D1",
+   "issuer_id": "ISS:US-XNAS-ATOM",
+   "key": "name:synopsys sentaurus tcad software",
+   "sentence_id": "rs:6fd80476edc6610d1189",
+   "species": "component_dependency"
+  },
+  {
+   "counterparty": "AKM",
+   "domain": "D1",
+   "issuer_id": "ISS:US-XNAS-ATOM",
+   "key": "name:akm",
+   "sentence_id": "rs:0559ff2edae7495a6143",
+   "species": "licensing"
+  },
+  {
+   "counterparty": "Asahi Kasei Microdevices",
+   "domain": "D1",
+   "issuer_id": "ISS:US-XNAS-ATOM",
+   "key": "name:asahi kasei microdevices",
+   "sentence_id": "rs:5949feb7c081d54f8933",
+   "species": "licensing"
+  },
+  {
+   "counterparty": "our foundry licensee",
+   "domain": "D1",
+   "issuer_id": "ISS:US-XNAS-ATOM",
+   "key": "name:our foundry licensee",
+   "sentence_id": "rs:c14d137dcd833e573240",
+   "species": "licensing"
+  },
+  {
+   "counterparty": "our RF licensee",
+   "domain": "D1",
+   "issuer_id": "ISS:US-XNAS-ATOM",
+   "key": "name:our rf licensee",
+   "sentence_id": "rs:c14d137dcd833e573240",
+   "species": "licensing"
+  },
+  {
+   "counterparty": "ST",
+   "domain": "D1",
+   "issuer_id": "ISS:US-XNAS-ATOM",
+   "key": "name:st",
+   "sentence_id": "rs:0559ff2edae7495a6143",
+   "species": "licensing"
+  },
+  {
+   "counterparty": "ST Microelectronics",
+   "domain": "D1",
+   "issuer_id": "ISS:US-XNAS-ATOM",
+   "key": "name:st microelectronics",
+   "sentence_id": "rs:5c280a5be621c15a61ba",
+   "species": "licensing"
+  },
+  {
+   "counterparty": "ST",
+   "domain": "D1",
+   "issuer_id": "ISS:US-XNAS-ATOM",
+   "key": "name:st",
+   "sentence_id": "rs:029841ead2be57a5b484",
+   "species": "supplier_customer"
+  },
+  {
+   "counterparty": "AMD",
+   "domain": "D1",
+   "issuer_id": "ISS:US-XNAS-CRSR",
+   "key": "ISS:US-XNAS-AMD",
+   "sentence_id": "rs:c8ee24b2dbbe4bf6f20f",
+   "species": "component_dependency"
+  },
+  {
+   "counterparty": "Intel",
+   "domain": "D1",
+   "issuer_id": "ISS:US-XNAS-CRSR",
+   "key": "ISS:US-XNAS-INTC",
+   "sentence_id": "rs:c8ee24b2dbbe4bf6f20f",
+   "species": "component_dependency"
+  },
+  {
+   "counterparty": "Microsoft",
+   "domain": "D1",
+   "issuer_id": "ISS:US-XNAS-CRSR",
+   "key": "ISS:US-XNAS-MSFT",
+   "sentence_id": "rs:c8ee24b2dbbe4bf6f20f",
+   "species": "component_dependency"
+  },
+  {
+   "counterparty": "NVIDIA",
+   "domain": "D1",
+   "issuer_id": "ISS:US-XNAS-CRSR",
+   "key": "ISS:US-XNAS-NVDA",
+   "sentence_id": "rs:c8ee24b2dbbe4bf6f20f",
+   "species": "component_dependency"
+  },
+  {
+   "counterparty": "Sony",
+   "domain": "D1",
+   "issuer_id": "ISS:US-XNAS-CRSR",
+   "key": "ISS:US-XNYS-SONY",
+   "sentence_id": "rs:c8ee24b2dbbe4bf6f20f",
+   "species": "component_dependency"
+  },
+  {
+   "counterparty": "Asus",
+   "domain": "D1",
+   "issuer_id": "ISS:US-XNAS-CRSR",
+   "key": "name:asus",
+   "sentence_id": "rs:c8ee24b2dbbe4bf6f20f",
+   "species": "component_dependency"
+  },
+  {
+   "counterparty": "Amazon",
+   "domain": "D1",
+   "issuer_id": "ISS:US-XNAS-CRSR",
+   "key": "ISS:US-XNAS-AMZN",
+   "sentence_id": "rs:784828653efa7c2b983c",
+   "species": "distribution"
+  },
+  {
+   "counterparty": "Best Buy",
+   "domain": "D1",
+   "issuer_id": "ISS:US-XNAS-CRSR",
+   "key": "ISS:US-XNYS-BBY",
+   "sentence_id": "rs:784828653efa7c2b983c",
+   "species": "distribution"
+  },
+  {
+   "counterparty": "e-retailer Amazon",
+   "domain": "D1",
+   "issuer_id": "ISS:US-XNAS-CRSR",
+   "key": "name:e retailer amazon",
+   "sentence_id": "rs:615b4c8b3ec17b5885ea",
+   "species": "supplier_customer"
+  },
+  {
+   "counterparty": "our majority owner",
+   "domain": "D1",
+   "issuer_id": "ISS:US-XNAS-CRSR",
+   "key": "name:our majority owner",
+   "sentence_id": "rs:439e0f9c2e0874d15bda",
+   "species": "supplier_customer"
+  },
+  {
+   "counterparty": "Motorola Solutions, Inc.",
+   "domain": "D1",
+   "issuer_id": "ISS:US-XNAS-EVLV",
+   "key": "ISS:US-XNYS-MSI",
+   "sentence_id": "rs:424f89391aa7e50e6c10",
+   "species": "distribution"
+  },
+  {
+   "counterparty": "Columbia Electrical Contractors, Inc.",
+   "domain": "D1",
+   "issuer_id": "ISS:US-XNAS-EVLV",
+   "key": "name:columbia electrical contractors inc",
+   "sentence_id": "rs:a38e21fa2039d2ac7f7f",
+   "species": "distribution"
+  },
+  {
+   "counterparty": "Columbia Tech",
+   "domain": "D1",
+   "issuer_id": "ISS:US-XNAS-EVLV",
+   "key": "name:columbia tech",
+   "sentence_id": "rs:564ab847748864e8728f",
+   "species": "distribution"
+  },
+  {
+   "counterparty": "Motorola",
+   "domain": "D1",
+   "issuer_id": "ISS:US-XNAS-EVLV",
+   "key": "name:motorola",
+   "sentence_id": "rs:2dbfa5811e49fbaa8c43",
+   "species": "distribution"
+  },
+  {
+   "counterparty": "our distributor",
+   "domain": "D1",
+   "issuer_id": "ISS:US-XNAS-EVLV",
+   "key": "name:our distributor",
+   "sentence_id": "rs:0e7009deb672c0c4f0d8",
+   "species": "distribution"
+  },
+  {
+   "counterparty": "ExxonMobil Low Carbon Solutions Onshore Storage, LLC",
+   "domain": "D2",
+   "issuer_id": "ISS:US-XNAS-EXE",
+   "key": "name:exxonmobil low carbon solutions onshore storage llc",
+   "sentence_id": "rs:f05857a7b01f829c5fd7",
+   "species": "supplier_customer"
+  },
+  {
+   "counterparty": "Momentum Sustainable Ventures LLC",
+   "domain": "D2",
+   "issuer_id": "ISS:US-XNAS-EXE",
+   "key": "name:momentum sustainable ventures llc",
+   "sentence_id": "rs:1bd2f95c645efda27cc4",
+   "species": "supplier_customer"
+  },
+  {
+   "counterparty": "the NG3 pipeline",
+   "domain": "D2",
+   "issuer_id": "ISS:US-XNAS-EXE",
+   "key": "name:the ng3 pipeline",
+   "sentence_id": "rs:1b9eee12e6130b5643d6",
+   "species": "supplier_customer"
+  },
+  {
+   "counterparty": "SK hynix",
+   "domain": "D1",
+   "issuer_id": "ISS:US-XNAS-INTC",
+   "key": "name:sk hynix",
+   "sentence_id": "rs:9ce517459b63b089dcc3",
+   "species": "contract_manufacturing"
+  },
+  {
+   "counterparty": "EireOg",
+   "domain": "D1",
+   "issuer_id": "ISS:US-XNAS-INTC",
+   "key": "name:eireog",
+   "sentence_id": "rs:b78e66e123c6d110f555",
+   "species": "licensing"
+  },
+  {
+   "counterparty": "EireOg Innovations Ltd.",
+   "domain": "D1",
+   "issuer_id": "ISS:US-XNAS-INTC",
+   "key": "name:eireog innovations ltd",
+   "sentence_id": "rs:c934252a8506c4c459d7",
+   "species": "licensing"
+  },
+  {
+   "counterparty": "Finjan",
+   "domain": "D1",
+   "issuer_id": "ISS:US-XNAS-INTC",
+   "key": "name:finjan",
+   "sentence_id": "rs:394570dbbc73caacaa24",
+   "species": "licensing"
+  },
+  {
+   "counterparty": "MCP",
+   "domain": "D1",
+   "issuer_id": "ISS:US-XNAS-INTC",
+   "key": "name:mcp",
+   "sentence_id": "rs:7cef85b4a425f2824c7b",
+   "species": "licensing"
+  },
+  {
+   "counterparty": "VLSI",
+   "domain": "D1",
+   "issuer_id": "ISS:US-XNAS-INTC",
+   "key": "name:vlsi",
+   "sentence_id": "rs:029ce3555537b18fcc5e",
+   "species": "licensing"
+  },
+  {
+   "counterparty": "SK hynix",
+   "domain": "D1",
+   "issuer_id": "ISS:US-XNAS-INTC",
+   "key": "name:sk hynix",
+   "sentence_id": "rs:9ce517459b63b089dcc3",
+   "species": "supplier_customer"
+  },
+  {
+   "counterparty": "UMC",
+   "domain": "D1",
+   "issuer_id": "ISS:US-XNAS-LAES",
+   "key": "ISS:US-XNYS-UMC",
+   "sentence_id": "rs:4b5822fe6b7f1aeecfa1",
+   "species": "contract_manufacturing"
+  },
+  {
+   "counterparty": "Presto Engineering",
+   "domain": "D1",
+   "issuer_id": "ISS:US-XNAS-LAES",
+   "key": "name:presto engineering",
+   "sentence_id": "rs:7e4fc45595440b98916e",
+   "species": "licensing"
+  },
+  {
+   "counterparty": "AB Circle",
+   "domain": "D1",
+   "issuer_id": "ISS:US-XNAS-LAES",
+   "key": "name:ab circle",
+   "sentence_id": "rs:03017f2eb2400b3ef954",
+   "species": "supplier_customer"
+  },
+  {
+   "counterparty": "DeltaDore",
+   "domain": "D1",
+   "issuer_id": "ISS:US-XNAS-LAES",
+   "key": "name:deltadore",
+   "sentence_id": "rs:f4269f67bfcbf6dc98b4",
+   "species": "supplier_customer"
+  },
+  {
+   "counterparty": "Hager",
+   "domain": "D1",
+   "issuer_id": "ISS:US-XNAS-LAES",
+   "key": "name:hager",
+   "sentence_id": "rs:f4269f67bfcbf6dc98b4",
+   "species": "supplier_customer"
+  },
+  {
+   "counterparty": "Hirsh",
+   "domain": "D1",
+   "issuer_id": "ISS:US-XNAS-LAES",
+   "key": "name:hirsh",
+   "sentence_id": "rs:03017f2eb2400b3ef954",
+   "species": "supplier_customer"
+  },
+  {
+   "counterparty": "Landis & Gyr",
+   "domain": "D1",
+   "issuer_id": "ISS:US-XNAS-LAES",
+   "key": "name:landis gyr",
+   "sentence_id": "rs:1d4decc8a752027eb7b9",
+   "species": "supplier_customer"
+  },
+  {
+   "counterparty": "PARROT",
+   "domain": "D1",
+   "issuer_id": "ISS:US-XNAS-LAES",
+   "key": "name:parrot",
+   "sentence_id": "rs:4ecd8528788a93698fae",
+   "species": "supplier_customer"
+  },
+  {
+   "counterparty": "Presto Engineering Inc.",
+   "domain": "D1",
+   "issuer_id": "ISS:US-XNAS-LAES",
+   "key": "name:presto engineering inc",
+   "sentence_id": "rs:85dc0e95e2fdfdeeb435",
+   "species": "supplier_customer"
+  },
+  {
+   "counterparty": "SIEMENS",
+   "domain": "D1",
+   "issuer_id": "ISS:US-XNAS-LAES",
+   "key": "name:siemens",
+   "sentence_id": "rs:1d4decc8a752027eb7b9",
+   "species": "supplier_customer"
+  },
+  {
+   "counterparty": "Tedee",
+   "domain": "D1",
+   "issuer_id": "ISS:US-XNAS-LAES",
+   "key": "name:tedee",
+   "sentence_id": "rs:f4269f67bfcbf6dc98b4",
+   "species": "supplier_customer"
+  },
+  {
+   "counterparty": "THALES",
+   "domain": "D1",
+   "issuer_id": "ISS:US-XNAS-LAES",
+   "key": "name:thales",
+   "sentence_id": "rs:1d4decc8a752027eb7b9",
+   "species": "supplier_customer"
+  },
+  {
+   "counterparty": "TOSHIBA",
+   "domain": "D1",
+   "issuer_id": "ISS:US-XNAS-LAES",
+   "key": "name:toshiba",
+   "sentence_id": "rs:1d4decc8a752027eb7b9",
+   "species": "supplier_customer"
+  },
+  {
+   "counterparty": "WISeSat",
+   "domain": "D1",
+   "issuer_id": "ISS:US-XNAS-LAES",
+   "key": "name:wisesat",
+   "sentence_id": "rs:c4469a069c8bead85658",
+   "species": "supplier_customer"
+  },
+  {
+   "counterparty": "ADIUC",
+   "domain": "D1",
+   "issuer_id": "ISS:US-XNAS-MXL",
+   "key": "name:adiuc",
+   "sentence_id": "rs:e1f16692c6e4a4d6ad15",
+   "species": "licensing"
+  },
+  {
+   "counterparty": "Bell Semiconductor",
+   "domain": "D1",
+   "issuer_id": "ISS:US-XNAS-MXL",
+   "key": "name:bell semiconductor",
+   "sentence_id": "rs:fc38e46b362a4823423b",
+   "species": "licensing"
+  },
+  {
+   "counterparty": "CableLabs",
+   "domain": "D1",
+   "issuer_id": "ISS:US-XNAS-MXL",
+   "key": "name:cablelabs",
+   "sentence_id": "rs:297446f1211079342475",
+   "species": "licensing"
+  },
+  {
+   "counterparty": "Koninklijke Philips Electronics N.V.",
+   "domain": "D1",
+   "issuer_id": "ISS:US-XNAS-NXPI",
+   "key": "name:koninklijke philips electronics n v",
+   "sentence_id": "rs:fae56bd603e3c22a6a1d",
+   "species": "licensing"
+  },
+  {
+   "counterparty": "Avnet",
+   "domain": "D1",
+   "issuer_id": "ISS:US-XNAS-NXPI",
+   "key": "ISS:US-XNAS-AVT",
+   "sentence_id": "rs:25b5fb6af38e6a3d272f",
+   "species": "supplier_customer"
+  },
+  {
+   "counterparty": "Arrow",
+   "domain": "D1",
+   "issuer_id": "ISS:US-XNAS-NXPI",
+   "key": "name:arrow",
+   "sentence_id": "rs:2bd8a9c7b5a60b99eb1e",
+   "species": "supplier_customer"
+  },
+  {
+   "counterparty": "Nexty",
+   "domain": "D1",
+   "issuer_id": "ISS:US-XNAS-NXPI",
+   "key": "name:nexty",
+   "sentence_id": "rs:2bd8a9c7b5a60b99eb1e",
+   "species": "supplier_customer"
+  },
+  {
+   "counterparty": "World Peace",
+   "domain": "D1",
+   "issuer_id": "ISS:US-XNAS-NXPI",
+   "key": "name:world peace",
+   "sentence_id": "rs:2bd8a9c7b5a60b99eb1e",
+   "species": "supplier_customer"
+  },
+  {
+   "counterparty": "WT Micro",
+   "domain": "D1",
+   "issuer_id": "ISS:US-XNAS-NXPI",
+   "key": "name:wt micro",
+   "sentence_id": "rs:2bd8a9c7b5a60b99eb1e",
+   "species": "supplier_customer"
+  },
+  {
+   "counterparty": "Epson",
+   "domain": "D1",
+   "issuer_id": "ISS:US-XNAS-POWI",
+   "key": "name:epson",
+   "sentence_id": "rs:00e06dec453a5ce30efd",
+   "species": "contract_manufacturing"
+  },
+  {
+   "counterparty": "Lapis",
+   "domain": "D1",
+   "issuer_id": "ISS:US-XNAS-POWI",
+   "key": "name:lapis",
+   "sentence_id": "rs:00e06dec453a5ce30efd",
+   "species": "contract_manufacturing"
+  },
+  {
+   "counterparty": "ROHM Lapis Semiconductor Co., Ltd.",
+   "domain": "D1",
+   "issuer_id": "ISS:US-XNAS-POWI",
+   "key": "name:rohm lapis semiconductor co ltd",
+   "sentence_id": "rs:430b1c73c238385a3ebc",
+   "species": "contract_manufacturing"
+  },
+  {
+   "counterparty": "X-FAB",
+   "domain": "D1",
+   "issuer_id": "ISS:US-XNAS-POWI",
+   "key": "name:x fab",
+   "sentence_id": "rs:00e06dec453a5ce30efd",
+   "species": "contract_manufacturing"
+  },
+  {
+   "counterparty": "X-FAB Semiconductor Foundries GmbH",
+   "domain": "D1",
+   "issuer_id": "ISS:US-XNAS-POWI",
+   "key": "name:x fab semiconductor foundries gmbh",
+   "sentence_id": "rs:266615cc4ea7cf366248",
+   "species": "contract_manufacturing"
+  },
+  {
+   "counterparty": "Posigen, Inc.",
+   "domain": "D1",
+   "issuer_id": "ISS:US-XNAS-SEDG",
+   "key": "name:posigen inc",
+   "sentence_id": "rs:34f1375fa58baf545c02",
+   "species": "supplier_customer"
+  },
+  {
+   "counterparty": "Stellantis",
+   "domain": "D1",
+   "issuer_id": "ISS:US-XNAS-SEDG",
+   "key": "name:stellantis",
+   "sentence_id": "rs:92bd8e94c85ac976acc4",
+   "species": "supplier_customer"
+  },
+  {
+   "counterparty": "Amazon",
+   "domain": "D1",
+   "issuer_id": "ISS:US-XNAS-TBCH",
+   "key": "ISS:US-XNAS-AMZN",
+   "sentence_id": "rs:58ba94f01e9bb5f0bb88",
+   "species": "distribution"
+  },
+  {
+   "counterparty": "Walmart",
+   "domain": "D1",
+   "issuer_id": "ISS:US-XNAS-TBCH",
+   "key": "ISS:US-XNAS-WMT",
+   "sentence_id": "rs:58ba94f01e9bb5f0bb88",
+   "species": "distribution"
+  },
+  {
+   "counterparty": "Best Buy",
+   "domain": "D1",
+   "issuer_id": "ISS:US-XNAS-TBCH",
+   "key": "ISS:US-XNYS-BBY",
+   "sentence_id": "rs:58ba94f01e9bb5f0bb88",
+   "species": "distribution"
+  },
+  {
+   "counterparty": "Target",
+   "domain": "D1",
+   "issuer_id": "ISS:US-XNAS-TBCH",
+   "key": "ISS:US-XNYS-TGT",
+   "sentence_id": "rs:58ba94f01e9bb5f0bb88",
+   "species": "distribution"
+  },
+  {
+   "counterparty": "Argos",
+   "domain": "D1",
+   "issuer_id": "ISS:US-XNAS-TBCH",
+   "key": "name:argos",
+   "sentence_id": "rs:58ba94f01e9bb5f0bb88",
+   "species": "distribution"
+  },
+  {
+   "counterparty": "Royal Gold Inc",
+   "domain": "D2",
+   "issuer_id": "ISS:US-XNYS-AEM",
+   "key": "ISS:US-XNAS-RGLD",
+   "sentence_id": "rs:f0143f5585da53ef944e",
+   "species": "licensing"
+  },
+  {
+   "counterparty": "Abitibi Royalties Inc",
+   "domain": "D2",
+   "issuer_id": "ISS:US-XNYS-AEM",
+   "key": "name:abitibi royalties inc",
+   "sentence_id": "rs:e8a32d110179e4b50ed4",
+   "species": "licensing"
+  },
+  {
+   "counterparty": "Delfer Gold Mines Inc",
+   "domain": "D2",
+   "issuer_id": "ISS:US-XNYS-AEM",
+   "key": "name:delfer gold mines inc",
+   "sentence_id": "rs:f0143f5585da53ef944e",
+   "species": "licensing"
+  },
+  {
+   "counterparty": "Maverix Metals Inc.",
+   "domain": "D2",
+   "issuer_id": "ISS:US-XNYS-AEM",
+   "key": "name:maverix metals inc",
+   "sentence_id": "rs:275745750c89a72cf07c",
+   "species": "licensing"
+  },
+  {
+   "counterparty": "Osisko Gold Royalties Ltd",
+   "domain": "D2",
+   "issuer_id": "ISS:US-XNYS-AEM",
+   "key": "name:osisko gold royalties ltd",
+   "sentence_id": "rs:e8a32d110179e4b50ed4",
+   "species": "licensing"
+  },
+  {
+   "counterparty": "Franco-Nevada Corporation",
+   "domain": "D2",
+   "issuer_id": "ISS:US-XNYS-AGI",
+   "key": "ISS:US-XNYS-FNV",
+   "sentence_id": "rs:bcb5eeb82313821a8b85",
+   "species": "licensing"
+  },
+  {
+   "counterparty": "Franco-Nevada Canada Holdings Corp.",
+   "domain": "D2",
+   "issuer_id": "ISS:US-XNYS-AGI",
+   "key": "name:franco nevada canada holdings corp",
+   "sentence_id": "rs:80e6574fba99f4a15846",
+   "species": "licensing"
+  },
+  {
+   "counterparty": "OR Royalties",
+   "domain": "D2",
+   "issuer_id": "ISS:US-XNYS-AGI",
+   "key": "name:or royalties",
+   "sentence_id": "rs:1dcf2b413888b50f7c38",
+   "species": "licensing"
+  },
+  {
+   "counterparty": "OR Royalties Inc.",
+   "domain": "D2",
+   "issuer_id": "ISS:US-XNYS-AGI",
+   "key": "name:or royalties inc",
+   "sentence_id": "rs:b746030bc2419edb54cd",
+   "species": "licensing"
+  },
+  {
+   "counterparty": "Triple Flag Mining Finance Ltd.",
+   "domain": "D2",
+   "issuer_id": "ISS:US-XNYS-AGI",
+   "key": "name:triple flag mining finance ltd",
+   "sentence_id": "rs:e077017610e7e877ab88",
+   "species": "licensing"
+  },
+  {
+   "counterparty": "Algoma Power Inc.",
+   "domain": "D2",
+   "issuer_id": "ISS:US-XNYS-AGI",
+   "key": "name:algoma power inc",
+   "sentence_id": "rs:ea2cf59f0a99302eead5",
+   "species": "supplier_customer"
+  },
+  {
+   "counterparty": "Grupo Desarrollo Infraestructura, S.A. de C.V.",
+   "domain": "D2",
+   "issuer_id": "ISS:US-XNYS-AGI",
+   "key": "name:grupo desarrollo infraestructura s a de c v",
+   "sentence_id": "rs:926c9b710c43ae02e404",
+   "species": "supplier_customer"
+  },
+  {
+   "counterparty": "Suncor Energy Products Partnership",
+   "domain": "D2",
+   "issuer_id": "ISS:US-XNYS-AGI",
+   "key": "name:suncor energy products partnership",
+   "sentence_id": "rs:56836ea588de3b452782",
+   "species": "supplier_customer"
+  },
+  {
+   "counterparty": "Union Pacific",
+   "domain": "D2",
+   "issuer_id": "ISS:US-XNYS-CVI",
+   "key": "ISS:US-XNYS-UNP",
+   "sentence_id": "rs:8a99258f433981dfc627",
+   "species": "supplier_customer"
+  },
+  {
+   "counterparty": "Burlington Northern Santa Fe",
+   "domain": "D2",
+   "issuer_id": "ISS:US-XNYS-CVI",
+   "key": "name:burlington northern santa fe",
+   "sentence_id": "rs:8a99258f433981dfc627",
+   "species": "supplier_customer"
+  },
+  {
+   "counterparty": "Duke Energy Carolinas, LLC",
+   "domain": "D2",
+   "issuer_id": "ISS:US-XNYS-EQT",
+   "key": "name:duke energy carolinas llc",
+   "sentence_id": "rs:cdef88e7022c4ab70c0d",
+   "species": "supplier_customer"
+  },
+  {
+   "counterparty": "Public Service Company of North Carolina, Inc.",
+   "domain": "D2",
+   "issuer_id": "ISS:US-XNYS-EQT",
+   "key": "name:public service company of north carolina inc",
+   "sentence_id": "rs:cdef88e7022c4ab70c0d",
+   "species": "supplier_customer"
+  },
+  {
+   "counterparty": "Distributed Energy Infrastructure (DEI)",
+   "domain": "D1",
+   "issuer_id": "ISS:US-XNYS-JKS",
+   "key": "name:distributed energy infrastructure dei",
+   "sentence_id": "rs:0be304ae3f0fb3fc029e",
+   "species": "supplier_customer"
+  },
+  {
+   "counterparty": "Nyox Srl",
+   "domain": "D1",
+   "issuer_id": "ISS:US-XNYS-JKS",
+   "key": "name:nyox srl",
+   "sentence_id": "rs:618780f452c8190d4939",
+   "species": "supplier_customer"
+  },
+  {
+   "counterparty": "Singapore Customer",
+   "domain": "D1",
+   "issuer_id": "ISS:US-XNYS-JKS",
+   "key": "name:singapore customer",
+   "sentence_id": "rs:1284d7d7421debd218e9",
+   "species": "supplier_customer"
+  },
+  {
+   "counterparty": "Advance Royalty Corporation",
+   "domain": "D2",
+   "issuer_id": "ISS:US-XNYS-NXE",
+   "key": "name:advance royalty corporation",
+   "sentence_id": "rs:a59a54593370359507bd",
+   "species": "licensing"
+  },
+  {
+   "counterparty": "MMCap",
+   "domain": "D2",
+   "issuer_id": "ISS:US-XNYS-NXE",
+   "key": "name:mmcap",
+   "sentence_id": "rs:fd3bafd8dda26f52940c",
+   "species": "supplier_customer"
+  },
+  {
+   "counterparty": "Citi",
+   "domain": "D2",
+   "issuer_id": "ISS:US-XNYS-PARR",
+   "key": "name:citi",
+   "sentence_id": "rs:062103cf2b34c21c42f6",
+   "species": "supplier_customer"
+  },
+  {
+   "counterparty": "Citigroup Energy Inc.",
+   "domain": "D2",
+   "issuer_id": "ISS:US-XNYS-PARR",
+   "key": "name:citigroup energy inc",
+   "sentence_id": "rs:66540a8dee02a375497b",
+   "species": "supplier_customer"
+  },
+  {
+   "counterparty": "Activos Mineros",
+   "domain": "D2",
+   "issuer_id": "ISS:US-XNYS-SCCO",
+   "key": "name:activos mineros",
+   "sentence_id": "rs:b2dd42f8e1c9cc4f8a50",
+   "species": "licensing"
+  },
+  {
+   "counterparty": "Asarco LLC",
+   "domain": "D2",
+   "issuer_id": "ISS:US-XNYS-SCCO",
+   "key": "name:asarco llc",
+   "sentence_id": "rs:e40fade5d5701b667fff",
+   "species": "supplier_customer"
+  },
+  {
+   "counterparty": "COFICAB Mexico",
+   "domain": "D2",
+   "issuer_id": "ISS:US-XNYS-SCCO",
+   "key": "name:coficab mexico",
+   "sentence_id": "rs:f454ecc52da4521df8c5",
+   "species": "supplier_customer"
+  },
+  {
+   "counterparty": "Eolica el Retiro",
+   "domain": "D2",
+   "issuer_id": "ISS:US-XNYS-SCCO",
+   "key": "name:eolica el retiro",
+   "sentence_id": "rs:2e9fc85924bef4163e60",
+   "species": "supplier_customer"
+  },
+  {
+   "counterparty": "Hartree Partners",
+   "domain": "D2",
+   "issuer_id": "ISS:US-XNYS-SCCO",
+   "key": "name:hartree partners",
+   "sentence_id": "rs:3e286ed6989cdc7219d0",
+   "species": "supplier_customer"
+  },
+  {
+   "counterparty": "Marcobre",
+   "domain": "D2",
+   "issuer_id": "ISS:US-XNYS-SCCO",
+   "key": "name:marcobre",
+   "sentence_id": "rs:cd6e4c3648d0a8f21bdb",
+   "species": "supplier_customer"
+  },
+  {
+   "counterparty": "MGE",
+   "domain": "D2",
+   "issuer_id": "ISS:US-XNYS-SCCO",
+   "key": "name:mge",
+   "sentence_id": "rs:bacad44de598a1387574",
+   "species": "supplier_customer"
+  },
+  {
+   "counterparty": "Molymet Group",
+   "domain": "D2",
+   "issuer_id": "ISS:US-XNYS-SCCO",
+   "key": "name:molymet group",
+   "sentence_id": "rs:547ca939803a2861af82",
+   "species": "supplier_customer"
+  },
+  {
+   "counterparty": "Parque Eolico de Fenicias",
+   "domain": "D2",
+   "issuer_id": "ISS:US-XNYS-SCCO",
+   "key": "name:parque eolico de fenicias",
+   "sentence_id": "rs:c7d13e2155898c23997e",
+   "species": "supplier_customer"
+  },
+  {
+   "counterparty": "Parque Eolico de Fenicias, S. de R.L. de C.V.",
+   "domain": "D2",
+   "issuer_id": "ISS:US-XNYS-SCCO",
+   "key": "name:parque eolico de fenicias s de r l de c v",
+   "sentence_id": "rs:5bf115bd7d19b8ab9130",
+   "species": "supplier_customer"
+  },
+  {
+   "counterparty": "Petroleos Mexicanos",
+   "domain": "D2",
+   "issuer_id": "ISS:US-XNYS-SCCO",
+   "key": "name:petroleos mexicanos",
+   "sentence_id": "rs:33edeca360ce153451cf",
+   "species": "supplier_customer"
+  },
+  {
+   "counterparty": "Amazon Web Services",
+   "domain": "D1",
+   "issuer_id": "ISS:US-XNYS-UI",
+   "key": "ISS:US-XNAS-AMZN",
+   "sentence_id": "rs:73f8d5fc182f1be62a9e",
+   "species": "component_dependency"
+  },
+  {
+   "counterparty": "G-Suite",
+   "domain": "D1",
+   "issuer_id": "ISS:US-XNYS-UI",
+   "key": "name:g suite",
+   "sentence_id": "rs:73f8d5fc182f1be62a9e",
+   "species": "component_dependency"
+  },
+  {
+   "counterparty": "Google Cloud",
+   "domain": "D1",
+   "issuer_id": "ISS:US-XNYS-UI",
+   "key": "name:google cloud",
+   "sentence_id": "rs:73f8d5fc182f1be62a9e",
+   "species": "component_dependency"
+  },
+  {
+   "counterparty": "the Grizzlies",
+   "domain": "D1",
+   "issuer_id": "ISS:US-XNYS-UI",
+   "key": "name:the grizzlies",
+   "sentence_id": "rs:b1da4e0f86033cb2e2ea",
+   "species": "supplier_customer"
+  },
+  {
+   "counterparty": "CarbonCure",
+   "domain": "D2",
+   "issuer_id": "ISS:US-XNYS-VMC",
+   "key": "name:carboncure",
+   "sentence_id": "rs:b10efe7a275be0a679c2",
+   "species": "licensing"
+  },
+  {
+   "counterparty": "CSL Americas",
+   "domain": "D2",
+   "issuer_id": "ISS:US-XNYS-VMC",
+   "key": "name:csl americas",
+   "sentence_id": "rs:4d1a0ea9018f21335a31",
+   "species": "supplier_customer"
+  },
+  {
+   "counterparty": "VGO",
+   "domain": "D2",
+   "issuer_id": "ISS:US-XNYS-VVV",
+   "key": "name:vgo",
+   "sentence_id": "rs:57fa07b5d0500b98c5f6",
+   "species": "supplier_customer"
+  }
+ ],
+ "misses_count": 155,
+ "per_issuer": [
+  {
+   "domain": "D2",
+   "hit": 0,
+   "issuer_id": "ISS:US-XASE-CTGO",
+   "miss": 14,
+   "ref": 14
+  },
+  {
+   "domain": "D2",
+   "hit": 4,
+   "issuer_id": "ISS:US-XASE-EQX",
+   "miss": 16,
+   "ref": 20
+  },
+  {
+   "domain": "D1",
+   "hit": 2,
+   "issuer_id": "ISS:US-XNAS-ACLS",
+   "miss": 0,
+   "ref": 2
+  },
+  {
+   "domain": "D1",
+   "hit": 7,
+   "issuer_id": "ISS:US-XNAS-AMD",
+   "miss": 8,
+   "ref": 15
+  },
+  {
+   "domain": "D1",
+   "hit": 9,
+   "issuer_id": "ISS:US-XNAS-ARM",
+   "miss": 7,
+   "ref": 16
+  },
+  {
+   "domain": "D1",
+   "hit": 1,
+   "issuer_id": "ISS:US-XNAS-ATOM",
+   "miss": 8,
+   "ref": 9
+  },
+  {
+   "domain": "D2",
+   "hit": 3,
+   "issuer_id": "ISS:US-XNAS-CHRD",
+   "miss": 0,
+   "ref": 3
+  },
+  {
+   "domain": "D1",
+   "hit": 1,
+   "issuer_id": "ISS:US-XNAS-CRSR",
+   "miss": 10,
+   "ref": 11
+  },
+  {
+   "domain": "D1",
+   "hit": 4,
+   "issuer_id": "ISS:US-XNAS-EVLV",
+   "miss": 5,
+   "ref": 9
+  },
+  {
+   "domain": "D2",
+   "hit": 0,
+   "issuer_id": "ISS:US-XNAS-EXE",
+   "miss": 3,
+   "ref": 3
+  },
+  {
+   "domain": "D1",
+   "hit": 4,
+   "issuer_id": "ISS:US-XNAS-INTC",
+   "miss": 7,
+   "ref": 11
+  },
+  {
+   "domain": "D1",
+   "hit": 7,
+   "issuer_id": "ISS:US-XNAS-LAES",
+   "miss": 14,
+   "ref": 21
+  },
+  {
+   "domain": "D1",
+   "hit": 3,
+   "issuer_id": "ISS:US-XNAS-MXL",
+   "miss": 3,
+   "ref": 6
+  },
+  {
+   "domain": "D1",
+   "hit": 12,
+   "issuer_id": "ISS:US-XNAS-NXPI",
+   "miss": 6,
+   "ref": 18
+  },
+  {
+   "domain": "D1",
+   "hit": 1,
+   "issuer_id": "ISS:US-XNAS-PLXS",
+   "miss": 0,
+   "ref": 1
+  },
+  {
+   "domain": "D1",
+   "hit": 3,
+   "issuer_id": "ISS:US-XNAS-POWI",
+   "miss": 5,
+   "ref": 8
+  },
+  {
+   "domain": "D1",
+   "hit": 2,
+   "issuer_id": "ISS:US-XNAS-SEDG",
+   "miss": 2,
+   "ref": 4
+  },
+  {
+   "domain": "D1",
+   "hit": 7,
+   "issuer_id": "ISS:US-XNAS-TBCH",
+   "miss": 5,
+   "ref": 12
+  },
+  {
+   "domain": "D1",
+   "hit": 4,
+   "issuer_id": "ISS:US-XNAS-VICR",
+   "miss": 0,
+   "ref": 4
+  },
+  {
+   "domain": "D2",
+   "hit": 0,
+   "issuer_id": "ISS:US-XNYS-AEM",
+   "miss": 5,
+   "ref": 5
+  },
+  {
+   "domain": "D2",
+   "hit": 0,
+   "issuer_id": "ISS:US-XNYS-AGI",
+   "miss": 8,
+   "ref": 8
+  },
+  {
+   "domain": "D2",
+   "hit": 4,
+   "issuer_id": "ISS:US-XNYS-CNX",
+   "miss": 0,
+   "ref": 4
+  },
+  {
+   "domain": "D2",
+   "hit": 1,
+   "issuer_id": "ISS:US-XNYS-CVI",
+   "miss": 2,
+   "ref": 3
+  },
+  {
+   "domain": "D2",
+   "hit": 0,
+   "issuer_id": "ISS:US-XNYS-EQT",
+   "miss": 2,
+   "ref": 2
+  },
+  {
+   "domain": "D1",
+   "hit": 0,
+   "issuer_id": "ISS:US-XNYS-JKS",
+   "miss": 3,
+   "ref": 3
+  },
+  {
+   "domain": "D2",
+   "hit": 0,
+   "issuer_id": "ISS:US-XNYS-NXE",
+   "miss": 2,
+   "ref": 2
+  },
+  {
+   "domain": "D2",
+   "hit": 0,
+   "issuer_id": "ISS:US-XNYS-PARR",
+   "miss": 2,
+   "ref": 2
+  },
+  {
+   "domain": "D2",
+   "hit": 0,
+   "issuer_id": "ISS:US-XNYS-SCCO",
+   "miss": 11,
+   "ref": 11
+  },
+  {
+   "domain": "D1",
+   "hit": 2,
+   "issuer_id": "ISS:US-XNYS-UI",
+   "miss": 4,
+   "ref": 6
+  },
+  {
+   "domain": "D2",
+   "hit": 0,
+   "issuer_id": "ISS:US-XNYS-VMC",
+   "miss": 2,
+   "ref": 2
+  },
+  {
+   "domain": "D2",
+   "hit": 2,
+   "issuer_id": "ISS:US-XNYS-VVV",
+   "miss": 1,
+   "ref": 3
+  }
+ ],
+ "pipeline_set_size": 117,
+ "recall": {
+  "jackknife_95": [
+   0.2429,
+   0.4545
+  ],
+  "jackknife_issuers": 31,
+  "jackknife_se": 0.054,
+  "value": 0.3487,
+  "wilson_95": [
+   0.291,
+   0.4113
+  ]
+ },
+ "reference_set_size": 238,
+ "schema": "gmi_rel_m2.recall_report/v1",
+ "sentences": {
+  "annotated": 11444,
+  "coverage": 1.0,
+  "total": 11444
+ }
+}
