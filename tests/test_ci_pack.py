@@ -5604,9 +5604,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_914),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_933),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_672),
+    ("templates/index.html", 137, 5_918),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_937),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_676),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5614,6 +5614,22 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    PR8133 current-main composition (2026-11-07): preserve main0cd9a4135c9b
+    and its complete accepted GSC/gateway accounting below. The original
+    hosted paired measurement was run42305762236/job128194540418,
+    head76c48e3794b0 against exact base26946d4f7b92: index5912->5916,
+    free5927->5931, Prophet5668->5672, no newly selected jobs. Enrolling
+    the two unchanged nested R2-D1/R3 suites changed the existing
+    unrun-factor-research planning estimate58->62. Its current-main owner
+    is byte-identical after removing only those two accepted suite args;
+    run_ci_pack remains blob3cbed58986d571e40af59eb03464e9419e8055a5.
+    Carry only that measured +4 onto current ceilings5914/5933/5672:
+    5918/5937/5676. This is source arithmetic, not a new planner or runtime
+    measurement. Preserve job-count ceilings137/138/131, ten packs, every
+    selector, assertion, timeout and runtime/admission bound. No unmerged
+    sibling contribution is included; natural successor CI must qualify
+    the integrated source. The original baseline settlement stays unknown.
 
     P5.T9.S5 (2026-11-07): compose accepted retained-GSC coverage with
     protected59e035e39607, preserving its gateway and prior provenance
