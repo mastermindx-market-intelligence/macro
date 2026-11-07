@@ -1,0 +1,20 @@
+{
+  "authored_utc": "2026-10-13T21:43:09.260712+00:00",
+  "asof": "2026-10-13",
+  "vendor_after_close_status": "AFTER_CLOSE_VENDOR_UNATTESTED",
+  "new_adjusted_price_vintage": true,
+  "provider_19of19_accepted": true,
+  "observed_bars": 4220,
+  "historical_Jan2010_start_preserved": true,
+  "earlier_V11_V12_bytes_unchanged": true,
+  "paper_rows": 72,
+  "broker_order_or_fill_claim": false,
+  "chart_parity_verified": false,
+  "future_returns_after_oct13_observed": false,
+  "no_automatic_monitoring": true,
+  "state_counts": {
+    "NO_ACTIVE_WATCH": 24,
+    "WATCH_FIRED_EARLIER": 9,
+    "WATCH_ACTIVE_UNTRIGGERED": 3
+  }
+}
