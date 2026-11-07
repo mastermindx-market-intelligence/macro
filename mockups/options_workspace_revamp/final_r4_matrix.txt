@@ -1,0 +1,167 @@
+{
+  "captures": 40,
+  "overflow": [],
+  "page_errors": [],
+  "nav_height": [
+    {
+      "name": "brief-1440-light-en",
+      "height": 42
+    },
+    {
+      "name": "flow-1440-light-en",
+      "height": 42
+    },
+    {
+      "name": "scanner-1440-light-en",
+      "height": 42
+    },
+    {
+      "name": "ticker-1440-light-en",
+      "height": 42
+    },
+    {
+      "name": "leaders-1440-light-en",
+      "height": 42
+    },
+    {
+      "name": "brief-1440-light-zh",
+      "height": 42
+    },
+    {
+      "name": "flow-1440-light-zh",
+      "height": 42
+    },
+    {
+      "name": "scanner-1440-light-zh",
+      "height": 42
+    },
+    {
+      "name": "ticker-1440-light-zh",
+      "height": 42
+    },
+    {
+      "name": "leaders-1440-light-zh",
+      "height": 42
+    },
+    {
+      "name": "brief-1440-dark-en",
+      "height": 42
+    },
+    {
+      "name": "flow-1440-dark-en",
+      "height": 42
+    },
+    {
+      "name": "scanner-1440-dark-en",
+      "height": 42
+    },
+    {
+      "name": "ticker-1440-dark-en",
+      "height": 42
+    },
+    {
+      "name": "leaders-1440-dark-en",
+      "height": 42
+    },
+    {
+      "name": "brief-1440-dark-zh",
+      "height": 42
+    },
+    {
+      "name": "flow-1440-dark-zh",
+      "height": 42
+    },
+    {
+      "name": "scanner-1440-dark-zh",
+      "height": 42
+    },
+    {
+      "name": "ticker-1440-dark-zh",
+      "height": 42
+    },
+    {
+      "name": "leaders-1440-dark-zh",
+      "height": 42
+    },
+    {
+      "name": "brief-390-light-en",
+      "height": 88
+    },
+    {
+      "name": "flow-390-light-en",
+      "height": 88
+    },
+    {
+      "name": "scanner-390-light-en",
+      "height": 88
+    },
+    {
+      "name": "ticker-390-light-en",
+      "height": 88
+    },
+    {
+      "name": "leaders-390-light-en",
+      "height": 88
+    },
+    {
+      "name": "brief-390-light-zh",
+      "height": 88
+    },
+    {
+      "name": "flow-390-light-zh",
+      "height": 88
+    },
+    {
+      "name": "scanner-390-light-zh",
+      "height": 88
+    },
+    {
+      "name": "ticker-390-light-zh",
+      "height": 88
+    },
+    {
+      "name": "leaders-390-light-zh",
+      "height": 88
+    },
+    {
+      "name": "brief-390-dark-en",
+      "height": 88
+    },
+    {
+      "name": "flow-390-dark-en",
+      "height": 88
+    },
+    {
+      "name": "scanner-390-dark-en",
+      "height": 88
+    },
+    {
+      "name": "ticker-390-dark-en",
+      "height": 88
+    },
+    {
+      "name": "leaders-390-dark-en",
+      "height": 88
+    },
+    {
+      "name": "brief-390-dark-zh",
+      "height": 88
+    },
+    {
+      "name": "flow-390-dark-zh",
+      "height": 88
+    },
+    {
+      "name": "scanner-390-dark-zh",
+      "height": 88
+    },
+    {
+      "name": "ticker-390-dark-zh",
+      "height": 88
+    },
+    {
+      "name": "leaders-390-dark-zh",
+      "height": 88
+    }
+  ]
+}

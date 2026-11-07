@@ -1,0 +1,8 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/options.html.j2
+  - templates/theme.css
+  - site/theme.css
+  - templates/theme.js
+  - site/theme.js
+manifest: mockups/options_workspace_revamp/canonical/manifest.json

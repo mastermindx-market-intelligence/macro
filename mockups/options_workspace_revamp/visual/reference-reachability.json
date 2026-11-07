@@ -1,0 +1,92 @@
+[
+  {
+    "width": 1440,
+    "theme": "light",
+    "lang": "en",
+    "spy": {
+      "items": [
+        {
+          "text": "755.72",
+          "in_view": true,
+          "covered": false
+        },
+        {
+          "text": "Jumpy \u2014 moves get amplified",
+          "in_view": true,
+          "covered": false
+        },
+        {
+          "text": "750",
+          "in_view": true,
+          "covered": false
+        },
+        {
+          "text": "772.93",
+          "in_view": true,
+          "covered": false
+        },
+        {
+          "text": "800",
+          "in_view": true,
+          "covered": false
+        },
+        {
+          "text": "2.3% below flip\n1-day move \u00b10.97%",
+          "in_view": true,
+          "covered": false
+        }
+      ],
+      "all_reachable": true
+    },
+    "source_details": {
+      "keyboard_focus": true,
+      "opened": true,
+      "center_unobstructed": true
+    }
+  },
+  {
+    "width": 390,
+    "theme": "dark",
+    "lang": "zh",
+    "spy": {
+      "items": [
+        {
+          "text": "755.72",
+          "in_view": true,
+          "covered": false
+        },
+        {
+          "text": "\u5267\u70c8 \u2014 \u6ce2\u52a8\u88ab\u653e\u5927",
+          "in_view": true,
+          "covered": false
+        },
+        {
+          "text": "750",
+          "in_view": true,
+          "covered": false
+        },
+        {
+          "text": "772.93",
+          "in_view": true,
+          "covered": false
+        },
+        {
+          "text": "800",
+          "in_view": true,
+          "covered": false
+        },
+        {
+          "text": "\u4f4e\u4e8e\u7ffb\u8f6c\u4f4d 2.3%\n1\u65e5\u9884\u671f\u6ce2\u5e45 \u00b10.97%",
+          "in_view": true,
+          "covered": false
+        }
+      ],
+      "all_reachable": true
+    },
+    "source_details": {
+      "keyboard_focus": true,
+      "opened": true,
+      "center_unobstructed": true
+    }
+  }
+]

@@ -1,0 +1,142 @@
+{
+  "at": "2026-11-03T07:20:13.531Z",
+  "file": "01M2WGNCX9475G79JRKJTCM08P",
+  "page": "p-25-0",
+  "carrier": "mcp__codex_apps__mastermind_paper_paper_edit",
+  "runtime": {
+    "root": "/Users/chriswong/.local/share/mastermind-paper/direct-business-seats/c1/paper-v20-merged-e3ee36e-20261102",
+    "bridge_sha256": "1a73ab002e89c87b489e8cee9f5c821530929a5b701eb0aaac7eed03a5a22ced",
+    "pid": 10657,
+    "rpc_default_timeout_seconds": 20,
+    "no_automatic_retry": true,
+    "no_persistent_queue_or_retry_ledger": true,
+    "all_dispatched_calls_inside_desktop_lock": true
+  },
+  "quiescence": {
+    "lock": "/Users/chriswong/.local/state/mastermind-paper/desktop.lock",
+    "independent_lsof_observations": [
+      {
+        "process": 59445,
+        "exit": 1,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "process": 65086,
+        "exit": 1,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "process": 66523,
+        "subprocess_exit": 1,
+        "stdout": "",
+        "stderr": ""
+      }
+    ]
+  },
+  "original_call_custody": {
+    "flow": "Child terminal receipt: outer aborted; no subsequent writes; child completed.",
+    "scanner": "Child terminal receipt: outer aborted; no subsequent writes; child completed.",
+    "recovery": "Original carrier connection timed out and returned; no repeat submitted."
+  },
+  "inventory": [
+    {
+      "id": "6Y1Q-0",
+      "name": "Options / Brief / Desktop 1440 / Light",
+      "childCount": 7,
+      "width": 1440,
+      "height": null,
+      "worldX": 0,
+      "worldY": 0
+    },
+    {
+      "id": "6Y8P-0",
+      "name": "Options / Brief / Mobile 390 / Dark",
+      "childCount": 8,
+      "width": 390,
+      "height": null,
+      "worldX": 1520,
+      "worldY": 0
+    },
+    {
+      "id": "6YFM-0",
+      "name": "Options / Flow / Desktop 1440 / Dark",
+      "childCount": 8,
+      "width": 1440,
+      "height": null,
+      "worldX": 1990,
+      "worldY": 0
+    },
+    {
+      "id": "6YP3-1",
+      "name": "Options / Scanner / Desktop 1440 / Light",
+      "childCount": 7,
+      "width": 1440,
+      "height": null,
+      "worldX": 3510,
+      "worldY": 0
+    },
+    {
+      "id": "6Z06-1",
+      "name": "Options / Components / Desktop 1440 / Light",
+      "childCount": 6,
+      "width": 1440,
+      "height": null,
+      "worldX": 5030,
+      "worldY": 0
+    },
+    {
+      "id": "6ZXX-0",
+      "name": "Options / Recovery / Mobile 390 / Dark",
+      "childCount": 1,
+      "width": 390,
+      "height": null,
+      "worldX": 6550,
+      "worldY": 0
+    },
+    {
+      "id": "702T-0",
+      "name": "Options / Ticker / Desktop 1440 / Dark",
+      "childCount": 17,
+      "width": 1440,
+      "height": null,
+      "worldX": 7020,
+      "worldY": 0
+    }
+  ],
+  "recovery_children": [
+    {
+      "id": "6ZXY-0",
+      "name": "Status bar",
+      "component": "Frame",
+      "childCount": 2,
+      "worldX": null,
+      "worldY": null,
+      "x": null,
+      "y": null
+    }
+  ],
+  "status": "RECONCILED_NOT_APPLIED",
+  "decision": "Caller reconciled the original returned/terminated calls using unchanged original carrier, repeated exact-target inventories, original-runtime bounded/non-replaying transport, and independent no-open-desktop-lock observations. Resume only a fresh manually reviewed plan on the same target/carrier; preserve original receipts.",
+  "operations": [
+    {
+      "operation_id": "options-r1-flow-mobile-light-create-20261103-ba",
+      "effect": "create_artboard",
+      "target": "Options / Flow / Mobile 390 / Light",
+      "result": "No native board created; original child terminal and no subsequent submissions."
+    },
+    {
+      "operation_id": "options-scanner-mobile-dark-createartboard-mvzyo7fq",
+      "effect": "create_artboard",
+      "target": "Options / Scanner / Mobile 390 / Dark",
+      "result": "No native board created; original child terminal and no subsequent submissions."
+    },
+    {
+      "operation_id": "options-r1-recovery-mobile-dark-f002",
+      "effect": "write_html",
+      "target": "6ZXX-0",
+      "result": "Only previously acknowledged status-bar child6ZXY-0 present; intended introduction absent."
+    }
+  ]
+}
