@@ -803,7 +803,7 @@ _APPLICATION_FABRIC_TRANSPORTS = {
     # protocol. These are distinct internal service identities, not provider
     # keys or enrollment. Ordinary application qualification remains held.
     "native_go_hermes_secretary_v1": _ApplicationFabricTransport(
-        base_url="http://127.0.0.1:50142/v1",
+        base_url="http://127.0.0.2:50142/v1",
         secret_ref="HERMES_SECRETARY_FABRIC_APPLICATION_TOKEN",
         provider_id="go",
         model="deepseek-v4.1-flash",
@@ -816,7 +816,7 @@ _APPLICATION_FABRIC_TRANSPORTS = {
         metadata_read=False,
     ),
     "native_go_hermes_meta_v1": _ApplicationFabricTransport(
-        base_url="http://127.0.0.1:50142/v1",
+        base_url="http://127.0.0.3:50142/v1",
         secret_ref="HERMES_META_FABRIC_APPLICATION_TOKEN",
         provider_id="go",
         model="deepseek-v4.1-flash",

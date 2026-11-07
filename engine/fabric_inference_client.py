@@ -412,6 +412,11 @@ class _NativeConnection(http.client.HTTPConnection):
     retry them. Native transport needs no DNS, proxy or redirect discovery.
     """
     def __init__(self, host, port, *, deadline, tls=False):
+        # Closed role aliases share the incumbent APPLICATION tunnel. They
+        # never introduce DNS, a proxy, an arbitrary listener or a new broker.
+        if (host not in {"127.0.0.1", "127.0.0.2", "127.0.0.3"}
+                or host != "127.0.0.1" and (port != 50142 or tls)):
+            _refuse("fabric_endpoint_invalid")
         super().__init__(host, port, timeout=max(0.001, deadline - time.monotonic()))
         self._deadline, self._tls = deadline, tls
         self._deadline_socket = None
@@ -443,10 +448,10 @@ class _NativeConnection(http.client.HTTPConnection):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self._deadline_socket = self.sock
         self.sock.settimeout(self._remaining())
-        self.sock.connect(("127.0.0.1", self.port))
+        self.sock.connect((self.host, self.port))
         if self._tls:
             context = ssl.create_default_context()
-            self.sock = context.wrap_socket(self.sock, server_hostname="127.0.0.1",
+            self.sock = context.wrap_socket(self.sock, server_hostname=self.host,
                                             do_handshake_on_connect=False)
             self._deadline_socket = self.sock
             self.sock.settimeout(self._remaining())
@@ -910,9 +915,11 @@ class FabricInferenceClient:
             _refuse("fabric_binding_invalid")
         try:
             url = urlsplit(base_url)
-            valid = (url.scheme in {"http", "https"} and url.hostname == "127.0.0.1"
+            role_alias = (native and url.scheme == "http"
+                          and url.hostname in {"127.0.0.2", "127.0.0.3"} and url.port == 50142)
+            valid = (url.scheme in {"http", "https"} and (url.hostname == "127.0.0.1" or role_alias)
                      and url.port is not None and 1 <= url.port <= 65535
-                     and url.netloc == f"127.0.0.1:{url.port}" and url.path == "/v1"
+                     and url.netloc == f"{url.hostname}:{url.port}" and url.path == "/v1"
                      and not url.query and not url.fragment)
         except (ValueError, TypeError, AttributeError):
             valid = False
@@ -1062,7 +1069,7 @@ class FabricInferenceClient:
     def _exchange(self, path, body, headers, *, timeout, admission=False):
         deadline = time.monotonic() + timeout
         if self._native:
-            connection = _NativeConnection("127.0.0.1", self._url.port,
+            connection = _NativeConnection(self._url.hostname, self._url.port,
                 deadline=deadline, tls=self._url.scheme == "https")
         else:
             cls = http.client.HTTPSConnection if self._url.scheme == "https" else http.client.HTTPConnection
@@ -1250,3 +1257,4 @@ class FabricInferenceClient:
             exchange.close()
             with self._lock:
                 self._active = False
+

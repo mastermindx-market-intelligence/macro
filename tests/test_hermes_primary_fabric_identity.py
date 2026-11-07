@@ -23,6 +23,8 @@ def test_unqualified_role_refuses_even_with_config_and_secret(identity, service_
     transport = owner._APPLICATION_FABRIC_TRANSPORTS[transport_id]
     assert not transport.qualified and not transport.application_allowed and not transport.metadata_read
     assert transport.protocol == "native_application_v1" and transport.secret_ref == secret_ref
+    expected_host = "127.0.0.2" if service_id == "hermes_secretary_fabric" else "127.0.0.3"
+    assert transport.base_url == f"http://{expected_host}:50142/v1"
     assert owner._SERVICE_FABRIC_RELATIONS[service_id].lane == lane
     row = {k: getattr(transport, k) for k in owner._APPLICATION_IDENTITY_FIELDS}
     row.update(transport_id=transport_id, enabled=True, application_allowed=True,
