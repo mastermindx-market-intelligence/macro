@@ -3513,6 +3513,7 @@ on:
       # appear elsewhere in this list and carry the arming/boundary halves.
       - "tests/test_freshness_sentinel.py"
       - "scripts/freshness_sentinel.py"
+      - "scripts/check_sector_intelligence_freshness.py"
       - "app/deploy/macro-sentinel.service"
       - "app/deploy/macro-sentinel.timer"
       # MMX-001 customer-table backup — same #3509 lesson as the sentinel:

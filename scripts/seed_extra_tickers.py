@@ -15,10 +15,19 @@ _ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(_ROOT))
 
 from lib import config, store  # noqa: E402
+from lib.yahoo_runtime_profile import (  # noqa: E402
+    assert_legacy_write_allowed, parse_profile, partition_legacy_symbols,
+)
 
 
 def main() -> int:
-    extras = config.load().get("stock_search", {}).get("extra_tickers", []) or []
+    cfg = config.load()
+    profile = parse_profile(cfg.get("yahoo", {}))
+    extras = cfg.get("stock_search", {}).get("extra_tickers", []) or []
+    partition = partition_legacy_symbols(profile, extras)
+    extras = list(partition.allowed)
+    if partition.excluded:
+        print("runtime-owned histories excluded:", ", ".join(partition.excluded))
     print("data dir:", config.data_dir())
     print("seeding", len(extras), "tickers")
     ok, bad = [], []
@@ -48,6 +57,7 @@ def main() -> int:
                 print(f"  {t:6s} via Stooq")
         if frame is None:
             bad.append(t); continue
+        assert_legacy_write_allowed(profile, group="yahoo", symbol=t)
         store.upsert("yahoo", t, frame, outlier_col=None)
         last = float(frame["close"].iloc[-1])
         print(f"  {t:6s} OK rows={len(frame)} {frame.index.min().date()}..{frame.index.max().date()} last={last:.2f}")

@@ -1,0 +1,161 @@
+{
+  "schema": "sector_dated_context/v1",
+  "status": "partial",
+  "scope": "configured_theme_example_with_market_global_risk",
+  "theme": {
+    "status": "available",
+    "reasons": [],
+    "theme_key": "memory_storage",
+    "name": "Memory, HBM & Storage",
+    "roster": [
+      "MU",
+      "WDC",
+      "SNDK",
+      "STX",
+      "NTAP"
+    ],
+    "roster_size": 5,
+    "membership_basis": "configured_theme_roster"
+  },
+  "observations": {
+    "status": "withheld",
+    "reasons": [
+      "historical_availability_unqualified"
+    ],
+    "clocks": {
+      "regime_asof": "2026-11-06",
+      "regime_built_at": "2026-11-07T00:11:01Z",
+      "regime_freshness": {
+        "asof": "2026-11-06",
+        "built_at": "2026-11-07T00:11:01Z",
+        "age_days": 1,
+        "age_sessions": 0,
+        "max_age_sessions": 1,
+        "stale": false
+      },
+      "theme_revisions_asof": "2026-11-06",
+      "bottleneck_asof": "2026-09-01"
+    }
+  },
+  "comparison": {
+    "status": "withheld",
+    "reasons": [
+      "historical_availability_unqualified"
+    ],
+    "evaluation": "prospective_unevaluated",
+    "entries": [
+      {
+        "id": "earnings_expectations",
+        "evaluation": "prospective_unevaluated",
+        "status": "unresolved",
+        "statement": "Withheld: the supplied snapshot is not qualified as available at the decision cutoff, so the positive-revision-breadth reading is not asserted.",
+        "evidence_refs": [],
+        "falsifier": {
+          "check": "A later qualified same-cohort snapshot that loses positive revision breadth would challenge this reading; check revision dates, coverage and revision counts.",
+          "met": false
+        },
+        "reasons": [
+          "historical_availability_unqualified"
+        ]
+      },
+      {
+        "id": "narrow_or_fading_revisions",
+        "evaluation": "prospective_unevaluated",
+        "status": "unresolved",
+        "statement": "Withheld: the supplied snapshot is not qualified as available at the decision cutoff, so the narrow-or-fading reading is not asserted.",
+        "evidence_refs": [],
+        "falsifier": {
+          "check": "Later qualified broadening evidence with wider coverage would challenge this caution; no coverage threshold is asserted here.",
+          "met": false
+        },
+        "reasons": [
+          "historical_availability_unqualified"
+        ]
+      },
+      {
+        "id": "physical_supply_constraint",
+        "evaluation": "prospective_unevaluated",
+        "status": "unresolved",
+        "statement": "Withheld: the supplied snapshot is not qualified as available at the decision cutoff, so the physical-supply reading is not asserted.",
+        "evidence_refs": [],
+        "falsifier": {
+          "check": "Qualified contemporaneous physical-supply owner evidence could change this assessment; provisional language-leg and fingerprint signals are insufficient alone.",
+          "met": false
+        },
+        "reasons": [
+          "historical_availability_unqualified"
+        ]
+      },
+      {
+        "id": "market_or_other_causes",
+        "evaluation": "prospective_unevaluated",
+        "status": "unresolved",
+        "statement": "Withheld: the supplied snapshot is not qualified as available at the decision cutoff, so the market-context reading is not asserted.",
+        "evidence_refs": [],
+        "falsifier": {
+          "check": "Owner evidence that establishes or contradicts a specified non-theme mechanism would be required to resolve this alternative.",
+          "met": false
+        },
+        "reasons": [
+          "historical_availability_unqualified",
+          "alternatives_not_resolved_by_supplied_evidence"
+        ]
+      }
+    ]
+  },
+  "market_risk": {
+    "status": "withheld",
+    "reasons": [
+      "historical_availability_unqualified"
+    ],
+    "scope": "market_global"
+  },
+  "provenance": {
+    "status": "available",
+    "reasons": [],
+    "source_attribution": {
+      "regime_document": {
+        "source_ref": "https://raw.githubusercontent.com/mastermindx-market-intelligence/macro/5f28e82be560a6ecb73832023e2823b677164747/data/regime/latest.json",
+        "raw_sha256": "1ec062ec0805727adb900c86a52de4c17612c4ee80ddad36a67e9405f2000f8a"
+      },
+      "config_document": {
+        "source_ref": "https://raw.githubusercontent.com/mastermindx-market-intelligence/macro/5f28e82be560a6ecb73832023e2823b677164747/config.yml",
+        "raw_sha256": "701229b33bbd6260c561023e2c2611a8fca24bc2c97e784cf97d55aa0357b402"
+      },
+      "public_risk_document": {
+        "source_ref": "https://raw.githubusercontent.com/mastermindx-market-intelligence/macro/5f28e82be560a6ecb73832023e2823b677164747/site/riskdata/risk_envelope.json",
+        "raw_sha256": "93f5b3da1dca0e6e464ef42c44cde22369ff2b2b57c521594374cc00f5ac804a"
+      }
+    },
+    "attribution_verification": "not_established_by_projection",
+    "projection": {
+      "schema": "sector_dated_context/v1",
+      "deterministic": true,
+      "reads": [
+        "regime_document",
+        "config_document",
+        "public_risk_document",
+        "source_attribution"
+      ],
+      "writes": []
+    }
+  },
+  "limitations": {
+    "current_sector_usable": false,
+    "historically_admissible": false,
+    "sector_mapping": {
+      "status": "unavailable",
+      "reason": "native_sector_mapping_not_supplied"
+    },
+    "original_available_at": null,
+    "availability_reason": "native_availability_and_revision_selection_not_supplied",
+    "attribution_verification": "not_established_by_projection"
+  },
+  "authority": {
+    "may_rank": false,
+    "may_gate": false,
+    "may_size": false,
+    "may_trade": false,
+    "may_escalate": false
+  }
+}

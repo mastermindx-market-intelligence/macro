@@ -1,0 +1,92 @@
+{
+  "schema": "mastermind.source-review.v1",
+  "recorded_at": "2026-11-07T06:36:31.681774+00:00",
+  "mission": "https://github.com/mastermindx-market-intelligence/Mastermind/issues/1202#issuecomment-6695716256",
+  "carrier": "https://github.com/mastermindx-market-intelligence/macro/pull/10780",
+  "operation_id": "macro-always-on-shared-shell-20261105-c3",
+  "base_sha": "334b26b540ea82fc2593ab3a723ceda65be32b3b",
+  "protected_law_sha": "5f8c13da926011fb5fdc8cea21287b532ac968db",
+  "status": "RETAINED_CAPTURE_SOURCE_QUALIFIED_NOT_ACTIVATED",
+  "qualification": {
+    "initial_passed": 95,
+    "initial_failed": 1,
+    "isolated_corrected_case_passed": 1,
+    "total_unique_qualified": 96,
+    "counts_across_two_runs": true,
+    "network": "blocked"
+  },
+  "files_sha256": {
+    "lib/sector_auxiliary_capture.py": "9a17ed7894c3cff2bb50730273cec79ce19d4c28f0502ae9edf55e570941266e",
+    "lib/sector_input_capture.py": "3b486dcd7ae24af677953ce0cc219099b287c69af11affcdaa6c031a8e67eef2",
+    "scripts/vps_live_orchestrator.py": "cd01f53d9b4e0107f7999853c2f74bef38ae191d9b9cbaa7b99fdea4299e6053",
+    "tests/test_sector_auxiliary_capture.py": "8c15b9049882768346890a523d7e00fd50be2a16994f858397ff9aa93409b686",
+    "tests/test_sector_previous_capture.py": "99312903a6032e3b40d4776fc16f4d9788f2ca49d516608179ce16016d5b5e02",
+    "tests/test_sector_captured_owner_projections.py": "c4cdc84b049b3dee725227a1316074eb22e0a0c68da23fbf704ce7cee4e73ac4",
+    "tests/test_vps_live_orchestration.py": "e02829fccad4cefbee86de3a8ba37ef607c066a470f2eb389abf046c3d34d68b"
+  },
+  "initial_receipt": {
+    "exit": 1,
+    "seconds": 9.892,
+    "pytest_args": [
+      "-q",
+      "-p",
+      "no:cacheprovider",
+      "tests/test_sector_auxiliary_capture.py",
+      "tests/test_sector_previous_capture.py",
+      "tests/test_sector_captured_owner_projections.py",
+      "tests/test_vps_live_orchestration.py",
+      "-k",
+      "sector_auxiliary or sector_previous or sector_captured_owner or selected_generation_read or bundle_member_read"
+    ],
+    "files_sha256": {
+      "lib/sector_auxiliary_capture.py": "9a17ed7894c3cff2bb50730273cec79ce19d4c28f0502ae9edf55e570941266e",
+      "lib/sector_input_capture.py": "3b486dcd7ae24af677953ce0cc219099b287c69af11affcdaa6c031a8e67eef2",
+      "scripts/vps_live_orchestrator.py": "cd01f53d9b4e0107f7999853c2f74bef38ae191d9b9cbaa7b99fdea4299e6053",
+      "tests/test_sector_auxiliary_capture.py": "8c15b9049882768346890a523d7e00fd50be2a16994f858397ff9aa93409b686",
+      "tests/test_sector_previous_capture.py": "b717b935bbd58bf87ea663abf4612bc69a93070658debe0475ffc29a0699fce2",
+      "tests/test_sector_captured_owner_projections.py": "c4cdc84b049b3dee725227a1316074eb22e0a0c68da23fbf704ce7cee4e73ac4",
+      "tests/test_vps_live_orchestration.py": "e02829fccad4cefbee86de3a8ba37ef607c066a470f2eb389abf046c3d34d68b"
+    },
+    "source_unchanged": true,
+    "index_lock_unchanged": true,
+    "index_lock": {
+      "inode": 2004151373,
+      "size": 0,
+      "mtime_ns": 1793987509342378895
+    },
+    "log": "/Volumes/Mastermind/evidence/persistent-sector-leadership-20261106-c4/macro-generation-recovery/retained-capture-tests.log",
+    "log_sha256": "3248b74bf94a46df8b205a3f9b3e6c243a696461f45292bd126c543a77e5f329",
+    "network": "blocked",
+    "provider_or_publication_effects": false
+  },
+  "corrected_fixture_receipt": {
+    "exit": 0,
+    "seconds": 49.577,
+    "command": [
+      "-q",
+      "-p",
+      "no:cacheprovider",
+      "tests/test_sector_previous_capture.py::test_selected_generation_read_pins_domain_across_path_aba"
+    ],
+    "changed_file": "tests/test_sector_previous_capture.py",
+    "sha256": "99312903a6032e3b40d4776fc16f4d9788f2ca49d516608179ce16016d5b5e02",
+    "production_source_changed": false,
+    "original_receipt": "retained-capture-receipt.json",
+    "qualification": "95 passing cases retained; only intended pointer-window fixture corrected",
+    "log": "/Volumes/Mastermind/evidence/persistent-sector-leadership-20261106-c4/macro-generation-recovery/directory-aba-fixture-fix.log",
+    "log_sha256": "26d94b983f0eee0e5f410336b85a96bf0295753f8e99f67f73e80a9374e80874"
+  },
+  "adjudication": "The ABA test moved the domain again during an unrelated retained-manifest read. Match only current.json by leaf name, retaining fault injection against old absolute-path pointer reads and all one-read/descriptor/content assertions. Production fail-closed reader unchanged.",
+  "do_not_redo": [
+    "unchanged qualified updater and live-setup source",
+    "95 previously passing cases without a material source invalidator"
+  ],
+  "limits": [
+    "No runtime, provider, native API migration, selected-generation publication, index mutation, commit or push",
+    "Original index.lock retained unchanged pending original-action disposition",
+    "CI registration ACTION_BLOCKED_NO_REPLAY preserved",
+    "Protected original holdings capture remains unconsumed and unretried",
+    "Complete MarketState/alpha/holdings/input assembly and authenticated natural-data path remain open"
+  ],
+  "psl_composition_requirement": "Preserve existing _measured_read rotation_payload=deepcopy(inputs.rotation_events), then add include_sector_dossiers=True only when composing the accepted dossier owner. Native selected-generation projection must also preserve the accepted dossier through its existing bounds/authority semantics."
+}

@@ -1,0 +1,72 @@
+{
+  "schema": "macro.sector_document_completion_source_proof.v1",
+  "base_sha": "1f3f605367f48021455e1dbec462bdbbf879c58a",
+  "recorded_at": "2026-11-06T12:47:13.130681+00:00",
+  "state": "SOURCE_QUALIFIED_NOT_RUNTIME_ACTIVATED",
+  "source_sha256": {
+    "engine/sector_generation_guard.py": "821b166ce0a56664ef5edfff978078bbdba9f06a4f1ed4dcdcdc69d1225866ac",
+    "scripts/build_sector_cycles.py": "59f874f5def438b62565d85298255f88755fa23bd22b551238d00be401857ac8",
+    "engine/sector_central_grader.py": "2c2b0bfea50304749cde99bcbca39c22d00e623dc392d35d41db5d79077e41ba",
+    "engine/sector_central.py": "2dcc04cfec82b739c07c2a531702d221c3912ac389882a01673765c18c61a065",
+    "scripts/build_sector_central.py": "343e6c2d2091a9879fd58859d035d47468173b9924e398111dd6c0e8badefe2c",
+    "tests/fixtures/base_sector_rotation_1f3f605.py": "47089af89bf933239a64909be3090e8af1b93604e1d41c77862bdd43a7709794",
+    "tests/fixtures/base_sector_central_grader_1f3f605.py": "83786e3a25830538c50f9b5cf2bdd96ab41ef57a471fc19d52e2cf7c98745032",
+    "tests/fixtures/base_sector_publication_1f3f605.py": "a790cbab0d7923cd1038078309779bbf78c1a099a08953e447706c0c34224fb1",
+    "tests/test_sector_rotation_explicit_inputs.py": "39277e24e0509da9376e8bbe8fb1487bb944855defcbf3d1742a11a6d9848e2e",
+    "tests/test_sector_grader_explicit_inputs.py": "3f89ac1fdbf7cd3f8ab6eca49e41c0cb3d7ee2792f65fdc7b3f5da84d9ed2abd",
+    "tests/test_sector_publication_explicit_inputs.py": "ab7666e459ec5bc134fcefea6be7afdc19e6b449c33268dab7e22389f3bea11d"
+  },
+  "qualification": [
+    {
+      "exit_code": 0,
+      "elapsed_seconds": 8.915,
+      "files": [
+        "tests/test_sector_rotation_explicit_inputs.py",
+        "tests/test_sector_generation_guard.py"
+      ],
+      "log": "/tmp/mmx-sector-rotation-values-20261106.log",
+      "sha256": "88da91d132ec67c2dc1f55bdf59fea017abf54e23fc893c534051e402bd785e3",
+      "passed": 64
+    },
+    {
+      "exit_code": 0,
+      "elapsed_seconds": 14.955,
+      "files": [
+        "tests/test_sector_grader_explicit_inputs.py",
+        "tests/test_sector_publication_explicit_inputs.py",
+        "tests/test_sector_central_publication.py",
+        "tests/test_sector_central_score_version.py",
+        "tests/test_sector_central_grader_v2.py",
+        "tests/test_basket_freeze.py",
+        "tests/test_sector_central.py",
+        "tests/test_sector_research_handoff.py",
+        "tests/test_sector_native_view.py"
+      ],
+      "log": "/tmp/mmx-sector-grader-publication-values-20261106.log",
+      "sha256": "454043d44233cfe99cc3635fef5c48b48b18d1e83264c7843212f4512553c707",
+      "passed": 253,
+      "warnings": 232
+    }
+  ],
+  "literal_baseline_hashes": {
+    "rotation_function": "f2941956d1373670414448d24f7e344a2596eccc96babd2c2cd77e027a1ca227",
+    "grader_module": "83786e3a25830538c50f9b5cf2bdd96ab41ef57a471fc19d52e2cf7c98745032",
+    "grader_shared_tail": "49945c4f14be384ac30c9e07970f152d2c3e676bcc281358cdb8d9877d7d8e7a",
+    "publication_block": "48f51ad6126fe36c9a929c061ee3a643cbab423cd30962a53192e70121144635"
+  },
+  "proven": [
+    "rotation context uses captured events/fragmentation and explicit day with exact original missing/invalid/alignment/projection-error behavior",
+    "grader retains original next-bar math, v1/v2 segmentation, membership/chain exclusions and partial frozen projection",
+    "legacy grade retains all three independently acquired frozen views and their failure ordering",
+    "runtime can derive all frozen context from one accepted frame without changing or appending the ledger",
+    "Central metadata/crowding/research legacy output matches the literal original block and existing builder tests",
+    "native metadata refuses claims of rendered flows HTML or legacy premium publication; native research receiver is explicitly unbound"
+  ],
+  "limits": [
+    "no fixed-five composer or capture adapter acceptance in this proof",
+    "runtime grading uses the captured pre-append calls log; total/accruing counts may differ from a nightly legacy append-then-grade run until ledger ownership integration",
+    "flat synthetic return fixtures retain existing correlation warnings; nonfinite output still faces the existing finite-JSON generation admission",
+    "native projector does not expose raw research handoffs; native receiver binding remains a separate journey obligation",
+    "no provider request, Macro runtime transfer, CI bypass or authenticated live-data proof"
+  ]
+}

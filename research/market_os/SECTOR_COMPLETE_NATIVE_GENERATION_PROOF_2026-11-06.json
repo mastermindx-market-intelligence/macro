@@ -1,0 +1,20 @@
+{
+  "source_sha": "f1023db10c4a0851a9d76a249470be5e856aeb29",
+  "sources": {
+    "site/sectordata/sector_central.json": "9c8244c518365acc533854e27fbef67a697fba506f1e98a372458b00e8a93047",
+    "site/sectordata/sector_cycles.json": "382d49dd7d0c9fcd5c2820926eb36bf4a70e76478fdbb7679f362dd80047d620"
+  },
+  "payload_bytes": 182141,
+  "payload_sha256": "fb30ba20aa6f69a0aa0cc44e01f93084ef41552e4f61886a434b4bcdcc52b6f2",
+  "decoder_sha256": "83fa4705919ec93f7c4bddf4a9950f71ae334c07d2b7c49164af5c26c2217af6",
+  "terminal_head": "847af34df5f811fa4a9152936e42d199b8a45b08",
+  "result": {
+    "rows": 11,
+    "ranked": 11,
+    "series": 11,
+    "points": 2772,
+    "turns": 183,
+    "asOf": "2026-11-03"
+  },
+  "scope": "Committed core/history source artifacts; controlled Brief/board fixture. No live runtime or browser proof."
+}

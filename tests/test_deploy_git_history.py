@@ -252,19 +252,19 @@ def updater_acquisition_fragment(text: str = UPDATE_TEXT,
     actually execute, not just what they assert.
     """
     fetch = _matching_lines(
-        text, r'^\t?git -C "\$APP_DIR" fetch [^\n]*origin main$',
+        text, r'^[\t ]*git -C "\$APP_DIR" fetch [^\n]*origin main$',
         "acquisition fetch line", source)
     old = _matching_lines(
-        text, r'^OLD=\$\(git -C "\$APP_DIR" rev-parse HEAD\)$',
+        text, r'^[\t ]*OLD=\$\(git -C "\$APP_DIR" rev-parse HEAD\)$',
         "installed-HEAD capture", source)
     new = _matching_lines(
-        text, r'^\t?NEW=\$\(git -C "\$APP_DIR" rev-parse FETCH_HEAD\)$',
+        text, r'^[\t ]*NEW=\$\(git -C "\$APP_DIR" rev-parse FETCH_HEAD\)$',
         "published-revision capture", source)
     changed = _matching_lines(
         text, r'^\tCHANGED=\$\(git -C "\$APP_DIR" diff --name-only "\$OLD" "\$NEW"\)$',
         "changed-path capture", source)
     reset = _matching_lines(
-        text, r'^\tgit -C "\$APP_DIR" reset --hard -q FETCH_HEAD$',
+        text, r'^[\t ]*git -C "\$APP_DIR" reset --hard -q "\$NEW"$',
         "protected reset", source)
     begin = text.index("# BEGIN W1B5_PRE_RESET_GUARD\n")
     end = text.index("# END W1B5_PRE_RESET_GUARD", begin) + len("# END W1B5_PRE_RESET_GUARD")
@@ -415,7 +415,7 @@ def fence_events(events: Path) -> list:
 
 def test_updater_acquisition_fetch_has_no_depth_limit():
     line = _matching_lines(
-        UPDATE_TEXT, r'^\t?git -C "\$APP_DIR" fetch [^\n]*origin main$',
+        UPDATE_TEXT, r'^[\t ]*git -C "\$APP_DIR" fetch [^\n]*origin main$',
         "acquisition fetch line", "app/deploy/update.sh")
     assert "--depth" not in line, (
         "the updater acquisition must not truncate protected-branch history"
@@ -465,7 +465,7 @@ def test_updater_keeps_lock_and_fail_closed_reset_shape():
     assert "set -euo pipefail" in UPDATE_TEXT
     assert 'exec 9>/var/lock/macro-update.lock' in UPDATE_TEXT
     assert 'flock -n 9 || exit 0' in UPDATE_TEXT
-    assert UPDATE_TEXT.count('git -C "$APP_DIR" reset --hard -q FETCH_HEAD') == 1
+    assert UPDATE_TEXT.count('git -C "$APP_DIR" reset --hard -q "$NEW"') == 1
 
 
 def test_bootstrap_keeps_deploy_key_plumbing_and_no_anonymous_fallback():

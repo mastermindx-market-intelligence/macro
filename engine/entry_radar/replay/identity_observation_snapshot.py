@@ -36,6 +36,38 @@ _DAY_NS = 86_400 * 1_000_000_000
 
 
 @dataclass(frozen=True, slots=True)
+class ReferenceReadBounds:
+    """Optional tighter consumer limits inside the existing capture/decoder.
+
+    Defaults preserve the incumbent limits. A consumer may only narrow them;
+    limits apply to the held file descriptors and Parquet metadata/batches, not
+    a racy preliminary pathname size check. They do not grant source admission.
+    """
+
+    artifact_bytes: int = 64 * _MIB
+    receipt_bytes: int = 9 * _MIB
+    total_bytes: int = 338 * _MIB  # five artifacts plus both receipt reads
+    rows: int = 100_000
+    columns: int = 128
+    decoded_bytes: int = 64 * _MIB
+    string_bytes: int = 262_144
+    record_bytes: int = 8 * _MIB
+
+    def __post_init__(self):
+        maxima = (64 * _MIB, 9 * _MIB, 338 * _MIB, 100_000, 128,
+                  64 * _MIB, 262_144, 8 * _MIB)
+        values = (self.artifact_bytes, self.receipt_bytes, self.total_bytes,
+                  self.rows, self.columns, self.decoded_bytes,
+                  self.string_bytes, self.record_bytes)
+        if any(type(v) is not int or not 0 < v <= maximum
+               for v, maximum in zip(values, maxima)):
+            raise IdentityError("identity snapshot: invalid consumer resource bounds")
+
+
+_DEFAULT_BOUNDS = ReferenceReadBounds()
+
+
+@dataclass(frozen=True, slots=True)
 class IdentitySnapshotRead:
     """Actual read evidence; hashes are consistency seals, not authentication."""
 
@@ -60,12 +92,13 @@ class LegacyReferenceRead:
     receipt_bytes: bytes
     artifact_bytes: tuple[tuple[str, bytes], ...]
     mode: str = "LEGACY"
+    bounds: ReferenceReadBounds = _DEFAULT_BOUNDS
 
     def records(self, name: str) -> list[dict[str, Any]]:
         """Decode only immutable captured bytes, never reopen a latest path."""
         if name not in REFERENCE_ARTIFACTS:
             raise IdentityError("identity snapshot: unknown reference member")
-        return _parquet_records(dict(self.artifact_bytes)[name], name)
+        return _parquet_records(dict(self.artifact_bytes)[name], name, bounds=self.bounds)
 
 
 def _clock(value: int) -> int:
@@ -136,7 +169,7 @@ def _timestamp(scalar: Any, column: str) -> str:
     return wall.strftime("%Y-%m-%dT%H:%M:%S") + f".{remainder:09d}" + suffix
 
 
-def _scalar(scalar: Any, column: str, arrow: Any) -> Any:
+def _scalar(scalar: Any, column: str, arrow: Any, bounds: ReferenceReadBounds) -> Any:
     if not scalar.is_valid:
         return None
     if arrow.types.is_timestamp(scalar.type):
@@ -148,13 +181,16 @@ def _scalar(scalar: Any, column: str, arrow: Any) -> Any:
         raise IdentityError(f"identity snapshot: unsupported Parquet scalar in {column}")
     if isinstance(value, float) and not math.isfinite(value):
         raise IdentityError(f"identity snapshot: nonfinite Parquet value in {column}")
-    if type(value) is str and len(value.encode("utf-8")) > 262_144:
+    if type(value) is str and len(value.encode("utf-8")) > bounds.string_bytes:
         raise IdentityError(f"identity snapshot: Parquet string bound in {column}")
     return value
 
 
-def _parquet_records(raw: bytes, name: str) -> list[dict[str, Any]]:
+def _parquet_records(raw: bytes, name: str, *,
+                     bounds: ReferenceReadBounds = _DEFAULT_BOUNDS) -> list[dict[str, Any]]:
     # Lazy import keeps the identity owner and unrelated thin test lanes pure.
+    if not isinstance(bounds, ReferenceReadBounds):
+        raise IdentityError("identity snapshot: invalid consumer resource bounds")
     try:
         import pyarrow as pa
         import pyarrow.parquet as pq
@@ -167,12 +203,12 @@ def _parquet_records(raw: bytes, name: str) -> list[dict[str, Any]]:
         ) as source:
             metadata, schema = source.metadata, source.schema_arrow
             names = schema.names
-            if len(names) > 128 or len(set(names)) != len(names) or any(not n for n in names):
+            if len(names) > bounds.columns or len(set(names)) != len(names) or any(not n for n in names):
                 raise IdentityError(f"identity snapshot: invalid Parquet columns in {name}")
-            if metadata.num_rows > 100_000:
+            if metadata.num_rows > bounds.rows:
                 raise IdentityError(f"identity snapshot: Parquet row bound in {name}")
             uncompressed = sum(metadata.row_group(i).total_byte_size for i in range(metadata.num_row_groups))
-            if uncompressed > 64 * _MIB:
+            if uncompressed > bounds.decoded_bytes:
                 raise IdentityError(f"identity snapshot: Parquet decoded byte bound in {name}")
             for field in schema:
                 typ = field.type
@@ -182,19 +218,24 @@ def _parquet_records(raw: bytes, name: str) -> list[dict[str, Any]]:
                         or pa.types.is_timestamp(typ) or pa.types.is_date(typ)):
                     raise IdentityError(f"identity snapshot: unsupported Parquet column {field.name}")
             rows, encoded_size, decoded_size = [], 2, 0
-            for batch in source.iter_batches(batch_size=1024, use_threads=False, use_pandas_metadata=False):
+            # A dictionary page can be tiny compared with its expanded values.
+            # Tighter consumers check one decoded row before requesting more,
+            # so a repeated oversized string cannot multiply across 1024 rows
+            # before the consumer's string/decoded-byte refusal is applied.
+            batch_rows = 1024 if bounds == _DEFAULT_BOUNDS else 1
+            for batch in source.iter_batches(batch_size=batch_rows, use_threads=False, use_pandas_metadata=False):
                 decoded_size += batch.nbytes
-                if decoded_size > 64 * _MIB:
+                if decoded_size > bounds.decoded_bytes:
                     raise IdentityError(f"identity snapshot: Parquet decoded byte bound in {name}")
                 for i in range(batch.num_rows):
-                    row = {column: _scalar(batch.column(j)[i], column, pa)
+                    row = {column: _scalar(batch.column(j)[i], column, pa, bounds)
                            for j, column in enumerate(names)}
                     wire = json.dumps(row, sort_keys=True, separators=(",", ":"),
                                       ensure_ascii=True, allow_nan=False).encode()
-                    if len(wire) > 8 * _MIB:
+                    if len(wire) > bounds.record_bytes:
                         raise IdentityError(f"identity snapshot: Parquet record byte bound in {name}")
                     encoded_size += len(wire) + (1 if rows else 0)
-                    if len(rows) >= 100_000 or encoded_size > 64 * _MIB:
+                    if len(rows) >= bounds.rows or encoded_size > bounds.decoded_bytes:
                         raise IdentityError(f"identity snapshot: Parquet record-set bound in {name}")
                     rows.append(row)
             if len(rows) != metadata.num_rows:
@@ -206,13 +247,16 @@ def _parquet_records(raw: bytes, name: str) -> list[dict[str, Any]]:
         raise IdentityError(f"identity snapshot: unreadable Parquet {name}") from exc
 
 
-def _read_reference_bytes(directory: str | Path, *, legacy: bool = False):
+def _read_reference_bytes(directory: str | Path, *, legacy: bool = False,
+                          bounds: ReferenceReadBounds = _DEFAULT_BOUNDS):
     """Capture existing bytes; only the LEGACY seam adds cooperative root SH.
 
     Native acquisition preserves its incumbent behavior, including writer-owned
     EX readback. LEGACY assumes local POSIX flock and cooperating participants;
     it does not fence old/noncooperating writers, other hosts or Git publication.
     """
+    if not isinstance(bounds, ReferenceReadBounds):
+        raise IdentityError("identity snapshot: invalid consumer resource bounds")
     if not isinstance(directory, (str, Path)):
         raise IdentityError("identity snapshot: an absolute local directory is required")
     root = Path(directory)
@@ -247,9 +291,15 @@ def _read_reference_bytes(directory: str | Path, *, legacy: bool = False):
                 pass
             else:
                 raise IdentityError("identity snapshot native layout requires native acquisition")
-        receipt_before = _read_file(fd, "_receipt.json", 9 * _MIB)
-        artifacts = {name: _read_file(fd, name, 64 * _MIB) for name in REFERENCE_ARTIFACTS}
-        receipt_after = _read_file(fd, "_receipt.json", 9 * _MIB)
+        consumed = 0
+        def read_member(name, limit):
+            nonlocal consumed
+            raw = _read_file(fd, name, min(limit, bounds.total_bytes - consumed))
+            consumed += len(raw)
+            return raw
+        receipt_before = read_member("_receipt.json", bounds.receipt_bytes)
+        artifacts = {name: read_member(name, bounds.artifact_bytes) for name in REFERENCE_ARTIFACTS}
+        receipt_after = read_member("_receipt.json", bounds.receipt_bytes)
         check_target()
         if receipt_before != receipt_after:
             raise IdentityError("identity observations: receipt changed during read")
@@ -260,20 +310,22 @@ def _read_reference_bytes(directory: str | Path, *, legacy: bool = False):
     return receipt_before, artifacts
 
 
-def read_reference_generation(directory: str | Path) -> LegacyReferenceRead:
+def read_reference_generation(directory: str | Path, *,
+                              bounds: ReferenceReadBounds = _DEFAULT_BOUNDS) -> LegacyReferenceRead:
     """Capture the complete legacy root under SH; native mode has no fallback.
 
     Trusted local configuration only. A prospective legacy probe alone grants
     no native identity proof. Native publication/history or layout requires the
     separately qualified native reader; this API never creates a read receipt.
     """
-    receipt, artifacts = _read_reference_bytes(directory, legacy=True)
+    receipt, artifacts = _read_reference_bytes(directory, legacy=True, bounds=bounds)
     context = _ob_load(receipt, 9 * _MIB)
     if type(context) is not dict:
         raise IdentityError("identity snapshot: legacy receipt object required")
     if {"publication", "identity_observations"} & context.keys():
         raise IdentityError("identity snapshot native context requires native acquisition")
-    return LegacyReferenceRead(receipt, tuple((name, artifacts[name]) for name in REFERENCE_ARTIFACTS))
+    return LegacyReferenceRead(receipt, tuple((name, artifacts[name]) for name in REFERENCE_ARTIFACTS),
+                               bounds=bounds)
 
 
 def read_identity_snapshot(directory: str | Path) -> IdentitySnapshotRead:

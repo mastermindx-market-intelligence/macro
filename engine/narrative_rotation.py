@@ -31,7 +31,9 @@ flow.json pattern) + a deterministic desk read. NEVER feeds axes/regime/macro_ri
 from __future__ import annotations
 
 import json
+from copy import deepcopy
 import logging
+from dataclasses import dataclass
 
 import numpy as np
 import pandas as pd
@@ -120,25 +122,55 @@ def _region_cfg(region: str) -> dict | None:
 def _setup(cfg: dict) -> dict | None:
     """Close matrix + benchmark level + the market-residual return panel for the basket-member
     union (one rolling-beta pass), for the region in `cfg`. Mirrors engine.baskets_region's
-    data plane so every market is computed identically."""
+    data plane so every market is computed identically.
+
+    LEGACY ADAPTER — unchanged signature and behaviour. It is now exactly
+    ``_build_setup(_acquire_setup(cfg))``: the acquisition half performs every read of the
+    narrative data plane, the build half turns those captured values into the panel and
+    reads nothing."""
+    return _build_setup(_acquire_setup(cfg))
+
+
+def _acquire_setup(cfg: dict) -> dict | None:
+    """READ-ONLY acquisition of the narrative-rotation data plane.
+
+    Every file/store read lives here; nothing here reads a clock. The returned dict is a
+    VALUE — feeding it to `_build_setup` reproduces the panel without touching the
+    repository again."""
     mem = cfg["membership"]()
     if not mem or not mem.get("baskets"):
         return None
     closes = cfg["closes"]()
     if closes is None or closes.empty:
         return None
+    extras = None
     if cfg.get("extras"):                                  # US carries off-index members; regions don't
         extras = cfg["extras"]()
         if extras is not None and not extras.empty:
             add = [c for c in extras.columns if c not in closes.columns]
             if add:
                 closes = closes.join(extras[add], how="left")
-    rets = closes.pct_change(fill_method=None)
-    idx = rets.index
     bdf = store.read(cfg["group"], mem.get("benchmark", cfg["bench_default"]))
     if bdf is None or "close" not in getattr(bdf, "columns", []):
         return None
     bench_close = bdf["close"].astype(float)
+    return {"cfg": cfg, "mem": mem, "closes": closes, "extras": extras,
+            "bench_close": bench_close}
+
+
+def _build_setup(acquired: dict | None) -> dict | None:
+    """PURE assembly of the narrative panel from ALREADY-CAPTURED values.
+
+    Reads nothing, writes nothing and uses no clock: every input arrives in `acquired`
+    (the output of `_acquire_setup`)."""
+    if acquired is None:
+        return None
+    cfg = acquired["cfg"]
+    mem = acquired["mem"]
+    closes = acquired["closes"]
+    bench_close = acquired["bench_close"]
+    rets = closes.pct_change(fill_method=None)
+    idx = rets.index
     bench_ret = bench_close.reindex(idx).ffill().pct_change(fill_method=None)
     bench = pd.Series(np.nan, index=idx)
     bf = bench_ret.first_valid_index()
@@ -452,7 +484,9 @@ def rotation_radar(preps: list[dict], ranks: dict, durab: dict, s: dict) -> dict
 # 5 · ALLOCATE — the low-turnover suggestion ruleset
 # =========================================================================== #
 def allocate(preps: list[dict], ranks: dict, crowd: dict, rot: dict,
-             bench_close: pd.Series | None = None) -> dict:
+             bench_close: pd.Series | None = None, *,
+             crash: dict | None = None,
+             sizing_calibration: dict | None = None) -> dict:
     """SUGGESTED target weights (display-framed, not advice). Faithful to what the 27y
     Phase-0 actually validated: EQUAL-WEIGHT the top-N themes that pass the absolute-trend
     gate (the dual-momentum book), with a T-bill cash escape for the unfilled slots when
@@ -537,7 +571,9 @@ def allocate(preps: list[dict], ranks: dict, crowd: dict, rot: dict,
             weights[bid] = POS_CAP
 
     # momentum-crash overlay (Daniel-Moskowitz): bear tape + high vol → halve to cash
-    crash = _crash_state(bench_close)
+    # `crash` may be supplied by an explicit-input caller that has already resolved the
+    # benchmark read; otherwise it is derived here from `bench_close`.
+    crash = _crash_state(bench_close) if crash is None else crash
     if crash["active"]:
         for b in list(weights):
             weights[b] *= 0.5
@@ -557,7 +593,7 @@ def allocate(preps: list[dict], ranks: dict, crowd: dict, rot: dict,
              "val_state": ranks[b].get("val_state")}
             for b in sorted(top, key=lambda x: ranks[x]["rank"])]
     cash = round(max(0.0, 1.0 - sum(s["weight"] for s in sugg)), 3)   # exact remainder of the rounded book
-    vol_overlay = _vol_overlay(top, weights, byid)                    # calibrated de-risk overlay (optional)
+    vol_overlay = _vol_overlay(top, weights, byid, sizing_calibration)   # calibrated de-risk overlay (optional)
     return {"weights": sugg, "cash": cash,
             "n_held": len(top), "crash_overlay": crash,
             "vol_overlay": vol_overlay,
@@ -590,13 +626,25 @@ def allocate(preps: list[dict], ranks: dict, crowd: dict, rot: dict,
 def _crash_state(bench_close: pd.Series | None = None) -> dict:
     """Broad-market panic gate: the region BENCHMARK's trailing-24m return < 0 AND realized
     vol top-quartile — the Daniel-Moskowitz state where laggard up-beta makes momentum crash.
-    `bench_close` is the region index level (SPY / CSI300 / HSI / TSX); defaults to SPY."""
+    `bench_close` is the region index level (SPY / CSI300 / HSI / TSX); defaults to SPY.
+
+    LEGACY ADAPTER — when no benchmark level is supplied it falls back to reading SPY from
+    the store. The arithmetic itself lives in `_crash_state_from_level`, which is the
+    read-free form the explicit-input core uses."""
     p = bench_close.astype(float).dropna() if bench_close is not None else None
     if p is None:
         spy = store.read("yahoo", "SPY")
         if spy is None or "close" not in spy.columns:
             return {"active": False}
         p = spy["close"].astype(float).dropna()
+    return _crash_state_from_level(p)
+
+
+def _crash_state_from_level(p) -> dict:
+    """The crash gate over an ALREADY-CAPTURED benchmark level — reads nothing."""
+    if p is None:
+        return {"active": False}
+    p = p.astype(float).dropna()
     if len(p) < 600:
         return {"active": False}
     r24 = float(p.iloc[-1] / p.iloc[-min(504, len(p) - 1)] - 1.0)
@@ -618,6 +666,12 @@ def _validation_meta(fname: str = "thematic_rotation_phase0.json") -> dict:
         return {}
 
 
+def sizing_calibration_from_document(document):
+    """Existing nested verdict from a captured document; preserve explicit nulls."""
+    from copy import deepcopy
+    return deepcopy(document.get("sizing", {})) if isinstance(document, dict) else {}
+
+
 def _sizing_calibration() -> dict:
     """The book-level vol-target SIZING verdict from scripts.calibrate_baskets (the 27y
     SPDR-sector proxy). Display-framed; the signal LOGIC is shared cross-region so the
@@ -625,20 +679,23 @@ def _sizing_calibration() -> dict:
     try:
         p = config.data_dir() / "strategies" / "baskets_calibration.json"
         d = json.loads(p.read_text()) if p.exists() else {}
-        return d.get("sizing", {}) if isinstance(d, dict) else {}
+        return sizing_calibration_from_document(d)
     except Exception:  # noqa: BLE001
         return {}
 
 
-def _vol_overlay(top: list, weights: dict, byid: dict) -> dict | None:
+def _vol_overlay(top: list, weights: dict, byid: dict, cal: dict | None = None) -> dict | None:
     """Book-level realized-vol-target DE-RISK overlay (Moreira-Muir), display-framed. Reads
     the calibrated `sizing` block: when the proxy backtest graded it calibratable/display_only
     it scales the whole book by clip(target_vol / trailing book-vol, floor, cap) — a pure
     DRAWDOWN lever (the proxy showed ~7pp shallower MaxDD, beats a trend-only brake, but NO
     Sharpe lift), residual gross to cash. `applied` is True only when calibratable; otherwise
     it is OFFERED with its measured provenance, never forced onto the default book. Wires the
-    previously-vestigial LEV_CAP (gross ceiling) + MAX_CASH (de-risk floor). None if absent."""
-    cal = _sizing_calibration()
+    previously-vestigial LEV_CAP (gross ceiling) + MAX_CASH (de-risk floor). None if absent.
+
+    `cal` may carry the ALREADY-CAPTURED calibration document; when it is None the
+    calibration is read from the store (the legacy path)."""
+    cal = _sizing_calibration() if cal is None else cal
     if not cal or cal.get("verdict") not in ("calibratable", "display_only") or not top:
         return None
     d = cal.get("default") or {}
@@ -811,53 +868,194 @@ def _dtc_map(si: pd.DataFrame | None) -> dict[str, float]:
         return {}
 
 
-def compute_narrative_rotation(region: str = "us") -> dict | None:
+# =========================================================================== #
+# EXPLICIT-INPUT SEAM (always-on Sector runtime)
+# =========================================================================== #
+# `compute_narrative_rotation` is the LEGACY acquisition adapter — same signature,
+# same default behaviour, same output bytes. It is now three pieces:
+#
+#   acquire_narrative_allocation_inputs(region) — every READ (data / config / file) of
+#                                                the narrative desk happens here and the
+#                                                results are captured as VALUES.
+#   compute_narrative_rotation_core(inputs)    — the accepted algorithm over those
+#                                                values. Reads nothing, writes nothing,
+#                                                uses no clock.
+#   compute_narrative_rotation(region)         — acquire -> core.
+#
+# The bundle is `NarrativeAllocationInputs`. Every entry is a captured value: no loader
+# callback, no mutable global, no environment patching. Two distinct bundles cannot
+# influence one another, so a runtime can recompute the desk from one accepted snapshot
+# without touching the repository.
+
+@dataclass(frozen=True)
+class NarrativeAllocationInputs:
+    """Captured inputs for `compute_narrative_rotation_core` — every field is a VALUE.
+
+    region                "us" | "china" | "hk" | "canada" | "intl".
+    panel                 the narrative panel: {cfg, mem, items, closes, rets, idx, bench,
+                          bench_ret, bench_close, resid}.
+    region_meta           the region's display metadata + the Phase-0 artifact names:
+                          {id, market_en, market_zh, bench_label, bench_label_zh,
+                          phase0_file, phase0_fallback}. The LOADER callables of the live
+                          region config are deliberately NOT carried — a bundle is a value,
+                          never a callback.
+    radar                 the Divergence Radar document (site/basketdata/radar.json) that
+                          drives the real-activity overlay, or {} when it is absent.
+    short_interest        the FINRA short-interest snapshot (context only), or None.
+    sizing_calibration    the book-level vol-target sizing verdict, or {}.
+    phase0_meta           the Phase-0 backtest document for this region.
+    phase0_fallback_meta  the Phase-0 fallback document (HK cites the US 27y proxy), or
+                          None when the region has no fallback.
+    """
+    region: str
+    panel: dict
+    region_meta: dict
+    radar: dict | None
+    short_interest: pd.DataFrame | None
+    sizing_calibration: dict
+    phase0_meta: dict
+    phase0_fallback_meta: dict | None
+
+
+def _acquire_validation_radar() -> dict:
+    """READ-ONLY capture of the Divergence Radar (site/basketdata/radar.json).
+
+    Mirrors engine.theme_validation._read_radar (same path, same fail-open). The captured
+    document is handed to `apply_validation` so the core never re-reads it; {} stands for
+    "absent" and keeps the overlay a no-op."""
+    try:
+        p = config.ROOT / "site" / "basketdata" / "radar.json"
+        if p.exists():
+            d = json.loads(p.read_text())
+            return d if isinstance(d, dict) else {}
+    except Exception:  # noqa: BLE001 — the overlay is additive, never fatal
+        pass
+    return {}
+
+
+def _acquire_short_interest() -> pd.DataFrame | None:
+    """READ-ONLY capture of the FINRA short-interest snapshot (context only)."""
+    si = None
+    sp = config.data_dir() / "finra" / "short_interest.parquet"
+    if sp.exists():
+        try:
+            si = pd.read_parquet(sp)
+        except Exception:  # noqa: BLE001
+            si = None
+    return si
+
+
+def acquire_narrative_allocation_inputs(region: str = "us") -> NarrativeAllocationInputs | None:
+    """READ-ONLY acquisition of every value the narrative desk consumes.
+
+    This is the ONLY place in the explicit-input path that touches the repository: the
+    close panel + benchmark + market residuals, the region metadata, the Divergence Radar,
+    the FINRA short-interest snapshot, the book-level sizing calibration and the Phase-0
+    backtest documents.
+
+    Returns None on the same shortfalls the incumbent reports (unknown region, no panel).
+    The returned bundle is a VALUE — it can be carried, re-used and re-computed without
+    reading anything again."""
+    cfg = _region_cfg(region)
+    if cfg is None:
+        return None
+    # The legacy `_setup` adapter is the seam: it is `_build_setup(_acquire_setup(cfg))`,
+    # and a caller that replaces it replaces the whole panel acquisition.
+    panel = _setup(cfg)
+    if panel is None:
+        return None
+    region_meta = {"id": cfg["id"], "market_en": cfg["market_en"], "market_zh": cfg["market_zh"],
+                   "bench_label": cfg["bench_label"], "bench_label_zh": cfg["bench_label_zh"],
+                   "phase0_file": cfg["phase0_file"],
+                   "phase0_fallback": cfg.get("phase0_fallback")}
+    return NarrativeAllocationInputs(
+        region=region, panel={key: value for key, value in panel.items() if key != "cfg"},
+        region_meta=region_meta,
+        radar=_acquire_validation_radar(), short_interest=_acquire_short_interest(),
+        sizing_calibration=_sizing_calibration(),
+        phase0_meta=_validation_meta(cfg["phase0_file"]),
+        phase0_fallback_meta=(_validation_meta(cfg["phase0_fallback"])
+                              if cfg.get("phase0_fallback") else None))
+
+
+def compute_narrative_rotation(region: str = "us",
+                               *, inputs: NarrativeAllocationInputs | None = None,
+                               diagnostics: list[dict] | None = None) -> dict | None:
     """Top-level: assemble the five subsystems into one display payload + AI handoff +
     deterministic desk read, for `region` ∈ {us, china, hk, canada}. PURE/additive —
-    returns None on shortfall, never raises."""
+    returns None on shortfall, never raises.
+
+    LEGACY ADAPTER AND CORE BODY IN ONE.
+
+    Called the incumbent way — ``compute_narrative_rotation("us")`` — it acquires every
+    ambient value (the close panel + benchmark + market residuals, the region metadata,
+    the Divergence Radar, the FINRA short-interest snapshot, the book-level sizing
+    calibration and the Phase-0 backtest documents) and runs the desk over them.
+
+    Called with an ALREADY-CAPTURED bundle — ``compute_narrative_rotation(inputs=...)`` —
+    it reads nothing, writes nothing and uses no clock: every ambient read has become an
+    explicit input.
+
+    Same signature, same default behaviour, same output bytes either way.
+    """
+    legacy_acquisition = inputs is None
     try:
-        cfg = _region_cfg(region)
-        if cfg is None:
-            return None
-        s = _setup(cfg)
-        if s is None:
-            return None
+        if legacy_acquisition:
+            inputs = acquire_narrative_allocation_inputs(region)
+            if inputs is None:
+                return None
+        region = inputs.region
+        meta = inputs.region_meta
+        s = inputs.panel
         preps = _basket_preps(s)
         if len(preps) < 4:
             return None
-
         ranks = rank_themes(preps)
 
         # REAL-ACTIVITY VALIDATION overlay (display + bounded one-slot tie-break in allocate).
         # Annotates ranks with val_z/val_state/val_upgrade from the Divergence Radar; NEVER
         # touches score/rank/eligible (the price-scored core stays byte-identical). Additive.
+        # The radar document is the CAPTURED value; {} keeps the overlay a no-op without a read.
         try:
             from engine import theme_validation
-            theme_validation.apply_validation(ranks, region)
+            theme_validation.apply_validation(ranks, region, radar=inputs.radar or {})
         except Exception as e:  # noqa: BLE001 — additive, never fatal
-            log.debug("theme_validation overlay skipped: %s", e)
+            if legacy_acquisition:
+                log.debug("theme_validation overlay skipped: %s", e)
+            elif diagnostics is not None:
+                diagnostics.append({"kind": "validation_overlay_unavailable",
+                                    "error_type": type(e).__name__})
 
         durab, crowd = {}, {}
         from engine import extension as ext_mod
         from engine import theme_crowding as tc
         # short interest snapshot (context only)
-        si = None
-        sp = config.data_dir() / "finra" / "short_interest.parquet"
-        if sp.exists():
-            try:
-                si = pd.read_parquet(sp)
-            except Exception:  # noqa: BLE001
-                si = None
+        si = inputs.short_interest
         dtc_map = _dtc_map(si)
 
         for p in preps:
             durab[p["id"]] = durability(p)
-            ext_rows = list(ext_mod.extension_signals(p["members_closes"]).values())
+            anchor_records: list[dict] = []
+            if legacy_acquisition:
+                ext = ext_mod.extension_signals(p["members_closes"])
+            else:
+                ext = ext_mod.extension_signals(
+                    p["members_closes"], emit_diagnostics=False,
+                    diagnostic_records=anchor_records)
+            if diagnostics is not None:
+                diagnostics.extend({"basket_id": p["id"], **record}
+                                   for record in anchor_records)
+            ext_rows = list(ext.values())
             dtc = [dtc_map.get(t) for t in p["live"]] if dtc_map else None
             crowd[p["id"]] = tc.basket_crowding(p["members_resid"], p["rs"], ext_rows, dtc)
 
         rot = rotation_radar(preps, ranks, durab, s)
-        alloc = allocate(preps, ranks, crowd, rot, s["bench_close"])
+        # The crash gate reads the benchmark level the panel already carries. The panel
+        # always supplies a level (the store read is part of the acquisition), so the
+        # legacy SPY fallback in `_crash_state` is never reached from the core.
+        crash = _crash_state_from_level(s.get("bench_close"))
+        alloc = allocate(preps, ranks, crowd, rot, s["bench_close"], crash=crash,
+                         sizing_calibration=inputs.sizing_calibration or {})
         narr = _narrate(rot, alloc, ranks, durab, crowd, preps)
 
         # per-basket table (display)
@@ -882,11 +1080,11 @@ def compute_narrative_rotation(region: str = "us") -> dict | None:
                 "val_state": rk.get("val_state"),     # real-activity validation overlay (display)
             })
 
-        vm = _validation_meta(cfg["phase0_file"])
+        vm = inputs.phase0_meta
         sect = (vm.get("universes", {}) or {}).get("sectors", {})
         borrowed_from = None
-        if not sect and cfg.get("phase0_fallback"):       # HK: too few sector ETFs → cite US 27y
-            fb = _validation_meta(cfg["phase0_fallback"])
+        if not sect and meta.get("phase0_fallback"):      # HK: too few sector ETFs → cite US 27y
+            fb = inputs.phase0_fallback_meta or {}
             fbsect = (fb.get("universes", {}) or {}).get("sectors", {})
             if fbsect:
                 sect, vm, borrowed_from = fbsect, fb, "US — 27-year SPDR sectors"
@@ -925,10 +1123,10 @@ def compute_narrative_rotation(region: str = "us") -> dict | None:
                         "r10": _lead_rows_hit.get("r10"),
                         "val_state": _lead_rows_hit.get("val_state")}
 
-        return {
+        return deepcopy({
             "as_of": s["idx"].max().strftime("%Y-%m-%d"),
-            "region": cfg["id"], "market_en": cfg["market_en"], "market_zh": cfg["market_zh"],
-            "bench_label": cfg["bench_label"], "bench_label_zh": cfg["bench_label_zh"],
+            "region": meta["id"], "market_en": meta["market_en"], "market_zh": meta["market_zh"],
+            "bench_label": meta["bench_label"], "bench_label_zh": meta["bench_label_zh"],
             "n_themes": len(preps),
             "headline": headline,
             "narration": narr,
@@ -940,7 +1138,25 @@ def compute_narrative_rotation(region: str = "us") -> dict | None:
             "verdict": "discipline_not_prediction",
             "params": {"n_hold": N_HOLD, "lookbacks_d": list(LOOKBACKS_D), "skip_d": SKIP_D,
                        "sma_trend_d": SMA_TREND_D, "pos_cap": POS_CAP, "max_cash": MAX_CASH},
-        }
+        })
     except Exception as e:  # noqa: BLE001 — additive, never fatal
-        log.error("compute_narrative_rotation failed: %s", e)
+        if legacy_acquisition:
+            log.error("compute_narrative_rotation failed: %s", e)
+        elif diagnostics is not None:
+            diagnostics.append({"kind": "narrative_calculation_unavailable",
+                                "error_type": type(e).__name__})
         return None
+
+
+def compute_narrative_rotation_core(
+        inputs: NarrativeAllocationInputs, *, diagnostics: list[dict] | None = None
+) -> dict | None:
+    """The narrative-rotation desk over CAPTURED VALUES — no file read, no clock, no write.
+
+    The explicit-input entry point. It runs the SAME body as
+    `compute_narrative_rotation` over an already-captured bundle.
+
+    Same algorithm, same momentum rank, same eligibility gate, same weights, same labels
+    and the same output bytes as the legacy call.
+    """
+    return compute_narrative_rotation(inputs=inputs, diagnostics=diagnostics)

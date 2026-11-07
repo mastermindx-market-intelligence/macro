@@ -1,0 +1,7 @@
+{
+  "exit": 0,
+  "source_revision": "f223990e0e1dc805108517abde90c17b8883b005",
+  "whole_integration_diff_bytes": 295060,
+  "scope": "Unchanged visual gate on the original managed workspace after the existing sparse owner materialized mockups. All prior closure file hashes verified identical.",
+  "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

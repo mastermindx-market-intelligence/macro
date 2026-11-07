@@ -27,7 +27,6 @@
 set -euo pipefail
 
 APP_DIR="/opt/macro"
-VENV="$APP_DIR/.venv"
 BASE_DIR="/var/lib/macro-live"
 PUBLIC_DIR="$BASE_DIR/public"
 LIVE_DIR="$PUBLIC_DIR/live"
@@ -37,55 +36,65 @@ if [ "$(id -u)" -ne 0 ]; then
   echo "live-setup must run as root" >&2
   exit 1
 fi
-
-# Treat the first install as a transaction. Until the replacement timers are
-# enabled AND legacy cron is retired, any error restores the old serving path.
-# Existing installations are left in place on a rerun failure for diagnosis.
-initial_install=1
-if systemctl is-enabled macro-live-fast.timer >/dev/null 2>&1; then
-  initial_install=0
+if [ "$#" -eq 0 ]; then
+  # All source/runtime mutation enters the one installed updater owner.
+  exec /usr/local/bin/macro-update --live-setup
 fi
+if [ "$#" -ne 2 ] || [ "$1" != --source-attempt ] || [[ ! "$2" =~ ^[0-9a-f]{32}$ ]]; then
+  echo "live-setup: expected an original installed-owner invocation" >&2
+  exit 2
+fi
+SETUP_ATTEMPT=$2
+CAPSULE_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)
+[ "$CAPSULE_DIR" = "$BASE_DIR/state/source-update-capsules/$SETUP_ATTEMPT/setup" ] || {
+  echo "live-setup: script is not the original captured setup member" >&2
+  exit 75
+}
+setup_control() {
+  /usr/local/bin/macro-update --live-setup-control "$SETUP_ATTEMPT" "$1"
+}
+stage=$(setup_control inspect)
+
+# Preserve the incumbent finalizer, but never undo a qualified publication or
+# another timer's captured intent. Caddy's existing per-file existence matchers
+# retain the legacy fallback for absent external files. Successfully published
+# files and the original transaction evidence survive a later setup failure.
 setup_complete=0
-tmp_cron=""
 fail_safe_exit() {
   rc=$?
   trap - EXIT
-  if [ -n "$tmp_cron" ]; then
-    rm -f "$tmp_cron"
-  fi
-  if [ "$rc" -ne 0 ] && [ "$initial_install" -eq 1 ] && [ "$setup_complete" -eq 0 ]; then
-    log "first install failed; restoring legacy-only ownership"
-    systemctl disable --now \
-      macro-live-fast.timer \
-      macro-live-snapshot.timer \
-      macro-live-bars.timer >/dev/null 2>&1 || true
-    systemctl stop \
-      macro-live-fast.service \
-      macro-live-snapshot.service \
-      macro-live-bars.service >/dev/null 2>&1 || true
-    if [ -d "$PUBLIC_DIR" ]; then
-      failed_dir="$BASE_DIR/public.failed.$(date -u +%Y%m%dT%H%M%SZ)"
-      mv "$PUBLIC_DIR" "$failed_dir" || true
-      log "failed-install artifacts preserved at $failed_dir"
-    fi
+  if [ "$rc" -ne 0 ] && [ "$setup_complete" -eq 0 ]; then
+    log "setup incomplete; preserving original transaction and publication evidence"
+    log "reconcile the installed owner's recorded step before resuming this attempt"
   fi
   exit "$rc"
 }
 trap fail_safe_exit EXIT
 
-log "[1/6] runtime + live directories"
-export DEBIAN_FRONTEND=noninteractive
-apt-get install -y python3-venv rsync >/dev/null 2>&1 || true
-test -d "$VENV" || python3 -m venv "$VENV"
-"$VENV/bin/pip" install -q --upgrade pip
-# boto3 is the Prophet Live lane's ONLY extra dependency: the armed pack, the previous
-# pass's artifact and the event spool are R2 objects, and without it r2io.client()
-# returns None, the lane reads the public mirror, publishes nothing and writes no
-# served copy. Adding it here is what makes a re-run of this script arm the lane.
-"$VENV/bin/pip" install -q pandas pyarrow numpy requests pyyaml jinja2 datasketch boto3
-install -d -m 0755 \
-  "$PUBLIC_DIR" "$LIVE_DIR" "$PUBLIC_DIR/marketdata" \
-  "$BASE_DIR/state" "$BASE_DIR/data" "$APP_DIR/site/live"
+if [ "$stage" = PACKAGES ]; then
+  log "[1/6] captured runtime + live directories"
+  environment=$(setup_control environment)
+  environment_mode="${environment%%$'\n'*}"
+  VENV="${environment#*$'\n'}"
+  if [ "$environment_mode" = prepare ]; then
+    # A fresh environment is private to this original capsule until its imports
+    # pass. Existing serving environments are never pip-upgraded by setup.
+    export DEBIAN_FRONTEND=noninteractive
+    apt-get install -y python3-venv rsync >/dev/null 2>&1 || true
+    python3 -m venv "$VENV"
+    "$VENV/bin/pip" install -q --upgrade pip
+    "$VENV/bin/pip" install -q pandas pyarrow numpy requests pyyaml jinja2 datasketch boto3
+  elif [ "$environment_mode" = reuse ]; then
+    log "reusing the captured environment; dependency changes require its maintenance owner"
+  else
+    echo "live-setup: invalid captured environment mode" >&2
+    exit 75
+  fi
+  setup_control bind-environment
+  VENV="$APP_DIR/.venv"
+  install -d -m 0755 \
+    "$PUBLIC_DIR" "$LIVE_DIR" "$PUBLIC_DIR/marketdata" \
+    "$BASE_DIR/state" "$BASE_DIR/data" "$APP_DIR/site/live"
 
 log "[2/6] environment"
 if [ ! -e /etc/macro-live.env ]; then
@@ -135,71 +144,51 @@ if [ "${#R2_SEED_MISSING[@]}" -gt 0 ]; then
   log "WARNING: OPERATOR ACTION REQUIRED — add the missing key(s) to /etc/macro-api.env (preferred; shared with the API's own R2 reads) or directly to /etc/macro-live.env (must stay mode 0600), then re-run this script."
 fi
 
-log "[3/6] systemd services + timers"
+log "[3/6] captured ancillary services + timers"
+# The fixed core six were installed and drained by macro-update before this
+# script ran. Ancillary consumers retain their existing owner and timer intent.
+source "$CAPSULE_DIR/../helpers/market-memory-options-unit-boundary.sh"
 unit_sources=()
 for unit in \
-  macro-live-fast.service macro-live-fast.timer \
-  macro-live-snapshot.service macro-live-snapshot.timer \
-  macro-live-bars.service macro-live-bars.timer \
   macro-live-prophet.service macro-live-prophet.timer \
   macro-live-closepass.service macro-live-closepass.timer \
   macro-live-breadth.service macro-live-breadth.timer
 do
-  unit_sources+=("$APP_DIR/app/deploy/$unit")
+  mm_unit_repair_inputs_safe "$CAPSULE_DIR/units/$unit" "/etc/systemd/system/$unit"
+  unit_sources+=("$CAPSULE_DIR/units/$unit")
 done
 systemd-analyze verify "${unit_sources[@]}"
-for unit_source in "${unit_sources[@]}"
-do
+for unit_source in "${unit_sources[@]}"; do
   unit=$(basename "$unit_source")
-  install -m 0644 "$APP_DIR/app/deploy/$unit" "/etc/systemd/system/$unit"
+  install -m 0644 "$unit_source" "/etc/systemd/system/$unit"
 done
 systemctl daemon-reload
-
-log "[4/6] smoke test publication + fast lane"
-# Keep the legacy cron writer in place until the replacement has proven that it
-# can publish successfully. A failed install therefore leaves the old live path
-# intact instead of creating an outage.
-set +e
-systemctl start macro-live-fast.service
-smoke_rc=$?
-set -e
-if [ "$smoke_rc" -ne 0 ]; then
-  log "smoke test failed; recent service log:"
-  journalctl -u macro-live-fast.service -n 30 --no-pager
-  exit "$smoke_rc"
+sync -f /etc/systemd/system
+setup_control ready
+stage=$(setup_control inspect)
 fi
-test -s "$LIVE_DIR/orchestrator_status.json"
-test -s "$LIVE_DIR/quotes.json"
-"$VENV/bin/python" -c \
-  'import json,sys; d=json.load(open(sys.argv[1])); assert int((d.get("meta") or {}).get("resolved") or 0) >= 5' \
-  "$LIVE_DIR/quotes.json"
 
-log "[5/6] enable replacement timers"
-# macro-live-prophet, macro-live-closepass and macro-live-breadth are armed here too,
-# but none of the three is part of the fail-safe smoke transaction above: they consume
-# what the three lanes publish (or, for breadth, the nightly-baked close caches) and
-# write only their own runtime artifacts, so a fault in any of them can never take the
-# served site down.
-systemctl enable --now \
-  macro-live-fast.timer \
-  macro-live-snapshot.timer \
-  macro-live-bars.timer \
-  macro-live-prophet.timer \
-  macro-live-closepass.timer \
-  macro-live-breadth.timer >/dev/null
+if [ "$stage" = READY ]; then
+  log "[4/6] new guarded invocation + publication proof"
+  setup_control smoke
+  stage=$(setup_control inspect)
+fi
 
-log "[6/6] retire legacy cron writer"
-tmp_cron=$(mktemp)
-crontab -l 2>/dev/null | grep -v "macro-live\\|build_live_overlay" > "$tmp_cron" || true
-crontab "$tmp_cron"
-rm -f "$tmp_cron"
-tmp_cron=""
+if [ "$stage" = SMOKED ] || [ "$stage" = ARMED ]; then
+  log "[5/6] preserve existing timer intent; arm only captured fresh timers"
+  setup_control arm
+  stage=$(setup_control inspect)
+fi
+
+if [ "$stage" = ARMED ] || [ "$stage" = CRON_RETIRED ]; then
+  log "[6/6] retire legacy cron using captured preimage and verified postimage"
+  setup_control finish
+else
+  echo "live-setup: original setup stage cannot complete: $stage" >&2
+  exit 75
+fi
 
 setup_complete=1
 trap - EXIT
-log "DONE — live plane installed"
-systemctl list-timers \
-  macro-live-fast.timer macro-live-snapshot.timer macro-live-bars.timer \
-  macro-live-prophet.timer macro-live-closepass.timer macro-live-breadth.timer \
-  --no-pager
+log "DONE — original live setup transaction completed"
 log "After production freshness is verified, set GitHub repository variable VPS_LIVE_PRIMARY=true."

@@ -37,11 +37,14 @@ this is a descriptive consolidated tape, not an out-of-sample backtest. Coverage
 from __future__ import annotations
 
 import logging
+from collections.abc import Mapping
+from copy import deepcopy
+from dataclasses import dataclass
 
 import numpy as np
 import pandas as pd
 
-from lib import config
+from lib import config, store as data_store
 
 log = logging.getLogger(__name__)
 
@@ -171,6 +174,16 @@ def _load_member_ohlcv(ticker: str) -> pd.DataFrame | None:
     Deep store preferred, but all existing fallback stores are recency-probed
     (index-only read); the freshest usable tail wins, preserving provider order
     on equal timestamps. A stale/empty deep tape is healed without misdating it."""
+    runtime_frame = data_store.read_runtime_history("yahoo", ticker)
+    if runtime_frame is not None:
+        # Preserve the existing Yahoo close-only candle representation, but use
+        # this verified generation before any global cache or fallback store.
+        for column in ("open", "high", "low"):
+            if column not in runtime_frame.columns:
+                runtime_frame[column] = runtime_frame["close"]
+        if "volume" not in runtime_frame.columns:
+            runtime_frame["volume"] = np.nan
+        return runtime_frame[OHLCV_COLS].copy(deep=True)
     if ticker in _CACHE:
         return _CACHE[ticker]
     out: pd.DataFrame | None = None
@@ -342,49 +355,28 @@ def _base_weights(members: list[dict], present: list[str], mode: str,
     return pd.Series(1.0, index=present)                            # equal
 
 
-def consolidated_candle(members: list[dict], idx: pd.DatetimeIndex, mode: str = "equal",
-                        conv_map: dict | None = None, pit: bool = True,
-                        alpha_pit: bool = True
-                        ) -> tuple[pd.DataFrame | None, dict]:
-    """The basket CANDLE on calendar `idx`: columns [open, high, low, close, dollar_vol, n_live],
-    + a coverage/meta dict. None if fewer than 3 members resolve OHLCV. close is a LEVEL from 1.0.
+@dataclass(frozen=True)
+class _CloseIndexKernel:
+    close: pd.DataFrame
+    previous_close: pd.DataFrame
+    mask: pd.DataFrame
+    weights: pd.DataFrame
+    level: pd.Series | None
+    previous_level: pd.Series | None
+    first: pd.Timestamp | None
+    stale_tail: tuple[str, ...]
+    lookahead: bool
 
-    `members` are membership entries ({ticker, added, removed, weight?}); `idx` the basket
-    calendar; `conv_map` ticker→conviction score for relevance weighting; `pit` selects strict
-    point-in-time membership (True, perf-faithful) vs current-membership-over-full-history
-    (False, for the deep MTF/vol-hole technical read). See _live_mask.
 
-    `alpha_pit` (mode=='alpha' only): True (default) recomputes the trailing-strength tilt
-    on a monthly rebalance grid and holds each vector forward — a point-in-time curve with
-    no look-ahead. False reproduces the legacy static as-of-today vector applied across all
-    history (an in-sample illustration); meta is stamped `lookahead: true` so any display
-    can disclose it. See _alpha_weights_pit / audit #44."""
-    tickers = [m.get("ticker") for m in members if m.get("ticker")]
-    loaded = {t: _load_member_ohlcv(t) for t in tickers}
-    present = [t for t in tickers if loaded.get(t) is not None and not loaded[t].empty]
-    n_total = len(set(tickers))
-    if len(present) < 3:
-        return None, {"n_total": n_total, "n_with_ohlcv": len(present), "coverage_pct": None,
-                      "mode": mode}
+def _weighted_return(returns: pd.DataFrame, present: list[str], weights: pd.DataFrame) -> pd.Series:
+    return (returns[present] * weights).sum(axis=1, min_count=1)
 
-    # align each field to the basket calendar
-    def _field(col: str) -> pd.DataFrame:
-        cols = {t: loaded[t][col].reindex(idx) for t in present if col in loaded[t].columns}
-        return pd.DataFrame(cols, index=idx)
 
-    close_raw = _field("close")
+def _close_index_kernel(*, members, idx, present, close_raw, mode, conv_map, pit, alpha_pit):
+    """The incumbent close/membership/weight calculation; no loading or diagnostics."""
     close = close_raw.ffill()
-    high = _field("high").ffill()
-    low = _field("low").ffill()
-    open_ = _field("open").ffill()
-    vol = _field("volume")
-
     prev_close = close.shift(1)
     r_close = close / prev_close - 1.0
-    r_high = high / prev_close - 1.0
-    r_low = low / prev_close - 1.0
-    r_open = open_ / prev_close - 1.0
-
     mask = _live_mask(members, idx, present, pit=pit, close=close)
     # 2026-07 staleness audit: a member whose tape ENDED (deep-store fetch gap, delisting
     # missing its `removed` stamp) would otherwise ride the ffill at a frozen price,
@@ -404,10 +396,6 @@ def consolidated_candle(members: list[dict], idx: pd.DatetimeIndex, mode: str = 
         if live_after.any():
             mask.loc[mask.index > cutoff, t] = False
             stale_tail.append(t)
-    if stale_tail:
-        log.warning("basket candle: %d member tape(s) stale past %d-bar grace — exited "
-                    "from the live set at tape end: %s", len(stale_tail), _STALE_TAIL_GRACE,
-                    ",".join(sorted(stale_tail)[:12]))
 
     # daily renormalised weights over the live set
     lookahead = False
@@ -422,18 +410,150 @@ def consolidated_candle(members: list[dict], idx: pd.DatetimeIndex, mode: str = 
     wsum = w.sum(axis=1).replace(0, np.nan)
     w = w.div(wsum, axis=0)
 
-    def _wret(rf: pd.DataFrame) -> pd.Series:
-        return (rf[present] * w).sum(axis=1, min_count=1)
-
-    Rc, Rh, Rl, Ro = _wret(r_close), _wret(r_high), _wret(r_low), _wret(r_open)
+    Rc = _weighted_return(r_close, present, w)
     first = Rc.first_valid_index()
     if first is None:
-        return None, {"n_total": n_total, "n_with_ohlcv": len(present), "coverage_pct": None,
-                      "mode": mode}
+        return _CloseIndexKernel(close, prev_close, mask, w, None, None, None,
+                                 tuple(stale_tail), lookahead)
     lvl_close = pd.Series(np.nan, index=idx)
     lvl_close.loc[first:] = (1.0 + Rc.loc[first:].fillna(0.0)).cumprod()
     prev_lvl = lvl_close.shift(1)
-    prev_lvl.loc[first] = 1.0    # the implicit cumprod base — the level the day before `first`
+    prev_lvl.loc[first] = 1.0
+    return _CloseIndexKernel(close, prev_close, mask, w, lvl_close, prev_lvl, first,
+                             tuple(stale_tail), lookahead)
+
+
+MIN_MEMBER_INDEX_SESSIONS = 300
+
+
+def _capture_index_panel(frame, *, volume=False):
+    """Primitive value validation for an explicit calculation, without acquisition."""
+    from lib.adjusted_price_capture import MAX_ROWS, MAX_COLUMNS, MAX_PANEL_CELLS
+    if (not isinstance(frame, pd.DataFrame) or len(frame) > MAX_ROWS
+            or len(frame.columns) > MAX_COLUMNS or frame.size > MAX_PANEL_CELLS
+            or frame.columns.has_duplicates
+            or any(not isinstance(t, str) or not t or len(t) > 24 for t in frame.columns)):
+        raise ValueError("Invalid member-index panel")
+    idx = frame.index
+    if (not isinstance(idx, pd.DatetimeIndex) or idx.hasnans or idx.has_duplicates
+            or not idx.is_monotonic_increasing or idx.tz is not None
+            or not idx.equals(idx.normalize())):
+        raise ValueError("Invalid member-index calendar")
+    if any(not pd.api.types.is_numeric_dtype(frame[t]) or pd.api.types.is_bool_dtype(frame[t])
+           or pd.api.types.is_complex_dtype(frame[t]) for t in frame.columns):
+        raise ValueError("Invalid member-index value")
+    raw = frame.to_numpy(dtype=float, na_value=np.nan)
+    present = ~np.isnan(raw)
+    if (not np.isfinite(raw[present]).all() or (raw[present] < 0).any()
+            or not volume and (raw[present] == 0).any()):
+        raise ValueError("Invalid member-index value")
+    return pd.DataFrame(raw.copy(), index=idx.copy().as_unit("ns"), columns=frame.columns.copy())
+
+
+def _capture_member_index_scope(members, idx: pd.DatetimeIndex):
+    """One explicit membership/calendar identity and allocation-bound validator."""
+    from datetime import date
+    from lib.adjusted_price_capture import MAX_ROWS, MAX_COLUMNS, MAX_PANEL_CELLS
+    if (not isinstance(members, (list, tuple)) or len(members) > MAX_COLUMNS
+            or not isinstance(idx, pd.DatetimeIndex) or len(idx) > MAX_ROWS
+            or idx.hasnans or idx.has_duplicates or not idx.is_monotonic_increasing
+            or idx.tz is not None or not idx.equals(idx.normalize())):
+        raise ValueError("Invalid explicit member-index inputs")
+    document = deepcopy(list(members))
+    tickers = []
+    for member in document:
+        ticker = member.get("ticker") if isinstance(member, Mapping) else None
+        if not isinstance(ticker, str) or not ticker or len(ticker) > 24 or ticker in tickers:
+            raise ValueError("Ambiguous member-index membership")
+        for when in (member.get("added"), member.get("removed")):
+            if when is not None and (not isinstance(when, str) or date.fromisoformat(when).isoformat() != when):
+                raise ValueError("Invalid member-index membership date")
+        tickers.append(ticker)
+    calendar = idx.copy().as_unit("ns")
+    if len(calendar) * len(tickers) > MAX_PANEL_CELLS:
+        raise ValueError("Member-index projection bound")
+    return document, calendar, tickers
+
+
+def member_index_from_inputs(members, idx: pd.DatetimeIndex, *, close: pd.DataFrame,
+                             volume: pd.DataFrame | None = None) -> tuple[pd.Series | None, dict]:
+    """Current-membership equal-weight close index from actual captured fields.
+
+    This is the Sector-cycle close-index contract, not a full candle. The caller
+    supplies an admitted source calendar; this function has no loader, cache,
+    provider, config, clock, publication or session-calendar lookup. Missing range
+    fields are never invented. Volume is optional coverage evidence, never filled.
+    """
+    document, calendar, tickers = _capture_member_index_scope(members, idx)
+    captured = _capture_index_panel(close)
+    captured_volume = None if volume is None else _capture_index_panel(volume, volume=True)
+    # Membership order is retained. A nonempty frame outside the supplied
+    # calendar or an all-null column is not a resolved member.
+    raw = captured.reindex(index=calendar, columns=[t for t in tickers if t in captured])
+    present = [t for t in tickers if t in raw and bool(raw[t].notna().any())]
+    meta = {"mode": "equal", "pit": False, "n_total": len(tickers), "n_with_close": len(present),
+            "coverage_pct": None, "n_live_with_volume": None, "status": "unavailable",
+            "reason": "insufficient_resolved_members", "index_sessions": 0}
+    if len(present) < 3:
+        return None, meta
+    core = _close_index_kernel(members=document, idx=calendar, present=present,
+        close_raw=raw[present], mode="equal", conv_map=None, pit=False, alpha_pit=True)
+    if core.level is None:
+        return None, {**meta, "reason": "no_member_index_returns"}
+    full = core.level.replace([np.inf, -np.inf], np.nan).dropna().rename("close")
+    n_live = int(core.mask.iloc[-1].sum())
+    meta.update({"n_live": n_live, "n_stale_tail": len(core.stale_tail),
+        "stale_tail": sorted(core.stale_tail)[:12], "index_sessions": len(full),
+        "as_of": str(full.index[-1].date()) if len(full) else None,
+        "start": str(full.index[0].date()) if len(full) else None, "lookahead": core.lookahead})
+    if captured_volume is not None:
+        latest = captured_volume.reindex(index=calendar, columns=present).iloc[-1]
+        observed = int((latest.notna() & (latest > 0) & core.mask.iloc[-1]).sum())
+        meta.update({"n_live_with_volume": observed,
+                     "coverage_pct": round(observed / n_live, 3) if n_live else None})
+    if len(full) < MIN_MEMBER_INDEX_SESSIONS:
+        return None, {**meta, "reason": "insufficient_index_history"}
+    return full.copy(deep=True), {**meta, "status": "available", "reason": None}
+
+
+def _consolidated_candle_from_loaded(members, idx, loaded, *, mode, conv_map,
+                                    pit, alpha_pit, diagnostics):
+    """Incumbent OHLC construction over supplied frames; one numerical owner."""
+    tickers = [m.get("ticker") for m in members if m.get("ticker")]
+    present = [t for t in tickers if loaded.get(t) is not None and not loaded[t].empty]
+    n_total = len(set(tickers))
+    if len(present) < 3:
+        return None, {"n_total": n_total, "n_with_ohlcv": len(present), "coverage_pct": None,
+                      "mode": mode}
+
+    # align each field to the basket calendar
+    def _field(col: str) -> pd.DataFrame:
+        cols = {t: loaded[t][col].reindex(idx) for t in present if col in loaded[t].columns}
+        return pd.DataFrame(cols, index=idx)
+
+    close_raw = _field("close")
+    high = _field("high").ffill()
+    low = _field("low").ffill()
+    open_ = _field("open").ffill()
+    vol = _field("volume")
+
+    core = _close_index_kernel(members=members, idx=idx, present=present,
+        close_raw=close_raw, mode=mode, conv_map=conv_map, pit=pit, alpha_pit=alpha_pit)
+    close, prev_close, mask, w = core.close, core.previous_close, core.mask, core.weights
+    stale_tail, lookahead = list(core.stale_tail), core.lookahead
+    if stale_tail and diagnostics:
+        log.warning("basket candle: %d member tape(s) stale past %d-bar grace — exited "
+                    "from the live set at tape end: %s", len(stale_tail), _STALE_TAIL_GRACE,
+                    ",".join(sorted(stale_tail)[:12]))
+    r_high = high / prev_close - 1.0
+    r_low = low / prev_close - 1.0
+    r_open = open_ / prev_close - 1.0
+    Rh, Rl, Ro = (_weighted_return(frame, present, w) for frame in (r_high, r_low, r_open))
+    first = core.first
+    if first is None:
+        return None, {"n_total": n_total, "n_with_ohlcv": len(present), "coverage_pct": None,
+                      "mode": mode}
+    lvl_close, prev_lvl = core.level, core.previous_level
 
     cand = pd.DataFrame(index=idx)
     cand["close"] = lvl_close
@@ -467,6 +587,134 @@ def consolidated_candle(members: list[dict], idx: pd.DatetimeIndex, mode: str = 
         "lookahead": lookahead,
     }
     return cand, meta
+
+
+def consolidated_candle(members: list[dict], idx: pd.DatetimeIndex, mode: str = "equal",
+                        conv_map: dict | None = None, pit: bool = True,
+                        alpha_pit: bool = True
+                        ) -> tuple[pd.DataFrame | None, dict]:
+    """The basket CANDLE on calendar `idx`: columns [open, high, low, close, dollar_vol, n_live],
+    + a coverage/meta dict. None if fewer than 3 members resolve OHLCV. close is a LEVEL from 1.0.
+
+    `members` are membership entries ({ticker, added, removed, weight?}); `idx` the basket
+    calendar; `conv_map` ticker→conviction score for relevance weighting; `pit` selects strict
+    point-in-time membership (True, perf-faithful) vs current-membership-over-full-history
+    (False, for the deep MTF/vol-hole technical read). See _live_mask.
+
+    `alpha_pit` (mode=='alpha' only): True (default) recomputes the trailing-strength tilt
+    on a monthly rebalance grid and holds each vector forward — a point-in-time curve with
+    no look-ahead. False reproduces the legacy static as-of-today vector applied across all
+    history (an in-sample illustration); meta is stamped `lookahead: true` so any display
+    can disclose it. See _alpha_weights_pit / audit #44."""
+    tickers = [m.get("ticker") for m in members if m.get("ticker")]
+    loaded = {t: _load_member_ohlcv(t) for t in tickers}
+    return _consolidated_candle_from_loaded(
+        members, idx, loaded, mode=mode, conv_map=conv_map, pit=pit,
+        alpha_pit=alpha_pit, diagnostics=True)
+
+
+def consolidated_candle_from_inputs(members, idx: pd.DatetimeIndex, *,
+                                    frames: Mapping, mode: str = "equal",
+                                    conv_map: dict | None = None, pit: bool = False,
+                                    alpha_pit: bool = True,
+                                    reference_close: pd.DataFrame | None = None,
+                                    basis_tolerance: float = 1e-3):
+    """Build the incumbent full candle from detached genuine member fields.
+
+    Missing field identities are unavailable, never substituted with closes.
+    The calendar stops at an eligible actual observation; a later removed
+    member or an empty provider tail cannot advance the candle's source date.
+    """
+    from lib.adjusted_price_capture import OHLCV_FIELDS, MAX_PANEL_CELLS, validate_ohlcv_geometry
+    document, calendar, tickers = _capture_member_index_scope(members, idx)
+    if (not isinstance(frames, Mapping) or not set(frames).issubset(tickers)
+            or mode not in ("equal", "relevance", "alpha")
+            or type(pit) is not bool or type(alpha_pit) is not bool
+            or (pit and any(not row.get("added") for row in document))):
+        raise ValueError("Invalid explicit member-candle scope")
+    if (type(basis_tolerance) not in (int, float) or not np.isfinite(basis_tolerance)
+            or not 0 <= basis_tolerance < 1):
+        raise ValueError("Invalid member-candle basis tolerance")
+    if sum(frame.size for frame in frames.values() if isinstance(frame, pd.DataFrame)) > MAX_PANEL_CELLS * len(OHLCV_FIELDS):
+        raise ValueError("Captured member-frame allocation bound")
+    reference = None if reference_close is None else _capture_index_panel(reference_close)
+    if reference is not None and not set(reference.columns).issubset(tickers):
+        raise ValueError("Unexpected member-candle reference population")
+    loaded, unavailable, basis_checks = {}, {}, {}
+    observation_dates = {}
+    for ticker in tickers:
+        frame = frames.get(ticker)
+        if frame is None:
+            unavailable[ticker] = "no_captured_frame"
+            continue
+        if not isinstance(frame, pd.DataFrame) or frame.columns.has_duplicates:
+            raise ValueError("Invalid explicit member-candle frame")
+        if frame.empty:
+            unavailable[ticker] = "no_captured_observations"
+            continue
+        if set(frame.columns) != set(OHLCV_FIELDS):
+            unavailable[ticker] = "genuine_ohlcv_fields_required"
+            continue
+        values = {}
+        dates = {}
+        for field in OHLCV_FIELDS:
+            column = _capture_index_panel(
+                frame[[field]].rename(columns={field: ticker}), volume=field == "volume")[ticker]
+            actual = column.dropna()
+            if len(calendar) and len(actual) and actual.index[-1] > calendar[-1]:
+                raise ValueError("Future member-candle observations")
+            values[field] = column
+            dates[field] = actual.index[-1] if len(actual) else None
+        validate_ohlcv_geometry({field: column.to_frame(ticker) for field, column in values.items()})
+        if any(value is None for value in dates.values()):
+            unavailable[ticker] = "genuine_ohlcv_observations_required"
+            continue
+        if len(set(dates.values())) != 1:
+            unavailable[ticker] = "mixed_field_observation_dates"
+            continue
+        if reference is not None:
+            from lib import store
+            prior_close = (reference[ticker].dropna() if ticker in reference
+                           else pd.Series(dtype=float))
+            comparison = store.compare_basis(prior_close.to_frame("close"),
+                values["close"].dropna().to_frame("close"), strict=True, tol=basis_tolerance)
+            basis_checks[ticker] = {"status": comparison.status,
+                                    "overlap_dates": comparison.overlap_dates}
+            if comparison.status != store.BASIS_ALIGNED or comparison.overlap_dates < 3:
+                unavailable[ticker] = "reference_basis_unqualified"
+                continue
+        loaded[ticker] = pd.DataFrame(values)
+        observation_dates[ticker] = {
+            field: stamp.date().isoformat() for field, stamp in dates.items()}
+    present = [ticker for ticker in tickers if ticker in loaded]
+    evidence = {"unavailable_members": unavailable, "member_field_dates": observation_dates,
+                "required_fields": list(OHLCV_FIELDS), "status": "unavailable",
+                "observed_member_coverage_pct": None,
+                "reference_basis_qualified": reference is not None and len(present) >= 3,
+                "reference_basis_checks": basis_checks,
+                "reference_basis_tolerance": basis_tolerance}
+    if len(present) < 3 or not len(calendar):
+        return None, {"n_total": len(tickers), "n_with_ohlcv": len(present),
+                      "coverage_pct": None, "mode": mode, **evidence}
+    close = pd.DataFrame({ticker: loaded[ticker]["close"].reindex(calendar) for ticker in present},
+                         index=calendar)
+    eligible = _live_mask(document, calendar, present, pit=pit, close=close)
+    observed = (close.notna() & eligible).any(axis=1)
+    endpoints = calendar[observed]
+    if not len(endpoints):
+        return None, {"n_total": len(tickers), "n_with_ohlcv": len(present),
+                      "coverage_pct": None, "mode": mode, **evidence}
+    calendar = calendar[calendar <= endpoints[-1]]
+    candle, meta = _consolidated_candle_from_loaded(
+        document, calendar, loaded, mode=mode, conv_map=deepcopy(conv_map),
+        pit=pit, alpha_pit=alpha_pit, diagnostics=False)
+    at_end = eligible.loc[calendar[-1]] & close.loc[calendar[-1]].notna()
+    count = int(at_end.sum())
+    evidence.update({"status": "available" if candle is not None else "unavailable",
+                     "observed_members_at_endpoint": count,
+                     "observed_member_coverage_pct": round(count / len(tickers), 3) if tickers else None,
+                     "observed_endpoint": calendar[-1].date().isoformat()})
+    return (None if candle is None else candle.copy(deep=True)), {**meta, **evidence}
 
 
 def weight_variants(members: list[dict], idx: pd.DatetimeIndex,

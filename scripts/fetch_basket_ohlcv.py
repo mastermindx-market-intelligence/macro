@@ -62,8 +62,13 @@ from __future__ import annotations
 import argparse
 import json
 import logging
+import re
 import sys
 import time
+from copy import deepcopy
+from dataclasses import dataclass
+from collections.abc import Mapping
+from types import MappingProxyType
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
@@ -550,20 +555,75 @@ def _scrub_placeholder_prices(df: pd.DataFrame) -> pd.DataFrame:
     return df[df[px].notna().any(axis=1)]
 
 
-def _download_ohlcv(tickers: list[str]) -> dict[str, pd.DataFrame]:
+def _scrub_explicit_ohlcv_frame(frame: pd.DataFrame) -> pd.DataFrame:
+    """Reuse placeholder policy, retaining the raw response extent and true holes."""
+    from lib import adjusted_price_capture as captured
+    # Invalid types/nonfinite values cannot disappear inside placeholder cleanup.
+    for field in frame.columns:
+        captured._capture_panel_values(
+            frame[[field]], field=field, allow_price_placeholders=True)
+    original_index = frame.index.copy()
+    return _scrub_placeholder_prices(frame.copy(deep=True)).reindex(original_index)
+
+
+def _download_ohlcv(tickers: list[str], *, request_settings=None,
+                     history_start: str = START, source_session: str | None = None
+                     ) -> dict[str, pd.DataFrame]:
     """Per-ticker OHLCV frames, deep from START. Reuses the breadth yfinance pattern
     (crumb/cookie auth that works headless), batched with retry+backoff. group_by=ticker
     so each name comes back as its own Open/High/Low/Close/Volume block."""
+    if (request_settings is None) != (source_session is None):
+        raise ValueError("Explicit OHLCV download requires both policy and source session")
+    strict = request_settings is not None
+    batch_size = request_settings.batch_size if strict else BATCH
+    retries = request_settings.retries if strict else RETRIES
+    backoff = request_settings.backoff_base_s if strict else BACKOFF_S
     import yfinance as yf
     out: dict[str, pd.DataFrame] = {}
-    for i in range(0, len(tickers), BATCH):
-        batch = tickers[i:i + BATCH]
-        for attempt in range(RETRIES):
+    for i in range(0, len(tickers), batch_size):
+        batch = tickers[i:i + batch_size]
+        for attempt in range(retries):
             try:
-                df = yf.download(batch, start=START, auto_adjust=True, progress=False,
+                df = yf.download(batch, start=history_start, auto_adjust=True, progress=False,
                                  group_by="ticker", threads=True)
                 if df is None or df.empty:
                     raise RuntimeError("empty frame")
+                if strict:
+                    from lib import adjusted_price_capture as captured
+                    if (not isinstance(df, pd.DataFrame) or len(df) > captured.MAX_ROWS
+                            or df.size > captured.MAX_PANEL_CELLS * len(captured.OHLCV_FIELDS)
+                            or not isinstance(df.index, pd.DatetimeIndex)
+                            or df.index.hasnans or df.index.has_duplicates
+                            or not df.index.is_monotonic_increasing or df.index.tz is not None
+                            or not df.index.equals(df.index.normalize()) or df.columns.has_duplicates):
+                        raise captured.AdjustedCaptureError("invalid_adjusted_response")
+                    multi = isinstance(df.columns, pd.MultiIndex)
+                    if ((multi and df.columns.nlevels != 2)
+                            or (not multi and len(batch) != 1)):
+                        raise captured.AdjustedCaptureError("ambiguous_adjusted_symbols")
+                    if multi and not set(df.columns.get_level_values(0)).issubset(batch):
+                        raise captured.AdjustedCaptureError("unexpected_adjusted_symbol")
+                    raw = df.loc[df.index <= pd.Timestamp(source_session)]
+                    field_names = raw.columns.get_level_values(1) if multi else raw.columns
+                    if "Close" not in field_names:
+                        raise captured.AdjustedCaptureError("adjusted_close_missing")
+                    blocks = {}
+                    for ticker in batch:
+                        if multi and ticker not in raw.columns.get_level_values(0):
+                            continue
+                        block = raw[ticker] if multi else raw
+                        selected = [field.title() for field in captured.OHLCV_FIELDS
+                                    if field.title() in block.columns]
+                        block = block[selected].rename(columns=str.lower)
+                        blocks[ticker] = _scrub_explicit_ohlcv_frame(block).rename(columns=str.title)
+                    grouped = pd.concat(blocks, axis=1).swaplevel(0, 1, axis=1)
+                    observed = captured.capture_adjusted_ohlcv_response(
+                        grouped, requested=tuple(batch), source_session=source_session)
+                    for ticker in batch:
+                        out[ticker] = pd.DataFrame({
+                            field: observed.panels[field][ticker]
+                            for field in captured.OHLCV_FIELDS})
+                    break
                 # Single-ticker downloads come back flat (no ticker level) — normalise.
                 if not isinstance(df.columns, pd.MultiIndex):
                     df.columns = pd.MultiIndex.from_product([[batch[0]], df.columns])
@@ -577,14 +637,194 @@ def _download_ohlcv(tickers: list[str]) -> dict[str, pd.DataFrame]:
                         out[t] = sub.sort_index()
                 break
             except Exception as e:  # noqa: BLE001
-                wait = BACKOFF_S * (2 ** attempt)
+                wait = backoff * (2 ** attempt)
                 log.warning("batch %d/%d (%s…) attempt %d failed (%s); retry in %.0fs",
-                            i // BATCH + 1, (len(tickers) - 1) // BATCH + 1, batch[0],
+                            i // batch_size + 1, (len(tickers) - 1) // batch_size + 1, batch[0],
                             attempt + 1, e, wait)
                 time.sleep(wait)
         else:
-            log.error("batch starting %s failed after %d retries — leaving to prior store", batch[0], RETRIES)
+            log.error("batch starting %s failed after %d retries — leaving to prior store", batch[0], retries)
     return out
+
+
+
+
+@dataclass(frozen=True)
+class BasketOHLCVAcquisition:
+    """Detached incumbent-owner observations; this result is not publication authority."""
+    status: str
+    source_session: str
+    frames: Mapping[str, pd.DataFrame]
+    requested: tuple[str, ...]
+    acquired: tuple[str, ...]
+    current: tuple[str, ...]
+    retained: tuple[str, ...]
+    unresolved: tuple[str, ...]
+    evidence: Mapping
+
+
+def _capture_ohlcv_frames(frames: Mapping, *, requested: tuple[str, ...],
+                          source_session: str):
+    """Project genuine named fields into the existing bounded capture owner."""
+    from lib import adjusted_price_capture as captured
+    if not isinstance(frames, Mapping) or not set(frames).issubset(requested):
+        raise captured.AdjustedCaptureError("unexpected_ohlcv_frame_identity")
+    values = {}
+    index = pd.DatetimeIndex([])
+    for ticker, frame in frames.items():
+        if frame is None:
+            continue
+        if (not isinstance(frame, pd.DataFrame) or len(frame) > captured.MAX_ROWS
+                or frame.columns.has_duplicates
+                or not set(frame.columns).issubset(captured.OHLCV_FIELDS)
+                or not isinstance(frame.index, pd.DatetimeIndex)
+                or frame.index.hasnans or frame.index.has_duplicates
+                or not frame.index.is_monotonic_increasing or frame.index.tz is not None
+                or not frame.index.equals(frame.index.normalize())):
+            raise captured.AdjustedCaptureError("invalid_ohlcv_frame")
+        index = index.union(frame.index)
+        if (len(index) > captured.MAX_ROWS
+                or len(index) * len(requested) > captured.MAX_PANEL_CELLS):
+            raise captured.AdjustedCaptureError("ohlcv_frame_union_bound")
+        values[ticker] = _scrub_explicit_ohlcv_frame(frame)
+    index = index.sort_values().as_unit("ns")
+    panels = {}
+    for field in captured.OHLCV_FIELDS:
+        columns = {ticker: frame[field] for ticker, frame in values.items() if field in frame}
+        panels[field] = pd.DataFrame(columns, index=index).reindex(columns=requested)
+    return captured.capture_ohlcv_panels(panels, source_session=source_session)
+
+
+def acquire_ohlcv_from_inputs(*, requested: tuple[str, ...], prior_frames: Mapping,
+                              aliases: Mapping, excluded_symbols: frozenset[str],
+                              request_settings, history_start: str,
+                              evaluation_instant: datetime) -> BasketOHLCVAcquisition:
+    """Refresh the captured US thematic population through the incumbent deep downloader.
+
+    Full-history accepted replacements own all five fields together. Complete older
+    histories remain usable but do not count as current. Failed replacements preserve
+    the supplied prior, with its unresolved status. No legacy reads, census, cache,
+    proxy, store writes or publication are performed here.
+    """
+    from collectors.yahoo import YahooRequestSettings
+    from lib import market_session, adjusted_price_capture as captured
+    if (not isinstance(requested, tuple) or not requested
+            or len(requested) > captured.MAX_COLUMNS
+            or any(not isinstance(t, str) for t in requested)
+            or len(set(requested)) != len(requested)
+            or not isinstance(prior_frames, Mapping) or not isinstance(aliases, Mapping)
+            or not isinstance(excluded_symbols, frozenset)
+            or any(not isinstance(t, str) for t in excluded_symbols)
+            or not isinstance(request_settings, YahooRequestSettings)
+            or not isinstance(evaluation_instant, datetime)
+            or evaluation_instant.tzinfo is None or evaluation_instant.utcoffset() is None):
+        raise captured.AdjustedCaptureError("invalid_explicit_ohlcv_request")
+    try:
+        if not isinstance(history_start, str) or date.fromisoformat(history_start).isoformat() != history_start:
+            raise ValueError
+    except (TypeError, ValueError):
+        raise captured.AdjustedCaptureError("invalid_ohlcv_history_start") from None
+    # Revalidate even directly constructed policy objects, then use one immutable copy.
+    request = YahooRequestSettings.capture({
+        "batch_size": request_settings.batch_size, "retries": request_settings.retries,
+        "backoff_base_s": request_settings.backoff_base_s,
+        "upsert_basis_tol": request_settings.basis_tolerance,
+    })
+    frozen_aliases = deepcopy(dict(aliases))
+    mapping = {ticker: frozen_aliases.get(ticker, ticker) for ticker in requested}
+    if (any(not isinstance(ticker, str) or ticker != ticker.strip().upper()
+            or not re.fullmatch(r"[A-Z][A-Z0-9.-]{0,23}", ticker)
+            or market_session.cash_market_for_symbol(ticker) != "us" for ticker in requested)
+            or any(not isinstance(vendor, str) or vendor != vendor.strip().upper()
+                   or not re.fullmatch(r"[A-Z][A-Z0-9.-]{0,23}", vendor)
+                   or market_session.cash_market_for_symbol(vendor) != "us"
+                   for vendor in mapping.values())
+            or len(set(mapping.values())) != len(mapping)):
+        raise captured.AdjustedCaptureError("ohlcv_requires_unique_us_cash_identities")
+    evaluation = evaluation_instant.astimezone(timezone.utc)
+    local = market_session.market_local_date("US", evaluation)
+    target = market_session.expected_session("US", evaluation)
+    if (not market_session.calendar_verified("US", local.year)
+            or not market_session.calendar_verified("US", target.year)
+            or date.fromisoformat(history_start) > target):
+        raise captured.AdjustedCaptureError("ohlcv_target_calendar_or_start_invalid")
+    source = target.isoformat()
+    prior = _capture_ohlcv_frames(prior_frames, requested=requested, source_session=source)
+    active = tuple(ticker for ticker in requested if ticker not in excluded_symbols)
+    download_frames = {}
+    if active:
+        request_map = {ticker: mapping[ticker] for ticker in active}
+        raw = _download_ohlcv(list(request_map.values()), request_settings=request,
+                              history_start=history_start, source_session=source)
+        if not isinstance(raw, Mapping) or not set(raw).issubset(request_map.values()):
+            raise captured.AdjustedCaptureError("unexpected_ohlcv_provider_identity")
+        inverse = {vendor: ticker for ticker, vendor in request_map.items()}
+        download_frames = {inverse[vendor]: frame for vendor, frame in raw.items()}
+    fresh = _capture_ohlcv_frames(download_frames, requested=active, source_session=source)
+    # Strict downloader frames retain their complete returned row spans, including
+    # holes. Per-field actual observation dates are separately disclosed below.
+    spans = {}
+    for ticker, frame in download_frames.items():
+        if (frame is not None and len(frame) and ticker in fresh["close"]
+                and fresh["close"][ticker].notna().any()):
+            spans[ticker] = (pd.Timestamp(frame.index[0]), pd.Timestamp(frame.index[-1]))
+    observed = captured.AdjustedPriceCapture(
+        MappingProxyType(fresh), MappingProxyType(spans), active)
+    if active:
+        merged = captured.merge_adjusted_ohlcv_capture(
+            prior=prior, fresh=observed, active=active, source_session=source,
+            basis_tolerance=request.basis_tolerance, minimum_repair_sessions=1,
+            full_replacement=True, allow_historical_replacement=True)
+        panels, acquired, current, unresolved = (
+            merged.panels, merged.repaired, merged.current, merged.unresolved)
+        reasons = dict(merged.reasons)
+    else:
+        panels, acquired, current, unresolved, reasons = prior, (), (), (), {}
+    frames = {}
+    for ticker in requested:
+        frame = pd.DataFrame({field: panels[field][ticker] for field in captured.OHLCV_FIELDS})
+        frame = frame.dropna(how="all")
+        if not frame.empty:
+            frames[ticker] = frame.copy(deep=True)
+    retained = tuple(ticker for ticker in frames if ticker not in acquired)
+    def observation(panel, ticker):
+        values = panel[ticker].dropna() if ticker in panel else pd.Series(dtype=float)
+        return {"count": len(values),
+                "first": values.index[0].date().isoformat() if len(values) else None,
+                "last": values.index[-1].date().isoformat() if len(values) else None}
+    members = {}
+    for ticker in requested:
+        members[ticker] = {
+            "vendor_symbol": mapping[ticker],
+            "download_requested": ticker in active,
+            "excluded_by_captured_policy": ticker in excluded_symbols,
+            "accepted_replacement": ticker in acquired,
+            "current_acquisition": ticker in current,
+            "prior_retained": ticker in retained,
+            "unresolved_replacement": ticker in unresolved,
+            "reason": "excluded_by_captured_policy" if ticker in excluded_symbols else reasons.get(ticker),
+            "acquisition_basis": "provider_auto_adjusted" if ticker in acquired else None,
+            "prior_qualification": "not_requalified" if ticker in retained else None,
+            "response_span": [stamp.date().isoformat() for stamp in spans[ticker]] if ticker in spans else None,
+            "observed_fields": {field: observation(fresh[field], ticker) for field in captured.OHLCV_FIELDS},
+            "selected_fields": {field: observation(panels[field], ticker) for field in captured.OHLCV_FIELDS},
+        }
+    shortfalls = tuple(ticker for ticker in active if ticker not in current)
+    status = "complete" if active and not shortfalls else "partial" if frames else "unavailable"
+    evidence = {
+        "evaluation_instant": evaluation.isoformat(), "source_session": source,
+        "market": "US", "completed_sessions_only": True,
+        "request": {"history_start": history_start, "batch_size": request.batch_size,
+                    "retries": request.retries, "backoff_base_s": request.backoff_base_s,
+                    "basis_tolerance": request.basis_tolerance, "minimum_repair_sessions": 1,
+                    "full_replacement": True, "allow_historical_replacement": True},
+        "current_session_shortfalls": list(shortfalls), "members": members,
+        "unknown": {"vendor_publication_clock": "Not supplied per bar by yfinance",
+                    "provider_available_at": "First retrievable time is not observed"},
+    }
+    return BasketOHLCVAcquisition(
+        status, source, MappingProxyType(frames), requested, tuple(acquired), tuple(current),
+        retained, tuple(unresolved), MappingProxyType(evidence))
 
 
 def main(argv: list[str] | None = None) -> int:

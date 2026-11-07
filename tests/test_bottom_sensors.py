@@ -976,6 +976,281 @@ class TestSponsorshipState:
 # 7. Wiring conformance: daily.yml + dag.yml presence assertions
 # ═══════════════════════════════════════════════════════════════════════════════
 
+class TestCapturedSectorAssociations:
+    """Native identity, explicit source clocks and no holdings/ticker fallback."""
+
+    @staticmethod
+    def _inputs():
+        from lib.dataos.identity import AliasRow, VendorAliasTable
+        clock = datetime.datetime(2026, 10, 22, 12, tzinfo=datetime.timezone.utc)
+        def attribution(ref):
+            return {"source_ref": ref, "source_version": "statv1:retained-fixture",
+                    "captured_at": clock}
+        return {
+            "subjects": [{"vendor": "membership", "vendor_symbol": "MU"}],
+            "constituent_sources": [{
+                **attribution("data/breadth/constituents.parquet"),
+                "population": "breadth", "vendor": "membership",
+                "rows": [{"symbol": "MU", "name": "Micron Technology",
+                          "sector": "Information Technology"}],
+            }],
+            "alias_table": VendorAliasTable([AliasRow(
+                vendor="membership", vendor_symbol="MU", security_id="SEC:US-XNAS-MU",
+            )]),
+            "issuer_records": [{
+                "security_id": "SEC:US-XNAS-MU", "issuer_id": "ISS:US-XNAS-MU",
+                "issuer_state": "RESOLVED", "listing_key": "US-XNAS-MU",
+                "security_state": None, "superseded_by": None,
+            }],
+            "identity_source": {
+                "vendor_aliases": attribution("reference.vendor_aliases"),
+                "issuer_master": attribution("reference.security_master"),
+            },
+            "lookup_on": clock.date(), "observed_at": clock,
+        }
+
+    @staticmethod
+    def _project(inputs):
+        from engine.neuralweb.sector_map import project_captured_sector_associations
+        return project_captured_sector_associations(**inputs)
+
+    def test_native_mu_association_is_descriptive_and_detached(self):
+        import copy
+        import json
+        inputs = self._inputs()
+        original = copy.deepcopy({k: v for k, v in inputs.items() if k != "alias_table"})
+        result = self._project(inputs)
+        row = result["associations"][0]
+        assert result["schema"] == "sector_map.captured_associations/v1"
+        assert result["status"] == row["status"] == "available"
+        assert (row["security_id"], row["issuer_id"], row["listing_key"]) == (
+            "SEC:US-XNAS-MU", "ISS:US-XNAS-MU", "US-XNAS-MU",
+        )
+        assert (row["sector"], row["sector_etf_proxy"]) == ("Information Technology", "XLK")
+        assert row["etf_security_id"] is None
+        assert row["etf_identity_status"] == "not_supplied"
+        assert all(v is False for v in result["limitations"].values())
+        assert all(v is False for v in result["authority"].values())
+        assert result["identity_mode"] == "current"
+        assert all(a["raw_sha256"] is None for a in result["source_attribution"])
+        assert all(a["source_available_at"] is None for a in result["source_attribution"])
+        assert row["source_observations"][0]["source_effective_on"] is None
+        assert json.loads(json.dumps(result, allow_nan=False)) == result
+        assert {k: v for k, v in inputs.items() if k != "alias_table"} == original
+        inputs["subjects"][0]["vendor_symbol"] = "CHANGED"
+        inputs["constituent_sources"][0]["rows"][0]["name"] = "CHANGED"
+        assert row["subject"]["vendor_symbol"] == "MU"
+        assert row["source_observations"][0]["native_name"] == "Micron Technology"
+
+    @pytest.mark.parametrize("field,value,reason", [
+        ("issuer_state", "NO_ISSUER_EVIDENCE", "ISSUER_NOT_RESOLVED"),
+        ("issuer_id", None, "IDENTITY_INCOMPLETE"),
+        ("listing_key", None, "IDENTITY_INCOMPLETE"),
+        ("listing_key", "US-XNYS-MU", "IDENTITY_INCONSISTENT"),
+        ("issuer_id", "SEC:US-XNAS-MU", "IDENTITY_INCONSISTENT"),
+        ("issuer_id", "iss:us-xnas-mu", "IDENTITY_INCONSISTENT"),
+        ("security_state", "SUPERSEDED_DUPLICATE_MINT", "SECURITY_NOT_ACTIVE"),
+        ("superseded_by", "SEC:US-XNAS-MU.2", "SECURITY_NOT_ACTIVE"),
+    ])
+    def test_native_identity_must_be_active_and_resolved(self, field, value, reason):
+        inputs = self._inputs()
+        inputs["issuer_records"][0][field] = value
+        result = self._project(inputs)
+        row = result["associations"][0]
+        assert row["status"] == "unavailable"
+        assert row["security_id"] is row["issuer_id"] is row["sector_etf_proxy"] is None
+        assert row["source_observations"][0]["binding_status"] == "unbound"
+        assert reason in row["reason_codes"]
+
+    def test_unknown_master_none_state_is_not_active_membership(self):
+        inputs = self._inputs()
+        inputs["issuer_records"] = []
+        row = self._project(inputs)["associations"][0]
+        assert row["status"] == "unavailable"
+        assert "MASTER_SECURITY_ABSENT" in row["reason_codes"]
+        assert row["sector"] is None
+
+    def test_duplicate_raw_master_rejected_before_native_overwrite(self):
+        inputs = self._inputs()
+        inputs["issuer_records"].append(dict(inputs["issuer_records"][0],
+                                             issuer_state="NO_ISSUER_EVIDENCE"))
+        with pytest.raises(ValueError, match="duplicate_master_security"):
+            self._project(inputs)
+
+    def test_native_refusal_has_no_rows_or_ticker_fallback(self):
+        from lib.dataos.identity import IdentityError, VendorAliasTable
+        class Refused(VendorAliasTable):
+            @property
+            def rows(self):
+                raise AssertionError("No eligible-view bypass")
+            def resolve(self, *args, **kwargs):
+                raise IdentityError("native snapshot refused")
+        inputs = self._inputs()
+        inputs["alias_table"] = Refused()
+        row = self._project(inputs)["associations"][0]
+        assert row["sector"] is None
+        assert row["reason_codes"] == ["NATIVE_IDENTITY_REFUSED"]
+
+    def test_native_reciprocal_agreement_required(self):
+        from lib.dataos.identity import VendorAliasTable
+        class Mismatch(VendorAliasTable):
+            def vendor_symbol_for(self, *args, **kwargs):
+                return "DIFFERENT"
+        inputs = self._inputs()
+        inputs["alias_table"] = Mismatch(inputs["alias_table"].rows)
+        row = self._project(inputs)["associations"][0]
+        assert row["reason_codes"] == ["ALIAS_NOT_RECIPROCAL"]
+        assert row["sector_etf_proxy"] is None
+
+    def test_explicit_date_and_receipts_pass_to_both_native_directions(self):
+        from lib.dataos.identity import VendorAliasTable
+        calls = []
+        class Observed(VendorAliasTable):
+            def resolve(self, *args, **kwargs):
+                calls.append(("forward", args, kwargs))
+                return super().resolve(*args, **kwargs)
+            def vendor_symbol_for(self, *args, **kwargs):
+                calls.append(("reverse", args, kwargs))
+                return super().vendor_symbol_for(*args, **kwargs)
+        inputs = self._inputs()
+        inputs["snapshot_receipts"] = ("opaque-native-receipt",)
+        inputs["alias_table"] = Observed(inputs["alias_table"].rows)
+        assert self._project(inputs)["status"] == "available"
+        assert [c[0] for c in calls] == ["forward", "reverse"]
+        for _, args, kwargs in calls:
+            assert args[0] == "membership" and args[2] == inputs["lookup_on"]
+            assert kwargs == {"decision_at": inputs["observed_at"],
+                              "snapshot_receipts": inputs["snapshot_receipts"]}
+
+    def test_conflicting_captured_sectors_withhold_proxy(self):
+        import copy
+        inputs = self._inputs()
+        other = copy.deepcopy(inputs["constituent_sources"][0])
+        other.update(population="midcap_breadth", source_ref="data/midcap_breadth/constituents.parquet")
+        other["rows"][0]["sector"] = "Industrials"
+        inputs["constituent_sources"].append(other)
+        result = self._project(inputs)
+        row = result["associations"][0]
+        assert result["status"] == row["status"] == "conflict"
+        assert row["sector"] is row["sector_etf_proxy"] is None
+        assert len(row["source_observations"]) == 2
+        assert "CLASSIFICATION_CONFLICT" in row["reason_codes"]
+        assert result["coverage"]["conflict_n"] == 1
+
+    def test_duplicates_do_not_inflate_subject_or_observation_coverage(self):
+        inputs = self._inputs()
+        inputs["subjects"] *= 3
+        inputs["constituent_sources"][0]["rows"] *= 4
+        result = self._project(inputs)
+        assert result["coverage"] == {
+            "requested_n": 1, "associated_n": 1, "unavailable_n": 0,
+            "conflict_n": 0, "duplicate_requests_n": 2,
+        }
+        row = result["associations"][0]
+        assert len(row["source_observations"]) == 1
+        assert row["duplicate_observations_n"] == 3
+
+    def test_lowercase_symbol_is_not_normalized_or_filled_from_ticker(self):
+        inputs = self._inputs()
+        inputs["subjects"].append({"vendor": "membership", "vendor_symbol": "mu"})
+        result = self._project(inputs)
+        assert result["status"] == "partial"
+        assert result["coverage"]["associated_n"] == 1
+        assert result["coverage"]["unavailable_n"] == 1
+        assert result["associations"][1]["sector"] is None
+
+    def test_unsupported_native_sector_has_no_fuzzy_taxonomy(self):
+        inputs = self._inputs()
+        inputs["constituent_sources"][0]["rows"][0]["sector"] = "Technology"
+        row = self._project(inputs)["associations"][0]
+        assert row["status"] == "unavailable"
+        assert row["reason_codes"] == ["UNSUPPORTED_SECTOR"]
+
+    def test_empty_capture_is_unavailable_not_positive_identity_only(self):
+        inputs = self._inputs()
+        inputs["constituent_sources"] = []
+        row = self._project(inputs)["associations"][0]
+        assert row["security_id"] == "SEC:US-XNAS-MU"
+        assert row["status"] == "unavailable"
+        assert row["reason_codes"] == ["NO_CAPTURED_CLASSIFICATION"]
+
+    def test_effective_date_after_observation_is_preserved_and_withheld(self):
+        inputs = self._inputs()
+        inputs["constituent_sources"][0]["source_effective_on"] = datetime.date(2026, 10, 23)
+        row = self._project(inputs)["associations"][0]
+        assert row["sector"] is None
+        assert row["source_observations"][0]["source_effective_on"] == "2026-10-23"
+        assert row["reason_codes"] == ["CLASSIFICATION_EFFECTIVE_AFTER_OBSERVATION"]
+
+    def test_alias_naming_date_is_not_a_classification_cutoff(self):
+        inputs = self._inputs()
+        inputs["lookup_on"] = datetime.date(2026, 10, 20)
+        inputs["constituent_sources"][0]["source_effective_on"] = datetime.date(2026, 10, 22)
+        result = self._project(inputs)
+        assert result["status"] == "available"
+        assert result["associations"][0]["source_observations"][0]["source_effective_on"] == "2026-10-22"
+        assert result["limitations"]["historically_admissible"] is False
+
+    @pytest.mark.parametrize("change,reason", [
+        ("future_capture", "future_capture"), ("naive_capture", "aware_clock"),
+        ("future_available", "future_capture"), ("future_lookup", "future_lookup"),
+        ("unsupported_subject_vendor", "subject_namespace"),
+        ("sponsor_as_membership", "constituent_namespace"),
+        ("missing_source_identity", "missing_source_identity"),
+        ("invented_qualified", "attribution_shape"), ("nonfinite_version", "text"),
+        ("noncanonical_digest", "source_digest"), ("subject_bound", "subject_bound"),
+        ("row_bound", "row_bound"), ("source_bound", "source_bound"),
+        ("master_bound", "master_bound"), ("duplicate_population", "constituent_namespace"),
+        ("extra_row_field", "constituent_row"),
+    ])
+    def test_closed_inputs_bounds_and_clocks(self, change, reason):
+        import copy
+        inputs = self._inputs()
+        source = inputs["constituent_sources"][0]
+        if change == "future_capture":
+            source["captured_at"] += datetime.timedelta(seconds=1)
+        elif change == "naive_capture":
+            source["captured_at"] = source["captured_at"].replace(tzinfo=None)
+        elif change == "future_available":
+            source["source_available_at"] = source["captured_at"] + datetime.timedelta(seconds=1)
+        elif change == "future_lookup":
+            inputs["lookup_on"] += datetime.timedelta(days=1)
+        elif change == "unsupported_subject_vendor":
+            inputs["subjects"][0]["vendor"] = "yahoo_fetch"
+        elif change == "sponsor_as_membership":
+            source["vendor"] = "ssga"
+        elif change == "missing_source_identity":
+            del source["source_version"]
+        elif change == "invented_qualified":
+            inputs["identity_source"]["issuer_master"]["qualified"] = True
+        elif change == "nonfinite_version":
+            source["source_version"] = float("nan")
+        elif change == "noncanonical_digest":
+            source["raw_sha256"] = "A" * 64
+        elif change == "subject_bound":
+            inputs["subjects"] *= 65
+        elif change == "row_bound":
+            source["rows"] *= 8193
+        elif change == "source_bound":
+            inputs["constituent_sources"] *= 4
+        elif change == "master_bound":
+            inputs["issuer_records"] *= 65537
+        elif change == "duplicate_population":
+            inputs["constituent_sources"].append(copy.deepcopy(source))
+        elif change == "extra_row_field":
+            source["rows"][0]["qualified"] = True
+        with pytest.raises(ValueError, match=reason):
+            self._project(inputs)
+
+    def test_pure_projection_never_loads_legacy_map_or_files(self):
+        inputs = self._inputs()
+        with patch("engine.neuralweb.sector_map.build_sector_map",
+                   side_effect=AssertionError("legacy map forbidden")), \
+             patch("pandas.read_parquet", side_effect=AssertionError("I/O forbidden")), \
+             patch("builtins.open", side_effect=AssertionError("I/O forbidden")):
+            assert self._project(inputs)["status"] == "available"
+
+
 class TestWiringConformance:
     """Plain text-presence assertions: build_bottom_sensors is wired into
     daily.yml and has a dag.yml entry consistent with neighbouring NW producers.

@@ -157,9 +157,10 @@ var __history = {
 };
 var document = __document, window = __window, location = __loc, history = __history;
 var setTimeout = function (fn, ms) { return __window.setTimeout(fn, ms); };
+var clearTimeout = function (id) { if(__timersLog[id-1])__timersLog[id-1].cancelled=true; };
 // ── the panel skeleton, in the shipped markup shape ────────────────────────────
 ['si-measured', 'mr-sub', 'mr-status', 'mr-body', 'mr-cov', 'mr-list',
- 'mr-unmeasured', 'mr-detail', 'mr-early'].forEach(function (id) { mkEl(id); });
+ 'mr-unmeasured', 'mr-detail', 'mr-early', 'mr-exact', 'mr-context', 'mr-classification'].forEach(function (id) { mkEl(id); });
 __els['mr-body'].innerHTML = '<div class="mr-grid"><div class="rvx-card mr-listbox">' +
   '<div class="mr-cov" id="mr-cov"></div><ol class="mr-list" id="mr-list"></ol>' +
   '<ul class="mr-list mr-unmeasured" id="mr-unmeasured" hidden></ul></div>' +
@@ -177,9 +178,57 @@ if (CFG.central !== 'none' && CFG.central !== 'absent') {
   D0 = { as_of: CFG.as_of || '2026-10-09' };
 }
 if (CFG.lang) __docEl.attrs['data-lang'] = CFG.lang;
+if (D0 && Object.prototype.hasOwnProperty.call(CFG, 'dated_context')) D0.dated_context=CFG.dated_context;
+if (D0 && Object.prototype.hasOwnProperty.call(CFG, 'captured_classification')) D0.captured_classification=CFG.captured_classification;
 __setLoc(CFG.search || '', CFG.hash || '');
 __window.SECTOR_CENTRAL = D0;
 if (CFG.cycles) __window.SECTOR_CYCLES = CFG.cycles;
+// The native cases exercise the shipped fetch/stream/epoch path, using the
+// actual native projection and wire encoder fixture supplied from Python.
+var __nativeCalls=[], __nativePending=[], __sessionReads=0;
+if(CFG.native) {
+  __els['si-measured'].attrs['data-sector-generation']='native';
+  if(CFG.auth_ready!==false) __window.MDXAuth={
+    hasSession:function(){return !!CFG.has_session;},
+    client:function(){return Promise.resolve({auth:{getSession:function(){__sessionReads++;return Promise.resolve({data:{session:{}}});}}});}
+  };
+  __window.fetch=function(url,options){
+    var index=__nativeCalls.length;
+    __nativeCalls.push({url:url,options:options});
+    return new Promise(function(resolve,reject){
+      __nativePending.push({resolve:resolve,reject:reject});
+      var spec=(CFG.native_responses||[])[index];
+      if(spec && !spec.defer) nativeRespond(index,spec);
+    });
+  };
+}
+function nativeRespond(index,spec) {
+  var pending=__nativePending[index];
+  if(!pending)throw new Error('request not started: '+index);
+  if(spec.reject){pending.reject(new Error(spec.reject));return;}
+  var raw=Object.prototype.hasOwnProperty.call(spec,'raw')?spec.raw:JSON.stringify(spec.body);
+  if(spec.bytes)raw=new Uint8Array(spec.bytes);
+  if(spec.split_utf8) {
+    var bytes=new TextEncoder().encode(raw),at=bytes.findIndex(function(b){return b>=128;})+1;
+    if(at<1)throw new Error('multibyte fixture missing');
+    raw=new ReadableStream({start:function(controller){controller.enqueue(bytes.slice(0,at));controller.enqueue(bytes.slice(at));controller.close();}});
+  }
+  pending.resolve(new Response(raw,{status:spec.status||200,headers:{'content-type':spec.content_type||'application/json; charset=utf-8'}}));
+}
+async function drainNative() {
+  // Drain Promise and ReadableStream continuations without elapsed-time sleeps.
+  for(var i=0;i<4;i++)await new Promise(function(resolve){setImmediate(resolve);});
+}
+function nativeAuth(event,id) {dispatchWin('mdx-auth',{detail:{event:event,user:id?{id:id}:null}});}
+function nativeRetry() {dispatchEl('click',{target:{closest:function(){return {getAttribute:function(k){return k==='data-native-retry'?'true':null;}};}}});}
+function nativeCollect() {
+  var out=collect();out.nativeState=__els['si-measured'].attrs['data-native-state'];
+  out.generation=__els['si-measured'].attrs['data-native-generation'];
+  out.content=__els['si-measured'].attrs['data-native-content'];
+  out.exact=html('mr-exact');out.contextHidden=elOf('mr-context').hidden;
+  out.calls=__nativeCalls.map(function(c){return {url:c.url,credentials:c.options.credentials,cache:c.options.cache,redirect:c.options.redirect,aborted:c.options.signal.aborted};});
+  out.sessionReads=__sessionReads;out.legacy=__window.SECTOR_CENTRAL;return out;
+}
 var CYC = {meta: {rs_history: {schema: 'sector_cycles.rs_history.v1', as_of: '2026-10-09'}},
   sectors: [{ticker: 'XLE', rs_history: [
     {date: '2026-10-07', rs_21d: 2.0, rs_63d: 3.9},
@@ -218,7 +267,7 @@ function dispatchEl(name, evt) {
 }
 function fireTimers() {
   var l = __timersLog.slice(), i;
-  for (i = 0; i < l.length; i++) l[i].fn();
+  for (i = 0; i < l.length; i++) if(!l[i].cancelled)l[i].fn();
 }
 function obsClick() {
   dispatchEl('click', {target: {closest: function () {
@@ -226,7 +275,8 @@ function obsClick() {
   }}});
 }
 function collect() {
-  return {body: html('mr-body'), sub: html('mr-sub'), status: html('mr-status'),
+  return {body: html('mr-body'), sub: html('mr-sub'), status: html('mr-status'), context: html('mr-context'),
+          classification: html('mr-classification'),
           cov: html('mr-cov'), list: html('mr-list'), un: html('mr-unmeasured'),
           unHidden: elOf('mr-unmeasured') ? elOf('mr-unmeasured').hidden : null, detail: html('mr-detail'),
           hist: html('mr-hist'), early: html('mr-early'), rows: rows().map(function (r) {
@@ -245,7 +295,7 @@ def _run(body: str = "show();", fixture: dict | None = None, cfg: dict | None = 
     cf = json.dumps(cfg or {})
     script = HARNESS_PRELUDE + _panel_js() + "\n" + textwrap.dedent(body)
     script = script.replace("__FIXTURE__", fx).replace("__CFG__", cf)
-    res = subprocess.run(["node", "-e", script], capture_output=True, text=True, timeout=60)
+    res = subprocess.run(["node"], input=script, capture_output=True, text=True, timeout=60)
     assert res.returncode == 0, f"node failed:\nSTDERR:\n{res.stderr}"
     assert res.stdout.strip(), f"no stdout; stderr:\n{res.stderr}"
     return json.loads(res.stdout)
@@ -1076,3 +1126,1038 @@ def test_selected_measured_panel_links_its_exact_sector_to_macro_prophet(ticker)
     assert f'href="us_stocks.html?si_sector={ticker}#sector-prophet-context"' in out["detail"]
     assert "Compare in Prophet" in out["detail"]
     assert [row[0] for row in out["rows"]][:len(RANKED)] == RANKED
+
+
+# ══════════════════════════════════════════════════════════════════════════════════
+# 23 — PSL-3 · the dated leadership-evidence addendum
+#
+# The addendum is the incumbent engine's own optional projection
+# (leadership_rotation_context.sector_dossiers/v1), carried on the measured read.
+# It is qualified in the page against the CURRENT parent read, so every case
+# below drives the REAL panel JS over the REAL engine output — never a
+# hand-mirrored dossier.
+# ══════════════════════════════════════════════════════════════════════════════════
+
+EV_AS_OF = "2026-10-09"
+# The frozen measured read's own numbers, over the native sector registry:
+# XLK carries a literal 0.0, XLU is thin_history, XLRE is absent entirely.
+EV_H21 = {"XLB": -0.6, "XLC": 1.1, "XLE": 2.4, "XLF": 0.3, "XLI": -0.2,
+          "XLK": -0.5, "XLP": -1.0, "XLV": 0.2, "XLY": 1.7}
+EV_H63 = {"XLB": -1.4, "XLC": 2.3, "XLE": 4.1, "XLF": 1.2, "XLI": -0.7,
+          "XLK": 0.0, "XLP": -2.2, "XLV": 0.9, "XLY": 3.3}
+
+
+def _ev_cycles(as_of: str = EV_AS_OF, qualified: bool = True, sectors: bool = True) -> dict:
+    """A native-shaped sector-cycles payload — the shape engine.sector_cycles
+    publishes (meta.asOf, meta.benchmark, rs_history with basis/mode, and one
+    series_provenance per record). ``qualified=False`` drops the rs_history
+    mode/naturally_observed pair, which is how the engine itself produces an
+    all-null addendum."""
+    from engine import sector_cycles
+
+    rows = []
+    if sectors:
+        for ticker, info in sorted(sector_cycles.SECTORS.items()):
+            if ticker == "XLRE":
+                continue                      # the member the source never carries
+            rows.append({
+                "id": ticker.lower(), "ticker": ticker, "kind": "sector",
+                "name": info["name"], "name_zh": info["name_zh"],
+                "group": info["group"], "accent": info["accent"],
+                "now": {"rs_21d": EV_H21.get(ticker), "rs_63d": EV_H63.get(ticker),
+                        "thin_history": ticker == "XLU"},
+                "series_provenance": {
+                    "schema": "sector_cycles.series_provenance.v1",
+                    "structure_basis": "tr", "rs_basis": "tr",
+                    "membership": "single_instrument", "point_in_time": True,
+                    "benchmark": "SPY",
+                    "history_mode": "reconstructed_price_history"},
+            })
+    history = {"schema": "sector_cycles.rs_history.v1", "as_of": as_of,
+               "basis": "tr", "benchmark": "SPY"}
+    if qualified:
+        history["mode"] = "reconstructed_price_history"
+        history["naturally_observed"] = False
+    return {"meta": {"asOf": as_of, "benchmark": "SPY", "rs_history": history},
+            "sectors": rows}
+
+
+def _ev_dossier(qualified: bool = True, sectors: bool = True) -> dict:
+    """The engine's own dated addendum over native-shaped inputs."""
+    from engine import leadership_rotation_context as lrc
+
+    out = lrc.measured_group_read(_ev_cycles(qualified=qualified, sectors=sectors),
+                                  include_sector_dossiers=True)
+    return out["sector_dossiers"]
+
+
+def _ev_legacy_unavailable() -> dict:
+    """The engine's own measured read when nothing could be measured: status
+    unavailable with all eleven cohort identities still present."""
+    from engine import leadership_rotation_context as lrc
+
+    return lrc.measured_group_read(_ev_cycles(sectors=False))
+
+
+def _copy(obj: dict) -> dict:
+    return json.loads(json.dumps(obj))
+
+
+def _ev_state(section: str) -> tuple[str, str]:
+    """The addendum's qualification state and the exact check that failed,
+    read from the machine-readable attributes (never from visible copy)."""
+    m = re.search(r'data-ev-state="([^"]*)" data-ev-why="([^"]*)"', section or "")
+    assert m, section
+    return m.group(1), m.group(2)
+
+
+def _ev_section(detail: str) -> str:
+    """The leadership-evidence section of the detail panel, isolated from the
+    incumbent legacy facts so a legacy number can never satisfy an evidence
+    assertion."""
+    m = re.search(r'<section class="mr-ev".*?</section>', detail or "", re.S)
+    assert m, f"no leadership-evidence section in {detail!r}"
+    return m.group(0)
+
+
+@needs_node
+def test_23_measured_evidence_shows_native_window_values_and_receipts():
+    out = _run(cfg={"search": "?g=XLE", "mr": {"sector_dossiers": _ev_dossier()}})
+    ev = _ev_section(out["detail"])
+    assert "Leadership evidence" in ev
+    # header: native date, total-return basis, the selected identity EN/ZH
+    assert "2026-10-09" in ev
+    assert "total return" in ev
+    assert "Energy" in ev and "能源" in ev and "XLE" in ev
+    # the plain stance
+    assert "Measured profile available; explanatory evidence incomplete." in ev
+    # exact native windows — 21 and 63 sessions, never relabelled 1/3 months
+    assert "21 trading sessions vs" in ev and "+2.4%" in ev
+    assert "63 trading sessions vs" in ev and "+4.1%" in ev
+    # cross-sector ETF breadth, with the eleven-sector denominator
+    assert "5 of 9 measured (of 11 sectors)" in ev
+    assert "Constituent participation is not supplied" in ev
+    # the unavailable slots say so, and say what they are not
+    assert "5- and 20-session windows are not supplied in the legacy dossier." in ev
+    assert "Absolute returns are not supplied in the legacy dossier." in ev
+    assert "Explanation unavailable" in ev
+    assert "Sector risk context unavailable" in ev and "not a risk verdict" in ev
+    # the disclosure and its receipts
+    assert "<details class=\"mr-ev-det\">" in ev
+    assert "Evidence details" in ev
+    assert "engine.sector_cycles" in ev
+    assert "2026-10-09|SPY|us_sectors_11" in ev
+    assert "immutable_generation_not_supplied" in ev
+    assert "owner_freshness_receipt_not_supplied" in ev
+    assert "native_revision_selection_not_supplied" in ev
+    assert "not_established" in ev and "shared rolling windows" in ev
+    assert "not_qualified" in ev
+    assert "may_rank=false" in ev and "may_trade=false" in ev and "may_escalate=false" in ev
+
+
+@needs_node
+def test_24_zero_is_preserved_and_never_read_as_missing():
+    out = _run(cfg={"search": "?g=XLK", "mr": {"sector_dossiers": _ev_dossier()}})
+    ev = _ev_section(out["detail"])
+    # XLK's 63-session relative wealth is a literal 0.0 — a measured zero
+    assert re.search(r'63 trading sessions vs[^<]*</dt><dd><span class="mr-flat">0\.0%</span>', ev), ev
+    assert "n/a" not in ev
+    assert "not measured" not in ev
+
+
+@needs_node
+def test_25_unavailable_identity_speaks_its_plain_reason_and_its_exact_code():
+    out = _run(cfg={"search": "?g=XLRE", "mr": {"sector_dossiers": _ev_dossier()}})
+    ev = _ev_section(out["detail"])
+    assert "Measured profile unavailable" in ev
+    assert "no data for this sector in the evidence source" in ev
+    assert "missing_group" in ev          # the exact native code, in the receipt
+    assert "Real Estate" in ev
+    # an unavailable identity never shows a number
+    assert "%" not in re.sub(r'<span class="mr-ev-code">.*?</span>', '', ev, flags=re.S)
+
+
+@needs_node
+def test_26_all_null_addendum_keeps_the_eleven_identities_selectable():
+    """The legacy read is unavailable, the addendum is valid but every value is
+    null: the legacy notice stays, all eleven cohort identities stay selectable
+    as unavailable rows, and the selected one shows its exact null reason."""
+    legacy = _ev_legacy_unavailable()
+    out = _run(cfg={"search": "?g=XLE",
+                    "mr": {"status": legacy["status"], "groups": legacy["groups"],
+                           "sector_dossiers": _ev_dossier(qualified=False)}})
+    assert "mx-error" in out["body"], out["body"]
+    assert "could not be produced today" in out["body"], out["body"]
+    assert len(out["rows"]) == 11, out["rows"]
+    assert dict(out["rows"])["XLE"] == "true", out["rows"]
+    assert out["un"].count("<li>") == 11, out["un"]
+    assert "not measured" in out["un"]
+    ev = _ev_section(out["detail"])
+    assert _ev_state(ev) == ("ok", ""), ev
+    assert "Measured profile unavailable" in ev
+    assert "evidence_mode_not_qualified" in ev
+    # every identity's exact null reason is exposed, not only the selected one
+    for ticker in ("XLB", "XLC", "XLE", "XLF", "XLI", "XLK", "XLP", "XLRE",
+                   "XLU", "XLV", "XLY"):
+        assert ticker in ev, ticker
+
+
+@needs_node
+def test_27_absent_invalid_and_mismatched_addendum_leave_the_legacy_alone():
+    absent = _run(cfg={"search": "?g=XLE"})
+    assert "not in today" in _ev_section(absent["detail"])
+    assert "+2.4%" in absent["detail"] and "1 month vs" in absent["detail"]
+    assert "mr-skel-spark" in absent["hist"], "the legacy history is untouched"
+
+    invalid = _run(cfg={"search": "?g=XLE", "mr": {"sector_dossiers": "not-an-object"}})
+    assert "could not be checked" in _ev_section(invalid["detail"])
+    assert _ev_state(_ev_section(invalid["detail"])) == ("invalid", "not_an_object")
+    assert "+2.4%" in invalid["detail"] and "mr-skel-spark" in invalid["hist"]
+
+    wrong_schema = _run(cfg={"search": "?g=XLE",
+                             "mr": {"sector_dossiers": {"schema": "something/else/v9"}}})
+    assert "could not be checked" in _ev_section(wrong_schema["detail"])
+
+    stale = _copy(_ev_dossier())
+    stale["as_of"] = "2026-10-08"
+    generation_mismatch = _run(cfg={"search": "?g=XLE", "mr": {"sector_dossiers": stale}})
+    assert "does not match today" in _ev_section(generation_mismatch["detail"])
+    assert _ev_state(_ev_section(generation_mismatch["detail"])) == ("mismatch", "session_mismatch")
+    assert "+2.4%" in generation_mismatch["detail"]
+
+    renamed = _copy(_ev_dossier())
+    renamed["groups"][0]["group_id"] = "ZZZZ"
+    identity_mismatch = _run(cfg={"search": "?g=XLE", "mr": {"sector_dossiers": renamed}})
+    assert "does not match today" in _ev_section(identity_mismatch["detail"])
+    assert _ev_state(_ev_section(identity_mismatch["detail"])) == ("mismatch", "identity_mismatch")
+
+    # a parent generation that lost its own benchmark cannot qualify an addendum
+    no_benchmark = _run(cfg={"search": "?g=XLE", "mr": {
+        "generation": {"id": "2026-10-09|SPY|us_sectors_11", "cohort_id": "us_sectors_11",
+                       "session_end": "2026-10-09", "price_basis": "total_return"},
+        "sector_dossiers": _ev_dossier()}})
+    assert "does not match today" in _ev_section(no_benchmark["detail"])
+    assert _ev_state(_ev_section(no_benchmark["detail"])) == ("mismatch", "benchmark_mismatch")
+
+    foreign_benchmark = _copy(_ev_dossier())
+    foreign_benchmark["benchmark"] = "QQQ"
+    benchmark_mismatch = _run(cfg={"search": "?g=XLE",
+                                   "mr": {"sector_dossiers": foreign_benchmark}})
+    assert "does not match today" in _ev_section(benchmark_mismatch["detail"])
+    assert _ev_state(_ev_section(benchmark_mismatch["detail"])) == ("mismatch", "benchmark_mismatch")
+    # the mismatched addendum never reaches the panel
+    assert "QQQ" not in _ev_section(benchmark_mismatch["detail"])
+
+
+@needs_node
+def test_28_forged_authority_forecast_and_provenance_are_refused_not_echoed():
+    trade = _copy(_ev_dossier())
+    trade["authority"]["may_trade"] = True
+    out = _run(cfg={"search": "?g=XLE", "mr": {"sector_dossiers": trade}})
+    ev = _ev_section(out["detail"])
+    assert "claimed capabilities this read does not have" in ev
+    assert _ev_state(ev) == ("refused", "authority_claimed")
+    assert "may_trade=true" not in out["detail"]
+    assert "+2.4%" in out["detail"], "the legacy read is untouched"
+
+    forecast = _copy(_ev_dossier())
+    forecast["forecasts"]["expected_return"] = 0.12
+    out = _run(cfg={"search": "?g=XLE", "mr": {"sector_dossiers": forecast}})
+    assert "claimed capabilities this read does not have" in _ev_section(out["detail"])
+    assert _ev_state(_ev_section(out["detail"])) == ("refused", "forecast_value_claimed")
+    assert "0.12" not in out["detail"]
+
+    generation = _copy(_ev_dossier())
+    generation["source_generation"] = {"status": "available", "id": "gen-1"}
+    out = _run(cfg={"search": "?g=XLE", "mr": {"sector_dossiers": generation}})
+    assert "claimed capabilities this read does not have" in _ev_section(out["detail"])
+    assert _ev_state(_ev_section(out["detail"])) == ("refused", "immutable_generation_claimed")
+    assert "gen-1" not in out["detail"]
+
+    observed = _copy(_ev_dossier())
+    observed["history"]["naturally_observed"] = True
+    out = _run(cfg={"search": "?g=XLE", "mr": {"sector_dossiers": observed}})
+    assert "claimed capabilities this read does not have" in _ev_section(out["detail"])
+    assert _ev_state(_ev_section(out["detail"])) == ("refused", "naturally_observed_claimed")
+
+
+@needs_node
+def test_29_hostile_source_strings_are_escaped_never_rendered():
+    hostile = _copy(_ev_dossier())
+    hostile["groups"][2]["name_en"] = '<img src=x onerror="alert(1)">'
+    hostile["groups"][2]["name_zh"] = "<script>alert(2)</script>"
+    out = _run(cfg={"search": "?g=XLE", "mr": {"sector_dossiers": hostile}})
+    ev = _ev_section(out["detail"])
+    assert "<img src=x" not in ev
+    assert "<script>alert(2)" not in ev
+    assert "&lt;img src=x" in ev
+    assert "&lt;script&gt;" in ev
+
+
+@needs_node
+def test_30_source_replacement_drops_the_stale_evidence():
+    out = _run(body="""
+        var before = html('mr-detail');
+        __window.SECTOR_CENTRAL.measured_read.sector_dossiers = CFG.dossier2;
+        dispatchDoc('langchange');
+        show({before: before, after: html('mr-detail')});
+    """, cfg={"search": "?g=XLE", "mr": {"sector_dossiers": _ev_dossier()},
+              "dossier2": _ev_dossier(qualified=False)})
+    before = _ev_section(out["before"])
+    after = _ev_section(out["after"])
+    assert "+2.4%" in before
+    assert "+2.4%" not in after, "a replaced source must not leave stale values"
+    assert "evidence_mode_not_qualified" in after
+
+
+@needs_node
+def test_31_selection_language_disclosure_and_focus_follow_the_inherited_journey():
+    out = _run(body="""
+        function clickG(g) {
+            dispatchEl('click', {target: {closest: function () {
+                return {getAttribute: function (k) { return k === 'data-g' ? g : null; }};
+            }}});
+        }
+        clickG('XLY');
+        var afterSelect = html('mr-detail');
+        dispatchEl('toggle', {target: {className: 'mr-ev-det', open: true}});
+        __docEl.attrs['data-lang'] = 'zh';
+        dispatchDoc('langchange');
+        var afterLang = html('mr-detail');
+        var focusedAfterLang = __focused;
+        clickG('XLK');
+        var afterOther = html('mr-detail');
+        show({afterSelect: afterSelect, afterLang: afterLang, afterOther: afterOther,
+              focused: focusedAfterLang ? focusedAfterLang.getAttribute('data-g') : null,
+              pressed: pressedOf(), hist: __histLog});
+    """, cfg={"mr": {"sector_dossiers": _ev_dossier()}})
+    assert "Consumer Discretionary" in out["afterSelect"]
+    assert "<details class=\"mr-ev-det\">" in out["afterSelect"], "closed until opened"
+    assert "<details class=\"mr-ev-det\" open>" in out["afterLang"], \
+        "the same identity and source keep the disclosure open across a language switch"
+    assert "领涨证据" in out["afterLang"], "the Chinese twin renders"
+    assert "证据详情" in out["afterLang"]
+    assert out["focused"] is None, "a re-render must not steal focus"
+    assert "<details class=\"mr-ev-det\">" in out["afterOther"], \
+        "a different identity closes the disclosure"
+    assert dict(out["pressed"])["XLK"] == "true"
+    assert dict(out["pressed"])["XLY"] == "false"
+    assert [c for c in out["hist"] if c[0] == "push"], "the inherited deep link owns the URL"
+
+
+@needs_node
+def test_32_back_forward_restores_the_selection_and_its_evidence():
+    out = _run(body="""
+        __setLoc('?g=XLK', '');
+        dispatchWin('popstate');
+        show({detail: html('mr-detail'), pressed: pressedOf()});
+    """, cfg={"mr": {"sector_dossiers": _ev_dossier()}})
+    assert out["pressed"]["XLK"] == "true", out["pressed"]
+    ev = _ev_section(out["detail"])
+    assert "Technology" in ev and "科技" in ev
+    assert re.search(r'63 trading sessions vs[^<]*</dt><dd><span class="mr-flat">0\.0%</span>', ev)
+
+
+def test_33_the_addendum_adds_no_fetch_cache_or_lifecycle_owner():
+    src = PAGE.read_text(encoding="utf-8")
+    i = src.index("PSL-3 · Persistent Sector Leadership")
+    j = src.index("function render() {", i)
+    block = src[i:j]
+    for bad in ("fetch(", "XMLHttpRequest", "setTimeout", "localStorage",
+                "sessionStorage", "document.cookie"):
+        assert bad not in block, bad
+    # the panel still owns exactly one selection, one URL and one language hook
+    region = _region(src, START, END)
+    assert region.count("history.pushState") == 1
+    assert region.count("addEventListener('langchange'") == 1
+
+
+def test_34_evidence_styles_stay_neutral_and_native():
+    src = PAGE.read_text(encoding="utf-8")
+    rules = [l for l in src.split("\n") if l.startswith(".mr-ev")]
+    assert rules, "no leadership-evidence styles"
+    for rule in rules:
+        for bad in ("border-left", "border-right", "box-shadow", "text-shadow",
+                    "filter:", "backdrop-filter", "linear-gradient"):
+            assert bad not in rule, rule
+        if "font-family" in rule:
+            assert "var(--font-mono)" in rule, rule
+    # the disclosure target is at least 44px and keeps a visible focus ring
+    assert ".mr-ev-sum{" in src and "min-height:44px" in src
+    assert ".mr-ev-sum:focus-visible" in src
+
+
+# Parent integration regressions: execute the shipped panel with the actual owner
+# projection, including unavailable native provenance and same-key revisions.
+def _ev_read(cycles: dict | None = None) -> dict:
+    from engine import leadership_rotation_context as lrc
+    return lrc.measured_group_read(
+        _ev_cycles() if cycles is None else cycles, include_sector_dossiers=True)
+
+
+@needs_node
+def test_35_empty_native_source_keeps_eleven_truthful_unavailable_rows():
+    out = _run(fixture=_ev_read({}), cfg={"search": "?g=XLE"})
+    assert "could not be produced today" in out["body"]
+    assert len(out["rows"]) == 11
+    assert dict(out["rows"])["XLE"] == "true"
+    ev = _ev_section(out["detail"])
+    assert _ev_state(ev) == ("ok", "")
+    assert "source_session_missing_or_invalid" in ev
+    assert "2026-10-09" not in ev, "a missing source date must not borrow the page date"
+    assert "0 of 0" not in ev, "unknown positive count is not a measured zero"
+    assert "Evidence details" in ev
+
+
+@needs_node
+@pytest.mark.parametrize("case", [
+    "missing_corrections", "claimed_generation", "claimed_original_time",
+    "foreign_cohort", "foreign_identity", "parent_value_disagreement",
+    "below_minus_100", "non_null_reason_with_value", "row_status_disagreement",
+    "negative_count", "fractional_count", "inflated_count", "measurement_status",
+    "malformed_diagnostic_count", "extra_provenance_field",
+])
+def test_36_invalid_dossier_never_displaces_legacy_values_or_history(case):
+    read = _ev_read()
+    baseline_history = _run(fixture=read, cfg={"search": "?g=XLE"})["hist"]
+    d = read["sector_dossiers"]
+    row = d["groups"][0]
+    if case == "missing_corrections":
+        del d["corrections"]
+    elif case == "claimed_generation":
+        d["source_generation"]["id"] = "unearned-generation"
+    elif case == "claimed_original_time":
+        d["availability"]["original_available_at"] = "2026-10-09T00:00:00Z"
+    elif case == "foreign_cohort":
+        d["cohort_id"] = read["generation"]["cohort_id"] = "foreign_cohort"
+    elif case == "foreign_identity":
+        row["group_id"] = read["groups"][0]["group_id"] = "ZZZZ"
+    elif case == "parent_value_disagreement":
+        row["relative_wealth_pct"]["rs_21d"] = 1.2345
+    elif case == "below_minus_100":
+        row["relative_wealth_pct"]["rs_21d"] = -101
+        read["groups"][0]["current"]["rs_21d"] = -101
+    elif case == "non_null_reason_with_value":
+        row["null_reasons"]["rs_21d"] = "missing_group"
+    elif case == "row_status_disagreement":
+        row["status"] = "unavailable"
+    elif case == "negative_count":
+        d["cross_sector_breadth_counts"]["21"]["measured_n"] = -1
+    elif case == "fractional_count":
+        d["cross_sector_breadth_counts"]["21"]["positive_n"] = 5.5
+    elif case == "inflated_count":
+        d["cross_sector_breadth_counts"]["21"]["positive_n"] = 11
+    elif case == "measurement_status":
+        d["measurement_status"] = "available"
+    elif case == "malformed_diagnostic_count":
+        d["diagnostics"]["malformed_source_rows"] = -1
+    elif case == "extra_provenance_field":
+        d["corrections"]["revision_id"] = "claimed-revision"
+    out = _run(fixture=read, cfg={"search": "?g=XLE"})
+    ev = _ev_section(out["detail"])
+    assert _ev_state(ev)[0] in ("invalid", "mismatch", "refused"), (case, ev)
+    assert "+2.4%" in out["detail"] and "1 month vs" in out["detail"]
+    assert out["hist"] == baseline_history
+    assert "+2.4%" not in ev
+    assert "unearned-generation" not in ev and "claimed-revision" not in ev
+
+
+@needs_node
+def test_37_invalid_parent_cannot_unlock_the_unavailable_selectable_grid():
+    read = _ev_read({})
+    read["schema"] = "foreign-parent/v9"
+    out = _run(fixture=read)
+    assert not out["rows"]
+    assert "could not be produced today" in out["body"]
+
+
+@needs_node
+def test_38_native_as_known_withholding_displays_the_actual_cutoff():
+    from engine import leadership_rotation_context as lrc
+    cycles = _ev_cycles()
+    read = _ev_read(cycles)
+    read["sector_dossiers"] = lrc._compose_sector_dossiers(
+        cycles, read, expected_group_ids=[g["group_id"] for g in read["groups"]],
+        decision_cutoff="2026-10-08T16:00:00+00:00")
+    out = _run(fixture=read, cfg={"search": "?g=XLE"})
+    ev = _ev_section(out["detail"])
+    assert _ev_state(ev) == ("ok", "")
+    assert "2026-10-08T16:00:00+00:00" in ev
+    assert "source_session_after_decision_cutoff" in ev
+    assert "+2.4%" not in ev
+    assert "+2.4%" in out["detail"], "the incumbent dated read remains distinct"
+
+
+@needs_node
+def test_39_revised_values_with_the_same_compatibility_key_reset_disclosure():
+    read = _ev_read()
+    revised = _copy(read)
+    for row in revised["groups"]:
+        if row["group_id"] == "XLE":
+            row["current"]["rs_21d"] = 2.6
+    for row in revised["sector_dossiers"]["groups"]:
+        if row["group_id"] == "XLE":
+            row["relative_wealth_pct"]["rs_21d"] = 2.6
+    out = _run(fixture=read, cfg={"search": "?g=XLE", "replacement": revised}, body="""
+        dispatchEl('toggle', {target: {className: 'mr-ev-det', open: true}});
+        __docEl.attrs['data-lang'] = 'zh';
+        dispatchDoc('langchange');
+        var same = html('mr-detail');
+        __window.SECTOR_CENTRAL.measured_read = CFG.replacement;
+        dispatchDoc('langchange');
+        show({same: same, revised: html('mr-detail')});
+    """)
+    assert '<details class="mr-ev-det" open>' in _ev_section(out["same"])
+    ev = _ev_section(out["revised"])
+    assert _ev_state(ev) == ("ok", "")
+    assert "+2.6%" in ev
+    assert '<details class="mr-ev-det">' in ev
+    assert '<details class="mr-ev-det" open>' not in ev
+
+
+@needs_node
+@pytest.mark.parametrize("interruption", ["absent", "invalid", "legacy_outage"])
+def test_40_interrupted_source_cannot_restore_stale_disclosure(interruption):
+    out = _run(fixture=_ev_read(),
+               cfg={"search": "?g=XLE", "interruption": interruption}, body="""
+        var original = JSON.parse(JSON.stringify(__window.SECTOR_CENTRAL.measured_read));
+        dispatchEl('toggle', {target: {className: 'mr-ev-det', open: true}});
+        dispatchDoc('langchange');
+        var before = html('mr-detail');
+        var read = __window.SECTOR_CENTRAL.measured_read;
+        if (CFG.interruption === 'invalid') read.sector_dossiers = {};
+        else delete read.sector_dossiers;
+        if (CFG.interruption === 'legacy_outage') read.status = 'unavailable';
+        dispatchDoc('langchange');
+        __window.SECTOR_CENTRAL.measured_read = original;
+        dispatchDoc('langchange');
+        show({before: before, after: html('mr-detail'), rows: rows().length});
+    """)
+    assert '<details class="mr-ev-det" open>' in _ev_section(out["before"])
+    assert '<details class="mr-ev-det" open>' not in _ev_section(out["after"])
+    assert "+2.4%" in _ev_section(out["after"])
+    assert out["rows"] == 11
+
+
+@needs_node
+def test_41_detached_disclosure_toggle_cannot_reopen_the_current_packet():
+    out = _run(fixture=_ev_read(), cfg={"search": "?g=XLE"}, body="""
+        elOf('mr-detail').contains = function () { return false; };
+        dispatchEl('toggle', {target: {className: 'mr-ev-det', open: true}});
+        dispatchDoc('langchange');
+        show();
+    """)
+    assert '<details class="mr-ev-det" open>' not in _ev_section(out["detail"])
+
+
+@needs_node
+def test_42_normal_all_null_normal_rebinds_selection_and_preserves_navigation():
+    out = _run(fixture=_ev_read(),
+               cfg={"search": "?g=XLE", "empty": _ev_read({})}, body="""
+        var original = __window.SECTOR_CENTRAL.measured_read;
+        __window.SECTOR_CENTRAL.measured_read = CFG.empty;
+        dispatchDoc('langchange');
+        var unavailable = collect();
+        dispatchEl('click', {target: {closest: function () {
+            return {getAttribute: function (k) { return k === 'data-g' ? 'XLK' : null; }};
+        }}});
+        var chosen = collect();
+        __window.SECTOR_CENTRAL.measured_read = original;
+        __docEl.attrs['data-lang'] = 'zh';
+        dispatchDoc('langchange');
+        var restored = collect();
+        __setLoc('?g=XLE', '');
+        dispatchWin('popstate');
+        show({unavailable: unavailable, chosen: chosen, restored: restored,
+              back: collect()});
+    """)
+    assert len(out["unavailable"]["rows"]) == 11
+    assert dict(out["chosen"]["rows"])["XLK"] == "true"
+    assert "source_session_missing_or_invalid" in _ev_section(out["chosen"]["detail"])
+    assert dict(out["restored"]["rows"])["XLK"] == "true"
+    assert "领涨证据" in _ev_section(out["restored"]["detail"])
+    assert "0.0%" in _ev_section(out["restored"]["detail"])
+    assert dict(out["back"]["rows"])["XLE"] == "true"
+    assert "+2.4%" in _ev_section(out["back"]["detail"])
+
+# Exact-session companion: run the shipped browser owner, including its bundled
+# schema validator, on the real native Python projection. No consumer arithmetic.
+def _exact_packet(name="complete"):
+    return json.loads((ROOT / "tests/fixtures/leadership_rotation" /
+        f"sector_window_measurements.{name}.v1.json").read_text())
+
+
+def _exact_projected_parent(packet=None):
+    from engine.sector_native_view import _measured_read
+    packet = _exact_packet() if packet is None else packet
+    read = _fixture()
+    read["generation"].update(session_end=packet["end_session"],
+        cohort_id=packet["cohort_id"], price_basis=packet["price_basis"],
+        benchmark=packet["benchmark"])
+    read["sector_window_measurements"] = packet
+    return _measured_read(read, packet["end_session"])
+
+
+@needs_node
+@pytest.mark.parametrize("lang", ["en", "zh"])
+@pytest.mark.parametrize("name", ["complete", "unavailable"])
+def test_exact_native_projection_reaches_shipped_panel_with_all_eleven(lang, name):
+    packet = _exact_packet(name)
+    parent = _exact_projected_parent(packet)
+    out = _run("show({exact:html('mr-exact'),hidden:elOf('mr-exact').hidden});",
+        fixture=parent, cfg={"search":"?g=XLK","lang":lang,"as_of":packet["end_session"]})
+    html = out["exact"]
+    assert out["hidden"] is False
+    assert f'data-exact-state="{packet["status"]}"' in html
+    assert 'data-exact-selected="XLK"' in html
+    assert re.findall(r'<tr data-exact-group="([^"]+)"', html) == [
+        group["group_id"] for group in packet["groups"]]
+    for key in ("5","20","63"):
+        assert f'data-exact-window="{key}"' in html
+        assert f'data-exact-benchmark="{key}"' in html
+        assert packet["windows"][key]["start_session"] in html
+    assert "2026-11-05" in html and "2026-08-07" in html
+    assert ("21-session dossier" if lang == "en" else "原有21日档案") in html
+    if name == "unavailable":
+        assert ("after the stated end" if lang == "en" else "晚于所述结束日") in html
+        assert html.count('data-exact-value="absolute"><span class="mr-na">—') == 36
+
+
+@needs_node
+@pytest.mark.parametrize("legacy", ["unavailable", "invalid", "absent_groups"])
+def test_exact_selection_remains_usable_when_legacy_cannot_render(legacy):
+    parent = _exact_projected_parent()
+    if legacy == "unavailable":
+        parent["status"] = "unavailable"
+    elif legacy == "invalid":
+        parent["groups"] = None  # parent binding remains valid; the legacy row container does not
+    else:
+        parent.pop("groups")
+    out = _run("""
+        dispatchEl('click',{target:{closest:function(){return {getAttribute:function(k){
+          return k==='data-g'?'XLE':null;}};}}});
+        show({exact:html('mr-exact'),body:html('mr-body'),history:__histLog});
+        """, fixture=parent, cfg={"search":"?g=XLK"})
+    assert 'data-exact-selected="XLE"' in out["exact"]
+    assert len(re.findall(r'<tr data-exact-group=', out["exact"])) == 11
+    assert out["history"][-1][0] == "push" and "g=XLE" in out["history"][-1][2]
+    assert "mr-xwindow" not in out["body"]  # stable sibling, not a replacement legacy read
+
+
+@needs_node
+@pytest.mark.parametrize("replacement", ["no_root", "absent", "invalid", "new_source"])
+def test_exact_withdrawal_and_revision_retire_values_and_open_state(replacement):
+    source = {
+        "no_root": "window.SECTOR_CENTRAL=null;",
+        "absent": "delete window.SECTOR_CENTRAL.measured_read.sector_window_measurements;",
+        "invalid": "window.SECTOR_CENTRAL.measured_read.sector_window_measurements.authority.may_trade=true;",
+        "new_source": """var p=window.SECTOR_CENTRAL.measured_read.sector_window_measurements;
+            p.clocks.publication='2026-11-06T01:00:00Z';
+            p.limitations.publication={status:'supplied',clock:p.clocks.publication};""",
+    }[replacement]
+    body = """
+      dispatchEl('toggle',{target:{className:'mr-x-det',open:true,getAttribute:function(){return 'source';}}});
+      dispatchDoc('langchange');
+      var opened=html('mr-exact');
+      __REPLACEMENT__
+      dispatchDoc('langchange');
+      __setLoc('?g=XLE','#map'); dispatchWin('popstate');
+      dispatchEl('click',{target:{closest:function(){return {getAttribute:function(k){return k==='data-g'?'XLK':null;}};}}});
+      show({opened:opened,exact:html('mr-exact'),hidden:elOf('mr-exact').hidden});
+    """.replace("__REPLACEMENT__",source)
+    out = _run(body,fixture=_exact_projected_parent(),cfg={"search":"?g=XLK"})
+    assert 'data-exact-disclosure="source" open' in out["opened"]
+    assert 'data-exact-disclosure="source" open' not in out["exact"]
+    if replacement in ("no_root","absent"):
+        assert out["exact"] == "" and out["hidden"] is True
+    elif replacement == "invalid":
+        assert 'data-exact-state="invalid"' in out["exact"]
+        assert "data-exact-value=" not in out["exact"]
+    else:
+        assert "2026-11-06T01:00:00Z" in out["exact"]
+        assert 'data-exact-selected="XLK"' in out["exact"]
+
+
+@needs_node
+def test_exact_same_source_language_change_keeps_both_disclosures():
+    out = _run("""
+        ['compare','source'].forEach(function(kind){
+          dispatchEl('toggle',{target:{className:'mr-x-det',open:true,getAttribute:function(){return kind;}}});
+        });
+        __docEl.attrs['data-lang']='zh';dispatchDoc('langchange');
+        show({exact:html('mr-exact')});
+        """,fixture=_exact_projected_parent(),cfg={"search":"?g=XLK"})
+    assert 'data-exact-disclosure="source" open' in out["exact"]
+    assert 'data-exact-disclosure="compare" open' in out["exact"]
+    assert "精确交易时段回报" in out["exact"]
+    assert 'data-exact-selected="XLK"' in out["exact"]
+
+
+@needs_node
+@pytest.mark.parametrize("change", ["receipt","date","benchmark","coverage"])
+def test_exact_invalid_supplied_packet_never_becomes_a_figure(change):
+    parent = _exact_projected_parent()
+    packet = parent["sector_window_measurements"]
+    if change == "receipt": packet["receipt"] = {"a":"中"*3000}
+    elif change == "date": packet["windows"]["5"]["start_session"]="2026-02-30"
+    elif change == "benchmark":
+        packet["windows"]["5"].update(benchmark_return_pct=None,benchmark_null_reason="benchmark_missing")
+    else: packet["groups"][0]["windows"]["5"]["coverage"] = {"observed_n":2,"expected_n":6,"ratio":0.333333}
+    out = _run("show({exact:html('mr-exact')});",fixture=parent,cfg={"search":"?g=XLK"})
+    assert 'data-exact-state="invalid"' in out["exact"]
+    assert "data-exact-value=" not in out["exact"]
+
+
+@needs_node
+def test_exact_opaque_receipt_and_roots_are_not_executable_markup():
+    parent = _exact_projected_parent()
+    packet = parent["sector_window_measurements"]
+    packet["receipt"]={"<script>opaque</script>":"SECRET_RECEIPT_VALUE"}
+    packet["source_roots"]=['<img src=x onerror="alert(1)">']
+    out = _run("show({exact:html('mr-exact')});",fixture=parent,cfg={"search":"?g=XLK"})
+    assert 'data-exact-state="available"' in out["exact"]
+    assert "SECRET_RECEIPT_VALUE" not in out["exact"] and "opaque</script>" not in out["exact"]
+    assert '<img src=' not in out["exact"] and '&lt;img src=x' in out["exact"]
+
+
+def _dated_context_fixture(*, decision_cutoff=None):
+    # Consumer tests use detached, frozen outputs of the qualified owner. They
+    # must not import a private fixture helper from another source branch.
+    assert decision_cutoff in (None, "2026-10-01T20:00:00Z")
+    name = ("dated_context_current_v1.json" if decision_cutoff is None
+            else "dated_context_historical_v1.json")
+    path = ROOT / "tests" / "fixtures" / "leadership_rotation" / name
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+@needs_node
+@pytest.mark.parametrize("lang", ["en", "zh"])
+def test_dated_context_displays_separate_owner_clocks_coverage_and_unmet_falsifiers(lang):
+    out = _run(cfg={"lang": lang, "search": "?g=XLK", "dated_context": _dated_context_fixture()})
+    context = out["context"]
+    assert 'data-dated-state="ok"' in context
+    assert "2026-09-01" in context and "2026-11-06" in context
+    assert "3 / 5" in context and "MU, WDC, SNDK, STX, NTAP" in context
+    assert context.count('data-dated-alternative=') == 4
+    assert "21.9%" in context
+    assert ("Market-global risk" if lang == "en" else "全市场风险") in context
+    assert ("Separate policy posture" if lang == "en" else "单独列示的政策姿态") in context
+    assert ("Prospective falsifier — not evaluated" if lang == "en" else "前瞻证伪条件 — 尚未评估") in context
+    assert ("Sector mapping and original historical availability are not established" if lang == "en"
+            else "板块映射与原始历史可用时间尚未确立") in context
+    assert ("Required source coverage is unavailable" if lang == "en" else "所需来源覆盖不可用") in context
+    # Independent context never overwrites the closed selected-sector evidence.
+    assert "data-dated-alternative" not in out["detail"]
+    assert "sector_cause" not in context
+
+
+@needs_node
+@pytest.mark.parametrize("case", ["authority", "sector_claim", "pit_claim", "scope", "falsifier",
+    "comparison_id", "reference", "shape", "oversize", "invalid_hash", "member_count", "covered_count",
+    "coverage_ratio", "null_breadth", "null_risk_score", "null_policy", "unavailable_positive_risk", "market_supported"])
+def test_dated_context_invalid_packet_withdraws_all_context_readings(case):
+    packet = _dated_context_fixture()
+    if case == "authority": packet["authority"]["may_trade"] = True
+    elif case == "sector_claim": packet["limitations"]["current_sector_usable"] = True
+    elif case == "pit_claim": packet["limitations"]["historically_admissible"] = True
+    elif case == "scope": packet["scope"] = "sector_cause"
+    elif case == "falsifier": packet["comparison"]["entries"][0]["falsifier"]["met"] = True
+    elif case == "comparison_id": packet["comparison"]["entries"][0]["id"] = "sector_cause"
+    elif case == "reference": packet["comparison"]["entries"][0]["evidence_refs"] = ["private.token"]
+    elif case == "shape": packet["observations"]["orders"] = ["BUY"]
+    elif case == "oversize": packet["market_risk"]["coherence"]["contradictions"] = ["x" * 16384]
+    elif case == "invalid_hash": packet["provenance"]["source_attribution"]["config_document"]["raw_sha256"] = "invalid"
+    elif case == "member_count": packet["observations"]["revision_state"]["n_members"] = 6
+    elif case == "covered_count": packet["observations"]["revision_state"]["n_covered"] = 2
+    elif case == "coverage_ratio": packet["observations"]["revision_state"]["coverage"] = 0.9
+    elif case == "null_breadth": packet["observations"]["revision_state"]["breadth"] = None
+    elif case == "null_risk_score": packet["market_risk"]["measured_state"]["score"] = None
+    elif case == "null_policy": packet["market_risk"]["policy_summary"]["posture"] = None
+    elif case == "unavailable_positive_risk": packet["market_risk"]["status"] = "unavailable";packet["status"] = "partial"
+    elif case == "market_supported": packet["comparison"]["entries"][3]["status"] = "supported"
+    out = _run(cfg={"dated_context": packet})
+    assert 'data-dated-state="invalid"' in out["context"]
+    assert "data-dated-alternative=" not in out["context"]
+    assert "21.9%" not in out["context"] and "Memory, HBM" not in out["context"]
+
+
+@needs_node
+def test_dated_context_is_independent_of_legacy_absence_and_withholds_historical_values():
+    current = _run(cfg={"central": "absent", "dated_context": _dated_context_fixture()})
+    assert 'data-dated-state="ok"' in current["context"]
+    assert "21.9%" in current["context"]
+    historical = _run(cfg={"dated_context": _dated_context_fixture(decision_cutoff="2026-10-01T20:00:00Z")})
+    assert 'data-dated-state="ok"' in historical["context"]
+    assert "21.9%" not in historical["context"]
+    assert "No current-sector or historical conclusion is admitted" in historical["context"]
+
+
+@needs_node
+def test_dated_context_disclosure_resets_on_selection_replacement_and_withdrawal():
+    out = _run("""
+      dispatchEl('toggle',{target:{className:'mr-dc-det',open:true}});
+      dispatchDoc('langchange');var same=html('mr-context');
+      dispatchEl('click',{target:{closest:function(){return {getAttribute:function(k){return k==='data-g'?'XLE':null;}};}}});
+      var selected=html('mr-context');
+      dispatchEl('toggle',{target:{className:'mr-dc-det',open:true}});
+      __window.SECTOR_CENTRAL.dated_context.theme.name='Replacement theme';
+      dispatchDoc('langchange');var replaced=html('mr-context');
+      delete __window.SECTOR_CENTRAL.dated_context;
+      dispatchDoc('langchange');
+      show({same:same,selected:selected,replaced:replaced,withdrawn:html('mr-context'),hidden:elOf('mr-context').hidden});
+    """,cfg={"search":"?g=XLK", "dated_context":_dated_context_fixture()})
+    assert '<details class="mr-dc-det" open>' in out["same"]
+    assert '<details class="mr-dc-det" open>' not in out["selected"]
+    assert "Replacement theme" in out["replaced"]
+    assert '<details class="mr-dc-det" open>' not in out["replaced"]
+    assert out["withdrawn"] == "" and out["hidden"] is True
+
+
+@needs_node
+def test_dated_context_escapes_owner_text_and_keeps_source_authority_separate():
+    packet = _dated_context_fixture()
+    packet["theme"]["name"] = '<img src=x onerror="alert(1)">'
+    packet["comparison"]["entries"][0]["statement"] = '<script>alert(1)</script>'
+    packet["market_risk"]["source_authority"]["envelope_may_gate"] = True
+    out = _run(cfg={"dated_context": packet})
+    assert 'data-dated-state="ok"' in out["context"]
+    assert '<img src=' not in out["context"] and '&lt;img src=x' in out["context"]
+    assert '<script>' not in out["context"] and '&lt;script&gt;' in out["context"]
+    assert "gating, sizing, trading and escalation are disabled" in out["context"]
+
+
+def _native_wire_fixture(*, generation="sector-browser-1", theme_name=None, no_read=False,
+                         published_at="2026-11-06T02:00:00Z", qualification="stale", outage=False,
+                         exact_companion=True, classification=None):
+    """Actual native-owner projection and actual wire bytes over controlled inputs.
+
+    This proves transport/admission; these fixtures are not production evidence.
+    The separate exact-window companion is the incumbent owner's frozen fixture.
+    """
+    from dataclasses import replace
+    from engine.sector_native_view import project_sector_view
+    from lib.sector_generation_wire import encode_sector_generation
+    from tests.test_sector_native_view import (
+        specimen, _dossier_packet, _dossier_rows, _exact_window_parent, _exact_window_packet)
+    inputs, receipt = specimen.__wrapped__()
+    exact = _exact_window_packet()
+    end = exact["end_session"]
+    read = _exact_window_parent(exact)
+    read["generation"].update(session_end=end, id=f"{end}|SPY|us_sectors_11")
+    dossier = _dossier_packet(_dossier_rows())
+    dossier.update(as_of=end, compatibility_key=read["generation"]["id"])
+    read["sector_dossiers"] = dossier
+    read["sector_window_measurements"] = exact
+    if not exact_companion:
+        read.pop("sector_window_measurements")
+    inputs.central.update(as_of=end, measured_read=read,
+        dated_context=_dated_context_fixture())
+    if classification is not None:
+        inputs.central["captured_classification"] = classification
+    if theme_name is not None:
+        inputs.central["dated_context"]["theme"]["name"] = theme_name
+    inputs.central["sectors"] = [{"id": row["group_id"].lower(),
+        "ticker": row["group_id"], "kind": "sector", "name": row["name_en"]}
+        for row in read["groups"]]
+    inputs.cycles["meta"]["asOf"] = end
+    inputs.cycles["sectors"] = [{"id": row["group_id"].lower(),
+        "ticker": row["group_id"], "kind": "sector", "turns": [],
+        "rs_history": [{"date": day, "rs_21d": row["current"]["rs_21d"]-offset,
+                        "rs_63d": row["current"]["rs_63d"]-offset}
+                       for day, offset in (("2026-10-30", 0.5), (end, 0.0))]}
+        for row in read["groups"]]
+    if no_read:
+        inputs.central.pop("measured_read")
+    elif outage:
+        inputs.central["measured_read"]={"schema":"leadership_rotation_context.measured_group_read/v1",
+            "status":"unavailable","reason":"projection_error"}
+    receipt = replace(receipt, generation_id=generation, source_session=end,
+                      baseline_session=receipt.source_session, published_at=published_at,
+                      qualification=qualification)
+    projection = project_sector_view(inputs, receipt, audience="preview")
+    return json.loads(encode_sector_generation(audience="preview", source_session=end,
+        published_at=receipt.published_at, qualification=receipt.qualification,
+        projection=projection))
+
+
+def _run_native(body="await drainNative();show(nativeCollect());", *, wire=None, **cfg):
+    cfg = {"native": True, "search": "?g=XLK", "cycles": CYC, **cfg}
+    if "native_responses" not in cfg:
+        cfg["native_responses"]=[{"body": wire if wire is not None else _native_wire_fixture()}]
+    return _run("(async function(){" + body + "})().catch(function(e){console.error(e);process.exitCode=1;});", cfg=cfg)
+
+
+@needs_node
+@pytest.mark.parametrize("lang", ["en", "zh"])
+def test_native_generation_hydrates_measurements_history_exact_and_context_atomically(lang):
+    wire = _native_wire_fixture()
+    out = _run_native(wire=wire, lang=lang, has_session=True)
+    assert out["nativeState"] == "ready"
+    assert out["generation"] == wire["projection"]["receipt"]["generation_id"]
+    assert out["content"] == wire["projection"]["receipt"]["content_sha256"]
+    assert len(out["rows"]) == 11 and ["XLK", "true"] in out["rows"]
+    assert '<svg' in out["hist"] and "2026-11-05" in out["hist"]
+    assert "2026-10-09" not in out["hist"]
+    assert 'data-dated-state="ok"' in out["context"]
+    assert out["exact"].count('data-exact-group=') == 11
+    assert "21.9%" in out["context"] and "3 / 5" in out["context"]
+    assert out["sessionReads"] == 1
+    assert out["calls"] == [{"url": "/api/sector-generation?audience=preview",
+        "credentials": "same-origin", "cache": "no-store", "redirect": "error", "aborted": False}]
+    assert out["legacy"]["as_of"] == "2026-10-09"  # Other page owners retain their global.
+
+
+@needs_node
+def test_native_generation_language_change_uses_one_receipt_and_keeps_selection():
+    out = _run_native("""
+      await drainNative();var first=nativeCollect();
+      __docEl.attrs['data-lang']='zh';dispatchDoc('langchange');await drainNative();
+      show({first:first,second:nativeCollect()});
+    """)
+    assert out["first"]["content"] == out["second"]["content"]
+    assert len(out["second"]["calls"]) == 1
+    assert ["XLK", "true"] in out["second"]["rows"]
+    assert "全市场风险" in out["second"]["context"]
+
+
+@needs_node
+@pytest.mark.parametrize("case,state", [(401,"unauthorized"),(403,"forbidden"),(503,"unavailable"),
+    ("bad_json","invalid"),("oversize","invalid"),("wrong_session","invalid"),
+    ("wrong_history","invalid"),("invalid_context","invalid"),("network","unavailable"),
+    ("duplicate_ticker","invalid"),("foreign_benchmark","invalid"),("unavailable_wrong_session","invalid"),
+    ("invalid_utf8","invalid")])
+def test_native_generation_failure_withdraws_every_panel_source_without_static_fallback(case,state):
+    wire = _native_wire_fixture()
+    if isinstance(case,int): response={"body": {},"status":case}
+    elif case=="bad_json": response={"raw":"not json"}
+    elif case=="oversize": response={"raw":" "*(4*1024*1024+1)}
+    elif case=="network": response={"reject":"offline"}
+    elif case=="invalid_utf8": response={"bytes":[0xc3,0x28]}
+    else:
+        if case=="wrong_session":wire["projection"]["receipt"]["source_session"]="2026-11-04"
+        elif case=="wrong_history":wire["projection"]["data"]["history"]["sectors"][0]["ticker"]="OTHER"
+        elif case=="duplicate_ticker":
+            wire["projection"]["data"]["core"]["sectors"][1]["ticker"]="XLB"
+            wire["projection"]["data"]["history"]["sectors"][1]["ticker"]="XLB"
+        elif case in ("foreign_benchmark","unavailable_wrong_session"):
+            read=wire["projection"]["data"]["core"]["measured_read"]
+            read.pop("sector_dossiers");read.pop("sector_window_measurements")
+            if case=="foreign_benchmark":read["generation"]["benchmark"]="QQQ"
+            else:read["status"]="unavailable";read["generation"]["session_end"]="2026-11-04"
+        else:wire["projection"]["data"]["core"]["dated_context"]["theme"]["status"]="unavailable"
+        response={"body":wire}
+    out=_run_native("""
+      await drainNative();var before=nativeCollect();nativeRetry();await drainNative();
+      show({before:before,after:nativeCollect()});
+    """,native_responses=[{"body":_native_wire_fixture()},response])
+    assert out["before"]["nativeState"]=="ready"
+    after=out["after"]
+    assert after["nativeState"]==state and after["generation"]==after["content"]==""
+    assert after["rows"]==[] and after["hist"] is None and after["detail"] is None
+    assert after["context"]=="" and after["contextHidden"] is True
+    assert "21.9%" not in after["body"] and "2026-10-09" not in after["body"]
+
+
+@needs_node
+def test_native_generation_signout_cancels_a_queued_request_and_blocks_cookie_retry():
+    out=_run_native("""
+      nativeAuth('SIGNED_OUT',null);await drainNative();nativeRetry();await drainNative();
+      show(nativeCollect());
+    """)
+    assert out["nativeState"]=="unauthorized" and out["calls"]==[]
+
+
+@needs_node
+@pytest.mark.parametrize("event", ["SIGNED_OUT", "TOKEN_REFRESHED"])
+def test_native_generation_identity_loss_withdraws_and_late_response_cannot_restore(event):
+    out=_run_native("""
+      nativeAuth('SIGNED_IN','account-a');await drainNative();
+      nativeAuth(CFG.loss_event,null);nativeRespond(0,{body:CFG.late_wire});await drainNative();
+      nativeRetry();await drainNative();show(nativeCollect());
+    """,native_responses=[],loss_event=event,late_wire=_native_wire_fixture())
+    assert out["nativeState"]=="unauthorized" and out["rows"]==[]
+    assert len(out["calls"])==1 and out["calls"][0]["aborted"] is True
+
+
+@needs_node
+def test_native_generation_account_change_ignores_late_old_response():
+    first=_native_wire_fixture(generation="account-a-generation",theme_name="Old account context")
+    second=_native_wire_fixture(generation="account-b-generation",theme_name="Current account context")
+    out=_run_native("""
+      nativeAuth('SIGNED_IN','account-a');await drainNative();
+      nativeAuth('SIGNED_IN','account-b');await drainNative();
+      nativeRespond(1,{body:CFG.second});await drainNative();var fresh=nativeCollect();
+      nativeRespond(0,{body:CFG.first});await drainNative();show({fresh:fresh,late:nativeCollect()});
+    """,native_responses=[],first=first,second=second)
+    assert out["fresh"]["generation"]==out["late"]["generation"]=="account-b-generation"
+    assert "Current account context" in out["late"]["context"]
+    assert "Old account context" not in out["late"]["context"]
+    assert len(out["late"]["calls"])==2 and out["late"]["calls"][0]["aborted"] is True
+
+
+@needs_node
+def test_native_generation_replacement_resets_disclosure_even_at_the_same_session():
+    first=_native_wire_fixture()
+    second=_native_wire_fixture(generation="sector-browser-2",theme_name="Replacement context")
+    out=_run_native("""
+      await drainNative();dispatchEl('toggle',{target:{className:'mr-dc-det',open:true}});
+      dispatchDoc('langchange');var opened=html('mr-context');nativeRetry();await drainNative();
+      show({opened:opened,replacement:nativeCollect()});
+    """,native_responses=[{"body":first},{"body":second}])
+    assert '<details class="mr-dc-det" open>' in out["opened"]
+    assert '<details class="mr-dc-det" open>' not in out["replacement"]["context"]
+    assert out["replacement"]["generation"]=="sector-browser-2"
+    assert "Replacement context" in out["replacement"]["context"]
+    assert ["XLK","true"] in out["replacement"]["rows"]
+
+
+@needs_node
+def test_native_generation_has_one_bounded_auth_settle_and_request_timeout():
+    out=_run_native("""
+      await drainNative();var before=__nativeCalls.length;
+      __timersLog.filter(function(t){return t.ms===3000;}).forEach(function(t){t.fn();});
+      await drainNative();var loading=nativeCollect();
+      __timersLog.filter(function(t){return t.ms===20000&&!t.cancelled;}).forEach(function(t){t.fn();});
+      await drainNative();show({before:before,loading:loading,after:nativeCollect()});
+    """,auth_ready=False,native_responses=[])
+    assert out["before"]==0 and out["loading"]["nativeState"]=="loading"
+    assert len(out["after"]["calls"])==1 and out["after"]["calls"][0]["aborted"] is True
+    assert out["after"]["nativeState"]=="unavailable"
+
+
+@needs_node
+def test_native_generation_keeps_typed_absence_and_clears_missing_selection():
+    out=_run_native(wire=_native_wire_fixture(no_read=True),search="?g=REMOVED")
+    assert out["nativeState"]=="ready" and out["rows"]==[]
+    assert 'data-dated-state="ok"' in out["context"]
+    assert "This read is not in today&#39;s data yet" in out["body"]
+
+
+@needs_node
+@pytest.mark.parametrize("qualification", ["accepted","stale","degraded"])
+def test_native_generation_preserves_aware_minute_publication_and_owner_qualification(qualification):
+    out=_run_native(wire=_native_wire_fixture(published_at="2026-11-06T02:00+00:00",qualification=qualification))
+    assert out["nativeState"]=="ready" and "2026-11-06T02:00+00:00" in out["sub"]
+
+
+@needs_node
+def test_native_generation_accepts_exact_outage_stub_without_static_measurements():
+    out=_run_native(wire=_native_wire_fixture(outage=True))
+    assert out["nativeState"]=="ready" and out["rows"]==[] and out["hist"] is None
+    assert 'data-dated-state="ok"' in out["context"]
+
+
+@needs_node
+def test_native_generation_preserves_dossier_binding_when_exact_companion_is_absent():
+    out=_run_native(wire=_native_wire_fixture(exact_companion=False))
+    assert out["nativeState"]=="ready" and ["XLK","true"] in out["rows"]
+    assert 'data-ev-state="ok"' in out["detail"]
+    assert "63 trading sessions" in out["detail"]
+    assert 'data-exact-state="ok"' not in out["exact"]
+
+
+@needs_node
+def test_native_generation_decodes_utf8_when_transport_splits_a_multibyte_character():
+    wire=_native_wire_fixture(theme_name="中文 context")
+    out=_run_native(native_responses=[{"body":wire,"split_utf8":True}])
+    assert out["nativeState"]=="ready" and "中文 context" in out["context"]

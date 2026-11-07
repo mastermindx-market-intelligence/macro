@@ -1,0 +1,310 @@
+{
+ "scope": "full_template_router_native_fetch_over_mounted_api_bytes",
+ "production_authenticated": false,
+ "controlled_auth_events": true,
+ "source_revision": "f223990e0e1dc805108517abde90c17b8883b005",
+ "page_sha256": "7c8fed35b803bbdb33f0e452d152a0751be003a195d77b37a6f6136be090b76e",
+ "wire_sha256": "3e275fc69d22e990f81261c8a803576a832be9332484c7a99b2dddd165a5d425",
+ "wire_bytes": 179788,
+ "generation_id": "captured-sector-1",
+ "content_sha256": "a3573d7cefe87da155ef7575feb2071b4c32c9f562f42d5724b3ec54332d9eab",
+ "source_session": "2026-11-03",
+ "cells": [
+  {
+   "viewport": "desktop",
+   "width": 1440,
+   "height": 900,
+   "locale": "en",
+   "theme": "dark",
+   "problems": [],
+   "page_errors": [],
+   "requests": [
+    {
+     "method": "GET",
+     "query": "audience=preview",
+     "status": 200
+    },
+    {
+     "method": "GET",
+     "query": "audience=preview",
+     "status": 401
+    }
+   ],
+   "asset_requests": [
+    {
+     "path": "sector_cycles_series_data.js",
+     "state": "fixture_asset_unavailable"
+    },
+    {
+     "path": "sector_cycles_narr_data.js",
+     "state": "fixture_asset_unavailable"
+    },
+    {
+     "path": "sector_cycles_dna_data.js",
+     "state": "fixture_asset_unavailable"
+    },
+    {
+     "path": "live/shock_state.json",
+     "state": "outside_fixture_scope"
+    },
+    {
+     "path": "policy_lever.json",
+     "state": "outside_fixture_scope"
+    },
+    {
+     "path": "live/basket_pulse.json",
+     "state": "outside_fixture_scope"
+    },
+    {
+     "path": "marketdata/index_leadership.json",
+     "state": "outside_fixture_scope"
+    },
+    {
+     "path": "basketdata/narrative_emergence.json",
+     "state": "outside_fixture_scope"
+    },
+    {
+     "path": "basketdata/baskets.json",
+     "state": "outside_fixture_scope"
+    },
+    {
+     "path": "sector_cycles_series_data.js",
+     "state": "fixture_asset_unavailable"
+    },
+    {
+     "path": "marketdata/rotation_events.json",
+     "state": "outside_fixture_scope"
+    },
+    {
+     "path": "marketdata/sector_fragmentation.json",
+     "state": "outside_fixture_scope"
+    }
+   ],
+   "facts": {
+    "page_overflow": 0,
+    "context_overflow": 0,
+    "summary_height": 44,
+    "focus_visible": true,
+    "outline_width": "2px",
+    "history_points_visible": true,
+    "selected": "XLK"
+   },
+   "screenshot": "desktop-en-dark--native-context.png",
+   "classification": {
+    "facts": {
+     "overflow": 0,
+     "page_overflow": 0,
+     "summary_height": 44,
+     "focus_visible": true,
+     "outline_width": "2px"
+    },
+    "screenshot": "desktop-en-dark--native-classification.png",
+    "screenshot_sha256": "efc984e3f11f1f77a70574e859d6191f92ccf6a9df532841134f0626803ca80c",
+    "status": "partial",
+    "configured_n": 5,
+    "missing_n": 2
+   },
+   "computed_radii": {
+    ".mr-exact": [
+     "12px",
+     "12px",
+     "12px"
+    ],
+    ".mr-xselect": [
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px"
+    ],
+    ".mr-xwindow": [
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px"
+    ],
+    ".mr-cl-members li": [
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px"
+    ]
+   },
+   "full_template_screenshot": "desktop-en-dark--native-whole-page.png",
+   "full_template_screenshot_sha256": "cf1116fb239e0541863f45ddac5d082f06f0a634a2fb8d385d96399d26e4fee8",
+   "journey": {
+    "native_fetch": true,
+    "one_receipt": true,
+    "all_eleven": true,
+    "selection": true,
+    "language_no_refetch": true,
+    "signout_withdrawal": true,
+    "known_signout_retry_blocked": true,
+    "http_401_withdrawal": true,
+    "full_template_router": true,
+    "native_settings_controls": true,
+    "settings_visits_separate": true,
+    "classification_capture_displayed": true,
+    "browser_back_preserves_selection": true
+   }
+  },
+  {
+   "viewport": "small",
+   "width": 320,
+   "height": 640,
+   "locale": "zh",
+   "theme": "light",
+   "problems": [],
+   "page_errors": [],
+   "requests": [
+    {
+     "method": "GET",
+     "query": "audience=preview",
+     "status": 200
+    },
+    {
+     "method": "GET",
+     "query": "audience=preview",
+     "status": 401
+    }
+   ],
+   "asset_requests": [
+    {
+     "path": "sector_cycles_series_data.js",
+     "state": "fixture_asset_unavailable"
+    },
+    {
+     "path": "sector_cycles_narr_data.js",
+     "state": "fixture_asset_unavailable"
+    },
+    {
+     "path": "sector_cycles_dna_data.js",
+     "state": "fixture_asset_unavailable"
+    },
+    {
+     "path": "live/shock_state.json",
+     "state": "outside_fixture_scope"
+    },
+    {
+     "path": "policy_lever.json",
+     "state": "outside_fixture_scope"
+    },
+    {
+     "path": "live/basket_pulse.json",
+     "state": "outside_fixture_scope"
+    },
+    {
+     "path": "marketdata/index_leadership.json",
+     "state": "outside_fixture_scope"
+    },
+    {
+     "path": "basketdata/narrative_emergence.json",
+     "state": "outside_fixture_scope"
+    },
+    {
+     "path": "basketdata/baskets.json",
+     "state": "outside_fixture_scope"
+    },
+    {
+     "path": "sector_cycles_series_data.js",
+     "state": "fixture_asset_unavailable"
+    },
+    {
+     "path": "marketdata/rotation_events.json",
+     "state": "outside_fixture_scope"
+    },
+    {
+     "path": "marketdata/sector_fragmentation.json",
+     "state": "outside_fixture_scope"
+    }
+   ],
+   "facts": {
+    "page_overflow": 0,
+    "context_overflow": 0,
+    "summary_height": 44,
+    "focus_visible": true,
+    "outline_width": "2px",
+    "history_points_visible": true,
+    "selected": "XLK"
+   },
+   "screenshot": "small-zh-light--native-context.png",
+   "classification": {
+    "facts": {
+     "overflow": 0,
+     "page_overflow": 0,
+     "summary_height": 44,
+     "focus_visible": true,
+     "outline_width": "2px"
+    },
+    "screenshot": "small-zh-light--native-classification.png",
+    "screenshot_sha256": "adcd0bb189c5640b4da1b478914cf615742a3e1b8bffc39ef3f21eb50842a483",
+    "status": "partial",
+    "configured_n": 5,
+    "missing_n": 2
+   },
+   "computed_radii": {
+    ".mr-exact": [
+     "12px",
+     "12px",
+     "12px"
+    ],
+    ".mr-xselect": [
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px"
+    ],
+    ".mr-xwindow": [
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px"
+    ],
+    ".mr-cl-members li": [
+     "8px",
+     "8px",
+     "8px",
+     "8px",
+     "8px"
+    ]
+   },
+   "full_template_screenshot": "small-zh-light--native-whole-page.png",
+   "full_template_screenshot_sha256": "599eb8b1de3bc0812706ef3ef8f511be94e9caa9bfcf41b2ddc65c7cceee0bed",
+   "journey": {
+    "native_fetch": true,
+    "one_receipt": true,
+    "all_eleven": true,
+    "selection": true,
+    "language_no_refetch": true,
+    "signout_withdrawal": true,
+    "known_signout_retry_blocked": true,
+    "http_401_withdrawal": true,
+    "full_template_router": true,
+    "native_settings_controls": true,
+    "settings_visits_separate": true,
+    "classification_capture_displayed": true,
+    "browser_back_preserves_selection": true
+   }
+  }
+ ],
+ "problem_count": 0,
+ "outcome": "captured"
+}

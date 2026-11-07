@@ -1,0 +1,12 @@
+{
+  "exit": 0,
+  "cases": 68,
+  "render_inputs": 31,
+  "materialized_inputs": 27,
+  "seconds": 116.24,
+  "source": "f223990e0e1dc805108517abde90c17b8883b005",
+  "receipt_sha256": "c6b8001f29d0eb9cd2e65dad800f979afbfbb95fee3c13119fbe340043ed99eb",
+  "log_sha256": "24fac2cfe087eacd9acbe62278f537b79f9fd886dd310b90060e6a7b7bbc05e9",
+  "output": "/Volumes/Mastermind/evidence/persistent-sector-leadership-20261106-c4/macro-ci-ew-p4-recapture-v2",
+  "files": 80
+}

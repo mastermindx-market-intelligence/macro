@@ -149,6 +149,9 @@ import yfinance as yf
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from collectors.yahoo import STORE_COLUMNS, YahooAdapter, extract_store_frame  # noqa: E402
+from lib.yahoo_runtime_profile import (  # noqa: E402
+    assert_legacy_write_allowed, parse_profile, partition_legacy_symbols, runtime_owns,
+)
 from lib import config, store  # noqa: E402
 from lib.ticker_aliases import fetch_symbol  # noqa: E402
 
@@ -347,6 +350,7 @@ def needed_queue(state: dict, today: date | None = None, recent_days: int = 90,
     and the order is deterministic across runs (resumability).
 
     Parked names and symbols this lane cannot address are excluded entirely."""
+    profile = parse_profile(config.load().get("yahoo", {}))
     today = today or datetime.now(timezone.utc).date()
     last_seen = ledger_last_seen(data_dir)
     current, hub_every = hub_universe(site_dir)
@@ -357,7 +361,8 @@ def needed_queue(state: dict, today: date | None = None, recent_days: int = 90,
     universe = set(last_seen) | hub_every
     missing = {t for t in universe if t not in have}
     unsupported = sorted(t for t in missing if not addressable(t))
-    workable = sorted(t for t in missing if addressable(t))
+    workable = sorted(t for t in missing if addressable(t)
+                      and not runtime_owns(profile, group="yahoo", symbol=t))
 
     cutoff = (today - timedelta(days=recent_days)).isoformat()
     buckets: dict[str, int] = {}
@@ -439,6 +444,7 @@ def refresh_candidates(state: dict, data_dir: Path | None = None) -> tuple[list[
     the whole 6.8k store ever needed reading, versus ~0 s in the steady state).
     Order alone rides on it: the refresh re-pulls period='max' either way, so a
     stale ordering key costs at most a suboptimal pick, never correctness."""
+    profile = parse_profile(config.load().get("yahoo", {}))
     d = (data_dir or config.data_dir()) / "yahoo"
     if not d.exists():
         return [], 0
@@ -450,7 +456,8 @@ def refresh_candidates(state: dict, data_dir: Path | None = None) -> tuple[list[
     tips: list[tuple[str, str]] = []
     for p in sorted(d.glob("*.parquet")):
         stem = p.stem
-        if stem.startswith("_") or stem in maintained or stem in parked:
+        if (stem.startswith("_") or stem in maintained or stem in parked
+                or runtime_owns(profile, group="yahoo", symbol=stem)):
             continue
         entry = done.get(stem) or {}
         tip = entry.get("last_obs")
@@ -672,9 +679,12 @@ def run(cap: int = 400, batch_size: int = 20, sleep_s: float = 1.5,
     """
     if refresh_all and refresh_cap > 0:
         raise ValueError("refresh_all cannot be combined with an explicit refresh_cap")
+    profile = parse_profile(config.load().get("yahoo", {}))
     t0 = time.monotonic()
     state = load_state()
     queue, census = needed_queue(state, today=today, recent_days=recent_days)
+    queue = [(ticker, bucket) for ticker, bucket in queue
+             if not runtime_owns(profile, group="yahoo", symbol=ticker)]
     plan = queue[:max(0, cap)]
 
     report: dict = {
@@ -703,6 +713,9 @@ def run(cap: int = 400, batch_size: int = 20, sleep_s: float = 1.5,
                       refresh_noncurrent_returned=0, refresh_unattempted=0)
     if len(plan) < cap or refresh_all:
         candidates, n_refreshable = refresh_candidates(state)
+        candidates = list(partition_legacy_symbols(profile, candidates).allowed)
+        if profile.mode == "runtime":
+            n_refreshable = len(candidates)
         chosen = (n_refreshable if refresh_all else
                   refresh_cap if refresh_cap > 0 else refresh_cap_for(n_refreshable))
         refresh_plan = candidates[:max(0, chosen)]
@@ -733,6 +746,7 @@ def run(cap: int = 400, batch_size: int = 20, sleep_s: float = 1.5,
         the refresh re-pulls period='max' exactly as the backfill does, which is also
         what makes it the adjustment-basis heal (a full re-pull rebases the whole
         series; see lib.store.basis_shifted for why a short window cannot)."""
+        tickers = list(partition_legacy_symbols(profile, tickers).allowed)
         for i in range(0, len(tickers), max(1, batch_size)):
             if time.monotonic() - t0 > budget_s:
                 report["budget_exhausted"] = True
@@ -788,6 +802,7 @@ def run(cap: int = 400, batch_size: int = 20, sleep_s: float = 1.5,
                 if diag["anomalies"]:
                     report["ratio_anomalies"] += 1
                     anomalies[ticker] = diag["anomalies"]
+                assert_legacy_write_allowed(profile, group="yahoo", symbol=ticker)
                 store.upsert("yahoo", ticker, frame)
                 entry = state.setdefault("done", {}).get(ticker) or {}
                 entry.update({

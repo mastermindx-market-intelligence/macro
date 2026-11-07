@@ -1,0 +1,113 @@
+{
+  "base": "f769c2b879797e0237429dd011a5c6b7e7bc0bc7",
+  "files": [
+    {
+      "path": "scripts/prepare_sector_native_inputs.py",
+      "sha256": "99550bad0d23ad773c312823eec91846d46015bd1d639c68140709b496cbc74c"
+    },
+    {
+      "path": "scripts/prepare_sector_snapshot.py",
+      "sha256": "f8475a8bd60d652b4598180999dcabffe7ca078c5fef483d534ad396336f3e8f"
+    },
+    {
+      "path": "scripts/vps_live_orchestrator.py",
+      "sha256": "bfea981e0053206809a25449f63af7e2e76c136aa33e3a74ac98b9da0d593a12"
+    },
+    {
+      "path": "tests/test_intelligence_workspace_performance.py",
+      "sha256": "186539f37577de390033bc2d73e789d7189548babe4a15db9899074184e12f57"
+    },
+    {
+      "path": "tests/test_leadership_measured_read.py",
+      "sha256": "107147c91309654b4c296b1f4573d4fa7785e1f2a3c466dba8867245c098b6d4"
+    },
+    {
+      "path": "tests/test_xpv2_sector_r3_fixture.py",
+      "sha256": "3ba809252051b84b8c9216b658f9e5b94b33f357660bb59cf0e63c2224515ce6"
+    },
+    {
+      "path": "tests/test_sector_central_measured_panel.py",
+      "sha256": "0438181de613d42ad38fcf65dd13797531fd95280ebfaabc94a1f96e2e8c114c"
+    },
+    {
+      "path": "tests/fixtures/leadership_rotation/dated_context_current_v1.json",
+      "sha256": "e84590df33cd4d36c57f2aafac778ad18352605a157e999c7fc18254e741883e"
+    },
+    {
+      "path": "tests/fixtures/leadership_rotation/dated_context_historical_v1.json",
+      "sha256": "153a550a1f3f3572c714adc14b866e7f2d5a2689774523399b1bdb028a27a694"
+    },
+    {
+      "path": "tests/fixtures/leadership_rotation/dated_context_inputs_v1.json",
+      "sha256": "fc860c8bcd0e37017af0e45ec7d2d43d58c85f3b5aafe08254598d0e87a32580"
+    },
+    {
+      "path": "tests/fixtures/leadership_rotation/dated_context_provenance.md",
+      "sha256": "daaf8b2d0ad733535ad160cf8a91f238d20f1476445af796e4bb89c2a31fb3ed"
+    },
+    {
+      "path": "engine/sector_native_view.py",
+      "sha256": "efdd52d6b90aabc69d9613c997faeb5e1dfef096664380787d9f62ad2940c657"
+    },
+    {
+      "path": "tests/test_sector_native_view.py",
+      "sha256": "def8c878841e3c3922a54cef36b1b6a245f29de5b8537ef86d9a2fde593ee3cb"
+    },
+    {
+      "path": "tests/test_sector_captured_input_assembly.py",
+      "sha256": "af76ee7d955d57a75bad9e0c31c4006a16bba0bce0d93fa843711c00f6610132"
+    },
+    {
+      "path": "tests/test_sector_document_composition.py",
+      "sha256": "87ea01273a47f93a705ff0080cb09a09875ffc468fe8497a9d1b6539852d9c3e"
+    },
+    {
+      "path": "research/sector_completion_20261021/CAPABILITY_MATRIX_2026-10-21.csv",
+      "sha256": "730c215a00f22c0d1df8a8a93ebf0cbefd72254e8f9b578eb766a3a0af1e74cf"
+    },
+    {
+      "path": "research/sector_completion_20261021/CAPABILITY_MAP_2026-10-21.md",
+      "sha256": "e9b311a33d14d9f6d52db69e190fc4019d74ce671afbd620d8a69d34aa62c216"
+    },
+    {
+      "path": "templates/sector_central.html.j2",
+      "sha256": "7c8fed35b803bbdb33f0e452d152a0751be003a195d77b37a6f6136be090b76e"
+    },
+    {
+      "path": ".github/workflows/render.yml",
+      "sha256": "e7ec505fc5a58799b055cf28635a2f80aac6e42d008452e57f5eddfa7344172a"
+    },
+    {
+      "path": "tests/probe_leadership_evidence_browser.py",
+      "sha256": "abe3418546a2753c585df8faee8590bc0a87159798093fed5f8b3dd0188bb2c3"
+    }
+  ],
+  "diffcheck": 0,
+  "native_cases": 677,
+  "native_skips": [
+    {
+      "test": "test_the_genuine_packets_are_the_actual_producer_output",
+      "message": "the in-tree producer is not the pinned revision: /Volumes/Mastermind 2/agent-workspaces/macro/web/macro-always-on-shared-shell-20261105-c3/engine/leadership_rotation_context.py"
+    }
+  ],
+  "held_owner_copied": false,
+  "csv_line_endings": "CRLF normalized to LF for default diff-check; parsed cells only four cited owner corrections",
+  "csv_cell_changes": [
+    {
+      "row": "R3A-12",
+      "column": "canonical_producer_artifact_to_record"
+    },
+    {
+      "row": "R3A-15",
+      "column": "canonical_producer_artifact_to_record"
+    },
+    {
+      "row": "R3A-34",
+      "column": "canonical_producer_artifact_to_record"
+    },
+    {
+      "row": "R3A-91",
+      "column": "canonical_producer_artifact_to_record"
+    }
+  ]
+}

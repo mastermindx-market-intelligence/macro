@@ -24,6 +24,9 @@ from __future__ import annotations
 
 import json
 import logging
+from collections.abc import Mapping
+from copy import deepcopy
+from dataclasses import dataclass
 
 import numpy as np
 import pandas as pd
@@ -157,20 +160,52 @@ def _perf(lvl: pd.Series, bench: pd.Series, idx: pd.DatetimeIndex,
     return out
 
 
-def _proxy_returns(proxy, idx: pd.DatetimeIndex) -> pd.Series | None:
+def _proxy_returns_from_inputs(
+    proxy, idx: pd.DatetimeIndex, proxy_frames: Mapping[str, pd.DataFrame | None],
+    *, require_all: bool = False,
+) -> pd.Series | None:
     """Daily returns of a reference ETF, or an equal blend of several (e.g. ['XLP','XLU'])."""
     syms = proxy if isinstance(proxy, list) else [proxy]
+    if require_all and any(proxy_frames.get(s) is None or "close" not in proxy_frames[s] for s in syms):
+        return None
     legs = []
     for s in syms:
-        pe = store.read("yahoo", s)
+        pe = proxy_frames.get(s)
         if pe is not None and "close" in pe.columns:
             legs.append(pe["close"].reindex(idx).ffill().pct_change())
     if not legs:
         return None
-    return pd.concat(legs, axis=1).mean(axis=1)
+    return pd.concat(legs, axis=1).mean(axis=1, skipna=not require_all)
+
+
+@dataclass(frozen=True)
+class BasketInputs:
+    """Captured inputs; missing proxy entries mean absent, never a store fallback."""
+    membership: dict | None
+    closes: pd.DataFrame | None
+    spy: pd.DataFrame | None
+    extras: pd.DataFrame | None
+    names_sectors: Mapping[str, tuple[str, str]]
+    proxy_frames: Mapping[str, pd.DataFrame | None]
+    source_basis: Mapping[str, str] | None = None
+    require_complete_proxy_legs: bool = False
+
+
+def _proxy_returns(proxy, idx: pd.DatetimeIndex) -> pd.Series | None:
+    syms = proxy if isinstance(proxy, list) else [proxy]
+    return _proxy_returns_from_inputs(
+        proxy, idx, {symbol: store.read("yahoo", symbol) for symbol in syms},
+    )
+
+
+def compute_baskets_from_inputs(inputs: BasketInputs) -> dict | None:
+    """Calculate on the supplied source calendar, with no IO or diagnostic output."""
+    result, _ = _compute_baskets_captured(inputs)
+    return result
 
 
 def compute_baskets() -> dict | None:
+    """Compatibility acquisition; capture each declared proxy once per calculation."""
     mem = _membership()
     if not mem or not mem.get("baskets"):
         return None
@@ -180,22 +215,65 @@ def compute_baskets() -> dict | None:
     spy = store.read("yahoo", "SPY")
     if spy is None or "close" not in spy.columns:
         return None
+    # Preserve the old short-circuit before supplemental acquisition. The core
+    # repeats this pure alignment on the original inputs to retain its receipt.
+    aligned, _, observation = align_latest_common_observation(closes, spy["close"])
+    if aligned.empty or observation.get("effective_as_of") is None:
+        return None
+    extras = _basket_extras()
+    names = _names_sectors()
+    rows = mem["baskets"].values() if isinstance(mem["baskets"], dict) else mem["baskets"]
+    proxies = {}
+    for row in rows:
+        proxy = row.get("etf_proxy")
+        if proxy:
+            for symbol in proxy if isinstance(proxy, list) else [proxy]:
+                if symbol not in proxies:
+                    proxies[symbol] = store.read("yahoo", symbol)
+    result, refusals = _compute_baskets_captured(
+        BasketInputs(mem, closes, spy, extras, names, proxies),
+    )
+    for refusal in refusals:
+        bid, basket_observation = refusal["basket_id"], refusal["observation"]
+        print(
+            "::warning title=basket-observation-coverage::"
+            f"{bid} refused aggregate read at {basket_observation['effective_as_of']}: "
+            f"observed {basket_observation['observed_n']}/"
+            f"{basket_observation['configured_n']} live members; minimum "
+            f"{basket_observation['min_members']} and "
+            f"{int(round(basket_observation['min_coverage'] * 100))}% coverage",
+            flush=True,
+        )
+    return result
+
+
+def _compute_baskets_captured(inputs: BasketInputs) -> tuple[dict | None, list[dict]]:
+    mem = deepcopy(inputs.membership)
+    if not mem or not mem.get("baskets"):
+        return None, []
+    closes = None if inputs.closes is None else inputs.closes.copy(deep=True)
+    if closes is None or closes.empty:
+        return None, []
+    spy = None if inputs.spy is None else inputs.spy.copy(deep=True)
+    if spy is None or "close" not in spy.columns:
+        return None, []
     # The broad panel and SPY choose the effective session. Extras may widen the
     # basket population on that fixed calendar; they may not advance the whole desk
     # to a date where the broad universe itself has no observation.
     closes, spy_close, observation = align_latest_common_observation(closes, spy["close"])
     if closes.empty or observation.get("effective_as_of") is None:
-        return None
+        return None, []
     # Resolve all thematic members through the shared whole-column contract. The
     # broad panel already fixed the desk calendar above; supplemental tape may widen
     # population on that calendar but may never advance it or row-splice an
     # unproven adjustment vintage.
-    extras = _basket_extras()
+    extras = None if inputs.extras is None else inputs.extras.copy(deep=True)
     closes, price_resolution = resolve_thematic_close_panel(
-        closes, extras, _membership_tickers(mem))
+        closes, extras, _membership_tickers(mem),
+        source_basis=None if inputs.source_basis is None else dict(inputs.source_basis))
     rets = closes.pct_change(fill_method=None)
     idx = rets.index
-    nm = _names_sectors()
+    nm = dict(inputs.names_sectors)
 
     spy_ret = spy_close.reindex(idx).ffill().pct_change()
     bench = pd.Series(np.nan, index=idx)
@@ -216,15 +294,6 @@ def compute_baskets() -> dict | None:
         basket_observation = population_observation(closes, members, idx.max())
         if not basket_observation["aggregate_eligible"]:
             observation_refusals.append({"basket_id": bid, "observation": basket_observation})
-            print(
-                "::warning title=basket-observation-coverage::"
-                f"{bid} refused aggregate read at {basket_observation['effective_as_of']}: "
-                f"observed {basket_observation['observed_n']}/"
-                f"{basket_observation['configured_n']} live members; minimum "
-                f"{basket_observation['min_members']} and "
-                f"{int(round(basket_observation['min_coverage'] * 100))}% coverage",
-                flush=True,
-            )
             continue
         tickers = [m["ticker"] for m in members]
         present = [t for t in tickers if t in rets.columns]
@@ -274,7 +343,8 @@ def compute_baskets() -> dict | None:
         reference = None
         proxy = b.get("etf_proxy")
         if proxy:
-            pr = _proxy_returns(proxy, idx)
+            pr = _proxy_returns_from_inputs(proxy, idx, inputs.proxy_frames,
+                                            require_all=inputs.require_complete_proxy_legs)
             if pr is not None:
                 ew_ret = lvl.pct_change()
                 pair = pd.concat([ew_ret, pr, spy_ret], axis=1).dropna()
@@ -300,7 +370,7 @@ def compute_baskets() -> dict | None:
         })
 
     if not out_baskets:
-        return None
+        return None, observation_refusals
     out_baskets.sort(key=lambda x: (x["perf"]["20d"]["rel"] is None, -(x["perf"]["20d"]["rel"] or 0)))
     cats = []
     for b in out_baskets:
@@ -325,4 +395,4 @@ def compute_baskets() -> dict | None:
         "chart": {"dates": dates,
                   "bench": [None if pd.isna(v) else round(float(v), 5) for v in bench],
                   "baskets": chart_baskets},
-    }
+    }, observation_refusals

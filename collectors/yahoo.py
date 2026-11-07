@@ -16,6 +16,14 @@ Adjustment-basis guard: both stored bases are re-adjusted by Yahoo at every fetc
 so a 1mo window pulled after an ex-div/split disagrees with stored history on every
 overlap date. ``store.basis_shifted`` detects that and the name is re-pulled
 period='max' instead of spliced (see ``_rebase_shifted``).
+
+Acquisition seam: ``YahooAdapter.acquire_cycle_benchmarks`` is a bounded,
+EXPLICIT-INPUT boundary on this same adapter for the closed US Sector cycle
+benchmark set. It takes explicit symbols, explicit prior frames, an explicit
+evaluation instant and an explicit session policy, reads and writes NOTHING in
+the repository, and returns current-call validated frames plus truthful
+lineage/unknown clocks — all or nothing, never a partial result. See
+``CYCLE_BENCHMARK_SYMBOLS`` and the method docstring for the full contract.
 """
 from __future__ import annotations
 
@@ -23,7 +31,13 @@ import logging
 import hashlib
 import json
 import re
+import math
+from copy import deepcopy
+from collections.abc import Mapping, Sequence
+from dataclasses import dataclass
+from datetime import datetime, timezone
 from pathlib import Path
+from types import MappingProxyType
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 import time
 
@@ -33,6 +47,12 @@ import yfinance as yf
 from collectors.base import Adapter
 from lib import config, delisted_symbols, store
 from lib.ticker_aliases import fetch_symbol
+from lib.yahoo_runtime_profile import (
+    SECTOR_CLOSE_TICKERS, MIN_SECTOR_HISTORY_SESSIONS, capture_sector_history,
+    YahooRuntimeBindingError, YahooRuntimeOwnershipError, YahooRuntimeProfileError,
+    assert_legacy_write_allowed, bound_snapshot_for, parse_profile,
+    partition_legacy_symbols, runtime_owns,
+)
 
 log = logging.getLogger(__name__)
 
@@ -120,6 +140,61 @@ def _wti_temporal_context(index: pd.Index, request: dict | None) -> dict | None:
     }
 
 
+# The existing profile owns membership; this alias is a compatibility name.
+CYCLE_BENCHMARK_SYMBOLS = SECTOR_CLOSE_TICKERS
+
+
+@dataclass(frozen=True)
+class YahooRequestSettings:
+    """One detached request policy used by every call in an acquisition."""
+    batch_size: int
+    retries: int
+    backoff_base_s: float
+    basis_tolerance: float
+
+    @classmethod
+    def capture(cls, cfg):
+        if not isinstance(cfg, Mapping):
+            raise ValueError("Yahoo configuration must be a mapping")
+        values = deepcopy(dict(cfg))
+        batch = values.get("batch_size")
+        retries = values.get("retries")
+        backoff = values.get("backoff_base_s")
+        tolerance = values.get("upsert_basis_tol", 1e-3)
+        if type(batch) is not int or batch < 1 or type(retries) is not int or retries < 1:
+            raise ValueError("Yahoo batch size and retries must be positive integers")
+        if (type(backoff) not in (int, float) or not math.isfinite(backoff) or backoff < 0
+                or type(tolerance) not in (int, float) or not math.isfinite(tolerance)
+                or not 0 <= tolerance < 1):
+            raise ValueError("Invalid Yahoo backoff or basis tolerance")
+        return cls(batch, retries, float(backoff), float(tolerance))
+
+
+@dataclass(frozen=True)
+class CycleBenchmarkAcquisition:
+    """Private full histories or an all-or-nothing refusal, never a publication.
+
+    Frozen bindings do not make frames or nested metadata immutable. Every frame
+    is detached from provider/prior inputs. Only a verified published generation
+    may later be wrapped in VerifiedYahooCohort and bound for calculation.
+    """
+    accepted: bool
+    reason: str
+    requested: tuple[str, ...]
+    returned: tuple[str, ...]
+    failed: tuple[str, ...]
+    primary_failed: tuple[str, ...]
+    failure_reasons: Mapping[str, str]
+    frames: Mapping[str, pd.DataFrame]
+    lineage: Mapping[str, dict]
+    clocks: Mapping[str, object]
+    notes: tuple[str, ...]
+
+
+class _CycleAcquisitionRefusal(ValueError):
+    pass
+
+
 class YahooAdapter(Adapter):
     name = "yahoo"
     group = "yahoo"
@@ -129,8 +204,15 @@ class YahooAdapter(Adapter):
         from lib.market_session import cash_market_for_symbol
         return cash_market_for_symbol(name)
 
-    def __init__(self) -> None:
-        self.cfg = config.load()["yahoo"]
+    def __init__(self, *, yahoo_config: Mapping | None = None) -> None:
+        # The legacy constructor retains its configuration owner. Runtime supplies
+        # a detached mapping and never enters that acquisition-time read path.
+        if yahoo_config is None:
+            self.cfg = config.load()["yahoo"]
+        elif isinstance(yahoo_config, Mapping):
+            self.cfg = deepcopy(dict(yahoo_config))
+        else:
+            raise ValueError("Yahoo configuration must be a mapping")
 
     def all_tickers(self) -> list[str]:
         out: list[str] = []
@@ -156,7 +238,9 @@ class YahooAdapter(Adapter):
         # the store are untouched — see _drop_delisted). `maintained_tickers()` is
         # the un-filtered view for the store-tip audit, which must still see those
         # stores; every other caller of all_tickers() wants the fetch list.
-        return _drop_delisted(list(dict.fromkeys(out)))
+        candidates = _drop_delisted(list(dict.fromkeys(out)))
+        profile = parse_profile(config.load().get("yahoo"))
+        return list(partition_legacy_symbols(profile, candidates).allowed)
 
     def maintained_tickers(self) -> list[str]:
         """Every ticker whose data/yahoo store this group owns — the fetch list PLUS
@@ -167,7 +251,9 @@ class YahooAdapter(Adapter):
         invisible to the one check that reads stores rather than fetch results, and
         an invisible store is how a wrong ledger row (or a ticker reused by a new
         issuer) would never be caught."""
-        return list(dict.fromkeys(self.all_tickers() + sorted(delisted_symbols.tickers())))
+        candidates = list(dict.fromkeys(self.all_tickers() + sorted(delisted_symbols.tickers())))
+        profile = parse_profile(config.load().get("yahoo"))
+        return list(partition_legacy_symbols(profile, candidates).allowed)
 
     def fetch(self, full_history: bool = False, *,
               capture_source_metadata: bool = False) -> dict[str, pd.DataFrame]:
@@ -186,7 +272,8 @@ class YahooAdapter(Adapter):
             self.__dict__.pop("_wti_temporal_source", None)
         self._capture_temporal_metadata = capture_source_metadata
         self._wti_download_context = None
-        tickers = self.all_tickers()
+        profile = parse_profile(config.load().get("yahoo"))
+        tickers = list(partition_legacy_symbols(profile, self.all_tickers()).allowed)
         _report_delisted_exclusions(self.maintained_tickers())
         period = "max" if full_history else "1mo"
         # Keep intraday High/Low for the volatility group (^VIX etc.) — the daily
@@ -222,6 +309,7 @@ class YahooAdapter(Adapter):
         # spends a request per night probing a security that stopped existing.
         extras = _drop_delisted(
             config.load().get("stock_search", {}).get("extra_tickers", []) or [])
+        extras = list(partition_legacy_symbols(profile, extras).allowed)
         self._fill_missing_extras(frames, [t for t in extras if t not in deferred])
         # M3: `deferred` names WERE returned this run (yfinance served real data for
         # them) — they were pulled out of `frames` only because `_rebase_shifted`'s
@@ -233,6 +321,248 @@ class YahooAdapter(Adapter):
         if len(frames) < len(tickers) * 0.7:
             raise RuntimeError(f"yahoo returned only {len(frames)}/{len(tickers)} tickers")
         return frames
+
+    @staticmethod
+    def _validated_cycle_symbols(symbols) -> tuple[str, ...]:
+        if (isinstance(symbols, (str, bytes)) or not isinstance(symbols, Sequence)
+                or len(symbols) != len(SECTOR_CLOSE_TICKERS)
+                or any(type(t) is not str for t in symbols)
+                or set(symbols) != set(SECTOR_CLOSE_TICKERS)):
+            raise ValueError("Exactly the canonical 14 symbols, once each, are required")
+        return tuple(symbols)
+
+    def acquire_cycle_benchmarks(
+        self, symbols, *, prior_frames: Mapping[str, pd.DataFrame | None],
+        evaluation_instant: datetime, completed_sessions_only: bool = True,
+        period: str = "1mo",
+    ) -> CycleBenchmarkAcquisition:
+        """Acquire a complete private 14-symbol history over explicit prior inputs.
+
+        One published-calendar target and frozen request policy govern the whole
+        attempt. A window is merged only when BOTH bases align. Missing history,
+        incompatible basis or insufficient depth gets one bounded max recovery.
+        A max label is not coverage proof: target, depth and prior archive bounds
+        must still pass. No repository read/write, report or publication occurs.
+        """
+        import numpy as np
+        from lib import market_session
+
+        requested = self._validated_cycle_symbols(symbols)
+        if (not isinstance(evaluation_instant, datetime)
+                or evaluation_instant.tzinfo is None
+                or evaluation_instant.utcoffset() is None):
+            raise ValueError("evaluation_instant must be timezone-aware")
+        instant = evaluation_instant.astimezone(timezone.utc)
+        if completed_sessions_only is not True:
+            raise ValueError("Only completed sessions are admitted by this cohort")
+        if period not in ("1mo", "max"):
+            raise ValueError("period must be '1mo' or 'max'")
+        if not isinstance(prior_frames, Mapping) or set(prior_frames) != set(requested):
+            raise ValueError("An exact prior mapping is required; use None for absence")
+        settings = YahooRequestSettings.capture(self.cfg)
+        local_day = market_session.market_local_date("US", instant)
+        if not market_session.calendar_verified("US", local_day.year):
+            raise ValueError("US target calendar is unverified")
+        target = market_session.expected_session("US", instant)
+        if not market_session.calendar_verified("US", target.year):
+            raise ValueError("US target calendar coverage is incomplete")
+        priors = {}
+        for ticker in requested:
+            raw = prior_frames[ticker]
+            if raw is None:
+                priors[ticker] = None
+                continue
+            try:
+                prior = capture_sector_history(raw, minimum_sessions=1)
+            except YahooRuntimeBindingError as exc:
+                raise ValueError("Invalid prior history for " + ticker) from exc
+            if prior.index[-1].date() > target:
+                raise ValueError("Prior history exceeds the completed target for " + ticker)
+            priors[ticker] = prior
+        vendor = {t: fetch_symbol(t) for t in requested}
+        if (any(type(v) is not str or not v for v in vendor.values())
+                or len(set(vendor.values())) != len(requested)):
+            raise ValueError("Ambiguous Yahoo vendor identities")
+
+        attempts = {t: [] for t in requested}
+        comparison = {t: {} for t in requested}
+        failures = {}
+        accepted = {}
+        fresh_starts = {}
+        notes = []
+
+        def fetch_batch(batch, fetch_period):
+            for t in batch:
+                attempts[t].append(fetch_period)
+            try:
+                response = self._download([vendor[t] for t in batch], fetch_period,
+                                          request_settings=settings)
+            except Exception as exc:
+                return {}, {t: "download_failed" for t in batch}, type(exc).__name__
+            if not isinstance(response, pd.DataFrame) or response.empty:
+                return {}, {t: "missing_symbol" for t in batch}, None
+            if isinstance(response.columns, pd.MultiIndex):
+                top = set(response.columns.get_level_values(0))
+                valid_shape = (response.columns.nlevels == 2
+                    and not response.columns.has_duplicates
+                    and top.issubset({vendor[t] for t in batch}))
+            else:
+                valid_shape = len(batch) == 1 and not response.columns.has_duplicates
+            if not valid_shape:
+                return {}, {t: "ambiguous_batch_identity" for t in batch}, None
+            frames, errors = {}, {}
+            for t in batch:
+                missing_basis = []
+                extracted = self._extract(
+                    response, t, set(), missing_basis, require_adj_close=True,
+                    require_price_close=True, keep_missing_rows=True,
+                    vendor_symbol=vendor[t],
+                )
+                if extracted is None:
+                    errors[t] = "missing_price_basis" if missing_basis else "missing_symbol"
+                    continue
+                try:
+                    # Preserve the original span before null/session filtering.
+                    if (not isinstance(extracted.index, pd.DatetimeIndex)
+                            or extracted.index.hasnans or extracted.index.has_duplicates
+                            or not extracted.index.is_monotonic_increasing):
+                        raise _CycleAcquisitionRefusal("invalid_provider_index")
+                    frame = extracted.copy(deep=True)
+                    if frame.index.tz is not None:
+                        frame.index = frame.index.tz_localize(None)
+                    if not frame.index.equals(frame.index.normalize()):
+                        raise _CycleAcquisitionRefusal("invalid_provider_index")
+                    fresh_starts[t] = frame.index.min()
+                    bases = frame[["close", "close_price"]]
+                    if any(not pd.api.types.is_numeric_dtype(bases[c])
+                           or pd.api.types.is_bool_dtype(bases[c])
+                           or pd.api.types.is_complex_dtype(bases[c]) for c in bases):
+                        raise _CycleAcquisitionRefusal("invalid_price_basis")
+                    vals = bases.to_numpy(dtype=float, na_value=np.nan)
+                    present = ~np.isnan(vals)
+                    if not np.isfinite(vals[present]).all() or not (vals[present] > 0).all():
+                        raise _CycleAcquisitionRefusal("invalid_price_basis")
+                    # Missing bars are removed from the new owned span; never fill
+                    # their values from an older adjustment vintage.
+                    frame = frame.loc[bases.notna().all(axis=1)]
+                    frame = frame.loc[frame.index <= pd.Timestamp(target)]
+                    if not frame.empty:
+                        session_rows = [market_session.is_session_date("US", d.date())
+                                        for d in frame.index]
+                        frame = frame.loc[session_rows]
+                    if frame.empty or frame.index[-1].date() != target:
+                        raise _CycleAcquisitionRefusal("missing_target_session")
+                    frames[t] = frame
+                except _CycleAcquisitionRefusal as exc:
+                    errors[t] = str(exc)
+                except (ValueError, TypeError, KeyError, OverflowError):
+                    errors[t] = "invalid_provider_frame"
+            return frames, errors, None
+
+        def qualify(t, fresh, *, full_history):
+            prior = priors[t]
+            if full_history:
+                if prior is not None and (
+                        fresh.index[0] > prior.index[0] or len(fresh) < len(prior)):
+                    raise _CycleAcquisitionRefusal("archive_truncated")
+                merged = fresh
+            else:
+                if prior is None:
+                    raise _CycleAcquisitionRefusal("prior_absent")
+                comparison[t] = {
+                    col: store.compare_basis(prior, fresh, col=col,
+                                             tol=settings.basis_tolerance, strict=True).status
+                    for col in ("close", "close_price")
+                }
+                if any(value != store.BASIS_ALIGNED for value in comparison[t].values()):
+                    raise _CycleAcquisitionRefusal("basis_recovery_required")
+                merged = store.merge_frames(
+                    prior, fresh, overwrite_overlap=True, refresh_start=fresh_starts[t])
+            try:
+                return capture_sector_history(merged, source_session=target.isoformat())
+            except YahooRuntimeBindingError as exc:
+                code = ("insufficient_history" if "HISTORY_INSUFFICIENT" in exc.code
+                        else "invalid_history")
+                raise _CycleAcquisitionRefusal(code) from exc
+
+        recovery = []
+        for start in range(0, len(requested), settings.batch_size):
+            batch = requested[start:start + settings.batch_size]
+            frames, errors, failure_class = fetch_batch(batch, period)
+            if failure_class:
+                notes.append("Provider request failed: " + failure_class)
+            for t in batch:
+                reason = errors.get(t)
+                if reason is None:
+                    try:
+                        accepted[t] = qualify(t, frames[t], full_history=period == "max")
+                    except (_CycleAcquisitionRefusal, ValueError) as exc:
+                        reason = str(exc) if isinstance(exc, _CycleAcquisitionRefusal) else "invalid_merge"
+                if reason is not None:
+                    if period != "max" and reason != "download_failed":
+                        recovery.append(t)
+                    else:
+                        failures[t] = reason
+        for start in range(0, len(recovery), settings.batch_size):
+            batch = recovery[start:start + settings.batch_size]
+            frames, errors, failure_class = fetch_batch(batch, "max")
+            if failure_class:
+                notes.append("Max recovery failed: " + failure_class)
+            for t in batch:
+                reason = errors.get(t)
+                if reason is None:
+                    try:
+                        accepted[t] = qualify(t, frames[t], full_history=True)
+                    except (_CycleAcquisitionRefusal, ValueError) as exc:
+                        reason = str(exc) if isinstance(exc, _CycleAcquisitionRefusal) else "invalid_merge"
+                if reason is not None:
+                    failures[t] = reason
+        lineage = {}
+        for t in requested:
+            frame = accepted.get(t)
+            lineage[t] = {
+                "provider": "yahoo", "ticker": t, "vendor_symbol": vendor[t],
+                "alias_applied": vendor[t] != t,
+                "field": "Adj Close", "basis": "total_return",
+                "close_price_basis": "split_adjusted_dividend_unadjusted",
+                "attempt_periods": list(attempts[t]),
+                "basis_comparison": dict(comparison[t]),
+                "prior": "absent" if priors[t] is None else "present",
+                "completed_sessions_only": True, "expected_session": target.isoformat(),
+                "rows": 0 if frame is None else len(frame),
+                "first_session": None if frame is None else frame.index[0].date().isoformat(),
+                "last_session": None if frame is None else frame.index[-1].date().isoformat(),
+                "status": failures.get(t, "accepted"),
+            }
+        clocks = {
+            "known": {
+                "evaluation_instant": instant.isoformat(),
+                "expected_session": target.isoformat(), "session_calendar": "US",
+                "target_calendar_verified": True, "completed_sessions_only": True,
+                "minimum_history_sessions": MIN_SECTOR_HISTORY_SESSIONS,
+                "basis_tolerance": settings.basis_tolerance,
+                "fetch_period": period, "batch_size": settings.batch_size,
+                "retries": settings.retries, "backoff_base_s": settings.backoff_base_s,
+            },
+            "unknown": {
+                "vendor_publication_clock": "Not supplied per bar by yfinance",
+                "provider_available_at": "First retrievable time is not observed",
+                "vendor_session_metadata": "No per-bar session-completion proof supplied",
+                "upstream_correction_clock": "Corrections are observed only on a later request",
+            },
+        }
+        failed = tuple(t for t in requested if t in failures)
+        reason = failures[failed[0]] if failed else "accepted"
+        return CycleBenchmarkAcquisition(
+            accepted=not failures, reason=reason, requested=requested,
+            returned=() if failures else requested, failed=failed,
+            primary_failed=tuple(t for t in failed if failures[t] == reason),
+            failure_reasons=MappingProxyType(dict(failures)),
+            frames=MappingProxyType({} if failures else {
+                t: accepted[t].copy(deep=True) for t in requested}),
+            lineage=MappingProxyType(lineage), clocks=MappingProxyType(clocks),
+            notes=tuple(notes),
+        )
 
     def availability_source_metadata(self, ticker: str) -> dict | None:
         """Declared current-call lineage, not authentication or upstream timing."""
@@ -251,20 +581,36 @@ class YahooAdapter(Adapter):
 
     def _extract(self, df: pd.DataFrame, t: str, ohlc: set[str],
                  no_adj_close: list[str], *,
-                 capture_source_metadata: bool = False) -> pd.DataFrame | None:
+                 capture_source_metadata: bool = False,
+                 require_adj_close: bool = False,
+                 require_price_close: bool = False,
+                 keep_missing_rows: bool = False,
+                 vendor_symbol: str | None = None) -> pd.DataFrame | None:
         """Slice one ticker out of a (possibly MultiIndex) yf.download response and
         rename to the store schema; None when yfinance returned nothing for it.
 
         `t` is the CONFIG ticker throughout (store key, ohlc-group membership, log lines);
-        the response is keyed by the vendor symbol, which differs for renamed names."""
+        the response is keyed by the vendor symbol, which differs for renamed names.
+
+        ``require_adj_close=True`` refuses a name the vendor served WITHOUT an
+        Adj Close, instead of taking the FX/index fallback (close_price := close).
+        That fallback is correct for a security with no dividends, and WRONG for
+        a dividend-paying ETF: synthesising the equivalence there would make a
+        split-adjusted bar look total-return and silently poison the basis a
+        cycle reads. The refusal records the name in ``no_adj_close`` exactly as
+        the fallback path does, so the caller can name the reason. Default False
+        keeps the legacy fallback byte-identical."""
         if capture_source_metadata:
             self._availability_sources.pop(t, None)
             if t == "CL=F":
                 self._wti_availability_source = None
                 self._wti_temporal_source = None
         try:
-            sym = fetch_symbol(t)
+            sym = fetch_symbol(t) if vendor_symbol is None else vendor_symbol
             sub = df[sym] if isinstance(df.columns, pd.MultiIndex) else df
+            if require_price_close and "Close" not in sub.columns:
+                no_adj_close.append(t)
+                return None
             # W1.3 dual-basis rename:
             #   Adj Close -> close     (TR, byte-identical to old auto_adjust=True Close)
             #   Close     -> close_price (split-adj, div-UNadj — structure-math basis)
@@ -275,6 +621,13 @@ class YahooAdapter(Adapter):
                 want = ["Close", "Adj Close", "Volume"]
             available = sub[[c for c in want if c in sub.columns]]
             if "Adj Close" in available.columns:
+                if require_adj_close and available["Adj Close"].isna().all():
+                    # The column is PRESENT but carries no value: there is still no
+                    # total-return basis to report. The legacy path would drop every
+                    # row on the NaN and call the name "returned no data"; a caller
+                    # that demands the basis must be told WHICH basis is missing.
+                    no_adj_close.append(t)
+                    return None
                 renamed = available.rename(columns={
                     "Adj Close": "close",
                     "Close":     "close_price",
@@ -286,6 +639,10 @@ class YahooAdapter(Adapter):
                 # FX / indices that yfinance provides no Adj Close for:
                 # Close ≡ Adj Close (no dividends) → set close_price = close.
                 no_adj_close.append(t)
+                if require_adj_close:
+                    # No total-return basis to report. Refuse the name rather
+                    # than synthesise the equivalence (see the docstring).
+                    return None
                 renamed = available.rename(columns={
                     "Close":  "close",
                     "Volume": "volume",
@@ -294,7 +651,7 @@ class YahooAdapter(Adapter):
                 })
                 if "close" in renamed.columns:
                     renamed["close_price"] = renamed["close"]
-            sub_out = renamed.dropna(subset=["close"])
+            sub_out = renamed.copy() if keep_missing_rows else renamed.dropna(subset=["close"])
             if (capture_source_metadata and not sub_out.empty
                     and t in store.YAHOO_CAPTURE_COHORT and "Adj Close" in available.columns):
                 self._availability_sources[t] = {
@@ -334,6 +691,9 @@ class YahooAdapter(Adapter):
         fails is DROPPED from this run — never spliced — leaving the store
         untouched so the guard re-flags it the next night. Returns the tickers
         dropped without a heal (the caller keeps them away from the Stooq refill)."""
+        profile = parse_profile(config.load().get("yahoo"))
+        for ticker in frames:
+            assert_legacy_write_allowed(profile, group="yahoo", symbol=ticker)
         tol = float(self.cfg.get("upsert_basis_tol", 1e-3))
         shifted = [t for t, f in frames.items()
                    if store.basis_shifted(self.group, t, f, tol=tol)]
@@ -355,7 +715,9 @@ class YahooAdapter(Adapter):
             batch = shifted[i:i + bs]
             try:
                 df = self._download([fetch_symbol(t) for t in batch], "max")
-            except Exception as e:  # noqa: BLE001 — degrade: skip tonight, re-flag next run
+            except (YahooRuntimeBindingError, YahooRuntimeOwnershipError, YahooRuntimeProfileError):
+                raise
+            except Exception as e:  # noqa: BLE001 — legacy provider failures stay deferred
                 log.warning("yahoo: basis refetch failed for %d name(s) (%s) — kept out "
                             "of this run; the guard retries next night", len(batch), e)
                 continue
@@ -377,6 +739,8 @@ class YahooAdapter(Adapter):
         US symbols Stooq's ``.us`` feed understands, not crypto/futures/indices)
         and never fatal — Stooq is IP-gated, so a block just leaves the name
         missing, no worse than before."""
+        profile = parse_profile(config.load().get("yahoo"))
+        extras = list(partition_legacy_symbols(profile, extras).allowed)
         missing = [t for t in extras if not str(t).startswith("^") and t not in frames]
         if not missing:
             return frames
@@ -394,10 +758,16 @@ class YahooAdapter(Adapter):
             log.warning("yahoo: no data from Yahoo or Stooq for %s", still)
         return frames
 
-    def _download(self, batch: list[str], period: str) -> pd.DataFrame:
-        self._wti_download_context = None
+    def _download(self, batch: list[str], period: str, *,
+                  request_settings: YahooRequestSettings | None = None) -> pd.DataFrame:
+        if request_settings is None:
+            profile = parse_profile(config.load().get("yahoo"))
+            for ticker in batch:
+                assert_legacy_write_allowed(profile, group="yahoo", symbol=ticker)
+            self._wti_download_context = None
+        retries = self.cfg["retries"] if request_settings is None else request_settings.retries
         last_exc: Exception | None = None
-        for attempt in range(self.cfg["retries"]):
+        for attempt in range(retries):
             try:
                 # W1.3: auto_adjust=False returns BOTH Close (split-adj, div-UNadj)
                 # AND Adj Close (split+div adjusted = TR).  The old auto_adjust=True
@@ -409,7 +779,8 @@ class YahooAdapter(Adapter):
                                  progress=False, group_by="ticker", threads=True)
                 if df is None or df.empty:
                     raise RuntimeError("empty yfinance response")
-                if getattr(self, "_capture_temporal_metadata", False) and "CL=F" in batch:
+                if (request_settings is None
+                        and getattr(self, "_capture_temporal_metadata", False) and "CL=F" in batch):
                     self._wti_download_context = (df, {
                         "target": "CL=F", "period": period,
                         "auto_adjust": False, "progress": False,
@@ -421,7 +792,9 @@ class YahooAdapter(Adapter):
                 return df
             except Exception as e:  # noqa: BLE001
                 last_exc = e
-                wait = self.cfg["backoff_base_s"] * (2 ** attempt)
+                backoff = (self.cfg["backoff_base_s"] if request_settings is None
+                           else request_settings.backoff_base_s)
+                wait = backoff * (2 ** attempt)
                 log.warning("yfinance batch failed (%s); retry in %.0fs", e, wait)
                 time.sleep(wait)
         raise last_exc  # type: ignore[misc]
@@ -510,6 +883,19 @@ ENGINE_CRITICAL_SERIES: tuple[str, ...] = (
 )
 
 
+def _diagnostic_partition(tickers, *, group="yahoo"):
+    """An unbound legacy audit cannot judge the transferred runtime histories."""
+    if group != "yahoo":
+        return list(tickers), []
+    profile = parse_profile(config.load().get("yahoo"))
+    allowed, excluded = [], []
+    for ticker in tickers:
+        owned = runtime_owns(profile, group=group, symbol=ticker)
+        bound = bound_snapshot_for(group=group, symbol=ticker) is not None
+        (excluded if owned and not bound else allowed).append(ticker)
+    return allowed, excluded
+
+
 def check_yahoo_freshness(max_lag_sessions: int = 3, min_rows: int = 1000) -> list[dict]:
     """NYSE-calendar freshness + row-floor check on the engine-critical yahoo names.
 
@@ -525,7 +911,11 @@ def check_yahoo_freshness(max_lag_sessions: int = 3, min_rows: int = 1000) -> li
 
     expected = nyse_calendar.expected_last_session()
     problems: list[dict] = []
-    for series in ENGINE_CRITICAL_SERIES:
+    checked, excluded = _diagnostic_partition(ENGINE_CRITICAL_SERIES)
+    if excluded:
+        log.info("yahoo freshness: runtime-owned names excluded from legacy audit: %s",
+                 ", ".join(excluded))
+    for series in checked:
         df = store.read("yahoo", series)
         rows = 0 if df is None else len(df)
         last = None if (df is None or df.empty) else pd.Timestamp(df.index.max()).date()
@@ -556,7 +946,7 @@ def check_yahoo_freshness(max_lag_sessions: int = 3, min_rows: int = 1000) -> li
         _write_stale_series(problems)
     else:
         log.info("yahoo freshness: all %d engine-critical series fresh "
-                 "(last expected session %s)", len(ENGINE_CRITICAL_SERIES), expected)
+                 "(last expected session %s)", len(checked), expected)
     return problems
 
 
@@ -589,6 +979,11 @@ def audit_store_freshness(tickers: list[str], group: str = "yahoo") -> dict:
     {"ref": <ISO date str | None>, "stale": {ticker: tip}, "stub": {ticker: rows},
     "missing": [ticker, ...], "delisted": {ticker: tip}} so a caller/test can
     assert on the classification."""
+    tickers, runtime_excluded = _diagnostic_partition(tickers, group=group)
+    if runtime_excluded:
+        print(f"::notice title={group} store audit runtime owner::"
+              f"{len(runtime_excluded)} transferred name(s) excluded from this legacy audit: "
+              f"{', '.join(runtime_excluded)}", flush=True)
     tips: dict[str, pd.Timestamp] = {}
     rows_by: dict[str, int] = {}
     missing: list[str] = []
@@ -668,5 +1063,8 @@ def audit_store_freshness(tickers: list[str], group: str = "yahoo") -> dict:
         if _behind_wall > _STALE_CAL_DAYS:
             print(f"::warning title={group} store audit tip stale::group ref tip {ref} "
                   f"is >{_STALE_CAL_DAYS}d behind today — possible collector outage", flush=True)
-    return {"ref": ref, "stale": stale, "stub": stub, "missing": missing,
-            "delisted": delisted}
+    result = {"ref": ref, "stale": stale, "stub": stub, "missing": missing,
+              "delisted": delisted}
+    if runtime_excluded:
+        result["excluded_runtime"] = runtime_excluded
+    return result

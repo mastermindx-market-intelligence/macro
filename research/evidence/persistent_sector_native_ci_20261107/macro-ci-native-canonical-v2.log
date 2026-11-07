@@ -1,0 +1,5 @@
+outcome: captured
+pages: 1  states: 24/24 captured
+manifest: /Volumes/Mastermind/evidence/persistent-sector-leadership-20261106-c4/macro-ci-native-canonical-v2/manifest.json
+smells: /Volumes/Mastermind/evidence/persistent-sector-leadership-20261106-c4/macro-ci-native-canonical-v2/smells.json
+{"capture_exit": 0, "observations": 24, "source_revision": "f223990e0e1dc805108517abde90c17b8883b005"}

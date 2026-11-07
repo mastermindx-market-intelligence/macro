@@ -13,10 +13,15 @@
 """
 from __future__ import annotations
 
+import copy
+import hashlib
 import io
 import logging
+import math
+import re
 import time
-from datetime import date, datetime
+from dataclasses import dataclass
+from datetime import date, datetime, timezone
 
 import pandas as pd
 
@@ -103,28 +108,271 @@ class SectorHoldingsAdapter(Adapter):
         rows = rows.sort_values(["as_of", "etf", "rank"]).reset_index(drop=True)
         rows.to_parquet(hist_path, index=False)
 
-    def _fetch_fund(self, fund: str) -> pd.DataFrame:
+    def _fetch_workbook(self, fund: str) -> bytes:
+        """One incumbent HTTP/retry owner for legacy and explicit acquisition."""
         r = self.http_get(SSGA_XLSX.format(fund=fund.lower()), retries=3, timeout=60,
                           headers={"User-Agent": "Mozilla/5.0 (research)"})
-        # keep_default_na=False: 'NA' is a live listing (Nano Labs; National Bank of
-        # Canada on TSX). na_values=[""] keeps blank -> NaN so dropna/to_numeric are unchanged.
-        raw = pd.read_excel(io.BytesIO(r.content), header=None,
-                            keep_default_na=False, na_values=[""])
-        # find the header row ("Name", "Ticker", ...) and the as-of date above it
+        return r.content
+
+    def _fetch_fund(self, fund: str) -> pd.DataFrame:
+        return _snapshot_from_workbook(self._fetch_workbook(fund))
+
+    @classmethod
+    def capture_from_inputs(cls, *, sponsors, evaluated_at: datetime, clock):
+        """Acquire detached workbook-bound values; no config/store/history load.
+
+        The caller supplies the captured sponsor choices and observation clock.
+        Evaluation, document and observed capture times remain distinct. No
+        publication time is inferred from a document date or HTTP response.
+        """
+        from collections.abc import Mapping
+        if not isinstance(sponsors, Mapping) or not callable(clock):
+            raise HoldingsCaptureError("holdings_explicit_inputs_required")
+        captured_config = copy.deepcopy(dict(sponsors))
+        values = captured_config.get("sector_funds")
+        if (not isinstance(values, (list, tuple)) or not 0 < len(values) <= 11
+                or any(type(f) is not str or re.fullmatch(r"[A-Z0-9]{1,12}", f) is None
+                       for f in values) or len(set(values)) != len(values)):
+            raise HoldingsCaptureError("holdings_funds_invalid")
+        funds = tuple(values)
+        evaluated = _holdings_instant(evaluated_at)
+        from lib.market_session import market_local_date
+        evaluation_day = market_local_date("US", now=evaluated)
+        adapter = object.__new__(cls)  # The legacy __init__ loads ambient config.
+        snapshots, evidence, workbooks = {}, {}, {}
+        previous_capture = evaluated
+        for fund in funds:
+            raw, acquisition_error = None, None
+            try:
+                raw = adapter._fetch_workbook(fund)
+            except Exception as exc:  # Existing HTTP owner has exhausted its retries.
+                acquisition_error = exc
+            captured_at = _holdings_instant(clock())
+            if captured_at < previous_capture:
+                raise HoldingsCaptureError("holdings_capture_clock_regressed")
+            previous_capture = captured_at
+            fact = {
+                "origin": SSGA_XLSX.format(fund=fund.lower()),
+                "evaluated_at": evaluated.isoformat(),
+                "captured_at": captured_at.isoformat(),
+                "published_at": None,
+                "document_date": None, "sha256": None, "byte_length": None,
+            }
+            snapshots[fund], workbooks[fund] = None, None
+            if acquisition_error is not None:
+                response = getattr(acquisition_error, "response", None)
+                fact.update(
+                    outcome="absent" if getattr(response, "status_code", None) == 404
+                    else "unreadable",
+                    reason="http_" + type(acquisition_error).__name__)
+            else:
+                try:
+                    if type(raw) is not bytes or not 0 < len(raw) <= MAX_HOLDINGS_WORKBOOK_BYTES:
+                        raise HoldingsCaptureError("holdings_workbook_encoded_bound")
+                    workbooks[fund] = raw
+                    fact.update(sha256=hashlib.sha256(raw).hexdigest(), byte_length=len(raw))
+                    day_limit = min(evaluation_day, market_local_date("US", now=captured_at))
+                    snap = _snapshot_from_workbook(raw, strict_day=day_limit)
+                    snapshots[fund] = snap.copy(deep=True)
+                    fact.update(outcome="present", reason=None,
+                                document_date=snap.index[0].date().isoformat())
+                except HoldingsCaptureError as exc:
+                    fact.update(outcome="malformed", reason=str(exc))
+            evidence[fund] = fact
+        return SectorHoldingsCapture(
+            evaluated, previous_capture, snapshots, evidence, workbooks)
+
+
+MAX_HOLDINGS_WORKBOOK_BYTES = 8 * 1024 * 1024
+MAX_HOLDINGS_XML_BYTES = 32 * 1024 * 1024
+MAX_HOLDINGS_ZIP_MEMBERS = 256
+MAX_HOLDINGS_ROWS = 10000
+MAX_HOLDINGS_COLUMNS = 64
+MAX_HOLDINGS_CELLS = 200000
+
+
+class HoldingsCaptureError(ValueError):
+    """An explicit capture cannot establish a bounded, dated holdings value."""
+
+
+@dataclass(frozen=True)
+class SectorHoldingsCapture:
+    evaluated_at: datetime
+    captured_at: datetime
+    _snapshots: dict
+    _evidence: dict
+    _workbooks: dict
+
+    @property
+    def snapshots(self) -> dict:
+        return {fund: None if frame is None else frame.copy(deep=True)
+                for fund, frame in self._snapshots.items()}
+
+    @property
+    def evidence(self) -> dict:
+        return copy.deepcopy(self._evidence)
+
+    @property
+    def workbooks(self) -> dict:
+        return dict(self._workbooks)  # Byte values are immutable.
+
+    @property
+    def available(self) -> bool:
+        return any(frame is not None for frame in self._snapshots.values())
+
+    def assembly_arguments(self) -> dict:
+        return {"holdings": self.snapshots, "holdings_evidence": self.evidence}
+
+
+def _holdings_instant(value) -> datetime:
+    if not isinstance(value, datetime):
+        raise HoldingsCaptureError("holdings_aware_instant_required")
+    try:
+        if value.tzinfo is None or value.utcoffset() is None or pd.isna(value):
+            raise ValueError
+        return value.astimezone(timezone.utc)
+    except (TypeError, ValueError, OverflowError):
+        raise HoldingsCaptureError("holdings_aware_instant_required") from None
+
+
+def _bounded_holdings_workbook(content: bytes) -> None:
+    """Bound the XLSX envelope and worksheet geometry before the real parser."""
+    import zipfile
+    import xml.etree.ElementTree as ET
+    from pathlib import PurePosixPath
+
+    def coordinate(value):
+        match = re.fullmatch(r"([A-Z]+)([1-9][0-9]*)", value)
+        if match is None:
+            raise HoldingsCaptureError("holdings_workbook_geometry_invalid")
+        column = 0
+        for letter in match[1]:
+            column = column * 26 + ord(letter) - ord("A") + 1
+        if column > MAX_HOLDINGS_COLUMNS or int(match[2]) > MAX_HOLDINGS_ROWS:
+            raise HoldingsCaptureError("holdings_workbook_geometry_bound")
+
+    try:
+        with zipfile.ZipFile(io.BytesIO(content)) as archive:
+            members = archive.infolist()
+            if (not 0 < len(members) <= MAX_HOLDINGS_ZIP_MEMBERS
+                    or len({m.filename for m in members}) != len(members)
+                    or sum(m.file_size for m in members) > MAX_HOLDINGS_XML_BYTES):
+                raise HoldingsCaptureError("holdings_workbook_archive_bound")
+            cells = 0
+            for member in members:
+                name = member.filename
+                if (member.flag_bits & 1 or name.startswith("/") or "\\" in name
+                        or ".." in PurePosixPath(name).parts):
+                    raise HoldingsCaptureError("holdings_workbook_archive_invalid")
+                with archive.open(member) as stream:
+                    raw = stream.read(MAX_HOLDINGS_XML_BYTES + 1)
+                if len(raw) != member.file_size or len(raw) > MAX_HOLDINGS_XML_BYTES:
+                    raise HoldingsCaptureError("holdings_workbook_archive_bound")
+                if name.endswith((".xml", ".rels")):
+                    upper = raw.upper()
+                    if b"<!DOCTYPE" in upper or b"<!ENTITY" in upper:
+                        raise HoldingsCaptureError("holdings_workbook_xml_invalid")
+                if not (name.startswith("xl/worksheets/") and name.endswith(".xml")):
+                    continue
+                for event, element in ET.iterparse(io.BytesIO(raw), events=("start", "end")):
+                    if event == "end":
+                        element.clear()
+                        continue
+                    tag = element.tag.rsplit("}", 1)[-1]
+                    if tag == "dimension":
+                        for endpoint in element.attrib.get("ref", "").split(":"):
+                            coordinate(endpoint)
+                    elif tag == "row":
+                        number = element.attrib.get("r", "")
+                        if not number.isdigit() or not 0 < int(number) <= MAX_HOLDINGS_ROWS:
+                            raise HoldingsCaptureError("holdings_workbook_geometry_bound")
+                    elif tag == "c":
+                        coordinate(element.attrib.get("r", ""))
+                        cells += 1
+                        if cells > MAX_HOLDINGS_CELLS:
+                            raise HoldingsCaptureError("holdings_workbook_cell_bound")
+    except HoldingsCaptureError:
+        raise
+    except Exception:
+        raise HoldingsCaptureError("holdings_workbook_invalid") from None
+
+
+def _complete_holdings_date(value: str) -> date:
+    """Require all calendar components; never infer a current year/month/day."""
+    value = " ".join(value.split())
+    for fmt in ("%Y-%m-%d", "%Y/%m/%d", "%m/%d/%Y",
+                "%d-%b-%Y", "%d-%B-%Y", "%d %b %Y", "%d %B %Y",
+                "%b %d %Y", "%B %d %Y", "%b %d, %Y", "%B %d, %Y"):
+        try:
+            return datetime.strptime(value, fmt).date()
+        except ValueError:
+            continue
+    raise HoldingsCaptureError("holdings_document_date_invalid")
+
+
+def _snapshot_from_workbook(content, *, strict_day: date | None = None) -> pd.DataFrame:
+    """Shared original transform, with strict capture validation around it."""
+    strict = strict_day is not None
+    if strict:
+        _bounded_holdings_workbook(content)
+    try:
+        # 'NA' is a real ticker; only genuinely blank cells are missing.
+        options = {"nrows": MAX_HOLDINGS_ROWS} if strict else {}
+        raw = pd.read_excel(io.BytesIO(content), header=None,
+                            keep_default_na=False, na_values=[""], **options)
+        if strict and (raw.empty or raw.shape[1] < 2
+                       or raw.shape[1] > MAX_HOLDINGS_COLUMNS):
+            raise HoldingsCaptureError("holdings_workbook_shape_invalid")
         hdr_idx = raw.index[raw.iloc[:, 0].astype(str).str.strip() == "Name"]
         if not len(hdr_idx):
             raise ValueError("holdings header row not found")
-        asof = str(date.today())
+        if strict and len(hdr_idx) != 1:
+            raise HoldingsCaptureError("holdings_header_ambiguous")
+        asof = None if strict else str(date.today())
+        dates = []
         for i in range(hdr_idx[0]):
             cell = str(raw.iloc[i, 1])
             if "As of" in cell:
-                asof = str(pd.to_datetime(cell.replace("As of", "").strip()).date())
+                date_text = cell.replace("As of", "").strip()
+                parsed = (pd.Timestamp(_complete_holdings_date(date_text)) if strict
+                          else pd.to_datetime(date_text))
+                asof = str(parsed.date())
+                dates.append(parsed.date())
+        if strict:
+            if not dates:
+                raise HoldingsCaptureError("holdings_document_date_missing")
+            if len(dates) != 1:
+                raise HoldingsCaptureError("holdings_document_date_ambiguous")
+            if dates[0] > strict_day:
+                raise HoldingsCaptureError("holdings_document_date_future")
         df = raw.iloc[hdr_idx[0] + 1:].copy()
-        df.columns = [str(c).strip().lower().replace(" ", "_") for c in raw.iloc[hdr_idx[0]]]
+        columns = [str(c).strip().lower().replace(" ", "_") for c in raw.iloc[hdr_idx[0]]]
+        if strict and (len([c for c in columns if "weight" in c]) != 1
+                       or columns.count("ticker") != 1 or columns.count("name") != 1
+                       or len(set(c for c in columns if c != "nan")) != len([c for c in columns if c != "nan"])):
+            raise HoldingsCaptureError("holdings_columns_ambiguous")
+        df.columns = columns
         df = df.rename(columns={"weight": "weight_pct"})
         wcol = next((c for c in df.columns if "weight" in c), None)
         if wcol is None or "ticker" not in df.columns:
             raise ValueError(f"unexpected columns: {list(df.columns)[:6]}")
+        if strict:
+            members = df[df["ticker"].notna() & (df["ticker"] != "-")]
+            identities = []
+            for _, row in members.iterrows():
+                ticker = row["ticker"]
+                if type(ticker) is not str or not 0 < len(ticker.strip()) <= 32 or ticker.strip() == "-":
+                    raise HoldingsCaptureError("holdings_identity_invalid")
+                identities.append(ticker.strip())
+                weight = row[wcol]
+                try:
+                    number = pd.to_numeric(weight, errors="raise")
+                    if isinstance(weight, bool) or not math.isfinite(float(number)) or not 0 <= float(number) <= 100:
+                        raise ValueError
+                except (TypeError, ValueError, OverflowError):
+                    raise HoldingsCaptureError("holdings_weight_invalid") from None
+            if len(set(identities)) != len(identities):
+                raise HoldingsCaptureError("holdings_identity_duplicate")
         df["weight_pct"] = pd.to_numeric(df[wcol], errors="coerce")
         df = (df.dropna(subset=["weight_pct", "ticker"])
                 .query("ticker != '-'")
@@ -136,7 +384,16 @@ class SectorHoldingsAdapter(Adapter):
             "rank": range(1, len(df) + 1),
         })
         out.index = pd.to_datetime([asof] * len(out))
+        if strict and out.empty:
+            raise HoldingsCaptureError("holdings_snapshot_empty")
         return out
+    except HoldingsCaptureError:
+        raise
+    except Exception:
+        if strict:
+            raise HoldingsCaptureError("holdings_workbook_parse_failed") from None
+        raise
+
 
 def top10_union() -> list[str]:
     """Union of current top-N holdings tickers across all sectors (price feed).

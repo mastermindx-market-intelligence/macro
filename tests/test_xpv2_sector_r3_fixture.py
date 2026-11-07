@@ -57,6 +57,7 @@ SI_WORKSPACE_JS = TPL / "si_workspace.js"
 SUBSECTORS_JS = TPL / "subsectors.js"
 SECTOR_CENTRAL_TPL = TPL / "sector_central.html.j2"
 BUILD_SECTOR_CENTRAL_PY = SCRIPTS / "build_sector_central.py"
+SECTOR_ACTION_PREVIEW_PY = ROOT / "lib" / "sector_action_preview.py"
 ROTATION_EVENTS_JS = TPL / "rotation_events.js"
 SUBSECTOR_ROTATION_JS = TPL / "subsector_rotation.js"
 DESK_WATCH_JS = TPL / "desk_watch.js"
@@ -171,7 +172,7 @@ def _parse_actnow_lanes_from_text(text: str) -> list[tuple[str, str, bool]]:
 
 
 def _parse_actnow_lanes() -> list[tuple[str, str, bool]]:
-    return _parse_actnow_lanes_from_text(BUILD_SECTOR_CENTRAL_PY.read_text(encoding="utf-8"))
+    return _parse_actnow_lanes_from_text(SECTOR_ACTION_PREVIEW_PY.read_text(encoding="utf-8"))
 
 
 EXPECTED_ACTNOW_LANES = [
@@ -186,8 +187,13 @@ EXPECTED_ACTNOW_LANES = [
 
 class TestActionLaneKeys:
     def test_six_keys_exact_order_pinned(self):
+        from lib.sector_action_preview import _ACTNOW_LANES as owner_lanes
+        from scripts.build_sector_central import _ACTNOW_LANES as builder_lanes
+
         lanes = _parse_actnow_lanes()
         assert lanes == EXPECTED_ACTNOW_LANES
+        assert builder_lanes is owner_lanes
+        assert lanes == owner_lanes
 
     def test_hold_and_avoid_share_the_stand_aside_fold(self):
         lanes = _parse_actnow_lanes()
@@ -198,7 +204,7 @@ class TestActionLaneKeys:
         """Mutation half: mutate the SOURCE TEXT (not an already-parsed list)
         and run it back through the real parser, proving the parser -- not
         just a Python list comparison -- notices the missing key."""
-        real_text = BUILD_SECTOR_CENTRAL_PY.read_text(encoding="utf-8")
+        real_text = SECTOR_ACTION_PREVIEW_PY.read_text(encoding="utf-8")
         mutated_text = real_text.replace('    ("avoid", "dash-hold-fold", True),\n', "")
         mutated_lanes = _parse_actnow_lanes_from_text(mutated_text)
         assert mutated_lanes != EXPECTED_ACTNOW_LANES

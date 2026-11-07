@@ -168,6 +168,10 @@ def test_theme_signal_falls_back_to_equal_weight_close(monkeypatch):
     idx = pd.bdate_range("2023-01-02", periods=700)
     level = pd.Series(100 * np.exp(np.linspace(0, 0.35, len(idx))), index=idx)
     monkeypatch.setattr(bi, "deep_calendar", lambda members: pd.DatetimeIndex([]))
+    # This synthetic Canadian tape owns its synthetic reference calendar too.
+    # The test must not depend on a production TSX parquet being checked out.
+    from engine import session_anchor
+    monkeypatch.setitem(session_anchor._REF_CACHE, "CA", idx.copy())
     ts._SIG_CACHE.clear()
     out = ts._basket_signals(_members(["CA1.TO", "CA2.TO", "CA3.TO"]),
                              level, region="canada")

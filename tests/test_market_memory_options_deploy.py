@@ -895,7 +895,7 @@ def test_option_runtime_drift_disarms_before_git_reset_without_touching_unrelate
     assert runtime_regex is not None
     assert reciprocal_regex is not None
     assert update.index("# BEGIN W1B5_PRE_RESET_GUARD") < update.index(
-        'git -C "$APP_DIR" reset --hard -q FETCH_HEAD'
+        'git -C "$APP_DIR" reset --hard -q "$NEW"'
     )
 
     def trace_for(changed: str) -> list[str]:
@@ -1019,7 +1019,8 @@ def test_legacy_api_dropin_migration_is_exact_and_fail_closed(tmp_path: Path) ->
         'source "$APP_DIR/app/deploy/market-memory-options-dropin-migration.sh"'
     )
     assert api_service.count("EnvironmentFile=-/etc/macro-ollama.env") == 1
-    assert source_line in setup and source_line in update
+    assert source_line in setup
+    assert 'source "$LIVE_SOURCE_CAPSULE/helpers/market-memory-options-dropin-migration.sh"' in update
     update_migration = update.index("if ! mm_remove_exact_legacy_api_ollama_dropin")
     update_install = update.index(
         'install -m 0644 "$APP_DIR/app/deploy/macro-api.service" '

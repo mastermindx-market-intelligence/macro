@@ -1,0 +1,157 @@
+{
+  "schema": "macro.live_setup_source_review.v1",
+  "recorded_at": "2026-11-06T17:01:26.449492+00:00",
+  "base": "334b26b540ea82fc2593ab3a723ceda65be32b3b",
+  "state": "SOURCE_QUALIFIED_NOT_ACTIVATED",
+  "files": {
+    "app/deploy/update.sh": {
+      "sha256": "08565d009560e7aa6e30b0a3d2cfe62eae0f04add45ab9b3eb66ccb63766f19c",
+      "bytes": 231917
+    },
+    "app/deploy/live-setup.sh": {
+      "sha256": "849c7880861d6cd296150b79a0e655e379929b83ff66283069a83cd44a7798f2",
+      "bytes": 8725
+    },
+    "app/deploy/setup.sh": {
+      "sha256": "0ce1e9fb591a1ce0defc38931f4b289c50ae4ea36fabaea3a34c505e6e405f25",
+      "bytes": 9039
+    },
+    "app/deploy/bootstrap_repo.sh": {
+      "sha256": "073f76b42f0e43d5a0eb1da9f55020064840845f24ac9dbdf8e95ffba0b8675d",
+      "bytes": 5018
+    },
+    "scripts/vps_live_orchestrator.py": {
+      "sha256": "0ee59105102b63b5123d00adf68501f3d6f03c65b39f650bfafa5cff3933ab1c",
+      "bytes": 127237
+    },
+    "tests/test_deploy_live_source_barrier.py": {
+      "sha256": "be8a7ae4e6a4ad7eeaf455320daa794f75170486b1bcfdd9f6985a2917ec562c",
+      "bytes": 65117
+    },
+    "tests/test_vps_live_orchestration.py": {
+      "sha256": "90a63c9084518c1a8168a9b6f75881e0ac334549b58a3769b96c77a80e68cb88",
+      "bytes": 190179
+    }
+  },
+  "receipts": {
+    "linux": {
+      "mode": "linux",
+      "source_sha256": "08565d009560e7aa6e30b0a3d2cfe62eae0f04add45ab9b3eb66ccb63766f19c",
+      "test_sha256": "be8a7ae4e6a4ad7eeaf455320daa794f75170486b1bcfdd9f6985a2917ec562c",
+      "remote_fixture_root": "/root/mmx-source-qualification-20261106-c3-07",
+      "exit_code": 0,
+      "elapsed_seconds": 186.683,
+      "log_sha256": "dcd1f62738b9ce5fdfb804b7c3203c30e5abaa67b9e0e4990a9d2b0845604020"
+    },
+    "affected_initial": {
+      "exit_code": 1,
+      "elapsed_seconds": 207.933,
+      "suites": [
+        "tests/test_deploy_update_self_heal.py",
+        "tests/test_market_memory_options_deploy.py",
+        "tests/test_deploy_bootstrap_private.py",
+        "tests/test_deploy_git_history.py",
+        "tests/test_deploy_git_store_maintenance.py",
+        "tests/test_vps_live_orchestration.py"
+      ],
+      "source_sha256": "3d75139fea79013bd7a15fa0e60821858f932a064cff54f917d27e2d15139bf6",
+      "log_sha256": "9c6ddab7b507db0b4052c86ab603f52a0873f44a8465ad17ba604e2ff2410855",
+      "log": "/tmp/mmx-live-setup-affected-20261106.log"
+    },
+    "git_regressions": {
+      "exit_code": 0,
+      "elapsed_seconds": 142.861,
+      "suites": [
+        "tests/test_deploy_git_history.py",
+        "tests/test_deploy_git_store_maintenance.py"
+      ],
+      "source_sha256": "08565d009560e7aa6e30b0a3d2cfe62eae0f04add45ab9b3eb66ccb63766f19c",
+      "log_sha256": "effe9c9c0623ec2334ca5928e880554477723781df1e7db4517c4dc93190ed34",
+      "log": "/tmp/mmx-live-setup-regressions-20261106.log"
+    },
+    "pce_captured_registry": {
+      "exit_code": 0,
+      "elapsed_seconds": 7.064,
+      "baseline": "334b26b540ea82fc2593ab3a723ceda65be32b3b",
+      "source": [
+        {
+          "path": "scripts/watch_release_publications.py",
+          "sha256": "62cc2163c12d187211303294c47184db735be4e4b9c7d3023a6500a7c6d34b1b",
+          "baseline_identical": true
+        },
+        {
+          "path": "engine/release_actuals.py",
+          "sha256": "e00005bde89e4062f0e3e4be3c6aa4d8c8f99a549bebd6eddbb07056186a9a99",
+          "baseline_identical": true
+        },
+        {
+          "path": "scripts/official_release_parsers.py",
+          "sha256": "16d8a5f78d5a9291fa57f60bdba5b3475a596069604262da18c19d076a7a6b3a",
+          "baseline_identical": true
+        }
+      ],
+      "test_bodies_baseline_identical": true,
+      "registry": {
+        "path": "data/release_forecast/official_actual_defects.json",
+        "bytes": 1137,
+        "sha256": "2ea3fbac3770766cd97356cf1d33d2aff1fd248cfe73439bd625711eef512b67",
+        "captured_only_no_checkout_write": true
+      },
+      "calls": [
+        {
+          "nodeid": "tests/test_vps_live_orchestration.py::test_bea_known_feed_bound_state_repairs_only_from_successful_detail_page",
+          "passed": true
+        },
+        {
+          "nodeid": "tests/test_vps_live_orchestration.py::test_aged_governed_pce_defect_forces_feed_and_detail_repair",
+          "passed": true
+        },
+        {
+          "nodeid": "tests/test_vps_live_orchestration.py::test_aged_governed_pce_defect_failure_is_quarantined_and_bounded",
+          "passed": true
+        }
+      ],
+      "log_sha256": "855edd0d888a9f29753d6ec64a93fd49fea06311d8e913957b016bd7b3e128d6"
+    },
+    "terminal_allocation": {
+      "action": "canonical installed owner acquire",
+      "operation_id": "macro-always-on-terminal-generation-20261106-c3",
+      "elapsed_seconds": 7.881,
+      "exit_code": 0,
+      "stdout_sha256": "0ff089fab12deac600faaca5a4482e887f7e7a90ae09ba422f09c8505a4b6e6a",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 906,
+      "stderr_bytes": 0,
+      "stdout_receipt": {
+        "action": "acquire",
+        "effect": "APPLIED",
+        "receipt": {
+          "base_sha": "bb65839dc6078f2943f6b5a6f58f5261350a85dd",
+          "branch": "sol/web-macro-always-on-terminal-generation-20261106-c3",
+          "common_git_dir": "/Users/chriswong/Documents/Cluade/charting-app/.git",
+          "head_sha": "bb65839dc6078f2943f6b5a6f58f5261350a85dd",
+          "lane": "web",
+          "lock_reason": "mastermind-linked-worktree:v1 operation=macro-always-on-terminal-generation-20261106-c3 lane=web base=bb65839dc6078f2943f6b5a6f58f5261350a85dd",
+          "operation_id": "macro-always-on-terminal-generation-20261106-c3",
+          "reused": false,
+          "source_repository": "/Users/chriswong/Documents/Cluade/charting-app",
+          "workspace_path": "/Volumes/Mastermind 2/agent-workspaces/terminal/web/macro-always-on-terminal-generation-20261106-c3",
+          "workspace_root": "/Volumes/Mastermind 2/agent-workspaces/terminal"
+        },
+        "repository": "terminal",
+        "schema_version": "mastermind.workspace_cli/v2"
+      }
+    }
+  },
+  "checks": {
+    "diff_check": true,
+    "shell_parse": 4
+  },
+  "post_test_change": "Removed only trailing blank line from VPS test file; AST identity verified.",
+  "limits": [
+    "Linux process/filesystem fixtures use fake systemd",
+    "No provider, production source/unit/timer/setup or authenticated beta acceptance",
+    "CI registration action remains blocked; no replay",
+    "Only fast/snapshot/bars source isolation; ancillary/estate environment isolation not claimed"
+  ]
+}

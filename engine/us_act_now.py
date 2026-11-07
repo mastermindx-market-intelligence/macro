@@ -460,6 +460,19 @@ def assemble_bottoming_watch(
 # --------------------------------------------------------------------------- #
 #  Null-safe loader (used by scripts/build_baskets.py)                          #
 # --------------------------------------------------------------------------- #
+def cycle_rows_from_inputs(frame) -> list[dict] | None:
+    """Existing latest-date selection over the captured full forward-log rows."""
+    if frame is None:
+        return None
+    try:
+        if frame.empty or "date" not in frame.columns:
+            return []
+        latest = frame["date"].max()
+        return frame[frame["date"] == latest].to_dict(orient="records")
+    except Exception:  # noqa: BLE001 — same optional lane boundary
+        return None
+
+
 def load_cycle_rows(forward_log_path: str | None = None) -> list[dict] | None:
     """Load latest-date `sector_cycles/forward_log.parquet` rows.
 
@@ -481,10 +494,7 @@ def load_cycle_rows(forward_log_path: str | None = None) -> list[dict] | None:
             log.warning("us_act_now: forward_log.parquet not found at %s", p)
             return None
         df = pd.read_parquet(p)
-        if df.empty or "date" not in df.columns:
-            return []
-        latest = df["date"].max()
-        return df[df["date"] == latest].to_dict(orient="records")
+        return cycle_rows_from_inputs(df)
     except Exception as exc:  # noqa: BLE001 — additive lane, never fatal
         log.warning("us_act_now: failed to load forward_log: %s", exc)
         return None

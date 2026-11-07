@@ -221,7 +221,9 @@ def _anchor_row(ez: pd.DataFrame, max_age: int) -> _Anchor:
 
 
 def extension_signals(closes: pd.DataFrame, *,
-                      max_age: int = ANCHOR_MAX_AGE) -> dict[str, dict]:
+                      max_age: int = ANCHOR_MAX_AGE,
+                      emit_diagnostics: bool = True,
+                      diagnostic_records: list[dict] | None = None) -> dict[str, dict]:
     """Per-ticker {ext, ext_z, near_52wh, id_score, grade, parabolic, ext_asof, ext_age}
     from a daily close matrix (date × ticker). Mirrors scripts/top_picks_freshness_phase0.
     price_signals so the live chip equals the back-tested quantity. Names with too little
@@ -271,13 +273,20 @@ def extension_signals(closes: pd.DataFrame, *,
     id_score = -(np.sign(pret) * (dn_frac - up_frac))
 
     a = _anchor_row(ext_z, max_age)
+    if diagnostic_records is not None:
+        diagnostic_records.append({
+            "kind": "extension_anchor", "reason": a.reason, "as_of": a.asof,
+            "age": a.age, "newest_coverage": a.newest_cov,
+            "anchor_coverage": a.anchor_cov, "live_members": a.n_live,
+            "skipped_members": a.skipped,
+        })
     if a.reason == "unresolvable":
         # A PANEL that resolves nothing is a defect and must not be silent — this is the
         # shape a close-presence gate cannot see (300 names × 210 rows of gapless closes
         # is 100% "covered" and serves nobody). A one- or few-column frame resolving
         # nothing is the documented per-name degradation, and stays quiet: those callers
         # ask per ticker and would turn an ordinary short history into annotation spam.
-        if px.shape[1] >= ANCHOR_MIN_LIVE:
+        if emit_diagnostics and px.shape[1] >= ANCHOR_MIN_LIVE:
             print(f"::warning title=extension-unresolvable::no ticker resolves ext_z on "
                   f"{px.shape[0]} rows × {px.shape[1]} columns through {a.asof}: closes "
                   f"can be complete and ext_z still resolve for nobody, because it needs "
@@ -285,20 +294,21 @@ def extension_signals(closes: pd.DataFrame, *,
                   f"252d z over it); serving no extension read", flush=True)
         return {}
     if a.reason == "uncovered":
-        print(f"::warning title=extension-anchor-uncovered::no row within "
-              f"{max_age} of {a.asof} resolves ext_z for {ANCHOR_COVERAGE_FLOOR:.0%} of "
-              f"{a.n_live} live members (newest {a.newest_cov:.1%}); serving NO extension "
-              f"read rather than a reading older than {max_age} session(s) stamped as "
-              f"today's — the panel needs the fix", flush=True)
+        if emit_diagnostics:
+            print(f"::warning title=extension-anchor-uncovered::no row within "
+                  f"{max_age} of {a.asof} resolves ext_z for {ANCHOR_COVERAGE_FLOOR:.0%} of "
+                  f"{a.n_live} live members (newest {a.newest_cov:.1%}); serving NO extension "
+                  f"read rather than a reading older than {max_age} session(s) stamped as "
+                  f"today's — the panel needs the fix", flush=True)
         return {}
-    if a.reason == "shifted":
+    if emit_diagnostics and a.reason == "shifted":
         print(f"::warning title=extension-anchor-shifted::extension read anchored to "
               f"{a.asof}, {a.age} row(s) behind the newest panel row: that row resolves "
               f"ext_z for {a.newest_cov:.1%} of {a.n_live} live members, under the "
               f"{ANCHOR_COVERAGE_FLOOR:.0%} floor. {a.skipped} member(s) that did resolve "
               f"on the skipped row(s) are read off {a.asof} too — every served row carries "
               f"ext_age={a.age}", flush=True)
-    if a.reason in ("current", "shifted") \
+    if emit_diagnostics and a.reason in ("current", "shifted") \
             and a.anchor_cov < ANCHOR_COVERAGE_FLOOR + ANCHOR_MARGIN_NOTE:
         print(f"::warning title=extension-anchor-marginal::the anchor at {a.asof} clears "
               f"the {ANCHOR_COVERAGE_FLOOR:.0%} floor by only {a.anchor_cov - ANCHOR_COVERAGE_FLOOR:.1%} "

@@ -44,6 +44,9 @@ import yfinance as yf
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from lib import config, store  # noqa: E402 (after sys.path)
+from lib.yahoo_runtime_profile import (  # noqa: E402
+    assert_legacy_write_allowed, parse_profile, runtime_owns,
+)
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s  %(message)s")
 log = logging.getLogger(__name__)
@@ -113,6 +116,10 @@ def _extract_series(df: pd.DataFrame, col: str) -> pd.Series | None:
 def backfill_ticker(ticker: str, safe_name: str,
                     dry_run: bool = False) -> dict:
     """Process one ticker. Returns a status dict for the manifest."""
+    profile = parse_profile(config.load().get("yahoo", {}))
+    if (runtime_owns(profile, group="yahoo", symbol=ticker)
+            or runtime_owns(profile, group="yahoo", symbol=safe_name)):
+        return {"status": "skipped", "reason": "runtime_owner"}
     stored = store.read("yahoo", safe_name)
     if stored is None or stored.empty:
         return {"status": "skipped", "reason": "no stored parquet"}
@@ -262,6 +269,8 @@ def backfill_ticker(ticker: str, safe_name: str,
     from pathlib import Path
     safe_path = (Path(data_dir()) / "yahoo" /
                  f"{safe_name}.parquet")
+    assert_legacy_write_allowed(profile, group="yahoo", symbol=ticker)
+    assert_legacy_write_allowed(profile, group="yahoo", symbol=safe_name)
     on_disk.to_parquet(safe_path)
 
     coverage = n_aligned / max(n_stored, 1)

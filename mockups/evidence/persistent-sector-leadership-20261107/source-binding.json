@@ -1,0 +1,1611 @@
+{
+  "source_revision": "f223990e0e1dc805108517abde90c17b8883b005",
+  "scope": "local full-template native preview fixture; no authenticated production acceptance",
+  "capture_argv": [
+    "--base-url",
+    "http://leadership-evidence.test",
+    "--routes",
+    "/sector_central.html?g=XLK#map",
+    "--viewports",
+    "desktop,mobile",
+    "--locales",
+    "en,zh",
+    "--themes",
+    "dark,light",
+    "--force-state",
+    "measured_hover:hover(#mr-list .mr-row)",
+    "--force-state",
+    "context_focus:focus(#mr-context details > summary)",
+    "--settle-ms",
+    "1200",
+    "--delay-ms",
+    "0",
+    "--output-dir",
+    "/Volumes/Mastermind/evidence/persistent-sector-leadership-20261106-c4/macro-ci-native-canonical-v2/screenshots",
+    "--manifest",
+    "/Volumes/Mastermind/evidence/persistent-sector-leadership-20261106-c4/macro-ci-native-canonical-v2/manifest.json",
+    "--smells",
+    "/Volumes/Mastermind/evidence/persistent-sector-leadership-20261106-c4/macro-ci-native-canonical-v2/smells.json"
+  ],
+  "source_sha256": {
+    "templates/sector_central.html.j2": "7c8fed35b803bbdb33f0e452d152a0751be003a195d77b37a6f6136be090b76e",
+    "templates/theme.css": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757",
+    "templates/_sector_prophet_context.js.j2": "d6382abfd187d7145537c062c3936d4ead52c174dcb8776e1b2fc7cc543c90f1",
+    "tests/probe_leadership_evidence_browser.py": "abe3418546a2753c585df8faee8590bc0a87159798093fed5f8b3dd0188bb2c3",
+    "scripts/capture_us_stocks_compression_evidence.py": "43e037e55fb494df512cb1e5600d03178cf950be15e0ce0500dd416bc08cf76f",
+    "scripts/capture_page_evidence.py": "9b6e643c1c784eb81b584be4cb063092ae71c4a16fe01498130891e84cd0de42"
+  },
+  "rendered_html_sha256": "1c51971e28daf5660d72093f7e8c51250f37565b126aeb6b572108a9c1533fc7",
+  "generation_wire_sha256": "3e275fc69d22e990f81261c8a803576a832be9332484c7a99b2dddd165a5d425",
+  "generation_identity": {
+    "generation_id": "captured-sector-1",
+    "content_sha256": "a3573d7cefe87da155ef7575feb2071b4c32c9f562f42d5724b3ec54332d9eab"
+  },
+  "observations": [
+    {
+      "theme": "dark",
+      "locale": "en",
+      "width": 1440,
+      "overflow": 0,
+      "radii": {
+        ".mr-exact": "12px",
+        ".mr-xselect": "8px",
+        ".mr-xwindow": "8px",
+        ".mr-cl-members li": "8px"
+      }
+    },
+    {
+      "theme": "dark",
+      "locale": "en",
+      "width": 1440,
+      "overflow": 0,
+      "radii": {
+        ".mr-exact": "12px",
+        ".mr-xselect": "8px",
+        ".mr-xwindow": "8px",
+        ".mr-cl-members li": "8px"
+      }
+    },
+    {
+      "theme": "dark",
+      "locale": "en",
+      "width": 1440,
+      "overflow": 0,
+      "radii": {
+        ".mr-exact": "12px",
+        ".mr-xselect": "8px",
+        ".mr-xwindow": "8px",
+        ".mr-cl-members li": "8px"
+      }
+    },
+    {
+      "theme": "light",
+      "locale": "en",
+      "width": 1440,
+      "overflow": 0,
+      "radii": {
+        ".mr-exact": "12px",
+        ".mr-xselect": "8px",
+        ".mr-xwindow": "8px",
+        ".mr-cl-members li": "8px"
+      }
+    },
+    {
+      "theme": "light",
+      "locale": "en",
+      "width": 1440,
+      "overflow": 0,
+      "radii": {
+        ".mr-exact": "12px",
+        ".mr-xselect": "8px",
+        ".mr-xwindow": "8px",
+        ".mr-cl-members li": "8px"
+      }
+    },
+    {
+      "theme": "light",
+      "locale": "en",
+      "width": 1440,
+      "overflow": 0,
+      "radii": {
+        ".mr-exact": "12px",
+        ".mr-xselect": "8px",
+        ".mr-xwindow": "8px",
+        ".mr-cl-members li": "8px"
+      }
+    },
+    {
+      "theme": "dark",
+      "locale": "zh-CN",
+      "width": 1440,
+      "overflow": 0,
+      "radii": {
+        ".mr-exact": "12px",
+        ".mr-xselect": "8px",
+        ".mr-xwindow": "8px",
+        ".mr-cl-members li": "8px"
+      }
+    },
+    {
+      "theme": "dark",
+      "locale": "zh-CN",
+      "width": 1440,
+      "overflow": 0,
+      "radii": {
+        ".mr-exact": "12px",
+        ".mr-xselect": "8px",
+        ".mr-xwindow": "8px",
+        ".mr-cl-members li": "8px"
+      }
+    },
+    {
+      "theme": "dark",
+      "locale": "zh-CN",
+      "width": 1440,
+      "overflow": 0,
+      "radii": {
+        ".mr-exact": "12px",
+        ".mr-xselect": "8px",
+        ".mr-xwindow": "8px",
+        ".mr-cl-members li": "8px"
+      }
+    },
+    {
+      "theme": "light",
+      "locale": "zh-CN",
+      "width": 1440,
+      "overflow": 0,
+      "radii": {
+        ".mr-exact": "12px",
+        ".mr-xselect": "8px",
+        ".mr-xwindow": "8px",
+        ".mr-cl-members li": "8px"
+      }
+    },
+    {
+      "theme": "light",
+      "locale": "zh-CN",
+      "width": 1440,
+      "overflow": 0,
+      "radii": {
+        ".mr-exact": "12px",
+        ".mr-xselect": "8px",
+        ".mr-xwindow": "8px",
+        ".mr-cl-members li": "8px"
+      }
+    },
+    {
+      "theme": "light",
+      "locale": "zh-CN",
+      "width": 1440,
+      "overflow": 0,
+      "radii": {
+        ".mr-exact": "12px",
+        ".mr-xselect": "8px",
+        ".mr-xwindow": "8px",
+        ".mr-cl-members li": "8px"
+      }
+    },
+    {
+      "theme": "dark",
+      "locale": "en",
+      "width": 390,
+      "overflow": 0,
+      "radii": {
+        ".mr-exact": "12px",
+        ".mr-xselect": "8px",
+        ".mr-xwindow": "8px",
+        ".mr-cl-members li": "8px"
+      }
+    },
+    {
+      "theme": "dark",
+      "locale": "en",
+      "width": 390,
+      "overflow": 0,
+      "radii": {
+        ".mr-exact": "12px",
+        ".mr-xselect": "8px",
+        ".mr-xwindow": "8px",
+        ".mr-cl-members li": "8px"
+      }
+    },
+    {
+      "theme": "dark",
+      "locale": "en",
+      "width": 390,
+      "overflow": 0,
+      "radii": {
+        ".mr-exact": "12px",
+        ".mr-xselect": "8px",
+        ".mr-xwindow": "8px",
+        ".mr-cl-members li": "8px"
+      }
+    },
+    {
+      "theme": "light",
+      "locale": "en",
+      "width": 390,
+      "overflow": 0,
+      "radii": {
+        ".mr-exact": "12px",
+        ".mr-xselect": "8px",
+        ".mr-xwindow": "8px",
+        ".mr-cl-members li": "8px"
+      }
+    },
+    {
+      "theme": "light",
+      "locale": "en",
+      "width": 390,
+      "overflow": 0,
+      "radii": {
+        ".mr-exact": "12px",
+        ".mr-xselect": "8px",
+        ".mr-xwindow": "8px",
+        ".mr-cl-members li": "8px"
+      }
+    },
+    {
+      "theme": "light",
+      "locale": "en",
+      "width": 390,
+      "overflow": 0,
+      "radii": {
+        ".mr-exact": "12px",
+        ".mr-xselect": "8px",
+        ".mr-xwindow": "8px",
+        ".mr-cl-members li": "8px"
+      }
+    },
+    {
+      "theme": "dark",
+      "locale": "zh-CN",
+      "width": 390,
+      "overflow": 0,
+      "radii": {
+        ".mr-exact": "12px",
+        ".mr-xselect": "8px",
+        ".mr-xwindow": "8px",
+        ".mr-cl-members li": "8px"
+      }
+    },
+    {
+      "theme": "dark",
+      "locale": "zh-CN",
+      "width": 390,
+      "overflow": 0,
+      "radii": {
+        ".mr-exact": "12px",
+        ".mr-xselect": "8px",
+        ".mr-xwindow": "8px",
+        ".mr-cl-members li": "8px"
+      }
+    },
+    {
+      "theme": "dark",
+      "locale": "zh-CN",
+      "width": 390,
+      "overflow": 0,
+      "radii": {
+        ".mr-exact": "12px",
+        ".mr-xselect": "8px",
+        ".mr-xwindow": "8px",
+        ".mr-cl-members li": "8px"
+      }
+    },
+    {
+      "theme": "light",
+      "locale": "zh-CN",
+      "width": 390,
+      "overflow": 0,
+      "radii": {
+        ".mr-exact": "12px",
+        ".mr-xselect": "8px",
+        ".mr-xwindow": "8px",
+        ".mr-cl-members li": "8px"
+      }
+    },
+    {
+      "theme": "light",
+      "locale": "zh-CN",
+      "width": 390,
+      "overflow": 0,
+      "radii": {
+        ".mr-exact": "12px",
+        ".mr-xselect": "8px",
+        ".mr-xwindow": "8px",
+        ".mr-cl-members li": "8px"
+      }
+    },
+    {
+      "theme": "light",
+      "locale": "zh-CN",
+      "width": 390,
+      "overflow": 0,
+      "radii": {
+        ".mr-exact": "12px",
+        ".mr-xselect": "8px",
+        ".mr-xwindow": "8px",
+        ".mr-cl-members li": "8px"
+      }
+    }
+  ],
+  "native_requests": [
+    {
+      "method": "GET",
+      "path": "/api/sector-generation",
+      "query": "audience=preview"
+    },
+    {
+      "method": "GET",
+      "path": "/api/sector-generation",
+      "query": "audience=preview"
+    },
+    {
+      "method": "GET",
+      "path": "/api/sector-generation",
+      "query": "audience=preview"
+    },
+    {
+      "method": "GET",
+      "path": "/api/sector-generation",
+      "query": "audience=preview"
+    },
+    {
+      "method": "GET",
+      "path": "/api/sector-generation",
+      "query": "audience=preview"
+    },
+    {
+      "method": "GET",
+      "path": "/api/sector-generation",
+      "query": "audience=preview"
+    },
+    {
+      "method": "GET",
+      "path": "/api/sector-generation",
+      "query": "audience=preview"
+    },
+    {
+      "method": "GET",
+      "path": "/api/sector-generation",
+      "query": "audience=preview"
+    },
+    {
+      "method": "GET",
+      "path": "/api/sector-generation",
+      "query": "audience=preview"
+    },
+    {
+      "method": "GET",
+      "path": "/api/sector-generation",
+      "query": "audience=preview"
+    },
+    {
+      "method": "GET",
+      "path": "/api/sector-generation",
+      "query": "audience=preview"
+    },
+    {
+      "method": "GET",
+      "path": "/api/sector-generation",
+      "query": "audience=preview"
+    },
+    {
+      "method": "GET",
+      "path": "/api/sector-generation",
+      "query": "audience=preview"
+    },
+    {
+      "method": "GET",
+      "path": "/api/sector-generation",
+      "query": "audience=preview"
+    },
+    {
+      "method": "GET",
+      "path": "/api/sector-generation",
+      "query": "audience=preview"
+    },
+    {
+      "method": "GET",
+      "path": "/api/sector-generation",
+      "query": "audience=preview"
+    },
+    {
+      "method": "GET",
+      "path": "/api/sector-generation",
+      "query": "audience=preview"
+    },
+    {
+      "method": "GET",
+      "path": "/api/sector-generation",
+      "query": "audience=preview"
+    },
+    {
+      "method": "GET",
+      "path": "/api/sector-generation",
+      "query": "audience=preview"
+    },
+    {
+      "method": "GET",
+      "path": "/api/sector-generation",
+      "query": "audience=preview"
+    },
+    {
+      "method": "GET",
+      "path": "/api/sector-generation",
+      "query": "audience=preview"
+    },
+    {
+      "method": "GET",
+      "path": "/api/sector-generation",
+      "query": "audience=preview"
+    },
+    {
+      "method": "GET",
+      "path": "/api/sector-generation",
+      "query": "audience=preview"
+    },
+    {
+      "method": "GET",
+      "path": "/api/sector-generation",
+      "query": "audience=preview"
+    }
+  ],
+  "fixture_asset_requests": [
+    {
+      "path": "sector_cycles_series_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "sector_cycles_narr_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "sector_cycles_dna_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "live/shock_state.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "policy_lever.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "live/basket_pulse.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "marketdata/index_leadership.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "basketdata/narrative_emergence.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "basketdata/baskets.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "sector_cycles_series_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "marketdata/rotation_events.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "marketdata/sector_fragmentation.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "sector_cycles_series_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "sector_cycles_narr_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "sector_cycles_dna_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "live/shock_state.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "policy_lever.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "live/basket_pulse.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "marketdata/index_leadership.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "basketdata/narrative_emergence.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "basketdata/baskets.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "sector_cycles_series_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "marketdata/rotation_events.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "marketdata/sector_fragmentation.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "sector_cycles_series_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "sector_cycles_narr_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "sector_cycles_dna_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "live/shock_state.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "policy_lever.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "live/basket_pulse.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "marketdata/index_leadership.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "basketdata/narrative_emergence.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "basketdata/baskets.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "sector_cycles_series_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "marketdata/rotation_events.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "marketdata/sector_fragmentation.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "sector_cycles_series_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "sector_cycles_narr_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "sector_cycles_dna_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "live/shock_state.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "policy_lever.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "live/basket_pulse.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "marketdata/index_leadership.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "basketdata/narrative_emergence.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "basketdata/baskets.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "sector_cycles_series_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "marketdata/rotation_events.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "marketdata/sector_fragmentation.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "sector_cycles_series_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "sector_cycles_narr_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "sector_cycles_dna_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "live/shock_state.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "policy_lever.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "live/basket_pulse.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "marketdata/index_leadership.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "basketdata/narrative_emergence.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "basketdata/baskets.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "sector_cycles_series_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "marketdata/rotation_events.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "marketdata/sector_fragmentation.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "sector_cycles_series_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "sector_cycles_narr_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "sector_cycles_dna_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "live/shock_state.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "policy_lever.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "live/basket_pulse.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "marketdata/index_leadership.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "basketdata/narrative_emergence.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "basketdata/baskets.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "sector_cycles_series_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "marketdata/rotation_events.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "marketdata/sector_fragmentation.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "sector_cycles_series_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "sector_cycles_narr_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "sector_cycles_dna_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "live/shock_state.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "policy_lever.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "live/basket_pulse.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "marketdata/index_leadership.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "basketdata/narrative_emergence.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "basketdata/baskets.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "sector_cycles_series_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "marketdata/rotation_events.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "marketdata/sector_fragmentation.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "sector_cycles_series_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "sector_cycles_narr_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "sector_cycles_dna_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "live/shock_state.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "policy_lever.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "live/basket_pulse.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "marketdata/index_leadership.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "basketdata/narrative_emergence.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "basketdata/baskets.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "sector_cycles_series_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "marketdata/rotation_events.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "marketdata/sector_fragmentation.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "sector_cycles_series_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "sector_cycles_narr_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "sector_cycles_dna_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "live/shock_state.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "policy_lever.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "live/basket_pulse.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "marketdata/index_leadership.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "basketdata/narrative_emergence.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "basketdata/baskets.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "sector_cycles_series_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "marketdata/rotation_events.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "marketdata/sector_fragmentation.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "sector_cycles_series_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "sector_cycles_narr_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "sector_cycles_dna_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "live/shock_state.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "policy_lever.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "live/basket_pulse.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "marketdata/index_leadership.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "basketdata/narrative_emergence.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "basketdata/baskets.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "sector_cycles_series_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "marketdata/rotation_events.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "marketdata/sector_fragmentation.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "sector_cycles_series_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "sector_cycles_narr_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "sector_cycles_dna_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "live/shock_state.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "policy_lever.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "live/basket_pulse.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "marketdata/index_leadership.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "basketdata/narrative_emergence.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "basketdata/baskets.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "sector_cycles_series_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "marketdata/rotation_events.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "marketdata/sector_fragmentation.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "sector_cycles_series_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "sector_cycles_narr_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "sector_cycles_dna_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "live/shock_state.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "policy_lever.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "live/basket_pulse.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "marketdata/index_leadership.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "basketdata/narrative_emergence.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "basketdata/baskets.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "sector_cycles_series_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "marketdata/rotation_events.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "marketdata/sector_fragmentation.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "sector_cycles_series_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "sector_cycles_narr_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "sector_cycles_dna_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "live/shock_state.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "policy_lever.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "live/basket_pulse.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "marketdata/index_leadership.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "basketdata/narrative_emergence.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "basketdata/baskets.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "sector_cycles_series_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "marketdata/rotation_events.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "marketdata/sector_fragmentation.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "sector_cycles_series_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "sector_cycles_narr_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "sector_cycles_dna_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "live/shock_state.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "policy_lever.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "live/basket_pulse.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "marketdata/index_leadership.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "basketdata/narrative_emergence.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "basketdata/baskets.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "sector_cycles_series_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "marketdata/rotation_events.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "marketdata/sector_fragmentation.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "sector_cycles_series_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "sector_cycles_narr_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "sector_cycles_dna_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "live/shock_state.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "policy_lever.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "live/basket_pulse.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "marketdata/index_leadership.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "basketdata/narrative_emergence.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "basketdata/baskets.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "sector_cycles_series_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "marketdata/rotation_events.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "marketdata/sector_fragmentation.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "sector_cycles_series_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "sector_cycles_narr_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "sector_cycles_dna_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "live/shock_state.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "policy_lever.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "live/basket_pulse.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "marketdata/index_leadership.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "basketdata/narrative_emergence.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "basketdata/baskets.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "sector_cycles_series_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "marketdata/rotation_events.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "marketdata/sector_fragmentation.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "sector_cycles_series_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "sector_cycles_narr_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "sector_cycles_dna_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "live/shock_state.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "policy_lever.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "live/basket_pulse.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "marketdata/index_leadership.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "basketdata/narrative_emergence.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "basketdata/baskets.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "sector_cycles_series_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "marketdata/rotation_events.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "marketdata/sector_fragmentation.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "sector_cycles_series_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "sector_cycles_narr_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "sector_cycles_dna_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "live/shock_state.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "policy_lever.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "live/basket_pulse.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "marketdata/index_leadership.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "basketdata/narrative_emergence.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "basketdata/baskets.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "sector_cycles_series_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "marketdata/rotation_events.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "marketdata/sector_fragmentation.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "sector_cycles_series_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "sector_cycles_narr_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "sector_cycles_dna_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "live/shock_state.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "policy_lever.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "live/basket_pulse.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "marketdata/index_leadership.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "basketdata/narrative_emergence.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "basketdata/baskets.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "sector_cycles_series_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "marketdata/rotation_events.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "marketdata/sector_fragmentation.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "sector_cycles_series_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "sector_cycles_narr_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "sector_cycles_dna_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "live/shock_state.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "policy_lever.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "live/basket_pulse.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "marketdata/index_leadership.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "basketdata/narrative_emergence.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "basketdata/baskets.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "sector_cycles_series_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "marketdata/rotation_events.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "marketdata/sector_fragmentation.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "sector_cycles_series_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "sector_cycles_narr_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "sector_cycles_dna_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "live/shock_state.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "policy_lever.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "live/basket_pulse.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "marketdata/index_leadership.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "basketdata/narrative_emergence.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "basketdata/baskets.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "sector_cycles_series_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "marketdata/rotation_events.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "marketdata/sector_fragmentation.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "sector_cycles_series_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "sector_cycles_narr_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "sector_cycles_dna_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "live/shock_state.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "policy_lever.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "live/basket_pulse.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "marketdata/index_leadership.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "basketdata/narrative_emergence.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "basketdata/baskets.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "sector_cycles_series_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "marketdata/rotation_events.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "marketdata/sector_fragmentation.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "sector_cycles_series_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "sector_cycles_narr_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "sector_cycles_dna_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "live/shock_state.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "policy_lever.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "live/basket_pulse.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "marketdata/index_leadership.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "basketdata/narrative_emergence.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "basketdata/baskets.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "sector_cycles_series_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "marketdata/rotation_events.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "marketdata/sector_fragmentation.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "sector_cycles_series_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "sector_cycles_narr_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "sector_cycles_dna_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "live/shock_state.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "policy_lever.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "live/basket_pulse.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "marketdata/index_leadership.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "basketdata/narrative_emergence.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "basketdata/baskets.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "sector_cycles_series_data.js",
+      "state": "fixture_asset_unavailable"
+    },
+    {
+      "path": "marketdata/rotation_events.json",
+      "state": "outside_fixture_scope"
+    },
+    {
+      "path": "marketdata/sector_fragmentation.json",
+      "state": "outside_fixture_scope"
+    }
+  ],
+  "capture_exit": 0
+}

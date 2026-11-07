@@ -1,0 +1,1606 @@
+{
+  "schema": "macro.always_on_commissions.v1",
+  "root_id": "macro-always-on-shared-shell-20261105-c3",
+  "protected_law_sha": "770837b4317287fb36a3e7e3948ea701de67bbab",
+  "mission": "https://github.com/mastermindx-market-intelligence/macro/issues/10779",
+  "recorded_at": "2026-11-06T17:01:26.449492+00:00",
+  "authority": "Chairman authorized end-to-end implementation. This file retains source-linked worker briefs and observations; it is not a new execution/state owner.",
+  "entries": [
+    {
+      "name": "sector-api",
+      "run_id": "macro-always-on-20261106-c3-sector-api-01",
+      "work_packet": {
+        "objective": "Implement a bounded read-only API authorization envelope for the coherent Sector view, preserving the current Macro access owner. This is implementation labor, not a mandatory review.",
+        "identity": {
+          "repository": "mastermindx-market-intelligence/macro",
+          "base_sha": "bd11984e445209f79248951d773f2a4cdb3f18d1",
+          "protected_law_repository": "mastermindx-market-intelligence/Mastermind",
+          "protected_law_sha": "49c2e1d93e5e080b1671c98087a845e5beb09dd5",
+          "mission": "https://github.com/mastermindx-market-intelligence/macro/issues/10779",
+          "convergence_pr": 10780
+        },
+        "scope": "Own isolated managed source workspace. Only new app/sector_generation.py, focused tests/test_sector_generation_api.py, and a concise integration contract document. Do not register the router in app/main.py yet; parent reserves that final wiring hunk. Do not edit existing auth, policy, Caddy, collector, publisher, projection, Terminal, CI, timers, or other workers. Inspect current equivalents first; no new auth/proxy/state owner.",
+        "contract": "Expose a router factory for GET /api/sector-generation with a trusted injected selected-generation reader, not a second manifest parser. The dependency is called once after successful authorization and returns the already verified, authorized projection for a closed audience choice (preview or entitled); no caller path/URL/domain/root/generation override. Parent will wire this to the corrected publisher and pure projection, which are still under implementation. No production-ready reader exists yet. Do not fabricate it or serve legacy fallback. A small typed reader result/protocol in your module is acceptable if needed; name exact interface and return requirement.",
+        "authorization": "Reuse app.regwall.regwall_check(request), then app.paywall.paywall_check(request), with a controlled request view preserving only caller identity through existing Supabase cookies but overwriting x-original-uri and x-original-kind/asset semantics, and removing/replacing sec-fetch-dest or related caller document classification. Inspect actual gates, do not guess headers. Server-owned resources include /sectordata/sector_central.json, /sectordata/sector_cycles.json, /basketdata/baskets.json, /basketdata/si_handoff.json, and /premiumdata/sector_central.json when entitled board data is included. Preview must still satisfy current policy: unknown /sectordata and /basketdata paths default premium; do not grant free access by its label or alter site_access.yml. /premiumdata early enforcement remains when PAYWALL_ENABLED is false. All required resource gates affirmative before reader access; exceptions fail closed. Preserve denial class exposed by incumbent gates, no invented identity-vs-provider distinction.",
+        "responses": "Closed safe error codes, no stack/paths/raw manifests/hidden row names/hashes. Cache-Control private,no-store and Vary Cookie on success and failure. Maximum encoded JSON4MiB, finite JSON values only. Preserve source session/publication/qualification independently of poll time. Do not recompute intelligence, grade, collect, publish, change watch state, or provide fallback results. Invalid/unknown query choices400. Reader unavailable/corrupt result typed503safe error; no empty success. A healthy stale projection may retain its explicit truthful qualification.",
+        "tests": "Meaningful tests against existing gate behavior plus injected qualified-reader fixtures: caller header/path spoofing cannot weaken access; global paywall enabled/disabled and premium early enforcement; denial/exception before reader call; one reader invocation per allowed request; no private metadata in errors;4MiB boundary; bad JSON/nonfinite and invalid query rejection; source dates unchanged. Do not claim an injected fixture proves actual generation coherence. Existing auth behavior tests must remain intact. Preserve original task roots/grants.",
+        "acceptance": "Locally commit qualified code, return exact commit/base/files/workspace, complete interface and test receipts plus integration limitations. No push/PR/merge/deploy/provider calls/Slack/email. Parent owns convergence. If admission is refused, return exact state without alternate host/model retry. If source gating is ambiguous, return concrete source-linked decision rather than silently weakening policy."
+      },
+      "observed_status": {
+        "state": "TERMINAL",
+        "rc": 0,
+        "root_verified": true,
+        "worker_start_proven": false,
+        "result_available": true
+      },
+      "returned_response": {
+        "sha256": "1d93f71dc4a818264243dea6cc52a945628dc9bd1ddb39fcddafd89f2288e63d",
+        "bytes": 3707,
+        "text": "Done. The bounded slice is implemented, verified, and committed locally.\n\n## Deliverable\n\n| | |\n|---|---|\n| **Commit** | `bd7c4437992cca7db8d9fbacbd9fcf532baa590e` |\n| **Base (parent)** | `bd11984e445209f79248951d773f2a4cdb3f18d1` (= PR #10780 head) |\n| **Branch** | `claude/ssd-pr-10780-713c29b3e7c8eefe` (local only, not pushed) |\n| **Workspace** | `/Volumes/STORAGE/agent-workspaces/claude/8ed429a11612cd7b/pr-10780-713c29b3e7c8eefe` (managed external SSD worktree, tree clean) |\n| **Files** | `app/sector_generation.py` (423), `tests/test_sector_generation_api.py` (647), `docs/SECTOR_GENERATION_API_CONTRACT.md` (300) \u2014 1370 insertions, 3 new files, nothing else touched |\n\n## Interface\n\n```python\nreader.read_selected_generation(SectorGenerationRequest(audience=\"preview\"|\"entitled\"))\n    -> SectorGeneration(payload: Mapping, source_session: str, published_at: str, qualification: str)\n```\nRouter factory: `create_router(reader)` \u2192 `GET /api/sector-generation?audience=preview|entitled`. One resolution rule: injected reader wins, else `app.state.sector_generation_reader`.\n\n## How access is decided\n\n`app.regwall.regwall_check` then `app.paywall.paywall_check`, in Caddy's order, over a **controlled request view**: cookie preserved; `x-original-uri`/`x-original-kind` overwritten with the server-owned resource and `asset`; every `sec-fetch-*` dropped. Reader is called exactly once, after every required gate is affirmative. `preview` requires the four `/sectordata`+`/basketdata` resources (policy leaves them premium \u2014 not a free tier); `entitled` adds `/premiumdata/sector_central.json` (enforced early, so `PAYWALL_ENABLED=0` cannot open it). `config/site_access.yml` untouched.\n\nErrors are closed codes only (`400 REQUEST_INVALID`, `401 AUTHENTICATION_REQUIRED`, `403 ENTITLEMENT_REQUIRED`, `404 RESOURCE_NOT_AVAILABLE`, `503 SERVICE_UNAVAILABLE | SECTOR_GENERATION_UNAVAILABLE | SECTOR_GENERATION_TOO_LARGE`); `private, no-store` + `Vary: Cookie` on success and every failure; \u22644 MiB encoded, finite values only; source session/publication/qualification copied verbatim.\n\n## Receipts\n\n- New suite: **31 passed**; new + incumbent auth suites: **351 passed** (`test_regwall`, `test_regwall_json_gate`, `test_api_paywall`, `test_auth_cache_outage`, `test_paywall`, `test_paywall_pro_gate`, `test_api_no_store`) \u2014 existing auth tests unchanged.\n- CI guard suites on this head: **365 passed, 2 skipped** (`test_ci_pack`, `test_ci_trigger_closure`, `test_contract_delta`).\n- `ruff check` clean (E,F,B,PLE,PLW,PLC,SIM,UP); `PLR0911` is repo-idiomatic \u2014 `app/paywall.py` trips it too.\n- The 31 tests are **transport proofs over a qualified-reader fixture**. They prove nothing about generation coherence or freshness.\n\n## Integration limitations (parent's to close)\n\n1. **Router wiring** \u2014 `app/main.py` deliberately untouched; a test asserts it stays unwired.\n2. **CI home for the new suite.** `scripts/check_contract_delta.py --base bd11984e4452` exits **1** with `1 introduced, 0 inherited`; the single finding is `tests/test_sector_generation_api.py is a new pytest suite named by no run: step in any workflow`. No import-closure findings, no trigger gaps. Fix = a `run:` step in the `paywall-contracts` job (`.github/ci/legacy-jobs.yml` + its `ci-main-heartbeat.yml` mirror, which already carry the `fastapi`/`httpx` line) plus `app/sector_generation.py` and the test file in that job's `paths:`. CI edits were out of scope here.\n3. **No reader exists yet** \u2014 until the corrected publisher + pure projection land, the route answers 503 with no legacy fallback.\n\nNo push, PR, merge, deploy, provider call, Slack or email. Original root/grants preserved; no delegation performed.\n",
+        "accepted": false
+      },
+      "parent_disposition": "RETURNED_SOURCE_REVIEW_PENDING",
+      "parent_source_checkpoint": {
+        "commit": "3de008a43b17811cb048b1f0f65e145e8bb2cd6f",
+        "state": "PUBLISHED_INACTIVE",
+        "proof": "84 API and projection tests passed; router unmounted; no concrete reader yet"
+      }
+    },
+    {
+      "name": "bundle-final",
+      "run_id": "macro-always-on-20261106-c3-bundle-final-01",
+      "work_packet": {
+        "objective": "Close the remaining concrete defects in the inactive coherent-generation primitive and expose its one verified read seam. Do not create a second publisher or manifest verifier.",
+        "identity": {
+          "repository": "mastermindx-market-intelligence/macro",
+          "base_sha": "86e8da1ff4c316affe402ae480cde0002550762b",
+          "candidate_commit": "b478ab07320f88fdb7560ed2e3249a16d51ef88c",
+          "candidate_patch_sha256": "53e4b5c03aecc3c578325f3edf6f9000053cf10fc58b2567b47bd7c10be9e622",
+          "candidate_patch_bytes": 105703,
+          "protected_law_repository": "mastermindx-market-intelligence/Mastermind",
+          "protected_law_sha": "49c2e1d93e5e080b1671c98087a845e5beb09dd5"
+        },
+        "artifact": "Read exact immutable candidate from original ubuntu1 workspace /home/longr/lanes/macro-always-on-20261106-c3-bundle-publisher-rework/wt or its candidate/generation-publication-repair.patch sibling directory. Parent retains identical patch on M2 /tmp/mmx-always-on-publisher-b478ab0.patch. Use incumbent read-only artifact/fleet access and verify digest/bytes; do not mutate prior workspace. Prior candidate is terminal but NOT ACCEPTED, with no runtime activation. Earlier convenience candidate/*.py copies were stale; use the specified commit/patch only.",
+        "scope": "Only scripts/vps_live_orchestrator.py and tests/test_vps_live_orchestration.py in your own isolated managed workspace. No collectors, shared engines, API/auth, routes, timers, other source, CI, runtime or releases. Preserve current legacy behavior and inactive generation lane. Original author runtime remains single owner.",
+        "repairs": [
+          "Current pointer binding: _selection_error allows generation_id g1 with generation_dir sector/g2 and content_id of g1. _publish_generation_locked may verify request g1 then return unchanged based only on current content ID. Require directory/ID correspondence and binding of redundant pointer artifact list/fields to verified selected manifest. Before ANY unchanged/reuse success, verify the actual captured current selection through the shared selected-generation verifier. Add regressions for mismatched directory/ID, mismatched artifact list, and a corrupted pointer with a valid request generation.",
+          "Reject current.json symlinks explicitly before read, including dangling pointer symlinks which must not become absence. Preserve genuine absent versus corrupt/unreadable distinction; do not heal invalid current by overwriting with expected None.",
+          "Durability: _fsync_dir silently suppresses EINVAL/ENOTSUP/EOPNOTSUPP/EPERM/EBADF. Do not suppress EPERM or EBADF. Adopt a strict required directory-fsync contract for this private runtime primitive on target Linux; unsupported filesystem must be explicit failure, not claimed durable success. A pointer write whose rename is visible but fsync fails is APPLIED but durability unconfirmed, not an unchanged/rejected-old-state assertion. If readback cannot establish effect, status uncertain must remain and no retry/rollback may occur. Add failure tests at directory-fsync before and after pointer replacement; keep effect and durability distinct in the result contract.",
+          "_read_source_bytes opens O_RDONLY then fstats, so FIFO can hang before rejection. Use nonblocking open where supported, keep O_NOFOLLOW and regular-file fstat and bound+1 reads. Test an actual FIFO in an isolated subprocess with a strict deadline.",
+          "Production Orchestrator.publish_generation must require semantic validators with no external opt-out. Since no current callers exist, remove the wrapper's require_validator=False escape hatch, retaining internal helper flexibility only if truly needed by qualified tests. Do not imply non-null validator proves useful qualification; actual Sector semantic validator wiring remains parent work."
+        ],
+        "read_seam": "Expose one read-only selected-generation facade in this SAME module, based on _read_json_state, _selection_error, _verify_selected_generation and _verify_retained_generation. Validate fixed root/domain/pointer leaf, capture current.json ONCE, verify that captured selection and return manifest plus the verified, captured bytes for requested allowlisted member names (or an equally strong immutable snapshot object). No mkdir, lock-file write, selection mutation, fallback tree, collector, or second manifest implementation. Avoid a verify-then-unchecked-reread gap; share capture/hashing logic with retained verifier. Bounded reads and complete manifest/member checks remain. Expose safe typed failures; no API or auth in this module. Parent's API adapter will choose fixed members server-side and sanitize receipt metadata. Test concurrent pointer change cannot mix members, required member absent/corrupt rejection and no read-side writes.",
+        "qualification": "Run target and direct neighbor existing tests, not an unrelated estate sweep. Show new regressions fail the exact prior candidate and pass repaired source. Preserve old100+16 regressions. Return complete updated patch on exactbase or exact descendant with immutable refs, files, contracts and test receipts. Claim only source qualification. No push/PR/merge/deploy/provider calls/Slack/email. If a substantive design ambiguity remains, return it explicitly; do not repeat broad review or introduce new control owners."
+      },
+      "observed_status": {
+        "state": "ACTIVE_OR_WAITING",
+        "rc": null,
+        "root_verified": false,
+        "worker_start_proven": false,
+        "result_available": false
+      },
+      "parent_disposition": "ORIGINAL_EFFECT_RETAINED_NO_REPLAY",
+      "parent_source_checkpoint": {
+        "commit": "a2f4cf382f3368381872d6d068acf4caa4c6b8ca",
+        "state": "PUBLISHED_INACTIVE",
+        "proof": "Original publisher integrated with parent corrections; verified one-snapshot read facade; no active producer"
+      }
+    },
+    {
+      "name": "source-barrier",
+      "run_id": "macro-always-on-20261106-c3-source-barrier-01",
+      "work_packet": {
+        "objective": "Add the narrow source-mutation synchronization barrier between the incumbent Macro updater and the three existing live-orchestrator systemd services. No runtime activation or new deployment owner.",
+        "identity": {
+          "repository": "mastermindx-market-intelligence/macro",
+          "base_sha": "bd11984e445209f79248951d773f2a4cdb3f18d1",
+          "protected_law_repository": "mastermindx-market-intelligence/Mastermind",
+          "protected_law_sha": "49c2e1d93e5e080b1671c98087a845e5beb09dd5",
+          "mission": "https://github.com/mastermindx-market-intelligence/macro/issues/10779"
+        },
+        "write_set": [
+          "app/deploy/update.sh",
+          "app/deploy/macro-live-fast.service",
+          "app/deploy/macro-live-snapshot.service",
+          "app/deploy/macro-live-bars.service",
+          "tests/test_macro_live_source_barrier.py"
+        ],
+        "source_evidence": "All3 services start scripts.vps_live_orchestrator from mutable /opt/macro; existing lane locks occur after Python imports. update.sh holds macro-update.lock across git fetch, resets at~366 and installs live definitions much later~2179. Runtime must not share the update lock because a GitHub timeout would block starts. Other Python services also share checkout; this first package covers only3 named short-lived orchestrator lanes and must say that.",
+        "contract": "One advisory /var/lock/macro-live-source.lock, never unlinked/replaced. Each covered service uses installed /usr/bin/flock directly in ExecStart, shared nonblocking BEFORE Python, held for process lifetime; existing lane locks/cadences/resource/timeout/env controls unchanged. Contention means distinct deferred activation with no task/status/freshness receipt, while genuine task failures stay failures. No wrapper script loaded from mutable checkout and no new marker/registry/lifecycle owner.",
+        "updater": "Keep existing updater serialization. Fetch and identify exact candidate outside new barrier. Stage/verify candidate covered unit definitions from immutable candidate outside barrier. Preserve all existing options/reciprocal/active-writer/security fences. Attempt exclusive nonblocking source barrier immediately before git reset --hard; if occupied do no reset/install, explicit deployment defer, existing next invocation handles retry. Under barrier reset and install/read back covered units from SAME candidate; move existing late installation to this window so there is only one installer. Release after source/unit commands agree, before unrelated API work or any network/pip/apt installations. Preserve existing EXIT trap, no competing trap. Failure must not rearm unverified units. Do not silently change an existing release gate.",
+        "first_install": "Units already running without the wrapper do not retroactively hold the lock. Prepare a documented bounded first-install drain/readback path using existing timer/service controls; do not run it. Parent will pause exactly the covered admitted timers, let services settle, verify inactive/zero process IDs, install/read back and resume only previously admitted timers. Do not claim source commit activates protection.",
+        "tests": "Use actual isolated lock subprocesses and command stubs, no production actions. Two readers coexist; exclusive writer excludes resets while a reader runs; shared service sentinel never executes under exclusive writer; blocked/failing fake git fetch outside barrier does not block runtime sentinel; defer leaves status/publication untouched; genuine task failure not swallowed; candidate verification/reset/install/release ordering; failure cleanup releases process-held locks without deleting files; preserve lane/env/resource/timer parameters; systemd-analyze verify when supported. Add no globalCI/gate edits; parent owns named-test scheduling in existingCI.",
+        "limits": "Own isolated managed workspace. No edits to scripts/vps_live_orchestrator.py/tests (separate publisher worker), collectors/yahoo.py/lib/store.py (active cohort worker), engine/sector_cycles.py/shared kernels, API/auth/native projection/Terminal or source ownership flags. Do not invent a legacy/shadow/runtime profile. live-setup.sh still has separate in-place installation semantics; do not rerun it. live-rollback.sh restores legacy cron and must not be used after transfer; its profile-aware guard is another package. Other live services (closepass, Prophet, breadth, CN Prophet, entry radar, AM edition, radar pack, sentinel) remain outside this package; report their residual race without modifying them. No deploy/push/PR/merge/provider calls/Slack/email.",
+        "acceptance": "Locally commit qualified source; return full immutable commit/base/files/workspace, exact barrier and deferred status semantics, test receipts and first-install limitation. This is synchronization under the incumbent updater, not entire estate safety. If a source control boundary cannot be preserved, return exact evidence and decision; no bypass."
+      },
+      "observed_status": {
+        "state": "TERMINAL",
+        "rc": 124,
+        "root_verified": true,
+        "owned_cleanup_residual_count": 0,
+        "parent_disposition": "RETAINED_PARTIAL_SOURCE_REQUIRES_REPAIR_NO_REPLAY",
+        "patch_sha256": "bae0e2feb320084815dd707b635397e55e301014355743acd746fc9e733d1aba",
+        "separate_test_sha256": "62e226c221771191096b635dcd9f6f7e3c0ce0fc1d20f401c7ad81c7d8f0b05a"
+      },
+      "parent_disposition": "RETAINED_PARTIAL_SOURCE_REQUIRES_REPAIR_NO_REPLAY"
+    },
+    {
+      "name": "cycle-closure",
+      "run_id": "macro-always-on-20261106-c3-cycle-closure-01",
+      "work_packet": {
+        "objective": "Close the actual remaining ambient dependencies and three source defects in the Sector cycle input extraction. Deliver a generation-bound calculation over supplied values, preserving legacy formulas and per-record failure behavior.",
+        "identity": {
+          "repository": "mastermindx-market-intelligence/macro",
+          "base_sha": "86e8da1ff4c316affe402ae480cde0002550762b",
+          "candidate_commit": "077fb1e8208b5619d40ee73bae1705a9fe686229",
+          "candidate_patch_sha256": "4a97129421761dd938bcf343e1a06d79f33cbae450411f98faafb97766f96873",
+          "candidate_patch_bytes": 88894,
+          "protected_law_repository": "mastermindx-market-intelligence/Mastermind",
+          "protected_law_sha": "49c2e1d93e5e080b1671c98087a845e5beb09dd5",
+          "mission": "https://github.com/mastermindx-market-intelligence/macro/issues/10779"
+        },
+        "artifact": "The prior worker is terminal, no active writer. Read exact immutable candidate from ubuntu1 /home/longr/lanes/macro-always-on-20261106-c3-cycle-core-01/wt. Base..candidate patch retained at M2 /tmp/mmx-always-on-cycle-077fb1e.patch or original worker /home/longr/lanes/tmp/macro-always-on-20261106-c3-cycle-core-01/candidate.patch. Verify bytes/digest; own isolated managed workspace, no mutation of original artifact. Candidate is NOT ACCEPTED or integrated; do not trust its claim of transitive purity.",
+        "scope": [
+          "engine/sector_cycles.py",
+          "engine/cycles.py",
+          "engine/hazard_score.py",
+          "tests/test_sector_cycles_explicit_inputs.py",
+          "one small focused shared-kernel input test module if necessary",
+          "research/sector_completion_20261021/B04_METRIC_DEFINITIONS.md (coupled line-reference corrections only)"
+        ],
+        "concrete_findings": [
+          "acquire_inputs evaluates spec.get('members') outside the prior per-basket try. A valid JSON membership {'baskets':{'broken':null}} now aborts the adapter instead of skipping that basket. Preserve legacy per-basket failure isolation. _acquire_amalgam_source similarly catches only _load_amalgams, not malformed specification iteration; preserve the old whole-family catch. Add actual-base comparisons for malformed individual specs and members.",
+          "compute_from_inputs chooses an asof override without requiring equality to inputs.asof, although captured amalgam benchmarks were anchored at acquisition time. Reject a conflicting evaluation clock before calculation. Explicitly test acquire atA then compute atB. No silent relabeling or hidden reacquisition.",
+          "_resolve_hazard_scorer ignores _warm_hazard_calibration returning False and still returns hazard_score.score. Verified fault probe: missing model causes acquisition model/km reads, then another model read during scoring. Even successful warming retains mutable _model_cache/_km_cache dependence. Carry actual detached model/KM values or explicit absence; no loader callbacks in the input bundle and no re-load after absence."
+        ],
+        "ambient_contract": "Capture one explicit CycleCalculationInputs value containing macro_overlay settings used by ladder_state, vol_regime_overlay settings, entry-gate settings currently in import-time _EG_* globals, fitted cycle bands from _FITTED_BANDS, normalized ladder risk calibration from _RISK_CALIB, volatility-overlay gate document with explicit closed/absent semantics, and a separate hazard model/KM snapshot or explicit absence. Preserve code constants/formulas. engine.vol_regime already offers regime_caution_scored(...,gate=...): use its existing non-null explicit seam; do not create another reader or edit that module unnecessarily. Legacy callers without binding keep existing behavior. Explicit path must bypass cache reads/mutations and loader/logged flags.",
+        "binding": "Use explicit parameters or safe per-call ContextVar binding through nested incumbent helpers. Never temporarily replace process-global caches/config. Reset context in finally. Capture detached mappings/data values; computation must not mutate input or return aliases. frozen dataclass alone does not make contained frames/maps immutable; state actual guarantees accurately. Existing scorer arithmetic should have a supplied-calibration core and retained acquisition adapter. No new grading/history writer, fitting, provider calls or fallback collection.",
+        "tests": "Focused meaningful qualification only. Actual base implementation versus adapter/core parity, including malformed optional specs and unavailable calibrations; conflicting clock refusal; after acquisition trap config and data-file reads across the ENTIRE calculation chain (not only sector_cycles module) and calculate; clearing/replacing ambient caches after acquisition cannot alter old bundle output; interleaved/concurrent distinct input contexts remain isolated; changing an explicit setting/calibration changes the expected observable field, proving it is used; no input/output aliasing. Keep old18tests, update their honest scope. Run direct neighboring suites needed by touched kernels, not an unrelated full-estate sweep. Retain exact test receipts and any baseline-only failures without suppressing assertions.",
+        "limits": "No edits to Yahoo/lib store, central engine, China/country product files, API/auth/native views, publisher, builders, workflow/CI, schedulers or another worker workspace. No push/PR/merge/deploy/Slack/email. Parent owns original Macro PR10780 integration. No formula/epoch changes, fabricated purity or source-date freshness. If a remaining dependency cannot be captured within scope, return exact gap.",
+        "acceptance": "Locally commit qualified candidate, return immutable commit/base/tree/files/workspace and full interface/test evidence. Final patch may contain prior extraction plus corrections on exactbase, or an exact descendant of candidate with both refs. A successful source test is not runtime deployment or product acceptance."
+      },
+      "observed_status": {
+        "state": "TERMINAL",
+        "rc": 124,
+        "root_verified": true,
+        "owned_cleanup_residual_count": 0,
+        "parent_disposition": "NO_QUALIFIED_NEW_RESULT_PRIVATE_EFFECT_ABSENCE_NOT_CLAIMED_NO_REPLAY"
+      },
+      "parent_disposition": "NO_QUALIFIED_NEW_RESULT_PRIVATE_EFFECT_ABSENCE_NOT_CLAIMED_NO_REPLAY",
+      "parent_source_checkpoint": {
+        "base_sha": "57f6bff220a71f3c2376d394bceff45131addc1d",
+        "candidate_recovered": "077fb1e8208b5619d40ee73bae1705a9fe686229",
+        "state": "PARENT_INTEGRATED_VERIFIED_NOT_ACTIVATED",
+        "contract": "research/market_os/SECTOR_CYCLE_EXPLICIT_INPUT_CONTRACT_2026-11-06.md",
+        "proof": {
+          "passed": 297,
+          "skipped": 4,
+          "warnings": 6,
+          "pytest_exit": 0,
+          "log_sha256": "f1cd30f52966665d083826c5521d949db9e333de2661b720d0476e78741f0900",
+          "suite_files": [
+            "tests/test_sector_cycles_explicit_inputs.py",
+            "tests/test_hazard_score.py",
+            "tests/test_cycles.py",
+            "tests/test_cycle_proxies.py",
+            "tests/test_cycle_phase_age.py",
+            "tests/test_entry_gate.py",
+            "tests/test_session_anchor_invariance.py",
+            "tests/test_cycle_rhythm_disclosure.py",
+            "tests/test_hazard_parity.py",
+            "tests/test_sector_metric_definitions.py"
+          ],
+          "actual_base_sector_blob": "0ee680d46574723cd9bff07fff777b8005529186",
+          "hazard_fixture_blobs": [
+            "54530e57b4030cc04c432243008db7522a738472",
+            "38221010a2d6c51adfe48209e73bf9cc240e3b6d"
+          ]
+        },
+        "limits": [
+          "Runtime producer inputs not yet wired",
+          "No deployment or data ownership activation",
+          "CI registration action remains policy-blocked",
+          "Historical legacy member-tail behavior retained; strict core refuses future tails"
+        ]
+      }
+    },
+    {
+      "name": "terminal-native",
+      "run_id": "macro-always-on-20261106-c3-terminal-native-01",
+      "work_packet": {
+        "objective": "Implement and qualify the native Sector Brief/action-board presentation and atomic envelope adoption in the existing shared-shell Sector workspace. This is a dependent source draft, not a second release of queued PR1311.",
+        "identity": {
+          "repository": "mastermindx-market-intelligence/mastermind-terminal",
+          "base_sha": "847af34df5f811fa4a9152936e42d199b8a45b08",
+          "macro_contract_commit": "38f2441def30f02cf2accf9ddfbaee334d86e1b5",
+          "protected_law_repository": "mastermindx-market-intelligence/Mastermind",
+          "protected_law_sha": "49c2e1d93e5e080b1671c98087a845e5beb09dd5",
+          "mission": "https://github.com/mastermindx-market-intelligence/macro/issues/10779"
+        },
+        "context": "Read exact Macro engine/sector_native_view.py and research/market_os/SECTOR_NATIVE_VIEW_CONTRACT_2026-11-06.md at macro_contract_commit. That source is published;32 projection+20 legacy gate tests and2CI closure checks passed. It contains Brief/action board only; central/cycle documents are validated inputs but not emitted. Terminal1311 workspace/branch is frozen and in protected queue. Terminal1285 owns current BFF/heatmap transport and must not be edited. Own isolated managed workspace, no PR/push/activation.",
+        "write_scope": [
+          "terminal/lib/sectorNativeView.ts (new strict decoder/types)",
+          "terminal/components/sector-intelligence/SectorNativeBrief.tsx",
+          "terminal/components/sector-intelligence/SectorNativeActionBoard.tsx",
+          "terminal/components/sector-intelligence/SectorNativeView.module.css",
+          "terminal/components/sector-intelligence/SectorIntelligenceWorkspace.tsx (narrow native insertion and existing lifecycle adoption)",
+          "terminal/lib/sectorIntelligenceLex.ts",
+          "focused native decoder/component/workspace tests under terminal/lib/__tests__",
+          "contract-faithful fixtures under terminal/e2e/fixtures and focused browser proof/evidence if incumbent test conventions require"
+        ],
+        "contract": "Decode exactly published data.schema sector_native_view.v1, audience preview/entitled, brief and board dates/fields, and receipt schema sector_native_view.receipt.v1/source macro.sector/generation_id/source_session/published_at/qualification/input_version/baseline_session/content_sha256. Strict dates/enums/finite points and visible count consistency. Brief/board dates must match receipt baseline or source session. Render supplied21point comparison, labels/order/budgets; never recompute wealth, rank or invent entry authority. Keep source construction/history notes and not_declared_by_chart basis. Missing comparison is unavailable, not zero. A typed API wrapper is not finalized; do not invent one.",
+        "placement": "Insert market-wide Brief and board inside existing Discover\u2192Sectors, before or beside existing discovery content. Clearly distinguish market-wide leadership from the selected sector. Preserve Rotation/Discover/Breadth, research depth, source panel, Back/Forward, selection, scroll, focus and original current tools. Use existing callbacks for Review rotation/Check participation and only unambiguous native subject mappings. Do not map equal-weight basket IDs to ETFs. Preserve validated safe owner links otherwise. Use existing visual tokens, original working product conventions and coherent responsive spacing; avoid implementation jargon in the main user flow. Put necessary provenance detail in source/evidence disclosure.",
+        "lifecycle": "Extend the ONE existing SectorIntelligenceWorkspace request owner/effect and60s foreground/visibility-resume lifecycle with an optional injectable native reader. Reader gets the existing cancellation signal. Store the whole native envelope as ONE owner-scoped value; brief/board/receipt adopt atomically. Newgeneration/qualification/publication must update even with unchanged visible hash. Account/access changes clear prior privileged data and late prior-owner results never apply. Reuse existing failure-clearing/retention policy; do not weaken fail-closed access behavior or add a privileged-content cache. An accepted server rollback can have an earlier date/opaque ID. Unbound reader makes NO network request. No new timer/poller/proxy/endpoint/auth/watch store; do not synthesize fallback Brief from independent feeds.",
+        "exclusions": "Do not touch terminal/app/api/sector-intelligence/route.ts, heatmap transport, upstreams, auth, Supabase/watch services, global shell, deployment,CI/package manifests, or the frozen queued workspace. Do not expand SectorFeed union to force a dormant handler change. Separate native transport typing until parent binding. No source collection, publisher, new calculation, write-capable watch evaluator, or custom login.",
+        "tests": "Actual decoder+render+owner lifecycle tests: A\u2192B swaps all panels/receipt together; internaldate mismatch rejected as a whole; explicit olderbaseline visible; samehash newreceipt/qualification shown; preview hiddenrows neverDOM; approvedcounts and sharedhold/avoid preserved fromserver; missingevidence honest; identity/accessrevocation clears and delayedparse cannotrestore; onepereligiblecycle, nohiddenpolling, coalescedresume/timeout; nav/returncontext intact; English/Chinese andlight/dark, keyboard, desktop/tablet/mobile. Run existing relevant refresh/depth/exposure/discovery suites, not fullestate. Useexistingdependencies. Capture real local browser screenshots and report actual test commands/receipts; do not call fixtures authenticatedbeta proof.",
+        "acceptance": "Local commit only, return immutable head/base/tree/workspace/changedfiles and accessible patch/evidence. Completion claim limited to native Brief/action-board fixture qualification. Production BFF/readbinding/API, core/history coherence, Watches and entire userjourney/wholeestate acceptance remain parent integration obligations. If a source ambiguity blocks safe implementation, reportexact source and bounded decision. No push/PR/merge/deploy/Slack/email, no duplicate existingreleaseeffect."
+      },
+      "observed_status": {
+        "state": "TERMINAL",
+        "rc": 0,
+        "root_verified": true,
+        "candidate_head": "b441a9b2c7225df30161ce347c2d069e046cf3c6",
+        "parent_disposition": "REQUEST_REPAIR_SOURCE_NOT_ACCEPTED_OR_ACTIVATED"
+      },
+      "parent_disposition": "REQUEST_REPAIR_SOURCE_NOT_ACCEPTED_OR_ACTIVATED"
+    },
+    {
+      "name": "yahoo-profile",
+      "run_id": "macro-always-on-20261106-c3-yahoo-profile-01",
+      "work_packet": {
+        "objective": "Implement the one inactive Yahoo runtime ownership profile, scoped snapshot binding, and legacy caller fences. This is the disjoint preparation package; do not activate or duplicate the active acquisition/publisher work.",
+        "identity": {
+          "repository": "mastermindx-market-intelligence/macro",
+          "base_sha": "38f2441def30f02cf2accf9ddfbaee334d86e1b5",
+          "protected_law_repository": "mastermindx-market-intelligence/Mastermind",
+          "protected_law_sha": "49c2e1d93e5e080b1671c98087a845e5beb09dd5",
+          "mission": "https://github.com/mastermindx-market-intelligence/macro/issues/10779"
+        },
+        "write_scope": [
+          "lib/yahoo_runtime_profile.py (new)",
+          "config.yml (only inactive yahoo.sector_runtime block)",
+          "scripts/refresh_regime_if_stale.py",
+          "scripts/check_price_store_freshness.py",
+          "scripts/backfill_yahoo_universe.py",
+          "scripts/seed_extra_tickers.py",
+          "scripts/backfill_price_basis.py",
+          "scripts/heal_shallow_caches.py",
+          "focused helper/caller tests",
+          "concise interface/admission document under research/market_os"
+        ],
+        "profile": "Use existing top-level yahoo config, not a YAML overlay or new service. Proposed sector_runtime: schema yahoo.sector_runtime_profile.v1, mode legacy, cohort sector_close_14.v1, snapshot_schema yahoo.close_cohort.v1. Default committed mode MUST remain legacy. legacy and shadow retain incumbent authoritative reads/writes; shadow permits only private candidates. runtime transfers exactly the14 Yahoo symbols. Missing profile means pre-transfer legacy compatibility, but counts as downgrade for a future already-runtime deployment guard. Unknown schema/mode/cohort fails explicitly.",
+        "single_cohort": {
+          "name": "SECTOR_CLOSE_TICKERS",
+          "symbols": [
+            "XLB",
+            "XLC",
+            "XLE",
+            "XLF",
+            "XLI",
+            "XLK",
+            "XLP",
+            "XLRE",
+            "XLU",
+            "XLV",
+            "XLY",
+            "SPY",
+            "QQQ",
+            "IWM"
+          ],
+          "location": "lib/yahoo_runtime_profile.py",
+          "note": "Do not duplicate this literal in config/callers/another registry. Parent will reconcile the active collector's local constant to this owner after it returns. Existing fixed-nine RF9 capture eligibility is unchanged."
+        },
+        "helper": "Import-light, no config/file/clock/network/state reads or writes. parse_profile(yahoo_config)->YahooRuntimeProfile; runtime_owns(profile,group,symbol); partition_legacy_symbols(profile,symbols)->ordered allowed/excluded; assert_legacy_write_allowed(profile,group,symbol) typed error; bind_snapshot(profile,verified_cohort) scoped ContextVar; require_snapshot(profile). Verified cohort is injected from existing publisher reader, not parsed here. Hold generation/source-session/schema/cohort identity and complete14 qualified frames with both close(TR) and close_price; missing members/bases fail before calculation. No mutable aliases to callers. Resolve selection outside scope exactly once; nested same-generation binding may reuse, conflicting generation in same computation refuses; reliable reset. Do not choose private paths, write files, resolve latest, download R2 or implement manifest verification. Ownership includes group: stocks/SPY is not yahoo/SPY.",
+        "caller_fences": [
+          "refresh_regime_if_stale._repull_yahoo: refuse legacy SPY heal BEFORE constructing/running adapter if runtime owns it; force cannot override. Return honest runtime-owner/not-healed evidence.",
+          "check_price_store_freshness --heal: preserve refusal, no false attempted/successful heal when no provider action. Stale/unavailable remains truthful.",
+          "backfill_yahoo_universe: exclude runtime cohort from backfill queue AND refresh candidates before cap selection, requests, retries and attempt accounting. Do not park/exhaust excluded symbols as no_data. Final write assertion.",
+          "seed_extra_tickers: exclude before store reads, initial attempt and retry loop. Force, individual Yahoo history and Stooq fallback cannot reopen. Final write assertion.",
+          "backfill_price_basis.backfill_ticker: refuse transferred Yahoo ticker before reads/downloads and again before direct to_parquet, which bypasses store.upsert.",
+          "heal_shallow_caches: exclude runtime-owned Yahoo targets before scan/planning; assert at apply_heal before temp-file creation/replacement. A checkout Yahoo file is not a donor for transferred lineage: require an injected bound snapshot when possible, otherwise report runtime-binding-required, never use legacy file fallback."
+        ],
+        "reserved": "Do NOT edit collectors/yahoo.py or lib/store.py (active collector owns them), engine/inputs.py, engine/basket_index.py, publisher/orchestrator, deploy scripts, R2, workflow/CI, auth/API or Terminal. Parent must later intercept store.read before _path creates dirs, fence upsert, filter BOTH Yahoo.fetch tickers and separately re-read extras before fallback (not shared _download), bind across TR+price calls, and close basket_index direct/cache Yahoo reads. Do not hide transferred symbols by shrinking maintained_tickers audit universe.",
+        "tests": "Meaningful legacy/shadow compatibility and exact14/group isolation; unknown profile fails; no provider/retry/fallback/attempt mutation for excluded symbols; force/heal cannot bypass; direct writers refuse before all output effects; one injected binding retains generationA when external pointer changesB; both price bases fromA; missing/invalid binding fails without checkout/provider reads; scope/nested/concurrent isolation and detached mutable frames. Do not write tests merely restating implementation. Run focused existing affected caller suites; no unrelated estate sweep. No live provider calls.",
+        "acceptance": "Own managed isolated workspace. Locally commit qualified source; return immutable base/head/tree/workspace/files plus exact interface, test receipts and activation limitations. No push/PR/merge/deploy/Slack/email. Parent preserves original PR10780 and owns integration, source-profile anti-downgrade, old-writer drain, canonical compatibility read and real no-build proof. No false claim that helper/source merge transfers authority."
+      },
+      "observed_status": {
+        "state": "TERMINAL",
+        "rc": 75,
+        "root_verified": true,
+        "worker_start_proven": false,
+        "result_available": true
+      },
+      "returned_response": {
+        "sha256": "97a97cb8ce901db7cc980454e784a978eb0dc7a02606416de59682d1822d97c9",
+        "bytes": 241,
+        "text": "REMOTE_SUB_ADMISSION_REFUSED {\"active_count\":6,\"allowed\":false,\"cpu_count\":24,\"json_locked_count\":6,\"legacy_count\":0,\"load1\":8.314,\"load_ratio_limit\":0.4167,\"max_active\":18,\"reasons\":[\"host_temperature_at_or_above_limit\"],\"stale_reaped\":[]}\n",
+        "accepted": false
+      },
+      "parent_disposition": "PRETASK_THERMAL_REFUSAL_NO_REPLAY_PARENT_SOURCE_IMPLEMENTED_INACTIVE_122_TESTS_PASS"
+    },
+    {
+      "name": "basket-context",
+      "run_id": "macro-always-on-20261106-c3-basket-context-01",
+      "work_packet": {
+        "objective": "Extract explicit-input basket-chart and theme-context calculation seams so the original Sector Brief can advance from fresh historical inputs without HTML builds or duplicate history writers. Preserve existing owner algorithms and compatibility adapters.",
+        "identity": {
+          "repository": "mastermindx-market-intelligence/macro",
+          "base_sha": "38f2441def30f02cf2accf9ddfbaee334d86e1b5",
+          "protected_law_repository": "mastermindx-market-intelligence/Mastermind",
+          "protected_law_sha": "49c2e1d93e5e080b1671c98087a845e5beb09dd5",
+          "mission": "https://github.com/mastermindx-market-intelligence/macro/issues/10779"
+        },
+        "scope": [
+          "engine/baskets.py",
+          "engine/theme_context.py",
+          "new focused explicit-input tests for these two owners",
+          "concise source contract/evidence document under research/market_os"
+        ],
+        "source_findings": "The original Brief needs broad historical closes plus extras, SPY, theme intelligence and allocation; advancing the14 ETF histories alone is insufficient. Prior audit is research/market_os/ALWAYS_ON_MACRO_INPUT_RUNTIME_AUDIT_2026-11-05.md. compute_baskets reads membership, equity_factors._closes, Yahoo SPY, names/constituents, extras and proxy series. Broad calendar and whole-column adjustment-vintage resolution are intentional. compute_theme_context derives trailing leader from allocation rank, reads/seeds/advances context_history.jsonl when lane-gated, and reads rotation alignment. Neither a renamed compute function nor staged builder execution establishes a pure boundary.",
+        "basket_contract": "Retain compute_baskets as incumbent acquisition adapter. Add a typed explicit-input calculation with captured membership, broad closes, extras, SPY, names/sectors and every used proxy series. No _proxy_returns store fallback. Preserve align_latest_common_observation and resolve_thematic_close_panel, source calendar, coverage, index-migrant whole-column replacement, membership date semantics, construction/history disclosure, existing levels/returns and benchmark alignment. Extras cannot advance beyond broad-panel calendar. A713-member subset is not a replacement for required broader population inputs. Capture dependencies once in adapter, treat supplied empty/None as explicit absence, no hidden file/config/store/clock/ledger/provider reads in explicit calculation.",
+        "context_contract": "Add a pure core accepting allocation, theme intelligence, explicit context history snapshot, parsed rotation-alignment input and explicit evaluation/source date/settings actually needed. Preserve exact existing state, stance, strength order, trailing leader, days/state-change and missing-history behavior. No history seeding/append/replace, filesystem, current-clock, environment lane flag, notification or HTML effects in core. Existing nightly adapter keeps its seeding/history advancement behavior and sole ownership, with output/effect parity tests. Do not use environment patching or temporary global config/cache replacement to pretend explicitness. Missing history must not trigger a loader.",
+        "qualification": "Complete-output comparison against actual base implementations with controlled same acquired inputs, not only a hand-maintained mirror. Basket cases: normal, missing coverage, index migration/overlap, extras resolution, missing benchmark/proxy/membership and nonmutation/aliasing. Context cases: normal, changed state, absent/malformed history, alignment absent/current/stale, and explicit date; legacy adapter retains its intended writer call semantics while core has zero writer calls. Trap undeclared reads across the relevant calculation chain and history/ledger/HTML/notification writes, not only the top-level module. Test changing an explicit supplied input changes the expected field. Preserve all unrelated behavior and explain any residual dependency instead of claiming purity.",
+        "limits": "Own isolated managed workspace. Do not edit theme_scoring, narrative_rotation, group_flow, build_site/build_baskets/build_allocation/build_sector_action_board, Yahoo/lib store/profile, cycles/hazard, publisher/API/Terminal, deployment, CI/workflows, data or existing histories. Separate workers own those active seams or parent will commission successors. No live provider calls, source-owner cutover, new scheduler/registry/publisher/history owner, push/PR/merge/deploy/Slack/email. Do not create a new implementation of canonical action_board. Keep source changes bounded; no broad estate sweep.",
+        "acceptance": "Locally commit qualified source. Return immutable base/head/tree/workspace/files, exact dataclass/function contracts, focused test receipts and any residual gaps. This is preparatory basket/context source qualification, not complete Brief production or beta acceptance. Parent still must qualify broad-history collectors, theme-scoring/allocation inputs, canonical board assembly, ownership fences and real source-to-screen advancement."
+      },
+      "observed_status": {
+        "state": "TERMINAL",
+        "rc": 75,
+        "root_verified": true,
+        "worker_start_proven": false,
+        "result_available": true
+      },
+      "returned_response": {
+        "sha256": "0a077ce444d739fa3dae98daca5b9264ecc243caba4edb534b491997448eb374",
+        "bytes": 241,
+        "text": "REMOTE_SUB_ADMISSION_REFUSED {\"active_count\":6,\"allowed\":false,\"cpu_count\":24,\"json_locked_count\":6,\"legacy_count\":0,\"load1\":8.208,\"load_ratio_limit\":0.4167,\"max_active\":18,\"reasons\":[\"host_temperature_at_or_above_limit\"],\"stale_reaped\":[]}\n",
+        "accepted": false
+      },
+      "parent_disposition": "PRETASK_THERMAL_REFUSAL_NO_REPLAY_PARENT_RECOVERY",
+      "parent_source_checkpoint": {
+        "commit": "2b1ee3c6ec55ab8d47d4f61d38136834a5754cef",
+        "state": "PUBLISHED_INACTIVE",
+        "proof": "96 focused tests and16 actual-base/adapter/core comparisons with12 digests"
+      }
+    },
+    {
+      "name": "theme-allocation",
+      "run_id": "macro-always-on-20261106-c3-theme-allocation-01",
+      "work_packet": {
+        "objective": "Implement explicit-input theme scoring and narrative allocation calculation seams needed to refresh the original Sector Brief from the same accepted historical snapshot. Preserve canonical algorithms and existing legacy adapters; no builder/publication/history effects in the new cores.",
+        "identity": {
+          "repository": "mastermindx-market-intelligence/macro",
+          "base_sha": "38f2441def30f02cf2accf9ddfbaee334d86e1b5",
+          "protected_law_repository": "mastermindx-market-intelligence/Mastermind",
+          "protected_law_sha": "49c2e1d93e5e080b1671c98087a845e5beb09dd5",
+          "mission": "https://github.com/mastermindx-market-intelligence/macro/issues/10779"
+        },
+        "scope": [
+          "engine/theme_scoring.py",
+          "engine/narrative_rotation.py",
+          "engine/group_flow.py (only the existing setup acquisition seam needed by these consumers)",
+          "focused explicit-input tests and concise source contract document"
+        ],
+        "context": "Parent inspected build_baskets\u2192baskets/theme_scoring/narrative_rotation/theme_context. Separate worker basket-context owns engine/baskets.py and engine/theme_context.py; do not edit those. Its context core will receive current allocation, current theme intelligence, history and alignment explicitly. New14-name Yahoo cohort alone is insufficient because original Brief leaders/chart also use broad panels and extras. Existing builders write history/snapshots/HTML and cannot serve as runtime pure cores. Prior audit research/market_os/ALWAYS_ON_MACRO_INPUT_RUNTIME_AUDIT_2026-11-05.md is evidence with parent qualifications.",
+        "requirements": "Retain existing compute_theme_intel and compute_narrative_rotation acquisition adapters/signatures/default behavior. Add explicit captured value bundles and core functions for the actual accepted algorithms. Audit their transitive helper inputs before claiming closure. Theme scoring uses group_flow._setup panel, macro context, signal calibration, volatility snapshot/configuration and prior Sector artifact conflict demotion with an existing freshness rule. Capture that PRIOR-generation dependency; never substitute an in-progress current Sector output and create a calculation cycle. Narrative allocation depends on theme/basket inputs and calibration/context; expose actual inputs, do not copy another implementation. No loader callbacks masquerading as values, global cache/config replacement, or environment patching.",
+        "semantics": "All source dates, coverage/adjustment semantics, allocation ranks, labels, stance, scoring, eligibility and authority remain unchanged. Current allocation and theme intelligence must share the accepted session before context is called; do not relabel yesterday's allocation. Empty/missing supplied inputs are explicit absence, no fallback loaders. Calculation must not mutate inputs or return aliases. Evaluation time must be explicit wherever the current code uses a clock. Existing canonical ledger/grade/snapshot/alert owners remain separate; do not advance them or add a new writer.",
+        "tests": "Compare complete outputs to actual base implementation over the same controlled acquired inputs. Include missing/partial panels, explicit absent calibrations/context, prior Sector current/stale/missing demotion, normal allocation and meaningful score/rank transitions. Trap undeclared data/config/file/clock/provider reads across the relevant calculation chain and all ledger/snapshot/notification/HTML writes after acquisition. Distinct explicit contexts must remain isolated from ambient caches; altering a supplied input must change the expected observable field. Preserve legacy failure isolation. Run focused existing direct-neighbor suites, not full estate. Report any remaining transitive dependency honestly rather than narrowing read traps.",
+        "limits": "Own managed isolated workspace. Do not touch baskets/theme_context, cycles/hazard, central engine, Yahoo/store/profile, build_site/build_baskets/build_allocation, publisher/API/Terminal, data/config/workflows/CI/deploy or another worker's files. No live provider calls, source transfer, scheduling, push/PR/merge/deploy/Slack/email. If one required helper lies outside allowed scope, return exact dependency and a bounded proposed hunk; do not silently expand or duplicate it.",
+        "acceptance": "Locally commit qualified source. Return immutable base/head/tree/workspace/files and full explicit interface plus test receipts, unchanged-legacy evidence and residual limitations. Parent owns integration into original PR10780 and whole-Brief real-path acceptance. A source extraction is not a runtime deployment."
+      },
+      "observed_status": {
+        "state": "TERMINAL",
+        "rc": 0,
+        "root_verified": true,
+        "candidate_head": "45a4f141b53ba6069aea340f37cb6655828797cf",
+        "parent_disposition": "INTEGRATED_WITH_PARENT_REPAIRS_267_PASSED_17_SKIPPED"
+      },
+      "parent_disposition": "INTEGRATED_WITH_PARENT_REPAIRS_267_PASSED_17_SKIPPED"
+    },
+    {
+      "name": "board-data",
+      "run_id": "macro-always-on-20261106-c3-board-data-01",
+      "work_packet": {
+        "objective": "Extract the canonical Sector action-board data assembly from page rendering so the runtime can produce the original board without a site/HTML build or duplicate intelligence.",
+        "identity": {
+          "repository": "mastermindx-market-intelligence/macro",
+          "base_sha": "38f2441def30f02cf2accf9ddfbaee334d86e1b5",
+          "protected_law_repository": "mastermindx-market-intelligence/Mastermind",
+          "protected_law_sha": "49c2e1d93e5e080b1671c98087a845e5beb09dd5",
+          "mission": "https://github.com/mastermindx-market-intelligence/macro/issues/10779",
+          "overlap_carriers": [
+            10777,
+            10703
+          ]
+        },
+        "source_evidence": "scripts/build_sector_action_board.build_action_board calls build_alpha_data, build_insider_data and build_sector_pages before canonical action_board. build_sector_pages renders HTML while returning timing/notable data. Moving that builder into a staging directory relocates effects but does not create a data-only seam. Existing write_action_board is already the sole date/hash-bound writer and must remain so. Fullboard inputs extend beyond baskets; its basket hash alone never proves all-input freshness.",
+        "write_scope": "Own isolated managed workspace. Narrow extraction/re-export hunks in scripts/build_site.py and scripts/build_sector_action_board.py, a shared import-light data module only if required to move the canonical implementation, and focused tests/documentation. Read current10777/10703 diffs first, preserve their source/design semantics and holds, do not touch their workspace or publication. Parent's original PR10780 remains convergence carrier. Do not edit templates/CSS/routes/globalCI.",
+        "contract": "First enumerate actual existing action_board/basket_action_items/sector_setup_view and sector-page data inputs. Extract one canonical calculation path accepting explicit values and returning the SAME assembled board/timing/notable data. Separate sector-page data computation from HTML rendering; legacy build_sector_pages must delegate and render existing contexts, preserving its return contract. Runtime entry must not call build_alpha_data/build_insider_data/build_sector_pages builders or hidden filesystem/config/clock/network/ledger helpers. Accept their qualified raw/calculated owner inputs explicitly. Preserve full sector, theme and stock rows, order, labels, grade/authority and field semantics; do not reduce to theme rows or copy a parallel action_board implementation. Canonical source can move with legacy re-export rather than duplicate.",
+        "writer": "Reuse existing write_action_board with serialized accepted baskets bytes and explicit generation time. Do not implement a second JSON writer, direct served-tree write, or claim whole-bundle atomicity. The new pure calculation itself must not write anything. Existing builder output/effect behavior remains in its adapter; runtime uses data values only. Preserve previous-artifact retention on invalid sources.",
+        "tests": "Complete-output parity against actual base canonical functions with meaningful source-shaped fixtures covering sector/theme/stock mixes, all six lanes, missing optional context, counts, ordering and field preservation. Prove pure data entry performs zero HTML/page/ledger/notification/store/provider/clock calls; tests must fail if a legacy builder call is reintroduced. Verify legacy page adapter still renders and returns its former data, and existing action-board writer contracts remain passing. Avoid an unrelated full-site build or broad estate sweep. Focused gates/contract tests for changed source are required; do not weaken assertions or budgets.",
+        "boundaries": "Separate workers own basket/context, theme_scoring/narrative_rotation/group_flow, cycle/hazard, Yahoo/profile/store, publisher/API, Terminal and updater. Do not touch those files. If a required hidden dependency cannot be parameterized within this write set, return the precise gap and bounded next hunk rather than claiming a pure entry. No temporary globals/cache patching, environment tricks, new rank/gate/size rule, fixture-only production output or proprietary copied assets.",
+        "acceptance": "Local commit only; return exact base/head/tree/files/workspace and immutable patch, interface and actual parity/effect-test receipts. No push/PR/merge/deploy/provider calls/Slack/email. This is source preparation; parent owns source/input qualification, coherent publication, old-writer transfer and live beta proof."
+      },
+      "observed_status": {
+        "state": "TERMINAL",
+        "rc": 75,
+        "root_verified": true,
+        "worker_start_proven": false,
+        "result_available": true
+      },
+      "returned_response": {
+        "sha256": "e224a2291a4113376219ba0c9bf380eb7b3a7de175996add4a4b1855cf437c79",
+        "bytes": 241,
+        "text": "REMOTE_SUB_ADMISSION_REFUSED {\"active_count\":6,\"allowed\":false,\"cpu_count\":24,\"json_locked_count\":6,\"legacy_count\":0,\"load1\":7.102,\"load_ratio_limit\":0.4167,\"max_active\":18,\"reasons\":[\"host_temperature_at_or_above_limit\"],\"stale_reaped\":[]}\n",
+        "accepted": false
+      },
+      "parent_disposition": "PRETASK_THERMAL_REFUSAL_NO_REPLAY_PARENT_RECOVERY"
+    },
+    {
+      "name": "broad-acquisition",
+      "run_id": "macro-always-on-20261106-c3-broad-acquisition-01",
+      "work_packet": {
+        "objective": "Implement explicit-input, side-effect-free historical acquisition seams for the three incumbent US breadth collectors and basket extras. This closes the original Sector Brief's broad-stock-history dependency; it is not a new scheduler or provider owner.",
+        "identity": {
+          "repository": "mastermindx-market-intelligence/macro",
+          "base_sha": "38f2441def30f02cf2accf9ddfbaee334d86e1b5",
+          "protected_law_repository": "mastermindx-market-intelligence/Mastermind",
+          "protected_law_sha": "49c2e1d93e5e080b1671c98087a845e5beb09dd5",
+          "mission": "https://github.com/mastermindx-market-intelligence/macro/issues/10779"
+        },
+        "scope": [
+          "collectors/breadth.py",
+          "collectors/smallcap_breadth.py",
+          "collectors/midcap_breadth.py",
+          "scripts/fetch_basket_extras.py",
+          "new import-light explicit input/result module only if needed",
+          "focused tests and concise source contract under research/market_os"
+        ],
+        "owner_contract": "Preserve existing BreadthAdapter, SmallCapBreadthAdapter and MidCap400BreadthAdapter acquisition algorithms, configured adjusted downloader, batching/backoff and price basis. Existing legacy fetch remains the compatibility adapter with its incumbent writes/constituents/updown ownership; explicit acquisition must not use repository data/config/file-backed exclusions/current clock, write caches or ledgers, seed proxies, publish artifacts or mutate its supplied inputs. Supply every used configuration value, evaluation instant, completed target session, constituent/fixup/exclusion identity, prior close/high/low/volume panels with identity. Candidate returns all required panels and constituent identities plus requested/current/missing/stale/repair/archive counts. Missing or malformed required inputs are typed refusal, never a fallback read.",
+        "coverage": "Keep existing configured size floors broad400/smallcap450/midcap350 and initial80 percent provider coverage lower bound. New candidate qualification must measure declared active constituents at the target completed session, keeping missing constituents in the denominator. A union containing archived members cannot mask poor current coverage. This floor is not proof of every basket's member coverage or historical depth; retain downstream disclosure. Refuse incomplete/mixed target-session cohorts and incomplete bases as appropriate. Closed market dates must come from explicit qualified inputs/owner calendar, never timestamp relabeling.",
+        "revisions": "Preserve historical union within retention across stale/full refresh. A corrected deep column replaces its entire declared span including nulls; do not splice old adjustment-vintage values into revised holes with combine_first. Unresolved required seam repairs must refuse candidate publication, not merely warn and return old columns. Repair close/high/low/volume consistently. Include genuine source date, source identities and repair status in result; no promoted/fresh claim from collector-only success.",
+        "extras": "Use explicit basket membership/aliases, prior extras and qualified CANDIDATE smallcap/midcap/deep panels. Mere presence in _deep_cache_columns must not suppress an extra fetch for a departed/frozen name; require sufficient candidate coverage at declared target/history or fetch it. Preserve alias vendor-fetch versus membership storage key and handle collisions/duplicates. Runtime acquisition never calls _seed_proxies: IBIT,GDX,SIL,KWEB,FXI,TCOM retain existing distinct owners. Extras refresh failure must produce refusal even if legacy main historically returns zero. Qualified fresh complete columns own full span incl nulls; preserve absent archive columns. Extras does not advance the broader basket calendar by itself.",
+        "tests": "Prove zero repo reads/writes/ledger/proxy calls across explicit path with traps, deterministic supplied-date behavior, archived columns cannot mask active coverage, departed-name extra refresh, same-session correction, unresolved repair refusal, union retention, aliases and duplicate handling. Compare complete outputs against actual base adapter on fully qualified controlled fixtures; do not merely mirror algorithms. Preserve focused existing collector tests. No live provider calls or broad unrelated suite. Tests can be new; parent will wire exact CI paths. Do not modify CI.",
+        "active_fences": "Other active workers own Yahoo collector/store/profile, sector cycles/hazard, engine/baskets/theme_context, theme_scoring/narrative_rotation/group_flow, build_site/action_board, publisher/orchestrator, API, deployment and Terminal. Do not edit those. Do not alter scripts.collect registry or US hooks; parent will fence old writers once this acquisition and runtime integration are accepted. Do not change config.yml. No new registry/scheduler/publication/transport/identity/state owner.",
+        "runtime_evidence": "Read-only VPS evidence2026-11-06T02:36:18Z found breadth412x519 tipNov4/498non-null, smallcap777x635 tipNov4/598, midcap777x420 tipNov4/401, extras964x692 tipNov4/615; served Brief stillNov3. Individual stable files are NOT a coherent accepted snapshot and non-null counts are NOT active-cohort denominators. Do not treat this as unique cause proof.",
+        "acceptance": "Use one isolated managed source workspace. Locally commit qualified changes and return immutable base/head/tree/workspace/file list, exact API/dataclass contracts and test receipts. No push/PR/merge/deploy/service activation/Slack/email. Parent integrates into original10780, captures/coherently publishes runtime snapshots and separately proves source-to-screen advancement. Rollback keeps runtime ownership and selects last accepted generation; never re-enable legacy writer after transfer."
+      },
+      "observed_status": {
+        "state": "CONTROLLER_CREATED",
+        "worker_start_proven": false
+      },
+      "parent_disposition": "ORIGINAL_EFFECT_RETAINED_NO_REPLAY"
+    },
+    {
+      "name": "ci-contract",
+      "run_id": "macro-always-on-20261106-c3-ci-contract-01",
+      "work_packet": {
+        "objective": "Repair the current exact-head contract-delta integration failure on PR10780 without weakening gates, budgets, existing test commands or source behavior.",
+        "identity": {
+          "repository": "mastermindx-market-intelligence/macro",
+          "base_sha": "38f2441def30f02cf2accf9ddfbaee334d86e1b5",
+          "protected_law_repository": "mastermindx-market-intelligence/Mastermind",
+          "protected_law_sha": "49c2e1d93e5e080b1671c98087a845e5beb09dd5",
+          "mission": "https://github.com/mastermindx-market-intelligence/macro/issues/10779",
+          "job": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/42149260772/job/127671170127"
+        },
+        "scope": [
+          ".github/ci/legacy-jobs.yml",
+          "tests/test_ci_pack.py only CURATED_EXCLUSIVE addition and exact job presence assertions if needed"
+        ],
+        "defect": "Current hosted contract-delta reports6 introduced0 inherited at tested baseb6743c6087eae3ac142277783d02318c12b77da1: helperlib/sector_action_preview.py absent from leadership-rotation-countercases, options-r1-rotation-relative-trend and options-r1-sector-holdings-coverage declared paths; three ordinary probes increase exactly3 weight-seconds with no new jobs after the extra native-view step was inserted in broadly selected tier-gate. templates/index5915vs5912,build_free_content5930vs5927,prophet/plan_book5671vs5668.",
+        "implementation": "Extract ONLY the new two-line step named 'native Sector view preserves source dates and tier isolation' invoking 'python -m pytest tests/test_sector_native_view.py -q' from tier-gate into one new logical gate: code, scope: exclusive job named sector-native-view-contracts. Keep tier-gate gate:data, install line, all incumbent steps byte-for-byte. New job explicitly supplies Python3.12, pytest and Node20 because suite executes actual shipped Brief JS without skip. Keep assertions unchanged. Add new job to existing CURATED_EXCLUSIVE. Addlib/sector_action_preview.py path to the three reported existing jobs.",
+        "trigger_seed": [
+          "tests/test_sector_native_view.py",
+          "tests/__init__.py",
+          "engine/sector_native_view.py",
+          "engine/__init__.py",
+          "lib/sector_action_preview.py",
+          "lib/__init__.py",
+          "templates/_sector_central_brief.js.j2"
+        ],
+        "validation": "Use canonical closure census to widen this exact new job if concrete imports require it; don't invent selectors or bypass census. Run32 native view tests with Node parity execution, tests/test_ci_trigger_closure.py and relevant CI packing/exclusive tests plus actual scripts/check_contract_delta.py against exact tested base if available or prove base missing and run against38f. Show ordinary probe measurements restored to ceilings and a touch to native module/template/helper selects the new suite. No increased PACKING_PROBES ceilings, weights, no skips or removal of required suites. Parent independently verifies integrated manifest.",
+        "fences": "Own isolated managed workspace. No edits to engines/helper/tests/test_sector_native_view.py or other source/data/deploy files, no other PR or source carrier mutations. Original PR10759 owns copy repair; don't duplicate it. API worker new suite exists only in separate unintegratedartifact, do not wire/alter it here. No push/PR/merge/deploy/Slack/email. Locally commit bounded repair and return immutable base/head/tree/workspace/files plus exact test receipts. Original10780 parent owns integration."
+      },
+      "observed_status": {
+        "state": "CONTROLLER_CREATED",
+        "worker_start_proven": false
+      },
+      "parent_disposition": "ORIGINAL_EFFECT_RETAINED_NO_REPLAY"
+    },
+    {
+      "name": "sector-api-repair",
+      "run_id": "macro-always-on-20261106-c3-sector-api-repair-01",
+      "work_packet": {
+        "objective": "Repair three concrete parent-identified defects in the recovered, deliberately unwired Sector generation API adapter. Preserve existing auth, projection and publication owners.",
+        "identity": {
+          "repository": "mastermindx-market-intelligence/macro",
+          "base_sha": "38f2441def30f02cf2accf9ddfbaee334d86e1b5",
+          "protected_law_sha": "49c2e1d93e5e080b1671c98087a845e5beb09dd5",
+          "protected_law_repository": "mastermindx-market-intelligence/Mastermind",
+          "mission": "https://github.com/mastermindx-market-intelligence/macro/issues/10779",
+          "parent_run": "macro-always-on-20261106-c3-sector-api-01"
+        },
+        "candidate": {
+          "commit": "bd7c4437992cca7db8d9fbacbd9fcf532baa590e",
+          "parent": "bd11984e445209f79248951d773f2a4cdb3f18d1",
+          "tree": "080ee8733b98044c01adda6919c84d75774ed3a2",
+          "original_host": "m1",
+          "original_workspace": "/Volumes/STORAGE/agent-workspaces/claude/8ed429a11612cd7b/pr-10780-713c29b3e7c8eefe",
+          "m2_patch": "/tmp/mmx-always-on-sector-api-bd7c443.patch",
+          "patch_sha256": "19837828d575e201a1c90b540ac1f68e20107eafb82864ef42affd8b23e03c43",
+          "patch_bytes": 57708,
+          "posture": "Original run terminalrc0/rootverified; source reviewed but notaccepted/integrated. Read exact original artifact, do not mutate its worktree; own isolated managed workspace. If retrieval unavailable report exact blocker, don't recreate from prose."
+        },
+        "scope": [
+          "app/sector_generation.py",
+          "tests/test_sector_generation_api.py",
+          "docs/SECTOR_GENERATION_API_CONTRACT.md"
+        ],
+        "changes": [
+          "Add /basketdata/action_board.json to fixed PREVIEW_RESOURCES, inherited by ENTITLED_RESOURCES. It is a real source of both native projections. Current identical defaultpremium classification is not evidence of exploit, but missing explicit gate must not bypass future action-board policy. Test independent canonical expected set plus real incumbent temporary policy denying only actionboard and early-enforced actionboard with PAYWALL_ENABLED0, both audiences denied before reader. Keep preview excluding premiumdata.",
+          "Align transport fields with actual engine/sector_native_view.py at38f: qualification exactly accepted/stale/degraded, valid ISOsource date, timezone-aware fully valid published_at. Require outer metadata equals projection.receipt values at adapter or narrow envelope boundary; no independent freshness/clock derivation. Preserve declared older Brief baseline distinct from core source_session. Update docs/fixtures which currently recommend current/closed/unavailable. Use real projection fixtures for accepted/stale/degraded, same-session changed authorized content identity and olderbaseline.",
+          "Close resolution/coercion/serialization exception boundary: properties/Mappingmaterialization/unusable reader/RecursionError must yield existing small closed503 with private,no-store/VaryCookie, no internals. Log exception classonly. Correct shallow dictcopy comment. Keep missing/corrupt reader nolegacyfallback. Do not add independent state/verifier/cache/policy."
+        ],
+        "tests": "Rerun all original31 transport tests and actual incumbent auth focused suites as necessary; add discriminating missing-resource/receipt/error controls described above. Real gates can stub identity/entitlement lookups as existing fixtures, but never claim productioncookie/Supabaseproof. Show fixes fail on unmodified candidate. No live providercalls. Do not edit existing authtests/gates or engineprojection. Newtestsremainunwired parentCIintegrationresponsibility.",
+        "fences": "Keep app.main router wiring untouched; parent must bind actual publisherverifiedread and projection first. No readerimplementation, manifestparser, filesystem selection, BFF/nativeUI/publisher/deploy/workflow/config/otheractivefiles. No push/PR/merge/deploy/Slack/email. Do not introduce alternate authentication or inspect credentials. Existing gate internal failures may map tolocked; preserve that verdict instead of inventing new lookup.",
+        "return": "Locally commit qualified source and return immutable base/head/tree/workspace/file list, exact tests and residual integrationlimits. Parent retains originalPR10780 and calls corrected reader once per request after auth. This source result is not productionacceptance."
+      },
+      "observed_status": {
+        "state": "CONTROLLER_CREATED",
+        "worker_start_proven": false
+      },
+      "parent_disposition": "REPAIR_OF_REVIEWED_TERMINAL_SOURCE_NO_ACTIVATION"
+    },
+    {
+      "name": "terminal-native-repair",
+      "run_id": "macro-always-on-20261106-c3-terminal-native-repair-01",
+      "work_packet": {
+        "objective": "Repair the returned native Sector candidate's concrete decoder and owner/timeout defects and add the pure adapter for the actual published Macro HTTP envelope. This is source implementation, not review/release or production binding.",
+        "identity": {
+          "repository": "mastermindx-market-intelligence/mastermind-terminal",
+          "base_sha": "b441a9b2c7225df30161ce347c2d069e046cf3c6",
+          "base_tree": "fb36b6304ceb8273aea9866567dfbd6daccae49e",
+          "original_base": "847af34df5f811fa4a9152936e42d199b8a45b08",
+          "macro_contract_commit": "38f2441def30f02cf2accf9ddfbaee334d86e1b5",
+          "macro_api_commit": "3de008a43b17811cb048b1f0f65e145e8bb2cd6f",
+          "protected_law_repository": "mastermindx-market-intelligence/Mastermind",
+          "protected_law_sha": "49c2e1d93e5e080b1671c98087a845e5beb09dd5",
+          "mission": "https://github.com/mastermindx-market-intelligence/macro/issues/10779"
+        },
+        "custody": "Original terminal-native-01 returned rc0 and is immutable/read-only. Source /home/ubuntu2/lanes/repos/mastermind-terminal/.claude/worktrees/sector-native-view-brief-20261105; artifacts /home/ubuntu2/lanes/artifacts/sector-native-view-brief-20261105. Exact cumulative patch on M2 /tmp/mmx-terminal-native-b441a9b.patch147022bytes SHAce02b1f1ba339fb2642c360a58779740f93b69ffddbd3773179a5d969774bab0. Use AUTO routing and one new isolated managed workspace from b441 through incumbent custody. Do not modify original/frozen PR1311 or PR1285 or parentMacro workspace. No host/model override, no replay of originalrun.",
+        "write_scope": [
+          "terminal/lib/sectorNativeView.ts",
+          "terminal/components/sector-intelligence/SectorIntelligenceWorkspace.tsx",
+          "terminal/components/sector-intelligence/SectorNativeActionBoard.tsx (safe existing destination handling only)",
+          "terminal/lib/sectorIntelligenceLex.ts",
+          "terminal/app/dev/sector-native/page.tsx",
+          "terminal/lib/__tests__/sectorNativeView.test.ts",
+          "terminal/lib/__tests__/sectorNativeWorkspace.test.tsx",
+          "terminal/lib/__tests__/sectorNativeBrief.test.tsx",
+          "terminal/e2e/fixtures/sector-native-view.ts",
+          "terminal/e2e/sector-native-view.spec.ts"
+        ],
+        "repairs": [
+          "Keep raw projection decoder; add pure decodeSectorGenerationRead(input:unknown,expectedAudience:SectorNativeAudience):SectorNativeDecodeResult. Read exact Macro app/sector_generation.py/docs/SECTOR_GENERATION_API_CONTRACT.md/tests at3de (API source SHA2562d4ab955995df5db259ee8ebd3496553cbedb14223919537ba385080ad41d36c). Success outer schema sector_generation.read/v1, audience,source_session,published_at,qualification and nested projection{data,receipt}; validate expected audience and projection.data.audience, exact3outer/innerreceiptfacts; reject error/raw/malformed/wrongaudience envelope whole. Preserve olderBriefbaseline. Injected reader now returns HTTP shape; harness wraps unchanged literalproducer fixtures, not protocol guessing. NO fetch/endpoint/BFF/auth/cache/manifestreader.",
+          "Replace optional reader-only injection with explicit optional nativeBinding{readonly key:string,readonly audience:SectorNativeAudience,readonly read:SectorNativeReader}. Owner includes existing shellidentity/revision/activefeeds and stable bindingkey+audience. Sameaccount bindingkey/audience change immediately hidesolddata/cancelsread; lateentitledresult cannotrestorepreview. Ref latestreadclosure so unchangedsemanticbinding/newclosure doesn'trestart. Missing/invalidbindingfailclosed, unboundno native request. No extraauthsubscription.",
+          "10s native timeout currently only aborts signal, leaves nativePending forever for noncooperativepromise. Race owner-controlleddeadline/cancellationsettlement withread; timeout releases slot, followsfailureclearpolicy, nexteligiblecyclecanstart. Guard queuedupdates withowner ANDattemptidentity; late resolve/reject cannotmutate newerstate orclearnewerattempt orcauseunhandledrejection. Clear timers/listeners onsettle/dispose; ownerexit immediatecancel. RetainONEexisting60sforegound/visibilityresumeeffect, coalescing, nohiddeninterval/newpoller orlegacyfeedchanges.",
+          "Publication time regex currently admits impossibledate/time and rejects producerallowedspace separator. Validate realcalendar,time,awareoffset; acceptordinaryT/space awareforms supportedby pinnedAPI, preserveoriginaltext, discloseanyremainingparsermismatch. Enforce previewcap0..100 BOTH exact/lowerboundinference branches; reject101, preserve0/100/sharedholdavoid. finite safeintegercounts,10krows/lane,1kgroups,exact21points, sixlanes/count equality remain. No truncationrepair ofmalformedinput.",
+          "readSafeHref currently accepts whitespace-prefixedprotocolrelative external (' //outside.example/page.html'). Reject whitespace/controlprefixes and validateparsedURLsemantics, preservevalidrelativeownerpages, omitbadlinkwithoutrowloss. Render via incumbentresolveSharedShellLink/catalog; no newroutecatalog, unknownpaths mustnotappearworking. Change siNativeBaselineCurrent EN 'Same as source session', ZH '\u4e0e\u6765\u6e90\u4ea4\u6613\u65e5\u76f8\u540c'. Nullbaseline equality\u2260freshmarket."
+        ],
+        "preserve": "Singleatomicdata+receiptadoption; samehash/newreceiptqualificationsupdates; acceptedrollbackolderdate/opaqueid; accepted|stale|degraded comesfromservernotpolltime; failureclearsprivilegeddata withoutindependentlegacyfallback; contenthashformatchecknotcryptographicverification. Preserve Rotation/Discover/Breadth, researchdepth, sourcepanel, BackForward, selection/scroll/focus, ENZH, themeskeyboardand3viewports. Literal capturedproducer preview/entitled/olderbaselinefixtures unchangedexceptwrappers. NoCSSredesign/dependency/package/lockfile/CI/globalshellchange. DevharnessproductionnotFound guard stays, fixtureevidence\u2260production404proof.",
+        "tests": "Regression againstunmodifiedb441: real3dewrapper success, raw/error/wrongschema/facts/audiencefail; bindingA\u2192B/entitled\u2192preview sameaccount immediatehideandlateisolation; closureidentitynostart; noncooperativepromisetimeoutthennewrefreshlatefulfill/rejectsafe; impossible/leapdates/times/offsets/naive+validawareforms; preview101bothbranches reject,0/100budgetpass; unsafehrefprefixreject,actualcatalogownerlinkpreserveunknownomitted. Original atomicadoption/stale/olderbaseline/samehash/rollback/hiddenresume/unbound/nav testsretain. Run3native suites+relevantincumbentrefresh/depth/exposure/discovery, existingtsc/lint, focusedlocalbrowser proof ENZH lightdark responsive. Do not rerunwhole18875estatewithoutconcreteneed orweakenassertions. Recordexisting2fulltree inheritedfailuresseparately.",
+        "return_contract": "Localcommitonly exactbase/head/tree/workspacechangedfilescleanstatus; repaironlyb441..head ANDcumulative847..headpatches withbytesSHA256, actualcommands/results/discriminatingbaselineevidence/screenshots/prooflimits. Scope stillunboundnativefoundation; parentownsBFF/runtimefreshness/corehistory/Watches/beta/fullestate.",
+        "exclusions": "No terminal/app/api/** or existingBFFPR1285handler/upstreams/auth, noPR1311workspace/branch, nofetch/config/transportbinding, noqueue/deploy/providers/liveproductionrequests/Slack/email/childfanout. No push/PR/merge. On custodyconflict/explicitdenial/missingimmutableinput/outofscopeneed reportexactblocker retainoriginaleffect; no carrier/host/model replay."
+      },
+      "observed_status": {
+        "state": "VERIFIED_TERMINAL",
+        "controller_pid": 2113,
+        "worker_start_proven": false,
+        "rc": 1,
+        "root_verified": true,
+        "reason": "provider_rate_limit",
+        "signal": "quota",
+        "result_consumption_authorized": false,
+        "retry_authorized": false,
+        "owned_remote_process": {
+          "pid": 2573796,
+          "pgid": 2573796,
+          "started_at": "2026-11-06T04:31:01.947Z",
+          "ended_at": "2026-11-06T04:58:02.295Z",
+          "cleanup_identity_verified": true,
+          "cleanup_census_proven": true,
+          "cleanup_residual_count": 0,
+          "cleanup_status": "not_needed",
+          "cleanup_reason": "normal_completion"
+        },
+        "qualified_candidate_proven": false
+      },
+      "parent_disposition": "ORIGINAL_PROCESS_EFFECT_RECONCILED_NO_RESULT_CONSUMPTION_OR_RETRY_PRIVATE_SOURCE_NOT_ADOPTED_PARENT_RESERVED_SOURCE_RECOVERY"
+    },
+    {
+      "name": "source-barrier-repair",
+      "run_id": "macro-always-on-20261106-c3-source-barrier-repair-01",
+      "work_packet": {
+        "objective": "Repair the retained, unaccepted source-barrier candidate under the existing Macro updater and three live service owners. Implement crash-safe source admission, loaded-unit recovery, and per-timer activity preservation; do not activate anything.",
+        "identity": {
+          "repository": "mastermindx-market-intelligence/macro",
+          "base_sha": "57f6bff220a71f3c2376d394bceff45131addc1d",
+          "candidate_base": "bd11984e445209f79248951d773f2a4cdb3f18d1",
+          "protected_law_repository": "mastermindx-market-intelligence/Mastermind",
+          "protected_law_sha": "49c2e1d93e5e080b1671c98087a845e5beb09dd5",
+          "mission": "https://github.com/mastermindx-market-intelligence/macro/issues/10779"
+        },
+        "custody": "This is a new bounded repair after parent reconciliation, not replay/resume of timed-out source-barrier-01. That original run ended rc124 at04:07:50Z; owned ubuntu1 PID/session594209 cleanup identity+census proven, residual0. Exact private workspace remains untouched at bd11984e, branch lane/macro-always-on-20261106-c3-source-barrier-01. Original 4-file partial diff and separate untracked test have verified immutable content. No successful worker return/acceptance claimed. Use AUTO routing, one new isolated managed workspace. Parent canonical PR10780 workspace is reserved; never edit it. No host/model override. If 57f source unavailable, exact published3de008a43b17811cb048b1f0f65e145e8bb2cd6f is permitted as isolated repair base ONLY after verifying the five scope paths match; report actual base. Parent will integrate. Never mutate original private carrier.",
+        "inputs": {
+          "patch": "/tmp/mmx-source-barrier-candidate-20261106.patch on M2, 23980 bytes SHA256 bae0e2feb320084815dd707b635397e55e301014355743acd746fc9e733d1aba; remote /home/longr/lanes/tmp/macro-always-on-20261106-c3-source-barrier-01/candidate.diff",
+          "test": "/tmp/mmx-source-barrier-test-20261106.py on M2, 42687 bytes SHA256 62e226c221771191096b635dcd9f6f7e3c0ce0fc1d20f401c7ad81c7d8f0b05a; remote /home/longr/lanes/macro-always-on-20261106-c3-source-barrier-01/wt/tests/test_macro_live_source_barrier.py. Diff omits this untracked file.",
+          "findings": "Shared nonblocking flock before Python and exclusive updater mutation lock are useful. Current defects: failed daemon-reload leaves matching installed files so no unchanged-tick retry; invalid staging/verify still resets checkout and exits0; failed reset can leave mixed source after lock release; first-install pauses cron but not existing updater; timer restart starts all3 then asks to stop unadmitted ones. Retained31 tests pass but omit these failures. Retained affected suite2354 pass/1 fail test_market_memory_options_deploy::test_legacy_api_dropin_migration_is_exact_and_fail_closed; log wrapper exit0 does NOT prove pytest green. Static source shows no direct candidate change causing it, but baseline not proven."
+        },
+        "write_scope": [
+          "app/deploy/update.sh",
+          "app/deploy/macro-live-fast.service",
+          "app/deploy/macro-live-snapshot.service",
+          "app/deploy/macro-live-bars.service",
+          "tests/test_macro_live_source_barrier.py",
+          "research/market_os/LIVE_SOURCE_BARRIER_RECOVERY_2026-11-06.md (source contract and exact proof only)"
+        ],
+        "design": [
+          "Keep existing updater fd9 /var/lock/macro-update.lock and one new narrow shared/exclusive source barrier /var/lock/macro-live-source.lock. Never unlink lock. Fetch/candidate staging/verify outside source lock. This covers only3 short-lived live-orchestrator services, not estate-wide source safety.",
+          "Use one fixed persistent updater-owned pending transaction record under EXISTING /var/lib/macro-live/state, e.g. source-update.pending. This is source-deploy recovery under incumbent updater, no new scheduler/watcher/control owner. Record schema, exact target SHA, prior SHA, per-timer enabled+active state; no TTL/expiry unlock. Durably write temp+file fsync+same-directory rename+parent fsync BEFORE reset. Leave record after any failure; success must make repaired source/unit state durable before removing record and fsync parent, all under exclusive source lock.",
+          "Reader order installed unit: shared flock -> fail-closed pending/state-directory check -> exec Python, lock held throughout. Gate must be inline stable shell or already-installed stable helper OUTSIDE mutable checkout; do not import any /opt/macro Python or source helper to decide source safety. Missing/inaccessible/unexpected state directory, dangling symlink or present/malformed pending path defers/fails closed. Bare test ! -e is insufficient. No fake task/publication/freshness receipt on deferral. Preserve real process failure classification;75 remains intentional defer.",
+          "EARLY RECOVERY in installed /usr/local/bin/macro-update immediately after stable init/fd9, BEFORE source of market-memory-options-unit-boundary.sh/runtime-fence.sh/dropin-migration.sh or any repository import. Parse pending as data using stable host facilities, never shell source. Recover ORIGINAL exact recorded target from local git objects BEFORE any fetch/newmain; no network while source lock held. Acquire exclusive nonblocking. Reset exact SHA and verify working source coherence, not HEAD equality alone. Then use existing trusted source helper and unit installer. Pending path must run even HEAD==target/all files match. Invalid pending/target missing/qualification failure retains fence and returns distinct failure; no ordinary fallthrough against damagedsource.",
+          "Stage/verify candidate covered units before source mutation. Invalid or incomplete staging when change/repair required leaves old coherent source, installed/loaded units and readers untouched, documented non-success. With pending recovery, failures keep existing fence. Reuse existing mm_reviewed_unit_file_ready/mm_loaded_unit_ready in app/deploy/market-memory-options-unit-boundary.sh where contract fits: file bytes/ownership/mode/FragmentPath/no dropins/NeedDaemonReload=no. No second attestation implementation. Loaded-manager drift must trigger reload/retry even when installed files match. Later updater reload blocks cannot accidentally admit readers while pending.",
+          "Capture each covered timer's enabled AND active state independently; no blanket fast-enabled means restartall. Never change enablement in ordinary reconciliation. Enabled-but-stopped stays stopped, disabled-but-active not enabled, masked stays masked. Resume only activity legitimately paused; after crash reobserve restrictions so old record does not override a later operator mask/disable. First-install procedure pauses future cron AND settles existing updater, pauses intendedtimers, drains oldunwrappedservice MainPID/ControlPID, installs+attests wrappers, resumes only recorded/permittedstate. Source package alone is not activation.",
+          "Keep actual incumbent updater checkout/site/mirror/API/options behavior outside source transaction. Deferred read lock must preserve real OLD/NEW/CHANGED truth; do not claim candidatecommit applied when no reset. No unrelated API/dropin repair unless exact failure proven introduced; otherwise report base classification. No weakening test/release fences."
+        ],
+        "tests": "Focused real git/tempdir/subprocess tests, use existing stubs plus new failure injection: partial reset AFTER a source file changes cannot allow next reader to import mixed code; terminate updater after durablepending before/duringreset and recover originaltarget without GitHub; reset succeeds/installfails -> pending and no-change recovery; install succeeds/reloadfails -> retry attestation whenfilesmatch; durable removal onlyaftercoherence; invalidcandidate leavesoldHEAD/loadedstate and oldreaders running; earlyrecovery before mutablehelper sourcing; all3timerstates includingenabledstopped/masked/disabledactive; existing basic lock/contention/failuretests preserved. Retained tests' expectations that invalidcandidate stilladvances or partialfailureunlock meanssafe must be corrected to strongeractualcontract, not assertions removed. Run focused suite and exact options failing test; baseline discriminate that failure in sameconditions. Do not rerun2354estate withoutnewconcreterisk. No provider/runtime commands.",
+        "return_contract": "Local commit only, exact base/head/tree/workspace/changedfiles; cumulative source patch including recoveredtest and repair-only comparison ifpossible, bytecounts SHA256; actual tests/logs and honest baseline failures; docs first-install activation steps with explicitremaining other-service coverage. No activation claim.",
+        "exclusions": "No canonical parent edits, no original private workspace changes, no unrelatedunits/timers/config/profile/CI/package/credentials, no live systemctl/cron/provider/production writes, no publish/push/PR/merge/deploy/Slack/email/childfanout. On denial/custody uncertainty/out-of-scope requirement report exact blocker, preserve original effect, no carrier/model/host replay."
+      },
+      "observed_status": {
+        "controller_pid": 17817,
+        "state": "VERIFIED_TERMINAL",
+        "rc": 1,
+        "root_verified": true,
+        "reason": "provider_rate_limit",
+        "signal": "quota",
+        "result_consumption_authorized": false,
+        "retry_authorized": false,
+        "owned_remote_process": {
+          "pid": 2582814,
+          "pgid": 2582814,
+          "started_at": "2026-11-06T04:36:06.622Z",
+          "ended_at": "2026-11-06T04:55:01.781Z",
+          "cleanup_identity_verified": true,
+          "cleanup_census_proven": true,
+          "cleanup_residual_count": 0,
+          "cleanup_status": "not_needed",
+          "cleanup_reason": "normal_completion"
+        },
+        "qualified_candidate_proven": false
+      },
+      "parent_disposition": "ORIGINAL_PROCESS_EFFECT_RECONCILED_NO_RESULT_CONSUMPTION_OR_RETRY_PRIVATE_SOURCE_NOT_ADOPTED_PARENT_RESERVED_SOURCE_RECOVERY"
+    },
+    {
+      "name": "generation-reader",
+      "run_id": "macro-always-on-20261106-c3-generation-reader-01",
+      "work_packet": {
+        "objective": "Implement the concrete, stateless bridge from the existing verified Sector generation reader to the published private Sector API, including native freshness qualification and a shared full-response encoder. Keep production binding inactive. Reuse existing publication, calendar, freshness and authorization owners.",
+        "identity": {
+          "repository": "mastermindx-market-intelligence/macro",
+          "base_sha": "57f6bff220a71f3c2376d394bceff45131addc1d",
+          "publisher_sha": "a2f4cf382f3368381872d6d068acf4caa4c6b8ca",
+          "api_sha": "3de008a43b17811cb048b1f0f65e145e8bb2cd6f",
+          "protected_law_repository": "mastermindx-market-intelligence/Mastermind",
+          "protected_law_sha": "49c2e1d93e5e080b1671c98087a845e5beb09dd5",
+          "mission": "https://github.com/mastermindx-market-intelligence/macro/issues/10779"
+        },
+        "custody": "AUTO routing; one new isolated managed workspace at published57f. Parent canonical PR10780 workspace is reserved for cycle/acquisition integration. Source-barrier repair and native Terminal repair have separate active scopes; do not overlap. No child fan-out, host/model override, or changes to live deployment.",
+        "write_scope": [
+          "app/sector_generation_reader.py (new stateless adapter)",
+          "app/sector_generation.py (reuse shared response encoding only; preserve all authorization and failure behavior)",
+          "lib/sector_generation_wire.py (new import-light encoder, no HTTP/auth/storage state)",
+          "scripts/check_sector_intelligence_freshness.py (add native captured-member qualification in existing owner; preserve legacy evaluate)",
+          "tests/test_sector_generation_api.py",
+          "tests/test_sector_generation_reader.py (new)",
+          "tests/test_sector_intelligence_freshness.py (only relevant native cases if this is actual incumbent test path)",
+          "docs/SECTOR_GENERATION_API_CONTRACT.md",
+          "research/market_os/SECTOR_GENERATION_READER_CONTRACT_2026-11-06.md"
+        ],
+        "reader": "Implement SectorSelectedGenerationReader with explicit generations_root, domain, aware clock and preview_rows=3, plus test-injectable read_snapshot. Its read_selected_generation(request) calls scripts.vps_live_orchestrator.read_selected_generation(generations_root=...,domain=...,members=...) EXACTLY ONCE for the fixed five output members: sectordata/sector_central.json, sectordata/sector_cycles.json, basketdata/baskets.json, basketdata/si_handoff.json, basketdata/action_board.json. Decode only returned verified bytes. Never reopen paths/current.json, consult site/site.served/Git/R2, mkdir, lock, select or fallback. No raw historical input members in this API-facing set. Return existing SectorGeneration via canonical project_sector_view and SectorViewReceipt. Request contains only closed audience. Existing API authorizes all required resources before reader call.",
+        "identity_contract": "Define one small Sector-specific contract within existing generic manifest.input_identity: sector_view={schema:'sector.view_inputs.v1',source_session:'YYYY-MM-DD',input_version:'approved opaque version',baseline_session:null|date,source_qualification:'accepted'|'stale'|'degraded'}. Validate exact known shape/real dates/nonblank bounded opaque version and qualified enums; reject absent/malformed identity. It is bound by existing publisher content identity. Do not infer version from private hashes, infer baseline from oldest file, or claim equal dates prove calculation provenance. Preserve private dependency identities. Public generation_id=snapshot.generation_id; published_at=snapshot.published_at ORIGINAL manifest clock, never selected_at; source/baseline/version from this validated identity; current qualification from same captured native inputs and one captured now. Do not expose content_id, manifest, generation_dir or private hashes.",
+        "freshness": "Add a narrow entry in existing check_sector_intelligence_freshness owner for five captured bytes plus typed identity and explicit aware now. Validate finite JSON objects, central/cycles source date, baskets/handoff/action_board explicitly declared baseline (null means source), and action_board.baskets_sha256 against the EXACT captured basket bytes. Use canonical projector validation rather than duplicate its field policy. Structural/hash/schema contradictions are unavailable/503, not degraded. Valid retained source can age to stale/degraded on read without republish; preserve source and publication clocks. Reuse existing expected_last_session(now) completed daily-bar/settlement policy and calendar verdict discipline; nyse_calendar.session_date can be developing and cannot bless a completed daily bar. Preserve incumbent one-session gate/alert budget, distinguish breach from calendar uncertainty, qualify source and baseline separately. No invented HTML/premium input to call legacy evaluate, no HTTP success/liveness status as freshness. If pure no-I/O evaluation requires a supplied existing-owner calendar result, make that capture explicit and document it; no new calendar or fallback.",
+        "wire": "Extract existing 3de success envelope construction/finite UTF-8 JSON encoding into lib/sector_generation_wire.py, shared by API and future producer qualification. Same sector_generation.read/v1 schema, outer/inner three facts and audience checks, exact full encoded response ceiling4MiB, private failure boundary unchanged. Add an explicit helper which qualifies/project-encodes BOTH preview and entitled from the same five captured inputs and planned public receipt, so the future producer can call it before selection. Do not alter generic publisher. It validates an in-memory candidate set; metadata must conservatively cover timestamp/generation/qualification widths or require exact immutable receipt and document reuse/rollback preflight obligations. No artificial truncation or limit increase.",
+        "mounting": "Do not edit app/main.py, runtime config or systemd in this slice. Return the exact constructor/startup binding needed by parent. With no configured root/domain, the current API remains unbound. Root source facts: macro-api.service documents root and has no User=; no demonstrated permission defect. API read-only namespace access will be provisioned by existing deployment owner, not guessed by this adapter. No BFF changes; TerminalPR1285 retains transport/auth ownership.",
+        "tests": "Real temporary generation fixture through the ACTUAL existing publisher and read facade, captured action-board hash binding and canonical projector. Verify one pointer capture across selection change, no independent file reads/fallback, rollback preserves old published_at, audience projection isolation, same visible hash/new receipt changes, missing/wrong identity, invalid/NaN/oversized JSON, all source/baseline/hash contradictions, stopped source ages according to existing completed-session policy, valid older baseline disclosed, developing/future sessions and calendar uncertainty closed honestly. API existing84 combined tests must preserve authorization-before-reader, all five resource gates, paid extra gate, chunked cookie handling and safe503. Full-response near-boundary tests must distinguish a projector-sized success from wrapper-over-limit; both audiences preflighted. Use existing dependencies and focused suites, no whole estate run or CI edits. Capture actual commands/results and exact baseline failures separately.",
+        "return_contract": "Local commit only with exact base/head/tree/workspace/changed files; patch bytes/SHA256; actual focused tests and real temporary generation proof; API/qualifier contract and remaining producer/startup/BFF/beta obligations. Source fixture proof is not runtime activation or authenticated beta acceptance.",
+        "exclusions": "No canonical parent workspace or foreign writer edits, no generic publisher changes, no source collection/producer activation, no new scheduler/watcher/auth/data/publication owner, no private store writes from API, no app/main/config/systemd/CI/package edits, no provider/production commands, no push/PR/merge/deploy/Slack/email. If exact source requires outside-scope changes or a gate refuses, stop that action and report concrete evidence without replay/alternate carrier."
+      },
+      "observed_status": {
+        "controller_pid": 49388,
+        "state": "REQUEST_REFUSED_BEFORE_LAUNCH",
+        "controller_exit": 75,
+        "root_verified": false,
+        "worker_start_proven": false,
+        "acceptance_reason": "EXECUTION_NOT_ELIGIBLE",
+        "result_read_reason": "ROOT_UNVERIFIED",
+        "nested_execution_absence_proven": true,
+        "outer_execution_absence_proven": false
+      },
+      "parent_disposition": "RESULT_CONSUMPTION_STOPPED_NO_RETRY_NO_PRIVATE_EFFECT_ABSENCE_CLAIM_PARENT_RESERVED_SOURCE_RECOVERY",
+      "parent_source_checkpoint": {
+        "base_sha": "b5437f84eacb8681056f9b1c9a924a22cad3bf6c",
+        "state": "PARENT_INTEGRATED_VERIFIED_NOT_ACTIVATED",
+        "contract": "research/market_os/SECTOR_GENERATION_READER_CONTRACT_2026-11-06.md",
+        "proof": {
+          "command": "python -m pytest -q tests/test_sector_generation_reader.py tests/test_sector_generation_api.py tests/test_sector_native_view.py tests/test_sector_intelligence_page.py tests/test_vps_live_orchestration.py -k \"generation or sector_native_view or semantic_freshness\"",
+          "passed": 222,
+          "deselected": 143,
+          "warnings": 70,
+          "exit_code": 0,
+          "log": "/tmp/mmx-generation-reader-final-20261106.log",
+          "log_sha256": "5225e163ad4f11ffc58d89fee967400834c40097c200b294c46b66df7542d46b",
+          "scope": "Actual temporary publisher, one verified snapshot, canonical projection and gated HTTP path; not production or authenticated beta."
+        },
+        "parent_corrections": [
+          "Implemented reserved source independently after prelaunch refusal; no failed private worker result adopted.",
+          "Shared finite whole-envelope 4 MiB encoder and both-audience preflight with maximum receipt widths.",
+          "Optional final bundle callback in incumbent publisher receives actual new or retained original publication receipt, separate current admission clock, detached target identity and verified bytes; staged and retained state reverified after callback. Narrow parent scope extension required by concrete actual-clock and retained-reuse counterexamples.",
+          "Reader qualifies source and explicit baseline at original publication and read time; future/non-session and unverifiable calendar refuse; developing-at-publication never matures merely with time; source qualification never upgraded.",
+          "Shared Sector freshness uses incumbent published US market_session calendar with complete relevant year verification and unchanged one-session budget; historical nyse_calendar source unchanged.",
+          "Existing authorization, private errors/headers, source identity, prior-selection preservation, and direct generic publisher behavior without callback retained."
+        ],
+        "remaining": [
+          "qualified live producer",
+          "private production root and existing app startup mounting",
+          "full coherent core/history projection",
+          "Terminal BFF and real Discover native binding",
+          "CI registration capability policy gate",
+          "protected merge/deploy and authenticated source-to-screen proof"
+        ]
+      }
+    }
+  ],
+  "additional_reconciliation": {
+    "cohort": {
+      "run_id": "macro-always-on-20261106-c3-cohort-input-01",
+      "state": "TERMINAL",
+      "rc": 1,
+      "response_sha256": "986bdf6a2390694b8ae63ab0a7acfbcd6bc845f4cad56c1fc096bd645091f816",
+      "commit": "379a75f9849a4f8644643441a1ddd56eea48bd1e",
+      "patch_sha256": "5be57d21fb3ebf2d3302a5328a35ed00b0731cab54ebb2753175967227e4501e",
+      "accepted": false,
+      "ruling": "Provider terminal error does not erase the recovered immutable artifact, but worker prose is not acceptance. Parent reviews actual source/proof before any integration.",
+      "parent_source_checkpoint": {
+        "base_sha": "d9236cdb6a8c64e4543cf93d2f537b7b11400812",
+        "state": "PARENT_INTEGRATED_VERIFIED_NOT_ACTIVATED",
+        "contract": "research/market_os/SECTOR_YAHOO_COHORT_ACQUISITION_2026-11-06.md",
+        "proof": {
+          "command": "python -m pytest -q tests/test_yahoo_cycle_acquisition.py tests/test_yahoo_runtime_profile.py tests/test_store_guard.py tests/test_store_holiday_retention.py tests/test_yahoo_availability_capture.py tests/test_yahoo_universe_backfill.py tests/test_yahoo_freshness.py tests/test_collector_freshness_disclosure.py",
+          "passed": 291,
+          "skipped": 1,
+          "warnings": 14,
+          "exit_code": 0,
+          "log": "/tmp/mmx-cohort-parent-qualified-20261106.log",
+          "log_sha256": "025ae0732da02339a134449454d29348b3a33daa8ab29baa403438125bd09619",
+          "baseline_fixture": "tests/fixtures/base_store_d923.py",
+          "baseline_fixture_sha256": "1e98ed09c81a5f5d050d1bfa1834c39ac0a80a24fcad1c708cd97d1604f6401c",
+          "scope": "Controlled-provider acquisition and actual-base legacy merge/guard parity; no live-provider availability or runtime ownership proof."
+        },
+        "parent_corrections": [
+          "Single canonical14 authority; exact explicit prior mapping with None absence; malformed priors refused before provider.",
+          "Explicit configuration construction, detached primitive request policy, same retry/backoff across initial/recovery requests and receipt; no runtime WTI state mutation.",
+          "Same genuine dual-basis extractor, flat-response batch identity fence, original fresh-span retention, pure incumbent merge with explicit runtime overwrite and preserved legacy default.",
+          "One verified completed US target using existing 14:00/17:00 owner; both bases and all14 exact tips; one bounded max recovery, actual depth/archive qualification, never splice incompatible prior prefix.",
+          "Shared minimum1000 trading-session history validator in acquisition and verified binding; prior nonsession rows refused; historical fallback not relabeled published verified coverage.",
+          "Strict positive-price comparison uses true denominator; legacy numerical floor and wrapper behavior preserved by actual-base comparisons."
+        ],
+        "remaining": [
+          "store and engine snapshot binding before paths/caches",
+          "legacy fetch/write/retry exclusions",
+          "private coherent input publication/R2 and durable transfer/drain fences",
+          "broad/member/board producer assembly",
+          "protected CI/release and source-to-screen beta acceptance"
+        ]
+      }
+    },
+    "copy": {
+      "run_id": "macro-always-on-20261106-c3-ci-copy-01",
+      "commit": "b92ad6d2a6abf6db3c1c8a5446e42ed7f1208912",
+      "accepted": false,
+      "ruling": "DO_NOT_ADOPT_DUPLICATE. Original PR10759 belongs to RF under issuecomment6676754411; merge-on-green was removed, merge-blocked/main-red-repair retained. External local1859977f9f71f088f52caef81f29c1cd5bc796d0 is not parent-authored or adopted. Preserve original carrier and active RF custody; no rearm/push/reset."
+    },
+    "ci_policy_gate": {
+      "state": "ACTION_BLOCKED_NO_REPLAY",
+      "observation": "Studio start_process returned Command not allowed before process startup for counterfactual packing and attempted CI registration. No PID and exact targets unchanged. One bounded installed-owner diagnosis traced the message to commandManager.validateCommand false; the blocked token versus config exception is not established.",
+      "required_control": "Legitimate policy/session resolution by the capability owner before this action can be retried. No alternate carrier, allowlist change, shortened payload or hidden test-registration workaround.",
+      "source_targets_unchanged": [
+        ".github/ci/legacy-jobs.yml",
+        "tests/test_ci_pack.py"
+      ]
+    },
+    "runtime_read_write_binding": {
+      "base_sha": "2a946654f3f31cf38e5fdb90160656c6d02db6e9",
+      "state": "PARENT_INTEGRATED_VERIFIED_NOT_ACTIVATED",
+      "contract": "research/market_os/SECTOR_RUNTIME_BINDING_FENCES_2026-11-06.md",
+      "proof": {
+        "command": "python -m pytest -q tests/test_yahoo_runtime_profile.py tests/test_dual_basis_store.py tests/test_upsert_basis_guard.py tests/test_basket_index_recency_guard.py tests/test_yahoo_freshness.py tests/test_yahoo_availability_capture.py tests/test_yahoo_cycle_acquisition.py tests/test_collector_freshness_disclosure.py tests/test_circuit_breaker_recovery.py",
+        "passed": 283,
+        "warnings": 15,
+        "exit_code": 0,
+        "log": "/tmp/mmx-runtime-binding-final-20261106.log",
+        "log_sha256": "874e8be0d6c49bb87e4675f30974e1a4c7bd4dc10247c9d0c68dcf03a8268421"
+      },
+      "behavior": [
+        "One existing ContextVar permits explicit read-only shadow/runtime binding without global profile mutation.",
+        "Bound store and basket reads precede configuration/path/cache; unbound runtime reads refuse without fallback; engine.inputs inherits store basis behavior.",
+        "Upsert and legacy initial/rebase/Stooq paths fenced; typed control refusals propagate and runner marks blocked.",
+        "Legacy diagnostics disclose runtime exclusions; old availability-capture cohort remains unchanged."
+      ],
+      "remaining": [
+        "private coherent input publication and process bootstrap bindings",
+        "legacy consumer retirement/transfer drain and anti-downgrade",
+        "source updater recovery and first-install proof",
+        "broad/member/board inputs",
+        "complete native core/history and Terminal binding",
+        "CI capability resolution, protected release and authenticated beta acceptance"
+      ]
+    },
+    "terminal_queue_latest": {
+      "pr": 1311,
+      "head": "847af34df5f811fa4a9152936e42d199b8a45b08",
+      "state": "OPEN",
+      "merged": false,
+      "queue_entry_id": "MQE_lQDOTOzwKM8AAAABNMUtA84ABTs-zgPEicQ",
+      "position": 61,
+      "estimated_time_to_merge_seconds": 4713,
+      "evidence": "read-only original GitHub GraphQL queue response, Studio PID28076 exit0; ETA is an observation, not a completion promise",
+      "mutation": "none; original carrier retained",
+      "recorded_at": "2026-11-06T06:31:01.721091+00:00",
+      "observation_window_utc": [
+        "2026-11-06T06:17:16Z",
+        "2026-11-06T06:29:24Z"
+      ]
+    },
+    "complete_native_generation": {
+      "base_sha": "f1023db10c4a0851a9d76a249470be5e856aeb29",
+      "state": "PARENT_INTEGRATED_VERIFIED_NOT_ACTIVATED",
+      "contract": "research/market_os/SECTOR_COMPLETE_NATIVE_GENERATION_2026-11-06.md",
+      "proof": {
+        "command": "python -m pytest -q tests/test_sector_native_view.py tests/test_sector_generation_reader.py tests/test_sector_generation_api.py",
+        "passed": 196,
+        "warnings": 70,
+        "exit_code": 0,
+        "log": "/tmp/mmx-core-history-final-20261106.log",
+        "log_sha256": "66f40d072dbdc674b63e0b998ba8b828ef430e8c650eb840b676729519de7c9a",
+        "owner_interoperability": "research/market_os/SECTOR_COMPLETE_NATIVE_GENERATION_PROOF_2026-11-06.json"
+      },
+      "behavior": [
+        "Core/history/Brief/board share one authorized data hash and receipt.",
+        "Allowlisted typed fields, equal nonempty identity mappings, bounded explicit history, measured coverage validation; no recalculation or fallback.",
+        "Actual committed core/history accepted by existing Terminal decoders: 11 sectors, 2772 points, 183 turns."
+      ],
+      "remaining": [
+        "private input publication and producer/process bootstrap",
+        "complete Terminal atomic binding and transport integration",
+        "broad/member/board inputs and source-transfer fencing",
+        "CI capability resolution and protected release",
+        "authenticated beta source-to-screen acceptance"
+      ]
+    },
+    "private_yahoo_generation": {
+      "base_sha": "fb84067e6fd21b2fe8fbc25351cdfa58af971f56",
+      "state": "PARENT_INTEGRATED_VERIFIED_NOT_ACTIVATED",
+      "contract": "research/market_os/YAHOO_PRIVATE_GENERATION_CONTRACT_2026-11-06.md",
+      "proof": {
+        "affected_command": "python -m pytest -q tests/test_yahoo_generation_contract.py tests/test_yahoo_runtime_profile.py tests/test_yahoo_cycle_acquisition.py tests/test_sector_generation_reader.py tests/test_vps_live_orchestration.py -k \"yahoo or generation\"",
+        "affected_passed": 313,
+        "affected_deselected": 88,
+        "affected_warnings": 15,
+        "affected_log": "/tmp/mmx-yahoo-private-input-regression-20261106.log",
+        "affected_log_sha256": "40bed089a0d3490e888f76dec13dbfb30aac60029ddfe406b19c732145baff7d",
+        "final_command": "python -m pytest -q tests/test_yahoo_generation_contract.py",
+        "final_passed": 54,
+        "final_warnings": 6,
+        "final_log": "/tmp/mmx-yahoo-private-input-final-20261106.log",
+        "final_log_sha256": "e7ad4197d8aa33dbaa8979e9ec557fcf66929b1ded29d23e011df835f1d3901e",
+        "exit_code": 0,
+        "counts_overlap": true
+      },
+      "behavior": [
+        "Closed acquisition, prior, clock and per-member lineage bind the existing input_identity; no vendor clock invented.",
+        "Private bounded primitive parquet staging invokes incumbent publisher; one captured-byte reader constructs verified cohort.",
+        "Existing ContextVar binds whole in-process calculation; normal publication uses actual post-capture clock and retained source/computation metadata.",
+        "Explicit @/colon identities round-trip; malformed members/identity refused before staging effects."
+      ],
+      "installed_shape_evidence": "research/market_os/YAHOO_INSTALLED_ARCHIVE_SHAPES_2026-11-06.json",
+      "remaining": [
+        "capture actual prior frames/identity/CAS from same selection or explicit bootstrap",
+        "producer and child-process binding",
+        "private fixed-manifest compatibility transport where required",
+        "broad/member/board and updater/drain/anti-downgrade",
+        "CI policy resolution, protected release and authenticated beta acceptance"
+      ]
+    },
+    "terminal_release_observation": {
+      "observed_at": "2026-11-06T08:53:03Z",
+      "source": "GitHub REST independent PR reads",
+      "pulls": {
+        "1311": {
+          "state": "open",
+          "merged": false,
+          "head": "847af34df5f811fa4a9152936e42d199b8a45b08",
+          "base": "f9d3280a2a3ff28dd925b128231702b836c8a247",
+          "labels": [
+            "merge-on-green"
+          ]
+        },
+        "1285": {
+          "state": "open",
+          "merged": false,
+          "head": "aba8b24af911e406192d0959ccb788a52cf36d14",
+          "base": "74509963b0f432cfbd6a5c8dea80fe5620ed222b",
+          "labels": [
+            "merge-on-green"
+          ]
+        }
+      },
+      "queue_position_or_deploy_proven": false,
+      "mutation": "none"
+    },
+    "yahoo_producer_bootstrap": {
+      "base_sha": "ca13f3c6afb068e1d9001b0791e73279ee3d556c",
+      "state": "PARENT_INTEGRATED_VERIFIED_NOT_ACTIVATED",
+      "contract": "research/market_os/YAHOO_PRIVATE_GENERATION_CONTRACT_2026-11-06.md",
+      "proof": {
+        "command": "python -m pytest -q tests/test_yahoo_generation_contract.py tests/test_yahoo_runtime_profile.py tests/test_yahoo_cycle_acquisition.py tests/test_sector_generation_reader.py tests/test_vps_live_orchestration.py -k \"yahoo or generation\"",
+        "passed": 355,
+        "deselected": 88,
+        "warnings": 15,
+        "exit_code": 0,
+        "diff_check": 0,
+        "log": "/tmp/mmx-yahoo-producer-qualified-20261106.log",
+        "log_sha256": "8ef3eea6923d19ce99d593ace914f57c88ff4b9c09f955ca17008a63dfa6627a",
+        "counts_overlap_prior": true
+      },
+      "behavior": [
+        "Explicit bounded legacy byte capture; no implicit missing/corrupt fallback; original byte identities.",
+        "One verified prior capture supplies frames, identity and original CAS; fresh evaluation/preparation clocks.",
+        "One acquisition/encoding/publication attempt; concurrent advance rejects and uncertainty returns unchanged.",
+        "Whole-process binding requires the same content ID and restores context; no global ownership flip."
+      ],
+      "remaining": [
+        "Qualified broad/member/board input composition and incumbent lane wiring",
+        "Legacy writer drain, source updater recovery/first-install and anti-downgrade",
+        "Existing API root/startup mount and Terminal complete native binding",
+        "CI capability-owner policy resolution and protected release",
+        "Authenticated beta source-to-screen advancement and fault drills; all migration waves remain open"
+      ]
+    },
+    "breadth_adjusted_acquisition": {
+      "base_sha": "c3cd9bb6256ae7ea5943d226691a9b290e475f9e",
+      "state": "PARENT_INTEGRATED_VERIFIED_NOT_ACTIVATED",
+      "contract": "research/market_os/BREADTH_ADJUSTED_ACQUISITION_2026-11-06.md",
+      "proof": {
+        "passed": 114,
+        "warnings": 14,
+        "exit_code": 0,
+        "diff_check": 0,
+        "log": "/tmp/mmx-breadth-capture-qualified-20261106.log",
+        "log_sha256": "5e8052691acb1f1c47058b7720d924848ce2f25369b4505cb5fc2fa51e143837",
+        "counts_overlap_prior": true,
+        "legacy_fixture": "tests/fixtures/base_breadth_download_c3cd.py",
+        "legacy_method_sha256": "ca8435027f01f41696ad391cb82319de3d889a6bf4eb2b6b598803667202d3a9"
+      },
+      "behavior": [
+        "Existing large/small/mid adapters accept detached membership/configuration/exclusions/aliases and one verified completed target.",
+        "Shared incumbent download retry owner; no runtime legacy cache write, proxy seed or last-extras state.",
+        "Active target coverage >=80% after original400/450/350 floors; departed and retained unresolved columns excluded.",
+        "Fresh-span null/gap ownership; bounded whole-history four-field repair preserves prior observed dates and joint depth; failure retains original prior."
+      ],
+      "remaining": [
+        "Basket extras and actual resolver-selection qualification",
+        "Private coherent broad/member storage and runtime input composition",
+        "Pure basket handoff/board and final Sector assembly",
+        "Updater recovery/bootstrap, legacy drain/anti-downgrade",
+        "CI capability-owner resolution, protected release and authenticated beta proof; wider migration waves"
+      ]
+    },
+    "basket_extras_acquisition": {
+      "base_sha": "765cd41712a0a838f7ec68c659dd6dd3e8c092a9",
+      "state": "PARENT_INTEGRATED_VERIFIED_NOT_ACTIVATED",
+      "contract": "research/market_os/BASKET_EXTRAS_ACQUISITION_2026-11-06.md",
+      "proof": {
+        "passed": 103,
+        "warnings": 6,
+        "exit_code": 0,
+        "diff_check": 0,
+        "log": "/tmp/mmx-extras-capture-expanded-20261106.log",
+        "log_sha256": "282887b42eff8462356ae1d14f0823bb018f939ff1a44c60b142c44ca0586d20",
+        "counts_overlap_prior": true,
+        "legacy_fixture": "tests/fixtures/base_extras_download_765cd.py",
+        "legacy_function_sha256": "98a534528ad9254869405f4aea331f9fbbaf423e932841b42320c5f856819a95"
+      },
+      "behavior": [
+        "Existing extras downloader accepts captured policy/start/target; no legacy store/proxy effects.",
+        "Actual resolver selection controls skip/tie correction; short IPO history remains legitimate.",
+        "Full dated historical membership separated from current population; required historical observations qualify final selection.",
+        "Observed primary tail and bounded resolver view; union archive retained; target observation distinct from successful acquisition."
+      ],
+      "remaining": [
+        "Private coherent broad/member storage and source identity",
+        "Source evidence propagation through explicit basket/theme inputs",
+        "Pure basket handoff and canonical board then complete Sector composition",
+        "Updater recovery/bootstrap, legacy drain/anti-downgrade",
+        "CI capability-owner resolution, protected release, existing API/Terminal and authenticated beta proof; remaining migration waves"
+      ]
+    },
+    "breadth_member_generation": {
+      "base_sha": "519b2ae0060c40db6ae01b928157ca304ff4d7c8",
+      "state": "PARENT_INTEGRATED_VERIFIED_NOT_ACTIVATED",
+      "contract": "research/market_os/BREADTH_MEMBER_GENERATION_CONTRACT_2026-11-06.md",
+      "proof": {
+        "final_contract": {
+          "passed": 49,
+          "exit_code": 0,
+          "log": "/tmp/mmx-breadth-member-final-contract-20261106.log",
+          "sha256": "0260cceeed8c924349c27bf8e72ffc4103c73ac7d8ee6f6cc06735094b429cf2",
+          "counts_overlap": true
+        },
+        "affected_consumers": {
+          "passed": 76,
+          "exit_code": 0,
+          "log": "/tmp/mmx-breadth-member-qualified-20261106.log",
+          "sha256": "3201d2d38d86247d47980cf6c2e74ad9e863ac7d04fe4f3b44446a1f4076c2ac",
+          "counts_overlap": true
+        },
+        "expanded": {
+          "passed": 254,
+          "exit_code": 0,
+          "log": "/tmp/mmx-breadth-member-expanded-20261106.log",
+          "sha256": "13ce4ba84955bda0581cfbc454bffc0606ff0e6a33e4b3c1a535be28ddf1a664",
+          "counts_overlap": true
+        },
+        "generic_publisher": {
+          "passed": 68,
+          "exit_code": 0,
+          "log": "/tmp/mmx-breadth-member-publisher-20261106.log",
+          "sha256": "b0561e1ea34094af5bc46db03d03630e0747fe48f498a903c6170036b02a497f",
+          "counts_overlap": true,
+          "deselected": 88
+        },
+        "diff_check": 0,
+        "scope": "Controlled incumbent acquisition -> actual private publisher -> verified reader -> BasketInputs calculation; retained dependency recovery. No provider/runtime/authenticated-beta proof."
+      },
+      "behavior": [
+        "Fixed19member private input cohort; primitive bounded panels, membership, constituent labels and acquisition evidence.",
+        "Exact captured Yahoo content and original publication binding; current-target final admission; pinned retained recovery after partial upstream advancement.",
+        "Shared legacy panel/label kernels; actual selected-source qualification; independent extras resolver replay and partial status.",
+        "Explicit adjusted-source receipt; optional reference availability and complete-leg rows; no ambient store or fabricated OHLCV.",
+        "One shared ephemeral staging helper and original fenced publisher; no new selector, scheduler or retry."
+      ],
+      "remaining": [
+        "Explicit acquisition sequencing/bootstrap and additional Yahoo reference acquisition/transfer",
+        "Member close-index extraction with genuine field availability; no synthetic full candle",
+        "Data-only handoff, canonical board, auxiliary source capture, final five-member Sector composer",
+        "Source-updater recovery/first-install and legacy writer drain/anti-downgrade",
+        "CI capability-owner gate, protected release, authorized API/Terminal integration and authenticated beta proof; estate waves"
+      ]
+    },
+    "member_index_inputs": {
+      "base_sha": "7885f75fc27877b5757fdafc860da6552a2f52bf",
+      "state": "PARENT_INTEGRATED_VERIFIED_NOT_ACTIVATED",
+      "contract": "research/market_os/MEMBER_INDEX_EXPLICIT_INPUTS_2026-11-06.md",
+      "proof": {
+        "passed": 204,
+        "exit_code": 0,
+        "warnings": 6,
+        "log": "/tmp/mmx-member-index-final-20261106.log",
+        "sha256": "0bcf1ae6f6bf7ba19e0fa129a0ee8e71d37ccc73f5d6fb7fc328c9835d6c8648",
+        "diff_check": 0,
+        "scope": "Literal baseline numerical parity; actual private publication/read -> typed Sector member-index consumer; no provider/runtime/beta proof"
+      },
+      "behavior": [
+        "Shared incumbent close-index kernel; legacy full-candle mathematics retained",
+        "Explicit actual closes and optional volume; 300 constructed observations; no synthetic OHLC",
+        "Eligible actual member endpoint, removed-member clock exclusion, stale current-binding refusal",
+        "Selected-primary matching-close volume only; explicit thematic projection scope"
+      ],
+      "baseline_fixture": {
+        "path": "tests/fixtures/base_basket_index_7885.py",
+        "source_sha256": "92cd14b8224a5444e05dfc79a41612b13fa74cb9d055ff6aa10f8d696abb3151",
+        "fixture_sha256": "8d0b5de11e37e538aad51a25da78ea00860de1795565a00b68ec1d6bc1443ec9"
+      },
+      "remaining": [
+        "Captured amalgam and sponsor holdings populations",
+        "Pure Pulse, baskets/handoff and canonical board; auxiliary inputs and final Sector producer",
+        "Updater/legacy-writer transfer, CI and protected releases, API/Terminal integration and authenticated beta; estate waves"
+      ]
+    },
+    "pulse_basket_documents": {
+      "base_sha": "b168ff4a498999251e70dc6a0076e422d2689738",
+      "state": "PARENT_INTEGRATED_SOURCE_QUALIFIED_NOT_ACTIVATED",
+      "contract": "research/market_os/SECTOR_BASKET_DOCUMENTS_2026-11-06.md",
+      "proof": {
+        "pulse": {
+          "passed": 139,
+          "exit_code": 0,
+          "log": "/tmp/mmx-sector-pulse-explicit-20261106.log",
+          "sha256": "711f1bc6811c62208339f3209cd3ef7d5d9893b1013bd1210d6d7963609d8050"
+        },
+        "documents_final": {
+          "passed": 24,
+          "exit_code": 0,
+          "log": "/tmp/mmx-sector-basket-documents-final-20261106.log",
+          "sha256": "19e5fec26ce797d742178bfc38f083244cd7482e56f8744272507059f5dbdd24"
+        },
+        "affected": {
+          "passed": 463,
+          "failed": 5,
+          "skipped": 4,
+          "exit_code": 1,
+          "log": "/tmp/mmx-sector-basket-pulse-affected-20261106.log",
+          "sha256": "2d23a25988ce2dae772bd2fd04b562adb6ca414dc62906ae31d2b85300b9721d",
+          "disposition": "One new receipt-enum fixture repaired and reverified; four original missing sparse-artifact assertions independently reproduced unchanged"
+        },
+        "counts_overlap": true,
+        "source_review": "research/market_os/SECTOR_BASKET_DOCUMENTS_SOURCE_REVIEW_2026-11-06.json",
+        "git_diff_check": "Unscoped and scoped attempts timed out; pinned-source diff review/AST equality and direct whitespace/parser checks completed",
+        "scope": "Controlled owner calculations -> data-only assembly -> native Brief projection; no provider/runtime/authenticated-beta proof"
+      },
+      "behavior": [
+        "Single Pulse calculation with explicit archive/verdict and unchanged observation clock",
+        "Detached complete basket/Brief documents preserve chart, bottoming, field precedence and compact handoff",
+        "Coherent baseline, older auxiliary dates and finite JSON; no builder or ledger effects",
+        "Legacy adapters share extracted transformations; source guards and hosted CI remain binding"
+      ],
+      "remaining": [
+        "Canonical board preparation/reducer/envelope",
+        "Amalgam, sponsor holdings and genuine missing-field acquisition plus auxiliary capture",
+        "Full Sector composer and acquisition/bootstrap sequencing",
+        "Updater/writer transfer, CI/protected release, API/Terminal/authenticated beta and estate waves"
+      ]
+    },
+    "terminal_queue_observation_0936": {
+      "observed_at": "2026-11-06T09:36:35Z",
+      "source": "Single read-only GitHub GraphQL response, native runtime_transfer_judgment agent",
+      "pr1311": {
+        "head": "847af34df5f811fa4a9152936e42d199b8a45b08",
+        "state": "OPEN",
+        "queue_state": "QUEUED",
+        "position": 22,
+        "entry": "MQE_lQDOTOzwKM8AAAABNMUtA84ABTs-zgPEicQ",
+        "successful_contexts": 22,
+        "queue_head": null
+      },
+      "pr1285": {
+        "head": "aba8b24af911e406192d0959ccb788a52cf36d14",
+        "state": "OPEN",
+        "queue_state": "QUEUED",
+        "position": 19,
+        "entry": "MQE_lQDOTOzwKM8AAAABMxdVZM4ABTs-zgPEY6A",
+        "successful_contexts": 21,
+        "queue_head": null
+      },
+      "mutations": false,
+      "conclusion": "Preserve original entries; queue progression pending; no merged/deployed outcome"
+    },
+    "pulse_basket_publication": {
+      "head": "4eddd4ad83f761d4178e1faa73173dccd71ed419",
+      "state": "APPLIED",
+      "commit_action_ref": "c5fc694566c98a6df1ab3b8d72bdb0a49df8c8d1919fd21b9f39fdf5a23bd82e",
+      "commit_return": "APPLIED_INDEX_SYNC_FAILED",
+      "index_only_recovery": {
+        "schema": "mastermind.index_recovery.v1",
+        "operation_id": "macro-always-on-shared-shell-20261105-c3",
+        "action": "index_only_repair_of_applied_commit",
+        "head": "4eddd4ad83f761d4178e1faa73173dccd71ed419",
+        "tree": "7180e14356011a7fc74c828a864f8271add3ad23",
+        "source_bytes_unchanged": true,
+        "real_index_sha256_before": "a7d507b85633d5b42f8d80875da6baedbd5d931899254868374147216047eee5",
+        "real_index_sha256_after": "0be6244c96cc99d210f04803582e3097f536fa7ff320758896ae67c8cadcc253",
+        "index_backup": "/tmp/mmx-index-recovery-4eddd4-r9dmwc01/original.index",
+        "source_fingerprints": {
+          "engine/sector_pulse.py": "8955da84168afa916fd3a4d22c5aaca1c5731fe685aff5240a0b460f18bdf692",
+          "engine/sector_basket_documents.py": "3b9a43ac91e660c24d5b25c598ddc50eba525a3796024e6710ef7b0a4d086bd1",
+          "scripts/build_baskets.py": "4d736210ea12e1d9c6c21890e71c6ddfcaf5d59dd4acb42d56101c2b53a36678",
+          "tests/test_us_act_now.py": "2c2472c83676cceaafa0082ba8875ca10b488972691e69999c8cf9d48187d97b",
+          "tests/fixtures/base_sector_pulse_7885.py": "6eb878fa6352e9e5d4c2d3c09f93f58858576bfee9ef60fac365af206e4a5375",
+          "tests/test_sector_pulse_explicit_inputs.py": "8ba9eace61750fbbc257d215b39b4e46cb7157ba578e864a6fa533e6171490dc",
+          "tests/test_sector_basket_documents.py": "3a92f240498809d3a721fd67c8a6e8c0e6490e8b3f533064bc52558d6636328d",
+          "research/market_os/SECTOR_BASKET_DOCUMENTS_2026-11-06.md": "b70f0c87204884bed8b06b22dc9032197b8ded9cde11e62db6e1e5b0239ad2f2",
+          "research/market_os/SECTOR_BASKET_DOCUMENTS_SOURCE_REVIEW_2026-11-06.json": "aa0813926a9ed4490de381cca1aaa091a97f03c4bfef5f7a83d3f511cae504f7",
+          "research/market_os/ALWAYS_ON_MACRO_MIGRATION_2026-11-05.md": "9bd1c476781f89d845ee99ad6f4aee74dd11cb50f085145d77e43274b2da0bcd",
+          "research/market_os/ALWAYS_ON_ACTIVE_COMMISSIONS_2026-11-06.json": "7e60ee3b865a491c6c99a915861a164f4079cca31c839e6f8b88459fbee4c417"
+        },
+        "reconstructed_with_existing_owner_staging_operations": true,
+        "sparse_metadata_preserved": true,
+        "commit_or_ref_or_push_attempted": false,
+        "stale_lock_open_owners": 0,
+        "completed_at": "2026-11-06T10:17:30.516695+00:00"
+      },
+      "single_push_action_ref": "3bab2d27b8aa3936986fb1848488025b37c6a63c7816d9ef05d156adfb0f22cc",
+      "push_return": "EFFECT_UNKNOWN; subsequently original publisher APPLIED and independent GitHub exact-head confirmation",
+      "commit_or_push_retry": false,
+      "issue_readback": "https://github.com/mastermindx-market-intelligence/macro/issues/10779",
+      "issue_updated_at": "2026-11-06T10:30:23Z"
+    },
+    "action_board_inputs": {
+      "base_sha": "4eddd4ad83f761d4178e1faa73173dccd71ed419",
+      "state": "PARENT_INTEGRATED_SOURCE_QUALIFIED_NOT_ACTIVATED",
+      "contract": "research/market_os/SECTOR_ACTION_BOARD_INPUTS_2026-11-06.md",
+      "proof": {
+        "final": {
+          "passed": 310,
+          "skipped": 4,
+          "deselected": 4,
+          "exit_code": 0,
+          "log": "/tmp/mmx-sector-action-board-inputs-final-20261106.log",
+          "sha256": "1dce99a281684cf8990aa5f14359cf671eb58beac68430c4c52c6abc59584f22"
+        },
+        "initial": {
+          "passed": 308,
+          "skipped": 4,
+          "failed": 6,
+          "exit_code": 1,
+          "disposition": "New isolation-spy API corrected; original integer-total test failure reproduced then test repaired; four absent generated artifacts unchanged"
+        },
+        "baseline_test": {
+          "source_sha256": "cd7ec072f9831d0d1db13f90b80ba02f18537c7732585bd51048aab59b511a54",
+          "log_sha256": "e7bb16b1dad4fb29ffe64928e5d5ed004f8a1466e152dea869e98d193d975e80"
+        },
+        "diff_check": 0,
+        "source_review": "research/market_os/SECTOR_ACTION_BOARD_SOURCE_REVIEW_2026-11-06.json",
+        "counts_overlap": true,
+        "scope": "Literal owner parity and actual legacy writer/semantic/canonical-injection paths; no provider/runtime/authenticated-beta proof"
+      },
+      "behavior": [
+        "One existing lane/ranking owner, legacy wrappers preserve canonical injection",
+        "Detached explicit-input composition and exact basket-byte envelope",
+        "Original atomic writer, pre-read rejection and previous-artifact preservation",
+        "Source separation guard follows actual reducer; original row-count test repaired without weakening routing assertions"
+      ],
+      "remaining": [
+        "Genuine thematic OHLCV and texture calibration inputs",
+        "Data-only stock/sector timing and setup preparation",
+        "Amalgam/holdings/auxiliary capture and full Sector composer",
+        "Updater/writer transfer, CI/protected release, API/Terminal/authenticated beta and estate waves"
+      ],
+      "publication_attempt": {
+        "observed_at": "2026-11-06T10:42:40Z",
+        "carrier": "original typed managed publisher",
+        "expected_head": "4eddd4ad83f761d4178e1faa73173dccd71ed419",
+        "status": "REFUSED",
+        "effect_status": "NOT_APPLIED",
+        "code": "TYPED_GIT_PRECHECK_REFUSED",
+        "commit_or_push_created": false,
+        "retry_attempted": false,
+        "bounded_diagnostic": "Generic catch loses underlying exception; per-child timeout15s and observed36.235s total do not prove permission denial or exact failing stage. Separate canonical cleanup process preserved. Further source work is a materially new candidate on the same carrier."
+      }
+    },
+    "ohlcv_enrichment_inputs": {
+      "base_sha": "4eddd4ad83f761d4178e1faa73173dccd71ed419",
+      "state": "PARENT_SOURCE_QUALIFIED_NOT_ACTIVATED",
+      "contract": "research/market_os/SECTOR_OHLCV_ENRICHMENT_INPUTS_2026-11-06.md",
+      "source_review": "research/market_os/SECTOR_OHLCV_ENRICHMENT_SOURCE_REVIEW_2026-11-06.json",
+      "proof": {
+        "affected": {
+          "exit_code": 0,
+          "seconds": 135.911,
+          "log": "/tmp/mmx-ohlcv-enrichments-affected-final-20261106.log",
+          "sha256": "366cd00b7c9a0602902eda75eae7cadae95231f991a46138f3e14d74f131fe23",
+          "passed": 388,
+          "skipped": 1,
+          "deselected": 2
+        },
+        "final_boundary": {
+          "exit_code": 0,
+          "seconds": 34.073,
+          "log": "/tmp/mmx-ohlcv-enrichments-final-boundary-20261106.log",
+          "sha256": "8f398b203d70436fc03593cbf5fc59d176f68073f6577e091c62ef0cb81508c0",
+          "passed": 119
+        },
+        "counts_overlap": true,
+        "baseline_missing_membership": {
+          "baseline_sha": "4eddd4ad83f761d4178e1faa73173dccd71ed419",
+          "test_source_sha256": "0c2dac645a4e77553f1e52a2aa7d99180266217222d59fcb50ac4a9abf65fc57",
+          "byte_equal_to_worktree": true,
+          "results": [
+            {
+              "test": "test_bld_is_stamped_removed_in_live_membership",
+              "result": "reproduced_original_missing_membership",
+              "path": "/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-always-on-shared-shell-20261105-c3/data/baskets/membership.json"
+            },
+            {
+              "test": "test_mag_and_gato_are_stamped_delisted_in_live_membership",
+              "result": "reproduced_original_missing_membership",
+              "path": "/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-always-on-shared-shell-20261105-c3/data/baskets/membership.json"
+            }
+          ]
+        },
+        "literal_original_signal_function_equal": true,
+        "literal_fixture_sha256": {
+          "base_adjusted_price_capture_4eddd4.py": "d763d9bdbd8bbb8f4077b94f132f9178fcc14212d0be73d9ccaf65090778b307",
+          "base_basket_breadth_divergence_4eddd4.py": "f073f778f43f9e040b5b3b76cfb66fe5085940ca00b92e7ae2fac359d1d68be6",
+          "base_basket_score_4eddd4.py": "313e9dfae08768d769c6604dcc0881315c848ce4b6ffa524430385723d7f5016",
+          "base_basket_signals_4eddd4.py": "b768fd3025b90ffd848cddbbba5a317eba0aba848dac9eb23fc32a17a15ddd9c"
+        },
+        "actual_consumer": "prepare_theme_basket_rows -> basket_enrichments_from_inputs -> compute_theme_intel_core; real MTF/tape/textures with ambient config/store/legacy acquisition forbidden"
+      },
+      "behavior": [
+        "Five genuine adjusted fields through incumbent downloader and shared capture/merge owner",
+        "Placeholder scrub preserves original response span; invalid values checked before normalization",
+        "Whole-history five-field replacement; partial/older inputs cannot become current",
+        "Per-row member candle constructed against the exact resolved thematic close panel",
+        "Legacy observation grid, full-candle math and distinct consumer floors preserved",
+        "Captured cycle and calibration context; honest close-only fallback without older tape"
+      ],
+      "remaining": [
+        "Data-only stock/sector timing and setup preparation",
+        "Amalgam, sponsor holdings and auxiliary input captures",
+        "Fixed-five final Sector composition and existing publisher activation",
+        "Source updater/drain, CI capability, protected release, API/Terminal/authenticated beta and estate waves"
+      ]
+    },
+    "holdings_capture_admission_20261106": {
+      "run_id": "macro-always-on-20261106-c3-holdings-capture-01",
+      "root_id": "macro-always-on-shared-shell-20261105-c3",
+      "parent_id": "macro-always-on-shared-shell-20261105-c3",
+      "source_brief": "https://github.com/mastermindx-market-intelligence/macro/pull/10780#issuecomment-6683309669",
+      "controller_pid": 52778,
+      "state": "VERIFIED_TERMINAL",
+      "returncode": 75,
+      "reason": "remote_admission_refused",
+      "worker_start_proven": false,
+      "execution_absence_proven": false,
+      "retry_authorized": false,
+      "dispatch_continuation_authorized": false,
+      "result_consumption_authorized": false,
+      "usage_receipt": "MISSING",
+      "transport_cleanup": {
+        "receipt_saved": 0,
+        "usage_saved": 0
+      },
+      "connection_generation": "59f1fa72-924f-4f2a-9b47-092332e5705f",
+      "backend_generation": "b3b6a727-d770-4079-abcb-a9d661664896",
+      "bounded_reconciliation": "Original controller output read; exact original process metadata path absent. No alternate path, worker result, private provider output, host retry or rehome attempted. Absence of one metadata file does not establish zero effects. Holdings source owner remains protected.",
+      "material_capacity_observation": {
+        "observed_at": "2026-11-06T10:56:40.118Z",
+        "owner": "quota_remote.py show --provider minimax --force --json",
+        "confidence": 0.98,
+        "source": "PROVIDER_AUTHORITATIVE",
+        "window_5h_remaining_pct": 91,
+        "window_5h_reset": "2026-11-06T15:00:00Z",
+        "weekly_remaining_pct": 32,
+        "weekly_reset": "2026-11-09T00:00:00Z",
+        "meaning": "Capacity observation authorized a distinct planned leaf admission attempt; did not establish worker admission/start or clear old failed runs."
+      }
+    },
+    "sector_timing_setup": {
+      "base_sha": "c18e840debddfb838074ac32e102f2cd53d89911",
+      "state": "PARENT_SOURCE_QUALIFIED_NOT_ACTIVATED",
+      "contract": "research/market_os/SECTOR_TIMING_SETUP_INPUTS_2026-11-06.md",
+      "proof": "research/market_os/SECTOR_TIMING_SETUP_SOURCE_REVIEW_2026-11-06.json",
+      "qualification": {
+        "passed": 397,
+        "skipped": 4,
+        "deselected": 5,
+        "log_sha256": "bfa0f4d56e4fa929934919c1c77570c3f02aee0242a0ab2b5a1c731bed60760d"
+      },
+      "next": "fixed-five data-only composition; retain original cohorts, prior Central, separately acquired setup list and deferred effects"
+    },
+    "beta_terminal_1285_release": {
+      "state": "RUNTIME_ACCEPTED_BOUNDED_STATIC_FEED_REPAIR",
+      "target_sha": "334980ac7339a6edfa2ebf357a3b235732ad5419",
+      "operation": "beta-bff-upgrade-334980-20261106",
+      "original_process": 87020,
+      "attempt_id": "c23390bc536c4f3ab570d0f5328714f5",
+      "accepted_record_id": "bd1c7a00324653cd9bca13df033b7380e8da64014db68529aec33086428fe4db",
+      "accepted_at": "2026-11-06T12:20:14.728813Z",
+      "preflight_receipt_id": "026e21368fd18cc052f8e93a64771d8b3f3bc215611d45858526b592cab901d7",
+      "proof": "research/market_os/BETA_TERMINAL_1285_RELEASE_PROOF_2026-11-06.json",
+      "proof_sha256": "413d4da427666aa43b0cfe3f66eabc92c2cab7e62a4cf0645a109166a5fac7de",
+      "local_and_public_exact_tuple": true,
+      "credential_free_denial_verified": true,
+      "authenticated_consumer_proven": false,
+      "macro_generation_migration_proven": false,
+      "prior_terminal_1311_carrier_mutation": "none"
+    },
+    "sector_document_completion": {
+      "base_sha": "1f3f605367f48021455e1dbec462bdbbf879c58a",
+      "state": "PARENT_SOURCE_QUALIFIED_NOT_ACTIVATED",
+      "contract": "research/market_os/SECTOR_DOCUMENT_COMPLETION_INPUTS_2026-11-06.md",
+      "proof": "research/market_os/SECTOR_DOCUMENT_COMPLETION_SOURCE_REVIEW_2026-11-06.json",
+      "qualification": [
+        {
+          "passed": 64,
+          "log_sha256": "88da91d132ec67c2dc1f55bdf59fea017abf54e23fc893c534051e402bd785e3"
+        },
+        {
+          "passed": 253,
+          "warnings": 232,
+          "log_sha256": "454043d44233cfe99cc3635fef5c48b48b18d1e83264c7843212f4512553c707"
+        }
+      ],
+      "next": "fixed-five composition from captured input objects; preserve pre-append grader history and native research nonbinding disclosure"
+    },
+    "sector_document_composition": {
+      "base_sha": "cec642221e01dfc5a496d99f866e9b6fe313cfbb",
+      "state": "PARENT_SOURCE_QUALIFIED_NOT_ACTIVATED",
+      "contract": "research/market_os/SECTOR_DOCUMENT_COMPOSITION_INPUTS_2026-11-06.md",
+      "proof": "research/market_os/SECTOR_DOCUMENT_COMPOSITION_SOURCE_REVIEW_2026-11-06.json",
+      "passed": 328,
+      "warnings": 64,
+      "log_sha256": "44996b7b350ad0aaf650e9cd3e3f2ee55e8a8f46addada78b443ba5ba8bad70f",
+      "scope": "real synthetic member inputs -> incumbent engines -> exact fixed-five composition -> existing private staging/publisher -> captured selected generation -> actual auth gates with fixture identity -> both wire audiences",
+      "next": "Complete trusted supplemental capture; source barrier/CI/source-owner fences before runtime activation"
+    },
+    "sector_current_price_pair": {
+      "contract": "research/market_os/SECTOR_CURRENT_PRICE_CAPTURE_2026-11-06.md",
+      "final_new_tests": 3,
+      "affected_initial_passed": 145,
+      "initial_failure": "Wrong expected refusal-code regex; exact existing code/type asserted in final test",
+      "log_sha256": "aa195524a0dea94922e2d4f60269e4b2fc4c593f1a38bd36a8bba565e33a1bc3",
+      "state": "SOURCE_QUALIFIED_PRICE_DEPENDENCY_ONLY"
+    },
+    "beta_terminal_1311_release": {
+      "state": "RUNTIME_ACCEPTED_BOUNDED_REFRESH_LIFECYCLE",
+      "target_sha": "bb65839dc6078f2943f6b5a6f58f5261350a85dd",
+      "operation": "beta-refresh-upgrade-bb65839-20261106",
+      "original_process": 34114,
+      "attempt_id": "c009336b0f544f01a2af7efa43fb949c",
+      "accepted_record_id": "28e2e2925eeeb273b00a2be2d50c231f7692dbd38f993cd0599cd8e11d690506",
+      "accepted_at": "2026-11-06T13:10:38.823945Z",
+      "preflight_receipt_id": "c75fbb5b9f419578442972125f8aa23db4dfc10d51c34b052362d40800e44aa1",
+      "proof": "research/market_os/BETA_TERMINAL_1311_RELEASE_PROOF_2026-11-06.json",
+      "proof_sha256": "2b7516b73207efc8d997b440bbde4446a4d0bf85aec8ef2dcc29eaf51d585511",
+      "local_and_public_exact_tuple": true,
+      "credential_free_denial_verified": true,
+      "authenticated_consumer_proven": false,
+      "macro_generation_migration_proven": false,
+      "original_queue_mutation": "none"
+    },
+    "terminal_generation_workspace_admission": {
+      "operation_id": "macro-always-on-terminal-generation-20261106-c3",
+      "repository": "terminal",
+      "base_sha": "bb65839dc6078f2943f6b5a6f58f5261350a85dd",
+      "status": "APPLIED",
+      "effect_state": "APPLIED",
+      "code": "MANAGED_WORKSPACE_ACQUIRED",
+      "bounded_diagnostic": "Original adapter call settled with no surviving allocator or artifacts. Exact managed CLI is the documented owner path and resolved the same operation; adapter had primary/secondary pool validation mismatch.",
+      "retry_or_rehome": false,
+      "prior_status": "REFUSED/NOT_APPLIED/REPOSITORY_SOURCE_UNAVAILABLE",
+      "source_preparation": {
+        "exact_sha": "bb65839dc6078f2943f6b5a6f58f5261350a85dd",
+        "fetch_exit": 0,
+        "source_head_unchanged": "ec1e45ec29ced091b3721da77702d57e720ae588",
+        "receipt": "/tmp/mmx-terminal-source-preparation-bb65839-20261106.json"
+      },
+      "next": "Qualify four-view HTTP contract, transport, access/session lifetime and production mount",
+      "workspace": "/Volumes/Mastermind 2/agent-workspaces/terminal/web/macro-always-on-terminal-generation-20261106-c3",
+      "branch": "sol/web-macro-always-on-terminal-generation-20261106-c3",
+      "original_effect_reconciled": true,
+      "canonical_cli_receipt": {
+        "action": "canonical installed owner acquire",
+        "operation_id": "macro-always-on-terminal-generation-20261106-c3",
+        "elapsed_seconds": 7.881,
+        "exit_code": 0,
+        "stdout_sha256": "0ff089fab12deac600faaca5a4482e887f7e7a90ae09ba422f09c8505a4b6e6a",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_bytes": 906,
+        "stderr_bytes": 0,
+        "stdout_receipt": {
+          "action": "acquire",
+          "effect": "APPLIED",
+          "receipt": {
+            "base_sha": "bb65839dc6078f2943f6b5a6f58f5261350a85dd",
+            "branch": "sol/web-macro-always-on-terminal-generation-20261106-c3",
+            "common_git_dir": "/Users/chriswong/Documents/Cluade/charting-app/.git",
+            "head_sha": "bb65839dc6078f2943f6b5a6f58f5261350a85dd",
+            "lane": "web",
+            "lock_reason": "mastermind-linked-worktree:v1 operation=macro-always-on-terminal-generation-20261106-c3 lane=web base=bb65839dc6078f2943f6b5a6f58f5261350a85dd",
+            "operation_id": "macro-always-on-terminal-generation-20261106-c3",
+            "reused": false,
+            "source_repository": "/Users/chriswong/Documents/Cluade/charting-app",
+            "workspace_path": "/Volumes/Mastermind 2/agent-workspaces/terminal/web/macro-always-on-terminal-generation-20261106-c3",
+            "workspace_root": "/Volumes/Mastermind 2/agent-workspaces/terminal"
+          },
+          "repository": "terminal",
+          "schema_version": "mastermind.workspace_cli/v2"
+        }
+      },
+      "typed_publication_status": "Verified same base, clean admitted workspace, remote branch absent before candidate application",
+      "candidate_state": "Original b441a9b retained patch applied; parent corrections and tests in progress"
+    },
+    "sector_context_inputs": {
+      "state": "SOURCE_QUALIFIED_NOT_ACTIVATED",
+      "base_sha": "68d836353d8021f9d5c6d5b010cd6d795a2a4dec",
+      "contract": "research/market_os/SECTOR_CONTEXT_INPUTS_2026-11-06.md",
+      "proof": "research/market_os/SECTOR_CONTEXT_INPUTS_SOURCE_REVIEW_2026-11-06.json",
+      "focused_passed": 67,
+      "affected_passed": 262,
+      "affected_baseline_sparse_failure": 1,
+      "baseline_reproduced_and_exact_css_passed": true,
+      "remaining": "Actual source binding, resolved Market State, genuine OHLCV/holdings and auxiliary closure remain required; existing CI/Terminal/browser/effect fences unchanged."
+    },
+    "source_barrier_recovery_ruling": {
+      "state": "CORE_UPDATER_AND_LIVE_SETUP_SOURCE_QUALIFIED_NOT_ACTIVATED",
+      "recorded_at": "2026-11-06T17:01:26.449492+00:00",
+      "pending_requirements": [
+        "Existing CI/protected release",
+        "Controlled first adoption before old updater reset",
+        "Runtime provider/publication and authenticated beta proof"
+      ],
+      "unresolved": [
+        "No production activation",
+        "No estate-wide source/venv isolation"
+      ],
+      "no_deployment": true,
+      "helper_closure": {
+        "market-memory-options-unit-boundary.sh": "c7400b5d1a5532d4987c101f27411c8aca96542de42233317d7a108d82fdded4",
+        "market-memory-options-runtime-fence.sh": "2dc48933a390b12b5b35d097292ba12af5240886921a981158d62109b619328e",
+        "market-memory-options-dropin-migration.sh": "9b162f750c74252449e8d718774984ae376989710c3e099f97f7aafabbb943ea"
+      },
+      "resolution": "Capture original helper closure; one journal separates incomplete source from SOURCE_READY/RESTORING; preserve held timer restoration and original target; qualified installed helper/updater before first reset",
+      "implementation_choice": "Embedded installed macro-update owner with early closed --live-lane branch; no separately installed helper pair",
+      "first_adoption": "Existing setup.sh install-only under fd9, no bootstrap/reset; ordinary updater separately invoked after readback",
+      "owner_replacement": "Atomic rename/fsync at both existing install sites; refuse any unresolved journal; bind executing /proc/$$/fd/255 digest",
+      "scope": "Three service readers and their three timers; no estate-wide source isolation claim",
+      "contract": "research/market_os/LIVE_SOURCE_BARRIER_2026-11-06.md",
+      "proof": "research/market_os/LIVE_SOURCE_BARRIER_SOURCE_REVIEW_2026-11-06.json",
+      "setup_contract": "research/market_os/LIVE_SETUP_SOURCE_TRANSACTION_2026-11-06.md",
+      "setup_proof": "research/market_os/LIVE_SETUP_SOURCE_REVIEW_2026-11-06.json"
+    },
+    "member_ohlcv_private_generation": {
+      "state": "SOURCE_QUALIFIED_NOT_ACTIVATED",
+      "base_sha": "bb107bccc52152d46b5ee91865632a22bced6e20",
+      "contract": "research/market_os/SECTOR_MEMBER_OHLCV_GENERATION_2026-11-06.md",
+      "proof": "research/market_os/SECTOR_MEMBER_OHLCV_GENERATION_SOURCE_REVIEW_2026-11-06.json",
+      "final_passed": 130,
+      "new_contract_tests": 36,
+      "actual_provider_requests": false,
+      "private_fixture_publication_readback": true,
+      "remaining": "Actual bootstrap/policy/auxiliary source capture, protected holdings, complete composition adapter and runtime/native activation"
+    },
+    "sector_auxiliary_value_projections": {
+      "state": "SOURCE_QUALIFIED_NOT_ACTIVATED",
+      "base_sha": "84f1b7287c8f7298e502eb67949f01ee7c40ef1e",
+      "contract": "research/market_os/SECTOR_AUXILIARY_VALUE_PROJECTIONS_2026-11-06.md",
+      "proof": "research/market_os/SECTOR_AUXILIARY_VALUE_PROJECTIONS_SOURCE_REVIEW_2026-11-06.json",
+      "focused_passed": 97,
+      "affected_passed": 447,
+      "existing_real_cache_smoke_skips": 2,
+      "deliberate_entry_config_freshness_fix": true,
+      "remaining": "Actual auxiliary capture, protected holdings, complete adapter and runtime/native activation"
+    },
+    "auxiliary_capture_admission_20261106": {
+      "run_id": "macro-always-on-20261106-c3-auxiliary-capture-01",
+      "root_id": "macro-always-on-shared-shell-20261105-c3",
+      "source_brief": "https://github.com/mastermindx-market-intelligence/macro/pull/10780#issuecomment-6687616377",
+      "base_sha": "5a8513cab16dd0a7fe2a10a5960fd2c4c1b9ac58",
+      "controller_pid": 53561,
+      "state": "REQUEST_REFUSED_BEFORE_LAUNCH",
+      "outer_root_verified": false,
+      "worker_start_proven": false,
+      "inner_execution_absence_proven": true,
+      "outer_execution_absence_proven": false,
+      "controller_wrapper_exit": 0,
+      "controller_internal_exit": 75,
+      "result_available": false,
+      "retry_authorized": false,
+      "dispatch_authorized": false,
+      "result_consumption_authorized": false,
+      "disposition": "Original native request/run/root/parent match and report prelaunch execution absence. Protected fabric-backend source confirms outer conservative field. Existing Macro custody, exact head and absent auxiliary target files verified. Only the parent-imposed source-overlap hold is lifted; no Fabric retry, dispatch, result consumption, lifecycle release or effect substitution.",
+      "acceptance_reason": "EXECUTION_NOT_ELIGIBLE",
+      "failure_classification": "PRELAUNCH_REFUSAL_CAUSE_UNRESOLVED",
+      "protected_source_pin": "770837b4317287fb36a3e7e3948ea701de67bbab",
+      "request_root_and_parent_correlated": true,
+      "native_effect_evidence": "OWNER_REPORTS_EXECUTION_ABSENCE",
+      "outer_field_semantics": "Conservatively hardcoded by fabric_status; not contradictory worker activity evidence",
+      "source_overlap_hold": "PARENT_PROVISIONAL_HOLD_LIFTED",
+      "controller_reservation": "UNCHANGED_NO_RELEASE_OR_REPLAY",
+      "direct_work_reason": "NO_ELIGIBLE_PRE_EFFECT_WORKER; principal source work authorized in existing Macro carrier"
+    }
+  }
+}

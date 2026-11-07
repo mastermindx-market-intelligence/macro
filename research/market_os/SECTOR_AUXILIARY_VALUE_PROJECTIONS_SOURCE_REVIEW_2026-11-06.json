@@ -1,0 +1,175 @@
+{
+  "affected_passed": 447,
+  "affected_skipped": 2,
+  "base_sha": "84f1b7287c8f7298e502eb67949f01ee7c40ef1e",
+  "composer_proof": "New captured beta-table path derives keys from actual cycle spine and uses the same normalized risk calibration; five fixture documents byte-identical to old explicit-map path.",
+  "counts_overlap": true,
+  "deliberate_change": "Fresh cycle input acquisition uses six source defaults, not stale import-time entry overrides, when a current configuration setting is absent; unbound legacy globals remain unchanged.",
+  "files_sha256": {
+    "engine/basket_score.py": "fd193260d3d8ae60d9e85298e51b82de85767703fa8b3d346c5297b8abcc9947",
+    "engine/cycles.py": "520d3542937eae850264e1c1e83e98737821aad3417abb1fffe8e90a2ab00af9",
+    "engine/narrative_rotation.py": "43c9f3c948508432f6aeeff29697251b61e256c53b0f65cf7bd10d366891c9c5",
+    "engine/sector_basket_documents.py": "720995e75a40e7d8c39ee2f68e8e3cb57ff082c89ebdbe6e2355f26cf9b7ab59",
+    "engine/sector_central.py": "408291fa1c33f37e7dff1bc01b25fab988c29a6f5828fa465b61b11928f1dc73",
+    "engine/theme_scoring.py": "9e4d832f62be725fec41f60b47c2955b6060d002a02ad4c4c3fda05b4ceca317",
+    "engine/vol_regime.py": "f94df3e5ed524459019596a1abfdd9f367a7a30da585424d4b5258c5be5cec87",
+    "tests/fixtures/base_cycles_capture_normalizers_84f1b72.py": "cc6de354cbe4222c95398d23cdb54e841bc4240aa8328089a014ff2a2f4f0585",
+    "tests/fixtures/base_earnings_calendar_84f1b72.py": "e0014aed1740b51b6bf8037fb5f3eb8effa20ea46192f3b4f041e3133aaa6fa2",
+    "tests/fixtures/base_market_concentration_84f1b72.py": "6b778f0f5717bdc242fa36a97396ddc9d5e8922571664968c82103b0aee111a7",
+    "tests/fixtures/base_narrative_rotation_capture_normalizers_84f1b72.py": "ffce7d6b527af273c7f0b14e81d522342b518f16a9627a4e4f2c7494843413ab",
+    "tests/fixtures/base_sector_central_capture_normalizers_84f1b72.py": "3228ca4cf1bee1c9f7cfee7174d09faa2e9b3f3c32c018a07e4ed70690f957d6",
+    "tests/fixtures/base_theme_scoring_capture_normalizers_84f1b72.py": "59d323124ac0648005fa56fae8f1b9577ea239c0e7f2040908247307e728a7dd",
+    "tests/fixtures/base_vol_regime_capture_normalizers_84f1b72.py": "43160e88cd32d651c1695188c062ea53f2e556773bafd6aefde1ea8b2414a6f0",
+    "tests/test_sector_auxiliary_projections.py": "cd401f17010c227f84c9b3209f7b74cd19161270af08c6ce5db4f8d438ee3520",
+    "tests/test_sector_capture_normalizers.py": "9d11754884a8dd98b38adadd3c01c0c30ffa4fd2cdc1cd1da329ce467f61fb72"
+  },
+  "focused_passed": 97,
+  "limits": [
+    "Actual source-byte capture and complete composition-input adapter remain open",
+    "MarketState/alpha/holdings must be genuinely resolved, not supplied as unbound absence",
+    "No provider, runtime, source-barrier activation, CI registration, merge or authenticated beta proof",
+    "CI action denial, protected holdings effect, Terminal source-admission and browser capability fences remain"
+  ],
+  "mission": "https://github.com/mastermindx-market-intelligence/macro/issues/10779",
+  "original_owner_functions": {
+    "tests/fixtures/base_cycles_capture_normalizers_84f1b72.py": {
+      "captured_working_source_sha256": "644224a457fe9639230466036a373136769b6bc54995d0b5b2e492145089d20e",
+      "exact_base_function_hashes_verified": true,
+      "functions": {
+        "_load_risk_calib": "acf09e2049d4b4a2ae69c118dfb16bd1b6666fc1332d8d6189884c0503c06abb",
+        "acquire_calculation_inputs": "48d7f2730660c6eecafbd463cc15d45df00b1f093dd4eae99b69daebbaf9927b",
+        "risk_size_mult": "e79f4b24e0c9bf9efbbbcb22c0116b66704ede9957a2d822fc807b66c06518ae"
+      },
+      "source": "engine/cycles.py",
+      "source_sha256": "644224a457fe9639230466036a373136769b6bc54995d0b5b2e492145089d20e"
+    },
+    "tests/fixtures/base_earnings_calendar_84f1b72.py": {
+      "function_sha256": "e91f75cafa57a0108e87e851c23a0ecdac31ffa3d0c0ac4b561cb43d8f41e1d4",
+      "source": "engine/theme_scoring.py",
+      "source_sha256": "ad9b650265bc715586473aac250f05fd245eb67fbead7a054e8f0452b74557cd"
+    },
+    "tests/fixtures/base_market_concentration_84f1b72.py": {
+      "function_sha256": "a003f4d0d930c216da34df68f3e79e92fcce0ea8ec72c52805d45f635298b3f6",
+      "source": "engine/basket_score.py",
+      "source_sha256": "2745dd59bea1876f75f1afe6f525622d70094a61fcb304599f8fc288abfa416b"
+    },
+    "tests/fixtures/base_narrative_rotation_capture_normalizers_84f1b72.py": {
+      "captured_working_source_sha256": "57c2f97573aa5dae0d8d32e99c73361f5eabfad69ea2a233836e1035a33e2edd",
+      "exact_base_function_hashes_verified": true,
+      "functions": {
+        "_sizing_calibration": "8bff387eaf8e9e2c1ef841c0b5176d8a272b484b2460ca747daf193b96d4e289"
+      },
+      "source": "engine/narrative_rotation.py",
+      "source_sha256": "57c2f97573aa5dae0d8d32e99c73361f5eabfad69ea2a233836e1035a33e2edd"
+    },
+    "tests/fixtures/base_sector_central_capture_normalizers_84f1b72.py": {
+      "captured_working_source_sha256": "cf29f3d3dbf40931c6e552ef922e9aa0f240042680316ab710ce1572a03af3a8",
+      "exact_base_function_hashes_verified": true,
+      "functions": {
+        "_resolve_fusion_calibration": "6d074751f47d169f8b4e7d39badc809a9643fd5ae27c8646e55fbcabed4c6afa"
+      },
+      "source": "engine/sector_central.py",
+      "source_sha256": "cf29f3d3dbf40931c6e552ef922e9aa0f240042680316ab710ce1572a03af3a8"
+    },
+    "tests/fixtures/base_theme_scoring_capture_normalizers_84f1b72.py": {
+      "captured_working_source_sha256": "a007f5d3d056d9d346dcbe7ca8a3dd44312797fb04eec1cae6a7d99741c2ab95",
+      "exact_base_function_hashes_verified": true,
+      "functions": {
+        "_signal_calibration": "e0732a97b8b1e0e71d393348087fcd1ba345cb8c642b870e2dd7d24727689116"
+      },
+      "source": "engine/theme_scoring.py",
+      "source_sha256": "ad9b650265bc715586473aac250f05fd245eb67fbead7a054e8f0452b74557cd"
+    },
+    "tests/fixtures/base_vol_regime_capture_normalizers_84f1b72.py": {
+      "captured_working_source_sha256": "67c8e9ebf4b1c42337b952b11eadc052045db90f452b6838c6975e453b9bcc6d",
+      "exact_base_function_hashes_verified": true,
+      "functions": {
+        "load_overlay_gate": "629fdfcc1d0fbe8c64161ff844cfc5a6f2e936ba35174549637afe171a056dc4",
+        "overlay_config": "a8e92f3d499427bf49b493c6e7ed22d3fdfa4f481232741d397383b81374706e",
+        "published_snapshot": "fe9ecf1d463bc7f13e744ca1cae7259c39b160dbf45ba7cbca822dc172ec4fbc"
+      },
+      "source": "engine/vol_regime.py",
+      "source_sha256": "67c8e9ebf4b1c42337b952b11eadc052045db90f452b6838c6975e453b9bcc6d"
+    }
+  },
+  "protected_law_sha": "49c2e1d93e5e080b1671c98087a845e5beb09dd5",
+  "receipts": {
+    "affected": {
+      "command": [
+        "/opt/homebrew/Caskroom/miniconda/base/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "tests/test_sector_capture_normalizers.py",
+        "tests/test_sector_auxiliary_projections.py",
+        "tests/test_cycles.py",
+        "tests/test_entry_gate.py",
+        "tests/test_session_anchor_invariance.py",
+        "tests/test_sector_cycles_explicit_inputs.py",
+        "tests/test_vol_regime.py",
+        "tests/test_narrative_rotation.py",
+        "tests/test_theme_scoring.py",
+        "tests/test_sector_central.py",
+        "tests/test_sector_document_composition.py",
+        "tests/test_theme_allocation_explicit_inputs.py",
+        "tests/test_basket_score.py"
+      ],
+      "elapsed_seconds": 105.764,
+      "exit_code": 0,
+      "log": "/tmp/mmx-sector-capture-normalizers-affected-20261106.log",
+      "sha256": "771c39d1da304e586145f5053ff630082a33d3875dfcc8c4d4f3903b35612f6c"
+    },
+    "earnings_concentration_initial": {
+      "command": [
+        "/opt/homebrew/Caskroom/miniconda/base/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "tests/test_sector_auxiliary_projections.py",
+        "tests/test_basket_score.py",
+        "tests/test_theme_scoring.py",
+        "tests/test_theme_allocation_explicit_inputs.py"
+      ],
+      "elapsed_seconds": 8.866,
+      "exit_code": 0,
+      "log": "/tmp/mmx-sector-auxiliary-projections-20261106.log",
+      "sha256": "ed98ed0eca8ac9c93b0a7b941e3c9ab3e7f41beb4d2500663ae2c8e6b93c73b0"
+    },
+    "focused": {
+      "command": [
+        "/opt/homebrew/Caskroom/miniconda/base/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "tests/test_sector_capture_normalizers.py",
+        "tests/test_sector_auxiliary_projections.py"
+      ],
+      "elapsed_seconds": 11.374,
+      "exit_code": 0,
+      "log": "/tmp/mmx-sector-capture-normalizers-20261106.log",
+      "sha256": "8bb4816aa40780ac52b9738e051aa8f10226c901d7af5176739e9444c2ab84cd"
+    },
+    "skip_readback": {
+      "command": [
+        "/opt/homebrew/Caskroom/miniconda/base/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "-rs",
+        "tests/test_narrative_rotation.py::test_all_regions_have_cfg_and_smoke",
+        "tests/test_narrative_rotation.py::test_integration_smoke_real_data"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/mmx-sector-capture-normalizers-skips-20261106.log",
+      "sha256": "e3eb290992b8e5fa9debec7fb170ce55b72f0ae13f3225f996c83f1e10b7d1fb"
+    }
+  },
+  "recorded_at": "2026-11-06T14:45:23.950871+00:00",
+  "review": "Parent exact-source verification and focused/affected execution; native advisory source inspection found no concrete additional defect. No formal independent review claimed.",
+  "schema": "mastermind.source-review.v1",
+  "skip_reasons": [
+    "tests/test_narrative_rotation.py::test_all_regions_have_cfg_and_smoke: no regional caches available in this environment",
+    "tests/test_narrative_rotation.py::test_integration_smoke_real_data: real caches unavailable in this environment"
+  ],
+  "status": "SOURCE_QUALIFIED_NOT_ACTIVATED"
+}

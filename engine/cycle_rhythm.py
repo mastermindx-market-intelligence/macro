@@ -130,7 +130,10 @@ def _rhythm_window(turns: list[dict] | None, today_x: float) -> dict:
     }
 
 
-def estimate_kinds(now: dict, rhythm: dict) -> dict:
+_INCUMBENT_PARITY = object()
+
+
+def estimate_kinds(now: dict, rhythm: dict, *, live_hazard_parity=_INCUMBENT_PARITY) -> dict:
     """Per-horizon estimate-kind labels for one record's timing numbers.
 
     Separates what each number IS: `descriptive_rhythm` (the anchored window
@@ -174,7 +177,10 @@ def estimate_kinds(now: dict, rhythm: dict) -> dict:
         # B12r2 (RB12 repair): a record carries only {verdict, failing,
         # report_ref} — never the report — and only when a qualified cell exists.
         try:
-            from engine.hazard_parity import LIVE_HAZARD_PARITY as _parity
+            if live_hazard_parity is _INCUMBENT_PARITY:
+                from engine.hazard_parity import LIVE_HAZARD_PARITY as _parity
+            else:
+                _parity = live_hazard_parity or {}
             claim = ("parity_holds" if _parity.get("verdict") == "PARITY_HOLDS"
                      else "parity_failed" if _parity.get("verdict") == "PARITY_FAILS"
                      else "parity_not_established")

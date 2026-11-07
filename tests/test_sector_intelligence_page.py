@@ -34,6 +34,34 @@ def _view_body(src: str, view: str) -> str:
     return bodies[names.index(view)]
 
 
+def _assert_redirect_js(source: str, target: str) -> None:
+    """Execute the redirect with and without the existing shared-shell bridge."""
+    import json
+    import subprocess
+    scripts = re.findall(r"<script[^>]*>(.*?)</script>", source, re.S)
+    candidates = [script for script in scripts if "location.replace" in script and target in script]
+    assert candidates, "target-bearing redirect script missing"
+    harness = """
+const vm = require('node:vm');
+const fs = require('node:fs');
+const input = JSON.parse(fs.readFileSync(0, 'utf8'));
+const calls = [];
+const location = {hash: '', replace: target => calls.push(['location', target])};
+const window = {location};
+if (input.shell) window.MMXSharedShell = {navigate: (target, mode) => calls.push(['shell', target, mode])};
+vm.runInNewContext(input.script, {window, location}, {timeout: 1000});
+process.stdout.write(JSON.stringify(calls));
+"""
+    for shell in (False, True):
+        result = subprocess.run(
+            ["node", "-e", harness],
+            input=json.dumps({"script": candidates[-1], "shell": shell}),
+            text=True, capture_output=True, check=True, timeout=5,
+        )
+        expected = [["shell", target, "replace"]] if shell else [["location", target]]
+        assert json.loads(result.stdout) == expected
+
+
 # ---------------------------------------------------------------- stubs
 
 @pytest.mark.parametrize("name,target", [
@@ -44,10 +72,12 @@ def test_redirect_stub(name: str, target: str) -> None:
     s = _read(TPL / name)
     assert f'content="0;url={target}"' in s, "meta refresh missing/retargeted"
     assert 'name="robots" content="noindex,follow"' in s
-    assert f'location.replace("{target}")' in s
+    _assert_redirect_js(s, target)
     assert 'seo_path = "sector_central.html"' in s, "canonical must point at the merged page"
-    # A stub must never regrow page content
-    assert len(s) < 4000, f"{name} is {len(s)} chars — no longer a stub?"
+    # A stub must never regrow page content. Jinja comments are not rendered;
+    # keep the existing 4 KB budget on the actual template content.
+    stub_content = re.sub(r"\{#.*?#\}", "", s, flags=re.S)
+    assert len(stub_content) < 4000, f"{name} has {len(stub_content)} rendered-template chars"
 
 
 @pytest.mark.parametrize("name,target", [
@@ -63,7 +93,7 @@ def test_redirect_stub_rendered(name: str, target: str) -> None:
     """
     s = _read(ROOT / "site" / name)
     assert f'content="0;url={target}"' in s, "meta refresh missing/retargeted"
-    assert f'location.replace("{target}")' in s, "JS redirect fallback missing"
+    _assert_redirect_js(s, target)
     assert '<body class="macro-desk' not in s, "absorbed page body regrew in the render"
     assert "macro-desk.css" not in s, "stub must not re-join the macro-desk surface"
     # Headroom over the ~4.1KB healthy render for future head-injected chrome
@@ -561,6 +591,243 @@ def test_focused_action_builder_uses_fresh_baskets_and_canonical_board_logic(
     assert written == payload
 
 
+# ---------------------------------------------- canonical action-board publisher
+#
+# site/basketdata/action_board.json has ONE published contract (schema, as_of,
+# generated_utc, baskets_sha256, action_board) and ONE publisher
+# (scripts/build_sector_action_board.write_action_board). scripts/build_site.py
+# used to write a bare {"action_board": ...} object into the SAME file: that
+# envelope carries no source date and no basket binding, so a served board lost
+# its as_of/baskets_sha256 and the generation gate could no longer bind it to
+# the basket source it was built from.
+#
+# The tests below pin the canonical envelope, reproduce the legacy metadata
+# loss against the real gate, and prove the previous artifact survives a
+# contract failure instead of being overwritten with a degraded board.
+
+
+def _action_board_fixture(total: int = 1) -> dict:
+    """A minimal board in the shape scripts/build_site.py assembles."""
+    return {
+        "buy_now": [{"kind": "sector", "ticker": "XLK"}] if total else [],
+        "buy_soon": [],
+        "on_the_run": [],
+        "take_profits": [],
+        "hold": [],
+        "avoid": [],
+        "notable": [],
+        "total": total,
+    }
+
+
+def _write_basket_source(site: Path, *, as_of: str = "2026-09-14") -> Path:
+    """Write the basket source the board is bound to; return its path."""
+    baskets_path = site / "basketdata" / "baskets.json"
+    baskets_path.parent.mkdir(parents=True, exist_ok=True)
+    baskets_path.write_bytes(_json_bytes({
+        "as_of": as_of,
+        "theme_intel": {"as_of": as_of},
+        "baskets": [{"id": "theme-a"}],
+    }))
+    return baskets_path
+
+
+def _write_generation_around(site: Path, baskets_path: Path) -> None:
+    """Write the sibling artifacts of one generation, bound to the PUBLISHED
+    action-board bytes (the gate checks those hashes against each other)."""
+    action_sha = hashlib.sha256(
+        (site / "basketdata" / "action_board.json").read_bytes()
+    ).hexdigest()
+    baskets_sha = hashlib.sha256(baskets_path.read_bytes()).hexdigest()
+    (site / "sectordata").mkdir(parents=True, exist_ok=True)
+    (site / "sectordata" / "sector_central.json").write_bytes(
+        _json_bytes({"as_of": "2026-09-14", "sectors": [{"ticker": "XLK"}]})
+    )
+    (site / "premiumdata").mkdir(parents=True, exist_ok=True)
+    (site / "premiumdata" / "sector_central.json").write_bytes(_json_bytes({
+        "schema": "tier_payload.v1",
+        "page": "sector_central",
+        "as_of": "2026-09-14",
+        "baskets_sha256": baskets_sha,
+        "action_board_sha256": action_sha,
+    }))
+    (site / "sector_central.html").write_text(
+        '<section class="rvx-hero" '
+        'data-si-as-of="2026-09-14" '
+        f'data-si-baskets-sha256="{baskets_sha}" '
+        f'data-si-action-board-sha256="{action_sha}"></section>',
+        encoding="utf-8",
+    )
+
+
+def test_build_site_action_board_publishes_the_canonical_envelope(tmp_path: Path) -> None:
+    """The build_site writer must publish the canonical contract, not a bare
+    board object."""
+    from scripts.build_site import persist_action_board
+
+    site = tmp_path / "site"
+    baskets_path = _write_basket_source(site)
+    board = _action_board_fixture()
+
+    payload = persist_action_board(
+        site, board, generated_utc="2026-09-16T06:00:00Z"
+    )
+
+    written = json.loads(
+        (site / "basketdata" / "action_board.json").read_text()
+    )
+    assert written == payload
+    assert written["schema"] == "sector_intelligence_action_board.v1"
+    # as_of is the BASKET SOURCE date, never the build stamp
+    assert written["as_of"] == "2026-09-14"
+    assert written["generated_utc"] == "2026-09-16T06:00:00Z"
+    assert written["baskets_sha256"] == hashlib.sha256(
+        baskets_path.read_bytes()
+    ).hexdigest()
+    assert written["action_board"] == board
+
+
+def test_legacy_bare_action_board_envelope_fails_the_generation_gate(
+    tmp_path: Path,
+) -> None:
+    """Reproduces the metadata loss the bare writer caused.
+
+    The legacy envelope is exactly what scripts/build_site.py used to publish;
+    the generation gate rejects it for the two fields it had stripped.
+    """
+    site = tmp_path / "site"
+    _write_basket_source(site)
+    (site / "basketdata" / "action_board.json").write_bytes(
+        _json_bytes({"action_board": _action_board_fixture()})
+    )
+
+    report = _evaluate_sector_intelligence(tmp_path)
+    assert report["ok"] is False
+    errors = report["errors"]
+    assert any("action_board.json" in error and "as_of" in error
+               for error in errors), errors
+    assert any("baskets_sha256" in error for error in errors), errors
+
+
+def test_build_site_published_action_board_satisfies_the_generation_gate(
+    tmp_path: Path,
+) -> None:
+    """End to end: what the build_site writer publishes passes the real gate."""
+    from scripts.build_site import persist_action_board
+
+    site = tmp_path / "site"
+    baskets_path = _write_basket_source(site)
+    persist_action_board(
+        site, _action_board_fixture(), generated_utc="2026-09-16T06:00:00Z"
+    )
+    _write_generation_around(site, baskets_path)
+
+    report = _evaluate_sector_intelligence(tmp_path)
+    assert report["ok"] is True, report
+    assert report["facts"]["as_of"] == "2026-09-14"
+
+
+def test_a_second_writer_cannot_destroy_the_canonical_envelope(
+    tmp_path: Path,
+) -> None:
+    """The competing writer must not strip the contract the first one published.
+
+    The canonical producer writes the artifact first; the build_site producer
+    runs later in the engine job. Before the repair the second one overwrote
+    the canonical envelope with a bare board object, which reproduces the
+    metadata-loss shape without claiming the exact last live writer.
+    """
+    from scripts.build_sector_action_board import write_action_board
+    from scripts.build_site import persist_action_board
+
+    site = tmp_path / "site"
+    baskets_path = _write_basket_source(site)
+    output = site / "basketdata" / "action_board.json"
+    board = _action_board_fixture()
+
+    write_action_board(
+        output,
+        baskets_path=baskets_path,
+        action_board=board,
+        generated_utc="2026-09-16T06:00:00Z",
+    )
+    canonical = json.loads(output.read_text())
+
+    persist_action_board(site, board, generated_utc="2026-09-16T06:05:00Z")
+
+    after = json.loads(output.read_text())
+    for field in ("schema", "as_of", "baskets_sha256"):
+        assert after[field] == canonical[field], (
+            f"the second writer dropped {field} from the published artifact"
+        )
+    assert after["action_board"] == board
+    assert after["baskets_sha256"] == hashlib.sha256(
+        baskets_path.read_bytes()
+    ).hexdigest()
+
+
+def test_action_board_contract_failure_preserves_the_previous_artifact(
+    tmp_path: Path,
+) -> None:
+    """Insufficient inputs must leave the last accepted artifact in place."""
+    from scripts.build_sector_action_board import ActionBoardContractError
+    from scripts.build_site import persist_action_board
+
+    site = tmp_path / "site"
+    output = site / "basketdata" / "action_board.json"
+    output.parent.mkdir(parents=True)
+    previous = _json_bytes({
+        "schema": "sector_intelligence_action_board.v1",
+        "as_of": "2026-09-14",
+        "generated_utc": "2026-09-15T06:00:00Z",
+        "baskets_sha256": "0" * 64,
+        "action_board": _action_board_fixture(),
+    })
+    output.write_bytes(previous)
+
+    # no basket source at all — the board cannot be bound to one
+    with pytest.raises(ActionBoardContractError):
+        persist_action_board(
+            site, _action_board_fixture(), generated_utc="2026-09-16T06:00:00Z"
+        )
+    assert output.read_bytes() == previous
+
+    # a basket source with no usable as_of is just as unusable
+    (site / "basketdata" / "baskets.json").write_bytes(_json_bytes({"baskets": []}))
+    with pytest.raises(ActionBoardContractError):
+        persist_action_board(
+            site, _action_board_fixture(), generated_utc="2026-09-16T06:00:00Z"
+        )
+    assert output.read_bytes() == previous
+
+    # an empty board is a failed computation, not a generation
+    _write_basket_source(site)
+    with pytest.raises(ActionBoardContractError):
+        persist_action_board(
+            site, _action_board_fixture(total=0),
+            generated_utc="2026-09-16T06:00:00Z",
+        )
+    assert output.read_bytes() == previous
+
+    # a board whose total contradicts its lanes fails the gate's own rule
+    with pytest.raises(ActionBoardContractError):
+        persist_action_board(
+            site, {**_action_board_fixture(), "total": 0},
+            generated_utc="2026-09-16T06:00:00Z",
+        )
+    assert output.read_bytes() == previous
+
+
+def test_build_site_publishes_the_action_board_through_the_canonical_writer() -> None:
+    """Call-site guard: build_site must not hand-roll the artifact again."""
+    src = (ROOT / "scripts" / "build_site.py").read_text(encoding="utf-8")
+    assert 'json.dumps({"action_board"' not in src, (
+        "scripts/build_site.py publishes a bare action_board envelope again — "
+        "that shape carries no as_of and no baskets_sha256"
+    )
+    assert "persist_action_board(site, _ab)" in src
+
+
 def test_focused_basket_build_fails_closed_when_engine_raises(monkeypatch) -> None:
     from engine import baskets as basket_engine
     from scripts import build_baskets
@@ -904,3 +1171,43 @@ def test_unclosed_html_comment_hides_data_si_attrs(tmp_path: Path) -> None:
     assert any(
         "missing data-si-as-of" in error for error in report["errors"]
     ), report
+
+
+def test_action_board_binds_one_basket_byte_snapshot(tmp_path: Path, monkeypatch) -> None:
+    from scripts.build_site import persist_action_board
+    site = tmp_path / "site"
+    baskets_path = _write_basket_source(site)
+    raw = baskets_path.read_bytes()
+    original_read = Path.read_bytes
+    reads = []
+    def one_read(path):
+        if path == baskets_path:
+            reads.append(path)
+            assert len(reads) == 1, "validation and hash must use the same read"
+            return raw
+        return original_read(path)
+    monkeypatch.setattr(Path, "read_bytes", one_read)
+    payload = persist_action_board(site, _action_board_fixture(),
+                                   generated_utc="2026-09-16T06:00:00Z")
+    assert payload["baskets_sha256"] == hashlib.sha256(raw).hexdigest()
+    assert len(reads) == 1
+
+
+@pytest.mark.parametrize("bad_raw", [
+    b"{",
+    b"[]",
+    b'{"as_of":"not-a-date","theme_intel":{"as_of":"not-a-date"}}',
+    b'{"as_of":"2026-09-14","theme_intel":{"as_of":"2026-09-15"}}',
+])
+def test_invalid_basket_snapshot_keeps_previous_board(tmp_path: Path, bad_raw: bytes) -> None:
+    from scripts.build_sector_action_board import ActionBoardContractError
+    from scripts.build_site import persist_action_board
+    site = tmp_path / "site"
+    source = _write_basket_source(site)
+    persist_action_board(site, _action_board_fixture(), generated_utc="2026-09-16T06:00:00Z")
+    output = site / "basketdata" / "action_board.json"
+    previous = output.read_bytes()
+    source.write_bytes(bad_raw)
+    with pytest.raises(ActionBoardContractError):
+        persist_action_board(site, _action_board_fixture(), generated_utc="2026-09-16T06:05:00Z")
+    assert output.read_bytes() == previous

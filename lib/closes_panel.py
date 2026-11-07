@@ -172,6 +172,18 @@ def merge_close_caches(
         d.index = pd.to_datetime(d.index)
         frames[grp] = d.sort_index()
 
+    return merge_captured_close_caches(frames, groups)
+
+
+BROAD_GROUPS = ("breadth", "smallcap_breadth", "midcap_breadth")
+
+
+def merge_captured_close_caches(frames, groups) -> tuple[pd.DataFrame, dict]:
+    """Run the incumbent whole-column merge on explicitly captured frames.
+
+    Input owners validate and bound their frames before this value-only helper.
+    Legacy acquisition remains above; selection, stitch, and receipts are shared.
+    """
     if not frames:
         return pd.DataFrame(), {"raw_tip": None, "tip": None, "all_null_rows": [],
                                 "dropped_all_null_tail_rows": [], "behind": {},
@@ -346,6 +358,8 @@ def resolve_thematic_close_panel(
     primary: pd.DataFrame,
     supplemental: pd.DataFrame | None,
     tickers,
+    *,
+    source_basis: dict[str, str] | None = None,
 ) -> tuple[pd.DataFrame, dict]:
     """Resolve thematic member closes on the already-frozen primary calendar.
 
@@ -356,6 +370,13 @@ def resolve_thematic_close_panel(
     calendar are discarded before selection, so this helper can widen population but
     can never advance the desk clock.
     """
+    if source_basis is None:
+        basis = {"primary_breadth": "closes_cache_UNADJUSTED", "baskets_extras": "tradj"}
+    else:
+        if (not isinstance(source_basis, dict) or set(source_basis) != {"primary_breadth", "baskets_extras"}
+                or any(value not in ("provider_auto_adjusted", "unrecorded") for value in source_basis.values())):
+            raise ValueError("Invalid explicit thematic source basis")
+        basis = dict(source_basis)
     p = _normalise_frame_index(primary)
     if supplemental is None or supplemental.empty:
         s = pd.DataFrame(index=p.index)
@@ -430,10 +451,7 @@ def resolve_thematic_close_panel(
         "selection_reason": reason,
         "source_last_observation": source_last,
         "stitched": stitched,
-        "source_basis": {
-            "primary_breadth": "closes_cache_UNADJUSTED",
-            "baskets_extras": "tradj",
-        },
+        "source_basis": basis,
         "adjustment_vintage": "unrecorded",
         "authority": "measurement_only",
     }

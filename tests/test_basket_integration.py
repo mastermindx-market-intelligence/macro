@@ -297,7 +297,11 @@ def test_action_board_lane_hint_wins(tmp_path):
     assert any(x["ticker"] == "XLU" for x in board["take_profits"]), "lane_hint=take_profits"
     assert any(x["ticker"] == "XLY" for x in board["avoid"]), "lane_hint=avoid"
     # no double-listing
-    all_tickers = [x["ticker"] for lane in board.values() for x in lane]
+    # The published board also carries scalar total and per-lane more metadata.
+    # Check every row-bearing lane; metadata is not another signal lane.
+    lanes = ("buy_now", "buy_soon", "on_the_run", "take_profits", "hold", "avoid")
+    all_tickers = [x["ticker"] for lane in (*lanes, "notable") for x in board[lane]]
+    assert board["total"] == sum(len(board[lane]) for lane in lanes)
     assert len(all_tickers) == len(set(all_tickers))
 
 

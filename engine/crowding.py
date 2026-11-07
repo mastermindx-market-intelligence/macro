@@ -114,6 +114,21 @@ def compute_fragility(closes: pd.DataFrame | None = None,
         if si is None or "days_to_cover" not in si.columns:
             return {}
 
+        return compute_fragility_from_inputs(closes=closes, si=si, bench=bench)
+    except Exception as e:  # noqa: BLE001 — additive context, never fatal
+        log.warning("fragility map skipped (%s)", e)
+        return {}
+
+
+def compute_fragility_from_inputs(*, closes: pd.DataFrame | None,
+                                   si: pd.DataFrame | None,
+                                   bench: pd.Series | None) -> dict[str, dict]:
+    """Original fragility calculation; captured None is explicit absence."""
+    try:
+        if closes is None or closes.empty or bench is None:
+            return {}
+        if si is None or "days_to_cover" not in si.columns:
+            return {}
         bench = bench.reindex(closes.index).ffill()
         rs = closes.div(bench, axis=0)
         # percentile of the LATEST RS within each name's trailing window (PIT, cheap)

@@ -402,6 +402,24 @@ def _drop_spurious_sector_rows(wide: dict) -> dict[str, list[tuple]]:
     return dropped
 
 
+def liquidity_from_document(document):
+    """Compatibility projection; the shared pure board owner holds the body."""
+    from engine import sector_action_board
+    return sector_action_board.liquidity_from_document(document)
+
+
+def macro_drag_from_document(document):
+    """Compatibility projection; the shared pure board owner holds the body."""
+    from engine import sector_action_board
+    return sector_action_board.macro_drag_from_document(document)
+
+
+def factor_context_from_document(document):
+    """Compatibility projection; the shared pure board owner holds the body."""
+    from engine import sector_action_board
+    return sector_action_board.factor_context_from_document(document, logger=log)
+
+
 def current_liquidity() -> str | None:
     """The live US net-liquidity regime ("expanding"/"contracting"/"neutral")
     the engine last classified (regime/latest.json `liquidity_overlay`). Threaded
@@ -411,10 +429,10 @@ def current_liquidity() -> str | None:
     if not p.exists():
         return None
     try:
-        liq = json.loads(p.read_text()).get("liquidity_overlay")
+        return liquidity_from_document(json.loads(p.read_text()))
     except Exception:  # noqa: BLE001
         return None
-    return liq if liq in ("expanding", "contracting", "neutral") else None
+
 
 
 def current_macro() -> float | None:
@@ -426,10 +444,10 @@ def current_macro() -> float | None:
     if not p.exists():
         return None
     try:
-        v = (json.loads(p.read_text()).get("macro_risk") or {}).get("score")
+        return macro_drag_from_document(json.loads(p.read_text()))
     except Exception:  # noqa: BLE001
         return None
-    return float(v) if isinstance(v, (int, float)) else None
+
 
 
 def current_vol_regime() -> dict | None:
@@ -3571,23 +3589,9 @@ def main(now: datetime | None = None) -> int:
     fp = site / "factordata" / "factors.json"
     if fp.exists():
         try:
-            for _r in (json.loads(fp.read_text()) or {}).get("table", []):
-                if not _r.get("ticker"):
-                    continue
-                # audit #25: the board TIEBREAK must use the scorecard-passing IC-weighted
-                # composite (composite_rank), NOT the blind equal-weight composite (ic_ir -0.049,
-                # anti-predictive). Fall back to composite only if the rank composite is absent.
-                _cz = _r.get("composite_rank")
-                if _cz is None:
-                    _cz = _r.get("composite")
-                if _cz is not None:
-                    factor_z[_r["ticker"]] = _cz
-                if _r.get("sue") is not None:
-                    sue_z[_r["ticker"]] = _r["sue"]
-                _factor_legs[_r["ticker"]] = {k: _r.get(k) for k in
-                                              ("value", "quality", "profitability")}
-                if _r.get("sector"):
-                    _sectors[_r["ticker"]] = _r["sector"]
+            context = factor_context_from_document(json.loads(fp.read_text()))
+            factor_z, sue_z = context["factor_z"], context["sue_z"]
+            _factor_legs, _sectors = context["factor_legs"], context["sectors"]
         except Exception as e:  # noqa: BLE001 — additive, never fatal
             log.warning("factors.json unreadable (%s)", e)
     isp = site / "factordata" / "insider_signals.json"

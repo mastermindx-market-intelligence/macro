@@ -38,6 +38,12 @@ import json
 import logging
 import sys
 import time
+import re
+from copy import deepcopy
+from dataclasses import dataclass
+from datetime import date, datetime, timezone
+from collections.abc import Mapping
+from types import MappingProxyType
 from pathlib import Path
 
 import pandas as pd
@@ -98,35 +104,299 @@ def _membership_tickers() -> set[str]:
     return out
 
 
-def _download_closes(tickers: list[str]) -> pd.DataFrame:
+def _download_closes(tickers: list[str], *, request_settings=None,
+                     history_start: str = START, source_session: str | None = None) -> pd.DataFrame:
     """Adjusted closes for `tickers`, [Date x TICKER], deep history from START. Reuses the breadth
     yfinance pattern (crumb/cookie auth that works headless), batched with retry+backoff."""
+    if (request_settings is None) != (source_session is None):
+        raise ValueError("Explicit extras download requires both policy and source session")
+    strict = request_settings is not None
+    batch_size = request_settings.batch_size if strict else BATCH
+    retries = request_settings.retries if strict else RETRIES
+    backoff = request_settings.backoff_base_s if strict else BACKOFF_S
     import yfinance as yf
     frames: list[pd.DataFrame] = []
-    for i in range(0, len(tickers), BATCH):
-        batch = tickers[i:i + BATCH]
-        for attempt in range(RETRIES):
+    for i in range(0, len(tickers), batch_size):
+        batch = tickers[i:i + batch_size]
+        for attempt in range(retries):
             try:
-                df = yf.download(batch, start=START, auto_adjust=True,
+                df = yf.download(batch, start=history_start, auto_adjust=True,
                                  progress=False, group_by="column", threads=True)
                 if df is None or df.empty:
                     raise RuntimeError("empty frame")
-                closes = df["Close"] if "Close" in df.columns.get_level_values(0) else df
-                if isinstance(closes, pd.Series):              # single-ticker shape
-                    closes = closes.to_frame(batch[0])
-                frames.append(closes.sort_index())
+                if strict:
+                    closes = _capture_close_response(df, requested=tuple(batch), source_session=source_session)
+                else:
+                    closes = df["Close"] if "Close" in df.columns.get_level_values(0) else df
+                    if isinstance(closes, pd.Series):              # single-ticker shape
+                        closes = closes.to_frame(batch[0])
+                    closes = closes.sort_index()
+                frames.append(closes)
                 break
             except Exception as e:  # noqa: BLE001
-                wait = BACKOFF_S * (2 ** attempt)
+                wait = backoff * (2 ** attempt)
                 log.warning("batch %d/%d (%s…) attempt %d failed (%s); retry in %.0fs",
-                            i // BATCH + 1, (len(tickers) - 1) // BATCH + 1, batch[0], attempt + 1, e, wait)
+                            i // batch_size + 1, (len(tickers) - 1) // batch_size + 1, batch[0], attempt + 1, e, wait)
                 time.sleep(wait)
         else:
-            log.error("batch starting %s failed after %d retries — leaving to prior store", batch[0], RETRIES)
+            log.error("batch starting %s failed after %d retries — leaving to prior store", batch[0], retries)
     if not frames:
         raise RuntimeError("all download batches failed")
+    if strict:
+        from lib import adjusted_price_capture as bounds
+        union = pd.DatetimeIndex([])
+        names = []
+        for frame in frames:
+            union = union.union(frame.index)
+            names.extend(frame.columns)
+        if (len(names) != len(set(names)) or len(union) > bounds.MAX_ROWS
+                or len(names) > bounds.MAX_COLUMNS or len(union) * len(names) > bounds.MAX_PANEL_CELLS):
+            raise bounds.AdjustedCaptureError("extras_download_union_bound")
     out = pd.concat(frames, axis=1).sort_index()
     return out.loc[:, ~out.columns.duplicated()]
+
+
+@dataclass(frozen=True)
+class BasketExtrasAcquisition:
+    """Private values/evidence; per-basket admission remains its existing owner."""
+    status: str
+    source_session: str
+    effective_as_of: str | None
+    archive: pd.DataFrame
+    resolved_panel: pd.DataFrame
+    resolution: Mapping[str, object]
+    requested: tuple[str, ...]
+    downloaded: tuple[str, ...]
+    retained: tuple[str, ...]
+    unresolved: tuple[str, ...]
+    evidence: Mapping[str, object]
+
+
+def _capture_close_response(frame, *, requested: tuple[str, ...], source_session: str) -> pd.DataFrame:
+    from lib.adjusted_price_capture import capture_close_panel, AdjustedCaptureError, MAX_ROWS
+    if (not isinstance(frame, pd.DataFrame) or frame.empty or len(frame) > MAX_ROWS
+            or not isinstance(frame.index, pd.DatetimeIndex) or frame.index.hasnans
+            or frame.index.has_duplicates or not frame.index.is_monotonic_increasing
+            or frame.index.tz is not None or not frame.index.equals(frame.index.normalize())
+            or frame.columns.has_duplicates):
+        raise AdjustedCaptureError("invalid_extras_response")
+    multi = isinstance(frame.columns, pd.MultiIndex)
+    if (multi and frame.columns.nlevels != 2) or (not multi and len(requested) != 1):
+        raise AdjustedCaptureError("ambiguous_extras_symbols")
+    level0 = frame.columns.get_level_values(0) if multi else frame.columns
+    if "Close" not in level0 or (multi and not set(frame.columns.get_level_values(1)).issubset(requested)):
+        raise AdjustedCaptureError("unexpected_extras_symbols")
+    closes = frame["Close"]
+    if isinstance(closes, pd.Series): closes = closes.to_frame(requested[0])
+    if closes.columns.has_duplicates or not set(closes.columns).issubset(requested):
+        raise AdjustedCaptureError("unexpected_extras_symbols")
+    closes = closes.loc[closes.index <= pd.Timestamp(source_session)].reindex(columns=requested)
+    if closes.empty:
+        raise AdjustedCaptureError("no_completed_extras_observations")
+    return capture_close_panel(closes, source_session=source_session)
+
+
+def acquire_extras_from_inputs(*, membership: Mapping, primary_panel: pd.DataFrame,
+                               prior_extras: pd.DataFrame | None,
+                               qualified_primary_members: frozenset[str],
+                               primary_history_threshold: int, evaluation_instant: datetime,
+                               yahoo_config: Mapping, aliases: Mapping, history_start: str,
+                               primary_basis: str = "unrecorded",
+                               index_membership: Mapping | None = None) -> BasketExtrasAcquisition:
+    """Acquire through the incumbent downloader; keep the actual resolver choice.
+
+    ``qualified_primary_members`` is supplied by the caller's captured primary
+    source owner and is checked against the actual frozen primary column. Depth
+    controls download planning only; it never excludes a newly observed IPO.
+    This function performs no legacy store, proxy-seed or publication effects.
+    """
+    from collectors.yahoo import YahooRequestSettings
+    from lib import market_session, adjusted_price_capture as captured
+    from lib.closes_panel import resolve_thematic_close_panel, population_observation
+    if (not isinstance(evaluation_instant, datetime) or evaluation_instant.tzinfo is None
+            or evaluation_instant.utcoffset() is None or not isinstance(membership, Mapping)
+            or not isinstance(aliases, Mapping) or not isinstance(qualified_primary_members, frozenset)
+            or any(not isinstance(t, str) for t in qualified_primary_members)
+            or type(primary_history_threshold) is not int or primary_history_threshold < 1
+            or primary_basis not in ("unrecorded", "provider_auto_adjusted")):
+        raise captured.AdjustedCaptureError("invalid_extras_request")
+    try:
+        if not isinstance(history_start, str) or date.fromisoformat(history_start).isoformat() != history_start:
+            raise ValueError
+    except (TypeError, ValueError):
+        raise captured.AdjustedCaptureError("invalid_extras_history_start") from None
+    request = YahooRequestSettings.capture(yahoo_config)
+    policy_start = str(history_start)
+    evaluation = evaluation_instant.astimezone(timezone.utc)
+    local = market_session.market_local_date("US", evaluation)
+    target = market_session.expected_session("US", evaluation)
+    if (not market_session.calendar_verified("US", local.year)
+            or not market_session.calendar_verified("US", target.year) or date.fromisoformat(policy_start) > target):
+        raise captured.AdjustedCaptureError("extras_target_calendar_or_start_invalid")
+    source = target.isoformat()
+    primary = captured.capture_close_panel(primary_panel, source_session=source)
+    prior = captured.capture_close_panel(prior_extras, source_session=source, allow_absent=True)
+    if primary.empty or not bool(primary.iloc[-1].notna().any()):
+        raise captured.AdjustedCaptureError("observed_frozen_primary_tail_required")
+    # Membership-time eligibility stays with the existing basket observation owner.
+    document = deepcopy(dict(membership))
+    if index_membership is not None:
+        # The native receipt requires the strict thematic contract before any
+        # provider request. Legacy callers retain their existing value API.
+        from lib.breadth_member_generation_contract import _membership
+        _membership(document, primary)
+    baskets = document.get("baskets")
+    if not isinstance(baskets, dict) or len(baskets) > 1000:
+        raise captured.AdjustedCaptureError("invalid_basket_membership")
+    requested_set, active_set = set(), set()
+    required_end = {}
+    populations = {}
+    for basket_id, basket in baskets.items():
+        if not isinstance(basket_id, str) or not isinstance(basket, dict) or not isinstance(basket.get("members"), list):
+            raise captured.AdjustedCaptureError("invalid_basket_membership")
+        rows = basket["members"]
+        if len(rows) > 5000 or any(not isinstance(row, dict) for row in rows):
+            raise captured.AdjustedCaptureError("invalid_basket_membership")
+        for row in rows:
+            ticker = row.get("ticker") or row.get("symbol")
+            if not isinstance(ticker, str) or not re.fullmatch(r"[A-Z][A-Z0-9.-]{0,23}", ticker):
+                raise captured.AdjustedCaptureError("invalid_basket_member_symbol")
+            for when in (row.get("added"), row.get("removed")):
+                if when is not None:
+                    try:
+                        if not isinstance(when, str) or date.fromisoformat(when).isoformat() != when: raise ValueError
+                    except (TypeError, ValueError):
+                        raise captured.AdjustedCaptureError("invalid_basket_member_date") from None
+            # Historical resolution keeps the full dated-membership universe.
+            # Its visible end is the last frozen-calendar date within any of
+            # that member's existing added/removed intervals; no new clock.
+            requested_set.add(ticker)
+            eligible_dates = primary.index
+            if row.get("added"): eligible_dates = eligible_dates[eligible_dates >= pd.Timestamp(row["added"])]
+            if row.get("removed"): eligible_dates = eligible_dates[eligible_dates < pd.Timestamp(row["removed"])]
+            if len(eligible_dates):
+                required_end[ticker] = max(required_end.get(ticker, eligible_dates[-1]), eligible_dates[-1])
+        observation = population_observation(primary, rows, primary.index[-1])
+        populations[basket_id] = observation["configured_members"]
+        active_set.update(observation["configured_members"])
+    index_populations = None
+    if index_membership is not None:
+        from lib.sector_index_membership_capture import index_population
+        additional, eligible, ends, index_populations = index_population(
+            deepcopy(dict(index_membership)), primary=primary, before=evaluation)
+        requested_set.update(additional)
+        active_set.update(eligible)
+        for ticker, end in ends.items():
+            required_end[ticker] = max(required_end.get(ticker, end), end)
+    requested = tuple(sorted(requested_set))
+    if not requested or len(requested) > captured.MAX_COLUMNS:
+        raise captured.AdjustedCaptureError("empty_or_oversized_basket_membership")
+    alias_values = deepcopy(dict(aliases))
+    mapping = {t: alias_values.get(t, t) for t in requested}
+    if (any(not isinstance(v, str) or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9.^=-]{0,23}", v)
+            for v in mapping.values()) or len(set(mapping.values())) != len(mapping)):
+        raise captured.AdjustedCaptureError("extras_vendor_alias_collision_or_invalid")
+    basis = {"primary_breadth": primary_basis, "baskets_extras": "unrecorded"}
+    def resolve(archive):
+        names = [ticker for ticker in requested if ticker in archive.columns]
+        if (len(primary) * len(names) > captured.MAX_PANEL_CELLS
+                or len(primary) * len(requested) > captured.MAX_PANEL_CELLS):
+            raise captured.AdjustedCaptureError("extras_resolver_projection_bound")
+        # Keep the full archive separately; the incumbent resolver need only
+        # allocate the historical membership universe on this frozen calendar.
+        return resolve_thematic_close_panel(primary, archive.loc[:, names], requested, source_basis=basis)
+    _, initial_resolution = resolve(prior)
+    skipped = []
+    no_visible_obligation = tuple(t for t in requested if t not in required_end)
+    for ticker in requested:
+        column = primary[ticker].dropna() if ticker in primary else pd.Series(dtype=float)
+        required = pd.Timestamp(source) if ticker in active_set else required_end.get(ticker)
+        if (ticker in qualified_primary_members and len(column) >= primary_history_threshold
+                and required is not None and required in column.index
+                and initial_resolution["price_source"].get(ticker) == "primary_breadth"):
+            skipped.append(ticker)
+    needed = tuple(ticker for ticker in requested if ticker not in skipped and ticker not in no_visible_obligation)
+    fresh = captured.empty_panel()
+    failed_download = False
+    if needed:
+        request_map = {t: mapping[t] for t in needed}
+        try:
+            raw = _download_closes(list(request_map.values()), request_settings=request,
+                                   history_start=policy_start, source_session=source)
+        except RuntimeError:
+            failed_download = True
+        else:
+            raw = captured.capture_close_panel(raw, source_session=source)
+            if not set(raw.columns).issubset(request_map.values()):
+                raise captured.AdjustedCaptureError("unexpected_extras_symbols")
+            inverse = {v: k for k, v in request_map.items()}
+            fresh = raw.rename(columns=inverse).copy(deep=True)
+    union_index = prior.index.union(fresh.index).sort_values().as_unit("ns")
+    union_columns = sorted(set(prior.columns) | set(fresh.columns))
+    if (len(union_index) > captured.MAX_ROWS or len(union_columns) > captured.MAX_COLUMNS
+            or len(union_index) * len(union_columns) > captured.MAX_PANEL_CELLS):
+        raise captured.AdjustedCaptureError("extras_archive_union_bound")
+    archive = prior.reindex(index=union_index, columns=union_columns).copy(deep=True)
+    downloaded, unresolved, member_evidence = [], [], {}
+    for ticker in requested:
+        old = prior[ticker].dropna() if ticker in prior else pd.Series(dtype=float)
+        new = fresh[ticker].dropna() if ticker in fresh else pd.Series(dtype=float)
+        required = pd.Timestamp(source) if ticker in active_set else required_end.get(ticker)
+        refreshed = (ticker in needed and len(new) > 0 and required is not None and required in new.index
+                     and (not len(old) or old.index.isin(new.index).all()))
+        if refreshed:
+            archive[ticker] = fresh[ticker].reindex(union_index)
+            downloaded.append(ticker)
+        elif ticker in needed:
+            unresolved.append(ticker)
+        member_evidence[ticker] = {"vendor_symbol": mapping[ticker], "download_requested": ticker in needed,
+            "returned_span": [new.index[0].date().isoformat(), new.index[-1].date().isoformat()] if len(new) else None,
+            "downloaded": bool(refreshed), "archive_prior_retained": bool(len(old) and not refreshed),
+            "refresh_unresolved": ticker in unresolved,
+            "refresh_reason": ("download_failed" if failed_download else "missing_target_or_prior_observations")
+                if ticker in unresolved else None,
+            "acquisition_basis": "provider_auto_adjusted" if refreshed else None}
+    resolved, resolution = resolve(archive)
+    retained = tuple(ticker for ticker in prior.columns if ticker not in downloaded)
+    for ticker in requested:
+        chosen = resolution["price_source"].get(ticker)
+        observed = resolved[ticker].dropna() if ticker in resolved else pd.Series(dtype=float)
+        member_evidence[ticker].update({"selected_source": chosen,
+            "selection_reason": resolution["selection_reason"].get(ticker),
+            "selected_history_sessions": len(observed),
+            "selected_history_start": observed.index[0].date().isoformat() if len(observed) else None,
+            "selected_observation_date": observed.index[-1].date().isoformat() if len(observed) else None,
+            "target_observed": bool(len(observed) and observed.index[-1] == pd.Timestamp(source)),
+            "currently_eligible": ticker in active_set,
+            "required_history_end": required_end[ticker].date().isoformat() if ticker in required_end else None,
+            "required_history_end_observed": bool(ticker in required_end and required_end[ticker] in observed.index),
+            "desk_observed": bool(primary.index[-1] in observed.index),
+            "chosen_prior_retained": chosen == "baskets_extras" and ticker in retained,
+            "chosen_acquired_this_attempt": chosen == "baskets_extras" and ticker in downloaded,
+            "supplied_primary_qualified": ticker in qualified_primary_members,
+            "stitched": deepcopy(resolution["stitched"].get(ticker))})
+    selection_shortfalls = tuple(t for t in requested if t in required_end
+                                 and not member_evidence[t]["required_history_end_observed"])
+    for ticker in requested:
+        member_evidence[ticker]["selection_history_shortfall"] = ticker in selection_shortfalls
+    complete = (not unresolved and not selection_shortfalls
+                and all(member_evidence[t]["target_observed"] for t in active_set))
+    status = "complete" if complete else "partial" if any(member_evidence[t]["desk_observed"] for t in requested) else "unavailable"
+    evidence = {"evaluation_instant": evaluation.isoformat(), "source_session": source,
+        "effective_as_of": resolution["effective_as_of"], "completed_sessions_only": True,
+        "request": {"history_start": policy_start, "batch_size": request.batch_size,
+                    "retries": request.retries, "backoff_base_s": request.backoff_base_s,
+                    "primary_history_threshold": primary_history_threshold},
+        "skipped_qualified_primary": list(skipped), "basket_populations": populations,
+        "currently_eligible": sorted(active_set), "no_visible_history_obligation": list(no_visible_obligation),
+        "selection_history_shortfalls": list(selection_shortfalls),
+        "members": member_evidence,
+        "unknown": {"vendor_publication_clock": "Not supplied per bar by yfinance",
+                    "provider_available_at": "First retrievable time is not observed"}}
+    if index_populations is not None:
+        evidence["index_populations"] = index_populations
+    return BasketExtrasAcquisition(status, source, resolution["effective_as_of"], archive, resolved,
+        MappingProxyType(resolution), requested, tuple(downloaded), retained, tuple(unresolved), MappingProxyType(evidence))
 
 
 def main() -> int:

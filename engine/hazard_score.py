@@ -32,6 +32,8 @@ from __future__ import annotations
 import json
 import logging
 import math
+from copy import deepcopy
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Literal
 
@@ -118,6 +120,29 @@ def _load_km() -> dict:
     return _km_cache
 
 
+
+@dataclass(frozen=True)
+class HazardCalibration:
+    """Detached model and KM documents, without a loader or mutable cache binding."""
+    model: dict
+    km: dict
+
+    def __post_init__(self):
+        if not isinstance(self.model, dict) or not isinstance(self.km, dict):
+            raise TypeError("hazard calibration requires explicit model and KM mappings")
+        object.__setattr__(self, "model", deepcopy(self.model))
+        object.__setattr__(self, "km", deepcopy(self.km))
+
+
+def acquire_calibration() -> HazardCalibration | None:
+    """Capture incumbent calibration values once; absence remains explicit."""
+    try:
+        return HazardCalibration(model=_load_model(), km=_load_km())
+    except Exception as exc:
+        log.warning("hazard_score: cannot load artifact: %s", exc)
+        return None
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Feature construction
 # ─────────────────────────────────────────────────────────────────────────────
@@ -148,6 +173,7 @@ def _build_feature_vector(
     family: str,
     quad: str | None,
     liq_expanding: bool | None,
+    *, emit_diagnostics: bool = True,
 ) -> dict[str, float] | None:
     """Construct the full design vector from hazard_features + context.
 
@@ -158,14 +184,16 @@ def _build_feature_vector(
     freq = hf.get("freq", "D")
     bpy = 252.0 if freq == "D" else 12.0
     if age_bars is None:
-        log.debug("hazard_score: age_since_turn_bars missing — cannot score")
+        if emit_diagnostics:
+            log.debug("hazard_score: age_since_turn_bars missing — cannot score")
         return None
     age_months = max(0.001, age_bars / bpy * 12.0)
 
     # Median half-cycle in months
     median_half_yrs = hf.get("median_half_yrs")
     if not median_half_yrs or median_half_yrs <= 0:
-        log.debug("hazard_score: median_half_yrs missing/zero — cannot score")
+        if emit_diagnostics:
+            log.debug("hazard_score: median_half_yrs missing/zero — cannot score")
         return None
     median_half_m = median_half_yrs * 12.0
 
@@ -175,7 +203,8 @@ def _build_feature_vector(
     # pos_osc_s: pos (0–100) → divide by 100
     pos = hf.get("pos")
     if pos is None:
-        log.debug("hazard_score: pos missing — cannot score")
+        if emit_diagnostics:
+            log.debug("hazard_score: pos missing — cannot score")
         return None
     pos_osc_s = float(pos) / 100.0
 
@@ -227,22 +256,24 @@ def _build_feature_vector(
 # Schema guard
 # ─────────────────────────────────────────────────────────────────────────────
 
-def _check_schema(model: dict) -> bool:
+def _check_schema(model: dict, *, emit_diagnostics: bool = True) -> bool:
     """Return True if the model artifact's design matches _DESIGN exactly."""
     artifact_design = model.get("config", {}).get("design", [])
     if artifact_design != _DESIGN:
-        log.warning(
-            "hazard_score: model design mismatch — artifact has %d features, "
-            "scorer knows %d; refusing to score (epoch drift?)",
-            len(artifact_design), len(_DESIGN),
-        )
+        if emit_diagnostics:
+            log.warning(
+                "hazard_score: model design mismatch — artifact has %d features, "
+                "scorer knows %d; refusing to score (epoch drift?)",
+                len(artifact_design), len(_DESIGN),
+            )
         return False
     epoch_str = model.get("turn_def_version", "")
     if epoch_str and _EPOCH not in epoch_str and epoch_str != _EPOCH:
-        log.warning(
-            "hazard_score: epoch mismatch — artifact '%s', scorer expects '%s'",
-            epoch_str, _EPOCH,
-        )
+        if emit_diagnostics:
+            log.warning(
+                "hazard_score: epoch mismatch — artifact '%s', scorer expects '%s'",
+                epoch_str, _EPOCH,
+            )
         return False
     return True
 
@@ -383,24 +414,38 @@ def score(
     """
     if not hazard_features:
         return None
+    calibration = acquire_calibration()
+    return score_from_calibration(
+        hazard_features, direction, family, quad, liq_expanding,
+        calibration=calibration, emit_diagnostics=True)
 
-    try:
-        model = _load_model()
-        km    = _load_km()
-    except Exception as exc:
-        log.warning("hazard_score: cannot load artifact: %s", exc)
+
+def score_from_calibration(
+    hazard_features: dict,
+    direction: Literal["up", "down"],
+    family: str = "sector",
+    quad: str | None = None,
+    liq_expanding: bool | None = None,
+    *, calibration: HazardCalibration | None,
+    emit_diagnostics: bool = False,
+) -> dict | None:
+    """The incumbent scorer over supplied documents; no acquisition or cache access."""
+    if not hazard_features or calibration is None:
+        return None
+    model, km = calibration.model, calibration.km
+
+    if not _check_schema(model, emit_diagnostics=emit_diagnostics):
         return None
 
-    if not _check_schema(model):
-        return None
-
-    vec = _build_feature_vector(hazard_features, direction, family, quad, liq_expanding)
+    vec = _build_feature_vector(hazard_features, direction, family, quad, liq_expanding,
+                                emit_diagnostics=emit_diagnostics)
     if vec is None:
         return None
 
     coef = model["coefficients"].get(direction)
     if coef is None:
-        log.warning("hazard_score: no coefficients for direction=%r", direction)
+        if emit_diagnostics:
+            log.warning("hazard_score: no coefficients for direction=%r", direction)
         return None
 
     ledger = model["ledger"].get(direction, {})

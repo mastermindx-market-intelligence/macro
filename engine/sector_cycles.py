@@ -29,11 +29,16 @@ from __future__ import annotations
 import copy
 import json
 import logging
+from contextlib import contextmanager
+from contextvars import ContextVar
+from dataclasses import dataclass
+from typing import Any, Mapping
+from functools import partial
 
 import numpy as np
 import pandas as pd
 
-from engine import basket_index, cycles
+from engine import basket_index, cycles, hazard_score
 from engine import cycle_ontology as onto
 
 # SIC-ADJ-01: doctrine-stance fields the producer stamps beside the engine stance.
@@ -43,8 +48,20 @@ from engine import cycle_phase_age
 from engine.cycle_rhythm import RHYTHM_SCHEMA, estimate_kinds, rhythm_window
 from engine.inputs import yahoo_closes
 from lib import config
+from lib.sector_history_contract import (
+    RS_HISTORY_HORIZONS, RS_HISTORY_MAX_POINTS, RS_HISTORY_MODE, RS_HISTORY_SCHEMA,
+)
 
 log = logging.getLogger(__name__)
+
+
+_EMIT_DIAGNOSTICS: ContextVar[bool] = ContextVar("sector_cycle_diagnostics", default=True)
+
+
+def _diagnose(level: str, message: str, *args) -> None:
+    if _EMIT_DIAGNOSTICS.get():
+        getattr(log, level)(message, *args)
+
 
 # ── sector metadata ─────────────────────────────────────────────────────────
 # name = GICS sector; group = cyclical nature (drives the cross-sector grouping);
@@ -199,6 +216,117 @@ DEFAULT_WINDOW_YEARS = 7   # default VISIBLE span; the chart opens here, a "Max/
 _TODAY_PAD = 0.30          # forward x-headroom (yrs) for the projection leg
 _ZZ_PCT = 14.0            # ZigZag reversal threshold — a sector "major" swing (intermediate cycle)
 _MAJOR_PCT = 20.0         # legs this big get a "major" flag (prioritised for narration)
+
+
+# ── explicit-input boundary (always-on runtime) ─────────────────────────────
+# The US sector-cycle calculation is split into two layers:
+#
+#   acquire_inputs()       resolves EVERY external dependency ONCE, through the
+#                          incumbent helpers: the Yahoo close panels (TR + price
+#                          basis), the RS benchmark, the thematic-basket and
+#                          index-amalgamation membership + their member-index
+#                          candles, the retained forward log (a HISTORICAL LEDGER
+#                          READ input) and the frozen hazard calibration.
+#   compute_from_inputs()  the PURE calculation over an explicit input bundle.
+#                          This MODULE reads nothing outside the bundle it is
+#                          handed: no config, no filesystem, no network, no wall
+#                          clock — the only clock is the explicit `asof`
+#                          evaluation clock.  It never appends or rewrites a
+#                          ledger: the forward log is READ as the phase-age
+#                          input, while the grading writer stays with its owner
+#                          (cycle_forward_log).
+#   compute()              the compatibility adapter: acquire, then delegate.
+#
+# The shared cycle kernel now binds captured fitted/risk calibration, overlay and
+# entry settings, absolute session references, and hazard documents for the whole
+# calculation, including nested signal-age replay. Legacy standalone callers retain
+# their incumbent loaders. Runtime callers use the strict compute_from_inputs entry.
+#
+# Bundle field bindings are frozen; their frames and mappings remain mutable.
+# Callers own captured data for the duration of calculation. Optional absence never
+# triggers a fallback loader; required settings and the US calendar must be supplied.
+
+@dataclass(frozen=True, eq=False)
+class MemberIndexCandle:
+    """One acquired equal-weight member-index candle (a thematic basket or an
+    index-amalgamation complex).
+
+    `close` is the cleaned index close series (inf rows stripped, NaN dropped).
+    The three coverage fields are the incumbent `consolidated_candle` metadata
+    the legacy record carried; they are captured verbatim so the published
+    record is unchanged.
+    """
+    close: pd.Series
+    coverage_pct: Any = None
+    n_live: Any = None
+    n_stale_tail: Any = None
+
+
+@dataclass(frozen=True, eq=False)
+class AmalgamSource:
+    """The explicitly acquired inputs of ONE index-amalgamation family.
+
+    `specs`   the amalgamation membership/spec records (ordered as loaded).
+    `candles` the acquired member-index candle per spec key; a missing key or a
+               None value is EXPLICIT ABSENCE for that complex.
+    `bench_close` the family benchmark close (QQQ / IWM) the complexes are
+               RS'd against; None is explicit absence.
+    """
+    specs: Mapping[str, Mapping[str, Any]]
+    candles: Mapping[str, MemberIndexCandle | None]
+    bench_close: pd.Series | None
+
+
+@dataclass(frozen=True, eq=False)
+class SectorCyclesInputs:
+    """Explicit input bindings for the US sector-cycle calculation.
+
+    Every field is an INPUT of the calculation.  The bundle carries no writer
+    effect: the retained forward log appears here only as the phase-age READ
+    input, and the grading writer keeps its own ownership.
+
+    `asof` is the explicit evaluation day, or None for the captured panel's
+    observed tip. The strict entry refuses conflicting clocks. The dataclass
+    freezes field bindings, not contained frames or mappings; callers must not
+    mutate those values while a calculation uses them.
+
+    An optional None / empty member is explicit absence, never a loader fallback.
+    Calculation settings and a valid US session reference are mandatory.
+    """
+    closes_tr: pd.DataFrame
+    closes_px: pd.DataFrame | None
+    benchmark: str
+    basket_specs: Mapping[str, Mapping[str, Any]]
+    basket_candles: Mapping[str, MemberIndexCandle | None]
+    amalgams: Mapping[str, AmalgamSource]
+    phase_history: pd.DataFrame | None
+    phase_history_status: str
+    asof: str | None = None
+    hazard_calibration: hazard_score.HazardCalibration | None = None
+    calculation_inputs: cycles.CycleCalculationInputs | None = None
+    live_hazard_parity: Mapping[str, Any] | None = None
+
+
+# Hazard calibration documents are explicit input values. This scoped binding
+# supplies them to the incumbent scoring algorithm without calling a loader.  Outside a scope — every
+# legacy caller (engine/china_sector_cycles.py, engine/country_cycles.py, the
+# hazard parity harness) — the incumbent import path is used unchanged.
+#
+# The scope distinguishes "no scope" (the incumbent import path) from "scoped to
+# None" (EXPLICIT ABSENCE: no calibration, no read, no stamp).
+_NO_HAZARD_CALIBRATION = object()
+_HAZARD_CALIBRATION: ContextVar[Any] = ContextVar(
+    "sector_cycles_hazard_calibration", default=_NO_HAZARD_CALIBRATION)
+
+
+@contextmanager
+def _hazard_calibration_scope(calibration: hazard_score.HazardCalibration | None):
+    """Bind captured hazard documents for the duration of one calculation."""
+    token = _HAZARD_CALIBRATION.set(calibration)
+    try:
+        yield
+    finally:
+        _HAZARD_CALIBRATION.reset(token)
 
 
 def _yf(ts: pd.Timestamp) -> float:
@@ -467,7 +595,6 @@ def _taper_points(s: pd.Series, recent_start: pd.Timestamp, value_fn=None) -> li
     return out
 
 
-RS_HISTORY_MAX_POINTS = 252
 _RS_MIN_ROWS = 210
 # Sessions a missing benchmark close may be carried forward inside the shared RS
 # formula.  Unbounded, one stale holiday row silently prices every later session
@@ -532,7 +659,7 @@ def _leadership(close_full: pd.DataFrame, ticker: str, bench: str = "SPY",
     if rs.empty and (ticker not in close_full or bench not in close_full):
         return {"thin_history": False}
     if len(rs) < _RS_MIN_ROWS:
-        log.warning("_leadership: %s has only %d RS rows (< %d min) — thin_history flagged",
+        _diagnose("warning", "_leadership: %s has only %d RS rows (< %d min) — thin_history flagged",
                     ticker, len(rs), _RS_MIN_ROWS)
         return {"thin_history": True, "rs_rows": len(rs)}
     m21 = float(rs.pct_change(21).iloc[-1] * 100)
@@ -638,7 +765,7 @@ def _price_series(closes_px: pd.DataFrame | None, ticker: str,
     # ticker missing from the price panel → explicit, labeled TR fallback
     fb = tr_full.copy()
     fb.attrs["price_basis"] = "tr_fallback"
-    log.warning("sector_cycles: %s absent from close_price panel — structure basis "
+    _diagnose("warning", "sector_cycles: %s absent from close_price panel — structure basis "
                 "tr_fallback (declared gap; not silent)", ticker)
     return fb
 
@@ -1181,12 +1308,28 @@ def _stamp_hazard(rec: dict, family: str = "sector") -> None:
 
     B12: the feature/direction/quad/liq assembly lives in `_live_hazard_inputs`
     (pure, shared with the parity harness); this stamp is unchanged behavior.
+
+    The scorer is the FROZEN hazard calibration.  When the pure core runs, the
+    bundle's explicit scorer is bound in scope (see `_hazard_calibration_scope`), so
+    the core scores from a calibration the ACQUISITION layer already resolved
+    and performs no read of its own.  A scope bound to None is EXPLICIT
+    ABSENCE: no scorer, no read, no stamp.  Outside any scope the incumbent
+    import path is used unchanged.
     """
-    try:
-        from engine.hazard_score import score as _hz_score
-    except Exception as exc:  # noqa: BLE001
-        log.debug("hazard_score unavailable: %s", exc)
+    _scorer = _HAZARD_CALIBRATION.get()
+    if _scorer is _NO_HAZARD_CALIBRATION:
+        # not in a scope: the incumbent import path, unchanged.
+        try:
+            from engine.hazard_score import score as _hz_score
+        except Exception as exc:  # noqa: BLE001
+            _diagnose("debug", "hazard_score unavailable: %s", exc)
+            return
+    elif _scorer is None:
+        # EXPLICIT ABSENCE: the caller supplied no calibration — no read, no stamp.
         return
+    else:
+        _hz_score = partial(hazard_score.score_from_calibration, calibration=_scorer,
+                            emit_diagnostics=_EMIT_DIAGNOSTICS.get())
 
     nw = rec.get("now") or {}
     hf, direction, quad, liq_expanding = _live_hazard_inputs(rec, family)
@@ -1196,7 +1339,7 @@ def _stamp_hazard(rec: dict, family: str = "sector") -> None:
         if hz is not None:
             nw["hazard"] = hz
     except Exception as exc:  # noqa: BLE001
-        log.warning("hazard_score failed for %s: %s", rec.get("id", "?"), exc)
+        _diagnose("warning", "hazard_score failed for %s: %s", rec.get("id", "?"), exc)
 
 
 def build_sector(ticker: str, meta: dict, closes: pd.DataFrame,
@@ -1210,7 +1353,7 @@ def build_sector(ticker: str, meta: dict, closes: pd.DataFrame,
     per-record basis is stamped tr_fallback — never silent.  closes_px=None → legacy TR."""
     full = closes[ticker].dropna() if ticker in closes else pd.Series(dtype=float)
     if len(full) < 300:
-        log.warning("sector_cycles: %s too thin (%d rows) — skipped", ticker, len(full))
+        _diagnose("warning", "sector_cycles: %s too thin (%d rows) — skipped", ticker, len(full))
         return None
     price = _price_series(closes_px, ticker, full)
     core = _record_core(full, win_start, full.index[-1], price=price)
@@ -1245,25 +1388,25 @@ def _basket_rs(full: pd.Series, spy: pd.Series | None) -> dict:
 
 
 def build_basket(bid: str, bmeta: dict, win_start: pd.Timestamp, last_ts: pd.Timestamp,
-                 spy: pd.Series | None, accent: str) -> dict | None:
+                 spy: pd.Series | None, accent: str,
+                 *, candle: MemberIndexCandle | None = None) -> dict | None:
     """One thematic basket -> its cycle record, off the equal-weight member index
-    (engine.basket_index.consolidated_candle, current-membership deep tape)."""
+    (engine.basket_index.consolidated_candle, current-membership deep tape).
+
+    `candle` = the explicitly acquired equal-weight member-index candle.  None is
+    EXPLICIT ABSENCE (the candle is unavailable) -> no record, and NO loader runs
+    here.  Resolve a candle with `_acquire_member_candle` (the incumbent
+    acquisition) and hand it in; the pure core never acquires one itself.
+    """
     members = bmeta.get("members") or []
     if len(members) < 3:
         return None
-    try:
-        idx = basket_index.deep_calendar(members)
-        if idx is None or len(idx) < 300:
-            return None
-        cand, cmeta = basket_index.consolidated_candle(members, idx, mode="equal", pit=False)
-    except Exception as e:  # noqa: BLE001
-        log.warning("sector_cycles: basket %s candle failed: %s", bid, e)
-        return None
-    if cand is None or "close" not in cand:
+    if candle is None:
         return None
     # inf-poisoned rows (a member's 0→real price jump) crash the cycle math with
-    # NaN scores downstream — strip them so the basket renders on its clean tape
-    full = cand["close"].replace([np.inf, -np.inf], np.nan).dropna()
+    # NaN scores downstream — the acquisition strips them so the basket renders on
+    # its clean tape (the strip is part of the acquired candle, not of the math).
+    full = candle.close
     if len(full) < 300:
         return None
     core = _record_core(full, win_start, last_ts, pct=_zz_pct_for(full))
@@ -1278,9 +1421,9 @@ def build_basket(bid: str, bmeta: dict, win_start: pd.Timestamp, last_ts: pd.Tim
                 "group": cat, "group_zh": CATEGORY_ZH.get(cat, cat), "accent": accent,
                 "theme": bmeta.get("theme"), "theme_zh": bmeta.get("theme_zh"),
                 "etf_proxy": bmeta.get("etf_proxy"),
-                "coverage": (cmeta or {}).get("coverage_pct"),
-                "n_members": (cmeta or {}).get("n_live"),
-                "n_stale_members": (cmeta or {}).get("n_stale_tail")})
+                "coverage": candle.coverage_pct,
+                "n_members": candle.n_live,
+                "n_stale_members": candle.n_stale_tail})
     _apply_leadership(rec, _basket_rs(full, spy))
     _set_engine_read(rec)    # W0.3: populate engine-owned read after RS is available
     _stamp_hazard(rec, family="basket")   # W4.3: now['hazard'] P(turn ≤ 1m/3m/6m)
@@ -1295,7 +1438,7 @@ def _load_baskets() -> dict:
     try:
         return (json.loads(f.read_text(encoding="utf-8")) or {}).get("baskets", {})
     except Exception as e:  # noqa: BLE001
-        log.warning("sector_cycles: membership.json unreadable: %s", e)
+        _diagnose("warning", "sector_cycles: membership.json unreadable: %s", e)
         return {}
 
 
@@ -1335,17 +1478,27 @@ def _load_amalgams(ns: str) -> dict:
     try:
         return (json.loads(f.read_text(encoding="utf-8")) or {}).get("amalgamations", {})
     except Exception as e:  # noqa: BLE001
-        log.warning("sector_cycles: %s amalgamations unreadable: %s", ns, e)
+        _diagnose("warning", "sector_cycles: %s amalgamations unreadable: %s", ns, e)
         return {}
 
 
 def build_amalgam_family(ns: str, win_start: pd.Timestamp, last_ts: pd.Timestamp,
-                         closes: pd.DataFrame) -> list[dict]:
+                         closes: pd.DataFrame, *,
+                         source: AmalgamSource | None = None) -> list[dict]:
     """Cycle records for one index's amalgamation complexes (kind=ns, id=`<ns>-<key>`), RS'd to
-    the index ETF so leadership reads WITHIN the index."""
+    the index ETF so leadership reads WITHIN the index.
+
+    `source` = the explicitly acquired family inputs (membership specs + the
+    member-index candles + the family benchmark close).  When supplied, the
+    family is built from those inputs ONLY — no loader runs.  When omitted, the
+    incumbent loaders resolve them (the legacy acquisition path, kept for
+    standalone callers).
+    """
     fam = _AMALGAM_FAMILIES[ns]
-    amalgams = _load_amalgams(ns)
-    bench = _bench_close(fam["benchmark"], closes)
+    if source is None:
+        source = _acquire_amalgam_source(ns, closes)
+    amalgams = source.specs
+    bench = source.bench_close
     keys = list(amalgams)
     out: list[dict] = []
     for i, key in enumerate(keys):
@@ -1354,9 +1507,11 @@ def build_amalgam_family(ns: str, win_start: pd.Timestamp, last_ts: pd.Timestamp
                  "name_zh": spec.get("name_zh"), "category": fam["label"],
                  "etf_proxy": "", "theme": None}
         try:
-            rec = build_basket(key, bmeta, win_start, last_ts, bench, _basket_accent(i, len(keys)))
+            rec = build_basket(key, bmeta, win_start, last_ts, bench,
+                               _basket_accent(i, len(keys)),
+                               candle=source.candles.get(key))
         except Exception as e:  # noqa: BLE001
-            log.exception("sector_cycles: %s amalgam %s failed: %s", ns, key, e)
+            _diagnose("exception", "sector_cycles: %s amalgam %s failed: %s", ns, key, e)
             rec = None
         if not rec:
             continue
@@ -1438,7 +1593,7 @@ def _stamp_phase_age(records, *, asof, history, history_status, sessions=None):
                                        else None)
         except Exception as e:  # noqa: BLE001 — additive stamp, never fatal
             rid = rec.get("id") if isinstance(rec, dict) else None
-            log.warning("sector_cycles: phase-age stamp failed for %s: %s", rid, e)
+            _diagnose("warning", "sector_cycles: phase-age stamp failed for %s: %s", rid, e)
 
 
 def _series_provenance_for(rec: dict, sector_benchmark) -> dict:
@@ -1477,7 +1632,11 @@ def _series_provenance_for(rec: dict, sector_benchmark) -> dict:
     return prov
 
 
-def _stamp_rhythm_disclosure(records, *, today_x):
+_INCUMBENT_PARITY = object()
+
+
+def _stamp_rhythm_disclosure(records, *, today_x, sector_benchmark=None,
+                             live_hazard_parity=_INCUMBENT_PARITY):
     """B06 — stamp each record's rhythm window, estimate kinds and series provenance.
 
     ADDITIVE and per-record fault-isolated: reads rec['turns'] / rec['now'] /
@@ -1485,40 +1644,162 @@ def _stamp_rhythm_disclosure(records, *, today_x):
     series_provenance).  proj, now (incl. now.hazard), turns, osc, rs_history and
     the record_series output are untouched.  A failure on one record stamps an
     unavailable rhythm (reason 'stamp_error') and the build continues.
+
+    `sector_benchmark` = the explicitly resolved RS benchmark.  The pure core
+    supplies it (no config read); when it is omitted the incumbent config read
+    runs, exactly as before.
     """
-    try:
-        sector_benchmark = config.load()["engine"]["rs_ranking"]["benchmark"]
-    except Exception as e:  # noqa: BLE001 — provenance must never break the build
-        log.warning("sector_cycles: sector benchmark unreadable — stamping 'unknown': %s", e)
-        sector_benchmark = "unknown"
+    if sector_benchmark is None:
+        try:
+            sector_benchmark = config.load()["engine"]["rs_ranking"]["benchmark"]
+        except Exception as e:  # noqa: BLE001 — provenance must never break the build
+            _diagnose("warning", "sector_cycles: sector benchmark unreadable — stamping 'unknown': %s", e)
+            sector_benchmark = "unknown"
     for rec in records:
         try:
             rhythm = rhythm_window(rec.get("turns") or [], today_x)
             rec["rhythm"] = rhythm
-            rec["estimate_kinds"] = estimate_kinds(rec.get("now") or {}, rhythm)
+            rec["estimate_kinds"] = (
+                estimate_kinds(rec.get("now") or {}, rhythm)
+                if live_hazard_parity is _INCUMBENT_PARITY else
+                estimate_kinds(rec.get("now") or {}, rhythm,
+                               live_hazard_parity=live_hazard_parity))
             rec["series_provenance"] = _series_provenance_for(rec, sector_benchmark)
         except Exception as e:  # noqa: BLE001 — additive stamp, never fatal
-            log.warning("sector_cycles: rhythm disclosure failed for %s: %s",
+            _diagnose("warning", "sector_cycles: rhythm disclosure failed for %s: %s",
                         rec.get("id", "?"), e)
             rec["rhythm"] = {"schema": RHYTHM_SCHEMA, "status": "unavailable",
                              "reason": "stamp_error"}
 
 
-def compute(asof: str | None = None) -> dict | None:
-    """Top-level: build every sector's cycle record + page meta. Returns None if the
-    close panel can't be loaded (build script then no-ops).
+def member_candle_from_inputs(members, idx, *, close, volume=None) -> MemberIndexCandle | None:
+    """Wrap the incumbent explicit close index without loading or inventing OHLCV."""
+    full, metadata = basket_index.member_index_from_inputs(members, idx, close=close, volume=volume)
+    if full is None:
+        return None
+    return MemberIndexCandle(close=full, coverage_pct=metadata.get("coverage_pct"),
+        n_live=metadata.get("n_live"), n_stale_tail=metadata.get("n_stale_tail"))
 
-    W2.2: loads BOTH the TR panel (`closes`, momentum/RS basis) and the price panel
-    (`closes_px`, structure basis = close_price).  The 11 sector ETFs flip their
-    structure math (turns, oscillator, projection, DCL/failed-cycle) to close_price;
-    RS-vs-SPY stays on TR.  Thematic baskets + amalgam families keep their existing
-    member-TR candle (basis 'tr') — their member-level price-basis candle is out of
-    W2.2 scope (owned by the frozen-basket-levels wave), so their turns do NOT move
-    and are NOT re-keyed."""
+
+def member_candle_from_captured_inputs(members, *, captured):
+    """Named consumer of one already-verified private breadth/member capture."""
+    close, volume, evidence = captured.member_index_inputs(members)
+    if evidence["member_observation_session"] != captured.source_session:
+        evidence["index_unavailable_reason"] = "member_population_session_mismatch"
+        return None, evidence
+    return member_candle_from_inputs(members, close.index, close=close, volume=volume), evidence
+
+
+def _acquire_member_candle(members: list, *, label: str = "") -> MemberIndexCandle | None:
+    """Legacy member capture with the incumbent whole-basket failure isolation."""
+    try:
+        idx = basket_index.deep_calendar(members)
+        if idx is None or len(idx) < basket_index.MIN_MEMBER_INDEX_SESSIONS:
+            return None
+        cand, cmeta = basket_index.consolidated_candle(members, idx, mode="equal", pit=False)
+        if cand is None or "close" not in cand:
+            return None
+        full = cand["close"].replace([np.inf, -np.inf], np.nan).dropna()
+        if len(full) < basket_index.MIN_MEMBER_INDEX_SESSIONS:
+            return None
+        return MemberIndexCandle(close=full,
+                                 coverage_pct=(cmeta or {}).get("coverage_pct"),
+                                 n_live=(cmeta or {}).get("n_live"),
+                                 n_stale_tail=(cmeta or {}).get("n_stale_tail"))
+    except Exception as exc:
+        _diagnose("warning", "sector_cycles: basket %s candle failed: %s", label, exc)
+        return None
+
+
+def _acquire_amalgam_source(ns: str, closes: pd.DataFrame) -> AmalgamSource:
+    """Capture a family with the legacy family-level failure isolation."""
+    try:
+        specs = _load_amalgams(ns)
+        bench = _bench_close(_AMALGAM_FAMILIES[ns]["benchmark"], closes)
+        candles = {}
+        for key, spec in specs.items():
+            members = spec.get("members") or []
+            candles[key] = (_acquire_member_candle(members, label=key)
+                            if len(members) >= 3 else None)
+        return AmalgamSource(specs=specs, candles=candles, bench_close=bench)
+    except Exception as exc:
+        _diagnose("exception", "sector_cycles: amalgam family %s failed: %s", ns, exc)
+        return AmalgamSource(specs={}, candles={}, bench_close=None)
+
+
+def _resolve_hazard_calibration() -> hazard_score.HazardCalibration | None:
+    """Capture detached incumbent model/KM values; never hand a loader to the core."""
+    return hazard_score.acquire_calibration()
+
+
+def _warm_hazard_calibration() -> bool:
+    """Compatibility diagnostic for existing focused qualification helpers."""
+    return _resolve_hazard_calibration() is not None
+
+
+def _resolve_live_hazard_parity() -> Mapping[str, Any] | None:
+    """Resolve the recorded live-hazard parity report (the second frozen
+    calibration artifact) through the incumbent module.
+
+    A COPY is taken here, so the frozen bundle never carries the live module
+    global: a consumer that mutates the bundle cannot corrupt
+    engine.hazard_parity for everyone else.
+    """
+    try:
+        from engine.hazard_parity import LIVE_HAZARD_PARITY as _live_parity
+    except Exception as exc:  # noqa: BLE001 — additive disclosure, never fatal
+        _diagnose("debug", "hazard_parity unavailable: %s", exc)
+        return None
+    try:
+        return copy.deepcopy(_live_parity)
+    except Exception as exc:  # noqa: BLE001 — additive disclosure, never fatal
+        _diagnose("debug", "hazard_parity copy failed: %s", exc)
+        return None
+
+
+def _bound_panels(closes: pd.DataFrame, closes_px: pd.DataFrame | None,
+                  benchmark: str, asof: str | None):
+    """Apply the evaluation clock, then anchor the panel on the benchmark's last
+    OBSERVED close.
+
+    Pure — no read, no write, no clock of its own (the only clock is the
+    explicit `asof` the caller hands in).  Returns
+    (bounded_closes, bounded_closes_px, last_ts, raw_tip); last_ts is None when
+    the benchmark has no observed close in the clock-bounded panel.
+    """
+    if asof:
+        closes = closes[closes.index <= pd.Timestamp(asof)]
+        if closes_px is not None:
+            closes_px = closes_px[closes_px.index <= pd.Timestamp(asof)]
+    if closes is None or closes.empty:
+        return closes, closes_px, None, None
+    raw_tip = pd.Timestamp(closes.index[-1])
+    last_ts = _latest_cycle_session(closes, benchmark)
+    if last_ts is None:
+        return closes, closes_px, None, raw_tip
+    return (closes.loc[:last_ts],
+            closes_px.loc[:last_ts] if closes_px is not None else None,
+            last_ts, raw_tip)
+
+
+def acquire_inputs(asof: str | None = None) -> SectorCyclesInputs | None:
+    """Resolve EVERY external dependency of the US sector-cycle calculation ONCE.
+
+    This is the ACQUISITION layer.  It owns the sector-cycle calculation's
+    reads: the Yahoo close panels (total-return basis + the price-basis
+    structural panel), the configured RS benchmark, the thematic-basket and
+    index-amalgamation membership, their member-index candles, the retained
+    forward log (a historical LEDGER READ input — never a write) and the frozen
+    hazard calibration.
+
+    Returns None when the close panel cannot be loaded or the benchmark has no
+    observed close — the two conditions the legacy compute() refused on.
+    """
+    asof = _clock_date(asof)
     try:
         closes = yahoo_closes()
     except Exception as e:  # noqa: BLE001
-        log.error("sector_cycles: cannot load yahoo_closes: %s", e)
+        _diagnose("error", "sector_cycles: cannot load yahoo_closes: %s", e)
         return None
     if closes is None or closes.empty:
         return None
@@ -1527,72 +1808,189 @@ def compute(asof: str | None = None) -> dict | None:
     try:
         closes_px = yahoo_closes(basis="price")
     except Exception as e:  # noqa: BLE001
-        log.warning("sector_cycles: cannot load price-basis panel (%s) — structure math "
+        _diagnose("warning", "sector_cycles: cannot load price-basis panel (%s) — structure math "
                     "falls back to TR (labeled tr_fallback)", e)
         closes_px = None
-    if asof:
-        closes = closes[closes.index <= pd.Timestamp(asof)]
-        if closes_px is not None:
-            closes_px = closes_px[closes_px.index <= pd.Timestamp(asof)]
     benchmark = config.load()["engine"]["rs_ranking"]["benchmark"]
-    last_ts = _latest_cycle_session(closes, benchmark)
+    # The benchmark-anchored view of the panel — the SAME view the family
+    # benchmark close is read from (the legacy build anchored first, then read
+    # the family benchmark off the anchored panel).
+    anchored, _anchored_px, last_ts, _raw_tip = _bound_panels(
+        closes, closes_px, benchmark, asof)
     if last_ts is None:
-        log.error("sector_cycles: benchmark %s has no observed close", benchmark)
+        _diagnose("error", "sector_cycles: benchmark %s has no observed close", benchmark)
         return None
-    raw_tip = pd.Timestamp(closes.index[-1])
-    if raw_tip > last_ts:
-        log.warning(
+
+    # Thematic basket membership (data/baskets/membership.json) + the acquired
+    # member-index candles.  A basket with fewer than three members is skipped
+    # by the build itself, so no candle is acquired for it.
+    basket_specs = _load_baskets()
+    basket_candles: dict[str, MemberIndexCandle | None] = {}
+    for bid, spec in basket_specs.items():
+        try:
+            members = spec.get("members") or []
+            basket_candles[bid] = (_acquire_member_candle(members, label=bid)
+                                   if len(members) >= 3 else None)
+        except Exception as exc:
+            _diagnose("exception", "sector_cycles: basket %s capture failed: %s", bid, exc)
+            basket_candles[bid] = None
+
+    # Index-amalgamation families (Nasdaq-100 / Russell-2000).
+    amalgams = {ns: _acquire_amalgam_source(ns, anchored) for ns in _AMALGAM_FAMILIES}
+
+    # The retained forward log, READ once for the whole build (a historical
+    # ledger dependency — the grading writer keeps its own ownership).
+    history, history_status = cycle_phase_age.load_phase_history("sector_cycles")
+
+    return SectorCyclesInputs(
+        closes_tr=closes,
+        closes_px=closes_px,
+        benchmark=benchmark,
+        basket_specs=basket_specs,
+        basket_candles=basket_candles,
+        amalgams=amalgams,
+        phase_history=history,
+        phase_history_status=history_status,
+        asof=asof,
+        hazard_calibration=_resolve_hazard_calibration(),
+        calculation_inputs=cycles.acquire_calculation_inputs(
+            evaluation_date=str(pd.Timestamp(asof).date()) if asof else str(last_ts.date())),
+        live_hazard_parity=_resolve_live_hazard_parity(),
+    )
+
+
+def _clock_date(value: str | None) -> str | None:
+    if value is None:
+        return None
+    return cycles.normalize_evaluation_date(value)
+
+
+def _validate_member_boundary(inputs: SectorCyclesInputs, last_ts: pd.Timestamp) -> None:
+    """Refuse future-dependent member/benchmark inputs before any calculation."""
+    collections = [inputs.basket_candles]
+    for source in inputs.amalgams.values():
+        collections.append(source.candles)
+        if source.bench_close is not None and not source.bench_close.empty:
+            if source.bench_close.index.max() > last_ts:
+                raise ValueError("family benchmark extends beyond the admitted session")
+    for candles in collections:
+        for candle in candles.values():
+            if candle is not None and not candle.close.empty and candle.close.index.max() > last_ts:
+                raise ValueError("member candle extends beyond the admitted session")
+
+
+def compute_from_inputs(inputs: SectorCyclesInputs, *,
+                        asof: str | None = None) -> dict | None:
+    """Compute from captured values, with no ambient reads, writes or clock.
+
+    An override must equal the captured evaluation day. Member inputs must be bounded
+    to the common observed session; the core never relabels a future-dependent result.
+    This strict runtime entry differs from the explicitly retained legacy historical
+    member-tail behavior of compute(). It does not acquire or repair an invalid bundle.
+    """
+    captured = inputs.calculation_inputs
+    if captured is None:
+        raise ValueError("captured cycle calculation settings are required")
+    if "US" not in captured.reference_sessions:
+        raise ValueError("US session reference is required for Sector cycles")
+    expected = _clock_date(inputs.asof) or _clock_date(captured.evaluation_date)
+    if asof is not None and _clock_date(asof) != expected:
+        raise ValueError("evaluation clock differs from captured cycle inputs")
+    if _clock_date(captured.evaluation_date) != expected:
+        raise ValueError("calculation settings have a different evaluation clock")
+    clock = _clock_date(inputs.asof)
+    _, _, last_ts, _ = _bound_panels(inputs.closes_tr, inputs.closes_px,
+                                   inputs.benchmark, clock)
+    if last_ts is not None:
+        if clock is None and str(last_ts.date()) != expected:
+            raise ValueError("captured source session differs from calculation settings")
+        _validate_member_boundary(inputs, last_ts)
+    token = _EMIT_DIAGNOSTICS.set(False)
+    try:
+        with cycles.bind_calculation_inputs(captured):
+            return _compute_captured(inputs, asof=clock)
+    finally:
+        _EMIT_DIAGNOSTICS.reset(token)
+
+
+def _compute_captured(inputs: SectorCyclesInputs, *,
+                        asof: str | None = None) -> dict | None:
+    """Shared calculation body, invoked only under captured kernel settings.
+
+    The strict public entry validates clocks and member boundaries. The legacy
+    adapter deliberately preserves historical member-tail compatibility. This
+    body mutates no supplied data and emits no writer effect. Optional diagnostics
+    follow the caller's scope; the strict entry suppresses them.
+
+    The retained phase history is a read input; the grading writer stays with its
+    existing owner. Mutable public taxonomies and parity are copied into outputs.
+    """
+    clock = asof if asof is not None else inputs.asof
+    closes, closes_px, last_ts, raw_tip = _bound_panels(
+        inputs.closes_tr, inputs.closes_px, inputs.benchmark, clock)
+    if last_ts is None:
+        _diagnose("error", "sector_cycles: benchmark %s has no observed close", inputs.benchmark)
+        return None
+    benchmark = inputs.benchmark
+    if raw_tip is not None and raw_tip > last_ts:
+        _diagnose("warning",
             "sector_cycles: raw calendar tip %s has no %s close; effective asOf=%s",
             raw_tip.date(), benchmark, last_ts.date(),
         )
-    closes = closes.loc[:last_ts]
-    if closes_px is not None:
-        closes_px = closes_px.loc[:last_ts]
     win_start = last_ts - pd.DateOffset(years=WINDOW_YEARS)
 
-    sectors = []
-    for tk, meta in SECTORS.items():
-        try:
-            rec = build_sector(tk, meta, closes, win_start, closes_px=closes_px)
-        except Exception as e:  # noqa: BLE001
-            log.exception("sector_cycles: %s failed: %s", tk, e)
-            rec = None
-        if rec:
-            sectors.append(rec)
-    if not sectors:
-        return None
+    # Bind captured calibration documents; record scoring never acquires them.
+    with _hazard_calibration_scope(inputs.hazard_calibration):
+        sectors = []
+        for tk, meta in SECTORS.items():
+            try:
+                rec = build_sector(tk, meta, closes, win_start, closes_px=closes_px)
+            except Exception as e:  # noqa: BLE001
+                _diagnose("exception", "sector_cycles: %s failed: %s", tk, e)
+                rec = None
+            if rec:
+                sectors.append(rec)
+        if not sectors:
+            return None
 
-    # leadership ranks (63d legacy + fast 21d) for the "who leads" read
-    _stamp_rs_ranks(sectors)
+        # leadership ranks (63d legacy + fast 21d) for the "who leads" read
+        _stamp_rs_ranks(sectors)
 
-    # --- thematic baskets (Phase 2): same machinery off the equal-weight member index;
-    #     OFF by default in the UI, the user toggles individual baskets onto the chart ---
-    spy = closes["SPY"].dropna() if "SPY" in closes else None
-    basket_defs = _load_baskets()
-    keys = list(basket_defs.keys())
-    baskets = []
-    for i, bid in enumerate(keys):
-        try:
-            rec = build_basket(bid, basket_defs[bid], win_start, last_ts, spy,
-                               _basket_accent(i, len(keys)))
-        except Exception as e:  # noqa: BLE001
-            log.exception("sector_cycles: basket %s failed: %s", bid, e)
-            rec = None
-        if rec:
-            baskets.append(rec)
-    _stamp_rs_ranks(baskets)
-    baskets.sort(key=lambda b: (b.get("group") or "", b["name"]))   # grouped for the chip rail
+        # --- thematic baskets (Phase 2): same machinery off the equal-weight member index;
+        #     OFF by default in the UI, the user toggles individual baskets onto the chart ---
+        spy = closes["SPY"].dropna() if "SPY" in closes else None
+        basket_defs = inputs.basket_specs
+        keys = list(basket_defs.keys())
+        baskets = []
+        for i, bid in enumerate(keys):
+            try:
+                rec = build_basket(bid, basket_defs[bid], win_start, last_ts, spy,
+                                   _basket_accent(i, len(keys)),
+                                   candle=inputs.basket_candles.get(bid))
+            except Exception as e:  # noqa: BLE001
+                _diagnose("exception", "sector_cycles: basket %s failed: %s", bid, e)
+                rec = None
+            if rec:
+                baskets.append(rec)
+        _stamp_rs_ranks(baskets)
+        baskets.sort(key=lambda b: (b.get("group") or "", b["name"]))   # grouped for the chip rail
 
-    # --- index amalgamation families (Nasdaq-100 / Russell-2000 complexes) ---
-    amalgam_families = {}
-    for ns in _AMALGAM_FAMILIES:
-        try:
-            fam_recs = build_amalgam_family(ns, win_start, last_ts, closes)
-        except Exception as e:  # noqa: BLE001 — additive, never fatal
-            log.exception("sector_cycles: amalgam family %s failed: %s", ns, e)
-            fam_recs = []
-        if fam_recs:
-            amalgam_families[ns] = fam_recs
+        # --- index amalgamation families (Nasdaq-100 / Russell-2000 complexes) ---
+        amalgam_families = {}
+        for ns in _AMALGAM_FAMILIES:
+            source = inputs.amalgams.get(ns)
+            if source is None:
+                # Explicit absence: the family was not supplied, so it is NOT
+                # loaded here — absence is a fact, not an invitation to read.
+                source = AmalgamSource(specs={}, candles={}, bench_close=None)
+            try:
+                fam_recs = build_amalgam_family(ns, win_start, last_ts, closes,
+                                                source=source)
+            except Exception as e:  # noqa: BLE001 — additive, never fatal
+                _diagnose("exception", "sector_cycles: amalgam family %s failed: %s", ns, e)
+                fam_recs = []
+            if fam_recs:
+                amalgam_families[ns] = fam_recs
 
     # ── B05: measured phase age from the retained forward-log history ──────────
     # One load for the whole build; sectors + baskets are logged nightly by
@@ -1604,7 +2002,7 @@ def compute(asof: str | None = None) -> dict | None:
     # (already bounded by `closes = closes.loc[:last_ts]` above, so up to and
     # including `last_ts`) supplies the session dates.  A list that cannot be
     # built degrades to None — the reader's weekday rule, never an error.
-    _history, _history_status = cycle_phase_age.load_phase_history("sector_cycles")
+    _history, _history_status = inputs.phase_history, inputs.phase_history_status
     try:
         _sessions = [str(pd.Timestamp(t).date())
                      for t in closes[benchmark].dropna().index]
@@ -1624,7 +2022,8 @@ def compute(asof: str | None = None) -> dict | None:
     # the reconstruction facts of the series each record was actually built on.
     _stamp_rhythm_disclosure(
         sectors + baskets + [r for fam in amalgam_families.values() for r in fam],
-        today_x=_yf(last_ts))
+        today_x=_yf(last_ts), sector_benchmark=benchmark,
+        live_hazard_parity=inputs.live_hazard_parity)
 
     x_lo = round(_yf(win_start), 3)
     x_hi = round(_yf(last_ts) + _TODAY_PAD, 3)
@@ -1634,12 +2033,14 @@ def compute(asof: str | None = None) -> dict | None:
     # Records carry only the {verdict, failing, report_ref} pointer (cycle_rhythm
     # .estimate_kinds); the ~10 KiB report itself is published here, one copy per
     # payload.  Read inside a try — meta disclosure never breaks the build.
+    # RB12b: deep copy — a shallow dict() shared the nested report with the
+    # module constant, so an in-process consumer could mutate LIVE_HAZARD_PARITY.
+    # The bundle carries the report as an explicit input, so the copy is made
+    # here: the payload never aliases a mutable input payload.
     try:
-        from engine.hazard_parity import LIVE_HAZARD_PARITY as _live_parity
-        # RB12b: deep copy — a shallow dict() shared the nested report with the
-        # module constant, so an in-process consumer could mutate LIVE_HAZARD_PARITY.
-        live_hazard_parity = copy.deepcopy(_live_parity)
-    except Exception:  # noqa: BLE001 — additive disclosure, never fatal
+        live_hazard_parity = copy.deepcopy(inputs.live_hazard_parity)
+    except Exception as exc:  # noqa: BLE001 — meta disclosure never breaks the build
+        _diagnose("warning", "sector_cycles: live hazard parity copy failed: %s", exc)
         live_hazard_parity = None
 
     return {
@@ -1657,7 +2058,7 @@ def compute(asof: str | None = None) -> dict | None:
             # B05-r2: version 2 — only real benchmark sessions count and a
             # bridged (unobserved-session) pair reads lower_bound, not measured.
             "phase_age_version": 2,
-            "semantic_families": SEMANTIC_FAMILIES,
+            "semantic_families": copy.deepcopy(SEMANTIC_FAMILIES),
             # B06: rhythm-disclosure version + the correction-contract
             # disposition.  The Cycles inputs (yahoo close/close_price panels,
             # basket + amalgam membership, the SECTORS registry, the B05
@@ -1673,12 +2074,12 @@ def compute(asof: str | None = None) -> dict | None:
             # ONCE per payload (records carry only the report_ref pointer).
             "live_hazard_parity": live_hazard_parity,
             "rs_history": {
-                "schema": "sector_cycles.rs_history.v1",
-                "mode": "reconstructed_price_history",
+                "schema": RS_HISTORY_SCHEMA,
+                "mode": RS_HISTORY_MODE,
                 "naturally_observed": False,
                 "basis": "tr",
                 "benchmark": benchmark,
-                "horizons_sessions": [21, 63],
+                "horizons_sessions": list(RS_HISTORY_HORIZONS),
                 "max_points_per_sector": RS_HISTORY_MAX_POINTS,
                 "as_of": str(last_ts.date()),
                 "min_history_sessions": _RS_MIN_ROWS,
@@ -1702,8 +2103,35 @@ def compute(asof: str | None = None) -> dict | None:
                           "n": len(amalgam_families[ns])}
                          for ns in _AMALGAM_FAMILIES if ns in amalgam_families],
         },
-        "phases": PHASES,
+        "phases": copy.deepcopy(PHASES),
         "sectors": sectors,
         "baskets": baskets,
         **amalgam_families,
     }
+
+
+def compute(asof: str | None = None) -> dict | None:
+    """Top-level: build every sector's cycle record + page meta. Returns None if the
+    close panel can't be loaded (build script then no-ops).
+
+    COMPATIBILITY ADAPTER: acquires established inputs and shared-kernel
+    settings, then invokes _compute_captured under a scoped binding. Historical
+    member-tail behavior is retained here. The always-on producer instead uses
+    compute_from_inputs, which refuses conflicting clocks and future-tailed
+    member inputs before calculation. This function does not publish a payload.
+
+    W2.2: loads BOTH the TR panel (`closes`, momentum/RS basis) and the price panel
+    (`closes_px`, structure basis = close_price).  The 11 sector ETFs flip their
+    structure math (turns, oscillator, projection, DCL/failed-cycle) to close_price;
+    RS-vs-SPY stays on TR.  Thematic baskets + amalgam families keep their existing
+    member-TR candle (basis 'tr') — their member-level price-basis candle is out of
+    W2.2 scope (owned by the frozen-basket-levels wave), so their turns do NOT move
+    and are NOT re-keyed."""
+    inputs = acquire_inputs(asof)
+    if inputs is None:
+        return None
+    # Legacy history requests keep their incumbent member-tail behavior. Runtime
+    # production calls the strict compute_from_inputs boundary instead.
+    with cycles.bind_calculation_inputs(inputs.calculation_inputs):
+        return _compute_captured(inputs, asof=(inputs.calculation_inputs.evaluation_date
+                                               if asof is not None else None))

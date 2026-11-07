@@ -1,0 +1,35 @@
+{
+  "base_head": "4eddd4ad83f761d4178e1faa73173dccd71ed419",
+  "unchanged_literal_algorithms": [
+    "action_board",
+    "_action_board_stat_chip",
+    "_basket_as_of"
+  ],
+  "source_sha256": {
+    "engine/sector_action_board.py": "8da3e6daedfc7b7f17d0c611fd0ea770b3a564ff3299835e5ec3331c749c54ca",
+    "scripts/build_site.py": "1bd53162de2e4aa179656df73666317249b098ae55557caef0bcda9047771677",
+    "scripts/build_sector_action_board.py": "830cd2a1fc25e98404f89ff1e5a58dafc70e1c3d0ea7a35e7fc41d5306ca527d",
+    "tests/fixtures/base_sector_action_board_b168.py": "67ef85e6b7cceb8c2add17bb71cf2ba46d0f386944c9426c2db519643708032a",
+    "tests/test_sector_action_board_inputs.py": "afb8735ece84c65b06fd502c50e6a075ea10d1614407d70d630adbdc23943846",
+    "tests/test_act_now_board_assembler.py": "583b230c2d43ed35a54b41d260e1079fd3ba96af7bcdb7192c6d015da9799d92",
+    "tests/test_basket_integration.py": "94d56683b14c4bbc07d802687397e105e84d4a05804594abfb1117d531d6fd87"
+  },
+  "whitespace": {
+    "engine/sector_action_board.py": [],
+    "scripts/build_site.py": [],
+    "scripts/build_sector_action_board.py": [],
+    "tests/fixtures/base_sector_action_board_b168.py": [],
+    "tests/test_sector_action_board_inputs.py": [],
+    "tests/test_act_now_board_assembler.py": [],
+    "tests/test_basket_integration.py": []
+  },
+  "diff_check": {
+    "exit_code": 0,
+    "output": ""
+  },
+  "logs": {
+    "mmx-sector-action-board-inputs-20261106.log": "0628228f831f412b2c3f965798dcd98ee6cbf523f06896947b0a5aedea690140",
+    "mmx-sector-action-board-inputs-final-20261106.log": "1dce99a281684cf8990aa5f14359cf671eb58beac68430c4c52c6abc59584f22",
+    "mmx-sector-action-board-original-test-baseline-20261106.log": "e7bb16b1dad4fb29ffe64928e5d5ed004f8a1466e152dea869e98d193d975e80"
+  }
+}

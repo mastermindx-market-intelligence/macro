@@ -288,6 +288,15 @@ def load_gate(data_dir: Path | None = None) -> dict:
     return {"legs": {}, "composite": {"scored": False}}
 
 
+def overlay_gate_from_document(document) -> dict:
+    """Existing basket-caution gate or its closed missing-source fallback."""
+    from copy import deepcopy
+    if isinstance(document, dict):
+        return deepcopy(document)
+    return {"regime_marginal_over_voltarget": False, "live_overlay_helps": False,
+            "note": "missing/unreadable overlay gate -> caution display-only (validate-first)"}
+
+
 def load_overlay_gate(data_dir: Path | None = None) -> dict:
     """Read data/vol_regime/basket_overlay_gate.json — the additive-value verdict for the
     REGIME-STATE caution haircut (audit #30 firewall). The regime-state caution leg binds
@@ -301,11 +310,10 @@ def load_overlay_gate(data_dir: Path | None = None) -> dict:
         if p.exists():
             g = json.loads(p.read_text())
             if isinstance(g, dict):
-                return g
+                return overlay_gate_from_document(g)
     except Exception as e:  # noqa: BLE001 — a missing/broken gate must never break the build
         log.warning("vol_regime: overlay gate read failed (%s) — caution display-only", e)
-    return {"regime_marginal_over_voltarget": False, "live_overlay_helps": False,
-            "note": "missing/unreadable overlay gate -> caution display-only (validate-first)"}
+    return overlay_gate_from_document(None)
 
 
 def regime_caution_scored(data_dir: Path | None = None, gate: dict | None = None) -> bool:
@@ -613,6 +621,24 @@ def sizing_overlay(snap: dict | None, cfg: dict | None = None,
     return out
 
 
+def _published_snapshot_value(document, key):
+    snap = (document or {}).get(key)
+    return snap if isinstance(snap, dict) and snap else {}
+
+
+def published_snapshot_from_documents(*, site_document, regime_document) -> dict:
+    """Original site-first priority, without timestamp arbitration or reads."""
+    from copy import deepcopy
+    for document, key in ((site_document, "snapshot"), (regime_document, "vol_regime")):
+        try:
+            snap = _published_snapshot_value(document, key)
+            if snap:
+                return deepcopy(snap)
+        except Exception:  # noqa: BLE001 — preserve independent optional-source fallback
+            pass
+    return {}
+
+
 def published_snapshot(data_dir: Path | None = None, site_dir: Path | None = None) -> dict:
     """Load the freshest PUBLISHED regime snapshot for a consumer (baskets / per-stock ladder /
     run.py). Tries, in order: site/vol/regime.json['snapshot'] (build_vol_regime output),
@@ -623,7 +649,7 @@ def published_snapshot(data_dir: Path | None = None, site_dir: Path | None = Non
         sdir = site_dir if site_dir is not None else (config.ROOT / config.load()["storage"]["site_dir"])
         p = Path(sdir) / "vol" / "regime.json"
         if p.exists():
-            snap = (json.loads(p.read_text()) or {}).get("snapshot")
+            snap = _published_snapshot_value(json.loads(p.read_text()), "snapshot")
             if isinstance(snap, dict) and snap:
                 return snap
     except Exception as e:  # noqa: BLE001 — a missing/broken file must never break the build
@@ -633,12 +659,18 @@ def published_snapshot(data_dir: Path | None = None, site_dir: Path | None = Non
         ddir = data_dir if data_dir is not None else config.data_dir()
         p = Path(ddir) / "regime" / "latest.json"
         if p.exists():
-            snap = (json.loads(p.read_text()) or {}).get("vol_regime")
+            snap = _published_snapshot_value(json.loads(p.read_text()), "vol_regime")
             if isinstance(snap, dict) and snap:
                 return snap
     except Exception as e:  # noqa: BLE001
         log.warning("vol_regime: latest.json vol_regime read failed (%s)", e)
     return {}
+
+
+def overlay_config_from_inputs(overlay_settings) -> dict:
+    """Original overlay defaults plus detached captured dictionary overrides."""
+    from copy import deepcopy
+    return {**OVERLAY_DEFAULTS, **(deepcopy(overlay_settings) if isinstance(overlay_settings, dict) else {})}
 
 
 def overlay_config() -> dict:
@@ -648,4 +680,4 @@ def overlay_config() -> dict:
         c = (config.load().get("engine", {}) or {}).get("vol_regime_overlay") or {}
     except Exception:  # noqa: BLE001
         c = {}
-    return {**OVERLAY_DEFAULTS, **(c if isinstance(c, dict) else {})}
+    return overlay_config_from_inputs(c)

@@ -7251,6 +7251,8 @@ jobs:
       # job's venv line (the suite's own test_import_stays_light pins that).
       - name: tier-preview split contract (sector_central act-now board)
         run: python -m pytest tests/test_sector_central_gate.py tests/test_sector_central_contract.py tests/test_sector_receiver_contracts.py tests/test_sector_central_history.py tests/test_research_receiver_entry.py -q
+      - name: native Sector view preserves source dates and tier isolation
+        run: python -m pytest tests/test_sector_native_view.py -q
       # SIC-I07R: saved sector investigations through the existing watch/save
       # owner (templates/watchstore.js designated list, section 'si'). Runs as
       # its own step because test_sector_receiver_contracts.py pins the step
@@ -10954,10 +10956,15 @@ jobs:
           node-version: "20"
       - name: install render test dependencies
         run: pip install pytest pandas numpy pyyaml jinja2 pyarrow
+      # F11: run 42133634168 spent 491.8s of this job's 900s budget installing
+      # OS dependencies; slow mirror downloads dominated, while Chromium took 7.3s.
+      # Runner image 20261101.360.1 already had all Chromium link libraries.
+      # Keep the pinned browser and every assertion; this suite passes with no CJK
+      # fonts. A missing library on a future runner fails at browser launch.
       - name: install browser test dependencies
         run: |
           npm install --no-save --package-lock=false playwright@1.63.0
-          npx playwright install --with-deps chromium
+          npx playwright install chromium
       # F10 (intl-GS CI budget, DEC:INTL-GS-W2A-CI-BUDGET-RAISE-IS-W2A-SCOPE-20261031):
       # the unrestricted post-checkout base fetch cost ~4 minutes on hosted runners
       # (PR full-suite runs of 2026-10-31; every subtest green, job cut at the pack
@@ -15166,6 +15173,8 @@ jobs:
       - "lib/intl_gs_observations.py"
       - engine/postmortem.py
       - research/MASTERMIND_INTELLIGENCE_EVALUATION_ARCHITECTURE.md
+      - "scripts/check_sector_intelligence_freshness.py"
+      - "scripts/build_sector_action_board.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -16315,6 +16324,8 @@ jobs:
       - "site/crypto.html"
       - "site/vector.html"
       - "tests/test_crypto_observations_contract.py"
+      - "scripts/__init__.py"
+      - "scripts/check_sector_intelligence_freshness.py"
     # scripts/ci/push_retry.sh is the shared retry policy that EVERY lane's commit→push
     # step sources (render, engine-render, daily ×13, closing-bell, asia-close ×2,
     # weekly, earlyclose). It exists because render.yml run 30167139398 (2026-07-25)
@@ -20146,6 +20157,7 @@ jobs:
       - research/cycle_masterplan/W41_PANEL_CENSUS.md
       - scripts/build_hazard_panel.py
       - scripts/fit_cycle_hazard.py
+      - "scripts/build_sector_action_board.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -25148,6 +25160,7 @@ jobs:
       - "engine/intl_global_observation.py"
       - "lib/intl_global_observation_adapter.py"
       - "lib/intl_gs_observations.py"
+      - "scripts/build_sector_action_board.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -28325,6 +28338,7 @@ jobs:
       - research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md
       - research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md
       - "engine/alert_delivery_drain.py"
+      - "scripts/build_sector_action_board.py"
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -36467,6 +36481,7 @@ jobs:
       - "engine/intl_global_observation.py"
       - "lib/intl_global_observation_adapter.py"
       - "lib/intl_gs_observations.py"
+      - "scripts/build_sector_action_board.py"
     timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
@@ -37867,6 +37882,8 @@ jobs:
       - "engine/theme_graph/materialize.py"
       # W2F-X closure widening: the observation seam widened these import closures
       - "engine/intl_global_observation.py"
+      - "scripts/check_sector_intelligence_freshness.py"
+      - "scripts/build_sector_action_board.py"
     timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
@@ -47267,6 +47284,7 @@ jobs:
       # Import closure added by the main 80f270c4 merge (the union of both sides; measured
       - "contracts/theme_graph/curation_assertion.v1.schema.json"
       - "contracts/theme_graph/activity_membership_history.v1.schema.json"
+      - "scripts/build_sector_action_board.py"
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
@@ -47555,6 +47573,7 @@ jobs:
       - "scripts/build_hazard_panel.py"
       - "scripts/fit_cycle_hazard.py"
       - "research/cycle_masterplan/W41_PANEL_CENSUS.md"
+      - "scripts/build_sector_action_board.py"
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
@@ -52041,6 +52060,8 @@ jobs:
       - "engine/company_intelligence/economic_observations.py"
       - "engine/earnings_narrative/economic_interpretation.py"
       - "lib/frozen_delivery_client.py"
+      - "scripts/check_sector_intelligence_freshness.py"
+      - "scripts/build_sector_action_board.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

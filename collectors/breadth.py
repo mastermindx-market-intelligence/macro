@@ -18,6 +18,12 @@ import io
 import logging
 import re
 import time
+import math
+from copy import deepcopy
+from dataclasses import dataclass
+from datetime import datetime, timezone
+from collections.abc import Mapping
+from types import MappingProxyType
 
 import pandas as pd
 import yfinance as yf
@@ -281,14 +287,73 @@ def disclose_stale_constituent_columns(members_symbols, closes: pd.DataFrame,
     return {"no_column": no_column, "never_populated": never_populated, "frozen": frozen}
 
 
+@dataclass(frozen=True)
+class BreadthPriceAcquisition:
+    """Detached values and observed qualification, never publication authority."""
+    accepted: bool
+    reason: str
+    source_session: str
+    members: pd.DataFrame
+    panels: Mapping[str, pd.DataFrame]
+    current: tuple[str, ...]
+    unresolved: tuple[str, ...]
+    repaired: tuple[str, ...]
+    departed: tuple[str, ...]
+    evidence: Mapping[str, object]
+
+
+def _download_batches(tickers, period, *, batch_size, retries, backoff_base_s, consume):
+    """The incumbent breadth retry/batching owner, shared by both adapters."""
+    for i in range(0, len(tickers), batch_size):
+        batch = tickers[i:i + batch_size]
+        for attempt in range(retries):
+            try:
+                df = yf.download(batch, period=period, auto_adjust=True,
+                                 progress=False, group_by="column", threads=True)
+                consume(batch, df)
+                break
+            except Exception as e:  # noqa: BLE001
+                wait = backoff_base_s * (2 ** attempt)
+                log.warning("breadth batch %d failed (%s); retry in %.0fs", i // batch_size, e, wait)
+                time.sleep(wait)
+        time.sleep(1)
+
+
+def capture_adjusted_policy(policy: Mapping) -> dict:
+    """Detach and validate the native acquisition policy before provider work."""
+    from lib.adjusted_price_capture import AdjustedCaptureError
+    if not isinstance(policy, Mapping):
+        raise AdjustedCaptureError("invalid_breadth_policy")
+    cfg = deepcopy(dict(policy))
+    windows, nhw, lookback = (cfg.get(key) for key in
+                              ("ma_windows", "nhnl_window", "lookback_days_live"))
+    fixups = cfg.get("ticker_fixups") or {}
+    if (not isinstance(windows, (list, tuple)) or len(windows) != 2
+            or any(type(v) is not int or v < 1 for v in windows)
+            or type(nhw) is not int or nhw < 1 or type(lookback) is not int or lookback < 1
+            or not isinstance(fixups, dict)
+            or any(not isinstance(k, str) or not isinstance(v, str) for k, v in fixups.items())):
+        raise AdjustedCaptureError("invalid_breadth_policy")
+    cfg["ma_windows"], cfg["ticker_fixups"] = list(windows), fixups
+    return cfg
+
+
 class BreadthAdapter(Adapter):
     name = "breadth"
     group = "breadth"
 
-    def __init__(self) -> None:
-        self.cfg = config.load()["breadth"]
-        self.ycfg = config.load()["yahoo"]
-        self.cache_path = config.data_dir() / "breadth" / "_closes_cache.parquet"
+    def __init__(self, *, breadth_config: Mapping | None = None,
+                 yahoo_config: Mapping | None = None) -> None:
+        if breadth_config is None and yahoo_config is None:
+            self.cfg = config.load()[self.group]
+            self.ycfg = config.load()["yahoo"]
+            self.cache_path = config.data_dir() / self.group / "_closes_cache.parquet"
+        elif isinstance(breadth_config, Mapping) and isinstance(yahoo_config, Mapping):
+            self.cfg = deepcopy(dict(breadth_config))
+            self.ycfg = deepcopy(dict(yahoo_config))
+            self.cache_path = None
+        else:
+            raise ValueError("Both explicit breadth and Yahoo configurations are required")
 
     def constituents(self) -> pd.DataFrame:
         r = self.http_get(self.cfg["constituents_url"], retries=3,
@@ -326,7 +391,8 @@ class BreadthAdapter(Adapter):
         s = re.sub(r"[|;,/\s]+$", "", s)  # trailing delimiter run; "Inc." keeps its dot
         return " ".join(s.split())
 
-    def _repair(self, members: pd.DataFrame) -> pd.DataFrame:
+    def _repair(self, members: pd.DataFrame, *, ticker_fixups: Mapping | None = None,
+                excluded_symbols: frozenset[str] | None = None) -> pd.DataFrame:
         """Clean a freshly-scraped constituents table before it becomes the universe.
 
         Wikipedia is community-edited and ships the occasional non-ticker junk cell,
@@ -351,8 +417,9 @@ class BreadthAdapter(Adapter):
                         self.name, int((~ok).sum()), df.loc[~ok, "symbol"].tolist()[:10])
             df = df[ok]
         # repair known-bad symbols (vandalism / stale renames) -> the real ticker
+        repair_map = (self.cfg.get("ticker_fixups") or {}) if ticker_fixups is None else ticker_fixups
         fixups = {str(k).strip().upper(): str(v).strip().upper()
-                  for k, v in (self.cfg.get("ticker_fixups") or {}).items()}
+                  for k, v in repair_map.items()}
         if fixups:
             hit = df["symbol"].isin(fixups)
             if hit.any():
@@ -365,7 +432,8 @@ class BreadthAdapter(Adapter):
         # symbol to the universe every night — the fetch then requests a tape that
         # can never return (LEG, 2026-08: Form 25 filed 08-27, page still listed it).
         # lib.delisted_symbols fails open, so an unreadable ledger drops nothing.
-        dead = df["symbol"].isin(delisted_symbols.tickers())
+        excluded = delisted_symbols.tickers() if excluded_symbols is None else excluded_symbols
+        dead = df["symbol"].isin(excluded)
         if dead.any():
             log.info("%s constituents: dropping %d delisted symbol(s) per the exit "
                      "ledger: %s", self.name, int(dead.sum()),
@@ -388,31 +456,17 @@ class BreadthAdapter(Adapter):
         return df[["symbol", "name", "sector"]]
 
     def _download_closes(self, tickers: list[str], period: str) -> pd.DataFrame:
-        bs = self.ycfg["batch_size"]
         parts: list[pd.DataFrame] = []
-        # ADDITIVE OHLCV capture: yfinance already downloads high/low/volume — keep them
-        # (instead of discarding all but Close) so the stock library can compute
-        # volume-based signals (engine/bottom_radar) for the full universe, not just the
-        # ~114 deep names. Stashed on self for fetch() to cache; never affects closes.
         extras: dict[str, list] = {"high": [], "low": [], "volume": []}
-        for i in range(0, len(tickers), bs):
-            batch = tickers[i:i + bs]
-            for attempt in range(self.ycfg["retries"]):
-                try:
-                    df = yf.download(batch, period=period, auto_adjust=True,
-                                     progress=False, group_by="column", threads=True)
-                    lvl0 = (df.columns.get_level_values(0)
-                            if isinstance(df.columns, pd.MultiIndex) else df.columns)
-                    parts.append(df["Close"] if "Close" in lvl0 else df)
-                    for k, F in (("high", "High"), ("low", "Low"), ("volume", "Volume")):
-                        if F in lvl0:
-                            extras[k].append(df[F])
-                    break
-                except Exception as e:  # noqa: BLE001
-                    wait = self.ycfg["backoff_base_s"] * (2 ** attempt)
-                    log.warning("breadth batch %d failed (%s); retry in %.0fs", i // bs, e, wait)
-                    time.sleep(wait)
-            time.sleep(1)
+        def consume(batch, df):
+            lvl0 = (df.columns.get_level_values(0)
+                    if isinstance(df.columns, pd.MultiIndex) else df.columns)
+            parts.append(df["Close"] if "Close" in lvl0 else df)
+            for k, field in (("high", "High"), ("low", "Low"), ("volume", "Volume")):
+                if field in lvl0:
+                    extras[k].append(df[field])
+        _download_batches(tickers, period, batch_size=self.ycfg["batch_size"],
+            retries=self.ycfg["retries"], backoff_base_s=self.ycfg["backoff_base_s"], consume=consume)
         if not parts:
             raise RuntimeError("no constituent closes downloaded")
 
@@ -422,6 +476,127 @@ class BreadthAdapter(Adapter):
 
         self._last_extras = {k: _wide(v) for k, v in extras.items() if v}
         return _wide(parts)
+
+    def _download_adjusted_capture(self, tickers: tuple[str, ...], period: str, *,
+                                   request_settings, source_session: str):
+        from lib.adjusted_price_capture import capture_adjusted_response, combine_adjusted_captures
+        captures = []
+        def consume(batch, frame):
+            # Append only after the entire batch has been validated/detached.
+            captures.append(capture_adjusted_response(frame, requested=tuple(batch),
+                                                       source_session=source_session))
+        _download_batches(list(tickers), period, batch_size=request_settings.batch_size,
+            retries=request_settings.retries, backoff_base_s=request_settings.backoff_base_s,
+            consume=consume)
+        return combine_adjusted_captures(captures, requested=tickers)
+
+    def acquire_adjusted_prices(self, *, members: pd.DataFrame, prior_panels: Mapping,
+                                excluded_symbols: frozenset[str], aliases: Mapping,
+                                evaluation_instant: datetime, period: str = "1mo") -> BreadthPriceAcquisition:
+        """Capture a completed four-field cohort without any legacy file effects.
+
+        Request values are detached before provider access. The whole archive is
+        retained, but current qualification uses active members observed in this
+        acquisition only. This method does not flip the global ownership profile.
+        """
+        from collectors.yahoo import YahooRequestSettings
+        from lib import market_session
+        from lib.adjusted_price_capture import (capture_panels, merge_adjusted_capture,
+            remap_adjusted_capture, AdjustedCaptureError, FIELDS)
+        cfg = capture_adjusted_policy(self.cfg)
+        request = YahooRequestSettings.capture(self.ycfg)
+        if (not isinstance(evaluation_instant, datetime) or evaluation_instant.tzinfo is None
+                or evaluation_instant.utcoffset() is None or not isinstance(period, str)
+                or not isinstance(excluded_symbols, frozenset)
+                or any(not isinstance(t, str) for t in excluded_symbols)
+                or not isinstance(aliases, Mapping)):
+            raise AdjustedCaptureError("invalid_breadth_request")
+        evaluation = evaluation_instant.astimezone(timezone.utc)
+        local = market_session.market_local_date("US", evaluation)
+        target = market_session.expected_session("US", evaluation)
+        if (not market_session.calendar_verified("US", local.year)
+                or not market_session.calendar_verified("US", target.year)):
+            raise AdjustedCaptureError("target_calendar_unavailable")
+        source = target.isoformat()
+        windows = cfg.get("ma_windows")
+        nhw = cfg.get("nhnl_window")
+        lookback = cfg.get("lookback_days_live")
+        depth = max(*windows, nhw)
+        cold_period = f"{max(1, lookback // 365 + 1)}y"
+        if period not in ("1mo", "max", cold_period):
+            raise AdjustedCaptureError("invalid_breadth_period")
+        if (not isinstance(members, pd.DataFrame) or members.columns.has_duplicates
+                or not {"symbol", "name", "sector"}.issubset(members.columns)
+                or len(members) > 10_000
+                or any(not isinstance(v, str) for v in members["symbol"])
+                or any(not isinstance(v, str) for v in members["name"])
+                or any(not (isinstance(v, str) or v is None or v is pd.NA
+                           or isinstance(v, float) and math.isnan(v)) for v in members["sector"])):
+            raise AdjustedCaptureError("invalid_breadth_membership")
+        repaired_members = self.constituents_checked(self._repair(members.copy(deep=True),
+            ticker_fixups=deepcopy(cfg.get("ticker_fixups") or {}), excluded_symbols=excluded_symbols))
+        active = tuple(repaired_members["symbol"])
+        if (len(active) > 5000 or any(not _TICKER_RE.fullmatch(t) for t in active)
+                or len(set(active)) != len(active)):
+            raise AdjustedCaptureError("invalid_breadth_membership")
+        alias_values = deepcopy(dict(aliases))
+        mapping = {t: alias_values.get(t, t) for t in active}
+        if any(not isinstance(v, str) or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9.^=-]{0,23}", v)
+               for v in mapping.values()) or len(set(mapping.values())) != len(mapping):
+            raise AdjustedCaptureError("vendor_alias_collision_or_invalid")
+        previous = capture_panels(prior_panels, source_session=source, allow_absent=True)
+        if period == cold_period and any(not panel.empty for panel in previous.values()):
+            raise AdjustedCaptureError("finite_cold_period_requires_empty_prior")
+        raw = self._download_adjusted_capture(tuple(mapping.values()), period,
+            request_settings=request, source_session=source)
+        initial = remap_adjusted_capture(raw, canonical_to_vendor=mapping)
+        arguments = dict(prior=previous, fresh=initial, active=active, source_session=source,
+                         basis_tolerance=request.basis_tolerance, minimum_repair_sessions=depth,
+                         full_replacement=period != "1mo")
+        tentative = merge_adjusted_capture(**arguments)
+        scan = tentative.panels["close"].reindex(columns=active)
+        scan = scan.loc[scan.index >= pd.Timestamp(source) - pd.Timedelta(days=_SEAM_SCAN_DAYS)]
+        suspects = tuple(seam_suspects(None, None, scan)) if period == "1mo" else ()
+        arguments["residual_suspects"] = suspects
+        tentative = merge_adjusted_capture(**arguments)
+        repair_capture = None
+        if tentative.needs_repair and period == "1mo":
+            repair_map = {t: mapping[t] for t in tentative.needs_repair}
+            # One full-history recovery preserves prior depth across basis changes.
+            repair_raw = self._download_adjusted_capture(tuple(repair_map.values()), "max",
+                request_settings=request, source_session=source)
+            repair_capture = remap_adjusted_capture(repair_raw, canonical_to_vendor=repair_map)
+        result = merge_adjusted_capture(**arguments, repair=repair_capture)
+        required = math.ceil(len(active) * 0.8)
+        accepted = len(result.current) >= required
+        archive = set().union(*(set(panel.columns) for panel in result.panels.values()))
+        member_evidence = {}
+        for ticker in active:
+            selected_capture = (initial if ticker not in result.repaired or period != "1mo" else repair_capture)
+            span = selected_capture.spans.get(ticker) if selected_capture is not None else None
+            member_evidence[ticker] = {"vendor_symbol": mapping[ticker],
+                "initial_span": [s.date().isoformat() for s in initial.spans[ticker]] if ticker in initial.spans else None,
+                "accepted_span": [s.date().isoformat() for s in span] if ticker in result.current and span else None,
+                "repair_reason": result.reasons.get(ticker),
+                "repaired": ticker in result.repaired, "current": ticker in result.current,
+                "unresolved": ticker in result.unresolved}
+        evidence = {"evaluation_instant": evaluation.isoformat(), "source_session": source,
+            "completed_sessions_only": True, "target_calendar_verified": True,
+            "basis": "provider_auto_adjusted", "fields": list(FIELDS),
+            "selection_policy": {"ma_windows": list(windows), "nhnl_window": nhw,
+                "ticker_fixups": deepcopy(cfg.get("ticker_fixups") or {}),
+                "excluded_symbols": sorted(excluded_symbols)},
+            "active_members": len(active), "current_members": len(result.current), "required_current": required,
+            "request": {"period": period, "recovery_period": "max" if repair_capture is not None else None,
+                "batch_size": request.batch_size, "retries": request.retries,
+                "backoff_base_s": request.backoff_base_s, "basis_tolerance": request.basis_tolerance,
+                "minimum_repair_sessions": depth, "calculation_lookback_days": lookback},
+            "members": member_evidence,
+            "unknown": {"vendor_publication_clock": "Not supplied per bar by yfinance",
+                        "provider_available_at": "First retrievable time is not observed"}}
+        return BreadthPriceAcquisition(accepted, "accepted" if accepted else "active_target_coverage_insufficient",
+            source, repaired_members.copy(deep=True), result.panels, result.current, result.unresolved,
+            result.repaired, tuple(sorted(archive - set(active))), MappingProxyType(evidence))
 
     def _merge_refreshed(self, fresh: pd.DataFrame, cached: pd.DataFrame) -> pd.DataFrame:
         """``fresh.combine_first(cached)`` + split-seam repair (see module comment).
@@ -482,6 +657,8 @@ class BreadthAdapter(Adapter):
         return merged
 
     def fetch(self, full_history: bool = False) -> dict[str, pd.DataFrame]:
+        if self.cache_path is None:
+            raise ValueError("Explicit breadth configuration requires acquire_adjusted_prices")
         members = self.constituents_checked(self.constituents())
         tickers = members["symbol"].tolist()
 

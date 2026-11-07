@@ -804,7 +804,7 @@ PRINT_SELECT = 'echo "PASSED_SELECT OLD=$OLD NEW=$NEW"'
 
 def _select_stanza() -> str:
     start = UPDATE_TEXT.index(SELECT_BEGIN)
-    return UPDATE_TEXT[start:UPDATE_TEXT.index(SELECT_END, start)]
+    return UPDATE_TEXT[start:UPDATE_TEXT.index(SELECT_END, start)].replace("\n\t", "\n")
 
 
 def _run_free_space_guard(
@@ -828,6 +828,7 @@ def _run_free_space_guard(
     harness = "\n".join([
         "set -euo pipefail",
         f"APP_DIR='{app}'",
+        "LIVE_SOURCE_PENDING=0",
         stanza,
         'echo "PASSED_GUARD DISK_REFUSED=$DISK_REFUSED"',
         after,
@@ -895,7 +896,7 @@ def test_free_space_guard_runs_under_the_lock_and_before_the_pull():
     select = UPDATE_TEXT.index(SELECT_BEGIN)
     pull = UPDATE_TEXT.index('git -C "$APP_DIR" fetch -q origin main')
     select_end = UPDATE_TEXT.index(SELECT_END)
-    reset = UPDATE_TEXT.index('git -C "$APP_DIR" reset --hard -q FETCH_HEAD')
+    reset = UPDATE_TEXT.index('git -C "$APP_DIR" reset --hard -q "$NEW"')
     assert lock < guard < select < pull < select_end < reset
     between = UPDATE_TEXT[UPDATE_TEXT.index(GUARD_END, guard):select]
     assert "# Do not add --depth here" in between

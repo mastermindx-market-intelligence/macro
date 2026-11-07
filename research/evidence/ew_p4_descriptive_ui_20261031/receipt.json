@@ -1,7 +1,7 @@
 {
   "scope": "EW-P4.T1 descriptive early-warning observation UI (consumer-only), two hosts, synthetic fixtures",
   "production_authenticated": false,
-  "source_revision": "92cb5e1babdf45f7ecb5bdb104f810e2b6aed84a",
+  "source_revision": "f223990e0e1dc805108517abde90c17b8883b005",
   "base": "1d253e1d25f22c61d1bcf8126b13b0229f26ccbd",
   "capture_mode": "dialog_unclipped_static_harness",
   "capture_mode_note": "#dlg-risk rendered in normal flow with its max-height/overflow removed so the whole band is captured; live dialog scrolls",
@@ -1992,195 +1992,226 @@
     "radar-states": "contact-radar-states.html"
   },
   "pr_source_equivalence": {
-    "note": "Actual full 68-case isolated Chromium recapture from integrated source commit 92cb5e1babdf45f7ecb5bdb104f810e2b6aed84a; all 31 render inputs verified byte-for-byte against the Git tree before evidence publication; 2 screenshot PNGs and 1 contact-sheet artifacts genuinely changed. This is source evidence only, not signed-in production acceptance.",
-    "pr_branch": "claude/ssd-sector-intelligence-macro-7646-82cb8b-35c697a089b670b0",
-    "pr_parent_of_evidence_commit": "92cb5e1babdf45f7ecb5bdb104f810e2b6aed84a",
+    "note": "Actual full 68-case isolated Chromium recapture from f223990e0e1dc805108517abde90c17b8883b005. All 31 recorded render/context inputs are bound to the exact Git tree; 27 materialized inputs verified before and after capture, four omitted site copies verified from Git and equal template counterparts. Sector Central uses the existing synthetic component host, not full-template or authenticated production proof. Earlier receipt remains in Git history.",
+    "pr_branch": "sol/web-macro-always-on-shared-shell-20261105-c3",
+    "pr_parent_of_evidence_commit": "f223990e0e1dc805108517abde90c17b8883b005",
     "render_files": [
       {
         "path": "site/rotation_events.js",
         "blob_at_source_revision": "a096019ce32d901f76e8cd7a198c1ccc3f3dac52",
         "blob_on_pr_branch": "a096019ce32d901f76e8cd7a198c1ccc3f3dac52",
-        "equal": true
+        "equal": true,
+        "materialized": false
       },
       {
         "path": "templates/_risk_envelope_band.css.j2",
         "blob_at_source_revision": "09c15c1a022beba816a4adc92dd1a83751dab638",
         "blob_on_pr_branch": "09c15c1a022beba816a4adc92dd1a83751dab638",
-        "equal": true
+        "equal": true,
+        "materialized": true
       },
       {
         "path": "templates/_risk_envelope_band.html.j2",
         "blob_at_source_revision": "57af6f51d5f68d30eae9e7e913efd258c306681f",
         "blob_on_pr_branch": "57af6f51d5f68d30eae9e7e913efd258c306681f",
-        "equal": true
+        "equal": true,
+        "materialized": true
       },
       {
         "path": "templates/rotation_events.js",
         "blob_at_source_revision": "a096019ce32d901f76e8cd7a198c1ccc3f3dac52",
         "blob_on_pr_branch": "a096019ce32d901f76e8cd7a198c1ccc3f3dac52",
-        "equal": true
+        "equal": true,
+        "materialized": true
       },
       {
         "path": "tests/fixtures/ew_p4_observation/conflict_20s.json",
         "blob_at_source_revision": "0dd5fce2265bca4d74afec6b74ce0be6522dc83a",
         "blob_on_pr_branch": "0dd5fce2265bca4d74afec6b74ce0be6522dc83a",
-        "equal": true
+        "equal": true,
+        "materialized": true
       },
       {
         "path": "tests/fixtures/ew_p4_observation/corrected.json",
         "blob_at_source_revision": "2859bc9a02f3ddbcfdc829c182bf737b9e7933af",
         "blob_on_pr_branch": "2859bc9a02f3ddbcfdc829c182bf737b9e7933af",
-        "equal": true
+        "equal": true,
+        "materialized": true
       },
       {
         "path": "tests/fixtures/ew_p4_observation/expected.json",
         "blob_at_source_revision": "87d7182c216d2aaac69bbd37a524a2869a8b012c",
         "blob_on_pr_branch": "87d7182c216d2aaac69bbd37a524a2869a8b012c",
-        "equal": true
+        "equal": true,
+        "materialized": true
       },
       {
         "path": "tests/fixtures/ew_p4_observation/journey_b_both_fell.json",
         "blob_at_source_revision": "6f65172c44453228dfc26f39b59c93163e02d3e9",
         "blob_on_pr_branch": "6f65172c44453228dfc26f39b59c93163e02d3e9",
-        "equal": true
+        "equal": true,
+        "materialized": true
       },
       {
         "path": "tests/fixtures/ew_p4_observation/journey_c_envelope_1d253e1d.json",
         "blob_at_source_revision": "819773e4d725f2f729d8b72c8a80f32b587aecdf",
         "blob_on_pr_branch": "819773e4d725f2f729d8b72c8a80f32b587aecdf",
-        "equal": true
+        "equal": true,
+        "materialized": true
       },
       {
         "path": "tests/fixtures/ew_p4_observation/malformed_future.json",
         "blob_at_source_revision": "30d86cba6dcf7f127b90dbba9c06340895eb6098",
         "blob_on_pr_branch": "30d86cba6dcf7f127b90dbba9c06340895eb6098",
-        "equal": true
+        "equal": true,
+        "materialized": true
       },
       {
         "path": "tests/fixtures/ew_p4_observation/malformed_id.json",
         "blob_at_source_revision": "7644ff22b6490d1f52c525c20026472c65010c82",
         "blob_on_pr_branch": "7644ff22b6490d1f52c525c20026472c65010c82",
-        "equal": true
+        "equal": true,
+        "materialized": true
       },
       {
         "path": "tests/fixtures/ew_p4_observation/malformed_ratio.json",
         "blob_at_source_revision": "608562757447a71e569c63ad72d3c1e3e60f6f54",
         "blob_on_pr_branch": "608562757447a71e569c63ad72d3c1e3e60f6f54",
-        "equal": true
+        "equal": true,
+        "materialized": true
       },
       {
         "path": "tests/fixtures/ew_p4_observation/observed_rise.json",
         "blob_at_source_revision": "238b8f6f61ff09158db2316ba9d47a6614ef0f3c",
         "blob_on_pr_branch": "238b8f6f61ff09158db2316ba9d47a6614ef0f3c",
-        "equal": true
+        "equal": true,
+        "materialized": true
       },
       {
         "path": "tests/fixtures/ew_p4_observation/partial_missing_20s.json",
         "blob_at_source_revision": "33c0d74f9dbce45e46e001a7569169c83422fdce",
         "blob_on_pr_branch": "33c0d74f9dbce45e46e001a7569169c83422fdce",
-        "equal": true
+        "equal": true,
+        "materialized": true
       },
       {
         "path": "tests/fixtures/ew_p4_observation/partial_window_mismatch.json",
         "blob_at_source_revision": "4dc92202b7be2db4623bc7b7f6efa9c56e6c2049",
         "blob_on_pr_branch": "4dc92202b7be2db4623bc7b7f6efa9c56e6c2049",
-        "equal": true
+        "equal": true,
+        "materialized": true
       },
       {
         "path": "tests/fixtures/ew_p4_observation/reversal.json",
         "blob_at_source_revision": "a5db3baed08990c12abfc655e774c347b0b6ee85",
         "blob_on_pr_branch": "a5db3baed08990c12abfc655e774c347b0b6ee85",
-        "equal": true
+        "equal": true,
+        "materialized": true
       },
       {
         "path": "tests/fixtures/ew_p4_observation/stale_obs.json",
         "blob_at_source_revision": "cbdde8065fc8490ea07be0476bfa6d520ef66f31",
         "blob_on_pr_branch": "cbdde8065fc8490ea07be0476bfa6d520ef66f31",
-        "equal": true
+        "equal": true,
+        "materialized": true
       },
       {
         "path": "tests/fixtures/ew_p4_observation/withdrawn.json",
         "blob_at_source_revision": "7a23d72c6b18ce76f918c33ec8a9a539a0fa0fca",
         "blob_on_pr_branch": "7a23d72c6b18ce76f918c33ec8a9a539a0fa0fca",
-        "equal": true
+        "equal": true,
+        "materialized": true
       },
       {
         "path": "tests/probe_ew_p4_descriptive_ui_browser.py",
         "blob_at_source_revision": "9961f3d02347a41c4fd3e573be4946ce24c7a071",
         "blob_on_pr_branch": "9961f3d02347a41c4fd3e573be4946ce24c7a071",
-        "equal": true
+        "equal": true,
+        "materialized": true
       },
       {
         "path": "tests/fixtures/ew_p4_observation/malformed_blank_pair.json",
         "blob_at_source_revision": "d1fe7eedd55c7a62d75c3b64234438a8647a8e80",
         "blob_on_pr_branch": "d1fe7eedd55c7a62d75c3b64234438a8647a8e80",
-        "equal": true
+        "equal": true,
+        "materialized": true
       },
       {
         "path": "tests/fixtures/ew_p4_observation/malformed_calendar.json",
         "blob_at_source_revision": "fd434f0fa1be7b41fb5d5eb86f63b2737d8e4cc0",
         "blob_on_pr_branch": "fd434f0fa1be7b41fb5d5eb86f63b2737d8e4cc0",
-        "equal": true
+        "equal": true,
+        "materialized": true
       },
       {
         "path": "tests/fixtures/ew_p4_observation/malformed_missing_recorded.json",
         "blob_at_source_revision": "2ca4c6f59e42ea2501372650de086f3c4a62296b",
         "blob_on_pr_branch": "2ca4c6f59e42ea2501372650de086f3c4a62296b",
-        "equal": true
+        "equal": true,
+        "materialized": true
       },
       {
         "path": "templates/rotation_glance.css",
         "blob_at_source_revision": "5d1653f8f99f71685e5123fae22767240819fdda",
         "blob_on_pr_branch": "5d1653f8f99f71685e5123fae22767240819fdda",
-        "equal": true
+        "equal": true,
+        "materialized": true
       },
       {
         "path": "site/rotation_glance.css",
         "blob_at_source_revision": "5d1653f8f99f71685e5123fae22767240819fdda",
         "blob_on_pr_branch": "5d1653f8f99f71685e5123fae22767240819fdda",
-        "equal": true
+        "equal": true,
+        "materialized": false
       },
       {
         "path": "templates/theme.css",
         "blob_at_source_revision": "619436f58d37a222d1db7021ba9d52bb3a05a7fa",
         "blob_on_pr_branch": "619436f58d37a222d1db7021ba9d52bb3a05a7fa",
-        "equal": true
+        "equal": true,
+        "materialized": true
       },
       {
         "path": "templates/dashboard.html.j2",
         "blob_at_source_revision": "4a890c3224898639f680d6b0cefe836a0238d269",
         "blob_on_pr_branch": "4a890c3224898639f680d6b0cefe836a0238d269",
-        "equal": true
+        "equal": true,
+        "materialized": true
       },
       {
         "path": "templates/_risk_radar_workspace.html.j2",
         "blob_at_source_revision": "59599c343078e786ccd45657e15b2dd8fef40ee9",
         "blob_on_pr_branch": "59599c343078e786ccd45657e15b2dd8fef40ee9",
-        "equal": true
+        "equal": true,
+        "materialized": true
       },
       {
         "path": "templates/sector_central.html.j2",
-        "blob_at_source_revision": "9266e9413a62ae1ba72942f30a9904824593690d",
-        "blob_on_pr_branch": "9266e9413a62ae1ba72942f30a9904824593690d",
-        "equal": true
+        "blob_at_source_revision": "3957ca0e4df74c40a2eff90abc8e43698f824512",
+        "blob_on_pr_branch": "3957ca0e4df74c40a2eff90abc8e43698f824512",
+        "equal": true,
+        "materialized": true
       },
       {
         "path": "templates/si_workspace.js",
         "blob_at_source_revision": "2c7667c39b5a2a5171b5ef036ef45206fb0702fc",
         "blob_on_pr_branch": "2c7667c39b5a2a5171b5ef036ef45206fb0702fc",
-        "equal": true
+        "equal": true,
+        "materialized": true
       },
       {
         "path": "site/theme.css",
         "blob_at_source_revision": "619436f58d37a222d1db7021ba9d52bb3a05a7fa",
         "blob_on_pr_branch": "619436f58d37a222d1db7021ba9d52bb3a05a7fa",
-        "equal": true
+        "equal": true,
+        "materialized": false
       },
       {
         "path": "site/si_workspace.js",
         "blob_at_source_revision": "2c7667c39b5a2a5171b5ef036ef45206fb0702fc",
         "blob_on_pr_branch": "2c7667c39b5a2a5171b5ef036ef45206fb0702fc",
-        "equal": true
+        "equal": true,
+        "materialized": false
       }
     ],
     "all_equal": true

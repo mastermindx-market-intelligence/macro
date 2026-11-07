@@ -1,0 +1,71 @@
+{
+  "schema": "macro.sector_timing_setup_source_proof.v1",
+  "recorded_at": "2026-11-06T12:25:08.286355+00:00",
+  "source_base": "c18e840debddfb838074ac32e102f2cd53d89911",
+  "operation": "macro-always-on-shared-shell-20261105-c3",
+  "state": "SOURCE_QUALIFIED_NOT_RUNTIME_ACTIVATED",
+  "source_sha256": {
+    "engine/sector_action_board.py": "6832090783d6832eb0d086942815665849927b95955d3388f7b1590c134e11fc",
+    "scripts/build_site.py": "b510b719dc4302ddbea3930913674df54223f3320f71e5125149ac0cc4fa3424",
+    "tests/fixtures/base_sector_timing_c18e840.py": "e7d4bf0dde7e1653b11d2a8fdeaa8b3679edf00b6d6fbe5a75d4540bf92698cb",
+    "tests/test_sector_timing_explicit_inputs.py": "9e6d221c4a2d862c4ab6c94b2e18fbbb2ebfeb757b094634c17356a3ac91abe2"
+  },
+  "qualification": {
+    "exit_code": 0,
+    "elapsed_seconds": 33.436,
+    "log": "/tmp/mmx-sector-timing-qualified-20261106.log",
+    "sha256": "bfa0f4d56e4fa929934919c1c77570c3f02aee0242a0ab2b5a1c731bed60760d",
+    "files": [
+      "tests/test_sector_timing_explicit_inputs.py",
+      "tests/test_spark_zone_band.py",
+      "tests/test_ts_u3_dashboard_surfaces.py",
+      "tests/test_sector_action_board_inputs.py",
+      "tests/test_act_now_board_assembler.py",
+      "tests/test_action_board_coherence.py",
+      "tests/test_action_board_hover_cards.py",
+      "tests/test_basket_integration.py",
+      "tests/test_standouts_sector_integrity.py",
+      "tests/test_standout_audit.py",
+      "tests/test_us_act_now.py",
+      "tests/test_sector_intelligence_page.py"
+    ],
+    "excluded_known_missing_generated_preconditions": "not redirect_stub_rendered and not generated_forming_narratives_matches_deferred_init_contract and not scoped_publication_directories_are_real_and_owned_by_the_build and not test_removed_early_turn_strip_and_fetch_stay_absent",
+    "passed": 397,
+    "skipped": 4,
+    "deselected": 5
+  },
+  "new_boundary": {
+    "tests": 27,
+    "included_in_affected_suite": true,
+    "counts_not_additive": true
+  },
+  "baseline_missing_page": {
+    "base_sha": "c18e840debddfb838074ac32e102f2cd53d89911",
+    "test": "tests/test_ts_u3_dashboard_surfaces.py::TestModeGating::test_removed_early_turn_strip_and_fetch_stay_absent",
+    "exact_test_bytes_equal": true,
+    "test_sha256": "4014273b6285113dbad1a4d3d494ec372ff0bb640ccd976b1bfde899ad58b9cf",
+    "exception": "FileNotFoundError",
+    "missing_precondition": "site/us_stocks.html",
+    "reproduced": true
+  },
+  "other_missing_generated_preconditions": "Four already recorded at c18e840 in SECTOR_ACTION_BOARD_SOURCE_REVIEW_2026-11-06.json; none of their assertions or fixtures were changed.",
+  "repairs_during_qualification": [
+    "One actual extraction defect: restored incumbent ticker normalization inside the shared notable helper.",
+    "Test alpha entry corrected to the incumbent scalar status; real-cycle fixture changed from monotonic values with no ladder to a deterministic oscillating series.",
+    "Per-field observed dates distinguish a current close from older optional high without changing admission or calculation."
+  ],
+  "proven": [
+    "literal original builder/new adapter/explicit calculation equality, including the same stock in two per-fund macro contexts",
+    "300 frame-row floor with null closes and partial high evidence, original skip/count/order rules",
+    "shared full-signature display helpers and Markup return type",
+    "production setup two-read chips, measured/fallback/absent/tactical base rates",
+    "real cycle and real setup computations with ambient readers blocked",
+    "no captured-input mutation and detached returned auxiliary evidence"
+  ],
+  "limits": [
+    "cold cycles import retains incumbent configuration initialization",
+    "setup panel source admission remains upstream; None remains unavailable",
+    "no live-provider request, ownership transfer, Macro merge/deploy, or authenticated generation consumer proof",
+    "hosted CI registration action remains blocked under the original denial; no retry or bypass"
+  ]
+}

@@ -1,0 +1,279 @@
+{
+  "accepted_record": {
+    "acceptance_attempt_id": "c009336b0f544f01a2af7efa43fb949c",
+    "accepted_sha": "bb65839dc6078f2943f6b5a6f58f5261350a85dd",
+    "app_root": "/opt/terminal/beta/terminal",
+    "build_id": "build-TfctsWXpff2fKS",
+    "canonical_repo": "/opt/terminal/.gitsrc-beta",
+    "generated_at": "2026-11-06T13:10:38.823945Z",
+    "policy_digest": "99f76cb211b086d1f83bb86c10747e2711a4c318fa4bd5dab1b94e84d46fe1d6",
+    "policy_path": "/opt/terminal/.gitsrc-beta/ops/terminal_source_audit.beta.json",
+    "previous_runtime_record": "/var/lib/mastermind-terminal-beta/source-provisioned/runtime-accepted-334980ac7339a6edfa2ebf357a3b235732ad5419-bd1c7a00324653cd.json",
+    "previous_runtime_record_id": "bd1c7a00324653cd9bca13df033b7380e8da64014db68529aec33086428fe4db",
+    "record_id": "28e2e2925eeeb273b00a2be2d50c231f7692dbd38f993cd0599cd8e11d690506",
+    "release_receipt_id": "c75fbb5b9f419578442972125f8aa23db4dfc10d51c34b052362d40800e44aa1",
+    "release_receipt_path": "/var/lib/mastermind-terminal-beta/release-preflight/20261106T131023Z-bb65839dc6078f2943f6b5a6f58f5261350a85dd-c75fbb5b9f419578442972125f8aa23db4dfc10d51c34b052362d40800e44aa1.json",
+    "rollback_baseline": true,
+    "runtime_accepted": true,
+    "schema": "mastermind.terminal.beta_runtime_accepted.v1",
+    "source_audit_receipt_id": "3b989d2ab7e37698d625ed87ae681ff66fac9f65b8edb518428c5e46271c7a96",
+    "source_provisioned_record": "/var/lib/mastermind-terminal-beta/source-provisioned/source-provisioned-e45bde2cac07ac3b29285ff70c40d68900fad62c-efb499b6d0108d69.json",
+    "source_provisioned_record_id": "efb499b6d0108d69d3eedba424f7ef6ecea26c957c5378fbef4f9b6b997365d9",
+    "target": "beta",
+    "target_root": "/opt/terminal/beta"
+  },
+  "accepted_record_path": "/var/lib/mastermind-terminal-beta/source-provisioned/runtime-accepted-bb65839dc6078f2943f6b5a6f58f5261350a85dd-28e2e2925eeeb273.json",
+  "accepted_record_sha256": "39e2adf6848043d3aac39cb5936d6bbd7a1d7bcff52412abb3cea9e528bd65a5",
+  "attempt_records": [
+    {
+      "path": "/var/lib/mastermind-terminal-beta/source-provisioned/attempt-c009336b0f544f01a2af7efa43fb949c-activation-73d4ad31d23dd3c9.json",
+      "phase": "activation",
+      "record_id": "73d4ad31d23dd3c9e6e2fcba5229de9dd7f1bb394e1bb685a74570f2b95fc572",
+      "target_sha": "bb65839dc6078f2943f6b5a6f58f5261350a85dd"
+    },
+    {
+      "path": "/var/lib/mastermind-terminal-beta/source-provisioned/attempt-c009336b0f544f01a2af7efa43fb949c-committing-85b3fd2b90324b54.json",
+      "phase": "committing",
+      "record_id": "85b3fd2b90324b54fb607a721289bbba80d03458645440095db5b0bf689508c5",
+      "target_sha": "bb65839dc6078f2943f6b5a6f58f5261350a85dd"
+    },
+    {
+      "path": "/var/lib/mastermind-terminal-beta/source-provisioned/attempt-c009336b0f544f01a2af7efa43fb949c-inputs-dirty-25cbea975df35d07.json",
+      "phase": "inputs-dirty",
+      "record_id": "25cbea975df35d07d00964ec08eb5d50ddc5671032c70230dcf09ecc8629e2fa",
+      "target_sha": "bb65839dc6078f2943f6b5a6f58f5261350a85dd"
+    },
+    {
+      "path": "/var/lib/mastermind-terminal-beta/source-provisioned/attempt-c009336b0f544f01a2af7efa43fb949c-staging.json",
+      "phase": "staging",
+      "record_id": "a3c3fe2605ea6a431349a089f57689ff8c578a6fde2a508bbfceab0402b9e30e",
+      "target_sha": "bb65839dc6078f2943f6b5a6f58f5261350a85dd"
+    },
+    {
+      "path": "/var/lib/mastermind-terminal-beta/source-provisioned/attempt-c009336b0f544f01a2af7efa43fb949c-validated-587253ec667df494.json",
+      "phase": "validated",
+      "record_id": "587253ec667df49465d5e2fd41b6ca1d69bebe72ef0173860723ea33961b6c1b",
+      "target_sha": "bb65839dc6078f2943f6b5a6f58f5261350a85dd"
+    }
+  ],
+  "git_head": "bb65839dc6078f2943f6b5a6f58f5261350a85dd",
+  "local_status": {
+    "body": {
+      "bridgeVersion": "20261018.1",
+      "buildId": "bb65839dc6078f2943f6b5a6f58f5261350a85dd",
+      "documentVersion": "20261018.1",
+      "enabled": true,
+      "protocol": "mmx.shared-shell.v1",
+      "registrySha256": "8d6346856bf24eb42525cfd0a7cbb6de3ff00092a907874012d8187e44623fbe"
+    },
+    "headers": {
+      "Cache-Control": "private, no-store, max-age=0",
+      "Content-Type": "application/json"
+    },
+    "http_status": 200
+  },
+  "marker": "bb65839dc6078f2943f6b5a6f58f5261350a85dd",
+  "next_build_id": "build-TfctsWXpff2fKS",
+  "observed_at": "2026-11-06T13:12:55.339371+00:00",
+  "pending_exists": false,
+  "preflight": {
+    "accepted_sha": "bb65839dc6078f2943f6b5a6f58f5261350a85dd",
+    "canonical_repo": "/opt/terminal/.gitsrc-beta",
+    "generated_at": "2026-11-06T13:10:23.741455Z",
+    "policy_digest": "99f76cb211b086d1f83bb86c10747e2711a4c318fa4bd5dab1b94e84d46fe1d6",
+    "policy_path": "/opt/terminal/.gitsrc-beta/ops/terminal_source_audit.beta.json",
+    "receipt_id": "c75fbb5b9f419578442972125f8aa23db4dfc10d51c34b052362d40800e44aa1",
+    "result": "CLEAN",
+    "schema": "mastermind.terminal.release_preflight_receipt.v1",
+    "source_audit": {
+      "accepted_ref": {
+        "contains_sha": true,
+        "name": "refs/remotes/origin/master",
+        "sha": "61a0a3016124d8f549ccbb36ff64a5372023096d"
+      },
+      "accepted_sha": "bb65839dc6078f2943f6b5a6f58f5261350a85dd",
+      "canonical_repo": "/opt/terminal/.gitsrc-beta",
+      "canonical_repo_head": "bb65839dc6078f2943f6b5a6f58f5261350a85dd",
+      "deployment": {
+        "marker_path": "/opt/terminal/beta/terminal/.deployment-id",
+        "marker_state": "VALID",
+        "sha": "bb65839dc6078f2943f6b5a6f58f5261350a85dd"
+      },
+      "findings": [],
+      "generated_at": "2026-11-06T13:10:23.741455Z",
+      "mappings": [
+        {
+          "allowance_classes": [
+            "deployment_marker",
+            "generated_build_artifact",
+            "generated_dependency_tree",
+            "rollback_build_artifact",
+            "rollback_deployment_marker"
+          ],
+          "allowed_paths": 6,
+          "allowed_tracked_absence_count": 0,
+          "allowed_tracked_absences": [],
+          "allowed_tracked_runtime_file_count": 0,
+          "allowed_tracked_runtime_files": [],
+          "allowed_tracked_runtime_subtree_count": 1,
+          "allowed_tracked_runtime_subtrees": [
+            {
+              "canonical_git_tree": "6c4e397331dab962510c5e3b18d5d8b1cbd145bf",
+              "classification": "host_owned_runtime_market_data",
+              "live_root_state": "PRESENT",
+              "path": "public/data",
+              "tracked_paths": 134
+            }
+          ],
+          "canonical_kind": "tree",
+          "live_path": "/opt/terminal/beta/terminal",
+          "name": "beta-terminal-app",
+          "repo_path": "terminal",
+          "tracked_paths": 8230
+        },
+        {
+          "allowance_classes": [],
+          "allowed_paths": 0,
+          "allowed_tracked_absence_count": 0,
+          "allowed_tracked_absences": [],
+          "allowed_tracked_runtime_file_count": 0,
+          "allowed_tracked_runtime_files": [],
+          "allowed_tracked_runtime_subtree_count": 0,
+          "allowed_tracked_runtime_subtrees": [],
+          "canonical_kind": "tree",
+          "live_path": "/opt/terminal/beta/ingest",
+          "name": "beta-terminal-ingest",
+          "repo_path": "ingest",
+          "tracked_paths": 106
+        },
+        {
+          "allowance_classes": [],
+          "allowed_paths": 0,
+          "allowed_tracked_absence_count": 0,
+          "allowed_tracked_absences": [],
+          "allowed_tracked_runtime_file_count": 0,
+          "allowed_tracked_runtime_files": [],
+          "allowed_tracked_runtime_subtree_count": 0,
+          "allowed_tracked_runtime_subtrees": [],
+          "canonical_kind": "tree",
+          "live_path": "/opt/terminal/beta/scripts",
+          "name": "beta-terminal-scripts",
+          "repo_path": "scripts",
+          "tracked_paths": 11
+        },
+        {
+          "allowance_classes": [],
+          "allowed_paths": 0,
+          "allowed_tracked_absence_count": 0,
+          "allowed_tracked_absences": [],
+          "allowed_tracked_runtime_file_count": 0,
+          "allowed_tracked_runtime_files": [],
+          "allowed_tracked_runtime_subtree_count": 0,
+          "allowed_tracked_runtime_subtrees": [],
+          "canonical_kind": "tree",
+          "live_path": "/opt/terminal/beta/config",
+          "name": "beta-terminal-config",
+          "repo_path": "config",
+          "tracked_paths": 2
+        },
+        {
+          "allowance_classes": [],
+          "allowed_paths": 0,
+          "allowed_tracked_absence_count": 0,
+          "allowed_tracked_absences": [],
+          "allowed_tracked_runtime_file_count": 0,
+          "allowed_tracked_runtime_files": [],
+          "allowed_tracked_runtime_subtree_count": 0,
+          "allowed_tracked_runtime_subtrees": [],
+          "canonical_kind": "tree",
+          "live_path": "/opt/terminal/beta/contracts",
+          "name": "beta-terminal-contracts",
+          "repo_path": "contracts",
+          "tracked_paths": 11
+        },
+        {
+          "allowance_classes": [],
+          "allowed_paths": 0,
+          "allowed_tracked_absence_count": 0,
+          "allowed_tracked_absences": [],
+          "allowed_tracked_runtime_file_count": 0,
+          "allowed_tracked_runtime_files": [],
+          "allowed_tracked_runtime_subtree_count": 0,
+          "allowed_tracked_runtime_subtrees": [],
+          "canonical_kind": "tree",
+          "live_path": "/opt/terminal/beta/hub",
+          "name": "beta-terminal-hub",
+          "repo_path": "hub",
+          "tracked_paths": 64
+        },
+        {
+          "allowance_classes": [],
+          "allowed_paths": 0,
+          "allowed_tracked_absence_count": 0,
+          "allowed_tracked_absences": [],
+          "allowed_tracked_runtime_file_count": 0,
+          "allowed_tracked_runtime_files": [],
+          "allowed_tracked_runtime_subtree_count": 0,
+          "allowed_tracked_runtime_subtrees": [],
+          "canonical_kind": "tree",
+          "live_path": "/opt/terminal/beta/signal_layer",
+          "name": "beta-terminal-signal-layer",
+          "repo_path": "signal_layer",
+          "tracked_paths": 11
+        }
+      ],
+      "policy_digest": "99f76cb211b086d1f83bb86c10747e2711a4c318fa4bd5dab1b94e84d46fe1d6",
+      "receipt_id": "3b989d2ab7e37698d625ed87ae681ff66fac9f65b8edb518428c5e46271c7a96",
+      "schema": "mastermind.terminal.source_audit_receipt.v1",
+      "status": "CLEAN",
+      "summary": {
+        "allowed_paths": 6,
+        "allowed_tracked_absences": 0,
+        "allowed_tracked_runtime_files": 0,
+        "allowed_tracked_runtime_subtrees": 1,
+        "blocking_findings": 0,
+        "tracked_paths": 8435
+      }
+    },
+    "source_audit_receipt_id": "3b989d2ab7e37698d625ed87ae681ff66fac9f65b8edb518428c5e46271c7a96"
+  },
+  "preflight_path": "/var/lib/mastermind-terminal-beta/release-preflight/20261106T131023Z-bb65839dc6078f2943f6b5a6f58f5261350a85dd-c75fbb5b9f419578442972125f8aa23db4dfc10d51c34b052362d40800e44aa1.json",
+  "public_status": {
+    "body": {
+      "bridgeVersion": "20261018.1",
+      "buildId": "bb65839dc6078f2943f6b5a6f58f5261350a85dd",
+      "documentVersion": "20261018.1",
+      "enabled": true,
+      "protocol": "mmx.shared-shell.v1",
+      "registrySha256": "8d6346856bf24eb42525cfd0a7cbb6de3ff00092a907874012d8187e44623fbe"
+    },
+    "headers": {
+      "Cache-Control": "private, no-store, max-age=0",
+      "Content-Type": "application/json"
+    },
+    "http_status": 200
+  },
+  "service": "MainPID=819263\nActiveState=active\nSubState=running\nUnitFileState=enabled",
+  "shared_hold_exists": false,
+  "unauth_sector": {
+    "body": {
+      "data": null,
+      "receipt": {
+        "asOf": null,
+        "contentHash": null,
+        "failure": "access_denied",
+        "observedAt": null,
+        "path": "/sectordata/sector_central.json",
+        "source": "sector",
+        "stale": false,
+        "status": "access"
+      }
+    },
+    "headers": {
+      "Cache-Control": "private, no-store",
+      "Content-Type": "application/json",
+      "X-Sector-Failure": "access_denied"
+    },
+    "http_status": 401
+  }
+}
