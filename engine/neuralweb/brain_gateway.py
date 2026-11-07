@@ -9500,6 +9500,106 @@ def _sb_get(path: str) -> list | None:
         return None
 
 
+def _parse_content_range(value: str | None) -> tuple[int | None, int | None, int | None]:
+    """Parse a PostgREST ``Content-Range`` header into (first, last, total).
+
+    The header states which slice came back and how many rows exist in total:
+    ``0-24/26`` (26 rows, rows 0..24 returned), ``*/0`` (no rows at all) and
+    ``0-24/*`` (a slice, but no total — the count is UNKNOWN, not zero).
+
+    Returns (None, None, None) for a header that is absent or unparseable: a
+    read whose completeness cannot be proved is not a complete read, and the
+    caller must not be handed a total it did not receive.
+    """
+    if not value:
+        return None, None, None
+    raw = value.strip()
+    m = re.fullmatch(r"(\d+)-(\d+)/(\d+)", raw)
+    if m:
+        return int(m.group(1)), int(m.group(2)), int(m.group(3))
+    m = re.fullmatch(r"\*/(\d+)", raw)
+    if m:
+        # PostgREST's empty-result form: no rows, but the TOTAL is stated.
+        return None, None, int(m.group(1))
+    m = re.fullmatch(r"(\d+)-(\d+)/\*", raw)
+    if m:
+        return int(m.group(1)), int(m.group(2)), None
+    return None, None, None
+
+
+def _redact_owner(path: str) -> str:
+    """Strip the owner's id out of a query path before it reaches a log line.
+
+    The path carries ``user_id=eq.<uid>``. A debug log is not the place for a
+    user's identifier, and this helper reads private holdings.
+    """
+    return re.sub(r"(user_id=eq\.)[^&]*", r"\1***", path)
+
+
+def _sb_get_count_aware(path: str, *, limit: int = 1000) -> dict:
+    """GET from Supabase PostgREST with an EXACT count and the returned range.
+
+    Additive sibling of :func:`_sb_get`, beside it and sharing its transport
+    configuration (SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY, 5s timeout) and its
+    never-raises posture. The difference is the PROOF it carries: PostgREST is
+    asked for ``Prefer: count=exact`` and a bounded ``Range``, so the response
+    states how many rows exist and which slice came back. A caller can then
+    tell a complete read from a truncated one instead of assuming.
+
+    Returns a dict — never raises, and never reports a partial read as a
+    success::
+
+        {"ok": bool, "rows": list | None, "count": int | None,
+         "range_first": int | None, "range_last": int | None,
+         "returned_count": int | None, "error": str | None}
+
+    ``rows`` is None on every failure (the same "the store did not answer"
+    signal :func:`_sb_get` returns) and ``count`` is None whenever the response
+    carried no usable ``Content-Range`` — a read without a count is not a
+    complete read, and an absent count must never be read as zero.
+    """
+    supabase_url = os.environ.get("SUPABASE_URL", "").rstrip("/")
+    service_key = os.environ.get("SUPABASE_SERVICE_ROLE_KEY", "")
+    failure = {"ok": False, "rows": None, "count": None, "range_first": None,
+               "range_last": None, "returned_count": None}
+    if not supabase_url or not service_key:
+        return {**failure, "error": "store_not_configured"}
+    try:
+        url = f"{supabase_url}/rest/v1/{path}"
+        req = urllib.request.Request(
+            url,
+            headers={
+                "apikey": service_key,
+                "Authorization": f"Bearer {service_key}",
+                "Accept": "application/json",
+                # Ask PostgREST for the exact total, and bound the page so a
+                # large book is TRUNCATED VISIBLY (count > returned) instead of
+                # silently capped at the server's own max-rows.
+                "Prefer": "count=exact",
+                "Range": f"0-{max(0, int(limit) - 1)}",
+                "Range-Unit": "items",
+            },
+        )
+        with urllib.request.urlopen(req, timeout=5) as resp:
+            body = resp.read()
+            content_range = None
+            headers = getattr(resp, "headers", None)
+            if headers is not None:
+                content_range = headers.get("Content-Range")
+        rows = json.loads(body)
+    except Exception as exc:  # noqa: BLE001
+        log.debug("brain_gateway: Supabase GET (count-aware) %s failed (%s)",
+                  _redact_owner(path), exc)
+        return {**failure, "error": "request_failed"}
+    if not isinstance(rows, list):
+        log.debug("brain_gateway: Supabase GET (count-aware) %s returned no row set",
+                  _redact_owner(path))
+        return {**failure, "error": "not_a_row_set"}
+    first, last, count = _parse_content_range(content_range)
+    return {"ok": True, "rows": rows, "count": count, "range_first": first,
+            "range_last": last, "returned_count": len(rows), "error": None}
+
+
 def _sb_patch(path: str, payload: dict) -> list | None:
     """PATCH a Supabase PostgREST resource with service-role key.
 

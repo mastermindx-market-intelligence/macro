@@ -1,0 +1,2638 @@
+{
+  "schema": "portfolio_brief_context.projection_cases.v1",
+  "note": "Shared synthetic adversarial fixtures for the portfolio snapshot witness. `terminal` is the Terminal's real rowToPosition (commit 70ebc639e0a6795f8bc100008fa609406db72f3f, terminal/lib/portfolio.ts). `composer` is the frozen engine/portfolio_brief.py _normalize_holdings reading, cross-checked against the composer's own weights. `compatible` is the verdict derived from those two independent authorities: it is the contract a producer must satisfy, not a restatement of one implementation. A non-finite composer reading is encoded as null plus a name in `composer.non_finite`, because strict JSON has no Infinity/NaN literal and the fixture is shared with a TypeScript consumer. The producer gate covers the OPEN rows (the rows the composer is called with); a closed row is carried verbatim and never gated.",
+  "cases": [
+    {
+      "name": "decimal_string_shares",
+      "why": "numeric strings: Python float() and JS Number() agree",
+      "row": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": "10.50",
+        "entry_price": "100.25",
+        "entry_currency": null,
+        "entry_currency_basis": null,
+        "entry_date": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "created_at": "2026-01-15T09:30:00+00:00"
+      },
+      "terminal": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": 10.5,
+        "entryPrice": 100.25,
+        "entryCurrency": null,
+        "entryDate": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "createdAt": "2026-01-15T09:30:00+00:00"
+      },
+      "composer": {
+        "ticker": "NVDA",
+        "shares": 10.5,
+        "entry_price": 100.25,
+        "name_present": true,
+        "cost": 1052.625,
+        "non_finite": []
+      },
+      "composer_input": {
+        "ticker": "NVDA",
+        "shares": "10.50",
+        "entry_price": "100.25"
+      },
+      "compatible": true,
+      "reject_reason": null
+    },
+    {
+      "name": "integer_shares",
+      "why": "integer JSON number",
+      "row": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": 10,
+        "entry_price": 100,
+        "entry_currency": null,
+        "entry_currency_basis": null,
+        "entry_date": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "created_at": "2026-01-15T09:30:00+00:00"
+      },
+      "terminal": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": 10,
+        "entryPrice": 100,
+        "entryCurrency": null,
+        "entryDate": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "createdAt": "2026-01-15T09:30:00+00:00"
+      },
+      "composer": {
+        "ticker": "NVDA",
+        "shares": 10.0,
+        "entry_price": 100.0,
+        "name_present": true,
+        "cost": 1000.0,
+        "non_finite": []
+      },
+      "composer_input": {
+        "ticker": "NVDA",
+        "shares": 10,
+        "entry_price": 100
+      },
+      "compatible": true,
+      "reject_reason": null
+    },
+    {
+      "name": "float_one_point_zero",
+      "why": "JSON 1.0 — Python float(1.0)==1.0, JS Number(1.0)==1",
+      "row": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": 1,
+        "entry_price": 1,
+        "entry_currency": null,
+        "entry_currency_basis": null,
+        "entry_date": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "created_at": "2026-01-15T09:30:00+00:00"
+      },
+      "terminal": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": 1,
+        "entryPrice": 1,
+        "entryCurrency": null,
+        "entryDate": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "createdAt": "2026-01-15T09:30:00+00:00"
+      },
+      "composer": {
+        "ticker": "NVDA",
+        "shares": 1.0,
+        "entry_price": 1.0,
+        "name_present": true,
+        "cost": 1.0,
+        "non_finite": []
+      },
+      "composer_input": {
+        "ticker": "NVDA",
+        "shares": 1,
+        "entry_price": 1
+      },
+      "compatible": true,
+      "reject_reason": null
+    },
+    {
+      "name": "negative_zero",
+      "why": "signed zero is finite on both sides",
+      "row": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": 0,
+        "entry_price": 0,
+        "entry_currency": null,
+        "entry_currency_basis": null,
+        "entry_date": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "created_at": "2026-01-15T09:30:00+00:00"
+      },
+      "terminal": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": 0,
+        "entryPrice": 0,
+        "entryCurrency": null,
+        "entryDate": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "createdAt": "2026-01-15T09:30:00+00:00"
+      },
+      "composer": {
+        "ticker": "NVDA",
+        "shares": 0.0,
+        "entry_price": 0.0,
+        "name_present": true,
+        "cost": 0.0,
+        "non_finite": []
+      },
+      "composer_input": {
+        "ticker": "NVDA",
+        "shares": 0,
+        "entry_price": 0
+      },
+      "compatible": true,
+      "reject_reason": null
+    },
+    {
+      "name": "negative_zero_string",
+      "why": "signed zero as a numeric string",
+      "row": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": "-0",
+        "entry_price": "-0",
+        "entry_currency": null,
+        "entry_currency_basis": null,
+        "entry_date": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "created_at": "2026-01-15T09:30:00+00:00"
+      },
+      "terminal": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": 0,
+        "entryPrice": 0,
+        "entryCurrency": null,
+        "entryDate": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "createdAt": "2026-01-15T09:30:00+00:00"
+      },
+      "composer": {
+        "ticker": "NVDA",
+        "shares": -0.0,
+        "entry_price": -0.0,
+        "name_present": true,
+        "cost": 0.0,
+        "non_finite": []
+      },
+      "composer_input": {
+        "ticker": "NVDA",
+        "shares": "-0",
+        "entry_price": "-0"
+      },
+      "compatible": true,
+      "reject_reason": null
+    },
+    {
+      "name": "small_exponent",
+      "why": "small exponent literal",
+      "row": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": 1e-07,
+        "entry_price": 2.5e-08,
+        "entry_currency": null,
+        "entry_currency_basis": null,
+        "entry_date": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "created_at": "2026-01-15T09:30:00+00:00"
+      },
+      "terminal": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": 1e-07,
+        "entryPrice": 2.5e-08,
+        "entryCurrency": null,
+        "entryDate": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "createdAt": "2026-01-15T09:30:00+00:00"
+      },
+      "composer": {
+        "ticker": "NVDA",
+        "shares": 1e-07,
+        "entry_price": 2.5e-08,
+        "name_present": true,
+        "cost": 2.4999999999999996e-15,
+        "non_finite": []
+      },
+      "composer_input": {
+        "ticker": "NVDA",
+        "shares": 1e-07,
+        "entry_price": 2.5e-08
+      },
+      "compatible": true,
+      "reject_reason": null
+    },
+    {
+      "name": "large_exponent_in_range",
+      "why": "large-but-finite exponent literal",
+      "row": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": 1000000000000000,
+        "entry_price": 9007199254740991,
+        "entry_currency": null,
+        "entry_currency_basis": null,
+        "entry_date": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "created_at": "2026-01-15T09:30:00+00:00"
+      },
+      "terminal": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": 1000000000000000,
+        "entryPrice": 9007199254740991,
+        "entryCurrency": null,
+        "entryDate": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "createdAt": "2026-01-15T09:30:00+00:00"
+      },
+      "composer": {
+        "ticker": "NVDA",
+        "shares": 1000000000000000.0,
+        "entry_price": 9007199254740991.0,
+        "name_present": true,
+        "cost": 9.007199254740991e+30,
+        "non_finite": []
+      },
+      "composer_input": {
+        "ticker": "NVDA",
+        "shares": 1000000000000000,
+        "entry_price": 9007199254740991
+      },
+      "compatible": true,
+      "reject_reason": null
+    },
+    {
+      "name": "numeric_string_with_whitespace",
+      "why": "numeric strings are trimmed on both sides",
+      "row": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": " 10 ",
+        "entry_price": " 100.25 ",
+        "entry_currency": null,
+        "entry_currency_basis": null,
+        "entry_date": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "created_at": "2026-01-15T09:30:00+00:00"
+      },
+      "terminal": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": 10,
+        "entryPrice": 100.25,
+        "entryCurrency": null,
+        "entryDate": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "createdAt": "2026-01-15T09:30:00+00:00"
+      },
+      "composer": {
+        "ticker": "NVDA",
+        "shares": 10.0,
+        "entry_price": 100.25,
+        "name_present": true,
+        "cost": 1002.5,
+        "non_finite": []
+      },
+      "composer_input": {
+        "ticker": "NVDA",
+        "shares": " 10 ",
+        "entry_price": " 100.25 "
+      },
+      "compatible": true,
+      "reject_reason": null
+    },
+    {
+      "name": "leading_plus_numeric_string",
+      "why": "leading plus sign",
+      "row": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": "+10",
+        "entry_price": "+100.25",
+        "entry_currency": null,
+        "entry_currency_basis": null,
+        "entry_date": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "created_at": "2026-01-15T09:30:00+00:00"
+      },
+      "terminal": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": 10,
+        "entryPrice": 100.25,
+        "entryCurrency": null,
+        "entryDate": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "createdAt": "2026-01-15T09:30:00+00:00"
+      },
+      "composer": {
+        "ticker": "NVDA",
+        "shares": 10.0,
+        "entry_price": 100.25,
+        "name_present": true,
+        "cost": 1002.5,
+        "non_finite": []
+      },
+      "composer_input": {
+        "ticker": "NVDA",
+        "shares": "+10",
+        "entry_price": "+100.25"
+      },
+      "compatible": true,
+      "reject_reason": null
+    },
+    {
+      "name": "trailing_dot_numeric_string",
+      "why": "trailing decimal point",
+      "row": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": "10.",
+        "entry_price": "100.",
+        "entry_currency": null,
+        "entry_currency_basis": null,
+        "entry_date": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "created_at": "2026-01-15T09:30:00+00:00"
+      },
+      "terminal": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": 10,
+        "entryPrice": 100,
+        "entryCurrency": null,
+        "entryDate": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "createdAt": "2026-01-15T09:30:00+00:00"
+      },
+      "composer": {
+        "ticker": "NVDA",
+        "shares": 10.0,
+        "entry_price": 100.0,
+        "name_present": true,
+        "cost": 1000.0,
+        "non_finite": []
+      },
+      "composer_input": {
+        "ticker": "NVDA",
+        "shares": "10.",
+        "entry_price": "100."
+      },
+      "compatible": true,
+      "reject_reason": null
+    },
+    {
+      "name": "leading_dot_numeric_string",
+      "why": "leading decimal point",
+      "row": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": ".5",
+        "entry_price": ".25",
+        "entry_currency": null,
+        "entry_currency_basis": null,
+        "entry_date": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "created_at": "2026-01-15T09:30:00+00:00"
+      },
+      "terminal": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": 0.5,
+        "entryPrice": 0.25,
+        "entryCurrency": null,
+        "entryDate": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "createdAt": "2026-01-15T09:30:00+00:00"
+      },
+      "composer": {
+        "ticker": "NVDA",
+        "shares": 0.5,
+        "entry_price": 0.25,
+        "name_present": true,
+        "cost": 0.125,
+        "non_finite": []
+      },
+      "composer_input": {
+        "ticker": "NVDA",
+        "shares": ".5",
+        "entry_price": ".25"
+      },
+      "compatible": true,
+      "reject_reason": null
+    },
+    {
+      "name": "null_shares",
+      "why": "explicit null shares",
+      "row": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": null,
+        "entry_price": 100,
+        "entry_currency": null,
+        "entry_currency_basis": null,
+        "entry_date": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "created_at": "2026-01-15T09:30:00+00:00"
+      },
+      "terminal": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": null,
+        "entryPrice": 100,
+        "entryCurrency": null,
+        "entryDate": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "createdAt": "2026-01-15T09:30:00+00:00"
+      },
+      "composer": {
+        "ticker": "NVDA",
+        "shares": null,
+        "entry_price": 100.0,
+        "name_present": true,
+        "cost": 0.0,
+        "non_finite": []
+      },
+      "composer_input": {
+        "ticker": "NVDA",
+        "shares": null,
+        "entry_price": 100
+      },
+      "compatible": true,
+      "reject_reason": null
+    },
+    {
+      "name": "null_entry_price",
+      "why": "explicit null entry price",
+      "row": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": 10,
+        "entry_price": null,
+        "entry_currency": null,
+        "entry_currency_basis": null,
+        "entry_date": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "created_at": "2026-01-15T09:30:00+00:00"
+      },
+      "terminal": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": 10,
+        "entryPrice": null,
+        "entryCurrency": null,
+        "entryDate": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "createdAt": "2026-01-15T09:30:00+00:00"
+      },
+      "composer": {
+        "ticker": "NVDA",
+        "shares": 10.0,
+        "entry_price": null,
+        "name_present": true,
+        "cost": 0.0,
+        "non_finite": []
+      },
+      "composer_input": {
+        "ticker": "NVDA",
+        "shares": 10,
+        "entry_price": null
+      },
+      "compatible": true,
+      "reject_reason": null
+    },
+    {
+      "name": "both_null",
+      "why": "both numeric columns null",
+      "row": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": null,
+        "entry_price": null,
+        "entry_currency": null,
+        "entry_currency_basis": null,
+        "entry_date": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "created_at": "2026-01-15T09:30:00+00:00"
+      },
+      "terminal": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": null,
+        "entryPrice": null,
+        "entryCurrency": null,
+        "entryDate": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "createdAt": "2026-01-15T09:30:00+00:00"
+      },
+      "composer": {
+        "ticker": "NVDA",
+        "shares": null,
+        "entry_price": null,
+        "name_present": true,
+        "cost": 0.0,
+        "non_finite": []
+      },
+      "composer_input": {
+        "ticker": "NVDA",
+        "shares": null,
+        "entry_price": null
+      },
+      "compatible": true,
+      "reject_reason": null
+    },
+    {
+      "name": "empty_string_shares",
+      "why": "empty string numeric -> null on both sides",
+      "row": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": "",
+        "entry_price": "",
+        "entry_currency": null,
+        "entry_currency_basis": null,
+        "entry_date": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "created_at": "2026-01-15T09:30:00+00:00"
+      },
+      "terminal": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": null,
+        "entryPrice": null,
+        "entryCurrency": null,
+        "entryDate": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "createdAt": "2026-01-15T09:30:00+00:00"
+      },
+      "composer": {
+        "ticker": "NVDA",
+        "shares": null,
+        "entry_price": null,
+        "name_present": true,
+        "cost": 0.0,
+        "non_finite": []
+      },
+      "composer_input": {
+        "ticker": "NVDA",
+        "shares": "",
+        "entry_price": ""
+      },
+      "compatible": true,
+      "reject_reason": null
+    },
+    {
+      "name": "whitespace_string_shares",
+      "why": "whitespace-only numeric -> null on both sides",
+      "row": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": "   ",
+        "entry_price": "\t\n ",
+        "entry_currency": null,
+        "entry_currency_basis": null,
+        "entry_date": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "created_at": "2026-01-15T09:30:00+00:00"
+      },
+      "terminal": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": null,
+        "entryPrice": null,
+        "entryCurrency": null,
+        "entryDate": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "createdAt": "2026-01-15T09:30:00+00:00"
+      },
+      "composer": {
+        "ticker": "NVDA",
+        "shares": null,
+        "entry_price": null,
+        "name_present": true,
+        "cost": 0.0,
+        "non_finite": []
+      },
+      "composer_input": {
+        "ticker": "NVDA",
+        "shares": "   ",
+        "entry_price": "\t\n "
+      },
+      "compatible": true,
+      "reject_reason": null
+    },
+    {
+      "name": "boolean_true_shares",
+      "why": "JSON true: Python float(True)==1.0, Terminal -> null",
+      "row": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": true,
+        "entry_price": 100,
+        "entry_currency": null,
+        "entry_currency_basis": null,
+        "entry_date": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "created_at": "2026-01-15T09:30:00+00:00"
+      },
+      "terminal": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": null,
+        "entryPrice": 100,
+        "entryCurrency": null,
+        "entryDate": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "createdAt": "2026-01-15T09:30:00+00:00"
+      },
+      "composer": {
+        "ticker": "NVDA",
+        "shares": 1.0,
+        "entry_price": 100.0,
+        "name_present": true,
+        "cost": 100.0,
+        "non_finite": []
+      },
+      "composer_input": {
+        "ticker": "NVDA",
+        "shares": true,
+        "entry_price": 100
+      },
+      "compatible": false,
+      "reject_reason": "shares_mismatch"
+    },
+    {
+      "name": "boolean_false_shares",
+      "why": "JSON false: Python float(False)==0.0, Terminal -> null",
+      "row": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": false,
+        "entry_price": 100,
+        "entry_currency": null,
+        "entry_currency_basis": null,
+        "entry_date": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "created_at": "2026-01-15T09:30:00+00:00"
+      },
+      "terminal": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": null,
+        "entryPrice": 100,
+        "entryCurrency": null,
+        "entryDate": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "createdAt": "2026-01-15T09:30:00+00:00"
+      },
+      "composer": {
+        "ticker": "NVDA",
+        "shares": 0.0,
+        "entry_price": 100.0,
+        "name_present": true,
+        "cost": 0.0,
+        "non_finite": []
+      },
+      "composer_input": {
+        "ticker": "NVDA",
+        "shares": false,
+        "entry_price": 100
+      },
+      "compatible": false,
+      "reject_reason": "shares_mismatch"
+    },
+    {
+      "name": "boolean_true_entry_price",
+      "why": "JSON true in entry_price",
+      "row": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": 10,
+        "entry_price": true,
+        "entry_currency": null,
+        "entry_currency_basis": null,
+        "entry_date": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "created_at": "2026-01-15T09:30:00+00:00"
+      },
+      "terminal": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": 10,
+        "entryPrice": null,
+        "entryCurrency": null,
+        "entryDate": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "createdAt": "2026-01-15T09:30:00+00:00"
+      },
+      "composer": {
+        "ticker": "NVDA",
+        "shares": 10.0,
+        "entry_price": 1.0,
+        "name_present": true,
+        "cost": 10.0,
+        "non_finite": []
+      },
+      "composer_input": {
+        "ticker": "NVDA",
+        "shares": 10,
+        "entry_price": true
+      },
+      "compatible": false,
+      "reject_reason": "entry_price_mismatch"
+    },
+    {
+      "name": "underscore_numeric_string",
+      "why": "'1_0': Python PEP515 float -> 10.0, JS Number -> NaN",
+      "row": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": "1_0",
+        "entry_price": 100,
+        "entry_currency": null,
+        "entry_currency_basis": null,
+        "entry_date": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "created_at": "2026-01-15T09:30:00+00:00"
+      },
+      "terminal": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": null,
+        "entryPrice": 100,
+        "entryCurrency": null,
+        "entryDate": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "createdAt": "2026-01-15T09:30:00+00:00"
+      },
+      "composer": {
+        "ticker": "NVDA",
+        "shares": 10.0,
+        "entry_price": 100.0,
+        "name_present": true,
+        "cost": 1000.0,
+        "non_finite": []
+      },
+      "composer_input": {
+        "ticker": "NVDA",
+        "shares": "1_0",
+        "entry_price": 100
+      },
+      "compatible": false,
+      "reject_reason": "shares_mismatch"
+    },
+    {
+      "name": "hex_numeric_string",
+      "why": "'0x10': Python float() raises, JS Number -> 16",
+      "row": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": "0x10",
+        "entry_price": 100,
+        "entry_currency": null,
+        "entry_currency_basis": null,
+        "entry_date": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "created_at": "2026-01-15T09:30:00+00:00"
+      },
+      "terminal": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": 16,
+        "entryPrice": 100,
+        "entryCurrency": null,
+        "entryDate": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "createdAt": "2026-01-15T09:30:00+00:00"
+      },
+      "composer": {
+        "ticker": "NVDA",
+        "shares": null,
+        "entry_price": 100.0,
+        "name_present": true,
+        "cost": 0.0,
+        "non_finite": []
+      },
+      "composer_input": {
+        "ticker": "NVDA",
+        "shares": "0x10",
+        "entry_price": 100
+      },
+      "compatible": false,
+      "reject_reason": "shares_mismatch"
+    },
+    {
+      "name": "binary_numeric_string",
+      "why": "'0b101': Python float() raises, JS Number -> 5",
+      "row": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": "0b101",
+        "entry_price": 100,
+        "entry_currency": null,
+        "entry_currency_basis": null,
+        "entry_date": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "created_at": "2026-01-15T09:30:00+00:00"
+      },
+      "terminal": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": 5,
+        "entryPrice": 100,
+        "entryCurrency": null,
+        "entryDate": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "createdAt": "2026-01-15T09:30:00+00:00"
+      },
+      "composer": {
+        "ticker": "NVDA",
+        "shares": null,
+        "entry_price": 100.0,
+        "name_present": true,
+        "cost": 0.0,
+        "non_finite": []
+      },
+      "composer_input": {
+        "ticker": "NVDA",
+        "shares": "0b101",
+        "entry_price": 100
+      },
+      "compatible": false,
+      "reject_reason": "shares_mismatch"
+    },
+    {
+      "name": "octal_numeric_string",
+      "why": "'0o17': Python float() raises, JS Number -> 15",
+      "row": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": "0o17",
+        "entry_price": 100,
+        "entry_currency": null,
+        "entry_currency_basis": null,
+        "entry_date": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "created_at": "2026-01-15T09:30:00+00:00"
+      },
+      "terminal": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": 15,
+        "entryPrice": 100,
+        "entryCurrency": null,
+        "entryDate": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "createdAt": "2026-01-15T09:30:00+00:00"
+      },
+      "composer": {
+        "ticker": "NVDA",
+        "shares": null,
+        "entry_price": 100.0,
+        "name_present": true,
+        "cost": 0.0,
+        "non_finite": []
+      },
+      "composer_input": {
+        "ticker": "NVDA",
+        "shares": "0o17",
+        "entry_price": 100
+      },
+      "compatible": false,
+      "reject_reason": "shares_mismatch"
+    },
+    {
+      "name": "infinity_string",
+      "why": "'Infinity': Python float -> inf (non-finite)",
+      "row": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": "Infinity",
+        "entry_price": 100,
+        "entry_currency": null,
+        "entry_currency_basis": null,
+        "entry_date": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "created_at": "2026-01-15T09:30:00+00:00"
+      },
+      "terminal": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": null,
+        "entryPrice": 100,
+        "entryCurrency": null,
+        "entryDate": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "createdAt": "2026-01-15T09:30:00+00:00"
+      },
+      "composer": {
+        "ticker": "NVDA",
+        "shares": null,
+        "entry_price": 100.0,
+        "name_present": true,
+        "cost": null,
+        "non_finite": [
+          "shares"
+        ]
+      },
+      "composer_input": {
+        "ticker": "NVDA",
+        "shares": "Infinity",
+        "entry_price": 100
+      },
+      "compatible": false,
+      "reject_reason": "non_finite_numeric"
+    },
+    {
+      "name": "nan_string",
+      "why": "'nan': Python float -> nan (non-finite)",
+      "row": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": "nan",
+        "entry_price": 100,
+        "entry_currency": null,
+        "entry_currency_basis": null,
+        "entry_date": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "created_at": "2026-01-15T09:30:00+00:00"
+      },
+      "terminal": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": null,
+        "entryPrice": 100,
+        "entryCurrency": null,
+        "entryDate": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "createdAt": "2026-01-15T09:30:00+00:00"
+      },
+      "composer": {
+        "ticker": "NVDA",
+        "shares": null,
+        "entry_price": 100.0,
+        "name_present": true,
+        "cost": 0.0,
+        "non_finite": [
+          "shares"
+        ]
+      },
+      "composer_input": {
+        "ticker": "NVDA",
+        "shares": "nan",
+        "entry_price": 100
+      },
+      "compatible": false,
+      "reject_reason": "non_finite_numeric"
+    },
+    {
+      "name": "overflow_exponent",
+      "why": "'1e400': Python float -> inf (non-finite); JS Number -> Infinity",
+      "row": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": "1e400",
+        "entry_price": 100,
+        "entry_currency": null,
+        "entry_currency_basis": null,
+        "entry_date": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "created_at": "2026-01-15T09:30:00+00:00"
+      },
+      "terminal": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": null,
+        "entryPrice": 100,
+        "entryCurrency": null,
+        "entryDate": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "createdAt": "2026-01-15T09:30:00+00:00"
+      },
+      "composer": {
+        "ticker": "NVDA",
+        "shares": null,
+        "entry_price": 100.0,
+        "name_present": true,
+        "cost": null,
+        "non_finite": [
+          "shares"
+        ]
+      },
+      "composer_input": {
+        "ticker": "NVDA",
+        "shares": "1e400",
+        "entry_price": 100
+      },
+      "compatible": false,
+      "reject_reason": "non_finite_numeric"
+    },
+    {
+      "name": "underflow_exponent",
+      "why": "1e-400 underflows to zero on both sides",
+      "row": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": 0,
+        "entry_price": 100,
+        "entry_currency": null,
+        "entry_currency_basis": null,
+        "entry_date": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "created_at": "2026-01-15T09:30:00+00:00"
+      },
+      "terminal": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": 0,
+        "entryPrice": 100,
+        "entryCurrency": null,
+        "entryDate": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "createdAt": "2026-01-15T09:30:00+00:00"
+      },
+      "composer": {
+        "ticker": "NVDA",
+        "shares": 0.0,
+        "entry_price": 100.0,
+        "name_present": true,
+        "cost": 0.0,
+        "non_finite": []
+      },
+      "composer_input": {
+        "ticker": "NVDA",
+        "shares": 0,
+        "entry_price": 100
+      },
+      "compatible": true,
+      "reject_reason": null
+    },
+    {
+      "name": "non_numeric_string",
+      "why": "garbage numeric: both sides fall back to null",
+      "row": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": "not-a-number",
+        "entry_price": 100,
+        "entry_currency": null,
+        "entry_currency_basis": null,
+        "entry_date": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "created_at": "2026-01-15T09:30:00+00:00"
+      },
+      "terminal": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": null,
+        "entryPrice": 100,
+        "entryCurrency": null,
+        "entryDate": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "createdAt": "2026-01-15T09:30:00+00:00"
+      },
+      "composer": {
+        "ticker": "NVDA",
+        "shares": null,
+        "entry_price": 100.0,
+        "name_present": true,
+        "cost": 0.0,
+        "non_finite": []
+      },
+      "composer_input": {
+        "ticker": "NVDA",
+        "shares": "not-a-number",
+        "entry_price": 100
+      },
+      "compatible": true,
+      "reject_reason": null
+    },
+    {
+      "name": "unicode_ticker",
+      "why": "non-ASCII ticker both sides agree on the uppercase form",
+      "row": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "Ångström",
+        "shares": 10,
+        "entry_price": 100,
+        "entry_currency": null,
+        "entry_currency_basis": null,
+        "entry_date": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "created_at": "2026-01-15T09:30:00+00:00"
+      },
+      "terminal": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "ÅNGSTRÖM",
+        "shares": 10,
+        "entryPrice": 100,
+        "entryCurrency": null,
+        "entryDate": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "createdAt": "2026-01-15T09:30:00+00:00"
+      },
+      "composer": {
+        "ticker": "ÅNGSTRÖM",
+        "shares": 10.0,
+        "entry_price": 100.0,
+        "name_present": true,
+        "cost": 1000.0,
+        "non_finite": []
+      },
+      "composer_input": {
+        "ticker": "Ångström",
+        "shares": 10,
+        "entry_price": 100
+      },
+      "compatible": true,
+      "reject_reason": null
+    },
+    {
+      "name": "bom_prefixed_ticker",
+      "why": "U+FEFF: JS trim() strips it, Python str.strip() does not",
+      "row": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "﻿NVDA",
+        "shares": 10,
+        "entry_price": 100,
+        "entry_currency": null,
+        "entry_currency_basis": null,
+        "entry_date": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "created_at": "2026-01-15T09:30:00+00:00"
+      },
+      "terminal": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": 10,
+        "entryPrice": 100,
+        "entryCurrency": null,
+        "entryDate": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "createdAt": "2026-01-15T09:30:00+00:00"
+      },
+      "composer": {
+        "ticker": "﻿NVDA",
+        "shares": 10.0,
+        "entry_price": 100.0,
+        "name_present": true,
+        "cost": 1000.0,
+        "non_finite": []
+      },
+      "composer_input": {
+        "ticker": "﻿NVDA",
+        "shares": 10,
+        "entry_price": 100
+      },
+      "compatible": false,
+      "reject_reason": "ticker_mismatch"
+    },
+    {
+      "name": "nbsp_padded_ticker",
+      "why": "NBSP padding: both sides trim it",
+      "row": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": " NVDA ",
+        "shares": 10,
+        "entry_price": 100,
+        "entry_currency": null,
+        "entry_currency_basis": null,
+        "entry_date": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "created_at": "2026-01-15T09:30:00+00:00"
+      },
+      "terminal": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": 10,
+        "entryPrice": 100,
+        "entryCurrency": null,
+        "entryDate": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "createdAt": "2026-01-15T09:30:00+00:00"
+      },
+      "composer": {
+        "ticker": "NVDA",
+        "shares": 10.0,
+        "entry_price": 100.0,
+        "name_present": true,
+        "cost": 1000.0,
+        "non_finite": []
+      },
+      "composer_input": {
+        "ticker": " NVDA ",
+        "shares": 10,
+        "entry_price": 100
+      },
+      "compatible": true,
+      "reject_reason": null
+    },
+    {
+      "name": "control_char_ticker",
+      "why": "C0 control char: Terminal drops the ticker, Python keeps it",
+      "row": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NV\u0001DA",
+        "shares": 10,
+        "entry_price": 100,
+        "entry_currency": null,
+        "entry_currency_basis": null,
+        "entry_date": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "created_at": "2026-01-15T09:30:00+00:00"
+      },
+      "terminal": null,
+      "composer": {
+        "ticker": "NV\u0001DA",
+        "shares": 10.0,
+        "entry_price": 100.0,
+        "name_present": true,
+        "cost": 1000.0,
+        "non_finite": []
+      },
+      "composer_input": {
+        "ticker": "NV\u0001DA",
+        "shares": 10,
+        "entry_price": 100
+      },
+      "compatible": false,
+      "reject_reason": "row_dropped_by_terminal"
+    },
+    {
+      "name": "unit_separator_ticker",
+      "why": "U+001C: Python str.strip() strips it, JS trim() does not",
+      "row": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA\u001c",
+        "shares": 10,
+        "entry_price": 100,
+        "entry_currency": null,
+        "entry_currency_basis": null,
+        "entry_date": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "created_at": "2026-01-15T09:30:00+00:00"
+      },
+      "terminal": null,
+      "composer": {
+        "ticker": "NVDA",
+        "shares": 10.0,
+        "entry_price": 100.0,
+        "name_present": true,
+        "cost": 1000.0,
+        "non_finite": []
+      },
+      "composer_input": {
+        "ticker": "NVDA\u001c",
+        "shares": 10,
+        "entry_price": 100
+      },
+      "compatible": false,
+      "reject_reason": "row_dropped_by_terminal"
+    },
+    {
+      "name": "overlong_ticker",
+      "why": "129 chars: Terminal refuses the ticker, Python keeps it",
+      "row": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT",
+        "shares": 10,
+        "entry_price": 100,
+        "entry_currency": null,
+        "entry_currency_basis": null,
+        "entry_date": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "created_at": "2026-01-15T09:30:00+00:00"
+      },
+      "terminal": null,
+      "composer": {
+        "ticker": "TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT",
+        "shares": 10.0,
+        "entry_price": 100.0,
+        "name_present": true,
+        "cost": 1000.0,
+        "non_finite": []
+      },
+      "composer_input": {
+        "ticker": "TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT",
+        "shares": 10,
+        "entry_price": 100
+      },
+      "compatible": false,
+      "reject_reason": "row_dropped_by_terminal"
+    },
+    {
+      "name": "max_length_ticker",
+      "why": "exactly 128 chars is accepted by Terminal",
+      "row": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT",
+        "shares": 10,
+        "entry_price": 100,
+        "entry_currency": null,
+        "entry_currency_basis": null,
+        "entry_date": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "created_at": "2026-01-15T09:30:00+00:00"
+      },
+      "terminal": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT",
+        "shares": 10,
+        "entryPrice": 100,
+        "entryCurrency": null,
+        "entryDate": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "createdAt": "2026-01-15T09:30:00+00:00"
+      },
+      "composer": {
+        "ticker": "TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT",
+        "shares": 10.0,
+        "entry_price": 100.0,
+        "name_present": true,
+        "cost": 1000.0,
+        "non_finite": []
+      },
+      "composer_input": {
+        "ticker": "TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT",
+        "shares": 10,
+        "entry_price": 100
+      },
+      "compatible": true,
+      "reject_reason": null
+    },
+    {
+      "name": "numeric_ticker",
+      "why": "non-string ticker: Python str() counts it, Terminal drops the row",
+      "row": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": 123,
+        "shares": 10,
+        "entry_price": 100,
+        "entry_currency": null,
+        "entry_currency_basis": null,
+        "entry_date": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "created_at": "2026-01-15T09:30:00+00:00"
+      },
+      "terminal": null,
+      "composer": {
+        "ticker": "123",
+        "shares": 10.0,
+        "entry_price": 100.0,
+        "name_present": true,
+        "cost": 1000.0,
+        "non_finite": []
+      },
+      "composer_input": {
+        "ticker": 123,
+        "shares": 10,
+        "entry_price": 100
+      },
+      "compatible": false,
+      "reject_reason": "row_dropped_by_terminal"
+    },
+    {
+      "name": "blank_ticker",
+      "why": "blank ticker: both sides drop the name",
+      "row": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "",
+        "shares": 10,
+        "entry_price": 100,
+        "entry_currency": null,
+        "entry_currency_basis": null,
+        "entry_date": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "created_at": "2026-01-15T09:30:00+00:00"
+      },
+      "terminal": null,
+      "composer": {
+        "ticker": "",
+        "shares": 10.0,
+        "entry_price": 100.0,
+        "name_present": false,
+        "cost": 1000.0,
+        "non_finite": []
+      },
+      "composer_input": {
+        "ticker": "",
+        "shares": 10,
+        "entry_price": 100
+      },
+      "compatible": true,
+      "reject_reason": null
+    },
+    {
+      "name": "whitespace_ticker",
+      "why": "whitespace-only ticker: both sides drop the name",
+      "row": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "   ",
+        "shares": 10,
+        "entry_price": 100,
+        "entry_currency": null,
+        "entry_currency_basis": null,
+        "entry_date": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "created_at": "2026-01-15T09:30:00+00:00"
+      },
+      "terminal": null,
+      "composer": {
+        "ticker": "",
+        "shares": 10.0,
+        "entry_price": 100.0,
+        "name_present": false,
+        "cost": 1000.0,
+        "non_finite": []
+      },
+      "composer_input": {
+        "ticker": "   ",
+        "shares": 10,
+        "entry_price": 100
+      },
+      "compatible": true,
+      "reject_reason": null
+    },
+    {
+      "name": "missing_id",
+      "why": "no id: Terminal drops the whole position, Python counts the name",
+      "row": {
+        "id": null,
+        "ticker": "NVDA",
+        "shares": 10,
+        "entry_price": 100,
+        "entry_currency": null,
+        "entry_currency_basis": null,
+        "entry_date": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "created_at": "2026-01-15T09:30:00+00:00"
+      },
+      "terminal": null,
+      "composer": {
+        "ticker": "NVDA",
+        "shares": 10.0,
+        "entry_price": 100.0,
+        "name_present": true,
+        "cost": 1000.0,
+        "non_finite": []
+      },
+      "composer_input": {
+        "ticker": "NVDA",
+        "shares": 10,
+        "entry_price": 100
+      },
+      "compatible": false,
+      "reject_reason": "row_dropped_by_terminal"
+    },
+    {
+      "name": "empty_id",
+      "why": "empty id: Terminal drops the whole position, Python counts the name",
+      "row": {
+        "id": "",
+        "ticker": "NVDA",
+        "shares": 10,
+        "entry_price": 100,
+        "entry_currency": null,
+        "entry_currency_basis": null,
+        "entry_date": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "created_at": "2026-01-15T09:30:00+00:00"
+      },
+      "terminal": null,
+      "composer": {
+        "ticker": "NVDA",
+        "shares": 10.0,
+        "entry_price": 100.0,
+        "name_present": true,
+        "cost": 1000.0,
+        "non_finite": []
+      },
+      "composer_input": {
+        "ticker": "NVDA",
+        "shares": 10,
+        "entry_price": 100
+      },
+      "compatible": false,
+      "reject_reason": "row_dropped_by_terminal"
+    },
+    {
+      "name": "numeric_id",
+      "why": "non-string id: Terminal drops the whole position",
+      "row": {
+        "id": 42,
+        "ticker": "NVDA",
+        "shares": 10,
+        "entry_price": 100,
+        "entry_currency": null,
+        "entry_currency_basis": null,
+        "entry_date": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "created_at": "2026-01-15T09:30:00+00:00"
+      },
+      "terminal": null,
+      "composer": {
+        "ticker": "NVDA",
+        "shares": 10.0,
+        "entry_price": 100.0,
+        "name_present": true,
+        "cost": 1000.0,
+        "non_finite": []
+      },
+      "composer_input": {
+        "ticker": "NVDA",
+        "shares": 10,
+        "entry_price": 100
+      },
+      "compatible": false,
+      "reject_reason": "row_dropped_by_terminal"
+    },
+    {
+      "name": "status_closed",
+      "why": "exact closed",
+      "row": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": 10,
+        "entry_price": 100,
+        "entry_currency": null,
+        "entry_currency_basis": null,
+        "entry_date": "2026-01-15",
+        "notes": null,
+        "status": "closed",
+        "created_at": "2026-01-15T09:30:00+00:00"
+      },
+      "terminal": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": 10,
+        "entryPrice": 100,
+        "entryCurrency": null,
+        "entryDate": "2026-01-15",
+        "notes": null,
+        "status": "closed",
+        "createdAt": "2026-01-15T09:30:00+00:00"
+      },
+      "composer": {
+        "ticker": "NVDA",
+        "shares": 10.0,
+        "entry_price": 100.0,
+        "name_present": true,
+        "cost": 1000.0,
+        "non_finite": []
+      },
+      "composer_input": {
+        "ticker": "NVDA",
+        "shares": 10,
+        "entry_price": 100
+      },
+      "compatible": true,
+      "reject_reason": null
+    },
+    {
+      "name": "status_closed_upper",
+      "why": "CLOSED trims/lowercases to closed",
+      "row": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": 10,
+        "entry_price": 100,
+        "entry_currency": null,
+        "entry_currency_basis": null,
+        "entry_date": "2026-01-15",
+        "notes": null,
+        "status": "CLOSED",
+        "created_at": "2026-01-15T09:30:00+00:00"
+      },
+      "terminal": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": 10,
+        "entryPrice": 100,
+        "entryCurrency": null,
+        "entryDate": "2026-01-15",
+        "notes": null,
+        "status": "closed",
+        "createdAt": "2026-01-15T09:30:00+00:00"
+      },
+      "composer": {
+        "ticker": "NVDA",
+        "shares": 10.0,
+        "entry_price": 100.0,
+        "name_present": true,
+        "cost": 1000.0,
+        "non_finite": []
+      },
+      "composer_input": {
+        "ticker": "NVDA",
+        "shares": 10,
+        "entry_price": 100
+      },
+      "compatible": true,
+      "reject_reason": null
+    },
+    {
+      "name": "status_closed_padded",
+      "why": "' Closed ' trims to closed",
+      "row": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": 10,
+        "entry_price": 100,
+        "entry_currency": null,
+        "entry_currency_basis": null,
+        "entry_date": "2026-01-15",
+        "notes": null,
+        "status": " Closed ",
+        "created_at": "2026-01-15T09:30:00+00:00"
+      },
+      "terminal": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": 10,
+        "entryPrice": 100,
+        "entryCurrency": null,
+        "entryDate": "2026-01-15",
+        "notes": null,
+        "status": "closed",
+        "createdAt": "2026-01-15T09:30:00+00:00"
+      },
+      "composer": {
+        "ticker": "NVDA",
+        "shares": 10.0,
+        "entry_price": 100.0,
+        "name_present": true,
+        "cost": 1000.0,
+        "non_finite": []
+      },
+      "composer_input": {
+        "ticker": "NVDA",
+        "shares": 10,
+        "entry_price": 100
+      },
+      "compatible": true,
+      "reject_reason": null
+    },
+    {
+      "name": "status_open",
+      "why": "exact open",
+      "row": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": 10,
+        "entry_price": 100,
+        "entry_currency": null,
+        "entry_currency_basis": null,
+        "entry_date": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "created_at": "2026-01-15T09:30:00+00:00"
+      },
+      "terminal": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": 10,
+        "entryPrice": 100,
+        "entryCurrency": null,
+        "entryDate": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "createdAt": "2026-01-15T09:30:00+00:00"
+      },
+      "composer": {
+        "ticker": "NVDA",
+        "shares": 10.0,
+        "entry_price": 100.0,
+        "name_present": true,
+        "cost": 1000.0,
+        "non_finite": []
+      },
+      "composer_input": {
+        "ticker": "NVDA",
+        "shares": 10,
+        "entry_price": 100
+      },
+      "compatible": true,
+      "reject_reason": null
+    },
+    {
+      "name": "status_open_upper",
+      "why": "OPEN is NOT closed -> open",
+      "row": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": 10,
+        "entry_price": 100,
+        "entry_currency": null,
+        "entry_currency_basis": null,
+        "entry_date": "2026-01-15",
+        "notes": null,
+        "status": "OPEN",
+        "created_at": "2026-01-15T09:30:00+00:00"
+      },
+      "terminal": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": 10,
+        "entryPrice": 100,
+        "entryCurrency": null,
+        "entryDate": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "createdAt": "2026-01-15T09:30:00+00:00"
+      },
+      "composer": {
+        "ticker": "NVDA",
+        "shares": 10.0,
+        "entry_price": 100.0,
+        "name_present": true,
+        "cost": 1000.0,
+        "non_finite": []
+      },
+      "composer_input": {
+        "ticker": "NVDA",
+        "shares": 10,
+        "entry_price": 100
+      },
+      "compatible": true,
+      "reject_reason": null
+    },
+    {
+      "name": "status_open_padded",
+      "why": "' open ' -> open",
+      "row": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": 10,
+        "entry_price": 100,
+        "entry_currency": null,
+        "entry_currency_basis": null,
+        "entry_date": "2026-01-15",
+        "notes": null,
+        "status": " open ",
+        "created_at": "2026-01-15T09:30:00+00:00"
+      },
+      "terminal": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": 10,
+        "entryPrice": 100,
+        "entryCurrency": null,
+        "entryDate": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "createdAt": "2026-01-15T09:30:00+00:00"
+      },
+      "composer": {
+        "ticker": "NVDA",
+        "shares": 10.0,
+        "entry_price": 100.0,
+        "name_present": true,
+        "cost": 1000.0,
+        "non_finite": []
+      },
+      "composer_input": {
+        "ticker": "NVDA",
+        "shares": 10,
+        "entry_price": 100
+      },
+      "compatible": true,
+      "reject_reason": null
+    },
+    {
+      "name": "status_null",
+      "why": "null status is not closed -> open",
+      "row": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": 10,
+        "entry_price": 100,
+        "entry_currency": null,
+        "entry_currency_basis": null,
+        "entry_date": "2026-01-15",
+        "notes": null,
+        "status": null,
+        "created_at": "2026-01-15T09:30:00+00:00"
+      },
+      "terminal": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": 10,
+        "entryPrice": 100,
+        "entryCurrency": null,
+        "entryDate": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "createdAt": "2026-01-15T09:30:00+00:00"
+      },
+      "composer": {
+        "ticker": "NVDA",
+        "shares": 10.0,
+        "entry_price": 100.0,
+        "name_present": true,
+        "cost": 1000.0,
+        "non_finite": []
+      },
+      "composer_input": {
+        "ticker": "NVDA",
+        "shares": 10,
+        "entry_price": 100
+      },
+      "compatible": true,
+      "reject_reason": null
+    },
+    {
+      "name": "status_missing",
+      "why": "absent status is not closed -> open",
+      "row": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": 10,
+        "entry_price": 100,
+        "entry_currency": null,
+        "entry_currency_basis": null,
+        "entry_date": "2026-01-15",
+        "notes": null,
+        "status": null,
+        "created_at": "2026-01-15T09:30:00+00:00"
+      },
+      "terminal": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": 10,
+        "entryPrice": 100,
+        "entryCurrency": null,
+        "entryDate": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "createdAt": "2026-01-15T09:30:00+00:00"
+      },
+      "composer": {
+        "ticker": "NVDA",
+        "shares": 10.0,
+        "entry_price": 100.0,
+        "name_present": true,
+        "cost": 1000.0,
+        "non_finite": []
+      },
+      "composer_input": {
+        "ticker": "NVDA",
+        "shares": 10,
+        "entry_price": 100
+      },
+      "compatible": true,
+      "reject_reason": null
+    },
+    {
+      "name": "status_unknown_word",
+      "why": "an unknown status word is not closed -> open",
+      "row": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": 10,
+        "entry_price": 100,
+        "entry_currency": null,
+        "entry_currency_basis": null,
+        "entry_date": "2026-01-15",
+        "notes": null,
+        "status": "archived",
+        "created_at": "2026-01-15T09:30:00+00:00"
+      },
+      "terminal": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": 10,
+        "entryPrice": 100,
+        "entryCurrency": null,
+        "entryDate": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "createdAt": "2026-01-15T09:30:00+00:00"
+      },
+      "composer": {
+        "ticker": "NVDA",
+        "shares": 10.0,
+        "entry_price": 100.0,
+        "name_present": true,
+        "cost": 1000.0,
+        "non_finite": []
+      },
+      "composer_input": {
+        "ticker": "NVDA",
+        "shares": 10,
+        "entry_price": 100
+      },
+      "compatible": true,
+      "reject_reason": null
+    },
+    {
+      "name": "currency_receipt_valid",
+      "why": "receipt ticker+price match the row -> currency kept",
+      "row": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": 10,
+        "entry_price": 100,
+        "entry_currency": "USD",
+        "entry_currency_basis": {
+          "ticker": "NVDA",
+          "price": 100
+        },
+        "entry_date": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "created_at": "2026-01-15T09:30:00+00:00"
+      },
+      "terminal": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": 10,
+        "entryPrice": 100,
+        "entryCurrency": "USD",
+        "entryDate": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "createdAt": "2026-01-15T09:30:00+00:00"
+      },
+      "composer": {
+        "ticker": "NVDA",
+        "shares": 10.0,
+        "entry_price": 100.0,
+        "name_present": true,
+        "cost": 1000.0,
+        "non_finite": []
+      },
+      "composer_input": {
+        "ticker": "NVDA",
+        "shares": 10,
+        "entry_price": 100
+      },
+      "compatible": true,
+      "reject_reason": null
+    },
+    {
+      "name": "currency_receipt_price_mismatch",
+      "why": "receipt price != entry_price -> currency dropped",
+      "row": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": 10,
+        "entry_price": 100,
+        "entry_currency": "USD",
+        "entry_currency_basis": {
+          "ticker": "NVDA",
+          "price": 99
+        },
+        "entry_date": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "created_at": "2026-01-15T09:30:00+00:00"
+      },
+      "terminal": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": 10,
+        "entryPrice": 100,
+        "entryCurrency": null,
+        "entryDate": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "createdAt": "2026-01-15T09:30:00+00:00"
+      },
+      "composer": {
+        "ticker": "NVDA",
+        "shares": 10.0,
+        "entry_price": 100.0,
+        "name_present": true,
+        "cost": 1000.0,
+        "non_finite": []
+      },
+      "composer_input": {
+        "ticker": "NVDA",
+        "shares": 10,
+        "entry_price": 100
+      },
+      "compatible": true,
+      "reject_reason": null
+    },
+    {
+      "name": "currency_receipt_ticker_mismatch",
+      "why": "receipt ticker != raw row ticker -> currency dropped",
+      "row": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": 10,
+        "entry_price": 100,
+        "entry_currency": "USD",
+        "entry_currency_basis": {
+          "ticker": "AMD",
+          "price": 100
+        },
+        "entry_date": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "created_at": "2026-01-15T09:30:00+00:00"
+      },
+      "terminal": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": 10,
+        "entryPrice": 100,
+        "entryCurrency": null,
+        "entryDate": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "createdAt": "2026-01-15T09:30:00+00:00"
+      },
+      "composer": {
+        "ticker": "NVDA",
+        "shares": 10.0,
+        "entry_price": 100.0,
+        "name_present": true,
+        "cost": 1000.0,
+        "non_finite": []
+      },
+      "composer_input": {
+        "ticker": "NVDA",
+        "shares": 10,
+        "entry_price": 100
+      },
+      "compatible": true,
+      "reject_reason": null
+    },
+    {
+      "name": "currency_receipt_extra_key",
+      "why": "a receipt with a third key is not a receipt",
+      "row": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": 10,
+        "entry_price": 100,
+        "entry_currency": "USD",
+        "entry_currency_basis": {
+          "ticker": "NVDA",
+          "price": 100,
+          "note": "x"
+        },
+        "entry_date": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "created_at": "2026-01-15T09:30:00+00:00"
+      },
+      "terminal": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": 10,
+        "entryPrice": 100,
+        "entryCurrency": null,
+        "entryDate": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "createdAt": "2026-01-15T09:30:00+00:00"
+      },
+      "composer": {
+        "ticker": "NVDA",
+        "shares": 10.0,
+        "entry_price": 100.0,
+        "name_present": true,
+        "cost": 1000.0,
+        "non_finite": []
+      },
+      "composer_input": {
+        "ticker": "NVDA",
+        "shares": 10,
+        "entry_price": 100
+      },
+      "compatible": true,
+      "reject_reason": null
+    },
+    {
+      "name": "currency_receipt_null_price",
+      "why": "receipt price null and entry_price null -> currency kept",
+      "row": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": null,
+        "entry_price": null,
+        "entry_currency": "USD",
+        "entry_currency_basis": {
+          "ticker": "NVDA",
+          "price": null
+        },
+        "entry_date": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "created_at": "2026-01-15T09:30:00+00:00"
+      },
+      "terminal": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": null,
+        "entryPrice": null,
+        "entryCurrency": "USD",
+        "entryDate": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "createdAt": "2026-01-15T09:30:00+00:00"
+      },
+      "composer": {
+        "ticker": "NVDA",
+        "shares": null,
+        "entry_price": null,
+        "name_present": true,
+        "cost": 0.0,
+        "non_finite": []
+      },
+      "composer_input": {
+        "ticker": "NVDA",
+        "shares": null,
+        "entry_price": null
+      },
+      "compatible": true,
+      "reject_reason": null
+    },
+    {
+      "name": "currency_receipt_string_price",
+      "why": "a string receipt price never equals the numeric one",
+      "row": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": 10,
+        "entry_price": 100,
+        "entry_currency": "USD",
+        "entry_currency_basis": {
+          "ticker": "NVDA",
+          "price": "100.0"
+        },
+        "entry_date": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "created_at": "2026-01-15T09:30:00+00:00"
+      },
+      "terminal": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": 10,
+        "entryPrice": 100,
+        "entryCurrency": null,
+        "entryDate": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "createdAt": "2026-01-15T09:30:00+00:00"
+      },
+      "composer": {
+        "ticker": "NVDA",
+        "shares": 10.0,
+        "entry_price": 100.0,
+        "name_present": true,
+        "cost": 1000.0,
+        "non_finite": []
+      },
+      "composer_input": {
+        "ticker": "NVDA",
+        "shares": 10,
+        "entry_price": 100
+      },
+      "compatible": true,
+      "reject_reason": null
+    },
+    {
+      "name": "currency_receipt_lowercase_code",
+      "why": "priceCurrency is exact-ISO: 'usd' is not a currency",
+      "row": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": 10,
+        "entry_price": 100,
+        "entry_currency": "usd",
+        "entry_currency_basis": {
+          "ticker": "NVDA",
+          "price": 100
+        },
+        "entry_date": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "created_at": "2026-01-15T09:30:00+00:00"
+      },
+      "terminal": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": 10,
+        "entryPrice": 100,
+        "entryCurrency": null,
+        "entryDate": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "createdAt": "2026-01-15T09:30:00+00:00"
+      },
+      "composer": {
+        "ticker": "NVDA",
+        "shares": 10.0,
+        "entry_price": 100.0,
+        "name_present": true,
+        "cost": 1000.0,
+        "non_finite": []
+      },
+      "composer_input": {
+        "ticker": "NVDA",
+        "shares": 10,
+        "entry_price": 100
+      },
+      "compatible": true,
+      "reject_reason": null
+    },
+    {
+      "name": "currency_receipt_padded_code",
+      "why": "priceCurrency does not trim the code on read",
+      "row": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": 10,
+        "entry_price": 100,
+        "entry_currency": " USD ",
+        "entry_currency_basis": {
+          "ticker": "NVDA",
+          "price": 100
+        },
+        "entry_date": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "created_at": "2026-01-15T09:30:00+00:00"
+      },
+      "terminal": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": 10,
+        "entryPrice": 100,
+        "entryCurrency": null,
+        "entryDate": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "createdAt": "2026-01-15T09:30:00+00:00"
+      },
+      "composer": {
+        "ticker": "NVDA",
+        "shares": 10.0,
+        "entry_price": 100.0,
+        "name_present": true,
+        "cost": 1000.0,
+        "non_finite": []
+      },
+      "composer_input": {
+        "ticker": "NVDA",
+        "shares": 10,
+        "entry_price": 100
+      },
+      "compatible": true,
+      "reject_reason": null
+    },
+    {
+      "name": "currency_receipt_raw_ticker_case",
+      "why": "the receipt compares against the RAW ticker",
+      "row": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "nvda",
+        "shares": 10,
+        "entry_price": 100,
+        "entry_currency": "USD",
+        "entry_currency_basis": {
+          "ticker": "nvda",
+          "price": 100
+        },
+        "entry_date": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "created_at": "2026-01-15T09:30:00+00:00"
+      },
+      "terminal": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": 10,
+        "entryPrice": 100,
+        "entryCurrency": "USD",
+        "entryDate": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "createdAt": "2026-01-15T09:30:00+00:00"
+      },
+      "composer": {
+        "ticker": "NVDA",
+        "shares": 10.0,
+        "entry_price": 100.0,
+        "name_present": true,
+        "cost": 1000.0,
+        "non_finite": []
+      },
+      "composer_input": {
+        "ticker": "nvda",
+        "shares": 10,
+        "entry_price": 100
+      },
+      "compatible": true,
+      "reject_reason": null
+    },
+    {
+      "name": "notes_present",
+      "why": "notes are kept verbatim",
+      "row": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": 10,
+        "entry_price": 100,
+        "entry_currency": null,
+        "entry_currency_basis": null,
+        "entry_date": "2026-01-15",
+        "notes": "core position\nsecond line",
+        "status": "open",
+        "created_at": "2026-01-15T09:30:00+00:00"
+      },
+      "terminal": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": 10,
+        "entryPrice": 100,
+        "entryCurrency": null,
+        "entryDate": "2026-01-15",
+        "notes": "core position\nsecond line",
+        "status": "open",
+        "createdAt": "2026-01-15T09:30:00+00:00"
+      },
+      "composer": {
+        "ticker": "NVDA",
+        "shares": 10.0,
+        "entry_price": 100.0,
+        "name_present": true,
+        "cost": 1000.0,
+        "non_finite": []
+      },
+      "composer_input": {
+        "ticker": "NVDA",
+        "shares": 10,
+        "entry_price": 100
+      },
+      "compatible": true,
+      "reject_reason": null
+    },
+    {
+      "name": "notes_empty",
+      "why": "empty notes become null",
+      "row": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": 10,
+        "entry_price": 100,
+        "entry_currency": null,
+        "entry_currency_basis": null,
+        "entry_date": "2026-01-15",
+        "notes": "",
+        "status": "open",
+        "created_at": "2026-01-15T09:30:00+00:00"
+      },
+      "terminal": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": 10,
+        "entryPrice": 100,
+        "entryCurrency": null,
+        "entryDate": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "createdAt": "2026-01-15T09:30:00+00:00"
+      },
+      "composer": {
+        "ticker": "NVDA",
+        "shares": 10.0,
+        "entry_price": 100.0,
+        "name_present": true,
+        "cost": 1000.0,
+        "non_finite": []
+      },
+      "composer_input": {
+        "ticker": "NVDA",
+        "shares": 10,
+        "entry_price": 100
+      },
+      "compatible": true,
+      "reject_reason": null
+    },
+    {
+      "name": "created_at_iso",
+      "why": "timestamps are carried, not interpreted",
+      "row": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": 10,
+        "entry_price": 100,
+        "entry_currency": null,
+        "entry_currency_basis": null,
+        "entry_date": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "created_at": "2026-01-15T09:30:00.123456+00:00"
+      },
+      "terminal": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": 10,
+        "entryPrice": 100,
+        "entryCurrency": null,
+        "entryDate": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "createdAt": "2026-01-15T09:30:00.123456+00:00"
+      },
+      "composer": {
+        "ticker": "NVDA",
+        "shares": 10.0,
+        "entry_price": 100.0,
+        "name_present": true,
+        "cost": 1000.0,
+        "non_finite": []
+      },
+      "composer_input": {
+        "ticker": "NVDA",
+        "shares": 10,
+        "entry_price": 100
+      },
+      "compatible": true,
+      "reject_reason": null
+    },
+    {
+      "name": "created_at_null",
+      "why": "a null created_at becomes null",
+      "row": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": 10,
+        "entry_price": 100,
+        "entry_currency": null,
+        "entry_currency_basis": null,
+        "entry_date": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "created_at": null
+      },
+      "terminal": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": 10,
+        "entryPrice": 100,
+        "entryCurrency": null,
+        "entryDate": "2026-01-15",
+        "notes": null,
+        "status": "open",
+        "createdAt": null
+      },
+      "composer": {
+        "ticker": "NVDA",
+        "shares": 10.0,
+        "entry_price": 100.0,
+        "name_present": true,
+        "cost": 1000.0,
+        "non_finite": []
+      },
+      "composer_input": {
+        "ticker": "NVDA",
+        "shares": 10,
+        "entry_price": 100
+      },
+      "compatible": true,
+      "reject_reason": null
+    },
+    {
+      "name": "entry_date_non_calendar",
+      "why": "entry_date is carried as text on read",
+      "row": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": 10,
+        "entry_price": 100,
+        "entry_currency": null,
+        "entry_currency_basis": null,
+        "entry_date": "2026-02-31",
+        "notes": null,
+        "status": "open",
+        "created_at": "2026-01-15T09:30:00+00:00"
+      },
+      "terminal": {
+        "id": "11111111-1111-4111-8111-111111111111",
+        "ticker": "NVDA",
+        "shares": 10,
+        "entryPrice": 100,
+        "entryCurrency": null,
+        "entryDate": "2026-02-31",
+        "notes": null,
+        "status": "open",
+        "createdAt": "2026-01-15T09:30:00+00:00"
+      },
+      "composer": {
+        "ticker": "NVDA",
+        "shares": 10.0,
+        "entry_price": 100.0,
+        "name_present": true,
+        "cost": 1000.0,
+        "non_finite": []
+      },
+      "composer_input": {
+        "ticker": "NVDA",
+        "shares": 10,
+        "entry_price": 100
+      },
+      "compatible": true,
+      "reject_reason": null
+    }
+  ]
+}
