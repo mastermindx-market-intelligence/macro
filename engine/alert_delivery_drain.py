@@ -46,6 +46,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -483,6 +484,28 @@ class Decision:
     lang: str = "en"
 
 
+def _parse_not_after(value) -> datetime | None:
+    """Parse the supported B21 UTC profile, or return None for an invalid bound.
+
+    Contract §5 requires one UTC instant. Accept an extended Gregorian date,
+    a full HH:MM:SS clock, an optional dot plus 1–6 fractional digits, and
+    either Z or +00:00. The producer uses this profile with Z; broader ISO
+    forms must not silently become valid delivery bounds.
+    """
+    if not isinstance(value, str):
+        return None
+    if re.fullmatch(
+        r"[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}"
+        r"(?:\.[0-9]{1,6})?(?:Z|\+00:00)", value
+    ) is None:
+        return None
+    text = value[:-1] + "+00:00" if value.endswith("Z") else value
+    try:
+        return datetime.fromisoformat(text)
+    except ValueError:
+        return None
+
+
 def decide_row(row: dict, *, user_state: str, record: dict | None,
               ent: TypedRead, suppression: TypedRead, now_utc: datetime,
               frozen_admission: FrozenEmailAdmission | None = None) -> Decision:
@@ -542,6 +565,16 @@ def decide_row(row: dict, *, user_state: str, record: dict | None,
         # grant fields cannot stand in for this explicit private host capability.
         if not isinstance(frozen_admission,FrozenEmailAdmission) or not frozen_admission.matches(row):
             return Decision(action="unevaluable", reason="options_exposure_node_admission_unavailable",
+                            to_email=to_email, lang=prefs.lang)
+    # DR3 owns its expiry after the incumbent quiet-hours decision.
+    # Other bounded payloads need a valid instant whenever the key is present.
+    if (isinstance(payload, dict) and "not_after" in payload
+            and not rotation_obs.claims_rotation_observation(payload)):
+        bound = _parse_not_after(payload["not_after"])
+        if bound is None:
+            return Decision(action="unevaluable", reason="not_after_unparsable")
+        if now_utc >= bound:
+            return Decision(action="suppress", reason="mandatory_fact_stale",
                             to_email=to_email, lang=prefs.lang)
     if prefs.quiet_note == "unparsed":
         # An unrecognised quiet_hours shape must never fail OPEN to a silent send --
