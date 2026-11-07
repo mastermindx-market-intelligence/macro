@@ -75,6 +75,11 @@ waves:
     status: in_progress
     depends_on: [H0]
     next_action: >
+      2026-11-06 visibility increment: consume Mastermind #2174's existing protected queue for
+      head 50adff1969d1b0d2b43d6d99bfff62ccb148faa4; do not re-arm or push while queued.
+      O1-O3 source and exact-head CI pass, but reads remain default-off and not installed.
+      Next qualify real independently authorized census/Agent OS owner ports and intended Hermes
+      role readback; use the dated chatgpt-session-visibility handoff and preserve original effects.
       Hold #647, #651 and #836 at independent exact-head review. After release, wire R8 recovery plus bounded
       continuation into Control Room, then add closed successor bootstrap through existing Web-Sol,
       RuntimeBinding and Capacity owners.
@@ -131,6 +136,8 @@ discoveries:
   - DSC:CCR-MULTILOGIN-CLOUD-SEARCH-501-BLOCKS-NONSEAT-CANARY
   - DSC:CCR-BOUNDED-CONTINUATION-EXPOSED-STALE-FRONTIER
 artifacts:
+  - agentos/handoffs/CHAIRMAN-CONTROL-ROOM-2026-11-06-chatgpt-session-visibility.md
+  - https://github.com/mastermindx-market-intelligence/Mastermind/blob/50adff1969d1b0d2b43d6d99bfff62ccb148faa4/docs/superpowers/plans/2026-11-06-chatgpt-session-observability.md
   - agentos/decisions/DEC-CHAIRMAN-CONTROL-ROOM-P0-ARCHITECTURE-ACCEPTED.md
   - agentos/decisions/DEC-CHAIRMAN-CONTROL-ROOM-ACTIVE-SESSION-DIALOGUE-F0-ACCEPTED.md
   - agentos/decisions/DEC-CCR-P0B-AUTOMATION-OWNED-NONSEAT-CANARY-ONLY.md
