@@ -148,6 +148,8 @@ class RunResult:
     subscription_read_state: str = "ok"  # ok | unavailable | not_due
     subscription_read_error: str | None = None
     skipped_non_session: bool = False
+    # Raw trusted-producer observations; not native access or qualified locators.
+    delivery_observations: tuple = ()
 
 
 # ---------------------------------------------------------------------------
@@ -634,7 +636,10 @@ def project_monitors(tickers: list[str] | set[str], windows: list[dict] | None) 
 # IO — same service client as engine/thesis_condition_monitor.py
 # ---------------------------------------------------------------------------
 
-def _pg(method: str, path: str, body: Any = None, prefer: str | None = None, timeout: int = 6):
+def _pg(method: str, path: str, body: Any = None, prefer: str | None = None, timeout: int = 6,
+        response_limit: int | None = None):
+    if response_limit is not None and (type(response_limit) is not int or not 1 <= response_limit <= 1048576):
+        raise ValueError("invalid response bound")
     url = f"{SUPABASE_URL}/rest/v1/{path}"
     data = json.dumps(body).encode("utf-8") if body is not None else None
     headers = {
@@ -646,7 +651,12 @@ def _pg(method: str, path: str, body: Any = None, prefer: str | None = None, tim
         headers["Prefer"] = prefer
     req = urllib.request.Request(url, data=data, headers=headers, method=method)
     with urllib.request.urlopen(req, timeout=timeout) as resp:
-        raw = resp.read()
+        if response_limit is None:
+            raw = resp.read()
+        else:
+            raw = resp.read(response_limit + 1)
+            if len(raw) > response_limit:
+                raise ValueError("source response over budget")
         return json.loads(raw) if raw else None
 
 
@@ -839,6 +849,25 @@ def write_delivery(row: dict, *, dry_run: bool = False) -> str:
         return "error"
 
 
+def write_delivery_observed(row: dict, expected_owner_id: str, *, dry_run: bool = False):
+    """Existing source client, one write and bounded same-slot observation.
+
+    This is an explicit producer API for an installed original invocation owner.
+    Its local observation is not proof of that invocation to Runtime, and is
+    never printed by the existing aggregate-only CLI. Missing credentials emits
+    no observation and performs no network request.
+    """
+    if not SUPABASE_SERVICE_ROLE_KEY and not dry_run:
+        return None
+    from engine.brief_delivery_receipts import observe_delivery_write
+
+    def bounded_pg(method, path, body=None, prefer=None, timeout=6):
+        return _pg(method, path, body=body, prefer=prefer, timeout=timeout,
+                   response_limit=393216)
+
+    return observe_delivery_write(bounded_pg, row, expected_owner_id, dry_run=dry_run)
+
+
 def load_monitors_for_target(target: dict | None) -> list[dict]:
     """Current monitor states; read failures are explicit rather than false-calm."""
     tickers = list((target or {}).get("tickers") or [])
@@ -881,6 +910,7 @@ def run(
     dry_run: bool = True,
     run_date: date | None = None,
     root: Path | None = None,
+    collect_delivery_observations: bool = False,
 ) -> RunResult:
     if run_date is None:
         run_date = owner_run_date()
@@ -937,6 +967,7 @@ def run(
     read_missing = 0
     read_unavailable = 0
     planned_rows: list[dict] = []
+    delivery_observations: list = []
     considered = 0
 
     for sub in subscriptions:
@@ -993,6 +1024,22 @@ def run(
         if dry_run:
             planned_rows.append(row)
             outcome = write_delivery(row, dry_run=True)
+        elif collect_delivery_observations and state == "ready":
+            observed = write_delivery_observed(row, work.get("user_id"), dry_run=False)
+            if observed is not None and observed.receipt is not None:
+                delivery_observations.append(observed.receipt)
+            # An observation never proves a new insertion. Existing aggregate
+            # counters remain workflow facts, not a native sharing receipt.
+            if observed is None:
+                outcome = "error"
+            elif observed.post_outcome == "DUPLICATE":
+                outcome = "conflict"
+            elif observed.post_outcome == "ACKNOWLEDGED":
+                outcome = "acknowledged"
+            elif observed.post_outcome == "AMBIGUOUS" and observed.receipt is not None:
+                outcome = "reconciled"
+            else:
+                outcome = "error"
         else:
             outcome = write_delivery(row, dry_run=False)
         if outcome == "conflict":
@@ -1015,4 +1062,5 @@ def run(
         read_unavailable=read_unavailable,
         planned_rows=tuple(planned_rows),
         subscription_read_state="ok",
+        delivery_observations=tuple(delivery_observations),
     )
