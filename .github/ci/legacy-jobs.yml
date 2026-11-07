@@ -30534,6 +30534,29 @@ jobs:
       - name: inline-CSS externalization units (incl. the jinja2 cross-module gate)
         run: python -m pytest tests/test_externalize_css.py -q
 
+  inflation-finite-outputs:
+    if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
+    gate: code
+    # Inflation calculator. Node unit test over the template and the generated
+    # page: the whole controller IIFE runs over both surfaces and both copy
+    # transports, so a nonfinite derived amount, percentage or reciprocal is
+    # rejected instead of rendered as $Infinity and copied out. The verdict is a
+    # pure function of the PR tree (template + generated page + harness), so
+    # gate: code; the free-content-estate rebuild is gate: data and never runs
+    # on a pull request.
+    paths:
+      - templates/calculators/inflation.html.j2
+      - site/tools/calculators/inflation.html
+      - tests/js/inflation_finite_outputs.test.mjs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: inflation finite derived-output regression
+        run: node --test tests/js/inflation_finite_outputs.test.mjs
+
   calculator-input-integrity:
     if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
     gate: code

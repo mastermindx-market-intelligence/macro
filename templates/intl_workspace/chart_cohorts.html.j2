@@ -19,7 +19,7 @@
   {% for cohort in geometry.cohorts %}
     {% set identity = context_id ~ '-chart-' ~ cohort.id %}
     <details{% if loop.first %} open{% endif %} data-im-chart-cohort="{{ cohort.id|e }}">
-      <summary>{{ words('Comparable group', '可比市场组') }} {{ loop.index }} · {{ cohort.paths|length }} {{ words('markets', '个市场') }}
+      <summary>{{ words('Comparable group', '可比市场组') }} {{ loop.index }} · <span data-im-chart-visible-count data-im-chart-total="{{ cohort.paths|length|e }}">{{ cohort.paths|length|e }}</span> {{ words('markets', '个市场') }}
         · <time datetime="{{ cohort.window.start|e }}">{{ cohort.window.start[:10]|e }}</time>–
         <time datetime="{{ cohort.window.end|e }}">{{ cohort.window.end[:10]|e }}</time>
       </summary>
