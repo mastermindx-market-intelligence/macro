@@ -118,6 +118,90 @@ def test_template_block_renders_and_escapes():
     assert env.from_string(source).render(r={}) == ""
 
 
+def _policy_title_source():
+    """The comment-close block that follows the card rationale, and nothing else.
+
+    Reading it out of the template makes the render tests fail when the block
+    is removed. Production renders this file with autoescape on.
+    """
+    lines = (ROOT / "templates" / "foresight.html.j2").read_text(encoding="utf-8").splitlines()
+    why = next(i for i, ln in enumerate(lines) if '<p class="fx-why">{{ r.rationale }}</p>' in ln)
+    start = why + 1
+    assert "r.policy_reg_chip" in lines[start]
+    end = next(i for i in range(start, len(lines)) if lines[i].strip() == "{% endif %}")
+    block = "\n".join(lines[start:end + 1])
+    assert 'data-policy-title="1"' in block
+    assert 'class="fx-note"' in block
+    chips = next(i for i, ln in enumerate(lines) if '<div class="fx-chips">' in ln)
+    assert end < chips
+    return block
+
+
+def _render_policy_title(row):
+    import jinja2
+
+    env = jinja2.Environment(autoescape=True)
+    return env.from_string(_policy_title_source()).render(r=row)
+
+
+def _policy_half(note, cls):
+    chunk = note.split(f'class="{cls}"', 1)[1]
+    return chunk.split(">", 1)[1].split("</span>", 1)[0]
+
+
+_IBOGAINE = (
+    "Design and Safety Considerations for Clinical Trials Involving "
+    "Ibogaine Drug Products; Request for Information"
+)
+
+
+def test_policy_comment_title_renders_in_both_language_halves():
+    out = _render_policy_title({
+        "policy_reg_chip": {
+            "next_comment_close_date": "2026-11-20",
+            "next_comment_close_title": _IBOGAINE,
+        }
+    })
+    assert out.count('data-policy-title="1"') == 1
+    note = out[out.index("<p"):out.index("</p>") + 4]
+    assert 'data-policy-title="1"' in note
+    for half in (_policy_half(note, "l-en"), _policy_half(note, "l-zh")):
+        assert "2026-11-20" in half
+        assert _IBOGAINE in half
+    assert "Next comment close" in _policy_half(note, "l-en")
+    assert "下一次意见截止" in _policy_half(note, "l-zh")
+
+
+def test_policy_comment_title_absent_without_title_or_chip():
+    no_title = _render_policy_title({
+        "policy_reg_chip": {
+            "next_comment_close_date": "2026-11-20",
+            "next_comment_close_title": None,
+        }
+    })
+    no_chip = _render_policy_title({})
+    assert "data-policy-title" not in no_title
+    assert "data-policy-title" not in no_chip
+    assert _IBOGAINE not in no_title
+    assert "2026-11-20" not in no_chip
+
+
+def test_policy_comment_title_autoescapes():
+    raw = "Ibogaine & <Safety>"
+    out = _render_policy_title({
+        "policy_reg_chip": {
+            "next_comment_close_date": "2026-11-20",
+            "next_comment_close_title": raw,
+        }
+    })
+    note = out[out.index("<p"):out.index("</p>") + 4]
+    escaped = "Ibogaine &amp; &lt;Safety&gt;"
+    for half in (_policy_half(note, "l-en"), _policy_half(note, "l-zh")):
+        assert escaped in half
+    assert raw not in note
+    assert "<Safety>" not in note
+
+
 def _qualified_scarcity_row(details):
     """A minimal FDA row: a qualified, finished capture carrying raw details."""
     return {

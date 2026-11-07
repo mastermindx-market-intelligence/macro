@@ -334,3 +334,76 @@ The About stylesheet fix has meaningful failing-before/passing-after tests and a
 The proposed October Sector standalone reference received two actual independent BLOCK reviews. Its separate authority decision is REVISE; it is not an approved replacement for the existing Sector page. The Shared Shell beta retains existing native content under the Chairman's gradual-migration intent. The three Sector migration packets require a substantive, independently reviewed phase amendment and an applicable reference binding before their repository gate can close. Neither successful fixture captures nor older reference approval certifies the deficient new design or today's native runtime.
 
 No beta service installation, DNS cutover or public acceptance is claimed by this update.
+
+
+## November 3, 2026 UTC - first-class intelligence integration
+
+The current Chairman-directed receiver continues the existing Shared Shell programme;
+this is not another product, route authority or signal engine. Terminal PR #1244
+(`sol/web-beta-intelligence-integration-20261103-sol`) is the single source carrier.
+Its implementation task tree is
+`terminal/docs/SHARED_SHELL_INTELLIGENCE_INTEGRATION_2026-11-03.md` in Terminal.
+
+The user outcome is a discoverable, connected Macro Dashboard / Prophet / Sector
+Cycles journey, with a source-backed overview and full incumbent workspaces.
+The first source slice is at Terminal 844e5a68a871b84ddfea7fb9c278981b565abe10.
+It composes existing Macro Command, sector-cycle and Prophet inputs; distinguishes
+source and publication clocks; retains paid and membership gates; and avoids
+loading multi-megabyte histories into the overview. Macro owns the three native
+route declarations and their generated consumer projection through the existing
+page registry. Existing complete Macro and Sector Cycles pages remain available
+inside the supported legacy boundary; they are not falsely called native rewrites.
+
+Acceptance still requires exact-head independent review, required checks, normal
+protected landing, beta-only installation and authenticated real-source journeys.
+Preserve accepted foundation/A1A/A1B work and active neighboring navigation, Today,
+sector and performance changes. No merged/live claim is made by this checkpoint.
+
+
+### Scoped registry publication and release order
+
+The ordinary full census would newly classify unrelated GMI/Expectation pages as
+live and admit them into Shared Shell. This integration does not authorize those
+admissions. The existing registry builder therefore gains one narrow source-refresh
+mode, `--refresh-terminal-from <protected-registry-commit>`, which preserves every
+Macro/Mastermind row and their exact source provenance, and derives Terminal from
+one explicit immutable source. Tests prove baseline containment, exact source,
+non-owner preservation and failure without output replacement. No second registry,
+route allowlist, publisher, runtime store or auth owner is created.
+
+Baseline registry: Macro aba2ddcfe4cb90e4d2106c4a02de3ccb306f0551. Terminal input:
+844e5a68a871b84ddfea7fb9c278981b565abe10. The refreshed registry has 353 rows:
+314 Macro, 32 Terminal, 7 Mastermind. Non-Terminal rows and source dictionaries
+remain exactly equal to that protected baseline. Existing newly derived Terminal
+Equity Replay keeps its incumbent paid gate; dev routes remain excluded.
+
+Release order: independently review and normally land this Macro registry source;
+then use the unchanged exporter with `--inventory-ref <that-protected-Macro-SHA>`
+and the exact committed registry bytes. This is the existing protected cross-revision
+inventory path, not a weakened candidate export. It retains published company and
+earnings pages while preserving unadmitted GMI/Expectation/internal routes. Join the
+result into Terminal PR1244, qualify and independently review the exact final source,
+then carry it through the existing beta-only release owner. The temporary full-census
+projection used during local browser development is not the release candidate and
+must not be published as final admission.
+
+## November 3 recovery - exact original PRs, registry CI repair
+
+The current attended receiver retained Macro PR10639 and Terminal PR1244 and
+reused their original managed operation workspaces. No duplicate source carrier
+was created. Registry CI identified two source-discovered Terminal rows without
+design archetypes: dev/options-plan and options/equity-replay. Their explicit
+chart-workspace classification now follows their actual source modules, without
+changing developer-only lifecycle, paid access or navigation admission. The
+normal scoped builder regenerated the registry against Terminal7063a8e1; every
+non-Terminal row and source pin still equals the protected aba2ddcf baseline.
+The builder, exporter and design-system suites passed 163 tests locally.
+
+The requested independent Fabric review of the prior Macro head ab88dac5 was
+refused before reviewer launch (run beta-intelligence-registry-review-20261103-r1,
+controller exit75). No review result or formal approval exists; the owning reader
+also returned backend_unavailable. No replay or alternate reviewer route is
+authorized by those observations. Independent review, current-head CI, protected
+landing, final route export, beta deployment and real user acceptance remain
+separate outstanding gates. The existing Terminal task tree records browser
+qualification and the correction of an asynchronous-navigation test race.

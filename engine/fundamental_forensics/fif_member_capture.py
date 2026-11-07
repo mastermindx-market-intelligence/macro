@@ -923,15 +923,148 @@ _STATEMENT_NEEDLES: dict[str, tuple[str, ...]] = {
     ),
 }
 # Titles some issuers give their primary statements ("Consolidated Results of
-# Operations", "Statement of Financial Position/Condition"). Disclosures reuse
-# the same words ("... in Statement of Financial Position (Details)"), so these
-# are searched over Statement-category roles only, after every needle above.
+# Operations", "Statement of Financial Position/Condition", "Statements of
+# Earnings", "Statements of Consolidated Operations", "Statements of Condensed
+# Consolidated Operations", "Statements of (Loss) Earnings", "Statement of
+# Condition"). Disclosures reuse the same words ("... in Statement of
+# Financial Position (Details)", "Statements of Earnings Information"), so
+# these are searched over Statement-category roles only, after every needle
+# above.
 _STATEMENT_ONLY_NEEDLES: dict[str, tuple[str, ...]] = {
-    "income_statement": ("RESULTS OF OPERATIONS",),
-    "balance_sheet": ("FINANCIAL POSITION", "FINANCIAL CONDITION"),
+    "income_statement": (
+        "RESULTS OF OPERATIONS",
+        "STATEMENTS OF EARNINGS",
+        "STATEMENT OF EARNINGS",
+        "STATEMENTS OF CONSOLIDATED EARNINGS",
+        "STATEMENT OF CONSOLIDATED EARNINGS",
+        "STATEMENTS OF CONSOLIDATED OPERATIONS",
+        "STATEMENT OF CONSOLIDATED OPERATIONS",
+        "STATEMENTS OF CONDENSED CONSOLIDATED OPERATIONS",
+        "STATEMENT OF CONDENSED CONSOLIDATED OPERATIONS",
+        "STATEMENTS OF CONDENSED CONSOLIDATED EARNINGS",
+        "STATEMENT OF CONDENSED CONSOLIDATED EARNINGS",
+        "STATEMENTS OF (LOSS) EARNINGS",
+        "STATEMENT OF (LOSS) EARNINGS",
+    ),
+    "balance_sheet": (
+        "FINANCIAL POSITION",
+        "FINANCIAL CONDITION",
+        "STATEMENTS OF CONDITION",
+        "STATEMENT OF CONDITION",
+    ),
     "cash_flow": (),
 }
 _STATEMENT_TITLE_EXCLUSIONS = ("PARENTHETICAL", "COMPREHENSIVE", "SHAREHOLDERS", "SUPPLEMENTAL")
+# Where a combined "... Operations and (Other) Comprehensive Income" title
+# splits into its income-statement prefix and comprehensive tail.
+_COMBINED_INCOME_SPLIT = re.compile(r" AND (?:OTHER )?COMPREHENSIVE\b")
+# Titles the combined-income fallback refuses to bind.
+_COMBINED_INCOME_EXCLUSIONS = (
+    "PARENTHETICAL",
+    "SUPPLEMENTAL",
+    "SHAREHOLDERS",
+    "STOCKHOLDERS",
+    "EQUITY",
+    "CHANGES IN",
+)
+# A sole comprehensive-income statement still names an income or a loss.
+_SOLE_COMPREHENSIVE_WORDS = ("INCOME", "EARNINGS", "LOSS")
+# Titles the sole-comprehensive fallback refuses to bind.
+_SOLE_COMPREHENSIVE_EXCLUSIONS = (
+    "PARENTHETICAL",
+    "SHAREHOLDERS",
+    "SUPPLEMENTAL",
+    "STOCKHOLDERS",
+    "EQUITY",
+    "CHANGES IN",
+    "OTHER COMPREHENSIVE",
+    "ACCUMULATED",
+    "DEFICIT",
+    "CAPITAL",
+)
+# Titles that keep a statement from counting as a plain income statement.
+_PLAIN_INCOME_GATE_EXCLUSIONS = (
+    "PARENTHETICAL",
+    "SUPPLEMENTAL",
+    "SHAREHOLDERS",
+    "STOCKHOLDERS",
+    "EQUITY",
+    "CHANGES IN",
+    "RETAINED",
+    "DEFICIT",
+    "CAPITAL",
+    "ACCUMULATED",
+)
+
+
+def _role_spec(role_uri: str, title: str) -> dict[str, str]:
+    """The picked-role record: collapsed title plus its parenthetical-free search."""
+    search = _TRAILING_PARENTHETICAL.sub("", title).strip()
+    return {
+        "role_uri": role_uri,
+        "title": re.sub(r"\s+", " ", title),
+        "title_search": re.sub(r"\s+", " ", search),
+    }
+
+
+def _plain_income_title_exists(pairs: list[tuple[str, str, bool]]) -> bool:
+    """Whether a Statement role carries a plain operations/earnings title."""
+    for _, title, is_statement in pairs:
+        if not is_statement:
+            continue
+        normalized = _normalized_title(title)
+        if "OPERATIONS" not in normalized and "EARNINGS" not in normalized:
+            continue
+        if "COMPREHENSIVE" in normalized:
+            continue
+        if any(bad in normalized for bad in _PLAIN_INCOME_GATE_EXCLUSIONS):
+            continue
+        return True
+    return False
+
+
+def _combined_income_role(
+    pairs: list[tuple[str, str, bool]],
+) -> dict[str, str] | None:
+    """First Statement role combining an income statement with comprehensive income."""
+    needles = _STATEMENT_NEEDLES["income_statement"] + _STATEMENT_ONLY_NEEDLES[
+        "income_statement"
+    ]
+    for role_uri, title, is_statement in pairs:
+        if not is_statement:
+            continue
+        normalized = _normalized_title(title)
+        parts = _COMBINED_INCOME_SPLIT.split(normalized, maxsplit=1)
+        if len(parts) != 2:
+            continue
+        if not any(needle in parts[0] for needle in needles):
+            continue
+        if any(bad in normalized for bad in _COMBINED_INCOME_EXCLUSIONS):
+            continue
+        return _role_spec(role_uri, title)
+    return None
+
+
+def _sole_comprehensive_income_role(
+    pairs: list[tuple[str, str, bool]],
+) -> dict[str, str] | None:
+    """The sole comprehensive-income Statement role, or None when titles are ambiguous."""
+    first_by_title: dict[str, tuple[str, str, bool]] = {}
+    for role_uri, title, is_statement in pairs:
+        if not is_statement:
+            continue
+        normalized = _normalized_title(title)
+        if "COMPREHENSIVE" not in normalized:
+            continue
+        if not any(word in normalized for word in _SOLE_COMPREHENSIVE_WORDS):
+            continue
+        if any(bad in normalized for bad in _SOLE_COMPREHENSIVE_EXCLUSIONS):
+            continue
+        first_by_title.setdefault(normalized, (role_uri, title, is_statement))
+    if len(first_by_title) != 1:
+        return None
+    role_uri, title, _ = next(iter(first_by_title.values()))
+    return _role_spec(role_uri, title)
 
 
 def _pick_statement_role(
@@ -946,6 +1079,17 @@ def _pick_statement_role(
     Statement role is unchanged: no earlier needle matched any role, so none
     matched a Statement role either. Only a schema with no Statement category
     at all falls back to the original needles over every role.
+
+    For the income statement only, after the whole needle search finds
+    nothing and only when the schema has a Statement category, two fallbacks
+    run over Statement-category roles in schema order: a combined
+    "... Operations and (Other) Comprehensive Income" title, then a sole
+    comprehensive-income title. Neither ever binds a parenthetical, equity,
+    shareholders/stockholders, supplemental, changes-in or
+    other-comprehensive-only role, and ambiguity between distinct sole
+    comprehensive titles is a refusal. Neither fallback runs while a
+    Statement role carries a plain operations/earnings title, and such a
+    schema refuses instead.
     """
     has_statement_category = any(is_statement for _, _, is_statement in pairs)
     if has_statement_category:
@@ -961,12 +1105,11 @@ def _pick_statement_role(
                 continue
             if any(bad in normalized for bad in _STATEMENT_TITLE_EXCLUSIONS):
                 continue
-            search = _TRAILING_PARENTHETICAL.sub("", title).strip()
-            return {
-                "role_uri": role_uri,
-                "title": re.sub(r"\s+", " ", title),
-                "title_search": re.sub(r"\s+", " ", search),
-            }
+            return _role_spec(role_uri, title)
+    if has_statement_category and kind == "income_statement":
+        if _plain_income_title_exists(pairs):
+            return None
+        return _combined_income_role(pairs) or _sole_comprehensive_income_role(pairs)
     return None
 
 
@@ -1294,6 +1437,19 @@ def _index_member_sizes(items: Sequence[Mapping[str, Any]]) -> dict[str, int]:
     return sizes
 
 
+def _resolve_taxonomy_stem(items: Sequence[Mapping[str, Any]], primary_stem: str) -> str:
+    """DEC:FIF-TAXONOMY-STEM-FROM-INDEX-20261102 (R1): the stem the archive index lists for
+    the five XBRL role members of a 10-K/10-Q. Ambiguity keeps the primary stem, so the
+    base refusal fires unchanged."""
+    names = {item.get("name") for item in items if isinstance(item.get("name"), str)}
+    if f"{primary_stem}.xsd" in names:
+        return primary_stem
+    schemas = sorted(name for name in names if name.lower().endswith(".xsd"))
+    if len(schemas) == 1 and schemas[0].endswith(".xsd"):
+        return schemas[0][: -len(".xsd")]
+    return primary_stem
+
+
 def _prefetch_member_ceilings(
     items: Sequence[Mapping[str, Any]],
     *,
@@ -1370,6 +1526,7 @@ def _write_package(
     statement_roles: Mapping[str, dict[str, str]] | None,
     capture_recorded_at: str,
     absent_members: Sequence[Mapping[str, str]] = (),
+    taxonomy_stem: str | None = None,
 ) -> tuple[dict[str, Any], int, int]:
     """Assemble the package in staging and rename it into place atomically.
 
@@ -1400,7 +1557,7 @@ def _write_package(
             code="member_missing_from_index",
         )
     primary_document = bound_fields["primaryDocument"]
-    stem = primary_document.rsplit(".", 1)[0]
+    stem = taxonomy_stem if taxonomy_stem is not None else primary_document.rsplit(".", 1)[0]
     role_by_name = {f"{stem}{suffix}": role for suffix, role in MEMBER_SUFFIX_ROLES}
     rows: list[dict[str, Any]] = []
     stored_count = 0
@@ -1662,19 +1819,21 @@ def capture_fif_filing_packages(
                 )
                 budget -= len(index_bytes)
                 stem = primary_name.rsplit(".", 1)[0]
+                items = _parse_archive_index(index_bytes)
+                tstem = _resolve_taxonomy_stem(items, stem) if contract_form.strip().upper() in ("10-K", "10-Q") else stem
                 # D12 + R2/R3: every ceiling knowable from the index listing
                 # fires here, BEFORE any member fetch (the index is the only
                 # fetch a refused accession makes); an optional member the
                 # index does not name is decided ABSENT at zero cost.
                 present, absent = _prefetch_member_ceilings(
-                    _parse_archive_index(index_bytes),
-                    stem=stem,
+                    items,
+                    stem=tstem,
                     budget_remaining=budget,
                     policy=policy,
                 )
                 stored: dict[str, bytes] = {}
                 for suffix, _role in present:
-                    name = f"{stem}{suffix}"
+                    name = f"{tstem}{suffix}"
                     payload = _fetch_member_bytes(
                         collector,
                         archive_root=Path(archive_root),
@@ -1693,14 +1852,14 @@ def capture_fif_filing_packages(
                 # from the filing's own schema (unchanged, required); an 8-K
                 # mints NONE and OMITS the manifest key.
                 statement_roles = (
-                    mint_statement_roles(stored[f"{stem}.xsd"])
+                    mint_statement_roles(stored[f"{tstem}.xsd"])
                     if contract_form.strip().upper() in ("10-K", "10-Q")
                     else None
                 )
                 absent_entries = [
                     {
                         "role": role,
-                        "name": f"{stem}{suffix}",
+                        "name": f"{tstem}{suffix}",
                         "reason": ABSENT_MEMBER_REASON,
                     }
                     for suffix, role in absent
@@ -1720,6 +1879,7 @@ def capture_fif_filing_packages(
                     statement_roles=statement_roles,
                     capture_recorded_at=normalized_clock,
                     absent_members=absent_entries,
+                    taxonomy_stem=tstem,
                 )
                 report["package_files_written"] += files_written
                 report["package_bytes_written"] += bytes_written
