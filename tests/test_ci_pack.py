@@ -5473,9 +5473,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_912),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_927),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_668),
+    ("templates/index.html", 137, 5_915),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_930),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_671),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5483,6 +5483,17 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-07 (#8304): enroll tests/test_regime_v2_pit.py once in the
+    existing unrun-scoring-engine CODE owner. With run_ci_pack blob 3cbed589,
+    its fallback estimate changes 57->60: run commands 16->17, explicit
+    test paths 20->21, joined command text 1125->1173 characters (one
+    800-character unit in both). No observed-runtime override applies.
+    Fund exactly those three estimated-weight units on each existing
+    probe; keep job ceilings 137/138/131, ten-pack limits, selectors,
+    timeouts and admission bounds unchanged. This is source accounting,
+    not measured runtime; current-head hosted contract measurements
+    remain required. Other unmerged enrollments are not included here.
 
     P12.T32.S3 (2026-11-04): fresh canonical paired source measurements,
     candidate 5f0f047b160b against real base b4df44260aef, using the same
