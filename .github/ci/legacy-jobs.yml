@@ -21983,6 +21983,7 @@ jobs:
       - tests/test_agentos_project_proposal.py
       - tests/test_agentos_standing_instructions.py
       - tests/test_project_knowledge_recipes.py
+      - tests/test_project_discovery_correction.py
       - tests/test_agentos_status.py
       - tests/test_b_rec2_wave_boundary_records.py
       - tests/test_b_rec3_wave_boundary_records.py
@@ -22019,7 +22020,8 @@ jobs:
             tests/test_agentos_project_plan_owner.py \
             tests/test_agentos_project_proposal.py \
             tests/test_agentos_standing_instructions.py \
-            tests/test_project_knowledge_recipes.py -q
+            tests/test_project_knowledge_recipes.py \
+            tests/test_project_discovery_correction.py -q
 
   capability-broker:
     if: ${{ false }}
