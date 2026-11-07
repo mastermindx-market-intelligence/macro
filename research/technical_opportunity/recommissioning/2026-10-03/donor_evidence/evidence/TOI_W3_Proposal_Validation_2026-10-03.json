@@ -1,0 +1,122 @@
+{
+  "artifact_status": "PROPOSED_NOT_REGISTERED_HOLD",
+  "validation_status": "PASS",
+  "generated_at_utc": "2026-10-03T10:44:09.091189+00:00",
+  "source": {
+    "path": "/workspace/scratch/5989f2bb1f95/outputs/TOI_Recovery_Masterplan_2026-10-03.md",
+    "sha256_at_generation": "69e1ba924306e4c1613c0065667e801072257e71074b7960b3d7fbb76e6761ed",
+    "section_K_sha256": "0426631f0a2e3c7243530a2ad859c5e36857768c43d0649ab17210d1c2246be8",
+    "sections": "K1-K9"
+  },
+  "configurations": {
+    "path": "/workspace/scratch/5989f2bb1f95/outputs/TOI_W3_Configuration_Proposal_2026-10-03.csv",
+    "bytes": 768262,
+    "sha256": "bb8c1c0ccb5df440cef065ce9033eff5e34148d9964df2673851e06db53aafd7",
+    "row_count": 218,
+    "unique_proposal_ids": 218,
+    "by_execution_block": {
+      "W3-A": 53,
+      "W3-B": 120,
+      "W3-C": 45
+    },
+    "by_configuration_group": {
+      "EVENT_PROFILE": 24,
+      "MATCHED_D0_CONTROL": 8,
+      "RANDOM_OBSERVATIONAL_CONTROL": 4,
+      "COMBO_REFERENCE": 1,
+      "CONFIRMATION_POLICY": 16,
+      "ACTIVATION_MODEL": 8,
+      "TRIGGERED_PATH_MODEL": 16,
+      "REMAINING_MFE_MODEL": 48,
+      "REMAINING_MAE_MODEL": 48,
+      "MTF_MODEL_ADDITION": 45
+    },
+    "reference_count": 197,
+    "dangling_references": 0
+  },
+  "hypotheses": {
+    "path": "/workspace/scratch/5989f2bb1f95/outputs/TOI_W3_Hypothesis_Proposal_2026-10-03.csv",
+    "bytes": 661951,
+    "sha256": "6bc03fd633a0bcb9e963b2412222063b50bab68899dd9b2c991a6a670198b72f",
+    "row_count": 201,
+    "unique_proposal_ids": 201,
+    "by_execution_block": {
+      "W3-A": 81,
+      "W3-B": 60,
+      "W3-C": 60
+    },
+    "by_contrast_group": {
+      "COMPRESSION_VS_RAW_D0": 16,
+      "COMPRESSION_VS_MATCHED_D0": 16,
+      "D1_VS_D2": 8,
+      "DISCOVERY_VS_RANDOM": 8,
+      "D1_DAILY_UP_VS_COMBO": 1,
+      "POLICY_FALSE_PATH_ADMISSION": 16,
+      "POLICY_TIMELY_CAPTURE": 16,
+      "NATIVE_M1_VS_M0": 60,
+      "MTF_STEP_ADDITION": 45,
+      "MTF_4H_VS_195M": 15
+    },
+    "candidate_configuration_reference_count": 209,
+    "comparator_configuration_reference_count": 201,
+    "dangling_references": 0,
+    "co_primary_groups": 16,
+    "co_primary_cells": 32
+  },
+  "assertions": {
+    "configuration_count_218": true,
+    "hypothesis_count_201": true,
+    "configuration_blocks_53_120_45": true,
+    "hypothesis_blocks_81_60_60": true,
+    "unique_proposal_ids": true,
+    "all_configuration_and_claim_references_resolve": true,
+    "native_M1_M0_pairs_have_identical_dimensions": true,
+    "joint_discovery_references_both_directions_without_doubling_cohort": true,
+    "policy_co_primaries_16_pairs": true,
+    "four_distinct_clocks_preserved": true,
+    "Combo_is_one_actual_Daily_up_reference": true,
+    "MTF_models_only_Daily_D1_M1": true,
+    "activation_ten_subsequent_native_bars_origin_excluded": true,
+    "path_21_RTH_from_original_first_feasible_P0": true,
+    "prefix_known_landmark_weights_no_eventual_count_denominator": true,
+    "structural_fakeout_not_mislabeled_as_adverse_barrier_head": true,
+    "all_rows_proposed_not_registered_hold": true,
+    "all_rows_have_qualified_ancestry_and_pre_outcome_closure": true,
+    "source_report_unchanged_during_generation": true
+  },
+  "proposed_program_totals": {
+    "full": {
+      "configurations": 218,
+      "hypotheses": 201
+    },
+    "core_A_B": {
+      "configurations": 173,
+      "hypotheses": 141
+    },
+    "MTF_reserve_C": {
+      "configurations": 45,
+      "hypotheses": 60
+    }
+  },
+  "canonical_trial_ids_assigned": 0,
+  "canonical_trial_ledger_writes": 0,
+  "outcome_runs": 0,
+  "uploads": 0,
+  "main_report_modified": false,
+  "scope_note": "Packaging and structural validation only. PASS validates enumeration and references, not data admission, scientific sufficiency, estimator implementation, registration or efficacy.",
+  "independent_packaging_qa": {
+    "reviewer": "/root/toi_dnr_temporal",
+    "status": "PASS",
+    "scope": "Independent CSV structural and Section K semantic-grid validation only; no new research or outcomes",
+    "findings": [
+      "218 unique configurations independently match 53/120/45 semantic grid",
+      "201 unique hypothesis IDs and contrast signatures match 81/60/60",
+      "All JSON references resolve and detector/clock/direction/model/context/quantile metadata agree",
+      "16 complete policy co-primary pairs; D1-only policies/forecasts; M1-only added Daily MTF",
+      "Discovery uses one deduplicated all-FORMING cohort including never-triggered cases",
+      "Ten subsequent native bars excludes origin; common 21-session expiry and prefix-only weights preserved",
+      "All rows PROPOSED_NOT_REGISTERED_HOLD; Section K hash matches current report"
+    ],
+    "packaging_blockers": []
+  }
+}

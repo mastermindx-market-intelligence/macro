@@ -1,0 +1,12 @@
+{
+  "source_head": "c55d21d2fcfc4955c71aa10348adac984b9f70cf",
+  "proposal_native_base": "88804ed7079700c598bb8e04aa64307d1335402d",
+  "patch_apply_check": "PASS",
+  "python_syntax_and_jinja_parse": "PASS",
+  "owned_wrapper_links": "PASS",
+  "donor_original_hash": "PASS",
+  "new_native_source_paths_modified": [],
+  "outcomes_or_production_effect": false,
+  "qualified_test_result": "32 passed, 1 explicitly deselected",
+  "independent_acceptance": false
+}

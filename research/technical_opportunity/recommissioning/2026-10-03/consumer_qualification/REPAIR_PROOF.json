@@ -1,0 +1,48 @@
+{
+  "source_commit": "88804ed7079700c598bb8e04aa64307d1335402d",
+  "status": "ISOLATED_REPAIR_PROPOSAL_NOT_APPLIED_TO_SOURCE_BRANCH",
+  "red": {
+    "exit": 1,
+    "summary": "5 failed, 3 passed, 25 deselected"
+  },
+  "runs": [
+    {
+      "label": "green",
+      "exit": 0,
+      "summary": "8 passed, 25 deselected in 0.08s",
+      "stderr": ""
+    },
+    {
+      "label": "mutant-no-cleanup",
+      "exit": 1,
+      "summary": "4 failed, 4 passed, 25 deselected in 0.12s",
+      "stderr": ""
+    },
+    {
+      "label": "mutant-stale-seo",
+      "exit": 1,
+      "summary": "1 failed, 7 passed, 25 deselected in 0.15s",
+      "stderr": ""
+    },
+    {
+      "label": "restored",
+      "exit": 0,
+      "summary": "8 passed, 25 deselected in 0.08s",
+      "stderr": ""
+    }
+  ],
+  "paths": [
+    "scripts/build_confluence_screener.py",
+    "templates/confluence_screener.html.j2",
+    "tests/test_confluence_screener_page.py"
+  ],
+  "proposal_hashes": {
+    "scripts/build_confluence_screener.py": "d3a4a910e15b6e82b33f24bd3bb7dfa60c21a83745870a0c1eefa309872c8198",
+    "templates/confluence_screener.html.j2": "a4163e6b5627628e2bdc3ee5e3e3ac1fa31d2bfa04971b930603eb06710a61f2",
+    "tests/test_confluence_screener_page.py": "78b5e607ea3e1d30bb7a33dcc616f551ac8a362c012c7323d5e85d7659657bea"
+  },
+  "patch_sha256": "fb0ecfa04ff99e9a56b21dcd602b6e99cef66b9848e922d3b4795d1dccc1af7c",
+  "scope": "Eight synthetic native-render/head-fragment cases only; HTML rendering and page IO are test seams for IO cases. Not full-repository, browser, production, market-outcome or scientific admission.",
+  "actual_source_worktree_mutation": false,
+  "production_mutation": false
+}

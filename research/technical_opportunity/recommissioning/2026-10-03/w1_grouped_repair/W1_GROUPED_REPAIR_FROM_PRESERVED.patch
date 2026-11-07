@@ -1,0 +1,413 @@
+diff --git a/research/technical_opportunity/W1_EVIDENCE_CENSUS.md b/research/technical_opportunity/W1_EVIDENCE_CENSUS.md
+--- a/research/technical_opportunity/W1_EVIDENCE_CENSUS.md
++++ b/research/technical_opportunity/W1_EVIDENCE_CENSUS.md
+@@ -1,7 +1,7 @@
+ # Technical Opportunity Intelligence — W1 Evidence Census
+ 
+ **Operation:** `TOI-W1-EVIDENCE-CENSUS-V1`  
+-**State:** `PARTIAL / REPAIR_APPLIED_AWAITING_REREVIEW`  
++**State:** `PARTIAL / SOURCE_CUSTODY_AND_ACCEPTANCE_HOLD`
+ **Macro pickup:** `e2cddf8f0068f03f1d94816cfa950ba47a1db3c2`  
+ **Current-main reconciliation anchor used for census expansion:** `aa6750b68ccefeb17043e590b61e8a00565d1837`  
+ **Terminal archaeology:** `45a0e78e01377502399761626899458f9d08ffd9`  
+@@ -39,12 +39,14 @@
+ 
+ ## Local implementation truth
+ 
+-- **26/32** passports are exact local implementations.
+-- **1/32** is explicit `partial`: `toi.rvol`.
++- **24/32** passports are exact local implementations.
++- **3/32** are explicit `partial`: `toi.bb_bandwidth`, `toi.donchian_fakeout`, and `toi.rvol`.
+ - **5/32** are `missing`: causal support/resistance, round-level controls, short reversal, Fibonacci retracement, ordered-path/Elliott.
+-- P0 reconciles as 11 exact + 1 partial; P1 as 7 exact + 3 missing; P2 as 7 exact + 1 missing; archive as 1 exact + 1 missing.
++- P0 reconciles as 9 exact + 3 partial; P1 as 7 exact + 3 missing; P2 as 7 exact + 1 missing; archive as 1 exact + 1 missing.
+ 
+ The RVOL partial state is deliberate. The source-defined method compares current volume with an average of prior completed bars, while the current local helper includes the current bar in its 20-bar denominator. W1 records that mismatch rather than calling it exact or changing live behavior inside a records-only wave.
++
++The two additional partial bindings are deliberate: BandWidth now cites the existing numeric `engine/stock_technicals.py::bb_bandwidth` helper, without inventing a registered signal or claiming its consumer is qualified; Donchian fakeout retains the original-occurrence formula while the existing helpers reset to the latest break. No production formula is changed by this records repair.
+ 
+ ## Source and rights truth
+ 
+@@ -82,7 +84,7 @@
+ - Connors RSI now binds `SRC-STOCKCHARTS-CONNORS-RSI` and remains P2 / terminal-display / RSI-family blocked from authority stacking.
+ - RVOL now binds `SRC-STOCKCHARTS-RVOL`, freezes the source-defined prior-20-bar formula, and records the current local code as `partial` until a later implementation wave repairs or versions it.
+ 
+-The original review child is terminal. A fresh bounded independent repair verification is required before Sol acceptance because the repaired semantic head is new.
++The original 20-passport review is terminal. The Connors/RVOL two-finding review is terminal and was consumed by SOL ACCEPTED/STOP at Slack C0BSBM78V1N/1789367962.694559 under root1789328715.664659 and parent comment5865326642. These completed scopes are not overall W1 acceptance and must not be repeated unchanged. Independent review now applies only to the grouped generated-ID, fixture, BandWidth, fakeout and derived-record changes.
+ 
+ ## Equivalence and dependency
+ 
+@@ -124,11 +126,15 @@
+ 
+ ## Remaining W1 gates
+ 
+-- fresh independent verification limited to the two repaired findings on the new immutable head;
++- positive source custody and bounded independent verification of the new grouped findings, not a repeat of the closed two-finding review;
+ - exact Agent OS + passport/source/equivalence/residual + W1 pytest + diff-check battery;
+ - current-base compatibility and hosted checks;
+ - Sol acceptance.
+ 
++## W1-to-W3 handoff
++
++[W1_TO_W3_HANDOFF.md](W1_TO_W3_HANDOFF.md) carries the bounded 22-slot Daily-first proposal and the outstanding native/source/registration/evaluation requirements. Nothing in this census is an accepted preregistration or W3 compute grant.
++
+ ## No authority gained
+ 
+ No protected market outcomes were read. No forecast/model was fit. No W3 species is registered. No Prophet, rank, gate, size, execution or trading authority is created.
+diff --git a/research/technical_opportunity/W1_REPORT.md b/research/technical_opportunity/W1_REPORT.md
+--- a/research/technical_opportunity/W1_REPORT.md
++++ b/research/technical_opportunity/W1_REPORT.md
+@@ -2,7 +2,9 @@
+ 
+ ## Verdict
+ 
+-`PARTIAL / REPAIR_APPLIED_AWAITING_REREVIEW` — the 32-passport active census and 10-family residual disposition are normalized. The first independent reproduction returned **18 PASS / 2 FAIL** on immutable head `accd7c6a296fd038ae863d071fa44244c4796e0a`. Both findings are repaired on this carrier without reading market outcomes or changing live signal behavior. W1 still requires fresh bounded independent verification of those repaired findings plus the exact return-head validation/integration proof before Sol acceptance.
++`PARTIAL / SOURCE_CUSTODY_AND_ACCEPTANCE_HOLD` — grouped repair candidate for the existing 32-passport census. The first independent reproduction returned **18 PASS / 2 FAIL** on immutable head `accd7c6a296fd038ae863d071fa44244c4796e0a`; the subsequent Connors/RVOL repair review is already closed. The current grouped candidate is not source-custody release, independent acceptance or current-base/hosted proof.
++
++The original 20-passport review is terminal. The Connors/RVOL two-finding review is terminal and was consumed by SOL ACCEPTED/STOP at Slack C0BSBM78V1N/1789367962.694559 under root1789328715.664659 and parent comment5865326642. These completed scopes are not overall W1 acceptance and must not be repeated unchanged. Independent review now applies only to the grouped generated-ID, fixture, BandWidth, fakeout and derived-record changes.
+ 
+ ## Capability gained
+ 
+@@ -12,7 +14,7 @@
+ - **10 residual-family dispositions** that route or block the remaining method tail without expanding the first W3 trial family;
+ - primary/official/creator source receipts and explicit rights classes;
+ - alias/equivalence normalization separate from dependency clustering;
+-- **26 exact local implementations, 1 explicit partial local implementation, and 5 missing implementations**;
++- **24 exact local claims, 3 explicit partial local bindings, and 5 missing implementations**;
+ - owner routing for Setup Species, CPI, Live Entry Radar, Terminal, breadth/universe, regime, and later-context path research;
+ - fail-closed passport/source/equivalence/residual validators plus hostile tests;
+ - a deterministic 20-passport independent-reproduction sample with no outcome-derived selection.
+@@ -69,11 +71,13 @@
+ 
+ ## Local implementation truth
+ 
+-- **26/32 exact local**.
+-- **1/32 partial local:** `toi.rvol` because current local inclusive-window math does not exactly reproduce the source-defined prior-bar baseline.
++- **24/32 exact local**.
++- **3/32 partial local:** `toi.bb_bandwidth`, `toi.donchian_fakeout`, and `toi.rvol`; their numeric-consumer, original-occurrence and prior-bar-denominator gaps are explicit.
+ - **5/32 missing:** causal support/resistance, round-level controls, short reversal, Fibonacci retracement, ordered-path/Elliott.
+-- Priority/local reconciliation: P0 = 11 exact + 1 partial; P1 = 7 exact + 3 missing; P2 = 7 exact + 1 missing; archive = 1 exact + 1 missing.
++- Priority/local reconciliation: P0 = 9 exact + 3 partial; P1 = 7 exact + 3 missing; P2 = 7 exact + 1 missing; archive = 1 exact + 1 missing.
+ - Missing or partial does not mean rejected and does not authorize W1 to implement the method.
++
++The two additional partial bindings are deliberate: BandWidth now cites the existing numeric `engine/stock_technicals.py::bb_bandwidth` helper, without inventing a registered signal or claiming its consumer is qualified; Donchian fakeout retains the original-occurrence formula while the existing helpers reset to the latest break. No production formula is changed by this records repair.
+ 
+ ## Residual-family disposition
+ 
+@@ -108,10 +112,14 @@
+ 
+ ## Remaining acceptance gates
+ 
+-1. Obtain fresh **bounded independent verification of the two repaired findings** on the repaired immutable W1 head. The prior review child is terminal and cannot be silently continued.
++1. Reconcile source custody and apply the grouped repair on this original carrier. Obtain bounded independent verification of the changed grouped findings; preserve the completed original and Connors/RVOL reviews.
+ 2. Run `python3 scripts/agentos.py validate`, the W1 passport/source/equivalence validators, `pytest tests/test_toi_w1_census.py -q`, and `git diff --check` on that same immutable head.
+ 3. Reconcile the records-only CI waiver against current protected main if needed and obtain current-base merge/integration proof plus hosted checks.
+ 4. Return exact repaired head and proof to Sol for W1 acceptance.
++
++## Source-bound W1-to-W3 handoff
++
++Read [W1_TO_W3_HANDOFF.md](W1_TO_W3_HANDOFF.md). It consumes the later S16 and 22-slot Daily-first planning rulings, records all unresolved native/source/evaluation bindings, and keeps selection, registration, compute and outcomes held. Static local identity validation is not formula equivalence or data admission.
+ 
+ ## W3 gate
+ 
+diff --git a/research/technical_opportunity/W1_TO_W3_HANDOFF.md b/research/technical_opportunity/W1_TO_W3_HANDOFF.md
+new file mode 100644
+--- /dev/null
++++ b/research/technical_opportunity/W1_TO_W3_HANDOFF.md
+@@ -0,0 +1,76 @@
++# W1-to-W3 source-bound handoff — grouped repair candidate
++
++**Operation:** `TOI-W1-EVIDENCE-CENSUS-V1`, existing Macro #7107.
++**Candidate basis:** `15e4dfb0c9ddc788127d0954fd7d92414eefdcbf`, plus the preserved pending AST validator and its tests.
++**Disposition:** `DRAFT_SOURCE_BOUND_NOT_ADMITTED / SOURCE_CUSTODY_AND_ACCEPTANCE_HOLD`.
++**Authority:** selected=0; registered=0; outcomes_read=false; model_fit=false; production_effect=false; trading_authority=false.
++
++This handoff is a bounded candidate for adoption on the existing W1 source carrier. It is not a source custody transfer, an accepted preregistration, a replacement carrier or a compute grant. The exact repaired head must still be committed by the lawful source custodian, reviewed and accepted. The two earlier review scopes remain closed; this candidate's review is not complete. The original deterministic 20-method sample remains unchanged.
++
++## 1. W1 source facts delivered by the candidate
++
++There are 32 passports (12 P0, 10 P1, 8 P2, 2 archive), 29 equivalence classes, 65 aliases, 29 source receipts and 10 residual-family dispositions. The grouped candidate records 24 exact / 3 partial / 5 missing bindings, including P0 9 exact / 3 partial. Exact is a retained W1 local/source claim, not a calibrated forecast or blanket formula-parity proof.
++
++- The existing AST-based static resolver admits known generated catalog IDs without importing or executing engine code. It is preserved byte-for-byte from validator preimage `7a1804af0bd8a1c7fc19c5366883da92d210db6c12b2654396572241d47f60f2`.
++- The duplicate-member fixture uses a non-first-class relation so it reaches the cross-class membership guard; separate tests preserve rejection of zero or two first-class members. No guard is weakened.
++- `toi.bb_bandwidth` binds the numeric `engine/stock_technicals.py::bb_bandwidth` primitive (20, 2, ddof0, ratio units). Catalog/consumer and trailing-percentile use remain partial; no synthetic signal ID is invented.
++- `toi.donchian_fakeout` retains the original occurrence and frozen-boundary formula. The existing latest-break resets remain a documented partial mismatch; no production math changes.
++- `toi.rvol` remains partial because source-defined prior-20-completed-bar normalization differs from the local inclusive-current denominator. ConnorsRSI(3,2,100), existing DNRs, priorities, owners, aliases and formulas remain unchanged.
++
++## 2. Consume, do not restart, the later scientific decisions
++
++[TOI/S16 ruling 5985330888](https://github.com/mastermindx-market-intelligence/macro/pull/7107#issuecomment-5985330888) preserves historical all-FIRED_UP onset selection and its 12-trial ancestry. `volume_confirmed` is diagnostic unless a separately versioned subset is admitted. Activation forecasting is a distinct question, not authority to enter before release or revive the killed H2 construction. Registry-description repair remains owed. Def4's unrun proposal is not consumed research.
++
++The original R0 147-slot ceiling, Seat B R2 and supplementary 218-configuration/201-cell design are alternative proposal histories. Do not combine them into a larger search. The current proposed first-wave narrowing is [5985350325](https://github.com/mastermindx-market-intelligence/macro/pull/8332#issuecomment-5985350325); the proposed native mapping is [5985365086](https://github.com/mastermindx-market-intelligence/macro/pull/8332#issuecomment-5985365086). Both remain unadmitted.
++
++## 3. Exact proposed first-wave inventory, not an executable manifest
++
++| Object | UP planning reference | DOWN planning reference |
++|---|---|---|
++| C0 geometry parent | PLAN-001 | PLAN-019 |
++| C1 compression addition | PLAN-002 | PLAN-020 |
++| Simple frozen-prior-range breakout control | PLAN-005 | PLAN-023 |
++| Fixed-seed near-boundary placebo | PLAN-006 | PLAN-024 |
++| Q0 immediate policy | PLAN-009 | PLAN-027 |
++| Q1 one-bar-hold policy | PLAN-010 | PLAN-028 |
++| A0 activation baseline | PLAN-012 | PLAN-030 |
++| A1 activation + compression | PLAN-013 | PLAN-031 |
++| P0 post-trigger baseline | PLAN-015 | PLAN-033 |
++| P1 + participation | PLAN-016 | PLAN-034 |
++| P2 + completed-Weekly context | PLAN-017 | PLAN-035 |
++
++These are 22 planning slots and eight proposed primary contrasts: UP/DOWN A1–A0, P1–P0, Q1–Q0 and P2–P1. Planning IDs are not native scientific IDs. The exact native implementations, settings and result columns are still unbound. This table must not be consumed as a run manifest.
++
++Hold C2/C3, alternate compression sensors, Q2 retest, A2, remaining-path specifications, standalone Weekly, 240-minute and fixed195-minute studies, Combo slots and S16 historical comparator outside the first wave. A qualified 13-completed-Weekly context is not a standalone252-observation Weekly compression study. Held objects are not spare Daily trials after results are known. No nonexistent downside incumbent is fabricated.
++
++## 4. Unresolved bindings before registration or compute
++
++| Binding | Existing owner | Required accepted evidence |
++|---|---|---|
++| W1 source custody and semantics | Existing #7107 custodian and review owner | Immutable grouped head; pending-preimage preservation; native validators/hostile tests; changed-findings review; Agent OS and current integration/hosted proof; parent acceptance. |
++| Population and missingness | Data OS and native data owners | Dated eligibility/security/listing/venue/type denominator, delistings and exclusions; no present-day file-count substitute for historical PIT support. |
++| Price and volume | Existing Daily/Terminal owners | Explicit geometry and economic-outcome basis, corporate-action transformations, fractional-volume handling, exact-input parity and independent per-use qualification. |
++| Information time | Existing source owner | first-availability, correction-vintage and first-known receipt. Current-vintage retrospective data cannot silently become historical PIT. |
++| Episode/detector | TOI scientific owner | Exact C0/C1 formula/source/settings, warm-up, original FORMING cohort, expiry and pre-trigger reset policy, immutable post-trigger identity and no future-length weighting. |
++| Confirmation policy | TOI/Evaluation | Q0/Q1 first feasible price, common-cohort terminal and origin, no-entry/failure retention, transaction-cost convention and prespecified margins. Native fill-relative H is not silently substituted. |
++| Model | Existing Evaluation/harness | A0/A1/P0/P1/P2 features, scaling, ridge/solver/version, missing-input behavior, calibration slice and no future covariates. |
++| Controls | Existing Evaluation | Exact simple-breakout comparator and placebo seed/matching rules, no opportunistic redraw. |
++| Outcomes/inference | Existing Evaluation | Frozen endpoints/result columns, folds/embargo/purge, uncertainty/multiplicity, support/power and every repeated look/secondary diagnostic. |
++| Exposure and holdout | Existing Evaluation | Prior design/data/outcome exposure history, untouched holdout or explicit prospective accrual policy, versioned changes before access. |
++| Compute permission | Existing runtime/harness owner | Explicit opening decision, admitted worker/attempt/resource/repair limits and sealed result return; no raw provider launch or idle-worker outcome access. |
++
++The W2 source and records states are independent: #7094's current-base waiver composition and truthful record acceptance do not admit a mixed Daily/Weekly/4H panel. Consume the newer basis/precision ruling5985471173 rather than restarting broad archaeology. Provider-hourly fallback is not exact09:30-open4H evidence; mixed raw Daily/adjusted intraday and unreceipted live-tail remain held.
++
++## 5. Native accounting and budget meaning
++
++Use the existing TrialLedger with one proposed family `toi_w3_r0`, subject to owner adoption. After all preceding gates clear and before outcome compute, itemize the exact native configuration dictionaries and record the accepted declared-budget floor. The proposed floor22 plus22 itemized configs is a floor, not44 trials; real searched variants beyond the adopted set must be counted and cannot hide in eight contrast labels.
++
++Native identity hashes family+canonical config. Separate `source` and `info_cutoff` are metadata, not new hashed choices. Every material searched code/data-cut/population/basis/clock/model/policy/endpoint choice must therefore bind inside the admitted config or its immutable content reference. Prespecified prospective accrual and repeated looks follow their own accepted policy; namespaces do not prove statistical independence or erase selection history. An empty native ledger reports `effective_n()==1` despite zero itemized/declaration rows: positive effective N is not proof of registration.
++
++The synthetic17-test contract proof on #8332/51db78fb is already consumed; do not repeat it without a changed dependency. Its fake fixture families are not real TOI registrations. Preserve S16's12 historical trials in their existing family; never relabel or add them into TOI's proposed22. The donor and R0 unrun ceilings are recorded provenance, not falsely counted as executed trials.
++
++## 6. First consumer and final acceptance
++
++Permitted preparation is the existing descriptive Preparing/Active journey with original geometry, first-known time, typed freshness/contradiction and retained failure history. Use existing Macro, Terminal and Alert Center owners and design tokens, not a new store or ranker. Until separately qualified, forecasts stay not yet calibrated. Confluence repair#8428 is a distinct existing trust fix, not completion of TOI.
++
++After an explicit W3 opening, execute only the admitted study and retain positive, null and inconclusive results. Each predictive head earns source/support/calibration separately. Prospectively record predictions before outcomes, let declared cohorts mature, and obtain served-user and consumer-specific acceptance. W1 metadata validation, this handoff and a green CI do not create Prophet population/rank/gate, entry, sizing, execution or trading authority.
+diff --git a/research/technical_opportunity/w1_local_coverage.json b/research/technical_opportunity/w1_local_coverage.json
+--- a/research/technical_opportunity/w1_local_coverage.json
++++ b/research/technical_opportunity/w1_local_coverage.json
+@@ -4,10 +4,11 @@
+   "macro_base": "aa6750b68ccefeb17043e590b61e8a00565d1837",
+   "terminal_base": "45a0e78e01377502399761626899458f9d08ffd9",
+   "scope_state": "P0_P1_P2_CORE_PLUS_ARCHIVE_NORMALIZED_W1_FULL_CENSUS_PARTIAL",
+-  "summary": {"passport_count":32,"p0_passports":12,"p1_passports":10,"p2_passports":8,"archive_passports":2,"exact_local":26,"partial_local":1,"missing_local":5,"p0_exact_local":11,"p0_partial_local":1,"p1_exact_local":7,"p1_missing_local":3,"p2_exact_local":7,"p2_missing_local":1,"archive_exact_local":1,"archive_missing_local":1,"partial_method_ids":["toi.rvol"],"missing_method_ids":["toi.support_resistance","toi.round_levels","toi.short_reversal","toi.fibonacci_retracement","toi.ordered_path_elliott"],"first_vertical_roles_covered":["setup","trigger","participation","context","risk"],"first_vertical_horizons":["W","D","candidate_4H"],"outcomes_read":false,"model_fit":false,"trade_authority":false},
++  "summary": {"passport_count":32,"p0_passports":12,"p1_passports":10,"p2_passports":8,"archive_passports":2,"exact_local":24,"partial_local":3,"missing_local":5,"p0_exact_local":9,"p0_partial_local":3,"p1_exact_local":7,"p1_missing_local":3,"p2_exact_local":7,"p2_missing_local":1,"archive_exact_local":1,"archive_missing_local":1,"partial_method_ids":["toi.bb_bandwidth","toi.donchian_fakeout","toi.rvol"],"missing_method_ids":["toi.support_resistance","toi.round_levels","toi.short_reversal","toi.fibonacci_retracement","toi.ordered_path_elliott"],"first_vertical_roles_covered":["setup","trigger","participation","context","risk"],"first_vertical_horizons":["W","D","candidate_4H"],"outcomes_read":false,"model_fit":false,"trade_authority":false},
+   "macro_implementations": [
+-    {"path":"engine/bollinger_event_signals.py","methods":["toi.bb_bandwidth"],"state":"exact_local"},
+-    {"path":"engine/compression_signals.py","methods":["toi.bb_kc_squeeze","toi.nr7","toi.range_expansion","toi.donchian_breakout","toi.donchian_fakeout","toi.choppiness"],"state":"exact_local"},
++    {"path":"engine/stock_technicals.py","methods":["toi.bb_bandwidth"],"state":"partial_local","formula_mismatch":"Numeric primitive engine/stock_technicals.py::bb_bandwidth uses n=20, k=2, ddof=0 and ratio units; the catalog/consumer binding and trailing-percentile use remain unqualified. Band-walk Booleans are not BandWidth."},
++    {"path":"engine/compression_signals.py","methods":["toi.bb_kc_squeeze","toi.nr7","toi.range_expansion","toi.donchian_breakout","toi.choppiness"],"state":"exact_local"},
++    {"path":"engine/compression_signals.py","methods":["toi.donchian_fakeout"],"state":"partial_local","formula_mismatch":"The local donch_fail_up/dn helpers apply latest-break boundary and age resets on every qualifying break; they do not establish the original occurrence and frozen-boundary semantics specified here."},
+     {"path":"engine/path_risk_signals.py","methods":["toi.natr_percentile","toi.hvr","toi.ulcer"],"state":"exact_local"},
+     {"path":"engine/fractal_pivot_signals.py","methods":["toi.fractal_swing_structure"],"state":"exact_local","known_at":"two completed bars after pivot center"},
+     {"path":"engine/momentum_context_signals.py","methods":["toi.benchmark_rs","toi.momentum_12_1","toi.momentum_acceleration","toi.high52"],"state":"exact_local","external_input":"bench_close only for benchmark-RS methods"},
+@@ -23,7 +24,7 @@
+     {"path":"engine/rank_momentum_signals.py","methods":["toi.connors_rsi"],"state":"exact_local","authority_boundary":"method-specific ConnorsRSI(3,2,100) receipt added; RSI-family entry stacking remains blocked"},
+     {"path":"engine/formations.py","methods":["toi.geometric_double_pattern"],"state":"exact_local","known_at":"event emitted only after second pivot confirmation"}
+   ],
+-  "partial_local_methods":[{"method_id":"toi.rvol","reason":"current local inclusive 20-bar denominator does not exactly reproduce the receipted prior-bar RVOL methodology; later implementation must repair or explicitly version it before W3 use"}],
++  "partial_local_methods":[{"method_id":"toi.rvol","reason":"current local inclusive 20-bar denominator does not exactly reproduce the receipted prior-bar RVOL methodology; later implementation must repair or explicitly version it before W3 use"},{"method_id":"toi.bb_bandwidth","reason":"Numeric primitive engine/stock_technicals.py::bb_bandwidth uses n=20, k=2, ddof=0 and ratio units; the catalog/consumer binding and trailing-percentile use remain unqualified. Band-walk Booleans are not BandWidth."},{"method_id":"toi.donchian_fakeout","reason":"The local donch_fail_up/dn helpers apply latest-break boundary and age resets on every qualifying break; they do not establish the original occurrence and frozen-boundary semantics specified here."}],
+   "missing_local_methods":[{"method_id":"toi.support_resistance","reason":"no frozen causal level constructor yet; W1 records method/source only"},{"method_id":"toi.round_levels","reason":"microstructure control is source-backed but no TOI local implementation exists"},{"method_id":"toi.short_reversal","reason":"research concept is source-backed; W1 forbids per-name tuned timer implementation"},{"method_id":"toi.fibonacci_retracement","reason":"retained as a matched-control/archive family; empirical specificity evidence is weak and no TOI implementation is warranted in W1"},{"method_id":"toi.ordered_path_elliott","reason":"strategic later-context research representation; implementation waits for an explicit preregistered generic-geometry ablation after the first Compression Release vertical"}],
+   "terminal_crosswalk":{"owner":"mastermind-terminal display/visual implementation; not TOI occurrence authority","suite_order":["structure","trend","pulse","rsix","macdx"],"evidence_paths":["terminal/lib/suites/compute.ts","terminal/lib/suites/meta.ts","terminal/lib/suites/catalog.ts","terminal/lib/suites/registry.ts"],"disposition":"read-only W1 archaeology; visual primitives may be reused later, but Macro owns canonical occurrence semantics"},
+   "live_entry_radar_crosswalk":{"owner":"WS:LIVE-ENTRY-RADAR","scope":"true tactical 5m/RTH events and live evaluator","disposition":"W1 may crosswalk tactical methods but must not create a second intraday event owner"},
+diff --git a/research/technical_opportunity/w1_method_passports.jsonl b/research/technical_opportunity/w1_method_passports.jsonl
+--- a/research/technical_opportunity/w1_method_passports.jsonl
++++ b/research/technical_opportunity/w1_method_passports.jsonl
+@@ -1,11 +1,11 @@
+-{"schema_version":"toi.method_passport.v1","method_id":"toi.bb_bandwidth","canonical_name":"Bollinger BandWidth compression","aliases":["BB Width","BandWidth"],"source_refs":["SRC-BOLLINGER-OFFICIAL","SRC-TA-LIB-FUNCTIONS"],"rights_class":"public_formula","rights_ref":"SRC-BOLLINGER-OFFICIAL","mechanism_family":"volatility_compression","dependency_family":"volatility_channel","role":"setup","direction":"non_directional","horizon_roles":["forming","armed"],"aggregation_scope":"single_security","formula":{"plain_language":"Relative band width measures volatility contraction without assigning direction.","declarative_steps":["compute trailing SMA and standard deviation","form upper/lower bands","normalize width by middle band","compare only to trailing history"],"parameters":{"length":20,"stdev":2.0},"required_columns":["close"],"actionable_lag_bars":0,"repaint_behavior":"none"},"timeframes":["D","W","candidate_4H"],"local_implementation":{"status":"exact","paths":["engine/bollinger_event_signals.py"],"signal_ids":["bb_band_walk_up","bb_band_walk_down"]},"owner_disposition":"toi_w3_candidate","equivalence":{"parent_method_id":null,"equivalence_class":"volatility_channel","relationship":"first_class"},"mechanism_story":"Relative band width measures volatility contraction without assigning direction.","known_failure_modes":[],"dnd_keys":[],"candidate_species":[],"baseline_to_beat":"realized-volatility-only compression","research_priority":"P0","priority_reason":"first proving vertical explicitly requires Bollinger bandwidth percentile"}
++{"schema_version":"toi.method_passport.v1","method_id":"toi.bb_bandwidth","canonical_name":"Bollinger BandWidth compression","aliases":["BB Width","BandWidth"],"source_refs":["SRC-BOLLINGER-OFFICIAL","SRC-TA-LIB-FUNCTIONS"],"rights_class":"public_formula","rights_ref":"SRC-BOLLINGER-OFFICIAL","mechanism_family":"volatility_compression","dependency_family":"volatility_channel","role":"setup","direction":"non_directional","horizon_roles":["forming","armed"],"aggregation_scope":"single_security","formula":{"plain_language":"Relative band width measures volatility contraction without assigning direction.","declarative_steps":["compute trailing SMA and standard deviation","form upper/lower bands","normalize width by middle band","compare only to trailing history"],"parameters":{"length":20,"stdev":2.0},"required_columns":["close"],"actionable_lag_bars":0,"repaint_behavior":"none"},"timeframes":["D","W","candidate_4H"],"local_implementation":{"status":"partial","paths":["engine/stock_technicals.py"],"signal_ids":[]},"owner_disposition":"toi_w3_candidate","equivalence":{"parent_method_id":null,"equivalence_class":"volatility_channel","relationship":"first_class"},"mechanism_story":"Relative band width measures volatility contraction without assigning direction.","known_failure_modes":["Numeric primitive engine/stock_technicals.py::bb_bandwidth uses n=20, k=2, ddof=0 and ratio units; the catalog/consumer binding and trailing-percentile use remain unqualified. Band-walk Booleans are not BandWidth."],"dnd_keys":[],"candidate_species":[],"baseline_to_beat":"realized-volatility-only compression","research_priority":"P0","priority_reason":"first proving vertical explicitly requires Bollinger bandwidth percentile"}
+ {"schema_version":"toi.method_passport.v1","method_id":"toi.bb_kc_squeeze","canonical_name":"Bollinger/Keltner squeeze","aliases":["TTM Squeeze","BB/KC squeeze"],"source_refs":["SRC-BOLLINGER-OFFICIAL","SRC-TRADINGVIEW-KELTNER"],"rights_class":"public_formula","rights_ref":"SRC-BOLLINGER-OFFICIAL","mechanism_family":"volatility_compression","dependency_family":"compression_release","role":"setup","direction":"symmetric","horizon_roles":["forming","armed","triggered"],"aggregation_scope":"single_security","formula":{"plain_language":"Compression exists when Bollinger Bands contract inside a Keltner envelope; release is the first completed bar exiting compression.","declarative_steps":["compute trailing Bollinger bands","compute ATR-based Keltner channel","set squeeze state when BB is inside KC","emit release only on state transition"],"parameters":{"length":20,"bb_k":2.0,"kc_k":1.5},"required_columns":["high","low","close"],"actionable_lag_bars":0,"repaint_behavior":"none"},"timeframes":["D","W","candidate_4H"],"local_implementation":{"status":"exact","paths":["engine/compression_signals.py"],"signal_ids":["squeeze_on","squeeze_fire_up","squeeze_fire_dn"]},"owner_disposition":"toi_w3_candidate","equivalence":{"parent_method_id":null,"equivalence_class":"compression_release","relationship":"first_class"},"mechanism_story":"Compression exists when Bollinger Bands contract inside a Keltner envelope; release is the first completed bar exiting compression.","known_failure_modes":[],"dnd_keys":[],"candidate_species":[],"baseline_to_beat":"Bollinger BandWidth compression alone","research_priority":"P0","priority_reason":"direct Compression Release candidate with causal local implementation"}
+ {"schema_version":"toi.method_passport.v1","method_id":"toi.natr_percentile","canonical_name":"Normalized ATR percentile","aliases":["nATR","ATR/price"],"source_refs":["SRC-TA-LIB-FUNCTIONS"],"rights_class":"public_formula","rights_ref":"SRC-TA-LIB-FUNCTIONS","mechanism_family":"volatility_compression","dependency_family":"volatility_regime","role":"setup","direction":"non_directional","horizon_roles":["forming","armed","extended"],"aggregation_scope":"single_security","formula":{"plain_language":"ATR scaled by price expresses range volatility on a comparable basis; trailing percentiles identify compression or expansion.","declarative_steps":["compute ATR from completed HLC bars","divide by close","compare to trailing distribution"],"parameters":{"atr_length":14,"trail":252},"required_columns":["high","low","close"],"actionable_lag_bars":0,"repaint_behavior":"none"},"timeframes":["D","W","candidate_4H"],"local_implementation":{"status":"exact","paths":["engine/path_risk_signals.py"],"signal_ids":["natr_low","natr_high"]},"owner_disposition":"toi_w3_candidate","equivalence":{"parent_method_id":null,"equivalence_class":"volatility_regime","relationship":"first_class"},"mechanism_story":"ATR scaled by price expresses range volatility on a comparable basis; trailing percentiles identify compression or expansion.","known_failure_modes":[],"dnd_keys":[],"candidate_species":[],"baseline_to_beat":"raw ATR","research_priority":"P0","priority_reason":"explicit first-vertical normalized ATR evidence"}
+ {"schema_version":"toi.method_passport.v1","method_id":"toi.hvr","canonical_name":"Historical volatility ratio","aliases":["HVR","short/long realized vol"],"source_refs":["SRC-TRADINGVIEW-HISTVOL"],"rights_class":"public_formula","rights_ref":"SRC-TRADINGVIEW-HISTVOL","mechanism_family":"volatility_compression","dependency_family":"volatility_regime","role":"context","direction":"non_directional","horizon_roles":["forming","extended"],"aggregation_scope":"single_security","formula":{"plain_language":"Ratio of short-window to long-window realized volatility distinguishes compressed from expanding regimes.","declarative_steps":["compute close returns","estimate trailing short and long realized volatility","divide short by long","emit state/event from frozen thresholds"],"parameters":{"short":20,"long":120,"compress":0.75,"expand":1.25},"required_columns":["close"],"actionable_lag_bars":0,"repaint_behavior":"none"},"timeframes":["D","W","candidate_4H"],"local_implementation":{"status":"exact","paths":["engine/path_risk_signals.py"],"signal_ids":["hvr_compress","hvr_expand_event"]},"owner_disposition":"toi_w3_candidate","equivalence":{"parent_method_id":null,"equivalence_class":"volatility_regime","relationship":"first_class"},"mechanism_story":"Ratio of two declared historical-volatility windows is a deterministic compression/expansion context, built from the official historical-volatility primitive.","known_failure_modes":["window ratio is a Mastermind composition rather than a separately authoritative public signal"],"dnd_keys":[],"candidate_species":[],"baseline_to_beat":"single-window realized volatility","research_priority":"P0","priority_reason":"independent volatility-regime evidence for compression/release"}
+ {"schema_version":"toi.method_passport.v1","method_id":"toi.nr7","canonical_name":"NR7 narrow-range setup","aliases":["NR7"],"source_refs":["SRC-CRABEL-NR7-CREATOR"],"rights_class":"public_formula","rights_ref":"SRC-CRABEL-NR7-CREATOR","mechanism_family":"range_compression","dependency_family":"volatility_range","role":"setup","direction":"non_directional","horizon_roles":["forming","armed"],"aggregation_scope":"single_security","formula":{"plain_language":"A completed bar whose high-low range is the narrowest of seven marks short-horizon range contraction.","declarative_steps":["compute completed bar ranges","compare current range with prior six","optionally retain setup for a frozen short window"],"parameters":{},"required_columns":["high","low"],"actionable_lag_bars":0,"repaint_behavior":"none"},"timeframes":["D","W","candidate_4H"],"local_implementation":{"status":"exact","paths":["engine/compression_signals.py"],"signal_ids":["nr7_setup"]},"owner_disposition":"toi_w3_candidate","equivalence":{"parent_method_id":null,"equivalence_class":"volatility_range","relationship":"first_class"},"mechanism_story":"A completed bar whose high-low range is the narrowest of seven marks short-horizon range contraction.","known_failure_modes":[],"dnd_keys":[],"candidate_species":[],"baseline_to_beat":"generic rolling range percentile","research_priority":"P0","priority_reason":"simple interpretable range-contraction baseline with creator-authored rule evidence"}
+ {"schema_version":"toi.method_passport.v1","method_id":"toi.range_expansion","canonical_name":"ATR range expansion","aliases":["thrust bar","range expansion"],"source_refs":["SRC-TA-LIB-FUNCTIONS"],"rights_class":"public_formula","rights_ref":"SRC-TA-LIB-FUNCTIONS","mechanism_family":"range_expansion","dependency_family":"volatility_range","role":"trigger","direction":"symmetric","horizon_roles":["triggered","confirmed","extended"],"aggregation_scope":"single_security","formula":{"plain_language":"An unusually large true-range bar closing near an extreme provides a causal expansion trigger.","declarative_steps":["compute true range and ATR","require true range above frozen ATR multiple","require close location near bar extreme","separate bullish and bearish variants"],"parameters":{"atr_length":14,"atr_mult":2.0,"close_location":0.75},"required_columns":["high","low","close"],"actionable_lag_bars":0,"repaint_behavior":"none"},"timeframes":["D","W","candidate_4H"],"local_implementation":{"status":"exact","paths":["engine/compression_signals.py"],"signal_ids":["range_expand_up","range_expand_dn"]},"owner_disposition":"toi_w3_candidate","equivalence":{"parent_method_id":null,"equivalence_class":"volatility_range","relationship":"first_class"},"mechanism_story":"An unusually large true-range bar closing near an extreme provides a causal expansion trigger.","known_failure_modes":["ATR multiple and close-location rule are frozen Mastermind construction parameters, not claimed as a separate public-author method"],"dnd_keys":[],"candidate_species":[],"baseline_to_beat":"close-only breakout","research_priority":"P0","priority_reason":"direct release/participation trigger with independent range information"}
+ {"schema_version":"toi.method_passport.v1","method_id":"toi.donchian_breakout","canonical_name":"Prior-channel Donchian breakout","aliases":["Donchian breakout","prior-range breakout"],"source_refs":["SRC-TRADINGVIEW-DONCHIAN"],"rights_class":"public_formula","rights_ref":"SRC-TRADINGVIEW-DONCHIAN","mechanism_family":"price_breakout","dependency_family":"breakout_channel","role":"trigger","direction":"symmetric","horizon_roles":["armed","triggered","failed"],"aggregation_scope":"single_security","formula":{"plain_language":"Price closes beyond a prior completed trailing high or low; the current bar is excluded from the channel.","declarative_steps":["compute shifted trailing high/low channel","compare completed close to prior channel","emit direction-specific breakout"],"parameters":{"length":20},"required_columns":["high","low","close"],"actionable_lag_bars":0,"repaint_behavior":"none"},"timeframes":["D","W","candidate_4H"],"local_implementation":{"status":"exact","paths":["engine/compression_signals.py"],"signal_ids":["donch_break_up","donch_break_dn"]},"owner_disposition":"toi_w3_candidate","equivalence":{"parent_method_id":null,"equivalence_class":"breakout_channel","relationship":"first_class"},"mechanism_story":"Price closes beyond a prior completed trailing high or low; the current bar is excluded from the channel.","known_failure_modes":[],"dnd_keys":[],"candidate_species":[],"baseline_to_beat":"prior-range breakout","research_priority":"P0","priority_reason":"mandatory simple breakout baseline and causal trigger"}
+-{"schema_version":"toi.method_passport.v1","method_id":"toi.donchian_fakeout","canonical_name":"Donchian breakout failure","aliases":["breakout failure","fakeout"],"source_refs":["SRC-TRADINGVIEW-DONCHIAN"],"rights_class":"public_formula","rights_ref":"SRC-TRADINGVIEW-DONCHIAN","mechanism_family":"failure_memory","dependency_family":"breakout_channel","role":"risk","direction":"symmetric","horizon_roles":["failed","fakeout"],"aggregation_scope":"single_security","formula":{"plain_language":"A recent channel breakout that closes back through the frozen breakout boundary within a fixed window is a causal fakeout.","declarative_steps":["freeze boundary on breakout bar","track bounded post-break window","emit once when close crosses back through old boundary"],"parameters":{"length":20,"fail_window":5},"required_columns":["high","low","close"],"actionable_lag_bars":0,"repaint_behavior":"none"},"timeframes":["D","W","candidate_4H"],"local_implementation":{"status":"exact","paths":["engine/compression_signals.py"],"signal_ids":["donch_fail_up","donch_fail_dn"]},"owner_disposition":"toi_w3_candidate","equivalence":{"parent_method_id":"toi.donchian_breakout","equivalence_class":"breakout_channel","relationship":"subtype"},"mechanism_story":"A recent channel breakout that closes back through the frozen breakout boundary within a fixed window is a causal fakeout.","known_failure_modes":["bounded failure window is a Mastermind subtype on the sourced Donchian boundary"],"dnd_keys":[],"candidate_species":[],"baseline_to_beat":"raw breakout without failure memory","research_priority":"P0","priority_reason":"first vertical explicitly grades fakeout risk"}
++{"schema_version":"toi.method_passport.v1","method_id":"toi.donchian_fakeout","canonical_name":"Donchian breakout failure","aliases":["breakout failure","fakeout"],"source_refs":["SRC-TRADINGVIEW-DONCHIAN"],"rights_class":"public_formula","rights_ref":"SRC-TRADINGVIEW-DONCHIAN","mechanism_family":"failure_memory","dependency_family":"breakout_channel","role":"risk","direction":"symmetric","horizon_roles":["failed","fakeout"],"aggregation_scope":"single_security","formula":{"plain_language":"A recent channel breakout that closes back through the frozen breakout boundary within a fixed window is a causal fakeout.","declarative_steps":["freeze boundary on breakout bar","track bounded post-break window","emit once when close crosses back through old boundary"],"parameters":{"length":20,"fail_window":5},"required_columns":["high","low","close"],"actionable_lag_bars":0,"repaint_behavior":"none"},"timeframes":["D","W","candidate_4H"],"local_implementation":{"status":"partial","paths":["engine/compression_signals.py"],"signal_ids":["donch_fail_up","donch_fail_dn"]},"owner_disposition":"toi_w3_candidate","equivalence":{"parent_method_id":"toi.donchian_breakout","equivalence_class":"breakout_channel","relationship":"subtype"},"mechanism_story":"A recent channel breakout that closes back through the frozen breakout boundary within a fixed window is a causal fakeout.","known_failure_modes":["bounded failure window is a Mastermind subtype on the sourced Donchian boundary","The local donch_fail_up/dn helpers apply latest-break boundary and age resets on every qualifying break; they do not establish the original occurrence and frozen-boundary semantics specified here."],"dnd_keys":[],"candidate_species":[],"baseline_to_beat":"raw breakout without failure memory","research_priority":"P0","priority_reason":"first vertical explicitly grades fakeout risk"}
+ {"schema_version":"toi.method_passport.v1","method_id":"toi.fractal_swing_structure","canonical_name":"Confirmed fractal swing structure","aliases":["Williams fractals","HH/HL swing structure"],"source_refs":["SRC-METATRADER-FRACTALS"],"rights_class":"public_formula","rights_ref":"SRC-METATRADER-FRACTALS","mechanism_family":"swing_structure","dependency_family":"pattern_structure","role":"setup","direction":"symmetric","horizon_roles":["forming","armed","triggered"],"aggregation_scope":"single_security","formula":{"plain_language":"Confirmed swing highs/lows define higher-high/higher-low or lower-low/lower-high structure only after right-side confirmation bars complete.","declarative_steps":["identify strict local extrema with two bars each side","place event at confirmation bar, not pivot bar","track last two confirmed levels","derive HH/HL or LL/LH states and level breaks"],"parameters":{"wing":2},"required_columns":["high","low","close"],"actionable_lag_bars":2,"repaint_behavior":"confirmation_lag"},"timeframes":["D","W","candidate_4H"],"local_implementation":{"status":"exact","paths":["engine/fractal_pivot_signals.py"],"signal_ids":["fractal_low_confirm","fractal_high_confirm","swing_uptrend","swing_downtrend","fractal_break_up","fractal_break_dn"]},"owner_disposition":"toi_w3_candidate","equivalence":{"parent_method_id":null,"equivalence_class":"pattern_structure","relationship":"first_class"},"mechanism_story":"Confirmed swing highs/lows define higher-high/higher-low or lower-low/lower-high structure only after right-side confirmation bars complete.","known_failure_modes":[],"dnd_keys":[],"candidate_species":[],"baseline_to_beat":"unconfirmed local extrema","research_priority":"P0","priority_reason":"causal structure/invalidation geometry with explicit repaint lag"}
+ {"schema_version":"toi.method_passport.v1","method_id":"toi.benchmark_rs","canonical_name":"Benchmark relative strength","aliases":["relative strength line","RS vs market"],"source_refs":["SRC-STOCKCHARTS-PRICE-RELATIVE"],"rights_class":"public_formula","rights_ref":"SRC-STOCKCHARTS-PRICE-RELATIVE","mechanism_family":"relative_strength","dependency_family":"benchmark_relative_strength","role":"participation","direction":"symmetric","horizon_roles":["forming","triggered","confirmed"],"aggregation_scope":"single_security","formula":{"plain_language":"Security return relative to a frozen benchmark over declared windows measures leadership or repair without changing the benchmark after the fact.","declarative_steps":["align security and benchmark on PIT dates","compute log relative return over frozen horizon","emit zero-cross repair/deterioration or ratio high"],"parameters":{"short":21,"medium":63,"long":126},"required_columns":["close","bench_close"],"actionable_lag_bars":0,"repaint_behavior":"none"},"timeframes":["D","W","candidate_4H"],"local_implementation":{"status":"exact","paths":["engine/momentum_context_signals.py"],"signal_ids":["rs_repair","rs_deteriorate","rs_new_high"]},"owner_disposition":"toi_w3_candidate","equivalence":{"parent_method_id":null,"equivalence_class":"benchmark_relative_strength","relationship":"first_class"},"mechanism_story":"The sourced price-relative ratio supplies the benchmark-comparison primitive; horizon changes and repair events are deterministic transforms of that causal ratio path.","known_failure_modes":["benchmark must be frozen point-in-time rather than selected after the fact"],"dnd_keys":[],"candidate_species":[],"baseline_to_beat":"absolute momentum","research_priority":"P0","priority_reason":"first vertical explicitly requires market/sector relative-strength confirmation"}
+ {"schema_version":"toi.method_passport.v1","method_id":"toi.cmf","canonical_name":"Chaikin Money Flow","aliases":["CMF"],"source_refs":["SRC-TRADINGVIEW-CMF"],"rights_class":"public_formula","rights_ref":"SRC-TRADINGVIEW-CMF","mechanism_family":"volume_flow","dependency_family":"volume_money_flow","role":"participation","direction":"symmetric","horizon_roles":["forming","triggered","confirmed"],"aggregation_scope":"single_security","formula":{"plain_language":"Close location within each bar weighted by volume estimates persistent buying/selling pressure over a trailing window.","declarative_steps":["compute money-flow multiplier from HLC","multiply by volume","sum and normalize over trailing window","emit zero crosses or persistence"],"parameters":{"length":20},"required_columns":["high","low","close","volume"],"actionable_lag_bars":0,"repaint_behavior":"none"},"timeframes":["D","W","candidate_4H"],"local_implementation":{"status":"exact","paths":["engine/volume_flow_signals.py"],"signal_ids":["cmf_zero_up","cmf_zero_dn","cmf_pos_persist","cmf_neg_persist"]},"owner_disposition":"toi_w3_candidate","equivalence":{"parent_method_id":null,"equivalence_class":"volume_money_flow","relationship":"first_class"},"mechanism_story":"Close location within each bar weighted by volume estimates persistent buying/selling pressure over a trailing window.","known_failure_modes":[],"dnd_keys":[],"candidate_species":[],"baseline_to_beat":"price breakout without volume participation","research_priority":"P0","priority_reason":"explicit participation family for Compression Release"}
+diff --git a/research/technical_opportunity/w1_reproduction_sample.json b/research/technical_opportunity/w1_reproduction_sample.json
+--- a/research/technical_opportunity/w1_reproduction_sample.json
++++ b/research/technical_opportunity/w1_reproduction_sample.json
+@@ -9,7 +9,7 @@
+     "take": 20,
+     "outcome_data_used": false
+   },
+-  "review_status": "AWAITING_INDEPENDENT_REVIEWER",
++  "review_status": "ORIGINAL_REVIEWS_CLOSED_GROUPED_REPAIR_UNREVIEWED",
+   "required_reproduction": [
+     "resolve every source_ref to a current W1 source receipt",
+     "reproduce the passport's formula/declarative steps from the cited primary/official/public evidence without copied proprietary code",
+diff --git a/tests/test_toi_w1_census.py b/tests/test_toi_w1_census.py
+--- a/tests/test_toi_w1_census.py
++++ b/tests/test_toi_w1_census.py
+@@ -41,7 +41,7 @@
+     result = passports.validate_rows(_rows(), passports._source_ids())
+     assert result["status"] == "valid"
+     assert result["count"] == 32
+-    assert result["exact_local_count"] == 26
++    assert result["exact_local_count"] == 24
+     assert result["priority_counts"]["P0"] == 12
+     assert result["priority_counts"]["P1"] == 10
+     assert result["priority_counts"]["P2"] == 8
+@@ -71,21 +71,24 @@
+ 
+ def test_exact_local_without_signal_ids_fails_closed():
+     rows = copy.deepcopy(_rows())
+-    rows[0]["local_implementation"]["signal_ids"] = []
++    target = next(row for row in rows if row["local_implementation"]["status"] == "exact")
++    target["local_implementation"]["signal_ids"] = []
+     with pytest.raises(ValueError, match="requires paths and signal_ids"):
+         passports.validate_rows(rows, passports._source_ids())
+ 
+ 
+ def test_exact_local_missing_path_fails_closed():
+     rows = copy.deepcopy(_rows())
+-    rows[0]["local_implementation"]["paths"] = ["engine/does_not_exist.py"]
++    target = next(row for row in rows if row["local_implementation"]["status"] == "exact")
++    target["local_implementation"]["paths"] = ["engine/does_not_exist.py"]
+     with pytest.raises(ValueError, match="exact local path missing"):
+         passports.validate_rows(rows, passports._source_ids())
+ 
+ 
+ def test_exact_local_unknown_signal_id_fails_closed():
+     rows = copy.deepcopy(_rows())
+-    rows[0]["local_implementation"]["signal_ids"] = ["definitely_not_a_real_signal_id"]
++    target = next(row for row in rows if row["local_implementation"]["status"] == "exact")
++    target["local_implementation"]["signal_ids"] = ["definitely_not_a_real_signal_id"]
+     with pytest.raises(ValueError, match="signal_id .* not found"):
+         passports.validate_rows(rows, passports._source_ids())
+ 
+@@ -127,6 +130,7 @@
+     payload = json.loads(equiv.EQUIV.read_text(encoding="utf-8"))
+     bad = copy.deepcopy(payload)
+     duplicate = copy.deepcopy(bad["classes"][0]["members"][0])
++    duplicate["relationship"] = "subtype"  # isolate cross-class membership, not first_class
+     bad["classes"][1]["members"].append(duplicate)
+     with pytest.raises(ValueError, match="membership mismatch"):
+         equiv.validate(bad, ids, alias_map)
+@@ -289,3 +293,115 @@
+     rows[0]["owner_disposition"] = "toi_w3_candidate"
+     with pytest.raises(ValueError, match="opaque/blocked"):
+         passports.validate_rows(rows, passports._source_ids())
++
++
++# Grouped repair regression coverage. These are metadata/source checks only.
++@pytest.mark.parametrize("extra_first", [False, True])
++def test_equivalence_first_class_cardinality_has_its_own_guard(extra_first):
++    ids, aliases = equiv._methods()
++    payload = json.loads(equiv.EQUIV.read_text(encoding="utf-8"))
++    bad = copy.deepcopy(payload)
++    if extra_first:
++        copied = copy.deepcopy(bad["classes"][0]["members"][0])
++        bad["classes"][1]["members"].append(copied)
++    else:
++        for member in bad["classes"][0]["members"]:
++            if member["relationship"] == "first_class":
++                member["relationship"] = "subtype"
++    with pytest.raises(ValueError, match="exactly one first_class is required"):
++        equiv.validate(bad, ids, aliases)
++
++
++def test_bandwidth_binding_names_numeric_helper_without_inventing_signal():
++    import ast
++    row = next(r for r in _rows() if r["method_id"] == "toi.bb_bandwidth")
++    assert row["local_implementation"] == {
++        "status": "partial", "paths": ["engine/stock_technicals.py"], "signal_ids": []
++    }
++    assert row["formula"]["parameters"] == {"length": 20, "stdev": 2.0}
++    source = (ROOT / "engine/stock_technicals.py").read_text(encoding="utf-8")
++    helper = next(n for n in ast.parse(source).body
++                  if isinstance(n, ast.FunctionDef) and n.name == "bb_bandwidth")
++    assert "ddof=0" in ast.get_source_segment(source, helper)
++    assert "bb_bandwidth" in " ".join(row["known_failure_modes"])
++    assert "consumer" in " ".join(row["known_failure_modes"])
++
++
++def test_fakeout_partial_retains_original_occurrence_formula():
++    row = next(r for r in _rows() if r["method_id"] == "toi.donchian_fakeout")
++    assert row["local_implementation"]["status"] == "partial"
++    assert row["local_implementation"]["signal_ids"] == ["donch_fail_up", "donch_fail_dn"]
++    assert row["formula"]["declarative_steps"] == [
++        "freeze boundary on breakout bar", "track bounded post-break window",
++        "emit once when close crosses back through old boundary",
++    ]
++    assert row["formula"]["parameters"] == {"length": 20, "fail_window": 5}
++    assert "latest-break" in " ".join(row["known_failure_modes"])
++    assert "original occurrence" in " ".join(row["known_failure_modes"])
++
++
++def test_grouped_coverage_is_derived_from_all_passports_and_path_states():
++    from collections import Counter
++    rows = _rows()
++    coverage = json.loads((ROOT / "research/technical_opportunity/w1_local_coverage.json").read_text())
++    actual = Counter(r["local_implementation"]["status"] for r in rows)
++    assert actual == {"exact": 24, "partial": 3, "missing": 5}
++    summary = coverage["summary"]
++    for status in actual:
++        assert summary[status + "_local"] == actual[status]
++    partial_ids = {r["method_id"] for r in rows if r["local_implementation"]["status"] == "partial"}
++    assert partial_ids == {"toi.bb_bandwidth", "toi.donchian_fakeout", "toi.rvol"}
++    assert set(summary["partial_method_ids"]) == partial_ids
++    assert {r["method_id"] for r in coverage["partial_local_methods"]} == partial_ids
++    by_id = {r["method_id"]: r for r in rows}
++    represented = set()
++    for binding in coverage["macro_implementations"]:
++        for mid in binding["methods"]:
++            represented.add(mid)
++            assert binding["state"] == by_id[mid]["local_implementation"]["status"] + "_local"
++    assert represented == {r["method_id"] for r in rows if r["local_implementation"]["status"] in {"exact", "partial"}}
++    for priority in ["P0", "P1", "P2", "archive"]:
++        counts = Counter(r["local_implementation"]["status"] for r in rows if r["research_priority"] == priority)
++        for status, count in counts.items():
++            assert summary[priority.lower()+"_"+status+"_local"] == count
++    assert not summary["outcomes_read"] and not summary["model_fit"] and not summary["trade_authority"]
++
++
++def test_report_and_census_do_not_reopen_closed_two_finding_review():
++    for name in ["W1_REPORT.md", "W1_EVIDENCE_CENSUS.md"]:
++        text = (ROOT / "research/technical_opportunity" / name).read_text()
++        assert "24/32" in text and "3/32" in text
++        assert "two-finding review is terminal" in text
++        assert "W1_TO_W3_HANDOFF.md" in text
++        assert "SOURCE_CUSTODY_AND_ACCEPTANCE_HOLD" in text
++        assert "11 exact + 1 partial" not in text
++        assert "fresh bounded independent repair verification is required" not in text
++
++
++def test_reproduction_sample_is_preserved_but_current_review_is_not_accepted():
++    import hashlib
++    payload = json.loads((ROOT / "research/technical_opportunity/w1_reproduction_sample.json").read_text())
++    expected = sorted((r["method_id"] for r in _rows()),
++                      key=lambda mid: hashlib.sha256(("TOI-W1-REPRO-V1:"+mid).encode()).hexdigest())[:20]
++    assert [r["method_id"] for r in payload["sample"]] == expected
++    assert payload["review_status"] == "ORIGINAL_REVIEWS_CLOSED_GROUPED_REPAIR_UNREVIEWED"
++    assert not any(payload["authority"].values())
++
++
++def test_w1_to_w3_handoff_preserves_exact_subset_and_all_gates():
++    text = (ROOT / "research/technical_opportunity/W1_TO_W3_HANDOFF.md").read_text()
++    ids = [1,2,5,6,9,10,12,13,15,16,17,19,20,23,24,27,28,30,31,33,34,35]
++    assert all(f"PLAN-{n:03d}" in text for n in ids)
++    for required in ["22", "eight", "toi_w3_r0", "5985330888", "5985350325", "5985365086",
++                     "source custody", "holdout", "model", "placebo", "first-availability",
++                     "common-cohort", "partial", "12-trial", "HOLD", "selected=0", "registered=0",
++                     "outcomes_read=false", "effective_n", "metadata", "compute"]:
++        assert required in text
++
++
++def test_static_registration_resolution_never_executes_source_calls(tmp_path):
++    marker = tmp_path / "must-not-exist"
++    source = "from pathlib import Path\nPath(" + repr(str(marker)) + ").write_text('executed')\n"
++    source += "for n in dangerous_runtime_lookup():\n    SIGNALS[f'fake_{n}'] = object()\n"
++    assert passports._static_registered_signal_ids(source) == set()
++    assert not marker.exists()

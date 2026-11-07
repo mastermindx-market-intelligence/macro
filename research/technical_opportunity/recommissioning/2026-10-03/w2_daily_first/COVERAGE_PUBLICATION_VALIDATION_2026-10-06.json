@@ -1,0 +1,31 @@
+{
+  "schema": "toi.w2_daily_first_coverage_publication_validation.v1",
+  "source_docs_head": "e9b299c99c80b77cc5ed42fa0a297f6b458b0ad3",
+  "macro_main": "1c5b6e415c955e3763c3542de9f3aa93dbd6d6df",
+  "live_r2_manifest_sha256": "ee3f0ad6db975e4d29a44924611ad51f6be55e45c0ab18745d681629ebcf4ce2",
+  "live_r2_manifest_stable_before_after_scan": true,
+  "literal_cells": 1990911,
+  "available_cells": 1957003,
+  "missing_cells": 33908,
+  "literal_coverage_ratio": 0.9829686008063645,
+  "floor_seeded_missing": 28765,
+  "floor_seeded_share": 0.8483248790845818,
+  "object_identity_unresolved": [
+    "BPFH",
+    "UAA/UA"
+  ],
+  "market_outcomes_read": false,
+  "ohlcv_values_read": false,
+  "source_or_production_mutation": false,
+  "local_failures_preserved": [
+    {
+      "kind": "date_type_mismatch",
+      "when": "before bulk scan",
+      "effect": "none"
+    },
+    {
+      "kind": "artifact_path_mapping_error",
+      "effect": "reader-only result corrected with canonical Massive mapping; no source effect"
+    }
+  ]
+}

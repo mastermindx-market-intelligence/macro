@@ -1,0 +1,209 @@
+{
+  "operation": "toi-donor-text-source-completion-20261004-c2-001",
+  "source_zip_sha256": "4645f09417e546e8666c928e6dcc1e340da1ff47e386e6fa76374c681568198f",
+  "publication_parent": "dd8018ab7de958e3605b323f48a282c41e28eb15",
+  "source_content_edited": false,
+  "total_archive_members": 23,
+  "original_manifest_entries": 22,
+  "published_utf8_original_members": 22,
+  "published_manifest_content_entries": 21,
+  "manifest_itself_published": true,
+  "excluded_archive_members": [
+    {
+      "path": "TOI_Recovery_Masterplan_2026-10-03.pdf",
+      "bytes": 268666,
+      "sha256": "c027105335881b557c072663571626f9a3a0bfced0eb3c165ae2d488fa9389b6"
+    }
+  ],
+  "readme_identity": "donor_evidence/README.md is original; intake-author notes moved to INTAKE_README.md",
+  "newly_preserved_originals": 14,
+  "transfer_sha256": "136f54b134d90e1c4ebab38d60e2676e3b63c96d67b58c624e53f6fdbde6164c",
+  "verified_at": "2026-10-04T05:52:43.901198+00:00",
+  "table_validation": {
+    "row_counts": {
+      "TOI_Catalog_Crosswalk_2026-10-03.csv": 195,
+      "TOI_Method_Ontology_2026-10-03.csv": 45,
+      "TOI_Source_Register_2026-10-03.csv": 147
+    },
+    "unique_configurations": 218,
+    "unique_hypotheses": 201,
+    "configuration_references": 607,
+    "all_configuration_references_resolve": true,
+    "proposal_statuses": [
+      "PROPOSED_NOT_REGISTERED_HOLD"
+    ],
+    "configuration_blocks": {
+      "W3-A": 53,
+      "W3-B": 120,
+      "W3-C": 45
+    },
+    "hypothesis_blocks": {
+      "W3-A": 81,
+      "W3-B": 60,
+      "W3-C": 60
+    }
+  },
+  "research_adopted": false,
+  "trials_registered": 0,
+  "outcomes_accessed": false,
+  "application_source_modified": false,
+  "production_modified": false,
+  "files": [
+    {
+      "path": "donor_evidence/README.md",
+      "source_path": "README.md",
+      "bytes": 3281,
+      "sha256": "33302ef23d5ed7f6356357300c373aacc742b4ef29f13120198a21b72ec1d639",
+      "git_blob": "36e1c0a9599cf9d6064d25c8de51b52d96df7a9b"
+    },
+    {
+      "path": "donor_evidence/TOI_Catalog_Crosswalk_2026-10-03.csv",
+      "source_path": "TOI_Catalog_Crosswalk_2026-10-03.csv",
+      "bytes": 235494,
+      "sha256": "3761291ad0e26d508a25919faae310be685e7bec824d6c69ddc92b7ac5bf8314",
+      "git_blob": "05aaedbf6db93a914285015c74b495caa79b6055"
+    },
+    {
+      "path": "donor_evidence/TOI_Continuation_Brief_2026-10-03.md",
+      "source_path": "TOI_Continuation_Brief_2026-10-03.md",
+      "bytes": 14405,
+      "sha256": "b5d0660ae71f6ff60a5b16fe5b6b53e34f9cdd90ccdb75c9f2673c454b4a63ee",
+      "git_blob": "258730048a1ad4150114d39051855433a67ae636"
+    },
+    {
+      "path": "donor_evidence/TOI_Method_Ontology_2026-10-03.csv",
+      "source_path": "TOI_Method_Ontology_2026-10-03.csv",
+      "bytes": 153196,
+      "sha256": "7d3dcdb9cc2a23f13926321cf72cdc237ee1564f20d6707fb3fe57205d40f8cd",
+      "git_blob": "bdbe006f7492052cd2b4fd35a57ca6e4470f1356"
+    },
+    {
+      "path": "donor_evidence/TOI_Recovery_Masterplan_2026-10-03.md",
+      "source_path": "TOI_Recovery_Masterplan_2026-10-03.md",
+      "bytes": 155664,
+      "sha256": "69e1ba924306e4c1613c0065667e801072257e71074b7960b3d7fbb76e6761ed",
+      "git_blob": "efbc8d382792a85c30d20341970def5a8402337e"
+    },
+    {
+      "path": "donor_evidence/TOI_Source_Register_2026-10-03.csv",
+      "source_path": "TOI_Source_Register_2026-10-03.csv",
+      "bytes": 61430,
+      "sha256": "9a74137763473f773c152b486a28a699e853fa5c4ecba93a3efb170d74cf2f4d",
+      "git_blob": "55e5ceff6d3aa55addb9f389a5ae8c3659d3b834"
+    },
+    {
+      "path": "donor_evidence/TOI_W3_Configuration_Proposal_2026-10-03.csv",
+      "source_path": "TOI_W3_Configuration_Proposal_2026-10-03.csv",
+      "bytes": 768262,
+      "sha256": "bb8c1c0ccb5df440cef065ce9033eff5e34148d9964df2673851e06db53aafd7",
+      "git_blob": "539c8a91ec5131dfcded377baca162fb2e81ac07"
+    },
+    {
+      "path": "donor_evidence/TOI_W3_Hypothesis_Proposal_2026-10-03.csv",
+      "source_path": "TOI_W3_Hypothesis_Proposal_2026-10-03.csv",
+      "bytes": 661951,
+      "sha256": "6bc03fd633a0bcb9e963b2412222063b50bab68899dd9b2c991a6a670198b72f",
+      "git_blob": "85d40fafcd44e1ec6c52b7e758ea766f7f530c59"
+    },
+    {
+      "path": "donor_evidence/evidence/01_W1_Source_Audit.md",
+      "source_path": "evidence/01_W1_Source_Audit.md",
+      "bytes": 33142,
+      "sha256": "25d4fd3d97872644ffedf9822982f0fec569b663a1b6f68cc120073bd66ae13a",
+      "git_blob": "1d8c4f44ec7f0cb5eaf6acaf24466526321a2ca0"
+    },
+    {
+      "path": "donor_evidence/evidence/02_W2_Data_Audit.md",
+      "source_path": "evidence/02_W2_Data_Audit.md",
+      "bytes": 34270,
+      "sha256": "90d93e67dc74c4cb6a9016835329306c60102a1d86818ac9ea5cc27317b18db4",
+      "git_blob": "a9890d74d6c6435c7195d976aa6b373c55fe7c23"
+    },
+    {
+      "path": "donor_evidence/evidence/03_Estate_Audit.md",
+      "source_path": "evidence/03_Estate_Audit.md",
+      "bytes": 50739,
+      "sha256": "43eff102fdf77ae01da6bf4ac8fa320f3fc78ae2e4b9946cdb3865104b15d0a1",
+      "git_blob": "54f95da6194358da38c79dd82e84e3bf79c6332a"
+    },
+    {
+      "path": "donor_evidence/evidence/04_Governance_Temporal_Audit.md",
+      "source_path": "evidence/04_Governance_Temporal_Audit.md",
+      "bytes": 37809,
+      "sha256": "f4d3b07103ead30db3b00727081a61e4721f3f49f07e9704f8ba62b0d67410e0",
+      "git_blob": "18dbc10e501b3e0b70671c320e9380bd53421560"
+    },
+    {
+      "path": "donor_evidence/evidence/05_Independent_Design_Audit.md",
+      "source_path": "evidence/05_Independent_Design_Audit.md",
+      "bytes": 7875,
+      "sha256": "a925d4d87e4b8f4c9f92efdf8551ff0f2e43c671c63121fa4081381fc21738be",
+      "git_blob": "53f61cf00feefc9bef3b23668f5397e1240a9677"
+    },
+    {
+      "path": "donor_evidence/evidence/06_Historical_Trial_Accounting.md",
+      "source_path": "evidence/06_Historical_Trial_Accounting.md",
+      "bytes": 11411,
+      "sha256": "74cd80f4d66f5b5b47aef0058aba93f567ab81eec8a9c2fd8ee04c3e5c046f99",
+      "git_blob": "99ab6395aab3db7c9bbe855b8341d5f8fe71eb3e"
+    },
+    {
+      "path": "donor_evidence/evidence/TOI_Catalog_Validation_2026-10-03.json",
+      "source_path": "evidence/TOI_Catalog_Validation_2026-10-03.json",
+      "bytes": 731,
+      "sha256": "f8da75bd9a2d024b90bab47249611df92c58ea7568ec2b03b0db58b57dca0dac",
+      "git_blob": "4993ac9b09b48c7b2030d6465ea3b4ea35f6a3ef"
+    },
+    {
+      "path": "donor_evidence/evidence/TOI_Content_Verification_2026-10-03.json",
+      "source_path": "evidence/TOI_Content_Verification_2026-10-03.json",
+      "bytes": 704,
+      "sha256": "6d32c09959089f2598bdfc05da33718256468ffe92c0a4944c06ac720298ad15",
+      "git_blob": "57ba2d76c126f23ba15cb5bd38e3a6a85b7cf6e8"
+    },
+    {
+      "path": "donor_evidence/evidence/TOI_Final_Carrier_Observation_2026-10-03.json",
+      "source_path": "evidence/TOI_Final_Carrier_Observation_2026-10-03.json",
+      "bytes": 3461,
+      "sha256": "5a034113a698c7ccc9d7bd774e9971ec7a43449025f5466614763b035b2e77fa",
+      "git_blob": "a1cb6d64fbfd81e9aec22abcf2ef48d9fbfd8330"
+    },
+    {
+      "path": "donor_evidence/evidence/TOI_PDF_Verification_2026-10-03.json",
+      "source_path": "evidence/TOI_PDF_Verification_2026-10-03.json",
+      "bytes": 1457,
+      "sha256": "f142890602fe72699697981073de7943a85bee45463d615192c9ab2959b21d5a",
+      "git_blob": "26d1c33d042b6bfa3a5741c41513705634d635a7"
+    },
+    {
+      "path": "donor_evidence/evidence/TOI_Terminal_Fallback_2026-10-03.json",
+      "source_path": "evidence/TOI_Terminal_Fallback_2026-10-03.json",
+      "bytes": 8354,
+      "sha256": "1d5c23c3792dc23b39d7f82a02d4a5588af2abc21d7b6be2ed17d7b5c380b34c",
+      "git_blob": "b937f26b68412cea201a236177088d770a192f21"
+    },
+    {
+      "path": "donor_evidence/evidence/TOI_Terminal_Parity_2026-10-03.json",
+      "source_path": "evidence/TOI_Terminal_Parity_2026-10-03.json",
+      "bytes": 21933,
+      "sha256": "bccaf82ec084bfeebb2468f213d0d05f35d05b2c10b35ca3324122836eee1099",
+      "git_blob": "828167b4a27d298803b782a8bc45e2ffe24c714c"
+    },
+    {
+      "path": "donor_evidence/evidence/TOI_W3_Proposal_Validation_2026-10-03.json",
+      "source_path": "evidence/TOI_W3_Proposal_Validation_2026-10-03.json",
+      "bytes": 4730,
+      "sha256": "2c736317df752c44d7914c8653167e6dbe05f2cbb668900b0afcab9f0464c8d1",
+      "git_blob": "e11bc686a71e7cdb753dbce24783711c5ee51a66"
+    },
+    {
+      "path": "donor_evidence/SHA256_MANIFEST.json",
+      "source_path": "SHA256_MANIFEST.json",
+      "bytes": 4092,
+      "sha256": "6e05a66c7c3404177b38ac50f435a1600601a5db0f7dc6df380d3bbf71ad09d5",
+      "git_blob": "d2d55361e4dcf46fccdd38105855687127d235cb"
+    }
+  ],
+  "validation_diagnostic": "Initial local navigation check ran before this newly referenced receipt was created. It failed without remote effects; receipt creation preceded the successful final navigation check. No donor content was changed.",
+  "scope_limit": "Original byte preservation and finite table integrity only. Retained donor audits/PDF verification are not newly executed tests or current qualification."
+}

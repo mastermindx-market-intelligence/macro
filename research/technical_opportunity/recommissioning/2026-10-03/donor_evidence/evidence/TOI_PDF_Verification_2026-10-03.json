@@ -1,0 +1,38 @@
+{
+  "status": "PASS",
+  "source_sha256": "69e1ba924306e4c1613c0065667e801072257e71074b7960b3d7fbb76e6761ed",
+  "source_words": 18587,
+  "output_sha256": "c027105335881b557c072663571626f9a3a0bfced0eb3c165ae2d488fa9389b6",
+  "page_count": 53,
+  "output_bytes": 268666,
+  "phrase_checks": 2613,
+  "external_source_target_count": 137,
+  "pdf_outline_count": 85,
+  "pdf_outline_top_level": 19,
+  "source_heading_count": 86,
+  "table_count": 32,
+  "display_math_count": 5,
+  "pdf_uri_annotations": 200,
+  "artifact_marker_invocations": 1,
+  "source_filename": "TOI_Recovery_Masterplan_2026-10-03.md",
+  "output_filename": "TOI_Recovery_Masterplan_2026-10-03.pdf",
+  "missing_prose_anchors": 0,
+  "missing_headings": 0,
+  "visual_review_status": "PASS",
+  "visual_review_scope": "Six final representative pages inspected; full-document prose, headings, links and typesetting logs verified separately.",
+  "reviewed_physical_pages": [
+    1,
+    28,
+    15,
+    20,
+    30,
+    53
+  ],
+  "root_visual_review_physical_pages": [
+    1,
+    28
+  ],
+  "raw_renderer_receipt_sha256": "f3fd0260f6d9c949c6645e43f40f2348535cf5de55631c6dd0e8a0d157611218",
+  "raw_textual_validation_sha256": "bf134a0328d8bbc907d3777fe0fd871749907296118326dd4726c577830ca791",
+  "qualification": "Representative pages visually inspected; full-document prose/headings/links and typesetting logs checked. Render intermediates are reproducible from the PDF and are not separate deliverables."
+}

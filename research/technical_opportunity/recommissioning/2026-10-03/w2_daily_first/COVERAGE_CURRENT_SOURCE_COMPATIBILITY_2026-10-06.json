@@ -1,0 +1,18 @@
+{
+  "schema": "toi.w2_daily_first_coverage_source_compatibility.v1",
+  "current_macro": "1c5b6e415c955e3763c3542de9f3aa93dbd6d6df",
+  "docs_input_head": "e9b299c99c80b77cc5ed42fa0a297f6b458b0ad3",
+  "all_governing_blobs_unchanged_from_prior_daily_first_receipt": true,
+  "governing_blobs": {
+    "collectors/massive_stock_day.py": "fcad0850eb5ca3aa699cb52d3ba9a62d92231616",
+    "data/massive_stock_day/_manifest.json": "d6ad060e3d0af3296757883f43e955012f9564d8",
+    "data/massive_stock_day/_backfill_state.json": "c81d64105174025c6661cae31a8868f2c2daacf9",
+    "data/breadth/sp1500_pit_membership.parquet": "ec7085bc7460aca4a07661fa5983c424e1559be8",
+    "scripts/midsmall_pit.py": "00f3857b3c87eb83392254f5792700b7075792f4",
+    "scripts/build_security_master.py": "e88882b199e588145a50a4bf67c89127bbe13099",
+    "engine/oracle/oscillators.py": "09eee59c42fdb1ff2569ebd1c109a9203a958979",
+    "lib/nyse_calendar.py": "0ece6439ffe4b081ee7a268fe99b69e1de1216a3",
+    "research/prophet_v4/r6_program/rulings/R6-D07-01_EVIDENCE_CLASS_REGISTER_ADOPTION_2026-09-27.md": "58e61a8559687146c3f3648f07783ae9308960a7"
+  },
+  "source_or_outcome_mutation": false
+}

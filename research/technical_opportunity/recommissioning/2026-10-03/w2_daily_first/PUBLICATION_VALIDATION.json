@@ -1,0 +1,70 @@
+{
+  "schema": "toi.w2_daily_first_publication_validation.v1",
+  "source_docs_head": "e90df78109e7b1d5ed84f8cada8183999f6ccb2b",
+  "macro_main": "59b83048bd3d782b707ec6a4ca857415409fd776",
+  "w2_head": "5bb1bc68c99146fab040aade04bbf1903c51e5b7",
+  "relative_links_verified": 26,
+  "membership_rows": 3286,
+  "membership_unique_tickers": 2589,
+  "relevant_current_blobs_unchanged": true,
+  "market_outcomes_read": false,
+  "production_or_source_paths_changed": false,
+  "w3_opened": false,
+  "wrapper_failures": [
+    {
+      "kind": "javascript_quoting",
+      "effect": "none_before_dispatch"
+    },
+    {
+      "kind": "source_pin_moved",
+      "effect": "none_before_write"
+    }
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 4445,
+      "sha256": "ac33569f0d7f16168087477381db41a6e821536497f759d1de09cb2db7fb5296"
+    },
+    {
+      "path": "w2_daily_first/CURRENT_SOURCE_COMPATIBILITY.json",
+      "bytes": 1236,
+      "sha256": "897b4ea33ae6a37511e922398381bce56eb4bba84fbbbd73c86d653df4c8b7d5"
+    },
+    {
+      "path": "w2_daily_first/README.md",
+      "bytes": 983,
+      "sha256": "f5a0ff05139a0d887d22b73199a4fe2b9fbc5873a0693926ffa6d4da53e231ab"
+    },
+    {
+      "path": "w2_daily_first/SOURCE_AND_ADMISSION_SNAPSHOT.json",
+      "bytes": 6179,
+      "sha256": "94af5a34c32c6c66294f671f911ce2af9f3d189e10f54cbae5733c7f185ed02c"
+    },
+    {
+      "path": "w2_daily_first/SP1500_PIT_MEMBERSHIP_CENSUS.json",
+      "bytes": 1230,
+      "sha256": "bbe0588fc381d57eb142ada3574280adc894c99150b94e05534c1bad54e8c206"
+    },
+    {
+      "path": "w2_daily_first/W2_DAILY_FIRST_SOURCE_RULING_2026-10-06.md",
+      "bytes": 7768,
+      "sha256": "2de5ac33577cdd9503517107d897742809e17c35e4e1c51b9ec7737ff7922347"
+    },
+    {
+      "path": "w2_daily_first/WEEKLY_CALENDAR_COMPLETION_VALIDATION.json",
+      "bytes": 1823,
+      "sha256": "ebafdc224e20e40105af9a598fd07c6a9f9e27db7d9a06d14e2de64c60720085"
+    },
+    {
+      "path": "w2_daily_first/WEEKLY_KNOWN_DATE_MAPPING_VALIDATION.json",
+      "bytes": 1759,
+      "sha256": "5076873f14c60ae1ebe95926b54340faedc8fa6a6ad65ae69660de1be80a7597"
+    },
+    {
+      "path": "w2_daily_first/WEEKLY_SOURCE_CONTRACT_VALIDATION.json",
+      "bytes": 2496,
+      "sha256": "51763c80f774152aac6b854fa54a91d55fdf8a7e13afb15b4aa06842a9d1e431"
+    }
+  ]
+}

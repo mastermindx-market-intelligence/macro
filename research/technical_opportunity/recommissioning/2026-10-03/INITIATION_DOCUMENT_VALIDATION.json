@@ -1,0 +1,18 @@
+{
+  "configuration_slots": 147,
+  "unique_planning_keys": 147,
+  "counts_match_report": true,
+  "per_generic_clock": {
+    "DAILY": 36,
+    "WEEKLY": 36,
+    "4H-CLOCK": 36,
+    "195M-RTH": 36,
+    "NATIVE_DW_SCOPE_UNBOUND": 2,
+    "NATIVE_S16_RECIPE_UNBOUND": 1
+  },
+  "proposed_primary_contrasts": 8,
+  "admitted": 0,
+  "registered_by_initiation": 0,
+  "outcomes_read": false,
+  "test_scope": "Static document inventory and source integrity only; not native TOI tests."
+}

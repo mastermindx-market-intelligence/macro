@@ -1,0 +1,55 @@
+{
+  "operation": "toi-consumer-failure-path-qualification-20261003-c2-001",
+  "observed_at": "2026-10-04T02:41:55.029706+00:00",
+  "source_commit": "88804ed7079700c598bb8e04aa64307d1335402d",
+  "source_path": "scripts/build_confluence_screener.py",
+  "source_blob": "118c23550f5d0bf41e39a6a3c2198e9890f534f8",
+  "source_sha256": "a942cf2571169e987dbff006f0eab3f8f070a621ba1aa1fd2321d18b3c2e47c6",
+  "result": "FOUR_SYNTHETIC_REPRODUCTIONS",
+  "cases": [
+    {
+      "input_case": "missing",
+      "public_combos": 0,
+      "paid_combos": 0,
+      "old_card_retained": true,
+      "source_case_is_synthetic": true
+    },
+    {
+      "input_case": "malformed",
+      "public_combos": 0,
+      "paid_combos": 0,
+      "old_card_retained": true,
+      "source_case_is_synthetic": true
+    },
+    {
+      "input_case": "wrong_shape",
+      "public_combos": 0,
+      "paid_combos": 0,
+      "old_card_retained": true,
+      "source_case_is_synthetic": true
+    },
+    {
+      "input_case": "empty",
+      "public_combos": 0,
+      "paid_combos": 0,
+      "old_card_retained": true,
+      "source_case_is_synthetic": true
+    }
+  ],
+  "executed": "Unchanged complete native module render() and its build_context/build_premium_payload functions",
+  "test_seams": [
+    "HTML rendering replaced by context serialization",
+    "write_page limited to the isolated fixture directory",
+    "CTA replaced by a non-network fixture string"
+  ],
+  "not_proven": [
+    "Full repository integration",
+    "Real HTML/browser behavior",
+    "Production card contents or GET access",
+    "Real market-data freshness"
+  ],
+  "market_outcomes_read": false,
+  "source_worktree_modified": false,
+  "production_modified": false,
+  "source_hash_unchanged": true
+}
