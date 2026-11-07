@@ -1,0 +1,19 @@
+{
+  "actual_github_main_required_check_barrier": false,
+  "ci_acceptance": false,
+  "continuation_base": "8ad47787d83be8625fb387e279220b5a40efc7b2",
+  "contract_delta_failure": "dataos-prospective-reference import closure includes lib/nyse_calendar.py but its declared CI paths omitted that file",
+  "contract_delta_run": 38182746681,
+  "merge_before_checks_settled": true,
+  "merge_commit": "fba80a12a2886c8a143bee2c9cf9ce580702e5f1",
+  "merged_at_utc": "2026-10-11T23:05:16Z",
+  "new_branch_from_fresh_main": true,
+  "no_reuse_of_merged_branch": true,
+  "observed_at_utc": "2026-10-11T23:27:00Z",
+  "original_pr": 8698,
+  "repair": "Add the one omitted path to the existing CI job, preserving its tests and all source bytes",
+  "runtime_publication_held": true,
+  "schema": "tiingo_original_carrier_landing_correction.v1",
+  "source_and_archive_preserved": true,
+  "source_head": "2a08250fe61aa59ad3e1581149f0b93e9d5a17cf"
+}

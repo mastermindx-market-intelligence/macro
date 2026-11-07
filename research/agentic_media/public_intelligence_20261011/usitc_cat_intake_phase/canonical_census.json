@@ -1,0 +1,42 @@
+{
+  "observed_at": "2026-10-14T17:30:16.405405+00:00",
+  "catalog_sha256": "1110664390f10984c498f73d381ccd1d1f2cfdd717faa5bc32af56ff997afae9",
+  "catalog_count": 2910,
+  "matching_rows": [
+    {
+      "id": "marketdesk-aybb3ogdul2-c7adbf",
+      "title": "Daily ShortActivity16Sept2026 US CLEARED",
+      "institution": "S&T",
+      "published_at": "2026-09-17T18:17:07Z",
+      "pdf_sha256": null,
+      "pages": 11
+    },
+    {
+      "id": "marketdesk-ncrfvx5qchi-cd041e",
+      "title": "UBS An ESG View on Earnings Convergence 08 September 2026",
+      "institution": "Nuclear",
+      "published_at": "2026-09-08T02:11:16Z",
+      "pdf_sha256": null,
+      "pages": 63
+    },
+    {
+      "id": "marketdesk-czcxavxorjj-280125",
+      "title": "JPM Daily Credit Strategy",
+      "institution": "J.P. Morgan",
+      "published_at": "2026-08-20T10:08:51Z",
+      "pdf_sha256": null,
+      "pages": 16
+    }
+  ],
+  "exact_key_exists": {
+    "research_inbox/usitc-2026-10-13-337-ta-1473.pdf": false,
+    "research_inbox/usitc-2026-10-13-337-ta-1473.json": false,
+    "research_inbox/_processed/usitc-2026-10-13-337-ta-1473.json": false,
+    "research_vault/usitc-2026-10-13-337-ta-1473.pdf": false
+  },
+  "strict_reads": 5,
+  "conditional_capability_local_sdk": true,
+  "r2_writes": 0,
+  "installed_head": "8bca8e25f25b2e6445c81c88ccc8ca978c1d851f",
+  "r2_store_sha256": "c6875a7dea6614e57d3afe93747a03455ed9bd66588ebf1c43e82a7ade701ad0"
+}

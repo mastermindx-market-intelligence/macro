@@ -1,0 +1,12 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+________________ test_valid_legacy_v2_view_keeps_original_bytes ________________
+tests/test_tiingo_ingestion_integrity.py:172: in test_valid_legacy_v2_view_keeps_original_bytes
+    with pytest.raises(TiingoViewRefusal):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE TiingoViewRefusal
+
+NOTE: sparse worktree — data, mockups, orch, site, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_tiingo_ingestion_integrity.py::test_valid_legacy_v2_view_keeps_original_bytes
+1 failed in 1.27s

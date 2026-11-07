@@ -1,0 +1,56 @@
+/* Exact additive module presentation. Known specimen scale values are fallbacks
+   until the shared scale owner promotes them; no page palette or token root. */
+.gr-investor { margin:var(--sp-4,16px) 0; padding:var(--sp-5,20px); color:var(--text); background:var(--panel); border:1px solid var(--line); border-radius:var(--r-panel,14px); box-shadow:var(--card-shadow); font-family:var(--font-ui); }
+.gr-investor-head { display:flex; align-items:start; justify-content:space-between; gap:var(--sp-4,16px); }
+.gr-investor h2 { margin:0; font-size:var(--fs-h2); font-weight:700; line-height:1.3; }
+.gr-investor h3 { margin:0; font-size:var(--fs-h3); font-weight:700; }
+.gr-investor p { margin:var(--sp-2,8px) 0 0; line-height:1.5; overflow-wrap:anywhere; }
+.gr-investor-lead { font-size:var(--fs-sm); color:var(--muted); }
+.gr-investor-stance { display:block; margin-top:var(--sp-3,12px); font-size:var(--fs-md); color:var(--text); }
+.gr-investor .dtp-asof { margin-left:0; flex:none; color:var(--muted); }
+.gr-investor-issuers { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:var(--sp-2,8px); margin-top:var(--sp-4,16px); max-width:32em; }
+.gr-investor-issuers .gbtn { min-height:44px; justify-content:center; }
+.gr-investor-issuers [aria-pressed="true"] { color:var(--text); font-weight:800; box-shadow:inset 0 -2px 0 var(--text); }
+.gr-investor-axes { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:var(--sp-3,12px); margin:var(--sp-4,16px) 0; }
+.gr-investor-axis { min-width:0; padding:var(--sp-3,12px); border:1px solid var(--line); border-radius:var(--r-ctl,8px); background:var(--panel2); }
+.gr-investor-axis dt { font-size:var(--fs-sm); font-weight:700; color:var(--muted); }
+.gr-investor-axis dd { margin:0; font-size:var(--fs-body); }
+.gr-investor-axis dd > p { font-weight:600; }
+.gr-investor-evidence { margin-top:var(--sp-3,12px); font-size:var(--fs-sm); }
+.gr-investor-evidence summary { color:var(--ink-link); cursor:pointer; }
+.gr-investor-evidence a { margin-top:var(--sp-2,8px); }
+.gr-investor-context { margin:var(--sp-2,8px) 0; }
+.gr-investor-context > div { display:grid; grid-template-columns:minmax(6em,1fr) minmax(0,2fr); gap:var(--sp-2,8px); padding:var(--sp-1,4px) 0; }
+.gr-investor-context dt,.gr-investor-context dd { font-size:var(--fs-sm); overflow-wrap:anywhere; }
+.gr-investor-context dt { font-weight:400; }
+.gr-investor-contrary { border-left:3px solid var(--warn); padding:var(--sp-3,12px) var(--sp-4,16px); background:var(--ff-tint-warn-6); }
+.gr-investor-contrary h3 { color:var(--ink-warn); }
+.gr-investor-contrary p { font-size:var(--fs-body); }
+.gr-investor-next { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:var(--sp-4,16px); margin-top:var(--sp-4,16px); font-size:var(--fs-sm); }
+.gr-investor-next section { min-width:0; }
+.gr-investor-actions { display:flex; flex-wrap:wrap; gap:var(--sp-2,8px); margin-top:var(--sp-4,16px); }
+.gr-investor-note { color:var(--muted); font-size:var(--fs-sm); }
+.gr-investor-skeleton { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:var(--sp-3,12px); margin-top:var(--sp-4,16px); }
+.gr-investor-skeleton .skel { height:6em; }
+.gr-investor :is(button,summary,a):focus-visible { outline:2px solid var(--ink-link); outline-offset:3px; }
+html[data-theme="light"] .gr-investor-axis { background:transparent; border-width:0 0 1px; border-radius:0; }
+html[data-theme="light"] .gr-investor-contrary { background:transparent; border-top:1px solid var(--line); border-bottom:1px solid var(--line); }
+@media(max-width:900px) { .gr-investor-head { flex-wrap:wrap; } }
+@media(max-width:620px) { .gr-investor { padding:var(--sp-4,16px); } .gr-investor-axes,.gr-investor-next,.gr-investor-skeleton { grid-template-columns:minmax(0,1fr); } .gr-investor-issuers { grid-template-columns:repeat(4,minmax(0,1fr)); } .gr-investor .dtp-asof { width:100%; } .gr-investor-context > div { grid-template-columns:minmax(0,1fr); gap:var(--sp-1,4px); } }
+@media(prefers-reduced-motion:reduce) { .gr-investor * { animation:none; transition:none; } }
+
+.gr-investor-primary dd { font-size:var(--fs-md); font-weight:700; font-variant-numeric:tabular-nums; }
+
+.gr-investor-research { padding:var(--sp-3,12px) 0; margin-top:var(--sp-3,12px); border-top:1px solid var(--line); border-bottom:1px solid var(--line); font-size:var(--fs-sm); }
+
+.gr-investor-interpretation { margin-top:var(--sp-4,16px); padding-top:var(--sp-3,12px); border-top:1px solid var(--line); }
+.gr-investor-chain > div { padding:var(--sp-2,8px) 0; border-bottom:1px solid var(--line); }
+.gr-investor-chain dt span { display:block; margin-top:var(--sp-1,4px); color:var(--muted); font-size:var(--fs-xs); }
+.gr-investor-chain dd { font-size:var(--fs-sm); line-height:1.5; font-weight:400; }
+.gr-investor-case { margin-top:var(--sp-3,12px); padding:var(--sp-3,12px); border:1px solid var(--line); border-radius:var(--r-ctl,8px); background:var(--panel); }
+.gr-investor-case h4 { margin:0; font-size:var(--fs-sm); }
+html[data-theme="light"] .gr-investor-case { background:transparent; padding:var(--sp-3,12px) 0; border-width:0 0 1px; border-radius:0; }
+
+.gr-investor-baseline { margin-top:var(--sp-3,12px); padding-top:var(--sp-3,12px); border-top:1px solid var(--line); }
+.gr-investor-baseline .gr-investor-context dt { color:var(--muted); }
+.gr-investor-baseline .gr-investor-context dd { margin:0; }

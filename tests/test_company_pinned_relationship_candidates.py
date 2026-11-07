@@ -407,3 +407,155 @@ def test_candidate_receipt_body_hash_and_authority_injection_still_refuse(tmp_pa
 def test_malformed_candidate_is_bounded_refusal(candidate, tmp_path):
     f = fixture(tmp_path)
     assert_refusal(inspect(f, candidate=candidate), "CANDIDATE_DOCUMENT_INVALID")
+
+
+def test_fresh_reader_replays_without_acquisition_imports_or_side_effects(tmp_path):
+    """Native writers run only in the parent; the fresh child is a guarded reader."""
+    import json
+    import os
+    import subprocess
+    import sys
+    import textwrap
+
+    f = fixture(tmp_path)
+    expected = inspect(f)
+    assert expected["inspection_status"] == "INSPECTABLE"
+    before = files(tmp_path)
+    payload = {
+        "code_root": str(Path(__file__).resolve().parents[1]),
+        "fixture_root": str(tmp_path.resolve()),
+        "store_root": str(f.backing.root.resolve()),
+        "candidate": f.candidate,
+        "snapshot_id": f.snapshot.snapshot_id,
+        "manifest_key": f.manifest_key,
+        "document_id": f.document["document_id"],
+        "expected": expected,
+    }
+    child = textwrap.dedent(r"""
+        from hashlib import sha256
+        import json
+        import os
+        from pathlib import Path
+        import stat
+        import sys
+
+        sys.dont_write_bytecode = True
+        payload = json.load(sys.stdin)
+
+        def require(condition, label):
+            if not condition:
+                raise AssertionError(label)
+
+        forbidden = (
+            "collectors", "requests", "urllib3", "httpx", "aiohttp",
+            "boto3", "botocore", "urllib.request", "http.client",
+        )
+        def acquisition_module(name):
+            return any(name == prefix or name.startswith(prefix + ".") for prefix in forbidden)
+
+        blocked_imports = []
+        class NoAcquisitionImports:
+            def find_spec(self, fullname, path=None, target=None):
+                if acquisition_module(fullname):
+                    frame = sys._getframe(1)
+                    callers = []
+                    while frame is not None:
+                        module = frame.f_globals.get("__name__", "")
+                        if module.startswith("engine."):
+                            callers.append((module, frame.f_code.co_name, frame.f_lineno))
+                        frame = frame.f_back
+                    blocked_imports.append({"module": fullname, "callers": callers})
+                    raise ImportError("fresh reader denied acquisition import " + fullname)
+                return None
+
+        require(not any(acquisition_module(name) for name in sys.modules),
+                "acquisition dependency was warmed before the reader guard")
+        sys.meta_path.insert(0, NoAcquisitionImports())
+        guard = {"filesystem": False, "blocked_events": []}
+        write_flags = os.O_WRONLY | os.O_RDWR | os.O_CREAT | os.O_TRUNC | os.O_APPEND
+        mutation_events = {
+            "os.mkdir", "os.rmdir", "os.remove", "os.rename", "os.link", "os.symlink",
+            "os.chmod", "os.chown", "os.utime", "os.truncate", "os.setxattr", "os.removexattr",
+            "shutil.copyfile", "shutil.copymode", "shutil.copystat", "shutil.rmtree",
+        }
+        def audit(event, values):
+            deny = event.startswith(("socket.", "subprocess.", "os.exec", "os.spawn")) or event in {
+                "os.system", "os.fork", "os.forkpty", "os.posix_spawn",
+            }
+            if guard["filesystem"]:
+                deny = deny or event in mutation_events
+                if event == "open":
+                    mode, flags = values[1], values[2]
+                    deny = deny or (isinstance(mode, str) and any(x in mode for x in "wax+")) or (
+                        isinstance(flags, int) and bool(flags & write_flags)
+                    )
+            if deny:
+                guard["blocked_events"].append(event)
+                raise PermissionError("read-only replay denied " + event)
+        sys.addaudithook(audit)
+
+        fixture_root = Path(payload["fixture_root"])
+        store_root = Path(payload["store_root"])
+        for directory in [*reversed(store_root.parents), store_root]:
+            require(stat.S_ISDIR(directory.lstat().st_mode),
+                    "existing store chain contains a non-directory or symlink")
+
+        def tree_state():
+            result = {}
+            for path in [fixture_root, *sorted(fixture_root.rglob("*"))]:
+                info = path.lstat()
+                base = (info.st_dev, info.st_ino, info.st_mtime_ns)
+                if stat.S_ISDIR(info.st_mode):
+                    result[str(path)] = ("directory", *base)
+                else:
+                    require(stat.S_ISREG(info.st_mode), "fixture contains a non-regular file")
+                    result[str(path)] = ("file", *base, info.st_size, sha256(path.read_bytes()).hexdigest())
+            return result
+
+        before = tree_state()
+        latest = store_root / "fundamental_forensics/sec-source/v1/latest.json"
+        require(not latest.exists() and not latest.is_symlink(), "unexpected latest pointer")
+        sys.path.insert(0, payload["code_root"])
+        from engine.research_vault.r2_store import LocalStore
+        from engine.fundamental_forensics.filing_attestation import PinnedSourceAuthority
+        from engine.company_intelligence.pinned_relationship_candidates import inspect_pinned_candidate
+
+        # LocalStore calls mkdir(exist_ok=True). Supply only the checked existing
+        # store, verify its identity, then enable the full mutation guard.
+        store = LocalStore(store_root)
+        require(tree_state() == before, "imports or constructor changed existing fixture state")
+        guard["filesystem"] = True
+        authority = PinnedSourceAuthority(store=store, snapshot_id=payload["snapshot_id"])
+        result = inspect_pinned_candidate(
+            payload["candidate"], authority=authority, snapshot_id=payload["snapshot_id"],
+            manifest_key=payload["manifest_key"], document_id=payload["document_id"],
+        )
+        require(not blocked_imports, "acquisition imports attempted: " + repr(blocked_imports))
+        require(not guard["blocked_events"], "forbidden side effects attempted: " + repr(guard["blocked_events"]))
+        require(not any(acquisition_module(name) for name in sys.modules),
+                "an acquisition module entered the fresh reader")
+        require(result["inspection_status"] == "INSPECTABLE", "positive source replay did not complete")
+        require(result == payload["expected"], "complete positive output differs")
+        require(result["admission"] == "NOT_ADMITTED" and result["graph1_projection"] is None,
+                "admission boundary changed")
+        require(all(value is False for value in result["authority"].values()), "authority boundary changed")
+        require(tree_state() == before, "reader changed retained fixture state")
+        require(not latest.exists() and not latest.is_symlink(), "reader created a latest pointer")
+        print(json.dumps({
+            "result": result, "blocked_imports": blocked_imports,
+            "blocked_events": guard["blocked_events"], "retained_state_unchanged": True,
+        }, sort_keys=True))
+    """)
+    run = subprocess.run(
+        [sys.executable, "-B", "-c", child], input=json.dumps(payload),
+        text=True, capture_output=True, cwd=tmp_path,
+        env={**os.environ, "PYTHONDONTWRITEBYTECODE": "1"}, timeout=30,
+    )
+    assert run.returncode == 0, run.stderr
+    assert run.stderr == ""
+    actual = json.loads(run.stdout)
+    assert actual == {
+        "result": expected, "blocked_imports": [], "blocked_events": [],
+        "retained_state_unchanged": True,
+    }
+    assert files(tmp_path) == before

@@ -122,3 +122,60 @@ def test_database_suppression_reason_is_not_echoed_into_logs(monkeypatch, caplog
     assert status == "suppressed"
     assert "suppressed by canonical marketing gate" in caplog.text
     _assert_no_private_log_values(caplog)
+
+
+@pytest.mark.parametrize("rows", [[], {"untrusted": ADDRESS}], ids=["zero_rows", "non_list"])
+@pytest.mark.parametrize("operation", ["conditional_finish", "attempt_marker"])
+def test_unmatched_ledger_rows_preserve_failure_and_redact_private_key(
+    monkeypatch, caplog, rows, operation
+):
+    calls = []
+
+    def unmatched(method, path, **kwargs):
+        calls.append((method, path))
+        return rows
+
+    monkeypatch.setattr(mailer, "_pg", unmatched)
+    with caplog.at_level(logging.INFO, logger="macro.mailer"):
+        if operation == "conditional_finish":
+            result = mailer._ledger_finish_if_current(
+                IDEM_KEY, "failed", None, expected_status="queued"
+            )
+            assert "lost race" in caplog.text
+        else:
+            result = mailer._ledger_mark_attempting(IDEM_KEY)
+            assert "NOT sending" in caplog.text
+    assert result is False
+    assert len(calls) == 1 and calls[0][0] == "PATCH"
+    _assert_no_private_log_values(caplog)
+
+
+def test_degraded_marker_logs_no_private_key_and_preserves_single_attempt(
+    monkeypatch, caplog
+):
+    monkeypatch.setattr(mailer, "_ledger_insert", _db_down)
+    monkeypatch.setattr(mailer, "_ledger_mark_attempting", lambda *args, **kwargs: False)
+    monkeypatch.setattr(mailer, "_suppression_reason", lambda *args: None)
+    monkeypatch.setattr(mailer, "is_configured", lambda: True)
+    monkeypatch.setattr(mailer, "_build_message", lambda **kwargs: object())
+    calls = []
+
+    def fake_transport(message, *, before_data):
+        calls.append(before_data())
+
+    def unexpected_finish(*args, **kwargs):
+        raise AssertionError("an unconfirmed ledger must not be marked finished")
+
+    monkeypatch.setattr(mailer, "_smtp_send", fake_transport)
+    monkeypatch.setattr(mailer, "_ledger_finish", unexpected_finish)
+    with caplog.at_level(logging.WARNING, logger="macro.mailer"):
+        status = mailer.send(
+            template="catalyst_material_revision", cls="marketing",
+            to_email=ADDRESS, user_id=USER_ID,
+            subject="fixture", html="<p>fixture</p>", text="fixture",
+            idem_key=IDEM_KEY, strict_ledger=False,
+        )
+    assert status == "sent"
+    assert calls == [True]
+    assert "NO effect-boundary marker" in caplog.text
+    _assert_no_private_log_values(caplog)

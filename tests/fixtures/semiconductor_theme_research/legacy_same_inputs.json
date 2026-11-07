@@ -1,0 +1,9 @@
+{
+  "case_key": "legacy_same_inputs",
+  "expected_regression": "Member order, recommendation, entry and missing coverage unchanged",
+  "status": "stub_pending",
+  "synthetic": true,
+  "task_refs": [
+    "T12"
+  ]
+}
