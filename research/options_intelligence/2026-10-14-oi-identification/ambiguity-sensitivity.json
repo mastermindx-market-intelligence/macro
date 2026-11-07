@@ -1,0 +1,171 @@
+{
+  "schema": "options.oi.identification.sensitivity.v1",
+  "synthetic_only": true,
+  "scope": "positive initial OI, known zero removals, fully matched toy volume; no empirical observations",
+  "identity": "U-L=V-abs(d) for I0>0",
+  "rows": [
+    {
+      "volume": 100,
+      "initial": 100,
+      "change": -100,
+      "buyer_open_bounds": [
+        0,
+        0
+      ],
+      "unidentified_quantity": 0,
+      "selected_five_buyer_open": [
+        0,
+        0
+      ],
+      "opening_side_fraction": {
+        "numerator": 0,
+        "denominator": 1
+      }
+    },
+    {
+      "volume": 100,
+      "initial": 100,
+      "change": -90,
+      "buyer_open_bounds": [
+        0,
+        10
+      ],
+      "unidentified_quantity": 10,
+      "selected_five_buyer_open": [
+        0,
+        5
+      ],
+      "opening_side_fraction": {
+        "numerator": 1,
+        "denominator": 20
+      }
+    },
+    {
+      "volume": 100,
+      "initial": 100,
+      "change": -80,
+      "buyer_open_bounds": [
+        0,
+        20
+      ],
+      "unidentified_quantity": 20,
+      "selected_five_buyer_open": [
+        0,
+        5
+      ],
+      "opening_side_fraction": {
+        "numerator": 1,
+        "denominator": 10
+      }
+    },
+    {
+      "volume": 100,
+      "initial": 100,
+      "change": -50,
+      "buyer_open_bounds": [
+        0,
+        50
+      ],
+      "unidentified_quantity": 50,
+      "selected_five_buyer_open": [
+        0,
+        5
+      ],
+      "opening_side_fraction": {
+        "numerator": 1,
+        "denominator": 4
+      }
+    },
+    {
+      "volume": 100,
+      "initial": 100,
+      "change": 0,
+      "buyer_open_bounds": [
+        0,
+        100
+      ],
+      "unidentified_quantity": 100,
+      "selected_five_buyer_open": [
+        0,
+        5
+      ],
+      "opening_side_fraction": {
+        "numerator": 1,
+        "denominator": 2
+      }
+    },
+    {
+      "volume": 100,
+      "initial": 100,
+      "change": 50,
+      "buyer_open_bounds": [
+        50,
+        100
+      ],
+      "unidentified_quantity": 50,
+      "selected_five_buyer_open": [
+        0,
+        5
+      ],
+      "opening_side_fraction": {
+        "numerator": 3,
+        "denominator": 4
+      }
+    },
+    {
+      "volume": 100,
+      "initial": 100,
+      "change": 80,
+      "buyer_open_bounds": [
+        80,
+        100
+      ],
+      "unidentified_quantity": 20,
+      "selected_five_buyer_open": [
+        0,
+        5
+      ],
+      "opening_side_fraction": {
+        "numerator": 9,
+        "denominator": 10
+      }
+    },
+    {
+      "volume": 100,
+      "initial": 100,
+      "change": 90,
+      "buyer_open_bounds": [
+        90,
+        100
+      ],
+      "unidentified_quantity": 10,
+      "selected_five_buyer_open": [
+        0,
+        5
+      ],
+      "opening_side_fraction": {
+        "numerator": 19,
+        "denominator": 20
+      }
+    },
+    {
+      "volume": 100,
+      "initial": 100,
+      "change": 100,
+      "buyer_open_bounds": [
+        100,
+        100
+      ],
+      "unidentified_quantity": 0,
+      "selected_five_buyer_open": [
+        5,
+        5
+      ],
+      "opening_side_fraction": {
+        "numerator": 1,
+        "denominator": 1
+      }
+    }
+  ],
+  "not_a_confidence_score": true
+}
