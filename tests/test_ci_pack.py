@@ -5319,6 +5319,13 @@ CURATED_EXCLUSIVE = {
     # exact 55-file non-wildcard import closure plus the eight Jinja templates the
     # render tests load at runtime (T25 AUDIT-N3 A1, 2026-11-04); no ceiling moved.
     "global-liquidity-transmission",
+    # 2026-10-13 Communications Build 1: Alphabet GOOGL/GOOG enrollment.
+    # issuer_profiles' import closure reaches lib/pages.py and
+    # engine/press/earnings_adapter.py, whose subprocess/filesystem edges
+    # smear site/** and templates/** onto templates/index.html. scope:
+    # exclusive pins the job to the measured 35-path closure so that smear
+    # stays off the packing probes. Ceilings stay fixed.
+    "communications-issuer-enrollment",
 }
 
 
