@@ -317,6 +317,30 @@ def _bound_scope(slot):
 # required fragments
 # ---------------------------------------------------------------------------
 
+def _signal_fragments(meta, confirmed):
+    """Keep tier admission separate from the T1-only marker date.
+
+    Older scopes have no tier/provisional metadata. Preserve that unknown
+    rather than inferring a tier from a date, outcome or entry status.
+    """
+    tier = meta.get("signal_tier")
+    provisional = meta.get("signal_provisional")
+    if tier is not None and (not isinstance(tier, str) or tier not in {"T1", "T2", "T3"}):
+        raise ValueError("native plan signal_tier must be T1, T2, T3 or null")
+    if provisional is not None and type(provisional) is not bool:
+        raise ValueError("native plan signal_provisional must be boolean or null")
+    if ((tier == "T2" and provisional is True)
+            or (tier == "T3" and provisional is False)):
+        raise ValueError("native plan signal tier/provisional metadata conflict")
+    if confirmed is not None and (tier in {"T2", "T3"} or provisional is True):
+        raise ValueError("native plan T1 marker date conflicts with signal metadata")
+    return [
+        "signal tier " + tier if tier is not None else "signal tier not recorded",
+        "signal provisional " + str(provisional).lower() if provisional is not None
+        else "signal provisional status not recorded",
+    ]
+
+
 def scope_fragments(slot):
     """Short required visible scope disclosures; [] for non-native slots.
 
@@ -366,7 +390,9 @@ def scope_fragments(slot):
         "price basis " + price_basis.isoformat(),
         "display-only" if authority in _DISPLAY_AUTHORITY_TIERS else "plan authority " + authority,
         "entry status " + entry_status,
-        "no recorded confirmation" if confirmed is None else "confirmation recorded " + confirmed.isoformat(),
+        *_signal_fragments(meta, confirmed),
+        "T1 marker confirmation date not recorded" if confirmed is None
+        else "T1 marker confirmation date " + confirmed.isoformat(),
         "simulated close " + close.isoformat(),
         "not an executed trade or investor return",
     ]

@@ -860,8 +860,13 @@
   {# Top 3 drivers by |z| as bars #}
   {% if FG.legs_included %}
   <div style="font-size:12px;color:var(--muted);margin-bottom:4px">{{ t("What's driving it most","主要驱动因素") }}</div>
-  {% set _sorted_legs = FG.legs_included|sort(attribute='z',reverse=true) %}
-  {% for leg in _sorted_legs[:3] %}
+  {# Decorate rather than reorder the producer list; Jinja's sort is stable for ties. #}
+  {% set _fg_rank = namespace(legs=[]) %}
+  {% for leg in FG.legs_included %}
+    {% set _fg_rank.legs = _fg_rank.legs + [((leg.z|abs) if leg.z is not none else 0, leg)] %}
+  {% endfor %}
+  {% for ranked in (_fg_rank.legs|sort(attribute=0, reverse=true))[:3] %}
+  {% set leg = ranked[1] %}
   <div class="leg">
     <span style="flex:0 0 130px;font-size:12.5px">{{ t(leg.name_en, leg.name_zh) }}</span>
     <div class="leg-bar"><i style="width:{{ ([leg.z|abs / 3 * 100, 100]|min) if leg.z is not none else 0 }}%;background:{{ 'var(--down)' if (leg.z is not none and leg.z < 0) else 'var(--up)' }}"></i></div>

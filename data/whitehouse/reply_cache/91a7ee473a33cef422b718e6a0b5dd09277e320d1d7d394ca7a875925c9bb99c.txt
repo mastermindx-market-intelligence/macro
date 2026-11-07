@@ -1,0 +1,81 @@
+{
+  "activate": true,
+  "importance": 72,
+  "banner_days": 2,
+  "tone": "mixed",
+  "banner_title": "Russia-Ukraine ceasefire breakthrough at White House — defense headwind, Europe relief",
+  "banner_title_zh": "俄乌停火在白宫取得突破 — 国防承压，欧洲释然",
+  "summary": "First Lady Melania Trump hosted Russian and Ukrainian officials at the White House following a localized ceasefire in Oleshky, with both sides signing agreements and exchanging state honors — signaling a meaningful diplomatic thaw that markets will read as de-escalation momentum.",
+  "summary_zh": "梅拉尼娅·特朗普夫人在白宫接待俄乌官员，庆祝奥列什基局部停火。双方签署协议并互授国家荣誉，释放出市场将解读为局势降温动能的外交信号。",
+  "analysis": "The White House event formalizes a localized ceasefire in Oleshky/Kherson — the first Russia-Ukraine de-escalation milestone since 2022 to be celebrated at this level. The First Lady's documented role as 'Exclusive Intermediary' with written agreements signed by both sides on October 23, 2026, and the presence of senior officials like Kirill Dmitriev (Putin's special envoy) and Ukrainian parliamentarians, suggests genuine, process-driven diplomacy rather than a photo-op. For markets, this reprices the probability distribution around the war's trajectory: odds of a broader negotiated settlement in 2026-2027 rise, though this specific ceasefire is narrow in scope and confined to one region.\n\nThe transmission mechanism is straightforward. A credible path to ceasefire/de-escalation compresses the geopolitical risk premium embedded in energy prices (particularly European natural gas and Brent), supports European currencies and equities most exposed to energy costs and reconstruction, and is a headwind for defense contractors whose order books have been supercharged by the conflict. Sanctions relief — even partial — would lower the discount on Russian-facing assets and ease pressure on global energy and agricultural supply chains.\n\nThe key uncertainty is durability. A localized humanitarian ceasefire is far from a full settlement. Neither side has conceded on territorial, security, or sanctions questions. Markets will discount this heavily until there is evidence the Oleshky precedent scales to broader front lines or formal negotiations. The event is a sentiment shock with potential to become structural, but it could also fade if the ceasefire collapses or remains isolated.",
+  "sectors": [
+    {
+      "name": "Defense & Aerospace",
+      "impact": "headwind",
+      "rationale": "De-escalation momentum compresses the multi-year demand outlook for munitions and systems that have driven record backlogs."
+    },
+    {
+      "name": "European Energy / Utilities",
+      "impact": "tailwind",
+      "rationale": "Reduced geopolitical risk premium and potential future gas flow normalization lowers input costs and supply uncertainty."
+    },
+    {
+      "name": "European Banks & Equities",
+      "impact": "tailwind",
+      "rationale": "Eurozone assets broadly re-rate as war-risk discount narrows and reconstruction flows become more probable."
+    },
+    {
+      "name": "Global Energy (Brent/NatGas Complex)",
+      "impact": "headwind",
+      "rationale": "De-escalation removes a war premium from energy prices, a headwind for producers."
+    },
+    {
+      "name": "Agriculture / Wheat Complex",
+      "impact": "mixed",
+      "rationale": "Ceasefire in Kherson and potential Black Sea stabilization eases supply fears (bearish wheat) but lowers input costs for food producers."
+    }
+  ],
+  "tickers": [
+    {
+      "symbol": "LMT",
+      "direction": "hurt",
+      "rationale": "Lockheed Martin's munitions and missile backlogs are directly tied to Ukraine-related replenishment and forward demand."
+    },
+    {
+      "symbol": "RTX",
+      "direction": "hurt",
+      "rationale": "Raytheon's air defense and guided weapons systems have seen exceptional orders from the conflict; de-escalation trims terminal demand assumptions."
+    },
+    {
+      "symbol": "NOC",
+      "direction": "hurt",
+      "rationale": "Northrop Grumman is a key beneficiary of elevated defense spending tied to European security; peace momentum pressures the long-term growth narrative."
+    },
+    {
+      "symbol": "RHM.DE",
+      "direction": "hurt",
+      "rationale": "Rheinmetall is the purest listed play on European rearmament; any credible path to peace compresses its structural growth premium."
+    },
+    {
+      "symbol": "SHEL",
+      "direction": "hurt",
+      "rationale": "Shell's integrated gas business benefits from elevated European gas prices; de-escalation reduces the scarcity premium."
+    },
+    {
+      "symbol": "BP",
+      "direction": "hurt",
+      "rationale": "BP is a major European gas and oil producer; lower war-risk premium in energy prices works against near-term realized prices."
+    },
+    {
+      "symbol": "EWU",
+      "direction": "benefit",
+      "rationale": "UK equities (via ETF) have indirect exposure to European energy cost relief and improved regional risk sentiment."
+    },
+    {
+      "symbol": "FEZ",
+      "direction": "benefit",
+      "rationale": "Eurozone equities ETF captures broad re-rating from reduced war risk and cheaper energy"
+    }
+  ],
+  "confidence": "medium"
+}

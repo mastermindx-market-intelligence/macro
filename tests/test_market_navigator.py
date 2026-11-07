@@ -353,3 +353,15 @@ def test_public_explanation_lists_do_not_alias_internal_packet():
     assert raw["scenarios"][0]["triggers"][0]["threshold"]==773
     assert raw["scenarios"][0]["counterevidence"][0]["status"]=="missing"
     assert public_projection(raw)["scenarios"][0]["triggers"][0]["threshold"]==773
+
+
+def test_module_authority_cannot_be_mutated_in_process() -> None:
+    # A different consumer must not be able to relax the invariant used by
+    # composition AND its own public_projection guard in the same process.
+    with pytest.raises(TypeError):
+        AUTHORITY["trading"] = True
+    with pytest.raises(TypeError):
+        AUTHORITY["probability"] = True
+    packet = build()
+    assert all(value is False for value in packet["authority"].values())
+    assert all(value is False for value in public_projection(packet)["authority"].values())

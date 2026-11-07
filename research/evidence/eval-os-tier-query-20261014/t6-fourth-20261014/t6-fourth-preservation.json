@@ -1,0 +1,25 @@
+{
+  "schema": "eval_os.t6_fourth_preservation.v1",
+  "head": "8453d2a9051956a9dca49babe5db75201fa00666",
+  "base": "30117a758d915dcfeec562c823f764151ef5db08",
+  "observed_at": "2026-10-14T11:28:15.427782+00:00",
+  "job_execution_definitions_preserved": 314,
+  "all_scope_additions_only": true,
+  "qledger_job_entirely_unchanged": true,
+  "all_response_eval_executable_function_asts_unchanged": true,
+  "production_runtime_other_than_offline_fixture_registry_unchanged": true,
+  "changed_files": {
+    ".github/ci/legacy-jobs.yml": "668e716e16f0a307d1a1acf6714904e9dc4df3659a1795f21d5cae18983ba7ea",
+    "engine/neuralweb/eval/benchmark_mag7_flow_calibration_2026-07-11.json": "e0ba16e2b8d4aef75d2537a587f6e3594fd90cf949ae5aa17f592d43e68a6792",
+    "engine/neuralweb/eval/benchmark_mag7_narrative_denominator_2026-07-11.json": "7846c95577c9f7293e51951c49d4c41c58ac0d35c1dd26004992927e9fe3bfae",
+    "engine/neuralweb/eval/benchmark_mag7_organ_causality_2026-07-11.json": "6fbe91b12942d0ab621eebe9fb760fde9fe764dc202ac0c9187d4774cda527df",
+    "engine/neuralweb/eval/benchmark_risk_breadth_2026-07-08.json": "55b237a29ca3af9580b25d26e9d17c2427daa99671cb8c86f779bf459b5da98d",
+    "engine/neuralweb/eval/benchmark_semiconductor_divergence_2026-07-08.json": "6ab991ff7a289096af9e1be864513e73161b87432b5098fab93ed99c9ef54772",
+    "engine/neuralweb/eval/benchmark_treasury_liquidity_2026-07-02.json": "6e425605f527d21d39b836fa599d0209d456299f74c200015a77464cbf94f7f2",
+    "engine/neuralweb/response_eval.py": "6e38e66467e4377865dc80be1ecda79f76ebd656b3e644dcf7f76f4def6c2c85",
+    "research/INTELLIGENCE_OS_T6_TEXT_REPLAY.md": "ffcd6517381c7e4041086b1ef825b6b2d22f385952795a0e2e547b9966845563",
+    "tests/test_response_eval.py": "8fcf34c45eda071007082082e85a8d924fa15fe23094f7f7e489e7c6f5f20586"
+  },
+  "review": "assigning-root source inspection, not independent-review verdict",
+  "reuse": "Previous 1252 qledger tests and7selftests remain retained evidence of unchanged code execution and job definition. New admitted offline cases and A1 input selection are verified separately."
+}

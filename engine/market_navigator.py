@@ -17,15 +17,18 @@ import math
 import operator
 import re
 from typing import Any, Mapping
+from types import MappingProxyType
 
 SCHEMA = "market_navigator.context/v1"
 HORIZONS = frozenset({"intraday", "swing", "position"})
 FAMILIES = frozenset({"price", "breadth", "volatility", "positioning", "macro", "event", "liquidity"})
 QUALITIES = frozenset({"observed", "estimated", "user_claim", "synthetic"})
 OPS = {"gt": operator.gt, "gte": operator.ge, "lt": operator.lt, "lte": operator.le}
-AUTHORITY = {k: False for k in (
+# Immutable process-wide no-trade invariant: runtime consumers may copy it,
+# but an in-process component cannot silently mutate the trusted baseline.
+AUTHORITY = MappingProxyType({k: False for k in (
     "signal", "probability", "ranking", "sizing", "trading", "auto_exit", "alert_escalation",
-)}
+)})
 _ID = re.compile(r"[a-z][a-z0-9_-]{0,63}\Z")
 _UNITS = frozenset({"USD", "percent", "ratio", "vol_points", "basis_points", "contracts", "index_points"})
 _VERDICTS = frozenset({"RISK_ON", "MIXED", "RISK_OFF"})

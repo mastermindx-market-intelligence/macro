@@ -352,7 +352,7 @@ def test_recovery_panel_states_render_plain_words_and_paired_dates(name):
     assert start >= 0
     row = panel[start:]
     assert f'data-state="{rec["state"]}"' in row
-    assert 'class="rs-highs-ticker" href="us_stocks.html#TEST"' in row
+    assert 'class="rs-highs-ticker" href="stock.html#TEST"' in row
     assert LABELS[rec["state"]] in row
     assert _ZH[rec["state"]] in row
     # the raw state key appears only in the data attribute, never as visible copy

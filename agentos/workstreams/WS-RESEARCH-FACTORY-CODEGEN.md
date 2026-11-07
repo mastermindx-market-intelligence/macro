@@ -23,10 +23,12 @@ waves:
   - {id: RELEASE, title: "Protected release and authenticated consumer proof", status: in_progress}
   - {id: ACCEPTANCE, title: "Real pilot, historical and prospective evidence", status: todo}
 next_action: >
-  Connect typed synthetic accounting/prefix receipts to the existing advisory
-  review consumer and qualify that source increment through normal release.
-  Resolve the current Fabric recovery-owner delivery and original v4 effects;
-  no replay or candidate admission follows from source publication.
+  Receipt composition is merged in PR9851; reuse it without rebuilding.
+  Remaining acceptance requires lawful settlement of original v4 effects and
+  actual runtime/containment evidence, an original expectation binding for the
+  known-answer/future-dependent output control, and historical PIT availability
+  evidence. Preserve current holds; this record authorizes no replay, new canary,
+  data acquisition or candidate admission.
 artifacts:
   - research/research_factory_codegen/2026-10-12/EXECUTION_CHARTER.md
   - research/research_factory_codegen/2026-10-12/PROTOCOL_DESIGN_V1.md
@@ -37,6 +39,14 @@ artifacts:
   - engine/research_factory/codegen_boundary.py
   - engine/research_codegen/static_checks.py
 do_not_redo:
+  - PR9851 merged receipt composition at ca3ad93d2cf4a47189c84e1f2d1c269e56f4841e.
+    review_queue.py and its review-evidence tests are unchanged at main
+    d6f710184b1d4aebf60673029c17cb9f3066f817; do not rebuild or repeat accepted
+    source checks without a material invalidator. This is advisory source only.
+  - Commercial licensing for the incumbent Yahoo/yfinance route, Massive/Polygon,
+    Tiingo and ThetaData options is APPROVED_BY_CHAIRMAN_ATTESTATION. Consume
+    DEC:COMMERCIAL-DATA-RIGHTS-CHAIRMAN-ATTESTATION-20261023; do not ask again
+    or require contract upload/public-terms re-proof. Historical/PIT remains separate.
   - Reuse accepted checks and reviews until their relevant source or requirements change.
   - Original contracts operation remains EFFECT_UNKNOWN. Chris authorized quarantine
     and a fresh seven-path implementation, not replay, refused reads or lease release.
@@ -77,8 +87,13 @@ permission. Former Fabric Integration is parked and names Fable in Claude6
 as successor; current supported owner delivery is being resolved. No physical
 recovery or absence is claimed from this record.
 
-The next source increment joins typed synthetic staging/prefix receipts into
-`diagnostic_review_packet` rather than relying on a fixture-only projection.
+The receipt-composition increment is merged in
+[PR9851](https://github.com/mastermindx-market-intelligence/macro/pull/9851)
+at ca3ad93d2cf4a47189c84e1f2d1c269e56f4841e. `diagnostic_review_packet` accepts
+`engineering_receipts` and calls `_compose_diagnostic_receipts`. Read-only
+source reconciliation on October 29 verified `engine/research_factory/review_queue.py`
+and `tests/test_research_codegen_review_evidence.py` byte-identical between that
+merge and main d6f710184b1d4aebf60673029c17cb9f3066f817; this source work is complete.
 It preserves raw failure/uncertainty accounting internally and sanitizes the
 advisory attachment. Receipt types and consistent hashes do not authenticate a
 producer. No original expectation binding exists for the good/bad output control,
@@ -89,7 +104,8 @@ After lawful incident settlement, accepted host/resource/helper/cleanup
 composition is still required. A recovered fixed-canary PASS is not candidate
 admission. P01 still owes actual staging identities, a known-answer primitive
 and future-dependent refusal control; injected nonfinite output tests prove
-plumbing only. Qualified historical data/rights, full counted trial/Vault and
+plumbing only. Qualified historical data availability (commercial rights are settled by
+DEC:COMMERCIAL-DATA-RIGHTS-CHAIRMAN-ATTESTATION-20261023), full counted trial/Vault and
 evaluator composition, an honest historical/null result, naturally accrued
 prospective observations and continuity/rollback remain programme obligations.
 Existing runtime/admission engines remain dormant. No new OS/Fabric owner,
