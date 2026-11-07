@@ -49725,6 +49725,7 @@ jobs:
     # Separate processes keep archived and repaired same-name modules isolated.
     if: ${{ false }}
     gate: code
+    scope: exclusive
     paths:
       - research/factor_atlas/06_EMPIRICAL_VALIDATION_AND_ACCEPTANCE.md
       - research/factor_atlas/session6/**
