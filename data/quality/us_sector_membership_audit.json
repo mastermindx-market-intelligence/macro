@@ -2,21 +2,22 @@
  "membership": "data/baskets/membership.json",
  "reference": "data/breadth/constituents.parquet",
  "reference_status": "ok",
- "asof": "2026-11-03",
+ "asof": "2026-11-05",
  "skipped": false,
  "note": "",
  "drift": true,
- "n_extra": 3,
- "n_missing": 3,
+ "n_extra": 4,
+ "n_missing": 4,
  "missing_baskets": [],
  "baskets": [
   {
    "basket_id": "us_sector_tech",
    "sector": "Information Technology",
    "active": 74,
-   "expected": 75,
+   "expected": 76,
    "extra": [],
    "missing": [
+    "OKTA",
     "TWLO"
    ]
   },
@@ -69,8 +70,10 @@
    "basket_id": "us_sector_staples",
    "sector": "Consumer Staples",
    "active": 33,
-   "expected": 34,
-   "extra": [],
+   "expected": 33,
+   "extra": [
+    "KVUE"
+   ],
    "missing": [
     "VYLR"
    ]

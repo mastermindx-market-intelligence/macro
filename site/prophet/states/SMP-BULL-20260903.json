@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "SMP-BULL-20260903",
-  "asof": "2026-11-03",
+  "asof": "2026-11-06",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 39.2,
@@ -11,26 +11,26 @@
   "human_state": "Closed",
   "components": {
     "validity": 100.0,
-    "progress": 41.8,
-    "pace": 10.0,
-    "retention": 100.0,
-    "overlay": 59.0
+    "progress": 39.5,
+    "pace": 6.0,
+    "retention": 92.7,
+    "overlay": 32.8
   },
   "geometry": {
-    "dist_to_stop_r": 1.785,
-    "dist_to_t1_r": 0.715,
-    "dist_to_t2_r": 2.215,
-    "horizon_pct_used": 133.3,
-    "p1": 0.523,
-    "p2": 0.2615,
+    "dist_to_stop_r": 1.727,
+    "dist_to_t1_r": 0.773,
+    "dist_to_t2_r": 2.273,
+    "horizon_pct_used": 140.0,
+    "p1": 0.4846,
+    "p2": 0.2423,
     "p3": null,
-    "move_r": 0.785,
+    "move_r": 0.727,
     "mfe_r": 0.785,
     "mae_r": -0.799
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "Moving Away from Stop",
+  "change_reason": "",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -45,8 +45,8 @@
   "_first_trigger_ts": "2026-09-05",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 60,
-  "tau": 1.3333,
+  "days_elapsed": 63,
+  "tau": 1.4,
   "closed": true,
   "outcome": "NO_ENTRY"
 }

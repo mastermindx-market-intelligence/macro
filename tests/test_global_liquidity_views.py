@@ -550,6 +550,11 @@ def test_audit_a_k2_forecast_renders_unavailable_without_numbers():
     views = _compose(day=day, env=_env(day), t09=real)["statistical_forecast"]
     assert views["package_as_of"] == "2026-10-19"
     assert all(c["estimate_type"] == "unavailable" for c in views["cells"])
+    # O1: an all-rejected package is a readable package (status) whose section
+    # disposition is "unavailable"; nothing reads it as an available forecast.
+    assert views["status"] == "available"
+    assert views["disposition"] == "unavailable"
+    assert views["disposition_basis"] == "no_issued_cell"
     dump = json.dumps(views, sort_keys=True)
     for word in ("best_baseline", "seasonal_calendar", "persistence", "announced_only",
                  "relative_gain", "gain_ci", "mean_width", "abstention_reason",
@@ -569,6 +574,38 @@ def test_audit_b_k1_outlook_types_and_live_probe_degraded(tmp_path):
     dump = json.dumps(full, sort_keys=True)
     for word in ("gaps", "not found", "parquet"):
         assert word not in dump
+
+
+def test_o1_forecast_section_disposition_follows_issued_cells():
+    full = _compose(t09=_pkg(cells=[_issued_cell()]))["statistical_forecast"]
+    assert full["status"] == "available"
+    assert full["disposition"] == "available"
+    assert "disposition_basis" not in full
+    rejected = _cell(disposition="withheld_no_gain")
+    none = _compose(t09=_pkg(cells=[rejected]))["statistical_forecast"]
+    assert none["status"] == "available"
+    assert none["disposition"] == "unavailable"
+    assert none["disposition_basis"] == "no_issued_cell"
+    assert none["cells"][0]["estimate_type"] == "unavailable"
+    for cell in none["cells"]:
+        assert _walk_numbers(cell) == [cell["horizon_weeks"]]
+    validate_views(_compose(t09=_pkg(cells=[rejected])))
+
+
+def test_o2_rule_c_path_claim_allowed_is_refused_at_every_input_depth():
+    # Rule c: no input may carry path_claim_allowed, at any depth, under any
+    # value; the composer refuses rather than reading it.
+    for value in (True, False, None, 1):
+        for key in ("anchor", "announcements", "assumptions"):
+            oi = copy.deepcopy(_outlook_inputs())
+            node = oi[key]
+            node = node[0] if isinstance(node, list) else node
+            node["path_claim_allowed"] = value
+            with pytest.raises(ViewsContractError, match="refused key"):
+                _compose(oi=oi)
+    # and the composed document never carries the key
+    dump = json.dumps(_compose(oi=_outlook_inputs()), sort_keys=True)
+    assert "path_claim_allowed" not in dump
 
 
 def test_audit_c_no_path_claim_allowed_read():

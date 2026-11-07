@@ -4406,6 +4406,16 @@ def test_workspace_runtime_contracts_can_start_the_ci_that_validates_them() -> N
 # ---------------------------------------------------------------------------
 
 CURATED_EXCLUSIVE = {
+    # GDELT leaf suites own their exact import/read closure.
+    "gdelt-news-leaves",
+    # Installer simulations own their concrete source/read closure without
+    # adding weight to unrelated ordinary-code packing probes.
+    "earnings-worker-systemd",
+    # Actual page-query import/read closure; no unrelated fallback ownership.
+    "admin-analytics-pages",
+    # Paid Fabric source-only guidance and deterministic attribution tests are
+    # exclusively scoped; do not widen unrelated ordinary-code packing probes.
+    "meta-ceo-fabric-contracts",
     # A1 pure product/finite QA must run on code PRs without the legacy data job.
     "eval-os-a1",
     # Qledger suites retain all named imports; opaque fixture roots are audited.
@@ -4467,6 +4477,7 @@ CURATED_EXCLUSIVE = {
     "china-search-universe",
     "china-radar-record",  # W31 China Radar: render/ledger suites keep their measured closure.
     "quant-q02-american-exercise",  # Q02 quant assessment: suite imports importlib/subprocess; AST-derived closure
+    "p08-synthetic-composition",  # Research-only composition: curated solver/adapter/test closure.
     # 2026-09-25: the CI control plane's own contracts (this suite included), moved
     # off workflow-yaml, which was `gate: data` and never ran on a PR. Exclusive
     # because its suites read most of the repository: inferred, the job would add
@@ -5174,7 +5185,8 @@ CURATED_EXCLUSIVE = {
     # macro-suite view/label helpers and scripts/build_macro_suite_pages.py, so
     # inference smeared this job's scan roots onto templates/index.html (138
     # jobs / 5,919 s against the 137 / 5,909 probe ceilings). Exclusive with the
-    # exact 55-file non-wildcard closure; nothing under templates/; no ceiling moved.
+    # exact 55-file non-wildcard import closure plus the eight Jinja templates the
+    # render tests load at runtime (T25 AUDIT-N3 A1, 2026-11-04); no ceiling moved.
     "global-liquidity-transmission",
 }
 
@@ -5461,9 +5473,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_909),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_924),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_665),
+    ("templates/index.html", 137, 5_915),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_927),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_668),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5471,6 +5483,28 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    PR #10679 (2026-11-07): contract-delta run 42322109666 / job
+    128248836979 measured source c85797511aed on tested merge 4e39ed84a42e
+    against base 53ce2316134a: index 137 jobs / 5,912 -> 5,915 weight,
+    free-content 137 / 5,927 -> 5,927, Prophet 131 / 5,668 -> 5,668,
+    ten packs each, no newly selected jobs. The standalone public-HTML
+    timeout test adds three planning units to the existing regwall-boundary
+    step set; site-access-boundary keeps its isolated contract. Fund only
+    index 5,912 -> 5,915 above the separately recorded P12.T32.S3 baseline.
+    These are planner estimates, not runtime receipts. Job/pack limits,
+    suite selection, runner admission and all other ceilings are unchanged.
+
+    P12.T32.S3 (2026-11-04): fresh canonical paired source measurements,
+    candidate 5f0f047b160b against real base b4df44260aef, using the same
+    run_ci_pack blob 3cbed589. Comparison SHA256
+    18c613726a07f17a5484f76639079111ef7b69306f3d0360754c69fea2525888:
+    index137jobs/5909->5912, free137jobs/5924->5927, Prophet131jobs/5665->5668,
+    all ten packs, identical selected IDs with no entrants or exits. The sole
+    definition/selected-weight delta is existing basket-staleness-warn4->7
+    from its regional coverage step. Raise only those three estimated-weight
+    ceilings to the measured values. These are planner estimates, not runtime
+    evidence; job-count, pack, timeout and admission bounds remain unchanged.
 
     2026-11-01 main-red repair after #10294 (ee5cd3e1a8a8), which split the
     ``gate: data`` job ``tier-gate`` into ``tier-gate``, ``paywall-contracts``

@@ -1,6 +1,6 @@
 {
   "schema": "neuralweb.mechanism_pathways.v1",
-  "as_of": "2026-11-03",
+  "as_of": "2026-11-06",
   "display_only": true,
   "not_a_signal": true,
   "authority": {
@@ -28,7 +28,7 @@
       "family": "equity-leadership",
       "driver": "ai_semis",
       "pathway_role": "primary",
-      "as_of": "2026-11-03",
+      "as_of": "2026-11-06",
       "direction_en": "AI/semis unwind — tech-led de-rating",
       "direction_zh": "AI/半导体回吐 — 科技主导的回调",
       "confidence_ceiling": "context_only",
@@ -38,7 +38,7 @@
       "nodes": [
         {
           "node_id": "driver_ai_semis",
-          "as_of": "2026-11-03",
+          "as_of": "2026-11-06",
           "domain": "market_drivers",
           "source_artifact": "data/regime/latest.json#market_drivers",
           "entity": "ai_semis",
@@ -47,8 +47,8 @@
             "zh": "AI/半导体回吐 — 科技主导的回调"
           },
           "direction": -1,
-          "value": 1.7,
-          "z_or_percentile": 1.95,
+          "value": 3.52,
+          "z_or_percentile": 2.12,
           "source_tier": "display",
           "lag_class": "same_day",
           "pathway_role": "trigger",
@@ -58,17 +58,17 @@
         },
         {
           "node_id": "leg_ai_semis_0",
-          "as_of": "2026-11-03",
+          "as_of": "2026-11-06",
           "domain": "market_drivers",
           "source_artifact": "data/regime/latest.json#market_drivers",
           "entity": "semis RS",
           "observation": {
-            "en": "semis RS (-1.3σ)",
-            "zh": "半导体相对强度 (-1.3σ)"
+            "en": "semis RS (-3.9σ)",
+            "zh": "半导体相对强度 (-3.9σ)"
           },
           "direction": "negative",
-          "value": -1.3,
-          "z_or_percentile": -1.3,
+          "value": -3.9,
+          "z_or_percentile": -3.9,
           "source_tier": "display",
           "lag_class": "same_day",
           "pathway_role": "required_leg",
@@ -78,17 +78,17 @@
         },
         {
           "node_id": "leg_ai_semis_1",
-          "as_of": "2026-11-03",
+          "as_of": "2026-11-06",
           "domain": "market_drivers",
           "source_artifact": "data/regime/latest.json#market_drivers",
-          "entity": "tech vs utilities",
+          "entity": "growth vs value",
           "observation": {
-            "en": "tech vs utilities (-2.0σ)",
-            "zh": "科技对公用事业 (-2.0σ)"
+            "en": "growth vs value (-3.4σ)",
+            "zh": "成长对价值 (-3.4σ)"
           },
           "direction": "negative",
-          "value": -2.0,
-          "z_or_percentile": -2.0,
+          "value": -3.4,
+          "z_or_percentile": -3.4,
           "source_tier": "display",
           "lag_class": "same_day",
           "pathway_role": "required_leg",
@@ -98,17 +98,17 @@
         },
         {
           "node_id": "leg_ai_semis_2",
-          "as_of": "2026-11-03",
+          "as_of": "2026-11-06",
           "domain": "market_drivers",
           "source_artifact": "data/regime/latest.json#market_drivers",
-          "entity": "cap-weight vs equal-weight",
+          "entity": "tech vs utilities",
           "observation": {
-            "en": "cap-weight vs equal-weight (-2.3σ)",
-            "zh": "市值加权对等权重 (-2.3σ)"
+            "en": "tech vs utilities (-3.1σ)",
+            "zh": "科技对公用事业 (-3.1σ)"
           },
           "direction": "negative",
-          "value": -2.3,
-          "z_or_percentile": -2.3,
+          "value": -3.1,
+          "z_or_percentile": -3.1,
           "source_tier": "display",
           "lag_class": "same_day",
           "pathway_role": "required_leg",
@@ -160,7 +160,7 @@
       "family": "inflation",
       "driver": "oil_shock",
       "pathway_role": "alternate",
-      "as_of": "2026-11-03",
+      "as_of": "2026-11-06",
       "direction_en": "oil collapsing — energy lags, breakevens down",
       "direction_zh": "",
       "confidence_ceiling": "context_only",
@@ -170,7 +170,7 @@
       "nodes": [
         {
           "node_id": "driver_oil_shock",
-          "as_of": "2026-11-03",
+          "as_of": "2026-11-06",
           "domain": "market_drivers",
           "source_artifact": "data/regime/latest.json#market_drivers",
           "entity": "oil_shock",
@@ -179,7 +179,7 @@
             "zh": ""
           },
           "direction": "",
-          "value": 0.87,
+          "value": 1.66,
           "z_or_percentile": null,
           "source_tier": "display",
           "lag_class": "same_day",
@@ -190,7 +190,7 @@
         },
         {
           "node_id": "transmission_sticky_inflation_order1",
-          "as_of": "2026-11-03",
+          "as_of": "2026-11-06",
           "domain": "transmission",
           "source_artifact": "data/transmission/latest.json",
           "entity": "transmission channel",
@@ -210,7 +210,7 @@
         },
         {
           "node_id": "transmission_sticky_inflation_order2",
-          "as_of": "2026-11-03",
+          "as_of": "2026-11-06",
           "domain": "transmission",
           "source_artifact": "data/transmission/latest.json",
           "entity": "transmission channel",
@@ -230,7 +230,7 @@
         },
         {
           "node_id": "transmission_sticky_inflation_order3",
-          "as_of": "2026-11-03",
+          "as_of": "2026-11-06",
           "domain": "transmission",
           "source_artifact": "data/transmission/latest.json",
           "entity": "transmission channel",
@@ -293,7 +293,7 @@
       "family": "credit",
       "driver": "credit_stress",
       "pathway_role": "alternate",
-      "as_of": "2026-11-03",
+      "as_of": "2026-11-06",
       "direction_en": "credit spreads widening — stress",
       "direction_zh": "",
       "confidence_ceiling": "context_only",
@@ -303,7 +303,7 @@
       "nodes": [
         {
           "node_id": "driver_credit_stress",
-          "as_of": "2026-11-03",
+          "as_of": "2026-11-06",
           "domain": "market_drivers",
           "source_artifact": "data/regime/latest.json#market_drivers",
           "entity": "credit_stress",
@@ -312,7 +312,7 @@
             "zh": ""
           },
           "direction": "",
-          "value": 0.82,
+          "value": 1.18,
           "z_or_percentile": null,
           "source_tier": "display",
           "lag_class": "same_day",
