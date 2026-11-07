@@ -5605,7 +5605,7 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
     ("templates/index.html", 137, 5_914),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_933),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_935),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 131, 5_672),
 )
 # Twelve packs per shape was the pre-curation measurement.
@@ -5614,6 +5614,44 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-07 second conflict composition for Macro #7350, main2ac8eef3:
+    Preserve current main's accepted P5.T9.S5 GSC contribution and every
+    other current owner and provenance record. Its ceilings are now
+    index5914/free5933/plan-book5672. Add only this unchanged W4 source's
+    previously measured two free-content units:5933->5935. This is
+    arithmetic composition, not a new planner run or runtime measurement.
+    No #7352/#7385 sibling allowance is imported. All job-count ceilings,
+    ten-pack bounds, selectors, suites, timeouts and admission limits stay.
+    The preceding80fc head passed its own natural42394974233 proof; it
+    does not prove this new combined source. Natural CI must qualify it.
+
+    Earlier same-carrier provenance, at its recorded source identities:
+    2026-11-07 conflict composition for Macro #7350 against main0c02daa5:
+    retain the current accepted #10710 source, owner enrollment and measured
+    index/free/Prophet ceilings 5,914/5,931/5,672. Add only this carrier's
+    already measured +2 free-content contribution, yielding 5,914/5,933/5,672.
+    This is arithmetic composition, not a new paired execution measurement.
+    Natural current-head CI must qualify it. No unmerged sibling funding,
+    job-count, ten-pack, runtime, selector or admission limit is imported.
+    The preceding carrier-specific measurements below keep their dated bases.
+
+    2026-11-07 Macro #7350 ZeroHedge W4: exact natural CI 42378726182,
+    contract-delta job 128421630052, subject 7c1e5dca8e83 against base
+    eb326523fb4f (tested merge 7e196c3ed1b7) measured:
+
+        templates/index.html          137 jobs / 5,912 weight / 10 packs
+        scripts/build_free_content.py 137 jobs / 5,929 -> 5,931 / 10 packs
+        engine/prophet/plan_book.py   131 jobs / 5,670 weight / 10 packs
+
+    Free-content selected no new job. W4's one added tests/test_ argument
+    is in the incumbent research-vault command, with exact dependency
+    paths retained in that existing exclusive CODE owner. Fund only its
+    measured +2 on the free-content ceiling, 5,929 -> 5,931. Index, Prophet,
+    job-count ceilings, selected owners, ten-pack bounds and all global
+    runtime/capacity/selector controls are unchanged. These are planner
+    weights, not measured execution times. #7352 and other unmerged PRs
+    carry independent contributions; this does not import or fund them.
 
     P5.T9.S5 (2026-11-07): compose accepted retained-GSC coverage with
     protected59e035e39607, preserving its gateway and prior provenance
