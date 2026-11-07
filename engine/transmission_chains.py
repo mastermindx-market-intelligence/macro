@@ -1703,6 +1703,9 @@ def run(root: Path | None = None, *, write: bool = True,
         log.warning("prospective input capture unavailable: %s", e)
         state["input_capture"] = {"schema": "txi.prospective_input_read.v1",
                                   "status": "unavailable", "reason": "capture_failed"}
+    # Publish the actual completion clock, after the prospective capture finishes.
+    # The provisional minute stamp predates the captured inputs and cannot be a cutoff.
+    state["built"] = datetime.now(timezone.utc).isoformat()
     # Preserve the incumbent explorer's 2MB source cap; a receipt must not make an
     # otherwise readable state exceed it. Absence remains explicitly unqualified.
     if len(json.dumps(state, indent=2, ensure_ascii=False, default=str).encode()) > 2_000_000:
