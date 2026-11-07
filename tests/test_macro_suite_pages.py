@@ -1307,3 +1307,59 @@ def test_business_reference_period_does_not_claim_method_or_definition_publicati
     date_label = next(n for n in headline._nodes() if n.name == "dt")
     assert next(n for n in date_label._nodes() if n._class("l-en")).get_text(strip=True) == "Reference period"
     assert next(n for n in date_label._nodes() if n._class("l-zh")).get_text(strip=True) == "参考期"
+
+
+@pytest.mark.parametrize("status,reason", [("PRESENT", None), ("PARTIAL", "COMPUTATION_REFUSED")])
+def test_business_present_clock_absence_is_not_missing_data(status, reason):
+    from copy import deepcopy
+    from lib import macro_suite_view as V
+    page = next(p for p in builder.SUITE_PAGES if p.workspace_id == "business_activity")
+    snapshot, artifact = builder.read_workspace(ROOT / "tests/fixtures/macro_suite_t11", page)
+    component = snapshot["availability"]["required"][0]
+    component.update(status=status, freshness="CURRENT", source_asof=None, null_reason=reason)
+    before = deepcopy(snapshot)
+    view = V.build_view(snapshot, page_built_at=BUILT_AT, artifact=artifact)
+    row = view["context"]["required"][0]
+    assert row["presence"] == labels.PRESENCE[status]
+    assert row["source_asof"] is None and view["context"]["last_source_cut"] is None
+    assert row["absence"]["token"] == (reason or "UNKNOWN")
+    assert row["absence"]["label"] == {"en": "Observation timing not supplied", "zh": "来源未提供观察时间"}
+    assert row["freshness_tone"] == "neutral"
+    diagnostic = next(d for d in view["diagnostics"] if d["title"] == row["label"])
+    assert diagnostic["tone"] == "warn"
+    assert "No accepted source cut" in diagnostic["body"]["en"]
+    assert "No reading arrived today" not in diagnostic["body"]["en"]
+    assert "Observation timing not supplied" in diagnostic["body"]["en"]
+    assert snapshot == before
+
+
+@pytest.mark.parametrize("status,freshness,reason", [
+    ("ABSENT", "SOURCE_FAILED", "SOURCE_FAILED"),
+    ("PRESENT", "RIGHTS_BLOCKED", "RIGHTS_BLOCKED"),
+    ("PRESENT", "SOURCE_FAILED", "DISAGREEMENT"),
+    ("PRESENT", "CURRENT", "DISAGREEMENT"),
+])
+def test_business_unknown_clock_does_not_erase_data_rights_or_cut_refusals(status, freshness, reason):
+    from copy import deepcopy
+    from lib import macro_suite_view as V
+    page = next(p for p in builder.SUITE_PAGES if p.workspace_id == "business_activity")
+    snapshot, artifact = builder.read_workspace(ROOT / "tests/fixtures/macro_suite_t11", page)
+    snapshot["availability"]["state"] = "SOURCE_FAILED"
+    component = snapshot["availability"]["required"][0]
+    component.update(status=status, freshness=freshness, source_asof=None, null_reason=reason)
+    snapshot["availability"]["contradiction"] = {
+        "present": True, "kind": None,
+        "en": "Source cuts are ambiguous or duplicated.", "zh": "来源截止存在歧义或重复。",
+        "components": [component["component_id"]],
+    }
+    before = deepcopy(snapshot)
+    view = V.build_view(snapshot, page_built_at=BUILT_AT, artifact=artifact)
+    row = view["context"]["required"][0]
+    assert row["presence"] == labels.PRESENCE[status]
+    assert row["absence"]["token"] == reason
+    assert row["absence"]["label"] == labels.NULL_REASON[reason]
+    assert view["context"]["state_tone"] == "bad"
+    diagnostic = next(d for d in view["diagnostics"] if d["title"] == row["label"])
+    assert diagnostic["tone"] == "warn" and "No accepted source cut" in diagnostic["body"]["en"]
+    assert any(d["tone"] == "bad" and d["body"]["en"] == "Source cuts are ambiguous or duplicated." for d in view["diagnostics"])
+    assert snapshot == before

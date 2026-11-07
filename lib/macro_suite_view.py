@@ -250,10 +250,19 @@ def _context(snapshot: Mapping[str, Any], page_built_at: str) -> dict[str, Any]:
         if availability.get("worst_freshness") == "CURRENT":
             context["worst_freshness"] = business_unverified_label()
             context["worst_freshness_tone"] = "neutral"
-        for component in required:
+        for item, component in zip(availability.get("required") or [], required):
             if component["freshness_state"] == "CURRENT":
                 component["freshness"] = business_unverified_label()
                 component["freshness_tone"] = "neutral"
+            if (component["absence"] is not None
+                    and component["freshness_state"] == "CURRENT"
+                    and item.get("status") in ("PRESENT", "PARTIAL")
+                    and item.get("null_reason") in (None, "COMPUTATION_REFUSED")):
+                # This column is timing, not component availability. Keep the
+                # original reason token and no-accepted-cut warning; present
+                # (possibly partial) data does not establish a clock/freshness.
+                component["absence"]["label"] = _pair(
+                    "Observation timing not supplied", "来源未提供观察时间")
     return context
 
 
