@@ -1043,6 +1043,17 @@ PROPHET_SETTLEMENT_SCHEMA = "prophet.settlement_manifest/v1"
 _PROPHET_SETTLEMENT_STATUSES = ("PENDING", "SETTLED", "UNAVAILABLE_DATA")
 
 
+def _parse_prophet_settlement_session(value: object) -> "date | None":
+    """Accept only a complete canonical YYYY-MM-DD settlement session."""
+    if not isinstance(value, str):
+        return None
+    try:
+        parsed = date.fromisoformat(value)
+    except ValueError:
+        return None
+    return parsed if parsed.isoformat() == value else None
+
+
 def _grade_prophet_settlement(
     block: object, heartbeat_fresh: "bool | None"
 ) -> "tuple[list[str], dict]":
@@ -1053,8 +1064,8 @@ def _grade_prophet_settlement(
     alone, so a claimed SETTLED is incapable of paging and incapable of quieting a
     page. ``heartbeat_fresh`` is True (in budget), False (over budget) or None (no
     usable heartbeat clock). Only a QUALIFIED closed shape — the known schema id,
-    a known status token and, for SETTLED, both bundle dates parseable — reading
-    on a FRESH heartbeat is recorded into facts; anything else is described in a
+    a known status token and, for SETTLED, both dates in canonical YYYY-MM-DD
+    form — reading on a FRESH heartbeat is recorded into facts; anything else is described in a
     warning as exactly what it is (unreadable, unrecognized, advisory, or a claim
     that is not honored). Facts lift out only the closed schema id, the closed
     status token and bundle dates re-formatted from their PARSED values — never a
@@ -1081,11 +1092,12 @@ def _grade_prophet_settlement(
             "shape"
         )
         return warn, facts
-    owed = _parse_date(block.get("owed_session"))
-    source_asof = _parse_date(block.get("source_asof"))
+    owed = _parse_prophet_settlement_session(block.get("owed_session"))
+    source_asof = _parse_prophet_settlement_session(block.get("source_asof"))
     if status == "UNAVAILABLE_DATA":
-        facts["prophet_settlement_schema"] = schema
-        facts["prophet_settlement_status"] = status
+        if heartbeat_fresh is True:
+            facts["prophet_settlement_schema"] = schema
+            facts["prophet_settlement_status"] = status
         warn.append(
             "CHECK E INDETERMINATE: prophet_settlement reads UNAVAILABLE_DATA — "
             "the issuer reports no gradable settlement; this is neither an "
@@ -1097,12 +1109,13 @@ def _grade_prophet_settlement(
         # unavailable for a long time and that must never become a permanent
         # page — the non-settled state is noise-free until the heartbeat itself
         # gives a reason to alarm.
-        facts["prophet_settlement_schema"] = schema
-        facts["prophet_settlement_status"] = status
-        if owed is not None:
-            facts["prophet_settlement_owed_session"] = owed.isoformat()
-        if source_asof is not None:
-            facts["prophet_settlement_source_asof"] = source_asof.isoformat()
+        if heartbeat_fresh is True:
+            facts["prophet_settlement_schema"] = schema
+            facts["prophet_settlement_status"] = status
+            if owed is not None:
+                facts["prophet_settlement_owed_session"] = owed.isoformat()
+            if source_asof is not None:
+                facts["prophet_settlement_source_asof"] = source_asof.isoformat()
         bundle = "" if (owed is not None and source_asof is not None) \
             else " without a complete settlement bundle"
         warn.append(

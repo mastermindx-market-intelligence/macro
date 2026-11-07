@@ -1374,6 +1374,57 @@ def test_malformed_and_unknown_settlement_shapes_are_indeterminate():
         assert "not-a-session-date" not in blob
 
 
+@pytest.mark.parametrize("field", ["owed_session", "source_asof"])
+@pytest.mark.parametrize("value", [
+    "2026-08-11-GARBAGE",
+    "2026-08-11T00:00:00Z",
+    "2026-08-11Tmalformed",
+    "20260811",
+    "2026-W33-2",
+    "2026-08-11 ",
+])
+def test_settled_claim_requires_complete_canonical_session_dates(field, value):
+    """A parseable prefix, timestamp or alternate ISO form is not a session."""
+    report = evaluate(
+        [_run()], ADVANCED, NOW,
+        sentinel_heartbeat=_settlement_doc(_settlement(**{field: value})),
+    )
+    assert report["ok"] is True, report
+    assert not report["fail_reasons"], report
+    warnings = [w for w in report["warnings"] if "prophet_settlement" in w]
+    assert len(warnings) == 1 and "INDETERMINATE" in warnings[0], report
+    assert not _settlement_fact_keys(report), report["facts"]
+    assert value not in json.dumps(report)
+
+
+@pytest.mark.parametrize("status", ["PENDING", "UNAVAILABLE_DATA"])
+@pytest.mark.parametrize("last_pass_utc", [
+    "2026-08-12T02:00:00+00:00",
+    "not-a-timestamp",
+])
+def test_nonsettled_claim_requires_fresh_heartbeat_for_facts(status, last_pass_utc):
+    """Stale/unreadable observations retain warnings and the heartbeat verdict."""
+    baseline = evaluate(
+        [_run()], ADVANCED, NOW,
+        sentinel_heartbeat=_settlement_doc(None, last_pass_utc=last_pass_utc),
+    )
+    report = evaluate(
+        [_run()], ADVANCED, NOW,
+        sentinel_heartbeat=_settlement_doc(
+            _settlement(status=status), last_pass_utc=last_pass_utc,
+        ),
+    )
+    assert report["ok"] is baseline["ok"], report
+    assert report["fail_reasons"] == baseline["fail_reasons"], report
+    assert report["facts"] == baseline["facts"], report["facts"]
+    assert all(w in report["warnings"] for w in baseline["warnings"]), report
+    warnings = [w for w in report["warnings"] if "prophet_settlement" in w]
+    expected = "ADVISORY" if status == "PENDING" else "INDETERMINATE"
+    assert len(warnings) == 1 and expected in warnings[0], report
+    assert status in warnings[0], report
+    assert not _settlement_fact_keys(report), report["facts"]
+
+
 def test_claimed_settled_cannot_rescue_a_stale_heartbeat():
     """THE load-bearing one. The heartbeat age alone still grades pass/fail: a
     document claiming SETTLED from a sentinel that has not passed in 6 hours is
