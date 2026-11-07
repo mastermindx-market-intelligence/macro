@@ -485,11 +485,20 @@ def _observed_at(record: dict[str, Any]) -> tuple[str | None, str]:
     return None, "absent"
 
 
-def _event_row(record: dict[str, Any], *, session: str, state: str) -> dict[str, Any]:
+def _event_row(
+    record: dict[str, Any],
+    *,
+    session: str,
+    state: str,
+    dfii10_bundle: dict[str, Any] | None = None,
+    dfii10_load_state: str | None = None,
+) -> dict[str, Any]:
     """One ``forward.parquet`` row, built by COPYING declared spool fields.
 
-    PASSTHROUGH ONLY — this function reads the event and writes the row.  It
-    derives no history, joins no nightly artifact, and reconstructs nothing; the
+    EVENT IDENTITY IS PASSTHROUGH ONLY: this function never changes the candidate,
+    detector, decision cut or live-forward state.  The separately qualified
+    DFII10 owner receipt is copied as measurement context when it was known at
+    that cut; absence stays explicit and has no rank/gate/trade authority.  The
     ``lobe_enlisted``/``lobe_ids`` fields below are copied verbatim from the W4
     event when W4 chose to carry them and are NULL otherwise.  That null is the
     honest Q4 state: §10 Q4 is LIVE-FORWARD ONLY, and a historical enlistment
@@ -499,7 +508,7 @@ def _event_row(record: dict[str, Any], *, session: str, state: str) -> dict[str,
     """
     observed_at, observed_basis = _observed_at(record)
     ctx = record.get("context") if isinstance(record.get("context"), dict) else {}
-    return {
+    row = {
         "episode_address": episode_address(record),
         "ticker": str(record.get("ticker") or ""),
         "detector_id": str(record.get("detector_id") or ""),
@@ -521,6 +530,52 @@ def _event_row(record: dict[str, Any], *, session: str, state: str) -> dict[str,
         "first_seen_session": session,
         "spool_path": str(record.get("_spool_path") or "") or None,
     }
+    try:
+        from engine.rate_inflation_receipt import (
+            bind_dfii10_context,
+            flatten_dfii10_context,
+        )
+        dfii10_context = bind_dfii10_context(
+            dfii10_bundle,
+            decision_known_at=record.get("signal_known_ts"),
+            decision_session=row.get("decision_session"),
+            load_state=dfii10_load_state,
+        )
+        row.update(flatten_dfii10_context(dfii10_context))
+    except Exception as exc:  # noqa: BLE001 — context must not stop W5
+        unavailable = {
+            "schema": "entry_radar.dfii10_context/v1",
+            "status": "UNAVAILABLE",
+            "reason": "DFII10_CONTEXT_BIND_ERROR",
+            "decision_known_at": str(record.get("signal_known_ts") or "") or None,
+            "decision_session": row.get("decision_session"),
+            "load_state": f"BIND_ERROR_{type(exc).__name__}",
+            "authority": {
+                "ranking": False, "scoring": False, "gating": False,
+                "sizing": False, "signal_origination": False,
+                "position_management": False, "trade_execution": False,
+            },
+        }
+        row.update({
+            "dfii10_context_status": "UNAVAILABLE",
+            "dfii10_context_reason": "DFII10_CONTEXT_BIND_ERROR",
+            "dfii10_context_load_state": unavailable["load_state"],
+            "dfii10_source_snapshot_hash": None,
+            "dfii10_source_content_sha256": None,
+            "dfii10_receipt_first_known_at": None,
+            "dfii10_receipt_captured_at": None,
+            "dfii10_latest_observation_date": None,
+            "dfii10_latest_value_pct": None,
+            "dfii10_prior_observation_date": None,
+            "dfii10_prior_value_pct": None,
+            "dfii10_delta_bp": None,
+            "dfii10_receipt_age_sessions": None,
+            "dfii10_correction_state": None,
+            "dfii10_context_json": json.dumps(
+                unavailable, sort_keys=True, separators=(",", ":")
+            ),
+        })
+    return row
 
 
 def _spec_hash_of(record: dict[str, Any]) -> str | None:
@@ -813,13 +868,25 @@ def main(argv: list[str] | None = None) -> int:
     session = market_session()
     sdir = spool_dir(root, args.spool_dir)
     records = read_spool_events(sdir)
+    try:
+        from engine.rate_inflation_receipt import load_dfii10_bundle
+        dfii10_bundle, dfii10_load_state = load_dfii10_bundle(root)
+    except Exception as exc:  # noqa: BLE001 — context must not stop W5
+        dfii10_bundle = None
+        dfii10_load_state = f"LOAD_ERROR_{type(exc).__name__}"
     print(f"entry-radar reconcile: session={session} spool_dir={sdir} "
-          f"events={len(records)}", flush=True)
+          f"events={len(records)} dfii10={dfii10_load_state}", flush=True)
 
     epoch = LIVE_FORWARD_EPOCH
     rows: list[dict[str, Any]] = []
     for record in records:
-        provisional = _event_row(record, session=session, state=STATE_WAITING)
+        provisional = _event_row(
+            record,
+            session=session,
+            state=STATE_WAITING,
+            dfii10_bundle=dfii10_bundle,
+            dfii10_load_state=dfii10_load_state,
+        )
         if live_forward_eligible(provisional, epoch=epoch):
             provisional["state"] = STATE_LIVE_FORWARD
         rows.append(provisional)
@@ -847,6 +914,16 @@ def main(argv: list[str] | None = None) -> int:
         "live_forward_rows": len(live_rows),
         "live_forward_epoch": epoch,
         "spool_dir": str(sdir) if sdir else None,
+        "dfii10_context": {
+            "load_state": dfii10_load_state,
+            "qualified_rows": sum(
+                row.get("dfii10_context_status") == "QUALIFIED" for row in rows
+            ),
+            "unavailable_rows": sum(
+                row.get("dfii10_context_status") != "QUALIFIED" for row in rows
+            ),
+            "authority": "measurement_only",
+        },
         "updated_at": utcnow().isoformat(),
     }
 
