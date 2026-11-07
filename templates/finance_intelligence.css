@@ -195,6 +195,27 @@ body.fi-page { background: var(--fi-canvas); }
 .fi-deck { font-size: var(--fs-md); line-height: 1.55; margin: 8px 0 0; max-width: 70ch; color: var(--fi-text); }
 /* Not connected (no endpoint bound): the hero meta chips carry no payload — hide the empty row. */
 .fi-shell[data-state="not-connected"] .fi-meta { display: none; }
+/* Ruling F-5 (not-connected honest shell): a calm unbuilt status panel in the
+   same measure as .fi-section — hairline border, panel ground, section-title
+   h2 scale, muted body — plus static hides so the page is honest with
+   JavaScript off. Every mount stays in the DOM for a connected page; the
+   runtime's not_connected keep list agrees (finance_intelligence.js). */
+.fi-unbuilt {
+  background: var(--fi-panel);
+  border: 1px solid var(--fi-line);
+  border-radius: var(--r-card, 12px);
+  margin-top: 40px;
+  padding: 20px 24px;
+}
+.fi-unbuilt h2 { font-size: var(--fs-h2); font-weight: 700; letter-spacing: -.01em; margin: 0; }
+.fi-unbuilt p { font-size: var(--fs-md); line-height: 1.55; color: var(--fi-muted);
+  margin: 8px 0 0; max-width: 75ch; }
+.fi-shell[data-state="not-connected"] .fi-section:not(#company-exposure) { display: none; }
+.fi-shell[data-state="not-connected"] .fi-toc { display: none; }
+.fi-shell[data-state="not-connected"] .fi-provenance { display: none; }
+.fi-shell[data-state="not-connected"] [data-fi-mount="notice"] { display: none; }
+.fi-shell[data-state="not-connected"] #company-exposure > :not(.fi-section-head,
+.fi-hint-lede, .fi-hint-roster) { display: none; }
 .fi-meta { font-size: var(--fs-sm); color: var(--fi-muted); margin: 10px 0 0; display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
 .fi-toc { margin: 18px 0 8px; padding: 12px 16px; }
 .fi-toc ol { display: flex; flex-wrap: wrap; gap: 8px 12px; margin: 0; padding: 0; list-style: none; font-size: var(--fs-sm); }
@@ -223,6 +244,9 @@ body.fi-page { background: var(--fi-canvas); }
    citation rows. Tier-2 surface in both themes; each row wraps instead of
    overflowing a 390px viewport. */
 .fi-hint-roster { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: 6px; }
+/* Ruling F-5: quiet body line above the roster — the names are research
+   hints under study, none confirmed. */
+.fi-hint-lede { font-size: var(--fs-sm); color: var(--fi-muted); margin: 12px 0 0; }
 .fi-hint-row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; padding: 6px 10px; font-size: var(--fs-sm); background: var(--fi-panel2); border: 1px solid var(--fi-line); border-radius: var(--r-ctl, 8px); }
 .fi-hint-symbol { color: var(--fi-text); font-weight: 600; min-width: 3.5em; }
 .fi-hint-record { margin-left: auto; min-width: 0; color: var(--fi-muted); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
@@ -425,6 +449,7 @@ body.fi-page { background: var(--fi-canvas); }
   .fi-exposure-cards { display: grid; }
   .fi-exposure-cards-more { display: block; }
   .fi-section { padding: 16px; }
+  .fi-unbuilt { padding: 16px; }
   .fi-macro-table-wrap { display: none; }
   /* Item 9: every row stays reachable on phone. First 8 rows render in
      .fi-macro-cards; rows 9..N live inside a sibling .fi-disc .fi-macro-cards-more

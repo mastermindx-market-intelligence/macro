@@ -12,7 +12,7 @@ from html import unescape
 from urllib.parse import urlsplit
 
 from engine.news_common import low_value_reason, quality_score, ticker_editorial_reason, ticker_template_reason
-from engine.qkernel import publisher_category, publisher_domain, publisher_tier
+from engine.qkernel import norm_title, publisher_category, publisher_domain, publisher_tier
 from engine.qbus_news_editorial import NewsEditorialView
 
 EDITORIAL_POLICY_VERSION = "ticker_news.curated.v1"
@@ -92,6 +92,43 @@ def reporting_state(rows, rights=None) -> str:
     ):
         return "reports_differ"
     return "no_material_difference"
+
+
+def information_family_count(rows, rights=None) -> int:
+    """Count distinct information origins among one story's current members.
+
+    The publisher identity is the floor: one publisher is one family however many
+    transports or items carry it. Two publishers join one family only when both
+    show the same rights-visible normalized headline, which is how syndicated wire
+    copy appears under two outlets. A withheld or empty title never joins, so the
+    count reveals nothing about hidden text and falls back to the publisher count.
+    An edited syndicated headline is not detected and stays counted per publisher.
+    Cluster identifiers are never read: a shared cluster is not shared origin.
+    The result is 1 <= families <= publishers <= items for a non-empty story.
+    """
+    parent: dict[str, str] = {}
+
+    def root(key: str) -> str:
+        while parent[key] != key:
+            parent[key] = parent[parent[key]]
+            key = parent[key]
+        return key
+
+    first_publisher_for_title: dict[str, str] = {}
+    for row in rows:
+        source = str(row["source"])
+        publisher = publisher_identity(source, str(row["url"]))
+        parent.setdefault(publisher, publisher)
+        if rights is not None and not rights.allows(source, "title"):
+            continue
+        key = norm_title(display_text(row["title"]))
+        if not key:
+            continue
+        other = first_publisher_for_title.setdefault(key, publisher)
+        left, right = root(other), root(publisher)
+        if left != right:
+            parent[max(left, right)] = min(left, right)
+    return len({root(publisher) for publisher in parent})
 
 
 def representatives_in_display_order(rows, rights=None, *, comparison=None):
