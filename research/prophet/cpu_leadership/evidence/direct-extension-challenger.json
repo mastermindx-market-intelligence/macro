@@ -1,0 +1,380 @@
+{
+  "schema": "prophet.cpu_leadership.direct_extension_challenger.v1",
+  "authority": {
+    "can_rank": false,
+    "can_gate": false,
+    "can_size": false,
+    "can_trade": false
+  },
+  "construction": {
+    "rs_challenger": 0.85,
+    "atr_extended_boundary": 1.5,
+    "ma_window": 50,
+    "atr_window": 14,
+    "episode_unit": "contiguous_otherwise_clean_rs085_atr_band_onset",
+    "dd_risk": -0.08,
+    "horizons_sessions": [
+      5,
+      10,
+      21
+    ]
+  },
+  "data": {
+    "root": "/Users/chriswong/Documents/Cluade/macro-main/data",
+    "panel_shape": [
+      6968,
+      11
+    ],
+    "panel_span": [
+      "1998-12-22",
+      "2026-09-04"
+    ],
+    "manifest": [
+      {
+        "ticker": "XLK",
+        "path": "/Users/chriswong/Documents/Cluade/macro-main/data/yahoo/XLK.parquet",
+        "status": "ok",
+        "sha256": "7604d381e147613bd52d62f42182e7b2b8c75ba8cd2250bb342622722b68f203",
+        "rows": 6968,
+        "start": "1998-12-22",
+        "end": "2026-09-04"
+      },
+      {
+        "ticker": "XLE",
+        "path": "/Users/chriswong/Documents/Cluade/macro-main/data/yahoo/XLE.parquet",
+        "status": "ok",
+        "sha256": "c65cab1583326d89e412e57daaa23671d3331debd44f09b201844daee59d2a86",
+        "rows": 6968,
+        "start": "1998-12-22",
+        "end": "2026-09-04"
+      },
+      {
+        "ticker": "XLF",
+        "path": "/Users/chriswong/Documents/Cluade/macro-main/data/yahoo/XLF.parquet",
+        "status": "ok",
+        "sha256": "9baa64a4c30c952000ba496c92154cfda9debd6ecebe4aa99358fcc74e7a122d",
+        "rows": 6968,
+        "start": "1998-12-22",
+        "end": "2026-09-04"
+      },
+      {
+        "ticker": "XLV",
+        "path": "/Users/chriswong/Documents/Cluade/macro-main/data/yahoo/XLV.parquet",
+        "status": "ok",
+        "sha256": "ab67956ac91b4624661ef01af958c82902426a7a6b12afb5134dcf07b9715260",
+        "rows": 6968,
+        "start": "1998-12-22",
+        "end": "2026-09-04"
+      },
+      {
+        "ticker": "XLY",
+        "path": "/Users/chriswong/Documents/Cluade/macro-main/data/yahoo/XLY.parquet",
+        "status": "ok",
+        "sha256": "b05ad4893972a037024244c7639d6952bea6354b33780288a9f349da074bb65b",
+        "rows": 6968,
+        "start": "1998-12-22",
+        "end": "2026-09-04"
+      },
+      {
+        "ticker": "XLP",
+        "path": "/Users/chriswong/Documents/Cluade/macro-main/data/yahoo/XLP.parquet",
+        "status": "ok",
+        "sha256": "db4069e9ce02b0fabc8fd6c3008f66cf0759311e7f6201fe8224c798d4158849",
+        "rows": 6968,
+        "start": "1998-12-22",
+        "end": "2026-09-04"
+      },
+      {
+        "ticker": "XLU",
+        "path": "/Users/chriswong/Documents/Cluade/macro-main/data/yahoo/XLU.parquet",
+        "status": "ok",
+        "sha256": "cb25e749ff87f3f6fec08f665d5b24d5db103232da12611e05ed2eecea6d12da",
+        "rows": 6968,
+        "start": "1998-12-22",
+        "end": "2026-09-04"
+      },
+      {
+        "ticker": "XLI",
+        "path": "/Users/chriswong/Documents/Cluade/macro-main/data/yahoo/XLI.parquet",
+        "status": "ok",
+        "sha256": "e7193e39aa3d48accd325e45974a25200036948de64cce6464c0e22f7ddab33d",
+        "rows": 6968,
+        "start": "1998-12-22",
+        "end": "2026-09-04"
+      },
+      {
+        "ticker": "XLB",
+        "path": "/Users/chriswong/Documents/Cluade/macro-main/data/yahoo/XLB.parquet",
+        "status": "ok",
+        "sha256": "ae81257206350d3959d6cea805118bccb86c11dfc5d4341fa4387e3d53753674",
+        "rows": 6968,
+        "start": "1998-12-22",
+        "end": "2026-09-04"
+      },
+      {
+        "ticker": "XLRE",
+        "path": "/Users/chriswong/Documents/Cluade/macro-main/data/yahoo/XLRE.parquet",
+        "status": "ok",
+        "sha256": "4be409bbc31d6e42cab7a2e0d514f31a3e61775e4d148a420d9eb89eeb2b803e",
+        "rows": 2743,
+        "start": "2015-10-08",
+        "end": "2026-09-04"
+      },
+      {
+        "ticker": "XLC",
+        "path": "/Users/chriswong/Documents/Cluade/macro-main/data/yahoo/XLC.parquet",
+        "status": "ok",
+        "sha256": "d8df9488b6f5f14974b37db418fa26ef616929dcbe42953038727c5458a57aec",
+        "rows": 2065,
+        "start": "2018-06-19",
+        "end": "2026-09-04"
+      },
+      {
+        "ticker": "SPY",
+        "path": "/Users/chriswong/Documents/Cluade/macro-main/data/yahoo/SPY.parquet",
+        "status": "ok",
+        "sha256": "3c81a5dde9268b5b0cf467e7bf1beb14eede4932c58b6000e105fdd58589f20c",
+        "rows": 8458,
+        "start": "1993-01-29",
+        "end": "2026-09-04"
+      }
+    ]
+  },
+  "source_dependencies": {
+    "engine/theme_extension.py": "089bb214a3094a05408beb0712d4cd86e41db38fd084ac5421b92a56bff2afb5",
+    "engine/basket_score.py": "313e9dfae08768d769c6604dcc0881315c848ce4b6ffa524430385723d7f5016",
+    "scripts/calibrate_baskets.py": "d2abdd763468308dd81f2010688001b8ada143dad7dbde657c271e0d3f13a11a",
+    "research/prophet/cpu_leadership/entry_rs_threshold_study.py": "991d9ddf149cf1b185920dcf33e33b9c9e11637f95feb4407e66d65628caf34e",
+    "research/prophet/cpu_leadership/entry_rs_threshold_inference.py": "6b833a828423390a434375a2c1825d784e7a69bf8ee6558529ce1efb1fc61143"
+  },
+  "cohorts": {
+    "rs085_atr_normal": {
+      "n_episodes": 2712,
+      "n_sectors": 11,
+      "span": [
+        "1999-06-23",
+        "2026-08-06"
+      ],
+      "rs_pctile_median": 0.1825,
+      "atr_extension_median": 0.2064,
+      "decade_counts": {
+        "1990": 59,
+        "2000": 917,
+        "2010": 977,
+        "2020": 759
+      },
+      "abs_5d_median_pct": 0.42,
+      "rel_5d_median_pct": -0.01,
+      "abs_10d_median_pct": 0.728,
+      "rel_10d_median_pct": 0.047,
+      "abs_21d_median_pct": 1.203,
+      "rel_21d_median_pct": 0.041,
+      "dd_21d_median_pct": -2.166,
+      "p_dd_21d_lt_8pct": 0.1095,
+      "p_continuation_failure_21d": 0.4948
+    },
+    "rs085_atr_extended": {
+      "n_episodes": 3254,
+      "n_sectors": 11,
+      "span": [
+        "1999-06-30",
+        "2026-08-06"
+      ],
+      "rs_pctile_median": 0.3829,
+      "atr_extension_median": 3.0382,
+      "decade_counts": {
+        "1990": 38,
+        "2000": 1024,
+        "2010": 1235,
+        "2020": 957
+      },
+      "abs_5d_median_pct": 0.273,
+      "rel_5d_median_pct": 0.022,
+      "abs_10d_median_pct": 0.512,
+      "rel_10d_median_pct": 0.01,
+      "abs_21d_median_pct": 1.004,
+      "rel_21d_median_pct": 0.067,
+      "dd_21d_median_pct": -1.802,
+      "p_dd_21d_lt_8pct": 0.0685,
+      "p_continuation_failure_21d": 0.4871
+    },
+    "middle_075_085_atr_normal": {
+      "n_episodes": 337,
+      "n_sectors": 11,
+      "span": [
+        "1999-06-29",
+        "2026-08-06"
+      ],
+      "rs_pctile_median": 0.8016,
+      "atr_extension_median": 0.4963,
+      "decade_counts": {
+        "1990": 2,
+        "2000": 156,
+        "2010": 116,
+        "2020": 63
+      },
+      "abs_5d_median_pct": 0.721,
+      "rel_5d_median_pct": 0.299,
+      "abs_10d_median_pct": 1.142,
+      "rel_10d_median_pct": 0.368,
+      "abs_21d_median_pct": 1.773,
+      "rel_21d_median_pct": 0.692,
+      "dd_21d_median_pct": -1.947,
+      "p_dd_21d_lt_8pct": 0.1157,
+      "p_continuation_failure_21d": 0.3947
+    },
+    "middle_075_085_atr_extended": {
+      "n_episodes": 958,
+      "n_sectors": 11,
+      "span": [
+        "1999-06-30",
+        "2026-07-29"
+      ],
+      "rs_pctile_median": 0.8056,
+      "atr_extension_median": 4.3459,
+      "decade_counts": {
+        "1990": 6,
+        "2000": 327,
+        "2010": 405,
+        "2020": 220
+      },
+      "abs_5d_median_pct": 0.318,
+      "rel_5d_median_pct": 0.147,
+      "abs_10d_median_pct": 0.497,
+      "rel_10d_median_pct": 0.122,
+      "abs_21d_median_pct": 1.165,
+      "rel_21d_median_pct": 0.307,
+      "dd_21d_median_pct": -1.722,
+      "p_dd_21d_lt_8pct": 0.0616,
+      "p_continuation_failure_21d": 0.4509
+    }
+  },
+  "primary_inference": {
+    "left": "rs085_atr_extended",
+    "right": "rs085_atr_normal",
+    "metrics": {
+      "rel_21d": {
+        "n_overlapping_months": 288,
+        "span": [
+          "1999-06-01",
+          "2026-08-01"
+        ],
+        "mean": 7.8e-05,
+        "median": -0.001362,
+        "newey_west": {
+          "mean": 8e-05,
+          "se": 0.00128,
+          "t": 0.061,
+          "p": 0.9511,
+          "n": 288,
+          "lags": 3,
+          "lags_requested": 3
+        },
+        "moving_block_bootstrap": {
+          "n": 288,
+          "block": 3,
+          "draws": 5000,
+          "seed": 20260921,
+          "mean_ci95": [
+            -0.002286,
+            0.002698
+          ]
+        }
+      },
+      "dd_21d": {
+        "n_overlapping_months": 288,
+        "span": [
+          "1999-06-01",
+          "2026-08-01"
+        ],
+        "mean": -0.001946,
+        "median": -0.003223,
+        "newey_west": {
+          "mean": -0.00195,
+          "se": 0.00116,
+          "t": -1.68,
+          "p": 0.093,
+          "n": 288,
+          "lags": 3,
+          "lags_requested": 3
+        },
+        "moving_block_bootstrap": {
+          "n": 288,
+          "block": 3,
+          "draws": 5000,
+          "seed": 20260921,
+          "mean_ci95": [
+            -0.00411,
+            0.000535
+          ]
+        }
+      },
+      "dd_risk_21d": {
+        "n_overlapping_months": 288,
+        "span": [
+          "1999-06-01",
+          "2026-08-01"
+        ],
+        "mean": 0.001074,
+        "median": 0.0,
+        "newey_west": {
+          "mean": 0.00107,
+          "se": 0.00968,
+          "t": 0.111,
+          "p": 0.9116,
+          "n": 288,
+          "lags": 3,
+          "lags_requested": 3
+        },
+        "moving_block_bootstrap": {
+          "n": 288,
+          "block": 3,
+          "draws": 5000,
+          "seed": 20260921,
+          "mean_ci95": [
+            -0.017607,
+            0.019283
+          ]
+        }
+      },
+      "continuation_failure_21d": {
+        "n_overlapping_months": 288,
+        "span": [
+          "1999-06-01",
+          "2026-08-01"
+        ],
+        "mean": -0.000674,
+        "median": 0.0,
+        "newey_west": {
+          "mean": -0.00067,
+          "se": 0.01562,
+          "t": -0.043,
+          "p": 0.9656,
+          "n": 288,
+          "lags": 3,
+          "lags_requested": 3
+        },
+        "moving_block_bootstrap": {
+          "n": 288,
+          "block": 3,
+          "draws": 5000,
+          "seed": 20260921,
+          "mean_ci95": [
+            -0.031787,
+            0.030345
+          ]
+        }
+      }
+    }
+  },
+  "episodes": {
+    "n": 7261,
+    "sha256": "055cdab72c28994111b5a307f5bc13adaeb8302d8960e837d183f8e1be0b9883"
+  },
+  "limitations": [
+    "Long-history proxy uses sector-ETF level extension; live Theme Extension headlines median-member extension.",
+    "The study evaluates anti-chase separation, not return-alpha origination.",
+    "September-2026 AI-hardware examples are not used to choose thresholds.",
+    "No production policy changes from this research artifact."
+  ]
+}

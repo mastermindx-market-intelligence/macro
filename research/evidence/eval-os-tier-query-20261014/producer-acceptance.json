@@ -1,0 +1,47 @@
+{
+  "schema": "eval_os.t12_source_interface_qualification.v1",
+  "scope": "Both narrow original T12 source interfaces, with actual existing AgentOS consumer controls",
+  "source": {
+    "engine/qledger_validity.py": "8076620b1db88e314d617cb80bf6525789d9fd2f532a21263ee8f6d3df20bb23",
+    "tests/test_qledger_validity.py": "36e3b7af1d191c4771d5029aa556555630437762570b162ec0b6bcdd2c5e11d5",
+    "engine/intelligence_registry.py": "73f171baba1eee069eca1ed8ec9a3eeccdeed246ffcf35ea9ca10b763a781630",
+    "scripts/agentos.py": "11dcf8d06976cff11041ff012af3dcb335e3f10e961edcf9e913bbef65120d6a",
+    "scripts/build_intelligence_registry.py": "fb0b68a40cce4960ba472fac0fc36f1daead9a6d5a19ea5d0bffe2df364afd41",
+    "agentos/schema/discovery.schema.yml": "a50c54880e446858d7faf0659ba7a40ce5ad9e8eecae139e15b499f9469a4749"
+  },
+  "tests": {
+    "initial_missing_function_red": 16,
+    "initial_focused_pass": 16,
+    "final_affected_suite": {
+      "passed": 66,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 15.9,
+      "junit_sha256": "afb626b708e6ee88724ed588afc43e1c892d6da4707ea802f67d5d25c78ba545"
+    }
+  },
+  "review": {
+    "path": "producer-source-review.json",
+    "sha256": "5b6ed9dcc0b5b4b8eabb6311c5ffac3bc82c231b6a0a5287f054161aeedd6d20",
+    "result": "ACCEPTED_NARROW_T12_SOURCE_PRODUCER_CONSUMER"
+  },
+  "ci_owner": {
+    "job": "qledger-cluster-honest-ci",
+    "gate": "code",
+    "scope": "all code changes",
+    "existing_command": "python -m pytest tests/test_qledger_validity.py -q",
+    "declared_dependencies": "pytest pandas numpy pyarrow pyyaml requests",
+    "new_ci_job": false
+  },
+  "delivery_remaining": [
+    "Containing commit/current-base CI/protected merge",
+    "Actual admitted publication or consumer adoption where required"
+  ],
+  "limits": [
+    "Only the two existing invalid metric codes produce T0 integrity suggestions",
+    "No empirical T2-T4 findings, inferred verification, evidence dereference, priority or execution grant",
+    "Unknown authority tier policy remains unresolved",
+    "Caller owns supplied registry and receipt source identity"
+  ]
+}

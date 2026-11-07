@@ -144,13 +144,57 @@ def main() -> int:
 
     assert not page_errors, page_errors
 
+    # R-E byte-identity gate: the <section id="ud-hero">...</section> slice
+    # of site/macro.html is what every visual cell renders against, so it must
+    # hash to the same value at capture time and at FINAL head (when the PR
+    # squash-merges). Any byte diff between capture head and FINAL head fails
+    # the gate, regardless of how good the screenshots look.
+    macro_path = ROOT / "site" / "macro.html"
+    macro_text = macro_path.read_text()
+    # Tag-balanced scan: the hero opener is `<section class="..." id="ud-hero">`
+    # (class attributes precede id), and the hero template may nest a `<section>`
+    # (spec §3 spine), so a naive `<section id="ud-hero">…` regex misses the
+    # opener and closes at the FIRST nested `</section>`.
+    open_tag = '<section class="ud-hero panel span12 ud-hero-panel" id="ud-hero"'
+    open_idx = macro_text.find(open_tag)
+    if open_idx < 0:
+        raise SystemExit(
+            "R-E gate: opener '" + open_tag + "' not found in site/macro.html"
+        )
+    cursor = open_idx
+    hero_slice = ""
+    while cursor < len(macro_text):
+        nxt_open = macro_text.find("<section", cursor + 1)
+        nxt_close = macro_text.find("</section>", cursor + 1)
+        if nxt_close < 0:
+            hero_slice = macro_text[open_idx:]
+            break
+        if nxt_open < 0 or nxt_close < nxt_open:
+            hero_slice = macro_text[open_idx:nxt_close + len("</section>")]
+            break
+        cursor = nxt_open
+    if not hero_slice:
+        raise SystemExit("R-E gate: malformed macro.html (unterminated hero section)")
+    hero_sha = hashlib.sha256(hero_slice.encode("utf-8")).hexdigest()
+    hero_sha_short = hero_sha[:12]
+
     manifest = {
         "head": HEAD_SHA,
-        "branch": "claude/mo-a-unified-dashboard-b1",
-        "pr": 7469,
+        "branch": "claude/mo-a-ud-b1-r5-followup",
+        "pr": "DRAFT-followup",
         "source_url": "site/macro.html",
         "matrix": "theme(dark|light) × lang(en|zh) × viewport(1440|390) = 8 cells",
         "page_errors": page_errors,
+        "r_e_byte_identity": {
+            "selector": "section#ud-hero",
+            "sha256": hero_sha,
+            "sha256_short": hero_sha_short,
+            "bytes": len(hero_slice.encode("utf-8")),
+            "captured_at_head": HEAD_SHA,
+            "note": ("Byte-identity gate. The same selector, sliced from "
+                     "site/macro.html at FINAL head, must hash to this value. "
+                     "Any diff fails the R-E gate."),
+        },
         "cells": records,
     }
     manifest_path = EVIDENCE / "manifest.json"

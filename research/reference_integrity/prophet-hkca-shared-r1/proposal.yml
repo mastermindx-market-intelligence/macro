@@ -1,3 +1,8 @@
+# Historical R1 baseline; source preservation only (2026-11-07).
+# This is an inactive September 2026 record, not current implementation or production authority.
+# See https://github.com/mastermindx-market-intelligence/macro/pull/7499#issuecomment-5825493315
+# BETTER/EQUIVALENT and warranted:true below are the original author's proposal assessments.
+# They are not an accepted present verdict; frozen artifact, dates and evidence pointers are retained.
 schema: mastermind.rig_proposal.v1
 reference_id: prophet-hkca-shared-r1
 

@@ -1,0 +1,45 @@
+{
+  "schema": "pb_a_analysis_contract.v1",
+  "directory": "/workspace/scratch/b0f5c5c89db5/pb_a_work/research/policy_behavior/pro_returns/PB-A",
+  "inputs_schema": {
+    "meta": {
+      "protocol_freeze_commit": "99253212652ba7d1248a587c249da44ec6e3b9b6",
+      "coding_frozen_at_utc": "2026-10-07T02:57:53Z"
+    },
+    "episodes": [
+      {
+        "episode_id": "EXAMPLE",
+        "event_date": "YYYY-MM-DD",
+        "decision_cut_utc": "ISOZ",
+        "cohort": "PRIMARY or ADVERSARIAL_CHALLENGE",
+        "regime": "protocol regime id",
+        "split": "DEVELOPMENT or CHRONOLOGICAL_REPORT",
+        "features": {
+          "rhetoric_forward_direction": "DOWN/HOLD/UP/ABSTAIN",
+          "has_new_rate_decision": true,
+          "rate_decision_direction": "DOWN/HOLD/UP/NOT_RATE",
+          "decided_target_upper_pct": 0.25
+        },
+        "feature_source_ids": [
+          "source-id"
+        ],
+        "source_time_bounds": [
+          {
+            "source_id": "id",
+            "public_time_upper_bound_utc": "ISOZ",
+            "role": "DECISION_TIME_FACT"
+          }
+        ],
+        "known_rate_decision": {
+          "lower_pct": 0,
+          "upper_pct": 0.25,
+          "decision_utc": "ISOZ",
+          "effective_date": "YYYY-MM-DD or null",
+          "status": "KNOWN_DECIDED"
+        }
+      }
+    ]
+  },
+  "note": "This example documents shape only; root builds actual input values. known_rate_decision null for focal non-rate events; scorer derives most recent publicly known changed target from decision_changes plus effective history; never pass outcome histories to predictor."
+}
+

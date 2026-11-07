@@ -1,8 +1,14 @@
-# Independent RIG review commission — `prophet-hkca-shared-r1`
+# Inactive historical RIG review commission — `prophet-hkca-shared-r1`
+
+Current disposition (2026-11-07): source preservation only. The manifest is `draft`; no RIG verdict or approval exists. This document preserves the September review procedure and original frozen target as history. It does not request, dispatch or authorize new reviewers, and it is not a prerequisite to preserving these records. Any future current-reference review requires its own expressly scoped decision under current law.
+
+The original R1 migration approval was superseded by [review 5317458514](https://github.com/mastermindx-market-intelligence/macro/pull/7499#pullrequestreview-5317458514) and [ruling 5825493315](https://github.com/mastermindx-market-intelligence/macro/pull/7499#issuecomment-5825493315). Preserve the baseline and those findings; source preservation does not close the successor product.
+
+## Recorded September commission — inactive
 
 Artifact SHA: `e3077bf50c69063f5d80275fa33dd415dae76fa9`
 Route family: `hk_stocks.html + canada_stocks.html`
-Status: `in_review`; no verdict or approval receipt exists.
+Historical requested status: `in_review`; no verdict or approval receipt was earned. Current manifest status is `draft`.
 
 The earlier pass-1 commissions against artifact `eca7c779c26e7eaaca04fc33b6b42b8ba2d8a6a1` are superseded by the accepted Session A Tier-1 copy repair. They are not reusable for this replacement artifact. Fresh critic receipts must bind the SHA above.
 

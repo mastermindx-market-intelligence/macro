@@ -1,3 +1,6 @@
+# Historical R1 baseline; source preservation only (2026-11-07).
+# This is an inactive September 2026 record, not current implementation or production authority.
+# See https://github.com/mastermindx-market-intelligence/macro/pull/7499#issuecomment-5825493315
 schema: mastermind.rig_baseline.v1
 reference_id: prophet-hkca-shared-r1
 captured_at: "2026-09-20"
@@ -20,7 +23,7 @@ production:
   note: >
     The committed before-matrix is deterministic P0B browser-fixture evidence frozen at
     3fb76ea810a8e9ef6a05fe808bb6eaee87eb1f86, not current production or entitled-session
-    proof. Current anonymous live inspection is a lead only. Signed-in and natural-update
+    proof. The September 2026 anonymous live inspection was a lead only. Signed-in and natural-update
     behavior remain explicit gaps for implementation acceptance.
 
 evidence:
@@ -43,7 +46,7 @@ evidence:
     - {path: mockups/evidence/prophet-p0b-zero-fouc/78a60ac924044b8c.png, viewport: mobile390, theme: light, locale: zh, note: "Canada deterministic before"}
   gaps:
     - {axis: access, value: entitled, reason: "No approved signed-in fixture or current entitled browser capture in Session D."}
-    - {axis: proof_class, value: production, reason: "Before matrix is reproducible fixture evidence. A separate anonymous-deployed HK probe proves one current interaction defect but not entitled-session correctness."}
+    - {axis: proof_class, value: production, reason: "Before matrix is reproducible fixture evidence. A separate anonymous-deployed HK probe recorded one interaction defect at that epoch but not entitled-session correctness."}
     - {axis: view_parity, value: HK All Grid/Table, reason: "Anonymous deployed probe: board 32 + watch 8 = 40 unique current identities, while stocktable-data and All/Table expose only 3 rows."}
     - {axis: natural_update, value: two successive publications, reason: "Owed by B/C implementation acceptance, not reference design."}
     - {axis: history_coverage, value: exact exit and continuous tenure, reason: "Existing HK/CA graded ledgers omit some visible shelves."}

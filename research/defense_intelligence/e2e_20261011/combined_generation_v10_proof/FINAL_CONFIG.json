@@ -1,0 +1,143 @@
+{
+  "source_root": "/Volumes/Mastermind/agent-workspaces/codex/ed19/macro-main",
+  "built_site": "/Volumes/Mastermind/agent-workspaces/codex/ed19/macro-main/site",
+  "source_head": "58307ed08b46c2a1726b6caf56241fd05f40ef13",
+  "source_hashes": {
+    "templates/_site_nav.html.j2": "2056ac2e8b301a47ce41dc4d76758de8bd3167151abd611340ae06be4dda8455",
+    "templates/_navlinks.html.j2": "4b909789102ad5b44f6f2da2851d6ebe8aa5f1b2967211e84c0e48c0a774060b",
+    "templates/nav_market.js": "24985e3240b509bfa197a5203b7bd28bb039b82b77a624481393203c74463497",
+    "templates/account.js": "2f1dd80e7696ffecd308519877f82421745c14d8ead9b76904190091c194152c",
+    "templates/supabase.js": "8596965fe918e656600a1b568d3a168f5c0d3d22a600886bb6f44a6555db01e7",
+    "templates/government-revenue-page.js.j2": "1a64958ebbd16a777ec8e76b9e44ffbaa32b2f5dcdc18eaf6b5220d4bc0cae5f",
+    "templates/government-revenue-investor-start.js": "5e3af056038d886e5e611b327135f0256086591f8ec31b853579eb0e9daf86f3",
+    "templates/theme.js": "02e98bf19e8e8293e9469d7272550041c596c1d7e8c5ee1fa6f57e772607d046",
+    "templates/theme.css": "311f121e4d748b917aaa3ce8ca6dae411782a02571fc39f551e3516a4e0a2ab2",
+    "templates/product-nav-icons.css": "093ad1ea5ed74b16894c3939d971db3e957aba3476a7bf8aab2ccd7b3d044d93",
+    "templates/navigation-refresh.css": "ef068fe19adab3779512462c40ab67b3e75a997a2dc6edfae2d5a36dd604eb5c",
+    "scripts/build_government_revenue.py": "1f9c450117ffe08603fd20e41c001f4d9a641abb79cce7034248134c6e5b1e8a",
+    "lib/site_assets.py": "61ed68657b38b006962c653553bcd1d2e25f4ce918ce98ab30f99e7cdc09b275",
+    "templates/government_revenue.html.j2": "104555bb470b2a01d913a15969e7ef9bef1f8bd11537e56574b86e559a6961a7",
+    "templates/government-revenue-investor.js": "11562d7b71cee0e0e817987adf51312204080cf70da1485d6a98f971d6790e97",
+    "templates/government-revenue-investor.css": "4ad79f288c94c3cabcc58e666112c432f451ac9746485a5429044c05de6e74b1",
+    "templates/government-revenue-theme-context.js": "e22a488cd1d0000d400ba8c9af00f08d46701c40891279240fd3d3a34cb17a09",
+    "templates/government-revenue-theme-context.css": "cd1d763929beaa2242e50f5970c26e4e6c7548d6abf7aee266ede11fe344b661",
+    "templates/government-revenue-dossiers.js": "bed6e6782fa6398523d884bd2c233daf78526c1c3aaf15f135a9826afa8cb212",
+    "templates/government-revenue-sbir.js": "3ec9696f571c556f7b92ada3c4e2416f4981397be76075b01e5742bb3466e6b2",
+    "templates/government-revenue-sbir.css": "d3614fcbee74d73ebfa3b682d3c40df74f4b87bf83b74164fa3acedb87358f51",
+    "templates/government-revenue-briefcase.js": "3a9af968650b4c4d4645b3c65f980ea128da0c63c65031a380a804626f3a502f",
+    "templates/government-revenue-briefcase-ui.js": "a3ed8a4da7184754ee889e22cde2ded06d2e0dbdbc5481a522debf96b646b910",
+    "templates/government-revenue-parity.css": "cc4f592ddf55d9d4a5e93515402c07af520b4560a912f3baaca1521c30ac106b",
+    "tests/test_government_revenue_priority.cjs": "721b0c6a087ca6349fed1a28ff2da46248e05bb6ac319d32b3a725d69959fc30"
+  },
+  "generation": {
+    "build_receipt": "/Volumes/Mastermind/evidence/defense-e2e-20261012-01a13300/combined-investor-generation-v10/BUILD_RECEIPT.json",
+    "sha256": "768ce259a28fb5d8eed1c20094e47ae99a1881ca8023efaf29b6f112a4ad9d97",
+    "generated_at": "2026-10-14T03:12:45.197758+00:00",
+    "financial_sha256": "b627a9d4bfc2bff2015666f46b32071d68e0f05d34a9bd8b343ce63d86752e0f",
+    "theme_sha256": "07b5292b1be8b07741287b5ce40268cc50b2d77abfe1aa68c2b323b04a660967"
+  },
+  "html": {
+    "path": "/Volumes/Mastermind/agent-workspaces/codex/ed19/macro-main/site/government_revenue.html",
+    "sha256": "fdcb06ee5ecd7e2f72cba442b3266817990daa43e35a9d50e598e6f6cd8074c7"
+  },
+  "api_inputs": {},
+  "static_inputs": {
+    "government-revenue-data/budget-program.json": {
+      "path": "/Volumes/Mastermind/agent-workspaces/codex/ed19/macro-main/site/government-revenue-data/budget-program.json",
+      "sha256": "f75ecaab8c756262e7d1fc21c8897816cdd26753f5f12c41ce984b03fe31af2e"
+    },
+    "government-revenue-data/candidates.json": {
+      "path": "/Volumes/Mastermind/agent-workspaces/codex/ed19/macro-main/site/government-revenue-data/candidates.json",
+      "sha256": "c9e71c6b6c30048d77eddd58b3c76c27adf67205db77a12023984d041e1d4318"
+    },
+    "government-revenue-data/defense-economics.json": {
+      "path": "/Volumes/Mastermind/agent-workspaces/codex/ed19/macro-main/site/government-revenue-data/defense-economics.json",
+      "sha256": "b627a9d4bfc2bff2015666f46b32071d68e0f05d34a9bd8b343ce63d86752e0f"
+    },
+    "government-revenue-data/dossiers.json": {
+      "path": "/Volumes/Mastermind/agent-workspaces/codex/ed19/macro-main/site/government-revenue-data/dossiers.json",
+      "sha256": "7b1cab9f91678239bc84c0942e0ec874614e5e3700098d51960a77081c91c0aa"
+    },
+    "government-revenue-data/fms-cases.json": {
+      "path": "/Volumes/Mastermind/agent-workspaces/codex/ed19/macro-main/site/government-revenue-data/fms-cases.json",
+      "sha256": "aaa65845056df2bd87ed3760288ec69720b647b2294b0f3c1af4e2b8c942e7df"
+    },
+    "government-revenue-data/identity-atlas.json": {
+      "path": "/Volumes/Mastermind/agent-workspaces/codex/ed19/macro-main/site/government-revenue-data/identity-atlas.json",
+      "sha256": "d9e4c096700e86de15d4c80339763235459db1a7f8268593c74c32137a67f36b"
+    },
+    "government-revenue-data/idv-dossiers.json": {
+      "path": "/Volumes/Mastermind/agent-workspaces/codex/ed19/macro-main/site/government-revenue-data/idv-dossiers.json",
+      "sha256": "e5fada612c2dc1eb3b8fa6490eaa98d59e7a0a352d054b34d2086f8192067531"
+    },
+    "government-revenue-data/latest.json": {
+      "path": "/Volumes/Mastermind/agent-workspaces/codex/ed19/macro-main/site/government-revenue-data/latest.json",
+      "sha256": "6fff640cd85cc222740804d2e96d120792454655c152b1a5e0e89822a0c5ecfc"
+    },
+    "government-revenue-data/program-dossier.json": {
+      "path": "/Volumes/Mastermind/agent-workspaces/codex/ed19/macro-main/site/government-revenue-data/program-dossier.json",
+      "sha256": "23839771ecd78e098c1692dfaa5066eda17c1adedab95f8767393d595ccfa560"
+    },
+    "government-revenue-data/program-ontology.json": {
+      "path": "/Volumes/Mastermind/agent-workspaces/codex/ed19/macro-main/site/government-revenue-data/program-ontology.json",
+      "sha256": "989e62226a63fbaadee860271a0ed602e1c7b2e37f23a93116e1e40e8d63c5d4"
+    },
+    "government-revenue-data/program-theme-context.json": {
+      "path": "/Volumes/Mastermind/agent-workspaces/codex/ed19/macro-main/site/government-revenue-data/program-theme-context.json",
+      "sha256": "ea5297936ed0dd65bc790e70aafa09b30cd0242b7c996bccb98c777d3907af44"
+    },
+    "government-revenue-data/research-state.json": {
+      "path": "/Volumes/Mastermind/agent-workspaces/codex/ed19/macro-main/site/government-revenue-data/research-state.json",
+      "sha256": "c1fadf47fb8d90389b21b2df983d43bc5ed2229a6a29ea6608aef98aafa38b38"
+    },
+    "government-revenue-data/sbir-progression.json": {
+      "path": "/Volumes/Mastermind/agent-workspaces/codex/ed19/macro-main/site/government-revenue-data/sbir-progression.json",
+      "sha256": "0c63afd3c65fe0ed883c9e31c15a2ce9909b97a965566c49bbf08010c91ee0ba"
+    },
+    "government-revenue-data/subaward-dossiers.json": {
+      "path": "/Volumes/Mastermind/agent-workspaces/codex/ed19/macro-main/site/government-revenue-data/subaward-dossiers.json",
+      "sha256": "1a265338504e00cc3058872d8c222dc0379c6e75c67f5a1bcfe1fb6d79c24ddd"
+    },
+    "government-revenue-data/theme-context.json": {
+      "path": "/Volumes/Mastermind/agent-workspaces/codex/ed19/macro-main/site/government-revenue-data/theme-context.json",
+      "sha256": "07b5292b1be8b07741287b5ce40268cc50b2d77abfe1aa68c2b323b04a660967"
+    },
+    "government-revenue-data/workspace.json": {
+      "path": "/Volumes/Mastermind/agent-workspaces/codex/ed19/macro-main/site/government-revenue-data/workspace.json",
+      "sha256": "debed5e6be5e6611505bed6cf477bd5adb71175a66919cd87e12610775b88129"
+    }
+  },
+  "additional_assets": [
+    "account.js",
+    "government-revenue-briefcase-ui.js",
+    "government-revenue-briefcase.js",
+    "government-revenue-candidate-radar.js",
+    "government-revenue-dossiers.js",
+    "government-revenue-investor-start.js",
+    "government-revenue-investor.js",
+    "government-revenue-page.js",
+    "government-revenue-sbir.js",
+    "government-revenue-theme-context.js",
+    "nav_market.js",
+    "supabase.js"
+  ],
+  "asset_hashes": {
+    "government-revenue-candidate-radar.js": "54b61a55ad03ef6b3c9aa74809cada2416eb02624f893e8673473f67fc4e8627",
+    "government-revenue-briefcase.js": "3a9af968650b4c4d4645b3c65f980ea128da0c63c65031a380a804626f3a502f",
+    "government-revenue-sbir.js": "3ec9696f571c556f7b92ada3c4e2416f4981397be76075b01e5742bb3466e6b2",
+    "government-revenue-investor.js": "11562d7b71cee0e0e817987adf51312204080cf70da1485d6a98f971d6790e97",
+    "government-revenue-page.js": "0ffe454cc738a3c4f7b6934ab71c7c0940ba6dd275cfd432e5f5bc98d42423c6",
+    "government-revenue-theme-context.js": "e22a488cd1d0000d400ba8c9af00f08d46701c40891279240fd3d3a34cb17a09",
+    "government-revenue-briefcase-ui.js": "a3ed8a4da7184754ee889e22cde2ded06d2e0dbdbc5481a522debf96b646b910",
+    "government-revenue-investor-start.js": "5e3af056038d886e5e611b327135f0256086591f8ec31b853579eb0e9daf86f3",
+    "government-revenue-dossiers.js": "bed6e6782fa6398523d884bd2c233daf78526c1c3aaf15f135a9826afa8cb212",
+    "nav_market.js": "24985e3240b509bfa197a5203b7bd28bb039b82b77a624481393203c74463497",
+    "account.js": "2f1dd80e7696ffecd308519877f82421745c14d8ead9b76904190091c194152c",
+    "supabase.js": "8596965fe918e656600a1b568d3a168f5c0d3d22a600886bb6f44a6555db01e7"
+  },
+  "limitations": [
+    "Exact normal standalone builder publisher output; actual source ASGI loopback local test-principal; no production or installed-entitlement claim",
+    "Timing must wait for root CPU proof to settle and explicit generation freeze",
+    "Source identity is base HEAD plus /Volumes/Mastermind/evidence/defense-v3-20261012/o5/release-acceptance-o7/V10_FROZEN_TRACKED_DIFF.patch and material_source_hashes; uncommitted source at capture, not HEAD alone."
+  ]
+}

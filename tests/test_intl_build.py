@@ -16,7 +16,6 @@ from jinja2 import Environment, FileSystemLoader
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from collectors.intl_universe import _EU_SUFFIX, _clean_local  # noqa: E402
 from engine import i18n  # noqa: E402
 
 
@@ -177,6 +176,7 @@ def test_turn_board_cards_size_independently_and_hovers_stay_concise():
 
 
 def test_universe_ticker_conversion():
+    from collectors.intl_universe import _EU_SUFFIX, _clean_local
     assert _clean_local("8306") == "8306"                # JP code
     assert _clean_local("BP.") == "BP"                   # LSE trailing dot
     assert _clean_local("BT.A") == "BT-A"                # class share -> dash

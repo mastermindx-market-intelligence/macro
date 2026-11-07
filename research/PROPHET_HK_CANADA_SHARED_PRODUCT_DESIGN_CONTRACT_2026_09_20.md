@@ -1,20 +1,30 @@
-# Prophet HK + Canada shared product design contract — R1
+# Prophet HK + Canada R1 — historical product-design baseline
 
-**Status:** `DESIGN_AUTHORITY_REPAIR_COMPLETE / EDITABLE_REFERENCE_FROZEN_AT_e3077bf50c / RIG_IN_REVIEW / PRODUCTION_NOT_PROVEN`
+**Status:** Historical R1 baseline — source preservation only; RIG `draft`; not a current shipping or implementation reference.
+
+**Current disposition — 2026-11-07:** Preserve the September R1 evidence and recorded proposal. The September 24 [product ruling 5825493315](https://github.com/mastermindx-market-intelligence/macro/pull/7499#issuecomment-5825493315) and [superseding review 5317458514](https://github.com/mastermindx-market-intelligence/macro/pull/7499#pullrequestreview-5317458514) withdrew its use as an implementation release. Unqualified price/zone guidance, generic rationale, fixture identity and count-scope findings remain recorded; this preservation does not claim to repair those designs.
+
+Later [Board 90 acceptance 5887804998](https://github.com/mastermindx-market-intelligence/macro/pull/7499#issuecomment-5887804998) and [October 5 adjudication 5991288135](https://github.com/mastermindx-market-intelligence/macro/pull/7499#issuecomment-5991288135) govern their own successor design scope. They do not establish a whole-package RIG successor or completed product. The original 47 evidence files remain byte-preserved, with frozen artifact `e3077bf50c69063f5d80275fa33dd415dae76fa9` unchanged.
+
+No new review, design commission, source lease, Paper mutation, implementation, publication or production acceptance is activated by this record. `manifest.yml` uses the existing `draft` state because no RIG verdict/approval or proven successor_reference_id exists. Current source preservation is distinct from the original implementation/review instructions retained below, which are inactive history. Preserve #7700/shared-template custody, the denied HK mutation, October 5's refused ownership aggregation/relation-render probe and P1a local `60a494ed`.
+
+## Original September 2026 record — qualified historical scope
 **Operation:** `prophet-hkca-shared-design-contract-r1-20260920-sol-001`  
 **Parent:** `WS:PROPHET-HK-CA-REVAMP`  
 **Source assignment:** `D_SHARED_PRODUCT_DESIGN_AND_UI(1).md`, V2, September 19, 2026  
 **Protected procedure:** `Mastermind@8300950ac10a6c4c9e613ef26da42e67fb5c2dc8`, Skillpack 1.0.1/bootstrap 1
 **Macro build base:** `86634cb89ad4e7253b44a049b6e5712406899f90`
-**Current Macro compatibility pin:** `e84dc749411dd1cba6ef17453761d86fd43fb798`
+**Historical Macro compatibility pin:** `e84dc749411dd1cba6ef17453761d86fd43fb798`
 
-This contract turns the accepted HK/Canada roster, continuity, card, and state requirements into one bounded product-design handoff for the existing Hong Kong and Canada carriers. It does not change producer truth, rank, thresholds, entitlement, access policy, publication authority, or portfolio action.
+The original contract proposed a bounded product-design handoff for the then-existing Hong Kong and Canada carriers from the roster, continuity, card and state requirements. It does not change producer truth, rank, thresholds, entitlement, access policy, publication authority, or portfolio action.
 
-The current design authority approved the paired Paper geometry, component anatomy, states, themes, locales, counts, and roster/authority semantics. Session A then accepted those dimensions and required one bounded repair: remove fixture, programme, and source-authority vocabulary from user-facing Tier 1 while preserving every product invariant. The replacement Paper boards and evidence bundle in this commit complete that copy repair. Paper still does not become a repository-global design authority, satisfy Reference Integrity or independent review, prove either production route, or establish natural-publication continuity. Exact implementation, browser, access, integration, and natural-update proof remain separate gates.
+The September 20 record reported approval of the paired Paper geometry, component anatomy, states, themes, locales, counts and roster/authority semantics. That dated approval is not current implementation authority. Session A then accepted those dimensions and required one bounded repair: remove fixture, programme, and source-authority vocabulary from user-facing Tier 1 while preserving every product invariant. The replacement Paper boards and evidence bundle in this commit complete that copy repair. Paper still does not become a repository-global design authority, satisfy Reference Integrity or independent review, prove either production route, or establish natural-publication continuity. Exact implementation, browser, access, integration, and natural-update proof remain separate gates.
 
-The prior RIG review target `eca7c779c26e7eaaca04fc33b6b42b8ba2d8a6a1` is superseded. RIG reference `prophet-hkca-shared-r1` now binds the immutable replacement `e3077bf50c69063f5d80275fa33dd415dae76fa9`. No product-regression receipt, visual/taste receipt, design-authority RIG verdict, or `approval.yml` has been earned for this replacement; it remains provisional and non-canonical until fresh independent review and approval complete.
+Within the original September 20 proposal, review target `eca7c779c26e7eaaca04fc33b6b42b8ba2d8a6a1` was replaced. RIG reference `prophet-hkca-shared-r1` now binds the immutable replacement `e3077bf50c69063f5d80275fa33dd415dae76fa9`. No product-regression receipt, visual/taste receipt, design-authority RIG verdict, or `approval.yml` has been earned for this replacement; it remains a historical, provisional and non-canonical draft. This record commissions no new review.
 
-## 1. Authority, carriers, and non-goals
+## 1. Historical assignments, carriers, and retained non-goals
+
+The session names and carrier instructions below record the original assignment only. They are not present ownership, a new handoff, or authority to reopen retired carriers. Current canonical source/custody and successor rulings govern any implementation.
 
 - Session D owns shared product design and component convergence.
 - Hong Kong implementation remains with the incumbent `#7163` carrier:
@@ -54,9 +64,9 @@ Reuse the existing repository vocabulary:
 
 A missing primitive is a `DESIGN-SYSTEM GAP`, not permission for B or C to invent a route-local fork.
 
-## 3. Approved editable source trace
+## 3. Historical R1 editable source trace
 
-The approved implementation projection is the governed Paper file:
+The original R1 proposal used the following Paper projection; these identities are preserved as history, not selected as the current shipping reference:
 
 - file: `Mastermind Product Design System — Agentic Lab`;
 - file id: `01M2WGNCX9475G79JRKJTCM08P`;
@@ -69,7 +79,7 @@ The approved implementation projection is the governed Paper file:
 The shared contract is artboard `1F-1`. The prior incomplete Canada shell remains only as the
 explicitly named superseded audit artifact `9N-1`; B/C must not implement from it.
 
-Exact primary implementation artboards:
+Exact historical primary R1 artboards:
 
 | Market | Locale | Theme | 1440 | 390 |
 |---|---|---|---|---|
@@ -98,14 +108,16 @@ Its `manifest.json` SHA-256 is
 It binds each accepted artboard to a screenshot digest and a Paper `get_jsx`
 `inline-styles` snapshot digest; `SHA256SUMS` binds every committed evidence byte. The replacement keeps all artboard IDs, declared geometry, tokens, node count, and state coverage unchanged. Publication-wide dates now appear once at board level; row dates remain only when genuinely row-specific. User-facing JSX contains none of the rejected fixture, Branch-B, owner-current/owner-visible, screening-authority, or corresponding Chinese architecture labels; exact source and authority provenance remains in this contract and RIG evidence.
 
-### 3.1 Design-authority disposition — `APPROVED_FOR_BOUNDED_IMPLEMENTATION`
+### 3.1 Historical approval claim — withdrawn as implementation authority
 
-The design authority reviewed every accepted board after mutation, including both themes,
+The original September 20 label was `APPROVED_FOR_BOUNDED_IMPLEMENTATION`. The later ruling and superseding review cited above prevent using it to release R1 migration.
+
+The September 20 record reported review of every listed board after mutation, including both themes,
 both languages, both primary widths, both market-specific 320px long-name cases, and the
 state/interaction matrices. The review passed spacing, typography, contrast, alignment,
 artboard fit, deliberate responsive recomposition, and no horizontal overflow at 390/320.
 
-The accepted product decisions are:
+The original R1 product proposals were:
 
 - The Hong Kong reference epoch demonstrates `39` current names and an explicit two-name Top
   subset without making the subset appear to be the whole board. Production derives the total
@@ -122,11 +134,7 @@ The accepted product decisions are:
   stale, source failure, unauthenticated, entitlement expired, filter empty, incomplete history,
   correction, expanded, focus-visible, disabled/locked, and recovered.
 
-This approval preserves the exact artboards as the replacement design candidate, but it does **not**
-yet release B/C to begin the new R1 visual migration. The replacement must first be rebound to the
-Reference Integrity Gate and receive fresh independent review. It does not grant repository-global
-canonical reference status or authorize merge, deployment, access-policy change, rank/signal change,
-or publication.
+The exact artboards remain a preserved baseline. The historical approval does **not** release any R1 visual migration. The superseding product ruling keeps the design findings open under the existing successor journey. This source-preservation package grants no canonical RIG reference, implementation, deployment, access-policy change, rank/signal change or publication authority.
 A forced state proves intended presentation only unless the real producer/runtime emitted it.
 
 The Figma file `IKqTiq7jeVBJusBfoHnPsH` remains a secondary design-system projection and is not
@@ -337,7 +345,7 @@ Refreshing a failed source and clearing filters are separate actions.
 
 ## 13. Evidence matrix
 
-The editable design now covers all sixteen primary cells. Its displayed `39`/`17` counts are
+The original R1 record reported coverage of all sixteen primary cells. Its displayed `39`/`17` counts are
 reference-epoch examples only; implementation must render current producer-derived totals:
 
 ```text
@@ -345,15 +353,14 @@ reference-epoch examples only; implementation must render current producer-deriv
 ```
 
 It also covers two market-specific 320px ZH long-name/expanded-detail cases and paired dark/light
-state/interaction boards. The committed evidence bundle and manifest named in §3 are the source for
-all visual implementation references; chat images and the superseded shell are not source.
+state/interaction boards. The committed bundle and manifest named in §3 preserve the dated R1 proposal. They are not the current visual implementation reference; any successor implementation must use its own accepted source and current custody.
 
 Covered design states include populated, singleton, Top-empty/All-nonempty, valid zero, watch-only,
 blocked, stale, source-failed, unauthenticated, entitlement-expired, filter-empty, incomplete history,
 recent change, correction, focus-visible, expanded/open, disabled/locked, touch dismissal, and
 fresh→stale→failed→recovered transition treatment.
 
-Implementation still owes real-path proof for:
+The original open product-proof duties, retained separately from source preservation, were:
 
 - the inherited production card DOM and real controls rather than Paper nodes;
 - repair of the measured HK baseline where `source=all` Grid represented `40` current identities
@@ -373,7 +380,9 @@ New semantics require successor evidence; old P0B screenshots may not be relabel
 run. Production acceptance also requires two successive natural market publications so continuity,
 transition, correction, and exit behaviour are observed rather than inferred.
 
-## 14. Implementation order
+## 14. Historical implementation order — inactive
+
+The following is preserved commissioning history. It does not launch or reassign any session, reopen a source carrier, or release the historical R1 migration.
 
 1. **REPAIR COMPLETE — Session D:** paired Paper geometry, component anatomy, state coverage, and
    artboard IDs remain frozen; the plain-language Tier-1 replacement is evidence-bound in this commit.
@@ -390,9 +399,9 @@ transition, correction, and exit behaviour are observed rather than inferred.
 Urgent R0 restoration may continue in the existing accepted style. R1 does not block a truthful
 current-roster repair that requires no new visual language.
 
-## 15. Stop and escalation conditions
+## 15. Historical stop and escalation conditions
 
-Stop the affected lane and return to Session D/A when:
+The original commission required the affected lane to stop when:
 
 - a required canonical component is missing;
 - a shared partial has an incumbent writer or unknown effect;
@@ -404,10 +413,9 @@ Stop the affected lane and return to Session D/A when:
 - implementation requires a new auth, lifecycle, ledger, candidate, or publication plane;
 - the frozen Paper implementation reference or secondary Figma projection disagrees with repository design law.
 
-## 16. Acceptance boundary
+## 16. Historical claim and current preservation boundary
 
-Session D's **design-contract repair is complete and frozen on this commit** at the Paper/evidence
-identities in §3: exact implementation artboards, measurements, plain-language copy, state transitions,
+The original September 20 record claimed Session D's **design-contract repair complete and frozen** at the Paper/evidence identities in §3: exact implementation artboards, measurements, plain-language copy, state transitions,
 screenshot receipts, and JSX digests are durable; the shared-card writer boundary and B/C carriers remain
 explicit. The earlier RIG target and its review requests are superseded and confer no acceptance on this
 replacement.
@@ -420,9 +428,4 @@ The following are deliberately **not** claimed by that result:
 - browser, access-policy, publisher-mirror, deployment, or natural-publication proof;
 - completion of the parent HK/Canada Prophet upgrade.
 
-The product outcome is not complete when this document, a Paper/Figma file, a CSS patch, or CI alone
-exists. Completion requires the real HK and Canada routes to implement the design, preserve truth and
-access boundaries, pass independent and browser review, and establish continuity across two natural
-publications. B/C remain held from the new R1 visual migration until the replacement reference is
-rebound to RIG, independently reviewed, and explicitly released; lawful R0 restoration on already
-accepted styling remains independent.
+Current preservation accepts no product outcome. The existing Prophet programme still owes its selected Today → All Candidates → Setup/evidence/native Plan → return and history journeys, truthful source/access behavior, applicable visual/browser evidence and natural-publication continuity. Those duties remain with the current canonical programme and successor source carriers. They are not silently discharged or restarted by landing these historical records. The prior APPROVED review remains superseded and unused; the substantive design findings remain visible. No RIG verdict, approval, successor identity, fresh capture or product-completion receipt is invented.

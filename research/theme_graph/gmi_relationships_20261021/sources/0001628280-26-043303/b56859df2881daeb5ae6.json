@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-06-15T21:09:27Z",
+ "accession": "0001628280-26-043303",
+ "cik": "0001807794",
+ "doc_byte_length": 1712551,
+ "doc_sha256": "d4896817099c692f1d1d25678807cb8ef76df37ab45e96915cdab183cb1c6955",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-06-15",
+ "form": "10-K",
+ "period_of_report": "2026-05-02",
+ "primary_document": "crdo-20260502.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 339966,
+  "byte_start": 339272,
+  "normalized": "We generally place orders for products with some of our suppliers several months prior to the anticipated delivery date, with order volumes based on our forecasts of demand from our customers. If we inaccurately forecast demand for our products, we may be unable to obtain adequate and cost-effective foundry or assembly capacity from TSMC or our other third-party manufacturers or suppliers to meet our customers’ delivery requirements, or we may accumulate excess inventories. Moreover, even if we accurately forecast demand for our products, we cannot be sure that TSMC or our other third-party manufacturers or suppliers will allocate sufficient capacity to satisfy our requirements.",
+  "normalized_sha256": "761bac2bc1f192ea3e86986844e3260913a6357170e290e476a0bab0a1afece5",
+  "raw": " We generally place orders for products with some of our suppliers several months prior to the anticipated delivery date, with order volumes based on our forecasts of demand from our customers. If we inaccurately forecast demand for our products, we may be unable to obtain adequate and cost-effective foundry or assembly capacity from TSMC or our other third-party manufacturers or suppliers to meet our customers&#8217; delivery requirements, or we may accumulate excess inventories. Moreover, even if we accurately forecast demand for our products, we cannot be sure that TSMC or our other third-party manufacturers or suppliers will allocate sufficient capacity to satisfy our requirements.",
+  "raw_sha256": "b56859df2881daeb5ae644043f75f6c50dba7d67309fbedb77aae1c954694743"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1807794/000162828026043303/crdo-20260502.htm",
+ "xbrl_contexts": []
+}

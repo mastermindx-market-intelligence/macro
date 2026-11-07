@@ -1,0 +1,66 @@
+{
+  "recorded_at": "2026-10-14T15:51:34.782475+00:00",
+  "basis": {
+    "recorded_at": "2026-10-14T15:50:09.305985+00:00",
+    "base": "9b4bd85aa4f0a5c56bb0f025954aa743a2fe8c68",
+    "head": "1b7916353dd4609e2e092e16d466e93ca1597fd1",
+    "rc": 0,
+    "tree": "ed50be374fbd2d9bd749ed15107e39727dded5af",
+    "branch_or_worktree_mutation": false,
+    "scope": "Read-only hypothetical incumbent base-update tree; no source update authorization inferred",
+    "local_preserved": "26bfb6a0b9928e0463efef9e5904e6cdaeb6e581",
+    "local_clean": true
+  },
+  "missing_a1_inputs_added": [
+    "engine/rates_command_basis.py",
+    "engine/neuralweb/market_memory_brain_citations.py",
+    "engine/neuralweb/market_memory_retained_catalog.py",
+    "engine/neuralweb/market_memory_retained_legacy_guard.py",
+    "engine/neuralweb/market_memory_retained_saved.py"
+  ],
+  "job_count": 318,
+  "all_job_execution_definitions_and_existing_paths_preserved": true,
+  "packing_before": [
+    [
+      "templates/index.html",
+      136,
+      5803
+    ],
+    [
+      "scripts/build_free_content.py",
+      134,
+      5600
+    ],
+    [
+      "engine/prophet/plan_book.py",
+      130,
+      5600
+    ]
+  ],
+  "packing_after": [
+    [
+      "templates/index.html",
+      136,
+      5803
+    ],
+    [
+      "scripts/build_free_content.py",
+      135,
+      5600
+    ],
+    [
+      "engine/prophet/plan_book.py",
+      130,
+      5600
+    ]
+  ],
+  "weight_and_pack_limits_unchanged": true,
+  "files": [
+    ".github/ci/legacy-jobs.yml",
+    "tests/test_ci_pack.py"
+  ],
+  "patch_sha256": "0b9f209bfd91106ea7586d217f3463f583f05eabc371a5716e325559adb59058",
+  "status": "PREVIEW_ONLY_NOT_APPLIED",
+  "authority": "No manual base integration or source push authorized by this receipt; incumbent-only order remains binding pending Chairman decision",
+  "test_scope": "Structural proposal qualification only; accepted prior measured packing and full closure evidence retained, final merged-source checks still required"
+}
