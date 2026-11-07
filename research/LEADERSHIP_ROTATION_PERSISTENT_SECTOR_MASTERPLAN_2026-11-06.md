@@ -207,3 +207,47 @@ PSL-2 native evidence mappings and clocks remain unqualified unless a specific c
 ### Immediate continuation
 
 Consume both original UI results and exact source artifacts, integrate only granted changes into the admitted follow-on sources, run the necessary actual-path checks, consume original #10806/#1332 release effects, then publish the additive adoption candidate through its exact-head owner. Advance the existing natural producer/consumer path only when its actual source/runtime gates are satisfied. The mission is **MORE_WORK_EXISTS**, not accepted or completed by this milestone.
+
+
+## 10. Integrated consumer evidence — 2026-11-07 06:05 UTC
+
+This section supersedes the intermediate source/worker states in section 9. The original acceptance ruler and scientific embargo remain in force. This is an implementation milestone, not product acceptance.
+
+### Terminal visible dossier delivered to its original source carrier
+
+The initial parser [#1332](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1332) actually merged at 2026-11-07T05:09:26Z as `df432b7da0222e0641aa1aff1c05b74cc499b5e7`. The paid Terminal UI result was retrieved from exact worker commit `ed951936e8d9fb4ac783e15207129f8e8cabb3d9`, with verified parent/preimages, and integrated into a sequential workspace based on that actual merge. Parent hardening preserves the valid all-null eleven-sector packet, source-withdrawal behavior, exact availability mode/cutoff, null reasons, bounded disclosure continuity, localized labels and null-name fallback.
+
+The resulting exact source head `ba65c3a1caa4ceffc90ea826b839f806ae457273` is published and read back in Ready [#1333](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1333). Its natural CI is [42343740607](https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/42343740607); last inspected state was running, without an observed failure. No queue or deploy claim is made for #1333.
+
+Local qualification: seven focused files / **184 tests passed**; Next type generation, TypeScript and ESLint passed; **39 integrated Playwright cases passed** across desktop, tablet, 390px and 320px, EN/dark and ZH/light. Discover/Rotation, detail selection, reload/back, keyboard disclosure, access withdrawal and all-null data are exercised. Three reviewed screenshots and the receipt are [committed with that source](https://github.com/mastermindx-market-intelligence/mastermind-terminal/tree/ba65c3a1caa4ceffc90ea826b839f806ae457273/docs/evidence/persistent-sector-leadership-2026-11-07). These use the incumbent development auth/feed seams and are not authenticated production acceptance.
+
+### Macro visible dossier integrated and qualified
+
+The original paid Macro UI result, commit `e6ed73e8cd42322cbd62fe0098759f2b6c171871`, was retrieved through bounded read-only access to its registered worker host. Exact preimages matched the admitted adoption branch; no worker worktree, identity, refs or process was changed. Parent integration enforces the closed v1 contract, all eleven identities, finite/valid measurements matching the current parent read, actual as-known cutoff, coherent status/counts, and all-null owner behavior. A material source change closes previously opened details even when its compatibility key is unchanged.
+
+Qualification on this candidate:
+
+- **96 measured-panel tests passed** (process 80225).
+- The measured-reader/contract/native-shell run passed **227 cases**, with one missing tracked router asset caused solely by the sparse checkout. Materializing that exact tracked asset made the one failed case pass (process 283). This is 228 qualified cases across the original run and the focused repair, not a claim that one clean 228-case run occurred.
+- **16 component browser cells passed**: 1440/834/390/320px, EN/ZH, light/dark, visible keyboard focus, 44px disclosure target and no horizontal overflow.
+- **Two full-template/native-router journeys passed**, desktop EN/dark and phone ZH/light. Actual deep link, select, browser back/forward/reload, Brief-to-map return, normal-to-all-null eleven-row transition and restored-packet disclosure reset all passed without page exceptions. Other organs use intentionally absent fixture data; retained console/resource boundaries are not whole-page production-health proof.
+- The existing canonical capture owner produced **16 accepted visual states**, eight rest plus eight real focus states. The initial fixture boot wrongly left English dynamic text under ZH attributes; it was corrected using the production locale/theme boot and its evidence was regenerated. Only the corrected capture is committed.
+- Design-system added-style enforcement, runtime-injection gate (275 JavaScript units, 44 injecting sites/88 hits within baseline), visual-evidence gate and diff check passed. The existing sparse-checkout owner materialized only the needed tracked site/mockups trees; source files were unchanged by that operation.
+
+Evidence is in `mockups/evidence/persistent-sector-leadership-20261107-c4/`, with canonical manifest/smells/EVIDENCE receipt plus the full-router journey receipt and screenshots. The full mobile Chinese detail and representative Terminal/Macro captures were visually reviewed. Both original UI Fabric responses are now accepted on actual deterministic test evidence; that acceptance is neither a formal GitHub approval nor production acceptance.
+
+### Holdings provenance is the next source integration
+
+The original holdings result is complete and retrieved from commit `43d7a09c36c7d0a2c5ab2003bbc629d7d06798ca`, tree `0cc68dedecc5d859f2fef5b02ba9cb9f907a6901`. All four preimages match this source despite the worker's divergent base lineage. It adds scalar capture metadata bound to retained rows and a pure receipt with missing/mixed/malformed/consistent states, while leaving the default published coverage v1 unchanged.
+
+Parent review identified two concrete admission gaps to repair before integration acceptance: require complete, explicitly formatted calendar dates instead of inferred pandas dates; and bind each capture URL to the exact canonical requested source for its fund. No provider was fetched, and no holdings mechanism, historical availability, immutable generation or retained source-body claim is admitted by this prerequisite.
+
+### Existing release and runtime owners
+
+Macro #10806 remains on its once-armed `merge-on-green` carrier. Full sweep [42341802632](https://github.com/mastermindx-market-intelligence/macro/actions/runs/42341802632), job 128310891911, explicitly deferred its stale check-definition refresh under the existing capacity cap. The follow-on adoption PR still waits for actual original merge/current-main reconciliation; there is no duplicate initial-contract PR, manual refresh or capacity override.
+
+Terminal's installed source/marker remains `db06eacd8938cf44588d3906bca95bfd7122b74b`. The original owner adoption attempts 44380 and 66573 are CLOSED65. The later attempt refused an unsupported service-hook shape before build/restart and released its lock. Existing repair [#1331](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1331), head `45cf59a1e999ae77871237d024ebb33df6dba9c0`, has successful exact-head CI and a source-only technical PASS. Its ordinary protected release can advance after a current writer/queue fence. Runtime adoption separately requires a current exact containing-release manifest, actual owner/target composition and lease/effect disposition through the original protected-archive entrance. No closed refusal is replayed; no repair is copied into #1333.
+
+Mastermind #2157 is source-merged; its runtime inclusion was [recorded and exactly read back on the original PBR W1 carrier](https://github.com/mastermindx-market-intelligence/Mastermind/issues/1693#issuecomment-6702638417). That owner specifies the November 9 release-day precheck/s0 and target-freeze/composition gates. A current running installer or attention mechanism is not proven. The production Central baseline still lacks the dossier, and the public Terminal session is unsigned.
+
+No deployment, restart, SQL application, permission/grant change, policy/forecast promotion or trade occurred for this milestone. Original held #10780/#10703/#10707 and Terminal #1232/#1244/#1249 are preserved. Continue holdings integration, original protected source delivery, then exact natural generation and authenticated consumer proof. Mechanisms/falsifiers/risk and Macro-to-Terminal-to-portfolio acceptance remain open until actually demonstrated.

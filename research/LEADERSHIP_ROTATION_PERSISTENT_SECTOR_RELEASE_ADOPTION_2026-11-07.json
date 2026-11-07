@@ -1,0 +1,214 @@
+{
+  "schema": "mastermind.persistent_sector_leadership.release_adoption_evidence/v1",
+  "evidence_only": true,
+  "observed_on_utc": "2026-11-07",
+  "mission_state": "MORE_WORK_EXISTS",
+  "governing_mastermind_sha": "d2f72b2d0d3066502adef103afa847904a70b18d",
+  "producer": {
+    "operation_id": "persistent-sector-leadership-adoption-20261107-c4",
+    "branch": "sol/web-persistent-sector-leadership-adoption-20261107-c4",
+    "head": "65df4b24b255d89f815208f00e4b6e158b85c2c8",
+    "publication": "APPLIED",
+    "local_remote_equal": true,
+    "source_blob": "24b7e55099cb919654fa76523d5e8debb30e8a68",
+    "github_readback": true,
+    "validation": {
+      "command": "python3 -m pytest -q tests/test_leadership_measured_read.py tests/test_sector_central_measured_panel.py",
+      "passed": 137,
+      "seconds": 10.32,
+      "process": 45358,
+      "exit_code": 0,
+      "diff_check": "PASS"
+    }
+  },
+  "initial_source_releases": {
+    "mastermind": {
+      "pr": 2157,
+      "head": "21775669516630a183817f1ef334be0ff7d4aba2",
+      "merge_sha": "ad6275a9c4d237bce75e52d0d6a8f41264b4ded5",
+      "merged_at": "2026-11-06T23:50:42Z"
+    },
+    "terminal": {
+      "pr": 1332,
+      "head": "260002504a80e2ce297cec2a82b2f5c73290816c",
+      "merge_sha": "df432b7da0222e0641aa1aff1c05b74cc499b5e7",
+      "merged_at": "2026-11-07T05:09:26Z"
+    },
+    "macro": {
+      "pr": 10806,
+      "head": "5b4962a381711328cc01dbe788f9ca4b5f4f7e4d",
+      "state": "OPEN",
+      "release_carrier": "merge-on-green",
+      "request_count": 1,
+      "full_sweep": 42341802632,
+      "job": 128310891911,
+      "disposition": "stale_check_definitions_refresh_deferred_by_existing_capacity",
+      "merged": false
+    }
+  },
+  "authoritative_runtime_read": {
+    "process": 61290,
+    "exit_code": 0,
+    "read_only": true,
+    "http_health": 200,
+    "installed_commit": "ff16c192cc7b932e59c28c4fe30aeaf27bcb7595",
+    "reasoning_policy_ok": true,
+    "scheduled_runtime_ok": true,
+    "installed_reader_blob": "1f3746421b8b10a1b27a5adde87356a68b5aa312",
+    "installed_handler_blob": "fdaa736bb7a893294b4ed1ba5642638c5cd93a31",
+    "dossier_selector_installed": false,
+    "macro_binding": {
+      "vendor_is_symlink": true,
+      "canonical_target": "/opt/macro",
+      "externally_managed": true
+    },
+    "central": {
+      "published_served_equal": true,
+      "bytes": 267769,
+      "sha256": "5a5b7754859314daeced18ce744010391381c41abbe0a0cc88c2a5b9a2bca4b6",
+      "source_date": "2026-11-05",
+      "dossier_present": false
+    }
+  },
+  "runtime_adoption": {
+    "carrier": "PBR original W1",
+    "source_issue": "https://github.com/mastermindx-market-intelligence/Mastermind/issues/1693",
+    "inclusion_evidence": "https://github.com/mastermindx-market-intelligence/Mastermind/issues/1693#issuecomment-6702638417",
+    "inclusion_comment_exact_readback": true,
+    "accepted_driver_source": "a2297d08e4f96d69fd7df1b02ad44bc51fa88678",
+    "driver_sha256": "d75178c08f7de1f943d17668e7e7f481a5ad416a7424cc96191d56c3de3658d5",
+    "source_recorded_release_day": "2026-11-09",
+    "frozen_target": null,
+    "source_composition_admitted": false,
+    "attention_currently_armed": "NOT_PROVEN",
+    "original_latest_local_evidence": "install-20261106T0338Z_44b7a471",
+    "addressable_claude_targets": 0,
+    "expected_reader_blob": "4b42a2696cfd92dd2dc21510d140b6c7c36208d1",
+    "expected_handler_blob": "6f61ac6bac2b4dccbf214c21eca539a930feec85",
+    "expected_blobs_equal_at_merge_and_governing_pin": true,
+    "deployment_performed": false
+  },
+  "browser": {
+    "url": "https://app.mastermind-x.com/discover?tab=sectors",
+    "observed_state": "Sign up to open Discover; Already have an account? Sign in",
+    "authenticated": false,
+    "production_feature_acceptance": false
+  },
+  "workers": {
+    "root_id": "persistent-sector-leadership-20261106-c4",
+    "carriers": [
+      {
+        "run_id": "psl3-visible-dossier-20261107-c4",
+        "controller_pid": 23389,
+        "state": "TERMINAL",
+        "return_code": 0,
+        "root_verified": true,
+        "worker_source_commit": "ed951936e8d9fb4ac783e15207129f8e8cabb3d9",
+        "response_sha256": "01bb3d56cb9e0a4b45ae7e7ba5951c2b37f7c74f61b62b13380474eec64aac42",
+        "exact_source_retrieved": true,
+        "result_accepted": true
+      },
+      {
+        "run_id": "psl4-macro-evidence-20261107-c4",
+        "controller_pid": 44523,
+        "state": "TERMINAL",
+        "return_code": 0,
+        "root_verified": true,
+        "worker_source_commit": "e6ed73e8cd42322cbd62fe0098759f2b6c171871",
+        "response_sha256": "2cb1b94407cac851228231bce88ea9bbbf8fc456fdf9a4e113660be8bf24802f",
+        "exact_source_retrieved": true,
+        "result_accepted": true
+      },
+      {
+        "run_id": "psl2-holdings-provenance-20261107-c4",
+        "controller_pid": 91007,
+        "state": "TERMINAL",
+        "return_code": 0,
+        "root_verified": true,
+        "worker_source_commit": "43d7a09c36c7d0a2c5ab2003bbc629d7d06798ca",
+        "response_sha256": "f9825784f4cad04e367cd47930e1a7e4f89bf442f4d4af6662eaec14919b3235",
+        "exact_source_retrieved": true,
+        "result_accepted": false
+      }
+    ],
+    "retry_allowed": false
+  },
+  "limitations": [
+    "Source merge is not runtime installation or product acceptance.",
+    "Current raw Central publisher serves the incumbent consumers; held #10780 native-view migration is a separate dependency.",
+    "No matching qualified sector mechanism/issuer evidence has been admitted.",
+    "Current dossier v1 remains unchanged with null forecasts and all authority false.",
+    "No deployment, service restart, provider invocation, portfolio-policy change or trade was performed for this evidence receipt."
+  ],
+  "observed_at_utc": "2026-11-07T06:05:00Z",
+  "terminal_ui": {
+    "pr": 1333,
+    "head": "ba65c3a1caa4ceffc90ea826b839f806ae457273",
+    "base": "df432b7da0222e0641aa1aff1c05b74cc499b5e7",
+    "published_and_read_back": true,
+    "ci_run": 42343740607,
+    "ci_last_observed": "IN_PROGRESS",
+    "queue_requested": false,
+    "focused_tests_passed": 184,
+    "playwright_cases_passed": 39,
+    "typegen": "PASS",
+    "typescript": "PASS",
+    "eslint": "PASS",
+    "production_authenticated": false,
+    "evidence_url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/tree/ba65c3a1caa4ceffc90ea826b839f806ae457273/docs/evidence/persistent-sector-leadership-2026-11-07"
+  },
+  "macro_ui": {
+    "candidate_parent": "65df4b24b255d89f815208f00e4b6e158b85c2c8",
+    "focused_panel_tests": {
+      "passed": 96,
+      "process": 80225
+    },
+    "owner_contract_shell_tests": {
+      "initial_passed": 227,
+      "initial_failed_sparse_missing_asset": 1,
+      "exact_missing_asset_materialized": true,
+      "focused_failed_case_rerun_passed": 1,
+      "rerun_process": 283
+    },
+    "component_browser_cells": 16,
+    "full_template_journeys": 2,
+    "full_template_scope": "synthetic owner data; actual template/router/shared assets; unrelated absent organs recorded",
+    "canonical_visual_states": 16,
+    "canonical_manifest": "mockups/evidence/persistent-sector-leadership-20261107-c4/manifest.json",
+    "journey_receipt": "mockups/evidence/persistent-sector-leadership-20261107-c4/journey/receipt.json",
+    "design_system_gate": "PASS",
+    "runtime_injection_gate": "PASS",
+    "visual_evidence_gate": "PASS",
+    "diff_check": "PASS",
+    "production_authenticated": false,
+    "source_sha256": {
+      "templates/sector_central.html.j2": "ec270f384071cebcd7e1b04767e87a5468fa5d1750fdd6efdb9871599d8dee6f",
+      "tests/test_sector_central_measured_panel.py": "693ec811581cb12e7ddfdc258951656e517b705a99b8a8f8b2559b9c80281815",
+      "tests/probe_leadership_evidence_browser.py": "1f2b6f759fe2ad1cd85e5c176fe9248a099bd43b281de0da9beb3357af86f539"
+    }
+  },
+  "holdings_integration": {
+    "state": "parent_fixes_pending_before_integration",
+    "preimages_match": true,
+    "required_fixes": [
+      "complete explicitly formatted issuer calendar dates",
+      "canonical requested source URL bound to fund"
+    ],
+    "provider_invocation_performed": false
+  },
+  "terminal_runtime_adoption": {
+    "installed_commit": "db06eacd8938cf44588d3906bca95bfd7122b74b",
+    "installed_owner_sha256": "c7e9309d738687a0e10647e46166e24063d0a234460f3a26c5febc047d3cba81",
+    "original_attempts": {
+      "44380": "CLOSED65",
+      "66573": "CLOSED65"
+    },
+    "repair_pr": 1331,
+    "repair_head": "45cf59a1e999ae77871237d024ebb33df6dba9c0",
+    "repair_source_ci": "SUCCESS",
+    "current_containing_release_manifest_qualified": false,
+    "current_install_lease_qualified": false,
+    "deployment_performed": false,
+    "sql_migrations_applied": false
+  }
+}
