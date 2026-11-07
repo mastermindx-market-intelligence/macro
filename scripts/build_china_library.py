@@ -2188,23 +2188,14 @@ def _attach_eligible_coiled_fire(
     return evaluated
 
 
-def main(alpha: dict | None = None) -> dict | None:
-    site = config.ROOT / config.load()["storage"]["site_dir"]
-    outdir = site / "chinastockdata"
-    outdir.mkdir(parents=True, exist_ok=True)
-
-    # Section wall-clock ticks (asia-lane runtime diet observability): this build
-    # grew ~20 -> ~33+ min during 2026-07-02..10 with no per-section evidence of
-    # where — the collect loop has "collect timing total"; this is the builder's
-    # equivalent. Grep "[timing]" in the lane log to profile a run.
-    _tick_t0 = time.monotonic()
-    _tick_prev = [_tick_t0]
-
-    def _tick(label: str) -> None:
-        _now = time.monotonic()
-        log.info("[timing] %-34s +%6.1fs (cum %7.1fs)",
-                 label, _now - _tick_prev[0], _now - _tick_t0)
-        _tick_prev[0] = _now
+def _refresh_context_drips() -> None:
+    """Refresh additive context outside the established render-only modes."""
+    if (
+        os.environ.get("RENDER_NO_DRIP") == "1"
+        or os.environ.get("CHINA_FAST_RENDER") == "1"
+    ):
+        log.info("china context drips: render-only mode; reusing committed caches")
+        return
 
     # Refresh the additive A-share CONTEXT caches that power the US-parity per-stock panels
     # (analyst consensus / earnings-disclosure calendar / own-history valuation percentile /
@@ -2247,6 +2238,27 @@ def main(alpha: dict | None = None) -> dict | None:
             importlib.import_module(_mod).refresh(**_kw)
         except Exception as e:  # noqa: BLE001 — additive context, never fatal
             log.warning("china context drip %s skipped (%s)", _mod, e)
+
+
+def main(alpha: dict | None = None) -> dict | None:
+    site = config.ROOT / config.load()["storage"]["site_dir"]
+    outdir = site / "chinastockdata"
+    outdir.mkdir(parents=True, exist_ok=True)
+
+    # Section wall-clock ticks (asia-lane runtime diet observability): this build
+    # grew ~20 -> ~33+ min during 2026-07-02..10 with no per-section evidence of
+    # where — the collect loop has "collect timing total"; this is the builder's
+    # equivalent. Grep "[timing]" in the lane log to profile a run.
+    _tick_t0 = time.monotonic()
+    _tick_prev = [_tick_t0]
+
+    def _tick(label: str) -> None:
+        _now = time.monotonic()
+        log.info("[timing] %-34s +%6.1fs (cum %7.1fs)",
+                 label, _now - _tick_prev[0], _now - _tick_t0)
+        _tick_prev[0] = _now
+
+    _refresh_context_drips()
 
     # Register the GATED Tushare drip plane in run_status/health (masterplan §W6-CN fix 4).
     # These drips run here (not in the collect.py adapter loop), so a frozen/token-less
