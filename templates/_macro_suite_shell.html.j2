@@ -125,7 +125,7 @@
     <dl class="mq-context-meta">
       <div><dt>{{ t('Coverage', '覆盖率') }}</dt><dd>{% if ctx.coverage %}{{ ctx.coverage }}{% else %}{{ absent(none) }}<span class="mq-dash">—</span>{% endif %}</dd></div>
     </dl>
-    <p class="mq-context-caveat">{% if ctx.get('clock_qualification') %}{{ bl(ctx.clock_qualification.note) }}{% else %}{{ t('Updated once a night — not live.', '每晚更新一次 — 非实时。') }}{% endif %}</p>
+    <p class="mq-context-caveat">{% if ctx.get('clock_qualification') %}{{ bl(ctx.clock_reading_note) }}{% else %}{{ t('Updated once a night — not live.', '每晚更新一次 — 非实时。') }}{% endif %}</p>
     {% call mc_details() %}
       <p>{% if ctx.get('clock_qualification') %}{{ bl(ctx.clock_qualification.note) }}{% else %}{{ t('Conservative over the required set — a degraded optional leg cannot turn this green.', '在必需分项集合上取最保守值 — 可选分项降级不会让此处转绿。') }}{% endif %}</p>
       <p>{{ t('Owner cadence, daily republish', '按所有者节奏，每日重新发布') }} · {{ t('Latest accepted print', '最新已接受读数') }}</p>
@@ -1113,7 +1113,7 @@
     </div>
     <div class="mq-context-state">
       <dl class="mq-context-meta">
-        <div class="mq-nonclock"><dt>{{ t('Page refreshed', '页面更新于') }}</dt><dd>{% if ctx.get('clock_qualification') %}{{ bl(ctx.clock_qualification.note) }}{% else %}{{ t('Updated once a night — not live.', '每晚更新一次 — 非实时。') }}{% endif %}</dd></div>
+        <div class="mq-nonclock"><dt>{{ t('Page refreshed', '页面更新于') }}</dt><dd>{{ t('Updated once a night — not live.', '每晚更新一次 — 非实时。') }}</dd></div>
       </dl>
     </div>
   </header>
