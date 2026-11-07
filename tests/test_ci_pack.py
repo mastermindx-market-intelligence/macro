@@ -4537,6 +4537,7 @@ CURATED_EXCLUSIVE = {
     'unrun-brain-gateway',
     # The Fabric consumer join retains this desk job's complete named closure.
     "unrun-brain-desks",
+    "press-account-claim-consumer",
     # GDELT leaf suites own their exact import/read closure.
     "gdelt-news-leaves",
     # Installer simulations own their concrete source/read closure without
@@ -5628,7 +5629,7 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # measured units there; preserve the other ceilings, suites and all limits.
 PACKING_PROBES = (
     ("templates/index.html", 137, 5_974),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_991),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_993),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 131, 5_730),
 )
 # Twelve packs per shape was the pre-curation measurement.
@@ -5637,6 +5638,24 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    Protected Press/GSC and Fabric composition (2026-11-07): the actual
+    445d86584a50 + 0e48e731791f source measures index134/5721,
+    free-content134/5993 and Prophet127/5475, all ten packs. The accepted
+    GSC suite adds exactly two free-content planning units to the retained
+    Fabric ceiling5991. Fund only5991->5993 and preserve all other weight,
+    job-count, pack, timeout and admission bounds and both histories below.
+
+    P5.T9.S5 (2026-11-07): compose accepted retained-GSC coverage with
+    protected59e035e39607, preserving its gateway and prior provenance
+    histories below. Fresh canonical measurements on the actual composed
+    source are index137/5914, free-content137/5933 and Prophet131/5672,
+    all ten packs. The protected main manifest on that SAME source measures
+    5914/5931/5672 with identical selected job IDs; it is not a historical
+    main-tree baseline. Only the accepted eval-os-a1 GSC suite contributes
+    two free-content planning-weight units. Fund precisely5931->5933;
+    retain incoming index/Prophet ceilings, all job-count and pack bounds,
+    selectors, suites, timeouts and admission limits. No runtime claim.
 
     Native caller joins and held Go recipe (2026-11-05): the actual managed
     source planner measured index137/5959, free137/5974 and Prophet131/5715,
@@ -5706,6 +5725,26 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     Fund exactly these two measured units, retaining every suite, job-count
     ceiling, selector, ten-pack bound, timeout and admission limit. No padding;
     these are planning weights, not measured execution times.
+
+    P5.T9.S4 (2026-11-07): compose retained-GSC coverage with protected
+    cfdad6581bb2, preserving its provenance coverage below. Canonical
+    measurements on the actual composed source are index137/5912,
+    free-content137/5931 and Prophet131/5670, all ten packs. The protected
+    main manifest measured on that same source is 5912/5929/5670 with
+    identical selected job IDs; this is a same-source counterfactual, not
+    a historical main-tree baseline. Only eval-os-a1's already accepted
+    retained-GSC suite adds two planner-estimate units on free-content.
+    Fund exactly those two units; retain every incoming job and command,
+    job-count ceiling, ten-pack bound, selector and runtime timeout.
+
+    P5.T4.S1 (2026-11-05): candidate 51ed9ea0656bd against canonical
+    a20e6437cc8a8 appends the hermetic retained-GSC consumer suite to the
+    existing eval-os-a1 command. The shared contract census measures only
+    free-content137jobs/5927->5929/10packs, with no newly selected job.
+    Index137/5912 and Prophet131/5668 are unchanged. Account for exactly
+    those two estimator units; preserve all job-count/pack ceilings,
+    selectors, previous commands, runtime timeouts and admission controls.
+    This is a planner workload estimate, not runtime or funding authority.
 
     PR #8899 provenance coverage (2026-11-06): exact-head CI 42231847099,
     contract job 127939433316, head b0708d5ae2a4 against base 9a867da6f866:
