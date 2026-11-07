@@ -52333,3 +52333,41 @@ jobs:
       # nightly or wire data commit can move this verdict.
       - name: GDELT client + both news leaves — query bounds, structural rejection, cache fences
         run: python -m pytest tests/test_gdelt_client.py tests/test_macro_news.py tests/test_news_vector.py -q
+  cn-risk-capital-policy:
+    if: ${{ false }}
+    gate: code
+    scope: exclusive
+    paths:
+      - "collectors/**"
+      - "lib/**"
+      - "engine/*.py"
+      - "engine/oracle/**"
+      - "config/delisted_symbols.yml"
+      - "config.yml"
+      - "research/cn_risk_capital_policy/**"
+      - "scripts/research/cn_risk_capital_policy.py"
+      - "scripts/validate_regime_fwd.py"
+      - "scripts/__init__.py"
+      - "tests/test_cn_risk_capital_policy.py"
+      - "tests/__init__.py"
+      - "tests/conftest.py"
+      - "data/china_breadth/constituents.parquet"
+      - "data/fred/DGS2.parquet"
+      - "data/fred/DFII10.parquet"
+      - "data/fred/DGS10.parquet"
+      - "data/yahoo/CNH_F.parquet"
+      - "data/yahoo/DX-Y.NYB.parquet"
+      - "data/china_property/cgb.parquet"
+      - "data/china_breadth/breadth.parquet"
+    timeout-minutes: 4
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install focused research-contract dependencies
+        run: pip install pytest pandas numpy pyarrow pyyaml
+      - name: frozen capital-policy delivery contracts
+        run: python -m pytest tests/test_cn_risk_capital_policy.py -q -p no:cacheprovider
+
