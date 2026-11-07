@@ -1,6 +1,6 @@
 {
   "schema": "neuralweb.cortex_memo.v1",
-  "as_of": "2026-11-05T15:04:56+00:00",
+  "as_of": "2026-11-06T23:46:10+00:00",
   "summary": "Budget exhausted after 0 tool-call batches (0 individual calls). Partial deliberation only.",
   "what_fired": [],
   "contradictions_review": "Incomplete \u2014 budget exhausted before contradictions review.",
@@ -8,7 +8,7 @@
   "deserves_operator": [],
   "probation": {
     "schema": "neuralweb.cortex_probation.v1",
-    "as_of": "2026-11-05",
+    "as_of": "2026-11-06",
     "granted": false,
     "tier": "A0/A1 shadow",
     "reason": "insufficient-n: n=8 < min_n=25",
@@ -20,8 +20,8 @@
       "n": 8,
       "hits": 0,
       "base_rate": 0.5,
-      "ungradeable": 171,
-      "total_rows": 179
+      "ungradeable": 174,
+      "total_rows": 182
     },
     "is_context_only": true
   },
@@ -38,8 +38,8 @@
         "model": "claude-opus-4-8",
         "attempted": true,
         "ok": false,
-        "error_type": "auth",
-        "error_message": "Error code: 401 - {'type': 'error', 'error': {'type': 'authentication_error', 'message': 'OAuth access token has been revoked.'}, 'request_id': 'req_011CgjzCsBS4TB193FAxJAMD'}"
+        "error_type": "rate_limit",
+        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CgnZmGAY2ocy5peF7qDMN'}"
       },
       {
         "provider": "oauth",
@@ -47,7 +47,7 @@
         "attempted": true,
         "ok": false,
         "error_type": "rate_limit",
-        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CgjzCzwm1kMAGKEqNXe9G'}"
+        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CgnZnVksn3LLM7ibCLPr6'}"
       },
       {
         "provider": "oauth",
@@ -55,7 +55,7 @@
         "attempted": true,
         "ok": false,
         "error_type": "rate_limit",
-        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CgjzEF3bgScsriM1m19Ty'}"
+        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CgnZs4sJoosdwnMBcuq2B'}"
       },
       {
         "provider": "oauth",
@@ -63,29 +63,61 @@
         "attempted": true,
         "ok": false,
         "error_type": "rate_limit",
-        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CgjzJoWaY3Zc8Ji9naXLu'}"
+        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011Cgna6UnbA7r6YUFD4Kvt2'}"
       },
       {
-        "provider": "oauth",
-        "model": "claude-opus-4-8",
+        "provider": "codex",
+        "model": "gpt-5.6-sol",
         "attempted": true,
         "ok": false,
-        "error_type": "rate_limit",
-        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CgjzYDiyaRuuNmt8PnMyE'}"
+        "error_type": "transient",
+        "error_message": "Codex provider error (error): {\"type\":\"thread.started\",\"thread_id\":\"01a1b345-7873-7e62-a312-ca87d402a735\"} {\"type\":\"item.completed\",\"item\":{\"id\":\"item_0\",\"type\":\"error\",\"message\":\"Codex is ignoring 2 unrecognized configuration settings. Check for typos or deprecated settings.\\n  session-flags: `mult"
+      },
+      {
+        "provider": "codex",
+        "model": "gpt-5.6-sol",
+        "attempted": true,
+        "ok": false,
+        "error_type": "transient",
+        "error_message": "Codex provider error (error): {\"type\":\"thread.started\",\"thread_id\":\"01a1b345-986a-7551-9339-e69282d19414\"} {\"type\":\"item.completed\",\"item\":{\"id\":\"item_0\",\"type\":\"error\",\"message\":\"Codex is ignoring 2 unrecognized configuration settings. Check for typos or deprecated settings.\\n  session-flags: `mult"
       },
       {
         "provider": "oauth",
         "model": "claude-sonnet-4-6",
         "attempted": true,
         "ok": false,
-        "error_type": "auth",
-        "error_message": "Error code: 401 - {'type': 'error', 'error': {'type': 'authentication_error', 'message': 'OAuth access token has been revoked.'}, 'request_id': 'req_011CgjzYEWrsVjZC9BQb5zk1'}"
+        "error_type": "rate_limit",
+        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011Cgna7Vy3xVJPiB2aQqgW1'}"
+      },
+      {
+        "provider": "oauth",
+        "model": "claude-sonnet-4-6",
+        "attempted": true,
+        "ok": false,
+        "error_type": "rate_limit",
+        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011Cgna8m2Ci2cFxaN54u41x'}"
+      },
+      {
+        "provider": "oauth",
+        "model": "claude-sonnet-4-6",
+        "attempted": true,
+        "ok": false,
+        "error_type": "rate_limit",
+        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CgnaB7Md9gUkfiDUu1dAS'}"
+      },
+      {
+        "provider": "oauth",
+        "model": "claude-sonnet-4-6",
+        "attempted": true,
+        "ok": false,
+        "error_type": "rate_limit",
+        "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CgnaBF1FFr3QTdZPZDQkv'}"
       }
     ],
     "tool_call_batches": 0,
     "individual_tool_calls": 0,
     "expected_min_tool_calls": 1,
     "context_stale": false,
-    "context_as_of": "2026-11-05T13:32:20Z"
+    "context_as_of": "2026-11-06T13:01:50Z"
   }
 }
