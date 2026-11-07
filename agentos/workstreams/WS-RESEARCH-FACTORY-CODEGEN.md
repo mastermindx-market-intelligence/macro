@@ -23,17 +23,19 @@ waves:
   - {id: RELEASE, title: "Protected release and authenticated consumer proof", status: in_progress}
   - {id: ACCEPTANCE, title: "Real pilot, historical and prospective evidence", status: todo}
 next_action: >
-  Release the implemented source-owned staged-cycle adapter through normal checks;
-  qualify the integrated private S01 carrier and inert per-plan engine provider
-  through the same driver/review path. Shared cap-repair10755 is merged and its
-  protected base is integrated; qualify the final10758 head without a copied repair
-  or CI waiver. Old-head review and CI do not qualify the changed candidate.
-  Qualify the bounded CI-owner canonical comparison-object acquisition repair
-  after the original remote-fetch failure; preserve full design scopes and guards.
-  Both new Fabric leaves failed terminally; root completed permitted local source work.
-  Preserve original V4 and worktree unknown effects. Source readiness is not
-  P01 runtime or scientific acceptance. After qualification, complete the actual
-  good/bad staged cycle and unchanged historical/prospective obligations.
+  Receipt composition is merged in PR9851; reuse it without rebuilding.
+  Qualify the implemented RF10758 staged-cycle adapter, private S01 carrier,
+  inert per-plan engine provider and bounded canonical comparison acquisition
+  against protected main on the same source carrier. Retain the protected
+  code/data scanner split and measure the additive packing/closure composition;
+  no held10759/10674 repair bytes or CI waiver. Old-head review and CI do not
+  qualify the changed candidate. Both new Fabric leaves failed terminally;
+  root completed permitted local source work without retrying those operations.
+  After source qualification, complete the original good/bad staged cycle only
+  with actual containment/identity evidence and authentic expectation binding,
+  then unchanged historical/PIT and prospective obligations. Preserve original
+  V4/worktree unknown effects and release holds. Source readiness is not runtime,
+  candidate or scientific acceptance; no replay, canary or acquisition is granted.
 artifacts:
   - research/research_factory_codegen/2026-10-12/FABLE_MASTERPLAN.md
   - agentos/handoffs/RESEARCH-FACTORY-CODEGEN-2026-11-05.md
@@ -47,6 +49,10 @@ artifacts:
   - engine/research_factory/codegen_boundary.py
   - engine/research_codegen/static_checks.py
 do_not_redo:
+  - PR9851 merged receipt composition at ca3ad93d2cf4a47189c84e1f2d1c269e56f4841e.
+    review_queue.py and its review-evidence tests are unchanged at main
+    d6f710184b1d4aebf60673029c17cb9f3066f817; do not rebuild or repeat accepted
+    source checks without a material invalidator. This is advisory source only.
   - Commercial licensing for the incumbent Yahoo/yfinance route, Massive/Polygon,
     Tiingo and ThetaData options is APPROVED_BY_CHAIRMAN_ATTESTATION. Consume
     DEC:COMMERCIAL-DATA-RIGHTS-CHAIRMAN-ATTESTATION-20261023; do not ask again
@@ -100,6 +106,19 @@ Original physical V4 remains EFFECT_UNKNOWN after controller77 and the recorded
 claim is available. Original workspace creation36875c9c also remains unresolved.
 Neither operation is replayed or replaced. Source work now uses the independently
 assigned protected edd6 checkout; old runtime/lease/refusal custody is unchanged.
+
+The receipt-composition increment is merged in
+[PR9851](https://github.com/mastermindx-market-intelligence/macro/pull/9851)
+at ca3ad93d2cf4a47189c84e1f2d1c269e56f4841e. `diagnostic_review_packet` accepts
+`engineering_receipts` and calls `_compose_diagnostic_receipts`. Read-only
+source reconciliation on October 29 verified `engine/research_factory/review_queue.py`
+and `tests/test_research_codegen_review_evidence.py` byte-identical between that
+merge and main d6f710184b1d4aebf60673029c17cb9f3066f817; this source work is complete.
+It preserves raw failure/uncertainty accounting internally and sanitizes the
+advisory attachment. Receipt types and consistent hashes do not authenticate a
+producer. No original expectation binding exists for the good/bad output control,
+so that control remains NOT_RUN. Physical/resource controls remain NOT_RUN;
+execution, qualification and scientific authority stay disabled.
 
 Commercial rights for the named providers remain APPROVED_BY_CHAIRMAN_ATTESTATION.
 Historical/PIT availability, effective identity/protection, containment/resources,
