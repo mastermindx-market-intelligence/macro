@@ -19081,6 +19081,9 @@ jobs:
     # ticker-cluster time-confound law and the altdata_brain.py article3 convention.
     scope: exclusive
     paths:
+      # Fear/Greed extends this existing owner and its measured input closure.
+      - "engine/fear_greed_intelligence.py"
+      - "engine/vol_velocity.py"
       - engine/entry_radar/replay/identity_observation_snapshot.py
       - engine/neuralweb/market_memory_identity_candidate.py
       - collectors/yahoo.py
@@ -23964,6 +23967,9 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      # Fear/Greed extends this existing owner and its measured input closure.
+      - "engine/fear_greed_intelligence.py"
+      - "engine/vol_velocity.py"
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
       - engine/entry_radar/replay/identity_observation_snapshot.py
@@ -27616,6 +27622,9 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      # Fear/Greed extends this existing owner and its measured input closure.
+      - "engine/fear_greed_intelligence.py"
+      - "engine/vol_velocity.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "engine/intraday_greeks.py"
       - "engine/options_nbbo_cohort.py"
@@ -35380,6 +35389,9 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      # Fear/Greed extends this existing owner and its measured input closure.
+      - "engine/fear_greed_intelligence.py"
+      - "engine/vol_velocity.py"
       - collectors/rate_futures.py
       - engine/rate_futures_repricing.py
       - engine/entry_radar/__init__.py
@@ -36879,6 +36891,9 @@ jobs:
     # the declared-scope coverage audit re-checks them on every load.
     scope: exclusive
     paths:
+      # Fear/Greed extends this existing owner and its measured input closure.
+      - "engine/fear_greed_intelligence.py"
+      - "engine/vol_velocity.py"
       - engine/rate_futures_repricing.py
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
@@ -46999,6 +47014,13 @@ jobs:
     # An unlisted closure file is an uncovered path. No tests/** catch-all.
     scope: exclusive
     paths:
+      # Fear/Greed extends this existing owner and its measured input closure.
+      - "research/FEAR_GREED_INTELLIGENCE_V1.md"
+      - "tests/test_fear_greed_intelligence.py"
+      - "tests/test_fear_greed.py"
+      - "tests/fear_greed_intelligence_browser.py"
+      - "scripts/research_fear_greed_intelligence.py"
+      - "templates/_fear_greed_intelligence.html.j2"
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
       - engine/entry_radar/replay/identity_observation_snapshot.py
@@ -47278,6 +47300,7 @@ jobs:
           tests/test_macro_risk_dialog.py
           tests/test_risk_envelope_radar_integration.py
           tests/test_risk_radar_workspace.py
+          tests/test_fear_greed_intelligence.py
           tests/test_us_stocks_s2_compression.py
           tests/test_unified_dashboard_b2w2.py
           tests/test_ud_b2_w1_vw_fold.py
@@ -47304,6 +47327,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      # Fear/Greed extends this existing owner and its measured input closure.
+      - "templates/_fear_greed_intelligence.html.j2"
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
       - engine/entry_radar/replay/identity_observation_snapshot.py
@@ -50477,6 +50502,9 @@ jobs:
     # The qledger-cluster-honest-ci code owner retains grader/readiness suites.
     scope: exclusive
     paths:
+      # Fear/Greed extends this existing owner and its measured input closure.
+      - "engine/fear_greed_intelligence.py"
+      - "engine/vol_velocity.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"

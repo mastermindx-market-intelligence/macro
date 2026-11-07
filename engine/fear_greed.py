@@ -60,6 +60,7 @@ Leg dict:
 from __future__ import annotations
 
 import glob
+import json
 import logging
 from datetime import datetime, timezone
 from pathlib import Path
@@ -272,7 +273,7 @@ def _leg_hy_oas() -> dict:
     key = "hy_oas"
     meta = {"key": key, "name_en": "Junk demand (HY OAS)",
             "name_zh": "高收益需求（HY 利差）",
-            "orientation": "lower=greed", "unit": "OAS bps"}
+            "orientation": "lower=greed", "unit": "OAS %"}
     try:
         oas_df = store.read("fred", "BAMLH0A0HYM2")
         primary_ok = False
@@ -807,7 +808,17 @@ def compute_fear_greed() -> dict | None:
     leg_dates = [leg["last_date"] for leg in included if leg.get("last_date")]
     as_of = max(leg_dates) if leg_dates else datetime.now(timezone.utc).strftime("%Y-%m-%d")
 
+    # Preserve the legacy dial for existing machine consumers. The versioned
+    # display extension has its own explicit family/coverage contract.
+    try:
+        from engine.fear_greed_intelligence import compute_intelligence
+        intelligence = compute_intelligence()
+    except Exception as exc:  # noqa: BLE001 - additive display must fail closed
+        log.warning("fear_greed intelligence unavailable: %s", exc)
+        intelligence = None
+
     return {
+        "intelligence": intelligence,
         "dial": dial,
         "label_en": label_en,
         "label_zh": label_zh,
@@ -833,7 +844,8 @@ def compute_fear_greed() -> dict | None:
 def persist_dial_history(payload: dict | None) -> bool:
     """Append one row to data/sentiment_us/fear_greed_dial.parquet.
 
-    Schema: {date, dial, n_legs, label_en, logged_at (aware-UTC ISO string)}.
+    Legacy columns stay unchanged; additive intelligence fields retain the first
+    observed feature snapshot and its separate observation clocks.
     Keep-FIRST per date (idempotent on re-run same day).
     logged_at is stored as a STRING to avoid pandas>=2 aware-into-naive TypeError
     on DatetimeIndex parquet setitem (see tz-aware-into-naive-parquet-ledger memory).
@@ -855,7 +867,23 @@ def persist_dial_history(payload: dict | None) -> bool:
             log.info("persist_dial_history: already logged for %s (keep-first)", date)
             return False
         logged_at = datetime.now(timezone.utc).isoformat()   # aware UTC ISO string
+        intelligence = payload.get("intelligence") or {}
+        dynamics = intelligence.get("dynamics") or {}
+        # Same keep-first ledger, now retaining the first observed feature snapshot.
+        # Do not duplicate reconstructed histories inside every observation row.
+        snapshot = {k: v for k, v in intelligence.items() if k != "history"}
+        if dynamics:
+            snapshot["dynamics"] = {k: v for k, v in dynamics.items() if k != "history"}
         new_row = pd.DataFrame([{
+            "intelligence_version": intelligence.get("schema"),
+            "intelligence_as_of": intelligence.get("as_of"),
+            "intelligence_score": intelligence.get("score"),
+            "intelligence_status": intelligence.get("status"),
+            "vix_as_of": dynamics.get("as_of"),
+            "vix_velocity": dynamics.get("velocity"),
+            "vix_acceleration": dynamics.get("acceleration"),
+            "pivot_state": (intelligence.get("pivot") or {}).get("state"),
+            "intelligence_snapshot_json": json.dumps(snapshot, separators=(",", ":"), allow_nan=False) if snapshot else None,
             "date": date,
             "dial": int(payload["dial"]),
             "n_legs": int(payload.get("n_legs_qualifying", 0)),

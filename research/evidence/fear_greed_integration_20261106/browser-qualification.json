@@ -1,0 +1,321 @@
+{
+  "schema": "c4.fear-greed.browser-qualification.v1",
+  "result": {
+    "passed": 145,
+    "checks": [
+      "desktop-en-dark actual Risk Radar navigation",
+      "desktop-en-dark versioned payload",
+      "desktop-en-dark sentiment and VIX clocks",
+      "desktop-en-dark correct direction",
+      "desktop-en-dark native details initially closed",
+      "desktop-en-dark navigation text fits each button",
+      "desktop-en-dark disclosure opens",
+      "desktop-en-dark disclosure opens",
+      "desktop-en-dark three volatility paths",
+      "desktop-en-dark seven measures explained",
+      "desktop-en-dark six independent family votes",
+      "desktop-en-dark study stays on the customer surface",
+      "desktop-en-dark meter matches the engine",
+      "desktop-en-dark proxy provenance visible",
+      "desktop-en-dark no document horizontal overflow",
+      "desktop-en-dark no dialog horizontal overflow",
+      "desktop-en-dark Escape returns to overview",
+      "desktop-en-dark dialog close restores focus",
+      "desktop-en-light actual Risk Radar navigation",
+      "desktop-en-light versioned payload",
+      "desktop-en-light sentiment and VIX clocks",
+      "desktop-en-light correct direction",
+      "desktop-en-light native details initially closed",
+      "desktop-en-light navigation text fits each button",
+      "desktop-en-light disclosure opens",
+      "desktop-en-light disclosure opens",
+      "desktop-en-light three volatility paths",
+      "desktop-en-light seven measures explained",
+      "desktop-en-light six independent family votes",
+      "desktop-en-light study stays on the customer surface",
+      "desktop-en-light meter matches the engine",
+      "desktop-en-light proxy provenance visible",
+      "desktop-en-light no document horizontal overflow",
+      "desktop-en-light no dialog horizontal overflow",
+      "desktop-en-light Escape returns to overview",
+      "desktop-en-light dialog close restores focus",
+      "desktop-zh-dark actual Risk Radar navigation",
+      "desktop-zh-dark versioned payload",
+      "desktop-zh-dark sentiment and VIX clocks",
+      "desktop-zh-dark correct direction",
+      "desktop-zh-dark native details initially closed",
+      "desktop-zh-dark navigation text fits each button",
+      "desktop-zh-dark disclosure opens",
+      "desktop-zh-dark disclosure opens",
+      "desktop-zh-dark three volatility paths",
+      "desktop-zh-dark seven measures explained",
+      "desktop-zh-dark six independent family votes",
+      "desktop-zh-dark study stays on the customer surface",
+      "desktop-zh-dark meter matches the engine",
+      "desktop-zh-dark proxy provenance visible",
+      "desktop-zh-dark no document horizontal overflow",
+      "desktop-zh-dark no dialog horizontal overflow",
+      "desktop-zh-dark Escape returns to overview",
+      "desktop-zh-dark dialog close restores focus",
+      "desktop-zh-light actual Risk Radar navigation",
+      "desktop-zh-light versioned payload",
+      "desktop-zh-light sentiment and VIX clocks",
+      "desktop-zh-light correct direction",
+      "desktop-zh-light native details initially closed",
+      "desktop-zh-light navigation text fits each button",
+      "desktop-zh-light disclosure opens",
+      "desktop-zh-light disclosure opens",
+      "desktop-zh-light three volatility paths",
+      "desktop-zh-light seven measures explained",
+      "desktop-zh-light six independent family votes",
+      "desktop-zh-light study stays on the customer surface",
+      "desktop-zh-light meter matches the engine",
+      "desktop-zh-light proxy provenance visible",
+      "desktop-zh-light no document horizontal overflow",
+      "desktop-zh-light no dialog horizontal overflow",
+      "desktop-zh-light Escape returns to overview",
+      "desktop-zh-light dialog close restores focus",
+      "mobile-en-dark actual Risk Radar navigation",
+      "mobile-en-dark versioned payload",
+      "mobile-en-dark sentiment and VIX clocks",
+      "mobile-en-dark correct direction",
+      "mobile-en-dark native details initially closed",
+      "mobile-en-dark navigation text fits each button",
+      "mobile-en-dark disclosure opens",
+      "mobile-en-dark disclosure opens",
+      "mobile-en-dark three volatility paths",
+      "mobile-en-dark seven measures explained",
+      "mobile-en-dark six independent family votes",
+      "mobile-en-dark study stays on the customer surface",
+      "mobile-en-dark meter matches the engine",
+      "mobile-en-dark proxy provenance visible",
+      "mobile-en-dark no document horizontal overflow",
+      "mobile-en-dark no dialog horizontal overflow",
+      "mobile-en-dark Escape returns to overview",
+      "mobile-en-dark dialog close restores focus",
+      "mobile-en-light actual Risk Radar navigation",
+      "mobile-en-light versioned payload",
+      "mobile-en-light sentiment and VIX clocks",
+      "mobile-en-light correct direction",
+      "mobile-en-light native details initially closed",
+      "mobile-en-light navigation text fits each button",
+      "mobile-en-light disclosure opens",
+      "mobile-en-light disclosure opens",
+      "mobile-en-light three volatility paths",
+      "mobile-en-light seven measures explained",
+      "mobile-en-light six independent family votes",
+      "mobile-en-light study stays on the customer surface",
+      "mobile-en-light meter matches the engine",
+      "mobile-en-light proxy provenance visible",
+      "mobile-en-light no document horizontal overflow",
+      "mobile-en-light no dialog horizontal overflow",
+      "mobile-en-light Escape returns to overview",
+      "mobile-en-light dialog close restores focus",
+      "mobile-zh-dark actual Risk Radar navigation",
+      "mobile-zh-dark versioned payload",
+      "mobile-zh-dark sentiment and VIX clocks",
+      "mobile-zh-dark correct direction",
+      "mobile-zh-dark native details initially closed",
+      "mobile-zh-dark navigation text fits each button",
+      "mobile-zh-dark disclosure opens",
+      "mobile-zh-dark disclosure opens",
+      "mobile-zh-dark three volatility paths",
+      "mobile-zh-dark seven measures explained",
+      "mobile-zh-dark six independent family votes",
+      "mobile-zh-dark study stays on the customer surface",
+      "mobile-zh-dark meter matches the engine",
+      "mobile-zh-dark proxy provenance visible",
+      "mobile-zh-dark no document horizontal overflow",
+      "mobile-zh-dark no dialog horizontal overflow",
+      "mobile-zh-dark Escape returns to overview",
+      "mobile-zh-dark dialog close restores focus",
+      "mobile-zh-light actual Risk Radar navigation",
+      "mobile-zh-light versioned payload",
+      "mobile-zh-light sentiment and VIX clocks",
+      "mobile-zh-light correct direction",
+      "mobile-zh-light native details initially closed",
+      "mobile-zh-light navigation text fits each button",
+      "mobile-zh-light disclosure opens",
+      "mobile-zh-light disclosure opens",
+      "mobile-zh-light three volatility paths",
+      "mobile-zh-light seven measures explained",
+      "mobile-zh-light six independent family votes",
+      "mobile-zh-light study stays on the customer surface",
+      "mobile-zh-light meter matches the engine",
+      "mobile-zh-light proxy provenance visible",
+      "mobile-zh-light no document horizontal overflow",
+      "mobile-zh-light no dialog horizontal overflow",
+      "mobile-zh-light Escape returns to overview",
+      "mobile-zh-light dialog close restores focus",
+      "no JavaScript exceptions"
+    ],
+    "metrics": [
+      {
+        "cell": "desktop-en-dark",
+        "scrollWidth": 1278,
+        "clientWidth": 1278,
+        "documentWidth": 1440,
+        "viewport": 1440
+      },
+      {
+        "cell": "desktop-en-light",
+        "scrollWidth": 1278,
+        "clientWidth": 1278,
+        "documentWidth": 1440,
+        "viewport": 1440
+      },
+      {
+        "cell": "desktop-zh-dark",
+        "scrollWidth": 1278,
+        "clientWidth": 1278,
+        "documentWidth": 1440,
+        "viewport": 1440
+      },
+      {
+        "cell": "desktop-zh-light",
+        "scrollWidth": 1278,
+        "clientWidth": 1278,
+        "documentWidth": 1440,
+        "viewport": 1440
+      },
+      {
+        "cell": "mobile-en-dark",
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "documentWidth": 390,
+        "viewport": 390
+      },
+      {
+        "cell": "mobile-en-light",
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "documentWidth": 390,
+        "viewport": 390
+      },
+      {
+        "cell": "mobile-zh-dark",
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "documentWidth": 390,
+        "viewport": 390
+      },
+      {
+        "cell": "mobile-zh-light",
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "documentWidth": 390,
+        "viewport": 390
+      }
+    ],
+    "page_errors": [],
+    "scope": "candidate production template and controller; isolated source-backed fixtures; not a deployed claim"
+  },
+  "source_inputs": {
+    "source_ref": "9cfa8918b55a1c4735a90f4ca133506baa9d7966",
+    "inputs": {
+      "data/regime/latest.json": {
+        "sha256": "e21a679081f6843f5582a4274e1cb4f8b8821f2e6d5c4a0cc05a36bb3b210c4f",
+        "as_of": "2026-10-16"
+      },
+      "data/market_state/latest.json": {
+        "sha256": "07d767326cada9972db5f92143d3a0f57d59b1479f0c4d9e1eaee2a903f28530",
+        "as_of": "2026-10-16"
+      },
+      "site/riskdata/risk_envelope.json": {
+        "sha256": "87f9a05a549605d7a035c060f973095bad610fe0fdeec9f85cb1ca19a290e92d",
+        "as_of": "2026-10-16"
+      },
+      "data/contagion_links/latest.json": {
+        "sha256": "e99411487447db05e566491704cbaabde8124beda694bf9ac0cdf566796f9c2d",
+        "as_of": null
+      },
+      "data/crossasset_shadow/latest.json": {
+        "sha256": "d4c262d8d1f6d04e4e4570ffe35daa6df3f985e8e0b49418c2f44d5017751eb8",
+        "as_of": "2026-10-16"
+      },
+      "site/basketdata/fear_greed.json": {
+        "sha256": "5572a4d64ef3377ae4c29e2eae685874f6c67d4602f928de4aa9ec5c0b450f9a",
+        "as_of": "2026-10-16"
+      },
+      "candidate_engine/fear_greed_intelligence": {
+        "sha256": "e21d001f5fb554bb2100e68ce4a54cfa331c2dd7820d927cbc57096b9e251140",
+        "as_of": "2026-10-14",
+        "kind": "candidate_engine_fixture_not_published_snapshot"
+      },
+      "site/basketdata/vol_weather.json": {
+        "sha256": "6536795153eea4b61fceb58c4291a3d70f34cef643a9d9675943eb122d30f949",
+        "as_of": "2026-10-16"
+      },
+      "data/leadership_crack/latest.json": {
+        "sha256": "516b26fbb0fa5d9e2e30e665dbd280230d05d46f2b12d91812177956e3380d87",
+        "as_of": "2026-10-14"
+      },
+      "site/basketdata/sector_pulse.json": {
+        "sha256": "83e985a5cfc5c46e766dd5df9c17c5984769db36cf497b7d281e904e95ae2617",
+        "as_of": "2026-10-14"
+      }
+    },
+    "presentation_sha256": {
+      "templates/dashboard.html.j2": "2457f4a2abf0c2796cec4a6f943b7420d18d47be497d07b1a9de53204433f665",
+      "templates/_risk_radar_workspace.html.j2": "b141aa8b6a9f54c8c9b4d20db0671fd85c0988348e8b687c778d986d18e16151",
+      "templates/risk_radar_workspace.js": "07cf3a7e108d13b5ca84be68debe108459e73b575ea1ee162bdbe1c14f27e2da",
+      "templates/risk_radar_workspace.css": "cca7ab0507cc14824c946051d0a25870c208e163df75e99a3df653af2efffaf6",
+      "templates/_fear_greed_intelligence.html.j2": "59c74cb2ceb27a239d0b522fb19b1d69035d108e4ea3e29b5515983b1b6d044b"
+    },
+    "intelligence_input_sha256": {
+      "data/yahoo/SPY.parquet": {
+        "sha256": "4628a0de7c489988d30e7b52843d6f25d520b553f140d17ef5a42ccf39c70ff4",
+        "bytes": 244641
+      },
+      "data/yahoo/TLT.parquet": {
+        "sha256": "b2af871c5c07bada28a65d172043d1738d201d6e5c68e29971345d66cab725c8",
+        "bytes": 165878
+      },
+      "data/yahoo/_VIX.parquet": {
+        "sha256": "07b9a5b0124bcfd4289270c0701d56b07e0c1828b22326fa889316be89283243",
+        "bytes": 191409
+      },
+      "data/yahoo/_VIX3M.parquet": {
+        "sha256": "e48891a6dcce91db2222c84f2e660f28f41ef12e539e821ffb3e3f568b0a68cf",
+        "bytes": 119141
+      },
+      "data/yahoo/_VIX9D.parquet": {
+        "sha256": "8e27d36ddf81c34284a130d7c8895f4f59a2e252ab2b13ddd2b33ff4e3b6d017",
+        "bytes": 98323
+      },
+      "data/cboe/vvix.parquet": {
+        "sha256": "585245232592e7fdc54a4b649c81c0cdc2390959acbd6816741fa1598bd16ce2",
+        "bytes": 68681
+      },
+      "data/fred/BAMLH0A0HYM2.parquet": {
+        "sha256": "eafef7bae21880c089d0048d8f56c9b922457acc0692a4845d6c67581021f764",
+        "bytes": 82792
+      },
+      "data/cboe/putcall.parquet": {
+        "sha256": "b3fca25c2e4901ed3890e753cab3a522cd43d79181ae003b7578375558aaac76",
+        "bytes": 9326
+      },
+      "data/breadth/breadth.parquet": {
+        "sha256": "55b6d14e832c0d87e6524657bbecd7a03b9497a08f4df5d619939498f7c53f91",
+        "bytes": 435239
+      }
+    },
+    "intelligence_missing_inputs": [],
+    "candidate_engine_sha256": {
+      "engine/vol_velocity.py": "fb4cc7584b20327bf506296776aa7b652ba4c766ea9745847fca2d24932d5438",
+      "engine/fear_greed_intelligence.py": "01dcf8141d1a9e95e43c3513cfa89787a8021abff9838cca1fa95d2826dcdab0",
+      "engine/fear_greed.py": "d6d5f4ec15ae1e2e00283bb23bfeb99a8e2d5362c31f1e8f6d66173c12ab8dbc"
+    },
+    "served_asset_sha256": {
+      "site/theme.css": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757",
+      "site/theme.js": "3c1938914d4a660289eff8aa31593da3759abd78d2e57cc7ec37804817f33f00",
+      "site/risk_radar_workspace.css": "cca7ab0507cc14824c946051d0a25870c208e163df75e99a3df653af2efffaf6",
+      "site/risk_radar_workspace.js": "07cf3a7e108d13b5ca84be68debe108459e73b575ea1ee162bdbe1c14f27e2da"
+    },
+    "asset_preparation": "existing current site artifacts served through original render_fixture links; no emitter invoked"
+  },
+  "runtime_seconds": 26.81,
+  "python_playwright": "1.62.0",
+  "screenshot_count": 16,
+  "production_claim": false
+}

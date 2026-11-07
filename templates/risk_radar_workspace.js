@@ -169,8 +169,8 @@
   putView('signals', 'All risk signals', '全部风险信号', one('.riskdlg-ladder', dialog),
     ['Each signal uses its own 0–100 index. A higher reading means more pressure, not a probability.', '各信号使用自身的 0–100 指数。读数越高表示压力越大，并非发生概率。']);
   var sentiment = one('.riskdlg-sentiment', dialog);
-  putView('sentiment', 'Market sentiment', '市场情绪', sentiment && one('#sentiment-regime', sentiment) ? sentiment : null,
-    ['Risk appetite, sentiment and speculative pressure.', '风险偏好、市场情绪与投机压力。']);
+  putView('sentiment', 'Fear & Greed', '恐惧与贪婪', sentiment && one('#sentiment-regime', sentiment) ? sentiment : null,
+    ['Sentiment, changing volatility and independent turn evidence.', '情绪、波动率变化与独立拐点证据。']);
   putView('leadership', 'Market leadership', '市场领涨结构', one('.riskdlg-leadership', dialog),
     ['Current leaders and the separately tracked damage cohort.', '当前领涨板块与单独跟踪的受损群组。']);
   putView('volatility', 'Volatility & correlation', '波动率与相关性', one('.riskdlg-vw', dialog),
@@ -320,7 +320,7 @@
   one('.rkw-count').textContent = count ? String(count) : '—';
   var contextKeys = ['signals', 'sentiment', 'leadership', 'volatility', 'sources', 'method'];
   contextKeys.forEach(function (key) {
-    var label = {signals:['Signals','信号'],sentiment:['Sentiment','情绪'],leadership:['Leaders','领涨'],volatility:['Volatility','波动率'],sources:['Sources','来源'],method:['Method','方法']}[key];
+    var label = {signals:['Signals','信号'],sentiment:['Fear & Greed','恐惧与贪婪'],leadership:['Leaders','领涨'],volatility:['Volatility','波动率'],sources:['Sources','来源'],method:['Method','方法']}[key];
     var button = words(el('button'), label[0], label[1]);
     button.type = 'button'; button.dataset.rkwView = key; button.setAttribute('aria-pressed', 'false');
     contextNav.appendChild(button);

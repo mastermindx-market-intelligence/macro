@@ -668,3 +668,176 @@ def compute_vol_weather() -> dict | None:
             "不计分，无前瞻判断。这些芯片描述当前波动率环境，不预测方向。"
         ),
     }
+
+
+# Fear/Greed dynamics v1: descriptive extensions of this existing volatility owner.
+# No changes to the accepted regime engine, score weights, alerts or trade gates.
+def session_series(series: pd.Series | None, as_of=None, *, positive=False) -> pd.Series:
+    """Daily NYSE-session grid, cutoff before calculation; gaps are never filled.
+
+    Conflicting duplicate dates become unknown instead of choosing a correction
+    without its publication time. Daily labels retain their exchange-date meaning.
+    Historical stores are revised observations, NOT point-in-time vintages.
+    """
+    from lib import nyse_calendar
+
+    if series is None or not len(series):
+        return pd.Series(dtype=float, index=pd.DatetimeIndex([]))
+    end = pd.Timestamp(as_of or nyse_calendar.expected_last_session()).tz_localize(None).normalize()
+    idx = pd.to_datetime(series.index, errors="coerce")
+    if getattr(idx, "tz", None) is not None:
+        idx = idx.tz_localize(None)
+    s = pd.Series(pd.to_numeric(series, errors="coerce").to_numpy(), index=idx.normalize())
+    s = s.loc[s.index.notna() & (s.index <= end)].sort_index()
+    s = s.replace([np.inf, -np.inf], np.nan)
+    if positive:
+        s = s.where(s > 0)
+    if s.empty:
+        return s
+    # Same-value duplicate rows are harmless; conflicting values are not.
+    if s.index.has_duplicates:
+        s = s.groupby(level=0).agg(lambda x: x.iloc[0] if x.nunique(dropna=False) == 1 else np.nan)
+    days = nyse_calendar.sessions_between(s.index.min().date(), end.date())
+    return s.reindex(pd.DatetimeIndex(days))
+
+
+def causal_midrank(series: pd.Series, window=252) -> pd.Series:
+    """252 valid observations within at most 504 sessions; no short-history promotion.
+
+    Gaps remain missing, but do not erase a whole year of valid observations.
+    The age ceiling prevents ancient pre-gap history becoming today's baseline.
+    All-tied windows rank at 50. Reindexed missing sessions stay missing.
+    """
+    valid = series.dropna()
+    positions = pd.Series(np.arange(len(series)), index=series.index).loc[valid.index]
+    rank = 100 * valid.rolling(window, min_periods=window).rank(method="average", pct=True) - 50 / window
+    rank = rank.where(positions - positions.shift(window - 1) < 2 * window)
+    return rank.reindex(series.index)
+
+
+def vix_dynamics_frame(vix: pd.Series, as_of=None) -> pd.DataFrame:
+    """Causal level, signed log velocity and its first difference per session.
+
+    velocity = EWMA_5(100 * diff(log(VIX))); acceleration = diff(velocity).
+    EWMA starts over after every absent/invalid return and needs five returns.
+    Positive acceleration with negative velocity means relief is SLOWING.
+    """
+    c = session_series(vix, as_of, positive=True)
+    out = pd.DataFrame({"vix": c})
+    raw = 100 * np.log(c).diff()
+    groups = raw.isna().cumsum()
+    vel = raw.groupby(groups).transform(lambda x: x.ewm(span=5, adjust=False, min_periods=5).mean())
+    out["velocity"] = vel
+    out["acceleration"] = vel.diff()
+    out["level_percentile"] = causal_midrank(c)
+    out["velocity_percentile"] = causal_midrank(vel)
+    out["acceleration_percentile"] = causal_midrank(out.acceleration)
+    for h in (1, 5, 20):
+        # A missing intermediate session invalidates the whole measurement.
+        complete = c.rolling(h + 1, min_periods=h + 1).count().eq(h + 1)
+        out[f"change_{h}d_pct"] = (100 * (c / c.shift(h) - 1)).where(complete)
+        out[f"change_{h}d_points"] = c.diff(h).where(complete)
+    out["phase"] = [volatility_phase(v, a) for v, a in zip(vel, out.acceleration)]
+    for name, direction in (("up_sessions", 1), ("down_sessions", -1)):
+        agrees = (direction * vel > 1e-10) & (direction * out.change_1d_points > 1e-10)
+        out[name] = agrees.groupby((~agrees).cumsum()).cumsum().astype(int)
+    return out
+
+
+def volatility_phase(velocity, acceleration) -> str:
+    """Signed quadrants, not percentile-only direction or a turning-point forecast."""
+    if not np.isfinite(velocity) or not np.isfinite(acceleration):
+        return "unavailable"
+    # Numerical tolerance only; not an absolute VIX market-state threshold.
+    if abs(velocity) < 1e-10:
+        return "steady"
+    if abs(acceleration) < 1e-10:
+        return "rising_steady" if velocity > 0 else "falling_steady"
+    if velocity > 0:
+        return "stress_accelerating" if acceleration > 0 else "stress_decelerating"
+    return "relief_accelerating" if acceleration < 0 else "relief_decelerating"
+
+
+_DYNAMICS_COPY = {
+    "unavailable": ("Risk direction unavailable", "风险方向暂不可用"),
+    "steady": ("Volatility is steady", "波动率平稳"),
+    "rising_steady": ("Risk is rising steadily", "风险持续上升"),
+    "falling_steady": ("Risk is easing steadily", "风险持续缓解"),
+    "stress_accelerating": ("Risk is rising faster", "风险加速上升"),
+    "stress_decelerating": ("Risk is rising more slowly", "风险上升放缓"),
+    "relief_accelerating": ("Risk is easing faster", "风险加速缓解"),
+    "relief_decelerating": ("Relief is losing momentum", "风险缓解势头减弱"),
+}
+
+
+def compute_vix_dynamics(vix: pd.Series | None, *, vix3m=None, vix9d=None,
+                         vvix=None, as_of=None) -> dict:
+    """One authoritative calculation for Fear/Greed's descriptive VIX detail.
+
+    All ratios use the SAME session. No stale tail is promoted to today's state.
+    Curve ratios are spot implied-volatility horizons, NOT VIX futures roll yield.
+    VVIX is options-implied volatility of forward VIX, NOT VIX acceleration.
+    """
+    from engine import canon
+    from lib import nyse_calendar
+
+    end = pd.Timestamp(as_of or nyse_calendar.expected_last_session()).tz_localize(None).normalize()
+    end = pd.Timestamp(nyse_calendar.last_session_on_or_before(end.date()))
+    frame = vix_dynamics_frame(vix, end)
+    valid = frame.vix.dropna()
+    last_date = valid.index[-1].strftime("%Y-%m-%d") if len(valid) else None
+    current = frame.iloc[-1] if len(frame) else pd.Series(dtype=object)
+    fresh = len(valid) > 0 and valid.index[-1] == end
+    phase = str(current.get("phase", "unavailable")) if fresh else "unavailable"
+    label_en, label_zh = _DYNAMICS_COPY[phase]
+    out = {
+        "schema": "mastermind.vix_dynamics.v1", "as_of": last_date,
+        "expected_session": end.strftime("%Y-%m-%d"),
+        "status": "fresh" if fresh else ("stale" if last_date else "missing"),
+        "phase": phase, "label_en": label_en, "label_zh": label_zh,
+        "velocity_unit": "log-percent per session", "acceleration_unit": "log-percent per session squared",
+        "vix": _r(current.get("vix")), "velocity": _r(current.get("velocity"), 4),
+        "acceleration": _r(current.get("acceleration"), 4),
+        "level_percentile": _r(current.get("level_percentile"), 1),
+        "velocity_percentile": _r(current.get("velocity_percentile"), 1),
+        "acceleration_percentile": _r(current.get("acceleration_percentile"), 1),
+        "mature": bool(fresh and pd.notna(current.get("acceleration_percentile"))),
+        "up_sessions": 0, "down_sessions": 0, "term_ratio": None,
+        "front_ratio": None, "term_change_5d": None, "curve_as_of": None,
+        "vvix": None, "vvix_change_5d_pct": None, "vvix_percentile": None,
+        "vvix_as_of": None, "vvix_status": "missing", "history": [],
+    }
+    for h in (1, 5, 20):
+        for unit in ("pct", "points"):
+            key = f"change_{h}d_{unit}"
+            out[key] = _r(current.get(key), 3)
+    if fresh:
+        # Same streak definition is used by the research replay, without refitting.
+        out["up_sessions"] = int(current.up_sessions)
+        out["down_sessions"] = int(current.down_sessions)
+        v3 = session_series(vix3m, end, positive=True)
+        if len(v3):
+            ratio = canon.vix_term(frame.vix, v3)
+            out["term_ratio"] = _r(ratio.iloc[-1], 4)
+            complete = ratio.tail(6).notna().all() and len(ratio) >= 6
+            out["term_change_5d"] = _r(ratio.iloc[-1] - ratio.iloc[-6], 4) if complete else None
+            if out["term_ratio"] is not None:
+                out["curve_as_of"] = out["expected_session"]
+        v9 = session_series(vix9d, end, positive=True)
+        if len(v9):
+            out["front_ratio"] = _r((v9.reindex(frame.index) / frame.vix).iloc[-1], 4)
+    vv = session_series(vvix, end, positive=True)
+    vv_valid = vv.dropna()
+    if len(vv_valid):
+        out["vvix_as_of"] = vv_valid.index[-1].strftime("%Y-%m-%d")
+        out["vvix_status"] = "fresh" if vv_valid.index[-1] == end else "stale"
+        if out["vvix_status"] == "fresh":
+            out["vvix"] = _r(vv.iloc[-1])
+            out["vvix_percentile"] = _r(causal_midrank(vv).iloc[-1], 1)
+            if len(vv) >= 6 and vv.tail(6).notna().all():
+                out["vvix_change_5d_pct"] = _r(100 * (vv.iloc[-1] / vv.iloc[-6] - 1), 3)
+    for date, row in frame.tail(60).iterrows():
+        out["history"].append({"date": date.strftime("%Y-%m-%d"),
+                               **{k: _r(row[k], 4) for k in ("vix", "velocity", "acceleration")},
+                               "phase": row.phase})
+    return out
