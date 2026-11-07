@@ -73,7 +73,7 @@ DAILY_INSTRUMENTED_JOBS = frozenset({
     "active_build_map", "capital_structure", "causal", "collect", "collect_tail",
     "cortex", "engine", "factor_panel", "factor_series", "ledger_heartbeat",
     "oracle_offrender", "standout_audit_us", "stock_briefs", "tech_lab_offrender",
-    "us_prophet_ledgers", "us_scan_tier",
+    "us_board_ledgers", "us_prophet_ledgers", "us_scan_tier",
 })
 #: `ths_rescrape` (GMI W1a) is the weekly 同花顺 re-scrape: self-hosted, capped, and
 #: job-level skipped on the six non-Saturday days, so it appends a ledger row only on

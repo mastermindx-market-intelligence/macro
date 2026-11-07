@@ -1,0 +1,659 @@
+FF..FFFFFFF                                                              [100%]
+=================================== FAILURES ===================================
+__ test_us_board_q1_retirement_requires_a_surviving_custody_destination[self] __
+
+tmp_path = PosixPath('/private/tmp/macro-pr10432-c4-q1-20261106/audit-before/test_us_board_q1_retirement_re0')
+destinations = 'self'
+
+    @pytest.mark.parametrize("destinations", ["self", "mutual", "surviving", "conflicting"])
+    def test_us_board_q1_retirement_requires_a_surviving_custody_destination(tmp_path, destinations):
+        bare, ref, held = _q1_existing_hold(tmp_path, "1521")
+        lane = _clone_of(bare, tmp_path / "next-lane")
+        env = _hold_env(tmp_path, "1522")
+        recovery = _run_us_board_commit(lane, "--recover", **env)
+        assert recovery.returncode == 0, recovery.stdout + recovery.stderr
+        state = Path(env["RUNNER_TEMP"]) / "push_hold.1522.us_board_ledgers"
+        original = (state / "recovered").read_text()
+        ref2 = "refs/heads/push-hold/us_board_ledgers/independent-successor"
+        if destinations in ("mutual", "surviving"):
+            commit2 = _q1_seed_lineage_ref(bare, ref, ref2, [])
+            _git_output(lane, "fetch", "-q", "origin", commit2)
+            successor = "".join(
+                f"{ref2}\t{line.split(chr(9))[1]}\t{commit2}\n"
+                for line in original.splitlines()
+            )
+            (state / "held").write_text(original + successor)
+            if destinations == "mutual":
+                (state / "recovered").write_text(original + successor)
+        elif destinations == "conflicting":
+            fields = original.splitlines()[0].split("\t")
+            fields[2] = _git_output(bare, "rev-parse", "main")
+            (state / "held").write_text("\t".join(fields) + "\n")
+        else:
+            (state / "held").write_text(original)
+        before_main = _git_output(bare, "rev-parse", "main")
+        before_refs = _hold_refs(bare)
+    
+        result = run_sh(
+            f'. "{REPO_ROOT}/scripts/ci/push_hold.sh"\n'
+            'push_hold_settle "data/us_board_ledger" "data/us_sector_rotation"\n',
+            env=env, cwd=lane,
+        )
+    
+        assert _git_output(bare, "rev-parse", "main") == before_main
+        if destinations == "surviving":
+            assert result.returncode == 0, result.stdout + result.stderr
+            assert _hold_refs(bare) == [ref2]
+            entries, _ = _manifest(bare, ref2)
+            assert _rebuild(bare, ref2, entries[0]) == held
+        else:
+>           assert result.returncode == 2, result.stdout + result.stderr
+E           AssertionError: hold settled refs/heads/push-hold/us_board_ledgers/1521-1-f0765ce7d9b6
+E             To /private/tmp/macro-pr10432-c4-q1-20261106/audit-before/test_us_board_q1_retirement_re0/origin.git
+E              - [deleted]         push-hold/us_board_ledgers/1521-1-f0765ce7d9b6
+E             
+E           assert 0 == 2
+E            +  where 0 = CompletedProcess(args=['bash', '-eo', 'pipefail', '-c', '. "/Volumes/Mastermind 2/agent-workspaces/macro/web/github-pr...ore/test_us_board_q1_retirement_re0/origin.git\n - [deleted]         push-hold/us_board_ledgers/1521-1-f0765ce7d9b6\n').returncode
+
+tests/test_push_retry.py:4313: AssertionError
+------------------------------- Sparse worktree --------------------------------
+This checkout omits data, mockups, site, verify_shots. If this failure is an artifact of that, sparse worktree — data not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+_ test_us_board_q1_retirement_requires_a_surviving_custody_destination[mutual] _
+
+tmp_path = PosixPath('/private/tmp/macro-pr10432-c4-q1-20261106/audit-before/test_us_board_q1_retirement_re1')
+destinations = 'mutual'
+
+    @pytest.mark.parametrize("destinations", ["self", "mutual", "surviving", "conflicting"])
+    def test_us_board_q1_retirement_requires_a_surviving_custody_destination(tmp_path, destinations):
+        bare, ref, held = _q1_existing_hold(tmp_path, "1521")
+        lane = _clone_of(bare, tmp_path / "next-lane")
+        env = _hold_env(tmp_path, "1522")
+        recovery = _run_us_board_commit(lane, "--recover", **env)
+        assert recovery.returncode == 0, recovery.stdout + recovery.stderr
+        state = Path(env["RUNNER_TEMP"]) / "push_hold.1522.us_board_ledgers"
+        original = (state / "recovered").read_text()
+        ref2 = "refs/heads/push-hold/us_board_ledgers/independent-successor"
+        if destinations in ("mutual", "surviving"):
+            commit2 = _q1_seed_lineage_ref(bare, ref, ref2, [])
+            _git_output(lane, "fetch", "-q", "origin", commit2)
+            successor = "".join(
+                f"{ref2}\t{line.split(chr(9))[1]}\t{commit2}\n"
+                for line in original.splitlines()
+            )
+            (state / "held").write_text(original + successor)
+            if destinations == "mutual":
+                (state / "recovered").write_text(original + successor)
+        elif destinations == "conflicting":
+            fields = original.splitlines()[0].split("\t")
+            fields[2] = _git_output(bare, "rev-parse", "main")
+            (state / "held").write_text("\t".join(fields) + "\n")
+        else:
+            (state / "held").write_text(original)
+        before_main = _git_output(bare, "rev-parse", "main")
+        before_refs = _hold_refs(bare)
+    
+        result = run_sh(
+            f'. "{REPO_ROOT}/scripts/ci/push_hold.sh"\n'
+            'push_hold_settle "data/us_board_ledger" "data/us_sector_rotation"\n',
+            env=env, cwd=lane,
+        )
+    
+        assert _git_output(bare, "rev-parse", "main") == before_main
+        if destinations == "surviving":
+            assert result.returncode == 0, result.stdout + result.stderr
+            assert _hold_refs(bare) == [ref2]
+            entries, _ = _manifest(bare, ref2)
+            assert _rebuild(bare, ref2, entries[0]) == held
+        else:
+>           assert result.returncode == 2, result.stdout + result.stderr
+E           AssertionError: hold settled refs/heads/push-hold/us_board_ledgers/1521-1-c28b0b5921e1
+E             hold settled refs/heads/push-hold/us_board_ledgers/independent-successor
+E             To /private/tmp/macro-pr10432-c4-q1-20261106/audit-before/test_us_board_q1_retirement_re1/origin.git
+E              - [deleted]         push-hold/us_board_ledgers/1521-1-c28b0b5921e1
+E             To /private/tmp/macro-pr10432-c4-q1-20261106/audit-before/test_us_board_q1_retirement_re1/origin.git
+E              - [deleted]         push-hold/us_board_ledgers/independent-successor
+E             
+E           assert 0 == 2
+E            +  where 0 = CompletedProcess(args=['bash', '-eo', 'pipefail', '-c', '. "/Volumes/Mastermind 2/agent-workspaces/macro/web/github-pr...e/test_us_board_q1_retirement_re1/origin.git\n - [deleted]         push-hold/us_board_ledgers/independent-successor\n').returncode
+
+tests/test_push_retry.py:4313: AssertionError
+------------------------------- Sparse worktree --------------------------------
+This checkout omits data, mockups, site, verify_shots. If this failure is an artifact of that, sparse worktree — data not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+__ test_us_board_q1_topology_read_failure_cannot_count_a_terminal_repeatedly ___
+
+tmp_path = PosixPath('/private/tmp/macro-pr10432-c4-q1-20261106/audit-before/test_us_board_q1_topology_read0')
+
+    def test_us_board_q1_topology_read_failure_cannot_count_a_terminal_repeatedly(tmp_path):
+        bare, original_ref, held = _q1_existing_hold(tmp_path, "1531")
+        a = "refs/heads/push-hold/us_board_ledgers/cycle-a"
+        b = "refs/heads/push-hold/us_board_ledgers/cycle-b"
+        c = "refs/heads/push-hold/us_board_ledgers/terminal-c"
+        _q1_seed_lineage_ref(bare, original_ref, a, [b])
+        _q1_seed_lineage_ref(bare, original_ref, b, [a])
+        _q1_seed_lineage_ref(bare, original_ref, c, [])
+        _git_output(bare, "update-ref", "-d", original_ref)
+        lane = _clone_of(bare, tmp_path / "next-lane")
+        fakebin = tmp_path / "grep-bin"
+        fakebin.mkdir()
+        real_grep = shutil.which("grep")
+        assert real_grep
+        log = tmp_path / "topology-reads.log"
+        interceptor = fakebin / "grep"
+        interceptor.write_text(
+            "#!/bin/bash\n"
+            'case "$*" in\n'
+            f'  */topo_done) printf "injected-read-error\\n" >> {shlex.quote(str(log))}; exit 2 ;;\n'
+            "esac\n"
+            f'exec {shlex.quote(real_grep)} "$@"\n'
+        )
+        interceptor.chmod(0o755)
+        env = _hold_env(tmp_path, "1532", PATH=f"{fakebin}:{os.environ['PATH']}")
+        before_refs = _hold_refs(bare)
+    
+        result = _run_us_board_commit(lane, "--recover", **env)
+    
+        assert log.read_text().splitlines()
+>       assert result.returncode != 0, result.stdout + result.stderr
+E       AssertionError: 
+E       assert 0 != 0
+E        +  where 0 = CompletedProcess(args=['bash', '/Volumes/Mastermind 2/agent-workspaces/macro/web/github-pr-sweep-2028-c4-pr10432-repair/scripts/ci/us_board_commit.sh', '--recover'], returncode=0, stdout='', stderr='').returncode
+
+tests/test_push_retry.py:4350: AssertionError
+_ test_us_board_q1_retirement_reconciles_every_delete_outcome[accepted_client_failure-True] _
+
+tmp_path = PosixPath('/private/tmp/macro-pr10432-c4-q1-20261106/audit-before/test_us_board_q1_retirement_re4')
+mode = 'accepted_client_failure', admitted = True
+
+    @pytest.mark.parametrize(
+        "mode,admitted",
+        [
+            ("accepted_client_failure", True),
+            ("confirmed_unchanged", True),
+            ("moved_ref", False),
+            ("unreadable_after_success", False),
+            ("unreadable_after_failure", False),
+            ("malformed_readback", False),
+        ],
+    )
+    def test_us_board_q1_retirement_reconciles_every_delete_outcome(tmp_path, mode, admitted):
+        bare, ref, held = _q1_existing_hold(tmp_path, "1541")
+        original_commit = _git_output(bare, "rev-parse", ref)
+        old_main = _git_output(bare, "rev-parse", "main")
+        publisher = _clone_of(bare, tmp_path / "published-lane")
+        (publisher / "data/us_board_ledger/snapshots.jsonl").write_bytes(held)
+        _git_output(publisher, "add", "data/us_board_ledger/snapshots.jsonl")
+        _git_output(publisher, "commit", "-q", "-m", "publish exact held bytes")
+        _git_output(publisher, "push", "-q", "origin", "HEAD:main")
+        lane = _clone_of(bare, tmp_path / "next-lane")
+        log = tmp_path / "retirement-commands.log"
+        marker = tmp_path / "retirement-attempted"
+        fakebin = _custody_git_interceptor(
+            tmp_path,
+            r"""
+            if [ "$1" = push ]; then
+              for arg in "$@"; do
+                if [ "$arg" = ":$RETIRE_REF" ]; then
+                  printf 'push\n' >> "$RETIRE_LOG"
+                  : > "$RETIRE_MARK"
+                  case "$RETIRE_MODE" in
+                    accepted_client_failure)
+                      "$REAL_GIT" "$@" || exit $?
+                      exit 75 ;;
+                    unreadable_after_success)
+                      "$REAL_GIT" "$@"
+                      exit $? ;;
+                    moved_ref)
+                      "$REAL_GIT" -C "$RETIRE_BARE" update-ref "$RETIRE_REF" "$RETIRE_OLD_MAIN" "$RETIRE_COMMIT"
+                      exit 75 ;;
+                    *) exit 75 ;;
+                  esac
+                fi
+              done
+            fi
+            if [ "$1" = ls-remote ] && [ -f "$RETIRE_MARK" ]; then
+              for arg in "$@"; do
+                if [ "$arg" = "$RETIRE_REF" ]; then
+                  printf 'read\n' >> "$RETIRE_LOG"
+                  case "$RETIRE_MODE" in
+                    unreadable_after_success|unreadable_after_failure) exit 73 ;;
+                    malformed_readback) printf 'not-a-ref-receipt\n'; exit 0 ;;
+                  esac
+                fi
+              done
+            fi
+            """,
+        )
+        env = _hold_env(
+            tmp_path, "1542", PATH=f"{fakebin}:{os.environ['PATH']}",
+            RETIRE_REF=ref, RETIRE_COMMIT=original_commit, RETIRE_OLD_MAIN=old_main,
+            RETIRE_BARE=str(bare), RETIRE_LOG=str(log), RETIRE_MARK=str(marker),
+            RETIRE_MODE=mode,
+        )
+    
+        result = _run_us_board_commit(lane, "--recover", **env)
+    
+>       assert log.read_text().splitlines() == ["push", "read"]
+E       AssertionError: assert ['push'] == ['push', 'read']
+E         
+E         Right contains one more item: 'read'
+E         Use -v to get more diff
+
+tests/test_push_retry.py:4425: AssertionError
+------------------------------- Sparse worktree --------------------------------
+This checkout omits data, mockups, site, verify_shots. If this failure is an artifact of that, sparse worktree — data not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+_ test_us_board_q1_retirement_reconciles_every_delete_outcome[confirmed_unchanged-True] _
+
+tmp_path = PosixPath('/private/tmp/macro-pr10432-c4-q1-20261106/audit-before/test_us_board_q1_retirement_re5')
+mode = 'confirmed_unchanged', admitted = True
+
+    @pytest.mark.parametrize(
+        "mode,admitted",
+        [
+            ("accepted_client_failure", True),
+            ("confirmed_unchanged", True),
+            ("moved_ref", False),
+            ("unreadable_after_success", False),
+            ("unreadable_after_failure", False),
+            ("malformed_readback", False),
+        ],
+    )
+    def test_us_board_q1_retirement_reconciles_every_delete_outcome(tmp_path, mode, admitted):
+        bare, ref, held = _q1_existing_hold(tmp_path, "1541")
+        original_commit = _git_output(bare, "rev-parse", ref)
+        old_main = _git_output(bare, "rev-parse", "main")
+        publisher = _clone_of(bare, tmp_path / "published-lane")
+        (publisher / "data/us_board_ledger/snapshots.jsonl").write_bytes(held)
+        _git_output(publisher, "add", "data/us_board_ledger/snapshots.jsonl")
+        _git_output(publisher, "commit", "-q", "-m", "publish exact held bytes")
+        _git_output(publisher, "push", "-q", "origin", "HEAD:main")
+        lane = _clone_of(bare, tmp_path / "next-lane")
+        log = tmp_path / "retirement-commands.log"
+        marker = tmp_path / "retirement-attempted"
+        fakebin = _custody_git_interceptor(
+            tmp_path,
+            r"""
+            if [ "$1" = push ]; then
+              for arg in "$@"; do
+                if [ "$arg" = ":$RETIRE_REF" ]; then
+                  printf 'push\n' >> "$RETIRE_LOG"
+                  : > "$RETIRE_MARK"
+                  case "$RETIRE_MODE" in
+                    accepted_client_failure)
+                      "$REAL_GIT" "$@" || exit $?
+                      exit 75 ;;
+                    unreadable_after_success)
+                      "$REAL_GIT" "$@"
+                      exit $? ;;
+                    moved_ref)
+                      "$REAL_GIT" -C "$RETIRE_BARE" update-ref "$RETIRE_REF" "$RETIRE_OLD_MAIN" "$RETIRE_COMMIT"
+                      exit 75 ;;
+                    *) exit 75 ;;
+                  esac
+                fi
+              done
+            fi
+            if [ "$1" = ls-remote ] && [ -f "$RETIRE_MARK" ]; then
+              for arg in "$@"; do
+                if [ "$arg" = "$RETIRE_REF" ]; then
+                  printf 'read\n' >> "$RETIRE_LOG"
+                  case "$RETIRE_MODE" in
+                    unreadable_after_success|unreadable_after_failure) exit 73 ;;
+                    malformed_readback) printf 'not-a-ref-receipt\n'; exit 0 ;;
+                  esac
+                fi
+              done
+            fi
+            """,
+        )
+        env = _hold_env(
+            tmp_path, "1542", PATH=f"{fakebin}:{os.environ['PATH']}",
+            RETIRE_REF=ref, RETIRE_COMMIT=original_commit, RETIRE_OLD_MAIN=old_main,
+            RETIRE_BARE=str(bare), RETIRE_LOG=str(log), RETIRE_MARK=str(marker),
+            RETIRE_MODE=mode,
+        )
+    
+        result = _run_us_board_commit(lane, "--recover", **env)
+    
+>       assert log.read_text().splitlines() == ["push", "read"]
+E       AssertionError: assert ['push'] == ['push', 'read']
+E         
+E         Right contains one more item: 'read'
+E         Use -v to get more diff
+
+tests/test_push_retry.py:4425: AssertionError
+------------------------------- Sparse worktree --------------------------------
+This checkout omits data, mockups, site, verify_shots. If this failure is an artifact of that, sparse worktree — data not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+_ test_us_board_q1_retirement_reconciles_every_delete_outcome[moved_ref-False] _
+
+tmp_path = PosixPath('/private/tmp/macro-pr10432-c4-q1-20261106/audit-before/test_us_board_q1_retirement_re6')
+mode = 'moved_ref', admitted = False
+
+    @pytest.mark.parametrize(
+        "mode,admitted",
+        [
+            ("accepted_client_failure", True),
+            ("confirmed_unchanged", True),
+            ("moved_ref", False),
+            ("unreadable_after_success", False),
+            ("unreadable_after_failure", False),
+            ("malformed_readback", False),
+        ],
+    )
+    def test_us_board_q1_retirement_reconciles_every_delete_outcome(tmp_path, mode, admitted):
+        bare, ref, held = _q1_existing_hold(tmp_path, "1541")
+        original_commit = _git_output(bare, "rev-parse", ref)
+        old_main = _git_output(bare, "rev-parse", "main")
+        publisher = _clone_of(bare, tmp_path / "published-lane")
+        (publisher / "data/us_board_ledger/snapshots.jsonl").write_bytes(held)
+        _git_output(publisher, "add", "data/us_board_ledger/snapshots.jsonl")
+        _git_output(publisher, "commit", "-q", "-m", "publish exact held bytes")
+        _git_output(publisher, "push", "-q", "origin", "HEAD:main")
+        lane = _clone_of(bare, tmp_path / "next-lane")
+        log = tmp_path / "retirement-commands.log"
+        marker = tmp_path / "retirement-attempted"
+        fakebin = _custody_git_interceptor(
+            tmp_path,
+            r"""
+            if [ "$1" = push ]; then
+              for arg in "$@"; do
+                if [ "$arg" = ":$RETIRE_REF" ]; then
+                  printf 'push\n' >> "$RETIRE_LOG"
+                  : > "$RETIRE_MARK"
+                  case "$RETIRE_MODE" in
+                    accepted_client_failure)
+                      "$REAL_GIT" "$@" || exit $?
+                      exit 75 ;;
+                    unreadable_after_success)
+                      "$REAL_GIT" "$@"
+                      exit $? ;;
+                    moved_ref)
+                      "$REAL_GIT" -C "$RETIRE_BARE" update-ref "$RETIRE_REF" "$RETIRE_OLD_MAIN" "$RETIRE_COMMIT"
+                      exit 75 ;;
+                    *) exit 75 ;;
+                  esac
+                fi
+              done
+            fi
+            if [ "$1" = ls-remote ] && [ -f "$RETIRE_MARK" ]; then
+              for arg in "$@"; do
+                if [ "$arg" = "$RETIRE_REF" ]; then
+                  printf 'read\n' >> "$RETIRE_LOG"
+                  case "$RETIRE_MODE" in
+                    unreadable_after_success|unreadable_after_failure) exit 73 ;;
+                    malformed_readback) printf 'not-a-ref-receipt\n'; exit 0 ;;
+                  esac
+                fi
+              done
+            fi
+            """,
+        )
+        env = _hold_env(
+            tmp_path, "1542", PATH=f"{fakebin}:{os.environ['PATH']}",
+            RETIRE_REF=ref, RETIRE_COMMIT=original_commit, RETIRE_OLD_MAIN=old_main,
+            RETIRE_BARE=str(bare), RETIRE_LOG=str(log), RETIRE_MARK=str(marker),
+            RETIRE_MODE=mode,
+        )
+    
+        result = _run_us_board_commit(lane, "--recover", **env)
+    
+>       assert log.read_text().splitlines() == ["push", "read"]
+E       AssertionError: assert ['push'] == ['push', 'read']
+E         
+E         Right contains one more item: 'read'
+E         Use -v to get more diff
+
+tests/test_push_retry.py:4425: AssertionError
+------------------------------- Sparse worktree --------------------------------
+This checkout omits data, mockups, site, verify_shots. If this failure is an artifact of that, sparse worktree — data not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+_ test_us_board_q1_retirement_reconciles_every_delete_outcome[unreadable_after_success-False] _
+
+tmp_path = PosixPath('/private/tmp/macro-pr10432-c4-q1-20261106/audit-before/test_us_board_q1_retirement_re7')
+mode = 'unreadable_after_success', admitted = False
+
+    @pytest.mark.parametrize(
+        "mode,admitted",
+        [
+            ("accepted_client_failure", True),
+            ("confirmed_unchanged", True),
+            ("moved_ref", False),
+            ("unreadable_after_success", False),
+            ("unreadable_after_failure", False),
+            ("malformed_readback", False),
+        ],
+    )
+    def test_us_board_q1_retirement_reconciles_every_delete_outcome(tmp_path, mode, admitted):
+        bare, ref, held = _q1_existing_hold(tmp_path, "1541")
+        original_commit = _git_output(bare, "rev-parse", ref)
+        old_main = _git_output(bare, "rev-parse", "main")
+        publisher = _clone_of(bare, tmp_path / "published-lane")
+        (publisher / "data/us_board_ledger/snapshots.jsonl").write_bytes(held)
+        _git_output(publisher, "add", "data/us_board_ledger/snapshots.jsonl")
+        _git_output(publisher, "commit", "-q", "-m", "publish exact held bytes")
+        _git_output(publisher, "push", "-q", "origin", "HEAD:main")
+        lane = _clone_of(bare, tmp_path / "next-lane")
+        log = tmp_path / "retirement-commands.log"
+        marker = tmp_path / "retirement-attempted"
+        fakebin = _custody_git_interceptor(
+            tmp_path,
+            r"""
+            if [ "$1" = push ]; then
+              for arg in "$@"; do
+                if [ "$arg" = ":$RETIRE_REF" ]; then
+                  printf 'push\n' >> "$RETIRE_LOG"
+                  : > "$RETIRE_MARK"
+                  case "$RETIRE_MODE" in
+                    accepted_client_failure)
+                      "$REAL_GIT" "$@" || exit $?
+                      exit 75 ;;
+                    unreadable_after_success)
+                      "$REAL_GIT" "$@"
+                      exit $? ;;
+                    moved_ref)
+                      "$REAL_GIT" -C "$RETIRE_BARE" update-ref "$RETIRE_REF" "$RETIRE_OLD_MAIN" "$RETIRE_COMMIT"
+                      exit 75 ;;
+                    *) exit 75 ;;
+                  esac
+                fi
+              done
+            fi
+            if [ "$1" = ls-remote ] && [ -f "$RETIRE_MARK" ]; then
+              for arg in "$@"; do
+                if [ "$arg" = "$RETIRE_REF" ]; then
+                  printf 'read\n' >> "$RETIRE_LOG"
+                  case "$RETIRE_MODE" in
+                    unreadable_after_success|unreadable_after_failure) exit 73 ;;
+                    malformed_readback) printf 'not-a-ref-receipt\n'; exit 0 ;;
+                  esac
+                fi
+              done
+            fi
+            """,
+        )
+        env = _hold_env(
+            tmp_path, "1542", PATH=f"{fakebin}:{os.environ['PATH']}",
+            RETIRE_REF=ref, RETIRE_COMMIT=original_commit, RETIRE_OLD_MAIN=old_main,
+            RETIRE_BARE=str(bare), RETIRE_LOG=str(log), RETIRE_MARK=str(marker),
+            RETIRE_MODE=mode,
+        )
+    
+        result = _run_us_board_commit(lane, "--recover", **env)
+    
+        assert log.read_text().splitlines() == ["push", "read"]
+>       assert (result.returncode == 0) is admitted, result.stdout + result.stderr
+E       AssertionError: ::warning title=hold ref remains::refs/heads/push-hold/us_board_ledgers/1541-1-01dc881a5833 already landed on HEAD but the ref is still on origin
+E         To /private/tmp/macro-pr10432-c4-q1-20261106/audit-before/test_us_board_q1_retirement_re7/origin.git
+E          - [deleted]         push-hold/us_board_ledgers/1541-1-01dc881a5833
+E         
+E       assert (0 == 0) is False
+E        +  where 0 = CompletedProcess(args=['bash', '/Volumes/Mastermind 2/agent-workspaces/macro/web/github-pr-sweep-2028-c4-pr10432-repai...ore/test_us_board_q1_retirement_re7/origin.git\n - [deleted]         push-hold/us_board_ledgers/1541-1-01dc881a5833\n').returncode
+
+tests/test_push_retry.py:4426: AssertionError
+------------------------------- Sparse worktree --------------------------------
+This checkout omits data, mockups, site, verify_shots. If this failure is an artifact of that, sparse worktree — data not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+_ test_us_board_q1_retirement_reconciles_every_delete_outcome[unreadable_after_failure-False] _
+
+tmp_path = PosixPath('/private/tmp/macro-pr10432-c4-q1-20261106/audit-before/test_us_board_q1_retirement_re8')
+mode = 'unreadable_after_failure', admitted = False
+
+    @pytest.mark.parametrize(
+        "mode,admitted",
+        [
+            ("accepted_client_failure", True),
+            ("confirmed_unchanged", True),
+            ("moved_ref", False),
+            ("unreadable_after_success", False),
+            ("unreadable_after_failure", False),
+            ("malformed_readback", False),
+        ],
+    )
+    def test_us_board_q1_retirement_reconciles_every_delete_outcome(tmp_path, mode, admitted):
+        bare, ref, held = _q1_existing_hold(tmp_path, "1541")
+        original_commit = _git_output(bare, "rev-parse", ref)
+        old_main = _git_output(bare, "rev-parse", "main")
+        publisher = _clone_of(bare, tmp_path / "published-lane")
+        (publisher / "data/us_board_ledger/snapshots.jsonl").write_bytes(held)
+        _git_output(publisher, "add", "data/us_board_ledger/snapshots.jsonl")
+        _git_output(publisher, "commit", "-q", "-m", "publish exact held bytes")
+        _git_output(publisher, "push", "-q", "origin", "HEAD:main")
+        lane = _clone_of(bare, tmp_path / "next-lane")
+        log = tmp_path / "retirement-commands.log"
+        marker = tmp_path / "retirement-attempted"
+        fakebin = _custody_git_interceptor(
+            tmp_path,
+            r"""
+            if [ "$1" = push ]; then
+              for arg in "$@"; do
+                if [ "$arg" = ":$RETIRE_REF" ]; then
+                  printf 'push\n' >> "$RETIRE_LOG"
+                  : > "$RETIRE_MARK"
+                  case "$RETIRE_MODE" in
+                    accepted_client_failure)
+                      "$REAL_GIT" "$@" || exit $?
+                      exit 75 ;;
+                    unreadable_after_success)
+                      "$REAL_GIT" "$@"
+                      exit $? ;;
+                    moved_ref)
+                      "$REAL_GIT" -C "$RETIRE_BARE" update-ref "$RETIRE_REF" "$RETIRE_OLD_MAIN" "$RETIRE_COMMIT"
+                      exit 75 ;;
+                    *) exit 75 ;;
+                  esac
+                fi
+              done
+            fi
+            if [ "$1" = ls-remote ] && [ -f "$RETIRE_MARK" ]; then
+              for arg in "$@"; do
+                if [ "$arg" = "$RETIRE_REF" ]; then
+                  printf 'read\n' >> "$RETIRE_LOG"
+                  case "$RETIRE_MODE" in
+                    unreadable_after_success|unreadable_after_failure) exit 73 ;;
+                    malformed_readback) printf 'not-a-ref-receipt\n'; exit 0 ;;
+                  esac
+                fi
+              done
+            fi
+            """,
+        )
+        env = _hold_env(
+            tmp_path, "1542", PATH=f"{fakebin}:{os.environ['PATH']}",
+            RETIRE_REF=ref, RETIRE_COMMIT=original_commit, RETIRE_OLD_MAIN=old_main,
+            RETIRE_BARE=str(bare), RETIRE_LOG=str(log), RETIRE_MARK=str(marker),
+            RETIRE_MODE=mode,
+        )
+    
+        result = _run_us_board_commit(lane, "--recover", **env)
+    
+>       assert log.read_text().splitlines() == ["push", "read"]
+E       AssertionError: assert ['push'] == ['push', 'read']
+E         
+E         Right contains one more item: 'read'
+E         Use -v to get more diff
+
+tests/test_push_retry.py:4425: AssertionError
+------------------------------- Sparse worktree --------------------------------
+This checkout omits data, mockups, site, verify_shots. If this failure is an artifact of that, sparse worktree — data not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+_ test_us_board_q1_retirement_reconciles_every_delete_outcome[malformed_readback-False] _
+
+tmp_path = PosixPath('/private/tmp/macro-pr10432-c4-q1-20261106/audit-before/test_us_board_q1_retirement_re9')
+mode = 'malformed_readback', admitted = False
+
+    @pytest.mark.parametrize(
+        "mode,admitted",
+        [
+            ("accepted_client_failure", True),
+            ("confirmed_unchanged", True),
+            ("moved_ref", False),
+            ("unreadable_after_success", False),
+            ("unreadable_after_failure", False),
+            ("malformed_readback", False),
+        ],
+    )
+    def test_us_board_q1_retirement_reconciles_every_delete_outcome(tmp_path, mode, admitted):
+        bare, ref, held = _q1_existing_hold(tmp_path, "1541")
+        original_commit = _git_output(bare, "rev-parse", ref)
+        old_main = _git_output(bare, "rev-parse", "main")
+        publisher = _clone_of(bare, tmp_path / "published-lane")
+        (publisher / "data/us_board_ledger/snapshots.jsonl").write_bytes(held)
+        _git_output(publisher, "add", "data/us_board_ledger/snapshots.jsonl")
+        _git_output(publisher, "commit", "-q", "-m", "publish exact held bytes")
+        _git_output(publisher, "push", "-q", "origin", "HEAD:main")
+        lane = _clone_of(bare, tmp_path / "next-lane")
+        log = tmp_path / "retirement-commands.log"
+        marker = tmp_path / "retirement-attempted"
+        fakebin = _custody_git_interceptor(
+            tmp_path,
+            r"""
+            if [ "$1" = push ]; then
+              for arg in "$@"; do
+                if [ "$arg" = ":$RETIRE_REF" ]; then
+                  printf 'push\n' >> "$RETIRE_LOG"
+                  : > "$RETIRE_MARK"
+                  case "$RETIRE_MODE" in
+                    accepted_client_failure)
+                      "$REAL_GIT" "$@" || exit $?
+                      exit 75 ;;
+                    unreadable_after_success)
+                      "$REAL_GIT" "$@"
+                      exit $? ;;
+                    moved_ref)
+                      "$REAL_GIT" -C "$RETIRE_BARE" update-ref "$RETIRE_REF" "$RETIRE_OLD_MAIN" "$RETIRE_COMMIT"
+                      exit 75 ;;
+                    *) exit 75 ;;
+                  esac
+                fi
+              done
+            fi
+            if [ "$1" = ls-remote ] && [ -f "$RETIRE_MARK" ]; then
+              for arg in "$@"; do
+                if [ "$arg" = "$RETIRE_REF" ]; then
+                  printf 'read\n' >> "$RETIRE_LOG"
+                  case "$RETIRE_MODE" in
+                    unreadable_after_success|unreadable_after_failure) exit 73 ;;
+                    malformed_readback) printf 'not-a-ref-receipt\n'; exit 0 ;;
+                  esac
+                fi
+              done
+            fi
+            """,
+        )
+        env = _hold_env(
+            tmp_path, "1542", PATH=f"{fakebin}:{os.environ['PATH']}",
+            RETIRE_REF=ref, RETIRE_COMMIT=original_commit, RETIRE_OLD_MAIN=old_main,
+            RETIRE_BARE=str(bare), RETIRE_LOG=str(log), RETIRE_MARK=str(marker),
+            RETIRE_MODE=mode,
+        )
+    
+        result = _run_us_board_commit(lane, "--recover", **env)
+    
+>       assert log.read_text().splitlines() == ["push", "read"]
+E       AssertionError: assert ['push'] == ['push', 'read']
+E         
+E         Right contains one more item: 'read'
+E         Use -v to get more diff
+
+tests/test_push_retry.py:4425: AssertionError
+------------------------------- Sparse worktree --------------------------------
+This checkout omits data, mockups, site, verify_shots. If this failure is an artifact of that, sparse worktree — data not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+
+NOTE: sparse worktree — data, mockups, site, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+9 failed, 2 passed, 176 deselected in 26.09s

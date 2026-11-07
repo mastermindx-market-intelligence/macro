@@ -1,0 +1,73 @@
+{
+  "schema": "c4.us-board.fixture-identity-source.v1",
+  "pr": 10432,
+  "branch": "seat/us-board-rotation-landing-job",
+  "expected_parent": "7b80bc52a850aab755e0e9ec9917b7463cccb167",
+  "qualification_operation": "github-pr-sweep-2028-c4-pr10432-repair",
+  "qualifier_branch_push_permitted": false,
+  "protected_mastermind_pin": "3551bf914bc3cab6117f93377ba89ac1d9c3c30a",
+  "changed_source": {
+    "path": "tests/test_push_retry.py",
+    "before_blob": "d9c6f46ab8ae36b8d8fe36fd85b296d912c81981",
+    "after_blob": "6bac895e703d9c243d5b2204de9c3f3f87b083d9",
+    "after_sha256": "cfc98548bb9b78d20b69a25eb7a1ca5592b43f0d67b3c50cba3563e3bc337e2e",
+    "added_lines": 2,
+    "removed_lines": 0
+  },
+  "production_code_unchanged": true,
+  "assertions_unchanged": true,
+  "ambient_identity_isolation": {
+    "ambient_git_variables_removed": true,
+    "system_config_disabled": true,
+    "global_config": "/dev/null",
+    "user.useConfigOnly": true,
+    "EMAIL_removed": true
+  },
+  "before_counterexample": {
+    "failed": 1,
+    "stopped_after_first_failure": true,
+    "log_sha256": "1e9fd86395ae42792a8d2e357b2cb55dee9c84046b582bce3541b04111e039fe"
+  },
+  "after_existing_cases": {
+    "passed": 6,
+    "failed": 0,
+    "skipped": 0,
+    "log_sha256": "5f0ebb790390b2599ccaa5127b007a4a213223cbc2ffc7943ba0fb6721539ac2"
+  },
+  "identity_diagnostic": {
+    "exit_code": 128,
+    "author_identity_unknown": true,
+    "auto_detection_disabled": true,
+    "stderr_sha256": "355dbf35f39005f92ff91a8d51bfe15affabf5d864611f8fccf8fce5136e84ee"
+  },
+  "original_hosted_failure": {
+    "run": 42232604757,
+    "job": 127942893013,
+    "candidate_failed": 6,
+    "candidate_passed": 181,
+    "base_passed": 126,
+    "hosted_stderr_observed": false
+  },
+  "new_head_hosted_ci": "pending publication",
+  "files": {
+    "README.md": {
+      "bytes": 2479,
+      "sha256": "39da6e347509b64ed36f40dedd0a7e4573b9b528db50fc577b0732f39d6fc834"
+    },
+    "after.log": {
+      "bytes": 99,
+      "sha256": "5f0ebb790390b2599ccaa5127b007a4a213223cbc2ffc7943ba0fb6721539ac2"
+    },
+    "before.log.gz": {
+      "bytes": 2108,
+      "sha256": "ba65e0e39cff4a64b39bbace0b2eee71a8ad9bdd26ba3d9b6d6d70fb68d918f5",
+      "encoding": "gzip",
+      "decoded_sha256": "1e9fd86395ae42792a8d2e357b2cb55dee9c84046b582bce3541b04111e039fe",
+      "decoded_bytes": 6212
+    },
+    "qualification.json": {
+      "bytes": 8982,
+      "sha256": "202bf65a8c2fdabcd3ff5a50aec78373766f4a25172b15855eae5f357e2b0b98"
+    }
+  }
+}

@@ -1,0 +1,74 @@
+{
+  "schema": "c4.us-board.fixture-identity-qualification.v1",
+  "published_source": "7b80bc52a850aab755e0e9ec9917b7463cccb167",
+  "qualifier_head": "0787c6069951213b6500d7d419cb671a702881e8",
+  "isolation": {
+    "ambient_git_variables_removed": true,
+    "system_config_disabled": true,
+    "global_config": "/dev/null",
+    "user.useConfigOnly": true,
+    "EMAIL_removed": true
+  },
+  "production_source_blobs": {
+    "scripts/build_us_sector_rotation.py": "ec66878f49b8da857d2dc4f00ea9606fdc69b306",
+    "scripts/ci/push_hold.sh": "f67c82297d34482c75201431fbdd3af15f58f33c",
+    "scripts/ci/us_board_commit.sh": "3b6e0855c626ca267eb08499e2264cfa36669451"
+  },
+  "commands": [
+    {
+      "phase": "before",
+      "command": [
+        "python3",
+        "-m",
+        "pytest",
+        "tests/test_push_retry.py::test_us_board_q1_retirement_reconciles_every_delete_outcome",
+        "-q",
+        "-rs",
+        "--basetemp",
+        "/tmp/us-board-c4-fixture-20261106/pytest-before",
+        "-o",
+        "cache_dir=/tmp/us-board-c4-fixture-20261106/pytest-cache",
+        "-x"
+      ],
+      "exit_code": 1,
+      "seconds": 4.18,
+      "log_sha256": "1e9fd86395ae42792a8d2e357b2cb55dee9c84046b582bce3541b04111e039fe",
+      "log_tail": "F\n=================================== FAILURES ===================================\n_ test_us_board_q1_retirement_reconciles_every_delete_outcome[accepted_client_failure-True] _\n\ntmp_path = PosixPath('/private/tmp/us-board-c4-fixture-20261106/pytest-before/test_us_board_q1_retirement_re0')\nmode = 'accepted_client_failure', admitted = True\n\n    @pytest.mark.parametrize(\n        \"mode,admitted\",\n        [\n            (\"accepted_client_failure\", True),\n            (\"confirmed_unchanged\", True),\n            (\"moved_ref\", False),\n            (\"unreadable_after_success\", False),\n            (\"unreadable_after_failure\", False),\n            (\"malformed_readback\", False),\n        ],\n    )\n    def test_us_board_q1_retirement_reconciles_every_delete_outcome(tmp_path, mode, admitted):\n        bare, ref, held = _q1_existing_hold(tmp_path, \"1541\")\n        original_commit = _git_output(bare, \"rev-parse\", ref)\n        old_main = _git_output(bare, \"rev-parse\", \"main\")\n        publisher = _clone_of(bare, tmp_path / \"published-lane\")\n        (publisher / \"data/us_board_ledger/snapshots.jsonl\").write_bytes(held)\n        _git_output(publisher, \"add\", \"data/us_board_ledger/snapshots.jsonl\")\n>       _git_output(publisher, \"commit\", \"-q\", \"-m\", \"publish exact held bytes\")\n\ntests/test_push_retry.py:4375: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \ntests/test_push_retry.py:316: in _git_output\n    return subprocess.run(\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\ninput = None, capture_output = True, timeout = None, check = True\npopenargs = (['git', '-C', '/private/tmp/us-board-c4-fixture-20261106/pytest-before/test_us_board_q1_retirement_re0/published-lane', 'commit', '-q', '-m', ...],)\nkwargs = {'text': True, 'stdout': -1, 'stderr': -1}\n\n    def run(*popenargs,\n            input=None, capture_output=False, timeout=None, check=False, **kwargs):\n        \"\"\"Run command with arguments and return a CompletedProcess instance.\n    \n        The returned instance will have attributes args, returncode, stdout and\n        stderr. By default, stdout and stderr are not captured, and those attributes\n        will be None. Pass stdout=PIPE and/or stderr=PIPE in order to capture them,\n        or pass capture_output=True to capture both.\n    \n        If check is True and the exit code was non-zero, it raises a\n        CalledProcessError. The CalledProcessError object will have the return code\n        in the returncode attribute, and output & stderr attributes if those streams\n        were captured.\n    \n        If timeout (seconds) is given and the process takes too long,\n         a TimeoutExpired exception will be raised.\n    \n        There is an optional argument \"input\", allowing you to\n        pass bytes or a string to the subprocess's stdin.  If you use this argument\n        you may not also use the Popen constructor's \"stdin\" argument, as\n        it will be used internally.\n    \n        By default, all communication is in bytes, and therefore any \"input\" should\n        be bytes, and the stdout and stderr will be bytes. If in text mode, any\n        \"input\" should be a string, and stdout and stderr will be strings decoded\n        according to locale encoding, or by \"encoding\" if set. Text mode is\n        triggered by setting any of text, encoding, errors or universal_newlines.\n    \n        The other arguments are the same as for the Popen constructor.\n        \"\"\"\n        if input is not None:\n            if kwargs.get('stdin') is not None:\n                raise ValueError('stdin and input arguments may not both be used.')\n            kwargs['stdin'] = PIPE\n    \n        if capture_output:\n            if kwargs.get('stdout') is not None or kwargs.get('stderr') is not None:\n                raise ValueError('stdout and stderr arguments may not be used '\n                                 'with capture_output.')\n            kwargs['stdout'] = PIPE\n            kwargs['stderr'] = PIPE\n    \n        with Popen(*popenargs, **kwargs) as process:\n            try:\n                stdout, stderr = process.communicate(input, timeout=timeout)\n            except TimeoutExpired as exc:\n                process.kill()\n                if _mswindows:\n                    # Windows accumulates the output in a single blocking\n                    # read() call run on child threads, with the timeout\n                    # being done in a join() on those threads.  communicate()\n                    # _after_ kill() is required to collect that and add it\n                    # to the exception.\n                    exc.stdout, exc.stderr = process.communicate()\n                else:\n                    # POSIX _communicate already populated the output so\n                    # far into the TimeoutExpired exception.\n                    process.wait()\n                raise\n            except:  # Including KeyboardInterrupt, communicate handled that.\n                process.kill()\n                # We don't call process.wait() as .__exit__ does that for us.\n                raise\n            retcode = process.poll()\n            if check and retcode:\n>               raise CalledProcessError(retcode, process.args,\n                                         output=stdout, stderr=stderr)\nE               subprocess.CalledProcessError: Command '['git', '-C', '/private/tmp/us-board-c4-fixture-20261106/pytest-before/test_us_board_q1_retirement_re0/published-lane', 'commit', '-q', '-m', 'publish exact held bytes']' returned non-zero exit status 128.\n\n/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py:578: CalledProcessError\n------------------------------- Sparse worktree --------------------------------\nThis checkout omits data, mockups, site, verify_shots. If this failure is an artifact of that, sparse worktree \u2014 data not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full\n\nNOTE: sparse worktree \u2014 data, mockups, site, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full\n!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!\n1 failed in 3.13s\n"
+    },
+    {
+      "phase": "after",
+      "command": [
+        "python3",
+        "-m",
+        "pytest",
+        "tests/test_push_retry.py::test_us_board_q1_retirement_reconciles_every_delete_outcome",
+        "-q",
+        "-rs",
+        "--basetemp",
+        "/tmp/us-board-c4-fixture-20261106/pytest-after",
+        "-o",
+        "cache_dir=/tmp/us-board-c4-fixture-20261106/pytest-cache"
+      ],
+      "exit_code": 0,
+      "seconds": 39.32,
+      "log_sha256": "5f0ebb790390b2599ccaa5127b007a4a213223cbc2ffc7943ba0fb6721539ac2",
+      "log_tail": "......                                                                   [100%]\n6 passed in 38.73s\n"
+    }
+  ],
+  "identity_diagnostic": {
+    "exit_code": 128,
+    "author_identity_unknown": true,
+    "auto_detection_disabled": true,
+    "stderr_sha256": "355dbf35f39005f92ff91a8d51bfe15affabf5d864611f8fccf8fce5136e84ee"
+  },
+  "before_blob": "d9c6f46ab8ae36b8d8fe36fd85b296d912c81981",
+  "after_blob": "6bac895e703d9c243d5b2204de9c3f3f87b083d9",
+  "after_sha256": "cfc98548bb9b78d20b69a25eb7a1ca5592b43f0d67b3c50cba3563e3bc337e2e",
+  "preserved_untracked_files": 135,
+  "qualifier_index_unchanged": true,
+  "all_six_existing_cases_pass": true,
+  "all_other_published_paths_unchanged": true,
+  "production_code_unchanged": true,
+  "assertions_unchanged": true,
+  "diff_check_exit_code": 0
+}

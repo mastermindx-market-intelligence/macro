@@ -1,0 +1,199 @@
+{
+  "applied": true,
+  "conflicts": [],
+  "operation_id": "github-pr-sweep-2028-c4-pr10432-repair",
+  "original_head": "786b247bfcee4c0cb39ce12ae93d5dd78666097d",
+  "paths": [
+    {
+      "bytes": 2600543,
+      "common_base": {
+        "mode": "100644",
+        "sha": "77e42ebaccb6a544caf30b6bccaae5da92a12c8c"
+      },
+      "current_main": {
+        "mode": "100644",
+        "sha": "1d9aa5eb38c327ccb33f347ec176159d76c7a185"
+      },
+      "merge_exit": 0,
+      "mode": "100644",
+      "original": {
+        "mode": "100644",
+        "sha": "e4bbd340b812b212dbfc7e3f2be3abcc56a392cb"
+      },
+      "path": ".github/ci/legacy-jobs.yml",
+      "result_blob": "2ced5d6f76110665819f881e378ea56726226447",
+      "result_sha256": "ed256e9d93143d2bd3bf6a9bfbe6ed7a3c53724e5ce96f88ed45f6f1275091b1"
+    },
+    {
+      "bytes": 484905,
+      "common_base": {
+        "mode": "100644",
+        "sha": "bbb23e471b393a6e13be7c5131eebcbcbd7676b4"
+      },
+      "current_main": {
+        "mode": "100644",
+        "sha": "fe33f08e942adef0ecb8065a1ae9a30714794b7d"
+      },
+      "merge_exit": 0,
+      "mode": "100644",
+      "original": {
+        "mode": "100644",
+        "sha": "1499eec966f4c19ec0993d3d9d71ca1c5f1aacc3"
+      },
+      "path": ".github/workflows/daily.yml",
+      "result_blob": "e8b649041f972a90507ed7a863a221cc53a1bf7a",
+      "result_sha256": "0aa916400075f4707feab00d213a861255f54ce8dcd2d8c56d34ef4411e0f1d5"
+    },
+    {
+      "bytes": 309463,
+      "common_base": {
+        "mode": "100644",
+        "sha": "a9b08ce95599e66da2f61cc9d6c49e81ec576ffc"
+      },
+      "current_main": {
+        "mode": "100644",
+        "sha": "a9b08ce95599e66da2f61cc9d6c49e81ec576ffc"
+      },
+      "merge_exit": 0,
+      "mode": "100644",
+      "original": {
+        "mode": "100644",
+        "sha": "4123bc650807f547c45a98e230192f9bed46efb5"
+      },
+      "path": "config/dag.yml",
+      "result_blob": "4123bc650807f547c45a98e230192f9bed46efb5",
+      "result_sha256": "28136954f19600daa8862fd8a27e971c8897d4b7a7345dadbc636d5ce7274362"
+    },
+    {
+      "bytes": 1817,
+      "common_base": {
+        "mode": "100644",
+        "sha": "67b47db5fddc9c0e32233e9079931b2775817bc5"
+      },
+      "current_main": {
+        "mode": "100644",
+        "sha": "67b47db5fddc9c0e32233e9079931b2775817bc5"
+      },
+      "merge_exit": 0,
+      "mode": "100644",
+      "original": {
+        "mode": "100644",
+        "sha": "ec66878f49b8da857d2dc4f00ea9606fdc69b306"
+      },
+      "path": "scripts/build_us_sector_rotation.py",
+      "result_blob": "ec66878f49b8da857d2dc4f00ea9606fdc69b306",
+      "result_sha256": "1931ac4e300ba2ce74b7404c15e067d859971b0abc26ef0dd27d6e6ea5be8984"
+    },
+    {
+      "bytes": 36395,
+      "common_base": null,
+      "current_main": null,
+      "merge_exit": 0,
+      "mode": "100644",
+      "original": {
+        "mode": "100644",
+        "sha": "8b1c8d28b232eae0cccfef225302d783d647e66c"
+      },
+      "path": "scripts/ci/push_hold.sh",
+      "result_blob": "8b1c8d28b232eae0cccfef225302d783d647e66c",
+      "result_sha256": "20acdab64a4ba840b53329315da6e0f87847cec509af60524e8c75a1a8255653"
+    },
+    {
+      "bytes": 2974,
+      "common_base": null,
+      "current_main": null,
+      "merge_exit": 0,
+      "mode": "100644",
+      "original": {
+        "mode": "100644",
+        "sha": "a5ae8fc4dcb007c4e82344bb43c33b31369f0aba"
+      },
+      "path": "scripts/ci/us_board_commit.sh",
+      "result_blob": "a5ae8fc4dcb007c4e82344bb43c33b31369f0aba",
+      "result_sha256": "4a361a8b8df569f5ceda64aea6a3a7b2cff505dd13c5097535191f13cf6ac553"
+    },
+    {
+      "bytes": 55944,
+      "common_base": {
+        "mode": "100644",
+        "sha": "f0a9d40de3a6c7cd684bc29c754447545093fcc5"
+      },
+      "current_main": {
+        "mode": "100644",
+        "sha": "f0a9d40de3a6c7cd684bc29c754447545093fcc5"
+      },
+      "merge_exit": 0,
+      "mode": "100644",
+      "original": {
+        "mode": "100644",
+        "sha": "cbccc266aefa26162578813b71b6da066729d655"
+      },
+      "path": "tests/test_nightly_timings.py",
+      "result_blob": "cbccc266aefa26162578813b71b6da066729d655",
+      "result_sha256": "fd8e35c83c229857d02337f915bb6d8120f1d231556fd375be6b8852b7f1d6e1"
+    },
+    {
+      "bytes": 24353,
+      "common_base": {
+        "mode": "100644",
+        "sha": "bd3145c304f32ce6ee3fe51f452c3b312f9dc5cb"
+      },
+      "current_main": {
+        "mode": "100644",
+        "sha": "bd3145c304f32ce6ee3fe51f452c3b312f9dc5cb"
+      },
+      "merge_exit": 0,
+      "mode": "100644",
+      "original": {
+        "mode": "100644",
+        "sha": "ceee8acb81fe2645d8278a5061be2ba01476d3d5"
+      },
+      "path": "tests/test_prophet_off_engine_lane.py",
+      "result_blob": "ceee8acb81fe2645d8278a5061be2ba01476d3d5",
+      "result_sha256": "4605a5a2fa14bd1871885a5025ac734d63a052b0d45ff633a0b9248cccceee8d"
+    },
+    {
+      "bytes": 163452,
+      "common_base": {
+        "mode": "100644",
+        "sha": "cc55d1394850800397f3559866939f83bb1bd3c4"
+      },
+      "current_main": {
+        "mode": "100644",
+        "sha": "cc55d1394850800397f3559866939f83bb1bd3c4"
+      },
+      "merge_exit": 0,
+      "mode": "100644",
+      "original": {
+        "mode": "100644",
+        "sha": "596731f33bee3e11ec47cb19d5c2beae666b90d6"
+      },
+      "path": "tests/test_push_retry.py",
+      "result_blob": "596731f33bee3e11ec47cb19d5c2beae666b90d6",
+      "result_sha256": "d852c2d0bafbb45f736c81bfe9175c70c067dd0841d194ffc12c50c7ec822df3"
+    },
+    {
+      "bytes": 26655,
+      "common_base": {
+        "mode": "100644",
+        "sha": "f2987a13cc20c2c8d3c2325b2128f75779fbdd9f"
+      },
+      "current_main": {
+        "mode": "100644",
+        "sha": "f2987a13cc20c2c8d3c2325b2128f75779fbdd9f"
+      },
+      "merge_exit": 0,
+      "mode": "100644",
+      "original": {
+        "mode": "100644",
+        "sha": "9ecfb5a31cc9ec98b582239eb64995d5d50d1fe9"
+      },
+      "path": "tests/test_us_sector_rotation_wiring.py",
+      "result_blob": "9ecfb5a31cc9ec98b582239eb64995d5d50d1fe9",
+      "result_sha256": "1e115c845dd75f1137a6bd0e78042e21c87bd09067dfa326c49ce05cb095568d"
+    }
+  ],
+  "qualification_base": "0787c6069951213b6500d7d419cb671a702881e8",
+  "schema": "c4.us-board.original-composition.v1",
+  "true_common_base": "0f8f7880aa6b0388f2755d9dca9148dd60dd351f"
+}

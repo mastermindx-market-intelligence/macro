@@ -1,0 +1,27 @@
+{
+  "phase": "q1-audit-after",
+  "source_sha256": {
+    "scripts/ci/push_hold.sh": "d1614419adc68391e029a064881ed6d7bc9f393d690365b3ec8aad7afede0e76",
+    "scripts/ci/us_board_commit.sh": "14a7ecbe28cc00655a8e53458b2db1264e92b47aa661ea0a98e4e1aeaa1fa49d",
+    "tests/test_push_retry.py": "d4e187c194d045732762ccd5faeebd4f3685b4d0377de85b8f349c6f15c5e24f"
+  },
+  "command": [
+    "python3",
+    "-m",
+    "pytest",
+    "tests/test_push_retry.py",
+    "-q",
+    "-rs",
+    "-k",
+    "us_board or hold",
+    "--basetemp",
+    "/tmp/macro-pr10432-c4-q1-20261106/audit-after"
+  ],
+  "exit_code": 0,
+  "runtime_seconds": 126.48,
+  "log_sha256": "f1029eae041b58e2bba7e12cd54647ef7653c77d931ee385560f6109f4f350ee",
+  "log_tail": ".............................................................            [100%]\n61 passed, 126 deselected in 124.88s (0:02:04)\n",
+  "diff_check_exit": 0,
+  "diff_check_output": "",
+  "source_unchanged": true
+}

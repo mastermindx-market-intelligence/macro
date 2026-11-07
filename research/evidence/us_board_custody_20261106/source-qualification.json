@@ -1,0 +1,197 @@
+{
+  "schema": "mastermind.us_board_custody.source_qualification.v1",
+  "pr": 10432,
+  "operation_id": "github-pr-sweep-2028-c4-pr10432-repair",
+  "original_branch": "seat/us-board-rotation-landing-job",
+  "original_head": "786b247bfcee4c0cb39ce12ae93d5dd78666097d",
+  "qualification_base": "0787c6069951213b6500d7d419cb671a702881e8",
+  "publication_base": "942c4be064fd80019db2c1349937b446e79124c6",
+  "source_files": [
+    {
+      "path": ".github/ci/legacy-jobs.yml",
+      "mode": "100644",
+      "blob": "2ced5d6f76110665819f881e378ea56726226447",
+      "sha256": "ed256e9d93143d2bd3bf6a9bfbe6ed7a3c53724e5ce96f88ed45f6f1275091b1",
+      "bytes": 2600543,
+      "qualified_base_blob": {
+        "mode": "100644",
+        "sha": "1d9aa5eb38c327ccb33f347ec176159d76c7a185"
+      }
+    },
+    {
+      "path": ".github/workflows/daily.yml",
+      "mode": "100644",
+      "blob": "e8b649041f972a90507ed7a863a221cc53a1bf7a",
+      "sha256": "0aa916400075f4707feab00d213a861255f54ce8dcd2d8c56d34ef4411e0f1d5",
+      "bytes": 484905,
+      "qualified_base_blob": {
+        "mode": "100644",
+        "sha": "fe33f08e942adef0ecb8065a1ae9a30714794b7d"
+      }
+    },
+    {
+      "path": "config/dag.yml",
+      "mode": "100644",
+      "blob": "4123bc650807f547c45a98e230192f9bed46efb5",
+      "sha256": "28136954f19600daa8862fd8a27e971c8897d4b7a7345dadbc636d5ce7274362",
+      "bytes": 309463,
+      "qualified_base_blob": {
+        "mode": "100644",
+        "sha": "a9b08ce95599e66da2f61cc9d6c49e81ec576ffc"
+      }
+    },
+    {
+      "path": "scripts/build_us_sector_rotation.py",
+      "mode": "100644",
+      "blob": "ec66878f49b8da857d2dc4f00ea9606fdc69b306",
+      "sha256": "1931ac4e300ba2ce74b7404c15e067d859971b0abc26ef0dd27d6e6ea5be8984",
+      "bytes": 1817,
+      "qualified_base_blob": {
+        "mode": "100644",
+        "sha": "67b47db5fddc9c0e32233e9079931b2775817bc5"
+      }
+    },
+    {
+      "path": "scripts/ci/push_hold.sh",
+      "mode": "100644",
+      "blob": "f67c82297d34482c75201431fbdd3af15f58f33c",
+      "sha256": "d1614419adc68391e029a064881ed6d7bc9f393d690365b3ec8aad7afede0e76",
+      "bytes": 47564,
+      "qualified_base_blob": null
+    },
+    {
+      "path": "scripts/ci/us_board_commit.sh",
+      "mode": "100644",
+      "blob": "3b6e0855c626ca267eb08499e2264cfa36669451",
+      "sha256": "14a7ecbe28cc00655a8e53458b2db1264e92b47aa661ea0a98e4e1aeaa1fa49d",
+      "bytes": 3056,
+      "qualified_base_blob": null
+    },
+    {
+      "path": "tests/test_nightly_timings.py",
+      "mode": "100644",
+      "blob": "cbccc266aefa26162578813b71b6da066729d655",
+      "sha256": "fd8e35c83c229857d02337f915bb6d8120f1d231556fd375be6b8852b7f1d6e1",
+      "bytes": 55944,
+      "qualified_base_blob": {
+        "mode": "100644",
+        "sha": "f0a9d40de3a6c7cd684bc29c754447545093fcc5"
+      }
+    },
+    {
+      "path": "tests/test_prophet_off_engine_lane.py",
+      "mode": "100644",
+      "blob": "ceee8acb81fe2645d8278a5061be2ba01476d3d5",
+      "sha256": "4605a5a2fa14bd1871885a5025ac734d63a052b0d45ff633a0b9248cccceee8d",
+      "bytes": 24353,
+      "qualified_base_blob": {
+        "mode": "100644",
+        "sha": "bd3145c304f32ce6ee3fe51f452c3b312f9dc5cb"
+      }
+    },
+    {
+      "path": "tests/test_push_retry.py",
+      "mode": "100644",
+      "blob": "d9c6f46ab8ae36b8d8fe36fd85b296d912c81981",
+      "sha256": "d4e187c194d045732762ccd5faeebd4f3685b4d0377de85b8f349c6f15c5e24f",
+      "bytes": 186156,
+      "qualified_base_blob": {
+        "mode": "100644",
+        "sha": "cc55d1394850800397f3559866939f83bb1bd3c4"
+      }
+    },
+    {
+      "path": "tests/test_us_sector_rotation_wiring.py",
+      "mode": "100644",
+      "blob": "9ecfb5a31cc9ec98b582239eb64995d5d50d1fe9",
+      "sha256": "1e115c845dd75f1137a6bd0e78042e21c87bd09067dfa326c49ce05cb095568d",
+      "bytes": 26655,
+      "qualified_base_blob": {
+        "mode": "100644",
+        "sha": "f2987a13cc20c2c8d3c2325b2128f75779fbdd9f"
+      }
+    }
+  ],
+  "evidence_files": [
+    {
+      "path": "composition.json",
+      "bytes": 6306,
+      "sha256": "cf5fe4828a630e925e958863705104454ee947fd2a5c3406870b96badc6c124c"
+    },
+    {
+      "path": "q1-before.json",
+      "bytes": 7686,
+      "sha256": "e975c918bc13aa11e2cd516016a389614f74eaa683d2d979e2cff4ac6932cd69"
+    },
+    {
+      "path": "q1-after-initial.json",
+      "bytes": 730,
+      "sha256": "2685e67c9dc68742b021606a854d35e02caf4f0926b7a01eeefba0fcf9c3e9dd"
+    },
+    {
+      "path": "q1-final-qualification.json",
+      "bytes": 6566,
+      "sha256": "d4a843bfd1b77818830f3285d931f148f505ff6d1232db98ce547e38a2966801"
+    },
+    {
+      "path": "q1-audit-before.json",
+      "bytes": 17542,
+      "sha256": "b16a2ce45e72aec36b3eadcf7c5803dfc70e3572eeafdf0bb3b3451c807c1f37"
+    },
+    {
+      "path": "q1-audit-after.json",
+      "bytes": 934,
+      "sha256": "2b8cedfd96c7b4fa934af740bcb6ef10e338600fb73f8070f0488c1bf5894440"
+    },
+    {
+      "path": "q1-before.log",
+      "bytes": 9922,
+      "sha256": "d945a2b4c093d148e21051ec2dcdd47dca665fe1d134ac31f0b9c941f7f90063"
+    },
+    {
+      "path": "q1-audit-before.log",
+      "bytes": 32326,
+      "sha256": "7ab571d23d3ca9df0c52461869d25aabda949dfc195f686bd4006f7f99deaef3"
+    },
+    {
+      "path": "q1-audit-after.log",
+      "bytes": 127,
+      "sha256": "f1029eae041b58e2bba7e12cd54647ef7653c77d931ee385560f6109f4f350ee"
+    }
+  ],
+  "phase_results": {
+    "initial_causal_before": {
+      "failed": 4,
+      "passed": 1
+    },
+    "audit_causal_before": {
+      "failed": 9,
+      "passed": 2
+    },
+    "final_custody": {
+      "passed": 61,
+      "deselected": 126,
+      "failed": 0,
+      "skipped": 0
+    },
+    "source_wiring": {
+      "passed": 129,
+      "warnings": 1
+    },
+    "canonical_input_closure": {
+      "passed": 1
+    },
+    "dag": {
+      "lanes": 28,
+      "inherited_notices": 2
+    },
+    "distinct_passing_pytest_cases": 191
+  },
+  "final_audit_test_imports_unchanged": true,
+  "publication_base_scope_proof": "Eight existing native blobs unchanged; two helper paths absent at both main refs. The300-file compare cap is not absence proof.",
+  "production_execution": false,
+  "formal_github_approval": false,
+  "actual_merge": false,
+  "fresh_hosted_ci_required": true,
+  "followup": "Actual parent merge precedes10471 current-main qualification; normal production custody/recovery acceptance remains owed."
+}
