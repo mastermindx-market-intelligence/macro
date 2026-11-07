@@ -9078,3 +9078,158 @@ def test_options_nbbo_cohort_keeps_exact_source_and_avoids_unrelated_code_probes
                   "engine/prophet/plan_book.py"):  # ci-trigger-closure: data — selector input name, never opened
         selected, _ = PACK.select_jobs([job], [probe])
         assert selected == [], probe
+
+
+# Fast-ship compacts a genuinely scoped PR selection, never the main baseline.
+# Baseline pack names remain available for incumbent inherited-red comparisons.
+def _fastship_jobs(weights: list[int]) -> list[object]:
+    return [_plan_job(f"fastship-{i}", i, weight=w, paths=("engine/**",))
+            for i, w in enumerate(weights)]
+
+
+def _fastship_peak(packs: list[list[object]]) -> int:
+    return max((sum(job.weight for job in pack) for pack in packs), default=0)
+
+
+@pytest.mark.parametrize("weights,count,active", [
+    ([], 12, 0), ([0, 0, 0], 12, 1), ([50], 12, 1),
+    ([9, 5, 3], 12, 2), ([100] + [2] * 20, 12, 2),
+    ([10] * 12, 12, 12), ([5, 4, 3, 2, 1], 3, 3),
+])
+def test_fastship_compaction_preserves_every_job_object_without_larger_peak(weights, count, active):
+    jobs = _fastship_jobs(weights)
+    old = PACK.partition_jobs(jobs, count)
+    compact = PACK.compact_scoped_packs((job for job in jobs), count)
+    assert len(compact) == count
+    assert sum(bool(pack) for pack in compact) == active
+    assert _fastship_peak(compact) <= _fastship_peak(old)
+    assert sorted(id(job) for pack in compact for job in pack) == sorted(map(id, jobs))
+    assert all([j.ordinal for j in pack] == sorted(j.ordinal for j in pack) for pack in compact)
+    assert compact == PACK.compact_scoped_packs(reversed(jobs), count)
+
+
+@pytest.mark.parametrize("count", [0, -1])
+def test_fastship_compaction_keeps_positive_pack_count_validation(count):
+    with pytest.raises(ValueError, match="pack_count must be positive"):
+        PACK.compact_scoped_packs([], count)
+
+
+def test_fastship_fixed_seed_partition_properties():
+    import random
+    rng = random.Random(20261104)
+    for _ in range(300):
+        count = rng.randint(1, 12)
+        jobs = _fastship_jobs([rng.randint(0, 2000) for _ in range(rng.randint(0, 70))])
+        original = PACK.partition_jobs(jobs, count)
+        compact = PACK.compact_scoped_packs(jobs, count)
+        assert len(compact) == count
+        assert _fastship_peak(compact) <= _fastship_peak(original)
+        assert sorted(id(j) for p in compact for j in p) == sorted(map(id, jobs))
+        shuffled = list(jobs)
+        rng.shuffle(shuffled)
+        assert compact == PACK.compact_scoped_packs(shuffled, count)
+        assert all([j.ordinal for j in p] == sorted(j.ordinal for j in p) for p in compact)
+
+
+def test_fastship_compaction_changes_only_scoped_pr_pack_assignment(monkeypatch):
+    _freeze_scope_inference(monkeypatch)
+    jobs = _fastship_jobs([1400] + [14] * 20)
+    jobs.append(_plan_job("unselected-site", 21, paths=("site/**",)))
+    plan = PACK.build_plan(jobs, ["engine/example.py"], changed_from="base-sha",
+                           scope_mode="active", pack_count=12)
+    assert plan.role == "pr_head"
+    assert plan.nonempty_pack_indices == (0, 1)
+    assert plan.matrix() == {"include": [{"pack": 0}, {"pack": 1}]}
+    assert plan.eligible_job_ids == tuple(j.job_id for j in jobs[:-1])
+    assert plan.skipped_job_ids == ("unselected-site",)
+    assert len(plan.pack_jobs) == len(plan.pack_weights) == 12
+    assert max(plan.pack_weights) == 1400
+    assert {j.logical_job_id for j in plan.semantic_jobs} == set(plan.eligible_job_ids)
+    assert {j.logical_job_id: j.job_exec_sha256 for j in plan.semantic_jobs} == {
+        j.job_id: PACK.semantic_job_digest(j) for j in jobs[:-1]
+    }
+    assert all(j.pack_index in (0, 1) for j in plan.semantic_jobs)
+    fields = ("workflow_run_id", "workflow", "event", "role", "tested_tree_sha",
+              "subject_head_sha", "base_sha", "authority_changed", "changed_from",
+              "scope_mode", "changed_files_sha256", "pack_count", "eligible_job_ids",
+              "pack_jobs", "pack_weights", "semantic_jobs")
+    payload = PACK.plan_hash_payload(**{name: getattr(plan, name) for name in fields})
+    assert PACK._canonical_digest(payload) == plan.plan_sha256
+    assert PACK._canonical_digest({**payload, "pack_jobs": [list(reversed(p)) for p in plan.pack_jobs]}) != plan.plan_sha256
+
+
+@pytest.mark.parametrize("mode", ["active", "shadow", "off"])
+def test_fastship_main_baseline_keeps_original_named_pack_partition(monkeypatch, mode):
+    _freeze_scope_inference(monkeypatch)
+    jobs = _fastship_jobs([1400] + [14] * 20)
+    # A blanket compactor would remove ten baseline check names; it is forbidden.
+    plan = PACK.build_plan(jobs, None, changed_from=None, scope_mode=mode, pack_count=12)
+    assert plan.role == "main"
+    assert plan.nonempty_pack_indices == tuple(range(12))
+    assert plan.pack_jobs == tuple(tuple(j.job_id for j in p) for p in PACK.partition_jobs(jobs, 12))
+
+
+@pytest.mark.parametrize("mode", ["shadow", "off"])
+def test_fastship_scope_override_full_suite_is_never_compacted(monkeypatch, mode):
+    _freeze_scope_inference(monkeypatch)
+    jobs = _fastship_jobs([1400] + [14] * 20)
+    jobs.append(_plan_job("site-owner", 21, paths=("site/**",)))
+    plan = PACK.build_plan(jobs, ["engine/example.py"], changed_from="base-sha",
+                           scope_mode=mode, pack_count=12)
+    assert plan.eligible_job_ids == tuple(j.job_id for j in jobs)
+    assert plan.nonempty_pack_indices == tuple(range(12))
+
+
+@pytest.mark.parametrize("changed", [["scripts/run_ci_pack.py"], ["engine/example.py"]])
+def test_fastship_full_selection_and_authority_invalidators_keep_all_pack_names(monkeypatch, changed):
+    _freeze_scope_inference(monkeypatch)
+    jobs = _fastship_jobs([1400] + [14] * 20)
+    plan = PACK.build_plan(jobs, changed, changed_from="base-sha",
+                           scope_mode="active", pack_count=12)
+    assert len(plan.eligible_job_ids) == len(jobs)
+    assert plan.nonempty_pack_indices == tuple(range(12))
+
+
+def test_fastship_compaction_refuses_negative_weight_input():
+    with pytest.raises(ValueError, match="nonnegative"):
+        PACK.compact_scoped_packs(_fastship_jobs([10, -1]), 12)
+
+
+def test_fastship_compacted_plan_is_consumed_without_repartition(tmp_path, monkeypatch):
+    _freeze_scope_inference(monkeypatch)
+    jobs = _fastship_jobs([1400] + [14] * 20)
+    jobs.append(_plan_job("site-other", 21, paths=("site/**",)))
+    plan = PACK.build_plan(
+        jobs, ["engine/example.py"], changed_from="c" * 40,
+        scope_mode="active", pack_count=12, event="pull_request", role="pr_head",
+        tested_tree_sha="a" * 40, subject_head_sha="b" * 40, base_sha="c" * 40,
+    )
+    plan_file = tmp_path / "compacted-plan.json"
+    plan_file.write_text(json.dumps(plan.to_dict()), encoding="utf-8")
+    changed_file = tmp_path / "changed.json"
+    changed_file.write_text('["engine/example.py"]', encoding="utf-8")
+    monkeypatch.setattr(PACK, "load_legacy_jobs", lambda *args, **kwargs: jobs)
+    def forbidden(*args, **kwargs):
+        pytest.fail("the execution consumer must not replan or repartition")
+    monkeypatch.setattr(PACK, "partition_jobs", forbidden)
+    monkeypatch.setattr(PACK, "compact_scoped_packs", forbidden)
+    monkeypatch.setattr(PACK, "infer_job_scopes", forbidden)
+    consumed = PACK.load_authoritative_plan(
+        plan_file, workflow=tmp_path / "fixture.yml", changed_files_file=changed_file,
+        expect_plan_sha=plan.plan_sha256, expect_tested_tree_sha="a" * 40,
+        expect_subject_head_sha="b" * 40, expect_base_sha="c" * 40,
+    )
+    assert consumed == plan
+    assert consumed.nonempty_pack_indices == (0, 1)
+    assert {j.logical_job_id for j in consumed.semantic_jobs} == set(plan.eligible_job_ids)
+
+
+@pytest.mark.parametrize("base", [None, ""])
+def test_fastship_invalid_base_reference_remains_refused(monkeypatch, base):
+    _freeze_scope_inference(monkeypatch)
+    jobs = _fastship_jobs([1400] + [14] * 20)
+    jobs.append(_plan_job("site-other", 21, paths=("site/**",)))
+    with pytest.raises(PACK.ManifestError, match="changed_from"):
+        PACK.build_plan(jobs, ["engine/example.py"], changed_from=base,
+                        scope_mode="active", pack_count=12,
+                        event="pull_request", role="pr_head")
