@@ -14,10 +14,13 @@ reserved span evidence (``unsupported``).
 """
 from __future__ import annotations
 
+from datetime import date
 from decimal import Decimal
 from typing import Any, Mapping
 
+from .. import specialist_pack_contract as contract
 from ..raw_ledger import RawFactLedger, canonical_json, decimal_text
+from . import definition_linkbase
 from .base import (
     CORE_REVENUE_CONCEPTS,
     CheckRule,
@@ -29,7 +32,11 @@ from .base import (
     ReconcileToConsolidated,
     RuleOperand,
     RuleOutcome,
+    SpecialistPackError,
     TextSpanMapping,
+    _package_definition_linkbase_bytes,
+    _resolve_grouped_dimensioned_fact_mapping,
+    _select_primary,
     primary_period,
     probe_core_fact,
     register_extra_check,
@@ -235,7 +242,183 @@ def _fp_internal_revenue_not_double_counted(
     return check_row("pass"), ()
 
 
-PRODUCER = PackProducer(
+# --- dev-corpus widened re-resolution (diversified_v1) ------------------------
+#
+# Dev-corpus rules (diversified_v1, DEC-FIF-PACK-GENERALIZATION-DEV-CORPUS).
+# Three fields abstain on filings whose evidence the frozen single-concept
+# mapping declarations above do not name:
+#
+# 1. ``segment_profit_or_loss``: an ASU 2023-07 filer whose CODM measure is
+#    NET EARNINGS tags the per-segment measure with ``us-gaap:ProfitLoss``
+#    (the standard net-income concept), not an operating-income concept.
+# 2. ``geographic_revenue`` / ``product_service_revenue``: a filer that
+#    presents the geographic or product/service table on an
+#    other-than-606 basis tags those rows ``us-gaap:Revenues`` — already a
+#    ``core:revenue`` alias — optionally stamped with the
+#    OperatingSegmentsMember subtotal basis on ConsolidationItemsAxis, the
+#    same optional second-axis admission ``SEGMENT_FACT_OTHER_MEMBERS``
+#    grants the segment fields.
+#
+# The repair re-resolves exactly these three fields through the framework's
+# own grouped resolver with the widened concept tuple, emitting what a
+# mapping-level concept list would: each appended row names its own concept
+# and carries the digest of the widened mapping that produced it. A field
+# whose base block is a single absence row is REPLACED by the widened rows
+# (the resolver emits no absence row once any listed concept resolves); a
+# field with any valued base row gets the widened rows appended after the
+# base block (concept-major order). A filing that carries no widened-concept
+# fact on the field's axis leaves the envelope byte-identical — the hook
+# returns it untouched, which is exactly what the BASE envelope pins of the
+# later lanes' test modules assert. Fields never rewritten here:
+# ``segment_revenue``, ``unallocated_corporate_and_eliminations``,
+# ``number_of_operating_segments`` and both text placeholders. The mirrors
+# keep PK04's axis, member filter and row shape; the added concept is
+# PK03-side and deliberately does not touch PK04.
+_WIDENED_FIELD_MAPPINGS: Mapping[str, DimensionedFactMapping] = {
+    "segment_profit_or_loss": DimensionedFactMapping(
+        concepts=("us-gaap:ProfitLoss",),
+        primary_axis=SEGMENT_AXIS,
+        member_filter="definition_linkbase",
+        optional_other_members=SEGMENT_FACT_OTHER_MEMBERS,
+    ),
+    "geographic_revenue": DimensionedFactMapping(
+        concepts=("us-gaap:Revenues",),
+        primary_axis=GEOGRAPHICAL_AXIS,
+        member_filter="definition_linkbase",
+        optional_other_members={
+            CONSOLIDATION_ITEMS_AXIS: "us-gaap:OperatingSegmentsMember"
+        },
+    ),
+    "product_service_revenue": DimensionedFactMapping(
+        concepts=("us-gaap:Revenues",),
+        primary_axis=PRODUCT_OR_SERVICE_AXIS,
+        member_filter="definition_linkbase",
+        optional_other_members={
+            CONSOLIDATION_ITEMS_AXIS: "us-gaap:OperatingSegmentsMember"
+        },
+    ),
+}
+
+
+def _recompute_coverage(envelope: dict[str, Any]) -> None:
+    """Recount the coverage block after finalize rewrote field rows."""
+    counts = {
+        "valued_fields": 0,
+        "missing_fields": 0,
+        "unsupported_fields": 0,
+        "not_evaluable_fields": 0,
+        "not_applicable_fields": 0,
+    }
+    for row in envelope["fields"]:
+        coverage_key = contract.QUALITY_TO_COVERAGE.get(row["quality_state"])
+        if coverage_key is not None:
+            counts[coverage_key] += 1
+    disclosure = "present" if counts["valued_fields"] > 0 else "empty"
+    envelope["coverage"] = {**counts, "disclosure_coverage_state": disclosure}
+
+
+class Pk03Producer(PackProducer):
+    """PK03 declaration plus the dev-corpus widened-concept finalize hook."""
+
+    def finalize_result(
+        self, result: dict[str, Any], pack_input: Any
+    ) -> dict[str, Any]:
+        if result["applicability"]["state"] != "applicable":
+            return result  # the not-applicable path is already exact
+        from ..ixbrl_raw_ledger import (  # call-time: a test double is honoured
+            parse_and_convert_golden_packages
+        )
+
+        ledger, _filing_metadata, _report = parse_and_convert_golden_packages(
+            pack_input.packages
+        )
+        primary, _matched = _select_primary(pack_input.packages, SPEC.forms)
+        por_text = str(primary.manifest.get("period_of_report") or "")
+        por = date.fromisoformat(por_text[:10])
+        catalogue_fields = {
+            str(item["field_id"]): item
+            for item in contract.load_pack_schema("PK03")["fields"]
+        }
+        axis_groups = definition_linkbase.parse_axis_member_groups(
+            _package_definition_linkbase_bytes(primary)
+        )
+
+        replacements: dict[str, list[dict[str, Any]]] = {}
+        widened_limitations: list[str] = []
+        for field_id, mapping in _WIDENED_FIELD_MAPPINGS.items():
+            outcome = _resolve_grouped_dimensioned_fact_mapping(
+                pack_id="PK03",
+                catalogue_field=catalogue_fields[field_id],
+                mapping=mapping,
+                ledger=ledger,
+                por=por,
+                axis_groups=axis_groups,
+                limitation_sink=widened_limitations,
+            )
+            widened_rows = [outcome.row, *outcome.extra_rows]
+            if not any(
+                row["quality_state"] == "valued" for row in widened_rows
+            ):
+                # The filing carries no widened-concept evidence for this
+                # field: the base mapping's rows stay byte-identical.
+                continue
+            base_indexes = [
+                index
+                for index, row in enumerate(result["fields"])
+                if row["field_id"] == field_id
+            ]
+            base_rows = [result["fields"][index] for index in base_indexes]
+            if len(base_rows) == 1 and base_rows[0]["quality_state"] != (
+                "valued"
+            ):
+                # A single absence row: the widened pass replaces it (a
+                # mapping-level concept list emits no absence row once any
+                # listed concept resolves).
+                replacements[field_id] = widened_rows
+            else:
+                # Concept-major order: the base block stays, the widened
+                # concept's rows follow it.
+                replacements[field_id] = [*base_rows, *widened_rows]
+
+        if not replacements:
+            return result
+
+        # Emit each replacement block at its field's first base-row
+        # position; every other base row of a replaced field is skipped
+        # (it is already inside the block, or dropped by the replacement).
+        emit_at: dict[int, list[dict[str, Any]]] = {}
+        skip_ids: set[int] = set()
+        for field_id, block in replacements.items():
+            base_rows = [
+                row
+                for row in result["fields"]
+                if str(row["field_id"]) == field_id
+            ]
+            for row in base_rows:
+                skip_ids.add(id(row))
+            emit_at[id(base_rows[0])] = block
+        rewritten: list[dict[str, Any]] = []
+        for row in result["fields"]:
+            if id(row) in skip_ids:
+                if id(row) in emit_at:
+                    rewritten.extend(emit_at[id(row)])
+                continue
+            rewritten.append(row)
+        result["fields"] = rewritten
+        result["limitations"] = list(
+            dict.fromkeys((*result["limitations"], *widened_limitations))
+        )[:32]
+        _recompute_coverage(result)
+        result["pack_content_sha256"] = contract.pack_content_digest(result)
+        errors = contract.validate_pack_result(result)
+        if errors:
+            raise SpecialistPackError(
+                "PK03 finalize refused: " + "; ".join(errors[:5])
+            )
+        return result
+
+
+PRODUCER = Pk03Producer(
     spec=SPEC,
     field_mappings=_FIELD_MAPPINGS,
     checks=_CHECKS,

@@ -199,6 +199,17 @@ git add -f site/live/notify_state.json 2>/dev/null || true
 # imputed from its close-only per-stock JSON so the chart draws candlesticks.
 # US 4H intraday chart data (built by build_site -> build_chart_data.emit_intraday
 # from the cached data/intraday) — gitignored, force-add so the deploy ships it.
+# GH001 carve-out (scripts/ci/qledger_carve.sh — #9556 parity for THIS committer).
+# data/qledger/claims.jsonl sits at GitHub's 100 MiB blob limit on main and grows
+# on every runner; staging it rejected the WHOLE engine commit every night from
+# 2026-10-21 (run 40803269874: "GH001 large-file rejection") — regime update,
+# curated US candidate tier, rendered site all lost at the next checkout. Unstage
+# the oversize qledger planes (custody snapshot + verified park + restore on
+# exit; the ledger's own publication stays with the qledger publication program).
+# A carve that cannot secure custody withholds this commit: exit 1, because a
+# lost engine commit must red the run (see the push_lost branch below).
+. "${GITHUB_WORKSPACE:-.}/scripts/ci/qledger_carve.sh"
+qledger_carve_staged || exit 1
 if git diff --cached --quiet; then echo "no engine output changes"; exit 0; fi
 # Fail-closed conflict gate (P0 2026-08-01, d29e4dd44d / #4167): a conflicted
 # autostash apply anywhere upstream of this step leaves `Updated upstream /
@@ -293,6 +304,9 @@ while push_attempt; do
       # guarded engine commit alone — same forfeit as a failed render-sync.
       git add site/
       git add templates/ 2>/dev/null || true
+      # the carved qledger planes stay out of the render-sync commit too: the
+      # re-add above would re-stage a NEW site/qledger file the carve unstaged
+      if [ "${QLEDGER_CARVED:-false}" = true ]; then git reset -q -- site/qledger data/qledger 2>/dev/null || true; fi
       if push_staged_clean site/ templates/; then
         bash scripts/ci/options_signal_nightly.sh commit-render-sync \
           "render-sync: post-rebase guards (template re-copy + ms-board coherence)" \
@@ -312,12 +326,12 @@ while push_attempt; do
     if push_do origin "$qledger_push_candidate:refs/heads/main"; then
       echo "pushed engine outputs on attempt $PUSH_ATTEMPT"
       # Before the push, the worktree check cannot detect a site-only post-rebase
-      # overwrite of the derived settled public copy. Inspect immutable HEAD
-      # (the exact successfully pushed commit), not any later local builder
-      # mutation. A mismatch is a typed source-integrity incident, not reason
+      # overwrite of the derived settled public copy. Inspect the immutable
+      # candidate SHA passed to push_do, even if a later local action moves
+      # HEAD or the worktree. A mismatch is a typed source-integrity incident, not reason
       # to retroactively undo unrelated ledger publication or force market risk.
-      if ! python -m scripts.check_risk_envelope_pair --root . --git-ref HEAD; then
-        echo "::warning title=Grey Deer committed risk envelope pair divergence::pushed HEAD has nonidentical or off-session settled risk copies; consult the typed result and source publisher owner; do not activate risk alerts from either unqualified copy"
+      if ! python -m scripts.check_risk_envelope_pair --root . --git-ref "$qledger_push_candidate"; then
+        echo "::warning title=Grey Deer committed risk envelope pair divergence::pushed candidate has nonidentical or off-session settled risk copies; consult the typed result and source publisher owner; do not activate risk alerts from either unqualified copy"
       fi
       push_won; exit 0
     fi

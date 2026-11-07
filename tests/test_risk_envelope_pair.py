@@ -144,8 +144,8 @@ def test_original_precommit_and_new_exact_commit_checks_remain_distinct():
     script = Path(__file__).resolve().parents[1] / "scripts/ci/daily_engine_commit_outputs.sh"
     content = script.read_text(encoding="utf-8")
     assert "python -m scripts.check_risk_envelope_pair --root ." in content
-    assert "python -m scripts.check_risk_envelope_pair --root . --git-ref HEAD" in content
-    assert content.index("if push_do origin") < content.index("--git-ref HEAD") < content.index("push_won; exit 0")
+    assert 'python -m scripts.check_risk_envelope_pair --root . --git-ref "$qledger_push_candidate"' in content
+    assert content.index("if push_do origin") < content.index('--git-ref "$qledger_push_candidate"') < content.index("push_won; exit 0")
     assert content.index("--git-ref INDEX") < content.index("commit-broad-candidate") < content.index("if push_do origin")
 
 
@@ -186,3 +186,21 @@ def test_index_candidate_can_be_valid_without_promoting_settlement(tmp_path):
     assert result.status == "OK"
     assert result.settlement_proven is False
     assert result.reason == "mirror_bytes_and_market_session_match_settlement_unverified"
+
+
+def test_explicit_pushed_commit_stays_bound_when_head_advances(tmp_path):
+    _fixture(tmp_path, session="2026-10-29")
+    _commit_fixture(tmp_path)
+    pushed_sha = subprocess.check_output(
+        ("git", "-C", str(tmp_path), "rev-parse", "HEAD"), text=True
+    ).strip()
+    _fixture(tmp_path, session="2026-10-30")
+    _commit_fixture(tmp_path)
+
+    pushed = check_pair(tmp_path, git_ref=pushed_sha)
+    later_head = check_pair(tmp_path, git_ref="HEAD")
+    assert pushed.ok and later_head.ok
+    assert pushed.source_session == "2026-10-29"
+    assert later_head.source_session == "2026-10-30"
+    assert pushed.data_sha256 != later_head.data_sha256
+    assert pushed.settlement_proven is later_head.settlement_proven is False

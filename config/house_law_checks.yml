@@ -1,5 +1,5 @@
 schema: house_law_checks.v1
-updated: "2026-10-21"
+updated: "2026-11-07"
 
 # Canonical registry of every house law and its enforcement status.
 # Maintained by scripts/check_house_law_registry.py (meta-guard).
@@ -9,6 +9,39 @@ updated: "2026-10-21"
 # an operator/Fable ruling recorded in the PR.
 
 checks:
+
+  - law_id: pipeline.risk_envelope_pair
+    summary: >
+      Grey Deer risk-envelope data and site mirrors must have identical bytes,
+      a nonempty bundle identity and a source session matching market_state.
+      Worktree, staged index and exact pushed-commit diagnostics remain advisory.
+    source_ref:
+      - scripts/check_risk_envelope_pair.py
+      - tests/test_risk_envelope_pair.py
+      - "PR #10221"
+    severity: warn
+    check_script: scripts/check_risk_envelope_pair.py
+    ci_wiring:
+      - workflow: .github/workflows/daily.yml
+        job: engine
+        lane: scheduled
+    selftest: false
+    selftest_exempt_reason: >
+      Functional coverage lives in tests/test_risk_envelope_pair.py, including
+      synthetic local Git index and immutable-commit cases. The diagnostic
+      intentionally exposes no selftest flag.
+    allowlist: null
+    ratchet: null
+    known_limits:
+      - Equal hashes and dates never prove settled-source admission, producer success, rights or freshness.
+      - Scheduled diagnostic failures warn without undoing unrelated market-output publication.
+      - No mirror healing, publication retry, alert activation or risk decision is performed.
+    owner_program: grey-deer-risk-envelope
+    notes: >
+      The existing daily engine publisher calls this read-only diagnostic at
+      worktree, INDEX and successful-push boundaries in both publisher steps.
+      The existing push-retry-policy code job runs the functional pytest suite;
+      settlement_proven remains false even when the mirror check passes.
 
   # ── UI / rendering guards ──────────────────────────────────────────────────
 

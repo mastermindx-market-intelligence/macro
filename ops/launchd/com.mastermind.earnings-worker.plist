@@ -11,8 +11,10 @@
   17:45 window plus two idempotent retry/drain windows at 20:45 and 23:45.
   All paths are outside ~/Documents for launchd/TCC safety.
 
-  Secrets are NOT stored here. run_with_env.sh sources the already-existing
-  /Users/chriswong/hub-ops-wt/.env before launching the runner.
+  Secrets are NOT stored here. This file is an install-time template:
+  bootstrap_earnings_worker.sh replaces __EARNINGS_ENV_FILE__ with the explicit
+  operator-provided EARNINGS_ENV_FILE path before installing the LaunchAgent.
+  The committed template must never name another workload's credential file.
 -->
 <plist version="1.0">
 <dict>
@@ -22,7 +24,7 @@
   <key>ProgramArguments</key>
   <array>
     <string>/Users/chriswong/earnings-ops-wt/ops/launchd/run_with_env.sh</string>
-    <string>/Users/chriswong/hub-ops-wt/.env</string>
+    <string>__EARNINGS_ENV_FILE__</string>
     <string>/Users/chriswong/earnings-ops-wt/ops/launchd/run_earnings_worker.sh</string>
   </array>
 
