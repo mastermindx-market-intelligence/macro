@@ -241,6 +241,7 @@ USER = {"id": "u1"}
 BASE_STORAGE_KEYS = {
     "mdash.pf.v1",
     "mdash.watchlist.v1",
+    "mdash.watchlist.saved_snap.v1",  # Existing checked-Save snapshot, before SI composition.
     "mdash.watchstore.folded.v1",
     "mdash.watchstore.pf_folded.v1",
     "mdash.wl.",
@@ -326,7 +327,7 @@ def test_cloud_reads_of_the_shared_store_do_not_filter_by_section():
     own read (siRowsFetch) is the one that filters."""
     src = WATCHSTORE.read_text(encoding="utf-8")
     shared = re.search(
-        r"function symbolsFetch\(listId\) \{.*?\.order\('position'\);", src, re.S)
+        r"function symbolsFetch\(listId(?:, scope)?\) \{.*?\.order\('position'\);", src, re.S)
     assert shared, "symbolsFetch not found"
     assert ".select('symbol, section, position, created_at')" in shared.group(0)
     assert ".eq('section'" not in shared.group(0)

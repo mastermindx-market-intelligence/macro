@@ -1,0 +1,222 @@
+# Prophet product implementation — 15 October 2026
+
+Status: active implementation specification; no design acceptance or release claim.
+Commission: Chris's rejection of the deployed replacement cards and request for the complete Paper-informed Prophet system. Original root/parent: 01a11e89-b35d-7a81-9404-5fce2c6170cb.
+Canonical programme: macro#6817/comment6107291350. This specification refines the existing R6 mission; it does not replace its research, source, or scientific contracts.
+
+## Current direct implementation continuation — 3 November 2026
+
+The Chairman explicitly directs ChatGPT2 to own the continuation on this existing Prophet branch and complete the work directly. An archived session or an imagined original Fabric executive is not a dependency, and Grok Secretary is not a substitute implementation owner. Check actual source custody and uncertain effects, preserve held work, and advance a concrete safe implementation or verification step. The historical Fabric/Paper operations below remain held on their original effects; this direct source continuation does not replay them.
+
+Direct source commits through `381bb7aa89ab200730e080a26b9d2ac4c83d7c3a` implement reliable Turn Setups, a first-paint neutral session strip, tighter mobile discovery, candidate-preserving failed Plan navigation and 44px Plan controls. The normal generated page passes 16 responsive/theme/locale cases, 12 public/protected integrity checks and six fresh loading measurements. At 390px EN the first card moved from 918.5px to 808.7px; mobile lab CLS fell from 0.12055 to 0.01613. These are anonymous offline results, not authenticated or production proof.
+
+The next source slice in this continuation adds the persistent inline header assistant using the actual shared widget: lazy loading, one native keyboard button, same-button retry, 10-second failure deadline, late-response safety, pre-mounted-widget adoption, enlarged-text wrapping, close-focus return and a no-script Chat route. It preserves actual host context/configuration, default launchers on other pages, authentication and message/backend authority. The focused assistant regression batch passed 133 tests; final emitted-page proof and exact-head CI remain required.
+
+The cumulative implementation and evidence frontier is `mockups/evidence/prophet-opportunity-workspace/full-page-20261103/README.md`. Keep the held untracked `tests/test_prophet_plan_review_integration.py` unread, unexecuted, unmodified and unstaged. No release action is authorized here: no Ready, un-draft, relabel, enqueue, merge or deploy. Eligible signed-in Sources → Plan → same candidate/focus/scroll still requires real permitted account-path evidence.
+
+## Historical verified design and native build continuation — 3 November 2026
+
+The established Prophet Paper page p-C-0 now has three completed native R8 artboards: 1440 light English YW1-0, 390 light English ZRL-0, and 390 dark Chinese 1092-0. Native screenshots, JSX and an independent visual review are recorded at mockups/evidence/prophet-opportunity-workspace/full-page-20261103/paper-r8/. Dark desktop ZE5-0 has an unresolved original palette edit and is held.
+
+The incumbent source is at local 5370b9f51740fe87d25da33d46552cd33b628596. A full four-module native build at 39dca322 and two exact CSS-only asset follow-ups have generated its final public and protected files. Browser evidence at the final SHA covers 16 responsive state combinations, 16 canonical two-page manifest cells, 53/53 navigation checks, six unforced CLS measurements, twelve public/protected publication checks, and 68 EW screenshots with 163 passing tests and one skip. The product's first mobile card remains below the initial viewport and the session strip produces measurable shift; these are remaining UX issues, not a signed-off R8 replacement.
+
+Original Fabric run prophet-page-revamp-20261102-ux-refinement has EFFECT_UNKNOWN and may overlap native page/assistant/Turn Setups scope. Its effect must be reconciled before overlapping changes or re-dispatch. The current PR is #9495; source commits remain local until push validation. A separate eligible operator owns protected release; this account is excluded. Anonymous offline checks do not satisfy signed-in Sources to Plan to same-candidate return proof.
+
+## Historical full-page continuation — 2 November 2026
+
+Chris has explicitly commissioned a full Paper redesign and production replacement of
+`us_stocks.html`, with the supplied live-page screenshots as the failure baseline.
+Continue this incumbent specification and PR #9495; original root remains
+01a11e89-b35d-7a81-9404-5fce2c6170cb. Attended continuation:
+`prophet-page-revamp-20261102`. Starting source:
+`38a7f2a5fc69cfbdcea4691a605c083f56e6802b`.
+
+### Frozen composition and acceptance
+
+- Preserve the global navigation and every current data, entitlement, ranking, lifecycle,
+  quote, saved-list and setup-detail owner. This commission changes presentation and
+  connected navigation; it grants no new recommendation authority.
+- First viewport: Prophet identity / US stocks, the dated market briefing, Today /
+  Screener / Plans controls, and the beginning of the actual opportunity cards.
+  Remove the current full-width regime and theme-action panels from ahead of the board.
+- Create clear page-local navigation to Opportunities, Market context, Sector timing,
+  and Track record using real existing destinations. Preserve the existing board
+  controls and URL/return behavior. No decorative controls or dead affordances.
+- Retain four compact rich cards at wide desktop, three / two / one as space requires.
+  Identity, actual quote/chart, plain setup observation, main caution, maturity, dated
+  entry terms and View setup / Compare remain legible. No blank height reservation.
+- Context becomes a deliberate secondary reading area after the core workspace.
+  Retain regime path, theme actions, leaders, breadth, sector setups, turns, and all
+  existing expanded tables. Leaders/early observations must not bury current cards.
+- Light uses white surfaces on the existing cool canvas; dark uses existing graphite
+  depths. Use theme.css tokens, Inter, quiet neutral borders and semantic text/chart
+  marks. Remove colored container accent edges from touched elements. No parallel
+  palette, site header replacement, mock price history, or invented performance.
+- EN and ZH ship together. Preserve source dates and distinguish quote, series,
+  assessment and model-plan times. Missing or stale facts stay explicitly missing or
+  stale. Keep unfavorable historical outcomes and eligibility limits available.
+- Verify at 1440, 768, 390 and 320 widths, both themes and languages; actual DOM order,
+  keyboard reachability/focus return, no page-wide horizontal overflow, existing
+  source tabs, grid/table, detail sections, compare and return. Source checks alone
+  do not establish visual or production acceptance.
+
+### Current effects, boundaries and work tree
+
+| Work | State / next evidence |
+|---|---|
+| Live baseline and incumbent designs | Inspected live US page and Paper SYI-0 / L3E-0; first useful setups remain below oversized context. |
+| Paper redesign | NOT APPLIED. Exact file 01M3NT5Y3G5HTJHVR0K5W2MDJM, new work belongs on p-C-0; p-A-0 preserved. Read succeeds but writes are schema-blocked: observed catalog 16e6b93f0c51a1574ba8acee4df732052898707a04731d3817530971a88fdefd is not accepted by the current adapter. Do not bypass its guard or claim canvas completion. |
+| Full-page implementation | Implemented as a source candidate: compact Prophet header and named navigation, stock workspace before context, observation shelf after cards, token-based page styling, independent stock/theme failure behavior, honest missing-date state, and corrected Stand aside overlay counting. Existing rich card and setup owners retained. |
+| Bounded source map | Fabric child prophet-page-revamp-20261102-source-map, controller 41428; original carrier. Observed RUN_RESERVED / LEASE_WAIT on ubuntu3, pool minimax. START and result remain unproven; do not replay or claim accepted worker labor. |
+| Render and browser proof | Production dashboard template plus incumbent native public/plan/panel splits rendered successfully using the committed 2026-10-29 stock snapshot. Local review output SHA256 8f7675abd748f5b811a342e30e7eb6e0078dd60dadbc59dcfbeb817dfd42d323. This harness omits unavailable auxiliary context; it is not the complete production builder. The connected browser inspected the live baseline but could not reach either loopback preview URL (ERR_SOCKET_NOT_CONNECTED); its URL policy also refused data-URL previews. No new visual or authenticated acceptance. |
+| Publication | Source review, CI, actual production bytes and authenticated journeys remain separate release evidence. No self-approval or self-merge. |
+
+The pre-existing untracked `tests/test_prophet_plan_review_integration.py` belongs to
+the held original Plan operation. Preserve it unchanged and exclude it from staging and
+test selection. No other active writer of this incumbent worktree was observed at
+continuation entry. The protected source-law pin used for this continuation is
+`19cb00cfed26b68f0a8a5cdc0f2f1a9463a3feec`.
+
+### Verification and remaining gates for this continuation
+
+- Initial focused verification: 86 checks passed across
+  `test_dashboard_template_render.py`, `test_prophet_opportunity_integration.py`,
+  and `test_us_prophet_original_card_layout.py`.
+- After degraded-state and count repairs: 17 checks passed across
+  `test_prophet_page_composition.py`, `test_action_board_hover_cards.py`,
+  and `test_prophet_leader_observation_shelf.py`. The new output-level tests caught
+  a missing-sector navigation target and distinguish native grouped card order from
+  input row order. Both are resolved without changing the source ordering policy.
+- Design-system enforce-added: zero blocking findings. Runtime style-injection
+  ratchet: passed. No global stylesheet or runtime stylesheet injection was added.
+- Paper principal review remains read-only. The observed catalog has four new blocked
+  resource tools and a breaking `set_text_content` contract (`updates[].html`
+  replaces `updates[].textContent`). Only allowed descriptors are exported by the
+  current maintained diagnostics, so the complete upstream fingerprint cannot be
+  independently reconstructed. Do not accept the new fingerprint from this partial
+  evidence. A supported complete-catalog capture, independent review, guard tests and
+  actual seat/runtime qualification remain necessary.
+- Production publication remains held. Paper has not been modified. The new layout
+  has not passed desktop/mobile/light/dark/EN/ZH browser acceptance, connected account
+  journeys, or the complete production artifact regeneration. Keep this PR draft;
+  no merge, deployment, award-quality claim or finished-project claim is supported.
+
+## Outcome and failure being corrected
+
+Prophet must help a person discover an opportunity early, understand its business and price evidence, compare alternatives, identify what must happen before acting, follow the original plan, and learn from actual outcomes. Richness means useful detail and working connections, not bigger rectangles.
+
+The rejected shipped surface enlarged the shared legacy card using _prophet_workspace.css.j2 without supplying Paper's fuller information anatomy. The visible result has blank vertical space, weak separation of identity and context, missing chart/quote explanations, and an isolated Setup detail control. Functional and publication proofs did not establish visual quality. Chris's rejection is a material invalidator of product acceptance; those earlier technical proofs retain their original technical scope.
+
+The replacement must preserve the intricate useful information in the old cards. Do not remove charts, cautions, maturity, price/zone, company context or history merely to produce a cleaner screenshot.
+
+## Evidence and design selection
+
+Paper file: 01M3NT5Y3G5HTJHVR0K5W2MDJM.
+All 11 pages inventoried: 176 boards including one empty frame; 175 nonempty board-content reads. The source-only baseline has an oversized tree and invalid 1px screenshot, so its pixel rendering is not accepted evidence. Representative screens across the other ten pages have been visually examined; fetching a board tree does not imply visual acceptance of every variant.
+
+| Paper page | Use in the product | Changes needed |
+|---|---|---|
+| 07 / p-A-0 Opportunity workspace | Primary card anatomy; Today, mixed strategy cards, mobile, setup, comparison, saved return | Complete real fields; remove empty padding; align card sections; simplify operational copy |
+| p-7-0 R3.1–3.9 Setup/Evidence/Playbooks | Chart and timing workspace, supporting/opposing evidence, source inspector, level map and management | One detail shell with task tabs; no duplicate summary; chart controls must operate on real series |
+| p-3-0 R2 Today/Setup/Plans | Model plan book and original plan detail; tablet layouts | Compact review queue, original entry/levels and changes; no inference of user holdings |
+| p-4-0 Screener | Complete population, grid/table, filters, selection tray | Same identity/order as native population; compact and rich density variants; no separate ranking algorithm |
+| p-1-0 Daily Brief / Compare / Changes | Brief summary, aligned comparison, change log, recovery states | Collapse the oversized marketing hero; move builder contracts out of product UI |
+| p-8-0 Quote/Assessment review | Independent freshness and correction/return states | Use compact source/health disclosure; avoid turning a quote refresh into a new assessment |
+| p-5-0 Shared contracts | Loading/empty/error/access/correction behavior and journey state | Enforce as component behavior, not permanent warning blocks |
+| p-2-1 Regions | Market-specific identity, currency, clocks and recovery semantics | Reuse the shared component; region capability follows actual native data, not copied US coefficients |
+| p-9-0 R6 flagship study | Case-for/case-against and historical price-map reference only | Not the card grid; prior rejection remains; no automatic approval from a screenshot |
+| p-B-0 rejected text-row family | Negative reference and preserved interaction ideas only | Do not revive its text-row direction |
+| p-6-0 source-only live baseline | Legacy information/behavior preservation checklist | Never use as a design target |
+
+Concrete starting references: L3E-0 light Today, LPF-0 dark Today, M81-0 Chinese dark, MHC-0/MP1-0 mobile, PCL-0/Q9K-0 mixed strategies, LKU-0 setup, 8OM-0 evidence, A49-1 playbook, 4MM-0/4U6-0 plans, 2Z0-0/3NO-0 screener, G9H-0 comparison. These are selected working references, not a claim of Chris's taste approval.
+
+## Product structure and connected journeys
+
+Keep the existing global product navigation. Prophet-local primary navigation remains Today, Screener, Plans. The strategy selector distinguishes Early Leadership, Earnings and Cycle; it does not assign a strategy from a ticker or technical pattern.
+
+1. Today answers what deserves attention. A compact brief summarizes actual changes and coverage, followed immediately by rich opportunity cards in native selected order. Early Radar is an explicit view of developing observations, not a second action list.
+2. Screener preserves the complete supported population, including off-board and excluded candidates with their actual reasons. Grid/table and filters preserve the underlying order and counts. Compare preserves ordered canonical identities.
+3. Setup is an instrument-analysis workspace: identity and quote header; Structure & timing, Evidence, Connections, Market Memory, Changes tabs. Previous/next navigates the retained originating selection. Back restores filters, scroll, focus and selection.
+4. Evidence distinguishes supporting, challenging and missing observations. A source inspector opens beside the evidence list, then returns to the same item. Reading a caution never resolves it.
+5. Compare aligns up to three resolved opportunity identities by strategy, quote, assessment, terms, strongest support and strongest challenge. Different horizons/units remain explicit. Mobile uses two readable columns or an explicit selected-pair control; no whole-page overflow.
+6. Plans exposes the original model record, lifecycle, invalidation, targets, next review and material changes. It is separate from an actual brokerage position or fill.
+7. Connections reuses current GMI/theme/company intelligence. Market Memory reuses permitted comparable episodes, differences and outcomes. Track record remains a dedicated auditable view; it cannot imply measured alpha from illustrative examples.
+8. Save uses the existing list/persistence owner. Save, compare, notes and return context are distinct actions. An uncertain save response stays on its original operation; no duplicate write.
+
+## Visual direction and improvements
+
+Calm, precise investment research. The visual interest comes from chart structure, information hierarchy, deliberate material depth and aligned content—not decorative gradients or an excess of badges.
+
+Dark: existing charcoal canvas and separated panel depths; even neutral boundaries; lucid text and muted secondary lines. Keep semantic color in explicit status labels and chart/quote marks, with no colored container-edge rail in either theme.
+Light: cool canvas, white card material, fine neutral boundaries and subtle shadow; stronger typographic hierarchy; semantic color confined to status, chart/quote semantics and entry terms.
+Use existing theme.css tokens only. These are two deliberate treatments sharing anatomy and behavior, not two unrelated palettes. Preserve the site's EN/ZH color convention and translation semantics.
+
+Opportunity card anatomy, in order:
+- Status and quote: short supplied stance, separate supplied strategy/horizon, tabular price/delta. No invented delta, status, probability or horizon.
+- A continuous 64–76px chart with its own observation label and compact date. Missing history uses a deliberate neutral chart state, never a fake flat line.
+- Ticker/company, industry/sector and the meaning of priority. Do not hide identity behind a decorative initial/avatar.
+- A concise supplied setup observation plus the most consequential caution. Do not repeat the badge in a sentence. Detailed cautions expand from a labelled control.
+- Maturity/evidence progress, with strategy-native labels. Early maturity cannot be reused as an Earnings or Cycle lifecycle.
+- A context link when actually available.
+- A structured terms band: dated zone or milestone and its own publication information. Quote freshness must not rewrite it. The native signal_asof field is the signal session, not an entry-assessment clock; label it as such, and leave the assessment date absent until its producer supplies one.
+- A quiet action footer: compare on the left, View setup on the right; secondary save on detail. No floating isolated button and no full-card link covering other controls.
+
+Content controls height. No minimum-height spacer to force alignment, no blank 100px body reserve, no auto-growing chart that pushes the actions offscreen. Align semantic rows within a rendered grid using actual structure. Four rich cards at wide desktop; three/two/one as space requires. Dense Screener may offer a separate compact variant preserving the same information through deliberate disclosure. Mobile is a complete usable card, not desktop text clipped into a narrow column.
+
+Copy: customer language, not "owner-Featured", "exact source", "native binding", PR IDs or receipt slugs at rest. Missing facts get a short specific label ("Quote unavailable", "Event date unverified") beside the affected fact. One compact health disclosure explains what still works. Detailed mechanics belong in the inspector.
+
+## Backend and algorithm chain
+
+No parallel store, ranker, entitlement system, quote service or lifecycle is authorized by this design.
+
+| Responsibility | Existing implementation to extend | Required proof/remaining work |
+|---|---|---|
+| Selection and order | scripts/build_stock_library.py, native Today projection | Retain selected identity/order, no UI re-ranking |
+| Candidate and clocks | engine/prophet_candidate_state.py and _sources.py | Same generation/episode, immutable native input binding, typed missing state |
+| Brief and evidence | engine/prophet_daily_brief.py, _evidence_sources.py, app/prophet_daily_brief.py | Request-scoped composition, bounded cost, actual production identity and response |
+| Card presentation | Existing native row -> an explicit presentation adapter -> new opportunity macro | Field provenance table; missing values stay missing; no policy in Jinja/JS |
+| Setup/plan relation | Existing setup and Plan readers, original relation contract | No ticker-only Plan join; original levels and distinct management clock |
+| Quote/series | Existing quote and chart owners | Separate quote and series timestamps, late-response ordering, no stale relabeling |
+| Evidence/Connections | Existing evidence, GMI, EIOS, company intelligence | Actual source identity, observation time, coverage and rights |
+| User continuity | Existing view/return state and saved-list owner | Same-user isolation, ordered identity, uncertain operation reconciliation |
+| Delivery | Existing protected source/CI/render/API adoption | Exact source -> deployed bytes/process -> authenticated customer journey |
+
+Presentation adapter fields are a read model, not a new authority. For each field record producer symbol/key, identity/clock, units, null behavior, entitlement and UI use. Classify missing work into existing data not rendered, existing endpoint not connected, or genuinely absent production capability. Implement the first two immediately after source qualification; the third needs its actual producer contract, not a placeholder narrative.
+
+Research systems retained from the master plan:
+- Early Leadership: source-qualified nominations and original episodes; strategy-native entry validity, risk and next confirmation. No ACTIVE/calendar/horizon-based renewal.
+- Earnings: comparable issuer/event periods, actual expectations where licensed, revision and realized response separation, remaining opportunity; D5/Gate E proof retained.
+- Cycle: demand, margins, cash generation, financing/dilution, issuer survival, milestones and holding law; coverage/era/rights gates retained.
+- Ranking: reuse the incumbent qualified ranking; missing evidence and strategy incompatibility remain explicit. Any challenger requires distinct origin/current-landmark features, held-out eras, honest episode counts, costs, coverage and promotion proof.
+- Learning: preserve decisions as known then; classify missed discovery, filtering, ranking, late delivery, infeasible entry and management failures separately. No reconstruction of missing prospective history.
+
+## Implementation sequence and acceptance
+
+A. Build the additive opportunity component against this frozen anatomy and exact Paper references; test complete/missing/long-label/caution/bilingual variants. Do not connect it to production before its data adapter and visual self-check are complete.
+B. Map real producer fields and implement the adapter at the existing consumer boundary: dashboard.html.j2 -> _us_board_cards.html.j2, with scripts/build_site.py rendering the same partial into the premium payload. The unrelated us_stocks_v2.html.j2 is an old unlinked preview, not this delivery target. Preserve old useful fields and all entitlement/selection behavior. Integrate Today and Screener on the same component.
+C. Complete the setup/evidence/compare/return slice using existing unfinished carriers where their ownership and effects are clear; do not duplicate lost reviews or overwrite held work.
+D. Connect Plans, changes, saved return, Connections and Market Memory; each control must accomplish the advertised task.
+E. Complete research-source gaps and actual native runtime adoption. Parallelize nonconflicting Fabric leaves; parent owns composition, visual judgment and integration.
+F. Affected checks and ordinary required CI/release, actual covering publication, authenticated real-data workflow and explicit visual comparison to selected Paper references. Keep the legacy useful experience until replacement capability is demonstrated.
+
+Required visual matrix: EN/ZH × dark/light × 1440/390, plus 320px stress. Inspect content-rich, missing quote, missing assessment, caution expansion, invalidated/history, empty/filter-empty, loading/error/access, long price/name, comparison selection and return. Desktop 1440×900 shows an immediate answer and at most two supporting modules; no horizontal page scroll; keyboard focus and touch controls work.
+
+A screenshot count is not acceptance. Compare hierarchy, density, material treatment, chart readability, all visible fields and actual interactions. The present product remains rejected until the replacement meets that bar. No source-only or fixture-only completion claim.
+
+## Current concrete constraints
+
+Paper reads work. Paper writes are blocked by UPSTREAM_SCHEMA_UNREVIEWED: actual catalogue 48b2587455d839a57b4b78f5cfdb2e75df8d530ad8059a3ad6af303c0d37224f differs from accepted ac18857df0aa6323646333368e5798e7c28de7b4d5f5dc3cb320276e3535daa9. No retry, alternate connector or pin change. This spec is not a Paper edit.
+
+The recorded Chrome-extension consent gate remains unresolved; no unchanged retry or alternate automation. Build/test/source work proceeds, while native visual/customer verification retains that precise gate.
+
+PR9369's canonical CI has one blocking timeout; its original review is lost/worker-unknown. Existing PR9272/9294 and original ATR recovery retain their exact unresolved review/effect boundaries. They are dependencies to integrate lawfully, not evidence that this entire product must wait.
+
+## Working implementation
+
+The native Today/Screener partial and paid payload now share the new component and pure row presenter. The old oversized-card overrides are removed. Native quote updates, setup dialog, comparison and candidate-to-Plan return use existing owners. Setup detail carries the source assessment, full cautions, separate chart/quote/signal clocks, price levels and the supplied v3 evidence-family breakdown; it neither reconstructs a Plan nor computes a probability. The producer now carries its already-bound price bar and actual spark-series date into the display snapshot. The retained 14 October board has 105 valid source charts but no per-row quote/chart timestamps, so those dates stay unavailable until an actual new producer run supplies them.
+
+Current verification: affected presentation, producer-clock, quote, dialog/return and paid-hydration checks pass after the documented repairs. The shipped-data failure was traced to a ticker-only assertion across separate research/leader populations. The guard now follows TIER_PREVIEW_PATTERN step 7: full rendered row identity, whole-page leak scanning and complete paid-row parser coverage. Controls detect a copied card with a new DOM ID, including a tickerless record; distinct records for the same ticker remain valid. This changes test accuracy, not entitlement or production behavior. Browser visual acceptance, new-source production publication and connected live journeys remain open. Static HTML variants are preparation only.
+
+Today’s native evidence response is now bound to the requesting account and its auth-event generation. Sign-out/account changes invalidate late HTTP, JSON and error completions and clear an already displayed native summary; ordinary same-account token refresh remains valid. The existing server remains the permission authority, and selection/order and paid hydration are unchanged. The real rendered-loader harness reproduced 22 failing cases before the repair; all 212 affected hydration/source-binding checks pass afterward. This is local behavior evidence, not an authenticated browser claim.
+
+The Screener table now uses the same supplied evidence, caution fold, company context, independent dates and price levels as the opportunity card in both the public preview and protected payload. Its same-security model-record links use the existing relation reader; an unavailable read stays unavailable, and no exact candidate-to-plan relation is inferred. Shared caution rendering preserves the original categories and their order. The public/paid split, row order and original input records remain unchanged.

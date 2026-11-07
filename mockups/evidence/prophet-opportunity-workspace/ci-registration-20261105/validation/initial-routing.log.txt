@@ -1,0 +1,3 @@
+{"scope_summary": "derived scopes for 139/314 jobs; 173 declared exclusive"}
+{"changed_path": "tests/test_build_site_frozen_us_source.py", "required_owner": "unrun-grading-board", "owner_selected": true, "selected_count": 3, "reason": "scoped to 1 changed file(s): 3/314 jobs (2 unscoped always-on, 1 scoped matches)"}
+{"changed_path": "scripts/build_site.py", "required_owner": "unrun-grading-board", "owner_selected": true, "selected_count": 89, "reason": "scoped to 1 changed file(s): 89/314 jobs (2 unscoped always-on, 87 scoped matches)"}

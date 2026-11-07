@@ -1,0 +1,90 @@
+{
+  "fixture": "Prophet Save surface, reduced from the real dashboard render",
+  "board_as_of": "2026-11-02",
+  "ticker": "GM",
+  "card_id": "po-today-0",
+  "pages": [
+    {
+      "file": "save_signed_out.html",
+      "route": "/save_signed_out.html",
+      "state": "signed-out",
+      "account_store": "real site/watchstore.js (anonymous)",
+      "note": "no stub: the real site/watchstore.js answers signed_out for an anonymous page"
+    },
+    {
+      "file": "save_unavailable.html",
+      "route": "/save_unavailable.html",
+      "state": "unavailable",
+      "account_store": "fixture stub",
+      "note": "fixture account store reports the account host unavailable"
+    },
+    {
+      "file": "save_empty_lists.html",
+      "route": "/save_empty_lists.html",
+      "state": "empty",
+      "account_store": "fixture stub",
+      "note": "fixture account store answers with no lists; the dialog offers the Watchlists return control"
+    },
+    {
+      "file": "save_choose.html",
+      "route": "/save_choose.html",
+      "state": "choose",
+      "account_store": "fixture stub",
+      "note": "fixture account store answers with one list; the dialog shows the list picker"
+    },
+    {
+      "file": "save_saved.html",
+      "route": "/save_saved.html",
+      "state": "saved",
+      "account_store": "fixture stub",
+      "note": "fixture account store confirms the save and answers the read-back"
+    },
+    {
+      "file": "save_rejected.html",
+      "route": "/save_rejected.html",
+      "state": "rejected",
+      "account_store": "fixture stub",
+      "note": "fixture account store refuses the save"
+    },
+    {
+      "file": "save_uncertain.html",
+      "route": "/save_uncertain.html",
+      "state": "uncertain",
+      "account_store": "fixture stub",
+      "note": "fixture account store neither confirms nor refuses; the dialog holds the no-retry state"
+    },
+    {
+      "file": "save_observed.html",
+      "route": "/save_observed.html",
+      "state": "observed",
+      "account_store": "fixture stub",
+      "note": "fixture account store answers the membership read without a second save"
+    }
+  ],
+  "source_sha256": {
+    "templates/prophet_save.css": "a9aaca1ce94ac018d38233b34bfe143dac63f86051375ce474d00ddcb689a642",
+    "templates/prophet_save.js": "8bce9f8c3a4cda47de753e81eac6b0b270ea1207171da61237f4a7a7c36cd202",
+    "site/prophet_save.css": "a9aaca1ce94ac018d38233b34bfe143dac63f86051375ce474d00ddcb689a642",
+    "site/prophet_save.js": "8bce9f8c3a4cda47de753e81eac6b0b270ea1207171da61237f4a7a7c36cd202",
+    "site/watchstore.js": "31ed104376ccd90c02903214d59782a512bacbcfa4dcc59f852b1504d06e544d",
+    "site/theme.js": "a32f4446fc013608a3e793f78b1db2d750a2a0a913bff47da602d339281e2f37",
+    "site/factordata/us_standouts.json": "bc0c02f86b4c3223aa65c0e68e787804376609524a45478bf21a8acd4e9f77fc",
+    "site/basketdata/action_board.json": "295dd4be74456b045e06caf548ae938dfc084008348751f7acff1a069c47b81d",
+    "site/prophet/index.json": "22272683fdba126c5a695df06ce62f78736a82f1999811af2ce4fa896358ddd1"
+  },
+  "driver_sha256": "2d40b58735559321945af99f1e3e562067ccd98ae356d601f4b2dbefe9059dc6",
+  "page_sha256": {
+    "save_signed_out.html": "246ef402de882a4a5ca802e60d763087e9235e9e23f9761a420470e34afd72a1",
+    "save_unavailable.html": "423856370c5449875d139c80dd3c4feceb535e1368b57a8f88b362490eb947f5",
+    "save_empty_lists.html": "5cf6dc24d47bde30df6958903a9cfbb93d64cd338fcdb1ee0bbe18fe9c61062d",
+    "save_choose.html": "2cded735eb7cbdb7b9acb28df702a3dd7c6fa6b88e244e938db89c6252064f17",
+    "save_saved.html": "8ccd8c9ccedda941e5eff260bd56d50e70980d42dd633fe47e32a3926f7d6bc9",
+    "save_rejected.html": "ce2831773cd49c5c83a7b50fbcc4bec1d3a595c4bb43b52b080e97902e1cacd2",
+    "save_uncertain.html": "f3a0dbb55dbccedef419a1d1c790d75584ca95eb7528c49e3be82a63e1984356",
+    "save_observed.html": "28f6714f81c8b31056f751c4ab1b9b5911d6df88b6705ca6bb9eb0af70c97bc3"
+  },
+  "not_proven": [
+    "no signed-in account was contacted, no list was written and no membership was read from a real account: every session-requiring state answers from the fixture store",
+    "no served production or signed-in acceptance is claimed from this fixture"
+  ]
+}

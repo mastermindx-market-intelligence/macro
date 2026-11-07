@@ -384,6 +384,11 @@ BASIS: dict[str, dict[str, str]] = {
 
 # --- owner categorical readings ---------------------------------------------
 OWNER_VALUE: dict[str, dict[str, str]] = {
+    # Business-activity producer's four-phase cycle clock; display only.
+    "expansion": _pair("Expansion", "扩张"),
+    "slowdown": _pair("Slowdown", "放缓"),
+    "contraction": _pair("Contraction", "收缩"),
+    "recovery": _pair("Recovery", "复苏"),
     "contracting": _pair("Contracting", "收缩"),
     "expanding": _pair("Expanding", "扩张"),
     "benign_expansion": _pair("Benign expansion", "良性扩张"),
@@ -1839,6 +1844,19 @@ def producer_trips_copy_guard(text: str) -> bool:
     return bool(machine_text_hits(text))
 
 PLAIN_PRODUCER: tuple[tuple[str, dict[str, str]], ...] = (
+    (
+        "BREADTH (the share of leading legs weakening) has crossed the calibrated "
+        "recession-risk cutoff, but the leading tier's 6-month momentum DEPTH "
+        "has not -- the weakening is broad but shallow; the owner's 3 D's rule "
+        "requires both to fire together before a recession-risk signal is asserted.",
+        _pair(
+            "Weakness has spread across leading indicators, but the six-month "
+            "decline is not deep enough to confirm recession risk. Both breadth "
+            "and depth must meet their thresholds before this signal is shown.",
+            "领先指标的走弱已较为广泛，但六个月内的下降幅度尚不足以确认衰退风险。"
+            "广度与深度必须同时达到各自阈值，才会显示这一信号。",
+        ),
+    ),
     (
         "US labor-market state cannot be classified: axis coverage is below the "
         "disclosed floor. No quadrant is asserted rather than defaulting to a "

@@ -1,0 +1,20 @@
+{
+  "scope": "Two original actual public native-card closeups from previously qualified8cell snapshot; no premium/live/sign-in payload",
+  "source": "e85506e68d520b4989e20ad055453247e9a76702",
+  "cells": [
+    {
+      "case": "actual-card-1440-light-en",
+      "native_ticker": "THC",
+      "screenshot": "actual-card-1440-light-en.png",
+      "sha256": "c361bf5bb92bc084f782d829fe2fe5d971fe8e1c58fc192ef7285ff98fe9ec2c",
+      "public_html_sha256": "025e7269d50e2d9f0299aee66cfa964baf20b6d4ffe138de8d1f5fc5c6903e89"
+    },
+    {
+      "case": "actual-card-390-dark-zh",
+      "native_ticker": "THC",
+      "screenshot": "actual-card-390-dark-zh.png",
+      "sha256": "a78564d06fecc10998c2438e1a253c3488f1daa1913ec0bf57810a23a692214b",
+      "public_html_sha256": "025e7269d50e2d9f0299aee66cfa964baf20b6d4ffe138de8d1f5fc5c6903e89"
+    }
+  ]
+}

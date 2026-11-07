@@ -1,0 +1,33 @@
+{
+  "session_targets": {
+    "data": null,
+    "error": {
+      "code": "backend_unavailable",
+      "message": "installed Session Bridge owner is unavailable"
+    },
+    "ok": false,
+    "schema": "mastermind.session_bridge_result.v1",
+    "server_version": "0.2.0",
+    "tool": "session_targets"
+  },
+  "bounded_diagnostic": {
+    "bounded": [],
+    "data": null,
+    "degraded": [],
+    "error": {
+      "code": "backend_unavailable",
+      "message": "Executive reader request was not sent. Read-only describes this read operation; submission and execution readiness were not observed."
+    },
+    "generated_at": "2026-11-05T04:26:29.635271+00:00",
+    "grounding": {},
+    "mode": "readonly",
+    "ok": false,
+    "schema": "mastermind.executive_mcp_result.v1",
+    "server_version": "1.5.0",
+    "tool": "executive_state"
+  },
+  "target_returned": false,
+  "session_send_attempted": false,
+  "background_release_task_started": false,
+  "human_only_gate_established": false
+}

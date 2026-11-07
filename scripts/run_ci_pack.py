@@ -3610,6 +3610,7 @@ def prepare_canonical_main(
                 raise RuntimeError("canonical-main required object identity unavailable")
             required("cat-file", "-e", f"{oid}^{{commit}}")
             required("cat-file", "-e", f"{oid}^{{tree}}")
+        required_blobs: set[str] = set()
         for ref in (canonical_base, tested_tree_sha):
             for path in frozen_paths:
                 entry = required("ls-tree", ref, "--", path)
@@ -3617,7 +3618,41 @@ def prepare_canonical_main(
                 if (len(fields) != 4 or fields[1] != "blob" or fields[3] != path
                         or not re.fullmatch(r"[0-9a-f]{40}", fields[2])):
                     raise RuntimeError("canonical-main required frozen object unavailable")
-                required("cat-file", "-e", f"{fields[2]}^{{blob}}")
+                required_blobs.add(fields[2])
+
+        ordered = sorted(required_blobs)
+        def missing_blobs() -> list[str]:
+            probe = subprocess.run(
+                ["git", "cat-file", "--batch-check=%(objectname) %(objecttype)"],
+                cwd=root, env=git_env, input="".join(oid + "\n" for oid in ordered),
+                capture_output=True, text=True, check=True,
+            )
+            rows = probe.stdout.splitlines()
+            if len(rows) != len(ordered):
+                raise RuntimeError("canonical-main comparison probe is incomplete")
+            missing = []
+            for oid, row in zip(ordered, rows):
+                if row == oid + " missing":
+                    missing.append(oid)
+                elif row != oid + " blob":
+                    raise RuntimeError("canonical-main comparison object is not a blob")
+            return missing
+
+        missing = missing_blobs()
+        if missing:
+            # One exact-object acquisition under the incumbent logical-job
+            # deadline. Never retry, fetch each object lazily, or alter refs.
+            subprocess.run(
+                ["git", "fetch", "--no-recurse-submodules", "--no-tags",
+                 "--no-write-fetch-head", "--filter=blob:none", "origin", "--stdin"],
+                cwd=root, env=fetch_env, input="".join(oid + "\n" for oid in missing),
+                text=True, check=True,
+            )
+            check_bindings()
+            if commit("FETCH_HEAD") != canonical_sha:
+                raise RuntimeError("canonical-main comparison acquisition changed FETCH_HEAD")
+            if missing_blobs():
+                raise RuntimeError("canonical-main required local object unavailable after explicit acquisition")
 
     for depth in _EXACT_TESTED_TREE_DEPTHS:
         check_bindings()

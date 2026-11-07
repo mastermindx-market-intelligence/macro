@@ -1,0 +1,26 @@
+{
+  "source_head": "ee5d7f68229ad14e9d384af61bafc3701df70f65",
+  "created_at": 1793852163.7172656,
+  "native_cells": 16,
+  "caution_cells": 16,
+  "canonical_states": 24,
+  "canonical_rest": 8,
+  "canonical_applied_forced_states": 16,
+  "canonical_bytes_hashes_dimensions_verified": true,
+  "native_and_caution_uncaught_page_errors": 0,
+  "native_and_caution_document_overflow": 0,
+  "caution_failed_local_responses": 0,
+  "native_offline_feed_responses": 128,
+  "caution_min_touch_height": 44,
+  "all_caution_keyboard_checks": true,
+  "manual_images_reviewed": [
+    "browser/normal-top-1440-light-en.png",
+    "browser/normal-top-390-dark-zh.png",
+    "cautions/screener-expanded-320-light-en.png",
+    "cautions/screener-expanded-390-dark-zh.png",
+    "cautions/screener-view-1440-light-en.png",
+    "cautions/screener-view-1440-dark-en.png",
+    "cautions/screener-card-768-light-zh.png"
+  ],
+  "manual_findings": "Inspected current-source original PNGs: no clipped disclosure text/actions, readable light/dark hierarchy, visible keyboard focus, mobile wrapping preserves content. Source dates unavailable in the input remain explicitly unverified. Anonymous access/failed-feed state is retained."
+}

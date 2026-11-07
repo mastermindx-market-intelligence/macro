@@ -1,0 +1,22 @@
+{
+  "site/factordata/signal_gate.json": {
+    "before": {
+      "bytes": 779986,
+      "sha256": "91981e86d0cbea1f9e021e43fcd15ffc256a1c94048602e6a338aab2bc544d22"
+    },
+    "after": {
+      "bytes": 779707,
+      "sha256": "805774246a1f2305d76a46cd32d817f5ac423f3195346ef169ca899f22e38ca4"
+    }
+  },
+  "site/factordata/us_standouts.json": {
+    "before": {
+      "bytes": 2023154,
+      "sha256": "7ad850e62d1cf7f78c0b9d3c9bb5d05366ffa51b1c19619ac1f18e30402d6812"
+    },
+    "after": {
+      "bytes": 2003990,
+      "sha256": "de26f5130f9d49595c21314b99bbefd1beb7caa0baf060df4e428076bd286858"
+    }
+  }
+}

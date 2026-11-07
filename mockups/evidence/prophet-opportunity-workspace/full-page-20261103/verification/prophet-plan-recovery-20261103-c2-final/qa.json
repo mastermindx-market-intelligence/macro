@@ -1,0 +1,53 @@
+{
+  "source_head": "381bb7aa89ab200730e080a26b9d2ac4c83d7c3a",
+  "source_sha256": {
+    "templates/dashboard.html.j2": "5b2a6aba5076f32b650070eedd6b3942af72b51a9e269b9469ffe62ff6c25882",
+    "templates/_prophet_setup_detail.html.j2": "41a6b880a99fccf77373a0885ca97db415c38bbda9e82d7493befcebd9b5de96",
+    "templates/_prophet_workspace.css.j2": "ef1e00a43bab842352957108869e37f350c96311f65dcfbd5702c5c952a0dde8",
+    "templates/theme.js": "24ddb7ffaf378f62538855c37eae4a905cbe09f2ab8542d5e1b821731d159fd2",
+    "templates/theme.css": "321eca2fafe69c5aa9d810241a6f7d955a4e328c3f98e706d919a8035a212a82"
+  },
+  "scope": "Synthetic anonymous fixture; actual template/CSS/dialog/lifecycle/navigation owners; no live/authenticated acceptance",
+  "cases": [
+    {
+      "case": "1440-light-en",
+      "passed": true,
+      "keyboard_retry_and_return": true,
+      "same_sources_section_focus_scroll": true,
+      "false_zero_state": false,
+      "page_errors": [],
+      "screenshot": "plan-unavailable-1440-light-en.png",
+      "sha256": "e0f75b9c75bbee4628e82593d2de0af3179b93c0b92fa59421fdc4ffe823109b"
+    },
+    {
+      "case": "1440-dark-zh",
+      "passed": true,
+      "keyboard_retry_and_return": true,
+      "same_sources_section_focus_scroll": true,
+      "false_zero_state": false,
+      "page_errors": [],
+      "screenshot": "plan-unavailable-1440-dark-zh.png",
+      "sha256": "50c9e73f5d555d70d923c4b00c7562d6814ecfe95d45d933d91ed8c324f63d4b"
+    },
+    {
+      "case": "390-light-en",
+      "passed": true,
+      "keyboard_retry_and_return": true,
+      "same_sources_section_focus_scroll": true,
+      "false_zero_state": false,
+      "page_errors": [],
+      "screenshot": "plan-unavailable-390-light-en.png",
+      "sha256": "92c2068c4c998f702f70a0e965e527e4c50894dff1c84acc4159bd1cf7187ddb"
+    },
+    {
+      "case": "320-dark-zh",
+      "passed": true,
+      "keyboard_retry_and_return": true,
+      "same_sources_section_focus_scroll": true,
+      "false_zero_state": false,
+      "page_errors": [],
+      "screenshot": "plan-unavailable-320-dark-zh.png",
+      "sha256": "4072e50a219aa9cd83158bcac70fb5ec646ec1dcef93dd53525000770c61d475"
+    }
+  ]
+}

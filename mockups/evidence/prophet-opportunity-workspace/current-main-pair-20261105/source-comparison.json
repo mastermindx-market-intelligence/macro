@@ -1,0 +1,43 @@
+{
+  "before": "07dfce74bb28b0391c7ac4d8705d58ce64b6997a",
+  "after": "9a8a28c557717441d2c5ef5529dad9fc7445e7b4",
+  "same_blobs": {
+    ".github/ci/legacy-jobs.yml": "e7d1105f1903e065aec4ee5f8de28ec192ceccad",
+    ".github/workflows/ci.yml": "a9c409efa499d621c6a91196fcefc313ceee16b7",
+    ".github/workflows/fences.yml": "e997b23a40d5767ccb7eea203af64754e769ae5c",
+    ".github/workflows/ci-authority.yml": "f3f228ac01122077faa728403dffded271e03489",
+    "scripts/run_ci_pack.py": "3cbed58986d571e40af59eb03464e9419e8055a5",
+    "scripts/check_contract_delta.py": "deefde717818f4be641097a24c2f5b01e55cddbd",
+    "scripts/ci_scope_dependencies.py": "4c4779479f5bb41741fe7a5db114dfe304350a8a",
+    "scripts/audit_unrun_tests.py": "9ae74b91a276733b2b1a310cb652a847ad5f7dc0",
+    "scripts/check_ci_trigger_closure.py": "5cec55aa0d201033e4bbc2373b0a52504f234b55",
+    "tests/test_ci_pack.py": "474c141da00a0ce7795b02900e334033a210d792",
+    "tests/test_build_site_frozen_us_source.py": "10a7644752d99044a94b09670fe4314b2c630855",
+    "tests/test_prophet_public_featured_access_card.py": "36bddde2f5aa5540dc92242d72ac4562e1b455c5",
+    "tests/test_prophet_same_date_publication.py": "cbe01dfb74a131d7d69918da138136a5d81daf09",
+    "tests/test_render_macro_fast_source_guard.py": "4ffbd612b0f02779bf3fdfe80edc5a99d4983402",
+    "scripts/build_site.py": "e5bfa945fa794f1fb3dc1f6e6ca1b8964c2ede0d",
+    "scripts/build_prophet.py": "e48c03f2abc89e52af1960534b58393371519e5f",
+    "scripts/render_macro_fast.py": "f2e76b1bc542fad5d97bf743d60bf68d56a1b3b8",
+    "templates/prophet_save.js": "b8a982152be20efe3ec59421a611488158959c01",
+    "site/prophet_save.js": "b8a982152be20efe3ec59421a611488158959c01",
+    "tests/test_prophet_save_composition.py": "8fd1dd8ef5b7a6678d3337b00800edfc5000e21e"
+  },
+  "readEvidence": "Studio46525, read-only child source census",
+  "followup": "BEA source/import/exclusive-owner review; no change to three calibrated probes.",
+  "root_verified": true,
+  "immutable_prophet_paths_changed": [],
+  "board_list_fields_unchanged": {
+    "buy": true,
+    "watch": true,
+    "leaders": true,
+    "laggards": true,
+    "themes_in_favour": true,
+    "ran": true
+  },
+  "board_changed_top_level_keys": [
+    "emit",
+    "w3c_source",
+    "staleness"
+  ]
+}

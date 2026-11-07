@@ -1,0 +1,20 @@
+{
+  "schema": "prophet.save_read_recovery_regression.v1",
+  "phase": "before_fix",
+  "parent_head": "ec24a85de3fc91988ca5a6fb25a97384b1cf2ab5",
+  "argv": [
+    "/home/ubuntu0/lanes/venv/bin/python",
+    "-m",
+    "pytest",
+    "tests/test_prophet_save_composition.py",
+    "-q",
+    "-k",
+    "uncertain_inspection"
+  ],
+  "exit_code": 1,
+  "elapsed_seconds": 1.807,
+  "test_sha256": "20a03bb1339af2d06753beaa0f18d957f60f71bb027097e8c5e596e65ccf980d",
+  "controller_sha256": "8bce9f8c3a4cda47de753e81eac6b0b270ea1207171da61237f4a7a7c36cd202",
+  "log": "/tmp/prophet-save-recovery-red-ec24a85.log",
+  "completed_at": "2026-11-05T05:08:56.478878+00:00"
+}

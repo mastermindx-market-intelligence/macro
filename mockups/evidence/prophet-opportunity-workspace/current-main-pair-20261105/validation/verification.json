@@ -1,0 +1,59 @@
+{
+  "source_head": "9a8a28c557717441d2c5ef5529dad9fc7445e7b4",
+  "started_at": 1793857291.4460037,
+  "scope": "current pair integrity and anonymous offline16-cell capture",
+  "steps": [
+    {
+      "script": "verify_native_pair.py",
+      "argv": [
+        "/home/ubuntu0/lanes/venv/bin/python",
+        "/home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/mockups/evidence/prophet-opportunity-workspace/full-page-20261103/tools/verify_native_pair.py",
+        "--workspace",
+        "/home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105",
+        "--source-head",
+        "9a8a28c557717441d2c5ef5529dad9fc7445e7b4",
+        "--output",
+        "/tmp/prophet-latest-main-frozen-9a8a28.native-pair.json"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 5.98
+    },
+    {
+      "script": "verify_integrated_pair.py",
+      "argv": [
+        "/home/ubuntu0/lanes/venv/bin/python",
+        "/home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/mockups/evidence/prophet-opportunity-workspace/main-integration-20261105/tools/verify_integrated_pair.py",
+        "--workspace",
+        "/home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105",
+        "--source-head",
+        "9a8a28c557717441d2c5ef5529dad9fc7445e7b4",
+        "--output",
+        "/tmp/prophet-latest-main-frozen-9a8a28.complete-pair.json"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 4.193
+    },
+    {
+      "script": "capture_native_prophet.py",
+      "argv": [
+        "/home/ubuntu0/lanes/venv/bin/python",
+        "/home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105/mockups/evidence/prophet-opportunity-workspace/full-page-20261103/tools/capture_native_prophet.py",
+        "--workspace",
+        "/home/ubuntu0/lanes/wt/d03-9495-ci-registration-c2-20261105",
+        "--source-head",
+        "9a8a28c557717441d2c5ef5529dad9fc7445e7b4",
+        "--build-receipt",
+        "/tmp/prophet-latest-main-frozen-9a8a28.receipt.json",
+        "--output",
+        "/tmp/prophet-latest-main-frozen-9a8a28.native-browser"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 32.61
+    }
+  ],
+  "native_pair_checks": 12,
+  "complete_pair_checks": 22,
+  "browser_cells": 16,
+  "original_pngs": 22,
+  "completed_at": 1793857334.2330043
+}

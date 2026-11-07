@@ -1,0 +1,13 @@
+{
+  "source": "e85506e68d520b4989e20ad055453247e9a76702",
+  "baseline": {
+    "head": "e85506e68d520b4989e20ad055453247e9a76702",
+    "tree": "cff22f1ce571b482ca0498555ef3e8b912637f94",
+    "root": "01a11e89-b35d-7a81-9404-5fce2c6170cb"
+  },
+  "frozen_inputs": 1915,
+  "new_data_inputs": 0,
+  "material_invalidator": "three governed template/style changes for R8 anatomy and44px overrides require regeneration of actual public/protected pages; old9dbnativeproof not restamped",
+  "remote9495_ci": "42302216370/9db remains immutable, sole observer28402; local build does not mutate GitHub",
+  "recipe": "reviewed e60595a3 exact4modules/no-refresh/frozenboard+gate/networkaudit/RENDER_NO_DRIP"
+}

@@ -253,7 +253,11 @@ def test_desk_shell_renders_the_premium_block_in_both_languages(tmp_path):
     assert "申报" not in block
     assert "offer_price_provenance" not in block
     assert "None" not in block
-    assert "<style" not in html
+    # The premium component owns no inline styling. The shared site navigation
+    # independently supplies its no-script fallback inside <noscript>; testing
+    # the whole document here would reject that unrelated accessibility path.
+    assert "<style" not in block
+    assert "<style" not in _premium_block_source()
     repo_root = Path(__file__).parent.parent
     css = (repo_root / "templates" / "capital_structure.css").read_text(encoding="utf-8")
     for cls in re.findall(r'class="([^"]+)"', block):

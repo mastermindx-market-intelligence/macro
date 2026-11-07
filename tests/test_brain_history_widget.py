@@ -506,3 +506,249 @@ def test_saved_response_has_accessible_heading_hierarchy_without_executable_mark
     expect(page.locator('.mmb-txt')).to_contain_text('<script>window.headingInjected=true</script>')
     assert page.evaluate('window.headingInjected === undefined')
     assert page.locator('.mmb-txt script').count() == 0
+
+
+# Prophet adopts the same shared widget; transport/auth below are synthetic.
+@pytest.fixture
+def prophet_launcher():
+    from urllib.parse import urlsplit
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=True)
+        context = browser.new_context(viewport={"width": 390, "height": 844}, reduced_motion="reduce")
+        page = context.new_page()
+        state = {"fail": False, "scripts": 0, "errors": []}
+        page.on("pageerror", lambda error: state["errors"].append(str(error)))
+        from jinja2 import Environment
+        from markupsafe import Markup, escape
+        source = (ROOT / "templates/dashboard.html.j2").read_text()
+        start = source.index('<div class="stk-headline">')
+        end = source.index('<nav class="stk-header-links prophet-section-nav"', start)
+        env = Environment(autoescape=True)
+        env.globals["t"] = lambda en, zh: Markup('<span class="l-en">{}</span><span class="l-zh">{}</span>').format(escape(en), escape(zh))
+        env.globals["td"] = lambda value: value
+        header = env.from_string(source[start:end]).render(
+            _stk_hdr_delayed=False, _stk_hdr_su={"as_of":"2026-10-30"},
+            _vint_tip_en="Synthetic board date", _vint_tip_zh="测试榜单日期",
+            latest={"quad_name":"Growth"}, pb={"dial":{"posture":"Selective"}},
+        )
+        shell = """<!doctype html><html data-lang="en" data-theme="light"><head><style>
+        .l-zh{display:none}html[data-lang="zh"] .l-en{display:none}html[data-lang="zh"] .l-zh{display:inline}
+        body{font-family:Arial,sans-serif} :root{--line:#b4bac2;--text:#20242b;--muted:#576270;--link:#285fff;--panel2:#edf1f6}
+        </style></head><body class="page-stocks"><header id="stocks-header">""" + header + """</header>
+        <button id="outside-assistant">Continue reading</button></body></html>"""
+        def route(r):
+            path = urlsplit(r.request.url).path
+            if path == "/us_stocks.html":
+                r.fulfill(content_type="text/html", body=shell)
+            elif path == "/mm_brain.js":
+                state["scripts"] += 1
+                if state["fail"]:
+                    r.abort()
+                else:
+                    r.fulfill(content_type="application/javascript", path=str(ROOT / "templates/mm_brain.js"))
+            else:
+                r.abort()
+        page.route("**/*", route)
+        page.goto("http://prophet-launcher.test/us_stocks.html")
+        page.evaluate("""() => {
+          window.__requests=[]; window.__auth=null;
+          window.MDXAuth={enabled:()=>true,onChange:fn=>{window.__onAuth=fn;fn(null);},open:()=>{}};
+          window.MM_BRAIN_CFG={symbol:()=> 'NVDA',onClose:()=>false};
+          window.__originalConfig=window.MM_BRAIN_CFG;
+          window.fetch=(url,options={})=>{
+            window.__requests.push({url:String(url),method:options.method||'GET'});
+            return Promise.resolve(new Response('{}',{status:503,headers:{'Content-Type':'application/json'}}));
+          };
+          window.__originalHeader=document.getElementById('prophet-assistant');
+        }""")
+        theme = (ROOT / "templates/theme.js").read_text()
+        start = theme.index("  var MM_BRAIN_VER =")
+        end = theme.index("\n})();", start)
+        # Execute the actual bootstrap, not a copied/reimplemented loader.
+        bootstrap = "(function(){var _mmSharedAssetRoot='http://prophet-launcher.test/';function curLang(){return document.documentElement.dataset.lang||'en';}\n" + theme[start:end] + "\ninitChatLauncher();})();"
+        yield page, state, lambda: page.add_script_tag(content=bootstrap)
+        context.close()
+        browser.close()
+
+
+@pytest.mark.parametrize("key", ["Enter", "Space"])
+def test_prophet_header_lazily_adopts_one_widget_and_returns_focus(prophet_launcher, key):
+    page, state, boot = prophet_launcher
+    boot()
+    trigger = page.locator("#prophet-assistant")
+    expect(trigger).to_be_visible()
+    assert page.locator("#mmb-boot,#mmb-launch,#mmb-root").count() == 0
+    trigger.focus()
+    assert page.locator("#mmb-root").count() == 0  # warm fetch cannot mount
+    trigger.press(key)
+    expect(page.locator("#mmb-panel")).to_be_visible()
+    expect(page.locator(".mmb-signin").first).to_be_focused()
+    assert page.locator("#mmb-root").count() == 1
+    assert page.locator("#mmb-boot,#mmb-launch").count() == 0
+    assert page.evaluate("document.getElementById('prophet-assistant')===window.__originalHeader")
+    assert page.evaluate("MM_BRAIN_CFG===window.__originalConfig && MM_BRAIN_CFG.symbol()==='NVDA'")
+    assert not page.locator("#mmb-panel").evaluate("(n)=>n.classList.contains('mmb-top')")
+    expect(trigger).to_have_attribute("aria-expanded", "true")
+    page.keyboard.press("Escape")
+    expect(page.locator("#mmb-panel")).to_be_hidden()
+    expect(trigger).to_be_focused()
+    expect(trigger).to_have_attribute("aria-expanded", "false")
+    before = state["scripts"]
+    trigger.press(key)
+    expect(page.locator("#mmb-panel")).to_be_visible()
+    assert state["scripts"] == before
+    assert all(r["method"] == "GET" for r in page.evaluate("window.__requests"))
+    assert not state["errors"]
+
+
+def test_prophet_header_bundle_failure_is_visible_and_same_button_retries(prophet_launcher):
+    page, state, boot = prophet_launcher
+    state["fail"] = True
+    boot()
+    trigger = page.locator("#prophet-assistant")
+    expect(trigger).to_be_visible()
+    trigger.press("Enter")
+    expect(trigger).not_to_have_attribute("aria-busy", "true")
+    expect(page.locator("#prophet-assistant-status")).to_contain_text("try again")
+    expect(trigger).to_be_focused()
+    assert page.locator("#mmb-root").count() == 0
+    state["fail"] = False
+    trigger.press("Space")
+    expect(page.locator("#mmb-panel")).to_be_visible()
+    expect(page.locator("#prophet-assistant-status")).to_be_hidden()
+    assert page.evaluate("document.getElementById('prophet-assistant')===window.__originalHeader")
+    assert page.locator("#mmb-boot,#mmb-launch").count() == 0
+    assert not state["errors"]
+
+
+def test_prophet_header_adopts_preloaded_widget_without_replacing_conversation(prophet_launcher):
+    page, state, boot = prophet_launcher
+    page.add_script_tag(path=str(ROOT / "templates/mm_brain.js"))
+    assert page.locator("#mmb-launch").count() == 1
+    page.evaluate("window.__originalRoot=document.getElementById('mmb-root');")
+    boot()
+    trigger = page.locator("#prophet-assistant")
+    expect(trigger).to_be_visible()
+    assert page.locator("#mmb-launch,#mmb-boot").count() == 0
+    trigger.press("Enter")
+    expect(page.locator("#mmb-panel")).to_be_visible()
+    assert page.evaluate("document.getElementById('mmb-root')===window.__originalRoot")
+    assert state["scripts"] == 0
+    assert not state["errors"]
+
+
+@pytest.mark.parametrize("width,lang", [(320,"en"),(320,"zh"),(390,"en"),(390,"zh")])
+@pytest.mark.parametrize("text_scale", [1,2])
+def test_prophet_header_target_keeps_mobile_size_and_hidden_fallback(prophet_launcher, width, lang, text_scale):
+    import re
+    page, state, boot = prophet_launcher
+    page.set_viewport_size({"width":width,"height":844})
+    page.evaluate("lang=>document.documentElement.dataset.lang=lang",lang)
+    css = (ROOT / "templates/_prophet_page.css.j2").read_text()
+    page.add_style_tag(content=re.sub(r"{#.*?#}","",css,flags=re.S))
+    expect(page.locator("#prophet-assistant")).to_be_hidden()
+    boot()
+    trigger=page.locator("#prophet-assistant")
+    expect(trigger).to_be_visible()
+    page.evaluate("""scale=>{
+      const nodes=[...document.querySelectorAll('#stocks-header *')].filter(n=>n.namespaceURI==='http://www.w3.org/1999/xhtml');
+      const sizes=nodes.map(n=>parseFloat(getComputedStyle(n).fontSize));
+      nodes.forEach((n,i)=>{if(sizes[i])n.style.fontSize=(sizes[i]*scale)+'px';});
+    }""",text_scale)
+    box=trigger.bounding_box()
+    assert box and box["height"]>=44 and box["width"]>=44
+    assert box["x"]>=0 and box["x"]+box["width"]<=width
+    assert page.evaluate("document.documentElement.scrollWidth<=innerWidth")
+    assert not state["errors"]
+
+
+def test_prophet_header_hung_bundle_deadline_ignores_late_previous_attempt(prophet_launcher):
+    page, state, boot = prophet_launcher
+    boot()
+    page.evaluate("""() => {
+      const schedule=window.setTimeout, append=Node.prototype.appendChild;
+      window.__deadlines=[];window.__attempts=[];
+      window.setTimeout=(fn,ms,...args)=>{
+        if(ms>=4000 && ms<=12000){window.__deadlines.push(fn);return 0;}
+        return schedule(fn,ms,...args);
+      };
+      Node.prototype.appendChild=function(node){
+        if(node.tagName==='SCRIPT' && node.src.includes('mm_brain.js')){
+          window.__attempts.push(node);return node;
+        }
+        return append.call(this,node);
+      };
+      window.__loadCurrent=()=>append.call(document.body,window.__attempts.at(-1));
+      document.getElementById('prophet-assistant').click();
+      window.__oldLoad=window.__attempts[0].onload;
+      window.__oldError=window.__attempts[0].onerror;
+    }""")
+    assert page.evaluate("window.__deadlines.length") == 1
+    trigger=page.locator("#prophet-assistant")
+    expect(trigger).to_have_attribute("aria-busy","true")
+    page.evaluate("window.__deadlines[0]()")
+    expect(trigger).not_to_have_attribute("aria-busy","true")
+    expect(page.locator("#prophet-assistant-status")).to_contain_text("try again")
+    page.evaluate("document.getElementById('prophet-assistant').click();window.__oldLoad();window.__oldError();")
+    expect(trigger).to_have_attribute("aria-busy","true")
+    assert page.evaluate("window.__attempts.length") == 2
+    assert page.locator("#mmb-root").count() == 0
+    page.evaluate("window.__loadCurrent()")
+    expect(page.locator("#mmb-panel")).to_be_visible()
+    assert page.locator("#mmb-root").count() == 1
+    assert not state["errors"]
+
+
+def test_default_floating_launcher_remains_retryable_without_a_prophet_host(prophet_launcher):
+    page, state, boot = prophet_launcher
+    page.evaluate("document.getElementById('stocks-header').remove()")
+    state["fail"]=True
+    boot()
+    trigger=page.locator("#mmb-boot")
+    expect(trigger).to_be_visible()
+    assert trigger.evaluate("(n)=>getComputedStyle(n).position")=="fixed"
+    trigger.press("Enter")
+    expect(trigger).not_to_have_attribute("aria-busy","true")
+    state["fail"]=False
+    trigger.press("Space")
+    expect(page.locator("#mmb-panel")).to_be_visible()
+    expect(page.locator("#mmb-boot")).to_have_count(0)
+    assert page.locator("#mmb-launch").count()==1
+    expect(page.locator(".mmb-signin").first).to_be_focused()
+    page.keyboard.press("Escape")
+    expect(page.locator("#mmb-launch")).to_be_focused()
+    assert not state["errors"]
+
+
+@pytest.mark.parametrize("header", [True,False])
+def test_late_evaluated_bundle_retires_expired_launcher_without_unsolicited_open(prophet_launcher, header):
+    page, state, boot = prophet_launcher
+    if not header:
+        page.evaluate("document.getElementById('stocks-header').remove()")
+    boot()
+    selector="#prophet-assistant" if header else "#mmb-boot"
+    page.evaluate("""selector => {
+      const schedule=window.setTimeout,append=Node.prototype.appendChild;
+      window.__deadline=null;
+      window.setTimeout=(fn,ms,...args)=>{
+        if(ms>=4000 && ms<=12000){window.__deadline=fn;return 0;}
+        return schedule(fn,ms,...args);
+      };
+      Node.prototype.appendChild=function(node){
+        if(node.tagName==='SCRIPT' && node.src.includes('mm_brain.js'))return node;
+        return append.call(this,node);
+      };
+      document.querySelector(selector).click();
+      window.__deadline();
+    }""",selector)
+    page.add_script_tag(path=str(ROOT / "templates/mm_brain.js"))
+    expect(page.locator("#mmb-panel")).to_be_hidden()
+    expect(page.locator("#mmb-boot")).to_have_count(0)
+    trigger=page.locator("#prophet-assistant" if header else "#mmb-launch")
+    expect(trigger).to_be_visible()
+    before=page.evaluate("window.__requests.filter(r=>r.url.endsWith('/me')).length")
+    trigger.press("Enter")
+    expect(page.locator("#mmb-panel")).to_be_visible()
+    assert page.evaluate("window.__requests.filter(r=>r.url.endsWith('/me')).length")==before+1
+    assert page.locator("#mmb-root").count()==1
+    assert not state["errors"]

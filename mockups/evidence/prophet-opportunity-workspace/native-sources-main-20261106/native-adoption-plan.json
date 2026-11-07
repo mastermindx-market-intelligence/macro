@@ -1,0 +1,19 @@
+{
+  "source": "af1d6032535b9c397dd3fcdefce0afeaaf423dd4",
+  "closure_count": 51,
+  "changes": [
+    {
+      "path": "site/premiumdata/us_stocks.json",
+      "bytes": 10743680,
+      "sha256": "1403618e8947a3299c44ee1e676c5a207480b6078eb679627eef436b2a607e21",
+      "new_path": false
+    },
+    {
+      "path": "site/us_stocks.html",
+      "bytes": 830983,
+      "sha256": "43bf77febb200b9415878d968e4994a9489dd8c19210d52ebebd2c7dcd7a7b19",
+      "new_path": false
+    }
+  ],
+  "scope": "PREPARED only: native pair, exact referenced local assets, canonical paired stamp changes; no unrelated output/data adoption"
+}

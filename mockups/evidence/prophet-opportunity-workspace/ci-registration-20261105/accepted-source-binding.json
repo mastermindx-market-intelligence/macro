@@ -1,0 +1,53 @@
+{
+  "schema": "prophet.ci_registration_source_binding.v1",
+  "parent_head": "39f792bb3d0902fe46127b455c35f8f98d307080",
+  "manifest_sha256": "852ae0e785f518614161a2a92d4b41803910f94fa6e97ab79c1ecca99c910429",
+  "product_sha256": {
+    "site/us_stocks.html": "5f09f469275023fa6cbee3db2e161796ae6c6f4febc6f924eeffceba756a8646",
+    "site/premiumdata/us_stocks.json": "4931a5c91d9de49b6b3d109c4985310a0f43ebc2acaa5caf362bf442633699b3",
+    "site/factordata/us_standouts.json": "1e821810c93753f5bcce47c083cc515486aaf38c9bd9b28af1b5639270f67471",
+    "site/factordata/signal_gate.json": "288fe5457782f460c3e705c2643ccb1a6b444a450f5e337c2f48b19aba3129a5"
+  },
+  "test_modules": {
+    "tests/test_build_site_frozen_us_source.py": {
+      "sha256": "96ec7359900212040458c3ba1fcb15c84882a7af0e2c8ac0aa31d239e4994c64",
+      "bytes": 5488,
+      "unchanged_from_parent": true
+    },
+    "tests/test_us_today_source_binding.py": {
+      "sha256": "56b81fce0ce70d4a6d0e84136471be69526bfac11094fe650b754eb0ee0b5410",
+      "bytes": 45953,
+      "unchanged_from_parent": true
+    },
+    "tests/test_us_board_gate.py": {
+      "sha256": "fc5934322b204aba3ff4dcafc98f7d9102ac47604e3c862ab35df66e76da13c3",
+      "bytes": 111951,
+      "unchanged_from_parent": true
+    },
+    "tests/test_us_board_hydration_merge.py": {
+      "sha256": "2110cc17196b62d02072dd3ac627c413d5a8be59644c9202ee674dcd29585e95",
+      "bytes": 55097,
+      "unchanged_from_parent": true
+    },
+    "tests/test_prophet_public_featured_access_card.py": {
+      "sha256": "b6c58e7f876a30dba336a679eaf1041fd89de1e5fd09c7888c0133803eb1357d",
+      "bytes": 5347,
+      "unchanged_from_parent": true
+    },
+    "tests/test_prophet_same_date_publication.py": {
+      "sha256": "2e2f0a3bdaac3560a2de46983e5511a61b02fbe16af680d2768dd39e6ecae993",
+      "bytes": 5507,
+      "unchanged_from_parent": true
+    },
+    "tests/test_render_macro_fast_source_guard.py": {
+      "sha256": "007163b4ff02d58c492a691f9ac86d154d2f5494b1416214e18b01a1a1e0f7e7",
+      "bytes": 1945,
+      "unchanged_from_parent": true
+    }
+  },
+  "prior_evidence_manifest_sha256": "2a39969fb674b8409acd344757d00ee41e2f9d8178d9af5489f9d9e4f0d5ba7c",
+  "prior_evidence_files_verified": 97,
+  "prior_original_pngs_verified": 70,
+  "product_and_prior_evidence_unchanged": true,
+  "recorded_at": "2026-11-05T04:54:02.388503+00:00"
+}

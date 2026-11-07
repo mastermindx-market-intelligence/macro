@@ -1,0 +1,1711 @@
+{
+  "schema": "prophet.native_pair_render/v1",
+  "source_head": "e5c288011f026cb74b2a2e265d6dfc767359565d",
+  "public_html_sha256": "222bd3a37a3c4b98d3a5076155e77f643b3e8bc924df80740f93418c3dcf6070",
+  "essential_payload_sha256": "b98f14fd1a1ccd68341b24e5d67c33d17cf800f64b9f774bc07f6cc588dd4d8d",
+  "public_html_bytes": 793059,
+  "essential_payload_bytes": 9485252,
+  "board_sha256": "e655802dbb50851d726120ac7db48886a6d36d3a0f6d59ff68a99ddb40d6f792",
+  "board_as_of": "2026-11-03",
+  "public_pool_rows": [
+    "PWR",
+    "HUBG",
+    "MC"
+  ],
+  "public_cards": [
+    "PWR",
+    "CMG",
+    "CVNA"
+  ],
+  "public_today_grid_present": false,
+  "today_section_attrs": {
+    "class": [
+      "mx-sec"
+    ],
+    "id": "us-today",
+    "data-today-total": "12",
+    "data-today-visible": "0",
+    "data-today-source-sha256": "sha256:e655802dbb50851d726120ac7db48886a6d36d3a0f6d59ff68a99ddb40d6f792",
+    "data-today-pair-id": "a941b520be05487291def2f9b4acb488",
+    "data-today-selection-receipt": "sha256:1e8f65a97a4b692983ec075e21c575faacc03cb3724617834046103150bd4980",
+    "data-today-roster-size": "51",
+    "data-today-served": ""
+  },
+  "today_empty_state": "Featured setups are outside your current access. 精选形态尚未包含在当前访问权限内。 Open Screener to browse the candidates available to you. 打开筛选器，浏览当前可查看的候选股票。",
+  "protected_plan_controls_in_public": 0,
+  "private_payload_keys": [
+    "actnow_html",
+    "as_of",
+    "built",
+    "candidate_pool_html",
+    "candidate_pool_source",
+    "cards_html",
+    "gated",
+    "leader_observations_html",
+    "leaders_html",
+    "life_gate",
+    "locked",
+    "page",
+    "panels",
+    "passed_html",
+    "plan_cards_html",
+    "plv_names",
+    "preview",
+    "preview_cards_html",
+    "ran_html",
+    "required_tier",
+    "rows",
+    "schema",
+    "setups_html",
+    "tape_html",
+    "today_cards_html",
+    "today_preview",
+    "today_rows_meta",
+    "today_source_binding",
+    "today_total",
+    "total",
+    "what_changed_html"
+  ],
+  "scope": "Generated public HTML served unchanged; anonymous offline browser; the protected payload is not served and every /premiumdata/ request is aborted; no live, signed-in or production acceptance.",
+  "build_modules": [
+    {
+      "module": "scripts.build_site",
+      "exit": 0,
+      "seconds": 876.57
+    },
+    {
+      "module": "scripts.inject_data_base",
+      "exit": 0,
+      "seconds": 6.09
+    },
+    {
+      "module": "scripts.externalize_css",
+      "exit": 0,
+      "seconds": 7.4
+    },
+    {
+      "module": "scripts.optimize_assets",
+      "exit": 0,
+      "seconds": 26.47
+    }
+  ],
+  "cells": [
+    {
+      "case": "1440-light-en",
+      "metrics": {
+        "viewport": 1440,
+        "documentWidth": 1440,
+        "bodyWidth": 1440,
+        "pageHeight": 4401,
+        "theme": "light",
+        "lang": "en",
+        "standoutsVisible": true,
+        "cards": [
+          {
+            "ticker": "PWR",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0
+            },
+            "visible": false,
+            "hasSetupBody": true
+          },
+          {
+            "ticker": "CMG",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0
+            },
+            "visible": false,
+            "hasSetupBody": true
+          },
+          {
+            "ticker": "CVNA",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0
+            },
+            "visible": false,
+            "hasSetupBody": true
+          }
+        ],
+        "visibleCards": [],
+        "poolRows": [
+          "PWR",
+          "HUBG",
+          "MC"
+        ],
+        "todayTotal": "12",
+        "todayVisible": "0",
+        "todayGridPresent": false,
+        "todayEmptyText": "Featured setups are outside your current access. | Open Screener to browse the candidates available to you.",
+        "protectedControls": 0,
+        "visibleDialogs": 2
+      },
+      "page_errors": [],
+      "failed_local_responses": [
+        {
+          "url": "http://127.0.0.1:43837/basketdata/baskets.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/basket_pulse.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/prophet_live.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/quotes.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/breadth.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/overlay.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/risk_state.json?t=1793821330565",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/release_publications.json",
+          "status": 404
+        }
+      ],
+      "blocked_external_urls": [
+        "http://127.0.0.1:43837/premiumdata/us_stocks.json",
+        "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev/stockdata/mtf_upturn.json"
+      ],
+      "overflow_px": 0,
+      "screenshot": "public-page-1440-light-en.png",
+      "screenshot_sha256": "246bd45cc86226c7e0282a3e79243894687514fbe4b808dad409bbb51e54a8ab"
+    },
+    {
+      "case": "1440-light-zh",
+      "metrics": {
+        "viewport": 1440,
+        "documentWidth": 1440,
+        "bodyWidth": 1440,
+        "pageHeight": 4332,
+        "theme": "light",
+        "lang": "zh-CN",
+        "standoutsVisible": true,
+        "cards": [
+          {
+            "ticker": "PWR",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0
+            },
+            "visible": false,
+            "hasSetupBody": true
+          },
+          {
+            "ticker": "CMG",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0
+            },
+            "visible": false,
+            "hasSetupBody": true
+          },
+          {
+            "ticker": "CVNA",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0
+            },
+            "visible": false,
+            "hasSetupBody": true
+          }
+        ],
+        "visibleCards": [],
+        "poolRows": [
+          "PWR",
+          "HUBG",
+          "MC"
+        ],
+        "todayTotal": "12",
+        "todayVisible": "0",
+        "todayGridPresent": false,
+        "todayEmptyText": "精选形态尚未包含在当前访问权限内。 | 打开筛选器，浏览当前可查看的候选股票。",
+        "protectedControls": 0,
+        "visibleDialogs": 2
+      },
+      "page_errors": [],
+      "failed_local_responses": [
+        {
+          "url": "http://127.0.0.1:43837/live/basket_pulse.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/basketdata/baskets.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/prophet_live.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/quotes.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/breadth.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/overlay.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/risk_state.json?t=1793821332709",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/release_publications.json",
+          "status": 404
+        }
+      ],
+      "blocked_external_urls": [
+        "http://127.0.0.1:43837/premiumdata/us_stocks.json",
+        "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev/stockdata/mtf_upturn.json"
+      ],
+      "overflow_px": 0,
+      "screenshot": "public-page-1440-light-zh.png",
+      "screenshot_sha256": "0495ec65d8d575d55897f11b27e99a221541dde179feec9f60548b800602e9ed"
+    },
+    {
+      "case": "1440-dark-en",
+      "metrics": {
+        "viewport": 1440,
+        "documentWidth": 1440,
+        "bodyWidth": 1440,
+        "pageHeight": 4391,
+        "theme": "dark",
+        "lang": "en",
+        "standoutsVisible": true,
+        "cards": [
+          {
+            "ticker": "PWR",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0
+            },
+            "visible": false,
+            "hasSetupBody": true
+          },
+          {
+            "ticker": "CMG",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0
+            },
+            "visible": false,
+            "hasSetupBody": true
+          },
+          {
+            "ticker": "CVNA",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0
+            },
+            "visible": false,
+            "hasSetupBody": true
+          }
+        ],
+        "visibleCards": [],
+        "poolRows": [
+          "PWR",
+          "HUBG",
+          "MC"
+        ],
+        "todayTotal": "12",
+        "todayVisible": "0",
+        "todayGridPresent": false,
+        "todayEmptyText": "Featured setups are outside your current access. | Open Screener to browse the candidates available to you.",
+        "protectedControls": 0,
+        "visibleDialogs": 2
+      },
+      "page_errors": [],
+      "failed_local_responses": [
+        {
+          "url": "http://127.0.0.1:43837/live/basket_pulse.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/basketdata/baskets.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/prophet_live.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/quotes.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/breadth.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/overlay.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/risk_state.json?t=1793821334751",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/release_publications.json",
+          "status": 404
+        }
+      ],
+      "blocked_external_urls": [
+        "http://127.0.0.1:43837/premiumdata/us_stocks.json",
+        "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev/stockdata/mtf_upturn.json"
+      ],
+      "overflow_px": 0,
+      "screenshot": "public-page-1440-dark-en.png",
+      "screenshot_sha256": "fb36145d916a29a7474d1bf6ac6720e2adcb4d4fcd84e340893e38566b6f755e"
+    },
+    {
+      "case": "1440-dark-zh",
+      "metrics": {
+        "viewport": 1440,
+        "documentWidth": 1440,
+        "bodyWidth": 1440,
+        "pageHeight": 4322,
+        "theme": "dark",
+        "lang": "zh-CN",
+        "standoutsVisible": true,
+        "cards": [
+          {
+            "ticker": "PWR",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0
+            },
+            "visible": false,
+            "hasSetupBody": true
+          },
+          {
+            "ticker": "CMG",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0
+            },
+            "visible": false,
+            "hasSetupBody": true
+          },
+          {
+            "ticker": "CVNA",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0
+            },
+            "visible": false,
+            "hasSetupBody": true
+          }
+        ],
+        "visibleCards": [],
+        "poolRows": [
+          "PWR",
+          "HUBG",
+          "MC"
+        ],
+        "todayTotal": "12",
+        "todayVisible": "0",
+        "todayGridPresent": false,
+        "todayEmptyText": "精选形态尚未包含在当前访问权限内。 | 打开筛选器，浏览当前可查看的候选股票。",
+        "protectedControls": 0,
+        "visibleDialogs": 2
+      },
+      "page_errors": [],
+      "failed_local_responses": [
+        {
+          "url": "http://127.0.0.1:43837/live/basket_pulse.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/basketdata/baskets.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/prophet_live.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/breadth.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/quotes.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/overlay.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/risk_state.json?t=1793821336775",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/release_publications.json",
+          "status": 404
+        }
+      ],
+      "blocked_external_urls": [
+        "http://127.0.0.1:43837/premiumdata/us_stocks.json",
+        "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev/stockdata/mtf_upturn.json"
+      ],
+      "overflow_px": 0,
+      "screenshot": "public-page-1440-dark-zh.png",
+      "screenshot_sha256": "fc9e7a0740a51b32b43939e593efb64770159719b65449e3e88e07bdf63a51d5"
+    },
+    {
+      "case": "768-light-en",
+      "metrics": {
+        "viewport": 768,
+        "documentWidth": 768,
+        "bodyWidth": 768,
+        "pageHeight": 5760,
+        "theme": "light",
+        "lang": "en",
+        "standoutsVisible": true,
+        "cards": [
+          {
+            "ticker": "PWR",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0
+            },
+            "visible": false,
+            "hasSetupBody": true
+          },
+          {
+            "ticker": "CMG",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0
+            },
+            "visible": false,
+            "hasSetupBody": true
+          },
+          {
+            "ticker": "CVNA",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0
+            },
+            "visible": false,
+            "hasSetupBody": true
+          }
+        ],
+        "visibleCards": [],
+        "poolRows": [
+          "PWR",
+          "HUBG",
+          "MC"
+        ],
+        "todayTotal": "12",
+        "todayVisible": "0",
+        "todayGridPresent": false,
+        "todayEmptyText": "Featured setups are outside your current access. | Open Screener to browse the candidates available to you.",
+        "protectedControls": 0,
+        "visibleDialogs": 2
+      },
+      "page_errors": [],
+      "failed_local_responses": [
+        {
+          "url": "http://127.0.0.1:43837/live/basket_pulse.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/basketdata/baskets.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/prophet_live.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/breadth.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/quotes.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/overlay.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/risk_state.json?t=1793821338793",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/release_publications.json",
+          "status": 404
+        }
+      ],
+      "blocked_external_urls": [
+        "http://127.0.0.1:43837/premiumdata/us_stocks.json",
+        "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev/stockdata/mtf_upturn.json"
+      ],
+      "overflow_px": 0,
+      "screenshot": "public-page-768-light-en.png",
+      "screenshot_sha256": "8c181cced2379c855c6010d5c611280d59f49b1e6a3c928dbe747f2e79e117cd"
+    },
+    {
+      "case": "768-light-zh",
+      "metrics": {
+        "viewport": 768,
+        "documentWidth": 768,
+        "bodyWidth": 768,
+        "pageHeight": 5428,
+        "theme": "light",
+        "lang": "zh-CN",
+        "standoutsVisible": true,
+        "cards": [
+          {
+            "ticker": "PWR",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0
+            },
+            "visible": false,
+            "hasSetupBody": true
+          },
+          {
+            "ticker": "CMG",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0
+            },
+            "visible": false,
+            "hasSetupBody": true
+          },
+          {
+            "ticker": "CVNA",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0
+            },
+            "visible": false,
+            "hasSetupBody": true
+          }
+        ],
+        "visibleCards": [],
+        "poolRows": [
+          "PWR",
+          "HUBG",
+          "MC"
+        ],
+        "todayTotal": "12",
+        "todayVisible": "0",
+        "todayGridPresent": false,
+        "todayEmptyText": "精选形态尚未包含在当前访问权限内。 | 打开筛选器，浏览当前可查看的候选股票。",
+        "protectedControls": 0,
+        "visibleDialogs": 2
+      },
+      "page_errors": [],
+      "failed_local_responses": [
+        {
+          "url": "http://127.0.0.1:43837/live/basket_pulse.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/basketdata/baskets.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/prophet_live.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/quotes.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/breadth.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/overlay.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/risk_state.json?t=1793821340743",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/release_publications.json",
+          "status": 404
+        }
+      ],
+      "blocked_external_urls": [
+        "http://127.0.0.1:43837/premiumdata/us_stocks.json",
+        "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev/stockdata/mtf_upturn.json"
+      ],
+      "overflow_px": 0,
+      "screenshot": "public-page-768-light-zh.png",
+      "screenshot_sha256": "4e2e329592a0cb4a55df869a0e96bcd93ee2dcd52e75a2f03a4293489be20ecd"
+    },
+    {
+      "case": "768-dark-en",
+      "metrics": {
+        "viewport": 768,
+        "documentWidth": 768,
+        "bodyWidth": 768,
+        "pageHeight": 5750,
+        "theme": "dark",
+        "lang": "en",
+        "standoutsVisible": true,
+        "cards": [
+          {
+            "ticker": "PWR",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0
+            },
+            "visible": false,
+            "hasSetupBody": true
+          },
+          {
+            "ticker": "CMG",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0
+            },
+            "visible": false,
+            "hasSetupBody": true
+          },
+          {
+            "ticker": "CVNA",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0
+            },
+            "visible": false,
+            "hasSetupBody": true
+          }
+        ],
+        "visibleCards": [],
+        "poolRows": [
+          "PWR",
+          "HUBG",
+          "MC"
+        ],
+        "todayTotal": "12",
+        "todayVisible": "0",
+        "todayGridPresent": false,
+        "todayEmptyText": "Featured setups are outside your current access. | Open Screener to browse the candidates available to you.",
+        "protectedControls": 0,
+        "visibleDialogs": 2
+      },
+      "page_errors": [],
+      "failed_local_responses": [
+        {
+          "url": "http://127.0.0.1:43837/live/basket_pulse.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/prophet_live.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/basketdata/baskets.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/quotes.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/breadth.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/overlay.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/risk_state.json?t=1793821342728",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/release_publications.json",
+          "status": 404
+        }
+      ],
+      "blocked_external_urls": [
+        "http://127.0.0.1:43837/premiumdata/us_stocks.json",
+        "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev/stockdata/mtf_upturn.json"
+      ],
+      "overflow_px": 0,
+      "screenshot": "public-page-768-dark-en.png",
+      "screenshot_sha256": "58f1e7b65f41e02e95d6ea671a9162c03700038bf80b61219f59e6eb971a12fb"
+    },
+    {
+      "case": "768-dark-zh",
+      "metrics": {
+        "viewport": 768,
+        "documentWidth": 768,
+        "bodyWidth": 768,
+        "pageHeight": 5418,
+        "theme": "dark",
+        "lang": "zh-CN",
+        "standoutsVisible": true,
+        "cards": [
+          {
+            "ticker": "PWR",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0
+            },
+            "visible": false,
+            "hasSetupBody": true
+          },
+          {
+            "ticker": "CMG",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0
+            },
+            "visible": false,
+            "hasSetupBody": true
+          },
+          {
+            "ticker": "CVNA",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0
+            },
+            "visible": false,
+            "hasSetupBody": true
+          }
+        ],
+        "visibleCards": [],
+        "poolRows": [
+          "PWR",
+          "HUBG",
+          "MC"
+        ],
+        "todayTotal": "12",
+        "todayVisible": "0",
+        "todayGridPresent": false,
+        "todayEmptyText": "精选形态尚未包含在当前访问权限内。 | 打开筛选器，浏览当前可查看的候选股票。",
+        "protectedControls": 0,
+        "visibleDialogs": 2
+      },
+      "page_errors": [],
+      "failed_local_responses": [
+        {
+          "url": "http://127.0.0.1:43837/live/basket_pulse.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/prophet_live.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/basketdata/baskets.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/quotes.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/breadth.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/overlay.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/risk_state.json?t=1793821344677",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/release_publications.json",
+          "status": 404
+        }
+      ],
+      "blocked_external_urls": [
+        "http://127.0.0.1:43837/premiumdata/us_stocks.json",
+        "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev/stockdata/mtf_upturn.json"
+      ],
+      "overflow_px": 0,
+      "screenshot": "public-page-768-dark-zh.png",
+      "screenshot_sha256": "8a1896bc8f3c56ddb74ed9c53ca4f42356279d88b3e225d3ebcc4448e4b51677"
+    },
+    {
+      "case": "390-light-en",
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "bodyWidth": 390,
+        "pageHeight": 7084,
+        "theme": "light",
+        "lang": "en",
+        "standoutsVisible": true,
+        "cards": [
+          {
+            "ticker": "PWR",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0
+            },
+            "visible": false,
+            "hasSetupBody": true
+          },
+          {
+            "ticker": "CMG",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0
+            },
+            "visible": false,
+            "hasSetupBody": true
+          },
+          {
+            "ticker": "CVNA",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0
+            },
+            "visible": false,
+            "hasSetupBody": true
+          }
+        ],
+        "visibleCards": [],
+        "poolRows": [
+          "PWR",
+          "HUBG",
+          "MC"
+        ],
+        "todayTotal": "12",
+        "todayVisible": "0",
+        "todayGridPresent": false,
+        "todayEmptyText": "Featured setups are outside your current access. | Open Screener to browse the candidates available to you.",
+        "protectedControls": 0,
+        "visibleDialogs": 2
+      },
+      "page_errors": [],
+      "failed_local_responses": [
+        {
+          "url": "http://127.0.0.1:43837/live/basket_pulse.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/basketdata/baskets.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/prophet_live.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/quotes.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/breadth.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/overlay.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/risk_state.json?t=1793821346648",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/release_publications.json",
+          "status": 404
+        }
+      ],
+      "blocked_external_urls": [
+        "http://127.0.0.1:43837/premiumdata/us_stocks.json",
+        "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev/stockdata/mtf_upturn.json"
+      ],
+      "overflow_px": 0,
+      "screenshot": "public-page-390-light-en.png",
+      "screenshot_sha256": "f48e8554fa1b250864e11576003998f7c88972e81d6d77f09ad68a4af316c9d0"
+    },
+    {
+      "case": "390-light-zh",
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "bodyWidth": 390,
+        "pageHeight": 6525,
+        "theme": "light",
+        "lang": "zh-CN",
+        "standoutsVisible": true,
+        "cards": [
+          {
+            "ticker": "PWR",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0
+            },
+            "visible": false,
+            "hasSetupBody": true
+          },
+          {
+            "ticker": "CMG",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0
+            },
+            "visible": false,
+            "hasSetupBody": true
+          },
+          {
+            "ticker": "CVNA",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0
+            },
+            "visible": false,
+            "hasSetupBody": true
+          }
+        ],
+        "visibleCards": [],
+        "poolRows": [
+          "PWR",
+          "HUBG",
+          "MC"
+        ],
+        "todayTotal": "12",
+        "todayVisible": "0",
+        "todayGridPresent": false,
+        "todayEmptyText": "精选形态尚未包含在当前访问权限内。 | 打开筛选器，浏览当前可查看的候选股票。",
+        "protectedControls": 0,
+        "visibleDialogs": 2
+      },
+      "page_errors": [],
+      "failed_local_responses": [
+        {
+          "url": "http://127.0.0.1:43837/live/basket_pulse.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/basketdata/baskets.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/prophet_live.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/breadth.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/quotes.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/overlay.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/risk_state.json?t=1793821348572",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/release_publications.json",
+          "status": 404
+        }
+      ],
+      "blocked_external_urls": [
+        "http://127.0.0.1:43837/premiumdata/us_stocks.json",
+        "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev/stockdata/mtf_upturn.json"
+      ],
+      "overflow_px": 0,
+      "screenshot": "public-page-390-light-zh.png",
+      "screenshot_sha256": "45eb9278ee4a31b4baaa2d7559cc438abda5172301960de2dd5765d646f3507f"
+    },
+    {
+      "case": "390-dark-en",
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "bodyWidth": 390,
+        "pageHeight": 7027,
+        "theme": "dark",
+        "lang": "en",
+        "standoutsVisible": true,
+        "cards": [
+          {
+            "ticker": "PWR",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0
+            },
+            "visible": false,
+            "hasSetupBody": true
+          },
+          {
+            "ticker": "CMG",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0
+            },
+            "visible": false,
+            "hasSetupBody": true
+          },
+          {
+            "ticker": "CVNA",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0
+            },
+            "visible": false,
+            "hasSetupBody": true
+          }
+        ],
+        "visibleCards": [],
+        "poolRows": [
+          "PWR",
+          "HUBG",
+          "MC"
+        ],
+        "todayTotal": "12",
+        "todayVisible": "0",
+        "todayGridPresent": false,
+        "todayEmptyText": "Featured setups are outside your current access. | Open Screener to browse the candidates available to you.",
+        "protectedControls": 0,
+        "visibleDialogs": 2
+      },
+      "page_errors": [],
+      "failed_local_responses": [
+        {
+          "url": "http://127.0.0.1:43837/basketdata/baskets.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/basket_pulse.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/prophet_live.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/quotes.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/breadth.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/overlay.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/risk_state.json?t=1793821350493",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/release_publications.json",
+          "status": 404
+        }
+      ],
+      "blocked_external_urls": [
+        "http://127.0.0.1:43837/premiumdata/us_stocks.json",
+        "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev/stockdata/mtf_upturn.json"
+      ],
+      "overflow_px": 0,
+      "screenshot": "public-page-390-dark-en.png",
+      "screenshot_sha256": "be1d2f3706c39c52ac78aaca4e9b2445b3b2b0ca699db071901ffa6a53c9a37a"
+    },
+    {
+      "case": "390-dark-zh",
+      "metrics": {
+        "viewport": 390,
+        "documentWidth": 390,
+        "bodyWidth": 390,
+        "pageHeight": 6515,
+        "theme": "dark",
+        "lang": "zh-CN",
+        "standoutsVisible": true,
+        "cards": [
+          {
+            "ticker": "PWR",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0
+            },
+            "visible": false,
+            "hasSetupBody": true
+          },
+          {
+            "ticker": "CMG",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0
+            },
+            "visible": false,
+            "hasSetupBody": true
+          },
+          {
+            "ticker": "CVNA",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0
+            },
+            "visible": false,
+            "hasSetupBody": true
+          }
+        ],
+        "visibleCards": [],
+        "poolRows": [
+          "PWR",
+          "HUBG",
+          "MC"
+        ],
+        "todayTotal": "12",
+        "todayVisible": "0",
+        "todayGridPresent": false,
+        "todayEmptyText": "精选形态尚未包含在当前访问权限内。 | 打开筛选器，浏览当前可查看的候选股票。",
+        "protectedControls": 0,
+        "visibleDialogs": 2
+      },
+      "page_errors": [],
+      "failed_local_responses": [
+        {
+          "url": "http://127.0.0.1:43837/live/basket_pulse.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/basketdata/baskets.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/prophet_live.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/breadth.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/quotes.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/overlay.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/risk_state.json?t=1793821352400",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/release_publications.json",
+          "status": 404
+        }
+      ],
+      "blocked_external_urls": [
+        "http://127.0.0.1:43837/premiumdata/us_stocks.json",
+        "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev/stockdata/mtf_upturn.json"
+      ],
+      "overflow_px": 0,
+      "screenshot": "public-page-390-dark-zh.png",
+      "screenshot_sha256": "d2c5a76a6073d3594c1c9df7283d3e1f49a27b1a5d0a0e90a0e3088cc6f58c3a"
+    },
+    {
+      "case": "320-light-en",
+      "metrics": {
+        "viewport": 320,
+        "documentWidth": 320,
+        "bodyWidth": 320,
+        "pageHeight": 7707,
+        "theme": "light",
+        "lang": "en",
+        "standoutsVisible": true,
+        "cards": [
+          {
+            "ticker": "PWR",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0
+            },
+            "visible": false,
+            "hasSetupBody": true
+          },
+          {
+            "ticker": "CMG",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0
+            },
+            "visible": false,
+            "hasSetupBody": true
+          },
+          {
+            "ticker": "CVNA",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0
+            },
+            "visible": false,
+            "hasSetupBody": true
+          }
+        ],
+        "visibleCards": [],
+        "poolRows": [
+          "PWR",
+          "HUBG",
+          "MC"
+        ],
+        "todayTotal": "12",
+        "todayVisible": "0",
+        "todayGridPresent": false,
+        "todayEmptyText": "Featured setups are outside your current access. | Open Screener to browse the candidates available to you.",
+        "protectedControls": 0,
+        "visibleDialogs": 2
+      },
+      "page_errors": [],
+      "failed_local_responses": [
+        {
+          "url": "http://127.0.0.1:43837/basketdata/baskets.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/basket_pulse.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/prophet_live.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/breadth.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/quotes.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/overlay.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/risk_state.json?t=1793821354315",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/release_publications.json",
+          "status": 404
+        }
+      ],
+      "blocked_external_urls": [
+        "http://127.0.0.1:43837/premiumdata/us_stocks.json",
+        "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev/stockdata/mtf_upturn.json"
+      ],
+      "overflow_px": 0,
+      "screenshot": "public-page-320-light-en.png",
+      "screenshot_sha256": "4b1af3f3d515709ffb0d993f2cf7f05bd76fb1d7099120bf5f0d0d7f5d263f5d"
+    },
+    {
+      "case": "320-light-zh",
+      "metrics": {
+        "viewport": 320,
+        "documentWidth": 320,
+        "bodyWidth": 320,
+        "pageHeight": 6972,
+        "theme": "light",
+        "lang": "zh-CN",
+        "standoutsVisible": true,
+        "cards": [
+          {
+            "ticker": "PWR",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0
+            },
+            "visible": false,
+            "hasSetupBody": true
+          },
+          {
+            "ticker": "CMG",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0
+            },
+            "visible": false,
+            "hasSetupBody": true
+          },
+          {
+            "ticker": "CVNA",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0
+            },
+            "visible": false,
+            "hasSetupBody": true
+          }
+        ],
+        "visibleCards": [],
+        "poolRows": [
+          "PWR",
+          "HUBG",
+          "MC"
+        ],
+        "todayTotal": "12",
+        "todayVisible": "0",
+        "todayGridPresent": false,
+        "todayEmptyText": "精选形态尚未包含在当前访问权限内。 | 打开筛选器，浏览当前可查看的候选股票。",
+        "protectedControls": 0,
+        "visibleDialogs": 2
+      },
+      "page_errors": [],
+      "failed_local_responses": [
+        {
+          "url": "http://127.0.0.1:43837/live/basket_pulse.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/basketdata/baskets.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/prophet_live.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/quotes.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/breadth.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/overlay.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/risk_state.json?t=1793821356179",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/release_publications.json",
+          "status": 404
+        }
+      ],
+      "blocked_external_urls": [
+        "http://127.0.0.1:43837/premiumdata/us_stocks.json",
+        "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev/stockdata/mtf_upturn.json"
+      ],
+      "overflow_px": 0,
+      "screenshot": "public-page-320-light-zh.png",
+      "screenshot_sha256": "ea778be1454c0c55db5b6aa443a545b561037196e29e491bd5686cfc818e0f86"
+    },
+    {
+      "case": "320-dark-en",
+      "metrics": {
+        "viewport": 320,
+        "documentWidth": 320,
+        "bodyWidth": 320,
+        "pageHeight": 7697,
+        "theme": "dark",
+        "lang": "en",
+        "standoutsVisible": true,
+        "cards": [
+          {
+            "ticker": "PWR",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0
+            },
+            "visible": false,
+            "hasSetupBody": true
+          },
+          {
+            "ticker": "CMG",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0
+            },
+            "visible": false,
+            "hasSetupBody": true
+          },
+          {
+            "ticker": "CVNA",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0
+            },
+            "visible": false,
+            "hasSetupBody": true
+          }
+        ],
+        "visibleCards": [],
+        "poolRows": [
+          "PWR",
+          "HUBG",
+          "MC"
+        ],
+        "todayTotal": "12",
+        "todayVisible": "0",
+        "todayGridPresent": false,
+        "todayEmptyText": "Featured setups are outside your current access. | Open Screener to browse the candidates available to you.",
+        "protectedControls": 0,
+        "visibleDialogs": 2
+      },
+      "page_errors": [],
+      "failed_local_responses": [
+        {
+          "url": "http://127.0.0.1:43837/basketdata/baskets.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/basket_pulse.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/prophet_live.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/quotes.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/breadth.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/overlay.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/risk_state.json?t=1793821358058",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/release_publications.json",
+          "status": 404
+        }
+      ],
+      "blocked_external_urls": [
+        "http://127.0.0.1:43837/premiumdata/us_stocks.json",
+        "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev/stockdata/mtf_upturn.json"
+      ],
+      "overflow_px": 0,
+      "screenshot": "public-page-320-dark-en.png",
+      "screenshot_sha256": "e6a39b86616d77414136acef0196363be6c8d1545a9b997cfe5847da6fd48547"
+    },
+    {
+      "case": "320-dark-zh",
+      "metrics": {
+        "viewport": 320,
+        "documentWidth": 320,
+        "bodyWidth": 320,
+        "pageHeight": 6962,
+        "theme": "dark",
+        "lang": "zh-CN",
+        "standoutsVisible": true,
+        "cards": [
+          {
+            "ticker": "PWR",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0
+            },
+            "visible": false,
+            "hasSetupBody": true
+          },
+          {
+            "ticker": "CMG",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0
+            },
+            "visible": false,
+            "hasSetupBody": true
+          },
+          {
+            "ticker": "CVNA",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0
+            },
+            "visible": false,
+            "hasSetupBody": true
+          }
+        ],
+        "visibleCards": [],
+        "poolRows": [
+          "PWR",
+          "HUBG",
+          "MC"
+        ],
+        "todayTotal": "12",
+        "todayVisible": "0",
+        "todayGridPresent": false,
+        "todayEmptyText": "精选形态尚未包含在当前访问权限内。 | 打开筛选器，浏览当前可查看的候选股票。",
+        "protectedControls": 0,
+        "visibleDialogs": 2
+      },
+      "page_errors": [],
+      "failed_local_responses": [
+        {
+          "url": "http://127.0.0.1:43837/live/basket_pulse.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/basketdata/baskets.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/prophet_live.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/quotes.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/breadth.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/overlay.json",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/risk_state.json?t=1793821359935",
+          "status": 404
+        },
+        {
+          "url": "http://127.0.0.1:43837/live/release_publications.json",
+          "status": 404
+        }
+      ],
+      "blocked_external_urls": [
+        "http://127.0.0.1:43837/premiumdata/us_stocks.json",
+        "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev/stockdata/mtf_upturn.json"
+      ],
+      "overflow_px": 0,
+      "screenshot": "public-page-320-dark-zh.png",
+      "screenshot_sha256": "24b16e0c518d797f49026b5bbf3d3b18f697bc8cedb882a8fc7156b9b5e3531e"
+    }
+  ],
+  "completed_at": 1793821361.9824142
+}

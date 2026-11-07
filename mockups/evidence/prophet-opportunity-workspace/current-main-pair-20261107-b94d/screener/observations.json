@@ -1,0 +1,76 @@
+{
+  "source_head": "e73ed3b5c5c19205ee669bc64f7a4aab9f729e81",
+  "public_html_sha256": "f78487726aff58ff1d8ee3deb34a773feeb9f8ac98ac781b3534e6be26942d86",
+  "scope": "Actual public anonymous Screener cards; no protected payload, authentication, live feed or Paper approval",
+  "cells": [
+    {
+      "case": "1440-light-en",
+      "metrics": {
+        "width": 1440,
+        "scrollWidth": 1440,
+        "cards": [
+          {
+            "id": "po-screener-1",
+            "ticker": "CNMD",
+            "text": "CNMD\nCONMED Corporation\n$51.50\n—\nAs of Date unverified\nHealth Care\nPriority\n56\nⓘ\nNew\nContinuation\nBuy · partial\nBottoming\nTurning\nReady\nTrend\n\nSignal session · 2026-11-06\n\nDaily closes\nAs of Date unverified\n\nPartial entry — half size now\n\nKey caution The broad tape is under stress. Size down, or wait for confirmation. +2 more\nEntry zone\n$49.05–$51.50\nUSD\nAs of 2026-11-06\nAdded 2026-11-06\nView setup →\nSources\nCompare\nSave",
+            "width": 328,
+            "height": 660.875
+          },
+          {
+            "id": "po-screener-2",
+            "ticker": "UHS",
+            "text": "UHS\nUniversal Health Services\n$195.50\n—\nAs of Date unverified\nHealth Care\nPriority\n51\nⓘ\nNew\nContinuation\nBuy · partial\nBottoming\nTurning\nReady\nTrend\n\nSignal session · 2026-11-06\n\nDaily closes\nAs of Date unverified\n\nPartial entry — half size now\n\nKey caution The broad tape is under stress. Size down, or wait for confirmation. +4 more\nEntry zone\n$188.00–$195.50\nUSD\nAs of 2026-11-06\nAdded 2026-11-06\nView setup →\nSources\nCompare\nSave",
+            "width": 328,
+            "height": 660.875
+          },
+          {
+            "id": "po-screener-3",
+            "ticker": "BKSY",
+            "text": "BKSY\nBlackSky Technology Inc\n$21.33\n—\nAs of Date unverified\nIndustrials\nPriority\n48\nⓘ\nNew\nBottoming\nBuy · partial\nBottoming\nTurning\nReady\nTrend\n\nSignal session · 2026-11-06\n\nDaily closes\nAs of Date unverified\n\nPartial entry — half size now\n\nKey caution Accounting quality is worth a second look. +1 more\nEntry zone\n$19.71–$21.33\nUSD\nAs of 2026-11-06\nAdded 2026-11-06\nView setup →\nSources\nCompare\nSave",
+            "width": 328,
+            "height": 660.875
+          }
+        ],
+        "protectedPlanControls": 0
+      },
+      "page_errors": [],
+      "first_card_png_sha256": "91b861bbe4342a819dae3c811e28d7dc4a90aaafb889eda13fa530f637c1a4ae",
+      "viewport_png_sha256": "97d40e87ebd045c51e92648ecdf53c99f7dc4d2ca9d8fbef5c33f8abf338e865"
+    },
+    {
+      "case": "390-dark-zh",
+      "metrics": {
+        "width": 390,
+        "scrollWidth": 390,
+        "cards": [
+          {
+            "id": "po-screener-1",
+            "ticker": "CNMD",
+            "text": "CNMD\nCONMED Corporation\n$51.50\n—\n截至 日期未核实\nHealth Care\n优先级\n56\nⓘ\n新\n延续\n买入 · 部分\n筑底\n转折\n就绪\n趋势\n\n信号日期 · 2026-11-06\n\n每日收盘\n截至 日期未核实\n\n部分入场 — 当前可建半仓\n\n关键注意 大盘承压。减小仓位，或等待信号确认。 +2 条\n入场区间\n$49.05–$51.50\nUSD\n截至 2026-11-06\n入榜 2026-11-06\n查看形态 →\n来源\n对比\n保存",
+            "width": 354,
+            "height": 610.875
+          },
+          {
+            "id": "po-screener-2",
+            "ticker": "UHS",
+            "text": "UHS\nUniversal Health Services\n$195.50\n—\n截至 日期未核实\nHealth Care\n优先级\n51\nⓘ\n新\n延续\n买入 · 部分\n筑底\n转折\n就绪\n趋势\n\n信号日期 · 2026-11-06\n\n每日收盘\n截至 日期未核实\n\n部分入场 — 当前可建半仓\n\n关键注意 大盘承压。减小仓位，或等待信号确认。 +4 条\n入场区间\n$188.00–$195.50\nUSD\n截至 2026-11-06\n入榜 2026-11-06\n查看形态 →\n来源\n对比\n保存",
+            "width": 354,
+            "height": 610.875
+          },
+          {
+            "id": "po-screener-3",
+            "ticker": "BKSY",
+            "text": "BKSY\nBlackSky Technology Inc\n$21.33\n—\n截至 日期未核实\nIndustrials\n优先级\n48\nⓘ\n新\n筑底\n买入 · 部分\n筑底\n转折\n就绪\n趋势\n\n信号日期 · 2026-11-06\n\n每日收盘\n截至 日期未核实\n\n部分入场 — 当前可建半仓\n\n关键注意 财务质量值得再核查一次。 +1 条\n入场区间\n$19.71–$21.33\nUSD\n截至 2026-11-06\n入榜 2026-11-06\n查看形态 →\n来源\n对比\n保存",
+            "width": 354,
+            "height": 610.875
+          }
+        ],
+        "protectedPlanControls": 0
+      },
+      "page_errors": [],
+      "first_card_png_sha256": "b2f6a2a9f2c54fe482c1baabffc08657d3f164192fd6e88552fd472ae3be9434",
+      "viewport_png_sha256": "df0d12afed551e73fe41895fa84697e181a21cdffa28d4a6862629b10ea56fcf"
+    }
+  ],
+  "completed": true
+}

@@ -76,7 +76,19 @@ def theme_code(theme_src: str) -> str:
 # assigned from a bare string literal. An expression (pfx + 'x.js',
 # _mmBrainSrc(), _mmOverlaySrc) is not a literal and is not matched here; those
 # are checked for shared-root provenance by the second half of the test.
-_LITERAL_SRC_RE = re.compile(r"""\.(?:src|href)\s*=\s*(['"])([^'"]+)\1""")
+_LITERAL_SRC_RE = re.compile(r"""\.(src|href)\s*=\s*(['"])([^'"]+)\2""")
+
+# Only an immediately proven native navigation anchor is exempt. This is a
+# deliberately small straight-line recognizer, not a JavaScript type inference:
+# calls, rebinding, aliases and scope boundaries all fail closed. The URL and
+# variable name cannot earn an exemption; the same literal on a <link> fails.
+_NAVIGATION_HREF_PREFIX_RE = re.compile(
+    r"""(?:^|[;{}])\s*(?:var|let|const)\s+(?P<node>[A-Za-z_$][\w$]*)\s*=\s*"""
+    r"""document\.createElement\(\s*(?P<quote>['"])a(?P=quote)\s*\)\s*;"""
+    r"""(?:\s*(?P=node)\.(?:className|id|title|tabIndex|hidden|textContent)\s*=\s*"""
+    r"""(?:'[^'\\\n]*'|"[^"\\\n]*"|true|false|-?\d+)\s*;)*"""
+    r"""\s*(?P=node)$"""
+)
 
 # URLs that are not ours to rebase: absolute, protocol-relative, data/blob, and
 # the empty string (used to detach a media element).
@@ -86,11 +98,15 @@ _NOT_LOCAL = ("http://", "https://", "//", "data:", "blob:", "about:", "#", "/")
 def _document_relative_offenders(code: str) -> list[str]:
     """Injected asset URLs that are bare relative literals (comments stripped)."""
     code = re.sub(r"/\*.*?\*/", " ", code, flags=re.DOTALL)
-    return [
-        url
-        for _q, url in _LITERAL_SRC_RE.findall(code)
-        if url and not url.startswith(_NOT_LOCAL)
-    ]
+    offenders = []
+    for match in _LITERAL_SRC_RE.finditer(code):
+        attribute, _quote, url = match.groups()
+        if not url or url.startswith(_NOT_LOCAL):
+            continue
+        if attribute == "href" and _NAVIGATION_HREF_PREFIX_RE.search(code[:match.start()]):
+            continue
+        offenders.append(url)
+    return offenders
 
 
 def test_the_resolution_guard_actually_fires_on_the_2026_08_19_defect() -> None:
@@ -111,6 +127,45 @@ def test_the_resolution_guard_actually_fires_on_the_2026_08_19_defect() -> None:
     assert _document_relative_offenders(
         "a.src = 'https://cdn.example/x.js'; b.src = '//h/y.js'; c.src = '/z.js'; d.src = 'data:,';"
     ) == []
+
+
+@pytest.mark.parametrize(
+    "tag, attribute, expected",
+    [
+        ("a", "href", []),
+        ("link", "href", ["mm_brain.js"]),
+        ("script", "src", ["mm_brain.js"]),
+        ("a", "src", ["mm_brain.js"]),
+    ],
+)
+def test_resolution_guard_distinguishes_navigation_from_assets(tag, attribute, expected):
+    code = (
+        f"var control = document.createElement('{tag}');\n"
+        "control.className = 'same-control';\n"
+        f"control.{attribute} = 'mm_brain.js';"
+    )
+    assert _document_relative_offenders(code) == expected
+
+
+@pytest.mark.parametrize(
+    "between",
+    [
+        "control = document.createElement('link');",
+        "control = anotherElement;",
+        "control ||= document.createElement('link');",
+        "[control] = links;",
+        "} function other(control) {",
+        "reassignControl();",
+    ],
+)
+def test_resolution_guard_does_not_reuse_ambiguous_anchor_identity(between):
+    code = (
+        "var control = document.createElement('a');\n"
+        + between
+        + "\ncontrol.href = 'mm_brain.js';"
+    )
+    assert _document_relative_offenders(code) == ["mm_brain.js"]
+    assert _document_relative_offenders("control.href = 'mm_brain.js';") == ["mm_brain.js"]
 
 
 def test_no_dynamic_child_asset_is_document_relative(theme_code: str) -> None:
@@ -214,17 +269,16 @@ def test_launcher_init_does_not_fetch_the_bundle(theme_src: str) -> None:
     )
 
 
-def test_activation_is_coalesced_and_stays_retryable(theme_src: str) -> None:
-    """One request and one mount however many activations race; a failure retries."""
+def test_activation_has_an_inflight_guard(theme_src: str) -> None:
+    """Keep the static guard; real retry/deadline behavior is browser-tested."""
     assert re.search(r"if\s*\(_mmBrainScript\)\s*return;", theme_src), (
         "loadBrain() lost its in-flight guard — racing activations (double click, "
         "click during hover-warm) would each append a <script> and mm_brain.js "
         "would be fetched N times"
     )
-    assert re.search(r"onerror\s*=\s*function\s*\(\)\s*\{\s*_mmBrainScript\s*=\s*null", theme_src), (
-        "a failed load must clear _mmBrainScript, or the launcher is dead for the "
-        "rest of the session after one bad response"
-    )
+    # Failure, timeout, late callback and both host/default retry paths execute
+    # the actual loader + widget in test_brain_history_widget.py. A source regex
+    # for the old one-line onerror handler cannot prove that request identity.
 
 
 def test_hover_warm_never_executes_the_bundle(theme_src: str) -> None:

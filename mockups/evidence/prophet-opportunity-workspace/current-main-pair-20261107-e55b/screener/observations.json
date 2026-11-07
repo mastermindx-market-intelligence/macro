@@ -1,0 +1,76 @@
+{
+  "source_head": "e5fc097114082307a1ee707ef94edcc767cde16b",
+  "public_html_sha256": "effa218ef6a02292fc3ac179d1fe793b552941d59a2c46d49e340d9671fe00e9",
+  "scope": "Actual public anonymous Screener cards; no protected payload, authentication, live feed or Paper approval",
+  "cells": [
+    {
+      "case": "1440-light-en",
+      "metrics": {
+        "width": 1440,
+        "scrollWidth": 1440,
+        "cards": [
+          {
+            "id": "po-screener-1",
+            "ticker": "CNMD",
+            "text": "CNMD\nCONMED Corporation\n$51.50\n—\nAs of Date unverified\nHealth Care\nPriority\n56\nⓘ\nNew\nContinuation\nBuy · partial\nBottoming\nTurning\nReady\nTrend\n\nSignal session · 2026-11-06\n\nDaily closes\nAs of Date unverified\n\nPartial entry — half size now\n\nKey caution The broad tape is under stress. Size down, or wait for confirmation. +2 more\nEntry zone\n$49.05–$51.50\nUSD\nAs of 2026-11-06\nAdded 2026-11-06\nView setup →\nSources\nCompare\nSave",
+            "width": 328,
+            "height": 660.875
+          },
+          {
+            "id": "po-screener-2",
+            "ticker": "UHS",
+            "text": "UHS\nUniversal Health Services\n$195.50\n—\nAs of Date unverified\nHealth Care\nPriority\n51\nⓘ\nNew\nContinuation\nBuy · partial\nBottoming\nTurning\nReady\nTrend\n\nSignal session · 2026-11-06\n\nDaily closes\nAs of Date unverified\n\nPartial entry — half size now\n\nKey caution The broad tape is under stress. Size down, or wait for confirmation. +4 more\nEntry zone\n$188.00–$195.50\nUSD\nAs of 2026-11-06\nAdded 2026-11-06\nView setup →\nSources\nCompare\nSave",
+            "width": 328,
+            "height": 660.875
+          },
+          {
+            "id": "po-screener-3",
+            "ticker": "RGLD",
+            "text": "RGLD\nRoyal Gold\n$265.81\n—\nAs of Date unverified\nMaterials\nPriority\n48\nⓘ\n Featured\nNew\nContinuation\nBuy\nBottoming\nTurning\nReady\nTrend\n\nSignal session · 2026-11-06\n\nDaily closes\nAs of Date unverified\n\nBuy zone — entry open now\n\nKey caution Accounting quality is worth a second look. +1 more\nEntry zone\n$254.30–$265.80\nUSD\nAs of 2026-11-06\nAdded 2026-11-06\nView setup →\nSources\nCompare\nSave",
+            "width": 328,
+            "height": 660.875
+          }
+        ],
+        "protectedPlanControls": 0
+      },
+      "page_errors": [],
+      "first_card_png_sha256": "c3754b902b898d6c738954dd95b2ec0b367fcd6de480c0e89fcd695f78d0ba5d",
+      "viewport_png_sha256": "0208ea735a478f4127812bc6ff22e85fc66f1c6b96b0dff3a9369b0395409f25"
+    },
+    {
+      "case": "390-dark-zh",
+      "metrics": {
+        "width": 390,
+        "scrollWidth": 390,
+        "cards": [
+          {
+            "id": "po-screener-1",
+            "ticker": "CNMD",
+            "text": "CNMD\nCONMED Corporation\n$51.50\n—\n截至 日期未核实\nHealth Care\n优先级\n56\nⓘ\n新\n延续\n买入 · 部分\n筑底\n转折\n就绪\n趋势\n\n信号日期 · 2026-11-06\n\n每日收盘\n截至 日期未核实\n\n部分入场 — 当前可建半仓\n\n关键注意 大盘承压。减小仓位，或等待信号确认。 +2 条\n入场区间\n$49.05–$51.50\nUSD\n截至 2026-11-06\n入榜 2026-11-06\n查看形态 →\n来源\n对比\n保存",
+            "width": 354,
+            "height": 610.875
+          },
+          {
+            "id": "po-screener-2",
+            "ticker": "UHS",
+            "text": "UHS\nUniversal Health Services\n$195.50\n—\n截至 日期未核实\nHealth Care\n优先级\n51\nⓘ\n新\n延续\n买入 · 部分\n筑底\n转折\n就绪\n趋势\n\n信号日期 · 2026-11-06\n\n每日收盘\n截至 日期未核实\n\n部分入场 — 当前可建半仓\n\n关键注意 大盘承压。减小仓位，或等待信号确认。 +4 条\n入场区间\n$188.00–$195.50\nUSD\n截至 2026-11-06\n入榜 2026-11-06\n查看形态 →\n来源\n对比\n保存",
+            "width": 354,
+            "height": 610.875
+          },
+          {
+            "id": "po-screener-3",
+            "ticker": "RGLD",
+            "text": "RGLD\nRoyal Gold\n$265.81\n—\n截至 日期未核实\nMaterials\n优先级\n48\nⓘ\n 精选\n新\n延续\n买入\n筑底\n转折\n就绪\n趋势\n\n信号日期 · 2026-11-06\n\n每日收盘\n截至 日期未核实\n\n买入区 — 入场窗口已开启\n\n关键注意 财务质量值得再核查一次。 +1 条\n入场区间\n$254.30–$265.80\nUSD\n截至 2026-11-06\n入榜 2026-11-06\n查看形态 →\n来源\n对比\n保存",
+            "width": 354,
+            "height": 610.875
+          }
+        ],
+        "protectedPlanControls": 0
+      },
+      "page_errors": [],
+      "first_card_png_sha256": "77109cd82fd3be2adc376c8b1bf3160003f35edc9e95d2492a73da4c32c6dad0",
+      "viewport_png_sha256": "6c386e9c32f70d75b6ece50f483f2159e6dd701ac223f871c11549667dd7d397"
+    }
+  ],
+  "completed": true
+}

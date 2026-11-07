@@ -1,0 +1,22 @@
+{
+  "schema": "prophet.save_read_recovery_regression.v1",
+  "phase": "after_fix",
+  "parent_head": "ec24a85de3fc91988ca5a6fb25a97384b1cf2ab5",
+  "argv": [
+    "/home/ubuntu0/lanes/venv/bin/python",
+    "-m",
+    "pytest",
+    "tests/test_prophet_save_composition.py",
+    "tests/test_prophet_save_account_isolation.py",
+    "-q"
+  ],
+  "exit_code": 0,
+  "elapsed_seconds": 6.294,
+  "source_sha256": {
+    "templates/prophet_save.js": "63364e5bf444b4ebcd3ca7689362b7f393a64ea0b5d9539445c14ba4631fa193",
+    "site/prophet_save.js": "63364e5bf444b4ebcd3ca7689362b7f393a64ea0b5d9539445c14ba4631fa193",
+    "tests/test_prophet_save_composition.py": "20a03bb1339af2d06753beaa0f18d957f60f71bb027097e8c5e596e65ccf980d"
+  },
+  "log": "/tmp/prophet-save-recovery-green-ec24a85.log",
+  "completed_at": "2026-11-05T05:10:07.235086+00:00"
+}

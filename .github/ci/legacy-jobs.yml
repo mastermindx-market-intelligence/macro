@@ -11902,6 +11902,7 @@ jobs:
     # output and are correctly gate:data; narrowing that job's own gate is a
     # separate, larger cleanup outside this PR's scope.
     paths:
+      - tests/test_prophet_public_featured_access_card.py
       - "app/prophet_lab.py"
       # Same-box Treasury input reuses this module's internal and site-full guards.
       - "app/treasury_history.py"
@@ -12049,7 +12050,7 @@ jobs:
       - name: install observation browser
         run: python -m playwright install --with-deps chromium
       - name: Prophet observation discovery — full-population search, access failure and theme geometry
-        run: python -m pytest tests/test_prophet_observations_browser.py -q
+        run: python -m pytest tests/test_prophet_observations_browser.py tests/test_prophet_public_featured_access_card.py -q
 
   attested-history-guards:
     if: ${{ false }}
@@ -19087,6 +19088,7 @@ jobs:
     # ticker-cluster time-confound law and the altdata_brain.py article3 convention.
     scope: exclusive
     paths:
+      - "engine/prophet_opportunity_presentation.py"
       - engine/entry_radar/replay/identity_observation_snapshot.py
       - engine/neuralweb/market_memory_identity_candidate.py
       - collectors/yahoo.py
@@ -23971,6 +23973,7 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      - "engine/prophet_opportunity_presentation.py"
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
       - engine/entry_radar/replay/identity_observation_snapshot.py
@@ -27624,6 +27627,7 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      - "engine/prophet_opportunity_presentation.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "engine/intraday_greeks.py"
       - "engine/options_nbbo_cohort.py"
@@ -32375,8 +32379,10 @@ jobs:
       # assertions retain their existing nightly data owners unchanged.
       - name: Today source binding and private hydration (hermetic)
         run: >-
-          python -m pytest tests/test_us_today_source_binding.py
-          tests/test_us_board_gate.py tests/test_us_board_hydration_merge.py
+          python -m pytest tests/test_build_site_frozen_us_source.py
+          tests/test_us_today_source_binding.py tests/test_us_board_gate.py
+          tests/test_us_board_hydration_merge.py
+          tests/test_render_macro_fast_source_guard.py
           -q -k "not test_shipped"
         # The nightly recorded nothing for nine days (2026-07-31..08-06) while the step
         # concluded `success`; these pin that the alarms fire, name the cause, and stay
@@ -35389,6 +35395,20 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - tests/test_prophet_same_date_publication.py
+      - site/prophet/index.json
+      - "engine/prophet_plan_presentation.py"
+      - "tests/test_prophet_plan_presentation.py"
+      - "engine/prophet_opportunity_presentation.py"
+      - "templates/_prophet_opportunity_card.html.j2"
+      - "templates/_prophet_opportunity.css.j2"
+      - "tests/test_prophet_opportunity_card.py"
+      - "tests/test_prophet_opportunity_presentation.py"
+      - "tests/test_prophet_opportunity_integration.py"
+      - "tests/test_prophet_table_opportunity_parity.py"
+      - "tests/test_prophet_memory_handoff.py"
+      - "tests/test_prophet_setup_list_navigation.py"
+      - "tests/test_prophet_setup_sections.py"
       - collectors/rate_futures.py
       - engine/rate_futures_repricing.py
       - engine/entry_radar/__init__.py
@@ -36349,6 +36369,10 @@ jobs:
       - "templates/stocktable.js"
       - "templates/watchlist.js"
       - "templates/watchstore.js"
+      - "templates/prophet_save.js"
+      - "templates/prophet_save.css"
+      - "tests/test_prophet_save_composition.py"
+      - "tests/test_prophet_save_account_isolation.py"
       - "templates/support.html.j2"
       - "templates/theme.css"
       - "templates/theme.js"
@@ -36361,6 +36385,8 @@ jobs:
       - "tests/test_gate_crash_failopen.py"
       - "tests/test_mi_s2_theme_relative_intraday_registration.py"
       - "tests/test_mtf_upturn.py"
+      - "tests/test_prophet_mtf_health.py"
+      - "tests/test_prophet_mtf_states.py"
       - "tests/test_oracle_memory_analogues_step.py"
       - "tests/test_p0_prophet_candidate_board.py"
       - "tests/test_p_mp1_shell_ladder_error_state.py"
@@ -36520,7 +36546,7 @@ jobs:
       # an existing merge-binding CODE gate, not only by the data-gated
       # anticipation lane. No new job/runner/control plane is introduced.
       - name: Prophet source, lifecycle and presentation contracts (one native process)
-        run: python -m pytest tests/test_prophet_card_shared.py tests/test_us_prophet_original_card_layout.py tests/test_prophet_plan_relation.py tests/test_prophet_candidate_plan_return.py tests/test_prophet_journey_reconcile.py tests/test_us_completed_session_panel.py tests/test_us_leader_observation_projection.py tests/test_prophet_candidate_state.py tests/test_prophet_candidate_state_sources.py tests/test_prophet_strategy_definition.py tests/test_build_live_quotes.py tests/test_vps_live_orchestration.py tests/test_prophet_daily_brief.py -q
+        run: python -m pytest tests/test_prophet_card_shared.py tests/test_us_prophet_original_card_layout.py tests/test_prophet_plan_relation.py tests/test_prophet_candidate_plan_return.py tests/test_prophet_journey_reconcile.py tests/test_us_completed_session_panel.py tests/test_us_leader_observation_projection.py tests/test_prophet_candidate_state.py tests/test_prophet_candidate_state_sources.py tests/test_prophet_strategy_definition.py tests/test_build_live_quotes.py tests/test_vps_live_orchestration.py tests/test_prophet_daily_brief.py tests/test_prophet_plan_presentation.py tests/test_prophet_opportunity_card.py tests/test_prophet_opportunity_presentation.py tests/test_prophet_opportunity_integration.py tests/test_prophet_table_opportunity_parity.py tests/test_prophet_memory_handoff.py tests/test_prophet_setup_list_navigation.py tests/test_prophet_setup_sections.py tests/test_prophet_save_composition.py tests/test_prophet_save_account_isolation.py tests/test_prophet_same_date_publication.py -q
       - name: Prophet R7 Wave A watchlist save outcomes and saved/tonight columns (A2)
         run: python -m pytest tests/test_prophet_r7_wave_a_watchlist.py -q
       # §6.9 R5 PR-time copy contract. The complete why-not suite stays in its
@@ -36536,7 +36562,7 @@ jobs:
           python -m pytest tests/test_prophet_whynot_receipts.py -q
           -k "every_order_code_has_non_empty_bilingual_copy or template_copy_mirrors_the_engine_copy_exactly or plan_not_built_copy_never_claims_every_check_passed or validated_word_is_confined_to_the_exact_negative_disclaimer"
       - name: Prophet detector, organ and disposition contracts (one native process)
-        run: python -m pytest tests/test_prophet_doors.py tests/test_gate_crash_failopen.py tests/test_prophet_arena.py tests/test_washout_turn.py tests/test_mtf_upturn.py tests/test_oracle_memory_analogues_step.py tests/test_stock_events.py tests/test_event_atlas.py tests/test_us_leader_pullback.py tests/test_us_leader_pullback_coverage.py tests/test_mi_s2_theme_relative_intraday_registration.py tests/test_us_turn_watch.py tests/test_us_basket_turn.py tests/test_prophet_b2_disposition.py -q
+        run: python -m pytest tests/test_prophet_doors.py tests/test_gate_crash_failopen.py tests/test_prophet_arena.py tests/test_washout_turn.py tests/test_mtf_upturn.py tests/test_prophet_mtf_health.py tests/test_prophet_mtf_states.py tests/test_oracle_memory_analogues_step.py tests/test_stock_events.py tests/test_event_atlas.py tests/test_us_leader_pullback.py tests/test_us_leader_pullback_coverage.py tests/test_mi_s2_theme_relative_intraday_registration.py tests/test_us_turn_watch.py tests/test_us_basket_turn.py tests/test_prophet_b2_disposition.py -q
       - name: Prophet R7 Wave A refusal receipts and design guards (A3)
         run: python -m pytest tests/test_prophet_r7_wave_a_guards.py -q
       - name: Prophet native Plan source-origin binding and malformed-input guards
@@ -36889,6 +36915,8 @@ jobs:
     # the declared-scope coverage audit re-checks them on every load.
     scope: exclusive
     paths:
+      - "engine/prophet_opportunity_presentation.py"
+      - "tests/test_prophet_opportunity_integration.py"
       - engine/rate_futures_repricing.py
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
@@ -47064,6 +47092,13 @@ jobs:
       - "tests/test_macro_risk_dialog.py"
       - "tests/test_risk_envelope_radar_integration.py"
       - "tests/test_us_stocks_s2_compression.py"
+      - "tests/test_prophet_page_composition.py"
+      - "tests/test_action_board_hover_cards.py"
+      - "templates/_us_act_now_board.html.j2"
+      - "templates/_china_act_now_board.html.j2"
+      - "templates/_decision_card.html.j2"
+      - "templates/_prophet_page.css.j2"
+      - "templates/_prophet_workspace.css.j2"
       - "tests/test_unified_dashboard_b2w2.py"
       - "tests/test_macro_mtf_sort_key.py"
       - "tests/test_mag7_tape_strip.py"
@@ -47290,6 +47325,7 @@ jobs:
           tests/test_risk_envelope_radar_integration.py
           tests/test_risk_radar_workspace.py
           tests/test_us_stocks_s2_compression.py
+          tests/test_prophet_page_composition.py
           tests/test_unified_dashboard_b2w2.py
           tests/test_ud_b2_w1_vw_fold.py
           tests/test_vsb_surface.py
@@ -47374,6 +47410,7 @@ jobs:
       - "templates/rotation_glance.css"
       - "templates/si_workspace.js"
       - "research/evidence/ew_p4_descriptive_ui_20261031/**"
+      - "research/evidence/ew_p4_descriptive_ui_20261107_r8main/**"
       - "tests/probe_ew_p4_descriptive_ui_browser.py"
       - "site/rotation_events.js"
       - "templates/_macro_sector_desk.html.j2"
@@ -50488,6 +50525,7 @@ jobs:
     # The qledger-cluster-honest-ci code owner retains grader/readiness suites.
     scope: exclusive
     paths:
+      - "engine/prophet_opportunity_presentation.py"
       - "admin/press_audience.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"

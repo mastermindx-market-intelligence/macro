@@ -1,0 +1,17 @@
+{
+  "operation": "prophet-current-main-merge-assessment-20261105-v1",
+  "head": "07dfce74bb28b0391c7ac4d8705d58ce64b6997a",
+  "incoming": "008d4015fef2655a98d33dfd5c30d3cb600e2271",
+  "merge_base": "b48b5dc562cf1e2600699fc24a445709e18ef8fe",
+  "fetch": null,
+  "upstream_changed_count": 12571,
+  "overlap_paths": [
+    "site/premiumdata/us_stocks.json",
+    "site/us_stocks.html"
+  ],
+  "merge_tree_rc": 1,
+  "merge_tree_stdout": "293eaca9f8ddbb8ef13d1605f2b3725bb16c5881\nsite/premiumdata/us_stocks.json\nsite/us_stocks.html\n\nAuto-merging site/premiumdata/us_stocks.json\nCONFLICT (content): Merge conflict in site/premiumdata/us_stocks.json\nwarning: Cannot merge binary files: site/us_stocks.html (07dfce74bb28b0391c7ac4d8705d58ce64b6997a vs. 008d4015fef2655a98d33dfd5c30d3cb600e2271)\nAuto-merging site/us_stocks.html\nCONFLICT (content): Merge conflict in site/us_stocks.html\n",
+  "merge_tree_stderr": "",
+  "elapsed_seconds": 1.135,
+  "recorded_at": "2026-11-05T05:24:45.635128+00:00"
+}

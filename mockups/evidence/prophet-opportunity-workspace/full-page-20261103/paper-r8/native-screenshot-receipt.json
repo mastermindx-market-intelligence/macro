@@ -1,0 +1,75 @@
+[
+  {
+    "file": "paper-1440-light-en.jpg",
+    "board_id": "YW1-0",
+    "mime": "image/jpeg",
+    "bytes": 236455,
+    "sha256": "f3faaa90bf1cbafca2616bac1c17525db787d01d3ddefa4114e2b6ae8e74bccf",
+    "dimensions": [
+      1177,
+      2000
+    ],
+    "scope": "Unmodified native Paper screenshot at requested scale1; tool may cap image dimensions; illustrative design only"
+  },
+  {
+    "file": "paper-390-light-en.jpg",
+    "board_id": "ZRL-0",
+    "mime": "image/jpeg",
+    "bytes": 73093,
+    "sha256": "a8242f6acddb6f9b015ecc86e59a8beba3314463ff92da9e7941740ea42ccd1a",
+    "dimensions": [
+      150,
+      2000
+    ],
+    "scope": "Unmodified native Paper screenshot at requested scale1; tool may cap image dimensions; illustrative design only"
+  },
+  {
+    "file": "paper-390-dark-zh.jpg",
+    "board_id": "1092-0",
+    "mime": "image/jpeg",
+    "bytes": 60927,
+    "sha256": "fdba16f7db36d8a5b7513db134fe89c827eba35b6fdcdc28be5c854418e730ab",
+    "dimensions": [
+      154,
+      2000
+    ],
+    "scope": "Unmodified native Paper screenshot at requested scale1; tool may cap image dimensions; illustrative design only"
+  },
+  {
+    "file": "paper-390-light-en-card.jpg",
+    "board_id": "ZRL-0",
+    "mime": "image/jpeg",
+    "bytes": 25344,
+    "sha256": "221d56b8635d191e0ad0da0f497308d619991692d8fd5f3dccb5cfe05807217f",
+    "dimensions": [
+      350,
+      451
+    ],
+    "scope": "Unmodified native Paper screenshot at requested scale1; tool may cap image dimensions; illustrative design only"
+  },
+  {
+    "file": "paper-390-dark-zh-card.jpg",
+    "board_id": "1092-0",
+    "mime": "image/jpeg",
+    "bytes": 22558,
+    "sha256": "2d565c4beec319e1b7ce173acd301e67ab5e0d6234b9576b74bed4ee0e76fbec",
+    "dimensions": [
+      350,
+      451
+    ],
+    "scope": "Unmodified native Paper screenshot at requested scale1; tool may cap image dimensions; illustrative design only"
+  },
+  {
+    "file": "paper-1440-light-en-context.jpg",
+    "board_id": "YW1-0",
+    "node_id": "Z7D-0",
+    "mime": "image/jpeg",
+    "bytes": 39718,
+    "sha256": "9b70149b55f326b021164b9c600005ecfdbbc73374a93b9fb6d8009677629676",
+    "dimensions": [
+      1360,
+      267
+    ],
+    "scope": "Unmodified native Paper context crop. Growth and inflation both visible; resolves the full-board downsampling review concern."
+  }
+]

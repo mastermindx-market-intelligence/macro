@@ -1,0 +1,44 @@
+{
+  "head": "e5c288011f026cb74b2a2e265d6dfc767359565d",
+  "workspace": "/home/ubuntu0/lanes/wt/d03-prophet-pub-20261104",
+  "log": "/tmp/d03pub/build-e5c288-native.log",
+  "started_at": 1793818857.888792,
+  "modules": [
+    {
+      "module": "scripts.build_site",
+      "exit": 0,
+      "seconds": 876.57
+    },
+    {
+      "module": "scripts.inject_data_base",
+      "exit": 0,
+      "seconds": 6.09
+    },
+    {
+      "module": "scripts.externalize_css",
+      "exit": 0,
+      "seconds": 7.4
+    },
+    {
+      "module": "scripts.optimize_assets",
+      "exit": 0,
+      "seconds": 26.47
+    }
+  ],
+  "external_refresh_disabled": true,
+  "artifacts": {
+    "site/us_stocks.html": {
+      "sha256": "222bd3a37a3c4b98d3a5076155e77f643b3e8bc924df80740f93418c3dcf6070",
+      "bytes": 793059
+    },
+    "site/premiumdata/us_stocks.json": {
+      "sha256": "b98f14fd1a1ccd68341b24e5d67c33d17cf800f64b9f774bc07f6cc588dd4d8d",
+      "bytes": 9485252
+    },
+    "site/factordata/us_standouts.json": {
+      "sha256": "e655802dbb50851d726120ac7db48886a6d36d3a0f6d59ff68a99ddb40d6f792",
+      "bytes": 2025921
+    }
+  },
+  "completed_at": 1793819774.4371328
+}

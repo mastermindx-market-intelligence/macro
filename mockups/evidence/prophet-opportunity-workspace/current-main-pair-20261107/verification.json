@@ -1,0 +1,23 @@
+{
+  "source_head": "f622ee9d0b92c3d2dd89271c1824e9057c74067c",
+  "started_at": 1794061154.9874828,
+  "steps": [
+    {
+      "script": "verify_native_pair.py",
+      "exit": 0,
+      "seconds": 11.11
+    },
+    {
+      "script": "verify_integrated_pair.py",
+      "exit": 0,
+      "seconds": 9.1
+    },
+    {
+      "script": "capture-composed-native.py",
+      "exit": 0,
+      "seconds": 22.65
+    }
+  ],
+  "scope": "native artifacts and anonymous public Sources; not signed-in/live or Paper acceptance",
+  "completed_at": 1794061197.8488362
+}

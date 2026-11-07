@@ -55,5 +55,43 @@
       <span class="opt zh-opt" data-l="zh">中文</span>
     </div>
   </div>
+{# No-JS restore: theme.css now ships the compact 128px pre-enhance search
+   footprint (it must match what theme.js converges to, or the upgrade shifts
+   the page). With scripting disabled nothing ever upgrades the input, so give
+   no-JS readers back the legacy wide desktop search placement — stretched
+   across track 1 exactly as the sheet used to lay it out (justify-self:start
+   + width:auto would shrink-wrap the input to its intrinsic ~234px). With JS
+   on, <noscript> content is inert so this costs nothing; mobile keeps the
+   full-width search row either way. Sits INSIDE <nav> because
+   scripts/sync_chat_nav.py splices on the <nav>…</nav> element and its guard
+   requires the partial to end at </nav>. #}
+  <noscript>
+  <style>
+  /* Scripting off, the <noscript> element itself would land in the nav grid as
+     an item and add an empty row (+ a row gap). display:contents keeps it
+     box-free; the <style> inside still applies. */
+  nav.site-nav noscript { display: contents; }
+  /* With scripting disabled there is no hamburger. Keep the existing market
+     links and nested destinations reachable, and let the full inventory wrap. */
+  nav.site-nav:not(.nav-open) .nav-links { display: flex; flex-wrap: wrap; }
+  @media (max-width: 900px) {
+    nav.site-nav:not(.nav-open) .nav-dd { width: 100%; }
+    nav.site-nav:not(.nav-open) .nav-dd-menu {
+      position: static; width: 100%; min-width: 0; max-height: none;
+      overflow: visible; opacity: 1; visibility: visible; transform: none;
+      pointer-events: auto; box-sizing: border-box;
+    }
+    nav.site-nav:not(.nav-open) .nav-dd-menu a { white-space: normal; }
+  }
+  @media (min-width: 901px) {
+    nav.site-nav .nav-search { grid-column: 1; grid-row: 2; justify-self: stretch;
+      width: auto; max-width: 480px; height: auto; }
+    nav.site-nav .nav-search input { height: auto; }
+    nav.site-nav .nav-ctrls { grid-column: 2; min-height: 0; }
+    nav.site-nav .nav-brand .brand-word { display: inline; }
+    nav.site-nav { grid-template-columns: minmax(0, 1fr) auto; }
+  }
+  </style>
+  </noscript>
 </nav>
 {% if all_tools_enabled is defined and all_tools_enabled is sameas true %}{% include "_all_tools_menu.html.j2" %}{% else %}{{ "\n" }}{% endif %}

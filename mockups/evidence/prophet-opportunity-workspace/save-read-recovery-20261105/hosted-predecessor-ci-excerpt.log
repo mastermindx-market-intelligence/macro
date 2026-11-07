@@ -1,0 +1,16 @@
+2026-11-05T05:07:04.6921953Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --filter=blob:none --depth=1 origin +b12eb5a55e5555248414224ee0b0538dde6802e4:refs/remotes/pull/9495/merge
+2026-11-05T05:07:05.7220826Z  * [new ref]         b12eb5a55e5555248414224ee0b0538dde6802e4 -> pull/9495/merge
+2026-11-05T05:09:12.8111657Z HEAD is now at b12eb5a5 Merge f3c79cfed26286c25592e487939a59fa2dbfc7ec into 83ba26af56330d822277d2a729badc6aeb33a20d
+2026-11-05T05:09:12.8865020Z b12eb5a55e5555248414224ee0b0538dde6802e4
+2026-11-05T05:09:26.0431788Z [36;1mif [ "$tested_head" != "$EXPECTED_PR_HEAD" ]; then[0m
+2026-11-05T05:09:26.0454787Z   EXPECTED_PR_HEAD: f3c79cfed26286c25592e487939a59fa2dbfc7ec
+2026-11-05T05:09:26.0582881Z ##[group]Run git fetch --depth=1 origin 83ba26af56330d822277d2a729badc6aeb33a20d
+2026-11-05T05:09:26.0583191Z [36;1mgit fetch --depth=1 origin 83ba26af56330d822277d2a729badc6aeb33a20d[0m
+2026-11-05T05:09:26.6978940Z  * branch              83ba26af56330d822277d2a729badc6aeb33a20d -> FETCH_HEAD
+2026-11-05T05:09:26.7084805Z ##[group]Run python scripts/check_contract_delta.py --base 83ba26af56330d822277d2a729badc6aeb33a20d
+2026-11-05T05:09:26.7085198Z [36;1mpython scripts/check_contract_delta.py --base 83ba26af56330d822277d2a729badc6aeb33a20d[0m
+2026-11-05T05:16:34.8735223Z ##[error]packing probe engine/prophet/plan_book.py: an ordinary code PR touching it now selects 5,674 weight-seconds, over the ceiling 5,668 (base 5,668); newly selected: none. tests/test_ci_pack.py::test_exclusive_curation_narrows_ordinary_code_prs reds on this after merge — narrow the selection (curate the entrant with `scope: exclusive` and exact `paths:` in .github/ci/legacy-jobs.yml, or drop the edge that pulled it in), or, if the wider selection is intended, re-base that ceiling in tests/test_ci_pack.py PACKING_PROBES with the measurement recorded in the test's docstring
+2026-11-05T05:16:34.8744024Z ##[error]packing probe scripts/build_free_content.py: an ordinary code PR touching it now selects 5,933 weight-seconds, over the ceiling 5,927 (base 5,927); newly selected: none. tests/test_ci_pack.py::test_exclusive_curation_narrows_ordinary_code_prs reds on this after merge — narrow the selection (curate the entrant with `scope: exclusive` and exact `paths:` in .github/ci/legacy-jobs.yml, or drop the edge that pulled it in), or, if the wider selection is intended, re-base that ceiling in tests/test_ci_pack.py PACKING_PROBES with the measurement recorded in the test's docstring
+2026-11-05T05:16:34.8747380Z ##[error]packing probe templates/index.html: an ordinary code PR touching it now selects 5,918 weight-seconds, over the ceiling 5,912 (base 5,912); newly selected: none. tests/test_ci_pack.py::test_exclusive_curation_narrows_ordinary_code_prs reds on this after merge — narrow the selection (curate the entrant with `scope: exclusive` and exact `paths:` in .github/ci/legacy-jobs.yml, or drop the edge that pulled it in), or, if the wider selection is intended, re-base that ceiling in tests/test_ci_pack.py PACKING_PROBES with the measurement recorded in the test's docstring
+2026-11-05T05:16:34.8748615Z contract-delta: 3 introduced, 0 inherited (base 83ba26af5633)
+2026-11-05T05:16:34.8748815Z contract-delta: wall 428.0 s

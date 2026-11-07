@@ -1,0 +1,31 @@
+{
+  "source": "e85506e68d520b4989e20ad055453247e9a76702",
+  "closure_count": 51,
+  "changes": [
+    {
+      "path": "site/assets/css/1b63c7f1.css",
+      "bytes": 28022,
+      "sha256": "1b63c7f1cbefbc53d4a3bdb0282899a58c9b52eeedffe44991c08438c6a719ad",
+      "new_path": true
+    },
+    {
+      "path": "site/premiumdata/us_stocks.json",
+      "bytes": 10752016,
+      "sha256": "66bedcdf10035458d4af14849e2cde6f794421a7c94fccc2a7ee24252cd3923e",
+      "new_path": false
+    },
+    {
+      "path": "site/research_screener.html",
+      "bytes": 76500,
+      "sha256": "9c29acb89665a2bfe03baed963b1b4f9ddcf0718fe4f92926c2e30a387d58eca",
+      "new_path": false
+    },
+    {
+      "path": "site/us_stocks.html",
+      "bytes": 831513,
+      "sha256": "025e7269d50e2d9f0299aee66cfa964baf20b6d4ffe138de8d1f5fc5c6903e89",
+      "new_path": false
+    }
+  ],
+  "scope": "PREPARED only: native pair, exact referenced local assets, canonical paired stamp changes; includes separately canonical-baked Research HTML stamp repair with unchanged committed payload; no unrelated output/data adoption"
+}

@@ -487,7 +487,7 @@
       else renderSymbolNotice();
     });
 
-    var initial = '', explicitInput = false;
+    var initial = '', explicitInput = false, explicitResearch = false;
     if (window.MarketMemoryIntent) {
       var resumed = window.MarketMemoryIntent.resumeStatus();
       if (!resumed.ok) {
@@ -503,12 +503,19 @@
       if (restored.intent.language && typeof window.setLang === 'function') window.setLang(restored.intent.language);
       explicitInput = Object.prototype.hasOwnProperty.call(restored.intent, 'issuerInput');
       if (explicitInput) initial = restored.intent.issuerInput;
+      explicitResearch = restored.intent.view === 'memory';
     }
     if (!explicitInput) {
       try { initial = new URL(location.href).searchParams.get('ticker') || localStorage.getItem('market_memory_ticker') || ''; } catch (error) { /* no-op */ }
       initial = normalizeTicker(initial) || 'AAPL';
     }
     ui.symbolInput.value = initial;
+    // Only an explicit request for the existing research view opens this disclosure.
+    // An issuer in a saved-output URL alone must not start hidden legacy reads.
+    if (explicitInput && explicitResearch) {
+      var symbolDisclosure = document.getElementById('mmr-legacy');
+      if (symbolDisclosure && symbolDisclosure.tagName === 'DETAILS') symbolDisclosure.open = true;
+    }
     window.addEventListener('popstate', function () {
       if (!window.MarketMemoryIntent) return;
       var restored = window.MarketMemoryIntent.read();

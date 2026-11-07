@@ -1,0 +1,13 @@
+{
+  "command": "git diff --unified=0 52abe2e183833a216267942a99513e6c9cbe062f HEAD -- templates site | python scripts/check_ui_visual_evidence.py --diff-file -",
+  "source_head": "50cf9d22425587c04ce85c4c2774443abc500a16",
+  "base_sha": "52abe2e183833a216267942a99513e6c9cbe062f",
+  "diff_sha256": "3d0ef6ab085953ada4bb67ce2d552166bc956787ccf4c3fe17c4a57836d4c260",
+  "diff_bytes": 30446434,
+  "changed_files": 907,
+  "exit_code": 0,
+  "preceding_complete_checkout_gate_already_passed": true,
+  "new_capture_images": 24,
+  "applied_interactions": 16,
+  "recorded_at": "2026-11-05T03:22:54.104672+00:00"
+}

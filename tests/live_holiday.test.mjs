@@ -104,11 +104,15 @@ function entry(extra = {}) {
 function quote(price = 99, extra = {}) {
   return { price, source: "tencent", ts: NOW, prevClose: 10, changePct: 890, delayMin: 0, ...extra };
 }
-async function client({ pathname = "/china_stocks.html", symbols = ["600519.SS"], sessions = { cn: session() }, tickers = {}, quotes, ws = false, snapshotSessions, overlay, workerQuotes, rowDates = {} } = {}) {
+async function client({ pathname = "/china_stocks.html", symbols = ["600519.SS"], sessions = { cn: session() }, tickers = {}, quotes, ws = false, snapshotSessions, overlay, workerQuotes, rowDates = {}, quoteClocks = false, prerenderedStrip = false } = {}) {
   let now = NOW;
   const root = element("html", { "data-lang": "en" });
   const head = root.appendChild(element("head")), body = root.appendChild(element("body"));
   const nav = body.appendChild(element("nav", { class: "site-nav" }));
+  const initialStrip = prerenderedStrip ? body.appendChild(element("div", {
+    id: "market-session-status", class: "dtp-row", role: "status",
+    "aria-live": "polite", "data-session-state": "unverified",
+  }, "US · Status unverified · Next open unverified")) : null;
   const main = body.appendChild(element("main"));
   const px = {}, chg = {};
   for (const sym of symbols) {
@@ -117,6 +121,12 @@ async function client({ pathname = "/china_stocks.html", symbols = ["600519.SS"]
     px[sym] = row.appendChild(element("span", { class: "nb-px", "data-sym": sym, "data-mkt": mkt, ...(rowDates[sym] ? { "data-through": rowDates[sym] } : {}) }, "10.00"));
     chg[sym] = row.appendChild(element("span", { class: "nb-chg up", "data-sym": sym, "data-mkt": mkt }, "+1.00%"));
     row.appendChild(element("span", { class: "nb-dvg alert" }, "old divergence"));
+    if (quoteClocks) {
+      row.setAttribute('data-quote-container', '');
+      row.appendChild(element('span', {'data-quote-clock': ''}, 'Snapshot · 2026-09-25'));
+      row.appendChild(element('span', {class: 'chart-clock'}, 'Chart · 2026-09-24'));
+      row.appendChild(element('span', {class: 'signal-clock'}, 'Signal · 2026-09-21'));
+    }
   }
   const events = {}, intervals = [];
   const response = {
@@ -158,7 +168,7 @@ async function client({ pathname = "/china_stocks.html", symbols = ["600519.SS"]
   async function flush() { await new Promise(resolve => setImmediate(resolve)); }
   await flush();
   return {
-    root, nav, main, px, chg, requests, response, sockets,
+    root, nav, main, px, chg, requests, response, sockets, initialStrip,
     strip: () => document.getElementById("market-session-status"),
     async refresh() { window.LiveQuotes.refresh(); await flush(); },
     async advance(ms) { now += ms; intervals.forEach(fn => fn()); await flush(); },
@@ -555,4 +565,54 @@ test("an explicit row date survives and takes precedence over a later quote obse
   assert.equal(c.px["600519.SS"].getAttribute("data-data-state"), "late");
   assert.match(c.px["600519.SS"].getAttribute("data-tip-en"), /Prices through 2026-09-29/);
   assert.match(c.px["600519.SS"].getAttribute("data-tip-en"), /Quote time: 2026-09-30/);
+});
+
+
+test("visible opportunity clock follows accepted quote without touching other clocks", async () => {
+  const c = await client({ pathname: '/us_stocks.html', symbols: ['AAPL'], quoteClocks: true,
+    sessions: {us: session('us', {state: 'open', open: true, data_frozen: false})},
+    rowDates: {AAPL: '2026-09-30'} });
+  assert.equal(c.px.AAPL.textContent, '$99.00');
+  assert.match(c.main.querySelector('[data-quote-clock]').textContent, /Quote · 2026-10-07 02:00 UTC/);
+  assert.equal(c.main.querySelector('.chart-clock').textContent, 'Chart · 2026-09-24');
+  assert.equal(c.main.querySelector('.signal-clock').textContent, 'Signal · 2026-09-21');
+});
+
+test("visible opportunity clock follows the carried close through a holiday", async () => {
+  const c = await client({ quoteClocks: true, tickers: {'600519.SS': entry()},
+    rowDates: {'600519.SS': '2026-09-25'} });
+  const clock = c.main.querySelector('[data-quote-clock]');
+  assert.match(clock.textContent, /Close · 2026-09-30/);
+  assert.doesNotMatch(clock.textContent, /2026-10-07/);
+  c.language('zh');
+  assert.match(clock.textContent, /收盘 · 2026-09-30/);
+});
+
+test("rejected quote cannot attach its fresh date to a restored price", async () => {
+  for (const bad of [{tsSynthetic: true}, {ts: NOW + 3600000}, {ts: null}]) {
+    const c = await client({ pathname: '/us_stocks.html', symbols: ['AAPL'], quoteClocks: true,
+      sessions: {us: session('us', {state: 'open', open: true, data_frozen: false})},
+      rowDates: {AAPL: '2026-09-25'}, quotes: {AAPL: quote(900, bad)} });
+    assert.equal(c.px.AAPL.textContent, '10.00');
+    assert.match(c.main.querySelector('[data-quote-clock]').textContent, /Close · 2026-09-25/);
+  }
+});
+
+test("restored price with no original date stays explicitly undated", async () => {
+  const c = await client({ quoteClocks: true, sessions: {cn: session('cn', {state: 'unverified', calendar_verified: false})} });
+  assert.equal(c.px['600519.SS'].textContent, '10.00');
+  assert.match(c.main.querySelector('[data-quote-clock]').textContent, /Close date unavailable/);
+});
+
+test("pre-rendered session strip is reused across verified and expired receipts", async () => {
+  const c = await client({ pathname: "/us_stocks.html", symbols: ["SPY"],
+    sessions: {us: session({market: "us"})}, prerenderedStrip: true });
+  assert.equal(c.strip(), c.initialStrip);
+  assert.equal(c.root.querySelectorAll("#market-session-status").length, 1);
+  assert.equal(c.strip().getAttribute("data-session-state"), "holiday");
+  await c.advance(2 * 60 * 60 * 1000);
+  assert.equal(c.strip(), c.initialStrip);
+  assert.equal(c.root.querySelectorAll("#market-session-status").length, 1);
+  assert.equal(c.strip().getAttribute("data-session-state"), "unverified");
+  assert.match(c.strip().textContent, /Status unverified/);
 });

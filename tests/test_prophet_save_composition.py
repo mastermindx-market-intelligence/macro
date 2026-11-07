@@ -1,0 +1,406 @@
+"""Production Save composition on exact live candidate nodes; no browser/auth effect.
+
+The DOM and account service below are boundary doubles. The controller is the
+actual shipped module; account mutation semantics are covered separately against
+actual WatchStore in test_prophet_save_account_isolation.py and its incumbent tests.
+"""
+import json
+from pathlib import Path
+import subprocess
+
+import pytest
+
+ROOT = Path(__file__).parents[1]
+
+DOM = r"""
+const assert=require('node:assert/strict');
+const observers=[],pendingObservers=new Set();let mutationQueued=false;
+function changed(el,attribute){if(!el.isConnected)return;
+  observers.forEach(o=>{if(attribute?o.options.attributes&&(!o.options.attributeFilter||o.options.attributeFilter.includes(attribute)):o.options.childList)pendingObservers.add(o.fn);});
+  if(!pendingObservers.size||mutationQueued)return;mutationQueued=true;
+  queueMicrotask(()=>{mutationQueued=false;const todo=Array.from(pendingObservers);pendingObservers.clear();todo.forEach(fn=>fn());});}
+function simple(el,sel){
+  if(!el)return false;
+  if(sel===':scope')return true;
+  let no=/\:not\(([^)]+)\)/.exec(sel);if(no){if(simple(el,no[1]))return false;sel=sel.replace(no[0],'');}
+  const tag=/^[a-z][a-z0-9-]*/i.exec(sel);if(tag&&el.tag!==tag[0])return false;
+  for(const m of sel.matchAll(/#([\w-]+)/g))if(el.id!==m[1])return false;
+  for(const m of sel.matchAll(/\.([\w-]+)/g))if(!el.classList.contains(m[1]))return false;
+  for(const m of sel.matchAll(/\[([\w-]+)(?:="([^"]*)")?\]/g)){
+    if(!el.hasAttribute(m[1])||(m[2]!==undefined&&el.getAttribute(m[1])!==m[2]))return false;
+  }return true;
+}
+function match(el,sel){const parts=sel.replace(/>/g,' > ').trim().split(/\s+/);let i=parts.length-1;
+  if(!simple(el,parts[i--]))return false;
+  while(i>=0){if(parts[i]==='>'){i--;el=el.parentNode;if(!simple(el,parts[i--]))return false;}
+    else{let at=el.parentNode;while(at&&!simple(at,parts[i]))at=at.parentNode;if(!at)return false;el=at;i--;}}
+  return true;
+}
+class El{
+  constructor(tag){this.tag=tag;this.children=[];this.parentNode=null;this.attrs={};this.listeners={};this._text='';this.disabled=false;this.scrollTop=0;this.open=false;}
+  get isConnected(){return this===html||!!this.parentNode&&this.parentNode.isConnected;}
+  get id(){return this.getAttribute('id')||'';}set id(v){this.setAttribute('id',v);}
+  get className(){return this.getAttribute('class')||'';}set className(v){this.setAttribute('class',v);}
+  get classList(){const e=this;return {contains:k=>e.className.split(/\s+/).includes(k),add:k=>{if(!e.classList.contains(k))e.className=(e.className+' '+k).trim();}};}
+  get textContent(){return this._text+this.children.map(c=>c.textContent).join('');}
+  set textContent(v){this._text=String(v);this.children.forEach(c=>c.parentNode=null);this.children=[];changed(this);}
+  get value(){return this._value!==undefined?this._value:this.tag==='select'&&this.children[0]?this.children[0].value:'';}
+  set value(v){this._value=v;}
+  get hidden(){return this.hasAttribute('hidden');}set hidden(v){if(v)this.setAttribute('hidden','');else this.removeAttribute('hidden');}
+  setAttribute(k,v){if(this.attrs[k]===String(v))return;this.attrs[k]=String(v);changed(this,k);}
+  getAttribute(k){return Object.prototype.hasOwnProperty.call(this.attrs,k)?this.attrs[k]:null;}
+  hasAttribute(k){return this.getAttribute(k)!==null;}
+  removeAttribute(k){if(this.hasAttribute(k)){delete this.attrs[k];changed(this,k);}}
+  contains(n){return this===n||this.children.some(c=>c.contains(n));}
+  append(...nodes){for(const n of nodes){n.remove();n.parentNode=this;this.children.push(n);}changed(this);}
+  replaceChildren(...nodes){this.children.forEach(c=>c.parentNode=null);this.children=[];this._text='';this.append(...nodes);}
+  remove(){if(this.parentNode){const p=this.parentNode;p.children=p.children.filter(c=>c!==this);this.parentNode=null;changed(p);}}
+  closest(sel){for(let n=this;n;n=n.parentNode)if(sel.split(',').some(s=>match(n,s.trim())))return n;return null;}
+  querySelectorAll(sel){let all=[];function walk(e){e.children.forEach(c=>{all.push(c);walk(c);});}walk(this);
+    if(sel.startsWith(':scope > '))return this.children.filter(c=>simple(c,sel.slice(9)));
+    return all.filter(c=>sel.split(',').some(s=>match(c,s.trim())));}
+  querySelector(sel){return this.querySelectorAll(sel)[0]||null;}
+  getClientRects(){return this.isConnected&&!this.closest('[hidden],.mx-tier-hidden,.mx-tier-blurred')?[{}]:[];}
+  addEventListener(t,fn){(this.listeners[t]||=([])).push(fn);}
+  dispatchEvent(e){e.target=e.target||this;e.preventDefault=()=>{};(this.listeners[e.type]||[]).forEach(fn=>fn(e));return true;}
+  click(){if(!this.disabled)this.dispatchEvent({type:'click'});}
+  focus(){document.activeElement=this;}
+  showModal(){this.open=true;}close(){this.open=false;this.dispatchEvent({type:'close'});}
+}
+const html=new El('html'),body=new El('body');html.append(body);
+global.document={documentElement:html,body,readyState:'loading',listeners:{},activeElement:null,
+ createElement:t=>new El(t),querySelector:s=>html.querySelector(s),querySelectorAll:s=>html.querySelectorAll(s),
+ getElementById:id=>html.querySelector('#'+id),addEventListener(t,fn){(this.listeners[t]||=[]).push(fn);},
+ dispatchEvent(e){(this.listeners[e.type]||[]).forEach(fn=>fn(e));}};
+global.window=global;global.HTMLDialogElement=El;global.MutationObserver=class{constructor(fn){this.fn=fn;}observe(_root,options){observers.push({fn:this.fn,options});}};
+const winEvents={};window.addEventListener=(t,fn)=>(winEvents[t]||=[]).push(fn);
+window.scrollX=0;window.scrollY=500;window.scrollTo=o=>{window.scrollX=o.left;window.scrollY=o.top;};
+const ev=(type,detail)=>{(winEvents[type]||[]).forEach(fn=>fn({type,detail:detail||{}}));};
+const flush=async()=>{for(let i=0;i<12;i++)await Promise.resolve();};
+function element(tag,cls,id){const e=new El(tag);if(cls)e.className=cls;if(id)e.id=id;return e;}
+const host=element('div');host.setAttribute('data-watchstore-checked-save','');body.append(host);
+const panel=element('section','','us-standouts');panel.setAttribute('data-board-asof','2026-11-03');body.append(panel);
+const grid=element('div','','us-cand-grid');panel.append(grid);
+function candidate(id){const row=element('article','pvcard po-card');row.setAttribute('data-ticker','FLS');row.setAttribute('data-po-id',id);
+ const link=element('a','pv-setup-stock-link');link.setAttribute('href','stock.html#FLS');
+ const foot=element('footer','po-footer'),details=element('details','pv-setup-inline'),summary=element('summary'),content=element('div','pv-setup-body');
+ details.append(summary,content);row.append(link,foot,details);grid.append(row);return {row,link,foot,details,summary,content};}
+const first=candidate('screener-0'),second=candidate('screener-1');
+let sess={state:'ready',userId:'u1',generation:1}, writes=0, reads=0, inspection=0, saveResult, pendingSave;
+window.WatchStore={checkedSession:()=>({...sess}),lists:{refresh:()=>{reads++;return Promise.resolve([{id:'L1',name:'First list'},{id:'L2',name:'Chosen list'}]);}},
+ symbols:{saveChecked:(list,names)=>{writes++;assert.equal(list,'L2');assert.deepEqual(names,['FLS']);return pendingSave||Promise.resolve(saveResult||{state:'saved',names:['FLS'],readBackAt:'2026-11-03T12:00:00Z'});},
+ inspect:()=>{inspection++;return Promise.resolve({state:'not-confirmed',writeRetryAllowed:false});}}};
+let signins=0;window.MDXAuth={open:()=>{signins++;}};
+const mod=require(MODULE);mod.init();
+const saveDialog=()=>document.getElementById('prophet-save-dialog');
+const state=()=>saveDialog().getAttribute('data-save-state');
+const buttons=()=>saveDialog().querySelectorAll('button');
+const choose=()=>{const s=saveDialog().querySelector('select');s.value='L2';return buttons().find(b=>b.textContent.includes('Save ticker'));};
+"""
+
+
+def run(scenario):
+    script = 'const MODULE=' + json.dumps(str(ROOT / 'templates/prophet_save.js')) + ';\n' + DOM
+    script += '\n(async()=>{' + scenario + "\n})().then(()=>{process.stdout.write('OK');},e=>{console.error(e.stack);process.exitCode=1;});"
+    proc = subprocess.run(['node', '-e', script], capture_output=True, text=True, timeout=20)
+    assert proc.returncode == 0, proc.stderr + proc.stdout
+    assert proc.stdout == 'OK'
+
+
+def test_real_module_mounts_once_selects_account_list_and_returns_exact_occurrence():
+    run(r"""
+      await flush();mod.mount();mod.mount();await flush();
+      assert.equal(first.row.querySelectorAll('.pvs-save-pick').length,1);
+      assert.equal(second.row.querySelectorAll('.pvs-save-pick').length,1);
+      assert.equal(writes,0);
+      const pick=second.row.querySelector('.pvs-save-pick');pick.click();await flush();
+      assert.equal(state(),'choose');choose().click();await flush();assert.equal(state(),'saved');assert.equal(writes,1);
+      buttons()[0].click();await flush();assert.equal(document.activeElement,pick);assert.equal(window.scrollY,500);
+      assert.equal(first.row.querySelector('.pvs-save-pick')===pick,false);
+    """)
+
+
+def test_waiting_double_click_and_uncertain_membership_read_never_retry():
+    run(r"""
+      let settle;pendingSave=new Promise(r=>settle=r);
+      first.row.querySelector('.pvs-save-pick').click();await flush();const submit=choose();submit.click();submit.click();
+      assert.equal(state(),'waiting');assert.equal(writes,1);
+      settle({state:'uncertain'});await flush();assert.equal(state(),'uncertain');
+      const inspect=buttons().find(b=>b.textContent.includes('Check account list'));inspect.click();await flush();
+      assert.equal(inspection,1);assert.equal(writes,1);assert.equal(state(),'uncertain');
+      assert.equal(buttons().some(b=>b.textContent.includes('Save ticker')),false);
+      buttons()[0].click();first.row.querySelector('.pvs-save-pick').click();await flush();
+      assert.equal(state(),'uncertain');assert.equal(saveDialog().querySelector('select'),null);
+      assert.equal(writes,1,'closing/reopening must not turn an unknown effect into a second save');
+    """)
+
+
+
+@pytest.mark.parametrize('read_state', ['not-confirmed', 'unavailable'])
+def test_uncertain_inspection_rechecks_only_reads_when_owner_allows(read_state):
+    """A recoverable observation permits another user-clicked read, never a Save."""
+    run("const READ_STATE=" + json.dumps(read_state) + r"""
+      saveResult={state:'uncertain'};
+      WatchStore.symbols.inspect=()=>{inspection++;return Promise.resolve({
+        state:READ_STATE,membership:'unknown',readRetryAllowed:true,writeRetryAllowed:false});};
+      first.row.querySelector('.pvs-save-pick').click();await flush();
+      choose().click();await flush();assert.equal(state(),'uncertain');
+      const inspect=buttons().find(b=>b.textContent.includes('Check account list'));
+      inspect.click();assert.equal(inspect.disabled,true);await flush();
+      assert.equal(inspection,1);assert.equal(inspect.disabled,false);
+      await flush();assert.equal(inspection,1,'no automatic read retry');
+      inspect.click();await flush();
+      assert.equal(inspection,2);assert.equal(writes,1);
+      assert.equal(state(),'uncertain');
+      assert.equal(buttons().some(b=>b.textContent.includes('Save ticker')),false);
+      buttons()[0].click();first.row.querySelector('.pvs-save-pick').click();await flush();
+      assert.equal(state(),'uncertain');assert.equal(writes,1);
+    """)
+
+
+@pytest.mark.parametrize('read_state,permission', [
+    ('invalid', False), ('no-session', False), ('stale-session', False),
+    ('not-confirmed', None), ('unavailable', 'true'),
+])
+def test_uncertain_inspection_requires_explicit_boolean_read_permission(read_state, permission):
+    """Absent, denied or malformed capabilities must not enable another read."""
+    run("const READ_STATE=" + json.dumps(read_state) + ";const PERMISSION="
+        + json.dumps(permission) + r""";
+      saveResult={state:'uncertain'};
+      WatchStore.symbols.inspect=()=>{inspection++;
+        const answer={state:READ_STATE,membership:'unknown',writeRetryAllowed:false};
+        if(PERMISSION!==null)answer.readRetryAllowed=PERMISSION;
+        return Promise.resolve(answer);};
+      first.row.querySelector('.pvs-save-pick').click();await flush();
+      choose().click();await flush();
+      const inspect=buttons().find(b=>b.textContent.includes('Check account list'));
+      inspect.click();await flush();assert.equal(inspect.disabled,true);
+      inspect.click();await flush();
+      assert.equal(inspection,1);assert.equal(writes,1);
+      assert.equal(state(),'uncertain');
+      assert.equal(buttons().some(b=>b.textContent.includes('Save ticker')),false);
+    """)
+
+
+def test_uncertain_inspection_observed_membership_never_confirms_the_earlier_save():
+    """A later present observation remains separate from the uncertain write."""
+    run(r"""
+      saveResult={state:'uncertain'};
+      WatchStore.symbols.inspect=()=>{inspection++;return Promise.resolve({
+        state:inspection===1?'unavailable':'present',readRetryAllowed:true,writeRetryAllowed:false});};
+      first.row.querySelector('.pvs-save-pick').click();await flush();
+      choose().click();await flush();
+      const inspect=buttons().find(b=>b.textContent.includes('Check account list'));
+      inspect.click();await flush();inspect.click();await flush();
+      assert.equal(inspection,2);assert.equal(state(),'observed');
+      assert.equal(inspect.disabled,true);
+      assert.equal(saveDialog().textContent.includes('does not prove the earlier save'),true);
+      assert.equal(writes,1);
+      buttons()[0].click();first.row.querySelector('.pvs-save-pick').click();await flush();
+      assert.equal(state(),'uncertain');assert.equal(writes,1);
+    """)
+
+
+@pytest.mark.parametrize('fault', ['rejected', 'sync-throw'])
+def test_uncertain_inspection_unexpected_fault_is_redacted_and_fails_closed(fault):
+    """Unexpected owner failure is not an implicit read or write retry grant."""
+    run("const FAULT=" + json.dumps(fault) + r""";
+      saveResult={state:'uncertain'};
+      WatchStore.symbols.inspect=()=>{inspection++;
+        if(FAULT==='sync-throw')throw Error('private-provider-detail');
+        return Promise.reject(Error('private-provider-detail'));};
+      first.row.querySelector('.pvs-save-pick').click();await flush();
+      choose().click();await flush();
+      const inspect=buttons().find(b=>b.textContent.includes('Check account list'));
+      inspect.click();await flush();
+      assert.equal(state(),'uncertain');assert.equal(inspect.disabled,true);
+      assert.equal(saveDialog().textContent.includes('Membership could not be checked'),true);
+      assert.equal(saveDialog().textContent.includes('private-provider-detail'),false);
+      inspect.click();await flush();assert.equal(inspection,1);assert.equal(writes,1);
+      assert.equal(buttons().some(b=>b.textContent.includes('Save ticker')),false);
+    """)
+
+
+@pytest.mark.parametrize('same_user', [False, True])
+def test_uncertain_inspection_rechecks_generation_before_invoking_read(same_user):
+    """An auth transition before the queued read cannot start an old-account read."""
+    run("const SAME_USER=" + json.dumps(same_user) + r""";
+      saveResult={state:'uncertain'};
+      WatchStore.symbols.inspect=()=>{inspection++;return Promise.resolve({
+        state:'present',readRetryAllowed:true,writeRetryAllowed:false});};
+      first.row.querySelector('.pvs-save-pick').click();await flush();
+      choose().click();await flush();
+      buttons().find(b=>b.textContent.includes('Check account list')).click();
+      sess={state:'ready',userId:SAME_USER?'u1':'u2',generation:2};ev('mdx-auth');
+      await flush();
+      assert.equal(inspection,0);assert.equal(writes,1);
+      assert.equal(saveDialog().open,false);
+    """)
+
+
+@pytest.mark.parametrize('same_user', [False, True])
+@pytest.mark.parametrize('settlement', ['present', 'rejected'])
+def test_uncertain_inspection_late_settlement_cannot_change_replacement_dialog(same_user, settlement):
+    """Old read completions cannot cross a new account generation or dialog."""
+    run("const SAME_USER=" + json.dumps(same_user) + ";const SETTLEMENT="
+        + json.dumps(settlement) + r""";
+      saveResult={state:'uncertain'};let finish;
+      WatchStore.symbols.inspect=()=>{inspection++;return new Promise((resolve,reject)=>{
+        finish=()=>SETTLEMENT==='rejected'?reject(Error('private-provider-detail')):
+          resolve({state:'present',readRetryAllowed:true,writeRetryAllowed:false});});};
+      first.row.querySelector('.pvs-save-pick').click();await flush();
+      choose().click();await flush();
+      buttons().find(b=>b.textContent.includes('Check account list')).click();await flush();
+      assert.equal(inspection,1);
+      sess={state:'ready',userId:SAME_USER?'u1':'u2',generation:2};ev('mdx-auth');await flush();
+      first.row.querySelector('.pvs-save-pick').click();await flush();
+      const expected=SAME_USER?'uncertain':'choose';assert.equal(state(),expected);
+      finish();await flush();
+      assert.equal(state(),expected);assert.equal(writes,1);
+      assert.equal(saveDialog().textContent.includes('private-provider-detail'),false);
+      assert.equal(saveDialog().textContent.includes('Your account currently contains'),false);
+    """)
+
+
+@pytest.mark.parametrize('mutation', ["first.link.setAttribute('href','stock.html#OTHER');",
+                                      "panel.setAttribute('data-board-asof','2026-11-04');",
+                                      "first.row.classList.add('mx-tier-hidden');",
+                                      "first.row.remove();",
+                                      "panel.setAttribute('data-prophet-src','plans');",
+                                      "panel.classList.add('st-table-mode');",
+                                      "sess={state:'ready',userId:'u2',generation:2};ev('mdx-auth');",
+                                      "ev('mmx-access-tier');",
+                                      "document.dispatchEvent({type:'candidate-pool-hydrated'});"])
+def test_context_loss_drops_late_success_without_reopening_stale_candidate(mutation):
+    run(r"""
+      let settle;pendingSave=new Promise(r=>settle=r);
+      first.row.querySelector('.pvs-save-pick').click();await flush();choose().click();
+    """ + mutation + r"""
+      await flush();settle({state:'saved',names:['FLS'],readBackAt:'then'});await flush();
+      assert.equal(saveDialog().open,false);assert.equal(writes,1);
+      assert.notEqual(document.activeElement,first.row.querySelector('.pvs-save-pick'));
+    """)
+
+
+def test_signin_resumes_only_the_chooser_and_never_saves_automatically():
+    run(r"""
+      sess={state:'signed_out',userId:null,generation:1};
+      first.row.querySelector('.pvs-save-pick').click();await flush();assert.equal(state(),'signed-out');
+      buttons().find(b=>b.textContent.includes('Sign in')).click();assert.equal(signins,1);assert.equal(saveDialog().open,false);
+      sess={state:'ready',userId:'u1',generation:2};ev('mdx-auth',{event:'SIGNED_IN'});await flush();
+      assert.equal(saveDialog().open,true);assert.equal(state(),'choose');assert.equal(writes,0);
+    """)
+
+
+def test_source_pane_change_refuses_confirmation_before_any_write():
+    run(r"""
+      first.row.querySelector('.pvs-save-pick').click();await flush();const submit=choose();
+      panel.setAttribute('data-prophet-src','plans');
+      submit.click();assert.equal(writes,0,'pane guard applies even before observer delivery');
+      await flush();assert.equal(saveDialog().open,false,'source pane event/attribute closes stale chooser');
+    """)
+
+
+def test_setup_overlay_closes_modal_then_reopens_same_body_section_and_reading_position():
+    run(r"""
+      const native=element('dialog','','pv-setup-dialog'),head=element('header','pvs-dialog-head'),target=element('div','pvs-dialog-content');
+      const closer=element('button','pvs-close');head.append(closer);native.append(head,target);body.append(native);
+      const sources=element('section','','source-panel');sources.setAttribute('role','tabpanel');sources.setAttribute('data-pvs-section','sources');first.content.append(sources);
+      const tab=element('button');tab.setAttribute('aria-controls','source-panel');head.append(tab);
+      let selected=0;tab.addEventListener('click',()=>selected++);
+      first.summary.addEventListener('click',()=>{target.append(first.content);native.showModal();});
+      closer.addEventListener('click',()=>{first.details.append(first.content);native.close();});
+      first.summary.click();await flush();native.scrollTop=177;
+      const pick=native.querySelector('.pvs-save-setup');assert.ok(pick);pick.click();await flush();
+      assert.equal(native.open,false,'only one modal owner at a time');assert.equal(saveDialog().open,true);
+      choose().click();await flush();buttons()[0].click();await flush();
+      assert.equal(native.open,true);assert.equal(native.contains(first.content),true);
+      assert.equal(native.scrollTop,177);assert.equal(selected,1);
+      assert.equal(document.activeElement,native.querySelector('.pvs-save-setup'));
+    """)
+
+
+def test_dense_table_uses_the_same_exact_inert_source_and_returns_its_own_control():
+    run(r"""
+      const wrap=element('div','','us-stocktable-wrap'),tbody=element('tbody'),row=element('tr'),cell=element('td');
+      const link=element('a','stf-tkr');link.setAttribute('href','stock.html#FLS');
+      const detail=element('details','pv-setup-inline');detail.setAttribute('data-setup-ticker','FLS');
+      const holder=element('template','pvs-body-source');holder.content=element('fragment');holder.content.append(element('div','pv-setup-body'));
+      detail.append(element('summary'),holder);cell.append(link,detail);row.append(cell);tbody.append(row);wrap.append(tbody);panel.append(wrap);
+      await flush();const pick=cell.querySelector('.pvs-save-pick');assert.ok(pick);pick.click();await flush();
+      choose().click();await flush();assert.equal(state(),'saved');buttons()[0].click();await flush();
+      assert.equal(document.activeElement,pick);assert.equal(holder.content.children.length,1);
+    """)
+
+
+@pytest.mark.parametrize('answer,expected', [('[]', 'empty'), ('null', 'unavailable')])
+def test_missing_lists_cannot_implicitly_create_or_save(answer, expected):
+    run("WatchStore.lists.refresh=()=>Promise.resolve(" + answer + r""");
+      first.row.querySelector('.pvs-save-pick').click();await flush();
+      assert.equal(state(),""" + json.dumps(expected) + r""");assert.equal(writes,0);
+    """)
+
+
+def test_dashboard_has_production_checked_host_and_both_assets_only_in_stocks_mode():
+    from tests.test_dashboard_template_render import _base_vm, _env
+    from bs4 import BeautifulSoup
+    for mode in ('stocks', 'macro'):
+        page = BeautifulSoup(_env().get_template('dashboard.html.j2').render(**_base_vm(), mode=mode), 'html.parser')
+        assert bool(page.select('[data-watchstore-checked-save]')) is (mode == 'stocks')
+        assert bool(page.select('script[src="prophet_save.js"]')) is (mode == 'stocks')
+        assert bool(page.select('link[href="prophet_save.css"]')) is (mode == 'stocks')
+        if mode == 'stocks':
+            scripts = [s.get('src') for s in page.select('script[src]')]
+            assert scripts.index('theme.js') < scripts.index('watchstore.js') < scripts.index('prophet_save.js')
+
+
+def test_static_copy_includes_the_new_production_assets():
+    import ast
+    source = ast.parse((ROOT / 'scripts/build_site.py').read_text())
+    assets = next(n.iter for n in ast.walk(source) if isinstance(n, ast.For)
+                  and isinstance(n.target, ast.Name) and n.target.id == 'asset'
+                  and isinstance(n.iter, ast.Tuple) and any(isinstance(e, ast.Constant) and e.value == 'watchstore.js' for e in n.iter.elts))
+    assert {'prophet_save.js', 'prophet_save.css'} <= {e.value for e in assets.elts if isinstance(e, ast.Constant)}
+
+
+@pytest.mark.parametrize('rich', [True, False])
+def test_real_production_card_keeps_save_visible_above_the_stock_link(rich):
+    """Real rich/footer and legacy/full-card-link markup, actual Save mount.
+
+    This pins the stacking/source contract rather than inventing a browser hit
+    test: the parent still proves actual pointer activation in original Chrome.
+    In particular, moving Save into closed details content must fail here.
+    """
+    import re
+    from bs4 import BeautifulSoup, Tag
+    from tests.test_dashboard_template_render import _env
+    if rich:
+        from tests.test_prophet_opportunity_integration import _render, _source
+        card = _render([_source(ticker='FLS')]).select_one('.pvcard')
+        assert card.select_one('.po-footer'), 'the real native rich footer exists'
+    else:
+        html = _env().get_template('_prophet_card.html.j2').module.pv_card({
+            'tk': 'FLS', 'href': 'stock.html#FLS', 'verb': 'wait', 'name': 'Flowserve',
+            'setup_detail': '<div class="pv-setup-body">Original source</div>',
+        })
+        card = BeautifulSoup(str(html), 'html.parser').select_one('.pvcard')
+        assert not card.select_one('.po-footer')
+    def tree(tag):
+        return {'tag': tag.name, 'attrs': {k: ' '.join(v) if isinstance(v, list) else v
+                                         for k, v in tag.attrs.items()},
+                'children': [tree(c) for c in tag.children if isinstance(c, Tag)]}
+    run(r"""
+      function original(spec){const e=element(spec.tag);Object.entries(spec.attrs).forEach(([k,v])=>e.setAttribute(k,v));
+        spec.children.forEach(c=>e.append(original(c)));return e;}
+      first.row.remove();second.row.remove();
+      const row=original(""" + json.dumps(tree(card)) + r""");grid.append(row);await flush();
+      const pick=row.querySelector('.pvs-save-pick');assert.ok(pick);
+      assert.equal(pick.closest('details'),null,'a closed details body hides Save');
+      assert.ok(pick.getClientRects().length,'Save remains visible with source details closed');
+      pick.click();await flush();assert.equal(state(),'choose');assert.equal(writes,0);
+    """)
+    css = (ROOT / 'templates/prophet_save.css').read_text()
+    rule = re.search(r'\.pvs-save-pick\s*\{([^}]+)\}', css)
+    assert rule and 'position:relative' in rule[1]
+    assert int(re.search(r'z-index\s*:\s*(\d+)', rule[1])[1]) > 4
+    assert 'box-sizing:border-box' in css, 'preserve the verified mobile dialog containment'

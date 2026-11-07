@@ -1,0 +1,198 @@
+diff --git a/site/prophet_save.js b/site/prophet_save.js
+index f66358674ef4..b8a982152be2 100644
+--- a/site/prophet_save.js
++++ b/site/prophet_save.js
+@@ -77,10 +77,23 @@
+       '保存到 ' + hold.listName + ' 的操作尚未确认，可只读检查列表，不会再次保存。');
+     var inspect = button('Check account list', '检查账户列表', function () {
+       if (!current(origin) || inspect.disabled) return; inspect.disabled = true;
+-      origin.store.symbols.inspect(hold.listId, origin.entry.ticker).then(function (read) {
++      // A user click may repeat an authorized read, never the uncertain Save.
++      Promise.resolve().then(function () {
++        if (!current(origin)) return null;
++        return origin.store.symbols.inspect(hold.listId, origin.entry.ticker);
++      }).then(function (read) {
+         if (!current(origin)) return;
+         if (read && read.state === 'present') message('observed', 'Your account currently contains this ticker. This read does not prove the earlier save.', '账户列表目前包含此代码；本次读取不证明此前保存已完成。');
+-        else message('uncertain', 'Membership is not confirmed. No new save or retry was made.', '尚未确认列表成员关系，未重新保存或重试。');
++        else {
++          message('uncertain', 'Membership is not confirmed. No new save or retry was made.', '尚未确认列表成员关系，未重新保存或重试。');
++          inspect.disabled = !(read && read.readRetryAllowed === true);
++        }
++      }).catch(function () {
++        if (!current(origin)) return;
++        // Unexpected owner failures carry no permission to retry the read.
++        inspect.disabled = true;
++        message('uncertain', 'Membership could not be checked. No new save or retry was made.',
++          '无法检查列表成员关系，未重新保存或重试。');
+       });
+     }); content.append(inspect, watchlists());
+   }
+diff --git a/templates/prophet_save.js b/templates/prophet_save.js
+index f66358674ef4..b8a982152be2 100644
+--- a/templates/prophet_save.js
++++ b/templates/prophet_save.js
+@@ -77,10 +77,23 @@
+       '保存到 ' + hold.listName + ' 的操作尚未确认，可只读检查列表，不会再次保存。');
+     var inspect = button('Check account list', '检查账户列表', function () {
+       if (!current(origin) || inspect.disabled) return; inspect.disabled = true;
+-      origin.store.symbols.inspect(hold.listId, origin.entry.ticker).then(function (read) {
++      // A user click may repeat an authorized read, never the uncertain Save.
++      Promise.resolve().then(function () {
++        if (!current(origin)) return null;
++        return origin.store.symbols.inspect(hold.listId, origin.entry.ticker);
++      }).then(function (read) {
+         if (!current(origin)) return;
+         if (read && read.state === 'present') message('observed', 'Your account currently contains this ticker. This read does not prove the earlier save.', '账户列表目前包含此代码；本次读取不证明此前保存已完成。');
+-        else message('uncertain', 'Membership is not confirmed. No new save or retry was made.', '尚未确认列表成员关系，未重新保存或重试。');
++        else {
++          message('uncertain', 'Membership is not confirmed. No new save or retry was made.', '尚未确认列表成员关系，未重新保存或重试。');
++          inspect.disabled = !(read && read.readRetryAllowed === true);
++        }
++      }).catch(function () {
++        if (!current(origin)) return;
++        // Unexpected owner failures carry no permission to retry the read.
++        inspect.disabled = true;
++        message('uncertain', 'Membership could not be checked. No new save or retry was made.',
++          '无法检查列表成员关系，未重新保存或重试。');
+       });
+     }); content.append(inspect, watchlists());
+   }
+diff --git a/tests/test_prophet_save_composition.py b/tests/test_prophet_save_composition.py
+index 9e13a93940f9..8fd1dd8ef5b7 100644
+--- a/tests/test_prophet_save_composition.py
++++ b/tests/test_prophet_save_composition.py
+@@ -135,6 +135,133 @@ def test_waiting_double_click_and_uncertain_membership_read_never_retry():
+     """)
+ 
+ 
++
++@pytest.mark.parametrize('read_state', ['not-confirmed', 'unavailable'])
++def test_uncertain_inspection_rechecks_only_reads_when_owner_allows(read_state):
++    """A recoverable observation permits another user-clicked read, never a Save."""
++    run("const READ_STATE=" + json.dumps(read_state) + r"""
++      saveResult={state:'uncertain'};
++      WatchStore.symbols.inspect=()=>{inspection++;return Promise.resolve({
++        state:READ_STATE,membership:'unknown',readRetryAllowed:true,writeRetryAllowed:false});};
++      first.row.querySelector('.pvs-save-pick').click();await flush();
++      choose().click();await flush();assert.equal(state(),'uncertain');
++      const inspect=buttons().find(b=>b.textContent.includes('Check account list'));
++      inspect.click();assert.equal(inspect.disabled,true);await flush();
++      assert.equal(inspection,1);assert.equal(inspect.disabled,false);
++      await flush();assert.equal(inspection,1,'no automatic read retry');
++      inspect.click();await flush();
++      assert.equal(inspection,2);assert.equal(writes,1);
++      assert.equal(state(),'uncertain');
++      assert.equal(buttons().some(b=>b.textContent.includes('Save ticker')),false);
++      buttons()[0].click();first.row.querySelector('.pvs-save-pick').click();await flush();
++      assert.equal(state(),'uncertain');assert.equal(writes,1);
++    """)
++
++
++@pytest.mark.parametrize('read_state,permission', [
++    ('invalid', False), ('no-session', False), ('stale-session', False),
++    ('not-confirmed', None), ('unavailable', 'true'),
++])
++def test_uncertain_inspection_requires_explicit_boolean_read_permission(read_state, permission):
++    """Absent, denied or malformed capabilities must not enable another read."""
++    run("const READ_STATE=" + json.dumps(read_state) + ";const PERMISSION="
++        + json.dumps(permission) + r""";
++      saveResult={state:'uncertain'};
++      WatchStore.symbols.inspect=()=>{inspection++;
++        const answer={state:READ_STATE,membership:'unknown',writeRetryAllowed:false};
++        if(PERMISSION!==null)answer.readRetryAllowed=PERMISSION;
++        return Promise.resolve(answer);};
++      first.row.querySelector('.pvs-save-pick').click();await flush();
++      choose().click();await flush();
++      const inspect=buttons().find(b=>b.textContent.includes('Check account list'));
++      inspect.click();await flush();assert.equal(inspect.disabled,true);
++      inspect.click();await flush();
++      assert.equal(inspection,1);assert.equal(writes,1);
++      assert.equal(state(),'uncertain');
++      assert.equal(buttons().some(b=>b.textContent.includes('Save ticker')),false);
++    """)
++
++
++def test_uncertain_inspection_observed_membership_never_confirms_the_earlier_save():
++    """A later present observation remains separate from the uncertain write."""
++    run(r"""
++      saveResult={state:'uncertain'};
++      WatchStore.symbols.inspect=()=>{inspection++;return Promise.resolve({
++        state:inspection===1?'unavailable':'present',readRetryAllowed:true,writeRetryAllowed:false});};
++      first.row.querySelector('.pvs-save-pick').click();await flush();
++      choose().click();await flush();
++      const inspect=buttons().find(b=>b.textContent.includes('Check account list'));
++      inspect.click();await flush();inspect.click();await flush();
++      assert.equal(inspection,2);assert.equal(state(),'observed');
++      assert.equal(inspect.disabled,true);
++      assert.equal(saveDialog().textContent.includes('does not prove the earlier save'),true);
++      assert.equal(writes,1);
++      buttons()[0].click();first.row.querySelector('.pvs-save-pick').click();await flush();
++      assert.equal(state(),'uncertain');assert.equal(writes,1);
++    """)
++
++
++@pytest.mark.parametrize('fault', ['rejected', 'sync-throw'])
++def test_uncertain_inspection_unexpected_fault_is_redacted_and_fails_closed(fault):
++    """Unexpected owner failure is not an implicit read or write retry grant."""
++    run("const FAULT=" + json.dumps(fault) + r""";
++      saveResult={state:'uncertain'};
++      WatchStore.symbols.inspect=()=>{inspection++;
++        if(FAULT==='sync-throw')throw Error('private-provider-detail');
++        return Promise.reject(Error('private-provider-detail'));};
++      first.row.querySelector('.pvs-save-pick').click();await flush();
++      choose().click();await flush();
++      const inspect=buttons().find(b=>b.textContent.includes('Check account list'));
++      inspect.click();await flush();
++      assert.equal(state(),'uncertain');assert.equal(inspect.disabled,true);
++      assert.equal(saveDialog().textContent.includes('Membership could not be checked'),true);
++      assert.equal(saveDialog().textContent.includes('private-provider-detail'),false);
++      inspect.click();await flush();assert.equal(inspection,1);assert.equal(writes,1);
++      assert.equal(buttons().some(b=>b.textContent.includes('Save ticker')),false);
++    """)
++
++
++@pytest.mark.parametrize('same_user', [False, True])
++def test_uncertain_inspection_rechecks_generation_before_invoking_read(same_user):
++    """An auth transition before the queued read cannot start an old-account read."""
++    run("const SAME_USER=" + json.dumps(same_user) + r""";
++      saveResult={state:'uncertain'};
++      WatchStore.symbols.inspect=()=>{inspection++;return Promise.resolve({
++        state:'present',readRetryAllowed:true,writeRetryAllowed:false});};
++      first.row.querySelector('.pvs-save-pick').click();await flush();
++      choose().click();await flush();
++      buttons().find(b=>b.textContent.includes('Check account list')).click();
++      sess={state:'ready',userId:SAME_USER?'u1':'u2',generation:2};ev('mdx-auth');
++      await flush();
++      assert.equal(inspection,0);assert.equal(writes,1);
++      assert.equal(saveDialog().open,false);
++    """)
++
++
++@pytest.mark.parametrize('same_user', [False, True])
++@pytest.mark.parametrize('settlement', ['present', 'rejected'])
++def test_uncertain_inspection_late_settlement_cannot_change_replacement_dialog(same_user, settlement):
++    """Old read completions cannot cross a new account generation or dialog."""
++    run("const SAME_USER=" + json.dumps(same_user) + ";const SETTLEMENT="
++        + json.dumps(settlement) + r""";
++      saveResult={state:'uncertain'};let finish;
++      WatchStore.symbols.inspect=()=>{inspection++;return new Promise((resolve,reject)=>{
++        finish=()=>SETTLEMENT==='rejected'?reject(Error('private-provider-detail')):
++          resolve({state:'present',readRetryAllowed:true,writeRetryAllowed:false});});};
++      first.row.querySelector('.pvs-save-pick').click();await flush();
++      choose().click();await flush();
++      buttons().find(b=>b.textContent.includes('Check account list')).click();await flush();
++      assert.equal(inspection,1);
++      sess={state:'ready',userId:SAME_USER?'u1':'u2',generation:2};ev('mdx-auth');await flush();
++      first.row.querySelector('.pvs-save-pick').click();await flush();
++      const expected=SAME_USER?'uncertain':'choose';assert.equal(state(),expected);
++      finish();await flush();
++      assert.equal(state(),expected);assert.equal(writes,1);
++      assert.equal(saveDialog().textContent.includes('private-provider-detail'),false);
++      assert.equal(saveDialog().textContent.includes('Your account currently contains'),false);
++    """)
++
++
+ @pytest.mark.parametrize('mutation', ["first.link.setAttribute('href','stock.html#OTHER');",
+                                       "panel.setAttribute('data-board-asof','2026-11-04');",
+                                       "first.row.classList.add('mx-tier-hidden');",

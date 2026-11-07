@@ -1,0 +1,4 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/prophet_save.css
+manifest: mockups/evidence/prophet-opportunity-workspace/save-visual-20261104-fabric/manifest.json

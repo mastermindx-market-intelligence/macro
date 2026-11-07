@@ -1,0 +1,11 @@
+{
+  "source_commit": "9dbffa55cb1dbae715be6524adf813e81908a558",
+  "actual_local_renderer": "e855; Research source/assets unchanged by S9",
+  "payload_sha256": "bdbc60147861c8b7aa31d8d9700df406c6d1e5e5c36f597da53036f6a14280b0",
+  "payload_as_of": "2026-11-05",
+  "payload_rows": 2,
+  "expected_sha256": "9c29acb89665a2bfe03baed963b1b4f9ddcf0718fe4f92926c2e30a387d58eca",
+  "before_sha256": "3d726159292f3b68bb4b9eca26013ee1c2406ef4db1cf3ecadc74fe7dce8054d",
+  "diff_lines": 11,
+  "scope": "READONLY canonical bake of exact existing committed payload; no build_payload/_load_stockdata/render/main/producer refresh or source-data mutation"
+}

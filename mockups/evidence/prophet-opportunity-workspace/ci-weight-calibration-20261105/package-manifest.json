@@ -1,0 +1,29 @@
+{
+  "files": {
+    "README.md": {
+      "sha256": "68acfb01006797124feb9d113a77fa6b07efec4f3a12609d078936b7a7ed2fb9",
+      "bytes": 2526
+    },
+    "calibration.diff.patch": {
+      "sha256": "ed0e6f8f26f06191302a760bb4769d329700a1902ddc3cb4bb8b46fd18c0ae8f",
+      "bytes": 2623
+    },
+    "paired-measurement.json": {
+      "sha256": "bafd5037a9560b933634237a10e6555abd2bcdecc9e7b1bb7c2582ba987d4266",
+      "bytes": 7693
+    },
+    "producer-readback.txt": {
+      "sha256": "628368d3f29853843ca0d33d110fe170d28424c92648c55d8f4200e9958f4c95",
+      "bytes": 4267
+    },
+    "validation.json": {
+      "sha256": "097fdd823442fff933f381a2800dc2f7233e2a911aacc11101abffd06b72597d",
+      "bytes": 629
+    },
+    "validation.log.txt": {
+      "sha256": "274118755d48fe8b1be331ab659215e6d0ccea034381c293e28c9585e2f1d230",
+      "bytes": 109
+    }
+  },
+  "excludes_self": true
+}

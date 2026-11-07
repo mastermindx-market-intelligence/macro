@@ -1,0 +1,119 @@
+{
+  "files": {
+    "CONTINUATION.md": {
+      "sha256": "3bce04b5cdbba9bc321f20c5be30a61b1562b18bf72c64e03942a3963c4a691e",
+      "bytes": 7404
+    },
+    "README.md": {
+      "sha256": "c3c8cbc3643add618679033f4b3fb15d97a7c7976e0581335f173a7caf760130",
+      "bytes": 5181
+    },
+    "accepted-source-binding.json": {
+      "sha256": "50d049c677a178b2d31175c5c38474f8afd9e9b27b62e97185e66aea0b620d10",
+      "bytes": 2350
+    },
+    "copied-receipt-map.json": {
+      "sha256": "04214433f4a4b96876a6e2ad168a9a21c31997ddce0ce5c31e92973d8d889e76",
+      "bytes": 2486
+    },
+    "custody-observation.json": {
+      "sha256": "9dd47e8db89929c5bdd62c3206b86c25f95226db288ad0c1e102fdf039844a01",
+      "bytes": 818
+    },
+    "predecessor-ci-plan-observation.json": {
+      "sha256": "0f5d0daf19fabd41ac95d65560805ffb2df5fabb65caf20a770a65ff460fecbb",
+      "bytes": 949
+    },
+    "predecessor-contract-delta-excerpt.txt": {
+      "sha256": "216d7834a9dd8979daab620f18e850f97f802e31afc387a79f22357a0d2f57ed",
+      "bytes": 2757
+    },
+    "registration-map.json": {
+      "sha256": "5ab4155ce0b3d0b27ba95046b7cbb1aaf879c765f3d6f7cb5f3982e518f51101",
+      "bytes": 1676
+    },
+    "registration.diff.patch": {
+      "sha256": "85f228795cb0065cdd00386f2192e7d0caefc2c62816c54e460ba59ef9286ad9",
+      "bytes": 4750
+    },
+    "session-bridge-observation.json": {
+      "sha256": "a20c411019ad9c840b14f3f567cfc7a04a89f56b725f62959118e7f6ec93f6f5",
+      "bytes": 982
+    },
+    "validation/additional-suites-receipt.json": {
+      "sha256": "6d8ee51176d0c3c0097e114b3e42d5b1d3371fd86988f2cd255ec28d1f9f0758",
+      "bytes": 877
+    },
+    "validation/additional-suites.log.txt": {
+      "sha256": "68a97d038eeb10bf27dd125cfe97c550b04277d4cad4af397b37b3dbcb47dca5",
+      "bytes": 99
+    },
+    "validation/final-manifest.log.txt": {
+      "sha256": "5ee2cb7cb31fbe151edf387be862003620b6a7d8e66fe642a54d8c64a12ae536",
+      "bytes": 320
+    },
+    "validation/final-receipt.json": {
+      "sha256": "cb4f90b5b20e894ad015b62eb0245781219b6d8bdf857e174f59166d28207c5e",
+      "bytes": 3489
+    },
+    "validation/final-routing-and-exclusive-closure.log.txt": {
+      "sha256": "ff8342325a17108970850841fdf98667395c4b4ac999f0b396e1e9e53c47e64d",
+      "bytes": 2537
+    },
+    "validation/final-trigger-closure.log.txt": {
+      "sha256": "033abd3827c6585effe6c704ef16f2d04ea6257eb4101c2f33f4ad9ee53aca78",
+      "bytes": 306
+    },
+    "validation/final-unrun-census.log.txt": {
+      "sha256": "5bcccb3b22babd5737cec8467dfb52bb2ca449ef8259c6617113bebb5a33be1c",
+      "bytes": 34790
+    },
+    "validation/initial-hosted-step.log.txt": {
+      "sha256": "6319e4eded6cd9a31a9d63dfc1960351a601d62a96f9be682fa5270a985c8019",
+      "bytes": 446
+    },
+    "validation/initial-manifest.log.txt": {
+      "sha256": "4e7cd43bc483843ceb52d909241b9cb59afac27cfc71ac151dc2c2170f737afe",
+      "bytes": 320
+    },
+    "validation/initial-receipt.json": {
+      "sha256": "b96638f14aad476026b7e989d911cc8ee2887bde07f70b74173508caff920cda",
+      "bytes": 3076
+    },
+    "validation/initial-routing.log.txt": {
+      "sha256": "63261001558d12c458de8220a9e238efd3e4dba39beae01a938ddee00f516094",
+      "bytes": 544
+    },
+    "validation/initial-trigger-closure.log.txt": {
+      "sha256": "e154206f822c4e3653e49e4515cd93220ea8d7ef1e9eeb1340de227936efa90b",
+      "bytes": 306
+    },
+    "validation/initial-unrun-census.log.txt": {
+      "sha256": "63519a8c32b28eff01a4f7702e171bcf3d871068a0ef24b2988d73a30d9275a2",
+      "bytes": 35811
+    },
+    "validation/scope-gap-manifest.log.txt": {
+      "sha256": "5ee2cb7cb31fbe151edf387be862003620b6a7d8e66fe642a54d8c64a12ae536",
+      "bytes": 320
+    },
+    "validation/scope-gap-receipt.json": {
+      "sha256": "588ec4b6ca2a96a04455509b446780128cfb719c0e602d10971e79de59709aa5",
+      "bytes": 3417
+    },
+    "validation/scope-gap-routing-and-exclusive-closure.log.txt": {
+      "sha256": "e8015b9b1dfb6650d46fc49835f4360246b4ace1b544b15be6a3e059e751bf9a",
+      "bytes": 2478
+    },
+    "validation/scope-gap-trigger-closure.log.txt": {
+      "sha256": "033abd3827c6585effe6c704ef16f2d04ea6257eb4101c2f33f4ad9ee53aca78",
+      "bytes": 306
+    },
+    "validation/scope-gap-unrun-census.log.txt": {
+      "sha256": "5bcccb3b22babd5737cec8467dfb52bb2ca449ef8259c6617113bebb5a33be1c",
+      "bytes": 34790
+    }
+  },
+  "file_count": 28,
+  "bytes": 153585,
+  "excludes_self": true
+}
