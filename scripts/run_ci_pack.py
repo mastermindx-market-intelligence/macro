@@ -3700,40 +3700,37 @@ def prepare_canonical_main(
                         or not re.fullmatch(r"[0-9a-f]{40}", fields[2])):
                     raise RuntimeError("canonical-main required frozen object unavailable")
                 required_blobs.add(fields[2])
-                if comparison_paths is None:
-                    required("cat-file", "-e", f"{fields[2]}^{{blob}}")
-        if comparison_paths is None:
-            return
 
-        # Tree-only inventory: --no-renames avoids content reads while the
-        # historical blobs may still be absent from a promisor checkout.
-        raw_diff = required("diff", "--raw", "--no-renames", "--no-abbrev",
-                            "--no-ext-diff", "--no-textconv", "-z",
-                            canonical_base, tested_tree_sha, "--", *comparison_paths)
-        entries = raw_diff.split("\0")
-        if entries == [""]:
-            entries = []
-        elif entries[-1] == "":
-            entries.pop()
-        else:
-            raise RuntimeError("canonical-main comparison inventory is incomplete")
-        if len(entries) % 2:
-            raise RuntimeError("canonical-main comparison inventory is malformed")
-        for index in range(0, len(entries), 2):
-            fields = entries[index].split()
-            if (len(fields) != 5 or not fields[0].startswith(":")
-                    or not entries[index + 1]):
-                raise RuntimeError("canonical-main comparison entry is malformed")
-            for mode, oid in ((fields[0][1:], fields[2]), (fields[1], fields[3])):
-                if not re.fullmatch(r"[0-9a-f]{40}", oid):
-                    raise RuntimeError("canonical-main comparison identity is malformed")
-                if mode == "000000" and oid == "0" * 40:
-                    continue
-                if mode == "160000" and oid != "0" * 40:
-                    continue  # gitlink diffs name commits, not local blob contents
-                if mode not in {"100644", "100755", "120000"} or oid == "0" * 40:
-                    raise RuntimeError("canonical-main comparison mode is unsupported")
-                required_blobs.add(oid)
+        if comparison_paths is not None:
+            # Tree-only inventory: --no-renames avoids content reads while the
+            # historical blobs may still be absent from a promisor checkout.
+            raw_diff = required("diff", "--raw", "--no-renames", "--no-abbrev",
+                                "--no-ext-diff", "--no-textconv", "-z",
+                                canonical_base, tested_tree_sha, "--", *comparison_paths)
+            entries = raw_diff.split("\0")
+            if entries == [""]:
+                entries = []
+            elif entries[-1] == "":
+                entries.pop()
+            else:
+                raise RuntimeError("canonical-main comparison inventory is incomplete")
+            if len(entries) % 2:
+                raise RuntimeError("canonical-main comparison inventory is malformed")
+            for index in range(0, len(entries), 2):
+                fields = entries[index].split()
+                if (len(fields) != 5 or not fields[0].startswith(":")
+                        or not entries[index + 1]):
+                    raise RuntimeError("canonical-main comparison entry is malformed")
+                for mode, oid in ((fields[0][1:], fields[2]), (fields[1], fields[3])):
+                    if not re.fullmatch(r"[0-9a-f]{40}", oid):
+                        raise RuntimeError("canonical-main comparison identity is malformed")
+                    if mode == "000000" and oid == "0" * 40:
+                        continue
+                    if mode == "160000" and oid != "0" * 40:
+                        continue  # gitlink diffs name commits, not local blob contents
+                    if mode not in {"100644", "100755", "120000"} or oid == "0" * 40:
+                        raise RuntimeError("canonical-main comparison mode is unsupported")
+                    required_blobs.add(oid)
 
         ordered = sorted(required_blobs)
         def missing_blobs() -> list[str]:
@@ -3767,6 +3764,8 @@ def prepare_canonical_main(
             if commit("FETCH_HEAD") != canonical_sha:
                 raise RuntimeError("canonical-main comparison acquisition changed FETCH_HEAD")
             if missing_blobs():
+                if comparison_paths is None:
+                    raise RuntimeError("canonical-main required local object unavailable after explicit acquisition")
                 raise RuntimeError("canonical-main comparison blobs remained unavailable")
 
     for depth in _EXACT_TESTED_TREE_DEPTHS:
