@@ -1,0 +1,242 @@
+[
+  {
+    "path": "evidence/C00_readme.jpg",
+    "sha256": "31a0ff4a2b47a4d15418749cbb66856d2f8d425798eff6e64ae81f1923e357e5",
+    "bytes": 234684,
+    "decode_valid": true,
+    "dimensions": [
+      1440,
+      1288
+    ]
+  },
+  {
+    "path": "evidence/C01_plan_desktop.jpg",
+    "sha256": "7a75de4f5db896502ad1b9cd2becff5653f00d07b6db1e25aeeb0ad4e70a3c1a",
+    "bytes": 155798,
+    "decode_valid": true,
+    "dimensions": [
+      1440,
+      1152
+    ]
+  },
+  {
+    "path": "evidence/C02_compare.jpg",
+    "sha256": "da4a1f3d984dd7b6b050cc76f120fabe63a4aef634e976a6c76930212ea47130",
+    "bytes": 142350,
+    "decode_valid": true,
+    "dimensions": [
+      1440,
+      1100
+    ]
+  },
+  {
+    "path": "evidence/C03_revisit.jpg",
+    "sha256": "18a91e0d90f266f4541fc20cf254d6bfa0ee7607b11fe7b4390191b3b20115c1",
+    "bytes": 121818,
+    "decode_valid": true,
+    "dimensions": [
+      1024,
+      1056
+    ]
+  },
+  {
+    "path": "evidence/C04_phone_en.jpg",
+    "sha256": "d098133d5acd999806f4efea1e4132c0f092dffc8d116048e7bdece8a0dc52d5",
+    "bytes": 50843,
+    "decode_valid": true,
+    "dimensions": [
+      390,
+      844
+    ]
+  },
+  {
+    "path": "evidence/C05_phone_zh.jpg",
+    "sha256": "cf98462ddb8a4f3472f13d4b068b025fe1c73e34ab82722fd9a0f91fe65cff00",
+    "bytes": 61596,
+    "decode_valid": true,
+    "dimensions": [
+      320,
+      1220
+    ]
+  },
+  {
+    "path": "evidence/C06_assumptions.jpg",
+    "sha256": "4f2bfd4ee1ed1fa8f7cffe50edc1bd7d5f99da359e5130dde7db96090909450d",
+    "bytes": 75736,
+    "decode_valid": true,
+    "dimensions": [
+      768,
+      1024
+    ]
+  },
+  {
+    "path": "evidence/C07_save_watch_states.jpg",
+    "sha256": "db287100585413e143d4fcc464397f1442c27934d8d5f5631c440fad85f36a10",
+    "bytes": 330451,
+    "decode_valid": true,
+    "dimensions": [
+      1440,
+      1944
+    ]
+  },
+  {
+    "path": "evidence/C08_research_states.jpg",
+    "sha256": "b20b0dc26675021d597c5cc5642effb335ca5f55ee78b4c70fcb7bc45acc7ded",
+    "bytes": 186069,
+    "decode_valid": true,
+    "dimensions": [
+      1440,
+      1200
+    ]
+  },
+  {
+    "path": "evidence/C09_exact_leg_editor.jpg",
+    "sha256": "222e483dbaec4a25aab8bb0d557ddb79cbb4e24dc94b443283bd5c14d831cdfa",
+    "bytes": 49167,
+    "decode_valid": true,
+    "dimensions": [
+      390,
+      844
+    ]
+  },
+  {
+    "path": "evidence/C10_research_editor.jpg",
+    "sha256": "8981906e6e0bdc54ef79089625d5d7e8e2530f196de6aaff5f4b3cfd7db7938f",
+    "bytes": 38859,
+    "decode_valid": true,
+    "dimensions": [
+      320,
+      844
+    ]
+  },
+  {
+    "path": "evidence/before_compare.jpg",
+    "sha256": "e80611af2dbbf8da2adf9eb4f46ecd39f4477ad5da5d24c842da4ac24f0d4ee3",
+    "bytes": 167235,
+    "decode_valid": true,
+    "dimensions": [
+      1440,
+      1241
+    ]
+  },
+  {
+    "path": "evidence/before_plan_desktop.jpg",
+    "sha256": "7281bac5a0e284f955b8f6ee2a17e5569048f8c5c847c27ca8f9e375b5b528dd",
+    "bytes": 174590,
+    "decode_valid": true,
+    "dimensions": [
+      1440,
+      940
+    ]
+  },
+  {
+    "path": "evidence/before_plan_phone.jpg",
+    "sha256": "8ba8b9740c97b0d07816924e1a203906bc3893801d0ab238ee3580b4f31b6385",
+    "bytes": 93074,
+    "decode_valid": true,
+    "dimensions": [
+      263,
+      2000
+    ]
+  },
+  {
+    "path": "evidence/before_save_verification.jpg",
+    "sha256": "c3ecd3a2421f162c25d5e8361914522a2b43624b1d10feb6904731d44e4e8fba",
+    "bytes": 191907,
+    "decode_valid": true,
+    "dimensions": [
+      1440,
+      981
+    ]
+  },
+  {
+    "path": "evidence/browser_access_unavailable.png",
+    "sha256": "cd2da474472bb186394bb358c87a01fce5185dd7556f460894f720f2052fe06a",
+    "bytes": 48913,
+    "decode_valid": true,
+    "dimensions": [
+      1585,
+      1180
+    ]
+  },
+  {
+    "path": "evidence/review_pass1/C01_plan_desktop.jpg",
+    "sha256": "23d4c3e2a20848948d20bf7c7cb4dc84b194dba66cab1e1794202dd265d760e9",
+    "bytes": 138615,
+    "decode_valid": true,
+    "dimensions": [
+      1440,
+      1040
+    ]
+  },
+  {
+    "path": "evidence/review_pass1/C02_compare.jpg",
+    "sha256": "e6b566128cf7e9d4c4fa0c734d7323220026a6204a40acbf15cb642d7eea9954",
+    "bytes": 126061,
+    "decode_valid": true,
+    "dimensions": [
+      1440,
+      1040
+    ]
+  },
+  {
+    "path": "evidence/review_pass1/C03_revisit.jpg",
+    "sha256": "395a4f8fe4f7b66a677b4af206f96d2cef27b7f06a3873400686cdf07ab49b86",
+    "bytes": 116169,
+    "decode_valid": true,
+    "dimensions": [
+      1024,
+      1000
+    ]
+  },
+  {
+    "path": "evidence/review_pass1/C04_phone_en.jpg",
+    "sha256": "d610f2fa7ff69da923c3487d4c5f82693146770e43ac608c0012cd8a13ec9896",
+    "bytes": 46139,
+    "decode_valid": true,
+    "dimensions": [
+      390,
+      844
+    ]
+  },
+  {
+    "path": "evidence/review_pass1/C05_phone_zh.jpg",
+    "sha256": "3dd57090629dfb43a634796f0c091d6d6a5c56a4d7af6df9897803e3577a5aba",
+    "bytes": 58221,
+    "decode_valid": true,
+    "dimensions": [
+      320,
+      1150
+    ]
+  },
+  {
+    "path": "evidence/review_pass1/C06_assumptions.jpg",
+    "sha256": "5dbde5e83cc8a354f229d144bd790d78c7e858e928cb91483efeaa1731de44fe",
+    "bytes": 71347,
+    "decode_valid": true,
+    "dimensions": [
+      768,
+      1024
+    ]
+  },
+  {
+    "path": "evidence/review_pass2/C07_save_watch_states.jpg",
+    "sha256": "d44728236867e16837859fe2ed015816db3c66e5d46b4f4914f703ff95c02d40",
+    "bytes": 322324,
+    "decode_valid": true,
+    "dimensions": [
+      1440,
+      1944
+    ]
+  },
+  {
+    "path": "evidence/review_pass2/C08_research_states.jpg",
+    "sha256": "89de161a36971240ac1f04afc668f724b3e7ec40c631803561796028a261832d",
+    "bytes": 183725,
+    "decode_valid": true,
+    "dimensions": [
+      1440,
+      1200
+    ]
+  }
+]

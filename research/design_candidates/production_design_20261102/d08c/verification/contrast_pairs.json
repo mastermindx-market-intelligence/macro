@@ -1,0 +1,107 @@
+{
+  "scope": "14 specified token pairs only; not full rendered accessibility acceptance",
+  "method": "sRGB relative luminance, unrounded threshold comparison",
+  "sources": [
+    "https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html"
+  ],
+  "pairs": [
+    {
+      "pair": "dark_primary",
+      "foreground": "#f3f3f3",
+      "background": "#121212",
+      "ratio": 16.882944788312933,
+      "meets_4_5": true
+    },
+    {
+      "pair": "dark_secondary",
+      "foreground": "#b8b8b8",
+      "background": "#121212",
+      "ratio": 9.443910864031134,
+      "meets_4_5": true
+    },
+    {
+      "pair": "dark_tertiary",
+      "foreground": "#949494",
+      "background": "#121212",
+      "ratio": 6.175655265778037,
+      "meets_4_5": true
+    },
+    {
+      "pair": "dark_link",
+      "foreground": "#a7c9f1",
+      "background": "#121212",
+      "ratio": 10.943965932422566,
+      "meets_4_5": true
+    },
+    {
+      "pair": "dark_loss",
+      "foreground": "#efa6ad",
+      "background": "#121212",
+      "ratio": 9.570277562306693,
+      "meets_4_5": true
+    },
+    {
+      "pair": "dark_gain",
+      "foreground": "#b0d4b9",
+      "background": "#121212",
+      "ratio": 11.564889455891477,
+      "meets_4_5": true
+    },
+    {
+      "pair": "dark_button",
+      "foreground": "#1a1c20",
+      "background": "#c9b99b",
+      "ratio": 8.85252016704006,
+      "meets_4_5": true
+    },
+    {
+      "pair": "light_primary",
+      "foreground": "#1a1c20",
+      "background": "#ffffff",
+      "ratio": 17.060952416536836,
+      "meets_4_5": true
+    },
+    {
+      "pair": "light_secondary",
+      "foreground": "#51555b",
+      "background": "#ffffff",
+      "ratio": 7.499110523775706,
+      "meets_4_5": true
+    },
+    {
+      "pair": "light_tertiary",
+      "foreground": "#5f6368",
+      "background": "#f6f6f3",
+      "ratio": 5.587412704529447,
+      "meets_4_5": true
+    },
+    {
+      "pair": "light_link",
+      "foreground": "#235b8e",
+      "background": "#ffffff",
+      "ratio": 7.098196544783569,
+      "meets_4_5": true
+    },
+    {
+      "pair": "light_button",
+      "foreground": "#ffffff",
+      "background": "#66543b",
+      "ratio": 7.250782846303734,
+      "meets_4_5": true
+    },
+    {
+      "pair": "light_loss",
+      "foreground": "#a62d43",
+      "background": "#ffffff",
+      "ratio": 6.823050600379877,
+      "meets_4_5": true
+    },
+    {
+      "pair": "light_gain",
+      "foreground": "#256341",
+      "background": "#ffffff",
+      "ratio": 7.143513693289242,
+      "meets_4_5": true
+    }
+  ]
+}

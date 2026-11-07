@@ -1,0 +1,46 @@
+{
+  "schema": "d08c.b_to_c_proof_manifest.v1",
+  "scope": "Additive source/proof only; original53-file packet preserved",
+  "member_count": 6,
+  "self_excluded": "MANIFEST.json",
+  "aggregate_method": "SHA256 sorted path + NUL + member SHA256 + LF",
+  "aggregate_sha256": "95cd4d5c3d4cde4c15757a664f5327ffad61172d890f128a6613efbf65e3110f",
+  "members": [
+    {
+      "path": "CONSUMPTION.md",
+      "bytes": 13849,
+      "sha256": "ac4e06d3f493f044b99324ff41102f8569623e56961fbaaefba410f7dfde39e1",
+      "git_blob_sha1": "9007fd32d9aedadd658eae783ad19b96dfbae7a1"
+    },
+    {
+      "path": "RESULT.json",
+      "bytes": 4617,
+      "sha256": "f80d809e35d271c05925be25d2c0836ba7c393c3a8c9aac2351cf8cda5356976",
+      "git_blob_sha1": "48cb39e1440d2cf83bd4b1d8e889dd6e3e6b2e74"
+    },
+    {
+      "path": "SOURCES.json",
+      "bytes": 1353,
+      "sha256": "048b8d371aa74206c15717d8679e1e01563b203141080e4bd94545d3f6ca631b",
+      "git_blob_sha1": "ba2572e0decab893b75900107041da5af2e97953"
+    },
+    {
+      "path": "upstream/optionsContractShortlist.ts",
+      "bytes": 18045,
+      "sha256": "09407f04ac1c3ccbca439d9a30d9097357fabe367d97c0cdbdbe965ceadae3a4",
+      "git_blob_sha1": "8d42da79f3e5bbda9ea236df93845824feb4900d"
+    },
+    {
+      "path": "upstream/optionsPlanDraft.ts",
+      "bytes": 8233,
+      "sha256": "f6b1a182bbf25bc18e2e8db0cf21dff0b7e21299ac6cedddfda4f2e483fc6dc7",
+      "git_blob_sha1": "1b02689501cd26226b61e7a5d3fa8f5868552f7b"
+    },
+    {
+      "path": "verify_boundary.mjs",
+      "bytes": 11534,
+      "sha256": "ad0e948bb595753d1972525e1b2e853ccfce49a083270d83960f1fef6757cc90",
+      "git_blob_sha1": "7bf9314fbdd88ff1dc452ca5d71d350a4a964ca1"
+    }
+  ]
+}
