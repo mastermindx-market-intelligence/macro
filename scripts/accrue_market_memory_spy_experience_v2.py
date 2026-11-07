@@ -317,11 +317,12 @@ def _publish_record_v2(
 
 
 def _read_existing_record_v2(record_path: Path, *, label: str) -> dict[str, Any]:
-    """Bounded, stable, strict read of an incumbent record; links are refused.
+    """Bounded, strict read of an incumbent record; links are refused.
 
     ``_read_canonical_object`` opens with ``O_NOFOLLOW``, requires a regular
-    non-empty file inside its byte bound, re-reads to confirm the size stayed
-    stable, and requires canonical strict JSON.  Empty (zero-byte), malformed,
+    non-empty file inside its byte bound, compares the bounded descriptor read
+    with the initial file size, and requires canonical strict JSON. It does
+    not independently reread or refstat the file. Empty (zero-byte), malformed,
     symlinked, or nonregular incumbents therefore surface as typed store
     errors rather than as idempotence evidence.  Regularity is checked first
     with ``lstat`` so a nonregular incumbent (FIFO, device, directory) is

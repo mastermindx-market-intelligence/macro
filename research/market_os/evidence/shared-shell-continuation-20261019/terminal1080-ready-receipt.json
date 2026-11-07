@@ -1,0 +1,13 @@
+{
+  "ready_at": "2026-10-19T23:54:37.072942+00:00",
+  "head": "5f4965b5668209036842b1ad8b4d0db12b919b5b",
+  "ready_stdout": "",
+  "match_head_commit_supported": true,
+  "readback": {
+    "autoMergeRequest": null,
+    "headRefOid": "5f4965b5668209036842b1ad8b4d0db12b919b5b",
+    "isDraft": false,
+    "labels": [],
+    "state": "OPEN"
+  }
+}

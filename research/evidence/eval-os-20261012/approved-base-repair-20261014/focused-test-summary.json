@@ -1,0 +1,24 @@
+{
+  "at": "2026-10-14T16:05:08.753873+00:00",
+  "head": "7e3157596cdb009445ebe7db6ff3eef6a5b81d96",
+  "results": [
+    {
+      "name": "integrated-focused-tests",
+      "tests": 271,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 23.316
+    },
+    {
+      "name": "integrated-theme-tests",
+      "tests": 12,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 1.289
+    }
+  ],
+  "incoming_17_file_delta": "15/17 unchanged. Updater adds3incomingAPIrestart dependencies. templates/theme.css adds2canonical variables and1comment; no A1 reader names either new variable. Source token-parser controls rerun; final production asset binding still owed.",
+  "legacy_proof_reuse": "Accepted source/UI/science proof reused for unchanged application/test bytes; hosted current-head proof still required."
+}

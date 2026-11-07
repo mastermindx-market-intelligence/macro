@@ -41,7 +41,9 @@ or any other server-side convenience digest is never accepted as a SHA-256.
 from __future__ import annotations
 
 import hashlib
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
+from itertools import islice
 import json
 import re
 from typing import Any, NamedTuple
@@ -553,6 +555,48 @@ def _verify_member(
         raise _Fail("segmenter_identity_mismatch", report_id=report_id)
 
 
+def _parallel_member_reads(store: Any) -> bool:
+    from engine.research_vault.r2_store import R2Store
+
+    candidate = store
+    if type(store).__module__ == "engine.research_vault.qualified_reader":
+        # Preparation has already loaded this module. The lazy exact-type check
+        # avoids an import-time cycle and admits only our corpus-budget wrapper.
+        from engine.research_vault.qualified_reader import _LimitedStore
+        if type(store) is not _LimitedStore:
+            return False
+        candidate = store.store
+    return (type(candidate) is R2Store
+            and getattr(candidate, "_receipt_reads_thread_safe", False) is True)
+
+
+def _verify_members(store, fulltext_mod, store_mod, generation, members):
+    if not _parallel_member_reads(store):
+        for member in members:
+            _verify_member(store, fulltext_mod, store_mod, generation, member)
+        return
+
+    # Admit one finite window at a time, and consume errors in member order.
+    # The next window cannot start until every member in this one succeeded.
+    pool = ThreadPoolExecutor(max_workers=4, thread_name_prefix="rv-verify")
+    pending = []
+    iterator = iter(members)
+    try:
+        while batch := list(islice(iterator, 4)):
+            pending = []
+            for member in batch:
+                pending.append(pool.submit(_verify_member, store, fulltext_mod,
+                                           store_mod, generation, member))
+            for future in pending:
+                future.result()
+            pending = []
+    finally:
+        for future in pending:
+            future.cancel()
+        # No in-flight read survives a failed qualification into another epoch.
+        pool.shutdown(wait=True)
+
+
 def _qualify(
     store: Any,
     catalog_mod: Any,
@@ -628,8 +672,7 @@ def _qualify(
     if FULL_RATIO_NUMERATOR * numerator < FULL_RATIO_DENOMINATOR * denominator:
         raise _Fail("full_ratio_below_threshold")
 
-    for member in members:
-        _verify_member(store, fulltext_mod, store_mod, generation, member)
+    _verify_members(store, fulltext_mod, store_mod, generation, members)
 
     corpus_blob = _read_corpus(store)
     if hashlib.sha256(corpus_blob).hexdigest() != generation["corpus_sha256"]:

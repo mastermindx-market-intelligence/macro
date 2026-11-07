@@ -192,20 +192,67 @@ def _macro_binding(args: argparse.Namespace) -> dict:
             "expected_macro_sha256":args.macro_sha256}
 
 
+def _filing_binding(args: argparse.Namespace) -> dict:
+    if (args.filings is None) != (args.filings_sha256 is None):
+        raise CliError("filing path and exact source digest must be supplied together")
+    if args.filings is None:
+        if getattr(args, "filings_offset", 0) != 0:
+            raise CliError("a filing offset requires the selected filing source")
+        return {}
+    result = {"filings_path": Path(args.filings), "expected_filings_sha256": args.filings_sha256}
+    if hasattr(args, "filings_offset"):
+        result["filings_offset"] = args.filings_offset
+    return result
+
+
 def _run_dossier(args: argparse.Namespace) -> dict:
     _require_archive_module()
     binding=_macro_binding(args)
     return build_daily_dossier(Path(args.archive),args.date,
         expected_manifest_sha256=args.manifest_sha256,
-        reveal_outcomes=args.reveal_outcomes,**binding)
+        reveal_outcomes=args.reveal_outcomes,**binding,**_filing_binding(args))
+
+
+def _run_transcripts_catalog(args: argparse.Namespace) -> dict:
+    from lib.dataos.web_workspace import load_workspace_config, WorkspaceError
+    from lib.dataos.web_history import _transcript_binding
+    from engine.neuralweb.market_memory_history_transcripts import read_transcript_catalog, MAX_METADATA_BYTES
+    from engine.neuralweb.market_memory_history_archive import _bytes, _write_exclusive
+    destination=Path(args.output)
+    if destination.exists():raise FileExistsError(destination)
+    if destination.is_symlink() or any(p.is_symlink() for p in destination.parents):
+        raise CliError('catalogue output cannot traverse symlinks')
+    try:
+        workspace=load_workspace_config(Path(args.config))
+        _transcript_binding(workspace,args.ref,args.expected_version)
+        with workspace._file(args.ref,args.expected_version) as (stream,source):
+            catalog=read_transcript_catalog(stream,file_bytes=source['file_bytes'],
+                source_ref=args.ref,source_version=source['file_version'])
+        # The existing source descriptor guard has closed before output creation.
+    except WorkspaceError as exc:
+        raise CliError(exc.code) from None
+    raw=_bytes(catalog)
+    if len(raw)>MAX_METADATA_BYTES:raise CliError('transcript catalogue exceeds byte budget')
+    _write_exclusive(destination,raw)
+    import hashlib
+    return {'schema':'market_memory.transcript_catalog_receipt.v1','records':len(catalog['rows']),
+        'sha256':hashlib.sha256(raw).hexdigest(),'bytes':len(raw),'source_ref':args.ref,
+        'source_version':args.expected_version,'body_columns_read':False,'source_written':False,
+        'point_in_time_eligible':False,'public_publication':False}
 
 
 def _run_export(args: argparse.Namespace) -> dict:
     _require_archive_module()
     binding=_macro_binding(args)
+    catalog={}
+    if (args.transcripts_catalog is None)!=(args.transcripts_catalog_sha256 is None):
+        raise CliError('transcript catalogue path and exact digest must be supplied together')
+    if args.transcripts_catalog is not None:
+        catalog={'transcripts_catalog_path':Path(args.transcripts_catalog),
+                 'expected_transcripts_catalog_sha256':args.transcripts_catalog_sha256}
     return export_browser(Path(args.archive),Path(args.output),
         expected_manifest_sha256=args.manifest_sha256,
-        include_outcomes=args.include_outcomes,**binding)
+        include_outcomes=args.include_outcomes,**binding,**_filing_binding(args),**catalog)
 
 
 def make_parser() -> argparse.ArgumentParser:
@@ -216,7 +263,7 @@ def make_parser() -> argparse.ArgumentParser:
     commands = parser.add_subparsers(
         title="commands",
         dest="command",
-        metavar="{build,extend,day,inspect,dossier,export}",
+        metavar="{build,extend,day,inspect,dossier,export,transcripts-catalog}",
         required=True,
     )
 
@@ -271,14 +318,25 @@ def make_parser() -> argparse.ArgumentParser:
         consumer.add_argument("--manifest-sha256",required=True,type=_sha256_argument,metavar="EXACT64")
         consumer.add_argument("--macro",metavar="PATH",help="optional retained first-print chronology")
         consumer.add_argument("--macro-sha256",type=_sha256_argument,metavar="EXACT64")
+        consumer.add_argument("--filings",metavar="PATH",help="optional retained earnings_8k_dates.parquet")
+        consumer.add_argument("--filings-sha256",type=_sha256_argument,metavar="EXACT64")
         if name=="dossier":
             consumer.add_argument("--date",required=True,type=_date_argument,metavar="YYYY-MM-DD")
+            consumer.add_argument("--filings-offset",type=int,default=0,help="matched filing-record offset")
             consumer.add_argument("--reveal-outcomes",action="store_true")
         else:
             consumer.add_argument("--output",required=True,metavar="NEW_HTML")
+            consumer.add_argument("--transcripts-catalog", default=None, metavar="PATH", help="metadata-only transcript catalogue")
+            consumer.add_argument("--transcripts-catalog-sha256", default=None, type=_sha256_argument, metavar="EXACT64")
             consumer.add_argument("--include-outcomes",action="store_true",
                                  help="embed future outcomes for explicit educational reveal; not blind evaluation")
         consumer.set_defaults(handler=handler)
+    catalog=commands.add_parser("transcripts-catalog", help="export bound transcript metadata only; no call bodies")
+    catalog.add_argument("--config", required=True, metavar="HOST_CONFIG")
+    catalog.add_argument("--ref", required=True, metavar="BOUND_REF")
+    catalog.add_argument("--expected-version", required=True, metavar="OBSERVED_FILE_VERSION")
+    catalog.add_argument("--output", required=True, metavar="NEW_PATH")
+    catalog.set_defaults(handler=_run_transcripts_catalog)
     return parser
 
 

@@ -9,7 +9,6 @@ from __future__ import annotations
 
 import argparse
 from datetime import datetime, timedelta, timezone
-import inspect
 import json
 import os
 from pathlib import Path
@@ -21,7 +20,6 @@ _ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(_ROOT))
 
 import pandas as pd
-import pyarrow.fs
 
 from engine.qbus_news_universe import qualify_universe
 from engine.qbus_news_universe_snapshot import (
@@ -30,17 +28,13 @@ from engine.qbus_news_universe_snapshot import (
     diagnose_news_universe,
 )
 from lib import config
+from lib.native_parquet import read_parquet_native
 
 
 class NewsUniverseBuildError(RuntimeError):
     def __init__(self, code: str) -> None:
         self.code = code
         super().__init__(f"qbus_news_universe_build:{code}")
-
-
-_READ_PARQUET_HAS_TO_PANDAS_KWARGS = (
-    "to_pandas_kwargs" in inspect.signature(pd.read_parquet).parameters
-)
 
 
 def _observed_at(raw: str | None) -> datetime:
@@ -82,43 +76,10 @@ def _records(frame: pd.DataFrame, *, include_index: bool = False) -> list[dict]:
 
 def _read_parquet(path: Path, *, include_index: bool = False) -> list[dict]:
     try:
-        # pandas opens plain local paths as Python file objects and hands those to
-        # pyarrow, so buffer reads run as Python-backed arrow::py::PyBuffer objects
-        # on Arrow's process-wide IO pool. When such a completion is delayed past
-        # the start of interpreter finalization, its destructor's PyGILState_Ensure
-        # makes CPython force pthread_exit for the worker, and the forced unwind
-        # ends in std::terminate (SIGABRT, "terminate called without an active
-        # exception") after the receipt is already printed: 63/1002 runs (6.29%)
-        # at OMP_NUM_THREADS=4 on 4 pinned CPUs, and 18/300 on pandas 2.2. Reading
-        # through the native LocalFileSystem keeps the parquet reads' pool tasks
-        # free of Python-backed buffers, so the captured abort precondition cannot
-        # arise (0/1002 and 0/300 after the change). use_threads/pre_buffer False
-        # and the serial to_pandas conversion shrink the pool-thread census rather
-        # than emptying it: 5 -> 6 process threads after the four reads instead of
-        # 5 -> 10, and 5 -> 12 instead of 5 -> 13 on pandas 2.2, where
-        # read_parquet has no to_pandas_kwargs and the to_pandas conversion still
-        # runs on the CPU pool.
-        from urllib.parse import unquote, urlparse
-
-        source: Path | str = path
-        parsed = urlparse(str(path))
-        if parsed.scheme.lower() == "file":
-            # A --current/--pit/... file: URI reaches the read as a URI inside
-            # the Path argparse builds (type=Path keeps the scheme, collapsing
-            # file:///a to file:/a), and base pandas read every such form by
-            # URI parsing (file:/a, file://host/a, file:name, FILE:a), while
-            # LocalFileSystem answers any URI with ArrowInvalid. Normalize to
-            # the decoded URI path so the native read keeps serving them;
-            # non-file schemes and bare colon filenames keep failing as before.
-            source = unquote(parsed.path)
-        kwargs: dict[str, object] = {
-            "filesystem": pyarrow.fs.LocalFileSystem(),
-            "use_threads": False,
-            "pre_buffer": False,
-        }
-        if _READ_PARQUET_HAS_TO_PANDAS_KWARGS:
-            kwargs["to_pandas_kwargs"] = {"use_threads": False}
-        frame = pd.read_parquet(source, **kwargs)
+        # Native read: a Python-backed pyarrow buffer destroyed at interpreter
+        # exit forces pthread_exit -> SIGABRT (PR #9043: 63/1002 -> 0/1002);
+        # lib/native_parquet.py owns the mechanism.
+        frame = read_parquet_native(path)
     except Exception as exc:
         raise NewsUniverseBuildError("owner_artifact_unreadable") from exc
     try:

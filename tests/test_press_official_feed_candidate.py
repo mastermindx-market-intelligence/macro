@@ -128,3 +128,102 @@ def test_utf16_doctype_cannot_evade_byte_level_xml_guard(inputs):
     change(inputs,lambda q:q.update(feed_sha256=inputs['feed_sha256']))
     with pytest.raises(ValueError,match='entities|DOCTYPE|malformed'):
         invoke(inputs)
+
+
+@pytest.fixture
+def doj_inputs(tmp_path):
+    evidence = EVIDENCE.parent / 'doj_source_phase'
+    root = F.fixture_root(tmp_path / 'root')
+    (root / 'site/stocks').mkdir(parents=True, exist_ok=True)
+    (root / 'site/stocks/CVS.html').write_text('<html>CVS Health</html>')
+    q = json.loads((evidence / 'cvs_candidate.json').read_text())
+    result = {'root': root, 'as_of': '2026-10-14T04:00:00+00:00'}
+    for key, name in [('feed_path', 'rss.xml'), ('release_path', 'release.html'),
+                      ('policy_path', 'policy.html')]:
+        path = tmp_path / name
+        path.write_bytes((evidence / name).read_bytes())
+        result[key] = path
+    result.update(feed_sha256=q['feed_sha256'], qualification_path=tmp_path / 'q.json',
+                  qualification_sha256=dump(tmp_path / 'q.json', q))
+    return result
+
+
+def test_doj_release_retains_allegation_limit_and_never_admits_a_writer(doj_inputs):
+    before = {str(p): p.read_bytes() for p in doj_inputs['root'].rglob('*') if p.is_file()}
+    r = invoke(doj_inputs)
+    ctx = r['validation_context']
+    assert ctx['primary_source']['name'] == 'U.S. Department of Justice'
+    assert ctx['allowed_links'] == ['https://www.mastermind-x.com/stocks/CVS.html']
+    assert ctx['facts'][0]['values'] == ['315']
+    assert all(f['tier'] == 'third_party' for f in ctx['facts'])
+    assert any('no determination of liability' in f['text'] for f in ctx['facts'])
+    assert 'no determination of liability' in ctx['raw_documents'][0]['text']
+    assert len(r['source_revisions']) == 3  # feed, release and policy bytes
+    assert r['allow_stage'] is r['allow_emit'] is r['publication_approved'] is False
+    assert r['cadence_consumed'] is False
+    assert before == {str(p): p.read_bytes() for p in doj_inputs['root'].rglob('*') if p.is_file()}
+
+
+@pytest.mark.parametrize('key', ['release_path', 'policy_path'])
+def test_doj_requires_retained_full_release_and_policy(doj_inputs, key):
+    doj_inputs.pop(key)
+    with pytest.raises(ValueError, match='DOJ'):
+        invoke(doj_inputs)
+
+
+@pytest.mark.parametrize('key', ['release_path', 'policy_path'])
+def test_doj_changed_document_bytes_refuse(doj_inputs, key):
+    doj_inputs[key].write_bytes(doj_inputs[key].read_bytes() + b' ')
+    with pytest.raises(ValueError, match='hash'):
+        invoke(doj_inputs)
+
+
+@pytest.mark.parametrize('patch', [
+    {'source_qualifiers': []},
+    {'source_qualifiers': ['CVS admitted liability.']},
+    {'rights_basis': {'qualification': 'government_authored_factual_reporting',
+                      'scope': 'anything', 'policy_url': 'https://evil.test/policy'}},
+    {'source_key': 'occ_news'},
+    {'event_date': '2026-10-08'},
+])
+def test_doj_changed_qualification_refuses(doj_inputs, patch):
+    change(doj_inputs, lambda q: q.update(patch))
+    with pytest.raises(ValueError):
+        invoke(doj_inputs)
+
+
+@pytest.mark.parametrize('mutation', ['canonical', 'clock', 'summary', 'duplicate_body'])
+def test_doj_rebound_wrong_release_cannot_qualify(doj_inputs, mutation):
+    p = doj_inputs['release_path']
+    text = p.read_text()
+    if mutation == 'canonical':
+        text = text.replace('rel="canonical"', 'rel="alternate"')
+    elif mutation == 'clock':
+        text = text.replace('2026-10-13T12:00:00Z', '2026-10-12T12:00:00Z')
+    elif mutation == 'summary':
+        text = text.replace('$315 million', '$316 million')
+    else:
+        text += '<div class="node-body"><div class="field_body">ambiguous</div></div>'
+    p.write_text(text)
+    change(doj_inputs, lambda q: q.update(release_sha256=hashlib.sha256(p.read_bytes()).hexdigest()))
+    with pytest.raises(ValueError, match='DOJ'):
+        invoke(doj_inputs)
+
+
+def test_doj_candidate_alone_refuses_before_checkpoint_or_provider(doj_inputs, monkeypatch):
+    from datetime import datetime
+    from engine.press import desk_planner as P
+    from scripts import stage_official_feed_press as S
+
+    def forbidden(*args, **kwargs):
+        pytest.fail('a third-party source cannot reach the provider')
+
+    monkeypatch.setattr(S.writer, 'write', forbidden)
+    root = doj_inputs['root']
+    before = {str(p): p.read_bytes() for p in root.rglob('*') if p.is_file()}
+    kwargs = {k: v for k, v in doj_inputs.items() if k not in ('root', 'as_of')}
+    r = S.stage_official_feed_candidate(root, P.load_config(root),
+        now=datetime.fromisoformat(doj_inputs['as_of']), **kwargs)
+    assert r['staged'] is False and r['public_article_approved'] is False
+    assert 'first-party' in r['reason']
+    assert before == {str(p): p.read_bytes() for p in root.rglob('*') if p.is_file()}

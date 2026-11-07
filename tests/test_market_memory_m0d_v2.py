@@ -3359,3 +3359,113 @@ def test_r1_existing_record_must_reestablish_directory_durability(tmp_path, monk
         _binding_experience(source, root, session)
     assert record.read_bytes() == before_record
     assert _r1_head_path(exp_root).read_bytes() == before_head
+
+
+# HEAD failures have a different effect boundary from record publication:
+# after os.replace, new bytes are visible even if directory durability fails.
+def _r1_head_failure_fixture(tmp_path: Path):
+    source, _stored, session = _binding_source(tmp_path)
+    tech_root, _ = _binding_capture(source, session)
+    result = _binding_experience(source, tech_root, session)
+    assert result["status"] == "admitted"
+    exp_root = source.parent / "experience-v2"
+    head_path = _r1_head_path(exp_root)
+    new_head = json.loads(head_path.read_bytes())
+    old_bytes = _r1_canonical({**new_head, "latest_session": "2026-08-20"})
+    head_path.write_bytes(old_bytes)
+    return exp_root, old_bytes, new_head
+
+
+@pytest.mark.parametrize("failure", ["zero_write", "file_fsync"])
+def test_r1_head_failure_before_replace_preserves_old_head(
+    tmp_path, monkeypatch, failure
+):
+    from scripts import accrue_market_memory_spy_experience_v2 as exp
+
+    exp_root, old_bytes, new_head = _r1_head_failure_fixture(tmp_path)
+    record_before = _r1_record_path(exp_root).read_bytes()
+    if failure == "zero_write":
+        _r1_inject_zero_write(monkeypatch)
+    else:
+        _r1_inject_file_fsync_failure(monkeypatch)
+
+    with pytest.raises(exp.ExperienceV2StoreError):
+        exp._write_head_v2(exp_root, new_head)
+
+    assert _r1_head_path(exp_root).read_bytes() == old_bytes
+    assert _r1_record_path(exp_root).read_bytes() == record_before
+    _r1_assert_no_tmp_litter(exp_root)
+
+
+def test_r1_head_short_write_completes_before_replace(tmp_path, monkeypatch):
+    from scripts import accrue_market_memory_spy_experience_v2 as exp
+
+    exp_root, old_bytes, new_head = _r1_head_failure_fixture(tmp_path)
+    record_before = _r1_record_path(exp_root).read_bytes()
+    real_write = os.write
+    calls = []
+
+    def short_first_write(fd, data):
+        calls.append(len(data))
+        if len(calls) == 1:
+            assert _r1_head_path(exp_root).read_bytes() == old_bytes
+            return real_write(fd, data[:max(1, len(data) // 2)])
+        return real_write(fd, data)
+
+    monkeypatch.setattr(os, "write", short_first_write)
+    exp._write_head_v2(exp_root, new_head)
+
+    assert len(calls) >= 2
+    assert _r1_head_path(exp_root).read_bytes() == _r1_canonical(new_head)
+    assert _r1_record_path(exp_root).read_bytes() == record_before
+    _r1_assert_no_tmp_litter(exp_root)
+
+
+def test_r1_head_directory_fsync_failure_reports_visible_new_head(
+    tmp_path, monkeypatch
+):
+    from engine.neuralweb import market_memory_pit as pit
+    from scripts import accrue_market_memory_spy_experience_v2 as exp
+
+    exp_root, old_bytes, new_head = _r1_head_failure_fixture(tmp_path)
+    record_before = _r1_record_path(exp_root).read_bytes()
+    record = json.loads(record_before)
+    assert record["session"] == new_head["latest_session"]
+    assert record["registration_id"] == new_head["registration_id"]
+    assert record["disposition"] == new_head["latest_disposition"]
+    original = pit._directory_fsync
+    calls = []
+
+    def fail_head_directory(path):
+        calls.append(path)
+        if path == exp_root:
+            raise OSError("injected HEAD directory fsync failure")
+        return original(path)
+
+    monkeypatch.setattr(pit, "_directory_fsync", fail_head_directory)
+    with pytest.raises(exp.ExperienceV2StoreError):
+        exp._write_head_v2(exp_root, new_head)
+
+    assert calls == [exp_root]
+    assert _r1_head_path(exp_root).read_bytes() == _r1_canonical(new_head)
+    assert _r1_head_path(exp_root).read_bytes() != old_bytes
+    assert _r1_record_path(exp_root).read_bytes() == record_before
+    _r1_assert_no_tmp_litter(exp_root)
+
+
+def test_r1_head_unique_temporary_preserves_other_attempt_file(tmp_path):
+    from scripts import accrue_market_memory_spy_experience_v2 as exp
+
+    exp_root, _old_bytes, new_head = _r1_head_failure_fixture(tmp_path)
+    other_attempt = exp_root / f".EXP_V2_HEAD.tmp.{os.getpid()}"
+    sentinel = b"another attempt owns these bytes"
+    other_attempt.write_bytes(sentinel)
+    record_before = _r1_record_path(exp_root).read_bytes()
+
+    exp._write_head_v2(exp_root, new_head)
+
+    assert _r1_head_path(exp_root).read_bytes() == _r1_canonical(new_head)
+    assert _r1_record_path(exp_root).read_bytes() == record_before
+    assert other_attempt.read_bytes() == sentinel
+    assert set(exp_root.glob(".EXP_V2_HEAD.tmp*")) == {other_attempt}
+    assert list((exp_root / "records").glob(".*tmp*")) == []

@@ -184,7 +184,7 @@
   {# ---------- CONVICTION BOARD ---------- #}
   {# brain_usable: brain ran successfully AND is not degraded; when False scores are deterministic only #}
   {% set brain_usable = mastermind.brain_usable if mastermind else false %}
-  <section class="sid-sec">
+  <section class="sid-sec" id="convergence">
     <h2>{{ t('Conviction board', '置信榜') }}
       {% if brain_usable %}
       <span class="h-note">{{ t('ranked actionable signals — convergence × affiliation × AI conviction, graded vs SPY', '已排名的可操作信号——汇聚×关联×AI置信，对标普评分') }}</span>
@@ -192,6 +192,13 @@
       <span class="h-note mut">{{ t('deterministic convergence only — AI read unavailable; nothing graded yet', '仅确定性汇聚——AI解读不可用；尚无对标普评分') }}</span>
       {% endif %}
       {{ ql_chip(_ad_chip) }}</h2>
+    {% if mastermind and mastermind.is_context_only is sameas true %}
+    {% set _w19c1_a3 = mastermind.article3 if mastermind.article3 is mapping else none %}
+    {% set _w19c1_a3r = _w19c1_a3.get('reason') if _w19c1_a3 else '' %}
+    <p class="mut">{{ t('Context only — not yet cleared as actionable'
+      ~ (': ' ~ _w19c1_a3r|e if _w19c1_a3r else ''),
+      '仅作背景参考 — 尚未获准作为可操作信号' ~ ('：' ~ _w19c1_a3r|e if _w19c1_a3r else '')) }}</p>
+    {% endif %}
     {% if mastermind and mastermind.signals %}
     <div class="conv-list">
       {% for sg in mastermind.signals[:14] %}
@@ -236,6 +243,22 @@
     <div class="sid-card"><span class="mut">{{ t('No multi-channel convergence today.', '今日无多通道汇聚。') }}</span></div>
     {% endif %}
   </section>
+
+  {# ---------- CONVERGENCE-ONSET STRIP (alerts already in context; producer order) - #}
+  {% if alerts %}
+  <section class="sid-sec">
+    <h2>{{ t('Newly converging', '新汇聚') }}
+      <span class="h-note">{{ t(
+        'entered or strengthened multi-channel convergence in the last 30 days — watch, not a buy',
+        '近30天新进入或增强多通道汇聚 — 观察，非买入信号') }}</span></h2>
+    <div class="sid-card"><table class="sid-t"><thead><tr><th>{{ t('Date', '日期') }}</th>
+      <th>{{ t('Ticker', '标的') }}</th><th>{{ t('Event', '事件') }}</th></tr></thead>
+      <tbody>{% for a in alerts[:8] %}<tr><td class="mut">{{ a.ts[:10] }}</td>
+        <td class="tkc">{{ a.asset }}</td>
+        <td>{{ t(a.headline, a.headline_zh or a.headline) }}</td></tr>{% endfor %}</tbody>
+    </table></div>
+  </section>
+  {% endif %}
 
   {# ---------- BROKEN NAMES STRIP (attention on crashing names — NOT entries) ---------- #}
   {% if mastermind and mastermind.get('broken_signals') %}
@@ -402,9 +425,13 @@
       {% endif %}
 
       {% if pipeline_counts and pipeline_counts.rows %}
+      {% set wd = pipeline_counts.window_days %}
+      {% set shown = pipeline_counts.rows|length %}
+      {% set tot = pipeline_counts.total %}
       <div class="sid-card"><h3>{{ t('Federal pipeline counts','联邦项目管线数量') }}
-        <span class="mut" style="font-size:11px;">{{ t('90d vs prior 90d',
-          '近90天 vs 前90天') }}</span></h3>
+        <span class="mut" style="font-size:11px;">
+          <span class="l-en">{{ wd }}d vs prior {{ wd }}d</span>
+          <span class="l-zh">近{{ wd }}天 vs 前{{ wd }}天</span></span></h3>
         <table class="sid-t"><thead><tr><th>{{ t('Theme','主题') }}</th>
           <th class="num">{{ t('SAM now','SAM 近期') }}</th>
           <th class="num">{{ t('SAM prior','SAM 前期') }}</th>
@@ -417,6 +444,12 @@
           <td class="num">{{ r.foa_recent if r.foa_recent is not none else '—' }}</td>
           <td class="num">{{ r.foa_prior if r.foa_prior is not none else '—' }}</td>
           <td class="mut">{{ r.sam_as_of or '—' }}</td></tr>{% endfor %}</tbody></table>
+        {% if tot and tot > shown %}
+        <p><span class="mut" style="font-size:11px;">
+        <span class="l-en">Showing the top {{ shown }} of {{ tot }} themes by recent count.</span>
+        <span class="l-zh">按近期计数显示前{{ shown }}个主题（共{{ tot }}个）。</span>
+        </span></p>
+        {% endif %}
         <p><span class="mut" style="font-size:11px;">{{
           t('Source: SAM.gov opportunity and Grants.gov FOA counts per theme. Display only.',
             '来源：SAM.gov 采购机会与 Grants.gov 资助公告的主题计数。仅供展示。') }}</span></p></div>
@@ -424,10 +457,13 @@
 
       {% if s.fda %}
       <div class="sid-card"><h3>{{ t('FDA catalysts','FDA催化') }}</h3>
-        <table class="sid-t"><thead><tr><th>{{ t('Ticker','标的') }}</th><th>{{ t('Event','事件') }}</th><th>{{ t('Drug','药物') }}</th></tr></thead>
+        <table class="sid-t"><thead><tr><th>{{ t('Ticker','标的') }}</th>
+          <th>{{ t('Event','事件') }}</th><th>{{ t('Drug','药物') }}</th>
+          <th>{{ t('Date','日期') }}</th></tr></thead>
         <tbody>{% for r in s.fda[:10] %}<tr><td class="tkc">{{ r.ticker }}</td>
           <td class="mut">{{ t('New approval','新批准') if r.kind=='approval' else t('Label exp.','适应症扩展') }}</td>
-          <td class="mut">{{ r.drug or '—' }}</td></tr>{% endfor %}</tbody></table></div>
+          <td class="mut">{{ r.drug or '—' }}</td>
+          <td class="mut">{{ r.date or '—' }}</td></tr>{% endfor %}</tbody></table></div>
       {% endif %}
 
       {% if s.clinical %}
@@ -483,10 +519,17 @@
 
       {% if s.earnings %}
       <div class="sid-card"><h3>{{ t('Earnings imminent','财报临近') }} <span class="mut" style="font-size:11px;">{{ t('binary catalyst — watch, not a buy','二元催化 — 观察，非买入') }}</span></h3>
-        <table class="sid-t"><thead><tr><th>{{ t('Ticker','标的') }}</th><th class="num">{{ t('Reports','公布') }}</th><th class="num">{{ t('Cons. EPS','预期EPS') }}</th></tr></thead>
+        <table class="sid-t"><thead><tr><th>{{ t('Ticker','标的') }}</th>
+          <th class="num">{{ t('Reports','公布') }}</th>
+          <th class="num">{{ t('Cons. EPS','预期EPS') }}</th>
+          <th class="num">{{ t('Last surprise','上次业绩意外') }}</th></tr></thead>
         <tbody>{% for r in s.earnings[:10] %}<tr><td class="tkc">{{ r.ticker }}</td>
           <td class="num">{% if r.days_to==0 %}<b>{{ t('today','今天') }}</b>{% elif r.days_to==1 %}{{ t('1 day','1天') }}{% else %}{{ r.days_to }}{{ t('d','天') }}{% endif %}</td>
-          <td class="num">{% if r.eps_forecast is not none %}{{ r.eps_forecast }}{% else %}<span class="mut">—</span>{% endif %}</td></tr>{% endfor %}</tbody></table></div>
+          <td class="num">{% if r.eps_forecast is not none %}{{ r.eps_forecast }}{% else %}
+            <span class="mut">—</span>{% endif %}</td>
+          <td class="num">{% if r.last_surprise_pct is not none %}
+            {{ '%+.1f'|format(r.last_surprise_pct) }}%{% else %}
+            <span class="mut">—</span>{% endif %}</td></tr>{% endfor %}</tbody></table></div>
       {% endif %}
 
       {% if s.news_sentiment %}
@@ -510,6 +553,22 @@
           <td class="num">{% if r.bull_ratio>=0.65 %}<span class="r-pos">{{ (r.bull_ratio*100)|round|int }}%</span>{% else %}{{ (r.bull_ratio*100)|round|int }}%{% endif %}</td>
           <td class="num">{% if r.watchers %}{{ '{:,.0f}'.format(r.watchers) }}{% else %}—{% endif %}</td></tr>{% endfor %}</tbody></table></div>
       {% endif %}
+      {% if s.offexchange %}
+      <div class="sid-card"><h3>{{ t('Off-exchange flow','场外交易流向') }}
+        <span class="mut">{{ t('FINRA','FINRA') }} {{ s.offexchange[0].date }}</span>
+        {% if s.offexchange[0].stale %}
+        <span class="mut">{{ t('stale','数据滞后') }}</span>{% endif %}</h3>
+        <table class="sid-t"><thead><tr><th>{{ t('Ticker','标的') }}</th>
+          <th class="num">{{ t('Short ratio','卖空比例') }}</th>
+          <th>{{ t('Lean','倾向') }}</th></tr></thead>
+        <tbody>{% for r in s.offexchange[:10] %}<tr><td class="tkc">{{ r.ticker }}</td>
+          <td class="num">{% if r.dpi is not none %}{{ '%.3f'|format(r.dpi) }}
+            {% else %}—{% endif %}</td>
+          <td class="mut">{% if r.lean=='accumulation' %}{{ t('accumulation','吸筹') }}
+            {% elif r.lean=='distribution' %}{{ t('distribution','派发') }}
+            {% elif r.lean=='balanced' %}{{ t('balanced','均衡') }}
+            {% else %}—{% endif %}</td></tr>{% endfor %}</tbody></table></div>
+      {% endif %}
 
     </div>
   </section>
@@ -519,7 +578,9 @@
     <div class="sid-card">
       <div class="sid-cov">
         {% for ds, d in feed.datasets.items() %}
-        <span class="cov{% if not d.rows %} empty{% endif %}">{{ d.emoji }} <span class="l-en">{{ d.label_en }}</span><span class="l-zh">{{ d.label_zh }}</span> · {{ '{:,}'.format(d.rows) }}</span>
+        <span class="cov{% if not d.rows %} empty{% endif %}">{{ d.emoji }}
+          <span class="l-en">{{ d.label_en }}</span><span class="l-zh">{{ d.label_zh }}</span>
+          · {{ '{:,}'.format(d.rows) }} · {{ t('latest','最新') }} {{ d.last_seen or '—' }}</span>
         {% endfor %}
       </div>
       <p class="mut" style="font-size:11px;margin:11px 0 0;">{{ t(

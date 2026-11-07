@@ -1,0 +1,1 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="0" skipped="0" tests="1" time="1.571" timestamp="2026-10-23T22:55:12.778818-07:00" hostname="m2studio"><testcase classname="tests.test_intelligence_execution" name="test_cleanup_unknown_latches_without_replacement" time="0.672" /></testsuite></testsuites>

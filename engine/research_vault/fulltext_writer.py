@@ -2,7 +2,7 @@
 
 Imported only lazily, from inside ``ingest.run``. ``vault_head`` and ``ingest``
 are imported inside functions so a test monkeypatch of ``extract_pdf_text`` is
-visible: ``vault_head`` binds its extractor default at definition time.
+visible. Both entry points resolve an omitted extractor for its selected version.
 
 The ingest step is 395–435 s typical and 772 s worst. The job timeout is 900 s
 and the overhead is about 31 s. The pass budget is
@@ -65,9 +65,25 @@ def _meta(
     return out
 
 
-def _write_record(store, report_id: str, source_pdf_sha256: str, record: dict, success: str) -> dict:
-    """Create-only put. No existence GET before the conditional write."""
-    key = fulltext_store.derivative_key(report_id, source_pdf_sha256)
+def _write_record(
+    store,
+    report_id: str,
+    source_pdf_sha256: str,
+    record: dict,
+    success: str,
+    *,
+    extractor_version: str = fulltext_store.EXTRACTOR_VERSION,
+) -> dict:
+    """Create-only put. No existence GET before the conditional write.
+
+    The explicit ``extractor_version`` selects the derivative key plane, so a
+    v2 opt-in write lands on its own immutable key and can never collide with
+    — or overwrite — the v1 object for the same revision.
+    """
+    version = fulltext_store.validate_extractor_version(extractor_version)
+    key = fulltext_store.derivative_key(
+        report_id, source_pdf_sha256, extractor_version=version
+    )
     blob = fulltext_store.encode_record(record)
     if len(blob) > fulltext_store.FULLTEXT_MAX_BYTES:
         return _meta("too_large", report_id, source_pdf_sha256=source_pdf_sha256)
@@ -113,7 +129,7 @@ def _write_record(store, report_id: str, source_pdf_sha256: str, record: dict, s
             key=key,
         )
     decoded = None if existing is None else fulltext_store.decode_record(
-        existing, report_id, source_pdf_sha256,
+        existing, report_id, source_pdf_sha256, extractor_version=version,
     )
     # A create conflict is idempotent only for the exact deterministic bytes
     # attempted by this producer, not merely another well-formed derivative.
@@ -127,16 +143,42 @@ def _write_record(store, report_id: str, source_pdf_sha256: str, record: dict, s
     return _meta("already_current", report_id, source_pdf_sha256=source_pdf_sha256, key=key)
 
 
-def materialize(store, report_id, *, expected_pdf_sha256, extractor=None) -> dict:
+# The known extractor resolution table. Exactly one known extractor per
+# supported version; no second extraction plane is introduced.
+_KNOWN_EXTRACTORS = {
+    fulltext_store.EXTRACTOR_VERSION: "extract_pdf_text",
+    fulltext_store.READING_ORDER_EXTRACTOR_VERSION: "extract_pdf_text_reading_order_v2",
+}
+
+
+def _resolve_extractor(version: str):
+    """Resolve the known ingest extractor for a supported version at call time."""
+    from engine.research_vault import ingest as ingest_mod
+    return getattr(ingest_mod, _KNOWN_EXTRACTORS[version])
+
+
+def materialize(
+    store,
+    report_id,
+    *,
+    expected_pdf_sha256,
+    extractor=None,
+    extractor_version: str = fulltext_store.EXTRACTOR_VERSION,
+) -> dict:
     """Materialize one derivative. Never raises. Metadata only — never text.
 
-    ``extractor=None`` resolves ``ingest.extract_pdf_text`` at call time.
+    ``extractor=None`` resolves the known ingest extractor for the bound
+    ``extractor_version`` at call time. The default version is the incumbent
+    v1 contract, so every existing caller is unchanged; the pdftotext
+    default-reading-order candidate is reached only through an explicit
+    supported ``extractor_version`` and is written create-only to its own
+    versioned key.
     """
     rid = report_id if isinstance(report_id, str) else str(report_id or "")
     try:
+        version = fulltext_store.validate_extractor_version(extractor_version)
         if extractor is None:
-            from engine.research_vault import ingest as ingest_mod
-            extractor = ingest_mod.extract_pdf_text
+            extractor = _resolve_extractor(version)
         from engine.research_intelligence import vault_head
 
         result = vault_head.read_canonical_text(
@@ -145,6 +187,7 @@ def materialize(store, report_id, *, expected_pdf_sha256, extractor=None) -> dic
             body_max_bytes=fulltext_store.FULLTEXT_MAX_BYTES,
             extractor=extractor,
             expected_pdf_sha256=expected_pdf_sha256,
+            extractor_version=version,
         )
         if not isinstance(result, dict):
             return _meta("failed", rid)
@@ -169,26 +212,36 @@ def materialize(store, report_id, *, expected_pdf_sha256, extractor=None) -> dic
             if (
                 record.get("extracted_text_sha256") != result.get("extracted_text_sha256")
                 or record.get("extractor_name") != fulltext_store.EXTRACTOR_NAME
-                or record.get("extractor_version") != fulltext_store.EXTRACTOR_VERSION
+                or record.get("extractor_version") != version
             ):
                 return _meta("extractor_failed", out_id, source_pdf_sha256=sha_s)
-            return _write_record(store, out_id, record["source_pdf_sha256"], record, "materialized")
+            return _write_record(
+                store, out_id, record["source_pdf_sha256"], record, "materialized",
+                extractor_version=version,
+            )
 
         if state == "no_text_layer":
             # Stored text is blank-normalized: pdftotext emitted only whitespace
             # or form feeds. Never store ``unavailable``.
-            if result.get("text_layer_state") != "none" or not isinstance(sha_s, str):
+            if (
+                result.get("text_layer_state") != "none"
+                or not isinstance(sha_s, str)
+                or result.get("extractor_version") != version
+            ):
                 return _meta("extractor_failed", out_id, source_pdf_sha256=sha_s, error_class=error_s)
             record = fulltext.build_extracted_text(
                 report_id=out_id,
                 source_pdf_sha256=sha_s,
                 text="",
                 extractor_name=fulltext_store.EXTRACTOR_NAME,
-                extractor_version=fulltext_store.EXTRACTOR_VERSION,
+                extractor_version=version,
                 page_count=result.get("page_count"),
                 text_layer_state="none",
             )
-            return _write_record(store, out_id, sha_s, record, "no_text_layer")
+            return _write_record(
+                store, out_id, sha_s, record, "no_text_layer",
+                extractor_version=version,
+            )
 
         mapped = {
             "pdf_too_large": "too_large",
