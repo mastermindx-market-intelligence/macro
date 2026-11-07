@@ -6,6 +6,9 @@ on:
       - 'engine/fabric_inference_client.py'
       - 'engine/provider_production_modes.py'
       - 'engine/llm_auth.py'
+      - 'config/provider_workloads.v1.json'
+      - 'tests/test_fabric_service_identity.py'
+      - 'tests/test_hermes_attended_fabric_identity.py'
       - 'tests/test_fabric_application_binding.py'
       - 'tests/test_fabric_exact_scoped_model_composition.py'
       - 'tests/test_hermes_primary_fabric_*.py'
@@ -53,6 +56,7 @@ jobs:
             --junitxml="$RUNNER_TEMP/fabric-owner-composition.xml" \
             tests/test_hermes_primary_fabric_identity.py \
             tests/test_hermes_primary_fabric_endpoint.py \
+            tests/test_hermes_attended_fabric_identity.py \
             tests/test_fabric_service_identity.py \
             tests/test_fabric_exact_scoped_model_composition.py
           python - "$RUNNER_TEMP/fabric-owner-composition.xml" <<'PROOF'

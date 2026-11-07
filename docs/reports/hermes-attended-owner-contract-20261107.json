@@ -1,0 +1,57 @@
+{
+  "candidate_changes": "Retained boundary tests and existing qualification workflow only; no production/configuration change",
+  "credentials_and_qualification": "synthetic disposable owner fixture only",
+  "elapsed_seconds": 1.142,
+  "files": {
+    ".github/workflows/hermes-application-owner.yml": {
+      "bytes": 2749,
+      "git_blob": "a92827928241239d087bdf4ba48868c243cb93cb",
+      "sha256": "7baebce7cc3568102d6d1425654452b6d9f6c37a88f51a69fd803b2387bbacd9"
+    },
+    "tests/test_hermes_attended_fabric_identity.py": {
+      "bytes": 9061,
+      "git_blob": "3725f43f67f17e4e290c5c7b9791f65b85f692eb",
+      "sha256": "9e4f14335b69f1b3650f940fa2afd578de77fe0e4b303195692a6733a7b29c88"
+    }
+  },
+  "held_defaults": "Original shipped application_fabric_modes remains empty; no capability or credential was provisioned",
+  "junit_sha256": "08907930ba182f8d0987e9f1b71b656612e02372e12168541928002e810dea66",
+  "live_provider_acceptance": false,
+  "log_sha256": "7157ccbf653db00127fa8b8b74cc7de829233f331ed44e8d75aa63946cd7a790",
+  "new_tests_forbid_network_connections": true,
+  "owner_base": "c1647bf55ad5faf07e682f7055e3791280d6d41f",
+  "owner_pr": 10740,
+  "per_module": {
+    "tests.test_fabric_application_binding": 75,
+    "tests.test_fabric_application_inspection": 27,
+    "tests.test_fabric_service_identity": 25,
+    "tests.test_hermes_attended_fabric_identity": 31,
+    "tests.test_hermes_primary_fabric_endpoint": 16,
+    "tests.test_hermes_primary_fabric_identity": 23
+  },
+  "prior_local_attempts": {
+    "full_redline_scanner": "not qualified on incomplete standalone fixture; changed-manifest-only scan had zero findings and that proposed manifest change was discarded",
+    "incomplete_harness_reads": "missing sparse fixture dependencies affected separately attempted workload-policy meta-CI tests; no production failure or qualification claimed for those attempts",
+    "new_test_receipt_attribute_error": "corrected to existing WorkloadDecision.receipt()",
+    "unpublished_four_file_declaration": "superseded by original owner c164; not published"
+  },
+  "pytest": "9.2.0",
+  "python": "3.12.14",
+  "pyyaml": "6.0.3",
+  "remaining": "Original release/source gates, dedicated native service/principal/grant, endpoint and physical account/model/entitlement/headroom/hard budget, real authenticated primary/tool/usage/recovery proof",
+  "result": {
+    "errors": 0,
+    "failures": 0,
+    "skipped": 0,
+    "tests": 197
+  },
+  "runtime_enrollment": false,
+  "schema": "mastermind.hermes_attended_owner_contract_source.v1",
+  "source_declaration_owned_by": "c1647bf55ad5faf07e682f7055e3791280d6d41f",
+  "source_inputs": {
+    "config/capability_manifest.yml": "14cb9f81545de02f596f49f36f3f48e02d7851ce",
+    "config/provider_production_modes.v1.json": "1ec5bcf241f6a8e4838983348a7692bdb971c989",
+    "config/provider_workloads.v1.json": "f9f0bd26af3f543aaee8d05fb465a4ea53219660",
+    "engine/provider_production_modes.py": "4dfa5a9ccb9fbcf2e5717d40039eb62af1c8322b"
+  }
+}
