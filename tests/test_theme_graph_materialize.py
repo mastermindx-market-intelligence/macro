@@ -1810,3 +1810,277 @@ def test_supplied_action_without_resolved_authority_refuses_actual_build(tree, m
     before = _file_hashes(root)
     assert bake.run(backfill=False, force_backfill=False) == 1
     assert _file_hashes(root) == before
+
+
+def test_native_tracks_emitter_feeds_selected_house_display_without_etf_identity(tree):
+    from types import SimpleNamespace
+    from engine.theme_graph.security_navigation import compose_security_hierarchy
+    from tests.test_theme_graph_hierarchy_paths import _selected_security_row
+    document = yaml.safe_load(tree[1].read_text())
+    document['hierarchy'] = {'categories': [{'id':'theme:energy','name_en':'Energy',
+        'name_zh':'能源','asserted_on':materialize.HIERARCHY_EPOCH}], 'micro_themes': [],
+        'parents': [{'parent':'theme:energy','child':'theme:solar','asserted_on':materialize.HIERARCHY_EPOCH}]}
+    tree[1].write_text(yaml.safe_dump(document))
+    native = _build(tree, belief_time='2026-10-08', computed_at='2026-10-08T00:00:00Z')
+    view = SimpleNamespace(read_nodes=lambda: native.nodes, read_edges=lambda: native.edges,
+        read_evidence=lambda: native.evidence, read_node_lifecycle=lambda: [])
+    result = compose_security_hierarchy(view, [_selected_security_row()],
+        identity_kind='security', identity_id='SEC:US-XNAS-AAA',
+        asof='2026-10-09', knowledge_cutoff='2026-10-09T12:00:00Z')
+    references = result['etf_tracking']['references']
+    assert [(r['symbol'],r['basket_node_id']) for r in references] == [('TAN','basket:baskets:solar_us')], result
+    ref = references[0]
+    native_edge = next(e for e in native.edges if e['edge_id'] == ref['edge_id'])
+    assert ref['clocks'] == {k:native_edge[k] for k in ref['clocks']}
+    assert ref['era'] == 'reconstruction' and ref['date_provenance'] == 'seed_constant'
+    assert ref['evidence'][0]['published_at'] == US_DOC_DATE
+    assert result['etf_tracking']['security_identity']['status'] == 'unavailable'
+    assert all(not n.get('name_en') for n in native.nodes if n['node_id'] == ref['etf_node_id'])
+# ---------------------------------------------------------------------------
+# 11. Activity-history fold wiring (ORCH-PIPE 2026-10-21, lane B1)
+# ---------------------------------------------------------------------------
+
+_ACT_KNOWLEDGE_AT = "2026-08-10T09:00:00Z"
+_ACT_COMPUTED_AT = "2026-08-11T00:00:00Z"
+
+
+def _activity_event(*, source: str, target: str, use: str = "GRANTED",
+                    decision: str = "ACCEPT", knowledge_at: str = _ACT_KNOWLEDGE_AT,
+                    effective_at: dict | None = None,
+                    event_sha256: str | None = None) -> dict:
+    """An honestly digested GRANTED+ACCEPT APPEND by default — built exactly the way
+    tests/test_theme_graph_activity_membership_history.py's ``_event`` helper does:
+    ``membership_id`` via ``activity_membership_id`` and ``event_sha256`` recomputed
+    via ``activity_history_event_digest``. Owner-binding hexes are synthetic: the
+    projection tests bind projection mechanics, not C01 lineage (that owner file has
+    its own suite)."""
+    scope = {"product": "fixture HBM stack", "platform": "fixture platform",
+             "counterparty_issuer_id": "ISS:US-FIXTURE",
+             "segment": {"value": None, "state": "UNDISCLOSED"}}
+    event = {
+        "schema": materialize.ACTIVITY_HISTORY_EVENT_SCHEMA,
+        "action": "APPEND",
+        "membership_id": materialize.activity_membership_id(
+            source_node_id=source, target_node_id=target,
+            species="planned_product_integration", scope=scope),
+        "species": "planned_product_integration",
+        "endpoints": {"source_node_id": source, "target_node_id": target,
+                      "direction": "SOURCE_TO_TARGET"},
+        "scope": scope,
+        "role": "component_supplier",
+        "lifecycle": "planned",
+        "evidence_lineage": {
+            "proposal_id": "actprop:" + "a" * 24,
+            # activity_membership_history.v1 (sibling PR #9975) constrains fact_id to
+            # ^(integration|activity):[0-9a-f]{64}$ — stay inside that shape.
+            "fact_id": "integration:" + "0" * 64, "fact_revision": 1,
+            "source_sha256": "b" * 64, "span_text_sha256": "c" * 64,
+            "owner_bindings": {"spec": "d" * 64, "purpose": "e" * 64,
+                               "adoption": "f" * 64},
+        },
+        "use_qualification": {"graph_membership_use": use},
+        "curation": {"curator": "named-curator:fixture", "decision": decision,
+                     "decided_at": knowledge_at, "receipt_sha256": "0" * 64},
+        "observation": None,
+        "supersedes_event_sha256": None,
+        "clocks": {"knowledge_at": knowledge_at,
+                   "effective_at": effective_at or {"value": None,
+                                                    "state": "UNDISCLOSED"},
+                   "recorded_at": knowledge_at},
+    }
+    digest = event_sha256 or materialize.activity_history_event_digest(event)
+    return {"event_id": "actevt:" + digest[:24], "event_sha256": digest, **event}
+
+
+def _activity_endpoints(tree):
+    view = _build(tree)
+    return view, next(n["node_id"] for n in view.nodes if n["kind"] == "company"), \
+        next(n["node_id"] for n in view.nodes if n["kind"] == "theme")
+
+
+def test_activity_events_none_and_empty_leave_the_view_byte_identical(tree):
+    baseline = _build(tree)
+    view = _build(tree, activity_events=None)
+    for kind in ("nodes", "edges", "evidence"):
+        assert (json.dumps(getattr(baseline, kind), sort_keys=True)
+                == json.dumps(getattr(view, kind), sort_keys=True))
+    assert view.activity_refusals == [] and view.activity_fold == {}
+
+    empty = _build(tree, activity_events=[])
+    for kind in ("nodes", "edges", "evidence"):
+        assert (json.dumps(getattr(baseline, kind), sort_keys=True)
+                == json.dumps(getattr(empty, kind), sort_keys=True))
+    assert empty.activity_refusals == []
+    assert empty.activity_fold["current"] == 0
+    assert empty.activity_fold["projected_edges"] == 0
+
+
+def test_granted_activity_append_projects_one_member_of_edge_and_receipt(tree):
+    import jsonschema
+
+    view, src, dst = _activity_endpoints(tree)
+    event = _activity_event(source=src, target=dst)
+    wired = _build(tree, activity_events=[event])
+    assert wired.activity_refusals == []
+    assert wired.activity_fold["projected_edges"] == 1
+    assert wired.activity_fold["projected_evidence"] == 1
+    (edge,) = [e for e in wired.edges if e["src"] == src and e["dst"] == dst]
+    assert edge["type"] == "MEMBER_OF"
+    assert edge["date_provenance"] == "activity_history"
+    assert edge["confidence_basis"] == "activity_history.v1"
+    assert set(edge) == set(store.EDGE_COLUMNS)
+    # The event's effective clock is UNDISCLOSED: valid_from falls back to the
+    # knowledge date, and the receipt's effective_at stays null (publication IS the
+    # event).
+    assert edge["valid_from"] == _ACT_KNOWLEDGE_AT[:10]
+    assert edge["evidence_time"] == edge["valid_from"]
+    (receipt,) = [r for r in wired.evidence if r["evidence_id"] in edge["evidence_refs"]]
+    assert receipt["kind"] == "operator_curation"
+    assert set(receipt) == set(store.EVIDENCE_COLUMNS)
+    assert receipt["source_ref"] == event["event_id"]
+    assert receipt["published_at"] == event["curation"]["decided_at"][:10]
+    assert receipt["effective_at"] is None
+    assert receipt["provider"] is None and receipt["claim_type"] is None
+    assert (receipt["licensing_internal_ok"], receipt["licensing_display_ok"],
+            receipt["licensing_redistribution_ok"]) == (True, False, False)
+    assert edge["evidence_refs"] == [receipt["evidence_id"]]
+    edges_schema = json.loads((CONTRACTS / "edges.v1.schema.json").read_text(
+        encoding="utf-8"))
+    evidence_schema = json.loads((CONTRACTS / "evidence.v1.schema.json").read_text(
+        encoding="utf-8"))
+    jsonschema.Draft202012Validator(edges_schema).validate(edge)
+    jsonschema.Draft202012Validator(evidence_schema).validate(receipt)
+    # The projected belief adds an edge, never a node, and moves no other row.
+    assert (json.dumps(view.nodes, sort_keys=True)
+            == json.dumps(wired.nodes, sort_keys=True))
+    assert len(wired.edges) == len(view.edges) + 1
+
+
+def test_known_effective_clock_sets_valid_from_and_receipt_effective_at(tree):
+    _, src, dst = _activity_endpoints(tree)
+    event = _activity_event(source=src, target=dst,
+                            effective_at={"value": "2026-08-01", "state": "KNOWN"})
+    wired = _build(tree, activity_events=[event])
+    (edge,) = [e for e in wired.edges if e["src"] == src and e["dst"] == dst]
+    assert edge["valid_from"] == "2026-08-01"
+    assert edge["evidence_time"] == "2026-08-01"
+    (receipt,) = [r for r in wired.evidence if r["evidence_id"] in edge["evidence_refs"]]
+    assert receipt["effective_at"] == "2026-08-01"
+
+
+def test_not_granted_activity_append_projects_nothing_and_records_refusal(tree):
+    _, src, dst = _activity_endpoints(tree)
+    event = _activity_event(source=src, target=dst, use="NOT_GRANTED")
+    wired = _build(tree, activity_events=[event])
+    assert not [e for e in wired.edges if e["src"] == src and e["dst"] == dst]
+    assert [(r["code"], r["reason"]) for r in wired.activity_refusals] == [
+        ("GRAPH_MEMBERSHIP_USE_NOT_GRANTED", "GRAPH_MEMBERSHIP_USE_NOT_GRANTED")]
+    assert wired.activity_refusals[0]["membership_id"] == event["membership_id"]
+    assert wired.activity_fold["refused"] == 1
+    assert wired.activity_fold["projected_edges"] == 0
+
+
+def test_activity_endpoint_absent_is_refused_and_never_mints_a_node(tree):
+    view, _, dst = _activity_endpoints(tree)
+    event = _activity_event(source="co:us:ABSENTCO", target=dst)
+    wired = _build(tree, activity_events=[event])
+    assert (json.dumps(wired.nodes, sort_keys=True)
+            == json.dumps(view.nodes, sort_keys=True))
+    (refusal,) = [r for r in wired.activity_refusals
+                  if r["code"] == "ACTIVITY_ENDPOINT_NODE_ABSENT"]
+    assert refusal["missing"] == ["co:us:ABSENTCO"]
+    assert refusal["membership_id"] == event["membership_id"]
+    assert refusal["event_sha256"] == event["event_sha256"]
+    assert wired.activity_fold["projected_edges"] == 0
+
+
+def test_activity_edge_collision_is_refused_for_the_whole_group(tree):
+    view, src, dst = _activity_endpoints(tree)
+    event = _activity_event(source=src, target=dst)
+    fold = materialize.apply_activity_membership_events([event],
+                                                        knowledge_cutoff=_ACT_COMPUTED_AT)
+    node_ids = {n["node_id"] for n in view.nodes}
+    edges, evidence, refusals = materialize.project_activity_memberships(
+        fold, events=[event], belief_time="2026-08-11", era="reconstruction",
+        computed_at=_ACT_COMPUTED_AT, node_ids=node_ids, edge_ids=set())
+    assert len(edges) == 1 and len(evidence) == 1 and refusals == []
+    collided_edges, collided_evidence, collided_refusals = (
+        materialize.project_activity_memberships(
+            fold, events=[event], belief_time="2026-08-11", era="reconstruction",
+            computed_at=_ACT_COMPUTED_AT, node_ids=node_ids,
+            edge_ids={edges[0]["edge_id"]}))
+    assert collided_edges == [] and collided_evidence == []
+    assert [r["code"] for r in collided_refusals] == [
+        "ACTIVITY_EDGE_COLLIDES_WITH_EXISTING"]
+    assert collided_refusals[0]["edge_id"] == edges[0]["edge_id"]
+    assert collided_refusals[0]["membership_ids"] == [event["membership_id"]]
+
+
+def test_invalid_activity_event_refuses_the_fold_without_raising(tree):
+    view, src, dst = _activity_endpoints(tree)
+    event = _activity_event(source=src, target=dst, event_sha256="a" * 64)
+    wired = _build(tree, activity_events=[event])  # must NOT raise
+    for kind in ("nodes", "edges", "evidence"):
+        assert (json.dumps(getattr(view, kind), sort_keys=True)
+                == json.dumps(getattr(wired, kind), sort_keys=True))
+    assert [r["code"] for r in wired.activity_refusals] == ["ACTIVITY_FOLD_REFUSED"]
+    assert wired.activity_refusals[0]["reason"] == "EVENT_DIGEST_MISMATCH"
+    assert wired.activity_fold == {}
+
+
+def test_only_activity_history_edges_may_join_company_to_theme(tree):
+    """ORCH-PIPE evidence-grain ruling (2026-10-21): a curated, receipted activity
+    membership is a first-class evidence-grain fact, not a composition — so the only
+    company->theme edges this store may ever carry are the activity_history ones."""
+    _, src, dst = _activity_endpoints(tree)
+    event = _activity_event(source=src, target=dst)
+    wired = _build(tree, activity_events=[event])
+    joins = [e for e in wired.edges
+             if e["src"].startswith("co:") and e["dst"].startswith("theme:")]
+    assert joins
+    assert {e["date_provenance"] for e in joins} == {"activity_history"}
+
+
+def test_activity_projection_is_deterministic(tree):
+    _, src, dst = _activity_endpoints(tree)
+    events = [_activity_event(source=src, target=dst),
+              _activity_event(source=src, target=dst,
+                              knowledge_at="2026-08-10T12:00:00Z")]
+    forward = _build(tree, activity_events=list(events), computed_at=_ACT_COMPUTED_AT)
+    backward = _build(tree, activity_events=list(reversed(events)),
+                      computed_at=_ACT_COMPUTED_AT)
+    assert json.dumps(forward.edges, sort_keys=True) == json.dumps(
+        backward.edges, sort_keys=True)
+    assert json.dumps(forward.evidence, sort_keys=True) == json.dumps(
+        backward.evidence, sort_keys=True)
+    assert json.dumps(forward.activity_refusals, sort_keys=True) == json.dumps(
+        backward.activity_refusals, sort_keys=True)
+
+
+def test_activity_history_reader_absent_blank_and_malformed_lines(
+        tmp_path, monkeypatch, capsys):
+    from scripts import build_theme_graph as bake
+
+    monkeypatch.setattr(bake.store, "probation_path",
+                        lambda: tmp_path / "probation" / "proposals.jsonl")
+    # Absent ledger -> None, no output (today's production state).
+    assert bake._activity_history_events() is None
+    assert capsys.readouterr().out == ""
+    ledger = tmp_path / "probation" / "activity_history_events.jsonl"
+    ledger.parent.mkdir(parents=True, exist_ok=True)
+    ledger.write_text(json.dumps({"schema": "x"}) + "\n\n"
+                      + json.dumps({"schema": "y"}) + "\n", encoding="utf-8")
+    assert bake._activity_history_events() == [{"schema": "x"}, {"schema": "y"}]
+    assert capsys.readouterr().out == ""
+    # ANY malformed line refuses the WHOLE ledger, with a line-start ::warning.
+    ledger.write_text(json.dumps({"schema": "x"}) + "\n\nnot json\n",
+                      encoding="utf-8")
+    assert bake._activity_history_events() is None
+    warning = [ln for ln in capsys.readouterr().out.splitlines()
+               if ln.startswith("::")]
+    assert len(warning) == 1
+    assert warning[0].startswith("::warning title=theme graph activity history refused::")
+    assert f"{ledger}:3" in warning[0]
+    # A line that parses but is not a JSON object is malformed too.
+    ledger.write_text("[1, 2]\n", encoding="utf-8")
+    assert bake._activity_history_events() is None

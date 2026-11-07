@@ -1,0 +1,284 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mastermind-x.com/contracts/capital_structure_capacity_inputs.v1.schema.json",
+  "title": "Capital Structure Intelligence V2 — capacity inputs bundle (capital_structure.capacity_inputs.v1)",
+  "description": "One published capacity-inputs generation (SPEC_U1B §2). The bundle binds the five scenario-input families — instruments, share basis, financials, commitments and rules — to the served state generation and the verified projection generation, with TYPED per-family support: supported, partial or unavailable with a closed reason vocabulary. An unavailable family carries null records and null bindings, never an empty contract object, never a zero, never a fixture default. A supported or partial record is the published form of a frozen contract object and must reconstruct through its class byte-identically (engine.capital_structure.scenario_inputs). Facts and historical knowledge only: no supply, no cash number, no rank, size, entry, score, probability or recommendation.",
+  "type": "object",
+  "additionalProperties": false,
+  "propertyNames": {"$ref": "#/$defs/safe_property_name"},
+  "required": [
+    "schema",
+    "contract_version",
+    "generation_id",
+    "as_of",
+    "generated_at",
+    "state_generation_id",
+    "source_generation_id",
+    "rule_pack",
+    "rules",
+    "issuers",
+    "coverage",
+    "unavailable",
+    "capabilities_proven",
+    "authority"
+  ],
+  "properties": {
+    "schema": {"const": "capital_structure.capacity_inputs.v1"},
+    "contract_version": {
+      "type": "string",
+      "pattern": "^capital-structure-state-contracts/[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "generation_id": {
+      "type": "string",
+      "pattern": "^capacity_inputs:cs:[A-Fa-f0-9]{32}$"
+    },
+    "as_of": {"$ref": "#/$defs/timestamp"},
+    "generated_at": {"$ref": "#/$defs/timestamp"},
+    "state_generation_id": {"$ref": "#/$defs/identifier"},
+    "source_generation_id": {"$ref": "#/$defs/identifier"},
+    "rule_pack": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["rule_pack_id", "rule_pack_version", "rule_pack_digest", "source"],
+      "properties": {
+        "rule_pack_id": {"anyOf": [{"$ref": "#/$defs/identifier"}, {"type": "null"}]},
+        "rule_pack_version": {"anyOf": [{"type": "string", "minLength": 1}, {"type": "null"}]},
+        "rule_pack_digest": {"anyOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]},
+        "source": {"const": "L0"}
+      }
+    },
+    "rules": {"$ref": "#/$defs/rules_entry"},
+    "issuers": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["instruments", "share_basis", "financials", "commitments"],
+        "propertyNames": {"enum": ["instruments", "share_basis", "financials", "commitments"]},
+        "properties": {
+          "instruments": {"$ref": "#/$defs/family_entry"},
+          "share_basis": {"$ref": "#/$defs/family_entry"},
+          "financials": {"$ref": "#/$defs/family_entry"},
+          "commitments": {"$ref": "#/$defs/family_entry"}
+        }
+      }
+    },
+    "coverage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["issuer_count", "families"],
+      "properties": {
+        "issuer_count": {"type": "integer", "minimum": 0},
+        "families": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["instruments", "share_basis", "financials", "commitments"],
+          "properties": {
+            "instruments": {"$ref": "#/$defs/support_counts"},
+            "share_basis": {"$ref": "#/$defs/support_counts"},
+            "financials": {"$ref": "#/$defs/support_counts"},
+            "commitments": {"$ref": "#/$defs/support_counts"}
+          }
+        }
+      }
+    },
+    "unavailable": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "capabilities_proven": {
+      "type": "array",
+      "items": {"type": "object"}
+    },
+    "authority": {
+      "type": "object",
+      "propertyNames": {"$ref": "#/$defs/safe_property_name"}
+    },
+    "listings": {
+      "type": "object",
+      "propertyNames": {"$ref": "#/$defs/safe_property_name"},
+      "additionalProperties": {"$ref": "#/$defs/listing_record"}
+    }
+  },
+  "$defs": {
+    "safe_property_name": {
+      "type": "string",
+      "not": {
+        "pattern": "^(?:object_?keys?|raw_?(?:docs?|documents?)|scores?|probabilit(?:y|ies)|capacities|capacity|runway|overhang|fully_?diluted(?:_[a-z_]+)?|ranks?|ranking|sizing|position_?size|entry|prophet(?:_(?!authority$)[a-z_]+)?|likelihood|expected_dilution)$"
+      }
+    },
+    "identifier": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9:._/-]{0,199}$"
+    },
+    "listing_record": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "venue",
+        "foreign_private_issuer",
+        "home_country_practice_5635",
+        "reasons",
+        "evidence",
+        "available_at",
+        "as_of"
+      ],
+      "properties": {
+        "venue": {"enum": ["nasdaq", "nyse", "nyse_american", "otc", "none", "unknown"]},
+        "foreign_private_issuer": {"enum": [true, false, "unknown"]},
+        "home_country_practice_5635": {"enum": ["elected", "not_elected", "unknown"]},
+        "reasons": {"type": "array", "items": {"type": "string", "minLength": 1}},
+        "evidence": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["manifest_id", "span_id", "text_sha256"],
+            "properties": {
+              "manifest_id": {"$ref": "#/$defs/identifier"},
+              "span_id": {"$ref": "#/$defs/identifier"},
+              "text_sha256": {"$ref": "#/$defs/sha256"}
+            }
+          }
+        },
+        "available_at": {"$ref": "#/$defs/timestamp"},
+        "as_of": {"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"}
+      }
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[A-Fa-f0-9]{64}$"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "date": {
+      "type": "string",
+      "format": "date"
+    },
+    "unique_string_array": {
+      "type": "array",
+      "items": {"type": "string"},
+      "uniqueItems": true
+    },
+    "support_state": {
+      "enum": ["supported", "partial", "unavailable"]
+    },
+    "reason_code": {
+      "enum": [
+        "candidate_terms_not_materialized",
+        "decisions_ledger_absent",
+        "share_observations_not_admitted",
+        "corporate_actions_absent",
+        "companyfacts_snapshot_unavailable",
+        "commitment_rows_absent",
+        "binding_config_refuses_schema",
+        "no_rule_governs_as_of"
+      ]
+    },
+    "generation_binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["input_family", "schema", "support", "generation_id", "artifact_sha256", "as_of"],
+      "properties": {
+        "input_family": {
+          "enum": [
+            "instrument_candidate_terms",
+            "share_count_observations",
+            "corporate_actions",
+            "financials",
+            "document_terms",
+            "covenant_terms"
+          ]
+        },
+        "schema": {
+          "anyOf": [
+            {
+              "enum": [
+                "capital_structure.instrument_candidate_term.v1",
+                "capital_structure.share_count_observation.v1",
+                "capital_structure.share_count_observation.v2",
+                "capital_structure.corporate_action_observation.v1",
+                "capital_structure.financial_item_observation.v1",
+                "capital_structure.document_term_observation.v1",
+                "capital_structure.covenant_term_observation.v1"
+              ]
+            },
+            {"type": "null"}
+          ]
+        },
+        "support": {"$ref": "#/$defs/support_state"},
+        "generation_id": {"anyOf": [{"$ref": "#/$defs/identifier"}, {"type": "null"}]},
+        "artifact_sha256": {"anyOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]},
+        "as_of": {"anyOf": [{"$ref": "#/$defs/timestamp"}, {"type": "null"}]}
+      }
+    },
+    "family_entry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["support", "reason_codes", "binding", "record"],
+      "properties": {
+        "support": {"$ref": "#/$defs/support_state"},
+        "reason_codes": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/reason_code"}
+        },
+        "binding": {
+          "anyOf": [
+            {"$ref": "#/$defs/generation_binding"},
+            {"type": "null"}
+          ]
+        },
+        "record": {
+          "anyOf": [
+            {"type": "object", "propertyNames": {"$ref": "#/$defs/safe_property_name"}},
+            {"type": "null"}
+          ]
+        }
+      }
+    },
+    "rules_entry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["support", "reason_codes", "unknowns", "record"],
+      "properties": {
+        "support": {"$ref": "#/$defs/support_state"},
+        "reason_codes": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/reason_code"}
+        },
+        "unknowns": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["unknown_id", "description", "resolving_fact", "affects"],
+            "properties": {
+              "unknown_id": {"$ref": "#/$defs/identifier"},
+              "description": {"type": "string", "minLength": 1},
+              "resolving_fact": {"type": "string", "minLength": 1},
+              "affects": {"type": "array", "items": {"type": "string"}}
+            }
+          }
+        },
+        "record": {
+          "anyOf": [
+            {"type": "object", "propertyNames": {"$ref": "#/$defs/safe_property_name"}},
+            {"type": "null"}
+          ]
+        }
+      }
+    },
+    "support_counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["supported", "partial", "unavailable"],
+      "properties": {
+        "supported": {"type": "integer", "minimum": 0},
+        "partial": {"type": "integer", "minimum": 0},
+        "unavailable": {"type": "integer", "minimum": 0}
+      }
+    }
+  }
+}

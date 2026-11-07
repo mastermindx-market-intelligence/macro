@@ -168,15 +168,25 @@ def test_bilingual_render():
     # test rendering the shipped markup with the shipped helpers.
     preamble = tmpl[:tmpl.index("<!DOCTYPE html>")]
     assert "macro t(" in preamble and "macro qmark(" in preamble
-    snippet = preamble + "\n" + _if_block(tmpl, _LS_CHIP) + _if_block(tmpl, _TAKER_CHIP)
+    # R13 replaces the unqualified daily taker chip with the scoped hourly
+    # evidence surface. Keep testing actual shipped markup, not a deleted anchor.
+    flow_start = tmpl.index('{% set flow = derivatives_flow|default({}) %}')
+    flow_end = tmpl.index('</section>', flow_start) + len('</section>')
+    snippet = preamble + "\n" + _if_block(tmpl, _LS_CHIP) + tmpl[flow_start:flow_end]
     html = Environment(autoescape=True).from_string(snippet).render(leverage={
         "okx_ls_ratio": 2.5, "okx_ls_pctile": 96, "okx_ls_z": 2.1,
-        "okx_ls_lean": "crowded_long", "okx_taker_buy": 0.55, "okx_taker_pctile": 80})
+        "okx_ls_lean": "crowded_long", "okx_taker_buy": 0.99, "okx_taker_pctile": 80},
+        derivatives_flow={"state":"available","buy_share_pct":55.,
+            "observed_at":"2026-01-09 08:00 UTC","evaluated_at":"2026-01-09 09:00 UTC",
+            "window_24h_complete":True,"window_72h_complete":True,
+            "n_hours":200,"historical_gap":False})
     # Both metrics ship bilingually. Pin the load-bearing NOUNS, not the sentence: this
     # copy was rewritten to plain language ("OKX retail long/short" -> "Retail long/short
     # ratio (OKX accounts)") and assertions on the old phrasing rotted silently.
     assert "long/short ratio" in html.lower() and "多空比" in html          # EN + ZH
-    assert "buy share" in html.lower() and "主动买盘占比" in html             # EN + ZH
+    assert "buy-side share" in html.lower() and "买方占比" in html          # EN + ZH
+    assert '55.0' in html and '99.0' not in html, 'Use qualified hourly view, never legacy daily fallback'
+    assert 'Not spot flow or a trading signal' in html and '不是交易信号' in html
     # The CONTRARIAN framing is the load-bearing honesty invariant — a crowded long must
     # never read as a buy. Per the design doctrine the technical detail was demoted from
     # the glance line into the "?" hover note, so accept it anywhere in the chip.
