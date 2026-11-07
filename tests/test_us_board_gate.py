@@ -780,6 +780,129 @@ def _split_panels(vm, preview=3, gated=True):
     return _split_us_panels(vm, preview, gated=gated)
 
 
+def test_trigger_snapshot_refresh_preserves_order_and_observes_same_day_change(tmp_path):
+    from scripts.build_site import _load_us_trigger_snapshot
+    from tests.test_dashboard_template_render import _setup_row
+    path = tmp_path / "factordata" / "setups.json"
+    path.parent.mkdir()
+    prior = {"as_of": "2026-11-03", "buy": [_setup_row(ticker="TKR"), _setup_row(ticker="WELL")],
+             "rank_by": "alpha"}
+    path.write_text(json.dumps(prior))
+    first = _load_us_trigger_snapshot(tmp_path)
+    assert first == prior
+    corrected = {**prior, "buy": [_setup_row(ticker="WELL"), _setup_row(ticker="ARCB") ]}
+    path.write_text(json.dumps(corrected))
+    fresh = _load_us_trigger_snapshot(tmp_path)
+    assert fresh == corrected and fresh != first
+    assert first == prior  # the frozen first pass was not mutated
+
+
+@pytest.mark.parametrize("content", [None, "{broken", "null", "[]",
+    '{"as_of":"today","buy":[]}', '{"as_of":"2026-11-04","buy":{}}',
+    '{"as_of":"2026-11-04","buy":[null]}'])
+def test_trigger_snapshot_read_failure_drops_prior_rows_and_discloses_unavailable(tmp_path, content):
+    from scripts.build_site import _load_us_trigger_snapshot
+    path = tmp_path / "factordata" / "setups.json"
+    path.parent.mkdir()
+    if content is not None:
+        path.write_text(content)
+    assert _load_us_trigger_snapshot(tmp_path) == {
+        "as_of": None, "buy": [], "snapshot_unavailable": True}
+
+
+@pytest.mark.parametrize("field,value", [("ticker", None), ("alpha", None),
+    ("alpha", True), ("setup", "bad"), ("factor_z", "bad"),
+    ("factor_z", float("nan")), ("insider_net_mn", "bad"),
+    ("sector", {}), ("label", ["bad"]), ("signal", "bad"),
+    ("signal", {"tier_observed_date": "today"})])
+def test_trigger_snapshot_rejects_rows_that_cannot_render(tmp_path, field, value):
+    from scripts.build_site import _load_us_trigger_snapshot
+    from tests.test_dashboard_template_render import _setup_row
+    row = _setup_row(**{field: value})
+    path = tmp_path / "factordata" / "setups.json"
+    path.parent.mkdir()
+    path.write_text(json.dumps({"as_of": "2026-11-03", "buy": [row]}))
+    assert _load_us_trigger_snapshot(tmp_path)["snapshot_unavailable"] is True
+
+
+def test_trigger_snapshot_rejects_missing_format_fields(tmp_path):
+    from scripts.build_site import _load_us_trigger_snapshot
+    path = tmp_path / "factordata" / "setups.json"
+    path.parent.mkdir()
+    path.write_text(json.dumps({"as_of": "2026-11-03", "buy": [{"ticker": "TKR"}]}))
+    assert _load_us_trigger_snapshot(tmp_path)["snapshot_unavailable"] is True
+
+
+def test_trigger_pending_state_is_identical_in_public_and_paid_rows():
+    from engine.signal_gate import buy_signal
+    from scripts import build_site as bs
+    vm = _panel_vm(setups=5, leaders=0, ran=0, actnow=0, watch=0, laggards=0)
+    for row in vm["top_setups"]["buy"]:
+        row["signal"] = buy_signal({"eligible": True, "tier_cascade": "T1",
+            "tier": "anticipation", "sub": "pending", "provisional": False})
+    overrides, gate, locked = bs._split_us_panels(vm, 3, gated=True)
+    shell = _render_panels({**vm, **overrides}, gate)
+    payload = bs._render_us_panel_payload(_env(), gate, locked, vm)
+    paid = payload["setups_html"]
+    rows = TS_ROW.findall(shell)
+    assert len(rows) == 3 and len(TS_ROW.findall(paid)) == 2
+    for row in rows + TS_ROW.findall(paid):
+        assert "Unconfirmed — wait" in row and "未确认 — 等待" in row
+        assert "Buy zone" not in row and 'class="ts-buy ok"' not in row
+    assert 'data-tkr="TSX3"' not in shell and 'data-tkr="TSX3"' in paid
+
+
+@pytest.mark.parametrize("context", ["bad", {"status": "blocked"},
+    {"status": "buy_now", "asof": "today"}, {"status": None, "asof": "2026-11-04"},
+    {"status": "blocked", "asof": "2026-11-04", "entry_open": True}])
+def test_trigger_snapshot_rejects_unbound_price_context(tmp_path, context):
+    from scripts.build_site import _load_us_trigger_snapshot
+    from tests.test_dashboard_template_render import _setup_row
+    path = tmp_path / "factordata" / "setups.json"
+    path.parent.mkdir()
+    path.write_text(json.dumps({"as_of": "2026-11-04", "buy": [_setup_row(price_context=context)]}))
+    assert _load_us_trigger_snapshot(tmp_path)["snapshot_unavailable"] is True
+
+
+def test_trigger_owner_context_survives_producer_snapshot_and_public_paid_split(tmp_path):
+    import ast
+    from copy import deepcopy
+    from engine import signal_gate
+    from scripts import build_site as bs
+    from scripts import build_stock_library as library
+    vm = _panel_vm(setups=5, leaders=0, ran=0, actnow=0, watch=0, laggards=0)
+    snapshot = {**vm["top_setups"], "as_of": "2026-11-04"}
+    original = deepcopy(snapshot)
+    contexts = {r["ticker"]: {"status": "blocked", "asof": "2026-11-03"}
+                for r in snapshot["buy"]}
+    # Execute the actual post-rank writer block, then the actual loader and both
+    # consumers. The ranking inputs and original sequence are not reconstructed.
+    tree = ast.parse(Path(library.__file__).read_text())
+    loop = next(n for n in ast.walk(tree) if isinstance(n, ast.For)
+                and any(isinstance(x, ast.Subscript) and isinstance(x.slice, ast.Constant)
+                        and x.slice.value == "price_context" for x in ast.walk(n)))
+    scope = {"setups": snapshot, "signal_gate": signal_gate, "sig_verdict": {},
+             "trigger_price_context": contexts}
+    exec(compile(ast.Module(body=[loop], type_ignores=[]), library.__file__, "exec"), scope)
+    assert [{k: v for k, v in row.items() if k not in {"signal", "price_context"}}
+            for row in snapshot["buy"]] == [
+                {k: v for k, v in row.items() if k != "signal"} for row in original["buy"]]
+    path = tmp_path / "factordata" / "setups.json"
+    path.parent.mkdir()
+    path.write_text(json.dumps(snapshot))
+    vm["top_setups"] = bs._load_us_trigger_snapshot(tmp_path)
+    assert vm["top_setups"] == snapshot
+    overrides, gate, locked = bs._split_us_panels(vm, 3, gated=True)
+    shell = _render_panels({**vm, **overrides}, gate)
+    paid = bs._render_us_panel_payload(_env(), gate, locked, vm)["setups_html"]
+    assert len(TS_ROW.findall(shell)) == 3 and len(TS_ROW.findall(paid)) == 2
+    for row in TS_ROW.findall(shell) + TS_ROW.findall(paid):
+        assert "Decline — wait" in row and "下行 — 等待" in row
+        assert "2026-11-03" in row and "2026-11-04" not in row
+        assert "Buy zone" not in row
+    assert 'data-tkr="TSX3"' not in shell and 'data-tkr="TSX3"' in paid
+
+
 def test_every_adjacent_panel_ships_only_its_preview_slice():
     pytest.importorskip("pandas")
     pytest.importorskip("plotly")
@@ -1276,6 +1399,69 @@ def _actual_fresh_board_condition(prior, fresh, *, prior_view=None, fresh_view=N
                "us_candidate_visibility": prior_view if prior_view is not None else project_candidate_visibility(prior)},
     }
     return bool(eval(compile(ast.Expression(guards[0].test), "<actual-rerender-predicate>", "eval"), namespace))
+
+
+@pytest.mark.parametrize("refresh", ["corrected", "unavailable"])
+@pytest.mark.parametrize("board_state", ["unchanged", "missing", "malformed"])
+def test_trigger_only_change_reaches_real_rerender_and_both_consumer_halves(tmp_path, refresh, board_state):
+    """Main board is identical; only the separately produced trigger file changes."""
+    import ast
+    from copy import deepcopy
+    from scripts import build_site as bs
+    vm = _panel_vm(setups=5, leaders=0, ran=0, actnow=0, watch=0, laggards=0)
+    vm["top_setups"]["as_of"] = "2026-11-03"
+    prior = deepcopy(vm["top_setups"])
+    fresh = deepcopy(prior)
+    fresh["buy"][3]["name"] = "Corrected trigger company"
+    path = tmp_path / "factordata" / "setups.json"
+    path.parent.mkdir()
+    path.write_text(json.dumps(fresh) if refresh == "corrected" else "{broken")
+    snapshot = bs._load_us_trigger_snapshot(tmp_path)
+    board = vm["us_standouts"]
+    assert not _actual_fresh_board_condition(board, deepcopy(board))
+    module = ast.parse((ROOT / "scripts/build_site.py").read_text())
+    main = next(n for n in module.body if isinstance(n, ast.FunctionDef) and n.name == "main")
+    updates = [n for n in ast.walk(main) if isinstance(n, ast.Assign)
+               and any(isinstance(t, ast.Subscript) and isinstance(t.value, ast.Name)
+                       and t.value.id == "vm" and isinstance(t.slice, ast.Constant)
+                       and t.slice.value == "top_setups" for t in n.targets)]
+    assert len(updates) == 1
+    guards = [n for n in ast.walk(main) if isinstance(n, ast.If) and updates[0] in n.body]
+    assert len(guards) == 1
+    scope = {"vm": vm, "_fresh_setups": snapshot, "_board_changed": False,
+             "_setups_changed": snapshot != prior, "site": tmp_path, "json": json,
+             "log": bs.log, "_prior_as_of": board.get("as_of"), "_prior_stale": {},
+             "project_candidate_visibility": lambda *args, **kwargs: None,
+             "load_candidate_archive_status": lambda *args, **kwargs: None}
+    if board_state != "unchanged":
+        if board_state == "malformed":
+            (path.parent / "us_standouts.json").write_text("{broken")
+        # Execute the actual independent board-read try/except. Its failure must
+        # not skip the following trigger render decision or change prior bindings.
+        board_reads = [n for n in ast.walk(main) if isinstance(n, ast.Try)
+                       and any(isinstance(x, ast.Assign)
+                               and any(isinstance(t, ast.Name) and t.id == "_fresh_owner_doc"
+                                       for t in x.targets) for x in n.body)]
+        assert len(board_reads) == 1
+        assert guards[0] not in list(ast.walk(board_reads[0]))
+        exec(compile(ast.Module(body=board_reads, type_ignores=[]), "<actual-board-refresh>", "exec"), scope)
+        assert not scope["_board_changed"]
+        assert vm["us_standouts"] == board and vm["top_setups"] == prior
+    assert eval(compile(ast.Expression(guards[0].test), "<actual-common-render-guard>", "eval"), scope)
+    exec(compile(ast.Module(body=updates, type_ignores=[]), "<actual-trigger-refresh>", "exec"),
+         scope)
+    overrides, gate, locked = bs._split_us_panels(vm, 3, gated=True)
+    shell = _render_panels({**vm, **overrides}, gate)
+    blocks = bs._render_us_panel_payload(_env(), gate, locked, vm)
+    if refresh == "corrected":
+        assert "Corrected trigger company" not in shell
+        assert "Corrected trigger company" in blocks["setups_html"]
+        assert vm["top_setups"] == fresh
+    else:
+        assert "Signal snapshot unavailable" in shell
+        assert not TS_ROW.findall(shell)
+        assert not blocks.get("setups_html")
+    assert prior["buy"][3]["name"] == "Setup 3"
 
 
 @pytest.mark.parametrize("change", ["reason", "membership", "unavailable"])

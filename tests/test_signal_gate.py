@@ -65,7 +65,9 @@ def test_buy_signal_is_slim_and_json_safe():
                          # R-SQ3). The two grids were re-anchored in different PRs, so a row
                          # needs BOTH labels to be placed: `anchor_era` fences the cascade
                          # that tiered it, `sq_anchor_era` the marker stream that fed it.
-                         "sq_anchor_era"}
+                         "sq_anchor_era",
+                         "tier", "sub", "reason", "asof", "tier_event_date",
+                         "tier_observed_date", "tier_observation_provisional"}
     assert "last" not in slim and "result" not in slim          # no NaN-prone / heavy fields
     json.dumps(slim, allow_nan=False)                            # must not raise
     assert is_buyable(slim) is True                              # slim still gates correctly
@@ -78,6 +80,27 @@ def test_buy_signal_is_slim_and_json_safe():
                                 # grids whether or not either had anything to say (R-SQ3).
                                 "sq_anchor_era": signal_quality.ANCHOR_ERA}
     assert is_buyable(buy_signal(None)) is False
+
+
+def test_buy_signal_preserves_pending_confirmation_and_native_clocks():
+    """A pending T1 must not become indistinguishable from a held T1 in JSON."""
+    full = {"eligible": True, "tier_cascade": "T1", "tier": "anticipation",
+            "sub": "pending", "reason": "buy fired; forward confirmation pending",
+            "asof": "2026-11-03", "tier_event_date": "2026-11-02",
+            "tier_observed_date": "2026-11-03", "tier_observation_provisional": True,
+            "provisional": False, "last": {"price": float("nan")}}
+    slim = buy_signal(full)
+    for key in ("tier", "sub", "reason", "asof", "tier_event_date",
+                "tier_observed_date", "tier_observation_provisional"):
+        assert slim[key] == full[key]
+    assert slim["provisional"] is False  # different owner fact, not confirmation
+    assert "last" not in slim
+    assert json.loads(json.dumps(slim, allow_nan=False)) == slim
+    assert is_buyable(slim) == is_buyable(full)  # disclosure, not a new gate
+    held = {**full, "tier": "take", "sub": None,
+            "tier_observation_provisional": False}
+    assert buy_signal(held)["tier"] == "take"
+    assert buy_signal(held) != slim
 
 
 # ---------------------------------------------------------------------------

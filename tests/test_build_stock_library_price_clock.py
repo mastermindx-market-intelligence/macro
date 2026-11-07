@@ -26,6 +26,45 @@ def seed(close):
             "valuation": {"asof": str(close.index[-1].date())}}
 
 
+@pytest.mark.parametrize("state,urgency,tag,expected", [
+    ("DECLINE", "avoid", None, "Decline — wait"),
+    ("COUNTERTREND BOUNCE", "caution", None, "Turn unconfirmed"),
+    ("TOP WATCH", "caution", "DON'T CHASE", "Extended — wait"),
+    ("FRESH BUY", "now", None, "Entry check needed"),
+])
+def test_trigger_context_carries_actual_cycle_owner_to_watch_row(state, urgency, tag, expected):
+    from engine import entry_signal
+    from tests.test_dashboard_template_render import _env, _setup_row
+    close = closes()
+    # A later empty source row must not advance the price-analysis clock.
+    close.loc[pd.Timestamp("2026-10-09")] = np.nan
+    rec = {"ladder": {"state": state, "entry": {"urgency": urgency, "tag": tag}},
+           "cycle": {}, "tech": {}}
+    owner = entry_signal.assess(close, None, rec, buyable=True)
+    before = copy.deepcopy(owner)
+    context = library._trigger_price_context(owner, close)
+    assert context == {"status": owner["status"], "asof": "2026-10-08"}
+    assert owner == before
+    row = _setup_row(price_context=context, signal={
+        "eligible": True, "tier_cascade": "T1", "tier": "take", "asof": "2026-10-07"})
+    html = _env().get_template("_us_setups_rows.html.j2").render(rows=[row])
+    assert expected in html and "Signal confirmed" in html
+    assert "2026-10-07" in html and "2026-10-08" in html
+    assert "2026-10-09" not in html
+    assert "Buy zone" not in html and "half size" not in html
+    # This projection cannot become an alternative priced/sized entry contract.
+    assert set(context) == {"status", "asof"}
+
+
+@pytest.mark.parametrize("signal,close", [
+    (None, closes()), ({"status": "blocked"}, pd.Series(dtype=float)),
+    ({"status": "buy_now"}, pd.Series([100.0, 101.0])),
+    ({"status": "buy_now"}, pd.Series([100.0], index=[pd.NaT])),
+])
+def test_trigger_context_never_invents_an_owner_or_bar_date(signal, close):
+    assert library._trigger_price_context(signal, close) == {"status": None, "asof": None}
+
+
 def test_actual_one_binds_thin_price_without_rewriting_record_clock(monkeypatch):
     close = closes()
     monkeypatch.setattr(library, "analyze", lambda *a, **kw: {"ladder": {"state": "WATCH"}})

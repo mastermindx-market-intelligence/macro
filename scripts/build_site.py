@@ -5234,6 +5234,65 @@ def _us_panel_lists(vm: dict) -> "tuple[list, list, list]":
     return resid, ldrs, ran
 
 
+def _load_us_trigger_snapshot(site: Path) -> dict:
+    """Read one dated trigger snapshot; never reuse older rows after a failed read.
+
+    This is a rendering boundary, not a selector or entry gate. Valid producer
+    rows/order are returned unchanged. Missing/malformed input is distinct from a
+    successfully produced empty list, in both the first and late render passes.
+    """
+    try:
+        snapshot = json.loads((site / "factordata" / "setups.json").read_text())
+        if not isinstance(snapshot, dict) or not isinstance(snapshot.get("buy"), list):
+            raise ValueError("trigger snapshot must contain a buy array")
+        source_date = snapshot.get("as_of")
+        if (not isinstance(source_date, str) or len(source_date) != 10
+                or datetime.strptime(source_date, "%Y-%m-%d").date().isoformat() != source_date):
+            raise ValueError("trigger snapshot date unavailable")
+        from math import isfinite
+        for row in snapshot["buy"]:
+            if (not isinstance(row, dict) or not isinstance(row.get("ticker"), str)
+                    or not row["ticker"].strip()):
+                raise ValueError("trigger snapshot contains a malformed row")
+            for key in ("sector", "label"):
+                if row.get(key) is not None and not isinstance(row[key], str):
+                    raise ValueError(f"trigger row has invalid {key}")
+            signal = row.get("signal")
+            if signal is not None and not isinstance(signal, dict):
+                raise ValueError("trigger row has malformed signal evidence")
+            for key in ("asof", "tier_event_date", "tier_observed_date"):
+                clock = (signal or {}).get(key)
+                if clock is not None and (not isinstance(clock, str) or len(clock) != 10
+                        or datetime.strptime(clock, "%Y-%m-%d").date().isoformat() != clock):
+                    raise ValueError(f"trigger row has invalid {key}")
+            context = row.get("price_context")
+            if context is not None:
+                if not isinstance(context, dict) or set(context) != {"status", "asof"}:
+                    raise ValueError("trigger row has malformed price context")
+                status, clock = context.get("status"), context.get("asof")
+                if status is not None or clock is not None:
+                    if (not isinstance(status, str) or not status
+                            or not isinstance(clock, str) or len(clock) != 10
+                            or datetime.strptime(clock, "%Y-%m-%d").date().isoformat() != clock):
+                        raise ValueError("trigger row has undated price context")
+            # These values are formatted numerically by both shell and payload.
+            # Reject the snapshot before either consumer can retain an older
+            # table after a render error. Do not silently drop individual names.
+            for key in ("alpha", "setup", "factor_z", "insider_net_mn"):
+                value = row.get(key)
+                if value is None and key not in ("alpha", "setup"):
+                    if key == "factor_z" and key not in row:
+                        raise ValueError("trigger row is missing factor_z")
+                    continue
+                if (isinstance(value, bool) or not isinstance(value, (int, float))
+                        or not isfinite(value)):
+                    raise ValueError(f"trigger row has invalid {key}")
+        return snapshot
+    except (OSError, ValueError, TypeError) as exc:
+        log.warning("setups.json unavailable (%s)", exc)
+        return {"as_of": None, "buy": [], "snapshot_unavailable": True}
+
+
 def _us_withheld_names(vm: dict, panel_preview: int) -> set:
     """Every name the free US shell may not print, on any surface.
 
@@ -6548,13 +6607,7 @@ def main() -> int:
     # broad "Top setups" board (selection × timing across the full S&P 1500),
     # written by build_stock_library at the END of the prior build_site run —
     # additive + graceful: absent (first run) => the board simply doesn't render.
-    top_setups = None
-    _sp = site / "factordata" / "setups.json"
-    if _sp.exists():
-        try:
-            top_setups = json.loads(_sp.read_text())
-        except Exception as e:  # noqa: BLE001 — additive, never fatal
-            log.warning("setups.json unreadable (%s)", e)
+    top_setups = _load_us_trigger_snapshot(site)
     # WIDE "Standout individual stocks" board (~80-120 names ranked by the validated
     # alpha leg, each carrying the unified Conviction profile/verdict). Written by
     # build_stock_library at the END of the prior run (one-build lag, like setups.json,
@@ -8192,11 +8245,20 @@ def main() -> int:
         # from the first-pass board) can still lag one build, but it is a stable count that
         # does not signal staleness, so it is intentionally left. This removes only the
         # RENDER-side lag — the banner still fires whenever the DATA itself is genuinely
-        # stale (CSP-W5 disclosure unchanged; never fail-dark, per CSP-R1). Fail-soft: any
-        # error leaves the first-pass pages in place.
+        # stale (CSP-W5 disclosure unchanged; never fail-dark, per CSP-R1). The
+        # independent trigger snapshot still refreshes if the board read fails.
+        _fresh_setups = _load_us_trigger_snapshot(site)
+        _setups_changed = _fresh_setups != vm.get("top_setups")
+        _board_changed = False
+        _prior_as_of = (us_standouts or {}).get("as_of")
+        _prior_stale = (us_standouts or {}).get("staleness") or {}
         try:
             _us_path = site / "factordata" / "us_standouts.json"
             _fresh_source_bytes = _us_path.read_bytes() if _us_path.exists() else None
+            _fresh_owner_doc = (json.loads(_fresh_source_bytes)
+                                if _fresh_source_bytes is not None else None)
+            if _fresh_owner_doc is not None and not isinstance(_fresh_owner_doc, dict):
+                raise ValueError("fresh US board must be an object")
             _fresh_w3c = None
             _fresh_w3c_refusal = None
             _fresh_w3c_binding = None
@@ -8226,8 +8288,6 @@ def main() -> int:
                             log.warning("W3C US qualified reads refused (%s); receipt-only", _fresh_w3c_read["reason_codes"])
                 except Exception as _fresh_w3c_e:  # noqa: BLE001 — keep ordinary fresh-board rendering
                     log.warning("W3C fresh US source binding unavailable (%s)", _fresh_w3c_e)
-            _fresh_owner_doc = (json.loads(_fresh_source_bytes)
-                                if _fresh_source_bytes is not None else None)
             _fresh_su = None
             _fresh_today_native = None
             if _fresh_owner_doc is not None:
@@ -8245,8 +8305,6 @@ def main() -> int:
                         {**_fresh_today_binding, **_fresh_today_native}
                         if _fresh_today_binding else _fresh_today_native)
                 _fresh_su = _attach_board_display_chips(site, _fresh_owner_doc)
-            _prior_as_of = (us_standouts or {}).get("as_of")
-            _prior_stale = (us_standouts or {}).get("staleness") or {}
             _fresh_candidate_visibility = project_candidate_visibility(
                 _fresh_su, archive=load_candidate_archive_status(_fresh_su))
             if _fresh_su and (
@@ -8306,12 +8364,14 @@ def main() -> int:
                                                 _fresh_su, foresight=_fsight_rr)
                 except Exception as _tt_e:  # noqa: BLE001 — additive, never fatal
                     log.warning("theme tape re-render skipped (%s)", _tt_e)
-                _setups_path = site / "factordata" / "setups.json"
-                if _setups_path.exists():
-                    try:
-                        vm["top_setups"] = json.loads(_setups_path.read_text())
-                    except Exception:  # noqa: BLE001 — keep prior setups on parse error
-                        pass
+                _board_changed = True
+        except Exception as _br_e:  # noqa: BLE001 — retain the prior board, not prior triggers
+            log.warning("fresh US board unavailable (%s); checking trigger refresh independently", _br_e)
+        try:
+            if _board_changed or _setups_changed:
+                # One frozen trigger read and one render path for both consumers,
+                # even when the separate main-board producer is unavailable.
+                vm["top_setups"] = _fresh_setups
                 # Tier gate (docs/TIER_PREVIEW_PATTERN.md): the fresh board just
                 # replaced vm["us_standouts"] above, so re-split it and rewrite the
                 # payload from THIS generation — otherwise the re-render would bake
@@ -8380,9 +8440,9 @@ def main() -> int:
                 log.info(
                     "one-build-lag fix: re-rendered macro/us_stocks from fresh board "
                     "(as_of %s -> %s, delayed %s -> %s)",
-                    _prior_as_of, _fresh_su.get("as_of"),
+                    _prior_as_of, (vm.get("us_standouts") or {}).get("as_of"),
                     _prior_stale.get("delayed"),
-                    (_fresh_su.get("staleness") or {}).get("delayed"))
+                    ((vm.get("us_standouts") or {}).get("staleness") or {}).get("delayed"))
         except Exception as _rr_e:  # noqa: BLE001 — additive, never fatal
             log.warning("one-build-lag re-render skipped (%s)", _rr_e)
         _tmark("one_build_lag_rerender")

@@ -1738,6 +1738,9 @@
   .ts-buy { font-size: 10px; font-weight: 700; padding: 1px 7px; border-radius: 6px; white-space: nowrap; border: 1px solid var(--line); }
   .ts-buy.ok { color: var(--ink-up, var(--up)); border-color: var(--up); background: color-mix(in srgb, var(--up) 14%, var(--panel)); }
   .ts-buy.soon { color: var(--ink-up, var(--up)); border-color: color-mix(in srgb, var(--up) 55%, var(--line)); }
+  .ts-signal-date { display: block; margin-top: 3px; font-size: 10px; }
+  .ts-price-context { display: block; margin-top: 5px; font-size: 10px; line-height: 1.4; white-space: normal; max-width: 23ch; }
+  .ts-price-date { display: inline-block; }
   /* ── strip tables on phones (UX handoff §17: primary decisions never x-scroll) ──
      Both prophet-panel strips (⚡ fresh triggers, 9 cols · 🏃 market leaders, 6 cols,
      7 when the artifact stamps themes) are wider than a 390px panel, so .tbl-scroll
@@ -17782,12 +17785,15 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
       {%- set _ts_ov = _tsn.overlap -%}
       <div class="topsetups">
         <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap">
-          <span style="font-weight:700;font-size:12.5px">⚡ {{ t('More fresh triggers', '更多新触发') }}</span>
-          <span class="muted" style="font-size:11px">{{ t('More names flashing a buy signal today.', '今天还有更多个股亮起买入信号。') }}{% if _ts_ov %} {{ t('Signals already shown on cards carry a ⚡.', '已在卡片中展示的信号带有 ⚡ 标记。') }}{% endif %}
-            {{ help("These are today's signals that are not already shown as cards. Stronger names within their own sector appear first. Click a row for the full breakdown.", "这里是今天尚未在上方卡片中展示的信号。同板块中更强的股票排在前面。点击任意一行查看完整拆解。") }}</span>
+          <span style="font-weight:700;font-size:12.5px">⚡ {{ t('Signal watch', '信号观察') }}</span>
+          <span class="muted" style="font-size:11px">{{ t('Recent triggers by relative strength. Check current entry before acting.', '近期触发按相对强度排序，行动前请核实当前入场状态。') }}{% if _ts_ov %} {{ t('Signals already shown on cards carry a ⚡.', '已在卡片中展示的信号带有 ⚡ 标记。') }}{% endif %}
+            {{ help("These historical signals are not a ranked list of current entries. Strength uses older sector-relative momentum; it does not measure the chance of winning or prove a healthy trend. A confirmed signal can later fail. Click a row to check current entry, price structure and risk.", "这些历史信号并非当前入场机会的排名。强度采用较早的板块相对动量，不代表胜率，也不能证明趋势健康。已确认的信号以后仍可能失效。请点击查看当前入场状态、价格结构与风险。") }}</span>
+          <span class="muted ts-snapshot" style="font-size:11px">{% if top_setups.get('as_of') %}{{ t('List snapshot', '列表快照') }} {{ top_setups.as_of }}{% if _su and _su.get('as_of') and top_setups.as_of < _su.as_of %} · {{ t('Older snapshot — check current data', '较旧快照 — 请核实当前数据') }}{% endif %}{% else %}{{ t('List date unavailable', '列表日期不可用') }}{% endif %}</span>
           <a class="ts-more" href="discovery.html">{{ t('Top Picks', '精选股') }} →</a>
         </div>
-        {% if _tsn.resid %}
+        {% if top_setups.get('snapshot_unavailable') %}
+        <p class="ts-empty">{{ t('Signal snapshot unavailable. Current triggers cannot be verified.', '信号快照不可用，无法核实当前触发。') }}</p>
+        {% elif _tsn.resid %}
         {# Column classes (c-*) are the mobile contract: ≤680px hides the tertiary
            set (see the .ts-tbl media block) — a th without a c-class silently
            escapes that budget, so every column carries one (pinned by
@@ -17795,9 +17801,9 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
         <div class="tbl-scroll"><table class="ts-tbl">
           <thead><tr>
             <th class="c-stock">{{ t('Stock', '个股') }}</th><th class="c-sector">{{ t('Sector', '板块') }}</th>
-            <th class="r c-edge" data-tip-en="How strongly this stock is outperforming similar stocks after broad market and sector moves are removed." data-tip-zh="剔除大盘与板块整体走势后，这只股票相对同类股票的强度。">{{ t('strength', '强度') }}</th><th class="r c-rank">{{ t('rank', '排名') }}</th>
-            <th class="c-buy" data-tip-en="Where the name sits on the entry signal. Buy zone = it has fired in the last few days and is still building; About to cross = it should fire within a day or two. The board requires this." data-tip-zh="这只股票在入场信号上处于什么位置。买入区＝最近几天刚触发、还在往上走；即将交叉＝预计一两天内触发。榜单以此为准。">{{ t('buy', '买入') }}</th>
-            <th class="c-cycle">{{ t('cycle', '周期') }}</th><th class="c-trend">{{ t('trend', '趋势') }}</th>
+            <th class="r c-edge" data-tip-en="Sector-relative momentum over the prior year, excluding the latest month. This orders the list; it is not current trend health or a return forecast." data-tip-zh="过去一年剔除最近一个月的板块相对动量。本表按此排序，不代表当前趋势健康程度，也不是收益预测。">{{ t('strength', '强度') }}</th><th class="r c-rank">{{ t('sector rank', '板块内排名') }}</th>
+            <th class="c-buy" data-tip-en="Signal confirmation and dated daily-cycle context. Historical momentum and a trigger do not establish that a current entry is open." data-tip-zh="信号确认与带日期的每日周期背景。历史动量和触发信号不能证明当前可以入场。">{{ t('signal / price context', '信号 / 价格背景') }}</th>
+            <th class="c-cycle">{{ t('cycle', '周期') }}</th><th class="c-trend" data-tip-en="Recent relative-performance category, separate from the older strength score. A weak month does not establish a healthy pullback." data-tip-zh="近期相对表现类别，与较早的强度评分分开。近期偏弱不代表健康回调。">{{ t('recent move', '近期表现') }}</th>
             <th class="r c-factor" data-tip-en="A light tie-breaker using value, quality and volatility. It does not drive the list." data-tip-zh="使用价值、质量和波动率进行轻量比较，只在接近时辅助排序。">{{ t('quality', '质量') }}</th>
             <th class="r c-setup" data-tip-en="A secondary timing score. The list is ordered by Strength; this number is supporting detail." data-tip-zh="辅助判断入场时机的分数。本表按强度排序，这一列仅供补充。">{{ t('readiness', '就绪度') }}</th>
           </tr></thead>
@@ -17809,11 +17815,11 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
         </table></div>{# /tbl-scroll #}
         {% if pgate and pgate.get('setups') %}{{ pg_more(pgate.setups.locked) }}{% endif %}
         {% elif _tsn.actionable %}
-        <p class="ts-empty">⚡ {{ t("Every actionable signal is already on the board above, marked ⚡.", "今天可操作的信号都已在上方卡片中，以 ⚡ 标注。") }}</p>
+        <p class="ts-empty">⚡ {{ t("Every signal in this snapshot is already on the board above, marked ⚡.", "本次快照中的信号都已在上方卡片中，以 ⚡ 标注。") }}</p>
         {% elif _tsn.earnings %}
-        <p class="ts-empty">{{ t("Today's fresh signals are in Earnings watch while their reports are due.", "今天的新信号因财报临近，已列入财报观察。") }}</p>
+        <p class="ts-empty">{{ t("These signals are in Earnings watch while their reports are due.", "这些信号因财报临近，已列入财报观察。") }}</p>
         {% else %}
-        <p class="ts-empty">⚪ {{ t("No fresh buy triggers today — this board only lists names whose entry has actually fired, so a strong leader that is stretched or rolling over stays off it. New entries appear here when they trigger; see Top Picks for the full conviction board.", "今日无新买入触发 — 本榜单只列出确实已触发入场的标的，过度拉伸或正在回落的强势股不会出现。新入场触发后会在此显示；完整信念榜见精选股。") }}</p>
+        <p class="ts-empty">⚪ {{ t("No qualifying triggers in this snapshot. Check Top Picks for the broader board.", "本次快照没有符合条件的触发；更广泛的榜单请查看精选股。") }}</p>
         {% endif %}
       </div>
       {% endif %}
