@@ -29387,7 +29387,7 @@ jobs:
         # so it is named by a run step from the day it lands: an alarm nobody
         # tests is the same silence one layer up. stdlib + pyyaml, tmp_path only.
         run: python -m pytest tests/test_marketing_liveness_tripwire.py -q
-      - name: unrun-baseline joins 2026-08-11 — approval desk, card pixels, wire expiry
+      - name: approval desk, card pixels, wire expiry and synthetic harness boundaries
         # Batch join from the unrun_test_baseline triage that followed #5379's
         # voice-v5 rot discovery (test_marketing_market_clock): all suites below
         # sat in config/unrun_test_baseline.json named by NO run step. Ran green
@@ -29402,7 +29402,10 @@ jobs:
         #     publish-time daily read keeps its longer TTL
         # Verified in a clean pytest+pyyaml+numpy+pandas+pyarrow venv (this lane's
         # exact install line): 308 passed, 0 skipped.
-        run: python -m pytest tests/test_marketing_approval_desk.py tests/test_marketing_card_earns_pixels.py tests/test_marketing_wire_expiry.py -q
+        # Harness cases use generated temporary config and fake drivers.
+        # Public runtime operations refuse; no live pool/persona/profile is read.
+        # Git policy checks inspect ignore/index metadata, not the private file.
+        run: python -m pytest tests/test_marketing_approval_desk.py tests/test_marketing_card_earns_pixels.py tests/test_marketing_wire_expiry.py tools/xguerrilla/tests/test_drivers.py tools/xguerrilla/tests/test_net.py tools/xguerrilla/tests/test_ops.py tools/xguerrilla/tests/test_pilot_sim.py tools/xguerrilla/tests/test_proxies_template.py tools/xguerrilla/tests/test_state.py tools/xguerrilla/tests/test_textdrift.py tools/xguerrilla/tests/test_typing.py tools/xguerrilla/tests/test_validators.py tools/xguerrilla/tests/test_runtime_boundary.py -q
 
   marketing-media-pipeline:
     if: ${{ false }}

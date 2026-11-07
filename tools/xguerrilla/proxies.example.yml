@@ -1,0 +1,24 @@
+# BartProxies static ISP, US, USER-mode (2026-11-07). One line per slot; a slot is
+# consumed exclusively by one child for the life of the account (law: 1:1 sticky).
+# Port order is the allocation order. Never print the password in logs.
+# This is the sanitized template. Copy to proxies.yml and fill BART_USER/BART_PASS
+# (or export them) — tools/xguerrilla/proxies.yml is gitignored and never committed.
+pool: bartproxies-us-16
+scheme: http
+inventory:
+  - 170.124.172.249:8309:${BART_USER}:${BART_PASS}
+  - 170.124.172.250:8310:${BART_USER}:${BART_PASS}
+  - 170.124.172.251:8311:${BART_USER}:${BART_PASS}
+  - 170.124.172.252:8312:${BART_USER}:${BART_PASS}
+  - 170.124.172.253:8313:${BART_USER}:${BART_PASS}
+  - 170.124.172.254:8314:${BART_USER}:${BART_PASS}
+  - 170.124.172.255:8315:${BART_USER}:${BART_PASS}
+  - 170.124.173.1:8316:${BART_USER}:${BART_PASS}
+  - 170.124.173.2:8317:${BART_USER}:${BART_PASS}
+  - 170.124.173.3:8318:${BART_USER}:${BART_PASS}
+  - 170.124.173.4:8319:${BART_USER}:${BART_PASS}
+  - 170.124.173.5:8320:${BART_USER}:${BART_PASS}
+  - 170.124.173.6:8321:${BART_USER}:${BART_PASS}
+  - 170.124.173.7:8322:${BART_USER}:${BART_PASS}
+  - 170.124.173.8:8323:${BART_USER}:${BART_PASS}
+  - 170.124.173.9:8324:${BART_USER}:${BART_PASS}

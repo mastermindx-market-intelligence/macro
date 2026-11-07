@@ -771,3 +771,6 @@ data/qledger/control_evidence_clock_start/
 # inputs. WTI's bounded CL_F.observation.json export rides normal data publication.
 data/yahoo/.availability_capture/
 data/yahoo/.CL_F.observation-*
+
+# Live proxy pool: carries BartProxies user/password. Template is proxies.example.yml.
+tools/xguerrilla/proxies.yml
