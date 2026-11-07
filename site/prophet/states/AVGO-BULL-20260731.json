@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "AVGO-BULL-20260731",
-  "asof": "2026-11-06",
+  "asof": "2026-11-07",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 20.9,
@@ -10,27 +10,27 @@
   "recommended_action": null,
   "human_state": "Closed",
   "components": {
-    "validity": 0.5,
+    "validity": 0.8,
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 26.8
+    "overlay": 33.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.051,
+    "dist_to_stop_r": 0.066,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 202.2,
-    "p1": -0.6325,
-    "p2": -0.3162,
+    "horizon_pct_used": 204.4,
+    "p1": -0.6224,
+    "p2": -0.3112,
     "p3": null,
-    "move_r": -0.949,
+    "move_r": -0.934,
     "mfe_r": 0.0,
     "mae_r": -0.949
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "Nearing Invalidation",
+  "change_reason": "",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -45,8 +45,8 @@
   "_first_trigger_ts": null,
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 91,
-  "tau": 2.0222,
+  "days_elapsed": 92,
+  "tau": 2.0444,
   "closed": true,
   "outcome": "NO_ENTRY"
 }
