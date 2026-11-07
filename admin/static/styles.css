@@ -6573,3 +6573,13 @@ html[data-lang="zh"] #view .l-en { display: none; }
 .rf-diagnostics .rf-identity { display:block; overflow-wrap:anywhere; font-family:var(--font-mono); font-size:var(--fs-xs,12px); }
 
 .experiments-table-scroll { max-width:100%; overflow-x:auto; }
+
+/* Experiment follow-up: wrapped metadata must stay inside its header. */
+@media (max-width: 640px) {
+  .shell-right:has(.exp-table) .topbar {
+    height: auto;
+    min-height: 52px;
+    padding-top: 12px;
+    padding-bottom: 12px;
+  }
+}

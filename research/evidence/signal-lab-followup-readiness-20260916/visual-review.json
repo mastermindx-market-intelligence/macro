@@ -1,0 +1,8 @@
+{
+  "functional_browser_checks": "PASS at 1440 and 390; zero errors, zero writes, no document overflow",
+  "visual_review": "PASS for the bounded readiness change in the existing dark/English admin",
+  "desktop": "New-result and due-only groups distinguish the reason for attention; measured null stays explicit.",
+  "mobile": "Header containment regression failed at meta_bottom716.67 versus header_bottom676.98. Experiments-only auto-height now contains all metadata; screenshot inspected. Table scrolls horizontally without overflowing the document.",
+  "non_goals": "No claim that the entire admin navigation is redesigned or that light/ZH modes exist. No authenticated production browser proof.",
+  "production_proven": false
+}

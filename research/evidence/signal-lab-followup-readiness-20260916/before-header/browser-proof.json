@@ -1,0 +1,40 @@
+{
+  "scope": "isolated full admin app, real assets, synthetic reader fixtures",
+  "production_proven": false,
+  "authenticated_production_access": false,
+  "browser": "153.0.8010.48",
+  "as_of": "2026-09-16",
+  "rows": [
+    {
+      "width": 1440,
+      "result_cards": 1,
+      "due_only_cards": 1,
+      "global_horizontal_overflow": false,
+      "screenshot": "admin-experiments-1440.png",
+      "screenshot_sha256": "f72732fa767e396384973cb3f617c5cba3d94cbeb06338917aef2100726b6dcd"
+    },
+    {
+      "width": 390,
+      "result_cards": 1,
+      "due_only_cards": 1,
+      "global_horizontal_overflow": false,
+      "screenshot": "admin-experiments-390.png",
+      "screenshot_sha256": "df92180e8ef076c55fd8adb2e51f3583f40ceda76e8c9855fc972cf69abd2d21"
+    }
+  ],
+  "counts": {
+    "result_ready_count": 1,
+    "review_due_count": 2,
+    "attention_count": 2
+  },
+  "errors": [],
+  "write_requests": 0,
+  "inherited_ui_limits": "Admin currently exposes English and dark styles only; no light/ZH capability is claimed.",
+  "source_sha256": {
+    "engine/experiment_followup.py": "60a5ca1948b18c01f302f21eca6d6ecd622165087433901dc9960426cac69f0c",
+    "engine/experiments_registry.py": "98432fef1de974faba38d07b73b85a33d49d11f259bc05346f4fd68267591782",
+    "admin/experiments.py": "31227c5d9ada984ab12353b32f8226830ce68547ba6757f129268f4dccc2a64e",
+    "admin/static/app.js": "5b0a4af6cefddcfbc8c3d53266a30e182eac277834a80daca7c32d10787bb951",
+    "admin/static/styles.css": "b639420d18ca6edcbefd3548dc2de654b966cf99bce11ea404785af687a94556"
+  }
+}

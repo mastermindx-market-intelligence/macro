@@ -68,7 +68,9 @@ def test_default_build_has_no_diagnostic_read_and_legacy_counts_unchanged(tmp_pa
     legacy = {"experiments": [{"id": "old", "name": "Old", "status": "accruing", "come_back_on": "2001-01-01"}]}
     monkeypatch.setattr(panel, "_read_json", lambda _: copy.deepcopy(legacy))
     got = panel.panel()
-    assert got["n"] == 1 and got["ready_count"] == 1
+    assert got["n"] == 1 and got["ready_count"] == got["result_ready_count"] == 0
+    assert got["review_due_count"] == got["attention_count"] == 1
+    assert got["result_status_unknown_count"] == 1
     assert got["research_diagnostics_state"] == "DISABLED"
 
 

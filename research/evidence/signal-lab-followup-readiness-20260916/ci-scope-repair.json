@@ -1,0 +1,66 @@
+{
+  "operation": "signal-lab-followup-readiness-20260916-sol-001",
+  "procedure_pin": "5ee11ab1e993616f3568cfca4069cb21fa61fd8f",
+  "prior_head": "6fbf60948ee746e42aaafcde90aef4bc368a5cf8",
+  "pr": 7212,
+  "failure": {
+    "run": 35084383269,
+    "job": 104755648739,
+    "base": "4347812e120f5c2dc84190a740eb395651d351e1",
+    "introduced": [
+      [
+        "biocatalyst-serving",
+        "engine/experiment_followup.py"
+      ],
+      [
+        "unrun-picks-boards",
+        "engine/experiment_followup.py"
+      ]
+    ]
+  },
+  "repair": "Two exact curated CI paths added; existing commands, gates and paths preserved",
+  "red": {
+    "pid": 37510,
+    "failed": 2,
+    "deselected": 32
+  },
+  "green_focused": {
+    "pid": 41484,
+    "passed": 34,
+    "seconds": 4.09,
+    "exit_code": 0
+  },
+  "green_consumer_suite": {
+    "pid": 57477,
+    "tests": 69,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "deselected": 9,
+    "seconds": 72.13,
+    "exit_code": 0,
+    "junit_sha256": "64f1e39ee8db48068c00135bfbdc3787607ad71e0809c886b350044b40026388",
+    "qualification": "Nine real-input checks were previously verified separately; this run explicitly deselects them."
+  },
+  "full_contract_delta": {
+    "pid": 41994,
+    "command": "python3.12 scripts/check_contract_delta.py --base 4347812e120f5c2dc84190a740eb395651d351e1",
+    "introduced": 0,
+    "inherited": 0,
+    "exit_code": 0,
+    "seconds": 982.76,
+    "log_sha256": "266143eacc21476eaedc159284c5090d8f75b871d053398c569718e6bc3eee45"
+  },
+  "source_sha256": {
+    ".github/ci/legacy-jobs.yml": "fcc0aa4f34115f8f79e0540063466b09e2107d8332c39c72dc82709df418ffa3",
+    "tests/test_experiment_followup.py": "355ba9fccac976b1e6538c655b1b6a93b580ff2ee5537116b463fc6be7437047",
+    "engine/experiment_followup.py": "60a5ca1948b18c01f302f21eca6d6ecd622165087433901dc9960426cac69f0c",
+    "engine/experiments_registry.py": "9e4e461f9373a97aa1e5b05f9a1f8d0131b63b4eb55fe33f46df75c71b7b088b",
+    "admin/experiments.py": "31227c5d9ada984ab12353b32f8226830ce68547ba6757f129268f4dccc2a64e",
+    "admin/static/app.js": "8ce2349c71bb5a10c0fcbdad243cf0d2d9258be7862162a93ea8893eee742887",
+    "app/deploy/update.sh": "0776c22bf1c55b9db7bc1e736aae6934065829cefe17765d909057f887bd82a9"
+  },
+  "independent_review_complete": false,
+  "production_proven": false,
+  "new_alpha_admitted": false
+}

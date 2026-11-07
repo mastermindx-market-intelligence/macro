@@ -1,0 +1,35 @@
+{
+  "source_base": "459eafb838d9944e58e6a65413e282f2a13826ef",
+  "procedure_pin": "0fe8074ff953b2ced9025ed40f0f66019c759967",
+  "command": [
+    "/opt/homebrew/bin/python3.12",
+    "-m",
+    "pytest",
+    "tests/test_experiment_followup.py",
+    "tests/test_experiments_registry.py",
+    "tests/test_admin_modules_smoke.py::TestExperiments",
+    "tests/test_admin_js_no_undef.py",
+    "tests/test_admin_inline_handler_attrs.py",
+    "--basetemp=/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/signal-lab-followup-readiness-20260916-sol-001/followup-release-fixture-001",
+    "-k",
+    "not real_seed and not every_real_seed",
+    "-q",
+    "--tb=short"
+  ],
+  "exit_code": 0,
+  "output": "...................................................................      [100%]\n67 passed, 9 deselected in 6.66s\n",
+  "source_sha256": {
+    "engine/experiment_followup.py": "60a5ca1948b18c01f302f21eca6d6ecd622165087433901dc9960426cac69f0c",
+    "engine/experiments_registry.py": "9e4e461f9373a97aa1e5b05f9a1f8d0131b63b4eb55fe33f46df75c71b7b088b",
+    "admin/experiments.py": "31227c5d9ada984ab12353b32f8226830ce68547ba6757f129268f4dccc2a64e",
+    "admin/static/app.js": "8ce2349c71bb5a10c0fcbdad243cf0d2d9258be7862162a93ea8893eee742887",
+    "admin/static/styles.css": "495d15c2fbdcffa7f054953b7243d9e330088e79f25e18b9f70954dd2345b053",
+    "tests/test_experiment_followup.py": "aa59afebafaddb897da677afb1f529814b1961b64551981b7e60e9ee650924d8",
+    ".github/ci/legacy-jobs.yml": "c66694ba591ff8ee08124fc9ca243c0c786617ecd0a2b3fa424aee0d44d713e4"
+  },
+  "production_proven": false,
+  "limits": [
+    "Nine real-seed tests explicitly deselected in sparse checkout.",
+    "Hosted CI, independent review and authenticated production proof remain separate."
+  ]
+}

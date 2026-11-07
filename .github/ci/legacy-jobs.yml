@@ -19404,6 +19404,7 @@ jobs:
       - engine/event_risk.py
       - engine/expectation_state.py
       - engine/experiments_registry.py
+      - "engine/experiment_followup.py"
       - engine/extension.py
       - engine/factor_exposure.py
       - engine/factor_seasonality.py
@@ -24504,6 +24505,7 @@ jobs:
       - "engine/event_risk.py"
       - "engine/expectation_state.py"
       - "engine/experiments_registry.py"
+      - "engine/experiment_followup.py"
       - "engine/extension.py"
       - "engine/factor_exposure.py"
       - "engine/factor_seasonality.py"
@@ -25453,6 +25455,11 @@ jobs:
         run: pip install pytest requests pyyaml pandas numpy
       - name: admin live-runs snapshot tests
         run: python -m pytest tests/test_admin_live_runs.py -q
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: experiment follow-up producer, admin and notification contracts
+        run: python -m pytest tests/test_experiment_followup.py -q
 
   cbf-regime:
     if: ${{ false }}
@@ -27879,6 +27886,7 @@ jobs:
       - "engine/event_risk.py"
       - "engine/expectation_state.py"
       - "engine/experiments_registry.py"
+      - "engine/experiment_followup.py"
       - "engine/extension.py"
       - "engine/factor_exposure.py"
       - "engine/factor_seasonality.py"
@@ -35683,6 +35691,7 @@ jobs:
       - "engine/event_risk.py"
       - "engine/expectation_state.py"
       - "engine/experiments_registry.py"
+      - "engine/experiment_followup.py"
       - "engine/extension.py"
       - "engine/factor_exposure.py"
       - "engine/factor_seasonality.py"
@@ -37252,6 +37261,7 @@ jobs:
       - "engine/event_risk.py"
       - "engine/expectation_state.py"
       - "engine/experiments_registry.py"
+      - "engine/experiment_followup.py"
       - "engine/extension.py"
       - "engine/factor_exposure.py"
       - "engine/factor_seasonality.py"
@@ -50977,6 +50987,7 @@ jobs:
       - "engine/event_risk.py"
       - "engine/expectation_state.py"
       - "engine/experiments_registry.py"
+      - "engine/experiment_followup.py"
       - "engine/extension.py"
       - "engine/factor_exposure.py"
       - "engine/factor_seasonality.py"

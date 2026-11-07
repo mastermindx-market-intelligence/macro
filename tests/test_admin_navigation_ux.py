@@ -55,7 +55,7 @@ def test_research_tools_do_not_repeat_internal_proprietary_disclaimers_on_every_
 
 
 def test_experiments_table_hides_secondary_details_until_needed():
-    assert 'Long-running tests and data collections, with the next review date and action.' in APP
+    assert 'Research records and data collections. New results come from live readers; a due review is a reminder, not proof that an experiment passed or is ready to run.' in APP
     assert '<summary>Source</summary>' in APP
     assert '<details class="row-actions">' in APP
     assert '<summary class="btn">Actions</summary>' in APP

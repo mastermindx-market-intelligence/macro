@@ -1,0 +1,23 @@
+{
+  "source_commit": "459eafb838d9944e58e6a65413e282f2a13826ef",
+  "private_fixture": ".pytest_cache/followup-real-inputs-001",
+  "extraction_method": "git archive of config.yml and the nine named artifacts at source_commit, extracted only into the new private fixture",
+  "read_only_inputs": true,
+  "production_data_changed": false,
+  "scientific_grading_executed": false,
+  "result": "9 passed, 24 deselected in 4.68s; exit 0",
+  "command": "/opt/homebrew/bin/python3.12 -c 'from pathlib import Path; from lib import config; config.ROOT=Path(\".pytest_cache/followup-real-inputs-001\").resolve(); import pytest; raise SystemExit(pytest.main([\"tests/test_experiments_registry.py\", \"-k\", \"real_seed or every_real_seed\", \"--basetemp=.pytest_cache/followup-real-tests-001\", \"--junitxml=.pytest_cache/followup-real-tests-001.xml\", \"-q\", \"--tb=short\"]))'",
+  "artifact_git_blob_ids_verified_after_test": {
+    "data/ai_desk/scored.jsonl": "4dcc53f67317cabe9d4a28a2353cce7f71452e46",
+    "data/ai_desk/track_record.json": "c0000e910dec76a26c7114522c9b9c331f085fb5",
+    "data/calibration/summary.json": "fb8c71c21ffec3fb3b6c7433713246fff0b7d163",
+    "data/clinicaltrials/trials.parquet": "7254db0f5d7425676a53a6fd64801d8fca052d17",
+    "data/demand_chain/track_record.json": "77d26b027f4d3d08b8b1ffa1ddd749eff451cada",
+    "data/experiments/registry_seed.json": "6ad470759cf3e6a1c4f0fb8880948d42ba953c9a",
+    "data/radar/radar_ic.json": "fd45ce5e44b523522617a50904b71452a41f1626",
+    "data/thematic_desk/track_record.json": "832594d5a47cd30a85fef312089168f724beca48",
+    "data/vol_shock/log.jsonl": "fae6f84d4f3f74e0245244b4d39817e72a70d205"
+  },
+  "tests_cover": ["real seed fields and state provenance", "radar-ic", "calibration-hub", "thematic-desk", "vol-shock-scorecard", "clinicaltrials-phase3", "ai-desk-tracker", "demand-chain"],
+  "limitations": "Only the published readers and metadata were exercised; no source-revision certification, alpha validation, collector activation or production-path proof is implied."
+}

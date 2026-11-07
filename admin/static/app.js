@@ -1380,13 +1380,20 @@ const EXP_STATE = (e) => {
   const seeded = e.state_live === false && e.state_as_of;
   return `<div class="note mono muted">${esc(e.state)}${seeded
     ? ` <span class="statpill s-mut" style="font-size:10px;padding:1px 6px;margin-left:4px"
-         title="Hand-authored in the registry seed — no live reader is wired for this one yet.">as of ${esc(e.state_as_of)} (seed)</span>`
+         title="Dated registry note — not supplied by the current reader.">as of ${esc(e.state_as_of)} (seed)</span>`
     : ""}</div>`;
 };
+const EXP_HAS_RESULT = (e) => e.readiness_schema === "experiment_followup.v1" && e.reader_status === "observed" && e.result_ready === true;
+const EXP_READER = (e) => {
+  const labels = {unwired: "No live reader", unavailable: "Reader returned no current state", error: "Reader failed", legacy_unknown: "Result status needs a registry refresh"};
+  return labels[e.reader_status] ? `<div class="note">${esc(labels[e.reader_status])}</div>` : "";
+};
 const EXP_DUE = (e) => {
-  if (e.ready) return `<b style="color:var(--ok)">ready ✓</b>`;
+  if (EXP_HAS_RESULT(e)) return `<b style="color:var(--ok)">new result</b>`;
+  if (e.readiness_reason === "closed") return `<span class="sub">recorded closed</span>`;
+  if (e.review_due === true) return `<b style="color:var(--warn)">review due</b>`;
   if (e.days_until == null) return `<span class="sub">${esc(e.come_back_on || "—")}</span>`;
-  if (e.days_until <= 0) return `<b style="color:var(--ok)">due now</b>`;
+  if (e.days_until <= 0) return `<span class="sub">review date reached</span>`;
   const soon = e.days_until <= 7;
   return `<span style="color:${soon ? "var(--warn)" : "var(--text)"}">${e.days_until}d</span> <span class="sub mono">${esc((e.come_back_on || "").slice(0, 10))}</span>`;
 };
@@ -1483,33 +1490,39 @@ RENDER.experiments = async () => {
     return;
   }
   const exps = d.experiments || [];
-  const ready = exps.filter(e => e.ready);
-  let html = `<div class="sub" style="margin-bottom:10px">Long-running tests and data collections, with the next review date and action.</div>
+  const results = exps.filter(EXP_HAS_RESULT);
+  const due = exps.filter(e => e.review_due === true && !EXP_HAS_RESULT(e));
+  const countsKnown = Number.isInteger(d.result_ready_count) && Number.isInteger(d.review_due_count) && !(d.result_status_unknown_count > 0);
+  let html = `<div class="sub" style="margin-bottom:10px">Research records and data collections. New results come from live readers; a due review is a reminder, not proof that an experiment passed or is ready to run.</div>
+    ${countsKnown ? "" : '<div class="note">Counts need a registry refresh; legacy ready flags do not establish results.</div>'}
     <div class="grid">
-      ${card("Tracked", `<div class="big">${d.n}</div><div class="sub">experiments running</div>`)}
-      ${card("Ready to review", `<div class="big" style="color:${d.ready_count ? "var(--ok)" : "var(--text)"}">${d.ready_count}</div><div class="sub">need a decision</div>`)}
-      ${card("Last updated", `<div class="big" style="font-size:18px" class="mono">${esc(d.as_of || "—")}</div><div class="sub">today ${esc(d.today || "")}</div>`)}
+      ${card("Tracked", `<div class="big">${d.n}</div><div class="sub">records, including concluded work</div>`)}
+      ${card("New results", `<div class="big">${d.result_ready_count ?? "—"}</div><div class="sub">reader-reported changes, not automatic validation</div>`)}
+      ${card("Reviews due", `<div class="big">${d.review_due_count ?? "—"}</div><div class="sub">dates reached; check the next step</div>`)}
+      ${card("Last updated", `<div class="big mono" style="font-size:18px">${esc(d.as_of || "—")}</div><div class="sub">today ${esc(d.today || "")}</div>`)}
     </div>`;
   html += rfDiagnosticSection(d);
-  if (ready.length) {
-    html += `<div class="section">🔔 Ready for review <span class="cnt">${ready.length}</span></div>
-      <div class="grid">${ready.map(e => `<div class="card ready"><h3>${esc(e.name)}</h3>
+  for (const [kind, title, entries] of [["result_ready", "New reader results", results], ["review_due", "Review due — no new result", due]]) {
+    if (!entries.length) continue;
+    html += `<div class="section">${title} <span class="cnt">${entries.length}</span></div>
+      <div class="grid">${entries.map(e => `<div class="card${kind === "result_ready" ? " ready" : ""}" data-followup-kind="${kind}"><h3>${esc(e.name)}</h3>
         <div class="sub">${esc(e.what || "")}</div>
+        ${kind === "review_due" ? '<div class="note">No new result reported. Review the next step or missing dependency.</div>' : ""}
         <div class="kv" style="margin-top:8px"><span>Status</span>${EXP_STATUS_PILL(e.status)}</div>
         ${e.phase_hint ? `<div class="kv"><span>Next</span><b>${esc(e.phase_hint)}</b></div>` : ""}
         <div class="note" style="margin-top:6px">${esc(e.next_step || "")}</div>
-        ${EXP_STATE(e)}
+        ${EXP_STATE(e)}${EXP_READER(e)}
         ${e.surfaced ? `<div class="note mono muted">↳ ${esc(e.surfaced)}</div>` : ""}</div>`).join("")}</div>`;
   }
   html += `<div class="section">All experiments <span class="cnt">${exps.length}</span></div>
     <div class="experiments-table-scroll"><table class="exp-table"><thead><tr><th>Experiment</th><th>Type</th><th>Status</th><th>How often</th><th class="r">Come back</th><th>Next step</th><th>Your action</th></tr></thead><tbody>
-    ${exps.map(e => `<tr${e.ready ? ' class="hl"' : ""}>
+    ${exps.map(e => `<tr${e.attention_required === true ? ' class="hl"' : ""}>
       <td><b>${esc(e.name)}</b><div class="sub">${esc(e.what || "")}</div>${e.source ? `<details class="tech-details"><summary>Source</summary><span class="mono">${esc(e.source)}</span></details>` : ""}</td>
       <td class="sub">${esc(e.kind || "")}</td>
       <td>${EXP_STATUS_PILL(e.status)}</td>
       <td class="sub">${esc(e.cadence || "")}</td>
       <td class="r">${EXP_DUE(e)}</td>
-      <td class="sub" style="max-width:340px">${esc(e.next_step || "")}${EXP_STATE(e)}</td>
+      <td class="sub" style="max-width:340px">${esc(e.next_step || "")}${EXP_STATE(e)}${EXP_READER(e)}</td>
       <td class="exp-actions">
         <details class="row-actions">
           <summary class="btn">Actions</summary>

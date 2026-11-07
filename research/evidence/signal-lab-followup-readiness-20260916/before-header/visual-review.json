@@ -1,0 +1,8 @@
+{
+  "source": "browser-proof.json",
+  "functional_browser_checks": "PASS at 1440 and 390; zero errors, zero writes, no document overflow",
+  "visual_review": "PARTIAL",
+  "desktop": "Distinct new-result and due-only groups are readable using existing admin styles. Scientific null stays explicit.",
+  "mobile": "Topbar metadata crowds/overlaps the first text below it. Table is horizontally scrollable. Existing dark/English admin styling is unchanged; no full responsive-design acceptance claimed.",
+  "production_proven": false
+}

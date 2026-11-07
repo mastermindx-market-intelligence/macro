@@ -5561,9 +5561,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_912),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_929),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_670),
+    ("templates/index.html", 137, 5_915),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_932),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_673),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5571,6 +5571,19 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    PR #7212 follow-up truth (2026-11-07): natural contract job128338539596
+    in run42350878679 measured tested9bb3baecccb4 against exactbase5f28e82be560:
+    index137jobs/5912->5915, free137jobs/5929->5932, Prophet131jobs/5670->5673,
+    all ten packs and identical selected job IDs (no entrants or exits).
+    The existing admin-live-runs owner retains its original suite and adds
+    Node20 plus a separate test_experiment_followup.py command. The unchanged
+    planner estimator rises4->7 from the extra command and literal test path;
+    the setup action adds no run-command cost. Fund only those three measured
+    planning-weight units. Four additional exact helper dependency declarations
+    preserve all commands and weights. Retain every job-count ceiling,
+    ten-pack bound, selector, timeout, suite and admission limit. These are
+    planner estimates from the hosted full tree, not measured execution times.
 
     PR #8899 provenance coverage (2026-11-06): exact-head CI 42231847099,
     contract job 127939433316, head b0708d5ae2a4 against base 9a867da6f866:

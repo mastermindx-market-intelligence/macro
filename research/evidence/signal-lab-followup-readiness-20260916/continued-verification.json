@@ -1,0 +1,27 @@
+{
+  "procedure_pin": "8ba7deedde164c90298d3e88785d98e02fa5e2d2",
+  "published_initial_head": "8d92ddbd7c51a922b7360441e83edcf247e6d3c5",
+  "pull_request": 7212,
+  "source_base": "459eafb838d9944e58e6a65413e282f2a13826ef",
+  "production_proven": false,
+  "independent_review_complete": false,
+  "fresh_focused_suite": {
+    "command": "/opt/homebrew/bin/python3.12 -m pytest tests/test_experiment_followup.py tests/test_experiments_registry.py tests/test_admin_modules_smoke.py::TestExperiments tests/test_admin_js_no_undef.py tests/test_admin_inline_handler_attrs.py --basetemp=followup-resume-proof-20260916-002 -k 'not real_seed and not every_real_seed' -q --tb=short",
+    "pid": 42967, "exit_code": 0, "passed": 67, "deselected": 9, "seconds": 9.86
+  },
+  "previously_omitted_real_seed_checks": {
+    "command": "Run tests/test_experiments_registry.py with -k 'real_seed or every_real_seed', with lib.config.ROOT redirected to the private exact-base git-archive fixture documented in real-input-proof.json",
+    "pid": 10856, "exit_code": 0, "passed": 9, "deselected": 24, "seconds": 4.68,
+    "qualification": "Original tests and exact committed real artifacts, not invented fixtures. This is neither a pristine whole-repository suite nor a live grading run."
+  },
+  "deployment_contract_red": {
+    "command": "/opt/homebrew/bin/python3.12 -m pytest tests/test_deploy_update_self_heal.py -k 'admin and closure' --basetemp=.pytest_cache/followup-deploy-red-001 -q --tb=short",
+    "pid": 36631, "exit_code": 1, "failed": 1, "passed": 2,
+    "finding": "The new import-cached engine/experiment_followup.py was absent from the existing admin restart regex."
+  },
+  "deployment_contract_green": {
+    "command": "/opt/homebrew/bin/python3.12 -m pytest tests/test_deploy_update_self_heal.py --basetemp=.pytest_cache/followup-deploy-green-001 --junitxml=.pytest_cache/followup-deploy-green-001.xml -q --tb=short",
+    "pid": 49614, "exit_code": 0, "passed": 252, "seconds": 83.35,
+    "repair": "Add only experiment_followup to the existing admin import-closure restart regex. No service was restarted."
+  }
+}
