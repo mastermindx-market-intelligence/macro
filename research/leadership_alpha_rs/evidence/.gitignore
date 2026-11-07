@@ -1,0 +1,6 @@
+# Research HTML embeds real native episode context. Keep these local review
+# artifacts out of source publication, even when the repository is public.
+*.html
+validated-view*.json
+*current-context*.json
+*.zip
