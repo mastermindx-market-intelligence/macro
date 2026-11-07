@@ -316,7 +316,21 @@ def _banned_language_lines(cfg: dict) -> list[str]:
     return lines
 
 
-def _house_style(cfg: dict) -> str:
+_MARKET_HOUSE_HEAD = """\
+HOUSE STYLE — deterministic validators enforce every rule.
+NUMBERS: Use only SOURCE FACTS numbers; do not compute, infer, annualise, convert units or approximate new figures. You may reduce precision, never add it. Small prose counts are allowed but earn no credit.
+SOURCING: At least {floor_pct} of body words must be in sentences carrying a number anchored to a [first_party] SOURCE FACT. Credit is per sentence, never inherited by a paragraph. [third_party]-only numbers must anchor but earn neither share nor receipt credit. Carry the MINIMUM RECEIPTS of distinct [first_party] numbers across the piece. Give our reading with supported measurements, not a restatement of another report.
+LINKS: Only LINKING URLs; if none, no links. Name the desk and carry dated receipts inline.
+QUOTES: At most two verbatim SOURCE FACTS passages, each at most 25 words. Invent no quote or attribution. Otherwise use original wording and sentence structure; clause-by-clause paraphrase is forbidden.
+VOICE: Plain professional English, not textbook prose. Describe what the measurements show and which later evidence would change that assessment. Do not recommend an action to the reader. No advice. Never tell the reader to buy, sell or size anything. No meme voice, sitcom beats or emoji.
+"""
+
+_MARKET_HOUSE_TAIL = """\
+FORMAT: body_html is an HTML fragment using <p>,<h2>,<ul>/<li>,<a>,<strong>,<em>; no script,html/body or markdown. Open with <p class="press-byline"> and exact BYLINE; close with <p class="press-footer"> and exact FOOTER. Use 2–4 <h2> sections. SHAPE describes flow, never title/headings or near-variants. Make each heading story-specific: a SOURCE FACTS number, named institution or exact question settled.
+"""
+
+
+def _house_style(cfg: dict, *, market_snapshot: bool = False) -> str:
     """The house style for THIS run: the static contract plus the configured
     own-value floor and the rendered banned vocabulary.  Same rule everywhere
     else: the prompt states what the validators enforce, and the validators
@@ -325,9 +339,10 @@ def _house_style(cfg: dict) -> str:
     # Mirrors validators.check_our_value's own default for an absent floor.
     floor = float(v.get("our_value_min") or 0.40)
     return (
-        _HOUSE_STYLE_HEAD.format(floor_pct=_pct_text(floor))
+        (_MARKET_HOUSE_HEAD if market_snapshot else _HOUSE_STYLE_HEAD).format(
+            floor_pct=_pct_text(floor))
         + "\n" + "\n".join(_banned_language_lines(cfg))
-        + "\n" + _HOUSE_STYLE_TAIL
+        + "\n" + (_MARKET_HOUSE_TAIL if market_snapshot else _HOUSE_STYLE_TAIL)
     )
 
 _ENVELOPE = """\
@@ -446,6 +461,7 @@ def build_prompt(slot: dict, cfg: dict, *, attempt: int = 0,
     story = slot.get("story") or {}
     market_snapshot = (desk == "brief" and isinstance(story, dict)
                        and story.get("kind") == "native_market_snapshot")
+    compact_market = market_snapshot and single_attempt
     primary = slot.get("primary_source") or {}
     approved_claim_ids = sorted({
         str(claim_id)
@@ -459,8 +475,17 @@ def build_prompt(slot: dict, cfg: dict, *, attempt: int = 0,
     from engine.chronicle.earnings_calls import sanitize_untrusted_prose  # noqa: PLC0415
     from engine.press.native_plan_scope import receipt_facts, required_dossier, scope_fragments  # noqa: PLC0415
 
+    selected_facts = list(receipt_facts(slot))
+    # Common source scope remains untrusted evidence, not a trusted rule.
+    # Deduplicate only identical nonempty sanitized limits across every fact.
+    common_context = ""
+    if compact_market and selected_facts:
+        limits = [sanitize_untrusted_prose(f.get("context_relevance"), max_len=500)
+                  if isinstance(f, dict) else "" for f in selected_facts]
+        if limits[0] and all(value == limits[0] for value in limits):
+            common_context = limits[0]
     facts_lines: list[str] = []
-    for f in receipt_facts(slot):
+    for f in selected_facts:
         if not isinstance(f, dict):
             continue
         fact_text = sanitize_untrusted_prose(f.get("text"), max_len=2000)
@@ -484,10 +509,13 @@ def build_prompt(slot: dict, cfg: dict, *, attempt: int = 0,
         vintage = _vintage_tag(f.get("dated"), slot.get("as_of"), f.get("date_role"))
         source_name = sanitize_untrusted_prose(f.get("source_name"), max_len=200)
         line = f"- [{tag}] ({vintage}){claim_tag} {fact_text}"
-        if source_name:
+        # Only the native retained-observation attribution form proves this
+        # suffix redundant; a name substring elsewhere can denote another name.
+        attributed_in_fact = fact_text.startswith(f"Retained {source_name} reads ")
+        if source_name and not (compact_market and attributed_in_fact):
             line += f"  (source: {source_name})"
         context_limit = sanitize_untrusted_prose(f.get("context_relevance"), max_len=500)
-        if context_limit:
+        if context_limit and not common_context:
             line += f"  (context limit: {context_limit})"
         facts_lines.append(line)
 
@@ -505,7 +533,7 @@ def build_prompt(slot: dict, cfg: dict, *, attempt: int = 0,
 
     system_prompt = (
         contract
-        + "\n" + _house_style(cfg)
+        + "\n" + _house_style(cfg, market_snapshot=compact_market)
         + "\n" + _ENVELOPE
     )
 
@@ -664,6 +692,13 @@ def build_prompt(slot: dict, cfg: dict, *, attempt: int = 0,
     )
     parts.append("SOURCE FACTS — the complete set of numbers you may use:")
     parts.extend(facts_lines or ["- (none supplied)"])
+    if common_context:
+        # A source-supplied delimiter must remain literal evidence text.
+        fenced_context = common_context.replace(
+            "[BEGIN UNTRUSTED EVIDENCE DATA", "\\u005bBEGIN UNTRUSTED EVIDENCE DATA")
+        fenced_context = fenced_context.replace(
+            "[END UNTRUSTED EVIDENCE DATA", "\\u005bEND UNTRUSTED EVIDENCE DATA")
+        parts.append("COMMON CONTEXT LIMIT (applies to all SOURCE FACTS): " + fenced_context)
     if native_records is not None:
         # Clause keys remain source data inside the existing evidence fence.
         parts.append("BOUND RECEIPT CLAUSES — clause to distinct receipt identity values:")

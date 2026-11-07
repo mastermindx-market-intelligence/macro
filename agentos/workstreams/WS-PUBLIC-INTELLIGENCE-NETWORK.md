@@ -25,8 +25,19 @@ waves:
     title: Complete ten consecutive unedited mixed-desk passes with qualified native sources
     status: in_progress
     depends_on: [live-journey]
-next_action: Finish the prospective native-plan Brief evidence/scope repair through protected release and installed verification; the original quarantined KLAC draft is immutable. CropOct19 intake is complete but shared Research ingestion remains EFFECT_UNKNOWN under its incumbent. Ten mixed-desk passes remain incomplete.
+  - id: sustained-cadence-and-audience
+    title: Prove original D14 named properties, sustained cadence and measured reader outcomes
+    status: todo
+    depends_on: [mixed-desk-acceptance]
+  - id: editorial-expansion
+    title: Complete original D14 Editorial acceptance through existing product systems
+    status: todo
+    depends_on: [sustained-cadence-and-audience]
+next_action: Finish scoped source readiness on Draft10483 and resolve an actual funded atomic reservation under the verified 12000-inclusive-token single-writer ruling. The Nov3 Treasury candidate is source-qualified only and expires Nov7; no paid attempt or pass credit. Then ordinary release/install, one distinct unedited story, and remaining original D14 product acceptance.
 artifacts:
+  - research/agentic_media/public_intelligence_20261011/DELIVERY_TASK_TREE.md
+  - agentos/handoffs/PUBLIC-INTELLIGENCE-NETWORK-2026-11-05.md
+  - https://github.com/mastermindx-market-intelligence/macro/pull/10483
   - https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1075
   - https://github.com/mastermindx-market-intelligence/macro/pull/9696
   - https://github.com/mastermindx-market-intelligence/macro/pull/9648
