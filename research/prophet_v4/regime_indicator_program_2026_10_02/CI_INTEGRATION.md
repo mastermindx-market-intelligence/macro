@@ -1,3 +1,36 @@
+## Measured packing correction and current-main composition — 2026-11-07
+
+The first enrolled source1a526199af9edb040a69bfaab3f44ba72c120211
+earned actual hosted94tests and38subtests in run42325898520,
+pack8/job128261695102. Those are synthetic contract results, not a new
+market-data experiment.
+
+Own contract128260994059 compared exact baseb2cc9808cbd0aaadee46448449556f8af9398d9d:
+index137jobs/5912->5914, free137jobs/5927->5929, Prophet131jobs/5668->5670,
+all ten packs and no newly selected jobs. Existing unrun-factor-research
+weight58->60 reflects the accepted five-suite command and text-length band.
+
+The present composition preserves frozen main0cd9a4135c9b0364a8b32b192530b61d4a07f0f2
+and its accepted5914/5933/5672 expectations, carrying only this measured+2
+to5916/5935/5674. This is disclosed arithmetic, not a fresh planner or
+runtime measurement. The current owner is identical after removing only
+the accepted Node setup and five-suite step; the planner stays3cbed58986d571e40af59eb03464e9419e8055a5.
+All other current owners, prior packing histories, ten original native
+module/test selection cases, job-count ceilings137/138/131, ten-pack limit,
+selectors, assertions, timeouts and admission controls remain unchanged.
+No unmerged sibling funding is included.
+
+The original gate128272796099 remains FAILURE:92jobs/248PASS/15UNKNOWN.
+Original pack0/job128261695057 and checkoutci-base-replay-s9pih6w7 retain
+descendant-settlement UNKNOWN after their exact-base budget expired.
+No replay, probe, cancellation, cleanup, relocation or settlement claim
+is made. The distinct corrected source requires its own natural CI.
+No new local execution, scientific validation or product acceptance is claimed.
+
+The complete earlier integration narrative follows unchanged as dated evidence.
+
+---
+
 ## Current-main integration — 2026-11-07
 
 The original proposal and evidence below are retained verbatim. The recovery
