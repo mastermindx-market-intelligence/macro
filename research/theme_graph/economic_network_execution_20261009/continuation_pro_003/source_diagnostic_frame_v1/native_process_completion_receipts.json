@@ -1,0 +1,41 @@
+{
+  "schema": "gmi.wp02.read_only_process_completion_receipts/v1",
+  "processes": [
+    {
+      "pid": 25398,
+      "device": "m2studio",
+      "carrier": "Remote Desktop Commander read_process_output",
+      "exit_code": 0,
+      "receipt_text": "[Reading 8 new lines from line 0 (total: 281 lines, 273 remaining)]\n\n{\n  \"branch\": \"sol/web-gmi-economic-observations-20261009-pro-003\",\n  \"common_git\": \"/Users/chriswong/Documents/Cluade/Macro Dashboard/.git\",\n  \"filename_filter\": [\n    \"universe\",\n    \"issuer\",\n    \"listing\",\n    \"security\",\n✅ Process completed with exit code 0 (runtime: 0.58s)\n\n[executed on device: m2studio (3f5ce987-e3eb-40a3-af9f-4b0ae54919cc)]"
+    },
+    {
+      "pid": 28554,
+      "device": "m2studio",
+      "carrier": "Remote Desktop Commander read_process_output",
+      "exit_code": 0,
+      "receipt_text": "[Reading 4 new lines from line 0 (total: 1059 lines, 1055 remaining)]\n\n{\n  \"contract_path_search\": {\n    \"exit_code\": 0,\n    \"matches\": [\n✅ Process completed with exit code 0 (runtime: 1.69s)\n\n[executed on device: m2studio (3f5ce987-e3eb-40a3-af9f-4b0ae54919cc)]"
+    },
+    {
+      "pid": 34174,
+      "device": "m2studio",
+      "carrier": "Remote Desktop Commander read_process_output",
+      "exit_code": 0,
+      "receipt_text": "[Reading 3 new lines from line 0 (total: 532 lines, 529 remaining)]\n\n{\n  \"additional_geographic_filename_filter\": {\n    \"matches\": [\n✅ Process completed with exit code 0 (runtime: 1.32s)\n\n[executed on device: m2studio (3f5ce987-e3eb-40a3-af9f-4b0ae54919cc)]"
+    },
+    {
+      "pid": 38807,
+      "device": "m2studio",
+      "carrier": "Remote Desktop Commander read_process_output",
+      "exit_code": 0,
+      "receipt_text": "[Reading 3 new lines from line 0 (total: 124 lines, 121 remaining)]\n\n{\n  \"bounded_subdirectory_inventory\": [\n    \"data/canada_breadth/breadth.parquet\",\n✅ Process completed with exit code 0 (runtime: 1.22s)\n\n[executed on device: m2studio (3f5ce987-e3eb-40a3-af9f-4b0ae54919cc)]"
+    },
+    {
+      "pid": 49845,
+      "device": "m2studio",
+      "carrier": "Remote Desktop Commander read_process_output",
+      "exit_code": 0,
+      "receipt_text": "[Reading 3 new lines from line 0 (total: 116 lines, 113 remaining)]\n\n{\n  \"canada_search\": {\n    \"bytes\": 10874,\n✅ Process completed with exit code 0 (runtime: 0.44s)\n\n[executed on device: m2studio (3f5ce987-e3eb-40a3-af9f-4b0ae54919cc)]"
+    }
+  ],
+  "scope": "Completed read-only Git/Parquet observations; not application tests or source-capture replays."
+}

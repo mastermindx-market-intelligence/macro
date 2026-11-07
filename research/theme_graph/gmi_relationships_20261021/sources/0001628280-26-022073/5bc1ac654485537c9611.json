@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-03-30T21:43:24Z",
+ "accession": "0001628280-26-022073",
+ "cik": "0001853860",
+ "doc_byte_length": 1893842,
+ "doc_sha256": "4e8d402a4ebc2d91d3ef4595d4b01d1d40c85c450e599067fe251aedea533a3d",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-30",
+ "form": "40-F",
+ "period_of_report": "2025-12-31",
+ "primary_document": "a991-2026aif.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 235742,
+  "byte_start": 235468,
+  "normalized": "(1) Gold sold in concentrate includes 14,999 ounces of gold shipped to customer, net of 2,245 ounces deliverable to RG AG under the NX Gold Stream Agreements.",
+  "normalized_sha256": "5a98596e4a7147af57704e7ec1f2b7005b32c3e2224d32ecd6cdae69a60d3c89",
+  "raw": "(1)  </font><font style=\"color:#000000;font-family:'Nunito',sans-serif;font-size:8pt;font-weight:400;line-height:100%\">Gold sold in concentrate includes 14,999 ounces of gold shipped to customer, net of 2,245 ounces deliverable to RG AG under the NX Gold Stream Agreements. ",
+  "raw_sha256": "5bc1ac654485537c96113e5a6cafbce3f5bff6aa9b3467601236fa1f0ac93fa5"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1853860/000162828026022073/a991-2026aif.htm",
+ "xbrl_contexts": []
+}

@@ -15,9 +15,11 @@ from engine.prophet_integrity import (
 from scripts.audit_prophet_plan_chronology import (
     OriginationReceiptError,
     _append_correction_rows,
+    _correction_evidence,
     _integrity_disposition,
     audit_plan,
     build_plan_corrections,
+    build_report,
     decimal_tolerance,
     match_latest_price_basis,
     match_price_basis,
@@ -193,6 +195,90 @@ def test_decimal_tolerance_follows_the_published_precision():
     assert decimal_tolerance(Decimal("18.03")) < Decimal("0.006")
 
 
+@pytest.mark.parametrize("legacy", [False, True])
+def test_source_recording_never_proves_user_exposure_or_fill(tmp_path, legacy):
+    repo, plan_path, _ = _chronology_repo(tmp_path, legacy=legacy)
+    original = plan_path.read_bytes()
+    row = audit_plan(repo, plan_path)
+    clocks = row["clock_evidence"]
+    assert clocks["plan_run_date"] == "2026-08-08"
+    assert clocks["first_committed_at"] == row["first_committed_at"]
+    assert clocks["origination_recorded_utc"] == (
+        None if legacy else "2026-08-08T08:00:00+00:00"
+    )
+    assert clocks["publication_status"] == "UNRESOLVED"
+    assert clocks["fill_status"] == "UNRESOLVED"
+    assert clocks["accepted_publication_at"] is None
+    assert clocks["first_user_exposure_at"] is None
+    assert clocks["executable_fill_at"] is None
+    assert plan_path.read_bytes() == original
+
+
+def test_late_origination_capture_is_not_backdated_or_replaced_by_head(tmp_path):
+    repo, plan_path, _ = _chronology_repo(
+        tmp_path,
+        receipt_mutator=lambda r: r.update(recorded_utc="2026-08-10T22:30:00+00:00"),
+    )
+    receipt_path = repo / "data/prophet/origination_receipts/fixture.json"
+    later = json.loads(receipt_path.read_text())
+    later["recorded_utc"] = "2026-08-12T09:00:00+00:00"
+    receipt_path.write_text(json.dumps(later))
+    _commit_all(repo, "later receipt revision")
+    row = audit_plan(repo, plan_path)
+    assert row["recorded_at"] == "2026-08-08"
+    assert row["clock_evidence"]["origination_recorded_utc"] == "2026-08-10T22:30:00+00:00"
+    assert row["clock_evidence"]["accepted_publication_at"] is None
+
+
+@pytest.mark.parametrize("recorded_utc", ["2026-08-08", "2026-08-08T08:00:00", "bad", 123])
+def test_malformed_origination_timestamp_cannot_become_clock_evidence(tmp_path, recorded_utc):
+    repo, plan_path, _ = _chronology_repo(
+        tmp_path, receipt_mutator=lambda r: r.update(recorded_utc=recorded_utc),
+    )
+    with pytest.raises(OriginationReceiptError, match="recorded_utc"):
+        audit_plan(repo, plan_path)
+
+
+def test_report_and_correction_evidence_retain_unresolved_clock_boundary(tmp_path):
+    repo, plan_path, _ = _chronology_repo(tmp_path)
+    report = build_report(repo, date(2026, 8, 8), date(2026, 8, 8))
+    assert report["clock_qualification"] == {
+        "scope": "audited_rows_only",
+        "publication_unresolved_count": 1,
+        "fill_unresolved_count": 1,
+        "proves_user_exposure": False,
+    }
+    corrections = build_plan_corrections(
+        repo, report, corrected_at=date(2026, 8, 15), audit_receipt="audit.json",
+    )
+    assert corrections
+    for correction in corrections:
+        clocks = correction["evidence"]["clock_evidence"]
+        assert clocks["publication_status"] == "UNRESOLVED"
+        assert clocks["origination_recorded_utc"] == "2026-08-08T08:00:00+00:00"
+        assert clocks["executable_fill_at"] is None
+        if correction["field"] == "integrity_reason":
+            assert "published" not in correction["new_value"]
+            assert "publication session" not in correction["new_value"]
+    old_row = dict(report["rows"][0])
+    old_row.pop("clock_evidence")
+    old_evidence = _correction_evidence(old_row, audit_receipt="legacy-audit.json")
+    assert old_evidence["clock_evidence"]["origination_recorded_utc"] is None
+    assert old_evidence["clock_evidence"]["publication_status"] == "UNRESOLVED"
+    # A copied report is not an accepted publication/fill receipt. Its privilege-like
+    # fields must not survive into correction provenance as a positive claim.
+    report["rows"][0]["clock_evidence"].update({
+        "publication_status": "VERIFIED", "fill_status": "VERIFIED",
+        "accepted_publication_at": "2026-08-08T08:05:00Z",
+        "executable_fill_at": "2026-08-08T08:06:00Z",
+    })
+    rebuilt = _correction_evidence(report["rows"][0], audit_receipt="copied-audit.json")
+    assert rebuilt["clock_evidence"]["publication_status"] == "UNRESOLVED"
+    assert rebuilt["clock_evidence"]["fill_status"] == "UNRESOLVED"
+    assert rebuilt["clock_evidence"]["accepted_publication_at"] is None
+    assert rebuilt["clock_evidence"]["executable_fill_at"] is None
+
+
 def test_same_recorded_session_match_wins_over_an_old_repeated_price():
     read = match_price_basis(
         Decimal("3.67"),
@@ -223,7 +309,19 @@ def test_creation_blob_rule_reads_only_the_latest_available_close():
     assert read["match"]["date"] == "2026-08-05"
 
 
-def test_weekend_publication_has_zero_session_lag_from_friday_close():
+@pytest.mark.parametrize("integrity_status", [
+    "stale_price_basis", "price_current_board_mixed_vintage",
+])
+def test_disposition_does_not_promote_a_run_session_to_publication(integrity_status):
+    _, reason = _integrity_disposition({
+        "integrity_status": integrity_status,
+        "admission_integrity": "actionable_tier_proven",
+    })
+    assert "published" not in reason
+    assert "publication session" not in reason
+
+
+def test_weekend_run_has_zero_session_lag_from_friday_close():
     assert session_lag(date(2026, 8, 7), date(2026, 8, 8)) == 0
 
 

@@ -141,6 +141,93 @@ def test_sector_partial_has_l_en_l_zh_pairs():
     )
 
 
+def test_sector_partial_names_follow_the_page_language():
+    """A literal aria-label is English in both languages, and on the card it
+    overrode the visible Chinese text — a 中文 screen reader heard "Open the
+    Finance Intelligence dossier" (live 2026-09-25). Every name must instead
+    come from aria-labelledby/-describedby over an l-en/l-zh pair, whose
+    inactive half is display:none and so drops out of the accessible name."""
+    from html.parser import HTMLParser
+
+    class Descendants(HTMLParser):
+        """Classes found inside each element that carries an id."""
+
+        def __init__(self):
+            super().__init__()
+            self.stack: list[tuple[str, str | None]] = []
+            self.inside: dict[str, set[str]] = {}
+
+        def handle_starttag(self, tag, attrs):
+            a = dict(attrs)
+            for _, ident in self.stack:
+                if ident:
+                    self.inside[ident].update((a.get("class") or "").split())
+            if a.get("id"):
+                self.inside.setdefault(a["id"], set())
+            self.stack.append((tag, a.get("id")))
+
+        def handle_endtag(self, tag):
+            for i in range(len(self.stack) - 1, -1, -1):
+                if self.stack[i][0] == tag:
+                    del self.stack[i:]
+                    break
+
+    html = _render_partial(SECTOR_PARTIAL)
+    assert "aria-label=" not in html, "use aria-labelledby over the bilingual spans"
+    refs = re.findall(r'aria-(?:labelledby|describedby)="([^"]+)"', html)
+    ids = [i for ref in refs for i in ref.split()]
+    assert {"fi-sdd-head", "fi-sdd-name", "fi-sdd-cta", "fi-sdd-story"} <= set(ids)
+    parser = Descendants()
+    parser.feed(html)
+    for ident in ids:
+        assert ident in parser.inside, f"aria reference {ident!r} has no element in the partial"
+        assert {"l-en", "l-zh"} <= parser.inside[ident], (
+            f"{ident!r} must hold both language spans so its name switches with the page"
+        )
+
+
+# The watching statement is pinned directly from
+# tests/fixtures/finance_case_signal/synthesis_v0.json:15 (the alpha case's
+# `primary_limit`). FIN-1's engine/sector_intelligence/finance_watching.py is
+# NOT on this seed, so this lane pins the fixture string instead of importing
+# shell_watching_items; follow-up once FIN-1 lands: cross-check
+# shell_watching_items()[0]["statement"] == ALPHA_PRIMARY_LIMIT here.
+ALPHA_PRIMARY_LIMIT = "Synthetic limit: a measured description is not a measured cause."
+
+
+def test_sector_card_names_the_admitted_watching_statement():
+    """Ruling F-5 flips W10-FIN-3: the Theme Tracker sector deep-dive card
+    carries NO watching line at all — no alpha synthetic statement, no
+    data-state-falsifier="NOT_YET_EVALUABLE" marker. The WATCHING token must
+    not appear, names stay aria-labelledby/-describedby over l-en/l-zh, and
+    the existing aria id set must remain a subset of the aria refs."""
+    import json as _json
+    fixture = _json.loads(
+        (REPO_ROOT / "tests" / "fixtures" / "finance_case_signal" / "synthesis_v0.json")
+        .read_text(encoding="utf-8")
+    )
+    alpha = next(c for c in fixture["cases"] if c["case_id"] == "syn-case-alpha")
+    assert alpha["primary_limit"] == ALPHA_PRIMARY_LIMIT, (
+        "the pinned watching statement drifted from the alpha fixture"
+    )
+    html = _render_partial(SECTOR_PARTIAL)
+    assert ALPHA_PRIMARY_LIMIT not in html, (
+        "the card must not name the alpha fixture primary_limit"
+    )
+    assert 'data-state-falsifier="NOT_YET_EVALUABLE"' not in html, (
+        "the watching line and its state marker must be gone"
+    )
+    assert "WATCHING" not in html, "the WATCHING token must not appear"
+    assert "aria-label=" not in html, (
+        "accessible names stay aria-labelledby/-describedby, never aria-label"
+    )
+    refs = re.findall(r'aria-(?:labelledby|describedby)="([^"]+)"', html)
+    ids = [i for ref in refs for i in ref.split()]
+    assert {"fi-sdd-head", "fi-sdd-name", "fi-sdd-cta", "fi-sdd-story"} <= set(ids), (
+        "the existing aria-referenced id set must remain a subset of aria refs"
+    )
+
+
 # ---------------------------------------------------------------------------
 # (3) Tracker render — canonical theme count unchanged, Finance link in region
 # ---------------------------------------------------------------------------
