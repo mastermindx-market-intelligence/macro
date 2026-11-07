@@ -19404,6 +19404,7 @@ jobs:
       - engine/event_risk.py
       - engine/expectation_state.py
       - engine/experiments_registry.py
+      - "engine/experiment_followup.py"
       - engine/extension.py
       - engine/factor_exposure.py
       - engine/factor_seasonality.py
@@ -24504,6 +24505,7 @@ jobs:
       - "engine/event_risk.py"
       - "engine/expectation_state.py"
       - "engine/experiments_registry.py"
+      - "engine/experiment_followup.py"
       - "engine/extension.py"
       - "engine/factor_exposure.py"
       - "engine/factor_seasonality.py"
@@ -35686,6 +35688,7 @@ jobs:
       - "engine/event_risk.py"
       - "engine/expectation_state.py"
       - "engine/experiments_registry.py"
+      - "engine/experiment_followup.py"
       - "engine/extension.py"
       - "engine/factor_exposure.py"
       - "engine/factor_seasonality.py"
@@ -50857,6 +50860,7 @@ jobs:
       - "engine/event_risk.py"
       - "engine/expectation_state.py"
       - "engine/experiments_registry.py"
+      - "engine/experiment_followup.py"
       - "engine/extension.py"
       - "engine/factor_exposure.py"
       - "engine/factor_seasonality.py"
