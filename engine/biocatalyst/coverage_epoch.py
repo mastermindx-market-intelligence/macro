@@ -169,6 +169,28 @@ def _parse_datetime(value: object) -> datetime | None:
     return parsed if parsed.tzinfo is not None else None
 
 
+def _closure_time_key(value: object) -> tuple[int, str] | None:
+    """Order schema-validated closure clocks without discarding fractional digits.
+
+    RFC3339 offsets here have whole-minute precision. Normalize whole seconds
+    with integer arithmetic; trailing-zero-free decimal digit strings preserve
+    exact fractional order without float/Decimal rounding or a precision cap.
+    Other timing/budget semantics deliberately keep their existing parser.
+    """
+    parsed = _parse_datetime(value)
+    if parsed is None or not isinstance(value, str):
+        return None
+    offset = parsed.utcoffset()
+    if offset is None:
+        return None
+    seconds = (
+        parsed.toordinal() * 86400 + parsed.hour * 3600
+        + parsed.minute * 60 + parsed.second - offset // timedelta(seconds=1)
+    )
+    fractional = re.search(r"\.([0-9]+)", value)
+    return seconds, fractional.group(1).rstrip("0") if fractional else ""
+
+
 def _elapsed_ms(start: object, end: object, *, code: str) -> int:
     first, second = _parse_datetime(start), _parse_datetime(end)
     if first is None or second is None or second < first:
@@ -859,7 +881,9 @@ def build_cohort_admission_decision(
     identity = canonical_json_sha256(payload)
     payload["decision_id"] = f"biocatalyst_cohort_admission_{identity[:24]}"
     payload["decision_payload_sha256"] = canonical_json_sha256(payload)
-    return validate_cohort_admission_decision(payload, cohort=cohort, repo_root=repo_root)
+    return validate_cohort_admission_decision(
+        payload, cohort=cohort, epoch=normalized_epoch, repo_root=repo_root
+    )
 
 
 def cohort_admission_decision_semantic_issues(
@@ -1047,6 +1071,16 @@ def validate_cohort_admission_decision(
                     "$.coverage_epoch_ref",
                     "cohort_admission.coverage_binding",
                     "the decision must bind the exact attested coverage epoch",
+                )
+            )
+        decided = _closure_time_key(normalized.get("decided_at"))
+        coverage_to = _closure_time_key(bound_epoch.get("transaction_to"))
+        if decided is not None and coverage_to is not None and decided >= coverage_to:
+            issues.append(
+                _issue(
+                    "$.decided_at",
+                    "cohort_admission.coverage_inactive",
+                    "an admission must precede the bound coverage epoch's closure",
                 )
             )
     if issues:
