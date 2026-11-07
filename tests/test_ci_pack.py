@@ -4537,6 +4537,7 @@ CURATED_EXCLUSIVE = {
     'unrun-brain-gateway',
     # The Fabric consumer join retains this desk job's complete named closure.
     "unrun-brain-desks",
+    "press-account-claim-consumer",
     # GDELT leaf suites own their exact import/read closure.
     "gdelt-news-leaves",
     # Installer simulations own their concrete source/read closure without
@@ -5621,9 +5622,14 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs; these are estimator units, not observed execution duration.
 # Fund +14 in each ceiling, retaining existing same-tree margins of 0/4/4.
 # Job counts, pack limit, selection and the estimator remain unchanged.
+# Protected options-question composition (2026-11-07): actual combined probes
+# are index134/5721, free134/5991, Prophet127/5475, ten packs each.
+# The protected options widget browser test adds exactly two planning units
+# to unrun-brain-gateway, selected here only by free-content. Fund those two
+# measured units there; preserve the other ceilings, suites and all limits.
 PACKING_PROBES = (
     ("templates/index.html", 137, 5_974),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_989),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_993),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 131, 5_730),
 )
 # Twelve packs per shape was the pre-curation measurement.
@@ -5632,6 +5638,23 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    Protected SEO closure with Fabric (2026-11-07): actual composed probes
+    measure index134/5721, free134/5993 and Prophet127/5475, all ten packs.
+    The protected SEO suite adds precisely two free-content planner units
+    over the qualified Fabric5991 image. Fund only5991->5993; retain all
+    selectors, suites, job counts, pack counts, timeouts and admission bounds.
+
+    P5.T9.S5 (2026-11-07): compose accepted retained-GSC coverage with
+    protected59e035e39607, preserving its gateway and prior provenance
+    histories below. Fresh canonical measurements on the actual composed
+    source are index137/5914, free-content137/5933 and Prophet131/5672,
+    all ten packs. The protected main manifest on that SAME source measures
+    5914/5931/5672 with identical selected job IDs; it is not a historical
+    main-tree baseline. Only the accepted eval-os-a1 GSC suite contributes
+    two free-content planning-weight units. Fund precisely5931->5933;
+    retain incoming index/Prophet ceilings, all job-count and pack bounds,
+    selectors, suites, timeouts and admission limits. No runtime claim.
 
     Native caller joins and held Go recipe (2026-11-05): the actual managed
     source planner measured index137/5959, free137/5974 and Prophet131/5715,
@@ -5680,6 +5703,47 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     owner/startup proof adds six planner weight seconds above the prior
     consumer composition. Fund only these measured six seconds; preserve
     job-count, pack, runtime, admission and all required test bounds.
+
+    Current-main composition (2026-11-07, PR10710): preserve the original
+    P15.T2.S3 paired measurement below; this paragraph is arithmetic composition,
+    not a new planner run or execution-time measurement. Protected main7fdd55fe
+    carries index5912/free5929/plan-book5670, including the independent merged
+    free-content contribution. Add only this PR's own measured gateway+2 to
+    each selected probe:5914/5931/5672. Do not import unmerged sibling funding.
+    All job-count ceilings, ten-pack bounds, selectors, timeouts, suites and
+    admission limits remain unchanged; natural current-head CI must qualify
+    the composed source.
+
+    P15.T2.S3 (2026-11-04): paired manifest measurements against protected
+    355527d7d9de at candidate1184ddc9, using the same scope compiler and source
+    tree, have identical selected job IDs (no entrants/exits) for all probes:
+    index137/5912->5914, free-content137/5927->5929, plan-book131/5668->5670.
+    The sole selected-weight delta is unrun-brain-gateway108->110, from adding
+    test_options_question_widget_browser.py to its existing browser command.
+    The separate options-matrix-code39->41 does not select on these probes.
+    Fund exactly these two measured units, retaining every suite, job-count
+    ceiling, selector, ten-pack bound, timeout and admission limit. No padding;
+    these are planning weights, not measured execution times.
+
+    P5.T9.S4 (2026-11-07): compose retained-GSC coverage with protected
+    cfdad6581bb2, preserving its provenance coverage below. Canonical
+    measurements on the actual composed source are index137/5912,
+    free-content137/5931 and Prophet131/5670, all ten packs. The protected
+    main manifest measured on that same source is 5912/5929/5670 with
+    identical selected job IDs; this is a same-source counterfactual, not
+    a historical main-tree baseline. Only eval-os-a1's already accepted
+    retained-GSC suite adds two planner-estimate units on free-content.
+    Fund exactly those two units; retain every incoming job and command,
+    job-count ceiling, ten-pack bound, selector and runtime timeout.
+
+    P5.T4.S1 (2026-11-05): candidate 51ed9ea0656bd against canonical
+    a20e6437cc8a8 appends the hermetic retained-GSC consumer suite to the
+    existing eval-os-a1 command. The shared contract census measures only
+    free-content137jobs/5927->5929/10packs, with no newly selected job.
+    Index137/5912 and Prophet131/5668 are unchanged. Account for exactly
+    those two estimator units; preserve all job-count/pack ceilings,
+    selectors, previous commands, runtime timeouts and admission controls.
+    This is a planner workload estimate, not runtime or funding authority.
 
     PR #8899 provenance coverage (2026-11-06): exact-head CI 42231847099,
     contract job 127939433316, head b0708d5ae2a4 against base 9a867da6f866:

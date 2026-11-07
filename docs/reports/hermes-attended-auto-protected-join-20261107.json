@@ -1,0 +1,48 @@
+{
+  "candidate_parents": [
+    "fff0025e10de394c6a297c7878518513f1dbe633",
+    "339e14b58e331a3eda16d619b3a97c324e7f4eca"
+  ],
+  "contribution_diff_check": 0,
+  "existing_contribution_paths": [
+    "engine/provider_production_modes.py",
+    "review_evidence/hermes_primary/attended-auto-current-owner-20261107.json",
+    "tests/test_hermes_application_source_support.py",
+    "tests/test_hermes_attended_fabric_identity.py"
+  ],
+  "incoming_whitespace": "Existing original-carrier generated data/source whitespace retained byte-for-byte; it is outside this contribution. No unrelated cleanup.",
+  "installed_acceptance": false,
+  "live_provider_acceptance": false,
+  "merge_base": "12efe39a6b6e2f6d19f3a9893f978c55d4656681",
+  "new_composed_qualification": {
+    "counts": {
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0,
+      "tests": 198
+    },
+    "junit_sha256": "db6ee865a13ac37b0dc9ae819dac34f9f6d2b475a90f758dde69c3b6cfbe6996",
+    "log_sha256": "f5653d50049cdba15163b806793fa8076d99919a62b2491c2e8667fe5c3ce8df",
+    "network": "affected source/identity suites forbid network; no provider execution",
+    "seconds": 4.533,
+    "test_modules": [
+      "tests/test_hermes_attended_fabric_identity.py",
+      "tests/test_hermes_application_source_support.py",
+      "tests/test_hermes_primary_fabric_identity.py",
+      "tests/test_fabric_service_identity.py"
+    ]
+  },
+  "next_action": "Publish this same owned branch, then absorb through original Macro10740; retain required CI, release ownership and real Hermes acceptance.",
+  "original_carrier": "https://github.com/mastermindx-market-intelligence/macro/pull/10740",
+  "original_incoming_paths": 15890,
+  "original_paths_preserved_outside_existing_contribution": true,
+  "prior_245_case_evidence_retained_at": "fff0025e10de394c6a297c7878518513f1dbe633:review_evidence/hermes_primary/attended-auto-current-owner-20261107.json",
+  "runtime_enrollment": false,
+  "schema": "mastermind.hermes_attended_auto_protected_join.v1",
+  "source_files": {
+    "engine/fabric_inference_client.py": "0817202d609637ce024b5f4f1bbe6ba4507825424649f407a235bdf5ef441b8e",
+    "engine/provider_production_modes.py": "56996272225840ff7adefb95d8949c871cb91b1a578bbbf981ee8b8480454df8",
+    "tests/test_hermes_application_source_support.py": "6e4a9b8b477cc29512b1ed5bc02d2dbbab290a0313a2f432bac6568c240cbdf0",
+    "tests/test_hermes_attended_fabric_identity.py": "69e7b4486924772d8d9b00e19b0a740fd16656c66a365e3777458ebf755019cd"
+  }
+}

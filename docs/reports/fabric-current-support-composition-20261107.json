@@ -1,0 +1,98 @@
+{
+  "schema": "mastermind.fabric_application.current_support_composition.v1",
+  "observed_at": "2026-11-07T17:15:26.853140+00:00",
+  "parents": {
+    "qualified_protected_options_join": "da9bbc45a756e91548f63ed65a03c1e8f870b014",
+    "completed_hermes_support_and_ci": "12efe39a6b6e2f6d19f3a9893f978c55d4656681"
+  },
+  "protected_contract_base": "335e5cc3eb222a4c19cb11e90e29ec6c6723c2b0",
+  "incoming_blobs": {
+    ".github/workflows/hermes-application-owner.yml": "6de4d4f2c50781a2ea427246b722ab3e4f6fae05",
+    "engine/provider_production_modes.py": "6f73e65bdc9aa7548acc49b39e11f4054c405b40",
+    "tests/test_commodity_workspace_ui.js": "fc10b7f1494bc1eea98558bfc6bbf471da8ccacf",
+    "tests/test_hermes_application_source_support.py": "c83028dcb7a4be511294c241d385b662634dbe47",
+    "tests/test_hermes_attended_fabric_identity.py": "6886e418a0df7d529e260e309ab76cdf1f61b940",
+    "tests/test_hermes_primary_fabric_identity.py": "626959b736bbfa9a0b680b46bbd8ac2e6840450f"
+  },
+  "decisions": [
+    "Retain both completed source histories and all five Hermes descriptor source-support flags.",
+    "Preserve default selections, identity requirements, routes, models, credentials, capability/admission guards and the empty shipped application map.",
+    "Retain the actual builder-to-identity-to-Jinja-to-rendered-DOM fixture."
+  ],
+  "qualification": {
+    "owner": {
+      "kind": "owner",
+      "returncode": 0,
+      "seconds": 8.61,
+      "log": "/tmp/mmx-brief-auto-source-20261106-363my5ix/proof/macro-current-owner-full-v10.log",
+      "sha256": "f33f30c24b6dbeb7c682eb7a0a86b770004f5783783bb0931f963c2df47a0a3b",
+      "cases": {
+        "total": 219,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "failures": []
+    },
+    "dom": {
+      "returncode": 0,
+      "seconds": 12.654,
+      "node": "/usr/local/bin/node",
+      "python": "/tmp/mmx-brief-auto-source-20261106-363my5ix/proof/venv/bin/python",
+      "log": "/tmp/mmx-brief-auto-source-20261106-363my5ix/proof/macro-current-dom-python-v10.log",
+      "sha256": "55a2bd28531ac1e135bb0dcaa6a32d26b0e89573daf79889340841c55c86ce99"
+    },
+    "rendered_dom_journeys": 31,
+    "contract": {
+      "returncode": 0,
+      "seconds": 437.125,
+      "log": "/tmp/mmx-brief-auto-source-20261106-363my5ix/proof/macro-current-contract-only-v10.log",
+      "sha256": "c4b7d9cda4fe179b8786a94c6bdee62ed5108da4390ddfef41ab432933202f29",
+      "tail": "contract-delta: probe templates/index.html: head 134 jobs / 5,721 s / 10 packs; base 137 jobs / 5,914 s / 10 packs; ceilings 137 / 5,974 / 10\ncontract-delta: probe scripts/build_free_content.py: head 134 jobs / 5,991 s / 10 packs; base 137 jobs / 5,931 s / 10 packs; ceilings 138 / 5,991 / 10\ncontract-delta: probe engine/prophet/plan_book.py: head 127 jobs / 5,475 s / 10 packs; base 131 jobs / 5,672 s / 10 packs; ceilings 131 / 5,730 / 10\ncontract-delta: head census seconds: closure_and_suites 280.6, probes 73.7, skip_only 24.7, trigger_gaps 41.8\ncontract-delta: base census seconds: closure_and_suites 263.7, probes 77.8, skip_only 24.3, trigger_gaps 41.5\ncontract-delta: 0 introduced, 0 inherited (base 335e5cc3eb22)\ncontract-delta: wall 437.0 s\n"
+    },
+    "native_fixture": {
+      "source_commit": "41e86c7aa89905f9b4592d57fbf32c2d7c0f1458",
+      "archive_sha256": "3169989faf93058ee5505654018301cde5b1bb4a07c8825e4aa4e0cdb65583ef",
+      "regular_files": 663,
+      "git_blob_pins": {
+        "candidate/commission_deadline.py": "fade630ed75c1b93334a5711a6df7a554fbd24ee",
+        "candidate/go_shim.py": "066d87cd23275204fb6d30af45ac03db1d4dbb4f",
+        "candidate/lease_broker.py": "d8577c6ee5cc9bd3e7fc22905530f4755b860ae0",
+        "candidate/go_lease_gateway.py": "e21b6d6a4e4230fce5f55d90820c6391d4b79324",
+        "candidate/go_lease_capability.py": "38856700331b3fb3a7706a5745e23fb7b3d18cf0",
+        "candidate/application_http_transports.py": "c37181993a36da216c77778ebaeaae3ebe190a09",
+        "candidate/provider_outcome.py": "981f35a01183e83fdb9f0b8a4175b290cdeb85f8",
+        "candidate/quota_circuit.py": "1583a6ba773e56dbc3f295b65ffc08dea2d31d48",
+        "candidate/pick.py": "d17447c3c9f472b061733e36fa49a7f8d7e34ee5",
+        "candidate/pool_ledger.py": "61dc4d5e83172e6c647d058ec844f00a0b3955a6",
+        "source/model_tier.py": "96093c2747d2dda69b3f2255cb84e656355c87ea",
+        "source/pool_status.py": "02922043357d63b4bcfa3791899df27a5c42be12",
+        "tests/_offline_boundary.py": "e511ab65fe1cd30bf4d2addac6700ca43c3468da",
+        "tests/test_go_application_handler_composition.py": "13ebd6bcee5167926807d7ccdc63bcabed0cf1b1",
+        "tests/test_application_turn_admission.py": "4cc542888358bf6b46a1e78c581af5ef2f7178aa",
+        "tests/test_application_registered_pool_selection.py": "754d6d8c1a6391fcfefdbd26417f87944403ea2b",
+        "tests/test_application_registered_pool_composition.py": "3c1bb6f596fa8821af19c71eb2ea2327147b19eb",
+        "tests/test_application_auto_request.py": "6e990aa3be10cea5dc6ee19c621bd0b3583de909",
+        "tests/test_application_cross_pool_auto.py": "0d70a47906a23176d5eaed71a4575e925a500341"
+      },
+      "method": "Exact committed workflow checkout paths materialized for the same actual test selector; the network checkout action was not re-executed."
+    }
+  },
+  "preparation_failures": [
+    {
+      "scope": "Retained nineteen-file fixture only",
+      "result": "188 passed,31 setup errors because control_plane owner dependencies were absent; resolved by full exact workflow fixture."
+    },
+    {
+      "scope": "Node runner without qualified Python fixture interpreter",
+      "result": "The standalone journey file exited before journeys; resolved by its existing PYTHON environment setting to the qualified venv."
+    }
+  ],
+  "production_claims": {
+    "deployed": false,
+    "browser_proven": false,
+    "grants_issued": false,
+    "provider_called": false,
+    "accepted": false
+  }
+}
