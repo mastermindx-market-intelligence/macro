@@ -1,0 +1,71 @@
+diff --git a/tests/test_leadership_measured_read.py b/tests/test_leadership_measured_read.py
+index d87df51e5b78..ce01e63fc5e1 100644
+--- a/tests/test_leadership_measured_read.py
++++ b/tests/test_leadership_measured_read.py
+@@ -396,6 +396,11 @@ def test_s8_unchanged_downstream_and_fail_soft(tmp_path, monkeypatch):
+     assert out_a["measured_read"]["schema"] == MEASURED_READ_SCHEMA
+     assert out_a["measured_read"]["confirmed_events"]["status"] == "available"
+     assert out_a["measured_read"]["confirmed_events"]["n_active"] == 2
++    dossier = out_a["measured_read"]["sector_dossiers"]
++    assert dossier["schema"] == "leadership_rotation_context.sector_dossiers/v1"
++    assert len(dossier["groups"]) == 11
++    # This original fixture omits provenance: the published addendum stays null.
++    assert dossier["measurement_status"] == "unavailable"
+ 
+     # wiring pin: compute() itself calls _measured_read and ships the key
+     tree = ast.parse(Path(sector_central.__file__).read_text(encoding="utf-8"))
+@@ -790,3 +795,54 @@ def test_dossier_enforces_relative_wealth_domain_without_clipping_valid_values(v
+     assert row["null_reasons"]["rs_63d"] == (
+         "outside_relative_wealth_domain" if expected is None else None
+     )
++
++
++# --- Central publication adoption: the existing producer carries the addendum ---
++
++def test_central_publishes_dossiers_without_changing_legacy_projection(monkeypatch):
++    import copy
++    from engine import sector_central
++
++    cycles = _qualified_dossier_payload()
++    rotation = _build_rotation_payload()
++    before = copy.deepcopy((cycles, rotation))
++    monkeypatch.setattr(sector_central, "_load_rotation_events", lambda: rotation)
++
++    published = sector_central._measured_read(cycles)
++    dossier = published.pop("sector_dossiers")
++    assert published == lrc.measured_group_read(cycles, rotation_payload=rotation)
++    assert (cycles, rotation) == before
++    assert list(_dossier_rows(dossier)) == list(us_sector_cohort())
++    rows = _dossier_rows(dossier)
++    assert rows["XLK"]["relative_wealth_pct"] == {"rs_21d": -0.5, "rs_63d": 0.0}
++    assert rows["XLK"]["null_reasons"] == {"rs_21d": None, "rs_63d": None}
++    assert rows["XLU"]["null_reasons"]["rs_63d"] == "thin_history"
++    assert rows["XLRE"]["null_reasons"]["rs_21d"] == "missing_group"
++    assert dossier["cross_sector_breadth_counts"]["63"] == {
++        "expected_n": 11, "measured_n": 9, "positive_n": 5,
++    }
++    assert all(value is False for value in dossier["authority"].values())
++    assert dossier["source_generation"]["id"] is None
++    assert dossier["availability"]["historically_admissible"] is False
++    assert dossier["freshness"]["status"] == "unverified"
++    assert dossier["history"]["naturally_observed"] is False
++    json.dumps(dossier, allow_nan=False)
++
++
++def test_central_keeps_legacy_numbers_when_dossier_source_is_unqualified(monkeypatch):
++    from engine import sector_central
++
++    cycles, rotation = _build_fixture_payload()
++    monkeypatch.setattr(sector_central, "_load_rotation_events", lambda: rotation)
++    published = sector_central._measured_read(cycles)
++    dossier = published.pop("sector_dossiers")
++
++    # Old owner metadata supports the legacy read but cannot be upgraded into a
++    # qualified dossier merely because Central now publishes the optional field.
++    assert published == lrc.measured_group_read(cycles, rotation_payload=rotation)
++    assert published["cohort"]["measured_n"] == 9
++    assert next(row for row in published["groups"] if row["group_id"] == "XLK")[
++        "current"
++    ]["rs_63d"] == 0.0
++    _assert_dossier_withheld(dossier, "return_basis_not_qualified")
++    assert list(_dossier_rows(dossier)) == list(us_sector_cohort())

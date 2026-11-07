@@ -1,0 +1,48 @@
+--- pack-index=0 ---
+::notice title=ci-pack-scope::full suite: changed-file set unavailable; scope inference not needed
+Planned 389 of 389 legacy jobs into 12 packs; pack weights=[1630, 1400, 1237, 1237, 1237, 1237, 1236, 1236, 1236, 1236, 1236, 1236]; packs with work=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]; plan sha256=336f8cb9996613150a0cfb0e9f9155c5b9dc7d9059890b4783c755635ecc25f5.
+exit=0
+--- pack-index=1 ---
+::notice title=ci-pack-scope::full suite: changed-file set unavailable; scope inference not needed
+Planned 389 of 389 legacy jobs into 12 packs; pack weights=[1630, 1400, 1237, 1237, 1237, 1237, 1236, 1236, 1236, 1236, 1236, 1236]; packs with work=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]; plan sha256=336f8cb9996613150a0cfb0e9f9155c5b9dc7d9059890b4783c755635ecc25f5.
+exit=0
+--- pack-index=2 ---
+::notice title=ci-pack-scope::full suite: changed-file set unavailable; scope inference not needed
+Planned 389 of 389 legacy jobs into 12 packs; pack weights=[1630, 1400, 1237, 1237, 1237, 1237, 1236, 1236, 1236, 1236, 1236, 1236]; packs with work=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]; plan sha256=336f8cb9996613150a0cfb0e9f9155c5b9dc7d9059890b4783c755635ecc25f5.
+exit=0
+--- pack-index=3 ---
+::notice title=ci-pack-scope::full suite: changed-file set unavailable; scope inference not needed
+Planned 389 of 389 legacy jobs into 12 packs; pack weights=[1630, 1400, 1237, 1237, 1237, 1237, 1236, 1236, 1236, 1236, 1236, 1236]; packs with work=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]; plan sha256=336f8cb9996613150a0cfb0e9f9155c5b9dc7d9059890b4783c755635ecc25f5.
+exit=0
+--- pack-index=4 ---
+::notice title=ci-pack-scope::full suite: changed-file set unavailable; scope inference not needed
+Planned 389 of 389 legacy jobs into 12 packs; pack weights=[1630, 1400, 1237, 1237, 1237, 1237, 1236, 1236, 1236, 1236, 1236, 1236]; packs with work=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]; plan sha256=336f8cb9996613150a0cfb0e9f9155c5b9dc7d9059890b4783c755635ecc25f5.
+exit=0
+--- pack-index=5 ---
+::notice title=ci-pack-scope::full suite: changed-file set unavailable; scope inference not needed
+Planned 389 of 389 legacy jobs into 12 packs; pack weights=[1630, 1400, 1237, 1237, 1237, 1237, 1236, 1236, 1236, 1236, 1236, 1236]; packs with work=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]; plan sha256=336f8cb9996613150a0cfb0e9f9155c5b9dc7d9059890b4783c755635ecc25f5.
+exit=0
+--- pack-index=6 ---
+::notice title=ci-pack-scope::full suite: changed-file set unavailable; scope inference not needed
+Planned 389 of 389 legacy jobs into 12 packs; pack weights=[1630, 1400, 1237, 1237, 1237, 1237, 1236, 1236, 1236, 1236, 1236, 1236]; packs with work=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]; plan sha256=336f8cb9996613150a0cfb0e9f9155c5b9dc7d9059890b4783c755635ecc25f5.
+exit=0
+--- pack-index=7 ---
+::notice title=ci-pack-scope::full suite: changed-file set unavailable; scope inference not needed
+Planned 389 of 389 legacy jobs into 12 packs; pack weights=[1630, 1400, 1237, 1237, 1237, 1237, 1236, 1236, 1236, 1236, 1236, 1236]; packs with work=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]; plan sha256=336f8cb9996613150a0cfb0e9f9155c5b9dc7d9059890b4783c755635ecc25f5.
+exit=0
+--- pack-index=8 ---
+::notice title=ci-pack-scope::full suite: changed-file set unavailable; scope inference not needed
+Planned 389 of 389 legacy jobs into 12 packs; pack weights=[1630, 1400, 1237, 1237, 1237, 1237, 1236, 1236, 1236, 1236, 1236, 1236]; packs with work=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]; plan sha256=336f8cb9996613150a0cfb0e9f9155c5b9dc7d9059890b4783c755635ecc25f5.
+exit=0
+--- pack-index=9 ---
+::notice title=ci-pack-scope::full suite: changed-file set unavailable; scope inference not needed
+Planned 389 of 389 legacy jobs into 12 packs; pack weights=[1630, 1400, 1237, 1237, 1237, 1237, 1236, 1236, 1236, 1236, 1236, 1236]; packs with work=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]; plan sha256=336f8cb9996613150a0cfb0e9f9155c5b9dc7d9059890b4783c755635ecc25f5.
+exit=0
+--- pack-index=10 ---
+::notice title=ci-pack-scope::full suite: changed-file set unavailable; scope inference not needed
+Planned 389 of 389 legacy jobs into 12 packs; pack weights=[1630, 1400, 1237, 1237, 1237, 1237, 1236, 1236, 1236, 1236, 1236, 1236]; packs with work=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]; plan sha256=336f8cb9996613150a0cfb0e9f9155c5b9dc7d9059890b4783c755635ecc25f5.
+exit=0
+--- pack-index=11 ---
+::notice title=ci-pack-scope::full suite: changed-file set unavailable; scope inference not needed
+Planned 389 of 389 legacy jobs into 12 packs; pack weights=[1630, 1400, 1237, 1237, 1237, 1237, 1236, 1236, 1236, 1236, 1236, 1236]; packs with work=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]; plan sha256=336f8cb9996613150a0cfb0e9f9155c5b9dc7d9059890b4783c755635ecc25f5.
+exit=0

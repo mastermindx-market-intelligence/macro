@@ -59,6 +59,20 @@ from engine.leadership_rotation_context import (
     z_for,
 )
 
+from engine.sector_dated_context import (
+    ATTRIBUTION_KEYS as PSL_CTX_ATTRIBUTION_KEYS,
+    AUTHORITY_FLAGS as PSL_CTX_AUTHORITY_FLAGS,
+    COMPARISON_IDS as PSL_CTX_COMPARISON_IDS,
+    ENTRY_STATUSES as PSL_CTX_ENTRY_STATUSES,
+    LIMITS as PSL_CTX_LIMITS,
+    REASONS as PSL_CTX_REASONS,
+    SCHEMA as PSL_CTX_SCHEMA,
+    SCOPE as PSL_CTX_SCOPE,
+    SECTION_STATUSES as PSL_CTX_SECTION_STATUSES,
+    STATUSES as PSL_CTX_STATUSES,
+    project_dated_context,
+)
+
 
 # ---------------------------------------------------------------------------
 # cf -- discriminating counterexamples
@@ -1681,3 +1695,1483 @@ def test_fix_a2_adapters_total_on_nested_malformed_payloads():
     assert keyed["rows"] == [] and keyed["malformed_rows"] == 0
     assert diagnose_rotation_payload(None, cohort_id="c")["malformed_rows"] == 0
     assert diagnose_rotation_payload(None, cohort_id="c")["malformed_container"] is False
+
+
+# ---------------------------------------------------------------------------
+# PSL-DATED-CTX-1 -- the dated configured-theme context projection
+# (engine/sector_dated_context.py).
+#
+# The first test below is the exact byte/hash check of the three published
+# raw sources, read from the IMMUTABLE pinned commit object (never from the
+# working tree, so a later data refresh cannot make the check lie).  Every
+# reduced selected-field fixture after it is copied from those pinned bytes.
+# The reduced dictionaries are fixtures; the full hashes identify the
+# original files, not the reduced dictionaries.
+# ---------------------------------------------------------------------------
+
+PSL_CTX_BASE = "5f28e82be560a6ecb73832023e2823b677164747"
+
+PSL_CTX_PUBLISHED_SOURCES = {
+    "data/regime/latest.json": {
+        "bytes": 992189,
+        "raw_sha256": "1ec062ec0805727adb900c86a52de4c17612c4ee80ddad36a67e9405f2000f8a",
+        "git_blob": "c69ddeef96ffe839bf2fd05e5ee173a3fcee731e",
+    },
+    "config.yml": {
+        "bytes": 496073,
+        "raw_sha256": "701229b33bbd6260c561023e2c2611a8fca24bc2c97e784cf97d55aa0357b402",
+        "git_blob": "5be75249c98033d7ee0fbe55928713b1f50af627",
+    },
+    "site/riskdata/risk_envelope.json": {
+        "bytes": 81982,
+        "raw_sha256": "93f5b3da1dca0e6e464ef42c44cde22369ff2b2b57c521594374cc00f5ac804a",
+        "git_blob": "e80df06802f6fb46cfd6db9e9a6a347986a8dd28",
+    },
+}
+
+PSL_CTX_RAW_PREFIX = (
+    "https://raw.githubusercontent.com/mastermindx-market-intelligence/macro/"
+    + PSL_CTX_BASE + "/"
+)
+
+
+def _psl_ctx_regime():
+    """Reduced selected-field fixture of the pinned regime snapshot."""
+    return {
+        "asof": "2026-11-06",
+        "freshness": {
+            "asof": "2026-11-06",
+            "built_at": "2026-11-07T00:11:01Z",
+            "age_days": 1,
+            "age_sessions": 0,
+            "max_age_sessions": 1,
+            "stale": False,
+        },
+        "theme_revisions": {
+            "asof": "2026-11-06",
+            "n_themes": 18,
+            "weights": {
+                "breadth": "mean member net-up share [-1,1]",
+                "est_drift_90d": "median member 90d consensus-EPS drift %",
+                "breadth_accel": (
+                    "theme breadth now - breadth ~prior_snapshot ago "
+                    "(PIT, the broadening gauge)"),
+                "breadth_cov": (
+                    "W2a coverage-normalised breadth: mean of (up-dn)/n_covering "
+                    "over members with n_covering>=MIN_COVERING; None when fewer "
+                    "than MIN_MEMBERS_COV members have coverage data"),
+            },
+            "themes": {
+                "memory_storage": {
+                    "name": "Memory, HBM & Storage",
+                    "breadth": 0.746,
+                    "level_state": "POSITIVE",
+                    "est_drift_90d": 21.89,
+                    "net_up_total": 24.0,
+                    "breadth_accel": -0.204,
+                    "broadening_state": "ROLLING",
+                    "coverage": 0.6,
+                    "n_covered": 3,
+                    "n_members": 5,
+                    "members": [
+                        {"ticker": "WDC", "breadth": 0.33, "n_analysts": 3,
+                         "est_chg_90d": 21.9, "n_covering": 22,
+                         "breadth_cov": 0.0455},
+                        {"ticker": "MU", "breadth": 0.91, "n_analysts": 21,
+                         "est_chg_90d": 24.5, "n_covering": 36,
+                         "breadth_cov": 0.5278},
+                        {"ticker": "NTAP", "breadth": 1.0, "n_analysts": 4,
+                         "est_chg_90d": 13.6, "n_covering": 20,
+                         "breadth_cov": 0.2},
+                    ],
+                    "breadth_cov": 0.2269,
+                    "basis_days": 22,
+                },
+            },
+        },
+        "bottleneck": {
+            "asof": "2026-09-01",
+            "n_themes": 18,
+            "themes": {
+                "memory_storage": {
+                    "name": "Memory, HBM & Storage",
+                    "naics": "3344",
+                    "band": "NEUTRAL",
+                    "tightness": 0.11,
+                    "regime": False,
+                    "n_legs": 6,
+                    "numeric_composite": 0.0,
+                    "numeric_band": "NEUTRAL",
+                    "cap_u_latest": 76.51,
+                    "ppi_yoy_latest": -2.2,
+                    "language_accel": 0.5,
+                    "language_hits": 3,
+                    "language_n_filers": 2,
+                    "leg6_detail": {"value": 0.5, "accel": 0.5, "hits": 3,
+                                    "n_filers": 2, "provisional": True},
+                    "text_only": False,
+                    "fingerprint": {
+                        "theme": "memory_storage",
+                        "fingerprint_tightness": -0.091,
+                        "leg7_member_inventory": -0.091,
+                        "leg8_member_backlog": None,
+                        "n_legs_live": 1,
+                        "basis": "annual",
+                        "provisional": True,
+                        "components": {
+                            "leg7_member_inventory": {
+                                "value": -0.091, "n_reporting": 5,
+                                "latest_fy": 2027, "min_required": 3,
+                                "met_gate": True},
+                            "leg8_member_backlog": {
+                                "value": None, "n_reporting": 2,
+                                "latest_fy": 2022, "min_required": 3,
+                                "met_gate": False},
+                        },
+                    },
+                },
+            },
+        },
+    }
+
+
+def _psl_ctx_config():
+    """Reduced selected-field fixture of the decoded site configuration."""
+    return {
+        "themes": {
+            "memory_storage": {
+                "name": "Memory, HBM & Storage",
+                "tickers": ["MU", "WDC", "SNDK", "STX", "NTAP"],
+            },
+        },
+    }
+
+
+def _psl_ctx_public_risk():
+    """Reduced selected-field fixture of the published public risk envelope."""
+    return {
+        "schema": "mastermind.risk_envelope/v1",
+        "definition_id": "grey-deer-v1-2026-08-19",
+        "market": "US",
+        "bundle_id": "fbf32d0f9123bafd",
+        "source_session": "2026-11-06",
+        "as_of": "2026-11-06",
+        "observed_at": "2026-11-07T04:12:49Z",
+        "produced_at": "2026-11-07T04:12:49Z",
+        "revision": "settled",
+        "data_state": "DEGRADED",
+        "stale_after": None,
+        "measured_state": {
+            "as_of": "2026-11-06", "role": "slow_confirmed_trend", "score": 40,
+            "source_artifact": "market-state-latest", "usable": True,
+            "verdict": "RISK_OFF",
+        },
+        "hazard_summary": {
+            "active_episode_count": 0, "capped_sources": [],
+            "contributing_sources": ["risk-radar-us"], "display_only": True,
+            "primary_episode_id": None, "stage": None,
+            "stage_reason": "required_coverage_unavailable", "stage_since": None,
+            "stage_since_basis": "no_episode_lifecycle_in_v0",
+            "unmapped_required_sources": [],
+            "unreadable_sources": ["leadership-crack-latest"],
+        },
+        "freshness": {
+            "all_on_session": False,
+            "off_session_sources": ["leadership-crack-latest",
+                                    "site-marketdata-rotation-events"],
+            "per_source": {
+                "leadership-crack-latest": {"as_of": "2026-11-05",
+                                            "matches_session": False,
+                                            "state": "STALE"},
+                "market-state-latest": {"as_of": "2026-11-06",
+                                        "matches_session": True,
+                                        "state": "FRESH"},
+                "risk-radar-us": {"as_of": "2026-11-06", "matches_session": True,
+                                  "state": "FRESH"},
+                "site-marketdata-rotation-events": {"as_of": "2026-11-05",
+                                                    "matches_session": False,
+                                                    "state": "STALE"},
+            },
+            "source_session": "2026-11-06",
+        },
+        "coherence": {
+            "compares": ["measured_state", "hazard_evidence"],
+            "contradiction_count": 0, "contradictions": [], "display_only": True,
+            "excludes": ["policy_summary"], "scope": "market_reads",
+            "state": "MIXED",
+        },
+        "policy_summary": {
+            "active_policy_ids": [], "basis": "zero_active_policies",
+            "display_only": True, "policy_count": 0, "posture": "NORMAL",
+        },
+        "authority": {
+            "envelope_may_execute": False, "envelope_may_gate": False,
+            "envelope_may_rank": False, "envelope_may_size": False,
+            "policy_actions_require_individual_authority": True,
+        },
+        "policies": [],
+    }
+
+
+def _psl_ctx_attribution():
+    """The caller-supplied attribution for the three pinned published files."""
+    return {
+        "regime_document": {
+            "source_ref": PSL_CTX_RAW_PREFIX + "data/regime/latest.json",
+            "raw_sha256": PSL_CTX_PUBLISHED_SOURCES[
+                "data/regime/latest.json"]["raw_sha256"],
+        },
+        "config_document": {
+            "source_ref": PSL_CTX_RAW_PREFIX + "config.yml",
+            "raw_sha256": PSL_CTX_PUBLISHED_SOURCES["config.yml"]["raw_sha256"],
+        },
+        "public_risk_document": {
+            "source_ref": PSL_CTX_RAW_PREFIX + "site/riskdata/risk_envelope.json",
+            "raw_sha256": PSL_CTX_PUBLISHED_SOURCES[
+                "site/riskdata/risk_envelope.json"]["raw_sha256"],
+        },
+    }
+
+
+def _psl_ctx_project(**overrides):
+    payload = {
+        "theme_key": "memory_storage",
+        "regime_document": _psl_ctx_regime(),
+        "config_document": _psl_ctx_config(),
+        "public_risk_document": _psl_ctx_public_risk(),
+        "source_attribution": _psl_ctx_attribution(),
+    }
+    payload.update(overrides)
+    return project_dated_context(**payload)
+
+
+def _psl_ctx_entries(out):
+    return {entry["id"]: entry for entry in out["comparison"]["entries"]}
+
+
+def test_psl_ctx_pinned_source_identities_are_the_commissioned_ones():
+    """The pinned source identities are pinned as a contract, with no I/O.
+
+    This always runs. It pins the three published identities that the
+    reduced fixtures were copied from, so a change to any of them is a
+    deliberate edit rather than a silent drift, and it pins the rule that the
+    projection carries them as caller-supplied attribution and never claims
+    to have verified them.
+    """
+    assert sorted(PSL_CTX_PUBLISHED_SOURCES) == [
+        "config.yml",
+        "data/regime/latest.json",
+        "site/riskdata/risk_envelope.json",
+    ]
+    for path, expected in PSL_CTX_PUBLISHED_SOURCES.items():
+        assert expected["bytes"] > 0, path
+        assert len(expected["raw_sha256"]) == 64, path
+        assert expected["raw_sha256"] == expected["raw_sha256"].lower(), path
+        assert all(character in "0123456789abcdef"
+                   for character in expected["raw_sha256"]), path
+        assert len(expected["git_blob"]) == 40, path
+
+    out = _psl_ctx_project()
+    carried = out["provenance"]["source_attribution"]
+    assert carried["regime_document"]["raw_sha256"] == \
+        PSL_CTX_PUBLISHED_SOURCES["data/regime/latest.json"]["raw_sha256"]
+    assert carried["config_document"]["raw_sha256"] == \
+        PSL_CTX_PUBLISHED_SOURCES["config.yml"]["raw_sha256"]
+    assert carried["public_risk_document"]["raw_sha256"] == \
+        PSL_CTX_PUBLISHED_SOURCES["site/riskdata/risk_envelope.json"][
+            "raw_sha256"]
+    assert out["provenance"]["attribution_verification"] == \
+        "not_established_by_projection"
+    assert out["limitations"]["attribution_verification"] == \
+        "not_established_by_projection"
+
+
+def test_psl_ctx_published_sources_match_the_pinned_bytes():
+    """Exact byte-length and SHA256 check of the three published raw sources.
+
+    The bytes come from the repository's own object store: the immutable
+    pinned commit object first, and otherwise the checkout's own HEAD blob
+    when it is byte-identical to the pinned blob. The working tree is never
+    read, so a nightly refresh of data/ or site/ cannot make this check lie.
+
+    A checkout that does not carry those bytes at all cannot prove them; the
+    durable proof then lives with the lane evidence, and this test reports
+    that fact instead of passing silently.
+    """
+    import hashlib
+    import subprocess
+    from pathlib import Path
+
+    root = Path(__file__).resolve().parents[1]
+
+    def git(*args):
+        return subprocess.run(
+            ["git", "-C", str(root)] + list(args),
+            capture_output=True, check=True, timeout=120).stdout
+
+    for path, expected in PSL_CTX_PUBLISHED_SOURCES.items():
+        blob = None
+        try:
+            blob = git("cat-file", "blob", "{0}:{1}".format(PSL_CTX_BASE, path))
+        except (OSError, subprocess.SubprocessError):
+            try:
+                head_blob = git("rev-parse", "HEAD:{0}".format(path)).decode()
+                if head_blob.strip() == expected["git_blob"]:
+                    blob = git("cat-file", "blob", head_blob.strip())
+            except (OSError, subprocess.SubprocessError):
+                blob = None
+        if blob is None:
+            pytest.skip(
+                "this checkout does not carry the pinned bytes for {0}; the "
+                "byte/hash proof is in the lane evidence".format(path))
+        assert len(blob) == expected["bytes"], path
+        assert hashlib.sha256(blob).hexdigest() == expected["raw_sha256"], path
+
+
+def test_psl_ctx_primary_case_projects_the_dated_reading():
+    out = _psl_ctx_project()
+    assert out["schema"] == PSL_CTX_SCHEMA == "sector_dated_context/v1"
+    assert out["scope"] == PSL_CTX_SCOPE
+    assert out["scope"] == "configured_theme_example_with_market_global_risk"
+    assert out["status"] == "dated_context"
+    assert out["status"] in PSL_CTX_STATUSES
+
+    # -- the configured theme roster, not a sector or ETF membership --------
+    theme = out["theme"]
+    assert theme["status"] == "available"
+    assert theme["theme_key"] == "memory_storage"
+    assert theme["name"] == "Memory, HBM & Storage"
+    assert theme["roster"] == ["MU", "WDC", "SNDK", "STX", "NTAP"]
+    assert theme["roster_size"] == 5
+    assert theme["membership_basis"] == "configured_theme_roster"
+
+    # -- the dated revision reading, with its native units -----------------
+    obs = out["observations"]
+    assert obs["status"] == "available"
+    assert obs["reasons"] == []
+    rev = obs["revision_state"]
+    assert rev["asof"] == "2026-11-06"
+    assert rev["level_state"] == "POSITIVE"
+    assert rev["breadth"] == 0.746
+    assert rev["est_drift_90d"] == 21.89
+    assert rev["net_up_total"] == 24.0
+    assert rev["breadth_accel"] == -0.204
+    assert rev["broadening_state"] == "ROLLING"
+    assert rev["coverage"] == 0.6
+    assert rev["n_covered"] == 3
+    assert rev["n_members"] == 5
+    assert rev["breadth_cov"] == 0.2269
+    assert rev["breadth_accel_basis_days"] == 22
+    assert obs["units"]["breadth"] == "mean member net-up share [-1,1]"
+    assert obs["units"]["est_drift_90d"] == "median member 90d consensus-EPS drift %"
+    assert "(PIT, the broadening gauge)" in obs["units"]["breadth_accel"]
+
+    # -- covered contributors, with their own numbers ---------------------
+    contributors = {row["ticker"]: row for row in obs["contributors"]}
+    assert sorted(contributors) == ["MU", "NTAP", "WDC"]
+    assert contributors["WDC"]["breadth"] == 0.33
+    assert contributors["WDC"]["n_analysts"] == 3
+    assert contributors["WDC"]["est_chg_90d"] == 21.9
+    assert contributors["WDC"]["n_covering"] == 22
+    assert contributors["WDC"]["breadth_cov"] == 0.0455
+    assert contributors["MU"]["breadth"] == 0.91
+    assert contributors["MU"]["n_analysts"] == 21
+    assert contributors["MU"]["est_chg_90d"] == 24.5
+    assert contributors["MU"]["n_covering"] == 36
+    assert contributors["MU"]["breadth_cov"] == 0.5278
+    assert contributors["NTAP"]["breadth"] == 1.0
+    assert contributors["NTAP"]["n_analysts"] == 4
+    assert contributors["NTAP"]["est_chg_90d"] == 13.6
+    assert contributors["NTAP"]["n_covering"] == 20
+    assert contributors["NTAP"]["breadth_cov"] == 0.2
+
+    # -- every owner clock stays separate ---------------------------------
+    clocks = obs["clocks"]
+    assert clocks["regime_asof"] == "2026-11-06"
+    assert clocks["regime_built_at"] == "2026-11-07T00:11:01Z"
+    assert clocks["theme_revisions_asof"] == "2026-11-06"
+    assert clocks["bottleneck_asof"] == "2026-09-01"
+    assert clocks["bottleneck_asof"] != clocks["theme_revisions_asof"]
+    assert clocks["regime_freshness"]["age_days"] == 1
+    assert clocks["regime_freshness"]["age_sessions"] == 0
+    assert clocks["regime_freshness"]["max_age_sessions"] == 1
+    assert clocks["regime_freshness"]["stale"] is False
+
+    # -- the older neutral bottleneck, with its zero and its null ----------
+    bottleneck = obs["bottleneck"]
+    assert bottleneck["asof"] == "2026-09-01"
+    assert bottleneck["band"] == "NEUTRAL"
+    assert bottleneck["numeric_band"] == "NEUTRAL"
+    assert bottleneck["tightness"] == 0.11
+    assert bottleneck["numeric_composite"] == 0.0
+    assert bottleneck["n_legs"] == 6
+    assert bottleneck["regime"] is False
+    assert bottleneck["text_only"] is False
+    assert bottleneck["naics"] == "3344"
+    assert bottleneck["cap_u_latest"] == 76.51
+    assert bottleneck["ppi_yoy_latest"] == -2.2
+    assert bottleneck["language_hits"] == 3
+    assert bottleneck["language_n_filers"] == 2
+    assert bottleneck["leg6_detail"]["provisional"] is True
+    fingerprint = bottleneck["fingerprint"]
+    assert fingerprint["leg8_member_backlog"] is None
+    assert fingerprint["leg7_member_inventory"] == -0.091
+    assert fingerprint["n_legs_live"] == 1
+    assert fingerprint["basis"] == "annual"
+    assert fingerprint["provisional"] is True
+    assert fingerprint["components"]["leg8_member_backlog"]["value"] is None
+    assert fingerprint["components"]["leg8_member_backlog"]["latest_fy"] == 2022
+    assert fingerprint["components"]["leg8_member_backlog"]["met_gate"] is False
+
+    # -- market-global risk, separate from the sector reading -------------
+    risk = out["market_risk"]
+    assert risk["status"] == "available"
+    assert risk["scope"] == "market_global"
+    assert risk["data_state"] == "DEGRADED"
+    assert risk["stale_after"] is None
+    assert risk["source_session"] == "2026-11-06"
+    assert risk["as_of"] == "2026-11-06"
+    assert risk["observed_at"] == "2026-11-07T04:12:49Z"
+    assert risk["produced_at"] == "2026-11-07T04:12:49Z"
+    assert risk["revision"] == "settled"
+    assert risk["definition_id"] == "grey-deer-v1-2026-08-19"
+    assert risk["bundle_id"] == "fbf32d0f9123bafd"
+    assert risk["measured_state"]["verdict"] == "RISK_OFF"
+    assert risk["measured_state"]["score"] == 40
+    assert risk["measured_state"]["usable"] is True
+    assert risk["hazard_summary"]["stage"] is None
+    assert risk["hazard_summary"]["stage_reason"] == "required_coverage_unavailable"
+    assert risk["hazard_summary"]["unreadable_sources"] == ["leadership-crack-latest"]
+    assert risk["coherence"]["state"] == "MIXED"
+    assert risk["coherence"]["contradiction_count"] == 0
+    assert risk["coherence"]["contradictions"] == []
+    assert risk["coherence"]["scope"] == "market_reads"
+    assert risk["policy_summary"]["posture"] == "NORMAL"
+    assert risk["policy_summary"]["basis"] == "zero_active_policies"
+    assert risk["policy_summary"]["policy_count"] == 0
+    assert risk["policy_summary"]["active_policy_ids"] == []
+    assert risk["source_authority"]["envelope_may_execute"] is False
+    assert risk["source_authority"]["envelope_may_gate"] is False
+    assert risk["source_authority"]["envelope_may_rank"] is False
+    assert risk["source_authority"]["envelope_may_size"] is False
+    assert risk["source_authority"][
+        "policy_actions_require_individual_authority"] is True
+
+    # -- the four per-source freshness clocks stay separate ----------------
+    per_source = risk["freshness"]["per_source"]
+    assert risk["freshness"]["all_on_session"] is False
+    assert sorted(per_source) == [
+        "leadership-crack-latest", "market-state-latest", "risk-radar-us",
+        "site-marketdata-rotation-events",
+    ]
+    assert per_source["leadership-crack-latest"] == {
+        "as_of": "2026-11-05", "matches_session": False, "state": "STALE"}
+    assert per_source["market-state-latest"] == {
+        "as_of": "2026-11-06", "matches_session": True, "state": "FRESH"}
+    assert per_source["risk-radar-us"] == {
+        "as_of": "2026-11-06", "matches_session": True, "state": "FRESH"}
+    assert per_source["site-marketdata-rotation-events"] == {
+        "as_of": "2026-11-05", "matches_session": False, "state": "STALE"}
+
+
+def test_psl_ctx_limitations_and_authority_are_fixed_always():
+    fixed_limitations = {
+        "current_sector_usable": False,
+        "historically_admissible": False,
+        "sector_mapping": {"status": "unavailable",
+                           "reason": "native_sector_mapping_not_supplied"},
+        "original_available_at": None,
+        "availability_reason":
+            "native_availability_and_revision_selection_not_supplied",
+        "attribution_verification": "not_established_by_projection",
+    }
+    fixed_authority = {"may_rank": False, "may_gate": False, "may_size": False,
+                       "may_trade": False, "may_escalate": False}
+    assert sorted(fixed_authority) == sorted(PSL_CTX_AUTHORITY_FLAGS)
+
+    results = [
+        _psl_ctx_project(),
+        _psl_ctx_project(decision_cutoff="2026-11-06T21:00:00Z"),
+        _psl_ctx_project(decision_cutoff="not-a-cutoff"),
+        _psl_ctx_project(theme_key="no_such_theme"),
+        _psl_ctx_project(regime_document=None),
+    ]
+    for out in results:
+        assert out["limitations"] == fixed_limitations
+        assert out["authority"] == fixed_authority
+        assert out["schema"] == PSL_CTX_SCHEMA
+        assert out["scope"] == PSL_CTX_SCOPE
+        assert out["status"] in PSL_CTX_STATUSES
+        for section in ("theme", "observations", "comparison", "market_risk",
+                       "provenance"):
+            assert out[section]["status"] in PSL_CTX_SECTION_STATUSES
+
+
+def test_psl_ctx_historical_mode_withholds_every_contextual_value():
+    out = _psl_ctx_project(decision_cutoff="2026-11-06T21:00:00Z")
+    assert out["status"] == "partial"
+    assert out["observations"]["status"] == "withheld"
+    assert out["observations"]["reasons"] == [
+        "historical_availability_unqualified"]
+    assert out["market_risk"]["status"] == "withheld"
+    assert out["market_risk"]["reasons"] == [
+        "historical_availability_unqualified"]
+    assert out["comparison"]["status"] == "withheld"
+    assert out["comparison"]["reasons"] == [
+        "historical_availability_unqualified"]
+
+    # no contextual VALUE survives the historical claim. The owner clocks are
+    # kept, because they identify which snapshot would have been projected
+    # and they are not a positive claim; the limitation refuses their
+    # historical admissibility.
+    blob = json.dumps(out, ensure_ascii=False, sort_keys=True)
+    for token in ("POSITIVE", "NEUTRAL", "RISK_OFF", "ROLLING", "0.746",
+                  "21.89", "-0.204", "0.2269", "0.11"):
+        assert token not in blob, token
+    assert "revision_state" not in out["observations"]
+    assert "bottleneck" not in out["observations"]
+    assert "measured_state" not in out["market_risk"]
+    clocks = out["observations"]["clocks"]
+    assert clocks["bottleneck_asof"] == "2026-09-01"
+    assert clocks["theme_revisions_asof"] == "2026-11-06"
+    assert clocks["regime_asof"] == "2026-11-06"
+
+    # every alternative is unresolved and names the historical reason
+    entries = _psl_ctx_entries(out)
+    assert sorted(entries) == sorted(PSL_CTX_COMPARISON_IDS)
+    for entry in entries.values():
+        assert entry["status"] == "unresolved"
+        assert "historical_availability_unqualified" in entry["reasons"]
+        assert entry["evidence_refs"] == []
+        assert entry["falsifier"]["met"] is False
+        assert entry["statement"]
+
+    # the fixed limitations still refuse historical admissibility
+    assert out["limitations"]["historically_admissible"] is False
+    assert out["limitations"]["original_available_at"] is None
+
+
+def test_psl_ctx_invalid_decision_cutoff_fails_closed():
+    for bad in ("2026-11-06", "2026-11-06T00:00:00", "not-a-date", "", 42,
+                None.__class__, True):
+        out = _psl_ctx_project(decision_cutoff=bad)
+        assert out["status"] == "unavailable", bad
+        assert "invalid_decision_cutoff" in out["observations"]["reasons"], bad
+        assert out["comparison"]["entries"] == []
+        assert out["observations"]["status"] == "unavailable"
+        assert out["market_risk"]["status"] == "unavailable"
+        assert out["limitations"]["historically_admissible"] is False
+
+
+def test_psl_ctx_changed_observation_cannot_keep_the_fixture_claim():
+    regime = _psl_ctx_regime()
+    regime["theme_revisions"]["themes"]["memory_storage"]["level_state"] = "NEUTRAL"
+    out = _psl_ctx_project(regime_document=regime)
+    entries = _psl_ctx_entries(out)
+    first = entries["earnings_expectations"]
+    assert first["status"] == "unresolved"
+    assert first["reasons"] == ["revision_level_state_not_positive"]
+    assert "Positive revision breadth" not in first["statement"]
+    assert "NEUTRAL" in first["statement"]
+    # the second reading is regenerated from the changed value, not copied
+    second = entries["narrow_or_fading_revisions"]
+    assert "despite a NEUTRAL level state" in second["statement"]
+    assert "POSITIVE" not in second["statement"]
+    # independent valid sections remain
+    assert out["market_risk"]["status"] == "available"
+    assert out["market_risk"]["measured_state"]["verdict"] == "RISK_OFF"
+    assert out["observations"]["status"] == "available"
+    assert out["status"] == "partial"
+
+
+def test_psl_ctx_missing_observation_section_keeps_independent_sections():
+    regime = _psl_ctx_regime()
+    del regime["theme_revisions"]
+    out = _psl_ctx_project(regime_document=regime)
+    assert out["status"] == "partial"
+    assert out["observations"]["status"] == "partial"
+    assert "revision_state_unavailable" in out["observations"]["reasons"]
+    assert "revision_state" not in out["observations"]
+    # the separately dated bottleneck reading survives independently
+    assert out["observations"]["bottleneck"]["asof"] == "2026-09-01"
+    assert out["observations"]["bottleneck"]["band"] == "NEUTRAL"
+    entries = _psl_ctx_entries(out)
+    assert entries["earnings_expectations"]["status"] == "unresolved"
+    assert "Positive revision breadth" not in \
+        entries["earnings_expectations"]["statement"]
+    assert entries["physical_supply_constraint"]["status"] == "supported"
+    assert out["market_risk"]["status"] == "available"
+
+
+def test_psl_ctx_refuses_duplicate_outside_and_mismatched_contributors():
+    base = _psl_ctx_regime()
+    theme = base["theme_revisions"]["themes"]["memory_storage"]
+
+    duplicated = copy.deepcopy(base)
+    members = duplicated["theme_revisions"]["themes"]["memory_storage"]["members"]
+    members.append(dict(members[0]))
+    out = _psl_ctx_project(regime_document=duplicated)
+    assert "contributors_duplicate" in out["observations"]["reasons"]
+    assert "revision_state" not in out["observations"]
+    assert out["status"] == "partial"
+
+    outside = copy.deepcopy(base)
+    rows = outside["theme_revisions"]["themes"]["memory_storage"]["members"]
+    rows[0] = dict(rows[0])
+    rows[0]["ticker"] = "ZZZZ"
+    out = _psl_ctx_project(regime_document=outside)
+    assert "contributors_outside_roster" in out["observations"]["reasons"]
+    assert "revision_state" not in out["observations"]
+
+    mismatched = copy.deepcopy(base)
+    mismatched["theme_revisions"]["themes"]["memory_storage"]["n_members"] = 9
+    out = _psl_ctx_project(regime_document=mismatched)
+    assert "roster_count_mismatch" in out["observations"]["reasons"]
+    assert "revision_state" not in out["observations"]
+
+    covered_mismatch = copy.deepcopy(base)
+    covered_mismatch["theme_revisions"]["themes"]["memory_storage"][
+        "n_covered"] = 4
+    out = _psl_ctx_project(regime_document=covered_mismatch)
+    assert "contributors_count_mismatch" in out["observations"]["reasons"]
+
+    over_covered = copy.deepcopy(base)
+    over_covered["theme_revisions"]["themes"]["memory_storage"]["n_covered"] = 9
+    over_covered["theme_revisions"]["themes"]["memory_storage"][
+        "coverage"] = 1.8
+    out = _psl_ctx_project(regime_document=over_covered)
+    assert "revision_counts_invalid" in out["observations"]["reasons"]
+
+    # the theme is untouched by every refusal above
+    assert theme["members"][0]["ticker"] == "WDC"
+
+
+def test_psl_ctx_refuses_boolean_nonfinite_and_mistyped_numbers():
+    for field, value, reason in (
+        ("breadth", True, "boolean_not_numeric"),
+        ("breadth", float("inf"), "non_finite_value"),
+        ("breadth", float("nan"), "non_finite_value"),
+        ("breadth", "0.746", "revision_field_invalid"),
+        ("n_members", -1, "revision_counts_invalid"),
+        ("n_members", 2.5, "revision_counts_invalid"),
+        ("n_covered", True, "boolean_not_numeric"),
+    ):
+        regime = _psl_ctx_regime()
+        regime["theme_revisions"]["themes"]["memory_storage"][field] = value
+        out = _psl_ctx_project(regime_document=regime)
+        assert reason in out["observations"]["reasons"], (field, value)
+        assert "revision_state" not in out["observations"], (field, value)
+        entries = _psl_ctx_entries(out)
+        assert entries["earnings_expectations"]["status"] == "unresolved"
+        assert "Positive revision breadth" not in \
+            entries["earnings_expectations"]["statement"]
+        assert out["status"] == "partial"
+
+
+def test_psl_ctx_enforces_the_named_bounds():
+    # theme key
+    out = _psl_ctx_project(theme_key="x" * 65)
+    assert out["status"] == "unavailable"
+    assert "invalid_theme_key" in out["observations"]["reasons"]
+
+    # theme name
+    config = _psl_ctx_config()
+    config["themes"]["memory_storage"]["name"] = "N" * 121
+    out = _psl_ctx_project(config_document=config)
+    assert "theme_name_invalid" in out["theme"]["reasons"]
+    assert out["theme"]["status"] == "unavailable"
+
+    # ticker length
+    config = _psl_ctx_config()
+    config["themes"]["memory_storage"]["tickers"] = ["T" * 17]
+    out = _psl_ctx_project(config_document=config)
+    assert "roster_ticker_invalid" in out["theme"]["reasons"]
+
+    # roster size
+    config = _psl_ctx_config()
+    config["themes"]["memory_storage"]["tickers"] = [
+        "T{0:02d}".format(i) for i in range(65)]
+    out = _psl_ctx_project(config_document=config)
+    assert "roster_too_large" in out["theme"]["reasons"]
+
+    # duplicate roster ticker
+    config = _psl_ctx_config()
+    config["themes"]["memory_storage"]["tickers"] = ["MU", "MU"]
+    out = _psl_ctx_project(config_document=config)
+    assert "roster_duplicate_ticker" in out["theme"]["reasons"]
+
+    # contributor size
+    regime = _psl_ctx_regime()
+    theme = regime["theme_revisions"]["themes"]["memory_storage"]
+    theme["members"] = [
+        {"ticker": "T{0:02d}".format(i), "breadth": 0.5, "n_analysts": 1,
+         "est_chg_90d": 1.0, "n_covering": 2, "breadth_cov": 0.1}
+        for i in range(65)]
+    theme["n_members"] = 65
+    theme["n_covered"] = 65
+    theme["coverage"] = 1.0
+    out = _psl_ctx_project(regime_document=regime)
+    assert "contributors_too_large" in out["observations"]["reasons"]
+
+    # source_ref length
+    attribution = _psl_ctx_attribution()
+    attribution["regime_document"]["source_ref"] = "s" * 513
+    out = _psl_ctx_project(source_attribution=attribution)
+    assert "source_ref_invalid" in out["provenance"]["reasons"]
+
+    # raw_sha256 must be exact 64 lowercase hex
+    for bad in ("A" * 64, "a" * 63, "a" * 65, "g" * 64, 123):
+        attribution = _psl_ctx_attribution()
+        attribution["config_document"]["raw_sha256"] = bad
+        out = _psl_ctx_project(source_attribution=attribution)
+        assert "raw_sha256_invalid" in out["provenance"]["reasons"], bad
+
+    # the declared limits are the ones the commission names
+    assert PSL_CTX_LIMITS["max_configured_tickers"] == 64
+    assert PSL_CTX_LIMITS["max_contributors"] == 64
+    assert PSL_CTX_LIMITS["max_ticker_chars"] == 16
+    assert PSL_CTX_LIMITS["max_theme_key_chars"] == 64
+    assert PSL_CTX_LIMITS["max_theme_name_chars"] == 120
+    assert PSL_CTX_LIMITS["max_source_ref_chars"] == 512
+    assert PSL_CTX_LIMITS["max_selected_depth"] == 10
+    assert PSL_CTX_LIMITS["max_selected_nodes"] == 2048
+    assert PSL_CTX_LIMITS["max_comparison_entries"] == 4
+    assert PSL_CTX_LIMITS["max_statement_chars"] == 320
+    assert PSL_CTX_LIMITS["max_check_chars"] == 320
+    assert PSL_CTX_LIMITS["max_output_bytes"] == 16384
+
+
+def test_psl_ctx_refuses_cycles_and_type_violations():
+    # a cycle inside a selected branch
+    regime = _psl_ctx_regime()
+    theme = regime["theme_revisions"]["themes"]["memory_storage"]
+    theme["self"] = theme
+    out = _psl_ctx_project(regime_document=regime)
+    assert out["status"] == "unavailable"
+    assert "input_cycle_detected" in out["observations"]["reasons"]
+
+    # a non-JSON type inside a selected branch
+    regime = _psl_ctx_regime()
+    regime["theme_revisions"]["themes"]["memory_storage"]["weird"] = {1, 2}
+    out = _psl_ctx_project(regime_document=regime)
+    assert out["status"] == "unavailable"
+    assert "input_type_violation" in out["observations"]["reasons"]
+
+    # a non-string mapping key inside a selected branch
+    regime = _psl_ctx_regime()
+    regime["theme_revisions"]["themes"]["memory_storage"][7] = "x"
+    out = _psl_ctx_project(regime_document=regime)
+    assert out["status"] == "unavailable"
+    assert "input_type_violation" in out["observations"]["reasons"]
+
+    # an oversized selected branch exceeds the node budget
+    config = _psl_ctx_config()
+    config["themes"]["memory_storage"]["tickers"] = [
+        "T{0:04d}".format(i) for i in range(2100)]
+    out = _psl_ctx_project(config_document=config)
+    assert out["status"] == "unavailable"
+    assert "input_bound_exceeded" in out["observations"]["reasons"]
+
+
+def test_psl_ctx_attribution_is_carried_without_a_verification_claim():
+    out = _psl_ctx_project()
+    provenance = out["provenance"]
+    assert provenance["status"] == "available"
+    assert provenance["attribution_verification"] == "not_established_by_projection"
+    assert sorted(provenance["source_attribution"]) == sorted(
+        PSL_CTX_ATTRIBUTION_KEYS)
+    for key in PSL_CTX_ATTRIBUTION_KEYS:
+        entry = provenance["source_attribution"][key]
+        assert entry["raw_sha256"] == _psl_ctx_attribution()[key]["raw_sha256"]
+        assert entry["source_ref"] == _psl_ctx_attribution()[key]["source_ref"]
+
+    # a changed attribution is carried through, and never verified
+    attribution = _psl_ctx_attribution()
+    attribution["regime_document"]["raw_sha256"] = "b" * 64
+    attribution["regime_document"]["source_ref"] = "https://example.invalid/x"
+    changed = _psl_ctx_project(source_attribution=attribution)
+    carried = changed["provenance"]["source_attribution"]["regime_document"]
+    assert carried["raw_sha256"] == "b" * 64
+    assert carried["source_ref"] == "https://example.invalid/x"
+    assert changed["provenance"]["attribution_verification"] == \
+        "not_established_by_projection"
+    assert changed["limitations"]["attribution_verification"] == \
+        "not_established_by_projection"
+    assert changed["limitations"]["original_available_at"] is None
+    blob = json.dumps(changed, ensure_ascii=False, sort_keys=True)
+    for token in ("verified", "custody", "attested"):
+        assert token not in blob.lower(), token
+
+
+def test_psl_ctx_output_is_deterministic_detached_and_strict_json():
+    regime = _psl_ctx_regime()
+    config = _psl_ctx_config()
+    risk = _psl_ctx_public_risk()
+    attribution = _psl_ctx_attribution()
+    frozen = {
+        "regime": copy.deepcopy(regime),
+        "config": copy.deepcopy(config),
+        "risk": copy.deepcopy(risk),
+        "attribution": copy.deepcopy(attribution),
+    }
+    first = project_dated_context(
+        theme_key="memory_storage", regime_document=regime,
+        config_document=config, public_risk_document=risk,
+        source_attribution=attribution)
+    second = project_dated_context(
+        theme_key="memory_storage", regime_document=regime,
+        config_document=config, public_risk_document=risk,
+        source_attribution=attribution)
+    assert json.dumps(first, sort_keys=True) == json.dumps(second, sort_keys=True)
+
+    # the inputs are read, never mutated
+    assert regime == frozen["regime"]
+    assert config == frozen["config"]
+    assert risk == frozen["risk"]
+    assert attribution == frozen["attribution"]
+
+    # strict JSON: no NaN, no Infinity, and it round-trips
+    encoded = json.dumps(first, ensure_ascii=False, allow_nan=False,
+                         separators=(",", ":"), sort_keys=True)
+    assert "NaN" not in encoded and "Infinity" not in encoded
+    assert json.loads(encoded) == first
+
+    # the projection reads nothing ambient
+    from engine import sector_dated_context as sdc
+
+    assert not hasattr(sdc, "open")
+    assert not hasattr(sdc, "os")
+    assert not hasattr(sdc, "requests")
+
+
+def test_psl_ctx_module_imports_stdlib_only_and_never_reads_a_clock():
+    import ast
+    from pathlib import Path
+
+    from engine import sector_dated_context as sdc
+
+    allowed = {"__future__", "json", "math", "re", "datetime"}
+    source = Path(sdc.__file__).read_text(encoding="utf-8")
+    tree = ast.parse(source)
+    imported = set()
+    for node in tree.body:
+        if isinstance(node, ast.Import):
+            imported.update(alias.name.split(".")[0] for alias in node.names)
+        elif isinstance(node, ast.ImportFrom) and node.module:
+            imported.add(node.module.split(".")[0])
+    assert imported, "module-level imports must be parseable"
+    assert imported <= allowed, "non-stdlib top-level imports: {0}".format(
+        sorted(imported - allowed))
+    # owner modules, builders and providers are never imported
+    for owner in ("engine", "risk_envelope", "leadership_rotation_context",
+                  "yaml", "numpy", "pandas", "os", "subprocess", "urllib"):
+        assert owner not in imported
+
+    # no I/O, no clock read, no randomness, anywhere in the code
+    stripped = ast.parse(source)
+    for node in ast.walk(stripped):
+        if isinstance(node, (ast.Module, ast.FunctionDef, ast.AsyncFunctionDef,
+                             ast.ClassDef)):
+            body = node.body
+            if (body and isinstance(body[0], ast.Expr)
+                    and isinstance(body[0].value, ast.Constant)
+                    and isinstance(body[0].value.value, str)):
+                node.body = body[1:] or [ast.Pass()]
+    code_only = ast.unparse(stripped)
+    for token in ("open(", "urlopen", "datetime.now(", "random", "subprocess",
+                  "os.environ", "time.time", "importlib"):
+        assert token not in code_only, token
+
+
+def test_psl_ctx_output_bound_is_enforced_without_truncation():
+    tickers = ["T{0:015d}".format(i) for i in range(64)]
+    members = [{"ticker": ticker, "breadth": 0.5, "n_analysts": 10,
+                "est_chg_90d": 1.5, "n_covering": 20, "breadth_cov": 0.25}
+               for ticker in tickers]
+    regime = _psl_ctx_regime()
+    theme = regime["theme_revisions"]["themes"]["memory_storage"]
+    theme["name"] = "X" * 120
+    theme["members"] = members
+    theme["n_members"] = 64
+    theme["n_covered"] = 64
+    theme["coverage"] = 1.0
+    config = _psl_ctx_config()
+    config["themes"]["memory_storage"]["name"] = "X" * 120
+    config["themes"]["memory_storage"]["tickers"] = tickers
+
+    out = _psl_ctx_project(regime_document=regime, config_document=config)
+    assert out["status"] == "unavailable"
+    assert "output_bound_exceeded" in out["observations"]["reasons"]
+    encoded = json.dumps(out, ensure_ascii=False, allow_nan=False,
+                         separators=(",", ":"), sort_keys=True)
+    assert len(encoded.encode("utf-8")) <= PSL_CTX_LIMITS["max_output_bytes"]
+    # nothing was silently truncated: the refused result carries no roster
+    assert out["theme"]["roster"] == []
+
+    # a normal-sized input stays inside the bound
+    small = _psl_ctx_project()
+    encoded = json.dumps(small, ensure_ascii=False, allow_nan=False,
+                         separators=(",", ":"), sort_keys=True)
+    assert len(encoded.encode("utf-8")) <= PSL_CTX_LIMITS["max_output_bytes"]
+
+
+def test_psl_ctx_comparison_has_exactly_four_fixed_entries():
+    out = _psl_ctx_project()
+    comparison = out["comparison"]
+    assert comparison["evaluation"] == "prospective_unevaluated"
+    assert len(comparison["entries"]) == PSL_CTX_LIMITS["max_comparison_entries"]
+    assert [entry["id"] for entry in comparison["entries"]] == list(
+        PSL_CTX_COMPARISON_IDS)
+
+    for entry in comparison["entries"]:
+        assert entry["evaluation"] == "prospective_unevaluated"
+        assert entry["status"] in PSL_CTX_ENTRY_STATUSES
+        assert 0 < len(entry["statement"]) <= PSL_CTX_LIMITS["max_statement_chars"]
+        assert 0 < len(entry["falsifier"]["check"]) <= \
+            PSL_CTX_LIMITS["max_check_chars"]
+        # a falsifier is never marked met, and no entry ranks or scores
+        assert entry["falsifier"]["met"] is False
+        assert "score" not in entry
+        assert "rank" not in entry
+
+    entries = _psl_ctx_entries(out)
+    assert entries["earnings_expectations"]["status"] == "supported"
+    assert entries["narrow_or_fading_revisions"]["status"] == "supported"
+    assert entries["physical_supply_constraint"]["status"] == "supported"
+    assert entries["market_or_other_causes"]["status"] == "unresolved"
+    assert "alternatives_not_resolved_by_supplied_evidence" in \
+        entries["market_or_other_causes"]["reasons"]
+
+    # the statements carry the supplied values, not a copied conclusion
+    assert "3 of 5" in entries["narrow_or_fading_revisions"]["statement"]
+    assert "ROLLING" in entries["narrow_or_fading_revisions"]["statement"]
+    assert "NEUTRAL" in entries["physical_supply_constraint"]["statement"]
+    assert "2026-09-01" in entries["physical_supply_constraint"]["statement"]
+    assert "2026-11-06" in entries["physical_supply_constraint"]["statement"]
+
+
+def test_psl_ctx_evidence_references_resolve_to_projected_fields():
+    out = _psl_ctx_project()
+    context = {
+        "theme": out["theme"],
+        "observations": out["observations"],
+        "market_risk": out["market_risk"],
+    }
+    for entry in out["comparison"]["entries"]:
+        assert entry["evidence_refs"], entry["id"]
+        for ref in entry["evidence_refs"]:
+            node = context
+            for part in ref.split("."):
+                assert isinstance(node, dict), ref
+                assert part in node, ref
+                node = node[part]
+            assert node is not None, ref
+
+    # a reference into an unprojected section never survives
+    regime = _psl_ctx_regime()
+    del regime["bottleneck"]
+    out = _psl_ctx_project(regime_document=regime)
+    entries = _psl_ctx_entries(out)
+    assert entries["physical_supply_constraint"]["status"] == "unresolved"
+    assert entries["physical_supply_constraint"]["evidence_refs"] == []
+    assert "bottleneck_band_unavailable" in \
+        entries["physical_supply_constraint"]["reasons"]
+
+
+def test_psl_ctx_unknown_theme_and_unknown_owner_sections_are_typed():
+    out = _psl_ctx_project(theme_key="no_such_theme")
+    assert out["status"] == "unavailable"
+    assert "theme_not_in_config" in out["theme"]["reasons"]
+
+    regime = _psl_ctx_regime()
+    del regime["bottleneck"]
+    out = _psl_ctx_project(regime_document=regime)
+    assert "bottleneck_unavailable" in out["observations"]["reasons"]
+    assert "bottleneck" not in out["observations"]
+    # the revision reading survives independently
+    assert out["observations"]["revision_state"]["level_state"] == "POSITIVE"
+
+    regime = _psl_ctx_regime()
+    del regime["freshness"]
+    out = _psl_ctx_project(regime_document=regime)
+    assert out["observations"]["clocks"]["regime_built_at"] is None
+    assert out["observations"]["revision_state"]["asof"] == "2026-11-06"
+
+    out = _psl_ctx_project(public_risk_document={})
+    assert out["market_risk"]["status"] == "unavailable"
+    assert "market_risk_schema_missing" in out["market_risk"]["reasons"]
+
+    out = _psl_ctx_project(regime_document="not-a-document")
+    assert out["status"] == "unavailable"
+    assert "invalid_regime_document" in out["observations"]["reasons"]
+
+
+def test_psl_ctx_declared_reason_codes_are_typed_and_bounded():
+    assert "historical_availability_unqualified" in PSL_CTX_REASONS
+    assert "output_bound_exceeded" in PSL_CTX_REASONS
+    assert "invalid_decision_cutoff" in PSL_CTX_REASONS
+    assert "input_cycle_detected" in PSL_CTX_REASONS
+    assert "input_bound_exceeded" in PSL_CTX_REASONS
+    assert "boolean_not_numeric" in PSL_CTX_REASONS
+    assert "non_finite_value" in PSL_CTX_REASONS
+    # every reason is a stable snake_case token, never raw exception prose
+    for reason in PSL_CTX_REASONS:
+        assert reason == reason.lower()
+        assert " " not in reason
+        assert reason.replace("_", "").isalnum()
+    out = _psl_ctx_project()
+    seen = set(out["observations"]["reasons"]) | set(out["theme"]["reasons"])
+    seen |= set(out["market_risk"]["reasons"]) | set(out["provenance"]["reasons"])
+    assert seen <= set(PSL_CTX_REASONS)
+
+
+# ---------------------------------------------------------------------------
+# PSL-DATED-CTX-2 -- the corrective commission's focused cases.
+#
+# Every case below is a defect that the reconstructed projection still
+# carries.  Each one is written so that it fails against the reconstruction
+# and holds only after the correction lands.  The cases are grouped by the
+# commission's six concrete corrections.
+# ---------------------------------------------------------------------------
+
+
+def _psl_ctx_revision(theme):
+    """The selected revision theme of a regime fixture."""
+    return theme["theme_revisions"]["themes"]["memory_storage"]
+
+
+def _psl_ctx_bottleneck(theme):
+    """The selected bottleneck theme of a regime fixture."""
+    return theme["bottleneck"]["themes"]["memory_storage"]
+
+
+def _psl_ctx_statements(out):
+    """Every comparison statement, joined for prose assertions."""
+    return " || ".join(
+        entry["statement"] for entry in out["comparison"]["entries"])
+
+
+def _psl_ctx_encoded(out):
+    """The strict JSON encoding of a result, as UTF-8 bytes."""
+    return json.dumps(
+        out, ensure_ascii=False, allow_nan=False,
+        separators=(",", ":"), sort_keys=True).encode("utf-8")
+
+
+# -- correction 1: one accepted-count predicate, and a guarded zero --------
+
+def test_psl_ctx_correction_zero_member_counts_never_divide_by_zero():
+    """A zero-member roster is typed, not a ZeroDivisionError."""
+    regime = _psl_ctx_regime()
+    theme = _psl_ctx_revision(regime)
+    theme["n_members"] = 0
+    theme["n_covered"] = 0
+    theme["coverage"] = 0.0
+    theme["members"] = []
+    out = _psl_ctx_project(regime_document=regime)
+    assert out["status"] in PSL_CTX_STATUSES
+    assert "revision_coverage_inconsistent" in out["observations"]["reasons"]
+    assert "revision_state" not in out["observations"]
+    assert len(_psl_ctx_encoded(out)) <= PSL_CTX_LIMITS["max_output_bytes"]
+
+
+def test_psl_ctx_correction_a_float_member_count_is_checked_against_the_roster():
+    """A float member count is checked exactly like an integer member count."""
+    regime = _psl_ctx_regime()
+    _psl_ctx_revision(regime)["n_members"] = 9.0
+    out = _psl_ctx_project(regime_document=regime)
+    assert "roster_count_mismatch" in out["observations"]["reasons"]
+    assert "revision_state" not in out["observations"]
+
+
+def test_psl_ctx_correction_float_counts_are_checked_for_cover_and_coverage():
+    """Float covered/member counts are checked for cover and for coverage."""
+    regime = _psl_ctx_regime()
+    theme = _psl_ctx_revision(regime)
+    theme["n_members"] = 5.0
+    theme["n_covered"] = 9.0
+    theme["coverage"] = 1.8
+    out = _psl_ctx_project(regime_document=regime)
+    assert "revision_counts_invalid" in out["observations"]["reasons"]
+    assert "revision_state" not in out["observations"]
+
+    regime = _psl_ctx_regime()
+    theme = _psl_ctx_revision(regime)
+    theme["n_members"] = 5.0
+    theme["n_covered"] = 3.0
+    theme["coverage"] = 0.5
+    out = _psl_ctx_project(regime_document=regime)
+    assert "revision_coverage_inconsistent" in out["observations"]["reasons"]
+    assert "revision_state" not in out["observations"]
+
+
+def test_psl_ctx_correction_a_genuine_integral_float_count_keeps_its_value():
+    """A valid integral float count is never rejected and never rewritten."""
+    out = _psl_ctx_project()
+    net_up_total = out["observations"]["revision_state"]["net_up_total"]
+    assert net_up_total == 24.0
+    assert isinstance(net_up_total, float)
+    assert "revision_counts_invalid" not in out["observations"]["reasons"]
+    assert out["observations"]["status"] == "available"
+
+
+# -- correction 2: the owner label is not the numeric support --------------
+
+def test_psl_ctx_correction_a_positive_label_without_breadth_is_not_supported():
+    """The owner label alone never carries the strong positive statement."""
+    regime = _psl_ctx_regime()
+    del _psl_ctx_revision(regime)["breadth"]
+    out = _psl_ctx_project(regime_document=regime)
+    first = _psl_ctx_entries(out)["earnings_expectations"]
+    assert first["status"] == "unresolved"
+    assert "Positive revision breadth" not in first["statement"]
+    assert "revision_breadth_unavailable" in first["reasons"]
+    assert out["comparison"]["status"] == "partial"
+
+
+def test_psl_ctx_correction_a_negative_breadth_conflicts_with_a_positive_label():
+    """A negative numeric breadth conflicts with the supplied owner label."""
+    regime = _psl_ctx_regime()
+    _psl_ctx_revision(regime)["breadth"] = -0.25
+    out = _psl_ctx_project(regime_document=regime)
+    first = _psl_ctx_entries(out)["earnings_expectations"]
+    assert first["status"] == "unresolved"
+    assert "Positive revision breadth" not in first["statement"]
+    # the raw owner label is preserved, and the conflict is named
+    assert "POSITIVE" in first["statement"]
+    assert "revision_breadth_not_positive" in first["reasons"]
+
+
+def test_psl_ctx_correction_missing_counts_or_contributors_block_the_reading():
+    """Missing counts and missing contributors block the positive reading."""
+    regime = _psl_ctx_regime()
+    theme = _psl_ctx_revision(regime)
+    del theme["n_covered"]
+    del theme["n_members"]
+    out = _psl_ctx_project(regime_document=regime)
+    first = _psl_ctx_entries(out)["earnings_expectations"]
+    assert first["status"] == "unresolved"
+    assert "Positive revision breadth" not in first["statement"]
+    assert "coverage_unavailable" in first["reasons"]
+
+    regime = _psl_ctx_regime()
+    del _psl_ctx_revision(regime)["members"]
+    out = _psl_ctx_project(regime_document=regime)
+    first = _psl_ctx_entries(out)["earnings_expectations"]
+    assert first["status"] == "unresolved"
+    assert "Positive revision breadth" not in first["statement"]
+    # the missing contributor rows are typed on the observation section, and
+    # the reading they support is not asserted
+    assert "contributors_unavailable" in out["observations"]["reasons"]
+    assert "contributors_count_mismatch" in first["reasons"]
+
+
+def test_psl_ctx_correction_a_complete_primary_reading_is_unchanged():
+    """A complete, consistent reading keeps its supported positive statement."""
+    out = _psl_ctx_project()
+    first = _psl_ctx_entries(out)["earnings_expectations"]
+    assert first["status"] == "supported"
+    assert first["statement"] == (
+        "Positive revision breadth in the supplied snapshot is consistent "
+        "with improving covered-member expectations; price cause is not "
+        "established.")
+    assert first["reasons"] == []
+    assert out["observations"]["revision_state"]["breadth"] == 0.746
+    assert out["observations"]["revision_state"]["n_covered"] == 3
+    assert out["observations"]["revision_state"]["n_members"] == 5
+
+
+# -- correction 3: the configured theme identity fences theme assertions --
+
+def test_psl_ctx_correction_a_missing_config_entry_withholds_theme_assertions():
+    """A theme that is not in the configuration asserts nothing."""
+    out = _psl_ctx_project(theme_key="no_such_theme")
+    assert out["theme"]["status"] == "unavailable"
+    assert "theme_not_in_config" in out["theme"]["reasons"]
+    assert out["status"] == "unavailable"
+    entries = _psl_ctx_entries(out)
+    for entry_id in ("earnings_expectations", "narrow_or_fading_revisions",
+                     "physical_supply_constraint"):
+        entry = entries[entry_id]
+        assert entry["status"] == "unresolved", entry_id
+        assert entry["evidence_refs"] == [], entry_id
+        assert "theme_identity_unqualified" in entry["reasons"], entry_id
+    # the independent market-global risk stays qualified
+    assert out["market_risk"]["status"] == "available"
+    assert out["market_risk"]["measured_state"]["verdict"] == "RISK_OFF"
+
+
+def test_psl_ctx_correction_an_invalid_or_duplicate_roster_withholds_theme_assertions():
+    """An invalid or duplicated configured roster asserts nothing either."""
+    for tickers, reason in (
+        (["MU", "WDC", "", "STX", "NTAP"], "roster_ticker_invalid"),
+        (["MU", "MU", "WDC", "STX", "NTAP"], "roster_duplicate_ticker"),
+        (["T" * 17, "WDC", "SNDK", "STX", "NTAP"], "roster_ticker_invalid"),
+    ):
+        config = _psl_ctx_config()
+        config["themes"]["memory_storage"]["tickers"] = tickers
+        out = _psl_ctx_project(config_document=config)
+        assert out["theme"]["status"] == "unavailable"
+        assert reason in out["theme"]["reasons"]
+        entries = _psl_ctx_entries(out)
+        for entry_id in ("earnings_expectations",
+                         "narrow_or_fading_revisions",
+                         "physical_supply_constraint"):
+            entry = entries[entry_id]
+            assert entry["status"] == "unresolved", entry_id
+            assert entry["evidence_refs"] == [], entry_id
+            assert "theme_identity_unqualified" in entry["reasons"], entry_id
+
+
+def test_psl_ctx_correction_an_invalid_roster_keeps_the_independent_market_risk():
+    """A broken theme identity never reclassifies the independent risk."""
+    config = _psl_ctx_config()
+    config["themes"]["memory_storage"]["tickers"] = ["MU", "MU"]
+    out = _psl_ctx_project(config_document=config)
+    risk = out["market_risk"]
+    assert risk["status"] == "available"
+    assert risk["data_state"] == "DEGRADED"
+    assert risk["measured_state"]["verdict"] == "RISK_OFF"
+    assert risk["measured_state"]["score"] == 40
+    assert risk["hazard_summary"]["stage"] is None
+    assert risk["hazard_summary"]["stage_reason"] == "required_coverage_unavailable"
+    assert risk["policy_summary"]["posture"] == "NORMAL"
+    assert risk["policy_summary"]["policy_count"] == 0
+    assert risk["source_authority"]["envelope_may_execute"] is False
+    # the market-global alternative keeps its own evidence references
+    market = _psl_ctx_entries(out)["market_or_other_causes"]
+    assert "market_risk.measured_state.verdict" in market["evidence_refs"]
+
+
+# -- correction 4: valid owner clocks, and each own provisional flag -------
+
+def test_psl_ctx_correction_a_missing_revision_clock_is_typed_and_undated():
+    """A missing revision clock is typed and makes no dated claim."""
+    regime = _psl_ctx_regime()
+    del regime["theme_revisions"]["asof"]
+    out = _psl_ctx_project(regime_document=regime)
+    assert "revision_asof_unavailable" in out["observations"]["reasons"]
+    assert out["observations"]["revision_state"].get("asof") is None
+    assert "2026-11-06" not in _psl_ctx_statements(out)
+    assert "is contemporaneous with" not in _psl_ctx_statements(out)
+
+
+def test_psl_ctx_correction_an_invalid_owner_clock_makes_no_dated_claim():
+    """A malformed owner clock is typed and makes no dated claim."""
+    regime = _psl_ctx_regime()
+    regime["theme_revisions"]["asof"] = "whenever"
+    out = _psl_ctx_project(regime_document=regime)
+    assert "revision_asof_invalid" in out["observations"]["reasons"]
+    assert out["observations"]["revision_state"].get("asof") is None
+    assert "dated whenever" not in _psl_ctx_statements(out)
+    # the raw owner clock is still preserved, separately and unchanged
+    assert out["observations"]["clocks"]["theme_revisions_asof"] == "whenever"
+
+    regime = _psl_ctx_regime()
+    regime["bottleneck"]["asof"] = "2026-13-45"
+    out = _psl_ctx_project(regime_document=regime)
+    assert "bottleneck_asof_invalid" in out["observations"]["reasons"]
+    assert out["observations"]["bottleneck"].get("asof") is None
+    assert "2026-13-45" not in _psl_ctx_statements(out)
+    assert out["observations"]["clocks"]["bottleneck_asof"] == "2026-13-45"
+
+
+def test_psl_ctx_correction_the_same_malformed_clock_is_never_contemporaneous():
+    """Two identical malformed clocks never make a contemporaneous claim."""
+    regime = _psl_ctx_regime()
+    regime["theme_revisions"]["asof"] = "not-a-clock"
+    regime["bottleneck"]["asof"] = "not-a-clock"
+    out = _psl_ctx_project(regime_document=regime)
+    assert "is contemporaneous with" not in _psl_ctx_statements(out)
+    assert "not-a-clock" not in _psl_ctx_statements(out)
+    assert "revision_asof_invalid" in out["observations"]["reasons"]
+    assert "bottleneck_asof_invalid" in out["observations"]["reasons"]
+    physical = _psl_ctx_entries(out)["physical_supply_constraint"]
+    assert physical["status"] == "unresolved"
+
+
+def test_psl_ctx_correction_provisional_language_uses_each_own_flag():
+    """Each provisional sentence is generated from its own owner flag."""
+    statements = {}
+    for leg6 in (True, False):
+        for fingerprint in (True, False):
+            regime = _psl_ctx_regime()
+            _psl_ctx_bottleneck(regime)["leg6_detail"]["provisional"] = leg6
+            _psl_ctx_bottleneck(regime)["fingerprint"]["provisional"] = \
+                fingerprint
+            out = _psl_ctx_project(regime_document=regime)
+            statements[(leg6, fingerprint)] = _psl_ctx_entries(out)[
+                "physical_supply_constraint"]["statement"]
+
+    both = statements[(True, True)]
+    language_only = statements[(True, False)]
+    fingerprint_only = statements[(False, True)]
+    neither = statements[(False, False)]
+
+    assert "language leg" in both and "member fingerprint" in both
+    assert "language leg" in language_only
+    assert "member fingerprint" not in language_only
+    assert "member fingerprint" in fingerprint_only
+    assert "language leg" not in fingerprint_only
+    assert "provisional" not in neither
+
+    # all four combinations are meaningfully different
+    assert len(set(statements.values())) == 4
+
+
+# -- correction 5: the risk schema and the independently qualified parts --
+
+def test_psl_ctx_correction_an_unexpected_risk_schema_fails_closed():
+    """An incompatible risk envelope admits no reading and no reference."""
+    risk = _psl_ctx_public_risk()
+    risk["schema"] = "mastermind.risk_envelope/v2"
+    out = _psl_ctx_project(public_risk_document=risk)
+    assert out["market_risk"]["status"] == "unavailable"
+    assert out["market_risk"]["reasons"] == ["market_risk_schema_unexpected"]
+    for field in ("measured_state", "hazard_summary", "policy_summary",
+                  "freshness", "coherence", "source_authority"):
+        assert field not in out["market_risk"], field
+    market = _psl_ctx_entries(out)["market_or_other_causes"]
+    assert market["evidence_refs"] == []
+    assert "market_risk_unavailable" in market["reasons"]
+
+
+def test_psl_ctx_correction_a_failed_risk_subsection_is_withheld_and_unreferenced():
+    """A failed risk subsection is withheld; its independent siblings stay."""
+    risk = _psl_ctx_public_risk()
+    del risk["hazard_summary"]
+    out = _psl_ctx_project(public_risk_document=risk)
+    assert out["market_risk"]["status"] == "partial"
+    assert "market_risk_field_invalid" in out["market_risk"]["reasons"]
+    assert "hazard_summary" not in out["market_risk"]
+    assert out["market_risk"]["measured_state"]["verdict"] == "RISK_OFF"
+    assert out["market_risk"]["freshness"]["source_session"] == "2026-11-06"
+    assert out["market_risk"]["policy_summary"]["posture"] == "NORMAL"
+    refs = _psl_ctx_entries(out)["market_or_other_causes"]["evidence_refs"]
+    assert not any(ref.startswith("market_risk.hazard_summary") for ref in refs)
+    assert "market_risk.measured_state.verdict" in refs
+
+    risk = _psl_ctx_public_risk()
+    risk["measured_state"]["score"] = "forty"
+    out = _psl_ctx_project(public_risk_document=risk)
+    assert out["market_risk"]["status"] == "partial"
+    assert "measured_state" not in out["market_risk"]
+    assert out["market_risk"]["policy_summary"]["posture"] == "NORMAL"
+    assert out["market_risk"]["freshness"]["all_on_session"] is False
+    refs = _psl_ctx_entries(out)["market_or_other_causes"]["evidence_refs"]
+    assert "market_risk.measured_state.verdict" not in refs
+
+    risk = _psl_ctx_public_risk()
+    risk["freshness"]["per_source"]["market-state-latest"] = "not-a-mapping"
+    out = _psl_ctx_project(public_risk_document=risk)
+    assert out["market_risk"]["status"] == "partial"
+    assert "freshness" not in out["market_risk"]
+    assert out["market_risk"]["measured_state"]["verdict"] == "RISK_OFF"
+    assert out["market_risk"]["policy_summary"]["posture"] == "NORMAL"
+
+
+# -- correction 6: every return is bounded, and every value is detached ---
+
+def test_psl_ctx_correction_every_refusal_is_bounded_and_never_echoes_the_selector():
+    """No refusal echoes an invalid selector and no refusal exceeds the bound."""
+    huge = "z" * 200000
+    refusals = [
+        _psl_ctx_project(theme_key=huge),
+        _psl_ctx_project(theme_key=huge, decision_cutoff="not-a-cutoff"),
+        _psl_ctx_project(theme_key="x" * 65),
+        _psl_ctx_project(theme_key=42),
+        _psl_ctx_project(regime_document=None),
+        _psl_ctx_project(config_document=None),
+        _psl_ctx_project(public_risk_document=None),
+        _psl_ctx_project(decision_cutoff="not-a-cutoff"),
+    ]
+    for out in refusals:
+        encoded = _psl_ctx_encoded(out)
+        assert len(encoded) <= PSL_CTX_LIMITS["max_output_bytes"]
+        assert b"z" * 1000 not in encoded
+        assert out["status"] in PSL_CTX_STATUSES
+        for section in ("theme", "observations", "comparison", "market_risk",
+                        "provenance"):
+            assert out[section]["status"] in PSL_CTX_SECTION_STATUSES
+    assert refusals[0]["theme"]["theme_key"] is None
+    assert refusals[1]["theme"]["theme_key"] is None
+    assert "invalid_decision_cutoff" in refusals[1]["observations"]["reasons"]
+    assert "invalid_theme_key" in refusals[0]["observations"]["reasons"]
+
+
+def test_psl_ctx_correction_the_contradiction_list_is_detached_in_both_directions():
+    """A projected contradiction list shares nothing with its source."""
+    risk = _psl_ctx_public_risk()
+    risk["coherence"]["contradictions"] = [
+        {"kind": "measured_vs_hazard", "detail": "mismatch"}]
+    risk["coherence"]["contradiction_count"] = 1
+
+    # mutating the projected result never reaches the supplied document
+    out = _psl_ctx_project(public_risk_document=risk)
+    contradictions = out["market_risk"]["coherence"]["contradictions"]
+    assert contradictions == [
+        {"kind": "measured_vs_hazard", "detail": "mismatch"}]
+    contradictions.append("mutated")
+    contradictions[0]["detail"] = "mutated"
+    assert risk["coherence"]["contradictions"] == [
+        {"kind": "measured_vs_hazard", "detail": "mismatch"}]
+
+    # mutating the supplied document never reaches the projected result
+    out = _psl_ctx_project(public_risk_document=risk)
+    risk["coherence"]["contradictions"].append("added later")
+    risk["coherence"]["contradictions"][0]["detail"] = "changed later"
+    assert out["market_risk"]["coherence"]["contradictions"] == [
+        {"kind": "measured_vs_hazard", "detail": "mismatch"}]
+
+
+def test_psl_ctx_correction_the_pinned_primary_source_projects_the_same_reading():
+    """The real pinned bytes project the same dated reading as the fixture."""
+    import subprocess
+    from pathlib import Path
+
+    import yaml
+
+    root = str(Path(__file__).resolve().parents[1])
+
+    def pinned(path):
+        return subprocess.run(
+            ["git", "-C", root, "cat-file", "blob",
+             "{0}:{1}".format(PSL_CTX_BASE, path)],
+            capture_output=True, check=True, timeout=120).stdout
+
+    try:
+        regime = json.loads(pinned("data/regime/latest.json"))
+        config = yaml.safe_load(pinned("config.yml"))
+        risk = json.loads(pinned("site/riskdata/risk_envelope.json"))
+    except (OSError, subprocess.SubprocessError, ValueError):
+        pytest.skip(
+            "this checkout does not carry the pinned bytes; the byte/hash "
+            "proof is in the lane evidence")
+    if not isinstance(config, dict) or "themes" not in config:
+        pytest.skip("the pinned configuration does not carry the themes map")
+
+    out = project_dated_context(
+        theme_key="memory_storage", regime_document=regime,
+        config_document=config, public_risk_document=risk,
+        source_attribution=_psl_ctx_attribution())
+    fixture = _psl_ctx_project()
+
+    assert out["status"] == "dated_context"
+    assert out["theme"]["roster"] == fixture["theme"]["roster"]
+    assert out["observations"]["revision_state"] == \
+        fixture["observations"]["revision_state"]
+    assert out["observations"]["contributors"] == fixture["observations"]["contributors"]
+    assert out["observations"]["bottleneck"]["band"] == "NEUTRAL"
+    assert out["observations"]["bottleneck"]["asof"] == "2026-09-01"
+    assert out["observations"]["clocks"]["theme_revisions_asof"] == "2026-11-06"
+    assert out["market_risk"]["measured_state"] == fixture["market_risk"]["measured_state"]
+    assert out["market_risk"]["data_state"] == "DEGRADED"
+    assert out["market_risk"]["hazard_summary"]["stage"] is None
+    assert out["market_risk"]["policy_summary"]["posture"] == "NORMAL"
+
+    # the scope never widens into a sector or a global claim
+    assert out["scope"] == PSL_CTX_SCOPE
+    assert out["theme"]["membership_basis"] == "configured_theme_roster"
+    assert out["limitations"]["current_sector_usable"] is False
+    assert out["limitations"]["historically_admissible"] is False
+    assert all(flag is False for flag in out["authority"].values())

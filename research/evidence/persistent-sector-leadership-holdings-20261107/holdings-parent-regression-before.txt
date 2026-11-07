@@ -1,0 +1,93 @@
+..FFFFFFFF............FFF                                                [100%]
+=================================== FAILURES ===================================
+_ TestHoldingsCaptureProvenance.test_a_refused_issuer_date_never_touches_the_stored_snapshot[year-only] _
+tests/test_healthcare_dispersion_w0b.py:428: in test_a_refused_issuer_date_never_touches_the_stored_snapshot
+    with pytest.raises(RuntimeError, match=match):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: Regex pattern did not match.
+E     Expected regex: 'malformed'
+E     Actual message: "all sector holdings failed: ['XLK: sector holdings XLK: incoming capture dated 2026-01-01 is older than the stored snapshot 2026-11-05 — refused']"
+_ TestHoldingsCaptureProvenance.test_a_refused_issuer_date_never_touches_the_stored_snapshot[year-month] _
+tests/test_healthcare_dispersion_w0b.py:428: in test_a_refused_issuer_date_never_touches_the_stored_snapshot
+    with pytest.raises(RuntimeError, match=match):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: Regex pattern did not match.
+E     Expected regex: 'malformed'
+E     Actual message: "all sector holdings failed: ['XLK: sector holdings XLK: incoming capture dated 2026-11-01 is older than the stored snapshot 2026-11-05 — refused']"
+_ TestHoldingsCaptureProvenance.test_a_refused_issuer_date_never_touches_the_stored_snapshot[month-year] _
+tests/test_healthcare_dispersion_w0b.py:428: in test_a_refused_issuer_date_never_touches_the_stored_snapshot
+    with pytest.raises(RuntimeError, match=match):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   AssertionError: Regex pattern did not match.
+E     Expected regex: 'malformed'
+E     Actual message: "all sector holdings failed: ['XLK: sector holdings XLK: incoming capture dated 2026-11-01 is older than the stored snapshot 2026-11-05 — refused']"
+_ TestHoldingsCaptureProvenance.test_a_refused_issuer_date_never_touches_the_stored_snapshot[relative-today] _
+tests/test_healthcare_dispersion_w0b.py:428: in test_a_refused_issuer_date_never_touches_the_stored_snapshot
+    with pytest.raises(RuntimeError, match=match):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE RuntimeError
+_ TestHoldingsCaptureProvenance.test_a_refused_issuer_date_never_touches_the_stored_snapshot[relative-now] _
+tests/test_healthcare_dispersion_w0b.py:428: in test_a_refused_issuer_date_never_touches_the_stored_snapshot
+    with pytest.raises(RuntimeError, match=match):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE RuntimeError
+_ TestHoldingsCaptureProvenance.test_a_refused_issuer_date_never_touches_the_stored_snapshot[two-digit-year] _
+tests/test_healthcare_dispersion_w0b.py:428: in test_a_refused_issuer_date_never_touches_the_stored_snapshot
+    with pytest.raises(RuntimeError, match=match):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE RuntimeError
+_ TestHoldingsCaptureProvenance.test_a_refused_issuer_date_never_touches_the_stored_snapshot[undeclared-day-first] _
+tests/test_healthcare_dispersion_w0b.py:428: in test_a_refused_issuer_date_never_touches_the_stored_snapshot
+    with pytest.raises(RuntimeError, match=match):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE RuntimeError
+_ TestHoldingsCaptureProvenance.test_a_refused_issuer_date_never_touches_the_stored_snapshot[timestamp-not-calendar-date] _
+tests/test_healthcare_dispersion_w0b.py:428: in test_a_refused_issuer_date_never_touches_the_stored_snapshot
+    with pytest.raises(RuntimeError, match=match):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE RuntimeError
+_________ test_a_malformed_capture_is_withheld[wrong-fund-source-url] __________
+tests/test_sector_holdings_coverage.py:906: in test_a_malformed_capture_is_withheld
+    assert receipt["status"] == "malformed", receipt["reasons"]
+E   AssertionError: []
+E   assert 'consistent' == 'malformed'
+E     
+E     - malformed
+E     + consistent
+_________ test_a_malformed_capture_is_withheld[unrelated-source-host] __________
+tests/test_sector_holdings_coverage.py:906: in test_a_malformed_capture_is_withheld
+    assert receipt["status"] == "malformed", receipt["reasons"]
+E   AssertionError: []
+E   assert 'consistent' == 'malformed'
+E     
+E     - malformed
+E     + consistent
+___________ test_a_malformed_capture_is_withheld[altered-source-url] ___________
+tests/test_sector_holdings_coverage.py:906: in test_a_malformed_capture_is_withheld
+    assert receipt["status"] == "malformed", receipt["reasons"]
+E   AssertionError: []
+E   assert 'consistent' == 'malformed'
+E     
+E     - malformed
+E     + consistent
+=============================== warnings summary ===============================
+tests/test_healthcare_dispersion_w0b.py::TestHoldingsCaptureProvenance::test_a_refused_issuer_date_never_touches_the_stored_snapshot[undeclared-day-first]
+  /Volumes/Mastermind/agent-workspaces/macro/web/persistent-sector-leadership-adoption-20261107-c4/collectors/sector_holdings.py:127: UserWarning: Parsing dates in %d/%m/%Y format when dayfirst=False (the default) was specified. Pass `dayfirst=True` or specify a format to silence this warning.
+    parsed = pd.to_datetime(text)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+
+NOTE: sparse worktree — data, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_healthcare_dispersion_w0b.py::TestHoldingsCaptureProvenance::test_a_refused_issuer_date_never_touches_the_stored_snapshot[year-only]
+FAILED tests/test_healthcare_dispersion_w0b.py::TestHoldingsCaptureProvenance::test_a_refused_issuer_date_never_touches_the_stored_snapshot[year-month]
+FAILED tests/test_healthcare_dispersion_w0b.py::TestHoldingsCaptureProvenance::test_a_refused_issuer_date_never_touches_the_stored_snapshot[month-year]
+FAILED tests/test_healthcare_dispersion_w0b.py::TestHoldingsCaptureProvenance::test_a_refused_issuer_date_never_touches_the_stored_snapshot[relative-today]
+FAILED tests/test_healthcare_dispersion_w0b.py::TestHoldingsCaptureProvenance::test_a_refused_issuer_date_never_touches_the_stored_snapshot[relative-now]
+FAILED tests/test_healthcare_dispersion_w0b.py::TestHoldingsCaptureProvenance::test_a_refused_issuer_date_never_touches_the_stored_snapshot[two-digit-year]
+FAILED tests/test_healthcare_dispersion_w0b.py::TestHoldingsCaptureProvenance::test_a_refused_issuer_date_never_touches_the_stored_snapshot[undeclared-day-first]
+FAILED tests/test_healthcare_dispersion_w0b.py::TestHoldingsCaptureProvenance::test_a_refused_issuer_date_never_touches_the_stored_snapshot[timestamp-not-calendar-date]
+FAILED tests/test_sector_holdings_coverage.py::test_a_malformed_capture_is_withheld[wrong-fund-source-url]
+FAILED tests/test_sector_holdings_coverage.py::test_a_malformed_capture_is_withheld[unrelated-source-host]
+FAILED tests/test_sector_holdings_coverage.py::test_a_malformed_capture_is_withheld[altered-source-url]
+11 failed, 14 passed, 1 warning in 19.35s

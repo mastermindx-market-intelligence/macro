@@ -1,0 +1,187 @@
+{
+  "implementation_commit": "378e289b180b90ed2902a7689e960932a8a26fe6",
+  "source_artifact": "site/sectordata/sector_cycles.json",
+  "source_location": "existing M2 macro-main worktree; not a production HTTP receipt",
+  "source_sha256": "46a7b95a11446f12028a90cb071955710d516accd68f49db5ad99bab111194fa",
+  "source_bytes": 1909102,
+  "source_session": "2026-10-22",
+  "native_artifact_unchanged": true,
+  "legacy_projection_unchanged": true,
+  "dossier_schema": "leadership_rotation_context.sector_dossiers/v1",
+  "dossier_status": "partial",
+  "measurement_status": "available",
+  "groups": [
+    {
+      "group_id": "XLB",
+      "status": "available",
+      "relative_wealth_pct": {
+        "rs_21d": 3.3,
+        "rs_63d": -2.3
+      },
+      "null_reasons": {
+        "rs_21d": null,
+        "rs_63d": null
+      }
+    },
+    {
+      "group_id": "XLC",
+      "status": "available",
+      "relative_wealth_pct": {
+        "rs_21d": -4.1,
+        "rs_63d": -2.2
+      },
+      "null_reasons": {
+        "rs_21d": null,
+        "rs_63d": null
+      }
+    },
+    {
+      "group_id": "XLE",
+      "status": "available",
+      "relative_wealth_pct": {
+        "rs_21d": 8.9,
+        "rs_63d": 10
+      },
+      "null_reasons": {
+        "rs_21d": null,
+        "rs_63d": null
+      }
+    },
+    {
+      "group_id": "XLF",
+      "status": "available",
+      "relative_wealth_pct": {
+        "rs_21d": 4.4,
+        "rs_63d": -2.6
+      },
+      "null_reasons": {
+        "rs_21d": null,
+        "rs_63d": null
+      }
+    },
+    {
+      "group_id": "XLI",
+      "status": "available",
+      "relative_wealth_pct": {
+        "rs_21d": -1.5,
+        "rs_63d": -11.7
+      },
+      "null_reasons": {
+        "rs_21d": null,
+        "rs_63d": null
+      }
+    },
+    {
+      "group_id": "XLK",
+      "status": "available",
+      "relative_wealth_pct": {
+        "rs_21d": -6.2,
+        "rs_63d": 0.1
+      },
+      "null_reasons": {
+        "rs_21d": null,
+        "rs_63d": null
+      }
+    },
+    {
+      "group_id": "XLP",
+      "status": "available",
+      "relative_wealth_pct": {
+        "rs_21d": 9.7,
+        "rs_63d": 3.9
+      },
+      "null_reasons": {
+        "rs_21d": null,
+        "rs_63d": null
+      }
+    },
+    {
+      "group_id": "XLRE",
+      "status": "available",
+      "relative_wealth_pct": {
+        "rs_21d": 2.1,
+        "rs_63d": -10
+      },
+      "null_reasons": {
+        "rs_21d": null,
+        "rs_63d": null
+      }
+    },
+    {
+      "group_id": "XLU",
+      "status": "available",
+      "relative_wealth_pct": {
+        "rs_21d": 8.4,
+        "rs_63d": -10
+      },
+      "null_reasons": {
+        "rs_21d": null,
+        "rs_63d": null
+      }
+    },
+    {
+      "group_id": "XLV",
+      "status": "available",
+      "relative_wealth_pct": {
+        "rs_21d": 7.9,
+        "rs_63d": 8
+      },
+      "null_reasons": {
+        "rs_21d": null,
+        "rs_63d": null
+      }
+    },
+    {
+      "group_id": "XLY",
+      "status": "available",
+      "relative_wealth_pct": {
+        "rs_21d": 4.5,
+        "rs_63d": 1.6
+      },
+      "null_reasons": {
+        "rs_21d": null,
+        "rs_63d": null
+      }
+    }
+  ],
+  "cross_sector_breadth_counts": {
+    "21": {
+      "expected_n": 11,
+      "measured_n": 11,
+      "positive_n": 8
+    },
+    "63": {
+      "expected_n": 11,
+      "measured_n": 11,
+      "positive_n": 5
+    }
+  },
+  "freshness": {
+    "status": "unverified",
+    "reason": "owner_freshness_receipt_not_supplied"
+  },
+  "availability": {
+    "mode": "dated_snapshot",
+    "decision_cutoff": null,
+    "original_available_at": null,
+    "historically_admissible": false,
+    "reason": "original_availability_not_supplied"
+  },
+  "diagnostics": {
+    "qualification_reasons": [],
+    "duplicate_groups": [],
+    "outside_cohort": [],
+    "malformed_source_rows": 0,
+    "malformed_measured_rows": 0
+  },
+  "authority": {
+    "may_rank": false,
+    "may_gate": false,
+    "may_size": false,
+    "may_trade": false,
+    "may_escalate": false
+  },
+  "serialized_dossier_bytes": 4788,
+  "production_proven": false,
+  "limitation": "This dated retained artifact is from 2026-10-22. It proves native-shape composition only, not current freshness, historical as-known availability, deployed consumer activation or product acceptance."
+}

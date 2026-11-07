@@ -45,6 +45,10 @@ artifacts:
   - research/ROTATION_COMMAND_MASTERPLAN_BY_FABLE.md
   - research/ROTATION_EVENTS_V2_MASTERPLAN_BY_FABLE.md
   - research/SECTOR_ROTATION_CONTINUATION.md
+  - research/LEADERSHIP_ROTATION_PERSISTENT_SECTOR_MASTERPLAN_2026-11-06.md
+  - research/LEADERSHIP_ROTATION_PERSISTENT_SECTOR_SOURCE_AUDIT_2026-11-06.md
+  - research/LEADERSHIP_ROTATION_PERSISTENT_SECTOR_NATIVE_READ_2026-11-06.json
+  - research/LEADERSHIP_ROTATION_PERSISTENT_SECTOR_TRANSPORT_PROBE_2026-11-06.json
 waves:
   - id: LR-W1
     title: T01 frontier + T02 source qualification + T03–T05/T08 contract projection + T06 evidence modes + T16 replay isolation
@@ -75,7 +79,24 @@ waves:
     status: todo
     depends_on: [LR-W5]
     next_action: Author a dated PREREG V3 (own blob pin; never edit V1/V2/V2.1) re-registering the statistics, re-run T12/T13 size+power under it, and only on SIZED+POWERED issue a P1 read. T25 is a human act.
+  - id: LR-PSL-W1
+    title: Persistent Sector Leadership — bounded dossier source contract and native evidence qualification (Mastermind 1202)
+    status: in_progress
+    pr: 10806
+    depends_on: [LR-W3]
+    next_action: Qualify and release original source candidates Macro 10806, Terminal 1332 and Mastermind 2157 through their actual required CI/protected paths; reconcile native generation and accepted UI custody before natural production parity. LR-W6 and its historical-data embargo are unchanged.
 next_action: >
+  2026-11-06: Chairman commissioned Persistent Sector Leadership from Mastermind #1202 comment
+  6695716256. Task tree: research/LEADERSHIP_ROTATION_PERSISTENT_SECTOR_MASTERPLAN_2026-11-06.md;
+  source carrier Macro #10806; cumulative handoff
+  agentos/handoffs/LEADERSHIP-ROTATION-INTELLIGENCE-2026-11-06-persistent-sector-c4.md.
+  LR-PSL-W1 adds an opt-in Macro dossier, a separate strict Terminal parser (#1332) and selected
+  all-eleven portfolio MCP projection (Mastermind #2157), preserving default legacy behavior.
+  Raw MCP passthrough was disproven; selected compact responses preserve all eleven after the actual
+  serializer, including unavailable and retained-native cases. Continue exact-head CI/protected
+  release on those same carriers; natural generation/UI adoption needs #10780 and accepted design
+  custody reconciliation. The product remains BUILT_NOT_PROVEN; LR-W6/prior acceptance are unchanged.
+
   2026-10-31: the dormant observation-continuity slice (#10104, orphaned Sol carrier) is carried forward
   as EW-P2 of the Grey Deer Early-Warning Completion program (WS:GREY-DEER-RISK-INTELLIGENCE waves EW-P0..EW-P5,
   seat 00dea969) on a successor branch from main with recording default-off; LR-W6 is unchanged.

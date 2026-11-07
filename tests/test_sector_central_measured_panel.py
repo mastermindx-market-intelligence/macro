@@ -1076,3 +1076,556 @@ def test_selected_measured_panel_links_its_exact_sector_to_macro_prophet(ticker)
     assert f'href="us_stocks.html?si_sector={ticker}#sector-prophet-context"' in out["detail"]
     assert "Compare in Prophet" in out["detail"]
     assert [row[0] for row in out["rows"]][:len(RANKED)] == RANKED
+
+
+# ══════════════════════════════════════════════════════════════════════════════════
+# 23 — PSL-3 · the dated leadership-evidence addendum
+#
+# The addendum is the incumbent engine's own optional projection
+# (leadership_rotation_context.sector_dossiers/v1), carried on the measured read.
+# It is qualified in the page against the CURRENT parent read, so every case
+# below drives the REAL panel JS over the REAL engine output — never a
+# hand-mirrored dossier.
+# ══════════════════════════════════════════════════════════════════════════════════
+
+EV_AS_OF = "2026-10-09"
+# The frozen measured read's own numbers, over the native sector registry:
+# XLK carries a literal 0.0, XLU is thin_history, XLRE is absent entirely.
+EV_H21 = {"XLB": -0.6, "XLC": 1.1, "XLE": 2.4, "XLF": 0.3, "XLI": -0.2,
+          "XLK": -0.5, "XLP": -1.0, "XLV": 0.2, "XLY": 1.7}
+EV_H63 = {"XLB": -1.4, "XLC": 2.3, "XLE": 4.1, "XLF": 1.2, "XLI": -0.7,
+          "XLK": 0.0, "XLP": -2.2, "XLV": 0.9, "XLY": 3.3}
+
+
+def _ev_cycles(as_of: str = EV_AS_OF, qualified: bool = True, sectors: bool = True) -> dict:
+    """A native-shaped sector-cycles payload — the shape engine.sector_cycles
+    publishes (meta.asOf, meta.benchmark, rs_history with basis/mode, and one
+    series_provenance per record). ``qualified=False`` drops the rs_history
+    mode/naturally_observed pair, which is how the engine itself produces an
+    all-null addendum."""
+    from engine import sector_cycles
+
+    rows = []
+    if sectors:
+        for ticker, info in sorted(sector_cycles.SECTORS.items()):
+            if ticker == "XLRE":
+                continue                      # the member the source never carries
+            rows.append({
+                "id": ticker.lower(), "ticker": ticker, "kind": "sector",
+                "name": info["name"], "name_zh": info["name_zh"],
+                "group": info["group"], "accent": info["accent"],
+                "now": {"rs_21d": EV_H21.get(ticker), "rs_63d": EV_H63.get(ticker),
+                        "thin_history": ticker == "XLU"},
+                "series_provenance": {
+                    "schema": "sector_cycles.series_provenance.v1",
+                    "structure_basis": "tr", "rs_basis": "tr",
+                    "membership": "single_instrument", "point_in_time": True,
+                    "benchmark": "SPY",
+                    "history_mode": "reconstructed_price_history"},
+            })
+    history = {"schema": "sector_cycles.rs_history.v1", "as_of": as_of,
+               "basis": "tr", "benchmark": "SPY"}
+    if qualified:
+        history["mode"] = "reconstructed_price_history"
+        history["naturally_observed"] = False
+    return {"meta": {"asOf": as_of, "benchmark": "SPY", "rs_history": history},
+            "sectors": rows}
+
+
+def _ev_dossier(qualified: bool = True, sectors: bool = True) -> dict:
+    """The engine's own dated addendum over native-shaped inputs."""
+    from engine import leadership_rotation_context as lrc
+
+    out = lrc.measured_group_read(_ev_cycles(qualified=qualified, sectors=sectors),
+                                  include_sector_dossiers=True)
+    return out["sector_dossiers"]
+
+
+def _ev_legacy_unavailable() -> dict:
+    """The engine's own measured read when nothing could be measured: status
+    unavailable with all eleven cohort identities still present."""
+    from engine import leadership_rotation_context as lrc
+
+    return lrc.measured_group_read(_ev_cycles(sectors=False))
+
+
+def _copy(obj: dict) -> dict:
+    return json.loads(json.dumps(obj))
+
+
+def _ev_state(section: str) -> tuple[str, str]:
+    """The addendum's qualification state and the exact check that failed,
+    read from the machine-readable attributes (never from visible copy)."""
+    m = re.search(r'data-ev-state="([^"]*)" data-ev-why="([^"]*)"', section or "")
+    assert m, section
+    return m.group(1), m.group(2)
+
+
+def _ev_section(detail: str) -> str:
+    """The leadership-evidence section of the detail panel, isolated from the
+    incumbent legacy facts so a legacy number can never satisfy an evidence
+    assertion."""
+    m = re.search(r'<section class="mr-ev".*?</section>', detail or "", re.S)
+    assert m, f"no leadership-evidence section in {detail!r}"
+    return m.group(0)
+
+
+@needs_node
+def test_23_measured_evidence_shows_native_window_values_and_receipts():
+    out = _run(cfg={"search": "?g=XLE", "mr": {"sector_dossiers": _ev_dossier()}})
+    ev = _ev_section(out["detail"])
+    assert "Leadership evidence" in ev
+    # header: native date, total-return basis, the selected identity EN/ZH
+    assert "2026-10-09" in ev
+    assert "total return" in ev
+    assert "Energy" in ev and "能源" in ev and "XLE" in ev
+    # the plain stance
+    assert "Measured profile available; explanatory evidence incomplete." in ev
+    # exact native windows — 21 and 63 sessions, never relabelled 1/3 months
+    assert "21 trading sessions vs" in ev and "+2.4%" in ev
+    assert "63 trading sessions vs" in ev and "+4.1%" in ev
+    # cross-sector ETF breadth, with the eleven-sector denominator
+    assert "5 of 9 measured (of 11 sectors)" in ev
+    assert "Constituent participation is not supplied" in ev
+    # the unavailable slots say so, and say what they are not
+    assert "5- and 20-session windows are not supplied." in ev
+    assert "Absolute returns are not supplied." in ev
+    assert "Explanation unavailable" in ev
+    assert "Sector risk context unavailable" in ev and "not a risk verdict" in ev
+    # the disclosure and its receipts
+    assert "<details class=\"mr-ev-det\">" in ev
+    assert "Evidence details" in ev
+    assert "engine.sector_cycles" in ev
+    assert "2026-10-09|SPY|us_sectors_11" in ev
+    assert "immutable_generation_not_supplied" in ev
+    assert "owner_freshness_receipt_not_supplied" in ev
+    assert "native_revision_selection_not_supplied" in ev
+    assert "not_established" in ev and "shared rolling windows" in ev
+    assert "not_qualified" in ev
+    assert "may_rank=false" in ev and "may_trade=false" in ev and "may_escalate=false" in ev
+
+
+@needs_node
+def test_24_zero_is_preserved_and_never_read_as_missing():
+    out = _run(cfg={"search": "?g=XLK", "mr": {"sector_dossiers": _ev_dossier()}})
+    ev = _ev_section(out["detail"])
+    # XLK's 63-session relative wealth is a literal 0.0 — a measured zero
+    assert re.search(r'63 trading sessions vs[^<]*</dt><dd><span class="mr-flat">0\.0%</span>', ev), ev
+    assert "n/a" not in ev
+    assert "not measured" not in ev
+
+
+@needs_node
+def test_25_unavailable_identity_speaks_its_plain_reason_and_its_exact_code():
+    out = _run(cfg={"search": "?g=XLRE", "mr": {"sector_dossiers": _ev_dossier()}})
+    ev = _ev_section(out["detail"])
+    assert "Measured profile unavailable" in ev
+    assert "no data for this sector in the evidence source" in ev
+    assert "missing_group" in ev          # the exact native code, in the receipt
+    assert "Real Estate" in ev
+    # an unavailable identity never shows a number
+    assert "%" not in re.sub(r'<span class="mr-ev-code">.*?</span>', '', ev, flags=re.S)
+
+
+@needs_node
+def test_26_all_null_addendum_keeps_the_eleven_identities_selectable():
+    """The legacy read is unavailable, the addendum is valid but every value is
+    null: the legacy notice stays, all eleven cohort identities stay selectable
+    as unavailable rows, and the selected one shows its exact null reason."""
+    legacy = _ev_legacy_unavailable()
+    out = _run(cfg={"search": "?g=XLE",
+                    "mr": {"status": legacy["status"], "groups": legacy["groups"],
+                           "sector_dossiers": _ev_dossier(qualified=False)}})
+    assert "mx-error" in out["body"], out["body"]
+    assert "could not be produced today" in out["body"], out["body"]
+    assert len(out["rows"]) == 11, out["rows"]
+    assert dict(out["rows"])["XLE"] == "true", out["rows"]
+    assert out["un"].count("<li>") == 11, out["un"]
+    assert "not measured" in out["un"]
+    ev = _ev_section(out["detail"])
+    assert _ev_state(ev) == ("ok", ""), ev
+    assert "Measured profile unavailable" in ev
+    assert "evidence_mode_not_qualified" in ev
+    # every identity's exact null reason is exposed, not only the selected one
+    for ticker in ("XLB", "XLC", "XLE", "XLF", "XLI", "XLK", "XLP", "XLRE",
+                   "XLU", "XLV", "XLY"):
+        assert ticker in ev, ticker
+
+
+@needs_node
+def test_27_absent_invalid_and_mismatched_addendum_leave_the_legacy_alone():
+    absent = _run(cfg={"search": "?g=XLE"})
+    assert "not in today" in _ev_section(absent["detail"])
+    assert "+2.4%" in absent["detail"] and "1 month vs" in absent["detail"]
+    assert "mr-skel-spark" in absent["hist"], "the legacy history is untouched"
+
+    invalid = _run(cfg={"search": "?g=XLE", "mr": {"sector_dossiers": "not-an-object"}})
+    assert "could not be checked" in _ev_section(invalid["detail"])
+    assert _ev_state(_ev_section(invalid["detail"])) == ("invalid", "not_an_object")
+    assert "+2.4%" in invalid["detail"] and "mr-skel-spark" in invalid["hist"]
+
+    wrong_schema = _run(cfg={"search": "?g=XLE",
+                             "mr": {"sector_dossiers": {"schema": "something/else/v9"}}})
+    assert "could not be checked" in _ev_section(wrong_schema["detail"])
+
+    stale = _copy(_ev_dossier())
+    stale["as_of"] = "2026-10-08"
+    generation_mismatch = _run(cfg={"search": "?g=XLE", "mr": {"sector_dossiers": stale}})
+    assert "does not match today" in _ev_section(generation_mismatch["detail"])
+    assert _ev_state(_ev_section(generation_mismatch["detail"])) == ("mismatch", "session_mismatch")
+    assert "+2.4%" in generation_mismatch["detail"]
+
+    renamed = _copy(_ev_dossier())
+    renamed["groups"][0]["group_id"] = "ZZZZ"
+    identity_mismatch = _run(cfg={"search": "?g=XLE", "mr": {"sector_dossiers": renamed}})
+    assert "does not match today" in _ev_section(identity_mismatch["detail"])
+    assert _ev_state(_ev_section(identity_mismatch["detail"])) == ("mismatch", "identity_mismatch")
+
+    # a parent generation that lost its own benchmark cannot qualify an addendum
+    no_benchmark = _run(cfg={"search": "?g=XLE", "mr": {
+        "generation": {"id": "2026-10-09|SPY|us_sectors_11", "cohort_id": "us_sectors_11",
+                       "session_end": "2026-10-09", "price_basis": "total_return"},
+        "sector_dossiers": _ev_dossier()}})
+    assert "does not match today" in _ev_section(no_benchmark["detail"])
+    assert _ev_state(_ev_section(no_benchmark["detail"])) == ("mismatch", "benchmark_mismatch")
+
+    foreign_benchmark = _copy(_ev_dossier())
+    foreign_benchmark["benchmark"] = "QQQ"
+    benchmark_mismatch = _run(cfg={"search": "?g=XLE",
+                                   "mr": {"sector_dossiers": foreign_benchmark}})
+    assert "does not match today" in _ev_section(benchmark_mismatch["detail"])
+    assert _ev_state(_ev_section(benchmark_mismatch["detail"])) == ("mismatch", "benchmark_mismatch")
+    # the mismatched addendum never reaches the panel
+    assert "QQQ" not in _ev_section(benchmark_mismatch["detail"])
+
+
+@needs_node
+def test_28_forged_authority_forecast_and_provenance_are_refused_not_echoed():
+    trade = _copy(_ev_dossier())
+    trade["authority"]["may_trade"] = True
+    out = _run(cfg={"search": "?g=XLE", "mr": {"sector_dossiers": trade}})
+    ev = _ev_section(out["detail"])
+    assert "claimed capabilities this read does not have" in ev
+    assert _ev_state(ev) == ("refused", "authority_claimed")
+    assert "may_trade=true" not in out["detail"]
+    assert "+2.4%" in out["detail"], "the legacy read is untouched"
+
+    forecast = _copy(_ev_dossier())
+    forecast["forecasts"]["expected_return"] = 0.12
+    out = _run(cfg={"search": "?g=XLE", "mr": {"sector_dossiers": forecast}})
+    assert "claimed capabilities this read does not have" in _ev_section(out["detail"])
+    assert _ev_state(_ev_section(out["detail"])) == ("refused", "forecast_value_claimed")
+    assert "0.12" not in out["detail"]
+
+    generation = _copy(_ev_dossier())
+    generation["source_generation"] = {"status": "available", "id": "gen-1"}
+    out = _run(cfg={"search": "?g=XLE", "mr": {"sector_dossiers": generation}})
+    assert "claimed capabilities this read does not have" in _ev_section(out["detail"])
+    assert _ev_state(_ev_section(out["detail"])) == ("refused", "immutable_generation_claimed")
+    assert "gen-1" not in out["detail"]
+
+    observed = _copy(_ev_dossier())
+    observed["history"]["naturally_observed"] = True
+    out = _run(cfg={"search": "?g=XLE", "mr": {"sector_dossiers": observed}})
+    assert "claimed capabilities this read does not have" in _ev_section(out["detail"])
+    assert _ev_state(_ev_section(out["detail"])) == ("refused", "naturally_observed_claimed")
+
+
+@needs_node
+def test_29_hostile_source_strings_are_escaped_never_rendered():
+    hostile = _copy(_ev_dossier())
+    hostile["groups"][2]["name_en"] = '<img src=x onerror="alert(1)">'
+    hostile["groups"][2]["name_zh"] = "<script>alert(2)</script>"
+    out = _run(cfg={"search": "?g=XLE", "mr": {"sector_dossiers": hostile}})
+    ev = _ev_section(out["detail"])
+    assert "<img src=x" not in ev
+    assert "<script>alert(2)" not in ev
+    assert "&lt;img src=x" in ev
+    assert "&lt;script&gt;" in ev
+
+
+@needs_node
+def test_30_source_replacement_drops_the_stale_evidence():
+    out = _run(body="""
+        var before = html('mr-detail');
+        __window.SECTOR_CENTRAL.measured_read.sector_dossiers = CFG.dossier2;
+        dispatchDoc('langchange');
+        show({before: before, after: html('mr-detail')});
+    """, cfg={"search": "?g=XLE", "mr": {"sector_dossiers": _ev_dossier()},
+              "dossier2": _ev_dossier(qualified=False)})
+    before = _ev_section(out["before"])
+    after = _ev_section(out["after"])
+    assert "+2.4%" in before
+    assert "+2.4%" not in after, "a replaced source must not leave stale values"
+    assert "evidence_mode_not_qualified" in after
+
+
+@needs_node
+def test_31_selection_language_disclosure_and_focus_follow_the_inherited_journey():
+    out = _run(body="""
+        function clickG(g) {
+            dispatchEl('click', {target: {closest: function () {
+                return {getAttribute: function (k) { return k === 'data-g' ? g : null; }};
+            }}});
+        }
+        clickG('XLY');
+        var afterSelect = html('mr-detail');
+        dispatchEl('toggle', {target: {className: 'mr-ev-det', open: true}});
+        __docEl.attrs['data-lang'] = 'zh';
+        dispatchDoc('langchange');
+        var afterLang = html('mr-detail');
+        var focusedAfterLang = __focused;
+        clickG('XLK');
+        var afterOther = html('mr-detail');
+        show({afterSelect: afterSelect, afterLang: afterLang, afterOther: afterOther,
+              focused: focusedAfterLang ? focusedAfterLang.getAttribute('data-g') : null,
+              pressed: pressedOf(), hist: __histLog});
+    """, cfg={"mr": {"sector_dossiers": _ev_dossier()}})
+    assert "Consumer Discretionary" in out["afterSelect"]
+    assert "<details class=\"mr-ev-det\">" in out["afterSelect"], "closed until opened"
+    assert "<details class=\"mr-ev-det\" open>" in out["afterLang"], \
+        "the same identity and source keep the disclosure open across a language switch"
+    assert "领涨证据" in out["afterLang"], "the Chinese twin renders"
+    assert "证据详情" in out["afterLang"]
+    assert out["focused"] is None, "a re-render must not steal focus"
+    assert "<details class=\"mr-ev-det\">" in out["afterOther"], \
+        "a different identity closes the disclosure"
+    assert dict(out["pressed"])["XLK"] == "true"
+    assert dict(out["pressed"])["XLY"] == "false"
+    assert [c for c in out["hist"] if c[0] == "push"], "the inherited deep link owns the URL"
+
+
+@needs_node
+def test_32_back_forward_restores_the_selection_and_its_evidence():
+    out = _run(body="""
+        __setLoc('?g=XLK', '');
+        dispatchWin('popstate');
+        show({detail: html('mr-detail'), pressed: pressedOf()});
+    """, cfg={"mr": {"sector_dossiers": _ev_dossier()}})
+    assert out["pressed"]["XLK"] == "true", out["pressed"]
+    ev = _ev_section(out["detail"])
+    assert "Technology" in ev and "科技" in ev
+    assert re.search(r'63 trading sessions vs[^<]*</dt><dd><span class="mr-flat">0\.0%</span>', ev)
+
+
+def test_33_the_addendum_adds_no_fetch_cache_or_lifecycle_owner():
+    src = PAGE.read_text(encoding="utf-8")
+    i = src.index("PSL-3 · Persistent Sector Leadership")
+    j = src.index("function render() {", i)
+    block = src[i:j]
+    for bad in ("fetch(", "XMLHttpRequest", "setTimeout", "localStorage",
+                "sessionStorage", "document.cookie"):
+        assert bad not in block, bad
+    # the panel still owns exactly one selection, one URL and one language hook
+    region = _region(src, START, END)
+    assert region.count("history.pushState") == 1
+    assert region.count("addEventListener('langchange'") == 1
+
+
+def test_34_evidence_styles_stay_neutral_and_native():
+    src = PAGE.read_text(encoding="utf-8")
+    rules = [l for l in src.split("\n") if l.startswith(".mr-ev")]
+    assert rules, "no leadership-evidence styles"
+    for rule in rules:
+        for bad in ("border-left", "border-right", "box-shadow", "text-shadow",
+                    "filter:", "backdrop-filter", "linear-gradient"):
+            assert bad not in rule, rule
+        if "font-family" in rule:
+            assert "var(--font-mono)" in rule, rule
+    # the disclosure target is at least 44px and keeps a visible focus ring
+    assert ".mr-ev-sum{" in src and "min-height:44px" in src
+    assert ".mr-ev-sum:focus-visible" in src
+
+
+# Parent integration regressions: execute the shipped panel with the actual owner
+# projection, including unavailable native provenance and same-key revisions.
+def _ev_read(cycles: dict | None = None) -> dict:
+    from engine import leadership_rotation_context as lrc
+    return lrc.measured_group_read(
+        _ev_cycles() if cycles is None else cycles, include_sector_dossiers=True)
+
+
+@needs_node
+def test_35_empty_native_source_keeps_eleven_truthful_unavailable_rows():
+    out = _run(fixture=_ev_read({}), cfg={"search": "?g=XLE"})
+    assert "could not be produced today" in out["body"]
+    assert len(out["rows"]) == 11
+    assert dict(out["rows"])["XLE"] == "true"
+    ev = _ev_section(out["detail"])
+    assert _ev_state(ev) == ("ok", "")
+    assert "source_session_missing_or_invalid" in ev
+    assert "2026-10-09" not in ev, "a missing source date must not borrow the page date"
+    assert "0 of 0" not in ev, "unknown positive count is not a measured zero"
+    assert "Evidence details" in ev
+
+
+@needs_node
+@pytest.mark.parametrize("case", [
+    "missing_corrections", "claimed_generation", "claimed_original_time",
+    "foreign_cohort", "foreign_identity", "parent_value_disagreement",
+    "below_minus_100", "non_null_reason_with_value", "row_status_disagreement",
+    "negative_count", "fractional_count", "inflated_count", "measurement_status",
+    "malformed_diagnostic_count", "extra_provenance_field",
+])
+def test_36_invalid_dossier_never_displaces_legacy_values_or_history(case):
+    read = _ev_read()
+    baseline_history = _run(fixture=read, cfg={"search": "?g=XLE"})["hist"]
+    d = read["sector_dossiers"]
+    row = d["groups"][0]
+    if case == "missing_corrections":
+        del d["corrections"]
+    elif case == "claimed_generation":
+        d["source_generation"]["id"] = "unearned-generation"
+    elif case == "claimed_original_time":
+        d["availability"]["original_available_at"] = "2026-10-09T00:00:00Z"
+    elif case == "foreign_cohort":
+        d["cohort_id"] = read["generation"]["cohort_id"] = "foreign_cohort"
+    elif case == "foreign_identity":
+        row["group_id"] = read["groups"][0]["group_id"] = "ZZZZ"
+    elif case == "parent_value_disagreement":
+        row["relative_wealth_pct"]["rs_21d"] = 1.2345
+    elif case == "below_minus_100":
+        row["relative_wealth_pct"]["rs_21d"] = -101
+        read["groups"][0]["current"]["rs_21d"] = -101
+    elif case == "non_null_reason_with_value":
+        row["null_reasons"]["rs_21d"] = "missing_group"
+    elif case == "row_status_disagreement":
+        row["status"] = "unavailable"
+    elif case == "negative_count":
+        d["cross_sector_breadth_counts"]["21"]["measured_n"] = -1
+    elif case == "fractional_count":
+        d["cross_sector_breadth_counts"]["21"]["positive_n"] = 5.5
+    elif case == "inflated_count":
+        d["cross_sector_breadth_counts"]["21"]["positive_n"] = 11
+    elif case == "measurement_status":
+        d["measurement_status"] = "available"
+    elif case == "malformed_diagnostic_count":
+        d["diagnostics"]["malformed_source_rows"] = -1
+    elif case == "extra_provenance_field":
+        d["corrections"]["revision_id"] = "claimed-revision"
+    out = _run(fixture=read, cfg={"search": "?g=XLE"})
+    ev = _ev_section(out["detail"])
+    assert _ev_state(ev)[0] in ("invalid", "mismatch", "refused"), (case, ev)
+    assert "+2.4%" in out["detail"] and "1 month vs" in out["detail"]
+    assert out["hist"] == baseline_history
+    assert "+2.4%" not in ev
+    assert "unearned-generation" not in ev and "claimed-revision" not in ev
+
+
+@needs_node
+def test_37_invalid_parent_cannot_unlock_the_unavailable_selectable_grid():
+    read = _ev_read({})
+    read["schema"] = "foreign-parent/v9"
+    out = _run(fixture=read)
+    assert not out["rows"]
+    assert "could not be produced today" in out["body"]
+
+
+@needs_node
+def test_38_native_as_known_withholding_displays_the_actual_cutoff():
+    from engine import leadership_rotation_context as lrc
+    cycles = _ev_cycles()
+    read = _ev_read(cycles)
+    read["sector_dossiers"] = lrc._compose_sector_dossiers(
+        cycles, read, expected_group_ids=[g["group_id"] for g in read["groups"]],
+        decision_cutoff="2026-10-08T16:00:00+00:00")
+    out = _run(fixture=read, cfg={"search": "?g=XLE"})
+    ev = _ev_section(out["detail"])
+    assert _ev_state(ev) == ("ok", "")
+    assert "2026-10-08T16:00:00+00:00" in ev
+    assert "source_session_after_decision_cutoff" in ev
+    assert "+2.4%" not in ev
+    assert "+2.4%" in out["detail"], "the incumbent dated read remains distinct"
+
+
+@needs_node
+def test_39_revised_values_with_the_same_compatibility_key_reset_disclosure():
+    read = _ev_read()
+    revised = _copy(read)
+    for row in revised["groups"]:
+        if row["group_id"] == "XLE":
+            row["current"]["rs_21d"] = 2.6
+    for row in revised["sector_dossiers"]["groups"]:
+        if row["group_id"] == "XLE":
+            row["relative_wealth_pct"]["rs_21d"] = 2.6
+    out = _run(fixture=read, cfg={"search": "?g=XLE", "replacement": revised}, body="""
+        dispatchEl('toggle', {target: {className: 'mr-ev-det', open: true}});
+        __docEl.attrs['data-lang'] = 'zh';
+        dispatchDoc('langchange');
+        var same = html('mr-detail');
+        __window.SECTOR_CENTRAL.measured_read = CFG.replacement;
+        dispatchDoc('langchange');
+        show({same: same, revised: html('mr-detail')});
+    """)
+    assert '<details class="mr-ev-det" open>' in _ev_section(out["same"])
+    ev = _ev_section(out["revised"])
+    assert _ev_state(ev) == ("ok", "")
+    assert "+2.6%" in ev
+    assert '<details class="mr-ev-det">' in ev
+    assert '<details class="mr-ev-det" open>' not in ev
+
+
+@needs_node
+@pytest.mark.parametrize("interruption", ["absent", "invalid", "legacy_outage"])
+def test_40_interrupted_source_cannot_restore_stale_disclosure(interruption):
+    out = _run(fixture=_ev_read(),
+               cfg={"search": "?g=XLE", "interruption": interruption}, body="""
+        var original = JSON.parse(JSON.stringify(__window.SECTOR_CENTRAL.measured_read));
+        dispatchEl('toggle', {target: {className: 'mr-ev-det', open: true}});
+        dispatchDoc('langchange');
+        var before = html('mr-detail');
+        var read = __window.SECTOR_CENTRAL.measured_read;
+        if (CFG.interruption === 'invalid') read.sector_dossiers = {};
+        else delete read.sector_dossiers;
+        if (CFG.interruption === 'legacy_outage') read.status = 'unavailable';
+        dispatchDoc('langchange');
+        __window.SECTOR_CENTRAL.measured_read = original;
+        dispatchDoc('langchange');
+        show({before: before, after: html('mr-detail'), rows: rows().length});
+    """)
+    assert '<details class="mr-ev-det" open>' in _ev_section(out["before"])
+    assert '<details class="mr-ev-det" open>' not in _ev_section(out["after"])
+    assert "+2.4%" in _ev_section(out["after"])
+    assert out["rows"] == 11
+
+
+@needs_node
+def test_41_detached_disclosure_toggle_cannot_reopen_the_current_packet():
+    out = _run(fixture=_ev_read(), cfg={"search": "?g=XLE"}, body="""
+        elOf('mr-detail').contains = function () { return false; };
+        dispatchEl('toggle', {target: {className: 'mr-ev-det', open: true}});
+        dispatchDoc('langchange');
+        show();
+    """)
+    assert '<details class="mr-ev-det" open>' not in _ev_section(out["detail"])
+
+
+@needs_node
+def test_42_normal_all_null_normal_rebinds_selection_and_preserves_navigation():
+    out = _run(fixture=_ev_read(),
+               cfg={"search": "?g=XLE", "empty": _ev_read({})}, body="""
+        var original = __window.SECTOR_CENTRAL.measured_read;
+        __window.SECTOR_CENTRAL.measured_read = CFG.empty;
+        dispatchDoc('langchange');
+        var unavailable = collect();
+        dispatchEl('click', {target: {closest: function () {
+            return {getAttribute: function (k) { return k === 'data-g' ? 'XLK' : null; }};
+        }}});
+        var chosen = collect();
+        __window.SECTOR_CENTRAL.measured_read = original;
+        __docEl.attrs['data-lang'] = 'zh';
+        dispatchDoc('langchange');
+        var restored = collect();
+        __setLoc('?g=XLE', '');
+        dispatchWin('popstate');
+        show({unavailable: unavailable, chosen: chosen, restored: restored,
+              back: collect()});
+    """)
+    assert len(out["unavailable"]["rows"]) == 11
+    assert dict(out["chosen"]["rows"])["XLK"] == "true"
+    assert "source_session_missing_or_invalid" in _ev_section(out["chosen"]["detail"])
+    assert dict(out["restored"]["rows"])["XLK"] == "true"
+    assert "领涨证据" in _ev_section(out["restored"]["detail"])
+    assert "0.0%" in _ev_section(out["restored"]["detail"])
+    assert dict(out["back"]["rows"])["XLE"] == "true"
+    assert "+2.4%" in _ev_section(out["back"]["detail"])

@@ -1,0 +1,67 @@
+{
+  "schema": "persistent_sector_exact_window_source_qualification/v1",
+  "recorded_at": "2026-11-07T08:31:01.620839+00:00",
+  "root_id": "persistent-sector-leadership-20261106-c4",
+  "run_id": "psl-exact-window-binding-fix-20261107-c4",
+  "returned_head": "f55dda94ca7fe283e7066ceaad2d9438956062d9",
+  "returned_tree": "e02f5323f418f5333634f3c16e4e970e15b0943a",
+  "source_base": "5b4962a381711328cc01dbe788f9ca4b5f4f7e4d",
+  "integration_parent": "162e38856dd8b7520f64654371114c059381dedf",
+  "source_hashes": {
+    "engine/leadership_rotation_context.py": "43b1cf3a19d3f73dc6a29a319bcc81f3745cda153c3419e492396b48b9068c61",
+    "tests/fixtures/leadership_rotation/sector_window_measurements.complete.v1.json": "6b33895711742dee8cb1366baab5572a6aef31d6ca9ca6d0f81e32ab879e6dae",
+    "tests/fixtures/leadership_rotation/sector_window_measurements.unavailable.v1.json": "e4419e3a4d7dabce4ad4fd760c1fc37d05b8fe1111102ac5b0bb13b1a980f17e",
+    "tests/test_leadership_measured_read.py": "77e6e124cb0168e9d7e90ba1a9e3df0a5ca46b8b2d6cf5cda0eaddae5068d3f3"
+  },
+  "preimages": {
+    "engine/leadership_rotation_context.py": "6b38a6524cf2698b47e3b946550a246e6d3ebcc90f93644be1a8d77fdf96dfcf",
+    "tests/test_leadership_measured_read.py": "1e082319ae3c04f49d7c2f57d15b352f5c10ea5c1a4c69f5ca2d11a5649efcde"
+  },
+  "parent_tests": {
+    "measurement": 124,
+    "adjacent": 261,
+    "exit_code": 0,
+    "log_sha256": "961a2daa769360fe5a0dbe67e3849e2b206eaf1b0366cee667f7811c42c9e87b"
+  },
+  "closed_v1_and_default": "unchanged; focused frozen-fixture and absent-opt-in tests pass",
+  "fixture_change": "63-session start 2026-08-10 -> 2026-08-07 only; values unchanged",
+  "calendar_owner": "lib.nyse_calendar via incumbent engine/session_anchor.py US binding",
+  "calendar_primary_reference": "https://www.nyse.com/publicdocs/nyse/ICE_NYSE_2026_Yearly_Trading_Calendar.pdf",
+  "calendar_correction_to_adapter_prose": "NYSE 2026 calendar marks October12 and November11 as bank holidays where NYSE is open; worker final-response assertion that these are NYSE closures is false and is rejected. No calendar-source change was made. September7 Labor Day is closed.",
+  "publication": "local source integration only; prior adoption push remains EFFECT_UNKNOWN; no replay or release",
+  "production_or_pit_acceptance": false,
+  "evidence_sha256": {
+    "RETURN.md": "d3c1b31fa51ec69adc1818e59394786fb2e9f7f6e530c6c6682444b000edcd1c",
+    "parent-source-manifest.json": "ada1864babfa6496ff78d1e6a3ae18d267d31bce2f9a29fedcadbf88e3e5b3be",
+    "parent-verification-20261107.log": "961a2daa769360fe5a0dbe67e3849e2b206eaf1b0366cee667f7811c42c9e87b",
+    "receipt_before_input_state.txt": "5e1d088ec1d6248b9ec85d7524cd8b94721d536d167ebe2d4bbfcdd2e63fd5f5",
+    "receipt_before_calendar_state.txt": "a959419fb3fad47879cf5a89bba808894685c9423bfe0bb639ed9097f3e22096",
+    "receipt_after_candidate_state.txt": "b64004bcbc90784f488ead2b2a0766b61ede71e1bd64feec8866067d070b31dd",
+    "receipt_after_neighbouring_owner_tests.txt": "84148954fed14b2a343436ae8b1ca4bff21a94788552b5fcc18671a3db7eb3fb",
+    "receipt_after_ci_pack_plan_only.txt": "4e977af51fb48e0d5bedf6830ed34b5360816fd9f25f2943ae501ef16481b347",
+    "receipt_after_contract_delta.txt": "9b15bbfdfde9c32426541f02379878f81f9fa67df57ff194d2c66f759a042a11"
+  },
+  "integration_preserved_prior_tests": {
+    "source_commit": "162e38856dd8b7520f64654371114c059381dedf",
+    "method": "three-way union of independently verified insertion-only edits against exact5b; both original and worker complete line sequences preserved; unique top-level function union verified",
+    "source_patch_sha256": "7d756d8b0135b5cd3c2a0888721ebbe71fd3f51694dfdffffb822405f740a4a3",
+    "combined_test_sha256": "4a046d68a66dbafe112952502c460b87c8d6ecb609664aa471c51516ee6e41ed",
+    "initial_223_case_run": "before prior-adoption assertions restored; retained but not final combined qualification"
+  },
+  "integration_combined_tests": {
+    "command": [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "-m",
+      "pytest",
+      "tests/test_leadership_measured_read.py",
+      "tests/test_sector_central_paper.py",
+      "-q",
+      "-p",
+      "no:cacheprovider"
+    ],
+    "exit_code": 0,
+    "log": "integration-combined-test.log",
+    "sha256": "9307315d0c2fa746ba9b703f3f48da9cc7e74e1e62840f125762fca237346603",
+    "summary": "225 passed, 50 warnings in 23.33s"
+  }
+}

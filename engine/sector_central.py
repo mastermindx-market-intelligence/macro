@@ -792,7 +792,9 @@ def _measured_read(cyc) -> dict:
         return {"schema": "leadership_rotation_context.measured_group_read/v1",
                 "status": "unavailable", "reason": "projection_error"}
     try:
-        return _lrc.measured_group_read(cyc, rotation_payload=_load_rotation_events())
+        return _lrc.measured_group_read(
+            cyc, rotation_payload=_load_rotation_events(), include_sector_dossiers=True
+        )
     except Exception as e:  # noqa: BLE001
         log.warning("sector_central: measured_read projection failed: %s", e)
         return {"schema": _lrc.MEASURED_READ_SCHEMA, "status": "unavailable",

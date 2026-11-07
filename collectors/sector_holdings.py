@@ -13,10 +13,12 @@
 """
 from __future__ import annotations
 
+import hashlib
 import io
 import logging
+import re
 import time
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 
 import pandas as pd
 
@@ -33,6 +35,141 @@ TOP_N = 20
 
 SSGA_XLSX = ("https://www.ssga.com/us/en/intermediary/etfs/library-content/"
              "products/fund-data/etfs/us/holdings-daily-us-en-{fund}.xlsx")
+
+# --- capture provenance -------------------------------------------------------
+#
+# A holdings snapshot answers "what did the fund hold" but not "where did this
+# come from" or "when was it fetched". The capture block records both as
+# ordinary scalar columns in the per-fund parquet that already stores the
+# snapshot, under one reserved prefix:
+#
+#   * no DataFrame.attrs — those do not survive the parquet round-trip;
+#   * no side-car artifact and no new store — the block travels with the rows
+#     it describes, so a row can never be bound to a response that did not
+#     produce it;
+#   * ONE block per capture, repeated on every row of that capture, so each
+#     row is self-describing.
+#
+# The block records provenance only. It does NOT establish issuer mapping,
+# source-use rights, economic causation, historical availability, correction
+# history or any sector explanation.
+CAPTURE_PREFIX = "capture_"
+CAPTURE_SCHEMA_VERSION = "sector_holdings.capture.v1"
+CAPTURE_COLUMNS = (
+    "capture_schema_version",
+    "capture_fund",
+    "capture_source_url",
+    "capture_content_sha256",
+    "capture_content_bytes",
+    "capture_retrieved_at",
+    "capture_issuer_as_of",
+    "capture_date_origin",
+)
+# Where the index date came from. "issuer_reported" means the issuer's own
+# file stated that date; "retrieval_date_fallback" means the file stated none
+# and the index date is the retrieval date, which qualifies NOTHING about the
+# issuer's effective date; "date_origin_not_recorded" is the honest value for
+# rows written before the capture block existed and is never backfilled.
+DATE_ORIGIN_ISSUER_REPORTED = "issuer_reported"
+DATE_ORIGIN_RETRIEVAL_FALLBACK = "retrieval_date_fallback"
+DATE_ORIGIN_NOT_RECORDED = "date_origin_not_recorded"
+
+# The PIT history archive's schema is FIXED at six columns. The capture block
+# belongs to the per-fund store; copying it here would silently widen a
+# published archive for every snapshot ever taken.
+HISTORY_COLUMNS = ("as_of", "etf", "ticker", "name", "weight_pct", "rank")
+
+
+def _utc_now() -> datetime:
+    """The ONE aware-UTC reading a capture is stamped with.
+
+    Every timestamp of one capture comes from a single call of this function,
+    so the retrieval instant and the fallback index date can never disagree.
+    Nothing else in this module may read the clock.
+    """
+    return datetime.now(timezone.utc)
+
+
+def _with_capture_columns(frame: pd.DataFrame) -> pd.DataFrame:
+    """Every stored frame carries the full reserved capture block.
+
+    Rows written before the capture block existed (or by any other writer) get
+    NULL metadata — never the latest capture's values backfilled onto them,
+    which would silently date a legacy snapshot to a response that never
+    produced it.
+    """
+    out = frame.copy()
+    for column in CAPTURE_COLUMNS:
+        if column not in out.columns:
+            out[column] = None
+    return out
+
+
+_ISSUER_MONTHS = {
+    key.lower(): number
+    for number, month in enumerate(
+        ("January", "February", "March", "April", "May", "June",
+         "July", "August", "September", "October", "November", "December"),
+        start=1,
+    )
+    for key in (month, month[:3])
+}
+
+
+def _parse_issuer_date(text: str) -> date:
+    """Read a complete calendar date without filling missing components.
+
+    Accepted source forms are ISO YYYY-MM-DD, explicit US month/day/year
+    with a four-digit year, and English month-name day[,] year. Numeric
+    slash dates always mean month/day/year; no locale or day-first inference.
+    Partial dates, relative words and timestamps are not issuer dates.
+    """
+    iso = re.fullmatch(r"([0-9]{4})-([0-9]{2})-([0-9]{2})", text)
+    us = re.fullmatch(r"([0-9]{1,2})/([0-9]{1,2})/([0-9]{4})", text)
+    named = re.fullmatch(r"([A-Za-z]+) +([0-9]{1,2}),? +([0-9]{4})", text)
+    try:
+        if iso:
+            year, month, day = map(int, iso.groups())
+        elif us:
+            month, day, year = map(int, us.groups())
+        elif named:
+            month = _ISSUER_MONTHS[named[1].lower()]
+            day, year = int(named[2]), int(named[3])
+        else:
+            raise ValueError("complete supported calendar date required")
+        return date(year, month, day)
+    except (KeyError, ValueError) as error:
+        raise ValueError(
+            f"holdings issuer as-of date is malformed: {text!r}") from error
+
+
+def _issuer_as_of(raw: pd.DataFrame, header_row: int) -> date | None:
+    """The issuer's own as-of date, or None when the file states none.
+
+    Every "As of" cell above the header row is a claim about the same date, so
+    two different claims are a CONFLICT: the capture is refused rather than
+    silently resolved to whichever cell happened to come last. A cell that
+    cannot be parsed is a MALFORMED claim and is refused too — a file that
+    states an unusable date must not fall back to the retrieval date, because
+    that would relabel an issuer-stated snapshot as if the issuer had said
+    nothing at all.
+    """
+    if raw.shape[1] < 2:
+        return None
+    stated: list[date] = []
+    for i in range(header_row):
+        cell = str(raw.iloc[i, 1])
+        if "As of" not in cell:
+            continue
+        text = cell.replace("As of", "", 1).strip()
+        stated.append(_parse_issuer_date(text))
+    if not stated:
+        return None
+    unique = sorted(set(stated))
+    if len(unique) > 1:
+        raise ValueError("holdings issuer as-of dates conflict: "
+                         + ", ".join(d.isoformat() for d in unique))
+    return unique[0]
 
 
 class SectorHoldingsAdapter(Adapter):
@@ -67,33 +204,72 @@ class SectorHoldingsAdapter(Adapter):
         d = config.data_dir() / self.group
         d.mkdir(parents=True, exist_ok=True)
         p = d / f"{fund}.parquet"
+        incoming = _with_capture_columns(snap)
+        incoming_dates = pd.DatetimeIndex(pd.to_datetime(incoming.index)).unique()
+        if not len(incoming_dates):
+            raise ValueError(f"sector holdings {fund}: empty capture refused")
+        incoming_max = incoming_dates.max()
         if p.exists():
             old = pd.read_parquet(p)
             old.index = pd.to_datetime(old.index)
-            old = old[old.index != snap.index[0]]  # replace same-day snapshot
-            snap = pd.concat([old, snap]).sort_index()
-        snap.to_parquet(p)
+            stored_max = old.index.max()
+            if (stored_max is not None and pd.notna(stored_max)
+                    and incoming_max < stored_max):
+                # A regressive capture must never be written: the merged file's
+                # max date would relabel an older capture as the current one,
+                # and the history archiver would then file the STORED tip
+                # under the incoming capture's identity. The stored snapshot
+                # is preserved exactly as it is.
+                raise ValueError(
+                    f"sector holdings {fund}: incoming capture dated "
+                    f"{incoming_max.date()} is older than the stored snapshot "
+                    f"{stored_max.date()} — refused")
+            old = old[~old.index.isin(incoming_dates)]  # replace same-day snapshot
+            merged = pd.concat([_with_capture_columns(old), incoming]).sort_index()
+        else:
+            merged = incoming
+        order = ([c for c in merged.columns if c not in CAPTURE_COLUMNS]
+                 + list(CAPTURE_COLUMNS))
+        merged = merged.reindex(columns=order)
+        merged.to_parquet(p)
         # PIT history archiver: append-mode dated store for dispersion analysis.
         # Columns: as_of (date), etf (str), ticker, name, weight_pct, rank.
         # Idempotent per (as_of, etf): same-day re-runs drop the old rows first.
-        # Pass only today's rows (last date in the now-merged snap).
-        today_date = snap.index.max()
-        self._append_history(fund, snap.loc[[today_date]])
+        # The archived rows are the incoming capture's OWN rows: the merged
+        # file's max date IS the incoming capture's date (a regressive capture
+        # was refused above), so the archive can never carry an older
+        # capture's identity.
+        self._append_history(fund, merged.loc[[incoming_max]])
 
     def _append_history(self, fund: str, snap: pd.DataFrame) -> None:
         """Append today's snapshot for *fund* to data/sector_holdings/history.parquet.
 
         Idempotent: if a row for (as_of, etf) already exists it is replaced, not
         duplicated.  ``snap`` carries the per-holding rows indexed by as_of date.
+
+        The archive's schema is FIXED at six columns (as_of, etf, ticker, name,
+        weight_pct, rank): the capture block belongs to the per-fund store, and
+        copying it here would widen a published archive for every snapshot ever
+        taken.
         """
         d = config.data_dir() / self.group
         as_of = snap.index[0].date()
-        rows = snap.reset_index(drop=True).copy()
+        source = snap.reset_index(drop=True)
+        missing = [c for c in HISTORY_COLUMNS[2:] if c not in source.columns]
+        if missing:
+            raise ValueError("sector holdings history row is missing column(s): "
+                             + ", ".join(missing))
+        rows = source[list(HISTORY_COLUMNS[2:])].copy()
         rows.insert(0, "as_of", as_of)
         rows.insert(1, "etf", fund)
         hist_path = d / "history.parquet"
         if hist_path.exists():
             old = pd.read_parquet(hist_path)
+            extra = [c for c in old.columns if c not in HISTORY_COLUMNS]
+            if extra:
+                log.warning("sector_holdings history: dropping unexpected column(s): %s",
+                            ", ".join(extra))
+            old = old[list(HISTORY_COLUMNS)].copy()
             old["as_of"] = pd.to_datetime(old["as_of"]).dt.date
             # Drop rows for same (as_of, etf) to ensure idempotency
             mask = ~((old["as_of"] == as_of) & (old["etf"] == fund))
@@ -104,21 +280,43 @@ class SectorHoldingsAdapter(Adapter):
         rows.to_parquet(hist_path, index=False)
 
     def _fetch_fund(self, fund: str) -> pd.DataFrame:
-        r = self.http_get(SSGA_XLSX.format(fund=fund.lower()), retries=3, timeout=60,
+        url = SSGA_XLSX.format(fund=fund.lower())
+        r = self.http_get(url, retries=3, timeout=60,
                           headers={"User-Agent": "Mozilla/5.0 (research)"})
+        # The EXACT response body handed to read_excel — the decoded XLSX
+        # content, not the raw wire bytes. Its digest and length are what
+        # identify this capture's source response.
+        content = r.content
+        digest = hashlib.sha256(content).hexdigest()
+        nbytes = len(content)
+        # ONE aware-UTC instant for the whole capture, taken after the response
+        # arrived: the retrieval time and the fallback index date are derived
+        # from the same reading, so they can never disagree.
+        retrieved_at = _utc_now()
+        if retrieved_at.tzinfo is None:
+            raise ValueError("sector holdings capture clock must be an aware datetime")
+        retrieved_at = retrieved_at.astimezone(timezone.utc)
         # keep_default_na=False: 'NA' is a live listing (Nano Labs; National Bank of
         # Canada on TSX). na_values=[""] keeps blank -> NaN so dropna/to_numeric are unchanged.
-        raw = pd.read_excel(io.BytesIO(r.content), header=None,
+        raw = pd.read_excel(io.BytesIO(content), header=None,
                             keep_default_na=False, na_values=[""])
         # find the header row ("Name", "Ticker", ...) and the as-of date above it
         hdr_idx = raw.index[raw.iloc[:, 0].astype(str).str.strip() == "Name"]
         if not len(hdr_idx):
             raise ValueError("holdings header row not found")
-        asof = str(date.today())
-        for i in range(hdr_idx[0]):
-            cell = str(raw.iloc[i, 1])
-            if "As of" in cell:
-                asof = str(pd.to_datetime(cell.replace("As of", "").strip()).date())
+        # A stated date is admitted only when it is unambiguous and valid; a
+        # malformed or conflicting one refuses the capture before anything is
+        # written (see _issuer_as_of).
+        issuer_as_of = _issuer_as_of(raw, int(hdr_idx[0]))
+        if issuer_as_of is None:
+            # No issuer date stated: the index date is the retrieval date,
+            # deterministically at midnight, and it is LABELLED as a retrieval
+            # fallback so it is never read as an issuer-effective date.
+            index_day = retrieved_at.date()
+            date_origin = DATE_ORIGIN_RETRIEVAL_FALLBACK
+        else:
+            index_day = issuer_as_of
+            date_origin = DATE_ORIGIN_ISSUER_REPORTED
         df = raw.iloc[hdr_idx[0] + 1:].copy()
         df.columns = [str(c).strip().lower().replace(" ", "_") for c in raw.iloc[hdr_idx[0]]]
         df = df.rename(columns={"weight": "weight_pct"})
@@ -135,7 +333,22 @@ class SectorHoldingsAdapter(Adapter):
             "weight_pct": df["weight_pct"].round(2),
             "rank": range(1, len(df) + 1),
         })
-        out.index = pd.to_datetime([asof] * len(out))
+        out.index = pd.to_datetime([index_day] * len(out))
+        # The same capture block on EVERY incoming row, so each row is
+        # self-describing and no separate artifact can drift away from it.
+        capture = {
+            "capture_schema_version": CAPTURE_SCHEMA_VERSION,
+            "capture_fund": fund,
+            "capture_source_url": url,
+            "capture_content_sha256": digest,
+            "capture_content_bytes": int(nbytes),
+            "capture_retrieved_at": retrieved_at.isoformat(),
+            "capture_issuer_as_of": (issuer_as_of.isoformat()
+                                     if issuer_as_of is not None else None),
+            "capture_date_origin": date_origin,
+        }
+        for column, value in capture.items():
+            out[column] = value
         return out
 
 def top10_union() -> list[str]:
