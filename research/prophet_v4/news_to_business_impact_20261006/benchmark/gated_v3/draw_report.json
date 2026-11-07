@@ -1,0 +1,268 @@
+{
+  "drawn_cells": {
+    "T1": {
+      "ambiguous": {
+        "drawn": 4,
+        "short": 26,
+        "target": 30
+      },
+      "negative": {
+        "drawn": 6,
+        "short": 44,
+        "target": 50
+      },
+      "no_change": {
+        "drawn": 3,
+        "short": 27,
+        "target": 30
+      },
+      "positive": {
+        "drawn": 58,
+        "short": 32,
+        "target": 90
+      }
+    },
+    "T2": {
+      "ambiguous": {
+        "drawn": 6,
+        "short": 24,
+        "target": 30
+      },
+      "negative": {
+        "drawn": 7,
+        "short": 43,
+        "target": 50
+      },
+      "no_change": {
+        "drawn": 1,
+        "short": 29,
+        "target": 30
+      },
+      "positive": {
+        "drawn": 39,
+        "short": 51,
+        "target": 90
+      }
+    },
+    "T3": {
+      "ambiguous": {
+        "drawn": 0,
+        "short": 30,
+        "target": 30
+      },
+      "negative": {
+        "drawn": 1,
+        "short": 49,
+        "target": 50
+      },
+      "no_change": {
+        "drawn": 0,
+        "short": 30,
+        "target": 30
+      },
+      "positive": {
+        "drawn": 10,
+        "short": 80,
+        "target": 90
+      }
+    }
+  },
+  "fallback_ledger": {
+    "fill_only_tickers": 7569,
+    "primary_tickers": 2921,
+    "sha256": "b046d8515b2a5ea9e26680011a3afd8d46c15689e2ea82ffb32b7be6a956494c",
+    "tickers": 10459
+  },
+  "families": {
+    "hits": {
+      "T1": 990,
+      "T2": 1084,
+      "T3": 709
+    },
+    "overlaps": {
+      "T1&T2": 17,
+      "T1&T2&T3": 2,
+      "T1&T3": 13,
+      "T2&T3": 13
+    }
+  },
+  "feeders": {
+    "event_log": 101,
+    "regex": 2736,
+    "reject": 0,
+    "reject_not_on_tape": 1731
+  },
+  "frame": {
+    "excluded_reasons": {
+      "no_cik": 1015,
+      "no_qualifying_8k": 1402
+    },
+    "frame_cells": {
+      "T1": {
+        "ambiguous": 23,
+        "negative": 20,
+        "no_change": 4,
+        "positive": 108
+      },
+      "T2": {
+        "ambiguous": 17,
+        "negative": 15,
+        "no_change": 6,
+        "positive": 143
+      },
+      "T3": {
+        "ambiguous": 7,
+        "negative": 14,
+        "no_change": 3,
+        "positive": 60
+      }
+    },
+    "kind": "body_available",
+    "n_candidates_in_frame": 420,
+    "n_candidates_pre_frame": 2837,
+    "n_status_entries": 2837,
+    "n_status_entries_outside_pool": 0,
+    "pre_frame_cells": {
+      "T1": {
+        "ambiguous": 190,
+        "negative": 205,
+        "no_change": 34,
+        "positive": 600
+      },
+      "T2": {
+        "ambiguous": 131,
+        "negative": 94,
+        "no_change": 44,
+        "positive": 849
+      },
+      "T3": {
+        "ambiguous": 58,
+        "negative": 57,
+        "no_change": 13,
+        "positive": 562
+      }
+    },
+    "status_map_sha256": "97a22a6f28ae2578825fb04896d6390bef421f1804132580cae5673ccab9ac06"
+  },
+  "funnel": {
+    "candidate": 2837,
+    "low_value": 4,
+    "no_family": 31754,
+    "non_english": 11348,
+    "outside_window": 7856,
+    "seendate_dropped": 1311,
+    "seendate_dropped_by_reason": {
+      "seendate_blank": 1311
+    },
+    "total": 55110
+  },
+  "gate_frame": {
+    "excluded_codes": {
+      "g1_commentary": 24,
+      "g1_market_report": 20,
+      "g1_quote_page": 5,
+      "g1_solicitation": 6,
+      "g2_ambiguous_ticker": 30,
+      "g2_issuer_absent": 70,
+      "g2_issuer_not_subject": 40,
+      "g3_event_mismatch": 19,
+      "g3_no_family_language": 26,
+      "g3_results_without_202": 3,
+      "g3_template_sense": 4
+    },
+    "gate_map_sha256": "491f9174acc5ce94034f9fa5eee52c264b9e6f908e124757608f8848fa7b9c29",
+    "gated_cells": {
+      "T1": {
+        "ambiguous": 6,
+        "negative": 6,
+        "no_change": 3,
+        "positive": 64
+      },
+      "T2": {
+        "ambiguous": 6,
+        "negative": 11,
+        "no_change": 2,
+        "positive": 62
+      },
+      "T3": {
+        "ambiguous": 1,
+        "negative": 1,
+        "no_change": 0,
+        "positive": 11
+      }
+    },
+    "kind": "routing_gates",
+    "n_candidates_gated_in": 173,
+    "n_candidates_pre_gate": 420,
+    "n_gate_entries": 2837
+  },
+  "holdout": {
+    "groups": 2316,
+    "largest": {
+      "key": "hg:5c803892ceb42ed3",
+      "size": 47
+    },
+    "size_histogram": {
+      "1": 2099,
+      "2": 133,
+      "3": 38,
+      "4": 10,
+      "5": 12,
+      "6": 11,
+      "7": 1,
+      "8": 1,
+      "9": 2,
+      "11": 4,
+      "12": 1,
+      "18": 1,
+      "19": 2,
+      "47": 1
+    }
+  },
+  "issuers": {
+    "fallback_resolved": 256,
+    "preferred_variant_resolved": 375,
+    "resolved": 1822,
+    "unresolved": 1015,
+    "unresolved_by_reason": {
+      "ambiguous_ticker": 0,
+      "malformed_identifier": 0,
+      "name_only_mention": 0,
+      "no_mention": 914,
+      "not_listed_at_asof": 0,
+      "unknown_ticker": 101
+    }
+  },
+  "manifest_sha256": "0429d76e9931caafbde34fccde80ef8a1da12a89996d5b2680ea037f46575f09",
+  "pool_cells": {
+    "T1": {
+      "ambiguous": 190,
+      "negative": 205,
+      "no_change": 34,
+      "positive": 600
+    },
+    "T2": {
+      "ambiguous": 131,
+      "negative": 94,
+      "no_change": 44,
+      "positive": 849
+    },
+    "T3": {
+      "ambiguous": 58,
+      "negative": 57,
+      "no_change": 13,
+      "positive": 562
+    }
+  },
+  "sampler_version": "ni-sampler-1",
+  "tags": {
+    "indirect_transfer": 463,
+    "near_duplicate": 2
+  },
+  "tape_sha256": "bab574014865532c63977e44f12be0e8a3234ba9faa8253d2717e43d67580e17",
+  "version": "ni-tape-draw-1",
+  "window": {
+    "end": "2026-10-14",
+    "start": "2026-07-17"
+  }
+}
