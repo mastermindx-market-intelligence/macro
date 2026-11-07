@@ -9,6 +9,7 @@ from __future__ import annotations
 import datetime as datetime_module
 from dataclasses import dataclass
 from datetime import date, datetime, timezone
+from functools import partial
 from decimal import (
     Context,
     Decimal,
@@ -29,6 +30,7 @@ from typing import Any, Mapping, Sequence
 
 from jsonschema import Draft202012Validator, FormatChecker
 
+from .issuer_sic import IssuerSicResolver, resolve_issuer_sic
 from .metric_registry import GovernanceBundle, MetricRegistry, load_core_metric_registry
 from .query import (
     BitemporalMetricQueryEngine,
@@ -46,6 +48,7 @@ from .query import (
     PeriodRequest,
     ProvenanceKind,
     QUERY_SCHEMA,
+    QueryEntity,
     QueryPolicy,
     UnsupportedMetricError,
 )
@@ -478,6 +481,7 @@ def validate_packet_against_build_input(
     metric_registry: MetricRegistry,
     context: PacketBuildContext,
     input_digests: PacketEvidenceDigests | Mapping[str, str | None] | None = None,
+    issuer_sic_resolver: IssuerSicResolver | None = None,
 ) -> None:
     """Validate a packet against the exact inputs used to assemble it. Pure."""
     validate_packet_semantics(packet)
@@ -491,6 +495,7 @@ def validate_packet_against_build_input(
         metric_registry=metric_registry,
         context=context,
         input_digests=digests,
+        issuer_sic_resolver=issuer_sic_resolver,
     )
     actual_body = {
         key: value
@@ -852,11 +857,26 @@ def _query_adapted_cells(
     query_request: PacketQueryRequest,
     metric_registry: MetricRegistry,
     governance_bundle: GovernanceBundle,
+    issuer_sic_resolver: IssuerSicResolver | None = None,
 ) -> tuple[list[dict[str, Any]], list[dict[str, Any]], list[MetricCell]]:
+    # R1-SIC: the issuer SIC reaches the kernel only through QueryEntity,
+    # resolved issuer-agnostically from the coverage contract's CIK record.
+    # No resolver means no SIC: the E0 fail-closed path
+    # (NOT_EVALUABLE/issuer_class_unknown) governs class-restricted metrics.
+    if issuer_sic_resolver is not None:
+        query_entities: list[QueryEntity] | Mapping[str, str] = [
+            QueryEntity(
+                ticker=entity.ticker,
+                entity_id=entity.source_entity_id,
+                issuer_sic=issuer_sic_resolver(entity.source_entity_id),
+            )
+        ]
+    else:
+        query_entities = {entity.ticker: entity.source_entity_id}
     engine = BitemporalMetricQueryEngine(
         ledger,
         metric_registry,
-        entities={entity.ticker: entity.source_entity_id},
+        entities=query_entities,
         filing_metadata=filing_metadata,
     )
     cells: list[dict[str, Any]] = []
@@ -955,6 +975,7 @@ def _governed_packet_components(
     metric_registry: MetricRegistry,
     context: PacketBuildContext,
     input_digests: PacketEvidenceDigests,
+    issuer_sic_resolver: IssuerSicResolver | None = None,
 ) -> tuple[dict[str, Any], GovernanceBundle]:
     governance_bundle = metric_registry.governance_bundle_at(query_request.policy.recorded_at)
     cells, evidence_cells, _kernel_cells = _query_adapted_cells(
@@ -964,6 +985,7 @@ def _governed_packet_components(
         query_request=query_request,
         metric_registry=metric_registry,
         governance_bundle=governance_bundle,
+        issuer_sic_resolver=issuer_sic_resolver,
     )
     assert_formula_evidence_closed(cells, evidence_cells)
     revisions = _revision_records(
@@ -1022,6 +1044,7 @@ def assemble_financial_intelligence_packet(
     input_digests: PacketEvidenceDigests | Mapping[str, str | None] | None = None,
     disclosure_projection: Mapping[str, Any] | None = None,
     built_at: datetime | str | None = None,
+    issuer_sic_resolver: IssuerSicResolver | None = None,
 ) -> dict[str, Any]:
     if disclosure_projection:
         raise ValueError("FIF-1 does not accept a disclosure projection")
@@ -1043,6 +1066,7 @@ def assemble_financial_intelligence_packet(
         metric_registry=metric_registry,
         context=context,
         input_digests=digests,
+        issuer_sic_resolver=issuer_sic_resolver,
     )
     digest = packet_digest(body)
     packet = {
@@ -1067,6 +1091,7 @@ def assemble_financial_intelligence_packet(
         metric_registry=metric_registry,
         context=context,
         input_digests=digests,
+        issuer_sic_resolver=issuer_sic_resolver,
     )
     return packet
 
@@ -1084,6 +1109,7 @@ def build_financial_intelligence_packet_from_repo(
     disclosure_projection: Mapping[str, Any] | None = None,
     built_at: datetime | str | None = None,
     input_digests: PacketEvidenceDigests | Mapping[str, str | None] | None = None,
+    issuer_sic_resolver: IssuerSicResolver | None = None,
 ) -> dict[str, Any]:
     root = Path(repo_root)
     schema = (
@@ -1110,6 +1136,14 @@ def build_financial_intelligence_packet_from_repo(
         input_digests=PacketEvidenceDigests.from_mapping(input_digests),
         disclosure_projection=disclosure_projection,
         built_at=built_at,
+        # The repo adapter is the root-owning boundary: the default resolver
+        # is the shipped coverage contract, rooted exactly where this site
+        # already resolves its schema, builder bytes, and registry.
+        issuer_sic_resolver=(
+            issuer_sic_resolver
+            if issuer_sic_resolver is not None
+            else partial(resolve_issuer_sic, repo_root=root)
+        ),
     )
 
 

@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-03-27T23:58:14Z",
+ "accession": "0001062993-26-001662",
+ "cik": "0001277866",
+ "doc_byte_length": 1243846,
+ "doc_sha256": "90336c27c5a8886400bf11d83bd3b8ce45925136b17a206e7f38b5abb1dd5027",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-30",
+ "form": "40-F",
+ "period_of_report": "2025-12-31",
+ "primary_document": "exhibit99-3.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 525971,
+  "byte_start": 525705,
+  "normalized": "On May 1, 2025, concurrently with the acquisition of Minera Kolpa shares, Endeavour entered into a ten year $35 million copper stream agreement with Versamet Royalties Corporation to help fund the cash portion of the Kolpa acquisition. Under the terms of the stream:",
+  "normalized_sha256": "c03856c9104e5ffbb4b1118ce0c414b6f3e8a862d051ab2a26d868b6c0b56219",
+  "raw": "On May 1, 2025, concurrently with the acquisition of Minera Kolpa shares, Endeavour entered into a ten year $35 million copper stream agreement with Versamet Royalties Corporation to help fund the cash portion of the Kolpa acquisition. Under the terms of the stream:",
+  "raw_sha256": "c03856c9104e5ffbb4b1118ce0c414b6f3e8a862d051ab2a26d868b6c0b56219"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1277866/000106299326001662/exhibit99-3.htm",
+ "xbrl_contexts": []
+}

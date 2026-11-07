@@ -15,7 +15,9 @@ W4 BLOCK remediation tests (added 2026-07-09):
 - B2: tampered hash → dropped_forged_hash; blank hash → mint-stamped; stored card
   mutated post-mint → validate_card catches.
 - M1: LLM-injected forged transition history does not survive ingest.
-- M3: deleting causal_mechanisms.jsonl does NOT reset the budget when ledger rows exist.
+- M3: deleting causal_mechanisms.jsonl does NOT reset the budget when filing-budget
+  rows exist; filing-budget rows go to data/neuralweb/causal_filing_budget.jsonl and
+  never touch data/trial_ledger.jsonl (TrialLedger's owner-locked file).
 - M4: validate_instruments(load_instruments()) passes against real config.
 """
 from __future__ import annotations
@@ -31,6 +33,16 @@ import pytest
 # ---------------------------------------------------------------------------
 # Fixtures helpers
 # ---------------------------------------------------------------------------
+
+
+@pytest.fixture(autouse=True)
+def _isolate_filing_budget(tmp_path, monkeypatch):
+    """Point the M3 filing-budget file at tmp_path so no test writes the real
+    data/neuralweb/causal_filing_budget.jsonl."""
+    path = tmp_path / "causal_filing_budget.jsonl"
+    monkeypatch.setattr("scripts.causal_ingest_brainstorm._FILING_BUDGET", path)
+    return path
+
 
 def _make_valid_card(mechanism_id: str = "test-mech-001") -> dict:
     """Make a valid mechanism card (post-sanitized, pre-frozen-hash)."""
@@ -708,7 +720,7 @@ class TestM1ForgedTransitionHistory:
 
 class TestM3IsoWeekLockDurability:
     """M3: deleting causal_mechanisms.jsonl must not reset the weekly budget
-    when trial_ledger rows exist."""
+    when filing-budget rows exist (new file, or legacy trial_ledger rows)."""
 
     def _write_inbox(self, tmp_path: Path, cards: list[dict]) -> Path:
         inbox = tmp_path / "inbox"
@@ -720,7 +732,7 @@ class TestM3IsoWeekLockDurability:
         """Budget is durable: deleting causal_mechanisms.jsonl doesn't reset it."""
         from scripts.causal_ingest_brainstorm import (
             ingest, _BUDGET_PER_WEEK, _current_iso_week,
-            _count_filed_this_week, _log_filing_budget_to_ledger,
+            _count_filed_this_week, _log_filing_budget,
         )
 
         ledger_path = tmp_path / "trial_ledger.jsonl"
@@ -730,11 +742,13 @@ class TestM3IsoWeekLockDurability:
 
         week = _current_iso_week()
 
-        # Pre-populate trial_ledger with BUDGET rows for this week (simulating
-        # a previous filing run that has since had its mechanisms file deleted)
+        # Pre-populate the filing-budget file with BUDGET rows for this week
+        # (simulating a previous filing run that has since had its mechanisms
+        # file deleted)
         with mock.patch("scripts.causal_ingest_brainstorm._TRIAL_LEDGER", ledger_path):
             for i in range(_BUDGET_PER_WEEK):
-                _log_filing_budget_to_ledger(f"pre-filed-{i:03d}", week)
+                _log_filing_budget(f"pre-filed-{i:03d}", week)
+        assert not ledger_path.exists(), "filing-budget rows must not touch the trial ledger"
 
         # Confirm mechanisms file does NOT exist (it was "deleted")
         assert not mechanisms_file.exists()
@@ -746,9 +760,9 @@ class TestM3IsoWeekLockDurability:
         with mock.patch("scripts.causal_ingest_brainstorm._TRIAL_LEDGER", ledger_path):
             result = ingest(inbox=inbox, out_dir=out_dir, dry_run=False, model_label="test")
 
-        # Budget should be exhausted from ledger — ingest returns 1
+        # Budget should be exhausted from filing-budget rows — ingest returns 1
         assert result == 1, (
-            "ingest must refuse when budget is exhausted via ledger rows, "
+            "ingest must refuse when budget is exhausted via filing-budget rows, "
             "even if causal_mechanisms.jsonl was deleted"
         )
 
@@ -779,6 +793,133 @@ class TestM3IsoWeekLockDurability:
             count = _count_filed_this_week(out_dir)
 
         assert count == 2, f"expected 2 from ledger alone, got {count}"
+
+    def test_legacy_ledger_rows_and_new_file_rows_sum(self, tmp_path, _isolate_filing_budget):
+        """Cutover week: legacy trial_ledger rows and new-file rows are disjoint
+        and both count, so moving the writer cannot reopen this week's budget."""
+        from scripts.causal_ingest_brainstorm import (
+            _count_filed_this_week, _current_iso_week, _log_filing_budget,
+        )
+
+        ledger_path = tmp_path / "trial_ledger.jsonl"
+        out_dir = tmp_path / "out"
+        out_dir.mkdir()
+        week = _current_iso_week()
+        legacy = {
+            "ts": datetime.now(timezone.utc).isoformat(),
+            "kind": "filing_budget",
+            "family": "causal_scan",
+            "filing_week": week,
+            "mechanism_id": "legacy-0",
+        }
+        ledger_path.write_text(json.dumps(legacy) + "\n", encoding="utf-8")
+
+        with mock.patch("scripts.causal_ingest_brainstorm._TRIAL_LEDGER", ledger_path):
+            _log_filing_budget("new-0", week)
+            _log_filing_budget("new-1", week)
+            _log_filing_budget("other-week", "1999-W01")
+            count = _count_filed_this_week(out_dir)
+
+        assert count == 3, f"expected 1 legacy + 2 new rows for this week, got {count}"
+        assert ledger_path.read_text(encoding="utf-8") == json.dumps(legacy) + "\n"
+
+    def test_filing_budget_default_path_is_not_the_trial_ledger(self, monkeypatch):
+        """The unpatched module constants point at two different files."""
+        import scripts.causal_ingest_brainstorm as cib
+
+        monkeypatch.undo()  # drop the autouse tmp patch to see the real defaults
+        root = Path(cib.__file__).resolve().parents[1]
+        assert cib._TRIAL_LEDGER == root / "data" / "trial_ledger.jsonl"
+        assert cib._FILING_BUDGET == root / "data" / "neuralweb" / "causal_filing_budget.jsonl"
+        assert cib._FILING_BUDGET != cib._TRIAL_LEDGER
+
+
+# ---------------------------------------------------------------------------
+# Filing budget vs TrialLedger owner lock — the write never enters the ledger
+# ---------------------------------------------------------------------------
+
+class TestFilingBudgetNeverTouchesTrialLedger:
+    """The M3 filing-budget write must not touch data/trial_ledger.jsonl, so it
+    cannot interleave with a TrialLedger owner_transaction (read -> append ->
+    raw_readback) or tear a locked trial registration."""
+
+    def _write_inbox(self, tmp_path: Path, cards: list[dict]) -> Path:
+        inbox = tmp_path / "inbox"
+        inbox.mkdir(exist_ok=True)
+        (inbox / "batch.json").write_text(json.dumps(cards), encoding="utf-8")
+        return inbox
+
+    def test_filing_write_inside_owner_transaction_does_not_interleave(
+        self, tmp_path, _isolate_filing_budget,
+    ):
+        """A filing-budget write landing between an owner's read and its readback
+        leaves the ledger bytes unchanged; the owner's readback and append succeed.
+
+        Against the old writer (plain open('a') on data/trial_ledger.jsonl) the
+        readback raises "ledger changed outside this owner transaction"."""
+        from engine.trial_ledger import TrialLedger
+        from scripts.causal_ingest_brainstorm import _current_iso_week, _log_filing_budget
+
+        ledger_path = tmp_path / "trial_ledger.jsonl"
+        ledger = TrialLedger(path=ledger_path, family="causal_test")
+        assert ledger.log_trial({"k": 1}) is True
+        before = ledger_path.read_bytes()
+        week = _current_iso_week()
+
+        with mock.patch("scripts.causal_ingest_brainstorm._TRIAL_LEDGER", ledger_path):
+            with ledger.owner_transaction():
+                _log_filing_budget("mid-transaction-001", week)
+                assert ledger.raw_readback() == before
+                assert ledger.log_trial({"k": 2}) is True
+
+        rows = [json.loads(l) for l in ledger_path.read_text(encoding="utf-8").splitlines()]
+        assert [r.get("config") for r in rows] == [{"k": 1}, {"k": 2}]
+        assert all(r.get("kind") != "filing_budget" for r in rows)
+        assert TrialLedger(path=ledger_path, family="causal_test").corrupt_lines == 0
+
+        budget_rows = [json.loads(l) for l in
+                       _isolate_filing_budget.read_text(encoding="utf-8").splitlines()]
+        assert budget_rows == [{
+            "ts": budget_rows[0]["ts"],
+            "kind": "filing_budget",
+            "family": "causal_scan",
+            "filing_week": week,
+            "mechanism_id": "mid-transaction-001",
+        }]
+
+    def test_ingest_write_leaves_trial_ledger_bytes_unchanged(
+        self, tmp_path, _isolate_filing_budget,
+    ):
+        """A full ingest(--write) records the budget row in the budget file and
+        leaves an existing trial ledger byte-identical."""
+        from engine.trial_ledger import TrialLedger
+        from scripts.causal_ingest_brainstorm import ingest
+
+        ledger_path = tmp_path / "trial_ledger.jsonl"
+        TrialLedger(path=ledger_path, family="causal_test").log_trial({"k": 1})
+        before = ledger_path.read_bytes()
+
+        inbox = self._write_inbox(tmp_path, [_make_valid_card("ingest-no-touch-001")])
+        out_dir = tmp_path / "out"
+        out_dir.mkdir()
+        with mock.patch("scripts.causal_ingest_brainstorm._TRIAL_LEDGER", ledger_path):
+            result = ingest(inbox=inbox, out_dir=out_dir, dry_run=False, model_label="test")
+
+        assert result == 0
+        assert ledger_path.read_bytes() == before
+        budget_rows = [json.loads(l) for l in
+                       _isolate_filing_budget.read_text(encoding="utf-8").splitlines()]
+        assert [r["mechanism_id"] for r in budget_rows] == ["ingest-no-touch-001"]
+        assert all(r["kind"] == "filing_budget" for r in budget_rows)
+
+    def test_daily_workflow_commits_the_filing_budget_file(self):
+        """The Tuesday causal commit step must git-add the new budget file, or
+        M3 durability is lost on the next fresh checkout."""
+        wf = Path(__file__).resolve().parents[1] / ".github" / "workflows" / "daily.yml"
+        text = wf.read_text(encoding="utf-8")
+        start = text.index("commit causal outputs")
+        step = text[start:start + 3000]
+        assert "git add data/neuralweb/causal_filing_budget.jsonl" in step
 
 
 # ---------------------------------------------------------------------------
