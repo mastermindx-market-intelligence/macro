@@ -4406,6 +4406,13 @@ def test_workspace_runtime_contracts_can_start_the_ci_that_validates_them() -> N
 # ---------------------------------------------------------------------------
 
 CURATED_EXCLUSIVE = {
+    # GDELT leaf suites own their exact import/read closure.
+    "gdelt-news-leaves",
+    # Installer simulations own their concrete source/read closure without
+    # adding weight to unrelated ordinary-code packing probes.
+    "earnings-worker-systemd",
+    # Actual page-query import/read closure; no unrelated fallback ownership.
+    "admin-analytics-pages",
     # Paid Fabric source-only guidance and deterministic attribution tests are
     # exclusively scoped; do not widen unrelated ordinary-code packing probes.
     "meta-ceo-fabric-contracts",
@@ -5467,8 +5474,8 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
     ("templates/index.html", 137, 5_914),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_929),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_670),
+    ("scripts/build_free_content.py", 138, 5_931),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_672),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5477,6 +5484,13 @@ PACKING_PROBE_MAX_PACKS = 10
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
 
+    PR #10727 composition with protected85e299 (2026-11-07): preserve the
+    accepted #8899 provenance-suite enrollment and all current CODE owners.
+    The separate Fabric composition suite adds two planning-weight units to
+    each probe: expected index5914, free5931, Prophet5672. These combined values
+    are source-derived expectations; the new-head hosted contract-delta must
+    measure them. Keep job ceilings137/138/131 and the ten-pack bound unchanged.
+
     Fabric production-owner composition (2026-11-04): exact tracked-tree
     inventory at17b805dbf6e6 measured index137jobs/5914, free137jobs/5929
     and Prophet131jobs/5670, all ten packs, against protected8b78baf69777
@@ -5484,6 +5498,19 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     units; preserve every job-count, pack, timeout and admission bound. The
     three probes match the hosted contract-delta shape; these estimates are
     not runtime evidence. Sparse filesystem-only measurements are not used.
+
+    PR #8899 provenance coverage (2026-11-06): exact-head CI 42231847099,
+    contract job 127939433316, head b0708d5ae2a4 against base 9a867da6f866:
+    index137jobs/5912->5912, free137jobs/5927->5929, Prophet131jobs/5668->5670,
+    all ten packs and identical selected job IDs (no entrants or exits).
+    The sole manifest delta enrolls tests/test_integrated_answer_provenance.py
+    in the existing integrated-answer-v0 owner alongside all four accepted
+    suites. Its unchanged planner estimate rises10->12 from that fifth literal
+    test path; no observed-runtime override or dependency-scope change.
+    Fund only the two additional planning-weight units on free-content and
+    Prophet. Preserve the homepage, every job-count ceiling, ten-pack bound,
+    selectors, suites, timeouts and admission limits. These are planner
+    estimates, not measured execution times.
 
     P12.T32.S3 (2026-11-04): fresh canonical paired source measurements,
     candidate 5f0f047b160b against real base b4df44260aef, using the same

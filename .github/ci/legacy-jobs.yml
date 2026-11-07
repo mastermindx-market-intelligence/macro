@@ -2425,6 +2425,7 @@ jobs:
       - "tests/test_integrated_answer_clock.py"
       - "tests/test_integrated_answer_consumer_receipt.py"
       - "tests/test_integrated_answer_cs_context_leg.py"
+      - "tests/test_integrated_answer_provenance.py"
       - "tests/test_integrated_answer_v0.py"
       - "tools/**"
       - "worker/**"
@@ -2438,7 +2439,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest fastapi httpx pyyaml requests pandas numpy pyarrow jsonschema
       - name: integrated answer v0 composer
-        run: python -m pytest tests/test_integrated_answer_v0.py tests/test_integrated_answer_clock.py tests/test_integrated_answer_consumer_receipt.py tests/test_integrated_answer_cs_context_leg.py -q
+        run: python -m pytest tests/test_integrated_answer_v0.py tests/test_integrated_answer_clock.py tests/test_integrated_answer_consumer_receipt.py tests/test_integrated_answer_cs_context_leg.py tests/test_integrated_answer_provenance.py -q
 
   c19-wp19-integrated-answer-pins:
     if: ${{ false }}
@@ -6166,9 +6167,11 @@ jobs:
         # regression is the first failure a reader sees rather than the id contract
         # failing for a borrowed reason; it rides this existing step because a step is
         # the masking unit (run_ci_pack.py returns on the first non-zero step) while
-        # pytest reports every file inside one step.  No dependency widened: probed at
-        # RUN time it loads only pandas/numpy/pyarrow/pyyaml — exactly this job's thin
-        # install line — and blocking plotly leaves it 12-passed.
+        # pytest reports every file inside one step. The historical thesis-ID-only
+        # probe used pandas/numpy/pyarrow/pyyaml and reported 12 passes with plotly
+        # blocked; it was not a dependency inventory for this whole job.
+        # The UK Policy Watch suite also renders the real view and requires jinja2,
+        # which is retained in the existing combined dependency install above.
         run: >
           python -m pytest
           tests/test_ai_desk.py tests/test_ai_desk_scorer.py
@@ -23004,6 +23007,7 @@ jobs:
       - "site/basket_china/**"
       - "site/basket_hk/**"
       - "site/basket_intl/**"
+      - "site/allocation.html"
       - "templates/allocation.html.j2"
       - "templates/basket_detail.html.j2"
       - "templates/sector_central.html.j2"
@@ -26758,6 +26762,7 @@ jobs:
     # hence the pandas-family install below.
     scope: exclusive
     paths:
+      - engine/rate_futures_repricing.py
       - "engine/entry_radar/__init__.py"
       - "engine/entry_radar/replay/__init__.py"
       - "config/dataset_registry.yml"
@@ -30567,6 +30572,29 @@ jobs:
       - name: inline-CSS externalization units (incl. the jinja2 cross-module gate)
         run: python -m pytest tests/test_externalize_css.py -q
 
+  inflation-finite-outputs:
+    if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
+    gate: code
+    # Inflation calculator. Node unit test over the template and the generated
+    # page: the whole controller IIFE runs over both surfaces and both copy
+    # transports, so a nonfinite derived amount, percentage or reciprocal is
+    # rejected instead of rendered as $Infinity and copied out. The verdict is a
+    # pure function of the PR tree (template + generated page + harness), so
+    # gate: code; the free-content-estate rebuild is gate: data and never runs
+    # on a pull request.
+    paths:
+      - templates/calculators/inflation.html.j2
+      - site/tools/calculators/inflation.html
+      - tests/js/inflation_finite_outputs.test.mjs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: inflation finite derived-output regression
+        run: node --test tests/js/inflation_finite_outputs.test.mjs
+
   calculator-input-integrity:
     if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
     gate: code
@@ -34155,6 +34183,143 @@ jobs:
       - name: pick-conditional forward distributions — PIT/embargo (w1) + HAR standardizer pin (w1.5)
         run: python -m pytest tests/test_pick_forward_dist.py tests/test_pick_forward_dist_phase1.py -q
 
+  admin-analytics-pages:
+    # The live page reader must retain every exclusion while avoiding repeated
+    # membership work. Real PostgreSQL fixtures use a fresh Unix-only cluster;
+    # no production rows, network database or optional skipped CI proof.
+    if: ${{ false }}  # Executed inside the required ci-pack wrapper.
+    gate: code
+    # Retain the complete derived import/read closure; discard only opaque
+    # fallback domains that otherwise select unrelated homepage/Prophet probes.
+    scope: exclusive
+    paths:
+      - "admin/**"
+      - "app/**"
+      - "collectors/**"
+      - "config/**"
+      - "contracts/**"
+      - "engine/*.py"
+      - "engine/biocatalyst/**"
+      - "engine/capital_structure/**"
+      - "engine/catalyst_opportunity/**"
+      - "engine/chronicle/**"
+      - "engine/codex_lane/**"
+      - "engine/company_intelligence/**"
+      - "engine/company_theme_exposure/**"
+      - "engine/context_index/**"
+      - "engine/earnings_narrative/**"
+      - "engine/earnings_release/**"
+      - "engine/entry_radar/**"
+      - "engine/fundamental_forensics/**"
+      - "engine/government_revenue/**"
+      - "engine/institutional_census/**"
+      - "engine/intelligence_workspace/**"
+      - "engine/market_ontology/**"
+      - "engine/market_os/**"
+      - "engine/marketing/**"
+      - "engine/medtech/**"
+      - "engine/metabolism/**"
+      - "engine/neuralweb/**"
+      - "engine/news_impact/**"
+      - "engine/oracle/**"
+      - "engine/pick_lab/**"
+      - "engine/press/**"
+      - "engine/price_pressure/**"
+      - "engine/prophet_lab/**"
+      - "engine/prophet_live/**"
+      - "engine/research_intelligence/**"
+      - "engine/research_vault/**"
+      - "engine/seasonality/**"
+      - "engine/sector_intelligence/**"
+      - "engine/stock_identity/**"
+      - "engine/theme_graph/**"
+      - "lib/**"
+      - "research/**"
+      - "scripts/__init__.py"
+      - "scripts/build_debt_maturity.py"
+      - "scripts/build_macro_suite_pages.py"
+      - "scripts/build_security_master.py"
+      - "scripts/build_stock_library.py"
+      - "scripts/build_thematic_state.py"
+      - "scripts/calibrate_rate_inflation.py"
+      - "scripts/check_board_contradictions.py"
+      - "scripts/check_research_vault_source_freshness.py"
+      - "scripts/check_signal_gate_coherence.py"
+      - "scripts/check_stretch_oracle_contract.py"
+      - "scripts/compile_capital_structure_events.py"
+      - "scripts/probe_theme_exposure_axes.py"
+      - "scripts/publish_company_disclosure.py"
+      - "scripts/query_k3e_expectation_surface.py"
+      - "scripts/security_state_producer.py"
+      - "scripts/snapshot_shadow_book.py"
+      - "scripts/sparse_guard.py"
+      - "scripts/stock_liquidity_profile.py"
+      - "scripts/thematic_rotation_phase0.py"
+      - "scripts/worktree_sparse.py"
+      - "site/basketdata/baskets.json"
+      - "site/basketdata/fear_greed.json"
+      - "site/basketdata/foresight_cascade.json"
+      - "site/basketdata/narrative_emergence.json"
+      - "site/basketdata/radar.json"
+      - "site/basketdata/radar_enriched.json"
+      - "site/basketdata/sector_pulse.json"
+      - "site/canadabasketdata/baskets.json"
+      - "site/chinabasketdata/baskets.json"
+      - "site/chinabasketdata/narrative_emergence.json"
+      - "site/coming-soon.html"
+      - "site/data/portfolio_ctx.json"
+      - "site/factordata/alerts_triage.json"
+      - "site/factordata/basket_washout_state.json"
+      - "site/factordata/china_standouts.json"
+      - "site/factordata/dna_class.json"
+      - "site/factordata/factors.json"
+      - "site/factordata/impulse.json"
+      - "site/factordata/reflexivity_overlay.json"
+      - "site/factordata/signal_gate.json"
+      - "site/factordata/stock_personality.json"
+      - "site/factordata/us_standouts.json"
+      - "site/factordata/us_standouts_v2.json"
+      - "site/flowleaders/leaders.json"
+      - "site/government-revenue-data/defense-economics.json"
+      - "site/government-revenue-data/program-theme-context.json"
+      - "site/government-revenue-data/research-state.json"
+      - "site/government-revenue-data/sbir-progression.json"
+      - "site/government-revenue-data/theme-context.json"
+      - "site/hkbasketdata/baskets.json"
+      - "site/leaderradar/radar.json"
+      - "site/marketdata/subsector_rotation.json"
+      - "site/master_brief.json"
+      - "site/neuralwebdata/theme_state.json"
+      - "site/prophet/index.json"
+      - "site/turn_watch/turn_watch.json"
+      - "site/vol/regime.json"
+      - "templates/_navlinks.html.j2"
+      - "templates/_public_footer.html.j2"
+      - "templates/_public_nav.html.j2"
+      - "templates/glossary.html.j2"
+      - "templates/methodology.html.j2"
+      - "templates/support.html.j2"
+      - "tests/__init__.py"
+      - "tests/conftest.py"
+      - "tests/test_analytics_exclusions.py"
+      - "tests/test_analytics_pages_postgres.py"
+    timeout-minutes: 3
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest requests
+      - name: page analytics SQL contracts and real PostgreSQL equivalence
+        run: |
+          pg_bin="$(pg_config --bindir)"
+          export PATH="$pg_bin:$PATH"
+          for tool in psql initdb pg_ctl; do command -v "$tool" >/dev/null; done
+          test "$(id -u)" -ne 0
+          python -m pytest tests/test_analytics_exclusions.py tests/test_analytics_pages_postgres.py -q
+
   unrun-serving-admin:
     # admin control surfaces + the brain/tape serving edges.
     if: ${{ false }}
@@ -35280,6 +35445,8 @@ jobs:
     paths:
       - config/provider_production_modes.v1.json
       - engine/provider_production_modes.py
+      - collectors/rate_futures.py
+      - engine/rate_futures_repricing.py
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
       - engine/entry_radar/replay/identity_observation_snapshot.py
@@ -36272,6 +36439,7 @@ jobs:
       - "tests/test_prophet_postmortem.py"
       - "tests/test_prophet_r7_wave_a_plan_cards.py"
       - "tests/test_prophet_strategy_definition.py"
+      - "tests/test_prophet_whynot_receipts.py"
       - "tests/test_stock_events.py"
       - "tests/test_us_basket_turn.py"
       - "tests/test_us_board_priority_ui.py"
@@ -36410,6 +36578,18 @@ jobs:
         run: python -m pytest tests/test_prophet_card_shared.py tests/test_us_prophet_original_card_layout.py tests/test_prophet_plan_relation.py tests/test_prophet_candidate_plan_return.py tests/test_prophet_journey_reconcile.py tests/test_us_completed_session_panel.py tests/test_us_leader_observation_projection.py tests/test_prophet_candidate_state.py tests/test_prophet_candidate_state_sources.py tests/test_prophet_strategy_definition.py tests/test_build_live_quotes.py tests/test_vps_live_orchestration.py tests/test_prophet_daily_brief.py -q
       - name: Prophet R7 Wave A watchlist save outcomes and saved/tonight columns (A2)
         run: python -m pytest tests/test_prophet_r7_wave_a_watchlist.py -q
+      # §6.9 R5 PR-time copy contract. The complete why-not suite stays in its
+      # existing data-gated job during this bootstrap: as of 2026-09-10 current main
+      # carried four known harness failures that #7059 repairs, so moving the whole
+      # file first would have made the prerequisite red on its own base. These four
+      # hermetic copy laws are the source-change contract that must execute before
+      # #7059 can merge. As of 2026-11-05 the first two names exist on frozen main
+      # 7241e9b; #7059 adds the latter two, so this selector bootstraps green and
+      # expands automatically on that exact head.
+      - name: Prophet intake receipt copy contract (PR-time hermetic subset)
+        run: >-
+          python -m pytest tests/test_prophet_whynot_receipts.py -q
+          -k "every_order_code_has_non_empty_bilingual_copy or template_copy_mirrors_the_engine_copy_exactly or plan_not_built_copy_never_claims_every_check_passed or validated_word_is_confined_to_the_exact_negative_disclaimer"
       - name: Prophet detector, organ and disposition contracts (one native process)
         run: python -m pytest tests/test_prophet_doors.py tests/test_gate_crash_failopen.py tests/test_prophet_arena.py tests/test_washout_turn.py tests/test_mtf_upturn.py tests/test_oracle_memory_analogues_step.py tests/test_stock_events.py tests/test_event_atlas.py tests/test_us_leader_pullback.py tests/test_us_leader_pullback_coverage.py tests/test_mi_s2_theme_relative_intraday_registration.py tests/test_us_turn_watch.py tests/test_us_basket_turn.py tests/test_prophet_b2_disposition.py -q
       - name: Prophet R7 Wave A refusal receipts and design guards (A3)
@@ -36765,6 +36945,7 @@ jobs:
     scope: exclusive
     paths:
       - engine/provider_production_modes.py
+      - engine/rate_futures_repricing.py
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
       - engine/entry_radar/replay/identity_observation_snapshot.py
@@ -51807,3 +51988,156 @@ jobs:
         run: node --version
       - name: Intelligence OS API renderer source and finite measurement contracts
         run: python -m pytest tests/test_admin_intelligence_os.py tests/test_admin_intelligence_os_ui.py tests/test_admin_server.py tests/test_intelligence_execution.py tests/test_admin_theme_tokens.py tests/test_evidence_findings.py tests/test_evidence_findings_ui.py tests/test_eval_os_adversarial_acceptance.py tests/test_response_eval.py -q
+
+  earnings-worker-systemd:
+    if: ${{ false }}
+    gate: code
+    scope: exclusive
+    paths:
+      - ops/bootstrap_earnings_worker_linux.sh
+      - ops/systemd/mastermind-earnings-worker.service
+      - ops/systemd/mastermind-earnings-worker.timer
+      - ops/launchd/run_earnings_worker.sh
+      - ops/launchd/run_with_env.sh
+      - ops/earnings_worker_requirements.txt
+      - tests/test_earnings_worker_systemd.py
+      - tests/__init__.py
+    timeout-minutes: 4
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install test dependency
+        run: pip install pytest
+      - name: earnings worker service and simulated bootstrap contracts
+        run: python -m pytest tests/test_earnings_worker_systemd.py -q
+
+  gdelt-news-leaves:
+    if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
+    gate: code
+    # The GDELT leaf family: the shared HTTP/cache client plus both consumers
+    # that build OR-queries against it. Wired 2026-09-18 as the follow-up to
+    # #7309. All three suites were rows in config/unrun_test_baseline.json —
+    # named by NO `run:` step in any workflow — so every contract below has been
+    # unenforced since the hour it landed.
+    #
+    # WHAT THAT COST. engine/macro_news.py shipped ONE 400-char OR-query that
+    # GDELT structurally rejects ("Your query was too short or too long."),
+    # answered as HTTP 200 + text/html so no status check sees it, on every
+    # nightly build for ~2 months. engine/news_vector.py had already fixed the
+    # IDENTICAL class in 2026-07 by splitting its terms into bounded sub-queries,
+    # and shipped tests/test_news_vector.py as the guard — a guard no job named.
+    # The fix did not travel to the sibling leaf because nothing made it travel:
+    # the _MAX_QUERY_LEN bound, the structural-vs-transient classification and
+    # the never-cache-a-failure rule were all dark. news_vector's own 230-char
+    # bound has held only because nobody has edited its term list since.
+    #
+    # WHY ITS OWN JOB rather than a step in an existing one. No enabled
+    # `gate: code` job owns these modules as its SUBJECT. `biocatalyst-serving`
+    # is the only one carrying engine/macro_news.py in `paths:` and it reaches it
+    # through its import closure, not through ownership; `unrun-macro-panels`
+    # runs the news-adjacent suites but is `gate: data`, and gate:data jobs are
+    # off the merge gate. Lodging a family's contracts in a job that owns
+    # something else is how ownership stops being readable, which is the state
+    # this file exists to end.
+    #
+    # config.yml is in scope on purpose and is the highest-value entry here: the
+    # term lists these queries are assembled from live there (#7309 edited it),
+    # and a term-list edit is precisely what walks a query over the server-side
+    # length bound. tests/test_news_vector.py reads it for real via `nv._cfg()`.
+    # engine/qbus.py and engine/qkernel.py are direct imports of
+    # tests/test_macro_news.py — depth-1 closure, the depth
+    # scripts/check_ci_trigger_closure.py gates at and for the reason it states.
+    #
+    # `scope: exclusive` because inference smears. Left to infer its own scope
+    # this job picked up whole-tree roots — templates/**, site/**, scripts/**,
+    # engine/** — through opaque constructs deep in macro_news's closure, and
+    # began selecting on every probe in
+    # tests/test_ci_pack.py::test_exclusive_curation_narrows_ordinary_code_prs
+    # (measured 2026-09-18: the ratchet reds, exactly as it is built to when a
+    # new job is handed the fallback tier). Curated away at the source, the way
+    # `options-estate-guards` was in wave 3, rather than paid for in the bound.
+    # Exclusivity means these paths are the WHOLE scope. Keep the exact
+    # contract-delta import closure here rather than relying on fallback roots:
+    # the direct subjects plus every source/config module transitively reached
+    # by the three suites. This stays narrower than engine/** / collectors/**
+    # while preserving the repository's fail-closed trigger-closure contract.
+    scope: exclusive
+    paths:
+      - "config.yml"
+      - "collectors/base.py"
+      - "collectors/fred.py"
+      - "config/ai_pricing.yml"
+      - "config/capability_manifest.yml"
+      - "engine/__init__.py"
+      - "engine/codex_lane/runner.py"
+      - "engine/codex_provider.py"
+      - "engine/event_calendar.py"
+      - "engine/gdelt_client.py"
+      - "engine/macro_news.py"
+      - "engine/macro_surprise.py"
+      - "engine/neuralweb/key_pool.py"
+      - "engine/news_common.py"
+      - "engine/news_events.py"
+      - "engine/news_translate.py"
+      - "engine/news_vector.py"
+      - "engine/qbus.py"
+      - "engine/qkernel.py"
+      - "lib/__init__.py"
+      - "lib/ai_costs.py"
+      - "lib/config.py"
+      - "lib/store.py"
+      - "tests/test_gdelt_client.py"
+      - "tests/test_macro_news.py"
+      - "tests/test_news_vector.py"
+      # Current source closure and existing ancestor packages; no broad fallback.
+      - "collectors/__init__.py"
+      - "collectors/yahoo.py"
+      - "config/delisted_symbols.yml"
+      - "engine/codex_lane/__init__.py"
+      - "engine/neuralweb/__init__.py"
+      - "lib/cn_calendar.py"
+      - "lib/delisted_symbols.py"
+      - "lib/exchange_holidays.py"
+      - "lib/hk_calendar.py"
+      - "lib/market_observations.py"
+      - "lib/market_session.py"
+      - "lib/nyse_calendar.py"
+      - "lib/stooq.py"
+      - "lib/ticker_aliases.py"
+      - "lib/tsx_calendar.py"
+      - "lib/us_cash_calendar.py"
+      - "tests/__init__.py"
+    timeout-minutes: 8
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      # Measured one package at a time in a clean 3.12 venv (2026-09-18), the
+      # method the install-line note on `workflow-yaml` documents: pytest+pyyaml
+      # alone leaves 40 of 92 failing; +pandas+numpy leaves 31; +requests leaves
+      # 5; +pyarrow+beautifulsoup4 runs all 92 green. pyarrow is the parquet
+      # engine test_news_vector.py's freshness tests round-trip through.
+      # beautifulsoup4 is load-bearing in the quietest way there is: macro_news
+      # imports it INSIDE a try/except, so without it _fetch_official_pages
+      # returns an empty list and the two official-pages tests fail on missing
+      # ITEMS rather than on a missing MODULE — a thin runner would read as a
+      # code regression. numpy is transitive via pandas and named for the record,
+      # as causal-factory and global-liquidity-transmission do.
+      # No importorskip and no skipif anywhere in the three suites (verified), so
+      # they cannot skip their way to a green on a thin runner — the class
+      # scripts/check_skip_only_suites.py exists to catch.
+      - name: install GDELT leaf test dependencies
+        run: pip install pytest pyyaml pandas numpy pyarrow requests beautifulsoup4
+      # One step, all three suites: the install-line note on `workflow-yaml`
+      # records that consecutive per-suite steps hide each other (the first
+      # failure ends the job and four later steps never report). `gate: code` is
+      # provable here rather than asserted — the family runs green in a SPARSE
+      # checkout with no data/ tree on disk at all (92 passed, 2026-09-18), so no
+      # nightly or wire data commit can move this verdict.
+      - name: GDELT client + both news leaves — query bounds, structural rejection, cache fences
+        run: python -m pytest tests/test_gdelt_client.py tests/test_macro_news.py tests/test_news_vector.py -q
