@@ -75,11 +75,15 @@ waves:
     status: in_progress
     depends_on: [H0]
     next_action: >
-      2026-11-06 visibility increment: consume Mastermind #2174's existing protected queue for
-      head 50adff1969d1b0d2b43d6d99bfff62ccb148faa4; do not re-arm or push while queued.
-      O1-O3 source and exact-head CI pass, but reads remain default-off and not installed.
-      Next qualify real independently authorized census/Agent OS owner ports and intended Hermes
-      role readback; use the dated chatgpt-session-visibility handoff and preserve original effects.
+      S4 integration: #2174, #2178 and #2179 are source-merged. Consume #2188 head 851f250d's
+      ordinary CI and protected integration, then original native consumer #2195; the profile stays
+      disabled until explicit
+      host/mission qualification. Then prove original mission/frontier/pending-effect continuity,
+      scoped recipient consumption and return to the original parent on two admitted mixed-provider
+      hosts. Current authenticated target projection is empty. Preserve #1318's production
+      inspection denial, #1958 NO INSTALL, historical terminal MiniMax and #836 action-scoped
+      holds, #2172's native admission hold and #2189's denied protected Control read. Exact receipts
+      and next actions are in the dated chatgpt-session-visibility handoff.
       Hold #647, #651 and #836 at independent exact-head review. After release, wire R8 recovery plus bounded
       continuation into Control Room, then add closed successor bootstrap through existing Web-Sol,
       RuntimeBinding and Capacity owners.
@@ -210,7 +214,8 @@ do_not_redo:
   - "Do not refresh Chairman bindings merely to pass an age gate, reuse a Chairman profile/account, choose an unqualified stopped profile, fall back to GoLogin, create a third profile or start a browser in the profile_B child."
   - "Do not blind-retry a profile update, lifecycle bootstrap, release-receipt, Keychain or vendor effect after uncertainty; reconcile the same operation/task/host and exact fixed coordinates."
 next_action: >
-  Advance SC1 as the current cross-session continuity frontier while leaving P0B and ASD independent.
+  Advance SC1/S4 using the dated chatgpt-session-visibility handoff: #2178/#2179 source-merged;
+  #2188 ordinary CI/integration and qualified native consumption remain. Keep P0B and ASD independent.
   Mastermind #868 is protected/do-not-redo. #647 `00a37df9...` and #651 `3e70694f...` are source-built,
   exact-head CI green and current-base compatible, but both remain Draft pending genuinely independent
   exact-head semantic review. #651's real canonical Agent OS rerun after Macro #7619 now passes the actual

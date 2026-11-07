@@ -109,18 +109,32 @@ unresolved:
   - Earlier Control Room/Meta-CEO R2 obligations remain in the 2026-10-12 handoff; this increment does not replace that programme.
 next_actions:
   - >-
-    Consume the existing PR #2174 protected queue result and exact merge SHA. Do not re-arm,
-    push into the queued branch, or rebuild the tested O1-O3 slice. A queued state is not merge proof.
+    Consume #2188 head 851f250dd8ec7489b74a603d52733f8c4828f2b2 ordinary CI run
+    42348279388 and its protected integration, then dependent native consumer #2195
+    at 73fd5443f06e382260600caf09521730f7711e01. Preserve both incumbent branches/writers;
+    no substitute runner, denied AF_UNIX replay or automatic context-profile enrollment.
   - >-
-    Qualify the incumbent authorization projection and bounded census/Agent OS read ports
-    described in docs/hermes/CHATGPT_SESSION_VISIBILITY.md, preserving current denied or
-    uncertain browser/installation effects.
+    Qualify the installed source, exact host connection, principal/mission/profile and
+    original #2195 native memory consumer and #2172 configuration owner before claiming
+    adopted context consumption. Preserve
+    #2172's denied M2 route action and #2189's denied protected Control read. Current
+    authenticated session_targets projection returned no addressable rows.
   - >-
-    Wire the intended native roles only through their current qualified host configuration;
-    prove both-role readback, source time/coverage, revocation and restart without SEND or ACK.
+    Preserve #1318's explicit production host/COMMIT inspection denial and existing
+    dirty source custody. No alternate-carrier inspection or denied edit/publication replay.
   - >-
-    Preserve original R2, SC1 and Web-Sol control obligations; handle their exact carriers
-    separately. No new registry, polling loop, token owner or alternate browser reader.
+    Continue #1958 only through the authenticated host, NativeReplyWriter and original
+    Agent Dialogue thread after its existing NO INSTALL / DO NOT DEPLOY gate is released
+    for that exact action. Do not replay the terminal historical MiniMax task.
+  - >-
+    After actual qualification, prove two admitted mixed-provider hosts: question,
+    reply, recipient consumption and requester/original-parent consumption, with
+    stale generation, unauthorized scope, expiry/revoke, cancellation and uncertain
+    delivery negatives. Delivery or fixture success cannot satisfy this acceptance.
+  - >-
+    Keep original R2/O0-O7 and SC1 obligations, H24/selected-child operations and
+    #836 action-scoped browser/native grants. S2 owns shared Executive interfaces;
+    S6 consumes qualified evidence without fabricated enrollment.
 do_not_redo:
   - Reuse the existing census protocol/client and bounded Agent OS continuation; do not build another session bridge.
   - The maximum-row output-budget defect was repaired and covered; default display cap 64 differs from producer cap 128.
@@ -136,7 +150,88 @@ danger_areas:
 prs: []
 ---
 
-## §0 State — what is true right now
+## S4 integration frontier — 2026-11-07 UTC
+
+This updates the original SC1/Chairman Control Room carrier. It preserves the original
+mission, R2/O0-O7 acceptance and unfinished work. Current source is incorporated in
+part; **live organizational continuity, bounded delegation and peer/parent consumption
+remain unproven**. A native coordination child's returned judgment was consumed by
+this parent; that is not a qualified organizational delegation receipt.
+
+| Original carrier | Verified state and retained next action |
+| --- | --- |
+| [#2178](https://github.com/mastermindx-market-intelligence/Mastermind/pull/2178) receiver | Merged `23c9b011e30a4acc6892a59d67a629f74b07a491`; dependency is satisfied. |
+| [#2179](https://github.com/mastermindx-market-intelligence/Mastermind/pull/2179) optional reader | Merged `87a17ebb0eeaa98ef18fd0f65c5b8c327a97f45e` from `9eec2b2c9f4a0c25ae6a2b127abcb401da9336ad` at 06:47:36Z. Original branch subsequently deleted. |
+| [#2188](https://github.com/mastermindx-market-intelligence/Mastermind/pull/2188) authenticated context | Incumbent `851f250dd8ec7489b74a603d52733f8c4828f2b2`; ordinary CI `42348279388` running at this checkpoint. Existing context bytes/receipt, mission-specific catalogue, disabled default and legacy seven tools remain. |
+| [#2195](https://github.com/mastermindx-market-intelligence/Mastermind/pull/2195) native memory consumer | Active dependent source at `73fd5443f06e382260600caf09521730f7711e01` joins exact authenticated bytes, captured MCP, original admission, plugin collectors, MemoryManager and current-turn messages. Preserve its original carrier; it remains unarmed pending [#2188](https://github.com/mastermindx-market-intelligence/Mastermind/pull/2188) integration and its own CI. No parallel adapter or memory store. |
+| Native/observation owners | [#2172](https://github.com/mastermindx-market-intelligence/Mastermind/pull/2172) remains Draft at `ed171b75b18ccef9df9c5d3995f10bc057b52785`; new entries are disabled and its M2 route was refused before dispatch. [#2189](https://github.com/mastermindx-market-intelligence/Mastermind/pull/2189) at `50bf8602ccc6619fdf4b00e87bcdefefb3d1263b` owns installed observation source; its protected Control read was permission-denied. Preserve both original operations and working GLM/OMH services. |
+| [#1318](https://github.com/mastermindx-market-intelligence/Mastermind/pull/1318) authorization | Original `c45beca5b1b4d0a0e17aef48339120205b850793` and dirty original workspace retained. Production host/COMMIT inspection remains explicitly denied; no alternative carrier was used. |
+| [#1958](https://github.com/mastermindx-market-intelligence/Mastermind/pull/1958) original dialogue | Source incorporated through [#1966](https://github.com/mastermindx-market-intelligence/Mastermind/pull/1966) merge `42ee2dce50f495343d706b24c046b496d1d6f83b`. Existing authenticated host/NativeReplyWriter/current-instruction/role/binding/unknown-effect checks retained; NO INSTALL / DO NOT DEPLOY and real consumption remain. |
+
+### Consumed source evidence
+
+#2179 retains the fixed authenticated GET, host-selected work reference, 128 KiB
+wire bound, 24 KiB brief, currentness around awaits and total 401/403 invalidation.
+It now projects authored task-frontier rows within the existing budget. Fifty-eight
+focused source cases passed, including fresh-reader pause/cancel/reprioritize/resume,
+urgent correction during an await, whole-row omissions and no authority inferred
+from urgent text. Merged continuity blob `e082b61e60569a159f11c79209a65a203c4b46b7`
+and frontier-test blob `488f649d2b79b8d3b0408ca59d334b3fbc763744` exactly match
+that receipt. The retained earlier 235 tests remain source evidence only. Authored
+waves are planning state; missing runtime pending effects or DONE_WHEN are not
+invented as empty or complete.
+
+#2179's published model-contract repair passed 23 tests and ordinary Hermes run
+`42346398833` on Python 3.12/3.13. The later local `c744ef171da9a278552c36d45540efaca9ab3d2d`
+was not published: retain `NOT_APPLIED / REMOTE_REF_REJECTED_UNCHANGED`,
+`retry_allowed=false`. Its proposed live-realm repin is retired. Incumbent #2188
+instead preserves the historical realm preimage `eeea4c0fafc7e6df5c534c731cb6046bbe4d3f37`
+actually selected by the fixture, with strict equality intact. Its new CI and
+accepted postimage must be consumed separately. Do not restore #2179's deleted
+branch, retry that publication, transplant the retired commit or call it merged.
+
+#2188's earlier ordinary CI `42343112652`, shard job `128315318663`, passed all
+79 context-module cases, including its two actual AF_UNIX/signed-MCP fixture
+roundtrips. The previously denied local socket creation remains denied and was
+not rerun. These hosted fixture results establish source/transport behavior only;
+they do not establish a production host, grant, installed profile or native
+consumption. The later integration `511ca4df542c601edaa04d15385eadbfa0e294e4`
+failed the old realm-source pin; that failure is retained, not relabeled as a pass.
+
+### Remaining authority and effects
+
+The current authenticated `session_targets({})` read returned `ok:true,data:[]`.
+That is this caller's addressable projection, not proof that the fleet is absent.
+No native SEND, wake, grant, new worker, installation or model-spend action followed.
+#2195 is the original authenticated native-memory adapter; its C26 Ubuntu1/root
+permission failure and inherited AF_UNIX denial remain unretried. Its 70 new native
+cases/71-case final focused receipt are source evidence, not installed role proof.
+#2172's source requires the original configuration/native MCP grant owners to qualify
+an enabled reader; manually enabling disabled entries is source drift. Its refused M2
+route and #2189's protected Control read cannot be replayed through this Studio session
+or another carrier. Their exact admission/access conditions must materially change.
+#1318's denied production inspection and historical denied source/publication actions
+are not retried. The terminal historical MiniMax dialogue task is not replayed.
+Unknown delivery stays on its original operation with `SEND_EFFECT_UNKNOWN`;
+a steering or restart instruction cannot authorize duplicate sending.
+
+Pause preserves the original frontier and pending effects; resume resumes only the
+same authorized work. Reprioritization changes ordering while preserving unfinished
+tasks. Cancellation must bind the intended operation and does not erase an uncertain
+committed effect. Urgency supplies no broader recipient, topic, role or generation
+authority. These are the remaining native acceptance requirements, not a claim
+that the local source tests have proven all runtime transitions.
+
+Authoritative detailed receipts remain on the original PRs:
+[#2179](https://github.com/mastermindx-market-intelligence/Mastermind/pull/2179#issuecomment-6703424905),
+[#2188](https://github.com/mastermindx-market-intelligence/Mastermind/pull/2188#issuecomment-6703174235),
+[#1318](https://github.com/mastermindx-market-intelligence/Mastermind/pull/1318#issuecomment-6703294039),
+[#1958](https://github.com/mastermindx-market-intelligence/Mastermind/pull/1958#issuecomment-6703296942).
+Mastermind #2174 merged at `2986a584a96bd98e8ac4ee27c61ab84169667784`;
+#2173 merged at `70781ecc797872341ccf2c2eaa78deb145b09361`.
+The older queued statements below describe the original source checkpoint.
+
+## §0 Historical visibility checkpoint
 
 The architecture and first source slice are published in
 [Mastermind PR #2174](https://github.com/mastermindx-market-intelligence/Mastermind/pull/2174)
