@@ -1,0 +1,103 @@
+{
+  "source_base": "4597dd8e72a64aa86d1e07ae1a76924ce9a7b5ae",
+  "old_published_artifact": {
+    "rows": 372,
+    "asof_max": "2026-09-22",
+    "impossible_count": 105,
+    "max_participation": 5.983,
+    "examples": [
+      {
+        "ticker": "HL",
+        "asof": "2026-09-22",
+        "participation": 5.983,
+        "participation_z": 56.07
+      },
+      {
+        "ticker": "CDE",
+        "asof": "2026-09-22",
+        "participation": 5.1524,
+        "participation_z": 31.26
+      },
+      {
+        "ticker": "BJ",
+        "asof": "2026-09-22",
+        "participation": 4.0654,
+        "participation_z": 68.68
+      },
+      {
+        "ticker": "RCL",
+        "asof": "2026-09-22",
+        "participation": 3.9112,
+        "participation_z": 77.33
+      },
+      {
+        "ticker": "IBP",
+        "asof": "2026-09-22",
+        "participation": 3.2967,
+        "participation_z": 40.44
+      },
+      {
+        "ticker": "WTFC",
+        "asof": "2026-09-22",
+        "participation": 2.9129,
+        "participation_z": 43.7
+      },
+      {
+        "ticker": "LII",
+        "asof": "2026-09-22",
+        "participation": 2.7849,
+        "participation_z": 39.12
+      },
+      {
+        "ticker": "ASO",
+        "asof": "2026-09-22",
+        "participation": 2.7686,
+        "participation_z": 47.67
+      }
+    ]
+  },
+  "candidate_artifact": {
+    "rows": 372,
+    "asof_max": "2026-09-23",
+    "impossible_count": 0,
+    "max_participation": 0.8675,
+    "examples": []
+  },
+  "candidate_html_sha256": "bd29fc087ac0584384465394e990c8ea48376f0db304ce00e2ea1f5bf63b543f",
+  "coverage": {
+    "n_total": 372,
+    "n_with_participation": 372,
+    "n_with_price": 372,
+    "n_with_z": 368,
+    "n_with_venue": 371,
+    "n_no_price": 0,
+    "n_invalid_participation_rows": 971,
+    "n_invalid_current_participation": 0,
+    "tracked_universe": 375,
+    "current_session_rows": 274,
+    "stale_rows": 98,
+    "missing_rows": 3,
+    "current_session_pct": 73.1
+  },
+  "candidate_context_names": [
+    "HL",
+    "MKSI",
+    "DELL",
+    "ACLS",
+    "CZR",
+    "ALHC",
+    "STX",
+    "GEV",
+    "KEY",
+    "BJ",
+    "META",
+    "RCL",
+    "VLO",
+    "MARA",
+    "NDSN",
+    "EXPE"
+  ],
+  "candidate_tagged_count": 24,
+  "candidate_displayed_standouts": 16,
+  "integration_base": "b9b714b75c4c1e28f99481229fc98fd5c151c409"
+}

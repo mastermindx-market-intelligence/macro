@@ -11,6 +11,7 @@ import pytest
 
 from engine.darkpool_signals import (
     NameMetrics,
+    compute_name_metrics,
     _pattern,
     market_gauge,
     share_break_index,
@@ -235,6 +236,59 @@ def test_market_gauge_is_dollar_weighted_not_share_weighted():
 def test_market_gauge_reports_nulls_when_inputs_are_missing():
     g = market_gauge([NameMetrics(ticker="X")])
     assert g["participation_dollar_wtd"] is None and g["n_names"] == 0
+
+
+# ---------------------------------------------------------------------------
+# participation trust — FINRA off-exchange volume is a subset of total volume
+# ---------------------------------------------------------------------------
+
+def _participation_fixture(n=50, *, latest_finra=600.0, bad_prior=False):
+    dates = pd.date_range("2026-07-01", periods=n, freq="B")
+    total = np.full(n, 400.0)
+    total[-1] = latest_finra
+    if bad_prior:
+        total[12] = 1500.0
+    finra = pd.DataFrame({
+        "date": dates,
+        "ticker": "AAA",
+        "short_vol": total * 0.5,
+        "short_exempt": 0.0,
+        "total_vol": total,
+        "short_ratio": 0.5,
+    })
+    consolidated = pd.Series(1000.0, index=dates)
+    close = pd.Series(np.linspace(10.0, 11.0, n), index=dates)
+    return finra, consolidated, close
+
+
+def test_participation_rejects_impossible_current_ratio_without_backfilling_yesterday():
+    finra, consolidated, close = _participation_fixture(latest_finra=1200.0)
+    m = compute_name_metrics("AAA", finra, consolidated, close)
+    assert m.participation is None
+    assert m.participation_z is None
+    assert m.participation_norm is None
+    assert m.participation_5d is None
+    assert m.participation_trend_pp is None
+    assert m.pattern is None
+    assert m.extras["participation_invalid_rows"] == 1
+    assert m.extras["participation_current_invalid"] is True
+
+
+def test_participation_excludes_impossible_history_from_baseline():
+    dirty_finra, consolidated, close = _participation_fixture(latest_finra=600.0, bad_prior=True)
+    bad_date = dirty_finra.iloc[12]["date"]
+    reference_finra = dirty_finra[dirty_finra["date"] != bad_date].copy()
+    reference_consolidated = consolidated.drop(pd.Timestamp(bad_date))
+    reference_close = close.drop(pd.Timestamp(bad_date))
+    reference = compute_name_metrics("AAA", reference_finra, reference_consolidated, reference_close)
+    dirty = compute_name_metrics("AAA", dirty_finra, consolidated, close)
+    assert dirty.participation == reference.participation == 0.6
+    assert dirty.participation_z == reference.participation_z
+    assert dirty.participation_norm == reference.participation_norm
+    assert dirty.participation_trend_pp == reference.participation_trend_pp
+    assert dirty.n_usable == reference.n_usable
+    assert dirty.extras["participation_invalid_rows"] == 1
+    assert dirty.extras["participation_current_invalid"] is False
 
 
 # ---------------------------------------------------------------------------
