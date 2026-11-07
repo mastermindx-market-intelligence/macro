@@ -40397,6 +40397,7 @@ jobs:
     gate: code
     # Exact Git-tree closure, including subprocess JS inputs and observed data domains.
     paths:
+      - tests/test_fabric_exact_scoped_model_composition.py
       - collectors/biocatalyst/__init__.py
       - engine/biocatalyst/__init__.py
       - engine/catalyst_opportunity/__init__.py
@@ -42294,34 +42295,29 @@ jobs:
           set -euo pipefail
           metabolism_fixture_root="$(mktemp -d)"
           trap 'rm -rf "$metabolism_fixture_root"' EXIT
-          # Current 19-file owner fixture is distinct from the historical 12-file fixture.
-          # Every immutable input is Git-blob checked by native_fixture before import.
-          for metabolism_relative in \
-            ops/native_fabric/quota_continuity/candidate/commission_deadline.py \
-            ops/native_fabric/quota_continuity/candidate/go_shim.py \
-            ops/native_fabric/quota_continuity/candidate/lease_broker.py \
-            ops/native_fabric/quota_continuity/candidate/go_lease_gateway.py \
-            ops/native_fabric/quota_continuity/candidate/go_lease_capability.py \
-            ops/native_fabric/quota_continuity/candidate/application_http_transports.py \
-            ops/native_fabric/quota_continuity/candidate/provider_outcome.py \
-            ops/native_fabric/quota_continuity/candidate/quota_circuit.py \
-            ops/native_fabric/quota_continuity/candidate/pick.py \
-            ops/native_fabric/quota_continuity/candidate/pool_ledger.py \
-            ops/native_fabric/quota_continuity/source/model_tier.py \
-            ops/native_fabric/quota_continuity/source/pool_status.py \
-            ops/native_fabric/quota_continuity/tests/_offline_boundary.py \
-            ops/native_fabric/quota_continuity/tests/test_go_application_handler_composition.py \
-            ops/native_fabric/quota_continuity/tests/test_application_turn_admission.py \
-            ops/native_fabric/quota_continuity/tests/test_application_registered_pool_selection.py \
-            ops/native_fabric/quota_continuity/tests/test_application_registered_pool_composition.py \
-            ops/native_fabric/quota_continuity/tests/test_application_auto_request.py \
-            ops/native_fabric/quota_continuity/tests/test_application_cross_pool_auto.py; do
-            metabolism_target="$metabolism_fixture_root/$metabolism_relative"
-            mkdir -p "$(dirname "$metabolism_target")"
-            curl --fail --silent --show-error --proto '=https' --tlsv1.2 --max-time 45 \
-              "https://raw.githubusercontent.com/mastermindx-market-intelligence/Mastermind/41e86c7aa89905f9b4592d57fbf32c2d7c0f1458/$metabolism_relative" \
-              -o "$metabolism_target"
-          done
+          # Consume the exact pin table owned by the composition fixture without importing it.
+          python - "$metabolism_fixture_root" <<'FIXTURE'
+          import ast, hashlib, pathlib, re, subprocess, sys
+          tree = ast.parse(pathlib.Path("tests/test_fabric_exact_scoped_model_composition.py").read_bytes())
+          tables = [n.value for n in tree.body if isinstance(n, ast.Assign) and len(n.targets) == 1
+                    and isinstance(n.targets[0], ast.Name) and n.targets[0].id == "NATIVE_PINS"]
+          assert len(tables) == 1, "one canonical native fixture pin table required"
+          pins = ast.literal_eval(tables[0])
+          assert type(pins) is dict and len(pins) == 19, "closed native fixture cohort required"
+          base = "ops/native_fabric/quota_continuity/"
+          revision = "41e86c7aa89905f9b4592d57fbf32c2d7c0f1458"
+          for relative, expected in pins.items():
+              path = pathlib.PurePosixPath(relative)
+              assert not path.is_absolute() and ".." not in path.parts and str(path) == relative
+              assert path.parts[0] in {"candidate", "source", "tests"} and re.fullmatch("[0-9a-f]{40}", expected)
+              target = pathlib.Path(sys.argv[1]) / base / path
+              target.parent.mkdir(parents=True, exist_ok=True)
+              url = "https://raw.githubusercontent.com/mastermindx-market-intelligence/Mastermind/" + revision + "/" + base + relative
+              subprocess.run(["curl", "--fail", "--silent", "--show-error", "--proto", "=https",
+                              "--tlsv1.2", "--max-time", "45", url, "-o", str(target)], check=True)
+              raw = target.read_bytes()
+              assert hashlib.sha1(b"blob " + str(len(raw)).encode() + b"\0" + raw).hexdigest() == expected, relative
+          FIXTURE
           MM_FABRIC_GATEWAY_SOURCE_ROOT="$metabolism_fixture_root" python -B -m pytest \
             -q --noconftest -o addopts= tests/test_metabolism_fabric_composition.py
       - name: Five service identities through actual paired Mastermind owners
