@@ -1,0 +1,18 @@
+{
+  "equity_data_cutoff": "2026-10-13",
+  "freeze_utc": "2026-10-14T01:17:50.623340+00:00",
+  "freeze_eastern": "2026-10-13T21:17:50.623340-04:00",
+  "original_price_symbols": 19,
+  "stocks_scored": 18,
+  "lower_entry_rules": 3,
+  "long_context_modes": 2,
+  "total_paper_rows": 108,
+  "still_unknown_chart_parity": true,
+  "future_Oct14_trading_outcome_observed": false,
+  "source_vendor_finality": "AFTER_CLOSE_VENDOR_UNATTESTED",
+  "source_v27_market_data_modified": false,
+  "market_network_access": 0,
+  "broker_trades": 0,
+  "scheduled_monitor": false,
+  "research_episode_model": "V30 master watches and flags as fixed before the first future outcome"
+}
