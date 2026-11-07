@@ -3568,13 +3568,35 @@
       },
       {
         "date": "2026-09-30",
-        "sync": 0.0621,
-        "n": 154,
+        "sync": 0.0675,
+        "n": 209,
         "frac": {
-          "trough": 0.286,
-          "advance": 0.208,
-          "peak": 0.318,
-          "decline": 0.188
+          "trough": 0.316,
+          "advance": 0.22,
+          "peak": 0.292,
+          "decline": 0.172
+        }
+      },
+      {
+        "date": "2026-10-31",
+        "sync": 0.2412,
+        "n": 110,
+        "frac": {
+          "trough": 0.6,
+          "advance": 0.091,
+          "peak": 0.3,
+          "decline": 0.009
+        }
+      },
+      {
+        "date": "2026-11-30",
+        "sync": 0.2164,
+        "n": 44,
+        "frac": {
+          "trough": 0.182,
+          "advance": 0.455,
+          "peak": 0.273,
+          "decline": 0.091
         }
       }
     ],
@@ -7497,13 +7519,35 @@
       },
       {
         "date": "2026-09-30",
-        "sync": 0.1993,
-        "n": 336,
+        "sync": 0.2441,
+        "n": 528,
         "frac": {
-          "trough": 0.211,
-          "advance": 0.372,
-          "peak": 0.238,
-          "decline": 0.179
+          "trough": 0.267,
+          "advance": 0.394,
+          "peak": 0.197,
+          "decline": 0.142
+        }
+      },
+      {
+        "date": "2026-10-31",
+        "sync": 0.407,
+        "n": 288,
+        "frac": {
+          "trough": 0.542,
+          "advance": 0.295,
+          "peak": 0.122,
+          "decline": 0.042
+        }
+      },
+      {
+        "date": "2026-11-30",
+        "sync": 0.4721,
+        "n": 96,
+        "frac": {
+          "trough": 0.688,
+          "advance": 0.125,
+          "peak": 0.156,
+          "decline": 0.031
         }
       }
     ],
@@ -10832,17 +10876,39 @@
       },
       {
         "date": "2026-09-30",
-        "sync": 0.6708,
-        "n": 372,
+        "sync": 0.6631,
+        "n": 527,
         "frac": {
-          "trough": 0.583,
-          "advance": 0.347,
-          "peak": 0.07,
+          "trough": 0.588,
+          "advance": 0.334,
+          "peak": 0.078,
           "decline": 0.0
+        }
+      },
+      {
+        "date": "2026-10-31",
+        "sync": 0.5902,
+        "n": 186,
+        "frac": {
+          "trough": 0.581,
+          "advance": 0.349,
+          "peak": 0.038,
+          "decline": 0.032
+        }
+      },
+      {
+        "date": "2026-11-30",
+        "sync": 0.6222,
+        "n": 124,
+        "frac": {
+          "trough": 0.742,
+          "advance": 0.194,
+          "peak": 0.032,
+          "decline": 0.032
         }
       }
     ]
   },
   "definition": "sync = 1 \u2212 circ_var(2\u03c0\u00b7pos/100); mean resultant length of phase angles",
-  "updated_at": "2026-09-18T17:30:37Z"
+  "updated_at": "2026-11-07T13:00:43Z"
 }

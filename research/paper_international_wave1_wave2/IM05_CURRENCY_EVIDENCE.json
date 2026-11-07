@@ -1,0 +1,30 @@
+{
+  "status": "ACCEPTED_SCOPED_SOURCE",
+  "run_ids": [
+    "paper-01a1101f-im05-currency-review-r1",
+    "paper-01a1101f-im05-currency-review-r2"
+  ],
+  "source_hashes": {
+    "lib/intl_workspace_risk_currency.py": "087d05e2e8053fc3d73bb53d439ccbe43f995650b826067c870c73a5080fbdf9",
+    "tests/test_intl_workspace_risk_currency.py": "789c2719e62148cf53f415ed9ed7d36e0139b9eb04be99b4b0a21e16fc56e3ac",
+    "tests/fixtures/intl_workspace/risk_currency_overview.json": "c6c82a70d9dbdcd454958a636b3e0cac77fec74271282d1908b10ac371ef84cf",
+    "tests/test_intl_workspace_risk_currency_independent.py": "5b4df9c50d121bf4977c4e4aa44ab40f3753bb24897113cb6507238d217ff868",
+    "tests/test_intl_workspace_risk_currency_numerical.py": "651ddf807e20fb4715fd0d1d3fa910e9db3dd7252c92b5c2008ea8873358aeec"
+  },
+  "parent_validation": {
+    "frozen_review_cases_passed": 71,
+    "independent_original_cases": 19,
+    "independent_final_delta_cases": 12,
+    "author_cases": 40,
+    "genuine_red_to_green_cases": 2
+  },
+  "review": "Grok 4.6 original semantics and final delta PASS_SCOPED; parent reran all 71 and reviewed exact source",
+  "integration": {
+    "ci_owner": "international-workspace-foundation",
+    "regression_packaging": "Independent fixture paths made relative to tests; two historical-baseline comparison cases remain immutable in evidence and are not copied into product tests; ten behavioral numerical cases retained",
+    "repository_cases_passed": 69,
+    "ci_scope_and_packing_cases_passed": 3,
+    "ci_scope_and_packing_seconds": 101.55
+  },
+  "limits": "Consumes an already disclosed Overview projection; no raw source admission, Risk root, UI, production or whole-program acceptance."
+}

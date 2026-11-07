@@ -88,6 +88,7 @@
   .cortex-list { margin:3px 0 0 16px; padding:0; font-size:13px; }
   .cortex-list li { margin:2px 0; }
 {% include "_aibrief_css.j2" %}
+{% include "_mor2b_blocks_css.j2" %}
 </style>
 </head>
 <body>
@@ -102,6 +103,59 @@
   <p class="muted sm" style="margin:10px 0 0">{{ t(
     'These are AI (LLM) syntheses of the dashboards — they narrate the regime, flag where signals conflict and test the working thesis, with US macro, the dollar, global liquidity and commodities as shared backdrop. RESEARCH CONTEXT ONLY: nothing here feeds a score, signal or allocation, and a brief can be wrong or overconfident — always verify against the underlying panels. The macro and China briefs refresh daily after the close; the Bitcoin brief every three days. Each tab shows its own refresh cadence.',
     '以下为对各看板的 AI（大模型）综合解读 — 解读周期、标注信号冲突、检验当前假设，并以美国宏观、美元、全球流动性与商品为共同背景。仅供研究参考：此处内容不参与任何评分、信号或仓位，且简报可能出错或过度自信 — 请始终对照底层面板核实。宏观与中国简报每个交易日收盘后更新；比特币简报每三天更新。每个标签页会标注各自的更新节奏。') }}</p>
+</div>
+
+{# ── MOR-2b Lane C: Morning Orientation band (sits directly under the h1).
+       Reads site/am_edition.json (or data/regime/am_edition.json fallback) via the
+       same fail-open loader build_aibrief.py uses for its siblings. Renders a
+       .mx-empty state when the JSON is absent — never blocks the brief.
+
+       BLOCKER 2 round 2: the chip maps the producer's session_state to the
+       seat-pinned .dtp-chip primitive — OPEN → --live (with the pulsing dot),
+       CLOSED → --stale (no pulse), NOT_YET_OPEN → --pre, anything else →
+       --warn. The prior round rendered "Live" in all three branches and pulsed
+       on weekends / pre-open. ── #}
+{% set _ame = am_edition if (am_edition is defined and am_edition) else None %}
+{% set _ame_present = _ame and not _ame.get('absent') %}
+{% set _ame_chip = (
+  ('live',   t('Live', '实时'),                       True)  if _ame_present and _ame.get('session_state') == 'OPEN'
+  else ('stale',  t('After the close', '已收盘'),    False) if _ame_present and _ame.get('session_state') == 'CLOSED'
+  else ('pre',    t('Not yet open', '尚未开盘'),     False) if _ame_present and _ame.get('session_state') == 'NOT_YET_OPEN'
+  else ('warn',   t('Unavailable', '不可用'),         False)
+) %}
+<div class="panel">
+  <div class="mx-block-header">
+    <span class="eyebrow">{{ t('Morning Orientation', '盘前导读') }}</span>
+    <h2>{{ t('Before the US open — one read', '美股开盘前 — 一览') }}</h2>
+    <span class="mx-chip-slot">
+      <span class="dtp-chip dtp-chip--{{ _ame_chip[0] }}">
+        {% if _ame_chip[2] %}<i class="dtp-dot"></i>{% endif %}
+        {{ _ame_chip[1] }}
+      </span>
+    </span>
+    {% if _ame_present and _ame.get('generated_at') %}
+    <span class="dtp-asof">{{ t('Built at', '构建时间') }} {{ _ame.generated_at[:16] }}</span>
+    {% endif %}
+  </div>
+  {% if _ame_present %}
+  <div class="mx-band">
+    {% if _ame.get('first_tape_en') %}
+    <span class="mx-band-lead">
+      {{ t(_ame.first_tape_en, _ame.first_tape_zh or _ame.first_tape_en) }}
+    </span>
+    {% else %}
+    <span class="mx-band-lead">{{ t('The morning orientation page has built.', '今晨导读页面已生成。') }}</span>
+    {% endif %}
+    <a class="brief-link" href="am_edition.html">{{ t('Open the morning orientation page →', '打开今晨导读页面 →') }}</a>
+  </div>
+  {% else %}
+  <div class="mx-empty">
+    <div class="mx-empty-line">{{ t('Morning orientation unavailable.', '今晨导读暂不可用。') }}</div>
+    {% if _ame and (_ame.get('reason_en') or _ame.get('reason_zh')) %}
+    <div class="mx-empty-why">{{ t(_ame.get('reason_en') or '', _ame.get('reason_zh') or _ame.get('reason_en') or '') }}</div>
+    {% endif %}
+  </div>
+  {% endif %}
 </div>
 
 {# ── Panel A: Context strip (server-side, fail-open) ──────────────────────────── #}

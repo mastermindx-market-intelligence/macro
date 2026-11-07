@@ -1,0 +1,42 @@
+{
+  "jobs": 314,
+  "execution_definitions_and_order_preserved": true,
+  "path_additions": {
+    "flow-surface": [
+      "research/FOMC_QT_CLOCK_CASE_2024_05_01.md"
+    ],
+    "fif-kernel-guards": [
+      "research/FOMC_QT_CLOCK_CASE_2024_05_01.md"
+    ],
+    "eval-os-a1": [
+      "research/FOMC_QT_CLOCK_CASE_2024_05_01.md",
+      "engine/neuralweb/eval/benchmark_fomc_qt_clock_2024-05-01.json"
+    ],
+    "biocatalyst-serving": [
+      "research/FOMC_QT_CLOCK_CASE_2024_05_01.md"
+    ],
+    "biocatalyst-history": [
+      "research/FOMC_QT_CLOCK_CASE_2024_05_01.md"
+    ],
+    "crypto-assistant-context": [
+      "research/FOMC_QT_CLOCK_CASE_2024_05_01.md"
+    ],
+    "defense-rail-laws": [
+      "research/FOMC_QT_CLOCK_CASE_2024_05_01.md"
+    ],
+    "unrun-government-revenue-candidate-projection": [
+      "research/FOMC_QT_CLOCK_CASE_2024_05_01.md"
+    ],
+    "unrun-government-revenue-grader": [
+      "research/FOMC_QT_CLOCK_CASE_2024_05_01.md"
+    ],
+    "research-price-panel": [
+      "research/FOMC_QT_CLOCK_CASE_2024_05_01.md"
+    ],
+    "ticker-news-qbus": [
+      "research/FOMC_QT_CLOCK_CASE_2024_05_01.md"
+    ]
+  },
+  "source_entries": 11,
+  "fixture_entries": 1
+}

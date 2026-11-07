@@ -274,6 +274,8 @@ def test_main_never_probes_futures_without_explicit_rights_gate_flag(
         monkeypatch, tmp_path):
     monkeypatch.setenv("POLYGON_API_KEY", FAKE_KEY)
     monkeypatch.delenv("MASSIVE_API_KEY", raising=False)
+    monkeypatch.setattr(mep, "resolve_key", lambda key_env: (FAKE_KEY, "POLYGON_API_KEY"))
+    monkeypatch.setattr(mep, "_base_url", lambda: mep.DEFAULT_BASE_URL)
     monkeypatch.setattr(mep, "run_rest_battery", lambda prober: {})
     seen = []
 
@@ -632,3 +634,147 @@ def test_ws_handshake_403_reads_as_not_entitled():
     rec = mep.probe_ws("wss://x.test/indices", "V.I:SPX", FAKE_KEY, lib_pair=pair)
     assert rec["verdict"] == "not_entitled"
     assert rec["evidence"]["handshake_status"] == 403
+
+
+def test_rest_battery_probes_exact_gold_cny_minute_endpoint_used_by_product():
+    p = _prober(
+        lambda url, params, n: _FakeResponse(
+            200, {"resultsCount": 1, "results": [{"t": 1, "c": 1.0}]}
+        )
+    )
+
+    rest = mep.run_rest_battery(p, probe_day="2026-09-18")
+
+    assert rest["fx_gold_cny_minute"]["verdict"] == "entitled"
+    assert rest["fx_gold_cny_minute"]["evidence"] == {
+        "results_count": 1,
+        "non_empty": True,
+    }
+    calls = [
+        c for c in p.session.calls
+        if "/v2/aggs/ticker/C:XAUCNY/range/1/minute/2026-09-18/2026-09-18" in c["url"]
+    ]
+    assert len(calls) == 1
+    assert calls[0]["params"]["limit"] == 5
+
+
+# --------------------------------------------------------------------------- Futures row-shape truth
+
+def _futures_synthetic_result(contract_payload, aggregate_payload, status=200):
+    def handler(url, params, n):
+        if url.endswith("/futures/v1/contracts"):
+            return _FakeResponse(status, contract_payload)
+        assert url.endswith("/futures/v1/aggs/ESU6")
+        return _FakeResponse(status, aggregate_payload)
+
+    session = _FakeSession(handler)
+    prober = mep.RestProber(
+        FAKE_KEY, base_url=mep.FUTURES_BASE_URL, timeout=1.0, session=session
+    )
+    records = mep.run_futures_rest_battery(prober)
+    return records, mep.derive(records, {}), session
+
+
+@pytest.mark.parametrize("target", ["contract", "aggregate"])
+@pytest.mark.parametrize(
+    "rows",
+    [
+        [None],
+        [False],
+        [0],
+        [""],
+        ["not an object"],
+        [[]],
+        [{}],
+        [{"ticker": "ESU6"}, None],
+        [None, {"ticker": "ESU6"}],
+        [{"ticker": "ESU6"}, {}],
+    ],
+)
+def test_futures_malformed_row_lists_remain_unknown_through_transport_and_derive(target, rows):
+    valid_contract = {"results": [{
+        "ticker": "ESU6", "product_code": "ES", "trading_venue": "XCME",
+        "date": "2026-05-22",
+    }]}
+    valid_aggregate = {"results": [{
+        "ticker": "ESU6", "session_end_date": "2026-05-22", "window_start": 1,
+    }]}
+    malformed = {"results": rows}
+    contract = malformed if target == "contract" else valid_contract
+    aggregate = malformed if target == "aggregate" else valid_aggregate
+    records, derived, session = _futures_synthetic_result(contract, aggregate)
+    affected = "futures_contracts_es" if target == "contract" else "futures_aggs_minute_es"
+    field = "futures_contracts_entitled" if target == "contract" else "futures_minute_history_entitled"
+    other = "futures_minute_history_entitled" if target == "contract" else "futures_contracts_entitled"
+
+    assert derived[field] is None
+    assert derived[other] is True
+    assert records[affected]["verdict"] == "entitled"
+    assert records[affected]["evidence"]["non_empty"] is False
+    assert records[affected]["evidence"]["results_count"] == len(rows)
+    assert "evidence_error" not in records[affected]["evidence"]
+    assert len(session.calls) == 2
+
+
+@pytest.mark.parametrize(
+    "payload",
+    [
+        None,
+        [],
+        {},
+        {"results": None},
+        {"results": []},
+        {"results": {}},
+        {"results": "not a list"},
+    ],
+)
+def test_futures_empty_missing_or_non_list_results_remain_unknown(payload):
+    records, derived, session = _futures_synthetic_result(payload, payload)
+    assert derived["futures_contracts_entitled"] is None
+    assert derived["futures_minute_history_entitled"] is None
+    assert len(session.calls) == 2
+
+
+def test_futures_valid_object_rows_reach_the_positive_derivation_unchanged():
+    contract_row = {
+        "ticker": "ESU6", "product_code": "ES", "trading_venue": "XCME",
+        "date": "2026-05-22",
+    }
+    aggregate_row = {
+        "ticker": "ESU6", "session_end_date": "2026-05-22", "window_start": 1,
+    }
+    records, derived, session = _futures_synthetic_result(
+        {"results": [contract_row]}, {"results": [aggregate_row]}
+    )
+    assert derived["futures_contracts_entitled"] is True
+    assert derived["futures_minute_history_entitled"] is True
+    assert records["futures_contracts_es"]["evidence"] == {
+        "results_count": 1, "non_empty": True, **contract_row,
+        "api_host": "api.massive.com",
+    }
+    assert records["futures_aggs_minute_es"]["evidence"] == {
+        "results_count": 1, "non_empty": True, "ticker": "ESU6",
+        "session_end_date": "2026-05-22", "window_start_present": True,
+        "api_host": "api.massive.com",
+    }
+    assert len(session.calls) == 2
+    for call in session.calls:
+        assert call["headers"]["Authorization"] == f"Bearer {FAKE_KEY}"
+        assert "apiKey" not in call["params"] and "api_key" not in call["params"]
+
+
+@pytest.mark.parametrize(
+    ("status", "payload", "expected"),
+    [
+        (401, {"results": [None]}, None),
+        (403, {"results": [None]}, False),
+        (404, {"results": [None]}, None),
+        (429, {"results": [None]}, None),
+        (200, {"status": "NOT_AUTHORIZED", "results": [None]}, False),
+    ],
+)
+def test_futures_row_shape_does_not_erase_explicit_refusal_or_ambiguous_http(status, payload, expected):
+    records, derived, session = _futures_synthetic_result(payload, payload, status=status)
+    assert derived["futures_contracts_entitled"] is expected
+    assert derived["futures_minute_history_entitled"] is expected
+    assert len(session.calls) == 2
