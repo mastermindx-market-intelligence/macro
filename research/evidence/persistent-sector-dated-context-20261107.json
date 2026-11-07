@@ -1,0 +1,79 @@
+{
+  "schema": "mastermind.source_qualification.v1",
+  "mission": "Persistent Sector Leadership / Mastermind #1202",
+  "source_law_pin": "5f8c13da926011fb5fdc8cea21287b532ac968db",
+  "source_brief": "https://github.com/mastermindx-market-intelligence/Mastermind/issues/1202#issuecomment-6704818991",
+  "parent_preimage_head": "6bb0cc174120d5d0ee0802c550757eeef602bf57",
+  "worker": {
+    "run_id": "psl-dated-context-correctness-fix-20261107-c4",
+    "commit": "6a44d1a961e3109adc5341ed25176e784bff384c",
+    "tree": "7c1dd15911e8a732c1875ba82f968b673170050d",
+    "response_sha256": "f2856d1d86482e1aae0c9eaa77e47c008b7fce6049c2ee15ac62325752f4ced0",
+    "accepted": true,
+    "accepted_by": "deterministic",
+    "verification_summary": "deterministic_test_evidence"
+  },
+  "paths": {
+    "engine/sector_dated_context.py": {
+      "bytes": 80792,
+      "sha256": "30fb3b21c48c2d5f0b2c82903e799968b0326f3e3f3805e7250557e6ed50bdb0"
+    },
+    "tests/test_leadership_rotation_contract.py": {
+      "bytes": 148392,
+      "sha256": "7593fafe401be6e3872206ec645e3d3a3c5ac882acc967b86c4e2f862735b484",
+      "preimage_sha256": "7d57a2e9f8a1ac9073555290604eded87bfb10cbf01077b574b5083864332681",
+      "existing_top_level_definitions_ast_unchanged": 62,
+      "removed_lines": 0
+    }
+  },
+  "corrected": [
+    "finite nonnegative integral counts and zero-denominator handling",
+    "numeric/count/contributor qualification before positive narrative",
+    "configured roster identity before theme attribution",
+    "validated owner clocks and independent provisional flags",
+    "risk schema and subsection-specific admitted evidence references",
+    "bounded selector refusals and detached contradictions"
+  ],
+  "qualification": {
+    "parent": {
+      "command": "python3 -m pytest -q tests/test_leadership_rotation_contract.py --basetemp <retained-evidence>/parent-pytest-tmp",
+      "passed": 107,
+      "failed": 0,
+      "exit_code": 0,
+      "log_sha256": "87ce270d58c270fbed6e887170a8fcd2fd9f502fcbf8dc592472eb20729f2724"
+    },
+    "worker_before": {
+      "failed": 16,
+      "passed": 91
+    },
+    "worker_after": {
+      "passed": 107
+    },
+    "primary_output": {
+      "bytes": 9566,
+      "before_sha256": "db9d0aef9895a49f83aade7b3dee645ca98580ff630902dae05aa6f354ebf1d6",
+      "after_sha256": "db9d0aef9895a49f83aade7b3dee645ca98580ff630902dae05aa6f354ebf1d6"
+    },
+    "worker_global_tmp_command": "not a PASS receipt: teardown RecursionError also observed on pristine base",
+    "diff_check_exit_code": 0
+  },
+  "retained_evidence": "/Volumes/Mastermind/evidence/persistent-sector-leadership-20261106-c4/returned-source-leaves/dated-context-final",
+  "scope": {
+    "pure_dormant_projection": true,
+    "current_sector_usable": false,
+    "historically_admissible": false,
+    "original_available_at": null,
+    "native_sector_mapping": "unavailable",
+    "attribution_verification": "not_established",
+    "trade_authority": false,
+    "runtime_activation": false,
+    "production_acceptance": false
+  },
+  "remaining": [
+    "existing capture and consumer integration",
+    "qualified current membership and theme-to-sector mapping",
+    "earlier admissible cut",
+    "required CI path enrollment on its original action; no denied-action replay",
+    "original Macro publication effect a4764ca4e855324291cbb3b548fb76290ef237c0f81f46c749722213ce4aa63e remains fenced"
+  ]
+}
