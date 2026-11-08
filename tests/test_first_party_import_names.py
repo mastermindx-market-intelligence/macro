@@ -611,9 +611,9 @@ def test_archive_identity_fails_before_parsing(tmp_path, monkeypatch, mutation):
     else:
         path.unlink()
 
-    def must_not_parse(_path):
-        pytest.fail("parsing ran before the archival identity check")
-    monkeypatch.setitem(globals(), "_parse", must_not_parse)
+    def must_not_sweep(*_args, **_kwargs):
+        pytest.fail("cached sweep entered before the archival identity check")
+    monkeypatch.setitem(globals(), "_sweep_validated", must_not_sweep)
     with pytest.raises(AssertionError, match="historical artifact identity"):
         _sweep(tmp_path, _D06_ARCHIVAL_IMPORTS)
 
