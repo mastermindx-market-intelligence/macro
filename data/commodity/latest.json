@@ -7,11 +7,11 @@
     "Copper"
   ],
   "index": {
-    "ew": 910.2,
-    "vw": 1198.29,
-    "chg_1m_pct": -6.0,
+    "ew": 908.66,
+    "vw": 1196.19,
+    "chg_1m_pct": -6.2,
     "ts_trend": "up",
-    "ts_momentum": 0.328,
+    "ts_momentum": 0.323,
     "mtf": {
       "grade": "CAUTION",
       "headline": "Unconfirmed turn within a bearish bigger picture",
@@ -22,14 +22,14 @@
       "ladder_state": "COUNTERTREND BOUNCE"
     },
     "shock_state": "normal",
-    "shock_z": -1.604,
+    "shock_z": -1.635,
     "velocity": {
-      "r5": -2.3,
-      "r20": -6.9,
-      "r60": -9.5,
-      "r252": 10.2,
-      "accel": -0.16,
-      "impulse": -2.874
+      "r5": -2.4,
+      "r20": -7.0,
+      "r60": -9.7,
+      "r252": 10.0,
+      "accel": -0.166,
+      "impulse": -2.964
     },
     "benchmarks": {
       "DBC": {
@@ -48,7 +48,7 @@
     "pct_up_trend": 0.588,
     "n_bull_momentum": 0,
     "n_low_risk": 1,
-    "trend_diversity": 0.616,
+    "trend_diversity": 0.619,
     "breadth_pctile": 0.615
   },
   "confluence": {
@@ -188,11 +188,11 @@
         "name": "palladium",
         "label": "Palladium",
         "class": "precious",
-        "state": "Neutral",
+        "state": "Basing \u2014 early bottom signs",
         "null_reason": null,
-        "bottom_score": 33.3,
+        "bottom_score": 47.6,
         "top_score": 0.0,
-        "capitulation_score": 15.4,
+        "capitulation_score": 38.5,
         "turn_score": 62.5,
         "euphoria_score": 0.0,
         "rollover_score": 0.0,
@@ -203,6 +203,13 @@
             "label_zh": "\u4e2d\u5468\u671f\u8d85\u5356",
             "explain_en": "The slower oscillator is still oversold \u2014 the wash has breadth in time.",
             "explain_zh": "\u66f4\u957f\u5468\u671f\u632f\u8361\u6307\u6807\u4ecd\u8d85\u5356\u2014\u2014\u6d17\u76d8\u5728\u65f6\u95f4\u4e0a\u6709\u5bbd\u5ea6\u3002"
+          },
+          {
+            "code": "stretch_below",
+            "label_en": "Deeply below its 200-day trend",
+            "label_zh": "\u6df1\u8dcc\u7834200\u65e5\u5747\u7ebf",
+            "explain_en": "Price is sitting far below its 200-day trend \u2014 a deep drawdown, not a dip.",
+            "explain_zh": "\u4ef7\u683c\u8fdc\u4f4e\u4e8e200\u65e5\u5747\u7ebf\u2014\u2014\u662f\u6df1\u8dcc\uff0c\u4e0d\u662f\u6d45\u56de\u8c03\u3002"
           },
           {
             "code": "curl",
@@ -466,8 +473,8 @@
         ],
         "top_fired": [],
         "n_bottom_applicable": 8,
-        "n_top_applicable": 7,
-        "turn_developing": true,
+        "n_top_applicable": 8,
+        "turn_developing": false,
         "basing": true,
         "armed_recent": true
       },
@@ -477,22 +484,13 @@
         "class": "grain",
         "state": "Neutral",
         "null_reason": null,
-        "bottom_score": 38.1,
+        "bottom_score": 19.0,
         "top_score": 0.0,
-        "capitulation_score": 46.2,
+        "capitulation_score": 15.4,
         "turn_score": 25.0,
         "euphoria_score": 0.0,
         "rollover_score": 0.0,
         "bottom_fired": [
-          {
-            "code": "shock_bottom",
-            "label_en": "Washout from a shock outside this market",
-            "label_zh": "\u5916\u90e8\u629b\u538b\u7838\u51fa\u7684\u6d17\u76d8",
-            "explain_en": "A washout driven by a shock this market did not generate on its own.",
-            "explain_zh": "\u8fd9\u662f\u672c\u5e02\u573a\u81ea\u8eab\u9a71\u52a8\u89e3\u91ca\u4e0d\u4e86\u7684\u629b\u538b\u6d17\u76d8\u3002",
-            "tip_en": "Engine flag: exogenous washout",
-            "tip_zh": "\u5f15\u64ce\u6807\u8bb0\uff1a\u5916\u751f\u51b2\u51fb\u6d17\u76d8"
-          },
           {
             "code": "oversold_htf",
             "label_en": "Oversold longer-term",
@@ -797,43 +795,43 @@
   "assets": {
     "gold": {
       "label": "Gold",
-      "price": 4079.5,
-      "chg": -1.9,
+      "price": 4074.9,
+      "chg": -2.0,
       "alloc": 0,
       "risk": "Elevated",
       "trend": "down",
       "action": "SELL",
-      "conviction": -19.7
+      "conviction": -16.4
     },
     "silver": {
       "label": "Silver",
-      "price": 51.97,
-      "chg": -12.0,
+      "price": 51.8,
+      "chg": -12.3,
       "alloc": 0,
       "risk": "Elevated",
       "trend": "up",
       "action": "SELL",
-      "conviction": -16.6
+      "conviction": -14.8
     },
     "copper": {
       "label": "Copper",
-      "price": 6.26,
-      "chg": -4.0,
+      "price": 6.22,
+      "chg": -4.6,
       "alloc": 0,
       "risk": "Calm",
       "trend": "up",
       "action": "STRONG SELL",
-      "conviction": -36.2
+      "conviction": -36.8
     },
     "oil": {
       "label": "Oil \u00b7 WTI",
-      "price": 90.34,
-      "chg": -1.3,
+      "price": 90.83,
+      "chg": -0.7,
       "alloc": 0,
       "risk": "Elevated",
       "trend": "up",
       "action": "SELL",
-      "conviction": -14.0
+      "conviction": -14.2
     }
   },
   "gold_context": {
@@ -857,12 +855,12 @@
   "ratios": {
     "copper_gold": {
       "value": 0.0015,
-      "chg_20d_pct": -4.0,
+      "chg_20d_pct": -4.54,
       "dir": "down"
     },
     "gold_silver": {
-      "value": 78.5048,
-      "chg_20d_pct": 12.67,
+      "value": 78.6615,
+      "chg_20d_pct": 12.89,
       "dir": "up"
     }
   }
