@@ -1,12 +1,58 @@
 {
-  "integrated_main": "ab2a2a7aee27fa30c06376622474d992b6c49ba8",
+  "current_main_qualification": {
+    "ancestor_git_discovery_fenced": true,
+    "breaches": [],
+    "canonical_probe_constants": true,
+    "immutable_main_compositions": [
+      "ba32f20ba306f9e75b7c400992138e736b904516",
+      "19c130f81cc5a22d3f43f4cd9a1bbf8b7204f1c3"
+    ],
+    "log_sha256": "43a8833df54b3a369ded25825031fe7f55643e8b79ae1a00e161683b08c1dd9c",
+    "no_native_source_ref_mutation": true,
+    "no_test_budget_changes": true,
+    "retained_prior_source_entries": 193,
+    "rows": [
+      {
+        "jobs": 134,
+        "max_jobs": 137,
+        "max_packs": 10,
+        "max_weight": 5923,
+        "packs": 10,
+        "probe": "templates/index.html",
+        "reason": "scoped to 1 changed file(s): 134/395 jobs (2 unscoped always-on, 132 scoped matches)",
+        "weight": 5727
+      },
+      {
+        "jobs": 134,
+        "max_jobs": 138,
+        "max_packs": 10,
+        "max_weight": 6000,
+        "packs": 10,
+        "probe": "scripts/build_free_content.py",
+        "reason": "scoped to 1 changed file(s): 134/395 jobs (2 unscoped always-on, 132 scoped matches)",
+        "weight": 6000
+      },
+      {
+        "jobs": 127,
+        "max_jobs": 131,
+        "max_packs": 10,
+        "max_weight": 5681,
+        "packs": 10,
+        "probe": "engine/prophet/plan_book.py",
+        "reason": "scoped to 1 changed file(s): 127/395 jobs (2 unscoped always-on, 125 scoped matches)",
+        "weight": 5484
+      }
+    ],
+    "same_admin_consolidation_and_tests": true
+  },
+  "integrated_main": "19c130f81cc5a22d3f43f4cd9a1bbf8b7204f1c3",
   "limitations": [
-    "Local proof is not new-head hosted CI, protected merge, deployment or H4 live acceptance.",
-    "Earlier rejected proposals are not part of the published tree.",
-    "Current native and provider effect fences remain unchanged."
+    "Local source and focused test qualification do not establish hosted CI, merge, native deployment, or H4 live acceptance.",
+    "The original merge-on-green controller owns hosted proof freshness, refresh, labels, and final protected merge."
   ],
   "original_head": "bc2fad1c0c69afe90427621b4f89e2cbf2a34612",
   "original_pr": "https://github.com/mastermindx-market-intelligence/macro/pull/10740",
+  "prior_qualified_source_commit": "df5d1dde047a6029428858e84d794a2864e194e0",
   "qualification": {
     "failures": [],
     "log_sha256": "8e0dd3e259f68c193f05e3e04acef6407a9ed36e5124438d9f9a04fbd0db33db",
@@ -32,8 +78,8 @@
     "tree": "225f7a81fd280b714a182428e291da4148ab16da",
     "xml_sha256": "714c48e778d14f3b5590dd54ff636c7bfa7db3d84f1ef8b530791036a3caa40c"
   },
-  "qualified_source_tree_before_evidence": "225f7a81fd280b714a182428e291da4148ab16da",
-  "schema": "mastermind.fabric_application.current_main_packing_composition.v1",
+  "qualified_source_tree_before_evidence": "0e599c0296074f16fc4a99fdaabc6b30e3656136",
+  "schema": "mastermind.macro_current_main_packing_composition.v2",
   "source_changes": {
     "admin_job_estimator_after": 11,
     "admin_job_estimator_before": 14,
