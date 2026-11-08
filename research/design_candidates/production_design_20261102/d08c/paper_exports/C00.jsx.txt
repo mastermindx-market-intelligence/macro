@@ -1,0 +1,122 @@
+// Static Paper review export, not an integrated product component.
+// File 01M3NSZGE8JWN2EZCSF0DT05RM; node 1S0R-0
+(
+    <div id="1S0R-0" style={{ backgroundColor: '#FFFFFF', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', fontSynthesis: 'none', MozOsxFontSmoothing: 'grayscale', overflow: 'clip', overflowWrap: 'anywhere', WebkitFontSmoothing: 'antialiased' }}>
+      <div id="1S0S-0" style={{ backgroundColor: '#080808', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '24px', height: 'fit-content', padding: '40px', width: '1440px' }}>
+        <div id="1S0T-0" style={{ boxSizing: 'border-box', color: '#B8B8B8', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '12px', lineHeight: '16px' }}>
+          D08C · PRODUCTION DESIGN PROGRAMME · DESIGN / SPECIFICATION ONLY
+        </div>
+        <div id="1S0U-0" style={{ boxSizing: 'border-box', color: '#F3F3F3', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '34px', fontWeight: 600, lineHeight: '42px' }}>
+          Options Plan, Compare &amp; Review
+        </div>
+        <div id="1S0V-0" style={{ boxSizing: 'border-box', color: '#B8B8B8', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '17px', lineHeight: '26px' }}>
+          Turn an observed signal into a reproducible hypothetical research plan, then revisit what changed.
+        </div>
+        <div id="1S0X-0" style={{ alignItems: 'center', backgroundColor: '#191919', borderColor: '#343434', borderRadius: '10px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', justifyContent: 'space-between', minHeight: '64px', paddingBlock: '16px', paddingInline: '20px' }}>
+          <div id="1S0Y-0" style={{ boxSizing: 'border-box', color: '#F3F3F3', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '16px', fontWeight: 600, lineHeight: '20px' }}>
+            RIG draft · provisional foundation composition
+          </div>
+          <div id="1S0Z-0" style={{ boxSizing: 'border-box', color: '#B8B8B8', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '16px' }}>
+            D08 owner: mastermindx-3 · Macro #10649
+          </div>
+        </div>
+        <div id="1S11-0" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          <div id="1S12-0" style={{ boxSizing: 'border-box', color: '#F3F3F3', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '19px', fontWeight: 600, lineHeight: '24px' }}>
+            The task path
+          </div>
+          <div id="1S13-0" style={{ boxSizing: 'border-box', color: '#F3F3F3', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '16px', lineHeight: '27px' }}>
+            Investigate → choose exact contracts → author a plan → adjust assumptions → compare → explicitly save → optionally arm a watch → revisit the exact revision.
+          </div>
+          <div id="1S14-0" style={{ boxSizing: 'border-box', color: '#B8B8B8', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '21px' }}>
+            Keep original observations separate from authored entries and current evidence. A plan does not place a trade or create a holding.
+          </div>
+        </div>
+        <div id="1S16-0" style={{ boxSizing: 'border-box', display: 'flex', gap: '24px', width: '1360px' }}>
+          <div id="1S18-0" style={{ backgroundColor: '#121212', borderColor: '#343434', borderRadius: '10px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: 0, gap: '14px', minHeight: '220px', padding: '20px', width: '437px' }}>
+            <div id="1S19-0" style={{ boxSizing: 'border-box', color: '#F3F3F3', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '18px', fontWeight: 600, lineHeight: '22px' }}>
+              Existing owners
+            </div>
+            <div id="1S1H-0" style={{ boxSizing: 'border-box', color: '#B8B8B8', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '14px', lineHeight: '24px', whiteSpace: 'pre-wrap' }}>
+              D08 owns navigation and integration.<br />D23 / native Investigation owns saved research and alerts.<br />D22 owns actual holdings.<br />Terminal #804 remains the held Plan carrier.
+            </div>
+          </div>
+          <div id="1S1B-0" style={{ backgroundColor: '#121212', borderColor: '#343434', borderRadius: '10px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: 0, gap: '14px', minHeight: '220px', padding: '20px', width: '437px' }}>
+            <div id="1S1C-0" style={{ boxSizing: 'border-box', color: '#F3F3F3', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '18px', fontWeight: 600, lineHeight: '22px' }}>
+              Foundation input
+            </div>
+            <div id="1S1J-0" style={{ boxSizing: 'border-box', color: '#B8B8B8', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '14px', lineHeight: '24px', whiteSpace: 'pre-wrap' }}>
+              F01-F02-SHELL / 1.0.0-candidate.4<br />F02 / 1.0.0-candidate.2<br />Final foundation release and formal independent RIG acceptance remain open.<br />No global token or shared held board changed.
+            </div>
+          </div>
+          <div id="1S1E-0" style={{ backgroundColor: '#121212', borderColor: '#343434', borderRadius: '10px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', flexShrink: 0, gap: '14px', minHeight: '220px', padding: '20px', width: '438px' }}>
+            <div id="1S1F-0" style={{ boxSizing: 'border-box', color: '#F3F3F3', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '18px', fontWeight: 600, lineHeight: '22px' }}>
+              Source and evidence
+            </div>
+            <div id="1S1L-0" style={{ boxSizing: 'border-box', color: '#B8B8B8', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '23px', whiteSpace: 'pre-wrap' }}>
+              Law: 910803421bec…<br />Terminal: 2ded360882b9…<br />D08 / producer: d0516e1bad9c…<br />Full pins, contracts, captures and future cases:<br /><span style={{ color: '#A7C9F1' }}>Open the D08C source package ↗</span>
+            </div>
+          </div>
+        </div>
+        <div id="1S1N-0" style={{ boxSizing: 'border-box', color: '#F3F3F3', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '19px', fontWeight: 600, lineHeight: '24px' }}>
+          Editable candidates · Terminal / p-13-0
+        </div>
+        <div id="1S1P-0" style={{ borderBottomColor: '#343434', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', justifyContent: 'space-between', paddingBottom: '12px' }}>
+          <div id="1S1Q-0" style={{ boxSizing: 'border-box', color: '#F3F3F3', flexShrink: 0, fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '14px', lineHeight: '18px', width: '660px' }}>
+            C01 · Desktop Plan · 1NZZ-0
+          </div>
+          <div id="1S1R-0" style={{ boxSizing: 'border-box', color: '#F3F3F3', flexShrink: 0, fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '14px', lineHeight: '18px', width: '660px' }}>
+            C02 · Compare assumptions · 1OGC-0
+          </div>
+        </div>
+        <div id="1S1T-0" style={{ borderBottomColor: '#343434', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', justifyContent: 'space-between', paddingBottom: '12px' }}>
+          <div id="1S1U-0" style={{ boxSizing: 'border-box', color: '#F3F3F3', flexShrink: 0, fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '14px', lineHeight: '18px', width: '660px' }}>
+            C03 · Revisit 1024 · 1OL8-0
+          </div>
+          <div id="1S1V-0" style={{ boxSizing: 'border-box', color: '#F3F3F3', flexShrink: 0, fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '14px', lineHeight: '18px', width: '660px' }}>
+            C06 · Assumptions 768 · 1PU1-0
+          </div>
+        </div>
+        <div id="1S1X-0" style={{ borderBottomColor: '#343434', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', justifyContent: 'space-between', paddingBottom: '12px' }}>
+          <div id="1S1Y-0" style={{ boxSizing: 'border-box', color: '#F3F3F3', flexShrink: 0, fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '14px', lineHeight: '18px', width: '660px' }}>
+            C04 · Phone 390 EN · 1OUZ-0
+          </div>
+          <div id="1S1Z-0" style={{ boxSizing: 'border-box', color: '#F3F3F3', flexShrink: 0, fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '14px', lineHeight: '18px', width: '660px' }}>
+            C05 · Phone 320 ZH · 1OXF-0
+          </div>
+        </div>
+        <div id="1S21-0" style={{ borderBottomColor: '#343434', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', justifyContent: 'space-between', paddingBottom: '12px' }}>
+          <div id="1S22-0" style={{ boxSizing: 'border-box', color: '#F3F3F3', flexShrink: 0, fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '14px', lineHeight: '18px', width: '660px' }}>
+            C07 · Save / watch states · 1PXO-0
+          </div>
+          <div id="1S23-0" style={{ boxSizing: 'border-box', color: '#F3F3F3', flexShrink: 0, fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '14px', lineHeight: '18px', width: '660px' }}>
+            C08 · Research states · 1Q8U-0
+          </div>
+        </div>
+        <div id="1S25-0" style={{ borderBottomColor: '#343434', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', justifyContent: 'space-between', paddingBottom: '12px' }}>
+          <div id="1S26-0" style={{ boxSizing: 'border-box', color: '#F3F3F3', flexShrink: 0, fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '14px', lineHeight: '18px', width: '660px' }}>
+            C09 · Exact-leg editor · 1RQJ-0
+          </div>
+          <div id="1S27-0" style={{ boxSizing: 'border-box', color: '#F3F3F3', flexShrink: 0, fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '14px', lineHeight: '18px', width: '660px' }}>
+            C10 · Research editor · 1RV0-0
+          </div>
+        </div>
+        <div id="1S29-0" style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          <div id="1S2A-0" style={{ boxSizing: 'border-box', color: '#F3F3F3', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '19px', fontWeight: 600, lineHeight: '24px' }}>
+            Control contract
+          </div>
+          <div id="1S2B-0" style={{ boxSizing: 'border-box', color: '#B8B8B8', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '14px', lineHeight: '25px', whiteSpace: 'pre-wrap' }}>
+            Adjust / Edit legs: change the local draft, retain source snapshots, clear an obsolete result. Compare: preserve the baseline and show per-leg changes.<br />Save: use the native owner once, distinguish unknown effect from known commitment, then read the exact revision. Watch: preview and confirm separately.<br />Revisit: compare observations with observations; keep authored entries separate. Navigation never silently saves or replaces evidence. One overlay; restore focus conditionally.
+          </div>
+        </div>
+        <div id="1S2D-0" style={{ borderColor: '#343434', borderRadius: '10px', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', padding: '20px' }}>
+          <div id="1S2E-0" style={{ boxSizing: 'border-box', color: '#F3F3F3', fontFamily: '"Inter-SemiBold", "Inter", system-ui, sans-serif', fontSize: '17px', fontWeight: 600, lineHeight: '22px' }}>
+            Evidence and remaining gates
+          </div>
+          <div id="1S2F-0" style={{ boxSizing: 'border-box', color: '#B8B8B8', fontFamily: '"Inter-Regular", "Inter", system-ui, sans-serif', fontSize: '13px', lineHeight: '22px', whiteSpace: 'pre-wrap' }}>
+            Illustrative expiry arithmetic: 238 checks, 103-point grid. This is not an API or contract-coverage proof.<br />Actual beta Options access was unverified. Authenticated normal-data, Save/watch, keyboard and responsive browser paths remain unproved.<br />Current-source Plan admission is unavailable. Final foundations, original #804 conditions and formal QA01 / RIG review remain open. No merge, deployment or production acceptance is claimed.
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+
