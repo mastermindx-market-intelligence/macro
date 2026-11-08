@@ -2226,11 +2226,255 @@
           ]
         }
       ]
+    },
+    {
+      "key": "motion-source-link-61",
+      "operation_id": "paper-estate-audit-20261108-sol-001-motion-source-link-61",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "results": [
+        {
+          "created_nodes": [
+            {
+              "id": "9WZ-0",
+              "name": "Verified source packet"
+            },
+            {
+              "id": "9X0-0",
+              "name": "Open the self-contai…"
+            },
+            {
+              "id": "9X1-0",
+              "name": "Open the verified bu…"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "os-source-link-62",
+      "operation_id": "paper-estate-audit-20261108-sol-001-os-source-link-62",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "results": [
+        {
+          "created_nodes": [
+            {
+              "id": "YDV-0",
+              "name": "8 Nov implementation…"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "sector-source-link-63",
+      "operation_id": "paper-estate-audit-20261108-sol-001-sector-source-link-63",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "results": [
+        {
+          "created_nodes": [
+            {
+              "id": "GOG-0",
+              "name": "8 Nov implementation…"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "hub-source-link-64",
+      "operation_id": "paper-estate-audit-20261108-sol-001-hub-source-link-64",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "results": [
+        {
+          "created_nodes": [
+            {
+              "id": "72L-0",
+              "name": "8 Nov implementation…"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "hub-finish-65",
+      "operation_id": "paper-estate-audit-20261108-sol-001-hub-finish-65",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "results": [
+        {
+          "result": "OK"
+        }
+      ]
+    },
+    {
+      "key": "os-finish-66",
+      "operation_id": "paper-estate-audit-20261108-sol-001-os-finish-66",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "results": [
+        {
+          "result": "OK"
+        }
+      ]
+    },
+    {
+      "key": "sector-finish-67",
+      "operation_id": "paper-estate-audit-20261108-sol-001-sector-finish-67",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "results": [
+        {
+          "result": "OK"
+        }
+      ]
+    },
+    {
+      "key": "canonical-finish-68",
+      "operation_id": "paper-estate-audit-20261108-sol-001-canonical-finish-68",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "results": [
+        {
+          "result": "OK"
+        }
+      ]
+    },
+    {
+      "key": "canonical-visible-source-69",
+      "operation_id": "paper-estate-audit-20261108-sol-001-canonical-visible-source-69",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "results": [
+        {
+          "updated_nodes": [
+            {
+              "nodeId": "9X0-0"
+            },
+            {
+              "nodeId": "9X1-0"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "os-visible-source-70",
+      "operation_id": "paper-estate-audit-20261108-sol-001-os-visible-source-70",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "results": [
+        {
+          "updated_nodes": [
+            {
+              "nodeId": "YDV-0"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "sector-visible-source-71",
+      "operation_id": "paper-estate-audit-20261108-sol-001-sector-visible-source-71",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "results": [
+        {
+          "updated_nodes": [
+            {
+              "nodeId": "GOG-0"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "hub-visible-source-72",
+      "operation_id": "paper-estate-audit-20261108-sol-001-hub-visible-source-72",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "results": [
+        {
+          "updated_nodes": [
+            {
+              "nodeId": "72L-0"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "canonical-final-finish-73",
+      "operation_id": "paper-estate-audit-20261108-sol-001-canonical-final-finish-73",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "results": [
+        {
+          "result": "OK"
+        }
+      ]
+    },
+    {
+      "key": "os-final-finish-74",
+      "operation_id": "paper-estate-audit-20261108-sol-001-os-final-finish-74",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "results": [
+        {
+          "result": "OK"
+        }
+      ]
+    },
+    {
+      "key": "sector-final-finish-75",
+      "operation_id": "paper-estate-audit-20261108-sol-001-sector-final-finish-75",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "results": [
+        {
+          "result": "OK"
+        }
+      ]
+    },
+    {
+      "key": "hub-final-finish-76",
+      "operation_id": "paper-estate-audit-20261108-sol-001-hub-final-finish-76",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "results": [
+        {
+          "result": "OK"
+        }
+      ]
     }
   ],
   "limits": [
     "Paper edits are design candidates, not production acceptance.",
     "Browser inline motion execution blocked by URL policy; not retried by another surface.",
     "MASTERMIND PAGES file-size warning prevented modifications there."
-  ]
+  ],
+  "finalization": {
+    "design_effects": 64,
+    "visible_source_updates": 4,
+    "finish_bookkeeping": 8,
+    "all_effects_observed": true,
+    "source_packet_commit": "ecc32c1b5f6b8d2f9a41d08bb363a12525c8e4b7",
+    "source_readbacks": [
+      {
+        "file": "ESTATE_AUDIT.md",
+        "match": true
+      },
+      {
+        "file": "FILE_MAP.md",
+        "match": true
+      },
+      {
+        "file": "BUILD_CONTRACT.md",
+        "match": true
+      },
+      {
+        "file": "PAPER_CHANGE_RECEIPTS.json",
+        "match": true
+      },
+      {
+        "file": "MOTION_SPECIMEN.html",
+        "match": true
+      },
+      {
+        "file": "build_motion_specimen.py",
+        "match": true
+      },
+      {
+        "file": "MOTION_VERIFICATION.json",
+        "match": true
+      }
+    ]
+  }
 }
