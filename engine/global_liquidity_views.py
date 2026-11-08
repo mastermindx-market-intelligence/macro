@@ -593,12 +593,24 @@ def _statistical_forecast(t09_package: Any, day: date) -> dict:
             out_cell["calibration_ref"] = source["calibration_ref"]
         out_cells.append(out_cell)
 
-    return {
+    # ``status`` reports package availability only (the T09 package is readable
+    # and not after as_of), so it stays "available" even when every cell is
+    # rejected. ``disposition`` is a separate section-level word: "available"
+    # when at least one cell is supported, otherwise "unavailable" with basis
+    # "no_issued_cell". A consumer that keys on ``disposition`` therefore does
+    # not treat an all-rejected package as an issued forecast (T25 obligation
+    # O1); each cell keeps its own per-cell disposition.
+    issued = sum(1 for cell in out_cells if cell["disposition"] == "supported")
+    section = {
         "status": "available",
+        "disposition": "available" if issued else "unavailable",
         "package_as_of": package_day.isoformat(),
         "horizons_weeks": sorted({cell["horizon_weeks"] for cell in out_cells}),
         "cells": out_cells,
     }
+    if not issued:
+        section["disposition_basis"] = "no_issued_cell"
+    return section
 
 
 # ---------------------------------------------------------------------------
