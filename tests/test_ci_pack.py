@@ -5610,9 +5610,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_923),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_944),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_681),
+    ("templates/index.html", 137, 5_926),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_947),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_684),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5620,6 +5620,26 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-08 (PR #10277, second shared-CI conflict composition):
+    current main8251e41 has independently landed #10180 B17 recovery and
+    its complete measured +3 accounting. Preserve that entire current owner,
+    all394 other owners and all accepted current source. Reapply only W1
+    two selectors/comment and its existing full-suite step. The common owner
+    baseline is11 commands/26 test tokens/1365 characters, weight64; W1
+    alone is12/27/1437, weight67, while current B17 alone is12/27/1433,
+    also weight67. BOTH accepted additions are13/28/1505, weight70.
+    Equal old W1/B17 ceiling literals therefore do not fund the same work.
+    Add only W1 remaining +3 to5923/5944/5681 ->5926/5947/5684.
+    Keep jobs137/138/131, ten packs, all selectors/timeouts/runtime limits,
+    the stronger current basket guards and current replay/compactor source.
+    Both complete same-carrier historical paragraphs and the landed B17
+    paragraph remain below, with their original dates, bases and numbers.
+    Old own CLEAR322 jobs/698 semantic proof steps describes H1bb0e582,
+    not this combination. This is static source arithmetic, not a new
+    planner/timing measurement; natural new-head CI must qualify the result.
+    No unmerged10226/10192 or other sibling allowance is imported. W2
+    November19 science freeze and every original process/product hold remain.
 
     2026-11-08 (PR #10277, current-main shared-CI conflict repair):
     preserve the three accepted W1 intake-waterfall source/test/research blobs
@@ -5650,6 +5670,26 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     Fund only the observed +3 for each weight ceiling, not a new job,
     pack, exclusion, changed selection or runtime allowance. Preserve
     all existing semantic test coverage and the 10-pack bound.
+
+    2026-11-08 (PR #10180, measured B-17 enrollment integration):
+    Fixed current c91d58b2413d plus the five unchanged recovery objects
+    preserves all 395 owners. Native paired production measurements on
+    the SAME exact candidate source universe compare only the existing
+    manifest and the accepted nine-line B-17 enrollment. The full path
+    inventory and all required source bytes are bound to that candidate.
+    Prophet Lab weight is 64 before and 67 after; it is already selected
+    by all three probes. Every selected job ID is unchanged, with no
+    entrants or exits. Index is 137 jobs, weight 5920 to 5923; free-content
+    is 137 jobs, weight 5941 to 5944; plan-book is 131 jobs, 5678 to 5681.
+    All six measured plans retain ten packs. Fund precisely those three
+    measured weight units per probe, preserving job caps 137, 138, 131,
+    the ten-pack ceiling, every command, selector and runtime limit.
+    This is an actual paired planning result, not a runtime or full-CI
+    result. It preserves the accepted #7352 contribution and imports no
+    unmerged sibling funding. Native receipt18660 ended at06:57:59 UTC;
+    proof SHA256 99135659f96ebf1182e8e843c1153d7a71347273bd2fcfb890626d70f6bfee0f.
+    Source: PR10180 issuecomment6718493720. Original historical and
+    scientific limitations remain; natural CI must qualify publication.
 
     2026-11-08 (PR #7352, current-main shared-CI conflict repair):
     preserve the accepted research-intelligence model benchmark source and its

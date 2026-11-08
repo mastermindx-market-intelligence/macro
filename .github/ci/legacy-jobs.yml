@@ -11915,6 +11915,10 @@ jobs:
       - "engine/entry_radar/contracts.py"
       - "engine/entry_radar/spool.py"
       - "scripts/prophet_lab_baseline.py"
+      # B-17 frozen-input research verifier: keep the regression in the existing
+      # Prophet code gate; test-only and source-only edits both select this job.
+      - "research/prophet_v4/b17_frozen_input_recovery.py"
+      - "tests/test_prophet_b17_frozen_input_recovery.py"
       - "tests/test_prophet_lab.py"
       - "tests/test_intelligence_vector_units.py"
       - "tests/test_prophet_lab_api.py"
@@ -12013,6 +12017,11 @@ jobs:
           tests/test_prophet_lab_timeparse.py
           tests/test_prophet_lab_commissioning.py
           tests/test_caddy_hub_boundary.py -q
+
+      # B-17 recovers immutable inputs and exercises the existing selector.
+      # CI runs only the focused hermetic tests, never full archive reconstruction.
+      - name: Prophet B-17 frozen-input recovery — immutable sources, cutoff clocks, and unknown inputs
+        run: python -m pytest tests/test_prophet_b17_frozen_input_recovery.py -q
 
       # B04-A0 evidence dossier (#9935): closed reason map, forbidden-key refusal
       # and admissibility literals for the Prophet Lab dossier reader. Hermetic
@@ -15639,6 +15648,7 @@ jobs:
       - "tests/test_ci_canary_tools.py"
       - "tests/test_ci_canary_workflows.py"
       - "tests/test_ci_gate_reliability_report.py"
+      - "tests/test_ci_main_heartbeat_header.py"
       - "tests/test_ci_pack.py"
       - "tests/test_ci_pack_fragments.py"
       - "tests/test_ci_pack_semantic.py"
@@ -15810,6 +15820,7 @@ jobs:
       - "tests/test_ci_canary_tools.py"
       - "tests/test_ci_canary_workflows.py"
       - "tests/test_ci_gate_reliability_report.py"
+      - "tests/test_ci_main_heartbeat_header.py"
       - "tests/test_ci_pack.py"
       - "tests/test_ci_pack_fragments.py"
       - "tests/test_ci_pack_semantic.py"
@@ -15936,6 +15947,12 @@ jobs:
       # it cannot skip its way to green on a pack runner with no `gh`.
       - name: merge-gate reliability report contract
         run: python -m pytest tests/test_ci_gate_reliability_report.py -q
+      # ci-main-heartbeat.yml names each of its jobs after a job in this manifest,
+      # and its header tells the reader what a green heartbeat means. This suite
+      # measures every heartbeat job's test files against its namesake here and
+      # holds the header's words to the difference, both ways. Pure stdlib + pyyaml.
+      - name: ci-main-heartbeat header matches what its jobs run
+        run: python -m pytest tests/test_ci_main_heartbeat_header.py -q
       - name: transitional self-hosted runner policy and canary contracts
         run: python scripts/check_runner_policy.py && python -m pytest tests/test_runner_policy.py tests/test_ci_canary_tools.py tests/test_ci_canary_workflows.py tests/test_trusted_ci_executor_workflow.py tests/test_trusted_ci_production_route.py -q
       # The US nightly's cron redundancy (2026-08-13), wired here for the same reason
@@ -16003,6 +16020,7 @@ jobs:
       - "tests/test_ci_canary_tools.py"
       - "tests/test_ci_canary_workflows.py"
       - "tests/test_ci_gate_reliability_report.py"
+      - "tests/test_ci_main_heartbeat_header.py"
       - "tests/test_ci_pack.py"
       - "tests/test_ci_pack_fragments.py"
       - "tests/test_ci_pack_semantic.py"
@@ -16956,6 +16974,10 @@ jobs:
     # Dynamic Ontology assets and canonical navigation are included explicitly.
     scope: exclusive
     paths:
+      # TTI-D1: bind the existing synthetic minute reader/resolver suite to
+      # its current CODE consumer owner; the older signal-contract copy is DATA.
+      - "engine/entry_radar/minute_resolution.py"
+      - "tests/test_entry_radar_w4_c3_reader.py"
       - "scripts/company_intelligence_publication_evidence.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
@@ -18302,7 +18324,7 @@ jobs:
       - name: ontology research case — native evidence and existing live episode projection
         run: python -m pytest tests/test_opportunity_evidence_vector_contract.py tests/test_entry_radar_w4_live.py -k 'opportunity_case or research_case' -q
       - name: native earnings context, retained identity and published Radar read
-        run: python -m pytest tests/test_earnings_opportunity_qualification.py tests/test_earnings_opportunity_context.py tests/test_entry_radar_quote_context.py tests/test_entry_radar_research_read.py tests/test_entry_radar_earnings_context_producer.py tests/test_entry_radar_candidate_provenance.py tests/test_entry_radar_quote_lineage_read.py -q
+        run: python -m pytest tests/test_earnings_opportunity_qualification.py tests/test_earnings_opportunity_context.py tests/test_entry_radar_quote_context.py tests/test_entry_radar_research_read.py tests/test_entry_radar_earnings_context_producer.py tests/test_entry_radar_candidate_provenance.py tests/test_entry_radar_quote_lineage_read.py -q tests/test_entry_radar_w4_c3_reader.py
       - name: captured native DRL event and evidence composition
         run: python -m pytest tests/test_price_pressure_research.py tests/test_h20_supplier_conditional.py tests/test_gmi_native_disclosure_propagation.py -q
       - name: ontology explorer — real browser, selected context, responsive and failure states
