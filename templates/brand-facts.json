@@ -1,5 +1,5 @@
 {
-  "effective_at": "2026-07-27",
+  "effective_at": "2026-11-08",
   "owner": "MastermindX",
   "source": "https://www.mastermind-x.com/brand-facts.json",
   "brand": {
@@ -9,7 +9,7 @@
     "languages": ["en", "zh"],
     "social_profiles": ["https://x.com/mastermindx001"]
   },
-  "what_it_is": "Market-intelligence platform: nightly macro-regime, market-cycle and sector-rotation dashboards for US, China, Hong Kong, Canada and global markets, plus 1,600+ per-stock dossiers with proprietary trend, stage and confluence models.",
+  "what_it_is": "Market-intelligence platform with regional dashboards, stock dossiers, research-report landing pages, educational articles and tools.",
   "surface_scope": "public_unauthenticated",
   "surfaces": [
     {
@@ -20,7 +20,7 @@
     {
       "name": "Stock Dossiers",
       "url": "https://www.mastermind-x.com/stocks/index.html",
-      "description": "1,600+ per-ticker pages with trend, stage, confluence, ownership and options context."
+      "description": "Per-ticker pages with market context and links to the stock index for current coverage."
     },
     {
       "name": "Research Library",
@@ -40,7 +40,7 @@
     {
       "name": "MastermindX Blog",
       "url": "https://www.mastermind-x.com/blog/index.html",
-      "description": "Plain-English articles on trading math, risk and market mechanics."
+      "description": "Public explainers and source-attributed research articles, including company events and official economic data."
     },
     {
       "name": "Plans",
@@ -59,8 +59,8 @@
   },
   "coverage": {
     "markets": ["US", "China", "Hong Kong", "Canada", "International"],
-    "stock_dossiers": "1,600+ US tickers, expanding",
-    "update_cadence": "nightly"
+    "stock_dossiers": "US stock dossiers; see the stock index for current coverage",
+    "update_cadence": "Varies by surface; use each page or report data date"
   },
   "editorial": {
     "author_entity": "MastermindX Research (organization)",
