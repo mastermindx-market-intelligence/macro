@@ -1,0 +1,137 @@
+{# Paper R2 composition for Macro's existing Sector page. No new global shell. #}
+<style id="si-paper-layout">
+  .si-shell { display:block; margin:0; }
+  .si-page-header { display:flex; align-items:center; justify-content:space-between; gap:24px; padding:28px 0 22px; }
+  .si-page-identity { display:flex; align-items:center; gap:20px; min-width:0; }
+  .si-page-title { margin:0; font:800 var(--fs-h1)/1.15 var(--font-ui); letter-spacing:-.03em; }
+  .si-page-region { padding-left:20px; border-left:1px solid var(--line); color:var(--muted); font-size:var(--fs-sm); }
+  .si-side-foot { display:flex; align-items:flex-end; flex-direction:column; gap:4px; margin:0; padding:0; border:0; color:var(--muted); font-size:var(--fs-label); }
+  .si-workflow { display:flex; align-items:center; gap:8px; padding:0 0 14px; border-bottom:1px solid var(--line); }
+  .si-workflow-link, .si-view-btn { display:inline-flex; align-items:center; justify-content:center; gap:8px; min-height:44px; padding:8px 14px; border:1px solid transparent; border-radius:var(--r-ctl,8px); font:500 var(--fs-body)/1.3 var(--font-ui); color:var(--muted); text-decoration:none; white-space:nowrap; }
+  .si-workflow-link:hover, .si-view-btn:hover { color:var(--text); background:var(--panel2); }
+  .si-workflow-link.on, .si-view-btn.on { color:var(--ink-link,var(--link)); font-weight:700; background:var(--panel2); border-color:transparent; }
+  .si-workflow-link:focus-visible, .si-view-btn:focus-visible, .si-paper-action:focus-visible { outline:2px solid var(--link); outline-offset:3px; }
+  .si-workflow-note { margin-left:auto; font-size:var(--fs-sm); color:var(--muted); }
+  .si-side { position:static; display:flex; flex-direction:row; align-items:center; flex-wrap:wrap; gap:4px; height:auto; margin:0; padding:12px 0; border:0; border-bottom:1px solid var(--line); background:transparent; }
+  .si-side[hidden] { display:none; }
+  .si-vb-g { display:none; }
+  .si-view-btn .si-vb-l { display:block; font-size:inherit; }
+  .si-side .si-view-btn { min-height:40px; font-size:var(--fs-sm); }
+  .si-stage { min-width:0; padding:0; background:transparent; }
+  .si-view { display:none; padding-top:28px; }
+  .si-view.on { display:block; }
+  .si-view[data-view="overview"] { padding-top:0; }
+  .si-view-read { display:flex; align-items:flex-start; gap:9px; margin:0 0 24px; padding:14px 18px; font-size:var(--fs-body); line-height:1.5; color:var(--text); background:var(--panel); border:1px solid var(--line); border-radius:var(--r-card,12px); box-shadow:none; }
+  .si-view-read[hidden] { display:none; }
+  .si-view[data-view="overview"] .si-view-read { display:none; }
+  .si-vr-g { width:16px; height:16px; flex:none; color:var(--ink-link,var(--link)); }
+  .si-vr-t { flex:1; min-width:0; }
+  .si-vr-q { flex:none; display:inline-grid; place-items:center; width:18px; height:18px; border:1px solid var(--line); border-radius:var(--r-pill,999px); font-size:var(--fs-micro); color:var(--muted); }
+  .si-changed { display:flex; align-items:center; flex-wrap:wrap; gap:8px; margin:20px 0; }
+  .si-changed-l { font:600 var(--fs-label)/1.5 var(--font-ui); color:var(--muted); }
+  .si-shell .rvx-hero, html[data-theme="light"] .si-shell .rvx-hero { margin:0; padding:32px 0 28px; border:0; border-bottom:1px solid var(--line); border-radius:0; background:transparent; box-shadow:none; animation:none; opacity:1; transform:none; }
+  .si-shell .rvx-hero::before, .si-shell .rvx-hero::after { content:none; }
+  .si-shell .rvx-eyebrow { margin:0 0 18px; color:var(--ink-link,var(--link)); font:600 var(--fs-label)/1.4 var(--font-ui); letter-spacing:.08em; }
+  .si-shell .rvx-eyebrow .as-of { margin-left:auto; color:var(--muted); }
+  .si-shell .rvx-hgrid { display:grid; grid-template-columns:minmax(0,2fr) minmax(260px,1fr); gap:38px; align-items:start; }
+  .si-shell .rvx-vword { margin:0; max-width:22ch; font:800 var(--fs-display)/1.08 var(--font-ui); letter-spacing:-.035em; color:var(--text); }
+  .si-shell .rvx-vword .ac, html[data-theme="light"] .si-shell .rvx-vword .ac { color:var(--text); background:none; -webkit-text-fill-color:currentColor; }
+  .si-shell .rvx-vsub { max-width:66ch; margin:18px 0; color:var(--muted); font-size:var(--fs-md); line-height:1.7; }
+  .si-shell .rvx-stance { display:block; margin:0; font-size:var(--fs-sm); color:var(--muted); }
+  .si-shell .rvx-chips { gap:8px 18px; margin-top:16px; }
+  .si-shell .rvx-chips.ctx :is(.rvx-chip,.fs-chip,.tc-chip,.pulse-size) { padding:2px 0; border:0; background:transparent; font-size:var(--fs-sm); }
+  .si-entry-read { padding-left:30px; border-left:1px solid var(--line); }
+  .si-entry-read .cap, .si-brief-evidence .cap { margin:0 0 18px; color:var(--muted); font:500 var(--fs-label)/1.5 var(--font-ui); letter-spacing:.07em; text-transform:uppercase; }
+  .si-entry-read h2 { margin:0 0 20px; font:700 var(--fs-num-lg)/1.3 var(--font-ui); letter-spacing:-.02em; }
+  .si-entry-read dl { margin:0; }
+  .si-entry-read dl > div { display:flex; justify-content:space-between; gap:16px; padding:12px 0; border-bottom:1px solid var(--line); font-size:var(--fs-body); }
+  .si-entry-read dt, .si-entry-read dd { margin:0; }
+  .si-entry-read dd { text-align:right; font-weight:600; }
+  .si-entry-read p { margin:18px 0 0; color:var(--muted); font-size:var(--fs-sm); line-height:1.6; }
+  .si-paper-actions { display:flex; flex-wrap:wrap; align-items:center; gap:12px 22px; margin-top:22px; }
+  .si-paper-action { display:inline-flex; justify-content:center; align-items:center; min-height:44px; padding:10px 16px; border:1px solid var(--line); border-radius:var(--r-ctl,8px); color:var(--ink-link,var(--link)); background:var(--panel); font-weight:600; text-decoration:none; }
+  .si-paper-action:hover { background:var(--panel2); }
+  .si-paper-text-link { color:var(--ink-link,var(--link)); font-size:var(--fs-body); text-decoration:none; }
+  .si-paper-text-link:hover { text-decoration:underline; }
+  .si-brief-evidence { display:grid; grid-template-columns:minmax(0,2fr) minmax(260px,1fr); gap:38px; padding:28px 0; border-bottom:1px solid var(--line); }
+  .si-brief-evidence h2 { margin:0 0 18px; font-size:var(--fs-num-lg); line-height:1.3; letter-spacing:-.02em; }
+  .si-brief-figure { margin:0; min-width:0; }
+  .si-brief-figure figcaption, .si-brief-status { color:var(--muted); font-size:var(--fs-sm); line-height:1.6; }
+  .si-brief-chart { display:block; width:100%; height:auto; margin:14px 0; overflow:visible; }
+  .si-brief-chart .si-chart-grid { stroke:var(--line); stroke-width:1; }
+  .si-brief-chart .si-chart-series { fill:none; stroke:var(--link); stroke-width:2.5; }
+  .si-brief-chart text { fill:var(--muted); font-family:var(--font-ui); font-size:var(--fs-sm); }
+  .si-brief-chart .si-chart-last { fill:var(--ink-link,var(--link)); font-weight:700; }
+  .si-brief-coverage { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:10px 20px; padding:14px 18px; margin:18px 0; border-radius:var(--r-ctl,8px); background:var(--panel2); }
+  .si-brief-coverage > div { flex:1 1 320px; min-width:0; }
+  .si-brief-coverage p { margin:0; font-size:var(--fs-sm); line-height:1.6; }
+  .si-brief-coverage p + p { margin-top:4px; color:var(--muted); }
+  .si-brief-coverage .si-paper-text-link { font-size:var(--fs-sm); }
+  .si-brief-list { display:grid; gap:0; padding:0; margin:0; list-style:none; counter-reset:si-look; }
+  .si-brief-list li { padding:18px 0; border-bottom:1px solid var(--line); counter-increment:si-look; }
+  .si-brief-list li:first-child { padding-top:0; }
+  .si-brief-list li:last-child { border-bottom:0; padding-bottom:0; }
+  .si-brief-list a { color:var(--text); font:600 var(--fs-h2)/1.4 var(--font-ui); text-decoration:none; }
+  .si-brief-list a:hover { color:var(--ink-link,var(--link)); }
+  .si-brief-list p { margin:8px 0 0; color:var(--muted); font-size:var(--fs-sm); line-height:1.6; }
+  .si-brief-list .cap { display:block; margin-bottom:6px; font-size:var(--fs-micro); }
+  .si-shell .rvx-hocard, html[data-theme="light"] .si-shell .rvx-hocard { margin-top:20px; padding:18px; border:1px solid var(--line); border-radius:var(--r-card,12px); background:var(--panel); box-shadow:none; }
+  .si-shell .rvx-hocard::before, .si-shell .rvx-hocard::after { content:none; }
+  .si-shell .rvx-hocard .cap { margin-bottom:12px; }
+  .si-shell .rvx-handoff { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+  .si-shell .rvx-hocol .nm { font-size:var(--fs-h2); line-height:1.4; }
+  .si-shell .rvx-sec { margin-top:28px; }
+  .si-shell .rvx-sec-h h2::before { content:none; }
+  .si-shell .rvx-sec-h h2 { font-size:var(--fs-num-lg); letter-spacing:-.02em; }
+  .si-shell .rvx-card, .si-shell .rvx-lane { border:1px solid var(--line); border-radius:var(--r-card,12px); background:var(--panel); box-shadow:none; }
+  .si-shell .rvx-lane .ic { background:transparent; }
+  .si-shell .rvx-lane-desc { min-height:0; }
+  .si-shell .ftr-tape-strip { margin:22px 0 0; gap:8px 22px; border:1px solid var(--line); border-radius:var(--r-card,12px); background:var(--panel); box-shadow:none; }
+  .si-shell .ftr-tape-strip .ftr-strip-ranks { display:inline-flex; flex-wrap:wrap; align-items:center; gap:8px 18px; }
+  .si-shell .ftr-tape-strip .ftr-strip-chip { padding:0; border:0; background:transparent; }
+  .si-shell .ftr-strip-chip .ftr-strip-nm { font-weight:600; color:var(--text); }
+  .si-shell .ftr-strip-chip .ftr-strip-pct { font-variant-numeric:tabular-nums; }
+  .si-shell .mr-row[aria-pressed="true"] { background:var(--panel2); box-shadow:none; outline:1px solid var(--line); outline-offset:-1px; }
+  /* Legacy instruments can inject CSS after the page loads, and confluence
+     writes inline edge colors. Keep the operator's neutral-edge rule across
+     those existing instruments without changing chart glyphs or signal labels. */
+  .si-shell :is(.sc-leg,.sc-fcast,.sc-dna,.rc-card,.rcf-lane,.oracle-shock-note,.tm-ep-dir-in,.tm-ep-dir-out,.gcard,.lcard) { border-color:var(--line)!important; border-left-width:1px!important; }
+  .si-shell #actnow-section { padding-top:8px; }
+  html[data-theme="light"] .si-shell .rvx-card, html[data-theme="light"] .si-shell .rvx-lane { background:var(--panel); box-shadow:var(--card-shadow,none); }
+  html[data-lang="zh"] .si-shell :is(.si-page-title,.rvx-vword,.rvx-eyebrow,.si-entry-read h2,.si-entry-read .cap,.si-brief-evidence h2,.si-brief-list .cap) { letter-spacing:0; text-transform:none; }
+  @media (max-width:1000px) {
+    .si-workflow-note { display:none; }
+    .si-shell .rvx-hgrid, .si-brief-evidence { grid-template-columns:minmax(0,1.6fr) minmax(240px,1fr); gap:24px; }
+    .si-entry-read { padding-left:24px; }
+    .si-shell .rvx-vword { font-size:var(--fs-num-xl); }
+  }
+  @media (max-width:767px) {
+    .si-page-header { padding:22px 0 16px; gap:12px; align-items:flex-start; }
+    .si-page-identity { display:block; }
+    .si-page-title { font-size:var(--fs-num-lg); letter-spacing:-.025em; }
+    .si-page-region { display:block; padding:6px 0 0; border:0; }
+    .si-side-foot { max-width:40%; font-size:var(--fs-micro); text-align:right; }
+    .si-workflow { gap:2px; justify-content:space-between; }
+    .si-workflow-link, .si-workflow > .si-view-btn { padding:8px 10px; font-size:var(--fs-sm); }
+    .si-side { flex-wrap:wrap; gap:4px; padding:10px 0; }
+    .si-side .si-view-btn { min-height:44px; padding:8px 10px; font-size:var(--fs-sm); }
+    .si-shell .rvx-hero { padding:24px 0; }
+    .si-shell .rvx-hgrid, .si-brief-evidence { grid-template-columns:minmax(0,1fr); gap:24px; }
+    .si-shell .rvx-vword { max-width:22ch; font-size:var(--fs-h1); line-height:1.15; }
+    .si-shell .rvx-eyebrow { margin-bottom:14px; flex-wrap:wrap; }
+    .si-shell .rvx-vsub { margin:14px 0; font-size:var(--fs-body); line-height:1.6; }
+    .si-entry-read { padding:20px 0 0; border-left:0; border-top:1px solid var(--line); }
+    .si-entry-read h2 { font-size:var(--fs-h2); margin-bottom:12px; }
+    .si-entry-read .cap { margin-bottom:10px; }
+    .si-entry-read p { margin-top:12px; }
+    .si-paper-actions { gap:12px; margin-top:16px; }
+    .si-paper-action { padding:10px 12px; font-size:var(--fs-sm); }
+    .si-paper-text-link { font-size:var(--fs-sm); }
+    .si-brief-evidence { padding:24px 0; }
+    .si-brief-evidence h2, .si-shell .rvx-sec-h h2 { font-size:var(--fs-h2); }
+    .si-brief-figure figcaption, .si-brief-status { font-size:var(--fs-sm); }
+  }
+  @media (prefers-reduced-motion:reduce) {
+    .si-shell .rvx-reveal { animation:none; transform:none; opacity:1; }
+  }
+</style>

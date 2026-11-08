@@ -2,6 +2,18 @@
 
 **Recorded:** 2026-10-30. **Editorial state:** proposed / not yet product-accepted. **Owning codebase:** macro. **Mastermind protected procedure pin:** mastermindx-market-intelligence/Mastermind@bb85b429f2ffffd38408080ce4df7d6378c34100 (skillpack 1.0.1). **Initial code baseline:** macro@63a2ea6a4e32936cfbed8c4c5c043bea04b29b80. **This task tree:** research/breadth_intelligence/MASTER_PLAN.md. **No new Agent OS workstream or runtime Job is created by this plan.**
 
+## Bounded source integration — 2026-11-08
+
+The original product objective and completion contract below remain open. This branch adds committed consumer regressions and ordinary CODE CI coverage for the existing pure projection. The accepted companion qualifier is now on main: engine/live_breadth.py blob `8e85ef89ed9741cfbb6fff9e51c37e3eb0a57825`, with its unchanged tests and research/engineering audit. The accepted seventy-case companion work remains preserved; this change does not reimplement its parser or producer.
+
+The fourteen original projection tests remain intact. Six additional test methods exercise the actual default compute_tier (including an explicit None), finite price/prior-close and optional-level admission, and the actual qualifier feeding the actual default projection. Synthetic 1,500-member controls require one fresh plus1,499 stale rows to remain unmeasured; all valid trade/minute-shaped rows with synthetic clocks to remain unmeasured; and all fresh rows to retain one advance plus1,499 unchanged, with0.067% positive participation distinct from100% advances/(advances+declines). These are committed assertions, not a newly executed case count or a current production observation.
+
+The adverse tests retain a separately supplied synthetic top-level clock while asserting that zero qualified members have no admitted per-member clock. They establish price-admission behavior under that envelope; the projection's single-clock contract remains a separate production integration limit. Caller-supplied thresholds and memberships in these fixtures are synthetic. Qualified quote coverage is not itself the breadth denominator, proof of same-basis thresholds, PIT membership or authenticated rights.
+
+The complete projection suite is enrolled in the existing leadership-measured-read CODE/exclusive owner, with declarations for the projection, live_breadth and its test. The existing leadership suite, settings and every unrelated owner remain. No new job, packing allowance, poller, data store, workflow, history capture or runtime publisher is introduced. Natural current-head contract and suite proof must qualify this source change.
+
+The [accepted research/engineering handoff](https://github.com/mastermindx-market-intelligence/Macro/pull/10212#issuecomment-6537700793) already records the Chairman commercial attestation for Massive/Polygon, Tiingo, ThetaData and the named Yahoo/yfinance route. Generic licence-unqualified wording in the October30 census is historical for those attested sources; no reapproval is requested. Actual access, reference-source/theme-use rights, vintages and retention implementation remain separate. Parser Boolean coercion, the actual poller hook, same-basis historical thresholds, PIT history, Paper and real browser/product acceptance remain open. The original Paper brief and every product journey below are preserved.
+
 ## Objective and completion contract
 
 **Persona:** an institutional-style market analyst, discretionary investor or risk desk reviewing whether advances or weakness are broad, how early that was observable, and which subindustries and themes are participating or decoupling.

@@ -997,13 +997,14 @@ html.dsr-dlg-lock body{overflow:hidden;position:fixed;width:100%;}
        "never checked" must not look the same from the hero. #}
     <a class="ss-hchip ss-t-{{ security_state.degradation.tone }}" href="#security-state">{{ t(security_state.degradation.en, security_state.degradation.zh) }}</a>
     {%- endif %}
-    {% if stale %}<span class="asof wrn">{{ t('May be stale', '可能过期') }} · {{ freshness }}</span>
+    {% if not (price_as_of|default(none)) %}<span class="asof dq-stamp" data-dq-stamp data-dq-state="baked">{{ t('Price observation date unavailable', '价格观测日期未知') }}</span>
+    {% elif price_stale|default(true) %}<span class="asof wrn dq-stamp" data-dq-stamp data-dq-state="baked">{{ t('Price may be stale', '价格可能过期') }} · {{ price_as_of }}</span>
     {# This said "Live" unconditionally, decided by the BUILD's own date: a page
        rendered last night printed a pulsing green "Live" next to a baked price
        that was a full session old. It now ships in the honest `baked` state —
        naming the date of the bytes actually served — and is upgraded ONLY by a
        measured quote, by dossier-live-quote.js. With JS off it stays truthful. #}
-    {% else %}<span class="livestamp dq-stamp" data-dq-stamp data-dq-state="baked"><span class="live-dot"></span>{{ t('As of ' ~ freshness, '截至 ' ~ freshness) }}</span>{% endif %}
+    {% else %}<span class="livestamp dq-stamp" data-dq-stamp data-dq-state="baked"><span class="live-dot"></span>{{ t('As of ' ~ price_as_of, '截至 ' ~ price_as_of) }}</span>{% endif %}
   </div>
   {% endif %}
 </header>
@@ -1259,7 +1260,7 @@ html.dsr-dlg-lock body{overflow:hidden;position:fixed;width:100%;}
 
   {% if technicals %}
   <section class="mod rv" id="technicals">
-    <div class="mod-hd"><h2>{{ t('Technicals', '技术面') }}</h2><span class="hint">{{ t('daily bars', '日线数据') }} · {{ freshness }} {% if 'technicals' in deep_ids %}<button class="gbtn gbtn-sm" onclick="dsrOpenDlg('dlg-technicals')">{{ t('Full detail', '完整数据') }}</button>{% endif %}</span></div>
+    <div class="mod-hd"><h2>{{ t('Technicals', '技术面') }}</h2><span class="hint">{{ t('daily bars', '日线数据') }} · {{ daily_as_of|default(none) or t('Observation date unavailable', '观测日期未知') }} {% if 'technicals' in deep_ids %}<button class="gbtn gbtn-sm" onclick="dsrOpenDlg('dlg-technicals')">{{ t('Full detail', '完整数据') }}</button>{% endif %}</span></div>
     {% if technicals.active_signals %}
     {%- set shortsigs = [] -%}
     {%- for sig in technicals.active_signals -%}
@@ -1723,7 +1724,7 @@ html.dsr-dlg-lock body{overflow:hidden;position:fixed;width:100%;}
     <p class="sm mut" style="margin:0 0 10px;line-height:1.5;">{{ t('Next month:', '下月：') }} {{ t(seasonality.next_label, seasonality.next_label_zh) }}</p>
     {% endif %}
     {% if seasonality.monthly %}
-    {%- set cur_month_idx = freshness[5:7] | int(1) - 1 -%}
+    {%- set cur_month_idx = (daily_as_of[5:7] | int(1) - 1) if (daily_as_of|default(none)) else -1 -%}
     <div class="seas">
       {% for m in seasonality.monthly %}
       {%- set wr = m.win_rate | float(0) -%}
@@ -1806,7 +1807,7 @@ html.dsr-dlg-lock body{overflow:hidden;position:fixed;width:100%;}
 
 <footer class="site-footer6">
   <p>{{ t('Research context only — not investment advice. Past patterns do not guarantee future results.', '仅供研究参考，不构成投资建议。历史规律不代表未来表现。') }}</p>
-  <p>{{ t('Data through', '数据截至') }} {{ freshness }} · {{ t('regenerated nightly', '每晚更新') }} · {{ t('Generated', '生成于') }} {{ generated_utc }} · <a href="index.html">{{ t('All coverage', '所有股票') }}</a> · <a href="../stock.html">{{ t('Analyzer', '分析器') }}</a></p>
+  <p>{% if freshness %}{{ t('Latest dated issuer source', '发行人最新来源日期') }} {{ freshness }}{% else %}{{ t('Source date unavailable', '来源日期未知') }}{% endif %} · {{ t('regenerated nightly', '每晚更新') }} · {{ t('Generated', '生成于') }} {{ generated_utc }} · <a href="index.html">{{ t('All coverage', '所有股票') }}</a> · <a href="../stock.html">{{ t('Analyzer', '分析器') }}</a></p>
 </footer>
 
 </div><!-- /page-wrap -->

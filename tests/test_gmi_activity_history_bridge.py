@@ -437,6 +437,65 @@ def test_two_qualifying_rulings_are_ambiguous(tmp_path, proposed, original_rulin
 
 
 # ---------------------------------------------------------------------------
+# A Chairman-delegated decision names its grant, or it is not authority
+# ---------------------------------------------------------------------------
+
+_DELEGATION = {
+    "granted_by": "Chairman Chris",
+    "granted_on": "2026-11-02",
+    "quote": "For Curator ABC and Graph membership use, you should make the decision for me",
+    "deciding_seat": "fixture-seat",
+    "decision_record": "DEC:FIXTURE-DELEGATED-DECISION",
+}
+
+
+def _delegated_plan(tmp_path, proposed, original_ruling, original_ruling_sha, *,
+                    evidence_kind="chairman_delegated_decision", delegation=_DELEGATION):
+    receipts_dir, terminal = _ratified(tmp_path, proposed)
+    ruling = _fixture_ruling(proposed, original_ruling, original_ruling_sha)
+    ruling["evidence_kind"] = evidence_kind
+    if delegation is not None:
+        ruling["delegation"] = copy.deepcopy(delegation)
+    path = tmp_path / "ruling_delegated.json"
+    path.write_text(json.dumps(ruling, sort_keys=True), encoding="utf-8")
+    [decision] = bridge.plan_bridge(
+        [proposed, terminal], receipts_dir=receipts_dir, ruling_paths=[str(path)],
+        recorded_at=RECORDED_AT, existing_events=[], allow_fixture=True)
+    return decision
+
+
+def test_delegated_decision_with_a_complete_record_grants(tmp_path, proposed,
+                                                          original_ruling,
+                                                          original_ruling_sha):
+    decision = _delegated_plan(tmp_path, proposed, original_ruling, original_ruling_sha)
+    assert decision["outcome"] == "APPEND"
+    assert decision["graph_membership_use"] == "GRANTED"
+    assert decision["ruling_refusals"] == []
+
+
+@pytest.mark.parametrize("case,evidence_kind,delegation", [
+    ("no_delegation_record", "chairman_delegated_decision", None),
+    ("grantor_not_the_chairman", "chairman_delegated_decision",
+     {**_DELEGATION, "granted_by": "Sol CEO"}),
+    ("blank_quote", "chairman_delegated_decision", {**_DELEGATION, "quote": "  "}),
+    ("no_deciding_seat", "chairman_delegated_decision",
+     {k: v for k, v in _DELEGATION.items() if k != "deciding_seat"}),
+    ("no_decision_record", "chairman_delegated_decision",
+     {**_DELEGATION, "decision_record": None}),
+    ("delegation_not_a_mapping", "chairman_delegated_decision", "Chairman Chris"),
+    ("unknown_evidence_kind", "seat_self_declared_decision", _DELEGATION),
+])
+def test_delegated_decision_without_a_complete_record_is_refused(
+        tmp_path, proposed, original_ruling, original_ruling_sha,
+        case, evidence_kind, delegation):
+    decision = _delegated_plan(tmp_path, proposed, original_ruling, original_ruling_sha,
+                               evidence_kind=evidence_kind, delegation=delegation)
+    assert decision["outcome"] == "HELD", case
+    assert decision["graph_membership_use"] == "NOT_GRANTED"
+    assert "USE_RULING_AUTHORITY" in [r["code"] for r in decision["ruling_refusals"]]
+
+
+# ---------------------------------------------------------------------------
 # The fixture-granted APPEND and idempotency
 # ---------------------------------------------------------------------------
 

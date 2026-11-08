@@ -1,13 +1,16 @@
-"""Isolated synthetic tests of the stateless group projection.
+"""Synthetic unit and real-consumer tests of the stateless group projection.
 
-These unit tests inject the existing pure counter interface for local execution;
-the repository CI must also execute an integration test with its real counter.
+The original cases retain their injected pure counter. Added integration cases
+use the default live-breadth counter and the accepted per-member qualifier,
+without provider I/O or a production source-clock or threshold-basis claim.
 """
 import copy
 import math
 import unittest
+from datetime import datetime
 
 from engine.breadth_intelligence_projection import project_groups
+from engine.live_breadth import qualify_snapshot_members
 
 NOW = "2026-10-30T14:42:00-04:00"
 KNOWN = "2026-10-30T14:43:00-04:00"
@@ -150,6 +153,172 @@ class Tests(unittest.TestCase):
         r = self.calc(groups=groups)["groups"]
         self.assertEqual(r[0]["positive_pct_of_observed"], r[1]["positive_pct_of_observed"])
         self.assertFalse(r[0]["aggregable_with_other_groups"])
+
+
+    def real_calc(self, **kw):
+        """Exercise project_groups' actual default counter without a substitute."""
+        args = dict(groups=self.groups, last_by_symbol=self.prices,
+                    thresholds_by_symbol=self.thresholds, source_asof=NOW,
+                    known_at=KNOWN, session="rth", upstream_usable=True)
+        args.update(kw)
+        return project_groups(**args)
+
+    def test_real_default_counter_and_explicit_none_preserve_denominators(self):
+        before = copy.deepcopy((self.prices, self.thresholds, self.groups))
+        for options in ({}, {"aggregate_tier": None}):
+            with self.subTest(options=options):
+                r = self.real_calc(**options)["groups"][0]
+                self.assertEqual(r["state"], "measured")
+                self.assertEqual((r["adv"], r["dec"], r["unch"]), (2, 2, 1))
+                self.assertEqual(r["observed_n"], 5)
+                self.assertEqual(r["positive_pct_of_observed"], 40)
+                self.assertEqual(r["adv_pct_excluding_unchanged"], 50)
+                self.assertEqual(r["pct_above_50"], 60)
+                self.assertEqual(r["pct_above_200"], 60)
+                self.assertEqual(r["logical_identification_bounds_pct"], [40, 40])
+        self.assertEqual((self.prices, self.thresholds, self.groups), before)
+
+    def test_real_counter_filters_invalid_price_and_prior_close(self):
+        for field in ("price", "prev_close"):
+            for value in (None, True, math.nan, math.inf, -math.inf, 0, -1, "100"):
+                with self.subTest(field=field, value=repr(value)):
+                    prices = dict(self.prices)
+                    levels = copy.deepcopy(self.thresholds)
+                    if field == "price":
+                        prices["C"] = value
+                    else:
+                        levels["C"]["prev_close"] = value
+                    before = copy.deepcopy((prices, levels))
+                    r = self.real_calc(
+                        last_by_symbol=prices, thresholds_by_symbol=levels,
+                        minimum_coverage_pct=80, minimum_observed=4)["groups"][0]
+                    self.assertEqual(r["state"], "measured")
+                    self.assertEqual(r["observed_n"], 4)
+                    self.assertEqual(r["coverage_pct"], 80)
+                    self.assertEqual((r["adv"], r["dec"], r["unch"]), (2, 2, 0))
+                    self.assertEqual(r["positive_pct_of_observed"], 50)
+                    self.assertEqual(r["adv_pct_excluding_unchanged"], 50)
+                    self.assertEqual(r["logical_identification_bounds_pct"], [40, 60])
+                    self.assertEqual((prices, levels), before)
+
+    def test_real_counter_excludes_invalid_optional_thresholds(self):
+        for value in (None, True, math.nan, math.inf, -math.inf, 0, -1, "99"):
+            with self.subTest(value=repr(value)):
+                levels = copy.deepcopy(self.thresholds)
+                for field in ("ma50", "ma200", "hi52", "lo52"):
+                    levels["C"][field] = value
+                before = copy.deepcopy(levels)
+                r = self.real_calc(thresholds_by_symbol=levels)["groups"][0]
+                self.assertEqual((r["adv"], r["dec"], r["unch"]), (2, 2, 1))
+                self.assertEqual(r["observed_n"], 5)
+                self.assertEqual(r["pct_above_50"], 50)
+                self.assertEqual(r["pct_above_200"], 50)
+                self.assertEqual((r["new_highs"], r["new_lows"]), (0, 0))
+                self.assertEqual(levels, before)
+
+    @staticmethod
+    def qualified_cohort_rows():
+        members = [f"S{i:04d}" for i in range(1500)]
+        quotes = {
+            symbol: {
+                "price": 101 if i == 0 else 100,
+                "source": "polygon",
+                "native_quote_identity": {
+                    "schema": "native_quote_identity.v1",
+                    "vendor": "polygon",
+                    "vendor_symbol": symbol,
+                    "response_field": "tickers[].ticker",
+                },
+                "price_basis": "trade" if i % 2 == 0 else "minute",
+                "quote_ts": NOW,
+                "quote_ts_synthetic": False,
+            }
+            for i, symbol in enumerate(members)
+        }
+        return members, quotes
+
+    def qualified_projection(self, members, quotes):
+        cutoff = datetime.fromisoformat(KNOWN)
+        qualified = qualify_snapshot_members(
+            quotes, members, observed_at=cutoff, asof=cutoff,
+            session_start=datetime.fromisoformat("2026-10-30T09:30:00-04:00"),
+            session_end=datetime.fromisoformat("2026-10-30T16:00:00-04:00"))
+        levels = {
+            symbol: dict(prev_close=100, ma50=99, ma200=98, hi52=110, lo52=70)
+            for symbol in members
+        }
+        # Deliberately keep a separately supplied, fresh top-level envelope.
+        # It must not turn excluded member prices into measured breadth.
+        # NOW is not an invented admitted clock when qualification returns none.
+        result = self.real_calc(
+            groups=[make_group(members=members)],
+            last_by_symbol=qualified["last_by_symbol"],
+            thresholds_by_symbol=levels, source_asof=NOW)
+        return qualified, result
+
+    def assert_unmeasured_counts(self, row, observed_n):
+        self.assertEqual(row["state"], "unmeasured")
+        self.assertEqual(row["unmeasured_reason"], "coverage_insufficient")
+        self.assertEqual(row["eligible_n"], 1500)
+        self.assertEqual(row["observed_n"], observed_n)
+        for key in (
+            "adv", "dec", "unch", "positive_pct_of_observed",
+            "adv_pct_excluding_unchanged", "pct_above_50", "pct_above_200",
+            "new_highs", "new_lows", "logical_identification_bounds_pct",
+        ):
+            self.assertIsNone(row[key], key)
+
+    def test_real_qualifier_one_fresh_1499_stale_cannot_create_flat_votes(self):
+        members, quotes = self.qualified_cohort_rows()
+        for symbol in members[1:]:
+            quotes[symbol]["quote_ts"] = "2026-10-30T09:31:00-04:00"
+        before = copy.deepcopy(quotes)
+        qualified, result = self.qualified_projection(members, quotes)
+        self.assertEqual(qualified["qualified_n"], 1)
+        self.assertEqual(qualified["last_by_symbol"], {members[0]: 101})
+        self.assertEqual(len(qualified["excluded_by_symbol"]), 1499)
+        self.assertEqual(set(qualified["excluded_by_symbol"].values()), {"stale_quote"})
+        self.assertEqual(qualified["oldest_source_asof"], "2026-10-30T18:42:00+00:00")
+        self.assertEqual(qualified["newest_source_asof"], qualified["oldest_source_asof"])
+        row = result["groups"][0]
+        self.assert_unmeasured_counts(row, 1)
+        self.assertEqual(row["coverage_pct"], 0.067)
+        self.assertEqual(quotes, before)
+
+    def test_real_qualifier_synthetic_trade_minute_clocks_cannot_create_counts(self):
+        members, quotes = self.qualified_cohort_rows()
+        for quote in quotes.values():
+            # Keep valid trade/minute shapes: this isolates the synthetic flag.
+            quote["quote_ts_synthetic"] = True
+        qualified, result = self.qualified_projection(members, quotes)
+        self.assertEqual(qualified["qualified_n"], 0)
+        self.assertEqual(qualified["last_by_symbol"], {})
+        self.assertEqual(qualified["source_asof_by_symbol"], {})
+        self.assertEqual(len(qualified["excluded_by_symbol"]), 1500)
+        self.assertEqual(
+            set(qualified["excluded_by_symbol"].values()), {"synthetic_quote_ts"})
+        self.assertIsNone(qualified["oldest_source_asof"])
+        self.assertIsNone(qualified["newest_source_asof"])
+        self.assertEqual(result["source_asof"], NOW)
+        row = result["groups"][0]
+        self.assert_unmeasured_counts(row, 0)
+        self.assertEqual(row["coverage_pct"], 0)
+
+    def test_real_qualifier_fresh_cohort_preserves_unchanged_denominator(self):
+        members, quotes = self.qualified_cohort_rows()
+        qualified, result = self.qualified_projection(members, quotes)
+        self.assertEqual(qualified["qualified_n"], 1500)
+        self.assertEqual(qualified["excluded_by_symbol"], {})
+        self.assertEqual(len(qualified["source_asof_by_symbol"]), 1500)
+        row = result["groups"][0]
+        self.assertEqual(row["state"], "measured")
+        self.assertEqual((row["eligible_n"], row["observed_n"]), (1500, 1500))
+        self.assertEqual(row["coverage_pct"], 100)
+        self.assertEqual((row["adv"], row["dec"], row["unch"]), (1, 0, 1499))
+        self.assertEqual(row["positive_pct_of_observed"], 0.067)
+        self.assertEqual(row["adv_pct_excluding_unchanged"], 100)
+        self.assertEqual(row["logical_identification_bounds_pct"], [0.067, 0.067])
+        self.assertFalse(row["aggregable_with_other_groups"])
 
 
 if __name__ == "__main__":
