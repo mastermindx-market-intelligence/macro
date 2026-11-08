@@ -1,0 +1,4 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/government-revenue-parity.css
+manifest: mockups/evidence/defense-a38-saved-cut-20261018/manifest.json

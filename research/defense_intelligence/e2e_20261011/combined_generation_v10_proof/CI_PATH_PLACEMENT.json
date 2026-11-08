@@ -1,0 +1,28 @@
+{
+  "purpose": "Reduce repeated additive-list conflicts with independently advancing main",
+  "semantics": "Identical path multisets and all non-path job fields; no changed inventory, matching rule or gate",
+  "jobs": {
+    "conviction-profile": 4,
+    "options-matrix-code": 4,
+    "flow-surface": 6,
+    "fif-kernel-guards": 24,
+    "nw-lobe-unfreeze": 4,
+    "biocatalyst-serving": 6,
+    "biocatalyst-history": 6,
+    "crypto-assistant-context": 23,
+    "defense-rail-laws": 225,
+    "govrev-program-ontology": 89,
+    "unrun-government-revenue-candidate-projection": 3,
+    "washout-turn-organ": 4,
+    "unrun-picks-boards": 4,
+    "earnings-economic-source-selection": 6,
+    "earnings-economic-dossier": 4,
+    "unrun-government-revenue-grader": 3,
+    "research-price-panel": 23,
+    "falsifier-tripwires": 7,
+    "ticker-news-qbus": 24,
+    "skew-accrual-lane": 4,
+    "mining-economic-dossier": 4,
+    "industrials-result-cash": 6
+  }
+}

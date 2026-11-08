@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-03-23T18:15:26Z",
+ "accession": "0001193125-26-119321",
+ "cik": "0001280263",
+ "doc_byte_length": 4117571,
+ "doc_sha256": "deeacde656e445319dba455f66696bc4ccbee30ed2c9ef92dc4a9695c8f83852",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-23",
+ "form": "10-K",
+ "period_of_report": "2026-01-31",
+ "primary_document": "amba-20260131.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 509633,
+  "byte_start": 509120,
+  "normalized": "We currently depend on Samsung, as the principal foundry for our products, to transition to new processes successfully. We cannot assure you that Samsung will be able to effectively manage such transitions or that we will be able to maintain our relationship with Samsung or develop relationships with new foundries. Moreover, as we utilize more advanced process nodes beyond 5 nm, we are increasingly dependent upon a very small number of foundries currently available for certain advanced process technologies.",
+  "normalized_sha256": "46a20d210c30cb6358e73944e4c661a9c591e275cad6b4c5a4ec430180e0b102",
+  "raw": " We currently depend on Samsung, as the principal foundry for our products, to transition to new processes successfully. We cannot assure you that Samsung will be able to effectively manage such transitions or that we will be able to maintain our relationship with Samsung or develop relationships with new foundries. Moreover, as we utilize more advanced process nodes beyond 5 nm, we are increasingly dependent upon a very small number of foundries currently available for certain advanced process technologies.",
+  "raw_sha256": "3abaa1d5f8a500048f3c150e7108d19a442997fc862f358ad62f93047a0965b7"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1280263/000119312526119321/amba-20260131.htm",
+ "xbrl_contexts": []
+}
