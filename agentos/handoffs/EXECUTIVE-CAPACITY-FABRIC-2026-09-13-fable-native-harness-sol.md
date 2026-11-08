@@ -1,4 +1,105 @@
 ---
+workstream: "WS:EXECUTIVE-CAPACITY-FABRIC"
+session: "claude/fable-native-harness-20260913-sol"
+model: "sol"
+ended_because: "blocked"
+mission: "Qualify existing N0 router_only/native_leaf source on current main; no native activation, widened leaf or second control plane."
+state_before: "Published abf7a354e4ed36c937027d81d8a50cbdf47e7f60 has accepted historical N0 semantics, stale settings/catalog and five fixture mutations targeting PreToolUse[0] instead of the routing guard."
+changed:
+  - path: ".claude/settings.json"
+    what: "Preserve current settings; widen only the existing routing guard matcher to include TeamCreate, SendMessage and Skill."
+  - path: ".github/ci/legacy-jobs.yml"
+    what: "Extend only the existing CODE ruling-graph routing step with profile and native-conformance suites."
+  - path: "tests/test_fable_harness_profile.py"
+    what: "Select the unique group by exact profile.GUARD_COMMAND; preserve all five mutations and refusal assertions."
+  - path: "agentos/handoffs/EXECUTIVE-CAPACITY-FABRIC-2026-09-13-fable-native-harness-sol.md"
+    what: "Qualify current claims; preserve the complete original 12422-byte record once as dated history."
+prs:
+  - 7114
+verified:
+  - claim: "Published source and current-main preimages are identified."
+    command: "GitHub git/commits, git/trees and blob reads at H abf7a354e4ed36c937027d81d8a50cbdf47e7f60, base aa6750b68ccefeb17043e590b61e8a00565d1837 and main 0242fc6a26d733160fc0e3d9fc710d32508cd030; Git hash verification."
+    result: "Main guard/context/routing-test and registry/scout equal the original base. Eight additions remain absent on main; nine original postimages are retained."
+  - claim: "Current settings, CI and fixture adaptations are narrow."
+    command: "V8 JSON.parse, unique exact-command selection and inverse source comparisons."
+    result: "One matcher, one existing CI step and one fixture assignment change. Other settings,396 catalog owners and all five mutation/refusal assertions remain exact. No Python execution."
+  - claim: "The original handoff remains exact once."
+    command: "UTF-8 length, Git blob SHA-1, SHA-256 and exact archive extraction comparison."
+    result: "12422 bytes; blob e179f3102bfc55019c2db0961459922e68e72d4a; SHA256 0a9c0b0c69dc879fa5341759a759fcc969dc45d071f13663a8b96c78a3f3d9f3."
+unverified:
+  - claim: "Current candidate owning tests, contract and hosted semantic CI pass."
+    what_would_verify: "Natural exact-new-head CI, including existing routing/profile/model-guard/native-oracle suites. Historical results do not transfer."
+  - claim: "Current packing and ordinary-budget AgentOS selection/validation are qualified."
+    what_would_verify: "Actual current measurements and normal validation receipts. Packing file and context budgets are unchanged; no inferred +4 allowance or full-store/context-parity claim."
+  - claim: "N1 rich-principal integration and native/runtime/product adoption are accepted."
+    what_would_verify: "Existing capability/package/harness/workspace/Executive owners must supply current grants, bindings, capacity, served-model and exact-parent consumer proof. This source launches nothing."
+unresolved:
+  - "Draft/HOLD source release awaits current proof and explicit disposition; the assigned parent continues other safe work."
+  - "A1 rc1/provider_error was not accepted completion. A2 acquisition/diagnostic were NOT_APPLIED; original closed operations/private 191c workspace are not accessed or replayed."
+  - "September host, connector, CLI, test and context-selection observations remain historical; current health and activation are unproven."
+next_actions:
+  - "Continue the original PR/branch; consume new own CI and repair concrete N0 failures without weakening the leaf."
+  - "Change the conditional fourteenth packing path only after actual current paired evidence; preserve job/pack/selector controls and record the measured delta."
+  - "Record explicit source-hold disposition before Ready/one incumbent MOG. Continue native adoption separately through the pinned existing owners."
+do_not_redo:
+  - "Preserve nine immutable original postimages and router_only/native_leaf: launch_authorized:false, six-source/CWD/hash binding, fixed Sonnet/read-only/scout/fourteen-turn leaf, no children/resume and existing tool refusals."
+  - "Keep architecture/evidence JSONs unchanged. September 253 focused tests/eight scripted-loopback cases remain dated proof, not new execution."
+  - "Do not reconstruct private preparation or retry original native/provider/host/workspace refusals; current-public-source preparation grants no old effect release."
+  - "Reuse existing router, Executive, capability, package and harness owners; add no registry, launcher, scheduler, budget, queue or watcher."
+danger_areas:
+  - "A compiled plan/requested model is not admission, served identity, billing, installed protection or OS sandbox. Leaf/concurrency hints do not implement shared-root budgets."
+  - "Preserve current ship-loop/quota/return/blocklist/navigation/report-only/Stop hooks. Historical archived instructions do not override this dated qualification."
+---
+
+## Current source qualification — 2026-11-08
+
+**Draft/HOLD; N0 source only.** This candidate composes published
+`abf7a354e4ed36c937027d81d8a50cbdf47e7f60` with main
+`0242fc6a26d733160fc0e3d9fc710d32508cd030`. Its thirteen original paths contain
+nine unchanged postimages and four scoped adaptations. The conditional packing
+file is unchanged; private a1's fourteen-path inventory and old ceilings do not
+describe this candidate.
+
+The current settings retain the ship-loop group before the routing guard. The
+fixture selects that guard by exact command instead of index zero, preserving
+all five refusal cases. The compiler/guard and six-source/CWD binding remain
+unchanged; N0 does not become a rich principal or activate N1.
+
+At protected Mastermind `42f844017ec27554709282e72228c53b4c9ef8df`, the
+[canonical capability policy](https://github.com/mastermindx-market-intelligence/Mastermind/blob/42f844017ec27554709282e72228c53b4c9ef8df/config/executive_agent_capabilities.json)
+defines Claude sealed-worker and attended-bounded profiles. It is no longer
+Codex-only. Existing continuation owners are:
+
+| Responsibility | Pinned source | Git blob |
+|---|---|---|
+| Claude SDK adapter | [`control_plane/claude_operator_adapter.py`](https://github.com/mastermindx-market-intelligence/Mastermind/blob/42f844017ec27554709282e72228c53b4c9ef8df/control_plane/claude_operator_adapter.py) | `cf95b7943ed0ba1dcf99bfa2346bfbd84084ed59` |
+| Immutable Capability Packages | [`control_plane/executive_capability_packages.py`](https://github.com/mastermindx-market-intelligence/Mastermind/blob/42f844017ec27554709282e72228c53b4c9ef8df/control_plane/executive_capability_packages.py) | `6e187a89ea85ea113b114d5f27e7e7684042dd0f` |
+| Canonical capability policy | [`control_plane/executive_agent_capabilities.py`](https://github.com/mastermindx-market-intelligence/Mastermind/blob/42f844017ec27554709282e72228c53b4c9ef8df/control_plane/executive_agent_capabilities.py) | `5cd2b0ef347d9ed1cc2f57912778b6363b3da52e` |
+| Operator Harness interface | [`control_plane/operator_harness_contract.py`](https://github.com/mastermindx-market-intelligence/Mastermind/blob/42f844017ec27554709282e72228c53b4c9ef8df/control_plane/operator_harness_contract.py) | `b89c68cb102faa75efe36d262124f8830cd72894` |
+
+These are source owners/interfaces, not evidence of an installed runtime,
+current host availability, quota or an admitted rich Claude principal.
+
+No new Python/native-CLI/provider/full-store/context-selection result is claimed.
+The [a1 evidence limits](https://github.com/mastermindx-market-intelligence/Macro/pull/7114#issuecomment-6673763505)
+and [a2 NOT_APPLIED receipt](https://github.com/mastermindx-market-intelligence/Macro/pull/7114#issuecomment-6673864277)
+remain intact. This distinct public-source composition does not read or
+reconstruct the private 191c preparation, retry acquisition, certify old workspace
+custody or grant native activation. The current assigned parent owns source
+continuation; old author/chat names are not approval seats.
+
+## Complete original handoff — historical 2026-09-13 snapshot
+
+Original 12422 bytes, blob e179f3102bfc55019c2db0961459922e68e72d4a,
+SHA256 0a9c0b0c69dc879fa5341759a759fcc969dc45d071f13663a8b96c78a3f3d9f3.
+Its 123-test/CLI2.1.239, registry, host and #581/N1 statements keep their original
+dates. The dated architecture and evidence JSONs are also unchanged history.
+
+<details>
+<summary>Original dated record — preserved verbatim as history</summary>
+
+<!-- BEGIN EXACT ORIGINAL HANDOFF e179f3102bfc55019c2db0961459922e68e72d4a -->
+---
 workstream: WS:EXECUTIVE-CAPACITY-FABRIC
 session: claude/fable-native-harness-20260913-sol
 model: sol
@@ -155,3 +256,6 @@ Hold on source collision, missing admission, stale binding/capacity, unknown eff
 unqualified tools or served-model substitution; preserve the same operation until
 its effect is reconciled. Source tests, native fixture proof, merge and production
 acceptance remain separate facts.
+
+<!-- END EXACT ORIGINAL HANDOFF e179f3102bfc55019c2db0961459922e68e72d4a -->
+</details>

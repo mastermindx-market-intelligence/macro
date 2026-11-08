@@ -311,7 +311,13 @@ def test_compiler_refuses_unknown_or_unsupported_versions(project, version):
 def test_compiler_refuses_unqualified_existing_hook_wiring(project, mutation):
     path = project / profile.SETTINGS
     data = json.loads(path.read_text())
-    group = data["hooks"]["PreToolUse"][0]
+    groups = [
+        group for group in data["hooks"]["PreToolUse"]
+        if any(hook.get("command") == profile.GUARD_COMMAND
+               for hook in group.get("hooks", []))
+    ]
+    assert len(groups) == 1, "fixture must select the unique routing guard"
+    group = groups[0]
     if mutation == "missing":
         group["hooks"] = []
     elif mutation == "duplicate":

@@ -1,0 +1,11 @@
+# Reviewed drawing transaction prototype
+
+This is an artifact contribution, not a migration, source writer, installed RPC or live delivery. It uses the existing drawings table and owner RLS; no second collection store is introduced.
+
+The direct-input guard passed 33 real PostgreSQL 17.11 fixture cases. The exact transaction function passed three independent cases using actual database sessions: one concurrent save committed while the other conflicted; a replay retained the same revision and entire row; a successful replacement rolled back to the exact preimage. `concurrent-proof.json` pins the function hash and container removal. The fixture used the official cached PostgreSQL image, network none and temporary memory storage. Production PostgreSQL is 17.6; runtime equivalence has not been claimed.
+
+Two GLM oracle proposals were rejected after actual PostgreSQL syntax and assertion failures. Higher Fabric Grok repair `rs_20261006T164213Z_50821` corrected and executed the suite: 33 guard and 11 transaction cases passed with zero skips, `psql` exited0, and the fixture was removed. The parent verified unchanged guard/function/guard-regression hashes, reviewed the corrected RLS snapshots and rollback assertions, and freshly read back container absence. `transaction-proof.json` and `review.json` preserve that scoped acceptance. No full original A04 acceptance is claimed.
+
+`python3 run_fixture.py` reproduces the isolated matrix on the admitted existing Ubuntu2 Docker/PostgreSQL image. `python3 run_concurrent.py` reproduces the independent real-session cases. Both use only synthetic rows and remove their own temporary fixture. Run from this contribution directory with its fixture files; do not retarget either script to a real database.
+
+Source route/outbox/normalizer/tool registry are unchanged between the prototype pin64c1 and deployed8f3; `current-source-caller-proof.json` gives exact blobs. The actual save/load caller is TerminalShell.tsx, whose incumbent owner PR597 binding remains unresolved. Legacy collection bootstrap, operation/revision client receipts and outbox retention, migration prefix/custody, owning CI and live two-tab acceptance remain outstanding. No existing collection may be migrated by blindly installing this strict prototype.
