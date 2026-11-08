@@ -1,0 +1,782 @@
+{
+  "snapshot_date_utc": "2026-10-31",
+  "pins": {
+    "mastermind": "bb85b429f2ffffd38408080ce4df7d6378c34100",
+    "macro": "1c85878983323f9ab38fff56a15771166d0f8aeb",
+    "terminal": "69e8e9f0eaad94180a83b108d05f16ad48c48950",
+    "fable_ledger": "6c543006d693c7b5051f27697362c015ea1ff8ee"
+  },
+  "records": [
+    {
+      "id": "R01",
+      "title": "Protected Mastermind skillpack index",
+      "kind": "receipt_or_locator",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/bb85b429f2ffffd38408080ce4df7d6378c34100/docs/sol_skills/INDEX.md",
+      "scope": "Version 1.0.1. Companion procedures retained under evidence/procedure."
+    },
+    {
+      "id": "R02",
+      "title": "C0 programme control",
+      "kind": "pinned_repository_file",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/1c85878983323f9ab38fff56a15771166d0f8aeb/agentos/decisions/DEC-OPTIONS-INTELLIGENCE-C0-PROGRAM-CONTROL.md",
+      "blob_sha": "05b2ae757de1db0c29dd47fd2e09d6878405dd37",
+      "scope": "Four canonical owners; no fifth programme or plane."
+    },
+    {
+      "id": "R03",
+      "title": "Options Alpha recovery",
+      "kind": "pinned_repository_file",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/1c85878983323f9ab38fff56a15771166d0f8aeb/agentos/workstreams/WS-OPTIONS-ALPHA-INTELLIGENCE-RECOVERY.md",
+      "blob_sha": "681ec895ebc842cd633651732db0848a46872976",
+      "scope": "OA-1..5, prerequisites, authority and DO_NOT_REDO."
+    },
+    {
+      "id": "R04",
+      "title": "Intraday Flow P0 recovery",
+      "kind": "pinned_repository_file",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/1c85878983323f9ab38fff56a15771166d0f8aeb/agentos/workstreams/WS-INTRADAY-FLOW-P0-RECOVERY.md",
+      "blob_sha": "59764b7dd35952700fd35d0b92840ea7ccf161d9",
+      "scope": "PR4 three-plane acceptance differs from individual source/health receipts."
+    },
+    {
+      "id": "R05",
+      "title": "Advanced Data Options",
+      "kind": "pinned_repository_file",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/1c85878983323f9ab38fff56a15771166d0f8aeb/agentos/workstreams/WS-ADVANCED-DATA-OPTIONS.md",
+      "blob_sha": "fc0243b9cf4ad792ff14a48f10c2c2389b15d0a2",
+      "scope": "AD ownership; desired coverage is not admitted coverage."
+    },
+    {
+      "id": "R06",
+      "title": "Context audit v2",
+      "kind": "pinned_repository_file",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/1c85878983323f9ab38fff56a15771166d0f8aeb/agentos/workstreams/WS-OPTIONS-CONTEXT-AUDIT-PREREG-V2.md",
+      "blob_sha": "8651971f8f553bcb50ac469145986fd6a40f636d",
+      "scope": "Separate inactive charter; original source limits."
+    },
+    {
+      "id": "R07",
+      "title": "Canonical August28 masterplan",
+      "kind": "pinned_repository_file",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/1c85878983323f9ab38fff56a15771166d0f8aeb/research/OPTIONS_INTELLIGENCE_CONSOLIDATED_MASTERPLAN_2026-08-28.md",
+      "blob_sha": "87e69183734fc158f020a3fe55d4f70c4f80c6d8",
+      "scope": "Programme provenance; current scoped receipts outrank dated status."
+    },
+    {
+      "id": "R08",
+      "title": "October11 Fable plan / #8770",
+      "kind": "pinned_repository_file",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/8bf49e2430c996642e94b7f39d220c2e9fb33894/research/options_intelligence/2026-10-11-fable-completion/FABLE_EXECUTION_MASTERPLAN.md",
+      "blob_sha": "2911f81b48558e2a8addb114b6c89bd99b5cf70d",
+      "scope": "Existing planning carrier; no dispatch or custody transfer."
+    },
+    {
+      "id": "R09",
+      "title": "Fable continuation ledger / 6c543006",
+      "kind": "pinned_repository_file",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/6c543006d693c7b5051f27697362c015ea1ff8ee/research/OPTIONS_INTELLIGENCE_CONTINUATION_HANDOFF_2026-10-11.md",
+      "blob_sha": "7ea750cc789080c2adc899d2ed4bcfe669994476",
+      "scope": "D102 October31 05:41Z; 104-task OPT packet already adopted."
+    },
+    {
+      "id": "R10",
+      "title": "Options supersession register",
+      "kind": "pinned_repository_file",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/1c85878983323f9ab38fff56a15771166d0f8aeb/research/options_estate/OPTIONS_SUPERSESSION_REGISTER_2026-10.md",
+      "blob_sha": "6057683d0bc3140756962c6b50af8f79dbdb2a1a",
+      "scope": "123 claims; explicit conflicts and preserved accepted work."
+    },
+    {
+      "id": "R11",
+      "title": "Canonical product issue #599",
+      "kind": "receipt_or_locator",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/issues/599",
+      "scope": "Last34 comments read, plus selected explicit receipts; not all234 comments re-audited."
+    },
+    {
+      "id": "R12",
+      "title": "October29 natural acceptance",
+      "kind": "receipt_or_locator",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/issues/599#issuecomment-6504497416",
+      "scope": "Natural Oct26–29 source and EN/ZH Tape/Statistics; partial populations;1261-second cycle."
+    },
+    {
+      "id": "R13",
+      "title": "Options R1 programme",
+      "kind": "pinned_repository_file",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/69e8e9f0eaad94180a83b108d05f16ad48c48950/docs/OPTIONS_R1_PROGRAM.md",
+      "blob_sha": "1657e6859c121f87f16e0fe53db42c53ad3530c9",
+      "scope": "W1/W2 live receipts; W3 next-action prose superseded by R14/R15."
+    },
+    {
+      "id": "R14",
+      "title": "R1 W3",
+      "kind": "pull_request_snapshot",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1104",
+      "head_sha": "708b996b1c09ddc137d9cfe34621fda3dd69b456",
+      "merged": true,
+      "merge_commit_sha": "0aecf8e95dd7888b3453834d75f3e072e464bb6e",
+      "updated_at": "2026-10-30T15:44:09Z",
+      "scope": "Merged; dated apply-null body superseded by R15."
+    },
+    {
+      "id": "R15",
+      "title": "0040 production apply",
+      "kind": "receipt_or_locator",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1104#issuecomment-6343024596",
+      "scope": "Applied once Oct22 13:40:13Z; independent validator/catalog read; no full Watch journey inferred."
+    },
+    {
+      "id": "R16",
+      "title": "W3B clock adjudication",
+      "kind": "receipt_or_locator",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1104#issuecomment-6526883926",
+      "scope": "Existing synthetic mixed-clock witness; owner decision before changing convention."
+    },
+    {
+      "id": "R17",
+      "title": "Sharing preview failure proposal",
+      "kind": "receipt_or_locator",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1144#issuecomment-6539302833",
+      "scope": "Unapplied source proposal under incumbent; no new implementation pickup."
+    },
+    {
+      "id": "R18",
+      "title": "Candidate formation policy v2",
+      "kind": "pinned_repository_file",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/1c85878983323f9ab38fff56a15771166d0f8aeb/research/options_estate/options_alpha_candidate_formation_policy_v2.json",
+      "blob_sha": "8e243ef690f0e39dcc325429e3cd87bd76e200bc",
+      "scope": "Inactive; four prerequisites and activation receipt; frozen first eligible revision."
+    },
+    {
+      "id": "R19",
+      "title": "OA3 exact-option outcome policy",
+      "kind": "pinned_repository_file",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/1c85878983323f9ab38fff56a15771166d0f8aeb/research/options_estate/options_alpha_exact_option_outcome_policy_v1.json",
+      "blob_sha": "898ef7195616956137444e2b76421af59066c8fd",
+      "scope": "Long single-leg standard-contract H60 NBBO ruler; no actual-fill claim."
+    },
+    {
+      "id": "R20",
+      "title": "OA science preregistration",
+      "kind": "pinned_repository_file",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/1c85878983323f9ab38fff56a15771166d0f8aeb/research/options_estate/OPTIONS_ALPHA_SIGNAL_SCIENCE_PREREG_V1.md",
+      "blob_sha": "37ee447f527d4ddee94fb898f28785e383fea6b0",
+      "scope": "FS-5 target, source/time/root restrictions and validation law."
+    },
+    {
+      "id": "R21",
+      "title": "Six-pilot study specification",
+      "kind": "pinned_repository_file",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/1c85878983323f9ab38fff56a15771166d0f8aeb/research/options_intelligence/2026-10-03/PILOT_STUDY_SPEC_V1.md",
+      "blob_sha": "db8c9ce40b46a1e5cefc7983ded5c6faedc3cfb0",
+      "scope": "Authoring status PRINCIPAL_PROPOSAL; read with later R23 acceptance."
+    },
+    {
+      "id": "R22",
+      "title": "Six-pilot machine design",
+      "kind": "pinned_repository_file",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/1c85878983323f9ab38fff56a15771166d0f8aeb/research/options_intelligence/2026-10-03/pilot-study-spec.v1.json",
+      "blob_sha": "fc00aa33b11c26be9fa0ca6a4b7c0280f73dab81",
+      "scope": "Six distinct primary studies; empirical binding remains unfilled."
+    },
+    {
+      "id": "R23",
+      "title": "Six-pilot engineering acceptance",
+      "kind": "pinned_repository_file",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/1c85878983323f9ab38fff56a15771166d0f8aeb/research/options_intelligence/2026-10-03/PRINCIPAL_DECISIONS_20261003.md",
+      "blob_sha": "5b5c6e5770481d568f458f867629d6b9ad58465e",
+      "scope": "Accepts exact design for engineering; empirical trial remains unsealed."
+    },
+    {
+      "id": "R24",
+      "title": "Dated Flow signal gate",
+      "kind": "pinned_repository_file",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/1c85878983323f9ab38fff56a15771166d0f8aeb/data/flow_signals/gate.json",
+      "blob_sha": "482412237b95d45f215110082af3d585f0e1f21f",
+      "scope": "Oct18 snapshot / last event Oct16; not current runtime."
+    },
+    {
+      "id": "R25",
+      "title": "Main Intraday browser template",
+      "kind": "pinned_repository_file",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/1c85878983323f9ab38fff56a15771166d0f8aeb/templates/intraday_flow.html.j2",
+      "blob_sha": "8832ceba22068eccc65704f7bf6d7bbe027a9e45",
+      "scope": "Actual computeLegs code extracted and synthetically compared."
+    },
+    {
+      "id": "R26",
+      "title": "Main Intraday engine",
+      "kind": "pinned_repository_file",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/1c85878983323f9ab38fff56a15771166d0f8aeb/engine/intraday_flow.py",
+      "blob_sha": "bc5b88bec9f0f077e8153f6b98e6bcb60611834a",
+      "scope": "Actual confluence_legs function extracted."
+    },
+    {
+      "id": "R27",
+      "title": "Intraday builder",
+      "kind": "pinned_repository_file",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/1c85878983323f9ab38fff56a15771166d0f8aeb/scripts/build_intraday_flow.py",
+      "blob_sha": "c6f71484a365a2800235826805da65ed5c96c3f4",
+      "scope": "Measured washout propagation and lifecycle consumers."
+    },
+    {
+      "id": "R28",
+      "title": "Intraday lifecycle repair",
+      "kind": "pull_request_snapshot",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/6867",
+      "head_sha": "1ba8321db28c7ff8458ac2931bd5bcf9bde66809",
+      "merged": false,
+      "merge_commit_sha": null,
+      "updated_at": "2026-10-23T23:56:13Z",
+      "scope": "Selected actual diff inspected; draft/HOLD; red checks."
+    },
+    {
+      "id": "R29",
+      "title": "ThetaData collector",
+      "kind": "pinned_repository_file",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/1c85878983323f9ab38fff56a15771166d0f8aeb/collectors/thetadata.py",
+      "blob_sha": "75be5fab61c5820ea78a53fca962e7a380c52fc5",
+      "scope": "Sequential per-expiration fallback; no provider call by audit."
+    },
+    {
+      "id": "R30",
+      "title": "Latency measurement",
+      "kind": "pull_request_snapshot",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/10201",
+      "head_sha": "87035e8928f78ac78c778aa83469d53c0c059057",
+      "merged": false,
+      "merge_commit_sha": "16016e72d072562cb38e456d29624596a8d5ffe4",
+      "updated_at": "2026-10-30T14:57:21Z",
+      "scope": "Actual diff inspected; draft/release hold; source review reported."
+    },
+    {
+      "id": "R31",
+      "title": "Terminal flowScore",
+      "kind": "pinned_repository_file",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/69e8e9f0eaad94180a83b108d05f16ad48c48950/terminal/lib/flowScore.ts",
+      "blob_sha": "93706d41b65167aee7f95324cdafdf32151a4bfb",
+      "scope": "Weighted heuristic attention/conviction score; not calibrated probability."
+    },
+    {
+      "id": "R32",
+      "title": "Candidate panel",
+      "kind": "pinned_repository_file",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/69e8e9f0eaad94180a83b108d05f16ad48c48950/terminal/components/prophet/OptionsAlphaCandidatePanel.tsx",
+      "blob_sha": "80cfe3b7a92e4a1e596fc744edbdf03235ccbceb",
+      "scope": "Candidate identity, disposition and eligibility display."
+    },
+    {
+      "id": "R33",
+      "title": "Terminal Plan expiry API",
+      "kind": "pinned_repository_file",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/69e8e9f0eaad94180a83b108d05f16ad48c48950/terminal/app/api/options/plan/expiry/route.ts",
+      "blob_sha": "8aa0fb159c70bf5ab5ec4653857ab744ab6000a0",
+      "scope": "Private authenticated forwarding, bounded strict preparation."
+    },
+    {
+      "id": "R34",
+      "title": "Terminal Plan payoff contract",
+      "kind": "pinned_repository_file",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/69e8e9f0eaad94180a83b108d05f16ad48c48950/terminal/lib/optionsPlanPayoff.ts",
+      "blob_sha": "cb68f58f3f64e3e586c7b775996209d177ca6a22",
+      "scope": "Dated-reference boundary; current-quote and historical-first-availability claims false."
+    },
+    {
+      "id": "R35",
+      "title": "Macro private Plan consumer",
+      "kind": "pinned_repository_file",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/1c85878983323f9ab38fff56a15771166d0f8aeb/docs/OPTIONS_PLAN_PRIVATE_CONSUMER_2026-10-24.md",
+      "blob_sha": "61f8015e026683b93a65da3758945e10728a10e4",
+      "scope": "Existing endpoint/installation owner and retained reference."
+    },
+    {
+      "id": "R36",
+      "title": "Macro Plan preparation",
+      "kind": "pinned_repository_file",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/1c85878983323f9ab38fff56a15771166d0f8aeb/docs/OPTIONS_PLAN_EXPIRY_SOURCE_PREPARATION_2026-10-24.md",
+      "blob_sha": "2719ff50272eb966d84fd335cce2229f9fae4df5",
+      "scope": "Source preparation is not install or live acceptance."
+    },
+    {
+      "id": "R37",
+      "title": "Exact expression/history",
+      "kind": "pull_request_snapshot",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/9682",
+      "head_sha": "9c7aa19c6a5e53aa802967452bd5dc8ad2645baf",
+      "merged": false,
+      "merge_commit_sha": "109cb7d72d4af2141b61d8e3ca69203c5410cbb9",
+      "updated_at": "2026-10-23T23:57:14Z",
+      "scope": "Existing source preparation; no activation/capture inferred."
+    },
+    {
+      "id": "R38",
+      "title": "Campaign correction receipt",
+      "kind": "pull_request_snapshot",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/9677",
+      "head_sha": "65a230d376821d3c2db8707820e91cbcb194c02f",
+      "merged": false,
+      "merge_commit_sha": "4a1671bfdd118730862b3eb8ea37f31ece0e88a3",
+      "updated_at": "2026-10-19T08:09:59Z",
+      "scope": "Lineage integrity separate from Tape proof."
+    },
+    {
+      "id": "R39",
+      "title": "Calibration methods",
+      "kind": "pull_request_snapshot",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/8385",
+      "head_sha": "0234ea19cb8fee75750f8c387b2fe4a3cf358a25",
+      "merged": false,
+      "merge_commit_sha": "4c077164f3b374a80c517416ed7fedc040c1cf6a",
+      "updated_at": "2026-10-11T09:22:14Z",
+      "scope": "Q01/O-A concluded in R09; carrier remains REVISE."
+    },
+    {
+      "id": "R40",
+      "title": "Read-failed semantics",
+      "kind": "pull_request_snapshot",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/10003",
+      "head_sha": "f6d01b905d87d1a776f5374b297d1b01504d2af3",
+      "merged": false,
+      "merge_commit_sha": "50327744d96a2e6cc87086b3aa5e054dfdc98eba",
+      "updated_at": "2026-10-31T05:42:28Z",
+      "scope": "Head f6d01b9 moved since D102; incumbent owns refresh."
+    },
+    {
+      "id": "R41",
+      "title": "D04-A2 clocks/status",
+      "kind": "pull_request_snapshot",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/10004",
+      "head_sha": "242a51f252c4cd5957c7f92aec98b54070dee617",
+      "merged": true,
+      "merge_commit_sha": "dc3a97848ae2964c1375e982f6589b78b037bf32",
+      "updated_at": "2026-10-22T15:38:31Z",
+      "scope": "Merged; D102 accepts 8/8 bounded window samples."
+    },
+    {
+      "id": "R42",
+      "title": "Lab→Plan handoff",
+      "kind": "pull_request_snapshot",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1183",
+      "head_sha": "85585945a30b9ca767cfc5509adbbdd38a1597bf",
+      "merged": false,
+      "merge_commit_sha": "f7fd167683532892557bcfcf324189833981e27f",
+      "updated_at": "2026-10-31T05:42:25Z",
+      "scope": "DRAFT ONLY in body despite draft=false; new-head CI in progress at census."
+    },
+    {
+      "id": "R43",
+      "title": "Exact enrollment acknowledgment",
+      "kind": "pull_request_snapshot",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1182",
+      "head_sha": "b173a4bd2793a50ad7b7318a09f1df8a68805351",
+      "merged": false,
+      "merge_commit_sha": "a2f0f66d52809d2faa0dd089aec13c6cb2c5b3b9",
+      "updated_at": "2026-10-31T05:55:45Z",
+      "scope": "Dormant source; no DB apply; original UNKNOWN effects retained."
+    },
+    {
+      "id": "R44",
+      "title": "IW2 integration",
+      "kind": "pull_request_snapshot",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/804",
+      "head_sha": "34fb2ea5d36c64acc2870d8537ae02cded2f75a0",
+      "merged": false,
+      "merge_commit_sha": "aa85950cd17398df54619786dba14fb08705fd06",
+      "updated_at": "2026-10-30T18:10:19Z",
+      "scope": "Sole exact Plan Save/reopen integrator; green checks do not clear other gates."
+    },
+    {
+      "id": "R45",
+      "title": "Payoff presentation",
+      "kind": "pull_request_snapshot",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/781",
+      "head_sha": "85d9f4eae17227cc01731adc9c352ac67381645e",
+      "merged": false,
+      "merge_commit_sha": null,
+      "updated_at": "2026-10-24T11:18:14Z",
+      "scope": "Existing separate custodian; numerical evidence and release distinct."
+    },
+    {
+      "id": "R46",
+      "title": "Coverage expansion",
+      "kind": "pull_request_snapshot",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/8191",
+      "head_sha": "6753d5622555e110a107bd4fd706f478f73b1d24",
+      "merged": false,
+      "merge_commit_sha": "45e7fbae97230980bc389e22355f79e335ff96a4",
+      "updated_at": "2026-09-30T01:39:38Z",
+      "scope": "Draft HOLD; desired 1000/1500 universe not actual qualification."
+    },
+    {
+      "id": "R47",
+      "title": "Context audit v2 scaffold",
+      "kind": "pull_request_snapshot",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7728",
+      "head_sha": "11386753ad3db3449f420b3fb8faad3527977deb",
+      "merged": false,
+      "merge_commit_sha": "0d3794cfca2895d6dbceb75087c4143d7eedca5b",
+      "updated_at": "2026-10-14T04:17:37Z",
+      "scope": "Inactive; preserved v1 limits."
+    },
+    {
+      "id": "R48",
+      "title": "Private Cboe sample qualification",
+      "kind": "pull_request_snapshot",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/8658",
+      "head_sha": "1609b14088e53a754835f471e521ab138ae91572",
+      "merged": false,
+      "merge_commit_sha": "7c727160c4458571e539725b1e2e0af9cfad83af",
+      "updated_at": "2026-10-08T23:39:54Z",
+      "scope": "Separate historical C1 demo populations; not whole market."
+    },
+    {
+      "id": "R49",
+      "title": "Dealer pressure research",
+      "kind": "pull_request_snapshot",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/8555",
+      "head_sha": "82bc91ba18684f4a2c7f7f83ffd0c8d2a80625a6",
+      "merged": false,
+      "merge_commit_sha": "b78a0c29439f7d789679893fb39eccbc44976f26",
+      "updated_at": "2026-10-20T09:01:35Z",
+      "scope": "Held existing research catalogue."
+    },
+    {
+      "id": "R50",
+      "title": "Exposure Outlook",
+      "kind": "pull_request_snapshot",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7328",
+      "head_sha": "9515f2558a006c913a7c0eb30d966c47fa1a143b",
+      "merged": false,
+      "merge_commit_sha": null,
+      "updated_at": "2026-09-24T12:40:20Z",
+      "scope": "Source-readiness consumer; independent predictive hold."
+    },
+    {
+      "id": "R51",
+      "title": "Paper design locators",
+      "kind": "receipt_or_locator",
+      "url": null,
+      "scope": "R1:01M5EPQ16VBT7SBW2NQVX2RJG4,page p-2-0; mobile:01M5FNCKAND6CBSJNYM5FZWR8Y; R2:01M3NSZGE8JWN2EZCSF0DT05RM. Record locators only; native boards not opened here."
+    },
+    {
+      "id": "R52",
+      "title": "Fabric capabilities",
+      "kind": "receipt_or_locator",
+      "url": "evidence/FABRIC_CAPABILITIES.json",
+      "scope": "Adapter available; admission/start UNPROBED; background_execution and native_parent_wake false."
+    },
+    {
+      "id": "R53",
+      "title": "Fleet status",
+      "kind": "receipt_or_locator",
+      "url": "evidence/FLEET_STATUS.json",
+      "scope": "Eight gateway routes ready; DEGRADED launcher drift; physicalFleet null; not worker admission."
+    },
+    {
+      "id": "R54",
+      "title": "Open PR census",
+      "kind": "receipt_or_locator",
+      "url": "07_OPEN_PR_CENSUS.json",
+      "scope": "56 open title-query union; 15 supplemental carriers; 10 critical-head check/review snapshots."
+    },
+    {
+      "id": "R55",
+      "title": "Path/blob inventory",
+      "kind": "receipt_or_locator",
+      "url": "08_SOURCE_MAP.json",
+      "scope": "396 Macro +693 Terminal paths indexed, not all semantically audited."
+    },
+    {
+      "id": "R56",
+      "title": "Linear MAS-86",
+      "kind": "receipt_or_locator",
+      "url": null,
+      "scope": "Read Todo/Sep18 PR4 acceptance record; backlog evidence, not current lease."
+    },
+    {
+      "id": "R57",
+      "title": "Linear MAS-196",
+      "kind": "receipt_or_locator",
+      "url": null,
+      "scope": "Read Todo/Oct15 AD1-T2 record; stale instructions require current owner reconciliation."
+    },
+    {
+      "id": "R58",
+      "title": "Exact outcome evaluator",
+      "kind": "pull_request_snapshot",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/9663",
+      "head_sha": "570aac578bb408466f736c66280104e4f3cb1188",
+      "merged": true,
+      "merge_commit_sha": "1850484b64d0673e437b012b4c39b8f20ffbbcb1",
+      "updated_at": "2026-10-21T07:38:12Z",
+      "scope": "Merged implementation; no prospective performance inferred."
+    },
+    {
+      "id": "R59",
+      "title": "Observed statistics producer",
+      "kind": "pull_request_snapshot",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/10173",
+      "head_sha": "049de21585c5b77e634414c7dc43ba53efa33176",
+      "merged": true,
+      "merge_commit_sha": "34ea394397554cabe5fe12a544fde294234694cc",
+      "updated_at": "2026-10-25T00:13:08Z",
+      "scope": "Merged; R12 supplies natural consumption."
+    },
+    {
+      "id": "R60",
+      "title": "Plan consumer",
+      "kind": "pull_request_snapshot",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1166",
+      "head_sha": "6e5345a99ceed9352adc7995049331c4a16ed47f",
+      "merged": true,
+      "merge_commit_sha": "c22364f3ba3978692e10d866c6741727676f4dc0",
+      "updated_at": "2026-10-25T02:29:57Z",
+      "scope": "Merged source; authenticated final capability remains separate."
+    },
+    {
+      "id": "R61",
+      "title": "Statistics decoder",
+      "kind": "pull_request_snapshot",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1177",
+      "head_sha": "30b07d98171ef496a579d5d4a574dd898682127e",
+      "merged": true,
+      "merge_commit_sha": "a4f2803d3e85aec1e5e17126e1c7482e9b2c39b5",
+      "updated_at": "2026-10-25T01:37:14Z",
+      "scope": "Merged source."
+    },
+    {
+      "id": "R62",
+      "title": "Statistics UI",
+      "kind": "pull_request_snapshot",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1178",
+      "head_sha": "f90c0f7cec6781564f1036241e06b8468b689f00",
+      "merged": true,
+      "merge_commit_sha": "683eea62b64065b49f28c6d8b511788fb984674f",
+      "updated_at": "2026-10-25T06:20:53Z",
+      "scope": "Merged; accepted natural consumer in R12."
+    },
+    {
+      "id": "R63",
+      "title": "Navigation/saved Tape screens",
+      "kind": "pull_request_snapshot",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1159",
+      "head_sha": "d0bcb065d9646e7bf6895b34f216e103521b16da",
+      "merged": true,
+      "merge_commit_sha": "a8037ef7b662316a88becca11f31f5a87b5b7133",
+      "updated_at": "2026-10-24T12:07:11Z",
+      "scope": "Combined carrier merged; browser preferences differ from investigations."
+    },
+    {
+      "id": "R64",
+      "title": "QQQ Options Pulse",
+      "kind": "pull_request_snapshot",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/10097",
+      "head_sha": "263f05509b5bd71fc4248a17316e73a34b7fce43",
+      "merged": false,
+      "merge_commit_sha": "d473569236b8ab0ebc74f017298b028564a44ffa",
+      "updated_at": "2026-10-30T04:29:46Z",
+      "scope": "Derivative brief; no fresh provider authority."
+    },
+    {
+      "id": "R65",
+      "title": "NDX/NDXP source family",
+      "kind": "pull_request_snapshot",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/10157",
+      "head_sha": "48bcb100581bde6a83626b838d74b6d6077d83b0",
+      "merged": false,
+      "merge_commit_sha": null,
+      "updated_at": "2026-10-29T22:53:48Z",
+      "scope": "Distinct roots; complete production EOD chain not proven."
+    },
+    {
+      "id": "R66",
+      "title": "NDX-family guard",
+      "kind": "pull_request_snapshot",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1180",
+      "head_sha": "83d48a3fa4cdac1f8580f29026ea29de00dbb36b",
+      "merged": false,
+      "merge_commit_sha": "de38fa4ffeea84142d3b002aeaf6d19675c21be8",
+      "updated_at": "2026-10-29T22:54:02Z",
+      "scope": "Companion admission guard, not coverage acceptance."
+    },
+    {
+      "id": "R67",
+      "title": "Saved scenario references",
+      "kind": "pull_request_snapshot",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1144",
+      "head_sha": "2ecc6c793c1c8aff990cb7bf6d111ca74a256a1b",
+      "merged": true,
+      "merge_commit_sha": "a32f264d8ac2b02744fb8928a3fc35ae8e774893",
+      "updated_at": "2026-10-31T04:59:23Z",
+      "scope": "Merged source; preview failure proposal R17 remains unapplied."
+    },
+    {
+      "id": "R68",
+      "title": "Prior-session moneyness",
+      "kind": "pull_request_snapshot",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/9808",
+      "head_sha": "98354d407b0263fcaad0c7853803a0b340f503a8",
+      "merged": false,
+      "merge_commit_sha": null,
+      "updated_at": "2026-10-23T15:27:39Z",
+      "scope": "UPDATE9398 UNKNOWN preserved; do not replay old installer."
+    },
+    {
+      "id": "R69",
+      "title": "Function-level audit witness",
+      "kind": "receipt_or_locator",
+      "url": "evidence/intraday_semantic_reproduction.json",
+      "scope": "Actual extracted functions, synthetic fixtures; computeRvol stubbed null; no browser/runtime proof."
+    },
+    {
+      "id": "R70",
+      "title": "Dated Plan numerical/reference receipt",
+      "kind": "receipt_or_locator",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/issues/599#issuecomment-6382806783",
+      "scope": "SPY32-contract retained reference; hypothetical760/745 put vertical; no current executable quote claim."
+    },
+    {
+      "id": "R71",
+      "title": "M02 hedge-target tests",
+      "kind": "pull_request_snapshot",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/8920",
+      "head_sha": "23bd4769d6bda2c811e4b31dfde3ed814a8634e1",
+      "merged": false,
+      "merge_commit_sha": null,
+      "updated_at": "2026-10-19T07:53:50Z",
+      "scope": "Do not merge duplicate source already accepted through #8684."
+    },
+    {
+      "id": "R72",
+      "title": "Context audit records",
+      "kind": "pull_request_snapshot",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/10065",
+      "head_sha": "e964a9dae841f86f2681a744259d465dfad95e79",
+      "merged": true,
+      "merge_commit_sha": "5ba79ffce8f9342a91ed50de192fadd017e1d401",
+      "updated_at": "2026-10-22T17:26:53Z",
+      "scope": "Merged records with REPAIR_REQUIRED, not runtime acceptance."
+    },
+    {
+      "id": "R73",
+      "title": "October22 R2 handoff",
+      "kind": "pinned_repository_file",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/1c85878983323f9ab38fff56a15771166d0f8aeb/agentos/handoffs/WS-OPTIONS-ALPHA-INTELLIGENCE-RECOVERY-2026-10-22.md",
+      "blob_sha": "d34c70245a567deb101ae8fce2b17ee18bbc43fb",
+      "scope": "Scoped R2 release acceptance, not whole OA completion."
+    },
+    {
+      "id": "W01",
+      "title": "ThetaData v2 Trade Quote",
+      "kind": "public_primary_source",
+      "url": "https://http-docs.thetadata.us/operations/get-hist-option-trade_quote.html",
+      "scope": "Quote/trade ordering and exclusive parameter; actual deployed API version matters.",
+      "web_ref": "turn5view0"
+    },
+    {
+      "id": "W02",
+      "title": "ThetaData v3 Trade Quote",
+      "kind": "public_primary_source",
+      "url": "https://docs.thetadata.us/operations_excel/option_history_trade_quote.html",
+      "scope": "V3 documented strictly preceding default; avoid importing v2 defaults.",
+      "web_ref": "turn6search3"
+    },
+    {
+      "id": "W03",
+      "title": "Pan–Poteshman option volume",
+      "kind": "public_primary_source",
+      "url": "https://www.nber.org/papers/w10925",
+      "scope": "Specially classified opening buyer transactions differ from generic quote-side observations.",
+      "web_ref": "turn1search9"
+    },
+    {
+      "id": "W04",
+      "title": "Cboe0DTE positioning study",
+      "kind": "public_primary_source",
+      "url": "https://www.cboe.com/insights/posts/0-dt-es-decoded-positioning-trends-and-market-impact",
+      "scope": "SPX-specific exchange study; no universal dealer-causation claim.",
+      "web_ref": "turn2search0"
+    },
+    {
+      "id": "W05",
+      "title": "Cboe Trade-by-Trade",
+      "kind": "public_primary_source",
+      "url": "https://datashop.cboe.com/enhanced-us-options-trade-by-trade-execution-detail",
+      "scope": "C1-only current product,T+1,side/open-close/capacity/IDs; redistribution restrictions.",
+      "web_ref": "turn6search1"
+    },
+    {
+      "id": "W06",
+      "title": "Cboe Open-Close",
+      "kind": "public_primary_source",
+      "url": "https://datashop.cboe.com/cboe-options-open-close-volume-summary",
+      "scope": "Selected Cboe venues; announced Nov8 schema/correction change; vintage matters.",
+      "web_ref": "turn6search2"
+    },
+    {
+      "id": "W07",
+      "title": "OPRA documents",
+      "kind": "public_primary_source",
+      "url": "https://www.opraplan.com/document-library",
+      "scope": "Source-use/distribution categories; do not erase existing scoped rights attestations.",
+      "web_ref": "turn0search7"
+    },
+    {
+      "id": "W08",
+      "title": "Unusual Whales flow docs",
+      "kind": "public_primary_source",
+      "url": "https://docs.unusualwhales.com/features/2-options-flow/",
+      "scope": "Vendor-documented inspection/filter workflow; not independent validation.",
+      "web_ref": "turn3search0"
+    },
+    {
+      "id": "W09",
+      "title": "Unusual Whales multileg guide",
+      "kind": "public_primary_source",
+      "url": "https://unusualwhales.substack.com/p/multi-leg-options-flow-feed-more",
+      "scope": "Vendor-described grouping; inferred linkage must remain qualified.",
+      "web_ref": "turn3search2"
+    },
+    {
+      "id": "W10",
+      "title": "SpotGamma HIRO",
+      "kind": "public_primary_source",
+      "url": "https://support.spotgamma.com/hc/en-us/articles/4420646443539-What-is-the-SpotGamma-HIRO-Indicator",
+      "scope": "Vendor-described delta-flow/hedging estimate; not inventory ground truth.",
+      "web_ref": "turn4search2"
+    },
+    {
+      "id": "W11",
+      "title": "OptionStrat Builder",
+      "kind": "public_primary_source",
+      "url": "https://optionstrat.com/tutorials/options-builder",
+      "scope": "Conditional payoff/time/IV/save workflow reference.",
+      "web_ref": "turn4search4"
+    },
+    {
+      "id": "W12",
+      "title": "Probability of Backtest Overfitting",
+      "kind": "public_primary_source",
+      "url": "https://escholarship.org/uc/item/4w1110bb",
+      "scope": "Primary selection-bias research; no new programme threshold implied.",
+      "web_ref": "turn4search0"
+    },
+    {
+      "id": "W13",
+      "title": "Harvey–Liu–Zhu multiple testing",
+      "kind": "public_primary_source",
+      "url": "https://www.nber.org/papers/w20592",
+      "scope": "Trial accounting motivation; no automatic t-cutoff transplant.",
+      "web_ref": "turn4search1"
+    },
+    {
+      "id": "W14",
+      "title": "OCC Index Options",
+      "kind": "public_primary_source",
+      "url": "https://www.theocc.com/clearance-and-settlement/clearing/index-options",
+      "scope": "Contract-specific exercise, settlement value and timing.",
+      "web_ref": "turn6search4"
+    }
+  ]
+}
