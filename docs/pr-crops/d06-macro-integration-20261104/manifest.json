@@ -1,0 +1,479 @@
+{
+  "schema": "d06.artifact_inventory.v1",
+  "member_count": 94,
+  "aggregate_sha256": "104d614c3a00ffa2f087727b89c7093e7e1d8b176be2543da811227d2dbd86d1",
+  "aggregate_rule": "SHA256 of path-sorted lines: sha256 + space + repository-relative path + LF",
+  "manifest_self_excluded": true,
+  "members": [
+    {
+      "path": "docs/d06-macro-integration-20261104.md",
+      "bytes": 8209,
+      "sha256": "fbc99f9788f9fe0d8bec2bcbcdbf7bade5df1da9218e65c588cb11fe9461e4ad"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-integration-20261104/actual-browser.json",
+      "bytes": 8948,
+      "sha256": "4c311a8a145844c054e04f03b6ce05faa07e563bec14d9f641ab5d501c1c36f7"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-integration-20261104/actual.log",
+      "bytes": 72,
+      "sha256": "d3c4e846ab687739e47ac07e8cea486fe9aca5fc28364948d442393ad5612230"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-integration-20261104/browser-source-binding.json",
+      "bytes": 9514,
+      "sha256": "590f8c55c695d149fd71a1f31397a535cbee087a2e70aa1c2b78f8c3907cf1ce"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-integration-20261104/canonical-integrity.json",
+      "bytes": 3240,
+      "sha256": "752c42dc2e8ad07421e4d9eacee74a7eea85493433d24390b9312bc15ed12355"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-integration-20261104/ci-manifest-result.json",
+      "bytes": 253,
+      "sha256": "fa7ffbe7b42cf36710ebd62bfd4824b756fb933fe81e266c201cb1e80e49a7e8"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-integration-20261104/ci-manifest.log",
+      "bytes": 4801,
+      "sha256": "de92fe6ecede221b387a0d0f26d548b21d6ad2f5817ca584085fba7366b77855"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-integration-20261104/design-ratchet.log",
+      "bytes": 279,
+      "sha256": "23b5fc8278a740bc092f792b46152cd57b18122ce431f0000632dd3cd59e75d3"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-integration-20261104/final-guards.json",
+      "bytes": 812,
+      "sha256": "409ed4198901668ae468ab706ebe42f3835ebf72912aa2752391bfcfb3a6f174"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-integration-20261104/initial-arguments-ci-manifest-result.json",
+      "bytes": 201,
+      "sha256": "1df107768ca35e964b08eba21181a1f1829b08921b5ff600fc4e7d1595c0df86"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-integration-20261104/initial-arguments-ci-manifest.log",
+      "bytes": 1530,
+      "sha256": "b6a38bc22ee36feeb5a8f51af5a53246334b1e1853052f25cb5b94b81c7d91d3"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-integration-20261104/integration-base-advance.json",
+      "bytes": 3002,
+      "sha256": "b1c863beddcafe1bde960c0ad04a4d88faf49ef0e662aca95b41dad90729032d"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-integration-20261104/integration-before-locale-fix.json",
+      "bytes": 6207,
+      "sha256": "e58308f914ef370e7a263161d20dd68af1d35c0581329abf710bd555b14dee29"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-integration-20261104/integration-blob-recovery.json",
+      "bytes": 11536,
+      "sha256": "b5ef55c2997cb72a539b193d7e293065b0943a509281fe0839c033dac7c98dcc"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-integration-20261104/integration-focused-checks.json",
+      "bytes": 966,
+      "sha256": "0136a928b4e8cc7af78fd89edf412c4850d9a3a2e45ba3d2231e3898a088c3ba"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-integration-20261104/integration-focused-tests.log",
+      "bytes": 99,
+      "sha256": "3d75eb3f7ca207089a093d5b2d6b0157b1be29549c08b6acd03fab9e642d03db"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-integration-20261104/integration-inline-js.log",
+      "bytes": 144,
+      "sha256": "89c8288bf9c7ee4dc64165c62cd2814fcd38fbf20754df89dc2f2704320a5184"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-integration-20261104/integration-interrupted-preparation-readback.json",
+      "bytes": 3744,
+      "sha256": "859b6f31836cf144bb812eb7322e087c0e97b4d07483625ea3663c9288921a47"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-integration-20261104/integration-latest-delta.json",
+      "bytes": 3507,
+      "sha256": "42cdedbd6bedec4a95b353f21b1522d5a98f272a0a39a22b16c4355fe40d1207"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-integration-20261104/integration-materialization.json",
+      "bytes": 560,
+      "sha256": "8a19dec4e1e11d82cb9b90ee6953c7695a0f624bbd24331082e576f6c3bee226"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-integration-20261104/integration-materialize-data.json",
+      "bytes": 173,
+      "sha256": "b59e4407bb29b58b2e75c647562f8b7bcf391ac206b38a7f769b0d5673b417f0"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-integration-20261104/integration-materialize-data.log",
+      "bytes": 35,
+      "sha256": "3371430cd9db274673d915a50dc14a3c5bf1e19c80eb9f295233d817fdd3744b"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-integration-20261104/integration-prepared-tree.json",
+      "bytes": 965,
+      "sha256": "a2da807675dc4ccf9d2ea9d7be7ce8b6d544b527cf03c3cf56faad2c9d94a65a"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-integration-20261104/integration-rebuild.json",
+      "bytes": 90124,
+      "sha256": "023c896b6021d40cc777070404aff4c2ae70127222fdd958f9f9334bb6cf4b4d"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-integration-20261104/integration-whitespace-inherited.log",
+      "bytes": 22018,
+      "sha256": "da657f6fb505429ba588668124efa294a4ad43a5d4e0016df18267389b11a9bc"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-integration-20261104/market-1440-dark-zh.png",
+      "bytes": 179314,
+      "sha256": "493d97ad0afe8f38ca44d5ccf8d18b365f7fc6954dab3146f5083c180d936de5"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-integration-20261104/market-1440-light-en.png",
+      "bytes": 175250,
+      "sha256": "c00e74511e3f20c6a71275cd3339873c12656dd6deee0129d4bf823f3712945d"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-integration-20261104/market-320-light-en.png",
+      "bytes": 96595,
+      "sha256": "6da3a3fa58cc90965fb50f0a819af332126409df9f5b7b6c897585aff2d50f28"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-integration-20261104/market-390-dark-en.png",
+      "bytes": 109472,
+      "sha256": "1df0c50b2cd882d28c6bf321625f516c54ee0c4a2fcf4e47881babdf496bfee8"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-integration-20261104/market-390-light-zh.png",
+      "bytes": 109848,
+      "sha256": "7f4c7c8ffa2b61ad38fb82ae197e7504fedf672cbebc820ced23af5c44284980"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-integration-20261104/market-720-light-en.png",
+      "bytes": 135424,
+      "sha256": "176fef99666456c2dc81c2855c2053f052fd99056ca35f7c24c125d17a6ee33e"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-integration-20261104/market-browser.json",
+      "bytes": 3735,
+      "sha256": "262922021c0b46b40a13ea9c0d19dd5fab942657d86a99af9743dc00e6de2aa7"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-integration-20261104/market-locale-fix/baseline-colors.json",
+      "bytes": 1688,
+      "sha256": "697d43ecc402dfd6cfd558c5257f6d95b45d16c9188d897977eac90f749e1e75"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-integration-20261104/market-locale-fix/canonical-capture.json",
+      "bytes": 1126,
+      "sha256": "2ee908368d2f7a94fa1f5b4afb4b840e10c02e948f0b847a45541d4ecdc869a0"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-integration-20261104/market-locale-fix/canonical-capture.log",
+      "bytes": 225,
+      "sha256": "425dc1bc7a28f52a8da6c971aebeb575cbc8cbd97ed6385ae6b92bc6cd7c4ffe"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-integration-20261104/market-locale-fix/color-probe.log",
+      "bytes": 106,
+      "sha256": "add496923c980ffee21945e61324c16e7562c50b7939cf7fea3f2e9ecd24d811"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-integration-20261104/market-locale-fix/color_probe.py",
+      "bytes": 4003,
+      "sha256": "7c6fceeaea64e9b34e68411a2c386f4eb52d322207180d7918ab021556392d3c"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-integration-20261104/market-locale-fix/fixed-colors.json",
+      "bytes": 3594,
+      "sha256": "bbe0ac4ab2355739b1598a99e7223f2e52379321b8aa3f3af58668eff180d565"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-integration-20261104/market-locale-fix/gex-colors-baseline-390-light-zh.png",
+      "bytes": 109469,
+      "sha256": "b132116b13d74abc11daa5599b94876cfda9fd40d6378f6c39a2782c1d653063"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-integration-20261104/market-locale-fix/gex-colors-fixed-1440-dark-en.png",
+      "bytes": 182383,
+      "sha256": "a0f575cb4fd5850fc127ba523907e958ae03fdba00c67cf2b7237d622b2b28c8"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-integration-20261104/market-locale-fix/gex-colors-fixed-1440-dark-zh.png",
+      "bytes": 178865,
+      "sha256": "34954b8351f80a526c7102fa3aa5bee0177dd98c25dc25baf9b72d40295d41f5"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-integration-20261104/market-locale-fix/gex-colors-fixed-390-light-en.png",
+      "bytes": 104974,
+      "sha256": "05b4dca75febc130930ebd4d527b21fea5d9c52a8bd69be0e3d88dca9aa22107"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-integration-20261104/market-locale-fix/gex-colors-fixed-390-light-zh.png",
+      "bytes": 109498,
+      "sha256": "818dd4ec93b6eb770fe8a9d46ff0d864337d17d4513590c24ea6db079c6a0737"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-integration-20261104/market-locale-fix/initial-baseline-probe-assertion.json",
+      "bytes": 1024,
+      "sha256": "25a35c358af2ec50ee726dc9690e3602d5516229416ed4d2cc6c5cd6008f67f5"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-integration-20261104/market-locale-fix/market-1440-dark-zh.png",
+      "bytes": 179309,
+      "sha256": "22fc0726a329c264a8ae2c0aaf6be2ef0f3e7fc8318cbdb876e2523f646964e5"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-integration-20261104/market-locale-fix/market-1440-light-en.png",
+      "bytes": 175237,
+      "sha256": "aa8225d09459f6f2677105213c5bfef0f58fc5e56086bc69bd73b72d978fec49"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-integration-20261104/market-locale-fix/market-320-light-en.png",
+      "bytes": 96593,
+      "sha256": "5cd1da14892ba5016a4e37c3f15d947080b5ba3c99ddce39d4d572af6e183327"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-integration-20261104/market-locale-fix/market-390-dark-en.png",
+      "bytes": 109443,
+      "sha256": "cad03aa649d808b8ec1a236a14d66cf092eebeb6238561a11aa6a7644932f56c"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-integration-20261104/market-locale-fix/market-390-light-zh.png",
+      "bytes": 109886,
+      "sha256": "1525fa6484d615365774b3151d6ab82ce312239b287553ca8e630a7aa03e77b8"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-integration-20261104/market-locale-fix/market-720-light-en.png",
+      "bytes": 135398,
+      "sha256": "0f4992a0382a44ef04aa2d0816b76f33af5d0db909ba936bd1fa7a9d0ea5d378"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-integration-20261104/market-locale-fix/market-browser.json",
+      "bytes": 3879,
+      "sha256": "ec44853cad580ce922a6aa881401b76e638d33e43efad0ce46b292f17a36a2e0"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-integration-20261104/market-locale-fix/market-browser.log",
+      "bytes": 72,
+      "sha256": "c8203a50100b871adc865db6a169457365d8fb8326647c2b707991d302deaf64"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-integration-20261104/market-locale-fix/market-missing-zh.png",
+      "bytes": 37866,
+      "sha256": "96f624f4834be8e43cb7d746950d46881841029dff395f56d3d56bd5338bddb4"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-integration-20261104/market-locale-fix/market-partial-outer-only.png",
+      "bytes": 50100,
+      "sha256": "789265c370d61188fa256360a92c51f1b064288824dae365c3b60930c8dcb936"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-integration-20261104/market-locale-fix/market-tests.log",
+      "bytes": 180,
+      "sha256": "b7e562329659af5debcd034b2bc961d5d5fe7da66eefe44d6cd1d417981a40ec"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-integration-20261104/market-locale-fix/run_browser.py",
+      "bytes": 195,
+      "sha256": "5169a4dc9e818cc1a5dcd76102107d744e132b1e09c232274730125ee799e219"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-integration-20261104/market-locale-fix/verification.json",
+      "bytes": 2476,
+      "sha256": "827e59b4ce872eb03218b7711429ecfd6d57b8b62e3d915725fea97b0dce45c9"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-integration-20261104/market-missing-zh.png",
+      "bytes": 37866,
+      "sha256": "96f624f4834be8e43cb7d746950d46881841029dff395f56d3d56bd5338bddb4"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-integration-20261104/market-partial-outer-only.png",
+      "bytes": 50100,
+      "sha256": "789265c370d61188fa256360a92c51f1b064288824dae365c3b60930c8dcb936"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-integration-20261104/market.log",
+      "bytes": 72,
+      "sha256": "c8203a50100b871adc865db6a169457365d8fb8326647c2b707991d302deaf64"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-integration-20261104/run_browser.py",
+      "bytes": 216,
+      "sha256": "80f78a7f5a2f6d12a3230f639c63c698adcf239525e0ff8c652a90d77d48331c"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-integration-20261104/spv-actual-1440-en.png",
+      "bytes": 123519,
+      "sha256": "3474a7d641803007624a1d64d967af579af0a907d99b012d47191cc313e3f537"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-integration-20261104/spv-actual-390-zh.png",
+      "bytes": 80985,
+      "sha256": "5cd4879c4a43fff1e23420037ea4eb617321e143ec3f38d520fb2226ca5bece5"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-integration-20261104/stage-actual-1440-en.png",
+      "bytes": 268691,
+      "sha256": "720d48c490797b1854b1f656046e05e88132a35605a71a08a9c1b317a66ba5c8"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-integration-20261104/stage-actual-390-zh.png",
+      "bytes": 123014,
+      "sha256": "8a37ace982bc5e7fbc4f3cd6c42734f60c6c1798bf6e6d446d4506276154d1fe"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-integration-20261104/verification.json",
+      "bytes": 7519,
+      "sha256": "959e1b9f527011f71dad8b2d9c160258e31fdef989c3bd82db0d035e9058dd16"
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-integration-20261104/visual-evidence.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-integration-20261104/market_structure/EVIDENCE.yml",
+      "bytes": 187,
+      "sha256": "e787cd32f5f13d46fb2df8f2487c845ee58ccbb649353942eaff205ad6d09463"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-integration-20261104/market_structure/manifest.json",
+      "bytes": 25543,
+      "sha256": "7e6cd7336db8d6cd1005ed9a815e6b44c45970241a1717c3ef4fa18b73078b4d"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-integration-20261104/market_structure/png/05163511126a0666--help-hover.png",
+      "bytes": 435844,
+      "sha256": "05163511126a0666e1d63cd835641dde77f63d4e3b6529a5679808790d08d602"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-integration-20261104/market_structure/png/0851ceef7974daf5--help-focus.png",
+      "bytes": 416153,
+      "sha256": "0851ceef7974daf5dd7962de7e1a8161640bb7fe54b4327a587cbdc64d26acb5"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-integration-20261104/market_structure/png/128841d42a61d730--help-hover.png",
+      "bytes": 420426,
+      "sha256": "128841d42a61d730e39044ca77d8590ba9ac93ed6abe9324e1de7938b859e7a8"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-integration-20261104/market_structure/png/1a0f96a04687ddea--help-hover.png",
+      "bytes": 417749,
+      "sha256": "1a0f96a04687ddea48f9e54a3b0e906215694df6279dbf6ae46181096cfc05df"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-integration-20261104/market_structure/png/1d0c0aa294725796.png",
+      "bytes": 506297,
+      "sha256": "1d0c0aa294725796e5f56ba7180a429126e72275e2db69ca93bf74a71c044889"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-integration-20261104/market_structure/png/22c9d88c1acb60b8--help-focus.png",
+      "bytes": 523995,
+      "sha256": "22c9d88c1acb60b8678d040c385c7cd767f337e7304687a729601f7441c61148"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-integration-20261104/market_structure/png/52f73f3053a2ecda.png",
+      "bytes": 393827,
+      "sha256": "52f73f3053a2ecda7d968c9cfad52d03e853475243cf0b107d6e5ac1c14482ac"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-integration-20261104/market_structure/png/669d940c816b50ee--help-hover.png",
+      "bytes": 411816,
+      "sha256": "669d940c816b50ee2141a85c4a8d1707da41502b6db655f2dd483554cc379820"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-integration-20261104/market_structure/png/6dd87d7f036f77f9.png",
+      "bytes": 398508,
+      "sha256": "6dd87d7f036f77f92b08ed3b4724f7a6e26937986ea7466e0c5205fda7dd18f9"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-integration-20261104/market_structure/png/7a0025e3cce6f052.png",
+      "bytes": 391873,
+      "sha256": "7a0025e3cce6f052c10a87f7065aa9dee43786066403e306fe7ae2ea6786bb88"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-integration-20261104/market_structure/png/84f3285b40914ccd--help-focus.png",
+      "bytes": 401354,
+      "sha256": "84f3285b40914ccd12ddbe9d1ca2aa2fd37330a157a66ec2abcfa3a6e7bfbca3"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-integration-20261104/market_structure/png/89fa0e3313516736--help-hover.png",
+      "bytes": 526019,
+      "sha256": "89fa0e331351673669fb7335cb0f4ccf1c70d5e0a7f6a8a18c68ae36b96a78a0"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-integration-20261104/market_structure/png/975f1f8c866cf390--help-hover.png",
+      "bytes": 530768,
+      "sha256": "975f1f8c866cf3902039aa5e1522a66d2829017cd455ec4f8f26babed57599dc"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-integration-20261104/market_structure/png/9afc28a0a10bce71.png",
+      "bytes": 492566,
+      "sha256": "9afc28a0a10bce711b3518f085256019b34ac3c092816146f7bd3697f3164b4f"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-integration-20261104/market_structure/png/9deeebf7d58a7431.png",
+      "bytes": 398863,
+      "sha256": "9deeebf7d58a743177eb5afd1b6db44e2a2b96f1db8c22d215debf9c78cbbf2b"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-integration-20261104/market_structure/png/ac64f3db5cbafbdb--help-focus.png",
+      "bytes": 415504,
+      "sha256": "ac64f3db5cbafbdbee3317897313b1c07dddd00f96a8ff8875b9d6729602a100"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-integration-20261104/market_structure/png/b878d3db697eba7d--help-focus.png",
+      "bytes": 394372,
+      "sha256": "b878d3db697eba7da82684beebda63047148be6d06bdf213995c6fcbfe824e98"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-integration-20261104/market_structure/png/c7e3d81489a72f9f--help-focus.png",
+      "bytes": 532004,
+      "sha256": "c7e3d81489a72f9f5fa7488113d68a6792f698b802f10722e7574e5fc3ef4043"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-integration-20261104/market_structure/png/cdee9cd6394a7aa5--help-focus.png",
+      "bytes": 520104,
+      "sha256": "cdee9cd6394a7aa575ee7c42f9277bdd9bbb6a1857a8ce764998298dd85d282a"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-integration-20261104/market_structure/png/ced6be9d17ec6737.png",
+      "bytes": 515392,
+      "sha256": "ced6be9d17ec6737a871a8ded77a8739c3cd4ec28ae4813baa1e48539f6ea7a4"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-integration-20261104/market_structure/png/e23d879e6bd55fb3--help-focus.png",
+      "bytes": 510248,
+      "sha256": "e23d879e6bd55fb321881b7d53295a6c7455a47d02954cc96e34e9f0d548b629"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-integration-20261104/market_structure/png/e4ea91a19b18aa24.png",
+      "bytes": 503896,
+      "sha256": "e4ea91a19b18aa24a3f5fe1d250b216cbaf27d6259d55c2ed1c918194c9caaa9"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-integration-20261104/market_structure/png/f2c02c48fe4a26bc--help-hover.png",
+      "bytes": 509143,
+      "sha256": "f2c02c48fe4a26bc8f8a7f2552311471158b0d2331d255a05aaabac6b6559bd8"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-integration-20261104/market_structure/png/f61c62d0b9b456c6--help-hover.png",
+      "bytes": 518893,
+      "sha256": "f61c62d0b9b456c6ece9fb48af90e1febc6355b8e0158d9516ee9067cef7bdec"
+    },
+    {
+      "path": "mockups/evidence/d06-macro-integration-20261104/market_structure/smells.json",
+      "bytes": 3531,
+      "sha256": "b10b2e3b610e1a6661ec7e1d42683d26ee1bd24e491969c3d9ce85045ff8b709"
+    }
+  ]
+}

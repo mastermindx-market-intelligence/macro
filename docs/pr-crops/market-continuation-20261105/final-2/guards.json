@@ -1,0 +1,17 @@
+[
+  {
+    "name": "design-ratchet",
+    "exit_code": 0,
+    "log": "docs/pr-crops/market-continuation-20261105/final-2/design-ratchet.log"
+  },
+  {
+    "name": "visual-evidence",
+    "exit_code": 0,
+    "log": "docs/pr-crops/market-continuation-20261105/final-2/visual-evidence.log"
+  },
+  {
+    "name": "ci-manifest",
+    "exit_code": 2,
+    "log": "docs/pr-crops/market-continuation-20261105/final-2/ci-manifest.log"
+  }
+]
