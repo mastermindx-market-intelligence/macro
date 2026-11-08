@@ -3,7 +3,7 @@ workstream: "WS:CI-MERGE-CONTROL-PLANE"
 session: "6e051448-2cc6-4432-93e6-166e660715a2 / claude/ssd-mastermindx-ci-workflow-ca9501-103ca38d7470b454"
 model: fable
 ended_because: ci_handoff
-checkpoint: "6 (2026-11-05, after the Chairman reconciliation request)"
+checkpoint: "7 (2026-11-05 afternoon, canary proven at one worker; X1 delivered)"
 mission: >
   Fable CEO receiver for the MastermindX CI, independent-review and workflow
   acceleration program (Mastermind #917, handoff comment 6618966432). Reach
@@ -17,7 +17,11 @@ state_before: >
   lanes only. Phase 1 review-policy ruling posted as #917 comment 6622731611.
 changed:
   - path: agentos/handoffs/WS-CI-MERGE-CONTROL-PLANE-2026-11-04-ACCELERATION.md
-    what: This checkpoint; the adjudicated cross-repo CI acceleration plan and runner findings, amended at checkpoint 6 with the reconciliation and the three open lanes.
+    what: This checkpoint; the adjudicated cross-repo CI acceleration plan and runner findings, amended at checkpoint 6 with the reconciliation and the three open lanes, and at checkpoint 7 with the canary measurement, X1 and the sweep-checkout finding.
+  - path: "Macro PR 10764 (scripts/merge_on_green.py, .github/workflows/merge-on-green.yml, tests/test_merge_on_green.py, tests/test_merge_on_green_semantic.py)"
+    what: X1. A main commit touching only .github/ci/legacy-jobs.yml is scoped per armed head by comparing the manifest blob at the proof base with the frozen tip and the head's selected legacy jobs from its v1 semantic plan; byte-identical is current, every unknown stays stale, every other definition file still re-proves every head. Also adds run_ci_pack's import closure to the sweep job's sparse checkout, which activates the live-inherited-red waiver for the first time.
+  - path: "Macro PR 10759 (lib/macro_suite_labels.py, site/macro_business_activity.html, two tests)"
+    what: Repair of the main market-os-macro-suite-pages red; merged main after the nightly re-render conflicted, page re-rendered from the merged tree.
   - path: "Terminal PR 1297 (scripts/ci_pr_scope.py, .github/workflows/ci.yml, tests/test_ci_pr_scope.py)"
     what: Terminal fast mode. A trusted-base classifier executed from the PR base commit decides mode docs or full from Git objects only, with a positive allowlist (Markdown under docs and terminal/docs minus the trees and files that code or tests read, plus raster evidence images); docs mode skips hub, unit, e2e, ingest and PostgreSQL work while the frozen required contexts still report; everything unqualified is full.
   - path: "Macro PR 10745 (scripts/run_ci_pack.py, tests/test_run_ci_pack_base_replay_env.py, .github/ci/legacy-jobs.yml)"
@@ -40,6 +44,19 @@ verified:
   - claim: The rebalanced six-shard placement keeps the exact partition and passes the planner policy tests.
     command: python3.12 scripts/ci_pytest.py --plan-only --jobs 6 and pytest tests/test_ci_pytest_policy.py tests/test_ci_parallel_fanin.py in the Mastermind worktree
     result: discovered=1797 running=1797 shards 332/269/276/298/296/326; 189 passed; predicted reported load 863/863/932/857/862/857 s.
+verified_checkpoint_7:
+  - claim: The self-hosted Terminal e2e canary beats the hosted shard at one worker.
+    command: gh run view 42011181810 and 42015673866 on mastermind-terminal with job timings
+    result: desktop-1 on ubuntu0 JIT runner 16m06s (11:20:41Z to 11:36:47Z, green) versus hosted desktop-1 shard 54m41s in the same hour; the workers 4 dispatch is run 42029519496 on runner ubuntu0-canary-3.
+  - claim: A JIT runner minted with only the custom label never receives the self-hosted, linux and x64 labels.
+    command: gh api actions/runners listing after the first mint; re-mint with all four labels
+    result: the first job queued 26 minutes on an idle online runner; the four-label runner started the job at once.
+  - claim: The Macro sweep job could never import the pack runner, so the live-inherited-red waiver never fired.
+    command: local simulation of the sparse checkout list from merge-on-green.yml plus a subprocess import of scripts.run_ci_pack
+    result: ImportError on scripts.ci_scope_dependencies before the fix; 34 invalidators and _touches_ci_control_plane False for an engine file after adding the three closure modules; guarded by test_the_sweep_checkout_can_import_the_pack_runner.
+  - claim: The closure tracer charges string literals in control-plane tests to the job scope.
+    command: pytest tests/test_ci_pack.py test_curated_exclusive_scopes_cover_their_own_import_closure with and without the X1 literals
+    result: an engine/signal_quality.py literal widened ci-control-plane-contracts to collectors and engine; the ci-trigger-closure data marker on fixture lines restores the pass.
 verified_checkpoint_6:
   - claim: Terminal had no PR fast mode; Mastermind has pr_scope and pr_fast tiers (2016, 2057 merged); Macro has the semantic plan and no-work pack skip but no PR tier.
     command: read of the three ci.yml files on their default branches and of Mastermind 917 comments through 6648077765
@@ -61,14 +78,18 @@ next_actions:
   - Mastermind #2044 (shard re-pin) needs one fresh non-author review, then the merge queue; accept only when a merge-group run shows shard steps within about 15 percent of each other.
   - Mastermind M3 per-shard setup trim after #2016 merges (same ci.yml region); M1 in-shard xdist canary on one shard; M5 queue-required Mastermind OS frontend test is a Chairman or admin ruleset decision.
   - Terminal T4 split terminal-unit and cache Playwright there; T1 e2e against next build plus next start with an e2e-only flag and a negative test; T3 PR-time shard reduction only with merge-time full coverage.
-  - Macro X1 scope the check-definition staleness rule by plan digest plus definition content hash, and X2 adaptive MAX_IN_FLIGHT_PR_PROOFS, both after #10652 then #10682 land (same file, live writers).
+  - Macro X1 is delivered as PR 10764 (manifest-scoped rule, not the planner-based digest, which cannot run inside the sweep job); it waits on one non-author review and merge-on-green. X2 adaptive MAX_IN_FLIGHT_PR_PROOFS follows after 10764 lands (same file).
+  - Macro main-red chain: 10759 (suite pages) and 10755 (washout-turn-organ board cap) are mergeable and in CI; 10745 and 10735 re-prove by sweeper update-branch once those land.
+  - Canary workers 4 run 42029519496 is in flight on ubuntu0-canary-3; read its desktop-1 time at a boundary, compare with 16m06s at one worker and 54m41s hosted, then deregister the runner and record the verdict in 917.
   - Self-hosting on ubuntu1-4 is CONDITIONAL-GO for Terminal e2e shards only (ephemeral one-job runners, restricted runner group, same-repo PRs, Fabric isolation, hosted fallback, canary first); NO-GO for merge, control or secret-bearing jobs; org runner registration needs an admin token.
 do_not_redo:
+  - X1 design (manifest blob diff scoped by the head's v1 eligible_jobs) and the sweep sparse-closure finding; the canary at one worker and its baseline comparison.
   - Terminal 1297 classifier design and its review repairs; Macro 10745 replay-env root cause; Mastermind 2065 xdist guard and hash-seed pin; Macro 10738 fif-kernel xdist (head 0059d4432, binding checks green, sweeper-owned).
   - Phase 1 review-policy ruling (#917 comment 6622731611): ROUTINE tier not FAST widening; seven CRITICAL pins; CRITICAL dispatch by tier.
   - Mastermind #2044 shard re-pin; #1989 #2000 #1570 merged; #2003 superseded by #1977; Macro review-once guard is already #10682.
   - The CI speed survey and self-hosting verdict (#917 checkpoint 3); do not re-survey without a changed measurement.
 danger_areas:
+  - String literals naming repository paths inside control-plane test files widen ci-control-plane-contracts through the closure tracer unless marked ci-trigger-closure data; comment lines inside a sparse-checkout block are passed to checkout as patterns.
   - scripts/merge_on_green.py has live writers (#10652 then #10682); any X1 or X2 edit lands after them.
   - A main commit touching ci.yml or fences.yml stales every armed Macro green at once; batch such commits.
   - Self-hosted runners on public repos expose the host to PR-authored YAML unless the runner group is restricted to main-defined workflows.
@@ -85,6 +106,7 @@ evidence:
   - "Mastermind #2044 with ci/shard_timings/41772104126.json"
   - "Macro sweep run 41773787061; Mastermind merge-group run 41772104126"
   - "Checkpoint 6 lanes: Terminal 1297 and 1277, Macro 10745 and 10738, Mastermind 2065; Macro 10735 run 41925067587 pack 11 (replay-env defect)"
+  - "Checkpoint 7: Mastermind 917 comment 6658235994; Terminal canary runs 42011181810 and 42029519496; Macro 10764, 10759 comment 6657877726, 10755"
 ---
 
 # WS:CI-MERGE-CONTROL-PLANE — 2026-11-04 acceleration checkpoint
