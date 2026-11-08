@@ -30961,6 +30961,9 @@ jobs:
       - tests/js/calculator_input_integrity.test.mjs
       - templates/calculators/cagr.html.j2
       - tests/test_cagr_copy_feedback.py
+      - templates/calculators/risk_reward.html.j2
+      - site/tools/calculators/risk-reward.html
+      - tests/js/risk_reward_warning_copy.test.mjs
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -30975,7 +30978,9 @@ jobs:
       - name: CAGR truthful copy feedback
         run: python -m pytest tests/test_cagr_copy_feedback.py -q
       - name: calculator input, chart, language and copy integrity
-        run: node --test tests/js/calculator_input_integrity.test.mjs
+        run: |
+          node --test tests/js/calculator_input_integrity.test.mjs
+          node --test tests/js/risk_reward_warning_copy.test.mjs
 
   public-render-fastlane:
     if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
@@ -41104,6 +41109,31 @@ jobs:
       - "engine/entry_radar/replay/first_green_reversal_descriptor.py"
       - "engine/entry_radar/replay/leader_pivot_descriptor.py"
       - "tests/test_entry_radar_first_green_descriptor.py"
+      - "tests/test_entry_radar_first_green_variants.py"
+      - "tests/test_entry_radar_first_green_next_close.py"
+      - "engine/entry_radar/replay/rs_onset_features.py"
+      # RS-onset import closure: owned leadership_rotation_context dependencies.
+      - "config/sector_legs.json"
+      - "engine/cycle_ontology.py"
+      - "engine/hazard_score.py"
+      - "engine/leadership_rotation_context.py"
+      - "engine/oracle/ratio_lens.py"
+      - "engine/rotation_corr.py"
+      - "engine/rotation_events.py"
+      - "engine/rotation_flows.py"
+      - "engine/rotation_universe.py"
+      - "engine/rotation_velocity.py"
+      - "engine/sector_cycles.py"
+      - "engine/sector_legs.py"
+      - "engine/cycle_phase_age.py"
+      - "engine/cycle_rhythm.py"
+      - "engine/hazard_parity.py"
+      - "scripts/build_hazard_panel.py"
+      - "scripts/fit_cycle_hazard.py"
+      - "engine/grading_stats.py"
+      - "research/cycle_masterplan/W41_PANEL_CENSUS.md"
+      - "tests/test_entry_radar_rs_onset_features.py"
+      - "tests/test_entry_radar_rs_252_reference.py"
       - "tests/test_entry_radar_leader_pivot_descriptor.py"
       - "tests/test_entry_radar_leader_pivot_progress.py"
       - "tests/test_entry_radar_leader_pivot_progress_edges.py"
@@ -42258,6 +42288,11 @@ jobs:
         run: >-
           python -m pytest
           tests/test_research_price_panel.py
+          tests/test_entry_radar_first_green_descriptor.py
+          tests/test_entry_radar_first_green_variants.py
+          tests/test_entry_radar_first_green_next_close.py
+          tests/test_entry_radar_rs_onset_features.py
+          tests/test_entry_radar_rs_252_reference.py
           tests/test_entry_radar_rs_pullback_phase1.py
           tests/test_entry_radar_oscillator_mtf_research.py
           tests/test_entry_radar_oscillator_owner_integration.py
