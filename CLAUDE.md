@@ -2,8 +2,18 @@
 
 ## Local review within this Claude session
 
-Follow the [shared agent review rule](AGENTS.md#session-owned-technical-reviews-chairman-amendment-2026-11-03). Mastermind #2026's session-local review page is a **proposed** source until protected merge, not yet accepted/installed; keep incumbent review requirements until its and #2018's applicable adoption gates prove true. This Claude session can conduct its own adversarial diff check and, when distinct independent technical scrutiny is owed, use **native Claude reviewer subagents in this same parent session** with separate context, read-only source, a real returned verdict and parent adjudication. No other Claude/Web session, Dot or reviewer account is automatically required. Fabric is an optional separately admitted child avenue, not a mandatory handoff. Author self-check != independent child != formal native GitHub non-author approval. Actual holds, CI, protected merge and effect fences continue.
+Follow the [shared agent review rule](AGENTS.md#session-owned-technical-reviews-chairman-amendment-2026-11-03). Mastermind #2026 merged into protected master on 2026-11-04, and #2030 also merged; #2018 closed without merging and is not a pending adoption gate. Follow the current protected session-local review law, not a stale PR condition; merged source does not by itself prove a particular reviewer machine is installed. This Claude session can conduct its own adversarial diff check and, when distinct independent technical scrutiny is owed, use **native Claude reviewer subagents in this same parent session** with separate context, read-only source, a real returned verdict and parent adjudication. No other Claude/Web session, Dot or reviewer account is automatically required. Fabric is an optional separately admitted child avenue, not a mandatory handoff. Author self-check != independent child != formal native GitHub non-author approval. Actual holds, CI, protected merge and effect fences continue.
 
+
+## Reuse-first implementation
+
+Before bespoke work on proven infrastructure or chart/UI plumbing, check the existing owner and maintained open-source candidates; use narrow integration/extension where sound. Protect unique quant logic, existing security boundaries and consumer proof. See the [shared engineering policy](https://github.com/mastermindx-market-intelligence/Mastermind/blob/master/docs/REUSE_FIRST_ENGINEERING.md) after its protected acceptance; do not add a survey or approval step for small repairs.
+
+## Source authoring on M2: GitHub-native versus host-local
+
+When Mastermind #2118 is actually merged to protected `master`, an assigned Claude session with genuine GitHub-native write tools may publish scoped branch commits and PRs entirely through the authorized GitHub API, without acquiring an M2 worktree solely for that remote action. Follow the current protected Mastermind delivery workflow and [Macro's source-surface rules](AGENTS.md#github-native-source-authoring-versus-m2-host-local-custody). Until that merge, the candidate #2118 policy is not installed.
+
+When editing through a local M2 shell/checkout, continue to use the approved SSD worktree and quarantine helpers. Never bypass local hooks, occupied-checkout restrictions, CAS, existing source writers, unknown/denied effects, Macro's `merge-on-green` controller or actual review/CI/release holds. Source location does not grant merge authority.
 
 Signal-engine + static-site repo (engines in `engine/`, builders in `scripts/`, rendered site in `site/`, programs/masterplans in `research/`). Nightly pipeline runs on a self-hosted Mac Studio via GitHub Actions; render budget is law (~67 min, 4-core-bound) — heavy compute goes off the render path, artifacts to R2.
 
