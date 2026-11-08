@@ -1210,5 +1210,612 @@
       "preservedWidth": "The original 1960px wrappers leave unused width to the right of their 480px note rails. This is retained Build geometry, not a product-layout defect. No further rebuild is recommended for this bounded check.",
       "mutationsPerformed": false
     }
-  }
+  },
+  "prophetMirror": {
+    "audit": "Final bounded Prophet Daily Brief residual mirror check",
+    "date": "2026-11-08",
+    "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+    "readOnly": true,
+    "mutationsPerformed": false,
+    "scope": [
+      "E36-0",
+      "EHM-0",
+      "EUE-0",
+      "FL7-0"
+    ],
+    "methods": [
+      "Read the four existing clarity-architecture-prophet-legacy captures.",
+      "Search only the requested proof, UI-promotion/rank and route/focus/return-contract phrase families, plus the exact DAZ/DPQ source-update paragraph mirror.",
+      "Confirm every target's current node, parent, text and artboard with get_node_info.",
+      "Use bounded current find_nodes queries for proof, UI and route on EUE/FL7 to verify residual presence or absence."
+    ],
+    "counts": {
+      "totalTargets": 12,
+      "moves": 6,
+      "copyReplacements": 6,
+      "byRoot": {
+        "E36-0": 6,
+        "EHM-0": 5,
+        "EUE-0": 1,
+        "FL7-0": 0
+      },
+      "alreadySeparatedExcluded": 4
+    },
+    "buildDestination": {
+      "pageId": "p-5-0",
+      "rootId": "146H-0",
+      "slots": {
+        "E36-0": "146O-0",
+        "EHM-0": "146Q-0",
+        "EUE-0": "146S-0",
+        "FL7-0": "146U-0"
+      }
+    },
+    "rows": [
+      {
+        "productRoot": "E36-0",
+        "nodeId": "EF4-0",
+        "expectedParentId": "EF3-0",
+        "action": "MOVE_FRAME",
+        "destinationSlotId": "146O-0",
+        "originalText": null,
+        "originalChildIds": [
+          "EF6-0",
+          "EF5-0"
+        ],
+        "originalTextByChild": {
+          "EF6-0": "UI-created rank",
+          "EF5-0": "none"
+        }
+      },
+      {
+        "productRoot": "E36-0",
+        "nodeId": "1300-0",
+        "expectedParentId": "12ZT-0",
+        "action": "MOVE_TEXT",
+        "destinationSlotId": "146O-0",
+        "originalText": "Proposed routes · not order-wiring proof"
+      },
+      {
+        "productRoot": "E36-0",
+        "nodeId": "E64-0",
+        "expectedParentId": "E63-0",
+        "action": "MOVE_TEXT",
+        "destinationSlotId": "146O-0",
+        "originalText": "PROPOSED ROUTES · NOT RUNTIME PROOF"
+      },
+      {
+        "productRoot": "E36-0",
+        "nodeId": "EBL-0",
+        "expectedParentId": "EBK-0",
+        "action": "REPLACE_TEXT",
+        "destinationSlotId": "146O-0",
+        "originalText": "Same cards, same source-owned states. No UI promotion, probability or hidden re-ranking.",
+        "nextText": "Candidates retain their source order and current assessment.",
+        "preserveOriginalPassageBeforeChange": true
+      },
+      {
+        "productRoot": "E36-0",
+        "nodeId": "E6G-0",
+        "expectedParentId": "E6F-0",
+        "action": "REPLACE_TEXT",
+        "destinationSlotId": "146O-0",
+        "originalText": "A change appears only when a canonical source object changes. The UI cannot infer a recommendation from price movement.",
+        "nextText": "Updates reflect changed source records. Price movement alone is not a new recommendation.",
+        "preserveOriginalPassageBeforeChange": true
+      },
+      {
+        "productRoot": "E36-0",
+        "nodeId": "E66-0",
+        "expectedParentId": "E65-0",
+        "action": "REPLACE_TEXT",
+        "destinationSlotId": "146O-0",
+        "originalText": "Every route keeps the candidate episode, source clocks, filters and return position intact.",
+        "nextText": "Continue researching this candidate.",
+        "preserveOriginalPassageBeforeChange": true
+      },
+      {
+        "productRoot": "EHM-0",
+        "nodeId": "EQ9-0",
+        "expectedParentId": "EQ8-0",
+        "action": "MOVE_TEXT",
+        "destinationSlotId": "146Q-0",
+        "originalText": "Proposed routes · not order-wiring proof"
+      },
+      {
+        "productRoot": "EHM-0",
+        "nodeId": "ELJ-0",
+        "expectedParentId": "ELI-0",
+        "action": "MOVE_TEXT",
+        "destinationSlotId": "146Q-0",
+        "originalText": "PROPOSED ROUTES · NOT RUNTIME PROOF"
+      },
+      {
+        "productRoot": "EHM-0",
+        "nodeId": "EQ0-0",
+        "expectedParentId": "EMP-0",
+        "action": "REPLACE_TEXT",
+        "destinationSlotId": "146Q-0",
+        "originalText": "Same source-owned states. No UI promotion, probability or hidden re-ranking.",
+        "nextText": "Candidates retain their source order and current assessment.",
+        "preserveOriginalPassageBeforeChange": true
+      },
+      {
+        "productRoot": "EHM-0",
+        "nodeId": "ELS-0",
+        "expectedParentId": "ELO-0",
+        "action": "REPLACE_TEXT",
+        "destinationSlotId": "146Q-0",
+        "originalText": "A change appears only when a canonical candidate, quote, plan, assessment or evidence object changes. Price movement alone cannot become a recommendation.",
+        "nextText": "Updates reflect changed source records. Price movement alone is not a new recommendation.",
+        "preserveOriginalPassageBeforeChange": true
+      },
+      {
+        "productRoot": "EHM-0",
+        "nodeId": "ELK-0",
+        "expectedParentId": "ELI-0",
+        "action": "REPLACE_TEXT",
+        "destinationSlotId": "146Q-0",
+        "originalText": "Every route keeps the episode, source clocks, filters, compare state, focus and return position intact.",
+        "nextText": "Continue researching this candidate.",
+        "preserveOriginalPassageBeforeChange": true
+      },
+      {
+        "productRoot": "EUE-0",
+        "nodeId": "FBV-0",
+        "expectedParentId": "FBG-0",
+        "action": "MOVE_TEXT",
+        "destinationSlotId": "146S-0",
+        "originalText": "No UI-created probability, entry permission, size or broker effect.",
+        "reason": "Implementation-only assertion beneath Open accepted brief. Keep the adjacent accepted-rank/state, entry-review and sizing/order separate-gate rows unchanged. Preserve this full original assertion in the source-matched Build slot."
+      }
+    ],
+    "alreadySeparatedExcluded": [
+      {
+        "nodeId": "E45-0",
+        "currentParentId": "E43-0",
+        "currentArtboardId": "146H-0",
+        "originalText": "A second ranker or UI promotion score\nAnother quote cache or stale-value fallback\nA second assessment store or plan identity\nEntry, order, fill or position authority\nRetry queue, watcher or hidden polling plane\nA generic “fresh” clock across unlike objects",
+        "reason": "Already under Build root 146H-0 after the prior separation. Do not move or edit again."
+      },
+      {
+        "nodeId": "EJF-0",
+        "currentParentId": "EJ9-0",
+        "currentArtboardId": "146H-0",
+        "originalText": "A second ranker or UI promotion score",
+        "reason": "Already under Build root 146H-0 after the prior separation. Do not move or edit again."
+      },
+      {
+        "nodeId": "FIX-0",
+        "currentParentId": "FIW-0",
+        "currentArtboardId": "146H-0",
+        "originalText": "A fallback ranker or UI promotion score",
+        "reason": "Already under Build root 146H-0 after the prior separation. Do not move or edit again."
+      },
+      {
+        "nodeId": "G7A-0",
+        "currentParentId": "G79-0",
+        "currentArtboardId": "146H-0",
+        "originalText": "Fallback ranker or UI promotion score",
+        "reason": "Already under Build root 146H-0 after the prior separation. Do not move or edit again."
+      }
+    ],
+    "absence": [
+      {
+        "root": "FL7-0",
+        "result": "No current target in the requested phrase family.",
+        "evidence": {
+          "*proof*": {
+            "nodes": [],
+            "count": 0
+          },
+          "*route*": {
+            "nodes": [],
+            "count": 0
+          },
+          "*UI*": {
+            "nodes": [
+              {
+                "id": "G03-0",
+                "name": "All required records…",
+                "component": "Text",
+                "matched": [
+                  {
+                    "textValue": "All required records are current."
+                  }
+                ]
+              },
+              {
+                "id": "G4V-0",
+                "name": "No automatic retry i…",
+                "component": "Text",
+                "matched": [
+                  {
+                    "textValue": "No automatic retry is running. A new attempt requires a safe recovery action from the assembly owner."
+                  }
+                ]
+              }
+            ],
+            "count": 2
+          }
+        },
+        "interpretation": "The two UI-substring matches are ordinary 'required/requires' wording, not UI-promotion or UI-created-rank assertions. The captured G7A UI-promotion paragraph is already under Build root 146H-0."
+      }
+    ],
+    "preserve": [
+      "All fixture / illustrative / not-live qualifications.",
+      "All plan levels, quote values or absence, source clocks and entry states.",
+      "Management score meaning, current accepted assessments and candidate order.",
+      "Data-gap cards and their missing-versus-zero behavior.",
+      "All actual route/action controls.",
+      "On EUE, the adjacent accepted-rank/state, entry-review and separate sizing/order rows.",
+      "The full original implementation wording, attached to the matching product lineage in Build."
+    ],
+    "noOtherScope": "No other data-health, recovery, financial or source semantics are proposed for change. No additional roots were audited or modified in this bounded check."
+  },
+  "finalExactCopies": [
+    {
+      "family": "news",
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "boardId": "1-0",
+      "nodeId": "N-0",
+      "next": "Daily",
+      "old": "Daily · chart surface shown for context only — not part of this design",
+      "parentId": "L-0"
+    },
+    {
+      "family": "news",
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "boardId": "1-0",
+      "nodeId": "6L-0",
+      "next": "Illustrative news",
+      "old": "Headlines are fixture copy, not reporting.",
+      "parentId": "6I-0"
+    },
+    {
+      "family": "ontology",
+      "fileId": "01M3P1X4FR6BRTB13KA736Y1HT",
+      "boardId": "2G8-0",
+      "nodeId": "2N3-0",
+      "next": "Your saved thesis is unchanged.",
+      "old": "No automatic Thesis save, monitor mutation, notification delivery or history duplication.",
+      "parentId": "2N1-0"
+    },
+    {
+      "family": "ontology",
+      "fileId": "01M3P1X4FR6BRTB13KA736Y1HT",
+      "boardId": "2G8-0",
+      "nodeId": "2OK-0",
+      "next": "THS-001 · BRD-EW-042 · SRC-20260929",
+      "old": "THS-001 · BRD-EW-042 · SRC-20260929 · question revision q3 · selected card breadth-pressure",
+      "parentId": "2OH-0"
+    },
+    {
+      "family": "policy",
+      "fileId": "01M6Q4WK0EMPV1G2KDGGRQBC1B",
+      "boardId": "1-0",
+      "nodeId": "4T-0",
+      "next": "Repricing channels are unavailable in this snapshot.",
+      "old": "This snapshot does not report repricing channels — that is an absent field, not an empty channel list.",
+      "parentId": "4R-0"
+    },
+    {
+      "fileId": "01M6FAXA774QT1VRDMAG7DFQ2W",
+      "boardId": "FB7-0",
+      "nodeId": "FFV-0",
+      "parentId": "FFT-0",
+      "old": "rs_21d · 21 sessions vs S&P 500 · total return · as of 30 Oct 2026 close",
+      "next": "21 sessions vs S&P 500 · total return · as of 30 Oct 2026 close"
+    },
+    {
+      "fileId": "01M6FAXA774QT1VRDMAG7DFQ2W",
+      "boardId": "FO0-0",
+      "nodeId": "FRZ-0",
+      "parentId": "FRX-0",
+      "old": "rs_21d · 21 sessions vs S&P 500 · total return · as of 30 Oct 2026 close",
+      "next": "21 sessions vs S&P 500 · total return · as of 30 Oct 2026 close"
+    },
+    {
+      "fileId": "01M6FAXA774QT1VRDMAG7DFQ2W",
+      "boardId": "FB7-0",
+      "nodeId": "FIG-0",
+      "parentId": "FIE-0",
+      "old": "rs_21d · sector ETF · total return",
+      "next": "Sector ETF · total return"
+    },
+    {
+      "fileId": "01M6FAXA774QT1VRDMAG7DFQ2W",
+      "boardId": "FO0-0",
+      "nodeId": "FUK-0",
+      "parentId": "FUI-0",
+      "old": "rs_21d · sector ETF · total return",
+      "next": "Sector ETF · total return"
+    },
+    {
+      "fileId": "01M6FAXA774QT1VRDMAG7DFQ2W",
+      "boardId": "FO0-0",
+      "nodeId": "FXR-0",
+      "parentId": "FXO-0",
+      "old": "score · pulse_rank_delta_5d",
+      "next": "Score · rank change over 5 sessions"
+    },
+    {
+      "fileId": "01M6FAXA774QT1VRDMAG7DFQ2W",
+      "boardId": "FO0-0",
+      "nodeId": "G2T-0",
+      "parentId": "G2S-0",
+      "old": "pulse_rank_delta_5d · as of 30 Oct 2026 close",
+      "next": "5-session rank change · as of 30 Oct 2026 close"
+    },
+    {
+      "fileId": "01M312VSDSZFVT45674GDVJVZN",
+      "boardId": "7IS-0",
+      "nodeId": "7IU-0",
+      "old": "F02 / 390 CSS px / 中文 / 设计候选",
+      "next": "示例数据",
+      "parentId": "7IT-0"
+    },
+    {
+      "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+      "boardId": "DAZ-0",
+      "nodeId": "DH9-0",
+      "parentId": "DH6-0",
+      "old": "Same cards, same source-owned states. No UI promotion, probability or hidden re-ranking.",
+      "next": "Candidates retain their source order and current assessment."
+    },
+    {
+      "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+      "boardId": "DPQ-0",
+      "nodeId": "DUD-0",
+      "parentId": "DU8-0",
+      "old": "Same source-owned states. No UI promotion, probability or hidden re-ranking.",
+      "next": "Candidates retain their source order and current assessment."
+    },
+    {
+      "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+      "boardId": "DAZ-0",
+      "nodeId": "DMH-0",
+      "parentId": "DMF-0",
+      "old": "A change appears only when a canonical source object changes. The UI cannot infer a recommendation from price movement.",
+      "next": "Updates reflect changed source records. Price movement alone is not a new recommendation."
+    },
+    {
+      "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+      "boardId": "DPQ-0",
+      "nodeId": "DYU-0",
+      "parentId": "DYS-0",
+      "old": "A change appears only when a canonical candidate, quote, plan, assessment or evidence object changes. Price movement alone cannot become a recommendation.",
+      "next": "Updates reflect changed source records. Price movement alone is not a new recommendation."
+    },
+    {
+      "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+      "boardId": "DAZ-0",
+      "nodeId": "DMR-0",
+      "parentId": "DMO-0",
+      "old": "Every route keeps the candidate episode, source clocks, filters and return position intact.",
+      "next": "Continue researching this candidate."
+    },
+    {
+      "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+      "boardId": "DPQ-0",
+      "nodeId": "DZ3-0",
+      "parentId": "DZ0-0",
+      "old": "Every route keeps the episode, source clocks, filters, compare state, focus and return position intact.",
+      "next": "Continue researching this candidate."
+    },
+    {
+      "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+      "boardId": "E36-0",
+      "nodeId": "EBL-0",
+      "parentId": "EBK-0",
+      "old": "Same cards, same source-owned states. No UI promotion, probability or hidden re-ranking.",
+      "next": "Candidates retain their source order and current assessment."
+    },
+    {
+      "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+      "boardId": "E36-0",
+      "nodeId": "E6G-0",
+      "parentId": "E6F-0",
+      "old": "A change appears only when a canonical source object changes. The UI cannot infer a recommendation from price movement.",
+      "next": "Updates reflect changed source records. Price movement alone is not a new recommendation."
+    },
+    {
+      "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+      "boardId": "E36-0",
+      "nodeId": "E66-0",
+      "parentId": "E65-0",
+      "old": "Every route keeps the candidate episode, source clocks, filters and return position intact.",
+      "next": "Continue researching this candidate."
+    },
+    {
+      "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+      "boardId": "EHM-0",
+      "nodeId": "EQ0-0",
+      "parentId": "EMP-0",
+      "old": "Same source-owned states. No UI promotion, probability or hidden re-ranking.",
+      "next": "Candidates retain their source order and current assessment."
+    },
+    {
+      "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+      "boardId": "EHM-0",
+      "nodeId": "ELS-0",
+      "parentId": "ELO-0",
+      "old": "A change appears only when a canonical candidate, quote, plan, assessment or evidence object changes. Price movement alone cannot become a recommendation.",
+      "next": "Updates reflect changed source records. Price movement alone is not a new recommendation."
+    },
+    {
+      "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+      "boardId": "EHM-0",
+      "nodeId": "ELK-0",
+      "parentId": "ELI-0",
+      "old": "Every route keeps the episode, source clocks, filters, compare state, focus and return position intact.",
+      "next": "Continue researching this candidate."
+    },
+    {
+      "fileId": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "boardId": "1ZOE-0",
+      "nodeId": "1ZSH-0",
+      "parentId": "1ZSG-0",
+      "old": "Historical graph context is not silently backfilled.",
+      "next": "Historical relationships",
+      "color": null
+    },
+    {
+      "fileId": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "boardId": "1ZUV-0",
+      "nodeId": "1ZYY-0",
+      "parentId": "1ZYX-0",
+      "old": "Historical graph context is not silently backfilled.",
+      "next": "Historical relationships",
+      "color": "#D7DCE3"
+    },
+    {
+      "fileId": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "nodeId": "20A3-0",
+      "parentId": "20A2-0",
+      "old": "询问 Mastermind ↗",
+      "next": "询问 Mastermind ↗",
+      "color": "#0F1115",
+      "kind": "contrast_only"
+    },
+    {
+      "fileId": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "nodeId": "20DQ-0",
+      "parentId": "20DP-0",
+      "old": "基于来源提问 ↗",
+      "next": "基于来源提问 ↗",
+      "color": "#0F1115",
+      "kind": "contrast_only"
+    }
+  ],
+  "finalExactMoves": [
+    {
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "boardId": "1-0",
+      "nodeId": "6J-0",
+      "parentId": "6I-0",
+      "old": "Shell context · not part of this design",
+      "destinationId": "2QK-0"
+    },
+    {
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "boardId": "H3-0",
+      "nodeId": "H6-0",
+      "parentId": "H5-0",
+      "old": "Shell context · chart scrolled above · not part of this design",
+      "destinationId": "2QK-0"
+    },
+    {
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "boardId": "M3-0",
+      "nodeId": "M8-0",
+      "parentId": "M5-0",
+      "old": "shell context · not this design",
+      "destinationId": "2QK-0"
+    },
+    {
+      "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+      "boardId": "DAZ-0",
+      "nodeId": "12WW-0",
+      "parentId": "12WP-0",
+      "old": "Proposed routes · not click-wiring proof",
+      "destinationId": "146K-0"
+    },
+    {
+      "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+      "boardId": "DAZ-0",
+      "nodeId": "DMS-0",
+      "parentId": "DMN-0",
+      "old": "PROPOSED ROUTES · NOT RUNTIME PROOF",
+      "destinationId": "146K-0"
+    },
+    {
+      "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+      "boardId": "DPQ-0",
+      "nodeId": "DU6-0",
+      "parentId": "DTY-0",
+      "old": "Proposed routes · not click-wiring proof",
+      "destinationId": "146M-0"
+    },
+    {
+      "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+      "boardId": "DPQ-0",
+      "nodeId": "DZ4-0",
+      "parentId": "DZ0-0",
+      "old": "PROPOSED ROUTES · NOT RUNTIME PROOF",
+      "destinationId": "146M-0"
+    },
+    {
+      "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+      "boardId": "DAZ-0",
+      "nodeId": "DDL-0",
+      "parentId": "DDB-0",
+      "old": "UI-created rank · none",
+      "destinationId": "146K-0"
+    },
+    {
+      "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+      "boardId": "E36-0",
+      "nodeId": "EF4-0",
+      "parentId": "EF3-0",
+      "old": null,
+      "destinationId": "146O-0"
+    },
+    {
+      "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+      "boardId": "E36-0",
+      "nodeId": "1300-0",
+      "parentId": "12ZT-0",
+      "old": "Proposed routes · not order-wiring proof",
+      "destinationId": "146O-0"
+    },
+    {
+      "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+      "boardId": "E36-0",
+      "nodeId": "E64-0",
+      "parentId": "E63-0",
+      "old": "PROPOSED ROUTES · NOT RUNTIME PROOF",
+      "destinationId": "146O-0"
+    },
+    {
+      "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+      "boardId": "EHM-0",
+      "nodeId": "EQ9-0",
+      "parentId": "EQ8-0",
+      "old": "Proposed routes · not order-wiring proof",
+      "destinationId": "146Q-0"
+    },
+    {
+      "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+      "boardId": "EHM-0",
+      "nodeId": "ELJ-0",
+      "parentId": "ELI-0",
+      "old": "PROPOSED ROUTES · NOT RUNTIME PROOF",
+      "destinationId": "146Q-0"
+    },
+    {
+      "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+      "boardId": "EUE-0",
+      "nodeId": "FBV-0",
+      "parentId": "FBG-0",
+      "old": "No UI-created probability, entry permission, size or broker effect.",
+      "destinationId": "146S-0"
+    },
+    {
+      "fileId": "01M6FAXA774QT1VRDMAG7DFQ2W",
+      "boardId": "FB7-0",
+      "nodeId": "FG5-0",
+      "parentId": "FG0-0",
+      "old": "rs_21d",
+      "destinationId": "GOI-0"
+    },
+    {
+      "fileId": "01M6FAXA774QT1VRDMAG7DFQ2W",
+      "boardId": "FO0-0",
+      "nodeId": "FSB-0",
+      "parentId": "FS8-0",
+      "old": "rs_21d",
+      "destinationId": "GOI-0"
+    }
+  ]
 }
