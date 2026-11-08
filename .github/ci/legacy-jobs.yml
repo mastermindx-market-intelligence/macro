@@ -34505,6 +34505,7 @@ jobs:
     # fallback domains that otherwise select unrelated homepage/Prophet probes.
     scope: exclusive
     paths:
+      - "site/basketdata/pulse.json"
       - "admin/**"
       - "app/**"
       - "collectors/**"
@@ -45547,6 +45548,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "site/basketdata/pulse.json"
       - "contracts/capital_structure_projection.schema.json"
       - "contracts/evidence_foundation/block.v1.schema.json"
       - "contracts/evidence_foundation/recipe.v1.schema.json"
@@ -52434,6 +52436,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "site/basketdata/pulse.json"
       - "admin/**"
       - "app/**"
       - "collectors/**"
