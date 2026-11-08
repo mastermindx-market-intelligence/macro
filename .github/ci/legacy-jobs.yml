@@ -10513,6 +10513,8 @@ jobs:
       - "tests/fixtures/intl_library_search_catalogue.json"
       - "templates/intl_workspace_state.js"
       - "tests/intl_workspace_state.test.cjs"
+      - "templates/intl_workspace.js"
+      - "tests/intl_workspace_shell_query.test.cjs"
     timeout-minutes: 3
     runs-on: ubuntu-latest
     steps:
@@ -10525,7 +10527,7 @@ jobs:
       - name: International Library search and reply identity
         run: node --test tests/intl_library_search.test.cjs
       - name: International research context and route state
-        run: node --test tests/intl_workspace_state.test.cjs
+        run: node --test tests/intl_workspace_state.test.cjs tests/intl_workspace_shell_query.test.cjs
 
   international-global-correction:
     # IM12 E3: correction receipts, dependent-result invalidation and saved-evidence

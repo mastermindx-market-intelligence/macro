@@ -2019,11 +2019,35 @@
     target.focus();
   }
 
+  // Shell markers identify iframe transport, not International workspace state.
+  // Preserve business-query bytes and leave malformed/duplicate metadata to the
+  // strict reducer. This projection grants no parent, source or data authority.
+  function workspaceLocationQuery(window) {
+    var raw = window.location.search;
+    // The reducer allows 2048 units; two bounded transport pairs fit in 256.
+    if (typeof raw !== 'string' || raw.length > 2304) return raw;
+    var pairs = (raw.charAt(0) === '?' ? raw.slice(1) : raw).split('&');
+    if (pairs.length > 18) return raw;
+    var kept = [], shell = [], generation = [];
+    try {
+      for (var i = 0; i < pairs.length; i += 1) {
+        var at = pairs[i].indexOf('=');
+        var key = decodeURIComponent((at < 0 ? pairs[i] : pairs[i].slice(0, at)).replace(/\+/g, ' '));
+        if (key === 'mmx_shell' || key === 'mmx_generation') {
+          var value = decodeURIComponent((at < 0 ? '' : pairs[i].slice(at + 1)).replace(/\+/g, ' '));
+          (key === 'mmx_shell' ? shell : generation).push(value);
+        } else kept.push(pairs[i]);
+      }
+    } catch (_) { return raw; }
+    if (shell.length !== 1 || shell[0] !== '1' || generation.length !== 1 || !/^[\w-]{1,128}$/.test(generation[0])) return raw;
+    return kept.length ? '?' + kept.join('&') : '';
+  }
+
   function popstate(controller) {
     if (!controller.live) return;
     var hadInspector = !!controller.inspector;
     if (hadInspector) visuallyCloseInspector(controller, { release: true });
-    var parsed = controller.reducer.parseQuery(controller.environment.window.location.search);
+    var parsed = controller.reducer.parseQuery(workspaceLocationQuery(controller.environment.window));
     parsed = alignGsMarketUrl(controller, clampGsMarket(controller, parsed));
     var committed = commitResearch(controller, parsed, 'popstate');
     if (controller.pendingScenario) {
@@ -2278,7 +2302,7 @@
       required(root, '[data-im-heading]').setAttribute('tabindex', '-1');
       required(root, '[data-im-issues]').setAttribute('role', 'status');
       required(root, '[data-im-unavailable]');
-      var parsed = reducer.parseQuery(window.location.search);
+      var parsed = reducer.parseQuery(workspaceLocationQuery(window));
       parsed = alignGsMarketUrl(controller, clampGsMarket(controller, parsed));
       if (IntlWorkspaceScenario && owned(root,'[data-im-history-panel]').length) controller.scenarioDraft=IntlWorkspaceScenario.createDraft(scenarioContext(parsed.state));
       stageAndCommit(controller, parsed.state, parsed.issues, 'mount', false);

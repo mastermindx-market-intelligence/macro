@@ -1476,18 +1476,35 @@ def _p0b_receipt_closure_steps():
     return jobs["p0b-receipt-closure"]["steps"]
 
 
-def test_diff_scoped_steps_fail_closed_without_a_comparison_base():
-    base_dependent = [
-        s for s in _design_governance_steps()
-        if "merge-base" in (s.get("run") or "")
-    ]
-    # The diff-scoped design gates depend on the base: the forward-only design
-    # ratchet and the visual-evidence gate. Deleting one to satisfy the
-    # per-step assertions below fails here instead.
-    assert len(base_dependent) == 2, (
-        "expected exactly 2 base-dependent design-governance steps "
-        "(forward-only ratchet + visual evidence), "
-        f"found {len(base_dependent)}")
+def _assert_canonical_design_comparison_wrappers(steps):
+    """Both real comparison producers must refuse before their real checker."""
+    expected = (
+        ("forward-only design ratchet (new forbidden decisions on changed lines)",
+         "style", "/tmp/design.diff",
+         "python3 scripts/check_design_system.py --mode enforce-added --diff-file /tmp/design.diff"),
+        ("visual evidence required for a material UI change", "visual", "/tmp/ui.diff",
+         "python3 scripts/check_ui_visual_evidence.py --diff-file /tmp/ui.diff"),
+    )
+    selected = [s for s in steps if "scripts/design_semantic_comparison.py" in s.get("run", "")]
+    assert len(selected) == 2, "both base-dependent design gates must remain wired"
+    for name, kind, output, checker in expected:
+        matches = [s for s in selected if s.get("name") == name]
+        assert len(matches) == 1, name
+        lines = [line.strip() for line in matches[0]["run"].splitlines() if line.strip()]
+        assert lines == [
+            "python3 scripts/design_semantic_comparison.py "
+            f"--write-design-diff {output} --design-diff-kind {kind} "
+            "--base-ref " + chr(34) + "${{ github.base_ref || 'main' }}" + chr(34) + " || exit 1",
+            checker,
+        ], (name, lines)
+    return selected
+
+
+def test_diff_scoped_steps_fail_closed_without_a_comparison_base(tmp_path):
+    # The two existing design gates now consume the verified immutable plan
+    # through the canonical helper. Inline merge-base is preserved only for
+    # ordinary standalone/replay use inside that helper, not required twice.
+    base_dependent = _assert_canonical_design_comparison_wrappers(_design_governance_steps())
     # The p0b receipt-closure gate is base-dependent too, but lives in its OWN
     # job since 2026-09-24 (#6872: as a trailing design-governance step it was
     # skipped behind the ratchet's red and never printed its verdict). Pin it
@@ -1504,7 +1521,8 @@ def test_diff_scoped_steps_fail_closed_without_a_comparison_base():
     # refuses the `null` a main proof publishes (#7237 redded every one).
     assert '--event "${GITHUB_EVENT_NAME:-}"' in p0b_base_dependent[0]["run"]
 
-    for step in base_dependent + p0b_base_dependent:
+    # P0B's independent event-bound inline comparison remains unchanged.
+    for step in p0b_base_dependent:
         run = step["run"]
         name = step.get("name", "<unnamed>")
         assert "exit 0" not in run, (
@@ -1518,3 +1536,45 @@ def test_diff_scoped_steps_fail_closed_without_a_comparison_base():
         assert "::error" in run, (
             f"design-governance step {name!r} must annotate the missing base "
             "with ::error so an absent gate is visible in the run summary")
+
+
+    # Exercise the actual admitted comparison entrypoint with a genuinely
+    # missing plan, not an assertion about a benign source string. It must
+    # annotate refusal, exit nonzero and never create a checker input.
+    import os
+    import sys
+    output = tmp_path / "unqualified.diff"
+    helper = guard.REPO_ROOT / "scripts/design_semantic_comparison.py"
+    env = {k: v for k, v in os.environ.items() if not k.startswith(("CI_", "GITHUB_", "EXPECTED_", "TESTED_", "SUBJECT_"))}
+    env["GITHUB_EVENT_NAME"] = "pull_request"
+    for kind in ("style", "visual"):
+        result = subprocess.run(
+            [sys.executable, str(helper), "--write-design-diff", str(output),
+             "--design-diff-kind", kind, "--plan-json", str(tmp_path / "missing-plan.json"),
+             "--changed-files-file", str(tmp_path / "missing-changed.json"),
+             "--expect-plan-sha", "a" * 64, "--expect-tested-tree-sha", "b" * 40,
+             "--expect-subject-head-sha", "c" * 40, "--expect-base-sha", "d" * 40],
+            cwd=guard.REPO_ROOT, env=env, capture_output=True, text=True,
+        )
+        assert result.returncode != 0
+        assert "::error title=design-governance::" in result.stderr + result.stdout
+        assert not output.exists()
+
+
+@pytest.mark.parametrize("damage", ["drop-gate", "wrong-kind", "wrong-base", "ignore-refusal", "checker-first"])
+def test_canonical_design_comparison_wiring_refuses_drift(damage):
+    import copy
+    steps = copy.deepcopy(_design_governance_steps())
+    target = next(s for s in steps if s.get("name") == "visual evidence required for a material UI change")
+    if damage == "drop-gate":
+        steps.remove(target)
+    elif damage == "wrong-kind":
+        target["run"] = target["run"].replace("--design-diff-kind visual", "--design-diff-kind style")
+    elif damage == "wrong-base":
+        target["run"] = target["run"].replace("github.base_ref", "github.head_ref")
+    elif damage == "ignore-refusal":
+        target["run"] = target["run"].replace("|| exit 1", "|| exit 0")
+    elif damage == "checker-first":
+        target["run"] = "\n".join(reversed(target["run"].splitlines()))
+    with pytest.raises(AssertionError):
+        _assert_canonical_design_comparison_wrappers(steps)
