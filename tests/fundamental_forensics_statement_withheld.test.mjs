@@ -174,6 +174,8 @@ for (const [name, statements] of [['mixed', mixedStatements], ['all-refused', al
       'displayed_layout_unsupported',
       'statement_role_not_consolidated',
       'displayed_cell_period_mismatch',
+      'displayed_column_period_unbound',
+      'statement_role_presentation_absent',
       'A35-W1',
       RAW_ROLE_URI,
       RAW_TITLE,

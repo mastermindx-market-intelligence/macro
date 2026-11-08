@@ -374,6 +374,90 @@ def _attempt(call, *args, **kwargs) -> dict:
         return {"availability": "UNAVAILABLE", "null_reason": "OWNER_INPUT_UNAVAILABLE", "value": None, "error_type": type(exc).__name__}
 
 
+# Local-theme families whose graph carries an exact source-local basket identity.
+# ``materialize.build_ths_plane`` mints ``basket:baskets_china_ths:<bid> -EXPRESSES->
+# ltheme:ths:<code>`` from the basket's own ``ths_concept`` joined to the dated concept
+# map: "this basket is that vendor concept". That is the basket the PIT membership
+# owner already serves. No other family carries such an identity (finviz subthemes
+# have no basket; crosswalk basket_ids are price proxies), so none is derived for them.
+_EXPRESSED_BASKET_SUITES = {"ths": "baskets_china_ths"}
+
+
+_BINDING_UNAVAILABLE = "EXACT_LOCAL_BASKET_BINDING_UNAVAILABLE"
+_BINDING_AMBIGUOUS = "EXACT_LOCAL_BASKET_BINDING_AMBIGUOUS"
+
+
+def _live_node(projection: Any) -> bool:
+    # A node the owner projected as visible and neither retired nor merged away.
+    return (isinstance(projection, dict)
+            and str(projection.get("status") or "").lower() not in store.RETIRED_LIKE_STATUSES
+            and not projection.get("merged_into"))
+
+
+def _composed(read: Any, node_id: str) -> dict | None:
+    """The owner-composed neighborhood of exactly ``node_id``, or None."""
+    if not isinstance(read, dict) or read.get("availability") != "AVAILABLE":
+        return None
+    value = read.get("value")
+    if (not isinstance(value, dict) or value.get("node_id") != node_id
+            or (value.get("availability") or {}).get("state") != "OK"):
+        return None
+    return value
+
+
+def _expressing_peers(value: dict, direction: str, prefix: str) -> set[str]:
+    # Distinct live EXPRESSES peers; several edge_ids for one pair are one peer.
+    return {row["peer_node_id"] for row in value.get("relations") or []
+            if isinstance(row, dict) and row.get("type") == "EXPRESSES" and row.get("direction") == direction
+            and isinstance(row.get("peer_node_id"), str) and row["peer_node_id"].startswith(prefix)
+            and _live_node(row.get("peer"))}
+
+
+def _expressed_basket_peer(family: str | None, node_id: str, ontology_read: Any) -> tuple[str | None, str | None]:
+    """The one live basket node the captured ontology read says expresses this local theme."""
+    suite = _EXPRESSED_BASKET_SUITES.get(family or "")
+    value = _composed(ontology_read, node_id) if suite is not None else None
+    if value is None:
+        return None, _BINDING_UNAVAILABLE
+    peers = _expressing_peers(value, "INCOMING", "basket:" + suite + ":")
+    if len(peers) > 1:
+        return None, _BINDING_AMBIGUOUS
+    if not peers:
+        return None, _BINDING_UNAVAILABLE
+    return peers.pop(), None
+
+
+def _expressed_basket(family: str | None, node_id: str, ontology_read: Any,
+                      basket_read: Any) -> tuple[dict | None, str | None]:
+    """The one basket the captured ontology reads bind to this local theme, both ways.
+
+    Reads only owner-composed neighborhoods already captured for the subject (live
+    at ``effective_at``, known at the capture cutoff): the theme's, which must show
+    exactly one live expressing basket, and that basket's, which must be live and
+    express exactly this one local theme. A missing, retired or merged basket, or
+    an edge whose other end is not unique, binds nothing; the null reason says which.
+    """
+    peer, null_reason = _expressed_basket_peer(family, node_id, ontology_read)
+    if peer is None:
+        return None, null_reason
+    basket_value = _composed(basket_read, peer)
+    if basket_value is None or not _live_node(basket_value.get("subject")):
+        return None, _BINDING_UNAVAILABLE
+    targets = _expressing_peers(basket_value, "OUTGOING", "ltheme:" + str(family) + ":")
+    if len(targets) > 1:
+        return None, _BINDING_AMBIGUOUS
+    if targets != {node_id}:
+        return None, _BINDING_UNAVAILABLE
+    suite = _EXPRESSED_BASKET_SUITES[str(family)]
+    basket_id = peer[len("basket:" + suite + ":"):]
+    try:
+        if identity.basket_node_id(suite, basket_id) != peer:
+            return None, _BINDING_UNAVAILABLE
+    except ValueError:
+        return None, _BINDING_UNAVAILABLE
+    return {"basket_id": basket_id, "suite": suite}, None
+
+
 def _native_members(basket_id: str, suite: str, effective_at: str) -> dict:
     # Invoke the incumbent public API even when its tolerant return cannot qualify.
     answer = _attempt(pit.members_asof, basket_id, effective_at[:10], suite=suite)
@@ -486,6 +570,9 @@ def _validate_bundle_derivations(snapshot: dict) -> None:
             basket = {"basket_id": meta["basket_id"], "suite": meta["suite"]} if (
                 isinstance(meta.get("basket_id"), str) and
                 meta.get("suite") in ("baskets", "baskets_china", "baskets_china_ths")) else None
+            if basket is None:
+                captured = (snapshot["subjects"].get(node) or {}).get("native_reads") or {}
+                basket, _ = _expressed_basket(family, node, captured.get("ontology"), captured.get("basket_ontology"))
             expected[node] = {"kind": "local_theme", "name_en": row.get("name_en"),
                 "name_zh": row.get("name_zh"), "source_family": family, "native_id": native_id,
                 "basket": basket}
@@ -601,8 +688,14 @@ def capture_owner_bundle(root: Path, *, owner_readers=None, effective_at: str, k
     capture_view = _CaptureStoreView(view)
     for node_id, subject in subjects.items():
         reads = {"ontology": _attempt(ontology.compose_neighborhood, capture_view, node_id=node_id, asof=effective_at[:10], knowledge_cutoff=capture_started[:10]), "identity": identity_reads}
+        binding_null = _BINDING_UNAVAILABLE
+        if subject["kind"] == "local_theme" and subject["basket"] is None:
+            peer, _ = _expressed_basket_peer(subject["source_family"], node_id, reads["ontology"])
+            if peer is not None:
+                reads["basket_ontology"] = _attempt(ontology.compose_neighborhood, capture_view, node_id=peer, asof=effective_at[:10], knowledge_cutoff=capture_started[:10])
+            subject["basket"], binding_null = _expressed_basket(subject["source_family"], node_id, reads["ontology"], reads.get("basket_ontology"))
         basket = subject["basket"]
-        reads["membership"] = _native_members(basket["basket_id"], basket["suite"], effective_at) if basket else {"availability": "UNAVAILABLE", "null_reason": "EXACT_LOCAL_BASKET_BINDING_UNAVAILABLE", "value": None}
+        reads["membership"] = _native_members(basket["basket_id"], basket["suite"], effective_at) if basket else {"availability": "UNAVAILABLE", "null_reason": binding_null or _BINDING_UNAVAILABLE, "value": None}
         family = rights.family_for_node_id(node_id)
         reads["rights"] = _bound_rights_read(root, sources["rights_registry"], family)
         subject["native_reads"] = reads

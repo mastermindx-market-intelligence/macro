@@ -5,7 +5,7 @@
    t('EN','中文') here; attributes take plain strings only (never t()). #}
 {% import "intl_workspace/_gs_macros.html.j2" as gs with context %}
 {% macro sm_abstain_chip_only(state) -%}
-<span class="intl-gs__chip intl-gs__chip--muted-dashed" data-abstain="{{ state.token }}" title="{{ state.reason[0] }} · {{ state.reason[1] }}">{{ t('Abstain', '弃权') }}</span>
+<span class="intl-gs__chip intl-gs__chip--muted-dashed" data-abstain="{{ state.token }}" data-tip-en="{{ state.reason[0]|e }}" data-tip-zh="{{ state.reason[1]|e }}" tabindex="0">{{ t('Abstain', '弃权') }}</span>
 {%- endmacro %}
 
 {% macro sm_abstain_state(token, reason) -%}
@@ -28,7 +28,7 @@
 
 {% macro sm_tier(tier) -%}
 {%- if tier and tier.tier_abstain -%}
-<span class="intl-gs__chip intl-gs__chip--muted-dashed" data-abstain="evidence_tier_undefined" title="{{ tier.label[0] }} · {{ tier.label[1] }}">{{ t('Abstain', '弃权') }}</span>
+<span class="intl-gs__chip intl-gs__chip--muted-dashed" data-abstain="evidence_tier_undefined" data-tip-en="{{ tier.label[0]|e }}" data-tip-zh="{{ tier.label[1]|e }}" tabindex="0">{{ t('Abstain', '弃权') }}</span>
 {%- elif not tier or not tier.rights_class -%}
 <span class="intl-gs__rights-slot" role="img" aria-label="{{ tier.label[0] if tier else 'No rights row' }} · {{ tier.label[1] if tier else '无权利记录' }}" title="{{ tier.label[0] if tier else 'No rights row' }}"></span>
 {%- elif tier.rights_class in ('unresolved', 'internal_only') -%}
@@ -143,9 +143,9 @@
     {{ t(row.name_en, row.name_zh) }} <code class="intl-gs__marketcode">{{ row.id }}</code>
     {%- endif -%}
   </span>
-  <span class="intl-gs__covcell intl-gs__covcell--session" data-abstain="session_calendar_unadmitted" title="{{ p.session_title[0] }} · {{ p.session_title[1] }}">{{ row.session if row.session else '—' }}</span>
+  <span class="intl-gs__covcell intl-gs__covcell--session" data-abstain="session_calendar_unadmitted" data-tip-en="{{ p.session_title[0]|e }}" data-tip-zh="{{ p.session_title[1]|e }}" tabindex="0">{{ row.session if row.session else '—' }}</span>
   {%- for column in p.matrix.columns %}{% set cell = row.cells[column.id] %}
-  <span class="intl-gs__covcell" data-col="{{ column.id }}" data-gs-state="{{ cell.state if cell.state else 'aggregate' }}" data-gs-cell-for="{{ row.id }}"{% if cell.title %} title="{{ cell.title[0] }} · {{ cell.title[1] }}"{% elif cell.reason_copy %} title="{{ column.label[0] }} · {{ cell.reason_copy[0] }} · {{ cell.reason_copy[1] }}"{% endif %}>
+  <span class="intl-gs__covcell" data-col="{{ column.id }}" data-gs-state="{{ cell.state if cell.state else 'aggregate' }}" data-gs-cell-for="{{ row.id }}"{% if cell.title %} data-tip-en="{{ cell.title[0]|e }}" data-tip-zh="{{ cell.title[1]|e }}" tabindex="0"{% elif cell.reason_copy %} data-tip-en="{{ column.label[0]|e }} · {{ cell.reason_copy[0]|e }}" data-tip-zh="{{ column.label[1]|e }} · {{ cell.reason_copy[1]|e }}" tabindex="0"{% endif %}>
     <span class="intl-gs__covcell__label">{{ t(column.label[0], column.label[1]) }}</span>
     {%- if cell.excluded -%}<span class="intl-gs__num intl-gs__num--muted">—</span>
     {%- else -%}{{ gs.gs_glyph(cell.state) }}{% if cell.clock %} <time class="intl-gs__num" datetime="{{ cell.clock.datetime }}">{{ t(cell.clock.en, cell.clock.zh) }}</time>{% else %} <span class="intl-gs__num intl-gs__num--muted">—</span>{% endif %}
