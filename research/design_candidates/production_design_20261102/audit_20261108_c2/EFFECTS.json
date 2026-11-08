@@ -1498,6 +1498,143 @@
       "result": [
         "OK"
       ]
+    },
+    {
+      "key": "motion_inspect_consistency_edit",
+      "operation_id": "paper-audit-20261108-c2-motion-inspect-consistency",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "write_html",
+      "adapter_snapshot_before": "64a1efd6c1233c304881b67efd79acaebf746e02378ba97b9e9bff8b5007caf4",
+      "adapter_snapshot_after": "64a1efd6c1233c304881b67efd79acaebf746e02378ba97b9e9bff8b5007caf4",
+      "retry_allowed": false,
+      "production_acceptance": false,
+      "result": [
+        {
+          "createdNodes": [
+            {
+              "id": "AC9-0",
+              "name": "Inspect · revision A period 2 exact value",
+              "component": "SVG",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "ACA-0",
+              "name": "Rect",
+              "component": "SVGVisualElement",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "ACB-0",
+              "name": "Path",
+              "component": "SVGVisualElement",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "ACC-0",
+              "name": "Path",
+              "component": "SVGVisualElement",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "ACD-0",
+              "name": "Circle",
+              "component": "SVGVisualElement",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "ACE-0",
+              "name": "Circle",
+              "component": "SVGVisualElement",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "ACF-0",
+              "name": "Path",
+              "component": "SVGVisualElement",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "ACG-0",
+              "name": "Rect",
+              "component": "SVGVisualElement",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "ACH-0",
+              "name": "EXACT VALUE",
+              "component": "SVGVisualElement",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "ACI-0",
+              "name": "12",
+              "component": "SVGVisualElement",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "ACJ-0",
+              "name": "Revision A · period …",
+              "component": "SVGVisualElement",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "ACK-0",
+              "name": "Selected value → aut…",
+              "component": "SVGVisualElement",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "finish_motion_consistency",
+      "operation_id": "paper-audit-20261108-c2-finish-motion-consistency",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "finish_working_on_nodes",
+      "adapter_snapshot_before": "64a1efd6c1233c304881b67efd79acaebf746e02378ba97b9e9bff8b5007caf4",
+      "adapter_snapshot_after": "64a1efd6c1233c304881b67efd79acaebf746e02378ba97b9e9bff8b5007caf4",
+      "retry_allowed": false,
+      "production_acceptance": false,
+      "result": [
+        "OK"
+      ]
     }
   ],
   "verification": {
@@ -1521,7 +1658,9 @@
       "screenshotReviewed": true,
       "preservedImplementationBoard": "13J-0",
       "contractSourceCommit": "cb225f999dafc5fa3582bd798c4829525853c4cb",
-      "finalSourcePointerReadback": true
+      "finalSourcePointerReadback": true,
+      "inspectionCurveMatchesReveal": true,
+      "inspectionDiagramNode": "AC9-0"
     },
     "guide": [
       {
@@ -1682,7 +1821,7 @@
   "evidence": [
     {
       "name": "motion-storyboard.jpg",
-      "sha": "fa2b06ff9083124c5b1beba32a9d1cb31458c96d"
+      "sha": "61bfcc499c242a9c165c9c591c6e7eb6cd34537c"
     },
     {
       "name": "ai-build-sequence.jpg",
