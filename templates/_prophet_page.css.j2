@@ -117,6 +117,21 @@ body.page-stocks #us-standouts #us-st-view-toggle button[aria-selected="true"] {
 }
 body.page-stocks #us-standouts #us-board-sub { flex-basis: 100%; color: var(--muted); }
 body.page-stocks #us-standouts .pbs-note { margin: 10px 0; font-size: var(--fs-sm,12.5px); }
+/* Retain the live note and its source state; reserve space only when a note is
+   actually visible. The hidden variants must not insert a blank row. */
+body.page-stocks #us-standouts .pbs-note:not(:has(.pbs-nv:not([hidden]))) { display: none; }
+/* Keep the opportunity cards near the first fold without compressing their
+   research content, controls or source clocks. Shared navigation is unchanged. */
+body.page-stocks > .grid { row-gap: 12px; }
+html[data-theme="light"] body.page-stocks #stocks-header { background: transparent; }
+@media (min-width: 960px) {
+  body.page-stocks #stocks-header { padding-block: 6px; }
+  body.page-stocks #stocks-header h1 { margin-block: 4px; }
+  body.page-stocks #prophet-market-brief { padding-block: 10px; }
+  body.page-stocks #us-standouts .pb-hdrow { gap: 8px; padding-block: 4px 8px; }
+  body.page-stocks #us-standouts #us-today { margin-top: 8px; }
+  body.page-stocks #us-today .mx-sec-hd { margin-bottom: 6px; padding-bottom: 4px; }
+}
 body.page-stocks #us-standouts .mx-sec-hd { margin-top: 16px; gap: 10px; }
 /* The source toggle already names Today. Keep its heading in the accessibility
    tree without duplicating a visible title and delaying the first card. */

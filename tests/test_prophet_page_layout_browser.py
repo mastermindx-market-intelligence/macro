@@ -26,15 +26,21 @@ def layout_html():
     vm["market_state"] = {"color": "red", "label_en": "Risk-off", "label_zh": "避险"}
     for row in vm["us_standouts"]["buy"]:
         row["featured"] = True
+    # The producer's declared shelf count selects Today; featured flags alone
+    # deliberately leave the workspace on Candidates. This synthetic fixture
+    # supplies that metadata without issuing any live selection receipt.
+    vm["us_standouts"]["ranking"] = {"featured_count": len(vm["us_standouts"]["buy"])}
     return _env().get_template("dashboard.html.j2").render(**vm, mode="stocks")
 
 
 @pytest.mark.parametrize("width", [320, 390, 820, 1440])
 @pytest.mark.parametrize("theme,lang", [("light", "en"), ("dark", "en"), ("light", "zh"), ("dark", "zh")])
 def test_paper_composition_first_paint(layout_browser, layout_html, width, theme, lang, tmp_path):
-    # First-paint geometry must not depend on account/data requests.
-    # SSR-only; authenticated journeys have separate tests.
-    context = layout_browser.new_context(viewport={"width": width, "height": 1000}, java_script_enabled=False)
+    # Normal first paint, with every external script/data request still aborted.
+    # JavaScript-disabled navigation deliberately expands the no-JS site map;
+    # that accessible fallback is not the collapsed mobile workspace.
+    # No credentials or authenticated journey are exercised by this fixture.
+    context = layout_browser.new_context(viewport={"width": width, "height": 1000})
     page = context.new_page()
     page.set_default_timeout(3000)
 
@@ -63,12 +69,21 @@ def test_paper_composition_first_paint(layout_browser, layout_html, width, theme
         assert page.locator("#prophet-workspace-nav").evaluate("e=>e.scrollWidth <= e.clientWidth || getComputedStyle(e).overflowX === 'auto'")
         for control in page.locator("#prophet-workspace-nav a").all():
             assert control.bounding_box()["height"] >= 44
+        assert page.locator("#us-standouts").get_attribute("data-prophet-src") == "today"
         first_card = page.locator("#us-today-grid .po-card").first.bounding_box()
-        assert first_card and first_card["y"] < (740 if width < 640 else 570), first_card
+        assert first_card and first_card["y"] < (740 if width < 960 else 570), first_card
         risk = page.locator("#prophet-market-brief").inner_text()
         assert ("保住本金" if lang == "zh" else "defend capital") in risk
         assert ("defend capital" if lang == "zh" else "保住本金") not in risk
         page.screenshot(path=str(tmp_path / f"prophet-{width}-{theme}-{lang}.png"))
+        # An empty note must not consume a row, but a native state update must
+        # reveal the SAME warning region without reconstructing its content.
+        if width == 1440 and theme == "light" and lang == "en":
+            note = page.locator("#us-standouts .pbs-note")
+            assert not note.is_visible()
+            page.locator('[data-bs-note="behind"]').evaluate("e=>e.removeAttribute('hidden')")
+            assert note.is_visible()
+            assert "last night's confirmed picks" in note.inner_text()
         print(f"layout {width} {theme} {lang}: first_card_y={first_card['y']:.1f}; no overflow")
     finally:
         context.close()

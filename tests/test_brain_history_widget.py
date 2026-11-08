@@ -522,7 +522,10 @@ def prophet_launcher():
         from markupsafe import Markup, escape
         source = (ROOT / "templates/dashboard.html.j2").read_text()
         start = source.index('<div class="stk-headline">')
-        end = source.index('<nav class="stk-header-links prophet-section-nav"', start)
+        # The workspace nav follows the risk brief now. Keep this fixture bound
+        # to the real header and its live status, not a sibling's position/class.
+        status_start = source.index('<p id="prophet-assistant-status"', start)
+        end = source.index('</p>', status_start) + len('</p>')
         env = Environment(autoescape=True)
         env.globals["t"] = lambda en, zh: Markup('<span class="l-en">{}</span><span class="l-zh">{}</span>').format(escape(en), escape(zh))
         env.globals["td"] = lambda value: value
