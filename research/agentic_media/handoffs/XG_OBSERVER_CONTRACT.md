@@ -1,52 +1,52 @@
-# XG novelty observer — contract v1.2
+# XG novelty observer — contract v1.4
 
 Status: **specification, unbuilt**. Owning card: `t_2bb26bfe`. Author seat: engineering.
-v1.1 added the refusal verdicts, the `collected` block, allowlist provenance and content
-addressing. v1.2 adds **parser identity**, after a real incident: a reported "4 → 6 connection
-churn" was the sweep's own parser fix landing between two runs. The diff spanned a tool change,
-so it was not a time series. This file is a contract, not an implementation. Nothing here grants
-permission, binds an account, or enables a runtime operation.
+v1.3 added parser identity (`refused: tool_changed`). v1.4 adds: the socket/artifact/comparison
+verdict split, `connection_count` as the readable number, `bind_addr` as non-nullable, the
+`bound_no_endpoint` class, the `refused: unowned_bridge` gate, and a correction — a
+`DevToolsActivePort` file is corroboration and a bound socket is not an endpoint.
+Nothing here grants permission, binds an account, or enables a runtime operation.
 
 ## Purpose
 
 The harness gate chain validates *intent*: is this identity admitted, is this proxy declared,
 is this slot inside the box ceiling. It cannot see that the box is **already running something
-the registry never declared**. On 2026-11-07 a parallel automation worker drove CDP-attached
-Chrome instances on `mini1` while the harness PR was an unsigned draft; no gate in the chain
-would have reported it, because every gate asked about declared things.
+the registry never declared**. The observer closes that gap by enumerating reality and diffing it
+against declaration.
 
-The observer closes that gap by enumerating reality and diffing it against declaration.
-
-## Three rules, all load-bearing
+## Four rules, all load-bearing
 
 1. **Readback proves state, not ownership.** The observer may report a resource as
    `undeclared`. It must never report an identity as `known`, `authorized`, or `ours`.
-   Attribution is a separate evidence path with a separate owner (process, manifest, or payment
-   trail) — never inferred from a snapshot.
+   Attribution is a separate evidence path with a separate owner — process argv, plist, manifest,
+   payment trail — never inferred from a snapshot.
 2. **A self-report cannot be the observer.** The snapshot must be produced by a process
-   independent of the subject's own tree. A worker's own README, health script, or environment
-   report is corroborating material, not observation.
+   independent of the subject's own tree. A worker's own README, health script,
+   `DevToolsActivePort`, or environment report is corroborating material, not observation.
 3. **A diff across a tool change is not a time series.** Two snapshots may be compared only when
-   their `sweep_script_sha256` and tool identities match. Otherwise the verdict is
-   `refused: tool_changed` — not "the box changed", and not a delta.
+   their `sweep_script_sha256` and tool identities match. Otherwise `refused: tool_changed` —
+   not "the box changed", and not a delta.
+4. **A bound socket is not an endpoint.** `lsof` proves a port is held; it does not prove anything
+   serves on it. An endpoint exists only if the CDP probe answers. Everything that would be said
+   about a port — exposure, drivability, identity — is said only after the probe.
 
 ## Snapshot contract
 
-Transport: one JSON document per host per sweep. The harness consumes it as a **pure input**;
-no import from `tools/xguerrilla/` and no shared helper module, so the observer can be built,
-tested and merged while the harness PR is still a draft.
+One JSON document per host per sweep. The harness consumes it as a **pure input**; no import from
+`tools/xguerrilla/`, no shared helper module, so the observer can be built, tested and merged
+while the harness PR is still a draft.
 
 ```jsonc
 {
   "schema_version": 1,
   "host": "mini1",
-  "taken_at": "2026-11-07T23:04:00-07:00",
+  "taken_at": "2026-11-08T07:12:51Z",
   "observer": "hermes",
   "provenance": {
     "ssh_target": "mini1",
-    "commands": ["launchctl list", "lsof -nP -iTCP -sTCP:LISTEN", "ps axo pid,ppid,command"],
+    "commands": ["launchctl print", "lsof -nP -iTCP -sTCP:LISTEN", "ps axo pid,ppid,command", "curl /json/version"],
     "tools": {"macos": "27.0 (26A428)", "lsof": "4.91"},
-    "sweep_script_sha256": "b3eddcc6d98dc2f2b0876a54eb41aff4130477831897b0e5e55ea066d9ff73ce",
+    "sweep_script_sha256": "92ddfb15aee058760b6f0e156f284a25410f9ee904ff2ce1c169d2e1ae63e66e",
     "mutating": false
   },
   "collection_status": "complete",            // complete | incomplete — never a verdict word
@@ -54,133 +54,119 @@ tested and merged while the harness PR is still a draft.
     "hosts_attempted": ["mini1","mini2","mini3","mini4"],
     "hosts_returned": ["mini1"],
     "commands_run": [{"cmd": "lsof -nP -iTCP -sTCP:LISTEN", "exit": 0}],
-    "command_failures": [{"host": "mini2", "cmd": "ssh", "error": "host unreachable"}]
+    "command_failures": [{"host": "mini2", "cmd": "ssh", "error": "Could not resolve hostname"}]
   },
-  "launchd":   [{"label": "com.xg.proxyauth", "plist_path": "...", "pid": 60367, "loaded_at": "..."}],
-  "listeners": [{"port": 9333, "bind_addr": "127.0.0.1", "pid": 10248, "proc": "Google Chrome"}],
-  "chrome":    [{"pid": 10248, "cdp_port": 9333, "proxy_server": "http://<redacted>",
-                 "profile_dir": "~/xg/profiles/smoke", "ppid": 1, "started_at": "..."}],
-  "cdp_sessions": [{"pid": 63439, "local": "127.0.0.1:62066", "remote": "127.0.0.1:9333", "state": "ESTABLISHED"}]
+  "listeners": [{"port": 9223, "bind_addr": "127.0.0.1", "pid": 35984, "proc": "Google Chrome"}],
+  "endpoints": [{"port": 9223, "probe": "400", "serving": true,
+                 "browser": "Chrome/155.0.8059.40", "protocol": "1.3", "peers": 2},
+                {"port": 9222, "probe": "404", "serving": false, "peers": 0}],
+  "connection_count": 3,                      // the number to read; see cdp_sessions
+  "cdp_sessions": [{"pid": 17533, "local": "127.0.0.1:63278", "remote_port": 9223, "state": "ESTABLISHED"}],
+  "socket_ends":  [{"pid": 35984, "local_port": 9223, "peer": "127.0.0.1:60998", "state": "ESTABLISHED"}],
+  "launchd": [{"label": "com.mastermind.peekaboo-bridge", "plist_path": "...", "pid": 17533,
+               "start_interval_s": 60, "bootout_authority": null}]
 }
 ```
 
-Requirements:
+### Shape rules
 
-- **Read-only.** No process killed, no file written on the observed host, no port touched.
-- **No credential values.** `proxy_server` is host:port only. Users, passwords and TOTP seeds
-  never enter a snapshot, a log, or a report. An observed credential file is reported by path
-  and mode, never by content.
-- **One type per field, everywhere.** `hosts_returned` is always a list of names — never `null`,
-  never `0`, never a count. `port` and `cdp_port` are always integers, so they join against an
-  integer registry; a string port makes every *declared* port read `undeclared`, which is the
-  failure mode that looks safe and therefore gets switched off instead of fixed.
-- **Verdict words and collection words live in different keys.** Collection outcome is
-  `collection_status: complete | incomplete`. Nothing else may occupy that namespace; a
-  `status: "ok"` sitting alongside five refusal verdicts is a sixth verdict by accident.
-- **Connections are counted once.** `lsof` reports both ends of a loopback connection. Keep the
-  client-side row and drop the server-side echo, or double-counting turns a stable box into
-  apparent churn.
-- **Provenance is mandatory and includes the parser.** `observer` + `commands` + `taken_at` +
-  `sweep_script_sha256` + tool versions. Without the script sha, a later "quiet" may only mean a
-  different parser produced different output.
-- **`collected` is mandatory.** A host that did not answer, a command that exited non-zero, or a
-  truncated listing must appear in `command_failures`. An empty array means *collection was
-  complete and found nothing*, never *collection didn't happen*.
-- **`mutating: true` is a rejection condition**, not a warning.
+- **`cdp_sessions` holds client-side rows only.** Server echoes live in `socket_ends[]`.
+  `connection_count` is the single readable number, and `len(cdp_sessions) == connection_count`.
+  Dedupe key is **`(pid, remote_port)`** — never the local port: a keepalive that reconnects every
+  minute changes the local port on each reconnect, and a local-port key scores that as phantom churn.
+- **Types are single, everywhere.** `hosts_returned` is always a list of names, never `null` or a
+  count. `port`, `cdp_port`, `remote_port` are integers, so they join an integer registry.
+- **`bind_addr` is non-nullable** on every listener. If a CDP surface ever reads `*` or `0.0.0.0`,
+  that is an incident, and the schema must make it visible rather than absent.
+- **`socket_ends` is advisory, not a completeness claim.** The echo of a client row may be missing
+  when a sweep races a reconnect — a local port on its fourth value in one session is normal. A
+  consumer must never infer a fault from an absent echo, and must never derive a connection count
+  from `socket_ends`.
+- **The manifest carries its own identity.** Manifest-level `schema_version` and
+  `sweep_script_sha256`, so a manifest-vs-manifest comparison can evaluate `refused: tool_changed`
+  without opening any snapshot.
+- **Verdicts do not share one field.** Three subjects, three keys, evaluated separately:
+
+```jsonc
+{
+  "socket_verdicts":     [{"port": 9223, "verdict": "undeclared"}],
+  "artifact_verdict":    {"verdict": "complete"},
+  "comparison_verdict":  {"verdict": "comparable", "vs": "<previous manifest sha256>"}
+}
+```
+
+  A per-port table must never have to print an artifact verdict, and a consumer iterating ports
+  must not be able to drop a comparison refusal silently.
 
 ## Verdicts
 
-Six outcomes. The rule refuses rather than guesses:
+**Socket** (`declared` / `baseline` / `undeclared` / `bound_no_endpoint`)
 
-| verdict | meaning | effect on launch |
+| verdict | meaning | effect |
 |---|---|---|
-| `declared` | observed and in the registry | pass |
-| `baseline` | observed and in `baseline_allowlist` | pass |
-| `undeclared` | observed in neither | **refuse** |
-| `refused: collection_incomplete` | `collected` shows a host or command that did not answer | **refuse** |
-| `refused: schema_unsupported` | `schema_version` unknown, or registry revision newer than the consumer understands | **refuse** |
-| `refused: tool_changed` | comparing snapshots with differing `sweep_script_sha256` or tool identity | **refuse the comparison** |
+| `declared` | observed, a declaration-of-record exists (argv flag, plist→script), and the live socket matches it | pass |
+| `baseline` | stock OS service with allowlist provenance | pass |
+| `undeclared` | observed, no declaration of record | **refuse** |
+| `bound_no_endpoint` | port held, no CDP endpoint answers (404/empty, zero peers) | **not registrable** — a socket with no identity |
 
-`refused: schema_unsupported` is the anti-fail-open clause. `refused: tool_changed` is the
-anti-false-narrative clause: the 2026-11-08 "churn" reading was a parser fix, not box activity,
-and the only thing that would have prevented the misreading was refusing to diff.
+`baseline` can never include a Chrome CDP listener: admitting it would launder a product into the
+operating system.
 
-**Version discipline:** `schema_version` is 1 only because no consumer exists yet. Once the
-first consumer ships, any *required* field addition bumps to 2, and a v1 consumer meeting a v2
-snapshot refuses rather than tolerating unknown fields.
+**Artifact** (`complete` / `refused: collection_incomplete` / `refused: schema_unsupported`)
 
-## Content addressing at consumption
+**Comparison** (`comparable` / `refused: tool_changed`)
 
-`~/.hermes/reports/` is a mutable user directory. The harness therefore takes
-`{path, sha256, taken_at}` — never a bare path — and writes the sha256 into the **admission
-receipt**. "The sweep ran" is otherwise an assertion; a sha is a readback. A file whose sha no
-longer matches the receipt is evidence of tampering or staleness, not of a quieter box.
+**Gate** (`refused: unowned_bridge`) — raised when the identity's `binding.cdp_port` is served by a
+process whose owning bridge declares no `bootout_authority`. The driver returns this refusal rather
+than attaching. Rationale: the `com.mastermind.peekaboo-bridge` agent is a `StartInterval 60`
+keepalive that restarted 24 minutes after the xg scaffold; "we stopped the driver" is true while
+the bridge reconnects within a minute. A rule that only labels sockets can describe an attach
+afterwards; it cannot prevent one. Labelling a port is not enough — the registry must bind
+**process identity and bootout authority** for any bridge a driver would ride.
 
-## Diff rule
-
-Inputs: (a) the snapshot, (b) the identity registry, (c) the versioned `baseline_allowlist`,
-(d) the provenance of the last accepted snapshot.
-
-- observed and declared → `declared`.
-- observed and in `baseline_allowlist` → `baseline` (stock OS; not ours, not novel).
-- observed in **neither** → `undeclared` → **launch refuses.**
-- collection incomplete, schema unsupported, or tool changed → **launch refuses.**
-
-## `baseline_allowlist` — held to the snapshot's standard
-
-This is the one input that can turn `undeclared` into a pass, so it carries the same discipline
-as an admission receipt. Each entry:
+## Registry addition (delta on v1)
 
 ```yaml
-- match: "proc=ARDAgent, port=3283"
-  reason: "stock macOS Remote Desktop agent, pre-existing"
-  added_by: engineering
-  added_at: 2026-11-07
-  host_seed_sha: "<sha256 of the clean-host snapshot it was derived from>"
+binding:
+  cdp_port: 9223
+owner_bridge:                        # who can stop it, not who benefits from it
+  label: com.mastermind.peekaboo-bridge
+  plist_path: /Users/mini1/Library/LaunchAgents/com.mastermind.peekaboo-bridge.plist
+  plist_sha256: "<sha>"
+  start_interval_s: 60
+  bootout_authority: null            # a seat or a human; null ⇒ refused: unowned_bridge
 ```
 
-Rules: no entry without `reason` and `added_by`; an allowlist whose `host_seed_sha` does not
-match the clean-host snapshot it claims is **refused**, not trimmed. An allowlist that grows
-without those fields is an escape hatch, and escape hatches are how a novelty check becomes a
-formality.
+## Content addressing
 
-## Binding by port, not by count
-
-`cdp_port` is part of the identity binding. A CDP port that is open and not bound to a declared
-identity is an **undeclared identity**, not merely an extra process. During the 2026-11-07
-incident the box went from two CDP instances to three (9333, 9222, 9223) while a hold was in
-force; a count-based ceiling describes that as "3 of 6, fine". A port-bound registry describes
-it correctly.
-
-Box capacity is carried as `{box, measured_ceiling}` — measured, not nominal. On `mini1`,
-`ChatGPT.app` plus Codex renderers hold roughly 3.2 GB of 16 GB and ~28 helper processes run
-per Chrome instance, so the binding constraint on concurrency is often process count, not memory.
-
-## Acceptance evidence (required before this leaves draft)
-
-1. Unit tests for the diff rule, including the three-way `declared` / `baseline` / `undeclared`
-   split and a fixture where a stock OS service is present.
-2. A rejection test: a snapshot missing `provenance` or carrying `mutating: true` is refused.
-3. **The first fleet sweep** recorded verbatim as the fixture — real ports, real helper counts,
-   four hosts — so the suite notices if the emitted shape has already drifted from this contract.
-4. A negative test proving the observer reports `undeclared` and never `known`.
-5. **Schema-refusal test:** a `schema_version: 2` snapshot, and a registry revision newer than
-   the consumer knows, both yield `refused: schema_unsupported`.
-6. **Collection-refusal test:** a snapshot with non-empty `collected.command_failures`, and one
-   from a host that did not answer, both yield `refused: collection_incomplete` — and *neither*
-   passes as "no findings".
-7. **Allowlist-refusal test:** an entry missing `reason`/`added_by`, and an allowlist whose
-   `host_seed_sha` mismatches, are both refused.
-8. **Content-addressing test:** a snapshot whose sha256 no longer matches the value recorded in
-   the admission receipt is refused.
-9. **Tool-change test:** two snapshots differing only in `sweep_script_sha256` must yield
-   `refused: tool_changed` — and specifically must *not* produce a connection-count delta.
-
-Absent those nine, the observer is a document, not an artifact.
+The harness takes `{path, sha256, taken_at}` — never a bare path — and writes the sha256 into the
+admission receipt. `~/.hermes/reports/` is a mutable user directory; "the sweep ran" is otherwise
+an assertion.
 
 ## Accepted fixture
 
-Sweep of **2026-11-08T06:58:39Z**, `sweep.py` v1.2, `script_sha256`
-`b3eddcc6d98dc2f2b0876a54eb41aff4130477831897b0e5e55ea066d9ff73ce`, manifest sha256
-`362919cc804d9a52051209d0e53b9223e9472f6e95b654bba4f5f2256b5a1b26`. The earlier `68589392…`
-manifest predates the dedupe fix and must not be diffed against it.
+Run 2 of **2026-11-08T07:12:51Z**, `sweep.py` **v1.3**,
+`script_sha256 92ddfb15aee058760b6f0e156f284a25410f9ee904ff2ce1c169d2e1ae63e66e`,
+manifest sha256 **`5458165275ab3446d38f06c147c318a4f4caa8b1aeee5dbeca4e2286cbcf007e`**.
+`connection_count: 3` in that fixture means three connections. Superseded and not to be diffed
+against: `362919cc…` (v1.2 shape), `68589392…` (pre-dedupe).
+
+## Acceptance evidence (required before this leaves draft)
+
+1. Diff-rule unit tests: `declared` / `baseline` / `undeclared` / `bound_no_endpoint`.
+2. `provenance` missing or `mutating: true` → refused.
+3. The accepted fixture above, stored verbatim in the test tree.
+4. Negative test: observer reports `undeclared`, never `known`.
+5. `schema_version: 2` and a newer registry revision → `refused: schema_unsupported`.
+6. Non-empty `command_failures`, and a host that did not answer → `refused: collection_incomplete`,
+   and neither passes as "no findings".
+7. Allowlist entry missing `reason`/`added_by`, or `host_seed_sha` mismatch → refused.
+8. Snapshot sha256 no longer matching the admission receipt → refused.
+9. Two snapshots differing only in `sweep_script_sha256` → `refused: tool_changed`, and
+   specifically no connection-count delta.
+10. **Endpoint test:** a fixture port with a held socket and a 404/empty probe must classify
+    `bound_no_endpoint` and must never be reported as an exposure or a drivable surface.
+11. **Bridge test:** an entry whose `bootout_authority` is null yields `refused: unowned_bridge`
+    at launch, not a warning at snapshot time.
+
+Absent those eleven, the observer is a document, not an artifact.
