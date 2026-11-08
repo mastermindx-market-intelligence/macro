@@ -1,0 +1,2236 @@
+{
+  "schema": "mastermind.paper_audit_receipts.v1",
+  "date": "2026-11-08",
+  "carrier": "Mastermind Paper direct",
+  "operation_prefix": "paper-estate-audit-20261108-sol-001",
+  "source_pins": {
+    "mastermind": "5c3d3885234358aefb97ecdbc59be0864df14f8b",
+    "macro": "338a10852dcefa5d2bd07e5c6be0955c2b1e83fd"
+  },
+  "scope": {
+    "files_modified": 4,
+    "artboards_modified": 13,
+    "resources_inventoried": 37
+  },
+  "operations": [
+    {
+      "key": "hub-priority-edit",
+      "operation_id": "paper-estate-audit-20261108-sol-001-hub-priority-01",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "results": [
+        {
+          "moves": [
+            {
+              "nodeId": "G6-0",
+              "parentId": "8S-0",
+              "index": 4
+            },
+            {
+              "nodeId": "9G-0",
+              "parentId": "8S-0",
+              "index": 8
+            }
+          ],
+          "affected_parents": [
+            {
+              "parentId": "8S-0",
+              "childIds": [
+                "8T-0",
+                "98-0",
+                "9Z-0",
+                "A8-0",
+                "G6-0",
+                "AQ-0",
+                "GR-0",
+                "I5-0",
+                "9G-0",
+                "K7-0"
+              ]
+            },
+            {
+              "parentId": "98-0",
+              "childIds": [
+                "99-0"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "hub-copy-edit",
+      "operation_id": "paper-estate-audit-20261108-sol-001-hub-copy-02",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "results": [
+        {
+          "updated_nodes": [
+            {
+              "nodeId": "8V-0"
+            },
+            {
+              "nodeId": "8X-0"
+            },
+            {
+              "nodeId": "A2-0"
+            },
+            {
+              "nodeId": "AB-0"
+            },
+            {
+              "nodeId": "AC-0"
+            },
+            {
+              "nodeId": "AG-0"
+            },
+            {
+              "nodeId": "AS-0"
+            },
+            {
+              "nodeId": "AT-0"
+            },
+            {
+              "nodeId": "G8-0"
+            },
+            {
+              "nodeId": "G9-0"
+            },
+            {
+              "nodeId": "GE-0"
+            },
+            {
+              "nodeId": "GM-0"
+            },
+            {
+              "nodeId": "GH-0"
+            },
+            {
+              "nodeId": "GP-0"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "hub-card-03",
+      "operation_id": "paper-estate-audit-20261108-sol-001-hub-card-03",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "results": [
+        {
+          "created_nodes": [
+            {
+              "id": "6W2-0",
+              "name": "Frame"
+            },
+            {
+              "id": "6W3-0",
+              "name": "Frame"
+            },
+            {
+              "id": "6W4-0",
+              "name": "LRCX"
+            },
+            {
+              "id": "6W5-0",
+              "name": "Early · Checks passe…"
+            },
+            {
+              "id": "6W6-0",
+              "name": "Radar and buy-board …"
+            },
+            {
+              "id": "6W7-0",
+              "name": "Frame"
+            },
+            {
+              "id": "6W8-0",
+              "name": "Review supporting ev…"
+            },
+            {
+              "id": "6W9-0",
+              "name": "Inspect setup ↗"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "hub-edit-04",
+      "operation_id": "paper-estate-audit-20261108-sol-001-hub-04",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "results": [
+        {
+          "created_nodes": [
+            {
+              "id": "6WB-0",
+              "name": "Frame"
+            },
+            {
+              "id": "6WC-0",
+              "name": "Frame"
+            },
+            {
+              "id": "6WD-0",
+              "name": "ANET"
+            },
+            {
+              "id": "6WE-0",
+              "name": "Emerging · Checks pa…"
+            },
+            {
+              "id": "6WF-0",
+              "name": "Quiet tape and a for…"
+            },
+            {
+              "id": "6WG-0",
+              "name": "Frame"
+            },
+            {
+              "id": "6WH-0",
+              "name": "Review supporting ev…"
+            },
+            {
+              "id": "6WI-0",
+              "name": "Inspect setup ↗"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "hub-edit-05",
+      "operation_id": "paper-estate-audit-20261108-sol-001-hub-05",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "results": [
+        {
+          "created_nodes": [
+            {
+              "id": "6WK-0",
+              "name": "Frame"
+            },
+            {
+              "id": "6WL-0",
+              "name": "Intelligence"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "hub-edit-06",
+      "operation_id": "paper-estate-audit-20261108-sol-001-hub-06",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "results": [
+        {
+          "created_nodes": [
+            {
+              "id": "6WN-0",
+              "name": "Frame"
+            },
+            {
+              "id": "6WO-0",
+              "name": "Overview"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "hub-edit-07",
+      "operation_id": "paper-estate-audit-20261108-sol-001-hub-07",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "results": [
+        {
+          "created_nodes": [
+            {
+              "id": "6WQ-0",
+              "name": "Unavailable source — non-interactive"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "hub-selection-edit",
+      "operation_id": "paper-estate-audit-20261108-sol-001-hub-selection-08",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "results": [
+        {
+          "created_nodes": [
+            {
+              "id": "6WS-0",
+              "name": "Frame"
+            },
+            {
+              "id": "6WT-0",
+              "name": "Frame"
+            },
+            {
+              "id": "6WU-0",
+              "name": "01 AXON"
+            },
+            {
+              "id": "6WV-0",
+              "name": "$430.11 · Snapshot"
+            },
+            {
+              "id": "6WW-0",
+              "name": "Frame"
+            },
+            {
+              "id": "6WX-0",
+              "name": "Discovery"
+            },
+            {
+              "id": "6WY-0",
+              "name": "Rolling over"
+            },
+            {
+              "id": "6WZ-0",
+              "name": "Frame"
+            },
+            {
+              "id": "6X0-0",
+              "name": "51"
+            },
+            {
+              "id": "6X1-0",
+              "name": "Frame"
+            },
+            {
+              "id": "6X2-0",
+              "name": "Frame"
+            },
+            {
+              "id": "6X3-0",
+              "name": "Rectangle"
+            },
+            {
+              "id": "6X4-0",
+              "name": "85"
+            },
+            {
+              "id": "6X5-0",
+              "name": "Frame"
+            },
+            {
+              "id": "6X6-0",
+              "name": "Frame"
+            },
+            {
+              "id": "6X7-0",
+              "name": "·"
+            },
+            {
+              "id": "6X8-0",
+              "name": "Frame"
+            },
+            {
+              "id": "6X9-0",
+              "name": "·"
+            },
+            {
+              "id": "6XA-0",
+              "name": "Frame"
+            },
+            {
+              "id": "6XB-0",
+              "name": "·"
+            },
+            {
+              "id": "6XC-0",
+              "name": "Frame"
+            },
+            {
+              "id": "6XD-0",
+              "name": "·"
+            },
+            {
+              "id": "6XE-0",
+              "name": "Frame"
+            },
+            {
+              "id": "6XF-0",
+              "name": "·"
+            },
+            {
+              "id": "6XG-0",
+              "name": "Frame"
+            },
+            {
+              "id": "6XH-0",
+              "name": "Federal obligated do…"
+            },
+            {
+              "id": "6XI-0",
+              "name": "Off-desk discovery ·…"
+            },
+            {
+              "id": "6XJ-0",
+              "name": "→"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "hub-mobile-move",
+      "operation_id": "paper-estate-audit-20261108-sol-001-hub-mobile-09",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "results": [
+        {
+          "moves": [
+            {
+              "nodeId": "1HL-0",
+              "parentId": "1EW-0",
+              "index": 1
+            },
+            {
+              "nodeId": "1EI-0",
+              "parentId": "1EW-0",
+              "index": 5
+            }
+          ],
+          "affected_parents": [
+            {
+              "parentId": "1EW-0",
+              "childIds": [
+                "1EX-0",
+                "1HL-0",
+                "1F6-0",
+                "1HK-0",
+                "1HW-0",
+                "1EI-0"
+              ]
+            },
+            {
+              "parentId": "1HK-0",
+              "childIds": [
+                "1HR-0"
+              ]
+            },
+            {
+              "parentId": "1E0-0",
+              "childIds": [
+                "1E1-0",
+                "1E9-0",
+                "1EC-0",
+                "1EG-0",
+                "1EH-0"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "hub-mobile-copy",
+      "operation_id": "paper-estate-audit-20261108-sol-001-hub-mobile-10",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "results": [
+        {
+          "updated_nodes": [
+            {
+              "nodeId": "1EB-0"
+            },
+            {
+              "nodeId": "1EZ-0"
+            },
+            {
+              "nodeId": "1F0-0"
+            },
+            {
+              "nodeId": "1F3-0"
+            },
+            {
+              "nodeId": "1F8-0"
+            },
+            {
+              "nodeId": "1HM-0"
+            },
+            {
+              "nodeId": "1HN-0"
+            },
+            {
+              "nodeId": "1IG-0"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "hub-mobile-11",
+      "operation_id": "paper-estate-audit-20261108-sol-001-hub-mobile-11",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "results": [
+        {
+          "created_nodes": [
+            {
+              "id": "6XL-0",
+              "name": "Frame"
+            },
+            {
+              "id": "6XM-0",
+              "name": "Review setups"
+            },
+            {
+              "id": "6XN-0",
+              "name": "LRCX and ANET passed…"
+            },
+            {
+              "id": "6XO-0",
+              "name": "Frame"
+            },
+            {
+              "id": "6XP-0",
+              "name": "LRCX setup ↗"
+            },
+            {
+              "id": "6XQ-0",
+              "name": "ANET setup ↗"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "hub-mobile-12",
+      "operation_id": "paper-estate-audit-20261108-sol-001-hub-mobile-12",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "results": [
+        {
+          "created_nodes": [
+            {
+              "id": "6XS-0",
+              "name": "Frame"
+            },
+            {
+              "id": "6XT-0",
+              "name": "Frame"
+            },
+            {
+              "id": "6XU-0",
+              "name": "News ↗"
+            },
+            {
+              "id": "6XV-0",
+              "name": "Frame"
+            },
+            {
+              "id": "6XW-0",
+              "name": "Alt-Data ↗"
+            },
+            {
+              "id": "6XX-0",
+              "name": "Frame"
+            },
+            {
+              "id": "6XY-0",
+              "name": "Radar ↗"
+            },
+            {
+              "id": "6XZ-0",
+              "name": "Frame"
+            },
+            {
+              "id": "6Y0-0",
+              "name": "Buy-Board ↗"
+            },
+            {
+              "id": "6Y1-0",
+              "name": "Frame"
+            },
+            {
+              "id": "6Y2-0",
+              "name": "Policy ↗"
+            },
+            {
+              "id": "6Y3-0",
+              "name": "Frame"
+            },
+            {
+              "id": "6Y4-0",
+              "name": "Special situations ↗"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "hub-mobile-13",
+      "operation_id": "paper-estate-audit-20261108-sol-001-hub-mobile-13",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "results": [
+        {
+          "updated_nodes": [
+            {
+              "nodeId": "1F5-0"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "os-copy-14",
+      "operation_id": "paper-estate-audit-20261108-sol-001-os-copy-14",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "results": [
+        {
+          "updated_nodes": [
+            {
+              "nodeId": "VJU-0"
+            },
+            {
+              "nodeId": "QP6-0"
+            },
+            {
+              "nodeId": "VM0-0"
+            },
+            {
+              "nodeId": "VM1-0"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "hub-mobile-15",
+      "operation_id": "paper-estate-audit-20261108-sol-001-hub-mobile-15",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "results": [
+        {
+          "created_nodes": [
+            {
+              "id": "6Y6-0",
+              "name": "All desks · six destinations"
+            },
+            {
+              "id": "6Y7-0",
+              "name": "Frame"
+            },
+            {
+              "id": "6Y8-0",
+              "name": "News ↗"
+            },
+            {
+              "id": "6Y9-0",
+              "name": "Frame"
+            },
+            {
+              "id": "6YA-0",
+              "name": "Alt-Data ↗"
+            },
+            {
+              "id": "6YB-0",
+              "name": "Frame"
+            },
+            {
+              "id": "6YC-0",
+              "name": "Radar ↗"
+            },
+            {
+              "id": "6YD-0",
+              "name": "Frame"
+            },
+            {
+              "id": "6YE-0",
+              "name": "Buy-Board ↗"
+            },
+            {
+              "id": "6YF-0",
+              "name": "Frame"
+            },
+            {
+              "id": "6YG-0",
+              "name": "Policy ↗"
+            },
+            {
+              "id": "6YH-0",
+              "name": "Frame"
+            },
+            {
+              "id": "6YI-0",
+              "name": "Special situations ↗"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "hub-builder-header-16",
+      "operation_id": "paper-estate-audit-20261108-sol-001-hub-builder-header-16",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "results": [
+        {
+          "created_nodes": [
+            {
+              "id": "6YK-0",
+              "name": "8 Nov · Review-first implementation delta"
+            },
+            {
+              "id": "6YL-0",
+              "name": "Frame"
+            },
+            {
+              "id": "6YM-0",
+              "name": "8 NOV 2026 · IMPLEME…"
+            },
+            {
+              "id": "6YN-0",
+              "name": "Put reviewable setup…"
+            },
+            {
+              "id": "6YO-0",
+              "name": "Applies to US deskto…"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "hub-builder-place-17",
+      "operation_id": "paper-estate-audit-20261108-sol-001-hub-builder-place-17",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "results": [
+        {
+          "moves": [
+            {
+              "nodeId": "6YK-0",
+              "parentId": "2Q-0",
+              "index": 3
+            }
+          ],
+          "affected_parents": [
+            {
+              "parentId": "2Q-0",
+              "childIds": [
+                "2R-0",
+                "2S-0",
+                "2T-0",
+                "6YK-0",
+                "2U-0",
+                "3B-0",
+                "3T-0",
+                "48-0",
+                "4D-0",
+                "4S-0",
+                "51-0"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "os-builder-header-18",
+      "operation_id": "paper-estate-audit-20261108-sol-001-os-builder-header-18",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "results": [
+        {
+          "created_nodes": [
+            {
+              "id": "XD4-0",
+              "name": "8 Nov · Current owner and journey contract"
+            },
+            {
+              "id": "XD5-0",
+              "name": "Frame"
+            },
+            {
+              "id": "XD6-0",
+              "name": "8 NOV 2026 · CURRENT…"
+            },
+            {
+              "id": "XD7-0",
+              "name": "One clear action. On…"
+            },
+            {
+              "id": "XD8-0",
+              "name": "Project creation, pl…"
+            },
+            {
+              "id": "XD9-0",
+              "name": "Source: protected Ma…"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "os-builder-place-19",
+      "operation_id": "paper-estate-audit-20261108-sol-001-os-builder-place-19",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "results": [
+        {
+          "moves": [
+            {
+              "nodeId": "XD4-0",
+              "parentId": "TMP-0",
+              "index": 0
+            }
+          ],
+          "affected_parents": [
+            {
+              "parentId": "TMP-0",
+              "childIds": [
+                "XD4-0",
+                "TMQ-0",
+                "TMU-0",
+                "TMW-0",
+                "TMY-0",
+                "TN0-0"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "os-builder-name-20",
+      "operation_id": "paper-estate-audit-20261108-sol-001-os-builder-name-20",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "results": [
+        {
+          "updated_nodes": [
+            {
+              "nodeId": "TMP-0",
+              "name": "UX15 · Current owner map + historical snapshot"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "hub-builder-order-21",
+      "operation_id": "paper-estate-audit-20261108-sol-001-hub-builder-order-21",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "results": [
+        {
+          "created_nodes": [
+            {
+              "id": "6YQ-0",
+              "name": "Frame"
+            },
+            {
+              "id": "6YR-0",
+              "name": "Order & destinations"
+            },
+            {
+              "id": "6YS-0",
+              "name": "Overview → review se…"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "hub-builder-data-22",
+      "operation_id": "paper-estate-audit-20261108-sol-001-hub-builder-data-22",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "results": [
+        {
+          "created_nodes": [
+            {
+              "id": "6YU-0",
+              "name": "Frame"
+            },
+            {
+              "id": "6YV-0",
+              "name": "Data & compatibility"
+            },
+            {
+              "id": "6YW-0",
+              "name": "Keep hub.command, op…"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "hub-builder-proof-23",
+      "operation_id": "paper-estate-audit-20261108-sol-001-hub-builder-proof-23",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "results": [
+        {
+          "created_nodes": [
+            {
+              "id": "6YY-0",
+              "name": "Frame"
+            },
+            {
+              "id": "6YZ-0",
+              "name": "Unavailable & verifi…"
+            },
+            {
+              "id": "6Z0-0",
+              "name": "Missing evidence get…"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "os-lifecycle-24",
+      "operation_id": "paper-estate-audit-20261108-sol-001-os-lifecycle-24",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "results": [
+        {
+          "created_nodes": [
+            {
+              "id": "XDB-0",
+              "name": "Frame"
+            },
+            {
+              "id": "XDC-0",
+              "name": "Create → plan → work"
+            },
+            {
+              "id": "XDD-0",
+              "name": "Frame"
+            },
+            {
+              "id": "XDE-0",
+              "name": "Verified preview → e…"
+            },
+            {
+              "id": "XDF-0",
+              "name": "SOURCE · app/masterm…"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "os-admission-25",
+      "operation_id": "paper-estate-audit-20261108-sol-001-os-admission-25",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "results": [
+        {
+          "created_nodes": [
+            {
+              "id": "XDH-0",
+              "name": "Frame"
+            },
+            {
+              "id": "XDI-0",
+              "name": "Pause new work"
+            },
+            {
+              "id": "XDJ-0",
+              "name": "Frame"
+            },
+            {
+              "id": "XDK-0",
+              "name": "Pause the selected w…"
+            },
+            {
+              "id": "XDL-0",
+              "name": "SOURCE · admission/P…"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "os-native-26",
+      "operation_id": "paper-estate-audit-20261108-sol-001-os-native-26",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "results": [
+        {
+          "created_nodes": [
+            {
+              "id": "XDN-0",
+              "name": "Frame"
+            },
+            {
+              "id": "XDO-0",
+              "name": "Native conversation"
+            },
+            {
+              "id": "XDP-0",
+              "name": "Frame"
+            },
+            {
+              "id": "XDQ-0",
+              "name": "Connect on this Mac …"
+            },
+            {
+              "id": "XDR-0",
+              "name": "SOURCE · hermes-nati…"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "os-org-27",
+      "operation_id": "paper-estate-audit-20261108-sol-001-os-org-27",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "results": [
+        {
+          "created_nodes": [
+            {
+              "id": "XDT-0",
+              "name": "Frame"
+            },
+            {
+              "id": "XDU-0",
+              "name": "Team and results"
+            },
+            {
+              "id": "XDV-0",
+              "name": "Frame"
+            },
+            {
+              "id": "XDW-0",
+              "name": "Show Role charter se…"
+            },
+            {
+              "id": "XDX-0",
+              "name": "SOURCE · organizatio…"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "os-type-28",
+      "operation_id": "paper-estate-audit-20261108-sol-001-os-type-28",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "results": [
+        {
+          "created_nodes": [
+            {
+              "id": "XDZ-0",
+              "name": "Create → plan → work"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "os-type-29",
+      "operation_id": "paper-estate-audit-20261108-sol-001-os-type-29",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "results": [
+        {
+          "created_nodes": [
+            {
+              "id": "XE1-0",
+              "name": "Pause new work"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "os-type-30",
+      "operation_id": "paper-estate-audit-20261108-sol-001-os-type-30",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "results": [
+        {
+          "created_nodes": [
+            {
+              "id": "XE3-0",
+              "name": "Native conversation"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "os-type-31",
+      "operation_id": "paper-estate-audit-20261108-sol-001-os-type-31",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "results": [
+        {
+          "created_nodes": [
+            {
+              "id": "XE5-0",
+              "name": "Team and results"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "canonical-nav-32",
+      "operation_id": "paper-estate-audit-20261108-sol-001-canonical-nav-32",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "results": [
+        {
+          "moves": [
+            {
+              "nodeId": "48S-0",
+              "parentId": "47Q-0",
+              "index": 2
+            },
+            {
+              "nodeId": "9RF-0",
+              "parentId": "47Q-0",
+              "index": 3
+            },
+            {
+              "nodeId": "9RM-0",
+              "parentId": "47Q-0",
+              "index": 4
+            },
+            {
+              "nodeId": "9RT-0",
+              "parentId": "47Q-0",
+              "index": 5
+            },
+            {
+              "nodeId": "9S0-0",
+              "parentId": "47Q-0",
+              "index": 6
+            },
+            {
+              "nodeId": "9S7-0",
+              "parentId": "47Q-0",
+              "index": 7
+            }
+          ],
+          "affected_parents": [
+            {
+              "parentId": "47Q-0",
+              "childIds": [
+                "47R-0",
+                "47W-0",
+                "48S-0",
+                "9RF-0",
+                "9RM-0",
+                "9RT-0",
+                "9S0-0",
+                "9S7-0",
+                "484-0",
+                "488-0",
+                "9QR-0",
+                "9QF-0"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "canonical-copy-33",
+      "operation_id": "paper-estate-audit-20261108-sol-001-canonical-copy-33",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "results": [
+        {
+          "updated_nodes": [
+            {
+              "nodeId": "48T-0"
+            },
+            {
+              "nodeId": "48U-0"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "os-tokens-34",
+      "operation_id": "paper-estate-audit-20261108-sol-001-os-tokens-34",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "results": [
+        {
+          "created_nodes": [
+            {
+              "id": "XE7-0",
+              "name": "8 Nov · Current owner and journey contract"
+            },
+            {
+              "id": "XE8-0",
+              "name": "Frame"
+            },
+            {
+              "id": "XE9-0",
+              "name": "8 NOV 2026 · CURRENT…"
+            },
+            {
+              "id": "XEA-0",
+              "name": "One clear action. On…"
+            },
+            {
+              "id": "XEB-0",
+              "name": "Project creation, pl…"
+            },
+            {
+              "id": "XEC-0",
+              "name": "Source: protected Ma…"
+            },
+            {
+              "id": "XED-0",
+              "name": "Frame"
+            },
+            {
+              "id": "XEE-0",
+              "name": "Create → plan → work"
+            },
+            {
+              "id": "XEF-0",
+              "name": "Frame"
+            },
+            {
+              "id": "XEG-0",
+              "name": "Verified preview → e…"
+            },
+            {
+              "id": "XEH-0",
+              "name": "SOURCE · app/masterm…"
+            },
+            {
+              "id": "XEI-0",
+              "name": "Frame"
+            },
+            {
+              "id": "XEJ-0",
+              "name": "Pause new work"
+            },
+            {
+              "id": "XEK-0",
+              "name": "Frame"
+            },
+            {
+              "id": "XEL-0",
+              "name": "Pause the selected w…"
+            },
+            {
+              "id": "XEM-0",
+              "name": "SOURCE · admission/P…"
+            },
+            {
+              "id": "XEN-0",
+              "name": "Frame"
+            },
+            {
+              "id": "XEO-0",
+              "name": "Native conversation"
+            },
+            {
+              "id": "XEP-0",
+              "name": "Frame"
+            },
+            {
+              "id": "XEQ-0",
+              "name": "Connect on this Mac …"
+            },
+            {
+              "id": "XER-0",
+              "name": "SOURCE · hermes-nati…"
+            },
+            {
+              "id": "XES-0",
+              "name": "Frame"
+            },
+            {
+              "id": "XET-0",
+              "name": "Team and results"
+            },
+            {
+              "id": "XEU-0",
+              "name": "Frame"
+            },
+            {
+              "id": "XEV-0",
+              "name": "Show Role charter se…"
+            },
+            {
+              "id": "XEW-0",
+              "name": "SOURCE · organizatio…"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "os-project-states-header-35",
+      "operation_id": "paper-estate-audit-20261108-sol-001-os-project-states-header-35",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "results": [
+        {
+          "created_nodes": [
+            {
+              "id": "XEY-0",
+              "name": "Project continuation · UI states"
+            },
+            {
+              "id": "XEZ-0",
+              "name": "PROJECT CONTINUATION…"
+            },
+            {
+              "id": "XF0-0",
+              "name": "Project state cards"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "os-project-created-36",
+      "operation_id": "paper-estate-audit-20261108-sol-001-os-project-created-36",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "results": [
+        {
+          "created_nodes": [
+            {
+              "id": "XF2-0",
+              "name": "Project created"
+            },
+            {
+              "id": "XF3-0",
+              "name": "PROJECT"
+            },
+            {
+              "id": "XF4-0",
+              "name": "Project created"
+            },
+            {
+              "id": "XF5-0",
+              "name": "Your outcome has a h…"
+            },
+            {
+              "id": "XF6-0",
+              "name": "Frame"
+            },
+            {
+              "id": "XF7-0",
+              "name": "Plan the work"
+            },
+            {
+              "id": "XF8-0",
+              "name": "Creation confirmed ·…"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "os-plan-ready-37",
+      "operation_id": "paper-estate-audit-20261108-sol-001-os-plan-ready-37",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "results": [
+        {
+          "created_nodes": [
+            {
+              "id": "XFA-0",
+              "name": "Plan ready"
+            },
+            {
+              "id": "XFB-0",
+              "name": "PLANNING"
+            },
+            {
+              "id": "XFC-0",
+              "name": "Plan ready"
+            },
+            {
+              "id": "XFD-0",
+              "name": "Review the steps and…"
+            },
+            {
+              "id": "XFE-0",
+              "name": "Frame"
+            },
+            {
+              "id": "XFF-0",
+              "name": "Review plan"
+            },
+            {
+              "id": "XFG-0",
+              "name": "Adopting a plan does…"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "os-project-recovery-38",
+      "operation_id": "paper-estate-audit-20261108-sol-001-os-project-recovery-38",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "results": [
+        {
+          "created_nodes": [
+            {
+              "id": "XFI-0",
+              "name": "Status needs checking"
+            },
+            {
+              "id": "XFJ-0",
+              "name": "RECOVERY"
+            },
+            {
+              "id": "XFK-0",
+              "name": "Status needs checkin…"
+            },
+            {
+              "id": "XFL-0",
+              "name": "Your previous reques…"
+            },
+            {
+              "id": "XFM-0",
+              "name": "Frame"
+            },
+            {
+              "id": "XFN-0",
+              "name": "Check previous reque…"
+            },
+            {
+              "id": "XFO-0",
+              "name": "Keep this request un…"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "os-native-states-header-39",
+      "operation_id": "paper-estate-audit-20261108-sol-001-os-native-states-header-39",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "results": [
+        {
+          "created_nodes": [
+            {
+              "id": "XFQ-0",
+              "name": "Native conversation · recovery states"
+            },
+            {
+              "id": "XFR-0",
+              "name": "NATIVE CONVERSATION …"
+            },
+            {
+              "id": "XFS-0",
+              "name": "Native conversation state cards"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "os-native-connect-40",
+      "operation_id": "paper-estate-audit-20261108-sol-001-os-native-connect-40",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "results": [
+        {
+          "created_nodes": [
+            {
+              "id": "XFU-0",
+              "name": "Continue on this Mac"
+            },
+            {
+              "id": "XFV-0",
+              "name": "NOT CONNECTED"
+            },
+            {
+              "id": "XFW-0",
+              "name": "Continue on this Mac"
+            },
+            {
+              "id": "XFX-0",
+              "name": "Connect to your loca…"
+            },
+            {
+              "id": "XFY-0",
+              "name": "Frame"
+            },
+            {
+              "id": "XFZ-0",
+              "name": "Connect on this Mac"
+            },
+            {
+              "id": "XG0-0",
+              "name": "A remote web client …"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "os-native-check-41",
+      "operation_id": "paper-estate-audit-20261108-sol-001-os-native-check-41",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "results": [
+        {
+          "created_nodes": [
+            {
+              "id": "XG2-0",
+              "name": "Check before resending"
+            },
+            {
+              "id": "XG3-0",
+              "name": "REQUEST HELD"
+            },
+            {
+              "id": "XG4-0",
+              "name": "Check before resendi…"
+            },
+            {
+              "id": "XG5-0",
+              "name": "The response was int…"
+            },
+            {
+              "id": "XG6-0",
+              "name": "Frame"
+            },
+            {
+              "id": "XG7-0",
+              "name": "Check previous reque…"
+            },
+            {
+              "id": "XG8-0",
+              "name": "Keep the conversatio…"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "os-native-recovered-42",
+      "operation_id": "paper-estate-audit-20261108-sol-001-os-native-recovered-42",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "results": [
+        {
+          "created_nodes": [
+            {
+              "id": "XGA-0",
+              "name": "Answer recovered"
+            },
+            {
+              "id": "XGB-0",
+              "name": "RECOVERED"
+            },
+            {
+              "id": "XGC-0",
+              "name": "Answer recovered"
+            },
+            {
+              "id": "XGD-0",
+              "name": "The original respons…"
+            },
+            {
+              "id": "XGE-0",
+              "name": "Frame"
+            },
+            {
+              "id": "XGF-0",
+              "name": "Continue conversatio…"
+            },
+            {
+              "id": "XGG-0",
+              "name": "History read confirm…"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "os-specimen-copy-43",
+      "operation_id": "paper-estate-audit-20261108-sol-001-os-specimen-copy-43",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "results": [
+        {
+          "updated_nodes": [
+            {
+              "nodeId": "XG3-0"
+            },
+            {
+              "nodeId": "XG4-0"
+            },
+            {
+              "nodeId": "XG5-0"
+            },
+            {
+              "nodeId": "XFG-0"
+            },
+            {
+              "nodeId": "XFO-0"
+            },
+            {
+              "nodeId": "XG8-0"
+            },
+            {
+              "nodeId": "XGG-0"
+            },
+            {
+              "nodeId": "XF8-0"
+            },
+            {
+              "nodeId": "XG0-0"
+            },
+            {
+              "nodeId": "XEQ-0"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "sector-truth-44",
+      "operation_id": "paper-estate-audit-20261108-sol-001-sector-truth-44",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "results": [
+        {
+          "updated_nodes": [
+            {
+              "nodeId": "FJV-0"
+            },
+            {
+              "nodeId": "FJY-0"
+            },
+            {
+              "nodeId": "FK1-0"
+            },
+            {
+              "nodeId": "FK2-0"
+            },
+            {
+              "nodeId": "AUH-0"
+            },
+            {
+              "nodeId": "AWS-0"
+            },
+            {
+              "nodeId": "BMZ-0"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "sector-semantics-45",
+      "operation_id": "paper-estate-audit-20261108-sol-001-sector-semantics-45",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "results": [
+        {
+          "updated_nodes": [
+            {
+              "nodeId": "FL6-0"
+            },
+            {
+              "nodeId": "FL7-0"
+            },
+            {
+              "nodeId": "FMC-0"
+            },
+            {
+              "nodeId": "FMD-0"
+            },
+            {
+              "nodeId": "FMO-0"
+            },
+            {
+              "nodeId": "FMT-0"
+            },
+            {
+              "nodeId": "FMW-0"
+            },
+            {
+              "nodeId": "FMX-0"
+            },
+            {
+              "nodeId": "FN1-0"
+            },
+            {
+              "nodeId": "FNM-0"
+            },
+            {
+              "nodeId": "FNN-0"
+            },
+            {
+              "nodeId": "FNR-0"
+            },
+            {
+              "nodeId": "B4C-0"
+            },
+            {
+              "nodeId": "B4E-0"
+            },
+            {
+              "nodeId": "BN0-0"
+            },
+            {
+              "nodeId": "BP0-0"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "sector-contract-header-46",
+      "operation_id": "paper-estate-audit-20261108-sol-001-sector-contract-header-46",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "results": [
+        {
+          "created_nodes": [
+            {
+              "id": "GM1-0",
+              "name": "8 Nov · Meaning, save and return contract"
+            },
+            {
+              "id": "GM2-0",
+              "name": "8 NOV 2026 · AUDIT D…"
+            },
+            {
+              "id": "GM3-0",
+              "name": "A clear comparison m…"
+            },
+            {
+              "id": "GM4-0",
+              "name": "Current source: Macr…"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "sector-contract-place-47",
+      "operation_id": "paper-estate-audit-20261108-sol-001-sector-contract-place-47",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "results": [
+        {
+          "moves": [
+            {
+              "nodeId": "GM1-0",
+              "parentId": "BML-0",
+              "index": 0
+            }
+          ],
+          "affected_parents": [
+            {
+              "parentId": "BML-0",
+              "childIds": [
+                "GM1-0",
+                "BMM-0",
+                "BMN-0",
+                "BMO-0",
+                "BMP-0",
+                "BMW-0",
+                "BN2-0",
+                "BOW-0",
+                "BP5-0"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "sector-plot-48",
+      "operation_id": "paper-estate-audit-20261108-sol-001-sector-plot-48",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "results": [
+        {
+          "created_nodes": [
+            {
+              "id": "GMX-0",
+              "name": "SVG"
+            },
+            {
+              "id": "GMY-0",
+              "name": "Rect"
+            },
+            {
+              "id": "GMZ-0",
+              "name": "Line"
+            },
+            {
+              "id": "GN0-0",
+              "name": "Line"
+            },
+            {
+              "id": "GN1-0",
+              "name": "Lower score · rising…"
+            },
+            {
+              "id": "GN2-0",
+              "name": "Higher score · risin…"
+            },
+            {
+              "id": "GN3-0",
+              "name": "Lower score · fallin…"
+            },
+            {
+              "id": "GN4-0",
+              "name": "Higher score · falli…"
+            },
+            {
+              "id": "GN5-0",
+              "name": "Circle"
+            },
+            {
+              "id": "GN6-0",
+              "name": "Utilities"
+            },
+            {
+              "id": "GN7-0",
+              "name": "Circle"
+            },
+            {
+              "id": "GN8-0",
+              "name": "Financials"
+            },
+            {
+              "id": "GN9-0",
+              "name": "Circle"
+            },
+            {
+              "id": "GNA-0",
+              "name": "Industrials"
+            },
+            {
+              "id": "GNB-0",
+              "name": "Circle"
+            },
+            {
+              "id": "GNC-0",
+              "name": "Real estate"
+            },
+            {
+              "id": "GND-0",
+              "name": "Circle"
+            },
+            {
+              "id": "GNE-0",
+              "name": "Staples"
+            },
+            {
+              "id": "GNF-0",
+              "name": "Circle"
+            },
+            {
+              "id": "GNG-0",
+              "name": "Health care"
+            },
+            {
+              "id": "GNH-0",
+              "name": "Circle"
+            },
+            {
+              "id": "GNI-0",
+              "name": "Materials"
+            },
+            {
+              "id": "GNJ-0",
+              "name": "Circle"
+            },
+            {
+              "id": "GNK-0",
+              "name": "Comm services"
+            },
+            {
+              "id": "GNL-0",
+              "name": "Circle"
+            },
+            {
+              "id": "GNM-0",
+              "name": "Discretionary"
+            },
+            {
+              "id": "GNN-0",
+              "name": "Circle"
+            },
+            {
+              "id": "GNO-0",
+              "name": "B · Technology"
+            },
+            {
+              "id": "GNP-0",
+              "name": "Circle"
+            },
+            {
+              "id": "GNQ-0",
+              "name": "Circle"
+            },
+            {
+              "id": "GNR-0",
+              "name": "A · Energy"
+            },
+            {
+              "id": "GNS-0",
+              "name": "0"
+            },
+            {
+              "id": "GNT-0",
+              "name": "50"
+            },
+            {
+              "id": "GNU-0",
+              "name": "100"
+            },
+            {
+              "id": "GNV-0",
+              "name": "+4"
+            },
+            {
+              "id": "GNW-0",
+              "name": "0"
+            },
+            {
+              "id": "GNX-0",
+              "name": "−4"
+            },
+            {
+              "id": "GNY-0",
+              "name": "Across: rotation sco…"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "sector-contract-data-49",
+      "operation_id": "paper-estate-audit-20261108-sol-001-sector-contract-data-49",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "results": [
+        {
+          "created_nodes": [
+            {
+              "id": "GO0-0",
+              "name": "Frame"
+            },
+            {
+              "id": "GO1-0",
+              "name": "Numbers & availabili…"
+            },
+            {
+              "id": "GO2-0",
+              "name": "An incompatible or m…"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "sector-contract-rank-50",
+      "operation_id": "paper-estate-audit-20261108-sol-001-sector-contract-rank-50",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "results": [
+        {
+          "created_nodes": [
+            {
+              "id": "GO4-0",
+              "name": "Frame"
+            },
+            {
+              "id": "GO5-0",
+              "name": "Rank has a precise m…"
+            },
+            {
+              "id": "GO6-0",
+              "name": "engine/sector_pulse.…"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "sector-contract-save-51",
+      "operation_id": "paper-estate-audit-20261108-sol-001-sector-contract-save-51",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "results": [
+        {
+          "created_nodes": [
+            {
+              "id": "GO8-0",
+              "name": "Frame"
+            },
+            {
+              "id": "GO9-0",
+              "name": "Three independent ou…"
+            },
+            {
+              "id": "GOA-0",
+              "name": "Watch membership: te…"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "sector-contract-proof-52",
+      "operation_id": "paper-estate-audit-20261108-sol-001-sector-contract-proof-52",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "results": [
+        {
+          "created_nodes": [
+            {
+              "id": "GOC-0",
+              "name": "Frame"
+            },
+            {
+              "id": "GOD-0",
+              "name": "Build proof & route …"
+            },
+            {
+              "id": "GOE-0",
+              "name": "Open Company through…"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "motion-paper-header-53",
+      "operation_id": "paper-estate-audit-20261108-sol-001-motion-paper-header-53",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "results": [
+        {
+          "created_nodes": [
+            {
+              "id": "9VK-0",
+              "name": "8 Nov · Signal Ink motion and state contract"
+            },
+            {
+              "id": "9VL-0",
+              "name": "8 NOV 2026 · SHARED …"
+            },
+            {
+              "id": "9VM-0",
+              "name": "Motion that carries …"
+            },
+            {
+              "id": "9VN-0",
+              "name": "One reveal, then sti…"
+            },
+            {
+              "id": "9VO-0",
+              "name": "Signal Ink storyboard"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "motion-paper-place-54",
+      "operation_id": "paper-estate-audit-20261108-sol-001-motion-paper-place-54",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "results": [
+        {
+          "moves": [
+            {
+              "nodeId": "9VK-0",
+              "parentId": "4NV-0",
+              "index": 1
+            }
+          ],
+          "affected_parents": [
+            {
+              "parentId": "4NV-0",
+              "childIds": [
+                "4NW-0",
+                "9VK-0",
+                "4O1-0",
+                "4O7-0",
+                "4OD-0",
+                "4OJ-0",
+                "4OP-0",
+                "4OV-0",
+                "4P1-0",
+                "4P5-0",
+                "4P9-0",
+                "9QY-0",
+                "9R5-0"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "motion-draw-55",
+      "operation_id": "paper-estate-audit-20261108-sol-001-motion-draw-55",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "results": [
+        {
+          "created_nodes": [
+            {
+              "id": "9VQ-0",
+              "name": "Reveal the observation"
+            },
+            {
+              "id": "9VR-0",
+              "name": "01 · DRAW"
+            },
+            {
+              "id": "9VS-0",
+              "name": "Reveal the observati…"
+            },
+            {
+              "id": "9VT-0",
+              "name": "SVG"
+            },
+            {
+              "id": "9VU-0",
+              "name": "Path"
+            },
+            {
+              "id": "9VV-0",
+              "name": "Path"
+            },
+            {
+              "id": "9VW-0",
+              "name": "950 ms stroke. The s…"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "motion-settle-56",
+      "operation_id": "paper-estate-audit-20261108-sol-001-motion-settle-56",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "results": [
+        {
+          "created_nodes": [
+            {
+              "id": "9VY-0",
+              "name": "Leave it still"
+            },
+            {
+              "id": "9VZ-0",
+              "name": "02 · SETTLE"
+            },
+            {
+              "id": "9W0-0",
+              "name": "Leave it still"
+            },
+            {
+              "id": "9W1-0",
+              "name": "SVG"
+            },
+            {
+              "id": "9W2-0",
+              "name": "Path"
+            },
+            {
+              "id": "9W3-0",
+              "name": "Path"
+            },
+            {
+              "id": "9W4-0",
+              "name": "Circle"
+            },
+            {
+              "id": "9W5-0",
+              "name": "A quiet area and end…"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "motion-null-57",
+      "operation_id": "paper-estate-audit-20261108-sol-001-motion-null-57",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "results": [
+        {
+          "created_nodes": [
+            {
+              "id": "9W7-0",
+              "name": "Keep the empty state honest"
+            },
+            {
+              "id": "9W8-0",
+              "name": "03 · MISSING"
+            },
+            {
+              "id": "9W9-0",
+              "name": "Keep the empty state…"
+            },
+            {
+              "id": "9WA-0",
+              "name": "SVG"
+            },
+            {
+              "id": "9WB-0",
+              "name": "Line"
+            },
+            {
+              "id": "9WC-0",
+              "name": "No history yet"
+            },
+            {
+              "id": "9WD-0",
+              "name": "No trend, invented p…"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "motion-owner-58",
+      "operation_id": "paper-estate-audit-20261108-sol-001-motion-owner-58",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "results": [
+        {
+          "created_nodes": [
+            {
+              "id": "9WF-0",
+              "name": "Frame"
+            },
+            {
+              "id": "9WG-0",
+              "name": "Existing owner"
+            },
+            {
+              "id": "9WH-0",
+              "name": "Use lib/illus.py wit…"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "motion-access-59",
+      "operation_id": "paper-estate-audit-20261108-sol-001-motion-access-59",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "results": [
+        {
+          "created_nodes": [
+            {
+              "id": "9WJ-0",
+              "name": "Frame"
+            },
+            {
+              "id": "9WK-0",
+              "name": "Timing & accessibili…"
+            },
+            {
+              "id": "9WL-0",
+              "name": "Use the source chore…"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "motion-proof-60",
+      "operation_id": "paper-estate-audit-20261108-sol-001-motion-proof-60",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "results": [
+        {
+          "created_nodes": [
+            {
+              "id": "9WN-0",
+              "name": "Frame"
+            },
+            {
+              "id": "9WO-0",
+              "name": "Proof & current limi…"
+            },
+            {
+              "id": "9WP-0",
+              "name": "Native Paper storybo…"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "limits": [
+    "Paper edits are design candidates, not production acceptance.",
+    "Browser inline motion execution blocked by URL policy; not retried by another surface.",
+    "MASTERMIND PAGES file-size warning prevented modifications there."
+  ]
+}

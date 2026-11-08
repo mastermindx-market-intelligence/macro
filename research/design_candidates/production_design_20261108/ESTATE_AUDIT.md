@@ -66,7 +66,7 @@ All listed Paper effects returned APPLIED_RESPONSE_OBSERVED on the direct Paper 
 | [OS project workspace](https://app.paper.design/file/01M3NRCX55B452A12819WNE1RH/p-H-0) | MHD-0 / VJU-0 | Pause → Pause new work, matching the current admission owner. Running-work state remains separate. Screenshot inspected. |
 | OS new project | N8N-0 / VM0-0, VM1-0 | Start project → Create project; concise next-step copy makes planning a subsequent action. |
 | [OS team progress](https://app.paper.design/file/01M3NRCX55B452A12819WNE1RH/p-J-0) | QM6-0 / QP6-0 | Corrected five examples to six, consistent with the existing six-row fixture and its explicit non-total status. |
-| [OS current build map](https://app.paper.design/file/01M3NRCX55B452A12819WNE1RH/p-E-0) | TMP-0 / new XD4-0 | Added current source-to-owner map above the retained 8 October snapshot: project publication/planning/execution, admission pause, native Hermes recovery, organization qualification. Initial visual check caught inherited text color; explicit token colors corrected. |
+| [OS current build map](https://app.paper.design/file/01M3NRCX55B452A12819WNE1RH/p-E-0) | TMP-0 / current XE7-0 | Added current source-to-owner map above the retained 8 October snapshot: project publication/planning/execution, admission pause, native Hermes recovery, organization qualification. Initial visual check caught inherited text color; explicit token colors corrected. |
 | [Shared system entry](https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-9-0) | 47Q-0 | Foundations, Components, Patterns, References and Utilities now precede the lengthy source/hold sections. Candidate status remains at the top; no review/release hold cleared. Screenshot inspected. |
 
 ### Architecture findings driving the changes
@@ -78,8 +78,18 @@ All listed Paper effects returned APPLIED_RESPONSE_OBSERVED on the direct Paper 
 
 Primary architecture evidence: protected Mastermind@5c3d3885234358aefb97ecdbc59be0864df14f8b, app/mastermind_os/src/{projects/ProjectPlanningJourney.tsx,admission/ProjectAdmissionPanel.tsx,admission/project-admission.ts,hermes-native/HermesNativePanel.tsx,hermes-native/contract.ts,organization/OrganizationWorkspace.tsx}; integrations/hermes_leadership/organization.py; docs/hermes/THIN_NATIVE_OS.md.
 
-## Current frontier
-A1 census has identified 37 resource entries (35 files, 2 folders), including product, historical, QA and scratch material. Representative current journeys are under audit; this is not a claim to have visually reviewed all historical programme boards.
-A3 has concrete verified changes in Hub, OS and the shared system. A4 is in progress: add user-state specimens and a source-based motion/illustration contract; then consume market/sector reasoning findings and consolidate entry navigation.
-No unresolved modifying effect. No production code, deployment, runtime control or external message was sent.
-PLAN_NOT_ORG_LINKED: this source plan has not changed Agent OS organizational/runtime records.
+## Verified milestone 2 — semantic correctness, viable states and motion
+
+- Sector R4 compare FB7-0 now blanks unqualified current model values, retains historical priors, and consistently describes rotation score and rank change, including its SVG axes/quadrants (GMX-0). Producer sign checked at the immutable Macro pin.
+- Company ATF-0 now exposes missing member-price dates in its header. Save-state B1V-0 separates watch success from local notes/navigation context. BML-0 links the exact original package and current source checks; addendum GM1-0 defines the required owner and return joins.
+- OS TMP-0 / XE7-0 includes six visible project/native conversation state specimens. Recovery says Response not confirmed; enforcement details were moved out of the cards. Local-connect eligibility is separated from remote-client behavior.
+- Shared Utilities 4NV-0 / 9VK-0 contains a three-panel Signal Ink storyboard and source/timing/accessibility contract. MOTION_SPECIMEN.html is generated from the pinned renderer and shared CSS/JS. Both script blocks parse; browser execution is explicitly not verified because browser policy denied the inline data URL. No circumvention was attempted.
+- Sixty design mutation receipts were observed as APPLIED_RESPONSE_OBSERVED before final source-link/finish bookkeeping. Thirteen artboards in four workspaces were changed. Changed groups were visually read back; identified mobile clipping, inherited text color and an SVG axis contradiction were corrected.
+
+## Delivery and scope outcome
+
+This audit/design-candidate pass has met the planned resource map, representative architecture audit, native repairs, builder contract, illustration/motion specification and durable evidence outcomes. FILE_MAP.md records all 37 resources and their coverage; BUILD_CONTRACT.md records source owners, feature viability, implementation sequence and required product proof; PAPER_CHANGE_RECEIPTS.json records exact effects.
+
+This is not a whole-estate pixel review or a product release. The preserved AI, News and other family work should be built from their existing contracts, not needlessly redone. Remaining product implementation/installed-path proof and browser playback checks belong to the explicit future-build gates. Native archive/delete/file-creation and schema-held tools were not used. MASTERMIND PAGES emitted a capacity/data-loss warning and was not modified.
+
+No runtime commands, production changes, merges, deployments or messages to other people. No unresolved Paper modifying effect. Agent reasoning tasks returned read-only findings and were consumed. PLAN_NOT_ORG_LINKED remains accurate.
