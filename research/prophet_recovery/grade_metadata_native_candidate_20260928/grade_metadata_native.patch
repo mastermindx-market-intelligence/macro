@@ -1,0 +1,687 @@
+--- a/engine/us_prophet_grades.py
++++ b/engine/us_prophet_grades.py
+@@ -236,8 +236,240 @@
+     return _store_dir(root) / day[:7] / f"{day}.parquet"
+ 
+ 
++# Metadata projection is deliberately opt-in.  These are the existing grade
++# owner's non-return fields, not caller-provided roles or a new schema registry.
++_GRADE_METADATA_COLUMNS = frozenset({
++    *GRADE_KEY, "fill_date", "mark_date", "bench", "graded_asof", "schema",
++    DISCRIMINATOR_COLUMN, "signal_class", "signal_label",
++    "bench_calendar_state", "bench_inserted_session_count", "bench_missing_sessions",
++})
++
++
++class GradeMetadataReadError(ValueError):
++    """A strict read cannot prove the requested metadata projection/catalogue.
++
++    Codes/relative part names only: dependency exceptions may contain data and
++    are intentionally not interpolated into the public error or log.
++    """
++
++    def __init__(self, code: str, part: str | None = None):
++        self.code = code
++        self.part = part
++        super().__init__(code if part is None else f"{code}: {part}")
++
++
++def _grade_metadata_catalogue(expected_parts: Any) -> dict[str, dict[str, Any]]:
++    """Validate caller-supplied, already-authorized source receipts; never create them."""
++    from datetime import date
++    from pathlib import PurePosixPath
++    import re
++
++    if not isinstance(expected_parts, Mapping):
++        raise GradeMetadataReadError("EXPECTED_PARTS_REQUIRED")
++    result: dict[str, dict[str, Any]] = {}
++    for name, receipt in expected_parts.items():
++        if not isinstance(name, str) or not re.fullmatch(
++            r"\d{4}-\d{2}/\d{4}-\d{2}-\d{2}\.parquet", name
++        ):
++            raise GradeMetadataReadError("INVALID_PART_PATH")
++        part = PurePosixPath(name)
++        try:
++            day = date.fromisoformat(part.stem)
++        except ValueError:
++            raise GradeMetadataReadError("INVALID_PART_PATH") from None
++        if part.parent.name != day.isoformat()[:7]:
++            raise GradeMetadataReadError("INVALID_PART_PATH")
++        if not isinstance(receipt, Mapping):
++            raise GradeMetadataReadError("INVALID_PART_RECEIPT", name)
++        digest = receipt.get("sha256")
++        size, rows = receipt.get("bytes"), receipt.get("rows")
++        if (not isinstance(digest, str) or not re.fullmatch(r"[0-9a-f]{64}", digest)
++                or type(size) is not int or size <= 0
++                or type(rows) is not int or rows < 0):
++            raise GradeMetadataReadError("INVALID_PART_RECEIPT", name)
++        result[name] = {"sha256": digest, "bytes": size, "rows": rows}
++    return result
++
++
++def _grade_metadata_part_names(store: Path, months: set[str] | None) -> list[str]:
++    """Preserve native grading-RUN months; never reinterpret them as stamp months."""
++    if not store.is_dir() or store.is_symlink():
++        raise GradeMetadataReadError("STORE_UNAVAILABLE")
++    names = []
++    for part in sorted(store.glob("*/*.parquet")):
++        if months is not None and part.parent.name not in months:
++            continue
++        name = part.relative_to(store).as_posix()
++        if part.parent.is_symlink() or part.is_symlink() or not part.is_file():
++            raise GradeMetadataReadError("NON_REGULAR_PART", name)
++        names.append(name)
++    return names
++
++
++def _grade_metadata_snapshot(part: Path, receipt: Mapping[str, Any]):
++    """Copy encoded bytes once into a bounded-memory, temporary private snapshot.
++
++    SHA256 covers the SAME encoded object used for schema + projected decoding.
++    This is not outcome-value materialization. Parquet's footer may itself contain
++    statistics; neither those values nor arbitrary schema metadata are exported.
++    The accepted upstream catalogue supplies byte/row bounds and rights, not this
++    helper. It does not attest current live path state or an observation timestamp.
++    """
++    import hashlib
++    import os
++    import stat
++    import tempfile
++
++    snapshot = tempfile.SpooledTemporaryFile(max_size=8 * 1024 * 1024, mode="w+b")
++    try:
++        flags = os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_NONBLOCK", 0)
++        fd = os.open(part, flags)
++        with os.fdopen(fd, "rb") as source:
++            if not stat.S_ISREG(os.fstat(source.fileno()).st_mode):
++                raise GradeMetadataReadError("NON_REGULAR_PART")
++            remaining = receipt["bytes"]
++            digest = hashlib.sha256()
++            while remaining:
++                chunk = source.read(min(1024 * 1024, remaining))
++                if not chunk:
++                    raise GradeMetadataReadError("SOURCE_SIZE_MISMATCH")
++                snapshot.write(chunk)
++                digest.update(chunk)
++                remaining -= len(chunk)
++            if source.read(1):
++                raise GradeMetadataReadError("SOURCE_SIZE_MISMATCH")
++        if digest.hexdigest() != receipt["sha256"]:
++            raise GradeMetadataReadError("SOURCE_DIGEST_MISMATCH")
++        snapshot.seek(0)
++        return snapshot
++    except BaseException:
++        snapshot.close()
++        raise
++
++
++def _load_grade_metadata(root: Any, *, months: Iterable[str] | None,
++                         columns: Iterable[str] | None,
++                         expected_parts: Mapping[str, Mapping[str, Any]] | None) -> pd.DataFrame:
++    """All-or-nothing, role-restricted projection through this existing reader.
++
++    `expected_parts` maps native relative part paths to immutable sha256/bytes/rows
++    receipts. This proves only that bounded catalogue, NOT candidate-population
++    coverage, scientific eligibility, source rights or label-usable clocks.
++    No full-column retry; missing additive metadata stays null; no bad-part skip.
++    """
++    import re
++    import math
++
++    if columns is None or isinstance(columns, (str, bytes)):
++        raise GradeMetadataReadError("EXPLICIT_METADATA_COLUMNS_REQUIRED")
++    wanted = list(columns)
++    if (not wanted or any(not isinstance(c, str) for c in wanted)
++            or len(wanted) != len(set(wanted))):
++        raise GradeMetadataReadError("INVALID_METADATA_COLUMNS")
++    if not set(wanted) <= _GRADE_METADATA_COLUMNS:
++        raise GradeMetadataReadError("COLUMN_NOT_METADATA")
++    if not set(GRADE_KEY) <= set(wanted):
++        raise GradeMetadataReadError("GRADE_KEYS_REQUIRED")
++    if isinstance(months, (str, bytes)):
++        raise GradeMetadataReadError("INVALID_RUN_MONTHS")
++    requested_months = None if months is None else list(months)
++    if requested_months is not None and any(
++        not isinstance(m, str) or not re.fullmatch(r"\d{4}-(0[1-9]|1[0-2])", m)
++        for m in requested_months
++    ):
++        raise GradeMetadataReadError("INVALID_RUN_MONTHS")
++    selected_months = None if requested_months is None else set(requested_months)
++    expected = _grade_metadata_catalogue(expected_parts)
++    expected = {k: v for k, v in expected.items()
++                if selected_months is None or k[:7] in selected_months}
++    store = _store_dir(root)
++    names = _grade_metadata_part_names(store, selected_months)
++    if set(names) != set(expected):
++        raise GradeMetadataReadError("PART_CATALOGUE_MISMATCH")
++    try:
++        import pyarrow as pa  # noqa: PLC0415
++        import pyarrow.parquet as pq  # noqa: PLC0415
++    except ImportError:
++        raise GradeMetadataReadError("STRICT_PARQUET_UNAVAILABLE") from None
++
++    frames: list[pd.DataFrame] = []
++    observed_parts: list[dict[str, Any]] = []
++    date_names = {"stamp_date", "fill_date", "mark_date", "graded_asof"}
++    integer_names = {"horizon", "bench_inserted_session_count"}
++    for name in names:
++        receipt = expected[name]
++        try:
++            with _grade_metadata_snapshot(store / name, receipt) as snapshot:
++                # No pandas-index enrichment and no nested-column prefix reads.
++                # The schema, row-count and data use one verified encoded snapshot.
++                parquet = pq.ParquetFile(snapshot, pre_buffer=False)
++                try:
++                    schema = parquet.schema_arrow
++                    field_names = schema.names
++                    if len(field_names) != len(set(field_names)):
++                        raise GradeMetadataReadError("DUPLICATE_SCHEMA_COLUMNS")
++                    if not set(GRADE_KEY) <= set(field_names):
++                        raise GradeMetadataReadError("MISSING_GRADE_KEYS")
++                    present = [c for c in wanted if c in field_names]
++                    for column in present:
++                        dtype = schema.field(column).type
++                        valid = pa.types.is_null(dtype)
++                        if column in integer_names:
++                            valid = valid or pa.types.is_integer(dtype)
++                            if column == "bench_inserted_session_count":
++                                # Native optional counts may serialize as nullable floats.
++                                valid = valid or pa.types.is_floating(dtype)
++                        else:
++                            valid = valid or pa.types.is_string(dtype) or pa.types.is_large_string(dtype)
++                            if column in date_names:
++                                valid = valid or pa.types.is_date(dtype) or pa.types.is_timestamp(dtype)
++                        if not valid:
++                            raise GradeMetadataReadError("INVALID_METADATA_TYPE")
++                    if parquet.metadata.num_rows != receipt["rows"]:
++                        raise GradeMetadataReadError("SOURCE_ROW_COUNT_MISMATCH")
++                    table = parquet.read(columns=present, use_threads=False,
++                                         use_pandas_metadata=False)
++                    if table.column_names != present or table.num_rows != receipt["rows"]:
++                        raise GradeMetadataReadError("PROJECTION_MISMATCH")
++                    # Ignore arbitrary pandas index metadata, including any outcome index.
++                    frame = table.to_pandas(ignore_metadata=True, use_threads=False)
++                    if list(frame.columns) != present or len(frame) != receipt["rows"]:
++                        raise GradeMetadataReadError("PROJECTION_MISMATCH")
++                    if "bench_inserted_session_count" in frame.columns:
++                        counts = frame["bench_inserted_session_count"].dropna()
++                        if any(not math.isfinite(float(v)) or float(v) < 0
++                               or not float(v).is_integer() for v in counts):
++                            raise GradeMetadataReadError("INVALID_METADATA_VALUE")
++                    frames.append(frame.reindex(columns=wanted))
++                finally:
++                    parquet.close()
++        except GradeMetadataReadError as exc:
++            raise GradeMetadataReadError(exc.code, name) from None
++        except Exception:  # noqa: BLE001 — deliberate fail closed, never unrestricted retry
++            raise GradeMetadataReadError("PART_UNREADABLE", name) from None
++        observed_parts.append({"part": name, **receipt,
++                               "projected_columns": present,
++                               "missing_metadata_columns": [c for c in wanted if c not in present]})
++    if _grade_metadata_part_names(store, selected_months) != names:
++        raise GradeMetadataReadError("PART_CATALOGUE_CHANGED")
++    result = pd.concat(frames, ignore_index=True) if frames else pd.DataFrame(columns=wanted)
++    result.attrs["grade_metadata_projection"] = {
++        "catalogue_complete": True,
++        "catalogue_scope": "specified_grading_run_month_parts_not_candidate_population",
++        "run_months": None if selected_months is None else sorted(selected_months),
++        "requested_columns": wanted,
++        "parts": observed_parts,
++        "rows": len(result),
++        "rights_verified": False,
++        "label_usable_time_verified": False,
++    }
++    return result
++
++
+ def load_grades(root: Any = None, *, months: Iterable[str] | None = None,
+-                columns: Iterable[str] | None = None) -> pd.DataFrame:
++                columns: Iterable[str] | None = None,
++                metadata_only: bool = False,
++                expected_parts: Mapping[str, Mapping[str, Any]] | None = None) -> pd.DataFrame:
+     """Read the grade store as ONE frame — the only supported way to consume it.
+ 
+     Mirrors :func:`engine.us_context_vector.load_candidates`: parts are concatenated in
+@@ -249,7 +481,21 @@
+     A part that names a column the caller asked for and a part that does not are both
+     handled: the projection is intersected per part and the union is reindexed at the end,
+     so a column introduced in a later month reads back null for earlier months.
+-    """
++
++    `metadata_only=True` is an opt-in fail-closed reader for already-authorized
++    metadata intake. It requires explicit allowed columns including native keys
++    and exact expected part sha256/bytes/rows receipts. It never materializes an
++    outcome column on fallback or silently drops an unreadable part. The source
++    catalogue is not proof of candidate coverage, rights or label usable time.
++    Legacy callers retain the existing permissive read and numerical behavior.
++    """
++    if type(metadata_only) is not bool:
++        raise GradeMetadataReadError("INVALID_METADATA_MODE")
++    if metadata_only:
++        return _load_grade_metadata(root, months=months, columns=columns,
++                                    expected_parts=expected_parts)
++    if expected_parts is not None:
++        raise GradeMetadataReadError("EXPECTED_PARTS_REQUIRES_METADATA_MODE")
+     store = _store_dir(root)
+     if not store.exists():
+         return pd.DataFrame()
+--- a/tests/test_us_prophet_grades.py
++++ b/tests/test_us_prophet_grades.py
+@@ -913,3 +913,417 @@
+             REPO / ".github" / "workflows" / "daily.yml", REPO
+         )
+         assert "python -m scripts.grade_us_prophet_candidates --nightly" in text
++
++# --- Opt-in outcome-blind metadata projection; real Parquet, synthetic data only. ---
++
++@pytest.fixture
++def metadata_store(tmp_path):
++    import pyarrow.parquet as pq
++    store = upg._store_dir(tmp_path)
++    store.mkdir(parents=True)
++    receipts = {}
++    def write(name="2020-03/2020-03-02.parquet", *, data=None, index=False):
++        if data is None:
++            data = pd.DataFrame({
++                "stamp_date": ["2020-01-02", "2020-01-03"],
++                "ticker": ["TEST_A", "TEST_B"],
++                "board_definition": ["fixture", "fixture"],
++                "horizon": [10, 10],
++                "graded_asof": ["2020-03-02", "2020-03-02"],
++                "fwd_ret": ["FABRICATED_OUTCOME_A", "FABRICATED_OUTCOME_B"],
++            })
++        path = store / name
++        path.parent.mkdir(parents=True, exist_ok=True)
++        data.to_parquet(path, index=index)
++        raw = path.read_bytes()
++        receipts[name] = {"sha256": hashlib.sha256(raw).hexdigest(),
++                          "bytes": len(raw), "rows": len(data)}
++        return path
++    write()
++    return tmp_path, store, receipts, write
++
++
++def _metadata_call(case, **kwargs):
++    root, _, receipts, _ = case
++    return upg.load_grades(root, columns=kwargs.pop("columns", list(upg.GRADE_KEY)+["bench_calendar_state"]),
++                           metadata_only=True, expected_parts=kwargs.pop("expected_parts", receipts),
++                           **kwargs)
++
++
++@pytest.fixture
++def metadata_read_trace(monkeypatch):
++    import pyarrow.parquet as pq
++    original = pq.ParquetFile
++    calls = []
++    class TracedFile:
++        def __init__(self, *a, **kw):
++            self.inner = original(*a, **kw)
++        @property
++        def schema_arrow(self):
++            return self.inner.schema_arrow
++        @property
++        def metadata(self):
++            return self.inner.metadata
++        def read(self, *a, **kw):
++            result = self.inner.read(*a, **kw)
++            calls.append({"requested": kw.get("columns"), "decoded": result.column_names,
++                          "pandas_index": kw.get("use_pandas_metadata")})
++            return result
++        def close(self):
++            return self.inner.close()
++    monkeypatch.setattr(pq, "ParquetFile", TracedFile)
++    return calls
++
++
++def test_metadata_projection_actual_parquet_never_materializes_missing_column_fallback(metadata_store, metadata_read_trace, monkeypatch):
++    def forbid_unrestricted(*a, **kw):
++        raise AssertionError("strict mode must not use pandas fallback")
++    monkeypatch.setattr(pd, "read_parquet", forbid_unrestricted)
++    out = _metadata_call(metadata_store)
++    assert list(out.columns) == list(upg.GRADE_KEY)+["bench_calendar_state"]
++    assert len(out) == 2 and out["bench_calendar_state"].isna().all()
++    assert metadata_read_trace == [{"requested": list(upg.GRADE_KEY),
++                                    "decoded": list(upg.GRADE_KEY), "pandas_index": False}]
++    assert "FABRICATED_OUTCOME" not in repr(out)+repr(out.attrs)
++    receipt = out.attrs["grade_metadata_projection"]
++    assert receipt["catalogue_complete"] is True and receipt["rows"] == 2
++    assert receipt["rights_verified"] is False and receipt["label_usable_time_verified"] is False
++    assert receipt["parts"][0]["missing_metadata_columns"] == ["bench_calendar_state"]
++
++
++def test_metadata_projection_complete_columns_and_order(metadata_store, metadata_read_trace):
++    columns = ["graded_asof", "horizon", "ticker", "stamp_date", "board_definition"]
++    out = _metadata_call(metadata_store, columns=columns)
++    assert list(out.columns) == columns
++    assert metadata_read_trace[0]["decoded"] == columns
++
++
++@pytest.mark.parametrize("columns,code", [
++    (None,"EXPLICIT_METADATA_COLUMNS_REQUIRED"),
++    ("ticker","EXPLICIT_METADATA_COLUMNS_REQUIRED"),
++    ([],"INVALID_METADATA_COLUMNS"),
++    (["ticker","ticker"],"INVALID_METADATA_COLUMNS"),
++    (["ticker",None],"INVALID_METADATA_COLUMNS"),
++    (["ticker"],"GRADE_KEYS_REQUIRED"),
++    (["fwd_ret"],"COLUMN_NOT_METADATA"),
++    (["label_usable_at"],"COLUMN_NOT_METADATA"),
++    (["ticker.return"],"COLUMN_NOT_METADATA"),
++])
++def test_metadata_columns_are_explicit_closed_role(metadata_store, metadata_read_trace, columns, code):
++    with pytest.raises(upg.GradeMetadataReadError) as e:
++        _metadata_call(metadata_store, columns=columns)
++    assert e.value.code == code and metadata_read_trace == []
++
++
++def test_metadata_outcome_index_is_not_loaded(metadata_store, metadata_read_trace):
++    _, store, receipts, write = metadata_store
++    old = pd.read_parquet(next(store.glob("*/*.parquet")))
++    write(data=old.set_index("fwd_ret"), index=True)
++    out = _metadata_call(metadata_store)
++    assert isinstance(out.index, pd.RangeIndex)
++    assert "fwd_ret" not in metadata_read_trace[0]["decoded"]
++    assert "FABRICATED_OUTCOME" not in repr(out)+repr(out.attrs)
++
++
++def test_metadata_nested_field_cannot_select_hidden_outcome(metadata_store, metadata_read_trace):
++    import pyarrow as pa
++    import pyarrow.parquet as pq
++    _, store, receipts, _ = metadata_store
++    path = next(store.glob("*/*.parquet"))
++    table = pa.table({"stamp_date":["2020-01-02"],
++                      "ticker":pa.array([{"return":"DO_NOT_DECODE"}],type=pa.struct([("return",pa.string())])),
++                      "board_definition":["fixture"],"horizon":[10]})
++    pq.write_table(table,path)
++    raw=path.read_bytes();receipts[path.relative_to(store).as_posix()]={"sha256":hashlib.sha256(raw).hexdigest(),"bytes":len(raw),"rows":1}
++    with pytest.raises(upg.GradeMetadataReadError) as e:
++        _metadata_call(metadata_store)
++    assert e.value.code == "INVALID_METADATA_TYPE" and metadata_read_trace == []
++
++
++def test_metadata_duplicate_schema_names_fail_before_read(metadata_store, metadata_read_trace):
++    import pyarrow as pa
++    import pyarrow.parquet as pq
++    _, store, receipts, _ = metadata_store
++    path = next(store.glob("*/*.parquet"))
++    table=pa.Table.from_arrays([pa.array(["2020-01-02"]),pa.array(["A"]),pa.array(["B"]),pa.array(["v"]),pa.array([10])],names=["stamp_date","ticker","ticker","board_definition","horizon"])
++    pq.write_table(table,path)
++    raw=path.read_bytes();receipts[path.relative_to(store).as_posix()]={"sha256":hashlib.sha256(raw).hexdigest(),"bytes":len(raw),"rows":1}
++    with pytest.raises(upg.GradeMetadataReadError) as e:
++        _metadata_call(metadata_store)
++    assert e.value.code=="DUPLICATE_SCHEMA_COLUMNS" and metadata_read_trace==[]
++
++
++@pytest.mark.parametrize("key",list(upg.GRADE_KEY))
++def test_metadata_missing_native_key_refuses(metadata_store,metadata_read_trace,key):
++    _,store,_,write=metadata_store
++    frame=pd.read_parquet(next(store.glob("*/*.parquet"))).drop(columns=[key])
++    write(data=frame)
++    with pytest.raises(upg.GradeMetadataReadError) as e:
++        _metadata_call(metadata_store)
++    assert e.value.code=="MISSING_GRADE_KEYS" and metadata_read_trace==[]
++
++
++@pytest.mark.parametrize("key,value,code",[
++    ("sha256","0"*64,"SOURCE_DIGEST_MISMATCH"),
++    ("rows",999,"SOURCE_ROW_COUNT_MISMATCH"),
++    ("bytes",1,"SOURCE_SIZE_MISMATCH"),
++    ("bytes",10000000,"SOURCE_SIZE_MISMATCH"),
++    ("rows",True,"INVALID_PART_RECEIPT"),
++    ("rows",-1,"INVALID_PART_RECEIPT"),
++    ("bytes",False,"INVALID_PART_RECEIPT"),
++    ("sha256","invalid","INVALID_PART_RECEIPT"),
++])
++def test_metadata_source_identity_count_and_size_bound(metadata_store,metadata_read_trace,key,value,code):
++    _,_,receipts,_=metadata_store
++    receipts[next(iter(receipts))][key]=value
++    with pytest.raises(upg.GradeMetadataReadError) as e:
++        _metadata_call(metadata_store)
++    assert e.value.code==code and metadata_read_trace==[]
++
++
++@pytest.mark.parametrize("name",["../outside.parquet","/tmp/outside.parquet","2020-01/2020-02-01.parquet","2020-13/2020-13-02.parquet","2020-01\\2020-01-01.parquet"])
++def test_metadata_expected_path_cannot_escape_or_mislabel_run_month(metadata_store,name):
++    receipts={name:{"sha256":"0"*64,"rows":0,"bytes":1}}
++    with pytest.raises(upg.GradeMetadataReadError) as e:
++        _metadata_call(metadata_store,expected_parts=receipts)
++    assert e.value.code=="INVALID_PART_PATH"
++
++
++def test_metadata_expected_catalogue_is_mandatory(metadata_store):
++    with pytest.raises(upg.GradeMetadataReadError) as e:
++        _metadata_call(metadata_store,expected_parts=None)
++    assert e.value.code=="EXPECTED_PARTS_REQUIRED"
++
++
++def test_metadata_missing_expected_part_cannot_look_healthy(metadata_store):
++    _,_,receipts,_=metadata_store
++    receipts['2020-03/2020-03-03.parquet']=dict(next(iter(receipts.values())))
++    with pytest.raises(upg.GradeMetadataReadError) as e:
++        _metadata_call(metadata_store)
++    assert e.value.code=="PART_CATALOGUE_MISMATCH"
++
++
++def test_metadata_unexpected_part_cannot_look_healthy(metadata_store):
++    _,_,receipts,write=metadata_store
++    write('2020-03/2020-03-03.parquet')
++    receipts.pop('2020-03/2020-03-03.parquet')
++    with pytest.raises(upg.GradeMetadataReadError) as e:
++        _metadata_call(metadata_store)
++    assert e.value.code=="PART_CATALOGUE_MISMATCH"
++
++
++def test_metadata_corrupt_part_not_silently_skipped(metadata_store):
++    _,store,receipts,_=metadata_store
++    path=store/'2020-03/2020-03-03.parquet';raw=b'not parquet; FABRICATED_ERROR_SECRET'
++    path.write_bytes(raw)
++    receipts['2020-03/2020-03-03.parquet']={"sha256":hashlib.sha256(raw).hexdigest(),"bytes":len(raw),"rows":0}
++    with pytest.raises(upg.GradeMetadataReadError) as e:
++        _metadata_call(metadata_store)
++    assert e.value.code=="PART_UNREADABLE"
++    assert 'FABRICATED_ERROR_SECRET' not in str(e.value)
++
++
++def test_metadata_generic_read_failure_no_unrestricted_retry(metadata_store,monkeypatch):
++    import pyarrow.parquet as pq
++    original=pq.ParquetFile
++    calls=[]
++    class FailedRead:
++        def __init__(self,*a,**kw):self.inner=original(*a,**kw)
++        @property
++        def schema_arrow(self):return self.inner.schema_arrow
++        @property
++        def metadata(self):return self.inner.metadata
++        def read(self,*a,**kw):
++            calls.append(kw.get('columns'));raise OSError('FABRICATED_INTERNAL_SECRET')
++        def close(self):self.inner.close()
++    monkeypatch.setattr(pq,'ParquetFile',FailedRead)
++    monkeypatch.setattr(pd,'read_parquet',lambda *a,**kw: (_ for _ in ()).throw(AssertionError('forbidden full retry')))
++    with pytest.raises(upg.GradeMetadataReadError) as e:
++        _metadata_call(metadata_store)
++    assert calls==[list(upg.GRADE_KEY)]
++    assert e.value.code=='PART_UNREADABLE' and 'FABRICATED_INTERNAL_SECRET' not in str(e.value)
++
++
++def test_metadata_same_snapshot_binds_schema_data_even_after_source_replacement(metadata_store,monkeypatch):
++    import pyarrow.parquet as pq
++    root,store,receipts,write=metadata_store
++    original=pq.ParquetFile
++    path=next(store.glob('*/*.parquet'))
++    old_receipts={k:dict(v) for k,v in receipts.items()}
++    replacement=pd.read_parquet(path);replacement['ticker']=['OTHER_A','OTHER_B']
++    def replace_after_snapshot(source,*a,**kw):
++        write(data=replacement)
++        return original(source,*a,**kw)
++    monkeypatch.setattr(pq,'ParquetFile',replace_after_snapshot)
++    out=_metadata_call(metadata_store,expected_parts=old_receipts)
++    assert out['ticker'].tolist()==['TEST_A','TEST_B']
++    assert out.attrs['grade_metadata_projection']['parts'][0]['sha256']==old_receipts[next(iter(old_receipts))]['sha256']
++    assert hashlib.sha256(path.read_bytes()).hexdigest()!=old_receipts[next(iter(old_receipts))]['sha256']
++
++
++def test_metadata_mutated_bytes_before_snapshot_fail_closed(metadata_store):
++    _,store,receipts,write=metadata_store
++    frozen={k:dict(v) for k,v in receipts.items()}
++    frame=pd.read_parquet(next(store.glob('*/*.parquet')));frame['ticker']=['OTHER_A','OTHER_B'];write(data=frame)
++    with pytest.raises(upg.GradeMetadataReadError) as e:
++        _metadata_call(metadata_store,expected_parts=frozen)
++    assert e.value.code in {'SOURCE_SIZE_MISMATCH','SOURCE_DIGEST_MISMATCH'}
++
++
++def test_metadata_new_part_during_read_refuses_moving_catalogue(metadata_store,monkeypatch):
++    _,_,_,write=metadata_store
++    original=upg._grade_metadata_snapshot
++    first=True
++    def add_part_after_first_snapshot(*a,**kw):
++        nonlocal first
++        stream=original(*a,**kw)
++        if first:
++            first=False;write('2020-03/2020-03-03.parquet')
++        return stream
++    monkeypatch.setattr(upg,'_grade_metadata_snapshot',add_part_after_first_snapshot)
++    with pytest.raises(upg.GradeMetadataReadError) as e:
++        _metadata_call(metadata_store)
++    assert e.value.code=='PART_CATALOGUE_CHANGED'
++
++
++def test_metadata_part_symlink_refused(metadata_store,tmp_path):
++    _,store,receipts,_=metadata_store
++    path=next(store.glob('*/*.parquet'));outside=tmp_path/'elsewhere.parquet'
++    path.rename(outside);path.symlink_to(outside)
++    with pytest.raises(upg.GradeMetadataReadError) as e:
++        _metadata_call(metadata_store)
++    assert e.value.code=='NON_REGULAR_PART'
++
++
++def test_metadata_month_symlink_refused(metadata_store,tmp_path):
++    _,store,_,_=metadata_store
++    month=store/'2020-03';outside=tmp_path/'elsewhere';month.rename(outside);month.symlink_to(outside,target_is_directory=True)
++    with pytest.raises(upg.GradeMetadataReadError) as e:
++        _metadata_call(metadata_store)
++    assert e.value.code=='NON_REGULAR_PART'
++
++
++def test_metadata_run_month_is_not_stamp_month(metadata_store):
++    out=_metadata_call(metadata_store,months=['2020-03'])
++    assert out['stamp_date'].tolist()==['2020-01-02','2020-01-03']
++    empty=_metadata_call(metadata_store,months=['2020-01'])
++    assert empty.empty and empty.attrs['grade_metadata_projection']['parts']==[]
++
++
++@pytest.mark.parametrize('months',['2020-03',['2020-13'],[None]])
++def test_metadata_invalid_run_month_request(metadata_store,months):
++    with pytest.raises(upg.GradeMetadataReadError) as e:
++        _metadata_call(metadata_store,months=months)
++    assert e.value.code=='INVALID_RUN_MONTHS'
++
++
++def test_metadata_store_absence_is_not_empty_coverage(tmp_path):
++    with pytest.raises(upg.GradeMetadataReadError) as e:
++        upg.load_grades(tmp_path,metadata_only=True,columns=list(upg.GRADE_KEY),expected_parts={})
++    assert e.value.code=='STORE_UNAVAILABLE'
++
++
++def test_metadata_explicit_empty_catalogue_not_candidate_coverage(tmp_path):
++    upg._store_dir(tmp_path).mkdir(parents=True)
++    out=upg.load_grades(tmp_path,metadata_only=True,columns=list(upg.GRADE_KEY),expected_parts={})
++    assert out.empty and list(out.columns)==list(upg.GRADE_KEY)
++    assert out.attrs['grade_metadata_projection']['catalogue_scope']=='specified_grading_run_month_parts_not_candidate_population'
++
++
++def test_metadata_read_does_not_rewrite_parts(metadata_store):
++    _,store,_,_=metadata_store
++    before={p:hashlib.sha256(p.read_bytes()).hexdigest() for p in store.glob('*/*.parquet')}
++    _metadata_call(metadata_store)
++    assert before=={p:hashlib.sha256(p.read_bytes()).hexdigest() for p in store.glob('*/*.parquet')}
++
++
++def test_metadata_mode_rejects_truthy_nonboolean(metadata_store):
++    root,_,_,_=metadata_store
++    with pytest.raises(upg.GradeMetadataReadError) as e:
++        upg.load_grades(root,metadata_only='true')
++    assert e.value.code=='INVALID_METADATA_MODE'
++
++
++def test_metadata_receipts_cannot_be_ignored_by_legacy_mode(metadata_store):
++    root,_,receipts,_=metadata_store
++    with pytest.raises(upg.GradeMetadataReadError) as e:
++        upg.load_grades(root,expected_parts=receipts)
++    assert e.value.code=='EXPECTED_PARTS_REQUIRES_METADATA_MODE'
++
++
++@pytest.mark.parametrize('months',[[[]],[{}]])
++def test_metadata_unhashable_months_refuse_without_io(metadata_store,metadata_read_trace,months):
++    with pytest.raises(upg.GradeMetadataReadError) as e:
++        _metadata_call(metadata_store,months=months)
++    assert e.value.code=='INVALID_RUN_MONTHS' and metadata_read_trace==[]
++
++
++def test_metadata_outcome_with_valid_keys_rejected_before_decoding(metadata_store,metadata_read_trace):
++    with pytest.raises(upg.GradeMetadataReadError) as e:
++        _metadata_call(metadata_store,columns=list(upg.GRADE_KEY)+['fwd_ret'])
++    assert e.value.code=='COLUMN_NOT_METADATA' and metadata_read_trace==[]
++
++
++def test_metadata_zero_row_known_schema_keeps_declared_columns(metadata_store):
++    _,store,_,write=metadata_store
++    empty=pd.read_parquet(next(store.glob('*/*.parquet'))).iloc[:0]
++    write(data=empty)
++    out=_metadata_call(metadata_store)
++    assert out.empty and list(out.columns)==list(upg.GRADE_KEY)+['bench_calendar_state']
++    assert out.attrs['grade_metadata_projection']['parts'][0]['rows']==0
++
++
++def test_metadata_unsafe_integer_type_rejected_before_decoding(metadata_store,metadata_read_trace):
++    _,store,_,write=metadata_store
++    frame=pd.read_parquet(next(store.glob('*/*.parquet')));frame['horizon']=[10.5,10.5];write(data=frame)
++    with pytest.raises(upg.GradeMetadataReadError) as e:
++        _metadata_call(metadata_store)
++    assert e.value.code=='INVALID_METADATA_TYPE' and metadata_read_trace==[]
++
++
++def test_metadata_actual_date_type_round_trip(metadata_store):
++    from datetime import date
++    _,store,_,write=metadata_store
++    frame=pd.read_parquet(next(store.glob('*/*.parquet')));frame['stamp_date']=[date(2020,1,2),date(2020,1,3)];write(data=frame)
++    out=_metadata_call(metadata_store)
++    assert out['stamp_date'].tolist()==[date(2020,1,2),date(2020,1,3)]
++
++
++def test_metadata_missing_optional_is_separate_from_present_null(metadata_store):
++    _,store,_,write=metadata_store
++    frame=pd.read_parquet(next(store.glob('*/*.parquet')));frame['bench_calendar_state']=None;write(data=frame)
++    out=_metadata_call(metadata_store)
++    assert out['bench_calendar_state'].isna().all()
++    assert out.attrs['grade_metadata_projection']['parts'][0]['missing_metadata_columns']==[]
++
++
++def test_metadata_spooled_snapshot_retains_encoded_identity(metadata_store):
++    _,store,receipts,_=metadata_store
++    name=next(iter(receipts));path=store/name
++    with upg._grade_metadata_snapshot(path,receipts[name]) as snap:
++        assert hashlib.sha256(snap.read()).hexdigest()==receipts[name]['sha256']
++    assert snap.closed
++
++
++def test_metadata_native_optional_count_name_and_nullable_float(metadata_store,metadata_read_trace):
++    _,store,_,write=metadata_store
++    frame=pd.read_parquet(next(store.glob('*/*.parquet')));frame['bench_inserted_session_count']=[0,None];write(data=frame)
++    out=_metadata_call(metadata_store,columns=list(upg.GRADE_KEY)+['bench_inserted_session_count'])
++    assert out.loc[0,'bench_inserted_session_count']==0
++    assert pd.isna(out.loc[1,'bench_inserted_session_count'])
++    assert metadata_read_trace[0]['decoded']==list(upg.GRADE_KEY)+['bench_inserted_session_count']
++
++
++@pytest.mark.parametrize('value',[-1,0.5,float('inf')])
++def test_metadata_count_values_cannot_impersonate_counts(metadata_store,value):
++    _,store,_,write=metadata_store
++    frame=pd.read_parquet(next(store.glob('*/*.parquet')));frame['bench_inserted_session_count']=[value,None];write(data=frame)
++    with pytest.raises(upg.GradeMetadataReadError) as e:
++        _metadata_call(metadata_store,columns=list(upg.GRADE_KEY)+['bench_inserted_session_count'])
++    assert e.value.code=='INVALID_METADATA_VALUE'
++
++
++def test_metadata_invented_plural_count_name_is_not_native(metadata_store,metadata_read_trace):
++    with pytest.raises(upg.GradeMetadataReadError) as e:
++        _metadata_call(metadata_store,columns=list(upg.GRADE_KEY)+['bench_inserted_sessions'])
++    assert e.value.code=='COLUMN_NOT_METADATA' and metadata_read_trace==[]
