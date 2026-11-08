@@ -1,0 +1,52 @@
+{
+  "schema": "macro.rotation_consent.c0.local_verification.v1",
+  "operation_id": "clear-workstream-blockers-20261104-rotation-consent",
+  "base_sha": "c53915f6d67078d5c0aeaf73bf85ddea1a23de03",
+  "recorded_at": "2026-11-04T04:18:14.391799+00:00",
+  "scope": "isolated fixture/source only; no installed or source-to-user claim",
+  "postgres_version": "17.11",
+  "records": [
+    {
+      "log": "/tmp/cwb-rotation-consent-sql-1104.log",
+      "sha256": "e9e8ed4631b235765977d123431b78af134a56ccf0641595d5b1ad0e471f999e",
+      "summary": "51 passed in 15.82s"
+    },
+    {
+      "log": "/tmp/cwb-rotation-consent-owner-1104.log",
+      "sha256": "cea51b3eaf337eade44376c6ed4311d400b816805644ede2d095cdf09c02f195",
+      "summary": "313 passed, 3 skipped in 325.36s (0:05:25)"
+    },
+    {
+      "command": [
+        "scripts/check_contract_delta.py",
+        "--base",
+        "c53915f6d67078d5c0aeaf73bf85ddea1a23de03"
+      ],
+      "exit_code": 0,
+      "log": "/tmp/cwb-rotation-consent-contract-delta-1104.log",
+      "sha256": "3554133427ee04ff2b694f4970abe158d4898ea616acfff892a6f7d38989e6bf",
+      "summary": "0 introduced, 0 inherited; all three probes equal base and within existing ceilings; 576.8 seconds",
+      "output": [
+        "contract-delta: probe templates/index.html: head 137 jobs / 5,909 s / 10 packs; base 137 jobs / 5,909 s / 10 packs; ceilings 137 / 5,909 / 10",
+        "contract-delta: probe scripts/build_free_content.py: head 137 jobs / 5,924 s / 10 packs; base 137 jobs / 5,924 s / 10 packs; ceilings 138 / 5,924 / 10",
+        "contract-delta: probe engine/prophet/plan_book.py: head 131 jobs / 5,665 s / 10 packs; base 131 jobs / 5,665 s / 10 packs; ceilings 131 / 5,665 / 10",
+        "contract-delta: head census seconds: closure_and_suites 375.4, probes 77.4, skip_only 26.4, trigger_gaps 39.8",
+        "contract-delta: base census seconds: closure_and_suites 370.1, probes 76.9, skip_only 27.5, trigger_gaps 40.3",
+        "contract-delta: 0 introduced, 0 inherited (base c53915f6d670)",
+        "contract-delta: wall 576.8 s"
+      ]
+    }
+  ],
+  "post_run_source_sha256": {
+    ".github/ci/legacy-jobs.yml": "cb87d076aeb6b76d96a44d21efef37a96f7fccab32b28e978d4cf188e72841ed",
+    "lib/user_prefs.py": "7ab28f8114b55a5df53e799987cfabce5423dffae228a110444b026ca8e134ab",
+    "scripts/deploy/rotation_notification_consent_v1.sql": "d08218f1f75f4ee153698afec6ebaba43c773fe405c67af365721d36383cbe68",
+    "scripts/deploy/rotation_notification_consent_v1_rollback.sql": "575016ee2a5a6652daf63a4128555b451ec3b79100df31fb54da7abef1d1906f",
+    "tests/test_rotation_consent.py": "0260b64d1ad938b9f7f1c19adbf8c4b372107adf31df23e9d423181c0cecd354",
+    "tests/test_rotation_consent_postgres.py": "80c538c5739fbaeb4bcbda6482365ea39c7c09c2823a789538efc6358d9f6f1d",
+    "research/DEFENSIVE_ROTATION_CONSENT_C0_2026-11-04.md": "fae7c4a5629175033e89ce514d5b6dc24e0ce35cfc01c847d3547868d31ff288"
+  },
+  "live_effects": false,
+  "hosted_ci": "not_started",
+  "independent_review": "owed"
+}

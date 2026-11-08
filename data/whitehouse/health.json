@@ -1,10 +1,23 @@
 {
   "schema": "wh_health.v1",
-  "as_of": "2026-11-07T10:06:20.233245+00:00",
-  "posts_seen": 16,
-  "seen_total": 327,
-  "evaluated": 0,
+  "as_of": "2026-11-08T19:43:32.848033+00:00",
+  "posts_seen": 12,
+  "seen_total": 330,
+  "evaluated": 2,
   "activated": 0,
   "provider": "Claude claude-opus-4-8 (subscription)",
-  "gate_scores": []
+  "gate_scores": [
+    {
+      "id": "wh-2026-11-08-icymi-ag-todd-blanche-dismantles-democrats-oversight-charade-on-the-sunday-shows",
+      "importance": 5,
+      "activated": false,
+      "degraded_reason": "served_by:deepseek"
+    },
+    {
+      "id": "wh-2026-11-08-presidential-message-on-diwali-1f71",
+      "importance": 5,
+      "activated": false,
+      "degraded_reason": "served_by:deepseek"
+    }
+  ]
 }
