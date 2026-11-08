@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "VRT-BULL-20261026",
-  "asof": "2026-11-06",
+  "asof": "2026-11-08",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 16.4,
@@ -14,23 +14,23 @@
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 32.8
+    "overlay": 39.0
   },
   "geometry": {
-    "dist_to_stop_r": -0.267,
+    "dist_to_stop_r": -0.128,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 15.6,
-    "p1": -0.8448,
-    "p2": -0.4224,
+    "horizon_pct_used": 20.0,
+    "p1": -0.752,
+    "p2": -0.376,
     "p3": null,
-    "move_r": -1.267,
+    "move_r": -1.128,
     "mfe_r": 0.085,
     "mae_r": -1.267
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "Stop Level Breached",
+  "change_reason": "",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -45,8 +45,8 @@
   "_first_trigger_ts": "2026-10-31",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 7,
-  "tau": 0.1556,
+  "days_elapsed": 9,
+  "tau": 0.2,
   "closed": true,
   "outcome": "INVALIDATED"
 }

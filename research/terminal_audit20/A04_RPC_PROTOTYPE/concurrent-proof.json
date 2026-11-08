@@ -1,0 +1,18 @@
+{
+  "scope": "ISOLATED_TRANSACTION_ACCEPTANCE",
+  "production_effects": false,
+  "cases_pass": 3,
+  "fixture_cleanup": true,
+  "container_id": "fee2eba45dc8bab909409f8833fbd0297256430a706dca919218aa06867da922",
+  "image_id": "sha256:ae69c452f483507a6b99fb654cf93aad7fe156ffd2c56247707eef4e36d3c12b",
+  "function_sha256": "1bb8d8639c73945bae80e1523d64d84414a49cde0964ea8ab82af69809cb38d2",
+  "second_session_elapsed_s": 2.008,
+  "outcomes": [
+    "two real sessions: one commit, one explicit conflict",
+    "lost response replay: stable revision and exact row preimage",
+    "admitted replacement rolled back: exact original row preimage"
+  ],
+  "version": "17.11 (Debian 17.11-1.pgdg13+2)",
+  "cleanup_remove_exit": 0,
+  "cleanup_inspect_exit": 1
+}
