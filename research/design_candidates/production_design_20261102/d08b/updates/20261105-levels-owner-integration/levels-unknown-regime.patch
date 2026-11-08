@@ -1,0 +1,33 @@
+--- a/terminal/components/levels/LevelsView.tsx
++++ b/terminal/components/levels/LevelsView.tsx
+@@ -413,6 +413,12 @@
+ 
+   const regime = payload?.regime ?? null;
+   const isSticky = regime?.label === "sticky";
++  const isSlippery = regime?.label === "slippery";
++  // A missing classification is unknown, not an inferred negative-gamma regime.
++  const regimeColor = isSticky ? palette.stickyVar
++    : isSlippery ? palette.slipperyVar : palette.neutralVar;
++  const regimeBorderColor = isSticky ? `rgba(${palette.stickyRGB},0.4)`
++    : isSlippery ? `rgba(${palette.slipperyRGB},0.4)` : "var(--line)";
+ 
+   // as-of / staleness read (OI updates once a day — say so honestly).
+   const { asofStr, asofStale } = useMemo(() => {
+@@ -518,13 +524,13 @@
+ 
+       {/* ── Ribbon (plain-English regime read) ────────────────────────────── */}
+       {regime && (
+-        <div style={{ ...RIBBON, borderLeft: `3px solid ${isSticky ? palette.stickyVar : palette.slipperyVar}` }}>
++        <div style={{ ...RIBBON, borderLeft: `3px solid ${regimeColor}` }}>
+           <span style={{
+             ...RIBBON_TAG,
+-            color: isSticky ? palette.stickyVar : palette.slipperyVar,
+-            borderColor: isSticky ? `rgba(${palette.stickyRGB},0.4)` : `rgba(${palette.slipperyRGB},0.4)`,
++            color: regimeColor,
++            borderColor: regimeBorderColor,
+           }}>
+-            {isSticky ? t("lvSticky") : t("lvSlippery")}
++            {isSticky ? t("lvSticky") : isSlippery ? t("lvSlippery") : pick(lang === "zh", "Unknown", "未知")}
+           </span>
+           <span style={RIBBON_TEXT}>{regime.ribbon}</span>
+         </div>
