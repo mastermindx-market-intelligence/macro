@@ -42,7 +42,7 @@ Known files:
 
 ## Custody, capability and effects
 
-No Paper mutation has yet been attempted. Root is the only Paper writer for this audit; one native reasoning adviser is challenging IA decisions without Paper access or source mutations. Reason: PRINCIPAL_JUDGMENT; WHY NOT FABLE: no separate long-horizon operator is needed.
+Root is the only Paper writer for this audit. Two native advisers supplied bounded architecture and scientific-clarity reasoning with no canvas/source writes. Reason: PRINCIPAL_JUDGMENT. Separate observed edits on OS Today and Project workspace were preserved; they are not credited to this audit.
 
 Current Paper contract allows target-scoped multi-writer collaboration. Inspect the original target immediately before each bounded write; preserve any observed overlapping or uncertain effect. Do not modify held F01/F02/F03, D06/D07/D08 carriers merely because this audit sees them. No merge, deployment, source-approval relabeling or physical reorganization is part of this pass. Review/delivery and runtime acceptance remain distinct.
 
@@ -50,14 +50,28 @@ Qualified edits include `set_text_content` and `write_html`. Current schema hold
 
 ## Initial confirmed observations
 
-- OS Today has a generic “Decide” action and marks Macro “Done” while describing only a weekly outlook result.
+- Initial OS Today labels “Decide” and Macro “Done” were superseded during this audit by another writer’s observed “Review sharing” and “Brief ready” changes. The audit did not make those changes.
 - OS Project workspace presents activity and chat prominently, but exposes its rich plan/evidence/journal features through a generic “Project details” entry.
 - OS Conversations distinguishes unavailable conversation history from an accessible project; preserve this useful recovery behavior.
-- Mastermind AI has a clear evidence comparison and visible two-snapshot limitation. Its “Investigate…” action lacks a named destination.
+- Mastermind AI has a clear evidence comparison and visible two-snapshot limitation. Exact builder bindings prove “Investigate…” opens the R2 16 research-depth/usage review. It does not open the saved-case context mismatch dialog or begin research. The current R10 main page lacks a complete rendered review state.
 - F03 already contains 27 product-family assignments and reports 1,837 structurally observed artboards. Do not rebuild this inventory.
 
 ## Verification and continuation
 
 All observations above are design observations, not live-service findings. No functionality, delivery, statistical validity or production acceptance is asserted.
 
-Next: inspect the existing decision and project-detail destinations, then apply the smallest joined clarity improvement and verify its desktop/mobile counterparts. Update this record at the material audit/edit milestone.
+### Applied milestone — MarketOntology
+
+Editable targets: file `01M3P1X4FR6BRTB13KA736Y1HT`, page `p-1-0`, desktop `44L-0`, mobile `4F5-0`.
+
+Operation `paper-clarity-20261108-c2-ontology-reading-01` returned `APPLIED_RESPONSE_OBSERVED`. All 120 requested text updates were read back exactly. Screenshots checked the desktop/mobile hero, four-condition sequence, evidence, interpretation, activation requirements and mobile return.
+
+- Lead with **Oil condition unmet** and **Inactive**, replacing ambiguous “Not running” and the dominant repeated 2/4 fraction.
+- Display **Source verification unavailable** beside the primary assessment and retain it with source details.
+- Use **Inspect oil condition**, **View source details**, **What this reading means**, **What must change next** and **Return to oil condition**.
+- Preserve the ordered four-condition model. Later qualifying readings cannot fill missing earlier conditions or establish oil causation.
+- Keep the 25 Sep 2026 observation, 28 Sep build timestamp, source identities, exact readings, strict thresholds, session windows, path revision, source-verification limitation and implementation proof hold.
+- Keep full design/product-proof status in the existing footer; use a brief Design preview marker beside market content.
+- Finish operation `paper-clarity-20261108-c2-ontology-finish-01` returned `APPLIED_RESPONSE_OBSERVED` for only the two changed boards.
+
+Next safe phase: align four shared state-pattern boards with the 18 Oct doctrine removing colored container-edge rails; complete AI's current desktop/mobile depth/usage review design using existing interaction semantics. No new runtime, scope, permissions, usage meter or case store is authorized or required.
