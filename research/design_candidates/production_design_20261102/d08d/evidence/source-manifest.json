@@ -1,0 +1,219 @@
+[
+  {
+    "path": "terminal/app/(shell)/options/futures/page.tsx",
+    "commit": "2ded360882b9c721e690907ff363b553781fb920",
+    "blobSha": "dc890aa8c4fabc8f89456035cf68e0dbd296d2e7",
+    "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/2ded360882b9c721e690907ff363b553781fb920/terminal/app/(shell)/options/futures/page.tsx",
+    "observed": true
+  },
+  {
+    "path": "terminal/app/(shell)/options/equity-replay/page.tsx",
+    "commit": "2ded360882b9c721e690907ff363b553781fb920",
+    "blobSha": "3d4f1ed36030c4883556541b5b3cd642ace7bf7b",
+    "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/2ded360882b9c721e690907ff363b553781fb920/terminal/app/(shell)/options/equity-replay/page.tsx",
+    "observed": true
+  },
+  {
+    "path": "terminal/app/dev/options-plan/page.tsx",
+    "commit": "2ded360882b9c721e690907ff363b553781fb920",
+    "blobSha": "c2aaeac2e9db98fa9e4af01b33db61d69231a5ba",
+    "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/2ded360882b9c721e690907ff363b553781fb920/terminal/app/dev/options-plan/page.tsx",
+    "observed": true
+  },
+  {
+    "path": "terminal/lib/futuresRequest.ts",
+    "commit": "2ded360882b9c721e690907ff363b553781fb920",
+    "blobSha": "eb47f7ee659c3c410462e35849c58c23266f593a",
+    "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/2ded360882b9c721e690907ff363b553781fb920/terminal/lib/futuresRequest.ts",
+    "observed": true
+  },
+  {
+    "path": "terminal/components/futures/FuturesWorkspaceView.tsx",
+    "commit": "2ded360882b9c721e690907ff363b553781fb920",
+    "blobSha": "2ca439f7a2c2e023d4fa73cca71b74d1c9e62989",
+    "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/2ded360882b9c721e690907ff363b553781fb920/terminal/components/futures/FuturesWorkspaceView.tsx",
+    "observed": true
+  },
+  {
+    "path": "terminal/components/futures/useFuturesWorkspace.ts",
+    "commit": "2ded360882b9c721e690907ff363b553781fb920",
+    "blobSha": "33976371047e2d25a118644096315a571919e623",
+    "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/2ded360882b9c721e690907ff363b553781fb920/terminal/components/futures/useFuturesWorkspace.ts",
+    "observed": true
+  },
+  {
+    "path": "terminal/app/api/futures/route.ts",
+    "commit": "2ded360882b9c721e690907ff363b553781fb920",
+    "blobSha": "a1f307662866d54d5606ae33de99a00014d97d02",
+    "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/2ded360882b9c721e690907ff363b553781fb920/terminal/app/api/futures/route.ts",
+    "observed": true
+  },
+  {
+    "path": "terminal/lib/futuresSourceRead.ts",
+    "commit": "2ded360882b9c721e690907ff363b553781fb920",
+    "blobSha": "b31150236cd2b6fc5a42cbfb8ea55162fd785cfe",
+    "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/2ded360882b9c721e690907ff363b553781fb920/terminal/lib/futuresSourceRead.ts",
+    "observed": true
+  },
+  {
+    "path": "terminal/lib/futuresSourceJoin.ts",
+    "commit": "2ded360882b9c721e690907ff363b553781fb920",
+    "blobSha": "0ff6f9ce43975831d8f5fc276792a43352d88321",
+    "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/2ded360882b9c721e690907ff363b553781fb920/terminal/lib/futuresSourceJoin.ts",
+    "observed": true
+  },
+  {
+    "path": "terminal/lib/futuresTransport.ts",
+    "commit": "2ded360882b9c721e690907ff363b553781fb920",
+    "blobSha": "2595a413330a18c1855c278602abcae99683c6a7",
+    "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/2ded360882b9c721e690907ff363b553781fb920/terminal/lib/futuresTransport.ts",
+    "observed": true
+  },
+  {
+    "path": "terminal/components/futures/FuturesMicrostructureChart.tsx",
+    "commit": "2ded360882b9c721e690907ff363b553781fb920",
+    "blobSha": "ef492282d65f77608ff8104ff1b4ccbecea4f56c",
+    "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/2ded360882b9c721e690907ff363b553781fb920/terminal/components/futures/FuturesMicrostructureChart.tsx",
+    "observed": true
+  },
+  {
+    "path": "terminal/components/futures/FuturesCotPanel.tsx",
+    "commit": "2ded360882b9c721e690907ff363b553781fb920",
+    "blobSha": "1b9aad55ee3b8851adca0058f8646ce65a989c02",
+    "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/2ded360882b9c721e690907ff363b553781fb920/terminal/components/futures/FuturesCotPanel.tsx",
+    "observed": true
+  },
+  {
+    "path": "terminal/lib/futuresCot.ts",
+    "commit": "2ded360882b9c721e690907ff363b553781fb920",
+    "blobSha": "e86a59ccc3f84f7f997e5fcfc64198abe5d57eb6",
+    "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/2ded360882b9c721e690907ff363b553781fb920/terminal/lib/futuresCot.ts",
+    "observed": true
+  },
+  {
+    "path": "terminal/lib/futuresGexProjection.ts",
+    "commit": "2ded360882b9c721e690907ff363b553781fb920",
+    "blobSha": "525671a7a7d64154bb7d9d440119dd48ee85d057",
+    "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/2ded360882b9c721e690907ff363b553781fb920/terminal/lib/futuresGexProjection.ts",
+    "observed": true
+  },
+  {
+    "path": "terminal/components/futures/IexDepthReplayView.tsx",
+    "commit": "2ded360882b9c721e690907ff363b553781fb920",
+    "blobSha": "8bdf3fa5268f2fd6f4e028ff663ca4cd8ad3981f",
+    "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/2ded360882b9c721e690907ff363b553781fb920/terminal/components/futures/IexDepthReplayView.tsx",
+    "observed": true
+  },
+  {
+    "path": "terminal/lib/iexDepthReplay.ts",
+    "commit": "2ded360882b9c721e690907ff363b553781fb920",
+    "blobSha": "73740e5b4758f653f0b9a5cb3b6262980be0a46a",
+    "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/2ded360882b9c721e690907ff363b553781fb920/terminal/lib/iexDepthReplay.ts",
+    "observed": true
+  },
+  {
+    "path": "terminal/lib/largeTrades/client.ts",
+    "commit": "2ded360882b9c721e690907ff363b553781fb920",
+    "blobSha": "e751a58ac2dbd3dd3681560704a824855fa1f34f",
+    "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/2ded360882b9c721e690907ff363b553781fb920/terminal/lib/largeTrades/client.ts",
+    "observed": true
+  },
+  {
+    "path": "terminal/lib/largeTrades/engine.ts",
+    "commit": "2ded360882b9c721e690907ff363b553781fb920",
+    "blobSha": "17e6c4a4617fdc082dbc7a633e4330be03b42e01",
+    "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/2ded360882b9c721e690907ff363b553781fb920/terminal/lib/largeTrades/engine.ts",
+    "observed": true
+  },
+  {
+    "path": "terminal/lib/largeTrades/sourceAdmission.ts",
+    "commit": "2ded360882b9c721e690907ff363b553781fb920",
+    "blobSha": "61e4e4e4d4da15e2e8a2b80bd15df8f43110e285",
+    "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/2ded360882b9c721e690907ff363b553781fb920/terminal/lib/largeTrades/sourceAdmission.ts",
+    "observed": true
+  },
+  {
+    "path": "terminal/app/api/large-trades/route.ts",
+    "commit": "2ded360882b9c721e690907ff363b553781fb920",
+    "blobSha": "ea8118fa1798b2e0c01581b969583f3b1419e0b8",
+    "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/2ded360882b9c721e690907ff363b553781fb920/terminal/app/api/large-trades/route.ts",
+    "observed": true
+  },
+  {
+    "path": "terminal/lib/originNav.ts",
+    "commit": "2ded360882b9c721e690907ff363b553781fb920",
+    "blobSha": "7484e1894b9282045a5bfec8e3d24846e40c0a61",
+    "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/2ded360882b9c721e690907ff363b553781fb920/terminal/lib/originNav.ts",
+    "observed": true
+  },
+  {
+    "path": "terminal/lib/companySearchContext.ts",
+    "commit": "2ded360882b9c721e690907ff363b553781fb920",
+    "blobSha": "2166bbbccb4d85667acc218ece36b75133c17b14",
+    "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/2ded360882b9c721e690907ff363b553781fb920/terminal/lib/companySearchContext.ts",
+    "observed": true
+  },
+  {
+    "path": "ingest/iex_depth_replay.py",
+    "commit": "2ded360882b9c721e690907ff363b553781fb920",
+    "blobSha": "9b0eee69c90865d663e0fe7ecbbcfda4f740414d",
+    "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/2ded360882b9c721e690907ff363b553781fb920/ingest/iex_depth_replay.py",
+    "observed": true
+  },
+  {
+    "path": "ingest/iex_deep_trades.py",
+    "commit": "2ded360882b9c721e690907ff363b553781fb920",
+    "blobSha": "d31d58f2852300cb8dfe6c8e02144777816b1956",
+    "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/2ded360882b9c721e690907ff363b553781fb920/ingest/iex_deep_trades.py",
+    "observed": true
+  },
+  {
+    "path": "hub/lib/futuresPublication.js",
+    "commit": "2ded360882b9c721e690907ff363b553781fb920",
+    "blobSha": "7c7da3874a782fe75b48ae45a95d721e149219f1",
+    "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/2ded360882b9c721e690907ff363b553781fb920/hub/lib/futuresPublication.js",
+    "observed": true
+  },
+  {
+    "path": "hub/lib/futuresWorkspaceProjection.js",
+    "commit": "2ded360882b9c721e690907ff363b553781fb920",
+    "blobSha": "9e386cdc13a9da7c8eb609afddb41ce51ed50633",
+    "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/2ded360882b9c721e690907ff363b553781fb920/hub/lib/futuresWorkspaceProjection.js",
+    "observed": true
+  },
+  {
+    "path": "terminal/app/dev/futures/page.tsx",
+    "commit": "2ded360882b9c721e690907ff363b553781fb920",
+    "blobSha": "fcd6ead3a51befc158d1f4b4dccc98a15ebf8b09",
+    "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/2ded360882b9c721e690907ff363b553781fb920/terminal/app/dev/futures/page.tsx",
+    "observed": true
+  },
+  {
+    "path": "terminal/app/dev/futures-sample/page.tsx",
+    "commit": "2ded360882b9c721e690907ff363b553781fb920",
+    "blobSha": "f3436cf7617d5a4ed77cb637fb4b696aa0729312",
+    "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/2ded360882b9c721e690907ff363b553781fb920/terminal/app/dev/futures-sample/page.tsx",
+    "observed": true
+  },
+  {
+    "path": "terminal/components/futures/FuturesResearchLab.tsx",
+    "commit": "2ded360882b9c721e690907ff363b553781fb920",
+    "blobSha": "f4f86695516490c7e9912ed0b33b9e699f9466b3",
+    "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/2ded360882b9c721e690907ff363b553781fb920/terminal/components/futures/FuturesResearchLab.tsx",
+    "observed": true
+  },
+  {
+    "path": "terminal/components/futures/FuturesPublicSampleLab.tsx",
+    "commit": "2ded360882b9c721e690907ff363b553781fb920",
+    "blobSha": "0740fc342894647e4dd372cb2ae7d82a41708227",
+    "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/2ded360882b9c721e690907ff363b553781fb920/terminal/components/futures/FuturesPublicSampleLab.tsx",
+    "observed": true
+  },
+  {
+    "path": "terminal/lib/futuresSampleLoader.ts",
+    "commit": "2ded360882b9c721e690907ff363b553781fb920",
+    "blobSha": "aa3c27f449abb35bf4e6f2b6057218eac294da07",
+    "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/2ded360882b9c721e690907ff363b553781fb920/terminal/lib/futuresSampleLoader.ts",
+    "observed": true
+  }
+]

@@ -1,14 +1,15 @@
 {
- "active": {},
- "candidates": {
+ "active": {
   "mag7_basket->xlv": {
    "pair_id": "mag7_basket->xlv",
    "donor": "mag7_basket",
    "receiver": "xlv",
    "tier": "primary",
    "started": "2026-10-16",
-   "lapse_count": 0,
-   "confirm_streak": 1,
+   "lapse_count": 1,
+   "neg_run": 0,
+   "confirm_streak": 0,
+   "announced": true,
    "last_receipts": {
     "event_type": "into_strength",
     "donor_signature": "contagion_bleed",
@@ -16,23 +17,143 @@
      "state": "contagion_bleed",
      "rs20": null,
      "at_40d_low": true,
-     "asof": "2026-11-03"
+     "asof": "2026-11-05"
     },
     "receiver": {
-     "off_low_pct": 0.1171,
-     "rs20": 0.1331,
-     "ratio_chg_20s": 0.1847,
-     "ratio_20s_high": false,
-     "breadth_above50": 81.67,
+     "off_low_pct": 0.1225,
+     "rs20": 0.1525,
+     "ratio_chg_20s": 0.2012,
+     "ratio_20s_high": true,
+     "breadth_above50": 88.33,
      "breadth_rising": true,
      "breadth_above_donor": true,
-     "donor_breadth_above50": 39.19,
+     "donor_breadth_above50": 25.68,
      "donor_breadth_state": "MEASURED"
     },
-    "ratio": null,
+    "ratio": {
+     "ratio_chg_10s": 0.0754,
+     "inflected": false,
+     "ratio_20s_high": true
+    },
     "blowoff": null,
     "turn": null,
-    "asof": "2026-11-03"
+    "asof": "2026-11-05"
+   }
+  }
+ },
+ "candidates": {
+  "xlk->xlv": {
+   "pair_id": "xlk->xlv",
+   "donor": "xlk",
+   "receiver": "xlv",
+   "tier": "primary",
+   "started": "2026-10-20",
+   "lapse_count": 1,
+   "confirm_streak": 0,
+   "last_receipts": {
+    "event_type": "into_strength",
+    "donor_signature": "contagion_bleed",
+    "donor": {
+     "state": "contagion_bleed",
+     "rs20": null,
+     "at_40d_low": true,
+     "asof": "2026-11-05"
+    },
+    "receiver": {
+     "off_low_pct": 0.1225,
+     "rs20": 0.1525,
+     "ratio_chg_20s": 0.3393,
+     "ratio_20s_high": true,
+     "breadth_above50": 88.33,
+     "breadth_rising": true,
+     "breadth_above_donor": true,
+     "donor_breadth_above50": 25.68,
+     "donor_breadth_state": "MEASURED"
+    },
+    "ratio": {
+     "ratio_chg_10s": 0.1453,
+     "inflected": false,
+     "ratio_20s_high": true
+    },
+    "blowoff": null,
+    "turn": null,
+    "asof": "2026-11-05"
+   }
+  },
+  "smh->xlv": {
+   "pair_id": "smh->xlv",
+   "donor": "smh",
+   "receiver": "xlv",
+   "tier": "primary",
+   "started": "2026-10-20",
+   "lapse_count": 1,
+   "confirm_streak": 0,
+   "last_receipts": {
+    "event_type": "into_strength",
+    "donor_signature": "contagion_bleed",
+    "donor": {
+     "state": "contagion_bleed",
+     "rs20": null,
+     "at_40d_low": true,
+     "asof": "2026-11-05"
+    },
+    "receiver": {
+     "off_low_pct": 0.1225,
+     "rs20": 0.1525,
+     "ratio_chg_20s": 0.4914,
+     "ratio_20s_high": true,
+     "breadth_above50": 88.33,
+     "breadth_rising": true,
+     "breadth_above_donor": true,
+     "donor_breadth_above50": 25.68,
+     "donor_breadth_state": "MEASURED"
+    },
+    "ratio": {
+     "ratio_chg_10s": 0.1922,
+     "inflected": false,
+     "ratio_20s_high": true
+    },
+    "blowoff": null,
+    "turn": null,
+    "asof": "2026-11-05"
+   }
+  },
+  "xlk->xlp": {
+   "pair_id": "xlk->xlp",
+   "donor": "xlk",
+   "receiver": "xlp",
+   "tier": "secondary",
+   "started": "2026-10-20",
+   "lapse_count": 1,
+   "confirm_streak": 0,
+   "last_receipts": {
+    "event_type": "into_strength",
+    "donor_signature": "contagion_bleed",
+    "donor": {
+     "state": "contagion_bleed",
+     "rs20": null,
+     "at_40d_low": true,
+     "asof": "2026-11-05"
+    },
+    "receiver": {
+     "off_low_pct": 0.1359,
+     "rs20": 0.1467,
+     "ratio_chg_20s": 0.3323,
+     "ratio_20s_high": true,
+     "breadth_above50": 90.62,
+     "breadth_rising": true,
+     "breadth_above_donor": true,
+     "donor_breadth_above50": 25.68,
+     "donor_breadth_state": "MEASURED"
+    },
+    "ratio": {
+     "ratio_chg_10s": 0.1386,
+     "inflected": false,
+     "ratio_20s_high": true
+    },
+    "blowoff": null,
+    "turn": null,
+    "asof": "2026-11-05"
    }
   },
   "xlk->xlu": {
@@ -41,7 +162,7 @@
    "receiver": "xlu",
    "tier": "secondary",
    "started": "2026-10-14",
-   "lapse_count": 1,
+   "lapse_count": 3,
    "confirm_streak": 0,
    "last_receipts": {
     "event_type": "into_strength",
