@@ -113,13 +113,13 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-ui);
       '查看来源披露及已报告的供应商角色。选择公司并不确立其与上方路径的联系。') }}</p>
     <form class="ox-company-form">
       <label class="ox-company-label" for="ox-company-query">{{ t('Company symbol', '公司代码') }}
-        <input id="ox-company-query" type="text" maxlength="24" autocomplete="off" spellcheck="false" autocapitalize="characters" required>
+        <input id="ox-company-query" type="text" maxlength="24" autocomplete="off" spellcheck="false" autocapitalize="characters" required disabled>
       </label>
-      <button class="ox-cta" type="submit">{{ t('Inspect company', '查看公司') }}</button>
-      <button class="ox-cta secondary" type="button" data-company-clear>{{ t('Clear', '清除') }}</button>
+      <button class="ox-cta" type="submit" disabled>{{ t('Inspect company', '查看公司') }}</button>
+      <button class="ox-cta secondary" type="button" data-company-clear disabled>{{ t('Clear', '清除') }}</button>
     </form>
-    <div data-company-result aria-live="polite" aria-busy="false">
-      <p class="ox-note">{{ t('Choose a company to inspect its source-announced plans.', '选择一家公司，查看其来源披露的计划。') }}</p>
+    <div data-company-result data-state="module_unavailable" aria-live="polite" aria-busy="false">
+      <p class="ox-note">{{ t('Company research controls have not initialized. Other views remain available.', '公司研究控件尚未初始化。其他视图仍可使用。') }}</p>
     </div>
   </section>
 
@@ -128,9 +128,11 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-ui);
     <p class="ox-note">{{ t('Follow the selected company into Mastermind’s curated theme hierarchy. Membership describes classification, not revenue exposure or an estimated market impact.', '沿所选公司查看 Mastermind 整理的主题层级。成员关系表示分类，不代表收入敞口或市场影响估计。') }}</p>
     <div class="ox-company-form">
       <button class="ox-cta" type="button" data-theme-read disabled>{{ t('Read house Theme Map', '读取自有主题图谱') }}</button>
-      <button class="ox-cta secondary" type="button" data-theme-clear>{{ t('Clear reading', '清除读数') }}</button>
+      <button class="ox-cta secondary" type="button" data-theme-clear disabled>{{ t('Clear reading', '清除读数') }}</button>
     </div>
-    <div data-theme-result aria-live="polite" aria-busy="false"></div>
+    <div data-theme-result data-state="module_unavailable" aria-live="polite" aria-busy="false">
+      <p class="ox-note">{{ t('Theme Map controls have not initialized. Other views remain available.', '主题图谱控件尚未初始化。其他视图仍可使用。') }}</p>
+    </div>
   </section>
 
   <details id="ox-research" class="ox-company ox-detail ox-detail--flush">
@@ -138,23 +140,27 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-ui);
     <p class="ox-note">{{ t('Open a retrospective research case from one exact observed event. Its relationship to the transmission path above is not established.', '从一个确切的已观测事件打开回溯研究案例。该事件与上方传导路径的关系尚未确立。') }}</p>
     <p><a class="ox-action" href="stocks/index.html#pressure">{{ t('Find an event in Pressure Watch', '在个股承压中查找事件') }}</a></p>
     <form class="ox-company-form" autocomplete="off">
-      <label class="ox-company-label">{{ t('Event date', '事件日期') }}<input type="date" name="date" required></label>
-      <label class="ox-company-label">{{ t('Symbol', '代码') }}<input type="text" name="ticker" maxlength="15" spellcheck="false" autocapitalize="characters" required></label>
-      <label class="ox-company-label">{{ t('Residual side', '残差方向') }}<select name="side"><option value="down" data-en="Negative residual" data-zh="负残差">Negative residual</option><option value="up" data-en="Positive residual" data-zh="正残差">Positive residual</option></select></label>
-      <button class="ox-cta" type="submit">{{ t('Inspect event', '查看事件') }}</button>
-      <button class="ox-cta secondary" type="button" data-research-clear>{{ t('Clear reading', '清除读数') }}</button>
+      <label class="ox-company-label">{{ t('Event date', '事件日期') }}<input type="date" name="date" required disabled></label>
+      <label class="ox-company-label">{{ t('Symbol', '代码') }}<input type="text" name="ticker" maxlength="15" spellcheck="false" autocapitalize="characters" required disabled></label>
+      <label class="ox-company-label">{{ t('Residual side', '残差方向') }}<select name="side" disabled><option value="down" data-en="Negative residual" data-zh="负残差">Negative residual</option><option value="up" data-en="Positive residual" data-zh="正残差">Positive residual</option></select></label>
+      <button class="ox-cta" type="submit" disabled>{{ t('Inspect event', '查看事件') }}</button>
+      <button class="ox-cta secondary" type="button" data-research-clear disabled>{{ t('Clear reading', '清除读数') }}</button>
     </form>
-    <div data-research-result aria-live="polite" aria-busy="false"></div>
+    <div data-research-result data-state="module_unavailable" aria-live="polite" aria-busy="false">
+      <p class="ox-note">{{ t('Event research controls have not initialized. Pressure Watch remains available.', '事件研究控件尚未初始化。个股承压页面仍可使用。') }}</p>
+    </div>
   </details>
 
   <details id="ox-radar-research" class="ox-company ox-detail ox-detail--flush">
     <summary>{{ t('Read research from Entry Radar candidates', '读取入场雷达候选的研究证据') }}</summary>
     <p class="ox-note">{{ t('Inspect published cases and earnings context for existing Radar candidates. This view creates no candidates and changes no priority or lifecycle.', '查看现有雷达候选已发布的案例与财报背景。此视图不创建候选，也不改变优先级或生命周期。') }}</p>
     <div class="ox-company-form">
-      <button class="ox-cta" type="button" data-radar-read>{{ t('Read published candidates', '读取已发布候选') }}</button>
-      <button class="ox-cta secondary" type="button" data-radar-clear>{{ t('Clear reading', '清除读数') }}</button>
+      <button class="ox-cta" type="button" data-radar-read disabled>{{ t('Read published candidates', '读取已发布候选') }}</button>
+      <button class="ox-cta secondary" type="button" data-radar-clear disabled>{{ t('Clear reading', '清除读数') }}</button>
     </div>
-    <div data-radar-result aria-live="polite" aria-busy="false"></div>
+    <div data-radar-result data-state="module_unavailable" aria-live="polite" aria-busy="false">
+      <p class="ox-note">{{ t('Radar research controls have not initialized. Other views remain available.', '雷达研究控件尚未初始化。其他视图仍可使用。') }}</p>
+    </div>
   </details>
 
   <noscript>

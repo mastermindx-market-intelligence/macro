@@ -84,15 +84,16 @@ export function mountResearch(root) {
   const selected=eventSelectionFromSearch(window.location.search);
   if(selected){for(const key of ['date','ticker','side'])form.elements[key].value=selected[key];root.open=true;}
   let epoch=0,operation=null,disposed=false,subscription=null,canonicalOwner=owner();
-  const copy={idle:['Choose an event from Pressure Watch, then inspect its evidence here.','从个股承压页面选择事件，然后在此查看其证据。'],
+  const copy={module_unavailable:['Event research controls have not initialized. Pressure Watch remains available.','事件研究控件尚未初始化。个股承压页面仍可使用。'],
+    idle:['Choose an event from Pressure Watch, then inspect its evidence here.','从个股承压页面选择事件，然后在此查看其证据。'],
     loading:['Reading the selected event and composing its evidence…','正在读取所选事件并整理其证据…'],
     signed_out:['Sign in before opening a private research case.','请登录后打开私有研究案例。'],
     forbidden:['This account does not include private research access.','此账户未包含私有研究权限。'],
     not_found:['That exact event is not present in the current retained snapshot. Select an event that the native page currently lists.','当前保留快照中没有此确切事件。请选择原生页面当前列出的事件。'],
     unavailable:['This research read is unavailable. The transmission and company views remain usable.','此研究读数暂不可用。传导路径与公司视图仍可使用。']};
-  function state(s) { output.replaceChildren(note(...copy[s]));output.dataset.state=s;output.setAttribute('aria-busy',String(s==='loading'));submit.disabled=s==='loading'; }
+  function state(s) { output.replaceChildren(note(...copy[s]));output.dataset.state=s;output.setAttribute('aria-busy',String(s==='loading'));submit.disabled=disposed || s==='loading'; }
   function stop() { epoch++;if(operation){const op=operation;operation=null;op.abort.abort();if(op.reader)cancel(op.reader);clearTimeout(op.timer);op.reject(new Error('RESEARCH_CANCELLED'));} }
-  function clear() { stop();state('idle'); }
+  function clear() { stop();state(disposed?'module_unavailable':'idle'); }
   function auth(event) { canonicalOwner=typeof event.detail?.user?.id==='string'?event.detail.user.id:null;clear(); }
   function check(op) { if(disposed || epoch!==op.id || document.hidden || op.abort.signal.aborted || performance.now()>=op.deadline || owner()!==op.owner || canonicalOwner!==op.owner)fail(); }
   async function checked(op,p) { const value=await p;check(op);return value; }
@@ -132,6 +133,7 @@ export function mountResearch(root) {
   function hidden(){if(document.hidden)clear();}
   function language(){const lang=document.documentElement.dataset.lang==='zh'?'zh':'en';for(const option of form.querySelectorAll('option'))option.textContent=option.dataset[lang];}
   form.addEventListener('submit',evaluate);form.addEventListener('input',clear);form.addEventListener('change',clear);document.addEventListener('langchange',language);clearButton.addEventListener('click',clear);window.addEventListener('mdx-auth',auth);window.addEventListener('pagehide',clear);document.addEventListener('visibilitychange',hidden);language();state('idle');
-  return {dispose(){disposed=true;clear();subscription?.unsubscribe();form.removeEventListener('submit',evaluate);form.removeEventListener('input',clear);form.removeEventListener('change',clear);document.removeEventListener('langchange',language);clearButton.removeEventListener('click',clear);window.removeEventListener('mdx-auth',auth);window.removeEventListener('pagehide',clear);document.removeEventListener('visibilitychange',hidden);}};
+  for(const control of form.elements)control.disabled=false;
+  return {dispose(){disposed=true;clear();for(const control of form.elements)control.disabled=true;subscription?.unsubscribe();form.removeEventListener('submit',evaluate);form.removeEventListener('input',clear);form.removeEventListener('change',clear);document.removeEventListener('langchange',language);clearButton.removeEventListener('click',clear);window.removeEventListener('mdx-auth',auth);window.removeEventListener('pagehide',clear);document.removeEventListener('visibilitychange',hidden);}};
 }
 mountResearch(document.getElementById('ox-research'));

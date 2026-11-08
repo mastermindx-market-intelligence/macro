@@ -113,6 +113,7 @@ export function mountCompanyResearch(root) {
     output.dataset.state = state.status;
     output.setAttribute('aria-busy', state.status === 'loading' ? 'true' : 'false');
     const messages = {
+      module_unavailable: ['Company research controls have not initialized. Other views remain available.', '公司研究控件尚未初始化。其他视图仍可使用。'],
       idle: ['Choose a company to inspect its source disclosures.', '选择一家公司，查看其来源披露。'],
       loading: ['Reading the company’s current disclosure selection…', '正在读取该公司的当前披露列表…'],
       signed_out: ['Sign in to inspect private company disclosures.', '登录后查看私有公司披露。'],
@@ -335,10 +336,12 @@ export function mountCompanyResearch(root) {
   document.addEventListener('visibilitychange', hidden);
   window.addEventListener('pagehide', leaving);
   render({ status: 'idle' });
+  for (const control of form.elements) control.disabled = false;
   return {
     dispose() {
       controller.dispose();
-      output.replaceChildren();
+      render({ status: 'module_unavailable' });
+      for (const control of form.elements) control.disabled = true;
       disposed = true;
       client = null;
       if (subscription) subscription.unsubscribe();

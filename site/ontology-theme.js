@@ -199,6 +199,7 @@ export function mountTheme(root) {
   function status(state) {
     output.replaceChildren(); output.dataset.state = state; output.setAttribute('aria-busy', state === 'loading' ? 'true' : 'false');
     const copy = {
+      module_unavailable: ['Theme Map controls have not initialized. Other views remain available.', '主题图谱控件尚未初始化。其他视图仍可使用。'],
       no_reading: ['Load a current path reading first.', '请先加载当前路径读数。'],
       no_company: ['Select a company in Company research above.', '请先在上方公司研究中选择公司。'],
       idle: ['Read the selected company’s house-curated paths when ready.', '准备就绪后，读取所选公司的自有主题路径。'],
@@ -208,10 +209,10 @@ export function mountTheme(root) {
       changed: ['The selected source changed. Reload the path before reading again.', '所选数据源已变化，请重新加载路径后再读取。'],
       unavailable: ['The house Theme Map is unavailable for this reading.', '本次自有主题图谱读数不可用。'],
     };
-    output.append(note(...copy[state])); read.disabled = !reading || !selected || state === 'loading';
+    output.append(note(...copy[state])); read.disabled = disposed || !reading || !selected || state === 'loading';
   }
   function stop() { epoch++; if (operation) { const old=operation; operation=null; old.abort.abort(); if(old.reader)cancel(old.reader); clearTimeout(old.timer); old.reject(new Error('THEME_CANCELLED')); } }
-  function clear() { stop(); status(!reading ? 'no_reading' : !selected ? 'no_company' : 'idle'); }
+  function clear() { stop(); status(disposed ? 'module_unavailable' : !reading ? 'no_reading' : !selected ? 'no_company' : 'idle'); }
   function invalidate() { reading=null; selected=null; clear(); }
   function auth(event) { canonicalOwner=typeof event.detail?.user?.id === 'string' ? event.detail.user.id : null; selected=null; if (reading?.owner_id !== canonicalOwner || canonicalOwner !== owner()) reading=null; clear(); }
   function check(op) { if (disposed || epoch !== op.id || document.hidden || reading !== op.reading || selected !== op.selected
@@ -336,8 +337,9 @@ export function mountTheme(root) {
   root.addEventListener('ontology-reading',receive);root.addEventListener('ontology-source-changed',invalidate);company.addEventListener('ontology-company-identity',select);
   window.addEventListener('mdx-auth',auth);window.addEventListener('pagehide',invalidate);document.addEventListener('visibilitychange',hidden);
   read.addEventListener('click',evaluate);clearButton.addEventListener('click',clear);status('no_reading');
+  clearButton.disabled=false;
   root.dispatchEvent(new CustomEvent('ontology-consumer-ready'));company.dispatchEvent(new CustomEvent('ontology-identity-ready'));
-  return {dispose(){disposed=true;invalidate();output.replaceChildren();subscription?.unsubscribe();
+  return {dispose(){disposed=true;invalidate();clearButton.disabled=true;subscription?.unsubscribe();
     root.removeEventListener('ontology-reading',receive);root.removeEventListener('ontology-source-changed',invalidate);company.removeEventListener('ontology-company-identity',select);
     window.removeEventListener('mdx-auth',auth);window.removeEventListener('pagehide',invalidate);document.removeEventListener('visibilitychange',hidden);
     read.removeEventListener('click',evaluate);clearButton.removeEventListener('click',clear);}};
