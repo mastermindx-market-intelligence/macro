@@ -1,0 +1,21 @@
+{
+  "weights": {
+    "conjunction": 12.0,
+    "two_plus_scares": 12.0,
+    "complacency": 0.0,
+    "breadth_div": 12.0,
+    "drawdown_band": 6.0,
+    "systemic_stress": 6.0,
+    "turning_point": 6.0
+  },
+  "base": {
+    "caution": 56.0,
+    "elevated": 38.0,
+    "risk-off": 26.0
+  },
+  "severe_bump": 10.0,
+  "floor": 12.0,
+  "base_rate_dd5": 0.016,
+  "n_graded": 61,
+  "updated": "2026-11-08T06:31:32+00:00"
+}
