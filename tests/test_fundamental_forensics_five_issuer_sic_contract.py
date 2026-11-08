@@ -17,25 +17,75 @@ from pathlib import Path
 
 import pytest
 
+from engine.fundamental_forensics.coverage_proof import THRESHOLDS_SCHEMA
 from engine.fundamental_forensics.detectors import issuer_class_for_sic
-from engine.fundamental_forensics.issuer_sic import resolve_issuer_sic
+from engine.fundamental_forensics.issuer_sic import _NON_MEMBER_SCHEMAS, resolve_issuer_sic
 
 ROOT = Path(__file__).resolve().parents[1]
 COVERAGE_DIR = ROOT / "config" / "fundamental_forensics" / "coverage"
 CONTRACT_PATH = COVERAGE_DIR / "five_issuer_v1.json"
-# Every shipped contract feeds the resolver's index, so every one is held to
-# the same invariant, not only the five-issuer contract.
-SHIPPED_CONTRACTS = sorted(COVERAGE_DIR.glob("*.json"))
+CONTRACT_SCHEMA = "fundamental_forensics.coverage_contract/v1"
+SHIPPED_DOCUMENTS = sorted(COVERAGE_DIR.glob("*.json"))
+# Every shipped member contract feeds the resolver's index, so every one is
+# held to the same invariant, not only the five-issuer contract.
+SHIPPED_CONTRACTS = [
+    path
+    for path in SHIPPED_DOCUMENTS
+    if json.loads(path.read_text(encoding="utf-8")).get("schema") not in _NON_MEMBER_SCHEMAS
+]
 
 
 def test_the_five_issuer_contract_is_among_the_shipped_contracts() -> None:
     assert CONTRACT_PATH in SHIPPED_CONTRACTS
 
 
+def test_the_resolver_skips_only_the_frozen_thresholds_schema() -> None:
+    # The skip set is exactly the C2 thresholds document's schema, read from
+    # its owner; widening it would let a real contract fall out of the index.
+    assert _NON_MEMBER_SCHEMAS == frozenset({THRESHOLDS_SCHEMA})
+
+
+@pytest.mark.parametrize("document_path", SHIPPED_DOCUMENTS, ids=lambda path: path.name)
+def test_every_shipped_coverage_document_is_a_contract_or_a_declared_non_member(
+    document_path: Path,
+) -> None:
+    schema = json.loads(document_path.read_text(encoding="utf-8")).get("schema")
+    assert schema == CONTRACT_SCHEMA or schema in _NON_MEMBER_SCHEMAS, (document_path.name, schema)
+
+
+def test_a_thresholds_document_beside_a_contract_does_not_break_resolution(tmp_path: Path) -> None:
+    root = _write_contract(tmp_path, [{"cik": "0000000001", "sic": "3571"}])
+    coverage = root / "config" / "fundamental_forensics" / "coverage"
+    (coverage / "c2_thresholds_v1.json").write_text(
+        json.dumps({"schema": THRESHOLDS_SCHEMA, "thresholds_id": "synthetic"}), encoding="utf-8"
+    )
+    assert resolve_issuer_sic("0000000001", repo_root=root) == "3571"
+
+
+@pytest.mark.parametrize(
+    "document",
+    [
+        {"schema": "fundamental_forensics.coverage_thresholds/v2"},
+        {"schema": ["fundamental_forensics.coverage_thresholds/v1"]},
+        {"thresholds_id": "no-schema"},
+        {"schema": THRESHOLDS_SCHEMA + " "},
+    ],
+    ids=repr,
+)
+def test_an_undeclared_document_without_issuers_still_fails_closed(
+    tmp_path: Path, document: dict
+) -> None:
+    root = _write_contract(tmp_path, [{"cik": "0000000001", "sic": "3571"}])
+    coverage = root / "config" / "fundamental_forensics" / "coverage"
+    (coverage / "stray.json").write_text(json.dumps(document), encoding="utf-8")
+    with pytest.raises(ValueError, match="carries no issuers list: stray.json"):
+        resolve_issuer_sic("0000000001", repo_root=root)
+
+
 @pytest.mark.parametrize("contract_path", SHIPPED_CONTRACTS, ids=lambda path: path.name)
 def test_every_shipped_coverage_member_carries_a_resolvable_sic(contract_path: Path) -> None:
     contract = json.loads(contract_path.read_text(encoding="utf-8"))
-    assert contract["schema"] == "fundamental_forensics.coverage_contract/v1"
+    assert contract["schema"] == CONTRACT_SCHEMA
     issuers = contract["issuers"]
     assert issuers, "a shipped coverage contract must not be empty"
     for issuer in issuers:

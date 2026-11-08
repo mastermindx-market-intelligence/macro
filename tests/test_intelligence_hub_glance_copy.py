@@ -615,3 +615,192 @@ def test_w18a5_missing_roster_date_keeps_count() -> None:
     assert "(roster" not in footer
     assert "（名册" not in footer
     assert "None" not in footer
+
+
+# ── W20-L2: the Discovery-feed card on the track-record band ──
+
+
+def _w20l2_track_record() -> dict:
+    """Synthetic track_record carrying per-feed by_source stats, as hub.json does.
+
+    Key order is load-bearing: the other-horizons line joins in dict order,
+    and the 21d by_source order (radar first) pins the alphabetical sort.
+    """
+    return {
+        "n_snapshots": 120, "any_matured": True, "proven": {},
+        "horizons": {
+            "5": {"n_matured": 9000, "opportunity_ic": -0.01, "by_stage": {}, "by_source": {
+                "insider_cluster": {"n": 2757, "mean_fwd_rel": -0.0072, "hit_rate": 0.423},
+                "radar_quiet": {"n": 159, "mean_fwd_rel": 0.0109, "hit_rate": 0.528},
+                "federal_velocity": {"n": 140, "mean_fwd_rel": -0.016, "hit_rate": None}}},
+            "21": {"n_matured": 8000, "opportunity_ic": -0.02, "by_stage": {}, "by_source": {
+                "radar_quiet": {"n": 132, "mean_fwd_rel": 0.0221, "hit_rate": 0.477},
+                "insider_cluster": {"n": 2124, "mean_fwd_rel": -0.0398, "hit_rate": 0.302},
+                "federal_velocity": {"n": 108, "mean_fwd_rel": -0.0573, "hit_rate": None},
+                "stale_feed": {"n": 0, "mean_fwd_rel": 0.0, "hit_rate": None},
+                "gap_feed": {"n": 5, "mean_fwd_rel": None, "hit_rate": None},
+                "flat_feed": {"n": 3, "mean_fwd_rel": 0.0, "hit_rate": 0.0}}},
+            "63": {"n_matured": 2000, "opportunity_ic": -0.03, "by_stage": {}, "by_source": {
+                "insider_cluster": {"n": 557, "mean_fwd_rel": -0.0904, "hit_rate": 0.212},
+                "radar_quiet": {"n": 0, "mean_fwd_rel": 0.0, "hit_rate": None},
+                "federal_velocity": {"n": 45, "mean_fwd_rel": -0.1551, "hit_rate": 0.222}}},
+        },
+    }
+
+
+def _w20l2_card(html: str) -> str:
+    """Slice the rendered Discovery-leads feed card, or '' when it is absent."""
+    m = re.search(r'<div class="card trc trsrc">.*?\n  </div>', html, re.S)
+    return m.group(0) if m else ""
+
+
+def _w20l2_cell(card: str, label: str) -> str:
+    """The ONE trcell whose first trlab text equals label; asserts exactly one."""
+    hits = []
+    for piece in card.split('<div class="trcell"')[1:]:
+        m = re.search(r'<span class="trlab">(.*?)</span>', piece, re.S)
+        if m and m.group(1) == label:
+            hits.append(piece)
+    assert len(hits) == 1, f"expected exactly one cell for {label!r}, got {len(hits)}"
+    return hits[0]
+
+
+def test_w20l2_feed_card_prints_21d_values() -> None:
+    html = _render_glance_page(track_record=_w20l2_track_record())
+    card = _w20l2_card(html)
+    assert card, "Discovery-feed card missing"
+    assert "Discovery leads · 21d" in card
+    assert "发掘线索 · 21天" in card
+    ins = _w20l2_cell(card, "insider cluster")
+    assert "-4.0%" in ins
+    assert "n 2,124" in ins
+    assert "30% of leads beat SPY" in ins
+    assert "30% 的线索跑赢标普" in ins
+    assert "lagged SPY" in ins
+    assert "跑输标普" in ins
+    rad = _w20l2_cell(card, "radar quiet")
+    assert "+2.2%" in rad
+    assert "n 132" in rad
+    assert "48% of leads beat SPY" in rad
+    assert "跑赢标普" in rad
+    fed = _w20l2_cell(card, "federal velocity")
+    assert "-5.7%" in fed
+    assert "n 108" in fed
+    assert "of leads beat SPY" not in fed
+    assert "insider cluster" in card
+    assert "insider_cluster" not in card
+    assert "None" not in card
+
+
+def test_w20l2_feed_card_other_horizons_line() -> None:
+    html = _render_glance_page(track_record=_w20l2_track_record())
+    card = _w20l2_card(html)
+    ins = _w20l2_cell(card, "insider cluster")
+    assert "5d -0.7% · 63d -9.0%" in ins
+    assert "5天 -0.7% · 63天 -9.0%" in ins
+    fed = _w20l2_cell(card, "federal velocity")
+    assert "5d -1.6% · 63d -15.5%" in fed
+    rad = _w20l2_cell(card, "radar quiet")
+    assert "5d +1.1%" in rad
+    assert "63d" not in rad
+    assert "63天" not in rad
+    for label in ("insider cluster", "radar quiet", "federal velocity", "flat feed"):
+        cell = _w20l2_cell(card, label)
+        assert "21d " not in cell
+        assert "21天 " not in cell
+
+
+@pytest.mark.parametrize("case", ["empty", "no_key", "no_horizon"])
+def test_w20l2_feed_card_absent_without_21d_sources(case: str) -> None:
+    tr = _w20l2_track_record()
+    if case == "empty":
+        tr["horizons"]["21"]["by_source"] = {}
+    elif case == "no_key":
+        del tr["horizons"]["21"]["by_source"]
+    else:
+        del tr["horizons"]["21"]
+    html = _render_glance_page(track_record=tr)
+    assert _w20l2_card(html) == ""
+    assert "Discovery leads" not in html
+
+
+def test_w20l2_incomplete_feeds_are_skipped() -> None:
+    html = _render_glance_page(track_record=_w20l2_track_record())
+    card = _w20l2_card(html)
+    assert card
+    assert "stale feed" not in card
+    assert "gap feed" not in card
+
+
+def test_w20l2_flat_feed_reads_matched() -> None:
+    html = _render_glance_page(track_record=_w20l2_track_record())
+    cell = _w20l2_cell(_w20l2_card(html), "flat feed")
+    assert "+0.0%" in cell
+    assert "matched SPY" in cell
+    assert "持平标普" in cell
+    assert re.search(r'<span class="trans ?">\s*<span class="l-en">matched SPY', cell)
+    assert 'class="trval "' in cell
+    assert 'class="trval pos"' not in cell
+    assert 'class="trval neg"' not in cell
+    assert "0% of leads beat SPY" in cell
+
+
+def test_w20l2_cells_carry_direction_classes() -> None:
+    html = _render_glance_page(track_record=_w20l2_track_record())
+    card = _w20l2_card(html)
+    ins = _w20l2_cell(card, "insider cluster")
+    assert 'class="trval neg"' in ins
+    assert 'class="trans bad"' in ins
+    rad = _w20l2_cell(card, "radar quiet")
+    assert 'class="trval pos"' in rad
+    assert 'class="trans ok"' in rad
+
+
+def test_w20l2_feeds_sorted_by_name() -> None:
+    html = _render_glance_page(track_record=_w20l2_track_record())
+    card = _w20l2_card(html)
+    i_fed = card.index("federal velocity")
+    i_ins = card.index("insider cluster")
+    i_rad = card.index("radar quiet")
+    assert i_fed < i_ins < i_rad
+
+
+def test_w20l2_card_sits_between_grid_and_gap_note() -> None:
+    tr = _w20l2_track_record()
+    tr["accrual_gaps"] = _w18a1_track_record()["accrual_gaps"]
+    html = _render_glance_page(track_record=tr)
+    assert "Discovery leads" not in _w18a1_trh_block(html)
+    assert html.index('class="card trc trsrc"') > html.index('<div class="trh">')
+    assert html.index('class="card trc trsrc"') < html.index("snapshot dates")
+
+
+def test_w20l2_feed_name_escaped_in_production_env(monkeypatch) -> None:
+    import jinja2
+
+    assert jinja2.select_autoescape(["html", "xml"])("intelligence_hub.html.j2") is False
+
+    def _w20l2_env(**kw):
+        kw["autoescape"] = jinja2.select_autoescape(["html", "xml"])
+        return jinja2.Environment(**kw)
+
+    monkeypatch.setitem(globals(), "Environment", _w20l2_env)
+    tr = _w20l2_track_record()
+    tr["horizons"]["21"]["by_source"] = {
+        "<b>x</b>": {"n": 3, "mean_fwd_rel": 0.01, "hit_rate": 0.5},
+    }
+    card = _w20l2_card(_render_glance_page(track_record=tr))
+    assert card
+    assert "&lt;b&gt;x&lt;/b&gt;" in card
+    assert "<b>x</b>" not in card
+
+
+def test_w20l2_seat_edge_cells() -> None:
+    """A 0.0 hit rate prints; a horizon with n but no mean is skipped; no empty line."""
+    tr = _w20l2_track_record()
+    tr["horizons"]["5"]["by_source"]["flat_feed"] = {
+        "n": 4, "mean_fwd_rel": None, "hit_rate": None}
+    card = _w20l2_card(_render_glance_page(track_record=tr))
+    flat = _w20l2_cell(card, "flat feed")
+    assert "0% of leads beat SPY" in flat
+    assert "5d" not in flat
+    assert flat.count('class="trlab"') == 2

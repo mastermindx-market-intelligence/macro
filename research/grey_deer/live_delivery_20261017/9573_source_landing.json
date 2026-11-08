@@ -1,0 +1,374 @@
+{
+  "admin_merge": false,
+  "all_owned_artifacts_exact": true,
+  "binding_ci": "all12packs,ci-gate,contract-delta,active_main_authority_and_fences_concluded_success",
+  "binding_ci_run": 39089624859,
+  "fetched_main": "1ed4b870a426ff3cafb439152072c5bf47858551",
+  "merge_owner": "normal_merge_on_green",
+  "merge_sha": "1ed4b870a426ff3cafb439152072c5bf47858551",
+  "merged_at": "2026-10-18T02:37:11Z",
+  "native_auto_merge": false,
+  "observed_at": "2026-10-18T02:47:45.553826+00:00",
+  "owned_paths": [
+    {
+      "bytes": 34845,
+      "candidate_blob": "69f20a8d2f411fc0ea899b26f2534e5431a6570a",
+      "fetched_main_blob": "69f20a8d2f411fc0ea899b26f2534e5431a6570a",
+      "merge_blob": "69f20a8d2f411fc0ea899b26f2534e5431a6570a",
+      "path": "agentos/handoffs/GREY-DEER-RISK-INTELLIGENCE-2026-10-17-SOL-META-CEO-CENSUS.md",
+      "sha256": "df6369d2df1e545776827d74fdaaf41bf3f0eb0b550baef9025e3813e7280385"
+    },
+    {
+      "bytes": 31280,
+      "candidate_blob": "2f4bc302ceab7d1e79638186822277763862b254",
+      "fetched_main_blob": "2f4bc302ceab7d1e79638186822277763862b254",
+      "merge_blob": "2f4bc302ceab7d1e79638186822277763862b254",
+      "path": "agentos/workstreams/WS-GREY-DEER-RISK-INTELLIGENCE.md",
+      "sha256": "313fa2f409f868f3af175c60d5e0ea590d01390782117ab14aa7b118e76b7536"
+    },
+    {
+      "bytes": 39388,
+      "candidate_blob": "2b878943967eef7a15b6e191d3a7a59d1cf5ddf8",
+      "fetched_main_blob": "2b878943967eef7a15b6e191d3a7a59d1cf5ddf8",
+      "merge_blob": "2b878943967eef7a15b6e191d3a7a59d1cf5ddf8",
+      "path": "research/grey_deer/GREY_DEER_CONTINUATION_HANDOFF_2026-10-11.md",
+      "sha256": "75b81acf33e8a57d5351279100ffcd73321ddd8d7bfdc73ce42114f349b69406"
+    },
+    {
+      "bytes": 46602,
+      "candidate_blob": "a0903bee68b575f4cbc4011d2de91c7ebe726d25",
+      "fetched_main_blob": "a0903bee68b575f4cbc4011d2de91c7ebe726d25",
+      "merge_blob": "a0903bee68b575f4cbc4011d2de91c7ebe726d25",
+      "path": "research/grey_deer/RISK_RADAR_META_CEO_ACCEPTANCE_2026-10-17.md",
+      "sha256": "09452b90ca93407a3409b6010c56e2864311d133fe5aea2c88938c193b0b878e"
+    },
+    {
+      "bytes": 2091,
+      "candidate_blob": "b65babce00bb50c0044300575b94c23a4e0b243c",
+      "fetched_main_blob": "b65babce00bb50c0044300575b94c23a4e0b243c",
+      "merge_blob": "b65babce00bb50c0044300575b94c23a4e0b243c",
+      "path": "research/grey_deer/all_date_census/T13_SPY_INPUT_IDENTITY_2026-10-17.json",
+      "sha256": "25d60c218767c661bcd6c0c4eb26540d5ef11b8fce1e8f39220c2abaae67bb4a"
+    },
+    {
+      "bytes": 6009,
+      "candidate_blob": "53ffe575d21c86ae2e70258af902d1027727f482",
+      "fetched_main_blob": "53ffe575d21c86ae2e70258af902d1027727f482",
+      "merge_blob": "53ffe575d21c86ae2e70258af902d1027727f482",
+      "path": "research/grey_deer/all_date_census/t12_frozen_sample_20261017/POST_EXECUTION_REVIEW_2026-10-18.md",
+      "sha256": "58b51fd4939aa34b81ad31b7e84dcf7a8a59d14a7dbec328cf392ccf10835650"
+    },
+    {
+      "bytes": 7194,
+      "candidate_blob": "245c5866d2ddef41954f2907c1a33b7befef2067",
+      "fetched_main_blob": "245c5866d2ddef41954f2907c1a33b7befef2067",
+      "merge_blob": "245c5866d2ddef41954f2907c1a33b7befef2067",
+      "path": "research/grey_deer/all_date_census/t12_frozen_sample_20261017/README.md",
+      "sha256": "0eb93761d70b3a7a92d4ff160c0471955180ec15443b71002383c25f1cfa1279"
+    },
+    {
+      "bytes": 5919,
+      "candidate_blob": "e81eec70adfb9662eb064bd7457bdeacc01d4afd",
+      "fetched_main_blob": "e81eec70adfb9662eb064bd7457bdeacc01d4afd",
+      "merge_blob": "e81eec70adfb9662eb064bd7457bdeacc01d4afd",
+      "path": "research/grey_deer/all_date_census/t12_frozen_sample_20261017/STAGE1_DEPENDENCY_REVIEW_2026-10-17.md",
+      "sha256": "bb719fcebd397821edfeaed5b13961522936611a093d65e8c3dbd6436419b2e3"
+    },
+    {
+      "bytes": 7203,
+      "candidate_blob": "12fcf654e26c2e6649eee57b4fe7faf43ff9a691",
+      "fetched_main_blob": "12fcf654e26c2e6649eee57b4fe7faf43ff9a691",
+      "merge_blob": "12fcf654e26c2e6649eee57b4fe7faf43ff9a691",
+      "path": "research/grey_deer/all_date_census/t12_frozen_sample_20261017/T12_FROZEN_SAMPLE_REVIEW_2026-10-17.md",
+      "sha256": "869ddaaa9936cb7a1cde0eca2d169dccccf66fd69cf1e7a5afa78c86e6f486e4"
+    },
+    {
+      "bytes": 14350,
+      "candidate_blob": "123f51143f3a31ed108c4cbe1f02c980813d52c6",
+      "fetched_main_blob": "123f51143f3a31ed108c4cbe1f02c980813d52c6",
+      "merge_blob": "123f51143f3a31ed108c4cbe1f02c980813d52c6",
+      "path": "research/grey_deer/all_date_census/t12_frozen_sample_20261017/T13_FRED_ALFRED_source_purpose_2026-10-17.md",
+      "sha256": "fb1e7cb0eab24b0dde6e1072aed7bf2f59a3d6415a7c9ee2762201c6111f7e6f"
+    },
+    {
+      "bytes": 1248719,
+      "candidate_blob": "b8e510d35b65550687fc03c147fd0c8a90e2cfaa",
+      "fetched_main_blob": "b8e510d35b65550687fc03c147fd0c8a90e2cfaa",
+      "merge_blob": "b8e510d35b65550687fc03c147fd0c8a90e2cfaa",
+      "path": "research/grey_deer/all_date_census/t12_frozen_sample_20261017/T13_SAMPLE_METADATA_ADMISSION_2026-10-18.json",
+      "sha256": "91a45bc0f4ecb650db01bdeb5e9ec6834a09249ed4057d5a5d54a4d5cd6841e5"
+    },
+    {
+      "bytes": 4847,
+      "candidate_blob": "8b638bfd2837a11ec9cc84a33f91d2e2df87cc3e",
+      "fetched_main_blob": "8b638bfd2837a11ec9cc84a33f91d2e2df87cc3e",
+      "merge_blob": "8b638bfd2837a11ec9cc84a33f91d2e2df87cc3e",
+      "path": "research/grey_deer/all_date_census/t12_frozen_sample_20261017/T13_SAMPLE_METADATA_ADMISSION_RECEIPT_2026-10-18.json",
+      "sha256": "e6b5e1fd470acd4c260aa03cd089edeb5ae4751174def9663acb10d37b4c9a2b"
+    },
+    {
+      "bytes": 5724,
+      "candidate_blob": "3ae60c46e5839c1c4cd5893aaeb2c5e111869016",
+      "fetched_main_blob": "3ae60c46e5839c1c4cd5893aaeb2c5e111869016",
+      "merge_blob": "3ae60c46e5839c1c4cd5893aaeb2c5e111869016",
+      "path": "research/grey_deer/all_date_census/t12_frozen_sample_20261017/T13_SAMPLE_METADATA_RESULT_2026-10-18.md",
+      "sha256": "9e774bb6a8e5f94235673e379aac7371f97b55c8455c7e71b81cb3c4ec8f2d08"
+    },
+    {
+      "bytes": 16301,
+      "candidate_blob": "b904f37dceba88570212a442d5f2d23f9492f48a",
+      "fetched_main_blob": "b904f37dceba88570212a442d5f2d23f9492f48a",
+      "merge_blob": "b904f37dceba88570212a442d5f2d23f9492f48a",
+      "path": "research/grey_deer/all_date_census/t12_frozen_sample_20261017/T13_SAMPLE_USE_CONTRACT_2026-10-18.md",
+      "sha256": "4c7a9d2225e9c27d6abd6a5f124b1f7fe6a70844c1adc4e8485b2c1f8c1ec8ce"
+    },
+    {
+      "bytes": 6048,
+      "candidate_blob": "2a7c53ce917850df218e17828e6a7cf14a676f0e",
+      "fetched_main_blob": "2a7c53ce917850df218e17828e6a7cf14a676f0e",
+      "merge_blob": "2a7c53ce917850df218e17828e6a7cf14a676f0e",
+      "path": "research/grey_deer/all_date_census/t12_frozen_sample_20261017/T13_SAMPLE_USE_CONTRACT_REVIEW_2026-10-18.md",
+      "sha256": "d846f7e71b4ee013e937372a0005277c2019f631ce455dbffaf7f0c3b790a718"
+    },
+    {
+      "bytes": 8103,
+      "candidate_blob": "df4cf15a75cd3522b1cb13238a1a73e07327fc34",
+      "fetched_main_blob": "df4cf15a75cd3522b1cb13238a1a73e07327fc34",
+      "merge_blob": "df4cf15a75cd3522b1cb13238a1a73e07327fc34",
+      "path": "research/grey_deer/all_date_census/t12_frozen_sample_20261017/freeze_original_t12_sample.py",
+      "sha256": "2ff9925896add104f069c5cb200031d75d8c0fb56dee38a215d731174cfaff90"
+    },
+    {
+      "bytes": 10563,
+      "candidate_blob": "bb0283c0edd6016e6c61f6591a1264e0b2779077",
+      "fetched_main_blob": "bb0283c0edd6016e6c61f6591a1264e0b2779077",
+      "merge_blob": "bb0283c0edd6016e6c61f6591a1264e0b2779077",
+      "path": "research/grey_deer/all_date_census/t12_frozen_sample_20261017/receipt.json",
+      "sha256": "ad8a1f5fe92fb12690a25794f917619a2e113baaf9a07fc3f446207020340d4f"
+    },
+    {
+      "bytes": 6359,
+      "candidate_blob": "3a1332e16e9885486a7481b6359a14744fa5f470",
+      "fetched_main_blob": "3a1332e16e9885486a7481b6359a14744fa5f470",
+      "merge_blob": "3a1332e16e9885486a7481b6359a14744fa5f470",
+      "path": "research/grey_deer/all_date_census/t12_frozen_sample_20261017/sample.json",
+      "sha256": "944e0054b724aef775a5073ee8a1537779b464454a304acf4a4b396cd818a583"
+    },
+    {
+      "bytes": 5861,
+      "candidate_blob": "2d2d9131d6bdc52837ad724b08dd665f9f577010",
+      "fetched_main_blob": "2d2d9131d6bdc52837ad724b08dd665f9f577010",
+      "merge_blob": "2d2d9131d6bdc52837ad724b08dd665f9f577010",
+      "path": "research/grey_deer/all_date_census/t12_frozen_sample_20261017/spy_input_identity.py",
+      "sha256": "4432e1033297eb58f65f37e5199ba0e87e114f8572e56db8e6fff496e54ec862"
+    },
+    {
+      "bytes": 18757,
+      "candidate_blob": "3579d2ed8ac25d03fb5928f460463968976bbacf",
+      "fetched_main_blob": "3579d2ed8ac25d03fb5928f460463968976bbacf",
+      "merge_blob": "3579d2ed8ac25d03fb5928f460463968976bbacf",
+      "path": "research/grey_deer/all_date_census/t12_frozen_sample_20261017/t13_sample_metadata_admission.py",
+      "sha256": "0d1b6e55aafb58932c5b581ac406c96e242f199f7838c3e8abc723039b6498ff"
+    },
+    {
+      "bytes": 14845,
+      "candidate_blob": "24c334862cd1560a8d53f58ee4c3e5fdc1f5719d",
+      "fetched_main_blob": "24c334862cd1560a8d53f58ee4c3e5fdc1f5719d",
+      "merge_blob": "24c334862cd1560a8d53f58ee4c3e5fdc1f5719d",
+      "path": "research/grey_deer/consumer_comparison_20261017/FORWARD_ACTIVATION_REVIEW_2026-10-18.md",
+      "sha256": "27a6adb95000dd18a01b1a267c38c9700f05a6e49a8ef67f6130d55a32afb53b"
+    },
+    {
+      "bytes": 24127,
+      "candidate_blob": "e16bb7279238b61c00f9b0c14564d23c9ffd12bf",
+      "fetched_main_blob": "e16bb7279238b61c00f9b0c14564d23c9ffd12bf",
+      "merge_blob": "e16bb7279238b61c00f9b0c14564d23c9ffd12bf",
+      "path": "research/grey_deer/consumer_comparison_20261017/MASTERmind_1567_RELEASE_SCOPE_REVIEW_2026-10-17.md",
+      "sha256": "207cd225781dac87f4595ea2bddf24bfd6380fc061b4451571f1707fd4d58f40"
+    },
+    {
+      "bytes": 75128,
+      "candidate_blob": "ef9944ebed235803ea32e7532c0a03884675cc69",
+      "fetched_main_blob": "ef9944ebed235803ea32e7532c0a03884675cc69",
+      "merge_blob": "ef9944ebed235803ea32e7532c0a03884675cc69",
+      "path": "research/grey_deer/consumer_comparison_20261017/source/portfolio/forward_evaluation.py",
+      "sha256": "19e053bbab9372bfd7c8dd075bfc9a6d3c7ce3450641982086400184a6e07a22"
+    },
+    {
+      "bytes": 14934,
+      "candidate_blob": "27f66c96a48ac081f43d46c1d52fbebc2d912ba2",
+      "fetched_main_blob": "27f66c96a48ac081f43d46c1d52fbebc2d912ba2",
+      "merge_blob": "27f66c96a48ac081f43d46c1d52fbebc2d912ba2",
+      "path": "research/grey_deer/consumer_comparison_20261017/source/scripts/deploy_code_to_vps.sh",
+      "sha256": "c158fc903121b8c4ad680049ded16000913393039944c6eec3a23d44ca376204"
+    },
+    {
+      "bytes": 1493,
+      "candidate_blob": "f40e7895e88b0cd755fb7ef9b41a4783a1df4ed9",
+      "fetched_main_blob": "f40e7895e88b0cd755fb7ef9b41a4783a1df4ed9",
+      "merge_blob": "f40e7895e88b0cd755fb7ef9b41a4783a1df4ed9",
+      "path": "research/grey_deer/consumer_comparison_20261017/source/scripts/deploy_from_git.sh",
+      "sha256": "b983a9e88f6eddeac00929797d1e05c80e09e3c206bcabf4e26342fdb7dbb42f"
+    },
+    {
+      "bytes": 19715,
+      "candidate_blob": "95a27eafaf5564051fb55f9581c78eb01a833b68",
+      "fetched_main_blob": "95a27eafaf5564051fb55f9581c78eb01a833b68",
+      "merge_blob": "95a27eafaf5564051fb55f9581c78eb01a833b68",
+      "path": "research/grey_deer/live_delivery_20261017/9515_source_landing.json",
+      "sha256": "14efdfd7a2297b0b84362886a00822a9377818df80c0f95daf3f9266f200bc7c"
+    },
+    {
+      "bytes": 12801,
+      "candidate_blob": "7e341858037c6045ce6406a3f54c96a1ecee0c02",
+      "fetched_main_blob": "7e341858037c6045ce6406a3f54c96a1ecee0c02",
+      "merge_blob": "7e341858037c6045ce6406a3f54c96a1ecee0c02",
+      "path": "research/grey_deer/live_delivery_20261017/CONTINUATION_EVIDENCE_CONSISTENCY_2026-10-17.md",
+      "sha256": "42490ab0d9e42b58f1ba5f24a738c9f7ef9c6a2dbd561d736cc3b43465016328"
+    },
+    {
+      "bytes": 9826,
+      "candidate_blob": "8be3f85bf3dd0c565c0087a02ff87d01e5c5ea0a",
+      "fetched_main_blob": "8be3f85bf3dd0c565c0087a02ff87d01e5c5ea0a",
+      "merge_blob": "8be3f85bf3dd0c565c0087a02ff87d01e5c5ea0a",
+      "path": "research/grey_deer/live_delivery_20261017/continuation_validation_20261018.json",
+      "sha256": "efa48c2845e7ea50a7e004218e3377688a3c8f2f93b819e23f5732fdda016c0b"
+    },
+    {
+      "bytes": 982,
+      "candidate_blob": "1dcb9da8aefd319ac06a9e141f06a522374ac63b",
+      "fetched_main_blob": "1dcb9da8aefd319ac06a9e141f06a522374ac63b",
+      "merge_blob": "1dcb9da8aefd319ac06a9e141f06a522374ac63b",
+      "path": "research/grey_deer/live_delivery_20261017/continuation_workspace_acquire.json",
+      "sha256": "c09f102c34414efc355dd106b10ca4f0baf530ecf04a6a6e57b5b48ea92c3a33"
+    },
+    {
+      "bytes": 9630,
+      "candidate_blob": "76b20050b41e5aefc48bb5567f3b4f8cdf852be5",
+      "fetched_main_blob": "76b20050b41e5aefc48bb5567f3b4f8cdf852be5",
+      "merge_blob": "76b20050b41e5aefc48bb5567f3b4f8cdf852be5",
+      "path": "research/grey_deer/live_delivery_20261017/copilot_failure_trace/FINDINGS_2026-10-17.md",
+      "sha256": "f3204c50d7944a5194a759fb5255da7e04d2e8b23748d92043857af18edb0837"
+    },
+    {
+      "bytes": 5473,
+      "candidate_blob": "1554f817eaece8c3c8a85135aeae515fc64c2511",
+      "fetched_main_blob": "1554f817eaece8c3c8a85135aeae515fc64c2511",
+      "merge_blob": "1554f817eaece8c3c8a85135aeae515fc64c2511",
+      "path": "research/grey_deer/live_delivery_20261017/copilot_failure_trace/README.md",
+      "sha256": "5cafaf5e76eb9fb540a07d88efd95da7c7272dfefb8775dd368249e519464448"
+    },
+    {
+      "bytes": 10691,
+      "candidate_blob": "e54d0e58126c588a7512cf1139344c6052b382f9",
+      "fetched_main_blob": "e54d0e58126c588a7512cf1139344c6052b382f9",
+      "merge_blob": "e54d0e58126c588a7512cf1139344c6052b382f9",
+      "path": "research/grey_deer/live_delivery_20261017/copilot_failure_trace/finalization_counterexample.json",
+      "sha256": "61c23927d97dbf0eae5cfe006780db01f9dd2111893d9fcff5eeb8ec7ee58151"
+    },
+    {
+      "bytes": 9909,
+      "candidate_blob": "5e8199339f91142577b8961790655024162eeaaa",
+      "fetched_main_blob": "5e8199339f91142577b8961790655024162eeaaa",
+      "merge_blob": "5e8199339f91142577b8961790655024162eeaaa",
+      "path": "research/grey_deer/live_delivery_20261017/copilot_failure_trace/reproduce_finalization.py",
+      "sha256": "7dfdffd724f075406172eb6367c992daf8a191cc5a66c9fbce6638fdeacd70e7"
+    },
+    {
+      "bytes": 2736,
+      "candidate_blob": "09ecc5e0b6549d253f3ed3e2a74ec4502dbc9bb5",
+      "fetched_main_blob": "09ecc5e0b6549d253f3ed3e2a74ec4502dbc9bb5",
+      "merge_blob": "09ecc5e0b6549d253f3ed3e2a74ec4502dbc9bb5",
+      "path": "research/grey_deer/live_delivery_20261017/delivered_workspace/README.md",
+      "sha256": "003730cf6ee6a9580c4fc54789bb78140f78e42ffddb63b7dcbfc4de6e9b0423"
+    },
+    {
+      "bytes": 12388,
+      "candidate_blob": "c19f733c2d4b5bb23247a2570755c83c112f4579",
+      "fetched_main_blob": "c19f733c2d4b5bb23247a2570755c83c112f4579",
+      "merge_blob": "c19f733c2d4b5bb23247a2570755c83c112f4579",
+      "path": "research/grey_deer/live_delivery_20261017/delivered_workspace/REVIEW_2026-10-17.md",
+      "sha256": "bc856876d119d51ff22451cae92be5a08af71385cd674e355b84caa3919d9e38"
+    },
+    {
+      "bytes": 2609,
+      "candidate_blob": "f2654940135be618d53d63e560e608e622c218c3",
+      "fetched_main_blob": "f2654940135be618d53d63e560e608e622c218c3",
+      "merge_blob": "f2654940135be618d53d63e560e608e622c218c3",
+      "path": "research/grey_deer/live_delivery_20261017/delivered_workspace/capture_manifest.json",
+      "sha256": "a67e4e9a5b3cafa52b3554dbded0483bb1a8175800c7867e0ce03d5d5610738d"
+    },
+    {
+      "bytes": 568,
+      "candidate_blob": "b4b93473acfbe980a779463f9ea9c05843b9e22b",
+      "fetched_main_blob": "b4b93473acfbe980a779463f9ea9c05843b9e22b",
+      "merge_blob": "b4b93473acfbe980a779463f9ea9c05843b9e22b",
+      "path": "research/grey_deer/live_delivery_20261017/delivered_workspace/odds-expanded.txt",
+      "sha256": "7bad8bdb57893ed0956235a51a7eb688ddebd46465d8e3c6ac9755a743ec2b40"
+    },
+    {
+      "bytes": 94819,
+      "candidate_blob": "b6b32dc69c034e0f8cd620e8128f7d946a0e08af",
+      "fetched_main_blob": "b6b32dc69c034e0f8cd620e8128f7d946a0e08af",
+      "merge_blob": "b6b32dc69c034e0f8cd620e8128f7d946a0e08af",
+      "path": "research/grey_deer/live_delivery_20261017/delivered_workspace/odds.jpg",
+      "sha256": "bf42e89aa27ae712b9fb2e71ba5d0902d078b7a6b8fa04e5aee04c8aa7492f08"
+    },
+    {
+      "bytes": 1300,
+      "candidate_blob": "ee24f54e23a85e8b7f47ef734139ae2d25a2d36d",
+      "fetched_main_blob": "ee24f54e23a85e8b7f47ef734139ae2d25a2d36d",
+      "merge_blob": "ee24f54e23a85e8b7f47ef734139ae2d25a2d36d",
+      "path": "research/grey_deer/live_delivery_20261017/delivered_workspace/odds.txt",
+      "sha256": "cfe15816534fcb5cbf44ee6aec3b331e43c1c1062bc85d7136cbd8437468d64c"
+    },
+    {
+      "bytes": 82480,
+      "candidate_blob": "c9d079c76daa3cd9c9db51a39118c6ea11b084f9",
+      "fetched_main_blob": "c9d079c76daa3cd9c9db51a39118c6ea11b084f9",
+      "merge_blob": "c9d079c76daa3cd9c9db51a39118c6ea11b084f9",
+      "path": "research/grey_deer/live_delivery_20261017/delivered_workspace/overview.jpg",
+      "sha256": "8c49e4a19fe21a6723cd96100c207aaa9e8a573b187a4c11b34606f14df751f9"
+    },
+    {
+      "bytes": 913,
+      "candidate_blob": "6037932670c9e9133efae92f74666941a57b9089",
+      "fetched_main_blob": "6037932670c9e9133efae92f74666941a57b9089",
+      "merge_blob": "6037932670c9e9133efae92f74666941a57b9089",
+      "path": "research/grey_deer/live_delivery_20261017/delivered_workspace/overview.txt",
+      "sha256": "3967eff964947ed07dd2b2a36bc65d93ad8548efb2804e2549fe0e69a0f4a18a"
+    },
+    {
+      "bytes": 93348,
+      "candidate_blob": "b17834a9b3b74a417801bf1009fb43db1595dc5f",
+      "fetched_main_blob": "b17834a9b3b74a417801bf1009fb43db1595dc5f",
+      "merge_blob": "b17834a9b3b74a417801bf1009fb43db1595dc5f",
+      "path": "research/grey_deer/live_delivery_20261017/delivered_workspace/sources.jpg",
+      "sha256": "aff97362f1cc178177d4178c361d3a4382842f81860e0c72dcdd67970cf013a5"
+    },
+    {
+      "bytes": 2424,
+      "candidate_blob": "a0c138880d71ae38f49198589224b40363819b53",
+      "fetched_main_blob": "a0c138880d71ae38f49198589224b40363819b53",
+      "merge_blob": "a0c138880d71ae38f49198589224b40363819b53",
+      "path": "research/grey_deer/live_delivery_20261017/delivered_workspace/sources.txt",
+      "sha256": "69198ebfe6a97256670b406a507889b7962aec726ce4994d993779faeaa15567"
+    },
+    {
+      "bytes": 42165,
+      "candidate_blob": "8ec0e4ce632f33078265011f4863b93317a5e83a",
+      "fetched_main_blob": "8ec0e4ce632f33078265011f4863b93317a5e83a",
+      "merge_blob": "8ec0e4ce632f33078265011f4863b93317a5e83a",
+      "path": "research/grey_deer/risk_radar_source_consumer_audit_20261017.md",
+      "sha256": "2c5f9909257c59dd5eba06b1497621c739872b9113c90cde8455a37bff9aed4a"
+    }
+  ],
+  "pr": 9573,
+  "programme_complete": false,
+  "remote_branch_absent": true,
+  "repository": "mastermindx-market-intelligence/macro",
+  "reviewed_head": "84faf4b957b656393b560f8ab2b6cb1539d1c019",
+  "runtime_deployed_by_this_pr": false,
+  "schema": "risk_radar.continuation_source_landing.v1",
+  "source_landing_accepted": true
+}

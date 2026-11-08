@@ -2,6 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://mastermind-x.com/contracts/theme_graph/activity_membership_proposal.v1.schema.json",
   "title": "Native activity membership proposal v1",
+  "$comment": "2026-10-21 additive amendment: second admitted activity species principal_business_activity (role operator, lifecycle current, segment-only scope, activity: fact ids); C01 shape unchanged via species-conditional allOf. Base source_evidence.fact_id uses the single regex alternation ^(integration|activity):[0-9a-f]{64}$; each species-conditional allOf branch pins its own prefix.",
   "description": "One owner-read company activity bound to one micro-theme definition. A row is PROPOSED until a named curator decision is supplied as input; no code path ratifies, materializes or publishes it. Graph-membership use is not granted by any current source-purpose ruling, so v1 cannot represent a granted use. Magnitudes and clocks carry explicit states: a value is non-null only for KNOWN (and KNOWN_ZERO, which requires zero).",
   "type": "object",
   "additionalProperties": false,
@@ -560,16 +561,14 @@
         },
         "species": {
           "enum": [
-            "planned_product_integration"
+            "planned_product_integration",
+            "principal_business_activity"
           ]
         },
         "scope": {
           "type": "object",
           "additionalProperties": false,
           "required": [
-            "product",
-            "platform",
-            "counterparty_issuer_id",
             "segment"
           ],
           "properties": {
@@ -592,11 +591,15 @@
         "role": {
           "enum": [
             "component_supplier",
-            "platform_owner"
+            "platform_owner",
+            "operator"
           ]
         },
         "lifecycle": {
-          "const": "planned"
+          "enum": [
+            "planned",
+            "current"
+          ]
         },
         "endpoints": {
           "type": "object",
@@ -673,7 +676,7 @@
             },
             "fact_id": {
               "type": "string",
-              "pattern": "^integration:[0-9a-f]{64}$"
+              "pattern": "^(integration|activity):[0-9a-f]{64}$"
             },
             "fact_revision": {
               "type": "integer",
@@ -857,7 +860,85 @@
             }
           }
         }
-      }
+      },
+            "allOf": [
+        {
+          "if": {
+            "properties": {
+              "species": {
+                "const": "planned_product_integration"
+              }
+            },
+            "required": [
+              "species"
+            ]
+          },
+          "then": {
+            "properties": {
+              "role": {
+                "enum": [
+                  "component_supplier",
+                  "platform_owner"
+                ]
+              },
+              "lifecycle": {
+                "const": "planned"
+              },
+              "scope": {
+                "required": [
+                  "product",
+                  "platform",
+                  "counterparty_issuer_id",
+                  "segment"
+                ]
+              },
+              "source_evidence": {
+                "properties": {
+                  "fact_id": {
+                    "pattern": "^integration:[0-9a-f]{64}$"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "species": {
+                "const": "principal_business_activity"
+              }
+            },
+            "required": [
+              "species"
+            ]
+          },
+          "then": {
+            "properties": {
+              "role": {
+                "const": "operator"
+              },
+              "lifecycle": {
+                "const": "current"
+              },
+              "scope": {
+                "properties": {
+                  "product": false,
+                  "platform": false,
+                  "counterparty_issuer_id": false
+                }
+              },
+              "source_evidence": {
+                "properties": {
+                  "fact_id": {
+                    "pattern": "^activity:[0-9a-f]{64}$"
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
     }
   }
 }

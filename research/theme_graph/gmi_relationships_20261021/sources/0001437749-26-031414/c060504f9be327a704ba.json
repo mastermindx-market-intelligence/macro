@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-09-29T01:39:19Z",
+ "accession": "0001437749-26-031414",
+ "cik": "0001334933",
+ "doc_byte_length": 5612639,
+ "doc_sha256": "ee6141c9e996561acc71f6e400ab462b98008008a489c0903bdd8d5f4ff28bed",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-09-29",
+ "form": "10-K",
+ "period_of_report": "2026-07-31",
+ "primary_document": "uec20260731_10k.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 272709,
+  "byte_start": 272276,
+  "normalized": "We progressed our strategy towards building a vertically integrated U.S. uranium fuel supply chain from mining to conversion, through UR&C. Working with our engineering partner, Fluor Enterprises, Inc. (“Fluor”), UR&C completed core execution plans, built a combined dedicated 63-member project team, began preparing its U.S. Nuclear Regulatory Commission license application and progressed site selection.",
+  "normalized_sha256": "152848cfa8b67662b54bd6dd6466245040abbe546b000787c4656f85e1ec3f9c",
+  "raw": "We progressed our strategy towards building a vertically integrated U.S. uranium fuel supply chain from mining to conversion, through UR&amp;C. Working with our engineering partner, Fluor Enterprises, Inc. (&#8220;<b>Fluor</b>&#8221;), UR&amp;C completed core execution plans, built a combined dedicated 63-member project team, began preparing its U.S. Nuclear Regulatory Commission license application and progressed site selection.",
+  "raw_sha256": "c060504f9be327a704bafbc0197a77c8f8e1c315d7a25c31c757ec77b3934a70"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1334933/000143774926031414/uec20260731_10k.htm",
+ "xbrl_contexts": []
+}

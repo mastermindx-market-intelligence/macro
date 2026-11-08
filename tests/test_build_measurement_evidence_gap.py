@@ -526,8 +526,8 @@ def test_thesis_monitor_llm_only_row_shows_its_inputs(monkeypatch, tmp_path):
 
 def test_thesis_monitor_llm_row_does_not_claim_heat_decay(monkeypatch, tmp_path):
     """The producer breaks an LLM thesis on lost physical confirmation, too few
-    surfaces OR a heat drop, and does not record which.  Steady heat with
-    physical confirmation lost must not be labelled as heat decay."""
+    surfaces OR a heat drop; a row that carries no broken_reasons record does not
+    say which.  Steady heat with physical confirmation lost must not be labelled as heat decay."""
     fixture_path = tmp_path / "foresight" / "thesis_monitor.json"
     _write_json(fixture_path, {
         "asof": "2026-01-01", "n_broken": 1, "n_weakening": 0,
@@ -874,3 +874,143 @@ def test_still_tracked_header_hidden_when_intact_rows_empty():
     assert "eg-thesis-broken" in html
     assert "Still tracked" not in html
     assert "仍在跟踪" not in html
+
+
+# ---------------------------------------------------------------------------
+# 16. W20-L1 — the producer records WHICH AI kill condition fired
+#     (broken_reasons / llm_broken_reasons); the reader relays it.
+# ---------------------------------------------------------------------------
+
+def test_w20l1_llm_row_names_recorded_reason(monkeypatch, tmp_path):
+    """An LLM row carrying broken_reasons names that condition, not its inputs."""
+    result = _thesis_fixture(monkeypatch, tmp_path, [{
+        "theme": "fixture_med", "source": "llm", "status": "BROKEN",
+        "heat_at_open": 0.196, "heat_now": 0.137, "n_surfaces_now": 1,
+        "physical_now": False, "opened_asof": "2026-09-30",
+        "kill_criteria": ["t"], "broken_reasons": ["below_quorum"],
+    }])
+    (row,) = result["rows"]
+    assert row["fired"] == [{"kind": "below_quorum", "detail": "1 surface(s) now"}]
+    html = _render_measurement(thesis_monitor_broken=result)
+    panel = html.split('id="eg-thesis-broken"', 1)[1].split("eg-footnote", 1)[0]
+    assert "below_quorum — 1 surface(s) now" in panel
+    assert "llm_inputs" not in panel
+    assert "heat 0.196" not in panel
+
+
+def test_w20l1_llm_row_all_reasons_keep_producer_order(monkeypatch, tmp_path):
+    """Every recorded reason becomes its own fired entry, in list order."""
+    result = _thesis_fixture(monkeypatch, tmp_path, [{
+        "theme": "fixture_all", "source": "llm", "status": "BROKEN",
+        "heat_at_open": 0.5, "heat_now": 0.2, "n_surfaces_now": 1,
+        "physical_now": False, "opened_asof": "2026-09-30",
+        "kill_criteria": ["t"],
+        "broken_reasons": ["physical_lost", "below_quorum", "heat_drop"],
+    }])
+    (row,) = result["rows"]
+    assert row["fired"] == [
+        {"kind": "physical_lost", "detail": "physical now: no"},
+        {"kind": "below_quorum", "detail": "1 surface(s) now"},
+        {"kind": "heat_drop", "detail": "heat 0.5 → 0.2"},
+    ]
+
+
+def test_w20l1_reason_list_degrades_to_inputs(monkeypatch, tmp_path):
+    """Empty/string/garbage/unknown broken_reasons degrade without re-judging."""
+    inputs = "heat 0.196 → 0.137 · 1 surface(s) now · physical now: no"
+    fields = {"source": "llm", "status": "BROKEN", "heat_at_open": 0.196,
+              "heat_now": 0.137, "n_surfaces_now": 1, "physical_now": False,
+              "opened_asof": "2026-09-30", "kill_criteria": ["t"]}
+    result = _thesis_fixture(monkeypatch, tmp_path, [
+        dict(fields, theme="r1", broken_reasons=[]),
+        dict(fields, theme="r2", broken_reasons="below_quorum"),
+        dict(fields, theme="r3", broken_reasons=[None, 7, "", "below_quorum"]),
+        dict(fields, theme="r4", broken_reasons=["new_rule"]),
+    ])
+    rows = result["rows"]
+    assert rows[0]["fired"] == [{"kind": "llm_inputs", "detail": inputs}]
+    assert rows[1]["fired"] == [{"kind": "llm_inputs", "detail": inputs}]
+    assert rows[2]["fired"] == [{"kind": "below_quorum", "detail": "1 surface(s) now"}]
+    assert rows[3]["fired"] == [{"kind": "new_rule", "detail": inputs}]
+
+
+def test_w20l1_overlay_reasons_pass_through_and_render(monkeypatch, tmp_path):
+    """llm_broken_reasons rides the deterministic row only when written (as a
+    list) and the overlay clause names the fired codes, escaped."""
+    base = {"source": "deterministic", "status": "BROKEN",
+            "opened": "2026-08-02", "stage_at_open": "BROADENING (text)",
+            "kill_criteria": [{"kind": "cycle_tripwire", "detail": "dd"}],
+            "criterion_statuses": ["BROKEN"]}
+    result = _thesis_fixture(monkeypatch, tmp_path, [
+        dict(base, theme="w20l1_o1", llm_status="BROKEN",
+             llm_heat_at_open=0.213, llm_heat_now=0.169,
+             llm_broken_reasons=["below_quorum"]),
+        dict(base, theme="w20l1_o2", llm_status="BROKEN",
+             llm_heat_at_open=0.213, llm_heat_now=0.169, llm_broken_reasons="x"),
+        dict(base, theme="w20l1_o3", llm_status="INTACT",
+             llm_heat_at_open=0.4, llm_heat_now=0.4, llm_broken_reasons=[]),
+        dict(base, theme="w20l1_o4", llm_status="BROKEN",
+             llm_heat_at_open=0.3, llm_heat_now=0.3,
+             llm_broken_reasons=["<b>r</b>"]),
+        dict(base, theme="w20l1_o5", llm_status="BROKEN",
+             llm_heat_at_open=0.1),
+    ])
+    assert [r["llm_broken_reasons"] for r in result["rows"][:4]] == [
+        ["below_quorum"], [], [], ["<b>r</b>"]]
+    assert "llm_broken_reasons" not in result["rows"][4]
+    html = _render_measurement(thesis_monitor_broken=result)
+    panel = html.split('id="eg-thesis-broken"', 1)[1].split("eg-footnote", 1)[0]
+    assert "0.213 → 0.169 · fired: below_quorum" in panel
+    assert "· 触发：below_quorum" in panel
+    assert panel.count("fired:") == 2  # o1 and o4 only
+    # strengthening for m14: o5 lacks llm_heat_now, so only o1..o4 render a
+    # clause; a guard missing the 'llm_heat_now' in row check would add o5.
+    assert panel.count("overlay ") == 4
+    assert "&lt;b&gt;r&lt;/b&gt;" in panel
+    assert "<b>r</b>" not in panel
+
+
+def test_w20l1_intact_row_carries_overlay(monkeypatch, tmp_path):
+    """The AI overlay rides INTACT rows too, so disagreement stays visible."""
+    result = _thesis_fixture(monkeypatch, tmp_path, [
+        {"theme": "grid_electrification", "source": "deterministic",
+         "status": "INTACT", "opened": "2026-07-04",
+         "stage_at_open": "BROADENING (text)"},
+        {"theme": "nuclear_power", "source": "deterministic",
+         "status": "INTACT", "opened": "2026-07-04",
+         "stage_at_open": "BROADENING (text)", "llm_status": "BROKEN",
+         "llm_heat_at_open": 0.213, "llm_heat_now": 0.169,
+         "llm_broken_reasons": ["below_quorum"]},
+    ])
+    keys = ("llm_status", "llm_heat_at_open", "llm_heat_now", "llm_broken_reasons")
+    nuclear = result["intact_rows"][1]
+    assert nuclear["llm_status"] == "BROKEN"
+    assert nuclear["llm_heat_at_open"] == 0.213
+    assert nuclear["llm_heat_now"] == 0.169
+    assert nuclear["llm_broken_reasons"] == ["below_quorum"]
+    assert not any(k in result["intact_rows"][0] for k in keys)
+    html = _render_measurement(thesis_monitor_broken=result)
+    panel = html.split('id="eg-thesis-intact"', 1)[1].split("</table>", 1)[0]
+    assert "AI overlay" in panel and "AI 叠加" in panel
+    assert "overlay broken · heat" in panel
+    assert "0.213 → 0.169 · fired: below_quorum" in panel
+    assert "叠加 已失效" in panel
+    (grid_seg,) = [s for s in panel.split("<tr>") if "grid_electrification" in s]
+    assert "—" in grid_seg
+    assert "overlay" not in grid_seg
+
+
+def test_w20l1_footnote_and_docstring_name_reasons():
+    """The footnote and the reader docstring name the recorded reason codes."""
+    html = _render_measurement(thesis_monitor_broken=BROKEN_THESIS_CONTEXT)
+    note = html.split('id="eg-thesis-broken"', 1)[1]
+    note = note.split("eg-footnote", 1)[1].split("</div>", 1)[0]
+    assert "not which one fired" not in note
+    assert "不指明具体触发哪一项" not in note
+    en, zh = note.split('class="l-zh"')
+    for token in ("physical_lost", "below_quorum", "heat_drop", "llm_inputs"):
+        assert token in en
+        assert token in zh
+    doc = bm.build_thesis_monitor_broken.__doc__
+    assert "broken_reasons" in doc
+    assert "does not\n    record which" not in doc

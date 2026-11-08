@@ -32,6 +32,33 @@ def test_only_archived_trade_age_can_qualify_and_quotes_do_not_refresh():
  assert r.snapshot(NOW+timedelta(seconds=31))['quotes']=={}
 
 
+@pytest.mark.parametrize('quote_offset', [1.025, -60])
+def test_quote_clock_failure_cannot_erase_or_refresh_a_valid_trade(quote_offset):
+ r=reducer();consume(r,frame())
+ original=r.snapshot(NOW)['quotes']['AMD'].copy()
+ watermark=r.watermarks['AMD']
+ consume(r,frame('Q',quote_offset),1)
+ assert r.snapshot(NOW+timedelta(seconds=1))['quotes']['AMD']==original
+ assert r.watermarks['AMD']==watermark
+ assert r.snapshot(NOW+timedelta(seconds=31))['quotes']=={}
+
+
+@pytest.mark.parametrize('kind', ['Q', 'T', 'B'])
+def test_invalid_identity_remains_fail_closed_for_every_message_kind(kind):
+ r=reducer();consume(r,frame())
+ obj=json.loads(frame(kind,1));obj['data'][3]=123
+ consume(r,json.dumps(obj),1)
+ assert r.snapshot(NOW+timedelta(seconds=1))['quotes']=={}
+
+
+def test_malformed_quote_clock_does_not_change_last_trade_state():
+ r=reducer();consume(r,frame())
+ original=r.snapshot(NOW)['quotes']['AMD'].copy()
+ quote=json.loads(frame('Q',1));quote['data'][1]='invalid-clock'
+ consume(r,json.dumps(quote),1)
+ assert r.snapshot(NOW+timedelta(seconds=1))['quotes']['AMD']==original
+
+
 def test_break_invalidates_even_without_matching_price_or_size():
  r=reducer();consume(r,frame())
  consume(r,frame('B',1,price=77,size=3),1)

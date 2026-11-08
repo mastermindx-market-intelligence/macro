@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-09T21:24:05Z",
+ "accession": "0001097864-26-000006",
+ "cik": "0001097864",
+ "doc_byte_length": 2781990,
+ "doc_sha256": "28b760672ffe0b798bc137892d3a5c7e3acc0d5c4d6e23339916756738ea0cd9",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-09",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "on-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 751727,
+  "byte_start": 751090,
+  "normalized": "The decrease from 2024 to 2025 of $1,086.9 million, or 15.3%, was attributable primarily to lower sales volumes across all reportable segments, which are further explained below. We had one customer, a distributor, whose revenue accounted for approximately 11% and 10% of the total revenue for the years ended December 31, 2025 and 2024, respectively, with sales across all reportable segments.",
+  "normalized_sha256": "f609d81f7a04fafead81e034be3cbc67f45312859e43bc5f49a785c278ac2eb7",
+  "raw": " The decrease from 2024 to 2025 of $1,086.9 million, or 15.3%, </span><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:9pt;font-weight:400;line-height:120%\">w</span><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%\">as attributable primarily to lower sales volumes across all reportable segments, which are further explained below. We had one customer, a distributor, whose revenue accounted for approximately 11% and 10% of the total revenue for the years ended December&#160;31, 2025 and 2024, respectively, with sales across all reportable segments.",
+  "raw_sha256": "df7a88509b5935b85951d5ebeaa896bc88d90cb8d0e53868ac76ea80626cf53f"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1097864/000109786426000006/on-20251231.htm",
+ "xbrl_contexts": []
+}

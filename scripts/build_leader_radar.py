@@ -2095,7 +2095,7 @@ def _build_fire_history(
     fire_log_df: pd.DataFrame,
     data_root: Path,
 ) -> list[dict]:
-    """Return last 20 fire_log rows joined with grade data if available.
+    """Return last 20 fire_log rows plus up to 20 older matured rows, grade-joined.
 
     Reads data/pick_lab/grades.jsonl via engine.pick_lab.ledger (consume, never
     re-implement).  Key: (engine_id, ticker, fire_date).  Primary horizon row
@@ -2116,7 +2116,7 @@ def _build_fire_history(
         # Normalize date column
         fl = fire_log_df.copy()
         fl["date"] = pd.to_datetime(fl["date"])
-        fl = fl.sort_values("date", ascending=False).head(20)
+        fl = fl.sort_values("date", ascending=False)
     except Exception:  # noqa: BLE001
         return []
 
@@ -2196,7 +2196,17 @@ def _build_fire_history(
             "ret_excess_spy": ret_excess_spy,
             "status": status,
         })
-    return result
+    recent = result[:20]
+    seen = {(e["date"], e["ticker"], e["fire_type"]) for e in recent}
+    extra: list[dict] = []
+    for e in result[20:]:
+        if len(extra) >= 20 or e["status"] != "matured":
+            continue
+        key = (e["date"], e["ticker"], e["fire_type"])
+        if key not in seen:
+            seen.add(key)
+            extra.append(e)
+    return recent + extra
 
 
 def _rs_high_watch_unavailable(as_of, reason: str) -> dict:

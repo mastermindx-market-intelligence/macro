@@ -646,6 +646,147 @@ def test_semantic_failure_response_is_not_cached(monkeypatch):
         httpd.shutdown(); httpd.server_close()
 
 
+def test_governed_theme_projection_is_narrow_versioned_and_public(monkeypatch):
+    from admin import server
+    monkeypatch.setattr(server.settings,"auth_enabled",lambda:True)
+    monkeypatch.setattr(server,"_THEME_TOKEN_BODY",None)
+    monkeypatch.setattr(server,"_THEME_TOKEN_VERSION",None)
+    projected,version=server._theme_token_asset()
+    assert b"--admin-canonical-" in projected
+    assert b"body {" not in projected and b".card" not in projected
+    httpd,port=_server()
+    try:
+        code,body,headers=_get_with_headers(port,"/assets/theme-tokens.css?v="+version)
+        assert code==200 and body==projected
+        assert headers["Cache-Control"]=="public, max-age=31536000, immutable"
+        assert headers["ETag"]=='"'+version+'"'
+        head,empty,_=_head_with_headers(port,"/assets/theme-tokens.css?v="+version)
+        assert head==200 and empty==b""
+        for route in ["/assets/theme.css","/assets/../config.yml","/assets/theme-tokens.css/../config.yml"]:
+            try:
+                _get(port,route)
+                raise AssertionError("unlisted asset served")
+            except urllib.error.HTTPError as exc:
+                assert exc.code in {401,404}
+    finally:httpd.shutdown();httpd.server_close()
+
+
+def test_governed_theme_projection_failure_is_fixed_and_fail_closed(monkeypatch):
+    from admin import server
+    def failure():raise RuntimeError("/private/synthetic SECRET_CANARY")
+    monkeypatch.setattr(server,"_theme_token_asset",failure)
+    httpd,port=_server()
+    try:
+        try:
+            _get(port,"/assets/theme-tokens.css")
+            raise AssertionError("invalid projection served")
+        except urllib.error.HTTPError as exc:
+            assert exc.code==503
+            assert json.loads(exc.read())=={"error":"theme asset unavailable"}
+    finally:httpd.shutdown();httpd.server_close()
+
+
+def test_intelligence_http_force_supersedes_panel_and_detail_cache(monkeypatch):
+    from admin import server
+    version=[1]
+    def panel(force=False):
+        if force:version[0]+=1
+        return {"ok":True,"generation":version[0],"generated":{"observed_at":f"fixture-{version[0]}"}}
+    monkeypatch.setattr(server.settings,"auth_enabled",lambda:False)
+    monkeypatch.setattr(server.intelligence_execution,"response",
+                        lambda operation, **kw: panel(kw.get("force", False)) if operation == "panel"
+                        else {"ok":True,"generation":version[0]})
+    _clear_response_cache();httpd,port=_server()
+    try:
+        _,first,_=_get_with_headers(port,"/api/intelligence_os")
+        _,detail,_=_get_with_headers(port,"/api/intelligence_os/engine?id=fixture")
+        _,forced,headers=_get_with_headers(port,"/api/intelligence_os?force=1")
+        _,after,_=_get_with_headers(port,"/api/intelligence_os")
+        _,after_detail,_=_get_with_headers(port,"/api/intelligence_os/engine?id=fixture")
+        assert json.loads(first)["generation"]==json.loads(detail)["generation"]==1
+        assert json.loads(forced)["generation"]==json.loads(after)["generation"]==json.loads(after_detail)["generation"]==2
+        assert json.loads(after)["generated"]["observed_at"]=="fixture-2"
+        assert headers["Cache-Control"]=="no-store"
+    finally:httpd.shutdown();httpd.server_close();_clear_response_cache()
+
+
+def test_intelligence_route_exceptions_have_fixed_wire_error(monkeypatch):
+    from admin import server
+    def fail(*a,**kw):raise RuntimeError("/private/synthetic SECRET_CANARY")
+    monkeypatch.setattr(server.settings,"auth_enabled",lambda:False)
+    monkeypatch.setattr(server.intelligence_execution,"response",fail)
+    _clear_response_cache();httpd,port=_server()
+    try:
+        for route in ["/api/intelligence_os?force=1","/api/intelligence_os/engine?id=fixture&force=1"]:
+            try:
+                _get(port,route)
+                raise AssertionError("expected fixed failed read")
+            except urllib.error.HTTPError as exc:
+                assert exc.code==500 and exc.headers["Cache-Control"]=="no-store"
+                assert json.loads(exc.read())=={"ok":False,"error":"Could not read the evidence estate","error_code":"evidence_read_failed"}
+        try:_get(port,"/api/intelligence_os/missing")
+        except urllib.error.HTTPError as exc:assert exc.code==404
+    finally:httpd.shutdown();httpd.server_close();_clear_response_cache()
+
+
+def test_intelligence_routes_refuse_missing_and_invalid_sessions_before_owner(monkeypatch):
+    from admin import server
+    monkeypatch.setattr(server.settings,"auth_enabled",lambda:True)
+    monkeypatch.setattr(server.auth,"valid_session",lambda cookie:False)
+    def forbidden(*a,**k):raise AssertionError("unauthorized owner accessed")
+    monkeypatch.setattr(server.intelligence_execution,"response",forbidden)
+    httpd,port=_server()
+    try:
+        for route in ["/api/intelligence_os","/api/intelligence_os/engine?id=fixture"]:
+            for cookie in [None,"synthetic-expired.signature","synthetic-tampered.signature"]:
+                request=urllib.request.Request(f"http://127.0.0.1:{port}"+route,headers={"Cookie":"admin_session="+cookie} if cookie else {})
+                try:
+                    urllib.request.urlopen(request,timeout=5)
+                    raise AssertionError("unauthorized read")
+                except urllib.error.HTTPError as exc:
+                    assert exc.code==401 and json.loads(exc.read())=={"error":"authentication required"}
+    finally:httpd.shutdown();httpd.server_close()
+
+
+def test_unversioned_theme_conditional_get_preserves_revalidation_policy():
+    from admin import server
+    _,version=server._theme_token_asset()
+    httpd,port=_server()
+    try:
+        request=urllib.request.Request(f"http://127.0.0.1:{port}/assets/theme-tokens.css",headers={"If-None-Match":'"'+version+'"'})
+        try:
+            urllib.request.urlopen(request,timeout=5)
+            raise AssertionError("expected conditional response")
+        except urllib.error.HTTPError as exc:
+            assert exc.code==304 and exc.headers["Cache-Control"]=="no-cache"
+    finally:httpd.shutdown();httpd.server_close()
+
+
+def test_owner_snapshot_publication_invalidates_serialized_panel_and_detail(monkeypatch,tmp_path):
+    import os
+    from admin import server
+    path=tmp_path/'site/qledger/track_record.json';path.parent.mkdir(parents=True)
+    path.write_text('{"generation":1}')
+    monkeypatch.setattr(server.settings,'auth_enabled',lambda:False)
+    monkeypatch.setattr(server.intelligence_os,'_ROOT',tmp_path)
+    calls=[]
+    def response(*a,**k):
+        calls.append(1);return {'ok':True,**json.loads(path.read_text())}
+    monkeypatch.setattr(server.intelligence_execution,'response',response)
+    _clear_response_cache();httpd,port=_server()
+    try:
+        for route in ['/api/intelligence_os','/api/intelligence_os/engine?id=fixture']:
+            _,body,_=_get_with_headers(port,route);assert json.loads(body)['generation']==1
+            _,_,header=_get_with_headers(port,route);assert header['X-Admin-Cache']=='HIT'
+        before=path.stat();path.write_text('{"generation":2}')
+        os.utime(path,ns=(before.st_atime_ns,before.st_mtime_ns))
+        for route in ['/api/intelligence_os','/api/intelligence_os/engine?id=fixture']:
+            _,body,header=_get_with_headers(port,route)
+            assert json.loads(body)['generation']==2 and header['X-Admin-Cache']=='MISS'
+        assert len(calls)==4
+    finally:httpd.shutdown();httpd.server_close();_clear_response_cache()
+
+
 def test_diagnostic_tokens_are_fixed_path_readonly_and_revalidate(monkeypatch):
     from admin import research_diagnostic_tokens
     httpd, port = _server()
@@ -671,3 +812,23 @@ def test_diagnostic_tokens_are_fixed_path_readonly_and_revalidate(monkeypatch):
             assert json.loads(error.read()) == {"error": "diagnostic presentation unavailable"}
     finally:
         httpd.shutdown(); httpd.server_close()
+
+
+def test_intelligence_envelope_unavailability_is_never_cached(monkeypatch):
+    from admin import server
+    monkeypatch.setattr(server.settings, "auth_enabled", lambda: False)
+    calls = []
+    def unavailable(*args, **kwargs):
+        calls.append(1)
+        return {"ok": False, "error": "Evidence unavailable", "error_code": "evidence_deadline_exceeded"}
+    monkeypatch.setattr(server.intelligence_execution, "response", unavailable)
+    _clear_response_cache(); httpd, port = _server()
+    try:
+        for _ in range(2):
+            code, body, headers = _get_with_headers(port, "/api/intelligence_os")
+            assert code == 200 and json.loads(body)["ok"] is False
+            assert headers["Cache-Control"] == "no-store"
+            assert headers.get("X-Admin-Cache") != "HIT"
+        assert len(calls) == 2
+    finally:
+        httpd.shutdown(); httpd.server_close(); _clear_response_cache()

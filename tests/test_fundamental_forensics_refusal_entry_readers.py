@@ -43,6 +43,7 @@ def _income_row(metric_id: str, end: str, value: str) -> dict:
         "standardized_metric_id": metric_id,
         "cells": [{
             "period": {"kind": "duration", "start": "2026-01-01", "end": end},
+            "unit": "USD",
             "value": value,
         }],
     }

@@ -1,6 +1,7 @@
 """News-impact W3 producer, stage two: events to fact log, thesis views and Prophet evidence.
 
-Reads stage-one ``events*.jsonl`` rows (``{case_id, shadow, novelty_source, event}``),
+Reads verified adjudicated stage-one ``events.jsonl`` generations and their bound
+``events_report.json`` receipts; shadow or incomplete generations are refused. It
 keys each news_impact_event.v1 event to a fact_log.v1 ``fact_key``, assigns novelty by
 rule through ``cluster.assign_novelty``, appends one record at a time through
 ``thesis.append_records``, projects thesis views with ``thesis.project`` and assembles
@@ -24,11 +25,11 @@ from hashlib import sha256
 from pathlib import Path
 from typing import Any, Iterable, Mapping
 
-from engine.news_impact import thesis
+from engine.news_impact import producer, thesis
 from engine.news_impact.cluster import FactObservation, NoveltyError, assign_novelty
 from engine.news_impact.prophet_adapter import ProphetAdapterError, adapt_batch
 
-PRODUCER_FACTS_VERSION = "ni-producer-facts-1"
+PRODUCER_FACTS_VERSION = "ni-producer-facts-2"
 
 T1 = "capital_allocation_event.v1"
 T2 = "demand_guidance_contract_event.v1"
@@ -184,6 +185,7 @@ def leaf_payload(event: Mapping[str, Any], slot: Mapping[str, Any], counts: Coun
     template = event["schema"]
     leaf: dict[str, Any] = {
         "template": template,
+        "quantity_terms": {},
         "commitment_status": event.get("commitment_status"),
         "negated": bool(event.get("negated", False)),
     }
@@ -194,6 +196,9 @@ def leaf_payload(event: Mapping[str, Any], slot: Mapping[str, Any], counts: Coun
         if value is None:
             continue
         leaf[key] = value
+        # Preserve the canonical per-quantity unit, basis, period and evidence.
+        # The scalar and structured term originate from this one quantity.
+        leaf["quantity_terms"][key] = copy.deepcopy(dict(quantity))
         if currency is None and isinstance(quantity, Mapping) and quantity.get("currency"):
             currency = quantity["currency"]
     if currency is not None:
@@ -264,12 +269,21 @@ def _parse_dt(value: Any) -> datetime:
 
 
 def _read_rows(paths: Iterable[Path]) -> list[dict[str, Any]]:
+    """Verify every selected adjudicated generation before processing any row."""
+    selected = tuple(Path(path) for path in paths)
+    if not selected:
+        raise Reject("events_generation_missing")
     rows: list[dict[str, Any]] = []
-    for path in paths:
-        with Path(path).open() as fh:
-            for line in fh:
-                if line.strip():
-                    rows.append(json.loads(line))
+    for path in selected:
+        # The owner takes a directory. Bind the caller's exact filename first;
+        # an alias or shadow path must never select a neighboring events file.
+        if path.name != "events.jsonl":
+            raise Reject("events_path_not_canonical")
+        try:
+            _report, generation_rows = producer.read_verified_output(path.parent)
+        except producer.ProducerInputError as exc:
+            raise Reject(exc.code) from None
+        rows.extend(generation_rows)
     return rows
 
 
@@ -489,7 +503,7 @@ def run(events_paths: list[Path], out: Path, as_of: str | None = None) -> dict[s
 
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    ap.add_argument("--events", type=Path, nargs="+", required=True, help="stage-one events*.jsonl files")
+    ap.add_argument("--events", type=Path, nargs="+", required=True, help="verified adjudicated stage-one events.jsonl files")
     ap.add_argument("--out", type=Path, required=True, help="output directory (never data/news_impact)")
     ap.add_argument("--as-of", default=None, help="projection as_of_utc (default: latest observed_at)")
     args = ap.parse_args(argv)
