@@ -1,8 +1,8 @@
 {
   "schema": "stage_context.v1",
-  "asof": "2026-11-07",
+  "asof": "2026-11-08",
   "data_session": "2026-11-06",
-  "built": "2026-11-07T12:58:40Z",
+  "built": "2026-11-08T08:56:31Z",
   "is_context_only": true,
   "display_only": true,
   "disclaimer": "Context only — stage classification display, never a signal or sizing input.",
@@ -61,15 +61,15 @@
   "counts": {
     "total": 2700,
     "stage1": 159,
-    "stage2": 1359,
-    "stage2_fresh": 397,
-    "stage3": 218,
+    "stage2": 1360,
+    "stage2_fresh": 396,
+    "stage3": 217,
     "stage4": 964,
     "too_young": 362,
     "new_today": 29
   },
   "market": {
-    "pct_stage2": 50.3,
+    "pct_stage2": 50.4,
     "pct_stage4": 35.7,
     "weather": "mixed",
     "spy_stage": 2,
@@ -1259,15 +1259,16 @@
       "arc_pos": 0.375,
       "earnings": {
         "present": true,
-        "sentiment": -0.5,
-        "performance": 2.5,
-        "tone_word": "cautious",
+        "sentiment": 0.5,
+        "performance": 7.5,
+        "tone_word": "confident",
         "tags": [
           "guidance_raised",
-          "margin_expansion"
+          "margin_expansion",
+          "demand_slowdown"
         ],
-        "quarter": "Q2",
-        "summary": "Novavax reported Q2 FY26 revenue of $57 million (down from $239M prior year due to a one-time milestone in the comparison period) and an adjusted net loss driven by R&D expenses. Management raised its full-year 2026 guidance for non-GAAP total revenues ($235-$275M midpoint inc…"
+        "quarter": "Q3",
+        "summary": "Novavax reported Q3 FY2026 revenue of $68 million, a decrease from $70 million in the prior year, driven by reduced R&D reimbursement offset by product sales growth and a $125 million milestone. The company raised its full-year 2026 adjusted revenue guidance to a midpoint of $…"
       },
       "why": [
         "Early in its climb — 10 weeks up so far",
@@ -2018,7 +2019,7 @@
       "stage_week_end": "2026-11-06",
       "stage_current": true,
       "stage": 2,
-      "weeks_in_stage": 4,
+      "weeks_in_stage": 3,
       "fresh": true,
       "sga_score": 52,
       "ma30_slope_pct5w": 9.614,
@@ -2028,7 +2029,7 @@
       "event": null,
       "gate_tier": null,
       "blackout": false,
-      "arc_pos": 0.3,
+      "arc_pos": 0.2875,
       "earnings": {
         "present": true,
         "sentiment": -0.5,
@@ -2288,26 +2289,16 @@
       "arc_pos": 0.3,
       "earnings": {
         "present": true,
-        "sentiment": 0.6666666666666666,
-        "performance": 7.5,
-        "tone_word": "confident",
+        "sentiment": -0.5,
+        "performance": 2.5,
+        "tone_word": "cautious",
         "tags": [
-          "merger",
-          "data_centers",
-          "colstrip",
-          "cost_recovery",
-          "rate_case",
-          "guidance",
-          "regulation",
-          "electric_utility",
-          "regulated_utility",
-          "transmission",
-          "power_generation",
-          "data_center_power",
-          "merger_arbitrage"
+          "guidance_raised",
+          "demand_slowdown",
+          "margin_contraction"
         ],
-        "quarter": "Q2",
-        "summary": "...noting that was really driven off of improved base rate recovery versus last year."
+        "quarter": "Q3",
+        "summary": "NorthWestern Energy reported Q3 FY2026 GAAP diluted EPS of $0.50 versus $0.62 in the prior year quarter, while non-GAAP diluted EPS was $0.58 compared to $0.79 last year. Management reaffirmed its full-year 2026 adjusted EPS guidance range of $3.68-$3.83 with a bias toward the…"
       },
       "why": [
         "Early in its climb — 4 weeks up so far",
@@ -2346,17 +2337,16 @@
       "arc_pos": 0.2625,
       "earnings": {
         "present": true,
-        "sentiment": 0.3,
-        "performance": 6.5,
-        "tone_word": "steady",
+        "sentiment": -0.5,
+        "performance": 2.5,
+        "tone_word": "cautious",
         "tags": [
           "guidance_raised",
-          "margin_expansion",
-          "demand_slowdown",
+          "demand_acceleration",
           "buyback_or_dividend"
         ],
-        "quarter": "Q2",
-        "summary": "Orion reported Q2 2026 revenue of $34.3 million, down from $37.3 million a year ago, while net income of $24.6 million ($0.43/share) was inflated by a $28.8 million gain on two property sales. Core FFO was $11.8 million, or $0.20 per share, essentially flat YoY, and Adjusted E…"
+        "quarter": "Q3",
+        "summary": "Orion Properties reported Q3 FY2026 total revenues of $35.4 million, a decline from $37.1 million in the prior year quarter, alongside a net loss of $3.3 million compared to a profit of $69 million last year. Management raised the 2026 Core FFO guidance range to $0.75-$0.78 pe…"
       },
       "why": [
         "Early in its climb — 1 weeks up so far",
@@ -2897,12 +2887,12 @@
         "summary": null
       },
       "why": [
-        "Early in its climb — 5 weeks up so far",
-        "Already stretched well above its 30-week line — may need a rest"
+        "Early in its climb — 8 weeks up so far",
+        "Trading above its 30-week line — the trend is with it"
       ],
       "why_zh": [
-        "上升初期 — 已上行 5 周",
-        "已明显高于 30 周均线 — 可能需要回踩"
+        "上升初期 — 已上行 8 周",
+        "位于 30 周均线之上 — 趋势向好"
       ],
       "atr_14w": 3.8776,
       "atr_ext": 1.296,
@@ -3177,6 +3167,12 @@
       "trend": "down"
     },
     {
+      "sector": "Consumer Discretionary",
+      "n": 162,
+      "pct_stage2": 42.6,
+      "trend": "down"
+    },
+    {
       "sector": "Materials",
       "n": 59,
       "pct_stage2": 42.4,
@@ -3192,12 +3188,6 @@
       "sector": "Communication Services",
       "n": 102,
       "pct_stage2": 42.2,
-      "trend": "down"
-    },
-    {
-      "sector": "Consumer Discretionary",
-      "n": 162,
-      "pct_stage2": 42.0,
       "trend": "down"
     },
     {
@@ -4704,7 +4694,7 @@
     ],
     "BMY": [
       2,
-      2
+      48
     ],
     "BNAI": [
       4,
@@ -10868,7 +10858,7 @@
     ],
     "PGR": [
       2,
-      2
+      3
     ],
     "PGY": [
       2,
@@ -12743,8 +12733,8 @@
       117
     ],
     "THRM": [
-      3,
-      1
+      2,
+      14
     ],
     "THRY": [
       4,
@@ -30128,7 +30118,7 @@
     },
     "BMY": {
       "stage": 2,
-      "fresh": true,
+      "fresh": false,
       "event": null
     },
     "BNAI": {
@@ -40292,7 +40282,7 @@
       "event": null
     },
     "THRM": {
-      "stage": 3,
+      "stage": 2,
       "fresh": false,
       "event": null
     },
