@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-10T21:08:36Z",
+ "accession": "0001038074-26-000005",
+ "cik": "0001038074",
+ "doc_byte_length": 1674294,
+ "doc_sha256": "9e341102c42a9d25e6b7507e3d306292400c077473fc161e3272f9cb4f397ac4",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-10",
+ "form": "10-K",
+ "period_of_report": "2026-01-03",
+ "primary_document": "slab-20260103.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 195191,
+  "byte_start": 194894,
+  "normalized": "Although we sell products to, and are paid by distributors and contract manufacturers, we refer to the end customer as our customer. Two of our distributors who sell to our customers, Arrow Electronics and Edom Technology, represented 28% and 21% of our revenues during fiscal 2025, respectively.",
+  "normalized_sha256": "6401f25c8194f91060ad4b6020a3614ef51440c5f2389096e57a33e5d709ad68",
+  "raw": " Although we sell products to, and are paid by distributors and contract manufacturers, we refer to the end customer as our customer. Two of our distributors who sell to our customers, Arrow Electronics and Edom Technology, represented 28% and 21% of our revenues during fiscal 2025, respectively.",
+  "raw_sha256": "52b8bceaf866c51f04ce211fb1b80d5a8a76b86b2d6ae41884f15bef73d0f0e7"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1038074/000103807426000005/slab-20260103.htm",
+ "xbrl_contexts": []
+}

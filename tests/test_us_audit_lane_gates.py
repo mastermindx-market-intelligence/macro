@@ -56,10 +56,19 @@ def _radar_snap(asof="2026-07-16", state="elevated"):
 
 def _recovery(asof="2026-07-16"):
     return {
-        "asof": asof, "n_fresh": 1, "turn_confirmed_full": False,
+        "asof": asof,
+        "construction_version": rrra.RECOVERY_CONSTRUCTION_VERSION,
+        "n_fresh": 1,
+        "n_confirmation_fresh": 0,
+        "turn_confirmed_full": False,
         "market": {
             "chips": [{"key": "breadth_thrust", "fired": True, "fresh": True}],
-            "veto": {"active": False, "p_now": 0.1},
+            "veto": {
+                "active": False,
+                "evaluated": True,
+                "state": "clear",
+                "p_now": 0.1,
+            },
             "market_confirmed": False,
             "morphology": {"shape": "grinding"},
         },

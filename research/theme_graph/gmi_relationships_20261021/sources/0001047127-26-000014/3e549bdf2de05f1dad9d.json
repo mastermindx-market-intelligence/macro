@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-20T20:03:02Z",
+ "accession": "0001047127-26-000014",
+ "cik": "0001047127",
+ "doc_byte_length": 2701377,
+ "doc_sha256": "df8a34917379b26d57a5c063ebf82b4d19b268d5b6c9d2bce0e55f649065e0ef",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-20",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "amkr-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 425685,
+  "byte_start": 425398,
+  "normalized": "Our customers include most of the world’s largest semiconductor companies. Our ten largest customers accounted for 72% of our net sales in 2025. Direct sales to Apple and Qualcomm accounted for 29.8% and 11.1% of our net sales, respectively, for the year ended December 31, 2025.",
+  "normalized_sha256": "962f1eddf271a9cfe29f6ca53073211f6acdb6ce0d78111ab47bfa534c19006f",
+  "raw": "Our customers include most of the world&#8217;s largest semiconductor companies.  Our ten largest customers accounted for 72% of our net sales in 2025.  Direct sales to Apple and Qualcomm accounted for 29.8% and 11.1% of our net sales, respectively, for the year ended December 31, 2025.",
+  "raw_sha256": "3e549bdf2de05f1dad9d82bfa8f75a251573d3e81f6bc36164bf4e39e4320a88"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1047127/000104712726000014/amkr-20251231.htm",
+ "xbrl_contexts": []
+}
