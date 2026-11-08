@@ -1,5 +1,5 @@
 {
-  "generated_utc": "2026-11-08T09:15:25.372894+00:00",
+  "generated_utc": "2026-11-08T20:17:55.952053+00:00",
   "as_of": "2026-11-08",
   "schema": "altdata.feed.v1",
   "source": "Quiver Quantitative (Trader plan)",
@@ -7826,6 +7826,14 @@
         "detail": "Divestitures"
       },
       {
+        "ticker": "KTB",
+        "category": "Divestitures",
+        "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "Divestitures"
+      },
+      {
         "ticker": "LEG",
         "category": "Delistings",
         "confidence": "high",
@@ -11675,14 +11683,6 @@
       },
       {
         "ticker": "CNTY",
-        "category": "Strategic Reviews",
-        "confidence": "high",
-        "activist": false,
-        "filer": null,
-        "detail": "Strategic Reviews"
-      },
-      {
-        "ticker": "CLAR",
         "category": "Strategic Reviews",
         "confidence": "high",
         "activist": false,
@@ -17610,6 +17610,14 @@
         "detail": "Acquisitions"
       },
       {
+        "ticker": "VCTR",
+        "category": "Acquisitions",
+        "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "Acquisitions"
+      },
+      {
         "ticker": "APGE",
         "category": "Delistings",
         "confidence": "high",
@@ -17691,6 +17699,14 @@
       },
       {
         "ticker": "ADSK",
+        "category": "Acquisitions",
+        "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "Acquisitions"
+      },
+      {
+        "ticker": "FOXA",
         "category": "Acquisitions",
         "confidence": "high",
         "activist": false,
@@ -19250,6 +19266,14 @@
         "detail": "Acquisitions"
       },
       {
+        "ticker": "CNNE",
+        "category": "Divestitures",
+        "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "Divestitures"
+      },
+      {
         "ticker": "IESC",
         "category": "Acquisitions",
         "confidence": "high",
@@ -19690,6 +19714,14 @@
         "detail": "Divestitures"
       },
       {
+        "ticker": "AXON",
+        "category": "Acquisitions",
+        "confidence": "medium",
+        "activist": false,
+        "filer": null,
+        "detail": "Acquisitions"
+      },
+      {
         "ticker": "LIND",
         "category": "Acquisitions",
         "confidence": "high",
@@ -19986,6 +20018,14 @@
         "detail": "Acquisitions"
       },
       {
+        "ticker": "SLGN",
+        "category": "Divestitures",
+        "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "Divestitures"
+      },
+      {
         "ticker": "VZ",
         "category": "Acquisitions",
         "confidence": "high",
@@ -20029,6 +20069,14 @@
         "ticker": "CVI",
         "category": "Acquisitions",
         "confidence": "medium",
+        "activist": false,
+        "filer": null,
+        "detail": "Acquisitions"
+      },
+      {
+        "ticker": "ANIP",
+        "category": "Acquisitions",
+        "confidence": "high",
         "activist": false,
         "filer": null,
         "detail": "Acquisitions"
@@ -20283,17 +20331,6 @@
         "hot": true
       },
       {
-        "ticker": "ADI",
-        "net_up_30d": 23,
-        "breadth": 1.0,
-        "est_chg_30d": 1.0,
-        "n_analysts": 23,
-        "bull_ratio": 1.0,
-        "rising": true,
-        "revision_delta": 23,
-        "hot": true
-      },
-      {
         "ticker": "ISRG",
         "net_up_30d": 22,
         "breadth": 0.92,
@@ -20302,17 +20339,6 @@
         "bull_ratio": 0.96,
         "rising": true,
         "revision_delta": 22,
-        "hot": true
-      },
-      {
-        "ticker": "BBY",
-        "net_up_30d": 20,
-        "breadth": 1.0,
-        "est_chg_30d": 0.1,
-        "n_analysts": 20,
-        "bull_ratio": 1.0,
-        "rising": true,
-        "revision_delta": 20,
         "hot": true
       },
       {
@@ -20344,6 +20370,17 @@
         "est_chg_30d": 0.52,
         "n_analysts": 21,
         "bull_ratio": 0.95,
+        "rising": true,
+        "revision_delta": 19,
+        "hot": true
+      },
+      {
+        "ticker": "APA",
+        "net_up_30d": 19,
+        "breadth": 0.83,
+        "est_chg_30d": 18.49,
+        "n_analysts": 23,
+        "bull_ratio": 0.91,
         "rising": true,
         "revision_delta": 19,
         "hot": true
@@ -20476,6 +20513,17 @@
         "est_chg_30d": 0.0,
         "n_analysts": 19,
         "bull_ratio": 0.89,
+        "rising": true,
+        "revision_delta": 15,
+        "hot": true
+      },
+      {
+        "ticker": "BE",
+        "net_up_30d": 15,
+        "breadth": 0.71,
+        "est_chg_30d": 8.63,
+        "n_analysts": 21,
+        "bull_ratio": 0.86,
         "rising": true,
         "revision_delta": 15,
         "hot": true
@@ -22766,14 +22814,14 @@
         "sentiment": 0.107
       },
       {
-        "ticker": "QQQ",
-        "mentions": 25,
-        "sentiment": 0.074
-      },
-      {
         "ticker": "MSFT",
         "mentions": 25,
         "sentiment": 0.015
+      },
+      {
+        "ticker": "QQQ",
+        "mentions": 25,
+        "sentiment": 0.074
       },
       {
         "ticker": "OKLO",
@@ -24722,25 +24770,11 @@
         "last_surprise_pct": 24.4
       },
       {
-        "ticker": "ADI",
-        "next_date": "2026-11-24",
-        "days_to": 16,
-        "eps_forecast": 3.89,
-        "last_surprise_pct": 3.6
-      },
-      {
         "ticker": "BABA",
         "next_date": "2026-11-24",
         "days_to": 16,
         "eps_forecast": 1.31,
         "last_surprise_pct": -43.3
-      },
-      {
-        "ticker": "BBY",
-        "next_date": "2026-11-24",
-        "days_to": 16,
-        "eps_forecast": 1.48,
-        "last_surprise_pct": 7.3
       },
       {
         "ticker": "DELL",
