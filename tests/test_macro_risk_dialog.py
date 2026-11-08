@@ -98,6 +98,7 @@ def _radar(**overrides):
             "top_exporters": [],
         },
         "cross_asset": {
+            "asof": "2026-08-28",
             "verdict": "converging",
             "absorption_pctile": 0.61,
         },
@@ -275,6 +276,30 @@ def test_drivers_omit_track_record_and_what_to_do():
     assert "Correlation" in drivers
     method = _dlg(_render())
     assert "Track record" in method.split('class="riskdlg-method"', 1)[1]
+
+
+def test_correlation_card_uses_the_dated_cross_asset_read():
+    from bs4 import BeautifulSoup
+
+    vm = _vm()
+    cross = vm["market_state"]["radar"]["cross_asset"]
+    cross.update(verdict="diversified", absorption_pctile=0.27)
+
+    def card():
+        soup = BeautifulSoup(_dlg(_render(vm)), "html.parser")
+        return next((row for row in soup.select(".riskdlg-drv")
+                     if row.select_one(".rkc-sig-lbl .l-en").get_text(strip=True) == "Correlation"), None)
+
+    row = card()
+    assert row["data-lens-kind"] == "context"
+    assert "Lower co-movement" in row.get_text() and "跨市场联动较低" in row.get_text()
+    assert "2026-08-28" in row.select_one(".lens-receipt").get_text()
+    assert "27th pctile" in row.get_text() and "size risk" not in row.get_text()
+    for date in ("2026-08-27", "2026-08-31", None):
+        cross["asof"] = date
+        assert card() is None
+    cross.update(asof="2026-08-28", verdict="unknown")
+    assert card() is None
 
 
 def test_no_duplicate_overseas_l1_after_leadership():

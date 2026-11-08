@@ -58,7 +58,27 @@
           <div class="rkw-odds-footer"><span class="rkw-baseline"></span><button type="button" class="rkw-quality" data-rkw-view="odds"></button></div>
         </section>
       </div>
-      <div class="rkw-internals-slot"></div>
+      <div class="rkw-internals-slot">
+        {% if risk_envelope is mapping and risk_envelope.get('schema') == 'mastermind.risk_envelope/v1'
+              and risk_envelope.get('data_state') in ('PARTIAL', 'DEGRADED', 'STALE', 'UNKNOWN') %}
+          {% set _coverage = risk_envelope.get('coverage') %}
+          {% set _fresh = _coverage.get('fresh') if _coverage is mapping else none %}
+          {% set _total = _coverage.get('source_count') if _coverage is mapping else none %}
+          {% set _session = risk_envelope.get('source_session') %}
+          <p class="rkw-label rkw-coverage">
+            {% if _session and _total is integer and _fresh is sequence and _fresh is not string and _fresh is not mapping and _fresh|length < _total %}
+              <span class="l-en">For the {{ _session|e }} session, {{ _fresh|length }} of {{ _total }} market-internals sources are current.</span>
+              <span class="l-zh">{{ _session|e }} 交易日，{{ _total }} 个市场内部数据源中有 {{ _fresh|length }} 个为当日数据。</span>
+            {% else %}
+              <span class="l-en">Market internals have incomplete source coverage.</span>
+              <span class="l-zh">市场内部数据源覆盖不完整。</span>
+            {% endif %}
+            {% if risk_envelope.get('coherence') is mapping and risk_envelope.coherence.get('scope') == 'market_reads' %}
+              <span class="l-en">The badge compares trend and stress.</span><span class="l-zh">一致性标签比较趋势与压力。</span>
+            {% endif %}
+          </p>
+        {% endif %}
+      </div>
       <section class="rkw-drivers" aria-labelledby="rkw-drivers-title">
         <div class="rkw-section-heading"><h3 id="rkw-drivers-title"><span class="l-en">What matters now</span><span class="l-zh">当前重点</span></h3><span class="rkw-section-hint"><span class="l-en">Select a signal to explore</span><span class="l-zh">点击信号深入了解</span></span></div>
         <div class="rkw-driver-grid"></div>
