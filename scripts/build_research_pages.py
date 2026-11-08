@@ -93,6 +93,9 @@ def _fmt_date(iso: str) -> str:
     if not d or d.count("-") < 2:
         return ""
     y, m, dd = d.split("-")[:3]
+    # The year is printed as text, and the hub's t() macro prints through |safe.
+    if not re.fullmatch(r"[0-9]{4}", y):
+        return ""
     try:
         return f"{_MON[int(m) - 1]} {int(dd)}, {y}"
     except (ValueError, IndexError):
@@ -145,7 +148,7 @@ def _norm(item: dict) -> dict:
         "tickers": [t for t in (item.get("tickers") or []) if t][:6],
         "teaser": _trunc(pts[0], 220) if pts else "",
         "n_points": len(pts),
-        "top_pick": bool(item.get("top_pick")),
+        "top_pick": item.get("top_pick") is True,
     }
 
 

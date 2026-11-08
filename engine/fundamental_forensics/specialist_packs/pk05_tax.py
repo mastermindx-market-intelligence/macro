@@ -15,6 +15,25 @@ duplicate policy: filings tag one balance in the statement (``decimals=-6``)
 and again as a rounded rollforward bound (``decimals=-8``), and those
 duplicates reconcile onto the more precise occurrence instead of poisoning
 the field as a conflict.
+
+Diversified_v1 dev-corpus verification (2026-11-01; five issuers, nine
+10-Ks, dev assertions cross-checked against each filing's own rendered
+rollforward table): every mapped UTP field resolves to the table's own
+line — movements tagged as positive magnitudes under the rollforward
+identity's sign convention, comparative-year contexts never selected, and
+coarser narrative duplicates reconciling through the A.1 policy. Three
+limits stand rather than being bent: filings may carry FX-translation or
+acquisition movement lines under three different standard spellings, and
+those lines map to no catalogue field, so the ``utp_rollforward`` identity
+fails on such filings instead of absorbing them; an issuer that discloses
+the ETR-impact figure only on the plain balance concept gets a typed
+absence, never an aliased closing balance; and no mapping declaration
+here may change semantics at all — every existing declaration's digest is
+pinned by the BASE envelope-sha tables in ``test_fif_specialist_packs``
+(the PK07/PK08 tables pin PK05's own gold-fixture envelope), so a
+declaration repair needs a coordinated pin-update lane, and a
+member-filtered dimensioned stand-in or a sign guard needs ``base.py``
+support the ``FactMapping`` surface does not expose.
 """
 from __future__ import annotations
 
