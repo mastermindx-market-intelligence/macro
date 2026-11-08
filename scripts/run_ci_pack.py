@@ -418,7 +418,11 @@ OBSERVED_COMMAND_SECONDS = {
     # local timings scaled by 0.7. workflow-yaml keeps the parse gate, the
     # render-lane contracts and the options/sparse suites: about 90 s including
     # its data-stack install.
-    "ci-control-plane-contracts": 1400,
+    # 2026-11-04 (#917): ci-control-plane-contracts split three ways; hosted group
+    # timings from runs 41806511589 / 41803222742 (median of the two).
+    "ci-control-plane-contracts": 815,
+    "ci-control-plane-census": 530,
+    "ci-control-plane-structure": 150,
     # Hosted command groups, 2026-10-19: FIF historical kernel median 1618 s
     # plus ~13 s guards (nine runs); earnings 1071 s in full trial 39247388552.
     # These calibrate balancing only; install/checkout/queue are excluded.
