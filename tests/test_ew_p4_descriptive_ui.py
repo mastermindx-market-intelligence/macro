@@ -523,7 +523,7 @@ def test_record_fields_are_escaped_and_history_is_separated():
 
 # November 8 layout exact-source browser recapture. All prior screenshots
 # and receipts remain immutable; this receipt binds the current render inputs.
-EVIDENCE = ROOT / "research" / "evidence" / "ew_p4_descriptive_ui_20261108_layout"
+EVIDENCE = ROOT / "research" / "evidence" / "ew_p4_descriptive_ui_20261108_presentation"
 
 
 @pytest.mark.parametrize("key", ["values", "source_as_of"])
