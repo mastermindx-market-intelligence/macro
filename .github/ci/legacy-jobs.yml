@@ -1519,7 +1519,7 @@ jobs:
       - name: install deterministic source-research test dependencies
         run: pip install pytest
       - name: point-in-time equity pressure and private pilot projection
-        run: PYTHONPATH=.:tests python -m pytest tests/test_equity_pressure_response.py tests/test_microstructure_pressure_response_pilot.py -q
+        run: PYTHONPATH=.:tests python -m pytest tests/test_equity_pressure_response.py tests/test_microstructure_pressure_response_pilot.py tests/test_tpb_historical_ruler.py -q
 
   yahoo-daily-archive-refresh:
     if: ${{ false }}
