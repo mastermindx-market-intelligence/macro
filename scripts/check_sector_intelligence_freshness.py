@@ -10,7 +10,8 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
-import re
+from math import isfinite
+from html.parser import HTMLParser
 import sys
 from datetime import date, datetime, timezone
 from pathlib import Path
@@ -47,6 +48,12 @@ def _parse_date(value: object) -> date | None:
         return None
 
 
+def _refuse_nonfinite_json(token: str) -> None:
+    # stdlib json.loads accepts Python's NaN/Infinity extensions by default;
+    # browsers do not, so the release validator must be at least as strict.
+    raise ValueError(f"nonstandard JSON number {token!r} is forbidden")
+
+
 def _read_json(path: Path, errors: list[str]) -> tuple[dict[str, Any] | None, bytes | None]:
     try:
         raw = path.read_bytes()
@@ -54,7 +61,7 @@ def _read_json(path: Path, errors: list[str]) -> tuple[dict[str, Any] | None, by
         errors.append(f"{path.relative_to(path.parents[2])} is absent or unreadable: {exc}")
         return None, None
     try:
-        payload = json.loads(raw)
+        payload = json.loads(raw, parse_constant=_refuse_nonfinite_json)
     except (UnicodeDecodeError, ValueError) as exc:
         errors.append(f"{path.name} is not valid JSON: {exc}")
         return None, raw
@@ -64,23 +71,83 @@ def _read_json(path: Path, errors: list[str]) -> tuple[dict[str, Any] | None, by
     return payload, raw
 
 
+class _SectorHeroParser(HTMLParser):
+    """Read the actual served hero tag, ignoring scripts and HTML comments."""
+
+    def __init__(self) -> None:
+        super().__init__(convert_charrefs=True)
+        self.heroes: list[list[tuple[str, str | None]]] = []
+
+    def handle_starttag(
+        self, tag: str, attrs: list[tuple[str, str | None]],
+    ) -> None:
+        if tag != "section":
+            return
+        classes = [value for name, value in attrs if name == "class"]
+        if any(value and "rvx-hero" in value.split() for value in classes):
+            self.heroes.append(attrs)
+
+
+def _read_sector_runtime_js(
+    path: Path, sector_raw: bytes | None, errors: list[str],
+) -> bytes | None:
+    """Pin the actual browser-consumed JS to the same exact JSON generation.
+
+    build_sector_central writes both files from the SAME compact JSON value.
+    Parsing only sectordata/sector_central.json cannot prove what the page
+    actually executes; a stale JS file otherwise survives a good JSON check.
+    """
+    try:
+        actual = path.read_bytes()
+    except OSError as exc:
+        errors.append(f"SECTOR INTELLIGENCE RUNTIME ASSET MISSING: {path.name}: {exc}")
+        return None
+    if sector_raw is not None:
+        expected = b"window.SECTOR_CENTRAL=" + sector_raw + b";\n"
+        if actual != expected:
+            errors.append(
+                "SECTOR INTELLIGENCE CLIENT-DATA SPLIT: sector_central_data.js "
+                "does not match the exact sectordata/sector_central.json generation"
+            )
+    return actual
+
+
 def _html_metadata(path: Path, errors: list[str]) -> dict[str, str | None]:
     try:
         text = path.read_text(encoding="utf-8")
     except (OSError, UnicodeDecodeError) as exc:
         errors.append(f"site/sector_central.html is absent or unreadable: {exc}")
         return {key: None for key in _HTML_ATTRS}
-    # Non-greedy so text between two comments survives; an unclosed
-    # ``<!--`` hides the rest of the page from a browser, so it does here too.
-    text = re.sub(r"<!--.*?(?:-->|\Z)", "", text, flags=re.S)
-    out: dict[str, str | None] = {}
-    for key, attr in _HTML_ATTRS.items():
-        match = re.search(rf'\b{re.escape(attr)}="([^"]+)"', text)
-        out[key] = match.group(1) if match else None
-        if match is None:
-            errors.append(f"site/sector_central.html is missing {attr}")
-    return out
 
+    parser = _SectorHeroParser()
+    try:
+        parser.feed(text)
+        parser.close()
+    except ValueError as exc:
+        errors.append(f"site/sector_central.html has invalid markup: {exc}")
+        return {key: None for key in _HTML_ATTRS}
+    if len(parser.heroes) != 1:
+        errors.append(
+            "site/sector_central.html must have exactly one rvx-hero section "
+            f"for source verification (found {len(parser.heroes)})"
+        )
+    # Diagnostic values may be printed, but an extra or missing hero ALWAYS
+    # fails the release. No attribute from another DOM node can supply the
+    # missing source clock or byte stamps.
+    attrs = parser.heroes[0] if len(parser.heroes) == 1 else []
+    out: dict[str, str | None] = {}
+    for key, name in _HTML_ATTRS.items():
+        values = [value for attr, value in attrs if attr == name]
+        if len(values) != 1 or not values[0]:
+            out[key] = None
+            errors.append(
+                f"site/sector_central.html is missing {name}"
+                if not values else
+                f"site/sector_central.html has ambiguous {name}"
+            )
+        else:
+            out[key] = values[0]
+    return out
 
 def _require_date(
     label: str,
@@ -107,6 +174,74 @@ def _check_hash(
         )
 
 
+def _validate_breadth_measurements(breadth: dict[str, Any], errors: list[str]) -> None:
+    """Prevent semantically impossible numbers from receiving release authority.
+
+    Missing fields remain unmeasured; no S&P 1500 membership, price or MA
+    denominator is inferred from this source-only S&P 500 sample.
+    """
+    prefix = "UNVERIFIED SECTOR INTELLIGENCE BREADTH MEASUREMENT"
+
+    def check(field: str, *, integer: bool = False, ceiling: float | None = None):
+        value = breadth.get(field)
+        if value is None:
+            return None
+        valid_type = type(value) is int if integer else type(value) in (int, float)
+        valid = valid_type and isfinite(value) and value >= 0
+        if valid and ceiling is not None:
+            valid = value <= ceiling
+        if not valid:
+            errors.append(f"{prefix}: {field} has invalid count/range {value!r}")
+            return None
+        return value
+
+    observed = check("observed_members", integer=True)
+    adv = check("adv", integer=True)
+    dec = check("dec", integer=True)
+    nh = check("nh", integer=True)
+    nl = check("nl", integer=True)
+    above50 = check("pct_above_50", ceiling=100)
+    check("pct_above_200", ceiling=100)
+    ratio = check("ad_ratio")
+    for field in ("ad_3d", "ad_w", "ad_m"):
+        check(field)
+
+    if observed is not None:
+        if adv is not None and dec is not None and adv + dec > observed:
+            errors.append(f"{prefix}: adv + dec exceeds observed_members")
+        if nh is not None and nh > observed:
+            errors.append(f"{prefix}: nh exceeds observed_members")
+        if nl is not None and nl > observed:
+            errors.append(f"{prefix}: nl exceeds observed_members")
+    if ratio is not None:
+        if adv is None or dec is None or dec <= 0:
+            errors.append(f"{prefix}: ad_ratio has unmeasured A/D prerequisites")
+        elif abs(ratio - round(adv / dec, 2)) > 1e-9:
+            errors.append(
+                f"{prefix}: ad_ratio {ratio!r} contradicts measured advances "
+                f"and declines (expected {round(adv / dec, 2)!r})"
+            )
+    verdict = breadth.get("verdict")
+    if verdict is not None:
+        if verdict not in ("narrow", "broad", "mixed"):
+            errors.append(f"{prefix}: unregistered verdict {verdict!r}")
+        if (observed is None or observed == 0 or adv is None or
+                dec is None or dec == 0 or above50 is None):
+            errors.append(f"{prefix}: claimed verdict has unmeasured prerequisite")
+        elif (observed > 0 and adv + dec <= observed and
+              verdict in ("narrow", "broad", "mixed")):
+            observed_ad = round(adv / dec, 2)
+            expected = (
+                "narrow" if observed_ad < 0.95 and above50 < 45 else
+                "broad" if observed_ad > 1.3 and above50 > 58 else "mixed"
+            )
+            if verdict != expected:
+                errors.append(
+                    f"{prefix}: verdict {verdict!r} contradicts measured "
+                    f"S&P 500 A/D and 50-day participation (expected {expected!r})"
+                )
+
+
 def evaluate(
     root: Path,
     *,
@@ -120,7 +255,10 @@ def evaluate(
     warnings: list[str] = []
     baskets, baskets_raw = _read_json(site / "basketdata" / "baskets.json", errors)
     action, action_raw = _read_json(site / "basketdata" / "action_board.json", errors)
-    sector, _ = _read_json(site / "sectordata" / "sector_central.json", errors)
+    sector, sector_raw = _read_json(site / "sectordata" / "sector_central.json", errors)
+    sector_js_raw = _read_sector_runtime_js(
+        site / "sector_central_data.js", sector_raw, errors,
+    )
     premium, _ = _read_json(site / "premiumdata" / "sector_central.json", errors)
     html = _html_metadata(site / "sector_central.html", errors)
 
@@ -134,6 +272,27 @@ def evaluate(
             errors,
             dates,
         )
+    # Baskets embed an independent US market-breadth observation read from
+    # data/breadth/breadth.parquet. Its source session must not be laundered by
+    # theme_intel.as_of when the basket renderer advances independently.
+    if baskets is not None:
+        theme_intel = baskets.get("theme_intel")
+        breadth = theme_intel.get("market_concentration") if isinstance(theme_intel, dict) else None
+        if breadth is not None and breadth != {}:
+            if not isinstance(breadth, dict):
+                errors.append("site/basketdata/baskets.json:market_concentration must be an object")
+            else:
+                _require_date(
+                    "site/basketdata/baskets.json:theme_intel.market_concentration.source_as_of",
+                    breadth.get("source_as_of"), errors, dates,
+                )
+                if breadth.get("source_universe") != "sp500_current_constituents":
+                    errors.append(
+                        "UNVERIFIED SECTOR INTELLIGENCE BREADTH UNIVERSE: "
+                        "embedded US concentration must identify its observed S&P 500 source; "
+                        "it does not qualify S&P 1500 participation"
+                    )
+                _validate_breadth_measurements(breadth, errors)
     if action is not None:
         _require_date("site/basketdata/action_board.json:as_of", action.get("as_of"), errors, dates)
         board = action.get("action_board")
@@ -217,11 +376,27 @@ def evaluate(
     sessions_behind: int | None = None
     if common_as_of is not None:
         try:
-            sessions_behind = nyse_calendar.sessions_behind(common_as_of, now)
+            last_completed = nyse_calendar.expected_last_session(now)
+            valid_session = nyse_calendar.is_session(common_as_of)
+            # sessions_behind alone cannot validate a date: future-dated and
+            # weekend observations both return zero missing completed sessions.
+            if not valid_session:
+                errors.append(
+                    "INVALID SECTOR INTELLIGENCE MARKET SESSION: common as_of="
+                    f"{common_as_of.isoformat()} is not an NYSE session"
+                )
+            if common_as_of > last_completed:
+                errors.append(
+                    "FUTURE SECTOR INTELLIGENCE: common as_of="
+                    f"{common_as_of.isoformat()} exceeds last completed NYSE "
+                    f"session {last_completed.isoformat()}"
+                )
+            if valid_session and common_as_of <= last_completed:
+                sessions_behind = nyse_calendar.sessions_behind(common_as_of, now)
         except Exception as exc:  # noqa: BLE001 - calendar failure is fail closed here
             errors.append(f"NYSE calendar unavailable: {exc!r}")
         else:
-            if sessions_behind > max_sessions_behind:
+            if sessions_behind is not None and sessions_behind > max_sessions_behind:
                 errors.append(
                     "STALE SECTOR INTELLIGENCE: common as_of="
                     f"{common_as_of.isoformat()} is {sessions_behind} completed NYSE "
@@ -234,6 +409,8 @@ def evaluate(
         "dates": {label: value.isoformat() for label, value in dates.items()},
         "baskets_sha256": actual_baskets_sha,
         "action_board_sha256": actual_action_sha,
+        "sector_json_sha256": _sha256(sector_raw) if sector_raw is not None else None,
+        "sector_js_sha256": _sha256(sector_js_raw) if sector_js_raw is not None else None,
     }
     return {
         "ok": not errors,

@@ -574,7 +574,8 @@ def test_11_obs_history_for_xlk_and_its_failure_states():
 def test_12_early_box_watch_muted_broadening_clause_no_forecast():
     out = _run()
     e = out["early"]
-    assert "No early reading to show today." in e, e
+    assert "No qualifying early reading in this snapshot." in e, e
+    assert "No early reading to show today." not in e, e
     assert "mr-early-clause" not in out["early"], "state 'watch' must not render a clause"
     assert "Early observation — context only" in e and "2026-10-09" in e
     assert "Based on 2 of 2 checks" in e and "partial coverage" in e

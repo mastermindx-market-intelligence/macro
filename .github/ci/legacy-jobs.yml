@@ -9267,6 +9267,7 @@ jobs:
     # 846 tracked / 127 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - "lib/nyse_calendar.py"
       - "engine/options_statistics_state.py"
       - "engine/options_hub_retention.py"
       - "engine/options_scenario_capture.py"
@@ -23314,6 +23315,12 @@ jobs:
         run: |
           node --version
           python -m pytest tests/test_theme_detail_cycles.py -q
+      # Sector source-session disclosure: synthetic breadth inputs and the actual
+      # basket client renderer must fail closed on unknown or mismatched vintages.
+      - name: basket breadth source session and universe contracts
+        run: |
+          node --version
+          python -m pytest tests/test_basket_score.py -v -ra
 
   sector-basket-links:
     if: ${{ false }}
@@ -24343,6 +24350,7 @@ jobs:
     # Curated named closure: integrity fixtures scan only pytest tmp_path;
     # opaque artifact traversal must not claim unrelated template ownership.
     paths:
+      - "engine/json_strict.py"
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
       - engine/entry_radar/replay/identity_observation_snapshot.py
@@ -28009,6 +28017,8 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      - "engine/json_strict.py"
+      - "lib/nyse_calendar.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "engine/intraday_greeks.py"
       - "engine/options_nbbo_cohort.py"
@@ -28862,6 +28872,7 @@ jobs:
     # 846 tracked / 74 concrete.
     scope: exclusive
     paths:
+      - "lib/nyse_calendar.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "engine/intraday_greeks.py"
       - "engine/options_nbbo_cohort.py"
@@ -33891,6 +33902,7 @@ jobs:
     # no named closure file was removed.
     scope: exclusive
     paths:
+      - "lib/nyse_calendar.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "engine/intraday_greeks.py"
       - "engine/options_nbbo_cohort.py"
@@ -35775,6 +35787,7 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "engine/json_strict.py"
       - "engine/prophet_early_leadership_evidence.py"
       - "tests/test_prophet_fusion_w3_structural.py"
       - collectors/rate_futures.py
@@ -37281,6 +37294,8 @@ jobs:
     # the declared-scope coverage audit re-checks them on every load.
     scope: exclusive
     paths:
+      - "engine/json_strict.py"
+      - "lib/nyse_calendar.py"
       - "engine/prophet_early_leadership_evidence.py"
       - "contracts/theme_graph/theme_state.v1.schema.json"
       - engine/rate_futures_repricing.py
@@ -39739,6 +39754,30 @@ jobs:
       # not_supplied relationships) — receivers bind without guessing.
       - name: sector_central research handoff — B09 subject/snapshot/return-context per row
         run: python -m pytest tests/test_sector_research_handoff.py -q
+      # Keep these source/synthetic contracts on the existing PR code owner.
+      # Legacy generated-site assertions remain with express-render-guards (data).
+      - name: sector hero source session and browser breadth contracts
+        run: |
+          node --version
+          python -m pytest tests/test_sector_central_gate.py -v -ra
+      - name: sector synthetic publication coherence and strict JSON contracts
+        run: |
+          python -m pytest \
+            tests/test_sector_intelligence_page.py::test_natural_october_sunday_rejects_stale_breadth_without_faking_a_market_day \
+            tests/test_sector_intelligence_page.py::test_future_or_weekend_sector_date_cannot_pass_with_zero_missing_sessions \
+            tests/test_sector_intelligence_page.py::test_sector_gate_binds_embedded_breadth_source_session_and_population \
+            tests/test_sector_intelligence_page.py::test_sector_gate_cannot_publish_an_inconsistent_ad_ratio \
+            tests/test_sector_intelligence_page.py::test_sector_action_board_writer_outputs_browser_strict_nulls_without_mutating_sources \
+            tests/test_sector_intelligence_page.py::test_sector_publish_refuses_non_rfc8259_json_even_when_source_time_agrees \
+            tests/test_sector_intelligence_page.py::test_publication_stamps_must_belong_to_the_served_hero \
+            tests/test_sector_intelligence_page.py::test_publication_stamp_on_unrelated_node_is_not_a_hero_stamp \
+            tests/test_sector_intelligence_page.py::test_publication_rejects_ambiguous_or_duplicate_hero_metadata \
+            tests/test_sector_intelligence_page.py::test_semantic_publish_matches_actual_sector_browser_js \
+            tests/test_sector_intelligence_page.py::test_missing_sector_client_asset_cannot_pass_json_only \
+            tests/test_sector_intelligence_page.py::test_semantic_freshness_accepts_one_session_lag \
+            tests/test_sector_intelligence_page.py::test_action_board_writer_binds_exact_basket_bytes \
+            tests/test_sector_intelligence_page.py::test_full_timestamp_as_of_still_parses \
+            -v -ra
 
   # ── RED-ON-ARRIVAL SWEEP, BATCH B (2026-07-27) ─────────────────────────────
   # The template-surface share of the 10 reds (docs/UNRUN_TEST_CENSUS.md §"Red on
@@ -40417,6 +40456,7 @@ jobs:
     # 846 tracked / 74 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - "lib/nyse_calendar.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "engine/intraday_greeks.py"
       - "engine/options_nbbo_cohort.py"

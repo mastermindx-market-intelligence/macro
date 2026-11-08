@@ -39,6 +39,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from lib import config  # noqa: E402
 from lib.pages import write_page  # noqa: E402
+from engine.json_strict import sanitize_non_finite  # noqa: E402
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
 log = logging.getLogger("build_baskets")
@@ -434,7 +435,13 @@ def main(*, sector_intelligence_only: bool | None = None) -> int:
     # The Sector Intelligence page (sector_central.html) fetches this artifact client-side
     # (the old inline `var BASKETS = …` embed is gone) — written post-pulse-merge and
     # pre-chart-pop so it carries BOTH the velocity/heat keys and the chart matrix.
-    (fdir / "baskets.json").write_text(json.dumps(data, separators=(",", ":"), default=str))
+    # The JS Sector consumer uses JSON.parse, which rejects Python's bare NaN.
+    # This is a serialization-only copy: preserve unknown measurements as null
+    # without changing basket computation, scoring, missingness or source clocks.
+    (fdir / "baskets.json").write_text(json.dumps(
+        sanitize_non_finite(data), separators=(",", ":"), default=str,
+        allow_nan=False,
+    ))
 
     # THEME ROTATION DESK ADD-ONS (display-only context): ETF Pulse (style/risk/sector
     # rotation), vol-regime + CBOE put/call chip, and per-theme ATR extension. Each writes

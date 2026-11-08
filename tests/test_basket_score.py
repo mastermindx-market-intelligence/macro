@@ -186,3 +186,294 @@ def test_market_concentration_graceful(monkeypatch, tmp_path):
     from lib import config
     monkeypatch.setattr(config, "data_dir", lambda: tmp_path)
     assert bs.market_concentration() == {}
+
+
+
+def test_market_concentration_exposes_source_session_and_honest_universe(monkeypatch, tmp_path):
+    from lib import config
+
+    monkeypatch.setattr(config, "data_dir", lambda: tmp_path)
+    observed = pd.DataFrame(
+        {
+            "n_members": [490, 501],
+            "adv": [250, 270],
+            "dec": [240, 230],
+            "pct_above_50": [50.0, 54.0],
+            "pct_above_200": [61.0, 62.0],
+            "nh": [10, 12],
+            "nl": [9, 7],
+        },
+        index=pd.DatetimeIndex(["2026-10-14", "2026-10-15"]),
+    )
+    monkeypatch.setattr(bs.pd, "read_parquet", lambda _path: observed)
+    value = bs.market_concentration("us")
+    assert value["source_as_of"] == "2026-10-15"
+    assert value["source_universe"] == "sp500_current_constituents"
+    assert value["adv"] == 270
+    assert value["directional"] is False
+
+
+def test_market_concentration_absent_or_invalid_source_session_is_unmeasured(monkeypatch, tmp_path):
+    from lib import config
+
+    monkeypatch.setattr(config, "data_dir", lambda: tmp_path)
+    bad = pd.DataFrame(
+        {"adv": [9], "dec": [2], "pct_above_50": [70]},
+        index=["not-an-observation-date"],
+    )
+    monkeypatch.setattr(bs.pd, "read_parquet", lambda _path: bad)
+    assert bs.market_concentration("us") == {}
+
+
+
+def test_unmeasured_breadth_never_becomes_a_mixed_verdict(monkeypatch, tmp_path):
+    from lib import config
+
+    monkeypatch.setattr(config, "data_dir", lambda: tmp_path)
+    incomplete = pd.DataFrame(
+        {
+            "adv": [90.0],
+            "dec": [100.0],
+            "pct_above_50": [np.nan],
+            "pct_above_200": [float("inf")],
+            "nh": [np.nan],
+            "nl": [7],
+        },
+        index=pd.DatetimeIndex(["2026-10-15"]),
+    )
+    monkeypatch.setattr(bs.pd, "read_parquet", lambda _path: incomplete)
+    actual = bs.market_concentration("us")
+    assert actual["source_as_of"] == "2026-10-15"
+    assert actual["pct_above_50"] is None
+    assert actual["pct_above_200"] is None
+    assert actual["nh"] is None
+    assert actual["nl"] == 7
+    assert actual.get("verdict") is None
+    assert actual["directional"] is False
+
+
+def test_market_concentration_ad_horizons_require_full_nyse_sessions(monkeypatch, tmp_path):
+    from datetime import date
+    from lib import config, nyse_calendar
+
+    monkeypatch.setattr(config, "data_dir", lambda: tmp_path)
+
+    def frame(days):
+        n = len(days)
+        return pd.DataFrame(
+            {"n_members": [500] * n, "adv": [20] * n, "dec": [10] * n,
+             "pct_above_50": [60.0] * n, "pct_above_200": [55.0] * n,
+             "nh": [8] * n, "nl": [3] * n},
+            index=pd.DatetimeIndex(days),
+        )
+
+    # A Thursday/Friday/Tuesday trio spans Labor Day but is three
+    # consecutive NYSE sessions, not four calendar days of missing data.
+    holiday_span = nyse_calendar.sessions_between(date(2026, 9, 3), date(2026, 9, 8))
+    assert len(holiday_span) == 3
+    state = {"frame": frame(holiday_span)}
+    monkeypatch.setattr(bs.pd, "read_parquet", lambda _path: state["frame"])
+    sample = bs.market_concentration("us")
+    assert sample["ad_3d"] == 2.0
+    assert sample["ad_w"] is None
+    assert sample["ad_m"] is None
+
+    # Real 21-session population qualifies all three horizons.
+    days = nyse_calendar.sessions_between(date(2026, 9, 1), date(2026, 10, 16))[-21:]
+    assert len(days) == 21
+    state["frame"] = frame(days)
+    observed = bs.market_concentration("us")
+    assert observed["ad_3d"] == 2.0
+    assert observed["ad_w"] == 2.0
+    assert observed["ad_m"] == 2.0
+
+    # An unavailable penultimate NYSE session invalidates every named
+    # trailing horizon despite an unchanged latest source-as-of date.
+    state["frame"] = frame(days[:-2] + days[-1:])
+    sparse = bs.market_concentration("us")
+    assert sparse["source_as_of"] == observed["source_as_of"]
+    assert sparse["ad_3d"] is None
+    assert sparse["ad_w"] is None
+    assert sparse["ad_m"] is None
+
+    # A one-row tape cannot be reinterpreted as a weekly/monthly ratio.
+    state["frame"] = frame(days[-1:])
+    single = bs.market_concentration("us")
+    assert all(single[k] is None for k in ("ad_3d", "ad_w", "ad_m"))
+
+
+def test_market_concentration_ad_lookbacks_never_zero_fill_nan_or_duplicate_rows(
+    monkeypatch, tmp_path,
+):
+    from datetime import date
+    from lib import config, nyse_calendar
+
+    monkeypatch.setattr(config, "data_dir", lambda: tmp_path)
+    days = nyse_calendar.sessions_between(date(2026, 10, 1), date(2026, 10, 16))
+    assert len(days) >= 5
+    frame = pd.DataFrame(
+        {"adv": [80.0] * len(days), "dec": [40.0] * len(days),
+         "pct_above_50": [62.0] * len(days), "pct_above_200": [53.0] * len(days),
+         "nh": [12.0] * len(days), "nl": [4.0] * len(days)},
+        index=pd.DatetimeIndex(days),
+    )
+    state = {"frame": frame}
+    monkeypatch.setattr(bs.pd, "read_parquet", lambda _path: state["frame"])
+    assert bs.market_concentration("us")["ad_w"] == 2.0
+
+    missing = frame.copy()
+    missing.loc[days[-4], "adv"] = np.nan
+    state["frame"] = missing
+    outcome = bs.market_concentration("us")
+    assert outcome["ad_3d"] == 2.0
+    assert outcome["ad_w"] is None
+
+    nonfinite = frame.copy()
+    nonfinite.loc[days[-1], "dec"] = float("inf")
+    state["frame"] = nonfinite
+    assert bs.market_concentration("us")["ad_3d"] is None
+
+    negative = frame.copy()
+    negative.loc[days[-1], "adv"] = -1
+    state["frame"] = negative
+    assert bs.market_concentration("us")["ad_3d"] is None
+
+    duplicate = pd.concat([frame.iloc[:-1], frame.iloc[-2:-1]])
+    state["frame"] = duplicate
+    assert bs.market_concentration("us")["ad_3d"] is None
+
+
+
+def test_theme_desk_breadth_refuses_missing_vintage_and_false_sp1500():
+    """Run the actual Theme Rotation renderer, not only its source strings."""
+    from pathlib import Path
+    import shutil
+    import subprocess
+    import pytest
+
+    root = Path(__file__).resolve().parents[1]
+    template = (root / "templates" / "baskets_desk.js").read_bytes()
+    served = (root / "site" / "baskets_desk.js").read_bytes()
+    assert template == served
+
+    text = template.decode("utf-8")
+    assert text.count("function renderConcentration(){") == 1
+    fragment = (
+        "function renderConcentration(){"
+        + text.split("function renderConcentration(){", 1)[1]
+        .split("\nfunction _bbase(){", 1)[0]
+    )
+    assert "Object.prototype.hasOwnProperty.call(vmap,mc.verdict)" in fragment
+    assert "vmap[mc.verdict]||vmap.mixed" not in fragment
+
+    node = shutil.which("node")
+    if node is None:
+        pytest.skip("Node unavailable; byte-parity and source guards checked")
+
+    prelude = """
+let THEME, html='', zh=false;
+const window={BASKET_BASE:'basket/'};
+const document={getElementById:(id)=>id==='concentration'
+  ?{set innerHTML(s){html=s;}}
+  :id==='concentration-section'?{style:{}}:null};
+const L=(en,cn)=>zh?cn:en;
+const esc=(s)=>String(s);
+const heatDot=()=>'<span></span>';
+"""
+    cases = """
+function render(mc, asOf='2026-10-16', language=false){
+  zh=language;html='';
+  THEME={as_of:asOf,bench_label:'S&P 1500',bench_label_zh:'标普1500',
+    market_concentration:mc, themes:[],breadth_leaders:[],breadth_laggards:[],
+    entries:[],rollover:[]};
+  renderConcentration();
+  return html;
+}
+const d='2026-10-16';
+const valid={source_as_of:d,source_universe:'sp500_current_constituents',
+  verdict:'broad',ad_ratio:1.6,ad_3d:1.5,ad_w:1.4,ad_m:null,
+  pct_above_50:65,pct_above_200:61,nh:12,nl:3};
+const unknown=render({});
+const stale=render({...valid,source_as_of:'2026-10-14'});
+const forged=render({...valid,source_universe:'sp1500'});
+for(const x of [unknown,stale,forged]){
+  if(!x.includes('not measured')||!x.includes('Source session or coverage unverified')||
+     x.includes('1.60')||x.includes('65%')||x.includes('>null<')){
+    throw Error('unsupported breadth became a measurement: '+x.slice(0,1000));
+  }
+}
+const current=render(valid);
+if(!current.includes('S&P 500 sampled breadth')||!current.includes('broad')||
+   !current.includes('1.60')||!current.includes('1.50')||
+   !current.includes('61%')||!current.includes('>—<')){
+  throw Error('valid S&P500 source not displayed correctly: '+current.slice(0,1400));
+}
+const limited=render({...valid,verdict:null});
+if(!limited.includes('not measured')||!limited.includes('1.60')){
+  throw Error('separate measured A/D lost when verdict absent: '+limited.slice(0,1000));
+}
+const chinese=render({},d,true);
+if(!chinese.includes('未测')||!chinese.includes('数据来源交易日或覆盖范围未核验')){
+  throw Error('unmeasured Chinese state not visible');
+}
+"""
+    done = subprocess.run(
+        [node, "-e", prelude + fragment + cases],
+        capture_output=True, text=True, timeout=15,
+    )
+    assert done.returncode == 0, done.stderr
+
+
+
+def test_market_concentration_cannot_invent_participation_from_bad_counts(
+    monkeypatch, tmp_path,
+):
+    from lib import config
+
+    monkeypatch.setattr(config, "data_dir", lambda: tmp_path)
+    base = {
+        "n_members": 500.0, "adv": 350.0, "dec": 150.0,
+        "pct_above_50": 62.0, "pct_above_200": 60.0,
+        "nh": 20.0, "nl": 10.0,
+    }
+    state = {"last": base.copy()}
+
+    def source(_path):
+        return pd.DataFrame(
+            [state["last"]], index=pd.DatetimeIndex(["2026-10-16"])
+        )
+
+    monkeypatch.setattr(bs.pd, "read_parquet", source)
+    valid = bs.market_concentration("us")
+    assert valid["observed_members"] == 500
+    assert valid["verdict"] == "broad"
+    assert valid["nh"] == 20 and valid["nl"] == 10
+
+    # Advancers/decliners exceed the observed universe, NH exceeds
+    # members, negatives are impossible, and 140% is never participation.
+    state["last"] = {
+        **base, "n_members": 50.0, "nh": 200.0, "nl": -2.0,
+        "pct_above_50": 140.0, "pct_above_200": -1.0,
+    }
+    invalid = bs.market_concentration("us")
+    assert invalid["source_as_of"] == "2026-10-16"
+    assert invalid["observed_members"] == 50
+    assert invalid["adv"] is None and invalid["dec"] is None
+    assert invalid["ad_ratio"] is None
+    assert invalid["nh"] is None and invalid["nl"] is None
+    assert invalid["pct_above_50"] is None
+    assert invalid["pct_above_200"] is None
+    assert invalid.get("verdict") is None
+
+    # Fractional or non-finite member counts never become rounded integers
+    # that suggest a measured count; retain legitimate percent endpoints.
+    state["last"] = {
+        **base, "n_members": float("nan"), "adv": 1.5,
+        "dec": float("inf"), "pct_above_50": 0, "pct_above_200": 100,
+    }
+    sparse = bs.market_concentration("us")
+    assert sparse["observed_members"] is None
+    assert sparse["adv"] is None and sparse["dec"] is None
+    assert sparse["pct_above_50"] == 0
+    assert sparse["pct_above_200"] == 100
+    assert sparse.get("verdict") is None
