@@ -1081,8 +1081,8 @@
     var units = { ret: "%", ret_pct: "%", ret_bp: " bp", rs: " pp", rs_pp: " pp" };
     var unit = Object.prototype.hasOwnProperty.call(units, receipt.metric)
       ? units[receipt.metric] : "";
-    var en = value ? "Observed: " + value + unit : "Observed: not published";
-    var zh = value ? "读数：" + value + unit : "读数：未发布";
+    var en = value ? "Observed: " + value + unit : "Observed value unavailable in this view";
+    var zh = value ? "读数：" + value + unit : "此视图无法显示观测值";
     var named = { up: "向上", strengthening: "走强", "EM equities": "新兴市场股票" };
     if (Object.prototype.hasOwnProperty.call(named, value)) zh = "读数：" + named[value];
     if (threshold) {
@@ -1090,9 +1090,11 @@
       zh += " · 要求：" + (receipt.op === "in_contains" ? "包含 " : op ? op + " " : "") + (named[threshold] || threshold) + unit;
     }
     if (receipt.passed === true) {
-      en += " · Met"; zh += " · 已满足";
+      en += value ? " · Met" : " · Owner verdict: met";
+      zh += value ? " · 已满足" : " · 来源判定：已满足";
     } else if (receipt.passed === false) {
-      en += " · Not met"; zh += " · 未满足";
+      en += value ? " · Not met" : " · Owner verdict: not met";
+      zh += value ? " · 未满足" : " · 来源判定：未满足";
     } else {
       en += " · Result not published"; zh += " · 结果未发布";
     }

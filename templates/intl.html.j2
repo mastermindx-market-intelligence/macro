@@ -60,9 +60,7 @@
      a CJK-first stack is what made ZH numerals render in a different face than EN. */
   a { text-decoration: none; color: var(--ink-link, var(--link)); }
   h1 { font-size: 21px; margin: 0 0 2px; } h3 { font-size: 13px; margin: 0 0 8px; }
-  /* section title: macro.html --fs-h2 (17px) + its 3px regime rail */
   h2 { display:flex; align-items:center; gap:10px; font-size: 17px; margin: 0; color: var(--ink-1); font-weight: 700; letter-spacing: -.01em; text-transform: none; line-height: 1.3; }
-  h2::before { content:""; flex:none; align-self:center; width:3px; height:17px; border-radius:2px; background:linear-gradient(180deg, var(--link), color-mix(in srgb,var(--link) 30%,transparent)); }
   html[data-lang="zh"] h2 { letter-spacing: 0; }
   /* ── numeral face policy (macro.html parity) ───────────────────────────────
      The terminal mono is for FIGURES ONLY — never for words. macro.html applies
@@ -261,7 +259,6 @@
   .act-h .aq { font-size:20px; font-weight:800; letter-spacing:-.02em; color:var(--text); }
   html[data-lang="zh"] .act-h .aq { letter-spacing:0; }
   .act-h .as { font-size:12.5px; color:var(--ink-3); }
-  .act-h::before { content:""; align-self:center; width:22px; height:3px; border-radius:2px; background:linear-gradient(90deg,var(--link),transparent); }
   /* reference foldables (deep-tier data, collapsed by default) */
   details.ref-fold { margin:0 0 16px; border:1px solid var(--hair); border-radius:14px; background:color-mix(in srgb,var(--panel) 55%,transparent); }
   details.ref-fold > summary { list-style:none; cursor:pointer; display:flex; align-items:center; gap:12px; padding:15px 18px; border-radius:14px; }

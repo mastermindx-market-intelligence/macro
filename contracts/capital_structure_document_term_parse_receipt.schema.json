@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mastermind-x.com/contracts/capital_structure_document_term_parse_receipt.schema.json",
+  "title": "Capital Structure document-term parse receipt",
+  "description": "Operational evidence that one manifest/content/parser-version parse completed and materialized during a compile. It only exempts an already-parsed filing from being re-read and re-parsed on a later nightly run. It is not a fact, never amends or re-versions the append-only observation ledger, and grants no capacity, signal, sizing, or Prophet authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "receipt_id", "source_manifest_id", "accession",
+    "content_sha256", "parser_version", "parser_implementation_sha256",
+    "candidate_count", "candidate_logical_ids_sha256",
+    "candidate_semantic_sha256", "generated_at"
+  ],
+  "properties": {
+    "schema_version": {"const": "capital_structure.document_term_parse_receipt.v1"},
+    "receipt_id": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "sha256 of the canonical JSON of [source_manifest_id, content_sha256, parser_version]."
+    },
+    "source_manifest_id": {"type": "string", "minLength": 1},
+    "accession": {"type": "string", "minLength": 1},
+    "content_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "The manifest's document.content_sha256."
+    },
+    "parser_version": {"type": "string", "minLength": 1},
+    "parser_implementation_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "The released registry's implementation digest for parser_version."
+    },
+    "candidate_count": {"type": "integer", "minimum": 0},
+    "candidate_logical_ids_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "sha256 of the canonical JSON of the sorted candidate logical_observation_id list."
+    },
+    "candidate_semantic_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "sha256 of the canonical JSON of [[logical_observation_id, semantic body], ...] sorted by logical id."
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]+)?Z$"
+    }
+  }
+}
