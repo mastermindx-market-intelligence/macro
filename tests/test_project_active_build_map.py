@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import copy
 import json
+import threading
 import stat
 from datetime import datetime, timezone
 
@@ -407,6 +408,126 @@ def test_output_pair_preserves_backup_if_rollback_itself_fails(tmp_path, monkeyp
     assert len(preserved) == 1
     assert preserved[0].read_text(encoding="utf-8") == "prior-json"
     assert md_out.read_text(encoding="utf-8") == "prior-markdown"
+
+
+
+def _large_pr_collector(file_page):
+    """Simulate a real >3,000-file PR without asking GraphQL to walk its files."""
+    calls = []
+    def gh(args):
+        calls.append(args)
+        if args[0] == "api" and "/git/ref/heads/" in args[1]:
+            return {"object": {"sha": "a" * 40}}
+        if args[:2] == ["pr", "list"] and "open" in args:
+            return [{"number": 9731, "title": "Oversized PR", "headRefName": "giant",
+                     "updatedAt": "2026-10-24T09:00:00Z", "isDraft": False,
+                     "mergeStateStatus": "UNKNOWN", "url": "https://github.com/example/pr/9731",
+                     "body": ""}]
+        if args[:2] == ["pr", "list"] and "merged" in args:
+            return []
+        if args[0] == "api" and args[1].endswith("/pulls/9731/files?per_page=100&page=1"):
+            return file_page
+        raise AssertionError(f"unbounded or unrecognized GitHub call: {args!r}")
+    return gh, calls
+
+
+def test_live_collection_bounded_rest_page_handles_17k_file_pr_truthfully():
+    filenames = [f"changed/path-{i:03d}.py" for i in range(100)]
+    gh, calls = _large_pr_collector(filenames)
+    spec = project_map.REPOSITORIES[0]
+    result = project_map._collect_repository(spec, merged_days=14,
+        collected_at=datetime(2026, 10, 24, 9, tzinfo=timezone.utc), gh_runner=gh)
+    assert result is not None
+    assert len(result["open_prs"]) == 1
+    row = result["open_prs"][0]
+    assert row["files"] == filenames
+    assert row["files_truncated"] is True
+    assert row["merge_state"] == "UNKNOWN"
+    assert len([a for a in calls if a[0] == "api" and "/files?" in a[1]]) == 1
+    assert not any(a[:2] == ["pr", "view"] for a in calls)
+    payload = project_map.build_map(source_snapshot={
+        "schema": project_map.SOURCE_SCHEMA,
+        "collected_at": "2026-10-24T09:00:00+00:00", "merged_days": 14,
+        "repositories": [result, *[{
+            "repo": other.repository, "base_branch": other.base_branch,
+            "base_sha": "a" * 40, "open_prs": [], "recently_merged": []}
+            for other in project_map.REPOSITORIES[1:]]],
+    })
+    assert payload is not None
+    assert payload["repositories"][0]["open_prs"][0]["files_truncated"] is True
+    assert "Collision coverage is incomplete" in project_map.render_markdown(payload)
+
+
+@pytest.mark.parametrize("invalid_page", [None, {"message": "API refused"},
+    [{"filename": "not normalized"}], ["file.py", 7]])
+def test_live_collection_rejects_unqualified_file_pages(invalid_page):
+    gh, _ = _large_pr_collector(invalid_page)
+    assert project_map._collect_repository(project_map.REPOSITORIES[0], merged_days=14,
+        collected_at=datetime(2026, 10, 24, 9, tzinfo=timezone.utc), gh_runner=gh) is None
+
+
+
+def test_empty_changed_file_page_never_claims_complete_collision_coverage():
+    gh, _ = _large_pr_collector([])
+    result = project_map._collect_repository(project_map.REPOSITORIES[0], merged_days=14,
+        collected_at=datetime(2026, 10, 24, 9, tzinfo=timezone.utc), gh_runner=gh)
+    assert result is not None
+    assert result["open_prs"][0]["files"] == []
+    assert result["open_prs"][0]["files_truncated"] is True
+
+
+@pytest.mark.parametrize("bad_page", [["path.py"] * 2, [f"file-{i}" for i in range(101)]])
+def test_changed_file_page_rejects_duplicates_and_over_budget(bad_page):
+    gh, _ = _large_pr_collector(bad_page)
+    assert project_map._collect_repository(project_map.REPOSITORIES[0], merged_days=14,
+        collected_at=datetime(2026, 10, 24, 9, tzinfo=timezone.utc), gh_runner=gh) is None
+
+
+
+def test_file_page_collector_runs_bounded_in_parallel_with_stable_row_order():
+    """Real owner timeout needs concurrent reads, without unbounded fanout."""
+    barrier = threading.Barrier(2)
+    observed_pages = []
+    def fake_gh(args):
+        if args[0] == "api" and "/git/ref/heads/" in args[1]:
+            return {"object": {"sha": "a" * 40}}
+        if args[:2] == ["pr", "list"] and "open" in args:
+            return [
+                {"number": 10, "title": "first", "headRefName": "one",
+                 "updatedAt": "2026-10-24T09:00:00Z", "mergeStateStatus": "UNKNOWN"},
+                {"number": 20, "title": "second", "headRefName": "two",
+                 "updatedAt": "2026-10-24T08:00:00Z", "mergeStateStatus": "UNSTABLE"},
+            ]
+        if args[:2] == ["pr", "list"] and "merged" in args:
+            return []
+        if args[0] == "api" and "/files?" in args[1]:
+            observed_pages.append(args[1])
+            barrier.wait(timeout=3)
+            return ["first.py"] if "/pulls/10/" in args[1] else ["second.py"]
+        raise AssertionError(f"unexpected API read: {args!r}")
+
+    result = project_map._collect_repository(project_map.REPOSITORIES[0], merged_days=14,
+        collected_at=datetime(2026, 10, 24, 9, tzinfo=timezone.utc), gh_runner=fake_gh)
+    assert result is not None
+    assert len(observed_pages) == 2
+    assert [entry["number"] for entry in result["open_prs"]] == [10, 20]
+    assert [entry["files"] for entry in result["open_prs"]] == [["first.py"], ["second.py"]]
+    assert [entry["merge_state"] for entry in result["open_prs"]] == ["UNKNOWN", "UNSTABLE"]
+
+
+@pytest.mark.parametrize("bad_numbers", [[10, 10], [10, True], [10, -4]])
+def test_file_collector_refuses_invalid_or_duplicate_pr_numbers_before_requests(bad_numbers):
+    queried = []
+    def fake(args):
+        queried.append(args)
+        if args[0] == "api" and "/git/ref/heads/" in args[1]:
+            return {"object": {"sha": "a" * 40}}
+        if args[:2] == ["pr", "list"] and "open" in args:
+            return [{"number": n} for n in bad_numbers]
+        raise AssertionError("invalid PR list must not generate individual fetches")
+    assert project_map._collect_repository(project_map.REPOSITORIES[0], merged_days=14,
+        collected_at=datetime(2026, 10, 24, 9, tzinfo=timezone.utc), gh_runner=fake) is None
+    assert len(queried) == 2
 
 
 def test_live_collection_queries_every_declared_repository_and_branch():

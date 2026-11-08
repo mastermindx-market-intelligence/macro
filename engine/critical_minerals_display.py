@@ -11,6 +11,10 @@ _MAX_BYTES = 256 * 1024
 _MINERALS = (("cobalt", "Cobalt", "钴"), ("lithium", "Lithium", "锂"),
              ("gallium", "Gallium", "镓"), ("rare_earths", "Rare earths", "稀土"))
 _FALSE_FLAGS = ("may_rank", "may_gate", "may_size", "may_escalate", "rotation_calls", "short_calls")
+_COUNTRY_ZH = {"Argentina": "阿根廷", "Canada": "加拿大", "Chile": "智利", "China": "中国",
+               "Estonia": "爱沙尼亚", "Finland": "芬兰", "Germany": "德国", "Japan": "日本",
+               "Malaysia": "马来西亚", "Norway": "挪威", "Other": "其他"}
+_UNIT_ZH = {"metric tons": "公吨"}
 
 
 def _unavailable() -> dict:
@@ -43,6 +47,42 @@ def _text(value, limit=1200):
     if any(ord(c) < 32 and c not in "\n\t" for c in value):
         return None
     return value  # The producer owns the sentence, including its qualifiers.
+
+
+def _amount(value):
+    if type(value) not in (int, float) or not math.isfinite(value) or value < 0:
+        return None
+    if value % 1 == 0:
+        return f"{int(value):,}"
+    return str(value)  # Other values keep their recorded digits; never round.
+
+
+def _import_sources(source):
+    entries = source.get("import_sources_2021_24")
+    if not isinstance(entries, list) or not 1 <= len(entries) <= 12:
+        return None
+    total, rows = 0, []
+    for entry in entries:
+        if not isinstance(entry, dict):
+            return None
+        country, pct = _text(entry.get("country"), 60), entry.get("pct")
+        if (not country or type(pct) not in (int, float) or not math.isfinite(pct)
+                or not 0 <= pct <= 100):
+            return None
+        total += pct
+        rows.append({"country_en": country, "country_zh": _COUNTRY_ZH.get(country, country),
+                     "pct": _amount(pct)})
+    return None if total > 101 else rows
+
+
+def _world_output(producer):
+    if not isinstance(producer, dict) or producer.get("unit") not in _UNIT_ZH:
+        return None
+    total = producer.get("world_total")
+    if _amount(total) is None or total <= 0:
+        return None
+    unit = producer.get("unit")
+    return {"amount": _amount(total), "unit_en": unit, "unit_zh": _UNIT_ZH[unit]}
 
 
 def load_critical_minerals_context(path: Path) -> dict:
@@ -105,13 +145,16 @@ def load_critical_minerals_context(path: Path) -> dict:
                          "label_zh": _text(source.get("label_zh"), 100) or zh,
                          "available": available, "read_en": read_en if available else None,
                          "read_zh": read_zh if available else None,
-                         "observation_period": period if available else None})
+                         "observation_period": period if available else None,
+                         "import_sources": _import_sources(source) if available else None,
+                         "world_output": _world_output(producer) if available else None})
         count = sum(row["available"] for row in rows)
         if not count:
             return _unavailable()
         return {"state": "AVAILABLE" if count == len(rows) else "PARTIAL",
                 "edition_year": year, "published": published, "generated_at": generated,
                 "source_url": "https://www.sciencebase.gov/catalog/item/" + item,
+                "has_import_sources": any(r["import_sources"] for r in rows),
                 "rows": rows}
     except (OSError, ValueError, TypeError, UnicodeError, RecursionError, OverflowError):
         return _unavailable()

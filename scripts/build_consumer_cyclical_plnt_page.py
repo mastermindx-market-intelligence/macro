@@ -21,7 +21,7 @@ Usage:
     python -m scripts.build_consumer_cyclical_plnt_page  # held: exits 0, no page
     python -m scripts.build_consumer_cyclical_plnt_page --root /path/to/out-repo
 
-The page is held from the public carrier (Product Trust B1): it renders only
+The page is held from the public carrier (Product Trust F-6): it renders only
 to an explicit non-public root — the repository root and ``lib.config.ROOT``
 raise ``PublicCarrierHold``, and the full-site build skips the card.
 """
@@ -96,7 +96,7 @@ def render(root: Path, *, fixture_path: Path | None = None) -> Path:
     if _is_public_carrier(root):
         raise PublicCarrierHold(
             "consumer_cyclical_plnt is a synthetic fixture card; "
-            "public render held (Product Trust B1)"
+            "public render held (Product Trust F-6)"
         )
     packet = build_packet(Path(fixture_path) if fixture_path else FIXTURE_PATH)
     env = Environment(

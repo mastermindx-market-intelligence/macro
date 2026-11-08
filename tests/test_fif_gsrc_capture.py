@@ -542,6 +542,48 @@ def test_out_root_default_writes_under_g_src(
     assert (default_cik_dir / "request_log.jsonl").is_file()
 
 
+def test_out_root_empty_is_a_typed_refusal(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    argv, _index_path = _run_main_in_tmp(tmp_path, monkeypatch, "SNOW")
+    argv = [*argv, "--out-root", ""]
+
+    def _no_fetch(*args: object, **kwargs: object) -> None:
+        raise AssertionError("an empty --out-root must refuse before any fetch")
+
+    monkeypatch.setattr(gsrc, "build_submissions_index", _no_fetch)
+    monkeypatch.setattr(gsrc, "capture_package", _no_fetch)
+    assert gsrc.main([str(arg) for arg in argv]) == 2
+    assert capsys.readouterr().out.splitlines() == ["gsrc_refusal: out_root_empty: ''"]
+    assert list(tmp_path.rglob("*")) == [], "an empty --out-root must write nothing"
+
+
+def test_out_root_relative_resolves_against_repo_root(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    argv, _index_path = _run_main_in_tmp(tmp_path, monkeypatch, "SNOW")
+    repo_root = tmp_path / "repo"
+    elsewhere = tmp_path / "elsewhere"
+    repo_root.mkdir()
+    elsewhere.mkdir()
+    monkeypatch.setattr(gsrc, "_ROOT", repo_root)
+    monkeypatch.chdir(elsewhere)
+    argv = [*argv, "--out-root", "heldout/packages"]
+    out_dirs: list[Path] = []
+    monkeypatch.setattr(
+        gsrc,
+        "build_submissions_index",
+        lambda fetch, cik10, wanted: {accession: {} for accession in wanted},
+    )
+    monkeypatch.setattr(gsrc, "capture_package", _capture_recording_out_dirs(out_dirs))
+    assert gsrc.main([str(arg) for arg in argv]) == 0
+    assert set(out_dirs) == {repo_root / "heldout" / "packages" / "0001640147"}
+    assert (
+        repo_root / "heldout" / "packages" / "0001640147" / "capture_index.json"
+    ).is_file()
+    assert not (elsewhere / "heldout").exists()
+
+
 def test_out_root_flag_redirects_writes_and_default_root_stays_absent(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
