@@ -152,6 +152,18 @@ def _evaluate(spec: S.StrategySpec, ctx: dict) -> dict:
             "asof": bench.index[-1].strftime("%b %d, %Y")}
 
 
+def _score_band(score) -> dict | None:
+    """Display-only band for the raw score: the _BANDS row with lo <= score < hi.
+
+    The top row already ends at 101, so 100 is inside it and 101 is not. This does
+    not move the debounced book weight.
+    """
+    for lo, hi, lab, lab_zh, _col, wt, rng in _BANDS:
+        if lo <= score < hi:
+            return {"label": lab, "label_zh": lab_zh, "weight": wt, "rng": rng}
+    return None
+
+
 def _band_by_weight(risk_w: int):
     """Dial band label/colour from the CURRENT (debounced) weight, so the label, the
     allocation bar, and the highlighted rule-book row always agree. (The raw score can
@@ -207,6 +219,7 @@ def _detail_vm(ev: dict, built: str, leg_meta: dict | None = None,
         "as_of": ev["asof"], "built": built, "income_now": ev["income"],
         "bench_start": ev["bench"].index[0].strftime("%b %d, %Y"),
         "risk_w": ev["risk_w"], "cash_w": ev["cash_w"], "score": ev["score"],
+        "score_band": _score_band(ev["score"]),
         "band_label": band_label, "band_label_zh": band_label_zh, "band_color": band_color,
         "last_switch": ev["last_switch"], "legs": legs, "sc": ev["sc"], "at": ev["at"],
         "dsr": ev["dsr"], "bands": _bands_table(ev["risk_w"]), "episodes": ev["episodes"],

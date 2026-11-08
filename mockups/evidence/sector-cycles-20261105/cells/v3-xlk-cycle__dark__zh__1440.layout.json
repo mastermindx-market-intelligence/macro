@@ -1,0 +1,169 @@
+{
+  "cell": "v3-xlk-cycle__dark__zh__1440",
+  "view": "v3",
+  "url": "/sectors/XLK.html#cycle",
+  "theme": "dark",
+  "lang": "zh",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "variant": null,
+  "js": true,
+  "steps": [],
+  "head": "b601c02749a34fd83877393d59ee88e6045207cd",
+  "pins": {
+    "chromium": "149.0.7827.55",
+    "playwright": "1.61.1",
+    "host": "darwin/arm64",
+    "executable": {
+      "name": "chrome-headless-shell",
+      "sha256": "11e393326c7d20a7c56641a7c65def33ea9c280da3b0b74cf8563b07989a0ee3"
+    },
+    "launch_args": [
+      "--disable-skia-runtime-opts",
+      "--disable-partial-raster",
+      "--disable-gpu",
+      "--force-color-profile=srgb",
+      "--disable-font-subpixel-positioning",
+      "--font-render-hinting=none",
+      "--disable-lcd-text"
+    ],
+    "font_pin": "/p0b-font-pin/pin.css",
+    "clock": "2026-11-05T12:00:00Z",
+    "locale": "en-US",
+    "timezone": "UTC",
+    "dpr": 1
+  },
+  "http_status": 200,
+  "notes": [],
+  "scrollWidth": 1440,
+  "scrollHeight": 2000,
+  "data_theme": "dark",
+  "data_lang": "zh",
+  "html_lang": "zh-CN",
+  "computed_bg": "rgb(13, 16, 24)",
+  "boxes": {
+    "heading": {
+      "selector": "h1",
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0,
+      "visible": false,
+      "text": "Technology科技 (XLK)"
+    },
+    "asof": null,
+    "generation": null,
+    "stale_guard": null,
+    "chips": null,
+    "chart": null,
+    "inspector": null,
+    "compare_tray": null,
+    "fixture_label": {
+      "selector": "[data-fixture=\"true\"]",
+      "x": 202,
+      "y": 239,
+      "w": 68,
+      "h": 21,
+      "visible": true,
+      "text": "示例数据"
+    },
+    "tape_asof": null,
+    "strip_asof": null,
+    "basket_on": null,
+    "members": {
+      "selector": ".scd-members",
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0,
+      "visible": false,
+      "text": "Members成分 Ticker代码Weight权重 NVDANvidia Corp 15.0% AAPLApple Inc 14.8% MSFTMicrosoft Corp 11.4% AMDAdvanced Micro Devices 4.8% AVGOBroadcom Inc 4.8% MUMicron Technology Inc 4.1% INTCIntel Corp 2.7% PLTR"
+    },
+    "companies_unavailable": null,
+    "stance_unavailable": null
+  },
+  "fixture_labels": {
+    "count": 1,
+    "visible": 1,
+    "texts": [
+      "示例数据"
+    ]
+  },
+  "fixture_text": [
+    {
+      "el": "div.",
+      "visible": false,
+      "text": "CAPTURE FIXTURE · third-party TradingView chart stubbed offline (not product UI)"
+    },
+    {
+      "el": "span.l-zh",
+      "visible": true,
+      "text": "示例数据"
+    }
+  ],
+  "size_mult_text": [
+    {
+      "el": "code.scf-code",
+      "visible": false,
+      "in_details": true,
+      "details_open": false,
+      "text": "engine/sector_central.py:453 size_mult = 1.0 (W4.6: every cell ships 1.0; size lever only, never direction; C17; cycles_"
+    }
+  ],
+  "stripe_audit": {
+    "scope": "body",
+    "flagged": []
+  },
+  "next_turn_labels": [],
+  "cycles_ctx": null,
+  "assertions": {
+    "scroll_width_within_viewport": true,
+    "console_errors": 0,
+    "console_errors_unexpected": 0,
+    "size_mult_visible": false,
+    "page_errors": 0,
+    "fixture_label_visible": true,
+    "theme_applied": true,
+    "lang_applied": true,
+    "zh_latin": 3,
+    "expect_visible_any": null
+  },
+  "console_errors": [],
+  "console_errors_expected": [],
+  "page_errors": [],
+  "failed_requests": [],
+  "interceptions": [
+    {
+      "kind": "stub-tradingview",
+      "url": "https://s3.tradingview.com/tv.js"
+    }
+  ],
+  "serve": {
+    "counts": {
+      "out": 25,
+      "head-fallback": 7
+    },
+    "head_fallback": [
+      "/account.js",
+      "/live.js",
+      "/live_config.js",
+      "/logo_config.js",
+      "/nav_market.js",
+      "/navigation-refresh.css",
+      "/stock-logos.js"
+    ],
+    "missing": []
+  },
+  "zh_latin": {
+    "scope": "document",
+    "count": 3,
+    "rc": 1,
+    "line": "zh-latin=3 AI Inc Mastermind skip=details(wholesale),nav,script,style,svg,title,head,[hidden],.l-en code-on-face=counts allow=XL?,FIX,SPY,MODEL,PRIOR"
+  },
+  "png": {
+    "file": "cells/v3-xlk-cycle__dark__zh__1440.png",
+    "sha256": "1e30453949b3d3ed77a09c6fec14618f1cb91ae127f613d263f3085359d0578f"
+  }
+}
