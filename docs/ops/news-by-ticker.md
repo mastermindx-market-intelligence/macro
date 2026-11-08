@@ -76,3 +76,11 @@ contract of `by_ticker.json`.
   one would create a new identity namespace.
 - Every added field is optional-additive: consumers must tolerate its absence,
   and no existing key's meaning changed.
+
+## Unified intelligence news provenance
+
+`engine.intelligence.load_and_build()` carries the metadata from the same news document as its rows into the existing `site/intelligence/by_ticker.json` bundle. Its additive `news_freshness` object contains `source_asof`, `source_asof_basis`, `retained_from_previous_build`, and `retained_reason`. The bundle's `as_of` and `generated_utc` remain its own build clocks; they do not date the news input or the other facets.
+
+The source strings are reported as supplied; empty or wrong-type strings become `null`. The retained flag is a strict boolean or `null`, so an older producer or a row-only caller does not silently become `false`. A known `false` is not a recency claim. This metadata does not establish per-article freshness, complete coverage, rights, ranking, or predictive authority.
+
+The Mastermind consumer must keep the metadata paired with the rows it selects: unified news uses `news_freshness`, and a standalone fallback uses that standalone document's metadata. Missing unified metadata must not be filled from a newer standalone feed. The bot's serialized tool response and portfolio news lens are the intended readers; source release, vendor refresh, and deployed consumption are separate proof steps.

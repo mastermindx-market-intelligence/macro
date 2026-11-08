@@ -222,9 +222,29 @@ def _brain(news, alt, radar, standout, read: dict) -> dict:
     }
 
 
+def _news_freshness(metadata: dict | None) -> dict:
+    """Carry the news producer's reported provenance, without inferring recency.
+
+    These fields belong only to the news input, not to the unified build or its
+    other facets. Old row-only callers have unknown provenance, not fresh news.
+    """
+    metadata = metadata if isinstance(metadata, dict) else {}
+
+    def text(key):
+        value = metadata.get(key)
+        return value if isinstance(value, str) and value.strip() else None
+
+    retained = metadata.get("retained_from_previous_build")
+    return {"source_asof": text("source_asof"),
+            "source_asof_basis": text("source_asof_basis"),
+            "retained_from_previous_build": retained if isinstance(retained, bool) else None,
+            "retained_reason": text("retained_reason")}
+
+
 def build(news_tickers: dict | None, alt_signals: list | None,
           alt_by_ticker: dict | None, radar_tickers: list | None = None,
-          standouts: list | None = None, today: date | None = None) -> dict:
+          standouts: list | None = None, today: date | None = None, *,
+          news_metadata: dict | None = None) -> dict:
     """Merge every per-ticker dashboard signal into ONE bundle (4 facets + a read). PURE.
 
     news_tickers   — site/news/by_ticker.json     ["tickers"]  (T -> compact news dict)
@@ -232,6 +252,8 @@ def build(news_tickers: dict | None, alt_signals: list | None,
     alt_by_ticker  — site/altdata/by_ticker.json  ["tickers"]  (T -> v2 record, fallback)
     radar_tickers  — site/basketdata/radar_ticker.json["tickers"] (per-name divergence)
     standouts      — site/factordata/us_standouts.json["buy"]  (factor buy-board)
+    news_metadata  — metadata from the SAME news envelope as news_tickers; optional
+                     for legacy row-only callers. Never used by ranking/scoring.
     """
     news_tickers = news_tickers or {}
     alt_by_ticker = alt_by_ticker or {}
@@ -263,6 +285,7 @@ def build(news_tickers: dict | None, alt_signals: list | None,
     return {"schema": SCHEMA, "is_context_only": True,
             "as_of": today.isoformat(),
             "generated_utc": datetime.now(timezone.utc).isoformat(),
+            "news_freshness": _news_freshness(news_metadata),
             "n_tickers": len(out),
             "n_with_both": sum(1 for v in out.values() if v["has_news"] and v["has_alt"]),
             "n_4facet": sum(1 for v in out.values()
@@ -288,4 +311,4 @@ def load_and_build(today: date | None = None) -> dict:
     rt = _read("site/basketdata/radar_ticker.json") or {}
     so = _read("site/factordata/us_standouts.json") or {}
     return build(news.get("tickers"), mm.get("signals"), bt.get("tickers"),
-                 rt.get("tickers"), so.get("buy"), today)
+                 rt.get("tickers"), so.get("buy"), today, news_metadata=news)

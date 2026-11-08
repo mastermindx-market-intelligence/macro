@@ -44275,6 +44275,9 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "engine/intelligence.py"
+      - "tests/test_intelligence.py"
+      - "tests/test_intelligence_news_freshness.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -45492,6 +45495,8 @@ jobs:
         run: >-
           pip install pytest pandas pyarrow pyyaml requests fastapi httpx
           websockets jsonschema==4.26.0 referencing jinja2 beautifulsoup4
+      - name: unified news provenance — producer clocks and selected snapshot
+        run: python -m pytest tests/test_intelligence.py tests/test_intelligence_news_freshness.py -q
       - name: ticker-news qbus kernel — collectors, store, API read plane, deploy contracts
         run: >-
           PYTHONDONTWRITEBYTECODE=1 python -m pytest

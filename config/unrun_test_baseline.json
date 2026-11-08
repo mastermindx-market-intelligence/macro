@@ -434,7 +434,6 @@
     "tests/test_intel_discovery.py",
     "tests/test_intel_hub.py",
     "tests/test_intel_hub_policy_gate.py",
-    "tests/test_intelligence.py",
     "tests/test_international_macro_dashboards.py",
     "tests/test_intl_build.py",
     "tests/test_intl_c5c8.py",
