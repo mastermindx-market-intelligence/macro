@@ -1,0 +1,1 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="0" skipped="0" tests="1" time="5.423" timestamp="2026-10-14T03:43:53.355008-07:00" hostname="m2studio"><testcase classname="tests.test_ci_pack" name="test_qledger_scope_keeps_runtime_phrase_book_without_unrelated_builder" time="3.270" /></testsuite></testsuites>

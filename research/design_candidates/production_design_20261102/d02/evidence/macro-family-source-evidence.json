@@ -1,0 +1,407 @@
+{
+  "observed_at_utc": "2026-11-03",
+  "assignment_pin": "6e1862867193ec6486a22001a0e4fb515da20448",
+  "current_macro_pin": "fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9",
+  "f03_package_pin": "39ac3035b24b66d60dfc65f2cc58a81cb3f2b92d",
+  "f03_inventory_pin": "b66ca0fcfe7d79f1c90dbfa395e2d43ac5824a6e",
+  "registry_historical_macro_pin": "73852e221d9ce087abe30b4703de3627773f3351",
+  "registry_blob_sha": "f4cae40a4bafec7e2e9f94dfff1e84c45d1bd008",
+  "historical_registry_row": {
+    "page_id": "macro:macro_family",
+    "repo": "macro",
+    "route": "/macro/<id>.html",
+    "route_kind": "family",
+    "source_template": "unknown",
+    "builder": [],
+    "data_sources": [],
+    "access_shell": "anonymous",
+    "payload_tier": "public_shell_premium_payload",
+    "nav_family": "none",
+    "archetype": "regime_dashboard",
+    "design_system": {
+      "compliant": false
+    },
+    "primary_user_question": "",
+    "owner": "unowned",
+    "lifecycle": "live",
+    "priority": "unclassified",
+    "generated": "unknown",
+    "bilingual": "unknown",
+    "themes": "unknown",
+    "locales": "unknown",
+    "known_contracts": [],
+    "open_prs": [],
+    "source_evidence": [
+      "site/macro/"
+    ],
+    "notes": [
+      "11 committed pages under site/macro/",
+      "no write_page() call site resolves to this directory; builder unknown"
+    ]
+  },
+  "current_directory": [
+    {
+      "name": "fragments",
+      "path": "site/macro/fragments",
+      "sha": "800b709d70dc7bcd6898d7cd5ee04ea34ca4ce32",
+      "type": "dir"
+    }
+  ],
+  "current_members": [
+    {
+      "name": "consumer.html",
+      "path": "site/macro/fragments/consumer.html",
+      "sha": "f926993b89ed294f52d712d79ca490c97109f089",
+      "size": 5501,
+      "type": "file"
+    },
+    {
+      "name": "credit.html",
+      "path": "site/macro/fragments/credit.html",
+      "sha": "03aebeab4afe80425ea992c1d57d329fb653fe14",
+      "size": 4151,
+      "type": "file"
+    },
+    {
+      "name": "debt.html",
+      "path": "site/macro/fragments/debt.html",
+      "sha": "03331a5d2b6fdd2f2f266c8e801bd1162b48e45d",
+      "size": 2377,
+      "type": "file"
+    },
+    {
+      "name": "growth.html",
+      "path": "site/macro/fragments/growth.html",
+      "sha": "866ad5d92d15ff24798d32bdcd1f144b54b29200",
+      "size": 6273,
+      "type": "file"
+    },
+    {
+      "name": "housing.html",
+      "path": "site/macro/fragments/housing.html",
+      "sha": "8f9becc5878f0fe8cf169a68977db3e21bbdb50a",
+      "size": 4258,
+      "type": "file"
+    },
+    {
+      "name": "inflation.html",
+      "path": "site/macro/fragments/inflation.html",
+      "sha": "0466057171a65eedf7b2633de0345cc69aa92ee5",
+      "size": 3068,
+      "type": "file"
+    },
+    {
+      "name": "jobs.html",
+      "path": "site/macro/fragments/jobs.html",
+      "sha": "2511b836b65e33a76ce77dc359e2ca5c13ed8cef",
+      "size": 3096,
+      "type": "file"
+    },
+    {
+      "name": "money.html",
+      "path": "site/macro/fragments/money.html",
+      "sha": "cdf4b8fdc4bcf78f5dabb1baabcc381f8820ea25",
+      "size": 4113,
+      "type": "file"
+    },
+    {
+      "name": "policy.html",
+      "path": "site/macro/fragments/policy.html",
+      "sha": "03331a5d2b6fdd2f2f266c8e801bd1162b48e45d",
+      "size": 2377,
+      "type": "file"
+    },
+    {
+      "name": "rates.html",
+      "path": "site/macro/fragments/rates.html",
+      "sha": "dae0f313d30a98683c655b82d141461f1cb38677",
+      "size": 4281,
+      "type": "file"
+    },
+    {
+      "name": "trade.html",
+      "path": "site/macro/fragments/trade.html",
+      "sha": "f50260d0d72d54c1b5b149fb06c41a7564497250",
+      "size": 4228,
+      "type": "file"
+    }
+  ],
+  "historical_members": [
+    {
+      "name": "consumer.html",
+      "path": "site/macro/fragments/consumer.html",
+      "sha": "03331a5d2b6fdd2f2f266c8e801bd1162b48e45d",
+      "size": 2377,
+      "type": "file"
+    },
+    {
+      "name": "credit.html",
+      "path": "site/macro/fragments/credit.html",
+      "sha": "5fe9a42d00ede0120a5ebb9933182ca4c75f0c1c",
+      "size": 6893,
+      "type": "file"
+    },
+    {
+      "name": "debt.html",
+      "path": "site/macro/fragments/debt.html",
+      "sha": "1b205fd0cced40d447940232f70c84d6e311414c",
+      "size": 5061,
+      "type": "file"
+    },
+    {
+      "name": "growth.html",
+      "path": "site/macro/fragments/growth.html",
+      "sha": "32da4d750921c3efc6fe5d15ebe94c1523d4457a",
+      "size": 6273,
+      "type": "file"
+    },
+    {
+      "name": "housing.html",
+      "path": "site/macro/fragments/housing.html",
+      "sha": "e32be6431164bebb5cf5c0f92f658a496c1eb36b",
+      "size": 4253,
+      "type": "file"
+    },
+    {
+      "name": "inflation.html",
+      "path": "site/macro/fragments/inflation.html",
+      "sha": "0466057171a65eedf7b2633de0345cc69aa92ee5",
+      "size": 3068,
+      "type": "file"
+    },
+    {
+      "name": "jobs.html",
+      "path": "site/macro/fragments/jobs.html",
+      "sha": "dcb3456fba71e939118f3bcf591f2c677f5e208d",
+      "size": 3055,
+      "type": "file"
+    },
+    {
+      "name": "money.html",
+      "path": "site/macro/fragments/money.html",
+      "sha": "3c2fe541d344d834b2c719bd3a4c22b72a938a76",
+      "size": 4111,
+      "type": "file"
+    },
+    {
+      "name": "policy.html",
+      "path": "site/macro/fragments/policy.html",
+      "sha": "fef85fe4c8b6ebe579c2a065d5181b22d0246581",
+      "size": 4283,
+      "type": "file"
+    },
+    {
+      "name": "rates.html",
+      "path": "site/macro/fragments/rates.html",
+      "sha": "8fb656648b89b20bf4039cc86b882161ac4ff15c",
+      "size": 4281,
+      "type": "file"
+    },
+    {
+      "name": "trade.html",
+      "path": "site/macro/fragments/trade.html",
+      "sha": "f50260d0d72d54c1b5b149fb06c41a7564497250",
+      "size": 4228,
+      "type": "file"
+    }
+  ],
+  "f03_inventory_members": [
+    {
+      "name": "consumer.html",
+      "path": "site/macro/fragments/consumer.html",
+      "sha": "f926993b89ed294f52d712d79ca490c97109f089",
+      "size": 5501,
+      "type": "file"
+    },
+    {
+      "name": "credit.html",
+      "path": "site/macro/fragments/credit.html",
+      "sha": "03aebeab4afe80425ea992c1d57d329fb653fe14",
+      "size": 4151,
+      "type": "file"
+    },
+    {
+      "name": "debt.html",
+      "path": "site/macro/fragments/debt.html",
+      "sha": "03331a5d2b6fdd2f2f266c8e801bd1162b48e45d",
+      "size": 2377,
+      "type": "file"
+    },
+    {
+      "name": "growth.html",
+      "path": "site/macro/fragments/growth.html",
+      "sha": "866ad5d92d15ff24798d32bdcd1f144b54b29200",
+      "size": 6273,
+      "type": "file"
+    },
+    {
+      "name": "housing.html",
+      "path": "site/macro/fragments/housing.html",
+      "sha": "8f9becc5878f0fe8cf169a68977db3e21bbdb50a",
+      "size": 4258,
+      "type": "file"
+    },
+    {
+      "name": "inflation.html",
+      "path": "site/macro/fragments/inflation.html",
+      "sha": "0466057171a65eedf7b2633de0345cc69aa92ee5",
+      "size": 3068,
+      "type": "file"
+    },
+    {
+      "name": "jobs.html",
+      "path": "site/macro/fragments/jobs.html",
+      "sha": "2511b836b65e33a76ce77dc359e2ca5c13ed8cef",
+      "size": 3096,
+      "type": "file"
+    },
+    {
+      "name": "money.html",
+      "path": "site/macro/fragments/money.html",
+      "sha": "cdf4b8fdc4bcf78f5dabb1baabcc381f8820ea25",
+      "size": 4113,
+      "type": "file"
+    },
+    {
+      "name": "policy.html",
+      "path": "site/macro/fragments/policy.html",
+      "sha": "03331a5d2b6fdd2f2f266c8e801bd1162b48e45d",
+      "size": 2377,
+      "type": "file"
+    },
+    {
+      "name": "rates.html",
+      "path": "site/macro/fragments/rates.html",
+      "sha": "dae0f313d30a98683c655b82d141461f1cb38677",
+      "size": 4281,
+      "type": "file"
+    },
+    {
+      "name": "trade.html",
+      "path": "site/macro/fragments/trade.html",
+      "sha": "f50260d0d72d54c1b5b149fb06c41a7564497250",
+      "size": 4228,
+      "type": "file"
+    }
+  ],
+  "same_exporter_blob_at_current_and_f03_inventory": true,
+  "cached_files": [
+    {
+      "key": "macro-exporter",
+      "path": "macro/scripts/export_shared_shell_routes.py",
+      "sha": "c0fb0903a07ceb4ac1081a63fee9fdef86c231d8",
+      "display_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/scripts/export_shared_shell_routes.py"
+    },
+    {
+      "key": "registry-generator",
+      "path": "macro/scripts/build_product_page_registry.py",
+      "sha": "84bb51af83e7ca63971101b42d1f451dce9aa513",
+      "display_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/scripts/build_product_page_registry.py"
+    },
+    {
+      "key": "fragment-template",
+      "path": "macro/templates/_macro_command_fragment.html.j2",
+      "sha": "5a0b38a9871b29711a698e61cd73199f2f33f52a",
+      "display_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/templates/_macro_command_fragment.html.j2"
+    },
+    {
+      "key": "fragment-policy",
+      "path": "macro/site/macro/fragments/policy.html",
+      "sha": "03331a5d2b6fdd2f2f266c8e801bd1162b48e45d",
+      "display_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/site/macro/fragments/policy.html"
+    },
+    {
+      "key": "f03-d02",
+      "path": "f03/assignments/D02.md",
+      "sha": "72e8aab31ef63269168b80a0ba6615d2f0d65e2a",
+      "display_url": "https://github.com/mastermindx-market-intelligence/macro/blob/39ac3035b24b66d60dfc65f2cc58a81cb3f2b92d/research/design_candidates/production_design_20261102/f03/assignments/D02.md"
+    },
+    {
+      "key": "f03-provenance",
+      "path": "f03/data/provenance.json",
+      "sha": "4723d625938610ee1035992a05ea970be57c66c0",
+      "display_url": "https://github.com/mastermindx-market-intelligence/macro/blob/39ac3035b24b66d60dfc65f2cc58a81cb3f2b92d/research/design_candidates/production_design_20261102/f03/data/provenance.json"
+    },
+    {
+      "key": "f03-receipt",
+      "path": "f03/evidence/inventory-receipt.json",
+      "sha": "7883bc9a049c36afbf2554d57419815345f9c693",
+      "display_url": "https://github.com/mastermindx-market-intelligence/macro/blob/39ac3035b24b66d60dfc65f2cc58a81cb3f2b92d/research/design_candidates/production_design_20261102/f03/evidence/inventory-receipt.json"
+    },
+    {
+      "key": "f03-reproduce",
+      "path": "f03/REPRODUCE.md",
+      "sha": "ae3ff3d041a112c5e9bef313a646cd097e62be32",
+      "display_url": "https://github.com/mastermindx-market-intelligence/macro/blob/39ac3035b24b66d60dfc65f2cc58a81cb3f2b92d/research/design_candidates/production_design_20261102/f03/REPRODUCE.md"
+    },
+    {
+      "key": "current-fragment-consumer.html",
+      "path": "macro/site/macro/fragments/consumer.html",
+      "sha": "f926993b89ed294f52d712d79ca490c97109f089",
+      "display_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/site/macro/fragments/consumer.html"
+    },
+    {
+      "key": "current-fragment-credit.html",
+      "path": "macro/site/macro/fragments/credit.html",
+      "sha": "03aebeab4afe80425ea992c1d57d329fb653fe14",
+      "display_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/site/macro/fragments/credit.html"
+    },
+    {
+      "key": "current-fragment-debt.html",
+      "path": "macro/site/macro/fragments/debt.html",
+      "sha": "03331a5d2b6fdd2f2f266c8e801bd1162b48e45d",
+      "display_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/site/macro/fragments/debt.html"
+    },
+    {
+      "key": "current-fragment-growth.html",
+      "path": "macro/site/macro/fragments/growth.html",
+      "sha": "866ad5d92d15ff24798d32bdcd1f144b54b29200",
+      "display_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/site/macro/fragments/growth.html"
+    },
+    {
+      "key": "current-fragment-housing.html",
+      "path": "macro/site/macro/fragments/housing.html",
+      "sha": "8f9becc5878f0fe8cf169a68977db3e21bbdb50a",
+      "display_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/site/macro/fragments/housing.html"
+    },
+    {
+      "key": "current-fragment-inflation.html",
+      "path": "macro/site/macro/fragments/inflation.html",
+      "sha": "0466057171a65eedf7b2633de0345cc69aa92ee5",
+      "display_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/site/macro/fragments/inflation.html"
+    },
+    {
+      "key": "current-fragment-jobs.html",
+      "path": "macro/site/macro/fragments/jobs.html",
+      "sha": "2511b836b65e33a76ce77dc359e2ca5c13ed8cef",
+      "display_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/site/macro/fragments/jobs.html"
+    },
+    {
+      "key": "current-fragment-money.html",
+      "path": "macro/site/macro/fragments/money.html",
+      "sha": "cdf4b8fdc4bcf78f5dabb1baabcc381f8820ea25",
+      "display_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/site/macro/fragments/money.html"
+    },
+    {
+      "key": "current-fragment-rates.html",
+      "path": "macro/site/macro/fragments/rates.html",
+      "sha": "dae0f313d30a98683c655b82d141461f1cb38677",
+      "display_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/site/macro/fragments/rates.html"
+    },
+    {
+      "key": "current-fragment-trade.html",
+      "path": "macro/site/macro/fragments/trade.html",
+      "sha": "f50260d0d72d54c1b5b149fb06c41a7564497250",
+      "display_url": "https://github.com/mastermindx-market-intelligence/macro/blob/fc85b0428cf8b0ca4f2fbbc5a415b2871f15a1c9/site/macro/fragments/trade.html"
+    }
+  ],
+  "read_limitations": [
+    "F03 generated-document-index.csv over 1MB returned empty content from file connector; blob SHA received but no per-record rows inspected.",
+    "F03 gzip inventory is non-UTF8 and connector rejected read; receipt, source exporter, source directories and representative/all fragment content independently inspected.",
+    "No beta/browser, deployed routing, Paper or external writes in this advisory follow-up."
+  ],
+  "cache_git_blob_verification": {
+    "verified_count": 18,
+    "mismatches": []
+  }
+}

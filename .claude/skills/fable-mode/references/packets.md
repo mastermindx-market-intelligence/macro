@@ -204,5 +204,6 @@ If no real watcher could be registered: `WATCH_UNAVAILABLE: <surface checked> â€
 
 Session end (last line of a substantial session):
 ```
-SESSION END: <PROVEN_OUTCOME | EXACT_HUMAN_GATE | EFFECT_UNKNOWN | ALL_SCOPED_LANES_BLOCKED | DURABLE_EXECUTION_RUNNING>
+SESSION END: <PROVEN_OUTCOME | EXACT_HUMAN_GATE | PLATFORM_FAILURE | EFFECT_UNKNOWN | DURABLE_EXECUTION_RUNNING>
+# ALL_SCOPED_LANES_BLOCKED and MORE_WORK_EXISTS are diagnostic-only and may not end a seat/principal session.
 ```

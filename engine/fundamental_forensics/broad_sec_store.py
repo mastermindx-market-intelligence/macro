@@ -4140,21 +4140,28 @@ def live_fetchers(
     submissions_session: Any = None,
     companyfacts_fetcher: Any = None,
     retrieved_at: str | None = None,
+    pacer: Any = None,
 ) -> tuple[FetchBytes, FetchHistorical, FetchCompanyFacts, FetchIndex]:
-    from collectors.edgar_forensics import SecForensicsCollector
+    from collectors.edgar_forensics import SecForensicsCollector, SecRequestPacer
     from collectors.fundamental_forensics_companyfacts import SecCompanyFactsCollector
 
     del retrieved_at
+    # ONE incumbent SEC request pacer for the whole poll (A20): both collectors
+    # acquire the same budget object so concurrent fetch paths in this process
+    # cannot multiply the per-interval SEC request rate.
+    shared_pacer = pacer if pacer is not None else SecRequestPacer()
     submissions = SecForensicsCollector(
         scratch_root,
         user_agent=user_agent,
         session=submissions_session,
         max_response_bytes=MAX_SUBMISSIONS_BYTES,
+        pacer=shared_pacer,
     )
     facts = SecCompanyFactsCollector(
         user_agent=user_agent,
         fetcher=companyfacts_fetcher,
         max_attempts=4,
+        pacer=shared_pacer,
     )
 
     def fetch_submissions(cik: str) -> tuple[bytes, Mapping[str, str | None]]:

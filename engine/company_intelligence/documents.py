@@ -82,6 +82,8 @@ ABSENCE_REASONS: frozenset[str] = frozenset({
     "superseded_by_duplicate",
     "missing_basis",
     "missing_units",
+    "unit_mismatch",
+    "cross_check_conflict",
     "missing_period",
     "missing_source",
 })
