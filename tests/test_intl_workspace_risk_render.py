@@ -73,7 +73,7 @@ def render(
     generation="im-workspace-generation:12345678-1234-4123-8123-123456789012",
 ):
     environment = Environment(
-        loader=FileSystemLoader(ROOT),
+        loader=FileSystemLoader([ROOT, ROOT / "templates"]),
         autoescape=False,
         undefined=StrictUndefined,
     )

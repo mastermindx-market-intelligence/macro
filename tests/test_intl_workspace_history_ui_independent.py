@@ -134,10 +134,13 @@ def test_html_does_not_disclose_track_metrics_foreign_events_or_destinations():
     assert jp['as_known']['destination'] == '/research/as-known'
     for secret in (
         '0.25', 'hit_rate', '/research/as-known', '/research/track-record',
-        'global_top_ten', 'Other market', '其他市场', 'intl_regime.classifier_history',
+        'global_top_ten', 'Other market', '其他市场',
         'as_known', 'false_alarms', 'drawdowns',
     ):
         assert secret not in html, secret
+    # Qualified reconstruction universe metadata is permitted; track-record
+    # universe and metrics remain prohibited by the checks above.
+    assert '<dd data-im-history-universe>' + jp['identity']['universe'] + '</dd>' in html
     assert 'No success rate is inferred' in html
     assert 'Original-known history unavailable' in html
     assert 'No linked revision records' in html
@@ -189,7 +192,9 @@ def test_value_denied_keeps_dates_without_inventing_zero_scores():
     assert points and all(point['growth_score'] is None and point['inflation_score'] is None for point in points)
     assert '2026-01-01T00:00:00+09:00' in html
     assert '0.4375' not in html
-    assert 'Unavailable' in html
+    payload = json.loads(re.search(r'<script type="application/json" data-im-snapshot-payload>(.*?)</script>', html, re.S).group(1))
+    assert payload['selection'] == {'eligible': False, 'reason': 'value_denied'}
+    assert all(row[1:] == [None, None] for row in payload['points'])
     assert 'value="0"' not in html
 
 
@@ -224,7 +229,7 @@ def test_static_form_is_disabled_blank_and_confirmation_is_outside_the_fieldset(
     assert 'disabled' in fieldset
     inputs = [attrs for tag, attrs in nodes if tag == 'input']
     assert all(attrs.get('value', '') == '' for attrs in inputs)
-    assert html.find('data-im-scenario-fields') < html.find('</fieldset>') < html.find('data-im-scenario-confirm-reset')
+    assert html.find('data-im-scenario-fields') < html.find('</fieldset>', html.find('data-im-scenario-fields')) < html.find('data-im-scenario-confirm-reset')
     assert html.find('</fieldset>') < html.find('data-im-scenario-confirm-context')
     assert 'hidden' in next(attrs for _, attrs in nodes if 'data-im-scenario-result' in attrs)
 
@@ -241,7 +246,16 @@ def test_history_panel_is_one_shared_catalogue_not_per_horizon_pair():
     assert len(result['histories']) == 1
     assert len(result['histories'][0]['sections']) == 2
     assert [attrs['data-im-history-market'] for _, attrs in nodes if 'data-im-history-slot' in attrs] == ['JP', 'KR']
-    assert html.count('0.4375') == 1
+    # Bounded initial DOM stays empty; exact ordered supplied rows are retained
+    # in JSON for the actual controller's eight-row paging and explicit selector.
+    payloads = re.findall(r'<script type="application/json" data-im-snapshot-payload>(.*?)</script>', html, re.S)
+    assert len(payloads) == len(result['histories'][0]['sections'])
+    for wire, section in zip(payloads, result['histories'][0]['sections']):
+        assert json.loads(wire)['points'] == [
+            [row['observation_at'], *[str(row[k]) if row[k] is not None else None
+             for k in ('growth_score', 'inflation_score')]] for row in section['points']]
+    assert html.count('<td>0.4375</td>') == 0
+    assert '<tbody data-im-history-rows></tbody>' in html
     assert html.count('data-im-generation="' + GENERATION + '"') == 1
 
 
@@ -256,7 +270,7 @@ def test_css_is_static_scoped_and_does_not_mint_tokens_or_fetch():
     assert '[data-theme="light"] .intl-history__result' in css
     assert '[data-theme="light"] .intl-history__boundary' in css
     assert '[data-theme="light"] .intl-history :is(input,select)' in css
-    assert 'border-inline-start:3px solid var(--link)' in css
+    assert 'border-inline-start:3px solid var(--link)' not in css
     assert 'var(--card-shadow)' in css
     assert '.style.' not in controller
     assert 'insertRule' not in controller

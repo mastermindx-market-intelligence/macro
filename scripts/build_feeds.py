@@ -70,9 +70,11 @@ def _asof_of(obj) -> str | None:
     return None
 
 
-def build() -> dict:
+def build(*, render_only: bool = False, output_dir: Path | None = None) -> dict:
     """Assemble every feed; returns {artifact_name: asof|None} for the meta."""
-    out = _feeds_dir()
+    out = _feeds_dir() if output_dir is None else Path(output_dir)
+    if not out.is_dir() or out.is_symlink():
+        raise ValueError("feed output must be an existing real directory")
     data = config.data_dir()
     meta: dict[str, dict] = {}
 
@@ -133,23 +135,33 @@ def build() -> dict:
     # 6. event calendar — first persistent artifact (engine/event_calendar.py was
     #    render-inline only). asof = the schedule-pull date: calendar data IS
     #    forward-looking; freshness means "assembled today".
-    try:
-        from engine import event_calendar as ec
-        today = datetime.now(timezone.utc).date()
-        cal = {
-            "schema_version": SCHEMA_VERSION,
-            "asof": today.isoformat(),
-            "horizon_days": EVENT_HORIZON_D,
-            "us_macro": ec.us_macro_events(today, EVENT_HORIZON_D),
-            "high_impact": ec.high_impact_strip(today, EVENT_HORIZON_D),
-            "commodity": ec.commodity_events(today, EVENT_HORIZON_D),
-            "is_context_only": True,
-        }
-        _write_json(out, "event_calendar.json", cal)
-        note("event_calendar.json", cal["asof"], "engine/event_calendar.py")
-    except Exception as e:  # noqa: BLE001
-        log.warning("feed event_calendar.json failed: %s — skipped", e)
-
+    if render_only:
+        # The default normal feed builder retains acquisition behavior. The
+        # explicit durable render cannot obtain a calendar release/auction feed:
+        # retain an existing calendar's actual bytes/asof, or omit it honestly.
+        retained_calendar = out / "event_calendar.json"
+        retained_value = _read_json(retained_calendar)
+        if isinstance(retained_value, dict):
+            # Preserve the incumbent producer provenance as well as the old
+            # payload/asof. This invocation did not pull or reassemble it.
+            note("event_calendar.json", _asof_of(retained_value), "engine/event_calendar.py")
+    else:
+        try:
+            from engine import event_calendar as ec
+            today = datetime.now(timezone.utc).date()
+            cal = {
+                "schema_version": SCHEMA_VERSION,
+                "asof": today.isoformat(),
+                "horizon_days": EVENT_HORIZON_D,
+                "us_macro": ec.us_macro_events(today, EVENT_HORIZON_D),
+                "high_impact": ec.high_impact_strip(today, EVENT_HORIZON_D),
+                "commodity": ec.commodity_events(today, EVENT_HORIZON_D),
+                "is_context_only": True,
+            }
+            _write_json(out, "event_calendar.json", cal)
+            note("event_calendar.json", cal["asof"], "engine/event_calendar.py")
+        except Exception as e:  # noqa: BLE001
+            log.warning("feed event_calendar.json failed: %s — skipped", e)
     # 7. intl spillover — the per-market intl radars (engine/risk_radar_intl)
     #    were RENDER-INLINE only (computed inside build_china/build_hk, never
     #    persisted); this makes them a durable plane. snapshot() never raises
@@ -222,6 +234,41 @@ def build() -> dict:
     #     Byte-verbatim copy preserves the envelope contract.
     mc = data / "neuralweb" / "mastermind_context.json"
     copy(mc, "nw_mastermind_context.json", _asof_of(_read_json(mc)), "data/neuralweb/mastermind_context.json")
+
+    # 11. International native generation, on this incumbent R2-only machine
+    # plane. Never reshape the producer's bytes or replace the full manifest
+    # from a partial International fixture. Exact source files are independent
+    # of any user account, question, Saved record or authenticated read.
+    try:
+        from lib.intl_generation_publication import read_generation_publication, publish_unavailable_generation
+        publication = read_generation_publication(data_root=data)
+        if publication.get("status") != "ready":
+            # Invalidate a stale current selector when its dependent immutable
+            # bytes are missing/corrupt. No old/current generation fallback.
+            publish_unavailable_generation(data_root=data)
+            publication = read_generation_publication(data_root=data)
+        descriptor = publication.get("descriptor")
+        if type(descriptor) is not dict:
+            raise ValueError("International descriptor unavailable")
+        source_dir = data / "intl/publication/generations"
+        if descriptor.get("state") == "ready":
+            name = descriptor["artifact_name"]
+            copy(source_dir / name, name, None, "data/intl/publication/generations/" + name)
+            generation_contract = json.loads(publication["artifact_bytes"])
+            points = generation_contract.get("policy_points_ref")
+            if points is not None:
+                point_name = points["artifact_name"]
+                copy(source_dir / point_name, point_name, None, "data/intl/publication/generations/" + point_name)
+        # Preserve the original immutable descriptor witness as well as the
+        # mutable current selector; neither acquires a build-time asof.
+        current = source_dir / "intl_generation_current.json"
+        import hashlib
+        witness = "intl_generation_descriptor_" + hashlib.sha256(current.read_bytes()).hexdigest() + ".json"
+        copy(source_dir / witness, witness, None, "data/intl/publication/generations/" + witness)
+        copy(current, "intl_generation_current.json", None,
+             "data/intl/publication/generations/intl_generation_current.json")
+    except Exception as exc:
+        log.warning("International native generation feed unavailable (%s)", type(exc).__name__)
 
     _write_json(out, "feeds_meta.json", {
         "schema_version": SCHEMA_VERSION,

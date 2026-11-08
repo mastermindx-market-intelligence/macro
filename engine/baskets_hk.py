@@ -23,6 +23,15 @@ log = logging.getLogger(__name__)
 BENCHMARK_DEFAULT = "_HSI"   # Hang Seng Index
 SEARCH_START = "2021-06-15"  # trim the 40y deep cache to the ~5y window the other markets use
 
+#: What the HK series actually is. The membership file's own construction line says the
+#: baskets are "rebalanced monthly"; engine.baskets._ew_level instead takes the daily
+#: arithmetic mean of the members active on each date and compounds it. This is the
+#: construction the page must show.
+CONSTRUCTION = (
+    "Daily arithmetic mean of available active-member returns, compounded; "
+    "membership follows the supplied added/removed dates."
+)
+
 
 def _membership() -> dict | None:
     p = config.data_dir() / "baskets_hk" / "membership.json"
@@ -58,8 +67,17 @@ def compute_hk_baskets() -> dict | None:
         return None
     closes = _closes()
     bench = store.read("hk", mem.get("benchmark", BENCHMARK_DEFAULT))
-    return compute_region_baskets(closes, mem, bench,
-                                  lambda s: store.read("hk", s), name_key="name")
+    out = compute_region_baskets(closes, mem, bench,
+                                 lambda s: store.read("hk", s), name_key="name")
+    if not out:
+        return None
+    # The membership file's construction line says "rebalanced monthly"; the series is not
+    # that — engine.baskets._ew_level averages the active members' daily returns and
+    # compounds them. Restate the construction in the OUTPUT copy only: the membership
+    # dict, the rosters and every numeric field are left exactly as computed.
+    out = dict(out)
+    out["construction"] = CONSTRUCTION
+    return out
 
 
 def member_closes_getter(closes: pd.DataFrame | None):

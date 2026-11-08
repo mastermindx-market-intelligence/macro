@@ -508,6 +508,64 @@ class TestSelftest:
 # ---------------------------------------------------------------------------
 
 class TestLiveConformance:
+    def test_durable_intl_inventory_retains_every_conditional_call_and_drift_guard(self):
+        lanes, divergences = _parse_dag_yml(REPO_ROOT / "config" / "dag.yml")
+        lane = next(
+            lane for lane in lanes
+            if lane.workflow == ".github/workflows/render.yml" and lane.job == "render"
+        )
+        actual = _parse_workflow(REPO_ROOT / lane.workflow, REPO_ROOT)[lane.job]
+        module = "scripts.render_intl_durable"
+        assert [step.id for step in lane.steps if step.module == module] == [
+            "durable_intl_build", "durable_intl_finalize", "durable_intl_stage",
+            "durable_intl_precommit_verify", "durable_intl_target_verify",
+            "durable_intl_metadata_candidate_verify", "intl_durable_evidence",
+        ]
+        # Six publication gates plus the separate attempt-facts metadata audit.
+        assert sum(step.module == module for step in actual) == 7
+        import yaml
+        declared = yaml.safe_load((REPO_ROOT / "config" / "dag.yml").read_text())
+        render_lane = next(
+            item for item in declared["lanes"]
+            if item["workflow"] == lane.workflow and item["job"] == lane.job
+        )
+        audit = next(step for step in render_lane["steps"] if step["id"] == "intl_durable_evidence")
+        assert audit["args"] == ["metadata", "--receipt", "$RUNNER_TEMP/intl-durable.json"]
+        workflow = yaml.safe_load((REPO_ROOT / lane.workflow).read_text())
+        audit_call = next(
+            step for step in workflow["jobs"][lane.job]["steps"]
+            if step.get("id") == "intl_durable_evidence"
+        )
+        assert audit_call["if"] == "${{ always() && github.event_name == 'workflow_dispatch' && inputs.durable_intl == true }}"
+        assert audit_call["run"].strip() == (
+            'python -m scripts.render_intl_durable metadata --receipt "$RUNNER_TEMP/intl-durable.json" '
+            '> "$RUNNER_TEMP/intl-durable-attempt.json"'
+        )
+        key = f"{lane.workflow} / {lane.job}"
+        assert _diff_lane(lane.steps, actual, key, divergences) == []
+
+        # Reproduce the original real omission without changing a workflow or
+        # weakening the checker. Existing drift and reinvocation laws still bind.
+        undeclared = [step for step in lane.steps if step.module != module]
+        assert any(
+            "UNDECLARED ADDITION" in error and module in error
+            for error in _diff_lane(undeclared, actual, key, divergences)
+        )
+        # Retain the original last-publication-call omission control as well as
+        # refusing omission of the newly inventoried, non-publishing audit call.
+        calls = [i for i, step in enumerate(actual) if step.module == module]
+        last_call = calls[-2]
+        missing_call = actual[:last_call] + actual[last_call + 1:]
+        assert _diff_lane(lane.steps, missing_call, key, divergences)
+        audit_index = calls[-1]
+        missing_audit = actual[:audit_index] + actual[audit_index + 1:]
+        assert _diff_lane(lane.steps, missing_audit, key, divergences)
+        unknown_call = actual + [Step(id="", module=module + "_unregistered")]
+        assert any(
+            "UNDECLARED ADDITION" in error and module + "_unregistered" in error
+            for error in _diff_lane(lane.steps, unknown_call, key, divergences)
+        )
+
     def test_dag_yml_matches_live_workflows(self):
         """config/dag.yml must match the live .github/workflows/ files.
 

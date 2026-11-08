@@ -4282,3 +4282,457 @@ class CanonicalMainPreparationTests(_cm_unittest.TestCase):
                     else:
                         guard(path)
                 self.assert_head(f)
+
+
+DESIGN_SPEC = importlib.util.spec_from_file_location("design_semantic_comparison", ROOT / "scripts/design_semantic_comparison.py")
+DESIGN = importlib.util.module_from_spec(DESIGN_SPEC)
+assert DESIGN_SPEC and DESIGN_SPEC.loader
+DESIGN_SPEC.loader.exec_module(DESIGN)
+
+@pytest.fixture
+def design_plan_checkout(tmp_path: Path):
+    """Local Git only: no remote, package install, browser or CI execution."""
+    root = tmp_path / "checkout"
+    root.mkdir()
+    _git(root, "init", "-b", "main")
+    _git(root, "config", "user.email", "ci@example.test")
+    _git(root, "config", "user.name", "CI Test")
+    for rel in ("scripts/run_ci_pack.py", "scripts/check_design_system.py",
+                "scripts/check_ui_visual_evidence.py", "scripts/design_semantic_comparison.py",
+                "scripts/ci_semantic_proof.py"):
+        target = root / rel
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes((ROOT / rel).read_bytes())
+    manifest = root / PACK.LEGACY_MANIFEST_PATH
+    manifest.parent.mkdir(parents=True)
+    job = _job("design-governance", [{"name": "design", "run": "echo design"}])
+    job.definition["gate"] = "code"
+    _write_manifest(manifest, [job])
+    for folder in ("templates", "site"):
+        (root / folder).mkdir()
+        (root / folder / "case.html").write_text("old\n")
+    _git(root, "add", ".")
+    _git(root, "commit", "-m", "base")
+    base = _git(root, "rev-parse", "HEAD")
+    (root / "templates/case.html").write_text("new template\n")
+    (root / "site/case.html").write_text("new generated page\n")
+    _git(root, "commit", "-am", "head")
+    head = _git(root, "rev-parse", "HEAD")
+    changed = ["templates/case.html", "site/case.html"]
+    jobs = PACK.load_legacy_jobs(manifest)
+    plan = PACK.build_plan(jobs, changed, changed_from=base, scope_mode="active",
+                          pack_count=1, workflow_run_id="987654321", workflow="ci",
+                          event="pull_request", role="pr_head", tested_tree_sha=head,
+                          subject_head_sha=head, base_sha=base)
+    plan_path = tmp_path / "plan.json"
+    plan_path.write_text(json.dumps(plan.to_dict()))
+    changed_path = tmp_path / "changed.json"
+    changed_path.write_text(json.dumps(changed))
+    env = {"GITHUB_RUN_ID": plan.workflow_run_id, "GITHUB_EVENT_NAME": plan.event,
+           "GITHUB_WORKFLOW": plan.workflow, "GITHUB_SHA": head}
+    return root, manifest, plan, plan_path, changed_path, env
+
+
+def _design_diff_cli(fixture, destination: Path, kind="style"):
+    root, manifest, plan, plan_path, changed_path, env = fixture
+    return ["--workflow", str(manifest), "--gate", "code", "--plan-json", str(plan_path),
+            "--changed-files-file", str(changed_path), "--expect-plan-sha", plan.plan_sha256,
+            "--expect-tested-tree-sha", plan.tested_tree_sha,
+            "--expect-subject-head-sha", plan.subject_head_sha,
+            "--expect-base-sha", plan.base_sha,
+            "--write-design-diff", str(destination), "--design-diff-kind", kind]
+
+
+@pytest.mark.parametrize("kind,paths", [("style", ["templates"]), ("visual", ["templates", "site"])])
+def test_design_comparison_uses_verified_plan_offline(design_plan_checkout, tmp_path, monkeypatch, kind, paths):
+    root, manifest, plan, plan_path, changed_path, env = design_plan_checkout
+    monkeypatch.chdir(root)
+    for k, v in env.items():
+        monkeypatch.setenv(k, v)
+    output = tmp_path / "design.diff"
+    # The old origin/main acquisition fails deterministically: this local
+    # fixture has no origin. The verified comparison needs no transport.
+    assert subprocess.run(["git", "fetch", "origin", "main"], cwd=root,
+                          capture_output=True).returncode != 0
+    assert DESIGN.main(_design_diff_cli(design_plan_checkout, output, kind)) == 0
+    expected = subprocess.check_output(["git", "diff", "--unified=0", plan.base_sha,
+                                        plan.tested_tree_sha, "--", *paths], cwd=root)
+    assert output.read_bytes() == expected
+    assert "new template" in output.read_text()
+    assert ("new generated page" in output.read_text()) == (kind == "visual")
+
+
+@pytest.mark.parametrize("binding", ["--expect-plan-sha", "--expect-tested-tree-sha",
+                                      "--expect-subject-head-sha", "--expect-base-sha"])
+def test_design_comparison_refuses_mismatch_and_missing_binding(design_plan_checkout, tmp_path, monkeypatch, binding):
+    root, _, _, _, _, env = design_plan_checkout
+    monkeypatch.chdir(root)
+    for k, v in env.items():
+        monkeypatch.setenv(k, v)
+    output = tmp_path / "design.diff"
+    args = _design_diff_cli(design_plan_checkout, output)
+    index = args.index(binding)
+    bad = args.copy()
+    bad[index + 1] = "f" * (64 if binding == "--expect-plan-sha" else 40)
+    assert DESIGN.main(bad) == 2
+    assert not output.exists()
+    del args[index:index + 2]
+    assert DESIGN.main(args) == 2
+    assert not output.exists()
+
+
+@pytest.mark.parametrize("key", ["GITHUB_RUN_ID", "GITHUB_EVENT_NAME", "GITHUB_WORKFLOW", "GITHUB_SHA"])
+def test_design_comparison_refuses_foreign_run_context(design_plan_checkout, tmp_path, monkeypatch, key):
+    root, _, _, _, _, env = design_plan_checkout
+    monkeypatch.chdir(root)
+    for k, v in env.items():
+        monkeypatch.setenv(k, v)
+    monkeypatch.setenv(key, "foreign")
+    output = tmp_path / "design.diff"
+    assert DESIGN.main(_design_diff_cli(design_plan_checkout, output)) == 2
+    assert not output.exists()
+
+
+@pytest.mark.parametrize("damage", ["missing_plan", "changed_handle", "corrupt_plan", "dirty_source",
+                                     "dirty_template", "untracked_template", "wrong_checkout", "missing_base",
+                                     "dirty_helper", "dirty_visual", "dirty_manifest"])
+def test_design_comparison_fails_closed_on_unverifiable_inputs(design_plan_checkout, tmp_path, monkeypatch, damage):
+    root, manifest, plan, plan_path, changed_path, env = design_plan_checkout
+    monkeypatch.chdir(root)
+    for k, v in env.items():
+        monkeypatch.setenv(k, v)
+    if damage == "missing_plan":
+        plan_path.unlink()
+    elif damage == "changed_handle":
+        changed_path.write_text("[]")
+    elif damage == "corrupt_plan":
+        d = json.loads(plan_path.read_text()); d["plan_sha256"] = "f" * 64
+        plan_path.write_text(json.dumps(d))
+    elif damage == "dirty_source":
+        (root / "scripts/check_design_system.py").write_text("raise SystemExit(0)\n")
+    elif damage == "dirty_helper":
+        (root / "scripts/design_semantic_comparison.py").write_text("raise SystemExit(0)\n")
+    elif damage == "dirty_visual":
+        (root / "scripts/check_ui_visual_evidence.py").write_text("raise SystemExit(0)\n")
+    elif damage == "dirty_manifest":
+        manifest.write_text(manifest.read_text() + "# dirty source\n")
+    elif damage == "dirty_template":
+        (root / "templates/case.html").write_text("unadmitted\n")
+    elif damage == "untracked_template":
+        (root / "templates/extra.html").write_text("unadmitted\n")
+    elif damage == "wrong_checkout":
+        _git(root, "checkout", "--detach", plan.base_sha)
+    elif damage == "missing_base":
+        # Delete only this test-owned loose object, not a shared Git object.
+        # The exact admitted base is now genuinely unavailable offline.
+        (root / ".git/objects" / plan.base_sha[:2] / plan.base_sha[2:]).unlink()
+    output = tmp_path / "design.diff"
+    assert DESIGN.main(_design_diff_cli(design_plan_checkout, output)) == 2
+    assert not output.exists()
+
+
+def test_design_manifest_preserves_standalone_fetch_and_checkers():
+    current = yaml.safe_load(MANIFEST.read_text())["jobs"]["design-governance"]["steps"]
+    for name, kind, tail in [
+        ("forward-only design ratchet (new forbidden decisions on changed lines)", "style",
+         "python3 scripts/check_design_system.py --mode enforce-added --diff-file /tmp/design.diff"),
+        ("visual evidence required for a material UI change", "visual",
+         "python3 scripts/check_ui_visual_evidence.py --diff-file /tmp/ui.diff"),
+    ]:
+        command = next(x["run"] for x in current if x.get("name") == name)
+        assert "python3 scripts/design_semantic_comparison.py" in command
+        assert f"--design-diff-kind {kind}" in command
+        assert "--base-ref" in command and "|| exit 1" in command
+        assert command.rstrip().endswith(tail)
+
+
+@pytest.mark.parametrize("event", ["workflow_dispatch", "base_replay"])
+@pytest.mark.parametrize("kind,filename,paths,checker", [
+    ("style", "design", "templates", "scripts/check_design_system.py --mode enforce-added --diff-file /tmp/design.diff"),
+    ("visual", "ui", "templates site", "scripts/check_ui_visual_evidence.py --diff-file /tmp/ui.diff"),
+])
+def test_design_manifest_executes_unchanged_standalone_and_replay_contract(tmp_path, event, kind, filename, paths, checker):
+    steps = yaml.safe_load(MANIFEST.read_text())["jobs"]["design-governance"]["steps"]
+    command = next(s["run"] for s in steps if "--design-diff-kind " + kind in s.get("run", ""))
+    command = PACK.render_command(command, base_ref="main", head_ref="topic")
+    # Execute the real shell branch with only controlled command fixtures.
+    # No Git remote, checker scan or network operation is launched here.
+    bin_dir = tmp_path / "bin"; bin_dir.mkdir()
+    log = tmp_path / "commands"
+    for executable, body in [
+        ("git", 'printf "git %s\\n" "$*" >> "$COMMAND_LOG"\nif [ "$1" = merge-base ]; then echo fixture-base; fi\nif [ "$1" = diff ]; then echo fixture-diff; fi\n'),
+        ("python3", 'printf "python3 %s\\n" "$*" >> "$COMMAND_LOG"\n'),
+    ]:
+        p = bin_dir / executable;p.write_text("#!/bin/sh\n" + body);p.chmod(0o700)
+    env = {"PATH": str(bin_dir), "COMMAND_LOG": str(log), "GITHUB_EVENT_NAME": event,
+           "RUNNER_TEMP": str(tmp_path)}
+    if event == "base_replay":
+        env.update(EXPECTED_PLAN_SHA="inherited-head-plan", CI_BASE_SHA=SHA_BASE,
+                   TESTED_TREE_SHA=SHA_BASE)
+    # Redirect only the owned temp diff output; the command/checker arguments
+    # themselves retain the production path expected below.
+    command = command.replace("python3 scripts/design_semantic_comparison.py", shlex.quote(sys.executable) + " " + shlex.quote(str(ROOT / "scripts/design_semantic_comparison.py")))
+    command = command.replace(f"--write-design-diff /tmp/{filename}.diff", "--write-design-diff " + shlex.quote(str(tmp_path / "diff")))
+    result = subprocess.run(["/bin/bash", "-e", "-c", command], env=env,
+                            cwd=tmp_path, capture_output=True, text=True)
+    assert result.returncode == 0, result.stderr
+    assert log.read_text().splitlines() == [
+        "git fetch origin main", "git merge-base origin/main HEAD",
+        f"git diff --unified=0 fixture-base HEAD -- {paths}", "python3 " + checker,
+    ]
+
+
+@pytest.mark.parametrize("kind", ["style", "visual"])
+def test_design_manifest_inherited_base_alone_never_authorizes_comparison(tmp_path, kind):
+    steps = yaml.safe_load(MANIFEST.read_text())["jobs"]["design-governance"]["steps"]
+    command = PACK.render_command(next(s["run"] for s in steps if "--design-diff-kind " + kind in s.get("run", "")), base_ref="main", head_ref="topic")
+    command = command.replace("python3 scripts/design_semantic_comparison.py", shlex.quote(sys.executable) + " " + shlex.quote(str(ROOT / "scripts/design_semantic_comparison.py")))
+    bin_dir = tmp_path / "bin"; bin_dir.mkdir()
+    log = tmp_path / "commands"
+    for executable in ("git", "python3"):
+        p = bin_dir / executable
+        p.write_text('#!/bin/sh\nprintf "%s\\n" "$*" >> "$COMMAND_LOG"\nexit 0\n')
+        p.chmod(0o700)
+    # An inherited base or partial set of advertised identity variables cannot
+    # fall through to standalone fetch, create a diff or reach either checker.
+    complete = {"RUNNER_TEMP": str(tmp_path), "CI_CHANGED_FILES_FILE": str(tmp_path / "changed"),
+                "EXPECTED_PLAN_SHA": "a" * 64, "TESTED_TREE_SHA": SHA_TREE,
+                "SUBJECT_HEAD_SHA": SHA_HEAD, "TESTED_BASE_SHA": SHA_BASE}
+    for missing in complete:
+        env = {"PATH": str(bin_dir), "COMMAND_LOG": str(log), "GITHUB_EVENT_NAME": "pull_request",
+               "CI_BASE_SHA": SHA_BASE, **{k: v for k, v in complete.items() if k != missing}}
+        result = subprocess.run(["/bin/bash", "-e", "-c", command], env=env,
+                                cwd=tmp_path, capture_output=True, text=True)
+        assert result.returncode != 0, missing
+        assert not log.exists(), missing
+
+
+def test_design_comparison_accepts_exact_raw_parent_at_shallow_frontier(design_plan_checkout, tmp_path, monkeypatch):
+    root, _, plan, _, _, env = design_plan_checkout
+    monkeypatch.chdir(root)
+    for k, v in env.items():
+        monkeypatch.setenv(k, v)
+    (root / ".git/shallow").write_text(plan.tested_tree_sha + "\n")
+    assert subprocess.run(["git", "merge-base", "--is-ancestor", plan.base_sha,
+                           plan.tested_tree_sha], cwd=root, capture_output=True).returncode != 0
+    output = tmp_path / "diff"
+    assert DESIGN.main(_design_diff_cli(design_plan_checkout, output)) == 0
+    assert "new template" in output.read_text()
+    assert (root / ".git/shallow").read_text() == plan.tested_tree_sha + "\n"
+
+
+@pytest.mark.parametrize("rewrite", ["graft", "replace"])
+def test_design_comparison_refuses_rewrite_metadata(design_plan_checkout, tmp_path, monkeypatch, rewrite):
+    root, _, plan, _, _, env = design_plan_checkout
+    monkeypatch.chdir(root)
+    for k, v in env.items():
+        monkeypatch.setenv(k, v)
+    if rewrite == "graft":
+        (root / ".git/info/grafts").write_text(plan.tested_tree_sha + "\n")
+    else:
+        _git(root, "replace", plan.tested_tree_sha, plan.base_sha)
+    output = tmp_path / "diff"
+    assert DESIGN.main(_design_diff_cli(design_plan_checkout, output)) == 2
+    assert not output.exists()
+
+
+@pytest.mark.parametrize("kind", ["style", "visual"])
+def test_design_preparation_acquires_only_missing_exact_blobs_inside_comparison(
+    design_plan_checkout, tmp_path, monkeypatch, kind,
+):
+    """Old offline comparison RED; one finite object prep then the same diff GREEN.
+
+    Only a fresh test-owned file:// bare store serves the captured production
+    fetch contract. No real origin/network/runner/old tuple is executed.
+    """
+    prep_owner = DESIGN
+    root, _, plan, _, _, context = design_plan_checkout
+    remote = tmp_path / "complete.git"
+    real_run = subprocess.run
+    real_run(["git", "clone", "--bare", "--no-local", str(root), str(remote)], check=True, capture_output=True)
+    _git(root, "remote", "add", "origin", "https://github.com/mastermindx-market-intelligence/macro.git")
+    _git(root, "config", "remote.origin.promisor", "true")
+    _git(root, "config", "remote.origin.partialclonefilter", "blob:none")
+    old = _git(root, "rev-parse", plan.base_sha + ":templates/case.html")
+    missing_path = root / ".git/objects" / old[:2] / old[2:]
+    missing_path.unlink()  # exclusively this test's disposable loose blob
+    shallow = root / ".git/shallow"; shallow.write_text(plan.tested_tree_sha + "\n")
+    refs = _git(root, "for-each-ref", "--format=%(refname) %(objectname)")
+    for key, value in context.items():
+        monkeypatch.setenv(key, value)
+    monkeypatch.chdir(root)
+    output = tmp_path / "comparison.diff"
+    args = _design_diff_cli(design_plan_checkout, output, kind)
+    assert DESIGN.main(args) == 2  # unchanged verifier refuses missing base blob
+    assert not output.exists()
+    acquisitions = []
+
+    def controlled_transport(command, **kwargs):
+        if command[:2] == ["git", "fetch"]:
+            acquisitions.append((list(command), kwargs["input"]))
+            assert command == ["git", "fetch", "--no-tags", "--no-write-fetch-head",
+                               "--no-recurse-submodules", "--no-auto-maintenance", "--stdin",
+                               "https://github.com/mastermindx-market-intelligence/macro.git"]
+            assert kwargs["input"] == (old + "\n").encode()
+            assert kwargs["env"]["GIT_ALLOW_PROTOCOL"] == "https"
+            env = dict(kwargs["env"]); env["GIT_ALLOW_PROTOCOL"] = "file"
+            return real_run(command[:-1] + [remote.as_uri()], **{**kwargs, "env": env})
+        return real_run(command, **kwargs)
+
+    monkeypatch.setattr(prep_owner.subprocess, "run", controlled_transport)
+    assert DESIGN.main(args + ["--prepare-source"]) == 0
+    assert len(acquisitions) == 1
+    expected = real_run(["git", "diff", "--unified=0", plan.base_sha, plan.tested_tree_sha,
+                         "--", *(["templates"] if kind == "style" else ["templates", "site"])],
+                        cwd=root, capture_output=True, check=True).stdout
+    assert output.read_bytes() == expected
+    assert _git(root, "rev-parse", "HEAD") == plan.tested_tree_sha
+    assert _git(root, "for-each-ref", "--format=%(refname) %(objectname)") == refs
+    assert shallow.read_text() == plan.tested_tree_sha + "\n"
+    assert not (root / ".git/FETCH_HEAD").exists()
+    # Re-entry with complete objects has no acquisition, even in a promisor repo.
+    assert DESIGN.main(args + ["--prepare-source"]) == 0
+    assert len(acquisitions) == 1
+
+
+@pytest.mark.parametrize("damage", ["plan", "context", "semantic_validator", "producer", "origin", "rewrite_origin", "base", "denied", "partial"])
+def test_design_preparation_never_fetches_unbound_source_or_retries_failure(
+    design_plan_checkout, tmp_path, monkeypatch, damage,
+):
+    prep_owner = DESIGN
+    root, _, plan, plan_path, _, context = design_plan_checkout
+    _git(root, "remote", "add", "origin", "https://github.com/mastermindx-market-intelligence/macro.git")
+    old = _git(root, "rev-parse", plan.base_sha + ":templates/case.html")
+    (root / ".git/objects" / old[:2] / old[2:]).unlink()
+    for key, value in context.items():
+        monkeypatch.setenv(key, value)
+    monkeypatch.chdir(root)
+    if damage == "plan":
+        value = json.loads(plan_path.read_text());value["plan_sha256"] = "f" * 64
+        plan_path.write_text(json.dumps(value))
+    elif damage == "context":
+        monkeypatch.setenv("GITHUB_RUN_ID", "foreign")
+    elif damage == "semantic_validator":
+        (root / "scripts/ci_semantic_proof.py").write_text("raise SystemExit(0)\n")
+    elif damage == "producer":
+        (root / "scripts/design_semantic_comparison.py").write_text("raise SystemExit(0)\n")
+    elif damage == "origin":
+        _git(root, "remote", "set-url", "origin", "https://foreign.example.test/macro.git")
+    elif damage == "rewrite_origin":
+        _git(root, "config", "url.https://foreign.example.test/.insteadOf", "https://github.com/")
+    elif damage == "base":
+        (root / ".git/objects" / plan.base_sha[:2] / plan.base_sha[2:]).unlink()
+    real_run = subprocess.run
+    fetches = []
+
+    def refuse_or_incomplete(command, **kwargs):
+        if command[:2] == ["git", "fetch"]:
+            fetches.append(command)
+            return subprocess.CompletedProcess(command, 1 if damage == "denied" else 0,
+                                               stdout=b"", stderr=b"controlled refusal")
+        return real_run(command, **kwargs)
+
+    monkeypatch.setattr(prep_owner.subprocess, "run", refuse_or_incomplete)
+    output = tmp_path / "comparison.diff"
+    assert DESIGN.main(_design_diff_cli(design_plan_checkout, output) + ["--prepare-source"]) == 2
+    assert not output.exists()
+    assert len(fetches) == (1 if damage in {"denied", "partial"} else 0)
+
+
+@pytest.mark.parametrize("damage", ["foreign_path", "bad_oid", "commit_mode", "extra_field", "odd_record", "unexpected_type"])
+def test_design_preparation_refuses_malformed_or_foreign_object_inventory(
+    design_plan_checkout, monkeypatch, damage,
+):
+    prep_owner = DESIGN
+    root, _, plan, _, _, _ = design_plan_checkout
+    real_run = subprocess.run
+    fetches = []
+
+    def inventory_damage(command, **kwargs):
+        if command[:2] == ["git", "fetch"]:
+            fetches.append(command)
+            raise AssertionError("unverified object inventory must never acquire")
+        result = real_run(command, **kwargs)
+        if command[:2] == ["git", "diff-tree"] and result.returncode == 0:
+            raw = result.stdout
+            if damage == "foreign_path": raw = raw.replace(b"templates/case.html", b"app/main.py")
+            elif damage == "bad_oid":
+                header, separator, rest = raw.partition(b"\0")
+                fields = header.split(); fields[2] = b"z" * 40
+                raw = b" ".join(fields) + separator + rest
+            elif damage == "commit_mode": raw = raw.replace(b":100644", b":160000", 1)
+            elif damage == "extra_field": raw = raw.replace(b" M\0", b" M extra\0", 1)
+            elif damage == "odd_record": raw += b"orphan\0"
+            return subprocess.CompletedProcess(command, 0, stdout=raw, stderr=b"")
+        if command[:2] == ["git", "cat-file"] and "--batch-check=%(objectname) %(objecttype)" in command and damage == "unexpected_type":
+            return subprocess.CompletedProcess(command, 0, stdout=result.stdout.replace(b" blob", b" commit", 1), stderr=b"")
+        return result
+
+    monkeypatch.setattr(prep_owner.subprocess, "run", inventory_damage)
+    with pytest.raises(RuntimeError):
+        prep_owner.prepare_design_comparison_blobs(root, base_sha=plan.base_sha,
+                                                  tested_sha=plan.tested_tree_sha, paths=("templates",))
+    assert not fetches
+
+
+@pytest.mark.parametrize("damage", ["head", "refs", "shallow"])
+def test_design_preparation_refuses_acquisition_source_boundary_drift(
+    design_plan_checkout, tmp_path, monkeypatch, damage,
+):
+    prep_owner = DESIGN
+    root, _, plan, _, _, context = design_plan_checkout
+    _git(root, "remote", "add", "origin", "https://github.com/mastermindx-market-intelligence/macro.git")
+    old = _git(root, "rev-parse", plan.base_sha + ":templates/case.html")
+    blob = root / ".git/objects" / old[:2] / old[2:]
+    payload = blob.read_bytes(); blob.unlink()
+    for key, value in context.items(): monkeypatch.setenv(key, value)
+    monkeypatch.chdir(root)
+    real_run = subprocess.run; fetches = []
+
+    def changed_boundary(command, **kwargs):
+        if command[:2] == ["git", "fetch"]:
+            fetches.append(command);blob.write_bytes(payload)
+            if damage == "head":
+                real_run(["git", "update-ref", "HEAD", plan.base_sha], cwd=root, check=True)
+            elif damage == "refs":
+                real_run(["git", "update-ref", "refs/heads/foreign", plan.base_sha], cwd=root, check=True)
+            else:
+                (root / ".git/shallow").write_text(plan.tested_tree_sha + "\n")
+            return subprocess.CompletedProcess(command, 0, stdout=b"", stderr=b"")
+        return real_run(command, **kwargs)
+
+    monkeypatch.setattr(prep_owner.subprocess, "run", changed_boundary)
+    output = tmp_path / "comparison.diff"
+    assert DESIGN.main(_design_diff_cli(design_plan_checkout, output) + ["--prepare-source"]) == 2
+    assert not output.exists()
+    assert len(fetches) == 1
+
+
+def test_design_preparation_complete_objects_need_no_origin_or_transport(
+    design_plan_checkout, tmp_path, monkeypatch,
+):
+    prep_owner = DESIGN
+    root, _, _, _, _, context = design_plan_checkout
+    for key, value in context.items(): monkeypatch.setenv(key, value)
+    monkeypatch.chdir(root)
+    real_run = subprocess.run
+
+    def no_transport(command, **kwargs):
+        assert command[:2] != ["git", "fetch"]
+        assert command[:3] != ["git", "remote", "get-url"]
+        return real_run(command, **kwargs)
+
+    monkeypatch.setattr(prep_owner.subprocess, "run", no_transport)
+    output = tmp_path / "comparison.diff"
+    assert DESIGN.main(_design_diff_cli(design_plan_checkout, output) + ["--prepare-source"]) == 0
+    assert "new template" in output.read_text()
+
+
+@pytest.mark.parametrize("hostile", [False, True])
+def test_design_preparation_keeps_incumbent_trusted_git_environment(monkeypatch, hostile):
+    if hostile:
+        for key in ("GIT_DIR", "GIT_WORK_TREE", "GIT_INDEX_FILE", "GIT_OBJECT_DIRECTORY",
+                    "GIT_ALTERNATE_OBJECT_DIRECTORIES", "GIT_CONFIG_PARAMETERS",
+                    "GIT_CONFIG_GLOBAL", "GIT_CONFIG_COUNT", "GIT_ALLOW_PROTOCOL"):
+            monkeypatch.setenv(key, "controlled-untrusted-value")
+    assert DESIGN._design_preparation_git_environment() == PACK._trusted_git_environment()
