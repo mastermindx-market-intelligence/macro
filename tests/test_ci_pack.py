@@ -5631,7 +5631,7 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # measured units there; preserve the other ceilings, suites and all limits.
 PACKING_PROBES = (
     ("templates/index.html", 137, 5_920),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 6_001),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 6_000),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 131, 5_678),
 )
 # Twelve packs per shape was the pre-curation measurement.
@@ -5641,11 +5641,19 @@ PACKING_PROBE_MAX_PACKS = 10
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
 
-    H4 current-main intake (2026-11-08): retain the measured APPLICATION
-    5,999 free-content ceiling below and compose protected PR7352's exact
-    two-unit research-vault enrollment, yielding 6,001. Keep every job/pack
-    bound, the index/Prophet ceilings, suites and selectors. This is source
-    arithmetic pending the new combined-source canonical pytest below.
+    H4 current-main intake (2026-11-08): complete source332cae885da6
+    passed all422 paired consumer cases but its canonical packing test
+    found6,001 free-content units required11 packs. Retain protected PR7352's
+    full benchmark enrollment and every selected suite. Consolidate the two
+    adjacent ordinary pytest steps for typed datapoints and source-bound
+    Brain evidence into one invocation in their incumbent owner. Their cwd,
+    environment, interpreter, flags and explicit test paths are identical;
+    neither step carries a distinct source fixture or isolation contract.
+    This removes one Python/pytest startup and one command-estimator unit,
+    yielding6,000 without changing the estimator or any duration override.
+    Preserve all job/count/ten-pack bounds, selectors and admission limits.
+    The combined invocation and unchanged canonical planner must qualify
+    this actual new source before release; arithmetic is not a test receipt.
 
     2026-11-08 (PR #7352, current-main shared-CI conflict repair):
     preserve the accepted research-intelligence model benchmark source and its

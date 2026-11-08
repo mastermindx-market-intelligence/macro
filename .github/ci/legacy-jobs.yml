@@ -42331,7 +42331,7 @@ jobs:
           pins = ast.literal_eval(tables[0])
           assert type(pins) is dict and len(pins) == 19, "closed native fixture cohort required"
           base = "ops/native_fabric/quota_continuity/"
-          revision = "41e86c7aa89905f9b4592d57fbf32c2d7c0f1458"
+          revision = "4585aa136d41e91ece85114362d8c822a0fcbdf6"
           for relative, expected in pins.items():
               path = pathlib.PurePosixPath(relative)
               assert not path.is_absolute() and ".." not in path.parts and str(path) == relative
@@ -42471,7 +42471,7 @@ jobs:
             tests/test_bailian_fabric_native_composition.py -q
       - name: brain gateway — lane routing, quota ledger, tool allowlist, SSE event order
         run: node --version && python -m pytest tests/test_market_memory_brain_citations.py tests/test_market_memory_brain_citation_validation.py tests/test_brain_gateway.py tests/test_brain_research_mode.py tests/test_research_thesis_read.py tests/test_brain_history_availability.py tests/test_brain_gateway_quota_safety.py tests/test_brain_streaming.py tests/test_brain_tool_economics.py tests/test_brain_evidence_coverage.py tests/test_brain_instant_lane.py tests/test_brain_context_retention.py tests/test_intelligence_workspace_context_compiler.py tests/test_mm_brain_asset.py tests/test_mm_brain_inspector_freshness_source.py tests/test_brain_exact_source_context.py tests/test_company_source_span.py tests/test_brain_visuals.py tests/test_brain_visuals_review.py tests/test_brain_visuals_integration.py tests/test_brain_visuals_assets.py tests/test_brain_visuals_ci_ownership.py tests/test_brain_output_fast_presentation.py tests/test_brain_financial_views.py tests/test_brain_financial_assets.py tests/test_brain_chart_continuation.py tests/test_brain_chart_receipt_outcomes.py tests/test_brain_native_evidence_boundary.py tests/test_brain_pane_contexts.py tests/test_brain_price_window.py tests/test_brain_presentation.py -q
-      - name: W1-A typed datapoint registry — owners, PIT, rights, consumers, mutations, batching
+      - name: Typed datapoint registry and source-bound Brain report evidence
         run: >-
           python -m pytest
           tests/test_datapoint_registry.py
@@ -42482,9 +42482,9 @@ jobs:
           tests/test_intelligence_workspace_mutations.py
           tests/test_intelligence_workspace_cli.py
           tests/test_intelligence_workspace_performance.py
-          tests/test_intelligence_workspace_workspace_layout.py -q
-      - name: source-bound report evidence — Brain projection + CI owner law
-        run: python -m pytest tests/test_brain_research_evidence.py tests/test_mastermind_ai_evidence_ci_ownership.py -q
+          tests/test_intelligence_workspace_workspace_layout.py
+          tests/test_brain_research_evidence.py
+          tests/test_mastermind_ai_evidence_ci_ownership.py -q
 
       - name: install Brain browser
         phase: browser_setup
