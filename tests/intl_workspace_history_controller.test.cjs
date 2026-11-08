@@ -62,7 +62,7 @@ test('invalid confirm keeps original research tuple and focuses candidate',async
  assert.equal(await p.locator('[data-im-scenario-result]').isVisible(),false);
 });
 test('internal tab and route roundtrips retain the manual draft',async t=>{
- const p=await setup(t);await calculate(p);await p.locator('[data-im-scenario-action="set_tab"][data-im-scenario-tab="scenario"]').click({force:true});
+ const p=await setup(t);await calculate(p);const scenarioTab=p.locator('[data-im-history-tabs] [data-im-scenario-action="set_tab"][data-im-scenario-tab="scenario"]');assert.equal(await scenarioTab.count(),1);await scenarioTab.click({force:true});
  await p.evaluate(()=>handle.dispatch({type:'set_view',view:'overview'}));await p.evaluate(()=>handle.dispatch({type:'set_view',view:'history'}));
  assert.equal(await p.locator('#im-scenario-local').inputValue(),'5');assert.equal(await p.locator('[data-im-scenario-result]').isVisible(),true);
 });

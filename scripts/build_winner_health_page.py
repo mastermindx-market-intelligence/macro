@@ -78,9 +78,10 @@ def _is_stale(ctx: dict) -> bool:
     from datetime import date  # noqa: PLC0415
     try:
         y, m, d = (int(x) for x in str(ctx.get("asof", ""))[:10].split("-"))
+        observed = date(y, m, d)
     except Exception:  # noqa: BLE001
         return True
-    return (date.today() - date(y, m, d)).days > _MAX_AGE_DAYS
+    return (date.today() - observed).days > _MAX_AGE_DAYS
 
 
 def render(root: Path, fixture: Path | None = None) -> str:
