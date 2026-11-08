@@ -1,0 +1,79 @@
+{
+  "acceptance-summary.json": {
+    "bytes": 2805,
+    "sha256": "d8e53eaf54a39aee755b8a3d1879e1a239940e69f4f7f02a4284da60e91f68e0",
+    "original": "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/production-4579f45-20261024/acceptance-summary.json"
+  },
+  "auth-overview.json": {
+    "bytes": 23677,
+    "sha256": "e1568e890c2c11d293f497c7c6271317231ebfae3b78c6a55c3bfa935deeb9ab",
+    "original": "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/production-4579f45-20261024/auth-overview.json"
+  },
+  "auth-detail.json": {
+    "bytes": 3268,
+    "sha256": "cf961033aae61c913a1d3a2b3d8b1dd245cdbcd9a03d303f05ec9b260926d22f",
+    "original": "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/production-4579f45-20261024/auth-detail.json"
+  },
+  "interaction-return-empty.json": {
+    "bytes": 937,
+    "sha256": "6bbdf44f34a2d216d4747cef5aa8f438848fd4d313f3f68708ea7f4f2552c8cf",
+    "original": "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/production-4579f45-20261024/interaction-return-empty.json"
+  },
+  "served-output.json": {
+    "bytes": 2173,
+    "sha256": "a938eae83113d8aea64893682241ac9616dae56f54605988f3455875d9ae23ca",
+    "original": "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/production-4579f45-20261024/served-output.json"
+  },
+  "installed.json": {
+    "bytes": 7643,
+    "sha256": "e0c1d759bbbca1959940447428e89e39dfaa8df767697d08e08402b77e503f81",
+    "original": "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/production-4579f45-20261024/installed.json"
+  },
+  "landing-parity.json": {
+    "bytes": 893,
+    "sha256": "cb1d115514d0a37e4e7a68b1a03c0bb479aeb32b5b855de65a8c0b2f8e73d1a1",
+    "original": "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/production-4579f45-20261024/landing-parity.json"
+  },
+  "anonymous-api-boundary.json": {
+    "bytes": 275,
+    "sha256": "c9fada3b37474d57317dfb98c62d35acefd6a34e478d83d75e22d0fdde3ba179",
+    "original": "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/production-4579f45-20261024/anonymous-api-boundary.json"
+  },
+  "native-global-custody-note.json": {
+    "bytes": 808,
+    "sha256": "681f485052594796755bccb60b361e08febfef913f29eb16b62cc3ae24776966",
+    "original": "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/production-4579f45-20261024/native-global-custody-note.json"
+  },
+  "screenshots": {
+    "retained_directory": "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/production-4579f45-20261024",
+    "files": [
+      "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/production-4579f45-20261024/desktop-dark-zh.png",
+      "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/production-4579f45-20261024/device-controls.png",
+      "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/production-4579f45-20261024/desktop-light-zh.png",
+      "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/production-4579f45-20261024/mobile-light-zh-ceo.png",
+      "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/production-4579f45-20261024/mobile-dark-en.png",
+      "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/production-4579f45-20261024/mobile-detail.png",
+      "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/production-4579f45-20261024/device-enabled.png",
+      "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/production-4579f45-20261024/mobile-dark-zh.png",
+      "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/production-4579f45-20261024/desktop-dark-en.png",
+      "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/production-4579f45-20261024/mobile-dark-zh-ceo.png",
+      "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/production-4579f45-20261024/desktop-light-en.png",
+      "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/production-4579f45-20261024/mobile-light-en-ceo.png",
+      "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/production-4579f45-20261024/mobile-light-en.png",
+      "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/production-4579f45-20261024/device-size-check.png",
+      "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/production-4579f45-20261024/mobile-dark-en-ceo.png",
+      "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/production-4579f45-20261024/mobile-light-zh.png"
+    ],
+    "copy_policy": "Retain local original images; canonical metadata and actual matrix receipts copied, no script duplication."
+  },
+  "hosted-final-40051996671.zip": {
+    "bytes": 34693,
+    "sha256": "8096f812ccf1da1d5e5db41641481f88937dd3711d5bbb8f7307273347b86c73",
+    "original": "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/a1-source-projection-20261023/hosted-final-40051996671.zip"
+  },
+  "hosted-final-consumption-40051996671.json": {
+    "bytes": 200249,
+    "sha256": "2bf20567a209ffaa2e050145106057cabb01b694222dc1962d6c3988284e255b",
+    "original": "/Volumes/Mastermind/evidence/intelligence-evaluation-os-20261012-01a1333d/integration/a1-source-projection-20261023/hosted-final-consumption-40051996671.json"
+  }
+}

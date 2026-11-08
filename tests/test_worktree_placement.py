@@ -96,14 +96,11 @@ def test_common_dir_is_the_same_from_both_checkouts(clone: dict) -> None:
 def test_hook_plants_under_the_session_checkout(clone: dict) -> None:
     """End-to-end: a session launched in the local root gets its tree there."""
     env = {k: v for k, v in os.environ.items() if k != "MACRO_LOCAL_ROOT"}
+    # A host with the SSD storage policy installed delegates the mint to the
+    # external volume (2026-10-10); exercise the internal placement hermetically.
+    env["MASTERMIND_WORKTREE_STORAGE_POLICY"] = str(clone["local_root"] / "no-such-policy.json")
     payload = json.dumps({"name": "placement-probe", "cwd": str(clone["local_root"])})
-    # This case exercises the portable fallback, independently of host policy.
-    bootstrap = ("import pathlib, runpy, sys; "
-                 f"sys.path.insert(0, {str(REPO_ROOT)!r}); "
-                 "from scripts import worktree_storage; "
-                 f"worktree_storage.POLICY_PATH=pathlib.Path({str(clone['primary'] / 'absent-host-policy.json')!r}); "
-                 f"runpy.run_path({str(HOOK_PATH)!r}, run_name='__main__')")
-    proc = subprocess.run(["python3", "-c", bootstrap], input=payload,
+    proc = subprocess.run(["python3", str(HOOK_PATH)], input=payload,
                           capture_output=True, text=True, env=env)
     assert proc.returncode == 0, proc.stderr
     dest = Path(proc.stdout.strip())

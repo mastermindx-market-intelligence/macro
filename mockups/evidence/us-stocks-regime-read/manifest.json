@@ -1,0 +1,215 @@
+{
+  "schema": "mastermind.p0_evidence.v2",
+  "generated_at": "2026-10-02T10:35:49Z",
+  "tool": {
+    "module_ref": "scratch/capture_us_stocks_regime_read.py",
+    "version": "mo-paid-001-fix-r1-element",
+    "capture_method": "playwright locator('#regime-read').screenshot() on a fixture-rendered dashboard.html.j2 (stocks mode, base_effect both axes populated). data-theme/data-lang applied via setTheme/setLang with refuse-on-mismatch. sha256 from the element-screenshot bytes."
+  },
+  "target": {
+    "kind": "fixture_site_dir",
+    "base_url": null,
+    "site_dir": "/var/folders/yw/c0svzcnj66b7lysc8t02yqvh0000gn/T/us_stocks_regime_pw1azfl6",
+    "resolved_sha_or_none": "052e02d085b01f29baf499357e224c836d8eb224",
+    "resolved_gitdir_or_none": "/Users/mini2/lanes/repos/macro/.git",
+    "resolved_sha_source": "HEAD of the capture checkout; scratch is a throwaway us_stocks render, not live site/us_stocks.html"
+  },
+  "axes": {
+    "viewports": {
+      "desktop": [
+        1440,
+        900
+      ],
+      "mobile": [
+        390,
+        844
+      ]
+    },
+    "locales": [
+      "en",
+      "zh"
+    ],
+    "themes": [
+      "dark",
+      "light"
+    ],
+    "subjects": [
+      "regime-read"
+    ],
+    "selector": "#regime-read"
+  },
+  "selection": {
+    "mode": "explicit_subject",
+    "subjects": [
+      "regime-read"
+    ],
+    "selectors": {
+      "regime-read": "#regime-read"
+    }
+  },
+  "outcome": "captured",
+  "totals": {
+    "cells_attempted": 8,
+    "cells_captured": 8
+  },
+  "honesty": {
+    "access": "anonymous only",
+    "gaps": "uncaptured cells are recorded with a reason",
+    "authority": "this tool screenshots; it scores nothing",
+    "page": "dashboard.html.j2 stocks mode rendered with the regression fixture (tests.test_dashboard_template_render._base_vm) plus latest.base_effect.growth and latest.base_effect.inflation axes populated. Omitted vs live: site nav, vector polish, seo head. Sparse checkout has no data/; this is why the wrap is fixture-rendered."
+  },
+  "cells": [
+    {
+      "subject": "regime-read",
+      "selector": "#regime-read",
+      "viewport": "desktop",
+      "locale": "en",
+      "theme": "dark",
+      "viewport_width": 1440,
+      "viewport_height": 900,
+      "access": "anonymous",
+      "alias": "regime-read-dark-en-desktop.png",
+      "captured": true,
+      "file": "cells/regime-read-dark-en-desktop.png",
+      "sha256": "197a7377c6454fd85c297306af71fb1f309785dc60af81854b153df7de21b912",
+      "bytes": 28661,
+      "width": 1360,
+      "height": 169,
+      "applied_theme": "dark",
+      "applied_locale": "en"
+    },
+    {
+      "subject": "regime-read",
+      "selector": "#regime-read",
+      "viewport": "desktop",
+      "locale": "en",
+      "theme": "light",
+      "viewport_width": 1440,
+      "viewport_height": 900,
+      "access": "anonymous",
+      "alias": "regime-read-light-en-desktop.png",
+      "captured": true,
+      "file": "cells/regime-read-light-en-desktop.png",
+      "sha256": "d34dce4a943e56317d1edd98161f9bd03df2d3e75c7f95b8c3da1986a7935153",
+      "bytes": 28604,
+      "width": 1360,
+      "height": 169,
+      "applied_theme": "light",
+      "applied_locale": "en"
+    },
+    {
+      "subject": "regime-read",
+      "selector": "#regime-read",
+      "viewport": "desktop",
+      "locale": "zh",
+      "theme": "dark",
+      "viewport_width": 1440,
+      "viewport_height": 900,
+      "access": "anonymous",
+      "alias": "regime-read-dark-zh-desktop.png",
+      "captured": true,
+      "file": "cells/regime-read-dark-zh-desktop.png",
+      "sha256": "d5857bd38eb7975c70ddbd9620c5b8fccdc9607b3409e0c8d9b919dc6634a7f8",
+      "bytes": 27778,
+      "width": 1360,
+      "height": 169,
+      "applied_theme": "dark",
+      "applied_locale": "zh"
+    },
+    {
+      "subject": "regime-read",
+      "selector": "#regime-read",
+      "viewport": "desktop",
+      "locale": "zh",
+      "theme": "light",
+      "viewport_width": 1440,
+      "viewport_height": 900,
+      "access": "anonymous",
+      "alias": "regime-read-light-zh-desktop.png",
+      "captured": true,
+      "file": "cells/regime-read-light-zh-desktop.png",
+      "sha256": "577fad5dda6deb874698b9ac189a692d979ddcdf01169760b652cc17a5356468",
+      "bytes": 28150,
+      "width": 1360,
+      "height": 169,
+      "applied_theme": "light",
+      "applied_locale": "zh"
+    },
+    {
+      "subject": "regime-read",
+      "selector": "#regime-read",
+      "viewport": "mobile",
+      "locale": "en",
+      "theme": "dark",
+      "viewport_width": 390,
+      "viewport_height": 844,
+      "access": "anonymous",
+      "alias": "regime-read-dark-en-mobile.png",
+      "captured": true,
+      "file": "cells/regime-read-dark-en-mobile.png",
+      "sha256": "7305a7c58a36a514349fc03563d8b973f2c8279cc6e0691915e5886c7a66da71",
+      "bytes": 28735,
+      "width": 354,
+      "height": 350,
+      "applied_theme": "dark",
+      "applied_locale": "en"
+    },
+    {
+      "subject": "regime-read",
+      "selector": "#regime-read",
+      "viewport": "mobile",
+      "locale": "en",
+      "theme": "light",
+      "viewport_width": 390,
+      "viewport_height": 844,
+      "access": "anonymous",
+      "alias": "regime-read-light-en-mobile.png",
+      "captured": true,
+      "file": "cells/regime-read-light-en-mobile.png",
+      "sha256": "785767c12ae923c82f89145b6d50041fcc6c43ebf0f3c195dc993a54bb3d0163",
+      "bytes": 28216,
+      "width": 354,
+      "height": 350,
+      "applied_theme": "light",
+      "applied_locale": "en"
+    },
+    {
+      "subject": "regime-read",
+      "selector": "#regime-read",
+      "viewport": "mobile",
+      "locale": "zh",
+      "theme": "dark",
+      "viewport_width": 390,
+      "viewport_height": 844,
+      "access": "anonymous",
+      "alias": "regime-read-dark-zh-mobile.png",
+      "captured": true,
+      "file": "cells/regime-read-dark-zh-mobile.png",
+      "sha256": "523c2ce637a0c1f280f55180d6f6ad9cdaa43717b49fd738ca1e35ac720e24b4",
+      "bytes": 26455,
+      "width": 354,
+      "height": 305,
+      "applied_theme": "dark",
+      "applied_locale": "zh"
+    },
+    {
+      "subject": "regime-read",
+      "selector": "#regime-read",
+      "viewport": "mobile",
+      "locale": "zh",
+      "theme": "light",
+      "viewport_width": 390,
+      "viewport_height": 844,
+      "access": "anonymous",
+      "alias": "regime-read-light-zh-mobile.png",
+      "captured": true,
+      "file": "cells/regime-read-light-zh-mobile.png",
+      "sha256": "885cab6531eef1b162b1b8c3d4641ce10eb2273ae9bdfea618f7112c4e4099f1",
+      "bytes": 26429,
+      "width": 354,
+      "height": 305,
+      "applied_theme": "light",
+      "applied_locale": "zh"
+    }
+  ]
+}

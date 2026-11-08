@@ -1,0 +1,43 @@
+{
+  "observed_at": "2026-10-14T13:31:37.302585+00:00",
+  "source": "6aef75a732cc8fd0085d4f724d2f403ace7470b5",
+  "github_composed_a1": "7c610b6d8a771cc66d8c2a43548a0328c817b79c",
+  "nine_conflicts_ours_empty_incoming_only": true,
+  "exact_incoming_additions": {
+    "flow-surface": [
+      "engine/rates_command_basis.py"
+    ],
+    "fif-kernel-guards": [
+      "engine/neuralweb/market_memory_brain_citations.py",
+      "engine/rates_command_basis.py"
+    ],
+    "biocatalyst-serving": [
+      "engine/rates_command_basis.py"
+    ],
+    "biocatalyst-history": [
+      "engine/rates_command_basis.py"
+    ],
+    "crypto-assistant-context": [
+      "engine/neuralweb/market_memory_brain_citations.py",
+      "engine/rates_command_basis.py"
+    ],
+    "unrun-government-revenue-candidate-projection": [
+      "engine/rates_command_basis.py"
+    ],
+    "unrun-government-revenue-grader": [
+      "engine/rates_command_basis.py"
+    ],
+    "research-price-panel": [
+      "engine/neuralweb/market_memory_brain_citations.py",
+      "engine/rates_command_basis.py"
+    ],
+    "ticker-news-qbus": [
+      "engine/neuralweb/market_memory_brain_citations.py",
+      "engine/rates_command_basis.py"
+    ]
+  },
+  "non_path_merge_definitions_unchanged": true,
+  "resolution_sha256": "64e06228f4ee3d603181e55d52c9910434a927140b834d08046a40c0aef79ee7",
+  "status": "PREPARED_NOT_APPLIED",
+  "scope": "Exact future integration resolution after A1 protected landing and fresh final-main reconciliation. No branch main/A1 merge, no source publication, no hosted/release/adoption proof."
+}

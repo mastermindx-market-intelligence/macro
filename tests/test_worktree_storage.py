@@ -357,6 +357,119 @@ class FinalExternalRevalidationTests(unittest.TestCase):
         _, effects = self.apply(gc, repo, root, wt, cfg)
         self.assertEqual(effects, ['unlock', 'remove'])
 
+    def test_exact_cleanup_keeps_storage_lock_for_busy_unknown_and_idle_handles(self):
+        gc, repo, root, wt, cfg, gitdir = self.eligible()
+        original = gc._git
+        effects = []
+
+        def observed(where, *args, **kwargs):
+            if args[:2] in (("worktree", "unlock"), ("worktree", "remove"),
+                            ("worktree", "prune")):
+                effects.append(args)
+                raise AssertionError("exact cleanup must retain the storage-owned lock")
+            return original(where, *args, **kwargs)
+
+        for occupied in (True, None, False):
+            with self.subTest(occupied=occupied), \
+                 patch.object(gc, "worktree_storage", s), \
+                 patch.object(gc, "proc_cwd_map", return_value={}), \
+                 patch.object(gc, "exact_target_open_handles", return_value=occupied), \
+                 patch.object(gc, "_ledger_write"), \
+                 patch.object(gc, "_git", side_effect=observed):
+                result = gc.apply_deletions(
+                    repo, [wt], cfg, [Path(self.policy["root"])], exact_single=True)
+                self.assertTrue(result["errors"])
+                self.assertEqual(result["deleted"], [])
+                self.assertFalse(result["pruned"])
+                self.assertTrue((gitdir / "locked").is_file())
+        self.assertEqual(effects, [])
+
+    def test_protected_external_tree_is_retained_even_with_stale_safe_verdict(self):
+        gc, repo, root, wt, cfg, gitdir = self.eligible()
+        with patch.object(gc, "worktree_storage", s):
+            gc.classify(wt, repo, cfg, {}, {}, True, repo, time.time(),
+                        protected=[Path(self.policy["root"])])
+        self.assertEqual(wt.verdict, "PROTECTED")
+        wt.verdict = "SAFE_MERGED"  # Independently exercise the apply-side belt.
+        original = gc._git
+        effects = []
+
+        def observed(where, *args, **kwargs):
+            if args[:2] in (("worktree", "unlock"), ("worktree", "remove")):
+                effects.append(args)
+                raise AssertionError("protected checkout must not be unlocked or removed")
+            return original(where, *args, **kwargs)
+
+        with patch.object(gc, "worktree_storage", s), \
+             patch.object(gc, "_ledger_write"), \
+             patch.object(gc, "_git", side_effect=observed):
+            result = gc.apply_deletions(
+                repo, [wt], cfg, [Path(self.policy["root"])],
+                protected=[Path(self.policy["root"])], exact_single=True)
+        self.assertEqual(effects, [])
+        self.assertEqual(result["deleted"], [])
+        self.assertTrue(any("human_driven_roots" in error for error in result["errors"]))
+        self.assertTrue((gitdir / "locked").is_file())
+
+    def test_failed_storage_unlock_stops_before_remove_or_prune(self):
+        gc, repo, root, wt, cfg, gitdir = self.eligible()
+        original = gc._git
+        effects = []
+
+        def observed(where, *args, **kwargs):
+            if args[:2] == ("worktree", "unlock"):
+                effects.append("unlock")
+                return -1, "", "fixture timeout; unlock outcome unverified"
+            if args[:2] in (("worktree", "remove"), ("worktree", "prune")):
+                effects.append(args[1])
+                raise AssertionError("failed unlock must stop the sweep")
+            return original(where, *args, **kwargs)
+
+        with patch.object(gc, "worktree_storage", s), \
+             patch.object(gc, "proc_cwd_map", return_value={}), \
+             patch.object(gc, "_ledger_write"), \
+             patch.object(gc, "_git", side_effect=observed):
+            result = gc.apply_deletions(repo, [wt], cfg, [Path(self.policy["root"])])
+        self.assertEqual(effects, ["unlock"])
+        self.assertTrue(any("storage unlock failed" in error for error in result["errors"]))
+        self.assertEqual(result["deleted"], [])
+        self.assertFalse(result["pruned"])
+        self.assertTrue((gitdir / "locked").is_file())
+
+
+    def test_failed_external_remove_stops_before_prune_when_initially_unlocked(self):
+        gc, repo, root, wt, cfg, gitdir = self.eligible()
+        self.git(repo, "worktree", "unlock", str(root))
+        wt = next(w for w in gc.parse_worktree_list(
+            self.git(repo, "worktree", "list", "--porcelain")) if w.path == root)
+        with patch.object(gc, "worktree_storage", s):
+            gc.classify(wt, repo, cfg, {}, {}, True, repo, time.time())
+        self.assertEqual(wt.verdict, "SAFE_MERGED")
+        self.assertFalse(wt.locked)
+        original = gc._git
+        effects = []
+
+        def observed(where, *args, **kwargs):
+            if args[:2] == ("worktree", "remove"):
+                effects.append("remove")
+                self.assertNotIn("--force", args)
+                return -1, "", "fixture timeout; removal outcome unverified"
+            if args[:2] in (("worktree", "unlock"), ("worktree", "prune")):
+                effects.append(args[1])
+                raise AssertionError("failed external removal must stop the sweep")
+            return original(where, *args, **kwargs)
+
+        with patch.object(gc, "worktree_storage", s), \
+             patch.object(gc, "proc_cwd_map", return_value={}), \
+             patch.object(gc, "_ledger_write"), \
+             patch.object(gc, "_git", side_effect=observed):
+            result = gc.apply_deletions(repo, [wt], cfg, [Path(self.policy["root"])])
+        self.assertEqual(effects, ["remove"])
+        self.assertEqual(result["deleted"], [])
+        self.assertFalse(result["pruned"])
+        self.assertTrue(result["errors"])
+        self.assertTrue(root.is_dir())
+
 
 class FilesystemMetadataTests(unittest.TestCase):
     """Admission uses observed diskutil fields, before any destination allocation."""
@@ -982,19 +1095,46 @@ class F4ManagedAutoProfileTests(unittest.TestCase):
         hook = importlib.util.module_from_spec(hook_spec)
         hook_spec.loader.exec_module(hook)
         before = self.snapshot(root)
+        policy = self.base / "host-policy.json"
+        helper = self.base / "host-helper.py"
+        policy.write_text(json.dumps(self.policy))
+        helper.write_text("# intercepted host helper fixture\n")
+        original_run = subprocess.run
         for fail in (False, True):
             with self.subTest(fail=fail):
                 output = io.StringIO()
-                payload = json.dumps(dict(name="f4-hook", cwd=str(repo), session_id="f4-fixture"))
-                with patch.object(hook.sys, "stdin", io.StringIO(payload)), \
+                request = dict(name="f4-hook", cwd=str(repo), session_id="f4-fixture")
+                reads, delegated = [], []
+
+                def observed(command, **kwargs):
+                    if command[0] == "git":
+                        args = tuple(command[-3:])
+                        self.assertIn(args, (
+                            ("rev-parse", "--path-format=absolute", "--git-common-dir"),
+                            ("rev-parse", "--path-format=absolute", "--show-toplevel"),
+                        ), "portable mutating Git path entered")
+                        reads.append(args)
+                        return original_run(command, **kwargs)
+                    self.assertEqual(list(command), [
+                        hook.sys.executable, str(helper), "--config", str(policy), "create"])
+                    self.assertEqual(json.loads(kwargs["input"]), request)
+                    delegated.append(command)
+                    return subprocess.CompletedProcess(
+                        command, 1 if fail else 0,
+                        "" if fail else str(root) + "\n",
+                        "fixture refusal" if fail else "")
+
+                with patch.object(hook.sys, "stdin", io.StringIO(json.dumps(request))), \
                      patch.object(hook.sys, "stdout", output), \
-                     patch.object(self.storage, "load_policy", return_value=self.policy), \
-                     patch.object(self.storage, "create_worktree", return_value=root,
-                                  side_effect=self.storage.StorageError("fixture refusal") if fail else None), \
-                     patch.object(hook, "git", side_effect=AssertionError("portable Git path entered")):
+                     patch.object(hook.sys, "stderr", io.StringIO()), \
+                     patch.object(hook, "storage_policy_path", return_value=policy), \
+                     patch.object(hook, "storage_helper_path", return_value=helper), \
+                     patch.object(hook.subprocess, "run", side_effect=observed):
                     rc = hook.main()
                 self.assertEqual(rc, 1 if fail else 0)
                 self.assertEqual(output.getvalue().strip(), "" if fail else str(root))
+                self.assertEqual(len(reads), 2)
+                self.assertEqual(len(delegated), 1)
                 self.assertEqual(self.snapshot(root), before)
 
 

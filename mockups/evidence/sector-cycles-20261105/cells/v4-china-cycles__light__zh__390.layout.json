@@ -1,0 +1,185 @@
+{
+  "cell": "v4-china-cycles__light__zh__390",
+  "view": "v4",
+  "url": "/sector_cycles_china.html",
+  "theme": "light",
+  "lang": "zh",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "variant": null,
+  "js": true,
+  "steps": [],
+  "head": "b601c02749a34fd83877393d59ee88e6045207cd",
+  "pins": {
+    "chromium": "149.0.7827.55",
+    "playwright": "1.61.1",
+    "host": "darwin/arm64",
+    "executable": {
+      "name": "chrome-headless-shell",
+      "sha256": "11e393326c7d20a7c56641a7c65def33ea9c280da3b0b74cf8563b07989a0ee3"
+    },
+    "launch_args": [
+      "--disable-skia-runtime-opts",
+      "--disable-partial-raster",
+      "--disable-gpu",
+      "--force-color-profile=srgb",
+      "--disable-font-subpixel-positioning",
+      "--font-render-hinting=none",
+      "--disable-lcd-text"
+    ],
+    "font_pin": "/p0b-font-pin/pin.css",
+    "clock": "2026-11-05T12:00:00Z",
+    "locale": "en-US",
+    "timezone": "UTC",
+    "dpr": 1
+  },
+  "http_status": 200,
+  "notes": [],
+  "scrollWidth": 390,
+  "scrollHeight": 9165,
+  "data_theme": "light",
+  "data_lang": "zh",
+  "html_lang": "zh-CN",
+  "computed_bg": "rgb(232, 235, 241)",
+  "boxes": {
+    "heading": {
+      "selector": "#sc-hero-title",
+      "x": 14,
+      "y": 538,
+      "w": 362,
+      "h": 22,
+      "visible": true,
+      "text": "板块轮动叠加"
+    },
+    "asof": {
+      "selector": "#sc-asof",
+      "x": 55,
+      "y": 368,
+      "w": 62,
+      "h": 17,
+      "visible": true,
+      "text": "2026-11-04"
+    },
+    "generation": null,
+    "stale_guard": null,
+    "chips": {
+      "selector": "#sc-chips",
+      "x": 14,
+      "y": 755,
+      "w": 362,
+      "h": 56,
+      "visible": true,
+      "text": "☰ 板块 5 ▾"
+    },
+    "chart": {
+      "selector": "#sc-chart",
+      "x": 14,
+      "y": 811,
+      "w": 362,
+      "h": 440,
+      "visible": true,
+      "text": "超卖 中段 狂热 低 中 高 2020 2022 2024 2026 当前"
+    },
+    "inspector": {
+      "selector": "#sc-detail",
+      "x": 0,
+      "y": 844,
+      "w": 390,
+      "h": 777,
+      "visible": false,
+      "text": "关闭 板块轮动 · 2026-11-04所有板块放在同一个刻度上——靠上说明这波已经走了很久，靠下说明跌得比较透。切到价格看实际走势，点某个板块可以看它的拐点。各板块所处位置上行中健康上行食饮交运银行美护回落中下行中农业煤炭入场良机已筑底 · 转强家电传媒石化筑底中超卖化工钢铁有色电子纺服轻工医药公用地产零售服务综合建材建筑电新军工计算机通信非银汽车机械环保展开全部 31 ▾领涨 · 对比上证综指"
+    },
+    "compare_tray": null,
+    "fixture_label": null,
+    "tape_asof": null,
+    "strip_asof": null,
+    "basket_on": null,
+    "members": null,
+    "companies_unavailable": null,
+    "stance_unavailable": null
+  },
+  "fixture_labels": {
+    "count": 0,
+    "visible": 0,
+    "texts": []
+  },
+  "fixture_text": [],
+  "size_mult_text": [
+    {
+      "el": "code.scf-code",
+      "visible": false,
+      "in_details": true,
+      "details_open": false,
+      "text": "engine/sector_central.py:453 size_mult = 1.0 (W4.6: every cell ships 1.0; size lever only, never direction; C17; cycles_"
+    }
+  ],
+  "stripe_audit": {
+    "scope": "body",
+    "flagged": []
+  },
+  "next_turn_labels": [
+    "▼ 下次▼ 2026年12月 ↓ 逆风 RS -19.4% #30",
+    "▼ 下次▼ 2026年12月 ↓ 逆风 RS -27.7% #31",
+    "▼ 下次▼ 2026年11月 ↓ 逆风 RS -5.4% #23",
+    "▼ 参考：底部原预计 2026年10月 — 已过 ↓ 逆风 RS -5.1% #21",
+    "▼ 下次▼ 2026年12月 ↓ 逆风 RS -8.8% #27",
+    "▼ 参考：底部原预计 2026年7月 — 已过 ↓ 逆风 RS -5.5% #24",
+    "▼ 参考：底部原预计 2026年10月 — 已过 ↓ 逆风 RS -10.1% #28",
+    "▼ 参考：底部原预计 2026年5月 — 已过 ↓ 逆风 RS -0.9% #16",
+    "▼ 参考：底部原预计 2026年6月 — 已过 ↓ 逆风 RS -0.8% #15",
+    "▼ 下次▼ 2026年12月 ↓ 逆风 RS -11.2% #29",
+    "▼ 下次▼ 2026年12月 ↓ 逆风 RS -6.1% #25",
+    "▼ 参考：底部原预计 2026年10月 — 已过 ↓ 逆风 RS -1.4% #18",
+    "▼ 参考：底部原预计 2026年9月 — 已过 ↓ 逆风 RS -3.1% #20",
+    "▲ 参考：顶部原预计 2024年7月 — 已过 ↓ 逆风 RS +2.5% #9",
+    "▼ 参考：底部原预计 2026年9月 — 已过 ↓ 逆风 RS +0.5% #13",
+    "▼ 参考：底部原预计 2026年10月 — 已过 ↓ 逆风 RS +4% #7"
+  ],
+  "cycles_ctx": null,
+  "assertions": {
+    "scroll_width_within_viewport": true,
+    "console_errors": 0,
+    "console_errors_unexpected": 0,
+    "size_mult_visible": false,
+    "page_errors": 0,
+    "fixture_label_visible": false,
+    "theme_applied": true,
+    "lang_applied": true,
+    "zh_latin": 7,
+    "expect_visible_any": null
+  },
+  "console_errors": [],
+  "console_errors_expected": [],
+  "page_errors": [],
+  "failed_requests": [],
+  "interceptions": [],
+  "serve": {
+    "counts": {
+      "out": 37,
+      "head-fallback": 8
+    },
+    "head_fallback": [
+      "/account.js",
+      "/live.js",
+      "/live_config.js",
+      "/logo_config.js",
+      "/macro-desk.css",
+      "/nav_market.js",
+      "/navigation-refresh.css",
+      "/stock-logos.js"
+    ],
+    "missing": []
+  },
+  "zh_latin": {
+    "scope": "document",
+    "count": 7,
+    "rc": 1,
+    "line": "zh-latin=7 A GS RS X Y d sectors skip=details(wholesale),nav,script,style,svg,title,head,[hidden],.l-en code-on-face=counts allow=XL?,FIX,SPY,MODEL,PRIOR"
+  },
+  "png": {
+    "file": "cells/v4-china-cycles__light__zh__390.png",
+    "sha256": "dc013399d9a869d359b02a2538ef6cb03bd9e4539fb1b1ec6dc26028da99b968"
+  }
+}

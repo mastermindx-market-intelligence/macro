@@ -534,7 +534,8 @@ def smile_confirm(dol: pd.DataFrame, real: dict | None, trend: dict | None,
     + a triple-red haven-loss flag (USD & equities & Treasuries falling together = the
     dollar is NOT acting as a safe haven). Descriptive only."""
     last = dol.iloc[-1]
-    regime = last.get("smile_regime", "Neutral")
+    raw_regime = last.get("smile_regime")
+    regime = raw_regime if isinstance(raw_regime, str) and raw_regime in _SMILE_USD else None
     usd_dir = _SMILE_USD.get(regime)
     confirms, against = [], []
 
@@ -569,7 +570,7 @@ def smile_confirm(dol: pd.DataFrame, real: dict | None, trend: dict | None,
         yd = _last(us10y.dropna().diff(w))                    # yield change; + = price down
         if ud is not None and sd is not None and yd is not None:
             triple_red = (ud < 0) and (sd < 0) and (yd > 0)
-    return {"regime": regime, "usd_dir": usd_dir, "confidence": conf,
+    return {"regime": regime, "usd_dir": usd_dir, "availability": "available" if usd_dir is not None else "unavailable", "confidence": conf,
             "confidence_zh": conf_zh, "n_confirm": n,
             "confirms": [c[0] for c in confirms], "confirms_zh": [c[1] for c in confirms],
             "against": [a[0] for a in against],

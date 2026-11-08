@@ -528,11 +528,12 @@ def test_status_json_shape(repo):
     out = WS.status_json(repo)
 
     assert set(out.keys()) == {
-        "sparse", "missing_dirs", "stale_locks_removed", "full_bytes_estimate",
-        "untracked_survivors",
+        "sparse", "missing_dirs", "partial_dirs", "stale_locks_removed",
+        "full_bytes_estimate", "untracked_survivors",
     }
     assert out["sparse"] is True
     assert out["missing_dirs"] == ["big"]
+    assert out["partial_dirs"] == [], "big/ is omitted whole, not partially materialized"
     assert out["stale_locks_removed"] == []
     assert isinstance(out["full_bytes_estimate"], int)
     assert out["full_bytes_estimate"] >= len(_BIG_CONTENT), (
@@ -836,7 +837,7 @@ def test_hook_main_verifies_postcondition_after_read_tree_not_before(tmp_path, m
     postcondition check must fire strictly after `git read-tree -mu HEAD`,
     never before."""
     hook = _load_hook()
-    monkeypatch.setattr("scripts.worktree_storage.load_policy", lambda: None)
+    monkeypatch.setenv("MASTERMIND_WORKTREE_STORAGE_POLICY", str(tmp_path / "no-storage-policy.json"))
     donor = tmp_path / "donor"
     donor.mkdir()
     _git(donor, "init", "-q", "-b", "main")

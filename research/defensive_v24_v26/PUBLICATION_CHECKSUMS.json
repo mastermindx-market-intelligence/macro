@@ -1,0 +1,36 @@
+{
+  "schema": "mmx.defensive.v24_v26.publication.v1",
+  "published_date": "2026-10-13",
+  "equity_cutoff": "2026-10-08",
+  "research_only": true,
+  "archive_sha256": "01a32a58f3cd9b8b6963f8feec8c0bc80be4fa51c0d941844b52e4cf4787b00e",
+  "archive_bytes": 801856,
+  "git_blob_sha": "0ac81923cb4a23d6bf5605cfa4c864cfd5cd1286",
+  "report_sha256": "fb5652fbfea92970ff7b08595cdb8c31190f65fd214cf734da15cae2a2bda089",
+  "table_sha256": {
+    "V24_Independent_Cycle_Family_Intervals.csv": "000cb62a82561fd95a42c7e1de1e81b338655cc863670ef52462049300a2d440",
+    "V24_Original_and_Spaced_Cell_Counts.csv": "66384404158d03b80a948fccbe304488b9bcbd1951c929da076aad31fb507b6c",
+    "V25_Chart_Convention_Classification_Shifts.csv": "cd099a91596659155b4b45f9dee998056429ca46a4a7337e3d807547e6eecb64",
+    "V25_Chart_Convention_Outcome_Contrasts.csv": "c219fac6b61b26515c4a5fb39401883d28df88fd24f3f81f89d448afb4bcd411",
+    "V26_48_Family_Simultaneous_Audit.csv": "020b59784a15714ee7e0223b22a1faa73ba51eb470fae46004871816e48fdfad"
+  },
+  "tests": {
+    "V24": 9,
+    "V25": 7,
+    "V26": 6
+  },
+  "baseline_2771_labels_mismatch": 0,
+  "simultaneous_family": {
+    "possible": 48,
+    "eligible": 46
+  },
+  "no_vendor_raw_prices": true,
+  "no_broker_changes": true,
+  "no_prod_changes": true,
+  "related_prs": [
+    9034,
+    9064,
+    9129,
+    9174
+  ]
+}
