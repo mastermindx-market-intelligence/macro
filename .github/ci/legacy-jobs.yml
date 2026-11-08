@@ -32,12 +32,48 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - collectors/base.py
+      - collectors/yahoo.py
+      - config/delisted_symbols.yml
+      - lib/cn_calendar.py
+      - lib/delisted_symbols.py
+      - lib/exchange_holidays.py
+      - lib/hk_calendar.py
+      - lib/market_observations.py
+      - lib/market_session.py
+      - lib/stooq.py
+      - lib/ticker_aliases.py
+      - lib/tsx_calendar.py
+      - lib/us_cash_calendar.py
       - engine/__init__.py
+      - engine/canon.py
+      - engine/conditions.py
+      - engine/confluence_tiers.py
+      - engine/entry_signal.py
+      - engine/hysteresis.py
+      - engine/indicators.py
+      - engine/session_anchor.py
+      - engine/signal_quality.py
       - engine/stock_identity/__init__.py
       - engine/stock_identity/authority.py
       - engine/stock_identity/replay/__init__.py
+      - engine/stock_identity/replay/events.py
+      - engine/stock_identity/replay/grid.py
       - engine/stock_identity/replay/method_projection.py
+      - engine/stock_identity/replay/naive.py
+      - engine/stock_identity/replay/sea.py
+      - engine/stock_identity/replay/starter.py
+      - engine/technicals.py
+      - engine/us_early_turn.py
+      - lib/__init__.py
+      - lib/config.py
+      - lib/nyse_calendar.py
+      - lib/store.py
+      - site/anticipationdata/us_leader_pullback.json
+      - site/basketdata/us_basket_turn.json
+      - site/factordata/basket_washout_state.json
       - tests/__init__.py
+      - tests/test_stock_identity_input_boundaries.py
       - tests/test_stock_identity_method_projection.py
     runs-on: ubuntu-latest
     timeout-minutes: 2
@@ -47,9 +83,9 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest
+        run: pip install pytest numpy pandas pyarrow pyyaml
       - name: outcome-free registered method projection
-        run: python -m pytest tests/test_stock_identity_method_projection.py -q
+        run: python -m pytest tests/test_stock_identity_method_projection.py tests/test_stock_identity_input_boundaries.py -q
   options-r1-sector-holdings-coverage:
     # Options R1 W2B: sector holdings coverage emitter — separate denominators, unknown total stays null, Terminal contract, additive hook.
     # scope: exclusive — the suite reads scripts/build_sector_central.py as text and imports it (the additive hook
@@ -295,6 +331,8 @@ jobs:
     # Keep generated-site identities even when absent from a local sparse checkout.
     # Canonical closure and ancestor tests enforce this exact curated scope.
     paths:
+      - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
+      - "engine/theme_graph/activity_history_bridge.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -2464,6 +2502,8 @@ jobs:
     # C19 WP32 P5/P6: generation-correction identity coherence + warm-cache denial silence on a synthetic ticker (offline).
     timeout-minutes: 10
     paths:
+      - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
+      - "engine/theme_graph/activity_history_bridge.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -3539,6 +3579,8 @@ jobs:
     # C19 WP22: DHI non-AAPL integrated-answer traversal on the published event workspace (offline).
     timeout-minutes: 10
     paths:
+      - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
+      - "engine/theme_graph/activity_history_bridge.py"
       - "scripts/company_intelligence_publication_evidence.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
@@ -6199,6 +6241,8 @@ jobs:
     # suites read can still start this job.
     scope: exclusive
     paths:
+      - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
+      - "engine/theme_graph/activity_history_bridge.py"
       - "engine/entry_radar/__init__.py"
       - "engine/entry_radar/replay/__init__.py"
       - "engine/entry_radar/replay/identity_observation_snapshot.py"
@@ -8135,6 +8179,8 @@ jobs:
     # opaque fallback patterns to this hermetic job.
     scope: exclusive
     paths:
+      - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
+      - "engine/theme_graph/activity_history_bridge.py"
       - "engine/neuralweb/options_selection_context.py"
       - "tests/test_options_selection_context.py"
       - "tests/fixtures/options_selection_question/terminal-mint-v1.json"
@@ -12386,6 +12432,8 @@ jobs:
     # every concrete static import-closure path (curated_exclusive_closure_findings
     # gates it) plus the measured runtime in-tree reads of every class-A suite.
     paths:
+      - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
+      - "engine/theme_graph/activity_history_bridge.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -14910,6 +14958,7 @@ jobs:
     # narrow those.
     scope: exclusive
     paths:
+      - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py
       - "lib/rotation_observation_notification.py"
@@ -16761,6 +16810,8 @@ jobs:
     # dynamic resource families; never fund unrelated matches by raising caps.
     scope: exclusive
     paths:
+      - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
+      - "engine/theme_graph/activity_history_bridge.py"
       - "engine/entry_radar/__init__.py"
       - "engine/entry_radar/replay/__init__.py"
       - "engine/entry_radar/replay/identity_observation_snapshot.py"
@@ -16971,6 +17022,8 @@ jobs:
     # Dynamic Ontology assets and canonical navigation are included explicitly.
     scope: exclusive
     paths:
+      - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
+      - "engine/theme_graph/activity_history_bridge.py"
       # TTI-D1: bind the existing synthetic minute reader/resolver suite to
       # its current CODE consumer owner; the older signal-contract copy is DATA.
       - "engine/entry_radar/minute_resolution.py"
@@ -19447,6 +19500,8 @@ jobs:
     # ticker-cluster time-confound law and the altdata_brain.py article3 convention.
     scope: exclusive
     paths:
+      - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
+      - "engine/theme_graph/activity_history_bridge.py"
       - engine/entry_radar/replay/identity_observation_snapshot.py
       - engine/neuralweb/market_memory_identity_candidate.py
       - collectors/yahoo.py
@@ -22622,6 +22677,8 @@ jobs:
     # the shared closure guard keeps every concrete dependency selecting this job.
     scope: exclusive
     paths:
+      - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
+      - "engine/theme_graph/activity_history_bridge.py"
       - "collectors/__init__.py"
       - "collectors/base.py"
       - "collectors/yahoo.py"
@@ -25519,6 +25576,10 @@ jobs:
       - "engine/theme_graph/activity_history_bridge.py"
       - "scripts/bridge_activity_history.py"
       - "tests/test_gmi_activity_history_bridge.py"
+      # Activity-history receipt binding at the I/O layer (one helper, both loaders).
+      - "tests/test_gmi_activity_history_binding.py"
+      - "tests/fixtures/gmi_activity_binding/**"
+      - "research/theme_graph/issuer_disclosures_20261011/C01_GRAPH_MEMBERSHIP_USE_RULING.json"
       - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - "research/theme_graph/issuer_disclosures_20261011/C01_CHAIRMAN_SOURCE_PURPOSE_RULING.json"
       # W2F-X closure widening: the observation seam widened these import closures
@@ -25539,7 +25600,7 @@ jobs:
       - name: dt_contra_state + subsector membership test suites
         run: python -m pytest tests/test_dt_contra_state.py tests/test_build_subsector_membership.py -q
       - name: GMI history integrity and refusal before publication
-        run: TZ=UTC python -m pytest tests/test_gmi_history_integrity.py tests/test_gmi_operating_proof.py tests/test_gmi_activity_membership_admission.py tests/test_basket_membership_pit.py tests/test_theme_graph_membership_lifecycle.py tests/test_theme_graph_materialize.py tests/test_theme_graph_activity_membership_history.py tests/test_theme_graph_local_plane.py tests/test_theme_graph_micro_membership_research.py tests/test_theme_graph_micro_member_addendum.py tests/test_theme_graph_micro_curator_readiness.py tests/test_theme_graph_contracts.py tests/test_theme_graph_structural_owner_binding.py tests/test_theme_graph_relation_action_resolver.py tests/test_gmi_activity_proposal_ledger.py tests/test_gmi_activity_history_bridge.py -q
+        run: TZ=UTC python -m pytest tests/test_gmi_history_integrity.py tests/test_gmi_operating_proof.py tests/test_gmi_activity_membership_admission.py tests/test_basket_membership_pit.py tests/test_theme_graph_membership_lifecycle.py tests/test_theme_graph_materialize.py tests/test_theme_graph_activity_membership_history.py tests/test_theme_graph_local_plane.py tests/test_theme_graph_micro_membership_research.py tests/test_theme_graph_micro_member_addendum.py tests/test_theme_graph_micro_curator_readiness.py tests/test_theme_graph_contracts.py tests/test_theme_graph_structural_owner_binding.py tests/test_theme_graph_relation_action_resolver.py tests/test_gmi_activity_proposal_ledger.py tests/test_gmi_activity_history_bridge.py tests/test_gmi_activity_history_binding.py -q
       - name: GMI local and canonical state contract and cutoff reader
         run: TZ=UTC python -m pytest tests/test_theme_graph_state.py -q
       - name: GMI sealed owner, generation integrity, and read-only accepted publications
@@ -27109,6 +27170,8 @@ jobs:
     # hence the pandas-family install below.
     scope: exclusive
     paths:
+      - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
+      - "engine/theme_graph/activity_history_bridge.py"
       - engine/rate_futures_repricing.py
       - "engine/entry_radar/__init__.py"
       - "engine/entry_radar/replay/__init__.py"
@@ -27374,6 +27437,8 @@ jobs:
     # Full tracked-tree import/read closure plus Jinja and committed page assets.
     # Preserve the existing 36 suites and add 6 guarded backend suites while removing unrelated opaque fallback fanout.
     paths:
+      - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
+      - "engine/theme_graph/activity_history_bridge.py"
       - "engine/options_hub_retention.py"
       - "engine/entry_radar/__init__.py"
       - "engine/entry_radar/replay/__init__.py"
@@ -30624,6 +30689,8 @@ jobs:
     # (data/neuralweb/confluence_graph.json) would otherwise lose its owner.
     scope: exclusive
     paths:
+      - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
+      - "engine/theme_graph/activity_history_bridge.py"
       - "collectors/__init__.py"
       - "collectors/base.py"
       - "collectors/yahoo.py"
@@ -31185,6 +31252,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
+      - "engine/theme_graph/activity_history_bridge.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -35788,6 +35857,8 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
+      - "engine/theme_graph/activity_history_bridge.py"
       - "engine/prophet_early_leadership_evidence.py"
       - "tests/test_prophet_fusion_w3_structural.py"
       - collectors/rate_futures.py
@@ -37294,6 +37365,7 @@ jobs:
     # the declared-scope coverage audit re-checks them on every load.
     scope: exclusive
     paths:
+      - "engine/theme_graph/activity_history_bridge.py"
       - "engine/prophet_early_leadership_evidence.py"
       - "contracts/theme_graph/theme_state.v1.schema.json"
       - engine/rate_futures_repricing.py
@@ -40981,6 +41053,8 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
+      - "engine/theme_graph/activity_history_bridge.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -44373,6 +44447,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
+      - "engine/theme_graph/activity_history_bridge.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -45647,6 +45723,8 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
+      - "engine/theme_graph/activity_history_bridge.py"
       - "contracts/capital_structure_projection.schema.json"
       - "contracts/evidence_foundation/block.v1.schema.json"
       - "contracts/evidence_foundation/recipe.v1.schema.json"
@@ -47485,6 +47563,7 @@ jobs:
     # An unlisted closure file is an uncovered path. No tests/** catch-all.
     scope: exclusive
     paths:
+      - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
       - engine/entry_radar/replay/identity_observation_snapshot.py
@@ -47791,6 +47870,7 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
       - engine/entry_radar/replay/identity_observation_snapshot.py
@@ -50968,6 +51048,8 @@ jobs:
     # The qledger-cluster-honest-ci code owner retains grader/readiness suites.
     scope: exclusive
     paths:
+      - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
+      - "engine/theme_graph/activity_history_bridge.py"
       - "admin/press_audience.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
