@@ -11,6 +11,8 @@ import time
 from pathlib import Path
 from types import SimpleNamespace
 
+import pytest
+
 ROOT = Path(__file__).resolve().parents[3]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
@@ -175,6 +177,51 @@ def test_stale_health_row_degrades_automatically(tmp_path):
 
     sup.recover(now=t)
     assert sup.pick(["lead1", "bc1"], now=t) == ["lead1", "bc1"]
+    sup.close()
+
+
+def test_heartbeat_refreshes_a_stale_row_without_inventing_health(tmp_path):
+    sup = _supervisor(tmp_path)
+    t = time.time()
+    # a stale healthy row is degraded by age alone
+    sup.conn.execute("UPDATE health SET updated_at = ? WHERE id = 1", (t - 1000,))
+    sup.conn.commit()
+    assert sup.status(now=t)["health"]["effective"] == "degraded"
+
+    sup.heartbeat(now=t)
+    health = sup.status(now=t)["health"]
+    assert health["stale"] is False
+    assert health["effective"] == "healthy"
+    assert health["age_s"] == 0.0
+    sup.close()
+
+
+def test_heartbeat_never_clears_a_degraded_row(tmp_path):
+    sup = _supervisor(tmp_path)
+    t = time.time()
+    sup.degrade("worker box down", now=t)
+
+    sup.heartbeat(now=t + 60)
+    health = sup.status(now=t + 60)["health"]
+    assert health["status"] == "degraded"
+    assert health["reason"] == "worker box down"
+    assert health["stale"] is False
+    assert health["effective"] == "degraded"
+    # and the beat did move the timestamp, so it is liveness evidence
+    assert health["age_s"] == 0.0
+    sup.close()
+
+
+def test_heartbeat_refuses_a_missing_health_row(tmp_path):
+    sup = _supervisor(tmp_path)
+    sup.conn.execute("DELETE FROM health WHERE id = 1")
+    sup.conn.commit()
+
+    with pytest.raises(RuntimeError, match="heartbeat is not a recovery"):
+        sup.heartbeat(now=time.time())
+    # nothing was re-inserted to stand in for evidence
+    assert sup.conn.execute("SELECT 1 FROM health WHERE id = 1").fetchone() is None
+    assert sup.status(now=time.time())["health"]["effective"] == "degraded"
     sup.close()
 
 

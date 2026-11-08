@@ -93,15 +93,15 @@ class SimClock:
 
 
 def heartbeat(sup: SimulationSupervisor, when: datetime) -> None:
-    """Re-stamp the supervisor's health row.
+    """Beat the supervisor's own health stamp on each simulated slot.
 
-    ``supervisor.py`` has no ``heartbeat()`` — ``degrade``/``recover`` are the
-    only writers — so a live harness has to beat the row itself or every child
-    looks stale after ``STALE_HEALTH_S``. The simulator beats it on each slot so
-    that "degraded" means the injected outage and nothing else.
+    The stamping lives in ``SimulationSupervisor.heartbeat`` so that the model
+    exercises the same call a harness would make. Reaching into ``conn`` from
+    here would let the simulation re-stamp a row whose product-level writer was
+    broken, which is exactly the failure a dry run is supposed to catch. The
+    beat is freshness only: an injected ``degrade`` survives it.
     """
-    sup.conn.execute("UPDATE health SET updated_at = ? WHERE id = 1", (when.timestamp(),))
-    sup.conn.commit()
+    sup.heartbeat(when)
 
 
 # --------------------------------------------------------------------------

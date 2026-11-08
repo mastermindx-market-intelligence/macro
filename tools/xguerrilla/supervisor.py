@@ -118,6 +118,20 @@ class SimulationSupervisor:
                           " WHERE id = 1", (_ts(now),))
         self.conn.commit()
 
+    def heartbeat(self, now=None) -> None:
+        """Stamp freshness only; status and reason survive the beat.
+
+        A beat is liveness evidence, not a recovery claim: a degraded row stays
+        degraded, so an injected outage cannot be cleared by the very beat that
+        proves the process is still running. A missing row raises instead of
+        being re-inserted, because a silent insert would manufacture a healthy
+        row out of no evidence.
+        """
+        if self.conn.execute("SELECT 1 FROM health WHERE id = 1").fetchone() is None:
+            raise RuntimeError("simulation health row missing: a heartbeat is not a recovery")
+        self.conn.execute("UPDATE health SET updated_at = ? WHERE id = 1", (_ts(now),))
+        self.conn.commit()
+
     # -- children -----------------------------------------------------------
     def activate(self, handle: str, now=None) -> None:
         self._put(handle, ChildState.ACTIVE, now=now)
