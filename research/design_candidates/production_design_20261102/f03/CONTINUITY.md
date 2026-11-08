@@ -2,7 +2,19 @@
 
 F03 continues under original programme Draft [#10617](https://github.com/mastermindx-market-intelligence/macro/pull/10617) and existing Draft [#10631](https://github.com/mastermindx-market-intelligence/macro/pull/10631). This is not a new registry, workstream, runtime grant or file-wide lease. The current receiving session owns recovery; an archived chat is not a dependency.
 
-## Latest actionable frontier — D05 reference discovery corrected, 2026-11-08
+## Latest actionable frontier — exact candidate-board discovery, 2026-11-08
+
+The D05 page-pointer correction below was published and all 14 changed files were byte-read back at `4981fe2dab3912666769c0ef275249f73894b6b9`. The next bounded feature now exposes the observed candidate board through the existing return-observation model: `candidate_board_id: GPL-0`, parent-bound to Sector `01M6FAXA774QT1VRDMAG7DFQ2W / p-6-0`. This uses the same immutable native observation; its timestamp/source head were not refreshed merely to expose the locator.
+
+- Assignment and Paper-reference searches accept the short board ID and exact `file/page/board` tuple. Assignment cards explain a matched candidate board; HTML detail and generated D05 Markdown show the full identity. Existing Readme `p-3-0 / BML-0`, retained p1, source status and approval limits remain explicit.
+- The builder validates the optional locator before applying any return. The read-only projection rejects malformed or mismatched candidate claims while retaining independent Readme/retained evidence. Missing/null locator behavior is identical. The existing page-keyed join, source owner and containing-page links are reused; no census record, exact-board URL, board-focus hash, new registry or state owner was added.
+- **129 return/identity + 69 directory source-logic + 26 structural-evidence checks pass.** The actual diff changes only D05's `candidate_board_id` within assignment data; provenance, old observations, frozen artifacts, route/ownership fields, source pins, native ledger and historical root manifest remain unchanged. [Behavior contract](evidence/candidate-board-discovery-20261108.md) and [verification receipt](evidence/candidate-board-discovery-verification-20261108.json) retain details.
+- Real-browser proof remains **UNVERIFIED**. The selected Chrome extension reported `net::ERR_CONNECTION_REFUSED` for the temporary workspace loopback preview. Read-only device discovery showed multiple online hosts without an established binding to that browser. No host was guessed, no remote execution/hosting deployment was attempted, and no alternate browser/control mechanism was used. The owned preview process and error tab were closed. This is a preview-transport boundary, not source-test failure, permission denial or functional acceptance.
+- Preserve every recorded Draft/HOLD, stacked CI restriction and warned-original no-modify boundary. No Paper mutation, native clone/move/archive, release or production effect was performed by this feature. Local source proof is not hosted CI or a deployed directory.
+
+**Next safe phase:** continue the portfolio's bounded market/heatmap design audit. Locate the actual current candidate and existing owner before any new improvement; preserve warned originals and other writers. Browser proof of this directory remains a separate open lane requiring a preview reachable by the selected browser.
+
+## Prior reference correction — D05 reference discovery, 2026-11-08
 
 The Chairman's continuing Paper portfolio audit now owns this bounded F03 source correction under Mastermind procedure pin `5c3d3885234358aefb97ecdbc59be0864df14f8b`. The previous branch head was `97856926b1a5ccd85780c67c5db45e6581bf5b3c`. This source-linked continuation preserves other canvas writers, the original F03 native ledger and all recorded release/physical-operation holds. An empty addressable-session response is not a proof that all writers are absent.
 

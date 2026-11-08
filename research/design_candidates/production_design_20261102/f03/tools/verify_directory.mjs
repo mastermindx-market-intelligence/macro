@@ -147,6 +147,68 @@ check('D05 discovery separates provisional Read me, proposed page and retained r
  assert.equal(candidate.n,1);assert.match(candidate.html,/unqualified comparison-return proposal/);assert.match(candidate.html,/Approval not established/);
  assert.ok(!run('data.artboards.some(b=>b.artboard_id==="BML-0"&&b.paper_file_id==="'+file+'")'));
 });
+check('Candidate board short and full identities resolve to their exact containing page',()=>{
+ const file='01M6FAXA774QT1VRDMAG7DFQ2W',tuple=file+'/p-6-0/GPL-0';
+ for(const q of ['GPL-0',tuple]){
+  const ref=run(`referenceView({view:'references',q:${JSON.stringify(q)},owner:'D05'},${JSON.stringify(q.toLowerCase())})`);
+  assert.equal(ref.n,1);assert.ok(ref.html.includes(file+'/p-6-0'));assert.match(ref.html,/GPL-0/);assert.match(ref.html,/Exact board URL not verified/);
+  const assignment=run(`assignmentView({view:'assignments',q:${JSON.stringify(q)},owner:'D05'},${JSON.stringify(q.toLowerCase())})`);
+  assert.equal(assignment.n,1);assert.match(assignment.html,/Observed candidate board/);assert.ok(assignment.html.includes(file+' / p-6-0 / GPL-0'));
+  assert.doesNotMatch(assignment.html,/board=GPL-0/);assert.doesNotMatch(ref.html,/board=GPL-0|\/p-6-0\/GPL-0["#?]/);
+ }
+ for(const q of [file+'/p-3-0/GPL-0','WRONG/p-6-0/GPL-0',file+'/p-6-0/BML-0']){
+  assert.equal(run(`referenceView({view:'references',q:'${q}',owner:'D05'},'${q.toLowerCase()}').n`),0);
+  assert.equal(run(`assignmentView({view:'assignments',q:'${q}',owner:'D05'},'${q.toLowerCase()}').n`),0);
+ }
+ assert.equal(run("referenceView({view:'references',q:'GPL-0',owner:'D07'},'gpl-0').n"),0);
+ const readme=file+'/p-3-0/BML-0';assert.equal(run(`referenceView({view:'references',q:'${readme}',owner:'D05'},'${readme.toLowerCase()}').n`),1);
+});
+check('Missing and null candidate board have identical legacy claims, search and rendering',()=>{
+ const missing=run("JSON.parse(JSON.stringify(sessionById('D05')))");delete missing.return_observation.candidate_board_id;
+ const explicit=JSON.parse(JSON.stringify(missing));explicit.return_observation.candidate_board_id=null;
+ for(const expression of ['JSON.stringify(referenceRows([S],[]))','returnSearchText(S)','searchText(S)','returnEvidence(S)',"card(S,{view:'assignments',q:'GPL-0',owner:'D05'},'gpl-0')"]){
+  assert.equal(run(expression.replace(/\bS\b/g,()=>JSON.stringify(missing))),run(expression.replace(/\bS\b/g,()=>JSON.stringify(explicit))));
+ }
+ assert.doesNotMatch(run(`returnSearchText(${JSON.stringify(explicit)})`),/candidate_board_id/);
+});
+check('Invalid candidate board suppresses only its candidate claim and never creates a locator',()=>{
+ for(const value of ['', ' ', 'GPL-0\n', 'GPL/0', 'GPL_0', '../GPL-0', 'GPL-0#x', '<b>GPL-0</b>', '`GPL-0`', 0, true, [], {}]){
+  const s=run("JSON.parse(JSON.stringify(sessionById('D05')))");s.return_observation.candidate_board_id=value;
+  const claims=run(`referenceRows([${JSON.stringify(s)}],[]).flatMap(r=>r.claims)`);
+  assert.equal(claims.filter(c=>c.kind==='candidate').length,0);assert.equal(claims.filter(c=>c.kind==='readme').length,1);assert.equal(claims.filter(c=>c.kind==='retained').length,1);
+  assert.equal(run(`candidateIdentity(${JSON.stringify(s)})`),null);
+  assert.doesNotMatch(run(`returnEvidence(${JSON.stringify(s)})`),/Candidate identity|board=GPL-0/);
+ }
+ for(const change of ['missing','mismatched','newline']){
+  const s=run("JSON.parse(JSON.stringify(sessionById('D05')))");
+  if(change==='missing'){s.candidate_ref=null;s.return_observation.candidate_file_id=null;s.return_observation.candidate_page_id=null;}
+  if(change==='mismatched')s.return_observation.candidate_page_id='p-3-0';
+  if(change==='newline')s.candidate_ref+='\n';
+  assert.equal(run(`referenceRows([${JSON.stringify(s)}],[]).flatMap(r=>r.claims).filter(c=>c.kind==='candidate').length`),0);
+ }
+});
+check('Equal candidate board IDs in separate files stay distinct; repeated claims deduplicate',()=>{
+ const a=run("JSON.parse(JSON.stringify(sessionById('D05')))");a.return_observation.readme_url=null;a.return_observation.retained_reference_url=null;
+ const b=JSON.parse(JSON.stringify(a));b.return_observation.candidate_file_id='OTHERFILE';b.candidate_ref='https://app.paper.design/file/OTHERFILE/p-6-0';
+ const rows=run(`referenceRows(${JSON.stringify([a,b,a])},[])`);assert.equal(rows.length,2);assert.ok(rows.every(r=>r.claims.length===1));
+ for(const file of ['01M6FAXA774QT1VRDMAG7DFQ2W','OTHERFILE'])assert.equal(rows.filter(r=>run(`returnedRefText(${JSON.stringify(r.claims[0])})`).includes((file+'/p-6-0/GPL-0').toLowerCase())).length,1);
+ a.return_observation.readme_url=a.candidate_ref;a.return_observation.readme_file_id=a.return_observation.candidate_file_id;a.return_observation.readme_page_id='p-6-0';a.return_observation.readme_board_id='GPL-0';
+ const same=run(`referenceRows([${JSON.stringify(a)},${JSON.stringify(a)}],[])`);assert.equal(same.length,1);assert.equal(same[0].claims.length,2);assert.ok(same[0].claims.some(c=>c.kind==='candidate'));assert.ok(same[0].claims.some(c=>c.kind==='readme'));
+});
+check('Candidate board detail and Back preserve context without inventing a focus target',()=>{
+ const q='01M6FAXA774QT1VRDMAG7DFQ2W/p-6-0/GPL-0',st={view:'references',q,owner:'D05'};
+ const h=run(`entry('D05',${JSON.stringify(st)})`),p=new URLSearchParams(h.slice(1));
+ assert.equal(p.get('q'),q);assert.equal(p.get('owner'),'D05');assert.equal(p.get('view'),'references');assert.equal(p.get('page'),null);assert.equal(p.get('board'),null);
+ const detail=run(`detail(sessionById('D05'),${JSON.stringify({...st,session:'D05',page:'',board:''})})`);
+ assert.ok(detail.includes('01M6FAXA774QT1VRDMAG7DFQ2W / p-6-0 / GPL-0'));assert.match(detail,/Exact board URL not verified/);assert.doesNotMatch(detail,/id="board-01M6FAXA774QT1VRDMAG7DFQ2W-p-6-0-GPL-0"/);
+ assert.ok(detail.includes(run(`hash(${JSON.stringify(st)})`).replaceAll('&','&amp;')));
+});
+check('Chinese candidate board discovery retains exact locator and page-navigation limit',()=>{
+ run("lang='zh'");
+ const a=run("assignmentView({view:'assignments',q:'GPL-0',owner:'D05'},'gpl-0')");assert.match(a.html,/已观察候选画板/);assert.match(a.html,/GPL-0/);
+ const d=run("returnEvidence(sessionById('D05'))");assert.match(d,/候选身份/);assert.match(d,/精确画板 URL 尚未验证/);assert.ok(d.includes('01M6FAXA774QT1VRDMAG7DFQ2W / p-6-0 / GPL-0'));
+ run("lang='en'");
+});
 check('Returned status and timestamp injection stays escaped and malicious contract stays inert',()=>{
  const c=run("JSON.parse(JSON.stringify(referenceRows().find(r=>r.claims.some(c=>c.owner==='D08B')).claims[0]))");
  c.status='<img src=x onerror=alert(1)>';c.qualification='<script>alert(1)</script>';c.source_head='<svg onload=alert(1)>';

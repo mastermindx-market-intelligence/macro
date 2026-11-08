@@ -32,6 +32,8 @@ def main():
     check('D05 retained reference remains separate from both current destinations',obs['retained_reference_url']=='https://app.paper.design/file/'+sector+'/p-1-0' and len({d05['candidate_ref'],obs['readme_url'],obs['retained_reference_url']})==3)
     check('D05 observation does not invent PR or foundation qualification',obs['observed_pr_head'] is None and d05['shell_version'] is None and d05['system_version'] is None and 'proposal' in d05['status'] and 'acceptance held' in d05['status'])
     check('curation mirrors have identical bytes',(root/'curation.json').read_bytes()==(root/'tools/curation.json').read_bytes())
+    check('D05 candidate board belongs to its candidate observation, not Read me',obs.get('candidate_board_id')=='GPL-0' and obs['readme_board_id']=='BML-0')
+    check('D05 Markdown renders exact candidate tuple and page-navigation limit',sector+' / p-6-0 / GPL-0' in (root/'assignments/D05.md').read_text() and 'exact board URL is not verified' in (root/'assignments/D05.md').read_text())
     for sid,row in returns.items():
         check('curated return rendered '+sid,all(by_id[sid][k]==v for k,v in row.items()))
         obs=row['return_observation']
@@ -74,6 +76,25 @@ def main():
     rejects('dot-segment source escape rejected',lambda c:c['assignment_returns']['D08B'].update({'source_contract':'https://github.com/mastermindx-market-intelligence/macro/blob/'+c['assignment_returns']['D08B']['return_observation']['source_head']+'/../../blob/main/README.md'}))
     rejects('Read me compound identity mismatch rejected',lambda c:c['assignment_returns']['D08B']['return_observation'].update({'readme_page_id':'p-12-0'}))
     rejects('current Read me cannot masquerade as original',lambda c:c['assignment_returns']['D08B']['return_observation'].update({'retained_reference_url':c['assignment_returns']['D08B']['return_observation']['readme_url']}))
+    for value in ('',' ','GPL-0\n','GPL/0','GPL_0','../GPL-0','GPL-0#x','<b>GPL-0</b>','`GPL-0`',0,True,[],{}):
+        rejects('invalid candidate board rejected '+repr(value),lambda c,v=value:c['assignment_returns']['D05']['return_observation'].update({'candidate_board_id':v}))
+    def missing_candidate(c):
+        row=c['assignment_returns']['D05']; row['candidate_ref']=None
+        row['return_observation'].update({'candidate_file_id':None,'candidate_page_id':None})
+    rejects('candidate board requires its own candidate page',missing_candidate)
+    rejects('candidate board cannot use a mismatched page tuple',lambda c:c['assignment_returns']['D05']['return_observation'].update({'candidate_page_id':'p-3-0'}))
+    rejects('candidate board requires a canonical page URL',lambda c:c['assignment_returns']['D05'].update({'candidate_ref':c['assignment_returns']['D05']['candidate_ref']+'\n'}))
+    legacy=copy.deepcopy(curated); legacy['assignment_returns']['D05']['return_observation'].pop('candidate_board_id')
+    explicit_null=copy.deepcopy(legacy); explicit_null['assignment_returns']['D05']['return_observation']['candidate_board_id']=None
+    missing=builder.apply_assignment_returns(copy.deepcopy(sessions),legacy)
+    null=builder.apply_assignment_returns(copy.deepcopy(sessions),explicit_null)
+    check('missing and null candidate board preserve legacy Markdown',builder.builder_entry(next(s for s in missing if s['id']=='D05'))==builder.builder_entry(next(s for s in null if s['id']=='D05')))
+    untouched=copy.deepcopy(sessions); late_board=copy.deepcopy(curated)
+    late_board['assignment_returns']['F01']['status']='SENTINEL: must not partially apply'
+    late_board['assignment_returns']['D05']['return_observation']['candidate_board_id']='GPL-0/invalid'
+    try: builder.apply_assignment_returns(untouched,late_board)
+    except AssertionError: check('invalid later candidate board leaves all assignments unchanged',untouched==sessions)
+    else: check('invalid later candidate board leaves all assignments unchanged',False)
     proposed=copy.deepcopy(sessions); late_bad=copy.deepcopy(curated)
     late_bad['assignment_returns']['F01']['status']='SENTINEL: must not partially apply'
     late_bad['assignment_returns']['D08D']['source_contract']='javascript:late_failure'

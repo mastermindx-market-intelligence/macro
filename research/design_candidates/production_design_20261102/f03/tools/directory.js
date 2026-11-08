@@ -23,7 +23,7 @@ const boardsFor=p=>boardMap.get(pageKey(p))||[];
 const refsFor=id=>data.pages.filter(p=>p.page_custodian===id||p.artboard_owners.includes(id));
 const boardText=b=>[b.artboard_id,b.paper_file_id+'/'+b.paper_page_id+'/'+b.artboard_id,b.name,b.product_owner,b.page_custodian,...b.observed_role_labels].join(' ').toLowerCase();
 const refText=p=>[p.name,p.file_name,p.paper_file_id,p.paper_page_id,pageKey(p),p.url,p.page_custodian,p.content_owner,...p.artboard_owners,p.role,observationFor(p)?'structural observation 结构观察':'',observationFor(p)?.page_name||'',observationFor(p)?.file_name||'',...boardsFor(p).map(boardText)].join(' ').toLowerCase();
-const searchText=s=>[s.id,s.title,s.title_zh,s.job,...s.aliases,...s.proposed_files,...s.canonical_registry_ids,...s.delegated_registry_ids,...s.source_deltas,s.source_contract||'',s.candidate_ref||'',JSON.stringify(s.return_observation||{}),...refsFor(s.id).map(refText),...data.routes.filter(r=>r.primary_session===s.id||r.delegated_slices.includes(s.id)).map(r=>r.route)].join(' ').toLowerCase();
+const searchText=s=>[s.id,s.title,s.title_zh,s.job,...s.aliases,...s.proposed_files,...s.canonical_registry_ids,...s.delegated_registry_ids,...s.source_deltas,s.source_contract||'',s.candidate_ref||'',returnSearchText(s),...refsFor(s.id).map(refText),...data.routes.filter(r=>r.primary_session===s.id||r.delegated_slices.includes(s.id)).map(r=>r.route)].join(' ').toLowerCase();
 const title=s=>lang==='zh'?s.title_zh:s.title;
 const role=r=>({candidate_unqualified:tr('Candidate / unqualified','候选／未认定'),held:tr('Held','保留待审'),historical:tr('Historical','历史'),redirect:tr('Redirect','迁移指引'),rejected:tr('Rejected','已否决'),source_only:tr('Source only','仅源证据'),specification:tr('Specification','规格参考'),reference_unqualified:tr('Reference / unqualified','参考／未认定'),unexpanded:tr('Not expanded','未展开检查'),live_delta_unqualified:tr('New observation / unqualified','新观察／未认定'),qa_only:tr('QA only','仅测试')})[r]||r;
 function state(){const p=new URLSearchParams(location.hash.slice(1));return {view:views.includes(p.get('view'))?p.get('view'):'assignments',q:p.get('q')||'',owner:p.get('owner')||'',session:p.get('session')||'',board:p.get('board')||'',page:p.get('page')||'',inventory:p.get('inventory')||''};}
@@ -67,7 +67,7 @@ function structuralEvidence(p){
  <details><summary>${tr('Observed names, evidence and limits','观察名称、证据与限制')}</summary><p>${source(o.file_name)} / ${source(o.page_name)}</p><p>${source(evidence.qualification)}</p>${o.warnings.map(w=>`<p>${source(w)}</p>`).join('')}<a href="${esc(evidence.evidence)}">${tr('Exact read evidence','精确读取证据')} ↗</a></details></div>`;
 }
 function boardOwner(b){return b.product_owner?ownerLink(b.product_owner):`${tr('Not established','尚未确立')} · ${tr('Organization steward','整理负责人')}: ${ownerLink(b.page_custodian)}`;}
-function card(s,st,q){const hits=matchedBoards(s,q);return `<article class="family"><a href="${esc(entry(s.id,st,hits.length===1?hits[0]:null))}"><div class="family-head"><span class="eyebrow">${s.id}</span><span aria-hidden="true">↗</span></div><h3>${esc(title(s))}</h3></a><p>${source(s.job)}</p>${s.aliases.length?`<p class="count">${source(s.aliases.join(' · '))}</p>`:''}${hits.slice(0,2).map(b=>boardMatch(b,st)).join('')}${hits.length>2?`<p class="count">${hits.length} ${tr('matching boards; open assignment to inspect','个匹配画板；打开任务查看')}</p>`:''}<div class="meta"><span>${s.canonical_registry_ids.length} ${tr('canonical','标准记录')} · ${s.paper_refs.length} ${tr('baseline page refs','基线参考页面')}</span><span>${tr('Approval not established','批准尚未确立')}</span></div></article>`;}
+function card(s,st,q){const hits=matchedBoards(s,q),candidateHit=matchedCandidateBoard(s,q);return `<article class="family"><a href="${esc(entry(s.id,st,hits.length===1&&!candidateHit?hits[0]:null))}"><div class="family-head"><span class="eyebrow">${s.id}</span><span aria-hidden="true">↗</span></div><h3>${esc(title(s))}</h3></a><p>${source(s.job)}</p>${s.aliases.length?`<p class="count">${source(s.aliases.join(' · '))}</p>`:''}${candidateHit?`<p class="row-sub"><a href="${esc(entry(s.id,st))}">${tr('Observed candidate board','已观察候选画板')} · <code>${esc([candidateHit.fileId,candidateHit.pageId,candidateHit.boardId].join(' / '))}</code></a></p>`:''}${hits.slice(0,2).map(b=>boardMatch(b,st)).join('')}${hits.length>2?`<p class="count">${hits.length} ${tr('matching boards; open assignment to inspect','个匹配画板；打开任务查看')}</p>`:''}<div class="meta"><span>${s.canonical_registry_ids.length} ${tr('canonical','标准记录')} · ${s.paper_refs.length} ${tr('baseline page refs','基线参考页面')}</span><span>${tr('Approval not established','批准尚未确立')}</span></div></article>`;}
 function assignmentView(st,q){const list=data.sessions.filter(s=>(!st.owner||s.id===st.owner)&&(!q||searchText(s).includes(q)));const order=['10 Workspaces','20 Markets','30 Research','40 Personal','50 Public','60 Internal','01 Foundations','00 Programme'];const groups=[...new Set(list.map(s=>s.folder))].sort((a,b)=>order.indexOf(a)-order.indexOf(b));const shortcuts=!q&&!st.owner?`<p class="quicklinks">${tr('Start with a job:','从任务开始：')} <a href="${entry('D07',st)}">${tr('Company','公司')}</a> · <a href="${entry('D08',st)}">${tr('Options','期权')}</a> · <a href="${entry('D04',st)}">${tr('Heatmaps','热力图')}</a> · <a href="${entry('D07',{...st,q:'Returns'})}">${tr('Returns Calendar','回报日历')}</a></p>`:'';return {n:list.length,html:shortcuts+groups.map(g=>`<div class="group-title"><h2>${source(g)}</h2><span class="count">${list.filter(s=>s.folder===g).length}</span></div><div class="grid">${list.filter(s=>s.folder===g).map(s=>card(s,st,q)).join('')}</div>`).join('')||empty(st)};}
 function ownership(p){let msg=p.role==='unexpanded'?tr('Organization steward F03 · product owner unknown','整理负责人 F03 · 产品负责人未知'):tr('Page custodian','页面保管')+' '+p.page_custodian;return `<p class="row-sub">${esc(msg)} · ${tr('Writer unverified','写入者未验证')}</p>${p.artboard_owners.length?`<p class="row-sub">${tr('Board product owners','画板产品负责人')}: ${p.artboard_owners.map(id=>ownerLink(id)).join(', ')}</p>`:''}${!p.listed_in_package?`<p class="ownership">${source(p.ownership_basis)}</p>`:''}`;}
 function warnings(p){return p.board_role_warnings.length?`<p class="ownership">${tr('Contains board labels','包含画板标签')}: ${p.board_role_warnings.map(role).join(' · ')}. ${tr('Title evidence; inspect conditions.','名称证据；请查看条件。')}</p>`:'';}
@@ -90,16 +90,32 @@ function referenceRows(sessions=data.sessions,pages=data.pages){
     source_head:obs.source_head,observed_at:obs.observed_at_utc,qualification:obs.qualification,
     status:s.status,source_contract:s.source_contract,source_contract_label:s.source_contract_label});
   };
-  add('candidate',s.candidate_ref,obs.candidate_file_id,obs.candidate_page_id);
+  const candidate=candidateIdentity(s);
+  if(candidate)add('candidate',s.candidate_ref,candidate.fileId,candidate.pageId,candidate.boardId);
   add('readme',obs.readme_url,obs.readme_file_id,obs.readme_page_id,obs.readme_board_id);
   add('retained',obs.retained_reference_url);
  }
  return [...rows.values()];
 }
 function returnKind(kind){return ({candidate:tr('Observed candidate','已观察候选'),readme:tr('Read me','设计说明'),retained:tr('Retained original reference','保留的原参考')})[kind];}
+function candidateIdentity(s){
+ const obs=s.return_observation||{},id=paperIdentity(s.candidate_ref),board=obs.candidate_board_id;
+ if(!id||s.candidate_ref!=='https://app.paper.design/file/'+id.key||id.fileId!==obs.candidate_file_id||id.pageId!==obs.candidate_page_id)return null;
+ if(board!=null&&(typeof board!=='string'||board!==board.trim()||!/^[A-Za-z0-9]+-[A-Za-z0-9]+$/.test(board)))return null;
+ return {...id,boardId:board??null};
+}
+function returnSearchText(s){
+ const obs={...(s.return_observation||{})};delete obs.candidate_board_id;
+ const candidate=candidateIdentity(s);
+ return [JSON.stringify(obs),candidate?[candidate.fileId,candidate.pageId,candidate.boardId].filter(Boolean).join('/'):''].join(' ');
+}
+function matchedCandidateBoard(s,q){
+ const c=candidateIdentity(s);
+ return q&&c?.boardId&&[c.boardId,c.key+'/'+c.boardId].join(' ').toLowerCase().includes(q)?c:null;
+}
 function returnedRefText(c){
  const s=sessionById(c.owner);
- return [c.owner,s?.title,s?.title_zh,c.kind,returnKind(c.kind),c.url,c.file_id+'/'+c.page_id,c.board_id,
+ return [c.owner,s?.title,s?.title_zh,c.kind,returnKind(c.kind),c.url,c.file_id+'/'+c.page_id,c.board_id,[c.file_id,c.page_id,c.board_id].filter(Boolean).join('/'),
   c.source_head,c.observed_at,c.status,c.qualification,c.source_contract].join(' ').toLowerCase();
 }
 function referenceReturnEvidence(claims,st){
@@ -108,6 +124,7 @@ function referenceReturnEvidence(claims,st){
  const labels=claims.map(c=>`<span class="pill">${returnKind(c.kind)}</span> ${ownerLink(c.owner)}${c.board_id?` · <code>${esc(c.board_id)}</code>`:''}`).join(' · ');
  const sources=owners.map(owner=>claims.find(c=>c.owner===owner));
  return `<div class="reference-return"><p class="row-sub">${labels}</p><p class="count">${tr('Approval not established · Return evidence is separate from the frozen census.','批准尚未确立 · 返回证据与冻结清单分开记录。')}</p>
+ ${claims.some(c=>c.board_id)?`<p class="count">${tr('Open the containing Paper page and select the displayed board ID. Exact board URL not verified.','打开所在 Paper 页面并选择显示的画板 ID。精确画板 URL 尚未验证。')}</p>`:''}
  <p class="reference-contracts">${sources.map(c=>evidenceLink(c.source_contract,c.owner+' · '+tr('Source contract','源合同'))).join(' · ')}</p>
  <details><summary>${tr('Source pins, observation times and conditions','来源版本、观察时间与条件')}</summary>${sources.map(c=>`<p>${ownerLink(c.owner)} · <time datetime="${esc(c.observed_at)}">${esc(c.observed_at)}</time><br><code>${esc(c.source_head)}</code></p><p>${source(c.status)}</p><p>${source(c.qualification)}</p>`).join('')}</details></div>`;
 }
@@ -145,14 +162,15 @@ function evidenceLink(url,label){
  return safe?`<a href="${esc(url)}" target="_blank" rel="noopener">${esc(label)} ↗</a>`:`<span>${tr('Destination not established','目标尚未确立')}</span>`;
 }
 function returnEvidence(s){
- const obs=s.return_observation||{},candidate=s.candidate_ref;
- const candidateIds=[obs.candidate_file_id,obs.candidate_page_id].filter(Boolean).join(' / ');
+ const obs=s.return_observation||{},identity=candidateIdentity(s),candidate=identity?s.candidate_ref:null;
+ const candidateIds=identity?[identity.fileId,identity.pageId,identity.boardId].filter(Boolean).join(' / '):'';
  const readmeIds=[obs.readme_file_id,obs.readme_page_id,obs.readme_board_id].filter(Boolean).join(' / ');
  return `<section class="entry"><div><h2>${tr('Candidate & reference review','候选与参考审核')}</h2><p>${tr('No approved candidate established in the inspected package.','所检查的资料尚未确立获批候选。')}</p><p>${source(s.status)}</p>
  ${candidate?`<p>${evidenceLink(candidate,tr('Observed candidate / directory','已观察候选／目录'))}</p>`:`<p>${tr('New native candidate not admitted or not established by this return.','本次返回尚未建立或获准建立新的原生候选稿。')}</p>`}
  ${obs.readme_url&&obs.readme_url!==candidate?`<p>${evidenceLink(obs.readme_url,tr('Read me / candidate entry','设计说明／候选入口'))}</p>`:''}
  ${obs.retained_reference_url?`<p>${evidenceLink(obs.retained_reference_url,tr('Retained original reference','保留的原参考'))}</p>`:''}
  ${candidateIds?`<p class="return-ids">${tr('Candidate identity','候选身份')}: <code>${esc(candidateIds)}</code></p>`:''}
+ ${identity?.boardId?`<p class="count">${tr('Open the containing Paper page and select the displayed board ID. Exact board URL not verified.','打开所在 Paper 页面并选择显示的画板 ID。精确画板 URL 尚未验证。')}</p>`:''}
  ${readmeIds?`<p class="return-ids">${tr('Read me identity','设计说明身份')}: <code>${esc(readmeIds)}</code></p>`:''}
  <p>${tr('RIG receipt: not observed. Writer custody is not established by this directory.','RIG 凭证：未观察。本目录不构成当前写入权证明。')} ${s.rig_state?source('RIG: '+s.rig_state):''}</p></div>
  <div><h2>${tr('Returned contract / package','已返回的合同／资料包')}</h2>${s.source_contract?`<p>${evidenceLink(s.source_contract,s.source_contract_label||tr('Returned source/build package','已返回的构建资料包'))}</p>`:`<p>${tr('Not returned. The assignment describes requirements; it is not a completed build contract.','尚未返回。任务说明列出要求，不等于完整构建合同。')}</p>`}

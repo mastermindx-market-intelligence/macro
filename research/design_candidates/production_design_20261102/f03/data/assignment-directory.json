@@ -1009,7 +1009,8 @@
       "readme_url": "https://app.paper.design/file/01M6FAXA774QT1VRDMAG7DFQ2W/p-3-0",
       "retained_reference_url": "https://app.paper.design/file/01M6FAXA774QT1VRDMAG7DFQ2W/p-1-0",
       "qualification": "Observed reference metadata for a bounded proposed slice, not a complete D05 build return, approved candidate, foundation release, current runtime or refreshed census. Source integration and consumer proof remain open.",
-      "readme_file_id": "01M6FAXA774QT1VRDMAG7DFQ2W"
+      "readme_file_id": "01M6FAXA774QT1VRDMAG7DFQ2W",
+      "candidate_board_id": "GPL-0"
     }
   },
   {

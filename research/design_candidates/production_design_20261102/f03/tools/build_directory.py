@@ -71,6 +71,10 @@ def apply_assignment_returns(sessions, curation):
         assert not any(part in ('.', '..') for part in link.split('/')), 'source path cannot normalize outside its immutable pin'
         assert row.get('rig_receipt') is None and row.get('rig_state') == 'draft', 'observation overlay cannot grant approval'
         candidate = row.get('candidate_ref')
+        candidate_board = obs.get('candidate_board_id')
+        assert candidate_board is None or (isinstance(candidate_board, str) and re.fullmatch(r'[A-Za-z0-9]+-[A-Za-z0-9]+', candidate_board)), 'invalid observed candidate board ID'
+        if candidate_board is not None:
+            assert isinstance(candidate, str) and re.fullmatch(r'https://app\.paper\.design/file/[A-Z0-9]+/p-[A-Za-z0-9-]+', candidate), 'candidate board requires an exact candidate page'
         if candidate:
             expected = 'https://app.paper.design/file/' + obs['candidate_file_id'] + '/' + obs['candidate_page_id']
             assert candidate == expected, 'candidate identity/link mismatch'
@@ -139,7 +143,9 @@ def builder_entry(s):
                      if contract else 'Not returned; the original assignment is requirements, not a completed build contract.')
     text = '**Candidate:** ' + candidate + '\n\n'
     if obs.get('candidate_file_id'):
-        text += '**Candidate identity:** `' + obs['candidate_file_id'] + ' / ' + obs['candidate_page_id'] + '`.\n\n'
+        text += '**Candidate identity:** `' + ' / '.join(x for x in (obs['candidate_file_id'], obs['candidate_page_id'], obs.get('candidate_board_id')) if x) + '`.\n\n'
+        if obs.get('candidate_board_id'):
+            text += 'The candidate link opens the containing Paper page. Select the displayed board ID in Paper; an exact board URL is not verified. This observed locator does not establish approval.\n\n'
     if obs.get('readme_url'):
         text += '[Read me / candidate entry](' + obs['readme_url'] + ')\n\n'
         text += '**Read me identity:** `' + ' / '.join(x for x in (obs['readme_file_id'], obs['readme_page_id'], obs.get('readme_board_id')) if x) + '`.\n\n'
