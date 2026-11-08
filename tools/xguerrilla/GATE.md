@@ -19,11 +19,16 @@ prospective data or production acceptance.
 
 ## Model criteria
 
-The retained five model criteria exercise synthetic child-day coverage,
-keystroke interval shape, label spread, fake restart behavior and simulated
-outage behavior. Historical local degraded-mode continuation and recovery are
-regression specimens, not runtime policy. The current accepted masterplan and
-incumbent owners govern any future real behavior.
+The retained model criteria exercise synthetic child-day coverage, keystroke
+counts, keystroke interval shape, label spread, fake restart behavior and
+simulated outage behavior. Keystroke counts and interval shape are separate
+criteria on purpose: the count refuses a run whose typing is not backed by
+keystrokes (a paste reported as typed work, or one programmatic write standing
+in for a post), while the interval shape refuses a run whose keystrokes are not
+distributed like a person's. A run can satisfy one and fail the other.
+Historical local degraded-mode continuation and recovery are regression
+specimens, not runtime policy. The current accepted masterplan and incumbent
+owners govern any future real behavior.
 
 The model uses a simulated clock. Fourteen simulated days are not fourteen
 elapsed days. The default configuration-loading seam still exists; a bounded
