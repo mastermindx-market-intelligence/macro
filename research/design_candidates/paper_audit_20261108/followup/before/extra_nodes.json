@@ -1,0 +1,280 @@
+{
+  "headline_12-0": {
+    "args": {
+      "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+      "nodeId": "12-0",
+      "format": "inline-styles",
+      "includeNodeIds": true
+    },
+    "outer": {
+      "state": "OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M5EX8RTPR7YEZD2A144XED2S\",\n    \"name\": \"Expectation Surface · R1 · 2026-10-21\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"d776b76d\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "(\n    <div id=\"12-0\" style={{ boxSizing: 'border-box', color: 'var(--dk-text)', fontFamily: '\"Inter-SemiBold\", \"Inter\", system-ui, sans-serif', fontSize: '21px', fontWeight: 600, letterSpacing: '-0.01em', lineHeight: '29px', width: '680px' }}>\n      EPS cuts lead for a fourth session. Revenue revisions are broadly balanced.\n    </div>\n  )"
+          }
+        ]
+      }
+    },
+    "data": "(\n    <div id=\"12-0\" style={{ boxSizing: 'border-box', color: 'var(--dk-text)', fontFamily: '\"Inter-SemiBold\", \"Inter\", system-ui, sans-serif', fontSize: '21px', fontWeight: 600, letterSpacing: '-0.01em', lineHeight: '29px', width: '680px' }}>\n      EPS cuts lead for a fourth session. Revenue revisions are broadly balanced.\n    </div>\n  )"
+  },
+  "headline_13-0": {
+    "args": {
+      "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+      "nodeId": "13-0",
+      "format": "inline-styles",
+      "includeNodeIds": true
+    },
+    "outer": {
+      "state": "OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M5EX8RTPR7YEZD2A144XED2S\",\n    \"name\": \"Expectation Surface · R1 · 2026-10-21\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"d776b76d\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": ""
+          }
+        ]
+      }
+    },
+    "data": ""
+  },
+  "headline_1RA-0": {
+    "args": {
+      "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+      "nodeId": "1RA-0",
+      "format": "inline-styles",
+      "includeNodeIds": true
+    },
+    "outer": {
+      "state": "OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M5EX8RTPR7YEZD2A144XED2S\",\n    \"name\": \"Expectation Surface · R1 · 2026-10-21\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"d776b76d\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "(\n    <div id=\"1RA-0\" style={{ boxSizing: 'border-box', color: 'var(--lt-text)', fontFamily: '\"Inter-SemiBold\", \"Inter\", system-ui, sans-serif', fontSize: '21px', fontWeight: 600, letterSpacing: '-0.01em', lineHeight: '29px', width: '680px' }}>\n      EPS cuts lead for a fourth session. Revenue revisions are broadly balanced.\n    </div>\n  )"
+          }
+        ]
+      }
+    },
+    "data": "(\n    <div id=\"1RA-0\" style={{ boxSizing: 'border-box', color: 'var(--lt-text)', fontFamily: '\"Inter-SemiBold\", \"Inter\", system-ui, sans-serif', fontSize: '21px', fontWeight: 600, letterSpacing: '-0.01em', lineHeight: '29px', width: '680px' }}>\n      EPS cuts lead for a fourth session. Revenue revisions are broadly balanced.\n    </div>\n  )"
+  },
+  "headline_1R9-0": {
+    "args": {
+      "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+      "nodeId": "1R9-0",
+      "format": "inline-styles",
+      "includeNodeIds": true
+    },
+    "outer": {
+      "state": "OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M5EX8RTPR7YEZD2A144XED2S\",\n    \"name\": \"Expectation Surface · R1 · 2026-10-21\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"d776b76d\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": ""
+          }
+        ]
+      }
+    },
+    "data": ""
+  },
+  "headline_2PA-0": {
+    "args": {
+      "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+      "nodeId": "2PA-0",
+      "format": "inline-styles",
+      "includeNodeIds": true
+    },
+    "outer": {
+      "state": "OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M5EX8RTPR7YEZD2A144XED2S\",\n    \"name\": \"Expectation Surface · R1 · 2026-10-21\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"d776b76d\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "(\n    <div id=\"2PA-0\" style={{ boxSizing: 'border-box', color: 'var(--dk-text)', fontFamily: '\"Inter-SemiBold\", \"Inter\", system-ui, sans-serif', fontSize: '18px', fontWeight: 600, letterSpacing: '-0.01em', lineHeight: '25px', width: '358px' }}>\n      EPS cuts lead for a fourth session. Revenue revisions are broadly balanced.\n    </div>\n  )"
+          }
+        ]
+      }
+    },
+    "data": "(\n    <div id=\"2PA-0\" style={{ boxSizing: 'border-box', color: 'var(--dk-text)', fontFamily: '\"Inter-SemiBold\", \"Inter\", system-ui, sans-serif', fontSize: '18px', fontWeight: 600, letterSpacing: '-0.01em', lineHeight: '25px', width: '358px' }}>\n      EPS cuts lead for a fourth session. Revenue revisions are broadly balanced.\n    </div>\n  )"
+  },
+  "headline_2N5-0": {
+    "args": {
+      "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+      "nodeId": "2N5-0",
+      "format": "inline-styles",
+      "includeNodeIds": true
+    },
+    "outer": {
+      "state": "OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M5EX8RTPR7YEZD2A144XED2S\",\n    \"name\": \"Expectation Surface · R1 · 2026-10-21\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"d776b76d\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "(\n    <div id=\"2N5-0\" style={{ boxSizing: 'border-box', color: 'var(--dk-text)', fontFamily: '\"PingFangSC-Semibold\", \"PingFang SC\", system-ui, sans-serif', fontSize: '20px', fontWeight: 600, lineHeight: '30px', width: '680px' }}>\n      EPS 下调连续四期多于上调；营收预期的上调与下调大致平衡。\n    </div>\n  )"
+          }
+        ]
+      }
+    },
+    "data": "(\n    <div id=\"2N5-0\" style={{ boxSizing: 'border-box', color: 'var(--dk-text)', fontFamily: '\"PingFangSC-Semibold\", \"PingFang SC\", system-ui, sans-serif', fontSize: '20px', fontWeight: 600, lineHeight: '30px', width: '680px' }}>\n      EPS 下调连续四期多于上调；营收预期的上调与下调大致平衡。\n    </div>\n  )"
+  },
+  "headline_39S-0": {
+    "args": {
+      "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+      "nodeId": "39S-0",
+      "format": "inline-styles",
+      "includeNodeIds": true
+    },
+    "outer": {
+      "state": "OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M5EX8RTPR7YEZD2A144XED2S\",\n    \"name\": \"Expectation Surface · R1 · 2026-10-21\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"d776b76d\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "(\n    <div id=\"39S-0\" style={{ boxSizing: 'border-box', color: 'var(--lt-text)', fontFamily: '\"PingFangSC-Medium\", \"PingFang SC\", system-ui, sans-serif', fontSize: '18px', fontWeight: 500, lineHeight: '25px', width: '358px' }}>\n      EPS 下调连续四期多于上调；营收预期的上调与下调大致平衡。\n    </div>\n  )"
+          }
+        ]
+      }
+    },
+    "data": "(\n    <div id=\"39S-0\" style={{ boxSizing: 'border-box', color: 'var(--lt-text)', fontFamily: '\"PingFangSC-Medium\", \"PingFang SC\", system-ui, sans-serif', fontSize: '18px', fontWeight: 500, lineHeight: '25px', width: '358px' }}>\n      EPS 下调连续四期多于上调；营收预期的上调与下调大致平衡。\n    </div>\n  )"
+  },
+  "label_1AQ-0": {
+    "args": {
+      "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+      "nodeId": "1AQ-0"
+    },
+    "outer": {
+      "state": "OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M5EX8RTPR7YEZD2A144XED2S\",\n    \"name\": \"Expectation Surface · R1 · 2026-10-21\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"d776b76d\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "(\n    <div id=\"1AQ-0\" style={{ boxSizing: 'border-box', color: 'var(--lt-text)', display: 'inline-block', fontFamily: '\"Inter-Bold\", \"Inter\", system-ui, sans-serif', fontSize: '18px', fontWeight: 700, letterSpacing: '-0.01em', lineHeight: '24px' }}>\n      Consensus explorer\n    </div>\n  )"
+          }
+        ]
+      }
+    },
+    "data": "(\n    <div id=\"1AQ-0\" style={{ boxSizing: 'border-box', color: 'var(--lt-text)', display: 'inline-block', fontFamily: '\"Inter-Bold\", \"Inter\", system-ui, sans-serif', fontSize: '18px', fontWeight: 700, letterSpacing: '-0.01em', lineHeight: '24px' }}>\n      Consensus explorer\n    </div>\n  )"
+  },
+  "label_186-0": {
+    "args": {
+      "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+      "nodeId": "186-0"
+    },
+    "outer": {
+      "state": "OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M5EX8RTPR7YEZD2A144XED2S\",\n    \"name\": \"Expectation Surface · R1 · 2026-10-21\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"d776b76d\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "(\n    <div id=\"186-0\" style={{ boxSizing: 'border-box', color: 'var(--lt-muted)', display: 'inline-block', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '11.5px', lineHeight: '14px' }}>\n      Average\n    </div>\n  )"
+          }
+        ]
+      }
+    },
+    "data": "(\n    <div id=\"186-0\" style={{ boxSizing: 'border-box', color: 'var(--lt-muted)', display: 'inline-block', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '11.5px', lineHeight: '14px' }}>\n      Average\n    </div>\n  )"
+  },
+  "label_17Z-0": {
+    "args": {
+      "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+      "nodeId": "17Z-0"
+    },
+    "outer": {
+      "state": "OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M5EX8RTPR7YEZD2A144XED2S\",\n    \"name\": \"Expectation Surface · R1 · 2026-10-21\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"d776b76d\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "(\n    <div id=\"17Z-0\" style={{ boxSizing: 'border-box', color: 'var(--lt-muted)', display: 'inline-block', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '11.5px', lineHeight: '14px' }}>\n      Median\n    </div>\n  )"
+          }
+        ]
+      }
+    },
+    "data": "(\n    <div id=\"17Z-0\" style={{ boxSizing: 'border-box', color: 'var(--lt-muted)', display: 'inline-block', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '11.5px', lineHeight: '14px' }}>\n      Median\n    </div>\n  )"
+  },
+  "label_17T-0": {
+    "args": {
+      "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+      "nodeId": "17T-0"
+    },
+    "outer": {
+      "state": "OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M5EX8RTPR7YEZD2A144XED2S\",\n    \"name\": \"Expectation Surface · R1 · 2026-10-21\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"d776b76d\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "(\n    <div id=\"17T-0\" style={{ boxSizing: 'border-box', color: 'var(--lt-muted)', display: 'inline-block', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '11.5px', lineHeight: '14px' }}>\n      Low to high\n    </div>\n  )"
+          }
+        ]
+      }
+    },
+    "data": "(\n    <div id=\"17T-0\" style={{ boxSizing: 'border-box', color: 'var(--lt-muted)', display: 'inline-block', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '11.5px', lineHeight: '14px' }}>\n      Low to high\n    </div>\n  )"
+  },
+  "label_17K-0": {
+    "args": {
+      "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
+      "nodeId": "17K-0"
+    },
+    "outer": {
+      "state": "OBSERVED",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"file\": {\n    \"id\": \"01M5EX8RTPR7YEZD2A144XED2S\",\n    \"name\": \"Expectation Surface · R1 · 2026-10-21\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"d776b76d\"\n  }\n}"
+          },
+          {
+            "type": "text",
+            "text": "(\n    <div id=\"17K-0\" style={{ boxSizing: 'border-box', color: 'var(--lt-muted)', display: 'inline-block', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '11.5px', lineHeight: '14px' }}>\n      vs prior capture\n    </div>\n  )"
+          }
+        ]
+      }
+    },
+    "data": "(\n    <div id=\"17K-0\" style={{ boxSizing: 'border-box', color: 'var(--lt-muted)', display: 'inline-block', fontFamily: '\"Inter-Regular\", \"Inter\", system-ui, sans-serif', fontSize: '11.5px', lineHeight: '14px' }}>\n      vs prior capture\n    </div>\n  )"
+  }
+}
