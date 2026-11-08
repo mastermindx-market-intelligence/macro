@@ -1,0 +1,73 @@
+{
+  "integrated_main": "ab2a2a7aee27fa30c06376622474d992b6c49ba8",
+  "limitations": [
+    "Local proof is not new-head hosted CI, protected merge, deployment or H4 live acceptance.",
+    "Earlier rejected proposals are not part of the published tree.",
+    "Current native and provider effect fences remain unchanged."
+  ],
+  "original_head": "bc2fad1c0c69afe90427621b4f89e2cbf2a34612",
+  "original_pr": "https://github.com/mastermindx-market-intelligence/macro/pull/10740",
+  "qualification": {
+    "failures": [],
+    "log_sha256": "8e0dd3e259f68c193f05e3e04acef6407a9ed36e5124438d9f9a04fbd0db33db",
+    "returncode": 0,
+    "schema": "h4.macro-admin-qualification.v1",
+    "seconds": 174.41,
+    "source_blobs": {
+      ".github/ci/legacy-jobs.yml": "1b1222d40c6e4f81c1f4bb74ce39ec35fc3fa7f2",
+      "tests/test_ci_pack.py": "18a48da3082abd9fc461fa0505082cff208443ef"
+    },
+    "suites": [
+      {
+        "errors": "0",
+        "failures": "0",
+        "hostname": "m2studio",
+        "name": "pytest",
+        "skipped": "0",
+        "tests": "38",
+        "time": "172.354",
+        "timestamp": "2026-11-08T06:01:49.286390-07:00"
+      }
+    ],
+    "tree": "225f7a81fd280b714a182428e291da4148ab16da",
+    "xml_sha256": "714c48e778d14f3b5590dd54ff636c7bfa7db3d84f1ef8b530791036a3caa40c"
+  },
+  "qualified_source_tree_before_evidence": "225f7a81fd280b714a182428e291da4148ab16da",
+  "schema": "mastermind.fabric_application.current_main_packing_composition.v1",
+  "source_changes": {
+    "admin_job_estimator_after": 11,
+    "admin_job_estimator_before": 14,
+    "all_jobs_retained": 395,
+    "combined_tests": [
+      "tests/test_admin_js_no_undef.py",
+      "tests/test_admin_api_cache_recovery.py",
+      "tests/test_admin_inline_handler_attrs.py",
+      "tests/test_admin_navigation_ux.py"
+    ],
+    "legacy_manifest_blob": "1b1222d40c6e4f81c1f4bb74ce39ec35fc3fa7f2",
+    "measured_original_overflow": {
+      "jobs": 134,
+      "packs": 11,
+      "probe": "scripts/build_free_content.py",
+      "weight": 6003
+    },
+    "no_estimator_or_weight_override_change": true,
+    "no_tests_removed": true,
+    "other_original_delta_blobs_and_modes_preserved": 192,
+    "packing_test_blob": "18a48da3082abd9fc461fa0505082cff208443ef",
+    "resolution": "Preserve both accepted packing histories and current-main enrollment. Combine four adjacent admin pytest commands into one invocation with the same ordered test paths and context.",
+    "unchanged_bounds": {
+      "jobs": [
+        137,
+        138,
+        131
+      ],
+      "packs": 10,
+      "weight": [
+        5923,
+        6000,
+        5681
+      ]
+    }
+  }
+}

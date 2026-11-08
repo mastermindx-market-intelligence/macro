@@ -1,0 +1,166 @@
+{
+  "retrieved_at": "2026-10-06",
+  "procedure_pin": "a6d40ff648671b03bd4d829d84dd066b58ea8c3f",
+  "macro_pin": "c9631f8b2469587dec643bec94b16e77c09ef511",
+  "terminal_pin": "ad36a332cd4b53af1d917a94f6fb3a10e27dad84",
+  "commission_baseline_macro": "7502286c8c15653635896344d632929e1715b6ad",
+  "files": [
+    {
+      "path": "research/options_intelligence/2026-10-03/MASTER_PLAN.md",
+      "local": "/workspace/scratch/3972f54b39b5/evidence/macro/research/options_intelligence/2026-10-03/MASTER_PLAN.md",
+      "blob": "0b0d60291d0377b1c9be4857281abcb34a87efdd",
+      "chars": 23618,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/c9631f8b2469587dec643bec94b16e77c09ef511/research/options_intelligence/2026-10-03/MASTER_PLAN.md"
+    },
+    {
+      "path": "research/options_intelligence/2026-10-03/CURRENT_STATE.md",
+      "local": "/workspace/scratch/3972f54b39b5/evidence/macro/research/options_intelligence/2026-10-03/CURRENT_STATE.md",
+      "blob": "5abe377fe71a8cbae9d1f30c1135c72a37d9bfc6",
+      "chars": 13558,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/c9631f8b2469587dec643bec94b16e77c09ef511/research/options_intelligence/2026-10-03/CURRENT_STATE.md"
+    },
+    {
+      "path": "research/options_intelligence/2026-10-03/CONTRACTS.md",
+      "local": "/workspace/scratch/3972f54b39b5/evidence/macro/research/options_intelligence/2026-10-03/CONTRACTS.md",
+      "blob": "5880a5fdc179a746822fc9ee635fc638e0395430",
+      "chars": 21626,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/c9631f8b2469587dec643bec94b16e77c09ef511/research/options_intelligence/2026-10-03/CONTRACTS.md"
+    },
+    {
+      "path": "research/options_intelligence/2026-10-03/options-signal-catalog.md",
+      "local": "/workspace/scratch/3972f54b39b5/evidence/macro/research/options_intelligence/2026-10-03/options-signal-catalog.md",
+      "blob": "93a3838ca124790eb867ddcdc3da5f782f7d03e9",
+      "chars": 35447,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/c9631f8b2469587dec643bec94b16e77c09ef511/research/options_intelligence/2026-10-03/options-signal-catalog.md"
+    },
+    {
+      "path": "research/options_intelligence/2026-10-03/options-near-expiry-spec.md",
+      "local": "/workspace/scratch/3972f54b39b5/evidence/macro/research/options_intelligence/2026-10-03/options-near-expiry-spec.md",
+      "blob": "51cbc8761794a6018cc8a079b1f0e22c2385e4f3",
+      "chars": 18909,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/c9631f8b2469587dec643bec94b16e77c09ef511/research/options_intelligence/2026-10-03/options-near-expiry-spec.md"
+    },
+    {
+      "path": "research/options_intelligence/2026-10-03/options-competitors.md",
+      "local": "/workspace/scratch/3972f54b39b5/evidence/macro/research/options_intelligence/2026-10-03/options-competitors.md",
+      "blob": "afa55220ebd2defac6c56d9d720266c1cc5ed866",
+      "chars": 29461,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/c9631f8b2469587dec643bec94b16e77c09ef511/research/options_intelligence/2026-10-03/options-competitors.md"
+    },
+    {
+      "path": "research/options_intelligence/2026-10-03/options-literature.md",
+      "local": "/workspace/scratch/3972f54b39b5/evidence/macro/research/options_intelligence/2026-10-03/options-literature.md",
+      "blob": "6c460d126eede17d5d07e13741284e21429fa807",
+      "chars": 42634,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/c9631f8b2469587dec643bec94b16e77c09ef511/research/options_intelligence/2026-10-03/options-literature.md"
+    },
+    {
+      "path": "research/market_microstructure/commission15/COMMISSION_15_HARDENED_REPORT.md",
+      "local": "/workspace/scratch/3972f54b39b5/evidence/macro/research/market_microstructure/commission15/COMMISSION_15_HARDENED_REPORT.md",
+      "blob": "7609e167acb8dfb832f7d0743ea27249e8f99c13",
+      "chars": 98404,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/c9631f8b2469587dec643bec94b16e77c09ef511/research/market_microstructure/commission15/COMMISSION_15_HARDENED_REPORT.md"
+    },
+    {
+      "path": "research/market_microstructure/commission15/CURRENT_STATE_AND_HARDENING_LOG.md",
+      "local": "/workspace/scratch/3972f54b39b5/evidence/macro/research/market_microstructure/commission15/CURRENT_STATE_AND_HARDENING_LOG.md",
+      "blob": "20c2bb6a1d8ccd5328bbd4bd91892ba600147623",
+      "chars": 29298,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/c9631f8b2469587dec643bec94b16e77c09ef511/research/market_microstructure/commission15/CURRENT_STATE_AND_HARDENING_LOG.md"
+    },
+    {
+      "path": "research/market_microstructure/commission15/VALIDATION_PROTOCOL.md",
+      "local": "/workspace/scratch/3972f54b39b5/evidence/macro/research/market_microstructure/commission15/VALIDATION_PROTOCOL.md",
+      "blob": "7611be11b8fabf1cf3c12fe0644e4ceafdbafc89",
+      "chars": 21395,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/c9631f8b2469587dec643bec94b16e77c09ef511/research/market_microstructure/commission15/VALIDATION_PROTOCOL.md"
+    },
+    {
+      "path": "engine/gex_engine.py",
+      "local": "/workspace/scratch/3972f54b39b5/evidence/macro/engine/gex_engine.py",
+      "blob": "bf1a2d740a3077ca91d15875c627164f7bb2f351",
+      "chars": 15360,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/c9631f8b2469587dec643bec94b16e77c09ef511/engine/gex_engine.py"
+    },
+    {
+      "path": "engine/options_flow.py",
+      "local": "/workspace/scratch/3972f54b39b5/evidence/macro/engine/options_flow.py",
+      "blob": "ab0b7b3a7ac903a176bf0cce35d5b2ec950be39d",
+      "chars": 24563,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/c9631f8b2469587dec643bec94b16e77c09ef511/engine/options_flow.py"
+    },
+    {
+      "path": "engine/live_flow.py",
+      "local": "/workspace/scratch/3972f54b39b5/evidence/macro/engine/live_flow.py",
+      "blob": "323be029c88ef8ee03d97c2ae3a878fce95ba191",
+      "chars": 79448,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/c9631f8b2469587dec643bec94b16e77c09ef511/engine/live_flow.py"
+    },
+    {
+      "path": "collectors/thetadata.py",
+      "local": "/workspace/scratch/3972f54b39b5/evidence/macro/collectors/thetadata.py",
+      "blob": "d3e0e4a97a872dcaad555c26e1e35bd934a00a20",
+      "chars": 82232,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/c9631f8b2469587dec643bec94b16e77c09ef511/collectors/thetadata.py"
+    },
+    {
+      "path": "research/OPTIONS_OPEX_VANNA_CHARM_ADJUDICATION.md",
+      "local": "/workspace/scratch/3972f54b39b5/evidence/macro/research/OPTIONS_OPEX_VANNA_CHARM_ADJUDICATION.md",
+      "blob": "b80f30a4e63b426cef30e935c21c939fef2db852",
+      "chars": 20093,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/c9631f8b2469587dec643bec94b16e77c09ef511/research/OPTIONS_OPEX_VANNA_CHARM_ADJUDICATION.md"
+    },
+    {
+      "path": "research/DARKPOOL_DESK_AUDIT_AND_UPGRADE_2026-08-05.md",
+      "local": "/workspace/scratch/3972f54b39b5/evidence/macro/research/DARKPOOL_DESK_AUDIT_AND_UPGRADE_2026-08-05.md",
+      "blob": "28ae8bd4313ec88801216107b52ac9d090145403",
+      "chars": 14642,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/c9631f8b2469587dec643bec94b16e77c09ef511/research/DARKPOOL_DESK_AUDIT_AND_UPGRADE_2026-08-05.md"
+    },
+    {
+      "path": "research/DAYTRADE_SUITE_MASTERPLAN_BY_FABLE.md",
+      "local": "/workspace/scratch/3972f54b39b5/evidence/macro/research/DAYTRADE_SUITE_MASTERPLAN_BY_FABLE.md",
+      "blob": "c619a66b832061e9fe699144c21cb77297fd611c",
+      "chars": 6880,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/c9631f8b2469587dec643bec94b16e77c09ef511/research/DAYTRADE_SUITE_MASTERPLAN_BY_FABLE.md"
+    },
+    {
+      "path": "research/LIVE_ENTRY_RADAR_PR0_RESEARCH_CONTRACT.md",
+      "local": "/workspace/scratch/3972f54b39b5/evidence/macro/research/LIVE_ENTRY_RADAR_PR0_RESEARCH_CONTRACT.md",
+      "blob": "d6c6fef1ffa90112f164b193d12cf18815a31652",
+      "chars": 120138,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/c9631f8b2469587dec643bec94b16e77c09ef511/research/LIVE_ENTRY_RADAR_PR0_RESEARCH_CONTRACT.md"
+    }
+  ],
+  "collisions": [
+    {
+      "query": 0,
+      "issues": []
+    },
+    {
+      "query": 1,
+      "issues": [
+        {
+          "title": "docs(agentos): reconcile liquidity recovery and Aion upgrade continuation",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7191"
+        },
+        {
+          "title": "fix(options): restore heatmaps from aligned source sessions",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7861"
+        },
+        {
+          "title": "HOLD-FOR-SOL: records(agentos): reconcile Linear / Slack / GitHub drift",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/pull/6593"
+        },
+        {
+          "title": "DRAFT/HOLD: fix(intraday-flow): restore truthful setup timing and precursor evidence",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/pull/6867"
+        },
+        {
+          "title": "fix(china): bind A-share heatmap to settled-close freshness",
+          "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7193"
+        }
+      ]
+    }
+  ]
+}

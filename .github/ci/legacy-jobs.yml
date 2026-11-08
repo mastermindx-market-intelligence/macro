@@ -5378,22 +5378,8 @@ jobs:
         run: pip install pytest
       - name: admin JS must have no out-of-scope references (eslint no-undef)
         run: python3 scripts/check_admin_js.py
-      - name: guard tests (real tree + planted #3693 offender, fail-closed in CI)
-        run: python -m pytest tests/test_admin_js_no_undef.py -q
-      - name: admin API cache recovers after a transient fetch rejection
-        run: python -m pytest tests/test_admin_api_cache_recovery.py -q
-      # Companion guard, same file, different failure: an inline on*= handler
-      # built with JSON.stringify emits double quotes that CLOSE the attribute,
-      # so the browser stores a truncated expression and the control is dead on
-      # click. check_inline_js.py already parses on*= attributes, but only in
-      # site/ and templates/ where they exist on disk — app.js materialises them
-      # in the browser, so the defect is visible only in the source that builds
-      # them. Pure Python: no node, so a minimal pip lane cannot disarm it.
-      - name: inline handler attributes must not interpolate JS string literals
-        run: python -m pytest tests/test_admin_inline_handler_attrs.py -q
-      - name: admin navigation and copy UX guardrails
-        run: python -m pytest tests/test_admin_navigation_ux.py -q
-
+      - name: admin JavaScript, cache recovery, inline handlers and navigation guards
+        run: python -m pytest tests/test_admin_js_no_undef.py tests/test_admin_api_cache_recovery.py tests/test_admin_inline_handler_attrs.py tests/test_admin_navigation_ux.py -q
   path-prune-lint:
     if: ${{ false }}
     gate: code
@@ -11993,6 +11979,10 @@ jobs:
       - "engine/entry_radar/contracts.py"
       - "engine/entry_radar/spool.py"
       - "scripts/prophet_lab_baseline.py"
+      # B-17 frozen-input research verifier: keep the regression in the existing
+      # Prophet code gate; test-only and source-only edits both select this job.
+      - "research/prophet_v4/b17_frozen_input_recovery.py"
+      - "tests/test_prophet_b17_frozen_input_recovery.py"
       - "tests/test_prophet_lab.py"
       - "tests/test_intelligence_vector_units.py"
       - "tests/test_prophet_lab_api.py"
@@ -12088,6 +12078,11 @@ jobs:
           tests/test_prophet_lab_timeparse.py
           tests/test_prophet_lab_commissioning.py
           tests/test_caddy_hub_boundary.py -q
+
+      # B-17 recovers immutable inputs and exercises the existing selector.
+      # CI runs only the focused hermetic tests, never full archive reconstruction.
+      - name: Prophet B-17 frozen-input recovery — immutable sources, cutoff clocks, and unknown inputs
+        run: python -m pytest tests/test_prophet_b17_frozen_input_recovery.py -q
 
       # B04-A0 evidence dossier (#9935): closed reason map, forbidden-key refusal
       # and admissibility literals for the Prophet Lab dossier reader. Hermetic
@@ -47073,15 +47068,26 @@ jobs:
         run: python -m pytest tests/test_winner_health_design_freeze.py -q
 
   options-nbbo-cohort:
-    # Frozen same-basis MomoEdge comparison infrastructure. The suite is fully
+    # Offline source qualification and frozen same-basis MomoEdge comparisons.
+    # The suites are fully
     # offline: source responses and authenticated producer rows are synthetic,
     # while raw production bytes remain host-private outside git.
     if: ${{ false }}  # executed inside ci-pack — NOT a disabled gate.
     gate: code
-    # Literal import/read closure of the four offline suites. Exclusive scope
+    # Literal import/read closure of the offline suites. Exclusive scope
     # prevents the CLI's dynamic file-module tests from widening unrelated probes.
     scope: exclusive
     paths:
+      - collectors/__init__.py
+      - collectors/options_free_samples.py
+      - collectors/options_free_tbt.py
+      - scripts/options_free_source_inventory.py
+      - scripts/qualify_options_free_samples.py
+      - scripts/qualify_options_free_tbt.py
+      - tests/__init__.py
+      - tests/test_options_free_samples.py
+      - tests/test_options_free_source_inventory.py
+      - tests/test_options_free_tbt.py
       - config/dag.yml
       - engine/__init__.py
       - lib/__init__.py
@@ -47126,6 +47132,8 @@ jobs:
           tests/test_options_alpha_exact_option_outcome_cli.py
           tests/test_options_occ_contract_terms.py
           tests/test_options_occ_contract_terms_native.py -q -rs
+      - name: private Cboe evaluation parsers, custody refusal and inventory contracts
+        run: python -m pytest tests/test_options_free_samples.py tests/test_options_free_source_inventory.py tests/test_options_free_tbt.py -q
 
   product-experience-registry:
     if: ${{ false }}
@@ -47762,6 +47770,14 @@ jobs:
       - tests/verification/test_journey_a01.py
       - tests/verification/test_journey_f01.py
       - tests/verification/test_oracle_q01.py
+      # Synthetic research-input qualification shares these existing Data OS
+      # verification seams and dependencies; the thin foundation stays unchanged.
+      - engine/systematic_inputs.py
+      - scripts/qualify_systematic_inputs.py
+      - tests/test_systematic_inputs.py
+      - research/systematic_inputs/README.md
+      - scripts/__init__.py
+      - tests/__init__.py
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
@@ -47779,6 +47795,10 @@ jobs:
           tests/verification/test_bench_q03_contract.py
           tests/verification/test_journey_f01.py
           tests/verification/test_journey_a01.py -q -rs
+      - name: systematic input qualification (synthetic rights, PIT and action refusals)
+        run: >-
+          PYTHONDONTWRITEBYTECODE=1 python -m pytest
+          tests/test_systematic_inputs.py -q -rs
 
   dataos-foundation:
     scope: exclusive
