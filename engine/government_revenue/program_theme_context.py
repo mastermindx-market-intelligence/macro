@@ -5,10 +5,11 @@ These structural checks do not authenticate an owner or confer display rights.
 No acquisition, persistence, identifier minting or arithmetic is performed here.
 """
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, date
 from decimal import Decimal, InvalidOperation
 from hashlib import sha256
 import json
+import math
 import re
 from pathlib import Path
 from jsonschema import Draft202012Validator
@@ -21,6 +22,12 @@ THEMES = ('golden_dome','munitions_replenishment','space','nato_fms_demand','fle
 RAILS = ('funding_stage','exposure','economics','market_context','contrary_case','next_event')
 STATES = ('supported','partial','stale','unreviewed','not_asserted','projection_missing','source_unavailable','blocked')
 AUTHORITY = dict(tier='display',context_only=True,can_rank=False,can_size=False,can_gate=False,can_originate_signal=False,can_add_candidates=False,can_escalate=False)
+GROUP_RIGHTS_REF = 'DEC:COMMERCIAL-DATA-RIGHTS-CHAIRMAN-ATTESTATION-20261023'
+GROUP_SOURCES = {
+ 'commercial_space_membership':('data/baskets/membership.json','/baskets/space_economy','basket_current_snapshot','Space Economy membership'),
+ 'commercial_space_pulse':('site/basketdata/pulse.json','/space_economy','group_pulse.v1','Space Economy pulse'),
+ 'commercial_space_baskets':('site/basketdata/baskets.json','/baskets','basket_current_snapshot','Space Economy exact-close coverage'),
+}
 CONTRACTS = {'program_ontology':{'government_program_ontology.v1'},'program_dossier':{'government_program_dossier.v1'},'identity_atlas':{'government_revenue_identity_atlas.v1'},'fms':{'government_fms_case.v1'},'budget':{'government_budget_program_graph.v1'},'defense_economics':{'defense_economics.v1'},'company_intelligence':{'event_workspace.v1'}}
 ALLOWED = {'funding_stage':{'fms','budget','program_ontology'},'exposure':{'program_ontology','identity_atlas','fms'},'economics':{'defense_economics','company_intelligence'},'market_context':{'defense_economics'},'contrary_case':{'fms','defense_economics','program_dossier','company_intelligence'},'next_event':{'program_ontology','fms','defense_economics'}}
 CLOCKS = {'known_at','graph_known_at','observed_at','retrieved_at','first_observed_at','generated_at','source_available_at'}
@@ -163,6 +170,73 @@ def _ref(ref,rail,owners,cutoff):
 def content_id(payload):
  return 'gptc1-'+sha256(_json({k:v for k,v in payload.items() if k not in ('content_id','generated_at')}).encode()).hexdigest()[:24]
 
+
+def group_context_references(context):
+ return [dict(owner_key=key,pointer=pointer,row_id='space_economy:'+path+':'+context['source_sha256'][path])
+         for key,(path,pointer,contract,title) in GROUP_SOURCES.items()]
+
+
+def group_context_owner_bindings(context):
+ # The incumbent group reader uses the native path as owner_admission_ref.
+ # It is an identity locator, not a historical admission receipt. The rights
+ # basis is the Chairman's settled named-source ruling; local verification is
+ # only house knowledge and must not fabricate source availability.
+ return {key:dict(owner_kind='group_reads',contract=contract,sha256=context['source_sha256'][path],
+                  content_id=None,available_at=None,admission_ref=path,
+                  rights_state='qualified_public_display',rights_ref=GROUP_RIGHTS_REF,
+                  source_available_at=None,house_observed_at=context['verified_at'])
+         for key,(path,pointer,contract,title) in GROUP_SOURCES.items()}
+
+
+def validate_group_context(context, *, as_of):
+ """Closed, source-free validation of the precomputed native observation."""
+ fields={'state','basket_id','source_commit','source_sha256','verified_at','pulse_generated_at',
+         'pulse_as_of','pulse_covered','pulse_members','activity_n','activity_share','close_as_of',
+         'close_observed','close_configured','close_missing','membership_version','curated',
+         'freshness','rights_ref','references'}
+ if not isinstance(context,dict) or set(context)!=fields:raise ValueError('group_context_fields_invalid')
+ if context['state']!='verified_native_published_context' or context['basket_id']!='space_economy' or context['rights_ref']!=GROUP_RIGHTS_REF:raise ValueError('group_context_scope_invalid')
+ if not isinstance(context['source_commit'],str) or not re.fullmatch('[a-f0-9]{40}',context['source_commit']):raise ValueError('group_context_source_invalid')
+ hashes=context['source_sha256']
+ if not isinstance(hashes,dict) or set(hashes)!={r[0] for r in GROUP_SOURCES.values()} or any(not isinstance(v,str) or not re.fullmatch('[a-f0-9]{64}',v) for v in hashes.values()):raise ValueError('group_context_sources_invalid')
+ if context['references']!=group_context_references(context):raise ValueError('group_context_reference_invalid')
+ cutoff=_instant(as_of);verified=_instant(context['verified_at']);generated=_instant(context['pulse_generated_at'])
+ days={key:date.fromisoformat(context[key]) for key in ('pulse_as_of','close_as_of','membership_version','curated')}
+ if generated>verified or verified>cutoff or days['pulse_as_of']>generated.date() or days['close_as_of']>verified.date() or max(days['membership_version'],days['curated'])>min(days['pulse_as_of'],days['close_as_of']):raise ValueError('group_context_clock_invalid')
+ for field in ('pulse_covered','pulse_members','activity_n','close_observed','close_configured'):
+  if type(context[field]) is not int:raise ValueError('group_context_count_invalid')
+ share=context['activity_share'];active=context['activity_n'];covered=context['pulse_covered']
+ if not 0<=active<=covered<=context['pulse_members'] or covered<=0 or not isinstance(share,(int,float)) or isinstance(share,bool) or not math.isfinite(share) or not 0<=share<=1 or abs(share-active/covered)>0.0001:raise ValueError('group_context_activity_invalid')
+ missing=context['close_missing']
+ if not isinstance(missing,list) or any(not isinstance(x,str) or not re.fullmatch('[A-Z0-9.:-]{1,32}',x) for x in missing) or len(set(missing))!=len(missing) or not 0<context['close_observed']<=context['close_configured'] or len(missing)!=context['close_configured']-context['close_observed']:raise ValueError('group_context_coverage_invalid')
+ from lib import nyse_calendar
+ expected_freshness='stale' if any(nyse_calendar.sessions_behind(days[key],now=cutoff) for key in ('pulse_as_of','close_as_of')) else 'partial'
+ if context['freshness']!=expected_freshness:raise ValueError('group_context_freshness_invalid')
+ return True
+
+
+def bind_group_context(reference, context):
+ """Add the independently verified group owner without changing legacy rails."""
+ context=dict(context,rights_ref=GROUP_RIGHTS_REF,references=group_context_references(context))
+ validate_group_context(context,as_of=reference['as_of'])
+ if set(GROUP_SOURCES)&set(reference['owner_bindings']):raise ValueError('group_context_owner_collision')
+ reference['commercial_space_context']=context
+ reference['owner_bindings'].update(group_context_owner_bindings(context))
+ reference['schema_version']='1.1.0';reference['content_id']=content_id(reference)
+ return context
+
+
+def validate_group_context_binding(reference):
+ context=reference.get('commercial_space_context')
+ actual={k:v for k,v in reference['owner_bindings'].items() if v.get('owner_kind')=='group_reads' or k in GROUP_SOURCES}
+ if context is None:
+  if actual or reference['schema_version']!='1.0.0':raise ValueError('group_context_binding_absent')
+  return None
+ if reference['schema_version']!='1.1.0':raise ValueError('group_context_version_invalid')
+ validate_group_context(context,as_of=reference['as_of'])
+ if actual!=group_context_owner_bindings(context):raise ValueError('group_context_owner_binding_invalid')
+ return context
+
 def compose_program_theme_context(assignments,*,owners,generated_at,as_of):
  """Pure projection. Assignments are reviewed context references, never truth."""
  cutoff=_instant(as_of);generated=_instant(generated_at)
@@ -250,13 +324,17 @@ def compose_program_theme_context(assignments,*,owners,generated_at,as_of):
  p['content_id']=content_id(p);return p
 
 def validate_program_theme_context(payload,*,owners):
- if not isinstance(payload,dict) or set(payload)!={'contract','schema_version','content_id','generated_at','as_of','authority','owner_bindings','themes'}: raise ValueError('snapshot_fields_invalid')
- if payload['contract']!=CONTRACT or payload['schema_version']!=SCHEMA_VERSION or payload['authority']!=AUTHORITY: raise ValueError('snapshot_contract_invalid')
+ if not isinstance(payload,dict) or set(payload)-{'commercial_space_context'}!={'contract','schema_version','content_id','generated_at','as_of','authority','owner_bindings','themes'}: raise ValueError('snapshot_fields_invalid')
+ if payload['contract']!=CONTRACT or payload['schema_version'] not in ('1.0.0','1.1.0') or payload['authority']!=AUTHORITY: raise ValueError('snapshot_contract_invalid')
+ validate_group_context_binding(payload)
  rows=payload['themes']
  if not isinstance(rows,list) or any(not isinstance(r,dict) or set(r)!={'theme_id','rails','research_state'} for r in rows) or [r['theme_id'] for r in rows]!=list(THEMES): raise ValueError('theme_inventory_invalid')
  assignments={r['theme_id']:r['rails'] for r in rows}
  expected=compose_program_theme_context(assignments,owners=owners,generated_at=payload['generated_at'],as_of=payload['as_of'])
- if payload!=expected: raise ValueError('snapshot_binding_or_state_mismatch')
+ legacy=dict(payload);legacy.pop('commercial_space_context',None)
+ legacy['owner_bindings']={k:v for k,v in payload['owner_bindings'].items() if k not in GROUP_SOURCES}
+ legacy['schema_version']='1.0.0';legacy['content_id']=content_id(legacy)
+ if legacy!=expected or payload['content_id']!=content_id(payload): raise ValueError('snapshot_binding_or_state_mismatch')
  return True
 
 
