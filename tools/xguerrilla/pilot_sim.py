@@ -68,6 +68,8 @@ CRITERIA = (
      "three children run fourteen days with zero challenges"),
     ("iki_in_band", "IKI histograms stay inside each speed class band"),
     ("label_spread", "at least two labels in each child's thirty posts"),
+    ("keystroke_counts",
+     "every typed post carries at least one keystroke per character it types"),
     ("restart_without_relogin", "one restart is survived without a re-login"),
     ("outage_degraded_recovered",
      "one deliberate worker outage falls through to degraded mode and recovers"),
@@ -270,6 +272,9 @@ class Report:
     posts: int = 0
     typed_posts: int = 0
     pasted_posts: int = 0
+    keystrokes: int = 0
+    typed_chars: int = 0
+    paste_chars: int = 0
     per_child_posts: dict[str, int] = field(default_factory=dict)
     per_child_days: dict[str, int] = field(default_factory=dict)
     labels: dict[str, dict[str, int]] = field(default_factory=dict)
@@ -306,6 +311,9 @@ class Report:
             "posts": self.posts,
             "typed_posts": self.typed_posts,
             "pasted_posts": self.pasted_posts,
+            "keystrokes": self.keystrokes,
+            "typed_chars": self.typed_chars,
+            "paste_chars": self.paste_chars,
             "per_child_posts": self.per_child_posts,
             "per_child_days": self.per_child_days,
             "labels": self.labels,
@@ -641,6 +649,7 @@ def run_pilot(children=None, days: int = 14, *, seed: int = 7,
                 gaps = [b.t - a.t for a, b in zip(keys, keys[1:])]
                 pasted = bool(draft.links) or random.Random(f"{seed}:{handle}:{when.isoformat()}:paste").random() < 0.2
 
+                before = drv.keystrokes
                 drv.click(COMPOSER)
                 if pasted:
                     drv.paste(draft.text)
@@ -650,6 +659,27 @@ def run_pilot(children=None, days: int = 14, *, seed: int = 7,
                 if got != draft.text:
                     raise DriverError(
                         f"composer text does not match the draft: {got!r} != {draft.text!r}")
+                hit = drv.keystrokes - before
+                if pasted:
+                    # A pasted post is not evidence of typing: if the driver
+                    # reports keystrokes for one, it did something other than
+                    # what it was asked and the run cannot be read as a pilot.
+                    if hit:
+                        raise DriverError(
+                            f"pasted post recorded {hit} keystroke(s): the paste route "
+                            f"and the typing route are not interchangeable")
+                    report.paste_chars += len(draft.text)
+                else:
+                    if hit != len(keys):
+                        raise DriverError(
+                            f"driver executed {hit} of {len(keys)} planned keystrokes")
+                    if hit < len(draft.text):
+                        raise DriverError(
+                            f"typed post of {len(draft.text)} chars recorded only {hit} "
+                            f"keystroke(s): fewer keys than characters means a paste "
+                            f"dressed as typing")
+                    report.keystrokes += hit
+                    report.typed_chars += len(draft.text)
                 drv.key("cmd+enter")
                 if drv.challenge and is_challenge(drv.challenge):
                     wall(handle, when)
@@ -790,6 +820,19 @@ def judge(report: Report, personas, intervals, day_posts) -> Report:
         if not w["children_blocked"]:
             report.fail("outage_degraded_recovered",
                         "§26.9 degraded mode: the outage blocked no child, so nothing degraded")
+
+    # A post count is not evidence that anything was typed. The pilot's own
+    # report has to carry the keystrokes, or the "typed, not pasted" claim rests
+    # on the simulator's good faith instead of on a number an operator can read.
+    if not report.typed_posts:
+        report.fail("keystroke_counts",
+                    f"§26.9 keystrokes: none of the {report.posts} post(s) was typed — "
+                    f"every one was pasted")
+    elif report.keystrokes < report.typed_chars:
+        report.fail("keystroke_counts",
+                    f"§26.9 keystrokes: {report.keystrokes} keystroke(s) for "
+                    f"{report.typed_chars} typed character(s) — fewer keys than "
+                    f"characters means text arrived without being typed")
     return report
 
 

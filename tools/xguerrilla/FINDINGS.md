@@ -73,14 +73,21 @@ returned value; on this box it returns `""`.
 
 | box | tests | pass | fail | error | skip | wall |
 |---|---|---|---|---|---|---|
-| authoring laptop | 205 | 205 | 0 | 0 | 0 | 68.3 s |
-| `mini1` | 205 | 204 | 0 | 0 | 1 | 29.9 s |
+| authoring laptop | 293 | 293 | 0 | 0 | 0 | 33.1 s |
+| `mini1` | 293 | 293 | 0 | 0 | 0 | 16.4 s |
 
-The one skip is `test_live_pool_is_gitignored`: `/Users/mini1/macro` is an rsync
-copy with no `.git`, so it has nothing to ask. `test_drivers.py` alone is 30
-tests, including five that pin the paste contract above (insertText lands and
-reads back; an empty field raises; no target means no read; the clipboard route
+Both boxes now run the whole suite with nothing skipped. The former skip,
+`test_live_pool_is_gitignored`, needed `/Users/mini1/macro` to be a repository;
+it is now one (`git init` + one commit of the rsynced tree, no remote), so the
+test asks its question and asserts. `mini1`'s live pool file is not present and
+`git check-ignore -v tools/xguerrilla/proxies.yml` answers from the synced
+`.gitignore` rule, so the policy is exercised without the credentials.
+`test_drivers.py` alone is 30 tests,
+including five that pin the paste contract above (insertText lands and reads
+back; an empty field raises; no target means no read; the clipboard route
 reports the empty field it really leaves; the GUI backend refuses to verify).
+`test_ops.py` adds the three heartbeat cases described in section 5, and
+`test_pilot_sim.py` adds the three keystroke cases described in section 8.
 
 ## 4. Changed in this pass
 
@@ -123,8 +130,15 @@ reports the empty field it really leaves; the GUI backend refuses to verify).
 - **`textdrift.audit(window<3)` was corrected in the subsequent C3 source pass**
   described in section 6. Invalid windows now raise; insufficient comparison
   evidence cannot produce a clear audit. This does not qualify a live pilot.
-- **`Supervisor` has no `heartbeat`**, so `pilot_sim` re-stamps child health
-  itself. The dry run therefore cannot catch a health-stamp bug.
+- **~~`Supervisor` has no `heartbeat`~~ — closed.** `SimulationSupervisor`
+  wrote the health row only from `degrade`/`recover`, and `pilot_sim` re-stamped
+  the row by reaching into `sup.conn`, so a dry run could paper over a broken
+  product-level writer. `SimulationSupervisor.heartbeat(now=None)` now owns the
+  stamp: it moves `updated_at` and leaves `status`/`reason` untouched, so an
+  injected outage survives the beat that proves liveness, and it raises
+  `RuntimeError("simulation health row missing: a heartbeat is not a recovery")`
+  instead of inserting a row, because an insert would manufacture health out of
+  no evidence. `pilot_sim.heartbeat(sup, when)` delegates to it.
 - **Clipboard route stays unusable headless.** If a real page must observe a
   `paste` event, the pilot has to run that step with the window shown, and
   verify by reading the value.
@@ -159,6 +173,62 @@ measurements above. See [the original-carrier source receipt](https://github.com
 
 No drivers, proxy configuration, account/profile state, typing, scheduling,
 supervisor, simulation or external service ran or changed in this pass.
-The absent heartbeat, real fourteen-day pilot, platform/identity permissions
-and production acceptance remain open. PR #10837 remains Draft on its existing
-parent stack; parent #10829 must actually merge before retargeting/admission.
+The real fourteen-day pilot, platform/identity permissions and production
+acceptance remain open. Parent #10829 merged to `main` on 2026-11-07
+(`f55fa485e`), so the retargeting blocker is gone; PR #10837 carries that
+content itself and was merged forward onto current `main` (`005baca8b`), with
+the single conflict — `tests/test_ci_pack.py` — resolved by composing this
+lane's measured +20 planner-weight enrollment onto the ceilings `main` already
+carries: 5920/5939/5678 -> **5940/5959/5698**.
+
+## 7. Where the suite runs, and what must never be synced there
+
+`test_live_pool_is_gitignored` asserts on repository state: the live pool file
+`tools/xguerrilla/proxies.yml` must be ignored and untracked. On a machine that
+is not a repository the test cannot ask its question, so a plain `rsync` of
+`tools/` produces a skip that hides the policy it exists to check. The worker
+box therefore holds a real repository: `git init` over the synced tree plus one
+commit, with no remote configured (it has no GitHub credentials and does not
+need any — code arrives by `rsync`, which stays the only transport).
+
+The pool file itself never belongs on the worker box. Sync with
+`--exclude 'proxies.yml'` and keep the root `.gitignore`: an rsync of `tools/`
+alone drops the root ignore file, and a `git add -A` in that state commits the
+live credential pool into the worker's local history. The pool is read where the
+harvest runs, from the environment, not copied to a second host.
+
+## 8. Keystroke evidence: a post count is not proof that anything was typed
+
+Until this pass the pilot reported `typed_posts` / `pasted_posts` but nothing
+counted the keys. A driver whose paste silently became an insert, or whose
+"typing" was one programmatic write, produced the same report as a driver that
+typed every character: the composer text matched either way. That is the same
+class of defect as the empty-payload paste in section 2 — a successful post
+hiding an interaction that never happened.
+
+Three changes close it:
+
+- `pilot_sim` snapshots `drv.keystrokes` before and after the composer write and
+  compares the delta to what it asked for. The paste route must report exactly
+  zero keystrokes; any non-zero count raises
+  `DriverError("pasted post recorded N keystroke(s): the paste route and the
+  typing route are not interchangeable")`. The typing route must report exactly
+  `len(keys)`, and any other number raises.
+- The report now carries `keystrokes`, `typed_chars` and `paste_chars` next to
+  the post counts, so an operator can read the evidence rather than infer it.
+- `keystroke_counts` is a verdict criterion, not a log field: a run with no
+  typed posts, or with fewer keystrokes than typed characters, fails the pilot
+  gate with the numbers in the reason.
+
+The three cases in `test_pilot_sim.py` pin all three: the clean run carries the
+counts it claims, a driver that lands the exact text while reporting one
+keystroke per post fails with `planned keystrokes`, and a paste that reports
+keystrokes fails with `pasted post recorded`. The middle case is the reason the
+criterion exists — the buffer check passes it, only the count does not.
+
+What this still does not prove: that a keystroke reached the operating system.
+`FakeDriver` counts what the plan asked for. The real evidence for the CDP path
+is section 1's live run (70 planned keystrokes, the page's own `input_value()`
+matching exactly, 28.77 s wall against a planned last offset of 27.96 s); the
+counter here makes the pilot refuse to claim typed work it cannot show, it does
+not make the simulation a live measurement.

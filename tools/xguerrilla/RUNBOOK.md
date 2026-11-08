@@ -67,6 +67,34 @@ are checked separately, without reading or creating the private pool. The
 text-drift proof remains separate and should not be rerun without a meaningful
 change. GATE.md explains the model's limits.
 
+## Running the suite on the worker box
+
+The worker box has no GitHub credentials and no remote; code reaches it by
+`rsync`, which is the only transport:
+
+```
+rsync -az --exclude __pycache__ --exclude '*.pyc' --exclude 'proxies.yml' \
+  tools mini1:/Users/mini1/macro/
+```
+
+`~/macro` on the worker box is a real repository — `git init` over the synced
+tree plus one commit. That is not incidental: `test_live_pool_is_gitignored`
+asserts that the private pool is ignored and untracked, so on a machine that is
+not a repository it can only skip, and a skip hides the policy it exists to
+check. The sync must carry the repository's root `.gitignore` and must exclude
+`proxies.yml`; syncing `tools/` alone drops the root ignore file, and a
+`git add -A` in that state commits the live credential pool into the worker's
+local history. The pool is read from the environment where the harvest runs and
+is never copied to a second host.
+
+Run the suite there with the harness venv:
+
+```
+cd ~/macro && ~/.venvs/xg/bin/python -m pytest tools/xguerrilla/tests -q
+```
+
+Laptop and worker box agree at 293 passed, 0 skipped (33.1 s and 16.4 s).
+
 ## Incidents and prospective acceptance
 
 Record incidents and source evidence with the existing GitHub/Agent OS owners

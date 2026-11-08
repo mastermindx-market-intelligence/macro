@@ -253,6 +253,55 @@ def test_every_post_is_typed_or_pasted_and_fits_the_persona(clean):
 # --------------------------------------------------------------------------
 # gate CLI
 # --------------------------------------------------------------------------
+def test_the_report_carries_the_keystrokes_it_claims(clean):
+    """A post count is not evidence that text was typed; the count must travel."""
+    assert clean.typed_posts > 0 and clean.pasted_posts > 0
+    assert clean.typed_chars > 0 and clean.paste_chars > 0
+    assert clean.keystrokes >= clean.typed_chars
+    doc = clean.to_dict()
+    for key in ("keystrokes", "typed_chars", "paste_chars"):
+        assert doc[key] == getattr(clean, key), key
+    assert clean.criteria["keystroke_counts"] is True
+
+
+class _SwallowsKeys(pilot_sim.FakeDriver):
+    """Lands the exact text but reports one keystroke per post: a paste dressed
+    as typing. The buffer check alone cannot see this, the count can."""
+
+    def type_plan(self, keys):
+        self._live()
+        for k in keys:
+            kind = getattr(k, "kind", None)
+            if kind == "char":
+                self.buffer += getattr(k, "text", "")
+            elif kind == "backspace":
+                self.buffer = self.buffer[:-1]
+            else:  # pragma: no cover - typing.py owns the vocabulary
+                raise base.DriverError(f"unknown keystroke kind {kind!r}")
+        self.keystrokes += 1
+        self.typed.append(self.buffer)
+
+
+class _CountsPastesAsTyping(pilot_sim.FakeDriver):
+    """Reports keystrokes for a pasted post, so the paste route looks like typing."""
+
+    def paste(self, text):
+        super().paste(text)
+        self.keystrokes += len(text)
+
+
+def test_a_driver_that_swallows_keystrokes_fails_the_run(tmp_path, monkeypatch):
+    monkeypatch.setattr(pilot_sim, "FakeDriver", _SwallowsKeys)
+    with pytest.raises(base.DriverError, match="planned keystrokes"):
+        run(tmp_path, days=2)
+
+
+def test_a_paste_that_reports_keystrokes_fails_the_run(tmp_path, monkeypatch):
+    monkeypatch.setattr(pilot_sim, "FakeDriver", _CountsPastesAsTyping)
+    with pytest.raises(base.DriverError, match="pasted post recorded"):
+        run(tmp_path, days=3)
+
+
 def test_gate_sim_exits_zero_on_a_clean_run(capsys, store_dir):
     assert gate.main(["sim", "--store-dir", store_dir]) == gate.EXIT_OK
     doc = json.loads(capsys.readouterr().out)
