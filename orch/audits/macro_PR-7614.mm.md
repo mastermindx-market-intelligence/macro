@@ -1,5 +1,23 @@
 # Plain-language / theme / validated-claims audit — macro PR #7614
 
+## Historical records reconciliation — 2026-11-06
+
+The checkpoint implementation in [Macro #7614](https://github.com/mastermindx-market-intelligence/macro/pull/7614) is already merged and DO_NOT_REDO. Native GitHub confirms source head `02fe114e577f181634afb41a34073ff4b7577ebf`, branch `sol/gold-publication-checkpoint-20260921`, merge `a9b1f4cb07d24e29c15b45cc5d73e344dcb6e2ae` at 2026-09-21T22:29:57Z. This integration preserves the accepted report with five narrow factual/evidence corrections and the useful original variant.
+
+Original #7656 report: [a2e5583473919249857d69d0e10a323eede17ec3](https://github.com/mastermindx-market-intelligence/macro/blob/a2e5583473919249857d69d0e10a323eede17ec3/orch/audits/macro_PR-7614.mm.md), blob `77ff35e7d50e1cb6b9925e47499e95816cbdae27`. Accepted main report: [1d7068eb12b810c5aa9b0439468fdccaa5a512c6](https://github.com/mastermindx-market-intelligence/macro/blob/1d7068eb12b810c5aa9b0439468fdccaa5a512c6/orch/audits/macro_PR-7614.mm.md), blob `aa56cbc24d389c729227cf9e72841c98fa774585`.
+
+Both reports retain the same bounded outcome: an early best-effort checkpoint reuses the incumbent publisher before the long tail; the final publisher remains; nine DAG module declarations and three source-bound regressions bind ordering, dual invocation and the resolved publisher module sequence. The exact native three-file patch was inspected. No publication code is changed here.
+
+The original variant adds two useful maintenance cautions: a future workflow-step rename must update its test constant, and a future refactor of private helper `_extract_steps_from_run` must maintain the source-bound cross-check. These are conditional cautions, not new work requests. The accepted main note about two unnamed historical suspect drifts remains a hygiene observation; no current drift identity is invented.
+
+All historical PASS statements, 48 DAG / 95 prior-head push-retry / 3 focused test counts, broad checker findings, incident timing and browser results remain attributed to the original report or PR body. No test, checker, nightly workflow or browser campaign was re-executed. The original pre-merge compatibility expectation does not establish a fresh current compatibility check.
+
+The original anonymous Gold browser matrix is distinct from proof that the early checkpoint actually published the quality receipt. This record does not settle incident run 35547644919, claim a new natural-cycle result, or accept the later push/deploy/served path. #7596 remains the separate Gold binding repair carrier. Historical statements about a missing main artifact describe their stated snapshot, not today's main.
+
+The old template-only checker description is corrected from exact source. None of the audited three paths falls within its configured display-copy inputs; that scoped fact does not certify the whole estate. The broader Gold production outcome and its existing return path remain outside this records integration.
+
+---
+
 Auditor: qwen_auditor2-style pass (one-shot, half-B scope). Date: 2026-09-21.
 
 ## PR metadata
@@ -12,14 +30,14 @@ Auditor: qwen_auditor2-style pass (one-shot, half-B scope). Date: 2026-09-21.
 | merged_at | 2026-09-21T22:29:57Z |
 | head (pre-merge candidate) | `02fe114e577f181634afb41a34073ff4b7577ebf` |
 | merge_commit | `a9b1f4cb07d24e29c15b45cc5d73e344dcb6e2ae` |
-| base | `main` at `e2f7189ddfe85946a5b440650e1a0be25a92dca2` (post-merge snapshot) |
-| branch | workstream-bound CI repair (no new code/JS/CSS surface) |
+| historical audit snapshot | `main` at `e2f7189ddfe85946a5b440650e1a0be25a92dca2` (post-merge snapshot, not the PR base) |
+| branch | `sol/gold-publication-checkpoint-20260921` |
 | changed files | **3 infra-only paths, +137 / −0.** `.github/workflows/daily.yml` (+9), `config/dag.yml` (+27), `tests/test_push_retry.py` (+101). Zero template / HTML / JS / CSS / data / render / user-facing runtime / agentos surface touched. |
 | additions / deletions | 137 / 0 |
 | labels | `merge-on-green` (sweeper arm — this is a CI repair, the label is the standing arm for ordinary work, not a release marker) |
 | scope collision | none — body is explicit that "this PR addresses publication atomicity only. It does not alter the Gold calculation, data-source authority, UI methodology, or the incumbent publisher implementation. PR #7596 remains a separate, unchanged carrier for the post-rebase Gold binding repair. Do not replace or redesign it." |
 
-**Why this PR is the half-B pick.** Cross-referencing `gh pr list --state merged --merged recent` (last 24 h: 2026-09-20T22:29Z → 2026-09-21T22:29Z) against `git ls-tree origin/main -- orch/audits/` shows the unaudited merges are exclusively infra/CI lanes: macro #7614, #7628, #7621, #7636, #7637, #7639, #7613, #7597; terminal #705, #700, #698, #696, #695, #693, #689. **#7614 is the most recent merged PR in either repository** (22:29:57Z, 12 seconds ahead of the next non-audit merge — macro #7651 at 22:22:20Z, which is itself an `orch(audit)` record-keeping PR for #7619 and carries no audit surface of its own). The remaining 24-h non-audit merges are all infra: CI workflow binds (#7614, #7628, #7621), `[MO-A heal]` receipts regenerations (#7639, #7637, #7613, #7597), and terminal chart/dataCache fixes (#705, #700, #698, #696, #695, #693, #689). The most recent merge with any audit-relevant surface is **#7614**. Plain-language applies only to the YAML comment lines (3 lines of `#` comments in `daily.yml` plus a YAML `# Early durable core publication checkpoint…` block-comment in `config/dag.yml`); theme is structurally out-of-scope (zero CSS/JS/HTML touched); validated-claims applies to the PR body's two load-bearing factual claims and to the absence of any user-facing claim.
+**Why this PR is the half-B pick.** Cross-referencing `gh pr list --state merged --merged recent` (last 24 h: 2026-09-20T22:29Z → 2026-09-21T22:29Z) against `git ls-tree origin/main -- orch/audits/` shows the unaudited merges are exclusively infra/CI lanes: macro #7614, #7628, #7621, #7636, #7637, #7639, #7613, #7597; terminal #705, #700, #698, #696, #695, #693, #689. **#7614 is the most recent merged PR in either repository** (22:29:57Z, as selected in the historical audit; the prior relative-time arithmetic is not retained). The remaining 24-h non-audit merges are all infra: CI workflow binds (#7614, #7628, #7621), `[MO-A heal]` receipts regenerations (#7639, #7637, #7613, #7597), and terminal chart/dataCache fixes (#705, #700, #698, #696, #695, #693, #689). The most recent merge with any audit-relevant surface is **#7614**. Plain-language applies only to the YAML comment lines (3 lines of `#` comments in `daily.yml` plus a YAML `# Early durable core publication checkpoint…` block-comment in `config/dag.yml`); theme is structurally out-of-scope (zero CSS/JS/HTML touched); validated-claims applies to the PR body's two load-bearing factual claims and to the absence of any user-facing claim.
 
 **Nature of change (half-B infra repair, CI-band scoped):** (i) inserts one new step into the `engine` job of `daily.yml` immediately after the regional/desk builder band, named `checkpoint core engine outputs to main (durable before tail desks)`, with `if: always()`, `timeout-minutes: 25`, `continue-on-error: true`, and `run: bash scripts/ci/daily_engine_commit_outputs.sh` — i.e. it reuses the **incumbent** publisher (`scripts/ci/daily_engine_commit_outputs.sh`) and adds no second implementation; (ii) declares the publisher's full module sequence (pre-commit normalization x4 → strict Gold render audit → post-rebase normalization x4 = 9 modules) in `config/dag.yml` so the DAG conformance contract tracks the new checkpoint without creating a Gold-only lane; (iii) pins three new tests in `tests/test_push_retry.py` that assert (a) the step sits in the engine job between the regional+desk builders and the tail-desks band, (b) both `bash scripts/ci/daily_engine_commit_outputs.sh` invocations coexist with the new one being the first cut, and (c) the declared module sequence in `config/dag.yml` exactly matches the resolved publisher source via `_extract_steps_from_run(resolve_run_source(...))`.
 
@@ -110,13 +128,13 @@ Theme law is `scripts/check_design_system.py` (mode `enforce-added` on changed `
 
 ## Validated-claims findings
 
-`scripts/check_validated_claims.py` is a template scanner — it looks for the word "validated" / "已验证" / "经验证的" / "验证" patterns in `templates/**/*.j2`. With **zero** template files changed, the gate's output for this PR is structurally clean.
+The original checker is broader than templates: it also scans site HTML/JS, Prophet JSON, engine display-copy fields and selected published registry data. Exact checker blob `86be3a08347f2300d85644e303e3c653fa1ac88b` is present at source head `02fe114e577f181634afb41a34073ff4b7577ebf`. The three infrastructure paths are outside those configured inputs. This is a source-scope finding, not an executed whole-estate PASS.
 
 But the PR body makes **two load-bearing factual claims** that are themselves CI evidence, and a CI-audit auditor should read them:
 
 1. **Claim (incidents):** "Incident run `35547644919` completed the regional/desk builder band, including the Gold output, but the sole broad publisher was still after the long tail. The job reached its 300-minute cap first, so the generated Gold page and quality receipt never reached `main`."
 
-   **Receipt cross-check:** `gh api repos/mastermindx-market-intelligence/macro/actions/runs/35547644919` — the run id is a real Actions run; whether it in fact "reached its 300-minute cap first" is a factual question the operator can answer. The PR body itself is the receipt: it cites the run id and the consequence. **Falsifier:** any record of `data/quality/china_gold_premium.json` reaching `main` during or immediately after `35547644919` — the body says it did not, and the production-path evidence section says "Current `main` still does not contain `data/quality/china_gold_premium.json`." Self-consistent; no claim-bearer detected.
+   **Receipt cross-check:** `gh api repos/mastermindx-market-intelligence/macro/actions/runs/35547644919` — the run id is a real Actions run; whether it in fact "reached its 300-minute cap first" is a factual question the operator can answer. The PR body attributes the incident to that run; a cited run ID and self-consistent narrative do not independently establish the run's actual publisher outcome. **Falsifier:** any record of `data/quality/china_gold_premium.json` reaching `main` during or immediately after `35547644919` — the body says it did not, and the production-path evidence section says "Current `main` still does not contain `data/quality/china_gold_premium.json`." Self-consistent; no claim-bearer detected.
 
 2. **Claim (falsifier against predecessor `1da5b956…`):** "Parent falsifier against `1da5b956…`: `checkpoint_core_gold_render_audit` absent from its engine DAG declaration."
 

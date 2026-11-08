@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "NABL-BULL-20260903",
-  "asof": "2026-11-03",
+  "asof": "2026-11-08",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 46.7,
@@ -11,20 +11,20 @@
   "human_state": "Closed",
   "components": {
     "validity": 100.0,
-    "progress": 40.3,
-    "pace": 10.0,
-    "retention": 81.0,
-    "overlay": 53.0
+    "progress": 34.6,
+    "pace": 3.3,
+    "retention": 66.1,
+    "overlay": 33.0
   },
   "geometry": {
-    "dist_to_stop_r": 1.746,
-    "dist_to_t1_r": 0.754,
-    "dist_to_t2_r": 2.254,
-    "horizon_pct_used": 133.3,
-    "p1": 0.4972,
-    "p2": 0.2486,
+    "dist_to_stop_r": 1.608,
+    "dist_to_t1_r": 0.892,
+    "dist_to_t2_r": 2.392,
+    "horizon_pct_used": 144.4,
+    "p1": 0.4056,
+    "p2": 0.2028,
     "p3": null,
-    "move_r": 0.746,
+    "move_r": 0.608,
     "mfe_r": 0.921,
     "mae_r": -0.237
   },
@@ -45,8 +45,8 @@
   "_first_trigger_ts": "2026-09-23",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 60,
-  "tau": 1.3333,
+  "days_elapsed": 65,
+  "tau": 1.4444,
   "closed": true,
   "outcome": "EXPIRED"
 }
