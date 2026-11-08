@@ -80,5 +80,3 @@ def test_known_false_news_retention_stays_false():
         "source_asof": "2026-10-31T05:00:00+00:00",
         "source_asof_basis": "financial_news.fetched_at",
         "retained_from_previous_build": False, "retained_reason": None}
-
-
