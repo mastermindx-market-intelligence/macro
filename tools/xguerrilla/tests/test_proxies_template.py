@@ -21,11 +21,27 @@ TEMPLATE = HERE / "proxies.example.yml"
 CRED = re.compile(r"^(\s*- )([0-9.]+:\d+):([^:]+):(.+)$")
 
 
+def _is_documentation_address(host: str) -> bool:
+    """RFC 5737 / RFC 3849 ranges — never a purchased endpoint."""
+    return (
+        host.startswith("192.0.2.")
+        or host.startswith("198.51.100.")
+        or host.startswith("203.0.113.")
+    )
+
+
 def test_template_exists_and_is_not_the_live_pool():
     assert TEMPLATE.exists(), "proxies.example.yml must be committed as the template"
     raw = TEMPLATE.read_text()
     assert "${BART_USER}" in raw and "${BART_PASS}" in raw
-    assert "BartProxies static ISP" in raw
+    # The pool's real addresses identify inventory the account pays for; the
+    # committed template carries documentation addresses only, and does not
+    # name the vendor.
+    assert "bartproxies" not in raw.lower(), "template must not name the vendor"
+    hosts = [m.group(2).rsplit(":", 1)[0] for m in (CRED.match(ln) for ln in raw.splitlines()) if m]
+    assert len(hosts) == 16, hosts
+    for host in hosts:
+        assert _is_documentation_address(host), f"{host} is a routable endpoint, not a template"
 
 
 def test_template_has_no_literal_credentials():

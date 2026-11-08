@@ -1,24 +1,28 @@
-# BartProxies static ISP, US, USER-mode (2026-11-07). One line per slot; a slot is
-# consumed exclusively by one child for the life of the account (law: 1:1 sticky).
-# Port order is the allocation order. Never print the password in logs.
-# This is the sanitized template. Copy to proxies.yml and fill BART_USER/BART_PASS
-# (or export them) — tools/xguerrilla/proxies.yml is gitignored and never committed.
-pool: bartproxies-us-16
+# Static ISP, US, USER-mode pool template. One line per slot; a slot is consumed
+# exclusively by one child for the life of the account (law: 1:1 sticky). Port
+# order is the allocation order. Never print the password in logs.
+#
+# The addresses below are RFC 5737 documentation addresses on purpose: the real
+# endpoint list is purchased inventory, it identifies the pool, and it belongs in
+# the gitignored live file only. Copy this to proxies.yml, put the provider's
+# actual host:port values in, and supply BART_USER/BART_PASS (or export them) —
+# tools/xguerrilla/proxies.yml is gitignored and never committed or rsynced.
+pool: proxy-pool-us-16
 scheme: http
 inventory:
-  - 170.124.172.249:8309:${BART_USER}:${BART_PASS}
-  - 170.124.172.250:8310:${BART_USER}:${BART_PASS}
-  - 170.124.172.251:8311:${BART_USER}:${BART_PASS}
-  - 170.124.172.252:8312:${BART_USER}:${BART_PASS}
-  - 170.124.172.253:8313:${BART_USER}:${BART_PASS}
-  - 170.124.172.254:8314:${BART_USER}:${BART_PASS}
-  - 170.124.172.255:8315:${BART_USER}:${BART_PASS}
-  - 170.124.173.1:8316:${BART_USER}:${BART_PASS}
-  - 170.124.173.2:8317:${BART_USER}:${BART_PASS}
-  - 170.124.173.3:8318:${BART_USER}:${BART_PASS}
-  - 170.124.173.4:8319:${BART_USER}:${BART_PASS}
-  - 170.124.173.5:8320:${BART_USER}:${BART_PASS}
-  - 170.124.173.6:8321:${BART_USER}:${BART_PASS}
-  - 170.124.173.7:8322:${BART_USER}:${BART_PASS}
-  - 170.124.173.8:8323:${BART_USER}:${BART_PASS}
-  - 170.124.173.9:8324:${BART_USER}:${BART_PASS}
+  - 192.0.2.10:8000:${BART_USER}:${BART_PASS}
+  - 192.0.2.11:8001:${BART_USER}:${BART_PASS}
+  - 192.0.2.12:8002:${BART_USER}:${BART_PASS}
+  - 192.0.2.13:8003:${BART_USER}:${BART_PASS}
+  - 192.0.2.14:8004:${BART_USER}:${BART_PASS}
+  - 192.0.2.15:8005:${BART_USER}:${BART_PASS}
+  - 192.0.2.16:8006:${BART_USER}:${BART_PASS}
+  - 192.0.2.17:8007:${BART_USER}:${BART_PASS}
+  - 192.0.2.18:8008:${BART_USER}:${BART_PASS}
+  - 192.0.2.19:8009:${BART_USER}:${BART_PASS}
+  - 192.0.2.20:8010:${BART_USER}:${BART_PASS}
+  - 192.0.2.21:8011:${BART_USER}:${BART_PASS}
+  - 192.0.2.22:8012:${BART_USER}:${BART_PASS}
+  - 192.0.2.23:8013:${BART_USER}:${BART_PASS}
+  - 192.0.2.24:8014:${BART_USER}:${BART_PASS}
+  - 192.0.2.25:8015:${BART_USER}:${BART_PASS}

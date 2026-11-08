@@ -197,6 +197,17 @@ alone drops the root ignore file, and a `git add -A` in that state commits the
 live credential pool into the worker's local history. The pool is read where the
 harvest runs, from the environment, not copied to a second host.
 
+The committed `proxies.example.yml` is a template in the strict sense: sixteen
+inventory lines, `${BART_USER}`/`${BART_PASS}` placeholders, and RFC 5737
+documentation addresses. Earlier it carried the purchased host:port list with the
+credentials templated out, which is still inventory — the address block
+identifies the pool, and nothing an operator needs lives in it.
+`test_template_exists_and_is_not_the_live_pool` now refuses any line whose host is
+outside the documentation ranges, and refuses the vendor name, so the next person
+who pastes a real response body into the template fails a test instead of
+shipping the pool. Ports and addresses in the template therefore say nothing
+about the live allocation; read `proxies.yml` for the real order.
+
 ## 8. Keystroke evidence: a post count is not proof that anything was typed
 
 Until this pass the pilot reported `typed_posts` / `pasted_posts` but nothing
