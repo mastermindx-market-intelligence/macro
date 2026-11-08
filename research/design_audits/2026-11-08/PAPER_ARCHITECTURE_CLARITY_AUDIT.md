@@ -75,3 +75,12 @@ Operation `paper-clarity-20261108-c2-ontology-reading-01` returned `APPLIED_RESP
 - Finish operation `paper-clarity-20261108-c2-ontology-finish-01` returned `APPLIED_RESPONSE_OBSERVED` for only the two changed boards.
 
 Next safe phase: align four shared state-pattern boards with the 18 Oct doctrine removing colored container-edge rails; complete AI's current desktop/mobile depth/usage review design using existing interaction semantics. No new runtime, scope, permissions, usage meter or case store is authorized or required.
+
+
+### Applied milestone — shared state patterns
+
+File `01M312VSDSZFVT45674GDVJVZN`, page `p-5-0`: desktop dark/light `2S4-0` / `2UE-0`, mobile dark/light `30G-0` / `336-0`.
+
+Recomposed ten state/note containers to remove the obsolete 3px colored edge rails. Preserved every displayed word, example value, source state, focus ring and evidence path. Adjusted the two state columns to fit content after screenshot QA found clipping. Both final columns render all three states completely. Final JSX checks found zero 3px rails in all four touched boards and exact text-content preservation.
+
+Operations `paper-clarity-20261108-c2-system-rail-01` through `-10`, `paper-clarity-20261108-c2-system-column-fit-dark` / `-light`, and `paper-clarity-20261108-c2-system-finish-01` all returned `APPLIED_RESPONSE_OBSERVED`. Only these four boards were released. This implements the 18 Oct 2026 no-colored-container-edge rule in the pinned `docs/DESIGN_DOCTRINE.md`; F02 candidate boards and token definitions are untouched.
