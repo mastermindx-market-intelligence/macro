@@ -69,13 +69,24 @@ def _render_blocker(b: dict) -> str:
     return f"  - [{sev}/{cat}] {finding}"
 
 
-def render_markdown(packets: list[dict], generated_at: str) -> str:
+def render_markdown(packets: list[dict], generated_at: str, *,
+                    private_source_references=None, source_repository=None) -> str:
     """Render the full queue.md document.
 
     Sections:
       1. Active Queue — human_review and paper-decay candidates (decidable or near-decidable)
       2. Blocked — awaiting_data candidates (blocked on data/label/grader availability)
     """
+    if private_source_references is not None:
+        if type(private_source_references) is not list or type(packets) is not list:
+            raise ValueError("PRIVATE_SOURCE_REFERENCE_REFUSED")
+        if len(private_source_references) != len(packets):
+            raise ValueError("PRIVATE_SOURCE_REFERENCE_REFUSED")
+        if not all(type(packet) is dict and packet.get("is_research_diagnostic") is True
+                   for packet in packets):
+            raise ValueError("PRIVATE_SOURCE_REFERENCE_REFUSED")
+    elif source_repository is not None:
+        raise ValueError("PRIVATE_SOURCE_REFERENCE_REQUIRED")
     # Split packets into active and blocked
     active_packets = [p for p in packets if not p.get("is_awaiting_data") and not p.get("is_research_diagnostic")]
     blocked_packets = [p for p in packets if p.get("is_awaiting_data")]
@@ -131,12 +142,37 @@ def render_markdown(packets: list[dict], generated_at: str) -> str:
     if diagnostic_packets:
         lines.extend(["", "## Synthetic research diagnostics", ""])
         for i, pkt in enumerate(diagnostic_packets, 1):
-            _render_packet(lines, i, pkt)
+            if private_source_references is None:
+                _render_packet(lines, i, pkt)
+            else:
+                _render_packet(lines, i, pkt, private_source_reference=private_source_references[i - 1],
+                               source_repository=source_repository)
     return "\n".join(lines)
 
 
-def _render_packet(lines: list[str], i: int, pkt: dict) -> None:
+def _render_packet(lines: list[str], i: int, pkt: dict, *, private_source_reference=None,
+                   source_repository=None) -> None:
     """Render one active-queue packet into lines (mutates lines in place)."""
+    if private_source_reference is not None:
+        # Direct helper calls must pass through the same checks as render_markdown.
+        from engine.research_factory.review_queue import diagnostic_review_packet
+        if type(pkt) is not dict or pkt.get("is_research_diagnostic") is not True or pkt.get("allowed_decisions") != []:
+            raise ValueError("PRIVATE_SOURCE_REFERENCE_REFUSED")
+        attached = pkt.get("engineering_evidence", {})
+        keys = ("schema", "identity", "accounting", "attempts", "controls")
+        if type(attached) is not dict or set(attached) != set(keys) | {"authority", "scope", "physical_acceptance", "scientific_acceptance"}:
+            raise ValueError("PRIVATE_SOURCE_REFERENCE_REFUSED")
+        checked = diagnostic_review_packet(pkt["diagnostic"],
+            engineering_evidence={key: attached[key] for key in keys},
+            private_source_reference=private_source_reference, source_repository=source_repository)
+        if (pkt.get("private_source_context") != checked["private_source_context"]
+                or attached != checked["engineering_evidence"]
+                or any(pkt.get(key) != checked[key] for key in ("diagnostic_id", "candidate_id",
+                    "created_at", "authority", "current_status", "candidate_type", "domain", "frozen_gate_metrics"))):
+            raise ValueError("PRIVATE_SOURCE_REFERENCE_REFUSED")
+        pkt = checked
+    elif source_repository is not None:
+        raise ValueError("PRIVATE_SOURCE_REFERENCE_REQUIRED")
     if pkt.get("is_research_diagnostic"):
         # These are owner-bound attachments, never decide.py candidates.
         from engine.research_codegen.bridge import PUBLIC_AGGREGATE_KEYS
@@ -167,6 +203,14 @@ def _render_packet(lines: list[str], i: int, pkt: dict) -> None:
                 lines.append(f"| {control['id']} | {control['status']} | {evidence} |")
             lines.extend(["", f"Retained attempts: {len(checked['attempts'])}.",
                           "Physical acceptance: unqualified. Scientific acceptance: unqualified."])
+        if private_source_reference is not None:
+            context = pkt["private_source_context"]
+            lines.extend(["", "**PRIVATE local source inspection — advisory only**",
+                f"Verified source: {context['source_link']}",
+                f"Source bytes: {context['source_bytes']}",
+                "Economic mechanism: UNAVAILABLE", "Parent diff: UNAVAILABLE",
+                "Local Git bytes match; no candidate execution or scientific acceptance."])
+            lines.extend(f"- {key}: {value}" for key, value in context["binding"].items())
         lines.append("")
         return
     cid = pkt.get("candidate_id", "?")
@@ -333,12 +377,85 @@ def _build_parser() -> argparse.ArgumentParser:
     )
     ap.add_argument("--retain-diagnostics", action="store_true", help="Preserve the existing compiled display projection when publishing a refreshed queue.")
     ap.add_argument("--retire-diagnostics", action="store_true", help="Explicitly retire the existing compiled diagnostic projection.")
+    ap.add_argument("--private-source-review", action="store_true", help="PRIVATE stdout-only immutable-source inspection; never publishes.")
+    ap.add_argument("--private-packets", type=Path)
+    ap.add_argument("--private-source-links", type=Path)
+    ap.add_argument("--source-repository", type=Path)
     return ap
+
+
+def _private_source_review(args):
+    """Retained packets only; never reaches build_queue or the normal publisher."""
+    import hashlib
+    from engine.research_codegen.bridge import _pairs
+    def _nonfinite(_):
+        raise ValueError("PRIVATE_NONFINITE_INPUT")
+    from engine.research_factory.review_queue import diagnostic_review_packet
+    def read(path):
+        with path.open("rb") as stream:
+            raw = stream.read(4 * 1024 * 1024 + 1)
+        if len(raw) > 4 * 1024 * 1024:
+            raise ValueError("PRIVATE_INPUT_LIMIT")
+        return raw
+    raw = read(args.private_packets)
+    packets = json.loads(raw.decode("utf-8"), object_pairs_hook=_pairs, parse_constant=_nonfinite)
+    links = json.loads(read(args.private_source_links).decode("utf-8"), object_pairs_hook=_pairs, parse_constant=_nonfinite)
+    import re
+    if (type(links) is not dict or set(links) != {"scope", "source_commit", "packet_sha256", "rows",
+                "swapped_source_matches", "declared_economic_mechanism", "parent_diff", "candidate_execution"}
+            or type(links.get("source_commit")) is not str
+            or re.fullmatch(r"[0-9a-f]{40}", links["source_commit"]) is None
+            or type(links.get("swapped_source_matches")) is not int or links["swapped_source_matches"] != 0
+            or links.get("scope") != "Private local inspection of retained engineering controls"
+            or links.get("packet_sha256") != hashlib.sha256(raw).hexdigest()
+            or links.get("declared_economic_mechanism") != "UNAVAILABLE"
+            or links.get("parent_diff") != "UNAVAILABLE" or links.get("candidate_execution") is not False
+            or type(packets) is not list or not 0 < len(packets) <= 256
+            or type(links.get("rows")) is not list or len(links["rows"]) != len(packets)):
+        raise ValueError("PRIVATE_PACKET_BINDING_REFUSED")
+    verified, refs = [], []
+    seen = set()
+    for packet, reference in zip(packets, links["rows"]):
+        if (type(packet) is not dict or type(reference) is not dict
+                or type(reference.get("source_link")) is not str
+                or not reference["source_link"].startswith("https://github.com/mastermindx-market-intelligence/macro/blob/" + links["source_commit"] + "/")):
+            raise ValueError("PRIVATE_PACKET_BINDING_REFUSED")
+        if (packet.get("allowed_decisions") != [] or packet.get("is_research_diagnostic") is not True
+                or packet.get("diagnostic_id") in seen):
+            raise ValueError("PRIVATE_PACKET_BINDING_REFUSED")
+        seen.add(packet["diagnostic_id"])
+        evidence = packet["engineering_evidence"]
+        keys = ("schema", "identity", "accounting", "attempts", "controls")
+        checked = diagnostic_review_packet(packet["diagnostic"],
+            engineering_evidence={key: evidence[key] for key in keys},
+            private_source_reference=reference, source_repository=args.source_repository)
+        # Original packets can have a receipt-composition note; render only the rebuilt packet.
+        if (evidence != checked["engineering_evidence"]
+                or any(packet.get(key) != checked[key] for key in ("diagnostic_id", "candidate_id",
+                    "created_at", "authority", "current_status", "candidate_type", "domain", "frozen_gate_metrics"))):
+            raise ValueError("PRIVATE_PACKET_BINDING_REFUSED")
+        verified.append(checked); refs.append(reference)
+    text = render_markdown(verified, "PRIVATE local inspection", private_source_references=refs,
+                           source_repository=args.source_repository)
+    print(text)
+    return 0
 
 
 def main(*, trusted_codegen_artifacts: tuple = (), synthetic_commission=None) -> int:
     ap = _build_parser()
     args = ap.parse_args()
+    if args.private_source_review:
+        if args.write or args.retain_diagnostics or args.retire_diagnostics or args.rf_dir is not None:
+            ap.error("PRIVATE source review is stdout-only; publishing options refused")
+        if not all((args.private_packets, args.private_source_links, args.source_repository)):
+            ap.error("PRIVATE source review needs packets, source links, and local source repository")
+        try:
+            return _private_source_review(args)
+        except (OSError, ValueError, KeyError, TypeError, RecursionError):
+            print("PRIVATE source review refused: source or packet binding could not be verified.", file=sys.stderr)
+            return 2
+    if any((args.private_packets, args.private_source_links, args.source_repository)):
+        ap.error("private inputs require --private-source-review")
     dry_run = not args.write
 
     rf_dir = args.rf_dir or DEFAULT_RF_DIR
