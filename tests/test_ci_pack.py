@@ -36,6 +36,8 @@ import yaml
 ROOT = Path(__file__).resolve().parents[1]
 WORKFLOW = ROOT / ".github" / "workflows" / "ci.yml"
 MANIFEST = ROOT / ".github" / "ci" / "legacy-jobs.yml"
+# S6 (2026-11-05): the FIF kernel job is three measured siblings with one closure.
+FIF_KERNEL_SIBLINGS = frozenset({"fif-kernel-guards", "fif-kernel-guards-b", "fif-kernel-guards-c"})
 FENCES = ROOT / ".github" / "workflows" / "fences.yml"
 
 # A `ci-trigger-closure: data` marker on a path in this file flags a NAME that a test
@@ -1553,7 +1555,62 @@ def test_fif_kernel_guards_selects_on_registry_v1_0_0_fixture_edit(real_manifest
     selected, reason = PACK.select_jobs(
         jobs, ["tests/fixtures/fundamental_forensics_registry_v1_0_0/x.json"]
     )
-    assert "fif-kernel-guards" in {job.job_id for job in selected}, reason
+    assert FIF_KERNEL_SIBLINGS <= {job.job_id for job in selected}, reason
+
+
+def test_fif_kernel_siblings_share_one_closure_and_partition_the_suite_once(
+    real_manifest_scopes,
+) -> None:
+    """S6 (2026-11-05): the 120-file kernel step was one 1,630 s job alone in
+    pack 0 (the critical path of every PR inside its closure — on #10759's run
+    42123959736 it ran 60+ minutes while every other pack finished in 10–33).
+    It is now three siblings. Splitting must not change WHAT runs: the three
+    kernel steps partition the original suite list exactly once, and every
+    sibling carries the identical curated closure so an edit that selected the
+    kernel before selects all three now (``scope: exclusive`` REPLACES
+    inference; the merge driver ``scripts/ci_pack_fragments.py`` is a line
+    scanner, so the list is copied rather than anchored)."""
+    jobs, _ = real_manifest_scopes
+    by_id = {job.job_id: job for job in jobs}
+    siblings = [by_id[job_id] for job_id in sorted(FIF_KERNEL_SIBLINGS)]
+    closures = {tuple(job.paths) for job in siblings}
+    assert len(closures) == 1, "sibling closures diverged"
+    for job in siblings:
+        assert job.paths.count("scripts/ci/run_fif_kernel_suites.py") == 1, job.job_id
+    # S6: all three curated-exclusive siblings must select changes in imported
+    # ancestor packages, not just the downstream .py modules. These paths were
+    # missing on the first hosted CI and the ancestor-init census rejected it.
+    required_ancestor_inits = {
+        "collectors/biocatalyst/__init__.py",
+        "engine/biocatalyst/__init__.py",
+        "engine/codex_lane/__init__.py",
+        "engine/context_index/__init__.py",
+        "engine/earnings_release/__init__.py",
+        "engine/intelligence_workspace/adapters/__init__.py",
+        "engine/oracle/__init__.py",
+        "engine/seasonality/__init__.py",
+    }
+    for job in siblings:
+        assert required_ancestor_inits <= set(job.paths), job.job_id
+    assert all(job.exclusive and job.gate == "code" for job in siblings)
+    step_name = "FIF kernel suites (class A, hermetic)"
+    slices = []
+    for job in siblings:
+        step = next(
+            step for step in job.definition["steps"] if step.get("name") == step_name
+        )
+        suites = [tok for tok in str(step["run"]).split() if tok.startswith("tests/")]
+        assert suites, job.job_id
+        slices.append(suites)
+    flat = [suite for suites in slices for suite in suites]
+    assert len(flat) == len(set(flat)) == 120, (len(flat), len(set(flat)))
+    assert [len(suites) for suites in slices] == [44, 37, 39]
+    for suite in flat:
+        assert (ROOT / suite).is_file(), suite
+    # Every sibling is measured: an unmeasured sibling would fall back to the
+    # generic estimator (~90 for 40 files) and the balancer would stack it.
+    for job in siblings:
+        assert job.job_id in PACK.OBSERVED_COMMAND_SECONDS, job.job_id
 
 
 def test_company_intelligence_workspace_chain_is_executed_by_pr_code_gate(real_manifest_scopes) -> None:
@@ -3111,11 +3168,17 @@ def test_measured_heavy_weights_rebalance_without_changing_execution_proofs(
 ) -> None:
     """Calibration changes the attested assignment, never the work it proves."""
     calibrated = _full_plan()
-    for job_id in ("fif-kernel-guards", "earnings-economic-dossier"):
+    for job_id in (
+        *FIF_KERNEL_SIBLINGS, "earnings-economic-dossier",
+        "international-workspace-browser", "international-workspace-browser-im13",
+        "international-workspace-browser-im14", "ontology-explorer",
+        "unrun-government-revenue-candidate-projection", "biocatalyst-serving",
+    ):
         monkeypatch.delitem(PACK.OBSERVED_COMMAND_SECONDS, job_id, raising=False)
     heuristic = _full_plan()
 
     assert calibrated.eligible_job_ids == heuristic.eligible_job_ids
+    assert calibrated.skipped_job_ids == heuristic.skipped_job_ids
     assert calibrated.pack_count == heuristic.pack_count == 12
     assert calibrated.nonempty_pack_indices == heuristic.nonempty_pack_indices
     assert calibrated.pack_jobs != heuristic.pack_jobs
@@ -3127,8 +3190,10 @@ def test_measured_heavy_weights_rebalance_without_changing_execution_proofs(
     flattened = [job_id for pack in calibrated.pack_jobs for job_id in pack]
     assert len(flattened) == len(set(flattened)) == len(calibrated.eligible_job_ids)
     assert set(flattened) == set(calibrated.eligible_job_ids)
-    heavy = {"ci-control-plane-contracts", "fif-kernel-guards", "earnings-economic-dossier"}
-    assert len({job.pack_index for job in calibrated.semantic_jobs if job.logical_job_id in heavy}) == 3
+    # 2026-11-05 (S6): the FIF kernel is three measured siblings, so five heavy
+    # jobs must land in five distinct packs instead of three.
+    heavy = {"ci-control-plane-contracts", *FIF_KERNEL_SIBLINGS, "earnings-economic-dossier"}
+    assert len({job.pack_index for job in calibrated.semantic_jobs if job.logical_job_id in heavy}) == len(heavy) == 5
 
 
 def test_plan_hash_covers_job_assignment_but_not_prose() -> None:
@@ -4995,6 +5060,8 @@ CURATED_EXCLUSIVE = {
     "international-gs-closure",
     # Actual macro template/controller with explicit supplied-frame browser fixture.
     "international-workspace-browser",
+    "international-workspace-browser-im13",
+    "international-workspace-browser-im14",
     # 2026-10-20 W28C-L29: the China Mechanics display suite renders its page
     # template and imports the builder (lib/config, lib/pages, lib/site_assets,
     # engine/i18n). As an ordinary job its inferred scope would widen the
@@ -5114,7 +5181,11 @@ CURATED_EXCLUSIVE = {
     # Inference would union ~139 fallback roots (the app/ TestClient suites
     # import app.main) and breach all three PACKING_PROBES; scope: exclusive
     # pins the job to the FIF globs plus its measured static/runtime closure.
+    # 2026-11-05 (S6): split into three measured siblings carrying the same
+    # closure; see test_fif_kernel_siblings_share_one_closure_and_partition_the_suite_once.
     "fif-kernel-guards",
+    "fif-kernel-guards-b",
+    "fif-kernel-guards-c",
     # 2026-10-12 SNI S2 event response (#8893): the runner's `git` subprocess
     # calls and the language test's rglob are opaque, so inference widened
     # the fallback to engine/** and the plan_book packing probe selected the
@@ -9269,6 +9340,29 @@ def test_options_nbbo_cohort_keeps_exact_source_and_avoids_unrelated_code_probes
         selected, _ = PACK.select_jobs([job], [probe])
         assert selected == [], probe
 
+
+def test_international_browser_partition_preserves_commands_guards_and_budget() -> None:
+    """Keep original proofs once and per-job setup/guard/budget unchanged."""
+    import hashlib
+    ids = ('international-workspace-browser', 'international-workspace-browser-im13', 'international-workspace-browser-im14')
+    jobs = _yaml(MANIFEST)["jobs"]
+    expected = {'Actual International builder and template contracts': 'b9102f5acac53df540ef541f9d61d2963110cd1dc11d6c6ce61e9a34401825f6', 'Actual DOM controller and page entry in Chromium': 'c5a2c66c08bd64a96ac4f036ffaba792600f808991d7a585c253759635b7e349', 'Generic table sort/filter in Chromium (templates/tablesort.js)': '83aec9d0d16c173b2c3823357e4a22b9ff124c87fe126cd881242e7b3aafa72d', 'IM13 global scanner + coverage tests (W2A)': 'a393484a514a9ebb948f6a1ac569bc49536a9ed62123e97bddb0d670698a5b38', 'IM13 scanner + coverage browser proof (W2A)': '6db4c14b98cd7696e8dee8e807b8a26e36cb55d6772e51809f6c4d4c0d0b853d', 'IM14 market dossier tests (W2B)': '7931d7cb2d7896f640a63955d6d01308cd14e3f9ff85c18801a03bb54c4f77ac', 'IM14 market dossier browser proof (W2B)': '510b5ee9ef1a30cdcdb95a036a7ba158ea5d7e496629efb89fc09ebf7be4e39c'}
+    digest = lambda value: hashlib.sha256(json.dumps(value, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+    actual = {}
+    for job_id in ids:
+        job = jobs[job_id]
+        assert job["timeout-minutes"] == 20
+        assert job["if"] == "${{ false }}"
+        assert job["gate"] == "code" and job["scope"] == "exclusive"
+        assert job["runs-on"] == "ubuntu-latest"
+        assert digest(job["paths"]) == 'e3d0818aa0ca9c9256117db3f3b83263428d7804fe60df48aec306b36752583f'
+        assert digest(job["steps"][:6]) == '837f572c82597fce7f0caab46c9f99aaed2caf2f00a0a7247aad93bad285ea2b'
+        for step in job["steps"][6:]:
+            assert step["name"] not in actual, step["name"]
+            actual[step["name"]] = hashlib.sha256(step["run"].encode()).hexdigest()
+    assert actual == expected
+    assert len(jobs[ids[0]]["steps"][6:]) == 3
+    assert all(len(jobs[job_id]["steps"][6:]) == 2 for job_id in ids[1:])
 
 # Fast-ship compacts a genuinely scoped PR selection, never the main baseline.
 # Baseline pack names remain available for incumbent inherited-red comparisons.
