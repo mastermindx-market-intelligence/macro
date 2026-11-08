@@ -78,6 +78,25 @@ def _trials(pack_id: str) -> dict:
     )
 
 
+def _later_wave_accessions() -> set[str]:
+    """Split-decision-3 accessions: the third sealing wave, after this generation.
+
+    Read from the held-out contract's own ``split_decision`` column, never from
+    generation three's measured universe, so a wave-one or wave-two file can
+    never qualify for the skip that uses this set. Generation four measures
+    these accessions.
+    """
+    contract = json.loads(
+        (HELD_OUT_ROOT / "held_out_contract.json").read_text(encoding="utf-8")
+    )
+    return {
+        str(row["accession"])
+        for issuer in contract["issuers"]
+        for row in issuer.get("accessions") or []
+        if row.get("split_decision") == 3
+    }
+
+
 def _index_rows() -> dict[str, list[str]]:
     rows: dict[str, list[str]] = {}
     for line in (REPORTS_DIR / "INDEX.md").read_text(encoding="utf-8").splitlines():
@@ -237,14 +256,33 @@ def test_every_label_file_of_both_waves_is_accounted_for_exactly_once() -> None:
     exactly once across that pack's predictions and exclusions. A wave-two
     file skipped here would mean the evaluator measured generation two's
     accessions over again and called it generation three.
+
+    Wave-three files (DEC:FIF-Q0-SPLIT-DECISION-3-PK12-BIOTECH-HELD-OUT) were
+    sealed after this generation ran, so they belong to generation four. They
+    are identified only by the held-out contract's ``split_decision == 3``
+    rows: a file is skipped only when every accession it holds is a
+    split-decision-3 accession, a file that mixes waves fails, and generation
+    three's own universe must not contain any split-decision-3 accession.
     """
+    later = _later_wave_accessions()
     for pack_id in PACK_IDS:
         labels_dir = HELD_OUT_ROOT / "packs" / pack_id / "labels"
         if not labels_dir.is_dir():
             continue
+        loaded: list[tuple[Path, list[dict], set[str]]] = []
+        for path in sorted(labels_dir.glob("*.json")):
+            rows = json.loads(path.read_text(encoding="utf-8"))
+            accessions = {row["accession"] for row in rows}
+            if accessions and accessions <= later:
+                continue
+            assert not (accessions & later), (pack_id, path.name)
+            loaded.append((path, rows, accessions))
+        if not loaded:
+            continue
         trials = _trials(pack_id)
         assert trials["labels_status"] == "labelled", pack_id
         universe = {row["accession"] for row in trials["accessions"]}
+        assert not (universe & later), pack_id
         predictions = json.loads(
             (REPORTS_DIR / f"{pack_id}_predictions.json").read_text(encoding="utf-8")
         )
@@ -252,12 +290,8 @@ def test_every_label_file_of_both_waves_is_accounted_for_exactly_once() -> None:
             [row["trial_id"] for row in predictions]
             + [row["trial_id"] for row in trials["exclusions"]]
         )
-        files = sorted(labels_dir.glob("*.json"))
-        assert files, f"{pack_id}: labelled pack with no label files"
         file_accessions: set[str] = set()
-        for path in files:
-            rows = json.loads(path.read_text(encoding="utf-8"))
-            accessions = {row["accession"] for row in rows}
+        for path, rows, accessions in loaded:
             # The file sits inside the generation's measured universe...
             assert accessions <= universe, (pack_id, path.name)
             file_accessions |= accessions

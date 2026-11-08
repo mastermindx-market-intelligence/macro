@@ -3825,6 +3825,12 @@ def _cm_fixture(parent, *, changed_frozen=False, shallow_remote=False, full_chec
     for number in range(4):
         _cm_commit(source, 'feature.txt', f'{number}\n', f'feature-{number}')
     if changed_frozen:
+        # _CM_FROZEN_PATHS[0] is a SHARED theme/nav entry: the foundation guard
+        # freezes it only when the same change also touches an International GS
+        # production surface (tests/test_intl_gs_foundation.py, 2026-10-22), so
+        # the fixture's feature change carries one such surface alongside it.
+        _cm_commit(source, 'templates/intl/fixture-surface.html.j2', 'gs surface\n',
+                   'change gs surface')
         _cm_commit(source, _CM_FROZEN_PATHS[0], 'changed by feature\n', 'change frozen file')
     feature = _cm_git(source, 'rev-parse', 'HEAD')
     _cm_git(source, 'switch', '-qc', 'tested', commits[24])

@@ -1,0 +1,192 @@
+{"at": "2026-10-22T16:39:47Z", "event": "start", "pack": 1}
+{"at": "2026-10-22T16:41:37Z", "event": "finish", "named": 2, "pack": 1, "sentences": 40, "unclear": 0}
+{"at": "2026-10-22T16:41:44Z", "event": "start", "pack": 2}
+{"at": "2026-10-22T16:41:44Z", "event": "start", "pack": 3}
+{"at": "2026-10-22T16:42:58Z", "event": "finish", "named": 5, "pack": 2, "sentences": 40, "unclear": 0}
+{"at": "2026-10-22T16:42:59Z", "event": "finish", "named": 5, "pack": 3, "sentences": 40, "unclear": 0}
+{"at": "2026-10-22T16:43:05Z", "event": "start", "pack": 4}
+{"at": "2026-10-22T16:43:05Z", "event": "start", "pack": 5}
+{"at": "2026-10-22T16:44:32Z", "event": "finish", "named": 4, "pack": 4, "sentences": 40, "unclear": 0}
+{"at": "2026-10-22T16:44:32Z", "event": "finish", "named": 5, "pack": 5, "sentences": 40, "unclear": 0}
+{"at": "2026-10-22T16:44:38Z", "event": "start", "pack": 6}
+{"at": "2026-10-22T16:44:38Z", "event": "start", "pack": 7}
+{"at": "2026-10-22T16:46:09Z", "event": "finish", "named": 3, "pack": 6, "sentences": 40, "unclear": 0}
+{"at": "2026-10-22T16:46:09Z", "event": "finish", "named": 6, "pack": 7, "sentences": 40, "unclear": 0}
+{"at": "2026-10-22T16:46:16Z", "event": "start", "pack": 8}
+{"at": "2026-10-22T16:46:16Z", "event": "start", "pack": 9}
+{"at": "2026-10-22T16:46:48Z", "event": "finish", "named": 4, "pack": 8, "sentences": 40, "unclear": 0}
+{"at": "2026-10-22T16:46:48Z", "event": "finish", "named": 1, "pack": 9, "sentences": 40, "unclear": 0}
+{"at": "2026-10-22T16:46:53Z", "event": "start", "pack": 10}
+{"at": "2026-10-22T16:46:53Z", "event": "start", "pack": 11}
+{"at": "2026-10-22T16:47:16Z", "event": "finish", "named": 2, "pack": 10, "sentences": 40, "unclear": 0}
+{"at": "2026-10-22T16:47:17Z", "event": "finish", "named": 1, "pack": 11, "sentences": 40, "unclear": 0}
+{"at": "2026-10-22T16:47:20Z", "event": "start", "pack": 12}
+{"at": "2026-10-22T16:47:20Z", "event": "start", "pack": 13}
+{"at": "2026-10-22T16:47:55Z", "event": "finish", "named": 0, "pack": 12, "sentences": 40, "unclear": 0}
+{"at": "2026-10-22T16:47:55Z", "event": "finish", "named": 3, "pack": 13, "sentences": 40, "unclear": 0}
+{"at": "2026-10-22T16:48:02Z", "event": "start", "pack": 14}
+{"at": "2026-10-22T16:48:02Z", "event": "start", "pack": 15}
+{"at": "2026-10-22T16:48:31Z", "event": "finish", "named": 0, "pack": 14, "sentences": 40, "unclear": 0}
+{"at": "2026-10-22T16:48:31Z", "event": "finish", "named": 1, "pack": 15, "sentences": 40, "unclear": 0}
+{"at": "2026-10-22T16:48:42Z", "event": "start", "pack": 16}
+{"at": "2026-10-22T16:48:43Z", "event": "start", "pack": 17}
+{"at": "2026-10-22T16:49:10Z", "event": "finish", "named": 0, "pack": 16, "sentences": 40, "unclear": 0}
+{"at": "2026-10-22T16:49:10Z", "event": "finish", "named": 0, "pack": 17, "sentences": 40, "unclear": 0}
+{"at": "2026-10-22T16:49:17Z", "event": "start", "pack": 18}
+{"at": "2026-10-22T16:49:17Z", "event": "start", "pack": 19}
+{"at": "2026-10-22T16:49:29Z", "event": "finish", "named": 0, "pack": 18, "sentences": 40, "unclear": 0}
+{"at": "2026-10-22T16:49:29Z", "event": "finish", "named": 0, "pack": 19, "sentences": 40, "unclear": 0}
+{"at": "2026-10-22T16:49:35Z", "event": "start", "pack": 20}
+{"at": "2026-10-22T16:49:36Z", "event": "start", "pack": 21}
+{"at": "2026-10-22T16:49:56Z", "event": "finish", "named": 0, "pack": 20, "sentences": 40, "unclear": 0}
+{"at": "2026-10-22T16:49:56Z", "event": "finish", "named": 0, "pack": 21, "sentences": 40, "unclear": 0}
+{"at": "2026-10-22T16:50:02Z", "event": "start", "pack": 22}
+{"at": "2026-10-22T16:50:03Z", "event": "start", "pack": 23}
+{"at": "2026-10-22T16:50:57Z", "event": "finish", "named": 1, "pack": 22, "sentences": 40, "unclear": 0}
+{"at": "2026-10-22T16:50:57Z", "event": "finish", "named": 0, "pack": 23, "sentences": 40, "unclear": 0}
+{"at": "2026-10-22T16:51:03Z", "event": "start", "pack": 24}
+{"at": "2026-10-22T16:51:03Z", "event": "start", "pack": 25}
+{"at": "2026-10-22T16:51:23Z", "event": "finish", "named": 0, "pack": 24, "sentences": 40, "unclear": 0}
+{"at": "2026-10-22T16:51:23Z", "event": "finish", "named": 0, "pack": 25, "sentences": 40, "unclear": 0}
+{"at": "2026-10-22T16:51:30Z", "event": "start", "pack": 26}
+{"at": "2026-10-22T16:51:30Z", "event": "start", "pack": 27}
+{"at": "2026-10-22T16:51:47Z", "event": "finish", "named": 0, "pack": 26, "sentences": 40, "unclear": 0}
+{"at": "2026-10-22T16:51:47Z", "event": "finish", "named": 1, "pack": 27, "sentences": 40, "unclear": 0}
+{"at": "2026-10-22T16:51:53Z", "event": "start", "pack": 28}
+{"at": "2026-10-22T16:51:53Z", "event": "start", "pack": 29}
+{"at": "2026-10-22T16:52:24Z", "event": "finish", "named": 1, "pack": 28, "sentences": 40, "unclear": 0}
+{"at": "2026-10-22T16:52:24Z", "event": "finish", "named": 1, "pack": 29, "sentences": 40, "unclear": 0}
+{"at": "2026-10-22T16:52:31Z", "event": "start", "pack": 30}
+{"at": "2026-10-22T16:52:31Z", "event": "start", "pack": 31}
+{"at": "2026-10-22T16:52:57Z", "event": "finish", "named": 3, "pack": 30, "sentences": 40, "unclear": 0}
+{"at": "2026-10-22T16:52:57Z", "event": "finish", "named": 2, "pack": 31, "sentences": 40, "unclear": 0}
+{"at": "2026-10-22T16:53:04Z", "event": "start", "pack": 32}
+{"at": "2026-10-22T16:53:04Z", "event": "start", "pack": 33}
+{"at": "2026-10-22T16:53:40Z", "event": "finish", "named": 3, "pack": 32, "sentences": 40, "unclear": 0}
+{"at": "2026-10-22T16:53:40Z", "event": "finish", "named": 3, "pack": 33, "sentences": 40, "unclear": 0}
+{"at": "2026-10-22T16:53:47Z", "event": "start", "pack": 34}
+{"at": "2026-10-22T16:53:47Z", "event": "start", "pack": 35}
+{"at": "2026-10-22T16:54:03Z", "event": "finish", "named": 2, "pack": 34, "sentences": 40, "unclear": 0}
+{"at": "2026-10-22T16:54:03Z", "event": "finish", "named": 2, "pack": 35, "sentences": 40, "unclear": 0}
+{"at": "2026-10-22T16:54:10Z", "event": "start", "pack": 36}
+{"at": "2026-10-22T16:54:10Z", "event": "start", "pack": 37}
+{"at": "2026-10-22T16:54:29Z", "event": "finish", "named": 1, "pack": 36, "sentences": 40, "unclear": 0}
+{"at": "2026-10-22T16:54:29Z", "event": "finish", "named": 0, "pack": 37, "sentences": 40, "unclear": 0}
+{"at": "2026-10-22T16:54:36Z", "event": "start", "pack": 38}
+{"at": "2026-10-22T16:54:36Z", "event": "start", "pack": 39}
+{"at": "2026-10-22T16:54:49Z", "event": "finish", "named": 0, "pack": 38, "sentences": 40, "unclear": 0}
+{"at": "2026-10-22T16:54:49Z", "event": "finish", "named": 1, "pack": 39, "sentences": 40, "unclear": 0}
+{"at": "2026-10-22T16:54:54Z", "event": "start", "pack": 40}
+{"at": "2026-10-22T16:54:54Z", "event": "start", "pack": 41}
+{"at": "2026-10-22T16:55:21Z", "event": "finish", "named": 0, "pack": 40, "sentences": 40, "unclear": 0}
+{"at": "2026-10-22T16:55:21Z", "event": "finish", "named": 1, "pack": 41, "sentences": 40, "unclear": 0}
+{"at": "2026-10-22T16:55:25Z", "event": "start", "pack": 42}
+{"at": "2026-10-22T16:55:25Z", "event": "start", "pack": 43}
+{"at": "2026-10-22T16:55:38Z", "event": "finish", "named": 0, "pack": 42, "sentences": 40, "unclear": 0}
+{"at": "2026-10-22T16:55:38Z", "event": "finish", "named": 0, "pack": 43, "sentences": 40, "unclear": 0}
+{"at": "2026-10-22T16:55:42Z", "event": "start", "pack": 44}
+{"at": "2026-10-22T16:55:43Z", "event": "start", "pack": 45}
+{"at": "2026-10-22T16:55:56Z", "event": "finish", "named": 1, "pack": 44, "sentences": 40, "unclear": 0}
+{"at": "2026-10-22T16:55:56Z", "event": "finish", "named": 0, "pack": 45, "sentences": 40, "unclear": 0}
+{"at": "2026-10-22T16:56:03Z", "event": "start", "pack": 46}
+{"at": "2026-10-22T16:56:04Z", "event": "start", "pack": 47}
+{"at": "2026-10-22T16:56:12Z", "event": "finish", "named": 0, "pack": 46, "sentences": 40, "unclear": 0}
+{"at": "2026-10-22T16:56:12Z", "event": "finish", "named": 0, "pack": 47, "sentences": 40, "unclear": 0}
+{"at": "2026-10-22T16:56:16Z", "event": "start", "pack": 48}
+{"at": "2026-10-22T16:56:16Z", "event": "start", "pack": 49}
+{"at": "2026-10-22T16:56:29Z", "event": "finish", "named": 0, "pack": 48, "sentences": 40, "unclear": 0}
+{"at": "2026-10-22T16:56:29Z", "event": "finish", "named": 0, "pack": 49, "sentences": 40, "unclear": 0}
+{"at": "2026-10-22T16:56:33Z", "event": "start", "pack": 50}
+{"at": "2026-10-22T16:56:34Z", "event": "start", "pack": 51}
+{"at": "2026-10-22T16:57:09Z", "event": "finish", "named": 0, "pack": 50, "sentences": 40, "unclear": 0}
+{"at": "2026-10-22T16:57:09Z", "event": "finish", "named": 0, "pack": 51, "sentences": 40, "unclear": 0}
+{"at": "2026-10-22T16:57:16Z", "event": "start", "pack": 52}
+{"at": "2026-10-22T16:57:16Z", "event": "start", "pack": 53}
+{"at": "2026-10-22T16:57:25Z", "event": "finish", "named": 0, "pack": 52, "sentences": 40, "unclear": 0}
+{"at": "2026-10-22T16:57:25Z", "event": "finish", "named": 0, "pack": 53, "sentences": 40, "unclear": 0}
+{"at": "2026-10-22T16:57:30Z", "event": "start", "pack": 54}
+{"at": "2026-10-22T16:57:30Z", "event": "start", "pack": 55}
+{"at": "2026-10-22T16:58:19Z", "event": "finish", "named": 1, "pack": 54, "sentences": 40, "unclear": 0}
+{"at": "2026-10-22T16:58:19Z", "event": "finish", "named": 0, "pack": 55, "sentences": 40, "unclear": 0}
+{"at": "2026-10-22T16:58:25Z", "event": "start", "pack": 56}
+{"at": "2026-10-22T16:58:26Z", "event": "start", "pack": 57}
+{"at": "2026-10-22T16:58:54Z", "event": "finish", "named": 0, "pack": 56, "sentences": 40, "unclear": 0}
+{"at": "2026-10-22T16:58:54Z", "event": "finish", "named": 0, "pack": 57, "sentences": 40, "unclear": 0}
+{"at": "2026-10-22T16:58:58Z", "event": "start", "pack": 58}
+{"at": "2026-10-22T16:58:59Z", "event": "start", "pack": 59}
+{"at": "2026-10-22T16:59:13Z", "event": "finish", "named": 0, "pack": 58, "sentences": 40, "unclear": 0}
+{"at": "2026-10-22T16:59:13Z", "event": "finish", "named": 0, "pack": 59, "sentences": 40, "unclear": 0}
+{"at": "2026-10-22T16:59:18Z", "event": "start", "pack": 60}
+{"at": "2026-10-22T16:59:18Z", "event": "start", "pack": 61}
+{"at": "2026-10-22T16:59:28Z", "event": "finish", "named": 0, "pack": 60, "sentences": 40, "unclear": 0}
+{"at": "2026-10-22T16:59:28Z", "event": "finish", "named": 0, "pack": 61, "sentences": 40, "unclear": 0}
+{"at": "2026-10-22T16:59:36Z", "event": "start", "pack": 62}
+{"at": "2026-10-22T16:59:37Z", "event": "start", "pack": 63}
+{"at": "2026-10-22T16:59:47Z", "event": "finish", "named": 0, "pack": 62, "sentences": 40, "unclear": 0}
+{"at": "2026-10-22T16:59:47Z", "event": "finish", "named": 0, "pack": 63, "sentences": 40, "unclear": 0}
+{"at": "2026-10-22T16:59:54Z", "event": "start", "pack": 64}
+{"at": "2026-10-22T16:59:54Z", "event": "start", "pack": 65}
+{"at": "2026-10-22T17:00:02Z", "event": "finish", "named": 0, "pack": 64, "sentences": 40, "unclear": 0}
+{"at": "2026-10-22T17:00:02Z", "event": "finish", "named": 0, "pack": 65, "sentences": 40, "unclear": 0}
+{"at": "2026-10-22T17:00:10Z", "event": "start", "pack": 66}
+{"at": "2026-10-22T17:00:10Z", "event": "start", "pack": 67}
+{"at": "2026-10-22T17:00:19Z", "event": "finish", "named": 0, "pack": 66, "sentences": 40, "unclear": 0}
+{"at": "2026-10-22T17:00:19Z", "event": "finish", "named": 0, "pack": 67, "sentences": 40, "unclear": 0}
+{"at": "2026-10-22T17:00:26Z", "event": "start", "pack": 68}
+{"at": "2026-10-22T17:00:26Z", "event": "start", "pack": 69}
+{"at": "2026-10-22T17:00:37Z", "event": "finish", "named": 0, "pack": 68, "sentences": 40, "unclear": 0}
+{"at": "2026-10-22T17:00:37Z", "event": "finish", "named": 0, "pack": 69, "sentences": 40, "unclear": 0}
+{"at": "2026-10-22T17:00:42Z", "event": "start", "pack": 70}
+{"at": "2026-10-22T17:00:42Z", "event": "start", "pack": 71}
+{"at": "2026-10-22T17:01:27Z", "event": "finish", "named": 1, "pack": 70, "sentences": 40, "unclear": 0}
+{"at": "2026-10-22T17:01:27Z", "event": "finish", "named": 4, "pack": 71, "sentences": 40, "unclear": 2}
+{"at": "2026-10-22T17:01:32Z", "event": "start", "pack": 72}
+{"at": "2026-10-22T17:01:32Z", "event": "start", "pack": 73}
+{"at": "2026-10-22T17:02:24Z", "event": "finish", "named": 0, "pack": 72, "sentences": 40, "unclear": 2}
+{"at": "2026-10-22T17:02:24Z", "event": "finish", "named": 0, "pack": 73, "sentences": 40, "unclear": 0}
+{"at": "2026-10-22T17:02:37Z", "event": "start", "pack": 74}
+{"at": "2026-10-22T17:02:37Z", "event": "start", "pack": 75}
+{"at": "2026-10-22T17:03:06Z", "event": "finish", "named": 0, "pack": 74, "sentences": 40, "unclear": 1}
+{"at": "2026-10-22T17:03:06Z", "event": "finish", "named": 1, "pack": 75, "sentences": 40, "unclear": 0}
+{"at": "2026-10-22T17:03:11Z", "event": "start", "pack": 76}
+{"at": "2026-10-22T17:03:11Z", "event": "start", "pack": 77}
+{"at": "2026-10-22T17:03:40Z", "event": "finish", "named": 0, "pack": 76, "sentences": 40, "unclear": 1}
+{"at": "2026-10-22T17:03:40Z", "event": "finish", "named": 0, "pack": 77, "sentences": 40, "unclear": 2}
+{"at": "2026-10-22T17:03:48Z", "event": "start", "pack": 78}
+{"at": "2026-10-22T17:03:48Z", "event": "start", "pack": 79}
+{"at": "2026-10-22T17:04:03Z", "event": "finish", "named": 0, "pack": 78, "sentences": 40, "unclear": 0}
+{"at": "2026-10-22T17:04:03Z", "event": "finish", "named": 0, "pack": 79, "sentences": 40, "unclear": 0}
+{"at": "2026-10-22T17:04:09Z", "event": "start", "pack": 80}
+{"at": "2026-10-22T17:04:09Z", "event": "start", "pack": 81}
+{"at": "2026-10-22T17:04:30Z", "event": "finish", "named": 0, "pack": 80, "sentences": 40, "unclear": 0}
+{"at": "2026-10-22T17:04:30Z", "event": "finish", "named": 0, "pack": 81, "sentences": 40, "unclear": 0}
+{"at": "2026-10-22T17:04:35Z", "event": "start", "pack": 82}
+{"at": "2026-10-22T17:04:35Z", "event": "start", "pack": 83}
+{"at": "2026-10-22T17:05:09Z", "event": "finish", "named": 3, "pack": 82, "sentences": 40, "unclear": 0}
+{"at": "2026-10-22T17:05:09Z", "event": "finish", "named": 2, "pack": 83, "sentences": 40, "unclear": 0}
+{"at": "2026-10-22T17:05:17Z", "event": "start", "pack": 84}
+{"at": "2026-10-22T17:05:17Z", "event": "start", "pack": 85}
+{"at": "2026-10-22T17:05:27Z", "event": "finish", "named": 0, "pack": 84, "sentences": 40, "unclear": 0}
+{"at": "2026-10-22T17:05:27Z", "event": "finish", "named": 1, "pack": 85, "sentences": 40, "unclear": 0}
+{"at": "2026-10-22T17:05:33Z", "event": "start", "pack": 86}
+{"at": "2026-10-22T17:05:34Z", "event": "start", "pack": 87}
+{"at": "2026-10-22T17:07:09Z", "event": "finish", "named": 2, "pack": 86, "sentences": 40, "unclear": 0}
+{"at": "2026-10-22T17:07:09Z", "event": "finish", "named": 3, "pack": 87, "sentences": 40, "unclear": 1}
+{"at": "2026-10-22T17:07:16Z", "event": "start", "pack": 88}
+{"at": "2026-10-22T17:07:16Z", "event": "start", "pack": 89}
+{"at": "2026-10-22T17:07:32Z", "event": "finish", "named": 3, "pack": 88, "sentences": 40, "unclear": 0}
+{"at": "2026-10-22T17:07:32Z", "event": "finish", "named": 0, "pack": 89, "sentences": 40, "unclear": 0}
+{"at": "2026-10-22T17:07:39Z", "event": "start", "pack": 90}
+{"at": "2026-10-22T17:07:39Z", "event": "start", "pack": 91}
+{"at": "2026-10-22T17:07:50Z", "event": "finish", "named": 1, "pack": 90, "sentences": 40, "unclear": 0}
+{"at": "2026-10-22T17:07:50Z", "event": "finish", "named": 1, "pack": 91, "sentences": 40, "unclear": 0}
+{"at": "2026-10-22T17:07:57Z", "event": "start", "pack": 92}
+{"at": "2026-10-22T17:07:57Z", "event": "start", "pack": 93}
+{"at": "2026-10-22T17:08:10Z", "event": "finish", "named": 0, "pack": 92, "sentences": 40, "unclear": 0}
+{"at": "2026-10-22T17:08:10Z", "event": "finish", "named": 0, "pack": 93, "sentences": 40, "unclear": 0}
+{"at": "2026-10-22T17:08:15Z", "event": "start", "pack": 94}
+{"at": "2026-10-22T17:08:15Z", "event": "start", "pack": 95}
+{"at": "2026-10-22T17:08:44Z", "event": "finish", "named": 1, "pack": 94, "sentences": 40, "unclear": 0}
+{"at": "2026-10-22T17:08:44Z", "event": "finish", "named": 1, "pack": 95, "sentences": 40, "unclear": 0}
+{"at": "2026-10-22T17:09:09Z", "event": "start", "pack": 96}
+{"at": "2026-10-22T17:09:21Z", "event": "finish", "named": 2, "pack": 96, "sentences": 28, "unclear": 0}
