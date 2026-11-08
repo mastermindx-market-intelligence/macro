@@ -157,6 +157,7 @@ def builder_entry(s):
     text += '**Status:** ' + s['status'] + '\n\n'
     if obs:
         text += '**Return observation:** ' + obs['observed_at_utc'] + '; immutable source `' + obs['source_head'] + '`. This does not refresh the original inventory or certify contract completeness.\n\n'
+        text += '**Observation limits:** ' + obs['qualification'] + '\n\n'
     text += '**Next action:** ' + s['next_action'] + '\n\n'
     return text
 

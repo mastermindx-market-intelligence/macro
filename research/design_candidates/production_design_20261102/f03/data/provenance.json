@@ -111,9 +111,19 @@
       "source_head": "32ea8d5b132ff8f65e9c66ed3224d4e0f6f0c68f"
     },
     {
+      "id": "D04",
+      "observed_at_utc": "2026-11-08T18:25:46Z",
+      "source_head": "6324c7281ec91a343c5a8c78b3679f93b1cd11e6"
+    },
+    {
       "id": "D05",
       "observed_at_utc": "2026-11-08T17:08:48Z",
       "source_head": "235d60d912589e630988b67eee6ba63be37c5712"
+    },
+    {
+      "id": "D06",
+      "observed_at_utc": "2026-11-08T18:25:46Z",
+      "source_head": "6324c7281ec91a343c5a8c78b3679f93b1cd11e6"
     },
     {
       "id": "D07",
@@ -144,6 +154,11 @@
       "id": "D08D",
       "observed_at_utc": "2026-11-04T02:38:34Z",
       "source_head": "a6ffdef508eb6f6293c74242f85d50d8c8843e6f"
+    },
+    {
+      "id": "D14",
+      "observed_at_utc": "2026-11-08T18:25:46Z",
+      "source_head": "6324c7281ec91a343c5a8c78b3679f93b1cd11e6"
     }
   ],
   "baseline_scope_note": "Original 299 listed pages + two observations and 2450 boards remain frozen; later returns are separate observations, not a recensus.",

@@ -382,6 +382,99 @@
         "readme_file_id": "01M6FAXA774QT1VRDMAG7DFQ2W",
         "candidate_board_id": "GPL-0"
       }
+    },
+    "D04": {
+      "source_contract": "https://github.com/mastermindx-market-intelligence/macro/blob/6324c7281ec91a343c5a8c78b3679f93b1cd11e6/research/design_candidates/production_design_20261102/f03/evidence/d04-heatmap-reference-observation-20261108.md",
+      "source_contract_label": "D04 reference observation · Heatmap selected-reading refresh",
+      "candidate_ref": "https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-1D-0",
+      "rig_state": "draft",
+      "rig_receipt": null,
+      "shell_version": null,
+      "system_version": null,
+      "status": "Bounded unqualified heatmap inspector-refresh proposal observed. Full D04 build-return completeness and runtime proof are not established by this observation.",
+      "next_action": "Prove select → refresh map/inspector agreement, requested-set membership, omitted/null/failed results, valid zero, late-response fencing, hidden/pruned identity, close/focus and metric-specific provenance. Quote source time is not supplied by the present consumer. Preserve existing owners, source restrictions and release holds.",
+      "return_observation": {
+        "observed_at_utc": "2026-11-08T18:25:46Z",
+        "source_head": "6324c7281ec91a343c5a8c78b3679f93b1cd11e6",
+        "source_blob_sha": "7571ddf1529551f9ce69a6107d7a41bcb9bd2666",
+        "observed_pr_head": null,
+        "evidence_urls": [
+          "https://github.com/mastermindx-market-intelligence/macro/blob/6324c7281ec91a343c5a8c78b3679f93b1cd11e6/research/design_candidates/production_design_20261102/f03/evidence/d04-heatmap-reference-observation-20261108.md",
+          "https://github.com/mastermindx-market-intelligence/macro/blob/6324c7281ec91a343c5a8c78b3679f93b1cd11e6/research/design_candidates/production_design_20261102/f03/evidence/proposal-reference-readback-20261108.json",
+          "https://github.com/mastermindx-market-intelligence/Mastermind/blob/ab0ec249fb8dd2dd926b84aaee1416f43095c5e7/docs/design/PAPER_PORTFOLIO_AUDIT_20261108.md"
+        ],
+        "candidate_file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "candidate_page_id": "p-1D-0",
+        "candidate_board_id": "22UK-0",
+        "readme_url": "https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-8-1",
+        "readme_file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "readme_page_id": "p-8-1",
+        "readme_board_id": "N71-1",
+        "retained_reference_url": null,
+        "qualification": "Observed reference metadata for a proposed slice. This observation does not establish a complete domain return, approved candidate, foundation release, current implementation, refreshed census, or live writer custody."
+      }
+    },
+    "D14": {
+      "source_contract": "https://github.com/mastermindx-market-intelligence/macro/blob/6324c7281ec91a343c5a8c78b3679f93b1cd11e6/research/design_candidates/production_design_20261102/f03/evidence/d14-context-reference-observation-20261108.md",
+      "source_contract_label": "D14 reference observation · Draft mentions and explicit composer context",
+      "candidate_ref": "https://app.paper.design/file/01M3P1QEHS5XXQY85BJT6QR2E1/p-B-0",
+      "rig_state": "draft",
+      "rig_receipt": null,
+      "shell_version": null,
+      "system_version": null,
+      "status": "Bounded unqualified composer-context proposal observed. The existing builder map and source-gap evidence remain separate from implementation and acceptance.",
+      "next_action": "Prove type/remove/replace against the actual outgoing context; whole-token eligibility; multiple mentions; stale Apply/Send reviews; Clear without reapplication; exact one-send context choice; conversation/access changes; Chinese IME and existing request/source-receipt custody. Preserve existing owners, source restrictions and release holds.",
+      "return_observation": {
+        "observed_at_utc": "2026-11-08T18:25:46Z",
+        "source_head": "6324c7281ec91a343c5a8c78b3679f93b1cd11e6",
+        "source_blob_sha": "8bdae0284375609a6a82540bd993ba55f3ff6d99",
+        "observed_pr_head": null,
+        "evidence_urls": [
+          "https://github.com/mastermindx-market-intelligence/macro/blob/6324c7281ec91a343c5a8c78b3679f93b1cd11e6/research/design_candidates/production_design_20261102/f03/evidence/d14-context-reference-observation-20261108.md",
+          "https://github.com/mastermindx-market-intelligence/macro/blob/6324c7281ec91a343c5a8c78b3679f93b1cd11e6/research/design_candidates/production_design_20261102/f03/evidence/proposal-reference-readback-20261108.json",
+          "https://github.com/mastermindx-market-intelligence/Mastermind/blob/3d66556374b73e7eb46b597929ada55ddabeca1e/docs/design/PAPER_PORTFOLIO_AUDIT_20261108.md"
+        ],
+        "candidate_file_id": "01M3P1QEHS5XXQY85BJT6QR2E1",
+        "candidate_page_id": "p-B-0",
+        "candidate_board_id": "72Y-0",
+        "readme_url": "https://app.paper.design/file/01M3P1QEHS5XXQY85BJT6QR2E1/p-9-0",
+        "readme_file_id": "01M3P1QEHS5XXQY85BJT6QR2E1",
+        "readme_page_id": "p-9-0",
+        "readme_board_id": "1MO-0",
+        "retained_reference_url": null,
+        "qualification": "Observed reference metadata for a proposed slice. This observation does not establish a complete domain return, approved candidate, foundation release, current implementation, refreshed census, or live writer custody."
+      }
+    },
+    "D06": {
+      "source_contract": "https://github.com/mastermindx-market-intelligence/macro/blob/6324c7281ec91a343c5a8c78b3679f93b1cd11e6/research/design_candidates/production_design_20261102/f03/evidence/d06-reader-reference-observation-20261108.md",
+      "source_contract_label": "D06 reference observation · Chart-reader lost selection and empty/refill",
+      "candidate_ref": "https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-1E-0",
+      "rig_state": "draft",
+      "rig_receipt": null,
+      "shell_version": null,
+      "system_version": null,
+      "status": "Bounded unqualified lost-reader-selection proposal observed. Reader/overlay integration and runtime proof remain open; the existing AI attachment contract is preserved.",
+      "next_action": "Prove selected-key presence/loss, empty/loading/refill with the key present or absent, old-key return after a newer choice, exact replay-cutoff/session retirements, synthetic versus deliberate crosshair input, action-time Latest availability and coherent reader/range/tooltips/calendar output. Preserve existing owners, source restrictions and release holds.",
+      "return_observation": {
+        "observed_at_utc": "2026-11-08T18:25:46Z",
+        "source_head": "6324c7281ec91a343c5a8c78b3679f93b1cd11e6",
+        "source_blob_sha": "3ab49418d91b891441ba65a901a3fa71d2f9c1d1",
+        "observed_pr_head": null,
+        "evidence_urls": [
+          "https://github.com/mastermindx-market-intelligence/macro/blob/6324c7281ec91a343c5a8c78b3679f93b1cd11e6/research/design_candidates/production_design_20261102/f03/evidence/d06-reader-reference-observation-20261108.md",
+          "https://github.com/mastermindx-market-intelligence/macro/blob/6324c7281ec91a343c5a8c78b3679f93b1cd11e6/research/design_candidates/production_design_20261102/f03/evidence/proposal-reference-readback-20261108.json",
+          "https://github.com/mastermindx-market-intelligence/Mastermind/blob/ecc8230b7929215d534acef8318be66c1ad6241c/docs/design/PAPER_PORTFOLIO_AUDIT_20261108.md"
+        ],
+        "candidate_file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "candidate_page_id": "p-1E-0",
+        "candidate_board_id": "23MJ-0",
+        "readme_url": null,
+        "readme_file_id": null,
+        "readme_page_id": null,
+        "readme_board_id": null,
+        "retained_reference_url": null,
+        "qualification": "Observed reference metadata for a proposed slice. This observation does not establish a complete domain return, approved candidate, foundation release, current implementation, refreshed census, or live writer custody."
+      }
     }
   }
 }

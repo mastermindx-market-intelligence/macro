@@ -175,6 +175,7 @@ function returnEvidence(s){
  <p>${tr('RIG receipt: not observed. Writer custody is not established by this directory.','RIG 凭证：未观察。本目录不构成当前写入权证明。')} ${s.rig_state?source('RIG: '+s.rig_state):''}</p></div>
  <div><h2>${tr('Returned contract / package','已返回的合同／资料包')}</h2>${s.source_contract?`<p>${evidenceLink(s.source_contract,s.source_contract_label||tr('Returned source/build package','已返回的构建资料包'))}</p>`:`<p>${tr('Not returned. The assignment describes requirements; it is not a completed build contract.','尚未返回。任务说明列出要求，不等于完整构建合同。')}</p>`}
  ${obs.source_head?`<p>${tr('Immutable source','不可变来源')}: <code>${esc(obs.source_head)}</code></p><p>${tr('Observed','观察时间')}: ${esc(obs.observed_at_utc)}</p>`:''}
+ ${obs.qualification?`<p><strong>${tr('Observation limits','观察限制')}:</strong> ${source(obs.qualification)}</p>`:''}
  <p>${source(s.shell_version||'F01 final release not observed')}</p><p>${source(s.system_version||'F02 final release not observed')}</p>
  <p><a href="${esc(s.handoff_url)}" target="_blank" rel="noopener">${tr('Original requirements','原始要求')} ↗</a></p></div></section>
  <p class="return-next"><strong>${tr('Next action','下一步')}:</strong> ${source(s.next_action)}</p>`;

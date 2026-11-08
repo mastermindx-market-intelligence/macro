@@ -2,7 +2,19 @@
 
 F03 continues under original programme Draft [#10617](https://github.com/mastermindx-market-intelligence/macro/pull/10617) and existing Draft [#10631](https://github.com/mastermindx-market-intelligence/macro/pull/10631). This is not a new registry, workstream, runtime grant or file-wide lease. The current receiving session owns recovery; an archived chat is not a dependency.
 
-## Latest actionable frontier — exact candidate-board discovery, 2026-11-08
+## Latest actionable frontier — three bounded proposal references, 2026-11-08
+
+The native Heatmap, AI composer-context and Chart-reader proposals are now connected through the existing F03 return-observation model. Their observation notes and shared native metadata readback were first published and byte-read back at `6324c7281ec91a343c5a8c78b3679f93b1cd11e6`. This overlay cites those actual note blobs; it does not predict its own future publication commit.
+
+- D04 points to Terminal `p-1D-0 / 22UK-0` and existing builder entry `p-8-1 / N71-1`. D14 points to AI `p-B-0 / 72Y-0` and existing builder-map entry `p-9-0 / 1MO-0`; source-gap board `5VN-0` remains a separate role. D06 points to Terminal `p-1E-0 / 23MJ-0`; its Read me tuple remains null because workspace-behavior board `1W4S-0` was not established as a complete D06 entry.
+- The directory now carries twelve observations. The previous nine return objects, timestamps and source pins are unchanged. No retained-original link, RIG receipt, shell/system release, implementation completion or live writer custody was invented for these proposals.
+- Exact short-board and full file/page/board search uses the existing candidate locator. Actions open containing pages; History & contract / Back retain query, assignment and view. The source qualification is now visible in both the HTML builder detail and generated assignment Markdown, as well as the existing reference evidence.
+- **160 return/identity checks, 83 directory source-logic probes and 26 structural-evidence checks pass.** All 36 non-evidence assignment identities, nine frozen artifacts, 348 routes, nine null-ID deltas, 301 NOT_DISPATCHED rows, 2,450 original boards, original native ledger, structural captures and historical root manifest are preserved. Provenance adds only the three dated observation records.
+- [Behavior and scope](evidence/proposal-reference-discovery-20261108.md), [prior-observation baseline](evidence/proposal-reference-baseline-20261108.json) and [verification receipt](evidence/proposal-reference-discovery-verification-20261108.json) identify the actual source checks. Browser proof remains UNVERIFIED under the earlier recorded preview-transport boundary; these checks do not supply it.
+
+**Next safe work:** continue the authorized portfolio audit from actual current design/source evidence. The bounded Account & Guide return-journey audit is underway as reasoning only. F03's warned original and all recorded native organization/release holds remain unchanged; this phase performed zero Paper or product-runtime mutations.
+
+## Retained preceding phase — exact candidate-board discovery, 2026-11-08
 
 The D05 page-pointer correction below was published and all 14 changed files were byte-read back at `4981fe2dab3912666769c0ef275249f73894b6b9`. The next bounded feature now exposes the observed candidate board through the existing return-observation model: `candidate_board_id: GPL-0`, parent-bound to Sector `01M6FAXA774QT1VRDMAG7DFQ2W / p-6-0`. This uses the same immutable native observation; its timestamp/source head were not refreshed merely to expose the locator.
 

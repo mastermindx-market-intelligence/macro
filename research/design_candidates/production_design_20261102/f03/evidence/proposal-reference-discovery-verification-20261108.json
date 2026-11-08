@@ -1,0 +1,1554 @@
+{
+  "kind": "F03_proposal_reference_discovery_source_verification_not_acceptance",
+  "recorded_at_utc": "2026-11-08T18:35:21Z",
+  "source_base": "6324c7281ec91a343c5a8c78b3679f93b1cd11e6",
+  "governing_procedure": "5c3d3885234358aefb97ecdbc59be0864df14f8b",
+  "published_observation_notes": "6324c7281ec91a343c5a8c78b3679f93b1cd11e6",
+  "commands": [
+    {
+      "argv": [
+        "python3",
+        "tools/build_directory.py",
+        "--refresh-returns",
+        "--output",
+        "."
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "python3",
+        "-B",
+        "tools/verify_returns.py",
+        "."
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "node",
+        "tools/verify_directory.mjs",
+        "."
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "python3",
+        "-B",
+        "tools/verify_page_observations.py",
+        "."
+      ],
+      "exit_code": 0
+    }
+  ],
+  "results": {
+    "build": {
+      "status": "RETURN_OBSERVATIONS_REFRESHED_NOT_APPROVED",
+      "assignments": 36,
+      "returns": 12,
+      "canonical_records": 348,
+      "actions_not_dispatched": 301
+    },
+    "returns": {
+      "kind": "bounded_return_refresh_identity_and_source_checks_not_acceptance",
+      "status": "PASS",
+      "check_count": 160,
+      "checks": [
+        {
+          "name": "frozen bytes data/inventory-gaps.json",
+          "result": "PASS"
+        },
+        {
+          "name": "frozen bytes data/live-delta.json",
+          "result": "PASS"
+        },
+        {
+          "name": "frozen bytes data/paper-artboard-directory.json",
+          "result": "PASS"
+        },
+        {
+          "name": "frozen bytes data/paper-page-directory.json",
+          "result": "PASS"
+        },
+        {
+          "name": "frozen bytes data/proposed-destinations.json",
+          "result": "PASS"
+        },
+        {
+          "name": "frozen bytes data/resource-action-ledger.json",
+          "result": "PASS"
+        },
+        {
+          "name": "frozen bytes data/route-assignment-projection.json",
+          "result": "PASS"
+        },
+        {
+          "name": "frozen bytes data/source-delta-projection.json",
+          "result": "PASS"
+        },
+        {
+          "name": "frozen bytes inventory.html",
+          "result": "PASS"
+        },
+        {
+          "name": "root and tool-local curation mirrors agree",
+          "result": "PASS"
+        },
+        {
+          "name": "36 unique assignments; exactly twelve observed returns",
+          "result": "PASS"
+        },
+        {
+          "name": "prior return baseline covers exactly the nine published observations",
+          "result": "PASS"
+        },
+        {
+          "name": "previous return preserved exactly F01",
+          "result": "PASS"
+        },
+        {
+          "name": "previous return preserved exactly F02",
+          "result": "PASS"
+        },
+        {
+          "name": "previous return preserved exactly D07",
+          "result": "PASS"
+        },
+        {
+          "name": "previous return preserved exactly D08",
+          "result": "PASS"
+        },
+        {
+          "name": "previous return preserved exactly D08A",
+          "result": "PASS"
+        },
+        {
+          "name": "previous return preserved exactly D08B",
+          "result": "PASS"
+        },
+        {
+          "name": "previous return preserved exactly D08C",
+          "result": "PASS"
+        },
+        {
+          "name": "previous return preserved exactly D08D",
+          "result": "PASS"
+        },
+        {
+          "name": "previous return preserved exactly D05",
+          "result": "PASS"
+        },
+        {
+          "name": "retained assignment fields P00",
+          "result": "PASS"
+        },
+        {
+          "name": "retained assignment fields F01",
+          "result": "PASS"
+        },
+        {
+          "name": "retained assignment fields F02",
+          "result": "PASS"
+        },
+        {
+          "name": "retained assignment fields F03",
+          "result": "PASS"
+        },
+        {
+          "name": "retained assignment fields D01",
+          "result": "PASS"
+        },
+        {
+          "name": "retained assignment fields D02",
+          "result": "PASS"
+        },
+        {
+          "name": "retained assignment fields D03",
+          "result": "PASS"
+        },
+        {
+          "name": "retained assignment fields D04",
+          "result": "PASS"
+        },
+        {
+          "name": "retained assignment fields D05",
+          "result": "PASS"
+        },
+        {
+          "name": "retained assignment fields D06",
+          "result": "PASS"
+        },
+        {
+          "name": "retained assignment fields D07",
+          "result": "PASS"
+        },
+        {
+          "name": "retained assignment fields D08",
+          "result": "PASS"
+        },
+        {
+          "name": "retained assignment fields D08A",
+          "result": "PASS"
+        },
+        {
+          "name": "retained assignment fields D08B",
+          "result": "PASS"
+        },
+        {
+          "name": "retained assignment fields D08C",
+          "result": "PASS"
+        },
+        {
+          "name": "retained assignment fields D08D",
+          "result": "PASS"
+        },
+        {
+          "name": "retained assignment fields D09",
+          "result": "PASS"
+        },
+        {
+          "name": "retained assignment fields D10",
+          "result": "PASS"
+        },
+        {
+          "name": "retained assignment fields D11",
+          "result": "PASS"
+        },
+        {
+          "name": "retained assignment fields D12",
+          "result": "PASS"
+        },
+        {
+          "name": "retained assignment fields D13",
+          "result": "PASS"
+        },
+        {
+          "name": "retained assignment fields D14",
+          "result": "PASS"
+        },
+        {
+          "name": "retained assignment fields D15",
+          "result": "PASS"
+        },
+        {
+          "name": "retained assignment fields D16",
+          "result": "PASS"
+        },
+        {
+          "name": "retained assignment fields D17",
+          "result": "PASS"
+        },
+        {
+          "name": "retained assignment fields D18",
+          "result": "PASS"
+        },
+        {
+          "name": "retained assignment fields D19",
+          "result": "PASS"
+        },
+        {
+          "name": "retained assignment fields D20",
+          "result": "PASS"
+        },
+        {
+          "name": "retained assignment fields D21",
+          "result": "PASS"
+        },
+        {
+          "name": "retained assignment fields D22",
+          "result": "PASS"
+        },
+        {
+          "name": "retained assignment fields D23",
+          "result": "PASS"
+        },
+        {
+          "name": "retained assignment fields D24",
+          "result": "PASS"
+        },
+        {
+          "name": "retained assignment fields D25",
+          "result": "PASS"
+        },
+        {
+          "name": "retained assignment fields D26",
+          "result": "PASS"
+        },
+        {
+          "name": "retained assignment fields D27",
+          "result": "PASS"
+        },
+        {
+          "name": "retained assignment fields QA01",
+          "result": "PASS"
+        },
+        {
+          "name": "D05 immutable observation source matches the published note",
+          "result": "PASS"
+        },
+        {
+          "name": "D05 proposed candidate and current Read me have separate exact identities",
+          "result": "PASS"
+        },
+        {
+          "name": "D05 retained reference remains separate from both current destinations",
+          "result": "PASS"
+        },
+        {
+          "name": "D05 observation does not invent PR or foundation qualification",
+          "result": "PASS"
+        },
+        {
+          "name": "curation mirrors have identical bytes",
+          "result": "PASS"
+        },
+        {
+          "name": "D05 candidate board belongs to its candidate observation, not Read me",
+          "result": "PASS"
+        },
+        {
+          "name": "D05 Markdown renders exact candidate tuple and page-navigation limit",
+          "result": "PASS"
+        },
+        {
+          "name": "published proposal note and actual blob D04",
+          "result": "PASS"
+        },
+        {
+          "name": "proposal candidate and entry have exact distinct roles D04",
+          "result": "PASS"
+        },
+        {
+          "name": "proposal remains bounded and unqualified D04",
+          "result": "PASS"
+        },
+        {
+          "name": "proposal Markdown includes exact candidate and qualification D04",
+          "result": "PASS"
+        },
+        {
+          "name": "published proposal note and actual blob D14",
+          "result": "PASS"
+        },
+        {
+          "name": "proposal candidate and entry have exact distinct roles D14",
+          "result": "PASS"
+        },
+        {
+          "name": "proposal remains bounded and unqualified D14",
+          "result": "PASS"
+        },
+        {
+          "name": "proposal Markdown includes exact candidate and qualification D14",
+          "result": "PASS"
+        },
+        {
+          "name": "published proposal note and actual blob D06",
+          "result": "PASS"
+        },
+        {
+          "name": "proposal candidate and entry have exact distinct roles D06",
+          "result": "PASS"
+        },
+        {
+          "name": "proposal remains bounded and unqualified D06",
+          "result": "PASS"
+        },
+        {
+          "name": "proposal Markdown includes exact candidate and qualification D06",
+          "result": "PASS"
+        },
+        {
+          "name": "curated return rendered F01",
+          "result": "PASS"
+        },
+        {
+          "name": "immutable source and null approval F01",
+          "result": "PASS"
+        },
+        {
+          "name": "Markdown direct return F01",
+          "result": "PASS"
+        },
+        {
+          "name": "curated return rendered F02",
+          "result": "PASS"
+        },
+        {
+          "name": "immutable source and null approval F02",
+          "result": "PASS"
+        },
+        {
+          "name": "Markdown direct return F02",
+          "result": "PASS"
+        },
+        {
+          "name": "curated return rendered D07",
+          "result": "PASS"
+        },
+        {
+          "name": "immutable source and null approval D07",
+          "result": "PASS"
+        },
+        {
+          "name": "Markdown direct return D07",
+          "result": "PASS"
+        },
+        {
+          "name": "curated return rendered D08",
+          "result": "PASS"
+        },
+        {
+          "name": "immutable source and null approval D08",
+          "result": "PASS"
+        },
+        {
+          "name": "Markdown direct return D08",
+          "result": "PASS"
+        },
+        {
+          "name": "curated return rendered D08A",
+          "result": "PASS"
+        },
+        {
+          "name": "immutable source and null approval D08A",
+          "result": "PASS"
+        },
+        {
+          "name": "Markdown direct return D08A",
+          "result": "PASS"
+        },
+        {
+          "name": "curated return rendered D08B",
+          "result": "PASS"
+        },
+        {
+          "name": "immutable source and null approval D08B",
+          "result": "PASS"
+        },
+        {
+          "name": "Markdown direct return D08B",
+          "result": "PASS"
+        },
+        {
+          "name": "curated return rendered D08C",
+          "result": "PASS"
+        },
+        {
+          "name": "immutable source and null approval D08C",
+          "result": "PASS"
+        },
+        {
+          "name": "Markdown direct return D08C",
+          "result": "PASS"
+        },
+        {
+          "name": "curated return rendered D08D",
+          "result": "PASS"
+        },
+        {
+          "name": "immutable source and null approval D08D",
+          "result": "PASS"
+        },
+        {
+          "name": "Markdown direct return D08D",
+          "result": "PASS"
+        },
+        {
+          "name": "curated return rendered D05",
+          "result": "PASS"
+        },
+        {
+          "name": "immutable source and null approval D05",
+          "result": "PASS"
+        },
+        {
+          "name": "Markdown direct return D05",
+          "result": "PASS"
+        },
+        {
+          "name": "curated return rendered D04",
+          "result": "PASS"
+        },
+        {
+          "name": "immutable source and null approval D04",
+          "result": "PASS"
+        },
+        {
+          "name": "Markdown direct return D04",
+          "result": "PASS"
+        },
+        {
+          "name": "curated return rendered D14",
+          "result": "PASS"
+        },
+        {
+          "name": "immutable source and null approval D14",
+          "result": "PASS"
+        },
+        {
+          "name": "Markdown direct return D14",
+          "result": "PASS"
+        },
+        {
+          "name": "curated return rendered D06",
+          "result": "PASS"
+        },
+        {
+          "name": "immutable source and null approval D06",
+          "result": "PASS"
+        },
+        {
+          "name": "Markdown direct return D06",
+          "result": "PASS"
+        },
+        {
+          "name": "no native candidate fabricated D08A",
+          "result": "PASS"
+        },
+        {
+          "name": "no native candidate fabricated D08D",
+          "result": "PASS"
+        },
+        {
+          "name": "no native candidate fabricated D08",
+          "result": "PASS"
+        },
+        {
+          "name": "348 exact unique route identities retained",
+          "result": "PASS"
+        },
+        {
+          "name": "nine source deltas remain noncanonical",
+          "result": "PASS"
+        },
+        {
+          "name": "all 301 resource effects remain undispatched",
+          "result": "PASS"
+        },
+        {
+          "name": "HTML and assignment JSON share exact returns",
+          "result": "PASS"
+        },
+        {
+          "name": "current effects derived from original native log",
+          "result": "PASS"
+        },
+        {
+          "name": "source law continuation separated from original and prior pins",
+          "result": "PASS"
+        },
+        {
+          "name": "native operation IDs unique",
+          "result": "PASS"
+        },
+        {
+          "name": "unknown effects exactly match original ledger and projection",
+          "result": "PASS"
+        },
+        {
+          "name": "unknown effects are not counted as applied or hidden in aggregate state",
+          "result": "PASS"
+        },
+        {
+          "name": "embedded metadata agrees with original current-effect projection",
+          "result": "PASS"
+        },
+        {
+          "name": "unknown assignment rejected",
+          "result": "PASS"
+        },
+        {
+          "name": "canonical ownership mutation rejected",
+          "result": "PASS"
+        },
+        {
+          "name": "source pin mismatch rejected",
+          "result": "PASS"
+        },
+        {
+          "name": "native candidate identity mismatch rejected",
+          "result": "PASS"
+        },
+        {
+          "name": "approval promotion rejected",
+          "result": "PASS"
+        },
+        {
+          "name": "unsafe source URL rejected",
+          "result": "PASS"
+        },
+        {
+          "name": "incomplete explicit return rejected",
+          "result": "PASS"
+        },
+        {
+          "name": "omitted prior return rejected",
+          "result": "PASS"
+        },
+        {
+          "name": "dot-segment source escape rejected",
+          "result": "PASS"
+        },
+        {
+          "name": "Read me compound identity mismatch rejected",
+          "result": "PASS"
+        },
+        {
+          "name": "current Read me cannot masquerade as original",
+          "result": "PASS"
+        },
+        {
+          "name": "invalid candidate board rejected ''",
+          "result": "PASS"
+        },
+        {
+          "name": "invalid candidate board rejected ' '",
+          "result": "PASS"
+        },
+        {
+          "name": "invalid candidate board rejected 'GPL-0\\n'",
+          "result": "PASS"
+        },
+        {
+          "name": "invalid candidate board rejected 'GPL/0'",
+          "result": "PASS"
+        },
+        {
+          "name": "invalid candidate board rejected 'GPL_0'",
+          "result": "PASS"
+        },
+        {
+          "name": "invalid candidate board rejected '../GPL-0'",
+          "result": "PASS"
+        },
+        {
+          "name": "invalid candidate board rejected 'GPL-0#x'",
+          "result": "PASS"
+        },
+        {
+          "name": "invalid candidate board rejected '<b>GPL-0</b>'",
+          "result": "PASS"
+        },
+        {
+          "name": "invalid candidate board rejected '`GPL-0`'",
+          "result": "PASS"
+        },
+        {
+          "name": "invalid candidate board rejected 0",
+          "result": "PASS"
+        },
+        {
+          "name": "invalid candidate board rejected True",
+          "result": "PASS"
+        },
+        {
+          "name": "invalid candidate board rejected []",
+          "result": "PASS"
+        },
+        {
+          "name": "invalid candidate board rejected {}",
+          "result": "PASS"
+        },
+        {
+          "name": "candidate board requires its own candidate page",
+          "result": "PASS"
+        },
+        {
+          "name": "candidate board cannot use a mismatched page tuple",
+          "result": "PASS"
+        },
+        {
+          "name": "candidate board requires a canonical page URL",
+          "result": "PASS"
+        },
+        {
+          "name": "missing and null candidate board preserve legacy Markdown",
+          "result": "PASS"
+        },
+        {
+          "name": "invalid later candidate board leaves all assignments unchanged",
+          "result": "PASS"
+        },
+        {
+          "name": "invalid later row leaves all assignments unchanged",
+          "result": "PASS"
+        },
+        {
+          "name": "missing unresolved receipt fails projection",
+          "result": "PASS"
+        },
+        {
+          "name": "orphan unresolved receipt fails projection",
+          "result": "PASS"
+        },
+        {
+          "name": "duplicate operation ID fails projection",
+          "result": "PASS"
+        },
+        {
+          "name": "duplicate unresolved receipt fails projection",
+          "result": "PASS"
+        },
+        {
+          "name": "synthetic resolved fixture clears stale unknown projection without changing actual ledger",
+          "result": "PASS"
+        }
+      ],
+      "limitations": [
+        "Original 399-input suite is historical, not rerun here.",
+        "Native-effect reconciliation fixtures are synthetic; no actual Paper effect is resolved by a test.",
+        "Native visual observation, browser interaction, hosted CI and formal RIG are separate."
+      ]
+    },
+    "directory": {
+      "kind": "source_logic_regression_probes_not_browser_tests",
+      "status": "PASS",
+      "tests": [
+        {
+          "name": "Canonical identity count is separate from nine null-ID deltas",
+          "result": "PASS"
+        },
+        {
+          "name": "Exact held board search exposes the matched board and role",
+          "result": "PASS"
+        },
+        {
+          "name": "Reference search and assignment filter include all D17 WTI exceptions",
+          "result": "PASS"
+        },
+        {
+          "name": "Detail navigation preserves originating view, query and owner",
+          "result": "PASS"
+        },
+        {
+          "name": "Skip action moves focus without changing router state",
+          "result": "PASS"
+        },
+        {
+          "name": "Exact board detail contains anchor and focus target",
+          "result": "PASS"
+        },
+        {
+          "name": "Equity replay exposes integration D08 and design D08D",
+          "result": "PASS"
+        },
+        {
+          "name": "Recorded redirects and Returns history are exposed without approval",
+          "result": "PASS"
+        },
+        {
+          "name": "Observed historical China role overrides prior candidate classification",
+          "result": "PASS"
+        },
+        {
+          "name": "Original Earnings and Hub archives link to recorded destinations",
+          "result": "PASS"
+        },
+        {
+          "name": "Inventory return is bounded to local inventory with its exact state",
+          "result": "PASS"
+        },
+        {
+          "name": "Mixed historical and held pages surface warnings",
+          "result": "PASS"
+        },
+        {
+          "name": "Family routes expose concrete-member index, never wildcard live URLs",
+          "result": "PASS"
+        },
+        {
+          "name": "Seven unregistered documents are individual gaps with design responsibility",
+          "result": "PASS"
+        },
+        {
+          "name": "Chinese chrome retains language-marked source fields and labels",
+          "result": "PASS"
+        },
+        {
+          "name": "Missing-result state links alternative scopes and member lookup",
+          "result": "PASS"
+        },
+        {
+          "name": "User search values are escaped and history encoded",
+          "result": "PASS"
+        },
+        {
+          "name": "Fresh document execution honors an exact saved board URL",
+          "result": "PASS"
+        },
+        {
+          "name": "Default inventory row retains an explicit nonempty return fragment",
+          "result": "PASS"
+        },
+        {
+          "name": "Complete member index preserves included and excluded rows",
+          "result": "PASS"
+        },
+        {
+          "name": "Twelve return observations preserve null native-approval receipts",
+          "result": "PASS"
+        },
+        {
+          "name": "D08B and D08C expose direct exact candidate, Read me and source links",
+          "result": "PASS"
+        },
+        {
+          "name": "Source-only D08A and D08D remain without admitted native candidates",
+          "result": "PASS"
+        },
+        {
+          "name": "D08 entry provides all four owner contracts without a third directory choice",
+          "result": "PASS"
+        },
+        {
+          "name": "New exact Read me board identity is searchable without mutating census",
+          "result": "PASS"
+        },
+        {
+          "name": "Changes view exposes immutable return observations and current resource gate",
+          "result": "PASS"
+        },
+        {
+          "name": "Current directory effects do not imply cross-file action application",
+          "result": "PASS"
+        },
+        {
+          "name": "Chinese returned-evidence chrome retains exact source identities",
+          "result": "PASS"
+        },
+        {
+          "name": "Evidence links reject executable or non-evidence URL schemes",
+          "result": "PASS"
+        },
+        {
+          "name": "Source return refresh does not erase query or owner context",
+          "result": "PASS"
+        },
+        {
+          "name": "Candidate and Read me compound identities use their own pages",
+          "result": "PASS"
+        },
+        {
+          "name": "Current D08B/C Read me links are not retained-original claims",
+          "result": "PASS"
+        },
+        {
+          "name": "Evidence links reject normalization outside the immutable source pin",
+          "result": "PASS"
+        },
+        {
+          "name": "Paper-reference search finds returned Read me board IDs with exact page and contract",
+          "result": "PASS"
+        },
+        {
+          "name": "Reference search accepts full returned URLs and exact compound identities",
+          "result": "PASS"
+        },
+        {
+          "name": "Returned reference owner filtering and result links preserve query context",
+          "result": "PASS"
+        },
+        {
+          "name": "Same-page candidate and Read me roles are retained without duplicate page results",
+          "result": "PASS"
+        },
+        {
+          "name": "Retained-only and no-native returns never become native candidates",
+          "result": "PASS"
+        },
+        {
+          "name": "Reference projection leaves all frozen data and approval fields unchanged",
+          "result": "PASS"
+        },
+        {
+          "name": "Returned references disclose observed source time and unresolved qualification",
+          "result": "PASS"
+        },
+        {
+          "name": "Chinese returned-reference labels retain exact identity and source contracts",
+          "result": "PASS"
+        },
+        {
+          "name": "Reference projection rejects mismatched identity tuples and untrusted Paper URLs",
+          "result": "PASS"
+        },
+        {
+          "name": "Compound page identity keeps equal page IDs in different files distinct",
+          "result": "PASS"
+        },
+        {
+          "name": "Repeated return records deduplicate claims without erasing distinct roles",
+          "result": "PASS"
+        },
+        {
+          "name": "New reference controls include narrow stacking and touch-target source rules",
+          "result": "PASS"
+        },
+        {
+          "name": "All concrete returned Read me board IDs resolve only to their own page",
+          "result": "PASS"
+        },
+        {
+          "name": "D05 discovery separates provisional Read me, proposed page and retained reference",
+          "result": "PASS"
+        },
+        {
+          "name": "Candidate board short and full identities resolve to their exact containing page",
+          "result": "PASS"
+        },
+        {
+          "name": "Missing and null candidate board have identical legacy claims, search and rendering",
+          "result": "PASS"
+        },
+        {
+          "name": "Invalid candidate board suppresses only its candidate claim and never creates a locator",
+          "result": "PASS"
+        },
+        {
+          "name": "Equal candidate board IDs in separate files stay distinct; repeated claims deduplicate",
+          "result": "PASS"
+        },
+        {
+          "name": "Candidate board detail and Back preserve context without inventing a focus target",
+          "result": "PASS"
+        },
+        {
+          "name": "Chinese candidate board discovery retains exact locator and page-navigation limit",
+          "result": "PASS"
+        },
+        {
+          "name": "Returned status and timestamp injection stays escaped and malicious contract stays inert",
+          "result": "PASS"
+        },
+        {
+          "name": "Synthetic pending native effect is exposed as a snapshot, not approval or a retry action",
+          "result": "PASS"
+        },
+        {
+          "name": "Zero-unknown fixture produces no stale warning or invented pending operation",
+          "result": "PASS"
+        },
+        {
+          "name": "Effect warning visibility follows the actual ledger on detail views without changing router context",
+          "result": "PASS"
+        },
+        {
+          "name": "Chinese synthetic pending-effect warning preserves the exact operation and evidence link",
+          "result": "PASS"
+        },
+        {
+          "name": "Pending operation display rejects text and timestamp injection",
+          "result": "PASS"
+        },
+        {
+          "name": "Later structural reads expose all 106 pages and 1837 compound board identities",
+          "result": "PASS"
+        },
+        {
+          "name": "Supplemental tail boards are searchable through their exact file/page/board identity",
+          "result": "PASS"
+        },
+        {
+          "name": "Repeated short board IDs do not collapse copied files or inherit product ownership",
+          "result": "PASS"
+        },
+        {
+          "name": "Observed board navigation preserves query, owner, exact page, focus and Back context",
+          "result": "PASS"
+        },
+        {
+          "name": "Zero-artboard observations remain successful reads without becoming completion or disposal",
+          "result": "PASS"
+        },
+        {
+          "name": "Provider data-loss warning stays on the exact duplicate file and does not spread to other copies",
+          "result": "PASS"
+        },
+        {
+          "name": "Coverage row reports completed metadata discovery and links the exact observation scope",
+          "result": "PASS"
+        },
+        {
+          "name": "Chinese structural chrome preserves exact observed identities and cautious ownership",
+          "result": "PASS"
+        },
+        {
+          "name": "Observed names and provider warnings are escaped without executable markup",
+          "result": "PASS"
+        },
+        {
+          "name": "D04 proposal is searchable by short board and exact tuple in both views",
+          "result": "PASS"
+        },
+        {
+          "name": "D04 proposal rejects mismatched file and page tuples",
+          "result": "PASS"
+        },
+        {
+          "name": "D04 proposal exposes published source, draft status and exact identity in EN and ZH",
+          "result": "PASS"
+        },
+        {
+          "name": "D04 proposal History and Back preserve search without inventing a board focus",
+          "result": "PASS"
+        },
+        {
+          "name": "D14 proposal is searchable by short board and exact tuple in both views",
+          "result": "PASS"
+        },
+        {
+          "name": "D14 proposal rejects mismatched file and page tuples",
+          "result": "PASS"
+        },
+        {
+          "name": "D14 proposal exposes published source, draft status and exact identity in EN and ZH",
+          "result": "PASS"
+        },
+        {
+          "name": "D14 proposal History and Back preserve search without inventing a board focus",
+          "result": "PASS"
+        },
+        {
+          "name": "D06 proposal is searchable by short board and exact tuple in both views",
+          "result": "PASS"
+        },
+        {
+          "name": "D06 proposal rejects mismatched file and page tuples",
+          "result": "PASS"
+        },
+        {
+          "name": "D06 proposal exposes published source, draft status and exact identity in EN and ZH",
+          "result": "PASS"
+        },
+        {
+          "name": "D06 proposal History and Back preserve search without inventing a board focus",
+          "result": "PASS"
+        },
+        {
+          "name": "D04 and D14 builder entries resolve to their own verified pages and boards",
+          "result": "PASS"
+        },
+        {
+          "name": "D06 candidate remains discoverable without an invented Read me or retained original",
+          "result": "PASS"
+        },
+        {
+          "name": "EN and ZH reference views render against recursively frozen source data",
+          "result": "PASS"
+        }
+      ],
+      "limitations": [
+        "No rendering, browser interaction, screen-reader, touch, focus-visibility, contrast, zoom or performance acceptance."
+      ]
+    },
+    "structural": {
+      "kind": "read_evidence_identity_checks_not_acceptance",
+      "status": "PASS",
+      "check_count": 26,
+      "checks": [
+        {
+          "name": "raw read receipts reproduce the entire observation file",
+          "result": "PASS"
+        },
+        {
+          "name": "106 exact listed-only pages, 12 files and 1837 complete board identities",
+          "result": "PASS"
+        },
+        {
+          "name": "12 successful zero-artboard reads remain explicit",
+          "result": "PASS"
+        },
+        {
+          "name": "two capped lists require 26 individually observed tail boards",
+          "result": "PASS"
+        },
+        {
+          "name": "provider data-loss warning retained on the exact duplicate file only",
+          "result": "PASS"
+        },
+        {
+          "name": "repeated short IDs coexist with 1837 unique compound identities",
+          "result": "PASS"
+        },
+        {
+          "name": "frozen pages and board data remain unchanged",
+          "result": "PASS"
+        },
+        {
+          "name": "no product-owner, approval, successor or archival fields inferred",
+          "result": "PASS"
+        },
+        {
+          "name": "coverage separates completed metadata reads from remaining retention work",
+          "result": "PASS"
+        },
+        {
+          "name": "duplicate page observation is rejected",
+          "result": "PASS"
+        },
+        {
+          "name": "unknown page cannot be promoted from a read",
+          "result": "PASS"
+        },
+        {
+          "name": "mismatched returned file is rejected",
+          "result": "PASS"
+        },
+        {
+          "name": "mismatched returned page is rejected",
+          "result": "PASS"
+        },
+        {
+          "name": "unsafe page URL is rejected",
+          "result": "PASS"
+        },
+        {
+          "name": "a failed read is never a zero-artboard success",
+          "result": "PASS"
+        },
+        {
+          "name": "non-UTC timestamp offsets cannot be ordered as UTC strings",
+          "result": "PASS"
+        },
+        {
+          "name": "mixed timestamp precision cannot corrupt completion order",
+          "result": "PASS"
+        },
+        {
+          "name": "supplemental timestamp uses the same canonical UTC precision",
+          "result": "PASS"
+        },
+        {
+          "name": "missing tail-node reads cannot claim a completed capped list",
+          "result": "PASS"
+        },
+        {
+          "name": "missing root summary cannot certify tail-node membership",
+          "result": "PASS"
+        },
+        {
+          "name": "duplicate supplemental node is rejected",
+          "result": "PASS"
+        },
+        {
+          "name": "board on another page is rejected",
+          "result": "PASS"
+        },
+        {
+          "name": "nonfinite board geometry is rejected",
+          "result": "PASS"
+        },
+        {
+          "name": "negative or Boolean counts are rejected",
+          "result": "PASS"
+        },
+        {
+          "name": "raw digest failure attaches no partial projection",
+          "result": "PASS"
+        },
+        {
+          "name": "missing prior evidence cannot leave a stale completion claim",
+          "result": "PASS"
+        }
+      ],
+      "limits": [
+        "Metadata, not full-content or visual comparison.",
+        "No move, archival, input-path, browser or approval proof."
+      ]
+    }
+  },
+  "assignment_data_diff": [
+    {
+      "id": "D04",
+      "changed_fields": [
+        "candidate_ref",
+        "return_observation",
+        "rig_state",
+        "next_action",
+        "source_contract",
+        "status",
+        "source_contract_label"
+      ]
+    },
+    {
+      "id": "D06",
+      "changed_fields": [
+        "candidate_ref",
+        "return_observation",
+        "rig_state",
+        "next_action",
+        "source_contract",
+        "status",
+        "source_contract_label"
+      ]
+    },
+    {
+      "id": "D14",
+      "changed_fields": [
+        "candidate_ref",
+        "return_observation",
+        "rig_state",
+        "next_action",
+        "source_contract",
+        "status",
+        "source_contract_label"
+      ]
+    }
+  ],
+  "provenance_changed_keys": [
+    "assignment_return_observations"
+  ],
+  "changed_artifact_digests": [
+    {
+      "path": "CONTINUITY.md",
+      "bytes": 43359,
+      "sha256": "a4f820ff1c716336b1714f87893e0cb5afbbb6515dd77f7a40e7194c963c24cc",
+      "git_blob_sha": "73cf1b774b96104643336a6e26db2f9d74f1e84c"
+    },
+    {
+      "path": "README.md",
+      "bytes": 28510,
+      "sha256": "416db9a60a26a9560b887dea56687a4f16263d438864e2d8c5d354f4ea198336",
+      "git_blob_sha": "e1813f406f7a0f24da90eba0d3646166cb48f217"
+    },
+    {
+      "path": "REPRODUCE.md",
+      "bytes": 11625,
+      "sha256": "6d18a789b946961b6efabc8dff099a4358fc953c1a140251e3baa18912210ee2",
+      "git_blob_sha": "b9416f2288d58301fa33db17674fa281e76b452a"
+    },
+    {
+      "path": "assignments/D04.md",
+      "bytes": 14357,
+      "sha256": "afc62b3a16b437eb6526e0573e4d0fc7b58f6b3f5c06c51d43fbbc49efc54c96",
+      "git_blob_sha": "142e4d4f2ffbf872267dab01edde1015ed35681e"
+    },
+    {
+      "path": "assignments/D05.md",
+      "bytes": 23329,
+      "sha256": "32bea032bf2069f9791c7325d4e5974f85997d5065c016be73ee9acfd41a1daa",
+      "git_blob_sha": "8ce392b050e159d6ff9a69dc2c82ec1f731c3479"
+    },
+    {
+      "path": "assignments/D06.md",
+      "bytes": 8623,
+      "sha256": "2c092f673f127a0af6ffb5ea4ff5770dd8835fc6b89e5c791ba374c1aaefebbb",
+      "git_blob_sha": "bcf01acbe05637c0821e74f6df6b6e0e9762f039"
+    },
+    {
+      "path": "assignments/D07.md",
+      "bytes": 36356,
+      "sha256": "4969f653f1548257e44ea8334287e59fbf2df15cc8e4d3d109bb517551f30a5d",
+      "git_blob_sha": "d6be70aba44cf8e544bb887cacb2b802f2a7fa24"
+    },
+    {
+      "path": "assignments/D08.md",
+      "bytes": 12670,
+      "sha256": "3464794f15960cfe5276bb947a235a40e98ed5cb402556cfe9622d004ed316fa",
+      "git_blob_sha": "cfa9d69a1c54f71d79bab660024ca5ae673c1ffd"
+    },
+    {
+      "path": "assignments/D08A.md",
+      "bytes": 4006,
+      "sha256": "d4c4470276ff7725ce3d3061ee35d398ee1072d3cf576405cec9054a2b2722c3",
+      "git_blob_sha": "9908bdc6494dbaa974eda4ed31b92a57817a5207"
+    },
+    {
+      "path": "assignments/D08B.md",
+      "bytes": 10297,
+      "sha256": "3a2623329d891f89eda2c7220338c5d99346efdd1ba70c3688f7028271dbe03e",
+      "git_blob_sha": "695d655a252b022fb4e04787717d20aea3962530"
+    },
+    {
+      "path": "assignments/D08C.md",
+      "bytes": 18013,
+      "sha256": "0bf7c1e623dc750f0d356ebf5f3b4feb3b237fc5ee0de82d22f6ec64a23c31d4",
+      "git_blob_sha": "534ba92b1db1c6afd91a79c206f95ed0ff9f9934"
+    },
+    {
+      "path": "assignments/D08D.md",
+      "bytes": 3854,
+      "sha256": "7671da39e3c433e93b0c5b75732297c2da950389b6c5fde0bfa6fc8e83ebbf6c",
+      "git_blob_sha": "0eef3ebb2ffa2e82409c926be17f768f5e35f8db"
+    },
+    {
+      "path": "assignments/D14.md",
+      "bytes": 14108,
+      "sha256": "677e1d896ddb10d0a632c9b98b25e2d293e22255d74827e817a795c8f9ca2d61",
+      "git_blob_sha": "a10234c0b29352b06083e21a5aae75c55e420fb5"
+    },
+    {
+      "path": "assignments/F01.md",
+      "bytes": 20232,
+      "sha256": "1a8d29aacaa2f8e7d7c2e87b50390c4b04579373fa2aab7c86bc28a3edd5c70f",
+      "git_blob_sha": "8414fa4f744f0537428414471ea85452c8404072"
+    },
+    {
+      "path": "assignments/F02.md",
+      "bytes": 13217,
+      "sha256": "428664ea40ff4b791aaf5fb8fe9e6a623d60dd44c9391502e04a212be628e288",
+      "git_blob_sha": "42025b3e74c9a50a39aa70ba775a2479b4b4ec95"
+    },
+    {
+      "path": "curation.json",
+      "bytes": 30470,
+      "sha256": "0df197043e933ac00c82575ad4e0e65cb1767908c949b592bafd9c3431d56b1f",
+      "git_blob_sha": "49f62e990bb4042e14357bfd28ee490fbb382640"
+    },
+    {
+      "path": "data/assignment-directory.json",
+      "bytes": 105360,
+      "sha256": "c9e817617789fd2b1a6d6287b165f356b894773e832d7151120f3929c6c985f4",
+      "git_blob_sha": "a89c5d5f03bfc45fd666381b9baa195677224928"
+    },
+    {
+      "path": "data/provenance.json",
+      "bytes": 7987,
+      "sha256": "fbbf1ecf84e6385c67aa47ca1c6c4aea802224ad0ad6f7370382c5cf52cddf8c",
+      "git_blob_sha": "4bc55b8488dc866a0657cdbb5c6c465ff99b8e0f"
+    },
+    {
+      "path": "directory.html",
+      "bytes": 2264977,
+      "sha256": "6432a2c8f59fb7e6eeac7c87851fe64299abe524d7f0732a1b179ae321d0cfcf",
+      "git_blob_sha": "f1469ebdf7b031c0e2877e7a85989d509a26fc12"
+    },
+    {
+      "path": "evidence/proposal-reference-baseline-20261108.json",
+      "bytes": 1089,
+      "sha256": "bd3a79b66531f1b8a03094bcbc4e8bb6a42b361d3413f6379d8570559f6c1a5c",
+      "git_blob_sha": "c1f67601d2608cefb22558e1f72eab2711735518"
+    },
+    {
+      "path": "evidence/proposal-reference-discovery-20261108.md",
+      "bytes": 4962,
+      "sha256": "a5f3bea7bb0dfd03797b6f575cd19e96f2f00768356d6a67b49db52783af5ede",
+      "git_blob_sha": "94a1226198c54f7796a9bbd613ed5208b3c2059b"
+    },
+    {
+      "path": "tools/build_directory.py",
+      "bytes": 40910,
+      "sha256": "9e32cd27e92a6dea226242137e6c4bda4f86eecc3eafbfa77ca78835b1839edb",
+      "git_blob_sha": "795a489b4e02d16e43719be4e14511d931edcf45"
+    },
+    {
+      "path": "tools/curation.json",
+      "bytes": 30470,
+      "sha256": "0df197043e933ac00c82575ad4e0e65cb1767908c949b592bafd9c3431d56b1f",
+      "git_blob_sha": "49f62e990bb4042e14357bfd28ee490fbb382640"
+    },
+    {
+      "path": "tools/directory.js",
+      "bytes": 39143,
+      "sha256": "5fedc41b89de9574e749c357a620a69cfb12492fc1fd25317bc8daaebe1f1217",
+      "git_blob_sha": "aa8f46d15e95069f70ba3c8de3c974bd8f399f5d"
+    },
+    {
+      "path": "tools/verify_directory.mjs",
+      "bytes": 39618,
+      "sha256": "cb8d26c9bfd47e2f0a162dc45785f706cdaf9ab3b7bc239feff7973d8dd23a78",
+      "git_blob_sha": "ead73abab0c7644af916d711faf4b1040ea1410e"
+    },
+    {
+      "path": "tools/verify_returns.py",
+      "bytes": 16548,
+      "sha256": "a2168b79fd7c382c6cc6fd190d1fb4a07f48e62842ec345cc9ec0af1373d30d2",
+      "git_blob_sha": "6514409dfdec664783d6db31930d7ce72d03f53b"
+    }
+  ],
+  "unchanged_loaded_artifacts": [
+    {
+      "path": "DIRECTORY.md",
+      "bytes": 11132,
+      "sha256": "08d8e380a2f94a49330f871569d9d853afb8d850b91607b51e85f57fbcd42fee",
+      "git_blob_sha": "5b27482feae3d6963608174018fe189ef6d9bc1c"
+    },
+    {
+      "path": "artifact-manifest.json",
+      "bytes": 56081,
+      "sha256": "138f70ff545f62045a4a603bb3f7771c810fbece9ca87eec5c5a6cb23bea979f",
+      "git_blob_sha": "3248109137a2a55360c73dc09fe3e3d662d59743"
+    },
+    {
+      "path": "assignments/F03.md",
+      "bytes": 57354,
+      "sha256": "cd7b95dc63141753e1767aded20a51a8ad75be8d8678811725e4718a18614640",
+      "git_blob_sha": "78bcaeb4f75c7d6583eee3b2a4f2260136531725"
+    },
+    {
+      "path": "data/inventory-gaps.json",
+      "bytes": 1696,
+      "sha256": "382ec40ee5e2850d22b729a79a4c14fca6f0e76b319da437d94c8591005ed96a",
+      "git_blob_sha": "1321087c91404c5c4e9e0c503e552efb95b0edb8"
+    },
+    {
+      "path": "data/live-delta.json",
+      "bytes": 1044,
+      "sha256": "a0b5c0f630ad025c6b34034f40cfcfc74bb4b55f968653222ff6824ba8276a0c",
+      "git_blob_sha": "68d9697d5d82ee997b522925f11617e86dec6250"
+    },
+    {
+      "path": "data/paper-artboard-directory.json",
+      "bytes": 1264042,
+      "sha256": "5d4bbc0b109dec5a0d46c28b5b934f1bc9fbdd881198a47f04e7605354c3e60e",
+      "git_blob_sha": "1df47788d0692aff8d1605bc391c7602ca1a1390"
+    },
+    {
+      "path": "data/paper-page-directory.json",
+      "bytes": 412757,
+      "sha256": "3b3de08d56e570e852128fbbc83127d529868283cb53e25d51d70eb9940b9f99",
+      "git_blob_sha": "5194b5da7077f92e4bada4da7994f4e335ccb3aa"
+    },
+    {
+      "path": "data/proposed-destinations.json",
+      "bytes": 38075,
+      "sha256": "775f7eeaa49d1a9df53cfdcaa0fb8c14bc3166ad21889587cc29d27bfb63eda2",
+      "git_blob_sha": "a19e60f004e01e084ac89dea1c817c15b1444d71"
+    },
+    {
+      "path": "data/resource-action-ledger.json",
+      "bytes": 460311,
+      "sha256": "3ef41320c90dca163fb27cdce9873663fe4d19b8522538220f151fe6377bb068",
+      "git_blob_sha": "6193b621a6d40997d57a36c70564eae27928c82f"
+    },
+    {
+      "path": "data/route-assignment-projection.json",
+      "bytes": 436632,
+      "sha256": "e0971f5188736b8f81ae44e19bb255626c0adbb89e3d3a6713e37e8ac9f7536c",
+      "git_blob_sha": "f60667adc611c39478e7c2f997baffd3c5eb09b5"
+    },
+    {
+      "path": "data/source-delta-projection.json",
+      "bytes": 4247,
+      "sha256": "e9e207c0390b46fb458a8d72099beeb258cfb4a1afdd22a399751c6372975b47",
+      "git_blob_sha": "21edc76a234371fc3d618fcce4339c1bff2afaa0"
+    },
+    {
+      "path": "evidence/candidate-board-discovery-20261108.md",
+      "bytes": 6014,
+      "sha256": "7bd3867bedcbc50484b5bed339b42c2c1e86e8ea1e60403d3262727a13eb3f56",
+      "git_blob_sha": "6c2ae209d20803fd5e8c6328d6219596e5b5a06a"
+    },
+    {
+      "path": "evidence/candidate-board-discovery-verification-20261108.json",
+      "bytes": 34857,
+      "sha256": "a58ca08292fc9e61000576cf8edefc2769d86f4fbefdce737b0d5e57b20f821d",
+      "git_blob_sha": "e177418f11aa5f3472742a7f353e00c5223f59f8"
+    },
+    {
+      "path": "evidence/d04-heatmap-reference-observation-20261108.md",
+      "bytes": 4001,
+      "sha256": "56a34b1cc0a6be06a70357dd656f3429beefa8004887e230b718fe14f5246667",
+      "git_blob_sha": "7571ddf1529551f9ce69a6107d7a41bcb9bd2666"
+    },
+    {
+      "path": "evidence/d05-directory-verification-20261108.json",
+      "bytes": 30448,
+      "sha256": "3695e144b556a9145d04cec17e692e8b784ba5c8aef1c365a59facc75a9fca1c",
+      "git_blob_sha": "649f74b2fdbbda1b3bd19efc8d04d322bdc00167"
+    },
+    {
+      "path": "evidence/d05-sector-reference-observation-20261108.md",
+      "bytes": 7176,
+      "sha256": "0ff21559d68079b489198c385027dbc5a88864e326a3550c524b243122aca19b",
+      "git_blob_sha": "3672f23a0d2bb4609469c3ec4ca88af56a17bf7d"
+    },
+    {
+      "path": "evidence/d05-sector-reference-readback-20261108.json",
+      "bytes": 16083,
+      "sha256": "6077462f8c07099011dc442694705f5e887f699c55732523b90faa5734475640",
+      "git_blob_sha": "f1e9d7dcb64b534a7193b3655a1bef14e53086a9"
+    },
+    {
+      "path": "evidence/d06-reader-reference-observation-20261108.md",
+      "bytes": 4090,
+      "sha256": "38dd2305d1cc0c4d43cb11e97b20e05dd831e6eb03a72cfff60d1691b4d993bb",
+      "git_blob_sha": "3ab49418d91b891441ba65a901a3fa71d2f9c1d1"
+    },
+    {
+      "path": "evidence/d14-context-reference-observation-20261108.md",
+      "bytes": 4210,
+      "sha256": "90baaf52d5697d615ab7cf2d57d0b4fc7a7091ff228ce2064ecae6f16bce9113",
+      "git_blob_sha": "8bdae0284375609a6a82540bd993ba55f3ff6d99"
+    },
+    {
+      "path": "evidence/proposal-reference-readback-20261108.json",
+      "bytes": 8060,
+      "sha256": "e9c416b0e369f491c6e84d5530a73b1d395f63d63864523b560305000476370f",
+      "git_blob_sha": "bfb414528f873223eeda51fa240238101dec9585"
+    },
+    {
+      "path": "evidence/return-refresh-baseline.json",
+      "bytes": 4854,
+      "sha256": "0365152ed2a6053c20ea4432a5b617e4f24f4829095db2d13d29404795c6831c",
+      "git_blob_sha": "e8c7383e971c29a48b2440a5715db9977ef66395"
+    },
+    {
+      "path": "inventory.html",
+      "bytes": 1620641,
+      "sha256": "017d3809bd0ae886e6f9176b51a3ec837febb27af6043735a0ab78f9c3b17c09",
+      "git_blob_sha": "330c779ae0eff361b474adb09b52bd7499a4b8f7"
+    },
+    {
+      "path": "paper/continuations/listed-page-expansion-20261104.json",
+      "bytes": 539814,
+      "sha256": "f2a5dae9c0f7dc167eceb7604cb28b808f78774ad4c100b7ff817ac503e7b98d",
+      "git_blob_sha": "51fdbbc048082a30a54e3f81f4e8c7d3ef2ecb47"
+    },
+    {
+      "path": "paper/continuations/listed-page-expansion-20261104.raw.json.gz",
+      "bytes": 481924,
+      "sha256": "ef6acf0ff80886afa28f762ee3caf34825b4a6f69b4b228a0e5bec2bb2a43728",
+      "git_blob_sha": "2a53aaeb70e7dcaddec405851a41f960c3685385"
+    },
+    {
+      "path": "paper/native-progress.json",
+      "bytes": 91529,
+      "sha256": "fe119a42c1fb11503d1d73e7e171c0f83a5453b69b3e32cc6d15e82ca3458aae",
+      "git_blob_sha": "34ff8b099195c36117b8eebe5a8a03728f265833"
+    },
+    {
+      "path": "tools/directory.template.html",
+      "bytes": 15230,
+      "sha256": "9725f1c88c5f5a3d5fc4aba70bebfe2f9e5070d00c531ed36f5035ebb6f4d7a3",
+      "git_blob_sha": "f1af42f6dda8f6175697b482e3bfd72f4ebfe30f"
+    },
+    {
+      "path": "tools/page_observations.py",
+      "bytes": 10549,
+      "sha256": "8f98a31637371d45ed1b52dab840fc89edeabba74558ad538d124d304efe5d3c",
+      "git_blob_sha": "fad4253554bfed1daacd712bcb52d5f11f18045b"
+    },
+    {
+      "path": "tools/verify_page_observations.py",
+      "bytes": 7783,
+      "sha256": "3ecc081ce90367f1f2188ed797b191082a0ef6126cf58c18d5ba636ad249587c",
+      "git_blob_sha": "536bff40307cef794b2f10cd3e60653868c48b6b"
+    }
+  ],
+  "whitespace_inspection": {
+    "added_lines_with_trailing_whitespace": []
+  },
+  "curation_mirrors_byte_equal": true,
+  "historical_root_manifest_unchanged": true,
+  "native_ledger_unchanged": true,
+  "previous_return_objects_preserved": 9,
+  "browser_proof": {
+    "status": "UNVERIFIED",
+    "reason": "Prior selected Chrome loopback preview returned ERR_CONNECTION_REFUSED; no unchanged retry or alternate host/control path used."
+  },
+  "paper_mutations": 0,
+  "runtime_mutations": 0,
+  "release_actions": 0,
+  "limitations": [
+    "Source/data/VM-harness checks only; no browser interaction, layout, accessibility, hosted CI, native RIG or deployed-product acceptance.",
+    "Publication and exact-byte readback of this change are separate from local verification.",
+    "The previous notes retain actual observation time; Paper snapshot guards are not immutable document revisions."
+  ],
+  "digest_exclusions": [
+    "This verification receipt excludes itself.",
+    "The active retention manifest is updated after this receipt and identified by the containing Git commit."
+  ]
+}

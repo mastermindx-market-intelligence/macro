@@ -19,7 +19,12 @@ def main():
         check('frozen bytes '+path,hashlib.sha256(b).hexdigest()==expected['sha256'] and builder.git_blob(b)==expected['git_blob_sha'])
     sessions=read('data/assignment-directory.json'); curated=read('tools/curation.json'); returns=curated['assignment_returns']
     check('root and tool-local curation mirrors agree',curated==read('curation.json'))
-    check('36 unique assignments; exactly nine observed returns',len(sessions)==len({s['id'] for s in sessions})==36 and set(returns)=={'F01','F02','D05','D07','D08','D08A','D08B','D08C','D08D'})
+    check('36 unique assignments; exactly twelve observed returns',len(sessions)==len({s['id'] for s in sessions})==36 and set(returns)=={'F01','F02','D04','D05','D06','D07','D08','D08A','D08B','D08C','D08D','D14'})
+    prior=read('evidence/proposal-reference-baseline-20261108.json')['prior_assignment_return_sha256']
+    check('prior return baseline covers exactly the nine published observations',set(prior)=={'F01','F02','D05','D07','D08','D08A','D08B','D08C','D08D'})
+    for sid,expected in prior.items():
+        digest=hashlib.sha256(json.dumps(returns[sid],ensure_ascii=False,sort_keys=True,separators=(',',':')).encode()).hexdigest()
+        check('previous return preserved exactly '+sid,digest==expected)
     for s in sessions:
         retained={k:v for k,v in s.items() if k not in builder.RETURN_FIELDS}
         digest=hashlib.sha256(json.dumps(retained,ensure_ascii=False,sort_keys=True,separators=(',',':')).encode()).hexdigest()
@@ -34,6 +39,19 @@ def main():
     check('curation mirrors have identical bytes',(root/'curation.json').read_bytes()==(root/'tools/curation.json').read_bytes())
     check('D05 candidate board belongs to its candidate observation, not Read me',obs.get('candidate_board_id')=='GPL-0' and obs['readme_board_id']=='BML-0')
     check('D05 Markdown renders exact candidate tuple and page-navigation limit',sector+' / p-6-0 / GPL-0' in (root/'assignments/D05.md').read_text() and 'exact board URL is not verified' in (root/'assignments/D05.md').read_text())
+    terminal='01M3NSZGE8JWN2EZCSF0DT05RM'; ai='01M3P1QEHS5XXQY85BJT6QR2E1'
+    proposals=[
+        ('D04',terminal,'p-1D-0','22UK-0',(terminal,'p-8-1','N71-1'),'d04-heatmap-reference-observation-20261108.md','7571ddf1529551f9ce69a6107d7a41bcb9bd2666'),
+        ('D14',ai,'p-B-0','72Y-0',(ai,'p-9-0','1MO-0'),'d14-context-reference-observation-20261108.md','8bdae0284375609a6a82540bd993ba55f3ff6d99'),
+        ('D06',terminal,'p-1E-0','23MJ-0',(None,None,None),'d06-reader-reference-observation-20261108.md','3ab49418d91b891441ba65a901a3fa71d2f9c1d1')]
+    for sid,file,page,board,entry,note,blob in proposals:
+        row=returns[sid]; obs=row['return_observation']; md=(root/'assignments'/(sid+'.md')).read_text()
+        head='6324c7281ec91a343c5a8c78b3679f93b1cd11e6'
+        source='https://github.com/mastermindx-market-intelligence/macro/blob/'+head+'/research/design_candidates/production_design_20261102/f03/evidence/'+note
+        check('published proposal note and actual blob '+sid,obs['source_head']==head and obs['source_blob_sha']==blob==builder.git_blob((root/'evidence'/note).read_bytes()) and row['source_contract']==source and source in obs['evidence_urls'])
+        check('proposal candidate and entry have exact distinct roles '+sid,(obs['candidate_file_id'],obs['candidate_page_id'],obs['candidate_board_id'])==(file,page,board) and (obs['readme_file_id'],obs['readme_page_id'],obs['readme_board_id'])==entry and obs['readme_url']==('https://app.paper.design/file/'+entry[0]+'/'+entry[1] if entry[0] else None) and obs['retained_reference_url'] is None)
+        check('proposal remains bounded and unqualified '+sid,obs['observed_at_utc']=='2026-11-08T18:25:46Z' and obs['observed_pr_head'] is None and row['shell_version'] is None and row['system_version'] is None and 'unqualified' in row['status'] and 'does not establish a complete domain return' in obs['qualification'])
+        check('proposal Markdown includes exact candidate and qualification '+sid,file+' / '+page+' / '+board in md and 'exact board URL is not verified' in md and obs['qualification'] in md and row['status'] in md)
     for sid,row in returns.items():
         check('curated return rendered '+sid,all(by_id[sid][k]==v for k,v in row.items()))
         obs=row['return_observation']

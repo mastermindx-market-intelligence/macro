@@ -7,12 +7,18 @@
 - [Interactive review directory](directory.html) and [GitHub-readable directory](DIRECTORY.md): 36 assignments, with direct returned-reference and source-package choices.
 - [Options integration entry](assignments/D08.md): four separately owned design packages with direct source contracts. Four packages are not four canonical route records.
 - [F03 organization contract](CONTRACT.md), [operation/preservation requirements](OPERATIONS.md), [Paper layout/state specification](PAPER_LAYOUT_SPEC.md).
-- [Current native effects](paper/native-progress.json), [review evidence](REVIEW.md), [exact continuation](CONTINUITY.md), [reproduction/checks](REPRODUCE.md), [artifact manifest](artifact-manifest.json).
+- [Current native effects](paper/native-progress.json), [review evidence](REVIEW.md), [exact continuation](CONTINUITY.md), [reproduction/checks](REPRODUCE.md), [current artifact manifest](paper/retention/artifact-manifest.json), [historical manifest](artifact-manifest.json).
 - [Frozen generated-document index](inventory.html) and [complete CSV](data/generated-document-index.csv).
 
 GitHub renders the Markdown entries directly; it displays the HTML companion as source. Open the complete extracted package together for its relative HTML links. Browser execution and production deployment are not implied.
 
-## Latest continuation — structural discovery and search
+## Latest continuation — proposal discovery, 8 November 2026
+
+The directory now exposes twelve immutable source observations, including the bounded Heatmap selected-reading, AI composer-context and Chart-reader recovery proposals. Search `22UK-0`, `72Y-0` or `23MJ-0`, or use the exact file/page/board tuple in [Assignments or Paper references](directory.html). [D04](assignments/D04.md) and [D14](assignments/D14.md) identify their existing builder entries; [D06](assignments/D06.md) keeps its Read me tuple explicitly null. Proposal observation is separate from full-domain delivery, implementation and approval.
+
+The previous nine observations and frozen inventory are preserved. Each HTML builder detail and generated assignment entry now shows its specific observation limits. **160 return/identity checks, 83 directory source probes and 26 structural-evidence checks pass**; browser interaction remains unverified. [Scope and verification](evidence/proposal-reference-discovery-20261108.md) identify the published note pins, actual behavior and remaining proof.
+
+## Retained preceding continuation — structural discovery and search
 
 The [dated read observation](paper/continuations/listed-page-expansion-20261104.json) covers **106 exact pages in 12 files**, with **1,837 complete artboard identities** and **12 successful zero-artboard reads**. Its 136 original receipts are retained in the [compressed raw capture](paper/continuations/listed-page-expansion-20261104.raw.json.gz). The read window was 04 Nov 2026, 08:08:10.061–08:21:02.485 UTC.
 
