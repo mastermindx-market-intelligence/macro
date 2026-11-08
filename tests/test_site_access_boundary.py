@@ -925,7 +925,8 @@ def test_the_child_bio_ref_route_is_one_301_onto_the_public_shell():
     """
     matcher = re.search(r"@x_ref\s*\{(.*?)\n\t\}", CADDY, re.S)
     assert matcher, "@x_ref matcher missing from the Caddyfile"
-    assert "path_regexp x_ref ^/x/(?P<id>[a-z0-9]{4,32})/?$" in matcher.group(1)
+    assert ("path_regexp x_ref "
+            "^/x/(?P<id>[a-z0-9](?:\\.?[a-z0-9]){3,31})/?$") in matcher.group(1)
     assert 'redir @x_ref "/?ref={re.x_ref.id}" 301' in CADDY
     assert not re.search(r"^\s*redir @x_ref [^\n]*\.html", CADDY, re.M)
 
@@ -936,3 +937,29 @@ def test_the_child_bio_ref_route_is_one_301_onto_the_public_shell():
     # closure edges for the site-access-boundary job — would drag the whole
     # app/ tree into a deliberately narrow job. This test owns the Caddyfile
     # side: one 301 onto "/"; test_regwall.py owns "/" being public.
+
+
+def test_the_x_ref_matcher_and_the_bio_validator_accept_the_same_ids():
+    """The edge matcher and tools.xguerrilla.validators.BIO_PATH_RE must agree.
+
+    Registry child ids are dotted (mila.lifts, wren.mp4, desk.and.dusk), so a
+    character class updated on one side and not the other sends a correct bio
+    link to a 401 at the edge — or refuses the correct bio — with every
+    synthetic-id test still green. Compile the Caddyfile's own pattern with
+    Python's re (RE2-compatible subset here) and require shape agreement with
+    the validator on both a dotted real id and the degenerate rejects.
+    """
+    from tools.xguerrilla.validators import BIO_PATH_RE
+
+    patterns = re.findall(r"path_regexp x_ref (\S+)", CADDY)
+    assert len(patterns) == 1, patterns
+    edge = re.compile(patterns[0])
+
+    accepted = ("mila.lifts", "wren.mp4", "harperbuilds", "ab12cd34")
+    rejected = ("ab1", "AB12CD34", "with-dash", "a..b", ".lead", "x" * 33)
+    for child in accepted:
+        assert edge.fullmatch(f"/x/{child}"), child
+        assert BIO_PATH_RE.fullmatch(f"/x/{child}"), child
+    for bad in rejected:
+        assert not edge.fullmatch(f"/x/{bad}"), bad
+        assert not BIO_PATH_RE.fullmatch(f"/x/{bad}"), bad

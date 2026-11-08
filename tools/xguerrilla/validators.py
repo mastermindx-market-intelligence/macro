@@ -70,7 +70,10 @@ _FIRST_WORD = re.compile(r"\s*([A-Za-z'’]+)")
 BIO_HOST = "www.mastermind-x.com"
 #: The path IS the attribution key (BL-2): the registry's immutable child id,
 #: never the handle, and never a campaign parameter.
-BIO_PATH_RE = re.compile(r"^/x/[a-z0-9]{4,32}$")
+#: Registry ids are dotted (desk.and.dusk, mila.lifts, wren.mp4): a bare
+#: [a-z0-9] class refuses 4 of the 5 registered children, so the shape admits
+#: interior single dots only — 4-32 chars, no leading/trailing/double dot.
+BIO_PATH_RE = re.compile(r"^/x/[a-z0-9](?:\.?[a-z0-9]){3,31}$")
 #: Hosts that resolve to somebody else's estate. Refused even when they redirect
 #: to us: with posts and replies URL-free (BL-9) the bio is the single hop, so
 #: BL-3 requires that hop to be org-controlled end to end.
@@ -376,17 +379,17 @@ def _bio_link_violations(
     elif not BIO_PATH_RE.match(path):
         out.append(
             f"bio link path {path!r} is not the settled destination shape "
-            f"^/x/[a-z0-9]{{4,32}}$ (BL-2)"
+            f"^/x/[a-z0-9](?:\\.?[a-z0-9]){{3,31}}$ (BL-2)"
         )
 
     if BIO_PATH_RE.match(path):
         slug = path[len("/x/"):]
         if child_id is not None:
             wanted = str(child_id or "").strip()
-            if not re.fullmatch(r"[a-z0-9]{4,32}", wanted):
+            if not re.fullmatch(r"[a-z0-9](?:\.?[a-z0-9]){3,31}", wanted):
                 out.append(
                     f"child_id {child_id!r} is not a valid attribution key "
-                    f"([a-z0-9]{{4,32}}) — the path cannot bind to it"
+                    f"([a-z0-9](?:\\.?[a-z0-9]){{3,31}}) — the path cannot bind to it"
                 )
             elif path != f"/x/{wanted}":
                 out.append(
