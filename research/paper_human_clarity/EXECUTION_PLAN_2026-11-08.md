@@ -43,3 +43,32 @@ Resource discovery returned 39 entries including folders, archived duplicates, c
 ## Evidence and continuation
 
 This is the initial durable plan, not a completion receipt. Exact later node changes, preserved destinations, screenshots and unresolved gates will be recorded alongside this plan. No Slack transport or background worker is implied. Agent OS organizational linkage is not yet established (PLAN_NOT_ORG_LINKED), which does not block this assigned source/design work.
+
+## Continued enhancement commission — 8 November 2026
+
+The Chairman explicitly continued this mission: go further, fix and upgrade more, keep advancing useful enhancements autonomously, and use saves as continuity rather than stopping points.
+
+### Recovered accepted result
+
+PR #10867 merged at 6b25578ad1b7c10e724b25170e2d0ab46acbead1. All 19 owned blobs match both that merge and Macro main b5674d8ef898e503d6164922654f5ff89be9981c. The prior Paper pass (15 edited files / 18 product-system files audited), preservation package and synchronized personal skill are DO_NOT_REDO except for evidenced defects or new authorized enhancements. The old PR's delivery checkpoint has been corrected and read back.
+
+### Active phase ladder
+
+1. Complete the current International calculation-method journey: render the five missing bodies behind the existing six-topic index, retain the accepted return-calculation view, qualify EN/ZH and both themes, and record exact origins, return destinations and focus/context behavior. Existing R14 frozen product frames and another scanner-to-dossier proposal are separate targets and are not the canvas for this phase.
+2. Close the AAPL News composition gap: preserve the independent NWSM rail, compose a same-context AAPL Headlines → Activity → counted sources / count method → Activity → Headlines journey, and add only the compact degraded variants not already covered by existing QO state semantics. Correct the two evidenced stale QO builder statements after source verification.
+3. Resolve International Library result-route design gaps using incumbent recovery, warning-outcome and correlation owners. Verify exact inputs, metric meaning, scope and existing source availability before composing results; render truthful unavailable/partial states when runtime or fixtures are unproven. Method help is never a substitute for a result destination.
+4. Reassess remaining high-value Paper workflow, accessibility and architecture defects after each accepted slice. Continue the next bounded safe improvement without duplicating accepted matrices, changing held product targets, or widening into unrelated runtime infrastructure.
+
+### Source and effect boundaries
+
+- Reuse protected Mastermind pin 5c3d3885234358aefb97ecdbc59be0864df14f8b; Macro composition/content and product source pin b5674d8ef898e503d6164922654f5ff89be9981c.
+- Same Studio Direct C3 Paper carrier. Fresh exact-file snapshot before each bounded mutation; native screenshots and node/parent readback afterward. No uncertain prior Paper effect survives.
+- New isolated source carrier: sol/paper-workflow-depth-20261108-c3-2335. Prior PR is merged and is not reopened. No runtime application deployment, backend activation, trade, credential change, or unrelated release control is authorized by a design artifact.
+- Root owns all Paper/source edits. Native advisors provide needed read-only architectural/product judgment; no paid Fabric or background-executor claim. Direct composition uses PRINCIPAL_JUDGMENT / LOWER_TOTAL_OVERHEAD. No Fable commission.
+- Advisory questions are distinct: International analytic destination meaning and incumbent-owner reuse; News disclosure/state architecture. Their output is evidence for root adjudication, not new permission or acceptance by itself.
+
+### Acceptance for each slice
+
+A visible control has a named designed destination and a specific return. Ticker/market, period, currency/basis, reference snapshot, filters and valid reading anchor survive according to the owning component's contract. Existing missing/stale/partial/restricted/zero and method-version distinctions stay truthful. Product/help text remains concise; backend details and exact navigation/acceptance contracts live in the linked builder record. Original source wording is preserved before corrections. Record actual Paper node IDs and native visual findings; static design is not runtime navigation proof.
+
+Implementation and applied evidence will be captured in WORKFLOW_ENHANCEMENTS.md and WORKFLOW_ENHANCEMENT_REGISTER.json in this same directory. These extend the existing plan and evidence owner; no parallel lifecycle, queue, registry or program is created.
