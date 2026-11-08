@@ -173,6 +173,7 @@ def _p1_overlay(raw: dict) -> dict:
 
 
 def write_fixture_site(scratch: Path) -> None:
+    from lib.pages import write_unshimmed_html  # noqa: PLC0415
     scratch.mkdir(parents=True, exist_ok=True)
     for name in ("theme.css", "navigation-refresh.css", "theme.js",
                  "logo_config.js", "nav_market.js", "product-nav-icons.css"):
@@ -189,16 +190,19 @@ def write_fixture_site(scratch: Path) -> None:
     items = diff_changes({"gamma_regime": "long"}, {"gamma_regime": "short"})
     raw_p1["state_changes"] = {"vs_asof": "2026-09-08", "items": items}
     stub_p1 = _write_stub(scratch, "p1.json", raw_p1)
-    (scratch / "p1.html").write_text(
+    write_unshimmed_html(
+        scratch / "p1.html",
         render(REPO_ROOT, fixture=stub_p1), encoding="utf-8")
 
     raw_changed = _load_raw()
     raw_changed["state_changes"] = {"vs_asof": "2026-09-08", "items": items}
     stub_changed = _write_stub(scratch, "changed.json", raw_changed)
-    (scratch / "changed.html").write_text(
+    write_unshimmed_html(
+        scratch / "changed.html",
         render(REPO_ROOT, fixture=stub_changed), encoding="utf-8")
 
-    (scratch / "warmup.html").write_text(
+    write_unshimmed_html(
+        scratch / "warmup.html",
         render(REPO_ROOT, fixture=Path("/nonexistent/path/market_structure_latest.json")),
         encoding="utf-8")
 
@@ -206,7 +210,8 @@ def write_fixture_site(scratch: Path) -> None:
         raw_o = _load_raw()
         raw_o["gamma"]["net_gex_pctile"] = pctile
         stub = _write_stub(scratch, f"ord{pctile}.json", raw_o)
-        (scratch / f"ord{pctile}.html").write_text(
+        write_unshimmed_html(
+            scratch / f"ord{pctile}.html",
             render(REPO_ROOT, fixture=stub), encoding="utf-8")
 
 

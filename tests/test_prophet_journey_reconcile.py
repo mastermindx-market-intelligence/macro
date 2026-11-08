@@ -837,7 +837,9 @@ def _with_summary_clock(text: str):
     RE-PARSED so the template's strings are filed exactly as a saved page's
     would be (bs4 >= 4.13: TemplateString)."""
     soup = BeautifulSoup(_corrected_html(), _pjr.HTML_PARSER)
-    for body in soup.select(".pv-setup-body"):
+    # soupsieve 4.0 (2026-11-03) no longer matches <template> contents from the
+    # document; selecting on the template element itself reaches them on 2.x and 4.x.
+    for body in _pjr._select_all_with_templates(soup, ".pv-setup-body"):
         clock = soup.new_tag("p", attrs={"class": "pvs-summary-clock"})
         clock.string = text
         body.insert(0, clock)
@@ -850,7 +852,9 @@ def test_j6_pass_summary_clock_text_is_read_inside_the_template_copy():
     used to bind as '' and never equal its displayed twin (CI-only red on
     the R25 AMD fixture, 2026-09-29)."""
     soup = _with_summary_clock("Source as-of 2026-09-26 · Quote time 2026-09-26T13:30:00Z")
-    template_clock = soup.select_one("template.pvs-body-source .pvs-summary-clock")
+    # soupsieve 4.0 (2026-11-03) no longer matches <template> contents from the
+    # document; selecting on the template element itself reaches them on 2.x and 4.x.
+    template_clock = soup.select_one("template.pvs-body-source").select_one(".pvs-summary-clock")
     assert template_clock is not None
     if hasattr(_pjr, "TemplateString") and _pjr.TemplateString is not _pjr.NavigableString:
         # The control exercises the real path: the string IS a TemplateString.
@@ -864,7 +868,9 @@ def test_j6_pass_summary_clock_text_is_read_inside_the_template_copy():
 
 def test_j6_fail_template_summary_clock_text_differs_from_displayed():
     soup = _with_summary_clock("Source as-of 2026-09-26 · Quote time 2026-09-26T13:30:00Z")
-    soup.select_one("template.pvs-body-source .pvs-summary-clock").string = (
+    # soupsieve 4.0 (2026-11-03) no longer matches <template> contents from the
+    # document; selecting on the template element itself reaches them on 2.x and 4.x.
+    soup.select_one("template.pvs-body-source").select_one(".pvs-summary-clock").string = (
         "Source as-of 2026-09-25 · Quote time 2026-09-25T13:30:00Z")
     chk = _pjr._check_j6(soup, _standouts_payload(), "TEST1")
     assert chk["status"] == "FAIL", chk
@@ -1028,7 +1034,10 @@ def test_j8_fail_duplicate_target_ids():
 
 def _unknown_relation_soup() -> BeautifulSoup:
     soup = BeautifulSoup(_corrected_html(), _pjr.HTML_PARSER)
-    for body in soup.select('[data-setup-ticker="TEST1"] .pv-setup-body'):
+    # soupsieve 4.0 (2026-11-03) no longer matches <template> contents from the
+    # document; selecting on the template element itself reaches them on 2.x and 4.x.
+    wrapper = soup.select_one('[data-setup-ticker="TEST1"]')
+    for body in _pjr._select_all_with_templates(wrapper, ".pv-setup-body"):
         body["data-plan-relation"] = "unknown"
         section = body.select_one(".pvs-plan-relation")
         section["data-plan-relation"] = "unknown"
@@ -1291,7 +1300,9 @@ def test_j9_pass_absent_signal_asof_renders_not_supplied():
     standouts = _standouts_payload()
     standouts["buy"][0].pop("signal_asof")
     soup = BeautifulSoup(_corrected_html(assessment_asof=""), _pjr.HTML_PARSER)
-    clock = soup.select_one(".pvs-assessment-clock")
+    # soupsieve 4.0 (2026-11-03) no longer matches <template> contents from the
+    # document; selecting on the template element itself reaches them on 2.x and 4.x.
+    clock = soup.select_one("template.pvs-body-source").select_one(".pvs-assessment-clock")
     clock.select_one(".l-en").string = "Entry read date not supplied"
     clock.select_one(".l-zh").string = "入场判读日期 来源未提供"
     chk = _pjr._check_j9(soup, _index_payload(), standouts,
@@ -2060,7 +2071,9 @@ def test_input_integrity_j6_rejects_matching_invented_template_and_display(path,
     for piece in pieces[:-1]:
         target = target[piece]
     target[pieces[-1]] = None
-    fields = soup.select('[data-source-field="' + path + '"] dd')
+    # soupsieve 4.0 (2026-11-03) no longer matches <template> contents from the
+    # document; selecting on the template element itself reaches them on 2.x and 4.x.
+    fields = _pjr._select_all_with_templates(soup, '[data-source-field="' + path + '"] dd')
     assert len(fields) >= 2, "test needs both displayed and template copies"
     for field in fields:
         field.clear()
@@ -2324,7 +2337,9 @@ def test_j7_passes_native_descendant_entry_status_without_body_attribute():
 
 def test_j9_fail_assessment_visible_date_differs_from_source():
     soup = BeautifulSoup(_corrected_html(), _pjr.HTML_PARSER)
-    clock = soup.select_one(".pvs-assessment-clock")
+    # soupsieve 4.0 (2026-11-03) no longer matches <template> contents from the
+    # document; selecting on the template element itself reaches them on 2.x and 4.x.
+    clock = soup.select_one("template.pvs-body-source").select_one(".pvs-assessment-clock")
     assert clock is not None
     clock.select_one(".l-en").string = "Entry read date 2099-01-01"
     clock.select_one(".l-zh").string = "入场判读日期 2099-01-01"
@@ -2336,7 +2351,9 @@ def test_j9_fail_assessment_visible_date_differs_from_source():
 
 def test_j9_fail_assessment_visible_dates_disagree_bilingually():
     soup = BeautifulSoup(_corrected_html(), _pjr.HTML_PARSER)
-    clock = soup.select_one(".pvs-assessment-clock")
+    # soupsieve 4.0 (2026-11-03) no longer matches <template> contents from the
+    # document; selecting on the template element itself reaches them on 2.x and 4.x.
+    clock = soup.select_one("template.pvs-body-source").select_one(".pvs-assessment-clock")
     assert clock is not None
     clock.select_one(".l-en").string = "Entry read date 2026-09-26"
     clock.select_one(".l-zh").string = "入场判读日期 2099-01-01"

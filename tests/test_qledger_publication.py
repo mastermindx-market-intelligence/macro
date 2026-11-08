@@ -174,6 +174,122 @@ def test_missing_newly_reachable_object_is_not_a_complete_inventory(tmp_path, li
         checked(root, candidate, baseline, base, limits)
 
 
+def accepted_historical_objects(root, *, count=1, size=64):
+    """Create accepted-but-deleted history in a synthetic local repository."""
+    directory = root / "retired-history"
+    directory.mkdir()
+    for number in range(count):
+        (directory / f"{number}.bin").write_bytes(str(number).encode() + b"x" * size)
+    git(root, "add", ".")
+    git(root, "commit", "-qm", "synthetic accepted historical objects")
+    historical = git(root, "rev-parse", "HEAD")
+    objects = {
+        "commit": historical,
+        "tree": git(root, "rev-parse", historical + ":retired-history"),
+        "blob": git(root, "rev-parse", historical + ":retired-history/0.bin"),
+    }
+    git(root, "rm", "-qr", "retired-history")
+    git(root, "commit", "-qm", "accepted tip no longer contains historical files")
+    return git(root, "rev-parse", "HEAD"), objects
+
+
+@pytest.mark.parametrize("boundary", ["candidate", "frozen", "inventory"])
+@pytest.mark.parametrize("kind", ["blob", "tree", "commit"])
+def test_missing_accepted_history_is_refused(boundary, kind, tmp_path, limits):
+    root, _, values, base = fixture_repo(tmp_path, limits)
+    baseline, historical = accepted_historical_objects(root)
+    candidate, _, snapshot = appended(root, values, base, limits)
+    tree = git(root, "rev-parse", candidate + "^{tree}")
+    assert git(root, "rev-parse", "--is-shallow-repository") == "false"
+    assert git(root, "merge-base", "--is-ancestor", baseline, candidate) == ""
+    assert historical[kind] not in git(
+        root, "rev-list", "--objects", "--no-object-names", candidate, "--not", baseline,
+    ).splitlines()
+    missing = root / ".git/objects" / historical[kind][:2] / historical[kind][2:]
+    missing.unlink()
+    before = physical_state(root)
+    index = (root / ".git/index").read_bytes()
+    refs = git(root, "show-ref")
+
+    with pytest.raises(p.SnapshotIntegrityError, match="INCOMPLETE|GIT_READ"):
+        if boundary == "candidate":
+            checked(root, candidate, baseline, snapshot, limits)
+        elif boundary == "frozen":
+            q.check_frozen_tree(
+                root, tree_oid=tree, parent_commit_oid=baseline,
+                accepted_baseline_oids=(baseline,),
+                binding=binding(baseline, snapshot), limits=limits,
+            )
+        else:
+            q.enumerate_introduced_blobs(
+                root, candidate_oid=candidate,
+                accepted_baseline_oids=(baseline,), limits=limits,
+            )
+
+    assert not missing.exists()
+    assert git(root, "rev-parse", "HEAD") == candidate
+    assert git(root, "show-ref") == refs
+    assert physical_state(root) == before and (root / ".git/index").read_bytes() == index
+
+
+def test_accepted_history_inventory_has_a_finite_capacity(tmp_path, limits):
+    limited = replace(limits, publication_objects=16)
+    root, _, values, base = fixture_repo(tmp_path, limited)
+    baseline, _ = accepted_historical_objects(root, count=24)
+    candidate, _, snapshot = appended(root, values, base, limited)
+    assert len(git(root, "rev-list", "--objects", "--no-object-names",
+                   candidate, "--not", baseline).splitlines()) <= limited.publication_objects
+    with pytest.raises(p.SnapshotIntegrityError, match="NONRETRYABLE_CAPACITY"):
+        checked(root, candidate, baseline, snapshot, limited)
+
+
+def test_complete_oversized_accepted_history_is_not_reclassified_as_introduced(tmp_path, limits):
+    limited = replace(limits, git_blob_bytes=2048)
+    root, _, values, base = fixture_repo(tmp_path, limited)
+    baseline, historical = accepted_historical_objects(root, size=4096)
+    candidate, _, snapshot = appended(root, values, base, limited)
+    result = checked(root, candidate, baseline, snapshot, limited)
+    assert result.status == "NATIVE_VERIFIED" and result.effect == "not_attempted"
+    introduced = q.enumerate_introduced_blobs(
+        root, candidate_oid=candidate, accepted_baseline_oids=(baseline,), limits=limited,
+    )
+    assert historical["blob"] not in {item.object_id for item in introduced}
+
+
+def test_every_supplied_accepted_baseline_requires_complete_history(tmp_path, limits):
+    root, baseline, values, base = fixture_repo(tmp_path, limits)
+    candidate, _, snapshot = appended(root, values, base, limits)
+    git(root, "checkout", "--detach", "-q", baseline)
+    other, historical = accepted_historical_objects(root)
+    missing = root / ".git/objects" / historical["blob"][:2] / historical["blob"][2:]
+    missing.unlink()
+    with pytest.raises(p.SnapshotIntegrityError, match="INCOMPLETE|GIT_READ"):
+        checked(root, candidate, baseline, snapshot, limits,
+                accepted_baseline_oids=(baseline, other))
+    assert not missing.exists()
+
+
+def test_complete_history_does_not_accept_unrelated_target_ancestry(tmp_path, limits):
+    root, baseline, values, base = fixture_repo(tmp_path, limits)
+    candidate, _, snapshot = appended(root, values, base, limits)
+    git(root, "checkout", "--detach", "-q", baseline)
+    other, _ = accepted_historical_objects(root)
+    with pytest.raises(p.SnapshotIntegrityError, match="CONFLICT"):
+        checked(root, candidate, other, snapshot, limits)
+
+
+def test_conversion_refuses_a_missing_accepted_historical_blob(tmp_path, limits):
+    raw = b"original\noriginal\n"
+    root, _, old_oid = legacy_repo(tmp_path, raw)
+    baseline, historical = accepted_historical_objects(root)
+    candidate, snapshot = conversion_candidate(root, raw, limits)
+    missing = root / ".git/objects" / historical["blob"][:2] / historical["blob"][2:]
+    missing.unlink()
+    with pytest.raises(p.SnapshotIntegrityError, match="INCOMPLETE|GIT_READ"):
+        conversion_check(root, candidate, baseline, old_oid, snapshot, limits)
+    assert not missing.exists()
+
+
 def test_shallow_history_is_refused_without_fetching(tmp_path, limits, monkeypatch):
     root, baseline, _, base = fixture_repo(tmp_path, limits)
     (root / ".git/shallow").write_text(baseline + "\n")
@@ -217,8 +333,12 @@ def test_candidate_must_match_explicit_owner_binding(case, tmp_path, limits):
 
 
 def test_introduced_inventory_count_is_bounded_before_returning_success(tmp_path, limits):
-    limited = replace(limits, publication_objects=1)
+    limited = replace(limits, publication_objects=16)
     root, baseline, values, base = fixture_repo(tmp_path, limited)
+    assert len(git(root, "rev-list", "--objects", "--no-object-names",
+                   baseline).splitlines()) <= limited.publication_objects
+    for number in range(24):
+        (root / f"introduced-{number}.bin").write_bytes(str(number).encode())
     candidate, _, snapshot = appended(root, values, base, limited)
     with pytest.raises(p.SnapshotIntegrityError, match="NONRETRYABLE_CAPACITY"):
         checked(root, candidate, baseline, snapshot, limited)
@@ -345,3 +465,292 @@ def test_caller_shallow_override_cannot_hide_repository_shallow_marker(
     assert marker.read_text() == baseline + chr(10)
     assert external.read_bytes() == b""
     assert (root / ".git/index").read_bytes() == index
+
+
+# Compose integrity, exact Git-source identity and continuity; no production binding.
+def legacy_repo(tmp_path, raw):
+    root = tmp_path / "synthetic-legacy"
+    write_members(root, {p.BASE_PATH: raw})
+    git(root, "init", "-q")
+    git(root, "config", "user.name", "Synthetic Conversion")
+    git(root, "config", "user.email", "conversion@example.invalid")
+    git(root, "config", "commit.gpgsign", "false")
+    git(root, "add", ".")
+    git(root, "commit", "-qm", "explicit legacy source")
+    tip = git(root, "rev-parse", "HEAD")
+    return root, tip, git(root, "rev-parse", tip + ":" + p.BASE_PATH)
+
+
+def conversion_candidate(root, raw, limits, *, tx="convert", base_raw=b""):
+    values, base = initial(base_raw, limits)
+    plan = p.plan_append(base, transaction_id=tx, serialized_rows=raw.splitlines(keepends=True), limits=limits)
+    values.update(plan.members)
+    values[p.ROOT_PATH] = plan.root_bytes
+    write_members(root, values)
+    git(root, "add", ".")
+    git(root, "commit", "-qm", "synthetic conversion candidate")
+    return git(root, "rev-parse", "HEAD"), plan.snapshot
+
+
+def conversion_check(root, candidate, baseline, old_oid, snapshot, limits, **changes):
+    args = dict(candidate_oid=candidate, accepted_baseline_oids=(baseline,),
+                target_ref="refs/heads/main", binding=binding(baseline, snapshot),
+                expected_legacy_blob_oid=old_oid, conversion_transaction_id="convert", limits=limits)
+    args.update(changes)
+    return q.check_legacy_conversion_candidate(root, **args)
+
+
+@pytest.mark.parametrize("raw", [b'{bad}\n\n', b'{"id":1}\n{"id":1}\n',
+                                b'{"id":"\xe6\xbc\xa2"}\r\n\n'])
+def test_conversion_witness_binds_exact_source_and_preserves_raw_occurrences(tmp_path, limits, raw):
+    # Original legacy bytes exceed the chosen native base-member ceiling.
+    limits = replace(limits, base_bytes=0)
+    root, baseline, old_oid = legacy_repo(tmp_path, raw)
+    candidate, snapshot = conversion_candidate(root, raw, limits)
+    assert snapshot.root.base.size == 0
+    before = physical_state(root)
+    index = (root / ".git/index").read_bytes()
+    result = conversion_check(root, candidate, baseline, old_oid, snapshot, limits)
+    assert result.status == "LEGACY_CONVERSION_VERIFIED"
+    assert result.publication.candidate_oid == candidate
+    assert result.source_tree_oid == git(root, "rev-parse", baseline + "^{tree}")
+    assert result.source_blob_oid == old_oid
+    assert result.source_logical_digest == hashlib.sha256(raw).hexdigest()
+    assert result.source_logical_bytes == len(raw)
+    assert result.transaction_ids == ("convert",)
+    assert result.eligible_for_cutover is False and result.effect == "not_attempted"
+    assert result.source_assurance == "EXPLICIT_GIT_OBJECTS_NOT_REMOTE_ACCEPTANCE"
+    assert physical_state(root) == before and (root / ".git/index").read_bytes() == index
+    assert git(root, "rev-parse", "HEAD") == candidate
+
+
+@pytest.mark.parametrize("wrong", [b'one\n', b'two\none\none\n', b'one\none\ntwo\nextra\n'])
+def test_format_valid_conversion_cannot_drop_reorder_or_inject_raw_history(tmp_path, limits, wrong):
+    root, baseline, oid = legacy_repo(tmp_path, b'one\none\ntwo\n')
+    candidate, snapshot = conversion_candidate(root, wrong, limits)
+    assert checked(root, candidate, baseline, snapshot, limits).status == "NATIVE_VERIFIED"
+    with pytest.raises(p.SnapshotIntegrityError, match="CONFLICT"):
+        conversion_check(root, candidate, baseline, oid, snapshot, limits)
+
+
+def test_conversion_cannot_substitute_claim_ids_for_storage_transaction_identity(tmp_path, limits):
+    root, baseline, oid = legacy_repo(tmp_path, b'old\n')
+    candidate, snapshot = conversion_candidate(root, b'old\n', limits, tx="different")
+    with pytest.raises(p.SnapshotIntegrityError, match="CONFLICT"):
+        conversion_check(root, candidate, baseline, oid, snapshot, limits)
+
+
+def test_conversion_rejects_nonempty_native_base_even_when_logical_bytes_match(tmp_path, limits):
+    root, baseline, oid = legacy_repo(tmp_path, b'base\ntail\n')
+    candidate, snapshot = conversion_candidate(root, b'tail\n', limits, base_raw=b'base\n')
+    with pytest.raises(p.SnapshotIntegrityError, match="CONFLICT"):
+        conversion_check(root, candidate, baseline, oid, snapshot, limits)
+
+
+def test_conversion_requires_exact_expected_source_blob(tmp_path, limits):
+    root, baseline, _ = legacy_repo(tmp_path, b'original\n')
+    candidate, snapshot = conversion_candidate(root, b'original\n', limits)
+    with pytest.raises(p.SnapshotIntegrityError, match="CONFLICT"):
+        conversion_check(root, candidate, baseline, "0" * 40, snapshot, limits)
+
+
+def test_conversion_rejects_oversized_deleted_intermediate_ancestry(tmp_path, limits):
+    small = replace(limits, git_blob_bytes=2048)
+    root, baseline, oid = legacy_repo(tmp_path, b'original\n')
+    large = root / "rejected-ancestor.bin"
+    large.write_bytes(b"x" * 4096)
+    git(root, "add", ".")
+    git(root, "commit", "-qm", "unpublished oversized ancestor")
+    git(root, "rm", "-q", str(large))
+    candidate, snapshot = conversion_candidate(root, b'original\n', small)
+    with pytest.raises(p.SnapshotIntegrityError, match="NONRETRYABLE_OVERSIZE"):
+        conversion_check(root, candidate, baseline, oid, snapshot, small)
+
+
+def test_conversion_cannot_accept_legacy_selected_as_a_continuity_success(tmp_path, limits):
+    root, baseline, oid = legacy_repo(tmp_path, b'original\n')
+    candidate, snapshot = conversion_candidate(root, b'original\n', limits)
+    with pytest.raises(p.SnapshotIntegrityError, match="PUBLICATION_INPUT"):
+        conversion_check(root, candidate, baseline, oid, snapshot, limits,
+                         binding=LegacyClaimsBinding(root / p.BASE_PATH))
+
+
+def native_candidate(root, values, snapshot):
+    write_members(root, {**values, p.ROOT_PATH: snapshot.root_bytes})
+    git(root, "add", ".")
+    git(root, "commit", "-qm", "synthetic rebased native candidate")
+    return git(root, "rev-parse", "HEAD")
+
+
+def native_checked(root, candidate, accepted, snapshot, receipt, limits, **changes):
+    args = dict(candidate_oid=candidate, accepted_baseline_oids=(accepted,),
+                target_ref="refs/heads/main", binding=binding(accepted, snapshot),
+                native_operation_receipt=receipt, limits=limits)
+    args.update(changes)
+    return q.check_native_operation_candidate(root, **args)
+
+
+def local_receipt(base, local, limits):
+    return q.NativeOperationReceipt("synthetic-operation", "synthetic-lane", base, local,
+                                    ("local",), limits)
+
+
+def test_native_witness_preserves_actual_remote_prefix_and_original_pending_suffix(tmp_path, limits):
+    root, _, values, base = fixture_repo(tmp_path, limits)
+    local = p.plan_append(base, transaction_id="local", serialized_rows=[b"local\n", b"local\n"], limits=limits)
+    accepted, remote_values, remote = appended(root, values, base, limits, tx="remote", rows=[b"remote\n"])
+    receipt = local_receipt(base, local.snapshot, limits)
+    rebased = q.rebase_native_pending(remote, native_operation_receipt=receipt)
+    candidate = native_candidate(root, {**remote_values, **rebased.members}, rebased.snapshot)
+    git(root, "checkout", "--detach", "-q", accepted)
+    before = physical_state(root)
+    index = (root / ".git/index").read_bytes()
+    result = native_checked(root, candidate, accepted, rebased.snapshot, receipt, limits)
+    assert result.status == "NATIVE_OPERATION_VERIFIED" and result.transaction_ids == ("local",)
+    assert result.publication.candidate_oid == candidate and result.source_blob_oid is None
+    assert result.source_tree_oid == git(root, "rev-parse", accepted + "^{tree}")
+    assert result.source_logical_digest == remote.receipt.logical_digest
+    assert result.eligible_for_cutover is False and result.effect == "not_attempted"
+    assert physical_state(root) == before and (root / ".git/index").read_bytes() == index
+    assert git(root, "rev-parse", "HEAD") == accepted
+
+
+@pytest.mark.parametrize("case", ["extra", "wrong-payload", "lost-remote"])
+def test_native_format_and_ancestry_alone_cannot_qualify_wrong_transaction_history(tmp_path, limits, case):
+    root, _, values, base = fixture_repo(tmp_path, limits)
+    local = p.plan_append(base, transaction_id="local", serialized_rows=[b"local\n"], limits=limits)
+    accepted, remote_values, remote = appended(root, values, base, limits, tx="remote", rows=[b"remote\n"])
+    receipt = local_receipt(base, local.snapshot, limits)
+    if case == "lost-remote":
+        wrong = local
+    else:
+        wrong = p.plan_append(remote, transaction_id="local" if case == "wrong-payload" else "unassigned",
+                              serialized_rows=[b"wrong\n"], limits=limits)
+    candidate = native_candidate(root, {**remote_values, **wrong.members}, wrong.snapshot)
+    assert checked(root, candidate, accepted, wrong.snapshot, limits).status == "NATIVE_VERIFIED"
+    with pytest.raises(p.SnapshotIntegrityError, match="CONFLICT"):
+        native_checked(root, candidate, accepted, wrong.snapshot, receipt, limits)
+
+
+@pytest.mark.parametrize("field,value", [("operation_id", "foreign"), ("lane_id", "foreign"),
+    ("authorized_transaction_ids", ()), ("limits", None)])
+def test_native_witness_rejects_mismatched_operation_receipt(tmp_path, limits, field, value):
+    root, accepted, values, base = fixture_repo(tmp_path, limits)
+    candidate, _, local = appended(root, values, base, limits)
+    receipt = replace(local_receipt(base, local, limits), **{field: value})
+    with pytest.raises(p.SnapshotIntegrityError):
+        native_checked(root, candidate, accepted, local, receipt, limits)
+
+
+def test_native_witness_recognizes_already_applied_storage_transaction_without_a_write(tmp_path, limits):
+    root, _, values, base = fixture_repo(tmp_path, limits)
+    candidate, _, local = appended(root, values, base, limits)
+    receipt = local_receipt(base, local, limits)
+    result = native_checked(root, candidate, candidate, local, receipt, limits)
+    assert result.status == "NATIVE_OPERATION_VERIFIED" and result.effect == "not_attempted"
+    assert result.publication.introduced_blobs == 0
+
+
+def test_native_witness_refuses_stale_full_view_replacement_over_new_remote_history(tmp_path, limits):
+    root, _, values, base = fixture_repo(tmp_path, limits)
+    local = p.plan_replace_view(base, transaction_id="local", expected_view_digest=base.root.logical_digest,
+                                replacement_rows=[b"replacement\n"], limits=limits)
+    accepted, remote_values, _ = appended(root, values, base, limits, tx="remote", rows=[b"remote\n"])
+    candidate = native_candidate(root, {**remote_values, **local.members}, local.snapshot)
+    with pytest.raises(p.SnapshotIntegrityError, match="CONFLICT"):
+        native_checked(root, candidate, accepted, local.snapshot, local_receipt(base, local.snapshot, limits), limits)
+
+
+# Independent review F1/F2: a named old tip must not hide intermediate history.
+@pytest.mark.parametrize("intermediate", ["legacy-append", "unrelated-change"])
+def test_review_conversion_requires_exact_direct_parent(tmp_path, limits, intermediate):
+    root, baseline, oid = legacy_repo(tmp_path, b'first\n')
+    if intermediate == "legacy-append":
+        write_members(root, {p.BASE_PATH: b'first\nsecond\n'})
+    else:
+        (root / "unrelated.txt").write_text("an unaccounted intermediate commit\n")
+    git(root, "add", ".")
+    git(root, "commit", "-qm", "unaccounted intermediate history")
+    candidate, snapshot = conversion_candidate(root, b'first\n', limits)
+    assert checked(root, candidate, baseline, snapshot, limits).status == "NATIVE_VERIFIED"
+    with pytest.raises(p.SnapshotIntegrityError, match="CONFLICT"):
+        conversion_check(root, candidate, baseline, oid, snapshot, limits)
+
+
+def test_review_native_cannot_certify_dropping_post_tip_transaction(tmp_path, limits):
+    root, baseline, values, base = fixture_repo(tmp_path, limits)
+    local = p.plan_append(base, transaction_id="local", serialized_rows=[b"local\n"], limits=limits)
+    _, remote_values, _ = appended(root, values, base, limits, tx="remote", rows=[b"remote\n"])
+    candidate = native_candidate(root, {**remote_values, **local.members}, local.snapshot)
+    assert checked(root, candidate, baseline, local.snapshot, limits).status == "NATIVE_VERIFIED"
+    with pytest.raises(p.SnapshotIntegrityError, match="CONFLICT"):
+        native_checked(root, candidate, baseline, local.snapshot,
+                       local_receipt(base, local.snapshot, limits), limits)
+
+
+def test_review_conversion_rejects_extra_parent_even_when_first_parent_is_tip(tmp_path, limits):
+    root, baseline, oid = legacy_repo(tmp_path, b'first\n')
+    candidate, snapshot = conversion_candidate(root, b'first\n', limits)
+    tree = git(root, "rev-parse", candidate + "^{tree}")
+    merge_candidate = git(root, "commit-tree", tree, "-p", baseline, "-p", candidate,
+                          "-m", "synthetic multi-parent candidate")
+    assert checked(root, merge_candidate, baseline, snapshot, limits).status == "NATIVE_VERIFIED"
+    with pytest.raises(p.SnapshotIntegrityError, match="CONFLICT"):
+        conversion_check(root, merge_candidate, baseline, oid, snapshot, limits)
+
+
+@pytest.mark.parametrize("raw", [b"", b"unterminated", b"cr-only\r"])
+def test_review_conversion_source_shape_is_explicit(tmp_path, limits, raw):
+    root, baseline, oid = legacy_repo(tmp_path, raw)
+    candidate, snapshot = conversion_candidate(root, raw if raw.endswith(b"\n") else b"", limits)
+    with pytest.raises(p.SnapshotIntegrityError, match="CONVERSION_INPUT"):
+        conversion_check(root, candidate, baseline, oid, snapshot, limits)
+
+
+def test_review_single_transaction_capacity_is_distinct_from_content_conflict(tmp_path, limits):
+    root, baseline, oid = legacy_repo(tmp_path, b'a\nb\n')
+    values, base = initial(b"", limits)
+    one = p.plan_append(base, transaction_id="convert", serialized_rows=[b"a\n"], limits=limits)
+    two = p.plan_append(one.snapshot, transaction_id="second", serialized_rows=[b"b\n"], limits=limits)
+    candidate = native_candidate(root, {**values, **one.members, **two.members}, two.snapshot)
+    with pytest.raises(p.SnapshotIntegrityError, match="CAPACITY"):
+        conversion_check(root, candidate, baseline, oid, two.snapshot, limits)
+
+
+def test_review_bad_binding_is_rejected_before_loading_legacy_body(tmp_path, limits, monkeypatch):
+    root, baseline, oid = legacy_repo(tmp_path, b'original\n')
+    candidate, snapshot = conversion_candidate(root, b'original\n', limits)
+    called = []
+    original = q.read_legacy_claims_blob
+    def observed(*args, **kwargs):
+        called.append(True)
+        return original(*args, **kwargs)
+    monkeypatch.setattr(q, "read_legacy_claims_blob", observed)
+    with pytest.raises(p.SnapshotIntegrityError, match="PUBLICATION_INPUT"):
+        conversion_check(root, candidate, baseline, oid, snapshot, limits,
+                         accepted_baseline_oids=())
+    assert called == []
+
+
+def test_review_witness_records_accepted_tip_and_planned_conversion(tmp_path, limits):
+    root, baseline, oid = legacy_repo(tmp_path, b'original\n')
+    candidate, snapshot = conversion_candidate(root, b'original\n', limits)
+    witness = conversion_check(root, candidate, baseline, oid, snapshot, limits)
+    assert witness.accepted_tip_oid == baseline
+    assert witness.planned_transaction_ids == ("convert",)
+    assert witness.already_present_transaction_ids == ()
+    assert witness.effect == "not_attempted"
+
+
+@pytest.mark.parametrize("already_present", [False, True])
+def test_review_witness_distinguishes_planned_from_already_present(tmp_path, limits, already_present):
+    root, baseline, values, base = fixture_repo(tmp_path, limits)
+    candidate, _, local = appended(root, values, base, limits)
+    accepted = candidate if already_present else baseline
+    witness = native_checked(root, candidate, accepted, local,
+                             local_receipt(base, local, limits), limits)
+    assert witness.accepted_tip_oid == accepted
+    assert witness.planned_transaction_ids == (() if already_present else ("local",))
+    assert witness.already_present_transaction_ids == (("local",) if already_present else ())
+    assert witness.transaction_ids == ("local",)
+    assert witness.effect == "not_attempted"

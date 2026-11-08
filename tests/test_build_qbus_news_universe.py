@@ -206,6 +206,27 @@ def test_read_parquet_accepts_cli_reachable_file_uri_owner_artifact(tmp_path):
     assert [row["symbol"] for row in rows] == ["NVDA", "MMC"]
 
 
+def test_read_parquet_delegates_to_lib_native_parquet_helper(monkeypatch, tmp_path):
+    """_read_parquet owns only the error mapping; the native read lives once
+    in lib.native_parquet.read_parquet_native (the PR #9043 mechanism)."""
+    paths = _fixtures(tmp_path / "data")
+    real_native = cli.read_parquet_native
+    seen = {}
+
+    def spy(path, **kwargs):
+        seen["path"] = Path(path)
+        seen["kwargs"] = dict(kwargs)
+        return real_native(path, **kwargs)
+
+    monkeypatch.setattr(cli, "read_parquet_native", spy)
+
+    rows = cli._read_parquet(paths["current"], include_index=True)
+
+    assert seen["path"] == paths["current"]
+    assert seen["kwargs"] == {}
+    assert [row["symbol"] for row in rows] == ["NVDA", "MMC"]
+
+
 def test_cli_defaults_to_check_only_and_emits_metadata_not_roster(monkeypatch, tmp_path, capsys):
     paths = _fixtures(tmp_path / "data")
     out = tmp_path / "qbus" / "news_universe.json"
