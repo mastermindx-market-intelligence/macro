@@ -3069,5 +3069,12 @@
       "AIheldp6"
     ]
   },
-  "syntaxVerification": "All delivered JSON is parsed before publication and source contents are read back byte-for-byte."
+  "syntaxVerification": "All delivered JSON is parsed before publication and source contents are read back byte-for-byte.",
+  "agentOSCandidateValidation": {
+    "command": "python3 scripts/agentos.py validate --paths agentos/decisions/DEC-PAPER-HUMAN-CLARITY-LAW.md",
+    "sourcePin": "86f9aa3238dfbcba7262f9d6777cd43c0dc167bb",
+    "scope": "Isolated candidate store with exact incumbent validator and current program registry. Full-store CI remains separate.",
+    "exitCode": 0,
+    "stdout": "agentos: 1 records (0 workstreams, 1 decisions, 0 discoveries, 0 handoffs) — 0 error(s), 0 warning(s)"
+  }
 }
