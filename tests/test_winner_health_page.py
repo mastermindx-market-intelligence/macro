@@ -576,3 +576,38 @@ def test_zero_or_missing_off_band_prints_no_count(tmp_path):
     assert "cleared one of the three bars recently" in hero1
     assert "in the last" not in hero1
     assert "只要在近期达到过三道门槛之一就会列出" in hero1
+
+
+@pytest.mark.parametrize("asof", ["2026-02-30", "2026-13-01", "2026-00-01",
+                                  "2026-01-32", "0000-01-01", "2025-02-29"])
+def test_native_invalid_calendar_date_reaches_warm_null(tmp_path, monkeypatch, asof):
+    """Exercise native loading: the fixture override intentionally skips age checks."""
+    data = tmp_path / "data"
+    path = data / "top_maturation" / "latest.json"
+    path.parent.mkdir(parents=True)
+    path.write_text(json.dumps(_ctx(asof=asof)), encoding="utf-8")
+    monkeypatch.setattr(bwh, "_data_dir", lambda root: data)
+    assert bwh._load_context(data) is None
+    html = bwh.render(REPO)
+    assert "has not landed yet" in html
+    assert "正在预热" in html
+    assert asof not in html
+
+
+@pytest.mark.parametrize("age, expected", [(0, False), (6, False), (7, True), (-1, False)])
+def test_native_age_boundary_is_unchanged(tmp_path, age, expected):
+    from datetime import date, timedelta
+    ctx = _ctx(asof=(date.today() - timedelta(days=age)).isoformat())
+    path = tmp_path / "top_maturation" / "latest.json"
+    path.parent.mkdir()
+    path.write_text(json.dumps(ctx), encoding="utf-8")
+    assert bwh._is_stale(ctx) is expected
+    assert bwh._load_context(tmp_path) == (None if expected else ctx)
+
+
+def test_valid_leap_date_and_fixture_age_override_remain_supported(tmp_path):
+    assert bwh._is_stale({"asof": "2024-02-29"}) is True
+    ctx = _ctx(asof="2026-02-30")
+    path = tmp_path / "override.json"
+    path.write_text(json.dumps(ctx), encoding="utf-8")
+    assert bwh._load_context(tmp_path, fixture=path) == ctx

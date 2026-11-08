@@ -45,10 +45,10 @@
     {% with compare_catalogue=panel.compare_catalogue, context_id=panel.context_id, generation=panel.generation|default('') %}{% include 'intl_workspace/compare.html.j2' %}{% endwith %}
   {% endfor %}
   {% for panel in intl_workspace.macros|default([]) %}
-    {% with macro_section=panel.macro_section, registry=intl_workspace.macro_registry, context_id=panel.context_id, panel_context=panel.context, generation=panel.generation|default(none), source_notice=panel.source_notice|default(none) %}{% include 'intl_workspace/macro.html.j2' %}{% endwith %}
+    {% with macro_section=panel.macro_section, registry=intl_workspace.macro_registry, context_id=panel.context_id, panel_context=panel.context, generation=panel.generation|default(none), source_notice=panel.source_notice|default(none), investigation_actions=panel.investigation_actions|default({}) %}{% include 'intl_workspace/macro.html.j2' %}{% endwith %}
   {% endfor %}
   {% for panel in intl_workspace.risks|default([]) %}
-    {% with risk_section=panel.risk_section, registry=intl_workspace.risk_registry, context_id=panel.context_id, panel_context=panel.context, generation=panel.generation|default(none) %}{% include 'intl_workspace/risk.html.j2' %}{% endwith %}
+    {% with risk_section=panel.risk_section, registry=intl_workspace.risk_registry, context_id=panel.context_id, panel_context=panel.context, generation=panel.generation|default(none), investigation_actions=panel.investigation_actions|default({}) %}{% include 'intl_workspace/risk.html.j2' %}{% endwith %}
   {% endfor %}
   {% if intl_workspace.library|default(none) %}
     {% with payload=intl_workspace.library, context_id='im-catalogue', generation=intl_workspace.library_generation|default('') %}{% include 'intl_workspace/library.html.j2' %}{% endwith %}

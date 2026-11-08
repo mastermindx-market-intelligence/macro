@@ -150,7 +150,7 @@ def render(
     source_notice=SOURCE_NOTICE,
 ):
     environment = Environment(
-        loader=FileSystemLoader(Path(__file__).resolve().parents[1]),
+        loader=FileSystemLoader([Path(__file__).resolve().parents[1], Path(__file__).resolve().parents[1] / "templates"]),
         autoescape=False,
         undefined=StrictUndefined,
     )

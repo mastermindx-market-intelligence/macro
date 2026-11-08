@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import ast
 import logging
+import json
 import types
 from copy import deepcopy
 from pathlib import Path
@@ -106,7 +107,9 @@ def _build_all(tmp_path, load_history, load_history_result):
 
 
 def _history_sources(namespace=None):
-    ns = {"logging": logging, "log": _Log()}
+    from lib import config
+    ns = {"logging": logging, "json": json, "log": _Log(), "config": config}
+    _exec_function(ROOT / "scripts/build_intl.py", "_history_disclosure_allowed", ns)
     if namespace:
         ns.update(namespace)
     return _exec_function(ROOT / "scripts/build_intl.py", "_history_publication_sources", ns), ns["log"]
@@ -362,4 +365,27 @@ def test_unknown_sources_mount_without_inventing_grants(monkeypatch):
     assert all(s["source_read_status"] == "unknown" and s["points"] == [] for s in sections)
     assert all(s["events"]["status"] == "unknown" for s in sections)
     assert all(s["track_record"]["status"] == "unknown" for s in sections)
+    assert log.errors == []
+
+
+def test_bridge_executes_actual_policy_owner_for_bound_synthetic_receipt(tmp_path, monkeypatch):
+    """A complete extracted owner may allow only the separately adopted scope.
+
+    The actual helper serializes local synthetic rows; no acquisition or engine
+    is invoked. This catches missing globals hidden by invalid receipt negatives.
+    """
+    from lib import config
+    from tests.test_intl_history_publication_build import _native_history_receipt
+
+    receipt, settings = _native_history_receipt(tmp_path, monkeypatch)
+    monkeypatch.setattr(config, "load", lambda: settings)
+    fn, log = _history_sources()
+    source = fn({"JP": receipt})["JP"]
+    assert source["capabilities"]["history_source"] == dict(metadata="allowed", value="allowed")
+    assert source["capabilities"]["events"] == source["capabilities"]["track_record"] == dict(metadata="unknown", value="unknown")
+    assert source["capabilities"]["snapshot_compare"] == dict(left_observation_at=None, right_observation_at=None)
+    assert log.errors == []
+    settings["intl"]["history_publication"]["status"] = "proposed"
+    source = fn({"JP": receipt})["JP"]
+    assert source["capabilities"]["history_source"] == dict(metadata="unknown", value="unknown")
     assert log.errors == []

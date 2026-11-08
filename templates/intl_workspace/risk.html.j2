@@ -1,3 +1,4 @@
+{% from 'intl_workspace/_investigation_action.html.j2' import investigate %}
 {% set quality_labels = {
   'qualified': {'en': 'Qualified', 'zh': '符合条件'},
   'stale': {'en': 'Stale data', 'zh': '数据过期'},
@@ -283,6 +284,7 @@
             <td headers="{{ row_id|e }} {{ context_id|e }}-pressure-currency">
               <strong class="intl-risk__cell-label">{{ words('Currency %', '汇率 %') }}</strong>
               {{ metric_number(row.get('currency_return'), 'percent') }}
+              {% if row.get('currency_return') is mapping and row.get('currency_return').get('quality') == 'qualified' and row.get('currency_return').get('value') is not none %}{{ investigate(investigation_actions|default({}), row.market_id ~ '.currency_return', generation) }}{% endif %}
               {% set ccy = row.get('currency_return') %}
               {% if ccy is mapping and ccy.get('window') is mapping %}
                 <small>{{ ccy.window.get('start')|e }} – {{ ccy.window.get('end')|e }}</small>
@@ -291,6 +293,7 @@
             <td headers="{{ row_id|e }} {{ context_id|e }}-pressure-credit">
               <strong class="intl-risk__cell-label">{{ words('Country credit change bp', '国家信用变化 bp') }}</strong>
               {{ metric_number(row.get('country_credit_change'), 'bp') }}
+              {% if row.get('country_credit_change') is mapping and row.get('country_credit_change').get('quality') == 'qualified' and row.get('country_credit_change').get('value') is not none %}{{ investigate(investigation_actions|default({}), row.market_id ~ '.country_credit_change', generation) }}{% endif %}
               {% set credit = row.get('country_credit_change') %}
               {% if credit is mapping %}
                 {% if credit.get('observation_at') is not none %}<small>{{ words('Observation', '观测') }} {{ credit.get('observation_at')|e }}</small>{% endif %}
@@ -303,6 +306,7 @@
             <td headers="{{ row_id|e }} {{ context_id|e }}-pressure-account">
               <strong class="intl-risk__cell-label">{{ words('Current account %GDP', '经常账户占GDP%') }}</strong>
               {{ metric_number(row.get('annual_current_account'), 'gdp') }}
+              {% if row.get('annual_current_account') is mapping and row.get('annual_current_account').get('quality') == 'qualified' and row.get('annual_current_account').get('value') is not none %}{{ investigate(investigation_actions|default({}), row.market_id ~ '.annual_current_account', generation) }}{% endif %}
               {% set annual = row.get('annual_current_account') %}
               {% if annual is mapping %}
                 {% set support = annual.get('support') %}
@@ -318,6 +322,7 @@
             <td headers="{{ row_id|e }} {{ context_id|e }}-pressure-breadth">
               <strong class="intl-risk__cell-label">{{ words('Above 50-day average %', '高于50日均线 %') }}</strong>
               {{ metric_number(row.get('constituent_breadth_50d'), 'percent') }}
+              {% if row.get('constituent_breadth_50d') is mapping and row.get('constituent_breadth_50d').get('quality') == 'qualified' and row.get('constituent_breadth_50d').get('value') is not none %}{{ investigate(investigation_actions|default({}), row.market_id ~ '.constituent_breadth_50d', generation) }}{% endif %}
               {% set breadth = row.get('constituent_breadth_50d') %}
               {% set bsupport = breadth.get('support') if breadth is mapping else none %}
               {% if bsupport is mapping %}

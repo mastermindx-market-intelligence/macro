@@ -90,7 +90,7 @@ def render(
     generation="im-workspace-generation:12345678-1234-4123-8123-123456789012",
 ):
     environment = Environment(
-        loader=FileSystemLoader(ROOT),
+        loader=FileSystemLoader([ROOT, ROOT / "templates"]),
         autoescape=False,
         undefined=StrictUndefined,
     )
@@ -476,7 +476,70 @@ def test_domain_copy_keeps_noncausal_nonissuer_semantics_and_reason_spacing():
     assert "pp" in card
 
 
-def test_publisher_static_wiring_passes_empty_grants_and_preserves_failures():
+def _keyword_value(call, name):
+    """Return the value bound to a keyword argument, or None when absent."""
+    for keyword in call.keywords:
+        if keyword.arg == name:
+            return keyword.value
+    return None
+
+def _is_ref(node, base, key=None):
+    """Match the bare name only without a key; a key requires that exact subscript."""
+    if key is None:
+        return isinstance(node, ast.Name) and node.id == base
+    return (
+        isinstance(node, ast.Subscript)
+        and isinstance(node.value, ast.Name)
+        and node.value.id == base
+        and isinstance(node.slice, ast.Constant)
+        and node.slice.value == key
+    )
+
+def _assert_native_summary_bound(function, summary):
+    assert isinstance(summary, ast.Dict) and len(summary.keys) == 1
+    assert isinstance(summary.keys[0], ast.Constant) and summary.keys[0].value == "us_transmission"
+    call = summary.values[0]
+    assert isinstance(call, ast.Call) and isinstance(call.func, ast.Name)
+    assert call.func.id == "risk_summary_eligibility"
+    assert _is_ref(_keyword_value(call, "risk_desk"), "risk_desk")
+    assert _is_ref(_keyword_value(call, "publication"), "risk_publication")
+    policy = ast.parse('(config.load().get("intl") or {}).get("risk_summary_publication")', mode="eval").body
+    assert ast.dump(_keyword_value(call, "policy")) == ast.dump(policy)
+    args = dict(zip((arg.arg for arg in function.args.kwonlyargs), function.args.kw_defaults))
+    assert isinstance(args["risk_publication"], ast.Constant) and args["risk_publication"].value is None
+    assert any(isinstance(node, ast.ImportFrom) and node.module == "lib.intl_risk_publication"
+               and any(alias.name == "risk_summary_eligibility" and alias.asname is None for alias in node.names)
+               for node in ast.walk(function))
+
+def _assert_native_publication_write_bound(source):
+    main = next(node for node in ast.parse(source).body
+                if isinstance(node, ast.FunctionDef) and node.name == "main")
+    assignments = [node for node in ast.walk(main) if isinstance(node, ast.Assign)
+                   and len(node.targets) == 1 and isinstance(node.targets[0], ast.Name)
+                   and node.targets[0].id == "_risk_publication" and isinstance(node.value, ast.Call)]
+    assert len(assignments) == 1
+    assignment = assignments[0]
+    call = assignment.value
+    assert isinstance(call.func, ast.Name) and call.func.id == "publish_risk_snapshot"
+    assert len(call.args) == 2 and ast.dump(call.args[0]) == ast.dump(ast.parse('_ird_dir / "latest.json"', mode="eval").body)
+    assert _is_ref(call.args[1], "_intl_risk_payload")
+    assert any(isinstance(node, ast.ImportFrom) and node.module == "lib.intl_risk_publication"
+               and any(alias.name == "publish_risk_snapshot" and alias.asname is None for alias in node.names)
+               for node in ast.walk(main))
+    owner_try = next(node for node in ast.walk(main) if isinstance(node, ast.Try) and assignment in node.body)
+    assert any(isinstance(node, ast.Assign) and node.lineno < owner_try.lineno
+               and any(isinstance(target, ast.Name) and target.id == "_risk_publication" for target in node.targets)
+               and isinstance(node.value, ast.Constant) and node.value.value is None for node in main.body)
+    assert not any(isinstance(node, (ast.Assign, ast.AnnAssign))
+                   and any(isinstance(target, ast.Name) and target.id == "_risk_publication"
+                           for target in getattr(node, "targets", [getattr(node, "target", None)]))
+                   for handler in owner_try.handlers for node in ast.walk(handler))
+    workspace_calls = [node for node in ast.walk(main) if isinstance(node, ast.Call)
+                       and isinstance(node.func, ast.Name) and node.func.id == "_publication_workspace"]
+    assert len(workspace_calls) == 1
+    assert _is_ref(_keyword_value(workspace_calls[0], "risk_publication"), "_risk_publication")
+
+def test_publisher_static_wiring_uses_native_publication_and_preserves_failures():
     source = PUBLISHER_PATH.read_text(encoding="utf-8")
     tree = ast.parse(source)
     function = next(
@@ -485,9 +548,18 @@ def test_publisher_static_wiring_passes_empty_grants_and_preserves_failures():
         if isinstance(node, ast.FunctionDef) and node.name == "_publication_workspace"
     )
     text = ast.get_source_segment(source, function)
-    assert "measures={}" in text
-    assert "field_support={}" in text
-    assert "summary_eligibility={}" in text
+    # The original official annual adapter is now restored alongside, and
+    # remains separately evidence-qualified from the native summary receipt.
+    assert 'annual_field = admit_current_account_field(' in text
+    assert 'ez_annual_field = admit_eurostat_annual_field(' in text
+    assert '"JP.annual_current_account": annual_field["measure"]' in text
+    assert 'EUROSTAT_ANNUAL_FIELD: ez_annual_field["measure"]' in text
+    assert 'if item["support"] is not None' in text
+    assert 'if ez_annual_field["evidence"] is not None else {}' in text
+    risk_call = next(node for node in ast.walk(function) if isinstance(node, ast.Call)
+                     and isinstance(node.func, ast.Name) and node.func.id == "attach_risks")
+    _assert_native_summary_bound(function, _keyword_value(risk_call, "summary_eligibility"))
+    _assert_native_publication_write_bound(source)
     assert "destinations={}" in text
     assert "risk_desk=risk_desk" in text
     assert "cgl=cgl" in text
@@ -619,3 +691,27 @@ def test_attach_risks_rejects_duplicate_context_and_existing_risks():
         attach_risks(workspace, **source)
     workspace, source = mount_fixture()
     assert attach_risks(None, **source) is None
+
+
+@pytest.mark.parametrize('old,new', [
+    ('publication=risk_publication,', 'publication=None,'),
+    ('risk_desk=risk_desk, publication=risk_publication,', 'risk_desk={}, publication=risk_publication,'),
+    ('get("risk_summary_publication"))', 'get("eod_publication"))'),
+    ('risk_publication=None):', 'risk_publication=True):'),
+    ('publish_risk_snapshot(_ird_dir / "latest.json", _intl_risk_payload)',
+     'publish_risk_snapshot(_ird_dir / "other.json", _intl_risk_payload)'),
+    ('publish_risk_snapshot(_ird_dir / "latest.json", _intl_risk_payload)',
+     'publish_risk_snapshot(_ird_dir / "latest.json", {})'),
+    ('risk_publication=_risk_publication,', 'risk_publication=None,'),
+])
+def test_actual_native_caller_guard_rejects_unbound_receipt_or_scope(old, new):
+    source = PUBLISHER_PATH.read_text(encoding='utf-8')
+    assert old in source
+    changed = source.replace(old, new, 1)
+    function = next(n for n in ast.parse(changed).body
+                    if isinstance(n, ast.FunctionDef) and n.name == '_publication_workspace')
+    call = next(n for n in ast.walk(function) if isinstance(n, ast.Call)
+                and isinstance(n.func, ast.Name) and n.func.id == 'attach_risks')
+    with pytest.raises(AssertionError):
+        _assert_native_summary_bound(function, _keyword_value(call, 'summary_eligibility'))
+        _assert_native_publication_write_bound(changed)

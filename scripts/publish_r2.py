@@ -331,7 +331,7 @@ def _transfer_config(concurrency: int = _TRANSFER_CONCURRENCY):
     return TransferConfig(max_concurrency=concurrency)
 
 
-def _client(workers: int = 32):
+def _client(workers: int = 32, *, single_attempt: bool = False):
     """S3 client for R2, or None when creds are absent (graceful no-op).
 
     `workers` sizes the connection pool — pass the SAME value handed to
@@ -351,15 +351,21 @@ def _client(workers: int = 32):
     # publish lists its dirs SERIALLY inside daily.yml's 150-min engine job.
     kw = dict(region_name="auto", signature_version="s3v4",
               max_pool_connections=_pool_size(workers),
-              retries={"max_attempts": 10, "mode": "adaptive"},
+              retries=({"total_max_attempts": 1, "mode": "standard"} if single_attempt else
+                       {"max_attempts": 10, "mode": "adaptive"}),
               connect_timeout=15, read_timeout=60)
     try:  # newer botocore: keep R2 happy (it rejects the default CRC32 trailer)
         cfg = Config(**kw, request_checksum_calculation="when_required",
                      response_checksum_validation="when_required")
     except TypeError:
         cfg = Config(**kw)
-    return boto3.client("s3", endpoint_url=ep, aws_access_key_id=ak,
-                        aws_secret_access_key=sk, config=cfg)
+    client = boto3.client("s3", endpoint_url=ep, aws_access_key_id=ak,
+                          aws_secret_access_key=sk, config=cfg)
+    if single_attempt:
+        # S3's region-redirect handler can request a resend independently of the
+        # ordinary retry budget. Abort before that handler on any failed reply.
+        client.meta.events.register_first("needs-retry.s3", _stop_selected_replay)
+    return client
 
 
 def _md5(p: Path) -> str:
@@ -578,7 +584,7 @@ def _index_gex_history_store_override(dirs) -> Path | None:
 def publish(dirs, dry_run: bool = False, workers: int = 32,
             manifest: bool = True, force_manifest: bool = False,
             stock_ticker: str | None = None,
-            stock_source_file: str | Path | None = None) -> int:
+            stock_source_file: str | Path | None = None):
     # A narrow, explicitly selected stock-library record uses this incumbent
     # publisher, with its normal hash delta, upload retry and failure reporting.
     # It must never replace the universe manifest or walk unrelated local files.
@@ -756,6 +762,261 @@ def publish(dirs, dry_run: bool = False, workers: int = 32,
     log.info("R2 publish done: %d uploaded, %d unchanged, %d failed (bucket=%s)",
              up, skip, failed, bucket)
     return 1 if failed else 0
+
+
+# Finite public International generation branch of this incumbent publisher.
+# It never walks feeds/, replaces its manifest, or retries an uncertain PUT.
+_INTL_ORIGIN = 'https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev'
+_INTL_SCHEMA = 'intl.public-delivery.v1'
+from lib.intl_durable_publication import IntlPublicationError, IntlPublicationUnknown
+
+
+
+
+
+
+def _intl_need(value, message):
+    if not value:
+        raise IntlPublicationError(message)
+
+
+
+
+
+
+
+
+
+
+
+
+def _intl_decode(raw, encoding, limit):
+    import zlib
+    if encoding in ('', 'identity', None):
+        _intl_need(len(raw) <= limit, 'oversize public body')
+        return raw
+    _intl_need(encoding.lower() == 'gzip', 'unsupported public content encoding')
+    d = zlib.decompressobj(16 + zlib.MAX_WBITS)
+    try:
+        out = d.decompress(raw, limit + 1)
+    except zlib.error:
+        raise IntlPublicationError('corrupt encoded public body') from None
+    _intl_need(len(out) <= limit and d.eof and not d.unused_data and not d.unconsumed_tail,
+                'oversize or incomplete encoded public body')
+    return out
+
+
+def _intl_public_get(origin, name, limit, *, absent=False):
+    import http.client
+    from urllib.parse import urlsplit
+    _intl_need(origin == _INTL_ORIGIN and re.fullmatch(r'intl_(?:generation|policy_points)_[A-Za-z0-9_-]+\.json', name),
+                'invalid exact public target')
+    u = urlsplit(origin); connection = http.client.HTTPSConnection(u.hostname, timeout=10)
+    try:
+        connection.request('GET', '/feeds/' + name, headers={
+            'Accept': 'application/json', 'Accept-Encoding': 'gzip, identity', 'Cache-Control': 'no-cache'})
+        response = connection.getresponse()
+        if response.status == 404 and absent:
+            return None
+        _intl_need(response.status == 200, 'public response unavailable; no redirect or fallback')
+        _intl_need((response.getheader('Content-Type') or '').split(';')[0].strip().lower() == 'application/json',
+                    'public response is not JSON')
+        raw = response.read(limit + 65537)
+        _intl_need(len(raw) <= limit + 65536, 'oversize public wire body')
+        return _intl_decode(raw, response.getheader('Content-Encoding'), limit)
+    except IntlPublicationError:
+        raise
+    except Exception:
+        raise IntlPublicationError('public read unavailable') from None
+    finally:
+        connection.close()
+
+
+
+
+def _stop_selected_replay(response=None, caught_exception=None, operation=None, **kwargs):
+    """Public botocore event seam: stop, never follow/refresh/resend a request."""
+    if response is not None and response[0].status_code == 200:
+        return None
+    status = response[0].status_code if response is not None else None
+    error = IntlPublicationError('selected transport failed; no SDK retry or redirect')
+    # Only bounded status facts, never SDK/provider prose or response bodies.
+    error.response = {'ResponseMetadata': {'HTTPStatusCode': status}, 'Error': {
+        'Code': 'NoSuchKey' if status == 404 and getattr(operation, 'name', None) == 'GetObject' else 'SelectedTransportStopped'}}
+    raise error
+
+
+def _intl_transport_contract(client):
+    """Inspect the installed incumbent SDK before granting this write path.
+
+    Versions alone do not prove that botocore serializes the conditional headers.
+    Bind the actual installed service model and resolved single-attempt setting;
+    never return client config, endpoint, credentials or arbitrary exception text.
+    """
+    from importlib.metadata import version
+    versions = {key: version(key) for key in ('boto3', 'botocore')}
+    _intl_need(all(re.fullmatch(r'[0-9]+(?:\.[0-9]+){2}', v) for v in versions.values()),
+                'unidentified incumbent SDK')
+    operation = client.meta.service_model.operation_model('PutObject')
+    members = operation.input_shape.members
+    _intl_need(operation.http == {'method': 'PUT', 'requestUri': '/{Bucket}/{Key+}'}
+                and all(key in members and members[key].serialization == {
+                    'location': 'header', 'name': header}
+                    for key, header in (('IfMatch', 'If-Match'), ('IfNoneMatch', 'If-None-Match')))
+                and client.meta.config.retries.get('total_max_attempts') == 1,
+                'conditional single-attempt transport unavailable')
+    return {**versions, 'service': 's3', 'operation': 'PutObject',
+            'conditions': ['If-Match', 'If-None-Match'], 'total_max_attempts': 1,
+            'body': 'identity-json; public read compared after content decoding'}
+
+
+def _verify_intl_transport(spec, blobs):
+    """Read the consumer's exact path/decoded bytes; never a PUT/ETag shortcut."""
+    for obj in spec['objects']:
+        _intl_need(_intl_public_get(spec['origin'], obj['name'], obj['bytes']) == blobs[obj['name']],
+                    'public bytes differ from exact producer')
+    current = 'intl_generation_current.json'
+    _intl_need(_intl_public_get(spec['origin'], current, len(blobs[current])) == blobs[current], 'public current moved')
+
+
+def _intl_selection(authorize):
+    """Private source-owned callback, not a CLI/HTTP ready flag or file list.
+
+    The sole production caller is the incumbent durable transaction. It invokes
+    its fixed native admission owner before transport; this helper independently
+    confines transport to that exact content-addressed Intl namespace.
+    """
+    _intl_need(callable(authorize), "fixed source admission callback required")
+    value = authorize()
+    _intl_need(type(value) is tuple and len(value) == 3, 'admission result unavailable')
+    spec, blobs, snapshot = value
+    _intl_need(type(spec) is dict and spec.get('origin') == _INTL_ORIGIN
+                and type(blobs) is dict and type(snapshot) is list
+                and type(spec.get('objects')) is list and 3 <= len(spec['objects']) <= 4,
+                'invalid selected closure')
+    names = []
+    for obj in spec['objects']:
+        _intl_need(type(obj) is dict and set(obj) == {'name', 'sha256', 'bytes'}
+                    and type(obj['name']) is str and re.fullmatch(
+                        r'intl_(?:generation|policy_points)_[A-Za-z0-9_-]+\.json', obj['name'])
+                    and type(obj['bytes']) is int and 0 < obj['bytes'] <= 8 * 1024 * 1024
+                    and type(blobs.get(obj['name'])) is bytes
+                    and len(blobs[obj['name']]) == obj['bytes']
+                    and hashlib.sha256(blobs[obj['name']]).hexdigest() == obj['sha256'],
+                    'invalid selected object')
+        names.append(obj['name'])
+    current = 'intl_generation_current.json'
+    _intl_need(len(set(names)) == len(names) and set(names) == set(blobs) and names[-1] == current,
+                'invalid selected order or sibling')
+    descriptor = json.loads(blobs[current])
+    witness = 'intl_generation_descriptor_' + hashlib.sha256(blobs[current]).hexdigest() + '.json'
+    artifact = descriptor.get('artifact_name')
+    _intl_need(witness in blobs and blobs[witness] == blobs[current] and artifact in blobs
+                and re.fullmatch(r'intl_generation_[0-9a-f-]{36}_[0-9a-f]{64}\.json', artifact)
+                and descriptor.get('artifact_sha256') == hashlib.sha256(blobs[artifact]).hexdigest()
+                and descriptor.get('artifact_bytes') == len(blobs[artifact])
+                and descriptor.get('generation') == spec.get('generation'), 'selected descriptor differs')
+    contract = json.loads(blobs[artifact]); points = contract.get('policy_points_ref')
+    expected = [artifact, witness, current]
+    if points is not None:
+        _intl_need(type(points) is dict and points.get('artifact_name') in blobs
+                    and re.fullmatch(r'intl_policy_points_[0-9a-f-]{36}_[0-9a-f]{64}\.json', points['artifact_name'])
+                    and points.get('artifact_sha256') == hashlib.sha256(blobs[points['artifact_name']]).hexdigest()
+                    and points.get('artifact_bytes') == len(blobs[points['artifact_name']]),
+                    'selected point identity differs')
+        expected.insert(0, points['artifact_name'])
+    _intl_need(names == expected, 'dependencies must precede the exact current selector')
+    return value
+
+
+def _bucket_intl_current(client, bucket):
+    try:
+        old = client.get_object(Bucket=bucket, Key='feeds/intl_generation_current.json')
+    except Exception as error:
+        code = str(getattr(error, 'response', {}).get('Error', {}).get('Code', ''))
+        _intl_need(code in {'NoSuchKey', '404'}, 'bucket current unavailable')
+        return None, None
+    stream = old['Body']
+    try:
+        wire = stream.read(256 * 1024 + 65537)
+    finally:
+        stream.close()
+    _intl_need(len(wire) <= 256 * 1024 + 65536, 'oversize bucket current')
+    decoded = _intl_decode(wire, old.get('ContentEncoding'), 256 * 1024)
+    etag = old.get('ETag')
+    _intl_need(type(etag) is str and re.fullmatch(r'"[A-Za-z0-9._-]{1,128}"', etag), 'invalid bucket current identity')
+    return decoded, etag
+
+
+def _capture_intl_target():
+    """Original target observation BEFORE computation, never an old Git alias."""
+    _intl_need((config.load().get('r2_data_plane') or {}).get('public_base') == _INTL_ORIGIN,
+                'configured public origin differs from native consumer')
+    _intl_need(re.fullmatch(r'https://[0-9a-f]{32}\.(?:(?:eu|fedramp)\.)?r2\.cloudflarestorage\.com',
+                            os.environ.get('R2_ENDPOINT', '')) is not None, 'selected publication requires the incumbent R2 endpoint')
+    client = _client(1, single_attempt=True)
+    _intl_need(client is not None and os.environ.get('R2_BUCKET'), 'publication credentials unavailable')
+    transport = _intl_transport_contract(client)
+    bucket = os.environ['R2_BUCKET']
+    before = _intl_public_get(_INTL_ORIGIN, 'intl_generation_current.json', 256 * 1024, absent=True)
+    body, etag = _bucket_intl_current(client, bucket)
+    _intl_need(body == before, 'bucket/public original current differs; cached public state is not authority')
+    return {'client': client, 'bucket': bucket, 'body': body, 'transport': transport,
+            'prior': {'exists': body is not None, 'sha256': hashlib.sha256(body).hexdigest() if body is not None else None, 'etag': etag}}
+
+
+def _check_intl_target(target):
+    before = _intl_public_get(_INTL_ORIGIN, 'intl_generation_current.json', 256 * 1024, absent=True)
+    body, etag = _bucket_intl_current(target['client'], target['bucket'])
+    _intl_need(before == body == target['body'] and etag == target['prior']['etag'],
+                'original public/bucket current changed; no newer-result adoption')
+
+
+def _publish_intl(*, authorize, state, checkpoint, fence, target):
+    """One original operation, conditional single-attempt writes, no replay/delete."""
+    spec, blobs, snapshot = _intl_selection(authorize)
+    _intl_need(type(state) is dict and not state and callable(checkpoint) and callable(fence),
+                'existing publication operation must be reconciled; no replay')
+    _intl_need(type(target) is dict and set(target) == {'client','bucket','body','transport','prior'}, 'original target observation missing')
+    client, bucket, prior = target['client'], target['bucket'], target['prior']
+    _intl_need(_intl_transport_contract(client) == target['transport'], 'original transport changed')
+    state.update(schema=_INTL_SCHEMA, state='prepared', spec=spec, completed=[],
+                 prior_public=prior, transport=target['transport'])
+    checkpoint()
+    _check_intl_target(target)
+    current = 'intl_generation_current.json'
+    conditional = {'IfMatch': prior['etag']} if prior['exists'] else {'IfNoneMatch': '*'}
+    for obj in spec['objects']:
+        fence(); _intl_need(_intl_selection(authorize) == (spec, blobs, snapshot), 'admitted closure changed')
+        name = obj['name']
+        if name == current:
+            _check_intl_target(target)
+        state.update(state='put_inflight', key='feeds/' + name); checkpoint()
+        try:
+            result = client.put_object(Bucket=bucket, Key='feeds/' + name, Body=blobs[name],
+                ContentType='application/json', CacheControl='no-store' if name == current else 'public,max-age=31536000,immutable',
+                **(conditional if name == current else {'IfNoneMatch': '*'}))
+        except Exception as error:
+            status = getattr(error, 'response', {}).get('ResponseMetadata', {}).get('HTTPStatusCode')
+            state['state'] = 'refused' if status in {400, 401, 403, 409, 412} else 'unknown'
+            checkpoint()
+            if state['state'] == 'unknown':
+                raise IntlPublicationUnknown('PUT outcome unknown; preserve original receipt/carrier') from None
+            raise IntlPublicationError('conditional publication refused; no retry') from None
+        if type(result) is not dict or result.get('ResponseMetadata', {}).get('HTTPStatusCode') != 200:
+            state['state'] = 'unknown'; checkpoint()
+            raise IntlPublicationUnknown('PUT acknowledgement unavailable; preserve original receipt/carrier')
+        state['completed'].append(name); state['state'] = 'uploaded'; checkpoint()
+        _intl_need(_intl_public_get(spec['origin'], name, obj['bytes']) == blobs[name], 'published dependency unavailable')
+    fence(); _intl_need(_intl_selection(authorize) == (spec, blobs, snapshot), 'admitted closure changed')
+    try:
+        _verify_intl_transport(spec, blobs)
+        _intl_need(_intl_selection(authorize) == (spec, blobs, snapshot), "admitted closure changed")
+    except Exception:
+        state['state'] = 'readback_unavailable'; checkpoint()
+        raise
+    state['state'] = 'verified'; checkpoint()
+    return state
 
 
 def main() -> int:

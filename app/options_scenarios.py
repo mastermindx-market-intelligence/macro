@@ -160,6 +160,7 @@ class SourceScenarioBindings:
     producer_out_dir: Any = None
     source_save_decision: Any = None
     retention_decision: Any = None
+    native_capture_authority: Any = None
 
 
 def _usable_bucket(bucket: Any) -> bool:
@@ -786,9 +787,9 @@ def _revision_field(value: Any, minimum: int) -> int:
 
 
 def _parse_body(raw: bytes) -> tuple[str, str, int, str | None, int | None, str | None,
-                                     dict | None]:
+                                     dict | None, dict | None]:
     """Closed request union; returns (mode, id, revision, grant_id,
-    expected_revision, operation_id, capture). Qualify validates the
+    expected_revision, operation_id, capture, canonical_request). Qualify validates the
     UNTRUSTED browser capture shape here, before any authority is contacted."""
     if len(raw) > _MAX_BODY_BYTES:
         raise _refuse_unavailable("request_invalid")
@@ -804,8 +805,8 @@ def _parse_body(raw: bytes) -> tuple[str, str, int, str | None, int | None, str 
     if mode == "resolve":
         if set(body.keys()) != set(_RESOLVE_KEYS):
             raise _refuse_unavailable("request_invalid")
-        return mode, investigation_id, revision, grant, None, None, None
-    if set(body.keys()) != set(_QUALIFY_KEYS):
+        return mode, investigation_id, revision, grant, None, None, None, None
+    if set(body.keys()) != set(_QUALIFY_KEYS) | ({'canonical_request'} if mode == 'capture' else set()):
         raise _refuse_unavailable("request_invalid")
     # Deliberate pre-apply owner intent carries no grant authority at all.
     if grant is not None:
@@ -822,7 +823,10 @@ def _parse_body(raw: bytes) -> tuple[str, str, int, str | None, int | None, str 
     capture = _parse_capture(body.get("capture"))
     if capture is None:
         raise _refuse_unavailable("capture_invalid")
-    return mode, investigation_id, revision, None, expected, operation_id, capture
+    canonical_request = body.get('canonical_request') if mode == 'capture' else None
+    if mode == 'capture' and type(canonical_request) is not dict:
+        raise _refuse_unavailable('request_invalid')
+    return mode, investigation_id, revision, None, expected, operation_id, capture, canonical_request
 
 
 def _read_canonical_row(investigation_id: str, revision: int,
@@ -936,7 +940,18 @@ async def resolve_scenario_source_route(
     request: Request,
     bindings=Depends(scenario_bindings),
 ) -> Response:
+    """The installed HTTP lifetime is a denial boundary, never native settlement."""
+    from app.options_scenario_http_admission import AdmissionClosed, request_lifetime
+    try:
+        with request_lifetime(request, bindings):
+            return await _dispatch_scenario_source_request(request, bindings)
+    except AdmissionClosed:
+        return _typed_response(_refuse_unavailable("source_binding_unavailable"))
+
+
+async def _dispatch_scenario_source_request(request: Request, bindings) -> Response:
     """Resolve, qualify or initially capture exact protected source; fail closed."""
+    from app.options_scenario_http_admission import AdmissionClosed
     try:
         # Zero-IO gate: no trusted binding means no auth call, no RPC, no S3.
         if not _bindings_usable(bindings):
@@ -945,7 +960,7 @@ async def resolve_scenario_source_route(
         if type(raw) is not bytes:
             raise _refuse_unavailable("request_invalid")
         (mode, investigation_id, revision, grant_id, expected_revision,
-         operation_id, capture) = _parse_body(raw)
+         operation_id, capture, canonical_request) = _parse_body(raw)
         from app.options_scenario_bindings import ScenarioSourceRuntime
         runtime = isinstance(bindings, ScenarioSourceRuntime)
         if mode == "capture" and (bindings.producer_out_dir is None
@@ -963,12 +978,16 @@ async def resolve_scenario_source_route(
             return _resolve_mode(bindings, access_token, principal, investigation_id,
                                  revision, grant_id)
         if mode == "capture":
+            from app.options_scenario_http_admission import bind_capture_request
+            bind_capture_request(principal, operation_id, canonical_request)
             return _capture_mode(bindings, access_token, principal, investigation_id,
-                                 revision, expected_revision, operation_id, capture)
+                                 revision, expected_revision, operation_id, capture, canonical_request)
         return _qualify_mode(bindings, access_token, principal, investigation_id,
                              revision, expected_revision, operation_id, capture)
     except _Refused as refusal:
         return _typed_response(refusal)
+    except AdmissionClosed:
+        return _typed_response(_refuse_unavailable("source_binding_unavailable"))
     except Exception:
         # Never an exception detail, a token, a paid value or a stack trace.
         return _typed_response(_refuse_unavailable("request_invalid"))
@@ -985,7 +1004,7 @@ def _resolve_mode(bindings, access_token: str, principal, investigation_id: str,
 
 
 def _resolve_capture(bindings, access_token, principal, investigation_id, revision,
-                     grant_id, capture, mode, expected_revision=None):
+                     grant_id, capture, mode, expected_revision=None, native_capture=None):
     from app.options_scenario_bindings import ScenarioSourceRuntime
     if isinstance(bindings, ScenarioSourceRuntime):
         bindings = bindings.for_request(token=access_token, principal=principal,
@@ -1035,6 +1054,19 @@ def _resolve_capture(bindings, access_token, principal, investigation_id, revisi
         "gex": gex,
         "moves": moves,
     }
+    if native_capture is not None:
+        # Internal original-producer observation, never a browser request field.
+        from app.investigation_native_capture import CompletionObservation
+        if type(native_capture) is not CompletionObservation or mode != 'capture':
+            raise _refuse_unavailable('source_unavailable')
+        payload['native_capture'] = {
+            'schema': 'investigation.native_capture.v1',
+            'operation_id': native_capture.binding.operation_id,
+            'generation': native_capture.generation,
+            'request_sha256': native_capture.binding.request_sha256,
+            'source_binding_sha256': native_capture.binding.source_binding_sha256,
+            'native_phase': native_capture.native_phase,
+        }
     return _qualified_response(payload)
 
 
@@ -1077,7 +1109,7 @@ def _qualify_mode(bindings, access_token: str, principal, investigation_id: str,
 
 
 def _capture_mode(bindings, access_token, principal, investigation_id, revision,
-                  expected_revision, operation_id, capture):
+                  expected_revision, operation_id, capture, canonical_request):
     """Initial deliberate capture, never an automatic/recovery replay.
 
     Fixed native producer files must STILL match acquired hashes/lengths. Both
@@ -1098,17 +1130,36 @@ def _capture_mode(bindings, access_token, principal, investigation_id, revision,
     viewer = _native.ViewerIdentity(principal.principal_id,
                                     principal.principal_issuer, principal.auth_epoch)
     try:
+        from app.investigation_native_capture import NativeCaptureAuthority, binding_for
+        authority = bindings.native_capture_authority
+        if type(authority) is not NativeCaptureAuthority:
+            raise ValueError('native authority unavailable')
+        binding = binding_for(principal, investigation_id=investigation_id,
+            revision=revision, expected_revision=expected_revision,
+            operation_id=operation_id, capture=capture, canonical_request=canonical_request)
+        from app.options_scenario_http_admission import require_claim_admission
+        require_claim_admission(authority, binding, canonical_request)
+        claim = authority.claim(binding, canonical_request)
+        if claim.status != 'claimed':
+            # Same original started/UNKNOWN/terminal invocation is never a new
+            # permission to run retention, even if desired bytes already exist.
+            raise ValueError('original native invocation already exists')
         _producer.capture_built_scenario_sources(descriptor, viewer, operation_id=operation_id,
             out_dir=bindings.producer_out_dir, s3=bindings.s3, bucket=bindings.bucket,
             destination=bindings.destination, source_save_decision=bindings.source_save_decision,
             retention_decision=bindings.retention_decision,
             current_viewer=(_current_viewer_seam(access_token) if bindings.current_viewer is None
                             else bindings.current_viewer), clock=bindings.clock)
+        # The synchronous producer has returned after ALL retention writes and
+        # exact readbacks. No path below this barrier issues another PUT. This
+        # records that effect phase only, not HTTP lifetime or canonical DB CAS.
+        completed = authority.record_retained(claim)
         _recheck_context(access_token, principal, investigation_id, revision, None, None)
         # Exact retained bytes + current evaluate/read authority + native TS math
         # still qualify before canonical CAS; metadata emission is not acceptance.
         return _resolve_capture(runtime, access_token, principal, investigation_id,
-                                revision, None, capture, "capture", expected_revision)
+                                revision, None, capture, "capture", expected_revision,
+                                native_capture=completed)
     except Exception:
         # A failed/partial/lost retention response never means "nothing changed".
         # No provider errors, source paths or paid bytes escape this boundary.

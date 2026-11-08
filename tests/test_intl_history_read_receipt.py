@@ -1,6 +1,7 @@
 """The current artifact reader distinguishes absence, failure and valid emptiness."""
 from datetime import datetime
 from pathlib import Path
+from copy import deepcopy
 import sys
 
 import pandas as pd
@@ -8,6 +9,115 @@ import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from engine import international_macro_dashboard as owner
+
+
+@pytest.fixture
+def materialized(source):
+    from lib.intl_history_materialization import capture_history_context, describe_history_write
+    path, frame = source
+    context = capture_history_context(
+        "JP", {"index": "fixture-index", "fx": "fixture-fx"}, {"fixture": "unit-only"},
+        frame, source_root=Path(__file__).resolve().parents[1])
+    frame.to_parquet(path)
+    descriptor = describe_history_write(
+        "JP", frame, context, path.read_bytes(), "2026-11-05T00:00:00+00:00")
+    return path, frame, descriptor
+
+
+def test_successful_materialization_binds_exact_read_and_projection(materialized):
+    path, frame, descriptor = materialized
+    result = owner.load_history_result("JP", materialization=descriptor)
+    assert result["status"] == "ready"
+    pd.testing.assert_frame_equal(result["frame"], frame, check_freq=False)
+    projected = owner.project_history_read(result)
+    assert projected["identity"]["method_ref"] == descriptor["method_ref"]
+    assert projected["identity"]["universe"] == descriptor["universe_ref"]
+    assert projected["read_at"] != descriptor["materialized_at"]
+    assert result["materialization"]["provider_coverage"]["status"] == "unknown"
+    assert result["materialization"]["original_known_at"] is None
+    assert result["materialization"]["disclosure_authority"] == "none"
+    assert owner.load_history_result("JP")["method_ref"] is None
+
+
+@pytest.mark.parametrize("change", [
+    lambda d: d.update(market_id="KR"),
+    lambda d: d.update(artifact_sha256="0" * 64),
+    lambda d: d.update(method_ref="sha256:" + "0" * 64),
+    lambda d: d["universe"]["country_config"].update(index="different"),
+    lambda d: d["input_matrix"].update(rows=3),
+    lambda d: d["input_matrix"]["non_null_by_column"].update(growth_score=True),
+    lambda d: d.update(provider_coverage={"status": "complete"}),
+    lambda d: d.update(original_known_at="2026-01-01T00:00:00Z"),
+    lambda d: d.update(materialized_at="2026-11-05T00:00:00"),
+    lambda d: d["output"].update(rows=2.0),
+    lambda d: d.update(extra="not admitted"),
+])
+def test_invalid_materialization_never_admits_identity(materialized, change):
+    _, _, descriptor = materialized
+    change(descriptor)
+    result = owner.load_history_result("JP", materialization=descriptor)
+    assert result["status"] == "invalid" and result["frame"] is None
+    assert result["method_ref"] is None and "materialization" not in result
+
+
+def test_still_valid_parquet_replacement_cannot_reuse_materialization(materialized):
+    path, frame, descriptor = materialized
+    changed = frame.copy()
+    changed.iloc[0, 0] = 0.125
+    changed.to_parquet(path)
+    result = owner.load_history_result("JP", materialization=descriptor)
+    assert result["status"] == "invalid" and result["frame"] is None
+
+
+def test_materialization_reader_refuses_a_symlinked_artifact(materialized):
+    path, _, descriptor = materialized
+    target = path.with_name("moved.parquet")
+    path.rename(target)
+    path.symlink_to(target)
+    result = owner.load_history_result("JP", materialization=descriptor)
+    assert result["status"] == "failed" and result["frame"] is None
+
+
+def test_in_memory_frame_drift_and_universe_override_refuse_projection(materialized):
+    _, _, descriptor = materialized
+    result = owner.load_history_result("JP", materialization=descriptor)
+    with pytest.raises(ValueError, match="invalid_history_read_projection"):
+        owner.project_history_read(result, universe="different")
+    result["frame"].iloc[0, 0] = 0.125
+    with pytest.raises(ValueError, match="invalid_history_read_projection"):
+        owner.project_history_read(result)
+
+
+def test_materialization_rejects_frame_objects_before_invoking_them(materialized):
+    _, _, descriptor = materialized
+    result = owner.load_history_result("JP", materialization=descriptor)
+    class HostileFrame:
+        def __len__(self):
+            raise AssertionError("untrusted frame code executed")
+    result["frame"] = HostileFrame()
+    with pytest.raises(ValueError, match="invalid_history_read_projection"):
+        owner.project_history_read(result)
+
+
+def test_materialization_rejects_custom_metadata_before_serializing(materialized):
+    _, _, descriptor = materialized
+    result = owner.load_history_result("JP", materialization=descriptor)
+    class HostileDict(dict):
+        def items(self):
+            raise AssertionError("untrusted metadata code executed")
+    result["materialization"]["method"]["engine_config"] = HostileDict(x=1)
+    with pytest.raises(ValueError, match="invalid_history_read_projection"):
+        owner.project_history_read(result)
+
+
+def test_unsuccessful_postimage_cannot_describe_another_frame(materialized):
+    from lib.intl_history_materialization import describe_history_write
+    path, frame, descriptor = materialized
+    changed = frame.copy()
+    changed.iloc[0, 0] = 0.125
+    context = {key: deepcopy(descriptor[key]) for key in ("method", "universe", "input_matrix")}
+    with pytest.raises(ValueError, match="history_write_postimage_mismatch"):
+        describe_history_write("JP", changed, context, path.read_bytes(), descriptor["materialized_at"])
 
 
 @pytest.fixture
