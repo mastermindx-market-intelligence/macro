@@ -15653,6 +15653,7 @@ jobs:
       - "tests/test_merge_on_green_semantic.py"
       - "tests/test_nightly_backstop.py"
       - "tests/test_release_hold_text.py"
+      - "tests/test_run_ci_pack_base_replay_env.py"
       - "tests/test_run_ci_pack_fetch_fallback.py"
       - "tests/test_runner_policy.py"
       - "tests/test_trusted_ci_executor_workflow.py"
@@ -15746,7 +15747,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest pyyaml
       - name: hosted-runner packing contract
-        run: python -m pytest tests/test_ci_pack.py tests/test_ci_pack_fragments.py tests/test_run_ci_pack_fetch_fallback.py tests/test_merge_on_green.py tests/test_merge_on_green_semantic.py tests/test_check_conflict_markers.py tests/test_release_hold_text.py -q
+        run: python -m pytest tests/test_ci_pack.py tests/test_ci_pack_fragments.py tests/test_run_ci_pack_base_replay_env.py tests/test_run_ci_pack_fetch_fallback.py tests/test_merge_on_green.py tests/test_merge_on_green_semantic.py tests/test_check_conflict_markers.py tests/test_release_hold_text.py -q
       # scripts/check_contract_delta.py (2026-08-19) is the differential PR-vs-base
       # gate that re-derives the two finding classes above (curated-exclusive
       # import-closure misses, unwired suites) UNCONDITIONALLY of ci-pack's path
@@ -15823,6 +15824,7 @@ jobs:
       - "tests/test_merge_on_green_semantic.py"
       - "tests/test_nightly_backstop.py"
       - "tests/test_release_hold_text.py"
+      - "tests/test_run_ci_pack_base_replay_env.py"
       - "tests/test_run_ci_pack_fetch_fallback.py"
       - "tests/test_runner_policy.py"
       - "tests/test_trusted_ci_executor_workflow.py"
@@ -16015,6 +16017,7 @@ jobs:
       - "tests/test_merge_on_green_semantic.py"
       - "tests/test_nightly_backstop.py"
       - "tests/test_release_hold_text.py"
+      - "tests/test_run_ci_pack_base_replay_env.py"
       - "tests/test_run_ci_pack_fetch_fallback.py"
       - "tests/test_runner_policy.py"
       - "tests/test_trusted_ci_executor_workflow.py"
