@@ -4611,6 +4611,10 @@ CURATED_EXCLUSIVE = {
     # plus the files they read. The cover-their-own-import-closure test and
     # check_ci_trigger_closure.py (both run in this job) keep that list honest.
     "ci-control-plane-contracts",
+    # 2026-11-04 (#917 CI acceleration): the control-plane job split three ways so
+    # the planner can spread its 1,000-2,000 s across packs; same paths, same gate.
+    "ci-control-plane-structure",
+    "ci-control-plane-census",
     "bot-session-recovery-browser",  # R5 Bot auth recovery: curated browser scope owns its two ancestor initializers.
     "live-flow-recovery-guards",
     # 2026-09-23 B-HEAL-CI-PACK-CEILING-2 (main integration-baseline red on
@@ -5606,9 +5610,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_917),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_936),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_675),
+    ("templates/index.html", 137, 5_923),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_944),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_681),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5616,6 +5620,127 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-08 (PR #10180, measured B-17 enrollment integration):
+    Fixed current c91d58b2413d plus the five unchanged recovery objects
+    preserves all 395 owners. Native paired production measurements on
+    the SAME exact candidate source universe compare only the existing
+    manifest and the accepted nine-line B-17 enrollment. The full path
+    inventory and all required source bytes are bound to that candidate.
+    Prophet Lab weight is 64 before and 67 after; it is already selected
+    by all three probes. Every selected job ID is unchanged, with no
+    entrants or exits. Index is 137 jobs, weight 5920 to 5923; free-content
+    is 137 jobs, weight 5941 to 5944; plan-book is 131 jobs, 5678 to 5681.
+    All six measured plans retain ten packs. Fund precisely those three
+    measured weight units per probe, preserving job caps 137, 138, 131,
+    the ten-pack ceiling, every command, selector and runtime limit.
+    This is an actual paired planning result, not a runtime or full-CI
+    result. It preserves the accepted #7352 contribution and imports no
+    unmerged sibling funding. Native receipt18660 ended at06:57:59 UTC;
+    proof SHA256 99135659f96ebf1182e8e843c1153d7a71347273bd2fcfb890626d70f6bfee0f.
+    Source: PR10180 issuecomment6718493720. Original historical and
+    scientific limitations remain; natural CI must qualify publication.
+
+    2026-11-08 (PR #7352, current-main shared-CI conflict repair):
+    preserve the accepted research-intelligence model benchmark source and its
+    existing research-vault enrollment. Current mainec26dac8 retains the
+    exact research-vault preimage from incorporated base0e48e731791f.
+    Restore only this carrier's 3 paths and one full suite argument;
+    all393 current owners and the other392 blocks stay unchanged.
+    Its exclusive owner keeps three commands, with43->44 test tokens
+    and2049->2095 characters, so the unchanged estimator is91->93.
+    Only free-content selects this owner: carry its accepted +2 from
+    current5939->5941, retaining index5920/Prophet5678, jobs137/138/131,
+    ten packs, every command/selector/timeout and admission limit.
+    Preserve landed #7694 accounting/provenance and all #10752 compactor
+    tests. No unmerged sibling funding or old runner is imported.
+    This is static source arithmetic, not a new whole-tree selected-set,
+    planner, pytest or elapsed-time result. Natural new-head CI must
+    qualify the actual composition. Original scope/effect fences remain.
+    Source: PR7352 issuecomment6711191891; dated evidence follows.
+
+    2026-11-07 second conflict composition for Macro #7352, main0e48e731:
+    Preserve current main's accepted P5.T9.S5 GSC contribution and every
+    other current owner and provenance record. Its ceilings are now
+    index5914/free5933/plan-book5672. Add only this unchanged benchmark
+    source's previously measured two free-content units:5933->5935.
+    This is arithmetic composition, not a new planner or runtime measure.
+    No #7350/#7385 sibling allowance is imported. Keep all job-count
+    ceilings, ten-pack bounds, selectors, suites, timeouts and admission
+    limits. Preceding90f8 passed its own natural42395289016 proof; that
+    does not prove this new combined source. Natural CI must qualify it.
+
+    Earlier same-carrier provenance, at its recorded source identities:
+    2026-11-07 conflict composition for Macro #7352 against main0c02daa5:
+    retain the current accepted #10710 source, owner enrollment and measured
+    index/free/Prophet ceilings 5,914/5,931/5,672. Add only this carrier's
+    already measured +2 free-content contribution, yielding 5,914/5,933/5,672.
+    This is arithmetic composition, not a new paired execution measurement.
+    Natural current-head CI must qualify it. No unmerged sibling funding,
+    job-count, ten-pack, runtime, selector or admission limit is imported.
+    The preceding carrier-specific measurements below keep their dated bases.
+
+    2026-11-07 current-main composition for Macro #7352: retain the dated
+    November 6 benchmark-only paired measurement below. Main already includes
+    #8899's independently measured free-content contribution. Compose this
+    benchmark's own +2 only on that current 5,929 ceiling, yielding 5,931;
+    index 5,912 and Prophet 5,670 remain unchanged. This arithmetic composition
+    is not a new paired execution measurement. Natural current-head CI must
+    validate it. No unmerged #7285, #7320, #7327, #7350 or #7385 allowance is
+    imported; every existing job/count/pack/control limit stays unchanged.
+
+    2026-11-06 Macro #7352 offline grounded-extraction benchmark: the new
+    tests/test_research_intelligence_benchmark.py is enrolled ONCE in the
+    incumbent research-vault CODE job's existing pytest invocation — its
+    incumbent owner — and that same job's curated scope is widened by the
+    three new paths its own command now reads (the manifest fails to load
+    without them; see _scope_coverage_findings). Native paired measurement on
+    2026-11-06, base 0bb81c727ada4f09814afcf587238d089714109e against the
+    candidate working tree, with this same run_ci_pack blob and
+    scripts/check_contract_delta.py --base 0bb81c72:
+
+        templates/index.html          137 jobs / 5,912 weight / 10 packs
+        scripts/build_free_content.py 137 jobs / 5,927 -> 5,929 weight / 10 packs
+        engine/prophet/plan_book.py   131 jobs / 5,668 weight / 10 packs
+
+    Identical selected job IDs on both sides — newly selected: none, no
+    entrant and no exit. The sole definition delta is the incumbent
+    research-vault job's own estimated weight 91 -> 93, from the one added
+    `tests/test_` reference inside its EXISTING pytest command; that job is
+    already selected by the free-content probe, so the probe's aggregate
+    moves by exactly +2. Re-base only that one weight ceiling, to its
+    measured 5,929, with no padding. The free-content job-count ceiling
+    (138), the pack bound (10), the other two weight ceilings, every
+    selector and every suite stay unchanged. These are planner estimates,
+    not measured execution times.
+
+    2026-11-08 (PR #7694, current-main content-conflict composition):
+    preserve the accepted full Immune-suite enrollment below together with
+    current main cef4e3797c186d6da7adbaa9da450ca790b00f8b's landed QTUM
+    parser coverage and Options scenario owner registration. Current catalog
+    1d0e64e9304f080d22946aa78466d4dbe479b769 retains the exact original
+    metab-throttle-ux base block; restore only its accepted fourth test step.
+    All 393 owner IDs and every unrelated command remain unchanged.
+    Compose the independently measured +3 planning-weight contribution onto
+    current ceilings: index 5917 -> 5920, free-content 5936 -> 5939,
+    Prophet 5675 -> 5678. Keep job ceilings 137 / 138 / 131, ten packs,
+    every assertion, selector, timeout, suite and admission limit. This is
+    static composition arithmetic, not a new planner or pytest execution.
+    No unmerged sibling contribution is funded; new natural CI must qualify.
+
+    PR7694 (2026-11-07): its own hosted contract-delta run42402141866,
+    job128492021418, measured base33f418baa9ee552260c835ab200c09abce0c24b8
+    against head762c1101612903a7f33b6eba47a40caf104e1915. Adding the full
+    Immune suite as the fourth step of the existing metab-throttle-ux CODE
+    owner increases each already-selected probe by exactly three planning
+    weight units: index137/5914->5917, free-content137/5933->5936, and
+    Prophet131/5672->5675. Selected job identities and ten-pack counts are
+    unchanged; contract-delta reported newly selected: none on all probes.
+    Fund only this measured coverage increment. Preserve all job-count
+    ceilings, pack bounds, selectors, suites, timeouts and admission limits,
+    including the prior accepted GSC and gateway histories below. These
+    are planning weights, not elapsed-runtime measurements. No unmerged
+    sibling funding is included; successor natural CI remains required.
 
     2026-11-07 (PR #8869, current-main conflict composition): preserve the
     independently accepted QTUM enrollment increment below while retaining
@@ -9114,3 +9239,158 @@ def test_options_nbbo_cohort_keeps_exact_source_and_avoids_unrelated_code_probes
                   "engine/prophet/plan_book.py"):  # ci-trigger-closure: data — selector input name, never opened
         selected, _ = PACK.select_jobs([job], [probe])
         assert selected == [], probe
+
+
+# Fast-ship compacts a genuinely scoped PR selection, never the main baseline.
+# Baseline pack names remain available for incumbent inherited-red comparisons.
+def _fastship_jobs(weights: list[int]) -> list[object]:
+    return [_plan_job(f"fastship-{i}", i, weight=w, paths=("engine/**",))
+            for i, w in enumerate(weights)]
+
+
+def _fastship_peak(packs: list[list[object]]) -> int:
+    return max((sum(job.weight for job in pack) for pack in packs), default=0)
+
+
+@pytest.mark.parametrize("weights,count,active", [
+    ([], 12, 0), ([0, 0, 0], 12, 1), ([50], 12, 1),
+    ([9, 5, 3], 12, 2), ([100] + [2] * 20, 12, 2),
+    ([10] * 12, 12, 12), ([5, 4, 3, 2, 1], 3, 3),
+])
+def test_fastship_compaction_preserves_every_job_object_without_larger_peak(weights, count, active):
+    jobs = _fastship_jobs(weights)
+    old = PACK.partition_jobs(jobs, count)
+    compact = PACK.compact_scoped_packs((job for job in jobs), count)
+    assert len(compact) == count
+    assert sum(bool(pack) for pack in compact) == active
+    assert _fastship_peak(compact) <= _fastship_peak(old)
+    assert sorted(id(job) for pack in compact for job in pack) == sorted(map(id, jobs))
+    assert all([j.ordinal for j in pack] == sorted(j.ordinal for j in pack) for pack in compact)
+    assert compact == PACK.compact_scoped_packs(reversed(jobs), count)
+
+
+@pytest.mark.parametrize("count", [0, -1])
+def test_fastship_compaction_keeps_positive_pack_count_validation(count):
+    with pytest.raises(ValueError, match="pack_count must be positive"):
+        PACK.compact_scoped_packs([], count)
+
+
+def test_fastship_fixed_seed_partition_properties():
+    import random
+    rng = random.Random(20261104)
+    for _ in range(300):
+        count = rng.randint(1, 12)
+        jobs = _fastship_jobs([rng.randint(0, 2000) for _ in range(rng.randint(0, 70))])
+        original = PACK.partition_jobs(jobs, count)
+        compact = PACK.compact_scoped_packs(jobs, count)
+        assert len(compact) == count
+        assert _fastship_peak(compact) <= _fastship_peak(original)
+        assert sorted(id(j) for p in compact for j in p) == sorted(map(id, jobs))
+        shuffled = list(jobs)
+        rng.shuffle(shuffled)
+        assert compact == PACK.compact_scoped_packs(shuffled, count)
+        assert all([j.ordinal for j in p] == sorted(j.ordinal for j in p) for p in compact)
+
+
+def test_fastship_compaction_changes_only_scoped_pr_pack_assignment(monkeypatch):
+    _freeze_scope_inference(monkeypatch)
+    jobs = _fastship_jobs([1400] + [14] * 20)
+    jobs.append(_plan_job("unselected-site", 21, paths=("site/**",)))
+    plan = PACK.build_plan(jobs, ["engine/example.py"], changed_from="base-sha",
+                           scope_mode="active", pack_count=12)
+    assert plan.role == "pr_head"
+    assert plan.nonempty_pack_indices == (0, 1)
+    assert plan.matrix() == {"include": [{"pack": 0}, {"pack": 1}]}
+    assert plan.eligible_job_ids == tuple(j.job_id for j in jobs[:-1])
+    assert plan.skipped_job_ids == ("unselected-site",)
+    assert len(plan.pack_jobs) == len(plan.pack_weights) == 12
+    assert max(plan.pack_weights) == 1400
+    assert {j.logical_job_id for j in plan.semantic_jobs} == set(plan.eligible_job_ids)
+    assert {j.logical_job_id: j.job_exec_sha256 for j in plan.semantic_jobs} == {
+        j.job_id: PACK.semantic_job_digest(j) for j in jobs[:-1]
+    }
+    assert all(j.pack_index in (0, 1) for j in plan.semantic_jobs)
+    fields = ("workflow_run_id", "workflow", "event", "role", "tested_tree_sha",
+              "subject_head_sha", "base_sha", "authority_changed", "changed_from",
+              "scope_mode", "changed_files_sha256", "pack_count", "eligible_job_ids",
+              "pack_jobs", "pack_weights", "semantic_jobs")
+    payload = PACK.plan_hash_payload(**{name: getattr(plan, name) for name in fields})
+    assert PACK._canonical_digest(payload) == plan.plan_sha256
+    assert PACK._canonical_digest({**payload, "pack_jobs": [list(reversed(p)) for p in plan.pack_jobs]}) != plan.plan_sha256
+
+
+@pytest.mark.parametrize("mode", ["active", "shadow", "off"])
+def test_fastship_main_baseline_keeps_original_named_pack_partition(monkeypatch, mode):
+    _freeze_scope_inference(monkeypatch)
+    jobs = _fastship_jobs([1400] + [14] * 20)
+    # A blanket compactor would remove ten baseline check names; it is forbidden.
+    plan = PACK.build_plan(jobs, None, changed_from=None, scope_mode=mode, pack_count=12)
+    assert plan.role == "main"
+    assert plan.nonempty_pack_indices == tuple(range(12))
+    assert plan.pack_jobs == tuple(tuple(j.job_id for j in p) for p in PACK.partition_jobs(jobs, 12))
+
+
+@pytest.mark.parametrize("mode", ["shadow", "off"])
+def test_fastship_scope_override_full_suite_is_never_compacted(monkeypatch, mode):
+    _freeze_scope_inference(monkeypatch)
+    jobs = _fastship_jobs([1400] + [14] * 20)
+    jobs.append(_plan_job("site-owner", 21, paths=("site/**",)))
+    plan = PACK.build_plan(jobs, ["engine/example.py"], changed_from="base-sha",
+                           scope_mode=mode, pack_count=12)
+    assert plan.eligible_job_ids == tuple(j.job_id for j in jobs)
+    assert plan.nonempty_pack_indices == tuple(range(12))
+
+
+@pytest.mark.parametrize("changed", [["scripts/run_ci_pack.py"], ["engine/example.py"]])
+def test_fastship_full_selection_and_authority_invalidators_keep_all_pack_names(monkeypatch, changed):
+    _freeze_scope_inference(monkeypatch)
+    jobs = _fastship_jobs([1400] + [14] * 20)
+    plan = PACK.build_plan(jobs, changed, changed_from="base-sha",
+                           scope_mode="active", pack_count=12)
+    assert len(plan.eligible_job_ids) == len(jobs)
+    assert plan.nonempty_pack_indices == tuple(range(12))
+
+
+def test_fastship_compaction_refuses_negative_weight_input():
+    with pytest.raises(ValueError, match="nonnegative"):
+        PACK.compact_scoped_packs(_fastship_jobs([10, -1]), 12)
+
+
+def test_fastship_compacted_plan_is_consumed_without_repartition(tmp_path, monkeypatch):
+    _freeze_scope_inference(monkeypatch)
+    jobs = _fastship_jobs([1400] + [14] * 20)
+    jobs.append(_plan_job("site-other", 21, paths=("site/**",)))
+    plan = PACK.build_plan(
+        jobs, ["engine/example.py"], changed_from="c" * 40,
+        scope_mode="active", pack_count=12, event="pull_request", role="pr_head",
+        tested_tree_sha="a" * 40, subject_head_sha="b" * 40, base_sha="c" * 40,
+    )
+    plan_file = tmp_path / "compacted-plan.json"
+    plan_file.write_text(json.dumps(plan.to_dict()), encoding="utf-8")
+    changed_file = tmp_path / "changed.json"
+    changed_file.write_text('["engine/example.py"]', encoding="utf-8")
+    monkeypatch.setattr(PACK, "load_legacy_jobs", lambda *args, **kwargs: jobs)
+    def forbidden(*args, **kwargs):
+        pytest.fail("the execution consumer must not replan or repartition")
+    monkeypatch.setattr(PACK, "partition_jobs", forbidden)
+    monkeypatch.setattr(PACK, "compact_scoped_packs", forbidden)
+    monkeypatch.setattr(PACK, "infer_job_scopes", forbidden)
+    consumed = PACK.load_authoritative_plan(
+        plan_file, workflow=tmp_path / "fixture.yml", changed_files_file=changed_file,
+        expect_plan_sha=plan.plan_sha256, expect_tested_tree_sha="a" * 40,
+        expect_subject_head_sha="b" * 40, expect_base_sha="c" * 40,
+    )
+    assert consumed == plan
+    assert consumed.nonempty_pack_indices == (0, 1)
+    assert {j.logical_job_id for j in consumed.semantic_jobs} == set(plan.eligible_job_ids)
+
+
+@pytest.mark.parametrize("base", [None, ""])
+def test_fastship_invalid_base_reference_remains_refused(monkeypatch, base):
+    _freeze_scope_inference(monkeypatch)
+    jobs = _fastship_jobs([1400] + [14] * 20)
+    jobs.append(_plan_job("site-other", 21, paths=("site/**",)))
+    with pytest.raises(PACK.ManifestError, match="changed_from"):
+        PACK.build_plan(jobs, ["engine/example.py"], changed_from=base,
+                        scope_mode="active", pack_count=12,
+                        event="pull_request", role="pr_head")
