@@ -45,7 +45,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: mastermindx-market-intelligence/Mastermind
-          ref: 41e86c7aa89905f9b4592d57fbf32c2d7c0f1458
+          ref: 4585aa136d41e91ece85114362d8c822a0fcbdf6
           path: .ci-fabric-mastermind
           sparse-checkout: |
             ops/native_fabric/quota_continuity
