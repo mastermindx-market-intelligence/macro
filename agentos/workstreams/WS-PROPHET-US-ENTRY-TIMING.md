@@ -9,15 +9,18 @@ status: active
 program: prophet-us
 p0: US_PROPHET_ENTRY_TIMING
 repos: [macro]
-artifacts:
-  - research/signal_engine/BOTTOM_PIVOT_DELIVERY_2026_11_05.md
-  - research/evidence/bottom_pivot_delivery_20261105/verification.json
 owner: coo-fable
 class: research
 blast_radius: reversible
 ambiguity: open
 owns_paths:
   - engine/prophet_*.py
+artifacts:
+  - research/prophet_v4/PROPHET_US_ENTRY_TIMING_COMPLETION_BRIEF_2026-10-31.md
+  - research/prophet_v4/PROPHET_US_ENTRY_TIMING_SOURCE_CENSUS_2026-10-31.md
+  - agentos/handoffs/PROPHET-US-ENTRY-TIMING-2026-10-31.md
+  - research/signal_engine/BOTTOM_PIVOT_DELIVERY_2026_11_05.md
+  - research/evidence/bottom_pivot_delivery_20261105/verification.json
 waves:
   - id: W0
     title: Queue drain + backfill
@@ -28,8 +31,9 @@ waves:
     status: in_progress
     depends_on: [W0]
     next_action: >
-      Read the 22:30Z bake log for the first post-backfill run. First-run-bomb law applies:
-      a first run after a backfill is not evidence of steady state.
+      Adjudicate the missed August 11 22:30Z bake against the outage disclosure and the
+      separate August 12/13 origination controls. Verify later ordinary protected-reader
+      delivery and record W1 disposition. Keep reconstructed rows out of prospective W2.
   - id: W2
     title: Entry-timing delta measurement on held-out episodes
     status: todo
@@ -38,7 +42,9 @@ landmines:
   - "A first bake after any backfill looks anomalous by construction — do not read run #1 as steady state."
 do_not_redo:
   - "Queue drain was root-caused and fixed in #5370 — do not re-diagnose the queue."
-next_action: >-
+next_action: >
+  Reconcile W1 using the October 31 handoff. In parallel qualify the prospective
+  same-read identity and denominator before opening any W2 outcome.
   Continue Chairman-assigned bottom-pivot delivery on PR 10785: qualify source release,
   then authenticated real-path proof and existing research integration. Preserve the
   separate historical W1 bake verification; no wave completion inferred.
@@ -48,7 +54,7 @@ next_action: >-
 
 One of five active company P0 objectives (`US_PROPHET_ENTRY_TIMING` in Mastermind
 `config/strategic_state.yml`). The backfill completed and the queue drained on 2026-08-11;
-the open question is whether the first post-backfill bake is clean.
+the October 31 audit records the missed bake and the later source receipts separately.
 
 
 ## November 5 Chairman-directed bottom-pivot increment
