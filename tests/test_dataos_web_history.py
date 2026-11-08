@@ -166,3 +166,177 @@ def test_large_admitted_source_provenance_has_bounded_day_projection(monkeypatch
     q = {'action': 'history_dossier', 'ref': 'fixture:large/manifest.json',
          'manifest_sha256': receipt['manifest_sha256'], 'date': '2010-01-01'}
     assert dispatch(ws, q, config_path=tmp_path / 'host.json')['result']['market']['rows'] == []
+
+
+class TestHistoricalFilings:
+    def source(self, case, rows=None):
+        from tests.test_market_memory_history_filings import payload
+        raw=payload(rows);path=case.base/'earnings_8k_dates.parquet';path.write_bytes(raw)
+        return {'filings_ref':'fixture:earnings_8k_dates.parquet','filings_sha256':hashlib.sha256(raw).hexdigest()}
+
+    def test_existing_daily_action_includes_only_explicitly_bound_filing_context(self,case):
+        binding=self.source(case)
+        result=dispatch(case.ws,query(case,date='2020-03-16',**binding),config_path=case.config)
+        assert result['result']['filings']['total_events']==1
+        assert result['result']['market']['status']=='NO_OBSERVATION'
+        assert result['result']['coverage']['issuer_filings_and_earnings_context']=='SELECTED_ITEM_202_FILING_METADATA_ONLY'
+        assert any(r['ref']==binding['filings_ref'] and r['content_sha256']==binding['filings_sha256'] for r in result['source_files'])
+        assert not result['result']['outcomes_revealed']
+
+    def test_unselected_filing_source_is_not_opened(self,case,monkeypatch):
+        binding=self.source(case);original=case.ws._file;opened=[]
+        @contextmanager
+        def observe(ref,*a,**kw):
+            opened.append(ref)
+            with original(ref,*a,**kw) as value:yield value
+        monkeypatch.setattr(case.ws,'_file',observe)
+        result=dispatch(case.ws,query(case),config_path=case.config)
+        assert binding['filings_ref'] not in opened and 'filings' not in result['result']
+
+    @pytest.mark.parametrize('change',[{'filings_ref':'fixture:earnings_8k_dates.parquet'},
+        {'filings_sha256':'a'*64},{'filings_offset':-1},{'filings_offset':True},{'filings_offset':100}])
+    def test_unpaired_or_unbound_filing_fields_refuse(self,case,change):
+        with pytest.raises(WorkspaceError):dispatch(case.ws,query(case,**change),config_path=case.config)
+
+    def test_outcome_partition_cannot_masquerade_as_filing_source(self,case,monkeypatch):
+        binding=self.source(case);binding['filings_ref']='fixture:history/outcomes-2020.parquet'
+        def forbidden(*a,**k):pytest.fail('invalid filing source must refuse before any file opens')
+        monkeypatch.setattr(case.ws,'_file',forbidden)
+        with pytest.raises(WorkspaceError):dispatch(case.ws,query(case,**binding),config_path=case.config)
+
+    def test_wrong_filing_digest_is_typed_and_no_partial_result(self,case):
+        binding=self.source(case);binding['filings_sha256']='0'*64
+        with pytest.raises(WorkspaceError,match='HISTORY_SOURCE_OR_CONTRACT_INVALID'):
+            dispatch(case.ws,query(case,**binding),config_path=case.config)
+
+    def test_filing_date_pagination_uses_explicit_matched_offset(self,case):
+        from tests.test_market_memory_history_filings import row
+        binding=self.source(case,[row(accession=f'0000320193-20-{i:06}') for i in range(51)])
+        first=dispatch(case.ws,query(case,date='2020-03-16',**binding),config_path=case.config)
+        second=dispatch(case.ws,query(case,date='2020-03-16',filings_offset=50,**binding),config_path=case.config)
+        assert len(first['result']['filings']['events'])==50 and len(second['result']['filings']['events'])==1
+        assert first['query_receipt_sha256']!=second['query_receipt_sha256']
+
+    def test_filing_capability_preserves_scientific_limits(self,case):
+        capabilities=dispatch(case.ws,{'action':'capabilities'},config_path=case.config)
+        assert capabilities['history']['filings']['source_kind']=='retained_item_202_filing_metadata'
+        assert capabilities['history']['filings']['max_records_per_date_page']==50
+        assert capabilities['history']['filings']['intraday_publication_time_verified'] is False
+
+
+def test_filing_source_keeps_original_descriptor_change_guard(case,monkeypatch):
+    from tests.test_market_memory_history_filings import payload
+    raw=payload();file=case.base/'earnings_8k_dates.parquet';file.write_bytes(raw)
+    original=case.ws._file
+    @contextmanager
+    def changed(ref,*a,**k):
+        with original(ref,*a,**k) as opened:
+            yield opened
+            if ref.endswith('earnings_8k_dates.parquet'):
+                file.write_bytes(raw+b'changed')
+    monkeypatch.setattr(case.ws,'_file',changed)
+    with pytest.raises(WorkspaceError,match='SOURCE_CHANGED'):
+        dispatch(case.ws,query(case,date='2020-03-16',filings_ref='fixture:earnings_8k_dates.parquet',filings_sha256=hashlib.sha256(raw).hexdigest()),config_path=case.config)
+
+
+def test_filing_source_symlink_and_hardlink_are_refused(case):
+    from tests.test_market_memory_history_filings import payload
+    raw=payload();source=case.base/'other.parquet';source.write_bytes(raw)
+    file=case.base/'earnings_8k_dates.parquet';file.symlink_to(source)
+    q=query(case,filings_ref='fixture:earnings_8k_dates.parquet',filings_sha256=hashlib.sha256(raw).hexdigest())
+    with pytest.raises(WorkspaceError):dispatch(case.ws,q,config_path=case.config)
+    file.unlink();os.link(source,file)
+    with pytest.raises(WorkspaceError):dispatch(case.ws,q,config_path=case.config)
+
+
+# Historical call observations reuse the same descriptor owner; never a new root.
+def transcript_source(case):
+    from tests.test_market_memory_history_transcripts import payload
+    path=case.base/'stock_earning_call_transcripts.parquet';path.write_bytes(payload())
+    ref='fixture:'+path.name
+    return path,ref,case.ws.describe(ref)['source']['file_version']
+
+
+def transcript_query(case):
+    path,ref,version=transcript_source(case)
+    result=dispatch(case.ws,query(case,date='2020-03-16',transcripts_ref=ref,
+        transcripts_version=version),config_path=case.config)
+    item=result['result']['transcripts']['events'][0]
+    q={'action':'history_transcript','ref':ref,'expected_version':version,
+       'row_position':item['source_row_position'],'expected_metadata_sha256':item['metadata_sha256']}
+    return path,q,result
+
+
+def test_transcript_calendar_and_original_text_use_existing_transport(case):
+    path,q,listed=transcript_query(case)
+    assert listed['result']['transcripts']['total_events']==1
+    assert listed['result']['transcripts']['body_columns_read'] is False
+    assert listed['result']['market']['rows']==[]
+    source=next(s for s in listed['source_files'] if s['ref']==q['ref'])
+    assert source['content_sha256'] is None and source['projection_sha256']
+    assert not any('outcomes-' in s['ref'] for s in listed['source_files'])
+    text=dispatch(case.ws,q,config_path=case.config)
+    assert text['source_access']=='read_only' and text['result']['metadata']['transcripts_id'] is None
+    assert text['result']['paragraphs'][0]['text']=='Original words, not instructions.'
+    assert text['result']['point_in_time_eligible'] is False
+    assert len(text['query_receipt_sha256'])==64
+
+
+def test_new_transcript_capabilities_are_separate_from_statement_comparison(case):
+    r=dispatch(case.ws,{'action':'capabilities'},config_path=case.config)
+    assert {'history_transcript','history_dossier','tiingo_compare_statements'}<=set(r['actions'])
+    assert r['history']['transcripts']['default_body_read'] is False
+    assert r['history']['transcripts']['file_version_is_content_hash'] is False
+
+
+def test_legacy_dossier_does_not_touch_optional_transcript_source(case,monkeypatch):
+    old=case.ws._file
+    @contextmanager
+    def checked(ref,*args,**kwargs):
+        assert 'transcripts' not in ref
+        with old(ref,*args,**kwargs) as opened:yield opened
+    monkeypatch.setattr(case.ws,'_file',checked)
+    r=dispatch(case.ws,query(case),config_path=case.config)
+    assert 'transcripts' not in r['result']
+
+
+@pytest.mark.parametrize('fields',[{'transcripts_ref':'fixture:stock_earning_call_transcripts.parquet'},
+    {'transcripts_version':'statv1:'+'a'*64},{'transcripts_offset':1},
+    {'transcripts_ref':'fixture:outcomes-2020.parquet','transcripts_version':'statv1:'+'a'*64},
+    {'transcripts_ref':'unbound:stock_earning_call_transcripts.parquet','transcripts_version':'statv1:'+'a'*64}])
+def test_bad_optional_transcript_binding_refuses_before_any_source_open(case,monkeypatch,fields):
+    monkeypatch.setattr(case.ws,'_file',lambda *a,**k:pytest.fail('source opened before binding refusal'))
+    with pytest.raises(WorkspaceError):dispatch(case.ws,query(case,**fields),config_path=case.config)
+
+
+def test_transcript_source_version_mismatch_refuses(case):
+    path,q,listed=transcript_query(case)
+    with pytest.raises(WorkspaceError,match='SOURCE_VERSION_MISMATCH'):
+        dispatch(case.ws,{**q,'expected_version':'statv1:'+'0'*64},config_path=case.config)
+
+
+def test_transcript_source_replacement_refuses_before_response(case,monkeypatch):
+    path,q,listed=transcript_query(case);old=case.ws._file
+    @contextmanager
+    def replaced(ref,*args,**kwargs):
+        with old(ref,*args,**kwargs) as opened:
+            yield opened
+            if ref==q['ref']:path.write_bytes(path.read_bytes()+b'changed')
+    monkeypatch.setattr(case.ws,'_file',replaced)
+    with pytest.raises(WorkspaceError,match='SOURCE_CHANGED'):
+        dispatch(case.ws,q,config_path=case.config)
+
+
+def test_transcript_no_hardlink_or_symlink_bypass(case):
+    path,q,listed=transcript_query(case);raw=path.read_bytes();other=case.base/'original.parquet';other.write_bytes(raw)
+    path.unlink();path.symlink_to(other)
+    with pytest.raises(WorkspaceError):dispatch(case.ws,q,config_path=case.config)
+    path.unlink();os.link(other,path)
+    with pytest.raises(WorkspaceError):dispatch(case.ws,q,config_path=case.config)
+
+
+@pytest.mark.parametrize('field',['api_key','command','root','output_path','sql','source_url'])
+def test_transcript_action_rejects_nonread_fields(case,field):
+    with pytest.raises(WorkspaceError,match='INVALID_REQUEST_FIELDS'):
+        dispatch(case.ws,{'action':'history_transcript','ref':'fixture:stock_earning_call_transcripts.parquet',
+            'expected_version':'statv1:'+'a'*64,'row_position':0,'expected_metadata_sha256':'a'*64,field:'not-admitted'},config_path=case.config)

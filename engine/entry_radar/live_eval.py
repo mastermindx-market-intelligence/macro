@@ -441,16 +441,23 @@ class QuotePoint:
     prev_close: float | None = None
     age_min: float | None = None
     max_age_min: float | None = None
+    native_quote_metadata: dict[str, Any] | None = None
 
     @property
     def usable(self) -> bool:
         return self.state == "ok" and self.price is not None and self.ts is not None
 
     def to_dict(self) -> dict[str, Any]:
-        return {"state": self.state, "price": self.price,
+        from lib.quote_native_metadata import copy_native_metadata
+
+        result = {"state": self.state, "price": self.price,
                 "ts": _iso(self.ts), "basis": self.basis, "source": self.source,
                 "prev_close": self.prev_close, "age_min": self.age_min,
                 "max_age_min": self.max_age_min}
+        metadata = copy_native_metadata(self.native_quote_metadata)
+        if metadata is not None:
+            result["native_quote_metadata"] = metadata
+        return result
 
 
 def _iso(ts: datetime | None) -> str | None:
@@ -513,8 +520,10 @@ def read_quote(ticker: str, row: Mapping[str, Any] | None, *, now: datetime,
                         else row.get("prev_close"))
     price = _float(row.get("price"))
     ts = _quote_ts(row)
+    from lib.quote_native_metadata import copy_native_metadata
     common = {"ticker": ticker, "basis": basis, "source": source,
-              "prev_close": prev_close, "max_age_min": max_age_min}
+              "prev_close": prev_close, "max_age_min": max_age_min,
+              "native_quote_metadata": copy_native_metadata(row.get("native_quote_metadata"))}
     if basis in CARRIED_QUOTE_BASES:
         # §3b: a stale carry, never live.  Admitting it would append the PRIOR
         # session's close as today's provisional bar — a fabricated flat day.
@@ -589,14 +598,18 @@ class JournalRecord:
     points: list[dict[str, Any]] = field(default_factory=list)
     observations: list[dict[str, Any]] = field(default_factory=list)
     refused: list[dict[str, Any]] = field(default_factory=list)
+    observation_quote_refs: dict[str, dict[str, Any]] = field(default_factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
-        return {"schema": SCHEMA_JOURNAL, "session": self.session,
+        result = {"schema": SCHEMA_JOURNAL, "session": self.session,
                 "ticker": self.ticker, "pack_as_of": self.pack_as_of,
                 "pack_hash": self.pack_hash, "price_basis": self.price_basis,
-                "points": [dict(p) for p in self.points],
+                "points": copy.deepcopy(self.points),
                 "observations": [dict(o) for o in self.observations],
                 "refused": [dict(r) for r in self.refused]}
+        if self.observation_quote_refs:
+            result["observation_quote_refs"] = copy.deepcopy(self.observation_quote_refs)
+        return result
 
     @classmethod
     def from_dict(cls, raw: Mapping[str, Any]) -> JournalRecord:
@@ -605,9 +618,10 @@ class JournalRecord:
                    pack_as_of=str(raw.get("pack_as_of") or ""),
                    pack_hash=str(raw.get("pack_hash") or ""),
                    price_basis=str(raw.get("price_basis") or ch.BASIS_ADJUSTED),
-                   points=[dict(p) for p in raw.get("points") or ()],
+                   points=copy.deepcopy(list(raw.get("points") or ())),
                    observations=[dict(o) for o in raw.get("observations") or ()],
-                   refused=[dict(r) for r in raw.get("refused") or ()])
+                   refused=[dict(r) for r in raw.get("refused") or ()],
+                   observation_quote_refs=copy.deepcopy(raw.get("observation_quote_refs") or {}))
 
     def last_ts(self) -> datetime | None:
         for row in reversed(self.points):
@@ -648,6 +662,10 @@ def _parse_iso(raw: Any) -> datetime | None:
     except (TypeError, ValueError):
         return None
     return parsed if parsed.tzinfo else parsed.replace(tzinfo=timezone.utc)
+
+
+def _quote_recorded_now() -> datetime:
+    return datetime.now(timezone.utc)
 
 
 class SessionJournal:
@@ -727,7 +745,8 @@ class SessionJournal:
 
     def append_point(self, record: JournalRecord, *, ts: datetime, price: float,
                      basis: str | None, source: str | None,
-                     basis_audit: Mapping[str, Any] | None) -> bool:
+                     basis_audit: Mapping[str, Any] | None,
+                     native_quote_metadata: dict | None = None) -> bool:
         """Append one quote point.  False when the append-only law refused it."""
         last = record.last_ts()
         if last is not None and ts <= last:
@@ -738,9 +757,17 @@ class SessionJournal:
                           "would land inside an already-sampled interval and rewrite "
                           "a published reading"})
             return False
-        record.points.append({"ts": _iso(ts), "price": float(price), "basis": basis,
-                              "source": source,
-                              "basis_audit": dict(basis_audit or {})})
+        from lib.quote_native_metadata import copy_native_metadata
+        point = {"ts": _iso(ts), "price": float(price), "basis": basis,
+                 "source": source, "basis_audit": dict(basis_audit or {})}
+        metadata = copy_native_metadata(native_quote_metadata)
+        if metadata is not None:
+            point["native_quote_metadata"] = metadata
+            if "response_identity" in metadata:
+                # Actual local admission clock, separate from vendor/evaluation
+                # clocks. Never added to an old or refused point.
+                point["quote_recorded_at"] = _quote_recorded_now().isoformat()
+        record.points.append(point)
         return True
 
     def freeze_observations(self, record: JournalRecord,
@@ -764,6 +791,19 @@ class SessionJournal:
             existing = known.get(key)
             if existing is None:
                 record.observations.append(row)
+                # Optional provenance lives beside the frozen observation, never
+                # in its strict detector schema or in an older observation.
+                if any("response_identity" in (p.get("native_quote_metadata") or {})
+                       for p in record.points):
+                    try:
+                        from engine.entry_radar.candidate_provenance import capture_observation_quote_reference
+                        reference = capture_observation_quote_reference(record, row,
+                            recorded_at=_quote_recorded_now().isoformat())
+                        if reference is not None:
+                            record.observation_quote_refs[key] = reference
+                    except Exception:
+                        pass  # optional provenance never changes detector admission
+
                 known[key] = row
                 added += 1
             elif existing != row:
@@ -1533,7 +1573,8 @@ def _refusal_payload(*, state: str, reasons: Sequence[str], now: datetime,
             "c3_reader": {"fetched_n": 0, "cache_hits": 0, "errors": 0, "empty": 0,
                           "deferred_n": 0, "incomplete_n": 0,
                           "reader_fetched_n": 0, "reader_cache_hits": 0,
-                          "reader_errors": 0, "reader_empty": 0},
+                          "reader_errors": 0, "reader_empty": 0,
+                          "source_arrival": None},
         },
         "basis": {"audited_n": 0, "mismatched_n": 0, "unchecked_n": 0, "refused": []},
         "null_readings": {"reading_unavailable": 0, "reading_stale": 0,
@@ -1623,7 +1664,8 @@ def run_pass(*, now: datetime, pack: lp.LivePack | None,
              env: Mapping[str, str] | None = None,
              tickers: Sequence[str] | None = None,
              unspooled_ok: bool = False,
-             dry_run: bool = False) -> PassResult:
+             dry_run: bool = False,
+             opportunity_cases: Mapping[str, Mapping[str, Any]] | None = None) -> PassResult:
     """One 5-minute RTH pass.  PURE given its inputs (W4 design §2 steps 1-10).
 
     ``quotes`` is the loaded quote view in ``live_verify.load_live_quotes`` shape
@@ -1686,7 +1728,8 @@ def run_pass(*, now: datetime, pack: lp.LivePack | None,
     return _evaluate(now=now, session=session, pack=pack, quotes=quotes,
                      ledger=ledger, state_dir=root, spool=spool,
                      intraday_reader=intraday_reader, cfg=cfg, probe=probe,
-                     unspooled_ok=unspooled_ok, dry_run=dry_run)
+                     unspooled_ok=unspooled_ok, dry_run=dry_run,
+                     opportunity_cases=opportunity_cases)
 
 
 def _probe_tickers(pack: lp.LivePack | None) -> list[str]:
@@ -1702,7 +1745,8 @@ def _evaluate(*, now: datetime, session: date, pack: lp.LivePack,
               quotes: Mapping[str, Any] | None, ledger: ll.LiveEpisodeLedger,
               state_dir: Path | None, spool: ll.EventSpool | None,
               intraday_reader: Any, cfg: LiveEvalConfig, probe: Sequence[str],
-              unspooled_ok: bool, dry_run: bool = False) -> PassResult:
+              unspooled_ok: bool, dry_run: bool = False,
+              opportunity_cases: Mapping[str, Mapping[str, Any]] | None = None) -> PassResult:
     """Steps 4-10.  One name at a time, then one spool object for the pass.
 
     ONE NAME CANNOT KILL THE PASS.  ``LiveEvalError``, ``ChallengerError``,
@@ -1728,8 +1772,11 @@ def _evaluate(*, now: datetime, session: date, pack: lp.LivePack,
                                        and intraday_reader is not None)
     results: list[NameResult] = []
     deltas: list[ll.PendingDelta] = []
-    c3_stats = {"fetched_n": 0, "cache_hits": 0, "errors": 0, "empty": 0,
-                "deferred_n": len(c3_deferred), "incomplete_n": 0}
+    c3_stats: dict[str, Any] = {
+        "fetched_n": 0, "cache_hits": 0, "errors": 0, "empty": 0,
+        "deferred_n": len(c3_deferred), "incomplete_n": 0,
+        "source_arrival": None,
+    }
     basis_stats = {"audited_n": 0, "mismatched_n": 0, "unchecked_n": 0,
                    "refused": []}
     stale_quotes = 0
@@ -1830,6 +1877,7 @@ def _evaluate(*, now: datetime, session: date, pack: lp.LivePack,
     t_merge = time.perf_counter()
     timing["merge_s"] = t_merge - t_loop
 
+    c3_stats["source_arrival"] = _reader_source_arrival(intraday_reader)
     health = _health(now=now, session=session, pack=pack, quotes=quotes,
                      results=results, ledger=ledger, state_dir=state_dir, cfg=cfg,
                      c3_stats=c3_stats, basis_stats=basis_stats,
@@ -1878,7 +1926,7 @@ def _evaluate(*, now: datetime, session: date, pack: lp.LivePack,
     health["content"]["ledger_hash"] = _ledger_hash(ledger)
     payload = _payload(now=now, session=session, pack=pack, results=results,
                        delta=delta, committed=committed, health=health,
-                       ledger=ledger)
+                       ledger=ledger, opportunity_cases=opportunity_cases)
     t_payload = time.perf_counter()
     timing["payload_s"] = t_payload - t_journal
     if not dry_run:
@@ -1898,7 +1946,7 @@ def _evaluate_name(*, ticker: str, now: datetime, session: date, session_iso: st
                    audit: Mapping[str, Any], journal: SessionJournal,
                    ledger: ll.LiveEpisodeLedger, cfg: LiveEvalConfig,
                    intraday_reader: Any, c3_deferred: bool,
-                   c3_stats: dict[str, int]) -> NameResult:
+                   c3_stats: dict[str, Any]) -> NameResult:
     """Steps 6-7 for ONE name: journal, observations, cross-check, evaluators."""
     record = journal.open_session(session=session_iso, ticker=ticker,
                                   pack_as_of=pack.as_of, pack_hash=pack.pack_hash,
@@ -1909,7 +1957,8 @@ def _evaluate_name(*, ticker: str, now: datetime, session: date, session_iso: st
     last_point = record.points[-1] if record.points else None
     if not journal.append_point(record, ts=quote.ts, price=quote.price,
                                 basis=quote.basis, source=quote.source,
-                                basis_audit=audit):
+                                basis_audit=audit,
+                                native_quote_metadata=quote.native_quote_metadata):
         # THE ROW MUST ADVERTISE THE PRICE THE DETECTORS READ.  An append-only
         # refusal is lawful and the pass keeps evaluating — but publishing the
         # REJECTED quote beside an observation built from the kept one is a
@@ -1926,10 +1975,12 @@ def _evaluate_name(*, ticker: str, now: datetime, session: date, session_iso: st
             reasons = reasons + ("journal_refused_point",)
             quote_rejected = quote.to_dict()
         kept_ts = _parse_iso((last_point or {}).get("ts"))
+        from lib.quote_native_metadata import copy_native_metadata
         quote = replace(
             quote, price=kept_price, ts=kept_ts,
             basis=(last_point or {}).get("basis"),
             source=(last_point or {}).get("source"),
+            native_quote_metadata=copy_native_metadata((last_point or {}).get("native_quote_metadata")),
             age_min=(None if kept_ts is None
                      else round((now - kept_ts).total_seconds() / 60.0, 4)))
 
@@ -2220,7 +2271,7 @@ def _c3_wanted(pack_name: lp.PackName, ledger: ll.LiveEpisodeLedger,
 
 def _run_c3(*, ticker: str, daily: ch.DailyHistory, session: date, now: datetime,
             reader: Any, ledger: ll.LiveEpisodeLedger, cfg: LiveEvalConfig,
-            stats: dict[str, int], pack_as_of: str,
+            stats: dict[str, Any], pack_as_of: str,
             ) -> tuple[fh.C3Run | None, tuple[date, ...]]:
     """``(run, missing_sessions)`` for C3 over the episode window.
 
@@ -2323,6 +2374,24 @@ def _reader_stats(reader: Any) -> dict[str, int]:
         return {}
 
 
+def _reader_source_arrival(reader: Any) -> dict[str, Any] | None:
+    """Latest successful client-observed minute fetch, for health observability only."""
+    if reader is None:
+        return None
+    latest = getattr(reader, "latest_fetch_receipt", None)
+    if not callable(latest):
+        return None
+    try:
+        receipt = latest()
+        if receipt is None:
+            return None
+        to_dict = getattr(receipt, "to_dict", None)
+        payload = to_dict() if callable(to_dict) else None
+        return dict(payload) if isinstance(payload, Mapping) else None
+    except Exception:  # noqa: BLE001 — health observation cannot fail a pass
+        return None
+
+
 def _session_back(session: date, n: int) -> date | None:
     from lib.nyse_calendar import session_n_back  # noqa: PLC0415
     try:
@@ -2414,7 +2483,7 @@ def _lane_rows(readings: Sequence[Any]) -> list[dict[str, Any]]:
 def _health(*, now: datetime, session: date, pack: lp.LivePack,
             quotes: Mapping[str, Any] | None, results: Sequence[NameResult],
             ledger: ll.LiveEpisodeLedger, state_dir: Path | None,
-            cfg: LiveEvalConfig, c3_stats: Mapping[str, int],
+            cfg: LiveEvalConfig, c3_stats: Mapping[str, Any],
             basis_stats: Mapping[str, Any], stale_quotes: int, covered: int,
             probe: Sequence[str], delta: ll.PendingDelta) -> dict[str, Any]:
     """The deterministic, enumerated health block."""
@@ -2652,10 +2721,108 @@ def _priority_lookup(board: Mapping[str, Any]
     return {ticker: tuple(rows) for ticker, rows in grouped.items()}
 
 
+def _project_opportunity_case(case: object, episode: dict, *, now: str) -> dict:
+    """Read an exact current LER episode, never mutate or create its lifecycle.
+
+    Radar's own pinned episode identity + canonical bytes bind this projection.
+    No ticker-to-security join is inferred: only a same-owner symbol vector is
+    eligible here. Canonical-security cases need an actual LER identity bridge.
+    """
+    from hashlib import sha256
+    from lib import evidence_foundation as ef
+    from lib.opportunity_case import OpportunityCaseError, SCHEMA, validate_case
+    row = ll.LiveEpisode.from_dict(episode)
+    data = validate_case(case)
+    vector = data["inputs"]["vector"]
+    asof = vector["asof"]
+    origin = asof["t0_evidence_ref"]
+    subject = data["subject"]
+    instant = lambda s: datetime.fromisoformat(s.replace("Z", "+00:00"))
+    try:
+        current = instant(now)
+        if (current.tzinfo is None or row.terminal or row.state != "CANDIDATE"
+                or subject != {"subject_type": "us_listing_symbol", "value": row.ticker,
+                               "identity_state": "single_owner_native", "identity_bridge": None}
+                or asof["t0_source"] != "radar_observed_at" or asof["t0_mode"] != "live"
+                or asof["grain"] != "datetime" or asof["value"] != row.candidate_at
+                or origin["native_identity"] != {"episode_id": row.episode_id}
+                or origin["native_digest"] != {"state": "known", "sha256": sha256(row.canonical.encode()).hexdigest()}
+                or instant(data["generated_at"]) > current
+                or instant(asof["value"]) > current):
+            raise OpportunityCaseError("case_episode_binding_unavailable")
+    except (TypeError, ValueError, KeyError) as exc:
+        if isinstance(exc, OpportunityCaseError):
+            raise
+        raise OpportunityCaseError("case_episode_clock_invalid") from None
+    return copy.deepcopy({
+        "schema": "entry_radar.research_case/v1",
+        "case_ref": {"schema": SCHEMA, "case_id": data["case_id"], "sha256": data["content_sha256"]},
+        "episode_binding": {"episode_id": row.episode_id, "candidate_at": row.candidate_at,
+                            "canonical_sha256": sha256(row.canonical.encode()).hexdigest()},
+        # Pointer-only drillback in the existing payload. No owner bodies, new
+        # case store, ranking or forward-result fields enter the live lane.
+        "evidence_refs": [{key: ref[key] for key in (
+            "reference_id", "owner_store", "native_digest",
+            "clocks", "rights", "freshness", "provenance")}
+            for _, ref in sorted(data["inputs"]["references"].items())],
+        "episode_id": row.episode_id, "research_state": data["research_state"],
+        **{k: data[k] for k in ("reality", "inferred", "transmission", "market_incorporation",
+                               "company_context", "strongest_unresolved_fact", "failed_gates",
+                               "next_observables", "denominators", "dominant_degradation")},
+        "evidence_binding_state": data["evidence_binding"]["state"],
+        "evaluation_reference_ids": [r["reference_id"] for r in data["evaluation_refs"]],
+        "authority": dict(ef.ALL_FALSE_AUTHORITY),
+    })
+
+
+def _attach_opportunity_cases(episode_rows: list[dict[str, Any]], *,
+                              cases: Mapping[str, Mapping[str, Any]] | None,
+                              now: datetime, health: dict[str, Any] | None) -> None:
+    """Read at most eight supplied cases AFTER lifecycle/spool decisions.
+
+    The existing source-reading caller may supply already composed cases by
+    native episode ID. This is a bounded view of existing episodes, never a
+    candidate source, case store, network reader or input to RP1/detection.
+    Default absence performs no case work and preserves the current wire.
+    """
+    if cases is None:
+        return
+    report = {"state": "available", "requested": 0, "attached": 0, "refusals": {}}
+    if health is not None:
+        health["opportunity_cases"] = report
+    if (not isinstance(cases, Mapping) or len(cases) > 8
+            or any(type(key) is not str for key in cases)):
+        report["state"] = "unavailable"
+        report["refusals"]["case_input_bound_invalid"] = 1
+        return
+    report["requested"] = len(cases)
+    from lib.opportunity_case import OpportunityCaseError
+    by_id = {row["episode_id"]: row for row in episode_rows}
+    for episode_id, case in sorted(cases.items()):
+        row = by_id.get(episode_id)
+        try:
+            if row is None:
+                raise OpportunityCaseError("case_episode_not_selected")
+            native_row = {key: row[key] for key in ll.EPISODE_FIELDS if key in row}
+            projection = _project_opportunity_case(case, native_row, now=_iso(now))
+            # No forward-result field or numeric authority gets an exemption
+            # merely because it is nested under a research case.
+            if forward_knowledge_keys(projection):
+                raise OpportunityCaseError("case_live_projection_not_permitted")
+            row["research_case"] = projection
+            report["attached"] += 1
+        except Exception as exc:
+            code = str(exc) if isinstance(exc, OpportunityCaseError) else "case_projection_unavailable"
+            report["refusals"][code] = report["refusals"].get(code, 0) + 1
+    if report["refusals"]:
+        report["state"] = "partial" if report["attached"] else "unavailable"
+
+
 def _payload(*, now: datetime, session: date, pack: lp.LivePack,
              results: Sequence[NameResult], delta: ll.PendingDelta,
              committed: bool, health: Mapping[str, Any],
-             ledger: ll.LiveEpisodeLedger) -> dict[str, Any]:
+             ledger: ll.LiveEpisodeLedger,
+             opportunity_cases: Mapping[str, Mapping[str, Any]] | None = None) -> dict[str, Any]:
     """``live/entry_radar.json``.  Mechanical copy only — nothing is composed.
 
     A name with ANY non-PROBING lane gets full per-lane detail; a pure-probing
@@ -2681,6 +2848,8 @@ def _payload(*, now: datetime, session: date, pack: lp.LivePack,
         now=now,
         health=health if isinstance(health, dict) else None,
     )
+    _attach_opportunity_cases(episode_rows, cases=opportunity_cases, now=now,
+                              health=health if isinstance(health, dict) else None)
     return {
         "schema": SCHEMA_LIVE_PAYLOAD,
         "asof": _iso(now),

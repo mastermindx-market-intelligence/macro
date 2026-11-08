@@ -70,8 +70,24 @@ def test_micro_research_no_input_mutation(document):
 
 
 def test_micro_research_crosswalk_byte_fence(document, tmp_path):
+    # Date-scoped fence (2026-10-21 micro expansion): the pin describes the
+    # frozen pre-expansion table named by source_pin.commit, so the fence is
+    # exercised against a frozen projection of the live file — the same frozen
+    # rows, different bytes — plus a nonsemantic trailing comment. Any local
+    # table the pin does not describe byte-for-byte refuses. The expansion era
+    # itself is fenced by frozen-projection reconciliation
+    # (tests/test_theme_graph_micro_expansion_20261021.py).
+    import yaml
+    live = yaml.safe_load((ROOT / "config/theme_crosswalk.yml").read_text(encoding="utf-8"))
+    frozen = {
+        key: [row for row in live["hierarchy"][key]
+              if str(row.get("asserted_on", "")) < "2026-10-21"]
+        for key in ("categories", "sub_themes", "micro_themes", "parents")
+    }
     target = tmp_path / "crosswalk.yml"
-    target.write_bytes((ROOT / "config/theme_crosswalk.yml").read_bytes() + b"\n# nonsemantic but different bytes\n")
+    target.write_text(
+        yaml.safe_dump({"hierarchy": frozen}, allow_unicode=True, sort_keys=False)
+        + "# nonsemantic but different bytes\n", encoding="utf-8")
     with pytest.raises(ValueError, match="crosswalk bytes differ"):
         build_microtheme_research_evidence(document, crosswalk_path=target)
 
@@ -113,7 +129,11 @@ def test_micro_research_crosswalk_byte_fence(document, tmp_path):
     lambda d: d["sources"]["S001"].__setitem__("url", "https://localhost/private"),
     lambda d: d["sources"]["S001"].__setitem__("published_on", "2027-01-01"),
     lambda d: d["sources"]["S001"].__setitem__("publication_precision", "YEAR"),
-    lambda d: d["source_pin"].__setitem__("crosswalk_sha256", "0" * 64),
+    # Date-scoped (2026-10-21 micro expansion): a well-formed but wrong digest
+    # can only be exercised against a byte-exact pre-expansion table, so this
+    # param arms the digest-format fence, which holds in both regimes; the
+    # value-level fence is covered by test_micro_research_crosswalk_byte_fence.
+    lambda d: d["source_pin"].__setitem__("crosswalk_sha256", "not-a-digest"),
     lambda d: d.__setitem__("schema", "gmi.microtheme_membership_research/v2"),
 ])
 def test_micro_research_adversarial_refusals(document, mutation):
@@ -248,3 +268,241 @@ def test_cli_mode_specific_refusal_code(tmp_path):
     body = json.loads(result.stderr)
     assert body["schema"] == "gmi.microtheme_membership_review_refusal/v1"
     assert body["code"] == "MICROTHEME_RESEARCH_UNAVAILABLE"
+
+
+# M1 next wave: Data OS CURRENT identity reference hints, not issuer admission.
+from engine.theme_graph.membership_evidence import (
+    build_microtheme_identity_preflight,
+    render_microtheme_identity_preflight_markdown,
+)
+
+
+@pytest.fixture
+def dataos_reference_rows():
+    issuer_rows = [
+        {"issuer_id": "ISS:US-XNAS-MU", "legal_name": "Micron Technology Inc", "status": "active"},
+        {"issuer_id": "ISS:US-XNYS-PL", "legal_name": "Planet Labs PBC", "status": "active"},
+        {"issuer_id": "ISS:US-XNYS-PLNT", "legal_name": "Planet Fitness Inc", "status": "active"},
+        {"issuer_id": "ISS:US-XNYS-CPT", "legal_name": "Camden Property Trust", "status": "active"},
+        {"issuer_id": "ISS:US-XNAS-DEL", "legal_name": "Micron obsolete", "status": "retired"},
+    ]
+    security_rows = [
+        {
+            "security_id": "SEC:" + x["issuer_id"].removeprefix("ISS:"),
+            "issuer_id": x["issuer_id"],
+            "issuer_state": "RESOLVED",
+            "listing_key": x["issuer_id"].removeprefix("ISS:"),
+            "security_state": None,
+        }
+        for x in issuer_rows if x["status"] == "active"
+    ]
+    return issuer_rows, security_rows
+
+
+def _identity_report(document, rows):
+    return build_microtheme_identity_preflight(
+        document,
+        issuer_rows=rows[0],
+        security_rows=rows[1],
+        issuer_snapshot_sha256="a" * 64,
+        security_snapshot_sha256="b" * 64,
+    )
+
+
+def test_m1_current_reference_is_diagnostic_not_member_admission(document, dataos_reference_rows):
+    out = _identity_report(document, dataos_reference_rows)
+    assert out["schema"] == "gmi.microtheme_identity_preflight/v1"
+    assert out["counts"]["activity_records"] == 103
+    assert out["counts"]["micro_definitions"] == 68
+    assert sum(out["counts"]["identity_hint_states"].values()) == 103
+    assert out["counts"]["canonical_memberships_admitted"] == 0
+    assert out["counts"]["dataos_identities_qualified_for_micro"] == 0
+    assert out["counts"]["measurement_cohorts_admitted"] == 0
+    assert out["reference"]["point_in_time_issuer_history_available"] is False
+    assert all(not row["measurement_eligible"] and not row["canonical_membership_admitted"]
+               for row in out["candidate_diagnostics"])
+    assert all(row["legal_entity_qualification"] == "NOT_PERFORMED"
+               for row in out["candidate_diagnostics"])
+
+
+def test_m1_identity_prefix_planet_fitness_and_amd_counterexamples(document, dataos_reference_rows):
+    by_id = {
+        row["record_id"]: row for row in
+        _identity_report(document, dataos_reference_rows)["candidate_diagnostics"]
+    }
+    assert by_id["M001"]["identity_hint_state"] == "POSSIBLE_ONE_CURRENT_ISSUER"
+    assert [x["issuer_id"] for x in by_id["M001"]["possible_current_issuer_refs"]] == [
+        "ISS:US-XNAS-MU",
+    ]
+    assert by_id["M073"]["identity_hint_state"] == "AMBIGUOUS_NAME_PREFIX"
+    assert {x["issuer_id"] for x in by_id["M073"]["possible_current_issuer_refs"]} == {
+        "ISS:US-XNYS-PL", "ISS:US-XNYS-PLNT",
+    }
+    assert by_id["M008"]["identity_hint_state"] == "NO_NAME_PREFIX_IN_REFERENCE"
+    assert by_id["M008"]["possible_current_issuer_refs"] == []  # AMD != Camden.
+
+
+def test_m1_identity_excludes_retired_or_orphaned_issuers(document, dataos_reference_rows):
+    issuers, security = copy.deepcopy(dataos_reference_rows)
+    # There is a real issuer name in the catalogue but no eligible owner security.
+    security[:] = [row for row in security if row["issuer_id"] != "ISS:US-XNAS-MU"]
+    report = _identity_report(document, (issuers, security))
+    m001 = next(x for x in report["candidate_diagnostics"] if x["record_id"] == "M001")
+    assert m001["identity_hint_state"] == "NO_NAME_PREFIX_IN_REFERENCE"
+
+
+@pytest.mark.parametrize("alter", [
+    lambda i, s: i.append(copy.deepcopy(i[0])),
+    lambda i, s: i[0].__setitem__("issuer_id", "not-a-canonical-issuer"),
+    lambda i, s: i[0].__setitem__("legal_name", 42),
+    lambda i, s: s.clear(),
+])
+def test_m1_identity_bad_dataos_rows_refused(document, dataos_reference_rows, alter):
+    issuer, security = copy.deepcopy(dataos_reference_rows)
+    alter(issuer, security)
+    with pytest.raises(ValueError, match="microtheme"):
+        _identity_report(document, (issuer, security))
+
+
+def test_m1_identity_digest_format_is_strict(document, dataos_reference_rows):
+    with pytest.raises(ValueError, match="unbound identity reference digest"):
+        build_microtheme_identity_preflight(
+            document, issuer_rows=dataos_reference_rows[0],
+            security_rows=dataos_reference_rows[1],
+            issuer_snapshot_sha256="not-a-sha",
+            security_snapshot_sha256="b" * 64,
+        )
+
+
+def test_m1_identity_cannot_upgrade_model_originated_canonical_id(document, dataos_reference_rows):
+    document["candidates"][0]["canonical_security_id"] = "SEC:US-XNAS-MU"
+    with pytest.raises(ValueError, match="candidate contains unadmitted identity"):
+        _identity_report(document, dataos_reference_rows)
+
+
+def test_m1_identity_output_is_deep_copy_and_markdown_escapes(document, dataos_reference_rows):
+    before = json.dumps(document, sort_keys=True)
+    out = _identity_report(document, dataos_reference_rows)
+    out["candidate_diagnostics"][0]["entity_name"] = "changed"
+    assert json.dumps(document, sort_keys=True) == before
+    out["candidate_diagnostics"][0]["entity_name"] = "fake|unsafe<tag>"
+    rendered = render_microtheme_identity_preflight_markdown(out)
+    assert "fake&#124;unsafe&lt;tag&gt;" in rendered
+    assert "qualified identities, memberships and weights: zero" in rendered
+
+
+def test_m1_identity_cli_actual_parquet_fixture(document, tmp_path):
+    pa = pytest.importorskip("pyarrow")
+    pq = pytest.importorskip("pyarrow.parquet")
+    issuer = tmp_path / "issuer_master.parquet"
+    security = tmp_path / "security_master.parquet"
+    pq.write_table(pa.Table.from_pylist([
+        {"issuer_id": "ISS:US-XNAS-MU", "legal_name": "Micron Technology Inc", "status": "active"},
+    ]), issuer)
+    pq.write_table(pa.Table.from_pylist([{
+        "security_id": "SEC:US-XNAS-MU", "issuer_id": "ISS:US-XNAS-MU",
+        "issuer_state": "RESOLVED", "listing_key": "US-XNAS-MU",
+        "security_state": None,
+    }]), security)
+    source = tmp_path / "research.json"
+    source.write_text(json.dumps(document))
+    result = subprocess.run(
+        [sys.executable, str(CLI), "--microtheme-research", str(source),
+         "--issuer-reference", str(issuer), "--security-reference", str(security)],
+        cwd=ROOT, text=True, capture_output=True, check=False,
+    )
+    assert result.returncode == 0, result.stderr
+    observed = json.loads(result.stdout)
+    assert observed["counts"]["identity_hint_states"]["POSSIBLE_ONE_CURRENT_ISSUER"] >= 1
+    assert observed["counts"]["canonical_memberships_admitted"] == 0
+
+
+def test_m1_identity_cli_partial_or_nonresearch_arguments_refused(tmp_path):
+    for args in (
+        ["--review", "missing.json", "--issuer-reference", "some.parquet"],
+        ["--microtheme-research", "missing.json", "--issuer-reference", "some.parquet"],
+    ):
+        result = subprocess.run([sys.executable, str(CLI), *args],
+                                cwd=ROOT, text=True, capture_output=True, check=False)
+        assert result.returncode == 2
+        assert json.loads(result.stderr)["ok"] is False
+
+
+def test_m1_current_reference_null_legal_name_is_reported_not_guessed(
+    document, dataos_reference_rows
+):
+    issuers, securities = copy.deepcopy(dataos_reference_rows)
+    issuers.append({
+        "issuer_id": "ISS:US-XNAS-NONAME",
+        "legal_name": None, "status": "active",
+    })
+    securities.append({
+        "security_id": "SEC:US-XNAS-NONAME", "issuer_id": "ISS:US-XNAS-NONAME",
+        "listing_key": "US-XNAS-NONAME", "issuer_state": "RESOLVED",
+        "security_state": None,
+    })
+    report = _identity_report(document, (issuers, securities))
+    assert report["reference"]["current_issuer_rows_without_legal_name"] == 1
+    assert sum(report["counts"]["identity_hint_states"].values()) == 103
+    assert not any(
+        x["issuer_id"] == "ISS:US-XNAS-NONAME"
+        for row in report["candidate_diagnostics"]
+        for x in row["possible_current_issuer_refs"]
+    )
+
+
+def test_m1_cli_valid_legacy_input_refuses_identity_flag_before_loading(
+    document, tmp_path
+):
+    path = tmp_path / "valid-source.json"
+    path.write_text(json.dumps(document))
+    result = subprocess.run(
+        [sys.executable, str(CLI), "--review", str(path),
+         "--issuer-reference", str(tmp_path / "issuer_master.parquet")],
+        cwd=ROOT, text=True, capture_output=True, check=False,
+    )
+    assert result.returncode == 2
+    error = json.loads(result.stderr)
+    assert error["code"] == "OVERLAP_EVIDENCE_UNAVAILABLE"
+    assert "requires both Data OS files" in error["message"]
+
+
+def test_m1_parquet_digest_and_parser_use_the_same_captured_bytes(
+    tmp_path, monkeypatch
+):
+    """Kill the path-reopened-after-hash mutation: provenance must cover parsed bytes."""
+    from scripts import explain_theme_overlap as cli
+    pa = pytest.importorskip("pyarrow")
+    pq = pytest.importorskip("pyarrow.parquet")
+    source = tmp_path / "current-issuer.parquet"
+    pq.write_table(pa.Table.from_pylist([{
+        "issuer_id": "ISS:US-XNAS-MU", "legal_name": "Micron Technology Inc", "status": "active",
+    }]), source)
+    original_bytes = source.read_bytes()
+    original_loader = pq.ParquetFile
+
+    def mutate_live_path_after_snapshot(snapshot, *args, **kwargs):
+        assert isinstance(snapshot, pa.BufferReader), "parquet parser reopened a path"
+        pq.write_table(pa.Table.from_pylist([{
+            "issuer_id": "ISS:US-XNYS-PL", "legal_name": "Planet Labs", "status": "active",
+        }]), source)
+        return original_loader(snapshot, *args, **kwargs)
+
+    monkeypatch.setattr(pq, "ParquetFile", mutate_live_path_after_snapshot)
+    records, sha = cli._read_bounded_reference(source)
+    assert records[0]["issuer_id"] == "ISS:US-XNAS-MU"
+    assert sha == hashlib.sha256(original_bytes).hexdigest()
+    assert source.read_bytes() != original_bytes
+
+
+def test_m1_source_reader_refuses_symlinks_oversize_and_invalid_parquet(tmp_path):
+    from scripts import explain_theme_overlap as cli
+    invalid = tmp_path / "corrupt.parquet"
+    invalid.write_bytes(b"not a parquet file")
+    link = tmp_path / "redirect.parquet"
+    link.symlink_to(invalid)
+    oversize = tmp_path / "large.parquet"
+    oversize.write_bytes(b"X" * 4_000_001)
+    for path in (invalid, link, oversize):
+        with pytest.raises((ValueError, OSError)):
+            cli._read_bounded_reference(path)

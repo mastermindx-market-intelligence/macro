@@ -71,7 +71,7 @@ from zoneinfo import ZoneInfo
 
 __all__ = [
     "IdentityError",
-    "BATS", "XNYS", "XNAS", "XASE", "ARCX", "XSHG", "XSHE", "XBSE", "XHKG", "XTSE", "XTSX",
+    "BATS", "XNYS", "XNAS", "XASE", "ARCX", "TXSE", "XSHG", "XSHE", "XBSE", "XHKG", "XTSE", "XTSX",
     "KNOWN_MICS",
     "VENUE_TZ", "VENUE_CURRENCY", "venue_timezone", "venue_currency",
     "ListingKey",
@@ -122,6 +122,7 @@ XNYS = "XNYS"   # New York Stock Exchange
 XNAS = "XNAS"   # Nasdaq
 XASE = "XASE"   # NYSE American (ex-AMEX)
 ARCX = "ARCX"   # ISO 10383 NYSE Arca segment; reference-probe admission only
+TXSE = "TXSE"   # Texas Stock Exchange (ISO 10383 operating MIC; dark segment TXSD not admitted)
 XSHG = "XSHG"   # Shanghai Stock Exchange
 XSHE = "XSHE"   # Shenzhen Stock Exchange
 XBSE = "XBSE"   # Beijing Stock Exchange
@@ -130,20 +131,23 @@ XTSE = "XTSE"   # Toronto Stock Exchange
 XTSX = "XTSX"   # TSX Venture Exchange
 
 KNOWN_MICS: frozenset[str] = frozenset(
-    {BATS, XNYS, XNAS, XASE, ARCX, XSHG, XSHE, XBSE, XHKG, XTSE, XTSX}
+    {BATS, XNYS, XNAS, XASE, ARCX, TXSE, XSHG, XSHE, XBSE, XHKG, XTSE, XTSX}
 )
 
 #: D00.A1.1 — CLOSED venue-clock map (same human-once-in-a-diff law as KNOWN_MICS).
 VENUE_TZ: Mapping[str, str] = MappingProxyType({
     BATS: "America/New_York", XNYS: "America/New_York", XNAS: "America/New_York",
     XASE: "America/New_York", ARCX: "America/New_York",
+    # TXSE is a Dallas venue but trades the national-market Eastern session, the same
+    # reason BATS (Lenexa, KS) reads the New York clock: the trade date is the tape's.
+    TXSE: "America/New_York",
     XTSE: "America/Toronto", XTSX: "America/Toronto",
     XHKG: "Asia/Hong_Kong",
     XSHG: "Asia/Shanghai", XSHE: "Asia/Shanghai", XBSE: "Asia/Shanghai",
 })
 #: D00.A1.2 — CLOSED listing-currency map; no FX is ever applied anywhere.
 VENUE_CURRENCY: Mapping[str, str] = MappingProxyType({
-    BATS: "USD", XNYS: "USD", XNAS: "USD", XASE: "USD", ARCX: "USD",
+    BATS: "USD", XNYS: "USD", XNAS: "USD", XASE: "USD", ARCX: "USD", TXSE: "USD",
     XTSE: "CAD", XTSX: "CAD",
     XHKG: "HKD",
     XSHG: "CNY", XSHE: "CNY", XBSE: "CNY",
@@ -699,6 +703,8 @@ def _as_date(value: date | str | None) -> date | None:
 # receipt. Candidate input consumers must additionally bind their actual snapshot
 # read by the decision cutoff in the existing input bundle.
 NATIVE_REFERENCE_VENDOR = "polygon"
+SEC_FILING_CUSIP_VENDOR = "sec_filing_cusip"
+_SEALED_REFERENCE_VENDORS = frozenset({NATIVE_REFERENCE_VENDOR, SEC_FILING_CUSIP_VENDOR})
 _SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 
 
@@ -856,32 +862,45 @@ class AliasRow:
             if self.binding_sha256 != expected:
                 raise IdentityError("option root binding seal mismatch")
             return
-        if self.vendor != NATIVE_REFERENCE_VENDOR:
+        if self.vendor not in _SEALED_REFERENCE_VENDORS:
             return
+        if self.vendor == SEC_FILING_CUSIP_VENDOR:
+            if (not isinstance(self.vendor_symbol, str)
+                    or not re.fullmatch(r"[0-9A-Z]{9}", self.vendor_symbol)
+                    or not isinstance(self.security_id, str)
+                    or not self.security_id.startswith("SEC:")):
+                raise IdentityError("SEC filing requires an exact CUSIP and canonical security")
+            parse_id(self.security_id)
+            if (type(self.valid_from) is not date or type(self.valid_to) is not date
+                    or self.valid_to != self.valid_from + timedelta(days=1)):
+                raise IdentityError("SEC filing binding is restricted to its evidenced observation day")
+        reference_label = "SEC filing" if self.vendor == SEC_FILING_CUSIP_VENDOR else "polygon"
         clock = _aware_utc(self.known_at, "known_at")
         object.__setattr__(self, "known_at", clock)
         if self.valid_from is None or isinstance(self.valid_from, datetime):
-            raise IdentityError("polygon reference requires a dated valid_from")
+            raise IdentityError(f"{reference_label} reference requires a dated valid_from")
         if clock.date() < self.valid_from:
-            raise IdentityError("polygon evidence precedes its reference date")
+            raise IdentityError(f"{reference_label} evidence precedes its reference date")
         if self.valid_to is not None and self.valid_to <= self.valid_from:
-            raise IdentityError("polygon invalid event-date bounds")
+            raise IdentityError(f"{reference_label} invalid event-date bounds")
         if not isinstance(self.evidence_sha256, str) or not _SHA256_RE.fullmatch(self.evidence_sha256):
-            raise IdentityError("polygon missing evidence digest")
+            raise IdentityError(f"{reference_label} missing evidence digest")
         expected = alias_binding_sha256(self.vendor, self.vendor_symbol, self.security_id,
                                         self.valid_from, self.valid_to, clock,
                                         self.evidence_sha256)
         if self.binding_sha256 != expected:
-            raise IdentityError("polygon alias binding seal mismatch")
+            raise IdentityError(f"{reference_label} alias binding seal mismatch")
 
     @property
     def underlying_kind(self) -> str | None:
         return option_underlying_kind(self.security_id) if self.alias_kind == OPTION_ROOT_KIND else None
 
     def covers(self, on: date, *, decision_at: datetime | str | None = None) -> bool:
+        if self.vendor == SEC_FILING_CUSIP_VENDOR and type(on) is not date:
+            raise IdentityError("SEC filing requires an exact event date")
         if self.alias_kind == OPTION_ROOT_KIND:
             _option_root_query(self.vendor, self.vendor_symbol, on)
-        if self.alias_kind == OPTION_ROOT_KIND or self.vendor == NATIVE_REFERENCE_VENDOR:
+        if self.alias_kind == OPTION_ROOT_KIND or self.vendor in _SEALED_REFERENCE_VENDORS:
             cutoff = _aware_utc(decision_at, "decision_at")
             if cutoff < self.known_at or on > cutoff.date():
                 return False
@@ -1054,7 +1073,7 @@ class VendorAliasTable:
 
 
 # ── Pure observation history (publication/adapter activation is separate) ──────
-_CLOCKED_ALIAS_VENDORS = frozenset({"polygon", "listing"})
+_CLOCKED_ALIAS_VENDORS = frozenset({"polygon", "listing", SEC_FILING_CUSIP_VENDOR})
 _OBSERVATION_SCHEMA = "mastermind.identity_observations.v1"
 _ARTIFACT_NAMES = (
     "security_master.parquet", "vendor_aliases.parquet", "issuer_master.parquet",
@@ -1367,6 +1386,100 @@ def validate_reference_snapshot(receipt_before, artifact_bytes, receipt_after, *
                          json.loads(aliases))
     return ReferenceSnapshot(receipt_before, tuple((n, artifact_bytes[n]) for n in _ARTIFACT_NAMES),
                              aliases, master)
+
+
+@dataclass(frozen=True, slots=True)
+class ReferenceBinding:
+    """Immutable structural G/R/V/H binding, not an authenticity attestation."""
+    generation_id: str
+    receipt_sha256: str
+    artifact_vector: tuple[tuple[str, str, int, str | None], ...]
+    history_sha256: str
+
+
+@dataclass(frozen=True, slots=True)
+class ReferenceTransition:
+    disposition: str
+    previous: ReferenceBinding
+    candidate: ReferenceBinding
+
+
+def _ob_transition_snapshot(context):
+    # A caller can construct a frozen dataclass without ever validating its seals.
+    _ob_require(type(context) is ReferenceSnapshot, "validated snapshot context required")
+    _ob_require(type(context.artifact_bytes) is tuple
+                and len(context.artifact_bytes) == len(_ARTIFACT_NAMES), "snapshot artifact vector")
+    for pair in context.artifact_bytes:
+        _ob_require(type(pair) is tuple and len(pair) == 2
+                    and type(pair[0]) is str and type(pair[1]) is bytes,
+                    "snapshot artifact vector entry")
+    _ob_require(len({pair[0] for pair in context.artifact_bytes}) == len(_ARTIFACT_NAMES),
+                "duplicate snapshot artifact")
+    checked = validate_reference_snapshot(
+        context.receipt_bytes, dict(context.artifact_bytes), context.receipt_bytes,
+        alias_records=_ob_load(context.alias_json, 64 * _MIB, record_set=True),
+        master_records=_ob_load(context.master_json, 64 * _MIB, record_set=True))
+    receipt = _ob_load(checked.receipt_bytes, 9 * _MIB)
+    pub = receipt["publication"]
+    vector = tuple((name, pub["artifacts"][name]["sha256"], pub["artifacts"][name]["bytes"],
+                    pub["artifacts"][name]["semantic_sha256"]) for name in _ARTIFACT_NAMES)
+    return checked, receipt, ReferenceBinding(
+        pub["generation_id"], hashlib.sha256(checked.receipt_bytes).hexdigest(),
+        vector, pub["history_sha256"])
+
+
+def validate_reference_transition(previous, candidate, *, expected_previous_generation_id,
+                                  expected_previous_receipt_sha256,
+                                  previous_artifact_vector, candidate_artifact_vector):
+    """Validate supplied snapshots and declared full artifact manifests without I/O.
+
+    NOOP preserves the identical receipt's historical predecessor. Every successor
+    must name the supplied previous receipt and preserve its native history prefix.
+    Receipt-only updates require a new native G: receipt fields outside publication
+    cannot alone produce one. Predecessor/generated_at-only restamps are refused.
+
+    This checks consistency, not whether supplied observations, clocks or code
+    changes are real, whether semantic records decode from the supplied Parquet
+    bytes, or whether publication occurred. A publisher must separately enforce
+    the full committed store's G/R uniqueness, lineage, custody and atomicity.
+    """
+    old, old_receipt, old_binding = _ob_transition_snapshot(previous)
+    new, new_receipt, new_binding = _ob_transition_snapshot(candidate)
+    _ob_hash(expected_previous_generation_id, "expected previous generation")
+    _ob_hash(expected_previous_receipt_sha256, "expected previous receipt")
+    _ob_require((expected_previous_generation_id, expected_previous_receipt_sha256)
+                == (old_binding.generation_id, old_binding.receipt_sha256),
+                "transition previous binding mismatch")
+    for declared, receipt in ((previous_artifact_vector, old_receipt),
+                              (candidate_artifact_vector, new_receipt)):
+        # Canonical JSON comparison retains JSON types (True must not equal 1).
+        _ob_require(_ob_json(declared) == _ob_json(receipt["publication"]["artifacts"]),
+                    "transition declared artifact vector mismatch")
+    if old == new:
+        return ReferenceTransition("NOOP", old_binding, new_binding)
+    _ob_require(new_binding.generation_id != old_binding.generation_id,
+                "transition same generation with different receipt")
+    _ob_require(new_binding.receipt_sha256 != old_binding.receipt_sha256,
+                "transition changed generation with same receipt")
+    _ob_require(new_receipt["publication"]["predecessor_receipt_sha256"]
+                == old_binding.receipt_sha256, "transition predecessor mismatch")
+    old_history, new_history = (r["identity_observations"] for r in (old_receipt, new_receipt))
+    _ob_require(_ob_json(old_receipt["prospective_reference"])
+                == _ob_json(new_receipt["prospective_reference"])
+                and _ob_json(old_history["anchor"]) == _ob_json(new_history["anchor"]),
+                "transition original context changed")
+    _ob_require(new_history["attempts"][:len(old_history["attempts"])] == old_history["attempts"],
+                "transition changed or truncated history prefix")
+    def substantive(receipt):
+        publication = {k: v for k, v in receipt["publication"].items()
+                       if k not in ("generation_id", "predecessor_receipt_sha256")}
+        return _ob_json({**{k: v for k, v in receipt.items()
+                           if k not in ("publication", "generated_at")},
+                         "publication": publication}, 9 * _MIB)
+    _ob_require(substantive(old_receipt) != substantive(new_receipt),
+                "transition predecessor/generated_at-only restamp")
+    disposition = "ARTIFACT_CHANGE" if old.artifact_bytes != new.artifact_bytes else "RECEIPT_ONLY"
+    return ReferenceTransition(disposition, old_binding, new_binding)
 
 
 def _ob_validate_history(history, original, records):

@@ -123,3 +123,64 @@ def test_browser_budget_refusal_preserves_its_specific_reason(monkeypatch, tmp_p
     monkeypatch.setattr(m, 'MAX_BROWSER_BYTES', 1)
     with pytest.raises(m.HistoricalExperienceError, match='browser decoded source exceeds budget'):
         m._columnar(root, manifest, 'states', receipt['manifest_sha256'])
+
+
+
+def test_browser_embeds_explicit_source_bound_filing_timeline(monkeypatch,tmp_path):
+    from tests.test_market_memory_history_filings import payload
+    root,receipt=archive(monkeypatch,tmp_path)
+    source=tmp_path/'earnings_8k_dates.parquet';raw=payload();source.write_bytes(raw)
+    digest=hashlib.sha256(raw).hexdigest();dest=tmp_path/'filings.html'
+    result=module().export_browser(root,dest,expected_manifest_sha256=receipt['manifest_sha256'],
+        filings_path=source,expected_filings_sha256=digest)
+    html=dest.read_text(encoding='utf-8')
+    encoded=re.search(r'<script id="mmh-filings-data"[^>]*>([^<]+)</script>',html).group(1)
+    data=json.loads(gzip.decompress(base64.b64decode(encoded)))
+    assert result['filing_events']==1 and result['filings_sha256']==digest
+    assert data['filings_sha256']==digest and data['manifest_sha256']==receipt['manifest_sha256']
+    assert len(data['rows'])==1 and data['metadata']['intraday_publication_time_verified'] is False
+    assert 'id="mmh-filings-table"' in html and 'id="mmh-filings-next"' in html
+    assert not any(c.startswith(('forward_','outcome')) for c in data['columns'])
+    assert 'id="mmh-outcomes-data"' not in html
+
+
+def test_filing_export_pair_or_filename_refuses_before_source_read(monkeypatch,tmp_path):
+    root,receipt=archive(monkeypatch,tmp_path)
+    from engine.neuralweb import market_memory_history_filings as filings
+    monkeypatch.setattr(filings,'read_filing_timeline',lambda *a,**k:pytest.fail('decoder called before admission'))
+    for kwargs in ({'filings_path':tmp_path/'earnings_8k_dates.parquet'},
+                   {'filings_path':tmp_path/'outcomes-2020.parquet','expected_filings_sha256':'a'*64}):
+        with pytest.raises(ValueError):
+            module().export_browser(root,tmp_path/'bad.html',expected_manifest_sha256=receipt['manifest_sha256'],**kwargs)
+    assert not (tmp_path/'bad.html').exists()
+
+
+
+def test_browser_embeds_source_bound_transcript_catalog_but_no_call_text(monkeypatch,tmp_path):
+    import io
+    from tests.test_market_memory_history_transcripts import payload
+    from engine.neuralweb.market_memory_history_transcripts import read_transcript_catalog
+    root,receipt=archive(monkeypatch,tmp_path);raw=payload()
+    catalog=read_transcript_catalog(io.BytesIO(raw),file_bytes=len(raw),
+        source_ref='fixture:stock_earning_call_transcripts.parquet',source_version='statv1:'+'a'*64)
+    source=tmp_path/'transcript-catalog.json';encoded=json.dumps(catalog,sort_keys=True).encode();source.write_bytes(encoded)
+    digest=hashlib.sha256(encoded).hexdigest();dest=tmp_path/'with-calls.html'
+    result=module().export_browser(root,dest,expected_manifest_sha256=receipt['manifest_sha256'],
+        transcripts_catalog_path=source,expected_transcripts_catalog_sha256=digest)
+    html=dest.read_text(encoding='utf-8')
+    block=re.search(r'<script id="mmh-transcripts-data"[^>]*>([^<]+)</script>',html).group(1)
+    data=json.loads(gzip.decompress(base64.b64decode(block)))
+    assert result['transcript_records']==1 and result['transcripts_catalog_sha256']==digest
+    assert data['manifest_sha256']==receipt['manifest_sha256']
+    assert data['metadata']['publication_time_verified'] is False
+    assert 'Original words, not instructions.' not in html
+    assert 'id="mmh-transcripts-table"' in html and 'id="mmh-transcript-request"' in html
+    assert 'id="mmh-outcomes-data"' not in html
+
+
+def test_bad_transcript_catalog_binding_refuses_before_export(monkeypatch,tmp_path):
+    root,receipt=archive(monkeypatch,tmp_path)
+    with pytest.raises(ValueError):
+        module().export_browser(root,tmp_path/'bad.html',expected_manifest_sha256=receipt['manifest_sha256'],
+            transcripts_catalog_path=tmp_path/'catalog.json')
+    assert not (tmp_path/'bad.html').exists()
