@@ -15589,8 +15589,195 @@ jobs:
     # Every ci.yml run on main runs this whole job; the merge sweeper dispatches
     # one when its main proof goes stale. A PR that edits the manifest or the
     # planner, the shape of #7971 and #8010, reds here, on its own head.
+    # 2026-11-04 (#917 CI acceleration): this job now runs only the hosted-runner
+    # packing contract and the differential contract-delta gate contract
+    # (556-1,074 s measured). The structure/reliability/runner-policy/backstop
+    # steps moved to ci-control-plane-structure and the three censuses to
+    # ci-control-plane-census, both declaring these same paths; see those jobs.
     runs-on: ubuntu-latest
     paths:
+      # Ancestor package initializers of the declared subjects (2026-11-04,
+      # ancestor-init census): importing a declared module executes these, so a
+      # change to one must select this job. Declared on all three control-plane
+      # jobs identically.
+      - "app/__init__.py"
+      - "collectors/__init__.py"
+      - "engine/capital_structure/__init__.py"
+      - "engine/government_revenue/__init__.py"
+      - "engine/theme_graph/__init__.py"
+      - "lib/__init__.py"
+      - "lib/dataos/__init__.py"
+      - "tests/__init__.py"
+      - "contracts/economic_propagation/propagation_hypothesis.v2.schema.json"
+      - "lib/dataos/identity.py"
+      - "lib/economic_propagation.py"
+      - "lib/economic_propagation_v2.py"
+      - "research/economic_propagation/k3d_real_proof_records/real_abstention_tsn_adm_no_graph1.json"
+      - "app/deploy/update.sh"
+      - "app/deploy/reconcile-caddy-autosave.py"
+      - "app/deploy/macro_caddy_overlay.py"
+      - "app/deploy/macro_caddy_publication.py"
+      - "lib/exchange_holidays.py"
+      - ".github/ci/legacy-jobs.yml"
+      - ".github/workflows/**"
+      - "scripts/run_ci_pack.py"
+      - "scripts/ci_*.py"
+      - "scripts/audit_unrun_tests.py"
+      - "scripts/check_ci_trigger_closure.py"
+      - "scripts/check_runner_policy.py"
+      - "scripts/check_skip_only_suites.py"
+      - "scripts/check_workflow_yaml.py"
+      - "scripts/nightly_backstop.py"
+      - "tests/test_audit_unrun_tests.py"
+      - "tests/test_check_conflict_markers.py"
+      - "tests/test_check_skip_only_suites.py"
+      - "tests/test_ci_canary_tools.py"
+      - "tests/test_ci_canary_workflows.py"
+      - "tests/test_ci_gate_reliability_report.py"
+      - "tests/test_ci_pack.py"
+      - "tests/test_ci_pack_fragments.py"
+      - "tests/test_ci_pack_semantic.py"
+      - "tests/test_ci_plan_workflow.py"
+      - "tests/test_ci_semantic_proof.py"
+      - "tests/test_ci_trigger_closure.py"
+      - "tests/test_contract_delta.py"
+      - "tests/test_merge_on_green.py"
+      - "tests/test_merge_on_green_semantic.py"
+      - "tests/test_nightly_backstop.py"
+      - "tests/test_release_hold_text.py"
+      - "tests/test_run_ci_pack_fetch_fallback.py"
+      - "tests/test_runner_policy.py"
+      - "tests/test_trusted_ci_executor_workflow.py"
+      - "tests/test_trusted_ci_production_route.py"
+      # What the suites above import or read. `scope: exclusive` replaces
+      # inference, so a file missing here is one whose change never starts this
+      # job; test_curated_exclusive_scopes_cover_their_own_import_closure reds on it.
+      - "scripts/__init__.py"
+      - "scripts/workflow_run_source.py"
+      - "scripts/worktree_sparse.py"
+      - "config/sparse_worktree.json"
+      - "lib/nyse_calendar.py"
+      - "scripts/check_conflict_markers.py"
+      - "scripts/check_contract_delta.py"
+      - "scripts/merge_on_green.py"
+      - "scripts/gh_path_filter.py"
+      - "scripts/capture_ci_canary_receipt.py"
+      - "scripts/compare_ci_canary_receipts.py"
+      - "scripts/monitor_ci_host_resources.py"
+      - "scripts/resolve_ci_canary_ref.py"
+      - "scripts/select_ci_canary_packs.py"
+      - "ops/runner-host/**"
+      - ".claude/workflows/release_hold_text.py"
+      - "research/MARKET_ONTOLOGY_META_CEO_CHARTER_2026_09_06.md"
+      - "config/house_law_checks.yml"
+      # The unrun census's own inputs: a waiver or baseline edit changes its verdict.
+      - "config/unrun_test_baseline.json"
+      - "config/unrun_test_waivers.yml"
+      # tests/test_ci_pack.py imports the P0B receipt verifier, which imports the
+      # stock-dashboard fixture renderer. These are that import's closure.
+      - "scripts/check_p0b_receipt_closure.py"
+      - "scripts/render_stock_dashboard_fixture.py"
+      - "scripts/verify_stock_dashboard_mobile_layout.cjs"
+      - "site/stock-dashboard.css"
+      - "site/factordata/canada_standouts.json"
+      - "site/factordata/hk_standouts.json"
+      - "engine/__init__.py"
+      - "engine/i18n.py"
+      # Parsed or existence-checked subjects, never imported. Each is marked
+      # `# ci-trigger-closure: data` where a suite names it, so its own imports
+      # are not followed; the file itself is still a trigger.
+      - "collectors/fred.py"
+      - "contracts/government_revenue/*.schema.json"
+      - "engine/capital_structure/document_terms.py"
+      - "engine/government_revenue/workspace.py"
+      - "engine/market_state.py"
+      - "engine/signal_quality.py"
+      - "lib/config.py"
+      - "scripts/build_news.py"
+      - "scripts/build_signal_quality.py"
+      - "config/causal_priors.yml"
+      - "config/marketing.yml"
+      - "config/press_sources.yml"
+      - "research/DO_NOT_REBUILD.md"
+      - "research/cn_prophet_audit/sector_intel_exante_test.py"
+      - "research/prophet_us_audit/reclaim_veto_packet.py"
+      - "research/prophet_us_audit/test_label_grading_battery.py"
+      - "research/signal_engine/test_breadth_consume.py"
+      - "research/signal_engine/test_buy_filters.py"
+      - "research/signal_engine/test_buyfilter.py"
+      - "scripts/research/test_run_w4_controls_fingerprints.py"
+      - "tests/test_chart_render_inline.py"
+      - "tests/test_us_reclaim_veto_packet.py"
+      - "tests/test_ci_apt_cold_acquisition.py"
+      - "tests/test_ci_apt_native_plan.py"
+      - "tests/test_ci_apt_native_stage.py"
+      - "tests/test_ci_apt_transaction_contract.py"
+      - "tests/test_ci_browser_capture.py"
+      - "tests/test_ci_browser_dependency_inputs.py"
+      - "tests/test_ci_browser_native_setup.py"
+      - "config/intl_global_universe_v1.json"
+      - "config/intl_source_rights_matrix_v1.json"
+      - "config/theme_crosswalk.yml"
+      - "config/theme_sources.yml"
+      - "engine/intl_global_observation.py"
+      - "engine/intl_global_universe.py"
+      - "engine/theme_graph/rights.py"
+      - "lib/intl_global_observation_adapter.py"
+      - "templates/_navlinks.html.j2"
+      - "templates/theme.css"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      # pytest + pyyaml only. Every suite below collects and passes with nothing else
+      # installed (measured 2026-09-25 in a clean venv holding exactly these two). The
+      # data stack in workflow-yaml's install is for its options suites. It is not
+      # needed here, and check_skip_only_suites.py below reds if a suite here ever
+      # starts to skip for a package this line does not install.
+      - name: install minimal deps
+        run: pip install pytest pyyaml
+      - name: hosted-runner packing contract
+        run: python -m pytest tests/test_ci_pack.py tests/test_ci_pack_fragments.py tests/test_run_ci_pack_fetch_fallback.py tests/test_merge_on_green.py tests/test_merge_on_green_semantic.py tests/test_check_conflict_markers.py tests/test_release_hold_text.py -q
+      # scripts/check_contract_delta.py (2026-08-19) is the differential PR-vs-base
+      # gate that re-derives the two finding classes above (curated-exclusive
+      # import-closure misses, unwired suites) UNCONDITIONALLY of ci-pack's path
+      # scoping — see its module docstring for the incident that motivated it
+      # (#5872/#5932 merged green because their packs never ran the two suites
+      # this job already runs above). Wired HERE, right after the audit_unrun_tests
+      # steps, for the same reason every other suite in this job is: it would
+      # otherwise be an unrun suite named by no run: step, caught by the
+      # audit_unrun_tests.py step right above it.
+      - name: differential contract-delta gate contract
+        run: python -m pytest tests/test_contract_delta.py -q
+  ci-control-plane-structure:
+    if: ${{ false }}  # executed inside ci-pack — NOT a disabled gate; see the ci-pack job.
+    gate: code
+    scope: exclusive
+    # 2026-11-04 (#917 CI acceleration): split out of ci-control-plane-contracts.
+    # Measured on hosted runs 41806511589 and 41803222742, the undivided job ran
+    # 1,033-1,961 s and was the critical path of every pack matrix that selected
+    # it (the next-heaviest pack finished 400-900 s earlier). The three parts are
+    # independent verdicts; splitting them lets the planner place each on its own
+    # pack. Same gate, same scope, the SAME declared paths (the union closure of
+    # every control-plane suite, kept identical on purpose so the three jobs are
+    # always selected together and the trigger-closure guard sees one list).
+    # Workflow-structure, merge-gate reliability, runner-policy/canary and nightly
+    # backstop contracts (105-197 s measured).
+    runs-on: ubuntu-latest
+    paths:
+      # Ancestor package initializers of the declared subjects (2026-11-04,
+      # ancestor-init census): importing a declared module executes these, so a
+      # change to one must select this job. Declared on all three control-plane
+      # jobs identically.
+      - "app/__init__.py"
+      - "collectors/__init__.py"
+      - "engine/capital_structure/__init__.py"
+      - "engine/government_revenue/__init__.py"
+      - "engine/theme_graph/__init__.py"
+      - "lib/__init__.py"
+      - "lib/dataos/__init__.py"
+      - "tests/__init__.py"
       - "contracts/economic_propagation/propagation_hypothesis.v2.schema.json"
       - "lib/dataos/identity.py"
       - "lib/economic_propagation.py"
@@ -15733,8 +15920,6 @@ jobs:
       # cannot skip its way to a green on a pack runner.
       - name: ci-plan/ci-pack/ci-gate workflow structure contract
         run: python -m pytest tests/test_ci_plan_workflow.py tests/test_ci_semantic_proof.py tests/test_ci_pack_semantic.py tests/test_ci_browser_dependency_inputs.py tests/test_ci_browser_capture.py tests/test_ci_apt_cold_acquisition.py tests/test_ci_apt_native_plan.py tests/test_ci_apt_transaction_contract.py tests/test_ci_apt_native_stage.py tests/test_ci_browser_native_setup.py -q
-      - name: hosted-runner packing contract
-        run: python -m pytest tests/test_ci_pack.py tests/test_ci_pack_fragments.py tests/test_run_ci_pack_fetch_fallback.py tests/test_merge_on_green.py tests/test_merge_on_green_semantic.py tests/test_check_conflict_markers.py tests/test_release_hold_text.py -q
       # The merge-gate reliability report is the progress metric for
       # research/CI_MERGE_GATE_RELIABILITY_ROOT_CAUSE_2026_08_19.md, so a silent
       # regression in it would make that program's acceptance gate meaningless.
@@ -15757,6 +15942,163 @@ jobs:
         run: python3 scripts/nightly_backstop.py --selftest
       - name: nightly backstop dispatch rule (must never fire over a live run)
         run: python -m pytest tests/test_nightly_backstop.py -q
+  ci-control-plane-census:
+    if: ${{ false }}  # executed inside ci-pack — NOT a disabled gate; see the ci-pack job.
+    gate: code
+    scope: exclusive
+    # 2026-11-04 (#917 CI acceleration): split out of ci-control-plane-contracts.
+    # Measured on hosted runs 41806511589 and 41803222742, the undivided job ran
+    # 1,033-1,961 s and was the critical path of every pack matrix that selected
+    # it (the next-heaviest pack finished 400-900 s earlier). The three parts are
+    # independent verdicts; splitting them lets the planner place each on its own
+    # pack. Same gate, same scope, the SAME declared paths (the union closure of
+    # every control-plane suite, kept identical on purpose so the three jobs are
+    # always selected together and the trigger-closure guard sees one list).
+    # The unrun, skip-only and trigger-closure censuses and their unit tests
+    # (373-690 s measured).
+    runs-on: ubuntu-latest
+    paths:
+      # Ancestor package initializers of the declared subjects (2026-11-04,
+      # ancestor-init census): importing a declared module executes these, so a
+      # change to one must select this job. Declared on all three control-plane
+      # jobs identically.
+      - "app/__init__.py"
+      - "collectors/__init__.py"
+      - "engine/capital_structure/__init__.py"
+      - "engine/government_revenue/__init__.py"
+      - "engine/theme_graph/__init__.py"
+      - "lib/__init__.py"
+      - "lib/dataos/__init__.py"
+      - "tests/__init__.py"
+      - "contracts/economic_propagation/propagation_hypothesis.v2.schema.json"
+      - "lib/dataos/identity.py"
+      - "lib/economic_propagation.py"
+      - "lib/economic_propagation_v2.py"
+      - "research/economic_propagation/k3d_real_proof_records/real_abstention_tsn_adm_no_graph1.json"
+      - "app/deploy/update.sh"
+      - "app/deploy/reconcile-caddy-autosave.py"
+      - "app/deploy/macro_caddy_overlay.py"
+      - "app/deploy/macro_caddy_publication.py"
+      - "lib/exchange_holidays.py"
+      - ".github/ci/legacy-jobs.yml"
+      - ".github/workflows/**"
+      - "scripts/run_ci_pack.py"
+      - "scripts/ci_*.py"
+      - "scripts/audit_unrun_tests.py"
+      - "scripts/check_ci_trigger_closure.py"
+      - "scripts/check_runner_policy.py"
+      - "scripts/check_skip_only_suites.py"
+      - "scripts/check_workflow_yaml.py"
+      - "scripts/nightly_backstop.py"
+      - "tests/test_audit_unrun_tests.py"
+      - "tests/test_check_conflict_markers.py"
+      - "tests/test_check_skip_only_suites.py"
+      - "tests/test_ci_canary_tools.py"
+      - "tests/test_ci_canary_workflows.py"
+      - "tests/test_ci_gate_reliability_report.py"
+      - "tests/test_ci_pack.py"
+      - "tests/test_ci_pack_fragments.py"
+      - "tests/test_ci_pack_semantic.py"
+      - "tests/test_ci_plan_workflow.py"
+      - "tests/test_ci_semantic_proof.py"
+      - "tests/test_ci_trigger_closure.py"
+      - "tests/test_contract_delta.py"
+      - "tests/test_merge_on_green.py"
+      - "tests/test_merge_on_green_semantic.py"
+      - "tests/test_nightly_backstop.py"
+      - "tests/test_release_hold_text.py"
+      - "tests/test_run_ci_pack_fetch_fallback.py"
+      - "tests/test_runner_policy.py"
+      - "tests/test_trusted_ci_executor_workflow.py"
+      - "tests/test_trusted_ci_production_route.py"
+      # What the suites above import or read. `scope: exclusive` replaces
+      # inference, so a file missing here is one whose change never starts this
+      # job; test_curated_exclusive_scopes_cover_their_own_import_closure reds on it.
+      - "scripts/__init__.py"
+      - "scripts/workflow_run_source.py"
+      - "scripts/worktree_sparse.py"
+      - "config/sparse_worktree.json"
+      - "lib/nyse_calendar.py"
+      - "scripts/check_conflict_markers.py"
+      - "scripts/check_contract_delta.py"
+      - "scripts/merge_on_green.py"
+      - "scripts/gh_path_filter.py"
+      - "scripts/capture_ci_canary_receipt.py"
+      - "scripts/compare_ci_canary_receipts.py"
+      - "scripts/monitor_ci_host_resources.py"
+      - "scripts/resolve_ci_canary_ref.py"
+      - "scripts/select_ci_canary_packs.py"
+      - "ops/runner-host/**"
+      - ".claude/workflows/release_hold_text.py"
+      - "research/MARKET_ONTOLOGY_META_CEO_CHARTER_2026_09_06.md"
+      - "config/house_law_checks.yml"
+      # The unrun census's own inputs: a waiver or baseline edit changes its verdict.
+      - "config/unrun_test_baseline.json"
+      - "config/unrun_test_waivers.yml"
+      # tests/test_ci_pack.py imports the P0B receipt verifier, which imports the
+      # stock-dashboard fixture renderer. These are that import's closure.
+      - "scripts/check_p0b_receipt_closure.py"
+      - "scripts/render_stock_dashboard_fixture.py"
+      - "scripts/verify_stock_dashboard_mobile_layout.cjs"
+      - "site/stock-dashboard.css"
+      - "site/factordata/canada_standouts.json"
+      - "site/factordata/hk_standouts.json"
+      - "engine/__init__.py"
+      - "engine/i18n.py"
+      # Parsed or existence-checked subjects, never imported. Each is marked
+      # `# ci-trigger-closure: data` where a suite names it, so its own imports
+      # are not followed; the file itself is still a trigger.
+      - "collectors/fred.py"
+      - "contracts/government_revenue/*.schema.json"
+      - "engine/capital_structure/document_terms.py"
+      - "engine/government_revenue/workspace.py"
+      - "engine/market_state.py"
+      - "engine/signal_quality.py"
+      - "lib/config.py"
+      - "scripts/build_news.py"
+      - "scripts/build_signal_quality.py"
+      - "config/causal_priors.yml"
+      - "config/marketing.yml"
+      - "config/press_sources.yml"
+      - "research/DO_NOT_REBUILD.md"
+      - "research/cn_prophet_audit/sector_intel_exante_test.py"
+      - "research/prophet_us_audit/reclaim_veto_packet.py"
+      - "research/prophet_us_audit/test_label_grading_battery.py"
+      - "research/signal_engine/test_breadth_consume.py"
+      - "research/signal_engine/test_buy_filters.py"
+      - "research/signal_engine/test_buyfilter.py"
+      - "scripts/research/test_run_w4_controls_fingerprints.py"
+      - "tests/test_chart_render_inline.py"
+      - "tests/test_us_reclaim_veto_packet.py"
+      - "tests/test_ci_apt_cold_acquisition.py"
+      - "tests/test_ci_apt_native_plan.py"
+      - "tests/test_ci_apt_native_stage.py"
+      - "tests/test_ci_apt_transaction_contract.py"
+      - "tests/test_ci_browser_capture.py"
+      - "tests/test_ci_browser_dependency_inputs.py"
+      - "tests/test_ci_browser_native_setup.py"
+      - "config/intl_global_universe_v1.json"
+      - "config/intl_source_rights_matrix_v1.json"
+      - "config/theme_crosswalk.yml"
+      - "config/theme_sources.yml"
+      - "engine/intl_global_observation.py"
+      - "engine/intl_global_universe.py"
+      - "engine/theme_graph/rights.py"
+      - "lib/intl_global_observation_adapter.py"
+      - "templates/_navlinks.html.j2"
+      - "templates/theme.css"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      # pytest + pyyaml only. Every suite below collects and passes with nothing else
+      # installed (measured 2026-09-25 in a clean venv holding exactly these two). The
+      # data stack in workflow-yaml's install is for its options suites. It is not
+      # needed here, and check_skip_only_suites.py below reds if a suite here ever
+      # starts to skip for a package this line does not install.
+      - name: install minimal deps
+        run: pip install pytest pyyaml
       # 2026-08-12: the terminal-CI-handoff step that used to sit here is GONE with the
       # rule it guarded. A worker no longer stops on an armed pull request — it owns
       # commit -> push -> PR -> CI -> squash-merge -> live verification — so there is no
@@ -15801,17 +16143,6 @@ jobs:
         run: python scripts/audit_unrun_tests.py
       - name: unrun-census discovery unit tests
         run: python -m pytest tests/test_audit_unrun_tests.py -q
-      # scripts/check_contract_delta.py (2026-08-19) is the differential PR-vs-base
-      # gate that re-derives the two finding classes above (curated-exclusive
-      # import-closure misses, unwired suites) UNCONDITIONALLY of ci-pack's path
-      # scoping — see its module docstring for the incident that motivated it
-      # (#5872/#5932 merged green because their packs never ran the two suites
-      # this job already runs above). Wired HERE, right after the audit_unrun_tests
-      # steps, for the same reason every other suite in this job is: it would
-      # otherwise be an unrun suite named by no run: step, caught by the
-      # audit_unrun_tests.py step right above it.
-      - name: differential contract-delta gate contract
-        run: python -m pytest tests/test_contract_delta.py -q
       # SKIP-ONLY suites: a test that skips in every job naming it executes
       # nowhere, so a job list and a green run both lie about it. This is what an
       # `importorskip` added to clear a red lane creates by construction — it
