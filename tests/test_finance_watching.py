@@ -1,9 +1,10 @@
 """Finance watching — synthetic, in-module, no I/O.
 
-The live not-connected Finance shell shows two ``NOT_YET_EVALUABLE`` watching
-items in ``ul.fi-falsifiers`` (card_networks + exchanges_trading_venues),
-produced by :func:`engine.sector_intelligence.finance_watching.shell_watching_items`
-which calls :func:`apply_page_signal` on in-module synthetic constants.
+Ruling F-5: the not-connected Finance shell ships NO watching items — the
+builder stopped passing ``watching_items``, so ``ul.fi-falsifiers`` renders
+empty on the public page. :func:`engine.sector_intelligence.finance_watching.shell_watching_items`
+still exists (and calls :func:`apply_page_signal` on in-module synthetic
+constants), but only a connected page may ever consume its output.
 
 No fetch, no ``WATCHING``, no research/finance read, no clock. The frozen
 constants are byte-equal to ``tests/fixtures/finance_case_signal/synthesis_v0.json``
@@ -331,13 +332,14 @@ def test_shell_watching_items_returns_independent_copies() -> None:
 
 
 def test_builder_render_includes_watching_list_without_a_read_url(tmp_path: Path) -> None:
-    """``render_shell`` writes the watching list into a temp site root.
+    """``render_shell`` ships NO watching list into a temp site root.
 
-    The renderer must (a) NOT write the worktree ``site/``, (b) keep
-    ``data-fi-read-url=""``, (c) include the alpha ``primary_limit`` in
-    the rendered HTML, (d) emit at least one ``<li
-    class="fi-falsifier fi-panel2"`` row, (e) emit NO ``WATCHING``
-    anywhere in the page.
+    Ruling F-5 flips the W10-FIN-1 pin: with ``FI_READ_URL == ""`` the
+    renderer must (a) NOT write the worktree ``site/``, (b) keep
+    ``data-fi-read-url=""``, (c) include neither alpha nor beta
+    ``primary_limit`` in the rendered HTML, (d) emit NO ``<li
+    class="fi-falsifier fi-panel2"`` row, (e) emit NO ``WATCHING`` and no
+    ``data-state-falsifier`` marker anywhere in the page.
     """
     worktree_site = ROOT / "site" / "finance_intelligence.html"
     backup = worktree_site.read_bytes() if worktree_site.exists() else None
@@ -357,54 +359,51 @@ def test_builder_render_includes_watching_list_without_a_read_url(tmp_path: Path
     assert 'data-fi-read-url=""' in html
     assert FI_READ_URL == ""
 
-    # Two falsifier <li> rows, with the spec'd CSS hook.
+    # No falsifier <li> row at all — the page is unbuilt, not synthetic.
     rows = re.findall(
         r'<li class="fi-falsifier fi-panel2"[^>]*>(.*?)</li>', html, re.S
     )
-    assert len(rows) == 2, f"expected 2 falsifier rows, got {len(rows)}"
+    assert len(rows) == 0, f"expected 0 falsifier rows, got {len(rows)}"
 
-    # Each row carries a NOT_YET_EVALUABLE state marker.
+    # Neither the states nor the frozen statements reach the page.
     states = re.findall(
         r'data-state-falsifier="([^"]+)"', html
     )
-    assert states, "no data-state-falsifier marker found"
-    assert all(state == "NOT_YET_EVALUABLE" for state in states)
-    assert len(states) >= 2
+    assert not states, f"unexpected data-state-falsifier marker: {states}"
 
-    # Alpha primary_limit is on the page; beta too. No WATCHING anywhere.
+    # Alpha primary_limit is OFF the page; beta too. No WATCHING anywhere.
     alpha = _row("syn-fin-case-alpha")
     beta = _row("syn-fin-case-beta")
-    assert alpha["primary_limit"] in html
-    assert beta["primary_limit"] in html
+    assert alpha["primary_limit"] not in html
+    assert beta["primary_limit"] not in html
     assert "WATCHING" not in html
-    # The ZH strings (synthetic) are on the page too.
-    assert finance_watching.SHELL_STATEMENT_ZH["syn-fin-case-alpha"] in html
-    assert finance_watching.SHELL_STATEMENT_ZH["syn-fin-case-beta"] in html
+    # The ZH strings (synthetic) are OFF the page too.
+    assert finance_watching.SHELL_STATEMENT_ZH["syn-fin-case-alpha"] not in html
+    assert finance_watching.SHELL_STATEMENT_ZH["syn-fin-case-beta"] not in html
 
 
 def test_watching_chip_label_is_localized(tmp_path: Path) -> None:
-    """P2: the visible chip text is the governed pair, not the raw enum.
+    """P2, flipped by Ruling F-5: no watching chip reaches the page at all.
 
-    The chip keeps the machine token in ``data-state-falsifier`` (the
-    render test above reads it) while the visible text becomes the D.18
-    ``falsifier_state`` pair from ``templates/finance_intelligence.js``.
-    The pair is parsed back out of that file, so template and JS can
-    never drift silently.
+    The D.18 ``falsifier_state`` pair from ``templates/finance_intelligence.js``
+    stays parsed from that file (the governed connected-path copy), but the
+    not-connected shell must render neither the visible pair nor the machine
+    ``data-state-falsifier`` token.
     """
     en, zh = _js_chip_pair()
     (tmp_path / "templates").symlink_to(TEMPLATES, target_is_directory=True)
     html = render_shell(tmp_path).read_text(encoding="utf-8")
-    # Literal visible pair, as commissioned ...
-    assert ">Not yet evaluable<" in html
-    assert ">暂无法评估<" in html
-    # ... and the same pair parsed from the governed JS map (drift guard).
-    assert f">{en}<" in html
-    assert f">{zh}<" in html
+    # The visible pair is OFF the page ...
+    assert ">Not yet evaluable<" not in html
+    assert ">暂无法评估<" not in html
+    # ... and the governed pair parsed from the JS map (drift guard) too.
+    assert f">{en}<" not in html
+    assert f">{zh}<" not in html
     # No element's visible text equals the machine token (attributes ok).
     hits = [t for t in _visible_texts(html) if t.strip() == "NOT_YET_EVALUABLE"]
     assert not hits, "raw enum leaking as visible chip text"
-    # The machine token stays in the data attribute the render test reads.
-    assert 'data-state-falsifier="NOT_YET_EVALUABLE"' in html
+    # The machine token stays OFF the not-connected page.
+    assert 'data-state-falsifier="NOT_YET_EVALUABLE"' not in html
 
 
 def test_no_io_in_finance_watching_module() -> None:

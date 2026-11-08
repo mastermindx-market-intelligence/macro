@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-08-20T20:11:16Z",
+ "accession": "0000895419-26-000054",
+ "cik": "0000895419",
+ "doc_byte_length": 3316615,
+ "doc_sha256": "4cc0119211a56ffa7fc1405c6f7f07e0a4231df127be9bd16db63f02d30ef144",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-08-20",
+ "form": "10-K",
+ "period_of_report": "2026-06-28",
+ "primary_document": "wolf-20260628.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 2109860,
+  "byte_start": 2108073,
+  "normalized": "The Company and MACOM also entered into certain ancillary and related agreements, including (i) an Intellectual Property Assignment and License Agreement, which assigned to MACOM certain intellectual property owned by the Company and its affiliates and licensed to MACOM certain additional intellectual property owned by the Company, (ii) a Transition Services Agreement, pursuant to which the Company provides MACOM certain limited transition services following the RF Closing, (iii) a Master Supply Agreement, pursuant to which the Company continued to operate the RTP Fab and supply MACOM with Epi wafers and fabrication services (the \"RF Master Supply Agreement\") through the date the RTP Fab Transfer is completed (the \"RTP Fab Transfer Date\"), (iv) a Long-Term Epi Supply Agreement (the \"Long-Term Epi Supply Agreement\"), pursuant to which MACOM will purchase Epi wafers from the Company from the RTP Fab Transfer Date until the fifth anniversary of the RTP Fab Transfer Date, and (v) an Epi Research and Development Agreement, pursuant to which the Company will provide MACOM certain research and development activities and other technical manufacturing support services related to the RF Business during the period between the RF Closing and expiration of the Long-Term Epi Supply Agreement. In connection with the sale of the property and building of the RTP Fab, an affiliate of MACOM entered into a Lease Agreement with the purchaser of the RTP Fab property and the Company entered into a Sublease Agreement, with the MACOM lessee, under which the Company leased the premises of the RTP Fab until the RTP Fab Transfer Date (except for the portion covered by the real estate license agreement entered into in connection with the RF Business Divestiture, which MACOM retained).",
+  "normalized_sha256": "681f922b4f42232bcada9656a2ed0ad32a755b12bc3c6a29a5defe22de81d0a5",
+  "raw": "The Company and MACOM also entered into certain ancillary and related agreements, including (i) an Intellectual Property Assignment and License Agreement, which assigned to MACOM certain intellectual property owned by the Company and its affiliates and licensed to MACOM certain additional intellectual property owned by the Company, (ii) a Transition Services Agreement, pursuant to which the Company provides MACOM certain limited transition services following the RF Closing, (iii) a Master Supply Agreement, pursuant to which the Company continued to operate the RTP Fab and supply MACOM with Epi wafers and fabrication services (the \"RF Master Supply Agreement\") through the date the RTP Fab Transfer is completed (the \"RTP Fab Transfer Date\"), (iv) a Long-Term Epi Supply Agreement (the \"Long-Term Epi Supply Agreement\"), pursuant to which MACOM will purchase Epi wafers from the Company from the RTP Fab Transfer Date until the fifth anniversary of the RTP Fab Transfer Date, and (v) an Epi Research and Development Agreement, pursuant to which the Company will provide MACOM certain research and development activities and other technical manufacturing support services related to the RF Business during the period between the RF Closing and expiration of the Long-Term Epi Supply Agreement. In connection with the sale of the property and building of the RTP Fab, an affiliate of MACOM entered into a Lease Agreement with the purchaser of the RTP Fab property and the Company entered into a Sublease Agreement, with the MACOM lessee, under which the Company leased the premises of the RTP Fab until the RTP Fab Transfer Date (except for the portion covered by the real estate license agreement entered into in connection with the RF Business Divestiture, which MACOM retained). ",
+  "raw_sha256": "7ce4c42d6baa1b9d0000cc8932670a402ef87d706e63d50c34272a2bd49b45c6"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/895419/000089541926000054/wolf-20260628.htm",
+ "xbrl_contexts": []
+}

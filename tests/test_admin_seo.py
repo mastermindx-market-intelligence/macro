@@ -18,7 +18,7 @@ Assertions:
                               genuinely broken invocation returns ok:False
   - history parsing         → jsonl lines parsed, malformed line skipped
   - director state          → null when no token; true/false when readable
-  - search console          → always the explicit "not connected" slot
+  - search console          → retained collection evidence, never live auth proof
 """
 from __future__ import annotations
 
@@ -159,7 +159,8 @@ class TestDayZero:
     def test_search_console_slot_present_day0(self, empty_root):
         r = marketing.seo(empty_root)
         sc = r["search_console"]
-        assert sc["connected"] is False
+        assert sc["connected"] is None
+        assert sc["available"] is None
         assert "unavailable" in sc["note"].lower()
 
     def test_does_not_raise(self, empty_root):
@@ -206,10 +207,224 @@ class TestSeeded:
         assert sc["issue_counts_by_severity"]["high"] == 1
         assert sc["deltas_vs_prior"]["health_score"] == 4
 
-    def test_search_console_never_healthy(self, seeded_root):
-        # Even with a full audit, GSC stays explicitly unavailable — not zeroed.
+    def test_beacon_audit_does_not_imply_search_console_collection(self, seeded_root):
         r = marketing.seo(seeded_root)
-        assert r["search_console"]["connected"] is False
+        assert r["search_console"]["connected"] is None
+        assert r["search_console"]["available"] is None
+
+
+GSC_STATE = {
+    "schema": "gsc_state.v1", "as_of": "2000-11-01", "available": True,
+    "reason": None, "property": "sc-domain:example.test",
+    "window": {"start": "2000-10-05", "end": "2000-11-01"},
+    "rows_fetched": 10, "rows_may_be_incomplete": True,
+    "service_account": {"client_email": "not-for-this-view@example.test"},
+}
+
+
+def _seed_gsc(root, state):
+    path = root / "data/marketing/seo/search_console_state.json"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(state), encoding="utf-8")
+    return path
+
+
+def test_retained_gsc_without_beacon_audit_is_not_current_auth(empty_root):
+    path = _seed_gsc(empty_root, GSC_STATE)
+    before = path.read_bytes()
+    out = marketing.seo(empty_root)
+    assert out["available"] is False  # no Beacon crawl, independent GSC evidence
+    sc = out["search_console"]
+    assert sc["available"] is True and sc["connected"] is None
+    assert sc["as_of"] == "2000-11-01" and sc["age_days"] > 1
+    assert sc["property"] == GSC_STATE["property"]
+    assert sc["window"] == GSC_STATE["window"]
+    assert sc["rows_fetched"] == 10 and sc["rows_may_be_incomplete"] is True
+    assert "Current connection has not been checked" in sc["note"]
+    assert "service_account" not in sc
+    assert "not-for-this-view" not in json.dumps(sc)
+    assert path.read_bytes() == before
+
+
+def test_last_collection_failure_keeps_its_actual_reason(seeded_root):
+    _seed_gsc(seeded_root, {**GSC_STATE, "available": False, "rows_fetched": 0,
+                            "reason": "API permission denied on this collection"})
+    out = marketing.seo(seeded_root)
+    assert out["health_score"] == 78
+    sc = out["search_console"]
+    assert sc["available"] is False and sc["connected"] is None
+    assert sc["rows_fetched"] == 0
+    assert sc["reason"] == "API permission denied on this collection"
+    assert "credentials not configured" not in sc["note"]
+
+
+@pytest.mark.parametrize("state", [
+    [], {**GSC_STATE, "schema": "other.v1"},
+    {**GSC_STATE, "available": "false"}, {**GSC_STATE, "as_of": "not-a-date"},
+    {**GSC_STATE, "as_of": "2999-01-01"},
+])
+def test_invalid_gsc_state_does_not_break_beacon_or_invent_connection(seeded_root, state):
+    _seed_gsc(seeded_root, state)
+    out = marketing.seo(seeded_root)
+    assert out["ok"] is True and out["health_score"] == 78
+    assert out["search_console"]["available"] is None
+    assert out["search_console"]["connected"] is None
+
+
+def test_corrupt_gsc_remains_unknown(seeded_root):
+    path = _seed_gsc(seeded_root, GSC_STATE)
+    path.write_text("{unfinished", encoding="utf-8")
+    out = marketing.seo(seeded_root)
+    assert out["ok"] is True and out["health_score"] == 78
+    assert out["search_console"]["available"] is None
+
+
+def test_gsc_display_metadata_does_not_coerce_counts_or_reverse_window(seeded_root):
+    _seed_gsc(seeded_root, {**GSC_STATE, "rows_fetched": True,
+                            "rows_may_be_incomplete": "false",
+                            "window": {"start": "2000-11-02", "end": "2000-11-01"}})
+    sc = marketing.seo(seeded_root)["search_console"]
+    assert sc["rows_fetched"] is None and sc["rows_may_be_incomplete"] is None
+    assert sc["window"] is None
+
+
+def test_gsc_renderer_preserves_snapshot_limits_and_escapes_metadata(empty_root):
+    import shutil
+    import subprocess
+    from pathlib import Path
+
+    node = shutil.which("node")
+    if not node:
+        pytest.skip("Node is required for the shipped admin renderer contract")
+    source = (Path(__file__).resolve().parents[1] / "admin/static/app.js").read_text()
+    esc = next(line for line in source.splitlines() if line.startswith("const esc ="))
+    block = "function seoSearchConsoleBlock" + source.split(
+        "function seoSearchConsoleBlock", 1)[1].split("/* ---- MASTERMIND AI", 1)[0]
+    _seed_gsc(empty_root, {**GSC_STATE, "property": '<img src=x onerror="bad()">'})
+    sc = marketing.seo(empty_root)["search_console"]
+    cases = [sc, {**sc, "available": False, "reason": "retained failure"}, {},
+             {"connected": True}]
+    code = esc + "\n" + block + "\nconsole.log(JSON.stringify(" + json.dumps(cases) + ".map(seoSearchConsoleBlock)));"
+    run = subprocess.run([node, "-e", code], capture_output=True, text=True, check=True)
+    rendered = json.loads(run.stdout)
+    assert "Retained collection" in rendered[0] and "2000-11-01" in rendered[0]
+    assert "Snapshot as of" in rendered[0] and "Last collection:" not in rendered[0]
+    assert "10" in rendered[0] and "Requested window" in rendered[0]
+    assert "Missing URLs do not prove zero traffic" in rendered[0]
+    assert "Current connection has not been checked" in rendered[0]
+    assert "<img" not in rendered[0] and "&lt;img" in rendered[0]
+    assert "Last collection unavailable" in rendered[1] and "retained failure" in rendered[1]
+    assert all("Connected." not in value for value in rendered)
+    assert "No collection record" in rendered[2] and "No collection record" in rendered[3]
+
+
+def _retained_observation_rows(root, rows):
+    import pandas as pd
+    path = root / "data/marketing/seo/search_console_daily.parquet"
+    pd.DataFrame(rows, columns=["date", "page", "clicks", "impressions", "ctr", "position"]).to_parquet(path)
+    return path
+
+
+def test_gsc_consumer_projects_window_without_replaying_or_rewriting(empty_root, monkeypatch):
+    from engine.marketing import seo_search_console as producer
+    import requests
+
+    def forbidden(*args, **kwargs):
+        raise AssertionError("No producer, vendor or network effect is permitted")
+
+    monkeypatch.setattr(producer, "run", forbidden)
+    monkeypatch.setattr(requests.sessions.Session, "request", forbidden)
+    state = _seed_gsc(empty_root, {**GSC_STATE, "rows_fetched": 1})
+    daily = _retained_observation_rows(empty_root, [
+        ["2000-10-04", "https://example.test/blog/old.html", 4, 189, 4 / 189, 3],
+        ["2000-10-05", "https://example.test/blog/current.html", 0, 11, 0, 7],
+        ["2000-11-02", "https://example.test/blog/future.html", 99, 99, 1, 1],
+    ])
+    stale = daily.with_name("page_family_scorecard.json")
+    stale.write_text(json.dumps({"clicks": 103, "impressions": 299}))
+    before = {p: p.read_bytes() for p in (state, daily, stale)}
+    sc = marketing.seo(empty_root)["search_console"]
+    assert sc["observations"] == {"available": True, "rows_observed": 1, "clicks": 0, "impressions": 11}
+    assert sc["connected"] is None and sc["rows_may_be_incomplete"] is True
+    assert sc["window"] == GSC_STATE["window"]
+    assert all(p.read_bytes() == raw for p, raw in before.items())
+    assert "current.html" not in json.dumps(sc)  # Aggregates only; no queries/URLs/credentials.
+
+
+@pytest.mark.parametrize("bad", ["missing", "corrupt", "schema", "date", "negative", "fractional", "nan"])
+def test_gsc_observation_failures_keep_metadata_and_do_not_invent_zero(empty_root, bad):
+    _seed_gsc(empty_root, GSC_STATE)
+    path = empty_root / "data/marketing/seo/search_console_daily.parquet"
+    if bad == "corrupt":
+        path.write_bytes(b"not parquet")
+    elif bad != "missing":
+        import pandas as pd
+        frame = pd.DataFrame([{"date": "2000-10-05", "page": "https://example.test/a.html",
+                               "clicks": 0, "impressions": 11, "ctr": 0, "position": 7}])
+        if bad == "schema":
+            frame = frame.drop(columns=["impressions"])
+        elif bad == "date":
+            frame["date"] = "2000-10-05T12:00:00Z"
+        else:
+            frame["clicks"] = {"negative": -1, "fractional": 0.5, "nan": float("nan")}[bad]
+        frame.to_parquet(path)
+    sc = marketing.seo(empty_root)["search_console"]
+    assert sc["available"] is True and sc["connected"] is None
+    assert sc["observations"] == {"available": False, "rows_observed": None, "clicks": None, "impressions": None}
+    assert sc["as_of"] == "2000-11-01"
+
+
+def test_gsc_empty_observations_require_empty_collection_and_are_not_traffic(empty_root):
+    _seed_gsc(empty_root, {**GSC_STATE, "rows_fetched": 0})
+    _retained_observation_rows(empty_root, [])
+    assert marketing.seo(empty_root)["search_console"]["observations"] == {
+        "available": True, "rows_observed": 0, "clicks": 0, "impressions": 0,
+    }
+    _seed_gsc(empty_root, GSC_STATE)
+    assert marketing.seo(empty_root)["search_console"]["observations"]["available"] is False
+
+
+def test_gsc_observations_reject_a_changed_collection_snapshot(empty_root, monkeypatch):
+    from engine.marketing import seo_search_console as producer
+    state = _seed_gsc(empty_root, {**GSC_STATE, "rows_fetched": 1})
+    _retained_observation_rows(empty_root, [["2000-10-05", "https://example.test/a.html", 0, 11, 0, 7]])
+    original = producer._build_scorecard
+
+    def moved(*args):
+        result = original(*args)
+        state.write_text(json.dumps({**GSC_STATE, "as_of": "2000-11-02"}))
+        return result
+
+    monkeypatch.setattr(producer, "_build_scorecard", moved)
+    assert marketing.seo(empty_root)["search_console"]["observations"]["available"] is False
+
+
+def test_gsc_observation_renderer_distinguishes_measured_empty_and_unavailable():
+    import shutil
+    import subprocess
+    from pathlib import Path
+
+    node = shutil.which("node")
+    if not node:
+        pytest.skip("Node is required for the shipped admin renderer contract")
+    source = (Path(__file__).resolve().parents[1] / "admin/static/app.js").read_text()
+    esc = next(line for line in source.splitlines() if line.startswith("const esc ="))
+    block = "function seoSearchConsoleBlock" + source.split(
+        "function seoSearchConsoleBlock", 1)[1].split("/* ---- MASTERMIND AI", 1)[0]
+    base = {"available": True, "window": GSC_STATE["window"], "rows_may_be_incomplete": True}
+    measured = {**base, "observations": {"available": True, "rows_observed": 1, "clicks": 0, "impressions": 11}}
+    cases = [measured, {**base, "observations": {"available": True, "rows_observed": 0, "clicks": 0, "impressions": 0}},
+             base, {**measured, "observations": {"available": True, "rows_observed": 1, "clicks": "0", "impressions": 11}}]
+    code = esc + "\n" + block + "\nconsole.log(JSON.stringify(" + json.dumps(cases) + ".map(seoSearchConsoleBlock)));"
+    en = json.loads(subprocess.run([node, "-e", code], capture_output=True, text=True, check=True).stdout)
+    zh = json.loads(subprocess.run([node, "-e", 'global.document={documentElement:{dataset:{lang:"zh"}}};\n' + code], capture_output=True, text=True, check=True).stdout)
+    assert "Observed clicks in retained window</span>: 0" in en[0]
+    assert "Observed impressions</span>: 11" in en[0]
+    assert "Missing URLs do not prove zero traffic" in en[0]
+    assert "留存窗口内观测到的点击</span>: 0" in zh[0]
+    assert "No retained observations in this window; traffic is unknown." in en[1]
+    assert "Observed clicks in retained window</span>: 0" not in en[1]
+    assert all("Retained window observations unavailable; no zero inferred." in value for value in en[2:])
 
 
 # ---------------------------------------------------------------------------

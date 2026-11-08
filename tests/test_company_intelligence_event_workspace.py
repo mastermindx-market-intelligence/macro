@@ -1339,3 +1339,277 @@ def test_this_module_imports_without_the_chain_suite() -> None:
             top_level.update(alias.name for alias in node.names)
     banned = {"tests.test_company_intelligence_workspace_chain", "engine.us_candidate_episode"}
     assert not (top_level & banned), sorted(top_level & banned)
+
+
+# P1.T5 fixtures are SYNTHETIC provenance; no response/acquisition is performed.
+def _p1_t5_case(tmp_path, *, receipt=True):
+    from copy import deepcopy
+    from scripts.company_intelligence_publication_evidence import build_sec_snapshot
+    filing = _filing()
+    body = EXHIBIT.read_text(encoding="utf-8").encode("utf-8")
+    source_url = filing["exhibit_url"]
+    metadata = {
+        "schema": "earnings_release.sec_acquisition.v1",
+        "filing_key": {"cik": AAPL_CIK, "accession": AAPL_ACCESSION},
+        "requested_url": source_url, "final_url": source_url,
+        "redirect_policy": "sec_https_same_filing_max5.v1", "redirects": [],
+        "http_status": 200, "body_representation": "requests.content_after_content_decoding",
+        "content_type": "text/html", "content_encoding": None, "declared_charset": None,
+        "entity_sha256": sha256(body).hexdigest(), "entity_length": len(body),
+        "decoder": "utf-8", "decode_errors": "strict", "decode_policy": "utf8_strict",
+        "source_sha256": sha256(body).hexdigest(), "source_utf8_length": len(body),
+        "acquired_at": "2026-08-17T18:00:00.123456Z",
+    }
+    row = _build_flagship(filing_overrides={"acquisition_receipt": metadata} if receipt else {})
+    generation = write_workspace_generation(tmp_path, {row["event_id"]: row})
+    raw = (generation / "manifest.json").read_bytes()
+    manifest = json.loads(raw)
+    wires = {name: (generation / name).read_bytes() for name in manifest["files"]}
+    return build_sec_snapshot, raw, wires, deepcopy(metadata), generation
+
+
+def _p1_t5_mutate_wire(raw, wires, mutate):
+    manifest = json.loads(raw)
+    name = next(iter(wires))
+    row = json.loads(wires[name])
+    mutate(row)
+    body = json.dumps(row, sort_keys=True).encode()
+    wires = {name: body}
+    manifest["files"][name] = {"bytes": len(body), "sha256": sha256(body).hexdigest()}
+    return json.dumps(manifest, sort_keys=True).encode(), wires
+
+
+@pytest.mark.usefixtures("_p1_t5_offline")
+def test_p1_t5_selected_metadata_preserves_exact_receipt_not_wire(tmp_path):
+    build, raw, wires, receipt, _ = _p1_t5_case(tmp_path)
+    result = build(raw, wires)
+    assert result["manifest"]["sha256"] == sha256(raw).hexdigest()
+    assert result["manifest"]["bytes"] == len(raw)
+    selected = result["selected"][0]
+    assert selected["source"]["acquisition_receipt"] == receipt
+    assert selected["source"]["acquisition_receipt"]["acquired_at"] == "2026-08-17T18:00:00.123456Z"
+    assert selected["wire"]["sha256"] == sha256(next(iter(wires.values()))).hexdigest()
+    assert set(result) == {"schema", "manifest", "selected"}
+    assert set(result["manifest"]) == {"schema", "sha256", "bytes", "generation_id", "generated_at", "source_clock"}
+    assert not any(name in json.dumps(result) for name in ["qa_exchanges", "claims", "span_text", "transcript"])
+
+
+@pytest.mark.usefixtures("_p1_t5_offline")
+def test_p1_t5_untrusted_manifest_and_mixed_source_strings_never_export(tmp_path):
+    build, raw, wires, _, _ = _p1_t5_case(tmp_path)
+    manifest = json.loads(raw)
+    event_id = next(iter(wires))[len("workspaces/"):-len(".json")]
+    manifest["aliases"]["https://private.invalid/?token=SYNTHETIC_SECRET"] = event_id
+    manifest["warnings"] = ["SYNTHETIC_SECRET"]
+    raw = json.dumps(manifest).encode()
+    def mutate(row):
+        row["issuer"]["display_name"] = "SYNTHETIC_SECRET"
+        for source in row["sources"]:
+            source["private_body"] = "SYNTHETIC_SECRET raw mixed body"
+    raw, wires = _p1_t5_mutate_wire(raw, wires, mutate)
+    result = build(raw, wires)
+    assert "SYNTHETIC_SECRET" not in json.dumps(result)
+    assert result["manifest"]["sha256"] == sha256(raw).hexdigest()
+    assert result["selected"][0]["source"]["receipt_status"] == "present"
+
+
+@pytest.mark.usefixtures("_p1_t5_offline")
+def test_p1_t5_old_absence_is_not_backfilled(tmp_path):
+    build, raw, wires, _, _ = _p1_t5_case(tmp_path, receipt=False)
+    item = build(raw, wires)["selected"][0]["source"]
+    assert item["receipt_status"] == "absent"
+    assert item["acquisition_receipt"] is None
+
+
+@pytest.mark.parametrize("mutation", [
+    lambda row: row.update(generation_id="f" * 24),
+    lambda row: row["issuer"].update(company_id="cik:0000000001"),
+    lambda row: row["sources"][0].update(document_id="SYNTHETIC_SECRET"),
+    lambda row: row["sources"][0].update(source_sha256="f" * 64),
+    lambda row: row["sources"][0]["filing_key"].update(cik="0000000001"),
+    lambda row: row["sources"][0]["acquisition_receipt"].update(content_type="text/html; token=SYNTHETIC_SECRET"),
+    lambda row: row["sources"][0]["acquisition_receipt"].update(Authorization="SYNTHETIC_SECRET"),
+    lambda row: row["sources"][0]["acquisition_receipt"].update(http_status=True),
+    lambda row: row["sources"][0]["acquisition_receipt"].update(entity_length=True),
+    lambda row: row["sources"][0]["acquisition_receipt"].update(acquired_at="2099-01-01T00:00:00Z"),
+    lambda row: row["sources"][0]["acquisition_receipt"].update(final_url="https://private.invalid/SYNTHETIC_SECRET"),
+])
+@pytest.mark.usefixtures("_p1_t5_offline")
+def test_p1_t5_invalid_binding_retains_no_candidate(tmp_path, mutation):
+    from scripts.company_intelligence_publication_evidence import EvidenceValidationError
+    build, raw, wires, _, _ = _p1_t5_case(tmp_path)
+    raw, wires = _p1_t5_mutate_wire(raw, wires, mutation)
+    with pytest.raises(EvidenceValidationError) as caught:
+        build(raw, wires)
+    assert "SYNTHETIC_SECRET" not in str(caught.value)
+
+
+@pytest.mark.usefixtures("_p1_t5_offline")
+def test_p1_t5_wire_hash_and_json_fail_closed(tmp_path):
+    from scripts.company_intelligence_publication_evidence import EvidenceValidationError
+    build, raw, wires, _, _ = _p1_t5_case(tmp_path)
+    name = next(iter(wires))
+    for manifest_body, rows in [(raw, {name: wires[name] + b" "}),
+            (b'{"schema":1,"schema":2}', wires), (b'{"schema":NaN}', wires), (b'\xff', wires)]:
+        with pytest.raises(EvidenceValidationError):
+            build(manifest_body, rows)
+
+
+@pytest.mark.usefixtures("_p1_t5_offline")
+def test_p1_t5_local_symlink_has_safe_absence_not_file_contents(tmp_path):
+    from scripts.company_intelligence_publication_evidence import PublicationEvidence
+    _, _, wires, _, generation = _p1_t5_case(tmp_path / "output")
+    name = next(iter(wires))
+    path = generation / name
+    path.unlink()
+    private = tmp_path / "private.json"
+    private.write_text("SYNTHETIC_SECRET")
+    path.symlink_to(private)
+    dest = tmp_path / "evidence.json"
+    evidence = PublicationEvidence(dest, checkout="a" * 40, run_id="123", run_attempt="1")
+    assert evidence.begin(tmp_path / "output") is None
+    evidence.finish(tmp_path / "output", "failed")
+    payload = json.loads(dest.read_text())
+    assert payload["candidates"] == [] and payload["final_local_selection"] is None
+    assert payload["unavailable"] == ["unsafe_local_path"]
+    assert "SYNTHETIC_SECRET" not in dest.read_text()
+
+
+@pytest.mark.usefixtures("_p1_t5_offline")
+def test_p1_t5_local_only_and_invalid_candidate_do_not_claim_complete_publication(tmp_path):
+    from scripts.company_intelligence_publication_evidence import PublicationEvidence
+    _, _, wires, _, generation = _p1_t5_case(tmp_path / "output")
+    artifact = tmp_path / "evidence.json"
+    evidence = PublicationEvidence(artifact, checkout="a" * 40, run_id="123", run_attempt="1")
+    evidence.finish(tmp_path / "output", "returned_success")
+    payload = json.loads(artifact.read_text())
+    assert payload["retention_status"] == "partial"
+    assert payload["final_local_selection"]["candidate_sequence"] is None
+    assert payload["candidates"] == []
+    name = next(iter(wires))
+    (generation / name).write_bytes(b"SYNTHETIC_SECRET")
+    assert evidence.begin(tmp_path / "output") is None
+    evidence.outcome(None, "marker_put_acknowledged")
+    evidence.finish(tmp_path / "output", "returned_success")
+    payload = json.loads(artifact.read_text())
+    assert payload["final_local_selection"] is None and payload["candidates"] == []
+    assert payload["retention_status"] == "unavailable"
+    assert "SYNTHETIC_SECRET" not in artifact.read_text()
+
+
+@pytest.mark.parametrize("context", [
+    {"checkout": "SYNTHETIC_SECRET", "run_id": "123", "run_attempt": "1"},
+    {"checkout": "a" * 40, "run_id": "123?token=SYNTHETIC_SECRET", "run_attempt": "1"},
+    {"checkout": "a" * 40, "run_id": "123", "run_attempt": True},
+])
+@pytest.mark.usefixtures("_p1_t5_offline")
+def test_p1_t5_context_is_closed_not_environment_or_actor_dump(tmp_path, context):
+    from scripts.company_intelligence_publication_evidence import EvidenceValidationError, PublicationEvidence
+    artifact = tmp_path / "evidence.json"
+    artifact.write_text("SYNTHETIC_SECRET stale artifact")
+    with pytest.raises(EvidenceValidationError) as caught:
+        PublicationEvidence(artifact, **context)
+    assert artifact.read_text() == "SYNTHETIC_SECRET stale artifact"
+    assert "SYNTHETIC_SECRET" not in str(caught.value)
+
+
+@pytest.fixture
+def _p1_t5_offline(monkeypatch):
+    import socket
+    monkeypatch.setattr(socket.socket, "connect", lambda *a, **k: pytest.fail("P1.T5 offline: network forbidden"))
+
+
+@pytest.mark.usefixtures("_p1_t5_offline")
+@pytest.mark.parametrize("mode", ["equal_latin1", "oversize_latin1", "unsafe_utf8", "unsafe_latin1"])
+def test_p1_t5_newrisk_impossible_or_unsafe_lengths_are_rejected(tmp_path, mode):
+    from scripts.company_intelligence_publication_evidence import EvidenceValidationError
+    build, raw, wires, _, _ = _p1_t5_case(tmp_path)
+    def mutate(row):
+        receipt = row["sources"][0]["acquisition_receipt"]
+        if mode != "unsafe_utf8":
+            receipt.update(decoder="latin-1", decode_policy="utf8_strict_then_latin1_strict")
+        if mode == "equal_latin1":
+            receipt["entity_length"] = receipt["source_utf8_length"]
+        elif mode == "oversize_latin1":
+            receipt["entity_length"] = 1
+        elif mode == "unsafe_utf8":
+            receipt["entity_length"] = receipt["source_utf8_length"] = 2 ** 53
+        else:
+            receipt["entity_length"], receipt["source_utf8_length"] = 2 ** 53, 2 ** 53 + 1
+    raw, wires = _p1_t5_mutate_wire(raw, wires, mutate)
+    with pytest.raises(EvidenceValidationError):
+        build(raw, wires)
+
+
+@pytest.mark.usefixtures("_p1_t5_offline")
+def test_p1_t5_newrisk_real_synthetic_latin1_transform_is_preserved(tmp_path):
+    from scripts.company_intelligence_publication_evidence import build_sec_snapshot
+    _, _, _, receipt, _ = _p1_t5_case(tmp_path / "old")
+    text = EXHIBIT.read_text().encode("latin-1", "xmlcharrefreplace").decode("latin-1") + "\n<cafe>café</cafe>"
+    entity = text.encode("latin-1")
+    receipt.update(decoder="latin-1", decode_policy="utf8_strict_then_latin1_strict",
+        content_type="text/html; charset=iso-8859-1", declared_charset="iso-8859-1",
+        entity_sha256=sha256(entity).hexdigest(), entity_length=len(entity),
+        source_sha256=sha256(text.encode()).hexdigest(), source_utf8_length=len(text.encode()))
+    row = _build_flagship(exhibit_body=text, filing_overrides={"acquisition_receipt": receipt})
+    generation = write_workspace_generation(tmp_path / "new", {row["event_id"]: row})
+    raw = (generation / "manifest.json").read_bytes()
+    wires = {name: (generation / name).read_bytes() for name in json.loads(raw)["files"]}
+    result = build_sec_snapshot(raw, wires)
+    assert result["selected"][0]["source"]["acquisition_receipt"] == receipt
+    assert receipt["entity_length"] < receipt["source_utf8_length"] <= 2 * receipt["entity_length"]
+
+
+@pytest.mark.usefixtures("_p1_t5_offline")
+@pytest.mark.parametrize("flow", ["invalid_context", "begin", "finish", "unbound_outcome"])
+def test_p1_t5_newrisk_output_must_never_mutate_publication_input(tmp_path, flow):
+    from scripts.company_intelligence_publication_evidence import EvidenceValidationError, PublicationEvidence
+    output = tmp_path / "output"
+    _p1_t5_case(output)
+    marker = output / "event_workspaces/manifest.json"
+    original = marker.read_bytes()
+    if flow == "invalid_context":
+        with pytest.raises(EvidenceValidationError):
+            PublicationEvidence(marker, checkout="invalid", run_id="123", run_attempt="1")
+    else:
+        evidence = PublicationEvidence(marker, checkout="a" * 40, run_id="123", run_attempt="1")
+        if flow == "begin":
+            assert evidence.begin(output) is None
+            evidence.outcome(None, "not_attempted_no_client")
+        elif flow == "finish":
+            evidence.finish(output, "returned_success")
+        else:
+            evidence.outcome(None, "not_attempted_no_client")
+    assert marker.exists() and marker.read_bytes() == original
+
+
+@pytest.mark.usefixtures("_p1_t5_offline")
+def test_p1_t5_newrisk_failure_cleanup_cannot_unlink_publication_input(tmp_path, monkeypatch):
+    from scripts import company_intelligence_publication_evidence as retention
+    output = tmp_path / "output"
+    _p1_t5_case(output)
+    marker = output / "event_workspaces/manifest.json"
+    original = marker.read_bytes()
+    evidence = retention.PublicationEvidence(tmp_path / "evidence.json", checkout="a" * 40, run_id="123", run_attempt="1")
+    token = evidence.begin(output)
+    assert token == 1
+    def fail(*_args):
+        evidence.path = marker
+        raise OSError("synthetic serialization destination failure")
+    monkeypatch.setattr(retention.os, "replace", fail)
+    evidence.outcome(token, "already_current")
+    assert marker.exists() and marker.read_bytes() == original
+
+
+@pytest.mark.usefixtures("_p1_t5_offline")
+def test_p1_t5_readiness_rejects_special_sink_before_open(tmp_path, monkeypatch):
+    from scripts import company_intelligence_publication_evidence as retention
+    output = tmp_path / "output"
+    _p1_t5_case(output)
+    evidence = retention.PublicationEvidence(tmp_path / "evidence.json", checkout="a" * 40, run_id="123", run_attempt="1")
+    assert evidence.finish(output, "returned_success")
+    fifo = tmp_path / "not-a-step-output"
+    retention.os.mkfifo(fifo)
+    with monkeypatch.context() as guard:
+        guard.setattr(retention.os, "open", lambda *a, **k: pytest.fail("must not open a special sink"))
+        assert evidence.mark_ready(fifo) is False
