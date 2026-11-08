@@ -553,6 +553,8 @@ def test_the_real_built_page_passes_the_copy_guard(built_hub: str, tmp_path: Pat
     assert guard.find_violations(built_hub) == []
 
 
+@pytest.mark.data_gate
+@pytest.mark.needs_full_checkout("site")
 def test_unknown_tokens_are_empty_for_the_shipped_artifact() -> None:
     """Frozen spec §3.3 step 5: assert clean for TODAY's real artifact —
     this is the shipped-state proof, not a guarantee against every future
