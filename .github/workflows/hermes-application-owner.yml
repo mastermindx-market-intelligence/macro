@@ -15,6 +15,7 @@ on:
       - 'tests/test_hermes_application_source_support.py'
       - 'tests/test_fabric_application_binding.py'
       - 'tests/test_fabric_exact_scoped_model_composition.py'
+      - 'tests/test_fabric_deepseek_consumer_contract.py'
       - 'tests/test_hermes_primary_fabric_*.py'
       - '.github/workflows/hermes-application-owner.yml'
   merge_group:
@@ -63,7 +64,8 @@ jobs:
             tests/test_hermes_primary_fabric_endpoint.py \
             tests/test_hermes_attended_fabric_identity.py \
             tests/test_fabric_service_identity.py \
-            tests/test_fabric_exact_scoped_model_composition.py
+            tests/test_fabric_exact_scoped_model_composition.py \
+            tests/test_fabric_deepseek_consumer_contract.py
           python - "$RUNNER_TEMP/fabric-owner-composition.xml" <<'PROOF'
           import json, sys, xml.etree.ElementTree as ET
           suites = list(ET.parse(sys.argv[1]).getroot().iter("testsuite"))
