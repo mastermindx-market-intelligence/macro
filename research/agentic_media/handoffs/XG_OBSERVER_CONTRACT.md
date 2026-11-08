@@ -1,11 +1,13 @@
-# XG novelty observer — contract v1.7
+# XG novelty observer — contract v1.8
 
 Status: **specification, unbuilt**. Owning card: `t_2bb26bfe`. Author seat: engineering.
 v1.7 corrects an inversion v1.6 shipped: the staleness rule compared `started_at` against the
 **mounted** framework's mtime, which is *false* for both stale renderers on mini1 — a gate that
 would have green-lit the restart card as unnecessary. Staleness is now identity
 (`mounted_framework != versions_current`), no clock. v1.7 also adds the egress coverage block and
-the remote-control surface class. Nothing here grants permission, binds an account, or enables a
+the remote-control surface class. v1.8 swaps the fixture pin and adds rule 8: an enumerated
+collection must prove its own completeness, because an empty array is a claim of absence.
+Nothing here grants permission, binds an account, or enables a
 runtime operation.
 
 ## Purpose
@@ -14,7 +16,7 @@ The harness gate chain validates *intent*. It cannot see that the box is **alrea
 something the registry never declared**. The observer enumerates reality and diffs it against
 declaration.
 
-## Seven rules, all load-bearing
+## Eight rules, all load-bearing
 
 1. **Readback proves state, not ownership.** Report `undeclared`; never `known`, `authorized`, or
    `ours`. Attribution is separate evidence with a separate owner.
@@ -34,6 +36,11 @@ declaration.
    is worse than none, because it creates the impression of coverage.
 7. **A row must prove itself.** A verdict field is recomputable from its own row, not by joining a
    sibling object. `stale_binary` carries `mounted_framework` and `versions_current` beside it.
+8. **An enumerated collection must prove its completeness.** An empty array is a claim that nothing
+   exists, so every enumerated collection carries a cross-check against an independent source. A
+   `remote_control_surfaces: []` on a host with a wildcard ARD listener, a remote-mode
+   `desktop-commander` and two studio-direct tunnels is not "no surfaces" — it is a failed
+   enumeration, and a consumer reading it as absence fails open on the gate that matters most.
 
 ## Snapshot contract
 
@@ -158,21 +165,26 @@ moves once per keepalive tick). Fixtures assert the **persistent set** — `1766
 
 ## Accepted fixture
 
-**Pinned:** sweep **2026-11-08T09:30:59Z**, `script_sha256 14191528c8a57aaacd2597ba2c0b6ce578b29b9379d2e03cc231d8d2e36cd396`,
-manifest sha256 **`3b0f6eb917c5127ca734fa23b94fdc054d07fceb672fd3c258a9af0d6682285a`**, mini1 payload
-`7ca6e0e579680189fd5ca60a471b63c…`, `hosts_returned: ["mini1"]`.
+**Pinned:** sweep **2026-11-08T09:44:47Z**, `script_sha256 9f7e2a55b52ff809562caeac3fd712321550a999aecad4e44ae84f687c7a78f8`,
+manifest sha256 **`0d88c68abbd31a2f6dc5ed025544b89a4fe288c60550b4f130f6b2aa66ee6ea5`**, mini1 payload,
+`hosts_returned: ["mini1"]`.
 
 Read on the payload by this seat, first-hand:
 
-- `chrome[]` 6 rows, **6/6 self-verifying**: 34493 and 35984 `mounted 155 / current 157 / stale true`;
+- `chrome[]` 6 rows, **6/6 self-verifying**: 34493/35984 `mounted 155 / current 157 / stale true`;
   10248, 11186, 14673, 17802 `mounted 157 / current 157 / stale false`.
 - `framework_versions` = three real versions; `Current` token stripped.
-- `external_estab`: **38 rows, 33 with `owner_command: null`**, 38 classified `undeclared`.
-  Coverage is **5/38 resolved**, not "a few unresolved" — the artifact must say so.
-- `listeners` include `*:3283` (ARDAgent) and four additional loopback high ports
-  (45018, 45019, 52194, 29979) not yet classified in any card.
+- `external_estab_coverage`: **rows 34, resolved 34, unresolved 0, ps_rows_captured 892,
+  ps_truncated false**; 29 of the 34 are non-private. Coverage is stated, not inferred from prose.
+- `listeners[]` carry `owner_command` for every port: `*:3283` ARDAgent; `45019` tunnel-client
+  (`studio-direct-private`); `45018` studio-direct-mcp node; `52194`/`29979` Paper.app (GUI,
+  loopback — not `baseline`, which is stock OS only, and not evidence of a command path).
+- **`remote_control_surfaces[]` is EMPTY (0 entries) against four known surfaces.** Under rule 8
+  that is a failed enumeration, not an absence: this pin satisfies items 12 and 15, and
+  **does not satisfy item 16**.
 
-**Superseded, not diffable:** `dc13765d…`/`091652` (pre-row-fix), `5497ef0d…` (v1.5 pin, itself
+**Superseded, not diffable:** `3b0f6eb9…` (pre-coverage; no owner_command on egress),
+`dc13765d…`/`091652` (pre-row-fix), `5497ef0d…` (v1.5 pin, itself
 mis-pinned as 2), `5458165275ab…`, `362919cc…`, `68589392…`.
 
 ## Acceptance evidence (required before this leaves draft)
@@ -197,7 +209,9 @@ mis-pinned as 2), `5458165275ab…`, `362919cc…`, `68589392…`.
 15. **Coverage test:** an `external_estab` block whose coverage is incomplete must emit
     `undeclared` **with** `external_estab_coverage`, and the report layer must never present
     "N undeclared" as if the owners were known.
-16. **Remote-control test:** any `remote_control_surfaces[]` entry with `declared_by: null` →
-    `refused: unowned_remote_control` at launch.
+16. **Remote-control test:** the array must contain the four known surfaces (ARD `*:3283`,
+    `desktop-commander` remote, `studio-direct-tunnel`, `studio-direct-mcp`), each
+    `declared_by: null` → `refused: unowned_remote_control`. A consumer meeting an **empty** array
+    yields `refused: enumeration_incomplete`, never a pass. **Unsatisfied as of the v1.8 pin.**
 
 Absent those sixteen, the observer is a document, not an artifact.
