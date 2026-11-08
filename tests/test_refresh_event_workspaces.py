@@ -340,7 +340,7 @@ def test_corrected_lifecycle_state_is_sticky_across_an_unchanged_source_rebuild(
 def test_load_prior_workspace_raises_on_genuine_fetch_failure(capsys) -> None:
     """Unit-level: any failure OTHER than a clean not-published 404 raises
     PriorWorkspaceFetchFailed, never returns None, and emits a line-start
-    ::warning naming the event and the error class."""
+    ::warning naming the event and the closed failure category."""
 
     def boom(event_id: str) -> dict:
         raise TimeoutError("connection timed out")
@@ -353,7 +353,7 @@ def test_load_prior_workspace_raises_on_genuine_fetch_failure(capsys) -> None:
     assert any(line.startswith("::warning title=event-workspace-prior-fetch-failed::") for line in lines), out
     warning_line = next(line for line in lines if line.startswith("::warning title=event-workspace-prior-fetch-failed::"))
     assert "evt_boom" in warning_line
-    assert "TimeoutError" in warning_line
+    assert '"exception_category":"timeout"' in warning_line
 
 
 def test_load_prior_workspace_returns_none_on_clean_not_published(capsys) -> None:
@@ -371,6 +371,144 @@ def test_load_prior_workspace_returns_none_on_clean_not_published(capsys) -> Non
 def test_load_prior_workspace_returns_the_workspace_on_a_hit() -> None:
     payload = {"event_id": "evt_x", "lifecycle": {"state": "complete"}}
     assert load_prior_workspace("evt_x", fetch=lambda eid: payload) == payload
+
+
+def test_p1_caught_read_failure_does_not_disclose_exception_text(capsys, caplog):
+    secret = "https://private.invalid/?signed=SECRET headers=SECRET body=SECRET"
+    original = TimeoutError(secret)
+    def fail(_event_id):
+        raise original
+    with pytest.raises(PriorWorkspaceFetchFailed) as caught:
+        load_prior_workspace("evt_fixture", fetch=fail)
+    assert caught.value.__cause__ is original
+    output = capsys.readouterr()
+    rendered = output.out + output.err + caplog.text + str(caught.value)
+    assert "SECRET" not in rendered and "private.invalid" not in rendered
+    assert '"exception_category":"timeout"' in rendered
+
+
+def test_p1_clean_absence_keeps_debug_output_free_of_exception_text(capsys, caplog):
+    import logging
+    def absent(_event_id):
+        raise _PriorWorkspaceNotPublished("SECRET signed URL and response body")
+    with caplog.at_level(logging.DEBUG):
+        assert load_prior_workspace("evt_fixture", fetch=absent) is None
+    output = capsys.readouterr()
+    assert "SECRET" not in output.out + output.err + caplog.text
+    assert "event-workspace-prior-fetch-failed" not in output.out
+
+
+@pytest.mark.parametrize("kind", [reader.WorkspaceChainIntegrityError, RuntimeError])
+def test_p1_current_generation_lookup_sanitizes_failures_without_fallback(monkeypatch, capsys, caplog, kind):
+    original = kind("SECRET signed URL and response body")
+    def fail(*args, **kwargs):
+        raise original
+    monkeypatch.setattr(reader, "find_current_event_id_for_company", fail)
+    with pytest.raises(PriorWorkspaceFetchFailed) as caught:
+        load_prior_workspace_for_ticker("DHI", base_url="https://fixture.invalid/company_intelligence")
+    assert caught.value.__cause__ is original
+    output = capsys.readouterr()
+    assert "SECRET" not in output.out + output.err + caplog.text + str(caught.value)
+
+
+def test_p1_body_failure_keeps_stage_through_phase1_without_any_publication(monkeypatch, tmp_path, capsys, caplog):
+    import requests
+    import socket
+    base = "https://fixture.invalid/company_intelligence"
+    event_id = "evt_cik0000795266_2026q3_results"
+    response = requests.Response()
+    response.status_code = 503
+    original = requests.HTTPError("https://private.invalid/?secret=SECRET body=SECRET", response=response)
+    def get(url, **kwargs):
+        if url == base + "/event_workspaces/manifest.json":
+            ok = requests.Response()
+            ok.status_code, ok.url = 200, url
+            ok._content = json.dumps({"generation_id": "a" * 24}).encode()
+            ok._content_consumed = True
+            return ok
+        raise original
+    monkeypatch.setattr(socket.socket, "connect", lambda *a, **k: pytest.fail("network forbidden"))
+    monkeypatch.setattr(reader.requests, "get", get)
+    def carry(ticker):
+        return load_prior_workspace(event_id, base_url=base) if ticker == "KBH" else None
+    fake = _FakeR2()
+    with pytest.raises(RefreshError) as caught:
+        _refresh(tmp_path, fake, homebuilder_carry_forward_loader=carry)
+    assert fake.puts == []
+    assert not (tmp_path / "event_workspaces" / "manifest.json").exists()
+    assert not (tmp_path / "event_workspaces" / "generations").exists()
+    details = reader.read_failure_diagnostics(caught.value)
+    assert details == {"request_stage": "immutable_workspace_body", "exception_category": "http_error", "http_status": 503}
+    output = capsys.readouterr()
+    rendered = output.out + output.err + caplog.text + str(caught.value)
+    assert "SECRET" not in rendered and "private.invalid" not in rendered
+    assert '"request_stage":"immutable_workspace_body"' in rendered
+
+
+@pytest.mark.parametrize("site", ["chain", "current_marker"])
+@pytest.mark.parametrize("category", ["timeout", "http_error"])
+def test_p1_chain_and_current_marker_failures_are_closed(monkeypatch, tmp_path, capsys, caplog, site, category):
+    import requests
+    import socket
+    from scripts import refresh_event_workspaces as owner
+    secret = "SYNTHETIC_SECRET https://private.invalid/?signed=SYNTHETIC_SECRET"
+    if category == "http_error":
+        response = requests.Response()
+        response.status_code = 503
+        original = requests.HTTPError(secret, response=response)
+    else:
+        original = TimeoutError(secret)
+    def fail(*args, **kwargs):
+        raise original
+    monkeypatch.setattr(socket.socket, "connect", lambda *a, **k: pytest.fail("network forbidden"))
+    fake = _FakeR2()
+    if site == "chain":
+        monkeypatch.setattr(owner.ci_reader, "read_event_source_revisions", fail)
+        with pytest.raises(PriorWorkspaceFetchFailed) as caught:
+            owner._event_known_revisions(FLAGSHIP_EVENT_ID)
+    else:
+        with pytest.raises(RefreshError) as caught:
+            _refresh(tmp_path, fake, current_marker_loader=fail)
+    assert caught.value.__cause__ is original
+    assert fake.puts == []
+    assert not (tmp_path / "event_workspaces" / "generations").exists()
+    assert not (tmp_path / "event_workspaces" / "manifest.json").exists()
+    expected = {"request_stage": None, "exception_category": category,
+                "http_status": 503 if category == "http_error" else None}
+    assert reader.read_failure_diagnostics(caught.value) == expected
+    output = capsys.readouterr()
+    rendered = output.out + output.err + caplog.text + str(caught.value)
+    assert "SYNTHETIC_SECRET" not in rendered and "private.invalid" not in rendered
+    assert json.dumps(expected, sort_keys=True, separators=(",", ":")) in str(caught.value)
+    if site == "chain":
+        assert json.dumps(expected, sort_keys=True, separators=(",", ":")) in output.out
+
+
+@pytest.mark.parametrize("already_current", [True, False])
+def test_p1_sibling_publish_noop_never_claims_new_promotion(tmp_path, monkeypatch, capsys, already_current):
+    import socket
+    from scripts import publish_company_intelligence_r2 as publisher
+    monkeypatch.setattr(socket.socket, "connect", lambda *a, **k: pytest.fail("network forbidden"))
+    monkeypatch.setattr(publisher, "_client", lambda: None)
+    def no_write_publish(path, **kwargs):
+        kwargs.pop("s3")
+        kwargs.pop("bucket")
+        class CurrentStore:
+            def get_object(self, *, Bucket, Key):
+                assert Key == WS_MARKER
+                return {"Body": io.BytesIO((path / "event_workspaces" / "manifest.json").read_bytes()), "ETag": "fixture"}
+            def put_object(self, **kwargs):
+                pytest.fail("already-current generation must not CREATE or promote anything")
+        return publisher.publish_event_workspaces(path, s3=CurrentStore() if already_current else None,
+                                                  bucket="fixture", **kwargs)
+    monkeypatch.setitem(globals(), "publish_event_workspaces", no_write_publish)
+    fake = _FakeR2()
+    assert _refresh(tmp_path, fake) == 0
+    assert fake.puts == []
+    output = capsys.readouterr().out
+    assert "immutable generation published" not in output
+    assert "sibling marker promoted" not in output
+    assert "event workspaces: generation validated; publish step returned success" in output
 
 
 class _FakeRequestsResponse:
@@ -2065,3 +2203,217 @@ def test_sec_redirect_rejects_index_and_raw_normalization_before_follow(_sec_moc
     with pytest.raises(owner.RefreshError):
         owner._http_get_sec_exhibit(EXHIBIT_URL, cik=AAPL_CIK, accession=AAPL_ACCESSION)
     assert len(calls) == 1
+
+
+@pytest.mark.parametrize("mode,expected,rc", [
+    ("publish", "marker_put_acknowledged", 0),
+    ("noop", "already_current", 0),
+    ("noop_dry", "already_current", 0),
+    ("no_client", "not_attempted_no_client", 0),
+    ("dry", "dry_run", 0),
+    ("conflict", "marker_conflict", PUBLISH_CONFLICT),
+    ("lost_marker_response", "marker_put_failed_effect_unknown", 1),
+    ("partial_payload", "payload_failure_partial_effects_possible", 1),
+])
+@pytest.mark.usefixtures("_p1_t5_offline")
+def test_p1_t5_actual_publisher_outcomes_do_not_infer_effect_from_rc0(tmp_path, monkeypatch, mode, expected, rc):
+    import socket
+    from scripts.company_intelligence_publication_evidence import PublicationEvidence
+    from scripts import publish_company_intelligence_r2 as publisher
+    from tests.test_company_intelligence_event_workspace import _p1_t5_case
+    out = tmp_path / "output"
+    _, _, _, original_receipt, _ = _p1_t5_case(out)
+    marker = _marker(out)
+    class Store(_FakeR2):
+        def put_object(self, **kwargs):
+            if kwargs["Key"] == WS_MARKER and mode == "lost_marker_response":
+                super().put_object(**kwargs)  # Real effect before response loss.
+                raise TimeoutError("synthetic response lost")
+            if kwargs["Key"].endswith(f"/workspaces/{FLAGSHIP_EVENT_ID}.json") and mode == "partial_payload":
+                super().put_object(**kwargs)
+                raise TimeoutError("synthetic payload response lost")
+            return super().put_object(**kwargs)
+    fake = Store(remote_manifest=marker if mode.startswith("noop") else {**marker, "generation_id": "f" * 24} if mode == "conflict" else None,
+                 conflict_on_cas=mode == "conflict")
+    monkeypatch.setattr(socket.socket, "connect", lambda *a, **k: pytest.fail("network forbidden"))
+    monkeypatch.setattr(publisher, "_client", lambda: None)
+    artifact = tmp_path / "evidence.json"
+    evidence = PublicationEvidence(artifact, checkout="a" * 40, run_id="123", run_attempt="2")
+    result = publisher.publish_event_workspaces(out, s3=None if mode == "no_client" else fake,
+        bucket="fixture", dry_run=mode in {"dry", "noop_dry"}, evidence=evidence)
+    assert result == rc
+    evidence.finish(out, "returned_success" if rc == 0 else "returned_conflict" if rc == PUBLISH_CONFLICT else "failed")
+    payload = json.loads(artifact.read_text())
+    assert payload["candidates"][0]["publish_outcome"] == expected
+    retained = payload["candidates"][0]["snapshot"]["selected"][0]["source"]["acquisition_receipt"]
+    assert retained == original_receipt  # Same-run retention is not a new acquisition.
+    if rc:
+        assert payload["final_local_selection"] is None
+    if mode == "lost_marker_response":
+        assert WS_MARKER in fake.objects  # 'Failed effect/not promoted' would be false.
+    if mode == "partial_payload":
+        assert fake.puts  # Some immutable effects actually happened.
+    if mode in {"noop", "noop_dry", "dry", "no_client"}:
+        assert fake.puts == []
+
+
+@pytest.mark.usefixtures("_p1_t5_offline")
+def test_p1_t5_actual_refresh_chain_and_skipped_closing_write_are_retained(tmp_path, monkeypatch, capsys):
+    import socket
+    from engine.fundamental_forensics.models import stable_id
+    from engine.company_intelligence.identity import company_id_for_cik
+    from scripts import refresh_event_workspaces as owner
+    original_stub = _stub_dhi_revision
+    def safe_stub(**kwargs):
+        row = original_stub(**kwargs)
+        cik = row["event_id"][len("evt_cik"):len("evt_cik") + 10]
+        source = row["sources"][0]
+        source["filing_key"]["cik"] = cik
+        source["url"] = f"https://www.sec.gov/Archives/edgar/data/{int(cik)}/{source['filing_key']['accession'].replace('-', '')}/ex991.htm"
+        source["document_id"] = stable_id("disclosure_document", cik, source["filing_key"], source["url"], source["source_sha256"])
+        row["issuer"]["company_id"] = company_id_for_cik(cik)
+        return row
+    monkeypatch.setitem(globals(), "_stub_dhi_revision", safe_stub)
+    monkeypatch.setattr(socket.socket, "connect", lambda *a, **k: pytest.fail("network forbidden"))
+    def offline(_work, **kwargs):
+        with monkeypatch.context() as nested:
+            nested.setitem(globals(), "publish_event_workspaces", kwargs["publish_generation"])
+            test_refresh_publishes_original_and_amendment_as_two_chained_generations(tmp_path / "output")
+        return 0
+    monkeypatch.setattr(owner, "refresh", offline)
+    artifact = tmp_path / "evidence.json"
+    ready = tmp_path / "github-output"
+    ready.write_text("sec_evidence_ready=false\n")
+    assert owner.main(["--work-dir", str(tmp_path), "--out-dir", str(tmp_path / "output"),
+        "--evidence-out", str(artifact), "--evidence-ready-output", str(ready), "--evidence-checkout", "a" * 40,
+        "--evidence-run-id", "123", "--evidence-run-attempt", "1"]) == 0
+    payload = json.loads(artifact.read_text())
+    assert len(payload["candidates"]) == 2
+    assert [x["publish_outcome"] for x in payload["candidates"]] == ["marker_put_acknowledged"] * 2
+    assert payload["final_local_selection"]["candidate_sequence"] == 2
+    assert payload["retention_status"] == "metadata_complete"
+    assert "closing write skipped" in capsys.readouterr().out
+
+    assert ready.read_text().splitlines()[-1] == "sec_evidence_ready=true"
+
+
+@pytest.mark.usefixtures("_p1_t5_offline")
+def test_p1_t5_main_later_failure_never_relabels_prior_candidate_as_final(tmp_path, monkeypatch):
+    import socket
+    from scripts import refresh_event_workspaces as owner
+    from tests.test_company_intelligence_event_workspace import _p1_t5_case
+    _p1_t5_case(tmp_path / "output")
+    fake = _FakeR2()
+    monkeypatch.setattr(socket.socket, "connect", lambda *a, **k: pytest.fail("network forbidden"))
+    def offline(_work, **kwargs):
+        assert kwargs["publish_generation"](tmp_path / "output", s3=fake, bucket="fixture") == 0
+        raise RefreshError("synthetic later refresh failure")
+    monkeypatch.setattr(owner, "refresh", offline)
+    artifact = tmp_path / "evidence.json"
+    ready = tmp_path / "github-output"
+    ready.write_text("sec_evidence_ready=false\n")
+    assert owner.main(["--work-dir", str(tmp_path), "--out-dir", str(tmp_path / "output"),
+        "--evidence-out", str(artifact), "--evidence-ready-output", str(ready), "--evidence-checkout", "a" * 40,
+        "--evidence-run-id", "123", "--evidence-run-attempt", "1"]) == 1
+    payload = json.loads(artifact.read_text())
+    assert payload["candidates"][0]["publish_outcome"] == "marker_put_acknowledged"
+    assert payload["refresh_outcome"] == "failed" and payload["retention_status"] == "partial"
+    assert payload["final_local_selection"] is None
+
+    assert ready.read_text().splitlines()[-1] == "sec_evidence_ready=true"
+
+
+@pytest.mark.usefixtures("_p1_t5_offline")
+def test_p1_t5_workflow_upload_is_one_metadata_file_without_new_permissions():
+    import yaml
+    workflow = yaml.safe_load((Path(__file__).parents[1] / ".github/workflows/company-intelligence.yml").read_text())
+    steps = workflow["jobs"]["refresh"]["steps"]
+    uploads = [s for s in steps if str(s.get("uses", "")).startswith("actions/upload-artifact@")]
+    assert len(uploads) == 1
+    upload = uploads[0]
+    assert upload["with"]["path"] == "${{ runner.temp }}/selected-sec-evidence/evidence.json"
+    assert upload["with"]["retention-days"] == 7
+    assert upload["if"] == "always() && steps.publication.outputs.sec_evidence_ready == 'true'"
+    assert any(s.get("id") == "publication" and 'sec_evidence_ready=false' in s.get("run", "") for s in steps)
+    assert workflow["permissions"] == {"contents": "read"}
+    checkout = next(s for s in steps if str(s.get("uses", "")).startswith("actions/checkout@"))
+    assert "scripts/company_intelligence_publication_evidence.py" in checkout["with"]["sparse-checkout"]
+
+
+@pytest.mark.usefixtures("_p1_t5_offline")
+def test_p1_t5_serialization_failure_cannot_enable_stale_artifact_upload(tmp_path, monkeypatch):
+    from scripts import refresh_event_workspaces as owner
+    from scripts import company_intelligence_publication_evidence as retention
+    from tests.test_company_intelligence_event_workspace import _p1_t5_case
+    _p1_t5_case(tmp_path / "output")
+    fake = _FakeR2()
+    artifact = tmp_path / "evidence.json"
+    artifact.write_text("SYNTHETIC_SECRET stale data")
+    ready = tmp_path / "github-output"
+    ready.write_text("sec_evidence_ready=false\n")
+    def offline(_work, **kwargs):
+        return kwargs["publish_generation"](tmp_path / "output", s3=fake, bucket="fixture")
+    monkeypatch.setattr(owner, "refresh", offline)
+    def denied(*_args):
+        raise OSError("SYNTHETIC_SECRET write failure")
+    monkeypatch.setattr(retention.os, "replace", denied)
+    assert owner.main(["--work-dir", str(tmp_path), "--out-dir", str(tmp_path / "output"),
+        "--evidence-out", str(artifact), "--evidence-ready-output", str(ready),
+        "--evidence-checkout", "a" * 40, "--evidence-run-id", "123", "--evidence-run-attempt", "1"]) == 0
+    assert WS_MARKER in fake.objects  # Publication's acknowledged effect is unchanged.
+    assert not artifact.exists()
+    assert ready.read_text() == "sec_evidence_ready=false\n"
+
+
+@pytest.mark.usefixtures("_p1_t5_offline")
+def test_p1_t5_invalid_context_clears_stale_output_without_publishing(tmp_path, monkeypatch, capsys):
+    from scripts import refresh_event_workspaces as owner
+    artifact = tmp_path / "evidence.json"
+    artifact.write_text("SYNTHETIC_SECRET stale data")
+    ready = tmp_path / "github-output"
+    ready.write_text("sec_evidence_ready=false\n")
+    monkeypatch.setattr(owner, "refresh", lambda *a, **k: pytest.fail("invalid context must not start refresh"))
+    assert owner.main(["--work-dir", str(tmp_path), "--out-dir", str(tmp_path),
+        "--evidence-out", str(artifact), "--evidence-ready-output", str(ready),
+        "--evidence-checkout", "SYNTHETIC_SECRET", "--evidence-run-id", "123", "--evidence-run-attempt", "1"]) == 1
+    assert artifact.read_text() == "SYNTHETIC_SECRET stale data"
+    assert ready.read_text() == "sec_evidence_ready=false\n"
+    captured = capsys.readouterr()
+    assert "SYNTHETIC_SECRET" not in captured.out + captured.err
+
+
+@pytest.fixture
+def _p1_t5_offline(monkeypatch):
+    import socket
+    monkeypatch.setattr(socket.socket, "connect", lambda *a, **k: pytest.fail("P1.T5 offline: network forbidden"))
+
+
+@pytest.mark.usefixtures("_p1_t5_offline")
+@pytest.mark.parametrize("mode", ["source", "symlink", "hardlink", "artifact", "missing"])
+def test_p1_t5_newready_sink_cannot_corrupt_input_or_artifact(tmp_path, monkeypatch, mode):
+    import os
+    from scripts import refresh_event_workspaces as owner
+    from tests.test_company_intelligence_event_workspace import _p1_t5_case
+    output = tmp_path / "output"
+    _p1_t5_case(output)
+    marker = output / "event_workspaces/manifest.json"
+    original = marker.read_bytes()
+    artifact = tmp_path / "evidence.json"
+    ready = tmp_path / "github-output"
+    if mode == "source":
+        ready = marker
+    elif mode == "symlink":
+        ready.symlink_to(marker)
+    elif mode == "hardlink":
+        os.link(marker, ready)
+    elif mode == "artifact":
+        ready = artifact
+    monkeypatch.setattr(owner, "refresh", lambda *a, **k: 0)
+    assert owner.main(["--work-dir", str(tmp_path), "--out-dir", str(output),
+        "--evidence-out", str(artifact), "--evidence-ready-output", str(ready),
+        "--evidence-checkout", "a" * 40, "--evidence-run-id", "123", "--evidence-run-attempt", "1"]) == 0
+    assert marker.read_bytes() == original
+    json.loads(artifact.read_text())
+    assert "sec_evidence_ready=true" not in artifact.read_text()
+    if mode == "missing":
+        assert not ready.exists()

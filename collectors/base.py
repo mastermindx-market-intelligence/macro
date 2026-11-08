@@ -683,7 +683,8 @@ def run_adapter(adapter: Adapter, full_history: bool = False,
                     try:
                         capture = store.capture_yahoo_wti_observation(
                             df, merged, lineage=adapter.wti_source_metadata(),
-                            adapter_return_known_by=adapter_known_by)
+                            adapter_return_known_by=adapter_known_by,
+                            temporal_context=adapter.wti_temporal_metadata())
                         exported = store.export_yahoo_wti_observation(capture, df, merged)
                         observation_notes.append(
                             f"yahoo WTI observation: receipt={capture['receipt_sha256']}; "
