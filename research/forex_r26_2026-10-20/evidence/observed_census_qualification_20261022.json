@@ -1,0 +1,80 @@
+{
+  "schema": "forex.observed_census_source_qualification.v1",
+  "at": "2026-10-22T12:34:51.494210+00:00",
+  "parent_head": "537dfc4124731d704770aa6e110943ee220809fc",
+  "source_sha256": {
+    "lib/dataos/tiingo_reader.py": "12068d55526d8f5b44358b367a4fa23071e4f4158ebaea21359004e65bc1de29",
+    "scripts/tiingo_materialize.py": "cebf7e92a57e756dfeb87a7ca84f58fc8cbbf1100aaa1219d4aed41689df9e90",
+    "lib/dataos/tiingo_forex.py": "d767d080cfb77fa2cc4bdcfb5eb63035ba3d16353d5647643a43d06331cd1610",
+    "tests/test_tiingo_forex_source.py": "fe5032e52db430757c35bcb863ef8d8a5a623b64e2cce48579a778f2fd311fc6"
+  },
+  "pure_parent_prefix_unchanged": true,
+  "source_test_run": {
+    "schema": "forex.census_boundary_test_qualification.v1",
+    "at": "2026-10-22T12:21:02.344727+00:00",
+    "prior_preflight": {
+      "pid": 70890,
+      "state": "SOURCE_APPLIED_TESTS_NOT_STARTED",
+      "reason": "one trailing blank line at new test EOF; removed without source change"
+    },
+    "source_before": {
+      "lib/dataos/tiingo_reader.py": "12068d55526d8f5b44358b367a4fa23071e4f4158ebaea21359004e65bc1de29",
+      "scripts/tiingo_materialize.py": "cebf7e92a57e756dfeb87a7ca84f58fc8cbbf1100aaa1219d4aed41689df9e90",
+      "lib/dataos/tiingo_forex.py": "d767d080cfb77fa2cc4bdcfb5eb63035ba3d16353d5647643a43d06331cd1610",
+      "tests/test_tiingo_forex_source.py": "fe5032e52db430757c35bcb863ef8d8a5a623b64e2cce48579a778f2fd311fc6"
+    },
+    "census_test_proposal_sha256": "8844daf267061a35f922b7025e00a2fba7318f0cd5d98ab6228ad22e2bdb7be9",
+    "archive_and_provider_untouched": true,
+    "command": [
+      "/opt/homebrew/Caskroom/miniconda/base/bin/python3",
+      "-m",
+      "pytest",
+      "tests/test_tiingo_forex_source.py",
+      "tests/test_tiingo_reader.py",
+      "tests/test_tiingo_views.py",
+      "tests/test_tiingo_ingestion_integrity.py",
+      "-q",
+      "--disable-warnings",
+      "-p",
+      "no:cacheprovider"
+    ],
+    "exit_code": 0,
+    "seconds": 9.778,
+    "completed_at_utc": "2026-10-22T12:21:12.123248+00:00",
+    "source_unchanged": true,
+    "log_sha256": "618983950ecfdc7b3e2aa2582510c4689123d66602b37ff92b79ba9063632ba4",
+    "passed": 328,
+    "pytest_seconds": 9.11
+  },
+  "closure_test_run": {
+    "schema": "forex.census_existing_owner_closure.v1",
+    "command": [
+      "/opt/homebrew/Caskroom/miniconda/base/bin/python3",
+      "-m",
+      "pytest",
+      "tests/test_ci_pack.py::test_curated_exclusive_scopes_cover_their_own_import_closure",
+      "-q",
+      "--disable-warnings",
+      "-p",
+      "no:cacheprovider"
+    ],
+    "exit_code": 0,
+    "seconds": 147.104,
+    "completed_at_utc": "2026-10-22T12:28:07.290863+00:00",
+    "source_sha256": {
+      "lib/dataos/tiingo_reader.py": "12068d55526d8f5b44358b367a4fa23071e4f4158ebaea21359004e65bc1de29",
+      "scripts/tiingo_materialize.py": "cebf7e92a57e756dfeb87a7ca84f58fc8cbbf1100aaa1219d4aed41689df9e90",
+      "lib/dataos/tiingo_forex.py": "d767d080cfb77fa2cc4bdcfb5eb63035ba3d16353d5647643a43d06331cd1610",
+      "tests/test_tiingo_forex_source.py": "fe5032e52db430757c35bcb863ef8d8a5a623b64e2cce48579a778f2fd311fc6"
+    },
+    "source_unchanged": true,
+    "log_sha256": "2fae01917b18809c9cc789c3c2370aa21c9b09222730ed93224565396b4bef51",
+    "passed": 1,
+    "pytest_seconds": 146.34
+  },
+  "actual_readback_summary_sha256": "2e2251dd1909e44ecaa9db9b8a2d6d37673ab7535b942560630cb9d153cdc3dd",
+  "original_source_review": "terminal unqualified429; no replay; accepted review absent",
+  "licensing_product_use": "COMPLETE by Chairman special-license attestation",
+  "monitoring_admitted": false,
+  "eligible_observations": []
+}

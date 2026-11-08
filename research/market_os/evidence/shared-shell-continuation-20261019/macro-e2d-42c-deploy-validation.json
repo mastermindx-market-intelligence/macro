@@ -1,0 +1,86 @@
+{
+  "started_at": "2026-10-20T10:41:15.710003+00:00",
+  "head": "e2d10f933587f58be8716505529a37f8839901f7",
+  "incoming": "42c859546ececa797b400db0adeb8c5a22f96832",
+  "source_before": {
+    "app/deploy/Caddyfile": "cb8adb3ce636e956fdb58831b960495f6cfba4dc75c578c62bfae39a3b64af3a",
+    "app/deploy/update.sh": "337664e579503b69d3bd11d4aeba817c9393f90d165a6a7821b07a52ef905394",
+    "config/site_access.yml": "9631799b269700885ed63d3e7267a1f43dfda07480c85733c64026414f9a9bd9",
+    "tests/test_regwall_json_gate.py": "f517e8b910f87f280fac3f5f54789db2472cbbaee18b0e3cdcd9557dc56de8eb",
+    "tests/test_site_access_boundary.py": "75313a6b544bce04b19a8d0ad563c9847c8665bcf83ce55e990416f2065d491a",
+    "tests/test_deploy_update_self_heal.py": "a679b64f2c3a5161b42d312a98e207287fc59c0034074c4d865c166dda39ebb4",
+    "scripts/verify_shared_shell_caddy_headers.py": "86fea9b839e80a6b5109e5a627061adca4eacb875088dba22209e158c4ad851b"
+  },
+  "commands": [
+    {
+      "name": "bash-syntax",
+      "args": [
+        "bash",
+        "-n",
+        "app/deploy/update.sh"
+      ],
+      "started_at": "2026-10-20T10:41:15.711673+00:00",
+      "log": "/tmp/shared-shell-css-visual-20261019T1107/macro-e2d-42c-deploy-validation-bash-syntax.log",
+      "finished_at": "2026-10-20T10:41:15.738447+00:00",
+      "exit": 0,
+      "log_bytes": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "summary": ""
+    },
+    {
+      "name": "headers",
+      "args": [
+        "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27/.venv-shared-shell/bin/python",
+        "-B",
+        "scripts/verify_shared_shell_caddy_headers.py",
+        "--caddyfile",
+        "app/deploy/Caddyfile",
+        "--caddy",
+        "caddy"
+      ],
+      "started_at": "2026-10-20T10:41:15.739520+00:00",
+      "log": "/tmp/shared-shell-css-visual-20261019T1107/macro-e2d-42c-deploy-validation-headers.log",
+      "finished_at": "2026-10-20T10:41:16.333289+00:00",
+      "exit": 0,
+      "log_bytes": 1174,
+      "log_sha256": "12fdc7882d31fca27f8426fad677cd3056f561f354837a7d384efe9fa0f50082",
+      "summary": "{\"schema\": \"mastermind.shared_shell_caddy_header_proof.v1\", \"passed\": 10, \"cases\": [{\"path\": \"/macro.html\", \"referer\": null, \"embedded\": false, \"status\": 200}, {\"path\": \"/macro.html?mmx_shell=1\", \"referer\": null, \"embedded\": false, \"status\": 200}, {\"path\": \"/macro.html?mmx_shell=1\", \"referer\": \"https://example.test/\", \"embedded\": false, \"status\": 200}, {\"path\": \"/macro.html?mmx_shell=1\", \"referer\": \"https://beta.mastermind-x.com.evil.test/\", \"embedded\": false, \"status\": 200}, {\"path\": \"/macro.html?mmx_shell=0\", \"referer\": \"https://beta.mastermind-x.com/\", \"embedded\": false, \"status\": 200}, {\"path\": \"/data/member.json?mmx_shell=1\", \"referer\": \"https://beta.mastermind-x.com/\", \"embedded\": false, \"status\": 200}, {\"path\": \"/macro.html?mmx_shell=1\", \"referer\": \"https://beta.mastermind-x.com/\", \"embedded\": true, \"status\": 200}, {\"path\": \"/stocks/AAPL.html?filter=a%20b&mmx_shell=1\", \"referer\": \"https://beta.mastermind-x.com/macro.html\", \"embedded\": true, \"status\": 200}, {\"path\": \"/blocked.html?mmx_shell=1\", \"referer\": \"https://beta.mastermind-x.com/\", \"embedded\": true, \"status\": 403}, {\"path\": \"/blocked.html\", \"referer\": null, \"embedded\": false, \"status\": 403}]}\n"
+    },
+    {
+      "name": "boundary-updater",
+      "args": [
+        "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27/.venv-shared-shell/bin/python",
+        "-B",
+        "-m",
+        "pytest",
+        "-q",
+        "--tb=short",
+        "--basetemp",
+        "/tmp/shared-shell-css-visual-20261019T1107/macro-e2d-42c-deploy-validation-pytest-tmp",
+        "tests/test_regwall_json_gate.py",
+        "tests/test_site_access_boundary.py",
+        "tests/test_deploy_update_self_heal.py"
+      ],
+      "started_at": "2026-10-20T10:41:16.333865+00:00",
+      "log": "/tmp/shared-shell-css-visual-20261019T1107/macro-e2d-42c-deploy-validation-boundary-updater.log",
+      "finished_at": "2026-10-20T10:44:05.550357+00:00",
+      "exit": 1,
+      "log_bytes": 1237,
+      "log_sha256": "622a3de0762d4566dc7ec3d7d6c6bd66db1f95abba9bd5e289406a88eea78f82",
+      "summary": "........................................................................ [ 21%]\n........................................................................ [ 43%]\n........................................................................ [ 64%]\n........................................................................ [ 86%]\n..............................................                           [100%]\n======================================================================\nMM_DATA_GUARD: test session dirtied the real data/ or site/ tree:\n  M  site/chat.html\n  M  site/theme.js\nTests must never write the repo's real data/ or site/ trees: pass\nroot=tmp_path / an explicit out dir, or monkeypatch lib.config\ndata_dir/ROOT, or pass explicit empty payloads to entry points that\nlazily recompute tiers (compute_foresight_cascade et al.).  Render\ntests redirect output to tmp_path \u2014 site/ output is legitimate, the\ndestination is not.\nHeal the tree:  git checkout -- data/ site/ && git clean -fd data/ site/\nHunt a culprit: MM_DATA_GUARD=trace python -m pytest <suspect files>\nBypass (deliberate local data flows only): MM_DATA_GUARD=off\n======================================================================\n\n334 passed in 166.20s (0:02:46)\n"
+    }
+  ],
+  "production_effect": false,
+  "finished_at": "2026-10-20T10:44:05.551659+00:00",
+  "source_after": {
+    "app/deploy/Caddyfile": "cb8adb3ce636e956fdb58831b960495f6cfba4dc75c578c62bfae39a3b64af3a",
+    "app/deploy/update.sh": "337664e579503b69d3bd11d4aeba817c9393f90d165a6a7821b07a52ef905394",
+    "config/site_access.yml": "9631799b269700885ed63d3e7267a1f43dfda07480c85733c64026414f9a9bd9",
+    "tests/test_regwall_json_gate.py": "f517e8b910f87f280fac3f5f54789db2472cbbaee18b0e3cdcd9557dc56de8eb",
+    "tests/test_site_access_boundary.py": "75313a6b544bce04b19a8d0ad563c9847c8665bcf83ce55e990416f2065d491a",
+    "tests/test_deploy_update_self_heal.py": "a679b64f2c3a5161b42d312a98e207287fc59c0034074c4d865c166dda39ebb4",
+    "scripts/verify_shared_shell_caddy_headers.py": "86fea9b839e80a6b5109e5a627061adca4eacb875088dba22209e158c4ad851b"
+  },
+  "source_unchanged": true,
+  "pass": false
+}

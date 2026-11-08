@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-04-16T20:09:17Z",
+ "accession": "0001753539-26-000049",
+ "cik": "0001753539",
+ "doc_byte_length": 567263,
+ "doc_sha256": "a256ecd9cf9a12bd73f72fd2246e1a9b29a53067ffdbe908c12c149006255c1f",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-04-16",
+ "form": "10-K/A",
+ "period_of_report": "2025-12-31",
+ "primary_document": "bksy-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 38984,
+  "byte_start": 37893,
+  "normalized": "BlackSky Technology Inc. (“we,” “us,” “our,” the “Company”) is filing this Amendment No. 1 on Form 10-K/A (“Amendment No. 1”) to amend our Annual Report on Form 10-K for the fiscal year ended December 31, 2025 (the “Original Filing”), filed with the U.S. Securities and Exchange Commission (“SEC”), to include the information required by Items 10 through 14 of Part III of Form 10-K. This information was previously omitted from the Original Filing in reliance on General Instruction G(3) to Form 10-K.",
+  "normalized_sha256": "159956021967f0f62616bd97d74b6ae5dc9f88701c2b9bde9e58bf29e78e3ce6",
+  "raw": "BlackSky Technology Inc. (&#8220;we,&#8221; &#8220;us,&#8221; &#8220;our,&#8221; the &#8220;Company&#8221;) is filing this Amendment No. 1 on Form 10-K/A (&#8220;Amendment No. 1&#8221;) to amend our </span><span style=\"color:#0000ff;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:139%;text-decoration:underline\"><a style=\"color:#0000ff;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:139%;text-decoration:underline\" href=\"https://www.sec.gov/ix?doc=/Archives/edgar/data/1753539/000175353924000032/bksy-20231231.htm\">Annual Report</a></span><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:139%\"> on Form 10-K for the fiscal year ended December 31, 2025 (the &#8220;Original Filing&#8221;), filed with the U.S. Securities and Exchange Commission (&#8220;SEC&#8221;), to include the information required by Items 10 through 14 of Part III of Form 10-K. This information was previously omitted from the Original Filing in reliance on General Instruction G(3) to Form 10-K.  ",
+  "raw_sha256": "f3cffe81fca12e810a81bd12ba081ff2d146af87fca66e1fc25bf563a7426ce8"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1753539/000175353926000049/bksy-20251231.htm",
+ "xbrl_contexts": []
+}

@@ -8,7 +8,7 @@
   "scope_en": "United Kingdom national economy; FTSE 100 and FTSE 250 are market context.",
   "scope_zh": "英国全国经济；富时100与富时250仅作市场背景。",
   "asof": "2026-10-14",
-  "built": "2026-10-17 18:31 UTC",
+  "built": "2026-10-18 06:47 UTC",
   "regime": {
     "quad": "Q3",
     "name": "Stagflation",
@@ -207,7 +207,7 @@
     "top_score": 51,
     "dominant_en": "Calm — no driver elevated",
     "dominant_zh": "平静 — 无驱动升高",
-    "h21": 0.021,
+    "h21": 0.011,
     "measure": ">=5% index pullback within h business days (measured on this market's own history)",
     "trajectory": {
       "intensity": 51.0,
@@ -218,9 +218,9 @@
       "phase": "receding",
       "reached_risk": true,
       "state_now": "calm",
-      "odds_now": 0.021,
+      "odds_now": 0.011,
       "odds_peak": 0.186,
-      "odds_delta": -0.165,
+      "odds_delta": -0.175,
       "spark": [
         64.9,
         66.7,
@@ -544,7 +544,7 @@
     {
       "metric": "cpi_yoy",
       "asof": "2025-03",
-      "age_days": 595,
+      "age_days": 596,
       "state": "stale",
       "label_en": "Inflation",
       "label_zh": "通胀"
@@ -552,7 +552,7 @@
     {
       "metric": "gdp",
       "asof": "2026-04",
-      "age_days": 199,
+      "age_days": 200,
       "state": "stale",
       "label_en": "Growth",
       "label_zh": "增长"
@@ -560,7 +560,7 @@
     {
       "metric": "unemployment",
       "asof": "2026-05",
-      "age_days": 169,
+      "age_days": 170,
       "state": "stale",
       "label_en": "Labour",
       "label_zh": "就业"
@@ -568,7 +568,7 @@
     {
       "metric": "yield_10y",
       "asof": "2026-08",
-      "age_days": 77,
+      "age_days": 78,
       "state": "fresh",
       "label_en": "Rates",
       "label_zh": "利率"

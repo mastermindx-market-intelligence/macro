@@ -479,7 +479,7 @@ def build(root=None) -> dict:
     cold = len(desks) - live
     promoted = sum(1 for d in desks if d["health"] == "calibrated")
     unproven = sum(1 for d in desks if d["health"] == "unproven")
-    note = (f"{live}/{len(desks)} desk loops live; {cold} still cold (windows maturing); "
+    note = (f"{live}/{len(desks)} desk loops running; {cold} still cold (windows maturing); "
             f"{promoted} promoted to calibrated. A desk is judged against the rate ITS OWN "
             "falsifiers go untriggered by chance, not against one-half — 'not falsified' is "
             "a lenient endpoint, and most leans clear it without any skill. "
@@ -593,7 +593,7 @@ th{{color:#8B8D98;font-weight:500;font-size:12px;text-transform:uppercase;letter
 <h1>Calibration Hub</h1>
 <div class="sub">The self-improving AI suite, made visible · as of {s['as_of']} · display-only</div>
 <div class="chips">
-<div class="chip"><b>{lp['live']}</b><div class="sub">live loops</div></div>
+<div class="chip"><b>{lp['live']}</b><div class="sub">running loops</div></div>
 <div class="chip"><b>{lp['cold']}</b><div class="sub">cold (maturing)</div></div>
 <div class="chip"><b>{lp.get('calibrated', 0)}</b><div class="sub">cleared their null</div></div>
 <div class="chip"><b>{s['trial_ledger']['total_families']}</b><div class="sub">trial families</div></div>

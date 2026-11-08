@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-03-12T21:13:11Z",
+ "accession": "0001193125-26-104436",
+ "cik": "0001493761",
+ "doc_byte_length": 3453506,
+ "doc_sha256": "2f4ab246605a5b0573dce24417e516ef64519222929fa62e6b2ae2c9ef73add8",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-12",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "tbch-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 251732,
+  "byte_start": 251087,
+  "normalized": "Our four largest individual customers accounted for approximately 66% of our gross sales in 2025, five individual customers accounted for approximately 69% of our gross sales in 2024, and 69% of our gross sales in 2023. During 2025, our three largest customers - Walmart, Amazon, and Best Buy - each accounted for between 14% to 28% of our consolidated gross sales.",
+  "normalized_sha256": "9de04a5d7853fb2576d162354a2be4837ca7b5de3411cdc02c5f7bd863730b99",
+  "raw": "Our four largest individual customers accounted for approximately 66% of our gross sales in 2025, five individual customers accounted for approximately 69% of our gross sales in 2024, and 69%</span><span style=\"color:#ff0000;white-space:pre-wrap;font-size:10pt;font-family:Times New Roman;font-kerning:none;min-width:fit-content;\"> </span><span style=\"color:#000000;white-space:pre-wrap;font-size:10pt;font-family:Times New Roman;font-kerning:none;min-width:fit-content;\">of our gross sales in 2023. During 2025, our three largest customers - Walmart, Amazon, and Best Buy - each accounted for between 14% to 28% of our consolidated gross sales.",
+  "raw_sha256": "3fd583b0b3450c644242ccff193122ad99c5ebdb2c689d2bd36e7de8de3759f7"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1493761/000119312526104436/tbch-20251231.htm",
+ "xbrl_contexts": []
+}

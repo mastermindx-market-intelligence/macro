@@ -907,7 +907,7 @@ def test_b5_real_rule_pack_makes_the_s3_window_and_the_s3asr_effectiveness_condi
     ``as_of`` day: the eCFR served no edition after 2026-10-09, so 2026-10-14
     reads ``beyond_window`` while 2024-03-01 reads ``verified``.
     """
-    assert repo_pack.version == "capital-structure-rule-applicability/1.1.0"
+    assert repo_pack.version == "capital-structure-rule-applicability/1.2.0"
     assert rule_status_as_of(repo_pack, RULE_415_A_5, "2024-03-01").state == "verified"
     assert rule_status_as_of(repo_pack, RULE_415_A_5, "2026-10-14").state == "beyond_window"
     assert rule_status_as_of(repo_pack, RULE_462_E, "2026-08-01").state == "verified"
