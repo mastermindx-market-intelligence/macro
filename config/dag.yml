@@ -3408,6 +3408,13 @@ lanes:
       - id: commodity_committed_candidate
         module: scripts.check_commodity_publication
         args: [--accepted-ref, "$COMMODITY_ACCEPTED", --candidate-ref, HEAD]
+      - id: intl_durable_evidence
+        module: scripts.render_intl_durable
+        args: [metadata, --receipt, "$RUNNER_TEMP/intl-durable.json"]
+        note: >
+          Separate always/manual-durable attempt-facts audit after publication.
+          This inventories the existing metadata command; it grants no publication
+          and leaves the six build/finalize/stage/verify gates unchanged.
 
   # ── intraday.yml / bars ─────────────────────────────────────────────────
   - workflow: .github/workflows/intraday.yml
