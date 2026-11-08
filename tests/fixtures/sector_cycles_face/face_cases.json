@@ -1,0 +1,50 @@
+{
+  "_label": "FIXTURE — synthetic/derived, not live. Every value below is invented to exercise the SC_FACE render seam (templates/sector_cycles_face.js); none is a market observation or a graded result.",
+  "_shapes": {
+    "rs_history": "engine/sector_cycles.py:549 _leadership_history_counted -> rec.rs_history [{date, rs_21d, rs_63d}] + rec.rs_history_rows_excluded_nonfinite",
+    "central": "engine/sector_central.py forward {trend_pass, above_200dma, ret_12m} + reasoning trace [{layer, en, zh}]",
+    "grader": "engine/sector_central_grader.py::grade by_horizon {'21d','63d','126d'}; accruing {n, note:'accruing', invalidated_membership}; unavailable {available:false, note}"
+  },
+  "rs_history": [
+    {"date": "2026-08-03", "rs_21d": 1.2, "rs_63d": -0.4},
+    {"date": "2026-08-04", "rs_21d": 1.5, "rs_63d": -0.2},
+    {"date": "2026-08-05", "rs_21d": 0.9, "rs_63d": 0.1},
+    {"date": "2026-08-20", "rs_21d": -0.6, "rs_63d": 0.8},
+    {"date": "2026-08-21", "rs_21d": -0.8, "rs_63d": 1.1},
+    {"date": "2026-08-24", "rs_21d": null, "rs_63d": 1.3},
+    {"date": "2026-08-25", "rs_21d": -1.1, "rs_63d": 1.0}
+  ],
+  "rs_history_rows_excluded_nonfinite": 1,
+  "central_trend_pass": {
+    "forward": {"trend_pass": true, "above_200dma": true, "ret_12m": 8.4},
+    "reasoning": [
+      {"layer": "Phase", "en": "FIXTURE phase layer", "zh": "示例阶段层"},
+      {"layer": "Trend gate", "en": "Trend gate open: price above its 200-day average", "zh": "趋势闸门开启：价格位于200日均线上方"}
+    ]
+  },
+  "central_trend_fail": {
+    "forward": {"trend_pass": false, "above_200dma": false, "ret_12m": -3.1},
+    "reasoning": [
+      {"layer": "Trend gate", "en": "Trend gate closed: price below its 200-day average", "zh": "趋势闸门关闭：价格位于200日均线下方"}
+    ]
+  },
+  "grader": {
+    "available": true,
+    "by_horizon": {
+      "21d": {
+        "n": 40, "n_directional": 30, "n_neutral": 10, "n_correct_directional": 18,
+        "conditional_directional_hit_rate": 0.6, "conditional_hit_rate_se": 0.0894,
+        "rank_ic": 0.112, "mean_excess_vs_bench": 0.0041,
+        "invalidated_membership": 2, "invalidated_pre_chain": 0
+      },
+      "63d": {
+        "n": 24, "n_directional": 20, "n_neutral": 4, "n_correct_directional": 11,
+        "conditional_directional_hit_rate": 0.55, "conditional_hit_rate_se": 0.1112,
+        "rank_ic": 0.031, "mean_excess_vs_bench": -0.0012,
+        "invalidated_membership": 0, "invalidated_pre_chain": 1
+      },
+      "126d": {"n": 5, "note": "accruing", "invalidated_membership": 0}
+    }
+  },
+  "grader_unavailable": {"available": false, "note": "no calls logged yet"}
+}

@@ -339,7 +339,7 @@ def test_subsector_detail_uses_unified_intelligence_shell_and_responsive_member_
 
 def test_subsector_detail_preserves_payload_truth_and_existing_chart_consumer():
     template = (TEMPLATES / "subsector_detail.html.j2").read_text()
-    for token in ("g.as_of", "g.n_priced", "g.n_members", "g.reliability", "g.members", "r.action", "e.reason"):
+    for token in ("g.as_of", "g.n_priced", "g.n_members", "g.reliability", "g.members", "r.label", "e.reason"):
         assert token in template
     assert "window.StockChart.mount" in template
     assert "CHART_KEY" in template
@@ -405,7 +405,7 @@ def test_subsector_detail_render_preserves_localized_truth_all_stats_and_mobile_
     }
     rendered = _execute_subsector_detail_render(detail)
 
-    assert '<span class="l-en">English action</span><span class="l-zh">中文行动</span>' in rendered
+    assert 'English action' not in rendered and '中文行动' not in rendered
     assert '<span class="l-en">English label</span><span class="l-zh">中文标签</span>' in rendered
     assert '<span class="l-en">Medium</span><span class="l-zh">中</span>' in rendered
 
@@ -436,3 +436,170 @@ def test_subsector_detail_adapts_visible_identity_without_builder_fork():
     assert 'L("Theme Intelligence", "主题情报")' in html
     assert 'L("Sector Intelligence", "板块情报")' in html
     assert 'L("Subsector Intelligence", "子行业情报")' in html
+
+
+# SIC-D35: every entry reason the engine publishes (engine/signal_gate.py), with the
+# Chinese the page must show for it. The census reasons are the ones live in
+# site/marketdata/subsector_confluence.json on 2026-11-05.
+_SUBSECTOR_REASON_ZH = {
+    "held but topped/rolled-over — no longer a fresh entry": "已回落",
+    "flat: sell": "暂无开放入场信号",
+    "buy blocked by filter: counter-trend, held but no 200-reclaim": "尚未收复趋势",
+    "buy blocked by filter: failed next-bar hold": "收复失败",
+    "buy fired; forward confirmation pending": "等待确认",
+    "buy blocked by filter: counter-trend, no 200-reclaim/hold": "仍在趋势下方",
+    "flat: cut": "暂无开放入场信号",
+    "buy blocked by filter: counter-trend, reclaimed 200 but no next-bar hold": "收复失败",
+    "buy blocked by filter: veto: bearish divergence": "动能背离",
+    "held confirmation": "已确认，非新信号",
+    "held buy-filter confirmation": "已确认，非新信号",
+    "held but risen for many days (cross 2+ ticks ago) — no longer a fresh entry": "已经拉升",
+    "forming master already topping — not a fresh entry": "已见顶",
+    "forming master risen for many days — not a fresh entry": "已经拉升",
+    "early advance-warning (no open buy)": "仅早期预警",
+    "early advance-warning (last buy was filtered out)": "仅早期预警",
+    "flat: no buy signal": "暂无开放入场信号",
+    "insufficient history": "历史数据不足",
+    "engine error": "信号暂不可用",
+    "tier T2 (weight 0.6)": "形态生效 · T2",
+    "forward confirmation pending": "等待确认",
+}
+
+
+def _subsector_reason_detail(reason: str) -> dict:
+    return {
+        "kind": "subsector",
+        "group": {
+            "key": "semis", "basket_id": "semis", "label": "Semiconductors", "label_zh": "半导体",
+            "sector": "Technology", "sector_zh": "科技", "n_members": 3, "n_priced": 3,
+            "reliability": "med", "as_of": "2026-11-04", "class": "forming",
+            "entry": {"tier": "T1", "buyable": True, "reason": reason, "ticks": 0},
+            "members": [
+                {"ticker": "AAA", "name_zh": "甲", "price": 10.0, "stock_tier": "T1",
+                 "ret_20d": 1.0, "vs_basket": 0.5, "stock_state": "long-bias", "stock_buyable": True},
+                {"ticker": "BBB", "name_zh": "乙", "price": 11.0, "stock_tier": "T4",
+                 "ret_20d": -1.0, "vs_basket": -0.5, "stock_state": "short-bias", "stock_buyable": False},
+                {"ticker": "CCC", "name_zh": "丙", "price": 12.0, "stock_tier": None,
+                 "ret_20d": 0.0, "vs_basket": 0.0, "stock_state": "mixed", "stock_buyable": False},
+            ],
+        },
+    }
+
+
+def test_subsector_detail_render_localizes_every_engine_word_in_chinese():
+    for reason, zh in _SUBSECTOR_REASON_ZH.items():
+        rendered = _execute_subsector_detail_render(_subsector_reason_detail(reason))
+        read = rendered.split('class="id-group-read"', 1)[1].split("</section>", 1)[0]
+        chip = read.split('class="reason-chip"', 1)[1].split("</span></span>", 1)[0]
+        assert f'<span class="l-zh">{zh}</span>' in chip + "</span>", reason
+        assert "其他入场条件" not in chip, reason
+        # The English engine code reaches the reader only as a tooltip, never as text.
+        assert f">{reason}<" not in read, reason
+        # The engine's tier reason carries a weight; the page never shows one.
+        assert "(weight" not in rendered and "weight 0.6" not in rendered, reason
+
+    rendered = _execute_subsector_detail_render(_subsector_reason_detail("flat: sell"))
+    assert '<h1 class="id-title"><span class="l-en">Semiconductors</span><span class="l-zh">半导体</span></h1>' in rendered
+    assert '<span class="l-en">Technology</span><span class="l-zh">科技</span>' in rendered
+    for en, zh in (("Momentum up", "动量偏多"), ("Momentum down", "动量偏空"), ("Mixed momentum", "动量分歧")):
+        assert f'<span class="l-en">{en}</span><span class="l-zh">{zh}</span>' in rendered
+    for code in ("long-bias", "short-bias", ">mixed<"):
+        assert code not in rendered, code
+    # SIC-D38: an open entry signal is a neutral labelled chip, never a market-direction
+    # colour on the row or card.
+    assert rendered.count('<span class="entry-chip">') == 2
+    assert '<span class="l-en">Entry signal open</span><span class="l-zh">入场信号开启</span>' in rendered
+
+
+# O-INT vi (state matrix dossier/error, R3A-74). The harness mirrors the real DOM in
+# one respect that matters: writing #app recreates an empty #chart-host, as the
+# page's innerHTML render does.
+_CHART_FAILURE_HARNESS = r"""
+const host = {innerHTML: ''};
+const btn = {listeners: {}, focused: 0,
+  addEventListener(type, fn) { this.listeners[type] = fn; },
+  focus() { this.focused++; }};
+host.querySelector = () => host.innerHTML.includes('id-chart-err') ? btn : null;
+const app = {};
+let appHTML = '';
+Object.defineProperty(app, 'innerHTML', {get: () => appHTML, set: (v) => { appHTML = v; host.innerHTML = ''; }});
+const scripts = [];
+const logged = [];
+global.document = {
+  getElementById: (id) => id === 'app' ? app : (id === 'chart-host' ? host : {}),
+  querySelector: () => host.querySelector(),
+  addEventListener: () => {},
+  createElement: () => ({}),
+  head: {appendChild: (node) => scripts.push(node)},
+};
+global.window = MODE === 'throw' ? {StockChart: {mount() { throw new Error('boom'); }}} : {};
+console.error = (...args) => logged.push(String(args[0]));
+"""
+
+
+def _drive_subsector_chart_failure(mode: str, steps: str) -> dict:
+    from scripts import build_subsector_confluence as bsc
+
+    detail = _subsector_reason_detail("flat: sell")
+    html = bsc._env().get_template("subsector_detail.html.j2").render(
+        detail_json=json.dumps(detail, ensure_ascii=False),
+        group_name=detail["group"]["label"],
+        chart_key="semis",
+        has_signals=False,
+        back_href="../subsectors.html",
+    )
+    scripts = re.findall(r"<script(?: [^>]*)?>(.*?)</script>", html, flags=re.S)
+    js = next(block for block in scripts if "const DETAIL =" in block)
+    node = shutil.which("node")
+    assert node is not None, "node is required to execute the chart-failure state"
+    harness = (
+        f"const MODE = {json.dumps(mode)};" + _CHART_FAILURE_HARNESS + js + "\n" + steps
+        + "\nprocess.stdout.write(JSON.stringify({host: host.innerHTML, focused: btn.focused,"
+        " scripts: scripts.map((s) => s.src), logged}));\n"
+    )
+    run = subprocess.run([node, "-e", harness], capture_output=True, text=True, timeout=30)
+    assert run.returncode == 0, run.stderr
+    return json.loads(run.stdout)
+
+
+def _assert_chart_unavailable(host: str) -> None:
+    assert '<div class="id-chart-err" role="alert">' in host
+    assert '<span class="l-en">Chart unavailable right now</span><span class="l-zh">图表暂不可用</span>' in host
+    assert '<span class="l-zh">本页的概况、成分与证据不受影响。</span>' in host
+    assert '<button type="button"><span class="l-en">Retry</span><span class="l-zh">重试</span></button>' in host
+
+
+def test_subsector_chart_mount_failure_says_so_in_its_frame():
+    """A mount that throws still logs, and now also tells the reader in the chart's
+    own frame. A retry that fails again keeps the message and puts focus back on Retry."""
+    out = _drive_subsector_chart_failure("throw", "")
+    _assert_chart_unavailable(out["host"])
+    assert out["logged"] == ["chart mount failed"]
+    assert out["focused"] == 0, "the first render never steals focus"
+
+    out = _drive_subsector_chart_failure("throw", "btn.listeners.click();")
+    _assert_chart_unavailable(out["host"])
+    assert out["focused"] == 1
+    assert out["scripts"] == [], "the chart script is present; retry re-mounts, it does not reload"
+
+
+def test_subsector_missing_chart_script_retries_by_reloading_it():
+    """When the shared chart script never arrived, Retry loads it again. A second
+    failure keeps the message with focus on Retry; a load mounts the chart."""
+    out = _drive_subsector_chart_failure("missing", "")
+    _assert_chart_unavailable(out["host"])
+    assert out["logged"] == []
+
+    out = _drive_subsector_chart_failure("missing", "btn.listeners.click(); scripts[0].onerror();")
+    _assert_chart_unavailable(out["host"])
+    assert out["scripts"] == ["../chart.js"]
+    assert out["focused"] == 1
+
+    out = _drive_subsector_chart_failure(
+        "missing",
+        "btn.listeners.click();"
+        " window.StockChart = {mount(h) { h.innerHTML = '<canvas></canvas>'; }};"
+        " scripts[0].onload();",
+    )
+    assert out["host"] == "<canvas></canvas>"
+    assert out["focused"] == 0

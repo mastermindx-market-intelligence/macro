@@ -1,7 +1,7 @@
 {
   "scope": "EW-P4.T1 descriptive early-warning observation UI (consumer-only), two hosts, synthetic fixtures",
   "production_authenticated": false,
-  "source_revision": "92cb5e1babdf45f7ecb5bdb104f810e2b6aed84a",
+  "source_revision": "67ea5cb977b08223a3825d14ccb816ac6b6e9422",
   "base": "1d253e1d25f22c61d1bcf8126b13b0229f26ccbd",
   "capture_mode": "dialog_unclipped_static_harness",
   "capture_mode_note": "#dlg-risk rendered in normal flow with its max-height/overflow removed so the whole band is captured; live dialog scrolls",
@@ -1992,9 +1992,9 @@
     "radar-states": "contact-radar-states.html"
   },
   "pr_source_equivalence": {
-    "note": "Actual full 68-case isolated Chromium recapture from integrated source commit 92cb5e1babdf45f7ecb5bdb104f810e2b6aed84a; all 31 render inputs verified byte-for-byte against the Git tree before evidence publication; 2 screenshot PNGs and 1 contact-sheet artifacts genuinely changed. This is source evidence only, not signed-in production acceptance.",
-    "pr_branch": "claude/ssd-sector-intelligence-macro-7646-82cb8b-35c697a089b670b0",
-    "pr_parent_of_evidence_commit": "92cb5e1babdf45f7ecb5bdb104f810e2b6aed84a",
+    "note": "Actual full 68-case isolated Chromium recapture from source commit 67ea5cb977b08223a3825d14ccb816ac6b6e9422 (the Sector Cycles wave with its PR #10777 review repairs, which changed three bound render inputs: templates/sector_central.html.j2, templates/si_workspace.js and site/si_workspace.js); the probe file is unchanged and ran under the local Playwright chromium_headless_shell-1228 build (reports Google Chrome for Testing 149.0.7827.55) passed as executable_path, because the Python Playwright 1.62 default build is not cached on this host; all 31 render inputs verified byte-for-byte against the Git tree before evidence publication; 2 PNG artifacts changed (1 screenshot, 1 contact sheet; 8 pixels in total, at most 2/255 per channel). This is source evidence only, not signed-in production acceptance.",
+    "pr_branch": "claude/sic-cycles-wave-20261102",
+    "pr_parent_of_evidence_commit": "67ea5cb977b08223a3825d14ccb816ac6b6e9422",
     "render_files": [
       {
         "path": "site/rotation_events.js",
@@ -2148,8 +2148,8 @@
       },
       {
         "path": "templates/dashboard.html.j2",
-        "blob_at_source_revision": "4a890c3224898639f680d6b0cefe836a0238d269",
-        "blob_on_pr_branch": "4a890c3224898639f680d6b0cefe836a0238d269",
+        "blob_at_source_revision": "7d3520e28ec038b23940f405e983c584d2577ed8",
+        "blob_on_pr_branch": "7d3520e28ec038b23940f405e983c584d2577ed8",
         "equal": true
       },
       {
@@ -2160,14 +2160,14 @@
       },
       {
         "path": "templates/sector_central.html.j2",
-        "blob_at_source_revision": "9266e9413a62ae1ba72942f30a9904824593690d",
-        "blob_on_pr_branch": "9266e9413a62ae1ba72942f30a9904824593690d",
+        "blob_at_source_revision": "ce5f80d57d76d188cf4fd37a991c6f40a5d7bd1c",
+        "blob_on_pr_branch": "ce5f80d57d76d188cf4fd37a991c6f40a5d7bd1c",
         "equal": true
       },
       {
         "path": "templates/si_workspace.js",
-        "blob_at_source_revision": "2c7667c39b5a2a5171b5ef036ef45206fb0702fc",
-        "blob_on_pr_branch": "2c7667c39b5a2a5171b5ef036ef45206fb0702fc",
+        "blob_at_source_revision": "eb2f6a171458c3b91a5e402e2a388747fd4e50f2",
+        "blob_on_pr_branch": "eb2f6a171458c3b91a5e402e2a388747fd4e50f2",
         "equal": true
       },
       {
@@ -2178,8 +2178,8 @@
       },
       {
         "path": "site/si_workspace.js",
-        "blob_at_source_revision": "2c7667c39b5a2a5171b5ef036ef45206fb0702fc",
-        "blob_on_pr_branch": "2c7667c39b5a2a5171b5ef036ef45206fb0702fc",
+        "blob_at_source_revision": "eb2f6a171458c3b91a5e402e2a388747fd4e50f2",
+        "blob_on_pr_branch": "eb2f6a171458c3b91a5e402e2a388747fd4e50f2",
         "equal": true
       }
     ],

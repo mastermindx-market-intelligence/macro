@@ -224,3 +224,37 @@ def test_parity_check_can_see_a_divergence(fns):
     mutated = us_fn.replace("does NOT reduce your positions", "does not reduce your positions")
     assert mutated != us_fn, "mutation control did not apply — the sentinel copy moved"
     assert _render(us_fn, CASES["stress"]) != _render(mutated, CASES["stress"])
+
+
+# --- A2_D1a: the pill's visible face is an attribution, never a size ---------------------
+# The face used to print the scalar ("positions sized to 75%"), which reads as an instruction to
+# size and was the only sizing number on the page. The face now names WHOSE volatility is read;
+# the scalar stays in the tooltips, where `How it's set` explains it.
+FACE_LABEL = "${L('Read from US volatility','依据美国波动率读数')}"
+FACE_RE = re.compile(r'<span class="pulse-size"[^>]*>(.*?)</span>\s*$', re.S)
+
+
+@needs_node
+@pytest.mark.parametrize("case", ["live", "warning", "stress"])
+def test_face_label_is_attribution_not_a_size(fns, case):
+    """Whatever the regime, the pill's own text is exactly the attribution label."""
+    for fn in fns:
+        html = _render(fn, CASES[case])
+        m = FACE_RE.search(html)
+        assert m, f"[{case}] pill span not found:\n{html}"
+        face = m.group(1)
+        assert face == "<EN>Read from US volatility</EN><ZH>依据美国波动率读数</ZH>", face
+        for banned in ("%", "positions sized", "仓位缩至"):
+            assert banned not in face, f"[{case}] face still carries {banned!r}: {face}"
+
+
+def test_twin_label_lines_identical():
+    """The two `return` lines that build the pill are byte-identical and carry the label."""
+    def label_line(path: Path) -> str:
+        hits = [ln for ln in path.read_text(encoding="utf-8").splitlines()
+                if ln.lstrip().startswith('return `<span class="pulse-size"')]
+        assert len(hits) == 1, f"{path.name}: expected one pill return line, got {len(hits)}"
+        return hits[0]
+    us, desk = label_line(US_SRC), label_line(DESK_SRC)
+    assert us == desk, f"twin pill lines diverged:\n{us}\n!=\n{desk}"
+    assert FACE_LABEL in us, "pill face is not the attribution label"

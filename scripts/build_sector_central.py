@@ -465,6 +465,63 @@ def _flows_section_html() -> str | None:
         "<p class='muted sm' style='margin:8px 2px 0'>" + str(note) + "</p></div>")
 
 
+#: The 11 SPDR sector ids the Cycles coverage line is measured against.
+_CYCLES_SPDR = ("XLB", "XLC", "XLE", "XLF", "XLI", "XLK", "XLP", "XLRE", "XLU", "XLV", "XLY")
+
+
+def drop_sizing_chips(action_board):
+    """Return a copy of the board with every HALF SIZE chip emptied (parity D1b).
+
+    Sector Central shows no sizing language; the shared board builder (build_site) keeps
+    its chip for us_stocks. Accepts the lane dict build_site persists, or a bare row
+    list; anything else is returned unchanged. The input is never mutated.
+    """
+    def _rows(rows):
+        out = []
+        for item in rows:
+            if isinstance(item, dict) and item.get("chip_en") == "HALF SIZE":
+                item = {**item, "chip_en": "", "chip_zh": "", "chip_tone": ""}
+            out.append(item)
+        return out
+
+    if isinstance(action_board, list):
+        return _rows(action_board)
+    if isinstance(action_board, dict):
+        return {k: _rows(v) if isinstance(v, list) else v for k, v in action_board.items()}
+    return action_board
+
+
+def cycles_context(site: Path, data: dict) -> dict:
+    """Baked Cycles-view context: as-of, generation and sector coverage (C01/C24).
+
+    Read fail-soft from sectordata/sector_cycles.json (written by build_sector_cycles):
+    an absent or unreadable payload returns {} and the view renders its typed
+    unavailable line. Generation is session_alignment() exactly as returned.
+    """
+    try:
+        cyc = json.loads((site / "sectordata" / "sector_cycles.json").read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return {}
+    if not isinstance(cyc, dict):
+        return {}
+    asof = (cyc.get("meta") or {}).get("asOf")
+    from engine.sector_generation_guard import session_alignment
+    measured = {
+        str(rec.get("ticker")).upper()
+        for rec in cyc.get("sectors") or []
+        if isinstance(rec, dict) and rec.get("ticker") and rec.get("osc")
+    }
+    return {
+        "asof": asof,
+        "generation": session_alignment(asof, data.get("as_of")),
+        "coverage": {
+            "measured": sum(1 for t in _CYCLES_SPDR if t in measured),
+            "expected": len(_CYCLES_SPDR),
+            "missing": [t for t in _CYCLES_SPDR if t not in measured],
+        },
+    }
+
+
 def main(*, strict: bool = False) -> int:
     """Build Sector Central.
 
@@ -544,6 +601,7 @@ def main(*, strict: bool = False) -> int:
     _action_doc = _action_doc or {}
     _action_sha256 = _ab_status["sha256"] or ""
     _action_board = _action_doc.get("action_board")
+    _action_board = drop_sizing_chips(_action_board)
     # W-A bottoming watch (reader pattern, same shape as the board above). The lane's
     # payload rides theme_intel.act_now in basketdata/baskets.json — written by
     # build_baskets, which runs earlier in the engine job. Read fail-soft: an absent or
@@ -710,6 +768,7 @@ def main(*, strict: bool = False) -> int:
     fdir.mkdir(parents=True, exist_ok=True)
     (fdir / "sector_central.json").write_text(
         json.dumps(data, separators=(",", ":"), ensure_ascii=False), encoding="utf-8")
+    _cycles_ctx = cycles_context(site, data)
     _acc_rows, _acc_uni = _accumulation_rows()
     try:
         html = env.get_template("sector_central.html.j2").render(
@@ -728,6 +787,7 @@ def main(*, strict: bool = False) -> int:
             accumulation_universe_n=_acc_uni,
             theme_tape=_theme_tape_view(site),
             fast_lens=(data.get("market") or {}).get("fast_lens") or {},
+            cycles_ctx=_cycles_ctx,
             generated_utc=ctx.get("generated_utc") or data.get("as_of") or "")
         write_page(site / "sector_central.html", html, encoding="utf-8")
     except Exception as e:  # noqa: BLE001 — a template error must NOT abort the daily engine job
@@ -751,6 +811,10 @@ def main(*, strict: bool = False) -> int:
     import shutil
     for asset in ("product-nav-icons.css", "dashboard-icons.css", "dashboard-icons.js",
                   "sector_cycles.css", "sector_cycles.js",
+                  # Cycles view modules (states, face, compare, platform) + their styles.
+                  "sector_cycles_states.js", "sector_cycles_face.js",
+                  "sector_cycles_compare.js", "sector_cycles_platform.js",
+                  "sector_cycles_states.css", "sector_cycles_platform.css",
                   # MOVEMENT donors extracted from the retired subsector_rotation page.
                   # subsector_rotation.js exports window.SRR, which time_machine.js needs.
                   "subsector_rotation.js", "rotation_events.js", "desk_watch.js",
