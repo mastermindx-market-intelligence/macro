@@ -177,7 +177,11 @@ def _closure_time_key(value: object) -> tuple[int, str] | None:
     exact fractional order without float/Decimal rounding or a precision cap.
     Other timing/budget semantics deliberately keep their existing parser.
     """
-    parsed = _parse_datetime(value)
+    # RFC3339 permits lowercase z; only this closure comparison normalizes it.
+    normalized = (
+        value[:-1] + "Z" if isinstance(value, str) and value.endswith("z") else value
+    )
+    parsed = _parse_datetime(normalized)
     if parsed is None or not isinstance(value, str):
         return None
     offset = parsed.utcoffset()

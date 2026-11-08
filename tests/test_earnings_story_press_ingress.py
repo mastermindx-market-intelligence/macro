@@ -207,6 +207,66 @@ def test_exact_current_packet_is_full_audited_derived_and_staged_once(tmp_path, 
     assert staged["story_root_current_after_stage"] is True
 
 
+def test_discovery_receipt_retains_verified_ids_without_prose_or_authority(tmp_path) -> None:
+    evidence, store, manifest, packet = _current(tmp_path)
+    destination = tmp_path / "discovery.json"
+    publisher.audit_remote_generation(
+        s3=_R2(_r2_objects(evidence, store, manifest)), bucket="bucket",
+        discovery_out=destination,
+    )
+    receipt = json.loads(destination.read_text())
+    assert receipt["status"] == "current_root_verified"
+    assert receipt["generation_id"] == manifest["generation_id"]
+    assert receipt["manifest_sha256"] == publisher.sha256_bytes(canonical_json_bytes(manifest))
+    assert receipt["allow_stage"] is False and receipt["allow_emit"] is False
+    assert receipt["rights"] == {"status": "unresolved", "public_article_approved": False}
+    assert receipt["packet_count"] == 1
+    row = receipt["packets"][0]
+    assert row["packet_id"] == packet["packet_id"]
+    assert row["story_revision_id"] == packet["story"]["story_revision_id"]
+    assert row["event_key"] == "AAPL/2026Q1" and row["event_date"] == "2026-01-30"
+    assert row["source_sha256"] == packet["digest"]["source"]["body_sha256"]
+    assert row["packet_sha256"] == publisher.sha256_bytes(canonical_json_bytes(packet))
+    assert row["tier"] == "B"
+    assert "Revenue grew" not in destination.read_text()
+    assert "press_slot" not in row and "story" not in row and "digest" not in row
+
+
+@pytest.mark.parametrize("failure", ["corrupt_object", "root_race", "missing_credentials"])
+def test_failed_audit_never_writes_discovery_receipt(tmp_path, monkeypatch, failure) -> None:
+    evidence, store, manifest, packet = _current(tmp_path)
+    objects = _r2_objects(evidence, store, manifest)
+    etags = None
+    if failure == "corrupt_object":
+        key = manifest["packets"]["AAPL/2026Q1"]["object_key"]
+        objects[f"{publisher.PREFIX}/{key}"] += b" "
+    elif failure == "root_race":
+        etags = ['"before"', '"after"']
+    client = _R2(objects, root_etags=etags)
+    if failure == "missing_credentials":
+        monkeypatch.setattr(publisher, "_client", lambda: None)
+        client = None
+    destination = tmp_path / "discovery.json"
+    with pytest.raises(publisher.ImmutableAddressIntegrityError):
+        publisher.audit_remote_generation(s3=client, bucket="bucket", discovery_out=destination)
+    assert not destination.exists()
+
+
+def test_discovery_receipt_refuses_to_replace_previous_evidence(tmp_path) -> None:
+    destination = tmp_path / "discovery.json"
+    destination.write_bytes(b"prior evidence")
+    with pytest.raises(publisher.ImmutableAddressIntegrityError, match="already exists"):
+        publisher.audit_remote_generation(discovery_out=destination)
+    assert destination.read_bytes() == b"prior evidence"
+
+
+def test_discovery_cli_requires_remote_audit_before_effects(tmp_path, capsys) -> None:
+    with pytest.raises(SystemExit) as stopped:
+        publisher.main(["--discovery-out", str(tmp_path / "discovery.json")])
+    assert stopped.value.code == 2
+    assert "--discovery-out requires --audit-remote" in capsys.readouterr().err
+
+
 @pytest.mark.parametrize(
     ("field", "value"),
     [

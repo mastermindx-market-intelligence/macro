@@ -1,0 +1,790 @@
+{
+  "case_key": "jv_physical_vs_economics",
+  "expected_regression": "One factory physically; parent/NCI and captive/external economics remain separate",
+  "status": "ready",
+  "synthetic": true,
+  "task_refs": [
+    "T07",
+    "T08"
+  ],
+  "query": {
+    "anchor_theme_id": "ai_semiconductors",
+    "slice_key": "hbm_packaging",
+    "view": "capacity",
+    "time_mode": "latest",
+    "source_cutoff": null,
+    "recorded_cutoff": null,
+    "offset": 0,
+    "limit": 50,
+    "expected_generation": null
+  },
+  "bundle": {
+    "revision_tuple": [
+      [
+        "assertion",
+        "gmirca_0e6102cad17e032a5898aea3cfa302e2"
+      ],
+      [
+        "assertion",
+        "gmirca_17e6474a95f370ce9705052101b33cb2"
+      ],
+      [
+        "assertion",
+        "gmirca_2fbc3a1c5e4269ed54bb7518ad151b29"
+      ],
+      [
+        "assertion",
+        "gmirca_556ec8059341765fe1a9f0e377f48394"
+      ],
+      [
+        "assertion",
+        "gmirca_5e983a40ccaa6a6f779002085f37d593"
+      ],
+      [
+        "assertion",
+        "gmirca_c614a083211445a14aa774ce0e70c532"
+      ],
+      [
+        "identity",
+        "identity-vintage-008"
+      ],
+      [
+        "identity",
+        "identity-vintage-009"
+      ],
+      [
+        "identity",
+        "identity-vintage-010"
+      ]
+    ],
+    "rights_revision": "synthetic-rights-0",
+    "assertions": [
+      {
+        "authority": {
+          "can_gate": false,
+          "can_open_entry": false,
+          "can_originate": false,
+          "can_rank": false,
+          "can_size": false
+        },
+        "correction": {
+          "predecessor_revision": null,
+          "reason": null
+        },
+        "curation_revision": "gmirca_5e983a40ccaa6a6f779002085f37d593",
+        "industrial_context": {
+          "interpretation": null,
+          "lineage_refs": [],
+          "local_objects": [
+            {
+              "configuration": null,
+              "kind": "facility",
+              "manufacturer": "Synthetic Parent Operator Pi",
+              "model": null,
+              "selector": "fac:jv-line",
+              "source_label": "JV assembly line"
+            }
+          ],
+          "measure_scope": {
+            "currency": null,
+            "denominator": null,
+            "estimate_status": "reported",
+            "gross_net": null,
+            "period_end": "2026-06-30",
+            "period_kind": "quarter",
+            "period_start": "2026-01-01",
+            "precision": "integer",
+            "purchase_boundary": null,
+            "stock_flow": "flow",
+            "value_basis": "jv line monthly capacity",
+            "wafer_diameter_mm": 300
+          },
+          "relation": null,
+          "stage": "reported_operation",
+          "stage_source_language": "the JV line runs at one hundred thousand wafers per month"
+        },
+        "limitations": {
+          "coverage": "single vendor statement in a synthetic trade wire",
+          "does_not_establish": [
+            "double counting the line per parent"
+          ],
+          "establishes": [
+            "the physical JV line output as disclosed by the operator parent"
+          ],
+          "expiry_trigger": "the vendor withdraws the statement",
+          "source_dependence": "vendor-authored claim"
+        },
+        "object": {
+          "configuration": null,
+          "source_product_label": "JV assembly line"
+        },
+        "observation": {
+          "estimate_status": "reported",
+          "gross_net_basis": null,
+          "precision": "integer",
+          "quantity_basis": "per_period",
+          "stock_flow": "flow",
+          "unit": "kilo_wafer_per_month",
+          "value": 100,
+          "value_high": null
+        },
+        "predicate": "REPORTED_OPERATING_MEASURE",
+        "review": {
+          "disposition": "accepted",
+          "review_due_at": null,
+          "reviewed_at": "2026-08-01T09:00:00Z",
+          "reviewer": "fixture-reviewer"
+        },
+        "schema": "theme_graph.curation_assertion.v1",
+        "scope": {
+          "application": "advanced packaging",
+          "canonical_theme_id": "ai_semiconductors",
+          "denominator": null,
+          "period": "2026Q2",
+          "region": "TW",
+          "technology_facet": "jv assembly"
+        },
+        "source": {
+          "locator": "para-2",
+          "native_digest": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+          "observed_at": "2026-04-03T08:00:00Z",
+          "published_at": "2026-04-02",
+          "published_at_grain": "date",
+          "publisher": "Example JV Wire",
+          "retained_at": "2026-04-03T08:05:00Z",
+          "retention_ref": "retention:jv/pi-line-disclosure",
+          "source_uri": "https://example.invalid/jv/pi-line-disclosure"
+        },
+        "statement_mode": "REPORTED_FACT",
+        "subject": {
+          "company_node_id": null,
+          "configuration": null,
+          "source_business_label": "Synthetic Parent Operator Pi",
+          "source_platform_label": null,
+          "source_product_label": "JV assembly line"
+        },
+        "temporal": {
+          "business_valid_from": "2026-01-01",
+          "business_valid_to": null
+        }
+      },
+      {
+        "authority": {
+          "can_gate": false,
+          "can_open_entry": false,
+          "can_originate": false,
+          "can_rank": false,
+          "can_size": false
+        },
+        "correction": {
+          "predecessor_revision": null,
+          "reason": null
+        },
+        "curation_revision": "gmirca_17e6474a95f370ce9705052101b33cb2",
+        "industrial_context": {
+          "interpretation": null,
+          "lineage_refs": [],
+          "local_objects": [
+            {
+              "configuration": null,
+              "kind": "facility",
+              "manufacturer": "Synthetic Parent Operator Pi",
+              "model": null,
+              "selector": "fac:jv-line",
+              "source_label": "JV assembly line"
+            }
+          ],
+          "measure_scope": {
+            "currency": null,
+            "denominator": null,
+            "estimate_status": "reported",
+            "gross_net": null,
+            "period_end": "2026-06-30",
+            "period_kind": "quarter",
+            "period_start": "2026-01-01",
+            "precision": "integer",
+            "purchase_boundary": null,
+            "stock_flow": "flow",
+            "value_basis": "jv line monthly capacity",
+            "wafer_diameter_mm": 300
+          },
+          "relation": null,
+          "stage": "reported_operation",
+          "stage_source_language": "the same physical JV line, as disclosed by the partner parent"
+        },
+        "limitations": {
+          "coverage": "single vendor statement in a synthetic trade wire",
+          "does_not_establish": [
+            "a second physical line"
+          ],
+          "establishes": [
+            "the same physical line, disclosed again by the partner"
+          ],
+          "expiry_trigger": "the vendor withdraws the statement",
+          "source_dependence": "vendor-authored claim"
+        },
+        "object": {
+          "configuration": null,
+          "source_product_label": "JV assembly line"
+        },
+        "observation": {
+          "estimate_status": "reported",
+          "gross_net_basis": null,
+          "precision": "integer",
+          "quantity_basis": "per_period",
+          "stock_flow": "flow",
+          "unit": "kilo_wafer_per_month",
+          "value": 100,
+          "value_high": null
+        },
+        "predicate": "REPORTED_OPERATING_MEASURE",
+        "review": {
+          "disposition": "accepted",
+          "review_due_at": null,
+          "reviewed_at": "2026-08-01T09:00:00Z",
+          "reviewer": "fixture-reviewer"
+        },
+        "schema": "theme_graph.curation_assertion.v1",
+        "scope": {
+          "application": "advanced packaging",
+          "canonical_theme_id": "ai_semiconductors",
+          "denominator": null,
+          "period": "2026Q2",
+          "region": "TW",
+          "technology_facet": "jv assembly"
+        },
+        "source": {
+          "locator": "para-3",
+          "native_digest": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+          "observed_at": "2026-04-10T08:00:00Z",
+          "published_at": "2026-04-09",
+          "published_at_grain": "date",
+          "publisher": "Example JV Wire",
+          "retained_at": "2026-04-10T08:05:00Z",
+          "retention_ref": "retention:jv/tau-line-disclosure",
+          "source_uri": "https://example.invalid/jv/tau-line-disclosure"
+        },
+        "statement_mode": "REPORTED_FACT",
+        "subject": {
+          "company_node_id": null,
+          "configuration": null,
+          "source_business_label": "Synthetic Parent Partner Tau",
+          "source_platform_label": null,
+          "source_product_label": "JV assembly line"
+        },
+        "temporal": {
+          "business_valid_from": "2026-01-01",
+          "business_valid_to": null
+        }
+      },
+      {
+        "authority": {
+          "can_gate": false,
+          "can_open_entry": false,
+          "can_originate": false,
+          "can_rank": false,
+          "can_size": false
+        },
+        "correction": {
+          "predecessor_revision": null,
+          "reason": null
+        },
+        "curation_revision": "gmirca_c614a083211445a14aa774ce0e70c532",
+        "industrial_context": {
+          "interpretation": null,
+          "lineage_refs": [],
+          "local_objects": [
+            {
+              "configuration": null,
+              "kind": "facility",
+              "manufacturer": "Synthetic Parent Operator Pi",
+              "model": null,
+              "selector": "fac:jv-line",
+              "source_label": "JV assembly line"
+            },
+            {
+              "configuration": null,
+              "kind": "business",
+              "manufacturer": "Synthetic Parent Operator Pi",
+              "model": null,
+              "selector": "ent:jv-nci",
+              "source_label": "Synthetic Parent Operator Pi"
+            }
+          ],
+          "measure_scope": {
+            "currency": null,
+            "denominator": null,
+            "estimate_status": "reported",
+            "gross_net": null,
+            "period_end": "2026-06-30",
+            "period_kind": "quarter",
+            "period_start": "2026-01-01",
+            "precision": "integer",
+            "purchase_boundary": null,
+            "stock_flow": "stock",
+            "value_basis": "jv ownership share",
+            "wafer_diameter_mm": null
+          },
+          "relation": {
+            "dst_selector": "fac:jv-line",
+            "kind": "ownership",
+            "src_selector": "ent:jv-nci"
+          },
+          "stage": null,
+          "stage_source_language": null
+        },
+        "limitations": {
+          "coverage": "single vendor statement in a synthetic trade wire",
+          "does_not_establish": [
+            "a second physical facility"
+          ],
+          "establishes": [
+            "the controlling interest share in the JV"
+          ],
+          "expiry_trigger": "the vendor withdraws the statement",
+          "source_dependence": "vendor-authored claim"
+        },
+        "object": {
+          "configuration": null,
+          "source_product_label": "JV controlling interest"
+        },
+        "observation": {
+          "estimate_status": "reported",
+          "gross_net_basis": null,
+          "precision": "integer",
+          "quantity_basis": "per_period",
+          "stock_flow": "stock",
+          "unit": "%",
+          "value": 60,
+          "value_high": null
+        },
+        "predicate": "OWNERSHIP_EVENT",
+        "review": {
+          "disposition": "accepted",
+          "review_due_at": null,
+          "reviewed_at": "2026-08-01T09:00:00Z",
+          "reviewer": "fixture-reviewer"
+        },
+        "schema": "theme_graph.curation_assertion.v1",
+        "scope": {
+          "application": "advanced packaging",
+          "canonical_theme_id": "ai_semiconductors",
+          "denominator": null,
+          "period": "2026Q2",
+          "region": "TW",
+          "technology_facet": "jv ownership"
+        },
+        "source": {
+          "locator": "para-5",
+          "native_digest": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+          "observed_at": "2026-04-03T08:00:00Z",
+          "published_at": "2026-04-02",
+          "published_at_grain": "date",
+          "publisher": "Example JV Wire",
+          "retained_at": "2026-04-03T08:05:00Z",
+          "retention_ref": "retention:jv/parent-share",
+          "source_uri": "https://example.invalid/jv/parent-share"
+        },
+        "statement_mode": "REPORTED_FACT",
+        "subject": {
+          "company_node_id": null,
+          "configuration": null,
+          "source_business_label": "Synthetic Parent Operator Pi",
+          "source_platform_label": null,
+          "source_product_label": "JV controlling interest"
+        },
+        "temporal": {
+          "business_valid_from": "2026-01-01",
+          "business_valid_to": null
+        }
+      },
+      {
+        "authority": {
+          "can_gate": false,
+          "can_open_entry": false,
+          "can_originate": false,
+          "can_rank": false,
+          "can_size": false
+        },
+        "correction": {
+          "predecessor_revision": null,
+          "reason": null
+        },
+        "curation_revision": "gmirca_556ec8059341765fe1a9f0e377f48394",
+        "industrial_context": {
+          "interpretation": null,
+          "lineage_refs": [],
+          "local_objects": [
+            {
+              "configuration": null,
+              "kind": "facility",
+              "manufacturer": "Synthetic Parent Operator Pi",
+              "model": null,
+              "selector": "fac:jv-line",
+              "source_label": "JV assembly line"
+            },
+            {
+              "configuration": null,
+              "kind": "business",
+              "manufacturer": "Synthetic NCI Holder Upsilon",
+              "model": null,
+              "selector": "ent:jv-nci",
+              "source_label": "Synthetic NCI Holder Upsilon"
+            }
+          ],
+          "measure_scope": {
+            "currency": null,
+            "denominator": null,
+            "estimate_status": "reported",
+            "gross_net": null,
+            "period_end": "2026-06-30",
+            "period_kind": "quarter",
+            "period_start": "2026-01-01",
+            "precision": "integer",
+            "purchase_boundary": null,
+            "stock_flow": "stock",
+            "value_basis": "jv ownership share",
+            "wafer_diameter_mm": null
+          },
+          "relation": {
+            "dst_selector": "fac:jv-line",
+            "kind": "ownership",
+            "src_selector": "ent:jv-nci"
+          },
+          "stage": null,
+          "stage_source_language": null
+        },
+        "limitations": {
+          "coverage": "single vendor statement in a synthetic trade wire",
+          "does_not_establish": [
+            "a second physical facility"
+          ],
+          "establishes": [
+            "the minority interest share in the JV"
+          ],
+          "expiry_trigger": "the vendor withdraws the statement",
+          "source_dependence": "vendor-authored claim"
+        },
+        "object": {
+          "configuration": null,
+          "source_product_label": "JV minority interest"
+        },
+        "observation": {
+          "estimate_status": "reported",
+          "gross_net_basis": null,
+          "precision": "integer",
+          "quantity_basis": "per_period",
+          "stock_flow": "stock",
+          "unit": "%",
+          "value": 40,
+          "value_high": null
+        },
+        "predicate": "OWNERSHIP_EVENT",
+        "review": {
+          "disposition": "accepted",
+          "review_due_at": null,
+          "reviewed_at": "2026-08-01T09:00:00Z",
+          "reviewer": "fixture-reviewer"
+        },
+        "schema": "theme_graph.curation_assertion.v1",
+        "scope": {
+          "application": "advanced packaging",
+          "canonical_theme_id": "ai_semiconductors",
+          "denominator": null,
+          "period": "2026Q2",
+          "region": "TW",
+          "technology_facet": "jv ownership"
+        },
+        "source": {
+          "locator": "para-4",
+          "native_digest": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+          "observed_at": "2026-04-03T08:00:00Z",
+          "published_at": "2026-04-02",
+          "published_at_grain": "date",
+          "publisher": "Example JV Wire",
+          "retained_at": "2026-04-03T08:05:00Z",
+          "retention_ref": "retention:jv/nci-share",
+          "source_uri": "https://example.invalid/jv/nci-share"
+        },
+        "statement_mode": "REPORTED_FACT",
+        "subject": {
+          "company_node_id": null,
+          "configuration": null,
+          "source_business_label": "Synthetic NCI Holder Upsilon",
+          "source_platform_label": null,
+          "source_product_label": "JV minority interest"
+        },
+        "temporal": {
+          "business_valid_from": "2026-01-01",
+          "business_valid_to": null
+        }
+      },
+      {
+        "authority": {
+          "can_gate": false,
+          "can_open_entry": false,
+          "can_originate": false,
+          "can_rank": false,
+          "can_size": false
+        },
+        "correction": {
+          "predecessor_revision": null,
+          "reason": null
+        },
+        "curation_revision": "gmirca_0e6102cad17e032a5898aea3cfa302e2",
+        "industrial_context": {
+          "interpretation": null,
+          "lineage_refs": [],
+          "local_objects": [
+            {
+              "configuration": null,
+              "kind": "facility",
+              "manufacturer": "Synthetic Parent Operator Pi",
+              "model": null,
+              "selector": "fac:jv-line",
+              "source_label": "JV assembly line"
+            }
+          ],
+          "measure_scope": {
+            "currency": "USD",
+            "denominator": null,
+            "estimate_status": "reported",
+            "gross_net": "net",
+            "period_end": "2026-06-30",
+            "period_kind": "quarter",
+            "period_start": "2026-01-01",
+            "precision": "integer",
+            "purchase_boundary": "standalone",
+            "stock_flow": "flow",
+            "value_basis": "jv captive-external revenue split",
+            "wafer_diameter_mm": null
+          },
+          "relation": null,
+          "stage": null,
+          "stage_source_language": null
+        },
+        "limitations": {
+          "coverage": "single vendor statement in a synthetic trade wire",
+          "does_not_establish": [
+            "external revenue",
+            "a consolidated total"
+          ],
+          "establishes": [
+            "captive (related-party) revenue of the JV line"
+          ],
+          "expiry_trigger": "the vendor withdraws the statement",
+          "source_dependence": "vendor-authored claim"
+        },
+        "object": {
+          "configuration": null,
+          "source_product_label": "JV captive revenue"
+        },
+        "observation": {
+          "estimate_status": "reported",
+          "gross_net_basis": null,
+          "precision": "integer",
+          "quantity_basis": "per_period",
+          "stock_flow": "flow",
+          "unit": "USD_m",
+          "value": 120,
+          "value_high": null
+        },
+        "predicate": "REPORTED_FINANCIAL_MEASURE",
+        "review": {
+          "disposition": "accepted",
+          "review_due_at": null,
+          "reviewed_at": "2026-08-01T09:00:00Z",
+          "reviewer": "fixture-reviewer"
+        },
+        "schema": "theme_graph.curation_assertion.v1",
+        "scope": {
+          "application": "advanced packaging",
+          "canonical_theme_id": "ai_semiconductors",
+          "denominator": null,
+          "period": "2026H1",
+          "region": "TW",
+          "technology_facet": "jv economics"
+        },
+        "source": {
+          "locator": "table-7",
+          "native_digest": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+          "observed_at": "2026-07-16T08:00:00Z",
+          "published_at": "2026-07-15",
+          "published_at_grain": "date",
+          "publisher": "Example JV Wire",
+          "retained_at": "2026-07-16T08:05:00Z",
+          "retention_ref": "retention:jv/captive-revenue",
+          "source_uri": "https://example.invalid/jv/captive-revenue"
+        },
+        "statement_mode": "REPORTED_FACT",
+        "subject": {
+          "company_node_id": null,
+          "configuration": null,
+          "source_business_label": "Synthetic Parent Operator Pi",
+          "source_platform_label": null,
+          "source_product_label": "JV captive revenue"
+        },
+        "temporal": {
+          "business_valid_from": "2026-01-01",
+          "business_valid_to": null
+        }
+      },
+      {
+        "authority": {
+          "can_gate": false,
+          "can_open_entry": false,
+          "can_originate": false,
+          "can_rank": false,
+          "can_size": false
+        },
+        "correction": {
+          "predecessor_revision": null,
+          "reason": null
+        },
+        "curation_revision": "gmirca_2fbc3a1c5e4269ed54bb7518ad151b29",
+        "industrial_context": {
+          "interpretation": null,
+          "lineage_refs": [],
+          "local_objects": [
+            {
+              "configuration": null,
+              "kind": "facility",
+              "manufacturer": "Synthetic Parent Partner Tau",
+              "model": null,
+              "selector": "fac:jv-line",
+              "source_label": "JV assembly line"
+            }
+          ],
+          "measure_scope": {
+            "currency": "USD",
+            "denominator": null,
+            "estimate_status": "reported",
+            "gross_net": "net",
+            "period_end": "2026-06-30",
+            "period_kind": "quarter",
+            "period_start": "2026-01-01",
+            "precision": "integer",
+            "purchase_boundary": "standalone",
+            "stock_flow": "flow",
+            "value_basis": "jv captive-external revenue split",
+            "wafer_diameter_mm": null
+          },
+          "relation": null,
+          "stage": null,
+          "stage_source_language": null
+        },
+        "limitations": {
+          "coverage": "single vendor statement in a synthetic trade wire",
+          "does_not_establish": [
+            "captive revenue",
+            "a consolidated total"
+          ],
+          "establishes": [
+            "external (third-party) revenue of the JV line"
+          ],
+          "expiry_trigger": "the vendor withdraws the statement",
+          "source_dependence": "vendor-authored claim"
+        },
+        "object": {
+          "configuration": null,
+          "source_product_label": "JV external revenue"
+        },
+        "observation": {
+          "estimate_status": "reported",
+          "gross_net_basis": null,
+          "precision": "integer",
+          "quantity_basis": "per_period",
+          "stock_flow": "flow",
+          "unit": "USD_m",
+          "value": 80,
+          "value_high": null
+        },
+        "predicate": "REPORTED_FINANCIAL_MEASURE",
+        "review": {
+          "disposition": "accepted",
+          "review_due_at": null,
+          "reviewed_at": "2026-08-01T09:00:00Z",
+          "reviewer": "fixture-reviewer"
+        },
+        "schema": "theme_graph.curation_assertion.v1",
+        "scope": {
+          "application": "advanced packaging",
+          "canonical_theme_id": "ai_semiconductors",
+          "denominator": null,
+          "period": "2026H1",
+          "region": "TW",
+          "technology_facet": "jv economics"
+        },
+        "source": {
+          "locator": "table-8",
+          "native_digest": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+          "observed_at": "2026-07-16T08:00:00Z",
+          "published_at": "2026-07-15",
+          "published_at_grain": "date",
+          "publisher": "Example JV Wire",
+          "retained_at": "2026-07-16T08:05:00Z",
+          "retention_ref": "retention:jv/external-revenue",
+          "source_uri": "https://example.invalid/jv/external-revenue"
+        },
+        "statement_mode": "REPORTED_FACT",
+        "subject": {
+          "company_node_id": null,
+          "configuration": null,
+          "source_business_label": "Synthetic Parent Partner Tau",
+          "source_platform_label": null,
+          "source_product_label": "JV external revenue"
+        },
+        "temporal": {
+          "business_valid_from": "2026-01-01",
+          "business_valid_to": null
+        }
+      }
+    ],
+    "identity_results": [
+      {
+        "company_node_id": "co:synth_pi",
+        "source_business_label": "Synthetic Parent Operator Pi",
+        "resolution": "RESOLVED",
+        "security_id": null,
+        "listing_valid_from": null,
+        "listing_valid_to": null,
+        "mapping_learned_at": "2026-03-01T00:00:00Z"
+      },
+      {
+        "company_node_id": "co:synth_tau",
+        "source_business_label": "Synthetic Parent Partner Tau",
+        "resolution": "RESOLVED",
+        "security_id": null,
+        "listing_valid_from": null,
+        "listing_valid_to": null,
+        "mapping_learned_at": "2026-03-01T00:00:00Z"
+      },
+      {
+        "company_node_id": "co:synth_upsilon",
+        "source_business_label": "Synthetic NCI Holder Upsilon",
+        "resolution": "RESOLVED",
+        "security_id": null,
+        "listing_valid_from": null,
+        "listing_valid_to": null,
+        "mapping_learned_at": "2026-03-01T00:00:00Z"
+      }
+    ],
+    "event_workspaces": [],
+    "financial_packets": [],
+    "interpretation_blocks": [],
+    "native_refs": [],
+    "omissions": [
+      "event_workspaces_pending_T05",
+      "financial_packets_pending_T05"
+    ]
+  },
+  "expected": {
+    "capacity_rows_for_fac:jv-line": 1,
+    "economics_rows": [
+      "captive",
+      "external",
+      "nci_share",
+      "parent_share"
+    ]
+  }
+}
