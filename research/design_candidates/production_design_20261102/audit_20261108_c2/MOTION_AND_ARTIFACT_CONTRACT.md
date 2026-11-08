@@ -7,7 +7,7 @@ This supplements the existing MarketOntology Visual Engine reference `01M3P1X4FR
 Protected law pin: Mastermind `5c3d3885234358aefb97ecdbc59be0864df14f8b`.
 Macro source pin: `338a10852dcefa5d2bd07e5c6be0955c2b1e83fd`.
 Current source references:
-- [Design System §2.2, §7–8](https://github.com/mastermindx-market-intelligence/macro/blob/338a10852dcefa5d2bd07e5c6be0955c2b1e83fd/docs/DESIGN_SYSTEM.md)
+- [Design System §2.2, §7–8](https://github.com/mastermindx-market-intelligence/macro/blob/338a10852dcefa5d2bd07e5c6be0955c2b1e83fd/research/MASTER_PRODUCT_DESIGN_SYSTEM_V1.md)
 - [Illustration contract](https://github.com/mastermindx-market-intelligence/macro/blob/338a10852dcefa5d2bd07e5c6be0955c2b1e83fd/docs/ILLUSTRATIONS.md)
 - [SSR renderer](https://github.com/mastermindx-market-intelligence/macro/blob/338a10852dcefa5d2bd07e5c6be0955c2b1e83fd/lib/illus.py)
 - [Reveal owner](https://github.com/mastermindx-market-intelligence/macro/blob/338a10852dcefa5d2bd07e5c6be0955c2b1e83fd/templates/illus.js) and [paired CSS](https://github.com/mastermindx-market-intelligence/macro/blob/338a10852dcefa5d2bd07e5c6be0955c2b1e83fd/templates/illus.css).
@@ -29,7 +29,8 @@ The reader should understand the observation before manipulating it. The glance 
 2. A valid settled artifact enters using the current ilx owner. In-page charts reveal once; scrolling off-screen and back does not replay the animation.
 3. The existing renderer keeps disconnected runs disconnected. A missing observation does not interpolate, connect, fill or become zero. Too little history produces the existing honest null state.
 4. The end point settles. A static observation never pulses as if live. Loading or stream activity derives from the existing request state, not from a visual timer.
-5. A dialog may replay its chart entrance on a subsequent open under the current `ilxReveal(dialogEl)` behavior. The fallback must not restart a chart already revealing.
+5. If the evidence revision changes or permission is withdrawn during motion, cancel the obsolete visual transition. Resolve the current authorized artifact through the existing owner, then render its final state or explicit unavailability. Animation completion never establishes analysis completion. Preserve focus when the selected mark survives; otherwise restore the section heading.
+6. A dialog may replay its chart entrance on a subsequent open under the current `ilxReveal(dialogEl)` behavior. The fallback must not restart a chart already revealing.
 
 ### Timing ownership
 New UI state transitions use Design System tokens: `--t-fast:.16s`, `--t-med:.2s`, `--t-slow:.55s`, `--ease-std` and `--ease-lift`. Tabs/toggles do not translate. Clickable-card lift remains 1–2px only.
