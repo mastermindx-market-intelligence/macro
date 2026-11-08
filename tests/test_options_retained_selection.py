@@ -217,3 +217,151 @@ def test_damaged_event_capture_cannot_reuse_unchanged_digest():
     with pytest.raises(ValueError):
         select_retained_events(replace(read, body=read.body + b"\n"), session="2026-10-19", root="SPY",
                                decision_at="2026-10-20T16:00:00Z")
+
+
+# Wire expectations are hand-derived, not computed by an inverse producer helper.
+def wire_matrix_raw():
+    return b'{"schema":"options_structure.matrix/v1","root":"SPY","session":"2026-10-19","coverage":null,"label":"9007199254740993","cells":[{"expiry":"2026-10-30","strike":123456789012.12345678,"call_oi":9007199254740993,"call_vol":null,"delta_oi":{"call":-2.5000},"unusual":{"call":{"ratio":3.0,"status":"unusual"}}}]}'
+
+
+def encoded_matrix_wire(raw=None):
+    from engine.options_retained_selection import encode_retained_matrix
+    raw = wire_matrix_raw() if raw is None else raw
+    return encode_retained_matrix(reference_for_bytes("SPY", raw), captured(raw),
+                                  decision_at="2026-10-20T16:00:00.123456789+00:00",
+                                  expiry="2026-10-30", side="call")
+
+
+def test_matrix_wire_is_lossless_json_with_explicit_original_byte_authority():
+    import base64
+    from engine.options_retained_selection import decode_retained_selection_wire
+    raw = encoded_matrix_wire()
+    wire = decode_retained_selection_wire(raw)
+    assert wire["schema"] == "options.retained_selection.wire/v1"
+    assert wire["kind"] == "matrix"
+    row = wire["rows"][0]
+    assert row["strike"] == "123456789012.12345678"
+    assert row["metrics"]["open_interest"] == {"decimal": "9007199254740993"}
+    assert row["metrics"]["delta_oi"] == {"decimal": "-2.5"}
+    assert row["metrics"]["volume"] is None
+    assert wire["document"]["object"]["label"] == "9007199254740993"
+    assert wire["document"]["object"]["coverage"] is None
+    assert "available_at" not in wire["document"]["object"]
+    assert base64.b64decode(wire["capture"]["body_base64"], validate=True) == wire_matrix_raw()
+    assert wire["capture"]["sha256"] == hashlib.sha256(wire_matrix_raw()).hexdigest()
+    assert wire["capture"]["byte_length"] == len(wire_matrix_raw())
+    assert wire["snapshot"]["version_ref"].endswith(f':bytes:{len(wire_matrix_raw())}:session:2026-10-19')
+    assert wire["decision_at"] == "2026-10-20T16:00:00.123456789+00:00"
+    assert wire["state"]["selection_mode"] == "known_snapshot_only"
+    assert wire["state"]["first_available_at"] is None
+    assert wire["state"]["history_order"] is None
+    assert wire["state"]["correction_order"] is None
+    assert decode_retained_selection_wire(json.dumps(wire).encode()) == wire
+
+
+def test_wire_tree_distinguishes_source_object_array_string_boolean_and_decimal():
+    from engine.options_retained_selection import decode_retained_selection_wire
+    doc = matrix(); doc["metadata"] = [{"decimal": "12"}, 12.0, "12", True, None]
+    wire = decode_retained_selection_wire(encoded_matrix_wire(json.dumps(doc).encode()))
+    assert wire["document"]["object"]["metadata"] == {"array": [
+        {"object": {"decimal": "12"}}, {"decimal": "12"}, "12", True, None]}
+
+
+def test_event_wire_never_projects_through_incumbent_float_values():
+    import base64
+    from engine.options_retained_selection import encode_retained_events, decode_retained_selection_wire
+    raw = stage(available="2026-10-19T14:33:00.123456789+00:00", size=9007199254740993)
+    raw = raw.replace(b'"strike": 103', b'"strike": 123456789012.12345678')
+    wire = decode_retained_selection_wire(encode_retained_events(captured(raw), session="2026-10-19", root="SPY",
+                                        decision_at="2026-10-20T16:00:00Z", event_ids=("one",)))
+    row = wire["records"][0]
+    assert row["event"]["object"]["strike"] == {"decimal": "123456789012.12345678"}
+    assert row["event"]["object"]["size"] == {"decimal": "9007199254740993"}
+    assert row["event"]["object"]["open_interest"] == {"decimal": "0"}
+    assert row["event"]["object"]["oi_asof"] == "2026-10-16"
+    assert row["source_available_at"] == "2026-10-19T14:33:00.123456789+00:00"
+    assert base64.b64decode(row["source_availability_receipt_base64"], validate=True) == raw.splitlines(keepends=True)[1]
+    assert row["source_stage_prefix_sha256"] == hashlib.sha256(raw).hexdigest()
+    assert wire["state"]["package_support"] == "no_sourced_membership"
+    assert wire["state"]["population"] == "individual_aggregate_events"
+
+
+@pytest.mark.parametrize("fault", ["schema", "kind", "extra", "body", "hash", "length", "bool_length", "read_clock",
+                                  "cutoff", "snapshot", "metric_float", "metric_rounding", "noncanonical_decimal",
+                                  "missing_null", "state", "deep", "duplicate"])
+def test_wire_decode_rejects_tampered_or_ambiguous_projection(fault):
+    from engine.options_retained_selection import decode_retained_selection_wire
+    wire = json.loads(encoded_matrix_wire())
+    if fault == "schema": wire["schema"] = "options.retained_selection.wire/v2"
+    if fault == "kind": wire["kind"] = "packages"
+    if fault == "extra": wire["catalog"] = []
+    if fault == "body": wire["capture"]["body_base64"] = "%%%"
+    if fault == "hash": wire["capture"]["sha256"] = "0" * 64
+    if fault == "length": wire["capture"]["byte_length"] += 1
+    if fault == "bool_length": wire["capture"]["byte_length"] = True
+    if fault == "read_clock": wire["capture"]["read_at"] = "2026-10-21T15:00:00Z"
+    if fault == "cutoff": wire["decision_at"] = "2026-10-19T15:00:00Z"
+    if fault == "snapshot": wire["snapshot"]["key"] = "current.json"
+    if fault == "metric_float": wire["rows"][0]["metrics"]["open_interest"] = 9007199254740992.0
+    if fault == "metric_rounding": wire["rows"][0]["metrics"]["open_interest"] = {"decimal": "9007199254740992"}
+    if fault == "noncanonical_decimal": wire["rows"][0]["metrics"]["delta_oi"] = {"decimal": "-2.500"}
+    if fault == "missing_null": del wire["rows"][0]["metrics"]["volume"]
+    if fault == "state": wire["state"]["history_order"] = ["first"]
+    if fault == "deep":
+        for _ in range(70): wire = {"object": wire}
+    raw = json.dumps(wire).encode()
+    if fault == "duplicate": raw = raw.replace(b'{', b'{"schema":"duplicate",', 1)
+    with pytest.raises(ValueError): decode_retained_selection_wire(raw)
+
+
+def test_wire_limits_are_checked_before_decoding_capture(monkeypatch):
+    from engine import options_retained_selection as selection
+    raw = encoded_matrix_wire()
+    monkeypatch.setattr(selection, "MAX_SELECTION_WIRE_BYTES", len(raw) - 1)
+    with pytest.raises(ValueError): selection.decode_retained_selection_wire(raw)
+
+
+def test_wire_decimal_bound_refuses_exponent_expansion_without_float_or_context_rounding():
+    from engine.options_retained_selection import decode_retained_selection_wire
+    raw = wire_matrix_raw().replace(b'9007199254740993,"call_vol"', b'1e1000000,"call_vol"')
+    with pytest.raises(ValueError): encoded_matrix_wire(raw)
+    wire = decode_retained_selection_wire(encoded_matrix_wire())
+    assert wire["rows"][0]["metrics"]["open_interest"]["decimal"] == "9007199254740993"
+
+
+def test_wire_exact_tokens_are_independent_of_callers_decimal_precision():
+    from decimal import localcontext
+    from engine.options_retained_selection import decode_retained_selection_wire
+    with localcontext() as context:
+        context.prec = 2
+        flags = dict(context.flags)
+        wire = decode_retained_selection_wire(encoded_matrix_wire())
+        assert wire["rows"][0]["strike"] == "123456789012.12345678"
+        assert wire["rows"][0]["metrics"]["open_interest"] == {"decimal": "9007199254740993"}
+        assert dict(context.flags) == flags
+
+
+def test_event_wire_roundtrip_never_infers_packages_or_changes_causal_clock_roles():
+    from engine.options_retained_selection import encode_retained_events, decode_retained_selection_wire
+    raw = stage(package_id="not-evidence", multiplier=100)
+    wire = decode_retained_selection_wire(encode_retained_events(captured(raw, "2026-10-20T15:00:00.000000123+00:00"),
+                                         session="2026-10-19", root="SPY", decision_at="2026-10-20T16:00:00Z"))
+    assert wire["capture"]["read_at"] == "2026-10-20T15:00:00.000000123+00:00"
+    assert wire["read_observed_at"] == "2026-10-20T15:00:00.000001+00:00"
+    event = wire["records"][0]["event"]["object"]
+    assert [event[k] for k in ["ts", "observed_at", "decision_at"]] == [
+        "2026-10-19T14:30:00Z", "2026-10-19T14:31:00Z", "2026-10-19T14:32:00Z"]
+    assert "available_at" not in event
+    assert event["package_id"] == "not-evidence"
+    assert event["multiplier"] == {"decimal": "100"}
+    assert wire["state"]["package_support"] == "no_sourced_membership"
+    assert decode_retained_selection_wire(json.dumps(wire).encode()) == wire
+
+
+def test_extra_base64_padding_and_float_structural_count_refuse():
+    from engine.options_retained_selection import decode_retained_selection_wire
+    for field, replacement in [("body_base64", "padding"), ("byte_length", "float")]:
+        wire = json.loads(encoded_matrix_wire())
+        if replacement == "padding": wire["capture"][field] += "="
+        else: wire["capture"][field] = float(wire["capture"][field])
+        with pytest.raises(ValueError): decode_retained_selection_wire(json.dumps(wire).encode())
