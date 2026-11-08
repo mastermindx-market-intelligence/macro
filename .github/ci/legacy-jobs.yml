@@ -48915,11 +48915,13 @@ jobs:
     # News Intelligence Estate masterplan section 9.1 vertical proofs (V91). Each
     # research/news_intelligence_estate_20261021/v91_proofs/v<n>_*.py runs offline
     # twice and its verdicts are pinned against the sibling .expected file. This job
-    # is byte-identical in every V91 pull request, so they merge in any order.
+    # also owns collector/calendar regressions for V4 effective-date evidence.
     if: ${{ false }}
     gate: code
     paths:
       - "tests/test_v91_vertical_proofs.py"
+      - "tests/test_federal_register.py"
+      - "tests/test_policy_calendar.py"
       - "research/news_intelligence_estate_20261021/v91_proofs/**"
       - "app/company_intelligence.py"
       - "app/integrated_answer.py"
@@ -48953,7 +48955,7 @@ jobs:
       - name: install V91 vertical proof dependencies
         run: pip install pytest pandas pyarrow pyyaml requests fastapi httpx jsonschema
       - name: V91 vertical proofs (offline, deterministic, verdicts pinned)
-        run: python -m pytest tests/test_v91_vertical_proofs.py -q
+        run: python -m pytest tests/test_v91_vertical_proofs.py tests/test_federal_register.py tests/test_policy_calendar.py -q
 
   site20-s4-chart-brief-js:
     if: ${{ false }}
