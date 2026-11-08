@@ -4,6 +4,8 @@ import hashlib
 import json
 import stat
 
+import pytest
+
 from engine.research_intelligence.evidence_delta import (
     COMPARISON_KIND,
     SCHEMA,
@@ -11,7 +13,7 @@ from engine.research_intelligence.evidence_delta import (
     summary,
 )
 from engine.research_intelligence.schema import SCHEMA as RIO_SCHEMA
-from scripts.research_intelligence_evidence_delta import _write_private_json
+from scripts.research_intelligence_evidence_delta import _write_private_json, main
 
 
 PRIOR_CLAIM = "AMD server demand grew 20% year over year as cloud orders improved."
@@ -505,3 +507,182 @@ def test_repeated_identical_claim_hashes_preserve_multiplicity():
     assert delta["claims"]["current_count"] == 1
     assert delta["surface_change_detected"] is True
     assert "claims" in delta["surface_change_dimensions"]
+
+
+def _unchanged_surface_pair():
+    previous, _current = _pair()
+    current = json.loads(json.dumps(previous))
+    current["document"].update(
+        id="fixture-2026-08-15-unchanged",
+        published_at="2026-08-15T12:00:00+00:00",
+        content_sha256=_sha("fixture-2026-08-15-unchanged-source"),
+    )
+    return previous, current
+
+
+def _repeated_number_pair():
+    previous, current = _unchanged_surface_pair()
+    statement = "A second grounded observation records 20% server demand growth."
+    row = {
+        "statement": statement,
+        "evidence": [{"quote_span": statement}],
+        "numbers": ["20%"],
+        "entities": ["AMD"],
+        "horizon": "current",
+        "explicit": True,
+    }
+    previous["claims"].append(json.loads(json.dumps(row)))
+    current["claims"].append(json.loads(json.dumps(row)))
+    return previous, current
+
+
+def test_number_removal_from_one_of_two_unchanged_claims_is_detected():
+    previous, current = _repeated_number_pair()
+    current["claims"][1]["numbers"] = []
+
+    delta = compare_institutional_rio_evidence(previous, current, topic_key=TOPIC_KEY)
+    assert delta["claims"]["added_sha256"] == []
+    assert delta["claims"]["removed_sha256"] == []
+    assert delta["numbers"]["added_sha256"] == []
+    assert delta["numbers"]["removed_sha256"] == [_sha("20%")]
+    assert delta["numbers"]["shared_sha256"] == [_sha("20%")]
+    assert delta["surface_change_dimensions"] == ["numbers"]
+    assert delta["surface_change_detected"] is True
+    assert summary(delta)["surface_change_dimensions"] == ["numbers"]
+
+
+def test_unchanged_repeated_numbers_remain_shared_without_a_change():
+    previous, current = _repeated_number_pair()
+    delta = compare_institutional_rio_evidence(previous, current, topic_key=TOPIC_KEY)
+    assert delta["numbers"]["added_sha256"] == []
+    assert delta["numbers"]["removed_sha256"] == []
+    assert delta["numbers"]["shared_sha256"] == [_sha("20%"), _sha("20%")]
+    assert delta["surface_change_dimensions"] == []
+    assert summary(delta)["surface_change_detected"] is False
+
+
+def test_raw_duplicates_removed_by_canonical_schema_are_not_recovered():
+    previous, current = _unchanged_surface_pair()
+    previous["claims"][0]["numbers"] = ["20%", "20%"]
+    previous["analysis"]["thesis"]["mechanism"] = [PRIOR_MECHANISM, PRIOR_MECHANISM]
+    delta = compare_institutional_rio_evidence(previous, current, topic_key=TOPIC_KEY)
+    assert delta["numbers"]["shared_sha256"] == [_sha("20%")]
+    assert delta["thesis"]["mechanisms"]["shared_sha256"] == [_sha(PRIOR_MECHANISM)]
+    assert delta["surface_change_dimensions"] == []
+    assert summary(delta)["surface_change_detected"] is False
+
+
+@pytest.mark.parametrize("flag", ["direction_changed", "conviction_changed", "support_changed"])
+def test_summary_rejects_missing_change_flags_instead_of_implying_false(flag):
+    previous, current = _unchanged_surface_pair()
+    delta = compare_institutional_rio_evidence(previous, current, topic_key=TOPIC_KEY)
+    del delta["thesis"][flag]
+    with pytest.raises(ValueError, match="flags must be boolean"):
+        summary(delta)
+
+
+@pytest.mark.parametrize("flag", ["direction_changed", "conviction_changed", "support_changed"])
+@pytest.mark.parametrize("value", [None, 0, 1, "false"])
+def test_summary_rejects_nonboolean_change_flags(flag, value):
+    previous, current = _unchanged_surface_pair()
+    delta = compare_institutional_rio_evidence(previous, current, topic_key=TOPIC_KEY)
+    delta["thesis"][flag] = value
+    with pytest.raises(ValueError, match="flags must be boolean"):
+        summary(delta)
+
+
+@pytest.mark.parametrize("flag", ["direction_changed", "conviction_changed", "support_changed"])
+def test_summary_rejects_boolean_flags_that_disagree_with_retained_thesis(flag):
+    previous, current = _unchanged_surface_pair()
+    delta = compare_institutional_rio_evidence(previous, current, topic_key=TOPIC_KEY)
+    delta["thesis"][flag] = True
+    with pytest.raises(ValueError, match="change flag disagrees"):
+        summary(delta)
+
+
+@pytest.mark.parametrize("dimension", [
+    "thesis_direction", "thesis_conviction", "thesis_support", "mechanisms",
+    "claims", "numbers", "entities", "category_forecasts",
+])
+def test_summary_rejects_an_omitted_changed_payload_dimension(dimension):
+    previous, current = _pair()
+    delta = compare_institutional_rio_evidence(previous, current, topic_key=TOPIC_KEY)
+    delta["surface_change_dimensions"].remove(dimension)
+    if dimension == "category_forecasts":
+        delta["changed_categories"] = []
+    with pytest.raises(ValueError, match="dimensions disagree"):
+        summary(delta)
+
+
+def test_summary_rejects_false_no_change_when_retained_payload_changed():
+    previous, current = _pair()
+    delta = compare_institutional_rio_evidence(previous, current, topic_key=TOPIC_KEY)
+    delta["surface_change_dimensions"] = []
+    delta["changed_categories"] = []
+    delta["surface_change_detected"] = False
+    with pytest.raises(ValueError, match="dimensions disagree"):
+        summary(delta)
+
+
+@pytest.mark.parametrize("dimension", ["thesis_direction", "claims", "category_forecasts"])
+def test_summary_rejects_dimensions_without_a_corresponding_payload_change(dimension):
+    previous, current = _unchanged_surface_pair()
+    delta = compare_institutional_rio_evidence(previous, current, topic_key=TOPIC_KEY)
+    delta["surface_change_dimensions"] = [dimension]
+    delta["surface_change_detected"] = True
+    if dimension == "category_forecasts":
+        delta["changed_categories"] = ["forecasts"]
+    with pytest.raises(ValueError, match="dimensions disagree"):
+        summary(delta)
+
+
+@pytest.mark.parametrize("path", [
+    ("numbers",), ("entities",), ("categories",), ("thesis", "mechanisms"),
+    ("thesis", "conviction_before_sha256"), ("thesis", "support_before_claim_sha256"),
+])
+def test_summary_requires_retained_payload_for_change_claims(path):
+    previous, current = _unchanged_surface_pair()
+    delta = compare_institutional_rio_evidence(previous, current, topic_key=TOPIC_KEY)
+    parent = delta
+    for key in path[:-1]:
+        parent = parent[key]
+    del parent[path[-1]]
+    with pytest.raises(ValueError):
+        summary(delta)
+
+
+def test_cli_keeps_private_paths_and_metadata_out_of_stdout(tmp_path, capsys):
+    previous, current = _pair()
+    for label, rio in (("previous", previous), ("current", current)):
+        rio["document"]["institution"] = "PrivateInstitutionSentinel"
+        rio["document"]["source_name"] = "PrivateInstitutionSentinel"
+        rio["document"]["id"] = f"PrivateReportSentinel-{label}"
+        rio["document"]["title"] = f"PrivateTitleSentinel-{label}"
+    previous_path = tmp_path / "previous.json"
+    current_path = tmp_path / "current.json"
+    target = tmp_path / "PrivateFileSentinel.json"
+    previous_path.write_text(json.dumps(previous), encoding="utf-8")
+    current_path.write_text(json.dumps(current), encoding="utf-8")
+
+    assert main([
+        "--previous", str(previous_path),
+        "--current", str(current_path),
+        "--topic-key", "PrivateTopicSentinel",
+        "--output", str(target),
+    ]) == 0
+
+    captured = capsys.readouterr()
+    assert captured.err == ""
+    stdout = json.loads(captured.out)
+    assert set(stdout) == {"state", "summary"}
+    assert stdout["state"] == "ok"
+    assert stat.S_IMODE(target.stat().st_mode) == 0o600
+    private_delta = json.loads(target.read_text(encoding="utf-8"))
+    assert private_delta["institution"] == "PrivateInstitutionSentinel"
+    assert private_delta["previous"]["document_id"] == "PrivateReportSentinel-previous"
+    assert stdout["summary"] == summary(private_delta)
+    for sentinel in (
+        "PrivateInstitutionSentinel", "PrivateReportSentinel", "PrivateTitleSentinel",
+        "PrivateTopicSentinel", "PrivateFileSentinel", str(tmp_path),
+    ):
+        assert sentinel not in captured.out

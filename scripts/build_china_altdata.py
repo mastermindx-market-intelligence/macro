@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import json
 import logging
+import re
 import sys
 from pathlib import Path
 
@@ -98,6 +99,33 @@ def _read_json(p: Path) -> dict:
         return {}
 
 
+# The participation producer writes the published-row lag into `data_gaps` as an internal
+# token (engine/china_participation.py:961-967). Parse it once here so the page can state the
+# row date, the tape-tail date and the lag in days in both languages — neither the raw token
+# nor the EN-only `snapshot_note` may be echoed to a reader.
+_STALE_RE = re.compile(
+    r"snapshot_staleness:published row (\d{4}-\d{2}-\d{2}) is (\d+)d "
+    r"behind tape tail (\d{4}-\d{2}-\d{2})")
+
+
+def _tape_staleness(part) -> dict | None:
+    """{row_date, lag_days, tail_date} from the producer's staleness token; None without it."""
+    try:
+        gaps = part.get("data_gaps") if isinstance(part, dict) else None
+        if not isinstance(gaps, list):
+            return None
+        for gap in gaps:
+            if not isinstance(gap, str):
+                continue
+            m = _STALE_RE.search(gap)
+            if m:
+                return {"row_date": m.group(1), "lag_days": int(m.group(2)),
+                        "tail_date": m.group(3)}
+    except Exception:  # noqa: BLE001 - a malformed upstream token degrades to no staleness line
+        return None
+    return None
+
+
 def _tape_read(part: dict) -> dict | None:
     """Map an upstream participation snapshot → the hero 'tape' read. Context only; None on miss."""
     if not part or not part.get("regime"):
@@ -117,6 +145,9 @@ def _tape_read(part: dict) -> dict | None:
         "qvix": part.get("qvix"), "qvix_z": part.get("qvix_z"),
         "margin_to_mcap": part.get("margin_to_mcap"),
         "evidence": part.get("evidence") or [],
+        "snapshot_note": part.get("snapshot_note"),
+        "data_gaps": part.get("data_gaps") or [],
+        "staleness": _tape_staleness(part),
     }
 
 

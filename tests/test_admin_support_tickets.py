@@ -660,3 +660,20 @@ def test_non_delivered_statuses_do_not_flag_emailed(wired, monkeypatch, status):
     payload, code = support_tickets.act(TID, "reply", "answer")
     assert code == 200 and payload["emailed"] is False
     assert not any("emailed = true" in s for s in q.sqls)
+
+def test_shared_supabase_read_fanout_runs_independent_queries_concurrently(monkeypatch):
+    barrier = threading.Barrier(3)
+
+    def fake_query(sql):
+        barrier.wait(timeout=2)
+        return [{"sql": sql}]
+
+    monkeypatch.setattr(users, "_query", fake_query)
+    out = users._parallel_reads(
+        first=lambda: users._query("select 1"),
+        second=lambda: users._query("select 2"),
+        third=lambda: users._query("select 3"),
+    )
+    assert out["first"] == [{"sql": "select 1"}]
+    assert out["second"] == [{"sql": "select 2"}]
+    assert out["third"] == [{"sql": "select 3"}]

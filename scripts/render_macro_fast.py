@@ -43,6 +43,13 @@ def main() -> int:
 
     env = Environment(loader=FileSystemLoader(config.ROOT / "templates"))
     env.filters["min"] = lambda seq: min(seq)
+    # Mirror the production build_site.py filter: templates use
+    # `|regex_replace(...)` for the one-integer-law strip.
+    import re as _re
+    env.filters["regex_replace"] = (
+        lambda s, pattern, repl: _re.sub(pattern, repl, s)
+        if isinstance(s, str) else s
+    )
     env.globals.update(td=i18n.td, tr=i18n.tr, zip=zip)
     tmpl = env.get_template("dashboard.html.j2")
 

@@ -109,7 +109,6 @@ def main(argv: Sequence[str] | None = None) -> int:
             json.dumps(
                 {
                     "state": "ok",
-                    "output": str(Path(args.output).expanduser()),
                     "summary": summary(delta),
                 },
                 ensure_ascii=False,

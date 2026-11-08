@@ -101,11 +101,12 @@ def _support_hashes(
     return out
 
 
-def _hashed_values(values: Iterable[Any]) -> list[str]:
+def _hashed_values(values: Iterable[Any], *, unique: bool = False) -> list[str]:
+    """Hash retained observations; only set-like metadata opts into deduplication."""
     out: list[str] = []
     for value in values:
         digest = _normalized_hash(value)
-        if digest and digest not in out:
+        if digest and (not unique or digest not in out):
             out.append(digest)
     return out
 
@@ -132,7 +133,7 @@ def _category_rows(
             payload["horizon_sha256"] = _normalized_hash(row.get("horizon"))
             payload["confidence_sha256"] = _normalized_hash(row.get("confidence"))
         elif field == "implications":
-            payload["assets_sha256"] = _hashed_values(row.get("assets") or [])
+            payload["assets_sha256"] = _hashed_values(row.get("assets") or [], unique=True)
             payload["direction"] = str(row.get("direction") or "unclear")
             payload["order"] = 2 if row.get("order") == 2 else 1
         out.setdefault(statement_hash, []).append(payload)
@@ -242,7 +243,12 @@ def compare_institutional_rio_evidence(
     *,
     topic_key: str,
 ) -> dict[str, Any]:
-    """Return a metadata-only delta for a caller-selected institutional topic pair."""
+    """Compare retained, canonically normalized RIO surfaces for a caller topic.
+
+    Multiplicity is preserved after validate_rio normalization. Raw duplicates
+    removed by that shared schema are not recoverable; this is not a semantic
+    equivalence or institutional belief-change claim.
+    """
     topic = _norm(topic_key)
     if not topic or len(topic) > 240:
         raise ValueError("topic_key is required and must be at most 240 normalized characters")
@@ -437,7 +443,12 @@ def summary(delta: Any) -> dict[str, Any]:
     allowed_directions = {"bullish", "bearish", "mixed", "neutral", "unclear"}
     before = thesis.get("direction_before")
     after = thesis.get("direction_after")
-    if before not in allowed_directions or after not in allowed_directions:
+    if (
+        not isinstance(before, str)
+        or not isinstance(after, str)
+        or before not in allowed_directions
+        or after not in allowed_directions
+    ):
         raise ValueError("evidence delta direction is invalid")
 
     changed = delta.get("changed_categories")
@@ -464,21 +475,96 @@ def summary(delta: Any) -> dict[str, Any]:
     ]
     if changed_categories != expected_changed_categories:
         raise ValueError("evidence delta category dimensions disagree")
-    if bool(thesis.get("direction_changed")) != (before != after):
+    for flag in ("direction_changed", "conviction_changed", "support_changed"):
+        if type(thesis.get(flag)) is not bool:
+            raise ValueError("evidence delta thesis change flags must be boolean")
+    if thesis["direction_changed"] != (before != after):
         raise ValueError("evidence delta direction change flag disagrees")
     if type(delta.get("surface_change_detected")) is not bool:
         raise ValueError("evidence delta surface_change_detected must be boolean")
     if delta["surface_change_detected"] != bool(surface_change_dimensions):
         raise ValueError("evidence delta surface_change_detected disagrees with dimensions")
 
-    added = claims.get("added_sha256")
-    removed = claims.get("removed_sha256")
-    if (
-        not isinstance(added, list)
-        or not isinstance(removed, list)
-        or any(not _is_sha256(value) for value in added + removed)
+    def hash_list(value: Any, label: str) -> list[str]:
+        if not isinstance(value, list) or any(not _is_sha256(item) for item in value):
+            raise ValueError(f"evidence delta {label} are invalid")
+        return value
+
+    def hash_delta(value: Any, label: str) -> tuple[list[str], list[str], list[str]]:
+        if not isinstance(value, dict):
+            raise ValueError(f"evidence delta {label} are invalid")
+        return (
+            hash_list(value.get("added_sha256"), label),
+            hash_list(value.get("removed_sha256"), label),
+            hash_list(value.get("shared_sha256"), label),
+        )
+
+    added, removed, _shared = hash_delta(claims, "claim counts")
+    mechanism_added, mechanism_removed, _ = hash_delta(
+        thesis.get("mechanisms"), "mechanism hashes"
+    )
+    number_added, number_removed, _ = hash_delta(delta.get("numbers"), "number hashes")
+
+    conviction_before = thesis.get("conviction_before_sha256")
+    conviction_after = thesis.get("conviction_after_sha256")
+    if any(
+        not isinstance(value, str) or (value != "" and not _is_sha256(value))
+        for value in (conviction_before, conviction_after)
     ):
-        raise ValueError("evidence delta claim counts are invalid")
+        raise ValueError("evidence delta conviction hashes are invalid")
+    if thesis["conviction_changed"] != (conviction_before != conviction_after):
+        raise ValueError("evidence delta conviction change flag disagrees")
+    support_before = hash_list(thesis.get("support_before_claim_sha256"), "support hashes")
+    support_after = hash_list(thesis.get("support_after_claim_sha256"), "support hashes")
+    if thesis["support_changed"] != (support_before != support_after):
+        raise ValueError("evidence delta support change flag disagrees")
+
+    entities = delta.get("entities")
+    if not isinstance(entities, dict) or any(
+        not isinstance(entities.get(kind), list)
+        or any(not isinstance(value, str) or not value for value in entities[kind])
+        for kind in ("added", "removed", "shared")
+    ):
+        raise ValueError("evidence delta entities are invalid")
+
+    categories = delta.get("categories")
+    if not isinstance(categories, dict):
+        raise ValueError("evidence delta categories are invalid")
+    actual_changed_categories = []
+    for field in _CATEGORY_FIELDS:
+        category = categories.get(field)
+        if not isinstance(category, dict) or any(
+            not isinstance(category.get(kind), list)
+            or any(not isinstance(row, dict) for row in category[kind])
+            for kind in ("added", "removed", "modified", "shared")
+        ):
+            raise ValueError("evidence delta categories are invalid")
+        if category["added"] or category["removed"] or category["modified"]:
+            actual_changed_categories.append(field)
+    if changed_categories != actual_changed_categories:
+        raise ValueError("evidence delta category dimensions disagree with payload")
+
+    observed_dimensions = []
+    for flag, dimension in (
+        ("direction_changed", "thesis_direction"),
+        ("conviction_changed", "thesis_conviction"),
+        ("support_changed", "thesis_support"),
+    ):
+        if thesis[flag]:
+            observed_dimensions.append(dimension)
+    for dimension, changed_payload in (
+        ("mechanisms", bool(mechanism_added or mechanism_removed)),
+        ("claims", bool(added or removed)),
+        ("numbers", bool(number_added or number_removed)),
+        ("entities", bool(entities["added"] or entities["removed"])),
+    ):
+        if changed_payload:
+            observed_dimensions.append(dimension)
+    observed_dimensions.extend(
+        f"category_{field}" for field in actual_changed_categories
+    )
+    if surface_change_dimensions != observed_dimensions:
+        raise ValueError("evidence delta surface dimensions disagree with payload")
 
     institution = str(delta.get("institution") or "")
     previous_id = str(previous.get("document_id") or "")
@@ -505,12 +591,12 @@ def summary(delta: Any) -> dict[str, Any]:
         "current_document_id_sha256": _sha256_text(current_id),
         "direction_before": before,
         "direction_after": after,
-        "direction_changed": bool(thesis.get("direction_changed")),
+        "direction_changed": thesis["direction_changed"],
         "added_claims": len(added),
         "removed_claims": len(removed),
         "changed_categories": changed_categories,
         "surface_change_dimensions": surface_change_dimensions,
-        "surface_change_detected": bool(delta.get("surface_change_detected")),
+        "surface_change_detected": delta["surface_change_detected"],
         "text_visibility": "metadata_only",
         "authority": "descriptive_research_only",
     }

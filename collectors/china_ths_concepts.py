@@ -25,12 +25,16 @@ Output: a dated raw snapshot data/baskets_china_ths/snapshots/<YYYY-MM-DD>.json
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import logging
+import re
 import time
-from datetime import date
+from datetime import date, datetime, timezone
+from html.parser import HTMLParser
 from io import StringIO
 from pathlib import Path
+from urllib.parse import urlsplit
 
 import pandas as pd
 import requests
@@ -163,63 +167,284 @@ def concept_code_map(force: bool = False) -> dict[str, str]:
     return {}
 
 
-def concept_members(code: str, session: requests.Session | None = None) -> list[dict]:
-    """All members of one THS concept board -> [{"ticker": "600519.SS", "name": "贵州茅台"}, …].
+COLLECTION_OBSERVATION_SCHEMA = "baskets_china_ths.collection_observation.v1"
 
-    Pages the detail table until a natural end (a short/empty last page, or no table past the last
-    page). COMPLETE-OR-FAIL: any mid-pagination failure — a non-200, a retry-exhausted fetch, a
-    missing/interstitial table on a page that should have one, or hitting the `_MAX_PAGES` ceiling
-    without a natural end — raises `ThsTruncated` rather than returning the partial rows collected
-    so far. Returning a truncated list would let the seed step read it as a genuine board shrink and
-    fabricate `removed` events (see ThsTruncated). An empty board (page 1 has no rows) returns [].
+
+def _collection_clock() -> str:
+    return datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+
+
+def _member_url(code: str, page: int) -> str:
+    return f"https://q.10jqka.com.cn/gn/detail/order/desc/page/{page}/ajax/1/code/{code}/"
+
+
+def _member_table_closed(text: str) -> bool:
+    """Require explicit source table boundaries, without pandas parser repair."""
+    class TableBoundary(HTMLParser):
+        def __init__(self) -> None:
+            super().__init__()
+            self.seen = False
+            self.depth = 0
+            self.closed = False
+
+        def handle_starttag(self, tag: str, attrs: list) -> None:
+            if tag == "table":
+                self.seen = True
+                self.closed = False
+                self.depth += 1
+
+        def handle_endtag(self, tag: str) -> None:
+            if tag == "table" and self.depth:
+                self.depth -= 1
+                self.closed = self.depth == 0
+
+    boundary = TableBoundary()
+    boundary.feed(text)
+    boundary.close()
+    return boundary.seen and boundary.closed
+
+
+def _member_response_has_error(text: str) -> bool:
+    """Explicit error/challenge markup or throttle text cannot prove an end page."""
+    class ErrorEvidence(HTMLParser):
+        def __init__(self) -> None:
+            super().__init__()
+            self.marked = False
+            self.ignored = 0
+            self.text = []
+
+        def handle_starttag(self, tag: str, attrs: list) -> None:
+            if tag in {"script", "style"}:
+                self.ignored += 1
+            for key, value in attrs:
+                if key in {"class", "id"} and value:
+                    tokens = re.split(r"[\s_-]+", value.lower())
+                    if set(tokens) & {"error", "throttle", "captcha", "interstitial"}:
+                        self.marked = True
+
+        def handle_endtag(self, tag: str) -> None:
+            if tag in {"script", "style"} and self.ignored:
+                self.ignored -= 1
+
+        def handle_data(self, data: str) -> None:
+            if not self.ignored:
+                self.text.append(data)
+
+    evidence = ErrorEvidence()
+    evidence.feed(text)
+    evidence.close()
+    body = " ".join(evidence.text).lower()
+    return evidence.marked or any(phrase in body for phrase in (
+        "访问过于频繁", "访问频繁", "请稍后重试", "too many requests", "access denied",
+    ))
+
+
+def concept_members_observation(
+    code: str, session: requests.Session | None = None,
+) -> dict:
+    """Collect one board with source-bound, JSON-serializable observation evidence.
+
+    States are complete_nonempty, partial, failed and uncovered. Only
+    complete_nonempty is currently qualified. The incumbent source exposes no
+    verified zero-member count/publication-time field: a first empty table is
+    uncovered, never an invented complete_empty marker, and source_asof is typed
+    unknown. A valid empty terminal table AFTER member pages ends a nonempty
+    pagination; missing/interstitial tables do not. Qualification also requires
+    explicit source table end tags: parser recovery is partial evidence. Check all
+    tables because pandas can skip hidden tables when selecting the member table.
+    Parse hidden candidates too; multiple member-shaped tables or explicit source
+    error/challenge evidence leave recovered facts unqualified. Even a short
+    nonempty page cannot end pagination when every member was already seen.
+
+    Counts describe parsed source rows, not price/measurement coverage. Partial
+    facts are retained only in this return, with qualified=False. Response digests
+    bind actual bodies and final board/page URLs; no cookies/headers are copied.
+    observation_id excludes collection clocks and binds the exact observed
+    responses/outcome. It is not first acceptance, a PIT append, or a rights grant.
     """
-    s = session or _session()
-    out: list[dict] = []
+    board = str(code).strip() if code is not None else None
+    result = {
+        "schema": COLLECTION_OBSERVATION_SCHEMA,
+        "source": "q.10jqka.com.cn",
+        "board_id": board,
+        "started_at": _collection_clock(),
+        "finished_at": None,
+        "source_asof": None,
+        "source_asof_status": "unknown",
+        "state": "uncovered",
+        "qualified": False,
+        "reason": None,
+        "completion_basis": None,
+        "members": [],
+        "responses": [],
+        "errors": [],
+        "coverage": {"pages_parsed": 0, "rows_parsed": 0,
+                     "unique_members": 0, "duplicate_members": 0,
+                     "expected_members": None},
+        "observation_id": None,
+    }
+
+    def finish(state: str, reason: str | None, basis: str | None = None) -> dict:
+        result.update(state=state, reason=reason, completion_basis=basis,
+                      qualified=state == "complete_nonempty",
+                      finished_at=_collection_clock())
+        result["coverage"]["unique_members"] = len(result["members"])
+        if result["responses"]:
+            identity = {field: result[field] for field in (
+                "schema", "source", "board_id", "source_asof", "source_asof_status",
+                "state", "reason", "completion_basis", "members",
+            )}
+            # A failed preliminary retry is audit evidence, not a different
+            # successful source population. Keep its trace in the return only.
+            identity["responses"] = [
+                {field: value for field, value in receipt.items() if field != "attempt"}
+                for receipt in result["responses"]
+                if not result["qualified"] or receipt["status_code"] == 200
+            ]
+            payload = json.dumps(identity, ensure_ascii=False, sort_keys=True,
+                                 separators=(",", ":")).encode("utf-8")
+            result["observation_id"] = "ths-collection:" + hashlib.sha256(payload).hexdigest()
+        return result
+
+    def refused(reason: str, *, uncovered: bool = False) -> dict:
+        return finish("partial" if result["members"] else
+                      ("uncovered" if uncovered else "failed"), reason)
+
+    if board is None or re.fullmatch(r"[0-9]{6}", board) is None:
+        return refused("invalid_board_id", uncovered=True)
+    try:
+        s = session if session is not None else _session()
+    except Exception as exc:  # noqa: BLE001 — no source response was observed
+        result["errors"].append({"kind": type(exc).__name__, "page": None})
+        return refused("session_unavailable")
+
     seen: set[str] = set()
     for pg in range(1, _MAX_PAGES + 1):
-        url = f"https://q.10jqka.com.cn/gn/detail/order/desc/page/{pg}/ajax/1/code/{code}/"
-        # THS invalidates the anti-scrape `v` cookie partway through a deep board (a 401 mid-
-        # pagination), which the adapter's Retry doesn't cover. Mint a FRESH cookie+session and
-        # retry the page once before giving up — this pushes past the mid-board 401 to the real
-        # end instead of truncating wherever the first 401 lands.
-        r = None
+        url = _member_url(board, pg)
+        response = None
         for attempt in range(2):
             try:
-                r = s.get(url, timeout=25)
-            except Exception as e:  # noqa: BLE001 — Retry exhausted (SSL drop etc.)
-                if attempt == 0:
-                    s = _session(); time.sleep(1.5); continue
-                raise ThsTruncated(f"{code} page {pg} fetch failed: {e}") from e
-            if r.status_code == 200:
-                break
-            if attempt == 0:                          # anti-scrape block → fresh cookie, retry once
-                s = _session(); time.sleep(1.5); continue
-            raise ThsTruncated(f"{code} page {pg} → HTTP {r.status_code}")
+                response = s.get(url, timeout=25)
+            except Exception as exc:  # noqa: BLE001 — preserve source failure as failure
+                result["errors"].append({"kind": type(exc).__name__, "page": pg,
+                                         "attempt": attempt + 1})
+                if attempt:
+                    return refused("fetch_failed")
+            else:
+                # requests supplies exact response bytes. A text-only compatibility
+                # response has a separately named UTF-8 digest basis, never raw-byte proof.
+                raw = getattr(response, "content", None)
+                if isinstance(raw, bytes):
+                    digest_basis = "response.content"
+                else:
+                    raw = response.text.encode("utf-8")
+                    digest_basis = "response.text:utf8"
+                result["responses"].append({
+                    "page": pg, "attempt": attempt + 1, "requested_url": url,
+                    "response_url": getattr(response, "url", None),
+                    "status_code": response.status_code,
+                    "body_sha256": hashlib.sha256(raw).hexdigest(),
+                    "body_bytes": len(raw), "digest_basis": digest_basis,
+                    "member_table_closed": None, "member_table_count": None,
+                    "source_error": None,
+                })
+                if response.status_code == 200:
+                    break
+                if attempt:
+                    return refused("http_failure")
+            try:
+                # Preserve the existing one fresh-cookie/session retry, not another
+                # retry scheduler. Tests supply an offline session for this seam.
+                s = _session()
+                time.sleep(1.5)
+            except Exception as exc:  # noqa: BLE001
+                result["errors"].append({"kind": type(exc).__name__, "page": pg})
+                return refused("session_unavailable")
+
+        final_url = getattr(response, "url", None)
+        if not isinstance(final_url, str) or not final_url:
+            return refused("response_identity_unknown", uncovered=True)
         try:
-            tbl = pd.read_html(StringIO(r.text))[0]
+            actual, expected = urlsplit(final_url), urlsplit(url)
+            matches = (actual.scheme == expected.scheme
+                       and actual.netloc == expected.netloc and actual.path == expected.path
+                       and actual.query == expected.query and actual.fragment == expected.fragment)
         except ValueError:
-            if pg == 1:  # page 1 with no table = throttle/interstitial, NOT an empty board
-                raise ThsTruncated(f"{code} page 1 returned no table (throttle/interstitial)")
-            break  # no table past the last page → natural end
-        cols = {str(c) for c in tbl.columns}
-        if "代码" not in cols or "名称" not in cols:
-            if pg == 1:
-                raise ThsTruncated(f"{code} page 1 had unexpected columns {sorted(cols)[:6]}")
-            break  # a trailing non-member table → natural end
+            matches = False
+        if not matches:
+            return refused("response_identity_mismatch", uncovered=True)
+        table_closed = _member_table_closed(response.text)
+        source_error = _member_response_has_error(response.text)
+        result["responses"][-1].update(member_table_closed=table_closed,
+                                       source_error=source_error)
+        try:
+            tables = pd.read_html(StringIO(response.text), displayed_only=False)
+        except Exception as exc:  # noqa: BLE001 — no table is not an end-page proof
+            result["errors"].append({"kind": type(exc).__name__, "page": pg})
+            return refused("member_table_parse_failed")
+        result["coverage"]["pages_parsed"] += 1
+        result["coverage"]["rows_parsed"] += sum(len(table) for table in tables)
+        candidates = [table for table in tables
+                      if {"代码", "名称"}.issubset({str(c) for c in table.columns})]
+        result["responses"][-1]["member_table_count"] = len(candidates)
+        if not candidates:
+            return refused("member_columns_invalid")
+        # Retain valid positive facts from every candidate, but only a unique
+        # member-shaped table can supply an authoritative pagination end.
+        ambiguous = len(candidates) != 1
+        tbl = pd.concat(candidates, ignore_index=True)
         if tbl.empty:
-            break  # empty page → natural end
+            if not table_closed:
+                return refused("member_table_unclosed")
+            if source_error:
+                return refused("source_error_response")
+            if ambiguous:
+                return refused("member_tables_ambiguous")
+            if not result["members"]:
+                return refused("empty_membership_unconfirmed", uncovered=True)
+            return finish("complete_nonempty", None, "terminal_empty_member_table")
+
+        page_members: list[dict] = []
         for _, row in tbl.iterrows():
-            t = to_suffixed(str(row["代码"]).split(".")[0])
-            if t in seen:
+            value = str(row["代码"]).strip()
+            if (pd.isna(row["代码"]) or pd.isna(row["名称"])
+                    or re.fullmatch(r"[0-9]{1,6}(?:\.0)?", value) is None
+                    or not str(row["名称"]).strip()):
+                return refused("member_identity_invalid")
+            page_members.append({"ticker": to_suffixed(value.split(".")[0]),
+                                 "name": str(row["名称"]).strip()})
+        if all(member["ticker"] in seen for member in page_members):
+            result["coverage"]["duplicate_members"] += len(page_members)
+            return refused("repeated_member_page")
+        for member in page_members:
+            if member["ticker"] in seen:
+                result["coverage"]["duplicate_members"] += 1
                 continue
-            seen.add(t)
-            out.append({"ticker": t, "name": str(row["名称"]).strip()})
+            seen.add(member["ticker"])
+            result["members"].append(member)
+        if not table_closed:
+            return refused("member_table_unclosed")
+        if source_error:
+            return refused("source_error_response")
+        if ambiguous:
+            return refused("member_tables_ambiguous")
         if len(tbl) < 10:
-            break  # last (short) page → natural end
+            return finish("complete_nonempty", None, "short_member_page")
         time.sleep(_PAGE_PAUSE)
-    else:  # loop ran all _MAX_PAGES without a natural end → suspiciously large / still paging
-        raise ThsTruncated(f"{code} exceeded _MAX_PAGES={_MAX_PAGES} with no end page")
-    return out
+    return refused("page_ceiling_without_end")
+
+
+def concept_members(code: str, session: requests.Session | None = None) -> list[dict]:
+    """Compatibility list API: complete positive members or an unresolved empty list.
+
+    Unqualified empty membership remains [] for the existing snapshot caller,
+    which already discards it. Partial/failed/unbound responses raise ThsTruncated;
+    a missing later page can no longer silently qualify previously collected rows.
+    """
+    observation = concept_members_observation(code, session)
+    if observation["qualified"] or observation["reason"] == "empty_membership_unconfirmed":
+        return observation["members"]
+    raise ThsTruncated(f"{code}: {observation['reason']}")
 
 
 def snapshot(theme_names: list[str], as_of: str | None = None,

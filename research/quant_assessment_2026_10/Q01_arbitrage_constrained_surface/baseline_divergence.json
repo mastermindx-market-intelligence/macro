@@ -1,0 +1,461 @@
+{
+ "chain_asof_stamps": {
+  "2026-06-15": [
+   "2026-06-15 00:00:00"
+  ],
+  "2026-06-17": [
+   "2026-06-17 00:00:00"
+  ],
+  "2026-06-18": [
+   "2026-06-18 00:00:00"
+  ],
+  "2026-06-24": [
+   "2026-06-24 00:00:00"
+  ],
+  "2026-06-26": [
+   "2026-06-26 00:00:00"
+  ],
+  "2026-06-30": [
+   "2026-06-30 00:00:00"
+  ],
+  "2026-07-01": [
+   "2026-07-01 00:00:00"
+  ],
+  "2026-07-02": [
+   "2026-07-02 00:00:00"
+  ],
+  "2026-07-07": [
+   "2026-07-07 00:00:00"
+  ],
+  "2026-07-08": [
+   "2026-07-08 00:00:00"
+  ],
+  "2026-07-09": [
+   "2026-07-09 00:00:00"
+  ],
+  "2026-07-10": [
+   "2026-07-10 00:00:00"
+  ],
+  "2026-07-13": [
+   "2026-07-13 00:00:00"
+  ],
+  "2026-07-15": [
+   "2026-07-15 00:00:00"
+  ],
+  "2026-07-17": [
+   "2026-07-17 00:00:00"
+  ],
+  "2026-07-20": [
+   "2026-07-20 00:00:00"
+  ],
+  "2026-07-21": [
+   "2026-07-21 00:00:00"
+  ],
+  "2026-07-22": [
+   "2026-07-22 00:00:00"
+  ],
+  "2026-07-23": [
+   "2026-07-23 00:00:00"
+  ],
+  "2026-07-24": [
+   "2026-07-24 00:00:00"
+  ],
+  "2026-07-27": [
+   "2026-07-27 00:00:00"
+  ],
+  "2026-07-28": [
+   "2026-07-28 00:00:00"
+  ],
+  "2026-07-29": [
+   "2026-07-29 00:00:00"
+  ],
+  "2026-07-30": [
+   "2026-07-30 00:00:00"
+  ],
+  "2026-08-06": [
+   "2026-08-06 00:00:00"
+  ],
+  "2026-08-10": [
+   "2026-08-10 00:00:00"
+  ],
+  "2026-08-12": [
+   "2026-08-12 00:00:00"
+  ],
+  "2026-08-13": [
+   "2026-08-13 00:00:00"
+  ]
+ },
+ "fields": [
+  "otm_put_iv",
+  "atm_call_iv",
+  "skew",
+  "spot",
+  "tenor_days",
+  "n_strikes"
+ ],
+ "label": "post-run diagnostic of evaluate.py run 1 S1; not an evaluation run or trial",
+ "per_snapshot_date": [
+  {
+   "best_chain_date": null,
+   "chain_asof_stamps_same_date": [
+    "2026-06-24 00:00:00"
+   ],
+   "exact_matches_vs_best_chain": 0,
+   "exact_matches_vs_previous_declared_chain": 0,
+   "exact_matches_vs_same_date_chain": 0,
+   "n_snapshot_asof_stamps": 1,
+   "previous_declared_chain_date": "2026-06-18",
+   "same_date_mismatch_rows_spot_equal": 0,
+   "same_date_mismatch_rows_with_spot_difference": 4,
+   "snapshot_asof_stamps": [
+    "2026-06-24"
+   ],
+   "snapshot_date": "2026-06-24",
+   "snapshot_rows": 4
+  },
+  {
+   "best_chain_date": null,
+   "chain_asof_stamps_same_date": [
+    "2026-06-26 00:00:00"
+   ],
+   "exact_matches_vs_best_chain": 0,
+   "exact_matches_vs_previous_declared_chain": 0,
+   "exact_matches_vs_same_date_chain": 0,
+   "n_snapshot_asof_stamps": 1,
+   "previous_declared_chain_date": "2026-06-24",
+   "same_date_mismatch_rows_spot_equal": 0,
+   "same_date_mismatch_rows_with_spot_difference": 4,
+   "snapshot_asof_stamps": [
+    "2026-06-26"
+   ],
+   "snapshot_date": "2026-06-26",
+   "snapshot_rows": 4
+  },
+  {
+   "best_chain_date": null,
+   "chain_asof_stamps_same_date": [
+    "2026-06-30 00:00:00"
+   ],
+   "exact_matches_vs_best_chain": 0,
+   "exact_matches_vs_previous_declared_chain": 0,
+   "exact_matches_vs_same_date_chain": 0,
+   "n_snapshot_asof_stamps": 1,
+   "previous_declared_chain_date": "2026-06-26",
+   "same_date_mismatch_rows_spot_equal": 0,
+   "same_date_mismatch_rows_with_spot_difference": 4,
+   "snapshot_asof_stamps": [
+    "2026-06-30"
+   ],
+   "snapshot_date": "2026-06-30",
+   "snapshot_rows": 4
+  },
+  {
+   "best_chain_date": null,
+   "chain_asof_stamps_same_date": [
+    "2026-07-01 00:00:00"
+   ],
+   "exact_matches_vs_best_chain": 0,
+   "exact_matches_vs_previous_declared_chain": 0,
+   "exact_matches_vs_same_date_chain": 0,
+   "n_snapshot_asof_stamps": 1,
+   "previous_declared_chain_date": "2026-06-30",
+   "same_date_mismatch_rows_spot_equal": 2,
+   "same_date_mismatch_rows_with_spot_difference": 3,
+   "snapshot_asof_stamps": [
+    "2026-07-01"
+   ],
+   "snapshot_date": "2026-07-01",
+   "snapshot_rows": 6
+  },
+  {
+   "best_chain_date": "2026-07-01",
+   "chain_asof_stamps_same_date": [
+    "2026-07-02 00:00:00"
+   ],
+   "exact_matches_vs_best_chain": 5,
+   "exact_matches_vs_previous_declared_chain": 5,
+   "exact_matches_vs_same_date_chain": 0,
+   "n_snapshot_asof_stamps": 1,
+   "previous_declared_chain_date": "2026-07-01",
+   "same_date_mismatch_rows_spot_equal": 0,
+   "same_date_mismatch_rows_with_spot_difference": 0,
+   "snapshot_asof_stamps": [
+    "2026-07-02"
+   ],
+   "snapshot_date": "2026-07-02",
+   "snapshot_rows": 5
+  },
+  {
+   "best_chain_date": null,
+   "chain_asof_stamps_same_date": [
+    "2026-07-07 00:00:00"
+   ],
+   "exact_matches_vs_best_chain": 0,
+   "exact_matches_vs_previous_declared_chain": 0,
+   "exact_matches_vs_same_date_chain": 0,
+   "n_snapshot_asof_stamps": 1,
+   "previous_declared_chain_date": "2026-07-02",
+   "same_date_mismatch_rows_spot_equal": 0,
+   "same_date_mismatch_rows_with_spot_difference": 229,
+   "snapshot_asof_stamps": [
+    "2026-07-07"
+   ],
+   "snapshot_date": "2026-07-07",
+   "snapshot_rows": 229
+  },
+  {
+   "best_chain_date": "2026-07-09",
+   "chain_asof_stamps_same_date": [
+    "2026-07-10 00:00:00"
+   ],
+   "exact_matches_vs_best_chain": 288,
+   "exact_matches_vs_previous_declared_chain": 288,
+   "exact_matches_vs_same_date_chain": 0,
+   "n_snapshot_asof_stamps": 1,
+   "previous_declared_chain_date": "2026-07-09",
+   "same_date_mismatch_rows_spot_equal": 1,
+   "same_date_mismatch_rows_with_spot_difference": 286,
+   "snapshot_asof_stamps": [
+    "2026-07-10"
+   ],
+   "snapshot_date": "2026-07-10",
+   "snapshot_rows": 288
+  },
+  {
+   "best_chain_date": null,
+   "chain_asof_stamps_same_date": [
+    "2026-07-13 00:00:00"
+   ],
+   "exact_matches_vs_best_chain": 0,
+   "exact_matches_vs_previous_declared_chain": 0,
+   "exact_matches_vs_same_date_chain": 0,
+   "n_snapshot_asof_stamps": 1,
+   "previous_declared_chain_date": "2026-07-10",
+   "same_date_mismatch_rows_spot_equal": 1,
+   "same_date_mismatch_rows_with_spot_difference": 326,
+   "snapshot_asof_stamps": [
+    "2026-07-13"
+   ],
+   "snapshot_date": "2026-07-13",
+   "snapshot_rows": 327
+  },
+  {
+   "best_chain_date": null,
+   "chain_asof_stamps_same_date": [
+    "2026-07-20 00:00:00"
+   ],
+   "exact_matches_vs_best_chain": 0,
+   "exact_matches_vs_previous_declared_chain": 0,
+   "exact_matches_vs_same_date_chain": 0,
+   "n_snapshot_asof_stamps": 1,
+   "previous_declared_chain_date": "2026-07-17",
+   "same_date_mismatch_rows_spot_equal": 1,
+   "same_date_mismatch_rows_with_spot_difference": 328,
+   "snapshot_asof_stamps": [
+    "2026-07-20"
+   ],
+   "snapshot_date": "2026-07-20",
+   "snapshot_rows": 329
+  },
+  {
+   "best_chain_date": "2026-07-20",
+   "chain_asof_stamps_same_date": [
+    "2026-07-21 00:00:00"
+   ],
+   "exact_matches_vs_best_chain": 330,
+   "exact_matches_vs_previous_declared_chain": 330,
+   "exact_matches_vs_same_date_chain": 0,
+   "n_snapshot_asof_stamps": 1,
+   "previous_declared_chain_date": "2026-07-20",
+   "same_date_mismatch_rows_spot_equal": 0,
+   "same_date_mismatch_rows_with_spot_difference": 330,
+   "snapshot_asof_stamps": [
+    "2026-07-21"
+   ],
+   "snapshot_date": "2026-07-21",
+   "snapshot_rows": 330
+  },
+  {
+   "best_chain_date": "2026-07-21",
+   "chain_asof_stamps_same_date": [
+    "2026-07-22 00:00:00"
+   ],
+   "exact_matches_vs_best_chain": 330,
+   "exact_matches_vs_previous_declared_chain": 330,
+   "exact_matches_vs_same_date_chain": 0,
+   "n_snapshot_asof_stamps": 1,
+   "previous_declared_chain_date": "2026-07-21",
+   "same_date_mismatch_rows_spot_equal": 2,
+   "same_date_mismatch_rows_with_spot_difference": 328,
+   "snapshot_asof_stamps": [
+    "2026-07-22"
+   ],
+   "snapshot_date": "2026-07-22",
+   "snapshot_rows": 330
+  },
+  {
+   "best_chain_date": null,
+   "chain_asof_stamps_same_date": [
+    "2026-07-27 00:00:00"
+   ],
+   "exact_matches_vs_best_chain": 0,
+   "exact_matches_vs_previous_declared_chain": 0,
+   "exact_matches_vs_same_date_chain": 0,
+   "n_snapshot_asof_stamps": 1,
+   "previous_declared_chain_date": "2026-07-24",
+   "same_date_mismatch_rows_spot_equal": 1,
+   "same_date_mismatch_rows_with_spot_difference": 329,
+   "snapshot_asof_stamps": [
+    "2026-07-27"
+   ],
+   "snapshot_date": "2026-07-27",
+   "snapshot_rows": 330
+  },
+  {
+   "best_chain_date": "2026-07-27",
+   "chain_asof_stamps_same_date": [
+    "2026-07-28 00:00:00"
+   ],
+   "exact_matches_vs_best_chain": 331,
+   "exact_matches_vs_previous_declared_chain": 331,
+   "exact_matches_vs_same_date_chain": 0,
+   "n_snapshot_asof_stamps": 1,
+   "previous_declared_chain_date": "2026-07-27",
+   "same_date_mismatch_rows_spot_equal": 0,
+   "same_date_mismatch_rows_with_spot_difference": 331,
+   "snapshot_asof_stamps": [
+    "2026-07-28"
+   ],
+   "snapshot_date": "2026-07-28",
+   "snapshot_rows": 331
+  },
+  {
+   "best_chain_date": "2026-07-28",
+   "chain_asof_stamps_same_date": [
+    "2026-07-29 00:00:00"
+   ],
+   "exact_matches_vs_best_chain": 331,
+   "exact_matches_vs_previous_declared_chain": 331,
+   "exact_matches_vs_same_date_chain": 0,
+   "n_snapshot_asof_stamps": 1,
+   "previous_declared_chain_date": "2026-07-28",
+   "same_date_mismatch_rows_spot_equal": 1,
+   "same_date_mismatch_rows_with_spot_difference": 330,
+   "snapshot_asof_stamps": [
+    "2026-07-29"
+   ],
+   "snapshot_date": "2026-07-29",
+   "snapshot_rows": 331
+  },
+  {
+   "best_chain_date": "2026-07-29",
+   "chain_asof_stamps_same_date": [
+    "2026-07-30 00:00:00"
+   ],
+   "exact_matches_vs_best_chain": 331,
+   "exact_matches_vs_previous_declared_chain": 331,
+   "exact_matches_vs_same_date_chain": 0,
+   "n_snapshot_asof_stamps": 1,
+   "previous_declared_chain_date": "2026-07-29",
+   "same_date_mismatch_rows_spot_equal": 1,
+   "same_date_mismatch_rows_with_spot_difference": 330,
+   "snapshot_asof_stamps": [
+    "2026-07-30"
+   ],
+   "snapshot_date": "2026-07-30",
+   "snapshot_rows": 331
+  },
+  {
+   "best_chain_date": null,
+   "chain_asof_stamps_same_date": [
+    "2026-08-06 00:00:00"
+   ],
+   "exact_matches_vs_best_chain": 0,
+   "exact_matches_vs_previous_declared_chain": 0,
+   "exact_matches_vs_same_date_chain": 0,
+   "n_snapshot_asof_stamps": 1,
+   "previous_declared_chain_date": "2026-07-30",
+   "same_date_mismatch_rows_spot_equal": 0,
+   "same_date_mismatch_rows_with_spot_difference": 330,
+   "snapshot_asof_stamps": [
+    "2026-08-06"
+   ],
+   "snapshot_date": "2026-08-06",
+   "snapshot_rows": 331
+  },
+  {
+   "best_chain_date": "2026-08-12",
+   "chain_asof_stamps_same_date": [
+    "2026-08-12 00:00:00"
+   ],
+   "exact_matches_vs_best_chain": 331,
+   "exact_matches_vs_previous_declared_chain": 0,
+   "exact_matches_vs_same_date_chain": 331,
+   "n_snapshot_asof_stamps": 1,
+   "previous_declared_chain_date": "2026-08-10",
+   "same_date_mismatch_rows_spot_equal": 0,
+   "same_date_mismatch_rows_with_spot_difference": 0,
+   "snapshot_asof_stamps": [
+    "2026-08-12"
+   ],
+   "snapshot_date": "2026-08-12",
+   "snapshot_rows": 331
+  },
+  {
+   "best_chain_date": "2026-08-13",
+   "chain_asof_stamps_same_date": [
+    "2026-08-13 00:00:00"
+   ],
+   "exact_matches_vs_best_chain": 330,
+   "exact_matches_vs_previous_declared_chain": 0,
+   "exact_matches_vs_same_date_chain": 330,
+   "n_snapshot_asof_stamps": 1,
+   "previous_declared_chain_date": "2026-08-12",
+   "same_date_mismatch_rows_spot_equal": 0,
+   "same_date_mismatch_rows_with_spot_difference": 0,
+   "snapshot_asof_stamps": [
+    "2026-08-13"
+   ],
+   "snapshot_date": "2026-08-13",
+   "snapshot_rows": 330
+  }
+ ],
+ "summary": {
+  "previous_declared_exact": {
+   "dates": [
+    "2026-07-02",
+    "2026-07-10",
+    "2026-07-21",
+    "2026-07-22",
+    "2026-07-28",
+    "2026-07-29",
+    "2026-07-30"
+   ],
+   "rows": 1946
+  },
+  "same_date_exact": {
+   "dates": [
+    "2026-08-12",
+    "2026-08-13"
+   ],
+   "rows": 661
+  },
+  "snapshot_dates": 18,
+  "snapshot_rows": 4171,
+  "unexplained_by_declared_inputs": {
+   "dates": [
+    "2026-06-24",
+    "2026-06-26",
+    "2026-06-30",
+    "2026-07-01",
+    "2026-07-07",
+    "2026-07-13",
+    "2026-07-20",
+    "2026-07-27",
+    "2026-08-06"
+   ],
+   "rows": 1564
+  }
+ },
+ "tolerance_abs": 1e-09
+}

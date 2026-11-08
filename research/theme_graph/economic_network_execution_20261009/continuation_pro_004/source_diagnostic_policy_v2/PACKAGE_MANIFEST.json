@@ -1,0 +1,72 @@
+{
+  "actual_issuer_selection": null,
+  "actual_population_cardinality": null,
+  "created_at_utc": "2026-10-09T11:54:52.340208+00:00",
+  "files": [
+    {
+      "bytes": 7851,
+      "path": "ARTIFACT_VALIDATION.json",
+      "sha256": "4c5deb03a3a3eab6d19688ceda009fb860c217f63ba046cb91713be181a1e762"
+    },
+    {
+      "bytes": 12822,
+      "path": "CORRECTION_CHANGELOG.md",
+      "sha256": "f47d8a11ec88d724375e5e7d71a4baffe7b8f94962a3825f23fa1e4e2d2bd387"
+    },
+    {
+      "bytes": 8698,
+      "path": "PRESERVATION_BASELINE.json",
+      "sha256": "0fa2acfd8f7e9b4e0233390312d6268b376485e912679a3b10a9332e9104cf31"
+    },
+    {
+      "bytes": 15881,
+      "path": "PRIMARY_SOURCE_REGISTER.json",
+      "sha256": "cf2521ad18316785ecd48c34cbdd132ab4606214041132548b0ff4898cfa2b43"
+    },
+    {
+      "bytes": 60312,
+      "path": "RECOMMENDED_SELECTION_POLICY.json",
+      "sha256": "d41422d76219b1c5d3a3c9cbb19a1bc3124433031200b09499033bd4dc30d522"
+    },
+    {
+      "bytes": 58436,
+      "path": "SELECTION_POLICY_ADJUDICATION_MEMO.md",
+      "sha256": "4d322ba08f488c6b4b71f22899416b4cb412f951dc893c4145f43796126fea29"
+    },
+    {
+      "bytes": 3091,
+      "path": "SOURCE_PROVENANCE.json",
+      "sha256": "8bfc98191e50e1b8a7b0158c36e3443e05a9515c600037fa9b6a5179264f4f6b"
+    },
+    {
+      "bytes": 2827,
+      "path": "SYNTHETIC_METHOD_CHECKS.json",
+      "sha256": "6f2b8e7f5ca4dfdf6595286711601dde00e47e53229187f332e0cf5c598f3281"
+    },
+    {
+      "bytes": 10875,
+      "path": "SYNTHETIC_METHOD_CHECKS.py",
+      "sha256": "c075fe80d9f30f2492889eb5b4e799878a250c56353cf3113c73f8f0904a8107"
+    }
+  ],
+  "manifest_self_excluded": true,
+  "member_bytes_excluding_manifest": 180793,
+  "native_app_Git_provider_effects": false,
+  "package_file_count_including_manifest": 10,
+  "policy_id": "GMI-WP02-RELATIVE-SOURCE-DIAGNOSTIC-20261009-v2",
+  "predictive_admission": false,
+  "prior_frozen_files_verified_unchanged": 36,
+  "prior_initial_review_verdict_preserved": "REQUEST_CHANGES_TWO_P2_INPUT_CONTRACT_GAPS",
+  "production_admission": false,
+  "remaining_owner_gates": [
+    "Independent corrective review of these exact bytes",
+    "Principal A01/A02/A03 policy adoption",
+    "Principal selection and authentication of existing source-owner review/admission receipt interface",
+    "Lawful, authenticated historical frame and resolved component sourcing for all42pools",
+    "Any later bounded selector implementation and real cohort freeze"
+  ],
+  "schema": "research.gmi.wp02.selection_policy_package_manifest/v2",
+  "source_scope": "Nineteen-entry v1 primary source register copied byte-exact; frozen independent review records read, with no new external retrieval or raw-source byte claim.",
+  "status": "FROZEN_AUTHOR_CORRECTION_INDEPENDENT_REVIEW_AND_ADOPTION_PENDING",
+  "validation_scope": "Structural artifact, exact delta/preservation and embedded synthetic controls only; no independent corrective approval or real-source proof."
+}
