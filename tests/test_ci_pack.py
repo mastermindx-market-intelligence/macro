@@ -5611,7 +5611,7 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
     ("templates/index.html", 137, 5_920),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_941),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_946),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 131, 5_678),
 )
 # Twelve packs per shape was the pre-curation measurement.
@@ -5620,6 +5620,21 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-08 (PR #10851, unified news provenance test enrollment):
+    Hosted contract-delta run 42463005182 / job 128676249618 at head 7b860d86,
+    tested against base 14fd85ad, measured free-content at 137 jobs / 5946
+    weight-seconds / 10 packs versus base 137 / 5941 / 10, with no newly
+    selected jobs. Index stayed 137 / 5920 / 10 and Prophet 131 / 5678 / 10.
+    The existing ticker-news-qbus owner now also runs the two intelligence
+    suites in one separate command: commands 2->3, explicit test paths 51->53,
+    command characters 2041->2130; the unchanged estimator is 106->111.
+    Account for exactly that measured +5 on the free-content weight ceiling.
+    Preserve every job-count and pack bound, selector, suite, assertion,
+    timeout and admission rule. Four actual builder input reads are added
+    to the same owner's declared closure; no new runner or owner is added.
+    These are planner weights, not elapsed runtime or production acceptance.
+    Natural new-head CI must validate the full composition.
 
     2026-11-08 (PR #7352, current-main shared-CI conflict repair):
     preserve the accepted research-intelligence model benchmark source and its

@@ -44278,6 +44278,11 @@ jobs:
       - "engine/intelligence.py"
       - "tests/test_intelligence.py"
       - "tests/test_intelligence_news_freshness.py"
+      # Unified builder's paired input documents are real read dependencies.
+      - "site/altdata/by_ticker.json"
+      - "site/altdata/mastermind.json"
+      - "site/basketdata/radar_ticker.json"
+      - "site/news/by_ticker.json"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
