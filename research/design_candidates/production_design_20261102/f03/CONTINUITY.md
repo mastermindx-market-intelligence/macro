@@ -1,8 +1,18 @@
 # F03 — recoverable implementation frontier
 
-F03 continues under original programme Draft [#10617](https://github.com/mastermindx-market-intelligence/macro/pull/10617) and existing Draft [#10631](https://github.com/mastermindx-market-intelligence/macro/pull/10631). This is not a new registry, workstream, runtime grant or file-wide lease. The current receiving session owns recovery; an archived chat is not a dependency.
+Historical records identify programme Draft [#10617](https://github.com/mastermindx-market-intelligence/macro/pull/10617) and F03 Draft/HOLD [#10631](https://github.com/mastermindx-market-intelligence/macro/pull/10631). The F03 source branch is verified; a current live PR identity for that branch is not established. Preserve the recorded HOLD rather than treating the historical PR link as a current receipt. This is not a new registry, workstream, runtime grant or file-wide lease. The assigned session owns recovery; an archived chat is not a dependency.
 
-## Latest actionable frontier — portfolio and Guide proposal discovery, 2026-11-08
+## Latest actionable frontier — Watchlist/Crypto notes saved, generated refresh pending, 2026-11-08
+
+The bounded D23 and D18 proposals now have authored [Watchlist](evidence/d23-watchlist-reference-observation-20261108.md) and [Crypto](evidence/d18-crypto-reference-observation-20261108.md) observations, [exact native readback](evidence/watchlist-crypto-reference-readback-20261108.json) and a [prior-fourteen preservation baseline](evidence/watchlist-crypto-reference-baseline-20261108.json). Native readback completed 2026-11-08T21:45:27Z; all seven final exports remain exact. No native edits, account endpoints, resource actions or product releases occurred.
+
+The directory, both curation mirrors, all generated assignments/data, existing tools and frozen inventories are unchanged from `9be3e7a68722b9a738ddd8d78c0eb920330e6c7b`. The generated count remains **fourteen**, not sixteen. Existing passing totals **191 / 98 / 26** belong to that unchanged generated state; they were not rerun in this authored-note phase.
+
+Local exec transport remains unavailable. Read-only Studio repository/config discovery returned READY repository bindings but `admission_evaluated=false`; no remote host command, workspace acquisition, host rebinding or dispatch was performed. That discovery is not execution permission. GitHub-native source publication and Paper-native design work remain available. The next F03 integration requires a usable, authorized existing build/verification path; no dummy writes, generated-output hand edits, denied-effect rerouting or new runner is justified by the outage.
+
+After note publication and exact readback, use their actual commit/blob identities in the existing return model only when the existing Python refresh and affected verification can be run. Preserve all prior fourteen return objects/timestamps, null approval/Read me meanings, source/runtime distinctions, original warned-file restrictions and all existing release holds. Continue independent native design work while this source verification path is diagnosed.
+
+## Retained preceding generated phase — portfolio and Guide proposal discovery, 2026-11-08
 
 D22 and D25 are now connected through the existing F03 return-observation model. Their two observation notes, exact native metadata, preservation baseline, Guide JSX and four native Guide captures were published and read back at `aca1d87854bfc643f5a01f0892b383ebc8baf6d6` before curation used the actual note commits and blobs. The audit companion uses those source identities without predicting its own commit.
 

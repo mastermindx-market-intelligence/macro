@@ -1,0 +1,1122 @@
+{
+  "kind": "F03_watchlist_crypto_exact_native_observation",
+  "completed_at_utc": "2026-11-08T21:45:27Z",
+  "carrier": "Mastermind Paper paper_read",
+  "paper_edits": 0,
+  "source_base": "9be3e7a68722b9a738ddd8d78c0eb920330e6c7b",
+  "pages": [
+    {
+      "assignment": "D23",
+      "file_id": "01M6Y309YH7PJZMF23R7EDH3CM",
+      "snapshot_guard": "4b4a7273f542af5281434468736b43d1718ecd24be451ce29dd2d1975d06aa42",
+      "metadata": {
+        "fileName": "Mastermind - Shared Market - Watchlists and Save States",
+        "pageName": "Proposed · Saved item to exact watchlist",
+        "pageId": "p-2-0",
+        "url": "https://app.paper.design/file/01M6Y309YH7PJZMF23R7EDH3CM/p-2-0",
+        "rootNodeId": "root_node_p-2-0",
+        "nodeCount": 295,
+        "artboardCount": 4,
+        "artboards": [
+          {
+            "id": "1IC-0",
+            "name": "01 · PROPOSED · Saved item to exact watchlist",
+            "childCount": 2,
+            "width": 1440,
+            "height": 900,
+            "worldX": -665,
+            "worldY": -3547
+          },
+          {
+            "id": "1S5-0",
+            "name": "02 · PROPOSED · Watchlist read states · EN/ZH",
+            "childCount": 2,
+            "width": 1440,
+            "height": 900,
+            "worldX": -2185,
+            "worldY": -2567
+          },
+          {
+            "id": "22L-0",
+            "name": "03 · PROPOSED · Watchlist context · EN/ZH",
+            "childCount": 2,
+            "width": 1440,
+            "height": 900,
+            "worldX": 855,
+            "worldY": -3547
+          },
+          {
+            "id": "2D4-0",
+            "name": "04 · D23 · Source contract & unbound destination",
+            "childCount": 2,
+            "width": 1440,
+            "height": 900,
+            "worldX": 2375,
+            "worldY": -3547
+          }
+        ],
+        "pages": [
+          {
+            "type": "page",
+            "id": "p-1-0",
+            "name": "Shared Market · Watchlists + Save States · Reference",
+            "icon": "design",
+            "isActive": true
+          },
+          {
+            "type": "page",
+            "id": "p-2-0",
+            "name": "Proposed · Saved item to exact watchlist",
+            "icon": "design",
+            "isActive": false
+          }
+        ],
+        "fontFamilies": [
+          "Inter",
+          "System Sans-Serif",
+          "PingFang SC"
+        ],
+        "tokens": {
+          "items": [
+            {
+              "name": "--mx-dark-bg",
+              "value": "#0F1115"
+            },
+            {
+              "name": "--mx-dark-panel",
+              "value": "#181B21"
+            },
+            {
+              "name": "--mx-dark-panel2",
+              "value": "#1E222A"
+            },
+            {
+              "name": "--mx-dark-text",
+              "value": "#D7DCE3"
+            },
+            {
+              "name": "--mx-dark-muted",
+              "value": "#8B93A1"
+            },
+            {
+              "name": "--mx-dark-line",
+              "value": "#3A4150"
+            },
+            {
+              "name": "--mx-dark-up",
+              "value": "#45B873"
+            },
+            {
+              "name": "--mx-dark-down",
+              "value": "#E06464"
+            },
+            {
+              "name": "--mx-dark-warn",
+              "value": "#E0A030"
+            },
+            {
+              "name": "--mx-dark-act",
+              "value": "#E05555"
+            },
+            {
+              "name": "--mx-dark-ok",
+              "value": "#3DA564"
+            },
+            {
+              "name": "--mx-dark-info",
+              "value": "#5B9BF0"
+            },
+            {
+              "name": "--mx-dark-link",
+              "value": "#7AA7E0"
+            },
+            {
+              "name": "--mx-dark-orange",
+              "value": "#E08B45"
+            },
+            {
+              "name": "--mx-light-bg",
+              "value": "#F7F8FA"
+            },
+            {
+              "name": "--mx-light-panel",
+              "value": "#FFFFFF"
+            },
+            {
+              "name": "--mx-light-panel2",
+              "value": "#EEF1F6"
+            },
+            {
+              "name": "--mx-light-text",
+              "value": "#1C2430"
+            },
+            {
+              "name": "--mx-light-muted",
+              "value": "#5D6B7E"
+            },
+            {
+              "name": "--mx-light-line",
+              "value": "#C9CCD1"
+            },
+            {
+              "name": "--mx-light-up",
+              "value": "#1F9A55"
+            },
+            {
+              "name": "--mx-light-down",
+              "value": "#CF4040"
+            },
+            {
+              "name": "--mx-light-warn",
+              "value": "#B9791A"
+            },
+            {
+              "name": "--mx-light-act",
+              "value": "#C43D3D"
+            },
+            {
+              "name": "--mx-light-ok",
+              "value": "#2F8A52"
+            },
+            {
+              "name": "--mx-light-info",
+              "value": "#285FFF"
+            },
+            {
+              "name": "--mx-light-link",
+              "value": "#285FFF"
+            },
+            {
+              "name": "--mx-light-orange",
+              "value": "#C4781F"
+            },
+            {
+              "name": "--mx-dark-prov",
+              "value": "#62A0E8"
+            },
+            {
+              "name": "--mx-dark-prov-ink",
+              "value": "#62A0E8"
+            },
+            {
+              "name": "--mx-dark-tier-accent",
+              "value": "#7C5CFF"
+            },
+            {
+              "name": "--mx-dark-tier-fill",
+              "value": "#6340D8"
+            },
+            {
+              "name": "--mx-dark-tier-ink",
+              "value": "#9B86FF"
+            },
+            {
+              "name": "--mx-dark-ser-1",
+              "value": "#5B9BF0"
+            },
+            {
+              "name": "--mx-dark-ser-2",
+              "value": "#D4A017"
+            },
+            {
+              "name": "--mx-dark-ser-3",
+              "value": "#0EA5E9"
+            },
+            {
+              "name": "--mx-dark-ser-4",
+              "value": "#E08B45"
+            },
+            {
+              "name": "--mx-light-prov",
+              "value": "#2F6FD0"
+            },
+            {
+              "name": "--mx-light-prov-ink",
+              "value": "#2C62B3"
+            },
+            {
+              "name": "--mx-light-tier-accent",
+              "value": "#7C5CFF"
+            },
+            {
+              "name": "--mx-light-tier-fill",
+              "value": "#6340D8"
+            },
+            {
+              "name": "--mx-light-tier-ink",
+              "value": "#5B3FC4"
+            },
+            {
+              "name": "--mx-light-ser-1",
+              "value": "#2F63C4"
+            },
+            {
+              "name": "--mx-light-ser-2",
+              "value": "#8F6A04"
+            },
+            {
+              "name": "--mx-light-ser-3",
+              "value": "#0284C7"
+            },
+            {
+              "name": "--mx-light-ser-4",
+              "value": "#B06A25"
+            },
+            {
+              "name": "--mx-light-ink-up",
+              "value": "#1E6D47"
+            },
+            {
+              "name": "--mx-light-ink-down",
+              "value": "#B23C3D"
+            },
+            {
+              "name": "--mx-light-ink-warn",
+              "value": "#7D5922"
+            },
+            {
+              "name": "--mx-light-ink-link",
+              "value": "#2758E6"
+            },
+            {
+              "name": "--noir-canvas",
+              "value": "#080808"
+            },
+            {
+              "name": "--noir-sidebar",
+              "value": "#0C0C0C"
+            },
+            {
+              "name": "--noir-panel",
+              "value": "#121212"
+            },
+            {
+              "name": "--noir-raised",
+              "value": "#191919"
+            },
+            {
+              "name": "--noir-hover",
+              "value": "#222222"
+            },
+            {
+              "name": "--noir-selected",
+              "value": "#292929"
+            },
+            {
+              "name": "--noir-text-primary",
+              "value": "#F3F3F3"
+            },
+            {
+              "name": "--noir-text-secondary",
+              "value": "#B8B8B8"
+            },
+            {
+              "name": "--noir-text-tertiary",
+              "value": "#949494"
+            },
+            {
+              "name": "--noir-champagne",
+              "value": "#C9B99B"
+            },
+            {
+              "name": "--noir-sage",
+              "value": "#A8C2AD"
+            },
+            {
+              "name": "--noir-rose",
+              "value": "#DEA4A5"
+            },
+            {
+              "name": "--noir-steel",
+              "value": "#A7B4C2"
+            },
+            {
+              "name": "--noir-lilac",
+              "value": "#BDB2CE"
+            },
+            {
+              "name": "--market-canvas",
+              "value": "#0A0B0D"
+            },
+            {
+              "name": "--market-panel",
+              "value": "#111318"
+            },
+            {
+              "name": "--market-raised",
+              "value": "#181B20"
+            },
+            {
+              "name": "--market-line",
+              "value": "#2B3038"
+            },
+            {
+              "name": "--mx-dark-up-soft",
+              "value": "rgb(69 184 115 / 12%)"
+            },
+            {
+              "name": "--mx-dark-down-soft",
+              "value": "rgb(224 100 100 / 12%)"
+            },
+            {
+              "name": "--mx-dark-warn-soft",
+              "value": "rgb(224 160 48 / 12%)"
+            },
+            {
+              "name": "--mx-dark-info-soft",
+              "value": "rgb(91 155 240 / 12%)"
+            },
+            {
+              "name": "--mx-light-up-soft",
+              "value": "#EAF7EF"
+            },
+            {
+              "name": "--mx-light-down-soft",
+              "value": "#FCECED"
+            },
+            {
+              "name": "--mx-light-warn-soft",
+              "value": "#FFF4E2"
+            },
+            {
+              "name": "--mx-light-info-soft",
+              "value": "#EAF2FC"
+            },
+            {
+              "name": "--mx-light-scrim",
+              "value": "#1C243029"
+            },
+            {
+              "name": "--font-ui",
+              "value": "\"Inter\""
+            },
+            {
+              "name": "--fs-micro",
+              "value": "10px"
+            },
+            {
+              "name": "--fs-label",
+              "value": "11px"
+            },
+            {
+              "name": "--fs-sm",
+              "value": "12.5px"
+            },
+            {
+              "name": "--fs-body",
+              "value": "14px"
+            },
+            {
+              "name": "--fs-h3",
+              "value": "14px"
+            },
+            {
+              "name": "--fs-md",
+              "value": "15px"
+            },
+            {
+              "name": "--fs-h2",
+              "value": "17px"
+            },
+            {
+              "name": "--fs-num-lg",
+              "value": "22px"
+            },
+            {
+              "name": "--fs-h1",
+              "value": "28px"
+            },
+            {
+              "name": "--fs-num-xl",
+              "value": "38px"
+            },
+            {
+              "name": "--fs-display",
+              "value": "46px"
+            },
+            {
+              "name": "--fw-regular",
+              "value": "400"
+            },
+            {
+              "name": "--fw-medium",
+              "value": "500"
+            },
+            {
+              "name": "--fw-semibold",
+              "value": "600"
+            },
+            {
+              "name": "--fw-bold",
+              "value": "700"
+            },
+            {
+              "name": "--fw-extrabold",
+              "value": "800"
+            },
+            {
+              "name": "--bp-mobile",
+              "value": "390px"
+            },
+            {
+              "name": "--bp-tablet",
+              "value": "768px"
+            },
+            {
+              "name": "--bp-desktop",
+              "value": "1440px"
+            },
+            {
+              "name": "--sp-1",
+              "value": "4px"
+            },
+            {
+              "name": "--sp-2",
+              "value": "8px"
+            },
+            {
+              "name": "--sp-3",
+              "value": "12px"
+            },
+            {
+              "name": "--sp-4",
+              "value": "16px"
+            },
+            {
+              "name": "--sp-5",
+              "value": "20px"
+            },
+            {
+              "name": "--sp-6",
+              "value": "24px"
+            },
+            {
+              "name": "--sp-7",
+              "value": "32px"
+            },
+            {
+              "name": "--sp-8",
+              "value": "44px"
+            },
+            {
+              "name": "--r-ctl",
+              "value": "8px"
+            },
+            {
+              "name": "--r-btn",
+              "value": "10px"
+            },
+            {
+              "name": "--r-card",
+              "value": "12px"
+            },
+            {
+              "name": "--r-panel",
+              "value": "14px"
+            },
+            {
+              "name": "--r-pill",
+              "value": "999px"
+            }
+          ]
+        }
+      },
+      "source_commit": "a365475fb389ef2645f5ef29c9f0b23ac0a46179"
+    },
+    {
+      "assignment": "D18",
+      "file_id": "01M6Y3F0NXNDPAKJMJGCAD759Z",
+      "snapshot_guard": "4c33971c16910537dd52fe1ed2be2bec2d90a948393992778cc1dfc24a793eb3",
+      "metadata": {
+        "fileName": "Mastermind - Crypto Intelligence - R4 References and Archive",
+        "pageName": "Proposed · Relative comparison basis",
+        "pageId": "p-3-0",
+        "url": "https://app.paper.design/file/01M6Y3F0NXNDPAKJMJGCAD759Z/p-3-0",
+        "rootNodeId": "root_node_p-3-0",
+        "nodeCount": 255,
+        "artboardCount": 3,
+        "artboards": [
+          {
+            "id": "2XH-0",
+            "name": "01 · PROPOSED · Relative comparison basis",
+            "childCount": 3,
+            "width": 1440,
+            "height": 1200,
+            "worldX": 2320,
+            "worldY": -2599
+          },
+          {
+            "id": "2YI-0",
+            "name": "02 · PROPOSED · Paired history states · EN ZH",
+            "childCount": 3,
+            "width": 1440,
+            "height": 1200,
+            "worldX": 800,
+            "worldY": -1319
+          },
+          {
+            "id": "2ZJ-0",
+            "name": "03 · D18 · Existing owner and window contract",
+            "childCount": 3,
+            "width": 1440,
+            "height": 1200,
+            "worldX": 3840,
+            "worldY": -2599
+          }
+        ],
+        "pages": [
+          {
+            "type": "page",
+            "id": "p-1-0",
+            "name": "Crypto Intelligence · R4 · Design References",
+            "icon": "design",
+            "isActive": true
+          },
+          {
+            "type": "page",
+            "id": "p-3-0",
+            "name": "Proposed · Relative comparison basis",
+            "icon": "design",
+            "isActive": false
+          },
+          {
+            "type": "page",
+            "id": "p-2-0",
+            "name": "ARCHIVE · Crypto Intelligence · R1–R2 · Not for Build",
+            "icon": "paper",
+            "isActive": false
+          }
+        ],
+        "fontFamilies": [
+          "Inter",
+          "System Sans-Serif"
+        ],
+        "tokens": {
+          "items": [
+            {
+              "name": "--mx-dark-bg",
+              "value": "#0F1115"
+            },
+            {
+              "name": "--mx-dark-panel",
+              "value": "#181B21"
+            },
+            {
+              "name": "--mx-dark-panel2",
+              "value": "#1E222A"
+            },
+            {
+              "name": "--mx-dark-text",
+              "value": "#D7DCE3"
+            },
+            {
+              "name": "--mx-dark-muted",
+              "value": "#8B93A1"
+            },
+            {
+              "name": "--mx-dark-line",
+              "value": "#3A4150"
+            },
+            {
+              "name": "--mx-dark-up",
+              "value": "#45B873"
+            },
+            {
+              "name": "--mx-dark-down",
+              "value": "#E06464"
+            },
+            {
+              "name": "--mx-dark-warn",
+              "value": "#E0A030"
+            },
+            {
+              "name": "--mx-dark-act",
+              "value": "#E05555"
+            },
+            {
+              "name": "--mx-dark-ok",
+              "value": "#3DA564"
+            },
+            {
+              "name": "--mx-dark-info",
+              "value": "#5B9BF0"
+            },
+            {
+              "name": "--mx-dark-link",
+              "value": "#7AA7E0"
+            },
+            {
+              "name": "--mx-dark-orange",
+              "value": "#E08B45"
+            },
+            {
+              "name": "--mx-light-bg",
+              "value": "#F7F8FA"
+            },
+            {
+              "name": "--mx-light-panel",
+              "value": "#FFFFFF"
+            },
+            {
+              "name": "--mx-light-panel2",
+              "value": "#EEF1F6"
+            },
+            {
+              "name": "--mx-light-text",
+              "value": "#1C2430"
+            },
+            {
+              "name": "--mx-light-muted",
+              "value": "#5D6B7E"
+            },
+            {
+              "name": "--mx-light-line",
+              "value": "#C9CCD1"
+            },
+            {
+              "name": "--mx-light-up",
+              "value": "#1F9A55"
+            },
+            {
+              "name": "--mx-light-down",
+              "value": "#CF4040"
+            },
+            {
+              "name": "--mx-light-warn",
+              "value": "#B9791A"
+            },
+            {
+              "name": "--mx-light-act",
+              "value": "#C43D3D"
+            },
+            {
+              "name": "--mx-light-ok",
+              "value": "#2F8A52"
+            },
+            {
+              "name": "--mx-light-info",
+              "value": "#285FFF"
+            },
+            {
+              "name": "--mx-light-link",
+              "value": "#285FFF"
+            },
+            {
+              "name": "--mx-light-orange",
+              "value": "#C4781F"
+            },
+            {
+              "name": "--mx-dark-prov",
+              "value": "#62A0E8"
+            },
+            {
+              "name": "--mx-dark-prov-ink",
+              "value": "#62A0E8"
+            },
+            {
+              "name": "--mx-dark-tier-accent",
+              "value": "#7C5CFF"
+            },
+            {
+              "name": "--mx-dark-tier-fill",
+              "value": "#6340D8"
+            },
+            {
+              "name": "--mx-dark-tier-ink",
+              "value": "#9B86FF"
+            },
+            {
+              "name": "--mx-dark-ser-1",
+              "value": "#5B9BF0"
+            },
+            {
+              "name": "--mx-dark-ser-2",
+              "value": "#D4A017"
+            },
+            {
+              "name": "--mx-dark-ser-3",
+              "value": "#0EA5E9"
+            },
+            {
+              "name": "--mx-dark-ser-4",
+              "value": "#E08B45"
+            },
+            {
+              "name": "--mx-light-prov",
+              "value": "#2F6FD0"
+            },
+            {
+              "name": "--mx-light-prov-ink",
+              "value": "#2C62B3"
+            },
+            {
+              "name": "--mx-light-tier-accent",
+              "value": "#7C5CFF"
+            },
+            {
+              "name": "--mx-light-tier-fill",
+              "value": "#6340D8"
+            },
+            {
+              "name": "--mx-light-tier-ink",
+              "value": "#5B3FC4"
+            },
+            {
+              "name": "--mx-light-ser-1",
+              "value": "#2F63C4"
+            },
+            {
+              "name": "--mx-light-ser-2",
+              "value": "#8F6A04"
+            },
+            {
+              "name": "--mx-light-ser-3",
+              "value": "#0284C7"
+            },
+            {
+              "name": "--mx-light-ser-4",
+              "value": "#B06A25"
+            },
+            {
+              "name": "--mx-light-ink-up",
+              "value": "#1E6D47"
+            },
+            {
+              "name": "--mx-light-ink-down",
+              "value": "#B23C3D"
+            },
+            {
+              "name": "--mx-light-ink-warn",
+              "value": "#7D5922"
+            },
+            {
+              "name": "--mx-light-ink-link",
+              "value": "#2758E6"
+            },
+            {
+              "name": "--noir-canvas",
+              "value": "#080808"
+            },
+            {
+              "name": "--noir-sidebar",
+              "value": "#0C0C0C"
+            },
+            {
+              "name": "--noir-panel",
+              "value": "#121212"
+            },
+            {
+              "name": "--noir-raised",
+              "value": "#191919"
+            },
+            {
+              "name": "--noir-hover",
+              "value": "#222222"
+            },
+            {
+              "name": "--noir-selected",
+              "value": "#292929"
+            },
+            {
+              "name": "--noir-text-primary",
+              "value": "#F3F3F3"
+            },
+            {
+              "name": "--noir-text-secondary",
+              "value": "#B8B8B8"
+            },
+            {
+              "name": "--noir-text-tertiary",
+              "value": "#949494"
+            },
+            {
+              "name": "--noir-champagne",
+              "value": "#C9B99B"
+            },
+            {
+              "name": "--noir-sage",
+              "value": "#A8C2AD"
+            },
+            {
+              "name": "--noir-rose",
+              "value": "#DEA4A5"
+            },
+            {
+              "name": "--noir-steel",
+              "value": "#A7B4C2"
+            },
+            {
+              "name": "--noir-lilac",
+              "value": "#BDB2CE"
+            },
+            {
+              "name": "--market-canvas",
+              "value": "#0A0B0D"
+            },
+            {
+              "name": "--market-panel",
+              "value": "#111318"
+            },
+            {
+              "name": "--market-raised",
+              "value": "#181B20"
+            },
+            {
+              "name": "--market-line",
+              "value": "#2B3038"
+            },
+            {
+              "name": "--mx-dark-up-soft",
+              "value": "rgb(69 184 115 / 12%)"
+            },
+            {
+              "name": "--mx-dark-down-soft",
+              "value": "rgb(224 100 100 / 12%)"
+            },
+            {
+              "name": "--mx-dark-warn-soft",
+              "value": "rgb(224 160 48 / 12%)"
+            },
+            {
+              "name": "--mx-dark-info-soft",
+              "value": "rgb(91 155 240 / 12%)"
+            },
+            {
+              "name": "--mx-light-up-soft",
+              "value": "#EAF7EF"
+            },
+            {
+              "name": "--mx-light-down-soft",
+              "value": "#FCECED"
+            },
+            {
+              "name": "--mx-light-warn-soft",
+              "value": "#FFF4E2"
+            },
+            {
+              "name": "--mx-light-info-soft",
+              "value": "#EAF2FC"
+            },
+            {
+              "name": "--mx-light-scrim",
+              "value": "#1C243029"
+            },
+            {
+              "name": "--font-ui",
+              "value": "\"Inter\""
+            },
+            {
+              "name": "--fs-micro",
+              "value": "10px"
+            },
+            {
+              "name": "--fs-label",
+              "value": "11px"
+            },
+            {
+              "name": "--fs-sm",
+              "value": "12.5px"
+            },
+            {
+              "name": "--fs-body",
+              "value": "14px"
+            },
+            {
+              "name": "--fs-h3",
+              "value": "14px"
+            },
+            {
+              "name": "--fs-md",
+              "value": "15px"
+            },
+            {
+              "name": "--fs-h2",
+              "value": "17px"
+            },
+            {
+              "name": "--fs-num-lg",
+              "value": "22px"
+            },
+            {
+              "name": "--fs-h1",
+              "value": "28px"
+            },
+            {
+              "name": "--fs-num-xl",
+              "value": "38px"
+            },
+            {
+              "name": "--fs-display",
+              "value": "46px"
+            },
+            {
+              "name": "--fw-regular",
+              "value": "400"
+            },
+            {
+              "name": "--fw-medium",
+              "value": "500"
+            },
+            {
+              "name": "--fw-semibold",
+              "value": "600"
+            },
+            {
+              "name": "--fw-bold",
+              "value": "700"
+            },
+            {
+              "name": "--fw-extrabold",
+              "value": "800"
+            },
+            {
+              "name": "--bp-mobile",
+              "value": "390px"
+            },
+            {
+              "name": "--bp-tablet",
+              "value": "768px"
+            },
+            {
+              "name": "--bp-desktop",
+              "value": "1440px"
+            },
+            {
+              "name": "--sp-1",
+              "value": "4px"
+            },
+            {
+              "name": "--sp-2",
+              "value": "8px"
+            },
+            {
+              "name": "--sp-3",
+              "value": "12px"
+            },
+            {
+              "name": "--sp-4",
+              "value": "16px"
+            },
+            {
+              "name": "--sp-5",
+              "value": "20px"
+            },
+            {
+              "name": "--sp-6",
+              "value": "24px"
+            },
+            {
+              "name": "--sp-7",
+              "value": "32px"
+            },
+            {
+              "name": "--sp-8",
+              "value": "44px"
+            },
+            {
+              "name": "--r-ctl",
+              "value": "8px"
+            },
+            {
+              "name": "--r-btn",
+              "value": "10px"
+            },
+            {
+              "name": "--r-card",
+              "value": "12px"
+            },
+            {
+              "name": "--r-panel",
+              "value": "14px"
+            },
+            {
+              "name": "--r-pill",
+              "value": "999px"
+            }
+          ]
+        }
+      },
+      "source_commit": "01cf699eb600040a5179d8bd8b2dc2e22d27c9c1"
+    }
+  ],
+  "jsx_checks": [
+    {
+      "node_id": "1IC-0",
+      "family": "watchlist",
+      "path": "saved-item-flow.jsx",
+      "state": "OBSERVED",
+      "jsx_chars": 17136,
+      "exact": true,
+      "bytes": 17151,
+      "sha256": "fc9e0a6cbbb7d925509edb609931f0461a07927eb10e58543ac12620f9c068b1",
+      "git_blob_sha": "be5656e9b237f136c31372000c826ffe6507560c"
+    },
+    {
+      "node_id": "1S5-0",
+      "family": "watchlist",
+      "path": "current-membership-states.jsx",
+      "state": "OBSERVED",
+      "jsx_chars": 20692,
+      "exact": true,
+      "bytes": 20900,
+      "sha256": "7b411390bafed89e449e6c895d07e9bd6440b41a9a1fe26bec7af8048976ef6f",
+      "git_blob_sha": "3ebe0421ed501363e54da7a3c7816b97c5647b4d"
+    },
+    {
+      "node_id": "22L-0",
+      "family": "watchlist",
+      "path": "context-transitions.jsx",
+      "state": "OBSERVED",
+      "jsx_chars": 21357,
+      "exact": true,
+      "bytes": 21685,
+      "sha256": "167a6d6e3807c59befa0c07ea519eae85632aabc7242dfa43e730c6c784f0bab",
+      "git_blob_sha": "20c0846392bd447aafb4c96b12e02a3451fe65ae"
+    },
+    {
+      "node_id": "2D4-0",
+      "family": "watchlist",
+      "path": "source-builder-map.jsx",
+      "state": "OBSERVED",
+      "jsx_chars": 13992,
+      "exact": true,
+      "bytes": 14005,
+      "sha256": "ab53a43afe1e17c838b1633bc911add0e49ddbe8fffd0513f3afd76c4b8f67dd",
+      "git_blob_sha": "43446c1dc75be71b4e7b72c0dad5201743af5348"
+    },
+    {
+      "node_id": "2XH-0",
+      "family": "crypto",
+      "path": "relative-basis-inspector.jsx",
+      "state": "OBSERVED",
+      "jsx_chars": 20417,
+      "exact": true,
+      "bytes": 20429,
+      "sha256": "e1f51fa1708ab27969ada50fcc18141269d08ed5b0444f8759bcb32741799261",
+      "git_blob_sha": "98b0d399a69bd87d492be529e8ed632823b0a001"
+    },
+    {
+      "node_id": "2YI-0",
+      "family": "crypto",
+      "path": "paired-history-states.jsx",
+      "state": "OBSERVED",
+      "jsx_chars": 22017,
+      "exact": true,
+      "bytes": 22536,
+      "sha256": "f9ae1328f4f824ca58cf76abe54cc97e24a394b7a7f34a6fe5b70584f1f7043c",
+      "git_blob_sha": "901e303a0c5af8c41eb0e332ba02b555402cc148"
+    },
+    {
+      "node_id": "2ZJ-0",
+      "family": "crypto",
+      "path": "existing-owner-window-contract.jsx",
+      "state": "OBSERVED",
+      "jsx_chars": 17035,
+      "exact": true,
+      "bytes": 17066,
+      "sha256": "b336452dab66e5489cb79fd7c0b98402d5d3d48c2f05f0f914762c782951b3a4",
+      "git_blob_sha": "8badc9d8d348e8644c825e16a73415455565ea97"
+    }
+  ],
+  "qualification": "Exact point-in-time metadata and visible export equality only. Snapshot guards are not revisions, permissions or leases; no hidden-property, full-file, runtime, RIG or release acceptance. Generated discovery is unchanged at fourteen."
+}

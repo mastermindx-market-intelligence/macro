@@ -12,7 +12,13 @@
 
 GitHub renders the Markdown entries directly; it displays the HTML companion as source. Open the complete extracted package together for its relative HTML links. Browser execution and production deployment are not implied.
 
-## Latest continuation — portfolio and Guide discovery, 8 November 2026
+## Latest authored observations — Watchlist and Crypto, 8 November 2026
+
+[Watchlist exact destination](evidence/d23-watchlist-reference-observation-20261108.md) and [Crypto relative-comparison basis](evidence/d18-crypto-reference-observation-20261108.md) now have immutable observation notes in this package. Fresh metadata identifies D23 `01M6Y309YH7PJZMF23R7EDH3CM / p-2-0 / 1IC-0` and D18 `01M6Y3F0NXNDPAKJMJGCAD759Z / p-3-0 / 2XH-0`; all seven board JSX exports still match their saved native evidence. [Readback](evidence/watchlist-crypto-reference-readback-20261108.json) and the [prior-fourteen preservation baseline](evidence/watchlist-crypto-reference-baseline-20261108.json) retain exact identities and limits.
+
+**These two notes are not yet indexed in the generated directory.** Curation, assignment/data outputs and directory.html remain at the verified fourteen observations below. The local execution transport is unavailable; no unverified hand edit was made to generated outputs. A later integration must use the existing refresh builder and affected checks. Full-domain Read me tuples and approval receipts remain unestablished. No Paper or product-runtime effect occurs in this publication.
+
+## Latest generated continuation — portfolio and Guide discovery, 8 November 2026
 
 The directory now exposes **fourteen immutable source observations**. The two new bounded proposals are [D22 Personal holdings, paper books and model comparison](assignments/D22.md), at Terminal `p-1F-0 / 261Q-0`, and [D25 Guide return, Close and horizon wording](assignments/D25.md), at Guide `p-8-0 / 44J-0`. Search either board ID, the exact file/page/board tuple, or source wording such as `personal holdings`, `provisional valuation`, `guide return` and `horizon wording` in Assignments or Paper references. Both views now index the existing source label and status consistently and show the proposal label beneath the broader title.
 

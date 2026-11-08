@@ -5,9 +5,9 @@
   "files": [
     {
       "path": "CONTINUITY.md",
-      "bytes": 46123,
-      "sha256": "ffd240ead76b9308890a5514a76ed627569206ef0e063dea20ad7e7b252b74f6",
-      "git_blob_sha": "70d56085f593631d690ea67e91784095441411dd"
+      "bytes": 48370,
+      "sha256": "4b9680559cd24d25b41b6cb1338806b20a2a09328fde194c10046d10e6c57840",
+      "git_blob_sha": "c3868b9e53a8f2f41cb12b3c51e4d898dd7af551"
     },
     {
       "path": "CONTRACT.md",
@@ -41,9 +41,9 @@
     },
     {
       "path": "README.md",
-      "bytes": 29903,
-      "sha256": "d9945db32ec682866a81c6cc079a39db78e55c96389371ededdf7d992bf2abdb",
-      "git_blob_sha": "b206a56e046410cb100db2444b695851f3202fda"
+      "bytes": 31125,
+      "sha256": "8c432dd7445669fbd4e82c9f29619c5b982562f43efa640a3a416a76fd55961e",
+      "git_blob_sha": "f2a64970df67d62e5659a8a1f53bf2ebf42e3048"
     },
     {
       "path": "REPRODUCE.md",
@@ -436,10 +436,22 @@
       "git_blob_sha": "8bdae0284375609a6a82540bd993ba55f3ff6d99"
     },
     {
+      "path": "evidence/d18-crypto-reference-observation-20261108.md",
+      "bytes": 5967,
+      "sha256": "c28a5d61ed1a04efb0e454e15d8939bc43cb62aa29b6b3e0762d0624945fba03",
+      "git_blob_sha": "9b161fa62288cfde336a0fd21fb331736931e760"
+    },
+    {
       "path": "evidence/d22-portfolio-reference-observation-20261108.md",
       "bytes": 6614,
       "sha256": "2f6a9f213566af3bdae7edbe6fbd1c2ddfa3d4c71c2d67bad4b0462e4386ee40",
       "git_blob_sha": "80885356c954fbec76004478fee8c9ce1b61a30d"
+    },
+    {
+      "path": "evidence/d23-watchlist-reference-observation-20261108.md",
+      "bytes": 5131,
+      "sha256": "c185e589a1cbb5bf25bea643d439593a87e82f4900b8997f2626f8835cd244e7",
+      "git_blob_sha": "c7527981a52436e90df36c085afc2ecb9c77022b"
     },
     {
       "path": "evidence/d25-guide-partial-20261108.jpg",
@@ -704,6 +716,18 @@
       "bytes": 15900,
       "sha256": "3f3d3c65700e66deb74110775a03758627b32806895bdb7fcab628589907ae1b",
       "git_blob_sha": "4a425227358171c54e0ccb39b204a3ecca7d4d5b"
+    },
+    {
+      "path": "evidence/watchlist-crypto-reference-baseline-20261108.json",
+      "bytes": 31802,
+      "sha256": "22b545e4a8f6485fb3592c21262c479800485a8d1f6fbfa6ba2bde6be8b52baf",
+      "git_blob_sha": "7b7387ee36ea18af842ef35e66d64213efefced7"
+    },
+    {
+      "path": "evidence/watchlist-crypto-reference-readback-20261108.json",
+      "bytes": 29879,
+      "sha256": "a8b206d144f5cfc12c4843e24c4de0168525d831a1f6bf2bcbc23ce1361043b3",
+      "git_blob_sha": "976dec6f37e31bccd97570468c4fbcb58c96c541"
     },
     {
       "path": "evidence/website-observation.json",
