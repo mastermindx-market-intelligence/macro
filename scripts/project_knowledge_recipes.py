@@ -46,6 +46,7 @@ __all__ = [
     "canonical",
     "build_project_file_add",
     "build_project_preference_set",
+    "build_project_discovery_correct",
     "MAX_FILE_BYTES",
     "MAX_PREFERENCE_BYTES",
     "MAX_PROJECT_FILES",
@@ -68,6 +69,7 @@ SCHEMA_RECIPE = "mastermind.project_knowledge_recipe.v1"
 SCHEMA_REQUEST_FINGERPRINT = "mastermind.project_knowledge_request_fingerprint.v1"
 SCHEMA_FILE_ADD_REQUEST = "mastermind.project_file_add_request.v1"
 SCHEMA_PREFERENCE_SET_REQUEST = "mastermind.project_preference_set_request.v1"
+SCHEMA_DISCOVERY_CORRECT_REQUEST = "mastermind.project_discovery_correct_request.v1"
 
 SCHEMA_WORKSTREAM = "agentos.workstream.v1"
 SCHEMA_DECISION = "agentos.decision.v1"
@@ -80,6 +82,7 @@ ACTOR_REF_PREFIX = "workspace:"
 STATE_DRAFT_ONLY = "DRAFT_ONLY"
 ACTION_FILE_ADD = "project_file_add"
 ACTION_PREFERENCE_SET = "project_preference_set"
+ACTION_DISCOVERY_CORRECT = "project_discovery_correct"
 
 ORIGIN_PRINCIPAL_UPLOAD = "PRINCIPAL_UPLOAD"
 ORIGIN_USER_EDIT = "USER_EDIT"
@@ -627,7 +630,7 @@ def _recipe_envelope(
     }
     _require_exact_keys(recipe, _RECIPE_KEYS, "MALFORMED_REQUEST_SCHEMA")
     total = 0
-    if len(recipe["postimages"]) > 2:
+    if len(recipe["postimages"]) != (3 if action == ACTION_DISCOVERY_CORRECT else 2):
         raise KnowledgeRecipeError("LIMIT_EXCEEDED")
     for image in recipe["postimages"]:
         _require_exact_keys(image, _POSTIMAGE_KEYS, "MALFORMED_REQUEST_SCHEMA")
@@ -654,6 +657,177 @@ def _ws_postimage(ws_key: str, data: dict, body: str, ws_sha256: str) -> dict:
         "content_sha256": _sha256_hex(text.encode("utf-8")),
         "expected_preimage_sha256": ws_sha256,
     }
+
+
+_CORRECTION_REQUEST_KEYS = frozenset({"schema", "request_id", "work_ref",
+    "source_commit", "base_revision", "discovery_ref", "expected_discovery_revision",
+    "correction_reason", "replacement"})
+_CORRECTION_REPLACEMENT_KEYS = frozenset({"claim", "falsifier", "so_what", "kind",
+    "confidence", "verified_at", "verified_by", "expires", "body_utf8", "evidence"})
+_CORRECTION_CLOSURE_KEYS = frozenset({"schema", "source_commit", "work_ref",
+    "discovery_ref", "replacement_ref", "parser_content_sha256", "coverage",
+    "member_counts", "record_manifest_sha256", "lineage", "referring_work_refs",
+    "replacement_absent"})
+_DISCOVERY_REF_RE = re.compile(r"\ADSC:[A-Z0-9]+(?:-[A-Z0-9]+)*\Z")
+
+
+def _correction_ref(value):
+    if (type(value) is not str or not _DISCOVERY_REF_RE.fullmatch(value)
+            or not 2 <= len(value[4:]) <= 64):
+        raise KnowledgeRecipeError("MALFORMED_REQUEST_SCHEMA")
+    return value
+
+
+def _correction_text(value, limit):
+    _validate_bounded_utf8(value, code="MALFORMED_REQUEST_SCHEMA", max_bytes=limit)
+    if not value.strip():
+        raise KnowledgeRecipeError("MALFORMED_REQUEST_SCHEMA")
+    return value
+
+
+def build_project_discovery_correct(
+    request: Any, *, actor_ref: str, permission_binding_digest: str,
+    captured_commit: str, workstream_text: str, discovery_text: str,
+    decision_date: str, reference_closure: dict,
+) -> dict:
+    """Three original-owned postimages for one explicitly evidenced correction.
+
+    ``reference_closure`` is the installed capture owner's complete-tree
+    qualification at DATA N, retained in its original authenticated private
+    input. It is not caller input, a grant, or a self-authenticating digest.
+    Restore reuses that exact original conclusion; it does not assert a fresh
+    global scan. Publication still requires the original base/CAS and owner.
+    The ordinary Agent OS validator rechecks correction scope on the merged
+    candidate tree. No claim is automatically promoted to verified confidence.
+    """
+    ws_raw = _validate_trusted_bindings(actor_ref=actor_ref,
+        permission_binding_digest=permission_binding_digest,
+        captured_commit=captured_commit, workstream_text=workstream_text)
+    selected = _validate_public_request(request, schema=SCHEMA_DISCOVERY_CORRECT_REQUEST,
+        keys=_CORRECTION_REQUEST_KEYS, request_id_prefix="mmos-project-discovery-correct-")
+    _validate_decision_date(decision_date)
+    if len(canonical(selected).encode("utf-8")) > 24 * 1024:
+        raise KnowledgeRecipeError("LIMIT_EXCEEDED")
+    old_ref = _correction_ref(selected["discovery_ref"])
+    old_raw = _validate_bounded_utf8(discovery_text,
+        code="SOURCE_MISMATCH", max_bytes=32768)
+    _require_hex64(selected["expected_discovery_revision"], "MALFORMED_REQUEST_SCHEMA")
+    if (selected["source_commit"] != captured_commit
+            or selected["base_revision"] != _sha256_hex(ws_raw)
+            or selected["expected_discovery_revision"] != _sha256_hex(old_raw)):
+        raise KnowledgeRecipeError("SOURCE_MISMATCH")
+    ws, ws_body = _load_record(workstream_text, "INVALID_WORKSTREAM_RECORD")
+    ws_key = _validate_workstream(ws, selected["work_ref"])
+    old, _old_body = _load_record(discovery_text, "SOURCE_MISMATCH")
+    if (old.get("key") != old_ref[4:] or old.get("scope") != [selected["work_ref"]]
+            or "superseded_by" in old):
+        raise KnowledgeRecipeError("SOURCE_MISMATCH")
+    identity = {"principal_scope": actor_ref[len(ACTOR_REF_PREFIX):],
+        "request_id": selected["request_id"], "work_ref": selected["work_ref"]}
+    new_ref = "DSC:PROJECT-CORRECTION-" + _sha256_hex(canonical(identity).encode("utf-8"))[:40].upper()
+    if new_ref == old_ref:
+        raise KnowledgeRecipeError("CONFLICT")
+    closure = _require_exact_keys(reference_closure, _CORRECTION_CLOSURE_KEYS, "SOURCE_MISMATCH")
+    if (closure["schema"] != "agentos.project_discovery_reference_closure.v1"
+            or any(closure[k] != selected[k] for k in ("source_commit", "work_ref", "discovery_ref"))
+            or closure["replacement_ref"] != new_ref or closure["replacement_absent"] is not True
+            or closure["coverage"] != "COMPLETE" or closure["referring_work_refs"] != [selected["work_ref"]]):
+        raise KnowledgeRecipeError("SOURCE_MISMATCH")
+    counts = _require_exact_keys(closure["member_counts"], frozenset({"WS", "DEC", "DSC", "HND"}), "SOURCE_MISMATCH")
+    if any(type(count) is not int or count < 0 for count in counts.values()) or not 2 <= sum(counts.values()) <= 4096:
+        raise KnowledgeRecipeError("SOURCE_MISMATCH")
+    _require_hex64(closure["parser_content_sha256"], "SOURCE_MISMATCH")
+    _require_hex64(closure["record_manifest_sha256"], "SOURCE_MISMATCH")
+    lineage = closure["lineage"]
+    if (type(lineage) is not list or not 1 <= len(lineage) < 64
+            or lineage[-1] != old_ref or new_ref in lineage):
+        raise KnowledgeRecipeError("SOURCE_MISMATCH")
+    for ref in lineage:
+        _correction_ref(ref)
+    if len(set(lineage)) != len(lineage):
+        raise KnowledgeRecipeError("SOURCE_MISMATCH")
+    replacement = _require_exact_keys(selected["replacement"], _CORRECTION_REPLACEMENT_KEYS,
+                                     "MALFORMED_REQUEST_SCHEMA")
+    for key in ("claim", "falsifier", "so_what", "verified_by"):
+        _correction_text(replacement[key], 2048)
+    _validate_decision_date(replacement["verified_at"])
+    if replacement["expires"] is not None:
+        _validate_decision_date(replacement["expires"])
+        if replacement["expires"] < replacement["verified_at"]:
+            raise KnowledgeRecipeError("MALFORMED_REQUEST_SCHEMA")
+    body = replacement["body_utf8"]
+    if type(body) is not str or len(body.encode("utf-8")) > 8192:
+        raise KnowledgeRecipeError("MALFORMED_REQUEST_SCHEMA")
+    if body:
+        _correction_text(body, 8192)
+    if len(canonical(replacement).encode("utf-8")) > 16 * 1024:
+        raise KnowledgeRecipeError("LIMIT_EXCEEDED")
+    if (type(replacement["kind"]) is not str
+            or replacement["kind"] not in {"architecture", "data", "landmine", "dead_code", "constraint", "runtime"}
+            or type(replacement["confidence"]) is not str
+            or replacement["confidence"] not in {"verified", "probable", "suspected"}):
+        raise KnowledgeRecipeError("MALFORMED_REQUEST_SCHEMA")
+    reason = _correction_text(selected["correction_reason"], 2048)
+    evidence = replacement["evidence"]
+    if type(evidence) is not list or not 1 <= len(evidence) <= 8:
+        raise KnowledgeRecipeError("MALFORMED_REQUEST_SCHEMA")
+    for item in evidence:
+        _correction_text(item, 1024)
+    if len(set(evidence)) != len(evidence):
+        raise KnowledgeRecipeError("MALFORMED_REQUEST_SCHEMA")
+    discoveries = _require_str_list(ws, "discoveries", "INVALID_WORKSTREAM_FIELD",
+        default=[], pattern=_DISCOVERY_REF_RE)
+    if new_ref in discoveries or len(discoveries) >= MAX_ARTIFACTS:
+        raise KnowledgeRecipeError("CONFLICT")
+    if old_ref not in discoveries:
+        discoveries.append(old_ref)
+    discoveries.append(new_ref)
+    if len(discoveries) > MAX_ARTIFACTS:
+        raise KnowledgeRecipeError("LIMIT_EXCEEDED")
+    ws["discoveries"] = discoveries
+    request_sha = _sha256_hex(canonical(selected).encode("utf-8"))
+    closure_sha = _sha256_hex(canonical(closure).encode("utf-8"))
+    new = {"schema": "agentos.discovery.v1", "key": new_ref[4:],
+        **{key: replacement[key] for key in ("claim", "falsifier", "so_what", "kind",
+                                              "confidence", "verified_by")},
+        "verified_at": replacement["verified_at"], "scope": [selected["work_ref"]],
+        "project_correction": {"schema": "agentos.project_discovery_correction.v1",
+            "work_ref": selected["work_ref"], "supersedes": old_ref,
+            "actor_ref": actor_ref, "request_sha256": request_sha,
+            "corrected_on": decision_date,
+            "source_commit": captured_commit, "predecessor_sha256": _sha256_hex(old_raw),
+            "reference_closure_sha256": closure_sha,
+            "correction_reason": reason, "evidence": list(evidence)}}
+    if replacement["expires"] is not None:
+        new["expires"] = replacement["expires"]
+    new_text = _serialize_record(new, body)
+    if len(new_text.encode("utf-8")) > 32768:
+        raise KnowledgeRecipeError("LIMIT_EXCEEDED")
+    # Preserve the complete predecessor bytes, including its body, comments,
+    # original scalar spellings and line endings. Insert only a YAML scalar
+    # immediately before the original closing frontmatter delimiter.
+    match = _FRONTMATTER_RE.fullmatch(discovery_text)
+    assert match is not None  # _load_record already qualified this exact text.
+    newline = "\r\n" if discovery_text.startswith("---\r\n") else "\n"
+    insert_at = match.end(1)
+    old_text = discovery_text[:insert_at] + newline + "superseded_by: " + new_ref + discovery_text[insert_at:]
+    if len(old_text.encode("utf-8")) > 32768:
+        raise KnowledgeRecipeError("LIMIT_EXCEEDED")
+    fingerprint = _sha256_hex(canonical({"schema": SCHEMA_REQUEST_FINGERPRINT,
+        "request": selected, "actor_ref": actor_ref,
+        "permission_binding_digest": permission_binding_digest,
+        "captured_commit": captured_commit, "preimages": {"workstream": _sha256_hex(ws_raw),
+            "discovery": _sha256_hex(old_raw), "replacement": None},
+        "reference_closure": closure, "decision_date": decision_date}).encode("utf-8"))
+    postimages = [{"path": "agentos/discoveries/DSC-" + old_ref[4:] + ".md",
+        "content_utf8": old_text, "content_sha256": _sha256_hex(old_text.encode("utf-8")),
+        "expected_preimage_sha256": _sha256_hex(old_raw)},
+        _media_postimage("agentos/discoveries/DSC-" + new_ref[4:] + ".md", new_text, new_text.encode("utf-8")),
+        _ws_postimage(ws_key, ws, ws_body, _sha256_hex(ws_raw))]
+    return _recipe_envelope(action=ACTION_DISCOVERY_CORRECT, work_ref=selected["work_ref"],
+        request_id=selected["request_id"], fingerprint=fingerprint,
+        captured_commit=captured_commit, permission_binding_digest=permission_binding_digest,
+        postimages=postimages)
 
 
 def build_project_file_add(
