@@ -1,0 +1,1 @@
+{"level":"warn","ts":1793733355.8546948,"logger":"caddyfile","msg":"Caddyfile input is not formatted; run 'caddy fmt --overwrite' to fix inconsistencies","file":"app/deploy/Caddyfile","line":806}

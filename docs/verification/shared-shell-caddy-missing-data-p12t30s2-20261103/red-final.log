@@ -1,0 +1,107 @@
+FFFF.                                                                    [100%]
+=================================== FAILURES ===================================
+__________ test_file_server_can_continue_only_inside_each_data_route ___________
+
+    def test_file_server_can_continue_only_inside_each_data_route():
+        for route in data_routes():
+>           stage = recovery(route)
+                    ^^^^^^^^^^^^^^^
+
+tests/test_terminal_data_caddy.py:58: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+route = {'handle': [{'handler': 'subroute', 'routes': [{'handle': [{...}]}, {'handle': [{...}], 'match': [{...}]}, {'handle': [{...}], 'match': [{...}]}, {'handle': [{...}]}]}], 'match': [{'path': ['/data/*']}]}
+
+    def recovery(route):
+        stages = [n["routes"] for n in nodes(route) if n.get("handler") == "subroute" and n.get("routes") and n["routes"][0].get("handle", [{}])[0].get("handler") == "file_server"]
+>       assert len(stages) == 1, "file_server must begin an explicitly ordered continuation"
+E       AssertionError: file_server must begin an explicitly ordered continuation
+E       assert 0 == 1
+E        +  where 0 = len([])
+
+tests/test_terminal_data_caddy.py:51: AssertionError
+------------------------------- Sparse worktree --------------------------------
+This checkout omits data, mockups, site, verify_shots. If this failure is an artifact of that, sparse worktree — data not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+______ test_read_fallback_is_explicit_json_404_and_overrides_public_cache ______
+
+    def test_read_fallback_is_explicit_json_404_and_overrides_public_cache():
+        for route in data_routes():
+>           fallback = {"routes": recovery(route)[1:]}
+                                  ^^^^^^^^^^^^^^^
+
+tests/test_terminal_data_caddy.py:66: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+route = {'handle': [{'handler': 'subroute', 'routes': [{'handle': [{...}]}, {'handle': [{...}], 'match': [{...}]}, {'handle': [{...}], 'match': [{...}]}, {'handle': [{...}]}]}], 'match': [{'path': ['/data/*']}]}
+
+    def recovery(route):
+        stages = [n["routes"] for n in nodes(route) if n.get("handler") == "subroute" and n.get("routes") and n["routes"][0].get("handle", [{}])[0].get("handler") == "file_server"]
+>       assert len(stages) == 1, "file_server must begin an explicitly ordered continuation"
+E       AssertionError: file_server must begin an explicitly ordered continuation
+E       assert 0 == 1
+E        +  where 0 = len([])
+
+tests/test_terminal_data_caddy.py:51: AssertionError
+------------------------------- Sparse worktree --------------------------------
+This checkout omits data, mockups, site, verify_shots. If this failure is an artifact of that, sparse worktree — data not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+_ test_head_has_empty_response_before_get_body_and_other_methods_keep_native_404 _
+
+    def test_head_has_empty_response_before_get_body_and_other_methods_keep_native_404():
+        for route in data_routes():
+>           fallback = {"routes": recovery(route)[1:]}
+                                  ^^^^^^^^^^^^^^^
+
+tests/test_terminal_data_caddy.py:80: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+route = {'handle': [{'handler': 'subroute', 'routes': [{'handle': [{...}]}, {'handle': [{...}], 'match': [{...}]}, {'handle': [{...}], 'match': [{...}]}, {'handle': [{...}]}]}], 'match': [{'path': ['/data/*']}]}
+
+    def recovery(route):
+        stages = [n["routes"] for n in nodes(route) if n.get("handler") == "subroute" and n.get("routes") and n["routes"][0].get("handle", [{}])[0].get("handler") == "file_server"]
+>       assert len(stages) == 1, "file_server must begin an explicitly ordered continuation"
+E       AssertionError: file_server must begin an explicitly ordered continuation
+E       assert 0 == 1
+E        +  where 0 = len([])
+
+tests/test_terminal_data_caddy.py:51: AssertionError
+------------------------------- Sparse worktree --------------------------------
+This checkout omits data, mockups, site, verify_shots. If this failure is an artifact of that, sparse worktree — data not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+______ test_existing_file_serving_and_its_cache_policies_precede_recovery ______
+
+    def test_existing_file_serving_and_its_cache_policies_precede_recovery():
+        for route in data_routes():
+            handlers = list(nodes(route))
+            fs = next(n for n in handlers if n.get("handler") == "file_server")
+            assert set(fs) <= {"handler", "hide", "pass_thru"}
+            assert {"handler": "vars", "root": "/opt/terminal/terminal/public"} in handlers
+            headers = [n["response"]["set"] for n in handlers if n.get("handler") == "headers"]
+            assert {"Cache-Control": ["public, s-maxage=60, max-age=0, must-revalidate"]} in headers
+            assert {"Cache-Control": ["public, s-maxage=300, max-age=0, must-revalidate"]} in headers
+            # There is no matcher in front of file_server that changes native method,
+            # conditional/range, canonical redirect, permission or I/O handling.
+>           assert recovery(route)[0]["handle"] == [fs]
+                   ^^^^^^^^^^^^^^^
+
+tests/test_terminal_data_caddy.py:101: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+route = {'handle': [{'handler': 'subroute', 'routes': [{'handle': [{...}]}, {'handle': [{...}], 'match': [{...}]}, {'handle': [{...}], 'match': [{...}]}, {'handle': [{...}]}]}], 'match': [{'path': ['/data/*']}]}
+
+    def recovery(route):
+        stages = [n["routes"] for n in nodes(route) if n.get("handler") == "subroute" and n.get("routes") and n["routes"][0].get("handle", [{}])[0].get("handler") == "file_server"]
+>       assert len(stages) == 1, "file_server must begin an explicitly ordered continuation"
+E       AssertionError: file_server must begin an explicitly ordered continuation
+E       assert 0 == 1
+E        +  where 0 = len([])
+
+tests/test_terminal_data_caddy.py:51: AssertionError
+------------------------------- Sparse worktree --------------------------------
+This checkout omits data, mockups, site, verify_shots. If this failure is an artifact of that, sparse worktree — data not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+
+NOTE: sparse worktree — data, mockups, site, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_terminal_data_caddy.py::test_file_server_can_continue_only_inside_each_data_route
+FAILED tests/test_terminal_data_caddy.py::test_read_fallback_is_explicit_json_404_and_overrides_public_cache
+FAILED tests/test_terminal_data_caddy.py::test_head_has_empty_response_before_get_body_and_other_methods_keep_native_404
+FAILED tests/test_terminal_data_caddy.py::test_existing_file_serving_and_its_cache_policies_precede_recovery
+4 failed, 1 passed in 1.45s
