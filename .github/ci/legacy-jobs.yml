@@ -15883,6 +15883,8 @@ jobs:
       - "templates/landing.css"
       - "templates/navigation-refresh.css"
       - "scripts/design_semantic_comparison.py"
+      - "config/runtime_style_injection_allowlist.json"
+      - "scripts/check_runtime_style_injection.py"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
