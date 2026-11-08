@@ -5610,9 +5610,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_925),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_946),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_683),
+    ("templates/index.html", 137, 5_928),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_949),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_686),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5620,6 +5620,21 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-08 (PR #10226, second current-main conflict composition):
+    retain the accepted four filer/ledger objects and the original two
+    data-base-shim command enrollments. This owner is still byte-identical
+    to its prior base on main8251e41; PR10192 remains unmerged, so its own
+    filer+2 and ledger+3 union is still +5, counted once. Current main has
+    separately landed #10180 B17 coverage and its measured +3 contribution.
+    Preserve that accepted source and complete dated note; compose +5 onto
+    current5923/5944/5681 to yield5928/5949/5686. Keep jobs137/138/131,
+    ten packs, all commands/selectors/timeouts and runtime/admission limits.
+    The prior H6b52c699 had own CLEAR120 jobs/380 semantic proof steps;
+    that proof does not certify this new combined source. Natural new-head
+    CI must qualify it. This is exact source arithmetic, not a new full-tree
+    planner or timing measurement. Both historical paragraphs remain below.
+    Recheck actual10192 settlement before publication; do not double fund it.
 
     2026-11-08 (PR #10226, filer/ledger current-owner accounting):
     retain all four accepted filer/ledger source and test postimages.
@@ -5639,6 +5654,26 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     current-tree failure claim. Natural own CI must qualify the result.
     If10192 actually lands before publication, retain that new baseline
     and add only ledger+3; do not enroll or fund the filer twice.
+
+    2026-11-08 (PR #10180, measured B-17 enrollment integration):
+    Fixed current c91d58b2413d plus the five unchanged recovery objects
+    preserves all 395 owners. Native paired production measurements on
+    the SAME exact candidate source universe compare only the existing
+    manifest and the accepted nine-line B-17 enrollment. The full path
+    inventory and all required source bytes are bound to that candidate.
+    Prophet Lab weight is 64 before and 67 after; it is already selected
+    by all three probes. Every selected job ID is unchanged, with no
+    entrants or exits. Index is 137 jobs, weight 5920 to 5923; free-content
+    is 137 jobs, weight 5941 to 5944; plan-book is 131 jobs, 5678 to 5681.
+    All six measured plans retain ten packs. Fund precisely those three
+    measured weight units per probe, preserving job caps 137, 138, 131,
+    the ten-pack ceiling, every command, selector and runtime limit.
+    This is an actual paired planning result, not a runtime or full-CI
+    result. It preserves the accepted #7352 contribution and imports no
+    unmerged sibling funding. Native receipt18660 ended at06:57:59 UTC;
+    proof SHA256 99135659f96ebf1182e8e843c1153d7a71347273bd2fcfb890626d70f6bfee0f.
+    Source: PR10180 issuecomment6718493720. Original historical and
+    scientific limitations remain; natural CI must qualify publication.
 
     2026-11-08 (PR #7352, current-main shared-CI conflict repair):
     preserve the accepted research-intelligence model benchmark source and its
