@@ -1,0 +1,31 @@
+.........................                                                [100%]
+==================================== PASSES ====================================
+=========================== short test summary info ============================
+PASSED tests/test_bonds_glance_copy.py::test_page_copy_names_no_data_provider
+PASSED tests/test_bonds_glance_copy.py::test_bonds_hero_uses_snapshot_not_live_badge
+PASSED tests/test_bonds_glance_copy.py::test_backtest_summary_uses_reader_language
+PASSED tests/test_bonds_glance_copy.py::test_jargon_heavy_section_titles_are_plain
+PASSED tests/test_bonds_glance_copy.py::test_supply_and_timeline_use_product_language_not_scoring_internals
+PASSED tests/test_bonds_glance_copy.py::test_calibration_tooltip_is_plain_and_keeps_audit_detail
+PASSED tests/test_bonds_glance_copy.py::test_committed_bonds_page_matches_contract
+PASSED tests/test_bonds_glance_copy.py::test_committed_bonds_stylesheet_is_fingerprinted
+PASSED tests/test_bonds_glance_copy.py::test_gauge_unavailable_has_no_needle_or_scored_label[None-None]
+PASSED tests/test_bonds_glance_copy.py::test_gauge_unavailable_has_no_needle_or_scored_label[score1-None]
+PASSED tests/test_bonds_glance_copy.py::test_gauge_unavailable_has_no_needle_or_scored_label[True-True]
+PASSED tests/test_bonds_glance_copy.py::test_gauge_unavailable_has_no_needle_or_scored_label[False-False]
+PASSED tests/test_bonds_glance_copy.py::test_gauge_unavailable_has_no_needle_or_scored_label[75-75]
+PASSED tests/test_bonds_glance_copy.py::test_gauge_unavailable_has_no_needle_or_scored_label[abc-abc]
+PASSED tests/test_bonds_glance_copy.py::test_gauge_unavailable_has_no_needle_or_scored_label[nan-nan]
+PASSED tests/test_bonds_glance_copy.py::test_gauge_unavailable_has_no_needle_or_scored_label[inf-inf]
+PASSED tests/test_bonds_glance_copy.py::test_gauge_unavailable_has_no_needle_or_scored_label[-inf--inf]
+PASSED tests/test_bonds_glance_copy.py::test_gauge_unavailable_has_no_needle_or_scored_label[-1--1]
+PASSED tests/test_bonds_glance_copy.py::test_gauge_unavailable_has_no_needle_or_scored_label[101-101]
+PASSED tests/test_bonds_glance_copy.py::test_gauge_zero_renders_real_zero
+PASSED tests/test_bonds_glance_copy.py::test_gauge_bounds_and_midpoint
+PASSED tests/test_bonds_glance_copy.py::test_gauge_preserves_builder_missing_and_true_zero[None]
+PASSED tests/test_bonds_glance_copy.py::test_gauge_preserves_builder_missing_and_true_zero[0]
+PASSED tests/test_bonds_glance_copy.py::test_gauge_preserves_builder_missing_and_true_zero[100]
+PASSED tests/test_bonds_glance_copy.py::test_committed_gauge_matches_current_renderer
+25 passed in 1.57s
+
+--- STDERR ---

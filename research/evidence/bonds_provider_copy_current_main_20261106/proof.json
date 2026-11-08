@@ -1,0 +1,144 @@
+{
+  "schema": "macro.bonds_provider_copy.current_main.v1",
+  "prior_head": "1ebefcacefdffb440fbef93f357f7aab7cf53b02",
+  "integration_base": "25c8b039f9d823de6613571d1b7aeec1dcbafedf",
+  "prior_published_blobs": {
+    "site/bonds.html": "a52968aeba8fde539076ad64b40c86c0249ff682",
+    "templates/bonds.html.j2": "f7e0a5e33654223172493d069c648acd9ad0bac4",
+    "tests/test_bonds_glance_copy.py": "b93b602942fca705e4c9e9b3a0ed017bd2cb4459"
+  },
+  "current_main_inputs": [
+    {
+      "path": "config.yml",
+      "blob": "5be75249c98033d7ee0fbe55928713b1f50af627",
+      "sha256": "701229b33bbd6260c561023e2c2611a8fca24bc2c97e784cf97d55aa0357b402",
+      "bytes": 496073
+    },
+    {
+      "path": "lib/__init__.py",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "lib/config.py",
+      "blob": "b6fc888269876242597da354aaa726c20ed95802",
+      "sha256": "fa22ec934ec5294072b6bb4bf081d787f3f8ad5da4702ce3f4818b1674dbd53f",
+      "bytes": 1131
+    },
+    {
+      "path": "lib/illus.py",
+      "blob": "28ad3deaf442d4556326cd60a45b4ff62362492e",
+      "sha256": "983475aff59143c2934541d236121e90ffa342484114b7ce5e0173500fc3fdac",
+      "bytes": 39541
+    },
+    {
+      "path": "lib/pages.py",
+      "blob": "db175c463a31828263b57a3287afba661439a765",
+      "sha256": "9ec5d5ceeff55e5e269c5de26d1f54b9d72db1a755940f7029f47d98820014ba",
+      "bytes": 38933
+    },
+    {
+      "path": "lib/shared_shell.py",
+      "blob": "cffbeba3f8fdcf7a9413d9428aec0154d97d9614",
+      "sha256": "eb1f06843b556968f15a0478d756e8312a3b6f4f4c8cb3daf047a6c438f79c1c",
+      "bytes": 5407
+    },
+    {
+      "path": "scripts/build_bonds.py",
+      "blob": "6cc14c336fb055dca7e773cdb273003bfdb69428",
+      "sha256": "6b23a5397d78fcc41da7187ff2d0dff1d5bcb341cbec5f274aff07638ddfe8eb",
+      "bytes": 97952
+    },
+    {
+      "path": "site/assets/css/080bfc12.css",
+      "blob": "75fa568f0f64a51cf3a1f1070390a7a989ef9731",
+      "sha256": "080bfc127fb8001ac95886c154fb716179e0a1407190cdc4f35236f994e2f3e6",
+      "bytes": 2298
+    },
+    {
+      "path": "site/assets/css/c45789fd.css",
+      "blob": "9c4baf80d5052476b7ba8a44c1d2a2faea6bc0ce",
+      "sha256": "c45789fd45b1faa2c1653af4e7471ddfd85f8e7984525eb435559ffd0cb245aa",
+      "bytes": 23542
+    },
+    {
+      "path": "site/assets/css/ebe31e14.css",
+      "blob": "cdeec5be0635d714fd6e8dcb205c0419cc9853e5",
+      "sha256": "ebe31e1495cecbd47daf8c8c0f07ad95c461826d99b812be603e1017c3884906",
+      "bytes": 30254
+    },
+    {
+      "path": "site/assets/css/fa07e99a.css",
+      "blob": "c5dc8f235e5b3a1bc313d9e2e2e18f4814e567a0",
+      "sha256": "fa07e99a6e84eef9c856700b10a24e88ea18b9c7ef674a1aed42db4fd1798189",
+      "bytes": 7786
+    },
+    {
+      "path": "site/bonds.html",
+      "blob": "4e48e1ce5d544cb39f1b2a92f86533d009e3fab5",
+      "sha256": "7168815355bdf9c72cd4d072516168ec73a542715e7fa41ee72e57ae22f6d8d5",
+      "bytes": 256158
+    },
+    {
+      "path": "templates/bonds.html.j2",
+      "blob": "8bb464cbbc8e9381a66735cc67ceb44429ef6108",
+      "sha256": "361807f52b4321fff22999180181b10dccd12039d2e3103026133bde781f5c33",
+      "bytes": 121174
+    },
+    {
+      "path": "tests/test_bonds_glance_copy.py",
+      "blob": "48e16eb874958cf4d975fb573cc48df025951893",
+      "sha256": "97dc525e4eecf16722cd08f97896a84af2ce31096c8ec2cc0d924304006012de",
+      "bytes": 8144
+    }
+  ],
+  "candidate_source": [
+    {
+      "path": "site/bonds.html",
+      "blob": "9a50b119c4f38c50e9b94e72e0fca7274c10e41d",
+      "sha256": "409d94cb9680863f97ee5664824d5fd5be398c4f93583af9dc6b374e918dcfcd",
+      "bytes": 256184,
+      "mode": "100644"
+    },
+    {
+      "path": "templates/bonds.html.j2",
+      "blob": "f7e0a5e33654223172493d069c648acd9ad0bac4",
+      "sha256": "a785848f7eabed805c67c735d1f60fa3dadba5ec445929937d3c937a48ddad44",
+      "bytes": 121200,
+      "mode": "100644"
+    },
+    {
+      "path": "tests/test_bonds_glance_copy.py",
+      "blob": "b93b602942fca705e4c9e9b3a0ed017bd2cb4459",
+      "sha256": "48d1febed09ab77886c8534f846cbd0e831374e661dfecaaf458cb019619eb72",
+      "bytes": 8596,
+      "mode": "100644"
+    }
+  ],
+  "invariants": {
+    "page_reverse_substitution_exact_main": true,
+    "template_reverse_substitution_exact_main": true,
+    "template_exact_prior_published": true,
+    "test_exact_prior_published": true,
+    "test_additions": 13,
+    "test_deletions": 0,
+    "only_provider_copy_changed": true
+  },
+  "full_t10_rebuild_executed": false,
+  "production_render_accepted": false,
+  "tests": {
+    "command": "python3 (normal startup; in-process pytest) tests/test_bonds_glance_copy.py -q -rA",
+    "network_fence_installed_after_interpreter_startup": true,
+    "exit_code": 0,
+    "elapsed_seconds": 2.574,
+    "log_sha256": "ab221a1e554d6b087af5e93108fc898f096b31859796068d62768eea335ae481",
+    "log_bytes": 2633,
+    "reported_summary": "25 passed in 1.57s",
+    "passed": 25,
+    "failed": 0,
+    "skipped": 0,
+    "deselected": 0,
+    "source_unchanged_after_tests": true
+  }
+}
