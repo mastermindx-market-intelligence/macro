@@ -1,7 +1,7 @@
 {
   "schema": "altdata.mastermind.v1",
-  "as_of": "2026-11-07",
-  "generated_utc": "2026-11-07T23:18:55.690740+00:00",
+  "as_of": "2026-11-08",
+  "generated_utc": "2026-11-08T02:33:13.757071+00:00",
   "contract": "Actionable alt-data axis for the Mastermind bot. Each signal: signal_score 0-100 (composite of weighted convergence + brain conviction + price confirm \u2212 extension), action \u2208 {ACCUMULATE,WATCH,AVOID}, direction \u2208 {long,short,neutral}, source \u2208 {brain,deterministic}. The bot sizes through its OWN risk framework; this is an input, not an order. Brain calls are graded vs SPY (see calibration). An extended name is never ACCUMULATE. trump_linked / affiliations flag actor ties. rolling_over names (off_high\u2264\u221215% AND 20d<0 AND below 50dma) appear in broken_signals only \u2014 crowd attention, NOT entries. entry_tier (T1/T2/T3) = validated confluence buy gate signal.",
   "regime_read": "The strongest measured convergence sits in enterprise technology and semiconductors, but several signals face near-term earnings risk and the track record has only two scored observations. IBM and MU offer the cleanest non-extended alignment; MSFT has credible convergence but is already extended.",
   "brain_present": true,
@@ -21,7 +21,7 @@
     "note": "10 scored, hit-rate 0.9 (directional accuracy 0.9)."
   },
   "n_signals": 65,
-  "n_broken": 48,
+  "n_broken": 50,
   "signals": [
     {
       "ticker": "IBM",
@@ -996,25 +996,25 @@
       "clamped": null
     },
     {
-      "ticker": "KR",
+      "ticker": "IBP",
       "signal_score": 30,
       "conviction": "medium",
       "action": "WATCH",
       "direction": "neutral",
       "source": "deterministic",
-      "weighted_score": 0.7,
+      "weighted_score": 1.0,
       "convergence_score": 2,
       "channels": [
-        "special_situation",
-        "trump"
+        "congress_buy",
+        "material_8k"
       ],
-      "trump_linked": true,
-      "rs_vs_spy_60d": 24.3,
+      "trump_linked": false,
+      "rs_vs_spy_60d": -5.2,
       "no_price_data": false,
       "extended": false,
       "rolling_over": false,
-      "off_high_252": -9.4,
-      "ret_20d": 9.8,
+      "off_high_252": -35.3,
+      "ret_20d": 18.7,
       "above_50dma": true,
       "entry_tier": null,
       "affiliations": [],
@@ -1026,6 +1026,59 @@
     }
   ],
   "broken_signals": [
+    {
+      "ticker": "META",
+      "signal_score": 68,
+      "conviction": "high",
+      "action": "WATCH",
+      "direction": "neutral",
+      "source": "deterministic",
+      "weighted_score": 1.8,
+      "convergence_score": 5,
+      "channels": [
+        "affiliation",
+        "github_momentum",
+        "lobbying",
+        "material_8k",
+        "stocktwits_bull"
+      ],
+      "trump_linked": false,
+      "rs_vs_spy_60d": 7.9,
+      "no_price_data": false,
+      "extended": false,
+      "rolling_over": true,
+      "off_high_252": -21.5,
+      "ret_20d": -15.1,
+      "above_50dma": false,
+      "entry_tier": null,
+      "affiliations": [
+        {
+          "actor": "Mark Zuckerberg",
+          "rel": "CONTROLS",
+          "kind": "exec"
+        },
+        {
+          "actor": "Mark Zuckerberg",
+          "rel": "CONTROLS",
+          "kind": "exec"
+        },
+        {
+          "actor": "Dan Crenshaw",
+          "rel": "HOLDS_STAKE",
+          "kind": "politician"
+        },
+        {
+          "actor": "Bill Ackman",
+          "rel": "AFFILIATES_WITH",
+          "kind": "fund"
+        }
+      ],
+      "n_affiliated_actors": 4,
+      "thesis": null,
+      "second_order": [],
+      "falsifier": null,
+      "clamped": null
+    },
     {
       "ticker": "BA",
       "signal_score": 56,
@@ -1090,58 +1143,6 @@
       "entry_tier": null,
       "affiliations": [],
       "n_affiliated_actors": 0,
-      "thesis": null,
-      "second_order": [],
-      "falsifier": null,
-      "clamped": null
-    },
-    {
-      "ticker": "META",
-      "signal_score": 51,
-      "conviction": "high",
-      "action": "WATCH",
-      "direction": "neutral",
-      "source": "deterministic",
-      "weighted_score": 1.25,
-      "convergence_score": 4,
-      "channels": [
-        "affiliation",
-        "github_momentum",
-        "lobbying",
-        "stocktwits_bull"
-      ],
-      "trump_linked": false,
-      "rs_vs_spy_60d": 7.9,
-      "no_price_data": false,
-      "extended": false,
-      "rolling_over": true,
-      "off_high_252": -21.5,
-      "ret_20d": -15.1,
-      "above_50dma": false,
-      "entry_tier": null,
-      "affiliations": [
-        {
-          "actor": "Mark Zuckerberg",
-          "rel": "CONTROLS",
-          "kind": "exec"
-        },
-        {
-          "actor": "Mark Zuckerberg",
-          "rel": "CONTROLS",
-          "kind": "exec"
-        },
-        {
-          "actor": "Dan Crenshaw",
-          "rel": "HOLDS_STAKE",
-          "kind": "politician"
-        },
-        {
-          "actor": "Bill Ackman",
-          "rel": "AFFILIATES_WITH",
-          "kind": "fund"
-        }
-      ],
-      "n_affiliated_actors": 4,
       "thesis": null,
       "second_order": [],
       "falsifier": null,
@@ -2050,6 +2051,35 @@
       "clamped": null
     },
     {
+      "ticker": "MRVL",
+      "signal_score": 21,
+      "conviction": "medium",
+      "action": "WATCH",
+      "direction": "neutral",
+      "source": "deterministic",
+      "weighted_score": 0.9,
+      "convergence_score": 2,
+      "channels": [
+        "analyst_upgrade_cluster",
+        "material_8k"
+      ],
+      "trump_linked": false,
+      "rs_vs_spy_60d": -31.2,
+      "no_price_data": false,
+      "extended": false,
+      "rolling_over": true,
+      "off_high_252": -55.4,
+      "ret_20d": -48.7,
+      "above_50dma": false,
+      "entry_tier": null,
+      "affiliations": [],
+      "n_affiliated_actors": 0,
+      "thesis": null,
+      "second_order": [],
+      "falsifier": null,
+      "clamped": null
+    },
+    {
       "ticker": "HPE",
       "signal_score": 21,
       "conviction": "medium",
@@ -2069,35 +2099,6 @@
       "rolling_over": true,
       "off_high_252": -39.1,
       "ret_20d": -39.1,
-      "above_50dma": false,
-      "entry_tier": null,
-      "affiliations": [],
-      "n_affiliated_actors": 0,
-      "thesis": null,
-      "second_order": [],
-      "falsifier": null,
-      "clamped": null
-    },
-    {
-      "ticker": "SNAP",
-      "signal_score": 19,
-      "conviction": "medium",
-      "action": "WATCH",
-      "direction": "neutral",
-      "source": "deterministic",
-      "weighted_score": 0.6,
-      "convergence_score": 2,
-      "channels": [
-        "activist_13d",
-        "app_demand"
-      ],
-      "trump_linked": false,
-      "rs_vs_spy_60d": -1.2,
-      "no_price_data": false,
-      "extended": false,
-      "rolling_over": true,
-      "off_high_252": -45.4,
-      "ret_20d": -20.4,
       "above_50dma": false,
       "entry_tier": null,
       "affiliations": [],
