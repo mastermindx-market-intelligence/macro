@@ -1,10 +1,10 @@
-# XG novelty observer — contract v1.5
+# XG novelty observer — contract v1.6
 
 Status: **specification, unbuilt**. Owning card: `t_2bb26bfe`. Author seat: engineering.
-v1.4 split the verdicts, added `connection_count`, `bound_no_endpoint` and the `unowned_bridge`
-gate. v1.5 adds: the **served-vs-on-disk browser version check** (`refused: stale_binary`), the
-bridge **armed/attached** distinction, and the re-pinned accepted fixture. Nothing here grants
-permission, binds an account, or enables a runtime operation.
+v1.6 fixes two defects found by reading the artifacts rather than the reports: a pinned fixture
+that did not contain the value it was pinned for, and a staleness rule whose input does not exist.
+It also promotes `bind_addr` from a schema rule with no consumer to a classified field.
+Nothing here grants permission, binds an account, or enables a runtime operation.
 
 ## Purpose
 
@@ -12,27 +12,27 @@ The harness gate chain validates *intent*. It cannot see that the box is **alrea
 something the registry never declared**. The observer enumerates reality and diffs it against
 declaration.
 
-## Five rules, all load-bearing
+## Six rules, all load-bearing
 
-1. **Readback proves state, not ownership.** The observer may report a resource as `undeclared`.
-   It must never report an identity as `known`, `authorized`, or `ours`. Attribution is separate
-   evidence with a separate owner — argv, plist, manifest, payment trail.
-2. **A self-report cannot be the observer.** The snapshot comes from a process independent of the
-   subject's tree. A README, a health script, `DevToolsActivePort`, an env report: corroboration,
-   never observation.
-3. **A diff across a tool change is not a time series.** Compare only snapshots with matching
-   `sweep_script_sha256` and tool identity; otherwise `refused: tool_changed`.
-4. **A bound socket is not an endpoint.** `lsof` proves a port is held; only a probe proves
-   something is served. Nothing is said about exposure or drivability before the probe.
-5. **A process is not its bundle.** `/json/version` reports the version the process *executed*;
-   the app bundle reports the version *on disk*. They diverge after an in-place update that never
-   restarted the process, and the divergence is what matters, not either number alone.
+1. **Readback proves state, not ownership.** Report `undeclared`; never `known`, `authorized`, or
+   `ours`. Attribution is separate evidence with a separate owner — argv, plist, manifest, payment.
+2. **A self-report cannot be the observer.** A README, health script, `DevToolsActivePort`,
+   environment report: corroboration, never observation.
+3. **A diff across a tool change is not a time series.** Matching `sweep_script_sha256` and tool
+   identity or `refused: tool_changed`.
+4. **A bound socket is not an endpoint.** `lsof` proves the port is held; only a probe proves
+   something is served.
+5. **A process is not its bundle.** Staleness is a *time* comparison, not a version-string
+   comparison: a process is stale when `started_at` is older than the mounted framework directory
+   it runs from. This fires for processes that answer 404, which the endpoint-based version had no
+   way to reach.
+6. **A field with no consumer is a comment.** Every schema rule names the reader that acts on it.
+   `bind_addr` was nullable-by-accident for six rounds because nothing classified on it; it now
+   classifies, and it is how a wildcard listener entered the record.
 
 ## Snapshot contract
 
-One JSON document per host per sweep, consumed as a **pure input** (no import from
-`tools/xguerrilla/`, no shared helper module), so the observer can ship while the harness PR is a
-draft.
+Pure input for the harness: no import from `tools/xguerrilla/`, no shared helper module.
 
 ```jsonc
 {
@@ -42,132 +42,142 @@ draft.
   "observer": "hermes",
   "provenance": {
     "ssh_target": "mini1",
-    "commands": ["launchctl print", "lsof -nP -iTCP -sTCP:LISTEN", "ps axo pid,ppid,command", "curl /json/version"],
+    "commands": ["launchctl print", "lsof -nP -iTCP -sTCP:LISTEN", "ps axo pid,ppid,lstart,command",
+                 "curl /json/version", "lsof -p <pid> (framework map)"],
     "tools": {"macos": "27.0 (26A428)", "lsof": "4.91"},
     "sweep_script_sha256": "f99242c4ef2ebbed4b776beca5fe6c6f87e8d7531df8bc89ba0be6025011b286",
     "mutating": false
   },
   "collection_status": "complete",
-  "collected": { "hosts_attempted": ["mini1","mini2","mini3","mini4"],
-                 "hosts_returned": ["mini1"],
+  "collected": { "hosts_attempted": ["mini1","mini2","mini3","mini4"], "hosts_returned": ["mini1"],
                  "commands_run": [{"cmd": "lsof -nP -iTCP -sTCP:LISTEN", "exit": 0}],
                  "command_failures": [{"host": "mini2", "cmd": "ssh", "error": "Could not resolve hostname"}] },
-  "listeners": [{"port": 9223, "bind_addr": "127.0.0.1", "pid": 35984, "proc": "Google Chrome"}],
-  "endpoints": [{"port": 9223, "http": 200, "serving": true, "browser": "Chrome/155.0.8059.40",
-                 "protocol": "1.3", "peers": 1}],
-  "host_software": [{"bundle": "/Applications/Google Chrome.app", "version": "157.0.8103.38",
-                     "info_plist_mtime": "2026-11-03T16:32:55-08:00"}],
-  "connection_count": 2,
+  "listeners": [{"port": 9223, "bind_addr": "127.0.0.1", "pid": 35984, "proc": "Google Chrome"},
+                {"port": 3283, "bind_addr": "*", "pid": 34487, "proc": "ARDAgent"}],
+  "endpoints": [{"port": 9223, "http": 200, "serving": true, "browser": "Chrome/155.0.8059.40", "peers": 1},
+                {"port": 9222, "http": 404, "serving": false, "browser": null, "peers": 0}],
+  "host_software": {"app": "/Applications/Google Chrome.app",
+                    "framework_versions": [{"version": "155.0.8059.40", "mtime": "2026-10-12T19:06:33-07:00"},
+                                           {"version": "156.0.8078.80", "mtime": "2026-11-02T15:27:50-08:00"},
+                                           {"version": "157.0.8103.38", "mtime": "2026-11-03T16:32:54-08:00"}]},
+  "chrome": [{"pid": 35984, "started_at": "2026-10-23T15:39:13-07:00", "cdp_port": 9223,
+              "profile_dir": "~/.local/share/mastermind-runtime/chrome-automation",
+              "mounted_framework": "155.0.8059.40"}],
+  "connection_count": 3,
   "cdp_sessions": [{"pid": 17665, "local": "127.0.0.1:60998", "remote_port": 9223, "state": "ESTABLISHED"}],
   "socket_ends":  [{"pid": 35984, "local_port": 9223, "peer": "127.0.0.1:60998", "state": "ESTABLISHED"}],
-  "launchd": [{"label": "com.mastermind.peekaboo-bridge", "plist_path": "...", "pid": 17533,
-               "start_interval_s": 60, "runs": 21944, "bootout_authority": null}]
+  "launchd": [{"label": "com.mastermind.peekaboo-bridge", "pid": 17533, "start_interval_s": 60,
+               "runs": 21944, "bootout_authority": null}]
 }
 ```
 
 ### Shape rules
 
-- **`cdp_sessions` is client-side only**; echoes live in `socket_ends[]`. `connection_count` is the
-  number to read, and `len(cdp_sessions) == connection_count`. Dedupe key is `(pid, remote_port)` —
-  a local port changes on every keepalive reconnect and would score phantom churn.
-- **Single types everywhere**: `hosts_returned` always a list of names; ports always integers.
-- **`bind_addr` non-nullable** on every listener. `*` or `0.0.0.0` on a CDP surface is an incident.
-- **`socket_ends` is advisory.** An absent echo during a reconnect is normal; no count may be
-  derived from it, and a consumer must never infer a fault from one.
-- **The manifest carries its own `schema_version` and `sweep_script_sha256`**, so a
-  manifest-vs-manifest diff is self-evaluating.
-- **Verdicts occupy three keys, never one**: `socket_verdicts[]`, `artifact_verdict`,
-  `comparison_verdict`. A per-port table must never be asked to print an artifact verdict.
+- `cdp_sessions` client-side only; echoes in `socket_ends[]`; `len(cdp_sessions) == connection_count`;
+  dedupe key `(pid, remote_port)`.
+- Single types: `hosts_returned` always a list; ports always integers.
+- `bind_addr` non-nullable, and **every listener is classified**, not just CDP ports. A non-loopback
+  bind is `undeclared` until a declaration of record exists; it is never silently out of scope
+  because the registry was scoped to three ports.
+- `socket_ends` advisory; no count may be derived from it.
+- The manifest carries `schema_version` and `sweep_script_sha256`.
+- Verdicts occupy three keys: `socket_verdicts[]`, `artifact_verdict`, `comparison_verdict`.
+- **`mounted_framework` is read from `lsof -p <pid>`**, not inferred from argv or from the app
+  bundle. It is the only honest discriminator: Chrome retains old version directories, so a
+  `(deleted)` mapping scan returns **0 rows on a five-week-old renderer**.
 
 ## Verdicts
 
-**Socket:** `declared` | `baseline` | `undeclared` (**refuse**) | `bound_no_endpoint`
-(**not registrable** — a socket with no identity). `baseline` may never admit a Chrome CDP
-listener; that would launder a product into the operating system.
+**Socket:** `declared` | `baseline` | `undeclared` (refuse) | `bound_no_endpoint` (not registrable).
+`baseline` may never admit a Chrome CDP listener, nor a GUI-automation agent reachable off-box.
 
 **Artifact:** `complete` | `refused: collection_incomplete` | `refused: schema_unsupported`.
 
 **Comparison:** `comparable` | `refused: tool_changed`.
 
-**Gate (blocks a launch, evaluated per identity):**
+**Gate (blocks a launch):**
 
-| gate verdict | condition | meaning |
+| gate | condition | meaning |
 |---|---|---|
-| `refused: unowned_bridge` | `owner_bridge.bootout_authority` is null and the bridge is `attached` **or** `armed` | nobody on record can stop the surface the driver would ride |
-| `refused: stale_binary` | `endpoints[].browser` major ≠ `host_software[].version` major for the app that owns the process | the process is executing a pre-update image |
-| `refused: endpoint_absent` | `bound_no_endpoint` on a port the registry would bind | a socket with no identity cannot be admitted |
+| `refused: unowned_bridge` | `bootout_authority` null and bridge `attached` or `armed` | nobody on record can stop the surface |
+| `refused: stale_binary` | `chrome[].started_at` < mtime of `mounted_framework` | process executing a pre-update image |
+| `refused: endpoint_absent` | `bound_no_endpoint` on a port the registry would bind | socket without an identity |
 
-### Why `stale_binary` exists
+### Staleness, measured (mini1, 2026-11-08)
 
-Measured on mini1, 2026-11-08: all three Chrome mains run the **same** bundle,
-`/Applications/Google Chrome.app`, whose on-disk version is `157.0.8103.38` (Info.plist mtime
-Nov 3). Yet `:9223` serves `Chrome/155.0.8059.40` and `:9333` serves `Chrome/157.0.8103.38`. Same
-bundle, different served majors — because pid 35984 has been running since Oct 23 and survived the
-in-place update. This is **not** two installs and **not** a frozen browser without an update path;
-it is a long-lived process executing an unpatched binary image, two majors behind the disk. That
-distinction changes the remediation (restart the process, not reinstall the app) and it is only
-visible when served and on-disk versions are both recorded.
+Framework dirs on disk: `155.0.8059.40` (Oct 12), `156.0.8078.80` (Nov 2), `157.0.8103.38` (Nov 3).
+`Info.plist` and `Contents/MacOS/Google Chrome` both mtime **Nov 3 16:32**; bundle version **157**.
+`lsof -p 35984` and `lsof -p 34493` both map `Versions/155.0.8059.40`. Both processes started
+Oct 23, so both have skipped **two** in-place updates, and `(deleted)` mappings = **0** for each.
+The endpoint-based rule could only ever see 35984 (serving) and never 34493 (404). The
+`started_at`-vs-framework rule sees both, plus all four instrumented-profile siblings.
 
 ### Bridge states
 
-`owner_bridge.state`: `attached` (live client sessions) | `armed` (process alive, keepalive loaded,
-zero sessions) | `absent`. **`armed` is a refusal too**, because the next attach is one
-`StartInterval` tick away — on mini1 the Peekaboo bridge was observed `armed` at 08:52Z: pid 17533
-resident since 05:02:01, keepalive `runs = 21944`, `connection_count` down to 2. "It stopped" was
-half true, and only the snapshot says which half.
+`attached` | `armed` (process alive, keepalive loaded, zero sessions) | `absent`. `armed` refuses:
+on mini1 the Peekaboo bridge was `armed` at 08:52Z — pid 17533 resident since 05:02:01,
+`runs = 21944`, sessions zero.
+
+## Sampling, not scalars
+
+`connection_count` on this stack is **bistable at heartbeat phase**: three runs inside 08:52:00–08:52:17
+read `2`, `3`, `3`, with Peekaboo's local port moving `63278 → 65011` inside seventeen seconds.
+A fixture therefore **may not assert a scalar** `connection_count`. It asserts the **persistent set**
+— `17665 → 9223` and the `com.xg.proxyauth` child → `9333`, present in every run — and treats the
+Peekaboo attach as the periodic term it is. Any comparison of counts must sample across ≥ one full
+`StartInterval` (60 s) or report the heartbeat as drift.
 
 ## Registry addition (delta on v1)
 
 ```yaml
 binding:
   cdp_port: 9223
-  browser_version: "155.0.8059.40"   # served version, recorded at admission, re-checked at launch
+  browser_version: "155.0.8059.40"
+  mounted_framework_at_admission: "155.0.8059.40"   # re-checked at launch against lsof
 owner_bridge:
   label: com.mastermind.peekaboo-bridge
-  plist_path: /Users/mini1/Library/LaunchAgents/com.mastermind.peekaboo-bridge.plist
   plist_sha256: "<sha>"
   start_interval_s: 60
-  state: armed                       # attached | armed | absent
-  bootout_authority: null            # a seat or a human; null ⇒ refused: unowned_bridge
+  state: armed
+  bootout_authority: null
 ```
-
-## Content addressing
-
-The harness takes `{path, sha256, taken_at}` — never a bare path — and writes the sha256 into the
-admission receipt. `~/.hermes/reports/` is a mutable user directory.
 
 ## Accepted fixture
 
-**Pinned:** run of **2026-11-08T08:52:17Z**, `sweep.py` v1.4 with `endpoints[]`,
-`script_sha256 f99242c4ef2ebbed4b776beca5fe6c6f87e8d7531df8bc89ba0be6025011b286`,
-manifest sha256 **`5497ef0d818f7b271e3db1082874f8410b70b34b707006e6002788848f6a007c`**,
-`connection_count: 2`, `endpoints`: 9222 `bound_no_endpoint` / 9223 serving 155 / 9333 serving 157.
+**Pinned:** sweep **2026-11-08T08:52:17Z**, `script_sha256 f99242c4ef2ebbed4b776beca5fe6c6f87e8d7531df8bc89ba0be6025011b286`,
+manifest **`5497ef0d818f7b271e3db1082874f8410b70b34b707006e6002788848f6a007c`**, mini1 payload
+`connection_count: 3`, three client rows (17533→9223:65011, 17665→9223, 67710→9333).
 
-**Single-run caveat:** `connection_count: 2` is one observation on a new parser. Per rule 3 the
-prior 3 is not comparable, so 2 is not yet a stable baseline — it becomes one only when a second
-run on the same `script_sha256` reproduces it.
+Correction recorded in the artifact rather than in chat: an earlier version of this section pinned
+the same manifest as `connection_count: 2`. The manifest was right and the pin was wrong — 2 was
+read from a report, not from the payload. The adjacent 08:52:00 manifest (`b188d51c64bf6fd7…`)
+is the run where Peekaboo is absent. Both are kept as the bistability evidence.
 
-**Superseded and not diffable:** `5458165275ab…` (v1.3 shape, `92ddfb15…`), `362919cc…` (v1.2),
-`68589392…` (pre-dedupe). The v1.3 → v1.4 `3 → 2` change is the canonical example of rule 3 in
-practice: it spans a parser change, so it is a re-baseline, not a delta.
+Gaps the fixture does not close, and must not pretend to: `host_software` and `mounted_framework`
+are **absent** from all three payloads (`071251`, `085200`, `085217`), so acceptance item 12 cannot
+be satisfied by this fixture. It needs one run with the framework section emitted.
+
+**Superseded, not diffable:** `5458165275ab…` (v1.3 shape), `362919cc…` (v1.2), `68589392…` (pre-dedupe).
 
 ## Acceptance evidence (required before this leaves draft)
 
 1. Diff-rule unit tests: `declared` / `baseline` / `undeclared` / `bound_no_endpoint`.
 2. `provenance` missing or `mutating: true` → refused.
-3. The pinned fixture above, stored verbatim, **plus** a second run on the same script sha.
+3. The pinned fixture stored verbatim, **asserting the persistent set, not a connection count**.
 4. Negative test: observer reports `undeclared`, never `known`.
-5. `schema_version: 2`, or a newer registry revision → `refused: schema_unsupported`.
-6. Non-empty `command_failures` / a host that did not answer → `refused: collection_incomplete`,
-   and neither passes as "no findings".
+5. `schema_version: 2` or newer registry revision → `refused: schema_unsupported`.
+6. Non-empty `command_failures` / silent host → `refused: collection_incomplete`, never "no findings".
 7. Allowlist entry missing `reason`/`added_by`, or `host_seed_sha` mismatch → refused.
 8. Snapshot sha256 not matching the admission receipt → refused.
-9. Two snapshots differing only in `sweep_script_sha256` → `refused: tool_changed`, with **no**
-   connection-count delta emitted.
-10. Endpoint test: held socket + 404/empty probe → `bound_no_endpoint`, never an exposure.
-11. Bridge test: `bootout_authority: null` with bridge `attached` **or** `armed` →
-    `refused: unowned_bridge` at launch, not a warning at snapshot time.
-12. Version test: served major ≠ on-disk major → `refused: stale_binary`, and the fixture proves
-    the same-bundle-two-versions case rather than two installs.
+9. Two snapshots differing only in `sweep_script_sha256` → `refused: tool_changed`, no delta emitted.
+10. Endpoint test: held socket + 404 → `bound_no_endpoint`, never an exposure.
+11. Bridge test: null `bootout_authority` with bridge `attached` **or** `armed` → `refused: unowned_bridge`.
+12. Staleness test: a process whose `started_at` precedes its `mounted_framework` mtime →
+    `refused: stale_binary`; the fixture must include a **404-answering** process, or the test
+    proves only the easy case.
+13. Wildcard test: a listener with `bind_addr` not loopback and no declaration of record →
+    `undeclared`, emitted in `socket_verdicts[]` — not omitted for being outside the CDP scope.
+14. Sampling test: three runs spanning one `StartInterval`; the assertion is on the persistent set
+    and the verdict is stable, not on a scalar that flips with the heartbeat.
 
-Absent those twelve, the observer is a document, not an artifact.
+Absent those fourteen, the observer is a document, not an artifact.
