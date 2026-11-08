@@ -1,0 +1,479 @@
+{
+  "artifact": "D08D capability ledger; not a runtime registry",
+  "counts": {
+    "RETAIN": 25,
+    "IMPROVE": 21,
+    "RELOCATE": 1,
+    "BLOCKED_DATA": 5
+  },
+  "entries": [
+    {
+      "id": "F01",
+      "capability": "ES/SPX and NQ/NDX identity; named futures contract",
+      "baseline": "FuturesRequest + transport",
+      "disposition": "RETAIN",
+      "destination": "Replay identity header / evidence",
+      "reason": "Pair controls never substitute SPY/QQQ; source owns active contract",
+      "dependency": "Terminal/source owner"
+    },
+    {
+      "id": "F02",
+      "capability": "Strict futures query including duplicates and unknown keys",
+      "baseline": "futuresRequest.ts",
+      "disposition": "RETAIN",
+      "destination": "Existing parser at page/API boundaries",
+      "reason": "No return keys, silent normalization or arbitrary date API",
+      "dependency": "D08 / Terminal"
+    },
+    {
+      "id": "F03",
+      "capability": "1/5-minute interval and 1/4/8-tick row grouping",
+      "baseline": "FuturesWorkspaceView",
+      "disposition": "RETAIN",
+      "destination": "Controls disclosure + summary",
+      "reason": "0.25 tick → 0.25/1.00/2.00 points; variant availability explicit",
+      "dependency": "Terminal"
+    },
+    {
+      "id": "F04",
+      "capability": "All, source-session zero/ex-zero and date expiry lenses",
+      "baseline": "FuturesWorkspaceView + source join",
+      "disposition": "IMPROVE",
+      "destination": "Controls; qualifier beside exposure",
+      "reason": "Separate expiry lens from futures contract selection and source session from intraday tradability",
+      "dependency": "D08B"
+    },
+    {
+      "id": "F05",
+      "capability": "Ratio/basis index-to-futures mapping",
+      "baseline": "futuresGexProjection",
+      "disposition": "RETAIN",
+      "destination": "Controls and evidence",
+      "reason": "Keep exact method, quote clocks, skew and original units",
+      "dependency": "D08B / source"
+    },
+    {
+      "id": "F06",
+      "capability": "Depth with displayed-order coverage and gaps",
+      "baseline": "FuturesMicrostructureChart",
+      "disposition": "IMPROVE",
+      "destination": "Primary chart + accessible depth table",
+      "reason": "Preserve observed depth on no-trade intervals; missing depth is a marked gap",
+      "dependency": "Terminal"
+    },
+    {
+      "id": "F07",
+      "capability": "Footprint buy/sell, unknown side, imbalances",
+      "baseline": "FuturesMicrostructureChart",
+      "disposition": "RETAIN",
+      "destination": "Primary view tab + contained table",
+      "reason": "Do not label resting liquidity as executed volume; unknown side stays explicit",
+      "dependency": "Terminal"
+    },
+    {
+      "id": "F08",
+      "capability": "Captured volume and known-side delta",
+      "baseline": "FuturesWorkspaceView",
+      "disposition": "IMPROVE",
+      "destination": "Two primary statistics plus coverage detail",
+      "reason": "Loaded-window basis; qualify partial capture next to values",
+      "dependency": "Terminal"
+    },
+    {
+      "id": "F09",
+      "capability": "CVD known-side and incomplete total semantics",
+      "baseline": "futuresWorkspace / chart",
+      "disposition": "RETAIN",
+      "destination": "Optional lower plot and evidence",
+      "reason": "Preserve baseline, null full-CVD, unknown-side accounting and gaps",
+      "dependency": "Terminal"
+    },
+    {
+      "id": "F10",
+      "capability": "Price zoom 1×/2× and responsive visible footprint count",
+      "baseline": "FuturesMicrostructureChart",
+      "disposition": "RETAIN",
+      "destination": "Display controls; chart footer",
+      "reason": "No source quantity changes; report narrower visible range",
+      "dependency": "Terminal"
+    },
+    {
+      "id": "F11",
+      "capability": "GEX show/hide, mapped strike rows and scale legend",
+      "baseline": "FuturesMicrostructureChart + workspace",
+      "disposition": "RETAIN",
+      "destination": "Exposure layer disclosure and evidence table",
+      "reason": "USD millions per 1% index move, estimate; no native futures-gamma claim",
+      "dependency": "D08B"
+    },
+    {
+      "id": "F12",
+      "capability": "Call wall, put wall, gamma flip / all-expiry scope",
+      "baseline": "futuresGexLevels / chart",
+      "disposition": "RETAIN",
+      "destination": "Chart labels and accessible key-level table",
+      "reason": "Preserve source-owned values, mapped precision and collision layout",
+      "dependency": "D08B"
+    },
+    {
+      "id": "F13",
+      "capability": "Observed captured-window point of control",
+      "baseline": "futuresVolumeProfile / chart",
+      "disposition": "RETAIN",
+      "destination": "Footprint and evidence",
+      "reason": "Observed executions only; not exchange-wide/session POC",
+      "dependency": "Terminal"
+    },
+    {
+      "id": "F14",
+      "capability": "Cash-closed or unavailable gamma with valid futures flow",
+      "baseline": "source join + UI copy",
+      "disposition": "IMPROVE",
+      "destination": "Layer-specific unavailable notice",
+      "reason": "Withhold only unqualified gamma, retain valid depth/executions",
+      "dependency": "D08B / source"
+    },
+    {
+      "id": "F15",
+      "capability": "Latest / historical cutoff selector",
+      "baseline": "workspace + source join",
+      "disposition": "IMPROVE",
+      "destination": "Prominent replay strip",
+      "reason": "Requested and effective time; available versus loaded bounds",
+      "dependency": "D08D / source"
+    },
+    {
+      "id": "F16",
+      "capability": "Historical no-poll; latest bounded polling, hidden abort, owner key",
+      "baseline": "useFuturesWorkspace",
+      "disposition": "RETAIN",
+      "destination": "Existing reader hook",
+      "reason": "5s latest / 15s transient; no overlapping reader or duplicate engine",
+      "dependency": "Terminal"
+    },
+    {
+      "id": "F17",
+      "capability": "403/401 clearing, terminal request/rate/source restrictions",
+      "baseline": "useFuturesWorkspace + API",
+      "disposition": "RETAIN",
+      "destination": "Access/status presentation",
+      "reason": "No stale protected response after account change; no blind retry",
+      "dependency": "Access / source"
+    },
+    {
+      "id": "F18",
+      "capability": "Source-as-of, publication, fresh-until and definition checks",
+      "baseline": "futuresTransport",
+      "disposition": "IMPROVE",
+      "destination": "Evidence clocks and freshness strip",
+      "reason": "Age of archive is distinct from stale latest source",
+      "dependency": "Terminal / source"
+    },
+    {
+      "id": "F19",
+      "capability": "Weekly COT positions and OI changes",
+      "baseline": "FuturesCotPanel + futuresCot",
+      "disposition": "RELOCATE",
+      "destination": "Below-chart Weekly positioning disclosure",
+      "reason": "Retain four groups and links; separately dated context with replayEligible:false",
+      "dependency": "Existing CFTC reader"
+    },
+    {
+      "id": "F20",
+      "capability": "CFTC source date, retrieved time and null comparison",
+      "baseline": "futuresCot",
+      "disposition": "RETAIN",
+      "destination": "Weekly positioning details",
+      "reason": "Weekly context is excluded from selected-observation evidence",
+      "dependency": "Existing CFTC reader"
+    },
+    {
+      "id": "F21",
+      "capability": "EN/ZH via one language provider",
+      "baseline": "futuresUiCopy",
+      "disposition": "RETAIN",
+      "destination": "Shared language control and local copy",
+      "reason": "No second locale store or language-driven side-color swap",
+      "dependency": "F01 / Terminal"
+    },
+    {
+      "id": "F22",
+      "capability": "Source distribution versus customer plan gate",
+      "baseline": "Hub + futures API",
+      "disposition": "IMPROVE",
+      "destination": "Specific refusal state when established",
+      "reason": "Subscriber feature is not a CME distribution license",
+      "dependency": "Publisher / access"
+    },
+    {
+      "id": "E01",
+      "capability": "One exact uppercase equity symbol; default NVDA for direct entry",
+      "baseline": "equity replay page",
+      "disposition": "RETAIN",
+      "destination": "Existing route parser",
+      "reason": "No extra cursor, origin or session query; incoming unsupported symbols do not silently default",
+      "dependency": "D08 / Terminal"
+    },
+    {
+      "id": "E02",
+      "capability": "NVDA/SPY/QQQ plus exact incoming symbol choices",
+      "baseline": "IexDepthReplayView",
+      "disposition": "RETAIN",
+      "destination": "Instrument picker",
+      "reason": "Presence in picker does not assert an admitted archive",
+      "dependency": "Terminal / publisher"
+    },
+    {
+      "id": "E03",
+      "capability": "IEX venue-only historical share scope",
+      "baseline": "IEX reader / view",
+      "disposition": "IMPROVE",
+      "destination": "Permanent identity line",
+      "reason": "No consolidated NBBO, live CME, options-gamma or trading-edge implication",
+      "dependency": "D08D"
+    },
+    {
+      "id": "E04",
+      "capability": "Observed snapshot slider and latest-retained behavior",
+      "baseline": "IexDepthReplayView",
+      "disposition": "IMPROVE",
+      "destination": "Replay strip with proposed previous/next and full retained-array picker",
+      "reason": "Exact entry resolution, commit/cancel and coherent inspector follow the same native selection",
+      "dependency": "D08D / Terminal"
+    },
+    {
+      "id": "E05",
+      "capability": "Nanosecond market/acquisition clocks and native sequence",
+      "baseline": "iexDepthReplay.ts",
+      "disposition": "IMPROVE",
+      "destination": "Evidence with exact values",
+      "reason": "No Number conversion for identity; ordinal only under verified artifact",
+      "dependency": "Terminal / D08D"
+    },
+    {
+      "id": "E06",
+      "capability": "Depth snapshot visualization of last 60 selected-prefix samples",
+      "baseline": "DepthSnapshots",
+      "disposition": "RETAIN",
+      "destination": "Depth tab; window count and ordinal axis",
+      "reason": "Equal sample spacing is not elapsed time; no future-prefix leakage",
+      "dependency": "Terminal"
+    },
+    {
+      "id": "E07",
+      "capability": "Near observed top ±1% / all retained levels",
+      "baseline": "iexDepthPriceRange",
+      "disposition": "RETAIN",
+      "destination": "Display controls",
+      "reason": "Price view affects picture only; totals retain all observed orders",
+      "dependency": "Terminal"
+    },
+    {
+      "id": "E08",
+      "capability": "Bid/ask observed totals and order count",
+      "baseline": "IEX sample contract",
+      "disposition": "IMPROVE",
+      "destination": "Statistics and evidence",
+      "reason": "Withheld book displays dashes; schema zero is not observed market zero",
+      "dependency": "Terminal"
+    },
+    {
+      "id": "E09",
+      "capability": "Executed-share profile with buy/sell/unknown",
+      "baseline": "iexExecutionProfile",
+      "disposition": "RETAIN",
+      "destination": "Executed volume tab + table",
+      "reason": "Reuse Large Trades correction engine; native sequence first",
+      "dependency": "Terminal"
+    },
+    {
+      "id": "E10",
+      "capability": "Trade breaks, duplicate/conflicting identities and unmatched cancels",
+      "baseline": "largeTrades engine",
+      "disposition": "RETAIN",
+      "destination": "Accounting qualifier in evidence",
+      "reason": "Later native records do not revise earlier selected states",
+      "dependency": "Terminal"
+    },
+    {
+      "id": "E11",
+      "capability": "First 64 price rows with complete captured totals disclosure",
+      "baseline": "IexDepthReplayView",
+      "disposition": "RETAIN",
+      "destination": "Executed-volume table footer",
+      "reason": "Existing disclosure retained; no new pagination endpoint promised",
+      "dependency": "Terminal"
+    },
+    {
+      "id": "E12",
+      "capability": "Sample retention and level truncation flags",
+      "baseline": "DepthSampler / reader",
+      "disposition": "IMPROVE",
+      "destination": "Visible coverage line + details",
+      "reason": "Partial capture is prominent; explain max-levels versus full observed totals",
+      "dependency": "IEX producer"
+    },
+    {
+      "id": "E13",
+      "capability": "Source-gap/prefix, order-chain and multiple-stream states",
+      "baseline": "IEX parser",
+      "disposition": "IMPROVE",
+      "destination": "Gap at cursor, exact typed reason in evidence",
+      "reason": "Never interpolate a missing book or show withheld totals as zero",
+      "dependency": "IEX producer"
+    },
+    {
+      "id": "E14",
+      "capability": "Artifact hash and servedAt already returned by client",
+      "baseline": "fetchLargeTrades; currently dropped by view",
+      "disposition": "IMPROVE",
+      "destination": "Carry through reader state into evidence",
+      "reason": "Source hash alone does not identify the current sampled artifact",
+      "dependency": "Terminal"
+    },
+    {
+      "id": "E15",
+      "capability": "Distinct signed-out/denied/rate/invalid/unavailable outcomes",
+      "baseline": "fetchLargeTrades; collapsed by view",
+      "disposition": "IMPROVE",
+      "destination": "Honest access and failure states",
+      "reason": "Preserve established reason; unknown remains generic",
+      "dependency": "Terminal / access"
+    },
+    {
+      "id": "E16",
+      "capability": "Refresh clears cursor to latest, artifact may change",
+      "baseline": "IexDepthReplayView",
+      "disposition": "IMPROVE",
+      "destination": "Explicit publication-change transition",
+      "reason": "Do not silently rebind inspected evidence by a fresh array index",
+      "dependency": "Terminal / D08D"
+    },
+    {
+      "id": "E17",
+      "capability": "IEX attribution and terms link",
+      "baseline": "sourceAdmission + view",
+      "disposition": "RETAIN",
+      "destination": "Source and limitations disclosure",
+      "reason": "Required attribution survives mobile, themes and localization",
+      "dependency": "Publisher"
+    },
+    {
+      "id": "E18",
+      "capability": "Partial archive and absence of original intraday knowledge",
+      "baseline": "IEX provenance",
+      "disposition": "IMPROVE",
+      "destination": "Historical/acquired-later labels",
+      "reason": "Knowledge cutoff is archive acquisition, not a reconstructed live receipt",
+      "dependency": "IEX producer"
+    },
+    {
+      "id": "J01",
+      "capability": "Generic Options / price chart / sibling replay links",
+      "baseline": "Both current replay views",
+      "disposition": "IMPROVE",
+      "destination": "Qualified origin return plus tools menu",
+      "reason": "Sender-owned context first; generic destination accurately labeled fallback",
+      "dependency": "D08 / D06"
+    },
+    {
+      "id": "J02",
+      "capability": "Existing Macro allowlist, embedded close and company search history",
+      "baseline": "originNav / companySearchContext",
+      "disposition": "RETAIN",
+      "destination": "Existing origin owner",
+      "reason": "Do not widen cross-origin permissions or overload closed company-search shape",
+      "dependency": "D06 / F01"
+    },
+    {
+      "id": "J03",
+      "capability": "Exact origin view/filter/row/focus/scroll restoration",
+      "baseline": "D08 semantic interface; not implemented end-to-end",
+      "disposition": "BLOCKED_DATA",
+      "destination": "Proposed return adapter owned by sender/integration",
+      "reason": "Requires actual existing-owner codec and path proof",
+      "dependency": "D08 / D06 / D08A"
+    },
+    {
+      "id": "J04",
+      "capability": "Durable observation save and later reconstruction",
+      "baseline": "D08/D23 semantic boundary; no replay save API identified",
+      "disposition": "BLOCKED_DATA",
+      "destination": "Existing Investigation / D23 after admitted contract",
+      "reason": "No duplicate evidence store, fake Saved toast or current-artifact substitution",
+      "dependency": "D23 / archive owner"
+    },
+    {
+      "id": "J05",
+      "capability": "Guest, verified plan and unverified access presentation",
+      "baseline": "OptionsPaywall + APIs",
+      "disposition": "IMPROVE",
+      "destination": "Replay-specific access panel preserving request/return",
+      "reason": "Current generic live-options pitch does not explain historical replay",
+      "dependency": "Access / D08"
+    },
+    {
+      "id": "J06",
+      "capability": "Responsive keyboard/touch and chart text alternatives",
+      "baseline": "Current chart SVG/native controls",
+      "disposition": "IMPROVE",
+      "destination": "One adaptive page and evidence overlay",
+      "reason": "44px house controls, non-drag selection and no page overflow",
+      "dependency": "F01 / F02 / Terminal"
+    },
+    {
+      "id": "J07",
+      "capability": "Dark/light and EN/ZH parity",
+      "baseline": "Current feature copy + shared foundation candidate",
+      "disposition": "IMPROVE",
+      "destination": "Shared theme roles and local copy",
+      "reason": "Final compositions await foundation/Paper gates; no independent palette plane",
+      "dependency": "F01 / F02"
+    },
+    {
+      "id": "J08",
+      "capability": "Native beta projection/registry admission",
+      "baseline": "Programme census excludes equity replay from current 17 native paths",
+      "disposition": "BLOCKED_DATA",
+      "destination": "Existing registry/publisher/F03 admission only",
+      "reason": "Source path and current direct URL reachability do not establish official admission",
+      "dependency": "F03 / incumbent publisher"
+    },
+    {
+      "id": "J09",
+      "capability": "Dev futures, futures-sample and options-plan production guards",
+      "baseline": "All three page modules and guarded development imports; options-plan live404",
+      "disposition": "RETAIN",
+      "destination": "Development harnesses only; production404 retained",
+      "reason": "Synthetic ResearchLab and verified local sample outputs never become customer fallback, menu entry or admission expansion",
+      "dependency": "Existing harness owner"
+    },
+    {
+      "id": "J10",
+      "capability": "Source inspection/publish authorization boundary",
+      "baseline": "Historical research + source owners",
+      "disposition": "RETAIN",
+      "destination": "Existing rights/installation owner",
+      "reason": "No feed purchase, source-config retry, capture installation or new publisher",
+      "dependency": "Incumbent source owner"
+    },
+    {
+      "id": "P01",
+      "capability": "Autoplay, speed and arbitrary archive/date catalog",
+      "baseline": "No current route capability",
+      "disposition": "BLOCKED_DATA",
+      "destination": "Proposal only, outside active control set",
+      "reason": "Requires retained-observation stepping contract/calendar/history owner; no fake 1× clock",
+      "dependency": "D08 / archive owner"
+    },
+    {
+      "id": "P02",
+      "capability": "Dedicated editable Paper file and immutable visual freeze",
+      "baseline": "Proposed MM · Futures & Replay; no IDs",
+      "disposition": "BLOCKED_DATA",
+      "destination": "P00-qualified dedicated file then exact owned boards",
+      "reason": "Published action drift and unreleased foundation prevent final qualification",
+      "dependency": "P00 / F01 / F02 / QA01"
+    }
+  ]
+}
