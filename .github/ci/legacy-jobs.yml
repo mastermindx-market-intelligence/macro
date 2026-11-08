@@ -40628,7 +40628,11 @@ jobs:
         run: |
           CADDY_DIR="$(mktemp -d)"
           trap 'rm -rf "$CADDY_DIR"' EXIT
+          # At most three 15-second attempts plus two 1-second delays (47s).
+          # Retry only curl's known transient failures on this same pinned URL.
           curl --fail --silent --show-error --location \
+            --retry 2 --retry-delay 1 --retry-max-time 45 \
+            --connect-timeout 10 --max-time 15 \
             --output "$CADDY_DIR/caddy.tar.gz" \
             https://github.com/caddyserver/caddy/releases/download/v2.11.4/caddy_2.11.4_linux_amd64.tar.gz
           printf '%s  %s\n' \
