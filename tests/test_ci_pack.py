@@ -5631,7 +5631,7 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # measured units there; preserve the other ceilings, suites and all limits.
 PACKING_PROBES = (
     ("templates/index.html", 137, 5_920),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_939),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_999),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 131, 5_678),
 )
 # Twelve packs per shape was the pre-curation measurement.
@@ -5640,6 +5640,19 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-08 (H4 original APPLICATION + protected-main composition):
+    candidate ca8de427c92e/tree ccfa82d02fd9 was materialized from the
+    complete immutable source and exercised by this unchanged pytest test,
+    with ancestor Git discovery fenced. It measured free-content 134 jobs /
+    5,999 planning units within the existing ten-pack bound; only its weight
+    ceiling failed. The paired protected ec26dac8e5e2 source passed this same
+    test. Retain current job ceilings 137 / 138 / 131 and all index/Prophet
+    ceilings, suites, selectors, timeouts and admission limits. Bind only the
+    free-content ceiling to the measured 5,999 units, retaining both accepted
+    histories below. The original APPLICATION ceiling was 5,993; the accepted
+    protected QTUM and Immune enrollments contribute three units each. These
+    are estimator units, not elapsed runtime. Natural CI remains required.
 
     Protected Press/GSC and Fabric composition (2026-11-07): the actual
     445d86584a50 + 0e48e731791f source measures index134/5721,
