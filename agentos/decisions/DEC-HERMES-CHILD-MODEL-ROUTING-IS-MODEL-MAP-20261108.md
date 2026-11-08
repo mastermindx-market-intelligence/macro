@@ -1,5 +1,5 @@
 ---
-key: HERMES-CHILD-MODEL-ROUTING-IS-MODEL_MAP-20261108
+key: HERMES-CHILD-MODEL-ROUTING-IS-MODEL-MAP-20261108
 question: How should a Hermes parent pin the model that each delegated child runs on, and does OMH intelligent routing apply to those children?
 answer: >-
   The advanced-delegation model_map backend is the owner of child model routing.
@@ -33,7 +33,7 @@ evidence:
   - "Provider-side check, not self-report: three children dispatched from fresh marketing sessions landed on experientiallabs, zai and byteplus-coding respectively, read back from the Hermes state database rather than from the children's summaries."
   - "OMH routing inventory: 18 category chains, all resolving to glm53, deepseek-v41-uc or deepseek-flash after ten dead heads were removed; pre-change backups retained as *.pre-modelmap.20261108T044712Z."
   - "~/.hermes/plugins/omh/tools/dag_tool.py::_backend_say states the child-routing owner explicitly: do not call omh_delegate_route; pass the tasks unchanged, each with its option."
-  - "Open caveat, not accepted as clean: omh doctor still reports missing_heads=10, which is a catalog-versus-discovery-scan mismatch -- heads it flags as missing were serving children in the same window. Treated as cosmetic until the discovery path is inspected."
+  - "Caveat resolved as cosmetic by mechanism: omh doctor's missing_heads=10 comes from its discovery scan over ~/.hermes/sessions, which holds request_dump_*.json, not session records, so confirmed=0 regardless of service; heads it flags as missing (glm-5.3, deepseek-flash) served children in the same window."
 affects:
   - WS:AGENT-OS
   - WS:MARKETING-X-CATALYST-LOOP
@@ -88,7 +88,8 @@ Proven: the configuration is live and read directly from disk, the option map
 resolves to three distinct providers, and three real children landed on three
 different providers as recorded in the Hermes state database.
 
-Not proven: `omh doctor` still prints `missing_heads=10`. Heads it reports as
-missing were serving children in the same time window, so the report is a
-catalog-versus-discovery mismatch, but the discovery path was not inspected and
-this is not claimed as clean.
+Not proven: `omh doctor` still prints `missing_heads=10`. Its cause is now
+identified: the discovery scan reads `~/.hermes/sessions`, which contains
+request dumps rather than session records, so it can confirm nothing. Heads it
+reports as missing were serving children in the same window. Cosmetic by
+construction; the discovery path itself is out of scope here.
