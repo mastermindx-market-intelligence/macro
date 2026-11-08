@@ -4611,6 +4611,10 @@ CURATED_EXCLUSIVE = {
     # plus the files they read. The cover-their-own-import-closure test and
     # check_ci_trigger_closure.py (both run in this job) keep that list honest.
     "ci-control-plane-contracts",
+    # 2026-11-04 (#917 CI acceleration): the control-plane job split three ways so
+    # the planner can spread its 1,000-2,000 s across packs; same paths, same gate.
+    "ci-control-plane-structure",
+    "ci-control-plane-census",
     "bot-session-recovery-browser",  # R5 Bot auth recovery: curated browser scope owns its two ancestor initializers.
     "live-flow-recovery-guards",
     # 2026-09-23 B-HEAL-CI-PACK-CEILING-2 (main integration-baseline red on
@@ -5607,7 +5611,7 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
     ("templates/index.html", 137, 5_922),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_941),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_943),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 131, 5_680),
 )
 # Twelve packs per shape was the pre-curation measurement.
@@ -5616,6 +5620,27 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-08 (PR #8004, current shared-CI conflict conservation):
+    its own2e76b626 tree passed run42443433015/gate128632505829:
+    CLEAR113 jobs/338 semantic PASS. Controller6717644339 then
+    identified a real content conflict after main067c changed definitions.
+    Preserve the accepted three feature/test objects and only the original
+    three-line prophet-lab enrollment in current catalog563e1217.
+    Its whole current owner still equals incorporated basea3eb8161;
+    preserve all395 owner identities and the other394 complete blocks,
+    the landed #10735 split, #8240 owners, and current runner/tests.
+    Current mainc91d58b2 has5920/5941/5678, including #7352's independent
+    free-content+2. Add only #8004's previously measured+2 per probe:
+    index5922, free-content5943, Prophet5680. H's old5941 must not
+    replace the combined5943 or coalesce two independent contributions.
+    Keep jobs137/138/131, ten packs, every assertion/selector/suite,
+    dependency, timeout and admission limit. No unmerged sibling funding.
+    This is static source conservation, not new planner/test execution;
+    the newly composed head must earn its own natural binding proof.
+    Source: PR8004 issuecomment6715796857 and measured6713014275.
+    Original sl8z94t2 descendant UNKNOWN, closed logs and #7426 refusals
+    remain untouched. The complete historical provenance follows.
 
     2026-11-08 (PR #8004, current-main content-conflict composition):
     preserve the accepted Packet 4 identity-boundary enrollment below over
@@ -5644,6 +5669,79 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     GSC and gateway histories below. These are planning weights, not
     elapsed-runtime measurements. No unmerged sibling funding is included;
     successor natural CI remains required.
+
+    2026-11-08 (PR #7352, current-main shared-CI conflict repair):
+    preserve the accepted research-intelligence model benchmark source and its
+    existing research-vault enrollment. Current mainec26dac8 retains the
+    exact research-vault preimage from incorporated base0e48e731791f.
+    Restore only this carrier's 3 paths and one full suite argument;
+    all393 current owners and the other392 blocks stay unchanged.
+    Its exclusive owner keeps three commands, with43->44 test tokens
+    and2049->2095 characters, so the unchanged estimator is91->93.
+    Only free-content selects this owner: carry its accepted +2 from
+    current5939->5941, retaining index5920/Prophet5678, jobs137/138/131,
+    ten packs, every command/selector/timeout and admission limit.
+    Preserve landed #7694 accounting/provenance and all #10752 compactor
+    tests. No unmerged sibling funding or old runner is imported.
+    This is static source arithmetic, not a new whole-tree selected-set,
+    planner, pytest or elapsed-time result. Natural new-head CI must
+    qualify the actual composition. Original scope/effect fences remain.
+    Source: PR7352 issuecomment6711191891; dated evidence follows.
+
+    2026-11-07 second conflict composition for Macro #7352, main0e48e731:
+    Preserve current main's accepted P5.T9.S5 GSC contribution and every
+    other current owner and provenance record. Its ceilings are now
+    index5914/free5933/plan-book5672. Add only this unchanged benchmark
+    source's previously measured two free-content units:5933->5935.
+    This is arithmetic composition, not a new planner or runtime measure.
+    No #7350/#7385 sibling allowance is imported. Keep all job-count
+    ceilings, ten-pack bounds, selectors, suites, timeouts and admission
+    limits. Preceding90f8 passed its own natural42395289016 proof; that
+    does not prove this new combined source. Natural CI must qualify it.
+
+    Earlier same-carrier provenance, at its recorded source identities:
+    2026-11-07 conflict composition for Macro #7352 against main0c02daa5:
+    retain the current accepted #10710 source, owner enrollment and measured
+    index/free/Prophet ceilings 5,914/5,931/5,672. Add only this carrier's
+    already measured +2 free-content contribution, yielding 5,914/5,933/5,672.
+    This is arithmetic composition, not a new paired execution measurement.
+    Natural current-head CI must qualify it. No unmerged sibling funding,
+    job-count, ten-pack, runtime, selector or admission limit is imported.
+    The preceding carrier-specific measurements below keep their dated bases.
+
+    2026-11-07 current-main composition for Macro #7352: retain the dated
+    November 6 benchmark-only paired measurement below. Main already includes
+    #8899's independently measured free-content contribution. Compose this
+    benchmark's own +2 only on that current 5,929 ceiling, yielding 5,931;
+    index 5,912 and Prophet 5,670 remain unchanged. This arithmetic composition
+    is not a new paired execution measurement. Natural current-head CI must
+    validate it. No unmerged #7285, #7320, #7327, #7350 or #7385 allowance is
+    imported; every existing job/count/pack/control limit stays unchanged.
+
+    2026-11-06 Macro #7352 offline grounded-extraction benchmark: the new
+    tests/test_research_intelligence_benchmark.py is enrolled ONCE in the
+    incumbent research-vault CODE job's existing pytest invocation — its
+    incumbent owner — and that same job's curated scope is widened by the
+    three new paths its own command now reads (the manifest fails to load
+    without them; see _scope_coverage_findings). Native paired measurement on
+    2026-11-06, base 0bb81c727ada4f09814afcf587238d089714109e against the
+    candidate working tree, with this same run_ci_pack blob and
+    scripts/check_contract_delta.py --base 0bb81c72:
+
+        templates/index.html          137 jobs / 5,912 weight / 10 packs
+        scripts/build_free_content.py 137 jobs / 5,927 -> 5,929 weight / 10 packs
+        engine/prophet/plan_book.py   131 jobs / 5,668 weight / 10 packs
+
+    Identical selected job IDs on both sides — newly selected: none, no
+    entrant and no exit. The sole definition delta is the incumbent
+    research-vault job's own estimated weight 91 -> 93, from the one added
+    `tests/test_` reference inside its EXISTING pytest command; that job is
+    already selected by the free-content probe, so the probe's aggregate
+    moves by exactly +2. Re-base only that one weight ceiling, to its
+    measured 5,929, with no padding. The free-content job-count ceiling
+    (138), the pack bound (10), the other two weight ceilings, every
+    selector and every suite stay unchanged. These are planner estimates,
+    not measured execution times.
 
     2026-11-08 (PR #7694, current-main content-conflict composition):
     preserve the accepted full Immune-suite enrollment below together with
