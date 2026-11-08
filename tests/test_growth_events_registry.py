@@ -26,7 +26,7 @@ import yaml
 ROOT = Path(__file__).resolve().parents[1]
 REGISTRY = ROOT / "config" / "growth_events.yml"
 
-_SCALAR_TYPES = {"string", "int", "bool", "float"}
+_SCALAR_TYPES = {"string", "string|null", "int", "bool", "float"}
 _NAME_RE = re.compile(r"^[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)*$")
 
 
@@ -48,7 +48,7 @@ def _live_beacon_types() -> set[str]:
     """
     from lib import growth_registry
 
-    value = growth_registry.accepted_wires()
+    value = growth_registry.accepted_wires(source="client")
     assert isinstance(value, frozenset) and value
     return set(value)
 
@@ -137,7 +137,7 @@ def test_live_wire_values_are_frozen_to_the_beacon():
     reg = _registry()
     beacon = _live_beacon_types()
     for event in reg["events"]:
-        if event["status"] == "live":
+        if event["status"] == "live" and event["source"] == "client":
             assert event["wire"] in beacon, (
                 f"{event['name']}: wire '{event['wire']}' is marked live but the beacon "
                 "does not accept it"
@@ -187,6 +187,8 @@ _LIVE_PAIRS = {
     "personal.act": "personal.act",
     "watchlist.symbol_added": "watchlist.symbol_added",
     "watchlist.saved": "watchlist.saved",
+    "checkout.completed": "checkout.completed",
+    "trial.started": "trial.started",
 }
 
 
@@ -359,3 +361,39 @@ def test_each_funnel_transition_has_at_least_one_event():
         if stage in {"none", "paid_activation"}:
             continue
         assert stage in emitted, f"funnel stage '{stage}' has no event"
+
+
+def test_live_wires_are_partitioned_by_existing_source(tmp_path):
+    from lib import growth_registry
+    fixture = tmp_path / "growth.yml"
+    fixture.write_text(
+        "schema: growth_events.v1\nenums: {}\nevents:\n"
+        "- {wire: client.live, source: client, status: live, envelope: v1}\n"
+        "- {wire: server.live, source: server, status: live, envelope: v1}\n"
+        "- {wire: server.planned, source: server, status: planned, envelope: v1}\n"
+    )
+    assert growth_registry.accepted_wires(fixture) == {"client.live", "server.live"}
+    for function in (growth_registry.accepted_wires, growth_registry.envelope_v1_wires):
+        assert function(fixture, source="client") == {"client.live"}
+        assert function(fixture, source="server") == {"server.live"}
+
+
+def test_public_whitelist_explicitly_requests_client_source():
+    import ast
+    value = _mm_event_types_assignment()
+    assert any(k.arg == "source" and isinstance(k.value, ast.Constant) and k.value.value == "client"
+               for k in value.keywords)
+
+
+def test_checkout_offer_nullable_means_unknown_but_presence_and_string_rules_remain_required():
+    import uuid
+    from lib import growth_registry
+    meta = {"tier": "pro", "interval": "month", "offer_key": None,
+            "amount_cents": 12345, "is_trial": False}
+    validate = lambda props: growth_registry.validate_v1_event(
+        "checkout.completed", str(uuid.uuid4()), "growth_events.v1", props)[1]
+    assert validate(meta) is None
+    assert validate({k: v for k, v in meta.items() if k != "offer_key"}) == "null_required_property"
+    assert validate({**meta, "offer_key": True}) == "type_mismatch"
+    assert validate({**meta, "offer_key": "x" * 201}) == "string_too_long"
+    assert validate({**meta, "amount_cents": None}) == "null_required_property"

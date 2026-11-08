@@ -1,0 +1,19 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - lib/intl_gs_scanner_view.py
+  - lib/intl_gs_coverage_view.py
+  - templates/intl_workspace/scanner.html.j2
+  - templates/intl_workspace/coverage.html.j2
+  - templates/intl_workspace/_gs_scanner_macros.html.j2
+  - templates/intl_workspace_surveillance.css
+  - site/intl_workspace_surveillance.css
+  - lib/intl_gs_display.py
+  - tests/test_intl_gs_foundation.py
+  - templates/intl_workspace/shell.html.j2
+  - templates/intl.html.j2
+  - .github/ci/legacy-jobs.yml
+  - tests/test_intl_gs_scanner.py
+  - tests/test_intl_gs_coverage.py
+  - tests/intl_gs_scanner_fixture.py
+  - tests/intl_gs_scanner_browser.test.cjs
+manifest: mockups/evidence/intl-gs-w2a/scanner/manifest.json

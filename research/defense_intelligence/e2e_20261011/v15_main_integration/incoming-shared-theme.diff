@@ -1,0 +1,18 @@
+diff --git a/templates/theme.js b/templates/theme.js
+index 874df90ff631..1d778157d53f 100644
+--- a/templates/theme.js
++++ b/templates/theme.js
+@@ -3591,6 +3591,13 @@
+   // (script unreachable): navigate to the landing with the param — index.html
+   // always carries the sheet.
+   function _mmOpenOnboard(mode) {
++    // Every global entry (including Settings and an already loaded sheet) must
++    // freeze this page's current reference before provider navigation. Waiting
++    // for a catalogue response can leave an older same-tab capsule in place.
++    if (location.pathname === '/market_memory.html' && window.MarketMemoryIntent) {
++      var memoryReturn = window.MarketMemoryIntent.syncReturn();
++      if (!memoryReturn.ok) return; // Ambiguous references cannot reuse old intent.
++    }
+     // whitelist: signin (default) · signup · upgrade (post-login monetization sheet)
+     var m = (mode === 'signup') ? 'signup' : (mode === 'upgrade') ? 'upgrade' : 'signin';
+     if (window.MMOnboard && window.MMOnboard.open) { window.MMOnboard.open(m); return; }
