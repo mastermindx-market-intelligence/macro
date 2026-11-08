@@ -1,0 +1,2913 @@
+{
+  "schema": "paper.workflow-enhancement.v1",
+  "status": "IN_PROGRESS",
+  "sourcePins": {
+    "Mastermind": "5c3d3885234358aefb97ecdbc59be0864df14f8b",
+    "macro": "b5674d8ef898e503d6164922654f5ff89be9981c",
+    "terminal": "cfe14c49f2e0166c0ded5e6f23a274bb663d0fd3"
+  },
+  "scope": "Continue human-first Paper work with complete interactions and honest result states. This is design and builder-contract work; no runtime deployment is claimed.",
+  "methods": {
+    "status": "NATIVE_DESIGN_VERIFIED",
+    "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+    "pageId": "p-N-0",
+    "gallery": "RKV-0",
+    "variants": [
+      {
+        "topic": "ranking",
+        "locale": "en",
+        "theme": "light",
+        "frame": "RL2-0",
+        "head": [
+          {
+            "id": "RL2-0"
+          },
+          {
+            "id": "RL3-0"
+          },
+          {
+            "id": "RL4-0"
+          }
+        ],
+        "groups": [
+          [
+            {
+              "id": "RL6-0",
+              "name": "Attention view",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RL7-0",
+              "name": "Attention view",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RL8-0",
+              "name": "Combines standardize…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ],
+          [
+            {
+              "id": "RLA-0",
+              "name": "Divergence view",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RLB-0",
+              "name": "Divergence view",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RLC-0",
+              "name": "Orders markets by th…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ],
+          [
+            {
+              "id": "RLE-0",
+              "name": "Before a score appears",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RLF-0",
+              "name": "Before a score appea…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RLG-0",
+              "name": "This score needs 60 …",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ]
+        ]
+      },
+      {
+        "topic": "ranking",
+        "locale": "zh",
+        "theme": "light",
+        "frame": "RLI-0",
+        "head": [
+          {
+            "id": "RLI-0",
+            "name": "Attention ordering · ZH light",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "RLJ-0",
+            "name": "Return to Methods",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "RLK-0",
+            "name": "Topic title",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          }
+        ],
+        "groups": [
+          [
+            {
+              "id": "RLM-0",
+              "name": "Attention view",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RLN-0",
+              "name": "关注视图",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RLO-0",
+              "name": "将标准化的美元变动幅度与背离相乘，并按美…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ],
+          [
+            {
+              "id": "RLQ-0",
+              "name": "Divergence view",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RLR-0",
+              "name": "背离视图",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RLS-0",
+              "name": "按背离幅度排序，不区分方向。",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ],
+          [
+            {
+              "id": "RLU-0",
+              "name": "Before a score appears",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RLV-0",
+              "name": "评分所需历史",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RLW-0",
+              "name": "此评分需要60个对齐交易日。历史不足的市…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ]
+        ]
+      },
+      {
+        "topic": "ranking",
+        "locale": "en",
+        "theme": "dark",
+        "frame": "RLY-0",
+        "head": [
+          {
+            "id": "RLY-0",
+            "name": "Attention ordering · EN dark",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "RLZ-0",
+            "name": "Return to Methods",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "RM0-0",
+            "name": "Topic title",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          }
+        ],
+        "groups": [
+          [
+            {
+              "id": "RM2-0",
+              "name": "Attention view",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RM3-0",
+              "name": "Attention view",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RM4-0",
+              "name": "Combines standardize…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ],
+          [
+            {
+              "id": "RM6-0",
+              "name": "Divergence view",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RM7-0",
+              "name": "Divergence view",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RM8-0",
+              "name": "Orders markets by th…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ],
+          [
+            {
+              "id": "RMA-0",
+              "name": "Before a score appears",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RMB-0",
+              "name": "Before a score appea…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RMC-0",
+              "name": "This score needs 60 …",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ]
+        ]
+      },
+      {
+        "topic": "ranking",
+        "locale": "zh",
+        "theme": "dark",
+        "frame": "RME-0",
+        "head": [
+          {
+            "id": "RME-0",
+            "name": "Attention ordering · ZH dark",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "RMF-0",
+            "name": "Return to Methods",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "RMG-0",
+            "name": "Topic title",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          }
+        ],
+        "groups": [
+          [
+            {
+              "id": "RMI-0",
+              "name": "Attention view",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RMJ-0",
+              "name": "关注视图",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RMK-0",
+              "name": "将标准化的美元变动幅度与背离相乘，并按美…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ],
+          [
+            {
+              "id": "RMM-0",
+              "name": "Divergence view",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RMN-0",
+              "name": "背离视图",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RMO-0",
+              "name": "按背离幅度排序，不区分方向。",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ],
+          [
+            {
+              "id": "RMQ-0",
+              "name": "Before a score appears",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RMR-0",
+              "name": "评分所需历史",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RMS-0",
+              "name": "此评分需要60个对齐交易日。历史不足的市…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ]
+        ]
+      },
+      {
+        "topic": "clocks",
+        "locale": "en",
+        "theme": "light",
+        "frame": "RMW-0",
+        "head": [
+          {
+            "id": "RMW-0",
+            "name": "Dates & revisions · EN light",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "RMX-0",
+            "name": "Return to Methods",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "RMY-0",
+            "name": "Topic title",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          }
+        ],
+        "groups": [
+          [
+            {
+              "id": "RN0-0",
+              "name": "Data period",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RN1-0",
+              "name": "Data period",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RN2-0",
+              "name": "The period a reading…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ],
+          [
+            {
+              "id": "RN4-0",
+              "name": "Source released",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RN5-0",
+              "name": "Source released",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RN6-0",
+              "name": "When the provider re…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ],
+          [
+            {
+              "id": "RN8-0",
+              "name": "Checked here",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RN9-0",
+              "name": "Checked here",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RNA-0",
+              "name": "When the data passed…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ],
+          [
+            {
+              "id": "RNC-0",
+              "name": "Snapshot available",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RND-0",
+              "name": "Snapshot available",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RNE-0",
+              "name": "When this snapshot b…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ]
+        ]
+      },
+      {
+        "topic": "clocks",
+        "locale": "zh",
+        "theme": "light",
+        "frame": "RNG-0",
+        "head": [
+          {
+            "id": "RNG-0",
+            "name": "Dates & revisions · ZH light",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "RNH-0",
+            "name": "Return to Methods",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "RNI-0",
+            "name": "Topic title",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          }
+        ],
+        "groups": [
+          [
+            {
+              "id": "RNK-0",
+              "name": "Data period",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RNL-0",
+              "name": "数据期",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RNM-0",
+              "name": "读数对应的期间。市场日期按当地交易时段记…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ],
+          [
+            {
+              "id": "RNO-0",
+              "name": "Source released",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RNP-0",
+              "name": "来源发布时间",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RNQ-0",
+              "name": "数据提供方发布该项数据的时间。",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ],
+          [
+            {
+              "id": "RNS-0",
+              "name": "Checked here",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RNT-0",
+              "name": "通过检查时间",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RNU-0",
+              "name": "数据通过采集检查的时间。",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ],
+          [
+            {
+              "id": "RNW-0",
+              "name": "Snapshot available",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RNX-0",
+              "name": "快照发布时间",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RNY-0",
+              "name": "此快照可用的时间。时间均为UTC；新快照…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ]
+        ]
+      },
+      {
+        "topic": "clocks",
+        "locale": "en",
+        "theme": "dark",
+        "frame": "RO0-0",
+        "head": [
+          {
+            "id": "RO0-0",
+            "name": "Dates & revisions · EN dark",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "RO1-0",
+            "name": "Return to Methods",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "RO2-0",
+            "name": "Topic title",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          }
+        ],
+        "groups": [
+          [
+            {
+              "id": "RO4-0",
+              "name": "Data period",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RO5-0",
+              "name": "Data period",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RO6-0",
+              "name": "The period a reading…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ],
+          [
+            {
+              "id": "RO8-0",
+              "name": "Source released",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RO9-0",
+              "name": "Source released",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "ROA-0",
+              "name": "When the provider re…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ],
+          [
+            {
+              "id": "ROC-0",
+              "name": "Checked here",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "ROD-0",
+              "name": "Checked here",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "ROE-0",
+              "name": "When the data passed…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ],
+          [
+            {
+              "id": "ROG-0",
+              "name": "Snapshot available",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "ROH-0",
+              "name": "Snapshot available",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "ROI-0",
+              "name": "When this snapshot b…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ]
+        ]
+      },
+      {
+        "topic": "clocks",
+        "locale": "zh",
+        "theme": "dark",
+        "frame": "ROK-0",
+        "head": [
+          {
+            "id": "ROK-0",
+            "name": "Dates & revisions · ZH dark",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "ROL-0",
+            "name": "Return to Methods",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "ROM-0",
+            "name": "Topic title",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          }
+        ],
+        "groups": [
+          [
+            {
+              "id": "ROO-0",
+              "name": "Data period",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "ROP-0",
+              "name": "数据期",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "ROQ-0",
+              "name": "读数对应的期间。市场日期按当地交易时段记…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ],
+          [
+            {
+              "id": "ROS-0",
+              "name": "Source released",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "ROT-0",
+              "name": "来源发布时间",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "ROU-0",
+              "name": "数据提供方发布该项数据的时间。",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ],
+          [
+            {
+              "id": "ROW-0",
+              "name": "Checked here",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "ROX-0",
+              "name": "通过检查时间",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "ROY-0",
+              "name": "数据通过采集检查的时间。",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ],
+          [
+            {
+              "id": "RP0-0",
+              "name": "Snapshot available",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RP1-0",
+              "name": "快照发布时间",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RP2-0",
+              "name": "此快照可用的时间。时间均为UTC；新快照…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ]
+        ]
+      },
+      {
+        "topic": "eligibility",
+        "locale": "en",
+        "theme": "light",
+        "frame": "RP6-0",
+        "head": [
+          {
+            "id": "RP6-0",
+            "name": "Unavailable readings · EN light",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "RP7-0",
+            "name": "Return to Methods",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "RP8-0",
+            "name": "Topic title",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          }
+        ],
+        "groups": [
+          [
+            {
+              "id": "RPA-0",
+              "name": "Missing",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RPB-0",
+              "name": "Missing",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RPC-0",
+              "name": "No reading available…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ],
+          [
+            {
+              "id": "RPE-0",
+              "name": "Stale",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RPF-0",
+              "name": "Stale",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RPG-0",
+              "name": "Older than that sour…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ],
+          [
+            {
+              "id": "RPI-0",
+              "name": "Restricted",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RPJ-0",
+              "name": "Restricted",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RPK-0",
+              "name": "The data is not perm…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ],
+          [
+            {
+              "id": "RPM-0",
+              "name": "Unscored",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RPN-0",
+              "name": "Unscored",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RPO-0",
+              "name": "Required inputs or h…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ]
+        ]
+      },
+      {
+        "topic": "eligibility",
+        "locale": "zh",
+        "theme": "light",
+        "frame": "RPQ-0",
+        "head": [
+          {
+            "id": "RPQ-0",
+            "name": "Unavailable readings · ZH light",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "RPR-0",
+            "name": "Return to Methods",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "RPS-0",
+            "name": "Topic title",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          }
+        ],
+        "groups": [
+          [
+            {
+              "id": "RPU-0",
+              "name": "Missing",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RPV-0",
+              "name": "缺失",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RPW-0",
+              "name": "当前选择没有可用读数。",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ],
+          [
+            {
+              "id": "RPY-0",
+              "name": "Stale",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RPZ-0",
+              "name": "过期",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RQ0-0",
+              "name": "已超出该来源要求的时效范围。",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ],
+          [
+            {
+              "id": "RQ2-0",
+              "name": "Restricted",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RQ3-0",
+              "name": "受限",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RQ4-0",
+              "name": "此视图无权展示该数据。",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ],
+          [
+            {
+              "id": "RQ6-0",
+              "name": "Unscored",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RQ7-0",
+              "name": "未评分",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RQ8-0",
+              "name": "缺少所需输入或历史数据。美元排名不可用时…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ]
+        ]
+      },
+      {
+        "topic": "eligibility",
+        "locale": "en",
+        "theme": "dark",
+        "frame": "RQA-0",
+        "head": [
+          {
+            "id": "RQA-0",
+            "name": "Unavailable readings · EN dark",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "RQB-0",
+            "name": "Return to Methods",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "RQC-0",
+            "name": "Topic title",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          }
+        ],
+        "groups": [
+          [
+            {
+              "id": "RQE-0",
+              "name": "Missing",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RQF-0",
+              "name": "Missing",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RQG-0",
+              "name": "No reading available…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ],
+          [
+            {
+              "id": "RQI-0",
+              "name": "Stale",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RQJ-0",
+              "name": "Stale",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RQK-0",
+              "name": "Older than that sour…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ],
+          [
+            {
+              "id": "RQM-0",
+              "name": "Restricted",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RQN-0",
+              "name": "Restricted",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RQO-0",
+              "name": "The data is not perm…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ],
+          [
+            {
+              "id": "RQQ-0",
+              "name": "Unscored",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RQR-0",
+              "name": "Unscored",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RQS-0",
+              "name": "Required inputs or h…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ]
+        ]
+      },
+      {
+        "topic": "eligibility",
+        "locale": "zh",
+        "theme": "dark",
+        "frame": "RQU-0",
+        "head": [
+          {
+            "id": "RQU-0",
+            "name": "Unavailable readings · ZH dark",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "RQV-0",
+            "name": "Return to Methods",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "RQW-0",
+            "name": "Topic title",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          }
+        ],
+        "groups": [
+          [
+            {
+              "id": "RQY-0",
+              "name": "Missing",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RQZ-0",
+              "name": "缺失",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RR0-0",
+              "name": "当前选择没有可用读数。",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ],
+          [
+            {
+              "id": "RR2-0",
+              "name": "Stale",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RR3-0",
+              "name": "过期",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RR4-0",
+              "name": "已超出该来源要求的时效范围。",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ],
+          [
+            {
+              "id": "RR6-0",
+              "name": "Restricted",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RR7-0",
+              "name": "受限",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RR8-0",
+              "name": "此视图无权展示该数据。",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ],
+          [
+            {
+              "id": "RRA-0",
+              "name": "Unscored",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RRB-0",
+              "name": "未评分",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RRC-0",
+              "name": "缺少所需输入或历史数据。美元排名不可用时…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ]
+        ]
+      },
+      {
+        "topic": "scenario",
+        "locale": "en",
+        "theme": "light",
+        "frame": "RRG-0",
+        "head": [
+          {
+            "id": "RRG-0",
+            "name": "Scenarios & replay · EN light",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "RRH-0",
+            "name": "Return to Methods",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "RRI-0",
+            "name": "Topic title",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          }
+        ],
+        "groups": [
+          [
+            {
+              "id": "RRK-0",
+              "name": "Conditional estimates",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RRL-0",
+              "name": "Conditional estimate…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RRM-0",
+              "name": "Scenario results dep…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ],
+          [
+            {
+              "id": "RRO-0",
+              "name": "Stored replay",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RRP-0",
+              "name": "Stored replay",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RRQ-0",
+              "name": "Replay shows the sto…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ],
+          [
+            {
+              "id": "RRS-0",
+              "name": "Watches",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RRT-0",
+              "name": "Watches",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RRU-0",
+              "name": "Watches recheck each…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ]
+        ]
+      },
+      {
+        "topic": "scenario",
+        "locale": "zh",
+        "theme": "light",
+        "frame": "RRW-0",
+        "head": [
+          {
+            "id": "RRW-0",
+            "name": "Scenarios & replay · ZH light",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "RRX-0",
+            "name": "Return to Methods",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "RRY-0",
+            "name": "Topic title",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          }
+        ],
+        "groups": [
+          [
+            {
+              "id": "RS0-0",
+              "name": "Conditional estimates",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RS1-0",
+              "name": "条件估计",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RS2-0",
+              "name": "情景结果取决于其假设。区间跨越零时，不给…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ],
+          [
+            {
+              "id": "RS4-0",
+              "name": "Stored replay",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RS5-0",
+              "name": "存档回放",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RS6-0",
+              "name": "回放展示当时可用的存档快照。后续修订不会…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ],
+          [
+            {
+              "id": "RS8-0",
+              "name": "Watches",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RS9-0",
+              "name": "关注提醒",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RSA-0",
+              "name": "每个新快照都会重新检查关注条件，仅发送提…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ]
+        ]
+      },
+      {
+        "topic": "scenario",
+        "locale": "en",
+        "theme": "dark",
+        "frame": "RSC-0",
+        "head": [
+          {
+            "id": "RSC-0",
+            "name": "Scenarios & replay · EN dark",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "RSD-0",
+            "name": "Return to Methods",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "RSE-0",
+            "name": "Topic title",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          }
+        ],
+        "groups": [
+          [
+            {
+              "id": "RSG-0",
+              "name": "Conditional estimates",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RSH-0",
+              "name": "Conditional estimate…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RSI-0",
+              "name": "Scenario results dep…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ],
+          [
+            {
+              "id": "RSK-0",
+              "name": "Stored replay",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RSL-0",
+              "name": "Stored replay",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RSM-0",
+              "name": "Replay shows the sto…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ],
+          [
+            {
+              "id": "RSO-0",
+              "name": "Watches",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RSP-0",
+              "name": "Watches",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RSQ-0",
+              "name": "Watches recheck each…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ]
+        ]
+      },
+      {
+        "topic": "scenario",
+        "locale": "zh",
+        "theme": "dark",
+        "frame": "RSS-0",
+        "head": [
+          {
+            "id": "RSS-0",
+            "name": "Scenarios & replay · ZH dark",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "RST-0",
+            "name": "Return to Methods",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "RSU-0",
+            "name": "Topic title",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          }
+        ],
+        "groups": [
+          [
+            {
+              "id": "RSW-0",
+              "name": "Conditional estimates",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RSX-0",
+              "name": "条件估计",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RSY-0",
+              "name": "情景结果取决于其假设。区间跨越零时，不给…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ],
+          [
+            {
+              "id": "RT0-0",
+              "name": "Stored replay",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RT1-0",
+              "name": "存档回放",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RT2-0",
+              "name": "回放展示当时可用的存档快照。后续修订不会…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ],
+          [
+            {
+              "id": "RT4-0",
+              "name": "Watches",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RT5-0",
+              "name": "关注提醒",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RT6-0",
+              "name": "每个新快照都会重新检查关注条件，仅发送提…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ]
+        ]
+      },
+      {
+        "topic": "transmission",
+        "locale": "en",
+        "theme": "light",
+        "frame": "RTA-0",
+        "head": [
+          {
+            "id": "RTA-0",
+            "name": "Transmission responses · EN light",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "RTB-0",
+            "name": "Return to Methods",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "RTC-0",
+            "name": "Topic title",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          }
+        ],
+        "groups": [
+          [
+            {
+              "id": "RTE-0",
+              "name": "Response windows",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RTF-0",
+              "name": "Response windows",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RTG-0",
+              "name": "Market-response chan…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ],
+          [
+            {
+              "id": "RTI-0",
+              "name": "Pending",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RTJ-0",
+              "name": "Pending",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RTK-0",
+              "name": "The window is unfini…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ],
+          [
+            {
+              "id": "RTM-0",
+              "name": "No response",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RTN-0",
+              "name": "No response",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RTO-0",
+              "name": "No response in a com…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ],
+          [
+            {
+              "id": "RTQ-0",
+              "name": "Lending exposure",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RTR-0",
+              "name": "Lending exposure",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RTS-0",
+              "name": "Structural exposure;…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ]
+        ]
+      },
+      {
+        "topic": "transmission",
+        "locale": "zh",
+        "theme": "light",
+        "frame": "RTU-0",
+        "head": [
+          {
+            "id": "RTU-0",
+            "name": "Transmission responses · ZH light",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "RTV-0",
+            "name": "Return to Methods",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "RTW-0",
+            "name": "Topic title",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          }
+        ],
+        "groups": [
+          [
+            {
+              "id": "RTY-0",
+              "name": "Response windows",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RTZ-0",
+              "name": "响应窗口",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RU0-0",
+              "name": "市场响应渠道各有对应证据及美国市场响应窗…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ],
+          [
+            {
+              "id": "RU2-0",
+              "name": "Pending",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RU3-0",
+              "name": "待确认",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RU4-0",
+              "name": "窗口尚未结束，或缺少所需观测数据。",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ],
+          [
+            {
+              "id": "RU6-0",
+              "name": "No response",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RU7-0",
+              "name": "未观察到响应",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RU8-0",
+              "name": "窗口已结束且所需数据齐全，但未观察到响应…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ],
+          [
+            {
+              "id": "RUA-0",
+              "name": "Lending exposure",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RUB-0",
+              "name": "借贷敞口",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RUC-0",
+              "name": "属于结构性敞口，不适用当日响应检验。",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ]
+        ]
+      },
+      {
+        "topic": "transmission",
+        "locale": "en",
+        "theme": "dark",
+        "frame": "RUE-0",
+        "head": [
+          {
+            "id": "RUE-0",
+            "name": "Transmission responses · EN dark",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "RUF-0",
+            "name": "Return to Methods",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "RUG-0",
+            "name": "Topic title",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          }
+        ],
+        "groups": [
+          [
+            {
+              "id": "RUI-0",
+              "name": "Response windows",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RUJ-0",
+              "name": "Response windows",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RUK-0",
+              "name": "Market-response chan…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ],
+          [
+            {
+              "id": "RUM-0",
+              "name": "Pending",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RUN-0",
+              "name": "Pending",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RUO-0",
+              "name": "The window is unfini…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ],
+          [
+            {
+              "id": "RUQ-0",
+              "name": "No response",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RUR-0",
+              "name": "No response",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RUS-0",
+              "name": "No response in a com…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ],
+          [
+            {
+              "id": "RUU-0",
+              "name": "Lending exposure",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RUV-0",
+              "name": "Lending exposure",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RUW-0",
+              "name": "Structural exposure;…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ]
+        ]
+      },
+      {
+        "topic": "transmission",
+        "locale": "zh",
+        "theme": "dark",
+        "frame": "RUY-0",
+        "head": [
+          {
+            "id": "RUY-0",
+            "name": "Transmission responses · ZH dark",
+            "component": "Frame",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "RUZ-0",
+            "name": "Return to Methods",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          },
+          {
+            "id": "RV0-0",
+            "name": "Topic title",
+            "component": "Text",
+            "worldX": null,
+            "worldY": null,
+            "x": null,
+            "y": null
+          }
+        ],
+        "groups": [
+          [
+            {
+              "id": "RV2-0",
+              "name": "Response windows",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RV3-0",
+              "name": "响应窗口",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RV4-0",
+              "name": "市场响应渠道各有对应证据及美国市场响应窗…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ],
+          [
+            {
+              "id": "RV6-0",
+              "name": "Pending",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RV7-0",
+              "name": "待确认",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RV8-0",
+              "name": "窗口尚未结束，或缺少所需观测数据。",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ],
+          [
+            {
+              "id": "RVA-0",
+              "name": "No response",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RVB-0",
+              "name": "未观察到响应",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RVC-0",
+              "name": "窗口已结束且所需数据齐全，但未观察到响应…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ],
+          [
+            {
+              "id": "RVE-0",
+              "name": "Lending exposure",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RVF-0",
+              "name": "借贷敞口",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "RVG-0",
+              "name": "属于结构性敞口，不适用当日响应检验。",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ]
+        ]
+      }
+    ],
+    "visualQA": [
+      {
+        "nodeId": "RL2-0",
+        "verdict": "PASS: 390px fit; consistent 24px group spacing, clear 28px title/body hierarchy, legible contrast, aligned back/title/body; no clipping or repeated decorative containers."
+      },
+      {
+        "nodeId": "RL0-0",
+        "verdict": "PASS after targeted repair: dark section labels now use text token, all text uses Inter/PingFang; 390px frames fit in EN/ZH and both themes; no clipping, consistent gaps and aligned controls."
+      },
+      {
+        "nodeId": "RMU-0",
+        "verdict": "PASS: all four timing views fit at390px; labels distinguish clocks, body text and links legible in both themes; aligned spacing, no clipped translation."
+      },
+      {
+        "nodeId": "RP4-0",
+        "verdict": "PASS: four unavailable meanings remain distinct; EN/ZH headings and bodies fit, dark contrast and alignment pass, no extra badges or footnotes."
+      },
+      {
+        "nodeId": "RRE-0",
+        "verdict": "PASS: concise conditional/replay/watch groups; EN/ZH and light/dark fit, 44px return target, no clipping or excess framing."
+      },
+      {
+        "nodeId": "RT8-0",
+        "verdict": "PASS: response-window / pending / no-response / structural lending remain visibly distinct; all language/theme frames fit at390px; spacing, type, contrast, alignment and clipping checks passed."
+      }
+    ],
+    "canonicalBindings": "research/paper_human_clarity/INTERNATIONAL_METHOD_BINDINGS.json"
+  },
+  "news": {
+    "status": "IN_PROGRESS",
+    "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+    "pageId": "p-5-0",
+    "fixture": {
+      "origin": "2RL-0 / 359-0",
+      "symbol": "AAPL",
+      "reports24h": 13,
+      "stories24h": 9,
+      "reports7d": 91,
+      "historyDays": 9,
+      "publicationTimeReports": 13,
+      "sources": [
+        "Benzinga",
+        "GlobeNewswire"
+      ],
+      "countedDisplay": "02:35 AM",
+      "headline": "37S-0"
+    },
+    "builderCorrections": [
+      {
+        "nodeId": "YM-0",
+        "original": "Flow never ticks from SSE (D-W3) — nothing to freeze, only to label",
+        "replacement": "Last accepted count stays visible during a stream interruption.",
+        "status": "PENDING"
+      },
+      {
+        "nodeId": "11O-0",
+        "original": "Today’s outline is dashed while the feed catches up: the bar may still grow. The typical line stays — the prior 28 days are complete.",
+        "replacement": "Dashed 24h bar: incomplete count. Suppress comparison; a supplied baseline does not prove complete history.",
+        "status": "PENDING"
+      }
+    ]
+  },
+  "internationalResults": {
+    "status": "PLANNED",
+    "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+    "destinations": [
+      "cross_market_correlation",
+      "recovery_quality",
+      "risk_track_record",
+      "trade_supply_links"
+    ],
+    "origins": [
+      "P7-0",
+      "2Z2-0",
+      "39H-0",
+      "3EO-0",
+      "3II-0",
+      "3KZ-0",
+      "3OS-0",
+      "3OZ-0"
+    ],
+    "newlyDiscoveredOrigin": "3OZ-0",
+    "numericFixtureVerified": false
+  },
+  "runtimeNavigationVerified": false,
+  "runtimeImplementationChanged": false
+}
