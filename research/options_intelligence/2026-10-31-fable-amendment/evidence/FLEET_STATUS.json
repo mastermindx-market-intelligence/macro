@@ -1,0 +1,173 @@
+{
+  "schema": "mastermind.studio_fleet_status_tool.v2",
+  "state": "DEGRADED",
+  "accountCount": 8,
+  "readyCount": 8,
+  "allReady": true,
+  "accounts": [
+    {
+      "account": "admin-business",
+      "state": "READY",
+      "ready": true,
+      "gateway": {
+        "loaded": true,
+        "running": true
+      },
+      "tunnel": {
+        "loaded": true,
+        "running": true,
+        "healthy": true,
+        "ready": true,
+        "controlPlanePollReady": true,
+        "gatewayReady": true,
+        "transportTTL": "5h",
+        "maxConcurrentRequests": 8
+      },
+      "issues": []
+    },
+    {
+      "account": "chatgpt1",
+      "state": "READY",
+      "ready": true,
+      "gateway": {
+        "loaded": true,
+        "running": true
+      },
+      "tunnel": {
+        "loaded": true,
+        "running": true,
+        "healthy": true,
+        "ready": true,
+        "controlPlanePollReady": true,
+        "gatewayReady": true,
+        "transportTTL": "5h",
+        "maxConcurrentRequests": 8
+      },
+      "issues": []
+    },
+    {
+      "account": "chatgpt2-business",
+      "state": "READY",
+      "ready": true,
+      "gateway": {
+        "loaded": true,
+        "running": true
+      },
+      "tunnel": {
+        "loaded": true,
+        "running": true,
+        "healthy": true,
+        "ready": true,
+        "controlPlanePollReady": true,
+        "gatewayReady": true,
+        "transportTTL": "5h",
+        "maxConcurrentRequests": 8
+      },
+      "issues": []
+    },
+    {
+      "account": "chatgpt2-personal",
+      "state": "READY",
+      "ready": true,
+      "gateway": {
+        "loaded": true,
+        "running": true
+      },
+      "tunnel": {
+        "loaded": true,
+        "running": true,
+        "healthy": true,
+        "ready": true,
+        "controlPlanePollReady": true,
+        "gatewayReady": true,
+        "transportTTL": "5h",
+        "maxConcurrentRequests": 8
+      },
+      "issues": []
+    },
+    {
+      "account": "chatgpt3",
+      "state": "READY",
+      "ready": true,
+      "gateway": {
+        "loaded": true,
+        "running": true
+      },
+      "tunnel": {
+        "loaded": true,
+        "running": true,
+        "healthy": true,
+        "ready": true,
+        "controlPlanePollReady": true,
+        "gatewayReady": true,
+        "transportTTL": "5h",
+        "maxConcurrentRequests": 8
+      },
+      "issues": []
+    },
+    {
+      "account": "chatgpt3-w570f6f34",
+      "state": "READY",
+      "ready": true,
+      "gateway": {
+        "loaded": true,
+        "running": true
+      },
+      "tunnel": {
+        "loaded": true,
+        "running": true,
+        "healthy": true,
+        "ready": true,
+        "controlPlanePollReady": true,
+        "gatewayReady": true,
+        "transportTTL": "5h",
+        "maxConcurrentRequests": 8
+      },
+      "issues": []
+    },
+    {
+      "account": "chatgpt3-wa2a9e6f9",
+      "state": "READY",
+      "ready": true,
+      "gateway": {
+        "loaded": true,
+        "running": true
+      },
+      "tunnel": {
+        "loaded": true,
+        "running": true,
+        "healthy": true,
+        "ready": true,
+        "controlPlanePollReady": true,
+        "gatewayReady": true,
+        "transportTTL": "5h",
+        "maxConcurrentRequests": 8
+      },
+      "issues": []
+    },
+    {
+      "account": "chatgpt4",
+      "state": "READY",
+      "ready": true,
+      "gateway": {
+        "loaded": true,
+        "running": true
+      },
+      "tunnel": {
+        "loaded": true,
+        "running": true,
+        "healthy": true,
+        "ready": true,
+        "controlPlanePollReady": true,
+        "gatewayReady": true,
+        "transportTTL": "5h",
+        "maxConcurrentRequests": 8
+      },
+      "issues": []
+    }
+  ],
+  "physicalFleet": null,
+  "issues": [
+    "FLEET_STATUS_FABRIC_LAUNCHER_DRIFT"
+  ]
+}

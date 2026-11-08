@@ -1,0 +1,6 @@
+{
+  "exit_code": 0,
+  "duration_seconds": 106.46,
+  "log": "/tmp/d06-macro-c4-11l44i0i/integration-materialize-data.log",
+  "tail": "worktree-sparse: materialized data\n"
+}

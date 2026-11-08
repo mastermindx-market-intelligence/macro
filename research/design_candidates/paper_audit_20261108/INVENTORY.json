@@ -1,0 +1,272 @@
+{
+  "observed_date": "2026-11-08",
+  "files": 35,
+  "folders": 2,
+  "actual_archived": 5,
+  "resources": [
+    {
+      "id": "01M2WGNCX9475G79JRKJTCM08P",
+      "name_observed_at_inventory": "MASTERMIND PAGES",
+      "type": "file",
+      "archived": false,
+      "parent_id": "01M2VVZT0YA4WK46WT5VD72YTQ"
+    },
+    {
+      "id": "01M5J3GC90GAKHK8B6SAPRV3JQ",
+      "name_observed_at_inventory": "Archived · GMI Round 2 · merged into Product system",
+      "type": "file",
+      "archived": false,
+      "parent_id": "01M2VVZT0YA4WK46WT5VD72YTQ"
+    },
+    {
+      "id": "01M38EVF74SJWG1GANN5VP380Z",
+      "name_observed_at_inventory": "Mastermind · Market Dashboard Popups · Redesign",
+      "type": "file",
+      "archived": false,
+      "parent_id": "01M3NSWX6SGTY4Z5DKBN4YP60M"
+    },
+    {
+      "id": "01M2VWK62FA5S4VVF6G7SBPE5J",
+      "name_observed_at_inventory": "Intelligence Hub · R4 Workspace",
+      "type": "file",
+      "archived": false,
+      "parent_id": "01M2VVZT0YA4WK46WT5VD72YTQ"
+    },
+    {
+      "id": "01M5JRN1HWF62YK527NKCY7WD5",
+      "name_observed_at_inventory": "Paper E2E acceptance — file+page+order verified",
+      "type": "file",
+      "archived": false,
+      "parent_id": "01M2VVZT0YA4WK46WT5VD72YTQ"
+    },
+    {
+      "id": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+      "name_observed_at_inventory": "PROPHET",
+      "type": "file",
+      "archived": false,
+      "parent_id": "01M2VVZT0YA4WK46WT5VD72YTQ"
+    },
+    {
+      "id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "name_observed_at_inventory": "Terminal",
+      "type": "file",
+      "archived": false,
+      "parent_id": "01M2VVZT0YA4WK46WT5VD72YTQ"
+    },
+    {
+      "id": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "name_observed_at_inventory": "News Intelligence · R3 Ledger + R2 States",
+      "type": "file",
+      "archived": false,
+      "parent_id": "01M2VVZT0YA4WK46WT5VD72YTQ"
+    },
+    {
+      "id": "01M5K0V5AGPSDXKA2K1PH1ABNE",
+      "name_observed_at_inventory": "Paper visual row guard canary 2026-10-22 (copy)",
+      "type": "file",
+      "archived": false,
+      "parent_id": "01M2VVZT0YA4WK46WT5VD72YTQ"
+    },
+    {
+      "id": "01M5JV8SY6WP21H72WKK7GJ5R6",
+      "name_observed_at_inventory": "Paper reviewed deletion regression 2026-10-22 (copy)",
+      "type": "file",
+      "archived": false,
+      "parent_id": "01M2VVZT0YA4WK46WT5VD72YTQ"
+    },
+    {
+      "id": "01M5K3WQXMD1QKXM2SBD7VABW1",
+      "name_observed_at_inventory": "Paper exact Copy link canary 2026-10-22 (copy)",
+      "type": "file",
+      "archived": false,
+      "parent_id": "01M2VVZT0YA4WK46WT5VD72YTQ"
+    },
+    {
+      "id": "01M5JKR6H0JNN07BA3YKQDXBNC",
+      "name_observed_at_inventory": "Young harmony (copy)",
+      "type": "file",
+      "archived": true,
+      "parent_id": "01M2VVZT0YA4WK46WT5VD72YTQ"
+    },
+    {
+      "id": "01M5EPQ16VBT7SBW2NQVX2RJG4",
+      "name_observed_at_inventory": "Terminal · Options R1 · Design Upgrade · 2026-10-21",
+      "type": "file",
+      "archived": false,
+      "parent_id": "01M2VVZT0YA4WK46WT5VD72YTQ"
+    },
+    {
+      "id": "01M5HDPF3HSZFJJAFMARVQSHZR",
+      "name_observed_at_inventory": "Jolly vase",
+      "type": "file",
+      "archived": false,
+      "parent_id": "01M2VVZT0YA4WK46WT5VD72YTQ"
+    },
+    {
+      "id": "01M5JS8TNZKQ01SJS4D0S9VQFC",
+      "name_observed_at_inventory": "Paper E2E acceptance — file+page+order verified (copy)",
+      "type": "file",
+      "archived": false,
+      "parent_id": "01M2VVZT0YA4WK46WT5VD72YTQ"
+    },
+    {
+      "id": "01M5H6EARN9YHQV17JC6ZG9BRY",
+      "name_observed_at_inventory": "GMI Explorer · Product system",
+      "type": "file",
+      "archived": false,
+      "parent_id": "01M2VVZT0YA4WK46WT5VD72YTQ"
+    },
+    {
+      "id": "01M5HVW84WZFE62DREB6QB9ZDJ",
+      "name_observed_at_inventory": "MASTERMIND PAGES (copy)",
+      "type": "file",
+      "archived": false,
+      "parent_id": "01M2VVZT0YA4WK46WT5VD72YTQ"
+    },
+    {
+      "id": "01M3P1X4FR6BRTB13KA736Y1HT",
+      "name_observed_at_inventory": "MarketOntology",
+      "type": "file",
+      "archived": false,
+      "parent_id": "01M2VVZT0YA4WK46WT5VD72YTQ"
+    },
+    {
+      "id": "01M32XYWDYSFTNDZVJKQ5QHT33",
+      "name_observed_at_inventory": "Mastermind · Market Guide · Re-envisioning",
+      "type": "file",
+      "archived": false,
+      "parent_id": "01M2VVZT0YA4WK46WT5VD72YTQ"
+    },
+    {
+      "id": "01M5FNCKAND6CBSJNYM5FZWR8Y",
+      "name_observed_at_inventory": "Terminal · Options R1 · Design Upgrade · W3 mobile · 2026-10-21",
+      "type": "file",
+      "archived": false,
+      "parent_id": "01M2VVZT0YA4WK46WT5VD72YTQ"
+    },
+    {
+      "id": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "name_observed_at_inventory": "International Markets · R10 · Current Build",
+      "type": "file",
+      "archived": false,
+      "parent_id": "01M2VVZT0YA4WK46WT5VD72YTQ"
+    },
+    {
+      "id": "01M3P1QEHS5XXQY85BJT6QR2E1",
+      "name_observed_at_inventory": "Mastermind AI",
+      "type": "file",
+      "archived": false,
+      "parent_id": "01M2VVZT0YA4WK46WT5VD72YTQ"
+    },
+    {
+      "id": "01M5EX8RTPR7YEZD2A144XED2S",
+      "name_observed_at_inventory": "Expectation Surface · R1 · 2026-10-21",
+      "type": "file",
+      "archived": false,
+      "parent_id": "01M2VVZT0YA4WK46WT5VD72YTQ"
+    },
+    {
+      "id": "01M3NRCX55B452A12819WNE1RH",
+      "name_observed_at_inventory": "Mastermind OS",
+      "type": "file",
+      "archived": false,
+      "parent_id": "01M2VVZT0YA4WK46WT5VD72YTQ"
+    },
+    {
+      "id": "01M6FAXA774QT1VRDMAG7DFQ2W",
+      "name_observed_at_inventory": "Sector Intelligence · R4 · Astra Pro · 2026-11-02",
+      "type": "file",
+      "archived": false,
+      "parent_id": "01M2VVZT0YA4WK46WT5VD72YTQ"
+    },
+    {
+      "id": "01M312VSDSZFVT45674GDVJVZN",
+      "name_observed_at_inventory": "Mastermind Product Design System — Canonical",
+      "type": "file",
+      "archived": false,
+      "parent_id": "01M3NSWX6SGTY4Z5DKBN4YP60M"
+    },
+    {
+      "id": "01M6JA41WWACWMRRVMVX1NQP9K",
+      "name_observed_at_inventory": "Mastermind Paper v20 Scratch Acceptance 2026-11-04",
+      "type": "file",
+      "archived": false,
+      "parent_id": "01M2VVZT0YA4WK46WT5VD72YTQ"
+    },
+    {
+      "id": "01M5HPWFPQ2Z5X79A9H8MJFKK0",
+      "name_observed_at_inventory": "Young harmony",
+      "type": "file",
+      "archived": true,
+      "parent_id": "01M2VVZT0YA4WK46WT5VD72YTQ"
+    },
+    {
+      "id": "01M5HQ8VMMY87NVDENZAGJNYKM",
+      "name_observed_at_inventory": "Young harmony (copy)",
+      "type": "file",
+      "archived": true,
+      "parent_id": "01M2VVZT0YA4WK46WT5VD72YTQ"
+    },
+    {
+      "id": "01M5HRAG5659SFE58D3PTA7D0V",
+      "name_observed_at_inventory": "Young harmony (copy)",
+      "type": "file",
+      "archived": true,
+      "parent_id": "01M2VVZT0YA4WK46WT5VD72YTQ"
+    },
+    {
+      "id": "01M3NQQ5KHTEZ50AGPT3RAD4BN",
+      "name_observed_at_inventory": "DUPLICATE DO NOT EDIT",
+      "type": "file",
+      "archived": true,
+      "parent_id": "01M3NSWX6SGTY4Z5DKBN4YP60M"
+    },
+    {
+      "id": "01M6JNN71ZN4867VJZ83PPXQZ0",
+      "name_observed_at_inventory": "AERLOR — Hospitality Website & Design System",
+      "type": "file",
+      "archived": false,
+      "parent_id": "01M2VVZT0YA4WK46WT5VD72YTQ"
+    },
+    {
+      "id": "01M6PXFEP1E1T59M2B3N673PMG",
+      "name_observed_at_inventory": "Market Memory · Revision evidence · R1 · 2026-11-05",
+      "type": "file",
+      "archived": false,
+      "parent_id": "01M2VVZT0YA4WK46WT5VD72YTQ"
+    },
+    {
+      "id": "01M6Q4WK0EMPV1G2KDGGRQBC1B",
+      "name_observed_at_inventory": "Macro · Policy Monitor · Production Design",
+      "type": "file",
+      "archived": false,
+      "parent_id": "01M2VVZT0YA4WK46WT5VD72YTQ"
+    },
+    {
+      "id": "01M6XNXMVK65A0JRXKJHXT7ZCF",
+      "name_observed_at_inventory": "Paper MCP write-path verification · design-lead · 2026-11-08",
+      "type": "file",
+      "archived": false,
+      "parent_id": "01M2VVZT0YA4WK46WT5VD72YTQ"
+    },
+    {
+      "id": "01M3NSWX6SGTY4Z5DKBN4YP60M",
+      "name_observed_at_inventory": "Others",
+      "type": "folder",
+      "archived": false,
+      "parent_id": "01M2VVZT0YA4WK46WT5VD72YTQ"
+    },
+    {
+      "id": "01M2VVZT0YA4WK46WT5VD72YTQ",
+      "name_observed_at_inventory": "Projects",
+      "type": "folder",
+      "archived": false,
+      "parent_id": null
+    }
+  ],
+  "subsequent_observation": {
+    "file_id": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+    "name": "International Markets · Core + Global Surveillance",
+    "attribution": "Independent shared-canvas writer; preserved."
+  }
+}
