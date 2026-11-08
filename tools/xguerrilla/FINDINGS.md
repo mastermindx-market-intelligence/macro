@@ -121,10 +121,14 @@ reports the empty field it really leaves; the GUI backend refuses to verify).
 
 ## 5. Still flaky or unproven
 
-- **`peekaboo` against a live window** was not re-run in this pass. The driver
-  path is unit-tested against a fake CLI and the stale-tree fix is reasoned from
-  the `target_unavailable` behaviour, not observed here. Treat the first
-  `peekaboo` run in the pilot as the test.
+- **`peekaboo` against a live window** has never been run, and cannot be yet.
+  The driver path is unit-tested against a fake CLI, and both
+  `PeekabooDriver.start` and `CdpDriver.start` raise `RuntimeBindingUnavailable`,
+  so no acceptance run of either backend is reachable before the adapter binds an
+  account, an approved action, an original holder and a profile owner. The stale-
+  tree fix is reasoned from the observed `target_unavailable` behaviour, not
+  measured here: the first real `peekaboo` run happens inside the pilot, after the
+  adapter lands, and that run is the test.
 - **`snapshot()` retry timings** (4 attempts, backoff, focus on odd attempts)
   are unmeasured under real GUI contention; numbers were chosen, not fitted.
 - **`textdrift.audit(window<3)` was corrected in the subsequent C3 source pass**

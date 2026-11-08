@@ -140,9 +140,16 @@ existing owners rather than replacing them:
   a veto; the absence of one is not permission, so the adapter has to bind the
   canonical account and profile identity as well.
 
-Two source gaps stay open and are named in `FINDINGS.md`: `textdrift.audit` is
-untested below a window of three posts, and the GUI backend in `drivers.py` has
-never been exercised against a real browser.
+Two source seams stay named in `FINDINGS.md`, and neither is a test that is
+missing. `textdrift.audit` refuses `window < 3` by design — ten parametrized
+cases in `tests/test_textdrift.py` assert the refusal — so what remains is the
+boundary behind it: a child with fewer than three informative posts in the window
+is excluded as `insufficient_posts` and has no drift coverage until it reaches
+three. The GUI backend has never been exercised against a live window, and it
+cannot be: `CdpDriver.start` and `PeekabooDriver.start` both call
+`refuse_runtime`, so the same boundary that blocks the live pilot blocks any
+acceptance run of either backend. Exercising the GUI driver is part of the
+adapter work in the list above, not something a test run can reach around.
 
 Once the adapter lands, the pilot runs exactly as the model describes it: three
 children, fourteen days, per-day evidence in the shape `PILOT_PLAYBOOK.md`
