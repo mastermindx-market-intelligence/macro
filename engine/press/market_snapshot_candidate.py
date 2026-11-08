@@ -112,7 +112,8 @@ def plan_market_snapshot_candidate(*, qualification_path, qualification_sha256,
         raise ValueError('calendar observation date required')
     date.fromisoformat(observed)
     facts, revisions = _reviewed_context(q['first_party_context'], root=root,
-        as_of=moment.date(), window_days=int(desk.get('window_days') or 3))
+        as_of=moment.date(), window_days=int(desk.get('window_days') or 3),
+        observation_date=observed)
     if observed != max(f['dated'] for f in facts):
         raise ValueError('observation date must equal latest selected fact date')
     adjudication = (_context_adjudication(q[_ADJUDICATION], q, facts, revisions)

@@ -2611,14 +2611,37 @@ def test_private_emit_guard_survives_provenance_strip(trail):
 
 
 def test_prompt_legacy_parity_and_actual_single_mode(inputs):
-    slot = invoke(inputs)['validation_context'];slot['story'] = {'kind': 'native_market_snapshot'}
-    a = W.build_prompt(slot, inputs['cfg']);b = W.build_prompt(slot, inputs['cfg'], single_attempt=True)
+    slot = invoke(inputs)['validation_context']
+    slot['story'] = {'kind': 'native_market_snapshot'}
+    legacy_system, _ = W.build_prompt(slot, inputs['cfg'])
+    system, user = W.build_prompt(slot, inputs['cfg'], single_attempt=True)
     promise = '  A draft that breaks one is regenerated at most twice and then dropped.'
-    assert a[0].replace(promise, '', 1) == b[0] and a[1] == b[1]
-    assert 'MINIMUM RECEIPTS: 5' in b[1] and 'WORD BUDGET: 300–600' in b[1]
-    assert 'Measured per sentence' in b[0] and 'BOUND RECEIPT CLAUSES' not in b[1]
-    assert 'PRIMARY SOURCE — FIRST PARTY' in b[1] and 'none — write this piece with no links' in b[1]
+    assert promise in legacy_system and promise not in system
+    assert 'MINIMUM RECEIPTS: 5' in user and 'WORD BUDGET: 300–600' in user
+    assert 'Credit is per sentence, never inherited by a paragraph.' in system
+    assert '[third_party]-only numbers must anchor but earn neither share nor receipt credit.' in system
+    assert 'Never tell the reader to buy, sell or size anything.' in system
+    assert 'BOUND RECEIPT CLAUSES' not in user
+    assert 'PRIMARY SOURCE — FIRST PARTY' in user and 'none — write this piece with no links' in user
 
+    # The native one-shot prompt may compact wording, never the dated evidence.
+    begin, end = '[BEGIN UNTRUSTED EVIDENCE DATA', '[END UNTRUSTED EVIDENCE DATA'
+    assert user.count(begin) == user.count(end) == 1
+    trusted, evidence = user.split(begin, 1)
+    evidence = evidence.split(end, 1)[0]
+    assert 'VINTAGE LAW: A publication date is not an observation date.' in trusted
+    assert slot['facts'] and evidence.count('- [first_party] ') == len(slot['facts'])
+    for fact in slot['facts']:
+        assert fact['text'] in evidence
+        if fact.get('source_name'):
+            assert fact['source_name'] in evidence
+        assert f"(dated {fact['dated']})" in evidence
+
+    # The non-target prompt keeps byte parity apart from the retry promise.
+    non_market = dict(slot, story={})
+    a = W.build_prompt(non_market, inputs['cfg'])
+    b = W.build_prompt(non_market, inputs['cfg'], single_attempt=True)
+    assert a[0].replace(promise, '', 1) == b[0] and a[1] == b[1]
 
 @pytest.mark.parametrize('cfg', [None, [], {'desks': []}, {'desks': {'brief': None}}])
 def test_malformed_explicit_config_refuses(inputs, cfg):
