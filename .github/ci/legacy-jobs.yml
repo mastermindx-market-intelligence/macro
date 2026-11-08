@@ -1519,7 +1519,7 @@ jobs:
       - name: install deterministic source-research test dependencies
         run: pip install pytest
       - name: point-in-time equity pressure and private pilot projection
-        run: PYTHONPATH=.:tests python -m pytest tests/test_equity_pressure_response.py tests/test_microstructure_pressure_response_pilot.py -q
+        run: PYTHONPATH=.:tests python -m pytest tests/test_equity_pressure_response.py tests/test_microstructure_pressure_response_pilot.py tests/test_tpb_historical_ruler.py -q
 
   yahoo-daily-archive-refresh:
     if: ${{ false }}
@@ -5963,6 +5963,8 @@ jobs:
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn
       - name: session + §7 anchor invariance (k=1..6 start drops, bucket/marker parity, era stamps)
         run: python -m pytest tests/test_session_anchor_invariance.py tests/test_sq_anchor_invariance.py tests/test_confluence_resample_runtime.py -q
+      - name: swing-confluence saved recipe (no market outcomes)
+        run: python -m pytest tests/test_toi_swing_plan.py -q
 
   trial-budgets:
     if: ${{ false }}
@@ -6317,6 +6319,8 @@ jobs:
       - "engine/marketing/state.py"
       - "engine/session_anchor.py"
       - "engine/sp500_heatmap.py"
+      - "engine/sector_breadth_close.py"
+      - "engine/spotlight.py"
       - "engine/stock_dossier.py"
       - "engine/stock_score.py"
       - "engine/stock_view.py"
@@ -8131,6 +8135,9 @@ jobs:
     # opaque fallback patterns to this hermetic job.
     scope: exclusive
     paths:
+      - "engine/neuralweb/options_selection_context.py"
+      - "tests/test_options_selection_context.py"
+      - "tests/fixtures/options_selection_question/terminal-mint-v1.json"
       # Plan private-reader/installer suites belong to this scoped CODE lane.
       - "tests/test_options_plan_api.py"
       - "tests/test_options_plan_install.py"
@@ -9036,6 +9043,8 @@ jobs:
       - "engine/intelligence_workspace/scenario_source_resolution.py"
       - "engine/options_hub_retention.py"
       - "tests/test_options_hub_retention.py"
+      - "tests/test_options_hub.py"
+      - "tests/test_options_expiry_support.py"
       - "tests/test_scenario_source_resolution.py"
       - "lib/shared_shell.py"
       - "lib/site_assets.py"
@@ -9239,7 +9248,7 @@ jobs:
       - name: install matrix-test deps
         run: pip install pytest pyyaml numpy pandas scipy pyarrow jsonschema fastapi httpx requests rjsmin==1.2.5
       - name: options matrix source/session/publication contracts
-        run: python -m pytest tests/test_options_matrix.py tests/test_options_matrix_retention.py tests/test_observe_options_matrix_publication.py tests/test_qualify_options_matrix_older_snapshot.py tests/test_observe_options_matrix_identity.py tests/test_options_selection_composition.py tests/test_observe_options_matrix_selection.py tests/test_options_use.py tests/test_options_hub_retention.py tests/test_scenario_source_resolution.py tests/test_options_scenario_capture.py tests/test_options_auth.py tests/test_options_scenarios.py tests/test_scenario_initial_capture.py tests/test_options_scenario_source_arrival.py tests/test_options_scenario_delivery.py tests/test_options_plan_api.py tests/test_options_plan_install.py -q
+        run: python -m pytest tests/test_options_matrix.py tests/test_options_matrix_retention.py tests/test_observe_options_matrix_publication.py tests/test_qualify_options_matrix_older_snapshot.py tests/test_observe_options_matrix_identity.py tests/test_options_selection_composition.py tests/test_observe_options_matrix_selection.py tests/test_options_use.py tests/test_options_hub_retention.py tests/test_scenario_source_resolution.py tests/test_options_scenario_capture.py tests/test_options_auth.py tests/test_options_selection_context.py tests/test_options_scenarios.py tests/test_scenario_initial_capture.py tests/test_options_scenario_source_arrival.py tests/test_options_scenario_delivery.py tests/test_options_plan_api.py tests/test_options_plan_install.py tests/test_options_hub.py tests/test_options_expiry_support.py -q
 
   flow-surface:
     if: ${{ false }}
@@ -11908,6 +11917,10 @@ jobs:
       - "engine/entry_radar/contracts.py"
       - "engine/entry_radar/spool.py"
       - "scripts/prophet_lab_baseline.py"
+      # B-17 frozen-input research verifier: keep the regression in the existing
+      # Prophet code gate; test-only and source-only edits both select this job.
+      - "research/prophet_v4/b17_frozen_input_recovery.py"
+      - "tests/test_prophet_b17_frozen_input_recovery.py"
       - "tests/test_prophet_lab.py"
       - "tests/test_intelligence_vector_units.py"
       - "tests/test_prophet_lab_api.py"
@@ -12003,6 +12016,11 @@ jobs:
           tests/test_prophet_lab_timeparse.py
           tests/test_prophet_lab_commissioning.py
           tests/test_caddy_hub_boundary.py -q
+
+      # B-17 recovers immutable inputs and exercises the existing selector.
+      # CI runs only the focused hermetic tests, never full archive reconstruction.
+      - name: Prophet B-17 frozen-input recovery — immutable sources, cutoff clocks, and unknown inputs
+        run: python -m pytest tests/test_prophet_b17_frozen_input_recovery.py -q
 
       # B04-A0 evidence dossier (#9935): closed reason map, forbidden-key refusal
       # and admissibility literals for the Prophet Lab dossier reader. Hermetic
@@ -15582,8 +15600,25 @@ jobs:
     # Every ci.yml run on main runs this whole job; the merge sweeper dispatches
     # one when its main proof goes stale. A PR that edits the manifest or the
     # planner, the shape of #7971 and #8010, reds here, on its own head.
+    # 2026-11-04 (#917 CI acceleration): this job now runs only the hosted-runner
+    # packing contract and the differential contract-delta gate contract
+    # (556-1,074 s measured). The structure/reliability/runner-policy/backstop
+    # steps moved to ci-control-plane-structure and the three censuses to
+    # ci-control-plane-census, both declaring these same paths; see those jobs.
     runs-on: ubuntu-latest
     paths:
+      # Ancestor package initializers of the declared subjects (2026-11-04,
+      # ancestor-init census): importing a declared module executes these, so a
+      # change to one must select this job. Declared on all three control-plane
+      # jobs identically.
+      - "app/__init__.py"
+      - "collectors/__init__.py"
+      - "engine/capital_structure/__init__.py"
+      - "engine/government_revenue/__init__.py"
+      - "engine/theme_graph/__init__.py"
+      - "lib/__init__.py"
+      - "lib/dataos/__init__.py"
+      - "tests/__init__.py"
       - "contracts/economic_propagation/propagation_hypothesis.v2.schema.json"
       - "lib/dataos/identity.py"
       - "lib/economic_propagation.py"
@@ -15610,6 +15645,7 @@ jobs:
       - "tests/test_ci_canary_tools.py"
       - "tests/test_ci_canary_workflows.py"
       - "tests/test_ci_gate_reliability_report.py"
+      - "tests/test_ci_main_heartbeat_header.py"
       - "tests/test_ci_pack.py"
       - "tests/test_ci_pack_fragments.py"
       - "tests/test_ci_pack_semantic.py"
@@ -15621,6 +15657,179 @@ jobs:
       - "tests/test_merge_on_green_semantic.py"
       - "tests/test_nightly_backstop.py"
       - "tests/test_release_hold_text.py"
+      - "tests/test_run_ci_pack_base_replay_env.py"
+      - "tests/test_run_ci_pack_fetch_fallback.py"
+      - "tests/test_runner_policy.py"
+      - "tests/test_trusted_ci_executor_workflow.py"
+      - "tests/test_trusted_ci_production_route.py"
+      # What the suites above import or read. `scope: exclusive` replaces
+      # inference, so a file missing here is one whose change never starts this
+      # job; test_curated_exclusive_scopes_cover_their_own_import_closure reds on it.
+      - "scripts/__init__.py"
+      - "scripts/workflow_run_source.py"
+      - "scripts/worktree_sparse.py"
+      - "config/sparse_worktree.json"
+      - "lib/nyse_calendar.py"
+      - "scripts/check_conflict_markers.py"
+      - "scripts/check_contract_delta.py"
+      - "scripts/merge_on_green.py"
+      - "scripts/gh_path_filter.py"
+      - "scripts/capture_ci_canary_receipt.py"
+      - "scripts/compare_ci_canary_receipts.py"
+      - "scripts/monitor_ci_host_resources.py"
+      - "scripts/resolve_ci_canary_ref.py"
+      - "scripts/select_ci_canary_packs.py"
+      - "ops/runner-host/**"
+      - ".claude/workflows/release_hold_text.py"
+      - "research/MARKET_ONTOLOGY_META_CEO_CHARTER_2026_09_06.md"
+      - "config/house_law_checks.yml"
+      # The unrun census's own inputs: a waiver or baseline edit changes its verdict.
+      - "config/unrun_test_baseline.json"
+      - "config/unrun_test_waivers.yml"
+      # tests/test_ci_pack.py imports the P0B receipt verifier, which imports the
+      # stock-dashboard fixture renderer. These are that import's closure.
+      - "scripts/check_p0b_receipt_closure.py"
+      - "scripts/render_stock_dashboard_fixture.py"
+      - "scripts/verify_stock_dashboard_mobile_layout.cjs"
+      - "site/stock-dashboard.css"
+      - "site/factordata/canada_standouts.json"
+      - "site/factordata/hk_standouts.json"
+      - "engine/__init__.py"
+      - "engine/i18n.py"
+      # Parsed or existence-checked subjects, never imported. Each is marked
+      # `# ci-trigger-closure: data` where a suite names it, so its own imports
+      # are not followed; the file itself is still a trigger.
+      - "collectors/fred.py"
+      - "contracts/government_revenue/*.schema.json"
+      - "engine/capital_structure/document_terms.py"
+      - "engine/government_revenue/workspace.py"
+      - "engine/market_state.py"
+      - "engine/signal_quality.py"
+      - "lib/config.py"
+      - "scripts/build_news.py"
+      - "scripts/build_signal_quality.py"
+      - "config/causal_priors.yml"
+      - "config/marketing.yml"
+      - "config/press_sources.yml"
+      - "research/DO_NOT_REBUILD.md"
+      - "research/cn_prophet_audit/sector_intel_exante_test.py"
+      - "research/prophet_us_audit/reclaim_veto_packet.py"
+      - "research/prophet_us_audit/test_label_grading_battery.py"
+      - "research/signal_engine/test_breadth_consume.py"
+      - "research/signal_engine/test_buy_filters.py"
+      - "research/signal_engine/test_buyfilter.py"
+      - "scripts/research/test_run_w4_controls_fingerprints.py"
+      - "tests/test_chart_render_inline.py"
+      - "tests/test_us_reclaim_veto_packet.py"
+      - "tests/test_ci_apt_cold_acquisition.py"
+      - "tests/test_ci_apt_native_plan.py"
+      - "tests/test_ci_apt_native_stage.py"
+      - "tests/test_ci_apt_transaction_contract.py"
+      - "tests/test_ci_browser_capture.py"
+      - "tests/test_ci_browser_dependency_inputs.py"
+      - "tests/test_ci_browser_native_setup.py"
+      - "config/intl_global_universe_v1.json"
+      - "config/intl_source_rights_matrix_v1.json"
+      - "config/theme_crosswalk.yml"
+      - "config/theme_sources.yml"
+      - "engine/intl_global_observation.py"
+      - "engine/intl_global_universe.py"
+      - "engine/theme_graph/rights.py"
+      - "lib/intl_global_observation_adapter.py"
+      - "templates/_navlinks.html.j2"
+      - "templates/theme.css"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      # pytest + pyyaml only. Every suite below collects and passes with nothing else
+      # installed (measured 2026-09-25 in a clean venv holding exactly these two). The
+      # data stack in workflow-yaml's install is for its options suites. It is not
+      # needed here, and check_skip_only_suites.py below reds if a suite here ever
+      # starts to skip for a package this line does not install.
+      - name: install minimal deps
+        run: pip install pytest pyyaml
+      - name: hosted-runner packing contract
+        run: python -m pytest tests/test_ci_pack.py tests/test_ci_pack_fragments.py tests/test_run_ci_pack_base_replay_env.py tests/test_run_ci_pack_fetch_fallback.py tests/test_merge_on_green.py tests/test_merge_on_green_semantic.py tests/test_check_conflict_markers.py tests/test_release_hold_text.py -q
+      # scripts/check_contract_delta.py (2026-08-19) is the differential PR-vs-base
+      # gate that re-derives the two finding classes above (curated-exclusive
+      # import-closure misses, unwired suites) UNCONDITIONALLY of ci-pack's path
+      # scoping — see its module docstring for the incident that motivated it
+      # (#5872/#5932 merged green because their packs never ran the two suites
+      # this job already runs above). Wired HERE, right after the audit_unrun_tests
+      # steps, for the same reason every other suite in this job is: it would
+      # otherwise be an unrun suite named by no run: step, caught by the
+      # audit_unrun_tests.py step right above it.
+      - name: differential contract-delta gate contract
+        run: python -m pytest tests/test_contract_delta.py -q
+  ci-control-plane-structure:
+    if: ${{ false }}  # executed inside ci-pack — NOT a disabled gate; see the ci-pack job.
+    gate: code
+    scope: exclusive
+    # 2026-11-04 (#917 CI acceleration): split out of ci-control-plane-contracts.
+    # Measured on hosted runs 41806511589 and 41803222742, the undivided job ran
+    # 1,033-1,961 s and was the critical path of every pack matrix that selected
+    # it (the next-heaviest pack finished 400-900 s earlier). The three parts are
+    # independent verdicts; splitting them lets the planner place each on its own
+    # pack. Same gate, same scope, the SAME declared paths (the union closure of
+    # every control-plane suite, kept identical on purpose so the three jobs are
+    # always selected together and the trigger-closure guard sees one list).
+    # Workflow-structure, merge-gate reliability, runner-policy/canary and nightly
+    # backstop contracts (105-197 s measured).
+    runs-on: ubuntu-latest
+    paths:
+      # Ancestor package initializers of the declared subjects (2026-11-04,
+      # ancestor-init census): importing a declared module executes these, so a
+      # change to one must select this job. Declared on all three control-plane
+      # jobs identically.
+      - "app/__init__.py"
+      - "collectors/__init__.py"
+      - "engine/capital_structure/__init__.py"
+      - "engine/government_revenue/__init__.py"
+      - "engine/theme_graph/__init__.py"
+      - "lib/__init__.py"
+      - "lib/dataos/__init__.py"
+      - "tests/__init__.py"
+      - "contracts/economic_propagation/propagation_hypothesis.v2.schema.json"
+      - "lib/dataos/identity.py"
+      - "lib/economic_propagation.py"
+      - "lib/economic_propagation_v2.py"
+      - "research/economic_propagation/k3d_real_proof_records/real_abstention_tsn_adm_no_graph1.json"
+      - "app/deploy/update.sh"
+      - "app/deploy/reconcile-caddy-autosave.py"
+      - "app/deploy/macro_caddy_overlay.py"
+      - "app/deploy/macro_caddy_publication.py"
+      - "lib/exchange_holidays.py"
+      - ".github/ci/legacy-jobs.yml"
+      - ".github/workflows/**"
+      - "scripts/run_ci_pack.py"
+      - "scripts/ci_*.py"
+      - "scripts/audit_unrun_tests.py"
+      - "scripts/check_ci_trigger_closure.py"
+      - "scripts/check_runner_policy.py"
+      - "scripts/check_skip_only_suites.py"
+      - "scripts/check_workflow_yaml.py"
+      - "scripts/nightly_backstop.py"
+      - "tests/test_audit_unrun_tests.py"
+      - "tests/test_check_conflict_markers.py"
+      - "tests/test_check_skip_only_suites.py"
+      - "tests/test_ci_canary_tools.py"
+      - "tests/test_ci_canary_workflows.py"
+      - "tests/test_ci_gate_reliability_report.py"
+      - "tests/test_ci_main_heartbeat_header.py"
+      - "tests/test_ci_pack.py"
+      - "tests/test_ci_pack_fragments.py"
+      - "tests/test_ci_pack_semantic.py"
+      - "tests/test_ci_plan_workflow.py"
+      - "tests/test_ci_semantic_proof.py"
+      - "tests/test_ci_trigger_closure.py"
+      - "tests/test_contract_delta.py"
+      - "tests/test_merge_on_green.py"
+      - "tests/test_merge_on_green_semantic.py"
+      - "tests/test_nightly_backstop.py"
+      - "tests/test_release_hold_text.py"
+      - "tests/test_run_ci_pack_base_replay_env.py"
       - "tests/test_run_ci_pack_fetch_fallback.py"
       - "tests/test_runner_policy.py"
       - "tests/test_trusted_ci_executor_workflow.py"
@@ -15726,8 +15935,6 @@ jobs:
       # cannot skip its way to a green on a pack runner.
       - name: ci-plan/ci-pack/ci-gate workflow structure contract
         run: python -m pytest tests/test_ci_plan_workflow.py tests/test_ci_semantic_proof.py tests/test_ci_pack_semantic.py tests/test_ci_browser_dependency_inputs.py tests/test_ci_browser_capture.py tests/test_ci_apt_cold_acquisition.py tests/test_ci_apt_native_plan.py tests/test_ci_apt_transaction_contract.py tests/test_ci_apt_native_stage.py tests/test_ci_browser_native_setup.py -q
-      - name: hosted-runner packing contract
-        run: python -m pytest tests/test_ci_pack.py tests/test_ci_pack_fragments.py tests/test_run_ci_pack_fetch_fallback.py tests/test_merge_on_green.py tests/test_merge_on_green_semantic.py tests/test_check_conflict_markers.py tests/test_release_hold_text.py -q
       # The merge-gate reliability report is the progress metric for
       # research/CI_MERGE_GATE_RELIABILITY_ROOT_CAUSE_2026_08_19.md, so a silent
       # regression in it would make that program's acceptance gate meaningless.
@@ -15737,6 +15944,12 @@ jobs:
       # it cannot skip its way to green on a pack runner with no `gh`.
       - name: merge-gate reliability report contract
         run: python -m pytest tests/test_ci_gate_reliability_report.py -q
+      # ci-main-heartbeat.yml names each of its jobs after a job in this manifest,
+      # and its header tells the reader what a green heartbeat means. This suite
+      # measures every heartbeat job's test files against its namesake here and
+      # holds the header's words to the difference, both ways. Pure stdlib + pyyaml.
+      - name: ci-main-heartbeat header matches what its jobs run
+        run: python -m pytest tests/test_ci_main_heartbeat_header.py -q
       - name: transitional self-hosted runner policy and canary contracts
         run: python scripts/check_runner_policy.py && python -m pytest tests/test_runner_policy.py tests/test_ci_canary_tools.py tests/test_ci_canary_workflows.py tests/test_trusted_ci_executor_workflow.py tests/test_trusted_ci_production_route.py -q
       # The US nightly's cron redundancy (2026-08-13), wired here for the same reason
@@ -15750,6 +15963,165 @@ jobs:
         run: python3 scripts/nightly_backstop.py --selftest
       - name: nightly backstop dispatch rule (must never fire over a live run)
         run: python -m pytest tests/test_nightly_backstop.py -q
+  ci-control-plane-census:
+    if: ${{ false }}  # executed inside ci-pack — NOT a disabled gate; see the ci-pack job.
+    gate: code
+    scope: exclusive
+    # 2026-11-04 (#917 CI acceleration): split out of ci-control-plane-contracts.
+    # Measured on hosted runs 41806511589 and 41803222742, the undivided job ran
+    # 1,033-1,961 s and was the critical path of every pack matrix that selected
+    # it (the next-heaviest pack finished 400-900 s earlier). The three parts are
+    # independent verdicts; splitting them lets the planner place each on its own
+    # pack. Same gate, same scope, the SAME declared paths (the union closure of
+    # every control-plane suite, kept identical on purpose so the three jobs are
+    # always selected together and the trigger-closure guard sees one list).
+    # The unrun, skip-only and trigger-closure censuses and their unit tests
+    # (373-690 s measured).
+    runs-on: ubuntu-latest
+    paths:
+      # Ancestor package initializers of the declared subjects (2026-11-04,
+      # ancestor-init census): importing a declared module executes these, so a
+      # change to one must select this job. Declared on all three control-plane
+      # jobs identically.
+      - "app/__init__.py"
+      - "collectors/__init__.py"
+      - "engine/capital_structure/__init__.py"
+      - "engine/government_revenue/__init__.py"
+      - "engine/theme_graph/__init__.py"
+      - "lib/__init__.py"
+      - "lib/dataos/__init__.py"
+      - "tests/__init__.py"
+      - "contracts/economic_propagation/propagation_hypothesis.v2.schema.json"
+      - "lib/dataos/identity.py"
+      - "lib/economic_propagation.py"
+      - "lib/economic_propagation_v2.py"
+      - "research/economic_propagation/k3d_real_proof_records/real_abstention_tsn_adm_no_graph1.json"
+      - "app/deploy/update.sh"
+      - "app/deploy/reconcile-caddy-autosave.py"
+      - "app/deploy/macro_caddy_overlay.py"
+      - "app/deploy/macro_caddy_publication.py"
+      - "lib/exchange_holidays.py"
+      - ".github/ci/legacy-jobs.yml"
+      - ".github/workflows/**"
+      - "scripts/run_ci_pack.py"
+      - "scripts/ci_*.py"
+      - "scripts/audit_unrun_tests.py"
+      - "scripts/check_ci_trigger_closure.py"
+      - "scripts/check_runner_policy.py"
+      - "scripts/check_skip_only_suites.py"
+      - "scripts/check_workflow_yaml.py"
+      - "scripts/nightly_backstop.py"
+      - "tests/test_audit_unrun_tests.py"
+      - "tests/test_check_conflict_markers.py"
+      - "tests/test_check_skip_only_suites.py"
+      - "tests/test_ci_canary_tools.py"
+      - "tests/test_ci_canary_workflows.py"
+      - "tests/test_ci_gate_reliability_report.py"
+      - "tests/test_ci_main_heartbeat_header.py"
+      - "tests/test_ci_pack.py"
+      - "tests/test_ci_pack_fragments.py"
+      - "tests/test_ci_pack_semantic.py"
+      - "tests/test_ci_plan_workflow.py"
+      - "tests/test_ci_semantic_proof.py"
+      - "tests/test_ci_trigger_closure.py"
+      - "tests/test_contract_delta.py"
+      - "tests/test_merge_on_green.py"
+      - "tests/test_merge_on_green_semantic.py"
+      - "tests/test_nightly_backstop.py"
+      - "tests/test_release_hold_text.py"
+      - "tests/test_run_ci_pack_base_replay_env.py"
+      - "tests/test_run_ci_pack_fetch_fallback.py"
+      - "tests/test_runner_policy.py"
+      - "tests/test_trusted_ci_executor_workflow.py"
+      - "tests/test_trusted_ci_production_route.py"
+      # What the suites above import or read. `scope: exclusive` replaces
+      # inference, so a file missing here is one whose change never starts this
+      # job; test_curated_exclusive_scopes_cover_their_own_import_closure reds on it.
+      - "scripts/__init__.py"
+      - "scripts/workflow_run_source.py"
+      - "scripts/worktree_sparse.py"
+      - "config/sparse_worktree.json"
+      - "lib/nyse_calendar.py"
+      - "scripts/check_conflict_markers.py"
+      - "scripts/check_contract_delta.py"
+      - "scripts/merge_on_green.py"
+      - "scripts/gh_path_filter.py"
+      - "scripts/capture_ci_canary_receipt.py"
+      - "scripts/compare_ci_canary_receipts.py"
+      - "scripts/monitor_ci_host_resources.py"
+      - "scripts/resolve_ci_canary_ref.py"
+      - "scripts/select_ci_canary_packs.py"
+      - "ops/runner-host/**"
+      - ".claude/workflows/release_hold_text.py"
+      - "research/MARKET_ONTOLOGY_META_CEO_CHARTER_2026_09_06.md"
+      - "config/house_law_checks.yml"
+      # The unrun census's own inputs: a waiver or baseline edit changes its verdict.
+      - "config/unrun_test_baseline.json"
+      - "config/unrun_test_waivers.yml"
+      # tests/test_ci_pack.py imports the P0B receipt verifier, which imports the
+      # stock-dashboard fixture renderer. These are that import's closure.
+      - "scripts/check_p0b_receipt_closure.py"
+      - "scripts/render_stock_dashboard_fixture.py"
+      - "scripts/verify_stock_dashboard_mobile_layout.cjs"
+      - "site/stock-dashboard.css"
+      - "site/factordata/canada_standouts.json"
+      - "site/factordata/hk_standouts.json"
+      - "engine/__init__.py"
+      - "engine/i18n.py"
+      # Parsed or existence-checked subjects, never imported. Each is marked
+      # `# ci-trigger-closure: data` where a suite names it, so its own imports
+      # are not followed; the file itself is still a trigger.
+      - "collectors/fred.py"
+      - "contracts/government_revenue/*.schema.json"
+      - "engine/capital_structure/document_terms.py"
+      - "engine/government_revenue/workspace.py"
+      - "engine/market_state.py"
+      - "engine/signal_quality.py"
+      - "lib/config.py"
+      - "scripts/build_news.py"
+      - "scripts/build_signal_quality.py"
+      - "config/causal_priors.yml"
+      - "config/marketing.yml"
+      - "config/press_sources.yml"
+      - "research/DO_NOT_REBUILD.md"
+      - "research/cn_prophet_audit/sector_intel_exante_test.py"
+      - "research/prophet_us_audit/reclaim_veto_packet.py"
+      - "research/prophet_us_audit/test_label_grading_battery.py"
+      - "research/signal_engine/test_breadth_consume.py"
+      - "research/signal_engine/test_buy_filters.py"
+      - "research/signal_engine/test_buyfilter.py"
+      - "scripts/research/test_run_w4_controls_fingerprints.py"
+      - "tests/test_chart_render_inline.py"
+      - "tests/test_us_reclaim_veto_packet.py"
+      - "tests/test_ci_apt_cold_acquisition.py"
+      - "tests/test_ci_apt_native_plan.py"
+      - "tests/test_ci_apt_native_stage.py"
+      - "tests/test_ci_apt_transaction_contract.py"
+      - "tests/test_ci_browser_capture.py"
+      - "tests/test_ci_browser_dependency_inputs.py"
+      - "tests/test_ci_browser_native_setup.py"
+      - "config/intl_global_universe_v1.json"
+      - "config/intl_source_rights_matrix_v1.json"
+      - "config/theme_crosswalk.yml"
+      - "config/theme_sources.yml"
+      - "engine/intl_global_observation.py"
+      - "engine/intl_global_universe.py"
+      - "engine/theme_graph/rights.py"
+      - "lib/intl_global_observation_adapter.py"
+      - "templates/_navlinks.html.j2"
+      - "templates/theme.css"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      # pytest + pyyaml only. Every suite below collects and passes with nothing else
+      # installed (measured 2026-09-25 in a clean venv holding exactly these two). The
+      # data stack in workflow-yaml's install is for its options suites. It is not
+      # needed here, and check_skip_only_suites.py below reds if a suite here ever
+      # starts to skip for a package this line does not install.
+      - name: install minimal deps
+        run: pip install pytest pyyaml
       # 2026-08-12: the terminal-CI-handoff step that used to sit here is GONE with the
       # rule it guarded. A worker no longer stops on an armed pull request — it owns
       # commit -> push -> PR -> CI -> squash-merge -> live verification — so there is no
@@ -15794,17 +16166,6 @@ jobs:
         run: python scripts/audit_unrun_tests.py
       - name: unrun-census discovery unit tests
         run: python -m pytest tests/test_audit_unrun_tests.py -q
-      # scripts/check_contract_delta.py (2026-08-19) is the differential PR-vs-base
-      # gate that re-derives the two finding classes above (curated-exclusive
-      # import-closure misses, unwired suites) UNCONDITIONALLY of ci-pack's path
-      # scoping — see its module docstring for the incident that motivated it
-      # (#5872/#5932 merged green because their packs never ran the two suites
-      # this job already runs above). Wired HERE, right after the audit_unrun_tests
-      # steps, for the same reason every other suite in this job is: it would
-      # otherwise be an unrun suite named by no run: step, caught by the
-      # audit_unrun_tests.py step right above it.
-      - name: differential contract-delta gate contract
-        run: python -m pytest tests/test_contract_delta.py -q
       # SKIP-ONLY suites: a test that skips in every job naming it executes
       # nowhere, so a job list and a green run both lie about it. This is what an
       # `importorskip` added to clear a red lane creates by construction — it
@@ -16613,6 +16974,10 @@ jobs:
     # Dynamic Ontology assets and canonical navigation are included explicitly.
     scope: exclusive
     paths:
+      # TTI-D1: bind the existing synthetic minute reader/resolver suite to
+      # its current CODE consumer owner; the older signal-contract copy is DATA.
+      - "engine/entry_radar/minute_resolution.py"
+      - "tests/test_entry_radar_w4_c3_reader.py"
       - "scripts/company_intelligence_publication_evidence.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
@@ -16639,6 +17004,7 @@ jobs:
       - "engine/marketing/market_clock.py"
       - "engine/marketing/movers_source.py"
       - "engine/sp500_heatmap.py"
+      - "engine/sector_breadth_close.py"
       - "engine/stocks_hub.py"
       - "engine/liquidity_currency.py"
       - "engine/liquidity_source_availability.py"
@@ -17958,7 +18324,7 @@ jobs:
       - name: ontology research case — native evidence and existing live episode projection
         run: python -m pytest tests/test_opportunity_evidence_vector_contract.py tests/test_entry_radar_w4_live.py -k 'opportunity_case or research_case' -q
       - name: native earnings context, retained identity and published Radar read
-        run: python -m pytest tests/test_earnings_opportunity_qualification.py tests/test_earnings_opportunity_context.py tests/test_entry_radar_quote_context.py tests/test_entry_radar_research_read.py tests/test_entry_radar_earnings_context_producer.py tests/test_entry_radar_candidate_provenance.py tests/test_entry_radar_quote_lineage_read.py -q
+        run: python -m pytest tests/test_earnings_opportunity_qualification.py tests/test_earnings_opportunity_context.py tests/test_entry_radar_quote_context.py tests/test_entry_radar_research_read.py tests/test_entry_radar_earnings_context_producer.py tests/test_entry_radar_candidate_provenance.py tests/test_entry_radar_quote_lineage_read.py -q tests/test_entry_radar_w4_c3_reader.py
       - name: captured native DRL event and evidence composition
         run: python -m pytest tests/test_price_pressure_research.py tests/test_h20_supplier_conditional.py tests/test_gmi_native_disclosure_propagation.py -q
       - name: ontology explorer — real browser, selected context, responsive and failure states
@@ -19714,6 +20080,7 @@ jobs:
       - engine/signal_stack.py
       - engine/smart_money.py
       - engine/sp500_heatmap.py
+      - "engine/sector_breadth_close.py"
       - engine/special_arb.py
       - engine/special_situations.py
       - engine/special_situations_premium.py
@@ -20585,6 +20952,7 @@ jobs:
       - "lib/config.py"
       - "lib/pages.py"
       - "lib/site_assets.py"
+      - "scripts/__init__.py"
       - "scripts/build_research_screener.py"
       - "scripts/check_template_site_sync.py"
       - "scripts/optimize_assets.py"
@@ -21966,6 +22334,7 @@ jobs:
       - scripts/linear_projector_p1_offline.py
       - templates/_navlinks.html.j2
       - templates/intelligence_hub.html.j2
+      - templates/ontology-theme.js
       - tests/__init__.py
       - tests/agent_eval_continuity_cases.py
       - tests/linear_portfolio_plan_cases.py
@@ -21986,6 +22355,7 @@ jobs:
       - tests/test_agentos_project_proposal.py
       - tests/test_agentos_standing_instructions.py
       - tests/test_project_knowledge_recipes.py
+      - tests/test_project_discovery_correction.py
       - tests/test_agentos_status.py
       - tests/test_b_rec2_wave_boundary_records.py
       - tests/test_b_rec3_wave_boundary_records.py
@@ -21993,6 +22363,9 @@ jobs:
       - tests/test_f02_owner_map_receipts.py
       - tests/test_mo_b_ledger_reconciliation_2026_09_18.py
       - tests/test_w9b_rec_ns.py
+      - tests/test_tfg1_r3_source_truth.py
+      - research/earnings_intelligence/e3/tfg1_development_boundary_identity_adjudication_r2.json
+      - research/earnings_intelligence/e3/tfg1_development_boundary_identity_adjudication_r3.json
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -22022,7 +22395,11 @@ jobs:
             tests/test_agentos_project_plan_owner.py \
             tests/test_agentos_project_proposal.py \
             tests/test_agentos_standing_instructions.py \
-            tests/test_project_knowledge_recipes.py -q
+            tests/test_project_knowledge_recipes.py \
+            tests/test_project_discovery_correction.py -q
+
+      - name: E3-FMT R3 source-truth and sealed-holdout integrity
+        run: python -m pytest tests/test_tfg1_r3_source_truth.py -q
 
   capability-broker:
     if: ${{ false }}
@@ -24753,6 +25130,7 @@ jobs:
       - "engine/signal_lab.py"
       - "engine/signal_quality.py"
       - "engine/signal_stack.py"
+      - "engine/sector_breadth_close.py"
       - "engine/smart_money.py"
       - "engine/sp500_heatmap.py"
       - "engine/special_arb.py"
@@ -25407,8 +25785,8 @@ jobs:
   metab-throttle-ux:
     if: ${{ false }}
     gate: code
-    # V11 Metabolism Throttle UX (budget gate + run-until dispatch):
-    # Three suites, one job:
+    # Metabolism contracts (V11 throttle UX + Immune health/queue projection):
+    # Four deterministic suites, one job:
     #   test_metabolism_budget_gate.py — key_budget header parsing, gate_verdict
     #                                    semantics (5h_max/weekly_max/manual),
     #                                    write_status schema, NEVER-RAISE.
@@ -25420,7 +25798,9 @@ jobs:
     #   test_admin_metabolism_ux.py    — admin routes for the new UX controls
     #                                    (5H MAX / WEEKLY MAX / STOP buttons,
     #                                    budget status panel data).
-    # Zero network calls; key_pool and budget_gate are monkeypatched throughout.
+    #   test_metabolism_immune.py      — health evaluation, child-queue evidence,
+    #                                    conservative unknowns and CLI receipts.
+    # Zero network calls; suites use mocked budget, key-pool, gh and health inputs.
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -25435,6 +25815,8 @@ jobs:
         run: python -m pytest tests/test_metabolism_rununtil.py -q
       - name: admin metabolism UX panel tests
         run: python -m pytest tests/test_admin_metabolism_ux.py -q
+      - name: Immune health and child-queue projection contract tests
+        run: python -m pytest tests/test_metabolism_immune.py -q
 
   admin-live-runs:
     if: ${{ false }}
@@ -27237,6 +27619,7 @@ jobs:
       - "engine/regime_label.py"
       - "engine/regime_vector.py"
       - "engine/research_intelligence/__init__.py"
+      - "engine/research_intelligence/benchmark.py"
       - "engine/research_intelligence/extractor.py"
       - "engine/research_intelligence/projection.py"
       - "engine/research_intelligence/schema.py"
@@ -27339,6 +27722,7 @@ jobs:
       - "scripts/ingest_research.py"
       - "scripts/inject_data_base.py"
       - "scripts/optimize_assets.py"
+      - "scripts/research_intelligence_benchmark.py"
       - "scripts/research_intelligence_store.py"
       - "scripts/research_intelligence_vault_head.py"
       - "scripts/research_vault_census.py"
@@ -27367,6 +27751,7 @@ jobs:
       - "templates/research_report.html.j2"
       - "templates/research_vault.html.j2"
       - "tests/__init__.py"
+      - "tests/test_research_intelligence_benchmark.py"
       - "tests/test_research_intelligence_comparison.py"
       - "tests/test_research_intelligence_prompt_contract.py"
       - "tests/test_research_intelligence_selection.py"
@@ -27520,7 +27905,7 @@ jobs:
       # One canonical code-gate invocation preserves producer, intelligence,
       # retrieval and page contracts from both composed source families.
       - name: research vault generation, ingestion, intelligence, retrieval and page tests
-        run: python -m pytest tests/test_research_vault_generation_cli.py tests/test_research_vault_materialize_published.py tests/test_research_vault_producer_generation.py tests/test_research_vault_producer_generation_writer.py tests/test_research_vault_generation_evidence.py tests/test_research_vault_producer_transport.py tests/test_research_vault_generation_recovery.py tests/test_research_vault_generation_continuation.py tests/test_research_vault_producer_timing.py tests/test_research_vault_processed_index_concurrency.py tests/test_research_vault_blank_text.py tests/test_research_vault_fulltext_store.py tests/test_research_vault_fulltext_index.py tests/test_research_vault_producer_read_cache.py tests/test_research_vault_fulltext_publication.py tests/test_research_vault_fulltext_qualification.py tests/test_research_vault.py tests/test_research_vault_strict_store.py tests/test_research_vault_page.py tests/test_research_pages.py tests/test_research_vault_subjects.py tests/test_research_vault_backfill.py tests/test_research_intelligence_vault_head.py tests/test_research_vault_retrieval_eval.py tests/test_research_vault_read_port.py tests/test_research_vault_read_service.py tests/test_research_vault_read_adapters.py tests/test_research_vault_reading_order_v2.py tests/test_research_vault_source_layout.py tests/test_research_intelligence_comparison.py tests/test_research_intelligence_prompt_contract.py tests/test_research_intelligence_support_loss.py tests/test_research_intelligence_selection.py tests/test_research_intelligence_selection_contract.py tests/test_research_intelligence_selector_semantics.py tests/test_research_vault_evaluation_runner.py tests/test_research_vault_f11_factory.py tests/test_research_vault_generation_selection.py tests/test_research_vault_generation_window.py tests/test_research_vault_qualified_reader.py tests/test_research_vault_read_runtime.py tests/test_research_vault_rio_source_qualification.py -q
+        run: python -m pytest tests/test_research_vault_generation_cli.py tests/test_research_vault_materialize_published.py tests/test_research_vault_producer_generation.py tests/test_research_vault_producer_generation_writer.py tests/test_research_vault_generation_evidence.py tests/test_research_vault_producer_transport.py tests/test_research_vault_generation_recovery.py tests/test_research_vault_generation_continuation.py tests/test_research_vault_producer_timing.py tests/test_research_vault_processed_index_concurrency.py tests/test_research_vault_blank_text.py tests/test_research_vault_fulltext_store.py tests/test_research_vault_fulltext_index.py tests/test_research_vault_producer_read_cache.py tests/test_research_vault_fulltext_publication.py tests/test_research_vault_fulltext_qualification.py tests/test_research_vault.py tests/test_research_vault_strict_store.py tests/test_research_vault_page.py tests/test_research_pages.py tests/test_research_vault_subjects.py tests/test_research_vault_backfill.py tests/test_research_intelligence_vault_head.py tests/test_research_vault_retrieval_eval.py tests/test_research_vault_read_port.py tests/test_research_vault_read_service.py tests/test_research_vault_read_adapters.py tests/test_research_vault_reading_order_v2.py tests/test_research_vault_source_layout.py tests/test_research_intelligence_comparison.py tests/test_research_intelligence_prompt_contract.py tests/test_research_intelligence_support_loss.py tests/test_research_intelligence_selection.py tests/test_research_intelligence_selection_contract.py tests/test_research_intelligence_selector_semantics.py tests/test_research_vault_evaluation_runner.py tests/test_research_vault_f11_factory.py tests/test_research_vault_generation_selection.py tests/test_research_vault_generation_window.py tests/test_research_vault_qualified_reader.py tests/test_research_vault_read_runtime.py tests/test_research_vault_rio_source_qualification.py tests/test_research_intelligence_benchmark.py -q
       - name: native divergence same-run private capture
         run: python -m pytest tests/test_native_divergence_capture.py -q
 
@@ -28043,6 +28428,7 @@ jobs:
       - "engine/signal_archive.py"
       - "engine/signal_frontier_docket.py"
       - "engine/signal_gate.py"
+      - "engine/sector_breadth_close.py"
       - "engine/signal_lab.py"
       - "engine/signal_quality.py"
       - "engine/signal_stack.py"
@@ -35383,6 +35769,8 @@ jobs:
     # contract-delta closure on 673a0a5a (a sparse worktree omits those trees).
     scope: exclusive
     paths:
+      - "engine/prophet_early_leadership_evidence.py"
+      - "tests/test_prophet_fusion_w3_structural.py"
       - collectors/rate_futures.py
       - engine/rate_futures_repricing.py
       - engine/entry_radar/__init__.py
@@ -36038,6 +36426,7 @@ jobs:
       - "engine/signal_stack.py"
       - "engine/smart_money.py"
       - "engine/sp500_heatmap.py"
+      - "engine/sector_breadth_close.py"
       - "engine/special_arb.py"
       - "engine/special_situations.py"
       - "engine/special_situations_premium.py"
@@ -36556,6 +36945,8 @@ jobs:
       # ITP-ES wave 1: deterministic page builder contract.
       - name: expectation surface page builder contract (ITP-ES wave 1)
         run: python -m pytest tests/test_build_expectation_surface.py -q
+      - name: Early Leadership owner identity and outcome-blind research envelope
+        run: python -m pytest tests/test_prophet_fusion_w3_structural.py -q
 
   prophet-anticipation-intake:
     # ANTICIPATION A1 (status-class admission) + §6.9 R3 (structure-anchored entry
@@ -36882,6 +37273,8 @@ jobs:
     # the declared-scope coverage audit re-checks them on every load.
     scope: exclusive
     paths:
+      - "engine/prophet_early_leadership_evidence.py"
+      - "contracts/theme_graph/theme_state.v1.schema.json"
       - engine/rate_futures_repricing.py
       - engine/entry_radar/__init__.py
       - engine/entry_radar/replay/__init__.py
@@ -37462,6 +37855,7 @@ jobs:
       - "engine/signal_quality.py"
       - "engine/signal_stack.py"
       - "engine/smart_money.py"
+      - "engine/sector_breadth_close.py"
       - "engine/sp500_heatmap.py"
       - "engine/special_arb.py"
       - "engine/special_situations.py"
@@ -37866,7 +38260,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn scipy rjsmin==1.2.5
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn scipy jsonschema==4.26.0 rjsmin==1.2.5
       # 2026-08-15 fusion override (WS:PROPHET-CONDITIONAL-FUSION): the C1 ranker
       # suite rides the step that already owns engine/us_board_rank.py rather than
       # opening a new one — it tests the SAME module's rank authority, and a
@@ -38666,7 +39060,7 @@ jobs:
         timeout-minutes: 10
         run: python -m playwright install --with-deps chromium
       - name: Brain history, principal isolation and narrow-screen controls
-        run: MM_REQUIRE_BROWSER=1 python -m pytest tests/test_brain_history_widget.py tests/test_brain_visuals_browser.py tests/test_brain_visuals_widget.py tests/test_brain_financial_browser.py tests/test_brain_financial_standalone.py tests/test_brain_financial_widget.py tests/test_brain_chart_widget.py tests/test_brain_chart_price_controls.py -q
+        run: MM_REQUIRE_BROWSER=1 python -m pytest tests/test_brain_history_widget.py tests/test_options_question_widget_browser.py tests/test_brain_visuals_browser.py tests/test_brain_visuals_widget.py tests/test_brain_financial_browser.py tests/test_brain_financial_standalone.py tests/test_brain_financial_widget.py tests/test_brain_chart_widget.py tests/test_brain_chart_price_controls.py -q
 
   ric-y0-yield-momentum:
     if: ${{ false }}
@@ -39289,6 +39683,11 @@ jobs:
       # on this job's venv line.
       - name: etf fund registry — universe coverage, type enum, sponsor drift pin
         run: python -m pytest tests/test_etf_registry.py -q
+      # QTUM HTML source parsing is intentionally offline/uncalled while sponsor
+      # commercial-purpose rights remain unadmitted. Keep its synthetic clock,
+      # balance-filter and no-fetch refusals with the existing ETF owner lane.
+      - name: QTUM offline sponsor parser — no live collection or future-dated holdings
+        run: python -m pytest tests/test_etf_qtum_offline_html_parser.py -q
       - name: etf board ledger — lane gate, idempotency, frozen-price grading
         run: python -m pytest tests/test_etf_board_ledger.py -q
       - name: etf board windows tile — three states, zh parity, vocab
@@ -41051,6 +41450,7 @@ jobs:
       - "engine/entry_radar/__init__.py"
       - "engine/entry_radar/contracts.py"
       - "engine/entry_radar/replay/rs_pullback_launch_data.py"
+      - "engine/entry_radar/replay/oscillator_mtf_research.py"
       - "engine/entry_radar/replay/rs_pullback_launch_labels.py"
       - "engine/entry_radar/spool.py"
       - "engine/entry_signal.py"
@@ -41574,6 +41974,9 @@ jobs:
       - "templates/support.html.j2"
       - "tests/__init__.py"
       - "tests/test_entry_radar_rs_pullback_phase1.py"
+      - "tests/test_entry_radar_oscillator_mtf_research.py"
+      - "tests/test_entry_radar_oscillator_owner_integration.py"
+      - "tests/test_rs_mtf_revision_prefix_qa.py"
       - "tests/test_entry_radar_rs_pullback_launch_labels.py"
       - "tests/test_market_memory.py"
       - "tests/test_market_memory_episode_comparison.py"
@@ -41840,6 +42243,9 @@ jobs:
           python -m pytest
           tests/test_research_price_panel.py
           tests/test_entry_radar_rs_pullback_phase1.py
+          tests/test_entry_radar_oscillator_mtf_research.py
+          tests/test_entry_radar_oscillator_owner_integration.py
+          tests/test_rs_mtf_revision_prefix_qa.py
           tests/test_entry_radar_rs_pullback_launch_labels.py
           tests/test_ptse_action_context.py
           tests/test_ptse_baseline.py
@@ -42868,15 +43274,26 @@ jobs:
         run: python -m pytest tests/test_winner_health_design_freeze.py -q
 
   options-nbbo-cohort:
-    # Frozen same-basis MomoEdge comparison infrastructure. The suite is fully
+    # Offline source qualification and frozen same-basis MomoEdge comparisons.
+    # The suites are fully
     # offline: source responses and authenticated producer rows are synthetic,
     # while raw production bytes remain host-private outside git.
     if: ${{ false }}  # executed inside ci-pack — NOT a disabled gate.
     gate: code
-    # Literal import/read closure of the four offline suites. Exclusive scope
+    # Literal import/read closure of the offline suites. Exclusive scope
     # prevents the CLI's dynamic file-module tests from widening unrelated probes.
     scope: exclusive
     paths:
+      - collectors/__init__.py
+      - collectors/options_free_samples.py
+      - collectors/options_free_tbt.py
+      - scripts/options_free_source_inventory.py
+      - scripts/qualify_options_free_samples.py
+      - scripts/qualify_options_free_tbt.py
+      - tests/__init__.py
+      - tests/test_options_free_samples.py
+      - tests/test_options_free_source_inventory.py
+      - tests/test_options_free_tbt.py
       - config/dag.yml
       - engine/__init__.py
       - lib/__init__.py
@@ -42921,6 +43338,8 @@ jobs:
           tests/test_options_alpha_exact_option_outcome_cli.py
           tests/test_options_occ_contract_terms.py
           tests/test_options_occ_contract_terms_native.py -q -rs
+      - name: private Cboe evaluation parsers, custody refusal and inventory contracts
+        run: python -m pytest tests/test_options_free_samples.py tests/test_options_free_source_inventory.py tests/test_options_free_tbt.py -q
 
   product-experience-registry:
     if: ${{ false }}
@@ -43557,6 +43976,14 @@ jobs:
       - tests/verification/test_journey_a01.py
       - tests/verification/test_journey_f01.py
       - tests/verification/test_oracle_q01.py
+      # Synthetic research-input qualification shares these existing Data OS
+      # verification seams and dependencies; the thin foundation stays unchanged.
+      - engine/systematic_inputs.py
+      - scripts/qualify_systematic_inputs.py
+      - tests/test_systematic_inputs.py
+      - research/systematic_inputs/README.md
+      - scripts/__init__.py
+      - tests/__init__.py
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
@@ -43574,6 +44001,10 @@ jobs:
           tests/verification/test_bench_q03_contract.py
           tests/verification/test_journey_f01.py
           tests/verification/test_journey_a01.py -q -rs
+      - name: systematic input qualification (synthetic rights, PIT and action refusals)
+        run: >-
+          PYTHONDONTWRITEBYTECODE=1 python -m pytest
+          tests/test_systematic_inputs.py -q -rs
 
   dataos-foundation:
     scope: exclusive
@@ -50480,6 +50911,7 @@ jobs:
     # The qledger-cluster-honest-ci code owner retains grader/readiness suites.
     scope: exclusive
     paths:
+      - "admin/press_audience.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
       - "app/options_plan_source.py"
@@ -50612,6 +51044,8 @@ jobs:
       - "admin/long_hold.py"
       - "admin/macro_thesis.py"
       - "admin/marketing.py"
+      - "engine/marketing/seo_director.py"
+      - "engine/marketing/seo_search_console.py"
       - "admin/marketing_floor.py"
       - "admin/mastermind_logs.py"
       - "admin/mastermind_proxy.py"
@@ -51456,6 +51890,7 @@ jobs:
       - "engine/signal_foundry/transforms.py"
       - "engine/signal_frontier_docket.py"
       - "engine/signal_gate.py"
+      - "engine/sector_breadth_close.py"
       - "engine/signal_lab.py"
       - "engine/signal_quality.py"
       - "engine/signal_stack.py"
@@ -51696,6 +52131,7 @@ jobs:
       - "templates/support.html.j2"
       - "templates/theme.css"
       - "tests/test_admin_intelligence_os.py"
+      - "tests/test_admin_seo.py"
       - "tests/test_intelligence_execution.py"
       - "admin/intelligence_execution.py"
       - "tests/test_admin_intelligence_os_ui.py"
@@ -52038,7 +52474,134 @@ jobs:
       - name: require Node for actual renderer contracts
         run: node --version
       - name: Intelligence OS API renderer source and finite measurement contracts
-        run: python -m pytest tests/test_admin_intelligence_os.py tests/test_admin_intelligence_os_ui.py tests/test_admin_server.py tests/test_intelligence_execution.py tests/test_admin_theme_tokens.py tests/test_evidence_findings.py tests/test_evidence_findings_ui.py tests/test_eval_os_adversarial_acceptance.py tests/test_response_eval.py -q
+        run: python -m pytest tests/test_admin_intelligence_os.py tests/test_admin_intelligence_os_ui.py tests/test_admin_server.py tests/test_intelligence_execution.py tests/test_admin_theme_tokens.py tests/test_evidence_findings.py tests/test_evidence_findings_ui.py tests/test_eval_os_adversarial_acceptance.py tests/test_response_eval.py tests/test_admin_seo.py -q
+
+  press-account-claim-consumer:
+    if: ${{ false }}  # Executed by the incumbent required ci-pack wrapper.
+    gate: code
+    scope: exclusive
+    paths:
+      - "admin/**"
+      - "app/**"
+      - "collectors/**"
+      - "config/**"
+      - "contracts/**"
+      - "engine/*.py"
+      - "engine/biocatalyst/**"
+      - "engine/capital_structure/**"
+      - "engine/catalyst_opportunity/**"
+      - "engine/chronicle/**"
+      - "engine/codex_lane/**"
+      - "engine/company_intelligence/**"
+      - "engine/company_theme_exposure/**"
+      - "engine/context_index/**"
+      - "engine/earnings_narrative/**"
+      - "engine/earnings_release/**"
+      - "engine/entry_radar/**"
+      - "engine/fundamental_forensics/**"
+      - "engine/government_revenue/**"
+      - "engine/institutional_census/**"
+      - "engine/intelligence_workspace/**"
+      - "engine/market_ontology/**"
+      - "engine/market_os/**"
+      - "engine/marketing/**"
+      - "engine/medtech/**"
+      - "engine/metabolism/**"
+      - "engine/neuralweb/**"
+      - "engine/news_impact/**"
+      - "engine/oracle/**"
+      - "engine/pick_lab/**"
+      - "engine/press/**"
+      - "engine/price_pressure/**"
+      - "engine/prophet_lab/**"
+      - "engine/prophet_live/**"
+      - "engine/research_intelligence/**"
+      - "engine/research_vault/**"
+      - "engine/seasonality/**"
+      - "engine/sector_intelligence/**"
+      - "engine/stock_identity/**"
+      - "engine/theme_graph/**"
+      - "lib/**"
+      - "research/**"
+      - "scripts/__init__.py"
+      - "scripts/build_debt_maturity.py"
+      - "scripts/build_macro_suite_pages.py"
+      - "scripts/build_security_master.py"
+      - "scripts/build_stock_library.py"
+      - "scripts/build_thematic_state.py"
+      - "scripts/calibrate_rate_inflation.py"
+      - "scripts/check_board_contradictions.py"
+      - "scripts/check_research_vault_source_freshness.py"
+      - "scripts/check_signal_gate_coherence.py"
+      - "scripts/check_stretch_oracle_contract.py"
+      - "scripts/compile_capital_structure_events.py"
+      - "scripts/probe_theme_exposure_axes.py"
+      - "scripts/publish_company_disclosure.py"
+      - "scripts/query_k3e_expectation_surface.py"
+      - "scripts/security_state_producer.py"
+      - "scripts/snapshot_shadow_book.py"
+      - "scripts/sparse_guard.py"
+      - "scripts/stock_liquidity_profile.py"
+      - "scripts/thematic_rotation_phase0.py"
+      - "scripts/worktree_sparse.py"
+      - "site/basketdata/baskets.json"
+      - "site/basketdata/fear_greed.json"
+      - "site/basketdata/foresight_cascade.json"
+      - "site/basketdata/narrative_emergence.json"
+      - "site/basketdata/radar.json"
+      - "site/basketdata/radar_enriched.json"
+      - "site/basketdata/sector_pulse.json"
+      - "site/canadabasketdata/baskets.json"
+      - "site/chinabasketdata/baskets.json"
+      - "site/chinabasketdata/narrative_emergence.json"
+      - "site/coming-soon.html"
+      - "site/data/portfolio_ctx.json"
+      - "site/factordata/alerts_triage.json"
+      - "site/factordata/basket_washout_state.json"
+      - "site/factordata/china_standouts.json"
+      - "site/factordata/dna_class.json"
+      - "site/factordata/factors.json"
+      - "site/factordata/impulse.json"
+      - "site/factordata/reflexivity_overlay.json"
+      - "site/factordata/signal_gate.json"
+      - "site/factordata/stock_personality.json"
+      - "site/factordata/us_standouts.json"
+      - "site/factordata/us_standouts_v2.json"
+      - "site/flowleaders/leaders.json"
+      - "site/government-revenue-data/defense-economics.json"
+      - "site/government-revenue-data/program-theme-context.json"
+      - "site/government-revenue-data/research-state.json"
+      - "site/government-revenue-data/sbir-progression.json"
+      - "site/government-revenue-data/theme-context.json"
+      - "site/hkbasketdata/baskets.json"
+      - "site/leaderradar/radar.json"
+      - "site/marketdata/subsector_rotation.json"
+      - "site/master_brief.json"
+      - "site/neuralwebdata/theme_state.json"
+      - "site/prophet/index.json"
+      - "site/turn_watch/turn_watch.json"
+      - "site/vol/regime.json"
+      - "templates/_navlinks.html.j2"
+      - "templates/_public_footer.html.j2"
+      - "templates/_public_nav.html.j2"
+      - "templates/glossary.html.j2"
+      - "templates/methodology.html.j2"
+      - "templates/support.html.j2"
+      - "tests/__init__.py"
+      - "tests/conftest.py"
+      - "admin/press_audience.py"
+      - "tests/test_press_account_claims.py"
+    timeout-minutes: 3
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install deterministic reader fixture dependencies
+        run: pip install pytest requests pyyaml pandas numpy
+      - name: exact native Press account-claim and fail-soft reader contracts
+        run: python -m pytest tests/test_press_account_claims.py -q
 
   earnings-worker-systemd:
     if: ${{ false }}
@@ -52192,3 +52755,30 @@ jobs:
       # nightly or wire data commit can move this verdict.
       - name: GDELT client + both news leaves — query bounds, structural rejection, cache fences
         run: python -m pytest tests/test_gdelt_client.py tests/test_macro_news.py tests/test_news_vector.py -q
+
+  options-scenario-contract:
+    # The existing flow-surface gate:data job does not run for ordinary code
+    # PRs. Keep the scenario contract and M02 endpoint regressions on gate:code
+    # as well; use synthetic inputs and the existing CLI's stdout projection.
+    if: ${{ false }}  # executed inside ci-pack, not as a standalone runner
+    gate: code
+    scope: exclusive
+    paths:
+      - "engine/__init__.py"
+      - "engine/intraday_greeks.py"
+      - "engine/options_scenario_surface.py"
+      - "scripts/__init__.py"
+      - "scripts/build_options_scenario_surface.py"
+      - "tests/__init__.py"
+      - "tests/test_options_scenario_surface.py"
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install scenario contract dependencies
+        run: pip install pytest numpy scipy
+      - name: conditional scenario and hedge-target contract regressions
+        run: python -m pytest tests/test_options_scenario_surface.py -q

@@ -2,9 +2,9 @@
   "schema": "crypto.class_state/v1",
   "tier": "display",
   "display_only": true,
-  "as_of": "2026-11-07",
+  "as_of": "2026-11-08",
   "universe_coverage": {
-    "as_of": "2026-11-07",
+    "as_of": "2026-11-08",
     "listed": 50,
     "requested": 50,
     "excluded": [
@@ -178,18 +178,18 @@
       "pages_declared": false
     },
     "breadth": {
-      "as_of": "2026-11-07",
-      "eligible": 3,
+      "as_of": "2026-11-08",
+      "eligible": 44,
       "required": 10,
-      "excluded": 47,
-      "positive": 0,
-      "denominator": 3,
+      "excluded": 6,
+      "positive": 10,
+      "denominator": 44,
       "basis": "reported_30d_return_positive",
-      "available": false,
-      "value": null,
-      "state": "Building history",
-      "tone": "neutral",
-      "state_zh": "积累历史中"
+      "available": true,
+      "value": 23,
+      "state": "Narrow",
+      "tone": "bear",
+      "state_zh": "狭窄"
     }
   },
   "market": {
@@ -197,7 +197,7 @@
     "total_state": "Falling",
     "dominance_state": "Steady",
     "fear_state": "Fearful",
-    "breadth_state": "Building history",
+    "breadth_state": "Narrow",
     "cap_move": "valuation",
     "cap_splices": [
       {
@@ -521,7 +521,7 @@
         "to_label_en": "direct total",
         "to_label_zh": "直接总量",
         "support_before": 2,
-        "support_after": 5,
+        "support_after": 6,
         "level_ratio": 0.9940386306533618,
         "regime_treatment": "continuity_adjusted"
       }
@@ -560,13 +560,13 @@
       "trend": "Range",
       "risk": "Stressed",
       "relative": "Tracking Bitcoin",
-      "coverage": "3,812 daily observations from Coinbase daily OHLCV."
+      "coverage": "3,813 daily observations from Coinbase daily OHLCV."
     },
     "SOL": {
       "trend": "Range",
       "risk": "Stressed",
       "relative": "Tracking Bitcoin",
-      "coverage": "1,970 daily observations from Coinbase daily OHLCV."
+      "coverage": "1,971 daily observations from Coinbase daily OHLCV."
     }
   }
 }
