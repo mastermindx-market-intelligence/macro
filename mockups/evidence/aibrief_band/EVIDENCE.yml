@@ -1,0 +1,6 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/aibrief.html.j2
+  - templates/_mor2b_blocks_css.j2
+  - scripts/build_aibrief.py
+manifest: mockups/evidence/aibrief_band/manifest.json

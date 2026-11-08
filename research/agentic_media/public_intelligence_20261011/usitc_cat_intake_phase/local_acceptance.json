@@ -1,0 +1,199 @@
+{
+  "checks": [
+    "two_complete_original_pages",
+    "agency_and_investigation_identity",
+    "actual_commission_vote_and_issue_date",
+    "separate_institution_date",
+    "exact_parties_and_roles",
+    "withdrawal_not_merits_disposition",
+    "motions_and_initial_determinations_dates",
+    "unopposed_motions_and_no_review_petition",
+    "four_exact_patent_identifiers",
+    "current_claim_groups_not_prior_withdrawals",
+    "earlier_august_disposition_distinct",
+    "scope_of_agreement_statement",
+    "date_only_metadata_no_promotion",
+    "existing_canonical_issuer_only",
+    "summary_carries_partial_and_no_merits_caveats",
+    "existing_ingester_dry_run",
+    "dry_store_unchanged",
+    "isolated_ingest_and_publication",
+    "exact_catalog",
+    "exact_index_text_and_vintage",
+    "single_fulltext",
+    "exact_fulltext_and_source_binding",
+    "same_source_idempotence",
+    "isolated_research_selection",
+    "held_source_refuses",
+    "future_refuses",
+    "stale_refuses",
+    "empty_refuses",
+    "original_inputs_and_cutover_unchanged"
+  ],
+  "passed": 29,
+  "source_id": "usitc-2026-10-13-337-ta-1473",
+  "pdf_sha256": "5fbe36883a69a418ff3cfd4bfe7cb0efbf63fb322d379e46344185daf6e0571e",
+  "sidecar_sha256": "fe21f6027db1ba98f674ed0f938c1d3bf0a7656a3b7736392f54f5c162ce7da5",
+  "slug": "certain-skid-steer-loaders-and-other-equipment-notice-of-partial-termi-ta1473",
+  "candidate_slot": {
+    "id": "press-research_desk-2026-10-14-da6d69398cc5",
+    "desk": "research_desk",
+    "publication": "mastermind_research",
+    "byline": "Research Desk \u2014 Mastermind Research",
+    "cluster": "research-desk",
+    "as_of": "2026-10-14",
+    "model_key": "press_research",
+    "min_words": 500,
+    "max_words": 900,
+    "min_anchored_receipts": 4,
+    "allowed_links": [
+      "https://www.mastermind-x.com/research/certain-skid-steer-loaders-and-other-equipment-notice-of-partial-termi-ta1473.html"
+    ],
+    "story": {
+      "kind": "research_report",
+      "title_hint": "Certain Skid-Steer Loaders and Other Equipment: Notice of Partial Termination of Patent Claims",
+      "institution": "U.S. International Trade Commission",
+      "side": "independent",
+      "published_at": "2026-10-13",
+      "tickers": [],
+      "themes": []
+    },
+    "primary_source": {
+      "kind": "first_party",
+      "name": "Mastermind Research: Certain Skid-Steer Loaders and Other Equipment: Notice of Partial Termination of Patent Claims",
+      "url": "https://www.mastermind-x.com/research/certain-skid-steer-loaders-and-other-equipment-notice-of-partial-termi-ta1473.html",
+      "ref": "research_vault:usitc-2026-10-13-337-ta-1473"
+    },
+    "sources": [
+      "research_vault:usitc-2026-10-13-337-ta-1473"
+    ],
+    "seed_refs": [
+      "research_vault:usitc-2026-10-13-337-ta-1473"
+    ],
+    "facts": [
+      {
+        "id": "vault_point_0",
+        "text": "USITC voted on 2026-10-13 not to review Orders 25 and 26, partially ending specified patent claims in the existing Bobcat complaint against Caterpillar. This notice does not terminate the entire investigation.",
+        "ref": "research_vault:usitc-2026-10-13-337-ta-1473",
+        "tier": "first_party",
+        "values": [],
+        "url": "https://www.mastermind-x.com/research/certain-skid-steer-loaders-and-other-equipment-notice-of-partial-termi-ta1473.html",
+        "source_name": "Mastermind Research coverage of U.S. International Trade Commission",
+        "dated": "2026-10-13"
+      },
+      {
+        "id": "vault_point_1",
+        "text": "Investigation 337-TA-1473 began on 2026-01-07 following a complaint by Doosan Bobcat North America. Caterpillar is the named respondent. The complaint alleges infringement involving imported construction equipment; the notice is not a finding that infringement occurred.",
+        "ref": "research_vault:usitc-2026-10-13-337-ta-1473",
+        "tier": "first_party",
+        "values": [],
+        "url": "https://www.mastermind-x.com/research/certain-skid-steer-loaders-and-other-equipment-notice-of-partial-termi-ta1473.html",
+        "source_name": "Mastermind Research coverage of U.S. International Trade Commission",
+        "dated": "2026-10-13"
+      },
+      {
+        "id": "vault_point_2",
+        "text": "Bobcat filed withdrawal motions on 2026-08-31 and 2026-09-04 and said both were unopposed by Caterpillar. The administrative law judge granted them on 2026-09-10. No party petitioned for review of either initial determination.",
+        "ref": "research_vault:usitc-2026-10-13-337-ta-1473",
+        "tier": "first_party",
+        "values": [],
+        "url": "https://www.mastermind-x.com/research/certain-skid-steer-loaders-and-other-equipment-notice-of-partial-termi-ta1473.html",
+        "source_name": "Mastermind Research coverage of U.S. International Trade Commission",
+        "dated": "2026-10-13"
+      },
+      {
+        "id": "vault_point_3",
+        "text": "The October determination removes claims 3-6 and 11 of patent 8,364,356; claims 3-5 of patent 8,047,760; claims 3 and 15 of patent 10,934,684; and claims 1, 4 and 17-19 of patent 7,831,364.",
+        "ref": "research_vault:usitc-2026-10-13-337-ta-1473",
+        "tier": "first_party",
+        "values": [],
+        "url": "https://www.mastermind-x.com/research/certain-skid-steer-loaders-and-other-equipment-notice-of-partial-termi-ta1473.html",
+        "source_name": "Mastermind Research coverage of U.S. International Trade Commission",
+        "dated": "2026-10-13"
+      },
+      {
+        "id": "vault_point_4",
+        "text": "The notice separately describes earlier claim withdrawals on 2026-08-26. Those earlier withdrawals must not be counted as a new October determination or confused with the specified claims in Orders 25 and 26.",
+        "ref": "research_vault:usitc-2026-10-13-337-ta-1473",
+        "tier": "first_party",
+        "values": [],
+        "url": "https://www.mastermind-x.com/research/certain-skid-steer-loaders-and-other-equipment-notice-of-partial-termi-ta1473.html",
+        "source_name": "Mastermind Research coverage of U.S. International Trade Commission",
+        "dated": "2026-10-13"
+      },
+      {
+        "id": "vault_point_5",
+        "text": "The initial determinations found no other written or oral agreements between the parties concerning the investigation and no extraordinary circumstances warranting denial of the withdrawal motions. This does not establish a commercial settlement or licence.",
+        "ref": "research_vault:usitc-2026-10-13-337-ta-1473",
+        "tier": "first_party",
+        "values": [],
+        "url": "https://www.mastermind-x.com/research/certain-skid-steer-loaders-and-other-equipment-notice-of-partial-termi-ta1473.html",
+        "source_name": "Mastermind Research coverage of U.S. International Trade Commission",
+        "dated": "2026-10-13"
+      },
+      {
+        "id": "vault_point_6",
+        "text": "The Commission vote and notice issue date are both 2026-10-13. The notice supplies no publication time, company revenue impact, share-price response or valuation estimate; none is inferred here.",
+        "ref": "research_vault:usitc-2026-10-13-337-ta-1473",
+        "tier": "first_party",
+        "values": [],
+        "url": "https://www.mastermind-x.com/research/certain-skid-steer-loaders-and-other-equipment-notice-of-partial-termi-ta1473.html",
+        "source_name": "Mastermind Research coverage of U.S. International Trade Commission",
+        "dated": "2026-10-13"
+      },
+      {
+        "id": "vault_meta",
+        "text": "The report is U.S. International Trade Commission research published 2026-10-13, 2 pages.",
+        "ref": "research_vault:usitc-2026-10-13-337-ta-1473",
+        "tier": "first_party",
+        "values": [
+          "2"
+        ],
+        "url": "https://www.mastermind-x.com/research/certain-skid-steer-loaders-and-other-equipment-notice-of-partial-termi-ta1473.html",
+        "source_name": "Mastermind Research vault",
+        "dated": "2026-10-13"
+      }
+    ],
+    "raw_documents": [
+      {
+        "ref": "research_vault:usitc-2026-10-13-337-ta-1473",
+        "text": "USITC voted on 2026-10-13 not to review Orders 25 and 26, partially ending specified patent claims in the existing Bobcat complaint against Caterpillar. This notice does not terminate the entire investigation. Investigation 337-TA-1473 began on 2026-01-07 following a complaint by Doosan Bobcat North America. Caterpillar is the named respondent. The complaint alleges infringement involving imported construction equipment; the notice is not a finding that infringement occurred. Bobcat filed withdrawal motions on 2026-08-31 and 2026-09-04 and said both were unopposed by Caterpillar. The administrative law judge granted them on 2026-09-10. No party petitioned for review of either initial determination. The October determination removes claims 3-6 and 11 of patent 8,364,356; claims 3-5 of patent 8,047,760; claims 3 and 15 of patent 10,934,684; and claims 1, 4 and 17-19 of patent 7,831,364. The notice separately describes earlier claim withdrawals on 2026-08-26. Those earlier withdrawals must not be counted as a new October determination or confused with the specified claims in Orders 25 and 26. The initial determinations found no other written or oral agreements between the parties concerning the investigation and no extraordinary circumstances warranting denial of the withdrawal motions. This does not establish a commercial settlement or licence. The Commission vote and notice issue date are both 2026-10-13. The notice supplies no publication time, company revenue impact, share-price response or valuation estimate; none is inferred here."
+      }
+    ],
+    "chronicle_context": {
+      "lines": [],
+      "narratives": [],
+      "coverage": {
+        "start": null,
+        "end": null,
+        "note": "chronicle store is empty \u2014 no events have accrued yet"
+      },
+      "budget_used": 0
+    },
+    "slug_hint": "certain-skid-steer-loaders-and-other-equipment-notice-of-partial-termi",
+    "triage": {
+      "tier": "flagship",
+      "rank": 1,
+      "w_score": 0.409829,
+      "w_score_pre_veto": 0.409829,
+      "components": {
+        "institution_tier": 0.5,
+        "cluster_density": 0.0,
+        "relevance": 0.0,
+        "extraction_quality": 0.964286,
+        "attention_potential": 0.48,
+        "novelty": 0.5
+      },
+      "veto": null,
+      "scoring_version": "w2r.1",
+      "score_source": "planner-recomputed",
+      "datasketch_present": false,
+      "ordered": true
+    }
+  },
+  "provider_calls": 0,
+  "canonical_writes": 0,
+  "press_staging_writes": 0,
+  "publication": false,
+  "execution": "isolated_local_fixtures"
+}
