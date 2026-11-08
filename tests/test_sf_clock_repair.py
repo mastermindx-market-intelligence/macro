@@ -216,6 +216,7 @@ def test_power_floor_uses_nonoverlap_count_without_calling_it_independence():
 
 def test_clock_regressions_are_enrolled_with_the_existing_foundry_ci():
     from pathlib import Path
+    import shlex
     import yaml
     root = Path(__file__).resolve().parents[1]
     manifest = yaml.safe_load((root / ".github/ci/legacy-jobs.yml").read_text())
@@ -223,6 +224,19 @@ def test_clock_regressions_are_enrolled_with_the_existing_foundry_ci():
     command = "\n".join(str(step.get("run", "")) for step in steps)
     assert "tests/test_sf_clock_repair.py" in command
     assert "tests/test_sf_harness.py" in command
+
+
+    code_owner = manifest["jobs"]["signal-foundry-regressions"]
+    assert code_owner["gate"] == "code"
+    commands = [
+        shlex.split(str(step["run"]))
+        for step in code_owner["steps"]
+        if "run" in step
+    ]
+    pytest_commands = [tokens for tokens in commands if tokens[:3] == ["python", "-m", "pytest"]]
+    assert len(pytest_commands) == 1
+    assert "tests/test_sf_clock_repair.py" in pytest_commands[0][3:]
+    assert not any("*" in token for token in pytest_commands[0][3:])
 
 
 @pytest.mark.parametrize("field,value", [("t", 1.99), ("dsr", 0.8999)])
