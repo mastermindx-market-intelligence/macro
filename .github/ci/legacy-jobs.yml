@@ -32,12 +32,48 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      - collectors/base.py
+      - collectors/yahoo.py
+      - config/delisted_symbols.yml
+      - lib/cn_calendar.py
+      - lib/delisted_symbols.py
+      - lib/exchange_holidays.py
+      - lib/hk_calendar.py
+      - lib/market_observations.py
+      - lib/market_session.py
+      - lib/stooq.py
+      - lib/ticker_aliases.py
+      - lib/tsx_calendar.py
+      - lib/us_cash_calendar.py
       - engine/__init__.py
+      - engine/canon.py
+      - engine/conditions.py
+      - engine/confluence_tiers.py
+      - engine/entry_signal.py
+      - engine/hysteresis.py
+      - engine/indicators.py
+      - engine/session_anchor.py
+      - engine/signal_quality.py
       - engine/stock_identity/__init__.py
       - engine/stock_identity/authority.py
       - engine/stock_identity/replay/__init__.py
+      - engine/stock_identity/replay/events.py
+      - engine/stock_identity/replay/grid.py
       - engine/stock_identity/replay/method_projection.py
+      - engine/stock_identity/replay/naive.py
+      - engine/stock_identity/replay/sea.py
+      - engine/stock_identity/replay/starter.py
+      - engine/technicals.py
+      - engine/us_early_turn.py
+      - lib/__init__.py
+      - lib/config.py
+      - lib/nyse_calendar.py
+      - lib/store.py
+      - site/anticipationdata/us_leader_pullback.json
+      - site/basketdata/us_basket_turn.json
+      - site/factordata/basket_washout_state.json
       - tests/__init__.py
+      - tests/test_stock_identity_input_boundaries.py
       - tests/test_stock_identity_method_projection.py
     runs-on: ubuntu-latest
     timeout-minutes: 2
@@ -47,9 +83,9 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest
+        run: pip install pytest numpy pandas pyarrow pyyaml
       - name: outcome-free registered method projection
-        run: python -m pytest tests/test_stock_identity_method_projection.py -q
+        run: python -m pytest tests/test_stock_identity_method_projection.py tests/test_stock_identity_input_boundaries.py -q
   options-r1-sector-holdings-coverage:
     # Options R1 W2B: sector holdings coverage emitter — separate denominators, unknown total stays null, Terminal contract, additive hook.
     # scope: exclusive — the suite reads scripts/build_sector_central.py as text and imports it (the additive hook
