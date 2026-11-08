@@ -1,6 +1,9 @@
 ---
 key: ALERT-FABRIC-SEMANTIC-ADMISSION
 claim: >
+  Historical 2026-09-14 Alert Fabric/Terminal design observations. This is not the
+  current Macro target-selection instruction; the later target-separation and
+  action-led Macro records govern. The original dated observations follow.
   Chris supplied both real Alert Center V2 Figma links. Sol inspected both and selected
   wvVt4GTPGMqnaPprVnbloU as the working file, preserving EQlAQXIOdRdO63nMX2RK3u as an
   untouched reference. Page 33:222 now contains 33 editable artboards and six configured
@@ -13,6 +16,10 @@ falsifier: >
   counts and the named route chains. Correct any unsupported claim; a subsequent deliberate
   design pass supersedes this snapshot rather than making it current by assumption.
 so_what: >
+  Preserve this dated report and use research/alert_intelligence/MACRO_ALERT_CENTER_HANDOFF_20260915_HISTORICAL.md
+  for its historical handoff. Current Macro continuation remains #7022 under the
+  later action-led direction. The original next-action wording below is historical,
+  not a new instruction or execution grant.
   Continue the secondary source-evidence/settings/coverage interactions on page 33:222,
   then finish the missing responsive, language and required-theme states under the same
   accepted brief. Do not ask for the two links again, create a third file, restart broad
@@ -20,6 +27,10 @@ so_what: >
 kind: architecture
 verified_at: 2026-09-14
 verified_by: >
+  Historical report in #7135: research/alert_intelligence/FIGMA_CONNECTED_JOURNEYS_PASS_20260914.md
+  at df7c14d0e68008f12365c5ae40ac8a40fb89ca00, blob
+  8e09915e6600936524bd164ee9f530cff42a8f2b. This binds the recorded report and its original
+  verification scope; no operation or historical result is rerun or recertified here.
   Native Figma file/component/variable inspection, canvas writes, representative rendered
   screenshots and saved-state verification: 33 artboards, 144 configured click targets,
   six primary route chains present, no missing destinations or measured containment
@@ -32,6 +43,40 @@ scope:
   - MMX-ALERT-CENTER-V2-ASTRA-20260908
 confidence: verified
 ---
+
+## Source qualification — 2026-11-08
+
+This is a dated design/source record. Its original observations, limits and
+continuation text are retained below with their September 2026 binding. This
+source-preservation amendment does not repeat a Figma, browser, test, customer-data
+or production operation and does not make those historical results current.
+
+The later [action-led implementation continuation](https://github.com/mastermindx-market-intelligence/Macro/pull/7135#issuecomment-5746511107)
+identifies #7022 as the existing implementation carrier. The current native
+metadata read found #7022 OPEN and unmerged at
+`061490193391a7f0a31aea9c0cf690e191975072`; that is a source snapshot, not a
+STARTED worker or production proof. Preserve the action-led Review first / Watch
+next / For awareness direction and existing Macro Figma file
+`r1hSkfDg4vGzjWRySgrHE1`. Earlier chronology-first or file-creation instructions
+are historical. The two Terminal Figma files remain separate preserved products.
+
+The September 15 handoff is retained byte-for-byte at
+[the historical handoff archive](../../research/alert_intelligence/MACRO_ALERT_CENTER_HANDOFF_20260915_HISTORICAL.md), original blob
+`745cf138514043a3f29194b183b4dc8370eaf5d7`. Its original immutable location is
+[available at its published head](https://github.com/mastermindx-market-intelligence/Macro/blob/fe0566ced79bf38c60899c6d7c814e553757cfb4/agentos/handoffs/MACRO-ALERT-CENTER.md).
+The old prose does not establish an exact workstream, normalized session-ending
+category or the six missing historical commands. Those facts are not invented
+to make an old handoff appear to be a current structured execution record.
+Its mission, user journeys, dangers and no-redo instructions remain intact.
+
+Real source-to-customer integration, original/current evidence return, language
+and degraded states, native secondary journeys, release and production
+acceptance remain separate duties on the existing implementation route. This
+records amendment grants no new Figma, runtime, trading, private-monitoring or
+delivery authority.
+
+## Historical record body
+
 
 ## Current state
 

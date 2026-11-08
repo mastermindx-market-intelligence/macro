@@ -1,0 +1,543 @@
+{
+  "lane": "F1",
+  "status": "DELIVERED",
+  "repo_head": "052e02d085b01f29baf499357e224c836d8eb224",
+  "provenance": {
+    "host": {
+      "hostname": "m2studio",
+      "python": "3.14.7",
+      "python_executable": "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "pandas": "3.0.5",
+      "numpy": "2.5.2",
+      "pyarrow": "25.0.1",
+      "scipy": "1.18.0",
+      "pytest": "9.1.1"
+    }
+  },
+  "data_class": {
+    "vintage": "served ledger as stored (final-vintage; as observed today, not point-in-time)",
+    "universe": "served picks, lanes buy+leaders (survivor-selected)"
+  },
+  "honest_n": {
+    "episodes": 1669,
+    "as_of_dates": 28,
+    "as_of_weeks": 9,
+    "tickers": 661,
+    "by_rank_by": {
+      "bottoming-alignment": 227,
+      "confluence": 582,
+      "us_prophet_v1": 93,
+      "us_prophet_v2": 255,
+      "us_prophet_v3": 512
+    },
+    "severe": 822,
+    "target": 219,
+    "neither": 628,
+    "units": "fraction"
+  },
+  "drop_counts": {
+    "rows_in_buy_leaders": 7334,
+    "episodes_total": 3167,
+    "episodes_kept_full": 1669,
+    "episodes_dropped_horizons": 1498,
+    "structural_drop_conviction": 437,
+    "structural_drop_bottoming_alignment": 174,
+    "structural_drop_total": 611,
+    "right_censored_us_prophet_v3_2026_08_26_to_09_17": 886,
+    "mid_panel_wbs_confluence_2026_07_27": 1,
+    "other_censored": 0,
+    "conviction_as_of_range": "2026-06-15..2026-06-22",
+    "bottoming_alignment_as_of_range": "2026-06-23..2026-06-24",
+    "episodes_missing_archetype": 137,
+    "episodes_missing_quad_hard_label": 34,
+    "episodes_missing_vol_regime": 34,
+    "episodes_missing_off_high": 0,
+    "episodes_missing_score": 0
+  },
+  "entry_model": {
+    "oos_auc": 0.6227445818504856,
+    "oos_auc_ci": [
+      0.5715116526475553,
+      0.6737902559867878
+    ],
+    "in_sample_auc": 0.7092234794623646,
+    "n_oos": 860,
+    "n_test_weeks": 4,
+    "top_coefficients": [
+      [
+        "sector_etf=XLE",
+        -1.0519340410800413
+      ],
+      [
+        "sector_etf=XLY",
+        1.0152414277810493
+      ],
+      [
+        "rank_by=bottoming-alignment",
+        -0.9251720328575228
+      ]
+    ],
+    "feature_names": [
+      "intercept",
+      "quad_hard_label=Q1",
+      "quad_hard_label=Q2",
+      "vol_regime=normalizing",
+      "band=constructive",
+      "band=high",
+      "band=low",
+      "band=neutral",
+      "archetype=broken_growth",
+      "archetype=cyclical",
+      "archetype=deep_value",
+      "archetype=distressed",
+      "archetype=dividend_defensive",
+      "archetype=financial",
+      "archetype=high_beta_momentum",
+      "archetype=mixed",
+      "archetype=quality_compounder",
+      "archetype=rate_sensitive",
+      "archetype=secular_growth",
+      "archetype=speculative_unprofitable",
+      "rank_by=bottoming-alignment",
+      "rank_by=confluence",
+      "rank_by=us_prophet_v1",
+      "rank_by=us_prophet_v2",
+      "rank_by=us_prophet_v3",
+      "sector_etf=XLB",
+      "sector_etf=XLC",
+      "sector_etf=XLE",
+      "sector_etf=XLF",
+      "sector_etf=XLI",
+      "sector_etf=XLK",
+      "sector_etf=XLP",
+      "sector_etf=XLRE",
+      "sector_etf=XLU",
+      "sector_etf=XLV",
+      "sector_etf=XLY",
+      "off_high",
+      "score"
+    ],
+    "c1_available": false,
+    "c1_status": "BROKEN",
+    "embargo_label_horizon": 21,
+    "embargo_rule": "training row kept iff np.busday_offset(as_of, 21, roll='forward', holidays=NYSE) < week_start, equivalently as_of <= week_start - 22 sessions",
+    "embargo_rule_alt": "as_of <= week_start - 22 sessions",
+    "n_removed_strict": 138,
+    "sensitivity": {
+      "label": "22 calendar-day wholesale pricing (sensitivity only, NOT binding)",
+      "oos_auc": 0.576850936082639,
+      "oos_auc_ci": [
+        0.5274273370517502,
+        0.6497031768817177
+      ],
+      "n_oos": 1267,
+      "n_test_weeks": 5
+    },
+    "per_week_aucs": {
+      "2026-W32": 0.6548837209302325,
+      "2026-W33": 0.6817565902931757,
+      "2026-W34": 0.5837735276259867,
+      "2026-W35": 0.5316552250190694
+    },
+    "fold_records": [
+      {
+        "week": "2026-W32",
+        "week_start": "2026-08-03",
+        "embargo_label_horizon": 21,
+        "train_cutoff": "2026-07-01",
+        "max_train_as_of": "2026-07-01",
+        "n_train": 73,
+        "n_test": 93
+      },
+      {
+        "week": "2026-W33",
+        "week_start": "2026-08-10",
+        "embargo_label_horizon": 21,
+        "train_cutoff": "2026-07-09",
+        "max_train_as_of": "2026-07-09",
+        "n_train": 138,
+        "n_test": 255
+      },
+      {
+        "week": "2026-W34",
+        "week_start": "2026-08-17",
+        "embargo_label_horizon": 21,
+        "train_cutoff": "2026-07-16",
+        "max_train_as_of": "2026-07-15",
+        "n_train": 227,
+        "n_test": 363
+      },
+      {
+        "week": "2026-W35",
+        "week_start": "2026-08-24",
+        "embargo_label_horizon": 21,
+        "train_cutoff": "2026-07-23",
+        "max_train_as_of": "2026-07-21",
+        "n_train": 359,
+        "n_test": 149
+      }
+    ],
+    "skipped_weeks": [
+      {
+        "week": "2026-W31",
+        "n_train": 0,
+        "n_test": 407,
+        "reason": "insufficient train or empty test"
+      }
+    ],
+    "bootstrap": {
+      "n_draws_valid": 1000,
+      "n_draws_ge_065": 174,
+      "distinct_at_1e10": 35,
+      "distinct_at_1e4": 33,
+      "multiset_max": 35
+    }
+  },
+  "hazard": {
+    "overall": {
+      "h1": [
+        0.12462552426602756,
+        0.059909198791714614,
+        0.17709463613819926
+      ],
+      "h2": [
+        0.15263518138261464,
+        0.12574400788958934,
+        0.19172979237728124
+      ],
+      "h3": [
+        0.3158319870759289,
+        0.25934237806207217,
+        0.3660925802627519
+      ],
+      "n": 1669,
+      "n_h1": 208,
+      "n_h2": 223,
+      "n_h3": 391,
+      "n_none": 847,
+      "n_clusters": 9
+    },
+    "by_rotation": {
+      "fast": {
+        "status": "INSUFFICIENT SUPPORT (C1 BROKEN)",
+        "reason": "C1 rotation_tercile missing"
+      },
+      "mid": {
+        "status": "INSUFFICIENT SUPPORT (C1 BROKEN)",
+        "reason": "C1 rotation_tercile missing"
+      },
+      "persistent": {
+        "status": "INSUFFICIENT SUPPORT (C1 BROKEN)",
+        "reason": "C1 rotation_tercile missing"
+      }
+    }
+  },
+  "attribution": {
+    "overall": {
+      "deteriorated_after_nonneg_h10": [
+        0.14841849148418493,
+        0.12869334867464544,
+        0.17362209915611812
+      ],
+      "immediate_failure": [
+        0.681265206812652,
+        0.607020900851204,
+        0.7416043124277681
+      ],
+      "other": 0.170316301703163,
+      "n_severe": 822,
+      "n_det": 122,
+      "n_imm": 560,
+      "n_other": 140,
+      "n_clusters": 9
+    },
+    "by_rotation": {
+      "fast": {
+        "status": "INSUFFICIENT SUPPORT (C1 BROKEN)",
+        "reason": "C1 rotation_tercile missing"
+      },
+      "mid": {
+        "status": "INSUFFICIENT SUPPORT (C1 BROKEN)",
+        "reason": "C1 rotation_tercile missing"
+      },
+      "persistent": {
+        "status": "INSUFFICIENT SUPPORT (C1 BROKEN)",
+        "reason": "C1 rotation_tercile missing"
+      }
+    },
+    "by_rank_by": {
+      "bottoming-alignment": {
+        "deteriorated_after_nonneg_h10": [
+          0.2638888888888889,
+          0.18181818181818182,
+          0.3333333333333333
+        ],
+        "immediate_failure": [
+          0.5555555555555556,
+          0.4166666666666667,
+          0.7307692307692307
+        ],
+        "other": 0.18055555555555555,
+        "n_severe": 72,
+        "n_clusters": 3
+      },
+      "confluence": {
+        "deteriorated_after_nonneg_h10": [
+          0.1353135313531353,
+          0.09230769230769231,
+          0.19047619047619047
+        ],
+        "immediate_failure": [
+          0.7161716171617162,
+          0.42857142857142855,
+          0.7741935483870968
+        ],
+        "other": 0.1485148514851485,
+        "n_severe": 303,
+        "n_clusters": 3
+      },
+      "us_prophet_v1": {
+        "deteriorated_after_nonneg_h10": [
+          0.09302325581395349,
+          null,
+          null
+        ],
+        "immediate_failure": [
+          0.6511627906976745,
+          null,
+          null
+        ],
+        "other": 0.2558139534883721,
+        "n_severe": 43,
+        "n_clusters": 1
+      },
+      "us_prophet_v2": {
+        "deteriorated_after_nonneg_h10": [
+          0.1590909090909091,
+          null,
+          null
+        ],
+        "immediate_failure": [
+          0.6893939393939394,
+          null,
+          null
+        ],
+        "other": 0.15151515151515152,
+        "n_severe": 132,
+        "n_clusters": 1
+      },
+      "us_prophet_v3": {
+        "deteriorated_after_nonneg_h10": [
+          0.13602941176470587,
+          0.10869565217391304,
+          0.15
+        ],
+        "immediate_failure": [
+          0.6764705882352942,
+          0.6222222222222222,
+          0.782608695652174
+        ],
+        "other": 0.1875,
+        "n_severe": 272,
+        "n_clusters": 2
+      }
+    }
+  },
+  "prophet_ledger": {
+    "c1_status": "BROKEN",
+    "c1_reason": "C1 controls.status=BROKEN per C1 result.json",
+    "c1_available": false,
+    "by_outcome": {
+      "EXPIRED": {
+        "n": 116,
+        "median_stock_result_pct": -2.05035,
+        "mean_stock_result_pct": -0.3992448275862071,
+        "median_days_held": 45.0,
+        "mean_days_held": 45.439655172413794
+      },
+      "INVALIDATED": {
+        "n": 69,
+        "median_stock_result_pct": -8.263,
+        "mean_stock_result_pct": -10.385988405797104,
+        "median_days_held": 19.0,
+        "mean_days_held": 20.18840579710145
+      },
+      "NO_ENTRY": {
+        "n": 39,
+        "median_stock_result_pct": null,
+        "mean_stock_result_pct": null,
+        "median_days_held": 45.0,
+        "mean_days_held": 45.64102564102564
+      },
+      "T1_HIT": {
+        "n": 43,
+        "median_stock_result_pct": 13.9714,
+        "mean_stock_result_pct": 17.11515581395349,
+        "median_days_held": 17.0,
+        "mean_days_held": 19.162790697674417
+      },
+      "T2_HIT": {
+        "n": 3,
+        "median_stock_result_pct": 13.0271,
+        "mean_stock_result_pct": 71.67443333333333,
+        "median_days_held": 8.0,
+        "mean_days_held": 7.666666666666667
+      }
+    },
+    "by_outcome_x_rotation": {
+      "EXPIRED": {
+        "status": "INSUFFICIENT SUPPORT (C1 BROKEN)",
+        "reason": "C1 controls.status=BROKEN per C1 result.json"
+      },
+      "INVALIDATED": {
+        "status": "INSUFFICIENT SUPPORT (C1 BROKEN)",
+        "reason": "C1 controls.status=BROKEN per C1 result.json"
+      },
+      "NO_ENTRY": {
+        "status": "INSUFFICIENT SUPPORT (C1 BROKEN)",
+        "reason": "C1 controls.status=BROKEN per C1 result.json"
+      },
+      "T1_HIT": {
+        "status": "INSUFFICIENT SUPPORT (C1 BROKEN)",
+        "reason": "C1 controls.status=BROKEN per C1 result.json"
+      },
+      "T2_HIT": {
+        "status": "INSUFFICIENT SUPPORT (C1 BROKEN)",
+        "reason": "C1 controls.status=BROKEN per C1 result.json"
+      }
+    }
+  },
+  "verdict": {
+    "lever": "MIXED",
+    "rule": "MANAGEMENT iff OOS AUC \u2264 0.55 AND share 'deteriorated after non-negative H10' > 0.50 among SEVERE; SELECTION iff OOS AUC \u2265 0.65 AND share 'immediate failure' > 0.50; MIXED otherwise.",
+    "small_n_caveat": "\u22484 test weeks / 860 OOS episodes (boot CI on 4 week clusters). Per-week AUC variance is wide; the verdict is descriptive and small-N.",
+    "oos_auc": 0.6227445818504856,
+    "deteriorated_share": 0.14841849148418493,
+    "immediate_share": 0.681265206812652
+  },
+  "tests": "17 passed",
+  "gaps": [
+    "C1 rotation_tercile is BROKEN on its AR(1)-21 control (corr=-0.04 vs >0.5); all by-rotation tables replaced with INSUFFICIENT SUPPORT (C1 BROKEN).",
+    "Conviction-family entries (rank_by=conviction, as_of 2026-06-15..2026-06-22, 437 episodes) are silently absent from the panel because they lack an h21 outcome \u2014 STATE THIS AS A GAP. Bottoming-alignment family 174 episodes (as_of 2026-06-23..2026-06-24) likewise.",
+    "Per-week OOS AUC variance is wide across the small number of test weeks; verdict is descriptive only.",
+    "Mid-panel WBS confluence row 2026-07-27 (has h5/h10, no h21) and the 886 right-censored us_prophet_v3 entries 2026-08-26..2026-09-17 are also dropped as horizons-incomplete."
+  ],
+  "deviations": [
+    "SEAT RULING 2026-10-04 (binding): replaced the -21-session literal purge with the label-realisation comparison busday_offset(as_of, 21, forward) < week_start (equivalently as_of <= week_start - 22 sessions); 138 training rows excluded by the new boundary (24/31/40/43 per fold). The 22-calendar-day rule is kept as the labelled sensitivity row only.",
+    "Means added to by_outcome (was missing in round-0).",
+    "Added NO_ENTRY to the outcome enum and remap any non-enum value to NO_ENTRY.",
+    "Standardisation + one-hot encoders now fit on the training fold only, per fold.",
+    "Drop counts split by reason: structural (conviction 06-15..06-22 / bottoming-alignment 06-23..06-24), right-censored us_prophet_v3, mid-panel WBS confluence.",
+    "Tied-score case added to Mann-Whitney AUC; tested in pytest.",
+    "AUC Mann-Whitney implementation verified against brute-force pairwise computation in pytest.",
+    "ONE c1_status() reads C1 result.json controls.status; both join_c1 and ledger_denom use it.",
+    "RESULT.md is GENERATED by run.py.render_result_md() from the same payload dict as result.json; check_result_md.py verifies 0 numeric mismatches at SPECIFIC key + rendered precision.",
+    "fold_records now persist max_train_as_of (the largest as_of actually used in training per fold).",
+    "n_removed_strict reports the count of training rows the new rule excludes vs the old -21-session rule.",
+    "Null CIs emitted when n_clusters < 2 (attribution.by_rank_by v1 and v2 carry null plus n_clusters=1).",
+    "result.json is written ONCE (after pytest) and is byte-identical across two consecutive runs (wall-clock timing stripped from pytest summary)."
+  ],
+  "mutant_runs": {
+    "m_peek": {
+      "label": "m_peek",
+      "n_pass": 10,
+      "n_fail": 5,
+      "n_skip": 2,
+      "failing_tests": [
+        "test_purge_embargo_actually_holds",
+        "test_purge_negative_control_with_weaker_embargo",
+        "test_purge_forward_peek_mutants_fail",
+        "test_result_json_byte_stable_across_runs",
+        "test_result_md_matches_result_json"
+      ],
+      "summary": "5 failed, 10 passed, 2 skipped",
+      "pytest_tail": "5 failed, 10 passed, 2 skipped\nFAILED test_purge_embargo_actually_holds\nFAILED test_purge_negative_control_with_weaker_embargo\nFAILED test_purge_forward_peek_mutants_fail\nFAILED test_result_json_byte_stable_across_runs\nFAILED test_result_md_matches_result_json",
+      "returncode": 1,
+      "mutant": "m_peek",
+      "mutated_line": "return as_of_dates < (ws_dt64 + np.timedelta64(5, \"D\"))  # BINDING_CMP"
+    },
+    "m_peek_rec": {
+      "label": "m_peek_rec",
+      "n_pass": 10,
+      "n_fail": 5,
+      "n_skip": 2,
+      "failing_tests": [
+        "test_purge_embargo_actually_holds",
+        "test_purge_negative_control_with_weaker_embargo",
+        "test_purge_forward_peek_mutants_fail",
+        "test_result_json_byte_stable_across_runs",
+        "test_result_md_matches_result_json"
+      ],
+      "summary": "5 failed, 10 passed, 2 skipped",
+      "pytest_tail": "5 failed, 10 passed, 2 skipped\nFAILED test_purge_embargo_actually_holds\nFAILED test_purge_negative_control_with_weaker_embargo\nFAILED test_purge_forward_peek_mutants_fail\nFAILED test_result_json_byte_stable_across_runs\nFAILED test_result_md_matches_result_json",
+      "returncode": 1,
+      "mutant": "m_peek_rec",
+      "mutated_line": "return as_of_dates <= (np.busday_offset(ws_dt64, -22, roll=\"backward\", holidays=holidays) + np.timedelta64(14, \"D\"))  # BINDING_CMP"
+    },
+    "m_r1": {
+      "label": "m_r1",
+      "n_pass": 10,
+      "n_fail": 5,
+      "n_skip": 2,
+      "failing_tests": [
+        "test_purge_embargo_actually_holds",
+        "test_purge_negative_control_with_weaker_embargo",
+        "test_purge_forward_peek_mutants_fail",
+        "test_result_json_byte_stable_across_runs",
+        "test_result_md_matches_result_json"
+      ],
+      "summary": "5 failed, 10 passed, 2 skipped",
+      "pytest_tail": "5 failed, 10 passed, 2 skipped\nFAILED test_purge_embargo_actually_holds\nFAILED test_purge_negative_control_with_weaker_embargo\nFAILED test_purge_forward_peek_mutants_fail\nFAILED test_result_json_byte_stable_across_runs\nFAILED test_result_md_matches_result_json",
+      "returncode": 1,
+      "mutant": "m_r1",
+      "mutated_line": "return end_dates <= ws_dt64  # BINDING_CMP"
+    },
+    "checker": {
+      "clean": {
+        "returncode": 0,
+        "output": "check_result_md: 0/42 mismatches (all 42 labeled numbers present)",
+        "n_mismatch": 0,
+        "n_checked": 42
+      },
+      "md_auc_09999": {
+        "returncode": 1,
+        "output": "check_result_md: 1/42 mismatches\n  {'label': 'OOS AUC (primary) | **', 'key': 'entry_model.oos_auc', 'md_val': 0.9999, 'rj_val': 0.6227445818504856}",
+        "n_mismatch": 1,
+        "n_checked": 42
+      },
+      "md_cihi_01111": {
+        "returncode": 1,
+        "output": "check_result_md: 1/42 mismatches\n  {'label': 'oos_auc_ci[1]', 'key': 'entry_model.oos_auc_ci[1]', 'md_val': 0.1111, 'rj_val': 0.6737902559867878}",
+        "n_mismatch": 1,
+        "n_checked": 42
+      },
+      "rj_auc_08123": {
+        "returncode": 1,
+        "output": "check_result_md: 1/42 mismatches\n  {'label': 'OOS AUC (primary) | **', 'key': 'entry_model.oos_auc', 'md_val': 0.6227, 'rj_val': 0.8123}",
+        "n_mismatch": 1,
+        "n_checked": 42
+      },
+      "rj_h1_09": {
+        "returncode": 1,
+        "output": "check_result_md: 2/42 mismatches\n  {'label': 'h1 (\u2264 5)', 'key': 'hazard.overall.h1.0', 'md_val': 0.1246, 'rj_val': 0.9}\n  {'label': 'hazard.h1[0]', 'key': 'hazard.overall.h1[0]', 'md_val': 0.1246, 'rj_val': 0.9}",
+        "n_mismatch": 2,
+        "n_checked": 42
+      },
+      "rj_h1_scalar": {
+        "returncode": 1,
+        "output": "check_result_md: 2/40 mismatches\n  {'label': 'h1 (\u2264 5)', 'key': 'hazard.overall.h1.0', 'md_val': 0.1246, 'rj_val': 0.9, 'reason': 'schema violation: key path did not resolve to a number'}\n  {'label': 'h1 (\u2264 5)', 'key': 'hazard.overall.h1', 'md_val': 0.1246, 'rj_val': 0.9, 'reason': 'schema violation: expected [height, lo, hi]'}",
+        "n_mismatch": 2,
+        "n_checked": 40
+      }
+    },
+    "clean": {
+      "n_pass": 17,
+      "n_fail": 0,
+      "n_skip": 0,
+      "failing_tests": [],
+      "summary": "17 passed",
+      "pytest_tail": "17 passed",
+      "returncode": 0
+    }
+  }
+}

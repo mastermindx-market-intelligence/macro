@@ -1,0 +1,158 @@
+[
+  {
+    "file": "unavailable_1440_dark_en.png",
+    "theme": "dark",
+    "lang": "en",
+    "applied_theme": "dark",
+    "applied_lang": "en",
+    "html_class": "cyc-page cyc-main",
+    "body_class": "",
+    "skyDeck": true,
+    "overlay_over_content": [],
+    "overlay_probe": [
+      {
+        "selector": ".sky-fx",
+        "present": false,
+        "over_content": false
+      },
+      {
+        "selector": ".mx5-aurora",
+        "present": false,
+        "over_content": false
+      },
+      {
+        "selector": ".theme-fab",
+        "present": false,
+        "over_content": false
+      },
+      {
+        "selector": "span.disc",
+        "present": false,
+        "over_content": false
+      },
+      {
+        "selector": ".aurora",
+        "present": false,
+        "over_content": false
+      }
+    ],
+    "why_text": "TURN HAZARD\nUnavailable today — the model's short- and long-window reads disagreed, so no clean probability can be shown. The projection below still stands."
+  },
+  {
+    "file": "unavailable_1440_dark_zh.png",
+    "theme": "dark",
+    "lang": "zh",
+    "applied_theme": "dark",
+    "applied_lang": "zh",
+    "html_class": "cyc-page cyc-main",
+    "body_class": "",
+    "skyDeck": true,
+    "overlay_over_content": [],
+    "overlay_probe": [
+      {
+        "selector": ".sky-fx",
+        "present": false,
+        "over_content": false
+      },
+      {
+        "selector": ".mx5-aurora",
+        "present": false,
+        "over_content": false
+      },
+      {
+        "selector": ".theme-fab",
+        "present": false,
+        "over_content": false
+      },
+      {
+        "selector": "span.disc",
+        "present": false,
+        "over_content": false
+      },
+      {
+        "selector": ".aurora",
+        "present": false,
+        "over_content": false
+      }
+    ],
+    "why_text": "转折风险\n今日暂不可用——模型的短窗与长窗读数不一致，无法给出可靠概率。下方的推算仍然有效。"
+  },
+  {
+    "file": "unavailable_1440_light_en.png",
+    "theme": "light",
+    "lang": "en",
+    "applied_theme": "light",
+    "applied_lang": "en",
+    "html_class": "cyc-page cyc-main",
+    "body_class": "",
+    "skyDeck": true,
+    "overlay_over_content": [],
+    "overlay_probe": [
+      {
+        "selector": ".sky-fx",
+        "present": false,
+        "over_content": false
+      },
+      {
+        "selector": ".mx5-aurora",
+        "present": false,
+        "over_content": false
+      },
+      {
+        "selector": ".theme-fab",
+        "present": false,
+        "over_content": false
+      },
+      {
+        "selector": "span.disc",
+        "present": false,
+        "over_content": false
+      },
+      {
+        "selector": ".aurora",
+        "present": false,
+        "over_content": false
+      }
+    ],
+    "why_text": "TURN HAZARD\nUnavailable today — the model's short- and long-window reads disagreed, so no clean probability can be shown. The projection below still stands."
+  },
+  {
+    "file": "unavailable_1440_light_zh.png",
+    "theme": "light",
+    "lang": "zh",
+    "applied_theme": "light",
+    "applied_lang": "zh",
+    "html_class": "cyc-page cyc-main",
+    "body_class": "",
+    "skyDeck": true,
+    "overlay_over_content": [],
+    "overlay_probe": [
+      {
+        "selector": ".sky-fx",
+        "present": false,
+        "over_content": false
+      },
+      {
+        "selector": ".mx5-aurora",
+        "present": false,
+        "over_content": false
+      },
+      {
+        "selector": ".theme-fab",
+        "present": false,
+        "over_content": false
+      },
+      {
+        "selector": "span.disc",
+        "present": false,
+        "over_content": false
+      },
+      {
+        "selector": ".aurora",
+        "present": false,
+        "over_content": false
+      }
+    ],
+    "why_text": "转折风险\n今日暂不可用——模型的短窗与长窗读数不一致，无法给出可靠概率。下方的推算仍然有效。"
+  }
+]

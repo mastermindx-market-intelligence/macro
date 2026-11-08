@@ -1,0 +1,10 @@
+{
+  "original_pid": 47907,
+  "outcome": "TIMED_OUT_PRE_APPLY",
+  "head_unchanged": true,
+  "tested_source_unchanged": true,
+  "sparse_selection_unchanged": true,
+  "exact_orphan_lock_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "orphan_lock_open_by_process": false,
+  "removed_own_orphan_lock": true
+}

@@ -4,6 +4,9 @@ question: >
   What product/experience architecture should govern the redesign of Macro's shared
   alerts.html page before Figma and implementation?
 answer: >
+  Historical 2026-09-14 design-stage freeze. The later actionable-content decision
+  and #7135 continuation to #7022 supersede its chronology-first presentation and
+  Figma-creation instructions. The original dated answer follows as evidence.
   Keep Alert Center as the shared Macro Monitor-archetype Market Changes Desk. Its
   identity is a board-day change-log timeline with Now / Explore / History tasks.
   What Matters Now is a deterministic 0-3 lead group inside the timeline, not a
@@ -49,10 +52,49 @@ affects:
   - alerts.html
   - alert-center-v2
 confidence: high
-reversibility: medium
+reversibility: costly
 decided_by: "Chairman Chris approval; product/architecture freeze by Sol"
 decided_at: 2026-09-14
 ---
+
+## Source qualification — 2026-11-08
+
+This is a dated design/source record. Its original observations, limits and
+continuation text are retained below with their September 2026 binding. This
+source-preservation amendment does not repeat a Figma, browser, test, customer-data
+or production operation and does not make those historical results current.
+
+The later [action-led implementation continuation](https://github.com/mastermindx-market-intelligence/Macro/pull/7135#issuecomment-5746511107)
+identifies #7022 as the existing implementation carrier. The current native
+metadata read found #7022 OPEN and unmerged at
+`061490193391a7f0a31aea9c0cf690e191975072`; that is a source snapshot, not a
+STARTED worker or production proof. Preserve the action-led Review first / Watch
+next / For awareness direction and existing Macro Figma file
+`r1hSkfDg4vGzjWRySgrHE1`. Earlier chronology-first or file-creation instructions
+are historical. The two Terminal Figma files remain separate preserved products.
+
+The September 15 handoff is retained byte-for-byte at
+[the historical handoff archive](../../research/alert_intelligence/MACRO_ALERT_CENTER_HANDOFF_20260915_HISTORICAL.md), original blob
+`745cf138514043a3f29194b183b4dc8370eaf5d7`. Its original immutable location is
+[available at its published head](https://github.com/mastermindx-market-intelligence/Macro/blob/fe0566ced79bf38c60899c6d7c814e553757cfb4/agentos/handoffs/MACRO-ALERT-CENTER.md).
+The old prose does not establish an exact workstream, normalized session-ending
+category or the six missing historical commands. Those facts are not invented
+to make an old handoff appear to be a current structured execution record.
+Its mission, user journeys, dangers and no-redo instructions remain intact.
+
+Real source-to-customer integration, original/current evidence return, language
+and degraded states, native secondary journeys, release and production
+acceptance remain separate duties on the existing implementation route. This
+records amendment grants no new Figma, runtime, trading, private-monitoring or
+delivery authority.
+
+The historical `medium` reversibility label is normalized to the supported
+`costly` category because reversing an experience freeze entails design and
+integration rework. This is a present record-format judgment, not a claim that
+the original decision used that enum or acquired new runtime authority.
+
+## Historical record body
+
 
 ## Scope
 

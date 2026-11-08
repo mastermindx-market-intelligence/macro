@@ -1,0 +1,104 @@
+Risk Radar
+US market
+2026-10-16
+×
+Close Risk Radar
+RISK READING
+Caution
+Growth scare / defensive rotation
+↳
+Current stance
+Trim chasing; favour good entries over extended leaders.
+Signal index
+83/100
+↗
+SPY · ≥5% pullback
+About these odds
+↗
+5d
+10d
+21d
+Probability horizon
+22%
+next 21 trading days
+0%
+100%
+Typical 18%
+Limited history
+Market internals
+Incomplete picture
+Trend
+Risk-off▼
+Stress
+Incomplete read
+
+Some inputs are unavailable; this is not an all-clear.
+
+Growth scare / defensive rotation: building
+
+Settled 2026-10-16
+Risk pressure · 7 issued sessions · since 2026-10-08
+Inspect sources
+↗
+What matters now
+Leading
+Cyclicals fading vs defensives — clearly
+↗
+Calendar
+Midterm year · weaker stretch
+↗
+Overseas
+Pressure from abroad
+↗
+Correlation
+Syncing up
+↗
+≋
+All risk signals
+7
+↗
+◒
+Market context
+↗
+⊙
+Sources & method
+↗
+Risk Radar evidence
+←
+Overview
+RISK RADAR / EVIDENCE
+Sources & freshness
+Source dates and coverage remain separate from the risk reading.
+Evidence sections
+Signals
+Sentiment
+Leaders
+Volatility
+Sources
+Method
+Settled evidence · 4 sources
+SOURCE↕	ITS OWN READ↕	AS OF↕	FRESHNESS↕
+Market state	RISK_OFF · 40	2026-10-16	This session required
+Leadership cohort	CRACKING	2026-10-14	Older than this session required
+Cross-asset scares	caution · 83	2026-10-16	This session
+Relative leadership	Defensive groups and broader-market proxies gaining relative strength	2026-10-16	This session
+
+No capital restrictions in force 0 active Separate from the market readings.
+
+Interpretation & provenance
+
+Leadership and risk · settled evidence
+
+Defensive groups and broader-market proxies gaining relative strength · 2026-10-16.
+
+The macro backdrop and relative leadership describe different aspects of the market. Shared price or breadth inputs do not count as independent confirmation.
+
+Some source relationships remain unknown; there is no independent-signal count.
+
+Last recorded backdrop change: Mixed → Risk-off · 2026-10-16.
+
+Relative strength can reflect a smaller decline. It does not establish fund inflows, institutional distribution, or a forecast of the next selloff.
+
+grey-deer-v1-2026-08-19 · bundle 44963c937ed62bdd · coverage DEGRADED · coherence MIXED (scope market_reads) · stage null (required_coverage_unavailable) · stage_since null (no_episode_lifecycle_in_v0) · engine/risk_envelope.py
+
+Odds evidence · 21d thin history · n=66

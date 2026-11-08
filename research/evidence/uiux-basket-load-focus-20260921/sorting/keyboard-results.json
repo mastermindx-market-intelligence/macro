@@ -1,0 +1,409 @@
+{
+  "source_mode": "local; optional requests 401, async test uses committed crossmarket artifact",
+  "results": [
+    {
+      "cell": "basket-ai_semiconductors.html-desktop-en-dark",
+      "http": 200,
+      "tab_steps": 1,
+      "row_count": 12,
+      "Enter_Space_click": true,
+      "focus_preserved": true,
+      "score_open_preserved": true,
+      "numeric_sort_checked": true,
+      "native_touch_checked": false,
+      "sort_widths": [
+        {
+          "client": 62,
+          "scroll": 62
+        },
+        {
+          "client": 58,
+          "scroll": 58
+        }
+      ],
+      "overflow": 0,
+      "page_errors": [],
+      "html_sha256": "97d1298aebf47295e412fe23e5be5b4961717f2e1bac8e604fe95acb7fd79a38",
+      "passed": true
+    },
+    {
+      "cell": "basket-ai_semiconductors.html-desktop-en-light",
+      "http": 200,
+      "tab_steps": 1,
+      "row_count": 12,
+      "Enter_Space_click": true,
+      "focus_preserved": true,
+      "score_open_preserved": true,
+      "numeric_sort_checked": true,
+      "native_touch_checked": false,
+      "sort_widths": [
+        {
+          "client": 62,
+          "scroll": 62
+        },
+        {
+          "client": 58,
+          "scroll": 58
+        }
+      ],
+      "overflow": 0,
+      "page_errors": [],
+      "html_sha256": "97d1298aebf47295e412fe23e5be5b4961717f2e1bac8e604fe95acb7fd79a38",
+      "passed": true
+    },
+    {
+      "cell": "basket-ai_semiconductors.html-desktop-zh-dark",
+      "http": 200,
+      "tab_steps": 1,
+      "row_count": 12,
+      "Enter_Space_click": true,
+      "focus_preserved": true,
+      "score_open_preserved": true,
+      "numeric_sort_checked": true,
+      "native_touch_checked": false,
+      "sort_widths": [
+        {
+          "client": 62,
+          "scroll": 62
+        },
+        {
+          "client": 58,
+          "scroll": 58
+        }
+      ],
+      "overflow": 0,
+      "page_errors": [],
+      "html_sha256": "97d1298aebf47295e412fe23e5be5b4961717f2e1bac8e604fe95acb7fd79a38",
+      "passed": true
+    },
+    {
+      "cell": "basket-ai_semiconductors.html-desktop-zh-light",
+      "http": 200,
+      "tab_steps": 1,
+      "row_count": 12,
+      "Enter_Space_click": true,
+      "focus_preserved": true,
+      "score_open_preserved": true,
+      "numeric_sort_checked": true,
+      "native_touch_checked": false,
+      "sort_widths": [
+        {
+          "client": 62,
+          "scroll": 62
+        },
+        {
+          "client": 58,
+          "scroll": 58
+        }
+      ],
+      "overflow": 0,
+      "page_errors": [],
+      "html_sha256": "97d1298aebf47295e412fe23e5be5b4961717f2e1bac8e604fe95acb7fd79a38",
+      "passed": true
+    },
+    {
+      "cell": "basket-ai_semiconductors.html-mobile-en-dark",
+      "http": 200,
+      "tab_steps": 1,
+      "row_count": 12,
+      "Enter_Space_click": true,
+      "focus_preserved": true,
+      "score_open_preserved": true,
+      "numeric_sort_checked": false,
+      "native_touch_checked": true,
+      "sort_widths": [
+        {
+          "client": 70,
+          "scroll": 70
+        }
+      ],
+      "overflow": 0,
+      "page_errors": [],
+      "html_sha256": "97d1298aebf47295e412fe23e5be5b4961717f2e1bac8e604fe95acb7fd79a38",
+      "passed": true
+    },
+    {
+      "cell": "basket-ai_semiconductors.html-mobile-en-light",
+      "http": 200,
+      "tab_steps": 1,
+      "row_count": 12,
+      "Enter_Space_click": true,
+      "focus_preserved": true,
+      "score_open_preserved": true,
+      "numeric_sort_checked": false,
+      "native_touch_checked": true,
+      "sort_widths": [
+        {
+          "client": 70,
+          "scroll": 70
+        }
+      ],
+      "overflow": 0,
+      "page_errors": [],
+      "html_sha256": "97d1298aebf47295e412fe23e5be5b4961717f2e1bac8e604fe95acb7fd79a38",
+      "passed": true
+    },
+    {
+      "cell": "basket-ai_semiconductors.html-mobile-zh-dark",
+      "http": 200,
+      "tab_steps": 1,
+      "row_count": 12,
+      "Enter_Space_click": true,
+      "focus_preserved": true,
+      "score_open_preserved": true,
+      "numeric_sort_checked": false,
+      "native_touch_checked": true,
+      "sort_widths": [
+        {
+          "client": 70,
+          "scroll": 70
+        }
+      ],
+      "overflow": 0,
+      "page_errors": [],
+      "html_sha256": "97d1298aebf47295e412fe23e5be5b4961717f2e1bac8e604fe95acb7fd79a38",
+      "passed": true
+    },
+    {
+      "cell": "basket-ai_semiconductors.html-mobile-zh-light",
+      "http": 200,
+      "tab_steps": 1,
+      "row_count": 12,
+      "Enter_Space_click": true,
+      "focus_preserved": true,
+      "score_open_preserved": true,
+      "numeric_sort_checked": false,
+      "native_touch_checked": true,
+      "sort_widths": [
+        {
+          "client": 70,
+          "scroll": 70
+        }
+      ],
+      "overflow": 0,
+      "page_errors": [],
+      "html_sha256": "97d1298aebf47295e412fe23e5be5b4961717f2e1bac8e604fe95acb7fd79a38",
+      "passed": true
+    },
+    {
+      "cell": "basket_china-cn_solar.html-desktop-en-dark",
+      "http": 200,
+      "tab_steps": 1,
+      "row_count": 15,
+      "Enter_Space_click": true,
+      "focus_preserved": true,
+      "score_open_preserved": true,
+      "numeric_sort_checked": true,
+      "native_touch_checked": false,
+      "sort_widths": [
+        {
+          "client": 62,
+          "scroll": 62
+        },
+        {
+          "client": 58,
+          "scroll": 58
+        }
+      ],
+      "overflow": 0,
+      "page_errors": [],
+      "html_sha256": "5e60c87b3530310e3c6bebe79474c0dadbb32dc4dcd8b8b81a0992dca058110a",
+      "passed": true
+    },
+    {
+      "cell": "basket_china-cn_solar.html-desktop-en-light",
+      "http": 200,
+      "tab_steps": 1,
+      "row_count": 15,
+      "Enter_Space_click": true,
+      "focus_preserved": true,
+      "score_open_preserved": true,
+      "numeric_sort_checked": true,
+      "native_touch_checked": false,
+      "sort_widths": [
+        {
+          "client": 62,
+          "scroll": 62
+        },
+        {
+          "client": 58,
+          "scroll": 58
+        }
+      ],
+      "overflow": 0,
+      "page_errors": [],
+      "html_sha256": "5e60c87b3530310e3c6bebe79474c0dadbb32dc4dcd8b8b81a0992dca058110a",
+      "passed": true
+    },
+    {
+      "cell": "basket_china-cn_solar.html-desktop-zh-dark",
+      "http": 200,
+      "tab_steps": 1,
+      "row_count": 15,
+      "Enter_Space_click": true,
+      "focus_preserved": true,
+      "score_open_preserved": true,
+      "numeric_sort_checked": true,
+      "native_touch_checked": false,
+      "sort_widths": [
+        {
+          "client": 62,
+          "scroll": 62
+        },
+        {
+          "client": 58,
+          "scroll": 58
+        }
+      ],
+      "overflow": 0,
+      "page_errors": [],
+      "html_sha256": "5e60c87b3530310e3c6bebe79474c0dadbb32dc4dcd8b8b81a0992dca058110a",
+      "passed": true
+    },
+    {
+      "cell": "basket_china-cn_solar.html-desktop-zh-light",
+      "http": 200,
+      "tab_steps": 1,
+      "row_count": 15,
+      "Enter_Space_click": true,
+      "focus_preserved": true,
+      "score_open_preserved": true,
+      "numeric_sort_checked": true,
+      "native_touch_checked": false,
+      "sort_widths": [
+        {
+          "client": 62,
+          "scroll": 62
+        },
+        {
+          "client": 58,
+          "scroll": 58
+        }
+      ],
+      "overflow": 0,
+      "page_errors": [],
+      "html_sha256": "5e60c87b3530310e3c6bebe79474c0dadbb32dc4dcd8b8b81a0992dca058110a",
+      "passed": true
+    },
+    {
+      "cell": "basket_china-cn_solar.html-mobile-en-dark",
+      "http": 200,
+      "tab_steps": 1,
+      "row_count": 15,
+      "Enter_Space_click": true,
+      "focus_preserved": true,
+      "score_open_preserved": true,
+      "numeric_sort_checked": false,
+      "native_touch_checked": true,
+      "sort_widths": [
+        {
+          "client": 70,
+          "scroll": 70
+        }
+      ],
+      "overflow": 0,
+      "page_errors": [],
+      "html_sha256": "5e60c87b3530310e3c6bebe79474c0dadbb32dc4dcd8b8b81a0992dca058110a",
+      "passed": true
+    },
+    {
+      "cell": "basket_china-cn_solar.html-mobile-en-light",
+      "http": 200,
+      "tab_steps": 1,
+      "row_count": 15,
+      "Enter_Space_click": true,
+      "focus_preserved": true,
+      "score_open_preserved": true,
+      "numeric_sort_checked": false,
+      "native_touch_checked": true,
+      "sort_widths": [
+        {
+          "client": 70,
+          "scroll": 70
+        }
+      ],
+      "overflow": 0,
+      "page_errors": [],
+      "html_sha256": "5e60c87b3530310e3c6bebe79474c0dadbb32dc4dcd8b8b81a0992dca058110a",
+      "passed": true
+    },
+    {
+      "cell": "basket_china-cn_solar.html-mobile-zh-dark",
+      "http": 200,
+      "tab_steps": 1,
+      "row_count": 15,
+      "Enter_Space_click": true,
+      "focus_preserved": true,
+      "score_open_preserved": true,
+      "numeric_sort_checked": false,
+      "native_touch_checked": true,
+      "sort_widths": [
+        {
+          "client": 70,
+          "scroll": 70
+        }
+      ],
+      "overflow": 0,
+      "page_errors": [],
+      "html_sha256": "5e60c87b3530310e3c6bebe79474c0dadbb32dc4dcd8b8b81a0992dca058110a",
+      "passed": true
+    },
+    {
+      "cell": "basket_china-cn_solar.html-mobile-zh-light",
+      "http": 200,
+      "tab_steps": 1,
+      "row_count": 15,
+      "Enter_Space_click": true,
+      "focus_preserved": true,
+      "score_open_preserved": true,
+      "numeric_sort_checked": false,
+      "native_touch_checked": true,
+      "sort_widths": [
+        {
+          "client": 70,
+          "scroll": 70
+        }
+      ],
+      "overflow": 0,
+      "page_errors": [],
+      "html_sha256": "5e60c87b3530310e3c6bebe79474c0dadbb32dc4dcd8b8b81a0992dca058110a",
+      "passed": true
+    },
+    {
+      "route": "basket/ai_semiconductors.html",
+      "lang": "en",
+      "async_refresh": true,
+      "direction": -1,
+      "focus_preserved": true,
+      "order_preserved": true,
+      "passed": true
+    },
+    {
+      "route": "basket/ai_semiconductors.html",
+      "lang": "en",
+      "async_refresh": true,
+      "direction": 1,
+      "focus_preserved": true,
+      "order_preserved": true,
+      "passed": true
+    },
+    {
+      "route": "basket_china/cn_solar.html",
+      "lang": "zh",
+      "async_refresh": true,
+      "direction": -1,
+      "focus_preserved": true,
+      "order_preserved": true,
+      "passed": true
+    },
+    {
+      "route": "basket_china/cn_solar.html",
+      "lang": "zh",
+      "async_refresh": true,
+      "direction": 1,
+      "focus_preserved": true,
+      "order_preserved": true,
+      "passed": true
+    }
+  ]
+}

@@ -98,10 +98,10 @@ def _cfg() -> dict:
 
 
 def enabled() -> bool:
-    """On by default WHEN a credential is present — but degrades to a no-op (returns
-    the input unchanged) the moment any provider is unavailable, so the suite never
-    depends on it."""
-    return bool(_cfg().get("enabled", True)) and _provider() is not None
+    """Off unless config.yml sets news_llm.enabled: true AND a provider credential
+    is present; when off or when no provider is available, annotate() is a
+    pass-through that returns its input unchanged."""
+    return bool(_cfg().get("enabled", False)) and _provider() is not None
 
 
 # --------------------------------------------------------------------------- #
@@ -239,7 +239,7 @@ def annotate(headlines: list[dict], batch_size: int | None = None,
     if not headlines:
         return headlines
     cfg = _cfg()
-    if not bool(cfg.get("enabled", True)):
+    if not bool(cfg.get("enabled", False)):
         return headlines
 
     from engine import llm_auth

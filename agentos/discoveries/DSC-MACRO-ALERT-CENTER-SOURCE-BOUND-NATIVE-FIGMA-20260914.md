@@ -1,6 +1,9 @@
 ---
 key: MACRO-ALERT-CENTER-SOURCE-BOUND-NATIVE-FIGMA-20260914
 claim: >
+  Historical 2026-09-14 source-bound design/presenter observations. These are dated
+  local proof and partial native-design claims, not current production acceptance.
+  The original observations follow with their historical limits intact.
   Chris approved the action-led Macro Alert Center direction. Three real canonical Alert
   Triage records now render through a pure local brief presenter and the approved UI.
   Native Figma file creation/writing succeeded in this continuation, yielding a separate
@@ -15,14 +18,22 @@ falsifier: >
   source pack, local test receipts and checksum manifest. Do not substitute a screenshot
   or PR title for production proof.
 so_what: >
+  Preserve this dated report and use research/alert_intelligence/MACRO_ALERT_CENTER_HANDOFF_20260915_HISTORICAL.md
+  for its historical handoff. Current Macro continuation remains #7022 under the
+  later action-led direction. The original next-action wording below is historical,
+  not a new instruction or execution grant.
   Continue from this exact native Macro file and the source-bound presentation candidate.
   Integrate the source brief through the existing assembler/renderer with structured owner
   fields and a real customer evidence-return path. Complete native secondary modes and
   language/state coverage against the same content. Do not create another Figma file,
   re-open broad architecture or return to Terminal or the rejected neutral log.
-kind: implementation
+kind: architecture
 verified_at: 2026-09-14
 verified_by: >
+  Historical report in #7135: research/alert_intelligence/MACRO_ALERTS_SOURCE_BOUND_NATIVE_FIGMA_PASS_20260914.md
+  at 1f587704224f917100a0a6239b2185b39e36c4f1, blob
+  8ca81a852b918cf12ae6e9600b2b299e3eac3824. This binds the recorded report and its original
+  verification scope; no operation or historical result is rerun or recertified here.
   Canonical GitHub source reads, bounded public-source HTTP/anchor reads from the verified
   Studio, 22 local content tests and 60 offline browser checks, native Figma screenshot
   inspection and saved-structure readback. No independent user study, production deployment,
@@ -34,6 +45,40 @@ scope:
   - macro-native-figma
 confidence: verified
 ---
+
+## Source qualification — 2026-11-08
+
+This is a dated design/source record. Its original observations, limits and
+continuation text are retained below with their September 2026 binding. This
+source-preservation amendment does not repeat a Figma, browser, test, customer-data
+or production operation and does not make those historical results current.
+
+The later [action-led implementation continuation](https://github.com/mastermindx-market-intelligence/Macro/pull/7135#issuecomment-5746511107)
+identifies #7022 as the existing implementation carrier. The current native
+metadata read found #7022 OPEN and unmerged at
+`061490193391a7f0a31aea9c0cf690e191975072`; that is a source snapshot, not a
+STARTED worker or production proof. Preserve the action-led Review first / Watch
+next / For awareness direction and existing Macro Figma file
+`r1hSkfDg4vGzjWRySgrHE1`. Earlier chronology-first or file-creation instructions
+are historical. The two Terminal Figma files remain separate preserved products.
+
+The September 15 handoff is retained byte-for-byte at
+[the historical handoff archive](../../research/alert_intelligence/MACRO_ALERT_CENTER_HANDOFF_20260915_HISTORICAL.md), original blob
+`745cf138514043a3f29194b183b4dc8370eaf5d7`. Its original immutable location is
+[available at its published head](https://github.com/mastermindx-market-intelligence/Macro/blob/fe0566ced79bf38c60899c6d7c814e553757cfb4/agentos/handoffs/MACRO-ALERT-CENTER.md).
+The old prose does not establish an exact workstream, normalized session-ending
+category or the six missing historical commands. Those facts are not invented
+to make an old handoff appear to be a current structured execution record.
+Its mission, user journeys, dangers and no-redo instructions remain intact.
+
+Real source-to-customer integration, original/current evidence return, language
+and degraded states, native secondary journeys, release and production
+acceptance remain separate duties on the existing implementation route. This
+records amendment grants no new Figma, runtime, trading, private-monitoring or
+delivery authority.
+
+## Historical record body
+
 
 ## Current state, not an averaged completion label
 
