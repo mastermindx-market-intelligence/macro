@@ -45,6 +45,8 @@ from engine.qbus_news_annotate import (
 from engine.qbus_news_receipts import (
     QualifiedNewsRights,
     load_health_receipt,
+    scope_news_health,
+    news_delivery_state,
     load_rights_receipt,
 )
 from engine.qbus_news_store import (
@@ -378,47 +380,11 @@ def _source_health() -> dict[str, Any]:
 
 
 def _curated_health(health: Mapping[str, Any], rights: NewsReadRights) -> dict[str, Any]:
-    """Scope delivery evidence to publishers this reader can actually see."""
-    eligible = frozenset(
-        source for source in rights.allowed_sources
-        if rights.allows(source, "title") and curated_source(source)
-    )
-    result = dict(health)
-    if "benzinga" not in eligible:
-        result.update(state="unavailable", last_successful_catchup=None,
-                      last_stream_event_at=None, reason="no_curated_primary_source")
-    if "additional_sources" in health:
-        extras = []
-        for item in health.get("additional_sources") or []:
-            if not isinstance(item, Mapping) or item.get("provider") != "massive":
-                continue
-            publishers = [publisher for publisher in item.get("configured_publishers", [])
-                          if isinstance(publisher, str) and "massive:" + publisher in eligible]
-            if not publishers:
-                continue
-            entry = dict(item, configured_publishers=publishers)
-            # The writer count includes rejected articles and cannot describe
-            # this curated population. Keep its untouched receipt at the writer.
-            entry.pop("accepted_reports_since_start", None)
-            extras.append(entry)
-        result["additional_sources"] = extras
-    return result
+    return scope_news_health(health, rights)
 
 
 def _state_from_health(health: Mapping[str, Any], *, row_count: int) -> str:
-    raw = str(health.get("state") or "").strip().lower()
-    extras = health.get("additional_sources") or []
-    if raw == "unavailable" and any(item.get("state") == "available" for item in extras):
-        return "degraded" if row_count else "quiet"
-    if raw == "live" and any(item.get("state") != "available" for item in extras):
-        return "degraded"
-    if raw == "live" and row_count == 0:
-        return "quiet"
-    if raw in {"live", "catching_up", "degraded", "restricted", "unavailable"}:
-        return raw
-    if raw == "quiet":
-        return "quiet"
-    return "degraded"
+    return news_delivery_state(health, row_count=row_count)
 
 
 def _flow_now() -> datetime:
