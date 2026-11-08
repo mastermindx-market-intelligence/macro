@@ -475,6 +475,150 @@ def test_nightly_items_carry_no_manufactured_corroboration(tmp_path):
 
 
 # --------------------------------------------------------------------------- #
+# News provenance: retrieval, publication, collection and retention differ.
+# --------------------------------------------------------------------------- #
+def test_news_provenance_mixed_feed_does_not_infer_health_or_retention(tmp_path):
+    _write_wires(tmp_path / "site" / "live", [
+        _wire("macro", "General macro report", hours_ago=1),
+    ])
+    url = "https://news.google.com/rss/articles/provided-id?oc=5"
+    _write_nightly(tmp_path, by_ticker={"NVDA": [
+        _nightly_item("NVDA older report", hours_ago=30, url=url, tickers=["NVDA"]),
+    ]})
+    result = bmi.get_market_events(tmp_path, symbol="NVDA", window_h=48, limit=2, now=NOW)
+    assert [e["headline"] for e in result["events"]] == ["NVDA older report", "General macro report"]
+    assert result["asof"] == _ago(0)
+    assert result["asof_basis"] == "tool_read_time"
+    assert result["collection_health"]["state"] == "unknown"
+    assert "receipt" in result["collection_health"]["reason"]
+    nightly, wire = result["events"]
+    assert nightly["source_url"] == url
+    assert nightly["timestamp_basis"] == "financial_news.seendate"
+    assert nightly["news_freshness"] == {
+        "source_asof": _ago(0),
+        "source_asof_basis": "financial_news.fetched_at",
+        "retained_from_previous_build": None,
+        "retained_reason": None,
+    }
+    assert wire["news_freshness"]["source_asof"] is None
+    assert wire["news_freshness"]["retained_from_previous_build"] is None
+
+
+@pytest.mark.parametrize("shape", ["absent", "empty", "corrupt"])
+def test_news_provenance_no_items_is_not_a_collection_health_receipt(tmp_path, shape):
+    if shape != "absent":
+        _write_wires(tmp_path / "site" / "live", [])
+    if shape == "corrupt":
+        (tmp_path / "site" / "live" / "wires.json").write_text("not JSON")
+    result = bmi.get_market_events(tmp_path, now=NOW)
+    assert result["events"] == []
+    assert result["collection_health"]["state"] == "unknown"
+    assert result["asof_basis"] == "tool_read_time"
+
+
+def test_news_provenance_stays_with_the_document_that_contributed_the_item(tmp_path, monkeypatch):
+    _write_nightly(tmp_path, headlines=[_nightly_item("Macro report")],
+                   by_ticker={"NVDA": [_nightly_item("NVDA report")]})
+    news = tmp_path / "site" / "news"
+    for name, clock, retained, reason in [
+        ("macro.json", _ago(2), False, None),
+        ("financial.json", _ago(20), True, "previous admitted snapshot retained"),
+    ]:
+        path = news / name
+        payload = json.loads(path.read_text())
+        payload.update(fetched_at=clock, retained_from_previous_build=retained,
+                       retained_reason=reason, generated_at=_ago(0))
+        path.write_text(json.dumps(payload))
+    reads = []
+    original_read = bmi._read_json
+
+    def tracked_read(path):
+        reads.append(path)
+        return original_read(path)
+
+    monkeypatch.setattr(bmi, "_read_json", tracked_read)
+    events = {e["headline"]: e for e in _events(tmp_path, limit=10)}
+    assert events["Macro report"]["news_freshness"] == {
+        "source_asof": _ago(2), "source_asof_basis": "macro_news.fetched_at",
+        "retained_from_previous_build": False, "retained_reason": None,
+    }
+    assert events["NVDA report"]["news_freshness"] == {
+        "source_asof": _ago(20), "source_asof_basis": "financial_news.fetched_at",
+        "retained_from_previous_build": True, "retained_reason": "previous admitted snapshot retained",
+    }
+    assert reads.count(news / "macro.json") == reads.count(news / "financial.json") == 1
+
+
+@pytest.mark.parametrize("raw,expected", [(True, True), (False, False), (None, None),
+                                         ("true", None), ("false", None), (1, None), (0, None)])
+def test_news_provenance_retention_is_a_strict_producer_boolean(tmp_path, raw, expected):
+    _write_nightly(tmp_path, headlines=[_nightly_item("Producer provenance")])
+    path = tmp_path / "site" / "news" / "macro.json"
+    payload = json.loads(path.read_text())
+    payload.update(source_asof=_ago(18), source_asof_basis="producer.collection_time",
+                   retained_from_previous_build=raw, retained_reason=["not a string"])
+    path.write_text(json.dumps(payload))
+    metadata = _events(tmp_path)[0]["news_freshness"]
+    assert metadata["source_asof"] == _ago(18), "do not replace the producer's older clock with fetched_at"
+    assert metadata["source_asof_basis"] == "producer.collection_time"
+    assert metadata["retained_from_previous_build"] is expected
+    assert metadata["retained_reason"] is None
+
+
+def test_news_provenance_wire_build_clock_is_not_collection_time(tmp_path):
+    _write_wires(tmp_path / "site" / "live", [_wire("x", "Recent wire")])
+    event = _events(tmp_path, limit=1)[0]
+    assert event["timestamp_basis"] == "wires.ts"
+    assert event["news_freshness"] == {
+        "source_asof": None, "source_asof_basis": None,
+        "retained_from_previous_build": None, "retained_reason": None,
+    }
+
+
+@pytest.mark.parametrize("clock", ["not-a-date", "", 123, ["2026-07-29"]])
+def test_news_provenance_malformed_producer_clock_remains_unknown(tmp_path, clock):
+    _write_nightly(tmp_path, headlines=[_nightly_item("Unqualified producer clock")])
+    path = tmp_path / "site" / "news" / "macro.json"
+    payload = json.loads(path.read_text())
+    payload.update(fetched_at=clock, source_asof=clock,
+                   source_asof_basis="producer.collection_time", generated_at=_ago(0))
+    path.write_text(json.dumps(payload))
+    metadata = _events(tmp_path)[0]["news_freshness"]
+    assert metadata["source_asof"] is None
+    assert metadata["source_asof_basis"] is None
+
+
+@pytest.mark.parametrize("url", [None, "", "javascript:alert(1)", "data:text/plain,news",
+                                  "/relative", "https://", "https://user:secret@example.com/news",
+                                  "https://example.com:invalid/news",
+                                  "https://example.com/\nnews"])
+def test_news_provenance_does_not_invent_or_forward_an_invalid_source_url(tmp_path, url):
+    _write_nightly(tmp_path, headlines=[_nightly_item("No usable source link", url=url)])
+    assert _events(tmp_path)[0]["source_url"] is None
+
+
+def test_news_provenance_wire_source_link_and_clock_fallback_are_explicit(tmp_path):
+    url = "https://example.com/original-report?version=2#correction"
+    _write_wires(tmp_path / "site" / "live", [
+        _wire("x", "Attributed report", ts=None, published_at=_ago(3),
+              url="javascript:invalid", source_url=url),
+    ])
+    event = _events(tmp_path, limit=1)[0]
+    assert event["source_url"] == url
+    assert event["timestamp_basis"] == "wires.published_at"
+    assert event["ts"] == _ago(3)
+
+
+def test_news_provenance_tool_description_teaches_the_evidence_limits():
+    description = bmi.EVENTS_TOOL_SCHEMA["description"]
+    for field in ("asof_basis", "source_url", "timestamp_basis", "news_freshness", "collection_health"):
+        assert field in description
+    assert "unknown" in description
+    assert "nightly" in description and "retention" in description
+    assert "seendate" in description and "publication" in description
+
+
+# --------------------------------------------------------------------------- #
 # 15-16  TI-R5 output whitelist — the epistemics law, pinned mechanically
 # --------------------------------------------------------------------------- #
 def test_event_items_carry_exactly_the_documented_keys(tmp_path):
@@ -878,7 +1022,7 @@ def test_real_repo_events_read_never_raises():
     """get_market_events against the real checkout: whatever the freshness of the
     committed digests, it returns a well-formed envelope with an honest note."""
     result = bmi.get_market_events(ROOT, window_h=48, limit=5)
-    assert set(result) == {"asof", "window_h", "events", "note"}
+    assert set(result) == {"asof", "asof_basis", "collection_health", "window_h", "events", "note"}
     assert result["note"] in {"live wire", "nightly digest only", "no fresh events in window"}
     for event in result["events"]:
         assert not set(event) - set(bmi.EVENT_FIELDS)

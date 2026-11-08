@@ -40,9 +40,12 @@ EVENTS_TOOL_SCHEMA / RESEARCH_TOOL_SCHEMA
 
 EPISTEMICS LAW (TI-R5) — WHY THE OUTPUT IS A WHITELIST
 ------------------------------------------------------
-get_market_events returns FACTS ONLY: a timestamp, the headline the desk
-composed, the source, the desk-computed salience where one exists, and the
-corroboration chip. It must NEVER emit a predicted effect, a beneficiary or
+get_market_events returns FACTS ONLY: a timestamp and its field basis, the
+headline the desk composed, the source and any supplied source link, the
+contributing document's news provenance, desk-computed salience where one
+exists, and the corroboration chip. The read clock is labelled separately;
+this reader has no collection-health receipt and reports that state as unknown.
+It must NEVER emit a predicted effect, a beneficiary or
 casualty list, a "shelter" mapping, or an invented probability — the
 shock→beneficiary map is a standing house KILL (TI-R5, research/DO_NOT_REBUILD.md
 §1: "laundered directional escalation on nulled continuation claims"), and an
@@ -75,7 +78,7 @@ import re
 import unicodedata
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from urllib.parse import quote, urlencode
+from urllib.parse import quote, urlencode, urlsplit
 
 # --------------------------------------------------------------------------- #
 # Output contract (TI-R5 whitelist)
@@ -92,6 +95,9 @@ EVENT_FIELDS: tuple[str, ...] = (
     "salience",
     "corroboration",
     "source_kind",
+    "source_url",
+    "timestamp_basis",
+    "news_freshness",
 )
 # Required members: everything except the optional translation.
 EVENT_FIELDS_REQUIRED: tuple[str, ...] = tuple(f for f in EVENT_FIELDS if f != "headline_zh")
@@ -393,6 +399,9 @@ def _project_event(
     salience: float | None,
     corroboration: str | None,
     source_kind: str,
+    source_url: str | None,
+    timestamp_basis: str,
+    news_freshness: dict,
 ) -> dict:
     """Build ONE output event from the whitelisted fields only (TI-R5).
 
@@ -407,10 +416,62 @@ def _project_event(
         "salience": salience,
         "corroboration": corroboration,
         "source_kind": source_kind,
+        "source_url": source_url,
+        "timestamp_basis": timestamp_basis,
+        "news_freshness": news_freshness,
     }
     if headline_zh:
         event["headline_zh"] = headline_zh
     return event
+
+
+def _event_source_url(item: dict) -> str | None:
+    """Preserve an actual upstream HTTP(S) link; never construct a citation.
+
+    An intermediary link stays an intermediary link. This validates its shape,
+    not its destination, publication identity, access rights or current reachability.
+    """
+    for key in ("url", "source_url", "link"):
+        value = _first_text(item, key)
+        if not value or any(ord(char) < 33 or ord(char) == 127 for char in value):
+            continue
+        try:
+            parsed = urlsplit(value)
+            _ = parsed.port  # Raises for a malformed explicit port.
+            if (parsed.scheme in {"http", "https"} and parsed.hostname
+                    and parsed.username is None and parsed.password is None):
+                return value
+        except ValueError:
+            continue
+    return None
+
+
+def _event_news_freshness(payload, *, fetched_at_basis: str | None = None) -> dict:
+    """Project the contributing document's producer facts, not reader guesses.
+
+    The nightly schema's fetched_at is a collection clock. A wire updated_at
+    or a document build date is not. Preserve the D2 four-field vocabulary;
+    absent or malformed producer values remain unknown. Parseable clock strings
+    retain their original precision and offset; parsing is not a recency claim.
+    No additional read.
+    """
+    envelope = payload if isinstance(payload, dict) else {}
+    source_asof = _first_text(envelope, "source_asof")
+    if _parse_ts(source_asof) is None:
+        source_asof = None
+    source_basis = _first_text(envelope, "source_asof_basis") if source_asof else None
+    if source_asof is None and fetched_at_basis:
+        source_asof = _first_text(envelope, "fetched_at")
+        if _parse_ts(source_asof) is None:
+            source_asof = None
+        source_basis = fetched_at_basis if source_asof else None
+    retained = envelope.get("retained_from_previous_build")
+    return {
+        "source_asof": source_asof,
+        "source_asof_basis": source_basis,
+        "retained_from_previous_build": retained if isinstance(retained, bool) else None,
+        "retained_reason": _first_text(envelope, "retained_reason"),
+    }
 
 
 def _collect_wire_events(root: Path, cutoff: datetime) -> list[tuple[float, datetime, dict, list, str | None]]:
@@ -431,10 +492,12 @@ def _collect_wire_events(root: Path, cutoff: datetime) -> list[tuple[float, date
     path = _resolve_wires_path(root)
     if path is None:
         return []
-    items = _wire_items(_read_json(path))
+    payload = _read_json(path)
+    items = _wire_items(payload)
     out: list[tuple[float, datetime, dict, list, str | None]] = []
     for item in items:
-        ts = _parse_ts(item.get("ts") or item.get("published_at"))
+        timestamp_key = "ts" if item.get("ts") else "published_at"
+        ts = _parse_ts(item.get(timestamp_key))
         if ts is None or ts < cutoff:
             continue  # unparseable or out of window
         headline = _first_text(item, "en", "headline", "text", "title")
@@ -459,6 +522,9 @@ def _collect_wire_events(root: Path, cutoff: datetime) -> list[tuple[float, date
                 salience=salience,
                 corroboration=corroboration,
                 source_kind="live_wire",
+                source_url=_event_source_url(item),
+                timestamp_basis=f"wires.{timestamp_key}",
+                news_freshness=_event_news_freshness(payload),
             ),
             item.get("tickers") if isinstance(item.get("tickers"), list) else [],
             _first_text(item, "id"),
@@ -515,8 +581,11 @@ def _collect_nightly_events(root: Path, cutoff: datetime) -> list[tuple[float, d
         payload = _read_json(root / "site" / "news" / name)
         if payload is None:
             continue
+        document_kind = "macro_news" if name == "macro.json" else "financial_news"
         for item in _nightly_candidate_items(payload):
-            ts = _parse_ts(item.get("seendate") or item.get("published_at") or item.get("ts"))
+            timestamp_key = next((key for key in ("seendate", "published_at", "ts")
+                                  if item.get(key)), "ts")
+            ts = _parse_ts(item.get(timestamp_key))
             if ts is None or ts < cutoff:
                 continue
             headline = _first_text(item, "title", "headline", "en")
@@ -542,6 +611,11 @@ def _collect_nightly_events(root: Path, cutoff: datetime) -> list[tuple[float, d
                     # never a manufactured "reports" chip.
                     corroboration=None,
                     source_kind="nightly",
+                    source_url=_event_source_url(item),
+                    timestamp_basis=f"{document_kind}.{timestamp_key}",
+                    news_freshness=_event_news_freshness(
+                        payload, fetched_at_basis=f"{document_kind}.fetched_at",
+                    ),
                 ),
                 item.get("tickers") if isinstance(item.get("tickers"), list) else [],
                 None,
@@ -612,8 +686,11 @@ def get_market_events(
     No predicted effect, no beneficiary/casualty list, no invented probability —
     not even if an upstream lane starts publishing them. See the module docstring.
 
-    Returns {"asof", "window_h", "events", "note"}. Never raises; a dead artifact
-    degrades to fewer events and an honest note.
+    `asof` is the tool read time, explicitly labelled by `asof_basis`. Each event
+    carries only its contributing document's news_freshness and selected clock
+    basis. This reader observes no collector-health receipt, so collection_health
+    stays unknown even when an artifact parses or recent events are present.
+    Never raises; a dead artifact degrades to fewer events and an honest note.
     """
     reference = now or datetime.now(timezone.utc)
     if reference.tzinfo is None:
@@ -680,6 +757,14 @@ def get_market_events(
 
     return {
         "asof": reference.strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "asof_basis": "tool_read_time",
+        "collection_health": {
+            "state": "unknown",
+            "reason": (
+                "No collector-health receipt is read by this tool. Artifact availability, "
+                "event age and an empty result do not establish collection health."
+            ),
+        },
         "window_h": window,
         "events": events,
         "note": note,
@@ -2315,7 +2400,16 @@ EVENTS_TOOL_SCHEMA: dict = {
         "corroboration chip ('verified', 'N sources', 'reports'). It returns no "
         "predicted effects and no beneficiary or casualty lists; draw any market "
         "read yourself from the engine's own signal tools, and never present a "
-        "single-source 'reports' item as confirmed."
+        "single-source 'reports' item as confirmed. Use source_url for a supplied "
+        "citation; an intermediary link is not a verified publisher URL. "
+        "timestamp_basis identifies the field used for ts: seendate and wire ts "
+        "do not certify publisher publication time. asof_basis marks asof as the "
+        "tool read time, not collection time. news_freshness carries the actual "
+        "contributing document's producer clock and strict retention flag; null "
+        "means unknown. A nightly item or an old article does not prove retention. "
+        "collection_health is unknown because this tool reads no applicable "
+        "collector-health receipt. Never infer healthy, stalled or quiet collection "
+        "from a successful read, recent event timestamps or an empty result."
     ),
     "input_schema": {
         "type": "object",
