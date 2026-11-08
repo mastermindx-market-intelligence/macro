@@ -26,7 +26,11 @@ Run: .venv/bin/python -m pytest tests/test_gh_annotation_line_start.py -q
 from __future__ import annotations
 
 import ast
+import hashlib
+import stat
 from pathlib import Path
+
+import pytest
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -45,6 +49,146 @@ EXEMPT: dict[str, str] = {
     "engine/research_vault/download_quota.py": "FastAPI request path (app/research.py)",
     "engine/research_vault/view_ratelimit.py": "FastAPI request path (app/research.py)",
 }
+
+
+# #7182 keeps this immutable upstream reference at its documented R14 filename.
+# It is historical source, not an Actions annotation producer. Preserve every
+# byte and reject operational imports; this is not a directory-wide exemption.
+_ARCHIVE_REL = "research/research_vault_expectations_r3/upstream/view_ratelimit.py"
+_ARCHIVE_MODULE = _ARCHIVE_REL[:-3].replace("/", ".")
+_ARCHIVE_GIT_BLOB = "5e33b4d213ff3b9497134343712921e3d3ac6b77"
+
+
+def _validated_archival_snapshot(root: Path) -> Path:
+    path = root / _ARCHIVE_REL
+    try:
+        current = path
+        while current != root:
+            assert not current.is_symlink(), "archival snapshot: symlink"
+            current = current.parent
+        mode = path.stat().st_mode
+        assert stat.S_ISREG(mode) and not mode & 0o111, (
+            "archival snapshot: expected a regular non-executable file"
+        )
+        raw = path.read_bytes()
+    except OSError as exc:
+        raise AssertionError(
+            f"archival snapshot: unavailable ({type(exc).__name__})"
+        ) from exc
+    framed = b"blob " + str(len(raw)).encode("ascii") + b"\0" + raw
+    assert hashlib.sha1(framed).hexdigest() == _ARCHIVE_GIT_BLOB, (
+        "archival snapshot: changed bytes; explicitly requalify the source role"
+    )
+    return path
+
+
+def _static_archive_uses(source: str) -> list[int]:
+    """Recognize direct imports and literal import/loader calls, without exec.
+
+    This bounded check does not claim to resolve arbitrary computed imports.
+    Documentation strings alone are not execution; the offline research runner
+    remains outside the operational-root check.
+    """
+    tree = ast.parse(source)
+    # Keep every candidate binding: an unrelated nested import must not hide
+    # an outer loader. This conservative check does not execute name resolution.
+    aliases: dict[str, set[str]] = {}
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            for name in node.names:
+                aliases.setdefault(name.asname or name.name.split(".")[0], set()).add(
+                    name.name if name.asname else name.name.split(".")[0]
+                )
+        elif isinstance(node, ast.ImportFrom) and not node.level:
+            for name in node.names:
+                aliases.setdefault(name.asname or name.name, set()).add(
+                    f"{node.module}.{name.name}"
+                )
+
+    def qualified(node):
+        if isinstance(node, ast.Name):
+            return aliases.get(node.id, {node.id})
+        if isinstance(node, ast.Attribute):
+            return {f"{parent}.{node.attr}" for parent in qualified(node.value)}
+        return set()
+
+    def literal(node):
+        if isinstance(node, ast.Constant) and isinstance(node.value, str):
+            return node.value
+        if isinstance(node, ast.BinOp) and isinstance(node.op, (ast.Add, ast.Div)):
+            left, right = literal(node.left), literal(node.right)
+            if right is None:
+                return None
+            if isinstance(node.op, ast.Add):
+                return left + right if left is not None else None
+            return (left.rstrip("/") + "/" if left else "") + right.lstrip("/")
+        if isinstance(node, ast.Call) and qualified(node.func) & {
+            "Path", "pathlib.Path", "PurePosixPath", "pathlib.PurePosixPath"
+        } and len(node.args) == 1 and not node.keywords:
+            return literal(node.args[0])
+        return None
+
+    def is_target(value):
+        if value is None:
+            return False
+        normalized = value.replace("\\", "/")
+        return (
+            value == _ARCHIVE_MODULE
+            or value.startswith(_ARCHIVE_MODULE + ".")
+            or normalized == _ARCHIVE_REL
+            or normalized.endswith("/" + _ARCHIVE_REL)
+        )
+
+    # Values identify the argument that is actually imported/read/executed.
+    loaders = {
+        "__import__": (0, "name"),
+        "builtins.__import__": (0, "name"),
+        "importlib.import_module": (0, "name"),
+        "runpy.run_module": (0, "mod_name"),
+        "runpy.run_path": (0, "path_name"),
+        "importlib.util.spec_from_file_location": (1, "location"),
+        "importlib.machinery.SourceFileLoader": (1, "path"),
+    }
+    found = []
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            if any(is_target(name.name) for name in node.names):
+                found.append(node.lineno)
+        elif isinstance(node, ast.ImportFrom) and not node.level:
+            if is_target(node.module) or any(
+                is_target(f"{node.module}.{name.name}") for name in node.names
+            ):
+                found.append(node.lineno)
+        elif isinstance(node, ast.Call):
+            for call_name in qualified(node.func):
+                spec = loaders.get(call_name)
+                if spec is None:
+                    continue
+                index, keyword = spec
+                argument = node.args[index] if len(node.args) > index else next(
+                    (item.value for item in node.keywords if item.arg == keyword), None
+                )
+                if argument is not None and is_target(literal(argument)):
+                    found.append(node.lineno)
+                    break
+    return sorted(set(found))
+
+
+def _operational_archive_uses(root: Path) -> list[tuple[str, int]]:
+    found = []
+    for directory in SCAN_DIRS:
+        if directory == "research":
+            continue  # Preserve the documented, offline R14 reproduction contract.
+        for path in (root / directory).rglob("*.py"):
+            raw = path.read_bytes()
+            # Parse before spelling checks: supported literal concatenations
+            # need not contain either target name contiguously in the raw file.
+            source = raw.decode("utf-8")
+            found.extend(
+                (path.relative_to(root).as_posix(), line)
+                for line in _static_archive_uses(source)
+            )
+    return sorted(found)
 
 
 def _annotation_head(node: ast.expr) -> str | None:
@@ -87,10 +231,11 @@ def _candidates() -> list[Path]:
 
 
 def _offenders() -> list[tuple[str, int, str]]:
+    archival = _validated_archival_snapshot(ROOT)
     found = []
     for path in _candidates():
         rel = path.relative_to(ROOT).as_posix()
-        if rel in EXEMPT:
+        if rel in EXEMPT or path == archival:
             continue
         try:
             tree = ast.parse(path.read_text(encoding="utf-8"))
@@ -105,6 +250,7 @@ def _offenders() -> list[tuple[str, int, str]]:
             head = _annotation_head(node.args[0])
             if head is not None:
                 found.append((rel, node.lineno, head.splitlines()[0][:70]))
+    _validated_archival_snapshot(ROOT)
     return sorted(found)
 
 
@@ -188,3 +334,153 @@ def test_prefilter_admits_a_call_split_across_lines():
         and _annotation_head(n.args[0]) is not None
     ]
     assert hits == [3, 5], f"matcher missed the split offenders: {hits}"
+
+
+# Exact historical identity and ordinary-guard adverse controls.
+def _copy_archival_fixture(root: Path) -> Path:
+    target = root / _ARCHIVE_REL
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_bytes((ROOT / _ARCHIVE_REL).read_bytes())
+    target.chmod(0o644)
+    return target
+
+
+def test_archival_snapshot_is_exact_and_not_operationally_imported():
+    assert _validated_archival_snapshot(ROOT) == ROOT / _ARCHIVE_REL
+    uses = _operational_archive_uses(ROOT)
+    assert not uses, (
+        "historical reference used by operational code; requalify its role:\n"
+        + "\n".join(f"  {path}:{line}" for path, line in uses)
+    )
+
+
+@pytest.mark.parametrize("mutation", [
+    "byte", "annotation_removed", "missing", "executable", "symlink", "parent_symlink",
+])
+def test_archival_identity_is_checked_before_the_prefilter(tmp_path, monkeypatch, mutation):
+    path = _copy_archival_fixture(tmp_path)
+    if mutation == "byte":
+        path.write_bytes(path.read_bytes() + b"\n")
+    elif mutation == "annotation_removed":
+        raw = path.read_bytes()
+        changed = raw.replace(b"::", b"")
+        assert changed != raw
+        path.write_bytes(changed)
+    elif mutation == "missing":
+        path.unlink()
+    elif mutation == "executable":
+        path.chmod(0o755)
+    elif mutation == "symlink":
+        target = tmp_path / "same_bytes.py"
+        target.write_bytes(path.read_bytes())
+        path.unlink()
+        path.symlink_to(target)
+    else:
+        parent = path.parent
+        moved = tmp_path / "moved_upstream"
+        parent.rename(moved)
+        parent.symlink_to(moved, target_is_directory=True)
+    monkeypatch.setitem(globals(), "ROOT", tmp_path)
+
+    def must_not_scan():
+        pytest.fail("annotation prefilter entered before identity validation")
+
+    monkeypatch.setitem(globals(), "_candidates", must_not_scan)
+    with pytest.raises(AssertionError, match="archival snapshot:"):
+        _offenders()
+
+
+def test_archival_read_error_is_not_an_exemption(tmp_path, monkeypatch):
+    path = _copy_archival_fixture(tmp_path)
+    read_bytes = Path.read_bytes
+
+    def denied(candidate):
+        if candidate == path:
+            raise PermissionError("synthetic unreadable fixture")
+        return read_bytes(candidate)
+
+    monkeypatch.setattr(Path, "read_bytes", denied)
+    with pytest.raises(AssertionError, match="archival snapshot: unavailable"):
+        _validated_archival_snapshot(tmp_path)
+
+
+def test_archival_identity_is_rechecked_after_scanning(tmp_path, monkeypatch):
+    path = _copy_archival_fixture(tmp_path)
+    monkeypatch.setitem(globals(), "ROOT", tmp_path)
+
+    def mutate_after_validation():
+        path.write_bytes(path.read_bytes() + b"\n")
+        return []
+
+    monkeypatch.setitem(globals(), "_candidates", mutate_after_validation)
+    with pytest.raises(AssertionError, match="archival snapshot: changed bytes"):
+        _offenders()
+
+
+def test_archival_exception_does_not_hide_a_neighbor_or_active_logger(tmp_path, monkeypatch):
+    _copy_archival_fixture(tmp_path)
+    neighbor = tmp_path / "research" / "unlisted_copy.py"
+    neighbor.write_bytes((tmp_path / _ARCHIVE_REL).read_bytes())
+    active = tmp_path / "scripts" / "active.py"
+    active.parent.mkdir()
+    active.write_text(
+        'log.warning(\n    "::warning::multiline")\n'
+        'log.error(f"::error::{1}")\n'
+    )
+    monkeypatch.setitem(globals(), "ROOT", tmp_path)
+    offenders = _offenders()
+    assert any(path == "research/unlisted_copy.py" for path, _, _ in offenders)
+    assert sum(path == "scripts/active.py" for path, _, _ in offenders) == 2
+    assert not any(path == _ARCHIVE_REL for path, _, _ in offenders)
+
+
+@pytest.mark.parametrize("source", [
+    "import research.research_vault_expectations_r3.upstream.view_ratelimit",
+    "import research.research_vault_expectations_r3.upstream.view_ratelimit as archived",
+    "from research.research_vault_expectations_r3.upstream import view_ratelimit as archived",
+    "from research.research_vault_expectations_r3.upstream.view_ratelimit import anything",
+    'import importlib as il; il.import_module("research.research_vault_expectations_r3.upstream.view_ratelimit")',
+    'from importlib import import_module as load; load(name="research.research_vault_expectations_r3.upstream.view_ratelimit")',
+    '__import__("research.research_vault_expectations_r3.upstream.view_ratelimit")',
+    'import runpy; runpy.run_path("research/research_vault_expectations_r3/upstream/view_ratelimit.py")',
+    'from runpy import run_module as run; run("research.research_vault_expectations_r3.upstream.view_ratelimit")',
+    'from importlib.util import spec_from_file_location as spec; spec("archived", "research/research_vault_expectations_r3/upstream/view_ratelimit.py")',
+    'from importlib.machinery import SourceFileLoader as loader; loader("archived", "/repo/research/research_vault_expectations_r3/upstream/view_ratelimit.py")',
+    'from pathlib import Path; import runpy; runpy.run_path(ROOT / "research" / "research_vault_expectations_r3" / "upstream" / "view_ratelimit.py")',
+])
+def test_literal_operational_archive_use_is_detected(source):
+    assert _static_archive_uses(source)
+
+
+@pytest.mark.parametrize(("source", "line"), [
+    ("import runpy\nrunpy.run_path(\"research/\" + \"research_vault_\" + \"expectations_r3/upstream/\" + \"view_\" + \"ratelimit.py\")\n", 2),
+    ("import importlib as loader\ndef unrelated():\n    import json as loader\nloader.import_module(\"research.research_vault_expectations_r3.upstream.view_ratelimit\")\n", 4),
+])
+def test_operational_wrapper_preserves_supported_literal_and_alias_detection(tmp_path, source, line):
+    active = tmp_path / "scripts" / "consumer.py"
+    active.parent.mkdir()
+    active.write_text(source, encoding="utf-8")
+    assert _operational_archive_uses(tmp_path) == [("scripts/consumer.py", line)]
+
+
+@pytest.mark.parametrize("source", [
+    "from engine.research_vault import view_ratelimit",
+    "import engine.research_vault.view_ratelimit as limiter",
+    'documentation = "import research.research_vault_expectations_r3.upstream.view_ratelimit"',
+    'record_reference("research/research_vault_expectations_r3/upstream/view_ratelimit.py")',
+])
+def test_reference_text_and_current_runtime_module_are_not_archive_execution(source):
+    assert _static_archive_uses(source) == []
+
+
+def test_offline_reproduction_reference_is_preserved(tmp_path):
+    offline = tmp_path / "research" / "r14" / "run_review.py"
+    offline.parent.mkdir(parents=True)
+    offline.write_text(
+        'import runpy; runpy.run_path("research/research_vault_expectations_r3/upstream/view_ratelimit.py")'
+    )
+    assert _operational_archive_uses(tmp_path) == []
+    active = tmp_path / "scripts" / "consumer.py"
+    active.parent.mkdir()
+    active.write_text(offline.read_text())
+    assert _operational_archive_uses(tmp_path) == [("scripts/consumer.py", 1)]

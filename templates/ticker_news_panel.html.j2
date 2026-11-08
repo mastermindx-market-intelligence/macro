@@ -1,0 +1,29 @@
+<section class="tn-panel" data-ticker-news data-ticker="{{ ticker|default('') }}" aria-labelledby="tn-heading">
+  <header class="tn-heading">
+    <div>
+      <p class="tn-eyebrow">{{ t('Company news', '公司新闻') }}</p>
+      <h2 id="tn-heading">{{ t('The latest reporting', '最新报道') }} <span data-tn-symbol></span></h2>
+      <p class="tn-intro">{{ t('One story, with the reporting behind it.', '将同一事件汇总，保留各来源报道。') }}</p>
+    </div>
+    <a class="tn-terminal" data-tn-terminal href="https://app.mastermind-x.com/terminal">{{ t('Open in Terminal', '在终端打开') }} <span aria-hidden="true">↗</span></a>
+  </header>
+  <div class="tn-toolbar">
+    <div class="tn-filters" role="group" aria-label="{{ 'News coverage' }}">
+      <button type="button" data-tn-filter="signal" aria-pressed="true">{{ t('High signal', '重点新闻') }}</button>
+      <button type="button" data-tn-filter="all" aria-pressed="false">{{ t('All reporting', '全部报道') }} <span data-tn-count></span></button>
+    </div>
+    <span class="tn-status" data-tn-status role="status">{{ t('Checking access…', '正在检查访问权限…') }}</span>
+  </div>
+  <p class="tn-coverage" data-tn-coverage hidden></p>
+  <div class="tn-message" data-tn-message hidden></div>
+  <button class="tn-updates" data-tn-updates type="button" hidden></button>
+  <div class="tn-rows" data-tn-rows></div>
+  <footer class="tn-footer">
+    <button type="button" data-tn-retry hidden>{{ t('Retry', '重试') }}</button>
+    <a data-tn-signin href="{{ nav_prefix|default('') }}index.html?signin=1" hidden>{{ t('Sign in', '登录') }}</a>
+    <button type="button" data-tn-more hidden>{{ t('Earlier reporting', '更早报道') }} <span aria-hidden="true">↓</span></button>
+    <button type="button" data-tn-latest hidden>{{ t('Back to latest', '返回最新') }}</button>
+    <a href="{{ nav_prefix|default('') }}news.html">{{ t('News Intelligence', '新闻情报') }} <span aria-hidden="true">↗</span></a>
+  </footer>
+  <noscript><p>{{ t('Enable JavaScript and sign in to view current company reporting.', '请启用 JavaScript 并登录以查看当前公司报道。') }}</p></noscript>
+</section>

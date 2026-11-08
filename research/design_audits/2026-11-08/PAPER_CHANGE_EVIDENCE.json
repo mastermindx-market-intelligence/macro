@@ -1,0 +1,1393 @@
+{
+  "schema": "mastermind.paper_design_audit_evidence.v1",
+  "date": "2026-11-08",
+  "scope": "Cross-product architecture and clarity pass; editable Paper design proof only",
+  "procedure_pin": "5c3d3885234358aefb97ecdbc59be0864df14f8b",
+  "product_pin": "ba32f20ba306f9e75b7c400992138e736b904516",
+  "carrier": "Studio Direct C2 Personal",
+  "paper_version": "0.5.18",
+  "catalog_sha256": "f200eaf725b38c7895ef2180b80e3e254957093a770582b795685fa5072759bb",
+  "operations": [
+    {
+      "operation_id": "paper-clarity-20261108-c2-ontology-reading-01",
+      "tool": "set_text_content",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false,
+      "production_acceptance": false,
+      "file_id": "01M3P1X4FR6BRTB13KA736Y1HT",
+      "snapshot": "02945aa7ec866beed5ccf889ad35593d2f1eb6220a56376109cd0ef36c764f8e"
+    },
+    {
+      "operation_id": "paper-clarity-20261108-c2-ontology-finish-01",
+      "tool": "finish_working_on_nodes",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false,
+      "production_acceptance": false,
+      "file_id": "01M3P1X4FR6BRTB13KA736Y1HT",
+      "snapshot": "02945aa7ec866beed5ccf889ad35593d2f1eb6220a56376109cd0ef36c764f8e"
+    },
+    {
+      "operation_id": "paper-clarity-20261108-c2-system-rail-01",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false,
+      "production_acceptance": false,
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "snapshot": "17fac2909612c2e29e8def79aa2412c76720f2df5daef99cc2cf972b58722a7d"
+    },
+    {
+      "operation_id": "paper-clarity-20261108-c2-system-rail-02",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false,
+      "production_acceptance": false,
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "snapshot": "de2b167c05938042aa92cb4fce666b081459f3ac7bdca7ebe70d01edaee708e0"
+    },
+    {
+      "operation_id": "paper-clarity-20261108-c2-system-rail-03",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false,
+      "production_acceptance": false,
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "snapshot": "0afeec9b6c15b46cf2a84079984e81efe9edeb9060197278ba026b37f95e82ed"
+    },
+    {
+      "operation_id": "paper-clarity-20261108-c2-system-rail-04",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false,
+      "production_acceptance": false,
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "snapshot": "14c67ece6b118a71c8b50a32a49bd5aba36a060e0a791fd4f3f0e5bf23a2e7b7"
+    },
+    {
+      "operation_id": "paper-clarity-20261108-c2-system-rail-05",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false,
+      "production_acceptance": false,
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "snapshot": "0ec5977f4a27416a6175c5259e640fabf811931c5d9e6a935e2522c77f8d7086"
+    },
+    {
+      "operation_id": "paper-clarity-20261108-c2-system-rail-06",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false,
+      "production_acceptance": false,
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "snapshot": "9468b0483acb5c1af1d377cc15dd996be24175fe1d9048cee9d39b3ffc5b003c"
+    },
+    {
+      "operation_id": "paper-clarity-20261108-c2-system-rail-07",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false,
+      "production_acceptance": false,
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "snapshot": "0eebcf00b53ed0de824fcdc2b480f876cc6565b044b8039054685eb5ccd6477e"
+    },
+    {
+      "operation_id": "paper-clarity-20261108-c2-system-rail-08",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false,
+      "production_acceptance": false,
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "snapshot": "92260116236bf4de0711a97ba6419167629c83dda00309318343066a10524568"
+    },
+    {
+      "operation_id": "paper-clarity-20261108-c2-system-rail-09",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false,
+      "production_acceptance": false,
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "snapshot": "e80d132fb831a1851b6fef61067f999d45bd7a0c9a55ce34623470569b0c663c"
+    },
+    {
+      "operation_id": "paper-clarity-20261108-c2-system-rail-10",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false,
+      "production_acceptance": false,
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "snapshot": "efd8f19776150dfec6311746c6a7ef542557159d38580c7aca393abf845158b0"
+    },
+    {
+      "operation_id": "paper-clarity-20261108-c2-system-column-fit-dark",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false,
+      "production_acceptance": false,
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "snapshot": "49c4ac0508ccd1630927c65698454d64a7b8a12e6cfb942954707c88688b6985"
+    },
+    {
+      "operation_id": "paper-clarity-20261108-c2-system-column-fit-light",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false,
+      "production_acceptance": false,
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "snapshot": "49c4ac0508ccd1630927c65698454d64a7b8a12e6cfb942954707c88688b6985"
+    },
+    {
+      "operation_id": "paper-clarity-20261108-c2-system-finish-01",
+      "tool": "finish_working_on_nodes",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false,
+      "production_acceptance": false,
+      "file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "snapshot": "49c4ac0508ccd1630927c65698454d64a7b8a12e6cfb942954707c88688b6985"
+    },
+    {
+      "operation_id": "paper-clarity-20261108-c2-ai-depth-labels-01",
+      "tool": "set_text_content",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false,
+      "production_acceptance": false,
+      "file_id": "01M3P1QEHS5XXQY85BJT6QR2E1",
+      "snapshot": "0cc71b3a499debe7939c03d0901c9e363a4d61f57d98a56de67af1ed0420d20d"
+    },
+    {
+      "operation_id": "paper-clarity-20261108-c2-ai-depth-boards-01",
+      "tool": "duplicate_nodes",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false,
+      "production_acceptance": false,
+      "file_id": "01M3P1QEHS5XXQY85BJT6QR2E1",
+      "snapshot": "0cc71b3a499debe7939c03d0901c9e363a4d61f57d98a56de67af1ed0420d20d"
+    },
+    {
+      "operation_id": "paper-clarity-20261108-c2-ai-review-header-desktop",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false,
+      "production_acceptance": false,
+      "file_id": "01M3P1QEHS5XXQY85BJT6QR2E1",
+      "snapshot": "0bdf4be9b500ceb0765453bd18fba3dbe82205e8bba4552a783eae1514e9471c"
+    },
+    {
+      "operation_id": "paper-clarity-20261108-c2-ai-review-header-mobile",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false,
+      "production_acceptance": false,
+      "file_id": "01M3P1QEHS5XXQY85BJT6QR2E1",
+      "snapshot": "734d9102f98da875b25343ff76b5a0e2ef4a638ad6ef052801508e9733cdf833"
+    },
+    {
+      "operation_id": "paper-clarity-20261108-c2-ai-review-names-01",
+      "tool": "rename_nodes",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false,
+      "production_acceptance": false,
+      "file_id": "01M3P1QEHS5XXQY85BJT6QR2E1",
+      "snapshot": "6985c9f92f705d016afcd021ae5b506b409aaeb9609a57390f73b9044988b9c8"
+    },
+    {
+      "operation_id": "paper-clarity-20261108-c2-ai-review-question-desktop",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false,
+      "production_acceptance": false,
+      "file_id": "01M3P1QEHS5XXQY85BJT6QR2E1",
+      "snapshot": "e24a9119289acc6b5b0583f7e64932d1b86924d7982ce2f5bc27c0f632813875"
+    },
+    {
+      "operation_id": "paper-clarity-20261108-c2-ai-review-question-mobile",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false,
+      "production_acceptance": false,
+      "file_id": "01M3P1QEHS5XXQY85BJT6QR2E1",
+      "snapshot": "76e9ec6252e9bb6139b9b375eb82fbd45ae63a89a9effe250e231c4389e35e4c"
+    },
+    {
+      "operation_id": "paper-clarity-20261108-c2-ai-review-quick-desktop",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false,
+      "production_acceptance": false,
+      "file_id": "01M3P1QEHS5XXQY85BJT6QR2E1",
+      "snapshot": "7e4d7cadcf3f4c900dc7e1318329f55d5940f5c822aefa940d05dc176d80d7ff"
+    },
+    {
+      "operation_id": "paper-clarity-20261108-c2-ai-review-quick-mobile",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false,
+      "production_acceptance": false,
+      "file_id": "01M3P1QEHS5XXQY85BJT6QR2E1",
+      "snapshot": "571a56c7d2e81b194c6124cc306847ddb9ca120a919c76e6bb272db4e7ba1b8d"
+    },
+    {
+      "operation_id": "paper-clarity-20261108-c2-ai-review-investigate-desktop",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false,
+      "production_acceptance": false,
+      "file_id": "01M3P1QEHS5XXQY85BJT6QR2E1",
+      "snapshot": "41bc8f703955a712c46662a2e9b67ffe0dcfba4d151abe493827e8c2445c6f20"
+    },
+    {
+      "operation_id": "paper-clarity-20261108-c2-ai-review-investigate-mobile",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false,
+      "production_acceptance": false,
+      "file_id": "01M3P1QEHS5XXQY85BJT6QR2E1",
+      "snapshot": "6865460a94714ec73e8652349bf911e268fc207a28f14211ee80f9f8de3d0263"
+    },
+    {
+      "operation_id": "paper-clarity-20261108-c2-ai-review-scope-desktop",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false,
+      "production_acceptance": false,
+      "file_id": "01M3P1QEHS5XXQY85BJT6QR2E1",
+      "snapshot": "858bc3479908a939fafd72477e9f6f4bff139b8630cf5fe70c58347e2a6f4228"
+    },
+    {
+      "operation_id": "paper-clarity-20261108-c2-ai-review-scope-mobile",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false,
+      "production_acceptance": false,
+      "file_id": "01M3P1QEHS5XXQY85BJT6QR2E1",
+      "snapshot": "01b241132fe41a725a92222750cfb09d0960e32890fd72f6bf71a9da0ef53dde"
+    },
+    {
+      "operation_id": "paper-clarity-20261108-c2-ai-review-usage-desktop",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false,
+      "production_acceptance": false,
+      "file_id": "01M3P1QEHS5XXQY85BJT6QR2E1",
+      "snapshot": "af6ef6408380e471ecc5c5994197634c60eb4c84bee1f01c2ca984d99d8fa0e5"
+    },
+    {
+      "operation_id": "paper-clarity-20261108-c2-ai-review-usage-mobile",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false,
+      "production_acceptance": false,
+      "file_id": "01M3P1QEHS5XXQY85BJT6QR2E1",
+      "snapshot": "d4f477e55ab73d5308bb1506d6831bfcfafa9a91af5b018abac9380e9097e990"
+    },
+    {
+      "operation_id": "paper-clarity-20261108-c2-ai-review-footer-desktop",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false,
+      "production_acceptance": false,
+      "file_id": "01M3P1QEHS5XXQY85BJT6QR2E1",
+      "snapshot": "c95de0fbbbbb69a1ba8ed598db6566c1e12e748d0b17c726d3007711d38b09cc"
+    },
+    {
+      "operation_id": "paper-clarity-20261108-c2-ai-review-footer-mobile",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false,
+      "production_acceptance": false,
+      "file_id": "01M3P1QEHS5XXQY85BJT6QR2E1",
+      "snapshot": "94a67438072e9369ca002c3bb28b8b73432ede4c546c19c26684461e814f6598"
+    },
+    {
+      "operation_id": "paper-clarity-20261108-c2-ai-review-bindings-01",
+      "tool": "set_text_content",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false,
+      "production_acceptance": false,
+      "file_id": "01M3P1QEHS5XXQY85BJT6QR2E1",
+      "snapshot": "5d0da04c9afba652cf4b65635bf2a9f1e00cd5916832e332d8eb94a5cae61df2"
+    },
+    {
+      "operation_id": "paper-clarity-20261108-c2-ai-depth-button-fit-answer-desktop",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false,
+      "production_acceptance": false,
+      "file_id": "01M3P1QEHS5XXQY85BJT6QR2E1",
+      "snapshot": "5d0da04c9afba652cf4b65635bf2a9f1e00cd5916832e332d8eb94a5cae61df2"
+    },
+    {
+      "operation_id": "paper-clarity-20261108-c2-ai-depth-button-fit-answer-mobile",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false,
+      "production_acceptance": false,
+      "file_id": "01M3P1QEHS5XXQY85BJT6QR2E1",
+      "snapshot": "5d0da04c9afba652cf4b65635bf2a9f1e00cd5916832e332d8eb94a5cae61df2"
+    },
+    {
+      "operation_id": "paper-clarity-20261108-c2-ai-depth-button-fit-sources-desktop",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false,
+      "production_acceptance": false,
+      "file_id": "01M3P1QEHS5XXQY85BJT6QR2E1",
+      "snapshot": "5d0da04c9afba652cf4b65635bf2a9f1e00cd5916832e332d8eb94a5cae61df2"
+    },
+    {
+      "operation_id": "paper-clarity-20261108-c2-ai-depth-button-fit-review-desktop",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false,
+      "production_acceptance": false,
+      "file_id": "01M3P1QEHS5XXQY85BJT6QR2E1",
+      "snapshot": "5d0da04c9afba652cf4b65635bf2a9f1e00cd5916832e332d8eb94a5cae61df2"
+    },
+    {
+      "operation_id": "paper-clarity-20261108-c2-ai-state-range-01",
+      "tool": "set_text_content",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false,
+      "production_acceptance": false,
+      "file_id": "01M3P1QEHS5XXQY85BJT6QR2E1",
+      "snapshot": "5d0da04c9afba652cf4b65635bf2a9f1e00cd5916832e332d8eb94a5cae61df2"
+    },
+    {
+      "operation_id": "paper-clarity-20261108-c2-ai-map-footer-fit-01",
+      "tool": "move_nodes",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false,
+      "production_acceptance": false,
+      "file_id": "01M3P1QEHS5XXQY85BJT6QR2E1",
+      "snapshot": "5d0da04c9afba652cf4b65635bf2a9f1e00cd5916832e332d8eb94a5cae61df2"
+    },
+    {
+      "operation_id": "paper-clarity-20261108-c2-ai-finish-01",
+      "tool": "finish_working_on_nodes",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false,
+      "production_acceptance": false,
+      "file_id": "01M3P1QEHS5XXQY85BJT6QR2E1",
+      "snapshot": "0eb6d86ef086fc1bb51c2c8cb0e3d45dc236b3e997f06f598a75f2ccc05f2d3a"
+    }
+  ],
+  "ontology": {
+    "file_id": "01M3P1X4FR6BRTB13KA736Y1HT",
+    "page": "p-1-0",
+    "boards": [
+      "44L-0",
+      "4F5-0"
+    ],
+    "text_updates": [
+      {
+        "nodeId": "45B-0",
+        "html": "WTI transmission"
+      },
+      {
+        "nodeId": "45F-0",
+        "html": "Private workspace"
+      },
+      {
+        "nodeId": "45M-0",
+        "html": "WTI TRANSMISSION · SNAPSHOT"
+      },
+      {
+        "nodeId": "45Q-0",
+        "html": "Oil condition unmet"
+      },
+      {
+        "nodeId": "45R-0",
+        "html": "Rates and duration meet their tests, but earlier conditions are unmet. Source verification unavailable."
+      },
+      {
+        "nodeId": "45U-0",
+        "html": "Inspect oil condition →"
+      },
+      {
+        "nodeId": "465-0",
+        "html": "Earlier conditions unmet"
+      },
+      {
+        "nodeId": "467-0",
+        "html": "DESIGN PREVIEW"
+      },
+      {
+        "nodeId": "46C-0",
+        "html": "PATH STATUS"
+      },
+      {
+        "nodeId": "46E-0",
+        "html": "INACTIVE"
+      },
+      {
+        "nodeId": "46G-0",
+        "html": "Inactive"
+      },
+      {
+        "nodeId": "46H-0",
+        "html": "Required oil condition unmet"
+      },
+      {
+        "nodeId": "46K-0",
+        "html": "FIRST UNMET CONDITION"
+      },
+      {
+        "nodeId": "46W-0",
+        "html": "FOUR REQUIRED CONDITIONS"
+      },
+      {
+        "nodeId": "46X-0",
+        "html": "Check conditions in order. Later readings cannot satisfy earlier conditions."
+      },
+      {
+        "nodeId": "470-0",
+        "html": "PATH STATUS · INACTIVE"
+      },
+      {
+        "nodeId": "476-0",
+        "html": "FIRST UNMET"
+      },
+      {
+        "nodeId": "479-0",
+        "html": "The 60-session oil move is below the required threshold. Positive trend alone is insufficient."
+      },
+      {
+        "nodeId": "47P-0",
+        "html": "Inflation expectations are nearly flat over the required 22-session window."
+      },
+      {
+        "nodeId": "485-0",
+        "html": "Real yields are rising, with a strong increase over 63 sessions."
+      },
+      {
+        "nodeId": "48S-0",
+        "html": "Rates and duration meet their tests, but oil and inflation expectations do not. Later readings cannot activate this oil-led path."
+      },
+      {
+        "nodeId": "48X-0",
+        "html": "SELECTED CONDITION · EVIDENCE"
+      },
+      {
+        "nodeId": "48Y-0",
+        "html": "Inspect the oil condition"
+      },
+      {
+        "nodeId": "48Z-0",
+        "html": "Readings as of 25 Sep 2026 · built 28 Sep 07:14 UTC"
+      },
+      {
+        "nodeId": "495-0",
+        "html": "Oil move below threshold"
+      },
+      {
+        "nodeId": "496-0",
+        "html": "This condition requires both an oil move above 25% over 60 sessions and a positive 50-day trend slope. Only the trend test passes."
+      },
+      {
+        "nodeId": "49O-0",
+        "html": "threshold 25%"
+      },
+      {
+        "nodeId": "49V-0",
+        "html": "Positive slope clears the &gt;0 trend test. Both tests must pass."
+      },
+      {
+        "nodeId": "4A0-0",
+        "html": "SOURCE METRIC"
+      },
+      {
+        "nodeId": "4AK-0",
+        "html": "REQUIRED TESTS"
+      },
+      {
+        "nodeId": "4AQ-0",
+        "html": "Snapshot source record · verification unavailable"
+      },
+      {
+        "nodeId": "4AR-0",
+        "html": "View source details →"
+      },
+      {
+        "nodeId": "4AZ-0",
+        "html": "Continue this conversation"
+      },
+      {
+        "nodeId": "4B4-0",
+        "html": "Oil supply shock · unmet condition"
+      },
+      {
+        "nodeId": "4B8-0",
+        "html": "Why are real yields rising while this path is inactive?"
+      },
+      {
+        "nodeId": "4BA-0",
+        "html": "The oil and inflation-expectation conditions are unmet. Rates and duration meet their tests, but that does not establish oil as the cause. Compare other rate drivers before drawing a conclusion."
+      },
+      {
+        "nodeId": "4BC-0",
+        "html": "SUPPORTING READINGS"
+      },
+      {
+        "nodeId": "4BW-0",
+        "html": "INTERPRETATION"
+      },
+      {
+        "nodeId": "4BX-0",
+        "html": "What this reading means"
+      },
+      {
+        "nodeId": "4C5-0",
+        "html": "Earlier comparison unavailable"
+      },
+      {
+        "nodeId": "4C6-0",
+        "html": "Current readings are available, but a validated previous path state is not. Change cannot be assessed from this snapshot."
+      },
+      {
+        "nodeId": "4CB-0",
+        "html": "Oil link not established"
+      },
+      {
+        "nodeId": "4CC-0",
+        "html": "Rates and duration meet their tests while oil and inflation expectations do not. These readings do not establish a completed oil-led path."
+      },
+      {
+        "nodeId": "4CH-0",
+        "html": "Compare other rate drivers"
+      },
+      {
+        "nodeId": "4CI-0",
+        "html": "Review the oil evidence, then compare fiscal, growth, term-premium and policy explanations."
+      },
+      {
+        "nodeId": "4CN-0",
+        "html": "REQUIREMENTS FOR ACTIVATION"
+      },
+      {
+        "nodeId": "4CO-0",
+        "html": "What must change next"
+      },
+      {
+        "nodeId": "4CP-0",
+        "html": "Required tests · no causal proof"
+      },
+      {
+        "nodeId": "4CT-0",
+        "html": "01 · OIL CONDITION"
+      },
+      {
+        "nodeId": "4CW-0",
+        "html": "Both tests must pass. The slope clears, but the 60-session oil move is only 17.8% in this snapshot."
+      },
+      {
+        "nodeId": "4CZ-0",
+        "html": "Observed / threshold (%)"
+      },
+      {
+        "nodeId": "4DC-0",
+        "html": "Observed / threshold"
+      },
+      {
+        "nodeId": "4DJ-0",
+        "html": "03 · REQUIRED ORDER"
+      },
+      {
+        "nodeId": "4DL-0",
+        "html": "Earlier conditions must pass before later readings can advance the path."
+      },
+      {
+        "nodeId": "4DM-0",
+        "html": "Oil and inflation expectations must qualify in order. Later readings cannot fill earlier gaps or establish causation."
+      },
+      {
+        "nodeId": "4E3-0",
+        "html": "SOURCE DETAILS"
+      },
+      {
+        "nodeId": "4E4-0",
+        "html": "Sources and limitations"
+      },
+      {
+        "nodeId": "4FM-0",
+        "html": "WTI transmission"
+      },
+      {
+        "nodeId": "4FU-0",
+        "html": "WTI TRANSMISSION · SNAPSHOT"
+      },
+      {
+        "nodeId": "4FX-0",
+        "html": "Oil condition unmet"
+      },
+      {
+        "nodeId": "4FY-0",
+        "html": "This oil-led path remains inactive."
+      },
+      {
+        "nodeId": "4FZ-0",
+        "html": "Rates and duration meet their tests, but earlier conditions are unmet. Source verification unavailable."
+      },
+      {
+        "nodeId": "4G2-0",
+        "html": "INACTIVE"
+      },
+      {
+        "nodeId": "4G6-0",
+        "html": "EARLIER CONDITIONS UNMET"
+      },
+      {
+        "nodeId": "4G8-0",
+        "html": "DESIGN PREVIEW"
+      },
+      {
+        "nodeId": "4GB-0",
+        "html": "PATH STATUS"
+      },
+      {
+        "nodeId": "4GD-0",
+        "html": "INACTIVE"
+      },
+      {
+        "nodeId": "4GG-0",
+        "html": "Inactive"
+      },
+      {
+        "nodeId": "4GH-0",
+        "html": "Required oil condition unmet"
+      },
+      {
+        "nodeId": "4GP-0",
+        "html": "FIRST UNMET CONDITION"
+      },
+      {
+        "nodeId": "4H1-0",
+        "html": "Inspect oil condition"
+      },
+      {
+        "nodeId": "4HI-0",
+        "html": "FOUR REQUIRED CONDITIONS"
+      },
+      {
+        "nodeId": "4HK-0",
+        "html": "PATH STATUS · INACTIVE"
+      },
+      {
+        "nodeId": "4HL-0",
+        "html": "Check conditions in order."
+      },
+      {
+        "nodeId": "4HM-0",
+        "html": "Later readings cannot satisfy earlier conditions. Tap a condition to inspect its evidence."
+      },
+      {
+        "nodeId": "4I2-0",
+        "html": "The 60-session oil move is below the required threshold. Positive trend alone is insufficient."
+      },
+      {
+        "nodeId": "4JZ-0",
+        "html": "QQQ trails SPY over 63 sessions, consistent with duration pressure. This does not establish oil as the cause."
+      },
+      {
+        "nodeId": "4KA-0",
+        "html": "Earlier conditions unmet"
+      },
+      {
+        "nodeId": "4KB-0",
+        "html": "Rates and duration meet their tests, but oil and inflation expectations do not. Later readings cannot activate this oil-led path."
+      },
+      {
+        "nodeId": "4KF-0",
+        "html": "SELECTED CONDITION · EVIDENCE"
+      },
+      {
+        "nodeId": "4KG-0",
+        "html": "Inspect the oil condition"
+      },
+      {
+        "nodeId": "4KH-0",
+        "html": "Readings as of 25 Sep 2026 · source verification unavailable"
+      },
+      {
+        "nodeId": "4KM-0",
+        "html": "Oil move below threshold"
+      },
+      {
+        "nodeId": "4KP-0",
+        "html": "This condition requires both an oil move above 25% over 60 sessions and a positive 50-day trend slope. Only the trend test passes."
+      },
+      {
+        "nodeId": "4LD-0",
+        "html": "threshold 25%"
+      },
+      {
+        "nodeId": "4LO-0",
+        "html": "Positive slope clears the &gt;0 trend test. Both tests must pass."
+      },
+      {
+        "nodeId": "4LR-0",
+        "html": "SOURCE METRIC"
+      },
+      {
+        "nodeId": "4MD-0",
+        "html": "REQUIRED TESTS"
+      },
+      {
+        "nodeId": "4ME-0",
+        "html": "Both required: oil return &gt;25% and MA50 slope &gt;0. Only the trend test passes."
+      },
+      {
+        "nodeId": "4KU-0",
+        "html": "Snapshot source record · verification unavailable"
+      },
+      {
+        "nodeId": "4KW-0",
+        "html": "View source details"
+      },
+      {
+        "nodeId": "4MR-0",
+        "html": "Continue this conversation"
+      },
+      {
+        "nodeId": "4MW-0",
+        "html": "Oil supply shock · unmet condition"
+      },
+      {
+        "nodeId": "4N5-0",
+        "html": "Why are real yields rising while this path is inactive?"
+      },
+      {
+        "nodeId": "4N9-0",
+        "html": "The oil and inflation-expectation conditions are unmet. Rates and duration meet their tests, but that does not establish oil as the cause. Compare other rate drivers before drawing a conclusion."
+      },
+      {
+        "nodeId": "4NB-0",
+        "html": "SUPPORTING READINGS"
+      },
+      {
+        "nodeId": "4NV-0",
+        "html": "INTERPRETATION"
+      },
+      {
+        "nodeId": "4NY-0",
+        "html": "What this reading means"
+      },
+      {
+        "nodeId": "4OC-0",
+        "html": "Earlier comparison unavailable"
+      },
+      {
+        "nodeId": "4OD-0",
+        "html": "Current readings are available, but a validated previous path state is not. Change cannot be assessed from this snapshot."
+      },
+      {
+        "nodeId": "4OK-0",
+        "html": "Oil link not established"
+      },
+      {
+        "nodeId": "4OL-0",
+        "html": "Rates and duration meet their tests while oil and inflation expectations do not. These readings do not establish a completed oil-led path."
+      },
+      {
+        "nodeId": "4OS-0",
+        "html": "Compare other rate drivers"
+      },
+      {
+        "nodeId": "4OT-0",
+        "html": "Review the oil evidence, then compare fiscal, growth, term-premium and policy explanations."
+      },
+      {
+        "nodeId": "4O2-0",
+        "html": "REQUIREMENTS FOR ACTIVATION"
+      },
+      {
+        "nodeId": "4O3-0",
+        "html": "What must change next"
+      },
+      {
+        "nodeId": "4O4-0",
+        "html": "Required tests · no causal proof"
+      },
+      {
+        "nodeId": "4P0-0",
+        "html": "01 · OIL CONDITION"
+      },
+      {
+        "nodeId": "4P4-0",
+        "html": "Both tests must pass. The slope clears, but the 60-session oil move is only 17.8% in this snapshot."
+      },
+      {
+        "nodeId": "4P7-0",
+        "html": "Observed / threshold (%)"
+      },
+      {
+        "nodeId": "4PM-0",
+        "html": "Observed / threshold"
+      },
+      {
+        "nodeId": "4PU-0",
+        "html": "03 · REQUIRED ORDER"
+      },
+      {
+        "nodeId": "4PX-0",
+        "html": "Earlier conditions must pass before later readings advance the path."
+      },
+      {
+        "nodeId": "4PY-0",
+        "html": "Oil and inflation expectations must qualify in order. Later readings cannot fill earlier gaps or establish causation."
+      },
+      {
+        "nodeId": "4QF-0",
+        "html": "SOURCE DETAILS"
+      },
+      {
+        "nodeId": "4QL-0",
+        "html": "Sources and limitations"
+      },
+      {
+        "nodeId": "4RT-0",
+        "html": "RETURN TO EVIDENCE"
+      },
+      {
+        "nodeId": "4RU-0",
+        "html": "Return to the selected oil condition"
+      },
+      {
+        "nodeId": "4RV-0",
+        "html": "Keep the selected condition and source revision when closing the answer. Current source permissions still apply."
+      },
+      {
+        "nodeId": "4RY-0",
+        "html": "Return to oil condition"
+      }
+    ],
+    "exact_text_readback": {
+      "requested": 120,
+      "missing": []
+    },
+    "preserved_invariants": [
+      {
+        "node": "49F-0",
+        "unchanged": true
+      },
+      {
+        "node": "49U-0",
+        "unchanged": true
+      },
+      {
+        "node": "4A8-0",
+        "unchanged": true
+      },
+      {
+        "node": "4A9-0",
+        "unchanged": true
+      },
+      {
+        "node": "4AF-0",
+        "unchanged": true
+      },
+      {
+        "node": "4AG-0",
+        "unchanged": true
+      },
+      {
+        "node": "47B-0",
+        "unchanged": true
+      },
+      {
+        "node": "47R-0",
+        "unchanged": true
+      },
+      {
+        "node": "487-0",
+        "unchanged": true
+      },
+      {
+        "node": "48N-0",
+        "unchanged": true
+      },
+      {
+        "node": "45O-0",
+        "unchanged": true
+      },
+      {
+        "node": "46O-0",
+        "unchanged": true
+      },
+      {
+        "node": "46R-0",
+        "unchanged": true
+      },
+      {
+        "node": "4F3-0",
+        "unchanged": true
+      }
+    ],
+    "screenshot_sections": [
+      "45J-0",
+      "4FS-0",
+      "46T-0",
+      "48U-0",
+      "4KD-0",
+      "4CK-0",
+      "4NS-0",
+      "4RR-0"
+    ]
+  },
+  "shared_patterns": {
+    "file_id": "01M312VSDSZFVT45674GDVJVZN",
+    "page": "p-5-0",
+    "boards": [
+      "2S4-0",
+      "2UE-0",
+      "30G-0",
+      "336-0"
+    ],
+    "container_replacements": [
+      {
+        "index": 1,
+        "parent": "2TN-0",
+        "created": "9SW-0",
+        "operation_id": "paper-clarity-20261108-c2-system-rail-01"
+      },
+      {
+        "index": 2,
+        "parent": "2TT-0",
+        "created": "9T2-0",
+        "created_nodes": [
+          {
+            "id": "9T2-0",
+            "type": "Frame"
+          },
+          {
+            "id": "9T3-0",
+            "type": "Frame"
+          },
+          {
+            "id": "9T4-0",
+            "type": "Text"
+          },
+          {
+            "id": "9T5-0",
+            "type": "Text"
+          },
+          {
+            "id": "9T6-0",
+            "type": "Text"
+          }
+        ],
+        "operation_id": "paper-clarity-20261108-c2-system-rail-02",
+        "state": "APPLIED_RESPONSE_OBSERVED"
+      },
+      {
+        "index": 3,
+        "parent": "2TZ-0",
+        "created": "9T8-0",
+        "created_nodes": [
+          {
+            "id": "9T8-0",
+            "type": "Frame"
+          },
+          {
+            "id": "9T9-0",
+            "type": "Frame"
+          },
+          {
+            "id": "9TA-0",
+            "type": "Text"
+          },
+          {
+            "id": "9TB-0",
+            "type": "Text"
+          },
+          {
+            "id": "9TC-0",
+            "type": "Text"
+          }
+        ],
+        "operation_id": "paper-clarity-20261108-c2-system-rail-03",
+        "state": "APPLIED_RESPONSE_OBSERVED"
+      },
+      {
+        "index": 4,
+        "parent": "2U9-0",
+        "created": "9TE-0",
+        "created_nodes": [
+          {
+            "id": "9TE-0",
+            "type": "Frame"
+          },
+          {
+            "id": "9TF-0",
+            "type": "Frame"
+          },
+          {
+            "id": "9TG-0",
+            "type": "Text"
+          },
+          {
+            "id": "9TH-0",
+            "type": "Text"
+          }
+        ],
+        "operation_id": "paper-clarity-20261108-c2-system-rail-04",
+        "state": "APPLIED_RESPONSE_OBSERVED"
+      },
+      {
+        "index": 5,
+        "parent": "2VX-0",
+        "created": "9TJ-0",
+        "created_nodes": [
+          {
+            "id": "9TJ-0",
+            "type": "Frame"
+          },
+          {
+            "id": "9TK-0",
+            "type": "Frame"
+          },
+          {
+            "id": "9TL-0",
+            "type": "Text"
+          },
+          {
+            "id": "9TM-0",
+            "type": "Text"
+          },
+          {
+            "id": "9TN-0",
+            "type": "Text"
+          }
+        ],
+        "operation_id": "paper-clarity-20261108-c2-system-rail-05",
+        "state": "APPLIED_RESPONSE_OBSERVED"
+      },
+      {
+        "index": 6,
+        "parent": "2W3-0",
+        "created": "9TP-0",
+        "created_nodes": [
+          {
+            "id": "9TP-0",
+            "type": "Frame"
+          },
+          {
+            "id": "9TQ-0",
+            "type": "Frame"
+          },
+          {
+            "id": "9TR-0",
+            "type": "Text"
+          },
+          {
+            "id": "9TS-0",
+            "type": "Text"
+          },
+          {
+            "id": "9TT-0",
+            "type": "Text"
+          }
+        ],
+        "operation_id": "paper-clarity-20261108-c2-system-rail-06",
+        "state": "APPLIED_RESPONSE_OBSERVED"
+      },
+      {
+        "index": 7,
+        "parent": "2W9-0",
+        "created": "9TV-0",
+        "created_nodes": [
+          {
+            "id": "9TV-0",
+            "type": "Frame"
+          },
+          {
+            "id": "9TW-0",
+            "type": "Frame"
+          },
+          {
+            "id": "9TX-0",
+            "type": "Text"
+          },
+          {
+            "id": "9TY-0",
+            "type": "Text"
+          },
+          {
+            "id": "9TZ-0",
+            "type": "Text"
+          }
+        ],
+        "operation_id": "paper-clarity-20261108-c2-system-rail-07",
+        "state": "APPLIED_RESPONSE_OBSERVED"
+      },
+      {
+        "index": 8,
+        "parent": "2WJ-0",
+        "created": "9U1-0",
+        "created_nodes": [
+          {
+            "id": "9U1-0",
+            "type": "Frame"
+          },
+          {
+            "id": "9U2-0",
+            "type": "Frame"
+          },
+          {
+            "id": "9U3-0",
+            "type": "Text"
+          },
+          {
+            "id": "9U4-0",
+            "type": "Text"
+          }
+        ],
+        "operation_id": "paper-clarity-20261108-c2-system-rail-08",
+        "state": "APPLIED_RESPONSE_OBSERVED"
+      },
+      {
+        "index": 9,
+        "parent": "322-0",
+        "created": "9U6-0",
+        "created_nodes": [
+          {
+            "id": "9U6-0",
+            "type": "Frame"
+          },
+          {
+            "id": "9U7-0",
+            "type": "Frame"
+          },
+          {
+            "id": "9U8-0",
+            "type": "Text"
+          },
+          {
+            "id": "9U9-0",
+            "type": "Text"
+          },
+          {
+            "id": "9UA-0",
+            "type": "Text"
+          }
+        ],
+        "operation_id": "paper-clarity-20261108-c2-system-rail-09",
+        "state": "APPLIED_RESPONSE_OBSERVED"
+      },
+      {
+        "index": 10,
+        "parent": "34S-0",
+        "created": "9UC-0",
+        "created_nodes": [
+          {
+            "id": "9UC-0",
+            "type": "Frame"
+          },
+          {
+            "id": "9UD-0",
+            "type": "Frame"
+          },
+          {
+            "id": "9UE-0",
+            "type": "Text"
+          },
+          {
+            "id": "9UF-0",
+            "type": "Text"
+          },
+          {
+            "id": "9UG-0",
+            "type": "Text"
+          }
+        ],
+        "operation_id": "paper-clarity-20261108-c2-system-rail-10",
+        "state": "APPLIED_RESPONSE_OBSERVED"
+      }
+    ],
+    "final_state_columns": {
+      "dark": "9UI-0",
+      "light": "9V1-0"
+    },
+    "verification": [
+      {
+        "key": "system_dark",
+        "copy_preserved": true,
+        "remaining_rails": 0
+      },
+      {
+        "key": "system_light",
+        "copy_preserved": true,
+        "remaining_rails": 0
+      },
+      {
+        "key": "system_mobile_dark",
+        "copy_preserved": true,
+        "remaining_rails": 0
+      },
+      {
+        "key": "system_mobile_light",
+        "copy_preserved": true,
+        "remaining_rails": 0
+      }
+    ]
+  },
+  "ai": {
+    "file_id": "01M3P1QEHS5XXQY85BJT6QR2E1",
+    "main_page": "p-1-0",
+    "builder_page": "p-9-0",
+    "new_boards": [
+      {
+        "id": "5M1-0",
+        "name": "67 · R10 · Research depth review · Desktop",
+        "based_on": "1QN-0",
+        "review_root": "5SJ-0"
+      },
+      {
+        "id": "5P8-0",
+        "name": "68 · R10 · Research depth review · Mobile",
+        "based_on": "2GV-0",
+        "review_root": "5SQ-0"
+      }
+    ],
+    "modified_existing_boards": [
+      "1O7-0",
+      "1VE-0",
+      "1QN-0",
+      "1Z2-0",
+      "1MO-0",
+      "5M0-0"
+    ],
+    "button_refs": [
+      {
+        "context": "answer-desktop",
+        "old": "3P1-0",
+        "created": [
+          {
+            "id": "5VB-0",
+            "type": "Frame"
+          },
+          {
+            "id": "5VC-0",
+            "type": "Text"
+          }
+        ]
+      },
+      {
+        "context": "answer-mobile",
+        "old": "3P4-0",
+        "created": [
+          {
+            "id": "5VE-0",
+            "type": "Frame"
+          },
+          {
+            "id": "5VF-0",
+            "type": "Text"
+          }
+        ]
+      },
+      {
+        "context": "sources-desktop",
+        "old": "3P7-0",
+        "created": [
+          {
+            "id": "5VH-0",
+            "type": "Frame"
+          },
+          {
+            "id": "5VI-0",
+            "type": "Text"
+          }
+        ]
+      },
+      {
+        "context": "review-desktop",
+        "old": "5NT-0",
+        "created": [
+          {
+            "id": "5VK-0",
+            "type": "Frame"
+          },
+          {
+            "id": "5VL-0",
+            "type": "Text"
+          }
+        ]
+      }
+    ],
+    "binding_updates": [
+      {
+        "nodeId": "3P8-0",
+        "html": "Choose depth…"
+      },
+      {
+        "nodeId": "5NU-0",
+        "html": "Choose depth…"
+      },
+      {
+        "nodeId": "1YQ-0",
+        "html": "Reuse Brain, renderers, citations, stream/history, identity, permissions, cases and monitors. Keep R7/R8’s facts, calculations, assumptions and unknowns distinct. Choose depth… opens 67–68, the current R2 16 depth/usage review; it never grants source access."
+      },
+      {
+        "nodeId": "1ZE-0",
+        "html": "IMPLEMENTATION HOLD · Saved with Monitoring off cannot use current create-thesis: it creates an active thesis, which the monitor watches. The thesis content schema also lacks structured evidence/assumption receipts. Extend the existing thesis/version contract for a non-monitoring saved case. Do not create active then archive. Source: Macro 10cf7d6e / Terminal c35b9a1d; #7151 comment 5927298214.<br /><br />First build slice: wire the server’s context_receipt into chat.html Sources, where it is currently ignored. Bind receipts to their answer; selected context is not a citation. Historical receipts are absent: show evidence unavailable. Keep draft, scroll and focus on close.<br /><br />Case &amp; alerts retains notes/versions and R2 14 review. Bind this case’s universe/metric, never the sample threshold. Review condition, schedule, time zone, delivery, expiry, fresh-crossing and stale-data rules. Enable only after coverage/permission checks, explicit confirmation and a server receipt. Unknown activation uses R2 17 lookup for the original alert request, never another Enable call.<br /><br />Choose depth… opens 67–68, the current R2 16 depth/usage review. Quick stays default; these boards show Investigate selected before confirmation. Preserve answer-bound sources, permissions, answer and draft. Render the service’s usage estimate or unknown; never invent balances or waive admission. Only Start research confirms the existing research request. Opening, selecting depth, closing or Cancel starts nothing and expands no source scope. Cancel restores trigger focus and reading position. Reuse the existing research lifecycle; do not create another quota, retry or run store.<br /><br />Reference correction: R8 33 enumerates four URLs (3 issuer-family + 1 journal), not five. Keep two evidence families. Earlier studies support R10; archive pins and token hashes are historical."
+      },
+      {
+        "nodeId": "1ZA-0",
+        "html": "START HERE · R10 conversation — Start, answer, context and evidence; depth review 67–68<br />R10 · Save + Resume · Recovery — Save review, uncertain saves, history, handover and session expiry<br />R10 · Build + Implementation Boundaries — Builder map, preserved contracts and implementation holds<br /><br />01 · Interaction + Recovery · R2 References — Earlier behavior and recovery specifications<br />02 · Answer Craft · R7–R8 References — Answer contracts and composition studies<br />03 · Legacy Reference + Assets — Retained earlier direction and standalone assets<br />04 · Retained Shared Shell · Research Reading + Evidence — Supporting reference material<br />05 · SOURCE ONLY · Chat Live Baseline — Source comparison, not the R10 design direction<br />99 · QA HOLD · Duplicate Shared Shell Transfer · Not for Build — Quarantined; do not use"
+      }
+    ],
+    "preserved_footer_move": {
+      "node": "1YY-0",
+      "from": "1MO-0",
+      "to": "5M0-0",
+      "reason": "Keep the generation map and proof limits fully visible on the existing implementation-boundaries board"
+    },
+    "verification": {
+      "labels": [
+        {
+          "context": "answer-desktop",
+          "node": "5VC-0",
+          "text": "Choose depth…"
+        },
+        {
+          "context": "answer-mobile",
+          "node": "5VF-0",
+          "text": "Choose depth…"
+        },
+        {
+          "context": "sources-desktop",
+          "node": "5VI-0",
+          "text": "Choose depth…"
+        },
+        {
+          "context": "review-desktop",
+          "node": "5VL-0",
+          "text": "Choose depth…"
+        }
+      ],
+      "answer_data_unchanged": true,
+      "hold_preserved": true,
+      "boards": [
+        "1O7-0",
+        "1VE-0",
+        "1QN-0",
+        "1Z2-0",
+        "1MO-0",
+        "5M0-0",
+        "5M1-0",
+        "5P8-0"
+      ]
+    }
+  },
+  "limits": {
+    "runtime_tests": false,
+    "production_acceptance": false,
+    "full_census_repeated": false,
+    "complete_theme_language_viewport_matrix": false,
+    "market_readings_validated_against_live_sources": false,
+    "notes": [
+      "All market numbers remain design fixtures.",
+      "No research run, save, alert, permission grant, deployment or trade was initiated.",
+      "OS Today/project changes observed during the audit were made by another writer and are not credited here.",
+      "Full dark/light × EN/ZH × viewport qualification remains required for any material implementation packet."
+    ]
+  }
+}
