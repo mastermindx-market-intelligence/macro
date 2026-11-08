@@ -29,7 +29,7 @@ MODEL = "qwen3.8-flash"
 NATIVE_PINS = {
     "candidate/commission_deadline.py": "fade630ed75c1b93334a5711a6df7a554fbd24ee",
     "candidate/go_shim.py": "066d87cd23275204fb6d30af45ac03db1d4dbb4f",
-    "candidate/lease_broker.py": "d8577c6ee5cc9bd3e7fc22905530f4755b860ae0",
+    "candidate/lease_broker.py": "a4710c15842490f796b7482a63f993d1db6e937e",
     "candidate/go_lease_gateway.py": "e21b6d6a4e4230fce5f55d90820c6391d4b79324",
     "candidate/go_lease_capability.py": "38856700331b3fb3a7706a5745e23fb7b3d18cf0",
     "candidate/application_http_transports.py": "c37181993a36da216c77778ebaeaae3ebe190a09",
