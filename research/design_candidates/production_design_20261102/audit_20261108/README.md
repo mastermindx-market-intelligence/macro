@@ -1,23 +1,46 @@
-# Paper estate audit and upgrade — 8 November 2026
+# Paper audit and upgrade — 8 November 2026
+
+## Completed pass
+
+Applied and visually checked focused improvements in seven existing Paper files. The work combines clearer reading paths, less repeated content, truthful source/status language, source-linked implementation guidance and an editable motion storyboard.
+
+**Read the [audit and build plan](AUDIT_AND_BUILD_PLAN.md)** for the exact changes, source findings, node identities, acceptance criteria and implementation sequence.
+
+| Surface | Open the revised design | Main outcome |
+|---|---|---|
+| Expectation Surface | [Start](https://app.paper.design/file/01M5EX8RTPR7YEZD2A144XED2S/p-1-0) · [Study](https://app.paper.design/file/01M5EX8RTPR7YEZD2A144XED2S/p-3-0) · [Build](https://app.paper.design/file/01M5EX8RTPR7YEZD2A144XED2S/p-2-0) | Shorter primary views; precise comparison/denominator semantics; mobile disclosure; motion and source-checked build plan. |
+| International Markets | [Start](https://app.paper.design/file/01M3P1TW5Y3XWQC37ADDS8K5AG/p-1-0) | Clear R10 core and frozen R14 surveillance scopes in one workspace. |
+| GMI Explorer | [Current designs](https://app.paper.design/file/01M5H6EARN9YHQV17JC6ZG9BRY/p-1-0) | Ten historical-source status badges clarified across theme, language and device variants. |
+| Terminal | [Current D06 page](https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-17-0) | Quote qualification is separate from selected-bar date and return basis. |
+| Intelligence Hub | [Current desktop](https://app.paper.design/file/01M2VWK62FA5S4VVF6G7SBPE5J/p-3-0) | One setup introduction; source-defined score names and honest null semantics. |
+| News | [R3 and behavior references](https://app.paper.design/file/01M5EXPMQTSBFBAM8KKG83FTZH/p-1-0) | Supported comparison before clocks; unverified scope distinguished from contradiction. |
+| Mastermind AI | [Build page](https://app.paper.design/file/01M3P1QEHS5XXQY85BJT6QR2E1/p-9-0) | Answer-bound evidence receipts and a viable non-monitoring save contract. |
+
+The [motion reference HTML](expectation-surface-motion-reference.html) demonstrates the intended selection, pending, failure/retry, details-return and reduced-motion state model using explicit fixtures. JavaScript syntax was checked; browser execution was not verified in this session.
 
 ## Assignment and source
-Chairman Chris assigned the current C4 session to audit and improve existing Paper designs, feature logic, architecture fit, navigation, clarity, illustrations/motion and implementation guidance, including justified consolidation or retirement. This is a continuation under the existing production design programme and PR #10617, not a new product/runtime programme.
 
-Protected procedure: Mastermind `5c3d3885234358aefb97ecdbc59be0864df14f8b`, compatible Skillpack 1.0.1. Product doctrine/design system: Macro `338a10852dcefa5d2bd07e5c6be0955c2b1e83fd`. Existing programme source preimage: `c9361d089d0fd296280accfcfe2dfcd0b71770f0`, branch `design/paper-production-audit-20261102-ryan`. This new path was absent at that head; existing programme/source files are preserved. GitHub identity observed: `mastermidx4`.
+Chairman assignment: audit and improve Paper designs, architecture fit, feature logic, navigation, clarity, illustration/motion and builder guidance, including justified consolidation.
 
-## Outcome and proof
-Improve the existing editable Paper estate into coherent user journeys with short glance copy, meaningful interactions, honest source/state semantics and implementation instructions grounded in incumbent owners. The audit must identify its actual coverage, retain useful prior work, record exact changed file/page/node IDs and operations, visually verify changed sections, and leave concrete build sequences for gaps. Paper edits are design evidence, not deployed functionality or formal estate-wide acceptance.
+Canonical programme: [Macro PR #10617](https://github.com/mastermindx-market-intelligence/macro/pull/10617), branch `design/paper-production-audit-20261102-ryan`. This directory is an additive audit return in that programme.
 
-## Execution sequence
-1. Recover live file/page identities and current entry points; compare with programme census and source routes. Inspect representative current journeys and known older files. Distinguish product, reference, duplicate and QA material by contents, not names alone.
-2. Fix the highest-impact actionable clarity/workflow defects directly on existing, freshly read targets. Preserve active/uncertain work, in particular original F01 atlas/Readme effects and protected original MASTERMIND PAGES migration. Avoid new competing designs.
-3. Strengthen existing builder guidance: trigger, state transition, canonical owner and input, visible output, failure/recovery, navigation return, accessibility, responsive reduction, motion/reduced motion and acceptance. Name unavailable capability without inventing endpoints, scores or lifecycle owners.
-4. Verify edited sections through native screenshots and JSX/node readback; check touched text and geometry. Persist a cumulative change report and remaining build plan here; reassess and continue useful phases in the same session.
+- Protected procedure pin: Mastermind `5c3d3885234358aefb97ecdbc59be0864df14f8b`.
+- Product source/doctrine pin: Macro `338a10852dcefa5d2bd07e5c6be0955c2b1e83fd`.
+- Existing programme preimage: `c9361d089d0fd296280accfcfe2dfcd0b71770f0`.
+- GitHub identity observed: `mastermidx4`.
 
-## Current capability observations
-Native Mastermind Paper inspect/catalog/read succeed on Paper Desktop 0.5.18. Live catalog `f200eaf725b38c7895ef2180b80e3e254957093a770582b795685fa5072759bb` admits tool-scoped write_html, set_text_content, rename_nodes/resource, move_nodes and page operations. create_artboard, create_tokens, set_tokens and update_styles have incompatible schemas and are held. Archive/delete/export operations are blocked. No denied or unknown write is replayed. The first resource listing returned 35 files and 2 folders; this is not a claim of 35 production products or full visual review.
+## Coverage and boundaries
 
-## Work ownership and boundaries
-Principal retains design/architecture judgment and the single canvas writer role for this audit (PRINCIPAL_JUDGMENT / LOWER_TOTAL_OVERHEAD for targeted edits). Native children, if used, have bounded read-only architecture or adversarial design judgment; no routine implementation delegation or canvas writes. WHY NOT FABLE: this is an attended existing-design audit with the current principal retaining consequential tradeoffs; a separate scarce principal adds no required capability. No worker has yet been dispatched.
+The fresh resource inventory returned 35 files and two folders. Representative current visual/source inspection covered nine product surfaces; additional entry metadata was examined. This is not a claim that every artboard across the estate was certified.
 
-No release-hold changes, merge, runtime/provider/credential effects or production deployment are part of this design pass. No decorative animation may imply live execution. Actual source contracts and current product controls govern future implementation. This source record is editorial continuity, not an Agent OS decision, Executive admission or canonical reference approval.
+Existing useful states, product-specific visual language, source controls and live/uncertain work were preserved. Redundant content was relocated with node identities intact. No archive/delete operation was performed. The original MASTERMIND PAGES migration, Canonical Design System and International R14 freeze remain protected.
+
+The principal retained the single canvas writer role. Three bounded read-only advisors contributed architecture and design judgment. Paper’s read-only connection interruption recovered on the same native carrier. The International rename’s uncertain response was reconciled by reading the original target without replay. Exact working indicators for this pass were released.
+
+## Implementation boundary
+
+These are applied design changes and build guidance. Runtime code, data feeds, functional navigation, production browser proof and release acceptance remain separate implementation work.
+
+Start with the data-meaning and source-status fixes, then answer evidence/save viability, then responsive navigation and motion. Reuse incumbent owners; do not create parallel identity, state, query, save, monitoring or retry lifecycles. The detailed report names proof requirements and unknown entry points rather than inventing an API.
+
+The programme PR remains open and draft. No release hold was changed, no approval was invented, and no merge or deployment was attempted.
