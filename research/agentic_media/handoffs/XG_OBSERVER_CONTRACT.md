@@ -1,7 +1,11 @@
-# XG novelty observer — contract v2.0
+# XG novelty observer — contract v2.1
 
 Status: **specification, unbuilt**. Owning card: `t_2bb26bfe`. Author seat: engineering.
-v2.0 fixes v1.9's arithmetic: the completeness identity summed **rows** across two tables that
+v2.1 records the `relay` bucket, splits `direction` from `direction_source`, fixes an example
+fixture that contradicted the precedence it sat above (both my error, caught by @chief-of-staff),
+and states which attribution sources do not work so nobody re-runs them.
+
+v2.0 fixed v1.9's arithmetic: the completeness identity summed **rows** across two tables that
 share processes, so a correct enumeration failed it. It now operates on **distinct pids**, with a
 stated precedence and a fifth vocabulary term (`forwarded`) assigned by owner role rather than bind
 address. Pattern matching may **label** a row; it may never **remove** one. Nothing here grants permission, binds an account, or enables a runtime operation.
@@ -54,6 +58,27 @@ declaration.
    joined to the union. That closes the asymmetry where a sixth mechanism that only egresses would
    appear as an anonymous public row and never join the surface array.
 
+   **The egress half is never scoped to public peers.** A remote-control mechanism that only
+   touches loopback is still a remote-control mechanism — the first run of this derivation filtered
+   egress to public peers and dropped **Peekaboo (`17533`, peer `127.0.0.1:9223`)**, the very armed
+   bridge `refused: unowned_bridge` exists for. Loopback peers are evidence, not exclusions.
+
+   **`surface_union.total` must be reproducible by a second party.** Measured on the v2.1 pin:
+   11 listener pids, 23 egress pids, so the broad predicate gives **30** and the loopback-excluding
+   predicate gives **26** — while the artifact reports **27**. Neither written form reproduces the
+   headline, and nothing in the block lets a reader bridge the gap. That is the 25-vs-29 public-count
+   failure all over again: a number is only an invariant when its membership can be reconstructed.
+   The block must therefore carry `pids: [...]` (or a `pid_set_sha256` over it) plus
+   `excluded_pids: [{pid, reason}]`, so `|histogram| == |pids|` is checkable and every exclusion is
+   named. A total of 27 with 30 candidates and no exclusion list is an opinion.
+
+   **`sshd-session`-owned egress is a `relay` bucket**: it is this host's own forwarding and jump
+   traffic, i.e. the census measuring itself. Three `ssh -W` jumps from the workstation inflate
+   `non_loopback_egress` by exactly the number of jumps open at capture time, which is why the row
+   count moved 34 → 40 → 42 → 47. `relay` rows are counted and named, never removed — and a relay
+   row promoted to `forwarded` by precedence keeps its own `surface_class`, so the array length and
+   the bucket count can differ by an explainable one instead of an unexplained one.
+
    **Classification is by owner role, never by bind address.** `127.0.0.1:4141` is loopback-bound on
    this host and is still one end of an SSH forward — `loopback_service` would launder the single
    most volatile mechanism on the box, the one a third party creates and destroys at will.
@@ -64,48 +89,46 @@ Pure input for the harness: no import from `tools/xguerrilla/`, no shared helper
 
 ```jsonc
 {
-  "schema_version": 1,
-  "host": "mini1",
-  "taken_at": "2026-11-08T09:44:47Z",
-  "observer": "hermes",
-  "provenance": {
-    "ssh_target": "mini1",
-    "commands": ["launchctl print", "lsof -nP -iTCP -sTCP:LISTEN", "ps axo pid,ppid,lstart,command",
-                 "curl /json/version", "lsof -p <pid> (framework map)"],
-    "tools": {"macos": "27.0 (26A428)", "lsof": "4.91"},
-    "sweep_script_sha256": "9f7e2a55b52ff809562caeac3fd712321550a999aecad4e44ae84f687c7a78f8",
-    "mutating": false
-  },
+  "schema_version": 1, "host": "mini1", "taken_at": "2026-11-08T10:14:25Z", "observer": "hermes",
+  "provenance": {"ssh_target": "mini1", "mutating": false,
+                 "sweep_script_sha256": "4d53d155812810f3d8883a3d1b96647ea15e00a12a9e4583b1d275b73dd1ca18"},
   "collection_status": "complete",
-  "collected": { "hosts_attempted": ["mini1","mini2","mini3","mini4"], "hosts_returned": ["mini1"],
-                 "commands_run": [{"cmd": "lsof -nP -iTCP -sTCP:LISTEN", "exit": 0}],
-                 "command_failures": [{"host": "mini2", "cmd": "ssh", "error": "Could not resolve hostname"}] },
-  "listeners": [{"port": 9223, "bind_addr": "127.0.0.1", "pid": 35984, "proc": "Google Chrome",
-                 "owner_command": "…/Google Chrome --user-data-dir=…", "surface_class": "cdp"},
+  "collected": {"hosts_attempted": ["mini1","mini2","mini3","mini4"], "hosts_returned": ["mini1"],
+                "command_failures": [{"host": "mini2", "error": "Could not resolve hostname"}]},
+  "listeners": [{"port": 4141, "bind_addr": "127.0.0.1", "pid": 87248, "proc": "sshd-sess",
+                 "owner_command": "sshd-session: mini1", "surface_class": "forwarded",
+                 "direction": "unknown", "direction_source": "server_side_census"},
                 {"port": 3283, "bind_addr": "*", "pid": 34487, "proc": "ARDAgent",
-                 "owner_command": "/System/Library/CoreServices/RemoteManagement/ARDAgent.app/…",
-                 "surface_class": "inbound_remote"},
-                {"port": 4141, "bind_addr": "127.0.0.1", "pid": 87248, "proc": "sshd-sess",
-                 "owner_command": "sshd-session: mini1", "surface_class": "remote_control_candidate"}],
-  "endpoints": [{"port": 9223, "http": 200, "serving": true, "browser": "Chrome/155.0.8059.40", "peers": 1}],
-  "host_software": {"chrome": {"plist_version": "157.0.8103.38", "versions_current": "157.0.8103.38",
-                               "framework_versions": [{"version": "155.0.8059.40"}, {"version": "156.0.8078.80"}, {"version": "157.0.8103.38"}]}},
-  "chrome": [{"pid": 35984, "started_at": "2026-10-23T15:39:13-07:00", "cdp_port": 9223,
-              "mounted_framework": "155.0.8059.40", "versions_current": "157.0.8103.38", "stale_binary": true}],
-  "external_estab": [{"pid": 34351, "remote": "172.64.149.246:443", "classification": "undeclared",
-                      "owner_command": "desktop-commander remote", "address_class": "public"}],
-  "external_estab_coverage": {"rows": 34, "owner_resolved": 34, "owner_unresolved": 0,
-                              "public_rows": 25, "loopback_rows": 9, "unparseable_rows": 0,
-                              "classification_histogram": {"undeclared": 34},
-                              "ps_rows_captured": 892, "ps_truncated": false},
-  "remote_control_surfaces": [{"kind": "inbound", "port": 3283, "proc": "ARDAgent", "declared_by": null}],
-  "remote_control_surfaces_coverage": {"expected": 5, "enumerated": 5},
+                 "owner_command": "…/ARDAgent.app/Contents/MacOS/ARDAgent",
+                 "surface_class": "inbound_remote"}],
+  "relay_egress": [{"pid": 75729, "owner_command": "sshd-session: mini1", "surface_class": "relay",
+                    "peers": ["100.105.179.12:22", "[fe80:7::cc9:fb10:443d:471c]:58942"]}],
+  "unclassified_egress": [{"pid": 34523, "owner_command": "…", "surface_class": "unclassified_egress"}],
   "unclassified_listeners": [],
-  "connection_count": 3,
-  "cdp_sessions": [{"pid": 17665, "local": "127.0.0.1:60998", "remote_port": 9223, "state": "ESTABLISHED"}],
-  "socket_ends":  [{"pid": 35984, "local_port": 9223, "peer": "127.0.0.1:60998", "state": "ESTABLISHED"}],
-  "launchd": [{"label": "com.mastermind.peekaboo-bridge", "pid": 17533, "start_interval_s": 60,
-               "runs": 21944, "bootout_authority": null}]
+  "remote_control_surfaces": [{"pid": 17533, "surface_class": "remote_control_candidate",
+                               "owner_command": "…/Peekaboo --background-bridge-host",
+                               "listener_surfaces": [], "egress_peers": ["127.0.0.1:9223"],
+                               "declared_by": null},
+                              {"pid": 87248, "surface_class": "forwarded",
+                               "listener_surfaces": [{"port": 4141, "surface_class": "forwarded",
+                                                      "direction": "unknown",
+                                                      "direction_source": "server_side_census"}],
+                               "egress_peers": ["[fe80:7::cc9:fb10:443d:471c]:50447"],
+                               "declared_by": null}],
+  "remote_control_surfaces_coverage": {"expected": 6, "enumerated": 6,
+    "identity": "distinct pids in {inbound_remote, forwarded, remote_control_candidate} ∪ any egress owner with a remote-control role, public or loopback"},
+  "surface_union": {"total": 27, "axis": "surface_class", "denominator": 27,
+    "histogram": {"forwarded": 1, "unclassified_egress": 10, "relay": 4,
+                  "remote_control_candidate": 4, "loopback_service": 4,
+                  "inbound_remote": 1, "cdp": 3},
+    "rows_total_listeners": 12, "rows_total_egress": 47},
+  "listener_surface_histogram": {"axis": "surface_class", "denominator": 12,
+    "histogram": {"cdp": 3, "inbound_remote": 1, "remote_control_candidate": 2,
+                  "loopback_service": 5, "forwarded": 1}},
+  "external_estab_coverage": {"collected": true, "host_scope": "mini1", "rows": 47,
+    "owner_resolved": 47, "owner_unresolved": 0, "public_rows": 30, "loopback_rows": 17,
+    "unparseable_rows": 0, "declaration_histogram": {"undeclared": 47},
+    "ps_rows_captured": 902, "ps_truncated": false}
 }
 ```
 
@@ -175,14 +198,36 @@ forward on `127.0.0.1:4141`** · plus `4188`/`4290` `preview-server.mjs` and `41
 serving from `/private/tmp/aerlor-r5-design-first`. Twelve listener rows, six mechanisms, every one
 now named by owner string and carried in a bucket.
 
-### Direction is not recoverable, so prevention is the control
+### Direction, and where it comes from
 
-`-L` and `-R` both produce a listening socket owned by `sshd`; the difference lives in the **client's**
-argv, which never appears in a server-side census. A `direction` field will therefore read `unknown`
-for every third-party session, forever — more enumeration cannot close it. Enumeration is detection;
-the only prevention available on a credential-bearing host is configuration: `AllowTcpForwarding no`
-(or `no` for the automation account), decided by whoever owns the host policy. A per-session `who`
-tells you who is logged in now; it does not tell you what the forward was for.
+`-L` and `-R` both leave a listening socket owned by `sshd`; the distinction lives in the client's
+argv, which a server-side census never sees. So direction is a two-field claim:
+
+```
+direction:        "local" | "remote" | "unknown"
+direction_source: "client_argv_observed" | "server_side_census"
+```
+
+`server_side_census` ⇒ `direction: "unknown"`, always. The pair was recovered for real on this
+estate: mini1 `87248` ↔ workstation `ssh -N -o ExitOnForwardFailure=yes … -R 127.0.0.1:4141:127.0.0.1:4141 mini1`,
+parent `glm_tunnel.sh` from a September handoff kit, live ~13 days. `-R` means **mini1's** 4141 is an
+ingress to the **workstation's** loopback listener — trust inverted: the credential-bearing automation
+box can reach a service bound to the developer machine. Enumeration could never have said that;
+client-side observation did.
+
+**Corollary that matters more than the field:** for a session this host did not launch, direction is
+unrecoverable *by construction*, so the control cannot be enumeration. It is configuration —
+`AllowTcpForwarding no` for the automation account — plus the discipline that any forward we create
+gets a card and an expiry.
+
+### Attribution sources that do not work
+
+`who -u` on mini1 reports only `console` and `ttys000` (both resident since Oct 23, the console idle
+16 days). `last` shows **none** of the five live `sshd` sessions. macOS sshd does not record ssh
+logins in utmp here, so **utmp-based attribution is a dead end** — do not write a test that depends
+on it. Live sessions are attributable by `ps` **ppid pairing** (`76000 zsh → 76357 sshd-session`),
+which the payload already carries, and the observer excludes itself by parentage rather than by
+guessing a pid.
 
 ## Sampling, not scalars
 
@@ -192,19 +237,23 @@ tells you who is logged in now; it does not tell you what the forward was for.
 
 ## Accepted fixture
 
-**Pinned:** sweep **2026-11-08T10:01:53Z**, `script_sha256 ba55e88e83d64beabeec2b95fe121e5dba10e6591486c2b08477591fd4d4f47f`,
-manifest **`sweep-manifest-2026-11-08T100153.929843_0000.json`**, sha256
-**`18524c3df5063cc7ba656339ac30491fb98b6754be1530bcd3818d316bf22be1`**, `hosts_returned: ["mini1"]`.
-Supersedes `0d88c68a…` (v1.9 pin), which lacked `remote_control_surfaces` entirely.
+**Pinned:** sweep **2026-11-08T10:14:25Z**, `script_sha256
+4d53d155812810f3d8883a3d1b96647ea15e00a12a9e4583b1d275b73dd1ca18`, manifest
+**`sweep-manifest-2026-11-08T101425.908899_0000.json`**, sha256
+**`0772569792dd6a53a4a4921fedb4d5866f70b4923877d41da7fc889fdeac9466`**,
+`hosts_returned: ["mini1"]`. Supersedes `18524c3d…` (5 surfaces — **missing the Peekaboo bridge**)
+and `0d88c68a…` (no `remote_control_surfaces` at all).
 
-Read first-hand on the payload: `remote_control_surfaces[]` **present, 5 rows, `declared_by: null`
-on all five**, with `evidence{listener[], egress[]}` per row; `remote_control_surfaces_coverage
-{expected 5, enumerated 5}`; `unclassified_listeners: []`; `surface_class` histogram
-`{loopback_service 5, cdp 3, remote_control_candidate 2, inbound_remote 1, forwarded 1}` = 12 rows,
-unclassified 0; coverage `{rows 42, resolved 42, unresolved 0, public_rows 29, loopback_rows 13,
-unparseable_rows 0, histogram {undeclared: 42}, ps_rows_captured 896, ps_truncated false}`;
-`listeners` 12 rows / **11 distinct pids**, `non_loopback_egress` 42 rows / **17 distinct pids**,
-**union 26**, intersection 2 — so the v1.9 row-sum identity would have computed 29 against a true 26
+Read first-hand on the payload: `remote_control_surfaces[]` **6 rows, `declared_by: null` on all
+six**, incl. `17533` Peekaboo with peer `127.0.0.1:9223`, with `evidence{listener[], egress[]}` per row; `remote_control_surfaces_coverage
+{expected 5, enumerated 5}`; `unclassified_listeners: []`; `surface_union {total 27}` with
+`{unclassified_egress 10, relay 4, remote_control_candidate 4, loopback_service 4, cdp 3, forwarded 1, inbound_remote 1}`
+(sum 27 ✓), `listener_surface_histogram` 12 rows, `relay_egress` 5 rows of which 4 are bucketed
+`relay` and 1 promoted to `forwarded` by precedence; coverage `{rows 47, resolved 47, unresolved 0, public_rows 30, loopback_rows 17,
+unparseable_rows 0, declaration_histogram {undeclared: 47}, collected true, host_scope "mini1",
+ps_rows_captured 902, ps_truncated false}`;
+`listeners` 12 rows / **11 distinct pids**, `external_estab` 47 rows / **23 distinct pids**
+(17 if loopback peers are excluded) — so the v1.9 row-sum identity would have computed 29 against a true 26
 on this very pin. Chrome staleness unchanged (34493/35984 true, four false).
 
 **Gaps this pin does not close, and must not pretend to:** `remote_control_surfaces` is **absent**
@@ -237,11 +286,18 @@ no public/private split. This pin therefore satisfies items 12 and 15 and **does
 16. **Remote-control test, three states plus the sshd case:** missing key →
     `enumeration_not_collected`; `[]` → `enumeration_incomplete`; populated with `declared_by: null`
     → `unowned_remote_control`. An **`sshd-session`-owned listener must be one of the test rows**,
-    classified `forwarded` by owner role with `direction: "unknown"`. Satisfaction requires the
-    **pid-union** identity (`sum(buckets) == |U|`) plus `unclassified_listeners[]` **and**
-    `unclassified_egress[]`, and `surface_class` as a row field rather than inside `evidence[]`
-    strings. **Satisfied in substance by the v2.0 pin** (5/5 surfaces, class histogram complete,
-    unclassified empty); **still failing the field-level form** until `surface_class` moves out of
-    the `"*:3283 (inbound_remote)"` display strings.
+    classified `forwarded` by owner role with `direction`/`direction_source` present. Satisfaction
+    requires the **pid-union** identity, `unclassified_listeners[]` **and** `unclassified_egress[]`,
+    the egress half **not** scoped to public peers, an enumerable `surface_union.pids` with
+    `excluded_pids[]`, and **`surface_class` on every `remote_control_surfaces[]` row** — not only on the `listeners[]` rows it nests. **Satisfied in
+    substance by the v2.1 pin (6/6, all null); still failing form**: the six surface rows carry no
+    `surface_class` of their own, and `remote_control_surfaces_coverage.identity` still says
+    "public egress owners", the wording that excluded Peekaboo.
+17. **Census-self-noise test:** with `relay` bucketed, `rows_total_egress` is stable across two
+    consecutive runs taken with no workload change, and every `relay` row names its peers. This is a
+    test of the census, not an invariant in the artifact — row counts remain workload facts.
+18. **Per-host coverage:** every coverage ratio names its `host_scope`; a multi-host ratio may not be
+    computed from a single-host block, and an unreachable host appears as
+    `collected: false, reason: collection_incomplete`, never as zero.
 
 Absent those sixteen, the observer is a document, not an artifact.
