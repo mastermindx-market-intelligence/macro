@@ -1,0 +1,23 @@
+{
+  "root": "01a10f92-900c-7363-89d0-010e8eec9e05",
+  "mission": "A01",
+  "actual_served_url": "https://app.mastermind-x.com/scripts",
+  "release": "52b9107b2f33738256b1e4877bbf166a45556525",
+  "browser": "existing intended Chrome2 authenticated session",
+  "actual_viewport": [
+    1525,
+    936
+  ],
+  "verification": "real rendered PineEditor UI with its real browser Worker diagnose path; declared product synthetic130daily bars/SYNTH symbol; not live chart data",
+  "weekly_source": "//@version=6\nindicator(\"Audit20 weekly acceptance\", overlay=true)\nweekly = request.security(syminfo.tickerid, \"1W\", close)\nplot(weekly, title=\"Closed weekly close\")",
+  "weekly_result": "Compiled with1warning,4lines,noerrors,unsaved; ISO-week final tail has no successor in later ISOweek; previous confirmed or na",
+  "foreign_symbol_result": "Compiled with1warning,4lines,noerrors,unsaved; unsupported symbol AUDIT20_OTHER_SYMBOL, chart symbol SYNTH, returning na",
+  "stored_script_saved": false,
+  "add_to_chart_invoked": false,
+  "editor_preimage_restored_byte_identical": true,
+  "restored_result": "Compiled successfully8lines,noerrors; Save label not Savechanges",
+  "customer_uuid_or_source_preserved": false,
+  "live_chart_plot_journey_complete": false,
+  "whole_mission_accepted": false,
+  "generated_at": "2026-10-07T23:09:50.323813+00:00"
+}

@@ -1,0 +1,2787 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mastermind-x.com/contracts/sector_intelligence/finance_intelligence_read_model.v1.schema.json",
+  "title": "Finance Intelligence Read Model v1",
+  "contract_id": {
+    "const": "finance_intelligence_read_model.v1"
+  },
+  "schema_version": {
+    "const": "1.0.0"
+  },
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract_id",
+    "schema_version",
+    "generated_at",
+    "knowledge_cutoff",
+    "common_as_of",
+    "sector_ref",
+    "outer_dossier_ref",
+    "snapshot_identity",
+    "coverage",
+    "material_changes",
+    "domains",
+    "slices",
+    "company_exposures",
+    "system_views",
+    "macro_matrix",
+    "constraints",
+    "conflicts",
+    "source_records",
+    "freshness",
+    "input_receipts",
+    "degraded_sections",
+    "authority_caps"
+  ],
+  "properties": {
+    "contract_id": {
+      "const": "finance_intelligence_read_model.v1"
+    },
+    "schema_version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "knowledge_cutoff": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "common_as_of": {
+      "type": "string",
+      "format": "date"
+    },
+    "sector_ref": {
+      "const": "sector:financials"
+    },
+    "outer_dossier_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "contract_id",
+        "dossier_id",
+        "dossier_hash",
+        "state"
+      ],
+      "properties": {
+        "contract_id": {
+          "oneOf": [
+            {
+              "const": "sector_dossier_read_model.v1"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "dossier_id": {
+          "oneOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "dossier_hash": {
+          "oneOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "AVAILABLE",
+            "OUTER_CONTRACT_NOT_ACCEPTED",
+            "UNAVAILABLE"
+          ]
+        }
+      }
+    },
+    "snapshot_identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "composer_version",
+        "input_digest",
+        "curation_revision_set",
+        "rights_profile",
+        "view_scope"
+      ],
+      "properties": {
+        "composer_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "input_digest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "curation_revision_set": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "rights_profile": {
+          "type": "string",
+          "minLength": 1
+        },
+        "view_scope": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "coverage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "domains_total",
+        "domains_populated",
+        "slices_total",
+        "slices_populated",
+        "slices_semantic_only",
+        "companies_with_records",
+        "first_vertical"
+      ],
+      "properties": {
+        "domains_total": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "domains_populated": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "slices_total": {
+          "const": 52
+        },
+        "slices_populated": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "slices_semantic_only": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "companies_with_records": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "first_vertical": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "name",
+            "slice_ids",
+            "state"
+          ],
+          "properties": {
+            "name": {
+              "const": "Financial Rails & Market Infrastructure"
+            },
+            "slice_ids": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/slice_id"
+              },
+              "uniqueItems": true
+            },
+            "state": {
+              "type": "string",
+              "enum": [
+                "NOT_BUILT",
+                "SYNTHETIC",
+                "RESEARCH_RECORDS",
+                "PRODUCTION_PROVEN"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "material_changes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "change_id",
+          "event_clock",
+          "domain_ids",
+          "slice_ids",
+          "operating_implication",
+          "evidence_refs",
+          "conflict_ids",
+          "freshness_state"
+        ],
+        "properties": {
+          "change_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "event_clock": {
+            "$ref": "#/$defs/clock"
+          },
+          "domain_ids": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/domain_id"
+            },
+            "uniqueItems": true
+          },
+          "slice_ids": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/slice_id"
+            },
+            "uniqueItems": true
+          },
+          "operating_implication": {
+            "type": "string",
+            "minLength": 1
+          },
+          "evidence_refs": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "uniqueItems": true
+          },
+          "conflict_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "uniqueItems": true
+          },
+          "freshness_state": {
+            "type": "string",
+            "enum": [
+              "FRESH",
+              "AGING",
+              "SOURCE_STALE",
+              "NO_EVIDENCE"
+            ]
+          }
+        }
+      }
+    },
+    "domains": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "domain_id",
+          "name_en",
+          "name_zh",
+          "slice_ids",
+          "system_view_ids"
+        ],
+        "properties": {
+          "domain_id": {
+            "$ref": "#/$defs/domain_id"
+          },
+          "name_en": {
+            "type": "string",
+            "minLength": 1
+          },
+          "name_zh": {
+            "type": "string",
+            "minLength": 1
+          },
+          "slice_ids": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/slice_id"
+            },
+            "uniqueItems": true
+          },
+          "system_view_ids": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/view_id"
+            },
+            "uniqueItems": true
+          }
+        }
+      }
+    },
+    "slices": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/slice"
+      }
+    },
+    "company_exposures": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/company_exposure"
+      }
+    },
+    "system_views": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/system_view"
+      }
+    },
+    "macro_matrix": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "slice_id",
+          "driver",
+          "mechanism",
+          "lag",
+          "state"
+        ],
+        "properties": {
+          "slice_id": {
+            "$ref": "#/$defs/slice_id"
+          },
+          "driver": {
+            "type": "string",
+            "enum": [
+              "policy_rates",
+              "yield_curve",
+              "deposit_funding",
+              "credit_growth",
+              "losses_defaults",
+              "housing",
+              "equity_levels",
+              "volatility",
+              "issuance_ma",
+              "catastrophe_reinsurance",
+              "regulation_capital",
+              "fx",
+              "liquidity"
+            ]
+          },
+          "mechanism": {
+            "type": "string",
+            "minLength": 1
+          },
+          "lag": {
+            "type": "string",
+            "enum": [
+              "IMMEDIATE",
+              "ONE_QUARTER",
+              "TWO_TO_FOUR_QUARTERS",
+              "MULTI_YEAR",
+              "UNKNOWN"
+            ]
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "DESCRIBED",
+              "CAUSAL_EFFECT_UNMEASURED",
+              "NOT_APPLICABLE"
+            ]
+          }
+        }
+      }
+    },
+    "constraints": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "slice_id",
+          "constraint",
+          "economic_effect",
+          "evidence_refs"
+        ],
+        "properties": {
+          "slice_id": {
+            "$ref": "#/$defs/slice_id"
+          },
+          "constraint": {
+            "type": "string",
+            "enum": [
+              "regulatory_permission",
+              "capital",
+              "funding_liquidity",
+              "network_access",
+              "settlement_finality",
+              "data_benchmark_control",
+              "distribution",
+              "integration_switching",
+              "trust_identity",
+              "resilience"
+            ]
+          },
+          "economic_effect": {
+            "type": "string",
+            "minLength": 1
+          },
+          "evidence_refs": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "uniqueItems": true
+          }
+        }
+      }
+    },
+    "conflicts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "conflict_id",
+          "label",
+          "slice_ids",
+          "company_row_ids",
+          "left",
+          "right",
+          "resolution"
+        ],
+        "properties": {
+          "conflict_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "label": {
+            "type": "string",
+            "enum": [
+              "EARNINGS_UP_P_E_DOWN",
+              "BOOK_UP_P_B_DOWN",
+              "NII_UP_CREDIT_WORSE",
+              "POLICY_SUPPORT_NIM_PRESSURE",
+              "REGULATORY_RATIO_DOWN_REGIME_BREAK",
+              "PLAN_DISCLOSED_EXECUTION_PENDING",
+              "TAIL_RISK_DOWN_CURRENT_EARNINGS_WEAK",
+              "PRICE_UP_CAUSAL_EVENT_EFFECT_UNPROVEN",
+              "CAPITAL_COST_UP_GROWTH_STILL_STRONG",
+              "VOLUME_UP_REVENUE_MATERIALITY_UNPROVEN"
+            ]
+          },
+          "slice_ids": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/slice_id"
+            },
+            "uniqueItems": true
+          },
+          "company_row_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "uniqueItems": true
+          },
+          "left": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "plane",
+              "statement",
+              "evidence_refs"
+            ],
+            "properties": {
+              "plane": {
+                "type": "string",
+                "enum": [
+                  "operating",
+                  "expectations",
+                  "valuation",
+                  "price",
+                  "regime",
+                  "policy"
+                ]
+              },
+              "statement": {
+                "type": "string",
+                "minLength": 1
+              },
+              "evidence_refs": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "uniqueItems": true
+              }
+            }
+          },
+          "right": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "plane",
+              "statement",
+              "evidence_refs"
+            ],
+            "properties": {
+              "plane": {
+                "type": "string",
+                "enum": [
+                  "operating",
+                  "expectations",
+                  "valuation",
+                  "price",
+                  "regime",
+                  "policy"
+                ]
+              },
+              "statement": {
+                "type": "string",
+                "minLength": 1
+              },
+              "evidence_refs": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "uniqueItems": true
+              }
+            }
+          },
+          "resolution": {
+            "const": "UNRESOLVED_BY_DESIGN"
+          }
+        }
+      }
+    },
+    "source_records": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/source_record"
+      }
+    },
+    "freshness": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "evidence_latest_observed_at",
+        "state",
+        "stale_after_days"
+      ],
+      "properties": {
+        "evidence_latest_observed_at": {
+          "oneOf": [
+            {
+              "type": "string",
+              "format": "date"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "FRESH",
+            "AGING",
+            "SOURCE_STALE",
+            "NO_EVIDENCE"
+          ]
+        },
+        "stale_after_days": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "input_receipts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "owner",
+          "generation",
+          "state",
+          "note"
+        ],
+        "properties": {
+          "owner": {
+            "type": "string",
+            "enum": [
+              "sector_intelligence",
+              "theme_graph",
+              "financial_intelligence",
+              "expectations_revisions",
+              "market_data",
+              "baskets",
+              "macro_rates_credit",
+              "identity",
+              "private_publication"
+            ]
+          },
+          "generation": {
+            "oneOf": [
+              {
+                "type": "string",
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "READ",
+              "UNAVAILABLE",
+              "NOT_ACCEPTED",
+              "DEGRADED"
+            ]
+          },
+          "note": {
+            "oneOf": [
+              {
+                "type": "string",
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      }
+    },
+    "degraded_sections": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "section",
+          "state",
+          "reason"
+        ],
+        "properties": {
+          "section": {
+            "type": "string",
+            "enum": [
+              "what_changed",
+              "rerating_map",
+              "system_map",
+              "subtheme_atlas",
+              "company_exposure",
+              "macro_matrix",
+              "constraint_map",
+              "evidence_drawer"
+            ]
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "AVAILABLE",
+              "UNAVAILABLE",
+              "PARTIAL"
+            ]
+          },
+          "reason": {
+            "oneOf": [
+              {
+                "type": "string",
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      }
+    },
+    "authority_caps": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rank",
+        "gate",
+        "size",
+        "trade",
+        "create_theme",
+        "change_membership",
+        "write_graph",
+        "admit_source"
+      ],
+      "properties": {
+        "rank": {
+          "const": false
+        },
+        "gate": {
+          "const": false
+        },
+        "size": {
+          "const": false
+        },
+        "trade": {
+          "const": false
+        },
+        "create_theme": {
+          "const": false
+        },
+        "change_membership": {
+          "const": false
+        },
+        "write_graph": {
+          "const": false
+        },
+        "admit_source": {
+          "const": false
+        }
+      }
+    }
+  },
+  "$defs": {
+    "date_time": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "date": {
+      "type": "string",
+      "format": "date"
+    },
+    "domain_id": {
+      "type": "string",
+      "enum": [
+        "asset_wealth",
+        "banking_funding",
+        "capital_markets",
+        "insurance",
+        "payments",
+        "software_trust",
+        "structural_disruption"
+      ]
+    },
+    "slice_id": {
+      "type": "string",
+      "enum": [
+        "deposit_franchise_quality",
+        "universal_money_center_banks",
+        "regional_superregional_banks",
+        "community_local_banks",
+        "nim_curve_normalization",
+        "cre_credit_cycle",
+        "cards_consumer_credit",
+        "specialty_auto_equipment_finance",
+        "digital_banks_neobanks",
+        "mortgage_originators",
+        "mortgage_servicers_msr",
+        "equity_debt_capital_markets",
+        "mna_advisory",
+        "electronic_market_makers",
+        "options_derivatives_ecosystem",
+        "exchanges_trading_venues",
+        "clearing_ccp_csd",
+        "custody_asset_servicing",
+        "prime_brokerage_securities_lending",
+        "market_reference_data",
+        "ratings_credit_information",
+        "indices_benchmarks_etf_plumbing",
+        "card_networks",
+        "merchant_acquiring_processing",
+        "issuer_processing",
+        "gateways_orchestration",
+        "ach_instant_b2b",
+        "cross_border_remittance",
+        "embedded_finance_baas",
+        "fraud_identity_tokenization",
+        "passive_etf_asset_managers",
+        "active_asset_managers",
+        "wealth_platforms_rias",
+        "retirement_recordkeeping",
+        "alternative_asset_managers",
+        "private_credit_managers",
+        "bdc_direct_lending_vehicles",
+        "fund_admin_middle_backoffice",
+        "personal_pc_insurance",
+        "commercial_specialty_pc",
+        "reinsurance",
+        "insurance_brokers",
+        "mga_delegated_underwriting",
+        "life_annuity_spread",
+        "claims_insurance_data_workflow",
+        "regtech_kyc_aml",
+        "financial_cybersecurity",
+        "core_banking_financial_software",
+        "stablecoin_infrastructure",
+        "digital_custody_tokenized_securities",
+        "open_banking_api_finance",
+        "agentic_ai_finance_workflow"
+      ]
+    },
+    "view_id": {
+      "type": "string",
+      "enum": [
+        "contractual_flow",
+        "infrastructure_access",
+        "public_equity_economics"
+      ]
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "freshness_state": {
+      "type": "string",
+      "enum": [
+        "FRESH",
+        "AGING",
+        "SOURCE_STALE",
+        "NO_EVIDENCE"
+      ]
+    },
+    "clock": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "published_at",
+        "published_at_grain",
+        "observed_at",
+        "effective_at"
+      ],
+      "properties": {
+        "published_at": {
+          "oneOf": [
+            {
+              "type": "string",
+              "format": "date"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "published_at_grain": {
+          "type": "string",
+          "enum": [
+            "DAY",
+            "MONTH",
+            "QUARTER",
+            "YEAR",
+            "UNKNOWN"
+          ]
+        },
+        "observed_at": {
+          "type": "string",
+          "format": "date"
+        },
+        "effective_at": {
+          "oneOf": [
+            {
+              "type": "string",
+              "format": "date"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "metric": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "native_metric_name",
+        "normalized_metric_family",
+        "value",
+        "unit",
+        "currency",
+        "period_start",
+        "period_end",
+        "measurement_class",
+        "numerator",
+        "denominator",
+        "gross_net_basis",
+        "average_end",
+        "reported_derived_estimated"
+      ],
+      "properties": {
+        "native_metric_name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "normalized_metric_family": {
+          "type": "string",
+          "minLength": 1
+        },
+        "value": {
+          "oneOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "unit": {
+          "type": "string",
+          "minLength": 1
+        },
+        "currency": {
+          "oneOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "period_start": {
+          "oneOf": [
+            {
+              "type": "string",
+              "format": "date"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "period_end": {
+          "oneOf": [
+            {
+              "type": "string",
+              "format": "date"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "measurement_class": {
+          "type": "string",
+          "enum": [
+            "VOLUME_VALUE",
+            "VOLUME_COUNT",
+            "REVENUE",
+            "EXPENSE",
+            "BALANCE",
+            "RATIO",
+            "RATE",
+            "PER_SHARE",
+            "QUALITATIVE"
+          ]
+        },
+        "numerator": {
+          "oneOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "denominator": {
+          "oneOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "gross_net_basis": {
+          "type": "string",
+          "enum": [
+            "GROSS",
+            "NET",
+            "NOTIONAL",
+            "NOT_APPLICABLE"
+          ]
+        },
+        "average_end": {
+          "type": "string",
+          "enum": [
+            "AVERAGE",
+            "END",
+            "NOT_APPLICABLE"
+          ]
+        },
+        "reported_derived_estimated": {
+          "type": "string",
+          "enum": [
+            "REPORTED",
+            "DERIVED",
+            "ESTIMATED"
+          ]
+        }
+      }
+    },
+    "plane_state": {
+      "type": "string",
+      "enum": [
+        "OBSERVED",
+        "INFERRED",
+        "MISSING",
+        "CONFLICTING",
+        "STALE",
+        "REGIME_BREAK",
+        "VALUATION_ANCHOR_UNAVAILABLE",
+        "PRICE_BASIS_UNQUALIFIED",
+        "NOT_APPLICABLE"
+      ]
+    },
+    "plane": {
+      "allOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "state",
+            "primary_metric",
+            "clock",
+            "comparability_state",
+            "evidence_refs",
+            "note"
+          ],
+          "properties": {
+            "state": {
+              "type": "string",
+              "enum": [
+                "OBSERVED",
+                "INFERRED",
+                "MISSING",
+                "CONFLICTING",
+                "STALE",
+                "REGIME_BREAK",
+                "VALUATION_ANCHOR_UNAVAILABLE",
+                "PRICE_BASIS_UNQUALIFIED",
+                "NOT_APPLICABLE"
+              ]
+            },
+            "primary_metric": {
+              "oneOf": [
+                {
+                  "$ref": "#/$defs/metric"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "clock": {
+              "oneOf": [
+                {
+                  "$ref": "#/$defs/clock"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "comparability_state": {
+              "oneOf": [
+                {
+                  "type": "string",
+                  "enum": [
+                    "COMPARABLE",
+                    "REGIME_BREAK_NOT_COMPARABLE",
+                    "MIXED_BASIS",
+                    "UNKNOWN"
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "evidence_refs": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "uniqueItems": true
+            },
+            "note": {
+              "oneOf": [
+                {
+                  "type": "string",
+                  "minLength": 1
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "state": {
+                "const": "REGIME_BREAK"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "comparability_state": {
+                "const": "REGIME_BREAK_NOT_COMPARABLE"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "state": {
+                "const": "OBSERVED"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "primary_metric": {
+                "not": {
+                  "type": "null"
+                }
+              },
+              "evidence_refs": {
+                "minItems": 1
+              }
+            }
+          }
+        }
+      ]
+    },
+    "expectations_plane": {
+      "allOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "state",
+            "primary_metric",
+            "clock",
+            "comparability_state",
+            "evidence_refs",
+            "note",
+            "history"
+          ],
+          "properties": {
+            "state": {
+              "type": "string",
+              "enum": [
+                "OBSERVED",
+                "INFERRED",
+                "MISSING",
+                "CONFLICTING",
+                "STALE",
+                "REGIME_BREAK",
+                "VALUATION_ANCHOR_UNAVAILABLE",
+                "PRICE_BASIS_UNQUALIFIED",
+                "NOT_APPLICABLE"
+              ]
+            },
+            "primary_metric": {
+              "oneOf": [
+                {
+                  "$ref": "#/$defs/metric"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "clock": {
+              "oneOf": [
+                {
+                  "$ref": "#/$defs/clock"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "comparability_state": {
+              "oneOf": [
+                {
+                  "type": "string",
+                  "enum": [
+                    "COMPARABLE",
+                    "REGIME_BREAK_NOT_COMPARABLE",
+                    "MIXED_BASIS",
+                    "UNKNOWN"
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "evidence_refs": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "uniqueItems": true
+            },
+            "note": {
+              "oneOf": [
+                {
+                  "type": "string",
+                  "minLength": 1
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "history": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "state",
+                "observations"
+              ],
+              "properties": {
+                "state": {
+                  "type": "string",
+                  "enum": [
+                    "DATED_CONSENSUS_AVAILABLE",
+                    "NO_HISTORICAL_CONSENSUS",
+                    "MANAGEMENT_GUIDANCE_ONLY"
+                  ]
+                },
+                "observations": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "as_of",
+                      "source",
+                      "metric",
+                      "value",
+                      "unit"
+                    ],
+                    "properties": {
+                      "as_of": {
+                        "type": "string",
+                        "format": "date"
+                      },
+                      "source": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "metric": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "value": {
+                        "type": "number"
+                      },
+                      "unit": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "state": {
+                "const": "REGIME_BREAK"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "comparability_state": {
+                "const": "REGIME_BREAK_NOT_COMPARABLE"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "state": {
+                "const": "OBSERVED"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "primary_metric": {
+                "not": {
+                  "type": "null"
+                }
+              },
+              "evidence_refs": {
+                "minItems": 1
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "history": {
+                "properties": {
+                  "state": {
+                    "const": "NO_HISTORICAL_CONSENSUS"
+                  }
+                }
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "history": {
+                "properties": {
+                  "observations": {
+                    "maxItems": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "history": {
+                "properties": {
+                  "state": {
+                    "const": "MANAGEMENT_GUIDANCE_ONLY"
+                  }
+                }
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "history": {
+                "properties": {
+                  "observations": {
+                    "items": {
+                      "properties": {
+                        "metric": {
+                          "pattern": "^guidance:"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "rerating": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "operating",
+        "expectations",
+        "valuation",
+        "price",
+        "bridge",
+        "falsifier_ids"
+      ],
+      "properties": {
+        "operating": {
+          "$ref": "#/$defs/plane"
+        },
+        "expectations": {
+          "$ref": "#/$defs/expectations_plane"
+        },
+        "valuation": {
+          "$ref": "#/$defs/plane"
+        },
+        "price": {
+          "$ref": "#/$defs/plane"
+        },
+        "bridge": {
+          "type": "string",
+          "minLength": 1
+        },
+        "falsifier_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "basket_state": {
+      "allOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "posture",
+            "incumbent_basket_ids",
+            "membership_state",
+            "member_count",
+            "weighting_family",
+            "price_basis_state"
+          ],
+          "properties": {
+            "posture": {
+              "type": "string",
+              "enum": [
+                "SEMANTIC_ONLY",
+                "BROAD_CONTEXT_AVAILABLE",
+                "RESEARCH_CANDIDATE",
+                "CANDIDATE_READY_FOR_OWNER_REVIEW",
+                "ADMITTED"
+              ]
+            },
+            "incumbent_basket_ids": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "regional_banks",
+                  "payments_fintech",
+                  "insurance",
+                  "intl_banks",
+                  "intl_insurers",
+                  "xlf:megabanks",
+                  "xlf:brokers_asset"
+                ]
+              },
+              "uniqueItems": true
+            },
+            "membership_state": {
+              "type": "string",
+              "enum": [
+                "NONE",
+                "CURRENT_MEMBERSHIP_ONLY",
+                "PIT_MEMBERSHIP_INCOMPLETE",
+                "PIT_MEMBERSHIP_VALIDATED"
+              ]
+            },
+            "member_count": {
+              "oneOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "weighting_family": {
+              "oneOf": [
+                {
+                  "type": "string",
+                  "enum": [
+                    "EQUAL_WEIGHT",
+                    "FLOAT_CAP_CONTEXT",
+                    "EXPOSURE_WEIGHT",
+                    "EXPOSURE_CAPPED_WEIGHT",
+                    "STRATIFIED_EQUAL_WEIGHT"
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "price_basis_state": {
+              "oneOf": [
+                {
+                  "type": "string",
+                  "enum": [
+                    "PRICE_BASIS_UNQUALIFIED",
+                    "TOTAL_RETURN_QUALIFIED",
+                    "PRICE_RETURN_QUALIFIED"
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "posture": {
+                "const": "ADMITTED"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "membership_state": {
+                "const": "PIT_MEMBERSHIP_VALIDATED"
+              },
+              "member_count": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "weighting_family": {
+                "enum": [
+                  "EQUAL_WEIGHT",
+                  "FLOAT_CAP_CONTEXT",
+                  "EXPOSURE_WEIGHT",
+                  "EXPOSURE_CAPPED_WEIGHT",
+                  "STRATIFIED_EQUAL_WEIGHT"
+                ]
+              },
+              "price_basis_state": {
+                "enum": [
+                  "TOTAL_RETURN_QUALIFIED",
+                  "PRICE_RETURN_QUALIFIED"
+                ]
+              }
+            }
+          }
+        }
+      ]
+    },
+    "indicator": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "direction",
+        "native_metric",
+        "state"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "direction": {
+          "type": "string",
+          "enum": [
+            "LEADING",
+            "COINCIDENT",
+            "LAGGING"
+          ]
+        },
+        "native_metric": {
+          "oneOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "OBSERVED",
+            "MISSING",
+            "STALE"
+          ]
+        }
+      }
+    },
+    "valuation_anchor": {
+      "allOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "primary_per_share_anchor",
+            "primary_valuation_anchor",
+            "denominator",
+            "horizon",
+            "information_clock",
+            "required_return_context",
+            "state"
+          ],
+          "properties": {
+            "primary_per_share_anchor": {
+              "type": "string",
+              "enum": [
+                "EPS",
+                "CORE_EPS",
+                "TBVPS",
+                "BVPS",
+                "FCF_PER_SHARE",
+                "DPS",
+                "EMBEDDED_VALUE_PER_SHARE",
+                "NAV_PER_SHARE",
+                "NOT_APPLICABLE"
+              ]
+            },
+            "primary_valuation_anchor": {
+              "type": "string",
+              "enum": [
+                "P_E",
+                "P_TBV",
+                "P_B",
+                "EV_EBITDA",
+                "FCF_YIELD",
+                "DIVIDEND_YIELD",
+                "P_EV",
+                "P_NAV",
+                "P_AUM",
+                "NOT_APPLICABLE"
+              ]
+            },
+            "denominator": {
+              "type": "string",
+              "minLength": 1
+            },
+            "horizon": {
+              "type": "string",
+              "enum": [
+                "TRAILING_12M",
+                "FORWARD_12M",
+                "FORWARD_24M",
+                "CURRENT_BOOK",
+                "NOT_APPLICABLE"
+              ]
+            },
+            "information_clock": {
+              "oneOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "required_return_context": {
+              "oneOf": [
+                {
+                  "type": "string",
+                  "minLength": 1
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "state": {
+              "type": "string",
+              "enum": [
+                "AVAILABLE",
+                "VALUATION_ANCHOR_UNAVAILABLE"
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "state": {
+                "const": "AVAILABLE"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "information_clock": {
+                "type": "string",
+                "format": "date"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "falsifier": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "falsifier_id",
+        "statement",
+        "window",
+        "state"
+      ],
+      "properties": {
+        "falsifier_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "statement": {
+          "type": "string",
+          "minLength": 1
+        },
+        "window": {
+          "type": "string",
+          "minLength": 1
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "WATCHING",
+            "NOT_YET_EVALUABLE"
+          ]
+        }
+      }
+    },
+    "slice": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "slice_id",
+        "domain_id",
+        "name_en",
+        "name_zh",
+        "slice_state",
+        "basket_state",
+        "economic_job",
+        "revenue_mechanism",
+        "retained_risk",
+        "rerating",
+        "indicators",
+        "valuation_anchor",
+        "conflict_ids",
+        "falsifiers",
+        "freshness",
+        "evidence_refs"
+      ],
+      "properties": {
+        "slice_id": {
+          "$ref": "#/$defs/slice_id"
+        },
+        "domain_id": {
+          "$ref": "#/$defs/domain_id"
+        },
+        "name_en": {
+          "type": "string",
+          "minLength": 1
+        },
+        "name_zh": {
+          "type": "string",
+          "minLength": 1
+        },
+        "slice_state": {
+          "type": "string",
+          "enum": [
+            "SEMANTIC_ONLY",
+            "RESEARCH_EVIDENCE_AVAILABLE",
+            "MEASURABLE",
+            "PRICE_SURFACE_AVAILABLE",
+            "EVALUATION_CONTEXT_AVAILABLE",
+            "RIGHTS_RESTRICTED",
+            "STALE",
+            "HELD_FOR_REVIEW"
+          ]
+        },
+        "basket_state": {
+          "$ref": "#/$defs/basket_state"
+        },
+        "economic_job": {
+          "type": "string",
+          "minLength": 1
+        },
+        "revenue_mechanism": {
+          "type": "string",
+          "minLength": 1
+        },
+        "retained_risk": {
+          "type": "string",
+          "minLength": 1
+        },
+        "rerating": {
+          "$ref": "#/$defs/rerating"
+        },
+        "indicators": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/indicator"
+          }
+        },
+        "valuation_anchor": {
+          "$ref": "#/$defs/valuation_anchor"
+        },
+        "conflict_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "falsifiers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/falsifier"
+          }
+        },
+        "freshness": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "evidence_latest_observed_at",
+            "state"
+          ],
+          "properties": {
+            "evidence_latest_observed_at": {
+              "oneOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "state": {
+              "$ref": "#/$defs/freshness_state"
+            }
+          }
+        },
+        "evidence_refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "publisher",
+        "source_family",
+        "source_uri",
+        "locator",
+        "published_at",
+        "published_at_grain",
+        "observed_at",
+        "retained_at",
+        "retention_ref",
+        "native_digest"
+      ],
+      "properties": {
+        "publisher": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_family": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_uri": {
+          "type": "string",
+          "format": "uri"
+        },
+        "locator": {
+          "type": "string",
+          "minLength": 1
+        },
+        "published_at": {
+          "oneOf": [
+            {
+              "type": "string",
+              "format": "date"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "published_at_grain": {
+          "type": "string",
+          "enum": [
+            "DAY",
+            "MONTH",
+            "QUARTER",
+            "YEAR",
+            "UNKNOWN"
+          ]
+        },
+        "observed_at": {
+          "type": "string",
+          "format": "date"
+        },
+        "retained_at": {
+          "oneOf": [
+            {
+              "type": "string",
+              "format": "date"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "retention_ref": {
+          "oneOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "native_digest": {
+          "oneOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "source_record": {
+      "allOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "record_id",
+            "source",
+            "business_scope",
+            "metric",
+            "observation",
+            "temporal",
+            "limitations",
+            "identity_state",
+            "rights_state",
+            "statement_mode",
+            "correction",
+            "evidence_ref",
+            "excerpt"
+          ],
+          "properties": {
+            "record_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "source": {
+              "$ref": "#/$defs/source"
+            },
+            "business_scope": {
+              "type": "string",
+              "minLength": 1
+            },
+            "metric": {
+              "$ref": "#/$defs/metric"
+            },
+            "observation": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "value",
+                "value_high",
+                "period_start",
+                "period_end",
+                "reported_derived_estimated",
+                "precision"
+              ],
+              "properties": {
+                "value": {
+                  "oneOf": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "value_high": {
+                  "oneOf": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "period_start": {
+                  "oneOf": [
+                    {
+                      "type": "string",
+                      "format": "date"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "period_end": {
+                  "oneOf": [
+                    {
+                      "type": "string",
+                      "format": "date"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "reported_derived_estimated": {
+                  "type": "string",
+                  "enum": [
+                    "REPORTED",
+                    "DERIVED",
+                    "ESTIMATED"
+                  ]
+                },
+                "precision": {
+                  "oneOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              }
+            },
+            "temporal": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "business_valid_from",
+                "business_valid_to"
+              ],
+              "properties": {
+                "business_valid_from": {
+                  "type": "string",
+                  "format": "date"
+                },
+                "business_valid_to": {
+                  "oneOf": [
+                    {
+                      "type": "string",
+                      "format": "date"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              }
+            },
+            "limitations": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "establishes",
+                "does_not_establish",
+                "coverage",
+                "source_dependence",
+                "expiry_trigger"
+              ],
+              "properties": {
+                "establishes": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "does_not_establish": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "coverage": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "source_dependence": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "expiry_trigger": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            },
+            "identity_state": {
+              "type": "string",
+              "enum": [
+                "IDENTITY_VALIDATED",
+                "IDENTITY_UNRESOLVED",
+                "RESEARCH_HINT_UNVALIDATED"
+              ]
+            },
+            "rights_state": {
+              "type": "string",
+              "enum": [
+                "DIRECT_DISPLAY_OK",
+                "DERIVED_DISPLAY_OK",
+                "SOURCE_RIGHTS_HELD",
+                "INTERNAL_ONLY"
+              ]
+            },
+            "statement_mode": {
+              "type": "string",
+              "enum": [
+                "REPORTED_FACT",
+                "CATALOG_DESCRIPTION",
+                "ANNOUNCED_ARRANGEMENT",
+                "FORWARD_TARGET",
+                "ATTRIBUTED_INTERPRETATION"
+              ]
+            },
+            "correction": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "predecessor_record_id",
+                "reason"
+              ],
+              "properties": {
+                "predecessor_record_id": {
+                  "oneOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "reason": {
+                  "oneOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              }
+            },
+            "evidence_ref": {
+              "oneOf": [
+                {
+                  "type": "string",
+                  "minLength": 1
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "excerpt": {
+              "oneOf": [
+                {
+                  "type": "string",
+                  "maxLength": 300
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "rights_state": {
+                "const": "INTERNAL_ONLY"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "excerpt": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "exposure": {
+      "allOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "basis",
+            "numerator",
+            "denominator",
+            "value",
+            "unit",
+            "state"
+          ],
+          "properties": {
+            "basis": {
+              "type": "string",
+              "enum": [
+                "SEGMENT_REVENUE",
+                "TRANSACTION_VOLUME",
+                "AUC_A",
+                "AUM",
+                "NOTIONAL",
+                "QUALITATIVE",
+                "NOT_SEPARATELY_DISCLOSED"
+              ]
+            },
+            "numerator": {
+              "oneOf": [
+                {
+                  "type": "string",
+                  "minLength": 1
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "denominator": {
+              "oneOf": [
+                {
+                  "type": "string",
+                  "minLength": 1
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "value": {
+              "oneOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "unit": {
+              "oneOf": [
+                {
+                  "type": "string",
+                  "minLength": 1
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "state": {
+              "type": "string",
+              "enum": [
+                "MEASURED",
+                "EXPOSURE_NOT_SEPARATELY_DISCLOSED",
+                "DIRECT_DIVERSIFIED",
+                "QUALITATIVE_ONLY"
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "basis": {
+                "const": "TRANSACTION_VOLUME"
+              },
+              "state": {
+                "const": "MEASURED"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "denominator": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        }
+      ]
+    },
+    "exposure_cell": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "slice_id",
+        "role",
+        "exposure",
+        "materiality",
+        "retained_risk",
+        "evidence_date",
+        "evidence_refs"
+      ],
+      "properties": {
+        "slice_id": {
+          "$ref": "#/$defs/slice_id"
+        },
+        "role": {
+          "type": "string",
+          "enum": [
+            "DIRECT_PURE_OR_HIGH_EXPOSURE",
+            "DIRECT_DIVERSIFIED",
+            "ENABLER_OR_TOLL_COLLECTOR",
+            "SECOND_ORDER_BENEFICIARY",
+            "PROXY_OR_ADJACENCY",
+            "AT_RISK_OR_DISRUPTED",
+            "HEDGE_OR_OFFSET"
+          ]
+        },
+        "exposure": {
+          "$ref": "#/$defs/exposure"
+        },
+        "materiality": {
+          "type": "string",
+          "enum": [
+            "MATERIAL",
+            "PARTIAL",
+            "IMMATERIAL",
+            "UNMEASURED"
+          ]
+        },
+        "retained_risk": {
+          "oneOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "evidence_date": {
+          "oneOf": [
+            {
+              "type": "string",
+              "format": "date"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "evidence_refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "company_exposure": {
+      "allOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "row_id",
+            "issuer_label",
+            "ticker_hint",
+            "identity",
+            "company_route",
+            "cells"
+          ],
+          "properties": {
+            "row_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "issuer_label": {
+              "type": "string",
+              "minLength": 1
+            },
+            "ticker_hint": {
+              "oneOf": [
+                {
+                  "type": "string",
+                  "minLength": 1
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "identity": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "state",
+                "company_node_id",
+                "security_ref",
+                "listing_note"
+              ],
+              "properties": {
+                "state": {
+                  "type": "string",
+                  "enum": [
+                    "IDENTITY_VALIDATED",
+                    "IDENTITY_UNRESOLVED",
+                    "RESEARCH_HINT_UNVALIDATED"
+                  ]
+                },
+                "company_node_id": {
+                  "oneOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "security_ref": {
+                  "oneOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "listing_note": {
+                  "oneOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              }
+            },
+            "company_route": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "href",
+                "state"
+              ],
+              "properties": {
+                "href": {
+                  "oneOf": [
+                    {
+                      "type": "string",
+                      "format": "uri"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "state": {
+                  "type": "string",
+                  "enum": [
+                    "AVAILABLE",
+                    "IDENTITY_UNRESOLVED"
+                  ]
+                }
+              }
+            },
+            "cells": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/exposure_cell"
+              },
+              "minItems": 1
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "identity": {
+                "properties": {
+                  "state": {
+                    "const": "IDENTITY_UNRESOLVED"
+                  }
+                }
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "company_route": {
+                "properties": {
+                  "state": {
+                    "const": "IDENTITY_UNRESOLVED"
+                  },
+                  "href": {
+                    "type": "null"
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "system_view": {
+      "allOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "view_id",
+            "name_en",
+            "name_zh",
+            "nodes",
+            "edges"
+          ],
+          "properties": {
+            "view_id": {
+              "$ref": "#/$defs/view_id"
+            },
+            "name_en": {
+              "type": "string",
+              "minLength": 1
+            },
+            "name_zh": {
+              "type": "string",
+              "minLength": 1
+            },
+            "nodes": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "node_id",
+                  "label_en",
+                  "label_zh",
+                  "node_type",
+                  "slice_ids",
+                  "expandable",
+                  "children_ids"
+                ],
+                "properties": {
+                  "node_id": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "label_en": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "label_zh": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "node_type": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "slice_ids": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/$defs/slice_id"
+                    },
+                    "uniqueItems": true
+                  },
+                  "expandable": {
+                    "type": "boolean"
+                  },
+                  "children_ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "uniqueItems": true
+                  }
+                }
+              },
+              "minItems": 1
+            },
+            "edges": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "from",
+                  "to",
+                  "relationship",
+                  "evidence_state"
+                ],
+                "properties": {
+                  "from": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "to": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "relationship": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "evidence_state": {
+                    "type": "string",
+                    "enum": [
+                      "OBSERVED",
+                      "INFERRED",
+                      "MISSING"
+                    ]
+                  }
+                }
+              },
+              "minItems": 1
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "view_id": {
+                "const": "contractual_flow"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "edges": {
+                "items": {
+                  "properties": {
+                    "relationship": {
+                      "enum": [
+                        "PAYS",
+                        "SETTLES",
+                        "CLEARS",
+                        "GUARANTEES",
+                        "FUNDS",
+                        "INSURES",
+                        "LENDS",
+                        "HOLDS_CUSTODY"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "view_id": {
+                "const": "infrastructure_access"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "edges": {
+                "items": {
+                  "properties": {
+                    "relationship": {
+                      "enum": [
+                        "LICENSES",
+                        "SUPERVISES",
+                        "GRANTS_ACCESS",
+                        "PUBLISHES_BENCHMARK",
+                        "RATES",
+                        "PROVIDES_DATA",
+                        "REQUIRES_MEMBERSHIP"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "view_id": {
+                "const": "public_equity_economics"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "edges": {
+                "items": {
+                  "properties": {
+                    "relationship": {
+                      "enum": [
+                        "EARNS_FEE_FROM",
+                        "BEARS_CREDIT_RISK_OF",
+                        "CAPTURES_SPREAD_ON",
+                        "RECOGNISES_REVENUE_FROM",
+                        "DEPENDS_ON_VOLUME_OF"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

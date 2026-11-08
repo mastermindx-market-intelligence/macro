@@ -1,0 +1,52 @@
+{
+  "schema": "prophet.management_state/v1",
+  "id": "CNM-BULL-20260917",
+  "asof": "2026-11-08",
+  "phase": "overtime",
+  "detection_phase": "overtime",
+  "management_confidence": 48.5,
+  "raw_confidence": 48.0,
+  "delta_vs_base": -11.5,
+  "recommended_action": null,
+  "human_state": "Closed",
+  "components": {
+    "validity": 100.0,
+    "progress": 51.9,
+    "pace": 22.0,
+    "retention": 77.4,
+    "overlay": 33.0
+  },
+  "geometry": {
+    "dist_to_stop_r": 2.047,
+    "dist_to_t1_r": 0.453,
+    "dist_to_t2_r": 1.953,
+    "horizon_pct_used": 113.3,
+    "p1": 0.6978,
+    "p2": 0.3489,
+    "p3": null,
+    "move_r": 1.047,
+    "mfe_r": 1.352,
+    "mae_r": -0.698
+  },
+  "rr_ratio": 1.5,
+  "rr_grade": "ACCEPTABLE",
+  "change_reason": "",
+  "confidence_ceiling": 92,
+  "authority": "trade-management-only-NOT-pick-rank",
+  "authority_tier": "display",
+  "reliability": {
+    "management_confidence": "display \u2014 no forward ledger has passed yet",
+    "recommended_action": "withheld \u2014 canonical forward ledger has closed this plan",
+    "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
+  },
+  "_mfe": 4.340000762939454,
+  "_mae": -2.240001068115234,
+  "_max_p1": 0.901350106529482,
+  "_first_trigger_ts": "2026-09-19",
+  "_first_t1_ts": null,
+  "_first_t2_ts": null,
+  "days_elapsed": 51,
+  "tau": 1.1333,
+  "closed": true,
+  "outcome": "EXPIRED"
+}
