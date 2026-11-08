@@ -16990,7 +16990,8 @@ jobs:
     # Dynamic Ontology assets and canonical navigation are included explicitly.
     scope: exclusive
     paths:
-      - "tests/test_ontology_consumer_bootstrap_browser.py"
+      - "contracts/theme_graph/activity_curation_receipt.v1.schema.json"
+      - "engine/theme_graph/activity_history_bridge.py"
       # TTI-D1: bind the existing synthetic minute reader/resolver suite to
       # its current CODE consumer owner; the older signal-contract copy is DATA.
       - "engine/entry_radar/minute_resolution.py"
@@ -18206,6 +18207,7 @@ jobs:
       - "tests/test_ontology_company_browser.py"
       - "tests/test_ontology_company_controller.py"
       - "tests/test_ontology_explorer_brain_browser.py"
+      - "tests/test_ontology_consumer_bootstrap_browser.py"
       - "tests/test_ontology_explorer_contract.py"
       - "tests/test_ontology_explorer_identity.py"
       - "tests/test_ontology_explorer_shell.py"
