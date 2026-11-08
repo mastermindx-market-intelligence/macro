@@ -36,7 +36,7 @@ const inventory=fs.readFileSync(root+'/inventory.html','utf8');const compact=JSO
 check('Default inventory row retains an explicit nonempty return fragment',()=>{assert.ok(inventory.includes("encodeURIComponent(p.toString()||'page=0')"));const s=run("detail(sessionById('D07'),{view:'routes',q:'',owner:'',session:'D07',page:'',board:'',inventory:'page=0'})");assert.match(s,/href="inventory.html#page=0"/);});
 check('Complete member index preserves included and excluded rows',()=>{assert.equal(compact.length,14025);assert.equal(compact.filter(x=>x[1]).length,14014);assert.equal(compact.filter(x=>x[2]==='included_legacy').length,13989);assert.equal(compact.filter(x=>x[2]==='unregistered').length,7);assert.equal(new Set(compact.map(x=>x[0])).size,14025);});
 
-check('Twelve return observations preserve null native-approval receipts',()=>{assert.equal(run('data.sessions.filter(s=>s.return_observation).length'),12);assert.ok(run('data.sessions.filter(s=>s.return_observation).every(s=>s.rig_receipt===null&&s.rig_state==="draft")'));});
+check('Fourteen return observations preserve null native-approval receipts',()=>{assert.equal(run('data.sessions.filter(s=>s.return_observation).length'),14);assert.ok(run('data.sessions.filter(s=>s.return_observation).every(s=>s.rig_receipt===null&&s.rig_state==="draft")'));});
 check('D08B and D08C expose direct exact candidate, Read me and source links',()=>{for(const [id,candidate,readme,pin] of [['D08B','p-12-0','p-14-0','a3356474cebbdd88e6448e05ffc3d2e44faa5ca6'],['D08C','p-13-0','p-15-0','291f21aa8e9d757466412549a8d6537d889ab4d8']]){const s=run(`returnEvidence(sessionById('${id}'))`);assert.ok(s.includes('01M3NSZGE8JWN2EZCSF0DT05RM/'+candidate));assert.ok(s.includes('01M3NSZGE8JWN2EZCSF0DT05RM/'+readme));assert.ok(s.includes('/blob/'+pin+'/'));assert.ok(s.includes(id+' returned source/build contract'));assert.doesNotMatch(s,/Open F03 contract/);}});
 check('Source-only D08A and D08D remain without admitted native candidates',()=>{for(const id of ['D08A','D08D']){assert.equal(run(`sessionById('${id}').candidate_ref`),null);const s=run(`returnEvidence(sessionById('${id}'))`);assert.match(s,/not admitted/);assert.match(s,/Retained original reference/);assert.match(s,/No approved candidate established/);}});
 check('D08 entry provides all four owner contracts without a third directory choice',()=>{const s=run("sliceEvidence(sessionById('D08'))");for(const id of ['D08A','D08B','D08C','D08D'])assert.ok(s.includes(run(`sessionById('${id}').source_contract`)));assert.match(s,/Design packages are not route records/);});
@@ -302,7 +302,9 @@ check('Observed names and provider warnings are escaped without executable marku
 const proposalRefs=[
  {id:'D04',file:'01M3NSZGE8JWN2EZCSF0DT05RM',page:'p-1D-0',board:'22UK-0',entryPage:'p-8-1',entryBoard:'N71-1'},
  {id:'D14',file:'01M3P1QEHS5XXQY85BJT6QR2E1',page:'p-B-0',board:'72Y-0',entryPage:'p-9-0',entryBoard:'1MO-0'},
- {id:'D06',file:'01M3NSZGE8JWN2EZCSF0DT05RM',page:'p-1E-0',board:'23MJ-0',entryPage:null,entryBoard:null}
+ {id:'D06',file:'01M3NSZGE8JWN2EZCSF0DT05RM',page:'p-1E-0',board:'23MJ-0',entryPage:null,entryBoard:null},
+ {id:'D22',file:'01M3NSZGE8JWN2EZCSF0DT05RM',page:'p-1F-0',board:'261Q-0',entryPage:null,entryBoard:null,sourceHead:'aca1d87854bfc643f5a01f0892b383ebc8baf6d6',phrase:'personal holdings'},
+ {id:'D25',file:'01M32XYWDYSFTNDZVJKQ5QHT33',page:'p-8-0',board:'44J-0',entryPage:null,entryBoard:null,sourceHead:'aca1d87854bfc643f5a01f0892b383ebc8baf6d6',phrase:'guide return'}
 ];
 for(const p of proposalRefs){
  const tuple=p.file+'/'+p.page+'/'+p.board;
@@ -320,7 +322,7 @@ for(const p of proposalRefs){
    assert.equal(run(`${fn}(${JSON.stringify({view,q,owner:p.id})},${JSON.stringify(q.toLowerCase())}).n`),0);
  });
  check(p.id+' proposal exposes published source, draft status and exact identity in EN and ZH',()=>{
-  const s=run(`sessionById('${p.id}')`);assert.equal(s.return_observation.source_head,'6324c7281ec91a343c5a8c78b3679f93b1cd11e6');
+   const s=run(`sessionById('${p.id}')`);assert.equal(s.return_observation.source_head,p.sourceHead||'6324c7281ec91a343c5a8c78b3679f93b1cd11e6');
   for(const language of ['en','zh']){run(`lang='${language}'`);const detail=run(`returnEvidence(sessionById('${p.id}'))`);
    assert.ok(detail.includes(s.source_contract));assert.ok(detail.includes(p.file+' / '+p.page+' / '+p.board));assert.ok(detail.includes(s.status));assert.ok(detail.includes(s.return_observation.qualification));
    assert.equal(s.rig_state,'draft');assert.equal(s.rig_receipt,null);
@@ -349,6 +351,46 @@ check('D06 candidate remains discoverable without an invented Read me or retaine
  for(const key of ['readme_url','readme_file_id','readme_page_id','readme_board_id','retained_reference_url'])assert.equal(o[key],null);
  const claims=run("referenceRows().flatMap(r=>r.claims).filter(c=>c.owner==='D06')");assert.equal(claims.filter(c=>c.kind==='candidate').length,1);assert.equal(claims.filter(c=>c.kind==='readme'||c.kind==='retained').length,0);
  assert.doesNotMatch(run("returnEvidence(sessionById('D06'))"),/Read me identity|1W4S-0|Retained original reference/);
+});
+for(const p of proposalRefs.filter(p=>p.sourceHead)){
+ check(p.id+' supplementary pointer does not invent a full Read me or retained original',()=>{
+  const s=run("sessionById('"+p.id+"')"),o=s.return_observation;
+  for(const key of ['readme_url','readme_file_id','readme_page_id','readme_board_id','retained_reference_url'])assert.equal(o[key],null);
+  const claims=run("referenceRows().flatMap(r=>r.claims).filter(c=>c.owner==='"+p.id+"')");
+  assert.equal(claims.filter(c=>c.kind==='candidate').length,1);
+  assert.equal(claims.filter(c=>c.kind==='readme'||c.kind==='retained').length,0);
+  assert.doesNotMatch(run("returnEvidence(sessionById('"+p.id+"'))"),/Read me identity|Retained original reference/);
+ });
+ check(p.id+' source terminology finds the bounded proposal in both views',()=>{
+  for(const [view,fn] of [['references','referenceView'],['assignments','assignmentView']]){
+   const r=run(fn+"("+JSON.stringify({view,q:p.phrase,owner:p.id})+","+JSON.stringify(p.phrase)+")");
+   assert.equal(r.n,1,p.id+' '+view+' '+p.phrase);
+   assert.ok(r.html.includes(p.id));
+   assert.ok(r.html.includes(run("esc(sessionById('"+p.id+"').source_contract_label)")));
+   if(view==='references')assert.ok(r.html.includes(p.board));
+   else assert.ok(r.html.includes('session='+p.id));
+  }
+ });
+}
+for(const [id,q] of [['D22','provisional valuation'],['D25','horizon wording']]){
+ check(id+' visible source label or status terms are searchable across both views',()=>{
+  for(const [view,fn] of [['references','referenceView'],['assignments','assignmentView']]){
+   const r=run(fn+"("+JSON.stringify({view,q,owner:id})+","+JSON.stringify(q)+")");
+   assert.equal(r.n,1,id+' '+view+' '+q);
+  }
+ });
+}
+check('Observed source labels remain escaped in assignment and reference results',()=>{
+ const original=run("sessionById('D25').source_contract_label");
+ const label='<img src=x onerror=alert(1)> Guide return';
+ run("sessionById('D25').source_contract_label="+JSON.stringify(label));
+ try{
+  for(const fn of ['assignmentView','referenceView']){
+   const r=run(fn+"({owner:'D25',q:'guide return'},'guide return')");
+   assert.equal(r.n,1);assert.ok(r.html.includes('&lt;img src=x onerror=alert(1)&gt; Guide return'));
+   assert.ok(!r.html.includes(label));
+  }
+ }finally{run("sessionById('D25').source_contract_label="+JSON.stringify(original));}
 });
 check('EN and ZH reference views render against recursively frozen source data',()=>{
  run("(function freeze(x){if(x&&typeof x==='object'&&!Object.isFrozen(x)){Object.freeze(x);for(const v of Object.values(x))freeze(v);}})(data)");

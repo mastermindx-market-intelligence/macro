@@ -2,7 +2,19 @@
 
 F03 continues under original programme Draft [#10617](https://github.com/mastermindx-market-intelligence/macro/pull/10617) and existing Draft [#10631](https://github.com/mastermindx-market-intelligence/macro/pull/10631). This is not a new registry, workstream, runtime grant or file-wide lease. The current receiving session owns recovery; an archived chat is not a dependency.
 
-## Latest actionable frontier — three bounded proposal references, 2026-11-08
+## Latest actionable frontier — portfolio and Guide proposal discovery, 2026-11-08
+
+D22 and D25 are now connected through the existing F03 return-observation model. Their two observation notes, exact native metadata, preservation baseline, Guide JSX and four native Guide captures were published and read back at `aca1d87854bfc643f5a01f0892b383ebc8baf6d6` before curation used the actual note commits and blobs. The audit companion uses those source identities without predicting its own commit.
+
+- D22 candidate: Terminal `01M3NSZGE8JWN2EZCSF0DT05RM / p-1F-0 / 261Q-0`. D25 candidate: Guide `01M32XYWDYSFTNDZVJKQ5QHT33 / p-8-0 / 44J-0`. Supplementary D22 `26NL-0` and Guide directory `37N-0` are not promoted to full Read me entries; both four-field Read me tuples and retained-reference URLs stay null.
+- Fourteen observations are present; the prior twelve objects, source pins and timestamps remain exact. RIG stays draft with null receipt, foundation versions and observed product PR head. Full D22/D25 returns, implementation, acceptance and live writer custody remain unestablished.
+- Existing search helpers now index source labels and statuses in both views; escaped proposal labels also explain the match below broad result titles. `personal holdings`, `provisional valuation`, `guide return` and `horizon wording` find their bounded proposals. Short board IDs and exact file/page/board tuples retain their existing identity checks, containing-page actions and History & contract / Back context.
+- **191 return/identity, 98 directory source-logic and 26 structural-evidence checks PASS.** The exact preservation properties and source-check limits are in [the behavior record](evidence/portfolio-guide-reference-discovery-20261108.md) and [verification receipt](evidence/portfolio-guide-reference-discovery-verification-20261108.json). Browser interaction remains UNVERIFIED at the recorded preview-transport boundary.
+- Zero Paper edits or product-runtime calls occurred in this F03 phase. Original native effects, frozen route/page/board/action files, all 36 non-evidence assignment identities, existing capture sets and the historical root manifest remain preserved. The original F03 file stays READ ONLY / NO MODIFY; all existing Draft/HOLD, physical-organization and release fences remain binding.
+
+**Next safe work:** continue the authorized Paper audit from an existing, not-yet-addressed design gap and its actual source owner. D22's passive-read consumer proof and D25's runtime return proof remain open; do not present discovery integration as satisfying either. Finish the owned source publication/readback and append its exact evidence to the canonical portfolio audit, then start the next useful bounded phase without a checkpoint-only stop.
+
+## Retained preceding phase — three bounded proposal references, 2026-11-08
 
 The native Heatmap, AI composer-context and Chart-reader proposals are now connected through the existing F03 return-observation model. Their observation notes and shared native metadata readback were first published and byte-read back at `6324c7281ec91a343c5a8c78b3679f93b1cd11e6`. This overlay cites those actual note blobs; it does not predict its own future publication commit.
 

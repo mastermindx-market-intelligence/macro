@@ -12,7 +12,13 @@
 
 GitHub renders the Markdown entries directly; it displays the HTML companion as source. Open the complete extracted package together for its relative HTML links. Browser execution and production deployment are not implied.
 
-## Latest continuation — proposal discovery, 8 November 2026
+## Latest continuation — portfolio and Guide discovery, 8 November 2026
+
+The directory now exposes **fourteen immutable source observations**. The two new bounded proposals are [D22 Personal holdings, paper books and model comparison](assignments/D22.md), at Terminal `p-1F-0 / 261Q-0`, and [D25 Guide return, Close and horizon wording](assignments/D25.md), at Guide `p-8-0 / 44J-0`. Search either board ID, the exact file/page/board tuple, or source wording such as `personal holdings`, `provisional valuation`, `guide return` and `horizon wording` in Assignments or Paper references. Both views now index the existing source label and status consistently and show the proposal label beneath the broader title.
+
+The previous twelve observations and frozen inventory are preserved. Both new Read me tuples and retained-original links remain null; supplementary notes do not establish full domain entries. **191 return/identity checks, 98 directory source probes and 26 structural-evidence checks pass.** Source notes and native captures were published and read back before curation at `aca1d87854bfc643f5a01f0892b383ebc8baf6d6`. [Scope and verification](evidence/portfolio-guide-reference-discovery-20261108.md) distinguish observed proposals, actual source checks and the still-unverified browser interaction. This phase performs zero Paper or product-runtime mutations.
+
+## Retained preceding continuation — three-proposal discovery, 8 November 2026
 
 The directory now exposes twelve immutable source observations, including the bounded Heatmap selected-reading, AI composer-context and Chart-reader recovery proposals. Search `22UK-0`, `72Y-0` or `23MJ-0`, or use the exact file/page/board tuple in [Assignments or Paper references](directory.html). [D04](assignments/D04.md) and [D14](assignments/D14.md) identify their existing builder entries; [D06](assignments/D06.md) keeps its Read me tuple explicitly null. Proposal observation is separate from full-domain delivery, implementation and approval.
 

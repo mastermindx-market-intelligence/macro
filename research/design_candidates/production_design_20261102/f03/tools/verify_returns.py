@@ -19,12 +19,17 @@ def main():
         check('frozen bytes '+path,hashlib.sha256(b).hexdigest()==expected['sha256'] and builder.git_blob(b)==expected['git_blob_sha'])
     sessions=read('data/assignment-directory.json'); curated=read('tools/curation.json'); returns=curated['assignment_returns']
     check('root and tool-local curation mirrors agree',curated==read('curation.json'))
-    check('36 unique assignments; exactly twelve observed returns',len(sessions)==len({s['id'] for s in sessions})==36 and set(returns)=={'F01','F02','D04','D05','D06','D07','D08','D08A','D08B','D08C','D08D','D14'})
+    check('36 unique assignments; exactly fourteen observed returns',len(sessions)==len({s['id'] for s in sessions})==36 and set(returns)=={'F01','F02','D04','D05','D06','D07','D08','D08A','D08B','D08C','D08D','D14','D22','D25'})
     prior=read('evidence/proposal-reference-baseline-20261108.json')['prior_assignment_return_sha256']
     check('prior return baseline covers exactly the nine published observations',set(prior)=={'F01','F02','D05','D07','D08','D08A','D08B','D08C','D08D'})
     for sid,expected in prior.items():
         digest=hashlib.sha256(json.dumps(returns[sid],ensure_ascii=False,sort_keys=True,separators=(',',':')).encode()).hexdigest()
         check('previous return preserved exactly '+sid,digest==expected)
+    previous_twelve=read('evidence/portfolio-guide-reference-baseline-20261108.json')['prior_assignment_return_sha256']
+    check('portfolio and Guide baseline covers the twelve prior observations',set(previous_twelve)=={'F01','F02','D04','D05','D06','D07','D08','D08A','D08B','D08C','D08D','D14'})
+    for sid,expected in previous_twelve.items():
+        digest=hashlib.sha256(json.dumps(returns[sid],ensure_ascii=False,sort_keys=True,separators=(',',':')).encode()).hexdigest()
+        check('twelve-return baseline preserved exactly '+sid,digest==expected)
     for s in sessions:
         retained={k:v for k,v in s.items() if k not in builder.RETURN_FIELDS}
         digest=hashlib.sha256(json.dumps(retained,ensure_ascii=False,sort_keys=True,separators=(',',':')).encode()).hexdigest()
@@ -52,6 +57,22 @@ def main():
         check('proposal candidate and entry have exact distinct roles '+sid,(obs['candidate_file_id'],obs['candidate_page_id'],obs['candidate_board_id'])==(file,page,board) and (obs['readme_file_id'],obs['readme_page_id'],obs['readme_board_id'])==entry and obs['readme_url']==('https://app.paper.design/file/'+entry[0]+'/'+entry[1] if entry[0] else None) and obs['retained_reference_url'] is None)
         check('proposal remains bounded and unqualified '+sid,obs['observed_at_utc']=='2026-11-08T18:25:46Z' and obs['observed_pr_head'] is None and row['shell_version'] is None and row['system_version'] is None and 'unqualified' in row['status'] and 'does not establish a complete domain return' in obs['qualification'])
         check('proposal Markdown includes exact candidate and qualification '+sid,file+' / '+page+' / '+board in md and 'exact board URL is not verified' in md and obs['qualification'] in md and row['status'] in md)
+    new_proposals=[
+        ('D22',terminal,'p-1F-0','261Q-0','d22-portfolio-reference-observation-20261108.md','80885356c954fbec76004478fee8c9ce1b61a30d'),
+        ('D25','01M32XYWDYSFTNDZVJKQ5QHT33','p-8-0','44J-0','d25-guide-reference-observation-20261108.md','1dda08732c4b614bb37f270e229cbf55492a497a')]
+    readback=read('evidence/portfolio-guide-reference-readback-20261108.json')
+    for sid,file,page,board,note,blob in new_proposals:
+        row=returns[sid]; obs=row['return_observation']; md=(root/'assignments'/(sid+'.md')).read_text()
+        head='aca1d87854bfc643f5a01f0892b383ebc8baf6d6'
+        source='https://github.com/mastermindx-market-intelligence/macro/blob/'+head+'/research/design_candidates/production_design_20261102/f03/evidence/'+note
+        native=readback['observations'][sid+'-candidate']
+        check('portfolio/Guide published note and actual blob '+sid,obs['source_head']==head and obs['source_blob_sha']==blob==builder.git_blob((root/'evidence'/note).read_bytes()) and row['source_contract']==source and source in obs['evidence_urls'])
+        check('portfolio/Guide exact candidate is present in bounded readback '+sid,(obs['candidate_file_id'],obs['candidate_page_id'],obs['candidate_board_id'])==(file,page,board) and (native['file_id'],native['page_id'])==(file,page) and any(b['id']==board for b in native['artboards']))
+        check('supplementary references are not promoted to full entries '+sid,all(obs[k] is None for k in ('readme_url','readme_file_id','readme_page_id','readme_board_id','retained_reference_url')))
+        check('portfolio/Guide proposal keeps exact observation and null acceptance '+sid,obs['observed_at_utc']=='2026-11-08T19:53:13Z' and obs['observed_pr_head'] is None and row['shell_version'] is None and row['system_version'] is None and row['rig_state']=='draft' and row['rig_receipt'] is None and 'unqualified' in row['status'] and 'does not establish a complete domain return' in obs['qualification'])
+        check('portfolio/Guide Markdown exposes qualification and page limit '+sid,file+' / '+page+' / '+board in md and 'exact board URL is not verified' in md and obs['qualification'] in md and row['status'] in md)
+    check('Guide native export is the published byte identity',builder.git_blob((root/'evidence/d25-guide-return-candidate-20261108.jsx').read_bytes())=='2d667df3437f1c8ca59fdbd095894f4dfca7b94d')
+    check('portfolio/Guide lookup observation dispatches no Paper effect',readback['native_mutations']==0 and not readback['snapshots_are_document_revisions'])
     for sid,row in returns.items():
         check('curated return rendered '+sid,all(by_id[sid][k]==v for k,v in row.items()))
         obs=row['return_observation']

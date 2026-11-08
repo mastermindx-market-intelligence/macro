@@ -475,6 +475,70 @@
         "retained_reference_url": null,
         "qualification": "Observed reference metadata for a proposed slice. This observation does not establish a complete domain return, approved candidate, foundation release, current implementation, refreshed census, or live writer custody."
       }
+    },
+    "D22": {
+      "source_contract": "https://github.com/mastermindx-market-intelligence/macro/blob/aca1d87854bfc643f5a01f0892b383ebc8baf6d6/research/design_candidates/production_design_20261102/f03/evidence/d22-portfolio-reference-observation-20261108.md",
+      "source_contract_label": "D22 reference observation · Personal holdings, paper books and model comparison",
+      "candidate_ref": "https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-1F-0",
+      "rig_state": "draft",
+      "rig_receipt": null,
+      "shell_version": null,
+      "system_version": null,
+      "status": "Bounded unqualified personal holdings, paper books and model comparison proposal observed. Source-specific read effects, provisional valuation and numerical eligibility remain explicit; full D22 return and product acceptance are not established.",
+      "next_action": "Bind approved cross-app navigation and the existing managed decision-availability projection; prove access, read effects, current user/book/metric/basis guards, source clocks and numerical eligibility. Shared self-directed comparison needs its own qualified holdings read. Preserve original record/target recovery, current accounting owners and release holds.",
+      "return_observation": {
+        "observed_at_utc": "2026-11-08T19:53:13Z",
+        "source_head": "aca1d87854bfc643f5a01f0892b383ebc8baf6d6",
+        "source_blob_sha": "80885356c954fbec76004478fee8c9ce1b61a30d",
+        "observed_pr_head": null,
+        "evidence_urls": [
+          "https://github.com/mastermindx-market-intelligence/macro/blob/aca1d87854bfc643f5a01f0892b383ebc8baf6d6/research/design_candidates/production_design_20261102/f03/evidence/d22-portfolio-reference-observation-20261108.md",
+          "https://github.com/mastermindx-market-intelligence/macro/blob/aca1d87854bfc643f5a01f0892b383ebc8baf6d6/research/design_candidates/production_design_20261102/f03/evidence/portfolio-guide-reference-readback-20261108.json",
+          "https://github.com/mastermindx-market-intelligence/Mastermind/blob/e48a633614f9e433568e86a9c7cc00fe4e13946f/docs/design/PAPER_PORTFOLIO_AUDIT_20261108.md",
+          "https://github.com/mastermindx-market-intelligence/Mastermind/blob/e48a633614f9e433568e86a9c7cc00fe4e13946f/docs/design/evidence/paper_portfolio_20261108/d22/evidence.json"
+        ],
+        "candidate_file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+        "candidate_page_id": "p-1F-0",
+        "candidate_board_id": "261Q-0",
+        "readme_url": null,
+        "readme_file_id": null,
+        "readme_page_id": null,
+        "readme_board_id": null,
+        "retained_reference_url": null,
+        "qualification": "Observed reference metadata for a proposed slice. This observation does not establish a complete domain return, approved candidate, foundation release, current implementation, refreshed census, or live writer custody."
+      }
+    },
+    "D25": {
+      "source_contract": "https://github.com/mastermindx-market-intelligence/macro/blob/aca1d87854bfc643f5a01f0892b383ebc8baf6d6/research/design_candidates/production_design_20261102/f03/evidence/d25-guide-reference-observation-20261108.md",
+      "source_contract_label": "D25 reference observation · Guide return, Close and horizon wording",
+      "candidate_ref": "https://app.paper.design/file/01M32XYWDYSFTNDZVJKQ5QHT33/p-8-0",
+      "rig_state": "draft",
+      "rig_receipt": null,
+      "shell_version": null,
+      "system_version": null,
+      "status": "Bounded unqualified Guide return and explanation-clarity proposal observed. Close, history Back, explicit Macro navigation and qualified task return remain distinct. The broader D25 account/onboarding/settings return and runtime acceptance are not established.",
+      "next_action": "Prove actual history/listener ordering, exact task-origin binding, access and market/horizon freshness, stale return retirement, placement receipts, focus and keyboard behavior through the existing navigation owners. Preserve separate account/access/settings scope; Lens-to-full-Guide wiring remains proposed.",
+      "return_observation": {
+        "observed_at_utc": "2026-11-08T19:53:13Z",
+        "source_head": "aca1d87854bfc643f5a01f0892b383ebc8baf6d6",
+        "source_blob_sha": "1dda08732c4b614bb37f270e229cbf55492a497a",
+        "observed_pr_head": null,
+        "evidence_urls": [
+          "https://github.com/mastermindx-market-intelligence/macro/blob/aca1d87854bfc643f5a01f0892b383ebc8baf6d6/research/design_candidates/production_design_20261102/f03/evidence/d25-guide-reference-observation-20261108.md",
+          "https://github.com/mastermindx-market-intelligence/macro/blob/aca1d87854bfc643f5a01f0892b383ebc8baf6d6/research/design_candidates/production_design_20261102/f03/evidence/portfolio-guide-reference-readback-20261108.json",
+          "https://github.com/mastermindx-market-intelligence/macro/blob/aca1d87854bfc643f5a01f0892b383ebc8baf6d6/research/design_candidates/production_design_20261102/f03/evidence/d25-guide-return-candidate-20261108.jsx",
+          "https://github.com/mastermindx-market-intelligence/Mastermind/blob/59c1782d61fa06575514f2e4a2f205b05e0cd6a9/docs/design/PAPER_PORTFOLIO_AUDIT_20261108.md"
+        ],
+        "candidate_file_id": "01M32XYWDYSFTNDZVJKQ5QHT33",
+        "candidate_page_id": "p-8-0",
+        "candidate_board_id": "44J-0",
+        "readme_url": null,
+        "readme_file_id": null,
+        "readme_page_id": null,
+        "readme_board_id": null,
+        "retained_reference_url": null,
+        "qualification": "Observed reference metadata for a proposed slice. This observation does not establish a complete domain return, approved candidate, foundation release, current implementation, refreshed census, or live writer custody."
+      }
     }
   }
 }
