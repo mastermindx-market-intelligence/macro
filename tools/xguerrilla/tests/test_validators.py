@@ -15,7 +15,14 @@ if str(ROOT) not in sys.path:
 
 from tools.xguerrilla import config                       # noqa: E402
 from tools.xguerrilla.persona import Persona              # noqa: E402
-from tools.xguerrilla.validators import Draft, enforce_voice, validate  # noqa: E402
+from tools.xguerrilla.validators import (                 # noqa: E402
+    Draft,
+    canonical_bio_link,
+    enforce_voice,
+    links_in_text,
+    validate,
+    validate_bio,
+)
 
 MILA = "mila.lifts"
 WREN = "wren.mp4"
@@ -63,18 +70,34 @@ CASES = [
     ("declared hashtag absent", MILA,
      dict(text="legs day again, squats and a flat white.", hashtags=["#gym"]), [], 0,
      "listed but not in the text"),
-    ("two links", MILA,
+    ("declared link", MILA,
+     dict(text="program is up, link in the usual place.", links=[MILA_SLOT]),
+     [], 0, "declares link"),
+    ("two declared links", MILA,
      dict(text="program is up, link in the usual place.", links=[MILA_SLOT, MILA_SLOT + "2"]),
-     [], 0, "more than one link"),
-    ("weekly link budget", MILA,
+     [], 0, "declares link"),
+    ("a spent budget cannot legalise a link", MILA,
      dict(text="program is up, link in the usual place.", links=[MILA_SLOT]), [], 3,
-     "link budget"),
+     "declares link"),
     ("foreign link slot", MILA,
      dict(text="program is up, link in the usual place.",
-          links=["https://somewhere-else.example/x"]), [], 0, "own link slot"),
-    ("relative link", MILA,
-     dict(text="program is up, link in the usual place.", links=["links.example.com/x"]),
-     [], 0, "absolute http(s)"),
+          links=["https://somewhere-else.example/x"]), [], 0, "declares link"),
+    ("url typed into post text", MILA,
+     dict(text="full write-up at https://www.mastermind-x.com/x/ab12cd34."), [], 0,
+     "URL in post text"),
+    ("bare host typed into post text", MILA,
+     dict(text="mastermind-x.com/x/ab12cd34 has the write-up."), [], 0,
+     "URL in post text"),
+    ("shortener typed into reply text", MILA,
+     dict(text="cheers, details at t.co/AbCd12.", kind="reply"), [], 0,
+     "URL in reply text"),
+    ("url typed into quote text", MILA,
+     dict(text="www.mastermind-x.com/x/ab12cd34 is the whole argument.", kind="quote"),
+     [], 0, "URL in quote text"),
+    ("declared link in a reply", MILA,
+     dict(text="the 5am thing is real, no notes.", kind="reply",
+          links=[MILA_SLOT], read_trace_id="trace-8842"),
+     [], 0, "declares link"),
     ("reply without read trace", MILA,
      dict(text="that is the honest version of the 5x5 story.", kind="reply",
           read_trace_id=None), [], 0, "read_trace_id"),
@@ -140,14 +163,31 @@ def test_clean_reply_and_quote_pass_with_trace(personas):
                     personas[MILA]) == []
 
 
-def test_link_to_own_slot_passes(personas):
+def test_own_link_slot_is_refused_and_the_budget_cannot_buy_it_back(personas):
+    """The one-link-per-week allowance is gone (§26.4 as amended by BL-9).
+
+    The persona row's ``links_per_week`` is now a historical field the gate
+    never reads: a link is refused at zero spend and refused again after a week
+    of imaginary link posts, because the policy has no per-account exception and
+    no budget left to spend.
+    """
     draft = clean_draft("program is up, link in the usual place.", links=[MILA_SLOT])
-    assert validate(draft, personas[MILA], links_used_7d=2) == []
+    for spent in (0, 2, 3):
+        problems = validate(draft, personas[MILA], links_used_7d=spent)
+        assert any("declares link" in p for p in problems), (spent, problems)
 
 
-def test_budget_exact_at_cap_is_legal(personas):
-    draft = clean_draft(links=[MILA_SLOT])
-    assert validate(draft, personas[MILA], links_used_7d=2)[:] == []
+@pytest.mark.parametrize("kind", ["post", "reply", "quote"])
+def test_no_draft_kind_may_carry_a_url_in_its_text(kind, personas):
+    text = "the write-up is at https://www.mastermind-x.com/x/ab12cd34 and that is it."
+    problems = validate(clean_draft(text, kind), personas[MILA])
+    assert any(f"URL in {kind} text" in p for p in problems), problems
+
+
+def test_the_clean_fixtures_carry_no_url_token(personas):
+    for handle, text in CLEAN.items():
+        assert links_in_text(text) == [], (handle, links_in_text(text))
+        assert validate(clean_draft(text), personas[handle]) == [], handle
 
 
 def test_now_must_be_a_datetime(personas):
@@ -264,3 +304,98 @@ def test_paths_resolve_under_the_package():
     assert config.personas_dir() == str(Path(config.__file__).parent / "personas")
     assert config.links_path().endswith("links.yml")
     assert Path(config.personas_dir()).is_dir()
+
+
+# --- the bio: the only URL surface in the network (bio policy v1) -----------
+
+BIO_TEXT = "An editorial account of Mastermind-X. Markets, told plainly."
+CHILD = "ab12cd34"
+
+
+def _bio(child_id: str = CHILD) -> str:
+    return f"{BIO_TEXT} {canonical_bio_link(child_id)}"
+
+
+def test_the_canonical_bio_passes():
+    assert validate_bio(_bio(), child_id=CHILD, known_ids={CHILD}) == []
+
+
+def test_canonical_bio_link_is_the_settled_shape():
+    assert canonical_bio_link(CHILD) == "https://www.mastermind-x.com/x/ab12cd34"
+
+
+def test_a_bio_link_may_carry_sentence_punctuation():
+    # The link ends the sentence: the period is the writer's, not the URL's.
+    assert validate_bio(_bio() + ".") == []
+    assert links_in_text(_bio() + ".") == [canonical_bio_link(CHILD)]
+
+
+BIO_REJECTIONS = [
+    ("apex host", f"{BIO_TEXT} https://mastermind-x.com/x/ab12cd34", "apex"),
+    ("shortener t.co", f"{BIO_TEXT} https://t.co/ab12cd34", "shortener"),
+    ("shortener bit.ly", f"{BIO_TEXT} https://bit.ly/ab12cd34", "shortener"),
+    ("query string", _bio() + "?utm_source=x", "query string"),
+    ("fragment", _bio() + "#top", "fragment"),
+    ("trailing slash", _bio() + "/", "trailing slash"),
+    ("uppercase path", f"{BIO_TEXT} https://www.mastermind-x.com/x/AB12CD34", "uppercase"),
+    ("http scheme", f"{BIO_TEXT} http://www.mastermind-x.com/x/ab12cd34", "https"),
+    ("no scheme", f"{BIO_TEXT} www.mastermind-x.com/x/ab12cd34", "https"),
+    ("two links", _bio() + " https://www.mastermind-x.com/x/deadbeef",
+     "URLs in the bio"),
+    ("foreign host", f"{BIO_TEXT} https://example.com/x/ab12cd34",
+     "is not 'www.mastermind-x.com'"),
+    ("userinfo posing as our host",
+     f"{BIO_TEXT} https://www.mastermind-x.com@evil.example/x/ab12cd34",
+     "is not 'www.mastermind-x.com'"),
+    ("child id too short", f"{BIO_TEXT} https://www.mastermind-x.com/x/ab1",
+     "destination shape"),
+    ("child id too long",
+     f"{BIO_TEXT} https://www.mastermind-x.com/x/{'a' * 33}", "destination shape"),
+    ("wrong path family",
+     f"{BIO_TEXT} https://www.mastermind-x.com/research/demo-report.html",
+     "destination shape"),
+    ("no link at all", BIO_TEXT, "carries no URL"),
+]
+
+
+@pytest.mark.parametrize("label,text,expected", BIO_REJECTIONS,
+                         ids=[c[0] for c in BIO_REJECTIONS])
+def test_bio_rejections(label, text, expected):
+    problems = validate_bio(text)
+    assert any(expected in p for p in problems), f"{label}: {problems}"
+
+
+def test_the_bio_must_name_this_childs_id():
+    problems = validate_bio(_bio("deadbeef"), child_id=CHILD)
+    assert any("not this child's attribution key" in p for p in problems), problems
+
+
+def test_an_invalid_child_id_cannot_bind_to_a_path():
+    problems = validate_bio(_bio("AB12CD34".lower()), child_id="Not-An-Id")
+    assert any("is not a valid attribution key" in p for p in problems), problems
+
+
+def test_an_unregistered_child_id_is_refused():
+    problems = validate_bio(_bio("deadbeef"), known_ids={CHILD})
+    assert any("not in the registry" in p for p in problems), problems
+
+
+def test_a_registered_child_id_passes():
+    assert validate_bio(_bio("deadbeef"), known_ids={CHILD, "deadbeef"}) == []
+
+
+def test_a_url_in_the_display_name_is_refused():
+    problems = validate_bio(_bio(), display_name=f"mila {canonical_bio_link(CHILD)}")
+    assert any("display name carries a URL" in p for p in problems), problems
+
+
+def test_links_in_text_sees_every_spelling_that_resolves():
+    assert links_in_text("see https://t.co/abc now") == ["https://t.co/abc"]
+    assert links_in_text("see www.mastermind-x.com/x/ab12cd34 now") == [
+        "www.mastermind-x.com/x/ab12cd34"]
+    # A bare host is a link on X even with no scheme in front of it.
+    assert links_in_text("see mastermind-x.com/x/ab12cd34") == [
+        "mastermind-x.com/x/ab12cd34"]
+    # A number is not a host: version strings must survive the matcher.
+    assert links_in_text("shipped 2.0.1 today") == []
+
