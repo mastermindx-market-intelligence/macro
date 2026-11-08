@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "VCYT-BULL-20260821",
-  "asof": "2026-11-06",
+  "asof": "2026-11-08",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 18.7,
@@ -14,23 +14,23 @@
     "progress": 60.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 32.8
+    "overlay": 39.0
   },
   "geometry": {
-    "dist_to_stop_r": -10.233,
+    "dist_to_stop_r": -10.135,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 171.1,
-    "p1": -7.4888,
-    "p2": -3.7444,
+    "horizon_pct_used": 175.6,
+    "p1": -7.4233,
+    "p2": -3.7117,
     "p3": null,
-    "move_r": -11.233,
+    "move_r": -11.135,
     "mfe_r": 5.258,
     "mae_r": -11.233
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "Phase: at_t2 \u2192 invalidated",
+  "change_reason": "",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -45,8 +45,8 @@
   "_first_trigger_ts": "2026-08-21",
   "_first_t1_ts": "2026-08-27",
   "_first_t2_ts": "2026-09-25",
-  "days_elapsed": 77,
-  "tau": 1.7111,
+  "days_elapsed": 79,
+  "tau": 1.7556,
   "closed": true,
   "outcome": "T1_HIT"
 }

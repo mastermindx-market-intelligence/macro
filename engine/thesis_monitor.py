@@ -54,6 +54,7 @@ from __future__ import annotations
 
 import json
 import logging
+import math
 from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -403,6 +404,19 @@ _LOOSENING_BANDS = {"LOOSE", "NEUTRAL", "AWAITING_DATA"}
 _SUPPORTIVE_BANDS = {"TIGHT", "SOLD_OUT", "TIGHTENING", "TIGHT (text)", "TIGHTENING (text)"}
 
 
+def _finite_sign_negative(value: Any) -> bool | None:
+    """Return the finite numeric sign, or None when it cannot be verified."""
+    if isinstance(value, bool):
+        return None
+    try:
+        number = float(value)
+    except (TypeError, ValueError, OverflowError):
+        return None
+    if not math.isfinite(number):
+        return None
+    return number < 0
+
+
 def _evaluate_criterion(
     criterion: dict,
     current_row: dict | None,
@@ -447,7 +461,9 @@ def _evaluate_criterion(
             lang_accel = current_row.get("language_accel")
         if lang_accel is None:
             return "UNVERIFIABLE"
-        current_neg = float(lang_accel) < 0
+        current_neg = _finite_sign_negative(lang_accel)
+        if current_neg is None:
+            return "UNVERIFIABLE"
         prev_count = sum(
             1 for u in prior[-CONSECUTIVE_NEEDED:]
             if u.get("criterion_kind") == kind and u.get("condition_met")
@@ -491,7 +507,9 @@ def _evaluate_criterion(
         rb = (current_row or {}).get("revision_breadth")
         if rb is None:
             return "UNVERIFIABLE"
-        current_neg = float(rb) < 0
+        current_neg = _finite_sign_negative(rb)
+        if current_neg is None:
+            return "UNVERIFIABLE"
         prev_count = sum(
             1 for u in prior[-CONSECUTIVE_NEEDED:]
             if u.get("criterion_kind") == kind and u.get("condition_met")

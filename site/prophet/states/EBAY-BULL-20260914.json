@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "EBAY-BULL-20260914",
-  "asof": "2026-11-06",
+  "asof": "2026-11-08",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 48.2,
@@ -11,20 +11,20 @@
   "human_state": "Closed",
   "components": {
     "validity": 100.0,
-    "progress": 43.0,
-    "pace": 24.7,
-    "retention": 100.0,
-    "overlay": 32.8
+    "progress": 39.1,
+    "pace": 22.0,
+    "retention": 88.0,
+    "overlay": 33.0
   },
   "geometry": {
-    "dist_to_stop_r": 1.815,
-    "dist_to_t1_r": 0.685,
-    "dist_to_t2_r": 2.185,
-    "horizon_pct_used": 108.9,
-    "p1": 0.543,
-    "p2": 0.2715,
+    "dist_to_stop_r": 1.717,
+    "dist_to_t1_r": 0.783,
+    "dist_to_t2_r": 2.283,
+    "horizon_pct_used": 113.3,
+    "p1": 0.4777,
+    "p2": 0.2388,
     "p3": null,
-    "move_r": 0.815,
+    "move_r": 0.717,
     "mfe_r": 0.815,
     "mae_r": -0.406
   },
@@ -45,8 +45,8 @@
   "_first_trigger_ts": "2026-10-15",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 49,
-  "tau": 1.0889,
+  "days_elapsed": 51,
+  "tau": 1.1333,
   "closed": true,
   "outcome": "EXPIRED"
 }
