@@ -1,0 +1,23 @@
+{
+  "bodies_sha256": "59bbeb2251d4e1577003d2eb118672592651b6428904256b098039a04b98c86c",
+  "candidates_sha256": "31d659345d715ee678ec2ca0bf07aca184353958ac71202ffec83f715562e490",
+  "gate_map_sha256": "491f9174acc5ce94034f9fa5eee52c264b9e6f908e124757608f8848fa7b9c29",
+  "gates_version": "ni-routing-gates-2",
+  "n_candidates": 2837,
+  "n_gated_in": 173,
+  "status_counts": {
+    "gated_in": 173,
+    "gated_out:g1_commentary": 24,
+    "gated_out:g1_market_report": 20,
+    "gated_out:g1_quote_page": 5,
+    "gated_out:g1_solicitation": 6,
+    "gated_out:g2_ambiguous_ticker": 30,
+    "gated_out:g2_issuer_absent": 70,
+    "gated_out:g2_issuer_not_subject": 40,
+    "gated_out:g3_event_mismatch": 19,
+    "gated_out:g3_no_family_language": 26,
+    "gated_out:g3_results_without_202": 3,
+    "gated_out:g3_template_sense": 4,
+    "gated_out:no_body": 2417
+  }
+}

@@ -1,7 +1,7 @@
 {
   "schema": "neuralweb.theme_state.v1",
-  "as_of": "2026-11-07",
-  "generated_at": "2026-11-07T13:53:52Z",
+  "as_of": "2026-11-08",
+  "generated_at": "2026-11-08T10:03:21Z",
   "authority": {
     "is_context_only": true,
     "may_rank": false,
@@ -39,7 +39,7 @@
           "basket_id": "ai_semiconductors",
           "name_en": "AI Semiconductors",
           "name_zh": "AI半导体",
-          "score": 35,
+          "score": 34,
           "label": "deteriorating",
           "label_en": "DETERIORATING",
           "label_zh": "走弱",
@@ -65,8 +65,8 @@
           "basket_id": "ai_semiconductors",
           "state": "POSITIVE_DIVERGENCE",
           "lifecycle": "emerging",
-          "divergence": 2.931,
-          "salience": 2.931,
+          "divergence": 2.963,
+          "salience": 2.963,
           "source": "site/basketdata/radar_enriched.json"
         },
         {
@@ -81,8 +81,8 @@
           "basket_id": "ai_infra",
           "state": "POSITIVE_DIVERGENCE",
           "lifecycle": "emerging",
-          "divergence": 3.714,
-          "salience": 3.714,
+          "divergence": 3.909,
+          "salience": 3.909,
           "source": "site/basketdata/radar_enriched.json"
         },
         {
@@ -90,7 +90,7 @@
           "lean": "positive_divergence",
           "horizon_d": 63,
           "check_by": "2027-02-05",
-          "thesis_snippet": "Real activity (gov contracts (quiver), congress net-buy, lobbying ramp) on DELL, MU, QCOM is accelerating (~3.3× YoY) wh",
+          "thesis_snippet": "Real activity (gov contracts (quiver), congress net-buy, lobbying ramp) on DELL, MU, QCOM is accelerating (~2.9× YoY) wh",
           "source": "site/basketdata/radar.json"
         }
       ],
@@ -178,8 +178,8 @@
           "basket_id": "memory_storage",
           "state": "QUIET",
           "lifecycle": "quiet",
-          "divergence": 3.53,
-          "salience": 3.53,
+          "divergence": 3.578,
+          "salience": 3.578,
           "source": "site/basketdata/radar_enriched.json"
         }
       ],
@@ -237,7 +237,7 @@
           "basket_id": "semicap_equipment",
           "name_en": "Semiconductor Equipment (WFE)",
           "name_zh": "半导体设备（晶圆厂设备）",
-          "score": 29,
+          "score": 28,
           "label": "deteriorating",
           "label_en": "DETERIORATING",
           "label_zh": "走弱",
@@ -251,8 +251,8 @@
           "basket_id": "semicap_equipment",
           "state": "POSITIVE_DIVERGENCE",
           "lifecycle": "forming",
-          "divergence": 3.735,
-          "salience": 3.735,
+          "divergence": 3.412,
+          "salience": 3.412,
           "source": "site/basketdata/radar_enriched.json"
         },
         {
@@ -342,26 +342,18 @@
       "radar": [
         {
           "basket_id": "data_center_power",
-          "state": "POSITIVE_DIVERGENCE",
-          "lifecycle": "forming",
-          "divergence": 1.906,
-          "salience": 1.906,
+          "state": "QUIET",
+          "lifecycle": "quiet",
+          "divergence": 1.898,
+          "salience": 1.898,
           "source": "site/basketdata/radar_enriched.json"
-        },
-        {
-          "basket_id": "data_center_power",
-          "lean": "positive_divergence",
-          "horizon_d": 63,
-          "check_by": "2027-02-05",
-          "thesis_snippet": "Real activity (congress net-buy, lobbying ramp, 8-k material events) on AEIS, ETN, GEV, HUBB… is accelerating (~1.6× YoY",
-          "source": "site/basketdata/radar.json"
         },
         {
           "basket_id": "ai_neoclouds",
           "state": "QUIET",
           "lifecycle": "quiet",
-          "divergence": 4.895,
-          "salience": 4.895,
+          "divergence": 4.897,
+          "salience": 4.897,
           "source": "site/basketdata/radar_enriched.json"
         }
       ],
@@ -446,16 +438,16 @@
           "basket_id": "nuclear_power",
           "state": "CONFIRMED_DOWN",
           "lifecycle": "fading",
-          "divergence": 2.119,
-          "salience": 2.119,
+          "divergence": 2.116,
+          "salience": 2.116,
           "source": "site/basketdata/radar_enriched.json"
         },
         {
           "basket_id": "uranium_miners",
           "state": "QUIET",
           "lifecycle": "quiet",
-          "divergence": 2.423,
-          "salience": 2.423,
+          "divergence": 2.424,
+          "salience": 2.424,
           "source": "site/basketdata/radar_enriched.json"
         }
       ],
@@ -519,19 +511,11 @@
       "radar": [
         {
           "basket_id": "power_grid",
-          "state": "POSITIVE_DIVERGENCE",
-          "lifecycle": "forming",
-          "divergence": 1.721,
-          "salience": 1.721,
+          "state": "QUIET",
+          "lifecycle": "quiet",
+          "divergence": 1.441,
+          "salience": 1.441,
           "source": "site/basketdata/radar_enriched.json"
-        },
-        {
-          "basket_id": "power_grid",
-          "lean": "positive_divergence",
-          "horizon_d": 63,
-          "check_by": "2027-02-05",
-          "thesis_snippet": "Real activity (federal contracts, federal grants/loans, gov contracts (quiver)) on TLN, CEG, BWXT, LEU… is accelerating ",
-          "source": "site/basketdata/radar.json"
         }
       ],
       "narrative": null,
@@ -595,8 +579,8 @@
           "basket_id": "cybersecurity",
           "state": "POSITIVE_DIVERGENCE",
           "lifecycle": "forming",
-          "divergence": 0.08,
-          "salience": 0.08,
+          "divergence": 0.094,
+          "salience": 0.094,
           "source": "site/basketdata/radar_enriched.json"
         },
         {
@@ -604,7 +588,7 @@
           "lean": "positive_divergence",
           "horizon_d": 63,
           "check_by": "2027-02-05",
-          "thesis_snippet": "Real activity (congress net-buy, lobbying ramp, 8-k material events) on CRWD, FTNT, NET, OKTA… is accelerating (~2.0× Yo",
+          "thesis_snippet": "Real activity (congress net-buy, lobbying ramp, 8-k material events) on CRWD, FTNT, NET, OKTA… is accelerating (~1.5× Yo",
           "source": "site/basketdata/radar.json"
         }
       ],
@@ -652,7 +636,7 @@
       "foresight": {
         "stage": "BROADENING (text)",
         "tier": "P",
-        "score": 49.1,
+        "score": 49.0,
         "entry_ready": false,
         "bottleneck_band": "TIGHT (text)",
         "source": "site/basketdata/foresight_cascade.json"
@@ -676,8 +660,8 @@
           "basket_id": "defense",
           "state": "QUIET",
           "lifecycle": "quiet",
-          "divergence": 1.546,
-          "salience": 1.546,
+          "divergence": 1.497,
+          "salience": 1.497,
           "source": "site/basketdata/radar_enriched.json"
         }
       ],
@@ -836,7 +820,7 @@
       "foresight": {
         "stage": "BROADENING (fingerprint)",
         "tier": "P",
-        "score": 52.1,
+        "score": 41.7,
         "entry_ready": false,
         "bottleneck_band": "TIGHTENING (fingerprint)",
         "source": "site/basketdata/foresight_cascade.json"
@@ -860,8 +844,8 @@
           "basket_id": "obesity_glp1",
           "state": "POSITIVE_DIVERGENCE",
           "lifecycle": "forming",
-          "divergence": 1.075,
-          "salience": 1.075,
+          "divergence": 1.087,
+          "salience": 1.087,
           "source": "site/basketdata/radar_enriched.json"
         },
         {
@@ -869,7 +853,7 @@
           "lean": "positive_divergence",
           "horizon_d": 63,
           "check_by": "2027-02-05",
-          "thesis_snippet": "Real activity (congress net-buy, lobbying ramp, 8-k material events) on AMGN, AZN, DVA, DXCM… is accelerating (~1.3× YoY",
+          "thesis_snippet": "Real activity (congress net-buy, lobbying ramp, 8-k material events) on AMGN, AZN, DVA, DXCM… is accelerating (~1.4× YoY",
           "source": "site/basketdata/radar.json"
         }
       ],
@@ -1014,8 +998,8 @@
           "basket_id": "space_economy",
           "state": "POSITIVE_DIVERGENCE",
           "lifecycle": "forming",
-          "divergence": 2.957,
-          "salience": 2.957,
+          "divergence": 2.702,
+          "salience": 2.702,
           "source": "site/basketdata/radar_enriched.json"
         },
         {
@@ -1095,8 +1079,8 @@
           "basket_id": "critical_minerals",
           "state": "CONFIRMED_DOWN",
           "lifecycle": "fading",
-          "divergence": 2.42,
-          "salience": 2.42,
+          "divergence": 2.494,
+          "salience": 2.494,
           "source": "site/basketdata/radar_enriched.json"
         }
       ],
@@ -1147,7 +1131,7 @@
           "basket_id": "reshoring",
           "name_en": "Reshoring & Industrial Capex",
           "name_zh": "回流与工业资本开支",
-          "score": 40,
+          "score": 39,
           "label": "neutral",
           "label_en": "NEUTRAL",
           "label_zh": "中性",
@@ -1284,7 +1268,7 @@
           "basket_id": "managed_care",
           "name_en": "Managed Care & Insurers",
           "name_zh": "管理式医疗与保险",
-          "score": 54,
+          "score": 55,
           "label": "emerging",
           "label_en": "EMERGING",
           "label_zh": "新兴",
@@ -1298,8 +1282,8 @@
           "basket_id": "managed_care",
           "state": "QUIET",
           "lifecycle": "quiet",
-          "divergence": -0.13,
-          "salience": 0.13,
+          "divergence": -0.108,
+          "salience": 0.108,
           "source": "site/basketdata/radar_enriched.json"
         }
       ],
@@ -1438,6 +1422,7 @@
     "divergence_log[fintech_payments]: stale (as_of=2026-08-28)",
     "divergence_log[memory_storage]: stale (as_of=2026-11-02)",
     "divergence_log[diagnostics_lifesci]: stale (as_of=2026-10-14)",
+    "divergence_log[copper_steel_electrify]: stale (as_of=2026-11-03)",
     "divergence_log[space_satellite]: stale (as_of=2026-08-08)",
     "divergence_log[data_center_power]: stale (as_of=2026-11-02)",
     "divergence_log[solar]: stale (as_of=2026-10-10)",
@@ -1455,7 +1440,7 @@
   },
   "schema_version": 1,
   "produced_by": "scripts/build_thematic_state.py",
-  "produced_at": "2026-11-07T13:53:53Z",
-  "inputs_hash": "sha256:600c144465edfefc4616650801ae30289bcf0cddcab6bec6f4eed35152dc6838",
+  "produced_at": "2026-11-08T10:03:22Z",
+  "inputs_hash": "sha256:e6123d366d2031fd9cedb8ae0132feb1115d603abacc07ef32ad42685cb2c30e",
   "tier": "display"
 }
