@@ -297,6 +297,7 @@ def synthesize(state: dict, cfg: dict | None = None, call=None) -> dict:
     brief = {
         "schema": SCHEMA, "is_context_only": True, "lens": "realpolitik",
         "generated_at": _now_iso(), "state_asof": asof,
+        "intel_asof": state.get("intel_asof"),
         "model": cfg.get("llm_model", "deepseek-v4-pro"),
         "regime_context": None, "regime_context_zh": None, "theses": [],
         "track_record": state.get("track_record"),
@@ -369,6 +370,7 @@ def _append_ledger(brief: dict, root) -> None:
                         entry[tk] = lv
             rows.append({
                 "id": t["id"], "logged_at": brief["generated_at"], "state_asof": asof,
+                "intel_asof": brief.get("intel_asof"),
                 "actor": t.get("actor"), "subject": t["subject"], "lean": t["lean"],
                 "conviction": t["conviction"], "horizon_d": t["horizon_d"],
                 "falsifier": t["falsifier"], "check_by": t["check_by"],
