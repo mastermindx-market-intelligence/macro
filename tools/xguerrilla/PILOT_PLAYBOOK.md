@@ -164,8 +164,16 @@ Append to `~/.xguerrilla/pilot/metrics.jsonl` (JSONL, one object, keys fixed):
 - production: `posts`, `replies`, `reply_responses`, `profile_opens` · telemetry
 - health: `challenges`, `relogins`, `session_ok` · `telemetry.summarise`
 - typing: `iki_median`, `iki_cv`, `iki_skew`, `deletions_per_100` · `assert_natural`
+- typing volume: `keystrokes`, `typed_chars`, `paste_chars` · pilot report
 - labels: `labels_distinct` · `label` rows
 - spend: `cost_usd`, `overrides` · spend log
+
+Record `keystrokes` beside the interval statistics. A pasted post must show zero
+keystrokes and a typed post must show exactly as many as it typed, so the day's
+typing evidence cannot be satisfied by a single programmatic write that lands
+the right text. A row whose `keystrokes` is zero across posts the log calls
+typed is a contradiction, not a rounding difference: freeze the child and
+inspect before the next day.
 
 ## 9. Kill switch and rollback — one child
 
