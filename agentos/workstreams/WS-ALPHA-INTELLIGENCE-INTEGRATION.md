@@ -29,6 +29,17 @@ owns_paths:
   - lib/institutional_intelligence.py
   - tests/fixtures/institutional_intelligence/
   - tests/test_institutional_manager_intent_contract.py
+  - contracts/economic_propagation/
+  - lib/economic_propagation.py
+  - lib/economic_propagation_v2.py
+  - tests/fixtures/economic_propagation/
+  - tests/test_economic_propagation_hypothesis_contract.py
+  - tests/test_economic_propagation_source_grain.py
+  - tests/test_economic_propagation_v2.py
+  - tests/test_economic_propagation_v2_semantics.py
+  - research/economic_propagation/K3D_PROPAGATION_HYPOTHESIS_CONTRACT_FREEZE_2026-08-27.md
+  - research/economic_propagation/k3d_real_proof_records/
+  - research/economic_propagation/k3d_v2_20261012/
   - data/reference/
   - data/symbol_directory/
   - data/openfigi/
@@ -213,8 +224,12 @@ waves:
       for the same main SHA entered the workflow concurrency group; no baseline
       job failed. This is a contract-only on-main capability, not a producer,
       consumer, store, product surface, deployment or PROVEN_LIVE claim. K3
-      remains IN_PROGRESS because K3-D Economic Propagation is still NOT_BUILT
-      and requires its own commission. This canonical K3-E remains distinct from
+      remains IN_PROGRESS because the existing K3-D Economic Propagation candidate
+      is BUILT_NOT_PROVEN on PR #6514 under operation
+      alpha-k3d-economic-propagation-20260826-sol-001. Continue that same carrier
+      through exact-head CI, review and Sol release; do not commission duplicate
+      work. Its runtime remains display/research-only and production-unproven.
+      This canonical K3-E remains distinct from
       the K3E Expectation-Market-Dynamics child program
       (DEC:K3E-EXPECTATION-MARKET-DYNAMICS-FREEZE); neither replaces the other.
   - id: k4
@@ -248,13 +263,31 @@ next_action: >
   on issuer overlap clusters (DEC:K3E-EVAL1-PARTITION-CLOCK-UNIT-2026-10-07) and the only counter is
   eval1_partition_clock.py read at a fresh origin/main. B0/B6/challenger are fit on F_DEV only, after
   F_DEV closes at 100 clusters, by the single evaluator (engine/k3e_eval1_forward.py); F_HOLD stays
-  locked; no tuning loop. (2) After the first nightly that runs the widened builder, re-run
-  r1_readiness_probe at a post-build cutoff and issue the prospective owner receipt upgrading the
-  resolved names from DEGRADED_ACCEPTED to CLOSED (R1 DEC upgrade path); never re-label rows at or
-  before 2026-10-03T06:31:51Z. (3) R4 predictive admission re-runs only when the forward N floor can
+  locked; no tuning loop. (2) DONE 2026-10-17 as a degraded REFRESH, not a CLOSED upgrade
+  (DEC:ITP-R1-DEGRADED-RECEIPT-REFRESH-2026-10-17): the widened builder's nightlies moved G1 to 1495 of
+  1502 names resolved (7 unresolved: BLFS, CENT, CENTA, CWEN-A, HLX, SKYD, TCBI) and G2 stays undated by
+  the ALIAS ruling, so no gap meets the spec's CLOSED gate; the refreshed receipt
+  R1_OWNER_RECEIPTS_2026-10-17.json at cutoff 2026-10-15T13:32:43Z and probe run
+  R1_READINESS_2026-10-17.json (COMPLETE_DEGRADED) are on main; never re-label rows at or before
+  2026-10-03T06:31:51Z, and a later refresh re-runs the probe with --cutoff/--owner-receipts/
+  --expected-universe-sha256 at a later spine clock (CLOSED only if issuer_id_resolved == names AND
+  undated_alias_rows == 0, neither reachable without a dated identity source). (3) R4 predictive admission re-runs only when the forward N floor can
   be met on post-boundary data. Absolute gates: vendor PIT procurement, capital/rank authority
   (Chairman). No K3-E merge authorizes consumer wiring, Market OS UI, rank, gate, size, trade or
   deployment; financial_influence, k3e_admissible and promotion_eligible stay false.
+  (4) DONE 2026-10-22 as a site materialization, not a ledger or admission change: the Expectation
+  Surface page (scripts/build_expectation_surface.py + templates/expectation_surface.html.j2, program
+  brief research/INFORMATION_TO_PRICE_SITE_PROGRAM_BRIEF_2026-10-21.md, #9958 squash cd90f651) merged
+  as #9969 squash 6a4c0079 from exact head 6de93f86fbd8555b9125182dc68820e975387b15 (fabric lanes
+  itp-es-build-data-20261021-r1 and itp-es-build-ui-20261021-r1, seat repairs r2 (design ratchet,
+  render ownership) r3 (visual-evidence receipt, site/theme.css sync) r4 (P0B receipt remint + manifest
+  bindings, research screener re-bake) and r5 (merge of main 8182ec04 + fresh remint); ledger research/INFORMATION_TO_PRICE_CONTINUATION_HANDOFF_2026-10-06.md
+  sections 41-43). The page is a descriptive, nightly-regenerated view of
+  data/revisions/expectation_observations.parquet; financial_influence and k3e_admissible stay false,
+  and it authorizes no rank, gate, size, trade or deployment. Rung = MERGED until the first nightly
+  render proves site/expectation_surface.html on origin/main (PRODUCTION_PROOF). Wave 2 after that
+  proof: Research mega-menu item (design-tier, nav-parity suites), per-security link-out, CPL-1
+  coupling panel; never the Intelligence Hub desk rail.
 ---
 
 # Alpha Intelligence Expansion — integration workstream
@@ -315,3 +348,25 @@ EXP-1 remains NOT_BUILT; after source publication and a fresh relevant collision
 census it must be commissioned with a real consumer in a separate bounded PR.
 Historical defects stay retained/excluded; identity, basis, rights and public
 history are not certified; EVAL-0 and all financial authority remain unchanged.
+
+
+## K3-D integration candidate — 2026-10-13
+
+The existing operation `alpha-k3d-economic-propagation-20260826-sol-001`
+continues on original PR #6514. Its source-identity repair and side-by-side
+typed V2 compiler are BUILT_NOT_PROVEN, not an admitted economic fact or a
+served product. Independent corrective review of `fc19d16cae6397e2c5651f16a3283ae0a03bccc7`
+reported no major findings (comment 6144221753). V2 carries explicit mechanism
+polarity, separates non-test conditions from qualified falsification, and
+reconstructs narrative plus scenario identity. Legacy V1, all frozen fixtures
+and both archived real abstentions remain unchanged.
+
+This current-main integration retains every existing CI job and step, adding
+one code-gated K3-D job for all four suites. The historical signal-contract
+job is data-gated and remains unchanged; it cannot prove PR code coverage. Integration
+checks, hosted CI and the normal Sol release decision remain pending; the PR
+stays DRAFT/HOLD. Historical wave notes above are not new current-liveness
+claims. No native source acquisition, identity/rights admission, Graph1 writer,
+store, grading/ranking/sizing/trading authority or product rollout is added.
+The K3E children, ownership inspector #8793 and source diagnostic #8803 retain
+their separate custody and acceptance boundaries.

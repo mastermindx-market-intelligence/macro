@@ -1027,37 +1027,160 @@ def test_severity_never_paints_from_the_direction_tokens():
     assert "--up" not in block and "--down" not in block, block
 
 
+STAMPED = ("watchlist.js", "watchlist_risk.js", "portfolio.js")
+_STAMP = re.compile(r'<script src="([a-z_]+\.js)\?v=(\d+)"></script>')
+
+
+def _git(root, *args, text=True):
+    return subprocess.run(["git", "-C", str(root), *args], capture_output=True, text=text)
+
+
+def _branch_point(root):
+    """The commit this checkout's edits are measured from, or None when there is none.
+
+    CI's recorded base first (`CI_BASE_SHA`, then the pack's `TESTED_BASE_SHA`) when that
+    commit is present here, else `git merge-base HEAD origin/main`. Never the live
+    `origin/main`: main moves while a PR's CI runs, and a file main edited AFTER the
+    branch point is not a file this branch touched. Measured against the live tip, every
+    in-flight PR went red the moment main changed watchlist.js (#9917, PR #10596)."""
+    for key in ("CI_BASE_SHA", "TESTED_BASE_SHA"):
+        sha = os.environ.get(key, "").strip()
+        if sha and _git(root, "rev-parse", "--verify", "-q", sha + "^{commit}").returncode == 0:
+            return sha
+    merge_base = _git(root, "merge-base", "HEAD", "origin/main")
+    if merge_base.returncode != 0:
+        return None
+    return merge_base.stdout.strip() or None
+
+
+def _unbumped_stamps(root, base):
+    """One message per STAMPED file whose working-tree bytes differ from `base` while its
+    `?v=` stamp in watchlist.html.j2 did not rise above the stamp at `base`. None when
+    `base`'s template cannot be read in this checkout."""
+    then = _git(root, "show", base + ":templates/watchlist.html.j2")
+    if then.returncode != 0:
+        return None
+
+    def stamps(text):
+        return {m.group(1): int(m.group(2)) for m in _STAMP.finditer(text)}
+
+    now, was = stamps((root / "templates" / "watchlist.html.j2").read_text()), stamps(then.stdout)
+    unbumped = []
+    for name in STAMPED:
+        body = _git(root, "show", "%s:templates/%s" % (base, name), text=False)
+        if body.returncode == 0 and (root / "templates" / name).read_bytes() == body.stdout:
+            continue
+        if not (name in now and name in was and now[name] > was[name]):
+            unbumped.append("%s changed but its ?v= stamp did not move (base=%s, branch=%s)"
+                            % (name, was.get(name), now.get(name)))
+    return unbumped
+
+
 def test_the_version_stamp_moved_for_every_js_file_this_wave_touched():
     """Plain-copy JS goes live in ~3 minutes; the `?v=` stamp waits for a render. A body
     that ships without its stamp bump is served from a warm cache indefinitely.
 
-    Asserted as a MONOTONIC INCREASE against `origin/main`, not against hardcoded
+    Asserted as a MONOTONIC INCREASE against the branch point, not against hardcoded
     numbers. Pinning `?v=7` would latch this wave's boundary into the suite and red the
     NEXT legitimate bump — a test that fails on correct future work is a worse defect
-    than the one it guards. Self-retiring by construction: once this merges, main's
-    values equal the branch's and the comparison is vacuously true, which is the right
-    behaviour for a wave-scoped check."""
-    tpl = TEMPLATE.read_text()
-    base = subprocess.run(
-        ["git", "-C", str(ROOT), "show", "origin/main:templates/watchlist.html.j2"],
-        capture_output=True, text=True)
-    if base.returncode != 0:
-        pytest.skip("origin/main not fetched in this checkout")
+    than the one it guards. Only files this branch changed are judged: a JS edit main
+    landed after the branch point is main's to stamp, not this branch's. Self-retiring by
+    construction: once this merges, the branch point is the merge itself and the
+    comparison is vacuously true, which is the right behaviour for a wave-scoped check."""
+    base = _branch_point(ROOT)
+    if base is None:
+        pytest.skip("no recorded CI base and no merge base with origin/main in this checkout")
+    unbumped = _unbumped_stamps(ROOT, base)
+    if unbumped is None:
+        pytest.skip("the branch point %s is not readable in this checkout" % base)
+    assert not unbumped, unbumped
 
-    def stamps(text):
-        return {m.group(1): int(m.group(2))
-                for m in re.finditer(r'<script src="([a-z_]+\.js)\?v=(\d+)"></script>', text)}
 
-    now, was = stamps(tpl), stamps(base.stdout)
-    changed = [n for n in ("watchlist.js", "watchlist_risk.js", "portfolio.js")
-               if (ROOT / "templates" / n).read_bytes()
-               != subprocess.run(["git", "-C", str(ROOT), "show", "origin/main:templates/" + n],
-                                 capture_output=True).stdout]
-    for name in changed:
-        assert name in now and name in was, name
-        assert now[name] > was[name], (
-            "%s changed but its ?v= stamp did not move (main=%d, branch=%d)"
-            % (name, was[name], now[name]))
+def _stamp_fixture(tmp_path, monkeypatch):
+    """A throwaway repo shaped like this one at the stamp boundary: watchlist.html.j2 and
+    the three stamped files committed at a branch point, plus a commit helper. The CI base
+    variables are cleared so the fixture's own history decides the branch point, and the
+    host's git config is kept out (signing, hooks) so a commit here is only a commit."""
+    for key in ("CI_BASE_SHA", "TESTED_BASE_SHA", "GIT_DIR", "GIT_WORK_TREE", "GIT_INDEX_FILE"):
+        monkeypatch.delenv(key, raising=False)
+    monkeypatch.setenv("GIT_CONFIG_GLOBAL", os.devnull)
+    monkeypatch.setenv("GIT_CONFIG_NOSYSTEM", "1")
+    for who in ("AUTHOR", "COMMITTER"):
+        monkeypatch.setenv("GIT_%s_NAME" % who, "fixture")
+        monkeypatch.setenv("GIT_%s_EMAIL" % who, "fixture@example.invalid")
+    root = tmp_path / "repo"
+    (root / "templates").mkdir(parents=True)
+    assert _git(root, "init", "-q").returncode == 0
+
+    def write(name, text):
+        (root / "templates" / name).write_text(text)
+
+    def stamp(**versions):
+        write("watchlist.html.j2", "".join(
+            '<script src="%s?v=%d"></script>\n' % (name, versions.get(name.replace(".js", ""), v))
+            for name, v in zip(STAMPED, (16, 7, 11))))
+
+    def commit(message):
+        assert _git(root, "add", "-A").returncode == 0
+        done = _git(root, "commit", "-q", "-m", message)
+        assert done.returncode == 0, done.stderr
+        return _git(root, "rev-parse", "HEAD").stdout.strip()
+
+    for name in STAMPED:
+        write(name, "/* %s at the branch point */\n" % name)
+    stamp()
+    return root, write, stamp, commit, commit("branch point")
+
+
+def test_a_js_edit_main_landed_after_the_branch_point_is_not_this_branchs_to_stamp(
+        tmp_path, monkeypatch):
+    """The regression: main edits watchlist.js without moving its stamp (as #9917 did)
+    while a branch that never touched it is in flight. Read against the live main tip the
+    branch looked like it had UNDONE main's edit without a bump; read against the branch
+    point it changed nothing it would have to stamp."""
+    root, write, stamp, commit, point = _stamp_fixture(tmp_path, monkeypatch)
+    assert _git(root, "checkout", "-q", "-b", "upstream").returncode == 0
+    write("watchlist.js", "/* main moved on */\n")
+    landed = commit("main edits watchlist.js without a bump")
+    assert _git(root, "update-ref", "refs/remotes/origin/main", landed).returncode == 0
+    assert _git(root, "checkout", "-q", "-b", "feature", point).returncode == 0
+    (root / "unrelated.txt").write_text("this branch touches no stamped file\n")
+    commit("unrelated branch work")
+
+    assert _branch_point(root) == point
+    assert _unbumped_stamps(root, _branch_point(root)) == []
+    assert _unbumped_stamps(root, "origin/main") == [
+        "watchlist.js changed but its ?v= stamp did not move (base=16, branch=16)"]
+
+
+def test_a_branch_that_edits_a_stamped_file_must_still_move_its_stamp(tmp_path, monkeypatch):
+    root, write, stamp, commit, point = _stamp_fixture(tmp_path, monkeypatch)
+    assert _git(root, "update-ref", "refs/remotes/origin/main", point).returncode == 0
+    assert _git(root, "checkout", "-q", "-b", "feature").returncode == 0
+    write("watchlist.js", "/* this branch's edit */\n")
+    commit("branch edits watchlist.js")
+    assert _unbumped_stamps(root, _branch_point(root)) == [
+        "watchlist.js changed but its ?v= stamp did not move (base=16, branch=16)"]
+
+    stamp(watchlist=17)
+    assert _unbumped_stamps(root, _branch_point(root)) == []  # uncommitted bump counts
+    commit("bump watchlist.js")
+    assert _unbumped_stamps(root, _branch_point(root)) == []
+
+
+def test_the_recorded_ci_base_wins_when_the_checkout_has_no_origin_main(tmp_path, monkeypatch):
+    """A pack checkout may hold the tested base without an origin/main ref (or with one
+    from a later fetch); the base CI recorded is the branch point it tested against."""
+    root, write, stamp, commit, point = _stamp_fixture(tmp_path, monkeypatch)
+    write("portfolio.js", "/* this branch's edit */\n")
+    commit("branch edits portfolio.js")
+    assert _branch_point(root) is None
+    monkeypatch.setenv("TESTED_BASE_SHA", point)
+    assert _branch_point(root) == point
+    assert _unbumped_stamps(root, point) == [
+        "portfolio.js changed but its ?v= stamp did not move (base=11, branch=11)"]
+    monkeypatch.setenv("TESTED_BASE_SHA", "0" * 40)
+    assert _branch_point(root) is None
 
 
 def test_the_site_copies_are_byte_identical_to_their_templates():

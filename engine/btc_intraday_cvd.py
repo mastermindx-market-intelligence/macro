@@ -45,6 +45,38 @@ def _index(index) -> pd.DatetimeIndex:
     return idx.tz_convert('UTC').tz_localize(None) if idx.tz is not None else idx
 
 
+def _elapsed_coverage(index: pd.DatetimeIndex, valid: pd.Series) -> dict:
+    """Trailing candidate of at most 24 labels.
+
+    Row count is not elapsed time. Complete 24-hour activity is exactly 24
+    valid labels on a one-hour grid, so first-to-last elapsed time is 23 hours.
+    Twenty-four labels stretched across 33 hours are incomplete.
+    """
+    if len(index) == 0:
+        return {
+            'rows': 0, 'first_ts': None, 'last_ts': None,
+            'elapsed_hours': None, 'completeness': 'unavailable',
+        }
+    window = index[-24:]
+    usable = valid.iloc[-len(window):]
+    first = pd.Timestamp(window[0])
+    last = pd.Timestamp(window[-1])
+    elapsed = float((last - first) / pd.Timedelta(hours=1))
+    rows = int(len(window))
+    hourly = False
+    if rows == 24:
+        diffs = pd.DatetimeIndex(window).to_series().diff().dropna()
+        hourly = bool((diffs == pd.Timedelta(hours=1)).all())
+    complete = bool(rows == 24 and hourly and elapsed == 23.0 and bool(usable.all()))
+    return {
+        'rows': rows,
+        'first_ts': first.strftime('%Y-%m-%d %H:%M:%S'),
+        'last_ts': last.strftime('%Y-%m-%d %H:%M:%S'),
+        'elapsed_hours': elapsed,
+        'completeness': 'complete' if complete else 'incomplete',
+    }
+
+
 def compute(sig_df: pd.DataFrame | None = None, *, as_of=None) -> dict:
     """Bounded descriptive projection. Explicit as_of is a UTC snapshot cutoff."""
     try:
@@ -78,6 +110,7 @@ def compute(sig_df: pd.DataFrame | None = None, *, as_of=None) -> dict:
         seg = numeric.iloc[len(h) - n:] if n else numeric.iloc[:0]
         signed = seg.taker_buy_vol - seg.taker_sell_vol
         cvd = signed.cumsum()
+        coverage = _elapsed_coverage(h.index, valid)
         net24 = _f(signed.tail(24).sum()) if n >= 24 else None
         net72 = _f(signed.tail(72).sum()) if n >= 72 else None
         total24 = _f(seg.tail(24).sum().sum()) if n >= 24 else None
@@ -109,7 +142,10 @@ def compute(sig_df: pd.DataFrame | None = None, *, as_of=None) -> dict:
             'asof': str(okx_last), 'evaluated_at': str(clock), 'n_hours': n,
             'stored_rows': len(h), 'stale': bool(stale), 'hours_behind_ref': behind_ref,
             'hours_behind_clock': behind_clock, 'gap_detected': gap_detected,
-            'window_24h_complete': n >= 24, 'window_72h_complete': n >= 72,
+            # A contiguous row count cannot outrun the trailing labels' elapsed span.
+            'window_24h_complete': bool(n >= 24 and coverage['completeness'] == 'complete'),
+            'window_72h_complete': n >= 72,
+            'elapsed_coverage': coverage,
             'cvd_native': _f(cvd.iloc[-1]) if n else None,
             'net_flow_24h_native': net24, 'net_flow_72h_native': net72,
             'buy_share_24h': buy_share,

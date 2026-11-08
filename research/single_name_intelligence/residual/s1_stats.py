@@ -58,6 +58,10 @@ def mirror_mean_ci(vals, cluster_keys, *, draws: int = BOOT_DRAWS,
     non-overlapping anchor unit (h+1 sessions >= h); the cluster variable is
     the cluster key = trade date of the anchor s. None when the engine returns
     None (< 2 unique cluster labels).
+
+    The engine rounds the returned bounds to 4 decimal places. That rounding of
+    the bounds can place the printed CI such that it excludes the printed mean
+    in degenerate cases (the unrounded interval still covers the mean).
     """
     x = np.asarray(list(vals), dtype=float)
     n = int(x.size)

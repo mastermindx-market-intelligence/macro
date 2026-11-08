@@ -1,12 +1,12 @@
 # Pullback Probability and Depth — Preregistration v1.1 (stage-1b panel)
 
-**Status: DRAFT — NOT FROZEN.**
+**Status: FROZEN (2026-10-13).**
 
-This file is a draft protocol. It is not a freeze. No panel label, feature, fit, score or outcome
-may be computed until the seat freezes this file and every box in the freeze checklist at the end
-is ticked. While any identity pin or the runner budget constant holds the literal
-`PREREG_V11_PENDING`, a real run refuses with `BLOCKED / PREREG_V11_PENDING` before any feature,
-label or outcome is computed.
+This file is the frozen protocol. The seat froze it on 2026-10-13 after the pin-flow boxes (a)
+through (d) of the freeze checklist at the end were ticked, and the runner records its Git blob sha
+as `PREREG_BLOB_SHA`. Changed bytes are a different file, not this protocol. If any identity pin,
+blob pin or the runner budget constant is put back to the literal `PREREG_V11_PENDING`, a real run
+refuses with `BLOCKED / PREREG_V11_PENDING` before any feature, label or outcome is computed.
 
 Program: `WS:GREY-DEER-RISK-INTELLIGENCE` / MAS-258 · operation `risk-radar-pullback-20261009`.
 Parent protocol: `research/grey_deer/PULLBACK_PREREGISTRATION_2026-10-11.md` (v1, frozen). This
@@ -16,25 +16,28 @@ Eligible-input manifest for the SPY study: `research/grey_deer/PULLBACK_SOURCE_R
 v1.0.0, blob `38925409555d046eb9d3ad38ddaba33e2159a3d3`. That manifest is not edited and is not the
 panel manifest. The panel manifest the runner pins is v1.1.0,
 `research/grey_deer/PULLBACK_SOURCE_RIGHTS_QUALIFICATION_V1_1_2026-10-12.md`.
-This draft records that path. It does not record the manifest's blob sha. The freeze checklist does.
+Its Git blob sha at freeze is `c52d93e98f4e4a776a7cf38fce46bcf4a84c52d7`, recorded as the runner's `MANIFEST_BLOB_SHA`.
 Stage-1 runner this science is carried from: `scripts/research/grey_deer_pullback_stage1.py`.
 Stage-1b runner named by the seat, not written here: `scripts/research/grey_deer_pullback_stage1b.py`.
-Provenance of this draft: branch `lane/grey-deer-w4-g-xt-prereg-20261012`, parent
+Provenance: drafted on branch `lane/grey-deer-w4-g-xt-prereg-20261012`, parent
 `44d515c0e78fe0708b6841de4d95ead3894b97f3`. That commit is not a freeze pin. The freeze pin is the
-Git blob sha of this file, recorded later in the runner.
-Drafted by lane G-XT-PREREG under the Grey Deer seat commission (Claude session `da1ad7ad`). The
-seat freezes the file. This draft does not claim an independent audit.
+Git blob sha of this file, recorded in the runner as `PREREG_BLOB_SHA`.
+Drafted by lane G-XT-PREREG under the Grey Deer seat commission (Claude session `da1ad7ad`) and
+frozen by the seat. The file does not claim an independent audit.
 
 Seat decisions D1–D13 are recorded below as frozen by the seat. Seat amendment A1 adds D14 and D15.
-Seat amendment A2 adds D16. This draft does not retune any of them. The status line stays
-`DRAFT — NOT FROZEN`.
+Seat amendment A2 adds D16. The freeze does not retune any of them.
 
 ## 0. Disclosure
 
 The authors of v1.1 have seen the stage-1 SPY results. v1.1 was designed after seeing a null on SPY. The panel is chosen to raise the calendar-episode count. It is a new test, not a rescue of v1. A result on the panel does not revise, overturn or repair the SPY verdict, and the SPY verdict is not an input to any threshold, horizon, population, cost ratio or power floor here.
 
-**What was read.** These files were read in full before this draft was written. They stay the
-record of the SPY study. This draft does not edit them and does not copy their skill tables.
+**Frozen inputs.** Manifest v1.1.0, `research/grey_deer/PULLBACK_SOURCE_RIGHTS_QUALIFICATION_V1_1_2026-10-12.md`,
+blob `c52d93e98f4e4a776a7cf38fce46bcf4a84c52d7` (the runner's `MANIFEST_BLOB_SHA`). This file's own blob is the runner's
+`PREREG_BLOB_SHA`; a file cannot carry its own blob sha.
+
+**What was read.** These files were read in full before this protocol was drafted. They stay the
+record of the SPY study. This protocol does not edit them and does not copy their skill tables.
 
 | Artifact | Role in the exposure |
 |---|---|
@@ -91,15 +94,15 @@ One row per seat decision. The v1 cell is a locator of at most 15 words, quoted 
 | D1 | "close-only models forecast SPY" | Same target, horizons, τ, features, purge and metrics. Configurations B0, B1-20, B1-63, B2-21, B2-63, M3-ALL, M3-ALL-C0.1 (sensitivity), Q0, Q1, Q3-ALL. Fold constants `WARM_IDX` 63, `FIRST_TEST_IDX` 315, `BLOCK_LEN` 126, `MIN_FINAL_BLOCK` 63. The fold calendar is applied on the panel's common DATE axis. | Same science. The axis changes from one SPY row index to the shared date index. |
 | D2 | "Manifest row 1 only: US SPY" | Tickers QQQ, IWM, DIA, XLB, XLC, XLE, XLF, XLI, XLK, XLP, XLRE, XLU, XLV, XLY (14). SPY is excluded. Window 2021-07-06 through 2026-10-07. A ticker whose first row falls after the window start refuses `BLOCKED / PANEL_COVERAGE`. The runner never trims. | The panel is the device that can raise the episode count. SPY is excluded because its stage-1 results have been seen. |
 | D3 | "the set of row dates equals" | See D15. The common DATE axis is the intersection of the 14 tickers' sessions in the window. The symmetric difference between that intersection and the NYSE session list must be exactly `{"2026-08-18"}`, else `BLOCKED / CALENDAR_MISALIGNED`. Never forward-fill. Horizons count sessions on the intersection. | Operative rule is D15. Seat amendment A1, input-pin evidence only. |
-| D4 | "A different hash means the run stops" | Each ticker has a pinned normalized-subframe sha256 (stage-1 `normalize_subframe`, `subframe_sha256`, `IDENTITY_COLUMNS`), row count, first date and last date. Until the seat fills them, every pin is the literal `PREREG_V11_PENDING`. A pending pin refuses a real run with `BLOCKED / PREREG_V11_PENDING` before any feature, label or outcome. | Identity is frozen before any outcome. The seat has not filled the pins. |
+| D4 | "A different hash means the run stops" | Each ticker has a pinned normalized-subframe sha256 (stage-1 `normalize_subframe`, `subframe_sha256`, `IDENTITY_COLUMNS`), row count, first date and last date. The seat filled them at freeze (§3). A pin put back to the literal `PREREG_V11_PENDING` refuses a real run with `BLOCKED / PREREG_V11_PENDING` before any feature, label or outcome. | Identity is frozen before any outcome. The seat filled the pins at freeze (§3). |
 | D5 | "Every day-over-day close ratio lies in [0.75, 1/0.75]" | After the D14 adjustment, a session with `abs(log(close_t / close_{t−1})) > log(1.25)` on adjusted closes refuses `BLOCKED / SPLIT_DISCONTINUITY`. An unpinned split is never inferred from the data. Dividends are unadjusted, and that is disclosed. | The seat tightened the guard from 0.75 to 1.25. The pinned adjustment is D14. |
 | D6 | "training set is the earlier warm origins" | Each fold's training set is the union, over tickers, of that ticker's date-purged training rows. There is no ticker-identity feature. The features are scale-free. Predictions are issued per (ticker, date). | Pooled fits, without a dummy the model could use to memorize which name drew down. |
 | D7 | "on the origins where every compared configuration" | Intersection-of-issued, as in stage 1, keyed on (ticker, date). | A paired comparison exists only where every compared configuration issued for that pair. |
 | D8 | "circular moving-block bootstrap over the time-ordered comparison set" | Circular moving-block bootstrap over the common DATE index. Each drawn date carries the whole cross-section. `L = max(21, 2h)`, sensitivity `L = h`, `N_DRAWS` 10,000. `SeedSequence([221012, h, pop, fam, var])` with stage-1 `SEED_CODES`. `starts = rng.integers(0, N_dates, size=ceil(N_dates / L))`. An undefined statistic is −inf or +inf, in the direction that fails the gate. `numpy.quantile`, never `nanquantile`. | Resampling dates keeps the cross-section intact. The seed root changes so v1's draws are not reused. |
 | D9 | "at least 10 episodes and at least 10" | An event date is a date where at least one ticker has `Y = 1`. Event dates are clustered on the DATE axis: a gap ≤ h merges. An episode window runs from 21 sessions before the first event to h sessions after the last. Power floor: ≥ 10 calendar episodes and ≥ 10 event months. LOEO removes one calendar episode's dates from all tickers. Per-ticker episode counts are descriptive only, never gate inputs. | The power unit is the calendar episode, so fourteen names cannot be counted as fourteen independent episodes. |
 | D10 | "There are 12 gated claims" | 12 claims: h × {P-all, P-active} × {binary, quantile}. The gate is the `0.05 / 12` quantile and v1 §11's conditions, restated on the panel. P-active stays `BLOCKED / OBSERVER_NOT_ON_MAIN`. INC is `NOT_APPLICABLE`: the incumbent is SPY-only. | The claim family stays one family of 12. The incumbent replay has no panel counterpart. |
-| D11 | "budget 69 = 23 per horizon" | Family `grey_deer_pullback_v11`, v1 §6's itemized convention with INC removed: 22 per horizon, 66 in total. Until freeze, the runner's budget constant is the literal `PREREG_V11_PENDING`, which refuses a real run. | INC is out of the count. The arithmetic is shown in §6. A pending constant blocks execution before freeze. |
-| D12 | "writes a results note and a JSON artifact" | Schema `grey_deer_pullback_stage1b/v1`, under `research/grey_deer/pullback_stage1b/`, and only by a seat-run real execution after freeze. Strict JSON with `allow_nan=False`; an undefined value is JSON `null`, never NaN. Top-level `bootstrap` is `{n_draws, seed_root, axis: "date", block_length_rule}` and the per-cell object is `bootstrap_cells`. `fold_block_table` is written into the payload before any fit. Every artifact carries `subframe_sha256` per ticker. | Stage-1b writes a new artifact. This draft does not write it. |
+| D11 | "budget 69 = 23 per horizon" | Family `grey_deer_pullback_v11`, v1 §6's itemized convention with INC removed: 22 per horizon, 66 in total. At freeze the runner's budget constant `TRIAL_BUDGET` is 66; put back to the literal `PREREG_V11_PENDING` it refuses a real run. | INC is out of the count. The arithmetic is shown in §6. A pending constant blocks execution. |
+| D12 | "writes a results note and a JSON artifact" | Schema `grey_deer_pullback_stage1b/v1`, under `research/grey_deer/pullback_stage1b/`, and only by a seat-run real execution after freeze. Strict JSON with `allow_nan=False`; an undefined value is JSON `null`, never NaN. Top-level `bootstrap` is `{n_draws, seed_root, axis: "date", block_length_rule}` and the per-cell object is `bootstrap_cells`. `fold_block_table` is written into the payload before any fit. Every artifact carries `subframe_sha256` per ticker. | Stage-1b writes a new artifact. This protocol does not write it. |
 | D13 | "before computing any outcome, label, feature or" | No panel outcome is computed before prereg v1.1 and manifest v1.1.0 are frozen by the seat. v1 §14's ceiling carries over: no customer odds, no publication, no capital change, and nothing written to PR #8721 or PR #8188. | Seeing the SPY null does not authorize a panel outcome before the new freeze. |
 | D14 | "Every day-over-day close ratio lies in [0.75, 1/0.75]" | Pinned table `{(t, "2025-12-05"): 2.0 for t in XLB, XLE, XLK, XLU, XLY}`. For rows dated before the effective date, open, high, low and close are divided by the ratio, volume is multiplied by the ratio, and transactions are unchanged. The observed pre/post close ratio on the effective date must lie in `[0.9 × ratio, 1.1 × ratio]`, else `BLOCKED / SPLIT_TABLE_MISMATCH`. The D5 absolute-log check then runs on adjusted closes, and any remaining break is `BLOCKED / SPLIT_DISCONTINUITY`. An unpinned split is never inferred from the data. The raw subframe sha256 stays the identity pin. | seat amendment A1, input-pin evidence only |
 | D15 | "the set of row dates equals" | The common DATE axis is the intersection of the 14 tickers' sessions in the window. The pinned excluded set is exactly `{"2026-08-18"}`. A symmetric difference between that intersection and the NYSE session list other than the pinned set is `BLOCKED / CALENDAR_MISALIGNED`. Expected panel: `EXPECTED_COMMON_SESSIONS = 1320`, 2021-07-06 through 2026-10-07. A session count other than 1320 is the same `BLOCKED / CALENDAR_MISALIGNED` refusal. Horizons and indices count sessions on the intersection, and a ticker that has 2026-08-18 drops that row before targets are built. | seat amendment A1, input-pin evidence only |
@@ -135,7 +138,7 @@ severity or capital. Masterplan §6.3 and SCIENTIFIC_PROTOCOL §5–§6 bind it,
 |---|---|---|
 | Historically-available reconstruction | HISTORICALLY_AVAILABLE | The primary sample (§3). All gates. |
 | Current-vintage reconstruction | CURRENT_VINTAGE | No role. v1 used this view only for INC. INC is `NOT_APPLICABLE` (§6). Nothing from this view is pooled and nothing from it is a gate. |
-| Prospective issued origins | GENUINELY_ISSUED | Not started. N = 0 at this draft (§13). |
+| Prospective issued origins | GENUINELY_ISSUED | Not started. N = 0 at freeze (§13). |
 | Excluded or unavailable origins | typed | Every excluded origin carries its first failing reason (§3, §12). |
 
 The three evidence classes are never pooled (manifest v1.0.0 D8, carried forward). SPY is an
@@ -156,8 +159,8 @@ a nonzero exit stops the run as `BLOCKED / HYDRATE_FAILED`. It then loads each t
 `collectors.massive_stock_day.load_ticker(<ticker>)`. `load_ticker` returns an empty frame on a
 missing file or any read error, and an empty frame stops the run as `BLOCKED / SOURCE_UNREADABLE`
 naming the ticker. The executing script applies the normalisation below to the frame
-`load_ticker` returned, never to a second read. The parquet is never committed. This drafting
-lane does not hydrate and does not load a store. The loaded frame is RAW. Identity is hashed on
+`load_ticker` returned, never to a second read. The parquet is never committed. The drafting
+lane did not hydrate or load a store; the seat's `--blocks-only` pass did (§3). The loaded frame is RAW. Identity is hashed on
 those raw bytes. The pinned adjustment below is applied afterwards, in memory, and the store file
 is not rewritten.
 
@@ -184,15 +187,16 @@ with `date <= 2026-10-07`, sorts by `date`, and returns those columns.
 `subframe_sha256` hashes one header line of the column names joined by `|`, then one line per row.
 The encoding is: a string as itself, a missing value as `NA`, otherwise `float(v).hex()`.
 
-Until the seat fills them, every pin in the next table is the literal `PREREG_V11_PENDING`. In
-the runner those pins are `IDENTITY_PINS`, the budget constant is `TRIAL_BUDGET`, and the
-manifest and prereg blob pins are the same literal until freeze. A real run checks the constants
-first, before hydrate and before any feature, label or outcome. If any pin equals that literal,
-or `TRIAL_BUDGET` equals that literal, or this file's status is still `DRAFT — NOT FROZEN`, the
-run stops as `BLOCKED / PREREG_V11_PENDING`. The check reads constants only. It does not read
-the price store. That refusal is the real run. `--blocks-only` is allowed while `IDENTITY_PINS`,
-`TRIAL_BUDGET`, the blob pins and the status line are still pending: it prints the pins and the
-block lines, and it is not this check (§12).
+The seat filled every pin in the next table at freeze, from the `PIN` lines of its `--blocks-only`
+pass over the pinned store. In the runner those pins are `IDENTITY_PINS`, the budget constant is
+`TRIAL_BUDGET` (66), and the manifest and prereg blob pins are `MANIFEST_BLOB_SHA` and
+`PREREG_BLOB_SHA`. A real run checks those constants first, before hydrate and before any feature,
+label or outcome. If any of them is put back to the literal `PREREG_V11_PENDING`, the run stops
+as `BLOCKED / PREREG_V11_PENDING`. The check reads constants only. It does not read this file's
+status line and does not read the price store. Every artifact records the `manifest_blob_sha` and
+`prereg_blob_sha` of the executing checkout, and a test on main holds the pinned blobs equal to the
+committed files. `--blocks-only` prints the pins and the block lines, and it is not this check
+(§12).
 
 The content hash and the subframe sha256 are one digest. Both names mean stage-1
 `subframe_sha256` over `IDENTITY_COLUMNS` of the raw, unadjusted rows with `date <= 2026-10-07`.
@@ -202,30 +206,30 @@ the calendar drop do not change it.
 
 | Ticker | `subframe_sha256` | rows | first date | last date |
 |---|---|---|---|---|
-| QQQ | `PREREG_V11_PENDING` | `PREREG_V11_PENDING` | `PREREG_V11_PENDING` | `PREREG_V11_PENDING` |
-| IWM | `PREREG_V11_PENDING` | `PREREG_V11_PENDING` | `PREREG_V11_PENDING` | `PREREG_V11_PENDING` |
-| DIA | `PREREG_V11_PENDING` | `PREREG_V11_PENDING` | `PREREG_V11_PENDING` | `PREREG_V11_PENDING` |
-| XLB | `PREREG_V11_PENDING` | `PREREG_V11_PENDING` | `PREREG_V11_PENDING` | `PREREG_V11_PENDING` |
-| XLC | `PREREG_V11_PENDING` | `PREREG_V11_PENDING` | `PREREG_V11_PENDING` | `PREREG_V11_PENDING` |
-| XLE | `PREREG_V11_PENDING` | `PREREG_V11_PENDING` | `PREREG_V11_PENDING` | `PREREG_V11_PENDING` |
-| XLF | `PREREG_V11_PENDING` | `PREREG_V11_PENDING` | `PREREG_V11_PENDING` | `PREREG_V11_PENDING` |
-| XLI | `PREREG_V11_PENDING` | `PREREG_V11_PENDING` | `PREREG_V11_PENDING` | `PREREG_V11_PENDING` |
-| XLK | `PREREG_V11_PENDING` | `PREREG_V11_PENDING` | `PREREG_V11_PENDING` | `PREREG_V11_PENDING` |
-| XLP | `PREREG_V11_PENDING` | `PREREG_V11_PENDING` | `PREREG_V11_PENDING` | `PREREG_V11_PENDING` |
-| XLRE | `PREREG_V11_PENDING` | `PREREG_V11_PENDING` | `PREREG_V11_PENDING` | `PREREG_V11_PENDING` |
-| XLU | `PREREG_V11_PENDING` | `PREREG_V11_PENDING` | `PREREG_V11_PENDING` | `PREREG_V11_PENDING` |
-| XLV | `PREREG_V11_PENDING` | `PREREG_V11_PENDING` | `PREREG_V11_PENDING` | `PREREG_V11_PENDING` |
-| XLY | `PREREG_V11_PENDING` | `PREREG_V11_PENDING` | `PREREG_V11_PENDING` | `PREREG_V11_PENDING` |
+| QQQ | `d6bd7575c5db3f0fb5d63e6baa2892a5a9d3610a8885562f8ead677a4444373f` | 1320 | 2021-07-06 | 2026-10-07 |
+| IWM | `ca2df002ee03ed68c19cd77e73b702c057be11f92435936b1f7d4fd57e218b8b` | 1320 | 2021-07-06 | 2026-10-07 |
+| DIA | `f11d142d015fca21c404e4a96524791d17ecaee4eb08f489f620ac47a753d618` | 1321 | 2021-07-06 | 2026-10-07 |
+| XLB | `0863d459e79a40b0943b2ced0aeea42801e81d9a989b8df07823ee6445055628` | 1321 | 2021-07-06 | 2026-10-07 |
+| XLC | `121c9b52c6ef4231540b73ad15362cf5927e7e5ae3c8df073ae231cbd158374d` | 1321 | 2021-07-06 | 2026-10-07 |
+| XLE | `ebf4be8c9f7f53b2472b1a032d5f105f7ed5ce7f439411f468b6435939176ba3` | 1320 | 2021-07-06 | 2026-10-07 |
+| XLF | `da3a5aa47a06f469dd6a99288e7be423ff63e9a8b9dc10d6832dc7a4af5b1491` | 1320 | 2021-07-06 | 2026-10-07 |
+| XLI | `d153ab22f333d536bdf7c8ef84c981b9c5614e8f62969687d765f043e35e596c` | 1320 | 2021-07-06 | 2026-10-07 |
+| XLK | `7dc854d1e340f1619340c1c26c9be4cc17fd0c925a0bbe036c74c058d53d0e63` | 1321 | 2021-07-06 | 2026-10-07 |
+| XLP | `a480545513732922a2be49c2cf807f7500baf923beb909cdf8d59eae70ef885b` | 1320 | 2021-07-06 | 2026-10-07 |
+| XLRE | `c578f88c142f67a237f45a324097fc912c6994abd2aaa355080b5e94ca41fcae` | 1320 | 2021-07-06 | 2026-10-07 |
+| XLU | `238dbbd6d68fa71ae074020ad83a2bbc4ffcd0a45cc087ca1982d56fb4a5b2f1` | 1320 | 2021-07-06 | 2026-10-07 |
+| XLV | `64f9d9b448b7e93b9e11137db11d9860c1c61d4682b0c685f43a6ff73db5d251` | 1321 | 2021-07-06 | 2026-10-07 |
+| XLY | `870fa4c0b19e31d5ef33b2d0702b9e9815b89285f3e3eb925434afb36b758ed5` | 1320 | 2021-07-06 | 2026-10-07 |
 
-The seat may compute these pins with the stage-1 recipe, identity only, as part of freeze. That
+The seat computed these pins at freeze, identity only, from the pinned store; the `--blocks-only` `PIN` lines carry the same hashes. That
 measurement prints the hash, the row count and the first and last date. It does not compute a
 label, a feature, a fit or a score, and it is not written under `research/grey_deer/pullback_stage1b/`.
 A hash that differs from the frozen pin stops the run as `BLOCKED / SAMPLE_IDENTITY_MISMATCH` for
 that ticker. It is never re-hashed into agreement. The fix is a new revision of this file. The
 same refusal fires when the row count, the first date or the last date differs from the pin.
 
-**Identity recipe (frozen, prints identity only).** One ticker per invocation. This draft does
-not run it.
+**Identity recipe (frozen, prints identity only).** One ticker per invocation. It is
+the reference for the §3 table.
 
 ```python
 """Canonical content hash of one frozen ticker subframe. Prints identity only, never values."""
@@ -257,7 +261,7 @@ print("last", sub["date"].iloc[-1])
 inside the closed window `[2021-07-06, 2026-10-07]`. The common DATE axis is the intersection `I`
 of the fourteen sets `S_i`. Let `NYSE` be
 `lib.nyse_calendar.sessions_between(date(2021, 7, 6), date(2026, 10, 7))`. v1 measured that NYSE
-set at 1,321 sessions. This draft does not re-measure it.
+set at 1,321 sessions. This protocol does not re-measure it.
 
 The symmetric difference between `I` and `NYSE` must be exactly the pinned excluded set
 `{"2026-08-18"}`. Otherwise the run stops as `BLOCKED / CALENDAR_MISALIGNED`. Dates that are in
@@ -284,7 +288,7 @@ window start.
 
 **Input preparation.** The stage-1b runner performs the pinned adjustment and the intersection by
 calling `prepare_panel(frames, window_start, as_of, splits=PINNED_SPLITS, excluded=PINNED_CALENDAR_EXCLUSIONS)`
-in `scripts/research/grey_deer_panel_adjust.py` (lane G-ADJ, pending merge). The runner must call
+in `scripts/research/grey_deer_panel_adjust.py` (lane G-ADJ, landed by PR #9091). The runner must call
 that function. It must not reimplement the adjustment or the intersection. `window_start` is
 2021-07-06 and `as_of` is 2026-10-07. Every feature and every label in §4 through §12 is read from
 the frame that call returns. The runner hashes the raw frame before the call and passes that same
@@ -292,12 +296,12 @@ raw frame in. It does not compute a second adjustment or a second intersection. 
 confirmation ratio is the split guard below. `prepare_panel` is what executes it.
 
 **Integrity order, before any feature or label.** This order is the real run. The first failure
-stops that run. `--blocks-only` does not take step 1. It prints and exits 0 while the pins are
-still the literal (§12). Steps 4 and 5 are inside the `prepare_panel` call. That call is the only
+stops that run. `--blocks-only` does not take step 1. It prints the block lines and the pins and
+exits 0 (§12). Steps 4 and 5 are inside the `prepare_panel` call. That call is the only
 implementation of the adjustment and the intersection. The refusal codes below are the codes that
 call must surface. The runner does not code the adjustment or the intersection a second time.
 
-1. Pending-pin and draft-status check (`PREREG_V11_PENDING`), constants only.
+1. Pending-pin check (`PREREG_V11_PENDING`) on `IDENTITY_PINS`, `TRIAL_BUDGET` and the two blob pins, constants only.
 2. Load. Empty frame: `SOURCE_UNREADABLE`.
 3. Normalise the raw frame, hash it, and match pins. The hash is the raw unadjusted subframe. Mismatch: `SAMPLE_IDENTITY_MISMATCH`. First date after the window start: `PANEL_COVERAGE`.
 4. Pinned-split confirmation and adjustment (D14), on each ticker's raw in-window rows, before the intersection drop. A pinned effective date or its previous session that is absent, or an observed pre/post close ratio outside `[0.9 × ratio, 1.1 × ratio]`, stops as `SPLIT_TABLE_MISMATCH`. An unpinned split is never inferred from the data.
@@ -373,7 +377,7 @@ No other ticker's price enters the label.
 
 Warmth and maturity are properties of the date, because every ticker shares the DATE axis.
 
-- **Warm.** A date is warm when `idx(t) ≥ 63` (`WARM_IDX`). Index 63 is 2021-10-04. That session is before 2026-08-18, so the §7 index-shift rule leaves it unchanged from v1's session map. This draft does not re-measure the calendar.
+- **Warm.** A date is warm when `idx(t) ≥ 63` (`WARM_IDX`). Index 63 is 2021-10-04. That session is before 2026-08-18, so the §7 index-shift rule leaves it unchanged from v1's session map. This protocol does not re-measure the calendar.
 - **P-all.** Every ticker-date row whose date is warm and mature for that `h`. Executable after freeze. Primary.
 - **P-active.** Every P-all row where the causal pullback observer, run on that ticker's own prefix through `t` only, returns `active is True`. The observer is `lib/pullback_observation.py` `observe()` with rules `close_path.v1`. It is on held draft PR #8188 (head `ff27a268abaa` at the time of v1) and not on main.
   - Until that observer is on main with byte-identical rules, every P-active row is `BLOCKED / OBSERVER_NOT_ON_MAIN`. The P-all execution continues. This seat never copies #8188's code.
@@ -411,7 +415,7 @@ Because the calendar is shared, a warm mature date contributes either all 14 tic
 | `WACE_MIN_BIN` | 100 ticker-date rows |
 | Trial family | `grey_deer_pullback_v11` |
 | Science budget | 66 |
-| `TRIAL_BUDGET` until freeze | the literal `PREREG_V11_PENDING` |
+| `TRIAL_BUDGET` | 66 (frozen) |
 | Schema | `grey_deer_pullback_stage1b/v1` |
 
 All features use that ticker's own closes at or before `t`, on the §3 adjusted intersection frame. No feature reads another ticker's price, a ticker identifier, a price level, or a volume level. The features are scale-free ratios, log returns or logs of volatility.
@@ -513,22 +517,22 @@ How the 66 lines sit under the 12 claims:
 `3 horizons × 4 claims = 12 claims`. `66 / 12` is not an integer, which is expected: a claim is
 not a budget line.
 
-Until the seat freezes this file, the runner's budget constant `TRIAL_BUDGET` is the literal
-`PREREG_V11_PENDING`, not the integer 66. That literal is not registered. `register_trials` is
-not called.
+At freeze the seat set the runner's budget constant `TRIAL_BUDGET` to the integer 66. Before
+freeze it was the literal `PREREG_V11_PENDING`, which was never registered.
 
 After freeze, the seat-run registers the family before any outcome is computed, with
 `engine.trial_ledger.register_trials` (a class, used as a context manager), family
 `grey_deer_pullback_v11`, `basis="itemized"`, budget 66. Registration appends to
-`data/trial_ledger.jsonl`. The seat-run that does so has `data/` available. This drafting lane
-does not opt the worktree into `data/` and does not write the ledger. A rerun under the deviation
+`data/trial_ledger.jsonl`. The runner's `trial_ledger_scope()` registers on the executing
+checkout's own `data/trial_ledger.jsonl` and refuses when that file is absent (a sparse worktree),
+so registration never creates a one-row ledger. A rerun under the deviation
 rule (§12) must not inflate the ledger: stage-1 deduplicated on family, budget and reason, and
 the same deduplication applies.
 
 ## 7. Frozen folds
 
 The fold calendar is the v1 index calendar, applied to the panel's common DATE axis (D1). It was
-not chosen by looking at panel prices. No panel price has been read for this draft.
+not chosen by looking at panel prices. No panel price was read to set it; the seat's `--blocks-only` pass read the store only for identity and the calendar.
 
 - **Index constants.** `WARM_IDX = 63`, `FIRST_TEST_IDX = 315`, `BLOCK_LEN = 126`, `MIN_FINAL_BLOCK = 63`.
 - **Why 315.** Warm indices start at 63. The 253rd warm date, counting from 1, is index `63 + 252 = 315`. That is the first test date. The constant is frozen. It is not recomputed from a price path.
@@ -539,26 +543,26 @@ not chosen by looking at panel prices. No panel price has been read for this dra
 - **Refit.** One fit per configuration per test block, on the pooled union. Never refit inside a block.
 - **Empty calendar.** If `315` is past the last mature index, `BLOCKED / FOLDS_EMPTY`. The block length is not reduced to avoid the refusal.
 
-**Index shift against v1's session map (D15).** The common DATE axis is the §3 intersection. It is one session shorter than the session list v1 published, because `2026-08-18` is excluded. Indices on this axis up to and including 2026-08-17 are identical to v1's session map. Every index after 2026-08-18 is v1's index minus 1. Any v1 block date after 2026-08-18 is restated as the date at the new index. This draft does not compute that date. The runner writes `fold_block_table` into the payload before any fit. `--blocks-only` prints one `BLOCK` line per fold block and does not fit. The freeze checklist copies those lines into the block-date table.
+**Index shift against v1's session map (D15).** The common DATE axis is the §3 intersection. It is one session shorter than the session list v1 published, because `2026-08-18` is excluded. Indices on this axis up to and including 2026-08-17 are identical to v1's session map. Every index after 2026-08-18 is v1's index minus 1. Any v1 block date after 2026-08-18 is restated as the date at the new index. The runner writes `fold_block_table` into the payload before any fit. `--blocks-only` prints one `BLOCK` line per fold block and does not fit. The block-date table below is copied from the seat's `--blocks-only` `BLOCK` lines at freeze.
 
 **Warm index.** `WARM_IDX` 63 is 2021-10-04, and it is unchanged. That session is before 2026-08-18, so its index on the intersection axis is the same index v1 published.
 
-**v1 boundary dates on or before 2026-08-17.** The explicit dates in the table below all fall on or before 2026-08-17, so the index-shift rule leaves those boundary dates unchanged. They are restated so the runner does not invent a second calendar for that stretch. They are not a new measurement of the panel. The cell "last mature date" is not a date this draft computes. It falls after 2026-08-18, so the runner restates it as the date at the new index and includes it in `fold_block_table`, which is written before any fit.
+**Block-date table (copied from the seat's `--blocks-only` `BLOCK` lines at freeze).** Blocks 1–7 fall on or before 2026-08-17, so their dates equal v1's. Row 8 ends at the last mature index `N − 1 − h`, N = 1320, after 2026-08-18; its three ends are h = 5 / 10 / 21 in that order. A real run writes the same table into `fold_block_table` before any fit.
 
-| Block | First test date | Last test date |
-|---|---|---|
-| 1 | 2022-10-04 | 2023-04-04 |
-| 2 | 2023-04-05 | 2023-10-04 |
-| 3 | 2023-10-05 | 2024-04-05 |
-| 4 | 2024-04-08 | 2024-10-04 |
-| 5 | 2024-10-07 | 2025-04-08 |
-| 6 | 2025-04-09 | 2025-10-08 |
-| 7 | 2025-10-09 | 2026-04-10 |
-| 8 | 2026-04-13 | last mature date |
+| Block | First test index | First test date | Last test index | Last test date |
+|---|---|---|---|---|
+| 1 | 315 | 2022-10-04 | 440 | 2023-04-04 |
+| 2 | 441 | 2023-04-05 | 566 | 2023-10-04 |
+| 3 | 567 | 2023-10-05 | 692 | 2024-04-05 |
+| 4 | 693 | 2024-04-08 | 818 | 2024-10-04 |
+| 5 | 819 | 2024-10-07 | 944 | 2025-04-08 |
+| 6 | 945 | 2025-04-09 | 1070 | 2025-10-08 |
+| 7 | 1071 | 2025-10-09 | 1196 | 2026-04-10 |
+| 8 | 1197 | 2026-04-13 | 1314 / 1309 / 1298 | 2026-09-30 / 2026-09-23 / 2026-09-08 |
 
-v1 reported the last block as 119, 114 and 103 origins at `h = 5, 10, 21` on v1's session list, each at least 63, so the short-block merge did not fire there. The panel runner applies the merge rule to the `N` it actually sees after §3, expected 1320. It does not assume v1's last-block lengths, and it does not assume the merge stays idle.
+v1 reported the last block as 119, 114 and 103 origins at `h = 5, 10, 21` on v1's session list, each at least 63, so the short-block merge did not fire there. The panel runner applies the merge rule to the `N` it actually sees after §3, expected 1320. It does not assume v1's last-block lengths, and it does not assume the merge stays idle. On the panel's 1320-session axis row 8 holds 118, 113 and 102 dates, each at least 63, so the merge did not fire.
 
-v1's first-block purge, on one series, admitted 248, 243 and 232 warm origins at `h = 5, 10, 21`. Those are index counts: the dates `t` with `63 ≤ idx(t) ≤ 315 − h`. Every index in that range falls on or before 2026-08-17, so the index-shift rule leaves those counts and those dates unchanged. On P-all the pooled training row count for that block is the number of tickers present on each admitted date. This draft does not multiply those figures into a census and does not treat them as a measured panel result.
+v1's first-block purge, on one series, admitted 248, 243 and 232 warm origins at `h = 5, 10, 21`. Those are index counts: the dates `t` with `63 ≤ idx(t) ≤ 315 − h`. Every index in that range falls on or before 2026-08-17, so the index-shift rule leaves those counts and those dates unchanged. On P-all the pooled training row count for that block is the number of tickers present on each admitted date. This protocol does not multiply those figures into a census and does not treat them as a measured panel result.
 
 **Comparison set (D7).** For each horizon and each population, on the ticker-date rows where every compared configuration issues:
 
@@ -677,7 +681,7 @@ Baseline-against-baseline differences on P-all (B1 and B2 against B0, Q1 against
 
 ## 12. Verdicts and stopping
 
-Verdict words are those of SCIENTIFIC_PROTOCOL. This draft adds no verdict word. `NOT_APPLICABLE` is a disposition for INC, not a verdict on a claim.
+Verdict words are those of SCIENTIFIC_PROTOCOL. This protocol adds no verdict word. `NOT_APPLICABLE` is a disposition for INC, not a verdict on a claim.
 
 | Outcome | Verdict |
 |---|---|
@@ -707,7 +711,7 @@ Verdict words are those of SCIENTIFIC_PROTOCOL. This draft adds no verdict word.
 
 **Negative control.** M3-ALL at `C = 1.0` and Q3-ALL are refit, once per test block, with that block's pooled training labels and targets circularly shifted by half the training length. Stack the pooled training rows by date ascending, and within a date by the canonical ticker order. Then `numpy.roll(y, len(y) // 2)`, deterministic, no seed. The same permutation is applied to the quantile target `A`. Report BSS, `V` at `α = b_h`, and pinball skill, all expected at or below 0. A value above 0 is reported. It does not move a gate, and it is not repaired by shifting a different amount.
 
-**`--blocks-only`.** Before freeze the seat runs the runner with `--blocks-only` on the store. That invocation prints one `BLOCK` line per fold block and 14 `PIN` lines, one per ticker. It computes no feature, label or outcome, and it exits 0. It does not write under `research/grey_deer/pullback_stage1b/`. It is not refused for `PREREG_V11_PENDING`: `IDENTITY_PINS`, `TRIAL_BUDGET` and the blob pins still hold that literal, and the status line is still `DRAFT — NOT FROZEN`. The freeze checklist copies that stdout into the §3 pin table and the §7 block-date table. The pending-pin refusal applies to the real run after those pins are filled.
+**`--blocks-only`.** At freeze the seat ran the runner with `--blocks-only` on the store. That invocation prints one `BLOCK` line per fold block and 14 `PIN` lines, one per ticker. It computes no feature, label or outcome, and it exits 0. It does not write under `research/grey_deer/pullback_stage1b/`. It is not refused for `PREREG_V11_PENDING`, so it ran while `IDENTITY_PINS`, `TRIAL_BUDGET` and the blob pins still held that literal. The seat copied that stdout into the §3 pin table and the §7 block-date table. The pending-pin refusal applies to every real run.
 
 **Stop-the-run types**, first failure wins, and no metric is emitted for a stopped run: `PREREG_V11_PENDING`, `HYDRATE_FAILED`, `SOURCE_UNREADABLE`, `PANEL_COVERAGE`, `SAMPLE_IDENTITY_MISMATCH`, `CALENDAR_MISALIGNED`, `PRICE_INVALID`, `SPLIT_TABLE_MISMATCH`, `SPLIT_DISCONTINUITY`, `FOLDS_EMPTY`, `FEATURE_UNDEFINED_AFTER_WARMUP`. The first stdout line is `BLOCKED / <TYPE>`. The blocked artifact records the type, the detail (tickers and dates where this section says to name them), and every identity already established. A common-session count other than `EXPECTED_COMMON_SESSIONS` 1320 is `BLOCKED / CALENDAR_MISALIGNED`.
 
@@ -719,7 +723,7 @@ Verdict words are those of SCIENTIFIC_PROTOCOL. This draft adds no verdict word.
 
 The prospective design is not written in this file. A separate lane owns it. The design document is `research/grey_deer/PULLBACK_PROSPECTIVE_LANE_DESIGN_2026-10-12.md`.
 
-At this draft, no issuing lane is started by this prereg, prospective N is 0, and the status is not started. This file does not issue a forecast and does not define a second ledger. Any prospective clock, refit cadence or readiness bar is whatever that design document freezes. This prereg does not copy v1 §13's bars into force ahead of that document, and it does not weaken them.
+At freeze, no issuing lane is started by this prereg, prospective N is 0, and the status is not started. This file does not issue a forecast and does not define a second ledger. Any prospective clock, refit cadence or readiness bar is whatever that design document freezes. This prereg does not copy v1 §13's bars into force ahead of that document, and it does not weaken them.
 
 ## 14. Interpretation ceiling
 
@@ -736,15 +740,15 @@ cost ratio, power floor or horizon may be selected after outcome inspection.
 
 ## Freeze checklist
 
-Status of this file: **DRAFT — NOT FROZEN.** Every box is open. A real panel run is refused until the seat ticks them all. This lane does not tick a box. `IDENTITY_PINS`, `TRIAL_BUDGET` and the manifest and prereg blob pins hold the literal `PREREG_V11_PENDING` until the pin flow below fills them.
+Status of this file: **FROZEN.** The seat ticked the split-screen, `prepare_panel`, runner and pin-flow boxes (a) through (d). Box (e) is the real run and stays open until the seat-run happens. `IDENTITY_PINS`, `TRIAL_BUDGET` and the manifest and prereg blob pins hold the values the pin flow filled.
 
 The split-screen, `prepare_panel` and runner boxes are unchanged. The pin flow is steps (a) through (e), in that order. The panel-hash box, the block-date box, the budget box, the blob-pin box and the no-outcome box are those steps. They are not listed again.
 
-- [ ] Split screen under D14, then the D5 check on adjusted closes. Pinned table `{(t, "2025-12-05"): 2.0 for t in XLB, XLE, XLK, XLU, XLY}`. Rows dated before the effective date: open, high, low and close divided by the ratio, volume multiplied by the ratio, transactions unchanged. The observed pre/post close ratio on the effective date lies in `[0.9 × ratio, 1.1 × ratio]`, else `BLOCKED / SPLIT_TABLE_MISMATCH`. Any remaining absolute-log break above `log(1.25)` on adjusted closes is `BLOCKED / SPLIT_DISCONTINUITY`. An unpinned split is never inferred from the data. The raw subframe sha256 stays the identity pin. No label, feature, fit or score is computed as part of the screen.
-- [ ] `prepare_panel` merged with tests. The stage-1b runner calls `scripts/research/grey_deer_panel_adjust.py` `prepare_panel` and does not reimplement adjustment or intersection.
-- [ ] Runner `scripts/research/grey_deer_pullback_stage1b.py` merged with its tests. The tests are the synthetic tests in §12.
-- [ ] (a) The seat runs the runner with `--blocks-only` on the store. That invocation prints one `BLOCK` line per fold block and 14 `PIN` lines, one per ticker. It computes no feature, label or outcome, and it exits 0. That stdout is the source for (b).
-- [ ] (b) The seat copies the 14 `PIN` lines into the §3 pin table and the `BLOCK` lines into the §7 block-date table, including the post-2026-08-18 dates the runner restates. This is the panel-hash box: per-ticker normalised-subframe sha256, row count, first date and last date, replacing every literal `PREREG_V11_PENDING` in §3. The content hash and the subframe sha256 are one digest. The pinned split table and the pinned exclusion `{"2026-08-18"}` are the constants in §3. The `BLOCK` lines are the block-date box. On a later real run the payload's `fold_block_table` is that same table, written before any fit.
-- [ ] (c) The seat sets `TRIAL_BUDGET = 66` and fills `IDENTITY_PINS`. The family is `grey_deer_pullback_v11`. Until this replacement the budget constant remains the literal `PREREG_V11_PENDING`.
-- [ ] (d) The seat records `git hash-object` of the frozen manifest v1.1.0 and of this prereg as the runner's blob pins. The manifest path is `research/grey_deer/PULLBACK_SOURCE_RIGHTS_QUALIFICATION_V1_1_2026-10-12.md` (SEAT_FILL filled, G7 DECIDED by A1/D14, D15 recorded). The prereg hash is taken in the same commit that flips this file's status from `DRAFT — NOT FROZEN` to FROZEN, and only after the boxes above this one are done. The recorded blob is the blob of that frozen text. This lane does not change the status line.
+- [x] Split screen under D14, then the D5 check on adjusted closes. Pinned table `{(t, "2025-12-05"): 2.0 for t in XLB, XLE, XLK, XLU, XLY}`. Rows dated before the effective date: open, high, low and close divided by the ratio, volume multiplied by the ratio, transactions unchanged. The observed pre/post close ratio on the effective date lies in `[0.9 × ratio, 1.1 × ratio]`, else `BLOCKED / SPLIT_TABLE_MISMATCH`. Any remaining absolute-log break above `log(1.25)` on adjusted closes is `BLOCKED / SPLIT_DISCONTINUITY`. An unpinned split is never inferred from the data. The raw subframe sha256 stays the identity pin. No label, feature, fit or score is computed as part of the screen. Done: the screen ran inside the seat's `--blocks-only` pass through `prepare_panel`, with no `SPLIT_TABLE_MISMATCH` or `SPLIT_DISCONTINUITY`.
+- [x] `prepare_panel` merged with tests (PR #9091). The stage-1b runner calls `scripts/research/grey_deer_panel_adjust.py` `prepare_panel` and does not reimplement adjustment or intersection.
+- [x] Runner `scripts/research/grey_deer_pullback_stage1b.py` merged with its tests (PR #9091). The tests are the synthetic tests in §12.
+- [x] (a) The seat runs the runner with `--blocks-only` on the store. That invocation prints one `BLOCK` line per fold block and 14 `PIN` lines, one per ticker. It computes no feature, label or outcome, and it exits 0. That stdout is the source for (b). Done: 24 `BLOCK` lines (8 blocks × 3 horizons) and 14 `PIN` lines, exit 0.
+- [x] (b) The seat copies the 14 `PIN` lines into the §3 pin table and the `BLOCK` lines into the §7 block-date table, including the post-2026-08-18 dates the runner restates. This is the panel-hash box: per-ticker normalised-subframe sha256, row count, first date and last date, replacing every literal `PREREG_V11_PENDING` in §3. The content hash and the subframe sha256 are one digest. The pinned split table and the pinned exclusion `{"2026-08-18"}` are the constants in §3. The `BLOCK` lines are the block-date box. On a later real run the payload's `fold_block_table` is that same table, written before any fit. Done: §3 holds 14 filled rows and §7 holds blocks 1–8.
+- [x] (c) The seat sets `TRIAL_BUDGET = 66` and fills `IDENTITY_PINS`. The family is `grey_deer_pullback_v11`. Done: `TRIAL_BUDGET = 66` and 14 filled `IDENTITY_PINS` in the runner.
+- [x] (d) The seat records `git hash-object` of the frozen manifest v1.1.0 and of this prereg as the runner's blob pins. The manifest path is `research/grey_deer/PULLBACK_SOURCE_RIGHTS_QUALIFICATION_V1_1_2026-10-12.md` (SEAT_FILL filled, G7 DECIDED by A1/D14, D15 recorded). The prereg hash is taken in the same commit that flips this file's status from `DRAFT — NOT FROZEN` to FROZEN, and only after the boxes above this one are done. The recorded blob is the blob of that frozen text. Done: manifest blob `c52d93e98f4e4a776a7cf38fce46bcf4a84c52d7`; this file's blob is the runner's `PREREG_BLOB_SHA` (a file cannot carry its own blob sha).
 - [ ] (e) Only then may a real run happen. No panel outcome is computed before (a) through (d) are done. Output under `research/grey_deer/pullback_stage1b/` exists only from a seat-run after that point. Schema `grey_deer_pullback_stage1b/v1`.

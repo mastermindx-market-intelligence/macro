@@ -75,7 +75,7 @@ def test_crypto_cockpit_contract_pins_six_axes_and_final_allocation(tmp_path):
     )
     assert leverage["primary"]["key"] == "leverage_cascade"
     assert leverage["primary"]["state_en"] == "Low"
-    assert leverage["spark_source"] == "signals.oi_mcap_ratio"
+    assert leverage["spark_source"] == "signals.leverage_stress"
 
 
 def test_crypto_cockpit_contract_degrades_missing_leverage_plainly(tmp_path):
