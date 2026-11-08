@@ -3754,8 +3754,11 @@ def prepare_canonical_main(
         if missing:
             # One exact-object acquisition under the incumbent logical-job
             # deadline. Never retry, fetch each object lazily, or alter refs.
+            # Advertised commits do not prove these promised blobs are local.
+            # Match Git's own promisor fetch: do not negotiate this OID batch.
             subprocess.run(
-                ["git", "fetch", "--no-recurse-submodules", "--no-tags",
+                ["git", "-c", "fetch.negotiationAlgorithm=noop", "fetch",
+                 "--no-recurse-submodules", "--no-tags",
                  "--no-write-fetch-head", "--filter=blob:none", "origin", "--stdin"],
                 cwd=root, env=fetch_env, input="".join(oid + "\n" for oid in missing),
                 text=True, check=True,

@@ -3895,7 +3895,7 @@ def _cm_commit(root, path, content, message):
     return _cm_git(root, 'rev-parse', 'HEAD')
 
 
-def _cm_fixture(parent, *, changed_frozen=False, shallow_remote=False, full_checkout=False, old_history=False):
+def _cm_fixture(parent, *, changed_frozen=False, shallow_remote=False, full_checkout=False, old_history=False, distinct_frozen=False):
     """main is ahead of tested's first parent; tested itself diverges from main.
 
     Both tested parents meet at main-2, 22 first-parent edges behind main-24.
@@ -3914,7 +3914,8 @@ def _cm_fixture(parent, *, changed_frozen=False, shallow_remote=False, full_chec
     for path in _CM_FROZEN_PATHS:
         dest = source / path
         dest.parent.mkdir(parents=True, exist_ok=True)
-        dest.write_text('frozen baseline\n', encoding='utf-8')
+        baseline = 'frozen baseline ' + path + '\n' if distinct_frozen else 'frozen baseline\n'
+        dest.write_text(baseline, encoding='utf-8')
     _cm_git(source, 'add', '.')
     _cm_git(source, 'commit', '-qm', 'frozen baseline')
     if old_history:
@@ -4481,7 +4482,9 @@ def test_design_canonical_actual_local_comparison_boundary(tmp_path, monkeypatch
     real_run = subprocess.run
     fetches = []
     def original_transport_boundary(argv, *args, **kwargs):
-        if isinstance(argv, (list, tuple)) and list(argv[:2]) == ['git', 'fetch']:
+        if (isinstance(argv, (list, tuple)) and
+                (list(argv[:2]) == ['git', 'fetch'] or
+                 list(argv[:4]) == ['git', '-c', 'fetch.negotiationAlgorithm=noop', 'fetch'])):
             fetches.append(list(argv))
             assert '--no-tags' in argv and '--no-recurse-submodules' in argv
             assert '--filter=blob:none' in argv
@@ -4577,7 +4580,9 @@ def test_design_canonical_shallow_promisor_comparison(tmp_path, monkeypatch, out
     assert before.returncode != 0
     fetches = []
     def acquire(argv, *args, **kwargs):
-        if isinstance(argv, (list, tuple)) and list(argv[:2]) == ['git', 'fetch']:
+        if (isinstance(argv, (list, tuple)) and
+                (list(argv[:2]) == ['git', 'fetch'] or
+                 list(argv[:4]) == ['git', '-c', 'fetch.negotiationAlgorithm=noop', 'fetch'])):
             fetches.append((list(argv), kwargs.get('input')))
             if '--stdin' not in argv:
                 assert '--filter=blob:none' in argv and '--deepen=2' in argv
@@ -4641,7 +4646,9 @@ def test_design_canonical_default_frozen_contract_unchanged(tmp_path, monkeypatc
     real_run = subprocess.run
     fetches = []
     def acquire(argv, *args, **kwargs):
-        if isinstance(argv, (list, tuple)) and list(argv[:2]) == ['git', 'fetch']:
+        if (isinstance(argv, (list, tuple)) and
+                (list(argv[:2]) == ['git', 'fetch'] or
+                 list(argv[:4]) == ['git', '-c', 'fetch.negotiationAlgorithm=noop', 'fetch'])):
             fetches.append(list(argv))
             if '--stdin' in argv:
                 assert missing_guard
@@ -4751,3 +4758,142 @@ def test_canonical_frozen_only_missing_promisor_blob_is_acquired_once(tmp_path, 
     assert {str(path.relative_to(root)): hashlib.sha256(path.read_bytes()).hexdigest()
             for path in root.rglob('*') if path.is_file()
             and not path.is_relative_to(root / '.git')} == original_files
+
+
+def test_canonical_frozen_blob_from_packed_smart_http(tmp_path):
+    """A real promisor batch must acquire a missing base blob from packed HTTP.
+
+    Distinct baseline blobs matter: an identical blob at another checkout path
+    would already hydrate the old theme and conceal this connectivity failure.
+    """
+    import http.server
+    import threading
+    import urllib.parse
+
+    f = _cm_fixture(tmp_path, changed_frozen=True, full_checkout=True,
+                    distinct_frozen=True)
+    source = f['source']
+    _cm_git(source, 'config', 'uploadpack.allowFilter', 'true')
+    _cm_git(source, 'config', 'uploadpack.allowReachableSHA1InWant', 'true')
+    _cm_git(source, 'repack', '-adb', '--write-bitmap-index')
+    _cm_git(source, 'prune-packed')
+    assert list((source / '.git/objects/pack').glob('*.bitmap'))
+    backend = Path(_cm_git(source, '--exec-path')) / 'git-http-backend'
+    assert backend.is_file(), 'Git smart HTTP backend is required by this regression'
+    requests = []
+    backend_errors = []
+
+    class GitHandler(http.server.BaseHTTPRequestHandler):
+        def log_message(self, *args):
+            pass
+
+        def do_GET(self):
+            self.handle_git()
+
+        def do_POST(self):
+            self.handle_git()
+
+        def handle_git(self):
+            uri = urllib.parse.urlsplit(self.path)
+            if (not uri.path.startswith('/source/.git/') or
+                    not uri.path.endswith(('/info/refs', '/git-upload-pack'))):
+                self.send_error(404)
+                return
+            size = int(self.headers.get('Content-Length', '0'))
+            if not 0 <= size < 1024 * 1024:
+                self.send_error(413)
+                return
+            env = PACK._trusted_git_environment(source)
+            env.update(GIT_PROJECT_ROOT=str(tmp_path), GIT_HTTP_EXPORT_ALL='1',
+                       REQUEST_METHOD=self.command, PATH_INFO=uri.path,
+                       QUERY_STRING=uri.query,
+                       CONTENT_TYPE=self.headers.get('Content-Type', ''),
+                       CONTENT_LENGTH=str(size), SERVER_PROTOCOL=self.protocol_version,
+                       REMOTE_ADDR='127.0.0.1', SERVER_NAME='localhost',
+                       SERVER_PORT=str(self.server.server_port))
+            if self.headers.get('Git-Protocol'):
+                env['GIT_PROTOCOL'] = self.headers['Git-Protocol']
+            result = _cm_subprocess.run(
+                [str(backend)], input=self.rfile.read(size), env=env,
+                capture_output=True, timeout=30,
+            )
+            separator = b'\r\n\r\n' if b'\r\n\r\n' in result.stdout else b'\n\n'
+            headers, found, body = result.stdout.partition(separator)
+            if result.returncode or not found:
+                backend_errors.append((result.returncode, result.stderr))
+                self.send_error(502)
+                return
+            status, outgoing = 200, []
+            for line in headers.decode().splitlines():
+                key, _, value = line.partition(':')
+                if key.lower() == 'status':
+                    status = int(value.strip().split()[0])
+                else:
+                    outgoing.append((key, value.strip()))
+            requests.append((self.command, uri.path, status))
+            self.send_response(status)
+            for key, value in outgoing:
+                self.send_header(key, value)
+            self.send_header('Content-Length', str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+
+    server = http.server.ThreadingHTTPServer(('127.0.0.1', 0), GitHandler)
+    thread = threading.Thread(target=server.serve_forever)
+    thread.start()
+    try:
+        root = tmp_path / 'http-blobless-checkout'
+        origin = f'http://127.0.0.1:{server.server_port}/source/.git'
+        _cm_git(tmp_path, 'clone', '-q', '--filter=blob:none', '--no-checkout',
+                '--single-branch', '--branch=tested', '--config=gc.auto=0',
+                '--config=maintenance.auto=false', origin, root)
+        _cm_git(root, 'checkout', '-q', '--detach', f['tested'])
+        f['checkout'] = root
+        base = _cm_git(source, 'merge-base', f['canonical'], f['tested'])
+        old = _cm_git(source, 'rev-parse', base + ':templates/theme.css')
+        new = _cm_git(source, 'rev-parse', f['tested'] + ':templates/theme.css')
+        assert old != new
+        offline = PACK._trusted_git_environment(root)
+        offline.update(GIT_NO_LAZY_FETCH='1', GIT_ALLOW_PROTOCOL='')
+
+        def probe(oid):
+            return _cm_subprocess.run(
+                ['git', 'cat-file', '--batch-check=%(objectname) %(objecttype)'],
+                cwd=root, env=offline, input=oid + '\n', text=True,
+                capture_output=True, check=True,
+            ).stdout.strip()
+
+        assert probe(old) == old + ' missing'
+        assert probe(new) == new + ' blob'
+        before = {
+            'HEAD': _cm_git(root, 'rev-parse', 'HEAD'),
+            'index': (root / '.git/index').read_bytes(),
+            'config': (root / '.git/config').read_bytes(),
+            'files': {str(path.relative_to(root)): path.read_bytes()
+                      for path in root.rglob('*') if path.is_file()
+                      and not path.is_relative_to(root / '.git')},
+        }
+        assert _cm_prepare(f) == f['canonical']
+        assert probe(old) == old + ' blob'
+        assert _cm_git(root, 'rev-parse', 'HEAD') == before['HEAD']
+        assert (root / '.git/index').read_bytes() == before['index']
+        assert (root / '.git/config').read_bytes() == before['config']
+        assert {str(path.relative_to(root)): path.read_bytes()
+                for path in root.rglob('*') if path.is_file()
+                and not path.is_relative_to(root / '.git')} == before['files']
+        assert _cm_git(root, 'rev-parse', 'origin/main') == f['canonical']
+        assert _cm_git(root, 'rev-parse', 'FETCH_HEAD') == f['canonical']
+        batches = [(cmd, value) for cmd, value in
+                   zip(f['fetches'], f['fetch_inputs']) if '--stdin' in cmd]
+        assert len(batches) == 1
+        assert batches[0][1] == old + '\n'
+        assert batches[0][0][:3] == ['git', '-c', 'fetch.negotiationAlgorithm=noop']
+        assert '--filter=blob:none' in batches[0][0]
+        assert '--no-write-fetch-head' in batches[0][0]
+        assert not backend_errors
+        assert requests and all(status == 200 for _, _, status in requests)
+    finally:
+        server.shutdown()
+        server.server_close()
+        thread.join(5)
+        assert not thread.is_alive()
