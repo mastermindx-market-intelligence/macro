@@ -206,6 +206,9 @@
       if(last.hasWinRate) line += " · expectancy " +
         (last.expectancyR >= 0 ? "+" : "") + last.expectancyR.toFixed(2) + " R";
       line += " — mastermind-x.com";
+      if (last.targetWarn) {
+        line = "Note: your target and stop appear to be on the same side of your entry. Check the prices. " + line;
+      }
       return line;
     }
     copyBtn.addEventListener("click", function(){
