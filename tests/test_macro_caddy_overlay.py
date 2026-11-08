@@ -441,6 +441,83 @@ def test_refuses_changed_group_reference_position_and_missing_active():
         plan_routes(_previous_source(), _candidate_source(), trimmed)
 
 
+def _x_ref_redir_inner():
+    """A groupless redirect route: the #10837 bio-ref shape."""
+    return {
+        "match": [
+            {
+                "path_regexp": {
+                    "name": "x_ref",
+                    "pattern": "^/x/(?P<id>[a-z0-9](?:\\.?[a-z0-9]){3,31})/?$",
+                }
+            }
+        ],
+        "handle": [{"handler": "static_response", "statusCode": 301}],
+    }
+
+
+def test_groupless_route_insertion_shifts_group_positions_and_still_plans():
+    """A groupless route inserted ahead of grouped blocks shifts every group
+    occurrence, but block identity is unchanged — the planner must adopt it
+    in place and remap the candidate group names onto the ACTIVE ones."""
+    prev, active = _previous_source(), _active_config()
+    inserted = _x_ref_redir_inner()
+    cand = _previous_source()
+    for srv in ("srv0", "srv1"):
+        _www_inner(cand, srv).insert(0, copy.deepcopy(inserted))
+    planned = plan_routes(prev, cand, active)
+    for srv, root_group, movers_group in (
+        ("srv0", "group9", "group11"),
+        ("srv1", "group21", "group25"),
+    ):
+        inner = _www_inner(planned, srv)
+        assert inner[0] == inserted, srv
+        assert inner[1]["group"] == root_group, srv
+        assert inner[2]["group"] == movers_group, srv
+        assert inner[1] == _www_inner(active, srv)[0], srv
+        assert inner[2] == _www_inner(active, srv)[1], srv
+    # Everything outside the changed host routes is untouched.
+    assert planned["apps"]["tls"] == active["apps"]["tls"]
+    assert planned["logging"] == active["logging"]
+
+
+def test_groupless_route_removal_shifts_group_positions_back_and_still_plans():
+    """The mirror case: the previous generation carried a groupless route that
+    the candidate dropped — positions shift back, block identity holds, and
+    the planned result is the active config (idempotent no-write)."""
+    prev, active = _previous_source(), _active_config()
+    stale = {
+        "match": [{"path": ["/retired-page.html"]}],
+        "handle": [{"handler": "static_response", "aborted": True}],
+    }
+    cand = _previous_source()
+    for srv in ("srv0", "srv1"):
+        # The stale route is part of the adopted previous generation, so the
+        # active config carries it too; the candidate simply drops it.
+        _www_inner(prev, srv).insert(0, copy.deepcopy(stale))
+        _www_inner(active, srv).insert(0, copy.deepcopy(stale))
+    planned = plan_routes(prev, cand, active)
+    # The candidate drops the stale route; the plan must drop it from the
+    # served config too, keeping the grouped blocks on their active names.
+    expected = copy.deepcopy(active)
+    for srv in ("srv0", "srv1"):
+        assert _www_inner(expected, srv)[0] == stale, srv
+        _www_inner(expected, srv).pop(0)
+    assert planned == expected
+
+
+def test_insertion_that_also_edits_a_grouped_block_still_refuses():
+    """A shift plus a content edit to a grouped block in one generation is
+    outside the envelope: block identity at the occurrence position fails.
+    Split such a change into two publications."""
+    prev, cand, active = _previous_source(), _candidate_source(), _active_config()
+    for srv in ("srv0", "srv1"):
+        _www_inner(cand, srv).insert(0, _x_ref_redir_inner())
+    _www_inner(cand, "srv0")[2]["handle"].append({"handler": "headers", "sentinel": "edit"})
+    with pytest.raises(ReconcileRefusal, match="moved between generations"):
+        plan_routes(prev, cand, active)
+
+
 def test_refuses_non_object_inputs():
     active = _active_config()
     for broken in (None, [], "config", 7):

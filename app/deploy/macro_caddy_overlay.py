@@ -13,6 +13,11 @@ Supported edit envelope (everything else refuses, fail closed):
   by name or ordinal, and source host routes by their exact sorted literal
   host set in the top-level match;
 * a changed host route is replaced in place at its existing active position;
+* a group reference may sit at a SHIFTED document position between generations
+  when every occurrence is carried by the semantically identical block
+  (normalized content at its own position, group value normalized out) — the
+  shape produced by inserting or removing routes that carry no group
+  reference; any other move still refuses;
 * adapter-generated ``group`` names matching ``group[0-9]+`` are compared
   modulo their numeric suffix and remapped onto the existing active group
   names at the same document-order occurrence, so opaque active IDs are
@@ -24,7 +29,9 @@ Intentionally unsupported (ReconcileRefusal, never guessed around):
   route in a compared source server lacking a simple host-only match;
 * source changes to server/listen membership, host inventories, non-route
   server fields, TLS apps, global options or any other non-route config;
-* changed group topology: added/removed group references, transitions between
+* changed group topology: added/removed group references (the reference count
+  must match), a grouped block whose content differs across generations at
+  its occurrence position, transitions between
   generated (``group[0-9]+``) and opaque group names, or inconsistent
   renumbering of generated names;
 * unrelated same-host drift: an active host route whose normalized full
@@ -306,11 +313,22 @@ def _remap_candidate_groups(listen_key, host_key, prev_route, cand_route, active
                 % (list(host_key), list(listen_key), position)
             )
         if cand_path != prev_path:
-            raise ReconcileRefusal(
-                "host route %s on listen %s: changed group topology (group "
-                "reference occurrence %d moved between generations)"
-                % (list(host_key), list(listen_key), position)
-            )
+            # A position shift is only safe when it is caused by routes
+            # inserted or removed AROUND the grouped blocks: occurrence i must
+            # sit in the semantically identical block across generations
+            # (normalized route content at its own position, group value
+            # normalized out). A moved, reordered or duplicated grouped block
+            # lands in different content and still refuses fail closed. The
+            # group-reference COUNT was checked above, so no insertion or
+            # removal may add or drop a group reference itself.
+            if _normalize(_subtree(prev_route, prev_path[:-1])) != _normalize(
+                _subtree(cand_route, cand_path[:-1])
+            ):
+                raise ReconcileRefusal(
+                    "host route %s on listen %s: changed group topology (group "
+                    "reference occurrence %d moved between generations)"
+                    % (list(host_key), list(listen_key), position)
+                )
         prev_generated = bool(_GENERATED_GROUP_RE.match(prev_value))
         cand_generated = bool(_GENERATED_GROUP_RE.match(cand_value))
         if prev_generated != cand_generated:
@@ -341,7 +359,7 @@ def _remap_candidate_groups(listen_key, host_key, prev_route, cand_route, active
             continue
         if cand_value == prev_value:
             continue
-        if _normalize(_subtree(prev_route, cand_path[:-1])) != _normalize(
+        if _normalize(_subtree(prev_route, prev_path[:-1])) != _normalize(
             _subtree(cand_route, cand_path[:-1])
         ):
             raise ReconcileRefusal(
