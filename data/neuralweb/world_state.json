@@ -1139,7 +1139,7 @@
         {
           "index": "QQQ",
           "metric": "ihm_macd_hist_depth_pctile",
-          "depth_pctile": 5.2,
+          "depth_pctile": 4.2,
           "reason": "low_depth",
           "washout_turn": false,
           "extreme": true
@@ -1147,7 +1147,7 @@
         {
           "index": "IWM",
           "metric": "ihm_macd_hist_depth_pctile",
-          "depth_pctile": 68.6,
+          "depth_pctile": 65.6,
           "reason": "washout_turn",
           "washout_turn": true,
           "extreme": true
@@ -1155,7 +1155,7 @@
         {
           "index": "SOXX",
           "metric": "ihm_macd_hist_depth_pctile",
-          "depth_pctile": 5.0,
+          "depth_pctile": 4.3,
           "reason": "low_depth",
           "washout_turn": true,
           "extreme": true
@@ -1163,7 +1163,7 @@
         {
           "index": "MAG7",
           "metric": "ihm_macd_hist_depth_pctile",
-          "depth_pctile": 5.4,
+          "depth_pctile": 5.0,
           "reason": "low_depth",
           "washout_turn": false,
           "extreme": true
@@ -1357,8 +1357,8 @@
     "quad": "Q2",
     "quad_name": "Reflation",
     "label": "Q2",
-    "confidence": 0.127,
-    "growth_score": 0.2,
+    "confidence": 0.08,
+    "growth_score": 0.067,
     "inflation_score": -0.2,
     "cycle_tag": "mid",
     "transition_state": "TRANSITIONING",
@@ -1371,7 +1371,7 @@
       "pending_quad": "Q1",
       "pending_days": 3,
       "pending_need": 7,
-      "note": "the label's own axes no longer support it — today's signs read Q1 (growth +0.20 / inflation -0.20) while the confirmed label is Q2; Q1 counting down 3 of 7 confirmation sessions"
+      "note": "the label's own axes no longer support it — today's signs read Q1 (growth +0.07 / inflation -0.20) while the confirmed label is Q2; Q1 counting down 3 of 7 confirmation sessions"
     },
     "flip_margin": 0.0,
     "liquidity_quality": {
@@ -5018,7 +5018,7 @@
         "reason": "version-matched + fresh",
         "calibration_version": "w2.7-loro-v1",
         "calibration_generated_at": "2026-07-02T12:32:51Z",
-        "calibration_age_days": 127
+        "calibration_age_days": 128
       },
       "lag_passport": {
         "basis": "per_leg_schedule",
@@ -5544,11 +5544,11 @@
       },
       {
         "ticker": "GC=F",
-        "rs": 5.548151235441281,
-        "mom_20d_pct": 2.45,
-        "mom_60d_pct": -2.61,
+        "rs": 5.541895067407289,
+        "mom_20d_pct": 2.34,
+        "mom_60d_pct": -2.72,
         "above_200d_trend": false,
-        "pctile_252d": 21.0,
+        "pctile_252d": 20.6,
         "rank": 14
       },
       {
@@ -5599,8 +5599,8 @@
     ],
     "freshness": {
       "asof": "2026-11-06",
-      "built_at": "2026-11-07T09:53:59Z",
-      "age_days": 1,
+      "built_at": "2026-11-08T06:18:04Z",
+      "age_days": 2,
       "age_sessions": 0,
       "max_age_sessions": 1,
       "stale": false,
@@ -5842,7 +5842,7 @@
               0.1429
             ],
             [
-              "failed_breakout_trap",
+              "stair_step_leader",
               0.0571
             ]
           ],
@@ -5878,7 +5878,7 @@
               0.2373
             ],
             [
-              "cyclical",
+              "distressed",
               0.1186
             ]
           ],
@@ -6069,59 +6069,60 @@
     "liquidity_overlay": "contracting"
   },
   "data_health": {
-    "last_run": "2026-11-07T05:20:12.575150+00:00",
+    "last_run": "2026-11-08T05:10:59.227561+00:00",
     "counts": {
-      "ok": 173,
+      "ok": 172,
       "failed": 6,
-      "stale": 2,
+      "stale": 3,
       "blocked": 6,
-      "empty": 2,
-      "creds_present": 1
+      "outside_lease": 1,
+      "creds_present": 1,
+      "empty": 1
     },
-    "n_cb_failed": 8,
+    "n_cb_failed": 6,
     "n_stale_series": 177,
     "failed_sources": [
       {
         "source": "sentiment_naaim",
         "error": "ValueError: NAAIM since-inception workbook link not found on page",
-        "checked_at": "2026-11-07T05:20:12.575797+00:00"
-      },
-      {
-        "source": "bgeo",
-        "error": "ValueError: bgeo fetched nothing (spent=1, skipped=['sopr', 'sth-sopr', 'lth-sopr', 'sth-realized-price', 'realized-pric",
-        "checked_at": "2026-11-07T05:20:12.576226+00:00"
+        "checked_at": "2026-11-08T05:10:59.227838+00:00"
       },
       {
         "source": "treasury_auctions",
         "error": "RuntimeError: no auction rows fetched",
-        "checked_at": "2026-11-07T05:20:12.576804+00:00"
+        "checked_at": "2026-11-08T05:10:59.228609+00:00"
+      },
+      {
+        "source": "intl_universe",
+        "error": "RuntimeError: intl_universe: no closes downloaded",
+        "checked_at": "2026-11-08T05:10:59.228219+00:00"
       },
       {
         "source": "sam_gov",
         "error": "RuntimeError: sam_gov: no opportunities (14 NAICS, 6 errors)",
-        "checked_at": "2026-11-07T05:20:12.576101+00:00"
+        "checked_at": "2026-11-08T05:10:59.228123+00:00"
       },
       {
         "source": "sec_capital_structure_companyfacts",
         "error": "CompanyFactsIntakeError: Company Facts external head witness is unreadable",
-        "checked_at": "2026-11-07T05:20:12.576721+00:00"
+        "checked_at": "2026-11-08T05:10:59.228527+00:00"
       },
       {
         "source": "sbir_awards",
         "error": "SbirRateLimitError: SBIR public API refused the request with HTTP 403; the published limit is 10 requests per 600s",
-        "checked_at": "2026-11-07T05:20:12.575963+00:00"
+        "checked_at": "2026-11-08T05:10:59.227992+00:00"
       }
     ]
   },
   "alerts": {
     "asof": "2026-11-06",
-    "generated_utc": "2026-11-07 10:01",
+    "generated_utc": "2026-11-08 06:28",
     "total": 60,
     "critical": 2,
     "major": 1,
     "minor": 57,
     "actionable": 2,
-    "backtested": 2
+    "backtested": 1
   },
   "factor_weather": {
     "style_regime": "mixed",
@@ -6134,7 +6135,7 @@
     "ratio_qqq_spy_20d": -0.07108974912944899,
     "ratio_iwm_spy_20d": 0.03669621759221853,
     "display_only": true,
-    "factor_state_as_of": "2026-11-07",
+    "factor_state_as_of": "2026-11-08",
     "seasonal_climate": {
       "month": 11,
       "seasonality_as_of": "2026-09",
@@ -6159,7 +6160,7 @@
     "share_skew_rising": 0.5789473684210527,
     "median_ivspread_rel": 0.00866,
     "share_pin_risk": null,
-    "opex_days": 13,
+    "opex_days": 12,
     "note": "sector-ETF/index options weather (raw aggregates; no composite — RO-2). Gamma-regime evidence is vol-conditioning with era-dependent sign (W-E1); never directional.",
     "display_only": true
   },
@@ -6310,7 +6311,7 @@
     "display_only": true
   },
   "fx_dollar": {
-    "asof": "2026-11-07",
+    "asof": "2026-11-08",
     "regime": "Risk-off haven bid",
     "risk": "risk-off",
     "favored": [
@@ -6356,7 +6357,7 @@
     },
     "em": {
       "cnh_basis_state": "neutral",
-      "risk_off_composite": 0.725
+      "risk_off_composite": 0.73
     },
     "stance": {
       "word_en": "Watch — don't chase",
@@ -6371,7 +6372,7 @@
       {
         "pair": "USDMXN",
         "action": "LONG",
-        "score": 26.7
+        "score": 26.5
       },
       {
         "pair": "EURUSD",
@@ -6387,11 +6388,11 @@
     "scenario_intensity": [
       {
         "name": "em_crisis_capital_flight",
-        "value": 29.9
+        "value": 30.4
       },
       {
         "name": "haven_flight_risk_off",
-        "value": 26.2
+        "value": 26.1
       }
     ],
     "deltas": {
@@ -6518,43 +6519,43 @@
         "current": "Risk-off haven bid",
         "prev": "Global reflation",
         "changed_on": "2026-10-05",
-        "days_in_state": 34
+        "days_in_state": 35
       },
       "lean": {
         "current": "mixed backdrop",
         "prev": "dollar-supportive backdrop",
         "changed_on": "2026-11-04",
-        "days_in_state": 4
+        "days_in_state": 5
       },
       "risk": {
         "current": "risk-off",
         "prev": "risk-on",
         "changed_on": "2026-09-30",
-        "days_in_state": 39
+        "days_in_state": 40
       },
       "fed_path_lean": {
         "current": "dovish_repricing",
         "prev": "steady",
         "changed_on": "2026-10-17",
-        "days_in_state": 22
+        "days_in_state": 23
       },
       "liquidity_dir": {
         "current": "soft",
         "prev": "supportive",
         "changed_on": "2026-11-04",
-        "days_in_state": 4
+        "days_in_state": 5
       },
       "trend": {
         "current": "up",
         "prev": "mixed",
         "changed_on": "2026-10-05",
-        "days_in_state": 34
+        "days_in_state": 35
       },
       "triple_red": {
         "current": false,
         "prev": true,
         "changed_on": "2026-09-18",
-        "days_in_state": 51
+        "days_in_state": 52
       },
       "cnh_basis_state": {
         "current": "neutral",
@@ -6573,7 +6574,7 @@
     "strength_extremes": {
       "strongest": {
         "ccy": "CHF",
-        "strength": 0.341
+        "strength": 0.347
       },
       "weakest": {
         "ccy": "BRL",
@@ -6594,7 +6595,7 @@
     "verdict_en": "Bond health healthy (68/100), recession. Curve positively sloped. Credit normal. Rates-vol normal.",
     "fed_path": {
       "policy_rate": 3.88,
-      "implied_bp_12m": 46,
+      "implied_bp_12m": 47,
       "implied_cuts_12m": -2
     },
     "bond_compass": {
@@ -6649,7 +6650,7 @@
             "key": "macro",
             "label_en": "Macro impulse (reflation)",
             "label_zh": "宏观动能（再通胀）",
-            "value": -0.07,
+            "value": -0.05,
             "weight": 0.5,
             "state": "neutral",
             "note_en": "Rising copper/gold + breakevens = reflation = a duration headwind.",
@@ -6701,7 +6702,7 @@
       "quad_name": "Reflation",
       "cycle_tag": "mid",
       "liquidity_overlay": "contracting",
-      "confidence": 0.127,
+      "confidence": 0.08,
       "pending_quad": null,
       "stale": false
     },
@@ -6755,33 +6756,33 @@
         "label": "Gold",
         "trend": "down",
         "action": "SELL",
-        "conviction": -19.7
+        "conviction": -16.4
       },
       {
         "label": "Silver",
         "trend": "up",
         "action": "SELL",
-        "conviction": -16.6
+        "conviction": -14.8
       },
       {
         "label": "Copper",
         "trend": "up",
         "action": "STRONG SELL",
-        "conviction": -36.2
+        "conviction": -36.8
       },
       {
         "label": "Oil · WTI",
         "trend": "up",
         "action": "SELL",
-        "conviction": -14.0
+        "conviction": -14.2
       }
     ],
     "index": {
       "mtf_grade": "CAUTION",
       "ladder_state": "COUNTERTREND BOUNCE",
       "shock_state": "normal",
-      "impulse": -2.874,
-      "chg_1m_pct": -6.0,
+      "impulse": -2.964,
+      "chg_1m_pct": -6.2,
       "headline": "Unconfirmed turn within a bearish bigger picture"
     },
     "breadth": {
@@ -6800,6 +6801,12 @@
           "score": 42.9
         },
         {
+          "name": "palladium",
+          "label": "Palladium",
+          "state": "Basing — early bottom signs",
+          "score": 47.6
+        },
+        {
           "name": "copper",
           "label": "Copper",
           "state": "Washing out — high risk",
@@ -6816,12 +6823,12 @@
     "ratios": {
       "copper_gold": {
         "value": 0.0015,
-        "chg_20d_pct": -4.0,
+        "chg_20d_pct": -4.54,
         "dir": "down"
       },
       "gold_silver": {
-        "value": 78.5048,
-        "chg_20d_pct": 12.67,
+        "value": 78.6615,
+        "chg_20d_pct": 12.89,
         "dir": "up"
       }
     },
@@ -6902,10 +6909,10 @@
     "display_only": true
   },
   "intelligence": {
-    "as_of": "2026-11-07",
-    "n_universe": 2227,
+    "as_of": "2026-11-08",
+    "n_universe": 2212,
     "n_priority": 25,
-    "n_actionable": 4,
+    "n_actionable": 3,
     "n_divergences": 52,
     "macro_context": {
       "regime": "Reflation",
@@ -6913,12 +6920,6 @@
       "fed_stance": "Hawkish"
     },
     "top_actionable": [
-      {
-        "ticker": "MCK",
-        "priority": 0.49,
-        "lean": -1,
-        "read": "fading"
-      },
       {
         "ticker": "GILD",
         "priority": 0.42,
@@ -6932,14 +6933,20 @@
         "read": "fading"
       },
       {
-        "ticker": "KR",
+        "ticker": "MCK",
         "priority": 0.42,
         "lean": -1,
         "read": "fading"
       },
       {
-        "ticker": "NVS",
-        "priority": 0.403,
+        "ticker": "IBM",
+        "priority": 0.367,
+        "lean": 1,
+        "read": "accumulation"
+      },
+      {
+        "ticker": "ABBV",
+        "priority": 0.352,
         "lean": -1,
         "read": "fading"
       }
@@ -6952,13 +6959,13 @@
     "display_only": true
   },
   "cross_asset_flows": {
-    "asof": "2026-11-07",
+    "asof": "2026-11-08",
     "source": "data/crossasset/latest.json",
     "regime": "mixed / no clear trend",
     "breadth": -0.08,
     "correlation": {
       "verdict": "diversified",
-      "absorption_pctile": 0.25,
+      "absorption_pctile": 0.26,
       "n_markets": 6
     },
     "dominant_cluster": [
@@ -6975,7 +6982,7 @@
       },
       {
         "pair": "gold_silver",
-        "ratio": 78.505,
+        "ratio": 78.661,
         "trend": "mid"
       },
       {
@@ -7002,13 +7009,13 @@
     },
     "shadow": {
       "escalated": false,
-      "pressure_pctile": 0.25
+      "pressure_pctile": 0.26
     },
     "stale": false,
     "display_only": true
   },
   "cycle_pattern": {
-    "as_of": "2026-11-07",
+    "as_of": "2026-11-08",
     "model_epoch": "price_c4414dcb",
     "gate_status": {
       "up": {
@@ -7608,8 +7615,8 @@
         "event_type": "into_strength",
         "to_sector": "xlv",
         "from_sector": "xlk",
-        "severity_effective": "notable",
-        "health_state": "active"
+        "severity_effective": "standard",
+        "health_state": "weakening"
       }
     ],
     "n_truncated": 0,
@@ -7694,10 +7701,10 @@
     "revision": "settled",
     "source_session": "2026-11-06",
     "as_of": "2026-11-06",
-    "observed_at": "2026-11-07T13:48:38Z",
-    "produced_at": "2026-11-07T13:48:38Z",
+    "observed_at": "2026-11-08T10:00:44Z",
+    "produced_at": "2026-11-08T10:00:44Z",
     "stale_after": null,
-    "bundle_id": "12a3cbdf1b95b8e1",
+    "bundle_id": "564438579701c6a9",
     "measured_state": {
       "as_of": "2026-11-06",
       "role": "slow_confirmed_trend",
@@ -8689,7 +8696,7 @@
       "excluded_reason": null,
       "source_artifact": "site-marketdata-rotation-events",
       "source_clock_receipt": {
-        "generated_utc": "2026-11-07 08:44 UTC"
+        "generated_utc": "2026-11-08 09:12 UTC"
       },
       "state": "MIXED_ROTATION",
       "usable": true
@@ -8828,7 +8835,7 @@
               {
                 "k_en": "Bond health",
                 "k_zh": "债券健康",
-                "v": 69
+                "v": 68
               },
               {
                 "k_en": "Stock-bond hedge",
@@ -9560,31 +9567,31 @@
   },
   "context_risk": {
     "available": true,
-    "as_of": "2026-11-07T12:44Z",
+    "as_of": "2026-11-07T15:00Z",
     "board_top_overweights": [
       {
         "archetype": "dividend_defensive",
-        "ratio": 5.957,
-        "member_share": 0.0417,
+        "ratio": 6.086,
+        "member_share": 0.0426,
         "universe_share": 0.007,
         "member_n": 2
       },
       {
         "archetype": "high_beta_momentum",
-        "ratio": 2.896,
-        "member_share": 0.0417,
+        "ratio": 2.958,
+        "member_share": 0.0426,
         "universe_share": 0.0144,
         "member_n": 2
       },
       {
         "archetype": "deep_value",
-        "ratio": 2.633,
-        "member_share": 0.0208,
+        "ratio": 2.696,
+        "member_share": 0.0213,
         "universe_share": 0.0079,
         "member_n": 1
       }
     ],
-    "weighted_p10_21d": -0.0839,
+    "weighted_p10_21d": -0.0842,
     "weighted_median_21d": 0.0125,
     "p10_interpretation": "per-type share-weighted average of marginal worst-decile returns; NOT a portfolio P10 — diversification and cross-type correlation are not modeled.",
     "n_board": 58,
@@ -9681,8 +9688,8 @@
   "china_market_state": {
     "available": false,
     "authority": "context_only",
-    "note": "stale: as_of 2026-11-06 exceeds 30.0h SLA",
-    "as_of": "2026-11-06",
+    "note": "stale: as_of 2026-11-07 exceeds 30.0h SLA",
+    "as_of": "2026-11-07",
     "display_only": true
   },
   "thematic_state": {
@@ -9691,10 +9698,10 @@
     "n_themes": 18,
     "stage_counts": {
       "WATCH": 13,
-      "PRECIPICE": 3,
-      "BROADENING": 2
+      "PRECIPICE": 2,
+      "BROADENING": 3
     },
-    "n_falsifiers_fired": 8,
+    "n_falsifiers_fired": 7,
     "falsifiers_fired": [
       {
         "theme_id": "nuclear_power",
@@ -9723,10 +9730,6 @@
       {
         "theme_id": "ag_fertilizer",
         "falsifier_id": "ag_f1"
-      },
-      {
-        "theme_id": "space_satellite",
-        "falsifier_id": "sat_f1"
       }
     ],
     "n_stale_legs": 9,
@@ -9758,8 +9761,8 @@
       },
       {
         "theme_id": "space_satellite",
-        "reason": "falsifier_fired, stage=PRECIPICE, tight_bottleneck+stale",
-        "stage": "PRECIPICE"
+        "reason": "stage=BROADENING, tight_bottleneck+stale",
+        "stage": "BROADENING"
       },
       {
         "theme_id": "ag_fertilizer",
@@ -9790,8 +9793,8 @@
   "live_overlay": {
     "source": "data/regime/latest.json:freshness",
     "asof": "2026-11-06",
-    "built_at": "2026-11-07T09:53:59Z",
-    "age_days": 1,
+    "built_at": "2026-11-08T06:18:04Z",
+    "age_days": 2,
     "stale": false
   },
   "contradictions": {
@@ -9852,14 +9855,14 @@
     "display_only": true
   },
   "special_situations": {
-    "asof": "2026-11-07",
+    "asof": "2026-11-08",
     "counts": {
-      "total": 1587,
-      "new_today": 54,
+      "total": 1597,
+      "new_today": 33,
       "grade_a": 0,
       "grade_b": 1,
-      "with_arb": 11,
-      "cross_border": 545
+      "with_arb": 13,
+      "cross_border": 549
     },
     "setups_display": [
       {
@@ -9914,6 +9917,19 @@
         ]
       },
       {
+        "ticker": "SLGN",
+        "company": "SILGAN HOLDINGS INC",
+        "category": "Divestitures",
+        "stage": "announced",
+        "grade": "C",
+        "score": 42.0,
+        "why": [
+          "Setup approaching entry level",
+          "Deeply oversold (weeks)",
+          "Sector in favor"
+        ]
+      },
+      {
         "ticker": "DLX",
         "company": "Deluxe Corporation",
         "category": "Acquisitions",
@@ -9923,98 +9939,85 @@
         "why": [
           "Deeply oversold (weeks)"
         ]
-      },
-      {
-        "ticker": "HBCYF",
-        "company": "HSBC HOLDINGS PLC",
-        "category": "Issuer Tenders",
-        "stage": "live",
-        "grade": "C",
-        "score": 40.5,
-        "why": [
-          "Deeply oversold (weeks)",
-          "Strong history for this event type",
-          "EDGAR filing confirmed"
-        ]
       }
     ],
     "changes": [
       {
         "kind": "new",
-        "ticker": "NXXT",
-        "category": "Spin-Offs",
+        "ticker": "EVC",
+        "category": "Strategic Reviews",
         "from": null,
         "to": "announced"
       },
       {
         "kind": "new",
-        "ticker": "SILO",
-        "category": "Spin-Offs",
+        "ticker": "CLAR",
+        "category": "Strategic Reviews",
         "from": null,
         "to": "announced"
       },
       {
         "kind": "new",
-        "ticker": "CCXIW",
-        "category": "SPACs",
-        "from": null,
-        "to": "announced"
-      },
-      {
-        "kind": "new",
-        "ticker": "CBGGF",
+        "ticker": "CPTKW",
         "category": "SPACs",
         "from": null,
         "to": "de-SPAC"
       },
       {
         "kind": "new",
-        "ticker": "BIPC",
+        "ticker": "PONOU",
+        "category": "SPACs",
+        "from": null,
+        "to": "de-SPAC"
+      },
+      {
+        "kind": "new",
+        "ticker": "SSEAU",
+        "category": "SPACs",
+        "from": null,
+        "to": "de-SPAC"
+      },
+      {
+        "kind": "new",
+        "ticker": "PYYX",
         "category": "Restructuring",
         "from": null,
         "to": "announced"
       },
       {
         "kind": "new",
-        "ticker": "REEAF",
-        "category": "Restructuring",
+        "ticker": "FFAI",
+        "category": "Other",
         "from": null,
         "to": "announced"
       },
       {
         "kind": "new",
-        "ticker": "CPPTL",
-        "category": "Restructuring",
-        "from": null,
-        "to": "announced"
-      },
-      {
-        "kind": "new",
-        "ticker": "GOAI",
-        "category": "Restructuring",
+        "ticker": "NXXT",
+        "category": "Other",
         "from": null,
         "to": "announced"
       }
     ],
     "risk_arb_top": [
       {
+        "ticker": "SGLA",
+        "company": "Sino Green Land Corp.",
+        "gross_spread_pct": 25.0,
+        "annualized_pct": null,
+        "days_to_close": null
+      },
+      {
+        "ticker": "VCTR",
+        "company": "Victory Capital Holdings, Inc.",
+        "gross_spread_pct": -2.5,
+        "annualized_pct": null,
+        "days_to_close": null
+      },
+      {
         "ticker": "VRNS",
         "company": "VARONIS SYSTEMS INC",
         "gross_spread_pct": 2.15,
-        "annualized_pct": null,
-        "days_to_close": null
-      },
-      {
-        "ticker": "PTC",
-        "company": "PTC INC.",
-        "gross_spread_pct": 5.09,
-        "annualized_pct": null,
-        "days_to_close": null
-      },
-      {
-        "ticker": "PERI",
-        "company": "Perion Network Ltd.",
-        "gross_spread_pct": 2.36,
         "annualized_pct": null,
         "days_to_close": null
       }
@@ -10024,7 +10027,7 @@
   "theme_rotation": {
     "as_of": "2026-11-06",
     "leadership_state": "rotating",
-    "days_in_state": 4,
+    "days_in_state": 5,
     "stance_en": "Rotation under way — favour the fresh leaders, not the old one.",
     "stance_zh": "轮动进行中——关注新领涨主题，勿追旧龙头。",
     "trailing_leader": {
@@ -10044,12 +10047,12 @@
         "name": "Consumer Staples"
       },
       {
-        "id": "defensives",
-        "name": "Defensives"
+        "id": "big_pharma",
+        "name": "Big Pharma"
       },
       {
-        "id": "insurance",
-        "name": "Insurance & Brokers"
+        "id": "defensives",
+        "name": "Defensives"
       }
     ],
     "migration": {
@@ -10090,49 +10093,19 @@
         "current": "rotating",
         "prev": "rotating",
         "changed_on": "2026-10-30",
-        "days_in_state": 5
+        "days_in_state": 6
       },
       "trailing_leader_id": {
         "current": "memory_storage",
         "prev": "memory_storage",
         "changed_on": "2026-10-30",
-        "days_in_state": 5
+        "days_in_state": 6
       },
       "leader_health": {
         "current": "broken",
         "prev": "broken",
         "changed_on": "2026-10-30",
-        "days_in_state": 5
-      },
-      "theme_label:managed_care": {
-        "current": "emerging",
-        "prev": "neutral",
-        "changed_on": "2026-11-06",
-        "days_in_state": 1
-      },
-      "theme_label:us_sector_financials": {
-        "current": "neutral",
-        "prev": "dominant",
-        "changed_on": "2026-11-06",
-        "days_in_state": 1
-      },
-      "theme_label:travel": {
-        "current": "emerging",
-        "prev": "dominant",
-        "changed_on": "2026-11-06",
-        "days_in_state": 1
-      },
-      "theme_label:reshoring": {
-        "current": "neutral",
-        "prev": "deteriorating",
-        "changed_on": "2026-11-06",
-        "days_in_state": 1
-      },
-      "theme_label:non_ai_software": {
-        "current": "deteriorating",
-        "prev": "fading",
-        "changed_on": "2026-11-06",
-        "days_in_state": 1
+        "days_in_state": 6
       }
     },
     "china": {
@@ -10192,7 +10165,7 @@
           },
           {
             "category": "New Energy & Autos",
-            "avg_breadth": 0.364
+            "avg_breadth": 0.386
           }
         ]
       },
@@ -10246,19 +10219,19 @@
     "display_only": true
   },
   "stage_analysis": {
-    "as_of": "2026-11-07",
+    "as_of": "2026-11-08",
     "counts": {
       "total": 2700,
       "stage1": 159,
-      "stage2": 1359,
-      "stage2_fresh": 397,
-      "stage3": 218,
+      "stage2": 1360,
+      "stage2_fresh": 396,
+      "stage3": 217,
       "stage4": 964,
       "too_young": 362,
       "new_today": 29
     },
     "market": {
-      "pct_stage2": 50.3,
+      "pct_stage2": 50.4,
       "pct_stage4": 35.7,
       "weather": "mixed",
       "spy_stage": 2,
@@ -10591,9 +10564,9 @@
       {
         "chain": "credit_spreads_refinancing",
         "title_en": "Credit spreads widen → refinancing-dependent cohort de-rate",
-        "state": "expressed",
+        "state": "arming",
         "tier": "calibrated_context",
-        "links_confirmed": 1,
+        "links_confirmed": 0,
         "n_hops": 1,
         "base_rates": {
           "asof": null,
@@ -10659,11 +10632,11 @@
           },
           "floating_rate_debt": {
             "n": 0,
-            "unevaluable": 3,
+            "unevaluable": 2953,
             "names": []
           },
           "fcf_burner": {
-            "n": 0,
+            "n": 338,
             "unevaluable": 811,
             "names": [
               "AAMI",
@@ -10681,9 +10654,9 @@
       {
         "chain": "real_rate_peak_crypto_rerate",
         "title_en": "Real-rate peak → crypto re-rates",
-        "state": "arming",
+        "state": "propagating",
         "tier": "calibrated_context",
-        "links_confirmed": 0,
+        "links_confirmed": 1,
         "n_hops": 2,
         "base_rates": {
           "asof": null,
@@ -10780,9 +10753,9 @@
       {
         "chain": "real_rate_peak_gold_rerate",
         "title_en": "Real-rate peak → gold re-rates",
-        "state": "arming",
+        "state": "propagating",
         "tier": "calibrated_context",
-        "links_confirmed": 0,
+        "links_confirmed": 1,
         "n_hops": 2,
         "base_rates": {
           "asof": null,
@@ -10890,9 +10863,9 @@
       {
         "chain": "vol_regime_deleveraging",
         "title_en": "Vol-regime shift → systematic deleveraging → high-beta unwind",
-        "state": "arming",
+        "state": "propagating",
         "tier": "hypothesis",
-        "links_confirmed": 0,
+        "links_confirmed": 1,
         "n_hops": 2,
         "base_rates": {
           "asof": null,
@@ -11039,40 +11012,40 @@
     "ease_score": 5,
     "stance_en": "The futures rate path isn't shown until it can be matched to the policy rate.",
     "stance_zh": "期货隐含的利率路径须与政策利率口径一致后才会显示。",
-    "implied_m12": 4.34,
+    "implied_m12": 4.35,
     "policy_rate": 3.88,
     "path_plain_en": "about two hikes",
     "path_plain_zh": "约两次加息",
-    "futures_plain_en": "Market prices ~2 hikes over the next 12m (funds 3.88% → 4.34%)",
-    "futures_plain_zh": "市场为未来12个月定价约加息2次（基金利率 3.88% → 4.34%）",
+    "futures_plain_en": "Market prices ~2 hikes over the next 12m (funds 3.88% → 4.35%)",
+    "futures_plain_zh": "市场为未来12个月定价约加息2次（基金利率 3.88% → 4.35%）",
     "display_only": true,
     "authority": false,
     "regime_outlook": {
       "schema_version": "regime_outlook.v1",
       "scope": "US",
-      "analysis_cutoff": "2026-11-07T13:48:23.938184+00:00",
-      "built_at": "2026-11-07T13:48:23.941793+00:00",
+      "analysis_cutoff": "2026-11-08T10:00:31.763578+00:00",
+      "built_at": "2026-11-08T10:00:31.764993+00:00",
       "mapping_version": "VERDICT_MAPPING_V2",
       "mapping_sha256": "4da240fbff55caefbdb17290f37e8164cc672c9f520f97704534059f862ce9c0",
       "inputs": {
         "T": {
           "path": "data/transmission/latest.json",
-          "sha256": "ceba10747919d91384714e9cd0358807512728f386c9ee898b5fe017acd8bf09",
+          "sha256": "d14e727165fda4e01ba5885fde88cf0ca307f43d0f14dcd6fed5a5214239f32e",
           "read_status": "available"
         },
         "R": {
           "path": "data/regime/latest.json",
-          "sha256": "489330024d11cb94a123fa1afe24520325175f4258576a51be209a339ff600db",
+          "sha256": "c085df66936519e22029e76c4fdc0c395bbb1ecc99ab9b2d61a654c7b0c60463",
           "read_status": "available"
         },
         "M": {
           "path": "data/market_state/latest.json",
-          "sha256": "f8944075f3919a9c9cebe8f86e1cb600c933925fe1f24e11ff53797c655d14f2",
+          "sha256": "a6196a462e9b5c628af0792398bf9a4025663c7e4a9f1c3601fda63a30ce88e5",
           "read_status": "available"
         },
         "D": {
           "path": "data/dispersion/regime.json",
-          "sha256": "2990c60af02976fcd8f74d5efcdc835716f5ff80f92da734d709f2beb69beb72",
+          "sha256": "a214c17a4a0e00637b3277f8714ee7210d123146ffa35c8d6a23bc82f28c1aee",
           "read_status": "available"
         },
         "L": {
@@ -11082,12 +11055,12 @@
         },
         "B": {
           "path": "data/bonds/bond_health.json",
-          "sha256": "3bb331e5c53af044f50b54fb7bb3db62c9ed319ebcc59d8d6bde5cd3fa4321df",
+          "sha256": "faf62253e5a5fd88d2b7f8fb1cec038f7adf5b34e846f53dc968d9d90a607d0f",
           "read_status": "available"
         },
         "C": {
           "path": "data/commodity/latest.json",
-          "sha256": "629ca4d34cf22efbb714fdfbf6fa2e9d37c69442d55ca633694f253061c6e255",
+          "sha256": "91082fb269338862099f06b867ee26dcfd17849942e4bbbd0a99bad23c702099",
           "read_status": "available"
         }
       },
@@ -11224,11 +11197,11 @@
           "source": {
             "artifact": "T",
             "pointer": "/state/inflation/direction",
-            "sha256": "ceba10747919d91384714e9cd0358807512728f386c9ee898b5fe017acd8bf09",
+            "sha256": "d14e727165fda4e01ba5885fde88cf0ca307f43d0f14dcd6fed5a5214239f32e",
             "clock_semantics": "owner_snapshot_date",
             "as_of": "2026-11-06",
             "precision": "date",
-            "age_calendar_days": 1,
+            "age_calendar_days": 2,
             "future_dated": false,
             "known_at": null,
             "available_at": null,
@@ -11261,11 +11234,11 @@
           "source": {
             "artifact": "T",
             "pointer": "/state/inflation/regime",
-            "sha256": "ceba10747919d91384714e9cd0358807512728f386c9ee898b5fe017acd8bf09",
+            "sha256": "d14e727165fda4e01ba5885fde88cf0ca307f43d0f14dcd6fed5a5214239f32e",
             "clock_semantics": "owner_snapshot_date",
             "as_of": "2026-11-06",
             "precision": "date",
-            "age_calendar_days": 1,
+            "age_calendar_days": 2,
             "future_dated": false,
             "known_at": null,
             "available_at": null,
@@ -11298,11 +11271,11 @@
           "source": {
             "artifact": "T",
             "pointer": "/state/expectations/anchoring",
-            "sha256": "ceba10747919d91384714e9cd0358807512728f386c9ee898b5fe017acd8bf09",
+            "sha256": "d14e727165fda4e01ba5885fde88cf0ca307f43d0f14dcd6fed5a5214239f32e",
             "clock_semantics": "owner_snapshot_date",
             "as_of": "2026-11-06",
             "precision": "date",
-            "age_calendar_days": 1,
+            "age_calendar_days": 2,
             "future_dated": false,
             "known_at": null,
             "available_at": null,
@@ -11335,11 +11308,11 @@
           "source": {
             "artifact": "T",
             "pointer": "/state/rates/direction",
-            "sha256": "ceba10747919d91384714e9cd0358807512728f386c9ee898b5fe017acd8bf09",
+            "sha256": "d14e727165fda4e01ba5885fde88cf0ca307f43d0f14dcd6fed5a5214239f32e",
             "clock_semantics": "owner_snapshot_date",
             "as_of": "2026-11-06",
             "precision": "date",
-            "age_calendar_days": 1,
+            "age_calendar_days": 2,
             "future_dated": false,
             "known_at": null,
             "available_at": null,
@@ -11372,11 +11345,11 @@
           "source": {
             "artifact": "T",
             "pointer": "/state/rates/regime",
-            "sha256": "ceba10747919d91384714e9cd0358807512728f386c9ee898b5fe017acd8bf09",
+            "sha256": "d14e727165fda4e01ba5885fde88cf0ca307f43d0f14dcd6fed5a5214239f32e",
             "clock_semantics": "owner_snapshot_date",
             "as_of": "2026-11-06",
             "precision": "date",
-            "age_calendar_days": 1,
+            "age_calendar_days": 2,
             "future_dated": false,
             "known_at": null,
             "available_at": null,
@@ -11409,11 +11382,11 @@
           "source": {
             "artifact": "T",
             "pointer": "/breakeven_decomp/direction",
-            "sha256": "ceba10747919d91384714e9cd0358807512728f386c9ee898b5fe017acd8bf09",
+            "sha256": "d14e727165fda4e01ba5885fde88cf0ca307f43d0f14dcd6fed5a5214239f32e",
             "clock_semantics": "owner_snapshot_date",
             "as_of": "2026-11-06",
             "precision": "date",
-            "age_calendar_days": 1,
+            "age_calendar_days": 2,
             "future_dated": false,
             "known_at": null,
             "available_at": null,
@@ -11446,11 +11419,11 @@
           "source": {
             "artifact": "T",
             "pointer": "/breakeven_decomp/trend",
-            "sha256": "ceba10747919d91384714e9cd0358807512728f386c9ee898b5fe017acd8bf09",
+            "sha256": "d14e727165fda4e01ba5885fde88cf0ca307f43d0f14dcd6fed5a5214239f32e",
             "clock_semantics": "owner_snapshot_date",
             "as_of": "2026-11-06",
             "precision": "date",
-            "age_calendar_days": 1,
+            "age_calendar_days": 2,
             "future_dated": false,
             "known_at": null,
             "available_at": null,
@@ -11483,11 +11456,11 @@
           "source": {
             "artifact": "T",
             "pointer": "/yield_curve/regime/term_premium_dir",
-            "sha256": "ceba10747919d91384714e9cd0358807512728f386c9ee898b5fe017acd8bf09",
+            "sha256": "d14e727165fda4e01ba5885fde88cf0ca307f43d0f14dcd6fed5a5214239f32e",
             "clock_semantics": "owner_snapshot_date",
             "as_of": "2026-11-06",
             "precision": "date",
-            "age_calendar_days": 1,
+            "age_calendar_days": 2,
             "future_dated": false,
             "known_at": null,
             "available_at": null,
@@ -11520,11 +11493,11 @@
           "source": {
             "artifact": "T",
             "pointer": "/yield_momentum/series/2y/turn_watch",
-            "sha256": "ceba10747919d91384714e9cd0358807512728f386c9ee898b5fe017acd8bf09",
+            "sha256": "d14e727165fda4e01ba5885fde88cf0ca307f43d0f14dcd6fed5a5214239f32e",
             "clock_semantics": "source_observation_date",
             "as_of": "2026-11-05",
             "precision": "date",
-            "age_calendar_days": 2,
+            "age_calendar_days": 3,
             "future_dated": false,
             "known_at": null,
             "available_at": null,
@@ -11557,11 +11530,11 @@
           "source": {
             "artifact": "T",
             "pointer": "/yield_momentum/series/5y/turn_watch",
-            "sha256": "ceba10747919d91384714e9cd0358807512728f386c9ee898b5fe017acd8bf09",
+            "sha256": "d14e727165fda4e01ba5885fde88cf0ca307f43d0f14dcd6fed5a5214239f32e",
             "clock_semantics": "source_observation_date",
             "as_of": "2026-11-05",
             "precision": "date",
-            "age_calendar_days": 2,
+            "age_calendar_days": 3,
             "future_dated": false,
             "known_at": null,
             "available_at": null,
@@ -11594,11 +11567,11 @@
           "source": {
             "artifact": "T",
             "pointer": "/yield_momentum/series/10y/turn_watch",
-            "sha256": "ceba10747919d91384714e9cd0358807512728f386c9ee898b5fe017acd8bf09",
+            "sha256": "d14e727165fda4e01ba5885fde88cf0ca307f43d0f14dcd6fed5a5214239f32e",
             "clock_semantics": "source_observation_date",
             "as_of": "2026-11-05",
             "precision": "date",
-            "age_calendar_days": 2,
+            "age_calendar_days": 3,
             "future_dated": false,
             "known_at": null,
             "available_at": null,
@@ -11631,11 +11604,11 @@
           "source": {
             "artifact": "T",
             "pointer": "/yield_momentum/series/20y/turn_watch",
-            "sha256": "ceba10747919d91384714e9cd0358807512728f386c9ee898b5fe017acd8bf09",
+            "sha256": "d14e727165fda4e01ba5885fde88cf0ca307f43d0f14dcd6fed5a5214239f32e",
             "clock_semantics": "source_observation_date",
             "as_of": "2026-11-05",
             "precision": "date",
-            "age_calendar_days": 2,
+            "age_calendar_days": 3,
             "future_dated": false,
             "known_at": null,
             "available_at": null,
@@ -11668,11 +11641,11 @@
           "source": {
             "artifact": "T",
             "pointer": "/yield_momentum/series/30y/turn_watch",
-            "sha256": "ceba10747919d91384714e9cd0358807512728f386c9ee898b5fe017acd8bf09",
+            "sha256": "d14e727165fda4e01ba5885fde88cf0ca307f43d0f14dcd6fed5a5214239f32e",
             "clock_semantics": "source_observation_date",
             "as_of": "2026-11-05",
             "precision": "date",
-            "age_calendar_days": 2,
+            "age_calendar_days": 3,
             "future_dated": false,
             "known_at": null,
             "available_at": null,
@@ -11705,11 +11678,11 @@
           "source": {
             "artifact": "R",
             "pointer": "/conditions/labor_nowcast/read",
-            "sha256": "489330024d11cb94a123fa1afe24520325175f4258576a51be209a339ff600db",
+            "sha256": "c085df66936519e22029e76c4fdc0c395bbb1ecc99ab9b2d61a654c7b0c60463",
             "clock_semantics": "owner_snapshot_date",
             "as_of": "2026-11-06",
             "precision": "date",
-            "age_calendar_days": 1,
+            "age_calendar_days": 2,
             "future_dated": false,
             "known_at": null,
             "available_at": null,
@@ -11742,11 +11715,11 @@
           "source": {
             "artifact": "R",
             "pointer": "/conditions/financial_conditions/state",
-            "sha256": "489330024d11cb94a123fa1afe24520325175f4258576a51be209a339ff600db",
+            "sha256": "c085df66936519e22029e76c4fdc0c395bbb1ecc99ab9b2d61a654c7b0c60463",
             "clock_semantics": "source_observation_date",
             "as_of": "2026-10-30",
             "precision": "date",
-            "age_calendar_days": 8,
+            "age_calendar_days": 9,
             "future_dated": false,
             "known_at": null,
             "available_at": null,
@@ -11779,11 +11752,11 @@
           "source": {
             "artifact": "R",
             "pointer": "/conditions/complacency/breadth_div",
-            "sha256": "489330024d11cb94a123fa1afe24520325175f4258576a51be209a339ff600db",
+            "sha256": "c085df66936519e22029e76c4fdc0c395bbb1ecc99ab9b2d61a654c7b0c60463",
             "clock_semantics": "source_observation_date",
             "as_of": "2026-11-06",
             "precision": "date",
-            "age_calendar_days": 1,
+            "age_calendar_days": 2,
             "future_dated": false,
             "known_at": null,
             "available_at": null,
@@ -11816,11 +11789,11 @@
           "source": {
             "artifact": "R",
             "pointer": "/liquidity_quality/label",
-            "sha256": "489330024d11cb94a123fa1afe24520325175f4258576a51be209a339ff600db",
+            "sha256": "c085df66936519e22029e76c4fdc0c395bbb1ecc99ab9b2d61a654c7b0c60463",
             "clock_semantics": "owner_snapshot_date",
             "as_of": "2026-11-06",
             "precision": "date",
-            "age_calendar_days": 1,
+            "age_calendar_days": 2,
             "future_dated": false,
             "known_at": null,
             "available_at": null,
@@ -11853,11 +11826,11 @@
           "source": {
             "artifact": "R",
             "pointer": "/liquidity_quality/stress_overlay/confirming_stress",
-            "sha256": "489330024d11cb94a123fa1afe24520325175f4258576a51be209a339ff600db",
+            "sha256": "c085df66936519e22029e76c4fdc0c395bbb1ecc99ab9b2d61a654c7b0c60463",
             "clock_semantics": "owner_snapshot_date",
             "as_of": "2026-11-06",
             "precision": "date",
-            "age_calendar_days": 1,
+            "age_calendar_days": 2,
             "future_dated": false,
             "known_at": null,
             "available_at": null,
@@ -11890,11 +11863,11 @@
           "source": {
             "artifact": "M",
             "pointer": "/components/[key=breadth]/tone",
-            "sha256": "f8944075f3919a9c9cebe8f86e1cb600c933925fe1f24e11ff53797c655d14f2",
+            "sha256": "a6196a462e9b5c628af0792398bf9a4025663c7e4a9f1c3601fda63a30ce88e5",
             "clock_semantics": "source_observation_date",
             "as_of": "2026-11-06",
             "precision": "date",
-            "age_calendar_days": 1,
+            "age_calendar_days": 2,
             "future_dated": false,
             "known_at": null,
             "available_at": null,
@@ -11931,7 +11904,7 @@
             "clock_semantics": "owner_snapshot_date",
             "as_of": "2026-11-06",
             "precision": "date",
-            "age_calendar_days": 1,
+            "age_calendar_days": 2,
             "future_dated": false,
             "known_at": null,
             "available_at": null,
@@ -11964,11 +11937,11 @@
           "source": {
             "artifact": "B",
             "pointer": "/fed_path/implied_cuts_12m",
-            "sha256": "3bb331e5c53af044f50b54fb7bb3db62c9ed319ebcc59d8d6bde5cd3fa4321df",
+            "sha256": "faf62253e5a5fd88d2b7f8fb1cec038f7adf5b34e846f53dc968d9d90a607d0f",
             "clock_semantics": "owner_snapshot_date",
             "as_of": "2026-11-06",
             "precision": "date",
-            "age_calendar_days": 1,
+            "age_calendar_days": 2,
             "future_dated": false,
             "known_at": null,
             "available_at": null,
@@ -11996,7 +11969,7 @@
           "source": {
             "artifact": "T",
             "pointer": "/dollar_channel/usd_dir",
-            "sha256": "ceba10747919d91384714e9cd0358807512728f386c9ee898b5fe017acd8bf09",
+            "sha256": "d14e727165fda4e01ba5885fde88cf0ca307f43d0f14dcd6fed5a5214239f32e",
             "clock_semantics": "unknown",
             "as_of": null,
             "precision": null,
@@ -12033,11 +12006,11 @@
           "source": {
             "artifact": "R",
             "pointer": "/liquidity_quality/stress_overlay/hy_oas_pct",
-            "sha256": "489330024d11cb94a123fa1afe24520325175f4258576a51be209a339ff600db",
+            "sha256": "c085df66936519e22029e76c4fdc0c395bbb1ecc99ab9b2d61a654c7b0c60463",
             "clock_semantics": "owner_snapshot_date",
             "as_of": "2026-11-06",
             "precision": "date",
-            "age_calendar_days": 1,
+            "age_calendar_days": 2,
             "future_dated": false,
             "known_at": null,
             "available_at": null,
@@ -12070,11 +12043,11 @@
           "source": {
             "artifact": "T",
             "pointer": "/state/inflation/eci_comp_yoy",
-            "sha256": "ceba10747919d91384714e9cd0358807512728f386c9ee898b5fe017acd8bf09",
+            "sha256": "d14e727165fda4e01ba5885fde88cf0ca307f43d0f14dcd6fed5a5214239f32e",
             "clock_semantics": "owner_snapshot_date",
             "as_of": "2026-11-06",
             "precision": "date",
-            "age_calendar_days": 1,
+            "age_calendar_days": 2,
             "future_dated": false,
             "known_at": null,
             "available_at": null,
@@ -12107,11 +12080,11 @@
           "source": {
             "artifact": "C",
             "pointer": "/assets/oil/trend",
-            "sha256": "629ca4d34cf22efbb714fdfbf6fa2e9d37c69442d55ca633694f253061c6e255",
+            "sha256": "91082fb269338862099f06b867ee26dcfd17849942e4bbbd0a99bad23c702099",
             "clock_semantics": "owner_snapshot_date",
             "as_of": "2026-11-06",
             "precision": "date",
-            "age_calendar_days": 1,
+            "age_calendar_days": 2,
             "future_dated": false,
             "known_at": null,
             "available_at": null,
@@ -12144,11 +12117,11 @@
           "source": {
             "artifact": "T",
             "pointer": "/yield_curve/regime/key",
-            "sha256": "ceba10747919d91384714e9cd0358807512728f386c9ee898b5fe017acd8bf09",
+            "sha256": "d14e727165fda4e01ba5885fde88cf0ca307f43d0f14dcd6fed5a5214239f32e",
             "clock_semantics": "owner_snapshot_date",
             "as_of": "2026-11-06",
             "precision": "date",
-            "age_calendar_days": 1,
+            "age_calendar_days": 2,
             "future_dated": false,
             "known_at": null,
             "available_at": null,
@@ -12181,9 +12154,9 @@
           "source": {
             "artifact": "D",
             "pointer": "/state",
-            "sha256": "2990c60af02976fcd8f74d5efcdc835716f5ff80f92da734d709f2beb69beb72",
+            "sha256": "a214c17a4a0e00637b3277f8714ee7210d123146ffa35c8d6a23bc82f28c1aee",
             "clock_semantics": "owner_snapshot_date",
-            "as_of": "2026-11-07",
+            "as_of": "2026-11-08",
             "precision": "date",
             "age_calendar_days": 0,
             "future_dated": false,
@@ -12218,9 +12191,9 @@
           "source": {
             "artifact": "D",
             "pointer": "/avg_corr",
-            "sha256": "2990c60af02976fcd8f74d5efcdc835716f5ff80f92da734d709f2beb69beb72",
+            "sha256": "a214c17a4a0e00637b3277f8714ee7210d123146ffa35c8d6a23bc82f28c1aee",
             "clock_semantics": "owner_snapshot_date",
-            "as_of": "2026-11-07",
+            "as_of": "2026-11-08",
             "precision": "date",
             "age_calendar_days": 0,
             "future_dated": false,
@@ -12255,11 +12228,11 @@
           "source": {
             "artifact": "R",
             "pointer": "/conditions/financial_conditions/trend",
-            "sha256": "489330024d11cb94a123fa1afe24520325175f4258576a51be209a339ff600db",
+            "sha256": "c085df66936519e22029e76c4fdc0c395bbb1ecc99ab9b2d61a654c7b0c60463",
             "clock_semantics": "source_observation_date",
             "as_of": "2026-10-30",
             "precision": "date",
-            "age_calendar_days": 8,
+            "age_calendar_days": 9,
             "future_dated": false,
             "known_at": null,
             "available_at": null,
@@ -12292,11 +12265,11 @@
           "source": {
             "artifact": "R",
             "pointer": "/liquidity_quality/stress_overlay/nfci_trend",
-            "sha256": "489330024d11cb94a123fa1afe24520325175f4258576a51be209a339ff600db",
+            "sha256": "c085df66936519e22029e76c4fdc0c395bbb1ecc99ab9b2d61a654c7b0c60463",
             "clock_semantics": "owner_snapshot_date",
             "as_of": "2026-11-06",
             "precision": "date",
-            "age_calendar_days": 1,
+            "age_calendar_days": 2,
             "future_dated": false,
             "known_at": null,
             "available_at": null,
@@ -14011,7 +13984,7 @@
             },
             "owner_verdict": null,
             "status": "partial",
-            "as_of": "2026-11-07"
+            "as_of": "2026-11-08"
           }
         },
         {
@@ -14031,7 +14004,7 @@
             },
             "owner_verdict": null,
             "status": "partial",
-            "as_of": "2026-11-07"
+            "as_of": "2026-11-08"
           }
         },
         {
@@ -14088,7 +14061,7 @@
     "data/regime/latest.json": "2026-11-06",
     "data/breadth/breadth.parquet": "2026-11-06",
     "site/basketdata/oracle_state.json": "2026-11-06",
-    "data/run_status.json": "2026-11-07T05:20:12.575150+00:00",
+    "data/run_status.json": "2026-11-08T05:10:59.227561+00:00",
     "site/factordata/alerts_triage.json": "2026-11-06",
     "data/neuralweb/liquidity_plumbing.json": "2026-10-14",
     "data/rebalance_pulse/latest.json": "2026-11-06",
@@ -14096,18 +14069,18 @@
     "data/neuralweb/theme_state.json": "2026-11-07",
     "data/transmission/latest.json": "2026-11-06",
     "data/rates_command/latest.json": "2026-11-06",
-    "data/forex/latest.json": "2026-11-07",
+    "data/forex/latest.json": "2026-11-08",
     "data/bonds/bond_health.json": "2026-11-06",
     "data/china_regime/latest.json": "2026-11-06",
     "data/hk_regime/latest.json": "2026-11-06",
     "data/canada_regime/latest.json": "2026-10-14",
     "data/commodity/latest.json": "2026-11-06",
-    "site/intelligence/briefing.json": "2026-11-07",
-    "data/crossasset/latest.json": "2026-11-07",
+    "site/intelligence/briefing.json": "2026-11-08",
+    "data/crossasset/latest.json": "2026-11-08",
     "data/intl_risk/latest.json": null,
     "site/basketdata/theme_context.json": "2026-11-06",
     "data/market_structure/latest.json": "2026-11-06",
-    "data/stage_analysis/context/latest.json": "2026-11-07",
+    "data/stage_analysis/context/latest.json": "2026-11-08",
     "data/darkpool/context/latest.json": "2026-11-06",
     "data/transmission/chain_state.json": "2026-11-06",
     "data/mag7_washout/latest.json": "2026-11-06",
@@ -14116,7 +14089,7 @@
   },
   "schema_version": 1,
   "produced_by": "engine/neuralweb/world_state.py",
-  "produced_at": "2026-11-07T13:48:41Z",
-  "inputs_hash": "sha256:4a91093a5e83906dc30127394cb26c9f6a609ec1b959dbb737e0d53bcfc32af0",
+  "produced_at": "2026-11-08T10:00:45Z",
+  "inputs_hash": "sha256:27c7575b8667a57eb3d920eeabcaadb1143388a0a436030c2df571c4f97e2922",
   "tier": "infrastructure"
 }

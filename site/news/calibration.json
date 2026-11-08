@@ -2,7 +2,7 @@
   "schema": "news_event_calibration.v1",
   "is_context_only": true,
   "asof": "2026-11-07",
-  "n_events_logged": 1886,
+  "n_events_logged": 1898,
   "n_events_graded": 1510,
   "classes": [
     {
@@ -26,7 +26,7 @@
       "hit_5d": 0.4117647058823529,
       "hit_21d": 0.5,
       "avg_rel_5d": 0.001357875846702317,
-      "avg_rel_21d": 0.01462705367965368,
+      "avg_rel_21d": 0.01479205367965368,
       "wilson_low_5d": 0.216108,
       "wilson_high_5d": 0.639949,
       "verdict": "insufficient"
@@ -39,7 +39,7 @@
       "hit_5d": 0.5294117647058824,
       "hit_21d": 0.17647058823529413,
       "avg_rel_5d": 0.008384105042016808,
-      "avg_rel_21d": -0.030028649859943978,
+      "avg_rel_21d": -0.02973522969187675,
       "wilson_low_5d": 0.309629,
       "wilson_high_5d": 0.738352,
       "verdict": "insufficient"
@@ -86,12 +86,12 @@
     {
       "event_type": "earnings_result",
       "direction": "mixed",
-      "n": 884,
+      "n": 885,
       "n_graded": 829,
       "hit_5d": 0.0,
       "hit_21d": 0.0,
       "avg_rel_5d": 0.0030914416318594353,
-      "avg_rel_21d": 0.012219679014637087,
+      "avg_rel_21d": 0.012224347656027292,
       "wilson_low_5d": null,
       "wilson_high_5d": null,
       "verdict": "context_only"
@@ -104,7 +104,7 @@
       "hit_5d": 0.4117647058823529,
       "hit_21d": 0.5294117647058824,
       "avg_rel_5d": 0.013635472549019607,
-      "avg_rel_21d": 0.017385341176470587,
+      "avg_rel_21d": 0.017799458823529415,
       "wilson_low_5d": 0.216108,
       "wilson_high_5d": 0.639949,
       "verdict": "insufficient"
@@ -138,7 +138,7 @@
     {
       "event_type": "litigation",
       "direction": "bearish",
-      "n": 363,
+      "n": 373,
       "n_graded": 297,
       "hit_5d": 0.4983164983164983,
       "hit_21d": 0.5404411764705882,
@@ -155,8 +155,8 @@
       "n_graded": 57,
       "hit_5d": 0.0,
       "hit_21d": 0.0,
-      "avg_rel_5d": -0.003274198830409357,
-      "avg_rel_21d": -0.009117053939393941,
+      "avg_rel_5d": -0.0032361461988304092,
+      "avg_rel_21d": -0.008996590303030303,
       "wilson_low_5d": null,
       "wilson_high_5d": null,
       "verdict": "context_only"
@@ -268,7 +268,7 @@
     {
       "event_type": "regulatory_probe",
       "direction": "bearish",
-      "n": 18,
+      "n": 19,
       "n_graded": 10,
       "hit_5d": 0.5,
       "hit_21d": 0.625,
@@ -280,7 +280,7 @@
     }
   ],
   "reject_audit": {
-    "n_sampled": 2208,
+    "n_sampled": 2240,
     "n_graded": 0,
     "classes": []
   }
