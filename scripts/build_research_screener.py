@@ -23,23 +23,16 @@ JSON_NAME = "research_screener.json"
 HTML_NAME = "research_screener.html"
 
 
-_FALLBACK_STOCKDATA = "tests/fixtures/research_screener"
-
-
 def _load_stockdata(root: Path) -> tuple[list[dict], list[dict], dict[str, str], str | None]:
-    """Read security_state.v1 records. Prefers ``site/stockdata`` (the real
-    per-ticker store), falls back to ``tests/fixtures/research_screener/``
-    so a fresh checkout without the gitignored site tree still produces the
-    documented rows for evidence re-capture. The fixture ships the same
-    shape as the real store: ``security_state`` + ``valuation_scenario``.
+    """Read security_state.v1 records from the production per-ticker store.
+
+    Missing production input is an empty list, never repository examples.
+    Tests and evidence harnesses must bind their synthetic stockdata explicitly
+    under their own root's ``site/stockdata`` directory.
     """
     stockdir = root / "site" / "stockdata"
     if not stockdir.is_dir():
-        fallback = root / _FALLBACK_STOCKDATA
-        if fallback.is_dir():
-            stockdir = fallback
-        else:
-            return [], [], {}, None
+        return [], [], {}, None
     states: list[dict] = []
     postures: list[dict] = []
     names: dict[str, str] = {}
