@@ -120,7 +120,10 @@ def test_vps_main_sync_wake_reuses_pinned_host_and_locked_updater_only():
     assert "/usr/local/bin/macro-update" in command
     assert "/var/log/macro-update.log" in command
     assert "git -C /opt/macro rev-parse --verify HEAD" in command
-    executable = "\n".join(line for line in command.splitlines()\n                           if not line.lstrip().startswith("#"))\n    assert "git reset" not in executable and "rsync " not in executable\n    assert "git push" not in command and "gh pr merge" not in command
+    executable = "\n".join(line for line in command.splitlines()
+                           if not line.lstrip().startswith("#"))
+    assert "git reset" not in executable and "rsync " not in executable
+    assert "git push" not in command and "gh pr merge" not in command
     assert "workflow_dispatch" not in command
     assert "|| true" not in command
     pin = (ROOT / "app" / "deploy" / "ohlc_origin_known_hosts").read_text()
