@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "XEL-BULL-20260727",
-  "asof": "2026-11-07",
+  "asof": "2026-11-08",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 38.2,
@@ -20,7 +20,7 @@
     "dist_to_stop_r": 1.127,
     "dist_to_t1_r": 1.373,
     "dist_to_t2_r": 2.873,
-    "horizon_pct_used": 191.1,
+    "horizon_pct_used": 193.3,
     "p1": 0.0849,
     "p2": 0.0424,
     "p3": null,
@@ -45,8 +45,8 @@
   "_first_trigger_ts": "2026-08-13",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 86,
-  "tau": 1.9111,
+  "days_elapsed": 87,
+  "tau": 1.9333,
   "closed": true,
   "outcome": "NO_ENTRY"
 }
