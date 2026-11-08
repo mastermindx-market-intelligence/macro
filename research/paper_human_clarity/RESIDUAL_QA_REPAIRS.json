@@ -1817,5 +1817,256 @@
       "old": "rs_21d",
       "destinationId": "GOI-0"
     }
-  ]
+  ],
+  "terminalFinalCopy": {
+    "date": "2026-11-08",
+    "kind": "read_only_copy_recommendation",
+    "fileId": "01M3NSZGE8JWN2EZCSF0DT05RM",
+    "roots": [
+      {
+        "id": "1ZOE-0",
+        "theme": "light",
+        "parentId": "212W-0"
+      },
+      {
+        "id": "1ZUV-0",
+        "theme": "dark",
+        "parentId": "212W-0"
+      }
+    ],
+    "scope": "Only the exact legend/history/ledger phrases identified by root, plus the immediately adjacent Current-vintage graph context heading in the same historical panel.",
+    "paperMutations": false,
+    "sourceMutations": false,
+    "preflight": "Both current root parents and all 16 text preimages/parents were read back through C3 paper_read and matched.",
+    "changes": [
+      {
+        "theme": "light",
+        "rootId": "1ZOE-0",
+        "nodeId": "1ZQ1-0",
+        "parentId": "1ZPN-0",
+        "preimage": "Relationship style communicates evidence status—not magnitude, confidence, ranking, or trade direction.",
+        "replacement": "Line styles show evidence status.",
+        "key": "legend",
+        "currentParentAndPreimageMatch": true
+      },
+      {
+        "theme": "light",
+        "rootId": "1ZOE-0",
+        "nodeId": "1ZSP-0",
+        "parentId": "1ZSM-0",
+        "preimage": "Exact Q2 event sources",
+        "replacement": "Q2 company sources",
+        "key": "q2_sources",
+        "currentParentAndPreimageMatch": true
+      },
+      {
+        "theme": "light",
+        "rootId": "1ZOE-0",
+        "nodeId": "1ZST-0",
+        "parentId": "1ZSQ-0",
+        "preimage": "When exact binding exists",
+        "replacement": "Requires a matching dated source.",
+        "key": "dated_source_condition",
+        "currentParentAndPreimageMatch": true
+      },
+      {
+        "theme": "light",
+        "rootId": "1ZOE-0",
+        "nodeId": "1ZSX-0",
+        "parentId": "1ZSU-0",
+        "preimage": "No current-vintage leak",
+        "replacement": "Current relationships kept separate",
+        "key": "historical_separation",
+        "currentParentAndPreimageMatch": true
+      },
+      {
+        "theme": "light",
+        "rootId": "1ZOE-0",
+        "nodeId": "1ZT0-0",
+        "parentId": "1ZSZ-0",
+        "preimage": "Current-vintage graph context",
+        "replacement": "Current relationships",
+        "key": "current_context_heading",
+        "currentParentAndPreimageMatch": true
+      },
+      {
+        "theme": "light",
+        "rootId": "1ZOE-0",
+        "nodeId": "1ZT5-0",
+        "parentId": "1ZSZ-0",
+        "preimage": "No ranking, weight, confidence scalar, causal DAG, or trade semantic is inferred by this Company Intelligence view.",
+        "replacement": "Links do not prove cause and effect.",
+        "key": "view_purpose",
+        "currentParentAndPreimageMatch": true
+      },
+      {
+        "theme": "light",
+        "rootId": "1ZOE-0",
+        "nodeId": "1ZTB-0",
+        "parentId": "1ZT7-0",
+        "preimage": "Deterministic display · no ranking by magnitude",
+        "replacement": "Not ranked by impact",
+        "key": "ledger_order",
+        "currentParentAndPreimageMatch": true
+      },
+      {
+        "theme": "light",
+        "rootId": "1ZOE-0",
+        "nodeId": "1ZU4-0",
+        "parentId": "1ZU2-0",
+        "preimage": "Research direction only. Do not infer a causal graph or “most important driver” from adjacency.",
+        "replacement": "Delivery impact needs supporting evidence.",
+        "key": "delivery_hypothesis",
+        "currentParentAndPreimageMatch": true
+      },
+      {
+        "theme": "dark",
+        "rootId": "1ZUV-0",
+        "nodeId": "1ZWI-0",
+        "parentId": "1ZW4-0",
+        "preimage": "Relationship style communicates evidence status—not magnitude, confidence, ranking, or trade direction.",
+        "replacement": "Line styles show evidence status.",
+        "key": "legend",
+        "currentParentAndPreimageMatch": true
+      },
+      {
+        "theme": "dark",
+        "rootId": "1ZUV-0",
+        "nodeId": "1ZZ6-0",
+        "parentId": "1ZZ3-0",
+        "preimage": "Exact Q2 event sources",
+        "replacement": "Q2 company sources",
+        "key": "q2_sources",
+        "currentParentAndPreimageMatch": true
+      },
+      {
+        "theme": "dark",
+        "rootId": "1ZUV-0",
+        "nodeId": "1ZZA-0",
+        "parentId": "1ZZ7-0",
+        "preimage": "When exact binding exists",
+        "replacement": "Requires a matching dated source.",
+        "key": "dated_source_condition",
+        "currentParentAndPreimageMatch": true
+      },
+      {
+        "theme": "dark",
+        "rootId": "1ZUV-0",
+        "nodeId": "1ZZE-0",
+        "parentId": "1ZZB-0",
+        "preimage": "No current-vintage leak",
+        "replacement": "Current relationships kept separate",
+        "key": "historical_separation",
+        "currentParentAndPreimageMatch": true
+      },
+      {
+        "theme": "dark",
+        "rootId": "1ZUV-0",
+        "nodeId": "1ZZH-0",
+        "parentId": "1ZZG-0",
+        "preimage": "Current-vintage graph context",
+        "replacement": "Current relationships",
+        "key": "current_context_heading",
+        "currentParentAndPreimageMatch": true
+      },
+      {
+        "theme": "dark",
+        "rootId": "1ZUV-0",
+        "nodeId": "1ZZM-0",
+        "parentId": "1ZZG-0",
+        "preimage": "No ranking, weight, confidence scalar, causal DAG, or trade semantic is inferred by this Company Intelligence view.",
+        "replacement": "Links do not prove cause and effect.",
+        "key": "view_purpose",
+        "currentParentAndPreimageMatch": true
+      },
+      {
+        "theme": "dark",
+        "rootId": "1ZUV-0",
+        "nodeId": "1ZZS-0",
+        "parentId": "1ZZO-0",
+        "preimage": "Deterministic display · no ranking by magnitude",
+        "replacement": "Not ranked by impact",
+        "key": "ledger_order",
+        "currentParentAndPreimageMatch": true
+      },
+      {
+        "theme": "dark",
+        "rootId": "1ZUV-0",
+        "nodeId": "200L-0",
+        "parentId": "200J-0",
+        "preimage": "Research direction only. Do not infer a causal graph or “most important driver” from adjacency.",
+        "replacement": "Delivery impact needs supporting evidence.",
+        "key": "delivery_hypothesis",
+        "currentParentAndPreimageMatch": true
+      }
+    ],
+    "preserveInBuilderRecord": "All exact original passages are preserved as preimage values here. Retain the full constraints in the existing builder reference when replacing product text: evidence style encodes status only; this view does not infer magnitude, confidence, rank, causal graph or trade semantics; historical binding requires matching source identity/date; current relationships stay separate from historical identity.",
+    "unchangedMeaningfulContent": [
+      {
+        "light": "1ZSJ-0",
+        "dark": "1ZZ0-0",
+        "text": "HISTORICAL IDENTITY · NOT LOADED"
+      },
+      {
+        "light": "1ZSK-0",
+        "dark": "1ZZ1-0",
+        "text": "Historical company relationships are not established for this date. Current relationships cannot prove what was known then."
+      },
+      {
+        "light": "1ZSY-0",
+        "dark": "1ZZF-0",
+        "text": "Historical relationships are unavailable in this case."
+      },
+      {
+        "light": "1ZT1-0",
+        "dark": "1ZZI-0",
+        "text": "Current relationships, when available, appear separately from this historical case."
+      },
+      {
+        "light": "1ZT3-0",
+        "dark": "1ZZK-0",
+        "text": "Historical ontology memberships unavailable"
+      },
+      {
+        "light": "1ZT4-0",
+        "dark": "1ZZL-0",
+        "text": "—"
+      },
+      {
+        "light": "1ZTF-0",
+        "dark": "1ZZW-0",
+        "text": "Q2 company evidence · Blackwell revenue +17% sequentially."
+      },
+      {
+        "light": "1ZTK-0",
+        "dark": "2001-0",
+        "text": "Networking +$2.295B QoQ while Compute −$0.311B."
+      },
+      {
+        "light": "1ZTP-0",
+        "dark": "2006-0",
+        "text": "The published outlook assumes no H20 shipments to China."
+      },
+      {
+        "light": "1ZTU-0",
+        "dark": "200B-0",
+        "text": "Dated policy evidence is not attached to this case."
+      },
+      {
+        "light": "1ZTZ-0",
+        "dark": "200G-0",
+        "text": "Historical relationship not loaded."
+      }
+    ],
+    "rationale": "The legend still explains evidence encoding, the ledger explicitly remains unranked, a short cause/effect limit prevents treating adjacency as proof, and the delivery hypothesis names its evidence gap. Exact binding, vintage isolation and graph implementation terminology remain in builder records.",
+    "verificationNeededAfterParentApplication": "Read back all replacements and inspect the legend/history/ledger sections for wrapping. No data, hypothesis/source badges, historical unknown states or research findings should change."
+  },
+  "internationalExpiryRepair": {
+    "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+    "nodeId": "OGT-0",
+    "parentId": "OGR-0",
+    "before": "什么能确认或否定判断？",
+    "after": "确认、否定或到期条件？",
+    "verified": true
+  }
 }
