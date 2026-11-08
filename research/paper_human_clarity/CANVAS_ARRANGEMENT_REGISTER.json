@@ -1,0 +1,305 @@
+{
+  "schema": "PAPER_CANVAS_ARRANGEMENT_V1",
+  "reason": "write_html retained frame content/styles but omitted root canvas left/top. Group owned frames in normal flow; use duplicate_nodes automatic empty-space placement for bounded product/reference carriers on existing pages.",
+  "preserve": "All original design/content node IDs remain intact inside their named frames. No held or unattributed root is moved. Source-only fixtures, release state and historical proof remain unchanged.",
+  "existing": [
+    {
+      "key": "newsProduct",
+      "name": "PRODUCT REFERENCES · News intelligence",
+      "rows": [
+        [
+          "27L-0",
+          "2G9-0",
+          "2JL-0"
+        ]
+      ],
+      "width": 2960,
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "pageId": "p-2-0",
+      "fullyOwnedPage": true
+    },
+    {
+      "key": "newsBuild",
+      "name": "BUILD REFERENCES · News architecture and original specimens",
+      "rows": [
+        [
+          "27K-0",
+          "1UF-0",
+          "2FG-0"
+        ],
+        [
+          "1FM-0",
+          "2QK-0"
+        ]
+      ],
+      "width": 4960,
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "pageId": "p-3-0",
+      "fullyOwnedPage": true
+    },
+    {
+      "key": "optionsBuild",
+      "name": "BUILD REFERENCES · Options contracts",
+      "rows": [
+        [
+          "14A-0",
+          "14E-0"
+        ]
+      ],
+      "width": 2860,
+      "fileId": "01M5EPQ16VBT7SBW2NQVX2RJG4",
+      "pageId": "p-3-0",
+      "fullyOwnedPage": true
+    },
+    {
+      "key": "optionsHelp",
+      "name": "HELP REFERENCES · Options",
+      "rows": [
+        [
+          "14J-0",
+          "14Z-0",
+          "15F-0",
+          "15V-0"
+        ]
+      ],
+      "width": 1800,
+      "fileId": "01M5EPQ16VBT7SBW2NQVX2RJG4",
+      "pageId": "p-4-0",
+      "fullyOwnedPage": true
+    },
+    {
+      "key": "sectorBuild",
+      "name": "BUILD REFERENCES · Sector clarity",
+      "rows": [
+        [
+          "GOI-0",
+          "GOO-0"
+        ]
+      ],
+      "width": 3200,
+      "fileId": "01M6FAXA774QT1VRDMAG7DFQ2W",
+      "pageId": "p-5-0",
+      "fullyOwnedPage": true
+    },
+    {
+      "key": "intlHelp",
+      "name": "HELP REFERENCES · International",
+      "rows": [
+        [
+          "NUB-0",
+          "NUN-0",
+          "NUZ-0",
+          "NVB-0"
+        ],
+        [
+          "NVN-0",
+          "NW0-0",
+          "O17-0",
+          "O23-0"
+        ],
+        [
+          "O1H-0",
+          "O2D-0"
+        ],
+        [
+          "O39-0"
+        ]
+      ],
+      "width": 1800,
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "pageId": "p-J-0",
+      "fullyOwnedPage": true
+    },
+    {
+      "key": "intlStates",
+      "name": "STATE REFERENCES · Saved research",
+      "rows": [
+        [
+          "O12-0",
+          "O14-0"
+        ]
+      ],
+      "width": 2960,
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "pageId": "p-K-0",
+      "fullyOwnedPage": true
+    },
+    {
+      "key": "popupStates",
+      "name": "FUTURE STATE REFERENCES · Follow save",
+      "rows": [
+        [
+          "AI1-0",
+          "AI2-0",
+          "AI3-0",
+          "AI4-0"
+        ]
+      ],
+      "width": 1800,
+      "fileId": "01M38EVF74SJWG1GANN5VP380Z",
+      "pageId": "p-9-0",
+      "fullyOwnedPage": true
+    }
+  ],
+  "newPages": [
+    {
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "pageName": "User help · News counts",
+      "name": "HELP REFERENCES · News counts",
+      "rows": [
+        [
+          "2NG-0",
+          "2OM-0"
+        ]
+      ],
+      "width": 1760,
+      "icon": "question"
+    },
+    {
+      "fileId": "01M312VSDSZFVT45674GDVJVZN",
+      "pageName": "Build · Clarity & product contracts",
+      "name": "BUILD REFERENCES · Product contracts",
+      "rows": [
+        [
+          "9XQ-0",
+          "9YG-0"
+        ]
+      ],
+      "width": 2800,
+      "icon": "blueprint"
+    },
+    {
+      "fileId": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "pageName": "Build · Clarity & company contracts",
+      "name": "BUILD REFERENCES · Company and chart contracts",
+      "rows": [
+        [
+          "1ZHS-0",
+          "1ZJC-0",
+          "1ZK6-0",
+          "1ZKQ-0"
+        ],
+        [
+          "1Z9O-0"
+        ]
+      ],
+      "width": 8400,
+      "icon": "blueprint"
+    },
+    {
+      "fileId": "01M3P1X4FR6BRTB13KA736Y1HT",
+      "pageName": "Build · Clarity & receipt contracts",
+      "name": "BUILD REFERENCES · Ontology contracts",
+      "rows": [
+        [
+          "ACM-0",
+          "ACQ-0"
+        ]
+      ],
+      "width": 3120,
+      "icon": "blueprint"
+    },
+    {
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "pageName": "Build · Clarity preservation",
+      "name": "BUILD REFERENCES · International preservation",
+      "rows": [
+        [
+          "NRX-0",
+          "NSF-0",
+          "NWE-0"
+        ]
+      ],
+      "width": 4800,
+      "icon": "blueprint"
+    },
+    {
+      "fileId": "01M2VWK62FA5S4VVF6G7SBPE5J",
+      "pageName": "Build · Clarity preservation",
+      "name": "BUILD REFERENCES · Hub preservation",
+      "rows": [
+        [
+          "73A-0",
+          "73G-0"
+        ]
+      ],
+      "width": 3040,
+      "icon": "blueprint"
+    },
+    {
+      "fileId": "01M5H6EARN9YHQV17JC6ZG9BRY",
+      "pageName": "Build · Clarity preservation",
+      "name": "BUILD REFERENCES · Global intelligence preservation",
+      "rows": [
+        [
+          "73O-0"
+        ]
+      ],
+      "width": 1280,
+      "icon": "blueprint"
+    },
+    {
+      "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+      "pageName": "Build · Clarity preservation",
+      "name": "BUILD REFERENCES · Prophet preservation",
+      "rows": [
+        [
+          "146H-0"
+        ]
+      ],
+      "width": 1680,
+      "icon": "blueprint"
+    }
+  ],
+  "proxies": [
+    {
+      "fileId": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "archivePageId": "p-1A-0",
+      "targetPageId": "p-1-0",
+      "name": "PRODUCT REFERENCES · Connected Drivers · Light and dark",
+      "nodes": [
+        "1ZOE-0",
+        "1ZUV-0"
+      ],
+      "width": 2960,
+      "height": 2340
+    },
+    {
+      "fileId": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "archivePageId": "p-1A-0",
+      "targetPageId": "p-M-1",
+      "name": "PRODUCT REFERENCES · Mobile call and source states · 中文",
+      "nodes": [
+        "201C-0",
+        "207K-0",
+        "203X-0",
+        "20A5-0"
+      ],
+      "width": 1800,
+      "height": 2101
+    },
+    {
+      "fileId": "01M2VWK62FA5S4VVF6G7SBPE5J",
+      "archivePageId": "p-B-0",
+      "targetPageId": "p-3-0",
+      "name": "PRODUCT REFERENCE · US Command",
+      "nodes": [
+        "73Q-0"
+      ],
+      "width": 1440,
+      "height": 2320
+    },
+    {
+      "fileId": "01M312VSDSZFVT45674GDVJVZN",
+      "archivePageId": null,
+      "targetPageId": "p-9-0",
+      "name": "LAW REFERENCE · Human-first clarity",
+      "nodes": [
+        "9X3-0"
+      ],
+      "width": 1040,
+      "height": 1000
+    }
+  ],
+  "proxyNote": "The law carrier minimum height is verified after native law render; use a matching empty template and normal-flow children. Templates are retained under an invisible utility frame on the archive/build page, not in product."
+}
