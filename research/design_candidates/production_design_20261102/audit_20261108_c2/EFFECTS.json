@@ -1466,6 +1466,38 @@
       "result": [
         "OK"
       ]
+    },
+    {
+      "key": "motion_pointer_edit",
+      "operation_id": "paper-audit-20261108-c2-motion-source-pointer",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "set_text_content",
+      "adapter_snapshot_before": "64a1efd6c1233c304881b67efd79acaebf746e02378ba97b9e9bff8b5007caf4",
+      "adapter_snapshot_after": "64a1efd6c1233c304881b67efd79acaebf746e02378ba97b9e9bff8b5007caf4",
+      "retry_allowed": false,
+      "production_acceptance": false,
+      "result": [
+        {
+          "updates": [
+            {
+              "nodeId": "AC7-0"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "finish_motion_pointer",
+      "operation_id": "paper-audit-20261108-c2-finish-motion-pointer",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "tool": "finish_working_on_nodes",
+      "adapter_snapshot_before": "64a1efd6c1233c304881b67efd79acaebf746e02378ba97b9e9bff8b5007caf4",
+      "adapter_snapshot_after": "64a1efd6c1233c304881b67efd79acaebf746e02378ba97b9e9bff8b5007caf4",
+      "retry_allowed": false,
+      "production_acceptance": false,
+      "result": [
+        "OK"
+      ]
     }
   ],
   "verification": {
@@ -1487,7 +1519,9 @@
       "addedSectionId": "A9R-0",
       "readback": true,
       "screenshotReviewed": true,
-      "preservedImplementationBoard": "13J-0"
+      "preservedImplementationBoard": "13J-0",
+      "contractSourceCommit": "cb225f999dafc5fa3582bd798c4829525853c4cb",
+      "finalSourcePointerReadback": true
     },
     "guide": [
       {
@@ -1644,5 +1678,23 @@
       "noTradesOrWrites": true
     },
     "limitations": "Read-only visual comparison; no entitlement, watch, save, full breakpoint or runtime acceptance proof."
-  }
+  },
+  "evidence": [
+    {
+      "name": "motion-storyboard.jpg",
+      "sha": "fa2b06ff9083124c5b1beba32a9d1cb31458c96d"
+    },
+    {
+      "name": "ai-build-sequence.jpg",
+      "sha": "e9886c4ab30a2969a3bb2802a6f1602a20fda348"
+    },
+    {
+      "name": "risk-guide-en-desktop.jpg",
+      "sha": "6b953c95300ed03b54ad1553c47773d46078e108"
+    },
+    {
+      "name": "risk-guide-zh-mobile.jpg",
+      "sha": "d1fd9155c40543bedb8f13562492854b87528844"
+    }
+  ]
 }
