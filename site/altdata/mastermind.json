@@ -1,7 +1,7 @@
 {
   "schema": "altdata.mastermind.v1",
   "as_of": "2026-11-07",
-  "generated_utc": "2026-11-07T06:42:12.249264+00:00",
+  "generated_utc": "2026-11-07T21:30:27.164108+00:00",
   "contract": "Actionable alt-data axis for the Mastermind bot. Each signal: signal_score 0-100 (composite of weighted convergence + brain conviction + price confirm \u2212 extension), action \u2208 {ACCUMULATE,WATCH,AVOID}, direction \u2208 {long,short,neutral}, source \u2208 {brain,deterministic}. The bot sizes through its OWN risk framework; this is an input, not an order. Brain calls are graded vs SPY (see calibration). An extended name is never ACCUMULATE. trump_linked / affiliations flag actor ties. rolling_over names (off_high\u2264\u221215% AND 20d<0 AND below 50dma) appear in broken_signals only \u2014 crowd attention, NOT entries. entry_tier (T1/T2/T3) = validated confluence buy gate signal.",
   "regime_read": "The strongest measured convergence sits in enterprise technology and semiconductors, but several signals face near-term earnings risk and the track record has only two scored observations. IBM and MU offer the cleanest non-extended alignment; MSFT has credible convergence but is already extended.",
   "brain_present": true,
@@ -21,7 +21,7 @@
     "note": "10 scored, hit-rate 0.9 (directional accuracy 0.9)."
   },
   "n_signals": 65,
-  "n_broken": 47,
+  "n_broken": 48,
   "signals": [
     {
       "ticker": "IBM",
@@ -1027,49 +1027,6 @@
   ],
   "broken_signals": [
     {
-      "ticker": "GOOGL",
-      "signal_score": 57,
-      "conviction": "high",
-      "action": "WATCH",
-      "direction": "neutral",
-      "source": "deterministic",
-      "weighted_score": 1.8,
-      "convergence_score": 5,
-      "channels": [
-        "affiliation",
-        "analyst_upgrade_cluster",
-        "app_demand",
-        "cnbc_pick",
-        "lobbying"
-      ],
-      "trump_linked": false,
-      "rs_vs_spy_60d": -12.5,
-      "no_price_data": false,
-      "extended": false,
-      "rolling_over": true,
-      "off_high_252": -29.2,
-      "ret_20d": -19.0,
-      "above_50dma": false,
-      "entry_tier": null,
-      "affiliations": [
-        {
-          "actor": "Nancy Pelosi",
-          "rel": "HOLDS_STAKE",
-          "kind": "politician"
-        },
-        {
-          "actor": "Paul Pelosi",
-          "rel": "AFFILIATES_WITH",
-          "kind": "influencer"
-        }
-      ],
-      "n_affiliated_actors": 2,
-      "thesis": null,
-      "second_order": [],
-      "falsifier": null,
-      "clamped": null
-    },
-    {
       "ticker": "BA",
       "signal_score": 56,
       "conviction": "high",
@@ -1252,6 +1209,48 @@
         }
       ],
       "n_affiliated_actors": 1,
+      "thesis": null,
+      "second_order": [],
+      "falsifier": null,
+      "clamped": null
+    },
+    {
+      "ticker": "GOOGL",
+      "signal_score": 46,
+      "conviction": "high",
+      "action": "WATCH",
+      "direction": "neutral",
+      "source": "deterministic",
+      "weighted_score": 1.45,
+      "convergence_score": 4,
+      "channels": [
+        "affiliation",
+        "app_demand",
+        "cnbc_pick",
+        "lobbying"
+      ],
+      "trump_linked": false,
+      "rs_vs_spy_60d": -12.5,
+      "no_price_data": false,
+      "extended": false,
+      "rolling_over": true,
+      "off_high_252": -29.2,
+      "ret_20d": -19.0,
+      "above_50dma": false,
+      "entry_tier": null,
+      "affiliations": [
+        {
+          "actor": "Nancy Pelosi",
+          "rel": "HOLDS_STAKE",
+          "kind": "politician"
+        },
+        {
+          "actor": "Paul Pelosi",
+          "rel": "AFFILIATES_WITH",
+          "kind": "influencer"
+        }
+      ],
+      "n_affiliated_actors": 2,
       "thesis": null,
       "second_order": [],
       "falsifier": null,
@@ -1906,6 +1905,35 @@
       "clamped": null
     },
     {
+      "ticker": "PWR",
+      "signal_score": 24,
+      "conviction": "medium",
+      "action": "WATCH",
+      "direction": "neutral",
+      "source": "deterministic",
+      "weighted_score": 0.9,
+      "convergence_score": 2,
+      "channels": [
+        "analyst_upgrade_cluster",
+        "insider_mspr"
+      ],
+      "trump_linked": false,
+      "rs_vs_spy_60d": -14.4,
+      "no_price_data": false,
+      "extended": false,
+      "rolling_over": true,
+      "off_high_252": -31.1,
+      "ret_20d": -23.4,
+      "above_50dma": false,
+      "entry_tier": null,
+      "affiliations": [],
+      "n_affiliated_actors": 0,
+      "thesis": null,
+      "second_order": [],
+      "falsifier": null,
+      "clamped": null
+    },
+    {
       "ticker": "SRE",
       "signal_score": 23,
       "conviction": "medium",
@@ -2070,35 +2098,6 @@
       "rolling_over": true,
       "off_high_252": -45.4,
       "ret_20d": -20.4,
-      "above_50dma": false,
-      "entry_tier": null,
-      "affiliations": [],
-      "n_affiliated_actors": 0,
-      "thesis": null,
-      "second_order": [],
-      "falsifier": null,
-      "clamped": null
-    },
-    {
-      "ticker": "NOW",
-      "signal_score": 19,
-      "conviction": "medium",
-      "action": "WATCH",
-      "direction": "neutral",
-      "source": "deterministic",
-      "weighted_score": 0.75,
-      "convergence_score": 2,
-      "channels": [
-        "insider_mspr",
-        "special_situation"
-      ],
-      "trump_linked": false,
-      "rs_vs_spy_60d": -14.6,
-      "no_price_data": false,
-      "extended": false,
-      "rolling_over": true,
-      "off_high_252": -41.2,
-      "ret_20d": -27.6,
       "above_50dma": false,
       "entry_tier": null,
       "affiliations": [],
