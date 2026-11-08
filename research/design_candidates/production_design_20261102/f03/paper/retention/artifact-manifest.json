@@ -388,6 +388,18 @@
       "git_blob_sha": "c43e7e96bc270632f0a95f87124d33db6bd87d95"
     },
     {
+      "path": "evidence/d05-sector-reference-observation-20261108.md",
+      "bytes": 7176,
+      "sha256": "0ff21559d68079b489198c385027dbc5a88864e326a3550c524b243122aca19b",
+      "git_blob_sha": "3672f23a0d2bb4609469c3ec4ca88af56a17bf7d"
+    },
+    {
+      "path": "evidence/d05-sector-reference-readback-20261108.json",
+      "bytes": 16083,
+      "sha256": "6077462f8c07099011dc442694705f5e887f699c55732523b90faa5734475640",
+      "git_blob_sha": "f1e9d7dcb64b534a7193b3655a1bef14e53086a9"
+    },
+    {
       "path": "evidence/data-verification.json",
       "bytes": 39653,
       "sha256": "0af00c16f092c906d4d4791f5cba6a2d85cb1fdd74f90fd65da2733d109b6da6",
