@@ -4593,6 +4593,7 @@ CURATED_EXCLUSIVE = {
     "leadership-measured-read",
     # Paper International: retain the measured ITR closure, dropping opaque fallback.
     "itr-turn-rotation",
+    "signal-builder-fail-closed",  # Synthetic #10094 builder/validator closure; no opaque subprocess widening.
     # 2026-10-05 GMI #8455: remove transmission's opaque code fallback.
     # Preserve its concrete imports and dynamic corpus/asset/data inputs.
     # All packing ceilings, commands, data gate and weights remain unchanged.
@@ -5316,6 +5317,11 @@ CURATED_EXCLUSIVE = {
     # closure through tests/test_macro_risk_dialog.py, declared verbatim plus what the
     # suite reads by name; the curated-closure guard audits it like its parent.
     "ew-p4-descriptive-ui",
+    # 2026-11-01 C19 Atom-clock guard: the 13F census sec_sources and rolling
+    # suites leave config/unrun_test_baseline.json for one gate:code exclusive
+    # home. paths: is the measured import/read closure plus ancestor inits;
+    # ceilings stay fixed.
+    "institutional-13f-ingestion-contracts",
     # GLT T22 (2026-11-03): tests/test_global_liquidity_views.py reaches the
     # macro-suite view/label helpers and scripts/build_macro_suite_pages.py, so
     # inference smeared this job's scan roots onto templates/index.html (138
@@ -5610,9 +5616,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_925),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_946),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_683),
+    ("templates/index.html", 137, 5_945),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_966),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_703),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5620,6 +5626,58 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    PR #10727 composition with protected 86f9aa32 (2026-11-08):
+    Preserve all 397 current catalog owners, including the accepted
+    institutional-13f-ingestion-contracts and signal-builder-fail-closed
+    owners. Retain all 360 unowned blocks and current additions within
+    the seven shared owners; in particular, keep Research Price Panel's
+    three oscillator/revision suites and their explicit command arguments.
+    Apply only the original 94 missing dependency paths and one Brain
+    composition-suite argument. All five feature postimages stay exact.
+
+    The unchanged planner has no observed-duration override for this
+    Brain owner. Six run commands, 27 test-path mentions and 1157 command
+    characters give weight 61; the retained extra suite makes 28 mentions
+    and 1207 characters, weight 63. There is no 800-character boundary change.
+    Compose precisely this qualified +2 onto current 5943/5964/5701,
+    including accepted #10837's independent +20: expect 5945/5966/5703.
+    These are source-derived expectations, not a new whole-tree planning
+    measurement or runtime result. Natural successor contract-delta must
+    verify the complete current tree. Keep job caps 137/138/131, ten packs,
+    every existing assertion, selector, command, dependency, timeout and
+    admission limit. Preserve each dated measurement and composition below.
+    Publication adopts protected e326d600 after 86f9aa32. Its complete
+    three-path delta is the News handoff and freshness sentinel source/test;
+    all seven PR path preimages and the planner remain unchanged. This
+    receiving advance does not add command registrations to these probes.
+
+    Source: PR10727 issuecomment6711547356; previous exact source 5d7bb0d7
+    passed CI42474718441 with 139 owners/426 semantic steps. That older
+    tested composition does not qualify this new receiver union.
+
+    2026-11-08 (PR #10837, explicit synthetic harness enrollment, recomposed on
+    current main 005baca8b092abe82acb4462eb6710af8f59a1c8): natural
+    contract run 42423716907 / job 128557542513 measured exact head
+    7921a9c1a6feedcf5209590b7c02012728ce7eec against base
+    b626135f8987ee724cdb7e0c639734835a4afe67 on tested merge
+    b095e1574342f5909d7ac9c10ae82fbc1d79dd1f. The existing
+    marketing-social-publisher command intentionally gained ten synthetic
+    suites: +20 estimator units, no new run step or newly selected job.
+    The measured shapes were index137/5914->5934, free137/5933->5953 and
+    Prophet131/5672->5692, all ten packs. Existing suites remain enrolled.
+
+    Compose this exact +20 onto the ceilings current main carries after
+    #7352's accepted +2 and #10180's B-17 +3, 5923/5944/5681
+    (both accepted compositions included): 5943/5964/5701, preserving every earlier provenance paragraph below,
+    including that +3 composition. The current marketing owner block is
+    byte-identical to the measured base before this lane's enrollment. All
+    current sibling jobs are preserved. Keep job ceilings137/138/131, ten
+    packs, assertions, selectors, commands, packages, timeouts and
+    admission/concurrency controls. This is arithmetic composition of
+    measured planner weights, not a new full-tree measurement or
+    execution-time claim. Natural successor CI must qualify the newly
+    composed tree; no padding is added.
 
     PR #10727 composition with protected eef3d687 (2026-11-08):
     Preserve all 395 current catalog owners and the accepted B-17 enrollment
