@@ -1,32 +1,32 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "XPEL-BULL-20260805",
-  "asof": "2026-11-01",
-  "phase": "overtime",
-  "detection_phase": "overtime",
-  "management_confidence": 30.1,
-  "raw_confidence": 32.0,
-  "delta_vs_base": -29.9,
+  "asof": "2026-11-08",
+  "phase": "invalidated",
+  "detection_phase": "invalidated",
+  "management_confidence": 10.3,
+  "raw_confidence": 8.0,
+  "delta_vs_base": -49.7,
   "recommended_action": null,
   "human_state": "Closed",
   "components": {
-    "validity": 51.4,
+    "validity": 0.0,
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 55.9
+    "overlay": 33.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.611,
+    "dist_to_stop_r": -0.028,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 191.1,
-    "p1": -0.2594,
-    "p2": -0.1297,
+    "horizon_pct_used": 206.7,
+    "p1": -0.6854,
+    "p2": -0.3427,
     "p3": null,
-    "move_r": -0.389,
+    "move_r": -1.028,
     "mfe_r": 0.121,
-    "mae_r": -0.623
+    "mae_r": -1.028
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -40,13 +40,13 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 1.3800007629394528,
-  "_mae": -7.077701873779297,
+  "_mae": -11.680000610351563,
   "_max_p1": 0.08098596026639981,
   "_first_trigger_ts": "2026-08-19",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 86,
-  "tau": 1.9111,
+  "days_elapsed": 93,
+  "tau": 2.0667,
   "closed": true,
   "outcome": "EXPIRED"
 }
