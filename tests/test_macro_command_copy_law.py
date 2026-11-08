@@ -297,6 +297,51 @@ def test_every_relocated_string_is_inside_mc_details_on_a_workspace_page(
     assert leaked == [], f"relocated string still in the reading path: {leaked}"
 
 
+def test_labor_unavailable_copy_preserves_partial_readings() -> None:
+    """Insufficient overall coverage must not imply every reading is absent."""
+    from copy import deepcopy
+    from lib import macro_suite_view
+
+    entry = {
+        "implication_id": "state_unavailable",
+        "text": {
+            "en": "US labor-market state cannot be classified: axis coverage is below "
+                  "the disclosed floor. No quadrant is asserted rather than defaulting "
+                  "to a neutral state.",
+            "zh": "美国劳动力市场状态无法分类：轴覆盖低于披露下限。不默认中性状态，故不给出象限。",
+        },
+        "evidence_class": "DESCRIPTIVE",
+        "confidence": {},
+        "horizon": "current",
+        "channels": ["hiring", "layoffs", "wages"],
+        "contradictions": [],
+        "trace_ref": "data/regime/latest.json#labor_nowcast",
+    }
+    before = deepcopy(entry)
+    rendered = macro_suite_view._implications({"implications": {"items": [entry]}})
+    assert not rendered["absent"]
+    assert len(rendered["entries"]) == 1
+    item = rendered["entries"][0]
+    assert "no overall reading is shown" in item["text"]["en"]
+    assert "Missing data is not treated as a neutral reading" in item["text"]["en"]
+    assert "不展示总体读数" in item["text"]["zh"]
+    assert "缺失数据不会被当作中性读数" in item["text"]["zh"]
+    for language in ("en", "zh"):
+        assert guard.find_violations(f"<p>{item['text'][language]}</p>") == []
+    assert item["text_original"] is None
+    assert item["implication_id"] == entry["implication_id"]
+    assert item["evidence_class"] == entry["evidence_class"]
+    assert item["trace_ref"] == entry["trace_ref"]
+    assert len(item["channels"]) == 3 and all(item["channels"])
+    assert entry == before
+
+    clean = "Hiring has slowed while layoff notices stayed broadly flat."
+    entry["text"] = {"en": clean, "zh": "招聘放缓，裁员通知大致持平。"}
+    entry["implication_id"] = "labor_reading"
+    available = macro_suite_view._implications({"implications": {"items": [entry]}})
+    assert available["entries"][0]["text"]["en"] == clean
+
+
 def test_all_fifteen_built_pages_are_clean_outside_details(tmp_path_factory) -> None:
     """P5 acceptance: hub + 14 deep-link pages, zero banned hits outside
     .mc-details / .mc-primer."""
@@ -455,6 +500,78 @@ def test_apply_plain_producer_unreviewed_machine_text_uses_fallback() -> None:
     assert original["en"].startswith("raw_unreviewed_slug")
 
 
+def test_labor_coverage_refusal_is_plain_without_claiming_neutral() -> None:
+    from html import escape
+    from lib.macro_suite_labels import PLAIN_FALLBACK, apply_plain_producer
+
+    source = {
+        "en": (
+            "US labor-market state cannot be classified: axis coverage is below "
+            "the disclosed floor. No quadrant is asserted rather than defaulting "
+            "to a neutral state."
+        ),
+        "zh": "美国劳动力市场状态无法分类：轴覆盖低于披露下限。不默认中性状态，故不给出象限。",
+    }
+    unchanged = dict(source)
+    reading, original = apply_plain_producer(source)
+
+    assert source == unchanged
+    assert original == unchanged
+    assert original is not source
+    assert reading is not None and reading != PLAIN_FALLBACK
+    assert "not treated as a neutral reading" in reading["en"]
+    assert "缺失数据不会被当作中性读数" in reading["zh"]
+    customer = (
+        '<main class="mc-shell"><p><span class="l-en">'
+        + escape(reading["en"]) + '</span><span class="l-zh">'
+        + escape(reading["zh"]) + "</span></p></main>"
+    )
+    assert guard.find_violations(customer) == []
+
+
+def test_labor_coverage_refusal_has_plain_copy_without_changing_source() -> None:
+    from lib.macro_suite_labels import apply_plain_producer
+
+    source = {
+        "en": "US labor-market state cannot be classified: axis coverage is below "
+              "the disclosed floor. No quadrant is asserted rather than defaulting "
+              "to a neutral state.",
+        "zh": "美国劳动力市场状态无法分类：轴覆盖低于披露下限。不默认中性状态，故不给出象限。",
+    }
+    before = dict(source)
+    reading, original = apply_plain_producer(source)
+    assert reading is not None and reading != source
+    assert original == before and source == before
+    assert "no overall reading" in reading["en"]
+    assert "not treated as a neutral reading" in reading["en"]
+    html = (f'<p><span class="l-en">{reading["en"]}</span>'
+            f'<span class="l-zh">{reading["zh"]}</span></p>')
+    assert guard.find_violations(html) == []
+    ordinary = {"en": "Payrolls increased this month.", "zh": "本月就业人数增加。"}
+    assert apply_plain_producer(ordinary) == (ordinary, None)
+
+
+def test_labor_unavailable_implication_is_plain_without_changing_source() -> None:
+    from copy import deepcopy
+    from engine.market_os.macro_workspaces import labor
+    from lib import macro_suite_view as view
+
+    items = labor._implications(
+        {"state_id": None}, None, None, {"present": False}, "CURRENT", 0.0)
+    snapshot = {"implications": {"items": items}}
+    before = deepcopy(snapshot)
+    reading = view._implications(snapshot)["entries"][0]["text"]
+
+    assert reading["en"] == (
+        "Labor-market data coverage is below the required minimum, so no "
+        "overall reading is shown. Missing data is not treated as a neutral reading.")
+    assert reading["zh"] == "劳动力市场数据覆盖未达到所需下限，因此不展示总体读数。缺失数据不会被当作中性读数。"
+    visible = f'<main><p>{reading["en"]}</p><p>{reading["zh"]}</p></main>'
+    assert guard.find_violations(visible) == []
+    assert snapshot == before
+    assert "axis coverage is below the disclosed floor" in items[0]["text"]["en"]
+
+
 def test_machine_text_predicate_catches_slugs_tokens_and_iso() -> None:
     from lib.macro_suite_labels import machine_text_hits
     assert machine_text_hits("sticky_led in the mix")
@@ -539,6 +656,7 @@ FIVE_COMMAND_PAGES = (
 )
 
 
+@pytest.mark.data_gate
 def test_committed_payloads_have_zero_plain_fallbacks() -> None:
     """MA4: count BOTH fallback sentences against committed site/*.html."""
     from lib.macro_suite_labels import PLAIN_FALLBACK
@@ -784,7 +902,52 @@ def test_clearance_probe_js_binds_locator_element_then_arg() -> None:
 
 
 def test_capture_relocated_needles_are_locale_visible_and_must_be_inside() -> None:
-    """M2 / B3: probe strings exist on the rates page and live in details."""
+    """M2 / B3: probe strings exist on the rates page and live in details.
+
+    The committed page is not part of this law. A rates snapshot rendered
+    through _render_workspace_html keeps the verdict off site/ (precedent
+    1f2b713e37, #8032). Confidence basis is emitted once per implication
+    entry; the stale fixture has none, so this plants one descriptive entry.
+    """
+    import json
+    from scripts.capture_macro_command_p5 import RELOCATED_EN, RELOCATED_ZH
+    fixture = json.loads(
+        (ROOT / "tests" / "fixtures" / "macro_command_p5"
+         / "rates_e2_stale.json").read_text(encoding="utf-8"))
+    fixture["implications"] = {"items": [{
+        "implication_id": "curve_shape",
+        "text": {"en": "The curve is steeper.", "zh": "曲线更陡。"},
+        "evidence_class": "DESCRIPTIVE",
+        "horizon": "ONE_MONTH",
+        "channels": [],
+        "confidence": {
+            "data_coverage": "HIGH",
+            "source_health": "HIGH",
+            "revision_risk": "LOW",
+            "method_stability": "HIGH",
+            "evidence_breadth": "MEDIUM",
+            "contradiction_state": "NONE",
+        },
+    }]}
+    html = _render_workspace_html("rates_curves", fixture)
+    assert "mc-producer-receipt" not in html
+    for needle in RELOCATED_EN:
+        assert needle in html
+        assert needle not in guard.reading_path_text(html)
+    for needle in RELOCATED_ZH:
+        assert needle in html
+        assert needle not in guard.reading_path_text(html)
+
+
+@pytest.mark.data_gate
+@pytest.mark.needs_full_checkout("site")
+def test_committed_rates_page_keeps_relocated_needles_inside_details() -> None:
+    """Companion site guard: the rebaked rates page keeps the same law.
+
+    Separate from the fixture test above on purpose (1f2b713e37, #8032): the
+    fixture render is the code law, this reads the committed artifact only
+    and skips via needs_full_checkout when site/ is absent.
+    """
     from scripts.capture_macro_command_p5 import RELOCATED_EN, RELOCATED_ZH
     html = (ROOT / "site" / "macro_rates_curves.html").read_text(encoding="utf-8")
     assert "mc-producer-receipt" not in html
@@ -1101,8 +1264,17 @@ def test_copy_guard_keeps_details_summary() -> None:
 
 
 def test_declared_cells_minus_captured_is_gaps() -> None:
-    from scripts.capture_macro_command_p5 import declared_cells
-    declared = declared_cells()
+    from scripts.capture_macro_command_p5 import (
+        HUB_PAGE, WORKSPACE_PAGES, declared_cells,
+    )
+    appl = {
+        HUB_PAGE: {"fragments": True, "template": True},
+    }
+    for page in WORKSPACE_PAGES:
+        appl[page] = {"fragments": False, "template": False}
+    declared = declared_cells(e5_applicability=appl)
+    assert any(n.startswith("e5-") for n in declared)
+    assert not any(n.startswith("e5-macro_rates_curves") for n in declared)
     captured = set(declared)
     assert sorted(set(declared) - captured) == []
     assert "01-dark-en-1440-full.png" in declared
@@ -1627,6 +1799,7 @@ def test_synthetic_partial_binds_from_dom() -> None:
         playwright_cm.stop()
 
 
+@pytest.mark.data_gate
 @pytest.mark.needs_full_checkout("site")
 def test_user_facing_numbers_have_no_machine_floats() -> None:
     """E-m3: rendered suite HTML never ships ≥4 fractional digits or e±."""
@@ -1653,6 +1826,7 @@ def test_user_facing_numbers_have_no_machine_floats() -> None:
         assert guard.find_violations(html) == [], name
 
 
+@pytest.mark.data_gate
 @pytest.mark.needs_full_checkout("site")
 def test_zh_l_zh_spans_are_translated() -> None:
     """M1: every .l-zh on the Macro Command hub (macro_monetary.html) + the 14 suite pages is not ASCII-letters-only."""
@@ -1697,6 +1871,7 @@ def test_zh_l_zh_spans_are_translated() -> None:
     assert ascii_hits == [], ascii_hits
 
 
+@pytest.mark.data_gate
 @pytest.mark.needs_full_checkout("site")
 def test_locale_spans_have_no_machine_text() -> None:
     """E-m1: every visible text node on the Macro Command hub + 14 suite pages is plain."""
@@ -1769,6 +1944,7 @@ def test_computation_refused_uses_e2_vocabulary() -> None:
     assert "拒绝计算" not in NULL_REASON["COMPUTATION_REFUSED"]["zh"]
 
 
+@pytest.mark.data_gate
 @pytest.mark.needs_full_checkout("site")
 def test_rendered_pages_use_ratified_null_vocabulary() -> None:
     """E-m2: no refused/refusal phrase on the Macro Command hub + 14 suite pages."""
@@ -1787,10 +1963,8 @@ def test_rendered_pages_use_ratified_null_vocabulary() -> None:
     assert hits == [], hits
 
 
-@pytest.mark.needs_full_checkout("site")
-def test_details_use_locale_pairing_not_lang_attributes() -> None:
-    """M2: Details text uses .l-en/.l-zh; suite templates have no lang= locale switch."""
-    from scripts.build_macro_suite_pages import HUB_PAGE, SUITE_PAGES
+def test_suite_templates_have_no_lang_locale_switch() -> None:
+    """M2, template half: suite templates have no lang= locale switch (code gate)."""
     suite_templates = list((ROOT / "templates").glob("macro_*.html.j2"))
     suite_templates.append(ROOT / "templates" / "_macro_suite_shell.html.j2")
     lang_hits = []
@@ -1801,6 +1975,13 @@ def test_details_use_locale_pairing_not_lang_attributes() -> None:
                 text):
             lang_hits.append(f"{path.name}:{match.group(0)[:80]}")
     assert lang_hits == [], lang_hits
+
+
+@pytest.mark.data_gate
+@pytest.mark.needs_full_checkout("site")
+def test_details_use_locale_pairing_not_lang_attributes() -> None:
+    """M2, committed-page half: Details text pairs .l-en/.l-zh on every nightly page."""
+    from scripts.build_macro_suite_pages import HUB_PAGE, SUITE_PAGES
     pages = [HUB_PAGE.output] + [page.output for page in SUITE_PAGES]
     present = [name for name in pages if (ROOT / "site" / name).is_file()]
     assert len(present) >= 14, present
@@ -1847,7 +2028,10 @@ COMPOSITION_DISCLOSURE_ROWS = (
 )
 
 
+@pytest.mark.data_gate
+@pytest.mark.needs_full_checkout("site")
 def test_axis_move_clauses_cover_every_axis_and_direction() -> None:
+    """Verdict moves with the nightly macrodata (payload axis census), so data gate."""
     from lib.macro_suite_disclosure import (
         AXIS_MOVE_CLAUSES, axis_move_clause, payload_axis_ids, required_axis_ids,
     )
@@ -1913,6 +2097,10 @@ def _assert_one_lineage_kind(html: str, kind: str) -> None:
     from lib.macro_suite_disclosure import (
         LINEAGE_NOTE_KIND_FACTS, LINEAGE_NOTE_KIND_SENTENCES,
     )
+    assert set(LINEAGE_NOTE_KIND_FACTS) == set(LINEAGE_NOTE_KIND_SENTENCES), (
+        "FACTS and SENTENCES must cover the same lineage kinds: the helpers "
+        "below filter on one dict and index the other by kind"
+    )
     for other, fact in LINEAGE_NOTE_KIND_FACTS.items():
         zh = LINEAGE_NOTE_KIND_SENTENCES[other]["zh"]
         if other == kind:
@@ -1925,18 +2113,31 @@ def _assert_one_lineage_kind(html: str, kind: str) -> None:
     assert "cannot summarise the correction note yet" not in html
 
 
-def _assert_live_lineage_matches_note(workspace_id: str, page_name: str) -> None:
-    """The committed page says the sentence its corrections.note actually is."""
-    import json
-    from lib.macro_suite_disclosure import classify_lineage_kind
-    snap = json.loads(
-        (DATA_ROOT / "workspaces" / workspace_id / "US" / "latest.json")
-        .read_text(encoding="utf-8"))
-    note = (snap.get("corrections") or {}).get("note")
-    kind = classify_lineage_kind(note)
-    html = (ROOT / "site" / page_name).read_text(encoding="utf-8")
-    print(f"lineage branch={kind} page={page_name}")
+def _assert_page_states_one_lineage_kind(html: str) -> str:
+    """Return the one lineage kind the page states, proved page-internally.
+
+    This never reads data/, DATA_ROOT or any snapshot and never calls
+    classify_lineage_kind, because a committed page's corrections.note moves
+    with the nightly snapshot while the HTML is rebaked separately, so a
+    note-vs-page comparison goes red with no code change (1f2b713e37, #8032).
+    """
+    from lib.macro_suite_disclosure import (
+        LINEAGE_NOTE_KIND_FACTS, LINEAGE_NOTE_KIND_SENTENCES,
+    )
+    assert set(LINEAGE_NOTE_KIND_FACTS) == set(LINEAGE_NOTE_KIND_SENTENCES), (
+        "FACTS and SENTENCES must cover the same lineage kinds: the helpers "
+        "below filter on one dict and index the other by kind"
+    )
+    stated = [kind for kind, fact in LINEAGE_NOTE_KIND_FACTS.items()
+              if kind in LINEAGE_NOTE_KIND_SENTENCES and fact in html]
+    assert len(stated) == 1, (
+        "page must state exactly one lineage kind, got",
+        {kind: fact in html
+         for kind, fact in LINEAGE_NOTE_KIND_FACTS.items()},
+    )
+    kind = stated[0]
     _assert_one_lineage_kind(html, kind)
+    return kind
 
 
 def _assert_axes_resolve_by_id(items: list, vector: dict, snap: dict) -> None:
@@ -1966,17 +2167,76 @@ def _assert_axes_resolve_by_id(items: list, vector: dict, snap: dict) -> None:
             assert view["vector"]["move"] == first
 
 
+def _liquidity_vector_snapshot(dx: float | None, dy: float | None, *,
+                               present: bool) -> dict:
+    """Synthetic liquidity snapshot. The axis list is y-then-x, so position cannot bind.
+
+    Does not read site/. funding_pressure carries direction_semantics
+    higher_tighter, matching the producer: a lower score is easier funding,
+    so a negative dx is the down clause.
+    """
+    vector: dict = {
+        "status": "PRESENT" if present else "ABSENT",
+        "dx": dx if present else None,
+        "dy": dy if present else None,
+        "x_axis_id": "funding_pressure" if present else None,
+        "y_axis_id": "balance_sheet_support" if present else None,
+    }
+    if not present:
+        vector["null_reason"] = "WARMUP"
+    items = [
+        {
+            "axis_id": "balance_sheet_support",
+            "direction_semantics": "higher_stronger",
+            "label": {"en": "Balance-sheet support", "zh": "资产负债表支持"},
+        },
+        {
+            "axis_id": "funding_pressure",
+            "direction_semantics": "higher_tighter",
+            "label": {"en": "Funding pressure", "zh": "融资压力"},
+        },
+    ] if present else []
+    return {
+        "workspace": {
+            "id": "liquidity_regime",
+            "title": {"en": "Liquidity regime", "zh": "流动性体制"},
+            "subtitle": {"en": "", "zh": ""},
+        },
+        "region": {"code": "US", "display_name": "United States", "supported": True},
+        "availability": {"state": "CURRENT"},
+        "headline": {
+            "status": "PRESENT",
+            "state_id": "A",
+            "effective_date": "2026-10-12",
+            "state_label": {
+                "en": "Easy funding, weak support",
+                "zh": "融资宽松、支持偏弱",
+            },
+            "one_month_vector": vector,
+        },
+        "changes": {"comparability": "COMPARABLE", "deltas": []},
+        "axes": {"items": items},
+    }
+
+
 def test_vector_axes_resolve_by_id_not_list_order() -> None:
-    """M2: ids come from committed builder payloads; list order does not bind.
+    """M2: ids come from the fixture payload; list order does not bind.
 
     The pair scenario is a committed fixture, so a workspace that later drops
-    its vector cannot erase the law. A live workspace with no resolvable pair
-    must not invent a move, and a planted axis list must not bind by position.
+    its vector cannot erase the law. The move sentence is a renderer law,
+    pinned by _render_workspace_html on a synthetic snapshot: a negative dx
+    on funding_pressure (higher_tighter) is "Easier funding pressure". It is
+    not read back from the committed page. That page is rebaked on its own
+    cadence, and binding the sentence to today's site/macrodata is what sent
+    this law red on main (precedent 1f2b713e37, #8032: the copy verdict must
+    not depend on which state the nightly data selects). A snapshot with no
+    resolvable pair must not invent a move, and a planted axis list must not
+    bind by position.
     """
     import json
     from html import unescape
     from lib.macro_suite_disclosure import resolve_vector_axes
-    from lib.macro_suite_labels import vector_move_pair
+    from lib.macro_suite_labels import label, vector_move_pair
     from lib.macro_suite_view import _headline
     fixture = json.loads(
         (ROOT / "tests" / "fixtures" / "macro_command_p5"
@@ -1992,8 +2252,28 @@ def test_vector_axes_resolve_by_id_not_list_order() -> None:
             [{"axis_id": "a"}, {"axis_id": "b"}],
             {},
         )
-    resolved = 0
-    no_pair = 0
+    # The numbers are the mismatch that the committed page still prints as
+    # "Tighter". higher_tighter means a fallen score is easier funding.
+    assert label("direction", "higher_tighter")["en"] == "Higher = tighter funding"
+    easier_en = "Easier funding pressure, weaker balance-sheet support."
+    easier_zh = "融资压力减轻，资产负债表支持减弱。"
+    tighter_en = "Tighter funding pressure, weaker balance-sheet support."
+    negative = _liquidity_vector_snapshot(-1.22, -17.7, present=True)
+    items = list(negative["axes"]["items"])
+    raw_vector = negative["headline"]["one_month_vector"]
+    assert items[0]["axis_id"] != raw_vector["x_axis_id"]
+    print("vector-axes branch=synthetic-negative-dx")
+    _assert_axes_resolve_by_id(items, raw_vector, negative)
+    negative_html = unescape(_render_workspace_html("liquidity_regime", negative))
+    assert easier_en in negative_html
+    assert easier_zh in negative_html
+    assert "Tighter funding pressure" not in negative_html
+    positive = _liquidity_vector_snapshot(1.22, -17.7, present=True)
+    print("vector-axes branch=synthetic-positive-dx")
+    positive_html = unescape(_render_workspace_html("liquidity_regime", positive))
+    assert tighter_en in positive_html
+    assert "融资压力上升，资产负债表支持减弱。" in positive_html
+    assert "Easier funding pressure" not in positive_html
     planted = (
         {"axis_id": "funding_pressure"},
         {"axis_id": "balance_sheet_support"},
@@ -2001,52 +2281,23 @@ def test_vector_axes_resolve_by_id_not_list_order() -> None:
     cant_show = (
         "We can't show the move yet — there is nothing comparable to measure it against."
     )
-    for page in builder.SUITE_PAGES:
-        path = DATA_ROOT / "workspaces" / page.workspace_id / page.region / "latest.json"
-        snap = json.loads(path.read_text(encoding="utf-8"))
-        items = list((snap.get("axes") or {}).get("items") or [])
-        raw_vector = (snap.get("headline") or {}).get("one_month_vector")
-        page_html = unescape(
-            (ROOT / "site" / page.output).read_text(encoding="utf-8"))
-        ids_ready = (
-            isinstance(raw_vector, dict)
-            and raw_vector.get("x_axis_id")
-            and raw_vector.get("y_axis_id")
-            and len(items) >= 2
-        )
-        if ids_ready:
-            print(f"vector-axes branch=resolve-by-id workspace={page.workspace_id}")
-            _assert_axes_resolve_by_id(items, raw_vector, snap)
-            if raw_vector.get("status") == "PRESENT":
-                got_x, got_y = resolve_vector_axes(items, raw_vector)
-                move = vector_move_pair(
-                    raw_vector.get("dx"), raw_vector.get("dy"), got_x, got_y)
-                assert move["en"] in page_html, page.output
-                assert move["zh"] in page_html, page.output
-            resolved += 1
-            continue
-        print(
-            f"vector-axes branch=no-pair workspace={page.workspace_id} "
-            f"vector_null={raw_vector is None} n_items={len(items)}")
-        view = _headline(snap, items)
-        assert view["vector"]["present"] is False, page.output
-        assert view["vector"]["move"] is None, page.output
-        assert not view["vector"]["x_axis_id"], page.output
-        assert not view["vector"]["y_axis_id"], page.output
-        with pytest.raises(KeyError, match="missing required x_axis_id"):
-            resolve_vector_axes(
-                list(planted),
-                raw_vector if isinstance(raw_vector, dict) else {},
-            )
-        assert cant_show in page_html, page.output
-        invented = vector_move_pair(
-            0.4, -0.2,
-            {"axis_id": "funding_pressure"},
-            {"axis_id": "balance_sheet_support"})
-        assert invented["en"] not in page_html, page.output
-        no_pair += 1
-    assert resolved >= 1, "no live workspace published a resolvable axis pair"
-    assert no_pair >= 1, "no live workspace lacked a resolvable axis pair"
+    absent = _liquidity_vector_snapshot(None, None, present=False)
+    print("vector-axes branch=synthetic-no-pair")
+    view = _headline(absent, [])
+    assert view["vector"]["present"] is False
+    assert view["vector"]["move"] is None
+    assert not view["vector"]["x_axis_id"]
+    assert not view["vector"]["y_axis_id"]
+    with pytest.raises(KeyError, match="missing required x_axis_id"):
+        resolve_vector_axes(list(planted), {})
+    absent_html = unescape(_render_workspace_html("liquidity_regime", absent))
+    assert cant_show in absent_html
+    invented = vector_move_pair(
+        0.4, -0.2,
+        {"axis_id": "funding_pressure"},
+        {"axis_id": "balance_sheet_support"})
+    assert invented["en"] not in absent_html
+    assert easier_en not in absent_html
 
 
 def test_visible_text_parser_treats_void_elements_as_self_closing() -> None:
@@ -2096,6 +2347,7 @@ COMPOSITE_COUNT_BY_PAGE = {
 }
 
 
+@pytest.mark.data_gate
 @pytest.mark.needs_full_checkout("site")
 def test_composites_disclose_composition_law_in_plain_words() -> None:
     """M1: every composite on the 15 pages paints the N disclosure rows, EN+ZH."""
@@ -2235,10 +2487,14 @@ def test_unknown_lineage_fallback_is_typed_and_warns(capsys) -> None:
     assert err.startswith("::warning title=macro-suite-unknown-lineage-kind::")
 
 
-@pytest.mark.needs_full_checkout("site")
 def test_financial_conditions_page_shows_no_change_republication() -> None:
-    """No-change republication is a fixture scenario. The committed page
-    follows whatever kind its corrections.note actually is."""
+    """No-change republication is a fixture scenario.
+
+    The committed page is not part of this law. Its corrections.note moves
+    with the nightly snapshot and the HTML is rebaked separately, so
+    requiring the page to match today's kind goes red on main (precedent
+    1f2b713e37, #8032).
+    """
     import json
     fixture = json.loads(
         (ROOT / "tests" / "fixtures" / "macro_command_p5"
@@ -2247,8 +2503,35 @@ def test_financial_conditions_page_shows_no_change_republication() -> None:
     assert "no-change republication" in html
     assert "A correction note is on file for this reading." not in html
     _assert_one_lineage_kind(html, "no_change_republication")
-    _assert_live_lineage_matches_note(
-        "financial_conditions", "macro_financial_conditions.html")
+
+
+def test_reference_period_lineage_renders_its_own_sentence() -> None:
+    """A later reference period keeps its own sentence.
+
+    The producer note is the financial-conditions branch for a different
+    as-of (engine/.../financial_conditions.py _corrections). Rendering it
+    must state that kind and must not reuse the no-change republication
+    phrase. The committed page can still carry the older phrase after the
+    snapshot has moved on; that agreement belongs to the render bot.
+    """
+    import json
+    fixture = json.loads(
+        (ROOT / "tests" / "fixtures" / "macro_command_p5"
+         / "fc_no_change_republication.json").read_text(encoding="utf-8"))
+    fixture["corrections"]["note"] = (
+        "Reference period differs from the predecessor print (a new observation, "
+        "not a revision of the same period); no correction asserted."
+    )
+    fixture["headline"]["effective_date"] = "2026-10-12"
+    fixture["headline"]["prior_state"] = {
+        "state_id": "B",
+        "effective_date": "2026-10-09",
+    }
+    html = _render_workspace_html("financial_conditions", fixture)
+    _assert_one_lineage_kind(html, "reference_period_change")
+    assert "no-change republication" not in html
+    assert "12 Oct 2026" in html
+    assert "9 Oct 2026" in html
 
 
 def test_hysteresis_note_distinguishes_configured_from_unused() -> None:
@@ -2293,8 +2576,18 @@ def test_owner_display_pair_falls_back_without_raising(capsys) -> None:
     assert "engine.brand_new_desk" in warning
 
 
+def test_shell_template_paints_trace_row_only_with_trace_ref() -> None:
+    """Template half (code gate): the shell paints mq-trace only under trace_ref."""
+    src = (ROOT / "templates" / "_macro_suite_shell.html.j2").read_text(
+        encoding="utf-8")
+    assert "{%- if item.trace_ref %}" in src
+    assert "mq-trace" in src
+
+
+@pytest.mark.data_gate
 @pytest.mark.needs_full_checkout("site")
 def test_trace_row_present_iff_trace_ref() -> None:
+    """Committed-page half: the nightly page paints one trace row per trace_ref."""
     import json
     path = DATA_ROOT / "workspaces" / "financial_conditions" / "US" / "latest.json"
     snap = json.loads(path.read_text(encoding="utf-8"))
@@ -2305,10 +2598,6 @@ def test_trace_row_present_iff_trace_ref() -> None:
     traces = re.findall(r'<p class="mq-trace">', html)
     expected = sum(1 for item in items if item.get("trace_ref"))
     assert len(traces) == expected
-    src = (ROOT / "templates" / "_macro_suite_shell.html.j2").read_text(
-        encoding="utf-8")
-    assert "{%- if item.trace_ref %}" in src
-    assert "mq-trace" in src
 
 
 _RESTORED_ROW_PAIRS = (
@@ -2328,10 +2617,15 @@ def _assert_restored_row_family(html: str) -> None:
     assert "A correction note is on file for this reading." not in html
 
 
-@pytest.mark.needs_full_checkout("site")
 def test_restored_row_families_on_non_composite_page() -> None:
-    """Value-correction rows are a fixture scenario. The committed page
-    keeps the row family and the sentence its own note classifies as."""
+    """Value-correction rows are a fixture scenario.
+
+    The committed page is not part of this law. Its corrections.note moves
+    with the nightly snapshot and the HTML is rebaked separately, so
+    requiring the page to match today's kind goes red on main (precedent
+    1f2b713e37, #8032). The row family and the value-correction sentence
+    are pinned by _render_workspace_html on mp_value_correction.json.
+    """
     import json
     fixture = json.loads(
         (ROOT / "tests" / "fixtures" / "macro_command_p5"
@@ -2339,6 +2633,17 @@ def test_restored_row_families_on_non_composite_page() -> None:
     baked = _render_workspace_html("monetary_policy", fixture)
     _assert_restored_row_family(baked)
     _assert_one_lineage_kind(baked, "value_correction")
+
+
+@pytest.mark.data_gate
+@pytest.mark.needs_full_checkout("site")
+def test_committed_monetary_policy_page_keeps_restored_rows() -> None:
+    """Companion site guard for the committed monetary page.
+
+    Static row family plus _assert_page_states_one_lineage_kind: the page is
+    proved internally consistent on one lineage kind. It does NOT compare
+    against corrections.note — that coupling is deleted on purpose (#8032).
+    """
     live = (ROOT / "site" / "macro_monetary_policy.html").read_text(
         encoding="utf-8")
     assert "mq-axis-method" not in live
@@ -2347,8 +2652,7 @@ def test_restored_row_families_on_non_composite_page() -> None:
         assert zh in live, zh
     assert "Definition version" in live
     assert "A correction note is on file for this reading." not in live
-    _assert_live_lineage_matches_note(
-        "monetary_policy", "macro_monetary_policy.html")
+    _assert_page_states_one_lineage_kind(live)
 
 
 @pytest.mark.needs_full_checkout("mockups")
@@ -4573,3 +4877,43 @@ def test_no_unlisted_identical_png_pairs() -> None:
         if not _crop_collision_ratified(uniq, probes, manifest["pages"]):
             illegal[sha] = uniq
     assert not illegal, illegal
+
+
+@pytest.mark.parametrize("token,en,zh", [
+    ("expansion", "Expansion", "扩张"),
+    ("slowdown", "Slowdown", "放缓"),
+    ("contraction", "Contraction", "收缩"),
+    ("recovery", "Recovery", "复苏"),
+])
+def test_business_cycle_owner_phases_have_translated_values(token, en, zh):
+    from lib.macro_suite_labels import value_pair
+    assert value_pair(token) == {"en": en, "zh": zh}
+
+
+def test_business_opposing_contradictions_keep_distinct_plain_meanings():
+    from copy import deepcopy
+    from engine.market_os.macro_workspaces.business_activity import _detect_contradiction
+    from lib.macro_suite_labels import PLAIN_FALLBACK, apply_plain_pair, machine_text_hits
+
+    readings = []
+    for depth, breadth in [(True, False), (False, True)]:
+        owner = _detect_contradiction({"recession_signal": {
+            "available": True, "conditions": {"depth": depth, "breadth": breadth}}})
+        before = deepcopy(owner)
+        pair = {"en": owner["en"], "zh": owner["zh"]}
+        reading, original = apply_plain_pair(pair)
+        assert owner == before
+        assert original == pair
+        assert reading is not None and reading != PLAIN_FALLBACK
+        assert not machine_text_hits(reading["en"]) and not machine_text_hits(reading["zh"])
+        assert "Both conditions are required before this model can flag recession risk." in reading["en"]
+        assert "这两项条件须同时满足" in reading["zh"]
+        readings.append(reading)
+    assert readings[0] != readings[1]
+    assert "concentrated rather than widespread" in readings[0]["en"]
+    assert "走弱集中，并未广泛扩散" in readings[0]["zh"]
+    assert "widespread but shallow" in readings[1]["en"]
+    assert "走弱范围广，但程度较浅" in readings[1]["zh"]
+    for same in (True, False):
+        assert _detect_contradiction({"recession_signal": {"available": True,
+            "conditions": {"depth": same, "breadth": same}}})["present"] is False

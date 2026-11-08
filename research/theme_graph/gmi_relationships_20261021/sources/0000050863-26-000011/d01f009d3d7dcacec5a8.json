@@ -1,0 +1,31 @@
+{
+ "accepted_at": "2026-01-22T23:43:06Z",
+ "accession": "0000050863-26-000011",
+ "cik": "0000050863",
+ "doc_byte_length": 3320835,
+ "doc_sha256": "1c1fccdaa6ba7111fb85206501dfa9aa064d1d833e731b793026dad2c31f6060",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-01-23",
+ "form": "10-K",
+ "period_of_report": "2025-12-27",
+ "primary_document": "intc-20251227.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 1715345,
+  "byte_start": 1713632,
+  "normalized": "Customer A19 %19 %19",
+  "normalized_sha256": "87eea105b1a299e222a9af37435de6ce9c5662c3a4826d67e618ce1cbad1a438",
+  "raw": "Customer A</span></div></td><td colspan=\"3\" style=\"padding:0 1pt\"/><td colspan=\"2\" style=\"border-top:1pt solid #0068b5;padding:2px 0 2px 1pt;text-align:right;vertical-align:bottom\"><span style=\"color:#0068b5;font-family:'Arial',sans-serif;font-size:9pt;font-weight:400;line-height:100%\"><ix:nonFraction unitRef=\"number\" contextRef=\"c-77\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-562\">19</ix:nonFraction>&#160;</span></td><td style=\"border-top:1pt solid #0068b5;padding:2px 1pt 2px 0;text-align:right;vertical-align:bottom\"><span style=\"color:#0068b5;font-family:'Arial',sans-serif;font-size:9pt;font-weight:400;line-height:100%\">%</span></td><td colspan=\"3\" style=\"padding:0 1pt\"/><td colspan=\"2\" style=\"border-top:1pt solid #0068b5;padding:2px 0 2px 1pt;text-align:right;vertical-align:bottom\"><span style=\"color:#262626;font-family:'Arial',sans-serif;font-size:9pt;font-weight:400;line-height:100%\"><ix:nonFraction unitRef=\"number\" contextRef=\"c-78\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-563\">19</ix:nonFraction>&#160;</span></td><td style=\"border-top:1pt solid #0068b5;padding:2px 1pt 2px 0;text-align:right;vertical-align:bottom\"><span style=\"color:#262626;font-family:'Arial',sans-serif;font-size:9pt;font-weight:400;line-height:100%\">%</span></td><td colspan=\"3\" style=\"padding:0 1pt\"/><td colspan=\"2\" style=\"border-top:1pt solid #0068b5;padding:2px 0 2px 1pt;text-align:right;vertical-align:bottom\"><span style=\"color:#262626;font-family:'Arial',sans-serif;font-size:9pt;font-weight:400;line-height:100%\"><ix:nonFraction unitRef=\"number\" contextRef=\"c-79\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-564\">19",
+  "raw_sha256": "d01f009d3d7dcacec5a8f4db260592cd1efc33b0a434b780b9acb8b71e346441"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/50863/000005086326000011/intc-20251227.htm",
+ "xbrl_contexts": [
+  {
+   "byte_end": 56500,
+   "byte_start": 55842,
+   "context_ref": "c-79",
+   "raw": "<xbrli:context id=\"c-79\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0000050863</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">intc:DellIncMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:SalesRevenueNetMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2023-01-01</xbrli:startDate><xbrli:endDate>2023-12-30</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "400f00c3809df12dead035dacb195e673d3b8683072a3cc89f7b93fb6c40eba7"
+  }
+ ]
+}

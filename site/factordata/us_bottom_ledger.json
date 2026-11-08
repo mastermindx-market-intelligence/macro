@@ -1,15 +1,15 @@
 {
  "schema": "bottom_ledger/v1",
- "as_of": "2026-10-09",
+ "as_of": "2026-10-17",
  "ledger_born": "2026-06-30",
  "advance": {
   "status": "advanced",
-  "as_of": "2026-10-09",
-  "n_new_flags": 148,
-  "n_newly_graded": 56,
+  "as_of": "2026-10-17",
+  "n_new_flags": 0,
+  "n_newly_graded": 0,
   "error": null,
   "clock_contract": "ledger dates are civil calendar dates (YYYY-MM-DD, no clock, no timezone) — engine/ledger_clock.py",
-  "n_rows": 3427,
+  "n_rows": 3571,
   "store_repairs": {
    "renormalized": 0,
    "unreadable": []
@@ -17,42 +17,42 @@
   "unreadable_flag_dates": []
  },
  "maturity_state": "maturing",
- "n_accruing": 3202,
- "n_matured": 225,
+ "n_accruing": 3227,
+ "n_matured": 344,
  "first_maturity_est": null,
  "accrual_by_source": {
-  "board_buy": 2922,
-  "prophet_plan": 505
+  "board_buy": 3028,
+  "prophet_plan": 543
  },
  "summary": {
-  "pin5": 0.1244,
-  "held_pct": 0.4667,
-  "prox_med": 0.1104
+  "pin5": 0.1134,
+  "held_pct": 0.4709,
+  "prox_med": 0.1178
  },
  "cohorts": [
   {
    "source": "board_buy",
    "lane": "bottoming",
-   "n": 65,
-   "prox_med": 0.10322738111061347,
-   "pin5": 0.2,
-   "held_pct": 0.4153846153846154,
-   "broke_pct": 0.27692307692307694,
-   "mfe60_med": 0.07302795218655289,
-   "fwd60_med": -0.04444395504378729,
-   "undercut_med": 0.030715391536559666
+   "n": 136,
+   "prox_med": 0.11976090720014432,
+   "pin5": 0.125,
+   "held_pct": 0.4632352941176471,
+   "broke_pct": 0.27941176470588236,
+   "mfe60_med": 0.07529163774360226,
+   "fwd60_med": -0.04172120293788706,
+   "undercut_med": 0.013062649192469078
   },
   {
    "source": "board_buy",
    "lane": "continuation",
-   "n": 63,
-   "prox_med": 0.13862162311909887,
-   "pin5": 0.015873015873015872,
-   "held_pct": 0.5079365079365079,
-   "broke_pct": 0.3333333333333333,
-   "mfe60_med": 0.10809896185631285,
-   "fwd60_med": -0.05258818938575438,
-   "undercut_med": 0.0037071607044002475
+   "n": 96,
+   "prox_med": 0.13366777983074296,
+   "pin5": 0.041666666666666664,
+   "held_pct": 0.4791666666666667,
+   "broke_pct": 0.3229166666666667,
+   "mfe60_med": 0.10260446548557411,
+   "fwd60_med": -0.052663799005018275,
+   "undercut_med": 0.024891117304086385
   },
   {
    "source": "board_buy",
@@ -65,6 +65,18 @@
    "mfe60_med": 0.08229951712050343,
    "fwd60_med": -0.0534585763317702,
    "undercut_med": 0.0214224619073341
+  },
+  {
+   "source": "board_buy",
+   "lane": "watch",
+   "n": 15,
+   "prox_med": 0.07751542828423053,
+   "pin5": 0.26666666666666666,
+   "held_pct": 0.4666666666666667,
+   "broke_pct": 0.3333333333333333,
+   "mfe60_med": 0.20894016207711918,
+   "fwd60_med": 0.09612900341934405,
+   "undercut_med": 0.0333577648279747
   }
  ],
  "baseline_ref": "calibration/bottom_ruler_baseline.json",
@@ -75,8 +87,8 @@
   "one_grader_law": "grades are computed once at maturity and never recomputed (SA-R14)"
  },
  "integrity_projection": {
-  "raw_rows": 3427,
-  "effective_rows": 3427,
+  "raw_rows": 3571,
+  "effective_rows": 3571,
   "excluded_prophet_rows": 0,
   "error": null,
   "effect": "raw learning rows remain append-only; Prophet rows require a stable plan source_ref and the current canonical signal-family date, and correction/quarantine authority excludes superseded claims from grades and cohorts"

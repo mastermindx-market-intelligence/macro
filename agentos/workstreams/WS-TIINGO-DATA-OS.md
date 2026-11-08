@@ -32,58 +32,26 @@ waves:
   - id: consumer-delivery
     title: Integrate incumbent Data OS and Quote Hub, release and prove live
     status: in_progress
-    pr: [8698, 945, 955, 8986, 9004, 9018, 9020, 9022, 9027]
+    pr: [8698, 945, 955, 1093, 8986, 9004, 9018, 9020, 9022, 9027]
 next_action: >-
-  Preserve accepted producer integrity, previous source dispositions and the
-  four PRODUCED EOD/fundamentals research contracts. Macro #9039 passed all twelve
-  jobs and original overall CI 38321632850 before its protected merge to
-  a13962ee3915e18a8ee21fa8e3a8fa05d475d62f; all eleven reviewed tree entries are
-  verified in canonical main. Original wave14 capture 41115 and continuation
-  40732 are settled and their actual returns are consumed. Actual quality-aware
-  accounting covers all 5,000 identities exactly once: 4,998 qualified successes,
-  one whole RBGPF raw quality quarantine and one held MYRUF transport failure,
-  with zero never-admitted requests. No failed request was retried. Preserve
-  failed prefix16 and window05 artifacts. Reconciliation 37818 verified and
-  reused 758 existing projections, wrote 809 missing valid projections and
-  verified two empty responses; all 1,516 partial-file hashes stayed unchanged.
-  Original reconciliation, coverage and accounting 26646 returns were consumed.
-  The accepted census is 43,160 nonempty histories and 91,067,720 bars, with both
-  WTFNF and RBGPF retained as source-quality quarantines. Final wave15 capture
-  43992 actually started at 2026-10-13 00:55:03 UTC on 4,392 unreserved symbols,
-  excluding all 24 holds. Its source, quota, storage, original reservations and
-  collision gates passed. Qualification window01 15584 stopped during prefix01
-  under the unchanged normalization guard; its actual exit-one return was
-  consumed. Read-only diagnosis 22625 verified the exact 253-response failed
-  snapshot, 171 retained valid partial projections and one SCNG receipt with
-  negative integer volumes and no projection. Complete supplemental validation
-  and disposition remain pending. Prepare and source-review the narrow reusable
-  preflight-and-reconciliation flow, preserving every whole invalid receipt and
-  all valid partial work. No successor qualification writer has started. Consume actual capture and qualification returns, qualify each
-  valid response, diagnose any new source-quality failure and finish the exact
-  final scope accounting. Preserve per-ticker history bounds, empty responses,
-  rolling-five-second admission pacing, raw threshold and 40 GiB floor. A started
-  qualification settles before return; no successor writer precedes consumption.
-  BOATS capture 90361 and qualifier 48859 are settled with consumed original
-  exit-zero returns. The 00:00:19-00:09:30 UTC capture retained 2,000,000 messages,
-  2,000 segments and 448,959,986 bytes on one connection with zero observed
-  transport breaks. All raw and reader lineage is verified: 1,939,898 Q events,
-  60,096 T events, zero B events and six other frames, with 11,577 vendor symbols.
-  Original uppercase zero-match audits remain immutable. A separate reader-only
-  audit found events for eight of nine literal lowercase names; AMZN has zero
-  only within that selected slice. Its 32 segments follow receipt path order;
-  chronological final-interval coverage is unproved. No canonical identity,
-  PIT, full-session continuity, public publication or live consumer acceptance
-  follows. Installed research release 0b204cde and accepted Lab/reader proof
-  remain valid. Terminal #955 last verified head is
-  8811e38c64eb14fadc40a00ccfbfb31c37f863e8. Existing dispatched CI 38319936924 passed
-  all twelve jobs; original PR CI 38319943025 is action_required and the protected
-  PR is OPEN/BLOCKED with required CI absent. Preserve the original approval
-  refusal and release gate. Standalone split, SHW/PFE and provider access holds
-  remain. The 75 accepted fundamentals captures across 25 companies serve about
-  three years; deep/full serving, dated identity, knowledge-time qualification
-  and responsive live Terminal acceptance remain open. Continue every ready
-  permitted lane. Proof and reviewed methods are saved in
-  docs/tiingo-evidence/20261013-open-session-history-frontier/.
+  The accepted Tiingo BOATS code is already merged and the sealed production
+  runtime source d18dbe338fda75691d2f548efcd3a54242ea5978 is installed.
+  On 2026-11-03 the original M2 locked manual quote canary for session 2026-11-04
+  captured 20,000 real messages (596 trades; 37 display-qualified by offline
+  replay), published six accepted R2 full replacements and delivered final
+  invalidation. All three existing launchd labels are installed and loaded,
+  RunAtLoad=false and KeepAlive=false; never repeat that session or reinstall
+  the same release/jobs. The first eligible recurring quote/current-history
+  session is 2026-11-04 20:00 America/New_York, following a harmless 19:00
+  Vancouver-clock candidate. Completed-history candidates admit after 04:00 ET.
+  Consume genuine first-scheduled-run immutable start/final, publisher and
+  private snapshot/bridge receipts; verify fresh Quote Hub tiingo_boats
+  LAST_TRADE, final expiry/clearing, current-night 24H bars and authenticated
+  responsive Terminal positive live browser UX. Do not equate loaded schedules
+  or archived trades with these remaining real-path acceptance proofs.
+  Preserve the original unrelated Fabric EFFECT_UNKNOWN lease/retry fence,
+  user-approved architecture, archive/PIT boundaries, rights limitations
+  and earlier accepted consumer tests.
 owns_paths:
   - collectors/tiingo_archive.py
   - lib/dataos/tiingo_*.py
@@ -91,6 +59,11 @@ owns_paths:
   - docs/TIINGO_DATA_OS_INGESTION_20261009.md
   - docs/tiingo-evidence/
 artifacts:
+  - docs/tiingo-evidence/20261021-terminal-24h/
+  - docs/tiingo-evidence/20261013-recovered-final-history/
+  - docs/tiingo-evidence/20261013-attended-recovery/
+  - docs/tiingo-evidence/20261013-continuation-accounting/
+  - docs/tiingo-evidence/20261013-final-scope-disposition/
   - docs/tiingo-evidence/20261013-open-session-history-frontier/
   - docs/tiingo-evidence/20261012-final-capture-preparation/
   - docs/tiingo-evidence/20261012-wave13-held-outcome/
@@ -418,3 +391,49 @@ stopped after that one request, with no successful response or projection. EOD
 embedded split/dividend evidence remains a distinct accepted source and does not
 clear the standalone endpoint refusal. No purchase, support email or account change
 was made. Safe current receipts are in the existing delivery-frontier directory.
+
+
+## 2026-10-21 Terminal consumer repair and continuous-delivery boundary
+
+Terminal [#1093](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1093) repairs overnight history latency and chart ordering on the existing 24H path. Daytime caching is separated from fresh private BOATS reads; the existing refresh can initialize a cold chart after background completion, and older responses/trades cannot roll back accepted data. The retained Terminal proof records 205 targeted tests, responsive overnight cases, exact-source guard checks and actual regenerated chart evidence. All sixteen original hosted CI jobs passed and the reviewed tree merged as `ea7b20286ffeda9194597245b147719d6ed515fd`. The canonical production owner deployed that revision successfully. Installed identity and source hashes, signed-in cold/expired cache transitions, and the actual AMD 1m ETH/24H chart were verified; the production screenshot and bounded metadata are retained in the activation evidence. Precise post-HTTP callback timing and continuous fresh source delivery remain separate from this acceptance.
+
+The current producer release and observed finite private-history delivery are recorded in [the activation evidence](../../docs/tiingo-evidence/20261021-terminal-24h/activation.md). The independent current-night owner settled without extension or replay. The three recurring labels remain unloaded; the source timestamp gap and original publication/scheduling refusals remain material. No quote publisher, R2 PUT or launchd installation was performed by this parent. Terminal was activated through its canonical production owner; beta and Quote Hub retained their existing process IDs. The proposal records the original owners, finite bounds, current canary interfaces, rollout prerequisites and rollback without granting runtime authority. Historical accepted archive accounting and open fundamentals/PIT boundaries remain in the prior handoff and evidence.
+
+
+## 2026-11-03 | Principal takeover: real BOATS publication and recurring schedule activation
+
+This supersedes only the previous uninstalled-release/unloaded-schedule action in the
+historical 2026-10-21 handoff. The original accepted 24H chart implementation is
+already merged; no duplicate code PR or re-release was needed.
+
+- **Original M2 production canary:** immutable trading session `2026-11-04`, exact
+  runner `--publish --total-max-seconds 60 --total-max-messages 20000
+  --max-segments 1 --segment-max-seconds 60` in supported attended manual mode.
+  Session start/final receipts exist; 20,000 raw messages and 20 SHA-verified
+  archive chunks include 596 T, 19,402 Q, zero B. An offline replay through the
+  **installed** qualification reducer accepted 37 trades (not 596 display trades).
+  Six incumbent R2 publications succeeded, no access denial, final empty
+  replacement delivered; exit code 5 is the documented message/segment cap.
+- **Installed protected runtime:** Macro merged PR #9962 `d18dbe338fda75691d2f548efcd3a54242ea5978`,
+  31/31 sealed file hashes matched on original M2 carrier.
+- **Activated existing launchd:** `com.macro.extquotes`,
+  `com.macro.boats-live-history`, `com.macro.boats-history` were installed to
+  original UID-501 LaunchAgents. Each bootstrap returned rc0; independent
+  `launchctl print` readback found all three loaded, not running,
+  `RunAtLoad=false`, `KeepAlive=false`, and exact sealed-plist hashes.
+  These facts prove activation, not the next schedule's successful effect.
+- **Private history interest read:** existing SSH bridge returned four older
+  requests but zero fresh current-session interests. No synthetic demand,
+  private snapshot write or new history canary was attempted.
+- **Live Terminal positive acceptance remains open:** R2 terminal object is
+  correctly empty after the canary's final clearing; no positive Quote Hub /
+  signed-in 24H client quote was captured within the short stream. The first
+  loaded scheduled quote, private-history and completed-history runs must return
+  actual receipts; verify the resulting visible chart on real browser desktop
+  and mobile and measure first paint. Never invent gaps or market continuity.
+- **Original Fabric operation:** `tiingo24h-fabric-activation-20261103-01`
+  remains `EFFECT_UNKNOWN`, original lease held and retry forbidden. This
+  separate unsuccessful worker attempt was **not** used for the successful M2
+  publisher activation; do not release its lease or rerun it.
+
+Evidence and original receipt hashes: [Terminal issue #1146, production activation](https://github.com/mastermindx-market-intelligence/mastermind-terminal/issues/1146#issuecomment-6621281319).

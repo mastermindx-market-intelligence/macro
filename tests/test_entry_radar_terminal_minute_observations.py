@@ -859,3 +859,219 @@ def test_future_record_integrity_still_refuses_at_actual_read(captured, mutation
     atomic_fixture(path, changed)
     with pytest.raises(InputContractError):
         read_at(path, "2026-10-06T14:18:00Z")
+
+
+def v3_capture(prior=None, rows=None, *, role="research_unadjusted", state="FALSE",
+               source_at="2026-10-06T14:15:00Z", status="complete"):
+    """Independent v3 fixture; no source basis admission or producer dependency."""
+    result = append_capture(envelope() if prior is None else prior, rows,
+                            source_at=source_at, status=status)
+    result["schema"] = bridge.CAPTURE_SCHEMA_V3
+    payload = result["captures"][-1]["payload"]
+    payload.update(schema=bridge.PAYLOAD_SCHEMA_V3, acquisition_role=role,
+                   chart_eligible=status == "complete" and role == "chart_adjusted" and state == "TRUE")
+    payload["request"]["adjusted"] = role == "chart_adjusted"
+    for page in payload["pages"]:
+        page["response_adjusted"] = {"state": state}
+    if status == "failed":
+        payload["pages"] = []
+        payload["observations"] = []
+        payload["counts"] = {key: 0 for key in payload["counts"]}
+    reseal(result)
+    return result
+
+
+@pytest.mark.parametrize("role", ("chart_adjusted", "research_unadjusted"))
+@pytest.mark.parametrize("state", sorted(bridge.RESPONSE_ADJUSTED_STATES - {"UNPARSED"}))
+def test_v3_exact_role_request_and_page_declaration_are_provenance_not_basis(tmp_path, role, state):
+    path = tmp_path / "v3.json"
+    rows = raw_rows()
+    rows[0]["v"] = 0.125
+    rows[1]["v"] = None
+    rows[2].pop("v")
+    capture = v3_capture(rows=rows, role=role, state=state)
+    atomic_fixture(path, capture)
+    snapshot = read_at(path, "2026-10-06T14:16:00Z")
+    decoded = decode(snapshot, [snapshot.receipt], cutoff="2026-10-06T14:16:00Z")
+    assert len(decoded["minutes"]) == 30
+    for row in decoded["minutes"]:
+        source = row["source_observation"]
+        assert source["acquisition_role"] == role
+        assert source["capture_payload_schema"] == bridge.PAYLOAD_SCHEMA_V3
+        assert source["request_adjusted"] is (role == "chart_adjusted")
+        assert source["response_adjusted"] == state
+        assert source["capture_sha256"] == capture["captures"][0]["capture_sha256"]
+        assert source["owner_read_receipt_sha256"] == snapshot.receipt["receipt_sha256"]
+        assert row["basis_id"] is None and row["basis_refusals"] == ["TERMINAL_BASIS_UNPROVEN"]
+    assert [row["volume"] for row in decoded["minutes"][:3]] == [0.125, None, None]
+    assert [row["source_observation"]["volume_state"] for row in decoded["minutes"][:3]] == [
+        "observed", "null", "missing"]
+    # Caller relabeling cannot turn either retained acquisition role into an
+    # admitted market basis through the unchanged real selector.
+    relabeled = copy.deepcopy(decoded["minutes"])
+    for row in relabeled:
+        row["basis_id"] = "synthetic-basis"
+        row.pop("basis_refusals")
+        reseal_receipt(row)
+    panel = build_input_panel(bundle(relabeled))
+    selected = panel["frames"][0]["bars"]["stock"]["30"]
+    assert selected["availability"] == "unavailable" and selected["ohlcv"] is None
+    assert "TERMINAL_BASIS_UNPROVEN" in selected["refusals"]
+    assert panel["retained_count"] == panel["population_count"] == 1
+    assert not any(panel["authority"].values())
+
+
+def test_v1_v2_rows_and_earlier_frame_are_exact_after_v3_role_interleaving(tmp_path):
+    path = tmp_path / "prefix.json"
+    capture = append_capture(envelope())
+    atomic_fixture(path, capture)
+    first = read_at(path, "2026-10-06T14:16:00Z")
+    first_rows = decode(first, [first.receipt], cutoff="2026-10-06T14:16:00Z")["minutes"]
+    capture = v2_capture(capture, [raw_rows()[-1]], source_at="2026-10-06T14:17:00Z")
+    atomic_fixture(path, capture)
+    second = read_at(path, "2026-10-06T14:18:00Z")
+    receipts = [first.receipt, second.receipt]
+    original = decode(second, receipts, cutoff="2026-10-06T14:18:00Z")["minutes"]
+    original_frame = build_input_panel(bundle(original, cutoffs=("2026-10-06T14:18:00Z",)))["frames"][0]
+    seals = [canonical(record) for record in capture["captures"]]
+    for index, role in enumerate(("research_unadjusted", "chart_adjusted")):
+        capture = v3_capture(capture, [raw_rows()[-1]], role=role,
+                             state="FALSE" if index == 0 else "TRUE",
+                             source_at=f"2026-10-06T14:{19 + 2 * index}:00Z")
+        atomic_fixture(path, capture)
+        latest = read_at(path, f"2026-10-06T14:{20 + 2 * index}:00Z")
+        receipts.append(latest.receipt)
+    assert [canonical(record) for record in capture["captures"][:2]] == seals
+    replay = decode(latest, receipts, cutoff="2026-10-06T14:18:00Z")["minutes"]
+    assert canonical(replay) == canonical(original)
+    assert decode(latest, receipts, cutoff="2026-10-06T14:16:00Z")["minutes"] == first_rows
+    replay_frame = build_input_panel(bundle(replay, cutoffs=("2026-10-06T14:18:00Z",)))["frames"][0]
+    assert canonical(replay_frame) == canonical(original_frame)
+    assert all("acquisition_role" not in row["source_observation"]
+               and "capture_payload_schema" not in row["source_observation"] for row in original)
+    visible = decode(latest, receipts, cutoff="2026-10-06T14:22:00Z")["minutes"]
+    assert visible[:31] == original and len(visible) == 33
+    assert visible[-2]["source_observation"]["acquisition_role"] == "research_unadjusted"
+    assert visible[-1]["source_observation"]["acquisition_role"] == "chart_adjusted"
+    assert visible[-2]["revision_id"] != visible[-1]["revision_id"]
+    assert visible[-2]["known_at"] == "2026-10-06T14:20:00Z"
+    assert visible[-1]["known_at"] == "2026-10-06T14:22:00Z"
+
+
+@pytest.mark.parametrize("status", ("complete", "partial", "failed"))
+@pytest.mark.parametrize("mutation", (
+    "missing_role", "null_role", "object_role", "list_role", "unknown_role",
+    "missing_request", "null_request", "wrong_bool", "integer_bool", "string_bool",
+    "unknown_version", "null_version", "object_version", "v1_downgrade", "v2_downgrade",
+))
+def test_v3_intact_future_semantics_wait_for_enrollment_and_visibility(tmp_path, status, mutation):
+    path = tmp_path / "future-v3.json"
+    original = v3_capture()
+    atomic_fixture(path, original)
+    first = read_at(path, "2026-10-06T14:16:00Z")
+    before = decode(first, [first.receipt], cutoff="2026-10-06T14:16:00Z")["minutes"]
+    frame = build_input_panel(bundle(before))["frames"][0]
+    changed = v3_capture(original, [raw_rows()[-1]], status=status, source_at="2026-10-06T14:17:00Z")
+    payload = changed["captures"][-1]["payload"]
+    if mutation == "missing_role":
+        payload.pop("acquisition_role")
+    elif mutation in ("null_role", "object_role", "list_role", "unknown_role"):
+        payload["acquisition_role"] = {"null_role": None, "object_role": {}, "list_role": [],
+                                       "unknown_role": "unadjusted"}[mutation]
+    elif mutation == "missing_request":
+        payload.pop("request")
+    elif mutation == "null_request":
+        payload["request"] = None
+    elif mutation in ("wrong_bool", "integer_bool", "string_bool"):
+        payload["request"]["adjusted"] = {"wrong_bool": True, "integer_bool": 0,
+                                          "string_bool": "false"}[mutation]
+    elif mutation in ("unknown_version", "null_version", "object_version"):
+        payload["schema"] = {"unknown_version": "v999", "null_version": None,
+                              "object_version": {}}[mutation]
+    else:
+        payload.pop("acquisition_role")
+        payload["request"]["adjusted"] = True
+        if mutation == "v1_downgrade":
+            payload.pop("schema")
+            payload.pop("chart_eligible")
+            for page in payload["pages"]:
+                page.pop("response_adjusted")
+        else:
+            payload["schema"] = bridge.PAYLOAD_SCHEMA_V2
+    reseal(changed)
+    assert changed["captures"][0] == original["captures"][0]
+    atomic_fixture(path, changed)
+    # The actual bounded reader checks JSON and every seal, but doesn't parse the
+    # intact un-enrolled record's role/version semantics.
+    later = read_at(path, "2026-10-06T14:18:00Z")
+    assert decode(later, [first.receipt], cutoff="2026-10-06T14:19:00Z")["minutes"] == before
+    receipts = [first.receipt, later.receipt]
+    earlier = decode(later, receipts, cutoff="2026-10-06T14:16:00Z")["minutes"]
+    assert canonical(earlier) == canonical(before)
+    assert canonical(build_input_panel(bundle(earlier))["frames"][0]) == canonical(frame)
+    with pytest.raises(InputContractError):
+        decode(later, receipts, cutoff="2026-10-06T14:18:00Z")
+
+
+@pytest.mark.parametrize("integrity", ("seal", "sequence", "id", "outer"))
+def test_v3_future_integrity_failure_refuses_at_actual_read(tmp_path, integrity):
+    capture = v3_capture()
+    changed = v3_capture(capture, source_at="2026-10-06T14:17:00Z")
+    last = changed["captures"][-1]
+    if integrity == "seal":
+        last["payload"]["request"]["adjusted"] = True
+    elif integrity == "sequence":
+        last["sequence"] = 99
+        reseal(changed)
+    elif integrity == "id":
+        last["capture_id"] = changed["captures"][0]["capture_id"]
+        reseal(changed)
+    else:
+        changed["schema"] = {}
+    path = tmp_path / "integrity.json"
+    atomic_fixture(path, changed)
+    with pytest.raises(InputContractError):
+        read_at(path, "2026-10-06T14:18:00Z")
+
+
+@pytest.mark.parametrize("status", ("partial", "failed", "empty", "suppressed"))
+def test_v3_nonrevision_attempts_preserve_raw_first_seen_and_occurrence_ids(tmp_path, status):
+    path = tmp_path / "attempts.json"
+    original = v3_capture()
+    atomic_fixture(path, original)
+    first = read_at(path, "2026-10-06T14:16:00Z")
+    before = decode(first, [first.receipt], cutoff="2026-10-06T14:16:00Z")["minutes"]
+    changed = v3_capture(original, [] if status in ("empty", "suppressed") else None,
+                         source_at="2026-10-06T14:17:00Z",
+                         status=status if status in ("partial", "failed") else "complete")
+    if status == "suppressed":
+        payload = changed["captures"][-1]["payload"]
+        payload["counts"].update(rows_received=30, finalized_rows=30, unchanged_suppressed=30)
+        payload["pages"][0].update(rows_received=30, finalized_rows=30)
+        reseal(changed)
+    atomic_fixture(path, changed)
+    later = read_at(path, "2026-10-06T14:18:00Z")
+    result = decode(later, [first.receipt, later.receipt], cutoff="2026-10-06T14:18:00Z")
+    assert result["minutes"] == before
+    assert len({row["revision_id"] for row in result["minutes"]}) == 30
+    if status in ("partial", "failed"):
+        assert result["diagnostics"]["visible_capture_outcomes"][status] == 1
+    else:
+        assert result["diagnostics"]["complete_captures_with_no_retained_observations"] == 1
+
+
+@pytest.mark.parametrize("target", ("status", "page_status"))
+@pytest.mark.parametrize("bad", (None, [], {}))
+def test_v3_visible_malformed_status_primitives_have_typed_refusal(tmp_path, target, bad):
+    capture = v3_capture()
+    payload = capture["captures"][0]["payload"]
+    if target == "status":
+        payload["status"] = bad
+    else:
+        payload["pages"][0]["status"] = bad
+    reseal(capture)
+    path = tmp_path / "bad-status.json"
+    atomic_fixture(path, capture)
+    snapshot = read_at(path, "2026-10-06T14:16:00Z")
+    with pytest.raises(InputContractError):
+        decode(snapshot, [snapshot.receipt], cutoff="2026-10-06T14:16:00Z")

@@ -1,0 +1,1458 @@
+{
+  "schema": "mmx.commodities.render_public_integration.v1",
+  "recorded_at": "2026-10-20T15:40:04.049689+00:00",
+  "reviewed_head": "6b8b3e48022eb1761a565ee35b079d652579ad3f",
+  "previous_accepted_main": "aae720e625066f30b557d3c408e76dc8f2cb7fbf",
+  "accepted_main": "9950da1d0080bf0bcdd63da0ee5377a6a2d63738",
+  "conflict_paths": [
+    "site/commodities.html"
+  ],
+  "resolution": "Accepted main page and exact current-main source snapshot; petroleum weekly data advanced from Oct2 to Oct9. Preserve accepted theme.js cache-busting reference. Core feature implementation is unchanged.",
+  "payload_leaf_changes": [
+    {
+      "path": "/fingerprint",
+      "old": "c1cda193c3a61bfe5928d4d9771ec6ee77da6f0464207ba6ed898a7673c7abb5",
+      "new": "6f617af0e84e0ae1469858475f03afec4e8f7128c1b80a715f3b0887180649e3"
+    },
+    {
+      "path": "/gold_physical/source_receipt/immutable_source/commit",
+      "old": "aae720e625066f30b557d3c408e76dc8f2cb7fbf",
+      "new": "9950da1d0080bf0bcdd63da0ee5377a6a2d63738"
+    },
+    {
+      "path": "/physical/age_days",
+      "old": 14,
+      "new": 7
+    },
+    {
+      "path": "/physical/as_of",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/business_read/en",
+      "old": "Product tightness makes refining margins and fuel pass-through worth checking. Refiners need product prices to outpace crude and operating costs; fuel users need evidence on hedges and pricing power.",
+      "new": "Check realised prices and hedges for producers, product spreads for refiners, and fuel pass-through for consumers."
+    },
+    {
+      "path": "/physical/business_read/zh",
+      "old": "\u6210\u54c1\u6cb9\u504f\u7d27\u503c\u5f97\u8fdb\u4e00\u6b65\u68c0\u67e5\u70bc\u6cb9\u5229\u6da6\u4e0e\u71c3\u6599\u6210\u672c\u8f6c\u5ac1\u3002\u70bc\u6cb9\u5546\u9700\u786e\u8ba4\u4ea7\u54c1\u4ef7\u683c\u80fd\u5426\u8dd1\u8d62\u539f\u6cb9\u53ca\u8fd0\u8425\u6210\u672c\uff0c\u71c3\u6599\u4f7f\u7528\u65b9\u9700\u68c0\u67e5\u5957\u4fdd\u4e0e\u5b9a\u4ef7\u80fd\u529b\u3002",
+      "new": "\u751f\u4ea7\u5546\u9700\u6838\u5bf9\u5b9e\u73b0\u4ef7\u683c\u4e0e\u5957\u4fdd\uff0c\u70bc\u6cb9\u5546\u9700\u6838\u5bf9\u4ea7\u54c1\u4ef7\u5dee\uff0c\u6d88\u8d39\u7aef\u9700\u6838\u5bf9\u71c3\u6599\u6210\u672c\u8f6c\u5ac1\u3002"
+    },
+    {
+      "path": "/physical/classification",
+      "old": "product_tightness",
+      "new": "broad_tightness"
+    },
+    {
+      "path": "/physical/clock/en",
+      "old": "Week ending 2026-10-02 \u00b7 14 days before the price snapshot \u00b7 release vintage unavailable.",
+      "new": "Week ending 2026-10-09 \u00b7 7 days before the price snapshot \u00b7 release vintage unavailable."
+    },
+    {
+      "path": "/physical/clock/zh",
+      "old": "\u622a\u81f32026-10-02\u7684\u4e00\u5468 \u00b7 \u65e9\u4e8e\u4ef7\u683c\u5feb\u716714\u5929 \u00b7 \u53d1\u5e03\u7248\u672c\u4e0d\u53ef\u6838\u5b9e\u3002",
+      "new": "\u622a\u81f32026-10-09\u7684\u4e00\u5468 \u00b7 \u65e9\u4e8e\u4ef7\u683c\u5feb\u71677\u5929 \u00b7 \u53d1\u5e03\u7248\u672c\u4e0d\u53ef\u6838\u5b9e\u3002"
+    },
+    {
+      "path": "/physical/detail/en",
+      "old": "Gasoline and distillate stocks were below seasonal norms while crude was not. The contrast focuses attention on product supply, refinery operations and trade; it does not establish a crude supply shock.",
+      "new": "All three stock categories were below their own seasonal norms in this observation week. This shows a tight US inventory buffer; it does not identify the cause or establish a global supply loss."
+    },
+    {
+      "path": "/physical/detail/zh",
+      "old": "\u6c7d\u6cb9\u4e0e\u998f\u5206\u6cb9\u5e93\u5b58\u4f4e\u4e8e\u5b63\u8282\u5e38\u6001\uff0c\u539f\u6cb9\u5219\u672a\u51fa\u73b0\u540c\u6837\u504f\u7d27\u3002\u5e94\u91cd\u70b9\u6838\u67e5\u6210\u54c1\u6cb9\u4f9b\u5e94\u3001\u70bc\u5382\u8fd0\u4f5c\u4e0e\u8d38\u6613\uff0c\u800c\u4e0d\u80fd\u636e\u6b64\u786e\u8ba4\u539f\u6cb9\u4f9b\u5e94\u51b2\u51fb\u3002",
+      "new": "\u8be5\u89c2\u5bdf\u5468\u7684\u4e09\u7c7b\u5e93\u5b58\u5747\u4f4e\u4e8e\u5404\u81ea\u5b63\u8282\u5e38\u6001\uff0c\u8bf4\u660e\u7f8e\u56fd\u5e93\u5b58\u7f13\u51b2\u504f\u7d27\uff1b\u5c1a\u4e0d\u80fd\u8bc6\u522b\u539f\u56e0\u6216\u786e\u8ba4\u5168\u7403\u4f9b\u5e94\u635f\u5931\u3002"
+    },
+    {
+      "path": "/physical/evidence/crude_chg_4w_mb/observation_at",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/evidence/crude_chg_4w_mb/value",
+      "old": 0.1,
+      "new": -7.9
+    },
+    {
+      "path": "/physical/evidence/crude_chg_4w_mb/window_end",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/evidence/crude_chg_4w_mb/window_start",
+      "old": "2026-09-04",
+      "new": "2026-09-11"
+    },
+    {
+      "path": "/physical/evidence/crude_stocks_mb/observation_at",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/evidence/crude_stocks_mb/value",
+      "old": 424.1,
+      "new": 415.6
+    },
+    {
+      "path": "/physical/evidence/crude_stocks_mb/window_end",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/evidence/crude_z/observation_at",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/evidence/crude_z/reference/end",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/evidence/crude_z/reference/start",
+      "old": "2021-09-10",
+      "new": "2021-09-17"
+    },
+    {
+      "path": "/physical/evidence/crude_z/value",
+      "old": -0.15,
+      "new": -0.59
+    },
+    {
+      "path": "/physical/evidence/crude_z/window_end",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/evidence/cushing_stocks_mb/observation_at",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/evidence/cushing_stocks_mb/value",
+      "old": 24.7,
+      "new": 26.6
+    },
+    {
+      "path": "/physical/evidence/cushing_stocks_mb/window_end",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/evidence/days_supply/observation_at",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/evidence/days_supply/value",
+      "old": 25.4,
+      "new": 25.1
+    },
+    {
+      "path": "/physical/evidence/days_supply/window_end",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/evidence/days_supply/window_start",
+      "old": "2026-09-11",
+      "new": "2026-09-18"
+    },
+    {
+      "path": "/physical/evidence/distillate_chg_4w_mb/observation_at",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/evidence/distillate_chg_4w_mb/value",
+      "old": -1.1,
+      "new": -5.2
+    },
+    {
+      "path": "/physical/evidence/distillate_chg_4w_mb/window_end",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/evidence/distillate_chg_4w_mb/window_start",
+      "old": "2026-09-04",
+      "new": "2026-09-11"
+    },
+    {
+      "path": "/physical/evidence/distillate_days/observation_at",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/evidence/distillate_days/value",
+      "old": 27.9,
+      "new": 25.8
+    },
+    {
+      "path": "/physical/evidence/distillate_days/window_end",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/evidence/distillate_days/window_start",
+      "old": "2026-09-11",
+      "new": "2026-09-18"
+    },
+    {
+      "path": "/physical/evidence/distillate_stocks_mb/observation_at",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/evidence/distillate_stocks_mb/value",
+      "old": 105.1,
+      "new": 102.6
+    },
+    {
+      "path": "/physical/evidence/distillate_stocks_mb/window_end",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/evidence/distillate_supplied_avg/observation_at",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/evidence/distillate_supplied_avg/value",
+      "old": 3.768,
+      "new": 3.974
+    },
+    {
+      "path": "/physical/evidence/distillate_supplied_avg/window_end",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/evidence/distillate_supplied_avg/window_start",
+      "old": "2026-09-11",
+      "new": "2026-09-18"
+    },
+    {
+      "path": "/physical/evidence/distillate_z/observation_at",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/evidence/distillate_z/reference/end",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/evidence/distillate_z/reference/start",
+      "old": "2021-09-10",
+      "new": "2021-09-17"
+    },
+    {
+      "path": "/physical/evidence/distillate_z/value",
+      "old": -2.01,
+      "new": -1.94
+    },
+    {
+      "path": "/physical/evidence/distillate_z/window_end",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/evidence/gasoline_chg_4w_mb/observation_at",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/evidence/gasoline_chg_4w_mb/value",
+      "old": -2.2,
+      "new": 0.5
+    },
+    {
+      "path": "/physical/evidence/gasoline_chg_4w_mb/window_end",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/evidence/gasoline_chg_4w_mb/window_start",
+      "old": "2026-09-04",
+      "new": "2026-09-11"
+    },
+    {
+      "path": "/physical/evidence/gasoline_days/observation_at",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/evidence/gasoline_days/value",
+      "old": 23.3,
+      "new": 24.0
+    },
+    {
+      "path": "/physical/evidence/gasoline_days/window_end",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/evidence/gasoline_days/window_start",
+      "old": "2026-09-11",
+      "new": "2026-09-18"
+    },
+    {
+      "path": "/physical/evidence/gasoline_stocks_mb/observation_at",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/evidence/gasoline_stocks_mb/value",
+      "old": 204.7,
+      "new": 208.3
+    },
+    {
+      "path": "/physical/evidence/gasoline_stocks_mb/window_end",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/evidence/gasoline_supplied_avg/observation_at",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/evidence/gasoline_supplied_avg/value",
+      "old": 8.776,
+      "new": 8.678
+    },
+    {
+      "path": "/physical/evidence/gasoline_supplied_avg/window_end",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/evidence/gasoline_supplied_avg/window_start",
+      "old": "2026-09-11",
+      "new": "2026-09-18"
+    },
+    {
+      "path": "/physical/evidence/gasoline_z/observation_at",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/evidence/gasoline_z/reference/end",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/evidence/gasoline_z/reference/start",
+      "old": "2021-09-10",
+      "new": "2021-09-17"
+    },
+    {
+      "path": "/physical/evidence/gasoline_z/value",
+      "old": -2.03,
+      "new": -1.2
+    },
+    {
+      "path": "/physical/evidence/gasoline_z/window_end",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/evidence/production_chg_4w/observation_at",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/evidence/production_chg_4w/value",
+      "old": 0.03,
+      "new": -0.27
+    },
+    {
+      "path": "/physical/evidence/production_chg_4w/window_end",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/evidence/production_chg_4w/window_start",
+      "old": "2026-09-04",
+      "new": "2026-09-11"
+    },
+    {
+      "path": "/physical/evidence/production_mbd/observation_at",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/evidence/production_mbd/value",
+      "old": 13.98,
+      "new": 13.68
+    },
+    {
+      "path": "/physical/evidence/production_mbd/window_end",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/evidence/refinery_inputs_avg/observation_at",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/evidence/refinery_inputs_avg/value",
+      "old": 16.72,
+      "new": 16.541
+    },
+    {
+      "path": "/physical/evidence/refinery_inputs_avg/window_end",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/evidence/refinery_inputs_avg/window_start",
+      "old": "2026-09-11",
+      "new": "2026-09-18"
+    },
+    {
+      "path": "/physical/evidence/refinery_util/observation_at",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/evidence/refinery_util/value",
+      "old": 92.7,
+      "new": 93.5
+    },
+    {
+      "path": "/physical/evidence/refinery_util/window_end",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/evidence/spr_chg_4w_mb/observation_at",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/evidence/spr_chg_4w_mb/value",
+      "old": -2.38,
+      "new": -1.97
+    },
+    {
+      "path": "/physical/evidence/spr_chg_4w_mb/window_end",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/evidence/spr_chg_4w_mb/window_start",
+      "old": "2026-09-04",
+      "new": "2026-09-11"
+    },
+    {
+      "path": "/physical/flows/0/observation_at",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/flows/0/value",
+      "old": 16.72,
+      "new": 16.541
+    },
+    {
+      "path": "/physical/flows/0/window_end",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/flows/0/window_start",
+      "old": "2026-09-11",
+      "new": "2026-09-18"
+    },
+    {
+      "path": "/physical/flows/1/observation_at",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/flows/1/value",
+      "old": 8.776,
+      "new": 8.678
+    },
+    {
+      "path": "/physical/flows/1/window_end",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/flows/1/window_start",
+      "old": "2026-09-11",
+      "new": "2026-09-18"
+    },
+    {
+      "path": "/physical/flows/2/observation_at",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/flows/2/value",
+      "old": 3.768,
+      "new": 3.974
+    },
+    {
+      "path": "/physical/flows/2/window_end",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/flows/2/window_start",
+      "old": "2026-09-11",
+      "new": "2026-09-18"
+    },
+    {
+      "path": "/physical/flows/3/observation_at",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/flows/3/value",
+      "old": 13.98,
+      "new": 13.68
+    },
+    {
+      "path": "/physical/flows/3/window_end",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/flows/4/observation_at",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/flows/4/value",
+      "old": 0.03,
+      "new": -0.27
+    },
+    {
+      "path": "/physical/flows/4/window_end",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/flows/4/window_start",
+      "old": "2026-09-04",
+      "new": "2026-09-11"
+    },
+    {
+      "path": "/physical/flows/5/observation_at",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/flows/5/value",
+      "old": 92.7,
+      "new": 93.5
+    },
+    {
+      "path": "/physical/flows/5/window_end",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/flows/6/observation_at",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/flows/6/value",
+      "old": -2.38,
+      "new": -1.97
+    },
+    {
+      "path": "/physical/flows/6/window_end",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/flows/6/window_start",
+      "old": "2026-09-04",
+      "new": "2026-09-11"
+    },
+    {
+      "path": "/physical/flows/7/observation_at",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/flows/7/value",
+      "old": 24.7,
+      "new": 26.6
+    },
+    {
+      "path": "/physical/flows/7/window_end",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/headline/en",
+      "old": "Product stocks tight; crude less constrained",
+      "new": "Crude and product stocks below seasonal norms"
+    },
+    {
+      "path": "/physical/headline/zh",
+      "old": "\u6210\u54c1\u6cb9\u5e93\u5b58\u504f\u7d27\uff0c\u539f\u6cb9\u7ea6\u675f\u8f83\u8f7b",
+      "new": "\u539f\u6cb9\u4e0e\u6210\u54c1\u6cb9\u5e93\u5b58\u5747\u4f4e\u4e8e\u5b63\u8282\u5e38\u6001"
+    },
+    {
+      "path": "/physical/source_dependencies/crude_production/fingerprint",
+      "old": "b98af4ac69fe287ad28b35c27565f03621d909ce908f6f321df21f3832a979c4",
+      "new": "87aff9f7e43820a1cecea902e2018668c0f4d4a58e986d45c6529edd8457f8a9"
+    },
+    {
+      "path": "/physical/source_dependencies/crude_production/immutable_source/commit",
+      "old": "aae720e625066f30b557d3c408e76dc8f2cb7fbf",
+      "new": "9950da1d0080bf0bcdd63da0ee5377a6a2d63738"
+    },
+    {
+      "path": "/physical/source_dependencies/crude_production/immutable_source/file_sha256",
+      "old": "d144e45583fe530c05b7bc269ae128363ce05bac1640a7734dd511ab23af2704",
+      "new": "4f9a1a71a44c89be0c7d9830f0aef5d249b7e6566ddb5c8f68ed25f1e33b0558"
+    },
+    {
+      "path": "/physical/source_dependencies/crude_production/input_latest_observation",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/source_dependencies/crude_production/observation_at",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/source_dependencies/crude_stocks/fingerprint",
+      "old": "dfc3cfe2e4bd9c4a77073fc81226ca013273bb4cf27e7162dc9648dc41e8d33f",
+      "new": "b6ab0c1041e98d158333845a67cb099bc83d858b489b0b6ae0255f36a7d3790f"
+    },
+    {
+      "path": "/physical/source_dependencies/crude_stocks/immutable_source/commit",
+      "old": "aae720e625066f30b557d3c408e76dc8f2cb7fbf",
+      "new": "9950da1d0080bf0bcdd63da0ee5377a6a2d63738"
+    },
+    {
+      "path": "/physical/source_dependencies/crude_stocks/immutable_source/file_sha256",
+      "old": "41db9e6c63093360bee7434ab3edc64a26bf2cd632e93ccf825a482c6da938ff",
+      "new": "4c437faba4510a2050f480a3559da65b2bff00b971bebfc390e79c403d33cbcc"
+    },
+    {
+      "path": "/physical/source_dependencies/crude_stocks/input_latest_observation",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/source_dependencies/crude_stocks/observation_at",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/source_dependencies/cushing_stocks/fingerprint",
+      "old": "608e9ec088e780bbf7a1a2e713290407be2ce182bd9eb94f75707d7c82ee0ed6",
+      "new": "a5792f7da699d646852648561826a8c1108e91d388991be8f8fe9cac99f7c59f"
+    },
+    {
+      "path": "/physical/source_dependencies/cushing_stocks/immutable_source/commit",
+      "old": "aae720e625066f30b557d3c408e76dc8f2cb7fbf",
+      "new": "9950da1d0080bf0bcdd63da0ee5377a6a2d63738"
+    },
+    {
+      "path": "/physical/source_dependencies/cushing_stocks/immutable_source/file_sha256",
+      "old": "00ca99656b24580ad46b5f18d316b19567f48ec7277537f8b5d21fadaabd11d0",
+      "new": "47b3a7c56e697029a947e5707d2098e2cb10472bf8f1d9ed0097332bd9c31012"
+    },
+    {
+      "path": "/physical/source_dependencies/cushing_stocks/input_latest_observation",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/source_dependencies/cushing_stocks/observation_at",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/source_dependencies/distillate_stocks/fingerprint",
+      "old": "18b0ba5352cdfa5aa373f98000581483773e2adf23ee805bb8c9378d3d76657c",
+      "new": "b5450131602991ee7b803c856527c2585b70e066fada029fa1f985e8d9a2e0ef"
+    },
+    {
+      "path": "/physical/source_dependencies/distillate_stocks/immutable_source/commit",
+      "old": "aae720e625066f30b557d3c408e76dc8f2cb7fbf",
+      "new": "9950da1d0080bf0bcdd63da0ee5377a6a2d63738"
+    },
+    {
+      "path": "/physical/source_dependencies/distillate_stocks/immutable_source/file_sha256",
+      "old": "e9966131001045d562d5fcad48896932fba1a391db996402c83f6dfd07ff80ae",
+      "new": "569387ece0d55ee247d48b00c0808a14461671cdcae16ec1fe3d9afbb9e0ebd4"
+    },
+    {
+      "path": "/physical/source_dependencies/distillate_stocks/input_latest_observation",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/source_dependencies/distillate_stocks/observation_at",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/source_dependencies/distillate_supplied/fingerprint",
+      "old": "478808cab9d68820c5625e9ba4ef1ca35ff2b13136ef329175ba7458fdea743e",
+      "new": "769b3802396583626aead62b50c9c451c427407a0dcbf693ddc22555483f1f8a"
+    },
+    {
+      "path": "/physical/source_dependencies/distillate_supplied/immutable_source/commit",
+      "old": "aae720e625066f30b557d3c408e76dc8f2cb7fbf",
+      "new": "9950da1d0080bf0bcdd63da0ee5377a6a2d63738"
+    },
+    {
+      "path": "/physical/source_dependencies/distillate_supplied/immutable_source/file_sha256",
+      "old": "654c170dd615861981acce82fd6c138cf7c5a83d0f7c6dea2bd71f1281e11000",
+      "new": "067c514deb368f0d186c8e8a1a6219229d27e3ad69163475af1775eb4489f50e"
+    },
+    {
+      "path": "/physical/source_dependencies/distillate_supplied/input_latest_observation",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/source_dependencies/distillate_supplied/observation_at",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/source_dependencies/gasoline_stocks/fingerprint",
+      "old": "233d1874ffaed409c38b2cd009e49f52739def02201a1dc96d10452b83d6b1fa",
+      "new": "4e830cb10f603905696322b9d23396238cfc532c6cb3bfed78ad1931c6dfb225"
+    },
+    {
+      "path": "/physical/source_dependencies/gasoline_stocks/immutable_source/commit",
+      "old": "aae720e625066f30b557d3c408e76dc8f2cb7fbf",
+      "new": "9950da1d0080bf0bcdd63da0ee5377a6a2d63738"
+    },
+    {
+      "path": "/physical/source_dependencies/gasoline_stocks/immutable_source/file_sha256",
+      "old": "0e03b911c39a423b3a5ada1559bbda57573097172ee781e011f3c99a598fe8d6",
+      "new": "f9d3fc05f17bdf6e6976ea7d2780b033fb566b5534b143bf8657ab05dc711790"
+    },
+    {
+      "path": "/physical/source_dependencies/gasoline_stocks/input_latest_observation",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/source_dependencies/gasoline_stocks/observation_at",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/source_dependencies/gasoline_supplied/fingerprint",
+      "old": "7ba9b75f7fad4a49f5ef08ecdd345d9584e92688c0008bcb9d970c42fa444a1c",
+      "new": "4ec7b9e71abb55499138cce677eab828842ec087e1ec8256dbc6bef44af458e8"
+    },
+    {
+      "path": "/physical/source_dependencies/gasoline_supplied/immutable_source/commit",
+      "old": "aae720e625066f30b557d3c408e76dc8f2cb7fbf",
+      "new": "9950da1d0080bf0bcdd63da0ee5377a6a2d63738"
+    },
+    {
+      "path": "/physical/source_dependencies/gasoline_supplied/immutable_source/file_sha256",
+      "old": "172c5b981d962c5e087d5995848c78567a92ee8be8204bc36928e4854d2b7724",
+      "new": "b13e75dbfc78b82139063796cef8c0f70435b285ec83d6d72a81095842a6fc66"
+    },
+    {
+      "path": "/physical/source_dependencies/gasoline_supplied/input_latest_observation",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/source_dependencies/gasoline_supplied/observation_at",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/source_dependencies/refinery_inputs/fingerprint",
+      "old": "8a6069dc0ff24fa4cbec185ccb7d8365908eeefd862c4b708cdc48e3dc03ee41",
+      "new": "669bc5b1daa2bb429507a1eca253bb0b8d4fa96df684b8f779b8b7fa1d1f1390"
+    },
+    {
+      "path": "/physical/source_dependencies/refinery_inputs/immutable_source/commit",
+      "old": "aae720e625066f30b557d3c408e76dc8f2cb7fbf",
+      "new": "9950da1d0080bf0bcdd63da0ee5377a6a2d63738"
+    },
+    {
+      "path": "/physical/source_dependencies/refinery_inputs/immutable_source/file_sha256",
+      "old": "3ae0e70164eb7817b44504bbe3a1e3aa9485121a8d0f327041e0f912c4c5f81a",
+      "new": "5102598649846b5d02395cd970a8f763d31659004cf49ca4634acc6e1b22a98c"
+    },
+    {
+      "path": "/physical/source_dependencies/refinery_inputs/input_latest_observation",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/source_dependencies/refinery_inputs/observation_at",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/source_dependencies/refinery_util/fingerprint",
+      "old": "141883a43c51691e46534fe204c0a8db377b262cabb836449a50f43d5d468b43",
+      "new": "60c7a8af39f1a4e6b4e4a95749e71107162ddd53b8aa0526cee4e3f6731aa8b9"
+    },
+    {
+      "path": "/physical/source_dependencies/refinery_util/immutable_source/commit",
+      "old": "aae720e625066f30b557d3c408e76dc8f2cb7fbf",
+      "new": "9950da1d0080bf0bcdd63da0ee5377a6a2d63738"
+    },
+    {
+      "path": "/physical/source_dependencies/refinery_util/immutable_source/file_sha256",
+      "old": "e41c1f5516abb9159562b51c0a0b7a6884eff9ea11e472d42f89f170910d93d2",
+      "new": "0c8432c0472c42b9c640c41298335f36633ea8b70587dd7231c294af5e4a2eb1"
+    },
+    {
+      "path": "/physical/source_dependencies/refinery_util/input_latest_observation",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/source_dependencies/refinery_util/observation_at",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/source_dependencies/spr_stocks/fingerprint",
+      "old": "d733da4d8825dce90da67fb8eb1e8809280b4ed8cfaa3f1f8e687bdb7d0d22ba",
+      "new": "e6453b0d999d05c24bd018ea95955eeb311e046a01b6f3c8350a12ee5a73bbe0"
+    },
+    {
+      "path": "/physical/source_dependencies/spr_stocks/immutable_source/commit",
+      "old": "aae720e625066f30b557d3c408e76dc8f2cb7fbf",
+      "new": "9950da1d0080bf0bcdd63da0ee5377a6a2d63738"
+    },
+    {
+      "path": "/physical/source_dependencies/spr_stocks/immutable_source/file_sha256",
+      "old": "b0377dabee9212630dd3ab97c031894e0241b42891737a001992107df9375775",
+      "new": "b90e456de2a02db90b54851a16803f32eeac57f3f7993f41c2126e243f957e55"
+    },
+    {
+      "path": "/physical/source_dependencies/spr_stocks/input_latest_observation",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/source_dependencies/spr_stocks/observation_at",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/stocks/0/anomaly/observation_at",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/stocks/0/anomaly/reference/end",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/stocks/0/anomaly/reference/start",
+      "old": "2021-09-10",
+      "new": "2021-09-17"
+    },
+    {
+      "path": "/physical/stocks/0/anomaly/value",
+      "old": -0.15,
+      "new": -0.59
+    },
+    {
+      "path": "/physical/stocks/0/anomaly/window_end",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/stocks/0/balance",
+      "old": "balanced",
+      "new": "tight"
+    },
+    {
+      "path": "/physical/stocks/0/balance_label/en",
+      "old": "Near seasonal norm",
+      "new": "Below seasonal norm"
+    },
+    {
+      "path": "/physical/stocks/0/balance_label/zh",
+      "old": "\u63a5\u8fd1\u5b63\u8282\u5e38\u6001",
+      "new": "\u4f4e\u4e8e\u5b63\u8282\u5e38\u6001"
+    },
+    {
+      "path": "/physical/stocks/0/change_4w/observation_at",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/stocks/0/change_4w/value",
+      "old": 0.1,
+      "new": -7.9
+    },
+    {
+      "path": "/physical/stocks/0/change_4w/window_end",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/stocks/0/change_4w/window_start",
+      "old": "2026-09-04",
+      "new": "2026-09-11"
+    },
+    {
+      "path": "/physical/stocks/0/days_cover/observation_at",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/stocks/0/days_cover/value",
+      "old": 25.4,
+      "new": 25.1
+    },
+    {
+      "path": "/physical/stocks/0/days_cover/window_end",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/stocks/0/days_cover/window_start",
+      "old": "2026-09-11",
+      "new": "2026-09-18"
+    },
+    {
+      "path": "/physical/stocks/0/level/observation_at",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/stocks/0/level/value",
+      "old": 424.1,
+      "new": 415.6
+    },
+    {
+      "path": "/physical/stocks/0/level/window_end",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/stocks/1/anomaly/observation_at",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/stocks/1/anomaly/reference/end",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/stocks/1/anomaly/reference/start",
+      "old": "2021-09-10",
+      "new": "2021-09-17"
+    },
+    {
+      "path": "/physical/stocks/1/anomaly/value",
+      "old": -2.03,
+      "new": -1.2
+    },
+    {
+      "path": "/physical/stocks/1/anomaly/window_end",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/stocks/1/change_4w/observation_at",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/stocks/1/change_4w/value",
+      "old": -2.2,
+      "new": 0.5
+    },
+    {
+      "path": "/physical/stocks/1/change_4w/window_end",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/stocks/1/change_4w/window_start",
+      "old": "2026-09-04",
+      "new": "2026-09-11"
+    },
+    {
+      "path": "/physical/stocks/1/days_cover/observation_at",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/stocks/1/days_cover/value",
+      "old": 23.3,
+      "new": 24.0
+    },
+    {
+      "path": "/physical/stocks/1/days_cover/window_end",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/stocks/1/days_cover/window_start",
+      "old": "2026-09-11",
+      "new": "2026-09-18"
+    },
+    {
+      "path": "/physical/stocks/1/level/observation_at",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/stocks/1/level/value",
+      "old": 204.7,
+      "new": 208.3
+    },
+    {
+      "path": "/physical/stocks/1/level/window_end",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/stocks/2/anomaly/observation_at",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/stocks/2/anomaly/reference/end",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/stocks/2/anomaly/reference/start",
+      "old": "2021-09-10",
+      "new": "2021-09-17"
+    },
+    {
+      "path": "/physical/stocks/2/anomaly/value",
+      "old": -2.01,
+      "new": -1.94
+    },
+    {
+      "path": "/physical/stocks/2/anomaly/window_end",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/stocks/2/change_4w/observation_at",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/stocks/2/change_4w/value",
+      "old": -1.1,
+      "new": -5.2
+    },
+    {
+      "path": "/physical/stocks/2/change_4w/window_end",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/stocks/2/change_4w/window_start",
+      "old": "2026-09-04",
+      "new": "2026-09-11"
+    },
+    {
+      "path": "/physical/stocks/2/days_cover/observation_at",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/stocks/2/days_cover/value",
+      "old": 27.9,
+      "new": 25.8
+    },
+    {
+      "path": "/physical/stocks/2/days_cover/window_end",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/stocks/2/days_cover/window_start",
+      "old": "2026-09-11",
+      "new": "2026-09-18"
+    },
+    {
+      "path": "/physical/stocks/2/level/observation_at",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/physical/stocks/2/level/value",
+      "old": 105.1,
+      "new": 102.6
+    },
+    {
+      "path": "/physical/stocks/2/level/window_end",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/sources/chains/immutable_source/commit",
+      "old": "aae720e625066f30b557d3c408e76dc8f2cb7fbf",
+      "new": "9950da1d0080bf0bcdd63da0ee5377a6a2d63738"
+    },
+    {
+      "path": "/sources/commodities/immutable_source/commit",
+      "old": "aae720e625066f30b557d3c408e76dc8f2cb7fbf",
+      "new": "9950da1d0080bf0bcdd63da0ee5377a6a2d63738"
+    },
+    {
+      "path": "/sources/fx/immutable_source/commit",
+      "old": "aae720e625066f30b557d3c408e76dc8f2cb7fbf",
+      "new": "9950da1d0080bf0bcdd63da0ee5377a6a2d63738"
+    },
+    {
+      "path": "/sources/gold_physical/immutable_source/commit",
+      "old": "aae720e625066f30b557d3c408e76dc8f2cb7fbf",
+      "new": "9950da1d0080bf0bcdd63da0ee5377a6a2d63738"
+    },
+    {
+      "path": "/sources/physical/as_of",
+      "old": "2026-10-02",
+      "new": "2026-10-09"
+    },
+    {
+      "path": "/sources/physical/fingerprint",
+      "old": "c6128625c5d9197b6c4a0feafdab4dd04aee06c624f8a406ced82f84d4d6d995",
+      "new": "fe42ca3634cff49cd5f40f2fcb48e4a9ad30336d7b2870ff1630b761b70daf3c"
+    },
+    {
+      "path": "/sources/physical/immutable_source/commit",
+      "old": "aae720e625066f30b557d3c408e76dc8f2cb7fbf",
+      "new": "9950da1d0080bf0bcdd63da0ee5377a6a2d63738"
+    },
+    {
+      "path": "/sources/physical/immutable_source/files/crude_production/commit",
+      "old": "aae720e625066f30b557d3c408e76dc8f2cb7fbf",
+      "new": "9950da1d0080bf0bcdd63da0ee5377a6a2d63738"
+    },
+    {
+      "path": "/sources/physical/immutable_source/files/crude_production/file_sha256",
+      "old": "d144e45583fe530c05b7bc269ae128363ce05bac1640a7734dd511ab23af2704",
+      "new": "4f9a1a71a44c89be0c7d9830f0aef5d249b7e6566ddb5c8f68ed25f1e33b0558"
+    },
+    {
+      "path": "/sources/physical/immutable_source/files/crude_stocks/commit",
+      "old": "aae720e625066f30b557d3c408e76dc8f2cb7fbf",
+      "new": "9950da1d0080bf0bcdd63da0ee5377a6a2d63738"
+    },
+    {
+      "path": "/sources/physical/immutable_source/files/crude_stocks/file_sha256",
+      "old": "41db9e6c63093360bee7434ab3edc64a26bf2cd632e93ccf825a482c6da938ff",
+      "new": "4c437faba4510a2050f480a3559da65b2bff00b971bebfc390e79c403d33cbcc"
+    },
+    {
+      "path": "/sources/physical/immutable_source/files/cushing_stocks/commit",
+      "old": "aae720e625066f30b557d3c408e76dc8f2cb7fbf",
+      "new": "9950da1d0080bf0bcdd63da0ee5377a6a2d63738"
+    },
+    {
+      "path": "/sources/physical/immutable_source/files/cushing_stocks/file_sha256",
+      "old": "00ca99656b24580ad46b5f18d316b19567f48ec7277537f8b5d21fadaabd11d0",
+      "new": "47b3a7c56e697029a947e5707d2098e2cb10472bf8f1d9ed0097332bd9c31012"
+    },
+    {
+      "path": "/sources/physical/immutable_source/files/distillate_stocks/commit",
+      "old": "aae720e625066f30b557d3c408e76dc8f2cb7fbf",
+      "new": "9950da1d0080bf0bcdd63da0ee5377a6a2d63738"
+    },
+    {
+      "path": "/sources/physical/immutable_source/files/distillate_stocks/file_sha256",
+      "old": "e9966131001045d562d5fcad48896932fba1a391db996402c83f6dfd07ff80ae",
+      "new": "569387ece0d55ee247d48b00c0808a14461671cdcae16ec1fe3d9afbb9e0ebd4"
+    },
+    {
+      "path": "/sources/physical/immutable_source/files/distillate_supplied/commit",
+      "old": "aae720e625066f30b557d3c408e76dc8f2cb7fbf",
+      "new": "9950da1d0080bf0bcdd63da0ee5377a6a2d63738"
+    },
+    {
+      "path": "/sources/physical/immutable_source/files/distillate_supplied/file_sha256",
+      "old": "654c170dd615861981acce82fd6c138cf7c5a83d0f7c6dea2bd71f1281e11000",
+      "new": "067c514deb368f0d186c8e8a1a6219229d27e3ad69163475af1775eb4489f50e"
+    },
+    {
+      "path": "/sources/physical/immutable_source/files/gasoline_stocks/commit",
+      "old": "aae720e625066f30b557d3c408e76dc8f2cb7fbf",
+      "new": "9950da1d0080bf0bcdd63da0ee5377a6a2d63738"
+    },
+    {
+      "path": "/sources/physical/immutable_source/files/gasoline_stocks/file_sha256",
+      "old": "0e03b911c39a423b3a5ada1559bbda57573097172ee781e011f3c99a598fe8d6",
+      "new": "f9d3fc05f17bdf6e6976ea7d2780b033fb566b5534b143bf8657ab05dc711790"
+    },
+    {
+      "path": "/sources/physical/immutable_source/files/gasoline_supplied/commit",
+      "old": "aae720e625066f30b557d3c408e76dc8f2cb7fbf",
+      "new": "9950da1d0080bf0bcdd63da0ee5377a6a2d63738"
+    },
+    {
+      "path": "/sources/physical/immutable_source/files/gasoline_supplied/file_sha256",
+      "old": "172c5b981d962c5e087d5995848c78567a92ee8be8204bc36928e4854d2b7724",
+      "new": "b13e75dbfc78b82139063796cef8c0f70435b285ec83d6d72a81095842a6fc66"
+    },
+    {
+      "path": "/sources/physical/immutable_source/files/refinery_inputs/commit",
+      "old": "aae720e625066f30b557d3c408e76dc8f2cb7fbf",
+      "new": "9950da1d0080bf0bcdd63da0ee5377a6a2d63738"
+    },
+    {
+      "path": "/sources/physical/immutable_source/files/refinery_inputs/file_sha256",
+      "old": "3ae0e70164eb7817b44504bbe3a1e3aa9485121a8d0f327041e0f912c4c5f81a",
+      "new": "5102598649846b5d02395cd970a8f763d31659004cf49ca4634acc6e1b22a98c"
+    },
+    {
+      "path": "/sources/physical/immutable_source/files/refinery_util/commit",
+      "old": "aae720e625066f30b557d3c408e76dc8f2cb7fbf",
+      "new": "9950da1d0080bf0bcdd63da0ee5377a6a2d63738"
+    },
+    {
+      "path": "/sources/physical/immutable_source/files/refinery_util/file_sha256",
+      "old": "e41c1f5516abb9159562b51c0a0b7a6884eff9ea11e472d42f89f170910d93d2",
+      "new": "0c8432c0472c42b9c640c41298335f36633ea8b70587dd7231c294af5e4a2eb1"
+    },
+    {
+      "path": "/sources/physical/immutable_source/files/spr_stocks/commit",
+      "old": "aae720e625066f30b557d3c408e76dc8f2cb7fbf",
+      "new": "9950da1d0080bf0bcdd63da0ee5377a6a2d63738"
+    },
+    {
+      "path": "/sources/physical/immutable_source/files/spr_stocks/file_sha256",
+      "old": "b0377dabee9212630dd3ab97c031894e0241b42891737a001992107df9375775",
+      "new": "b90e456de2a02db90b54851a16803f32eeac57f3f7993f41c2126e243f957e55"
+    },
+    {
+      "path": "/sources/rates/immutable_source/commit",
+      "old": "aae720e625066f30b557d3c408e76dc8f2cb7fbf",
+      "new": "9950da1d0080bf0bcdd63da0ee5377a6a2d63738"
+    },
+    {
+      "path": "/sources/ratios/immutable_source/commit",
+      "old": "aae720e625066f30b557d3c408e76dc8f2cb7fbf",
+      "new": "9950da1d0080bf0bcdd63da0ee5377a6a2d63738"
+    }
+  ],
+  "workspace_static_markup_identical_after_exact_fingerprint_substitution": false,
+  "physical_as_of": "2026-10-09",
+  "physical_classification": "broad_tightness",
+  "changed_leaf_count": 249,
+  "affected_visual_recapture_required": true,
+  "previous_script_refs": [
+    "logo_config.js?v=b37d33d3",
+    "stock-logos.js?v=cc29be53",
+    "live_config.js?v=52943e92",
+    "live.js?v=f8cda39d",
+    "theme.js?v=831dd241"
+  ],
+  "current_script_refs": [
+    "logo_config.js?v=b37d33d3",
+    "stock-logos.js?v=cc29be53",
+    "live_config.js?v=52943e92",
+    "live.js?v=f8cda39d",
+    "theme.js?v=1c9d7ad5"
+  ],
+  "review_page_sha256": "cee31b8baba002c37233e06a439b0bc4dc20cccb30f301655787235a5827ae6a",
+  "workspace_fingerprint": "6f617af0e84e0ae1469858475f03afec4e8f7128c1b80a715f3b0887180649e3",
+  "research_as_of": "2026-10-16",
+  "production_acceptance": false,
+  "qualification": {
+    "checks": [
+      {
+        "name": "python",
+        "command": [
+          "python3",
+          "-m",
+          "pytest",
+          "tests/test_commodity_supply_context.py",
+          "tests/test_commodity_decision_workspace.py",
+          "tests/test_critical_minerals_display.py",
+          "tests/test_critical_minerals_panel.py",
+          "tests/test_commodities_w6_truth.py",
+          "tests/test_commodities_ignition_copy.py",
+          "tests/test_commodity_mtf_verdict_honesty.py",
+          "-q"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 6.38,
+        "log": ".cache/commodities-r3-recovery/weekly-python.log"
+      },
+      {
+        "name": "node",
+        "command": [
+          "node",
+          "--test",
+          "tests/test_commodity_workspace_contracts.js"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.11,
+        "log": ".cache/commodities-r3-recovery/weekly-node.log"
+      },
+      {
+        "name": "dom",
+        "command": [
+          "node",
+          "tests/test_commodity_workspace_ui.js"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 7.2,
+        "log": ".cache/commodities-r3-recovery/weekly-dom.log"
+      },
+      {
+        "name": "browser",
+        "command": [
+          "python3",
+          "scripts/verify_commodity_workspace_browser.py",
+          "--receipt",
+          "mockups/evidence/commodities-r3/browser-journey.json"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 7.63,
+        "log": ".cache/commodities-r3-recovery/weekly-browser.log"
+      },
+      {
+        "name": "manifest",
+        "command": [
+          "python3",
+          "scripts/run_ci_pack.py",
+          "--workflow",
+          ".github/ci/legacy-jobs.yml",
+          "--validate-only",
+          "--gate",
+          "code"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 1.14,
+        "log": ".cache/commodities-r3-recovery/weekly-manifest.log"
+      }
+    ],
+    "ci_contracts_passed": 4,
+    "ci_contract_log": ".cache/commodities-r3-recovery/weekly-ci-contracts.log",
+    "manifest_jobs": 266,
+    "gates": [
+      {
+        "name": "claims",
+        "command": [
+          "python3",
+          "scripts/check_validated_claims.py",
+          "--scope",
+          "source"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 19.0,
+        "output": "check_validated_claims: OK [scope=source: engine/, lib/, scripts/build_*.py, scripts/render_*.py, templates/] \u2014 every affirmative 'validated' claim is backed.\n"
+      },
+      {
+        "name": "design",
+        "command": [
+          "python3",
+          "scripts/check_design_system.py",
+          "--mode",
+          "enforce-added",
+          "--diff-file",
+          "/tmp/commodities-r3-weekly-update.diff"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 3.47,
+        "output": "::notice title=design-system::R0 enforce-added: 0 blocking finding(s) (25371 further pre-existing, non-blocking finding(s) in the estate \u2014 run --mode report for the full census)\ndesign-system ratchet \u2014 mode=enforce-added blocking=0 (estate pre-existing, non-blocking: 25371)\n"
+      },
+      {
+        "name": "runtime",
+        "command": [
+          "python3",
+          "scripts/check_runtime_style_injection.py"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 1.06,
+        "output": "runtime style injection guard OK (237 .js files scanned, 44 injecting, 88 total hits \u2014 all within frozen allowances)\n"
+      },
+      {
+        "name": "ui-evidence",
+        "command": [
+          "python3",
+          "scripts/check_ui_visual_evidence.py",
+          "--diff-file",
+          "/tmp/commodities-r3-weekly-update.diff"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.96,
+        "output": ""
+      },
+      {
+        "name": "whitespace",
+        "command": [
+          "git",
+          "diff",
+          "--check",
+          "9950da1d0080bf0bcdd63da0ee5377a6a2d63738"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.66,
+        "output": ""
+      }
+    ]
+  },
+  "upstream_named_path_delta": {
+    "paths_checked": 105,
+    "changed": []
+  },
+  "accepted_petroleum_source_delta": [
+    "data/eia/crude_production.parquet",
+    "data/eia/crude_stocks.parquet",
+    "data/eia/cushing_stocks.parquet",
+    "data/eia/distillate_stocks.parquet",
+    "data/eia/distillate_supplied.parquet",
+    "data/eia/gasoline_stocks.parquet",
+    "data/eia/gasoline_supplied.parquet",
+    "data/eia/refinery_inputs.parquet",
+    "data/eia/refinery_util.parquet",
+    "data/eia/spr_stocks.parquet"
+  ],
+  "visual_acceptance": {
+    "verdict": "PASS",
+    "retained_cells": 40,
+    "fresh_cells": 16,
+    "retained_routes": {
+      "Overview": 24,
+      "Gold Explore": 8,
+      "Gold Relationships": 8
+    },
+    "fresh_routes": {
+      "WTI Explore": 8,
+      "WTI Relationships": 8
+    },
+    "manifest": "mockups/evidence/commodities-r3/weekly-update/manifest.json",
+    "reviewed_samples": [
+      "weekly-update/98052f7026a352f1.png",
+      "weekly-update/2aab6569ea8f826b.png",
+      "weekly-update/45b4f951e9521301.png",
+      "weekly-update/777b87ed7fe9a17e.png"
+    ],
+    "independent_review": "All remaining workspace markup is byte-identical after excluding exactly the two changed WTI physical regions, the closed methodology body and JSON payload. Summary remains closed and unchanged. Inline scripts/styles and linked styles are exact. Outside workspace only the theme.js cache reference differs; canonical and shipped theme bytes are identical. Four final and complementary theme samples accepted.",
+    "previous_wti_captures_are_historical": true
+  },
+  "current_main_legacy_preserved": true,
+  "usgs_references_preserved": 6
+}

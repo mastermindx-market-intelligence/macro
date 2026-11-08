@@ -107,8 +107,104 @@ def _r2_client():
         return None
 
 
+def _r2_error_code(exc: BaseException) -> str | None:
+    error = getattr(exc, "response", {})
+    detail = error.get("Error") if isinstance(error, dict) else None
+    code = detail.get("Code") if isinstance(detail, dict) else None
+    return code if isinstance(code, str) else None
+
+
+def _root_from_head_key(r2_key: str) -> str:
+    """Root encoded by options_structure/matrix/<ROOT>.json; otherwise refuse."""
+    prefix = R2_PREFIX
+    suffix = ".json"
+    if (
+        not isinstance(r2_key, str)
+        or not r2_key.startswith(prefix)
+        or not r2_key.endswith(suffix)
+    ):
+        raise retention.HistoricalUnavailable("R2 head key is not a matrix head")
+    return retention.validate_root(r2_key[len(prefix):-len(suffix)])
+
+
+def _read_r2_head(s3, bucket: str, r2_key: str) -> bytes | None:
+    """Return published head bytes, or None when the key is missing.
+
+    NoSuchKey, NotFound and 404 are missing. Any other read error, a non-int
+    ContentLength, or a declared size above the matrix ceiling raises. The body
+    is closed. Reads pass an explicit size of at most 64 KiB and stop at
+    MAX_MATRIX_BYTES + 1, including one byte past ContentLength so a short
+    declaration cannot hide a suffix.
+    """
+    try:
+        response = s3.get_object(Bucket=bucket, Key=r2_key)
+    except Exception as exc:
+        if _r2_error_code(exc) in {"NoSuchKey", "NotFound", "404"}:
+            return None
+        raise
+    if not isinstance(response, dict):
+        raise retention.HistoricalUnavailable("invalid R2 head response")
+    body = response.get("Body")
+    try:
+        length = response.get("ContentLength")
+        limit = retention.MAX_MATRIX_BYTES
+        if type(length) is not int or length < 0 or length > limit:
+            raise retention.HistoricalUnavailable("R2 head ContentLength invalid or oversize")
+        if body is None:
+            raise retention.HistoricalUnavailable("invalid R2 head response")
+        raw = bytearray()
+        bound = min(limit + 1, length + 1)
+        while len(raw) < bound:
+            want = min(64 * 1024, bound - len(raw))
+            chunk = body.read(want)
+            if not isinstance(chunk, bytes):
+                raise retention.HistoricalUnavailable("invalid R2 head stream")
+            if not chunk:
+                break
+            if len(chunk) > want:
+                raise retention.HistoricalUnavailable("R2 head stream exceeded read bound")
+            raw.extend(chunk)
+        if len(raw) != length or len(raw) > limit:
+            raise retention.HistoricalUnavailable("R2 head byte limit or ContentLength mismatch")
+        return bytes(raw)
+    finally:
+        if body is not None:
+            body.close()
+
+
 def _upload_r2(s3, bucket: str, raw: bytes, r2_key: str) -> bool:
-    """Advance the head using the exact bytes already retained and read back."""
+    """Advance the head using the exact bytes already retained and read back.
+
+    Missing and legacy-empty heads may be replaced. A usable published session
+    newer than the candidate is left in place. Read and identity failures
+    refuse the put. Signature stays (s3, bucket, raw, r2_key).
+    """
+    try:
+        root = _root_from_head_key(r2_key)
+        candidate, candidate_error = _usable_session_from_bytes(raw, root)
+        if candidate_error is not None or candidate is None:
+            raise retention.HistoricalUnavailable(
+                candidate_error or "candidate matrix lacks a trustworthy source session"
+            )
+        head_raw = _read_r2_head(s3, bucket, r2_key)
+        if head_raw is not None:
+            head_session, head_error = _usable_session_from_bytes(head_raw, root)
+            if head_error is not None:
+                raise retention.HistoricalUnavailable(head_error)
+            if head_session is not None and candidate < head_session:
+                log.error(
+                    "options_matrix_builder: resolved session %s older than R2 head %s",
+                    candidate, head_session,
+                )
+                return False
+    except AssertionError:
+        raise
+    except Exception as exc:  # noqa: BLE001
+        log.error(
+            "options_matrix_builder: R2 head precondition failed for %s: %s",
+            r2_key, exc,
+        )
+        return False
     try:
         s3.put_object(Bucket=bucket, Key=r2_key, Body=raw,
                       ContentType="application/json")
@@ -190,6 +286,36 @@ def _payload_session(data: dict) -> str | None:
         return None
 
 
+def _usable_session_from_bytes(raw: bytes, root: str) -> tuple[str | None, str | None]:
+    """Return (session, error) for matrix bytes addressed as root.
+
+    Empty/null artifacts are safe to replace because they carry no measured
+    cells. A usable artifact with an unreadable/missing session is preserved
+    fail-closed rather than silently overwritten.
+    """
+    try:
+        if not isinstance(raw, bytes) or not 0 < len(raw) <= retention.MAX_MATRIX_BYTES:
+            raise retention.HistoricalUnavailable("existing matrix exceeds byte limit")
+        # Preserve legacy objects without modern schema/root fields, while
+        # sharing the retained-byte decoder's strict JSON and identity rules.
+        current = json.loads(
+            raw.decode("utf-8"), object_pairs_hook=retention._unique_object,
+            parse_constant=retention._nonfinite, parse_float=retention._finite_float,
+        )
+        session = retention.source_session(current)
+        if "schema" in current and current["schema"] != retention.SCHEMA:
+            raise retention.HistoricalUnavailable("existing matrix schema mismatch")
+        if "root" in current and retention.validate_root(current["root"]) != root:
+            raise retention.HistoricalUnavailable("existing matrix root mismatch")
+    except Exception as exc:  # noqa: BLE001
+        return None, f"existing artifact unreadable: {exc}"
+    if not current.get("cells") or current.get("spot") is None:
+        return None, None
+    if session is None:
+        return None, "existing usable artifact lacks a trustworthy source session"
+    return session, None
+
+
 def _existing_usable_session(path: Path) -> tuple[str | None, str | None]:
     """Return (session, error) for a usable prior artifact.
 
@@ -204,26 +330,9 @@ def _existing_usable_session(path: Path) -> tuple[str | None, str | None]:
             raise retention.HistoricalUnavailable("existing matrix exceeds byte limit")
         with path.open("rb") as handle:
             raw = handle.read(retention.MAX_MATRIX_BYTES + 1)
-        if not 0 < len(raw) <= retention.MAX_MATRIX_BYTES:
-            raise retention.HistoricalUnavailable("existing matrix exceeds byte limit")
-        # Preserve legacy objects without modern schema/root fields, while
-        # sharing the retained-byte decoder's strict JSON and identity rules.
-        current = json.loads(
-            raw.decode("utf-8"), object_pairs_hook=retention._unique_object,
-            parse_constant=retention._nonfinite, parse_float=retention._finite_float,
-        )
-        session = retention.source_session(current)
-        if "schema" in current and current["schema"] != retention.SCHEMA:
-            raise retention.HistoricalUnavailable("existing matrix schema mismatch")
-        if "root" in current and retention.validate_root(current["root"]) != path.stem:
-            raise retention.HistoricalUnavailable("existing matrix root mismatch")
     except Exception as exc:  # noqa: BLE001
         return None, f"existing artifact unreadable: {exc}"
-    if not current.get("cells") or current.get("spot") is None:
-        return None, None
-    if session is None:
-        return None, "existing usable artifact lacks a trustworthy source session"
-    return session, None
+    return _usable_session_from_bytes(raw, path.stem)
 
 
 # --------------------------------------------------------------------------- #

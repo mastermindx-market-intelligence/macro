@@ -1,0 +1,48 @@
+{
+  "schema": "eval-os.t12-dsc-finding-final-review.v1",
+  "original_root": "01a1333d-b0c0-7f33-9259-dd718391d9e4",
+  "reviewer_native_thread": "01a13341-2c83-79b2-9a5a-dddb12e780e3",
+  "source_tree": "/Volumes/Mastermind 2/agent-workspaces/claude/14851c4656838a3b/eval-os-tier-query-20261014-57fd7cc5c269b449",
+  "ruling": "ACCEPTED_CONDITIONAL_DSC_DATA_EMISSION_SOURCE_AND_FOCUSED_PROOF",
+  "findings": [],
+  "reviewed_source_sha256": {
+    "scripts/agentos.py": "11dcf8d06976cff11041ff012af3dcb335e3f10e961edcf9e913bbef65120d6a",
+    "agentos/schema/discovery.schema.yml": "a50c54880e446858d7faf0659ba7a40ce5ad9e8eecae139e15b499f9469a4749",
+    "tests/test_agentos_schema.py": "37a9d83aff7a4bf852f88cb9f44c33b76bfdfb62e4cae012895590c9d3303945",
+    "research/MASTERMIND_AGENT_OS_STATE_SCHEMA.md": "a9e33961e2a8d6ac01c8bd759f87d4e70e6099eadc987fba8631019fd4018ec2"
+  },
+  "closed_finding": "Lone-surrogateUTF8 encoding now returnsFalse/typed bad-evaluation-finding through sharedvalidator, ratherthanuncaught exception; fivefieldmutants actuallyREDthenPASS, qualitativesurrogatealsoguarded.",
+  "accepted_contract": {
+    "shape": "Exactlysixfields. Fouridentities/locators nonemptyUTF8\u22642048B. observed_change explicitnull, boundedliteralqualitativetext, or closedbaseline/current/unit with finite nonBoolean numbers/null and boundedunit. suggestedtierT0..T4/null.",
+    "semantics": "Authored snapshot/comparison preserved, zero distinctfromnull, no delta/temporal comparison inferred, no evidencecontentverification or tierpassedclaim.",
+    "admission": "All DSCmetadata/falsifier/verification/scope/confidence remain independentcallerrequirements; finding cannotmint discoveryadmission.",
+    "producer_consumer": "Actualdraft-discovery CLI emits YAML sixfieldobject; existing validator consumes emittedtempstore record. Legacyabsent-fielddraft roundtrip retained. No canonicalstorepublication.",
+    "knowledge_projection": "Existing claim/so_what/falsifier excerpt plus recordlocator unchanged; no completegeneric typedfindingconsumer claimed.",
+    "control_boundary": "Closedfieldmaps + unchangedrecursive control-keyrejection; no ranking/routing/priority/dispatch/gating/grant/financialeffects"
+  },
+  "consumed_verification": {
+    "prior_full_schema": "129PASS/errors0/failures0/skips0 beforeUTF8/qualitativeguard; reused for unchanged legacybranches, not describedasfinalfullsuite.",
+    "discriminating_red": "6FAIL:5lonesurrogatefieldcases andqualitativesnapshot acceptance; sourceguardrepairthenfinaltargetedPASS.",
+    "final_focused": "31PASS/errors0/failures0/skips0; console3.68s/JUnit4.936s; includesactualCLI, legacyroundtrip andbounds/control/null/qualitativecases"
+  },
+  "receipt_sha256": {
+    "science/finding-schema-regression.txt": "059329625b2275eb22c1a5c74b138eaac012207a92ab7d2b9d2a7fd611bcb82c",
+    "science/finding-schema-regression.xml": "9720135f9289a2a65a045e127b97615b3cca7432498f43f9950cf765bbb71985",
+    "science/finding-review-red.txt": "34da03ddd4af81a4408b03ecaa4dbf5301e6aa6618e8e1f3bb8a6f12de3fd293",
+    "science/finding-final.txt": "1321781f74f78ecfc862aed9aebdabe7a2258390f7e87597b4c7eac84e9e7207",
+    "science/finding-final.xml": "7c4041e675b4b295d5e9103579cb4bfeb7e6c3b5fc395e1637543916e50401e6"
+  },
+  "limits": [
+    "DSC-specific conditionaltypedemission capability only",
+    "Genericresearchfindingproducer and fulloriginalT12 acceptance remainowed",
+    "Sourceuncommitted; containingcommit/publication/requiredCI laterowed",
+    "Published6651A1candidate/CI/releasecarrier untouched",
+    "FixtureCLI/localvalidator proof is not actualfindingpublication, empiricalevaluation or productionacceptance"
+  ],
+  "reviewer_effects": {
+    "tests": false,
+    "network_CIqueries": false,
+    "source_Gitwrites": false,
+    "newdelegation": false
+  }
+}

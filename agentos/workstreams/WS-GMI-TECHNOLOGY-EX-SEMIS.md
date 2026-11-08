@@ -51,7 +51,8 @@ next_action: >
   ORCHESTRATION; local mutation only, on the SSD worktree
   `pr-7891-tech-ex-semis-ci-red-3ad2ee7fc625af4e`, lane branch `lane/pr-7891-ci-red`
   created at `861d4049` at 00:17:24Z; at 00:24Z the worktree HEAD was detached at the throwaway
-  merge `c871e194` of origin/main `6e7ef32c` into `861d4049`, which no branch points at and which
+  merge `c871e194` of the 2026-10-01 main commit `6e7ef32c` (run 36806663101's base) into
+  `861d4049`, which no branch points at and which
   is never to be pushed; the worktree reflogs re-read 01:29Z (`git reflog --date=iso-strict`)
   show the branch moved to the lane's merge commit `64bbbfa8` at 00:34:55Z, unpushed, remote tip
   still `861d4049` at 01:29:41Z). Binding reds at 861d4049 in run 36806663101: contract-delta 110192417496,
