@@ -1,0 +1,689 @@
+{
+  "format": "commission16.research_evidence_manifest.v1",
+  "status": "RESEARCH_COMPLETE_IMPLEMENTATION_UNEXECUTED",
+  "date_utc": "2026-10-04",
+  "operation": "commission16-operational-sensors-hardening-20261004",
+  "publication": {
+    "repository": "mastermindx-market-intelligence/macro",
+    "branch": "claude/commission-16-operational-sensors-hardening-20261004",
+    "checkpoint_commit": "394c77eeabe60b78b3043687ec27625b5142f075",
+    "scope": "documentation only; no merge or implementation authority granted",
+    "final_commit_receipt": "The containing Git commit is the final immutable publication identity; delivery response supplies exact commit and PR.",
+    "pull_request_number": 8420,
+    "pull_request_url": "https://github.com/mastermindx-market-intelligence/macro/pull/8420",
+    "initial_complete_commit": "4574a120af5f43a708948dc73e4774b7948a7a37",
+    "pr_creation_base_sha": "617c5818b0493e1843c652be881f72cbebfac123",
+    "scope_diff_verified_files": 6
+  },
+  "input": {
+    "name": "deep-research-report (13)(1).md",
+    "bytes": 62820,
+    "sha256": "c76c42dd8b0feeaad09183dee3261c492ac0f6ced41ae24fc9720a5dfda4d310"
+  },
+  "source_pins": [
+    {
+      "repository": "mastermindx-market-intelligence/Mastermind",
+      "branch": "master",
+      "census_sha": "521720b09be2921e996d9396b522b1c4ca62041c",
+      "publication_recheck_sha": "521720b09be2921e996d9396b522b1c4ca62041c",
+      "protected_observed": true
+    },
+    {
+      "repository": "mastermindx-market-intelligence/macro",
+      "branch": "main",
+      "census_sha": "79251a22d731cf3f7e8d8ba2185bfcd0e9bb098f",
+      "publication_recheck_sha": "59a0789c0e5ffcce15e682b6f3880f3eacc6f6fc",
+      "protected_observed": false,
+      "delta_direct_child": true,
+      "changed_paths": [
+        "agentos/handoffs/TREND-PERSISTENCE-2026-10-04.md",
+        "agentos/workstreams/WS-TREND-PERSISTENCE.md"
+      ],
+      "sensor_code_contracts_data_unchanged": true,
+      "pr_creation_recheck_sha": "617c5818b0493e1843c652be881f72cbebfac123",
+      "additional_delta_changed_paths": [
+        "agentos/workstreams/WS-CHINA-ALPHA-INTELLIGENCE.md"
+      ]
+    },
+    {
+      "repository": "mastermindx-market-intelligence/mastermind-terminal",
+      "branch": "master",
+      "census_sha": "1c708450187755160e1a5889b69598a2fcb1f0d1",
+      "publication_recheck_sha": "1c708450187755160e1a5889b69598a2fcb1f0d1",
+      "protected_observed": true
+    }
+  ],
+  "research_vault": {
+    "owner_repository": "mastermindx-market-intelligence/macro",
+    "architecture_path": "research/RESEARCH_VAULT_MASTERPLAN.md",
+    "architecture_blob_sha": "fd2c3f509c725c4332f7202c645d988b483ad684",
+    "individual_document_used": false
+  },
+  "evidence_limits": [
+    "No licensed commercial sample or contract inspected",
+    "No new empirical backtest or prospective outcomes executed",
+    "No source-to-consumer live runtime acceptance established",
+    "Commercial costs and exact vintage entitlements remain unknown",
+    "Open PRs are candidate work, not merged implementation",
+    "Search negatives are bounded to inspected surfaces"
+  ],
+  "content_review": {
+    "passes": [
+      "integrated A-H plus source/census companions",
+      "final I-L handoff"
+    ],
+    "material_findings": 5,
+    "material_findings_resolved": 5,
+    "checkpoint_error_retracted": "Original attachment contains a final-return paragraph; the checkpoint truncation claim was false."
+  },
+  "artifacts": [
+    {
+      "path": "research/operational_sensors/COMMISSION_16_CURRENT_ESTATE_CENSUS_2026-10-04.md",
+      "bytes": 33311,
+      "sha256": "55c57d046f2278f4c149880e1aef47ffcc48a18ddc6b5ff4b3f08b7160dfc4ee",
+      "git_blob_sha": "849b1d2d9fb1b087891a5ad4da7814b12508832f"
+    },
+    {
+      "path": "research/operational_sensors/COMMISSION_16_HARDENING_AUDIT_2026-10-04.md",
+      "bytes": 10370,
+      "sha256": "a48e8b7936194860b9e90bd053266739537814d4e75392340842f6fa2c8a67f0",
+      "git_blob_sha": "789aef5a6df79f14608c99ae49e86560c58e3567"
+    },
+    {
+      "path": "research/operational_sensors/COMMISSION_16_OPERATIONAL_ALTERNATIVE_DATA_MASTERPLAN_2026-10-04.md",
+      "bytes": 105660,
+      "sha256": "20eeb2d312cf3e94592327f75d9208c0294087efa871d2f9d013117aa1f1ed7d",
+      "git_blob_sha": "e1811315d3fc2ae1b165a6ddd83f92bd7f2ea17b"
+    },
+    {
+      "path": "research/operational_sensors/COMMISSION_16_SOURCE_DILIGENCE_2026-10-04.md",
+      "bytes": 31200,
+      "sha256": "81af084d80d65659a8ca06152603697873312f594e342021434331e399720b08",
+      "git_blob_sha": "4fd3208e86d35a5fa8479331bd5f590199e3df45"
+    },
+    {
+      "path": "research/operational_sensors/README.md",
+      "bytes": 3895,
+      "sha256": "5034dd9b064e91f98314171ca9e173043f3c4cb043808f4a84b374c131aa6a97",
+      "git_blob_sha": "d20da601ca54fb41320b30350a950032eb2fd127"
+    }
+  ],
+  "primary_and_repository_references": [
+    {
+      "id": "R01",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/521720b09be2921e996d9396b522b1c4ca62041c/data/census/CENSUS.md",
+      "kind": "pinned_repository_file",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "R02",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/521720b09be2921e996d9396b522b1c4ca62041c/portfolio/lenses.py#L245-L300",
+      "kind": "pinned_repository_file",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "R03",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/521720b09be2921e996d9396b522b1c4ca62041c/portfolio/held_risk.py#L737-L839",
+      "kind": "pinned_repository_file",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "R04",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/521720b09be2921e996d9396b522b1c4ca62041c/loop/fundamentals.py",
+      "kind": "pinned_repository_file",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "R05",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/521720b09be2921e996d9396b522b1c4ca62041c/research/TREND_PERSISTENCE_PROTOCOL.md",
+      "kind": "pinned_repository_file",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "R06",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/521720b09be2921e996d9396b522b1c4ca62041c/docs/superpowers/specs/2026-09-15-mastermind-portfolio-v3-risk-first-autonomous-manager-design.md",
+      "kind": "pinned_repository_file",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "R07",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/521720b09be2921e996d9396b522b1c4ca62041c/brain/research_desk.py",
+      "kind": "pinned_repository_file",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "R08",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/521720b09be2921e996d9396b522b1c4ca62041c/data_layer/macro_refresh.py",
+      "kind": "pinned_repository_file",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "R09",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/79251a22d731cf3f7e8d8ba2185bfcd0e9bb098f/engine/altdata_models.py#L189-L233",
+      "kind": "pinned_repository_file",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "R10",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/79251a22d731cf3f7e8d8ba2185bfcd0e9bb098f/collectors/dol_labor_certs.py",
+      "kind": "pinned_repository_file",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "R11",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/79251a22d731cf3f7e8d8ba2185bfcd0e9bb098f/collectors/census_trade.py",
+      "kind": "pinned_repository_file",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "R12",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/79251a22d731cf3f7e8d8ba2185bfcd0e9bb098f/collectors/github_repos.py",
+      "kind": "pinned_repository_file",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "R13",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/79251a22d731cf3f7e8d8ba2185bfcd0e9bb098f/engine/altdata_ledger.py#L71-L130",
+      "kind": "pinned_repository_file",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "R14",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/79251a22d731cf3f7e8d8ba2185bfcd0e9bb098f/research/ALTDATA_CONVERGENCE_FIRST_COHORT_ADJUDICATION_2026-08-13.md",
+      "kind": "pinned_repository_file",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "R15",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/79251a22d731cf3f7e8d8ba2185bfcd0e9bb098f/data/altdata/track_record.json",
+      "kind": "pinned_repository_file",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "R16",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/79251a22d731cf3f7e8d8ba2185bfcd0e9bb098f/site/qledger/track_record.json",
+      "kind": "pinned_repository_file",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "R17",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/1c708450187755160e1a5889b69598a2fcb1f0d1/terminal/lib/companyIntelligence.ts",
+      "kind": "pinned_repository_file",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "R18",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/79251a22d731cf3f7e8d8ba2185bfcd0e9bb098f/agentos/workstreams/WS-GMI-THEME-GRAPH.md",
+      "kind": "pinned_repository_file",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "R19",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/7420",
+      "kind": "candidate_pull_request",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "R20",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/79251a22d731cf3f7e8d8ba2185bfcd0e9bb098f/research/INTL_ENGINE_PROBLEM_AUDIT_FOR_FABLE.md#L593-L602",
+      "kind": "pinned_repository_file",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "R21",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/521720b09be2921e996d9396b522b1c4ca62041c/loop/single_name_panel.py",
+      "kind": "pinned_repository_file",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "R22",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/521720b09be2921e996d9396b522b1c4ca62041c/brain/bottleneck.py",
+      "kind": "pinned_repository_file",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "R23",
+      "url": "https://github.com/mastermindx-market-intelligence/Mastermind/blob/521720b09be2921e996d9396b522b1c4ca62041c/bridge/macro_snapshot.py",
+      "kind": "pinned_repository_file",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "R24",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/79251a22d731cf3f7e8d8ba2185bfcd0e9bb098f/engine/theme_hiring.py",
+      "kind": "pinned_repository_file",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "R25",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/79251a22d731cf3f7e8d8ba2185bfcd0e9bb098f/config/synapse.yml#L13802-L13886",
+      "kind": "pinned_repository_file",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "R26",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/79251a22d731cf3f7e8d8ba2185bfcd0e9bb098f/site/basketdata/trade_flows.json",
+      "kind": "pinned_repository_file",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "R27",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/79251a22d731cf3f7e8d8ba2185bfcd0e9bb098f/engine/theme_trade_flows.py",
+      "kind": "pinned_repository_file",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "R28",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/79251a22d731cf3f7e8d8ba2185bfcd0e9bb098f/collectors/huggingface.py",
+      "kind": "pinned_repository_file",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "R29",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/79251a22d731cf3f7e8d8ba2185bfcd0e9bb098f/data/altdata/mastermind.json",
+      "kind": "pinned_repository_file",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "R30",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/79251a22d731cf3f7e8d8ba2185bfcd0e9bb098f/research/RESEARCH_VAULT_MASTERPLAN.md",
+      "kind": "pinned_repository_file",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "R31",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/1c708450187755160e1a5889b69598a2fcb1f0d1/ingest/pull_macro_intel.py",
+      "kind": "pinned_repository_file",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "R32",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/blob/79251a22d731cf3f7e8d8ba2185bfcd0e9bb098f/data/run_status.json",
+      "kind": "pinned_repository_file",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "R33",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/37172153941",
+      "kind": "workflow_receipt",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "R34",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/commit/59a0789c0e5ffcce15e682b6f3880f3eacc6f6fc",
+      "kind": "repository_commit",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "R35",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/commit/617c5818b0493e1843c652be881f72cbebfac123",
+      "kind": "repository_commit",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "W01",
+      "url": "https://support.similarweb.com/hc/en-us/articles/18876356573725-Everything-you-need-to-know-about-Similarweb-s-2024-Data-Version-Update",
+      "kind": "primary_public_documentation_or_research",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "W02",
+      "url": "https://www.prnewswire.com/news-releases/earnest-analytics-increases-orion-panel-sales-by-4x-adds-historic-data-301906934.html",
+      "kind": "primary_public_documentation_or_research",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "W03",
+      "url": "https://facteus.com/products/arbiter",
+      "kind": "primary_public_documentation_or_research",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "W04",
+      "url": "https://www.reveliolabs.com/faq",
+      "kind": "primary_public_documentation_or_research",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "W05",
+      "url": "https://sensortower.com/solutions/finance",
+      "kind": "primary_public_documentation_or_research",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "W06",
+      "url": "https://sensortower.com/product/mobile-app/app-performance-insights",
+      "kind": "primary_public_documentation_or_research",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "W07",
+      "url": "https://python-sdk.dev.kpler.com/_modules/kpler/sdk/resources/trades_snapshot.html",
+      "kind": "primary_public_documentation_or_research",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "W08",
+      "url": "https://python-sdk.dev.kpler.com/_modules/kpler/sdk/resources/trades_updates.html",
+      "kind": "primary_public_documentation_or_research",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "W09",
+      "url": "https://www.census.gov/data/developers/data-sets/international-trade.html",
+      "kind": "primary_public_documentation_or_research",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "W10",
+      "url": "https://fred.stlouisfed.org/docs/api/fred/fred_vs_alfred.html",
+      "kind": "primary_public_documentation_or_research",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "W11",
+      "url": "https://journals.sagepub.com/doi/10.1177/00491241221099552",
+      "kind": "primary_public_documentation_or_research",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "W12",
+      "url": "https://www.kellogg.northwestern.edu/faculty/petersen/htm/papers/standarderror.html",
+      "kind": "primary_public_documentation_or_research",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "W13",
+      "url": "https://cameron.econ.ucdavis.edu/research/Cameron_Miller_JHR_2015.pdf",
+      "kind": "primary_public_documentation_or_research",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "W14",
+      "url": "https://www.nber.org/papers/w20592",
+      "kind": "primary_public_documentation_or_research",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "W15",
+      "url": "https://sites.stat.washington.edu/raftery/Research/PDF/Gneiting2007jasa.pdf",
+      "kind": "primary_public_documentation_or_research",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "W16",
+      "url": "https://escholarship.org/uc/item/24w173zx",
+      "kind": "primary_public_documentation_or_research",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "W17",
+      "url": "https://docs.similarweb.com/api-v5/support-and-faq/faq",
+      "kind": "primary_public_documentation_or_research",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "W18",
+      "url": "https://www.earnestanalytics.com/datasets/orion-credit-card-data",
+      "kind": "primary_public_documentation_or_research",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "W19",
+      "url": "https://docs.placer.ai/reference/faqs-1",
+      "kind": "primary_public_documentation_or_research",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "W20",
+      "url": "https://keepa.com/api-docs/product-object.html",
+      "kind": "primary_public_documentation_or_research",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "W21",
+      "url": "https://facteus.com/products/onyx",
+      "kind": "primary_public_documentation_or_research",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "W22",
+      "url": "https://www.facteus.com/cpg-sku-data",
+      "kind": "primary_public_documentation_or_research",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "W23",
+      "url": "https://panjiva.com/api-guide/spec/",
+      "kind": "primary_public_documentation_or_research",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "W24",
+      "url": "https://panjiva.com/api-guide/data-selection/data-sources",
+      "kind": "primary_public_documentation_or_research",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "W25",
+      "url": "https://w3.importgenius.com/faq",
+      "kind": "primary_public_documentation_or_research",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "W26",
+      "url": "https://w3.importgenius.com/features/api-integration",
+      "kind": "primary_public_documentation_or_research",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "W27",
+      "url": "https://www.datamyne.com/our-product/global-trade-data-api/",
+      "kind": "primary_public_documentation_or_research",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "W28",
+      "url": "https://www.datamyne.com/our-product/global-trade-analytics/",
+      "kind": "primary_public_documentation_or_research",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "W29",
+      "url": "https://www.help.cbp.gov/s/article/Article-1108",
+      "kind": "primary_public_documentation_or_research",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "W30",
+      "url": "https://www.kpler.com/blog/kpler-completes-acquisition-of-spire-maritime-strengthening-maritime-intelligence-capabilities",
+      "kind": "primary_public_documentation_or_research",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "W31",
+      "url": "https://servicedocs-sm.kpler.com/messages-api/",
+      "kind": "primary_public_documentation_or_research",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "W32",
+      "url": "https://servicedocs-sm.kpler.com/historical-positions-api/",
+      "kind": "primary_public_documentation_or_research",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "W33",
+      "url": "https://sensortower.com/product/digital-advertising/pathmatics?directory=true",
+      "kind": "primary_public_documentation_or_research",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "W34",
+      "url": "https://github.blog/changelog/2026-09-04-new-api-endpoint-provides-privacy-safe-star-history-data/",
+      "kind": "primary_public_documentation_or_research",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "W35",
+      "url": "https://github.com/orgs/community/discussions/206104",
+      "kind": "primary_public_documentation_or_research",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "W36",
+      "url": "https://huggingface.co/docs/hub/models-download-stats",
+      "kind": "primary_public_documentation_or_research",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "W37",
+      "url": "https://www.dol.gov/agencies/eta/foreign-labor/performance",
+      "kind": "primary_public_documentation_or_research",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "W38",
+      "url": "https://docs.greenhouse.io/job-board.html",
+      "kind": "primary_public_documentation_or_research",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "W39",
+      "url": "https://www.datasets.reveliolabs.com/faq.html",
+      "kind": "primary_public_documentation_or_research",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "W40",
+      "url": "https://investor.tsmc.com/english/monthly-revenue/2026",
+      "kind": "primary_public_documentation_or_research",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "W41",
+      "url": "https://investor.tsmc.com/english/financial-calendar",
+      "kind": "primary_public_documentation_or_research",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "W42",
+      "url": "https://ir.chipotle.com/2026-07-29-CHIPOTLE-RAISES-FULL-YEAR-COMPARABLE-SALES-GUIDANCE-ON-STRONG-Q2-MOMENTUM",
+      "kind": "primary_public_documentation_or_research",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "W43",
+      "url": "https://www.sec.gov/Archives/edgar/data/1562088/000162828026012494/duol-20251231.htm",
+      "kind": "primary_public_documentation_or_research",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "W44",
+      "url": "https://www.sec.gov/Archives/edgar/data/1562088/000162828026029790/q1fy26duolingo3-31x26share.htm",
+      "kind": "primary_public_documentation_or_research",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "W45",
+      "url": "https://corporate.mcdonalds.com/content/dam/sites/corp/nfl/pdf/MCD%202025%20Annual%20Report.pdf",
+      "kind": "primary_public_documentation_or_research",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "W46",
+      "url": "https://panjiva.com/info/customer_agreement",
+      "kind": "primary_public_documentation_or_research",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "W47",
+      "url": "https://www.sec.gov/newsroom/press-releases/2021-176",
+      "kind": "primary_public_documentation_or_research",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "W48",
+      "url": "https://www.ams.usda.gov/market-news/grocerystore",
+      "kind": "primary_public_documentation_or_research",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "W49",
+      "url": "https://support.gs1.org/support/solutions/articles/43000734283-what-is-a-global-trade-item-number-gtin-",
+      "kind": "primary_public_documentation_or_research",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "W50",
+      "url": "https://docs.github.com/en/rest/activity/starring?apiVersion=2026-03-10",
+      "kind": "primary_public_documentation_or_research",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "W51",
+      "url": "https://alfred.stlouisfed.org/help",
+      "kind": "primary_public_documentation_or_research",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "W52",
+      "url": "https://www.census.gov/about/policies/quality/standards/standardd3.html",
+      "kind": "primary_public_documentation_or_research",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "W53",
+      "url": "https://www.nber.org/papers/t0326",
+      "kind": "primary_public_documentation_or_research",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "W54",
+      "url": "https://www.clevelandfed.org/publications/working-paper/2011/wp-1120-advances-in-forecast-evaluation",
+      "kind": "primary_public_documentation_or_research",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "W55",
+      "url": "https://www.data-dictionary.reveliolabs.com/methodology.html",
+      "kind": "primary_public_documentation_or_research",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "W56",
+      "url": "https://sensortower.com/product/connect",
+      "kind": "primary_public_documentation_or_research",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "W57",
+      "url": "https://support.similarweb.com/hc/en-us/articles/32914267250077-Similarweb-s-Data-Accuracy",
+      "kind": "primary_public_documentation_or_research",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "W58",
+      "url": "https://www.census.gov/foreign-trade/guide/sec2.html",
+      "kind": "primary_public_documentation_or_research",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "W59",
+      "url": "https://www.census.gov/foreign-trade/Press-Release/ft900_index.html",
+      "kind": "primary_public_documentation_or_research",
+      "access_date": "2026-10-04"
+    },
+    {
+      "id": "W60",
+      "url": "https://www.sec.gov/Archives/edgar/data/1816017/000095017025058698/spir-20250425.htm",
+      "kind": "primary_public_documentation_or_research",
+      "access_date": "2026-10-04"
+    }
+  ],
+  "checks": {
+    "A_to_L_complete": true,
+    "input_sha256_matches": true,
+    "document_issues": [],
+    "manifest_self_hash_excluded": true
+  }
+}
