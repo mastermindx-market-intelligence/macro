@@ -1,0 +1,31 @@
+{
+ "accepted_at": "2026-03-17T20:03:41Z",
+ "accession": "0001753539-26-000032",
+ "cik": "0001753539",
+ "doc_byte_length": 2462960,
+ "doc_sha256": "84fc5488e56bfe84ba0886f75a1ece09610b15d155e90ca08f4f15e94780b040",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-03-17",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "bksy-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 1712367,
+  "byte_start": 1710713,
+  "normalized": "Customer CRest of world15%*",
+  "normalized_sha256": "b04ff4b67672bb3952d279b3047c42d7ec2c86b464b9cc8ed0dee8ece64126bc",
+  "raw": "<tr><td colspan=\"3\" style=\"background-color:#cceeff;padding:2px 1pt 2px 1.02pt;text-align:left;vertical-align:middle\"><div style=\"margin-bottom:8pt;padding-left:0.02pt\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%\">Customer C</span></div></td><td colspan=\"3\" style=\"background-color:#cceeff;padding:0 1pt\"/><td colspan=\"3\" style=\"background-color:#cceeff;padding:2px 1pt;text-align:left;vertical-align:middle\"><div style=\"margin-bottom:8pt\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%\">Rest of world</span></div></td><td colspan=\"3\" style=\"background-color:#cceeff;padding:0 1pt\"/><td colspan=\"3\" style=\"display:none\"/><td colspan=\"3\" style=\"display:none\"/><td colspan=\"3\" style=\"display:none\"/><td colspan=\"3\" style=\"display:none\"/><td colspan=\"3\" style=\"background-color:#cceeff;padding:2px 1pt;text-align:center;vertical-align:middle\"><div style=\"margin-bottom:8pt;text-align:center\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%\"><ix:nonFraction unitRef=\"number\" contextRef=\"c-82\" decimals=\"2\" name=\"us-gaap:ConcentrationRiskPercentage1\" scale=\"-2\" id=\"f-488\">15</ix:nonFraction>%</span></div></td><td colspan=\"3\" style=\"background-color:#cceeff;padding:0 1pt\"/><td colspan=\"3\" style=\"background-color:#cceeff;padding:2px 1pt;text-align:center;vertical-align:middle\"><div style=\"margin-bottom:8pt;text-align:center\"><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%\">*</span></div></td></tr>",
+  "raw_sha256": "99a62e98db1d169cca190953f16d3a0425546043773dfaa15f2e6ff812caad55"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1753539/000175353926000032/bksy-20251231.htm",
+ "xbrl_contexts": [
+  {
+   "byte_end": 41720,
+   "byte_start": 40912,
+   "context_ref": "c-82",
+   "raw": "<xbrli:context id=\"c-82\"><xbrli:entity><xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001753539</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"us-gaap:StatementOperatingActivitiesSegmentAxis\">us-gaap:SegmentContinuingOperationsMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">bksy:CustomerCMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:SalesRevenueNetMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period><xbrli:startDate>2025-01-01</xbrli:startDate><xbrli:endDate>2025-12-31</xbrli:endDate></xbrli:period></xbrli:context>",
+   "raw_sha256": "005e9331b1f24d5be5d60b24a96150cae9a100d5ad64f4f9645717b0af74af93"
+  }
+ ]
+}

@@ -26,7 +26,13 @@ from engine.fundamental_forensics.companyfacts_ledger import (
     convert_companyfacts_to_raw_ledger,
 )
 from engine.fundamental_forensics.metric_registry import load_core_metric_registry
-from engine.fundamental_forensics.query import BitemporalMetricQueryEngine, FilingMetadata, PeriodRequest, QueryPolicy
+from engine.fundamental_forensics.query import (
+    BitemporalMetricQueryEngine,
+    FilingMetadata,
+    PeriodRequest,
+    QueryEntity,
+    QueryPolicy,
+)
 from engine.fundamental_forensics.query_snapshots import prepare_query_snapshot, publish_query_snapshot
 from engine.fundamental_forensics.raw_ledger import RawFactLedger
 from engine.research_vault.r2_store import LocalStore
@@ -34,6 +40,11 @@ from engine.research_vault.r2_store import LocalStore
 
 ROOT = Path(__file__).resolve().parents[1]
 STAMP = "2026-08-02T17:00:00.000000Z"
+# R1-SIC/R2: the mixed-coverage formula matrix evaluates class-restricted
+# metrics (gross_profit/gross_margin), so the synthetic entity carries an
+# industrial SIC; the snapshot manifest declares it and every replay re-reads
+# the declaration, so downstream publish/load/verify need no injection.
+_INDUSTRIAL_SIC = "3571"
 
 
 def _b3_helpers():
@@ -211,7 +222,7 @@ def _mixed_coverage_prepared(monkeypatch: pytest.MonkeyPatch, tmp_path: Path):
     matrix = BitemporalMetricQueryEngine(
         ledger,
         load_core_metric_registry(ROOT),
-        entities={"AAA": "0000000001"},
+        entities=(QueryEntity("AAA", "0000000001", issuer_sic=_INDUSTRIAL_SIC),),
         filing_metadata=metadata,
     ).query_matrix(
         tickers=["AAA"],

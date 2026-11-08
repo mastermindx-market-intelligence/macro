@@ -1,16 +1,16 @@
 {
   "schema": "flow_signals.gate/v2",
-  "asof": "2026-10-09",
+  "asof": "2026-10-18",
   "scored": false,
   "status": "building_history",
   "ledger": {
-    "n_rows": 92574,
+    "n_rows": 103893,
     "source_clock_coverage": {
       "schema": "flow_signals.clock_coverage/v1",
       "authority": "diagnostic_only",
-      "rows_total": 92574,
+      "rows_total": 103893,
       "status_counts": {
-        "ordered": 0,
+        "ordered": 11319,
         "partial": 0,
         "unavailable": 0,
         "invalid": 0,
@@ -18,16 +18,16 @@
         "unrecognized": 0
       },
       "field_non_null": {
-        "source_event_observed_at": 0,
-        "source_event_decision_at": 0,
-        "source_event_available_at": 0,
+        "source_event_observed_at": 11319,
+        "source_event_decision_at": 11319,
+        "source_event_available_at": 11319,
         "source_event_published_at": 0,
-        "source_event_snapshot_asof": 0
+        "source_event_snapshot_asof": 11319
       }
     },
-    "n_sessions": 44,
-    "last_ts": "2026-09-25T19:59:59+00:00",
-    "events_per_day_mean": 2104.0,
+    "n_sessions": 49,
+    "last_ts": "2026-10-16T19:59:59+00:00",
+    "events_per_day_mean": 2120.3,
     "events_per_day": {
       "2026-07-13": 4509,
       "2026-07-14": 4441,
@@ -72,24 +72,29 @@
       "2026-09-22": 2161,
       "2026-09-23": 2280,
       "2026-09-24": 2319,
-      "2026-09-25": 2544
+      "2026-09-25": 2544,
+      "2026-10-12": 1815,
+      "2026-10-13": 2147,
+      "2026-10-14": 2146,
+      "2026-10-15": 2562,
+      "2026-10-16": 2649
     },
     "n_by_dte_bucket": {
-      "1_7d": 36059,
-      "8_30d": 21254,
-      "31_90d": 19464,
-      "0d": 15797
+      "1_7d": 40591,
+      "8_30d": 22795,
+      "31_90d": 21724,
+      "0d": 18783
     }
   },
   "harvest": {
     "n_new_this_run": 0
   },
   "grader": {
-    "n_graded_ok": 834,
+    "n_graded_ok": 0,
     "n_split_seam": 0,
-    "n_not_matured": 8092,
-    "n_errors": 58,
-    "elapsed_sec": 1.9
+    "n_not_matured": 18225,
+    "n_errors": 65,
+    "elapsed_sec": 2.86
   },
   "scoring": {
     "enabled": false,
@@ -100,6 +105,6 @@
     "calibration": {},
     "monitor": {}
   },
-  "elapsed_sec": 4.53,
+  "elapsed_sec": 7.02,
   "note": "Flow-event ledger accruing. Scored field remains false until FS-3 pre-registration + FS-4 model training + FS-5 gauntlet pass. Ledger history older than 48h is permanently lost from the R2 archive window (FS-R1); run nightly without gaps."
 }
