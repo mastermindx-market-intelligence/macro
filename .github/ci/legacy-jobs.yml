@@ -20015,6 +20015,7 @@ jobs:
       - engine/qledger_evidence_clock.py
       - engine/qledger_falsifier.py
       - engine/qledger_store.py
+      - engine/qledger_store_import_preview.py
       - engine/qledger_store_native.py
       - engine/qledger_store_protocol.py
       - engine/qledger_store_sources.py
