@@ -30957,6 +30957,9 @@ jobs:
       - tests/js/calculator_input_integrity.test.mjs
       - templates/calculators/cagr.html.j2
       - tests/test_cagr_copy_feedback.py
+      - templates/calculators/risk_reward.html.j2
+      - site/tools/calculators/risk-reward.html
+      - tests/js/risk_reward_warning_copy.test.mjs
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -30971,7 +30974,9 @@ jobs:
       - name: CAGR truthful copy feedback
         run: python -m pytest tests/test_cagr_copy_feedback.py -q
       - name: calculator input, chart, language and copy integrity
-        run: node --test tests/js/calculator_input_integrity.test.mjs
+        run: |
+          node --test tests/js/calculator_input_integrity.test.mjs
+          node --test tests/js/risk_reward_warning_copy.test.mjs
 
   public-render-fastlane:
     if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
