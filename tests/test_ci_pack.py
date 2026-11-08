@@ -5634,8 +5634,8 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # to unrun-brain-gateway, selected here only by free-content. Fund those two
 # measured units there; preserve the other ceilings, suites and all limits.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_923),  # ci-trigger-closure: planner input path
-    ("scripts/build_free_content.py", 138, 6_000),  # ci-trigger-closure: planner input path
+    ("templates/index.html", 137, 5_923),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 6_000),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("engine/prophet/plan_book.py", 131, 5_681),
 )
 # Twelve packs per shape was the pre-curation measurement.
