@@ -15875,6 +15875,12 @@ jobs:
       - "lib/intl_global_observation_adapter.py"
       - "templates/_navlinks.html.j2"
       - "templates/theme.css"
+      - "scripts/capture_page_evidence.py"
+      - "scripts/check_design_system.py"
+      - "scripts/check_ui_visual_evidence.py"
+      - "templates/landing.css"
+      - "templates/navigation-refresh.css"
+      - "scripts/design_semantic_comparison.py"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -16047,6 +16053,12 @@ jobs:
       - "lib/intl_global_observation_adapter.py"
       - "templates/_navlinks.html.j2"
       - "templates/theme.css"
+      - "scripts/capture_page_evidence.py"
+      - "scripts/check_design_system.py"
+      - "scripts/check_ui_visual_evidence.py"
+      - "templates/landing.css"
+      - "templates/navigation-refresh.css"
+      - "scripts/design_semantic_comparison.py"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -16247,6 +16259,12 @@ jobs:
       - "lib/intl_global_observation_adapter.py"
       - "templates/_navlinks.html.j2"
       - "templates/theme.css"
+      - "scripts/capture_page_evidence.py"
+      - "scripts/check_design_system.py"
+      - "scripts/check_ui_visual_evidence.py"
+      - "templates/landing.css"
+      - "templates/navigation-refresh.css"
+      - "scripts/design_semantic_comparison.py"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -21685,6 +21703,7 @@ jobs:
       - "mockups/evidence/**"
       - "mockups/refs/**"
       - "scripts/check_design_system.py"
+      - "scripts/design_semantic_comparison.py"
       - "scripts/check_runtime_style_injection.py"
       - "scripts/check_ui_visual_evidence.py"
       - "tests/test_check_design_system.py"
@@ -21745,27 +21764,11 @@ jobs:
         run: python3 scripts/check_runtime_style_injection.py
       - name: forward-only design ratchet (new forbidden decisions on changed lines)
         run: |
-          if ! git fetch origin ${{ github.base_ref || 'main' }}; then
-            echo "::error title=design-governance::could not fetch origin/${{ github.base_ref || 'main' }}; the forward-only design ratchet has NO canonical comparison base and cannot run. Failing closed — an unresolvable base is an absent gate, not a degraded pass."
-            exit 1
-          fi
-          if ! mb=$(git merge-base "origin/${{ github.base_ref || 'main' }}" HEAD); then
-            echo "::error title=design-governance::no merge base with ${{ github.base_ref || 'main' }}; the forward-only design ratchet has NO canonical comparison base and cannot run. Failing closed — an unresolvable base is an absent gate, not a degraded pass."
-            exit 1
-          fi
-          git diff --unified=0 "$mb" HEAD -- templates > /tmp/design.diff
+          python3 scripts/design_semantic_comparison.py --write-design-diff /tmp/design.diff --design-diff-kind style --base-ref "${{ github.base_ref || 'main' }}" || exit 1
           python3 scripts/check_design_system.py --mode enforce-added --diff-file /tmp/design.diff
       - name: visual evidence required for a material UI change
         run: |
-          if ! git fetch origin ${{ github.base_ref || 'main' }}; then
-            echo "::error title=design-governance::could not fetch origin/${{ github.base_ref || 'main' }}; the visual-evidence gate has NO canonical comparison base and cannot run. Failing closed — an unresolvable base is an absent gate, not a degraded pass."
-            exit 1
-          fi
-          if ! mb=$(git merge-base "origin/${{ github.base_ref || 'main' }}" HEAD); then
-            echo "::error title=design-governance::no merge base with ${{ github.base_ref || 'main' }}; the visual-evidence gate has NO canonical comparison base and cannot run. Failing closed — an unresolvable base is an absent gate, not a degraded pass."
-            exit 1
-          fi
-          git diff --unified=0 "$mb" HEAD -- templates site > /tmp/ui.diff
+          python3 scripts/design_semantic_comparison.py --write-design-diff /tmp/ui.diff --design-diff-kind visual --base-ref "${{ github.base_ref || 'main' }}" || exit 1
           python3 scripts/check_ui_visual_evidence.py --diff-file /tmp/ui.diff
       # The P0B receipt-closure gate used to be two trailing steps here
       # (#7613). It is now its own job, `p0b-receipt-closure` below: the pack

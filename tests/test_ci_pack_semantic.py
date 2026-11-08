@@ -4282,3 +4282,255 @@ class CanonicalMainPreparationTests(_cm_unittest.TestCase):
                     else:
                         guard(path)
                 self.assert_head(f)
+
+
+DESIGN_SPEC = importlib.util.spec_from_file_location("design_semantic_comparison", ROOT / "scripts/design_semantic_comparison.py")
+DESIGN = importlib.util.module_from_spec(DESIGN_SPEC)
+assert DESIGN_SPEC and DESIGN_SPEC.loader
+DESIGN_SPEC.loader.exec_module(DESIGN)
+
+@pytest.fixture
+def design_plan_checkout(tmp_path: Path):
+    """Local Git only: no remote, package install, browser or CI execution."""
+    root = tmp_path / "checkout"
+    root.mkdir()
+    _git(root, "init", "-b", "main")
+    _git(root, "config", "user.email", "ci@example.test")
+    _git(root, "config", "user.name", "CI Test")
+    for rel in ("scripts/run_ci_pack.py", "scripts/check_design_system.py",
+                "scripts/check_ui_visual_evidence.py", "scripts/design_semantic_comparison.py",
+                "scripts/ci_semantic_proof.py"):
+        target = root / rel
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes((ROOT / rel).read_bytes())
+    manifest = root / PACK.LEGACY_MANIFEST_PATH
+    manifest.parent.mkdir(parents=True)
+    job = _job("design-governance", [{"name": "design", "run": "echo design"}])
+    job.definition["gate"] = "code"
+    _write_manifest(manifest, [job])
+    for folder in ("templates", "site"):
+        (root / folder).mkdir()
+        (root / folder / "case.html").write_text("old\n")
+    _git(root, "add", ".")
+    _git(root, "commit", "-m", "base")
+    base = _git(root, "rev-parse", "HEAD")
+    (root / "templates/case.html").write_text("new template\n")
+    (root / "site/case.html").write_text("new generated page\n")
+    _git(root, "commit", "-am", "head")
+    head = _git(root, "rev-parse", "HEAD")
+    changed = ["templates/case.html", "site/case.html"]
+    jobs = PACK.load_legacy_jobs(manifest)
+    plan = PACK.build_plan(jobs, changed, changed_from=base, scope_mode="active",
+                          pack_count=1, workflow_run_id="987654321", workflow="ci",
+                          event="pull_request", role="pr_head", tested_tree_sha=head,
+                          subject_head_sha=head, base_sha=base)
+    plan_path = tmp_path / "plan.json"
+    plan_path.write_text(json.dumps(plan.to_dict()))
+    changed_path = tmp_path / "changed.json"
+    changed_path.write_text(json.dumps(changed))
+    env = {"GITHUB_RUN_ID": plan.workflow_run_id, "GITHUB_EVENT_NAME": plan.event,
+           "GITHUB_WORKFLOW": plan.workflow, "GITHUB_SHA": head}
+    return root, manifest, plan, plan_path, changed_path, env
+
+
+def _design_diff_cli(fixture, destination: Path, kind="style"):
+    root, manifest, plan, plan_path, changed_path, env = fixture
+    return ["--workflow", str(manifest), "--gate", "code", "--plan-json", str(plan_path),
+            "--changed-files-file", str(changed_path), "--expect-plan-sha", plan.plan_sha256,
+            "--expect-tested-tree-sha", plan.tested_tree_sha,
+            "--expect-subject-head-sha", plan.subject_head_sha,
+            "--expect-base-sha", plan.base_sha,
+            "--write-design-diff", str(destination), "--design-diff-kind", kind]
+
+
+@pytest.mark.parametrize("kind,paths", [("style", ["templates"]), ("visual", ["templates", "site"])])
+def test_design_comparison_uses_verified_plan_offline(design_plan_checkout, tmp_path, monkeypatch, kind, paths):
+    root, manifest, plan, plan_path, changed_path, env = design_plan_checkout
+    monkeypatch.chdir(root)
+    for k, v in env.items():
+        monkeypatch.setenv(k, v)
+    output = tmp_path / "design.diff"
+    # The old origin/main acquisition fails deterministically: this local
+    # fixture has no origin. The verified comparison needs no transport.
+    assert subprocess.run(["git", "fetch", "origin", "main"], cwd=root,
+                          capture_output=True).returncode != 0
+    assert DESIGN.main(_design_diff_cli(design_plan_checkout, output, kind)) == 0
+    expected = subprocess.check_output(["git", "diff", "--unified=0", plan.base_sha,
+                                        plan.tested_tree_sha, "--", *paths], cwd=root)
+    assert output.read_bytes() == expected
+    assert "new template" in output.read_text()
+    assert ("new generated page" in output.read_text()) == (kind == "visual")
+
+
+@pytest.mark.parametrize("binding", ["--expect-plan-sha", "--expect-tested-tree-sha",
+                                      "--expect-subject-head-sha", "--expect-base-sha"])
+def test_design_comparison_refuses_mismatch_and_missing_binding(design_plan_checkout, tmp_path, monkeypatch, binding):
+    root, _, _, _, _, env = design_plan_checkout
+    monkeypatch.chdir(root)
+    for k, v in env.items():
+        monkeypatch.setenv(k, v)
+    output = tmp_path / "design.diff"
+    args = _design_diff_cli(design_plan_checkout, output)
+    index = args.index(binding)
+    bad = args.copy()
+    bad[index + 1] = "f" * (64 if binding == "--expect-plan-sha" else 40)
+    assert DESIGN.main(bad) == 2
+    assert not output.exists()
+    del args[index:index + 2]
+    assert DESIGN.main(args) == 2
+    assert not output.exists()
+
+
+@pytest.mark.parametrize("key", ["GITHUB_RUN_ID", "GITHUB_EVENT_NAME", "GITHUB_WORKFLOW", "GITHUB_SHA"])
+def test_design_comparison_refuses_foreign_run_context(design_plan_checkout, tmp_path, monkeypatch, key):
+    root, _, _, _, _, env = design_plan_checkout
+    monkeypatch.chdir(root)
+    for k, v in env.items():
+        monkeypatch.setenv(k, v)
+    monkeypatch.setenv(key, "foreign")
+    output = tmp_path / "design.diff"
+    assert DESIGN.main(_design_diff_cli(design_plan_checkout, output)) == 2
+    assert not output.exists()
+
+
+@pytest.mark.parametrize("damage", ["missing_plan", "changed_handle", "corrupt_plan", "dirty_source",
+                                     "dirty_template", "untracked_template", "wrong_checkout", "missing_base",
+                                     "dirty_helper", "dirty_visual", "dirty_manifest"])
+def test_design_comparison_fails_closed_on_unverifiable_inputs(design_plan_checkout, tmp_path, monkeypatch, damage):
+    root, manifest, plan, plan_path, changed_path, env = design_plan_checkout
+    monkeypatch.chdir(root)
+    for k, v in env.items():
+        monkeypatch.setenv(k, v)
+    if damage == "missing_plan":
+        plan_path.unlink()
+    elif damage == "changed_handle":
+        changed_path.write_text("[]")
+    elif damage == "corrupt_plan":
+        d = json.loads(plan_path.read_text()); d["plan_sha256"] = "f" * 64
+        plan_path.write_text(json.dumps(d))
+    elif damage == "dirty_source":
+        (root / "scripts/check_design_system.py").write_text("raise SystemExit(0)\n")
+    elif damage == "dirty_helper":
+        (root / "scripts/design_semantic_comparison.py").write_text("raise SystemExit(0)\n")
+    elif damage == "dirty_visual":
+        (root / "scripts/check_ui_visual_evidence.py").write_text("raise SystemExit(0)\n")
+    elif damage == "dirty_manifest":
+        manifest.write_text(manifest.read_text() + "# dirty source\n")
+    elif damage == "dirty_template":
+        (root / "templates/case.html").write_text("unadmitted\n")
+    elif damage == "untracked_template":
+        (root / "templates/extra.html").write_text("unadmitted\n")
+    elif damage == "wrong_checkout":
+        _git(root, "checkout", "--detach", plan.base_sha)
+    elif damage == "missing_base":
+        # Delete only this test-owned loose object, not a shared Git object.
+        # The exact admitted base is now genuinely unavailable offline.
+        (root / ".git/objects" / plan.base_sha[:2] / plan.base_sha[2:]).unlink()
+    output = tmp_path / "design.diff"
+    assert DESIGN.main(_design_diff_cli(design_plan_checkout, output)) == 2
+    assert not output.exists()
+
+
+def test_design_manifest_preserves_standalone_fetch_and_checkers():
+    current = yaml.safe_load(MANIFEST.read_text())["jobs"]["design-governance"]["steps"]
+    for name, kind, tail in [
+        ("forward-only design ratchet (new forbidden decisions on changed lines)", "style",
+         "python3 scripts/check_design_system.py --mode enforce-added --diff-file /tmp/design.diff"),
+        ("visual evidence required for a material UI change", "visual",
+         "python3 scripts/check_ui_visual_evidence.py --diff-file /tmp/ui.diff"),
+    ]:
+        command = next(x["run"] for x in current if x.get("name") == name)
+        assert "python3 scripts/design_semantic_comparison.py" in command
+        assert f"--design-diff-kind {kind}" in command
+        assert "--base-ref" in command and "|| exit 1" in command
+        assert command.rstrip().endswith(tail)
+
+
+@pytest.mark.parametrize("event", ["workflow_dispatch", "base_replay"])
+@pytest.mark.parametrize("kind,filename,paths,checker", [
+    ("style", "design", "templates", "scripts/check_design_system.py --mode enforce-added --diff-file /tmp/design.diff"),
+    ("visual", "ui", "templates site", "scripts/check_ui_visual_evidence.py --diff-file /tmp/ui.diff"),
+])
+def test_design_manifest_executes_unchanged_standalone_and_replay_contract(tmp_path, event, kind, filename, paths, checker):
+    steps = yaml.safe_load(MANIFEST.read_text())["jobs"]["design-governance"]["steps"]
+    command = next(s["run"] for s in steps if "--design-diff-kind " + kind in s.get("run", ""))
+    command = PACK.render_command(command, base_ref="main", head_ref="topic")
+    # Execute the real shell branch with only controlled command fixtures.
+    # No Git remote, checker scan or network operation is launched here.
+    bin_dir = tmp_path / "bin"; bin_dir.mkdir()
+    log = tmp_path / "commands"
+    for executable, body in [
+        ("git", 'printf "git %s\\n" "$*" >> "$COMMAND_LOG"\nif [ "$1" = merge-base ]; then echo fixture-base; fi\nif [ "$1" = diff ]; then echo fixture-diff; fi\n'),
+        ("python3", 'printf "python3 %s\\n" "$*" >> "$COMMAND_LOG"\n'),
+    ]:
+        p = bin_dir / executable;p.write_text("#!/bin/sh\n" + body);p.chmod(0o700)
+    env = {"PATH": str(bin_dir), "COMMAND_LOG": str(log), "GITHUB_EVENT_NAME": event,
+           "RUNNER_TEMP": str(tmp_path)}
+    if event == "base_replay":
+        env.update(EXPECTED_PLAN_SHA="inherited-head-plan", CI_BASE_SHA=SHA_BASE,
+                   TESTED_TREE_SHA=SHA_BASE)
+    # Redirect only the owned temp diff output; the command/checker arguments
+    # themselves retain the production path expected below.
+    command = command.replace("python3 scripts/design_semantic_comparison.py", shlex.quote(sys.executable) + " " + shlex.quote(str(ROOT / "scripts/design_semantic_comparison.py")))
+    command = command.replace(f"--write-design-diff /tmp/{filename}.diff", "--write-design-diff " + shlex.quote(str(tmp_path / "diff")))
+    result = subprocess.run(["/bin/bash", "-e", "-c", command], env=env,
+                            cwd=tmp_path, capture_output=True, text=True)
+    assert result.returncode == 0, result.stderr
+    assert log.read_text().splitlines() == [
+        "git fetch origin main", "git merge-base origin/main HEAD",
+        f"git diff --unified=0 fixture-base HEAD -- {paths}", "python3 " + checker,
+    ]
+
+
+@pytest.mark.parametrize("kind", ["style", "visual"])
+def test_design_manifest_inherited_base_alone_never_authorizes_comparison(tmp_path, kind):
+    steps = yaml.safe_load(MANIFEST.read_text())["jobs"]["design-governance"]["steps"]
+    command = PACK.render_command(next(s["run"] for s in steps if "--design-diff-kind " + kind in s.get("run", "")), base_ref="main", head_ref="topic")
+    command = command.replace("python3 scripts/design_semantic_comparison.py", shlex.quote(sys.executable) + " " + shlex.quote(str(ROOT / "scripts/design_semantic_comparison.py")))
+    bin_dir = tmp_path / "bin"; bin_dir.mkdir()
+    log = tmp_path / "commands"
+    for executable in ("git", "python3"):
+        p = bin_dir / executable
+        p.write_text('#!/bin/sh\nprintf "%s\\n" "$*" >> "$COMMAND_LOG"\nexit 0\n')
+        p.chmod(0o700)
+    # An inherited base or partial set of advertised identity variables cannot
+    # fall through to standalone fetch, create a diff or reach either checker.
+    complete = {"RUNNER_TEMP": str(tmp_path), "CI_CHANGED_FILES_FILE": str(tmp_path / "changed"),
+                "EXPECTED_PLAN_SHA": "a" * 64, "TESTED_TREE_SHA": SHA_TREE,
+                "SUBJECT_HEAD_SHA": SHA_HEAD, "TESTED_BASE_SHA": SHA_BASE}
+    for missing in complete:
+        env = {"PATH": str(bin_dir), "COMMAND_LOG": str(log), "GITHUB_EVENT_NAME": "pull_request",
+               "CI_BASE_SHA": SHA_BASE, **{k: v for k, v in complete.items() if k != missing}}
+        result = subprocess.run(["/bin/bash", "-e", "-c", command], env=env,
+                                cwd=tmp_path, capture_output=True, text=True)
+        assert result.returncode != 0, missing
+        assert not log.exists(), missing
+
+
+def test_design_comparison_accepts_exact_raw_parent_at_shallow_frontier(design_plan_checkout, tmp_path, monkeypatch):
+    root, _, plan, _, _, env = design_plan_checkout
+    monkeypatch.chdir(root)
+    for k, v in env.items():
+        monkeypatch.setenv(k, v)
+    (root / ".git/shallow").write_text(plan.tested_tree_sha + "\n")
+    assert subprocess.run(["git", "merge-base", "--is-ancestor", plan.base_sha,
+                           plan.tested_tree_sha], cwd=root, capture_output=True).returncode != 0
+    output = tmp_path / "diff"
+    assert DESIGN.main(_design_diff_cli(design_plan_checkout, output)) == 0
+    assert "new template" in output.read_text()
+    assert (root / ".git/shallow").read_text() == plan.tested_tree_sha + "\n"
+
+
+@pytest.mark.parametrize("rewrite", ["graft", "replace"])
+def test_design_comparison_refuses_rewrite_metadata(design_plan_checkout, tmp_path, monkeypatch, rewrite):
+    root, _, plan, _, _, env = design_plan_checkout
+    monkeypatch.chdir(root)
+    for k, v in env.items():
+        monkeypatch.setenv(k, v)
+    if rewrite == "graft":
+        (root / ".git/info/grafts").write_text(plan.tested_tree_sha + "\n")
+    else:
+        _git(root, "replace", plan.tested_tree_sha, plan.base_sha)
+    output = tmp_path / "diff"
+    assert DESIGN.main(_design_diff_cli(design_plan_checkout, output)) == 2
+    assert not output.exists()
