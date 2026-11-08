@@ -5616,9 +5616,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_949),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_970),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_707),
+    ("templates/index.html", 137, 5_951),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_972),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_709),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5626,6 +5626,22 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-08 Prophet #9495 browser enrollment on main5eb1603e:
+    CI42523238458 tested a26774e0 (base5eb1603e + head18cab35d) reports
+    index137/5943->5951, free137/5964->5972 and Plan131/5701->5709,
+    ten packs each. Canonical paired manifests on the same 18cab source
+    universe reproduce those measurements with identical selected IDs:
+    no entrants or exits. Selected owner weights are prophet-lab67->69,
+    unrun-grading-board40->44 and unrun-brain-gateway110->112. The first
+    six units were funded already; the last two retain the new native
+    page-layout browser suite in the existing Brain browser command.
+    Fund only the measured two-unit excess per ceiling, with no padding.
+    Preserve every suite, path/command/selector, job-count and pack bound,
+    runtime/setup timeout and admission limit. These are deterministic
+    planning weights, not measured execution time. Same-universe proof
+    SHA256 a8be4386fb19c53bc328410bd3ba372cd9ab1c412b5fe6c964cd720cea554ee2;
+    exact-base measurements remain in the original CI contract-delta log.
 
     2026-11-08 Prophet #9495 actual composition with mainba32f20b:
     Native paired planning on the SAME composed source universe preserves
