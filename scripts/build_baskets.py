@@ -284,14 +284,9 @@ def main(*, sector_intelligence_only: bool | None = None) -> int:
     try:
         _ti_ba = data.get("theme_intel")
         if _ti_ba and isinstance(_ti_ba.get("act_now"), dict):
-            from engine.us_act_now import assemble_bottoming_watch, load_cycle_rows
-            _an_ba = _ti_ba["act_now"]
-            # Bilingual law (G0.5): the forward log is English-only. Basket zh names
-            # come from the theme desk; sector-ETF zh names from the sector board.
+            from engine.us_act_now import load_cycle_rows
+            from engine.sector_basket_documents import attach_bottoming_watch
             _zh_ba: dict = {}
-            for _t_ba in (_ti_ba.get("themes") or []):
-                if _t_ba.get("id") and _t_ba.get("name_zh"):
-                    _zh_ba[_t_ba["id"]] = _t_ba["name_zh"]
             try:
                 _sc_ba = site / "sectordata" / "sector_central.json"
                 if _sc_ba.exists():
@@ -301,18 +296,7 @@ def main(*, sector_intelligence_only: bool | None = None) -> int:
                                 _zh_ba[_s_ba["id"]] = _s_ba["name_zh"]
             except Exception as _e_ba:  # noqa: BLE001 — names only, never fatal
                 log.warning("bottoming watch: sector zh names unavailable: %s", _e_ba)
-            _bw = assemble_bottoming_watch(
-                load_cycle_rows(),
-                reduce_ids=[x.get("id") for x in (_an_ba.get("reduce") or []) if x.get("id")],
-                names_zh=_zh_ba,
-            )
-            _an_ba["bottoming_watch"] = _bw["bottoming_watch"]
-            _an_ba["dual_read_ids"] = _bw["dual_read_ids"]
-            # Graduation gap: reduce/avoid rows the cycle organ reads as
-            # recovering off a low but which have left the bottoming lane.
-            # Disjoint from dual_read_ids — a separate chip, separate sentence.
-            _an_ba["recovering_ids"] = _bw["recovering_ids"]
-            _an_ba["bottoming_authority"] = _bw["authority"]
+            _bw = attach_bottoming_watch(_ti_ba, cycle_rows=load_cycle_rows(), sector_names_zh=_zh_ba)
             log.info(
                 "bottoming watch: %d row(s), %d dual-read id(s), %d recovering id(s)%s",
                 len(_bw["bottoming_watch"]), len(_bw["dual_read_ids"]),
@@ -494,38 +478,8 @@ def main(*, sector_intelligence_only: bool | None = None) -> int:
         _seas_path = site / "factordata" / "factor_seasonality.json"
         if _seas_path.exists():
             _seas_raw = json.loads(_seas_path.read_text(encoding="utf-8"))
-            _seas_now = _seas_raw.get("now") if isinstance(_seas_raw, dict) else None
-            if (
-                isinstance(_seas_raw, dict)
-                and _seas_raw.get("schema") == "factor_seasonality.v2"
-                and isinstance(_seas_now, dict)
-                and _seas_now.get("chip_en")
-            ):
-                _factor_list = _seas_now.get("factors") or []
-                _mom = next((f for f in _factor_list if f.get("key") == "momentum"), None)
-                _any_non_neutral = (
-                    (_mom and _mom.get("verdict") != "neutral")
-                    or any(f.get("verdict") != "neutral" for f in _factor_list if f.get("key") != "momentum")
-                )
-                if _any_non_neutral:
-                    _mom_verdict = (_mom or {}).get("verdict", "neutral")
-                    _tone = _mom_verdict if _mom_verdict != "neutral" else next(
-                        (f.get("verdict") for f in _factor_list if f.get("verdict") != "neutral"),
-                        "neutral",
-                    )
-                    factor_season = {
-                        "chip_en": _seas_now.get("chip_en"),
-                        "chip_zh": _seas_now.get("chip_zh"),
-                        "tip_en": (
-                            (_seas_now.get("headline_en") or "")
-                            + (" " + _seas_now.get("stance_en") if _seas_now.get("stance_en") else "")
-                        ).strip(),
-                        "tip_zh": (
-                            (_seas_now.get("headline_zh") or "")
-                            + (" " + _seas_now.get("stance_zh") if _seas_now.get("stance_zh") else "")
-                        ).strip(),
-                        "tone": _tone,
-                    }
+            from engine.sector_basket_documents import factor_season_from_inputs
+            factor_season = factor_season_from_inputs(_seas_raw)
     except Exception as _fse:  # noqa: BLE001 — additive display chip, never fatal
         log.warning("factor_season chip read failed: %s", _fse)
     env = Environment(loader=FileSystemLoader(str(config.ROOT / "templates")), autoescape=True)
@@ -533,12 +487,8 @@ def main(*, sector_intelligence_only: bool | None = None) -> int:
     # The scraper (build_live_quotes.scrape_site_symbols) reads site/*.html for data-sym attrs;
     # basket member tickers are only in the BASKETS JSON blob otherwise, so they are invisible
     # to the scraper. Passing them to Jinja lets us emit aria-hidden spans in static HTML.
-    _member_syms: list[str] = sorted({
-        str(m.get("symbol", "")).strip().upper()
-        for b in data.get("baskets", [])
-        for m in (b.get("members") or [])
-        if m.get("symbol")
-    })
+    from engine.sector_basket_documents import basket_member_symbols, make_si_handoff
+    _member_syms = basket_member_symbols(data)
 
     # Thematic Narrative-Rotation pages (engine.narrative_rotation -> site/allocation*.html)
     # for ALL FOUR markets (US + China + HK + Canada). Built here off the same baskets
@@ -638,14 +588,9 @@ def main(*, sector_intelligence_only: bool | None = None) -> int:
     # which engine.theme_context owns and the Neural Web theme_rotation lobe reads);
     # build_sector_central reads it fail-soft.
     try:
-        (fdir / "si_handoff.json").write_text(json.dumps({
-            "theme_context": _theme_context,
-            "factor_season": factor_season,
-            "flow": ({"cluster": {"regime": ((flow or {}).get("cluster") or {}).get("regime")}}
-                     if (flow or {}).get("cluster") else None),
-            "basket_member_syms": _member_syms,
-            "generated_utc": built,
-        }, separators=(",", ":"), default=str))
+        (fdir / "si_handoff.json").write_text(json.dumps(make_si_handoff(
+            theme_context=_theme_context, factor_season=factor_season, flow=flow,
+            member_symbols=_member_syms, generated_utc=built), separators=(",", ":"), default=str))
     except Exception as _si_exc:  # noqa: BLE001 — additive, never fatal
         log.warning("sector-intelligence handoff write failed: %s", _si_exc)
 

@@ -7514,6 +7514,12 @@ qual_extraction:
 # macro_signals never regenerated. (Block sourced from the redesign/risk-radar
 # working branch, where it was already in use.)
 yahoo:
+  # Inactive until the existing runtime owner is qualified and legacy writers drain.
+  sector_runtime:
+    schema: yahoo.sector_runtime_profile.v1
+    mode: legacy
+    cohort: sector_close_14.v1
+    snapshot_schema: yahoo.close_cohort.v1
   retries: 3
   backoff_base_s: 5
   batch_size: 80

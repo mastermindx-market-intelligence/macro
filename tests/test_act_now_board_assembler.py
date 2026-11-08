@@ -19,6 +19,7 @@ if str(ROOT) not in sys.path:
 
 TRIAGE_SRC = ROOT / "engine" / "alert_triage.py"
 BUILD_SITE_SRC = ROOT / "scripts" / "build_site.py"
+CORE_BOARD_SRC = ROOT / "engine" / "sector_action_board.py"
 BOARD_TPL = ROOT / "templates" / "_us_act_now_board.html.j2"
 ALERTS_TPL = ROOT / "templates" / "alerts.html.j2"
 DASHBOARD_TPL = ROOT / "templates" / "dashboard.html.j2"
@@ -257,6 +258,9 @@ def test_action_board_knows_nothing_of_the_alert_engines():
         "slice did not start at action_board() — the extractor drifted"
     )
     _assert_absent(slice_src, TRIAGE_TOKENS, "scripts/build_site.py::action_board")
+    # The legacy entry point delegates; guard the actual calculation owner too.
+    _assert_absent(CORE_BOARD_SRC.read_text(encoding="utf-8"), TRIAGE_TOKENS,
+                   "engine/sector_action_board.py")
 
 
 def test_board_template_is_self_sufficient_and_writes_none_of_the_triage_artifacts():

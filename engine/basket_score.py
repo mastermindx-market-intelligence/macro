@@ -26,17 +26,25 @@ from lib import config
 _ROLLOVER_HAND = (0.30, 0.25, 0.20, 0.15, 0.10)
 
 
+def rollover_weights_from_document(document) -> tuple:
+    """Existing fitted-or-hand selection over one captured calibration document."""
+    try:
+        rf = document.get("rollover_fit") or {}
+        w = rf.get("wired_weights")
+        if rf.get("verdict") == "ship_fitted_weights" and isinstance(w, list) and len(w) == 5:
+            return tuple(float(x) for x in w)
+    except Exception:  # noqa: BLE001 — same optional enrichment fallback
+        pass
+    return _ROLLOVER_HAND
+
+
 def _rollover_weights() -> tuple:
     try:
         p = config.data_dir() / "strategies" / "baskets_calibration.json"
         d = json.loads(p.read_text()) if p.exists() else {}
-        rf = d.get("rollover_fit") or {}
-        w = rf.get("wired_weights")
-        if rf.get("verdict") == "ship_fitted_weights" and isinstance(w, list) and len(w) == 5:
-            return tuple(float(x) for x in w)
+        return rollover_weights_from_document(d)
     except Exception:  # noqa: BLE001 — calibration is enrichment, never fatal
-        pass
-    return _ROLLOVER_HAND
+        return _ROLLOVER_HAND
 
 
 def _rsi(s: pd.Series, n: int = 14) -> float | None:
@@ -259,7 +267,8 @@ def _macd_hist_fade_leg(s: pd.Series) -> tuple[bool, int, float, float, float | 
 
 
 def rollover_risk(lvl: pd.Series, fp: dict | None, fp5: dict | None,
-                  breadth_d: dict | None, perf: dict | None) -> dict:
+                  breadth_d: dict | None, perf: dict | None, *,
+                  rollover_weights: tuple | None = None) -> dict:
     """Distribution / roll-over risk — was extended, momentum now decelerating off the high,
     breadth deteriorating, below short trend. 'Risky right now, about to roll over.'"""
     s = lvl.dropna()
@@ -267,7 +276,7 @@ def rollover_risk(lvl: pd.Series, fp: dict | None, fp5: dict | None,
     # breadth-free leg weights: OOS-calibrated (below-50d + extension dominate fwd drawdown)
     # when scripts.calibrate_baskets has shipped them, else the hand weights. A 0-weight leg
     # still appends its descriptive reason but adds nothing to the risk score.
-    W = _rollover_weights()
+    W = _rollover_weights() if rollover_weights is None else tuple(rollover_weights)
     rs_p = (fp or {}).get("rs_pctile")
     accel = (fp or {}).get("accel_z")
     accel5 = (fp5 or {}).get("accel_z")
@@ -316,7 +325,9 @@ def rollover_risk(lvl: pd.Series, fp: dict | None, fp5: dict | None,
 
 def theme_textures(lvl: pd.Series, fp: dict | None, fp5: dict | None,
                    crowd: dict | None, breadth_d: dict | None, perf: dict | None,
-                   mc_closes: pd.DataFrame | None = None) -> dict:
+                   mc_closes: pd.DataFrame | None = None, *,
+                   rollover_weights: tuple | None = None,
+                   breadth_divergence_fit: dict | None = None) -> dict:
     """All four per-theme textures + the basket RSI (one call per basket).
 
     `mc_closes` (optional, ADDITIVE): the dated live-masked member close matrix. When
@@ -329,11 +340,13 @@ def theme_textures(lvl: pd.Series, fp: dict | None, fp5: dict | None,
         "bull_age": bull_age(lvl),
         "overbought": overbought(lvl, rs_p, crowd),
         "clean_entry": clean_entry(lvl, fp, breadth_d, rsi),
-        "rollover_risk": rollover_risk(lvl, fp, fp5, breadth_d, perf),
+        "rollover_risk": rollover_risk(lvl, fp, fp5, breadth_d, perf,
+                                       rollover_weights=rollover_weights),
     }
     if mc_closes is not None:
         from engine import basket_breadth_divergence as _bd   # local: keeps import graph light
-        out["breadth_divergence"] = _bd.breadth_divergence(mc_closes, lvl)
+        out["breadth_divergence"] = _bd.breadth_divergence(
+            mc_closes, lvl, calibration=breadth_divergence_fit)
     return out
 
 
@@ -477,6 +490,19 @@ def market_concentration(region: str = "us") -> dict:
         b = pd.read_parquet(config.data_dir() / _BREADTH_DIR.get(region, "breadth") / "breadth.parquet")
     except Exception:  # noqa: BLE001
         return {}
+    return _market_concentration_values(b)
+
+
+def market_concentration_from_inputs(breadth: pd.DataFrame | None) -> dict:
+    """Original daily/3/5/21-row summary of the captured aggregate breadth tape.
+
+    This is not reconstructed from constituent panels. None is resolved absence;
+    malformed present tapes retain the incumbent calculation's failure semantics.
+    """
+    return {} if breadth is None else _market_concentration_values(breadth)
+
+
+def _market_concentration_values(b: pd.DataFrame) -> dict:
     if b.empty:
         return {}
     last = b.iloc[-1]

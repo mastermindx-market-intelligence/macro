@@ -18,6 +18,70 @@ DOMAIN="mastermind-x.com"
 
 log() { echo "[setup] $*"; }
 
+# First adoption never executes bootstrap_repo.sh or resets the mutable checkout.
+# The candidate is one exact local Git object; its own embedded owner performs
+# the fd9-serialized, pending-refusing, atomic install and exact readback.
+if [ "$#" -ne 0 ]; then
+	if [ "$#" -ne 3 ] || [ "$1" != --install-source-owner ] ||
+	   [ "$2" != --source-revision ] || [[ ! "$3" =~ ^[0-9a-f]{40}$ ]]; then
+		echo "setup: expected --install-source-owner --source-revision <qualified-40-SHA>" >&2
+		exit 2
+	fi
+	[ "$APP_DIR" = /opt/macro ] || { echo "setup: installed source owner is bound to /opt/macro" >&2; exit 2; }
+	candidate=$(mktemp /usr/local/bin/.macro-source-owner.XXXXXX)
+	if ! git -C "$APP_DIR" show "$3:app/deploy/update.sh" >"$candidate" ||
+	   ! bash -n "$candidate"; then
+		rm -f "$candidate"
+		echo "setup: exact source-owner candidate is unavailable or invalid" >&2
+		exit 1
+	fi
+	chmod 0755 "$candidate"
+	if bash "$candidate" --install-source-owner "$3"; then
+		rm -f "$candidate"
+		log "source owner installed and read back; run /usr/local/bin/macro-update as a separate invocation"
+		exit 0
+	else
+		rc=$?
+		rm -f "$candidate"
+		exit "$rc"
+	fi
+fi
+
+# Borrow an existing updater mutex only when it is the same file description.
+# Keep it through the absence check, package work, reset and owner installation.
+if ! { : >&9; } 2>/dev/null; then
+    exec 9>/var/lock/macro-update.lock
+fi
+[ /proc/$$/fd/9 -ef /var/lock/macro-update.lock ] || {
+    echo "source provisioning: inherited updater mutex is foreign" >&2; exit 75;
+}
+flock -n 9 || { echo "source provisioning: updater mutex is busy" >&2; exit 75; }
+
+# Full provisioning must not bypass the enrolled/partial live plane by reaching
+# bootstrap's direct reset. Routine refresh belongs to the installed updater.
+# Any ambiguous manager read refuses before package or source mutation.
+for unit in macro-live-fast.service macro-live-fast.timer \
+	macro-live-snapshot.service macro-live-snapshot.timer \
+	macro-live-bars.service macro-live-bars.timer
+do
+	if [ -e "/etc/systemd/system/$unit" ] || [ -L "/etc/systemd/system/$unit" ]; then
+		echo "setup: live-plane footprint present; refresh through /usr/local/bin/macro-update" >&2
+		exit 1
+	fi
+	load_state=$(systemctl show -p LoadState --value "$unit") || {
+		echo "setup: cannot establish live-plane absence" >&2; exit 1;
+	}
+	[ "$load_state" = not-found ] || {
+		echo "setup: loaded live-plane footprint; refresh through /usr/local/bin/macro-update" >&2; exit 1;
+	}
+done
+for footprint in /var/lib/macro-live/public /var/lib/macro-live/state/source-update.pending; do
+	if [ -e "$footprint" ] || [ -L "$footprint" ]; then
+		echo "setup: existing or partial live-plane state; preserve it and use the installed owner" >&2
+		exit 1
+	fi
+done
+
 log "[1/6] base packages"
 export DEBIAN_FRONTEND=noninteractive
 apt-get update -y
@@ -68,7 +132,7 @@ ufw --force enable >/dev/null
 log "[6/6] enable Caddy + fast pull-if-changed cron"
 systemctl enable caddy >/dev/null 2>&1 || true
 systemctl restart caddy
-install -m 0755 "$APP_DIR/app/deploy/update.sh" /usr/local/bin/macro-update
+bash "$APP_DIR/app/deploy/update.sh" --install-source-owner "$(git -C "$APP_DIR" rev-parse HEAD)"
 # Track main within minutes: pull-if-changed every 3 min (cheap no-op when unchanged),
 # so render.yml's fast template renders AND the nightly data build reach the domain
 # quickly — instead of a once-a-night pull. `|| true`: on a box with no crontab yet,

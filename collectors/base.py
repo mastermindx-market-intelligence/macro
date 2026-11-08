@@ -233,8 +233,8 @@ class Adapter:
     def http_get(self, url: str, retries: int = 3, backoff_base: float = 3.0,
                  timeout: int = 60, **kwargs) -> requests.Response:
         headers = kwargs.pop("headers", {})
-        headers.setdefault("User-Agent",
-                           config.load()["sponsors"]["user_agent"])
+        if "User-Agent" not in headers:
+            headers["User-Agent"] = config.load()["sponsors"]["user_agent"]
         last_exc: Exception | None = None
         for attempt in range(retries):
             try:
@@ -610,6 +610,10 @@ def run_adapter(adapter: Adapter, full_history: bool = False,
         half_open = True   # cooldown elapsed -> let ONE probe through to test recovery
         log.info("adapter %s breaker half-open: probing after %d fails", adapter.name, fails)
 
+    from lib.yahoo_runtime_profile import (
+        YahooRuntimeBindingError, YahooRuntimeOwnershipError, YahooRuntimeProfileError,
+        parse_profile, partition_legacy_symbols,
+    )
     try:
         if type(capture_yahoo_receipts) is not bool or type(capture_wti_receipts) is not bool:
             raise ValueError("capture flags must be boolean")
@@ -712,7 +716,10 @@ def run_adapter(adapter: Adapter, full_history: bool = False,
         if capture_wti_receipts and "CL=F" not in capture_attempted:
             observation_notes.append("yahoo WTI observation: no qualified returned observation")
         if capture_yahoo_receipts:
-            for name in sorted(store.YAHOO_CAPTURE_COHORT - capture_attempted):
+            capture_names = set(partition_legacy_symbols(
+                parse_profile(config.load().get("yahoo")), sorted(store.YAHOO_CAPTURE_COHORT),
+            ).allowed)
+            for name in sorted(capture_names - capture_attempted):
                 observation_notes.append(f"yahoo availability: {name} no qualified returned observation")
         status = "stale" if session_bad else "ok"
         if wall_last is not None:
@@ -749,6 +756,12 @@ def run_adapter(adapter: Adapter, full_history: bool = False,
         res = FetchResult(adapter.name, status, rows=rows,
                           last_date=str(last.date()) if last is not None else None,
                           notes=notes)
+    except (YahooRuntimeBindingError, YahooRuntimeOwnershipError, YahooRuntimeProfileError) as exc:
+        code = ("YAHOO_RUNTIME_OWNER" if isinstance(exc, YahooRuntimeOwnershipError)
+                else "YAHOO_RUNTIME_PROFILE_INVALID" if isinstance(exc, YahooRuntimeProfileError)
+                else "YAHOO_RUNTIME_BINDING_REQUIRED")
+        log.info("adapter %s blocked by runtime admission (%s)", adapter.name, code)
+        res = FetchResult(adapter.name, "blocked", error=code)
     except Exception as e:  # noqa: BLE001 — degrade, never crash the run
         # expected_failure is likewise optional — the handler itself must be
         # attribute-safe or one duck-typing gap crashes the whole collect pass.

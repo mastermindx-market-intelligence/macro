@@ -50,6 +50,26 @@ _MAX_GAP_BUSDAYS = 2
 _REQUIRED_COLUMNS = ("date", "id", "phase_v2")
 
 
+def phase_history_from_inputs(raw, *, observation: str) -> tuple[pd.DataFrame | None, str]:
+    """Reduce an explicitly observed log; never infer an unattempted absence."""
+    if observation not in {"present", "absent", "unreadable", "malformed"}:
+        raise ValueError("explicit_phase_history_observation_required")
+    if observation == "absent":
+        if raw is not None:
+            raise ValueError("absent_phase_history_has_values")
+        return None, "absent"
+    if observation != "present":
+        return None, "read_error"
+    try:
+        if raw is None or any(c not in raw.columns for c in _REQUIRED_COLUMNS):
+            return None, "read_error"
+        out = raw.loc[:, list(_REQUIRED_COLUMNS)].copy()
+        out["basis"] = raw["basis"] if "basis" in raw.columns else "tr"
+        return out, "ok"
+    except Exception:  # noqa: BLE001 — same unavailable-history behavior
+        return None, "read_error"
+
+
 def load_phase_history(engine: str = "sector_cycles") -> tuple[pd.DataFrame | None, str]:
     """Read the retained forward log reduced to the four columns age needs.
 
@@ -67,9 +87,7 @@ def load_phase_history(engine: str = "sector_cycles") -> tuple[pd.DataFrame | No
         if missing:
             log.warning("cycle_phase_age: %s is missing column(s) %s", path, missing)
             return None, "read_error"
-        out = raw.loc[:, list(_REQUIRED_COLUMNS)].copy()
-        out["basis"] = raw["basis"] if "basis" in raw.columns else "tr"
-        return out, "ok"
+        return phase_history_from_inputs(raw, observation="present")
     except Exception as e:  # noqa: BLE001 — never raise past this boundary
         log.warning("cycle_phase_age: cannot load phase history for %r: %s", engine, e)
         return None, "read_error"

@@ -30,7 +30,7 @@ import numpy as np
 import pandas as pd
 
 from lib import config, store
-from lib.closes_panel import disclose_merge, merge_close_caches
+from lib.closes_panel import BROAD_GROUPS, disclose_merge, merge_close_caches
 
 log = logging.getLogger(__name__)
 
@@ -317,7 +317,7 @@ def insider_signals(mktcap: pd.Series | None, *, months: int | None = None) -> d
 # currently-listed), so the deep read is an OPTIMISTIC bound — see scripts/sue_deep_phase0.py
 # + reports/sue-deep-history-phase0.md. The keyword default is 'broad' so every existing
 # caller is unchanged.
-_UNIVERSE_GROUPS = {"broad": ("breadth", "smallcap_breadth", "midcap_breadth"),
+_UNIVERSE_GROUPS = {"broad": BROAD_GROUPS,
                     "narrow": ("breadth",)}
 
 # Deep-history close panel — an offline backfill (not one of the daily breadth caches).
@@ -375,11 +375,20 @@ def _names_sectors(universe: str = "broad") -> dict[str, tuple[str, str]]:
     # unlabeled deep-only ticker simply falls back to its symbol).
     groups = (_UNIVERSE_GROUPS["broad"] if universe == "deep"
               else _UNIVERSE_GROUPS.get(universe, _UNIVERSE_GROUPS["broad"]))
-    out: dict[str, tuple[str, str]] = {}
+    frames = {}
     for grp in groups:
         p = config.data_dir() / grp / "constituents.parquet"
         if p.exists():
-            meta = pd.read_parquet(p)
+            frames[grp] = pd.read_parquet(p)
+    return names_sectors_from_frames(frames, groups)
+
+
+def names_sectors_from_frames(frames, groups) -> dict[str, tuple[str, str]]:
+    """Labels retain original group/row priority, independent of price freshness."""
+    out: dict[str, tuple[str, str]] = {}
+    for grp in groups:
+        meta = frames.get(grp)
+        if meta is not None:
             for t, row in meta.iterrows():
                 out.setdefault(str(t), (str(row.get("name", t)), str(row.get("sector", "—"))))
     return out

@@ -25,15 +25,157 @@ shipped with the UI — trust levels are printed, not implied.
 from __future__ import annotations
 
 import logging
+import math
+import re
+from datetime import date
+from contextlib import contextmanager
+from contextvars import ContextVar
+from copy import deepcopy
+from dataclasses import dataclass, fields
 
 import numpy as np
 import pandas as pd
 
+from engine import session_anchor
 from engine.session_anchor import session_positions
 from engine.technicals import macd_hist, rsi
 from lib import config
 
 log = logging.getLogger(__name__)
+
+
+def normalize_evaluation_date(value: str) -> str:
+    """Only an explicit ISO calendar day; relative tokens can read a wall clock."""
+    if not isinstance(value, str) or re.fullmatch(r"[0-9]{4}-[0-9]{2}-[0-9]{2}", value) is None:
+        raise ValueError("cycle evaluation date must be an explicit YYYY-MM-DD")
+    return date.fromisoformat(value).isoformat()
+
+
+_ENTRY_SETTING_KEYS = (
+    "stoch_oversold", "stoch_overbought", "daily_rsi_extension_cap",
+    "stretch_block_pct", "approach_days", "overextended_osc_exempt_below_pct",
+)
+
+
+_ENTRY_SETTING_DEFAULTS = {
+    "stoch_oversold": 25.0, "stoch_overbought": 80.0,
+    "daily_rsi_extension_cap": 62.0, "stretch_block_pct": 30.0,
+    "approach_days": 2, "overextended_osc_exempt_below_pct": -10.0,
+}
+
+
+def effective_entry_settings_from_inputs(entry_settings: dict | None) -> dict:
+    """Current explicit settings with source defaults, never import-time overrides."""
+    settings = entry_settings or {}
+    return {key: (int if key == "approach_days" else float)(settings.get(key, default))
+            for key, default in _ENTRY_SETTING_DEFAULTS.items()}
+
+
+@dataclass(frozen=True)
+class CycleCalculationInputs:
+    """Captured values used by every nested cycle calculation in one invocation."""
+    evaluation_date: str
+    fitted_bands: dict
+    risk_calibration: dict
+    macro_overlay: dict
+    vol_regime_overlay: dict
+    vol_overlay_gate: dict
+    entry_gate: dict
+    reference_sessions: dict[str, pd.DatetimeIndex]
+
+    def __post_init__(self):
+        object.__setattr__(self, "evaluation_date", normalize_evaluation_date(self.evaluation_date))
+        for key in ("fitted_bands", "risk_calibration", "macro_overlay",
+                    "vol_regime_overlay", "vol_overlay_gate", "entry_gate",
+                    "reference_sessions"):
+            value = getattr(self, key)
+            if not isinstance(value, dict):
+                raise TypeError(f"{key} must be an explicit mapping")
+            object.__setattr__(self, key, deepcopy(value))
+        if any(key not in self.entry_gate for key in _ENTRY_SETTING_KEYS):
+            raise ValueError("explicit entry settings must contain every effective threshold")
+        for key in _ENTRY_SETTING_KEYS:
+            value = self.entry_gate[key]
+            if (isinstance(value, (bool, np.bool_))
+                    or not isinstance(value, (int, float, np.number))
+                    or not math.isfinite(float(value))):
+                raise ValueError("explicit entry thresholds must be finite numbers")
+            if key == "approach_days" and not float(value).is_integer():
+                raise ValueError("explicit approach_days must be an integer")
+        if not self.reference_sessions:
+            raise ValueError("explicit session references are required")
+        references = {}
+        for market, reference in self.reference_sessions.items():
+            if market != session_anchor._market_key(market):
+                raise ValueError("explicit session reference market is not canonical")
+            if not isinstance(reference, pd.DatetimeIndex):
+                raise TypeError("explicit session reference must be a DatetimeIndex")
+            normalized = session_anchor._normalize(reference)
+            if (not len(normalized) or normalized.hasnans or not normalized.is_unique
+                    or not normalized.is_monotonic_increasing):
+                raise ValueError("explicit session reference must be nonempty ordered unique dates")
+            references[market] = normalized.copy(deep=True)
+        object.__setattr__(self, "reference_sessions", references)
+
+
+_CALCULATION_INPUTS: ContextVar[CycleCalculationInputs | None] = ContextVar(
+    "cycle_calculation_inputs", default=None)
+
+
+@contextmanager
+def bind_calculation_inputs(inputs: CycleCalculationInputs):
+    """Bind captured values for this call and nested replay, reset even on failure."""
+    if not isinstance(inputs, CycleCalculationInputs):
+        raise TypeError("explicit cycle calculation inputs are required")
+    # Recapture and revalidate nested values at bind time; frozen dataclasses do
+    # not prevent a caller from mutating their contained dictionaries.
+    captured = CycleCalculationInputs(**{field.name: getattr(inputs, field.name)
+                                        for field in fields(CycleCalculationInputs)})
+    token = _CALCULATION_INPUTS.set(captured)
+    try:
+        yield
+    finally:
+        _CALCULATION_INPUTS.reset(token)
+
+
+def has_explicit_calculation_inputs() -> bool:
+    return _CALCULATION_INPUTS.get() is not None
+
+
+def acquire_calculation_inputs(*, evaluation_date: str,
+                               markets: tuple[str, ...] = ("US",)) -> CycleCalculationInputs:
+    """Legacy acquisition adapter; runtime may construct these same values itself.
+
+    Calibration is captured afresh through its incumbent loaders. No process-global
+    fitted/risk/reference cache is substituted for this capture.
+    """
+    from engine import vol_regime
+    day = date.fromisoformat(normalize_evaluation_date(evaluation_date))
+    settings = config.load().get("engine") or {}
+    entry = settings.get("entry_gate") or {}
+    return CycleCalculationInputs(
+        evaluation_date=day.isoformat(),
+        fitted_bands=_load_fitted_bands(), risk_calibration=_load_risk_calib(),
+        macro_overlay=settings.get("macro_overlay") or {},
+        vol_regime_overlay=settings.get("vol_regime_overlay") or {},
+        vol_overlay_gate=vol_regime.load_overlay_gate() or {},
+        entry_gate=effective_entry_settings_from_inputs(entry),
+        reference_sessions={session_anchor._market_key(m):
+            session_anchor.capture_reference_sessions(m, asof=day) for m in markets},
+    )
+
+
+def _entry_value(key: str, legacy_value):
+    inputs = _CALCULATION_INPUTS.get()
+    return legacy_value if inputs is None else inputs.entry_gate[key]
+
+
+def _overlay_settings(key: str) -> dict:
+    inputs = _CALCULATION_INPUTS.get()
+    if inputs is not None:
+        return getattr(inputs, key)
+    return config.load()["engine"].get(key) or {}
+
 
 #: Era stamp for the ABSOLUTE session-calendar anchor under every n-session grid in this
 #: module (the 3D leg of ``mtf_snapshot``, ``calibrate_ladder``'s walk-forward grid) and
@@ -119,6 +261,27 @@ _RISK_CALIB_LOADED: bool = False
 _RISK_CALIB_LOGGED: set = set()   # (family, state) pairs whose non-1.0 override was logged
 
 
+def _risk_calibration_values(d) -> dict:
+    """Original whole-document transformation; malformed cells raise as before."""
+    rsm = d.get("risk_size_mult") or {}
+    clamp = d.get("mult_clamp") or [0.5, 1.5]
+    out: dict = {}
+    for fam, states in rsm.items():
+        out[fam] = {}
+        for st, cell in states.items():
+            m = cell.get("risk_size_mult", 1.0) if isinstance(cell, dict) else float(cell)
+            out[fam][st] = float(min(max(m, clamp[0]), clamp[1]))
+    return out
+
+
+def risk_calibration_from_document(document) -> dict:
+    """Resolve one captured calibration; one malformed cell closes the whole map."""
+    try:
+        return _risk_calibration_values(deepcopy(document))
+    except Exception:  # noqa: BLE001 — preserve the incumbent all-1.0 fallback
+        return {}
+
+
 def _load_risk_calib() -> dict:
     """Load ladder_risk_calibration.json -> {family: {state: mult}}. Returns {} on any
     error (fallback to all-1.0). Mirrors _load_fitted_bands (W2.8)."""
@@ -128,14 +291,7 @@ def _load_risk_calib() -> dict:
             return {}
         import json as _json
         d = _json.loads(p.read_text(encoding="utf-8"))
-        rsm = d.get("risk_size_mult") or {}
-        clamp = d.get("mult_clamp") or [0.5, 1.5]
-        out: dict = {}
-        for fam, states in rsm.items():
-            out[fam] = {}
-            for st, cell in states.items():
-                m = cell.get("risk_size_mult", 1.0) if isinstance(cell, dict) else float(cell)
-                out[fam][st] = float(min(max(m, clamp[0]), clamp[1]))
+        out = _risk_calibration_values(d)
         log.info("cycles: loaded ladder risk calibration from %s (validated=%s, any_bound=%s)",
                  p, d.get("validated"), d.get("any_cell_bound"))
         return out
@@ -151,11 +307,20 @@ _RISK_FAMILY_ALIAS = {"sector": "us_sector", "us_sector": "us_sector",
                       "country": "country", "equity": "us_sector"}
 
 
+def risk_size_mult_from_inputs(state: str, family: str | None, *, risk_calibration: dict) -> float:
+    """Original family alias and state lookup with no cache or loader binding."""
+    fam = _RISK_FAMILY_ALIAS.get(family or "", family)
+    return risk_calibration.get(fam, {}).get(state, 1.0)
+
+
 def risk_size_mult(state: str, family: str | None) -> float:
     """Fitted SIZE multiplier in [0.5,1.5] for (state, family). 1.0 when no artifact, no
     family, or the cell did not earn a weight (null-cell discipline). Additive to sizing,
     NEVER to the directional score. One-time log per non-1.0 (state,family)."""
     global _RISK_CALIB, _RISK_CALIB_LOADED  # noqa: PLW0603
+    captured = _CALCULATION_INPUTS.get()
+    if captured is not None:
+        return risk_size_mult_from_inputs(state, family, risk_calibration=captured.risk_calibration)
     if not _RISK_CALIB_LOADED:
         _RISK_CALIB = _load_risk_calib()
         _RISK_CALIB_LOADED = True
@@ -174,24 +339,25 @@ def _preset(kind: str) -> dict:
     artifact when available. All other fields come from CYCLE_PRESETS.  Falls back
     to the equity preset for unknown kinds."""
     global _FITTED_BANDS, _FITTED_BANDS_LOADED  # noqa: PLW0603
-    if not _FITTED_BANDS_LOADED:
+    captured = _CALCULATION_INPUTS.get()
+    if captured is None and not _FITTED_BANDS_LOADED:
         _FITTED_BANDS = _load_fitted_bands()
         _FITTED_BANDS_LOADED = True
 
     base = dict(CYCLE_PRESETS.get(kind, CYCLE_PRESETS["equity"]))
 
-    fitted = _FITTED_BANDS.get(kind)
+    fitted = (captured.fitted_bands if captured is not None else _FITTED_BANDS).get(kind)
     if fitted:
         fdc = fitted.get("dc_band")
         fic = fitted.get("ic_band_w")
         if fdc and len(fdc) == 2 and fdc[0] > 0 and fdc[1] > fdc[0]:
-            if kind not in _FITTED_BANDS_LOGGED:
+            if captured is None and kind not in _FITTED_BANDS_LOGGED:
                 log.info("cycles: %s dc_band override %s → %s (fitted)", kind,
                          base["dc_band"], tuple(fdc))
                 _FITTED_BANDS_LOGGED.add(kind)
             base["dc_band"] = tuple(fdc)
         if fic and len(fic) == 2 and fic[0] > 0 and fic[1] > fic[0]:
-            if (kind + "_ic") not in _FITTED_BANDS_LOGGED:
+            if captured is None and (kind + "_ic") not in _FITTED_BANDS_LOGGED:
                 log.info("cycles: %s ic_band_w override %s → %s (fitted)", kind,
                          base["ic_band_w"], tuple(fic))
                 _FITTED_BANDS_LOGGED.add(kind + "_ic")
@@ -310,7 +476,13 @@ def _anchor_bars(daily: pd.Series, tf: str, market: str = "US") -> pd.Series:
         return pd.Series(dtype="float64")
     n = int(tf[:-1] or 1)
     if tf.endswith("B"):
-        b = session_positions(s.index, market) // n
+        captured = _CALCULATION_INPUTS.get()
+        if captured is None:
+            positions = session_positions(s.index, market)
+        else:
+            reference = captured.reference_sessions[session_anchor._market_key(market)]
+            positions = session_positions(s.index, market, reference=reference)
+        b = positions // n
     else:                                        # "nD" — calendar days, epoch-anchored
         b = (s.index.normalize() - _DAY_EPOCH).days // n
     g = pd.DataFrame({"v": s.to_numpy(), "d": s.index.to_numpy()}).groupby(
@@ -1422,7 +1594,7 @@ def ladder_state(cyc: dict, mtf: dict, early: dict | None = None,
     macro_effect = None
     macro_pen = 0
     macro_line = macro_line_zh = ""
-    _mo = config.load()["engine"].get("macro_overlay") or {}
+    _mo = _overlay_settings("macro_overlay")
     macro_on = bool(macro_drag is not None and _mo.get("enabled", True))
     if macro_on and state in LIQ_NUDGE_STATES and macro_beta > 0:
         _mhead = float(_mo.get("macro_headwind", 7))
@@ -1450,14 +1622,16 @@ def ladder_state(cyc: dict, mtf: dict, early: dict | None = None,
     vr_pen = 0
     vr_line = vr_line_zh = ""
     _vr = vol_regime if isinstance(vol_regime, dict) else None
-    _vro = (config.load()["engine"].get("vol_regime_overlay") or {})
+    _vro = _overlay_settings("vol_regime_overlay")
     # VALIDATE-BEFORE-WEIGHT (audit #30): the regime-state caution failed its additive-value gate
     # over the mechanical vol-target (basket_overlay_gate.json regime_marginal_over_voltarget=false),
     # so it may NOT bind a real ladder SCORE. The headwind penalty applies ONLY when the caution
     # leg is gated-on; otherwise the caution stays as a display-only line (no score change).
     try:
         from engine import vol_regime as _vrm
-        _caution_scored = _vrm.regime_caution_scored()
+        captured = _CALCULATION_INPUTS.get()
+        _caution_scored = (_vrm.regime_caution_scored() if captured is None else
+                           _vrm.regime_caution_scored(gate=captured.vol_overlay_gate))
     except Exception:  # noqa: BLE001 — never break the ladder build
         _caution_scored = False
     vr_on = bool(_vr and _vro.get("enabled", True))
@@ -2163,12 +2337,13 @@ def _entry_gate_cfg() -> dict:
 
 
 _EG = _entry_gate_cfg()
-_EG_STOCH_OS = float(_EG.get("stoch_oversold", 25.0))               # 3D StochRSI "from oversold" line
-_EG_STOCH_OB = float(_EG.get("stoch_overbought", 80.0))            # 3D/daily StochRSI overbought = chase
-_EG_DAILY_RSI_MAX = float(_EG.get("daily_rsi_extension_cap", 62.0))  # daily RSI14 hotter than this = too late
-_EG_STRETCH_BLOCK = float(_EG.get("stretch_block_pct", 30.0))     # % over 200dma = overextended chase
-_EG_APPROACH_DAYS = int(_EG.get("approach_days", 2))               # 3D "about to cross" ETA cap (trading days)
-_EG_OSC_EXEMPT_BELOW = float(_EG.get("overextended_osc_exempt_below_pct", -10.0))
+_EG_EFFECTIVE = effective_entry_settings_from_inputs(_EG)
+_EG_STOCH_OS = _EG_EFFECTIVE["stoch_oversold"]
+_EG_STOCH_OB = _EG_EFFECTIVE["stoch_overbought"]
+_EG_DAILY_RSI_MAX = _EG_EFFECTIVE["daily_rsi_extension_cap"]
+_EG_STRETCH_BLOCK = _EG_EFFECTIVE["stretch_block_pct"]
+_EG_APPROACH_DAYS = _EG_EFFECTIVE["approach_days"]
+_EG_OSC_EXEMPT_BELOW = _EG_EFFECTIVE["overextended_osc_exempt_below_pct"]
 # When price is this far BELOW the 200dma, the oscillator legs (StochRSI/RSI14) are
 # suppressed: post-washout the look-back range is compressed so any bounce pins
 # StochRSI > 80 (range-compression noise, not extension). The stretch leg
@@ -2283,7 +2458,7 @@ def _three_day_fresh(t3: dict) -> str | None:
     if t3.get("macd_cross_up") or t3.get("macd_curl_up"):
         return "macd_trough"
     sp = [x for x in (t3.get("spark_stoch") or []) if x is not None]
-    if len(sp) >= 2 and sp[-1] >= _EG_STOCH_OS and any(v < _EG_STOCH_OS for v in sp[-4:-1]):
+    if len(sp) >= 2 and sp[-1] >= _entry_value("stoch_oversold", _EG_STOCH_OS) and any(v < _entry_value("stoch_oversold", _EG_STOCH_OS) for v in sp[-4:-1]):
         return "stoch_os"
     if t3.get("macd_approaching_up") and not t3.get("macd_pos"):
         return "approaching"
@@ -2322,18 +2497,18 @@ def _overextension_legs(mtf: dict, ext_pct: float | None = None) -> list[str]:
     legs: list[str] = []
     # oscillator legs are suppressed when price is far below the 200dma (range-compression
     # saturation); the stretch leg is structurally unreachable there and is unaffected.
-    osc_exempt = ext_pct is not None and ext_pct <= _EG_OSC_EXEMPT_BELOW
+    osc_exempt = ext_pct is not None and ext_pct <= _entry_value("overextended_osc_exempt_below_pct", _EG_OSC_EXEMPT_BELOW)
     if not osc_exempt:
         st_d = d.get("stoch")
-        if st_d is not None and st_d > _EG_STOCH_OB:
+        if st_d is not None and st_d > _entry_value("stoch_overbought", _EG_STOCH_OB):
             legs.append(OVEREXTENSION_LEG_STOCH_D)
         st_3d = (mtf.get("3D") or {}).get("stoch")
-        if st_3d is not None and st_3d > _EG_STOCH_OB:
+        if st_3d is not None and st_3d > _entry_value("stoch_overbought", _EG_STOCH_OB):
             legs.append(OVEREXTENSION_LEG_STOCH_3D)
         rsi = d.get("rsi14")
-        if rsi is not None and rsi > _EG_DAILY_RSI_MAX:
+        if rsi is not None and rsi > _entry_value("daily_rsi_extension_cap", _EG_DAILY_RSI_MAX):
             legs.append(OVEREXTENSION_LEG_RSI_D)
-    if ext_pct is not None and ext_pct >= _EG_STRETCH_BLOCK:
+    if ext_pct is not None and ext_pct >= _entry_value("stretch_block_pct", _EG_STRETCH_BLOCK):
         legs.append(OVEREXTENSION_LEG_STRETCH)
     return legs
 

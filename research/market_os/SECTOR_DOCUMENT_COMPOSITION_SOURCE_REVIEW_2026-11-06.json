@@ -1,0 +1,142 @@
+{
+  "actual_chain": "real synthetic member inputs -> incumbent engines -> exact fixed-five composition -> existing private staging/publisher -> captured selected generation -> actual auth gates with fixture identity -> both wire audiences",
+  "base_sha": "cec642221e01dfc5a496d99f866e9b6fe313cfbb",
+  "beta_refresh_release": {
+    "accepted_record_id": "28e2e2925eeeb273b00a2be2d50c231f7692dbd38f993cd0599cd8e11d690506",
+    "accepted_sha": "bb65839dc6078f2943f6b5a6f58f5261350a85dd",
+    "observed_at": "2026-11-06T13:12:55.339371+00:00",
+    "proof": "research/market_os/BETA_TERMINAL_1311_RELEASE_PROOF_2026-11-06.json",
+    "scope": "Existing static-feed polling lifecycle upgrade only",
+    "sha256": "2b7516b73207efc8d997b440bbde4446a4d0bf85aec8ef2dcc29eaf51d585511"
+  },
+  "counts_overlap": true,
+  "git_diff_check": 0,
+  "limitations": [
+    "Synthetic controlled inputs; no live data acquisition or Macro runtime activation",
+    "Holdings controller52778 remains protected; complete OHLCV/configuration/context/history capture pending",
+    "CI registration action denied; Macro PR remains unmerged/unarmed",
+    "Terminal generation workspace REFUSED/NOT_APPLIED/REPOSITORY_SOURCE_UNAVAILABLE; no retry/rehome",
+    "Source updater barrier and sole-writer transfer unfinished",
+    "Native research receiver and authenticated beta two-generation refresh unproven",
+    "Other estate families remain open"
+  ],
+  "mission": "https://github.com/mastermindx-market-intelligence/macro/issues/10779",
+  "price_pair_scope": "separate current-input dependency proof, not yet bound to full composition capture",
+  "protected_law_sha": "49c2e1d93e5e080b1671c98087a845e5beb09dd5",
+  "python_ast": "parsed",
+  "qualification": {
+    "final_composition_publication_api": {
+      "command": [
+        "/opt/homebrew/Caskroom/miniconda/base/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "tests/test_sector_document_composition.py",
+        "tests/test_sector_basket_documents.py",
+        "tests/test_sector_action_board_inputs.py",
+        "tests/test_sector_generation_reader.py",
+        "tests/test_sector_native_view.py",
+        "tests/test_sector_central_publication.py",
+        "tests/test_sector_generation_api.py"
+      ],
+      "elapsed_seconds": 64.069,
+      "exit_code": 0,
+      "log": "/tmp/mmx-sector-composition-publication-final-20261106.log",
+      "passed": 328,
+      "sha256": "44996b7b350ad0aaf650e9cd3e3f2ee55e8a8f46addada78b443ba5ba8bad70f",
+      "warnings": 64
+    },
+    "initial_affected": {
+      "command": [
+        "/opt/homebrew/Caskroom/miniconda/base/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "tests/test_sector_document_composition.py",
+        "tests/test_sector_basket_documents.py",
+        "tests/test_sector_action_board_inputs.py",
+        "tests/test_sector_generation_reader.py",
+        "tests/test_sector_native_view.py",
+        "tests/test_sector_central_publication.py"
+      ],
+      "elapsed_seconds": 26.945,
+      "exit_code": 0,
+      "log": "/tmp/mmx-sector-composition-affected-20261106.log",
+      "passed": 261,
+      "sha256": "8c3f2dc6dbd4295da38554e40259f9a399e491ad19cd8d9a02694f2be2fa27e3",
+      "warnings": 8
+    },
+    "initial_composition": {
+      "elapsed_seconds": 26.182,
+      "exit_code": 0,
+      "log": "/tmp/mmx-sector-composition-bound-20261106.log",
+      "passed": 19,
+      "sha256": "4502571fcb019ce1ea6a00e10fd601eed35e3656c1d8ed5f6b2ebf61cd2eafa5"
+    },
+    "price_pair_affected_initial": {
+      "command": [
+        "/opt/homebrew/Caskroom/miniconda/base/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "tests/test_breadth_member_generation_contract.py",
+        "tests/test_yahoo_generation_contract.py"
+      ],
+      "disposition": "New test expected wrong refusal-code regex; actual source correctly refused old inputs",
+      "elapsed_seconds": 62.611,
+      "exit_code": 1,
+      "failed": 1,
+      "log": "/tmp/mmx-sector-current-price-pair-20261106.log",
+      "passed": 145,
+      "sha256": "ada44963913733bb49f2137f8acc5409b333c61a40ba560849872653f1fb8196"
+    },
+    "price_pair_final": {
+      "command": [
+        "/opt/homebrew/Caskroom/miniconda/base/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "tests/test_breadth_member_generation_contract.py",
+        "-k",
+        "sector_price_pair or current_pair"
+      ],
+      "deselected": 54,
+      "disposition": "Exact owner exception/code asserted; all downstream preservation/recovery assertions passed",
+      "elapsed_seconds": 17.51,
+      "exit_code": 0,
+      "log": "/tmp/mmx-sector-current-price-pair-final-20261106.log",
+      "passed": 3,
+      "sha256": "aa195524a0dea94922e2d4f60269e4b2fc4c593f1a38bd36a8bba565e33a1bc3"
+    },
+    "publication_bridge": {
+      "command": [
+        "/opt/homebrew/Caskroom/miniconda/base/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "tests/test_sector_document_composition.py",
+        "tests/test_sector_generation_reader.py"
+      ],
+      "elapsed_seconds": 55.121,
+      "exit_code": 0,
+      "log": "/tmp/mmx-sector-composition-publication-20261106.log",
+      "passed": 92,
+      "sha256": "f2e2f3be6b29073fdf0d03e60b581ca30076054b796af076282e2c0345ce7882",
+      "warnings": 8
+    }
+  },
+  "recorded_at": "2026-11-06T13:26:22.703822+00:00",
+  "schema": "macro.sector_document_composition_source_review.v1",
+  "source_sha256": {
+    "engine/sector_basket_documents.py": "ca025fe5ebf4fa87dc65fb61a852610dce84547788d47d1d01dcf89c544e2283",
+    "lib/breadth_member_generation_contract.py": "ae30c6258b6edfa1a0cc5a9eb4164ce881b2a48bb71c55a66f5ba8f8bacd9406",
+    "lib/sector_generation_contract.py": "0e10bba05daddc8037083ec7361f0f9dbf4ffac9137df2f82eec85ed7cb57080",
+    "lib/sector_input_capture.py": "7166860f63945d26b2df2324761f76354ec6e9ea16d16ad6d19d79bf36821872",
+    "lib/yahoo_generation_contract.py": "762b92603da37754481a105553d7b0873cd7139ad66a3c07be373a5b6db9eb46",
+    "scripts/vps_live_orchestrator.py": "6ce901daf1decb2a177c9f77b9289e057035ae6ba18e6b5a69b26da527e8974e",
+    "tests/test_breadth_member_generation_contract.py": "46175cac5b201ffc4ec16ec4dda3b7359aff0b9b31049cd2b40b919fe1337afa",
+    "tests/test_sector_document_composition.py": "8b6a461535d5571068474f8812763790f6225b141433f57d65884c18ab16fa8b",
+    "tests/test_sector_generation_reader.py": "6dbb06b080dd3c6eaaed38b0a1d3bf101ac7e8aac88e66fdfdb7cd8870b7d788"
+  },
+  "state": "SOURCE_QUALIFIED_NOT_ACTIVATED"
+}

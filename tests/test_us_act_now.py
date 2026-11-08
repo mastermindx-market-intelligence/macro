@@ -984,7 +984,9 @@ def test_wiring_adds_recovering_ids_without_touching_the_other_lanes():
 def test_build_wiring_ships_the_recovering_key():
     """The engine key is inert unless the builder actually writes it."""
     src = (ROOT / "scripts" / "build_baskets.py").read_text(encoding="utf-8")
-    assert '_an_ba["recovering_ids"] = _bw["recovering_ids"]' in src
+    assert "attach_bottoming_watch(_ti_ba" in src
+    shared = (ROOT / "engine" / "sector_basket_documents.py").read_text()
+    assert '_an_ba["recovering_ids"] = _bw["recovering_ids"]' in shared
 
 
 # ───────────────────── help "?" tooltip framework twin (2026-08-06) ─────────────────────

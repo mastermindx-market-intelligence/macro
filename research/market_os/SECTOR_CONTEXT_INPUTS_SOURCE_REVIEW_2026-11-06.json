@@ -1,0 +1,99 @@
+{
+  "affected": {
+    "baseline_only_failure": "tests/test_macro_risk_dialog.py::test_leadership_rank_delta_uses_locale_aware_up_down_tokens",
+    "command": [
+      "/opt/homebrew/Caskroom/miniconda/base/bin/python",
+      "-m",
+      "pytest",
+      "-q",
+      "tests/test_sector_context_inputs.py",
+      "tests/test_conditions.py",
+      "tests/test_crowding.py",
+      "tests/test_theme_scoring.py",
+      "tests/test_sector_central.py",
+      "tests/test_sector_central_gate.py",
+      "tests/test_theme_allocation_explicit_inputs.py",
+      "tests/test_sector_document_composition.py",
+      "tests/test_macro_risk_dialog.py"
+    ],
+    "elapsed_seconds": 92.804,
+    "exit_code": 1,
+    "failed": 1,
+    "log": "/tmp/mmx-sector-context-affected-20261106.log",
+    "passed": 262,
+    "sha256": "1f3c65490868f0403e64afbca5eb6e7c477261cfa15ade7ec4206f5b3a9081e7"
+  },
+  "base_sha": "68d836353d8021f9d5c6d5b010cd6d795a2a4dec",
+  "baseline_css_proof": {
+    "base_sha": "68d836353d8021f9d5c6d5b010cd6d795a2a4dec",
+    "byte_equal": true,
+    "css_source_sha256": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757",
+    "exact_baseline_css_test": "passed",
+    "missing_path": "/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-always-on-shared-shell-20261105-c3/site/theme.css",
+    "reproduced": "FileNotFoundError",
+    "test_source_sha256": "fd4f52256408a648856ba3546bd3c4b916d5937d6c2902f3edd7b18537c81ee4",
+    "workspace_css_materialized": false
+  },
+  "carrier": "https://github.com/mastermindx-market-intelligence/macro/pull/10780",
+  "counts_overlap": true,
+  "files_sha256": {
+    "engine/conditions.py": "fa61e20c9a2e80e808bc2863b23f270e85c6610365509dbc9bc28d7219f0b085",
+    "engine/crowding.py": "3393397ddf78dadea502afc67926ab1e3554f58f6bdd70e63d0d3d2287b16bad",
+    "engine/sector_central.py": "cf29f3d3dbf40931c6e552ef922e9aa0f240042680316ab710ce1572a03af3a8",
+    "engine/theme_scoring.py": "ad9b650265bc715586473aac250f05fd245eb67fbead7a054e8f0452b74557cd",
+    "tests/fixtures/base_sector_conditions_68d836.py": "048ce01af9946803ea88f4ebc97b9a32d221b312697cf4032ed5a3d139c9f681",
+    "tests/fixtures/base_sector_crowding_68d836.py": "f1b3c034c74f833ede70cf9107822b28c0572071ba15273bcdfae1bc7503f774",
+    "tests/fixtures/base_sector_regime_context_68d836.py": "944cd866d2feea2897c819f09e5b1460ce3e67071aef337de45b802b61aa867e",
+    "tests/fixtures/base_theme_macro_context_68d836.py": "2ecb6688eb91e7a31e9352e488889f15e510d02aa6b264c72bbf563ac667f4c5",
+    "tests/test_sector_context_inputs.py": "e7e3f1541e1d4b41eef649dc55de1d8d3d0c4d99cc8ef6482a6ed72aecf097f4"
+  },
+  "focused": {
+    "command": [
+      "/opt/homebrew/Caskroom/miniconda/base/bin/python",
+      "-m",
+      "pytest",
+      "-q",
+      "tests/test_sector_context_inputs.py"
+    ],
+    "elapsed_seconds": 18.585,
+    "exit_code": 0,
+    "log": "/tmp/mmx-sector-context-inputs-20261106.log",
+    "passed": 67,
+    "sha256": "b9c688bd1287cfd84251b03e04990ada31510381aed9ce3b813e1e270cfd1f90"
+  },
+  "limits": [
+    "No capture provenance or freshness certified merely by accepting supplied values",
+    "Unbound Market State cannot be declared absent; incumbent published snapshot or resolved fallback remains required",
+    "No holdings or genuine member OHLCV private binding activation",
+    "No provider, history, ledger, calibration, scheduler, authentication, CI or deployment change",
+    "Source updater recovery remains unqualified",
+    "CI capability denial, protected holdings effect fence, Terminal workspace refusal and browser capability failure remain unchanged"
+  ],
+  "mission": "https://github.com/mastermindx-market-intelligence/macro/issues/10779",
+  "original_source_fixtures": {
+    "tests/fixtures/base_sector_conditions_68d836.py": {
+      "original_source_sha256": "2a19896a56cef3a8e3e128db2d806dd2be67b59633890784a963e32579e4797b"
+    },
+    "tests/fixtures/base_sector_crowding_68d836.py": {
+      "original_source_sha256": "f1b3c034c74f833ede70cf9107822b28c0572071ba15273bcdfae1bc7503f774"
+    },
+    "tests/fixtures/base_sector_regime_context_68d836.py": {
+      "original_source_sha256": "2dcc04cfec82b739c07c2a531702d221c3912ac389882a01673765c18c61a065"
+    },
+    "tests/fixtures/base_theme_macro_context_68d836.py": {
+      "original_function_sha256": "aa71400c391adb36d99ae4eaecb907b93436e2e433707174a06f8fac525f5d36",
+      "original_source_sha256": "99a7ecb3a97a64d40b294c2ef6947539cb6653540cafbd2f002dab568c0c8b15"
+    }
+  },
+  "protected_law_sha": "49c2e1d93e5e080b1671c98087a845e5beb09dd5",
+  "recorded_at": "2026-11-06T14:05:24.044972+00:00",
+  "schema": "mastermind.source-review.v1",
+  "scope": [
+    "Existing mathematical bodies shared with explicit captured-value entry points",
+    "Legacy acquisition ordering and optional-input failure semantics retained",
+    "Full broad price and FINRA cross-sections required",
+    "Actual complete context reaches the existing five-document composer",
+    "Parent reviewed exact production diff and focused evidence; advisory native judgment reported no concrete blocker"
+  ],
+  "status": "SOURCE_QUALIFIED_NOT_ACTIVATED"
+}

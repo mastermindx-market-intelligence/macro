@@ -109,10 +109,10 @@ def _data_root() -> Path:
     return config.data_dir()
 
 
-def _us_reference() -> pd.DatetimeIndex:
+def _us_reference(asof: date | None = None) -> pd.DatetimeIndex:
     """US sessions from the RULES (R1) — no store is read, ever."""
     sessions = nyse_calendar.sessions_between(
-        US_EPOCH, date.today() + timedelta(days=US_FORWARD_DAYS))
+        US_EPOCH, (asof if asof is not None else date.today()) + timedelta(days=US_FORWARD_DAYS))
     return pd.DatetimeIndex(pd.to_datetime(sessions))
 
 
@@ -148,6 +148,18 @@ def reference_sessions(market: str = "US") -> pd.DatetimeIndex:
     return got
 
 
+
+def capture_reference_sessions(market: str, *, asof: date) -> pd.DatetimeIndex:
+    """Acquire a detached reference for an explicit date, without the legacy cache.
+
+    US still uses the canonical rules and epoch. Other markets still require their
+    own incumbent reference store; no missing market falls back to another calendar.
+    """
+    m = _market_key(market)
+    value = _us_reference(asof) if m == "US" else _store_reference(m)
+    return value.copy(deep=True)
+
+
 def _normalize(idx) -> pd.DatetimeIndex:
     """Dates as tz-naive midnights — the form both sides of ``searchsorted`` must share."""
     di = idx if isinstance(idx, pd.DatetimeIndex) else pd.DatetimeIndex(pd.to_datetime(idx))
@@ -161,7 +173,8 @@ def _dense_rank(values: np.ndarray) -> np.ndarray:
     return pd.Series(values).rank(method="dense").to_numpy().astype(np.int64) - 1
 
 
-def session_positions(idx: pd.DatetimeIndex, market: str = "US") -> np.ndarray:
+def session_positions(idx: pd.DatetimeIndex, market: str = "US", *,
+                      reference: pd.DatetimeIndex | None = None) -> np.ndarray:
     """Absolute position of each date in the market's reference session index (int64).
 
     ``position(d) = R.searchsorted(d, side="left")``. The whole start-invariance property
@@ -184,7 +197,14 @@ def session_positions(idx: pd.DatetimeIndex, market: str = "US") -> np.ndarray:
       series' own pre-reference dates take ``-1, -2, ...`` backwards from R[0], so bucketing
       stays consecutive across the seam. Approximate, documented, not silently wrong.
     """
-    R = reference_sessions(market)
+    if reference is None:
+        R = reference_sessions(market)
+    else:
+        R = _normalize(reference)
+        if R.hasnans or not R.is_unique or not R.is_monotonic_increasing:
+            raise ValueError("explicit session reference must be unique, ordered dates")
+        if len(idx) and not len(R):
+            raise ValueError("explicit session reference is empty")
     d = _normalize(idx)
     if len(d) == 0:
         return np.zeros(0, dtype=np.int64)

@@ -350,6 +350,58 @@ def _prophet_live_surface() -> dict:
     return next(s for s in fs.SURFACES if s["id"] == "prophet_live")
 
 
+
+def _sector_artifacts(as_of: str = PROPHET_CURRENT_ASOF) -> dict[str, bytes]:
+    """A coherent source-bound bundle; mtime and build clock do not qualify it."""
+    import hashlib
+
+    def raw(value):
+        return json.dumps(value, ensure_ascii=False, separators=(",", ":")).encode()
+
+    baskets = raw({"as_of": as_of, "theme_intel": {"as_of": as_of}})
+    basket_hash = hashlib.sha256(baskets).hexdigest()
+    action = raw({
+        "as_of": as_of, "baskets_sha256": basket_hash,
+        "action_board": {"total": 1, "buy_now": [{"ticker": "XLK"}]},
+    })
+    action_hash = hashlib.sha256(action).hexdigest()
+    return {
+        "/basketdata/baskets.json": baskets,
+        "/basketdata/action_board.json": action,
+        "/sectordata/sector_central.json": raw({"as_of": as_of}),
+        "/premiumdata/sector_central.json": raw({
+            "as_of": as_of, "baskets_sha256": basket_hash,
+            "action_board_sha256": action_hash,
+            "private": "PREMIUM_SECRET_DO_NOT_PUBLISH",
+        }),
+        "/sector_central.html": (
+            f'<section data-si-as-of="{as_of}" '
+            f'data-si-baskets-sha256="{basket_hash}" '
+            f'data-si-action-board-sha256="{action_hash}"></section>'
+        ).encode(),
+    }
+
+
+def _sector_reader(artifacts=None):
+    artifacts = _sector_artifacts() if artifacts is None else artifacts
+
+    def read(root, path):
+        raw = artifacts.get(path)
+        if raw is None:
+            return fs.FetchResult(error="FileNotFoundError: premium private path")
+        return fs.FetchResult(
+            status=200, last_modified=NOW, raw_body=raw,
+            body=raw.decode("utf-8", errors="replace"),
+        )
+    return read
+
+
+def _sector_result(as_of: str = PROPHET_CURRENT_ASOF) -> fs.FetchResult:
+    return fs.read_sector_generation(
+        Path("/served"), NOW, served_reader=_sector_reader(_sector_artifacts(as_of)),
+    )
+
+
 def _served(result: fs.FetchResult, live: fs.FetchResult | None = None,
             strip: fs.FetchResult | None = None,
             radar: fs.FetchResult | None = None,
@@ -376,8 +428,13 @@ def _served(result: fs.FetchResult, live: fs.FetchResult | None = None,
     radar = _entry_radar() if radar is None else radar
     cn = _cn_board() if cn is None else cn
     standouts = _us_standouts() if standouts is None else standouts
+    sector_date = (json.loads(result.body).get("source_asof")
+                   if result.body and not result.error else None)
+    sector = _sector_artifacts(sector_date or PROPHET_CURRENT_ASOF)
 
     def _read(root, path):
+        if path in sector:
+            return _sector_reader(sector)(root, path)
         if path == CLIENT_PATH:
             return strip
         if path == RADAR_PATH:
@@ -401,6 +458,7 @@ def _fresh_results() -> dict[str, fs.FetchResult]:
         "us_board_provisional": _provisional(),
         "entry_radar_live": _entry_radar(),
         "cn_board_live": _cn_board(),
+        "sector_intelligence": _sector_result(),
 
         "prophet_live_armed": _armed(),
         # Window-gated (PROPHET_LIVE_MAX_AGE_MINUTES / the prophet_live SURFACES
@@ -445,6 +503,7 @@ def test_dead_nightly_for_a_day_breaches_every_bake_surface():
         "us_board_provisional": _provisional(),
         "entry_radar_live": _entry_radar(),
         "cn_board_live": _cn_board(),
+        "sector_intelligence": _sector_result(),
 
         # The three content surfaces are judged on content, not on a stamp —
         # they stay ok here, which is the point: the four bake surfaces answer
@@ -546,6 +605,7 @@ def _stale_report(now: datetime = NOW) -> dict:
             "us_board_provisional": _provisional(),
             "entry_radar_live": _entry_radar(),
             "cn_board_live": _cn_board(),
+        "sector_intelligence": _sector_result(),
 
             "prophet_live_armed": _armed(),
             # window closed for every `now` this helper is called with (NOW and
@@ -1064,6 +1124,8 @@ def test_prophet_is_read_from_the_served_tree_never_over_http(tmp_path, monkeypa
 
     def spy_served(served_dir, path):
         reads.append((str(served_dir), path))
+        if path in _sector_artifacts():
+            return _sector_reader()(served_dir, path)
         if path == CLIENT_PATH:
             return _live_strip()
         if path == RADAR_PATH:
@@ -1113,6 +1175,8 @@ def test_prophet_is_read_from_the_served_tree_never_over_http(tmp_path, monkeypa
         # twice: once as a first-class surface, once as the us_board_provisional
         # SLA's client-side read.
         (str(tmp_path / "public"), CLIENT_PATH),
+        *[("/opt/macro/site.served", path)
+          for _ in range(2) for path in _sector_artifacts()],
         (str(tmp_path / "public"), CLIENT_PATH),
     ]
     assert not [u for u in urls if "us_board_provisional" in u], urls
@@ -2266,6 +2330,7 @@ def _results_at(now: datetime, board: fs.FetchResult) -> dict[str, fs.FetchResul
         "us_board_provisional": board,
         "entry_radar_live": _entry_radar(FRI_SESSION),
         "cn_board_live": _cn_board(FRI_SESSION),
+        "sector_intelligence": _sector_result(FRI_SESSION),
         "prophet_live_armed": _armed(FRI_SESSION),
         # FRI_VISIBLE is 19:30 ET — after the live window closes; window-gated,
         # see _fresh_results.
@@ -2723,3 +2788,141 @@ def test_the_behind_budget_is_unchanged_by_the_ahead_fence():
     assert over["status"] == "stale" and over["asof_sessions_behind"] == 2
     assert "behind the calendar" in over["detail"]
     assert "pack_ahead_of_calendar" not in over["detail"]
+
+
+# Sector first: semantic monitoring must survive a green render and a dead build.
+def _sector_check(artifacts=None, now=NOW, reader=None):
+    surface = next(s for s in fs.SURFACES if s["id"] == "sector_intelligence")
+    result = fs.read_sector_generation(
+        Path("/served"), now,
+        served_reader=reader or _sector_reader(artifacts),
+    )
+    return fs.check_surface(surface, result, now)
+
+
+def test_sector_fresh_build_cannot_hide_frozen_source():
+    now = datetime(2026, 11, 5, 22, 6, tzinfo=timezone.utc)
+    check = _sector_check(_sector_artifacts("2026-11-03"), now)
+    assert check["status"] == "stale"
+    assert check["detail"] == "data_out_of_date"
+    assert check["asof"] == "2026-11-03"
+    assert check["asof_sessions_behind"] == 2
+
+
+def test_sector_weekend_uses_completed_session_calendar():
+    check = _sector_check()
+    assert check["status"] == "ok"
+    assert check["asof_sessions_behind"] == 0
+
+
+@pytest.mark.parametrize("kind", ["missing", "malformed", "wrong_shape", "invalid_utf8"])
+def test_sector_unreadable_generation_is_blind_not_healthy(kind):
+    artifacts = _sector_artifacts()
+    path = "/premiumdata/sector_central.json"
+    if kind == "missing":
+        artifacts.pop(path)
+    else:
+        artifacts[path] = {
+            "malformed": b'{"private":"PREMIUM_SECRET_DO_NOT_PUBLISH"',
+            "wrong_shape": b"[]",
+            "invalid_utf8": b'{"as_of":"2026-08-07","private":"\xff"}',
+        }[kind]
+    check = _sector_check(artifacts)
+    assert check["status"] == "indeterminate"
+    assert check["detail"] == "freshness_unavailable"
+    public = fs.public_report({"surfaces": {"sector_intelligence": check}})
+    assert "PREMIUM_SECRET" not in json.dumps(public)
+    assert "premiumdata" not in json.dumps(public)
+    assert "facts" not in public["surfaces"]["sector_intelligence"]
+
+
+@pytest.mark.parametrize("kind", ["split", "hash", "future"])
+def test_sector_stable_invalid_generation_is_not_fresh(kind):
+    artifacts = _sector_artifacts("2026-08-10" if kind == "future" else PROPHET_CURRENT_ASOF)
+    if kind == "split":
+        artifacts["/sectordata/sector_central.json"] = b'{"as_of":"2026-08-06"}'
+    elif kind == "hash":
+        doc = json.loads(artifacts["/premiumdata/sector_central.json"])
+        doc["baskets_sha256"] = "0" * 64
+        artifacts["/premiumdata/sector_central.json"] = json.dumps(doc).encode()
+    check = _sector_check(artifacts)
+    assert check["status"] == "stale"
+    assert check["detail"] == "publication_inconsistent"
+    public = fs.public_report({"surfaces": {"sector_intelligence": check}})
+    assert "PREMIUM_SECRET" not in json.dumps(public)
+    assert "sha256" not in json.dumps(public)
+
+
+def test_sector_publication_change_is_bounded_and_indeterminate():
+    original = _sector_artifacts()
+    changed = _sector_artifacts("2026-08-06")
+    calls = []
+
+    def changing_reader(root, path):
+        calls.append(path)
+        return _sector_reader(original if len(calls) <= 5 else changed)(root, path)
+
+    check = _sector_check(reader=changing_reader)
+    assert check["status"] == "indeterminate"
+    assert check["detail"] == "publication_in_progress"
+    assert len(calls) == 6  # No retry loop or rebuild inside the observer.
+
+
+def test_sector_observer_exception_cannot_stop_other_surfaces_or_leak():
+    def broken_reader(root, path):
+        raise RuntimeError("PREMIUM_SECRET_DO_NOT_PUBLISH")
+
+    check = _sector_check(reader=broken_reader)
+    assert check["status"] == "indeterminate"
+    public = fs.public_report({"surfaces": {"sector_intelligence": check}})
+    assert "PREMIUM_SECRET" not in json.dumps(public)
+
+
+def test_sector_observer_reads_without_modifying_served_bytes(tmp_path):
+    artifacts = _sector_artifacts()
+    for name, raw in artifacts.items():
+        path = tmp_path / name.lstrip("/")
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(raw)
+    before = {name: (tmp_path / name.lstrip("/")).stat().st_mtime_ns for name in artifacts}
+    result = fs.read_sector_generation(tmp_path, NOW)
+    assert json.loads(result.body)["status"] == "ok"
+    for name, raw in artifacts.items():
+        path = tmp_path / name.lstrip("/")
+        assert path.read_bytes() == raw
+        assert path.stat().st_mtime_ns == before[name]
+
+
+def test_sector_indeterminate_joins_existing_blindness_alert_path():
+    results = _fresh_results()
+    results["sector_intelligence"] = fs.read_sector_generation(
+        Path("/served"), NOW, served_reader=_sector_reader({}),
+    )
+    report = fs.evaluate(results, NOW)
+    assert report["stale_surfaces"] == []
+    assert report["indeterminate_surfaces"] == ["sector_intelligence"]
+    assert report["surfaces"]["prophet_us"]["status"] == "ok"
+
+
+def test_sector_known_stale_source_is_not_hidden_by_missing_action_metadata():
+    artifacts = _sector_artifacts("2026-11-03")
+    action = json.loads(artifacts["/basketdata/action_board.json"])
+    del action["as_of"]
+    del action["baskets_sha256"]
+    artifacts["/basketdata/action_board.json"] = json.dumps(action).encode()
+    check = _sector_check(
+        artifacts, datetime(2026, 11, 5, 22, 6, tzinfo=timezone.utc),
+    )
+    assert check["status"] == "stale"
+    assert check["detail"] == "data_out_of_date"
+    assert check["asof_sessions_behind"] == 2
+
+
+def test_sector_missing_clock_without_old_source_stays_indeterminate():
+    artifacts = _sector_artifacts()
+    action = json.loads(artifacts["/basketdata/action_board.json"])
+    del action["as_of"]
+    artifacts["/basketdata/action_board.json"] = json.dumps(action).encode()
+    check = _sector_check(artifacts)
+    assert check["status"] == "indeterminate"
+    assert check["detail"] == "freshness_unavailable"

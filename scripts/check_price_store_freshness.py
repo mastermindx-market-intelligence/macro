@@ -41,6 +41,9 @@ _ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(_ROOT))
 
 from lib import config, nyse_calendar  # noqa: E402
+from lib.yahoo_runtime_profile import (  # noqa: E402
+    YahooRuntimeBindingError, YahooRuntimeOwnershipError, parse_profile, runtime_owns,
+)
 
 log = logging.getLogger("price_store_freshness")
 
@@ -67,19 +70,35 @@ def run(heal: bool, now: datetime | None = None) -> int:
     from scripts.refresh_regime_if_stale import _repull_yahoo, _store_close_date
 
     expected = str(nyse_calendar.expected_last_session(now))
-    store_before = _store_close_date()
+    profile = parse_profile(config.load().get("yahoo", {}))
+    binding_error = None
+    try:
+        store_before = _store_close_date()
+    except YahooRuntimeBindingError as exc:
+        store_before = None
+        binding_error = exc.code
     status = evaluate(store_before, expected)
     store_after = store_before
     healed = False
+    heal_attempted = False
+    heal_refused = None
 
     if status in ("stale", "no_store") and heal:
-        log.info("store %s behind expected session %s — re-pulling yahoo (keyless)",
-                 store_before, expected)
-        try:
-            store_after = _repull_yahoo()
-            healed = evaluate(store_after, expected) == "fresh"
-        except Exception as e:  # noqa: BLE001 — a heal failure is just an unhealed stale
-            log.error("yahoo re-pull failed: %s", e)
+        if runtime_owns(profile, group="yahoo", symbol="SPY"):
+            heal_refused = "runtime_owner"
+            log.warning("SPY history is runtime-owned; legacy heal not attempted")
+        else:
+            log.info("store %s behind expected session %s — re-pulling yahoo (keyless)",
+                     store_before, expected)
+            try:
+                heal_attempted = True
+                store_after = _repull_yahoo()
+                healed = evaluate(store_after, expected) == "fresh"
+            except YahooRuntimeOwnershipError:
+                heal_attempted = False
+                heal_refused = "runtime_owner"
+            except Exception as e:  # noqa: BLE001 — failed heal remains stale
+                log.error("yahoo re-pull failed: %s", e)
     final = evaluate(store_after, expected)
 
     _write_marker({
@@ -89,7 +108,9 @@ def run(heal: bool, now: datetime | None = None) -> int:
         "store_after": store_after,
         "status": final,
         "healed": healed,
-        "heal_attempted": bool(heal and status != "fresh"),
+        "heal_attempted": heal_attempted,
+        **({"heal_refused": heal_refused} if heal_refused else {}),
+        **({"binding_error": binding_error} if binding_error else {}),
     })
 
     if final == "fresh":

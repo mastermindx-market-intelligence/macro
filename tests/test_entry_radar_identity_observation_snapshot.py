@@ -486,3 +486,74 @@ def test_legacy_refuses_native_layout_without_reading_pointer_or_control(legacy,
     monkeypatch.setattr(adapter, "_read_file", forbidden)
     with pytest.raises(IdentityError, match="native"):
         adapter.read_reference_generation(legacy)
+
+
+@pytest.mark.parametrize("field,value", [("rows", True), ("columns", 0), ("total_bytes", -1),
+    ("artifact_bytes", 64 * 1024**2 + 1), ("receipt_bytes", 9 * 1024**2 + 1),
+    ("decoded_bytes", 64 * 1024**2 + 1), ("string_bytes", 262145), ("record_bytes", 8 * 1024**2 + 1)])
+def test_consumer_bounds_only_narrow_the_incumbent_limits(field, value):
+    with pytest.raises(IdentityError, match="resource bounds"):
+        adapter.ReferenceReadBounds(**{field: value})
+
+
+def test_tighter_reference_read_applies_aggregate_cap_to_held_reads(legacy, monkeypatch):
+    total = sum((legacy / name).stat().st_size for name in NAMES) + 2 * (legacy / "_receipt.json").stat().st_size
+    complete = adapter.read_reference_generation(legacy, bounds=adapter.ReferenceReadBounds(total_bytes=total))
+    assert complete.artifact_bytes == adapter.read_reference_generation(legacy).artifact_bytes
+    original_read = adapter._read_file
+    seen = []
+    def read(fd, name, limit):
+        seen.append((name, limit))
+        return original_read(fd, name, limit)
+    monkeypatch.setattr(adapter, "_read_file", read)
+    with pytest.raises(IdentityError, match="byte bound"):
+        adapter.read_reference_generation(legacy, bounds=adapter.ReferenceReadBounds(total_bytes=total - 1))
+    assert seen[-1] == ("_receipt.json", (legacy / "_receipt.json").stat().st_size - 1)
+
+
+@pytest.mark.parametrize("field,maximum,match", [("rows", 1, "row bound"), ("columns", 1, "columns"),
+    ("decoded_bytes", 8, "decoded byte bound"), ("string_bytes", 3, "string bound"),
+    ("record_bytes", 12, "record byte bound")])
+def test_tighter_parquet_bounds_refuse_actual_decoded_rows(field, maximum, match):
+    raw = parquet_bytes([{"name": "Micron", "kind": "equity"}, {"name": "Other", "kind": "equity"}])
+    with pytest.raises(IdentityError, match=match):
+        adapter._parquet_records(raw, "controlled.parquet", bounds=adapter.ReferenceReadBounds(**{field: maximum}))
+
+
+def _dictionary_encoded_bytes(value, count):
+    # Construct a dictionary buffer directly; the fixture never materializes
+    # the dangerous expanded 1 GiB array merely to test its refusal.
+    array = pa.DictionaryArray.from_arrays(pa.array([0] * count, type=pa.int32()), pa.array([value]))
+    sink = pa.BufferOutputStream()
+    pq.write_table(pa.table({"name": array}), sink, use_dictionary=True, store_schema=False)
+    return sink.getvalue().to_pybytes()
+
+
+def test_tight_decoder_refuses_dictionary_expansion_before_requesting_a_large_batch(monkeypatch):
+    raw = _dictionary_encoded_bytes("x" * 1024**2, 1024)
+    assert len(raw) < 4 * 1024**2
+    calls = []
+    original_batches = pq.ParquetFile.iter_batches
+    def batches(self, *args, **kwargs):
+        calls.append(kwargs)
+        yield from original_batches(self, *args, **kwargs)
+    monkeypatch.setattr(pq.ParquetFile, "iter_batches", batches)
+    bounds = adapter.ReferenceReadBounds(decoded_bytes=8 * 1024**2, string_bytes=4096)
+    with pytest.raises(IdentityError, match="string bound"):
+        adapter._parquet_records(raw, "dictionary.parquet", bounds=bounds)
+    assert calls == [{"batch_size": 1, "use_threads": False, "use_pandas_metadata": False}]
+
+
+def test_valid_dictionary_records_preserve_default_and_tighter_decoder_results(monkeypatch):
+    raw = _dictionary_encoded_bytes("valid captured string", 20)
+    calls = []
+    original_batches = pq.ParquetFile.iter_batches
+    def batches(self, *args, **kwargs):
+        calls.append(kwargs["batch_size"])
+        yield from original_batches(self, *args, **kwargs)
+    monkeypatch.setattr(pq.ParquetFile, "iter_batches", batches)
+    default = adapter._parquet_records(raw, "valid.parquet")
+    equal_defaults = adapter._parquet_records(raw, "valid.parquet", bounds=adapter.ReferenceReadBounds())
+    tight = adapter._parquet_records(raw, "valid.parquet", bounds=adapter.ReferenceReadBounds(rows=100, string_bytes=4096))
+    assert default == equal_defaults == tight == [{"name": "valid captured string"}] * 20
+    assert calls == [1024, 1024, 1]

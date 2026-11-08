@@ -1,0 +1,71 @@
+{
+  "base_sha": "4eddd4ad83f761d4178e1faa73173dccd71ed419",
+  "python_parse": "passed",
+  "edited_source_whitespace": "passed",
+  "git_diff_check": 0,
+  "hashes": {
+    "lib/adjusted_price_capture.py": "90821ab245f3925efd3f95d00c62db7fc0016d4e1201b121d4f8272613ce9a54",
+    "scripts/fetch_basket_ohlcv.py": "caf00d5e880f944a998f065e4207498aebd64927b333ebea701e03fbb75c415f",
+    "engine/basket_index.py": "92e38cb042c848caaa3935a1a2759f95e495eeede59d37b1e161dfca2dbceac2",
+    "engine/basket_score.py": "2745dd59bea1876f75f1afe6f525622d70094a61fcb304599f8fc288abfa416b",
+    "engine/basket_breadth_divergence.py": "0d19641127e21443917382ada2579050cbec65a50925049c09e484067a0eb5b3",
+    "engine/theme_scoring.py": "99a7ecb3a97a64d40b294c2ef6947539cb6653540cafbd2f002dab568c0c8b15",
+    "tests/test_basket_ohlcv_explicit_inputs.py": "fd6a951632532102a39e24b619fc8791226b6f271dca5b262736c690ff754270",
+    "tests/test_basket_enrichments_explicit_inputs.py": "4fbdca74b7c779764192f66f7ab4b01643dabd444fce843504640b4e891276dc"
+  },
+  "status": " M engine/basket_breadth_divergence.py\n M engine/basket_index.py\n M engine/basket_score.py\n M engine/theme_scoring.py\n M lib/adjusted_price_capture.py\n M research/market_os/ALWAYS_ON_ACTIVE_COMMISSIONS_2026-11-06.json\n M research/market_os/ALWAYS_ON_MACRO_MIGRATION_2026-11-05.md\n M scripts/build_sector_action_board.py\n M scripts/build_site.py\n M scripts/fetch_basket_ohlcv.py\n M tests/test_act_now_board_assembler.py\n M tests/test_basket_integration.py\n?? engine/sector_action_board.py\n?? research/market_os/SECTOR_ACTION_BOARD_INPUTS_2026-11-06.md\n?? research/market_os/SECTOR_ACTION_BOARD_SOURCE_REVIEW_2026-11-06.json\n?? tests/fixtures/base_adjusted_price_capture_4eddd4.py\n?? tests/fixtures/base_basket_breadth_divergence_4eddd4.py\n?? tests/fixtures/base_basket_score_4eddd4.py\n?? tests/fixtures/base_basket_signals_4eddd4.py\n?? tests/fixtures/base_sector_action_board_b168.py\n?? tests/test_basket_enrichments_explicit_inputs.py\n?? tests/test_basket_ohlcv_explicit_inputs.py\n?? tests/test_sector_action_board_inputs.py\n",
+  "recorded_at": "2026-11-06T11:42:41.475832+00:00",
+  "state": "PARENT_SOURCE_QUALIFIED_NOT_ACTIVATED",
+  "protected_source_sha": "49c2e1d93e5e080b1671c98087a845e5beb09dd5",
+  "operation_id": "macro-always-on-shared-shell-20261105-c3",
+  "proof": {
+    "affected": {
+      "exit_code": 0,
+      "seconds": 135.911,
+      "log": "/tmp/mmx-ohlcv-enrichments-affected-final-20261106.log",
+      "sha256": "366cd00b7c9a0602902eda75eae7cadae95231f991a46138f3e14d74f131fe23",
+      "passed": 388,
+      "skipped": 1,
+      "deselected": 2
+    },
+    "final_boundary": {
+      "exit_code": 0,
+      "seconds": 34.073,
+      "log": "/tmp/mmx-ohlcv-enrichments-final-boundary-20261106.log",
+      "sha256": "8f398b203d70436fc03593cbf5fc59d176f68073f6577e091c62ef0cb81508c0",
+      "passed": 119
+    },
+    "counts_overlap": true,
+    "baseline_missing_membership": {
+      "baseline_sha": "4eddd4ad83f761d4178e1faa73173dccd71ed419",
+      "test_source_sha256": "0c2dac645a4e77553f1e52a2aa7d99180266217222d59fcb50ac4a9abf65fc57",
+      "byte_equal_to_worktree": true,
+      "results": [
+        {
+          "test": "test_bld_is_stamped_removed_in_live_membership",
+          "result": "reproduced_original_missing_membership",
+          "path": "/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-always-on-shared-shell-20261105-c3/data/baskets/membership.json"
+        },
+        {
+          "test": "test_mag_and_gato_are_stamped_delisted_in_live_membership",
+          "result": "reproduced_original_missing_membership",
+          "path": "/Volumes/Mastermind 2/agent-workspaces/macro/web/macro-always-on-shared-shell-20261105-c3/data/baskets/membership.json"
+        }
+      ]
+    },
+    "literal_original_signal_function_equal": true,
+    "literal_fixture_sha256": {
+      "base_adjusted_price_capture_4eddd4.py": "d763d9bdbd8bbb8f4077b94f132f9178fcc14212d0be73d9ccaf65090778b307",
+      "base_basket_breadth_divergence_4eddd4.py": "f073f778f43f9e040b5b3b76cfb66fe5085940ca00b92e7ae2fac359d1d68be6",
+      "base_basket_score_4eddd4.py": "313e9dfae08768d769c6604dcc0881315c848ce4b6ffa524430385723d7f5016",
+      "base_basket_signals_4eddd4.py": "b768fd3025b90ffd848cddbbba5a317eba0aba848dac9eb23fc32a17a15ddd9c"
+    },
+    "actual_consumer": "prepare_theme_basket_rows -> basket_enrichments_from_inputs -> compute_theme_intel_core; real MTF/tape/textures with ambient config/store/legacy acquisition forbidden"
+  },
+  "limits": [
+    "No live provider acquisition",
+    "No runtime ownership transfer, service activation or API mount",
+    "No hosted CI, protected release, Terminal installation or authenticated beta acceptance",
+    "Final boundary run follows affected suite and qualifies added allocation/detachment fences"
+  ]
+}

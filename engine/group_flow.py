@@ -571,13 +571,33 @@ def _region_plane(region: str):
 def _setup(region: str = "us"):
     """Shared close matrix + benchmark LEVEL for a region's thematic baskets.
 
+    LEGACY ADAPTER — unchanged signature and behaviour. It is now exactly
+    ``_build_setup(_acquire_setup(region))``: the acquisition half performs every
+    file/store read of the data plane, the build half turns those captured values
+    into the panel and reads nothing. Existing callers (compute_group_flows,
+    engine.theme_scoring) keep their current contract; the explicit-input cores
+    consume the panel as a captured value instead of re-reading the repository.
+
     region='us' (default) uses the S&P-1500 close cache on its latest exact common
     session with SPY, then unions baskets/extras on that fixed calendar. 'cn'/'hk'/'ca'
     swap in that region's baskets
     membership + search-cache closes + index benchmark (e.g. CSI 300 / HSI / TSX). The US-only
     PIT GICS sector frames are NOT built for non-US regions (no PIT membership), so non-US
     callers operate on the thematic baskets only."""
+    return _build_setup(_acquire_setup(region))
+
+
+def _acquire_setup(region: str = "us"):
+    """READ-ONLY acquisition of the shared close panel — every read of the group-flow
+    data plane lives here, and nothing here reads a clock.
+
+    Returns the captured raw values (membership, close matrix, benchmark level,
+    extras, observation receipt) as a plain dict, or None on the same shortfalls the
+    incumbent `_setup` reports. The returned dict is a VALUE: feeding it to
+    `_build_setup` reproduces the panel byte-for-byte without touching the
+    repository again."""
     region = _REGION_ALIASES.get((region or "us").lower(), "us")
+    extras = None                     # US-only supplemental tape; other regions carry none
     if region == "us":
         mem = _membership()
         if not mem or not mem.get("baskets"):
@@ -629,11 +649,31 @@ def _setup(region: str = "us"):
             closes, bench_df["close"])
         if closes.empty or observation.get("effective_as_of") is None:
             return None
-    rets = closes.pct_change(fill_method=None)
-    idx = rets.index
     if region != "us":
         theme_closes = closes
         theme_price_resolution = None
+    return {"region": region, "mem": mem, "closes": closes, "bench_close": bench_close,
+            "observation": observation, "extras": extras,
+            "theme_closes": theme_closes, "theme_price_resolution": theme_price_resolution}
+
+
+def _build_setup(acquired: dict | None):
+    """PURE assembly of the shared close panel from ALREADY-CAPTURED values.
+
+    Reads nothing, writes nothing and uses no clock: every input arrives in
+    `acquired` (the output of `_acquire_setup`). This is the seam the explicit-input
+    cores use — a runtime can capture the panel once and recompute the panel from the
+    same captured values without re-reading the repository."""
+    if acquired is None:
+        return None
+    region = acquired["region"]
+    mem = acquired["mem"]
+    closes = acquired["closes"]
+    bench_close = acquired["bench_close"]
+    theme_closes = acquired["theme_closes"]
+    theme_price_resolution = acquired["theme_price_resolution"]
+    rets = closes.pct_change(fill_method=None)
+    idx = rets.index
     theme_rets = theme_closes.pct_change(fill_method=None)
     bench_ret = bench_close.reindex(idx).ffill().pct_change(fill_method=None)
     bench = pd.Series(np.nan, index=idx)
@@ -644,7 +684,8 @@ def _setup(region: str = "us"):
     return {"mem": mem, "closes": closes, "rets": rets,
             "theme_closes": theme_closes, "theme_rets": theme_rets,
             "theme_price_resolution": theme_price_resolution,
-            "idx": idx, "bench": bench, "region": region, "observation": observation}
+            "idx": idx, "bench": bench, "region": region,
+            "observation": acquired["observation"]}
 
 
 def _pit_sector_frames(closes: pd.DataFrame, rets: pd.DataFrame,

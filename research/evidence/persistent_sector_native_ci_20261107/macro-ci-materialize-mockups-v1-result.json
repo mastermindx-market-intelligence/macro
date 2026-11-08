@@ -1,0 +1,10 @@
+{
+  "exit": 0,
+  "seconds": 29.01,
+  "log_sha256": "ad48e96188fc9278fdfb5df4643551875fb7e4846c97bc675320cf0641155a15",
+  "tail": [
+    "worktree-sparse: materialized mockups"
+  ],
+  "all_evidence_bytes_unchanged": true,
+  "head": "f223990e0e1dc805108517abde90c17b8883b005"
+}

@@ -1,0 +1,151 @@
+{
+  "schema": "macro.always_on_migration.observation.v1",
+  "purpose": "Bounded evidence for the 2026-11-05 architecture and Sector implementation; not production acceptance of the change.",
+  "source_pins": {
+    "mastermind": "49c2e1d93e5e080b1671c98087a845e5beb09dd5",
+    "macro": "e39ec45902c1a2bb28507beb851593be6e422167",
+    "terminal": "f9d3280a2a3ff28dd925b128231702b836c8a247"
+  },
+  "http_observation": {
+    "observed_at": "2026-11-05T22:06:16.958710+00:00",
+    "method": "Python urllib GET with normal TLS verification from authorized Studio M2; no credentials or cookies",
+    "sector": {
+      "url": "https://www.mastermind-x.com/sector_central.html",
+      "status": 200,
+      "last_modified": "Thu, 05 Nov 2026 04:57:23 GMT",
+      "cache_control": "public, must-revalidate, max-age=60",
+      "bytes": 404262,
+      "source_as_of": "2026-11-03",
+      "displayed_generated_at": "2026-11-05 03:50 UTC"
+    },
+    "sentinel": {
+      "url": "https://www.mastermind-x.com/live/staleness.json",
+      "status": 200,
+      "cache_control": "no-store",
+      "generated_at": "2026-11-05T21:42:06.869332+00:00",
+      "ok": false,
+      "surface_ids": [
+        "china",
+        "cn_board_live",
+        "entry_radar_live",
+        "hub",
+        "prophet_live",
+        "prophet_live_armed",
+        "prophet_us",
+        "r2_massive_stock_day",
+        "us_board_provisional",
+        "us_standouts",
+        "us_stocks"
+      ],
+      "sector_surface_present": false
+    },
+    "api": {
+      "url": "https://www.mastermind-x.com/api/status",
+      "status": 200,
+      "reported_status": "ok",
+      "observation": "Quotes, breadth and basket live clocks advanced on November 5; this is liveness of those lanes, not a global source-freshness verdict."
+    },
+    "beta": {
+      "url": "https://beta.mastermind-x.com/",
+      "status": 200,
+      "final_url": "https://beta.mastermind-x.com/today",
+      "cache_control": "private, must-revalidate, no-cache, no-store, max-age=0",
+      "scope": "Anonymous HTTPS reachability only; signed-in browser behavior is unverified."
+    }
+  },
+  "served_generation": {
+    "observed_at": "2026-11-05T22:20:00.086207+00:00",
+    "code_sha": "20959c5e8183f44678df4dbfc26ac246665ba2bf",
+    "method": "Existing read-only Sector validator against a temporary site symlink to the actual served tree; no production data or service modified.",
+    "ok": false,
+    "as_of": "2026-11-03",
+    "sessions_behind": 2,
+    "action_as_of_missing": true,
+    "action_baskets_hash_missing": true,
+    "premium_and_html_action_hash_mismatch": true,
+    "content_scope": "Only validation conclusions retained; private payload bytes and hashes omitted."
+  },
+  "workflow_failure": {
+    "run_id": 42099034826,
+    "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/42099034826",
+    "job_id": 127496654185,
+    "created_at": "2026-11-05T19:58:58Z",
+    "conclusion": "failure",
+    "failed_step": "Run actions/checkout@v4",
+    "observed_error": "RPC failed; curl 28 Operation too slow. Less than 1000 bytes/sec transferred the last 300 seconds; fatal: protocol error: bad pack header; git exit 128",
+    "downstream": "Build, semantic validation and publication steps were skipped."
+  },
+  "interpretation": {
+    "proven": [
+      "Fresh HTML can coexist with stale Sector source inputs.",
+      "The inspected Sector refresh was stopped by Git checkout before computation.",
+      "The served Sector action artifact does not match the source-bound generation contract.",
+      "The existing external sentinel did not include Sector."
+    ],
+    "inference": [
+      "scripts/build_site.py has a bare action_board.json writer matching the observed missing metadata shape; exact process attribution for the live overwrite is not yet proven."
+    ],
+    "not_proven": [
+      "Every outage has the same cause.",
+      "Signed-in beta acceptance.",
+      "Any new code merged, installed, or live.",
+      "Independent live Sector production."
+    ]
+  },
+  "source_delivery": {
+    "macro": {
+      "pr": 10780,
+      "url": "https://github.com/mastermindx-market-intelligence/macro/pull/10780",
+      "initial_implementation_head": "0c4c28e4a3e1ba0b1dde3ebdd9774355822f1527",
+      "status": "published; CI repair in progress; not merged or installed"
+    },
+    "terminal": {
+      "pr": 1311,
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1311",
+      "head": "26a8bbec0859959d48f97fcbc06c289dbf66ffd2",
+      "status": "published; hosted e2e pending; not merged or installed",
+      "focused_unit_passed": 78,
+      "playwright_passed": 12,
+      "viewports": [
+        "1440x900",
+        "820x1180",
+        "390x844"
+      ],
+      "typescript_exit": 0,
+      "evidence_path": "docs/pr-crops/sector-always-on-refresh-20261105/README.md",
+      "production_browser_acceptance": false
+    }
+  },
+  "terminal_installed_baseline": {
+    "observation_window_utc": "2026-11-05 approximately 23:37; minute precision retained from session receipt",
+    "method": "Read-only service, tracked Git status, deployment marker and localhost shared-shell status via existing SSH identity; no secret values inspected.",
+    "production": {
+      "service": "terminal.service",
+      "active": true,
+      "tracked_source_clean": true,
+      "deployment_id": "db06eacd8938cf44588d3906bca95bfd7122b74b",
+      "shared_shell_enabled": false
+    },
+    "beta": {
+      "service": "terminal-beta.service",
+      "active": true,
+      "tracked_source_clean": true,
+      "deployment_id": "3930ce93bb1ed6f3d66ba1ae4cac7e441995ba78",
+      "shared_shell_enabled": true,
+      "protocol": "mmx.shared-shell.v1"
+    },
+    "limits": "Baseline only; neither target contains PR 1311's implementation."
+  },
+  "input_runtime_audit": {
+    "run_id": "macro-always-on-20261105-c3-input-runtime-01",
+    "response_sha256": "adf6e96d9c9c11ed67895615497d8551b2b93b0858cfaaa6a320745180fde7f4",
+    "response_bytes": 20309,
+    "scope": "Source-only census, with explicit parent qualifications; not production or release acceptance.",
+    "adjudication": "ALWAYS_ON_MACRO_INPUT_RUNTIME_AUDIT_2026-11-05.md"
+  },
+  "browser_proof": {
+    "status": "blocked_on_connected_browser_observation",
+    "attempt": "Existing browser plugin beta navigation timed out; bounded tab-state read returned INVALID_ARGUMENT.",
+    "limits": "No authenticated route, signed-in account or open-tab production refresh was established. Local Playwright cases are fixture tests."
+  }
+}

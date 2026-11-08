@@ -711,6 +711,18 @@ SURFACES: list[dict] = [
         "asof_max_age_minutes": PROPHET_LIVE_MAX_AGE_MINUTES,
         "live_window_gate": True,
     },
+    # A fresh HTML build can carry an old or split Sector generation. Observe
+    # the exact served bundle outside GitHub, using the existing build gate's
+    # calendar and hash contract. Premium bytes stay local and private.
+    {
+        "id": "sector_intelligence",
+        "kind": "served_bundle",
+        "path": "/sector_central.html",
+        "bake_budget_hours": None,
+        "delay_budget_days": None,
+        "validator": "sector_generation",
+        "asof_max_sessions_behind": 1,
+    },
 ]
 
 # The English renderings of the delayed-board marker. us_stocks
@@ -730,6 +742,7 @@ class FetchResult:
     last_modified: datetime | None = None
     body: str | None = None
     error: str | None = None
+    raw_body: bytes | None = None  # Exact served bytes for generation hash checks.
 
 
 # --------------------------------------------------------------------------- #
@@ -794,7 +807,54 @@ def read_served(served_dir: Path, path: str) -> FetchResult:
         status=200,
         last_modified=datetime.fromtimestamp(stat.st_mtime, tz=timezone.utc),
         body=raw.decode("utf-8", errors="replace"),
+        raw_body=raw,
     )
+
+
+def read_sector_generation(served_dir: Path, now: datetime, *, served_reader=read_served,
+                           max_sessions_behind: int = 1) -> FetchResult:
+    """Read a bounded, stable Sector bundle; never collect, build or publish it.
+
+    Resolve a serving symlink once. Until the publisher supplies immutable
+    generations, compare two bounded observations. A changing tree is unknown,
+    not a stale verdict, and is retried only by the existing sentinel cadence.
+    """
+    def result(status: str, reason: str, facts: dict) -> FetchResult:
+        return FetchResult(status=200, body=json.dumps({
+            "status": status, "reason": reason, "facts": facts,
+        }))
+
+    try:
+        from scripts import check_sector_intelligence_freshness as sector_gate
+
+        root = Path(served_dir).resolve()
+        snapshot: dict[Path, bytes] = {}
+        for observation in range(2):
+            for relative in sector_gate.ARTIFACT_PATHS:
+                path = root / relative
+                fr = served_reader(root, "/" + relative)
+                if fr.error or fr.status != 200 or (
+                    fr.raw_body is None and fr.body is None
+                ):
+                    return result("indeterminate", "freshness_unavailable", {
+                        "read_error": fr.error or f"HTTP {fr.status}",
+                        "artifact": relative,
+                    })
+                raw = fr.raw_body if fr.raw_body is not None else fr.body.encode("utf-8")
+                if observation == 0:
+                    snapshot[path] = raw
+                elif snapshot[path] != raw:
+                    return result("indeterminate", "publication_in_progress", {})
+        report = sector_gate.evaluate(
+            root.parent, site_dir=root, now=now,
+            max_sessions_behind=max_sessions_behind,
+            read_bytes=snapshot.__getitem__,
+        )
+        return FetchResult(status=200, body=json.dumps(report))
+    except Exception as exc:  # noqa: BLE001 — this surface cannot stop the estate observer
+        return result("indeterminate", "freshness_unavailable", {
+            "evaluation_error": f"{type(exc).__name__}: {exc}",
+        })
 
 
 def _calendar_mod(name: str | None):
@@ -1332,7 +1392,10 @@ def check_surface(surface: dict, fr: FetchResult, now: datetime,
     }
     if fr.error or fr.status != 200:
         out["status"] = "indeterminate"
-        out["detail"] = fr.error or f"HTTP {fr.status}"
+        out["detail"] = (
+            "freshness_unavailable" if surface.get("validator") == "sector_generation"
+            else fr.error or f"HTTP {fr.status}"
+        )
         # A surface that publishes once a day has a NORMAL absent state, and the
         # difference between "not published yet" and "I cannot see" is the whole
         # question the blindness counter exists to answer. Narrow on purpose:
@@ -1341,6 +1404,36 @@ def check_surface(surface: dict, fr: FetchResult, now: datetime,
         if surface.get("absent_ok") and "FileNotFoundError" in (fr.error or ""):
             out["absent"] = True
             out["detail"] = "not published yet (absence is a normal state here)"
+        return out
+
+    if surface.get("validator") == "sector_generation":
+        # Only a small allowlisted projection is public. Raw validator errors,
+        # paths, hashes and premium metadata belong exclusively in private facts.
+        out["status"] = "indeterminate"
+        out["detail"] = "freshness_unavailable"
+        try:
+            report = json.loads(fr.body or "")
+            status, reason = report["status"], report["reason"]
+            allowed = {
+                "ok": {"current"},
+                "stale": {"data_out_of_date", "publication_inconsistent"},
+                "indeterminate": {"freshness_unavailable", "publication_in_progress"},
+            }
+            if reason not in allowed.get(status, set()):
+                return out
+            facts = report.get("facts") or {}
+            if not isinstance(facts, dict):
+                return out
+            out["status"], out["detail"] = status, reason
+            stamp = facts.get("as_of")
+            if isinstance(stamp, str) and re.fullmatch(r"\d{4}-\d{2}-\d{2}", stamp):
+                out["asof"] = stamp
+            behind = facts.get("sessions_behind")
+            if isinstance(behind, int) and not isinstance(behind, bool):
+                out["asof_sessions_behind"] = behind
+            out["facts"] = {"validation": report}
+        except (ValueError, KeyError, TypeError, AttributeError):
+            pass
         return out
 
     problems: list[str] = []
@@ -2277,6 +2370,12 @@ def run(now: datetime, base: str, r2_base: str, public_dir: Path, state_dir: Pat
     served_dir = Path(DEFAULT_SERVED_DIR) if served_dir is None else served_dir
     results: dict[str, FetchResult] = {}
     for s in SURFACES:
+        if s["kind"] == "served_bundle":
+            results[s["id"]] = read_sector_generation(
+                served_dir, now, served_reader=served_reader,
+                max_sessions_behind=s["asof_max_sessions_behind"],
+            )
+            continue
         if s["kind"] == "served_file":
             results[s["id"]] = served_reader(served_dir, s["path"])
             continue

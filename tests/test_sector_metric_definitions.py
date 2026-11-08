@@ -147,15 +147,20 @@ def test_grader_horizons_are_21_63_126_trading_bars():
 def test_rs_meta_pins_basis_benchmark_and_reconstruction_label():
     src = _src("engine/sector_cycles.py")
     for literal in (
-        '"horizons_sessions": [21, 63]',
-        '"mode": "reconstructed_price_history"',
+        '"horizons_sessions": list(RS_HISTORY_HORIZONS)',
+        '"mode": RS_HISTORY_MODE',
         '"naturally_observed": False',
         '"basis": "tr"',
         "RS_BENCH_FFILL_LIMIT = 5",
         "_RS_MIN_ROWS = 210",
-        "RS_HISTORY_MAX_POINTS = 252",
+        '"max_points_per_sector": RS_HISTORY_MAX_POINTS',
     ):
         assert literal in src, f"rs contract literal drifted: {literal!r}"
+    from lib import sector_history_contract as history_contract
+    assert sc.RS_HISTORY_MAX_POINTS == history_contract.RS_HISTORY_MAX_POINTS == 252
+    assert history_contract.RS_HISTORY_HORIZONS == (21, 63)
+    assert history_contract.RS_HISTORY_MODE == "reconstructed_price_history"
+    assert history_contract.RS_HISTORY_SCHEMA == "sector_cycles.rs_history.v1"
     # the shared ratio formula and the limit-free basket variant (B01 F4)
     assert "ratio = t / b.reindex(t.index).ffill(limit=RS_BENCH_FFILL_LIMIT)" in src
     assert 'rs = (full / spy.reindex(full.index).ffill()).dropna()' in src
@@ -226,7 +231,8 @@ def test_post_base_writer_pins():
         '"rhythm_version": 1',
         '"correction_contract": {',
         'rec["rhythm"] = rhythm',
-        'rec["estimate_kinds"] = estimate_kinds(rec.get("now") or {}, rhythm)',
+        'rec["estimate_kinds"] = (',
+        'live_hazard_parity=live_hazard_parity)',
         'nw["hazard"] = hz',
     ):
         assert literal in cycles, f"post-base cycles writer drifted: {literal!r}"

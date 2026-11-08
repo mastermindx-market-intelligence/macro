@@ -1,0 +1,285 @@
+{
+  "accepted_record": {
+    "acceptance_attempt_id": "c23390bc536c4f3ab570d0f5328714f5",
+    "accepted_sha": "334980ac7339a6edfa2ebf357a3b235732ad5419",
+    "app_root": "/opt/terminal/beta/terminal",
+    "build_id": "build-TfctsWXpff2fKS",
+    "canonical_repo": "/opt/terminal/.gitsrc-beta",
+    "generated_at": "2026-11-06T12:20:14.728813Z",
+    "policy_digest": "99f76cb211b086d1f83bb86c10747e2711a4c318fa4bd5dab1b94e84d46fe1d6",
+    "policy_path": "/opt/terminal/.gitsrc-beta/ops/terminal_source_audit.beta.json",
+    "previous_runtime_record": "/var/lib/mastermind-terminal-beta/source-provisioned/runtime-accepted-3930ce93bb1ed6f3d66ba1ae4cac7e441995ba78-d1cfe890f233b4e2.json",
+    "previous_runtime_record_id": "d1cfe890f233b4e2ce4674e63ea775fc80d4d03857eca6d8dfc847f5758f680e",
+    "record_id": "bd1c7a00324653cd9bca13df033b7380e8da64014db68529aec33086428fe4db",
+    "release_receipt_id": "026e21368fd18cc052f8e93a64771d8b3f3bc215611d45858526b592cab901d7",
+    "release_receipt_path": "/var/lib/mastermind-terminal-beta/release-preflight/20261106T121959Z-334980ac7339a6edfa2ebf357a3b235732ad5419-026e21368fd18cc052f8e93a64771d8b3f3bc215611d45858526b592cab901d7.json",
+    "rollback_baseline": true,
+    "runtime_accepted": true,
+    "schema": "mastermind.terminal.beta_runtime_accepted.v1",
+    "source_audit_receipt_id": "653f6807d81a013225ed489276a92943943e1df32fb4b8f14e8af28aa04cee19",
+    "source_provisioned_record": "/var/lib/mastermind-terminal-beta/source-provisioned/source-provisioned-e45bde2cac07ac3b29285ff70c40d68900fad62c-efb499b6d0108d69.json",
+    "source_provisioned_record_id": "efb499b6d0108d69d3eedba424f7ef6ecea26c957c5378fbef4f9b6b997365d9",
+    "target": "beta",
+    "target_root": "/opt/terminal/beta"
+  },
+  "accepted_record_path": "/var/lib/mastermind-terminal-beta/source-provisioned/runtime-accepted-334980ac7339a6edfa2ebf357a3b235732ad5419-bd1c7a00324653cd.json",
+  "accepted_record_sha256": "36f5ba3f0f5b1c9fdd265bb41ce0661522c609d2dc57fd548be3458fcb4c3093",
+  "attempt_records": [
+    {
+      "path": "/var/lib/mastermind-terminal-beta/source-provisioned/attempt-c23390bc536c4f3ab570d0f5328714f5-activation-448a5587149444d8.json",
+      "phase": "activation",
+      "record_id": "448a5587149444d8985789d26f3e29bfb4682bb492d7d789e868f429edae3900",
+      "target_sha": "334980ac7339a6edfa2ebf357a3b235732ad5419"
+    },
+    {
+      "path": "/var/lib/mastermind-terminal-beta/source-provisioned/attempt-c23390bc536c4f3ab570d0f5328714f5-committing-6b897c790d8c99fb.json",
+      "phase": "committing",
+      "record_id": "6b897c790d8c99fb540d3a880ce4f36605015a7927706da0efcf06a6d02b989b",
+      "target_sha": "334980ac7339a6edfa2ebf357a3b235732ad5419"
+    },
+    {
+      "path": "/var/lib/mastermind-terminal-beta/source-provisioned/attempt-c23390bc536c4f3ab570d0f5328714f5-inputs-dirty-bdf8066a1fc6e50e.json",
+      "phase": "inputs-dirty",
+      "record_id": "bdf8066a1fc6e50ecc6b7fc04cc50f1749cc5b702f9e89cd8ddb48dbd277c083",
+      "target_sha": "334980ac7339a6edfa2ebf357a3b235732ad5419"
+    },
+    {
+      "path": "/var/lib/mastermind-terminal-beta/source-provisioned/attempt-c23390bc536c4f3ab570d0f5328714f5-staging.json",
+      "phase": "staging",
+      "record_id": "7da9357d64ee3d5e6e7b64acfd2c15fa5d4d3b53edcac73c79bc856c51fdb298",
+      "target_sha": "334980ac7339a6edfa2ebf357a3b235732ad5419"
+    },
+    {
+      "path": "/var/lib/mastermind-terminal-beta/source-provisioned/attempt-c23390bc536c4f3ab570d0f5328714f5-validated-2aaef4bb87505544.json",
+      "phase": "validated",
+      "record_id": "2aaef4bb87505544d71058a4d75e30fb340324e2ba51b742721cd732dffd3682",
+      "target_sha": "334980ac7339a6edfa2ebf357a3b235732ad5419"
+    }
+  ],
+  "git_head": "334980ac7339a6edfa2ebf357a3b235732ad5419",
+  "local_status": {
+    "body": {
+      "bridgeVersion": "20261018.1",
+      "buildId": "334980ac7339a6edfa2ebf357a3b235732ad5419",
+      "documentVersion": "20261018.1",
+      "enabled": true,
+      "protocol": "mmx.shared-shell.v1",
+      "registrySha256": "8d6346856bf24eb42525cfd0a7cbb6de3ff00092a907874012d8187e44623fbe"
+    },
+    "headers": {
+      "Cache-Control": "private, no-store, max-age=0",
+      "Content-Type": "application/json"
+    },
+    "http_status": 200
+  },
+  "marker": "334980ac7339a6edfa2ebf357a3b235732ad5419",
+  "next_build_id": "build-TfctsWXpff2fKS",
+  "observed_at": "2026-11-06T12:20:59.077171+00:00",
+  "pending_exists": false,
+  "preflight": {
+    "accepted_sha": "334980ac7339a6edfa2ebf357a3b235732ad5419",
+    "canonical_repo": "/opt/terminal/.gitsrc-beta",
+    "generated_at": "2026-11-06T12:19:59.575158Z",
+    "policy_digest": "99f76cb211b086d1f83bb86c10747e2711a4c318fa4bd5dab1b94e84d46fe1d6",
+    "policy_path": "/opt/terminal/.gitsrc-beta/ops/terminal_source_audit.beta.json",
+    "receipt_id": "026e21368fd18cc052f8e93a64771d8b3f3bc215611d45858526b592cab901d7",
+    "result": "CLEAN",
+    "schema": "mastermind.terminal.release_preflight_receipt.v1",
+    "source_audit": {
+      "accepted_ref": {
+        "contains_sha": true,
+        "name": "refs/remotes/origin/master",
+        "sha": "f7bb1a3a04dcc694cc54afffc40b223f1c540b36"
+      },
+      "accepted_sha": "334980ac7339a6edfa2ebf357a3b235732ad5419",
+      "canonical_repo": "/opt/terminal/.gitsrc-beta",
+      "canonical_repo_head": "334980ac7339a6edfa2ebf357a3b235732ad5419",
+      "deployment": {
+        "marker_path": "/opt/terminal/beta/terminal/.deployment-id",
+        "marker_state": "VALID",
+        "sha": "334980ac7339a6edfa2ebf357a3b235732ad5419"
+      },
+      "findings": [],
+      "generated_at": "2026-11-06T12:19:59.575158Z",
+      "mappings": [
+        {
+          "allowance_classes": [
+            "deployment_marker",
+            "generated_build_artifact",
+            "generated_dependency_tree",
+            "rollback_build_artifact",
+            "rollback_deployment_marker"
+          ],
+          "allowed_paths": 6,
+          "allowed_tracked_absence_count": 0,
+          "allowed_tracked_absences": [],
+          "allowed_tracked_runtime_file_count": 0,
+          "allowed_tracked_runtime_files": [],
+          "allowed_tracked_runtime_subtree_count": 1,
+          "allowed_tracked_runtime_subtrees": [
+            {
+              "canonical_git_tree": "6c4e397331dab962510c5e3b18d5d8b1cbd145bf",
+              "classification": "host_owned_runtime_market_data",
+              "live_root_state": "PRESENT",
+              "path": "public/data",
+              "tracked_paths": 134
+            }
+          ],
+          "canonical_kind": "tree",
+          "live_path": "/opt/terminal/beta/terminal",
+          "name": "beta-terminal-app",
+          "repo_path": "terminal",
+          "tracked_paths": 8227
+        },
+        {
+          "allowance_classes": [],
+          "allowed_paths": 0,
+          "allowed_tracked_absence_count": 0,
+          "allowed_tracked_absences": [],
+          "allowed_tracked_runtime_file_count": 0,
+          "allowed_tracked_runtime_files": [],
+          "allowed_tracked_runtime_subtree_count": 0,
+          "allowed_tracked_runtime_subtrees": [],
+          "canonical_kind": "tree",
+          "live_path": "/opt/terminal/beta/ingest",
+          "name": "beta-terminal-ingest",
+          "repo_path": "ingest",
+          "tracked_paths": 106
+        },
+        {
+          "allowance_classes": [],
+          "allowed_paths": 0,
+          "allowed_tracked_absence_count": 0,
+          "allowed_tracked_absences": [],
+          "allowed_tracked_runtime_file_count": 0,
+          "allowed_tracked_runtime_files": [],
+          "allowed_tracked_runtime_subtree_count": 0,
+          "allowed_tracked_runtime_subtrees": [],
+          "canonical_kind": "tree",
+          "live_path": "/opt/terminal/beta/scripts",
+          "name": "beta-terminal-scripts",
+          "repo_path": "scripts",
+          "tracked_paths": 11
+        },
+        {
+          "allowance_classes": [],
+          "allowed_paths": 0,
+          "allowed_tracked_absence_count": 0,
+          "allowed_tracked_absences": [],
+          "allowed_tracked_runtime_file_count": 0,
+          "allowed_tracked_runtime_files": [],
+          "allowed_tracked_runtime_subtree_count": 0,
+          "allowed_tracked_runtime_subtrees": [],
+          "canonical_kind": "tree",
+          "live_path": "/opt/terminal/beta/config",
+          "name": "beta-terminal-config",
+          "repo_path": "config",
+          "tracked_paths": 2
+        },
+        {
+          "allowance_classes": [],
+          "allowed_paths": 0,
+          "allowed_tracked_absence_count": 0,
+          "allowed_tracked_absences": [],
+          "allowed_tracked_runtime_file_count": 0,
+          "allowed_tracked_runtime_files": [],
+          "allowed_tracked_runtime_subtree_count": 0,
+          "allowed_tracked_runtime_subtrees": [],
+          "canonical_kind": "tree",
+          "live_path": "/opt/terminal/beta/contracts",
+          "name": "beta-terminal-contracts",
+          "repo_path": "contracts",
+          "tracked_paths": 11
+        },
+        {
+          "allowance_classes": [],
+          "allowed_paths": 0,
+          "allowed_tracked_absence_count": 0,
+          "allowed_tracked_absences": [],
+          "allowed_tracked_runtime_file_count": 0,
+          "allowed_tracked_runtime_files": [],
+          "allowed_tracked_runtime_subtree_count": 0,
+          "allowed_tracked_runtime_subtrees": [],
+          "canonical_kind": "tree",
+          "live_path": "/opt/terminal/beta/hub",
+          "name": "beta-terminal-hub",
+          "repo_path": "hub",
+          "tracked_paths": 64
+        },
+        {
+          "allowance_classes": [],
+          "allowed_paths": 0,
+          "allowed_tracked_absence_count": 0,
+          "allowed_tracked_absences": [],
+          "allowed_tracked_runtime_file_count": 0,
+          "allowed_tracked_runtime_files": [],
+          "allowed_tracked_runtime_subtree_count": 0,
+          "allowed_tracked_runtime_subtrees": [],
+          "canonical_kind": "tree",
+          "live_path": "/opt/terminal/beta/signal_layer",
+          "name": "beta-terminal-signal-layer",
+          "repo_path": "signal_layer",
+          "tracked_paths": 11
+        }
+      ],
+      "policy_digest": "99f76cb211b086d1f83bb86c10747e2711a4c318fa4bd5dab1b94e84d46fe1d6",
+      "receipt_id": "653f6807d81a013225ed489276a92943943e1df32fb4b8f14e8af28aa04cee19",
+      "schema": "mastermind.terminal.source_audit_receipt.v1",
+      "status": "CLEAN",
+      "summary": {
+        "allowed_paths": 6,
+        "allowed_tracked_absences": 0,
+        "allowed_tracked_runtime_files": 0,
+        "allowed_tracked_runtime_subtrees": 1,
+        "blocking_findings": 0,
+        "tracked_paths": 8432
+      }
+    },
+    "source_audit_receipt_id": "653f6807d81a013225ed489276a92943943e1df32fb4b8f14e8af28aa04cee19"
+  },
+  "preflight_path": "/var/lib/mastermind-terminal-beta/release-preflight/20261106T121959Z-334980ac7339a6edfa2ebf357a3b235732ad5419-026e21368fd18cc052f8e93a64771d8b3f3bc215611d45858526b592cab901d7.json",
+  "public_sector_unauthenticated": {
+    "body": {
+      "data": null,
+      "receipt": {
+        "asOf": null,
+        "contentHash": null,
+        "failure": "access_denied",
+        "observedAt": null,
+        "path": "/sectordata/sector_central.json",
+        "source": "sector",
+        "stale": false,
+        "status": "access"
+      }
+    },
+    "headers": {
+      "Cache-Control": "private, no-store",
+      "Content-Type": "application/json",
+      "X-Sector-Failure": "access_denied"
+    },
+    "http_status": 401
+  },
+  "public_status": {
+    "body": {
+      "bridgeVersion": "20261018.1",
+      "buildId": "334980ac7339a6edfa2ebf357a3b235732ad5419",
+      "documentVersion": "20261018.1",
+      "enabled": true,
+      "protocol": "mmx.shared-shell.v1",
+      "registrySha256": "8d6346856bf24eb42525cfd0a7cbb6de3ff00092a907874012d8187e44623fbe"
+    },
+    "headers": {
+      "Cache-Control": "private, no-store, max-age=0",
+      "Content-Type": "application/json"
+    },
+    "http_status": 200
+  },
+  "service": [
+    "MainPID=778351",
+    "ActiveState=active",
+    "SubState=running",
+    "UnitFileState=enabled"
+  ],
+  "shared_build_hold": false,
+  "target_sha": "334980ac7339a6edfa2ebf357a3b235732ad5419"
+}

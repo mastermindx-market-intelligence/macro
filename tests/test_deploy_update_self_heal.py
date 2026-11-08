@@ -1831,7 +1831,7 @@ def test_ohlc_delivery_reconciles_before_copy_and_on_repository_noop():
     )
     after_copy = SCRIPT.index("\nreconcile_ohlc_delivery\n", noop)
     assert changed < before_copy < copy < noop < after_copy
-    assert SCRIPT[noop - 4:noop] == "fi\n\n"
+    assert SCRIPT[noop - len("fi\nlive_source_finish\n\n"):noop] == "fi\nlive_source_finish\n\n"
     assert "--delete-excluded" not in SCRIPT[before_copy:copy + 120]
 
 

@@ -10,7 +10,10 @@ China delta: /tmp/theme_context_cn_contract.md (pinned; wins on china specifics)
 Public API
 ----------
 compute_theme_context(alloc, theme_intel, region='us', root=None) -> dict | None
-    Main producer.  Pure/additive — never raises, logs + returns None on shortfall.
+    Legacy acquisition and lane-gated history advancement; never raises.
+
+compute_theme_context_from_inputs(inputs) -> dict | None
+    Pure display calculation over explicitly supplied history and rotation inputs.
 
 write_context(ctx, root=None) -> None
     Write the region-appropriate artifact path (derived from ctx['region']).
@@ -22,7 +25,9 @@ from __future__ import annotations
 
 import json
 import logging
-from datetime import date as _date
+from collections.abc import Sequence
+from copy import deepcopy
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
@@ -274,22 +279,21 @@ def _migration(rank_rows: list[dict], ti_by_id: dict[str, dict]) -> dict:
 # ── Alignment vs rotation_events.json ──────────────────────────────────────────
 
 
-def _alignment(
-    strength_ids: list[str],
-    root: Path,
-    region: str = "us",
-) -> dict:
-    """Cross-check strength themes vs active sector rotation events.
-
-    Reads rotation_events.json (US) or rotation_events_china.json (china) per CN contract item 5.
-    Returns sector_rotation_agrees: True | False | None.
-    None = artifact absent/unreadable (fail-open per contract).
-    """
+def _load_alignment_events(root: Path, region: str) -> dict | None:
     re_path = _alignment_path(region, root)
     if not re_path.exists():
-        return {"sector_rotation_agrees": None, "note_en": "", "note_zh": ""}
+        return None
     try:
         payload = json.loads(re_path.read_text(encoding="utf-8"))
+        return payload if isinstance(payload, dict) else None
+    except Exception as exc:  # noqa: BLE001 — retain legacy unknown state
+        log.debug("theme_context._alignment: %s", exc)
+        return None
+
+
+def _alignment_from_events(strength_ids: list[str], payload: dict | None) -> dict:
+    """A supplied empty object differs from an unavailable artifact."""
+    try:
         if not isinstance(payload, dict):
             return {"sector_rotation_agrees": None, "note_en": "", "note_zh": ""}
         active = payload.get("active") or []
@@ -314,9 +318,12 @@ def _alignment(
             "note_en": note_en,
             "note_zh": note_zh,
         }
-    except Exception as e:  # noqa: BLE001 — fail-open
-        log.debug("theme_context._alignment: %s", e)
+    except Exception:  # noqa: BLE001 — malformed events are unknown
         return {"sector_rotation_agrees": None, "note_en": "", "note_zh": ""}
+
+
+def _alignment(strength_ids: list[str], root: Path, region: str = "us") -> dict:
+    return _alignment_from_events(strength_ids, _load_alignment_events(root, region))
 
 
 # ── Region-aware artifact / history path helpers ────────────────────────────────
@@ -390,22 +397,12 @@ def _write_history(rows: list[dict], root: Path, region: str = "us") -> None:
 # ── One-shot seed from baskets.parquet ─────────────────────────────────────────
 
 
-def _seed_from_archive(root: Path, region: str = "us") -> list[dict]:
-    """Best-effort seed from data/signal_archive/baskets[_china].parquet.
-
-    'us'    -> data/signal_archive/baskets.parquet
-    'china' -> data/signal_archive/baskets_china.parquet  (CN contract item 4)
-    Each row carries snapshot_json with per-theme label/score.  Returns empty
-    list on any failure (including missing parquet).
-    """
+def seed_history_from_inputs(frame) -> list[dict]:
+    """Project the captured archive with the incumbent seed semantics; no reads."""
     try:
-        import pandas as pd
-
-        archive_name = "baskets_china.parquet" if region == "china" else "baskets.parquet"
-        p = root / "data" / "signal_archive" / archive_name
-        if not p.exists():
+        df = frame
+        if df is None:
             return []
-        df = pd.read_parquet(str(p))
         if df.empty or "snapshot_json" not in df.columns:
             return []
         if "asof" not in df.columns:
@@ -437,6 +434,28 @@ def _seed_from_archive(root: Path, region: str = "us") -> list[dict]:
                 "scores": scores,
             })
         return rows
+    except Exception as e:  # noqa: BLE001 — same optional seed degradation
+        log.debug("theme_context._seed_from_archive: %s", e)
+        return []
+
+
+def _seed_from_archive(root: Path, region: str = "us") -> list[dict]:
+    """Best-effort seed from data/signal_archive/baskets[_china].parquet.
+
+    'us'    -> data/signal_archive/baskets.parquet
+    'china' -> data/signal_archive/baskets_china.parquet  (CN contract item 4)
+    Each row carries snapshot_json with per-theme label/score.  Returns empty
+    list on any failure (including missing parquet).
+    """
+    try:
+        import pandas as pd
+
+        archive_name = "baskets_china.parquet" if region == "china" else "baskets.parquet"
+        p = root / "data" / "signal_archive" / archive_name
+        if not p.exists():
+            return []
+        df = pd.read_parquet(str(p))
+        return seed_history_from_inputs(df)
     except Exception as e:  # noqa: BLE001
         log.debug("theme_context._seed_from_archive: %s", e)
         return []
@@ -618,20 +637,28 @@ def compute_theme_context(
         return None
 
 
-def _compute(alloc: dict, theme_intel: dict, region: str, root: Path) -> dict | None:
-    # ── Validate inputs ────────────────────────────────────────────────────
-    rank_rows: list[dict] = alloc.get("ranks", [])
-    as_of: str = alloc.get("as_of", "")
-    if not rank_rows or not as_of:
-        log.warning("theme_context: alloc has no ranks or as_of — returning None")
+@dataclass(frozen=True)
+class ThemeContextInputs:
+    allocation: dict
+    theme_intel: dict
+    region: str
+    history: Sequence[dict]
+    rotation_events: dict | None
+
+
+def compute_theme_context_from_inputs(inputs: ThemeContextInputs) -> dict | None:
+    """No history loading/seed/advance, lane reads, clock, logging or artifact writes."""
+    try:
+        context, _ = _compute_context_inputs(inputs)
+        return context
+    except Exception:  # noqa: BLE001 — explicit malformed inputs remain unavailable
         return None
 
-    ti_themes: list[dict] = theme_intel.get("themes", [])
-    if not isinstance(ti_themes, list):
-        ti_themes = []
 
-    # Index theme_intel by id for O(1) lookup
-    ti_by_id: dict[str, dict] = {t["id"]: t for t in ti_themes if t.get("id")}
+def _compute(alloc: dict, theme_intel: dict, region: str, root: Path) -> dict | None:
+    if not alloc.get("ranks") or not alloc.get("as_of"):
+        log.warning("theme_context: alloc has no ranks or as_of — returning None")
+        return None
 
     # ── Load history (for state_changes / days_in_state / metric deltas) ──
     history = _load_history(root, region)
@@ -645,6 +672,47 @@ def _compute(alloc: dict, theme_intel: dict, region: str, root: Path) -> dict | 
                 history = seed_rows
         except Exception as e:  # noqa: BLE001
             log.debug("theme_context: seed_from_archive failed: %s", e)
+
+    ctx, history_row = _compute_context_inputs(ThemeContextInputs(
+        alloc, theme_intel, region, history, _load_alignment_events(root, region),
+    ))
+    if ctx is None:
+        return None
+    as_of = alloc["as_of"]
+    if _advance_enabled(region):
+        updated_history = list(history)
+        if updated_history and updated_history[-1].get("asof") == as_of:
+            # Same-day idempotent: replace last row
+            updated_history[-1] = history_row
+        else:
+            updated_history.append(history_row)
+        try:
+            _write_history(updated_history, root, region)
+        except Exception as e:  # noqa: BLE001
+            log.warning("theme_context: history write failed: %s", e)
+    # Off-lane: do not touch history file.
+
+    return ctx
+
+
+def _compute_context_inputs(inputs: ThemeContextInputs) -> tuple[dict | None, dict | None]:
+    alloc, theme_intel, region = (
+        deepcopy(inputs.allocation), deepcopy(inputs.theme_intel), inputs.region,
+    )
+    # ── Validate inputs ────────────────────────────────────────────────────
+    rank_rows: list[dict] = alloc.get("ranks", [])
+    as_of: str = alloc.get("as_of", "")
+    if not rank_rows or not as_of:
+        return None, None
+
+    ti_themes: list[dict] = theme_intel.get("themes", [])
+    if not isinstance(ti_themes, list):
+        ti_themes = []
+
+    # Index theme_intel by id for O(1) lookup
+    ti_by_id: dict[str, dict] = {t["id"]: t for t in ti_themes if t.get("id")}
+
+    history = deepcopy(list(inputs.history))
 
     # ── Collect label/score for history-based metrics ──────────────────────
     current_labels: dict[str, str | None] = {}
@@ -679,8 +747,7 @@ def _compute(alloc: dict, theme_intel: dict, region: str, root: Path) -> dict | 
     # ── Trailing leader (alloc rank 1) ────────────────────────────────────
     sorted_ranks = sorted(rank_rows, key=lambda r: r.get("rank", 9999))
     if not sorted_ranks:
-        log.warning("theme_context: no rank rows — returning None")
-        return None
+        return None, None
 
     leader_row = sorted_ranks[0]
     leader_id = leader_row.get("id", "")
@@ -807,7 +874,7 @@ def _compute(alloc: dict, theme_intel: dict, region: str, root: Path) -> dict | 
     migration = _migration(rank_rows, ti_by_id)
 
     # ── Alignment ──────────────────────────────────────────────────────────
-    alignment = _alignment(strength_ids, root, region)
+    alignment = _alignment_from_events(strength_ids, inputs.rotation_events)
 
     # ── state_changes ──────────────────────────────────────────────────────
     current_snapshot_for_changes = {
@@ -854,21 +921,7 @@ def _compute(alloc: dict, theme_intel: dict, region: str, root: Path) -> dict | 
         "labels": current_labels,
         "scores": current_scores,
     }
-
-    if _advance_enabled(region):
-        updated_history = list(history)
-        if updated_history and updated_history[-1].get("asof") == as_of:
-            # Same-day idempotent: replace last row
-            updated_history[-1] = history_row
-        else:
-            updated_history.append(history_row)
-        try:
-            _write_history(updated_history, root, region)
-        except Exception as e:  # noqa: BLE001
-            log.warning("theme_context: history write failed: %s", e)
-    # Off-lane: do not touch history file.
-
-    return ctx
+    return ctx, history_row
 
 
 # ── Write / Read API ────────────────────────────────────────────────────────────

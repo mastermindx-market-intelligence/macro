@@ -256,9 +256,9 @@ def test_w1a_batch_and_performance_receipt(tmp_path, monkeypatch):
     from engine.entry_radar.replay import identity_observation_snapshot as snapshot_owner
     original_parquet_records = snapshot_owner._parquet_records
 
-    def counted_parquet_records(raw, name):
+    def counted_parquet_records(raw, name, **kwargs):
         counters.parquet_reads[name] += 1  # captured-byte decodes, no latest-path opens
-        return original_parquet_records(raw, name)
+        return original_parquet_records(raw, name, **kwargs)
 
     monkeypatch.setattr(snapshot_owner, "_parquet_records", counted_parquet_records)
 

@@ -220,33 +220,12 @@ def _basket_levels() -> dict:
     returns an empty dict — the grader will report 'accruing from <freeze_start>'
     for all basket calls, which is the honest behaviour (see grade()).
     """
-    out = {}
     try:
-        # _return_valid_start_from: same contract as the public return_valid_start(),
-        # against the frame we already read (one parquet read, not one per basket).
-        from engine.basket_freeze import read_frozen, _return_valid_start_from
-        df = read_frozen("us")
-        if df is None or df.empty:
-            log.info("basket_levels[us]: no frozen store yet — basket grading accruing")
-            return out
-        for col in df.columns:
-            if not col.endswith("__level_tr"):
-                continue
-            bid = col[: -len("__level_tr")]
-            s = df[col].dropna()
-            if s.empty:
-                continue
-            vs = _return_valid_start_from(df, bid)
-            if vs is None:
-                log.info("basket_levels[us]: %s has no chain anchor — excluded from grading", bid)
-                continue
-            s = s[s.index >= pd.Timestamp(vs)]
-            if s.empty:
-                continue
-            out[bid] = (s, vs)
-    except Exception as e:  # noqa: BLE001
+        from engine.basket_freeze import read_frozen
+        return frozen_basket_levels_from_inputs(read_frozen("us"))
+    except Exception as e:  # noqa: BLE001 — preserve legacy acquisition failure behavior
         log.warning("basket_levels[us]: frozen read failed: %s", e)
-    return out
+        return {}
 
 
 def _level_for(row: dict, panel) -> float | None:
@@ -565,6 +544,59 @@ def grade() -> dict | None:
     except Exception:  # noqa: BLE001
         pass
 
+    return grade_from_inputs(df, yahoo_panel=panel, basket_levels=basket_lvl,
+                             frozen_df=frozen_df, freeze_start=freeze_start)
+
+
+def frozen_basket_levels_from_inputs(frozen_df) -> dict:
+    """Incumbent frozen-only series/chain-anchor projection from one captured frame."""
+    out = {}
+    try:
+        # _return_valid_start_from: same contract as the public return_valid_start(),
+        # against the frame we already read (one parquet read, not one per basket).
+        from engine.basket_freeze import _return_valid_start_from
+        df = frozen_df.copy(deep=True) if frozen_df is not None else None
+        if df is None or df.empty:
+            log.info("basket_levels[us]: no frozen store yet — basket grading accruing")
+            return out
+        for col in df.columns:
+            if not col.endswith("__level_tr"):
+                continue
+            bid = col[: -len("__level_tr")]
+            s = df[col].dropna()
+            if s.empty:
+                continue
+            vs = _return_valid_start_from(df, bid)
+            if vs is None:
+                log.info("basket_levels[us]: %s has no chain anchor — excluded from grading", bid)
+                continue
+            s = s[s.index >= pd.Timestamp(vs)]
+            if s.empty:
+                continue
+            out[bid] = (s, vs)
+    except Exception as e:  # noqa: BLE001
+        log.warning("basket_levels[us]: frozen read failed: %s", e)
+    return out
+
+
+def grade_from_inputs(call_log, *, yahoo_panel, basket_levels, frozen_df, freeze_start) -> dict:
+    """Grade captured calls through the incumbent math, without acquisition or append.
+
+    The legacy adapter retains its original independently acquired frozen views.
+    Runtime composition derives basket_levels from its one admitted frozen frame via
+    frozen_basket_levels_from_inputs; today's recomputed basket levels are never used.
+    """
+    from copy import deepcopy
+    if call_log is None:
+        return {"available": False, "note": "no calls logged yet"}
+    if not isinstance(call_log, pd.DataFrame):
+        raise TypeError("A captured calls DataFrame or explicit absence is required")
+    if call_log.empty:
+        return {"available": False, "note": "empty"}
+    df = call_log.copy(deep=True)
+    panel = yahoo_panel.copy(deep=True) if yahoo_panel is not None else None
+    basket_lvl = deepcopy(basket_levels)
+    frozen_df = frozen_df.copy(deep=True) if frozen_df is not None else None
     bench = None
     if panel is not None and "SPY" in panel.columns:
         bench = panel["SPY"].dropna()
