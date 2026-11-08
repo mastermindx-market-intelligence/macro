@@ -49,7 +49,7 @@ FALSE-POSITIVE HANDLING (the reason this can be repo-wide rather than scoped)
   * a target module containing `from x import *` or a module-level `__getattr__`
     (PEP 562) — cannot be resolved statically, so its importers are skipped rather
     than guessed at.
-  * genuinely dynamic cases — `_ALLOWED_UNRESOLVED` below (one temporary entry; see its comment).
+  * documented deferred/dynamic cases — `_ALLOWED_UNRESOLVED` below (see each comment).
 
 At the commit that introduced this file the sweep reports exactly zero findings
 across all first-party roots, so it lands repo-wide with no allowlist.
@@ -79,7 +79,8 @@ _SKIP_DIRS = frozenset({
     "site", "data", "reports", "verify_shots",
 })
 
-# Import sites that cannot be resolved statically and are known-good.
+# Explicit import-site exceptions with documented source disposition.
+# Historical archive exceptions do not certify runnable current consumers.
 # Format: (repo-relative path, module, name).  Keep this empty if you possibly can —
 # every entry is a place this guard has stopped guarding.  Add a comment saying why.
 _ALLOWED_UNRESOLVED: frozenset[tuple[str, str, str]] = frozenset({
@@ -92,6 +93,27 @@ _ALLOWED_UNRESOLVED: frozenset[tuple[str, str, str]] = frozenset({
         "mockups/evidence/sector-cycles-20261105/render_l6.py",
         "scripts.build_sector_cycles",
         "cycles_page_ctx",
+    ),
+    # TEMPORARY (#10862 archive / #10734 verifier): these exact historical scripts
+    # are preserved evidence, not runnable current consumers. Their real verifier
+    # remains on held #10734; do not rewrite the archive or add a placeholder.
+    # Remove in the first compatible PR after lawful protected-main adoption of
+    # that verifier. Ordinary submodule/name resolution already runs before this
+    # exact import-site exception, so adoption does not depend on the exception.
+    (
+        "docs/pr-crops/d06-macro-integration-20261104/market-locale-fix/color_probe.py",
+        "scripts",
+        "verify_d06_macro",
+    ),
+    (
+        "docs/pr-crops/d06-macro-integration-20261104/market-locale-fix/run_browser.py",
+        "scripts",
+        "verify_d06_macro",
+    ),
+    (
+        "docs/pr-crops/d06-macro-integration-20261104/run_browser.py",
+        "scripts",
+        "verify_d06_macro",
     ),
 })
 
@@ -410,6 +432,67 @@ def test_module_getattr_makes_a_module_opaque(tmp_path):
     (tmp_path / "lib" / "cal.py").write_text("def __getattr__(name):\n    return 1\n")
     (tmp_path / "user.py").write_text("from lib.cal import anything\n")
     _, missing_names, _ = _sweep(tmp_path)
+    assert not missing_names
+
+
+
+@pytest.mark.parametrize("relative_importer", [
+    "docs/pr-crops/d06-macro-integration-20261104/market-locale-fix/color_probe.py",
+    "docs/pr-crops/d06-macro-integration-20261104/market-locale-fix/run_browser.py",
+    "docs/pr-crops/d06-macro-integration-20261104/run_browser.py",
+])
+@pytest.mark.parametrize("package_init", [False, True])
+def test_d06_archive_exception_keeps_other_imports_guarded(
+    tmp_path, relative_importer, package_init,
+):
+    """Only the preserved import site is deferred, for either package shape."""
+    scripts = tmp_path / "scripts"
+    scripts.mkdir()
+    if package_init:
+        (scripts / "__init__.py").write_text("")
+    archive = tmp_path / relative_importer
+    archive.parent.mkdir(parents=True)
+    archive.write_text(
+        "from scripts import verify_d06_macro as verifier\n"
+        "from scripts import different_missing_verifier\n"
+        "from scripts.missing_module import verify_d06_macro\n"
+    )
+    other = tmp_path / "docs" / "unrelated_browser.py"
+    other.write_text("from scripts import verify_d06_macro\n")
+
+    missing_modules, missing_names, checked = _sweep(tmp_path)
+    assert checked == 4
+    assert len(missing_modules) == 1, missing_modules
+    assert "scripts.missing_module" in missing_modules[0]
+    assert len(missing_names) == 2, missing_names
+    assert any("different_missing_verifier" in finding for finding in missing_names)
+    assert any("docs/unrelated_browser.py:" in finding for finding in missing_names)
+
+
+@pytest.mark.parametrize("package_init", [False, True])
+def test_d06_archive_dependency_resolves_without_exception_after_adoption(
+    tmp_path, monkeypatch, package_init,
+):
+    """Normal resolution supports retiring all three deferred import entries."""
+    scripts = tmp_path / "scripts"
+    scripts.mkdir()
+    if package_init:
+        (scripts / "__init__.py").write_text("")
+    # This is an isolated AST fixture, never a repository verifier or executed code.
+    (scripts / "verify_d06_macro.py").write_text("FIXTURE = True\n")
+    for relative_importer in [
+        "docs/pr-crops/d06-macro-integration-20261104/market-locale-fix/color_probe.py",
+        "docs/pr-crops/d06-macro-integration-20261104/market-locale-fix/run_browser.py",
+        "docs/pr-crops/d06-macro-integration-20261104/run_browser.py",
+    ]:
+        archive = tmp_path / relative_importer
+        archive.parent.mkdir(parents=True, exist_ok=True)
+        archive.write_text("from scripts import verify_d06_macro\n")
+    monkeypatch.setitem(globals(), "_ALLOWED_UNRESOLVED", frozenset())
+
+    missing_modules, missing_names, checked = _sweep(tmp_path)
+    assert checked == 3
+    assert not missing_modules
     assert not missing_names
 
 
