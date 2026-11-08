@@ -252,8 +252,8 @@ def test_selected_r8_identity_first_anatomy_order():
     assert [n.attrs.get("data-po-field") for n in element_children(head)] == ["identity", "quote"]
     assert find(card, attrs={"data-po-field": "status"}).parent is card
     assert order == [
-        "header.po-head", "div.po-refinements", "div.po-head-main-po-status", "ol.po-stages",
-        "figure.po-chart", "p.po-obs", "details.po-cautions", "a.po-context",
+        "header.po-head", "div.po-head-main-po-status", "ol.po-stages",
+        "figure.po-chart", "div.po-refinements", "p.po-obs", "details.po-cautions", "a.po-context",
         "div.po-terms", "footer.po-foot",
     ]
 

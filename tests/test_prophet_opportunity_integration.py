@@ -191,10 +191,19 @@ def test_selected_r8_native_identity_and_quote_lead_independent_assessment():
             assert head.select_one(".po-ticker").get_text() == "BRK.B"
             assert "Example Company" in head.get_text()
             secondary = card.select_one(".po-refinements")
-            assert secondary.parent is card and children.index(head) < children.index(secondary) < children.index(status)
+            assert secondary.parent is card and children.index(head) < children.index(status) < children.index(chart) < children.index(secondary)
             assert "Insurance" in secondary.get_text() and "Financials" in secondary.get_text()
             assert secondary.select_one(".po-priority")
             assert not head.select(".po-class,.po-priority,.po-marks")
             assert card.select_one(".po-cautions")
             assert card.select_one(".po-terms[data-po-clock='terms']")
             assert card.select_one(".po-footer .pv-setup-inline > summary")
+
+
+def test_native_missing_change_is_explained_without_disconnect_or_invention():
+    card = _render([_source()]).select_one(".po-card")
+    change = card.select_one(".nb-chg[data-sym='BRK.B'][data-mkt='us']")
+    assert change.select_one(".l-en").get_text() == "Change unavailable"
+    assert change.select_one(".l-zh").get_text() == "涨跌暂缺"
+    assert "%" not in change.get_text()
+    assert card.select_one(".nb-px + .nb-chg") is change

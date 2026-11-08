@@ -71,7 +71,17 @@ def test_paper_composition_first_paint(layout_browser, layout_html, width, theme
             assert control.bounding_box()["height"] >= 44
         assert page.locator("#us-standouts").get_attribute("data-prophet-src") == "today"
         first_card = page.locator("#us-today-grid .po-card").first.bounding_box()
-        assert first_card and first_card["y"] < (740 if width < 960 else 570), first_card
+        # Phone framing is tighter; the tablet keeps its wider shared shell.
+        # In both, the stance below must still fit the same 844px first view.
+        assert first_card and first_card["y"] < (670 if width < 640 else 700 if width < 960 else 570), first_card
+        card = page.locator("#us-today-grid .po-card").first
+        stance = card.locator(".po-status").bounding_box()
+        secondary = card.locator(".po-refinements").bounding_box()
+        assert stance["y"] < secondary["y"]
+        if width in (390, 820):
+            assert stance["y"] + stance["height"] <= 844, stance
+        setup = card.locator(".pv-setup-inline > summary").bounding_box()
+        assert setup["height"] >= 44 and setup["width"] >= first_card["width"] * .8
         risk = page.locator("#prophet-market-brief").inner_text()
         assert ("保住本金" if lang == "zh" else "defend capital") in risk
         assert ("defend capital" if lang == "zh" else "保住本金") not in risk
