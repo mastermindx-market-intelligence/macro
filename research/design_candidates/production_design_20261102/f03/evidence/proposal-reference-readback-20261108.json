@@ -1,0 +1,265 @@
+{
+  "kind": "F03_bounded_proposal_reference_readback",
+  "observation_window_utc": {
+    "start": "2026-11-08T18:25:15Z",
+    "end": "2026-11-08T18:25:46Z"
+  },
+  "carrier": "Mastermind Paper paper_read/get_basic_info",
+  "native_mutations": 0,
+  "snapshots_are_document_revisions": false,
+  "qualification": "Observed reference metadata for a proposed slice. This observation does not establish a complete domain return, approved candidate, foundation release, current implementation, refreshed census, or live writer custody.",
+  "observations": {
+    "D04-candidate": {
+      "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "page_id": "p-1D-0",
+      "page_name": "Proposed · Heatmap inspector refresh",
+      "page_url": "https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-1D-0",
+      "artboards": [
+        {
+          "id": "22UK-0",
+          "name": "PROPOSED · Heatmap selected reading · EN/ZH",
+          "width": 1440,
+          "height": null
+        }
+      ],
+      "read_only": true,
+      "snapshot_is_revision": false
+    },
+    "D04-readme": {
+      "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "page_id": "p-8-1",
+      "page_name": "Market Heatmaps · Unified Workspace · 2026-09-29",
+      "page_url": "https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-8-1",
+      "artboards": [
+        {
+          "id": "LMF-1",
+          "name": "01 · Market Heatmaps · Map + Shared Inspector · Desktop",
+          "width": 1440,
+          "height": 1000
+        },
+        {
+          "id": "MO2-1",
+          "name": "02 · Heatmap Perspectives · Bubbles / Matrix / Clusters / Themes",
+          "width": 1440,
+          "height": 1260
+        },
+        {
+          "id": "N2Y-1",
+          "name": "03 · Table / Mobile Inspector / Light Mode / Source States",
+          "width": 1440,
+          "height": 1160
+        },
+        {
+          "id": "N71-1",
+          "name": "04 · START HERE · Source Anchors / Build Contract / Delivery Checkpoint",
+          "width": 1440,
+          "height": null
+        },
+        {
+          "id": "NZF-1",
+          "name": "05 · R2 · Themes Explorer + Cohort Evidence",
+          "width": 1440,
+          "height": 1120
+        },
+        {
+          "id": "OBB-1",
+          "name": "06 · R2 · Industry × Cap Matrix · Compare + Full Cell",
+          "width": 1440,
+          "height": 1080
+        },
+        {
+          "id": "OTM-1",
+          "name": "07 · R2 · Bubbles · Precise Axes + Draft Selection",
+          "width": 1440,
+          "height": 1160
+        },
+        {
+          "id": "OYR-1",
+          "name": "08 · R2 · Clusters · Concentration vs Participation",
+          "width": 1440,
+          "height": 1140
+        },
+        {
+          "id": "PNT-0",
+          "name": "09 · R3 · Filter Preview · Match, Exclude, Unknown",
+          "width": 1440,
+          "height": 1040
+        },
+        {
+          "id": "PSN-0",
+          "name": "10 · R3 · Save View · Live Query or Fixed Cohort",
+          "width": 1440,
+          "height": 1040
+        },
+        {
+          "id": "PVP-0",
+          "name": "11 · R3 · Save Outcomes · Pending, Check, Confirm, Fail",
+          "width": 1440,
+          "height": null
+        },
+        {
+          "id": "QD9-0",
+          "name": "12 · R4 · Complete Theme Atlas · 40 / 268",
+          "width": 1440,
+          "height": null
+        },
+        {
+          "id": "RK5-0",
+          "name": "13 · R4 · Semiconductor Subtheme Heatmap + Evidence",
+          "width": 1440,
+          "height": null
+        },
+        {
+          "id": "RQI-0",
+          "name": "14 · R4 · Overlap Lens · Shared Exposure + Source Audit",
+          "width": 1440,
+          "height": null
+        },
+        {
+          "id": "RYB-0",
+          "name": "15 · R5 · Change Lens · Matched Participation",
+          "width": 1440,
+          "height": null
+        },
+        {
+          "id": "S5V-0",
+          "name": "16 · R5 · Coverage Illusion · Light",
+          "width": 1440,
+          "height": null
+        }
+      ],
+      "read_only": true,
+      "snapshot_is_revision": false
+    },
+    "D14-candidate": {
+      "file_id": "01M3P1QEHS5XXQY85BJT6QR2E1",
+      "page_id": "p-B-0",
+      "page_name": "Proposed · Draft mention context",
+      "page_url": "https://app.paper.design/file/01M3P1QEHS5XXQY85BJT6QR2E1/p-B-0",
+      "artboards": [
+        {
+          "id": "72Y-0",
+          "name": "PROPOSED · Draft mentions and context · EN/ZH",
+          "width": 1440,
+          "height": null
+        }
+      ],
+      "read_only": true,
+      "snapshot_is_revision": false
+    },
+    "D14-readme": {
+      "file_id": "01M3P1QEHS5XXQY85BJT6QR2E1",
+      "page_id": "p-9-0",
+      "page_name": "R10 · Build + Implementation Boundaries",
+      "page_url": "https://app.paper.design/file/01M3P1QEHS5XXQY85BJT6QR2E1/p-9-0",
+      "artboards": [
+        {
+          "id": "1MO-0",
+          "name": "00 · R10 · Noir · Builder map + interaction",
+          "width": 1440,
+          "height": 1200
+        },
+        {
+          "id": "5M0-0",
+          "name": "R10 · Preserved Implementation Boundaries",
+          "width": 1440,
+          "height": 900
+        },
+        {
+          "id": "5VN-0",
+          "name": "Source gaps · Answer evidence and non-monitoring save",
+          "width": 1440,
+          "height": null
+        }
+      ],
+      "read_only": true,
+      "snapshot_is_revision": false
+    },
+    "D06-candidate": {
+      "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "page_id": "p-1E-0",
+      "page_name": "Proposed · Chart reader recovery",
+      "page_url": "https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-1E-0",
+      "artboards": [
+        {
+          "id": "23MJ-0",
+          "name": "PROPOSED · Chart reader recovery · EN/ZH",
+          "width": 1440,
+          "height": null
+        }
+      ],
+      "read_only": true,
+      "snapshot_is_revision": false
+    },
+    "D06-behavior": {
+      "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "page_id": "p-17-0",
+      "page_name": "D06 · Terminal · Production workspace · R2",
+      "page_url": "https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-17-0",
+      "artboards": [
+        {
+          "id": "1U01-0",
+          "name": "D06-01 · Chart + Context · 1440 · Dark EN",
+          "width": 1440,
+          "height": 900
+        },
+        {
+          "id": "1UEL-0",
+          "name": "D06-02 · Chart + Inline context · 390 · Dark EN",
+          "width": 390,
+          "height": null
+        },
+        {
+          "id": "1US3-0",
+          "name": "D06-03 · Constrained workspace · 1024 · Light EN",
+          "width": 1024,
+          "height": null
+        },
+        {
+          "id": "1V6P-0",
+          "name": "D06-04 · 行情与图表解读 · 390 · Light ZH",
+          "width": 390,
+          "height": null
+        },
+        {
+          "id": "1W4S-0",
+          "name": "D06-05 · Rail controls + focused return · behavior reference",
+          "width": 1440,
+          "height": null
+        },
+        {
+          "id": "1WI8-0",
+          "name": "D06-06 · Scripts · Durable save outcomes · 1440 · Dark EN",
+          "width": 1440,
+          "height": null
+        },
+        {
+          "id": "1WI9-0",
+          "name": "D06-07 · 脚本编辑 · 390 · Light ZH",
+          "width": 390,
+          "height": null
+        },
+        {
+          "id": "1WIA-0",
+          "name": "D06-08 · Public snapshot · Ready and unavailable · Light EN",
+          "width": 1440,
+          "height": null
+        },
+        {
+          "id": "1WYN-0",
+          "name": "D06-09 · Embedded chart · Browser and recovery · Light EN",
+          "width": 1440,
+          "height": null
+        },
+        {
+          "id": "1WYO-0",
+          "name": "D06-10 · 嵌入图表 · 浏览器与原生状态 · Dark ZH",
+          "width": 390,
+          "height": null
+        }
+      ],
+      "read_only": true,
+      "snapshot_is_revision": false
+    }
+  }
+}

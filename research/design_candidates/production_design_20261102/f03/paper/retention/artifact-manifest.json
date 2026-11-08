@@ -1706,6 +1706,30 @@
       "bytes": 13914,
       "sha256": "ece7d94be153a46981cfa13974e6d0656f2bcdb2b2abd0252b91a0f68c67a9d8",
       "git_blob_sha": "466df64bbc9b943d0ad966facc6f9d2f1386e22c"
+    },
+    {
+      "path": "evidence/proposal-reference-readback-20261108.json",
+      "bytes": 8060,
+      "sha256": "e9c416b0e369f491c6e84d5530a73b1d395f63d63864523b560305000476370f",
+      "git_blob_sha": "bfb414528f873223eeda51fa240238101dec9585"
+    },
+    {
+      "path": "evidence/d04-heatmap-reference-observation-20261108.md",
+      "bytes": 4001,
+      "sha256": "56a34b1cc0a6be06a70357dd656f3429beefa8004887e230b718fe14f5246667",
+      "git_blob_sha": "7571ddf1529551f9ce69a6107d7a41bcb9bd2666"
+    },
+    {
+      "path": "evidence/d14-context-reference-observation-20261108.md",
+      "bytes": 4210,
+      "sha256": "90baaf52d5697d615ab7cf2d57d0b4fc7a7091ff228ce2064ecae6f16bce9113",
+      "git_blob_sha": "8bdae0284375609a6a82540bd993ba55f3ff6d99"
+    },
+    {
+      "path": "evidence/d06-reader-reference-observation-20261108.md",
+      "bytes": 4090,
+      "sha256": "38dd2305d1cc0c4d43cb11e97b20e05dd831e6eb03a72cfff60d1691b4d993bb",
+      "git_blob_sha": "3ab49418d91b891441ba65a901a3fa71d2f9c1d1"
     }
   ],
   "manifest_self_excluded": true,
