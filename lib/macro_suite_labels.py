@@ -384,6 +384,11 @@ BASIS: dict[str, dict[str, str]] = {
 
 # --- owner categorical readings ---------------------------------------------
 OWNER_VALUE: dict[str, dict[str, str]] = {
+    # Existing business-cycle owner's four closed phase labels; no reclassification.
+    "expansion": _pair("Expansion", "扩张"),
+    "slowdown": _pair("Slowdown", "放缓"),
+    "contraction": _pair("Contraction", "收缩"),
+    "recovery": _pair("Recovery", "复苏"),
     "contracting": _pair("Contracting", "收缩"),
     "expanding": _pair("Expanding", "扩张"),
     "benign_expansion": _pair("Benign expansion", "良性扩张"),
@@ -1840,6 +1845,27 @@ def producer_trips_copy_guard(text: str) -> bool:
 
 PLAIN_PRODUCER: tuple[tuple[str, dict[str, str]], ...] = (
     (
+        "The leading tier's 6-month momentum has crossed the calibrated recession-risk DEPTH",
+        _pair(
+            "The six-month momentum of leading indicators has crossed the model's calibrated "
+            "recession-risk threshold, but the share of indicators confirming weakness has not. "
+            "Deterioration is concentrated rather than widespread. Both conditions are required "
+            "before this model can flag recession risk.",
+            "领先指标的六个月动量已越过模型校准的衰退风险阈值，但确认走弱的指标占比尚未达标。"
+            "走弱集中，并未广泛扩散。这两项条件须同时满足，模型才会发出衰退风险信号。",
+        ),
+    ),
+    (
+        "BREADTH (the share of leading legs weakening) has crossed the calibrated recession-risk",
+        _pair(
+            "The share of leading indicators that are weakening has crossed the model's calibrated "
+            "recession-risk threshold, but their six-month momentum has not. Weakness is widespread "
+            "but shallow. Both conditions are required before this model can flag recession risk.",
+            "走弱的领先指标占比已越过模型校准的衰退风险阈值，但领先指标的六个月动量尚未达标。"
+            "走弱范围广，但程度较浅。这两项条件须同时满足，模型才会发出衰退风险信号。",
+        ),
+    ),
+    (
         "US labor-market state cannot be classified: axis coverage is below the "
         "disclosed floor. No quadrant is asserted rather than defaulting to a "
         "neutral state.",
@@ -2147,32 +2173,6 @@ PLAIN_PRODUCER: tuple[tuple[str, dict[str, str]], ...] = (
             "Starts are down 13.5% from a year ago and permits are up 2.4%. "
             "Permits minus starts is +194 thousand homes at an annual rate.",
             "开工同比下降 13.5%，许可同比上升 2.4%。许可减开工为年化 +194 千套。",
-        ),
-    ),
-    # Business-activity depth/breadth contradiction
-    # (engine/market_os/macro_workspaces/business_activity.py
-    # `_detect_contradiction`): its upper-case DEPTH/BREADTH read as state
-    # tokens, so the page fell back to the placeholder sentence.
-    (
-        "The leading tier's 6-month momentum has crossed the calibrated recession-risk DEPTH",
-        _pair(
-            "Leading indicators have fallen far enough to meet the recession-risk "
-            "depth test, but too few of them are falling to meet the breadth test. "
-            "The weakness is concentrated, so no recession-risk signal is called "
-            "until both tests are met.",
-            "领先指标的跌幅已达到衰退风险的深度门槛，但下跌的分项还不够多，未达到广度门槛。"
-            "走弱较为集中，因此在两项门槛同时满足前不判定衰退风险信号。",
-        ),
-    ),
-    (
-        "BREADTH (the share of leading legs weakening) has crossed the calibrated recession-risk",
-        _pair(
-            "Enough leading indicators are weakening to meet the recession-risk "
-            "breadth test, but their combined fall is not yet deep enough to meet "
-            "the depth test. The weakness is broad but shallow, so no "
-            "recession-risk signal is called until both tests are met.",
-            "走弱的领先指标已足够多，达到衰退风险的广度门槛，但整体跌幅尚未达到深度门槛。"
-            "走弱广泛但较浅，因此在两项门槛同时满足前不判定衰退风险信号。",
         ),
     ),
 )
