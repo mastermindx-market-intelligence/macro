@@ -1,11 +1,16 @@
 #!/usr/bin/env python3
 """Run the PB-D research adapters from explicit, replayable JSON inputs.
 
-Examples (from repository root)::
+For the supplied synthetic example, use scripts/run_pb_d_example.sh. It selects
+the Macro checkout's .venv Python 3.12, works from any folder when launched by
+absolute path, and prints the saved report location. M2 Studio copy-and-paste
+instructions are in research/policy_behavior/pro_returns/PB-D/PB_D_OPERATOR_QUICKSTART.md.
 
-    python -m scripts.query_pb_d_event_quality quality --input review.json
-    python -m scripts.query_pb_d_event_quality freeze --input cohort.json
-    python -m scripts.query_pb_d_event_quality run --input research_packet.json
+Developer examples (inside the Macro checkout, with its Python 3.12 environment)::
+
+    .venv/bin/python -m scripts.query_pb_d_event_quality quality --input review.json
+    .venv/bin/python -m scripts.query_pb_d_event_quality freeze --input cohort.json
+    .venv/bin/python -m scripts.query_pb_d_event_quality run --input research_packet.json
 
 The integrated path is an offline consumer. It does not register a cohort,
 fetch news/prices, schedule collection, or modify any source/forward ledger.

@@ -1,0 +1,108 @@
+{
+  "lawful_data_entitlement_established": false,
+  "market_cap_dataset_acquired": false,
+  "record_created_at_utc": "2026-10-09T11:29:10.676280+00:00",
+  "schema": "research.selection_policy_independent_source_observations/v1",
+  "source_limit": "Six narrow independent primary opens; not independent re-fetch of all19 author sources",
+  "sources": [
+    {
+      "access_date_utc": "2026-10-09",
+      "document_date": "2022-09-30",
+      "id": "W1",
+      "individual_request_timestamp": null,
+      "publisher": "FINRA",
+      "raw_sha256": null,
+      "refs": [
+        "turn159view1"
+      ],
+      "representation": "WEB_RENDERED_PRIMARY_HTML",
+      "scope": "Definition and variable absolute cap conventions; no current issuer data",
+      "source_content_captured": false,
+      "url": "https://www.finra.org/investors/insights/market-cap"
+    },
+    {
+      "access_date_utc": "2026-10-09",
+      "document_date": "2026-05",
+      "id": "W2",
+      "individual_request_timestamp": null,
+      "publisher": "MSCI",
+      "raw_sha256": null,
+      "refs": [
+        "turn155view2",
+        "turn157view0",
+        "turn157view1"
+      ],
+      "representation": "WEB_RENDERED_PRIMARY_PDF",
+      "scope": "Printed pp26–27: full-cap ordering, cumulative free-float coverage, global size bounds, company-level segments",
+      "source_content_captured": false,
+      "url": "https://www.msci.com/eqb/methodology/meth_docs/MSCI_GIMIMethodology_May2026.pdf"
+    },
+    {
+      "access_date_utc": "2026-10-09",
+      "document_date": null,
+      "id": "W3",
+      "individual_request_timestamp": null,
+      "publisher": "S&P Dow Jones Indices / MSCI",
+      "raw_sha256": null,
+      "refs": [
+        "turn155view3",
+        "turn157view2",
+        "turn157view3"
+      ],
+      "representation": "WEB_RENDERED_PRIMARY_PDF",
+      "scope": "Printed p3: principal activity, revenue/earnings and review rules; no issuer-level classifications acquired",
+      "source_content_captured": false,
+      "url": "https://www.spglobal.com/spdji/en/documents/methodologies/methodology-gics.pdf"
+    },
+    {
+      "access_date_utc": "2026-10-09",
+      "document_date": null,
+      "id": "W4",
+      "individual_request_timestamp": null,
+      "publisher": "European Central Bank",
+      "raw_sha256": null,
+      "refs": [
+        "turn155view0"
+      ],
+      "representation": "WEB_RENDERED_PRIMARY_HTML",
+      "scope": "Publication and quotation-basis introduction only; no displayed currency value used and no historical series acquired",
+      "source_content_captured": false,
+      "url": "https://www.ecb.europa.eu/stats/policy_and_exchange_rates/euro_reference_exchange_rates/html/index.en.html"
+    },
+    {
+      "access_date_utc": "2026-10-09",
+      "document_date": null,
+      "id": "W5",
+      "individual_request_timestamp": null,
+      "publisher": "SEC / Investor.gov",
+      "raw_sha256": null,
+      "refs": [
+        "turn155view1"
+      ],
+      "representation": "WEB_RENDERED_PRIMARY_HTML",
+      "scope": "ADR underlying share ratio definition",
+      "source_content_captured": false,
+      "url": "https://www.investor.gov/introduction-investing/investing-basics/glossary/american-depositary-receipts-adrs"
+    },
+    {
+      "access_date_utc": "2026-10-09",
+      "document_date": "1992-10 journal issue",
+      "id": "W6",
+      "individual_request_timestamp": null,
+      "publisher": "Oxford University Press / Review of Financial Studies",
+      "raw_sha256": null,
+      "refs": [
+        "turn157search0",
+        "turn159view0"
+      ],
+      "representation": "PRIMARY_PUBLISHER_ABSTRACT",
+      "resolved_url": "https://oup.silverchair-cdn.com/article-minimal/1590264",
+      "retrieval_url": "https://academic.oup.com/rfs/article-abstract/5/4/553/1590264",
+      "scope": "Publisher abstract only; general survivorship mechanism, no full-paper or measured WP02 bias conclusion",
+      "source_content_captured": false,
+      "url": "https://doi.org/10.1093/rfs/5.4.553",
+      "web_display_date": "2015-05-19"
+    }
+  ],
+  "stock_or_issuer_census": false
+}

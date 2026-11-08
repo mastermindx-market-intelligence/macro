@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-02-20T21:16:10Z",
+ "accession": "0000073756-26-000016",
+ "cik": "0000073756",
+ "doc_byte_length": 2051805,
+ "doc_sha256": "9a7879fbf3ea60a91d858c4ae211dae23e89c3bd916961cd261756d063f1984a",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-20",
+ "form": "10-K",
+ "period_of_report": "2025-12-31",
+ "primary_document": "oii-20251231.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 1986262,
+  "byte_start": 1985250,
+  "normalized": "For the year ended December 31, 2025, revenue from one customer, the U.S. Government, which is served primarily by our ADTech segment, accounted for 12% of our total consolidated annual revenue, and no other customer accounted for more than 10% of our total consolidated revenue. No individual customer accounted for more than 10% of our consolidated revenue for the year ended December 31, 2024. For the year ended December 31, 2023, revenue from one customer, the U.S. Government, which is served primarily by our ADTech segment, accounted for 10% of our total consolidated annual revenue, and no other customer accounted for more than 10% of our total consolidated revenue.",
+  "normalized_sha256": "cc1992ee03e104884bbb664b6cc6aaad7b48bba4c71d30544fd55f99a26ff67b",
+  "raw": " </span><span style=\"color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:120%\">For the year ended December&#160;31, 2025, revenue from one customer, the U.S. Government, which is served primarily by our ADTech segment, accounted for <ix:nonNumeric contextRef=\"c-189\" name=\"us-gaap:ConcentrationRiskCustomer\" id=\"f-1151\">12</ix:nonNumeric>% of our total consolidated annual revenue, and no other customer accounted for more than 10% of our total consolidated revenue. No individual customer accounted for more than 10% of our consolidated revenue for the year ended December&#160;31, 2024. For the year ended December&#160;31, 2023, revenue from one customer, the U.S. Government, which is served primarily by our ADTech segment, accounted for <ix:nonNumeric contextRef=\"c-190\" name=\"us-gaap:ConcentrationRiskCustomer\" id=\"f-1152\">10</ix:nonNumeric>% of our total consolidated annual revenue, and no other customer accounted for more than 10% of our total consolidated revenue.",
+  "raw_sha256": "4647cb2711334ec6b930df5b9de87242ca8c557b9ed1da2e337cb6f205a88f01"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/73756/000007375626000016/oii-20251231.htm",
+ "xbrl_contexts": []
+}

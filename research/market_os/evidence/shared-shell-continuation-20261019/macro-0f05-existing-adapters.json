@@ -1,0 +1,13 @@
+{
+  "started_at": "2026-10-20T04:42:32.595349+00:00",
+  "finished_at": "2026-10-20T04:42:32.768646+00:00",
+  "command": [
+    "node",
+    "--test",
+    "tests/js/shared_shell_navigation_adapters.test.cjs",
+    "tests/js/shared_shell_owner_adapters.test.cjs"
+  ],
+  "exit": 0,
+  "log_sha256": "c33a3942fd9b446825cde61d23eb26675f99b2dedc506879d2d76c77d2887d24",
+  "index": "b4588872643390de5d2fa6816ce0009fdcec7ebb"
+}

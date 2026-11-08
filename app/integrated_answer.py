@@ -27,6 +27,12 @@ router = APIRouter()
 
 STALE_DAYS = 4
 
+CONSUMER_RECEIPT_VERSION = "c19-wp08-v1"
+CONSUMED_RECEIPTS_HEADER = "X-Integrated-Answer-Consumed-Receipts"
+RECEIPT_FIELDS = ("bytes_sha256", "producer_generation_id", "data_interval", "contract_watermark", "denominator")
+RECEIPT_NULL_REASONS = frozenset({"NOT_EXPOSED_BY_PRODUCER", "NOT_READ_AT_CONSUME", "NOT_APPLICABLE", "DRIFT_AT_CONSUME"})
+RECEIPT_LEGS = ("financial_facts", "earnings_expectation", "capital_structure", "publication_seam", "event_workspace", "theme_tape", "company_theme_exposure")
+
 _FY2025_REV = {
     "kind": "duration",
     "start": "2024-09-29",
@@ -79,6 +85,20 @@ _COPY: dict[str, dict[str, dict[str, str]]] = {
         "refused": {
             "en": "Earnings expectation detail isn't available on this view.",
             "zh": "此视图无法提供盈利预期细节。",
+        },
+    },
+    "capital_structure": {
+        "absent": {
+            "en": "Capital-structure context isn't available for this company yet.",
+            "zh": "该公司的资本结构背景暂不可用。",
+        },
+        "stale": {
+            "en": "Capital-structure state is older than this page stamp — check the receipt.",
+            "zh": "资本结构状态早于本页时间戳，请查看来源说明。",
+        },
+        "refused": {
+            "en": "Capital-structure context isn't available on this view.",
+            "zh": "此视图无法提供资本结构背景。",
         },
     },
     "publication_seam": {
@@ -189,6 +209,27 @@ def _content_hash(payload: object) -> str:
     return hashlib.sha256(body).hexdigest()
 
 
+class _Ref(dict):
+    """consumed_receipt is an in-process attribute and is never serialized."""
+
+    __slots__ = ("consumed_receipt",)
+
+
+def _consumed_receipt(values: dict, reasons_if_null: dict) -> dict:
+    receipt: dict[str, Any] = {}
+    null_reasons: dict[str, str] = {}
+    for field in RECEIPT_FIELDS:
+        value = values.get(field)
+        receipt[field] = value
+        if value is None:
+            code = reasons_if_null.get(field)
+            if code not in RECEIPT_NULL_REASONS:
+                raise ValueError(f"receipt field {field} is null without a valid reason")
+            null_reasons[field] = code
+    receipt["consumer_version"] = CONSUMER_RECEIPT_VERSION
+    return {"receipt": receipt, "null_reasons": null_reasons}
+
+
 def _make_ref(
     *,
     route: str,
@@ -196,14 +237,60 @@ def _make_ref(
     payload: object,
     generation_id: str | None = None,
     owner_hash: str | None = None,
+    consumed_receipt: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
-    return {
-        "route": route,
-        "as_of": as_of,
-        "generation_id": generation_id,
-        "owner_hash": owner_hash,
-        "content_hash": _content_hash(payload),
-    }
+    ref = _Ref(
+        {
+            "route": route,
+            "as_of": as_of,
+            "generation_id": generation_id,
+            "owner_hash": owner_hash,
+            "content_hash": _content_hash(payload),
+        }
+    )
+    ref.consumed_receipt = consumed_receipt
+    return ref
+
+
+def _receipt_entries(legs: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    by_id = {item["leg"]: item for item in legs}
+    entries: list[dict[str, Any]] = []
+    for leg_id in RECEIPT_LEGS:
+        item = by_id.get(leg_id)
+        ref = item.get("ref") if item is not None else None
+        if not ref:
+            entries.append(
+                {
+                    "leg": leg_id,
+                    "status": "NO_REF",
+                    "ref_content_hash": None,
+                    "receipt": None,
+                    "null_reasons": {},
+                }
+            )
+            continue
+        consumed = getattr(ref, "consumed_receipt", None)
+        if consumed is None:
+            entries.append(
+                {
+                    "leg": leg_id,
+                    "status": "MISSING",
+                    "ref_content_hash": ref["content_hash"],
+                    "receipt": None,
+                    "null_reasons": {},
+                }
+            )
+            continue
+        entries.append(
+            {
+                "leg": leg_id,
+                "status": "RECORDED",
+                "ref_content_hash": ref["content_hash"],
+                "receipt": consumed["receipt"],
+                "null_reasons": consumed["null_reasons"],
+            }
+        )
+    return entries
 
 
 def _leg_shell(leg_id: str) -> dict[str, Any]:
@@ -294,20 +381,21 @@ def _cte_dir() -> Path:
     return Path(os.environ.get("MACRO_CTE_DIR") or REPO / "data" / "company_theme_exposure")
 
 
-def _leg_financial_facts(ticker: str) -> dict[str, Any]:
+def _leg_financial_facts(ticker: str, composed_at: str | None = None) -> dict[str, Any]:
     leg = _leg_shell("financial_facts")
     if ticker != "AAPL":
         leg["status"] = "absent"
         leg["degraded_reason"] = "not_covered:golden_corpus_is_aapl_only"
         _apply_copy(leg)
         return leg
+    request_clock = _normalize_clock(composed_at) or _utc_now()
     req = {
         "schema": "fundamental_forensics.financial_query_request/v1",
         "entity_id": "ISS:US-XNAS-AAPL",
         "policy": {
             "selection": "latest_known_as_of",
-            "source_snapshot_at": "2026-08-01T00:00:00Z",
-            "recorded_at": "2026-08-23T12:00:00Z",
+            "source_snapshot_at": request_clock,
+            "recorded_at": request_clock,
         },
         "metric_ids": [
             "revenue",
@@ -331,7 +419,34 @@ def _leg_financial_facts(ticker: str) -> dict[str, Any]:
             "response_sha256": result.sha256,
             "replay_route": "/api/forensics/v1/financial/query",
         }
-        as_of = _normalize_clock(req["policy"]["recorded_at"]) or "2026-08-23T12:00:00Z"
+        # Producer-derived source clock: max normalized per-node
+        # provenance.recorded_at, else max provenance.accepted_at, else the
+        # threaded request clock. provenance.recorded_cutoff_at and
+        # provenance.source_snapshot_at echo the REQUEST — never read those.
+        envelope = result.envelope if isinstance(result.envelope, dict) else {}
+        receipt = envelope.get("receipt")
+        nodes = receipt.get("nodes") if isinstance(receipt, dict) else None
+        node_clocks: list[str] = []
+        accepted_clocks: list[str] = []
+        for node in nodes or []:
+            if not isinstance(node, dict):
+                continue
+            provenance = node.get("provenance")
+            if not isinstance(provenance, dict):
+                continue
+            recorded = _normalize_clock(provenance.get("recorded_at"))
+            if recorded:
+                node_clocks.append(recorded)
+            accepted = _normalize_clock(provenance.get("accepted_at"))
+            if accepted:
+                accepted_clocks.append(accepted)
+        if node_clocks:
+            as_of = max(node_clocks)
+        elif accepted_clocks:
+            as_of = max(accepted_clocks)
+        else:
+            as_of = request_clock
+        bytes_sha256 = result.sha256 if isinstance(result.sha256, str) and result.sha256 else None
         leg["status"] = "ok"
         leg["payload"] = payload
         leg["ref"] = _make_ref(
@@ -340,6 +455,22 @@ def _leg_financial_facts(ticker: str) -> dict[str, Any]:
             payload=payload,
             generation_id=None,
             owner_hash=result.sha256,
+            consumed_receipt=_consumed_receipt(
+                {
+                    "bytes_sha256": bytes_sha256,
+                    "producer_generation_id": None,
+                    "data_interval": None,
+                    "contract_watermark": None,
+                    "denominator": None,
+                },
+                {
+                    "bytes_sha256": "NOT_EXPOSED_BY_PRODUCER",
+                    "producer_generation_id": "NOT_READ_AT_CONSUME",
+                    "data_interval": "NOT_READ_AT_CONSUME",
+                    "contract_watermark": "NOT_READ_AT_CONSUME",
+                    "denominator": "NOT_APPLICABLE",
+                },
+            ),
         )
         _apply_copy(leg)
         return leg
@@ -425,19 +556,144 @@ def _leg_earnings_expectation(ticker: str, composed_at: str) -> dict[str, Any]:
         payload=payload,
         generation_id=None,
         owner_hash=owner_hash if isinstance(owner_hash, str) else None,
+        consumed_receipt=_consumed_receipt(
+            {
+                "bytes_sha256": None,
+                "producer_generation_id": None,
+                "data_interval": None,
+                "contract_watermark": None,
+                "denominator": None,
+            },
+            {
+                "bytes_sha256": "NOT_READ_AT_CONSUME",
+                "producer_generation_id": "NOT_READ_AT_CONSUME",
+                "data_interval": "NOT_READ_AT_CONSUME",
+                "contract_watermark": "NOT_READ_AT_CONSUME",
+                "denominator": "NOT_READ_AT_CONSUME",
+            },
+        ),
     )
     _apply_copy(leg)
     return leg
 
 
-def _leg_capital_structure() -> dict[str, Any]:
+def _leg_capital_structure(ticker: str, composed_at: str) -> dict[str, Any]:
+    from app import capital_structure as cs
+    from engine.company_intelligence.identity import IdentityError, company_id_for_cik
+
     leg = _leg_shell("capital_structure")
-    leg["status"] = "held_unavailable"
-    leg["degraded_reason"] = "held:W4/W6 preserved (Mastermind #1258 F4; WS:CAPITAL-STRUCTURE-INTELLIGENCE-V2)"
-    leg["copy"] = {
-        "en": "Capital-structure context is on hold for this answer.",
-        "zh": "本答复的资本结构背景暂缓提供。",
+
+    def _absent(degraded_reason: str) -> dict[str, Any]:
+        leg["status"] = "absent"
+        leg["degraded_reason"] = degraded_reason
+        _apply_copy(leg)
+        return leg
+
+    try:
+        normalized = ticker.strip().upper()
+        if not cs._TICKER_RE.fullmatch(normalized):
+            return _absent("ticker_not_covered")
+        projection = cs._load()
+        matches = cs._ticker_matches(projection, normalized)
+        if not matches:
+            return _absent("ticker_not_covered")
+        if len(matches) > 1:
+            return _absent("ambiguous_ticker")
+        issuer_id = str(matches[0]["issuer_id"])
+        resolved = cs._state_view(issuer_id, None, None, None)
+        paths = cs._path_rows(resolved.family_record)
+        bundle = resolved.bundle
+    except HTTPException as exc:
+        if exc.status_code == 404:
+            return _absent("issuer_not_covered_by_state")
+        if exc.status_code == 503 and exc.detail == cs._STATE_NOT_BOUND:
+            return _absent("state_not_bound")
+        if exc.status_code == 503:
+            return _absent("state_unavailable")
+        return _absent(f"unavailable:http_{exc.status_code}")
+    except (ContractError, cs.ContractViolation):
+        return _absent("contract_invalid")
+    except Exception as exc:  # noqa: BLE001
+        return _absent(f"unavailable:{type(exc).__name__}")
+
+    try:
+        company_id: str | None = company_id_for_cik(issuer_id.removeprefix("sec:cik:"))
+    except IdentityError:
+        company_id = None
+
+    path_rows = []
+    for path in paths:
+        origin = path.get("origin") or {}
+        registration = path.get("registration") or {}
+        path_rows.append(
+            {
+                "path_id": path.get("path_id"),
+                "form": origin.get("form"),
+                "accession": origin.get("accession"),
+                "sec_accepted_at": origin.get("sec_accepted_at"),
+                "mastermind_available_at": origin.get("mastermind_available_at"),
+                "observed_registration_state": path.get("observed_registration_state"),
+                "registration_family": registration.get("registration_family"),
+                "file_number": registration.get("file_number"),
+            }
+        )
+
+    payload = {
+        "schema": "capital_structure.context_leg.v1",
+        "issuer_id": issuer_id,
+        "company_id": company_id,
+        "identity": resolved.projection_record["identity"],
+        "state_id": resolved.state_record["state_id"],
+        "generation_id": bundle["generation_id"],
+        "projection_generation_id": bundle["projection_generation_id"],
+        "as_of": resolved.view["as_of"],
+        "horizons": bundle["horizons"],
+        "registration": {
+            "path_count": len(paths),
+            "paths": path_rows,
+            "coverage": dict(resolved.coverage),
+            "family_unavailable": list(resolved.family_record.get("unavailable") or []),
+        },
+        "unavailable": list(resolved.state_record["unavailable"]),
+        "capabilities_proven": list(resolved.state_record["capabilities_proven"]),
+        "authority": dict(cs.AUTHORITY),
+        "receipt_id": resolved.state_record["receipt"]["receipt_id"],
+        "evidence_route": f"/api/capital-structure/v1/issuers/{issuer_id}/state",
     }
+
+    owner_clock = _normalize_clock(bundle["as_of"])
+    if owner_clock is None:
+        leg["status"] = "stale"
+        leg["degraded_reason"] = "no_owner_clock"
+        as_of = composed_at
+    else:
+        leg["status"] = "ok"
+        as_of = owner_clock
+    owner_hash = (resolved.family_record.get("provenance") or {}).get("artifact_sha256")
+    leg["ref"] = _make_ref(
+        route="capital_structure:published_state_bundle",
+        as_of=as_of,
+        payload=payload,
+        generation_id=str(bundle["generation_id"]),
+        owner_hash=owner_hash,
+        consumed_receipt=_consumed_receipt(
+            {
+                "bytes_sha256": None,
+                "producer_generation_id": str(bundle["generation_id"]),
+                "data_interval": None,
+                "contract_watermark": {"contract": bundle["schema"], "watermark": owner_clock},
+                "denominator": dict(resolved.coverage) or None,
+            },
+            {
+                "bytes_sha256": "NOT_READ_AT_CONSUME",
+                "data_interval": "NOT_EXPOSED_BY_PRODUCER",
+                # Coverage was read; an empty published coverage has no denominator.
+                "denominator": "NOT_APPLICABLE",
+            },
+        ),
+    )
+    leg["payload"] = payload
+    _apply_copy(leg)
     return leg
 
 
@@ -449,6 +705,8 @@ def _leg_publication_seam() -> dict[str, Any]:
         as_of = _normalize_clock(payload.get("published_at"))
         if as_of is None:
             raise ValueError("missing published_at")
+        snapshot_id = payload.get("snapshot_id")
+        producer_generation_id = snapshot_id if isinstance(snapshot_id, str) and snapshot_id else None
         leg["status"] = "ok"
         leg["payload"] = payload
         leg["ref"] = _make_ref(
@@ -457,6 +715,22 @@ def _leg_publication_seam() -> dict[str, Any]:
             payload=payload,
             generation_id=payload.get("snapshot_id"),
             owner_hash=payload.get("query_hash"),
+            consumed_receipt=_consumed_receipt(
+                {
+                    "bytes_sha256": None,
+                    "producer_generation_id": producer_generation_id,
+                    "data_interval": None,
+                    "contract_watermark": None,
+                    "denominator": None,
+                },
+                {
+                    "bytes_sha256": "NOT_READ_AT_CONSUME",
+                    "producer_generation_id": "NOT_EXPOSED_BY_PRODUCER",
+                    "data_interval": "NOT_READ_AT_CONSUME",
+                    "contract_watermark": "NOT_READ_AT_CONSUME",
+                    "denominator": "NOT_APPLICABLE",
+                },
+            ),
         )
         _apply_copy(leg)
         return leg
@@ -480,6 +754,8 @@ def _leg_event_workspace(ticker: str, composed_at: str) -> dict[str, Any]:
             as_of = _normalize_clock(as_of_raw)
             if as_of is None:
                 as_of = composed_at
+            payload_gid = payload.get("generation_id")
+            producer_generation_id = payload_gid if isinstance(payload_gid, str) and payload_gid else None
             leg["status"] = "ok"
             leg["payload"] = payload
             leg["ref"] = _make_ref(
@@ -488,6 +764,22 @@ def _leg_event_workspace(ticker: str, composed_at: str) -> dict[str, Any]:
                 payload=payload,
                 generation_id=payload.get("generation_id") if isinstance(payload.get("generation_id"), str) else None,
                 owner_hash=None,
+                consumed_receipt=_consumed_receipt(
+                    {
+                        "bytes_sha256": None,
+                        "producer_generation_id": producer_generation_id,
+                        "data_interval": None,
+                        "contract_watermark": None,
+                        "denominator": None,
+                    },
+                    {
+                        "bytes_sha256": "NOT_READ_AT_CONSUME",
+                        "producer_generation_id": "NOT_EXPOSED_BY_PRODUCER",
+                        "data_interval": "NOT_READ_AT_CONSUME",
+                        "contract_watermark": "NOT_READ_AT_CONSUME",
+                        "denominator": "NOT_APPLICABLE",
+                    },
+                ),
             )
             _apply_copy(leg)
             return leg
@@ -514,6 +806,11 @@ def _leg_theme_tape() -> dict[str, Any]:
             return leg
         payload = {key: ctx.get(key) for key in ("schema", "as_of", "region", "display_only", "leadership")}
         as_of = _normalize_clock(ctx.get("as_of"))
+        ctx_schema = ctx.get("schema")
+        if isinstance(ctx_schema, str) and ctx_schema and as_of is not None:
+            contract_watermark: dict[str, Any] | None = {"contract": ctx_schema, "watermark": as_of}
+        else:
+            contract_watermark = None
         if as_of is None:
             leg["status"] = "stale"
             leg["degraded_reason"] = "no_owner_clock"
@@ -527,6 +824,22 @@ def _leg_theme_tape() -> dict[str, Any]:
             payload=payload,
             generation_id=None,
             owner_hash=None,
+            consumed_receipt=_consumed_receipt(
+                {
+                    "bytes_sha256": None,
+                    "producer_generation_id": None,
+                    "data_interval": None,
+                    "contract_watermark": contract_watermark,
+                    "denominator": None,
+                },
+                {
+                    "bytes_sha256": "NOT_READ_AT_CONSUME",
+                    "producer_generation_id": "NOT_READ_AT_CONSUME",
+                    "data_interval": "NOT_READ_AT_CONSUME",
+                    "contract_watermark": "NOT_EXPOSED_BY_PRODUCER",
+                    "denominator": "NOT_APPLICABLE",
+                },
+            ),
         )
         _apply_copy(leg)
         return leg
@@ -573,7 +886,8 @@ def _leg_company_theme_exposure(ticker: str, composed_at: str) -> dict[str, Any]
             return leg
         raw_path = base / "generations" / gid / rel
         raw = raw_path.read_bytes()
-        if hashlib.sha256(raw).hexdigest() != entry["sha256"] or len(raw) != entry["bytes"]:
+        raw_sha = hashlib.sha256(raw).hexdigest()
+        if raw_sha != entry["sha256"] or len(raw) != entry["bytes"]:
             leg["status"] = "absent"
             leg["degraded_reason"] = "generation_mismatch"
             _apply_copy(leg)
@@ -582,6 +896,18 @@ def _leg_company_theme_exposure(ticker: str, composed_at: str) -> dict[str, Any]
         contracts.validate_exposure(payload)
         owner_clock = (payload.get("theme_state") or {}).get("as_of")
         as_of = _normalize_clock(owner_clock)
+        theme_state = payload.get("theme_state") if isinstance(payload.get("theme_state"), dict) else {}
+        watermark = _normalize_clock(theme_state.get("as_of"))
+        schema = payload.get("schema")
+        if schema is not None and schema != "" and watermark is not None:
+            contract_watermark = {"contract": payload["schema"], "watermark": watermark}
+        else:
+            contract_watermark = None
+        marker_coverage = marker.get("coverage")
+        if immutable.get("coverage") == marker_coverage and marker_coverage is not None:
+            denominator: dict[str, Any] | None = dict(marker["coverage"])
+        else:
+            denominator = None
         leg["status"] = "ok"
         leg["payload"] = payload
         if as_of is None:
@@ -594,6 +920,22 @@ def _leg_company_theme_exposure(ticker: str, composed_at: str) -> dict[str, Any]
             payload=payload,
             generation_id=gid,
             owner_hash=entry.get("sha256"),
+            consumed_receipt=_consumed_receipt(
+                {
+                    "bytes_sha256": raw_sha,
+                    "producer_generation_id": gid,
+                    "data_interval": None,
+                    "contract_watermark": contract_watermark,
+                    "denominator": denominator,
+                },
+                {
+                    "bytes_sha256": "NOT_EXPOSED_BY_PRODUCER",
+                    "producer_generation_id": "NOT_EXPOSED_BY_PRODUCER",
+                    "data_interval": "NOT_EXPOSED_BY_PRODUCER",
+                    "contract_watermark": "NOT_EXPOSED_BY_PRODUCER",
+                    "denominator": "DRIFT_AT_CONSUME",
+                },
+            ),
         )
         _apply_copy(leg)
         return leg
@@ -617,12 +959,91 @@ def _leg_fixed_absent(leg_id: str, degraded_reason: str) -> dict[str, Any]:
     return leg
 
 
-def _compose_page(ticker: str) -> dict[str, Any]:
+_SURFACED_STATUS = frozenset({"ok", "stale"})
+_MEMBERSHIP_BASIS = {
+    "value": "current_generation_not_point_in_time",
+    "en": "Theme membership reflects the current published generation, not membership as of each past date.",
+    "zh": "主题成分反映当前发布的版本，而非各历史日期当时的成分。",
+}
+
+
+def _is_surfaced(leg: dict[str, Any]) -> bool:
+    return leg.get("status") in _SURFACED_STATUS
+
+
+def _shared_source_groups(legs: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Group surfaced legs that share a non-null owner or generation key.
+
+    A group is emitted only when at least two legs share that key. Null keys
+    never group. There is no count, score, or agreement field.
+    """
+    surfaced = [leg for leg in legs if _is_surfaced(leg) and isinstance(leg.get("ref"), dict)]
+    groups: list[dict[str, Any]] = []
+    for key_kind in ("generation_id", "owner_hash"):
+        buckets: dict[str, list[str]] = {}
+        for leg in surfaced:
+            raw = leg["ref"].get(key_kind)
+            if not isinstance(raw, str):
+                continue
+            buckets.setdefault(raw, []).append(str(leg["leg"]))
+        for key in sorted(buckets):
+            members = sorted(set(buckets[key]))
+            if len(members) < 2:
+                continue
+            groups.append({"key_kind": key_kind, "key": key, "legs": members})
+    groups.sort(key=lambda item: (item["key_kind"], item["key"]))
+    return groups
+
+
+def _price_derived_leg_ids(legs: list[dict[str, Any]]) -> list[str]:
+    """Legs whose surfaced payload is a price fact.
+
+    theme_tape is price-derived whenever it is surfaced. earnings_expectation
+    is price-derived only when expectation_chip is present: pead_drift_20d and
+    bad_news_absorption are market-relative price facts.
+    """
+    by_leg = {leg["leg"]: leg for leg in legs}
+    derived: list[str] = []
+    tape = by_leg.get("theme_tape")
+    if tape is not None and _is_surfaced(tape):
+        derived.append("theme_tape")
+    earnings = by_leg.get("earnings_expectation")
+    if earnings is not None and _is_surfaced(earnings):
+        payload = earnings.get("payload")
+        chip = payload.get("expectation_chip") if isinstance(payload, dict) else None
+        if chip is not None:
+            derived.append("earnings_expectation")
+    derived.sort()
+    return derived
+
+
+def _provenance(legs: list[dict[str, Any]]) -> dict[str, Any]:
+    block: dict[str, Any] = {
+        "schema": "integrated_answer.provenance.v0",
+        "shared_sources": _shared_source_groups(legs),
+        "price_derived_legs": _price_derived_leg_ids(legs),
+    }
+    cte = next((leg for leg in legs if leg.get("leg") == "company_theme_exposure"), None)
+    if cte is not None and _is_surfaced(cte):
+        block = {
+            "schema": block["schema"],
+            "shared_sources": block["shared_sources"],
+            "membership_basis": {
+                "value": _MEMBERSHIP_BASIS["value"],
+                "en": _MEMBERSHIP_BASIS["en"],
+                "zh": _MEMBERSHIP_BASIS["zh"],
+            },
+            "price_derived_legs": block["price_derived_legs"],
+        }
+    return block
+
+
+def _compose_page_with_receipts(ticker: str) -> tuple[dict[str, Any], list[dict[str, Any]]]:
     composed_at = _utc_now()
     legs = [
-        _leg_financial_facts(ticker),
+        _leg_financial_facts(ticker, composed_at),
         _leg_earnings_expectation(ticker, composed_at),
-        _leg_capital_structure(),
+        _leg_capital_structure(ticker, composed_at),
         _leg_publication_seam(),
         _leg_event_workspace(ticker, composed_at),
         _leg_theme_tape(),
@@ -666,7 +1087,7 @@ def _compose_page(ticker: str) -> dict[str, Any]:
             "zh": "以下内容并非在所有市场均有发布。",
         }
 
-    return {
+    page = {
         "schema": "integrated_answer.v0",
         "ticker": ticker,
         "as_of": page_as_of,
@@ -676,7 +1097,13 @@ def _compose_page(ticker: str) -> dict[str, Any]:
         "footer": {"en": "Heads-up only, not a buy signal.", "zh": "仅为提示，非买入信号。"},
         "coverage_note": coverage_note,
         "legs": legs,
+        "provenance": _provenance(legs),
     }
+    return page, _receipt_entries(legs)
+
+
+def _compose_page(ticker: str) -> dict[str, Any]:
+    return _compose_page_with_receipts(ticker)[0]
 
 
 @router.get(
@@ -692,11 +1119,20 @@ def integrated_answer_v1(
     except ContractError:
         raise HTTPException(status_code=400, detail="invalid ticker") from None
 
-    page = _compose_page(normalized)
+    page, entries = _compose_page_with_receipts(normalized)
     body_bytes = json.dumps(page, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
     digest = hashlib.sha256(body_bytes).hexdigest()
     return Response(
         content=body_bytes,
         media_type="application/json",
-        headers={**_PRIVATE_HEADERS, "X-Integrated-Answer-SHA256": digest},
+        headers={
+            **_PRIVATE_HEADERS,
+            "X-Integrated-Answer-SHA256": digest,
+            CONSUMED_RECEIPTS_HEADER: json.dumps(
+                {"version": CONSUMER_RECEIPT_VERSION, "page_sha256": digest, "entries": entries},
+                sort_keys=True,
+                separators=(",", ":"),
+                ensure_ascii=True,
+            ),
+        },
     )

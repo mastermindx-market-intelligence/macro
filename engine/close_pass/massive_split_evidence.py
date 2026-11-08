@@ -526,3 +526,35 @@ class SplitEvidenceReader(K.GenericSourceArtifactReader):
                 "read_started_utc_ns": started, "read_completed_utc_ns": completed, "basis_eligible": False}
         read["read_receipt_sha256"] = sha256(K._canonical_bytes(read)).hexdigest()
         return SplitEvidenceSnapshot(artifact, receipt, read)
+
+    def read_recorded_by(self, receipt_id: str, *, cutoff_utc_ns: int) -> SplitEvidenceSnapshot:
+        """Read one exact revision only if owner recording finished by the cutoff.
+
+        This is a necessary chronology check, NOT historical availability proof.
+        Receipt assembly precedes durable HEAD publication; neither that publication
+        instant nor the provider's original publication clock exists in this source
+        contract. Event execution dates, request basis dates and current readability
+        cannot fill those gaps. A rejected revision is never replaced with another
+        receipt, and an empty/partial observation never becomes complete action coverage.
+
+        The ordinary native read still verifies generation membership and retained
+        bytes. No identity, price adjustment, entitlement or economic eligibility is
+        conferred by passing this additional recording boundary.
+        """
+        cutoff = _ns(cutoff_utc_ns)
+        snapshot = self.read(receipt_id)
+        recorded = snapshot.owner_receipt["owner_receipt_assembled_utc_ns"]
+        if recorded > cutoff:
+            raise K.SourceNotFound("split evidence recorded after requested cutoff")
+        read = dict(snapshot.read_receipt)
+        read.pop("read_receipt_sha256")
+        read["schema"] = "market_memory.source_read.massive_split_history_recording_cutoff.v1"
+        read["recording_boundary"] = {
+            "cutoff_utc_ns": cutoff,
+            "owner_receipt_assembled_utc_ns": recorded,
+            "source_publication_utc_ns": None,
+            "generation_publication_utc_ns": None,
+            "historical_availability_proven": False,
+        }
+        read["read_receipt_sha256"] = sha256(K._canonical_bytes(read)).hexdigest()
+        return SplitEvidenceSnapshot(snapshot.artifact, snapshot.owner_receipt, read)

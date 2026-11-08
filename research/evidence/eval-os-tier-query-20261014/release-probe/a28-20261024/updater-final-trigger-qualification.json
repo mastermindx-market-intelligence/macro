@@ -1,0 +1,24 @@
+{
+  "source": "c9a076819bfb5ad9caaa2ef2453f84c6eed6c3d6",
+  "main": "92d06f6ab25ed06f29f8cd3573d2f56e033b9a02",
+  "preview_tree": "4be449fe7d0c839aea93cbd0bf0a9cf6fdb1fd3d",
+  "preview_clean": true,
+  "preview_preserves_entire_incoming_updater": true,
+  "algebraic_three_path_equivalence": true,
+  "positive_paths": [
+    "engine/neuralweb/response_eval.py",
+    "engine/options_hub_retention.py",
+    "engine/options_scenario_capture.py"
+  ],
+  "negative_paths": [
+    "engine/neuralweb/response_eval.py.bak",
+    "engine/options_hub_retention_extra.py",
+    "engine/options_scenario_capture.py.bak"
+  ],
+  "bash_syntax_passed": true,
+  "prior521_and_b824_previews_still_conflicted": true,
+  "manual_base_integration": false,
+  "production_effect": false,
+  "final_affected_api_tests_passed": 236,
+  "prior_full_updater_tests_passed": 376
+}

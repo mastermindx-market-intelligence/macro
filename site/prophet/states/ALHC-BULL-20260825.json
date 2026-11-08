@@ -1,32 +1,32 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "ALHC-BULL-20260825",
-  "asof": "2026-10-07",
+  "asof": "2026-11-08",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 10.1,
   "raw_confidence": 8.0,
   "delta_vs_base": -49.9,
-  "recommended_action": "invalidated",
-  "human_state": "Invalidated",
+  "recommended_action": null,
+  "human_state": "Closed",
   "components": {
     "validity": 0.0,
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 53.0
+    "overlay": 33.0
   },
   "geometry": {
-    "dist_to_stop_r": -5.834,
+    "dist_to_stop_r": -7.183,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 95.6,
-    "p1": -4.5566,
-    "p2": -2.2782,
+    "horizon_pct_used": 166.7,
+    "p1": -5.4557,
+    "p2": -2.7277,
     "p3": null,
-    "move_r": -6.834,
+    "move_r": -8.183,
     "mfe_r": 0.406,
-    "mae_r": -7.502
+    "mae_r": -8.693
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -36,15 +36,17 @@
   "authority_tier": "display",
   "reliability": {
     "management_confidence": "display \u2014 no forward ledger has passed yet",
-    "recommended_action": "display \u2014 narrate, not authoritative order",
+    "recommended_action": "withheld \u2014 canonical forward ledger has closed this plan",
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 0.3099996185302736,
-  "_mae": -5.729999866485596,
+  "_mae": -6.640000190734863,
   "_max_p1": 0.2706002256723757,
   "_first_trigger_ts": "2026-08-25",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 43,
-  "tau": 0.9556
+  "days_elapsed": 75,
+  "tau": 1.6667,
+  "closed": true,
+  "outcome": "INVALIDATED"
 }
