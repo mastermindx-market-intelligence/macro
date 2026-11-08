@@ -1519,7 +1519,7 @@ jobs:
       - name: install deterministic source-research test dependencies
         run: pip install pytest
       - name: point-in-time equity pressure and private pilot projection
-        run: PYTHONPATH=.:tests python -m pytest tests/test_equity_pressure_response.py tests/test_microstructure_pressure_response_pilot.py -q
+        run: PYTHONPATH=.:tests python -m pytest tests/test_equity_pressure_response.py tests/test_microstructure_pressure_response_pilot.py tests/test_tpb_historical_ruler.py -q
 
   yahoo-daily-archive-refresh:
     if: ${{ false }}
@@ -5963,6 +5963,8 @@ jobs:
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn
       - name: session + §7 anchor invariance (k=1..6 start drops, bucket/marker parity, era stamps)
         run: python -m pytest tests/test_session_anchor_invariance.py tests/test_sq_anchor_invariance.py tests/test_confluence_resample_runtime.py -q
+      - name: swing-confluence saved recipe (no market outcomes)
+        run: python -m pytest tests/test_toi_swing_plan.py -q
 
   trial-budgets:
     if: ${{ false }}
