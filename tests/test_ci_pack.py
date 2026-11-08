@@ -5616,9 +5616,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_943),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_964),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_701),
+    ("templates/index.html", 137, 5_948),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_969),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_706),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5626,6 +5626,21 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-08 (PR #6939, external worktree storage CI composition):
+    Natural contract run 42518245285 / job 128845881749 measured head
+    5db669c2e5af8c9255928aa5cf4c7a3a36b40f62 against exact base
+    3c451abc66da836a07d6eb294a8ddec34f698be7 on tested merge
+    462eddc6ccfe27e6af54ec60c7e4f6f51136fb21. The paired probes were
+    index 137/5943->5948, free 137/5964->5969 and Prophet 131/5701->5706;
+    all plans retained ten packs and reported newly selected: none.
+    Fund exactly the measured +5 estimated-weight units per probe.
+    Keep job ceilings 137/138/131, maximum 10 packs, assertions, commands,
+    dependencies, selectors and runtime/admission limits unchanged.
+    Preserve all earlier accepted accounting below. This measures the
+    published storage composition, not per-owner runtime. The accompanying
+    39 exact missing import-closure declarations still require the next
+    natural contract check; no additional allowance is assumed for them.
 
     2026-11-08 (PR #10837, explicit synthetic harness enrollment, recomposed on
     current main 005baca8b092abe82acb4462eb6710af8f59a1c8): natural
