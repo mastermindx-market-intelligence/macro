@@ -1,7 +1,7 @@
 {
   "schema": "transmission_chains.v1",
   "asof": "2026-11-06",
-  "built": "2026-11-07 12:59 UTC",
+  "built": "2026-11-08 08:57 UTC",
   "chains": [
     {
       "chain": "credit_spreads_refinancing",
@@ -11,15 +11,15 @@
         "en": "Credit spreads widen → refinancing-dependent cohort de-rate",
         "zh": "信用利差走阔 → 依赖再融资的板块下修"
       },
-      "state": "expressed",
+      "state": "arming",
       "state_label": {
-        "en": "Expressed",
-        "zh": "已兑现"
+        "en": "Arming",
+        "zh": "触发中"
       },
-      "hop": 1,
+      "hop": 0,
       "n_hops": 1,
       "armable": true,
-      "episode_id": "credit_spreads_refinancing@r2:2026-11-05",
+      "episode_id": "credit_spreads_refinancing@r2:2026-11-06",
       "hops": [
         {
           "id": "spread_widen->refi_cohort_derate",
@@ -29,8 +29,8 @@
             0,
             90
           ],
-          "confirmed": true,
-          "asof": "2026-11-06",
+          "confirmed": false,
+          "asof": null,
           "value_receipt": [
             {
               "series": "IWM",
@@ -546,7 +546,7 @@
           },
           "n": 0,
           "cuts": {},
-          "unevaluable": 3,
+          "unevaluable": 2953,
           "names": [],
           "resolved": false,
           "note": {
@@ -559,7 +559,7 @@
             "en": "FCF burner",
             "zh": "现金流消耗"
           },
-          "n": 0,
+          "n": 338,
           "cuts": {},
           "unevaluable": 811,
           "names": [
@@ -1296,7 +1296,7 @@
               "series": "CL=F",
               "metric": "ret_pct",
               "window": 60,
-              "value": 9.689,
+              "value": 10.284,
               "op": "gt",
               "threshold": 25,
               "passed": false
@@ -1304,7 +1304,7 @@
             {
               "series": "CL=F",
               "metric": "ma50_slope5",
-              "value": 0.1208,
+              "value": 0.1306,
               "op": "gt",
               "threshold": 0,
               "passed": true
@@ -1613,7 +1613,7 @@
               "series": "CL=F",
               "metric": "ret_pct",
               "window": 20,
-              "value": -3.627,
+              "value": -3.104,
               "op": "lt",
               "threshold": -12,
               "passed": false
@@ -1622,7 +1622,7 @@
               "series": "CL=F",
               "metric": "ret_pct",
               "window": 60,
-              "value": 9.689,
+              "value": 10.284,
               "op": "lt",
               "threshold": -18,
               "passed": false
@@ -1630,7 +1630,7 @@
             {
               "series": "CL=F",
               "metric": "ma50_slope5",
-              "value": 0.1208,
+              "value": 0.1306,
               "op": "lt",
               "threshold": 0,
               "passed": false
@@ -1806,12 +1806,12 @@
         "en": "Real-rate peak → crypto re-rates",
         "zh": "实际利率见顶 → 加密资产修复"
       },
-      "state": "arming",
+      "state": "propagating",
       "state_label": {
-        "en": "Arming",
-        "zh": "触发中"
+        "en": "Propagating",
+        "zh": "传导中"
       },
-      "hop": 0,
+      "hop": 1,
       "n_hops": 2,
       "armable": true,
       "episode_id": "real_rate_peak_crypto_rerate@r1:2026-11-06",
@@ -1824,8 +1824,8 @@
             0,
             180
           ],
-          "confirmed": false,
-          "asof": null,
+          "confirmed": true,
+          "asof": "2026-11-06",
           "value_receipt": [
             {
               "series": "DFII10",
@@ -1868,7 +1868,7 @@
               "series": "BTC-USD",
               "metric": "ret_pct",
               "window": 22,
-              "value": -6.756,
+              "value": -7.12,
               "op": "gt",
               "threshold": 10,
               "passed": false
@@ -1942,7 +1942,7 @@
               "series": "BTC-USD",
               "metric": "ret_pct",
               "window": 22,
-              "value": -6.756,
+              "value": -7.12,
               "op": "gt",
               "threshold": 10,
               "passed": false
@@ -2079,12 +2079,12 @@
         "en": "Real-rate peak → gold re-rates",
         "zh": "实际利率见顶 → 黄金估值修复"
       },
-      "state": "arming",
+      "state": "propagating",
       "state_label": {
-        "en": "Arming",
-        "zh": "触发中"
+        "en": "Propagating",
+        "zh": "传导中"
       },
-      "hop": 0,
+      "hop": 1,
       "n_hops": 2,
       "armable": true,
       "episode_id": "real_rate_peak_gold_rerate@r1:2026-11-06",
@@ -2097,8 +2097,8 @@
             0,
             180
           ],
-          "confirmed": false,
-          "asof": null,
+          "confirmed": true,
+          "asof": "2026-11-06",
           "value_receipt": [
             {
               "series": "DFII10",
@@ -2141,7 +2141,7 @@
               "series": "GC=F",
               "metric": "ret_pct",
               "window": 22,
-              "value": -1.864,
+              "value": -1.975,
               "op": "gt",
               "threshold": 4,
               "passed": false
@@ -2211,7 +2211,7 @@
               "series": "GC=F",
               "metric": "ret_pct",
               "window": 22,
-              "value": -1.864,
+              "value": -1.975,
               "op": "gt",
               "threshold": 4,
               "passed": false
@@ -3053,12 +3053,12 @@
         "en": "Vol-regime shift → systematic deleveraging → high-beta unwind",
         "zh": "波动率状态转变 → 系统性去杠杆 → 高贝塔平仓"
       },
-      "state": "arming",
+      "state": "propagating",
       "state_label": {
-        "en": "Arming",
-        "zh": "触发中"
+        "en": "Propagating",
+        "zh": "传导中"
       },
-      "hop": 0,
+      "hop": 1,
       "n_hops": 2,
       "armable": true,
       "episode_id": "vol_regime_deleveraging@r2:2026-11-06",
@@ -3071,8 +3071,8 @@
             0,
             21
           ],
-          "confirmed": false,
-          "asof": null,
+          "confirmed": true,
+          "asof": "2026-11-06",
           "value_receipt": [
             {
               "path": "vol_regime.vol_target_scalar",
@@ -4735,17 +4735,17 @@
   ],
   "display_only": true,
   "substrate": {
-    "universe": 3,
+    "universe": 2953,
     "substrate_asof": {
       "min": "2026-05-07",
-      "max": "2026-11-07"
+      "max": "2026-11-08"
     }
   },
   "input_capture": {
     "schema": "txi.prospective_input_read.v1",
     "status": "observed_input_bytes",
-    "capture_started_at": "2026-11-07T12:59:24.003976+00:00",
-    "capture_completed_at": "2026-11-07T12:59:29.880439+00:00",
+    "capture_started_at": "2026-11-08T08:57:03.299779+00:00",
+    "capture_completed_at": "2026-11-08T08:57:07.895943+00:00",
     "observation_asof": "2026-11-06",
     "knowledge_basis": "native_process_observation_only",
     "source_available_at": null,
@@ -4765,8 +4765,8 @@
     "reads": [
       {
         "path": "data/forex/latest.json",
-        "bytes": 222720,
-        "sha256": "340a0e1e336b9511d55f8d41719cc7ca464c9cfe294d35dda766f26df292686f",
+        "bytes": 217763,
+        "sha256": "3196163dfd80c6675ba257ac7f940b5967c555997a7d835c586b6ac6fec1c23e",
         "status": "present"
       },
       {
@@ -4783,32 +4783,32 @@
       },
       {
         "path": "data/regime/latest.json",
-        "bytes": 987284,
-        "sha256": "b83a1a757c82b5313a5d236f786164fbdd1d8807ad30ec661800e4960d970ae7",
+        "bytes": 987989,
+        "sha256": "c085df66936519e22029e76c4fdc0c395bbb1ecc99ab9b2d61a654c7b0c60463",
         "status": "present"
       },
       {
         "path": "data/transmission/chain_episodes.jsonl",
-        "bytes": 66038,
-        "sha256": "c872d764fc6194153a349d4c0b5a9577f054c9ac04428ac01a0e1bc6d1465571",
+        "bytes": 68599,
+        "sha256": "3d4865d9327152f58be7a2605f56ed4c51adf3bf33b800b319c7b07cb03310ed",
         "status": "present"
       },
       {
         "path": "data/transmission/latest.json",
         "bytes": 106507,
-        "sha256": "ceba10747919d91384714e9cd0358807512728f386c9ee898b5fe017acd8bf09",
+        "sha256": "d14e727165fda4e01ba5885fde88cf0ca307f43d0f14dcd6fed5a5214239f32e",
         "status": "present"
       },
       {
         "path": "data/yahoo/BTC-USD.parquet",
-        "bytes": 140247,
-        "sha256": "05355ddf815fc028e229b9baadb3bc0b638cf68ccb916e7efc4d878781c77f3f",
+        "bytes": 140272,
+        "sha256": "024c89ab80d324838371d0a05609e67b2c6719d303edd6e80b30e49e76a2358c",
         "status": "present"
       },
       {
         "path": "data/yahoo/CL_F.parquet",
-        "bytes": 172440,
-        "sha256": "4b1e89ae70e4389ae60b0f73f5c93a0548d6daf793b7ee45b733fab6f1584711",
+        "bytes": 172443,
+        "sha256": "718993c305203fae86a8c2003d5db0c8eb16b9fcc313c15b8cf635f883619687",
         "status": "present"
       },
       {
@@ -4819,8 +4819,8 @@
       },
       {
         "path": "data/yahoo/GC_F.parquet",
-        "bytes": 157032,
-        "sha256": "dc5743bc5e11e52073c3efc32415dbb3ad4f87139391115197dba8dd78207560",
+        "bytes": 157039,
+        "sha256": "925fa74c2889cbb79e5307ea46f3505345639576dc90a46d878dd2e3723f3a71",
         "status": "present"
       },
       {
@@ -4920,11 +4920,11 @@
       ],
       "knowledge/transmission/proposed": []
     },
-    "causal_state_sha256": "3f3587a27820d2d73a26ccc6108f02be1ba6e452f123bd985ad56e65a5cc429f",
-    "proposed_transitions_sha256": "0a189e145deb6727d0ba7fdfd699c7b5459f838cb16f8d947cc804776cb54980",
+    "causal_state_sha256": "04384e824203bb0ca5836c9ef8edc7a96c7c5cf74f56f936c8fca3e66cd4af9e",
+    "proposed_transitions_sha256": "36c942044e95984cf96809da52aa7b444e82f80e319f72eeb2ea0aa1e5c6b979",
     "retention": "resolve_exact_bytes_in_same_normal_git_publication",
     "publication_receipt": null,
     "scientific_acceptance": false,
-    "generation_id": "sha256:b2b0e451ea145d830cca1cfd8f9a1da0b6b1e97dad178d23530535886e5b858a"
+    "generation_id": "sha256:e75c6e1d6db501bb8e32036ee6fe50f3a2ebcce451b12e036e08a98a5e3c78d5"
   }
 }
