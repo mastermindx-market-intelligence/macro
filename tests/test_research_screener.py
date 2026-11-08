@@ -286,6 +286,96 @@ def test_mapping_key_can_be_one_listing_and_another_listings_ticker(identity, ex
     assert matches == ([expected_listing] if expected_listing else [])
 
 
+@pytest.mark.parametrize("production_dir_exists", [False, True])
+def test_missing_production_records_never_use_repository_examples(tmp_path, production_dir_exists):
+    from scripts.build_research_screener import build_payload
+
+    examples = tmp_path / "tests" / "fixtures" / "research_screener"
+    examples.mkdir(parents=True)
+    (examples / "DEMO.json").write_text(json.dumps({
+        "name": "Example company",
+        "security_state": _state("TEST-DEMO", "DEMO"),
+        "valuation_scenario": {"v1": _valuation("DEMO", price=20, per_share=40)},
+    }))
+    if production_dir_exists:
+        (tmp_path / "site" / "stockdata").mkdir(parents=True)
+
+    assert build_payload(tmp_path)["rows"] == []
+
+
+def test_render_without_production_records_publishes_empty_json_and_html(tmp_path, monkeypatch):
+    import sys
+    import types
+    from scripts import build_research_screener as builder
+
+    examples = tmp_path / "tests" / "fixtures" / "research_screener"
+    examples.mkdir(parents=True)
+    (examples / "DEMO.json").write_text(json.dumps({
+        "name": "Example company",
+        "security_state": _state("TEST-DEMO", "DEMO"),
+    }))
+    # Exercise the real publisher and template without the unrelated site-wide
+    # optimizer/shims or any repository site/data inputs.
+    pages = types.ModuleType("lib.pages")
+    pages.write_page = lambda path, html: path.write_text(html, encoding="utf-8")
+    monkeypatch.setitem(sys.modules, "lib.pages", pages)
+    monkeypatch.setattr(builder, "bake_html", lambda root, payload: builder.render_html(REPO, payload))
+
+    payload = builder.render(tmp_path)
+    published = json.loads((tmp_path / "site" / builder.JSON_NAME).read_text())
+    html = (tmp_path / "site" / builder.HTML_NAME).read_text()
+    assert payload["rows"] == published["rows"] == []
+    assert 'data-rs-empty' in html
+    assert 'data-listing-key="TEST-DEMO"' not in html
+    assert "Example company" not in html
+
+
+@pytest.mark.parametrize("input_state", ["missing", "empty", "malformed", "wrong_schema", "missing_identity"])
+def test_unavailable_universe_does_not_claim_lenses_found_no_names(tmp_path, input_state):
+    from scripts.build_research_screener import build_payload, render_html
+
+    if input_state != "missing":
+        stockdir = tmp_path / "site" / "stockdata"
+        stockdir.mkdir(parents=True)
+        if input_state == "malformed":
+            (stockdir / "DEMO.json").write_text("{broken")
+        elif input_state in ("wrong_schema", "missing_identity"):
+            state = _state("TEST-DEMO", "DEMO")
+            if input_state == "wrong_schema":
+                state["schema"] = "unsupported"
+            else:
+                state.pop("listing_key")
+            (stockdir / "DEMO.json").write_text(json.dumps({"security_state": state}))
+
+    payload = build_payload(tmp_path)
+    assert payload["rows"] == []
+    html = render_html(REPO, payload)
+    empty = re.search(r'<p class="rs-empty"([^>]*)>(.*?)</p>', html, re.S)
+    assert empty is not None
+    assert "hidden" not in empty.group(1), "Unavailable input must be visible before JavaScript"
+    copy = _visible_copy(html)
+    assert "Research list unavailable." in copy
+    assert "研究名单暂不可用。" in copy
+    assert "Company data is not available right now." in copy
+    assert "当前没有可用的公司数据。" in copy
+    assert "No names match these lenses" not in copy
+    assert "目前没有公司符合这些视角" not in copy
+    assert "0 names in this list" not in copy
+
+
+def test_populated_universe_retains_separate_lens_empty_copy():
+    from scripts.build_research_screener import render_html
+
+    payload = compile_research_screener([_state("TEST-DEMO", "DEMO")])
+    html = render_html(REPO, payload)
+    empty = re.search(r'<p class="rs-empty"([^>]*)>(.*?)</p>', html, re.S)
+    assert empty is not None and "hidden" in empty.group(1)
+    assert "No names match these lenses right now." in empty.group(2)
+    assert "目前没有公司符合这些视角。" in empty.group(2)
+    assert "1 name in this list." in _visible_copy(html)
+    assert "Research list unavailable." not in _visible_copy(html)
+
+
 def test_stock_record_preserves_valuation_listing_identity(tmp_path):
     from scripts.build_research_screener import build_payload
 
@@ -958,7 +1048,7 @@ const ROWS = [
   { key: 'US-XNAS-TSLA', ticker: 'TSLA', name: 'Tesla', catalystDate: '2026-09-20', hasCatalyst: true },
 ];
 
-function buildPage(doc) {
+function buildPage(doc, sourceRows = ROWS) {
   const main = new El('main', { class: 'rs', id: 'rs-main' });
   doc.body.appendChild(main);
   const chips = new El('div', { class: 'rs-chips', role: 'group' });
@@ -1010,7 +1100,7 @@ function buildPage(doc) {
 
   const list = new El('ol', { class: 'rs-list', 'data-rs-list': '' });
   main.appendChild(list);
-  ROWS.forEach((r) => {
+  sourceRows.forEach((r) => {
     const li = new El('li', {
       class: 'rs-row',
       'data-listing-key': r.key,
@@ -1150,6 +1240,22 @@ function chip(doc, lens) { return doc.querySelector('.rs-chip[data-lens="' + len
 function orderBtn(doc, order) { return doc.querySelector('.rs-order-btn[data-order="' + order + '"]'); }
 
 const SCENARIOS = {
+  async empty_universe(ctx) {
+    const page = buildPage(ctx.doc, []);
+    runInline(ctx);
+    chip(ctx.doc, 'catalyst').click();
+    await settle(ctx);
+    return snapshot(ctx, page, null);
+  },
+
+  async valuation_lens_no_matches(ctx) {
+    const page = buildPage(ctx.doc);
+    runInline(ctx);
+    chip(ctx.doc, 'valuation').click();
+    await settle(ctx);
+    return snapshot(ctx, page, null);
+  },
+
   async closed_only(ctx) {
     const page = buildPage(ctx.doc);
     ctx.sandbox.MDXAuth = makeAuth({ session: true });
@@ -1712,6 +1818,15 @@ def _held(scen: dict) -> list[str]:
 
 def _visible(scen: dict) -> list[str]:
     return [r["ticker"] for r in scen["rows"] if not r["hidden"]]
+
+
+def test_input_empty_and_filtered_empty_remain_visible_after_script(tmp_path):
+    cases = _run_exposure_scenarios(tmp_path, ["empty_universe", "valuation_lens_no_matches"])
+    assert cases["empty_universe"]["rows"] == []
+    assert len(cases["valuation_lens_no_matches"]["rows"]) == 3
+    for case in cases.values():
+        assert _visible(case) == []
+        assert case["emptyHidden"] is False
 
 
 def test_exposure_notice_variants_and_portfolio_destination():
