@@ -298,7 +298,12 @@ def read_workspace(data_root: Path, page: SuitePage) -> tuple[dict, dict]:
         )
 
     key = f"{page.workspace_id}/{page.region}"
-    entry = (manifest.get("workspaces") or {}).get(key)
+    workspaces = manifest.get("workspaces")
+    if workspaces is None:
+        workspaces = {}
+    if not isinstance(workspaces, Mapping):
+        raise SnapshotRefused("SOURCE_FAILED", "manifest.workspaces is not a JSON object")
+    entry = workspaces.get(key)
     if not isinstance(entry, Mapping):
         raise SnapshotRefused("NOT_COVERED", f"the suite manifest publishes no entry for {key!r}")
 

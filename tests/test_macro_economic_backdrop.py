@@ -274,3 +274,114 @@ def test_receipt_control_has_same_minimum_target_as_investigation():
     css = (root / "templates/_macro_economic_backdrop.css.j2").read_text()
     block = re.search(r"html body \.ebd-rc > summary\s*\{([^}]*)\}", css, re.S)
     assert block and "min-height: 44px" in block.group(1)
+
+
+def _assert_refused_economic_index(root: Path, reason: str) -> None:
+    """Exercise the complete reader, consumer and existing public partial."""
+    from jinja2 import Environment, FileSystemLoader, StrictUndefined
+
+    manifest_path = root / "workspaces/manifest.json"
+    manifest_before = manifest_path.read_bytes()
+    selected = [page for page in pages.SUITE_PAGES
+                if page.region == "US" and page.workspace_id in IDS]
+    assert len(selected) == 3
+    for page in selected:
+        with pytest.raises(pages.SnapshotRefused) as caught:
+            pages.read_workspace(root, page)
+        assert caught.value.kind == reason
+
+    cards = _module().build_economic_backdrop(root, page_built_at=BUILT)
+    assert tuple(card["id"] for card in cards) == IDS
+    for card in cards:
+        assert card["state"] == {"en": "Read unavailable", "zh": "暂无法读取"}
+        assert card["tone"] == "unavailable" and card["facts"] == []
+        assert card["asof"] is None and card["basis"] is None
+        assert card["source"] == {"digest": None, "authority": None, "reason": reason}
+        assert card["href"] == f"/macro_{card['id']}.html"
+        assert card["link"] == {"en": "Investigate", "zh": "查看详情"}
+        assert card["title"]["en"] and card["title"]["zh"]
+        assert card["note"]["en"] and card["note"]["zh"]
+    repo = Path(__file__).resolve().parents[1]
+    env = Environment(loader=FileSystemLoader(repo / "templates"),
+                      autoescape=True, undefined=StrictUndefined)
+    html = env.from_string(
+        '{% import "_macro_economic_backdrop.html.j2" as row %}'
+        '{{ row.economic_backdrop(cards) }}'
+    ).render(cards=cards)
+    assert html.count('class="panel ebd-card ') == 3
+    assert html.count('class="ebd-go"') == 3
+    assert "Read unavailable" in html and "暂无法读取" in html
+    for wid in IDS:
+        assert f'href="/macro_{wid}.html"' in html
+    assert "manifest.workspaces" not in html
+    assert "DO_NOT_RENDER_WORKSPACE_INDEX" not in html
+    assert manifest_path.read_bytes() == manifest_before
+
+
+@pytest.mark.parametrize("workspaces", [
+    [], [{"bad": "DO_NOT_RENDER_WORKSPACE_INDEX"}],
+    "", "DO_NOT_RENDER_WORKSPACE_INDEX", False, True, 0, 1, 0.0, 1.25,
+], ids=[
+    "empty-list", "nonempty-list", "empty-string", "nonempty-string",
+    "false", "true", "zero-int", "positive-int", "zero-float", "positive-float",
+])
+def test_malformed_workspace_index_is_a_typed_unavailable_read(tmp_path, workspaces):
+    _publish(tmp_path, _snapshots())
+    manifest_path = tmp_path / "workspaces/manifest.json"
+    manifest = json.loads(manifest_path.read_text())
+    manifest["workspaces"] = workspaces
+    manifest_path.write_text(json.dumps(manifest))
+    # _read republishes; call the real consumer without erasing the bad index.
+    _assert_refused_economic_index(tmp_path, "SOURCE_FAILED")
+
+
+@pytest.mark.parametrize("index_state", ["missing", "null", "empty-object"])
+def test_absent_workspace_index_keeps_not_covered_semantics(tmp_path, index_state):
+    _publish(tmp_path, _snapshots())
+    manifest_path = tmp_path / "workspaces/manifest.json"
+    manifest = json.loads(manifest_path.read_text())
+    if index_state == "missing":
+        manifest.pop("workspaces")
+    else:
+        manifest["workspaces"] = None if index_state == "null" else {}
+    manifest_path.write_text(json.dumps(manifest))
+    _assert_refused_economic_index(tmp_path, "NOT_COVERED")
+
+
+@pytest.mark.parametrize("wid", IDS)
+def test_missing_mapping_entry_keeps_healthy_sibling_cards_exact(tmp_path, wid):
+    _publish(tmp_path, _snapshots())
+    baseline = _module().build_economic_backdrop(tmp_path, page_built_at=BUILT)
+    manifest_path = tmp_path / "workspaces/manifest.json"
+    manifest = json.loads(manifest_path.read_text())
+    del manifest["workspaces"][f"{wid}/US"]
+    manifest_path.write_text(json.dumps(manifest))
+    cards = _module().build_economic_backdrop(tmp_path, page_built_at=BUILT)
+    for before, after in zip(baseline, cards):
+        if after["id"] == wid:
+            assert after["source"]["reason"] == "NOT_COVERED"
+            assert after["facts"] == [] and after["href"] == before["href"]
+        else:
+            assert after == before
+
+
+@pytest.mark.parametrize("fault,reason", [
+    ("digest", "DISAGREEMENT"), ("bytes", "DISAGREEMENT"),
+    ("path", "SOURCE_FAILED"),
+])
+def test_manifest_entry_refusals_still_preserve_healthy_siblings(tmp_path, fault, reason):
+    _publish(tmp_path, _snapshots())
+    baseline = _module().build_economic_backdrop(tmp_path, page_built_at=BUILT)
+    manifest_path = tmp_path / "workspaces/manifest.json"
+    manifest = json.loads(manifest_path.read_text())
+    entry = manifest["workspaces"][f"{IDS[0]}/US"]
+    if fault == "digest":
+        entry["content_sha256"] = "0" * 64
+    elif fault == "bytes":
+        entry["bytes"] += 1
+    else:
+        entry["path"] = "../outside.json"
+    manifest_path.write_text(json.dumps(manifest))
+    cards = _module().build_economic_backdrop(tmp_path, page_built_at=BUILT)
+    assert cards[0]["source"]["reason"] == reason and cards[0]["facts"] == []
+    assert cards[1:] == baseline[1:]
