@@ -47,7 +47,7 @@ jobs:
           set -euo pipefail
           HOST_PIN="$GITHUB_WORKSPACE/app/deploy/ohlc_origin_known_hosts"
           [ -s "$HOST_PIN" ] || { echo "::error::Trusted VPS host pin unavailable"; exit 1; }
-          grep -q '^146[.]190[.]142[.]17 ssh-ed25519 ' "$HOST_PIN" ||
+          grep -qx '146.190.142.17 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEc8ibhWOj35RC4FXjydG27GMxKfjiVXOw0s7hiCySkk' "$HOST_PIN" ||
             { echo "::error::Trusted VPS host pin changed"; exit 1; }
           [ -n "$VPS_DEPLOY_KEY" ] || { echo "::error::VPS_DEPLOY_KEY not enrolled"; exit 1; }
 
