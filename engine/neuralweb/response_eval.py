@@ -3,8 +3,9 @@
 The scoring half of the W2 evaluation harness (masterplan §3 row 14, rubric §9).
 Reads nothing and writes nothing on its own: the corpus reader/writer lives in
 scripts/run_brain_eval.py and admin/mastermind_logs.py, the LLM judge is INJECTED
-as a callable, and the only file this module opens is its own frozen benchmark
-fixture under engine/neuralweb/eval/.
+as a callable. The module opens its frozen benchmark fixtures under
+engine/neuralweb/eval/; optional historical text cases additionally verify their eight
+explicitly admitted, bounded canonical research documents. No outcome store is read.
 
 CONSTRAINT: scores produced here are INTERNAL QA TELEMETRY ONLY. Nothing in this
 module — and nothing downstream of it — may ever write a score, a pass rate, a
@@ -34,6 +35,8 @@ anything; it is a weekly read on whether the assistant's answers are getting
 better or worse, for the operator's eyes only.
 """
 from __future__ import annotations
+
+from collections.abc import Mapping
 
 import json
 import logging
@@ -736,6 +739,7 @@ def score_response(
     judge_fn: Callable[[str], str | None],
     *,
     extra_context: str = "",
+    native_source_context: dict | None = None,
 ) -> dict:
     """Score one response-log row: mechanical checks + the injected LLM judge.
 
@@ -749,11 +753,28 @@ def score_response(
     score must not be able to overturn — the mechanical tier is right exactly
     where the judge is unreliable. Unjudged rows are never ``passed``.
 
+    ``native_source_context`` is optional, ephemeral same-request resolver
+    evidence supplied by the caller, never loaded from the persisted log row.
+    When requested, numeric verification must succeed for ``passed`` to be true;
+    it cannot change the rubric, judge score or frozen failure taxonomy. Only
+    references and the verification result enter telemetry, never source values.
+    The caller owns actual request correlation and existing subscriber admission.
+
     Never raises: a judge that throws, times out, or returns garbage yields
     ``judged: False`` with the mechanical findings intact.
     """
     checks = mechanical_checks(row)
     row = row if isinstance(row, dict) else {}
+    source_verification = None
+    if native_source_context is not None:
+        context = native_source_context if isinstance(native_source_context, dict) else {}
+        source_verification = verify_native_numeric_response(
+            row.get("answer"), context.get("receipt"),
+            request_id=context.get("request_id"),
+            source_request_id=context.get("source_request_id"),
+            symbol=context.get("symbol"),
+            source_envelopes=context.get("source_envelopes"),
+        )
 
     verdict: dict | None = None
     err: str | None = None
@@ -785,7 +806,9 @@ def score_response(
         "lang": row.get("lang") or None,
         "total": total,
         "passed": bool(verdict and total is not None
-                       and total >= PASS_THRESHOLD and not hard_fail),
+                       and total >= PASS_THRESHOLD and not hard_fail
+                       and (source_verification is None
+                            or source_verification["status"] == "verified")),
         "scores": verdict["scores"] if verdict else {},
         "tags": [t for t in FAILURE_TAGS if t in tags],
         "mech": checks,
@@ -794,6 +817,8 @@ def score_response(
         "note": verdict["note"] if verdict else "",
         "hard_fail": hard_fail,
     }
+    if source_verification is not None:
+        out["source_verification"] = source_verification
     if err:
         out["error"] = err
     return out
@@ -1024,6 +1049,9 @@ def _benchmark_extra_context(case: dict) -> str:
     for prop in case.get("expected_properties") or []:
         if isinstance(prop, dict) and prop.get("check"):
             lines.append(f"- {prop.get('tag') or '?'}: {prop['check']}")
+    for failure in case.get("known_failure_modes") or []:
+        if isinstance(failure, str):
+            lines.append(f"- Known failure to avoid: {failure}")
     gold = str(case.get("gold_standard_sentence") or "").strip()
     if gold:
         lines.append(
@@ -1036,6 +1064,142 @@ def _benchmark_extra_context(case: dict) -> str:
         "and reconciles those specific numbers."
     )
     return "\n".join(lines)
+
+
+_HISTORICAL_TEXT_CASE_IDS = frozenset({"gold_real_rate_2026-08-09", "capex_bind_2026-07-22",
+                                      "mag7_forced_override_2026-07-11", "mag7_narration_2026-08-03",
+                                      "healthcare_coherence_2026-07-13", "rotation_wiring_2026-07-16",
+                                      'risk_breadth_2026-07-08',
+                                      'treasury_liquidity_2026-07-02',
+                                      'semiconductor_divergence_2026-07-08',
+                                      'mag7_organ_causality_2026-07-11',
+                                      'mag7_flow_calibration_2026-07-11',
+                                      'mag7_narrative_denominator_2026-07-11',
+                                      "fomc_qt_clock_2024-05-01",
+                                      "snb_floor_rate_2015-01-15",
+                                      "bls_survey_revision_2024-03-08",
+                                      "gdp_growth_units_2024-04-25",
+                                      "boj_ycc_band_2022-12-20",
+                                      "ecb_rate_clock_2022-07-21",
+                                      "boe_gilt_objective_2022-09-28",
+                                      "wti_delivery_scope_2020-04-27",
+                                      })
+_HISTORICAL_TEXT_CASE_NAMES = frozenset(f"benchmark_{case_id}.json" for case_id in _HISTORICAL_TEXT_CASE_IDS)
+_HISTORICAL_TEXT_SOURCES = frozenset({
+    "research/FOMC_QT_CLOCK_CASE_2024_05_01.md",
+    "research/SNB_FLOOR_RATE_CASE_2015_01_15.md",
+    "research/BLS_SURVEY_REVISION_CASE_2024_03_08.md",
+    "research/GDP_GROWTH_UNITS_CASE_2024_04_25.md",
+    "research/POLICY_AND_CONTRACT_CASES_2020_2022.md",
+    "research/CASE_STUDY_GOLD_REAL_RATE_PEAK_2026_08.md",
+    "research/POSTMORTEM_20260722_CROSSOVERS_VS_CAPEX_BIND_BY_FABLE.md",
+    "research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md",
+    "research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md",
+    "research/POSTMORTEM_20260714_ROTATION_MISS_BY_FABLE.md",
+    "research/POSTMORTEM_20260716_DEFENSIVE_ROTATION_MISS_BY_FABLE.md",
+    "research/RISK_ON_REGIME_SHIFT_POSTMORTEM_2026-06-29_TO_2026-07-08.md",
+    "research/MAG7_TURN_POSTMORTEM_BY_FABLE.md",
+})
+_HISTORICAL_SCOPE_LIMITS = [
+    "Supplied adjudication text only; historical source availability is unverified.",
+    "Current doctrine replay, not a reconstruction of the historical model or served product.",
+    "Declared fact dates are checked; source prose chronology remains an adjudicated assumption.",
+    "Internal reasoning QA only; no empirical-study, evaluation-tier or execution claim.",
+    "Case counts do not establish independent empirical observations.",
+]
+
+
+def historical_text_digest(meta: dict) -> str:
+    """The sole assembly of a qualified historical case's answerer inputs."""
+    return (
+        f"FROZEN SUPPLIED HISTORICAL TEXT — cutoff date {meta['cutoff_date']} "
+        f"({meta['session_label']}). Historical source availability is unverified; "
+        "this is not a live dashboard or a proved historically served snapshot.\n"
+        + "\n".join(f"[{fact['event_date']}] {fact['text']}" for fact in meta["input_facts"])
+    )
+
+
+def _historical_text_case_error(case: dict, root: Path) -> str | None:
+    """Validate the optional frozen text contract before any answer/judge call.
+
+    Reads only the named canonical documents, bounded and regular-file-only. Full
+    bytes and exact excerpts bind input and adjudication separately. No historical
+    stores, model defaults, rights escalation or claim/grade reads are involved.
+    """
+    import hashlib
+    import os
+    import stat
+    from datetime import date
+
+    meta = case.get("historical_case")
+    if (not isinstance(meta, dict) or case.get("frozen") is not True
+            or meta.get("schema") != "response_eval.historical_text_case.v1"
+            or meta.get("replay_scope") != "supplied_adjudication_text"
+            or meta.get("doctrine_scope") != "current_doctrine_replay"
+            or meta.get("historical_source_availability") != "unverified"
+            or meta.get("session_label") not in ("date only", "after hours")):
+        return "historical_case_metadata_invalid"
+
+    def day(value):
+        if not isinstance(value, str) or not re.fullmatch(r"\d{4}-\d{2}-\d{2}", value):
+            return None
+        try:
+            return date.fromisoformat(value)
+        except ValueError:
+            return None
+
+    cutoff = day(meta.get("cutoff_date"))
+    adjudication = day(meta.get("adjudication_date"))
+    facts = meta.get("input_facts")
+    if (cutoff is None or adjudication is None or adjudication < cutoff
+            or not isinstance(facts, list) or not 1 <= len(facts) <= 32):
+        return "historical_case_dates_or_facts_invalid"
+    for fact in facts:
+        event = day(fact.get("event_date")) if isinstance(fact, dict) else None
+        if event is None or event > cutoff:
+            return "historical_case_fact_date_invalid"
+    source = meta.get("source")
+    if (not isinstance(source, dict) or not isinstance(source.get("path"), str)
+            or source["path"] not in _HISTORICAL_TEXT_SOURCES):
+        return "historical_case_source_not_admitted"
+    try:
+        path = root / source["path"]
+        if (root / "research").is_symlink():
+            return "historical_case_source_unavailable"
+        fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+        with os.fdopen(fd, "rb") as stream:
+            before = os.fstat(stream.fileno())
+            if not stat.S_ISREG(before.st_mode) or before.st_size > 65536:
+                return "historical_case_source_unavailable"
+            blob = stream.read(65537)
+            after = os.fstat(stream.fileno())
+        identity = lambda value: (value.st_dev, value.st_ino, value.st_size,
+                                  value.st_mtime_ns, value.st_ctime_ns)
+        if len(blob) > 65536 or identity(before) != identity(after):
+            return "historical_case_source_unavailable"
+        lines = blob.decode("utf-8").splitlines()
+    except (OSError, ValueError, UnicodeError):
+        return "historical_case_source_unavailable"
+    if hashlib.sha256(blob).hexdigest() != source.get("sha256"):
+        return "historical_case_source_hash_mismatch"
+
+    def bound_excerpt(excerpt):
+        if not isinstance(excerpt, dict):
+            return False
+        span = excerpt.get("source_lines")
+        if (not isinstance(span, list) or len(span) != 2
+                or not all(type(n) is int for n in span)
+                or not 1 <= span[0] <= span[1] <= len(lines)):
+            return False
+        text = "\n".join(lines[span[0] - 1:span[1]])
+        return (excerpt.get("text") == text
+                and excerpt.get("sha256") == hashlib.sha256(text.encode()).hexdigest())
+
+    if not all(bound_excerpt(fact) for fact in facts) or not bound_excerpt(meta.get("adjudication_excerpt")):
+        return "historical_case_excerpt_mismatch"
+    if case.get("packet_digest_fixture") != historical_text_digest(meta):
+        return "historical_case_packet_mismatch"
+    return None
 
 
 def run_benchmark(
@@ -1057,11 +1221,28 @@ def run_benchmark(
     fixture, a dead answerer, or a dead judge yields ok=False with the reason,
     never an exception — the weekly lane must still write its summary.
     """
+    named_historical = str(name).split("/")[-1] in _HISTORICAL_TEXT_CASE_NAMES
     case = load_benchmark(name)
     if not case:
         return {"ok": False, "error": "benchmark_absent", "benchmark_id": "",
                 "total": None, "passed": False, "scores": {}, "tags": [],
-                "answer": ""}
+                "answer": "", **({"replay_scope": "supplied_adjudication_text",
+                                  "historical_source_availability": "unverified",
+                                  "scope_limits": list(_HISTORICAL_SCOPE_LIMITS)} if named_historical else {})}
+
+    historical = (named_historical or "historical_case" in case
+                  or (isinstance(case.get("benchmark_id"), str)
+                      and case["benchmark_id"] in _HISTORICAL_TEXT_CASE_IDS))
+    scope = ({"replay_scope": "supplied_adjudication_text",
+              "historical_source_availability": "unverified",
+              "scope_limits": list(_HISTORICAL_SCOPE_LIMITS)} if historical else {})
+    if historical:
+        problem = _historical_text_case_error(case, root or Path(__file__).resolve().parents[2])
+        if problem is None and not (callable(answer_fn) and callable(judge_fn)):
+            problem = "historical_case_requires_explicit_runners"
+        if problem:
+            return {"ok": False, "error": problem, "benchmark_id": case.get("benchmark_id", name),
+                    "total": None, "passed": False, "scores": {}, "tags": [], "answer": "", **scope}
 
     bid = str(case.get("benchmark_id") or name)
     question = str(case.get("question_en") or "")
@@ -1082,7 +1263,7 @@ def run_benchmark(
     if not answer:
         return {"ok": False, "error": "no_answer", "benchmark_id": bid,
                 "total": None, "passed": False, "scores": {}, "tags": [],
-                "answer": "", "system_chars": len(system),
+                "answer": "", "system_chars": len(system), **scope,
                 "doctrine_fingerprint": _doctrine_fingerprint()}
 
     row = {
@@ -1099,6 +1280,7 @@ def run_benchmark(
     )
     return {
         "ok": scored.get("judged", False),
+        **scope,
         "benchmark_id": bid,
         "total": scored.get("total"),
         "passed": scored.get("passed", False),
@@ -1112,4 +1294,673 @@ def run_benchmark(
         "system_chars": len(system),
         "doctrine_fingerprint": _doctrine_fingerprint(),
         "error": scored.get("error"),
+    }
+
+
+# Root-approved finite measurement-meaning acceptance; INTERNAL QA ONLY.
+# This is not an empirical financial evaluator or a consumer qualification grant.
+_MEASUREMENT_BENCHMARK = "benchmark_eval_os_measurement_v1.json"
+
+
+def _measurement_number(value: object) -> float:
+    import math
+    if isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(value):
+        raise ValueError("measurement_number_invalid")
+    return float(value)
+
+
+def _measurement_source_fact(contract: dict, payload: dict) -> None:
+    from engine.intelligence_workspace.contracts import semantic_fingerprint
+    source, reported = contract["source_fact"], payload["fact"]
+    if source.get("schema") != "datapoint_value.v1" or reported.get("schema") != source["schema"]:
+        raise ValueError("source_fact_mismatch")
+    if source.get("status") != "available" or semantic_fingerprint(source) != semantic_fingerprint(reported):
+        raise ValueError("source_fact_mismatch")
+
+
+def measurement_contract_checks(case: dict) -> dict:
+    """Consume a frozen synthetic reported contract, independent of its oracle.
+
+    Results inherit this module's INTERNAL QA/user-facing prohibition. No IO,
+    judge/model calls, fitting, trial writes or production authority. Numerical
+    owners are imported only for the compatible branch, never by admin imports.
+    """
+    result = {"accepted": False, "reason": None, "measurements": {},
+              "internal_qa_only": True, "outcome_access_allowed": False}
+    try:
+        contract, p, cls = case["contract"], case["class_payload"], case["output_class"]
+        if contract.get("synthetic_qa") is not True:
+            raise ValueError("synthetic_qa_scope_required")
+        values: dict = {}
+        if cls == "predictive":
+            for key in ("target_id", "horizon_d", "horizon_unit"):
+                if p.get(key) != contract[key]:
+                    raise ValueError("predictive_target_mismatch")
+            if contract["kind"] == "probability":
+                from engine import k3e_eval1_forward as core
+                if (contract["target_id"] != "K3E-UP-DOWN-FLAT-21"
+                        or contract["horizon_d"] != core.PRIMARY_HORIZON_SESSIONS
+                        or contract["horizon_unit"] != "NYSE_sessions"):
+                    raise ValueError("probability_target_unqualified")
+                probs = p["probabilities"]
+                try:
+                    for value in probs:
+                        _measurement_number(value)
+                    core._validate_probs_row(probs)
+                except (TypeError, ValueError):
+                    raise ValueError("probability_invalid") from None
+                values = {"log_loss": float(core.row_log_losses([probs], [p["label"]])[0]),
+                          "brier": float(core.brier_score([probs], [p["label"]]))}
+            elif contract["kind"] == "quantile":
+                from engine import pick_forward_dist as core
+                from engine.seasonality.contracts import _validate_quantile_map, ContractError
+                if p.get("unit") != contract["unit"]:
+                    raise ValueError("predictive_target_mismatch")
+                levels, quantiles = contract["levels"], p["quantiles"]
+                try:
+                    if len(levels) != len(quantiles) or len(levels) < 2 or levels != sorted(set(levels)):
+                        raise ValueError
+                    for value in levels + quantiles:
+                        _measurement_number(value)
+                    _validate_quantile_map({f"q{int(level * 100):02}": value
+                                            for level, value in zip(levels, quantiles)}, "fixture.quantiles")
+                    if any(level * 100 != int(level * 100) for level in levels):
+                        raise ValueError
+                except (TypeError, ValueError, ContractError):
+                    raise ValueError("quantile_invalid") from None
+                y = _measurement_number(p["realized"])
+                values = {"mean_pinball": float(core.mean_pinball([y], [quantiles], levels)[0]),
+                          "interval_coverage": core.interval_coverage([y], [quantiles[0]], [quantiles[-1]])}
+            else:
+                raise ValueError("predictive_kind_unqualified")
+        elif cls == "ranking":
+            eligible, ranked, missing = contract["eligible"], p["ranking"], p["missing"]
+            if (len(set(eligible)) != len(eligible) or set(p["eligible"]) != set(eligible)
+                    or len(p["eligible"]) != len(eligible) or len(set(ranked)) != len(ranked)
+                    or len(set(missing)) != len(missing) or set(ranked) & set(missing)
+                    or set(ranked) | set(missing) != set(eligible)):
+                raise ValueError("ranking_population_mismatch")
+            k = contract["top_k"]
+            if type(k) is not int or k < 1 or len(ranked) < k or not eligible:
+                raise ValueError("ranking_support_insufficient")
+            if (p.get("eligible_known_at") != contract["eligible_known_at"]
+                    or _measurement_number(p["eligible_known_at"]) > _measurement_number(contract["decision_at"])):
+                raise ValueError("ranking_population_not_known")
+            relevance = contract["relevance"]
+            if set(relevance) != set(eligible) or any(v not in (0, 1) for v in relevance.values()):
+                raise ValueError("ranking_relevance_unqualified")
+            values = {"precision_at_k": sum(relevance[x] for x in ranked[:k]) / k,
+                      "coverage": len(ranked) / len(eligible), "eligible_n": len(eligible)}
+        elif cls == "classification_state":
+            labels, predicted, truth = contract["labels"], p["predicted"], p["truth"]
+            if (not labels or len(set(labels)) != len(labels) or set(contract["label_definitions"]) != set(labels)
+                    or not truth or len(predicted) != len(truth)
+                    or not set(predicted + truth) <= set(labels)):
+                raise ValueError("state_label_definition_invalid")
+            if p.get("truth_source") != contract["truth_source"]:
+                raise ValueError("state_label_source_mismatch")
+            if p.get("clock_unit") != contract["clock_unit"]:
+                raise ValueError("state_clock_mismatch")
+            if _measurement_number(p["known_at"]) > _measurement_number(p["decision_at"]):
+                raise ValueError("state_label_not_available")
+            matrix = [[0 for _ in labels] for _ in labels]
+            for actual, guess in zip(truth, predicted):
+                matrix[labels.index(actual)][labels.index(guess)] += 1
+            values = {"accuracy": sum(a == b for a, b in zip(truth, predicted)) / len(truth),
+                      "n_labels": len(truth), "confusion": matrix}
+        elif cls == "detection_event":
+            if p.get("clock_unit") != contract["clock_unit"] or contract["matching"] != "one_alarm_one_event":
+                raise ValueError("event_clock_or_matching_mismatch")
+            events, alarms = p["events"], p["alarms"]
+            em, am = {e["id"]: e for e in events}, {a["id"]: a for a in alarms}
+            if len(em) != len(events) or len(am) != len(alarms):
+                raise ValueError("event_ids_not_distinct")
+            for event in events:
+                _measurement_number(event["at"])
+            for alarm in alarms:
+                if _measurement_number(alarm["at"]) >= _measurement_number(alarm["expires"]):
+                    raise ValueError("event_alarm_window_invalid")
+            matches = p["matches"]
+            aa, ee = [pair[0] for pair in matches], [pair[1] for pair in matches]
+            if len(set(aa)) != len(aa) or len(set(ee)) != len(ee):
+                raise ValueError("event_match_not_one_to_one")
+            leads = []
+            for aid, eid in matches:
+                alarm, event = am[aid], em[eid]
+                issued, expires, occurs = (_measurement_number(alarm["at"]),
+                                            _measurement_number(alarm["expires"]),
+                                            _measurement_number(event["at"]))
+                if not issued <= occurs <= expires or issued >= expires:
+                    raise ValueError("event_match_outside_window")
+                leads.append(occurs - issued)
+            exposure = _measurement_number(contract["exposure"])
+            if exposure <= 0:
+                raise ValueError("event_exposure_invalid")
+            false = len(alarms) - len(matches)
+            values = {"matched": len(matches), "missed": len(events) - len(matches),
+                      "false_alarms": false, "false_alarm_rate": false / exposure,
+                      "mean_lead": sum(leads) / len(leads) if leads else None}
+        elif cls in ("descriptive", "generative"):
+            _measurement_source_fact(contract, p)
+            values = {"source_supported": True}
+            if cls == "generative":
+                if "self_grade" in p:
+                    raise ValueError("self_grading_forbidden")
+                from datetime import date
+                readings = p["readings"]
+                for reading in readings:
+                    if (not isinstance(reading.get("entity"), str) or not reading["entity"]
+                            or _measurement_number(reading["window"]) <= 0
+                            or not isinstance(reading.get("as_of"), str)):
+                        raise ValueError("reading_scope_unqualified")
+                    try:
+                        date.fromisoformat(reading["as_of"])
+                    except ValueError:
+                        raise ValueError("reading_scope_unqualified") from None
+                different = 0
+                for i, left in enumerate(readings):
+                    _measurement_number(left["value"])
+                    if left.get("target_id") != contract["reading_target_id"] or left.get("unit") != contract["reading_unit"]:
+                        raise ValueError("reading_scope_unqualified")
+                    for right in readings[i + 1:]:
+                        _measurement_number(right["value"])
+                        keys = ("target_id", "entity", "unit", "window", "as_of")
+                        same = all(left[key] == right[key] for key in keys)
+                        if same and left["value"] != right["value"]:
+                            raise ValueError("same_contract_contradiction")
+                        if not same:
+                            different += 1
+                values["legitimate_scope_differences"] = different
+        elif cls == "salience":
+            if (not isinstance(p.get("generator"), str) or not p["generator"]
+                    or p["judge"] == p["generator"] or p["judge"] != contract["reference_owner"]
+                    or p.get("target") != "relevance" or contract["target"] != "relevance"
+                    or p.get("rubric_version") != contract["rubric_version"]):
+                raise ValueError("salience_reference_not_independent")
+            eligible, assessed, selected = contract["eligible"], p["assessed"], p["selected"]
+            if (not eligible or not selected or len(set(eligible)) != len(eligible)
+                    or len(p["eligible"]) != len(eligible) or set(p["eligible"]) != set(eligible)
+                    or len(set(assessed)) != len(assessed) or len(set(selected)) != len(selected)
+                    or not set(selected) <= set(assessed) <= set(eligible)
+                    or set(contract["relevance"]) != set(eligible)):
+                raise ValueError("salience_population_mismatch")
+            if any(type(v) is not bool for v in contract["relevance"].values()):
+                raise ValueError("salience_reference_invalid")
+            values = {"relevance_precision": sum(contract["relevance"][x] for x in selected) / len(selected),
+                      "coverage": len(assessed) / len(eligible)}
+        else:
+            raise ValueError("measurement_class_unqualified")
+        result.update(accepted=True, measurements=values)
+    except ValueError as exc:
+        result["reason"] = str(exc)
+    except (KeyError, TypeError, IndexError, AttributeError):
+        result["reason"] = "reported_contract_incomplete"
+    return result
+
+
+def validate_measurement_acceptance_protocol(protocol: dict, frozen: dict) -> dict:
+    """Check the finite synthetic QA freeze, dependence and separate research looks.
+
+    It admits no empirical protocol/outcome access. Frozen literal declarations
+    must match; overlap-connected intervals and same owner block form one block.
+    """
+    result = {"accepted": False, "reason": None, "internal_qa_only": True,
+              "outcome_access_allowed": False}
+    try:
+        if protocol.get("scope") != "synthetic_internal_qa" or protocol.get("outcome_access_allowed") is not False:
+            raise ValueError("protocol_scope_forbidden")
+        if frozen.get("protocol_id") != "EVAL-OS-MEASUREMENT-SYNTHETIC-QA-V1" or type(protocol.get("version")) is not int:
+            raise ValueError("protocol_freeze_unavailable")
+        mutable = {"observations", "declared_independent_blocks", "trial_ids", "look_ids",
+                   "inspected_holdout_ids", "contaminated_holdout_ids"}
+        for key in frozen.keys() - mutable:
+            if (protocol.get(key) != frozen[key] or frozen[key] is None or frozen[key] == ""
+                    or isinstance(protocol.get(key), bool) != isinstance(frozen[key], bool)):
+
+                raise ValueError("protocol_frozen_term_changed:" + key)
+        population = protocol["population"]
+        ids = population["case_ids"]
+        if population["kind"] != "synthetic" or not ids or len(set(ids)) != len(ids):
+            raise ValueError("protocol_population_invalid")
+        if len(protocol["observations"]) > protocol["max_observation_rows"]:
+            raise ValueError("protocol_observation_budget_exceeded")
+        if not protocol["observations"]:
+            raise ValueError("protocol_observations_absent")
+        rows: dict[str, dict] = {}
+        for row in protocol["observations"]:
+            if not row["id"] or not row["block_id"] or _measurement_number(row["start"]) >= _measurement_number(row["end"]):
+                raise ValueError("protocol_observation_invalid")
+            if row["id"] in rows and rows[row["id"]] != row:
+                raise ValueError("protocol_occurrence_collision")
+            rows[row["id"]] = row
+        for original in frozen["observations"]:
+            if rows.get(original["id"]) != original:
+                raise ValueError("protocol_frozen_observation_changed")
+        observations = list(rows.values())
+        parents = list(range(len(observations)))
+        def find(i):
+            while parents[i] != i:
+                i = parents[i]
+            return i
+        for i, left in enumerate(observations):
+            for j, right in enumerate(observations[:i]):
+                overlap = left["start"] < right["end"] and right["start"] < left["end"]
+                if overlap or left["block_id"] == right["block_id"]:
+                    parents[find(i)] = find(j)
+        blocks = len({find(i) for i in range(len(observations))})
+        declared = protocol["declared_independent_blocks"]
+        if type(declared) is not int or declared != blocks:
+            raise ValueError("protocol_independent_count_inflated")
+        counts = {}
+        for kind in ("trial", "look"):
+            names, budget = protocol[kind + "_ids"], protocol["max_" + kind + "s"]
+            if type(budget) is not int or budget < 1 or not names or any(not isinstance(x, str) or not x for x in names):
+                raise ValueError("protocol_research_count_invalid")
+            if not set(frozen[kind + "_ids"]) <= set(names):
+                raise ValueError("protocol_research_history_erased")
+            if len(set(names)) != len(names) or len(names) > budget:
+                raise ValueError("protocol_research_budget_exceeded")
+            counts[kind + "_count"] = len(names)
+        inspected = set(protocol["inspected_holdout_ids"])
+        contaminated = set(protocol["contaminated_holdout_ids"])
+        if not set(frozen["inspected_holdout_ids"]) <= inspected:
+            raise ValueError("protocol_inspection_erased")
+        if not inspected <= contaminated:
+            raise ValueError("protocol_contamination_erased")
+        result.update(accepted=True, independent_blocks=blocks, observation_rows=len(protocol["observations"]),
+                      distinct_observations=len(observations), contaminated_holdouts=sorted(contaminated), **counts)
+    except ValueError as exc:
+        result["reason"] = str(exc)
+    except (KeyError, TypeError, AttributeError):
+        result["reason"] = "protocol_incomplete"
+    return result
+
+
+def _measurement_oracle_equal(actual: object, expected: object, tolerance: float) -> bool:
+    if isinstance(expected, dict):
+        return (isinstance(actual, dict) and actual.keys() == expected.keys()
+                and all(_measurement_oracle_equal(actual[k], v, tolerance) for k, v in expected.items()))
+    if isinstance(expected, list):
+        return (isinstance(actual, list) and len(actual) == len(expected)
+                and all(_measurement_oracle_equal(a, b, tolerance) for a, b in zip(actual, expected)))
+    if isinstance(expected, (int, float)) and not isinstance(expected, bool):
+        return (isinstance(actual, (int, float)) and not isinstance(actual, bool)
+                and abs(actual - expected) <= tolerance)
+    return type(actual) is type(expected) and actual == expected
+
+
+def run_measurement_acceptance_cases(benchmark: dict | None = None) -> dict:
+    """Run existing offline owner's frozen synthetic cases; return INTERNAL QA.
+
+    Reads only its own fixture through the incumbent benchmark reader when no
+    in-memory benchmark is supplied. No LLM, score_response, sidecar or UI export.
+    """
+    doc = load_benchmark(_MEASUREMENT_BENCHMARK) if benchmark is None else benchmark
+    frozen_doc = load_benchmark(_MEASUREMENT_BENCHMARK)
+    frozen = frozen_doc.get("protocol") or {}
+    references = {c["id"]: c for c in frozen_doc.get("cases") or []}
+    protocol = validate_measurement_acceptance_protocol(doc.get("protocol") or {}, frozen)
+    rows = []
+    cases = doc.get("cases") or []
+    ids = [c.get("id") for c in cases]
+    expected_ids = (frozen.get("population") or {}).get("case_ids") or []
+    population_ok = bool(expected_ids) and len(set(ids)) == len(ids) and set(ids) == set(expected_ids)
+    for case in cases:
+        measured = measurement_contract_checks(case)
+        subset = {k: measured[k] for k in ("accepted", "reason", "measurements")}
+        reference = references.get(case.get("id")) or {}
+        contract_unchanged = (case.get("output_class") == reference.get("output_class")
+                              and case.get("contract") == reference.get("contract")
+                              and case.get("expected") == reference.get("expected"))
+        rows.append({"case_id": case.get("id"), "output_class": case.get("output_class"),
+                     "actual": subset, "contract_matches_freeze": contract_unchanged,
+                     "agrees_with_oracle": contract_unchanged and _measurement_oracle_equal(
+                         subset, reference.get("expected"), frozen.get("numeric_tolerance", 0.0))})
+    return {"ok": protocol["accepted"] and population_ok and all(r["agrees_with_oracle"] for r in rows),
+            "internal_qa_only": True, "outcome_access_allowed": False,
+            "protocol": protocol, "case_population_matches": population_ok, "cases": rows}
+
+
+# Same-request native numeric source verification (internal QA only).
+# Frozen receipt/answer contract strings.  These assert the native lane's own
+# published constants; no behaviour of the native lane is re-defined here.
+_NATIVE_NUMERIC_RECEIPT_SCHEMA = "brain.native_fact_receipt.v1"
+_NATIVE_NUMERIC_RECEIPT_ROUTE = "instant/native-fact"
+_NATIVE_NUMERIC_CACHE_LABEL = "request_scoped_no_value_cache"
+_NATIVE_NUMERIC_VALUE_SCHEMA = "datapoint_value.v1"
+_NATIVE_NUMERIC_SUBSCRIBER = "subscriber"
+_NATIVE_NUMERIC_SECURITY = "security"
+_NATIVE_NUMERIC_TYPED_FACT = "typed_fact"
+_NATIVE_NUMERIC_CLAUSE_PREFIX = "c"
+# Exact answer grammar of the native renderer: symbol + " — " + "; ".join(...).
+_NATIVE_NUMERIC_ANSWER_SEPARATOR = " — "
+_NATIVE_NUMERIC_CLAUSE_SEPARATOR = "; "
+
+_NATIVE_NUMERIC_MAX_TEXT_LENGTH = 256
+_NATIVE_NUMERIC_MAX_ANSWER_LENGTH = 8192
+_NATIVE_NUMERIC_MIN_SOURCE_FIELDS = 1
+_NATIVE_NUMERIC_MAX_SOURCE_FIELDS = 12
+
+_NATIVE_NUMERIC_VERIFIED = "verified"
+_NATIVE_NUMERIC_MISMATCH = "mismatch"
+_NATIVE_NUMERIC_NOT_ASSESSED = "not_assessed"
+_NATIVE_NUMERIC_VERIFIED_REASON = "numeric_response_verified"
+
+
+def verify_native_numeric_response(
+    answer: Any,
+    receipt: Any,
+    *,
+    request_id: Any,
+    source_request_id: Any,
+    symbol: Any,
+    source_envelopes: Any,
+) -> dict[str, Any]:
+    """Deterministically verify a native numeric answer against its sources.
+
+    Args:
+        answer: the full rendered answer text under verification.
+        receipt: the ``brain.native_fact_receipt.v1`` produced for it.
+        request_id: caller assertion of the serving request id.
+        source_request_id: caller assertion of the request id the sources and
+            receipt were produced under; must equal ``request_id``.
+        symbol: the already-admitted current symbol for the request.
+        source_envelopes: the real same-request subscriber resolver envelopes
+            (``datapoint_value.v1``) for 1..12 distinct numeric native fields.
+
+    Returns:
+        A small internal-only dict: ``status`` (``verified`` | ``mismatch`` |
+        ``not_assessed``), a stable ``reason`` code, ``checked_count`` (fields
+        fully verified; ``0`` unless verified), ``references`` (``field_id`` +
+        ``fact_fingerprint`` only, populated solely on ``verified``), and
+        ``internal_qa_only`` (always ``True``).  Never raises; never mutates
+        its inputs; never echoes values, answer text, receipt content, source
+        content, or exception text.
+    """
+    try:
+        return _native_numeric_verify(
+            answer,
+            receipt,
+            request_id=request_id,
+            source_request_id=source_request_id,
+            symbol=symbol,
+            source_envelopes=source_envelopes,
+        )
+    except Exception:
+        # Fail closed and quiet: a stable code, nothing leaked, nothing mutated.
+        return _native_numeric_result(_NATIVE_NUMERIC_NOT_ASSESSED, "internal_error", 0, ())
+
+
+def _native_numeric_verify(
+    answer: Any,
+    receipt: Any,
+    *,
+    request_id: Any,
+    source_request_id: Any,
+    symbol: Any,
+    source_envelopes: Any,
+) -> dict[str, Any]:
+    # Canonical helpers only, imported lazily; this module adds no registry,
+    # rights policy, or renderer of its own.
+    from engine.intelligence_workspace.contracts import finite_number, semantic_fingerprint
+    from engine.intelligence_workspace.consumers import build_brain_fact_packet
+    from engine.neuralweb.native_facts import _render_fact
+
+    # -- caller correlation assertions (never authentication) ---------------
+    if not _native_numeric_bounded_text(request_id) or not _native_numeric_bounded_text(source_request_id):
+        return _native_numeric_result(_NATIVE_NUMERIC_NOT_ASSESSED, "request_id_malformed", 0, ())
+    if request_id != source_request_id:
+        return _native_numeric_result(_NATIVE_NUMERIC_MISMATCH, "request_id_mismatch", 0, ())
+
+    # -- admitted symbol / answer bounds ------------------------------------
+    if not _native_numeric_bounded_text(symbol):
+        return _native_numeric_result(_NATIVE_NUMERIC_NOT_ASSESSED, "symbol_malformed", 0, ())
+    if not isinstance(answer, str) or not answer.strip() or len(answer) > _NATIVE_NUMERIC_MAX_ANSWER_LENGTH:
+        return _native_numeric_result(_NATIVE_NUMERIC_NOT_ASSESSED, "answer_malformed", 0, ())
+
+    # -- source evidence admission ------------------------------------------
+    if not isinstance(source_envelopes, (list, tuple)):
+        return _native_numeric_result(_NATIVE_NUMERIC_NOT_ASSESSED, "source_envelopes_malformed", 0, ())
+    envelopes = list(source_envelopes)
+    if not _NATIVE_NUMERIC_MIN_SOURCE_FIELDS <= len(envelopes) <= _NATIVE_NUMERIC_MAX_SOURCE_FIELDS:
+        return _native_numeric_result(_NATIVE_NUMERIC_NOT_ASSESSED, "source_envelopes_malformed", 0, ())
+
+    field_ids: list[Any] = []
+    digests: set[Any] = set()
+    entities: set[Any] = set()
+    for envelope in envelopes:
+        if not isinstance(envelope, Mapping):
+            return _native_numeric_result(_NATIVE_NUMERIC_NOT_ASSESSED, "source_envelopes_malformed", 0, ())
+        if envelope.get("schema") != _NATIVE_NUMERIC_VALUE_SCHEMA:
+            return _native_numeric_result(_NATIVE_NUMERIC_NOT_ASSESSED, "source_schema_unexpected", 0, ())
+        if envelope.get("audience") != _NATIVE_NUMERIC_SUBSCRIBER:
+            return _native_numeric_result(_NATIVE_NUMERIC_NOT_ASSESSED, "source_audience_not_subscriber", 0, ())
+        if envelope.get("status") != "available":
+            # Absence/blocked/stale is honestly not assessed; it is never a
+            # successful numeric check.
+            return _native_numeric_result(_NATIVE_NUMERIC_NOT_ASSESSED, "source_field_not_available", 0, ())
+        if not finite_number(envelope.get("value")):
+            # Booleans and non-finite floats are rejected outright; non-numeric
+            # native fields are outside this checker's scope, never a pass.
+            return _native_numeric_result(_NATIVE_NUMERIC_NOT_ASSESSED, "source_field_not_numeric", 0, ())
+        digest = envelope.get("registry_digest")
+        if not isinstance(digest, str) or re.fullmatch(r"[0-9a-f]{64}", digest) is None:
+            return _native_numeric_result(_NATIVE_NUMERIC_NOT_ASSESSED, "source_registry_digest_missing", 0, ())
+        if not _native_numeric_bounded_text(envelope.get("field_id")):
+            return _native_numeric_result(_NATIVE_NUMERIC_NOT_ASSESSED, "source_envelopes_malformed", 0, ())
+        entity = envelope.get("entity")
+        if (
+            not isinstance(entity, Mapping)
+            or entity.get("type") != _NATIVE_NUMERIC_SECURITY
+            or not _native_numeric_bounded_text(entity.get("id"))
+        ):
+            # The industry-rank subset resolves against an industry entity, so
+            # canonical-security equality cannot be established for it: that
+            # supported-subset boundary is not_assessed, never a numeric pass.
+            return _native_numeric_result(_NATIVE_NUMERIC_NOT_ASSESSED, "source_entity_not_security", 0, ())
+        field_ids.append(envelope.get("field_id"))
+        digests.add(digest)
+        entities.add((entity.get("type"), entity.get("id")))
+
+    if len(set(field_ids)) != len(field_ids):
+        return _native_numeric_result(_NATIVE_NUMERIC_NOT_ASSESSED, "source_field_duplicate", 0, ())
+    if len(digests) != 1:
+        return _native_numeric_result(_NATIVE_NUMERIC_NOT_ASSESSED, "source_registry_inconsistent", 0, ())
+    if len(entities) != 1:
+        return _native_numeric_result(_NATIVE_NUMERIC_NOT_ASSESSED, "source_entity_inconsistent", 0, ())
+    registry_digest = next(iter(digests))
+    entity_type, entity_id = next(iter(entities))
+    canonical_security = {"type": entity_type, "id": entity_id}
+
+    # Source integrity: the stored fingerprint must be exactly the canonical
+    # fingerprint of the envelope as supplied (a well-shaped hash proves
+    # nothing on its own).
+    for envelope in envelopes:
+        try:
+            expected_fingerprint = semantic_fingerprint(envelope)
+        except Exception:
+            return _native_numeric_result(_NATIVE_NUMERIC_NOT_ASSESSED, "source_fingerprint_invalid", 0, ())
+        if envelope.get("fact_fingerprint") != expected_fingerprint:
+            return _native_numeric_result(_NATIVE_NUMERIC_NOT_ASSESSED, "source_fingerprint_invalid", 0, ())
+
+    # Ground truth surfaces, built once from the sources by canonical code.
+    try:
+        packet_facts = build_brain_fact_packet(envelopes)["facts"]
+    except Exception:
+        return _native_numeric_result(_NATIVE_NUMERIC_NOT_ASSESSED, "source_envelopes_malformed", 0, ())
+    try:
+        rendered: list[str] = []
+        expected_clauses: list[dict[str, Any]] = []
+        for display_order, envelope in enumerate(envelopes):
+            text, clause = _render_fact(envelope)
+            rendered.append(text)
+            expected_clauses.append(
+                {
+                    **clause,
+                    "clause_id": f"{_NATIVE_NUMERIC_CLAUSE_PREFIX}{display_order + 1}",
+                    "display_order": display_order,
+                    "receipt_kind": _NATIVE_NUMERIC_TYPED_FACT,
+                }
+            )
+    except Exception:
+        return _native_numeric_result(_NATIVE_NUMERIC_NOT_ASSESSED, "field_unrenderable", 0, ())
+
+    # -- receipt admission (is this even a native fact receipt?) -------------
+    if not isinstance(receipt, Mapping):
+        return _native_numeric_result(_NATIVE_NUMERIC_NOT_ASSESSED, "receipt_malformed", 0, ())
+    if receipt.get("schema") != _NATIVE_NUMERIC_RECEIPT_SCHEMA:
+        return _native_numeric_result(_NATIVE_NUMERIC_NOT_ASSESSED, "receipt_schema_unexpected", 0, ())
+    if receipt.get("route") != _NATIVE_NUMERIC_RECEIPT_ROUTE:
+        return _native_numeric_result(_NATIVE_NUMERIC_NOT_ASSESSED, "receipt_route_unexpected", 0, ())
+    if receipt.get("request_scoped_no_value_cache") is not True:
+        return _native_numeric_result(_NATIVE_NUMERIC_NOT_ASSESSED, "receipt_cache_contract_violated", 0, ())
+    cache = receipt.get("cache")
+    if (
+        not isinstance(cache, Mapping)
+        or cache.get("hit") is not False
+        or cache.get("label") != _NATIVE_NUMERIC_CACHE_LABEL
+    ):
+        return _native_numeric_result(_NATIVE_NUMERIC_NOT_ASSESSED, "receipt_cache_contract_violated", 0, ())
+    if not _native_numeric_bounded_text(receipt.get("registry_digest")):
+        return _native_numeric_result(_NATIVE_NUMERIC_NOT_ASSESSED, "receipt_malformed", 0, ())
+    receipt_facts = receipt.get("facts")
+    receipt_clauses = receipt.get("clauses")
+    if not isinstance(receipt_facts, list) or not isinstance(receipt_clauses, list):
+        return _native_numeric_result(_NATIVE_NUMERIC_NOT_ASSESSED, "receipt_malformed", 0, ())
+    effective_context = receipt.get("effective_context")
+    identity_admission = receipt.get("identity_admission")
+    canonical_entity = receipt.get("canonical_entity")
+    if (
+        not isinstance(effective_context, Mapping)
+        or not isinstance(effective_context.get("symbol"), str)
+        or not isinstance(identity_admission, Mapping)
+        or not isinstance(identity_admission.get("requested_symbol"), str)
+        or not _native_numeric_bounded_text(identity_admission.get("canonical_security_id"))
+        or not isinstance(canonical_entity, Mapping)
+    ):
+        return _native_numeric_result(_NATIVE_NUMERIC_NOT_ASSESSED, "receipt_malformed", 0, ())
+
+    # -- response-vs-source equality ladder (observed defects are mismatch) --
+    if (
+        effective_context.get("symbol") != symbol
+        or identity_admission.get("requested_symbol") != symbol
+    ):
+        return _native_numeric_result(_NATIVE_NUMERIC_MISMATCH, "symbol_mismatch", 0, ())
+    if receipt.get("registry_digest") != registry_digest:
+        return _native_numeric_result(_NATIVE_NUMERIC_MISMATCH, "registry_mismatch", 0, ())
+    if (
+        dict(canonical_entity) != canonical_security
+        or identity_admission.get("canonical_security_id") != canonical_security["id"]
+    ):
+        return _native_numeric_result(_NATIVE_NUMERIC_MISMATCH, "canonical_entity_mismatch", 0, ())
+
+    if len(receipt_facts) != len(envelopes):
+        return _native_numeric_result(_NATIVE_NUMERIC_MISMATCH, "facts_structure_mismatch", 0, ())
+    for display_order, (fact, envelope) in enumerate(zip(receipt_facts, envelopes)):
+        if not isinstance(fact, Mapping):
+            return _native_numeric_result(_NATIVE_NUMERIC_MISMATCH, "facts_structure_mismatch", 0, ())
+        if (
+            fact.get("field_id") != envelope.get("field_id")
+            or fact.get("clause_id") != f"{_NATIVE_NUMERIC_CLAUSE_PREFIX}{display_order + 1}"
+            or not _native_numeric_is_index(fact.get("display_order"))
+            or fact.get("display_order") != display_order
+        ):
+            return _native_numeric_result(_NATIVE_NUMERIC_MISMATCH, "facts_structure_mismatch", 0, ())
+        expected_fact = {
+            **packet_facts[display_order],
+            "clause_id": f"{_NATIVE_NUMERIC_CLAUSE_PREFIX}{display_order + 1}",
+            "display_order": display_order,
+        }
+        try:
+            expected_json = _native_numeric_canonical_json(expected_fact)
+        except (TypeError, ValueError):
+            return _native_numeric_result(_NATIVE_NUMERIC_NOT_ASSESSED, "source_envelopes_malformed", 0, ())
+        try:
+            observed_json = _native_numeric_canonical_json(fact)
+        except (TypeError, ValueError):
+            return _native_numeric_result(_NATIVE_NUMERIC_MISMATCH, "fact_packet_mismatch", 0, ())
+        if observed_json != expected_json:
+            # Type-sensitive canonical equality over entity/value/status/unit/
+            # clock window/source/quality/freshness/provenance/fingerprint; no
+            # fuzzy numeric coercion, and a re-stamped hash cannot excuse a
+            # changed fact.
+            return _native_numeric_result(_NATIVE_NUMERIC_MISMATCH, "fact_packet_mismatch", 0, ())
+
+    if len(receipt_clauses) != len(envelopes):
+        return _native_numeric_result(_NATIVE_NUMERIC_MISMATCH, "clause_structure_mismatch", 0, ())
+    for display_order, (clause, expected) in enumerate(zip(receipt_clauses, expected_clauses)):
+        if not isinstance(clause, Mapping):
+            return _native_numeric_result(_NATIVE_NUMERIC_MISMATCH, "clause_structure_mismatch", 0, ())
+        if (
+            clause.get("field_id") != expected["field_id"]
+            or clause.get("clause_id") != expected["clause_id"]
+            or not _native_numeric_is_index(clause.get("display_order"))
+            or clause.get("display_order") != display_order
+            or clause.get("receipt_kind") != _NATIVE_NUMERIC_TYPED_FACT
+            or clause.get("status") != "available"
+        ):
+            return _native_numeric_result(_NATIVE_NUMERIC_MISMATCH, "clause_structure_mismatch", 0, ())
+        if clause.get("fact_fingerprint") != expected["fact_fingerprint"]:
+            return _native_numeric_result(_NATIVE_NUMERIC_MISMATCH, "fingerprint_mismatch", 0, ())
+        if not isinstance(clause.get("text"), str) or clause.get("text") != expected["text"]:
+            return _native_numeric_result(_NATIVE_NUMERIC_MISMATCH, "clause_text_mismatch", 0, ())
+        try:
+            if _native_numeric_canonical_json(clause) != _native_numeric_canonical_json(expected):
+                return _native_numeric_result(_NATIVE_NUMERIC_MISMATCH, "clause_structure_mismatch", 0, ())
+        except (TypeError, ValueError):
+            return _native_numeric_result(_NATIVE_NUMERIC_MISMATCH, "clause_structure_mismatch", 0, ())
+
+    expected_answer = symbol + _NATIVE_NUMERIC_ANSWER_SEPARATOR + _NATIVE_NUMERIC_CLAUSE_SEPARATOR.join(rendered)
+    if answer != expected_answer:
+        # Partial, extra, or edited narrative is rejected wholesale.
+        return _native_numeric_result(_NATIVE_NUMERIC_MISMATCH, "answer_mismatch", 0, ())
+
+    references = tuple(
+        {"field_id": envelope["field_id"], "fact_fingerprint": envelope["fact_fingerprint"]}
+        for envelope in envelopes
+    )
+    return _native_numeric_result(_NATIVE_NUMERIC_VERIFIED, _NATIVE_NUMERIC_VERIFIED_REASON, len(envelopes), references)
+
+
+def _native_numeric_bounded_text(value: Any) -> bool:
+    """Nonempty string within the bounded-text limit."""
+    return isinstance(value, str) and bool(value.strip()) and len(value) <= _NATIVE_NUMERIC_MAX_TEXT_LENGTH
+
+
+def _native_numeric_is_index(value: Any) -> bool:
+    return isinstance(value, int) and not isinstance(value, bool)
+
+
+def _native_numeric_canonical_json(payload: Any) -> str:
+    """Type-sensitive canonical JSON: sorted keys, non-finite values refused.
+
+    Deliberately the same canonicalization as the contract layer's canonical
+    JSON bytes, kept local so this module imports only the four canonical
+    helpers named for it.
+    """
+    return json.dumps(
+        payload,
+        allow_nan=False,
+        ensure_ascii=False,
+        separators=(",", ":"),
+        sort_keys=True,
+    )
+
+
+def _native_numeric_result(
+    status: str,
+    reason: str,
+    checked_count: int,
+    references: tuple[dict[str, Any], ...],
+) -> dict[str, Any]:
+    """Build the closed, internal-only result shape."""
+    return {
+        "status": status,
+        "reason": reason,
+        "checked_count": checked_count,
+        "references": [
+            {"field_id": reference["field_id"], "fact_fingerprint": reference["fact_fingerprint"]}
+            for reference in references
+        ],
+        "internal_qa_only": True,
     }

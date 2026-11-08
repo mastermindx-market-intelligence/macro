@@ -49,7 +49,7 @@ FALSE-POSITIVE HANDLING (the reason this can be repo-wide rather than scoped)
   * a target module containing `from x import *` or a module-level `__getattr__`
     (PEP 562) — cannot be resolved statically, so its importers are skipped rather
     than guessed at.
-  * genuinely dynamic cases — `_ALLOWED_UNRESOLVED` below, which is EMPTY today.
+  * genuinely dynamic cases — `_ALLOWED_UNRESOLVED` below (one temporary entry; see its comment).
 
 At the commit that introduced this file the sweep reports exactly zero findings
 across all first-party roots, so it lands repo-wide with no allowlist.
@@ -82,7 +82,18 @@ _SKIP_DIRS = frozenset({
 # Import sites that cannot be resolved statically and are known-good.
 # Format: (repo-relative path, module, name).  Keep this empty if you possibly can —
 # every entry is a place this guard has stopped guarding.  Add a comment saying why.
-_ALLOWED_UNRESOLVED: frozenset[tuple[str, str, str]] = frozenset()
+_ALLOWED_UNRESOLVED: frozenset[tuple[str, str, str]] = frozenset({
+    # TEMPORARY (#7646 Sector Cycles train): the evidence pack merged by #10822 renders
+    # the V2/V4 cycles pages through `cycles_page_ctx`, which lands on main with
+    # #10777 (scripts/build_sector_cycles.py). The pack is manifest-sealed
+    # (MANIFEST.sha256), so the importer cannot be edited in place. Remove this entry
+    # in the first PR after #10777 merges; the sweep then resolves the name itself.
+    (
+        "mockups/evidence/sector-cycles-20261105/render_l6.py",
+        "scripts.build_sector_cycles",
+        "cycles_page_ctx",
+    ),
+})
 
 
 # ---------------------------------------------------------------------------

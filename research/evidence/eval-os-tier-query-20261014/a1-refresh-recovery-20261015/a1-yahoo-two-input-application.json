@@ -1,0 +1,12 @@
+{
+  "at": "2026-10-15T18:20:40.799380+00:00",
+  "qualified_preview_main": "5bb77dbe6bf9225e483e4448f38728e4a5d97915",
+  "newer_main": "e01a8aee7e5647af37805fa24c13f1f0feebca3c",
+  "changed_source_paths": [],
+  "changed_generated_path_count": 3771,
+  "a1_patch_parent": "939b348451fc1e46b70eee2e55309e4e1756ab98",
+  "a1_patch_file": "a1-yahoo-two-input-source.patch",
+  "application": "Fresh read actual A1 remote/main and canonical custody/capacity. Apply only the two eval-os-a1 input additions to the same carrier, preferably after incumbent base refresh; no manual main merge, no force push. Revalidate changed source and preview. Never copy the follow-on qledger-exclusive scope into A1.",
+  "qualification": "a1-yahoo-two-input-qualification.json: actual A1 closure1210, RED2 -> GREEN0,3controlsPASS, packing probe selection unchanged. All production/runtime files unchanged by this correction.",
+  "carrier_modified": false
+}

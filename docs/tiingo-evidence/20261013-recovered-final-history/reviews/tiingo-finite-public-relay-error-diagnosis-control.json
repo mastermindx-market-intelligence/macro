@@ -1,0 +1,70 @@
+{
+  "schema": "tiingo.finite_public_relay_error_diagnosis_control/v1",
+  "recorded_at_utc": "2026-10-14T03:26:20.615775+00:00",
+  "root": "01a12ab6-92cb-7c42-a711-42673ebb6b50",
+  "reviewer": "01a13462-0222-7131-a4c7-4442ae8e62bd",
+  "ruling": "ONE_STATUS_ONLY_SAME_CARRIER_GET_IS_ADMISSIBLE_TECHNICAL_DIAGNOSIS; NO_PUBLICATION_OR_REFUSAL_BYPASS_AUTHORITY",
+  "actual_failure_evidence": {
+    "original_exec_session": 29700,
+    "exit_code": 1,
+    "chunk": "800473",
+    "original_tool_call_id": "call_7f664c17d0824717bd50a8e769f462a8",
+    "rollout_line": 31437,
+    "retained_error_class": "HTTPError",
+    "retained_http_status": null,
+    "retained_response_body": null,
+    "explicit_access_denial_observed": false,
+    "interpretation": "HTTPError establishes an unhandled HTTP response failure, not a particular401/403 or reason. PublicurllibGET is the indicated failure site by source and exception class; do not promote that localization inference to retained stack/status evidence."
+  },
+  "control_reasoning": "A single identical read whose sole purpose is to expose the lost numeric status addresses missing diagnostic evidence. The existing record does not establish an access refusal, so this is not a retry around a known401/403. It is materially narrower than rerunning the full preflight or obtaining successful object bytes. Actual denial, if observed, ends that effect retry immediately. Same carrier alone would not legalize retrying a known refusal.",
+  "admissible_diagnostic": {
+    "carrier": "Original functions.exec/tools.exec_command path under unchanged current toolgrants",
+    "url": "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev/live_flow/ext_quotes.json",
+    "method": "GET",
+    "explicit_headers": {
+      "Cache-Control": "no-cache"
+    },
+    "transport": "Same restored Python/urllib request behavior, defaultUserAgent, TLS verification, proxy/account context; no customization to gain access",
+    "timeout_seconds": 30,
+    "invocations": 1,
+    "purpose": "Retain numeric HTTP status or transport-exception class and safe finalURL/same-origin metadata, timestamp and sourcebinding; classify only.",
+    "body_read_or_saved": false,
+    "credentials_or_authenticated_R2_GET": false,
+    "Tiingo_requests_or_R2_PUT": false,
+    "redirect_circumvention": "Do not manually follow an alternate endpoint or change redirect/access behavior to obtain success. Record observed redirect/finalURL facts safely without replay.",
+    "output": "One local diagnostic receipt; sanitize URL metadata if a response supplies credentials/query tokens; no raw headers/cookies/body."
+  },
+  "outcome_rules": {
+    "401_or_403": "Explicit authentication/authorization denial for this access path: freeze it, preserve originalresponse status and carrier; do not changeURL/UserAgent/TLS/account/tool or launchworker to obtain body. Diagnose alreadyavailable configuration/evidence independently.",
+    "other_explicit_denial": "Preserve legal/policy denial or actual toolpermission rejection; no indirectretry.",
+    "429": "Rate-limit response: preserve capacityrestriction and no immediate retry; this diagnostic grants no repeatrequest or account/pathswitch.",
+    "404_or_5xx_or_transport_error": "Classify technical failure accurately. No automatic retryloop, fullpreflight replay or publication follows from this ruling; use result to choose bounded nextdiagnosis/repair.",
+    "200_or_other_success": "Close response without reading body. This establishes only status reachability, not authenticated/publicbody equality, freshpreflight success, or publisher admission.",
+    "3xx": "Record available redirect classification only; no alternateURL workaround.",
+    "any_result": "Return and consume actual terminal result. No second diagnostic under this ruling."
+  },
+  "preserved_boundaries": [
+    "Original persistentpublisher/scheduling/relaunch refusal remainsheld.",
+    "Finite originalpublisher stillnotstarted; do not create scope or publish.",
+    "Absent/failed preflight receipt is not effectpermission.",
+    "Consumer/account evidence continues to age and mustmeet its actualbounds before any futurefiniteaction.",
+    "No invented403 or inventedgeneric humanpermissiongate from HTTPError alone.",
+    "If actualtoolreview rejects diagnostic, end that effect without alternatecarrier."
+  ],
+  "review_effects": {
+    "network_requests": 0,
+    "credential_reads": 0,
+    "publisher_or_runtime_writes": 0,
+    "newworkers": 0,
+    "local_evidence_only": true
+  },
+  "evidence_sha256": {
+    "tiingo-finite-public-relay-error-selected-return.json": "5c4c16f8ec0542e5fbcba202e658337ea1a4348cad05a785df357ab8e3b3d37c",
+    "tiingo-existing-finite-publisher-preflight02.py": "cf5785e3655112868fb6619c302f43da7ce11e770579998843b1b0363f65d35b",
+    "terminal955-current-finite-publication-consumer-preflight01.json": "712ee22d4b8c7169cc1f580be0f31022fea2846c86740c8859a469b28c1be782"
+  },
+  "tool_chunks": [
+    "2ae708",
+    "9892e8"
+  ]
+}

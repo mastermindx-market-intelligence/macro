@@ -174,6 +174,16 @@ html[data-lang="zh"] .poskey .pk-lo{background:color-mix(in srgb,var(--green) 70
       {% for x in desk.summary.euphoric %}<span class="chip">{{ t(x.name, x.name_zh) }} <b>{{ x.score|int }}</b></span>{% endfor %}</div>
   </div>
   {% endif %}
+  {%- set bm = desk.benchmark or {} %}
+  {%- if bm.ticker %}
+  <div class="chips"><div class="chipset"><div class="k">{{ t(bm.name or bm.ticker, bm.name_zh) }}
+    {{- ' · ' }}{{ t('board RS basis','看板相对强度基准') }} {{ bm.ticker }}
+    {{- ' ' }}{{ t('ETF proxy','ETF代理') }}</div>
+    {%- for k, en, zh in [('chg_1d','1D','1日'), ('chg_5d','5D','5日'), ('chg_20d','20D','20日'),
+                          ('chg_60d','60D','60日'), ('chg_ytd','YTD','年初至今')] %}
+    {%- if bm[k] is number %}<span class="chip">{{ t(en, zh) }} {{ pc(bm[k]) }}</span>{% endif %}
+    {%- endfor %}</div></div>
+  {%- endif %}
   <div class="tbl-wrap">
     <table class="board" id="board">
       <thead><tr>
@@ -196,8 +206,24 @@ html[data-lang="zh"] .poskey .pk-lo{background:color-mix(in srgb,var(--green) 70
           <td class="val">{{ '%.0f'|format(s.level) }}</td>
           <td>{{ pc(s.chg_1d) }}</td><td>{{ pc(s.chg_5d) }}</td><td>{{ pc(s.chg_20d) }}</td><td>{{ pc(s.chg_ytd) }}</td>
           <td>{% if s.rs %}{{ pc(s.rs.mom_60d) }}{% else %}<span class="chg na">·</span>{% endif %}</td>
-          <td><span class="pill-pos">{% if s.position.score is not none %}<span class="minibar"><i style="left:{{ s.position.score }}%"></i></span><span class="poslbl">{{ t(s.position.label, s.position.label_zh) }}</span>{% else %}·{% endif %}</span></td>
-          <td>{% if s.cycle and s.cycle.state %}<span class="cyc">{{ s.cycle.state }}</span>{% else %}<span class="chg na">·</span>{% endif %}</td>
+          {%- set dist, dd = s.position.dist_200d_pct, s.position.drawdown_pct %}
+          <td{% if dist is number %} data-sort="{{ dist }}"{% endif %}><span class="pill-pos">
+          {%- if s.position.score is not none %}<span class="minibar"><i style="left:
+          {{- s.position.score }}%"></i></span><span class="poslbl">
+          {{- t(s.position.label, s.position.label_zh) }}</span>{% else %}·{% endif %}</span>
+          {%- if dist is number or dd is number %} <small class="poslbl">
+          {%- if dist is number %}{{ pc(dist) }} {{ t('vs 200d avg','较200日均线') }}{% endif %}
+          {%- if dist is number and dd is number %} · {% endif %}
+          {%- if dd is number %}{{ pc(dd) }} {{ t('from 1y high','距1年高点') }}{% endif %}</small>
+          {%- endif %}</td>
+          {%- set bc = s.cycle.bottom_confidence if s.cycle else none %}
+          <td{% if bc is number %} data-sort="{{ bc }}"{% endif %}>
+          {%- if s.cycle and s.cycle.state %}<span class="cyc">
+          {%- if s.cycle.label %}{{ t(s.cycle.label, s.cycle.label_zh) }}
+          {%- else %}{{ s.cycle.state }}{% endif %}</span>
+          {%- if bc is number %} <small class="poslbl">{{ t('bottom conf.','筑底置信度') }}
+          {{- ' ' }}{{ '%.1f'|format(bc) }}</small>{% endif %}
+          {%- else %}<span class="chg na">·</span>{% endif %}</td>
           <td class="val">{{ s.valuation.pe if s.valuation and s.valuation.pe is not none else '·' }}</td>
           <td class="val">{{ s.valuation.pb if s.valuation and s.valuation.pb is not none else '·' }}</td>
           <td class="val">{{ s.valuation.div ~ '%' if s.valuation and s.valuation.div is not none else '·' }}</td>
@@ -227,11 +253,17 @@ html[data-lang="zh"] .poskey .pk-lo{background:color-mix(in srgb,var(--green) 70
       </div>
       <div class="posends"><span>{{ t('beaten down','深度超跌') }}</span><span>{{ t('overheated','过热') }}</span></div>
       {% if h6 %}
+      {%- set hz = h6.h|int if h6.h is number else 6 %}
       <div class="cond">
-        <div><div class="k">{{ t('Fwd 6m up-rate','未来6月上涨率') }}</div>
+        <div><div class="k">{{ t('Fwd ' ~ hz ~ 'm up-rate', '未来' ~ hz ~ '月上涨率') }}</div>
           <div class="v">{{ (h6.cond_rate*100)|int }}%<small> / {{ t('base','基准') }} {{ (h6.base_rate*100)|int }}%</small></div>
-          <div class="ci">{{ t('when setup ~ today','当配置类似今日') }} · {% if h6.lift_ci_lo is not none %}{{ t('lift','超额') }} {{ (h6.lift_ci_lo*100)|int }}–{{ (h6.lift_ci_hi*100)|int }}pp · {% endif %}n={{ h6.n_months }}{{ t('mo','月') }}{% if h6.n_eff is not none %} (n_eff≈{{ h6.n_eff }}){% endif %}</div></div>
-        <div><div class="k">{{ t('Median fwd 6m','未来6月中位') }}</div>
+          <div class="ci">{{ t('when setup is in its top third','当配置处于自身历史高位三分之一时') }}
+          {%- if s.setup.tercile != 'high' %} ({{ t('not today','今日不在此区间') }}){% endif %}
+          {{- ' · ' }}{% if h6.lift_ci_lo is not none %}{{ t('lift','超额') }}
+          {{- ' ' }}{{ (h6.lift_ci_lo*100)|int }}–{{ (h6.lift_ci_hi*100)|int }}pp · {% endif %}
+          {{- 'n=' }}{{ h6.n_months }}{{ t('mo','月') }}
+          {%- if h6.n_eff is not none %} (n_eff≈{{ h6.n_eff }}){% endif %}</div></div>
+        <div><div class="k">{{ t('Median fwd ' ~ hz ~ 'm', '未来' ~ hz ~ '月中位') }}</div>
           <div class="v">{{ pc(h6.med_fwd_pct) }}</div>
           <div class="ci">{{ t('vs base','对比基准') }} {{ pc(h6.base_med_pct) }}</div></div>
       </div>
@@ -241,11 +273,54 @@ html[data-lang="zh"] .poskey .pk-lo{background:color-mix(in srgb,var(--green) 70
       </div>
       <div class="narr">{{ t(s.narrative_en, s.narrative_zh) }}</div>
       {% if s.turns.last %}<div class="turns">{{ t('Last major turn','最近主要拐点') }}: <b>{{ t(s.turns.last.kind, '底' if s.turns.last.kind=='bottom' else '顶') }}</b> {{ s.turns.last.date }} · {{ s.turns.n_bottoms }}{{ t('B','底') }}/{{ s.turns.n_tops }}{{ t('T','顶') }} {{ t('(≥25% zigzag)','（≥25% 折线）') }}</div>{% endif %}
+      {%- set th = s.turns.history if s.turns and s.turns.history else [] %}
+      {%- if th %}
+      <div class="legs">
+        {%- for r in (th[-8:]|reverse) %}<span class="leg">
+        {{- t('bottom','底') if r.kind == 'bottom' else t('top','顶') }} {{ r.date }}
+        {%- if r.price is number %} · {{ '%.1f'|format(r.price) }}{% endif %}</span>
+        {%- endfor %}
+        {%- if th|length > 8 %} · +{{ th|length - 8 }} {{ t('earlier turns','更早拐点') }}
+        {%- endif %}</div>
+      {%- endif %}
       <div class="caveat">{{ t(s.caveat_en, s.caveat_zh) }}</div>
     </div>
     {% endfor %}
   </div>
-  {% if gate %}<div class="gate {{ 'ok' if gate.passed else 'warn' }}">{{ '✓' if gate.passed else '⚠' }} {{ t('Evidence gate','证据门槛') }}: {{ t('signature checks pass','特征检验通过') if gate.passed else 'review' }}{% if gate.soft_warnings %} · {{ gate.soft_warnings|length }} {{ t('sign-drift note(s)','符号漂移提示') }}{% endif %}</div>{% endif %}
+  {% if gate %}
+  {%- set GL = {'dist_p': ('distance from 200d', '距200日线'), 'dd_p': ('drawdown from high', '距高点回撤'),
+     'dist_200d': ('distance from 200d', '距200日线'), 'dd_from_high': ('drawdown from high', '距高点回撤'),
+     'credit_impulse': ('credit impulse', '信贷脉冲'), 'ppi_yoy': ('PPI y/y', 'PPI同比')} %}
+  {%- if gate.available is defined and not gate.available %}
+  <div class="gate warn">⚠ {{ t('Turn-signature gate not run','拐点特征门槛未运行') }}:
+    {{- ' ' }}{{ t('sector or benchmark data absent','行业或基准数据缺失') }}</div>
+  {%- else %}
+  <div class="gate {{ 'ok' if gate.passed else 'warn' }}">{{ '✓' if gate.passed else '⚠' }}
+    {{- ' ' }}{{ t('Turn-signature gate','拐点特征门槛') }}:
+    {{- ' ' }}{% if gate.passed %}{{ t('pooled bottoms sit below tops','汇总底部低于顶部') }}
+    {%- else %}{{ t('pooled bottoms no longer sit below tops — review','汇总底部不再低于顶部，需复核') }}
+    {%- endif %}
+    {%- for p in (gate.pooled or []) %}{% set gl = GL.get(p.leg, (p.leg, p.leg)) %}
+    {{- ' · ' }}{{ t(gl[0], gl[1]) }} n={{ p.n_bottom }}/{{ p.n_top }}
+    {%- if p.median_bottom is not none and p.median_top is not none %}
+    {{- ' · ' }}{{ t('median pctile','中位分位') }} {{ '%.0f'|format(p.median_bottom * 100) }}→
+    {{- '%.0f'|format(p.median_top * 100) }}{% endif %}
+    {%- if p.gap_ci %}{{ ' · ' }}{{ t('separation CI','分离置信区间') }}
+    {{- ' %.0f–%.0fpp'|format(p.gap_ci[0] * 100, p.gap_ci[1] * 100) }}{% endif %}
+    {{- ' · ' }}{% if p.evidence %}{{ t('evidence','证据') }}{% elif p.sign_ok %}
+    {{- t('directional only','仅方向一致') }}{% else %}{{ t('flipped','方向反转') }}{% endif %}
+    {%- endfor %}
+    {%- for w in (gate.soft_warnings or [])[:4] %}{% set gl = GL.get(w.leg, (w.leg, w.leg)) %}
+    {%- set sw = (pathway.sectors or [])|selectattr('key', 'equalto', w.sector)|first %}
+    {{- ' · ' }}{{ t('sign drift','符号漂移') }}:
+    {{- ' ' }}{% if sw %}{{ t(sw.en, sw.zh) }}{% else %}{{ w.sector }}{% endif %}
+    {{- ' ' }}{{ t(gl[0], gl[1]) }} IC {{ '%+.2f'|format(w.ic) }} ({{ t('expected','预期') }}
+    {{- ' +' if w.expect_sign > 0 else ' −' }})
+    {%- endfor %}
+    {%- if (gate.soft_warnings or [])|length > 4 %}
+    {{- ' · +' }}{{ gate.soft_warnings|length - 4 }}{% endif %}</div>
+  {%- endif %}
+  {%- endif %}
   {% endif %}
 
   <div class="foot">
@@ -285,13 +360,14 @@ html[data-lang="zh"] .poskey .pk-lo{background:color-mix(in srgb,var(--green) 70
   });
   // simple click-to-sort on numeric columns
   var tbl=document.getElementById('board'); if(!tbl) return;
+  var sk=function(c){var d=c.getAttribute('data-sort');
+    return parseFloat(d!==null?d:(c.textContent||'').replace(/[^0-9.\-]/g,''));};
   tbl.querySelectorAll('th').forEach(function(th){
     th.addEventListener('click',function(){
       var ci=+th.getAttribute('data-c'), rows=Array.from(tbl.tBodies[0].rows);
       var asc=th._asc=!th._asc;
       rows.sort(function(a,b){
-        var x=parseFloat((a.cells[ci].textContent||'').replace(/[^0-9.\-]/g,'')),
-            y=parseFloat((b.cells[ci].textContent||'').replace(/[^0-9.\-]/g,''));
+        var x=sk(a.cells[ci]), y=sk(b.cells[ci]);
         if(isNaN(x)&&isNaN(y))return 0; if(isNaN(x))return 1; if(isNaN(y))return -1;
         return asc?x-y:y-x;
       });
