@@ -3506,9 +3506,13 @@ def test_native_v2_population_closes_actual_owner_bytes_without_values_or_writes
     from scripts import accrue_market_memory_spy_experience_v2 as exp
     before = {p: hashlib.sha256(p.read_bytes()).hexdigest()
               for p in kwargs["source_root"].parent.rglob("*") if p.is_file()}
-    monkeypatch.setattr(exp, "accrue_spy_experience_v2", lambda *a, **k: pytest.fail("reader accrued"))
-    monkeypatch.setattr(exp, "_write_create_once_v2", lambda *a, **k: pytest.fail("reader wrote"))
-    value = census.read_population_v2(**kwargs)
+    # Fixture creation and the initial byte inventory are complete. Guard the
+    # actual write/publication boundaries only while the read-only call runs.
+    with monkeypatch.context() as read_guard:
+        read_guard.setattr(exp, "accrue_spy_experience_v2", lambda *a, **k: pytest.fail("reader accrued"))
+        for operation in ("write", "fsync", "link", "replace"):
+            read_guard.setattr(os, operation, lambda *a, **k: pytest.fail("reader wrote"))
+        value = census.read_population_v2(**kwargs)
     assert value["registration_id"] == registration["registration_id"]
     assert value["expected_sessions"] == ["2026-08-21"]
     assert value["counts"] == dict(expected=1, recorded=1, admitted=1, abstained=0, unrecorded=0)
