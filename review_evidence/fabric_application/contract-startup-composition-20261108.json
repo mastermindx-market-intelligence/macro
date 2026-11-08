@@ -1,0 +1,198 @@
+{
+  "activation_or_live_acceptance_claimed": false,
+  "baseline_actual_plans": [
+    {
+      "jobs": 134,
+      "packs": 10,
+      "probe": "templates/index.html",
+      "weight": 5747
+    },
+    {
+      "jobs": 134,
+      "packs": 11,
+      "probe": "scripts/build_free_content.py",
+      "weight": 6020
+    },
+    {
+      "jobs": 127,
+      "packs": 10,
+      "probe": "engine/prophet/plan_book.py",
+      "weight": 5504
+    }
+  ],
+  "created_at": "2026-11-08T17:59:53.536377+00:00",
+  "dependency_environment_receipt_sha256": "c911f70e9834bfeddc1428150ea2c534ad18e789d320440c8361945566513a7a",
+  "parents": {
+    "merge_base": "19c130f81cc5a22d3f43f4cd9a1bbf8b7204f1c3",
+    "original_head": "344e85e56b2c97fff7c27d99da20c27842e5a60a",
+    "protected_operand": "86f9aa3238dfbcba7262f9d6777cd43c0dc167bb"
+  },
+  "preservation": {
+    "all_195_clean_head_entries_exact": true,
+    "both_public_conflict_provenances_retained": true,
+    "estimator_unchanged": true,
+    "filtered_intervening_command_unchanged": true,
+    "inferred_scopes_unchanged": true,
+    "job_ceilings": [
+      137,
+      138,
+      131
+    ],
+    "job_count": 397,
+    "max_packs": 10,
+    "only_two_existing_job_step_arrays_changed": true,
+    "ordered_selectors_in_three_consolidated_groups": 31,
+    "real_marketing_dependency_and_enrollment_retained": true,
+    "weight_ceilings": [
+      5943,
+      6000,
+      5701
+    ]
+  },
+  "qualification": {
+    "other_runs": [
+      {
+        "junit_sha256": "64c5d137d66bccdc41b06b60af977b3b287954953dd089a775959b1e7fc2591f",
+        "log_sha256": "a82a0b51cd86fa0131904e08c34ef556963104f0e3677f688117e093ebf2d3fe",
+        "name": "unrun-template-chips-1",
+        "returncode": 0,
+        "seconds": 7.17,
+        "suites": [
+          {
+            "errors": "0",
+            "failures": "0",
+            "skipped": "0",
+            "tests": "27",
+            "time": "4.551"
+          }
+        ]
+      },
+      {
+        "junit_sha256": "179f0e02f91cec961bf534c6b5f6b9c918117bfc0ddaf5df0bb1e3a948c3687a",
+        "log_sha256": "fe9dca0451129aaabdd76ea13e310b61a52091a146a1f9fe5b72b851eb33547f",
+        "name": "unrun-template-chips-preserved-filter",
+        "returncode": 0,
+        "seconds": 4.96,
+        "suites": [
+          {
+            "errors": "0",
+            "failures": "0",
+            "skipped": "0",
+            "tests": "14",
+            "time": "1.609"
+          }
+        ]
+      },
+      {
+        "junit_sha256": "6ddd55b078d7a61708098a62ff5eb9d9f0e797f3d17068d36490366d84877620",
+        "log_sha256": "df626e9ee6f2bfda10b9890cddcb1ad919aafeded545fef619fb7d8f602a4004",
+        "name": "unrun-template-chips-2",
+        "returncode": 0,
+        "seconds": 12.43,
+        "suites": [
+          {
+            "errors": "0",
+            "failures": "0",
+            "skipped": "0",
+            "tests": "246",
+            "time": "11.943"
+          }
+        ]
+      },
+      {
+        "junit_sha256": "67256bc0a4e1f83b0d79cb25bc106040f33d7ca20942d651dd455511357df2a1",
+        "log_sha256": "cf426ab35f3b06fccef8290fde5325d90af130a79da1d1752031518df77c4236",
+        "name": "canonical-packing-and-closure",
+        "returncode": 0,
+        "seconds": 261.65,
+        "suites": [
+          {
+            "errors": "0",
+            "failures": "0",
+            "skipped": "0",
+            "tests": "3",
+            "time": "261.228"
+          }
+        ]
+      }
+    ],
+    "scoring": {
+      "junit_sha256": "cc4df6cd61afa63b548279eac92c882f5ce7b3d632023fc7b5f6674a23a8f2a2",
+      "log_sha256": "28fa4b118b9b634d3a0fdcee12953a40625eaea6d47f67cfd65bacae8d6f322d",
+      "returncode": 0,
+      "seconds": 50.8,
+      "suites": [
+        {
+          "errors": "0",
+          "failures": "0",
+          "skipped": "1",
+          "tests": "545",
+          "time": "49.663"
+        }
+      ]
+    }
+  },
+  "qualified_source_tree_without_this_evidence": "6682e443f2412a8d021b4f337f5ea17c6984ad16",
+  "schema": "mastermind.h4-contract-startup-composition.v1",
+  "scoring_archive_metadata": {
+    "cause": "Without Git index the archive misclassified eight tracked artifacts as generated output. Import-only diagnosis reproduced this before any test ran.",
+    "checkout_is_built": false,
+    "exact_tree_index_receipt_sha256": "d3af932234a3eb9c4a09af15e4bcc06c03fca24cc35992a3b0e373950d090c0e",
+    "hosted_checkout_proof_required": true,
+    "initial_failure_count": 53,
+    "no_native_checkout_worktree_ref_or_commit": true,
+    "ordinary_worktree_dirty_guard_available": false,
+    "reader_and_index_unchanged": true,
+    "tracked_existing": 8,
+    "untracked_absent_build_outputs": 23
+  },
+  "skips": [
+    {
+      "class": "combined-qualification-20261108.macro-current-conflict-a5eed62a-20261108.current-86-344-qualified-source-20261108.tests.test_etf_partial_nav_sleeve",
+      "message": "the sponsor dropped the sweep line from METV's newest file",
+      "test": "test_the_sweep_line_really_is_a_dollar_balance"
+    }
+  ],
+  "source_only": true,
+  "source_overrides": {
+    ".github/ci/legacy-jobs.yml": {
+      "git_blob": "54ed57bc7fbd1de3c32a261eb1769ee5813ce37f",
+      "sha256": "a9949f79b5bf59a3616e5f9c247dedff6143013eafa7037adfd9b34ca58594ca"
+    },
+    "tests/test_ci_pack.py": {
+      "git_blob": "03eb210b4bdc48536c2992099e9aed46d240229c",
+      "sha256": "1faeaf6e6fbb561e94682602d1031bd32d50fe0f81bddc8c0b78cfcab99f747a"
+    }
+  },
+  "source_verification": {
+    "generated_output_custody_sha256": "35c06420bb908f6617ab2e58de424599b6a1df41b5cc55d132c90ba8187d3b2a",
+    "generated_outputs_preserved_outside_source": 3,
+    "head_delta_paths": 197,
+    "mismatches": [],
+    "only_framework_extras": true,
+    "original_head": "344e85e56b2c97fff7c27d99da20c27842e5a60a",
+    "outside_delta_main_mismatches": 0,
+    "overlap_paths": [
+      ".github/ci/legacy-jobs.yml",
+      "tests/test_ci_pack.py"
+    ],
+    "preserved_clean_head_entries": 195,
+    "prospective_tree": "e360e0b1afc18cd041484cce5b2923a3ea7ccf0b",
+    "qualified_code_and_data_tree": "6682e443f2412a8d021b4f337f5ea17c6984ad16",
+    "qualified_protected_operand": "86f9aa3238dfbcba7262f9d6777cd43c0dc167bb",
+    "schema": "mastermind.h4-qualified-composition-source-audit.v1",
+    "seconds": 52.8,
+    "verified_bytes": 14637385980,
+    "verified_files": 147995
+  },
+  "startup_weight_reduction": {
+    "after_weights_computed_from_preserved_selection": [
+      5727,
+      6000,
+      5484
+    ],
+    "total": 20,
+    "unrun-scoring-engine": 15,
+    "unrun-template-chips": 5
+  }
+}

@@ -4599,6 +4599,7 @@ CURATED_EXCLUSIVE = {
     "leadership-measured-read",
     # Paper International: retain the measured ITR closure, dropping opaque fallback.
     "itr-turn-rotation",
+    "signal-builder-fail-closed",  # Synthetic #10094 builder/validator closure; no opaque subprocess widening.
     # 2026-10-05 GMI #8455: remove transmission's opaque code fallback.
     # Preserve its concrete imports and dynamic corpus/asset/data inputs.
     # All packing ceilings, commands, data gate and weights remain unchanged.
@@ -5322,6 +5323,11 @@ CURATED_EXCLUSIVE = {
     # closure through tests/test_macro_risk_dialog.py, declared verbatim plus what the
     # suite reads by name; the curated-closure guard audits it like its parent.
     "ew-p4-descriptive-ui",
+    # 2026-11-01 C19 Atom-clock guard: the 13F census sec_sources and rolling
+    # suites leave config/unrun_test_baseline.json for one gate:code exclusive
+    # home. paths: is the measured import/read closure plus ancestor inits;
+    # ceilings stay fixed.
+    "institutional-13f-ingestion-contracts",
     # GLT T22 (2026-11-03): tests/test_global_liquidity_views.py reaches the
     # macro-suite view/label helpers and scripts/build_macro_suite_pages.py, so
     # inference smeared this job's scan roots onto templates/index.html (138
@@ -5634,9 +5640,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # to unrun-brain-gateway, selected here only by free-content. Fund those two
 # measured units there; preserve the other ceilings, suites and all limits.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_923),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("templates/index.html", 137, 5_943),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     ("scripts/build_free_content.py", 138, 6_000),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_681),
+    ("engine/prophet/plan_book.py", 131, 5_701),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5644,6 +5650,19 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    H4 protected-86/head-344 composition (2026-11-08): the complete
+    147,995-file source measured index134/5747/10, free134/6020/11 and
+    Prophet127/5504/10 (jobs/weight/packs). Preserve the accepted synthetic
+    enrollment and recover its exact20-unit excess with real interpreter
+    startup consolidation: unrun-scoring-engine runs the same21 ordered
+    selectors in one invocation instead of16; unrun-template-chips combines
+    its separate3- and4-invocation groups while retaining the intervening
+    filtered command. The same31 selectors, contexts and inferred scopes
+    remain. Their weights60->45 and31->26 remove20 startup units without
+    changing the estimator, any selector, the6,000 ceiling or ten-pack cap.
+    Joint execution and the canonical full-source gates qualify this
+    composition; the historical receipts below retain their original scope.
 
     H4 current-main ab2a2a7a integration (2026-11-08): the complete
     immutable candidate measured 134 free-content jobs, 6,003 planning
@@ -5670,6 +5689,29 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     Preserve all job/count/ten-pack bounds, selectors and admission limits.
     The combined invocation and unchanged canonical planner must qualify
     this actual new source before release; arithmetic is not a test receipt.
+
+    2026-11-08 (PR #10837, explicit synthetic harness enrollment, recomposed on
+    current main 005baca8b092abe82acb4462eb6710af8f59a1c8): natural
+    contract run 42423716907 / job 128557542513 measured exact head
+    7921a9c1a6feedcf5209590b7c02012728ce7eec against base
+    b626135f8987ee724cdb7e0c639734835a4afe67 on tested merge
+    b095e1574342f5909d7ac9c10ae82fbc1d79dd1f. The existing
+    marketing-social-publisher command intentionally gained ten synthetic
+    suites: +20 estimator units, no new run step or newly selected job.
+    The measured shapes were index137/5914->5934, free137/5933->5953 and
+    Prophet131/5672->5692, all ten packs. Existing suites remain enrolled.
+
+    Compose this exact +20 onto the ceilings current main carries after
+    #7352's accepted +2 and #10180's B-17 +3, 5923/5944/5681
+    (both accepted compositions included): 5943/5964/5701, preserving every earlier provenance paragraph below,
+    including that +3 composition. The current marketing owner block is
+    byte-identical to the measured base before this lane's enrollment. All
+    current sibling jobs are preserved. Keep job ceilings137/138/131, ten
+    packs, assertions, selectors, commands, packages, timeouts and
+    admission/concurrency controls. This is arithmetic composition of
+    measured planner weights, not a new full-tree measurement or
+    execution-time claim. Natural successor CI must qualify the newly
+    composed tree; no padding is added.
 
     2026-11-08 (PR #10180, measured B-17 enrollment integration):
     Fixed current c91d58b2413d plus the five unchanged recovery objects
