@@ -128,3 +128,13 @@ Market Memory file https://app.paper.design/file/01M6PXFEP1E1T59M2B3N673PMG/p-2-
 | 01M6Q4WK0EMPV1G2KDGGRQBC1B | 5B-0 | Context only — not a forecast: recorded conditions and market prices, no administration intent and no timing call. | Recorded conditions and prices · No intent or timing inference |
 | 01M6Q4WK0EMPV1G2KDGGRQBC1B | AS-0 | Context only — not a forecast: recorded conditions and market prices, no administration intent and no timing call. | Recorded conditions and prices · No intent or timing inference |
 | 01M6Q4WK0EMPV1G2KDGGRQBC1B | GH-0 | 仅作背景，不构成预测：记录条件与市场价格，不推断政府意图，也不判断时点。 | 记录条件与价格 · 不推断政府意图或时点 |
+
+## Semantic checks during rendered review
+
+Options KT-0 had an internally inconsistent fixture: 105% IV S1-0 showed 28.7%, with basis S3-0 “interpolated · ATM → 110 %”, while the 110% endpoint was explicitly unsupported and had no IV. Preserve that original fixture here; the current product must show an unavailable value and “Missing upper endpoint”, without inventing a 110% input. Valid 95% interpolation and all supplied values remain unchanged. Four new disclosure return labels name their destination: Tape, Volatility, Gamma comparison, Saved investigation.
+
+Sector's current ≤1-month model cells are not qualified because feature/model compatibility has not passed. SECTOR_MODEL_FIXTURE_REGISTER.json preserves the original 32 percentages, 17 labels and 3 coverage labels. Current product cells use “—”/unavailable; ≤3-month and ≤6-month historical base-rate values stay intact. A muted unqualified number with a long caveat must not read as an available current probability. No model is recalculated or admitted by this design change.
+
+PORTFOLIO_COPY_REGISTER.json retains exact original and revised EN/ZH text plus relocation candidates for Hub, GMI, International and Sector. Short keyboard operating hints stay where they help the current action. Current missing-reading status stays explicit. Hub's unavailable review conditions remain beside its model indices. International watch copy retains “Notifications only”. Original math, source clocks, rights, missingness and causal limitations must remain in accessible Methods/Source details and the builder guide.
+
+TERMINAL_BUILD_SEPARATION_REGISTER.json retains the original wrapper/product/rail hierarchy for 58 Company design sheets: 55 visible targets and 3 excluded held/archived roots. Complete product subtrees are promoted intact; remaining implementation rails are moved intact. Product/source truths and release holds do not change. Source identity and technical contracts are retained by node ID, not deleted. Grouped Build containers keep relocated material legible.
