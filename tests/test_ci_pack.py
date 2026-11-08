@@ -4593,6 +4593,7 @@ CURATED_EXCLUSIVE = {
     "leadership-measured-read",
     # Paper International: retain the measured ITR closure, dropping opaque fallback.
     "itr-turn-rotation",
+    "signal-builder-fail-closed",  # Synthetic #10094 builder/validator closure; no opaque subprocess widening.
     # 2026-10-05 GMI #8455: remove transmission's opaque code fallback.
     # Preserve its concrete imports and dynamic corpus/asset/data inputs.
     # All packing ceilings, commands, data gate and weights remain unchanged.
