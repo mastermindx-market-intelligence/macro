@@ -3028,6 +3028,10 @@ lanes:
         note: >
           SLF-048 attention store restore (#1677) — pre-render, non-fatal
           (absent store = attention chip silently absent this render).
+      - id: install_durable_intl_sdk
+        module: pip
+        args: [install, "boto3==1.40.0", "botocore==1.40.0"]
+        note: Existing opt-in conditional-PutObject SDK installation; default/bulk lanes remain unchanged.
       # spine (serial)
       - id: build_spvector
         module: scripts.build_spvector

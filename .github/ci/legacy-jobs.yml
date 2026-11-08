@@ -9937,6 +9937,7 @@ jobs:
       - research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md
       - research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md
       - "engine/alert_delivery_drain.py"
+      - site/intl.html
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -10976,6 +10977,11 @@ jobs:
     # macro #10257 (unmerged at the time of writing); whichever lands second is a no-op.
     # F10 (#10367) replaced that ~4-min unrestricted fetch with the blob-filtered
     # canonical-main helper; 15 is kept until the job's PR-side time is re-measured.
+      - site/factordata/intl_setups.json
+      - site/intl.html
+      - site/intl_stocks.html
+      - site/macrodata/global_regime_fragment.json
+      - site/marketdata/subsector_rotation.json
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
@@ -11378,6 +11384,11 @@ jobs:
       - "config/theme_sources.yml"
       # W2F-X closure widening: the observation seam widened these import closures
       - "lib/intl_gs_observations.py"
+      - site/factordata/intl_setups.json
+      - site/intl.html
+      - site/intl_stocks.html
+      - site/macrodata/global_regime_fragment.json
+      - site/marketdata/subsector_rotation.json
     timeout-minutes: 5
     runs-on: ubuntu-latest
     steps:
@@ -11857,6 +11868,11 @@ jobs:
     # (its redundant unrestricted base fetch after the fetch-depth 0 checkout)
     # is F10 (#10367): both international jobs use prepare_canonical_main.
     # This job's own measured budget (20) is unchanged by F10.
+      - site/factordata/intl_setups.json
+      - site/intl.html
+      - site/intl_stocks.html
+      - site/macrodata/global_regime_fragment.json
+      - site/marketdata/subsector_rotation.json
     timeout-minutes: 20
     runs-on: ubuntu-latest
     steps:
@@ -11873,7 +11889,7 @@ jobs:
         run: pip install pytest pandas numpy pyyaml jinja2 pyarrow
       - name: install browser test dependencies
         run: |
-          npm install --no-save --package-lock=false playwright@1.63.0
+          npm install --no-save --package-lock=false playwright@1.63.0 jsdom@26.1.0
           npx playwright install --with-deps chromium
       - name: canonical base for the frozen-file guard (fail closed)
         run: |
@@ -13608,6 +13624,7 @@ jobs:
       - "engine/capital_structure/scenario_export.py"
       - "engine/capital_structure/state_changes.py"
       - "lib/frozen_delivery_client.py"
+      - site/intl.html
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -15283,6 +15300,9 @@ jobs:
       - "lib/intl_gs_observations.py"
       - engine/postmortem.py
       - research/MASTERMIND_INTELLIGENCE_EVALUATION_ARCHITECTURE.md
+      - site/intl.html
+      - site/intl_stocks.html
+      - site/macrodata/global_regime_fragment.json
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -20293,6 +20313,10 @@ jobs:
       - research/cycle_masterplan/W41_PANEL_CENSUS.md
       - scripts/build_hazard_panel.py
       - scripts/fit_cycle_hazard.py
+      - site/factordata/intl_setups.json
+      - site/intl.html
+      - site/intl_stocks.html
+      - site/macrodata/global_regime_fragment.json
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -23662,6 +23686,11 @@ jobs:
       - "tests/test_intl_gs_transmission_view.py"
       - "tests/test_intl_transmission_evidence.py"
 
+      - site/factordata/intl_setups.json
+      - site/intl.html
+      - site/intl_stocks.html
+      - site/macrodata/global_regime_fragment.json
+      - site/marketdata/subsector_rotation.json
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
@@ -24112,6 +24141,11 @@ jobs:
     # machine (crash/breaking/topping/... incl. KOSPI replay goldens on the
     # committed _KS11 store) + fast rotation re-rank + ITR-R6 benchmark
     # freshness fallback. Store-reading tests skip gracefully when absent.
+      - site/factordata/intl_setups.json
+      - site/intl.html
+      - site/intl_stocks.html
+      - site/macrodata/global_regime_fragment.json
+      - site/marketdata/subsector_rotation.json
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -25375,6 +25409,10 @@ jobs:
       - "engine/intl_global_observation.py"
       - "lib/intl_global_observation_adapter.py"
       - "lib/intl_gs_observations.py"
+      - site/factordata/intl_setups.json
+      - site/intl.html
+      - site/intl_stocks.html
+      - site/macrodata/global_regime_fragment.json
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -28557,6 +28595,9 @@ jobs:
       - research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md
       - research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md
       - "engine/alert_delivery_drain.py"
+      - site/intl.html
+      - site/intl_stocks.html
+      - site/macrodata/global_regime_fragment.json
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -33324,6 +33365,7 @@ jobs:
       - research/POSTMORTEM_20260722_CROSSOVERS_VS_CAPEX_BIND_BY_FABLE.md
       - research/POSTMORTEM_20260723_MAG7_FORCED_CALL_BY_FABLE.md
       - research/POSTMORTEM_20260803_MAG7_RALLY_SILENCE_BY_FABLE.md
+      - site/intl.html
     timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
@@ -36724,6 +36766,10 @@ jobs:
       - "engine/intl_global_observation.py"
       - "lib/intl_global_observation_adapter.py"
       - "lib/intl_gs_observations.py"
+      - site/factordata/intl_setups.json
+      - site/intl.html
+      - site/intl_stocks.html
+      - site/macrodata/global_regime_fragment.json
     timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
@@ -38128,6 +38174,9 @@ jobs:
       - "engine/theme_graph/materialize.py"
       # W2F-X closure widening: the observation seam widened these import closures
       - "engine/intl_global_observation.py"
+      - site/intl.html
+      - site/intl_stocks.html
+      - site/macrodata/global_regime_fragment.json
     timeout-minutes: 12
     runs-on: ubuntu-latest
     steps:
@@ -47568,6 +47617,9 @@ jobs:
       # Import closure added by the main 80f270c4 merge (the union of both sides; measured
       - "contracts/theme_graph/curation_assertion.v1.schema.json"
       - "contracts/theme_graph/activity_membership_history.v1.schema.json"
+      - site/intl.html
+      - site/intl_stocks.html
+      - site/macrodata/global_regime_fragment.json
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
@@ -47860,6 +47912,9 @@ jobs:
       - "scripts/build_hazard_panel.py"
       - "scripts/fit_cycle_hazard.py"
       - "research/cycle_masterplan/W41_PANEL_CENSUS.md"
+      - site/intl.html
+      - site/intl_stocks.html
+      - site/macrodata/global_regime_fragment.json
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
@@ -47954,6 +48009,7 @@ jobs:
       - "scripts/research_liquidity_shock_reversal.py"
       - "site/factordata/basket_washout_state.json"
       - "site/factordata/us_standouts.json"
+      - site/intl.html
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
@@ -48146,6 +48202,7 @@ jobs:
       - "engine/company_intelligence/defense_profiles.py"
       - "engine/company_intelligence/gd_profile.py"
       - "engine/company_intelligence/issuer_supplements.py"
+      - site/intl.html
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
@@ -52376,6 +52433,10 @@ jobs:
       - "engine/company_intelligence/economic_observations.py"
       - "engine/earnings_narrative/economic_interpretation.py"
       - "lib/frozen_delivery_client.py"
+      - site/factordata/intl_setups.json
+      - site/intl.html
+      - site/intl_stocks.html
+      - site/macrodata/global_regime_fragment.json
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

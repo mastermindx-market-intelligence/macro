@@ -791,6 +791,11 @@ jobs:
       # ---- spine: the macro/US dashboard + the desks its pages embed ----
       # build_site reads the COMMITTED regime/latest.json (no engine.run needed) and
       # renders macro.html + the US stock pages + news.html + the stock library.
+      # The ordinary >=1.34 SDK minimum predates conditional PutObject.
+      # Pin only this opt-in transaction; default/bulk lanes are unchanged.
+      # ---- US page-renderers: deterministic JSON merges + chrome (NO LLM) ----
+      # Canada / S&P-TSX: rationale + restore provenance in the comment block above
+      # this step (moved out of the run script 2026-08-01: 21,000-char run limit).
       - name: re-render pages from committed data (resilient; no collect / no LLM / no EDGAR)
         id: render_pages
         # Mirrors the RENDER steps of daily.yml's `engine` job, minus the collectors,
@@ -830,8 +835,6 @@ jobs:
             echo "::error::durable International output requires manual exact scope=intl"; exit 1
           fi
           if [ "$INTL_DURABLE_MODE" = true ]; then
-            # The ordinary >=1.34 SDK minimum predates conditional PutObject.
-            # Pin only this opt-in transaction; default/bulk lanes are unchanged.
             python -m pip install 'boto3==1.40.0' 'botocore==1.40.0' || exit 1
           fi
           touch "$RUNNER_TEMP/render_libs_marker"
@@ -860,7 +863,6 @@ jobs:
             run_py "congressional trades desk (build_congress)" scripts.build_congress
           }
 
-          # ---- US page-renderers: deterministic JSON merges + chrome (NO LLM) ----
           us_pages() {
             run_py "radar upgrade (build_radar_plus)"   scripts.build_radar_plus
             run_py "radar IC ledger (build_radar_ic)"   scripts.build_radar_ic
@@ -889,8 +891,6 @@ jobs:
             fi
           }
 
-          # Canada / S&P-TSX: rationale + restore provenance in the comment block above
-          # this step (moved out of the run script 2026-08-01: 21,000-char run limit).
           canada() { [ -n "$CANADA_DONE" ] && return 0; CANADA_DONE=1; export SKIP_CANADA_HOOK=1; run_py "canada / S&P-TSX dashboard (build_canada)" scripts.build_canada; }
 
           # US Sector Central hub — reads baskets.json + sector_cycles_data.js + the heatmap json
