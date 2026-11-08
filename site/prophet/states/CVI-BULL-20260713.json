@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "CVI-BULL-20260713",
-  "asof": "2026-11-07",
+  "asof": "2026-11-08",
   "phase": "between_t1_t2",
   "detection_phase": "post_t1_failed_hold",
   "management_confidence": 45.9,
@@ -20,7 +20,7 @@
     "dist_to_stop_r": 1.274,
     "dist_to_t1_r": 1.226,
     "dist_to_t2_r": 2.726,
-    "horizon_pct_used": 248.9,
+    "horizon_pct_used": 251.1,
     "p1": 0.183,
     "p2": 0.0915,
     "p3": null,
@@ -45,8 +45,8 @@
   "_first_trigger_ts": "2026-07-30",
   "_first_t1_ts": "2026-09-16",
   "_first_t2_ts": null,
-  "days_elapsed": 112,
-  "tau": 2.4889,
+  "days_elapsed": 113,
+  "tau": 2.5111,
   "closed": true,
   "outcome": "EXPIRED"
 }
