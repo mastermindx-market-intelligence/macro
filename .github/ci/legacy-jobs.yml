@@ -1519,7 +1519,7 @@ jobs:
       - name: install deterministic source-research test dependencies
         run: pip install pytest
       - name: point-in-time equity pressure and private pilot projection
-        run: PYTHONPATH=.:tests python -m pytest tests/test_equity_pressure_response.py tests/test_microstructure_pressure_response_pilot.py -q
+        run: PYTHONPATH=.:tests python -m pytest tests/test_equity_pressure_response.py tests/test_microstructure_pressure_response_pilot.py tests/test_tpb_historical_ruler.py -q
 
   yahoo-daily-archive-refresh:
     if: ${{ false }}
@@ -5963,6 +5963,8 @@ jobs:
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn
       - name: session + §7 anchor invariance (k=1..6 start drops, bucket/marker parity, era stamps)
         run: python -m pytest tests/test_session_anchor_invariance.py tests/test_sq_anchor_invariance.py tests/test_confluence_resample_runtime.py -q
+      - name: swing-confluence saved recipe (no market outcomes)
+        run: python -m pytest tests/test_toi_swing_plan.py -q
 
   trial-budgets:
     if: ${{ false }}
@@ -11915,6 +11917,10 @@ jobs:
       - "engine/entry_radar/contracts.py"
       - "engine/entry_radar/spool.py"
       - "scripts/prophet_lab_baseline.py"
+      # B-17 frozen-input research verifier: keep the regression in the existing
+      # Prophet code gate; test-only and source-only edits both select this job.
+      - "research/prophet_v4/b17_frozen_input_recovery.py"
+      - "tests/test_prophet_b17_frozen_input_recovery.py"
       - "tests/test_prophet_lab.py"
       - "tests/test_intelligence_vector_units.py"
       - "tests/test_prophet_lab_api.py"
@@ -12010,6 +12016,11 @@ jobs:
           tests/test_prophet_lab_timeparse.py
           tests/test_prophet_lab_commissioning.py
           tests/test_caddy_hub_boundary.py -q
+
+      # B-17 recovers immutable inputs and exercises the existing selector.
+      # CI runs only the focused hermetic tests, never full archive reconstruction.
+      - name: Prophet B-17 frozen-input recovery — immutable sources, cutoff clocks, and unknown inputs
+        run: python -m pytest tests/test_prophet_b17_frozen_input_recovery.py -q
 
       # B04-A0 evidence dossier (#9935): closed reason map, forbidden-key refusal
       # and admissibility literals for the Prophet Lab dossier reader. Hermetic
@@ -15634,6 +15645,7 @@ jobs:
       - "tests/test_ci_canary_tools.py"
       - "tests/test_ci_canary_workflows.py"
       - "tests/test_ci_gate_reliability_report.py"
+      - "tests/test_ci_main_heartbeat_header.py"
       - "tests/test_ci_pack.py"
       - "tests/test_ci_pack_fragments.py"
       - "tests/test_ci_pack_semantic.py"
@@ -15645,6 +15657,7 @@ jobs:
       - "tests/test_merge_on_green_semantic.py"
       - "tests/test_nightly_backstop.py"
       - "tests/test_release_hold_text.py"
+      - "tests/test_run_ci_pack_base_replay_env.py"
       - "tests/test_run_ci_pack_fetch_fallback.py"
       - "tests/test_runner_policy.py"
       - "tests/test_trusted_ci_executor_workflow.py"
@@ -15738,7 +15751,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest pyyaml
       - name: hosted-runner packing contract
-        run: python -m pytest tests/test_ci_pack.py tests/test_ci_pack_fragments.py tests/test_run_ci_pack_fetch_fallback.py tests/test_merge_on_green.py tests/test_merge_on_green_semantic.py tests/test_check_conflict_markers.py tests/test_release_hold_text.py -q
+        run: python -m pytest tests/test_ci_pack.py tests/test_ci_pack_fragments.py tests/test_run_ci_pack_base_replay_env.py tests/test_run_ci_pack_fetch_fallback.py tests/test_merge_on_green.py tests/test_merge_on_green_semantic.py tests/test_check_conflict_markers.py tests/test_release_hold_text.py -q
       # scripts/check_contract_delta.py (2026-08-19) is the differential PR-vs-base
       # gate that re-derives the two finding classes above (curated-exclusive
       # import-closure misses, unwired suites) UNCONDITIONALLY of ci-pack's path
@@ -15804,6 +15817,7 @@ jobs:
       - "tests/test_ci_canary_tools.py"
       - "tests/test_ci_canary_workflows.py"
       - "tests/test_ci_gate_reliability_report.py"
+      - "tests/test_ci_main_heartbeat_header.py"
       - "tests/test_ci_pack.py"
       - "tests/test_ci_pack_fragments.py"
       - "tests/test_ci_pack_semantic.py"
@@ -15815,6 +15829,7 @@ jobs:
       - "tests/test_merge_on_green_semantic.py"
       - "tests/test_nightly_backstop.py"
       - "tests/test_release_hold_text.py"
+      - "tests/test_run_ci_pack_base_replay_env.py"
       - "tests/test_run_ci_pack_fetch_fallback.py"
       - "tests/test_runner_policy.py"
       - "tests/test_trusted_ci_executor_workflow.py"
@@ -15929,6 +15944,12 @@ jobs:
       # it cannot skip its way to green on a pack runner with no `gh`.
       - name: merge-gate reliability report contract
         run: python -m pytest tests/test_ci_gate_reliability_report.py -q
+      # ci-main-heartbeat.yml names each of its jobs after a job in this manifest,
+      # and its header tells the reader what a green heartbeat means. This suite
+      # measures every heartbeat job's test files against its namesake here and
+      # holds the header's words to the difference, both ways. Pure stdlib + pyyaml.
+      - name: ci-main-heartbeat header matches what its jobs run
+        run: python -m pytest tests/test_ci_main_heartbeat_header.py -q
       - name: transitional self-hosted runner policy and canary contracts
         run: python scripts/check_runner_policy.py && python -m pytest tests/test_runner_policy.py tests/test_ci_canary_tools.py tests/test_ci_canary_workflows.py tests/test_trusted_ci_executor_workflow.py tests/test_trusted_ci_production_route.py -q
       # The US nightly's cron redundancy (2026-08-13), wired here for the same reason
@@ -15996,6 +16017,7 @@ jobs:
       - "tests/test_ci_canary_tools.py"
       - "tests/test_ci_canary_workflows.py"
       - "tests/test_ci_gate_reliability_report.py"
+      - "tests/test_ci_main_heartbeat_header.py"
       - "tests/test_ci_pack.py"
       - "tests/test_ci_pack_fragments.py"
       - "tests/test_ci_pack_semantic.py"
@@ -16007,6 +16029,7 @@ jobs:
       - "tests/test_merge_on_green_semantic.py"
       - "tests/test_nightly_backstop.py"
       - "tests/test_release_hold_text.py"
+      - "tests/test_run_ci_pack_base_replay_env.py"
       - "tests/test_run_ci_pack_fetch_fallback.py"
       - "tests/test_runner_policy.py"
       - "tests/test_trusted_ci_executor_workflow.py"
@@ -16948,6 +16971,10 @@ jobs:
     # Dynamic Ontology assets and canonical navigation are included explicitly.
     scope: exclusive
     paths:
+      # TTI-D1: bind the existing synthetic minute reader/resolver suite to
+      # its current CODE consumer owner; the older signal-contract copy is DATA.
+      - "engine/entry_radar/minute_resolution.py"
+      - "tests/test_entry_radar_w4_c3_reader.py"
       - "scripts/company_intelligence_publication_evidence.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
@@ -18294,7 +18321,7 @@ jobs:
       - name: ontology research case — native evidence and existing live episode projection
         run: python -m pytest tests/test_opportunity_evidence_vector_contract.py tests/test_entry_radar_w4_live.py -k 'opportunity_case or research_case' -q
       - name: native earnings context, retained identity and published Radar read
-        run: python -m pytest tests/test_earnings_opportunity_qualification.py tests/test_earnings_opportunity_context.py tests/test_entry_radar_quote_context.py tests/test_entry_radar_research_read.py tests/test_entry_radar_earnings_context_producer.py tests/test_entry_radar_candidate_provenance.py tests/test_entry_radar_quote_lineage_read.py -q
+        run: python -m pytest tests/test_earnings_opportunity_qualification.py tests/test_earnings_opportunity_context.py tests/test_entry_radar_quote_context.py tests/test_entry_radar_research_read.py tests/test_entry_radar_earnings_context_producer.py tests/test_entry_radar_candidate_provenance.py tests/test_entry_radar_quote_lineage_read.py -q tests/test_entry_radar_w4_c3_reader.py
       - name: captured native DRL event and evidence composition
         run: python -m pytest tests/test_price_pressure_research.py tests/test_h20_supplier_conditional.py tests/test_gmi_native_disclosure_propagation.py -q
       - name: ontology explorer — real browser, selected context, responsive and failure states
@@ -43241,15 +43268,26 @@ jobs:
         run: python -m pytest tests/test_winner_health_design_freeze.py -q
 
   options-nbbo-cohort:
-    # Frozen same-basis MomoEdge comparison infrastructure. The suite is fully
+    # Offline source qualification and frozen same-basis MomoEdge comparisons.
+    # The suites are fully
     # offline: source responses and authenticated producer rows are synthetic,
     # while raw production bytes remain host-private outside git.
     if: ${{ false }}  # executed inside ci-pack — NOT a disabled gate.
     gate: code
-    # Literal import/read closure of the four offline suites. Exclusive scope
+    # Literal import/read closure of the offline suites. Exclusive scope
     # prevents the CLI's dynamic file-module tests from widening unrelated probes.
     scope: exclusive
     paths:
+      - collectors/__init__.py
+      - collectors/options_free_samples.py
+      - collectors/options_free_tbt.py
+      - scripts/options_free_source_inventory.py
+      - scripts/qualify_options_free_samples.py
+      - scripts/qualify_options_free_tbt.py
+      - tests/__init__.py
+      - tests/test_options_free_samples.py
+      - tests/test_options_free_source_inventory.py
+      - tests/test_options_free_tbt.py
       - config/dag.yml
       - engine/__init__.py
       - lib/__init__.py
@@ -43294,6 +43332,8 @@ jobs:
           tests/test_options_alpha_exact_option_outcome_cli.py
           tests/test_options_occ_contract_terms.py
           tests/test_options_occ_contract_terms_native.py -q -rs
+      - name: private Cboe evaluation parsers, custody refusal and inventory contracts
+        run: python -m pytest tests/test_options_free_samples.py tests/test_options_free_source_inventory.py tests/test_options_free_tbt.py -q
 
   product-experience-registry:
     if: ${{ false }}
@@ -43930,6 +43970,14 @@ jobs:
       - tests/verification/test_journey_a01.py
       - tests/verification/test_journey_f01.py
       - tests/verification/test_oracle_q01.py
+      # Synthetic research-input qualification shares these existing Data OS
+      # verification seams and dependencies; the thin foundation stays unchanged.
+      - engine/systematic_inputs.py
+      - scripts/qualify_systematic_inputs.py
+      - tests/test_systematic_inputs.py
+      - research/systematic_inputs/README.md
+      - scripts/__init__.py
+      - tests/__init__.py
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
@@ -43947,6 +43995,10 @@ jobs:
           tests/verification/test_bench_q03_contract.py
           tests/verification/test_journey_f01.py
           tests/verification/test_journey_a01.py -q -rs
+      - name: systematic input qualification (synthetic rights, PIT and action refusals)
+        run: >-
+          PYTHONDONTWRITEBYTECODE=1 python -m pytest
+          tests/test_systematic_inputs.py -q -rs
 
   dataos-foundation:
     scope: exclusive
