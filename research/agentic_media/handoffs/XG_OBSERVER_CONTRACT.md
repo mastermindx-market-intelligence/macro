@@ -1,32 +1,34 @@
-# XG novelty observer — contract v1.1
+# XG novelty observer — contract v1.2
 
 Status: **specification, unbuilt**. Owning card: `t_2bb26bfe`. Author seat: engineering.
-v1.1 amends v1 with four collection-layer gaps raised by the board seat: no defined verdict for
-an unsupported schema, `baseline_allowlist` held to a lower standard than the snapshot, no
-representation of what collection failed to see, and no content-addressing of the snapshot at
-consumption. This file is a contract, not an implementation. Nothing here grants permission,
-binds an account, or enables a runtime operation.
+v1.1 added the refusal verdicts, the `collected` block, allowlist provenance and content
+addressing. v1.2 adds **parser identity**, after a real incident: a reported "4 → 6 connection
+churn" was the sweep's own parser fix landing between two runs. The diff spanned a tool change,
+so it was not a time series. This file is a contract, not an implementation. Nothing here grants
+permission, binds an account, or enables a runtime operation.
 
 ## Purpose
 
 The harness gate chain validates *intent*: is this identity admitted, is this proxy declared,
 is this slot inside the box ceiling. It cannot see that the box is **already running something
-the registry never declared**. On 2026-11-07 a parallel automation worker drove three CDP-attached
-Chrome instances on `mini1` while the harness PR was an unsigned draft; no gate in the chain would
-have reported it, because every gate asked about declared things.
+the registry never declared**. On 2026-11-07 a parallel automation worker drove CDP-attached
+Chrome instances on `mini1` while the harness PR was an unsigned draft; no gate in the chain
+would have reported it, because every gate asked about declared things.
 
 The observer closes that gap by enumerating reality and diffing it against declaration.
 
-## Two rules, both load-bearing
+## Three rules, all load-bearing
 
 1. **Readback proves state, not ownership.** The observer may report a resource as
    `undeclared`. It must never report an identity as `known`, `authorized`, or `ours`.
-   Attribution is a separate evidence path with a separate owner (process, manifest, or
-   payment trail) — never inferred from a snapshot.
+   Attribution is a separate evidence path with a separate owner (process, manifest, or payment
+   trail) — never inferred from a snapshot.
 2. **A self-report cannot be the observer.** The snapshot must be produced by a process
-   independent of the subject's own tree. A worker's own README, health script, or
-   environment report is corroborating material, not observation. The snapshot carries its
-   provenance so the distinction is checkable after the fact.
+   independent of the subject's own tree. A worker's own README, health script, or environment
+   report is corroborating material, not observation.
+3. **A diff across a tool change is not a time series.** Two snapshots may be compared only when
+   their `sweep_script_sha256` and tool identities match. Otherwise the verdict is
+   `refused: tool_changed` — not "the box changed", and not a delta.
 
 ## Snapshot contract
 
@@ -38,25 +40,27 @@ tested and merged while the harness PR is still a draft.
 {
   "schema_version": 1,
   "host": "mini1",
-  "taken_at": "2026-11-07T22:47:00-07:00",
-  "observer": "hermes",                       // seat that ran the sweep
+  "taken_at": "2026-11-07T23:04:00-07:00",
+  "observer": "hermes",
   "provenance": {
     "ssh_target": "mini1",
     "commands": ["launchctl list", "lsof -nP -iTCP -sTCP:LISTEN", "ps axo pid,ppid,command"],
-    "tools": {"macos": "26.5", "lsof": "4.91"},   // tool identity
+    "tools": {"macos": "27.0 (26A428)", "lsof": "4.91"},
+    "sweep_script_sha256": "b3eddcc6d98dc2f2b0876a54eb41aff4130477831897b0e5e55ea066d9ff73ce",
     "mutating": false
   },
-  "collected": {                              // what the sweep could and could not see
+  "collection_status": "complete",            // complete | incomplete — never a verdict word
+  "collected": {
     "hosts_attempted": ["mini1","mini2","mini3","mini4"],
-    "hosts_returned": ["mini1","mini2"],
+    "hosts_returned": ["mini1"],
     "commands_run": [{"cmd": "lsof -nP -iTCP -sTCP:LISTEN", "exit": 0}],
-    "command_failures": [{"host": "mini3", "cmd": "ssh", "error": "timeout"}]
+    "command_failures": [{"host": "mini2", "cmd": "ssh", "error": "host unreachable"}]
   },
   "launchd":   [{"label": "com.xg.proxyauth", "plist_path": "...", "pid": 60367, "loaded_at": "..."}],
-  "listeners": [{"port": 9333, "bind_addr": "127.0.0.1", "pid": 60112, "proc": "Google Chrome"}],
-  "chrome":    [{"pid": 60112, "cdp_port": 9333, "proxy_server": "http://<redacted>",
+  "listeners": [{"port": 9333, "bind_addr": "127.0.0.1", "pid": 10248, "proc": "Google Chrome"}],
+  "chrome":    [{"pid": 10248, "cdp_port": 9333, "proxy_server": "http://<redacted>",
                  "profile_dir": "~/xg/profiles/smoke", "ppid": 1, "started_at": "..."}],
-  "cdp_sessions": [{"pid": 60367, "local": "127.0.0.1:5xxxx", "remote": "127.0.0.1:9333", "state": "ESTABLISHED"}]
+  "cdp_sessions": [{"pid": 63439, "local": "127.0.0.1:62066", "remote": "127.0.0.1:9333", "state": "ESTABLISHED"}]
 }
 ```
 
@@ -66,19 +70,27 @@ Requirements:
 - **No credential values.** `proxy_server` is host:port only. Users, passwords and TOTP seeds
   never enter a snapshot, a log, or a report. An observed credential file is reported by path
   and mode, never by content.
-- **Provenance is mandatory.** A snapshot without `observer` + `commands` + `taken_at` is
-  rejected rather than trusted.
-- **`mutating: true` is a rejection condition**, not a warning.
+- **One type per field, everywhere.** `hosts_returned` is always a list of names — never `null`,
+  never `0`, never a count. `port` and `cdp_port` are always integers, so they join against an
+  integer registry; a string port makes every *declared* port read `undeclared`, which is the
+  failure mode that looks safe and therefore gets switched off instead of fixed.
+- **Verdict words and collection words live in different keys.** Collection outcome is
+  `collection_status: complete | incomplete`. Nothing else may occupy that namespace; a
+  `status: "ok"` sitting alongside five refusal verdicts is a sixth verdict by accident.
+- **Connections are counted once.** `lsof` reports both ends of a loopback connection. Keep the
+  client-side row and drop the server-side echo, or double-counting turns a stable box into
+  apparent churn.
+- **Provenance is mandatory and includes the parser.** `observer` + `commands` + `taken_at` +
+  `sweep_script_sha256` + tool versions. Without the script sha, a later "quiet" may only mean a
+  different parser produced different output.
 - **`collected` is mandatory.** A host that did not answer, a command that exited non-zero, or a
-  truncated listing must appear in `command_failures`. An empty array in a collection block means
-  *collection was complete and found nothing*, never *collection didn't happen*.
-- **Tool identity is recorded** (`macos`, `lsof`, and any other tool whose output the diff
-  depends on). Without it, a later "quiet" may only mean a different command produced
-  different output.
+  truncated listing must appear in `command_failures`. An empty array means *collection was
+  complete and found nothing*, never *collection didn't happen*.
+- **`mutating: true` is a rejection condition**, not a warning.
 
 ## Verdicts
 
-Five outcomes. The rule refuses rather than guesses:
+Six outcomes. The rule refuses rather than guesses:
 
 | verdict | meaning | effect on launch |
 |---|---|---|
@@ -86,11 +98,12 @@ Five outcomes. The rule refuses rather than guesses:
 | `baseline` | observed and in `baseline_allowlist` | pass |
 | `undeclared` | observed in neither | **refuse** |
 | `refused: collection_incomplete` | `collected` shows a host or command that did not answer | **refuse** |
-| `refused: schema_unsupported` | `schema_version` unknown, or registry `registry_revision` newer than the consumer understands | **refuse** |
+| `refused: schema_unsupported` | `schema_version` unknown, or registry revision newer than the consumer understands | **refuse** |
+| `refused: tool_changed` | comparing snapshots with differing `sweep_script_sha256` or tool identity | **refuse the comparison** |
 
-`refused: schema_unsupported` is the anti-fail-open clause. Three verdicts with no home for an
-input the consumer does not understand leaves best-effort parsing as the only available
-behaviour — fail-open, the same defect in a new coat as "every gate asked about declared things".
+`refused: schema_unsupported` is the anti-fail-open clause. `refused: tool_changed` is the
+anti-false-narrative clause: the 2026-11-08 "churn" reading was a parser fix, not box activity,
+and the only thing that would have prevented the misreading was refusing to diff.
 
 **Version discipline:** `schema_version` is 1 only because no consumer exists yet. Once the
 first consumer ships, any *required* field addition bumps to 2, and a v1 consumer meeting a v2
@@ -105,12 +118,13 @@ longer matches the receipt is evidence of tampering or staleness, not of a quiet
 
 ## Diff rule
 
-Inputs: (a) the snapshot, (b) the identity registry, (c) the versioned `baseline_allowlist`.
+Inputs: (a) the snapshot, (b) the identity registry, (c) the versioned `baseline_allowlist`,
+(d) the provenance of the last accepted snapshot.
 
 - observed and declared → `declared`.
 - observed and in `baseline_allowlist` → `baseline` (stock OS; not ours, not novel).
 - observed in **neither** → `undeclared` → **launch refuses.**
-- collection incomplete or schema unsupported → **launch refuses.**
+- collection incomplete, schema unsupported, or tool changed → **launch refuses.**
 
 ## `baseline_allowlist` — held to the snapshot's standard
 
@@ -159,5 +173,14 @@ per Chrome instance, so the binding constraint on concurrency is often process c
    `host_seed_sha` mismatches, are both refused.
 8. **Content-addressing test:** a snapshot whose sha256 no longer matches the value recorded in
    the admission receipt is refused.
+9. **Tool-change test:** two snapshots differing only in `sweep_script_sha256` must yield
+   `refused: tool_changed` — and specifically must *not* produce a connection-count delta.
 
-Absent those eight, the observer is a document, not an artifact.
+Absent those nine, the observer is a document, not an artifact.
+
+## Accepted fixture
+
+Sweep of **2026-11-08T06:58:39Z**, `sweep.py` v1.2, `script_sha256`
+`b3eddcc6d98dc2f2b0876a54eb41aff4130477831897b0e5e55ea066d9ff73ce`, manifest sha256
+`362919cc804d9a52051209d0e53b9223e9472f6e95b654bba4f5f2256b5a1b26`. The earlier `68589392…`
+manifest predates the dedupe fix and must not be diffed against it.
