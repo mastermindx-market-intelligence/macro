@@ -32,12 +32,13 @@ def _synthetic_spy(n: int = 130, rebound: bool = True) -> pd.Series:
 def _recovery(turn_confirmed_full: bool = True,
               chip_keys: list[str] | None = None,
               liquidity_n: int = 2) -> dict:
-    """Synthetic recovery dict matching the shape assess() returns."""
+    """Synthetic recovery dict matching the versioned assess() contract."""
     chip_keys = chip_keys or ["thrust_confluence", "msi_swing", "oas_rollover"]
     chips = [{"key": k, "fired": True, "fresh": True} for k in chip_keys]
     return {
         "asof": "2024-02-05",
         "present": True,
+        "construction_version": rrra.RECOVERY_CONSTRUCTION_VERSION,
         "turn_confirmed": True,
         "turn_confirmed_full": turn_confirmed_full,
         "n_fresh": liquidity_n,
@@ -47,7 +48,12 @@ def _recovery(turn_confirmed_full: bool = True,
             "market_confirmed": True,
             "market_confirmed_raw": True,
             "n_fresh": len(chip_keys),
-            "veto": {"active": False, "p_now": 0.3},
+            "veto": {
+                "active": False,
+                "evaluated": True,
+                "state": "clear",
+                "p_now": 0.3,
+            },
         },
     }
 
@@ -84,9 +90,10 @@ class TestLogSnapshot:
     def test_row_has_required_fields(self, tmp_path):
         rrra.log_snapshot(_recovery(), _radar_snap(), root=tmp_path)
         row = rrra._read(rrra._path(tmp_path))[0]
-        for field in ("asof", "phase", "intensity", "chips", "veto",
-                      "liquidity_n", "market_confirmed", "turn_confirmed_full",
-                      "logged_at", "graded"):
+        for field in ("asof", "construction_version", "phase", "intensity",
+                      "chips", "veto", "liquidity_n", "liquidity_context_n",
+                      "market_confirmed",
+                      "turn_confirmed_full", "logged_at", "graded"):
             assert field in row, f"missing field: {field}"
         assert row["graded"] is None
 
@@ -307,3 +314,93 @@ class TestDegradeOnMissingStore:
     def test_scorecard_safe_on_empty_dir(self, tmp_path):
         sc = rrra.scorecard(root=tmp_path)
         assert sc["n_graded"] == 0
+
+
+
+# ---------------------------------------------------------------------------
+# Construction identity and tri-state veto preservation
+# ---------------------------------------------------------------------------
+
+def test_log_rejects_unversioned_or_mismatched_recovery(tmp_path, monkeypatch):
+    monkeypatch.setattr(rrra, "ledger_lane_armed", lambda: True)
+    rec = _recovery()
+    rec.pop("construction_version")
+    assert rrra.log_snapshot(rec, _radar_snap(), root=tmp_path) is False
+    rec["construction_version"] = "legacy"
+    assert rrra.log_snapshot(rec, _radar_snap(), root=tmp_path) is False
+
+
+def test_current_version_can_coexist_with_legacy_same_asof(tmp_path, monkeypatch):
+    monkeypatch.setattr(rrra, "ledger_lane_armed", lambda: True)
+    path = rrra._path(tmp_path)
+    rrra._write(path, [{"asof": "2024-02-05", "construction_version": "legacy"}])
+    assert rrra.log_snapshot(_recovery(), _radar_snap(), root=tmp_path) is True
+    rows = rrra._read(path)
+    assert len(rows) == 2
+    assert rows[-1]["construction_version"] == rrra.RECOVERY_CONSTRUCTION_VERSION
+
+
+def test_unknown_veto_is_not_coerced_to_clear(tmp_path, monkeypatch):
+    monkeypatch.setattr(rrra, "ledger_lane_armed", lambda: True)
+    rec = _recovery(turn_confirmed_full=False)
+    rec["market"]["market_confirmed"] = False
+    rec["market"]["veto"] = {
+        "active": None, "evaluated": False, "state": "unknown", "p_now": None,
+    }
+    assert rrra.log_snapshot(rec, _radar_snap(), root=tmp_path) is True
+    row = rrra._read(rrra._path(tmp_path))[0]
+    assert row["veto"] == {
+        "active": None, "evaluated": False, "state": "unknown", "p_now": None,
+    }
+    assert row["market_confirmed"] is False
+    assert row["turn_confirmed_full"] is False
+
+
+def test_malformed_veto_state_is_canonicalized_to_unknown(tmp_path, monkeypatch):
+    monkeypatch.setattr(rrra, "ledger_lane_armed", lambda: True)
+    rec = _recovery(turn_confirmed_full=False)
+    rec["market"]["market_confirmed"] = False
+    rec["market"]["veto"] = {
+        "active": "false", "evaluated": True, "state": "clear", "p_now": 0.2,
+    }
+    assert rrra.log_snapshot(rec, _radar_snap(), root=tmp_path) is True
+    row = rrra._read(rrra._path(tmp_path))[0]
+    assert row["veto"] == {
+        "active": None, "evaluated": True, "state": "unknown", "p_now": 0.2,
+    }
+
+
+def _graded_row(version, asof):
+    return {
+        "asof": asof,
+        "construction_version": version,
+        "phase": "receding",
+        "chips": {"thrust": {"fired": True, "fresh": True}},
+        "graded": {
+            "h21": {"fwd_ret": 0.05, "mae": -0.02, "mfe": 0.08},
+            "h63": {"fwd_ret": 0.10, "mae": -0.03, "mfe": 0.14},
+        },
+    }
+
+
+def test_scorecard_excludes_legacy_construction_without_rewriting_log(tmp_path):
+    path = rrra._path(tmp_path)
+    original = [
+        _graded_row("legacy", "2024-01-02"),
+        _graded_row(rrra.RECOVERY_CONSTRUCTION_VERSION, "2024-01-03"),
+    ]
+    rrra._write(path, original)
+    sc = rrra.scorecard(root=tmp_path)
+    assert sc["construction_version"] == rrra.RECOVERY_CONSTRUCTION_VERSION
+    assert sc["n_graded_total"] == 2
+    assert sc["n_graded"] == 1
+    assert sc["n_excluded_construction"] == 1
+    assert rrra._read(path) == original
+
+
+def test_scorecard_with_only_legacy_rows_reports_zero_current(tmp_path):
+    rrra._write(rrra._path(tmp_path), [_graded_row("legacy", "2024-01-02")])
+    sc = rrra.scorecard(root=tmp_path)
+    assert sc["n_graded_total"] == 1
+    assert sc["n_graded"] == 0
+    assert sc["n_excluded_construction"] == 1

@@ -1,32 +1,32 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "DAR-BULL-20260810",
-  "asof": "2026-11-02",
-  "phase": "overtime",
-  "detection_phase": "overtime",
-  "management_confidence": 24.7,
-  "raw_confidence": 24.5,
-  "delta_vs_base": -35.3,
+  "asof": "2026-11-07",
+  "phase": "invalidated",
+  "detection_phase": "invalidated",
+  "management_confidence": 10.0,
+  "raw_confidence": 8.0,
+  "delta_vs_base": -50.0,
   "recommended_action": null,
   "human_state": "Closed",
   "components": {
-    "validity": 27.5,
+    "validity": 0.0,
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 58.9
+    "overlay": 33.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.384,
+    "dist_to_stop_r": -0.058,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 182.2,
-    "p1": -0.4103,
-    "p2": -0.2052,
+    "horizon_pct_used": 193.3,
+    "p1": -0.7056,
+    "p2": -0.3528,
     "p3": null,
-    "move_r": -0.616,
+    "move_r": -1.058,
     "mfe_r": 0.392,
-    "mae_r": -0.662
+    "mae_r": -1.058
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -40,13 +40,13 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 4.909996337890625,
-  "_mae": -8.279998474121093,
+  "_mae": -13.240001373291015,
   "_max_p1": 0.26165714563765663,
   "_first_trigger_ts": "2026-08-13",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 82,
-  "tau": 1.8222,
+  "days_elapsed": 87,
+  "tau": 1.9333,
   "closed": true,
   "outcome": "EXPIRED"
 }

@@ -104,7 +104,7 @@
         },
         "null_reason": null,
         "required": true,
-        "source_asof": "2026-10-29",
+        "source_asof": "2026-11-05",
         "status": "PRESENT"
       },
       {
@@ -166,11 +166,11 @@
     "comparability": "COMPARABLE",
     "deltas": [
       {
-        "current_value": 7.24,
-        "delta": -0.16,
+        "current_value": 7.18,
+        "delta": -0.06,
         "metric_id": "mortgage_30y_rate_level",
         "note": "same method version; numeric comparison permitted",
-        "prior_value": 7.4
+        "prior_value": 7.24
       },
       {
         "current_value": -7.4299,
@@ -181,30 +181,30 @@
       },
       {
         "current_value": -3.1856,
-        "delta": -0.1385,
+        "delta": 0.0,
         "metric_id": "building_permits_yoy",
         "note": "same method version; numeric comparison permitted",
-        "prior_value": -3.0471
+        "prior_value": -3.1856
       },
       {
         "current_value": 2.0908,
-        "delta": 0.1604,
+        "delta": 0.0,
         "metric_id": "case_shiller_national_hpi_yoy",
         "note": "same method version; numeric comparison permitted",
-        "prior_value": 1.9304
+        "prior_value": 2.0908
       }
     ],
     "null_reason": null,
-    "prior_effective_date": "2026-10-15",
-    "prior_generation_id": "housing_real_estate-US-2eb087ea8b4cdce8",
+    "prior_effective_date": "2026-10-29",
+    "prior_generation_id": "housing_real_estate-US-b69ea7da8872d8c8",
     "prior_method_version": "housing_real_estate.compose.v1",
     "status": "PRESENT"
   },
   "corrections": {
     "changed_fingerprints": [],
     "correction_state": "none",
-    "note": "Reference period differs from the predecessor print (a new observation, not a revision of the same period); no correction asserted.",
-    "predecessor_generation_id": "housing_real_estate-US-2eb087ea8b4cdce8"
+    "note": "Same reference period as the predecessor print; no tracked metric changed value (no-change republication).",
+    "predecessor_generation_id": "housing_real_estate-US-42c771226bdbe937"
   },
   "drivers": {
     "balance_sheet": [
@@ -283,7 +283,7 @@
       {
         "coverage_state": "PRESENT",
         "driver_id": "mortgage_30y_rate_level",
-        "impact_magnitude": 7.24,
+        "impact_magnitude": 7.18,
         "impact_sign": 1,
         "label": {
           "en": "30-year mortgage rate",
@@ -292,12 +292,12 @@
         "note": "higher = more restrictive home-purchase financing",
         "owner_field": "fred.MORTGAGE30US.mortgage_30y",
         "unit": "percent",
-        "value": 7.24
+        "value": 7.18
       },
       {
         "coverage_state": "PRESENT",
         "driver_id": "mortgage_30y_rate_change_13w",
-        "impact_magnitude": 0.58,
+        "impact_magnitude": 0.49,
         "impact_sign": 1,
         "label": {
           "en": "Mortgage rate 13w change",
@@ -306,21 +306,21 @@
         "note": "positive = financing conditions tightened over the trailing 13 weeks",
         "owner_field": "fred.MORTGAGE30US.mortgage_30y",
         "unit": "pct_pts",
-        "value": 0.58
+        "value": 0.49
       }
     ]
   },
   "generation": {
-    "built_at": "2026-11-02T07:18:10Z",
-    "calculation_as_of": "2026-10-29",
-    "code_version": "b188d09fcf027f2a6f77a396c9d3e79e4660929d",
-    "content_sha256": "e3ba072c1ef6991b61e7aebdf15bf48d8774ba8ccf4b0a683dc45dd2dcd6cc42",
-    "generation_id": "housing_real_estate-US-e3ba072c1ef6991b",
+    "built_at": "2026-11-07T10:01:16Z",
+    "calculation_as_of": "2026-11-05",
+    "code_version": "a12eb4e3a090c08e2b429073edab80f1eb8f805a",
+    "content_sha256": "bb0a98c46fed29ee147855a01df8b5591806bcffb0b2113ed9a46c35b854fb71",
+    "generation_id": "housing_real_estate-US-bb0a98c46fed29ee",
     "producer": "engine.market_os.macro_workspaces.housing",
     "rendered_at": null
   },
   "headline": {
-    "effective_date": "2026-10-29",
+    "effective_date": "2026-11-05",
     "hysteresis": {
       "applied": false,
       "band": 0.0,
@@ -344,7 +344,7 @@
       "y_axis_id": null
     },
     "prior_state": {
-      "effective_date": "2026-10-15",
+      "effective_date": "2026-10-29",
       "method_version": "housing_real_estate.compose.v1",
       "state_id": null
     },
@@ -409,8 +409,8 @@
         "horizon": "current",
         "implication_id": "mortgage_rate_read",
         "text": {
-          "en": "The 30-year fixed mortgage rate reads 7.24%, +0.58 percentage points over the trailing 13 weeks.",
-          "zh": "30年期固定抵押贷款利率读数为7.24%，较13周前变化+0.58个百分点。"
+          "en": "The 30-year fixed mortgage rate reads 7.18%, +0.49 percentage points over the trailing 13 weeks.",
+          "zh": "30年期固定抵押贷款利率读数为7.18%，较13周前变化+0.49个百分点。"
         },
         "trace_ref": "data/fred/MORTGAGE30US.parquet"
       },
@@ -612,7 +612,7 @@
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "market_rate_level",
-        "calculation_as_of": "2026-10-29",
+        "calculation_as_of": "2026-11-05",
         "collected_at": null,
         "coverage": null,
         "definition_id": "fred.MORTGAGE30US.mortgage_30y",
@@ -623,10 +623,10 @@
         "metric_id": "mortgage_30y_rate_level",
         "model_version": "housing_real_estate.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-10-29",
+        "observed_at": "2026-11-05",
         "owner_ref": "data/fred/MORTGAGE30US.parquet",
         "reference_id": "mastermind.market_reference/v1#mortgage_30y_rate_level",
-        "reference_period": "2026-10-29",
+        "reference_period": "2026-11-05",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -641,14 +641,14 @@
           "value": null
         },
         "unit": "percent",
-        "value": 7.24,
+        "value": 7.18,
         "value_type": "percent"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "trailing_13w_level_change",
-        "calculation_as_of": "2026-10-29",
+        "calculation_as_of": "2026-11-05",
         "collected_at": null,
         "coverage": null,
         "definition_id": "fred.MORTGAGE30US.mortgage_30y",
@@ -659,10 +659,10 @@
         "metric_id": "mortgage_30y_rate_change_13w",
         "model_version": "housing_real_estate.compose.v1",
         "null_reason": "INSUFFICIENT_HISTORY",
-        "observed_at": "2026-10-29",
+        "observed_at": "2026-11-05",
         "owner_ref": "data/fred/MORTGAGE30US.parquet",
         "reference_id": "mastermind.market_reference/v1#mortgage_30y_rate_change_13w",
-        "reference_period": "2026-10-29",
+        "reference_period": "2026-11-05",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -677,7 +677,7 @@
           "value": null
         },
         "unit": "pct_pts",
-        "value": 0.58,
+        "value": 0.49,
         "value_type": "number"
       },
       {
@@ -1261,10 +1261,10 @@
   },
   "prior_publication": {
     "generation": {
-      "generation_id": "housing_real_estate-US-2eb087ea8b4cdce8"
+      "generation_id": "housing_real_estate-US-b69ea7da8872d8c8"
     },
     "headline": {
-      "effective_date": "2026-10-15",
+      "effective_date": "2026-10-29",
       "hysteresis": {
         "applied": false,
         "band": 0.0,
@@ -1288,7 +1288,7 @@
         "y_axis_id": null
       },
       "prior_state": {
-        "effective_date": "2026-10-08",
+        "effective_date": "2026-10-15",
         "method_version": "housing_real_estate.compose.v1",
         "state_id": null
       },
@@ -1316,7 +1316,7 @@
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "market_rate_level",
-          "calculation_as_of": "2026-10-15",
+          "calculation_as_of": "2026-10-29",
           "collected_at": null,
           "coverage": null,
           "definition_id": "fred.MORTGAGE30US.mortgage_30y",
@@ -1327,10 +1327,10 @@
           "metric_id": "mortgage_30y_rate_level",
           "model_version": "housing_real_estate.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-10-15",
+          "observed_at": "2026-10-29",
           "owner_ref": "data/fred/MORTGAGE30US.parquet",
           "reference_id": "mastermind.market_reference/v1#mortgage_30y_rate_level",
-          "reference_period": "2026-10-15",
+          "reference_period": "2026-10-29",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -1345,14 +1345,14 @@
             "value": null
           },
           "unit": "percent",
-          "value": 7.4,
+          "value": 7.24,
           "value_type": "percent"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "trailing_13w_level_change",
-          "calculation_as_of": "2026-10-15",
+          "calculation_as_of": "2026-10-29",
           "collected_at": null,
           "coverage": null,
           "definition_id": "fred.MORTGAGE30US.mortgage_30y",
@@ -1363,10 +1363,10 @@
           "metric_id": "mortgage_30y_rate_change_13w",
           "model_version": "housing_real_estate.compose.v1",
           "null_reason": "INSUFFICIENT_HISTORY",
-          "observed_at": "2026-10-15",
+          "observed_at": "2026-10-29",
           "owner_ref": "data/fred/MORTGAGE30US.parquet",
           "reference_id": "mastermind.market_reference/v1#mortgage_30y_rate_change_13w",
-          "reference_period": "2026-10-15",
+          "reference_period": "2026-10-29",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -1381,7 +1381,7 @@
             "value": null
           },
           "unit": "pct_pts",
-          "value": 0.85,
+          "value": 0.58,
           "value_type": "number"
         },
         {
@@ -1489,7 +1489,7 @@
             "value": null
           },
           "unit": "thousands_of_units_saar",
-          "value": 1400.0,
+          "value": 1398.0,
           "value_type": "number"
         },
         {
@@ -1525,7 +1525,7 @@
             "value": null
           },
           "unit": "percent",
-          "value": -3.0471,
+          "value": -3.1856,
           "value_type": "percent"
         },
         {
@@ -1562,14 +1562,14 @@
             "value": null
           },
           "unit": "thousands_of_units_saar",
-          "value": 179.0,
+          "value": 177.0,
           "value_type": "number"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "level",
-          "calculation_as_of": "2026-07-01",
+          "calculation_as_of": "2026-08-01",
           "collected_at": null,
           "coverage": null,
           "definition_id": "fred.CSUSHPISA.case_shiller_sa",
@@ -1580,10 +1580,10 @@
           "metric_id": "case_shiller_national_hpi_level",
           "model_version": "housing_real_estate.compose.v1",
           "null_reason": null,
-          "observed_at": "2026-07-01",
+          "observed_at": "2026-08-01",
           "owner_ref": "data/fred/CSUSHPISA.parquet",
           "reference_id": "mastermind.market_reference/v1#case_shiller_national_hpi_level",
-          "reference_period": "2026-07-01",
+          "reference_period": "2026-08-01",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -1598,14 +1598,14 @@
             "value": null
           },
           "unit": "index_pt_jan2000_100",
-          "value": 333.235,
+          "value": 334.227,
           "value_type": "index"
         },
         {
           "authority_ceiling": "DESCRIPTIVE",
           "available_at": null,
           "basis": "yoy_pct_change",
-          "calculation_as_of": "2026-07-01",
+          "calculation_as_of": "2026-08-01",
           "collected_at": null,
           "coverage": null,
           "definition_id": "fred.CSUSHPISA.case_shiller_sa",
@@ -1616,10 +1616,10 @@
           "metric_id": "case_shiller_national_hpi_yoy",
           "model_version": "housing_real_estate.compose.v1",
           "null_reason": "INSUFFICIENT_HISTORY",
-          "observed_at": "2026-07-01",
+          "observed_at": "2026-08-01",
           "owner_ref": "data/fred/CSUSHPISA.parquet",
           "reference_id": "mastermind.market_reference/v1#case_shiller_national_hpi_yoy",
-          "reference_period": "2026-07-01",
+          "reference_period": "2026-08-01",
           "released_at": null,
           "revised_at": null,
           "rights_state": "OPEN",
@@ -1634,7 +1634,7 @@
             "value": null
           },
           "unit": "percent",
-          "value": 1.9304,
+          "value": 2.0908,
           "value_type": "percent"
         },
         {
@@ -2074,7 +2074,7 @@
         },
         "owner_ref": "collectors.fred[MORTGAGE30US]",
         "provider": "Freddie Mac / FRED",
-        "reference_period": "2026-10-29",
+        "reference_period": "2026-11-05",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",

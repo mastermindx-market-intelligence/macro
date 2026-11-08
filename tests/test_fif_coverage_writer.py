@@ -1684,3 +1684,507 @@ def test_t17_malformed_units_levels_are_skipped_never_raise():
         },
     }
     assert w._np_alias_fact_other_accession(_ST_DEBT, only_malformed, slot) is False
+
+
+# 18. FIF A36: the writer's deep_pass mirrors the prover's component rule ---------------------
+#
+# The deep tier's rollup is the coverage prover's rule (coverage_proof.py):
+# every deep component cell the frozen thresholds config requires must be
+# present, with a not_applicable specialist pack still passing, and
+# deep_pass_strict additionally fails on any component cell the prover counts
+# as labelled.  All fixtures are synthetic; the parity test runs the real
+# prover on the writer's own output.
+
+
+DEEP_METRIC_IDS = ("dm1", "dm2")
+DEEP_CONFIG = ROOT / "config" / "fundamental_forensics" / "coverage" / "c2_thresholds_v1.json"
+
+
+def _deep_cell(cik, period_id, field_id, status="present", **extra):
+    cell = {
+        "cik": cik,
+        "period_id": period_id,
+        "field_id": field_id,
+        "status": status,
+        "reason_code": "present" if status == "present" else status,
+        "source_generation_id": "synthetic-deep-gen",
+    }
+    cell.update(extra)
+    return cell
+
+
+def _all_present_deep_cells(cik, metric_ids=DEEP_METRIC_IDS):
+    """A deep issuer whose deep metric window and every component cell pass."""
+    cells = [
+        _deep_cell(cik, period_id, f"metric:{metric_id}")
+        for period_id in w.DEEP_WINDOW_SLOTS
+        for metric_id in metric_ids
+    ]
+    return cells + [
+        _deep_cell(cik, period_id, field_id)
+        for period_id, field_id, _allows_na in w.DEEP_COMPONENT_SPECS
+    ]
+
+
+def _deep_triples(cells, strict=False):
+    """The issuer's (period_id, field_id, status) triples on one basis."""
+    return [
+        (
+            str(cell.get("period_id", "")),
+            str(cell.get("field_id", "")),
+            w._strict_status(cell) if strict else str(cell.get("status", "")),
+        )
+        for cell in cells
+    ]
+
+
+def _deep_verdict(cells, metric_ids=DEEP_METRIC_IDS):
+    """(deep_pass, deep_pass_strict) exactly as rewrite_manifest computes them."""
+    deep_scope_labelled = w._scope_labelled_na_metric_keys(cells, w.DEEP_WINDOW_SLOTS)
+    return (
+        w._deep_pass(_deep_triples(cells), "deep", metric_ids),
+        w._deep_pass(
+            _deep_triples(cells, strict=True),
+            "deep",
+            metric_ids,
+            w._labelled_deep_component_keys(cells),
+        )
+        and not deep_scope_labelled,
+    )
+
+
+def _drop_deep_cell(cells, period_id, field_id):
+    return [
+        cell
+        for cell in cells
+        if not (cell["period_id"] == period_id and cell["field_id"] == field_id)
+    ]
+
+
+def test_deep_pass_mirrors_prover_component_specs():
+    if not DEEP_CONFIG.is_file():
+        pytest.skip("frozen thresholds config absent")
+    deep = json.loads(DEEP_CONFIG.read_text())["tiers"]["deep"]
+    # The writer's constants restate tiers.deep field by field.
+    assert w.DEEP_WINDOW_SLOTS == tuple(deep["periods"])
+    assert w.DEEP_PACKAGE_ROLES == tuple(deep["required_package_roles"])
+    assert w.DEEP_STATEMENTS == tuple(deep["required_statements"])
+    assert w.DEEP_SPECIALIST_PACKS == tuple(deep["specialist_packs"])
+    assert w.DEEP_REQUIRE_PACKET is deep["require_packet"]
+    assert w.DEEP_REQUIRE_JOURNEY is deep["require_journey"]
+    # And the component list is the prover's, in its order.
+    expected = []
+    for period in deep["periods"]:
+        for role in deep["required_package_roles"]:
+            expected.append((period, f"package:{role}", False))
+        for kind in deep["required_statements"]:
+            expected.append((period, f"statement:{kind}", False))
+    for pack in deep["specialist_packs"]:
+        expected.append((w.WILDCARD_PERIOD, f"specialist:{pack}", True))
+    if deep["require_packet"]:
+        expected.append((w.WILDCARD_PERIOD, "packet", False))
+    if deep["require_journey"]:
+        expected.append((w.WILDCARD_PERIOD, "journey", False))
+    assert w.DEEP_COMPONENT_SPECS == tuple(expected)
+
+
+def test_deep_pass_true_when_all_components_present():
+    cells = _all_present_deep_cells(_cik(1))
+    assert w._window_pass(
+        _deep_triples(cells), "deep", w.DEEP_WINDOW_SLOTS, list(DEEP_METRIC_IDS)
+    ) is True
+    assert _deep_verdict(cells) == (True, True)
+
+
+def test_deep_pass_specialist_not_applicable_passes_but_class_policy_is_not_strict():
+    def specialist_with_basis(na_basis):
+        cells = _all_present_deep_cells(_cik(1))
+        for cell in cells:
+            if cell["field_id"] == "specialist:PK01":
+                cell["status"] = "not_applicable"
+                cell["reason_code"] = "not_applicable"
+                cell["na_basis"] = na_basis
+        return cells
+
+    # The kernel's own N/A keeps the issuer strict.
+    assert _deep_verdict(specialist_with_basis("kernel")) == (True, True)
+    # A class-policy N/A still passes deep but is labelled, never strict.
+    assert _deep_verdict(specialist_with_basis("class_policy")) == (True, False)
+
+
+@pytest.mark.parametrize(
+    "mutate",
+    [
+        pytest.param(lambda cells: _drop_deep_cell(cells, "A2", "package:label"), id="package-role"),
+        pytest.param(lambda cells: _drop_deep_cell(cells, "I1", "statement:cash_flow"), id="statement"),
+        pytest.param(lambda cells: _drop_deep_cell(cells, "*", "specialist:PK12"), id="specialist"),
+        pytest.param(lambda cells: _drop_deep_cell(cells, "*", "packet"), id="packet"),
+        pytest.param(lambda cells: _drop_deep_cell(cells, "*", "journey"), id="journey"),
+        pytest.param(
+            lambda cells: [
+                {**cell, "status": "not_applicable", "reason_code": "not_applicable"}
+                if cell["period_id"] == "A1" and cell["field_id"] == "statement:income_statement"
+                else cell
+                for cell in cells
+            ],
+            id="not-applicable-statement",
+        ),
+    ],
+)
+def test_deep_pass_fails_on_each_missing_component_family(mutate):
+    cells = mutate(_all_present_deep_cells(_cik(1)))
+    assert _deep_verdict(cells) == (False, False)
+
+
+def test_deep_pass_core_tier_never_passes_deep():
+    cells = _all_present_deep_cells(_cik(1))
+    assert w._deep_pass(_deep_triples(cells), "core", list(DEEP_METRIC_IDS)) is False
+    assert (
+        w._deep_pass(_deep_triples(cells, strict=True), "core", list(DEEP_METRIC_IDS), frozenset())
+        is False
+    )
+
+
+def test_deep_pass_legacy_package_alias_indexed_like_prover():
+    cik = _cik(1)
+    dotted = [
+        {**cell, "field_id": "package." + cell["field_id"][len("package:"):]}
+        if cell["field_id"].startswith("package:")
+        else cell
+        for cell in _all_present_deep_cells(cik)
+    ]
+    # The legacy package.<role> spelling counts as package:<role>.
+    assert _deep_verdict(dotted) == (True, True)
+    # A dotted role outside the alias roles matches no component spec.
+    assert w._canonical_deep_component_field("package.notarole") == "package.notarole"
+
+    # Both spellings for one (period, role): the later cell in manifest order
+    # wins, mirroring the prover's index write order (the prover itself
+    # refuses the duplicate outright).
+    canonical_absent = _deep_cell(cik, "A1", "package:primary", "absent", reason_code="absent")
+    dotted_present = _deep_cell(cik, "A1", "package.primary")
+    absent_first = [
+        {**cell, "status": "absent", "reason_code": "absent"}
+        if cell["period_id"] == "A1" and cell["field_id"] == "package:primary"
+        else cell
+        for cell in _all_present_deep_cells(cik)
+    ]
+    assert _deep_verdict(dotted + [canonical_absent]) == (False, False)
+    assert _deep_verdict(absent_first + [dotted_present]) == (True, True)
+
+
+def test_deep_pass_present_labelled_component_not_strict():
+    cells = _all_present_deep_cells(_cik(1))
+    for cell in cells:
+        if cell["period_id"] == "A1" and cell["field_id"] == "statement:balance_sheet":
+            cell["qualifier"] = "cover_date_as_of"
+            cell["qualifier_policy"] = "fif.synthetic/1.0.0"
+    # A labelled present component is present for deep_pass and never strict.
+    assert _deep_verdict(cells) == (True, False)
+
+
+def test_deep_rollup_matches_prover():
+    """The writer's rewrite_manifest output is accepted by the real prover.
+
+    Three synthetic deep issuers — all-present, a class-policy N/A specialist
+    and one missing statement — flow through rewrite_manifest (no slots and no
+    facts, so every cell is preserved verbatim and only the rollups are
+    recomputed) and the output is proved by coverage_proof.prove_coverage
+    under the frozen thresholds and the governed catalog.  The prover reports
+    no rollup_mismatch blocker and agrees on deep_pass per issuer; its
+    per-issuer ``complete_strict`` (deep_strict for a deep member) agrees on
+    the strict verdict.
+    """
+    from datetime import datetime, timezone
+
+    proof = pytest.importorskip("engine.fundamental_forensics.coverage_proof")
+    cm = pytest.importorskip("engine.fundamental_forensics.coverage_manifest")
+    if not (
+        cm.DEFAULT_THRESHOLDS.is_file()
+        and cm.DEFAULT_CATALOG.is_file()
+        and cm.DEFAULT_FORMULAS.is_file()
+    ):
+        pytest.skip("frozen coverage config absent")
+    thresholds = proof.load_thresholds(cm.DEFAULT_THRESHOLDS)
+    direct, formula = proof.load_metric_sets(cm.DEFAULT_CATALOG, cm.DEFAULT_FORMULAS, thresholds)
+    metric_ids = sorted(direct + formula)
+    specs = {metric_id: _spec(metric_id) for metric_id in metric_ids}
+
+    all_present = _all_present_deep_cells(_cik(1), metric_ids)
+    class_policy = [
+        (
+            {
+                **cell,
+                "status": "not_applicable",
+                "reason_code": "not_applicable",
+                "na_basis": "class_policy",
+            }
+            if cell["field_id"] == "specialist:PK07"
+            else cell
+        )
+        for cell in _all_present_deep_cells(_cik(2), metric_ids)
+    ]
+    missing_statement = _drop_deep_cell(
+        _all_present_deep_cells(_cik(3), metric_ids), "A2", "statement:cash_flow"
+    )
+    identity = dict(thresholds.census_identity)
+    generation = identity["source_generation_id"]
+    for cell in (*all_present, *class_policy, *missing_statement):
+        cell["source_generation_id"] = generation
+    base = {
+        "schema": cm.MANIFEST_SCHEMA,
+        "source_generation_id": generation,
+        "cutoff_at": identity["cutoff_at"],
+        "recorded_at": "2026-11-02T00:00:00Z",
+        "draft": False,
+        "attested": True,
+        # A well-formed declaration the thresholds' pin accepts, so the only
+        # remaining blockers are the synthetic target shortfalls.
+        "manifest_draft_sha256": identity["manifest_draft_sha256_prefix"] + "0" * 44,
+        "cells": [*all_present, *class_policy, *missing_statement],
+        "issuers": [{"cik": _cik(i), "tier_assigned": "deep"} for i in (1, 2, 3)],
+    }
+    provenance = {"mapping_rule_ids": [], "catalog_version": "synthetic",
+                  "mapping_pack_version": "synthetic", "base_manifest_sha256": "0" * 64}
+    manifest, _counts = w.rewrite_manifest(
+        base, [], (lambda cik: None), specs, "2026-11-02T00:00:00Z", provenance
+    )
+
+    report = proof.prove_coverage(
+        w.dump_manifest(manifest),
+        thresholds,
+        direct,
+        formula,
+        proved_at=datetime(2026, 11, 2, tzinfo=timezone.utc),
+    )
+    assert report["manifest_rollup_mismatch"] == []
+    assert "rollup_mismatch" not in report["acceptance_blockers"]
+    assert report["orphan_cells"] == 0
+    assert report["tiers"]["deep"]["component_labelled"] == 1
+
+    writer_issuers = {issuer["cik"]: issuer for issuer in manifest["issuers"]}
+    proof_issuers = {entry["cik"]: entry for entry in report["issuers"]}
+    expected = {_cik(1): (True, True), _cik(2): (True, False), _cik(3): (False, False)}
+    for cik, (deep_pass, deep_pass_strict) in expected.items():
+        assert writer_issuers[cik]["deep_pass"] is deep_pass
+        assert writer_issuers[cik]["deep_pass_strict"] is deep_pass_strict
+        assert proof_issuers[cik]["deep_pass"] is deep_pass
+        assert proof_issuers[cik]["complete_strict"] is deep_pass_strict
+
+
+# The A36 deep fix (2026-11-02): the strict rollups mirror the prover's
+# scope-label rule — a not_applicable metric cell inside the tier's metric
+# window whose na_basis is neither absent nor kernel fails that tier's strict
+# pass, while every any-basis output is untouched.
+
+
+def _scope_na_mutated(cells, period_id, metric_id, na_basis):
+    """The fixture with one metric cell turned not_applicable on ``na_basis``."""
+    out = []
+    for cell in cells:
+        if cell["period_id"] == period_id and cell["field_id"] == f"metric:{metric_id}":
+            cell = {
+                **cell,
+                "status": "not_applicable",
+                "reason_code": "not_applicable",
+                "na_basis": na_basis,
+            }
+        out.append(cell)
+    return out
+
+
+def _all_present_core_cells(cik, metric_ids=DEEP_METRIC_IDS):
+    """A core issuer whose core metric window passes; no deep components,
+    which would be orphans for a core member."""
+    return [
+        _deep_cell(cik, period_id, f"metric:{metric_id}")
+        for period_id in w.CORE_WINDOW_SLOTS
+        for metric_id in metric_ids
+    ]
+
+
+def _rewrite_issuers(cells, tiers_by_cik, specs):
+    """rewrite_manifest's issuer rollups for a synthetic cell fixture (no
+    slots and no facts: every cell is preserved verbatim and only the
+    rollups are recomputed)."""
+    base = {
+        "cells": cells,
+        "issuers": [
+            {"cik": cik, "tier_assigned": tier} for cik, tier in tiers_by_cik.items()
+        ],
+    }
+    manifest, _counts = w.rewrite_manifest(
+        base, [], (lambda cik: None), specs, "2026-11-02T00:00:00Z", {}
+    )
+    return {issuer["cik"]: issuer for issuer in manifest["issuers"]}
+
+
+def _deep_specs():
+    return {metric_id: _spec(metric_id) for metric_id in DEEP_METRIC_IDS}
+
+
+@pytest.mark.parametrize("na_basis", ["class_policy", "not_presented_item"])
+def test_deep_strict_fails_on_scope_labelled_na_metric(na_basis):
+    cik = _cik(1)
+    # One deep-window metric cell (A2, outside the core window) is N/A on a
+    # non-kernel basis; every component stays present.
+    cells = _scope_na_mutated(
+        _all_present_deep_cells(cik), "A2", DEEP_METRIC_IDS[0], na_basis
+    )
+    (issuer,) = _rewrite_issuers(cells, {cik: "deep"}, _deep_specs()).values()
+    # The N/A cell leaves the applicable denominator, so every any-basis
+    # output still passes — including the core window, which never sees A2.
+    assert issuer["deep_pass"] is True
+    assert issuer["core_pass"] is True and issuer["core_pass_strict"] is True
+    assert issuer["na_cells"] == 1
+    # Only the deep strict verdict fails: the scope cell is labelled.
+    assert issuer["deep_pass_strict"] is False
+
+
+def test_deep_strict_kernel_na_metric_stays_strict():
+    cik = _cik(1)
+    cells = _scope_na_mutated(
+        _all_present_deep_cells(cik), "A2", DEEP_METRIC_IDS[0], "kernel"
+    )
+    (issuer,) = _rewrite_issuers(cells, {cik: "deep"}, _deep_specs()).values()
+    # The kernel's own N/A is not a scope label.
+    assert issuer["deep_pass"] is True and issuer["deep_pass_strict"] is True
+    assert issuer["na_cells"] == 1
+
+
+@pytest.mark.parametrize("na_basis", ["class_policy", "not_presented_item"])
+def test_core_strict_fails_on_scope_labelled_na_metric(na_basis):
+    cik = _cik(2)
+    # A core-window metric cell (A1) is N/A on a non-kernel basis.
+    cells = _scope_na_mutated(
+        _all_present_core_cells(cik), "A1", DEEP_METRIC_IDS[0], na_basis
+    )
+    (issuer,) = _rewrite_issuers(cells, {cik: "core"}, _deep_specs()).values()
+    assert issuer["core_pass"] is True
+    assert issuer["core_pass_strict"] is False
+    assert issuer["na_cells"] == 1
+    # A core-tier issuer never passes deep on either basis.
+    assert issuer["deep_pass"] is False and issuer["deep_pass_strict"] is False
+
+
+def test_strict_rollups_match_prover_complete_strict():
+    """The writer's strict rollups equal the prover's per-issuer strict verdicts.
+
+    Five synthetic issuers — deep all-present; deep with a class_policy N/A
+    metric; deep with a not_presented_item N/A metric; core with a
+    class_policy N/A metric; core clean — flow through rewrite_manifest and
+    the output is proved by the real prover under the frozen thresholds and
+    the governed catalog.  The prover reports no rollup_mismatch blocker, and
+    for every issuer the writer's deep_pass_strict equals the prover's
+    complete_strict (deep issuers) and core_pass_strict equals core_strict.
+    """
+    from datetime import datetime, timezone
+
+    proof = pytest.importorskip("engine.fundamental_forensics.coverage_proof")
+    cm = pytest.importorskip("engine.fundamental_forensics.coverage_manifest")
+    if not (
+        cm.DEFAULT_THRESHOLDS.is_file()
+        and cm.DEFAULT_CATALOG.is_file()
+        and cm.DEFAULT_FORMULAS.is_file()
+    ):
+        pytest.skip("frozen coverage config absent")
+    thresholds = proof.load_thresholds(cm.DEFAULT_THRESHOLDS)
+    direct, formula = proof.load_metric_sets(cm.DEFAULT_CATALOG, cm.DEFAULT_FORMULAS, thresholds)
+    metric_ids = sorted(direct + formula)
+    specs = {metric_id: _spec(metric_id) for metric_id in metric_ids}
+    na_metric = metric_ids[0]
+
+    deep_all_present = _all_present_deep_cells(_cik(1), metric_ids)
+    deep_class_policy = _scope_na_mutated(
+        _all_present_deep_cells(_cik(2), metric_ids), "A2", na_metric, "class_policy"
+    )
+    deep_not_presented = _scope_na_mutated(
+        _all_present_deep_cells(_cik(3), metric_ids), "I2", na_metric, "not_presented_item"
+    )
+    core_class_policy = _scope_na_mutated(
+        _all_present_core_cells(_cik(4), metric_ids), "A1", na_metric, "class_policy"
+    )
+    core_clean = _all_present_core_cells(_cik(5), metric_ids)
+    tiers_by_cik = {
+        _cik(1): "deep",
+        _cik(2): "deep",
+        _cik(3): "deep",
+        _cik(4): "core",
+        _cik(5): "core",
+    }
+
+    identity = dict(thresholds.census_identity)
+    generation = identity["source_generation_id"]
+    cells = [
+        *deep_all_present,
+        *deep_class_policy,
+        *deep_not_presented,
+        *core_class_policy,
+        *core_clean,
+    ]
+    for cell in cells:
+        cell["source_generation_id"] = generation
+    base = {
+        "schema": cm.MANIFEST_SCHEMA,
+        "source_generation_id": generation,
+        "cutoff_at": identity["cutoff_at"],
+        "recorded_at": "2026-11-02T00:00:00Z",
+        "draft": False,
+        "attested": True,
+        # A well-formed declaration the thresholds' pin accepts, so the only
+        # remaining blockers are the synthetic target shortfalls.
+        "manifest_draft_sha256": identity["manifest_draft_sha256_prefix"] + "0" * 44,
+        "cells": cells,
+        "issuers": [
+            {"cik": cik, "tier_assigned": tier} for cik, tier in tiers_by_cik.items()
+        ],
+    }
+    provenance = {"mapping_rule_ids": [], "catalog_version": "synthetic",
+                  "mapping_pack_version": "synthetic", "base_manifest_sha256": "0" * 64}
+    manifest, _counts = w.rewrite_manifest(
+        base, [], (lambda cik: None), specs, "2026-11-02T00:00:00Z", provenance
+    )
+
+    report = proof.prove_coverage(
+        w.dump_manifest(manifest),
+        thresholds,
+        direct,
+        formula,
+        proved_at=datetime(2026, 11, 2, tzinfo=timezone.utc),
+    )
+    assert report["manifest_rollup_mismatch"] == []
+    assert "rollup_mismatch" not in report["acceptance_blockers"]
+    assert report["orphan_cells"] == 0
+
+    writer_issuers = {issuer["cik"]: issuer for issuer in manifest["issuers"]}
+    proof_issuers = {entry["cik"]: entry for entry in report["issuers"]}
+    # (deep_pass_strict, core_pass_strict, complete_strict) per issuer; the
+    # deep N/A cells sit outside the core window, so only issuer 4's core
+    # strict verdict fails.  complete_strict is the prover's own-scope strict
+    # verdict: deep_strict for a deep member, core_strict for a core member.
+    expected = {
+        _cik(1): (True, True, True),
+        _cik(2): (False, True, False),
+        _cik(3): (False, True, False),
+        _cik(4): (None, False, False),
+        _cik(5): (None, True, True),
+    }
+    for cik, (deep_pass_strict, core_pass_strict, complete_strict) in expected.items():
+        writer = writer_issuers[cik]
+        proof_entry = proof_issuers[cik]
+        assert writer["core_pass_strict"] is core_pass_strict
+        assert proof_entry["complete_strict"] is complete_strict
+        if tiers_by_cik[cik] == "deep":
+            assert writer["deep_pass_strict"] is deep_pass_strict
+    # The prover's per-issuer core_strict rides in the report only as the
+    # core tier's aggregate over every member (deep members included), so the
+    # counts and the core-scope label totals pin it alongside the per-issuer
+    # values above: the deep N/A cells are na_class 1 + na_not_presented 1
+    # over the deep window and never enter a core scope.
+    assert report["tiers"]["deep"]["complete_strict"] == 1
+    assert report["tiers"]["deep"]["fields"]["na_class"] == 1
+    assert report["tiers"]["deep"]["fields"]["na_not_presented"] == 1
+    assert report["tiers"]["core"]["complete_strict"] == 4
+    assert report["tiers"]["core"]["fields"]["na_class"] == 1
+    assert report["tiers"]["core"]["fields"]["na_not_presented"] == 0
+    assert report["incomplete_issuers"] == {"deep": [], "core": []}

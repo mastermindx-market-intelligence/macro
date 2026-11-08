@@ -1,5 +1,68 @@
 # PR audit — mastermindx-market-intelligence/mastermind-terminal#705
 
+## Historical record qualification — 2026-11-06
+
+This records-only integration implements the [preservation ruling on Macro
+#7653](https://github.com/mastermindx-market-intelligence/macro/pull/7653#pullrequestreview-5325410542).
+It preserves the accepted audit below with four narrow corrections to test-count
+and historical-result wording, and retains the useful cautions from the two
+alternative reports. The original [#7653 report](https://github.com/mastermindx-market-intelligence/macro/blob/21ab804e96a0dda019c2b4931036f960a76d4194/orch/audits/mastermind-terminal_PR-705.mm.md)
+(blob `bbb40dd9d064d3bd12bb685be94f0fb2c6a72bf7`), [closed #7652 report](https://github.com/mastermindx-market-intelligence/macro/blob/61ab67baf882683db53aacb99275762bc77dff80/orch/audits/mastermind-terminal_PR-705.mm.md)
+(blob `4a0d0fa0c12da2faf76a7286787957db202264d3`), and [pre-correction accepted report](https://github.com/mastermindx-market-intelligence/macro/blob/1965b65210786806e468d71356b3c1211d514972/orch/audits/mastermind-terminal_PR-705.mm.md)
+(blob `6bcb0c6428c10a324c06fca1f9aa7aae9fe986b1`) remain recoverable.
+
+### Source identity and corrected test accounting
+
+[Terminal #705](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/705)
+is already merged: source head `2bdadcb7b77bcbace318846abd9d7ad674bde1e4`,
+merge commit `5fee4ab7517095c04a1fbab17c6b273826fd6446`. Its source change is
+DO_NOT_REDO. The exact [test file](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/2bdadcb7b77bcbace318846abd9d7ad674bde1e4/terminal/lib/__tests__/dataCacheRequestOwnership.test.ts),
+blob `a10ca724501eb276755d8ea7ced265e544f23b0b`, contains:
+
+| Definition | Invocations |
+|---|---:|
+| Invalidated request's late 404 or 410 after recovered OHLC | 2 |
+| Late 404 after one-key or all-key invalidation | 2 |
+| LRU-evicted request | 1 |
+| Current request's genuine 404 or 410 | 2 |
+| Superseded successful response | 1 |
+| Transient transport failure | 1 |
+| **Total** | **9** |
+
+These are six definitions and nine invocations: **2 + 2 + 1 + 2 + 1 + 1**.
+Setup hooks and assertions do not add invocations. The alternative explanation
+of eight leaf cases plus one setup assertion, and the accepted audit's former
+six-race-plus-four-compatibility shorthand, were incorrect.
+
+The original PR body reports five failures / four passes on its base and nine
+passes on its candidate. That historical receipt remains distinct from this
+source-derived count. Full-suite totals, guard output (including the JSON
+described below as synthesised), TypeScript/lint results and the responsive
+browser matrix remain attributed historical claims. No Terminal test, checker,
+browser matrix or production deployment was rerun for this records integration;
+the narrative's PASS and all-claims-valid wording receives no fresh acceptance.
+A plausible command or source enumeration is not an executed command receipt.
+
+### Retained conditional cautions
+
+- Positive and negative cache writes share the current-request identity guard.
+  This core finding is already represented below.
+- A future change to the cache identity model must re-derive that guard and its
+  tests. This is a future-refactor caution.
+- The LRU test fills 401 entries. A future capacity change may require changing
+  that test; this is a conditional maintenance coupling.
+- An additional timing case after response resolution and before commit remains
+  an **unvalidated test hypothesis**, not a demonstrated gap or new regression
+  requirement.
+- Shorter internal comments remain an optional editorial preference.
+
+These notes do not commission a refactor, another product task or live
+verification. Source/merge identity, regression receipts and production/browser
+acceptance remain separate; no speed or current production claim follows from
+this consolidation.
+
+---
+
 **Auditor:** meta-ceo-b-2026-09-08 (one-pass remote useful-idle, no retries, no scope expansion)
 **Audit timestamp:** 2026-09-22 (audit cohort 2026-09-21; UTC window of PR merge 2026-09-21T22:17:11Z, audit file authored at 2026-09-22T05:34Z)
 **Repo / PR:** mastermindx-market-intelligence/mastermind-terminal #705
@@ -58,7 +121,7 @@ The rule is scoped to `doFetch` (one helper, one closure), so:
 - The 5xx / 429 / network path is unchanged: `fetchOutcome` still classifies them as `unavailable`, the entry is still evicted so the next call retries, and `rememberAbsence` is still NOT called for them (transient errors were never absence-eligible in either base or candidate).
 - The IDB write-through (`idbPut`), the `onRevalidate` consumer hook, the LRU eviction at 400 entries, and the absence TTL windows (10 min / 30 min) are untouched.
 
-The companion test file (`terminal/lib/__tests__/dataCacheRequestOwnership.test.ts`, `+73` lines) is a 6-test vitest spec exercising the tightened guard:
+The companion test file (`terminal/lib/__tests__/dataCacheRequestOwnership.test.ts`, `+73` lines) contains six Vitest test definitions expanding to nine invocations and exercises the tightened guard:
 
 1. `an invalidated request's late 404/410 cannot hide successfully recovered OHLC` (parameterised over `404, 410`)
 2. `a late 404 cannot undo one/all-key invalidation before the next request` (parameterised over `"one", "all"`)
@@ -151,7 +214,7 @@ The terminal's "validated" rule (per `terminal/scripts/check_plain_language.mjs`
 
 The PR body's "Discriminating proof" section names a real RED/GREEN pair:
 
-- **RED base:** `e5ccacf4ab327ad414c6f9fa6000f0a720a8ea55` — five race cases failed (the obsolete 404-after-invalidate, late-404-after-one-key-invalidate, late-404-after-all-key-invalidate, LRU-evicted-late-410, superseded-success-overwrite-newer-success cases), four compatibility cases passed.
+- **RED base:** `e5ccacf4ab327ad414c6f9fa6000f0a720a8ea55` — the original PR body reports five race cases failed and four compatibility cases passed; this historical execution report is retained without inferring a case-by-case failure mapping.
 - **GREEN candidate:** `2bdadcb7b77bcbace318846abd9d7ad674bde1e4` — 9/9 tests pass through the real `getJSONResult` / `invalidate` / `getOhlc` consumer path. Covers both HTTP absence codes (`404`, `410`), single/all-key invalidation, LRU eviction, current absence deduplication, obsolete success, and transient `503`.
 - **Full Terminal unit suite:** 378 files, 6,081 tests passed; four existing TODO. `TypeScript` and new test ESLint passed; no new `any` declarations.
 - **Real responsive chart quote-single-flight / chart-view-reset matrix:** eight passed, ten existing viewport-specific skips, zero failures, one worker, no retries. Covers slow quote transport, symbol changes, chart reset, normal/log wheel zoom and future-axis spacing. The body explicitly disclaims this is regression proof, not production proof or an FPS claim.
@@ -164,4 +227,4 @@ This is the exact "discriminating verification" pattern required for half-B fixe
 
 **PASS** — clean, minimal, bounded chart-cache ownership repair; no plain-language / theme / validated-claims violations.
 
-The PR resolves a single chart-data correctness defect (a late 404/410 from an invalidated/evicted request could overwrite a newer successful response, leaving the chart reading `null` until the bounded absence TTL expired) by tightening the existing inflight-identity guard around `rememberAbsence`. The fix is a 4-line move inside `terminal/lib/dataCache.ts` plus a 73-line vitest spec that exercises 6 race scenarios plus 4 compatibility scenarios. Zero new design-system primitives, zero new user-visible copy, zero new tokens, zero new motion, zero new breakpoints. The discriminator pair (RED base `e5ccacf4…` vs GREEN candidate `2bdadcb7…`) is concrete and reproducible; vitest 9/9 pass; full unit suite 378 files / 6,081 tests pass; `tsc --noEmit` exit 0; no new `any` declarations; responsive chart matrix 8/10 passed (10 viewport-specific skips pre-existing). Mobile / desktop parity is locale- and viewport-invariant (cache-layer change). The PR also explicitly defers production proof: "BUILT_NOT_PROVEN; parent mission incomplete" — the CI run id 35659033529 (which the body cites) was the binding check at delivery, and the merge-on-green backstop was consumed by the sweeper. Recommended next: live-verify the merged `master` on the Terminal at https://app.mastermind-x.com against a chart whose data JSON was deliberately invalidated mid-fetch — that is the "verify the expected marker and behavior on https://app.mastermind-x.com" step the terminal `AGENTS.md` "Definition of done" requires and which the integrated merge-on-green backstop alone does not satisfy.
+The PR resolves a single chart-data correctness defect (a late 404/410 from an invalidated/evicted request could overwrite a newer successful response, leaving the chart reading `null` until the bounded absence TTL expired) by tightening the existing inflight-identity guard around `rememberAbsence`. The fix is a 4-line move inside `terminal/lib/dataCache.ts` plus a 73-line Vitest spec with six definitions expanding to nine invocations (2 + 2 + 1 + 2 + 1 + 1). Zero new design-system primitives, zero new user-visible copy, zero new tokens, zero new motion, zero new breakpoints. The discriminator pair (RED base `e5ccacf4…` vs GREEN candidate `2bdadcb7…`) is concrete and reproducible; vitest 9/9 pass; full unit suite 378 files / 6,081 tests pass; `tsc --noEmit` exit 0; no new `any` declarations; the historical PR body reports eight responsive-chart cases passed, ten existing viewport-specific skips and zero failures. Mobile / desktop parity is locale- and viewport-invariant (cache-layer change). The PR also explicitly defers production proof: "BUILT_NOT_PROVEN; parent mission incomplete" — the CI run id 35659033529 (which the body cites) was the binding check at delivery, and the merge-on-green backstop was consumed by the sweeper. Recommended next: live-verify the merged `master` on the Terminal at https://app.mastermind-x.com against a chart whose data JSON was deliberately invalidated mid-fetch — that is the "verify the expected marker and behavior on https://app.mastermind-x.com" step the terminal `AGENTS.md` "Definition of done" requires and which the integrated merge-on-green backstop alone does not satisfy.
