@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Expectation Surface — motion reference</title>
+<style>
+:root{color-scheme:dark;--bg:#0f1115;--panel:#181b21;--panel2:#1e222a;--ink:#d7dce3;--muted:#9ca5b3;--line:#3a4150;--link:#8db7ee;--series:#5b9bf0;--warn:#e0a030;--r:12px;--fast:160ms;--change:200ms}
+html[data-theme=light]{color-scheme:light;--bg:#f7f8fa;--panel:#fff;--panel2:#eef1f6;--ink:#1c2430;--muted:#536176;--line:#c9ccd1;--link:#2758e6;--series:#386fce;--warn:#7d5922}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 Inter,system-ui,sans-serif}button,input{font:inherit}button{cursor:pointer;border:1px solid var(--line);border-radius:8px;background:transparent;color:var(--ink);min-height:44px;padding:10px 16px;transition:background var(--fast),border-color var(--fast)}button:hover{background:var(--panel2)}button:focus-visible,input:focus-visible,a:focus-visible{outline:2px solid var(--link);outline-offset:3px}button[aria-pressed=true]{background:var(--panel2);border-color:var(--link)}button:disabled{cursor:default;opacity:.55}a{color:var(--link)}.wrap{max-width:1200px;margin:auto;padding:28px 36px 56px}header{display:flex;align-items:center;justify-content:space-between;gap:16px;border-bottom:1px solid var(--line);padding-bottom:24px}.brand{font-size:13px;letter-spacing:.11em;font-weight:650}.brand span{color:var(--muted);font-weight:400;letter-spacing:0}.intro{padding:42px 0 30px;max-width:850px}.eyebrow{font-size:12px;letter-spacing:.13em;text-transform:uppercase;color:var(--link);font-weight:600}h1{font-size:clamp(30px,4vw,48px);line-height:1.1;letter-spacing:-.045em;margin:12px 0 16px;font-weight:620}.intro p{color:var(--muted);font-size:17px;max-width:690px;margin:0}.fixture{display:inline-flex;gap:8px;align-items:center;font-size:12px;border:1px solid var(--line);border-radius:6px;padding:5px 9px;color:var(--muted);margin-top:20px}.workbench{display:grid;grid-template-columns:260px minmax(0,1fr);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;background:var(--panel)}aside{border-right:1px solid var(--line);padding:24px;background:var(--bg)}h2{font-size:18px;letter-spacing:-.02em;margin:0 0 8px}.muted{color:var(--muted)}.small{font-size:12px}.choices{display:flex;flex-direction:column;gap:10px;margin-top:24px}.choice{display:flex;align-items:center;justify-content:space-between;text-align:left;width:100%;padding:13px 14px}.choice strong{font-size:16px}.choice span{display:block;color:var(--muted);font-size:12px;font-weight:400}.arrow{color:var(--link)}.tools{border-top:1px solid var(--line);margin-top:28px;padding-top:20px;display:flex;flex-direction:column;gap:14px}.check{display:flex;align-items:center;gap:10px;font-size:13px;cursor:pointer;min-height:44px}input{accent-color:var(--link);width:16px;height:16px}.tools button{font-size:13px}.panel{padding:26px 30px 30px;min-width:0}.panel-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}.stamp{color:var(--muted);font-size:12px}.current-title{font-size:25px;font-weight:620;letter-spacing:-.03em;margin:2px 0 3px}.context{font-size:13px;color:var(--muted)}.status{border-bottom:1px solid var(--line);min-height:58px;padding:16px 0 14px;margin-bottom:22px;font-size:13px;color:var(--muted);display:flex;align-items:center;gap:9px}.status[data-kind=loading]{color:var(--link)}.status[data-kind=error]{color:var(--warn)}.status svg{flex-shrink:0}.pair{display:flex;gap:36px;align-items:baseline}.value{font-size:42px;line-height:1.1;font-weight:600;letter-spacing:-.045em;font-variant-numeric:tabular-nums}.prior{font-size:21px;font-variant-numeric:tabular-nums;color:var(--muted)}.label{display:block;font-size:12px;color:var(--muted);margin-bottom:7px}.metric{font-size:12px;color:var(--muted);margin:12px 0 0}.plot{height:220px;margin-top:18px}.plot svg{width:100%;height:100%;overflow:visible}.axis{stroke:var(--line);stroke-width:1}.path{stroke:var(--series);stroke-width:2.5;fill:none;stroke-linecap:round}.dot{fill:var(--series)}.axis-label{fill:var(--muted);font-size:12px;font-family:Inter,system-ui,sans-serif}.figure-caption{color:var(--muted);font-size:12px;margin-top:10px}.table-view{min-height:220px;margin-top:18px;display:flex;flex-direction:column;justify-content:center;gap:0}.number-row{padding:18px 0;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:24px}.number-row strong{font-variant-numeric:tabular-nums}.actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:22px}.actions button{font-size:13px}.receipt{font-size:12px;color:var(--muted);margin-top:22px;display:flex;gap:14px;flex-wrap:wrap}.receipt code{color:var(--ink)}.notes{display:grid;grid-template-columns:repeat(3,1fr);gap:32px;padding-top:30px}.notes h3{font-size:14px;margin:0 0 7px}.notes p{font-size:13px;color:var(--muted);margin:0}.step{font-size:11px;letter-spacing:.1em;color:var(--link);display:block;margin-bottom:8px}.settle{animation:settle var(--change) ease-out}@keyframes settle{from{opacity:.45;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}html[data-reduced=true] *{animation:none!important;transition:none!important}dialog{background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:14px;max-width:540px;width:calc(100% - 32px);padding:28px}dialog::backdrop{background:rgb(0 0 0 / .58)}dialog h2{font-size:24px}dialog p{color:var(--muted);line-height:1.65}dialog .dialog-head{display:flex;justify-content:space-between;gap:16px}dialog .dialog-head button{min-width:44px;padding:8px}.hidden,[hidden]{display:none!important}footer{margin-top:36px;padding-top:20px;border-top:1px solid var(--line);font-size:12px;color:var(--muted);display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+@media(prefers-reduced-motion:reduce){html:not([data-reduced=false]) *{animation:none!important;transition:none!important}}
+@media(max-width:760px){.wrap{padding:20px 18px 36px}.brand span{display:block;margin-top:4px}.intro{padding-top:32px}.workbench{display:flex;flex-direction:column}aside{border-right:0;border-bottom:1px solid var(--line);padding:20px}.choices{flex-direction:row;margin-top:16px}.choice{flex:1;min-width:0}.tools{display:flex;flex-direction:row;align-items:center;flex-wrap:wrap;gap:10px 18px;margin-top:18px;padding-top:16px}.panel{padding:22px 20px}.panel-head{flex-wrap:wrap}.pair{gap:28px}.notes{grid-template-columns:1fr;gap:20px}.plot{height:190px}.value{font-size:38px}.context{max-width:100%}.status{min-height:66px}}
+</style>
+</head>
+<body><div class="wrap">
+<header><div class="brand">MASTERMIND <span> / Motion reference</span></div><button id="theme" aria-label="Switch to light theme">Light theme</button></header>
+<div class="intro"><div class="eyebrow">Expectation Surface</div><h1>Keep the selection clear.</h1><p>A working reference for loading, coherent updates, failure recovery and returning from detail.</p><div class="fixture">Design fixture · captured estimate values from the Paper example · no data connection</div></div>
+<main class="workbench">
+<aside><h2>Explore a capture</h2><div class="muted small">Choose another ticker to exercise the transition.</div>
+<div class="choices"><button class="choice" data-symbol="MU" aria-pressed="true"><div><strong>MU</strong><span>Next fiscal year</span></div><div class="arrow">↗</div></button><button class="choice" data-symbol="INTC" aria-pressed="false"><div><strong>INTC</strong><span>Current quarter</span></div><div class="arrow">↗</div></button></div>
+<div class="tools"><label class="check"><input id="reduced" type="checkbox">Reduced motion</label><label class="check"><input id="slow" type="checkbox">Slow response</label><button id="fail" aria-pressed="false">Fail next request</button></div>
+</aside>
+<section class="panel" aria-labelledby="selection-title">
+<div class="panel-head"><div><div class="stamp">Showing settled selection</div><h2 class="current-title" id="selection-title">MU</h2><div class="context" id="context">EPS · Next FY · Period ending Aug 2027</div></div><button id="method" aria-haspopup="dialog">Coverage &amp; method</button></div>
+<div id="status" class="status" role="status" aria-live="polite" data-kind="ready">Ready. Choose a ticker to inspect the transition.</div>
+<div id="data-region" aria-busy="false"><div class="pair"><div><span class="label">Latest captured average</span><span class="value" id="latest">11.02</span></div><div><span class="label">Prior comparable average</span><span class="prior" id="prior">9.84</span></div></div><p class="metric">USD per share · same fiscal period within each pair</p>
+<div class="plot" id="plot"><svg viewBox="0 0 600 210" role="img" aria-labelledby="plot-title"><title id="plot-title">Schematic comparison of prior and latest captured averages</title><line class="axis" x1="30" x2="570" y1="170" y2="170"/><line class="axis" x1="30" x2="570" y1="80" y2="80" stroke-dasharray="3 6"/><path class="path" id="line" d="M70 145 L530 55"/><circle class="dot" id="start-dot" cx="70" cy="145" r="5"/><circle class="dot" id="end-dot" cx="530" cy="55" r="5"/><text class="axis-label" x="30" y="200">Prior comparable capture</text><text class="axis-label" x="400" y="200">Latest valid capture</text></svg></div>
+<div class="table-view" id="numbers" hidden><div class="number-row"><span>Prior comparable capture</span><strong id="table-prior">9.84</strong></div><div class="number-row"><span>Latest valid capture</span><strong id="table-latest">11.02</strong></div><div class="number-row"><span>Capture dates</span><span>Bind prior_at / latest_at</span></div></div>
+<div class="figure-caption">Schematic two-point illustration. Production supplies both capture dates and its full observed series.</div></div>
+<div class="actions"><button id="numbers-toggle" aria-expanded="false" aria-controls="numbers">Show numbers</button><button id="replay">Replay selection</button><button id="retry" hidden>Retry selection</button></div>
+<div class="receipt"><span>Settled revision <code id="revision">0</code></span><span>Pending request <code id="request">—</code></span><span id="motion-label">200 ms commit</span></div>
+</section></main>
+<section class="notes" aria-label="Interaction contract"><div><span class="step">01 / REQUEST</span><h3>Keep the settled view.</h3><p>The visible ticker, period, labels and values remain coherent while another selection loads.</p></div><div><span class="step">02 / COMMIT</span><h3>Commit the whole selection.</h3><p>A response updates the complete context. Obsolete responses cannot overwrite a newer request.</p></div><div><span class="step">03 / RETURN</span><h3>Return to the same place.</h3><p>Detail keeps the selection and number view. Escape closes it and restores focus to its opener.</p></div></section>
+<footer><span>Companion to Paper Build / Motion &amp; feedback · 8 Nov 2026</span><span>Local interaction fixture · no API, persistence or monitoring</span></footer>
+</div>
+<dialog id="detail" aria-labelledby="detail-title"><div class="dialog-head"><h2 id="detail-title">Coverage &amp; method</h2><button id="close-detail" aria-label="Close coverage and method">×</button></div><p>Compare an estimate with its own previous valid capture for the same ticker, metric and fiscal period. Prior capture dates may differ between tickers.</p><p>Identity status is reported separately from the captured ticker universe. A zero prior may contribute to breadth but has no percentage change.</p><p id="detail-context"></p><button id="back">Back to the selection</button></dialog>
+<script>
+(function(){
+'use strict';
+const $=id=>document.getElementById(id);
+const fixture={
+ MU:{symbol:'MU',context:'EPS · Next FY · Period ending Aug 2027',prior:'9.84',latest:'11.02',line:'M70 145 L530 55',start:145,end:55},
+ INTC:{symbol:'INTC',context:'EPS · Current Q · Period ending Dec 2026',prior:'0.31',latest:'0.24',line:'M70 55 L530 145',start:55,end:145}
+};
+let settled='MU',pending=null,seq=0,revision=0,failNext=false,numbers=false,opener=null;
+const mq=window.matchMedia('(prefers-reduced-motion: reduce)');
+$('reduced').checked=mq.matches;
+function syncMotion(){document.documentElement.dataset.reduced=String($('reduced').checked);$('motion-label').textContent=$('reduced').checked?'Immediate commit':'200 ms commit';}
+syncMotion();$('reduced').addEventListener('change',syncMotion);
+function status(kind,text){$('status').dataset.kind=kind;$('status').textContent=text;}
+function render(symbol){
+ const f=fixture[symbol];settled=symbol;revision++;
+ $('selection-title').textContent=f.symbol;$('context').textContent=f.context;
+ ['latest','table-latest'].forEach(id=>$(id).textContent=f.latest);
+ ['prior','table-prior'].forEach(id=>$(id).textContent=f.prior);
+ $('line').setAttribute('d',f.line);$('start-dot').setAttribute('cy',f.start);$('end-dot').setAttribute('cy',f.end);
+ document.querySelectorAll('[data-symbol]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.symbol===symbol)));
+ $('revision').textContent=revision;
+ const region=$('data-region');region.classList.remove('settle');void region.offsetWidth;region.classList.add('settle');
+}
+function choose(symbol){
+ const request=++seq,willFail=failNext;pending=symbol;failNext=false;$('fail').setAttribute('aria-pressed','false');$('fail').textContent='Fail next request';
+ $('retry').hidden=true;$('request').textContent=request;$('data-region').setAttribute('aria-busy','true');
+ status('loading','Loading '+symbol+'… Showing the settled '+settled+' capture.');
+ const delay=$('slow').checked?1400:650;
+ setTimeout(()=>{
+  if(request!==seq)return;
+  $('data-region').setAttribute('aria-busy','false');$('request').textContent='—';
+  if(willFail){status('error','Could not load '+symbol+'. Showing '+settled+'. Retry this selection.');$('retry').hidden=false;return;}
+  render(symbol);pending=null;status('ready',symbol+' capture loaded. Labels and values updated together.');
+ },delay);
+}
+document.querySelectorAll('[data-symbol]').forEach(b=>b.addEventListener('click',()=>choose(b.dataset.symbol)));
+$('replay').addEventListener('click',()=>choose(settled));
+$('fail').addEventListener('click',()=>{failNext=!failNext;$('fail').setAttribute('aria-pressed',String(failNext));$('fail').textContent=failNext?'Next request will fail':'Fail next request';});
+$('retry').addEventListener('click',()=>choose(pending||settled));
+$('numbers-toggle').addEventListener('click',()=>{numbers=!numbers;$('numbers').hidden=!numbers;$('plot').hidden=numbers;$('numbers-toggle').textContent=numbers?'Show chart':'Show numbers';$('numbers-toggle').setAttribute('aria-expanded',String(numbers));});
+$('theme').addEventListener('click',()=>{const light=document.documentElement.dataset.theme!=='light';document.documentElement.dataset.theme=light?'light':'dark';$('theme').textContent=light?'Dark theme':'Light theme';$('theme').setAttribute('aria-label',light?'Switch to dark theme':'Switch to light theme');});
+$('method').addEventListener('click',()=>{opener=document.activeElement;$('detail-context').textContent='You are viewing '+settled+' · '+fixture[settled].context+'. Closing this detail keeps the same selection.';$('detail').showModal();});
+function closeDetail(){$('detail').close();}
+$('close-detail').addEventListener('click',closeDetail);$('back').addEventListener('click',closeDetail);
+$('detail').addEventListener('close',()=>{if(opener)opener.focus();});
+window.__motionReference={get state(){return{settled,pending,seq,revision,numbers,failNext,reduced:$('reduced').checked}}};
+})();
+</script></body></html>
