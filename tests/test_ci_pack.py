@@ -4531,6 +4531,8 @@ def test_workspace_runtime_contracts_can_start_the_ci_that_validates_them() -> N
 # ---------------------------------------------------------------------------
 
 CURATED_EXCLUSIVE = {
+    # Preserve V91 coverage while bounding newly enrolled policy regressions.
+    "news-v91-vertical-proofs",
     "press-account-claim-consumer",
     # GDELT leaf suites own their exact import/read closure.
     "gdelt-news-leaves",
