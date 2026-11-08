@@ -2069,6 +2069,33 @@ def partition_jobs(jobs: Iterable[LegacyJob], pack_count: int) -> list[list[Lega
     return packs
 
 
+def compact_scoped_packs(
+    jobs: Iterable[LegacyJob], pack_count: int
+) -> list[list[LegacyJob]]:
+    """Use fewer active bins without increasing the legacy modeled peak load.
+
+    Only build_plan's genuinely narrowed PR lane may use this compactor. The
+    ordinary partition_jobs function and main baseline pack names are unchanged.
+    Weights are planning estimates, not elapsed-time or speedup guarantees.
+    """
+    selected = list(jobs)
+    baseline = partition_jobs(selected, pack_count)
+    if any(job.weight < 0 for job in selected):
+        raise ValueError("scoped compaction requires nonnegative job weights")
+    peak = max((sum(job.weight for job in pack) for pack in baseline), default=0)
+    if not selected or peak == 0:
+        return baseline
+    total = sum(job.weight for job in selected)
+    # No packing below this bin count can retain the old peak. Search every
+    # feasible smaller greedy count; greedy feasibility need not be monotonic.
+    lower_bound = max(1, (total + peak - 1) // peak)
+    for active_count in range(lower_bound, min(pack_count, len(selected))):
+        candidate = partition_jobs(selected, active_count)
+        if max(sum(job.weight for job in pack) for pack in candidate) <= peak:
+            return candidate + [[] for _ in range(pack_count - active_count)]
+    return baseline
+
+
 # ---------------------------------------------------------------------------
 # Plan once, execute many (2026-08-11)
 #
@@ -2363,9 +2390,24 @@ def build_plan(
             f"{reason}"
         )
 
-    # Balance across the SELECTED set, not the full manifest — otherwise a
-    # scoped run would leave whole packs empty while one pack carried it all.
-    packs = partition_jobs(eligible, pack_count)
+    event = event or os.environ.get("GITHUB_EVENT_NAME") or (
+        "pull_request" if changed_from is not None else "workflow_dispatch"
+    )
+    role = role or os.environ.get("CI_SEMANTIC_ROLE") or (
+        "pr_head" if event == "pull_request" else "main"
+    )
+    # Main and full-suite plans retain every legacy baseline check name.
+    # Only a genuinely narrowed active PR selection may compact execution.
+    narrowed_pr = (
+        role == "pr_head"
+        and changed_from is not None
+        and changed is not None
+        and scope_mode == "active"
+        and not invalidated
+        and len(eligible) < len(jobs)
+    )
+    packs = (compact_scoped_packs(eligible, pack_count) if narrowed_pr
+             else partition_jobs(eligible, pack_count))
     pack_jobs = tuple(tuple(job.job_id for job in pack) for pack in packs)
     pack_weights = tuple(sum(job.weight for job in pack) for pack in packs)
     eligible_job_ids = tuple(job.job_id for job in eligible)
@@ -2394,12 +2436,6 @@ def build_plan(
         or os.environ.get("CI_BASE_SHA")
         or changed_from
         or tested_tree_sha
-    )
-    event = event or os.environ.get("GITHUB_EVENT_NAME") or (
-        "pull_request" if changed_from is not None else "workflow_dispatch"
-    )
-    role = role or os.environ.get("CI_SEMANTIC_ROLE") or (
-        "pr_head" if event == "pull_request" else "main"
     )
     # `workflow` is resolved HERE, before the role/event validation below, so
     # the narrow main-owned diagnostic admission can be evaluated in the same gate instead of

@@ -1,8 +1,8 @@
 {
   "schema": "news_event_calibration.v1",
   "is_context_only": true,
-  "asof": "2026-11-06",
-  "n_events_logged": 1871,
+  "asof": "2026-11-07",
+  "n_events_logged": 1886,
   "n_events_graded": 1510,
   "classes": [
     {
@@ -24,9 +24,9 @@
       "n": 20,
       "n_graded": 17,
       "hit_5d": 0.4117647058823529,
-      "hit_21d": 0.5384615384615384,
+      "hit_21d": 0.5,
       "avg_rel_5d": 0.001357875846702317,
-      "avg_rel_21d": 0.009178173193473194,
+      "avg_rel_21d": 0.01462705367965368,
       "wilson_low_5d": 0.216108,
       "wilson_high_5d": 0.639949,
       "verdict": "insufficient"
@@ -37,9 +37,9 @@
       "n": 21,
       "n_graded": 17,
       "hit_5d": 0.5294117647058824,
-      "hit_21d": 0.125,
+      "hit_21d": 0.17647058823529413,
       "avg_rel_5d": 0.008384105042016808,
-      "avg_rel_21d": -0.036055294642857144,
+      "avg_rel_21d": -0.030028649859943978,
       "wilson_low_5d": 0.309629,
       "wilson_high_5d": 0.738352,
       "verdict": "insufficient"
@@ -60,7 +60,7 @@
     {
       "event_type": "customer_win",
       "direction": "bullish",
-      "n": 2,
+      "n": 3,
       "n_graded": 1,
       "hit_5d": 1.0,
       "hit_21d": 1.0,
@@ -73,12 +73,12 @@
     {
       "event_type": "dividend_change",
       "direction": "mixed",
-      "n": 19,
+      "n": 20,
       "n_graded": 12,
       "hit_5d": 0.0,
       "hit_21d": 0.0,
       "avg_rel_5d": 0.007558281746031746,
-      "avg_rel_21d": 0.00439985119047619,
+      "avg_rel_21d": -0.002668812770562771,
       "wilson_low_5d": null,
       "wilson_high_5d": null,
       "verdict": "insufficient"
@@ -91,7 +91,7 @@
       "hit_5d": 0.0,
       "hit_21d": 0.0,
       "avg_rel_5d": 0.0030914416318594353,
-      "avg_rel_21d": 0.010331226035626135,
+      "avg_rel_21d": 0.012219679014637087,
       "wilson_low_5d": null,
       "wilson_high_5d": null,
       "verdict": "context_only"
@@ -102,9 +102,9 @@
       "n": 41,
       "n_graded": 17,
       "hit_5d": 0.4117647058823529,
-      "hit_21d": 0.5333333333333333,
+      "hit_21d": 0.5294117647058824,
       "avg_rel_5d": 0.013635472549019607,
-      "avg_rel_21d": 0.027234353333333336,
+      "avg_rel_21d": 0.017385341176470587,
       "wilson_low_5d": 0.216108,
       "wilson_high_5d": 0.639949,
       "verdict": "insufficient"
@@ -112,12 +112,12 @@
     {
       "event_type": "guidance_cut",
       "direction": "bearish",
-      "n": 46,
+      "n": 47,
       "n_graded": 34,
       "hit_5d": 0.4117647058823529,
-      "hit_21d": 0.3125,
+      "hit_21d": 0.3235294117647059,
       "avg_rel_5d": 0.0022216796218487394,
-      "avg_rel_21d": 0.019827866443452382,
+      "avg_rel_21d": 0.022913249299719888,
       "wilson_low_5d": 0.263657,
       "wilson_high_5d": 0.577787,
       "verdict": "context_only"
@@ -125,12 +125,12 @@
     {
       "event_type": "guidance_raise",
       "direction": "bullish",
-      "n": 62,
+      "n": 64,
       "n_graded": 38,
       "hit_5d": 0.7105263157894737,
-      "hit_21d": 0.5588235294117647,
+      "hit_21d": 0.5135135135135135,
       "avg_rel_5d": 0.013914833333333333,
-      "avg_rel_21d": 0.01730524264705882,
+      "avg_rel_21d": 0.01214269144144144,
       "wilson_low_5d": 0.552426,
       "wilson_high_5d": 0.829969,
       "verdict": "candidate"
@@ -138,12 +138,12 @@
     {
       "event_type": "litigation",
       "direction": "bearish",
-      "n": 356,
+      "n": 363,
       "n_graded": 297,
       "hit_5d": 0.4983164983164983,
-      "hit_21d": 0.539622641509434,
+      "hit_21d": 0.5404411764705882,
       "avg_rel_5d": -0.0004209208754208754,
-      "avg_rel_21d": -0.010323007861635218,
+      "avg_rel_21d": -0.011046056678921569,
       "wilson_low_5d": 0.441837,
       "wilson_high_5d": 0.554839,
       "verdict": "context_only"
@@ -151,7 +151,7 @@
     {
       "event_type": "macro_release",
       "direction": "informational",
-      "n": 141,
+      "n": 144,
       "n_graded": 57,
       "hit_5d": 0.0,
       "hit_21d": 0.0,
@@ -180,9 +180,9 @@
       "n": 45,
       "n_graded": 35,
       "hit_5d": 0.5142857142857142,
-      "hit_21d": 0.5,
+      "hit_21d": 0.53125,
       "avg_rel_5d": 0.003870619047619047,
-      "avg_rel_21d": 0.005451525,
+      "avg_rel_21d": 0.008113731770833334,
       "wilson_low_5d": 0.355685,
       "wilson_high_5d": 0.67006,
       "verdict": "context_only"
@@ -245,9 +245,9 @@
       "n": 25,
       "n_graded": 19,
       "hit_5d": 0.47368421052631576,
-      "hit_21d": 0.35294117647058826,
+      "hit_21d": 0.3888888888888889,
       "avg_rel_5d": -0.014220789473684211,
-      "avg_rel_21d": -0.04212879411764706,
+      "avg_rel_21d": -0.037929472222222226,
       "wilson_low_5d": 0.273295,
       "wilson_high_5d": 0.682925,
       "verdict": "insufficient"
@@ -280,7 +280,7 @@
     }
   ],
   "reject_audit": {
-    "n_sampled": 2169,
+    "n_sampled": 2208,
     "n_graded": 0,
     "classes": []
   }
