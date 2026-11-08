@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "CLF-BULL-20260724",
-  "asof": "2026-11-06",
+  "asof": "2026-11-08",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 42.0,
@@ -10,27 +10,27 @@
   "recommended_action": null,
   "human_state": "Closed",
   "components": {
-    "validity": 88.2,
+    "validity": 94.4,
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 32.8
+    "overlay": 39.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.911,
+    "dist_to_stop_r": 0.958,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 220.0,
-    "p1": -0.0594,
-    "p2": -0.0297,
+    "horizon_pct_used": 224.4,
+    "p1": -0.0281,
+    "p2": -0.014,
     "p3": null,
-    "move_r": -0.089,
+    "move_r": -0.042,
     "mfe_r": 0.653,
     "mae_r": -0.22
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "Moving Away from Stop",
+  "change_reason": "",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -45,8 +45,8 @@
   "_first_trigger_ts": "2026-08-08",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 99,
-  "tau": 2.2,
+  "days_elapsed": 101,
+  "tau": 2.2444,
   "closed": true,
   "outcome": "EXPIRED"
 }
