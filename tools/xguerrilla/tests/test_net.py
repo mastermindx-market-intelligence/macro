@@ -124,14 +124,23 @@ def test_public_never_contains_the_password(slots):
 
 
 def test_public_is_loggable_shape(slots):
-    """The loggable form keeps exactly the fields an operator needs to bisect."""
+    """The loggable form keeps what an operator needs to bisect a slot, and nothing usable."""
     for slot in slots:
         public = slot.public()
-        assert set(public) == {"slot", "host", "port", "user"}
+        assert set(public) == {"slot", "port", "user"}
         assert public["slot"] == slot.name
-        assert public["host"] == slot.host
         assert public["port"] == slot.port
-        assert public["user"] == slot.user
+        # the endpoint itself does not survive: no full address, no full username
+        assert slot.host not in repr(public), f"{slot.name} prints its address"
+        assert slot.user not in repr(public), f"{slot.name} prints its provider user"
+
+
+def test_reveal_is_the_only_full_form(slots):
+    """``reveal()`` is the form a binding command needs; it still carries no password."""
+    for slot in slots:
+        full = slot.reveal()
+        assert full["host"] == slot.host and full["user"] == slot.user
+        assert slot.password not in repr(full)
 
 
 def test_repr_does_not_leak_the_password(slots):

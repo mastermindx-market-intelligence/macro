@@ -65,8 +65,9 @@ def cmd_personas(args) -> int:
 
 def cmd_net_check(args) -> int:
     slots = net.load(args.proxies or DEFAULT_PROXIES)
-    _emit({"ok": True, "count": len(slots),
-           "slots": [s.public() for s in slots]})
+    form = (lambda s: s.reveal()) if getattr(args, "reveal", False) else (lambda s: s.public())
+    _emit({"ok": True, "count": len(slots), "revealed": bool(getattr(args, "reveal", False)),
+           "slots": [form(s) for s in slots]})
     return 0
 
 
@@ -117,6 +118,8 @@ def build_parser() -> argparse.ArgumentParser:
 
     p = sub.add_parser("net-check", help="validate and list proxy slots")
     p.add_argument("--proxies", default=DEFAULT_PROXIES)
+    p.add_argument("--reveal", action="store_true",
+                   help="print full host and provider user (default: masked)")
     p.set_defaults(func=cmd_net_check)
 
     p = sub.add_parser("shadow", help="resolve write steps against a live driver")

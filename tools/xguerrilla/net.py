@@ -24,7 +24,18 @@ class Slot:
         return f"http://{self.user}:{self.password}@{self.host}:{self.port}"
 
     def public(self) -> dict:
-        """Loggable form — no password."""
+        """Loggable form — no password, and no usable endpoint.
+
+        A support ticket, a CI log or a pasted terminal session should carry
+        enough to bisect a slot — ``slot`` and ``port`` do that — without also
+        handing every reader the address block and provider user that identify
+        the paid pool. Two octets of an address are still the pool.
+        """
+        user = f"{self.user[:2]}***" if len(self.user) > 2 else "***"
+        return {"slot": self.name, "port": self.port, "user": user}
+
+    def reveal(self) -> dict:
+        """Full endpoint — for the command that is about to bind a child to it."""
         return {"slot": self.name, "host": self.host, "port": self.port, "user": self.user}
 
 

@@ -73,8 +73,8 @@ returned value; on this box it returns `""`.
 
 | box | tests | pass | fail | error | skip | wall |
 |---|---|---|---|---|---|---|
-| authoring laptop | 293 | 293 | 0 | 0 | 0 | 33.1 s |
-| `mini1` | 293 | 293 | 0 | 0 | 0 | 16.4 s |
+| authoring laptop | 294 | 294 | 0 | 0 | 0 | 34.8 s |
+| `mini1` | 294 | 294 | 0 | 0 | 0 | 16.4 s |
 
 Both boxes now run the whole suite with nothing skipped. The former skip,
 `test_live_pool_is_gitignored`, needed `/Users/mini1/macro` to be a repository;
@@ -243,3 +243,36 @@ is section 1's live run (70 planned keystrokes, the page's own `input_value()`
 matching exactly, 28.77 s wall against a planned last offset of 27.96 s); the
 counter here makes the pilot refuse to claim typed work it cannot show, it does
 not make the simulation a live measurement.
+
+## 9. The loggable form was the leak
+
+`net-check` printed every slot as `host`, `port`, `user`. `public()` was named as
+if it were safe to log and was not: it carried the address block and the provider
+username, so a support ticket, a CI log or a pasted terminal session handed the
+reader a working host/user pair to set against the password that has never been
+printed. The first fix masked the last two octets (`170.124.x.x`) and was still
+wrong — the /16 plus the port order identifies the pool as surely as the full
+address does.
+
+Measured shape now, sixteen slots:
+
+```
+{ "count": 16, "ok": true, "revealed": false,
+  "slots": [ { "port": 8309, "slot": "<pool>-00", "user": "T3***" }, ... ] }
+```
+
+`slot` and `port` bisect a slot; nothing in the default output binds one. The
+full form lives behind `--reveal`, which exists for the command about to bind a
+child and for nothing else, and it still carries no password. Two tests hold the
+line: `test_public_is_loggable_shape` refuses a full address or username in the
+loggable dict, and `test_reveal_is_the_only_full_form` asserts the reveal keeps
+the endpoint and still omits the password. Slot names keep the pool tag, so they
+are scrubbed before a log leaves the box.
+
+A companion measurement from the same pass: the laptop's default `python3` is
+3.14 without PyYAML, and `python3 -m tools.xguerrilla.cli` dies at import with
+`ModuleNotFoundError: No module named 'yaml'` — a missing-module error that reads
+like a broken checkout. `PYTHONPATH=. /opt/homebrew/bin/python3.12` is the
+interpreter that works there; the worker box's `~/.venvs/xg/bin/python` needs no
+`PYTHONPATH` because it runs from `~/macro` where the tree root is the cwd. The
+runbook now names both.
