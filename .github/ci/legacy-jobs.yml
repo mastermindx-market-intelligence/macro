@@ -40628,7 +40628,7 @@ jobs:
         run: |
           CADDY_DIR="$(mktemp -d)"
           trap 'rm -rf "$CADDY_DIR"' EXIT
-          # At most three 15-second attempts plus two 1-second delays (47s).
+          # At most three 15-second attempts; retry budget 45s (final attempt <=60s total).
           # Retry only curl's known transient failures on this same pinned URL.
           curl --fail --silent --show-error --location \
             --retry 2 --retry-delay 1 --retry-max-time 45 \

@@ -220,7 +220,7 @@ def test_caddy_acquisition_has_finite_same_origin_recovery():
     assert command.count("python -m pytest") == 1
 
 
-def _exercise_caddy_acquisition(tmp_path, statuses, *, checksum_mismatch=False):
+def _exercise_caddy_acquisition(tmp_path, statuses, *, checksum_mismatch=False, retry_after=None):
     import hashlib
     from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
     import io
@@ -246,6 +246,8 @@ def _exercise_caddy_acquisition(tmp_path, statuses, *, checksum_mismatch=False):
             body = payload if status == 200 else b"test-owned acquisition failure"
             self.send_response(status)
             self.send_header("Content-Length", str(len(body)))
+            if retry_after is not None:
+                self.send_header("Retry-After", str(retry_after))
             self.end_headers()
             self.wfile.write(body)
 
@@ -323,6 +325,15 @@ def test_caddy_acquisition_nonretryable_403_stays_blocking(tmp_path):
 def test_caddy_acquisition_wrong_checksum_never_executes_security_command(tmp_path):
     result, requests, reached = _exercise_caddy_acquisition(
         tmp_path, [200], checksum_mismatch=True,
+    )
+    assert result.returncode != 0
+    assert len(requests) == 1
+    assert reached is None
+
+
+def test_caddy_acquisition_retry_after_beyond_budget_stays_blocking(tmp_path):
+    result, requests, reached = _exercise_caddy_acquisition(
+        tmp_path, [504], retry_after=86400,
     )
     assert result.returncode != 0
     assert len(requests) == 1
