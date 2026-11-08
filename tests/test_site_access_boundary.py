@@ -929,8 +929,10 @@ def test_the_child_bio_ref_route_is_one_301_onto_the_public_shell():
     assert 'redir @x_ref "/?ref={re.x_ref.id}" 301' in CADDY
     assert not re.search(r"^\s*redir @x_ref [^\n]*\.html", CADDY, re.M)
 
-    # The target must be a page the registration wall already serves publicly,
-    # or the bio link would bounce a logged-out reader to /?signin=1.
-    from app.regwall import PUBLIC_PATHS
-
-    assert "/" in PUBLIC_PATHS
+    # The target must be a page the registration wall serves publicly, or the
+    # bio link would bounce a logged-out reader to /?signin=1. Ownership stays
+    # with tests/test_regwall.py ("the ONLY guard on regwall.PUBLIC_PATHS"):
+    # reaching app/regwall.py from HERE — import or path literal, both are
+    # closure edges for the site-access-boundary job — would drag the whole
+    # app/ tree into a deliberately narrow job. This test owns the Caddyfile
+    # side: one 301 onto "/"; test_regwall.py owns "/" being public.
