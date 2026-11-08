@@ -2345,3 +2345,107 @@ def test_opt_in_does_not_refetch_an_already_present_unversioned_day(store, monke
     assert topup._dated_greek_request_options('SPY') == {'version': '1'}
     assert topup._ensure_one_cell(store, 'greeks', 'SPY', S_MID,
         lambda: pytest.fail('Opt-in must not replay an existing day')) == 'already_present'
+
+
+@pytest.fixture
+def pilot_cli_case(request, monkeypatch):
+    """Exact approved date through real main/daily entry, synthetic transport only."""
+    import sys
+    monkeypatch.setattr(sys.modules[__name__], 'D_MID', date(2026,10,26))
+    monkeypatch.setattr(sys.modules[__name__], 'S_MID', date(2026,10,23))
+    c=request.getfixturevalue('observation_case');c.now=_et(2026,10,26,17,30)
+    _wire_daily(monkeypatch,c.store,t1=['SPY'],ad=['SPY'])
+    c.fake=FakeTd(default_D=D_MID);_install_fake_td(monkeypatch,c.fake)
+    import collectors.thetadata as td
+    c.capacity={'ready':True}
+    c.config.transport.preflight=lambda **kw:c.capacity['ready']
+    monkeypatch.setattr(td,'bounded_spy_d_session_transport',lambda day:c.config.transport)
+    monkeypatch.setattr(topup,'_SPY_20261026_RETENTION_PARENT',c.private,raising=False)
+    monkeypatch.setenv('THETADATA_D_SESSION_OBSERVATION','spy-2026-10-26-1730-observation-v1')
+    monkeypatch.setenv('THETADATA_DATED_GREEKS_V1_ROOTS','SPY')
+    original=topup._daily_main
+    monkeypatch.setattr(topup,'_daily_main',lambda **kw:original(now_fn=lambda:c.now,**kw))
+    return c
+
+
+def test_pilot_cli_exact_operation_reaches_existing_two_attempt_journal(pilot_cli_case):
+    c=pilot_cli_case
+    assert topup.main(['--daily','--workers','1'])==0
+    assert [kind for kind,_ in c.calls]==['eod','greeks']
+    r=json.loads(c.receipt.read_text())
+    assert (r['operation_ref'],r['D'],r['S'],r['attempts'])==('spy-2026-10-26-1730-observation-v1','2026-10-26','2026-10-23',2)
+    assert r['max_gets']==2 and r['requested_greek_version']=='1'
+    assert not c.fake.calls and not topup._has_day(c.store,'greeks','SPY',D_MID)
+    health=_manifest(c.store)['daily_refresh']
+    assert health['status']=='healthy' and health['worker_count']==1
+    assert health['d_session_observation']['state']=='OBSERVED_COMPLETE'
+
+
+@pytest.mark.parametrize('case',['pre_gate','early_rung','wrong_rung','wrong_day','weekend','lock','no_oi','capacity','parent','existing_unknown'])
+def test_pilot_cli_refusal_makes_no_pilot_attempt_or_new_claim(pilot_cli_case,monkeypatch,case):
+    c=pilot_cli_case;before=None
+    if case=='pre_gate':c.now=_et(2026,10,26,15,30)
+    if case=='early_rung':c.now=_et(2026,10,26,17,15)
+    if case=='wrong_rung':c.now=_et(2026,10,26,19,0)
+    if case=='wrong_day':c.now=_et(2026,10,27,17,30)
+    if case=='weekend':c.now=_et(2026,10,24,17,30)
+    if case=='no_oi':(c.store/'oi/SPY/2026.parquet').unlink()
+    if case=='capacity':c.capacity['ready']=False
+    if case=='parent':monkeypatch.setattr(topup,'_SPY_20261026_RETENTION_PARENT',c.private/'absent')
+    if case=='existing_unknown':
+        c.receipt.parent.mkdir();before=b'{"state":"EFFECT_UNKNOWN","attempts":1}\n';c.receipt.write_bytes(before)
+    if case=='lock':
+        with topup._writer_lock(c.store) as held:
+            assert held;assert topup.main(['--daily','--workers','1'])==0
+    else:topup.main(['--daily','--workers','1'])
+    assert not c.calls
+    if before is None:assert not c.receipt.parent.exists()
+    else:assert c.receipt.read_bytes()==before
+
+
+@pytest.mark.parametrize('env,args',[
+    ('spy-2026-10-27-1730-observation-v1',['--daily']),
+    ('spy-2026-10-26-1730-observation-v1',['--daily','--force-run']),
+    ('spy-2026-10-26-1730-observation-v1',['--roots','SPY']),
+    ('spy-2026-10-26-1730-observation-v1',['--daily','--deadline-min','66']),
+])
+def test_pilot_cli_invalid_configuration_fails_before_source_work(pilot_cli_case,monkeypatch,env,args):
+    c=pilot_cli_case;monkeypatch.setenv('THETADATA_D_SESSION_OBSERVATION',env)
+    with pytest.raises(SystemExit) as ex:topup.main(args)
+    assert ex.value.code==2 and not c.calls and not c.fake.calls and not c.receipt.parent.exists()
+
+
+def test_pilot_cli_absent_configuration_preserves_default_none(pilot_cli_case,monkeypatch):
+    c=pilot_cli_case;monkeypatch.delenv('THETADATA_D_SESSION_OBSERVATION')
+    monkeypatch.setattr(topup,'_observe_spy_d_session',lambda *a,**k:pytest.fail('Absent config activated pilot'))
+    assert topup.main(['--daily','--workers','1'])==0
+    assert not c.calls and not c.receipt.parent.exists()
+    assert 'd_session_observation' not in _manifest(c.store)['daily_refresh']
+
+
+@pytest.mark.parametrize('outcome,state',[('abrupt','EFFECT_UNKNOWN'),('refusal','STOPPED')])
+def test_pilot_cli_unreturned_attempt_is_sticky_and_never_reoffered(pilot_cli_case,outcome,state):
+    c=pilot_cli_case;c.mode['kind']=outcome
+    if outcome=='abrupt':
+        with pytest.raises(KeyboardInterrupt):topup.main(['--daily','--workers','1'])
+    else:assert topup.main(['--daily','--workers','1'])==0
+    before=c.receipt.read_bytes();r=json.loads(before)
+    assert r['state']==state and r['attempts']==1 and len(c.calls)==1
+    assert topup.main(['--daily','--workers','1'])==0
+    assert c.receipt.read_bytes()==before and len(c.calls)==1
+
+
+def test_pilot_cli_missing_version_policy_cannot_mint_model_or_claim(pilot_cli_case,monkeypatch):
+    c=pilot_cli_case;monkeypatch.delenv('THETADATA_DATED_GREEKS_V1_ROOTS')
+    assert topup.main(['--daily','--workers','1'])==0
+    assert not c.calls and not c.receipt.parent.exists()
+    assert _manifest(c.store)['daily_refresh']['d_session_observation']['reason']=='greek_request_policy_unestablished'
+
+
+@pytest.mark.parametrize('fault',['origin','preflight'])
+def test_pilot_cli_bad_native_binding_refuses_before_daily_source(pilot_cli_case,fault):
+    c=pilot_cli_case
+    if fault=='origin':c.config.transport.origin='http://source-lookalike.invalid'
+    else:del c.config.transport.preflight
+    with pytest.raises(SystemExit) as ex:topup.main(['--daily','--workers','1'])
+    assert ex.value.code==2 and not c.calls and not c.fake.calls and not c.receipt.parent.exists()

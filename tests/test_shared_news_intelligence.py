@@ -143,7 +143,8 @@ def test_quality_representative_matches_snapshot_detail_and_stream(tmp_path):
         assert len(snapshot.rows) == 1
         row = snapshot.rows[0]
         assert row.source == "massive:reuters.com"  # earlier, higher quality report
-        assert row.source_count == 2 and row.item_count == 2
+        # Two publishers carry one identical headline: one information origin.
+        assert row.source_count == 1 and row.publisher_count == 2 and row.item_count == 2
         detail = store.story(row.story_id, rights=all_rights())
         changes = store.projected_changes_for_security(
             "sec-NVDA", after_sequence=0, limit=200, rights=all_rights(),
@@ -920,7 +921,9 @@ def test_url_category_projection_keeps_group_members_and_counts_consistent(tmp_p
         row = page.rows[0]
         detail = reader.story(row.story_id, rights=grant)
         expected = 1 if allow_benzinga_url else 2
-        assert row.item_count == row.source_count == detail.item_count == detail.source_count == expected
+        assert row.item_count == row.publisher_count == detail.item_count == detail.publisher_count == expected
+        # Both reports share one visible headline, so they are one origin either way.
+        assert row.source_count == detail.source_count == 1
         assert {member.source for member in detail.members} == (
             {"massive:reuters.com"} if allow_benzinga_url else {"massive:reuters.com", "benzinga"}
         )
@@ -1134,3 +1137,123 @@ def test_company_view_group_members_details_changes_and_flow_share_one_projectio
         flow = reader.news_flow(_EDITORIAL_SECURITY, now=_EDITORIAL_T0 + timedelta(hours=1), rights=rights)
         assert flow["reports_24h"] == flow["stories_24h"] == 1
         assert flow["provenance"]["editorial_view"] == _company_view().metadata()
+
+
+# Independent-origin counting: the publisher is the floor, and two publishers join one
+# origin only through the same rights-visible normalized headline. Cluster ids are never read.
+from engine.qbus_news_quality import information_family_count
+
+
+def _origin_row(source, title, url="", cluster="one-cluster"):
+    return {"source": source, "url": url, "title": title, "cluster_id": cluster}
+
+
+def _origin_rights(*hidden_title_sources):
+    sources = ("benzinga", "massive:reuters.com", "massive:apnews.com", "massive:benzinga.com")
+    return NewsReadRights(frozenset(sources), source_fields=tuple(
+        SourceReadRights(source, source not in hidden_title_sources, True, True) for source in sources
+    ))
+
+
+def test_information_family_count_merges_identical_visible_headlines_across_publishers():
+    rows = [
+        _origin_row("massive:reuters.com", TITLE),
+        _origin_row("massive:apnews.com", "  NVIDIA launches new AI-accelerator!  "),
+        _origin_row("benzinga", "Nvidia ships a different product"),
+    ]
+    assert information_family_count(rows) == 2
+    assert information_family_count(rows, _origin_rights()) == 2
+
+
+def test_information_family_count_decodes_entities_before_comparing_headlines():
+    rows = [
+        _origin_row("massive:reuters.com", "Nvidia &amp; AMD sign supply deal"),
+        _origin_row("massive:apnews.com", "Nvidia & AMD sign supply deal"),
+    ]
+    assert information_family_count(rows) == 1
+
+
+def test_information_family_count_keeps_different_headlines_separate_despite_a_shared_cluster():
+    rows = [
+        _origin_row("massive:reuters.com", "Nvidia wins chip contract"),
+        _origin_row("massive:apnews.com", "Nvidia shares rise after contract"),
+    ]
+    assert information_family_count(rows) == 2
+
+
+def test_information_family_count_one_publisher_is_one_origin_across_transports_and_items():
+    rows = [
+        _origin_row("benzinga", "Nvidia wins chip contract"),
+        _origin_row("benzinga", "Nvidia shares rise after contract"),
+        _origin_row("massive:benzinga.com", "Nvidia guidance raised"),
+    ]
+    assert information_family_count(rows) == 1
+
+
+def test_information_family_count_joins_transitively_through_a_shared_publisher():
+    rows = [
+        _origin_row("massive:reuters.com", "Nvidia wins chip contract"),
+        _origin_row("massive:apnews.com", "Nvidia wins chip contract"),
+        _origin_row("massive:apnews.com", "Nvidia shares rise after contract"),
+        _origin_row("benzinga", "Nvidia shares rise after contract"),
+    ]
+    assert information_family_count(rows) == 1
+
+
+def test_information_family_count_never_joins_through_a_withheld_headline():
+    rows = [
+        _origin_row("massive:reuters.com", TITLE),
+        _origin_row("massive:apnews.com", TITLE),
+    ]
+    assert information_family_count(rows, _origin_rights()) == 1
+    assert information_family_count(rows, _origin_rights("massive:apnews.com")) == 2
+    assert information_family_count(rows, _origin_rights("massive:reuters.com", "massive:apnews.com")) == 2
+
+
+def test_information_family_count_never_joins_through_an_empty_or_unnormalizable_headline():
+    assert information_family_count([
+        _origin_row("massive:reuters.com", ""), _origin_row("massive:apnews.com", ""),
+    ]) == 2
+    assert information_family_count([
+        _origin_row("massive:reuters.com", "!!! ???"), _origin_row("massive:apnews.com", "!!! ???"),
+    ]) == 2
+    assert information_family_count([]) == 0
+
+
+def test_information_family_count_stays_between_one_and_the_publisher_count():
+    from itertools import product
+    sources = ("benzinga", "massive:benzinga.com", "massive:reuters.com", "massive:apnews.com")
+    titles = ("Nvidia wins chip contract", "Nvidia shares rise", "", "Nvidia wins chip contract!")
+    for picks in product(range(len(sources)), range(len(titles)), range(len(sources)), range(len(titles))):
+        rows = [_origin_row(sources[picks[0]], titles[picks[1]]), _origin_row(sources[picks[2]], titles[picks[3]])]
+        for rights in (None, _origin_rights(), _origin_rights("massive:reuters.com")):
+            families = information_family_count(rows, rights)
+            publishers = len({"benzinga.com" if "benzinga" in row["source"] else row["source"] for row in rows})
+            assert 1 <= families <= publishers <= len(rows)
+
+
+def test_syndicated_headline_is_one_origin_in_snapshot_detail_evidence_and_changes(tmp_path):
+    rights = _origin_rights()
+    with NewsStore(tmp_path / "origin.db", source_key="test") as store:
+        store.commit([massive(), massive(domain="apnews.com", item="m2")], expected_cursor=None, next_cursor="1")
+        page = store.snapshot("sec-NVDA", limit=20, cursor=None, rights=rights)
+        assert len(page.rows) == 1
+        row = page.rows[0]
+        assert (row.source_count, row.publisher_count, row.item_count) == (1, 2, 2)
+        detail = store.story(row.story_id, rights=rights)
+        assert (detail.source_count, detail.publisher_count, detail.item_count) == (1, 2, 2)
+        evidence = store.evidence_for_security("sec-NVDA", limit=20, rights=rights)
+        assert evidence["stories"][0]["source_count"] == 1
+        assert evidence["stories"][0]["publisher_count"] == 2
+        changes = store.projected_changes_for_security("sec-NVDA", after_sequence=0, limit=200, rights=rights)
+        assert (changes.rows[0].source_count, changes.rows[0].publisher_count) == (1, 2)
+
+
+def test_withheld_headline_member_counts_as_its_own_origin_in_the_store(tmp_path):
+    rights = _origin_rights("massive:apnews.com")
+    with NewsStore(tmp_path / "origin-hidden.db", source_key="test") as store:
+        store.commit([massive(), massive(domain="apnews.com", item="m2")], expected_cursor=None, next_cursor="1")
+        row = store.snapshot("sec-NVDA", limit=20, cursor=None, rights=rights).rows[0]
+        assert (row.source_count, row.publisher_count, row.item_count) == (2, 2, 2)
+        detail = store.story(row.story_id, rights=rights)
+        assert (detail.source_count, detail.publisher_count) == (2, 2)

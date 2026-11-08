@@ -130,6 +130,8 @@
     var lost = A - power;
     var erosionPct = 100 * (1 - 1/factor);   // = 100·(1 − power/A)
     var risePct = 100 * (factor - 1);
+    if(![futureCost, power, lost, erosionPct, risePct].every(isFinite))
+      return {ok:false, msg:"That combination is too extreme to compute — try a smaller amount, rate or fewer years."};
     return {
       ok:true, futureCost:futureCost, power:power, lost:lost,
       erosionPct:erosionPct, risePct:risePct, deflation: i < 0
