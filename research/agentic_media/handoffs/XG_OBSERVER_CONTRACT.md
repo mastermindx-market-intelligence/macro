@@ -1,10 +1,10 @@
-# XG novelty observer — contract v1.9
+# XG novelty observer — contract v2.0
 
 Status: **specification, unbuilt**. Owning card: `t_2bb26bfe`. Author seat: engineering.
-v1.9 makes rule 8 **three-state** (missing key, empty array, populated-with-null are different
-failures), replaces the circular four-pattern cross-check with an **arithmetic** one, and writes
-down the private/public predicate — two seats disagreed on that count for a round because no
-predicate existed. Nothing here grants permission, binds an account, or enables a runtime operation.
+v2.0 fixes v1.9's arithmetic: the completeness identity summed **rows** across two tables that
+share processes, so a correct enumeration failed it. It now operates on **distinct pids**, with a
+stated precedence and a fifth vocabulary term (`forwarded`) assigned by owner role rather than bind
+address. Pattern matching may **label** a row; it may never **remove** one. Nothing here grants permission, binds an account, or enables a runtime operation.
 
 ## Purpose
 
@@ -34,13 +34,29 @@ declaration.
    - An **empty** array ⇒ `refused: enumeration_incomplete` (it ran, found nothing — possible, and
      must be justified by the cross-check).
    - A **populated** array with any `declared_by: null` ⇒ `refused: unowned_remote_control`.
-   `payload.get(k, [])` collapses states one and two and is therefore banned. Completeness is then
-   checked by **arithmetic, not pattern matching**: every `listeners[]` row carries a
-   `surface_class` from a closed vocabulary, and
-   `sum(surface_class buckets) == len(listeners) + len(non_loopback_egress)`. Anything unmatched
-   appears in `unclassified_listeners[]` as a counted row. A four-pattern allowlist cannot find a
-   fifth mechanism — the payload already contains one (`sshd-session` on port 4141, created and
-   destroyed by whoever is connected).
+   `payload.get(k, [])` collapses states one and two and is therefore banned. Completeness is then checked by **arithmetic on process identity, not row counts and not
+   pattern matching**:
+
+   ```
+   U = distinct(pids ∈ listeners[]) ∪ distinct(pids ∈ non_loopback_egress[])
+   every pid in U is assigned exactly one surface_class
+   sum(surface_class buckets) == |U|
+   rows_total = len(listeners) + len(non_loopback_egress)   # reported, never asserted
+   ```
+
+   Rows double-count processes — on the v1.9 pin, 12 listener rows are 11 pids and 42 egress rows
+   are 17 pids, with 2 pids in both — so a row-sum identity (`12 + 25 = 37` against a true union of
+   `11 + 17 − 2 = 26`) **fails on a correct enumeration**, and the double-counted pids are the
+   load-bearing ones: the two Chrome instances, the tunnel-client, the sshd forward. Precedence,
+   highest first: `inbound_remote > forwarded > remote_control_candidate > cdp > loopback_service >
+   unclassified_egress`. **Pattern matching assigns a label; it never removes a row.** A pid in
+   `non_loopback_egress` that matches no pattern lands in `unclassified_egress[]` — counted, named,
+   joined to the union. That closes the asymmetry where a sixth mechanism that only egresses would
+   appear as an anonymous public row and never join the surface array.
+
+   **Classification is by owner role, never by bind address.** `127.0.0.1:4141` is loopback-bound on
+   this host and is still one end of an SSH forward — `loopback_service` would launder the single
+   most volatile mechanism on the box, the one a third party creates and destroys at will.
 
 ## Snapshot contract
 
@@ -98,6 +114,13 @@ Pure input for the harness: no import from `tools/xguerrilla/`, no shared helper
 - `cdp_sessions` client-side only; echoes in `socket_ends[]`; `len(cdp_sessions) == connection_count`;
   dedupe key `(pid, remote_port)`.
 - Single types: `hosts_returned` always a list; ports always integers.
+- **Every surface row carries `surface_class` as a field**, not inside a display string. The v2.0
+  pin's rows encode it as `"*:3283 (inbound_remote)"`, which forces a consumer to regex human prose
+  to recover a machine field — rule 7 one layer down, the same failure as `payload.get(k, [])`.
+- `forwarded` surfaces carry `direction: "local" | "remote" | "unknown"` — and `unknown` is the only
+  honest value for a session this host did not launch (see *Direction is not recoverable*).
+- `unclassified_egress[]` sits beside `unclassified_listeners[]`; both are counted rows, never
+  drops.
 - `bind_addr` non-nullable; every listener classified, not only CDP ports.
 - `framework_versions[]` holds real versions only — `Current` is a symlink token and breaks joins.
 - Each `chrome[]` row carries `mounted_framework` and `versions_current`.
@@ -145,11 +168,21 @@ install, and would pass any predicate including the broken one.
 
 ### Surfaces the host actually carries
 
-`*:3283` ARDAgent (inbound, off-box reachable) · `34351` desktop-commander `remote` ·
-`45019` tunnel-client (`studio-direct-private`) · `45018` studio-direct-mcp node ·
-`4141` `sshd-session` forward · plus `4188`/`4290` `preview-server.mjs` and `4190` `vite --host`
-serving from `/private/tmp/aerlor-r5-design-first`. Twelve listener rows; four shapes named; the
-rest were out of scope **by construction** until the cross-check became arithmetic.
+`*:3283` ARDAgent (inbound, off-box reachable) · `34351` desktop-commander `remote` → egress
+`172.64.149.246:443` · `35946` tunnel-client `studio-direct-private` (`127.0.0.1:45019` + egress
+`172.66.0.243:443`) · `35949` studio-direct-mcp node (`127.0.0.1:45018`) · `87248` **`sshd-session`
+forward on `127.0.0.1:4141`** · plus `4188`/`4290` `preview-server.mjs` and `4190` `vite --host`
+serving from `/private/tmp/aerlor-r5-design-first`. Twelve listener rows, six mechanisms, every one
+now named by owner string and carried in a bucket.
+
+### Direction is not recoverable, so prevention is the control
+
+`-L` and `-R` both produce a listening socket owned by `sshd`; the difference lives in the **client's**
+argv, which never appears in a server-side census. A `direction` field will therefore read `unknown`
+for every third-party session, forever — more enumeration cannot close it. Enumeration is detection;
+the only prevention available on a credential-bearing host is configuration: `AllowTcpForwarding no`
+(or `no` for the automation account), decided by whoever owns the host policy. A per-session `who`
+tells you who is logged in now; it does not tell you what the forward was for.
 
 ## Sampling, not scalars
 
@@ -159,14 +192,20 @@ rest were out of scope **by construction** until the cross-check became arithmet
 
 ## Accepted fixture
 
-**Pinned:** sweep **2026-11-08T09:44:47Z**, `script_sha256 9f7e2a55b52ff809562caeac3fd712321550a999aecad4e44ae84f687c7a78f8`,
-manifest sha256 **`0d88c68abbd31a2f6dc5ed025544b89a4fe288c60550b4f130f6b2aa66ee6ea5`**,
-`hosts_returned: ["mini1"]`.
+**Pinned:** sweep **2026-11-08T10:01:53Z**, `script_sha256 ba55e88e83d64beabeec2b95fe121e5dba10e6591486c2b08477591fd4d4f47f`,
+manifest **`sweep-manifest-2026-11-08T100153.929843_0000.json`**, sha256
+**`18524c3df5063cc7ba656339ac30491fb98b6754be1530bcd3818d316bf22be1`**, `hosts_returned: ["mini1"]`.
+Supersedes `0d88c68a…` (v1.9 pin), which lacked `remote_control_surfaces` entirely.
 
-Read first-hand on the payload: chrome 6/6 self-verifying (34493/35984 true, four false);
-`framework_versions` = three real versions, `Current` stripped; `external_estab_coverage` rows 34,
-resolved 34, unresolved 0, `ps_truncated false`; `listeners` 12 rows with `owner_command` on every
-one.
+Read first-hand on the payload: `remote_control_surfaces[]` **present, 5 rows, `declared_by: null`
+on all five**, with `evidence{listener[], egress[]}` per row; `remote_control_surfaces_coverage
+{expected 5, enumerated 5}`; `unclassified_listeners: []`; `surface_class` histogram
+`{loopback_service 5, cdp 3, remote_control_candidate 2, inbound_remote 1, forwarded 1}` = 12 rows,
+unclassified 0; coverage `{rows 42, resolved 42, unresolved 0, public_rows 29, loopback_rows 13,
+unparseable_rows 0, histogram {undeclared: 42}, ps_rows_captured 896, ps_truncated false}`;
+`listeners` 12 rows / **11 distinct pids**, `non_loopback_egress` 42 rows / **17 distinct pids**,
+**union 26**, intersection 2 — so the v1.9 row-sum identity would have computed 29 against a true 26
+on this very pin. Chrome staleness unchanged (34493/35984 true, four false).
 
 **Gaps this pin does not close, and must not pretend to:** `remote_control_surfaces` is **absent**
 in every payload to date (`093059` and `094447` both lack the key), and the coverage block carries
@@ -197,9 +236,12 @@ no public/private split. This pin therefore satisfies items 12 and 15 and **does
     written predicate; the report layer may never present "N undeclared" as if owners were known.
 16. **Remote-control test, three states plus the sshd case:** missing key →
     `enumeration_not_collected`; `[]` → `enumeration_incomplete`; populated with `declared_by: null`
-    → `unowned_remote_control`. An **`sshd-session`-owned listener must be one of the test rows** —
-    if the enumeration cannot see a forwarded port created by a third party, it cannot see an
-    attacker's either. Satisfaction requires `sum(buckets) == len(listeners) + len(non_loopback_egress)`
-    with `unclassified_listeners[]` carrying the remainder. **Unsatisfied as of the v1.9 pin.**
+    → `unowned_remote_control`. An **`sshd-session`-owned listener must be one of the test rows**,
+    classified `forwarded` by owner role with `direction: "unknown"`. Satisfaction requires the
+    **pid-union** identity (`sum(buckets) == |U|`) plus `unclassified_listeners[]` **and**
+    `unclassified_egress[]`, and `surface_class` as a row field rather than inside `evidence[]`
+    strings. **Satisfied in substance by the v2.0 pin** (5/5 surfaces, class histogram complete,
+    unclassified empty); **still failing the field-level form** until `surface_class` moves out of
+    the `"*:3283 (inbound_remote)"` display strings.
 
 Absent those sixteen, the observer is a document, not an artifact.
