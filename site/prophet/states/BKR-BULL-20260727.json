@@ -1,32 +1,32 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "BKR-BULL-20260727",
-  "asof": "2026-10-30",
-  "phase": "triggered_pre_t1",
-  "detection_phase": "triggered_pre_t1",
-  "management_confidence": 31.5,
-  "raw_confidence": 31.4,
-  "delta_vs_base": -28.5,
+  "asof": "2026-11-07",
+  "phase": "invalidated",
+  "detection_phase": "invalidated",
+  "management_confidence": 10.8,
+  "raw_confidence": 8.0,
+  "delta_vs_base": -49.2,
   "recommended_action": null,
-  "human_state": "Stalling",
+  "human_state": "Closed",
   "components": {
-    "validity": 63.1,
+    "validity": 0.0,
     "progress": 0.0,
-    "pace": 1.1,
-    "retention": 50.0,
-    "overlay": 59.0
+    "pace": 0.0,
+    "retention": 0.0,
+    "overlay": 39.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.711,
+    "dist_to_stop_r": -0.46,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 77.8,
-    "p1": -0.1926,
-    "p2": -0.0963,
+    "horizon_pct_used": 95.6,
+    "p1": -0.9736,
+    "p2": -0.4868,
     "p3": null,
-    "move_r": -0.289,
+    "move_r": -1.46,
     "mfe_r": 0.0,
-    "mae_r": -0.674
+    "mae_r": -1.705
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -36,23 +36,17 @@
   "authority_tier": "display",
   "reliability": {
     "management_confidence": "display \u2014 no forward ledger has passed yet",
-    "recommended_action": "paused \u2014 no closing print since 2026-10-23; a stale price frame carries no current action authority",
+    "recommended_action": "withheld \u2014 canonical forward ledger has closed this plan",
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 1.8310546892053026e-06,
-  "_mae": -4.60000045776367,
+  "_mae": -11.629999237060545,
   "_max_p1": 1.7898872817256127e-07,
   "_first_trigger_ts": "2026-09-26",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 35,
-  "tau": 0.7778,
-  "price_frame": {
-    "state": "stale",
-    "last_close_date": "2026-10-23",
-    "run_asof": "2026-10-30",
-    "lag": 5,
-    "lag_basis": "business_days",
-    "max_lag": 3
-  }
+  "days_elapsed": 43,
+  "tau": 0.9556,
+  "closed": true,
+  "outcome": "INVALIDATED"
 }

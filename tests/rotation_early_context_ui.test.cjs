@@ -34,8 +34,8 @@ test('divergence: absolute legs and correct percent units',()=>{
   const h=render(); has(h,'Defensive leg rising; risk leg falling'); has(h,'+2.00%'); has(h,'-1.00%'); has(h,'+3.03%');
   not(h,'+200.00%'); has(h,'Forecast and sizing: not qualified'); has(h,'Price comparison, not measured fund flows');
 });
-test('both falling is only relative shelter',()=>{
-  const h=pairWindow(W(2,-1,-3)); has(h,'Relative shelter only: both legs falling'); not(h,'Defensive leg rising');
+test('both falling is only a smaller loss',()=>{
+  const h=pairWindow(W(2,-1,-3)); has(h,'Both legs falling; defensive leg fell less'); not(h,'Defensive leg rising');
 });
 test('both rising, flat and defensive weakness remain distinct',()=>{
   has(pairWindow(W(2,1,.5)),'Both legs rising'); has(pairWindow(W(2,0,0)),'Both legs flat');

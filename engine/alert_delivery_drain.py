@@ -46,6 +46,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -54,6 +55,7 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from typing import Callable
 
+from lib import rotation_observation_notification as rotation_obs
 from lib import user_prefs
 from lib.tiers import normalize_tier, tier_rank
 from lib.frozen_delivery_client import FrozenEmailDelivery, FrozenEmailAdmission, origin as delivery_origin
@@ -482,6 +484,28 @@ class Decision:
     lang: str = "en"
 
 
+def _parse_not_after(value) -> datetime | None:
+    """Parse the supported B21 UTC profile, or return None for an invalid bound.
+
+    Contract §5 requires one UTC instant. Accept an extended Gregorian date,
+    a full HH:MM:SS clock, an optional dot plus 1–6 fractional digits, and
+    either Z or +00:00. The producer uses this profile with Z; broader ISO
+    forms must not silently become valid delivery bounds.
+    """
+    if not isinstance(value, str):
+        return None
+    if re.fullmatch(
+        r"[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}"
+        r"(?:\.[0-9]{1,6})?(?:Z|\+00:00)", value
+    ) is None:
+        return None
+    text = value[:-1] + "+00:00" if value.endswith("Z") else value
+    try:
+        return datetime.fromisoformat(text)
+    except ValueError:
+        return None
+
+
 def decide_row(row: dict, *, user_state: str, record: dict | None,
               ent: TypedRead, suppression: TypedRead, now_utc: datetime,
               frozen_admission: FrozenEmailAdmission | None = None) -> Decision:
@@ -542,6 +566,16 @@ def decide_row(row: dict, *, user_state: str, record: dict | None,
         if not isinstance(frozen_admission,FrozenEmailAdmission) or not frozen_admission.matches(row):
             return Decision(action="unevaluable", reason="options_exposure_node_admission_unavailable",
                             to_email=to_email, lang=prefs.lang)
+    # DR3 owns its expiry after the incumbent quiet-hours decision.
+    # Other bounded payloads need a valid instant whenever the key is present.
+    if (isinstance(payload, dict) and "not_after" in payload
+            and not rotation_obs.claims_rotation_observation(payload)):
+        bound = _parse_not_after(payload["not_after"])
+        if bound is None:
+            return Decision(action="unevaluable", reason="not_after_unparsable")
+        if now_utc >= bound:
+            return Decision(action="suppress", reason="mandatory_fact_stale",
+                            to_email=to_email, lang=prefs.lang)
     if prefs.quiet_note == "unparsed":
         # An unrecognised quiet_hours shape must never fail OPEN to a silent send --
         # surface it as unevaluable (typed, counted, visible in the run receipt).
@@ -552,6 +586,33 @@ def decide_row(row: dict, *, user_state: str, record: dict | None,
     if action == "defer":
         return Decision(action="defer", reason="quiet_hours", deliver_after=deliver_after,
                         to_email=to_email, lang=prefs.lang)
+    # Defensive-rotation observations (DR3) are the one category with its own consumer
+    # contract, and it is consulted HERE -- after every ordinary preference/category
+    # gate above, and immediately before the send. Placing it lower would let an
+    # opted-out reader's malformed payload be reported as a contract failure instead of
+    # the consent decision it actually is; placing it earlier would let a
+    # category-filtered row be answered by the rotation gate. Placement is the point.
+    #
+    # Both outcomes reuse the EXISTING decision vocabulary and the EXISTING outbox
+    # status set: 'unevaluable' leaves the row pending and counts it, 'suppress' writes
+    # status='suppressed' with this reason as last_error (migration0013 already admits
+    # 'suppressed'). No new enum, no new send_fn, no new retry owner. An expired
+    # observation is a SUPPRESSION, not a retry: the next tick re-derives the same
+    # answer, and pushing deliver_after into the future to rescue it would be exactly
+    # the artificial deferral the contract forbids.
+    #
+    # PROSE CONSTRAINT, learned the hard way: the comment above avoids every substring
+    # tests/test_portfolio_changes.py counts across this module. That guard proves the
+    # alert drain never grew an address opt-out leg, which is what keeps it from being a
+    # drop-in home for the portfolio digest. The guard belongs to another owner and stays
+    # intact; a comment that trips it gets reworded here, not relaxed there.
+    if rotation_obs.claims_rotation_observation(payload):
+        verdict = rotation_obs.evaluate(payload, now_utc=now_utc)
+        if verdict.action == "unevaluable":
+            return Decision(action="unevaluable", reason=verdict.reason)
+        if verdict.action == "suppress":
+            return Decision(action="suppress", reason=verdict.reason,
+                            to_email=to_email, lang=prefs.lang)
     return Decision(action="send", reason="ok", to_email=to_email, lang=prefs.lang)
 
 
