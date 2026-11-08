@@ -1,0 +1,81 @@
+{
+  "schema": "news.ci_conflict_composition.v1",
+  "owned_head": "3436a33930c4f4a95f6028806e5947517584fb47",
+  "main": "73a0d5e7dd4603489e40cd83d9b6ef70e584a650",
+  "merge_base": "fca96b90d2d8f05a5ac1f57cd7f2cbe100e47445",
+  "original_ci": {
+    "run_id": 42464395558,
+    "attempt": 2,
+    "conclusion": "success",
+    "scope": "original owned head only"
+  },
+  "actual_conflicts": 2,
+  "conflict_file": "tests/test_ci_pack.py",
+  "manifest_merge": "clean three-way; only ticker-news-qbus differs from current main",
+  "production_estimator_blob": "471640444ecdda2496a14ffa38f66e4d0b9c5202",
+  "weights": {
+    "base": {
+      "ticker-news-qbus": 106,
+      "prophet-lab": 64
+    },
+    "main": {
+      "ticker-news-qbus": 106,
+      "prophet-lab": 67
+    },
+    "head": {
+      "ticker-news-qbus": 111,
+      "prophet-lab": 64
+    },
+    "merged": {
+      "ticker-news-qbus": 111,
+      "prophet-lab": 67
+    }
+  },
+  "main_probes": [
+    [
+      "templates/index.html",
+      137,
+      5923
+    ],
+    [
+      "scripts/build_free_content.py",
+      138,
+      5944
+    ],
+    [
+      "engine/prophet/plan_book.py",
+      131,
+      5681
+    ]
+  ],
+  "composed_probes": [
+    [
+      "templates/index.html",
+      137,
+      5923
+    ],
+    [
+      "scripts/build_free_content.py",
+      138,
+      5949
+    ],
+    [
+      "engine/prophet/plan_book.py",
+      131,
+      5681
+    ]
+  ],
+  "all_non_owner_jobs_equal_current_main": true,
+  "all_non_docstring_test_ast_except_explicit_probe_delta_equal_current_main": true,
+  "preserved_limits": [
+    "all job-count bounds",
+    "ten-pack ceiling",
+    "runtime limits",
+    "selectors",
+    "admission rules"
+  ],
+  "resolved_manifest_blob": "a677a4199e0b8bd04b376139696affc8249ba993",
+  "resolved_test_blob": "807f55173098eaab1dd3b369974035576ab7174d",
+  "qualification": "bounded exact-source composition; not a new whole-repository packing census or new-head CI result",
+  "lease_effects": "none; unarmed same-carrier content repair; no controller update-branch or refresh lease mutation"
+}
