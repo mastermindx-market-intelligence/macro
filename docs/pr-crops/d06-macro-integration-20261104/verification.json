@@ -1,0 +1,148 @@
+{
+  "schema": "d06.macro_current_main_integration.v2",
+  "status": "passed",
+  "verified_at": "2026-11-04T13:24:52.327260+00:00",
+  "source_parent": "4ac468b3a552559ec20afa14e71b19ea3a1ae680",
+  "source_binding": "Final working-tree hashes below; publication commit recorded in PR and canonical return.",
+  "integration_commit": "4ac468b3a552559ec20afa14e71b19ea3a1ae680",
+  "integration_tree": "cd20a7b86184173ab4836d406d8f890b7643dece",
+  "integration_parents": [
+    "ede62cbbc69441aca64973ee638c55be544cfc4d",
+    "a8a5d3523614777d88eb2579d6efab52cd862e33"
+  ],
+  "operation_id": "d06-macro-implementation-20261104-c4",
+  "integration_commit_action": "812de4ebcbb3e69864576ec68f10543f1d4febd6bc8db53e9dd52a385bc293f5",
+  "source_hashes": {
+    "tests/test_d06_market_structure.py": "11e6fd717650a59038ee4737f2336d7614b1cdd60ae6a699101b627a620d19f3",
+    "tests/test_build_market_structure_page.py": "c80d685a1fb398197d9cd5fa3a714590efde217d392aacd50bbc5a62c3778e8e",
+    "tests/test_market_structure_glance_copy.py": "0a4ebe82cb41063a8bdc29a245fafc53062219c45cc7f662d169fac292320951",
+    "tests/test_d06_stage_analysis.py": "8c64b425b3b81e8a029000774cda2bd3cc10663224c6e253ae83667c6c96a935",
+    "tests/test_stage_analysis_page.py": "5ecda94ba207b1a785ca6ea35f5155d6db6f3b764c29bfb1fec625c7e0ebd902",
+    "tests/test_d06_spvector.py": "ff9540af2fc68792d3a81067218104b21a29b75e139d61ce5b224de547919de4",
+    "tests/test_spvector_page.py": "4713e83987ac0f22f05027889a2191c9e85c4b3f023e62e7d1835f7a02ae16fb",
+    "tests/test_spvector_gate_chips.py": "a861d95bce948b7c49ff491a14c44dfda5171ab5b84fcc700c0ddce5180d5014",
+    "tests/test_spvector_scorecard_basis.py": "f179ddc0104f417935834bfc9ac53beafc94d17619c70d998d0a7ef5974e4f64",
+    ".github/ci/legacy-jobs.yml": "a96aae8e566aaefc736be8821cb15074e368d4152d41295beeac405e43b94cdf",
+    "templates/market_structure.html.j2": "f34e88b11467e73b88ffeb8438c1acddbe21f681d948373cb06f59be541ae1bb",
+    "templates/stage_analysis.html.j2": "fe8307c9ceb5b6f562ec3d51541f516c1f0a92ce00dba5611b9d98ef8fa2f72b",
+    "templates/spvector.html.j2": "8c6ea6ddfcd23fd4444230db9cecf65b60613338dbfac344a7641e1755d8c15f",
+    "scripts/build_market_structure_page.py": "2c1567a3d40679c89b457ca4480c398d42683de13424f3b7ef3381fe87707c35",
+    "scripts/build_stage_analysis_page.py": "af4a2cde67fe3da8bbad965991a3918ee1179fccd019cd57dfc52afcf20ab751",
+    "scripts/build_spvector.py": "c803560a7836094f9c965960e16c3c3ace8b28ba89f616aa42fd5794fbf4f5f1",
+    "scripts/verify_d06_macro.py": "5855f2a79e94b30b8cd2127058b4f3fccc00dd7986ba65e2c5df9133f312ff52",
+    "scripts/d06_macro_fixtures.py": "80d440f93d4d55ff39570a47ca2c87424d0b260f0c52c065125ca0eb7b467046",
+    "site/market_structure.html": "b69a01d3a916f465173414d30c23df78bed067b874cf229692a04b42821b8cbb",
+    "site/stage_analysis.html": "984a78b8678d28a949c4a7d2aa1756c199275ca5fff81eeefad02341e63077c2",
+    "site/spvector.html": "faf1dcca2a5916e0ce4a6792b607fc755d80797b3ec932c9327554247b3b789e",
+    "tests/fixtures/market_structure_latest.json": "fddfa5070492aa4a58c1154f3d05a0edb12e0636399aa796d22393d1e6f3854d",
+    "docs/pr-crops/d06-macro-ci-20261104/run_browser.py": "cd6d69a5a9e4bc83eec7c1bd8e8b00494808a3daf95f0fe36c8a2857a76390b8",
+    "design_refs/sector-paper-20261021/copy_deck.json": "c286b25ba4cc7dad14cfe5a33366fa07a213062613bae24b0b6174239f1149f1",
+    "tests/test_cycle_ontology.py": "299361e9d9e1c05a2639e1e6511735eae9972c67b8995b018047e1e789bc90b0",
+    "engine/cycle_ontology.py": "b5fff75d7ccedbc1c6e51932ff229d076a30061ad93ba07cfbdc39c4c613fe20",
+    "tests/test_ci_pack.py": "58b1de61bb5ca26d410b7d2ab3df9ec747ded5e1202e95795198ca0d055a309d",
+    "tests/test_contract_delta.py": "c190955bdaf434cf7b7203cab2588deedbf5bd03079c2a1bada0c1c6c1df79cc",
+    "scripts/check_contract_delta.py": "894f4e66dd323d5b17be2fe570bfd2fcb8456f92404d464a65b5b16f5c6a278f",
+    "scripts/run_ci_pack.py": "c418c319391957b790e79bdd9f0bf0c1a52425a4eae73aac5c7575654f3d7e58"
+  },
+  "changed_since_integration": [
+    "templates/market_structure.html.j2",
+    "site/market_structure.html"
+  ],
+  "integration_phase": {
+    "receipt": "integration-before-locale-fix.json",
+    "checks": {
+      "focused_tests": 27,
+      "overlaps_prior_253": true,
+      "inline_js_files": 2,
+      "inline_js_exit": 0,
+      "ci_manifest_exit": 0,
+      "market_matrix": 6,
+      "market_edge_cases": 2,
+      "actual_contexts": 4,
+      "stage_readers_per_context": 12,
+      "stage_requests_each": 1
+    },
+    "source_binding": "browser-source-binding.json",
+    "runtime_pngs": 12
+  },
+  "final_locale_phase": {
+    "receipt": "market-locale-fix/verification.json",
+    "baseline_correct_color_bars": 50,
+    "baseline_total_bars": 75,
+    "producer_regimes": {
+      "long": 50,
+      "short": 25
+    },
+    "color_contexts": 4,
+    "matches_per_context": 75,
+    "classification_changes": 0,
+    "focused_tests": 85,
+    "overlaps_prior_253": true,
+    "market_matrix": 6,
+    "market_edge_cases": 2,
+    "canonical_cells": 24,
+    "canonical_integrity": "canonical-integrity.json",
+    "source_stable": true
+  },
+  "checked_input_files": 415,
+  "inputs_unchanged_after_final_proof": true,
+  "spvector_input_files": 398,
+  "producer_auxiliary_writes": false,
+  "guards": {
+    "ci_manifest_exit": 0,
+    "design_ratchet_exit": 0,
+    "visual_evidence_exit": 0,
+    "receipt": "final-guards.json"
+  },
+  "root_visual_qa": {
+    "integrated_samples": [
+      "market-1440-light-en.png",
+      "market-390-light-zh.png",
+      "spv-actual-1440-en.png",
+      "spv-actual-390-zh.png",
+      "stage-actual-1440-en.png",
+      "stage-actual-390-zh.png"
+    ],
+    "final_samples": [
+      "market-locale-fix/gex-colors-fixed-1440-dark-zh.png",
+      "market-locale-fix/gex-colors-fixed-390-light-zh.png"
+    ],
+    "finding": "Final Chinese dealer histories distinguish long red and short green; observations, zero line and price/flip lines remain intact. Desktop and phone reflow checks pass."
+  },
+  "runtime_pngs": 25,
+  "canonical_pngs": 24,
+  "prior_proof": [
+    {
+      "path": "docs/pr-crops/d06-macro-20261104/manifest.json",
+      "members": 63,
+      "aggregate_sha256": "68bbf8be117fe16a002368a214a5ee0a0709c8784ae70385f1f5d58dc5d7b0f9",
+      "byte_identical": true
+    },
+    {
+      "path": "docs/pr-crops/d06-macro-ci-20261104/manifest.json",
+      "members": 204,
+      "aggregate_sha256": "7d72bbf78ee75edfd01942882db6bbb85d221b9251f3615151ed20bc548c6762",
+      "byte_identical": true
+    }
+  ],
+  "whitespace": {
+    "clean_claim": false,
+    "finding": "Generated blank-line indentation and historical diagnostic whitespace retained; final locale token repair is separate."
+  },
+  "artifact_inventory": "manifest.json",
+  "release": {
+    "draft": true,
+    "ready": false,
+    "pr_merged": false,
+    "deployed": false,
+    "production_acceptance": false,
+    "hosted_ci_success_claimed": false
+  },
+  "limits": [
+    "Local browsers and emulated viewports; no physical-device or production acceptance.",
+    "415 checked inputs are unchanged; this is not live-feed completeness or model/backtest recertification.",
+    "Earlier72 canonical captures and integration12 runtime captures retain their own source boundaries; currentMarket24 canonical cells are separate.",
+    "27 and85 focused test counts overlap prior suites; no summed unique-test total.",
+    "Canonical capture records access and synthetic-state gaps and a false heuristic asof probe; actual-data receipts establish the displayed dates separately."
+  ]
+}
