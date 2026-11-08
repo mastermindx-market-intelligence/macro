@@ -18,6 +18,8 @@ from __future__ import annotations
 
 import copy
 import fcntl
+import hmac
+import secrets
 import json
 import os
 import re
@@ -629,20 +631,14 @@ def _read_raw(
             raise MarketMemoryTechnicalStoreError(
                 f"{label} exceeds its safe size bound"
             )
-        chunks: list[bytes] = []
-        remaining = limit + 1
-        while remaining > 0:
-            chunk = os.read(descriptor, min(65_536, remaining))
-            if not chunk:
-                break
-            chunks.append(chunk)
-            remaining -= len(chunk)
+        body = market_memory_pit._read_bounded_descriptor(
+            descriptor, size=metadata.st_size, limit=limit
+        )
         after = os.fstat(descriptor)
     except OSError as exc:
         raise MarketMemoryTechnicalStoreError(f"{label} cannot be read") from exc
     finally:
         os.close(descriptor)
-    body = b"".join(chunks)
     if (
         metadata.st_dev != after.st_dev
         or metadata.st_ino != after.st_ino
@@ -1885,13 +1881,45 @@ def _load_generation(
         current_body = previous_body
 
 
-def _load_capture(
+def _pinned_inputs_from_receipt(receipt, bodies):
+    def stored_headers(role: str) -> tuple[tuple[str, str], ...]:
+        ref = receipt["source_bodies"][role]
+        return (
+            ("content-type", ref["content_type"]),
+            ("content-length", str(ref["bytes"])),
+            ("etag", f'"{ref["etag_md5"]}"'),
+            ("last-modified", ref["last_modified"]),
+        )
+
+    pinned_inputs = technical.PinnedTechnicalInputs(
+        fetched=technical.FetchedSpyDailyInputs(
+            manifest_body=bodies["publish_manifest"],
+            manifest_headers=stored_headers("publish_manifest"),
+            spy_body=bodies["spy_daily_parquet"],
+            spy_headers=stored_headers("spy_daily_parquet"),
+        ),
+        pinned_sources=technical.PinnedTechnicalSources(
+            pinned_commit=receipt["source_commit"],
+            canary_config_body=bodies["canary_identity_config"],
+            calendar_module_body=bodies["xnys_calendar_module"],
+            license_record_body=bodies["massive_entitlement_record"],
+            price_basis_contract_body=bodies["technical_price_basis_contract"],
+            git_blob_oids=tuple(
+                (role, receipt["source_bodies"][role]["git_blob_oid"])
+                for role in _GIT_SOURCE_ROLES
+            ),
+        ),
+    )
+    return pinned_inputs
+
+
+def _load_capture_metadata(
     root: Path,
     *,
     manifest: Mapping[str, Any],
     generation: Mapping[str, Any],
     capture_id: str,
-) -> StoredTechnicalActualOutput:
+):
     matches = [
         dict(entry)
         for entry in generation["captures"]
@@ -1962,6 +1990,19 @@ def _load_capture(
         raise MarketMemoryTechnicalStoreError(
             "stored source observation differs from its receipt"
         )
+    return receipt, prepared, bodies, source_raw, source_body
+
+
+def _load_capture(
+    root: Path,
+    *,
+    manifest: Mapping[str, Any],
+    generation: Mapping[str, Any],
+    capture_id: str,
+) -> StoredTechnicalActualOutput:
+    receipt, prepared, bodies, source_raw, source_body = _load_capture_metadata(
+        root, manifest=manifest, generation=generation, capture_id=capture_id
+    )
     feature_ref = receipt["feature_object"]
     feature_raw, feature_body = _read_json(
         _feature_object_path(root, feature_ref["snapshot_id"]),
@@ -1976,34 +2017,7 @@ def _load_capture(
             "stored feature object differs from its receipt"
         )
 
-    def stored_headers(role: str) -> tuple[tuple[str, str], ...]:
-        ref = receipt["source_bodies"][role]
-        return (
-            ("content-type", ref["content_type"]),
-            ("content-length", str(ref["bytes"])),
-            ("etag", f'"{ref["etag_md5"]}"'),
-            ("last-modified", ref["last_modified"]),
-        )
-
-    pinned_inputs = technical.PinnedTechnicalInputs(
-        fetched=technical.FetchedSpyDailyInputs(
-            manifest_body=bodies["publish_manifest"],
-            manifest_headers=stored_headers("publish_manifest"),
-            spy_body=bodies["spy_daily_parquet"],
-            spy_headers=stored_headers("spy_daily_parquet"),
-        ),
-        pinned_sources=technical.PinnedTechnicalSources(
-            pinned_commit=receipt["source_commit"],
-            canary_config_body=bodies["canary_identity_config"],
-            calendar_module_body=bodies["xnys_calendar_module"],
-            license_record_body=bodies["massive_entitlement_record"],
-            price_basis_contract_body=bodies["technical_price_basis_contract"],
-            git_blob_oids=tuple(
-                (role, receipt["source_bodies"][role]["git_blob_oid"])
-                for role in _GIT_SOURCE_ROLES
-            ),
-        ),
-    )
+    pinned_inputs = _pinned_inputs_from_receipt(receipt, bodies)
     candidate = technical.TechnicalSnapshotBundle(
         pinned_inputs=pinned_inputs,
         source_observation=source_raw,
@@ -2428,3 +2442,122 @@ __all__ = [
     "pin_technical_actual_output_generation",
     "validate_technical_actual_output_store_root",
 ]
+
+
+_RETAINED_METADATA_TOKEN = object()
+_RETAINED_METADATA_SEAL_KEY = secrets.token_bytes(32)
+
+
+@dataclass(frozen=True)
+class RetainedSourceBarMetadataCapability:
+    """Owner-sealed date-only metadata; construction alone grants no access."""
+    _token: object
+    _body: bytes
+    _body_sha256: str
+    _resource: bytes
+    _policy_id: str
+    _seal: bytes
+
+
+def _metadata_seal(body, resource, policy_id):
+    binding = market_memory_pit._canonical_bytes({
+        "body_sha256": _digest(body), "resource_sha256": _digest(resource),
+        "policy_id": policy_id})
+    return hmac.digest(_RETAINED_METADATA_SEAL_KEY, binding, "sha256")
+
+
+def _authorize_retained_metadata(policy, action, resource):
+    if (type(getattr(policy, "policy_id", None)) is not str
+            or not 1 <= len(policy.policy_id) <= 256
+            or not callable(getattr(policy, "check", None))):
+        raise PermissionError("named technical metadata policy required")
+    result = policy.check(action, copy.deepcopy(resource))
+    if result is not None and result is not True:
+        raise PermissionError("technical metadata authorization refused")
+
+
+def read_retained_source_bar_metadata(
+    root: str | Path, *, technical_pin: PinnedTechnicalGenerationSnapshot,
+    source_observation_id: str, policy: object,
+) -> RetainedSourceBarMetadataCapability:
+    """Authenticate exact retained source coverage without opening price values.
+
+    The assigning owner must supply its current metadata-use policy. This is
+    an internal owner seam, not an installed grant or public endpoint.
+    """
+    if type(technical_pin) is not PinnedTechnicalGenerationSnapshot:
+        raise MarketMemoryTechnicalStoreError("exact technical generation pin required")
+    if type(source_observation_id) is not str or not _SOURCE_ID.fullmatch(source_observation_id):
+        raise MarketMemoryTechnicalStoreError("exact source observation required")
+    resource = {"profile": STORE_PROFILE, "store_id": technical_pin.store_id,
+                "generation_id": technical_pin.generation_id,
+                "generation_sha256": technical_pin.generation_sha256,
+                "source_observation_id": source_observation_id}
+    _authorize_retained_metadata(policy, "read_retained_source_bar_metadata", resource)
+    with market_memory_pit.bounded_owner_reads(maximum_bytes=64 * 1024 * 1024):
+        store_root = validate_technical_actual_output_store_root(root)
+        pinned = pin_technical_actual_output_generation(
+            store_root, generation_id=technical_pin.generation_id, maximum_capture_count=256)
+        if pinned != technical_pin:
+            raise MarketMemoryTechnicalStoreError("technical pin differs from persisted generation")
+        matches = [entry for entry in pinned.captures
+                   if entry.source_observation_id == source_observation_id]
+        if len(matches) != 1:
+            raise MarketMemoryTechnicalStoreError("source absent or ambiguous in exact generation")
+        entry = matches[0]
+        receipt, prepared, bodies, source, source_body = _load_capture_metadata(
+            store_root, manifest={"store_id": pinned.store_id},
+            generation={"captures": [value.as_dict() for value in pinned.captures]},
+            capture_id=entry.capture_id)
+        try:
+            metadata = technical.read_source_bar_metadata(_pinned_inputs_from_receipt(receipt, bodies))
+        except technical.MarketMemoryTechnicalObservationError as exc:
+            raise MarketMemoryTechnicalStoreError("source metadata authentication failed") from exc
+        if (metadata["source_observation"] != source
+                or market_memory_pit._canonical_bytes(metadata["source_observation"]) != source_body
+                or source["source_observation_id"] != source_observation_id):
+            raise MarketMemoryTechnicalStoreError("full source metadata differs from retained evidence")
+        # Receipt/prepared validators bind the feature reference. Opening its
+        # body would materialize prices and is deliberately forbidden here.
+        value = {"schema": "market_memory.retained_source_bar_metadata.v1",
+                 **resource, "capture_id": entry.capture_id,
+                 "capture_receipt_sha256": entry.receipt_sha256,
+                 "revision_id": entry.revision_id,
+                 "first_observed_at": entry.first_observed_at,
+                 "available_at": entry.first_observed_at,
+                 "source_commit": receipt["source_commit"],
+                 "source_observation_sha256": _digest(source_body),
+                 "source_bodies": {role: {key: ref[key] for key in ("sha256", "bytes")}
+                                   for role, ref in receipt["source_bodies"].items()},
+                 "feature_ref": {key: receipt["feature_object"][key]
+                                 for key in ("snapshot_id", "sha256", "bytes")},
+                 "feature_body_read": False,
+                 "freshness": _freshness_receipt(session=source["session"],
+                     manifest_last_modified=receipt["source_bodies"]["publish_manifest"]["last_modified"],
+                     first_observed_at=entry.first_observed_at),
+                 **metadata}
+        _authorize_retained_metadata(policy, "disclose_retained_source_bar_metadata", resource)
+        body = market_memory_pit._canonical_bytes(value)
+        return RetainedSourceBarMetadataCapability(
+            _RETAINED_METADATA_TOKEN, body, _digest(body), market_memory_pit._canonical_bytes(resource), policy.policy_id,
+            _metadata_seal(body, market_memory_pit._canonical_bytes(resource), policy.policy_id))
+
+
+def disclose_retained_source_bar_metadata(
+    capability: RetainedSourceBarMetadataCapability, *, policy: object,
+) -> dict[str, Any]:
+    if (type(capability) is not RetainedSourceBarMetadataCapability
+            or capability._token is not _RETAINED_METADATA_TOKEN
+            or type(capability._body) is not bytes
+            or _digest(capability._body) != capability._body_sha256
+            or capability._policy_id != getattr(policy, "policy_id", None)
+            or type(capability._resource) is not bytes or type(capability._seal) is not bytes
+            or not hmac.compare_digest(capability._seal, _metadata_seal(
+                capability._body, capability._resource, capability._policy_id))):
+        raise PermissionError("original technical metadata capability required")
+    value = json.loads(capability._body)
+    resource = json.loads(capability._resource)
+    if any(value.get(key) != item for key, item in resource.items()):
+        raise PermissionError("technical metadata capability binding differs")
+    _authorize_retained_metadata(policy, "disclose_retained_source_bar_metadata", resource)
+    return value
