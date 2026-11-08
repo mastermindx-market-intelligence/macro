@@ -549,6 +549,10 @@ def classify_head_failure(
         return "pr_ci_contract_change", "semantic step execution spec differs on exact base"
     base_outcome = base_step.get("outcome")
     if base_outcome == "passed":
+        # A later successful replay cannot attribute an unsigned failure (for
+        # example, dependency acquisition before tests) to the candidate.
+        if head_step.get("failure_signature") is None:
+            return "unknown", "head failure signature is unavailable despite exact-base pass"
         return "pr_regression", "same semantic proof passes on exact base"
     if base_outcome in {"not_run_prior_failure", "infrastructure_blocked", "timed_out"}:
         return "unknown", "exact base did not reach a comparable semantic failure"

@@ -364,6 +364,47 @@ def test_exact_base_cases_a_through_i(replay: dict, expected: str) -> None:
     assert evidence["status"] == ("clear" if expected == "inherited_base" else "failure")
 
 
+@pytest.mark.parametrize(
+    ("run_id", "subject_head"),
+    [
+        ("42470575670", "967bb5e9c04e163ca8cca40d562a500b3596b814"),
+        ("42470572868", "7de5e640cb25be87306617bb337f23e84b69beab"),
+    ],
+)
+def test_failure_without_signature_is_not_attributed_by_later_base_pass(
+    run_id: str, subject_head: str,
+) -> None:
+    # Retained #10757/#10754 cases: pinned Caddy acquisition returned HTTP 504
+    # before pytest; the later exact-base execution passed. This is a projection
+    # of that evidence, not another execution or a fabricated test signature.
+    plan = _plan()
+    plan.update(
+        workflow_run_id=run_id,
+        subject_head_sha=subject_head,
+        base_sha="09a102098b7656cf62cc3c9712451798e18afe32",
+        changed_from="09a102098b7656cf62cc3c9712451798e18afe32",
+    )
+    plan["plan_sha256"] = proof.authoritative_plan_sha256(plan)
+    replay = _base_replay(a_outcome="passed")
+    replay["tested_tree_sha"] = plan["base_sha"]
+    fragment = _fragment(
+        plan=plan, a_outcome="failed", a_signature=None, replay=replay,
+    )
+    original = copy.deepcopy(fragment)
+
+    evidence = _reconcile(fragment, plan=plan)
+
+    step = evidence["jobs"][0]["steps"][0]
+    assert step["classification"] == "unknown"
+    assert "signature" in step["detail"]
+    assert step["outcome"] == "failed"
+    assert step["failure_signature"] is None
+    assert evidence["status"] == "failure"
+    loaded = proof.load_semantic_evidence(evidence, advertised=True)
+    assert not proof.semantic_gate_verdict(loaded.evidence).clear
+    assert fragment == original
+
+
 def test_same_step_base_plus_new_failure_is_not_inherited() -> None:
     head = {"atoms": ["a", "b"], "sha256": proof.canonical_sha256(["a", "b"])}
     base = {"atoms": ["a"], "sha256": proof.canonical_sha256(["a"])}
