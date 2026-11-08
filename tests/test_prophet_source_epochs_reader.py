@@ -277,3 +277,57 @@ def test_absent_book_keeps_existing_loading_surface():
                          "html.parser")
     assert page.select_one("#us-plan-block [aria-busy=true]")
     assert page.select_one("#us-prophet-source-epochs") is None
+
+
+def test_source_epoch_refusal_preserves_neutral_edges_and_accessible_status():
+    """The actual refusal callout keeps its warning fill without an edge rail."""
+    import re
+
+    rendered = _env().get_template("_prophet_source_epochs.html.j2").render(
+        us_prophet_source_epochs={"relation": "UNAVAILABLE"})
+    page = BeautifulSoup(rendered, "html.parser")
+    refusal = page.select_one("#us-prophet-epoch-refusal.epoch-refusal")
+    assert refusal is not None and refusal.get("role") == "status"
+    assert refusal.has_attr("hidden")
+    assert "source identities could not be matched" in refusal.select_one(".l-en").get_text()
+    assert "来源身份与此页面不匹配" in refusal.select_one(".l-zh").get_text()
+    assert page.select_one("#us-prophet-source-epochs")["data-settlement-status"] == "PENDING"
+
+    css = "\n".join(style.get_text() for style in page.find_all("style"))
+    css = re.sub(r"/\*.*?\*/", "", css, flags=re.S)
+    rules = {}
+    refusal_declarations = []
+    for selector_text, declaration_text in re.findall(r"([^{}]+)\{([^{}]*)\}", css):
+        declarations = [
+            (name.strip().lower(), " ".join(value.strip().lower().split()))
+            for declaration in declaration_text.split(";") if ":" in declaration
+            for name, value in [declaration.split(":", 1)]
+        ]
+        for selector in selector_text.split(","):
+            selector = " ".join(selector.split())
+            rules.setdefault(selector, {}).update(declarations)
+            if re.search(r"(?:\.epoch-refusal|#us-prophet-epoch-refusal)\b", selector):
+                refusal_declarations.extend(declarations)
+
+    assert refusal_declarations, "inspect every rule that can style the refusal"
+    edge_properties = (
+        "border-left", "border-right", "border-top", "border-bottom",
+        "border-inline", "border-block",
+    )
+    for name, value in refusal_declarations:
+        if name.startswith(edge_properties):
+            assert value in {"none", "transparent"} or re.fullmatch(
+                r"0(?:px|rem|em|%)?(?:\s+(?:none|solid|transparent))*", value
+            ), f"refusal edge accent: {name}: {value}"
+        if name == "box-shadow":
+            assert "inset" not in value, "do not replace the removed rail with an inset rail"
+        if name == "border":
+            assert value in {"none", "0", "1px solid var(--line)"}
+
+    refusal_style = dict(refusal_declarations)
+    assert refusal_style["padding"] == "10px 12px"
+    assert refusal_style["background"] == "var(--surface-warn-subtle)"
+    assert rules[".mx-source-epochs details"]["border"] == "1px solid var(--line)"
+    focus = rules[".mx-source-epochs summary:focus-visible"]
+    assert focus["outline"] == "2px solid var(--info)"
+    assert focus["outline-offset"] == "2px"
