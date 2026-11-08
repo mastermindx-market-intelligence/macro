@@ -343,3 +343,85 @@ Machine-readable source bindings and exact test commands are in
 merge, deployment, live activation, native-owner qualification, entitlement,
 model and trading boundaries remain. The next implementation is R10's durable
 correction-admission fence; it is not included in R9b.
+
+
+## R9c — F0 declaration and receipt binding repair (2026-11-08)
+
+This bounded continuation audits the public declarations at source commit
+`9239d53f8b5b5ef20d7c88980af5682603813916`. It does not repeat the historical
+application, native-owner, rights or production audit. The current Chairman's
+Macro source-healing assignment owns this five-path amendment on the original
+#6712 carrier; the old dirty checkout and its distinct runtime effects remain
+untouched. Draft/HOLD remains for the broader source and product gates.
+
+### Actual difference and retained history
+
+The exact registry and fixture bytes named by the previous F0 receipt exist at
+accepted commit `a7e09a974eac26a3cdf5f85491962b19013e122e`. Compared with
+those bytes, the current ownership registry and compatible fixture each change
+only the Trial Facts adapter's declared callable: `router` becomes
+`trial_facts_router`. Every other byte in both records is preserved. The source
+registry is byte-identical. The original `22cf8a9f...` fields are older shared
+lineage, not the registry postimages named by that receipt; they are retained.
+
+The old receipt is preserved byte-for-byte in
+[`biocatalyst_f0_delta_reconciliation_receipt.2026-08-11.json`](../../../data/biocatalyst/fixtures/biocatalyst_f0_delta_reconciliation_receipt.2026-08-11.json).
+Its file SHA-256 remains
+`ac099a11ec101f349e16a5d510a7e787b285f60ddac3c84949df8e69c5ee4c78`,
+and its original eligibility-promotion assertions remain attached to that
+historical object. The retained Capital Structure promotion is not repeated.
+
+### Current successor and exact bindings
+
+The schema-pinned current `.v2.json` path now holds successor
+`biocatalyst_f0_delta_c0e012af5147a0530ca61fcb`, dated `2026-11-08T17:40:50Z`,
+with state `reconciled_no_eligibility_change`. The audited commit is9239d53f;
+the ownership and fixture lineage remains22cf8a9f. All nine plane dispositions
+retain their prior final eligibility, including Capital Structure true-to-true.
+Every `eligibility_changed` is false. The evidence and inspected-path lists now
+state the public-record comparison actually performed; they do not inherit the
+older application-inspection claims as new work.
+
+| Binding | SHA-256 |
+| --- | --- |
+| Current ownership registry | `a873329740285c8765b687c3416aeb72655c1309b582ccc046e68d5b00e45efa` |
+| Current adapter fixture | `b6ba52dbd49395c05d948040d2b94c4e535a778e589459da84df5896a9b1e951` |
+| Unchanged source registry | `bf19c50a80fc7611f8b53267e16acf4a234cfa7ca3a0afb6336a12781db41785` |
+| Current complete serialized receipt | `c66678878bae40f0f98e6a8247f6a564a5f348d9e9e00f31adbd99871a9aaf9d` |
+| Current receipt canonical content | `c0e012af5147a0530ca61fcb631583c812b3c061f5c468d057495150343474a1` |
+
+The existing closed-beta manifest retains its current path, eleven families,
+six mandatory/two available denominator, exact blockers, rights, SLO binding
+and false authority flags. Only its ownership hash, receipt ID/file hash and
+canonical identity change. The unchanged denominator's historical effective
+date is distinct from this new binding reconciliation. New manifest identity:
+`biocatalyst_closed_beta_7d166fcd1af1f9c4ed605add`; content SHA-256
+`7d166fcd1af1f9c4ed605addc88bcd7ec4c904405c9a46b75299f33bc1cf51cb`.
+
+### Verification and limits
+
+Static verification reproduced both old canonical content identities before
+constructing the successors, checked the exact two-scalar byte deltas, all new
+hashes and both manifest identities, and inverted the manifest's five-field edit
+back to its original bytes. Plane eligibility, blocker/owner fields, every family,
+the denominator, SLO successor and authority flags are conserved. The owning
+current-byte/identity tests remain on the successor; historical promotion and
+the hostile no-change schema case use the preserved historical receipt. One
+current regression checks that the rename does not alter eligibility or route
+and owner declarations. No test assertion, schema or validator is weakened.
+
+No Python test, renderer, browser, provider or runtime action was executed in
+this source amendment. Natural hosted CI must qualify the new source. Earlier
+run39413887953 remains red at its own tested identity: the two F0 binding failures
+are the target of this correction; the independent design-ratchet failure and
+active main-authority file-inventory failure are not cleared by a static repair.
+The metadata tree census gives52 original paths against incorporated main16f;
+this amendment adds four changed paths for a predicted56, not a repaired API
+census or current-main integration claim. The native78-versus-returned69 comment
+count discrepancy remains disclosed; no universal writer/process absence is
+claimed. The original uncertain R9 push was already reconciled APPLIED in the
+preceding source record; no original operation is replayed here.
+
+R10's durable correction-admission fence, actual Trial Facts callable behavior,
+native source qualification, entitlement, serving, model/trading authority,
+production acceptance and the other existing release gates remain unproved.
