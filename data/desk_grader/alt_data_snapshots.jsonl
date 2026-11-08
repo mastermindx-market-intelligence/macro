@@ -6274,3 +6274,6 @@
 {"date":"2026-11-07","ticker":"IBP","departed":true,"left_desk":"2026-11-07","last_rank":29,"last_score":31}
 {"date":"2026-11-07","ticker":"MA","departed":true,"left_desk":"2026-11-07","last_rank":9,"last_score":43}
 {"date":"2026-11-07","ticker":"SMCI","departed":true,"left_desk":"2026-11-07","last_rank":null,"last_score":18}
+{"date":"2026-11-07","ticker":"IBP","rank":30,"score":30,"lean":1,"broken":false}
+{"date":"2026-11-07","ticker":"PWR","rank":null,"score":24,"lean":1,"broken":true}
+{"date":"2026-11-07","ticker":"MRVL","rank":null,"score":21,"lean":1,"broken":true}
