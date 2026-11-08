@@ -1,7 +1,12 @@
-# XG novelty observer — contract v2.1
+# XG novelty observer — contract v2.2
 
 Status: **specification, unbuilt**. Owning card: `t_2bb26bfe`. Author seat: engineering.
-v2.1 records the `relay` bucket, splits `direction` from `direction_source`, fixes an example
+v2.2 removes `excluded_pids` as a category. An exclusion list is where a banned predicate goes to
+survive: the first run of it dropped two CDP-attached processes under the label
+`private_only_egress` — the loopback filter that dropped Peekaboo, renamed and applied to pids
+instead of rows. Classification is now total, and CDP attachment is derived, not pattern-matched.
+
+v2.1 recorded the `relay` bucket, splits `direction` from `direction_source`, fixes an example
 fixture that contradicted the precedence it sat above (both my error, caught by @chief-of-staff),
 and states which attribution sources do not work so nobody re-runs them.
 
@@ -71,6 +76,20 @@ declaration.
    The block must therefore carry `pids: [...]` (or a `pid_set_sha256` over it) plus
    `excluded_pids: [{pid, reason}]`, so `|histogram| == |pids|` is checkable and every exclusion is
    named. A total of 27 with 30 candidates and no exclusion list is an opinion.
+
+   **There are no exclusions.** Every pid in the broad union receives a class; `unclassified_egress`
+   is the catch-all and `local_service` names a daemon with no command role (Tailscale's local API).
+   `excluded_pids` is deleted, because on its first run it removed `17665` — **`chrome-devtools-mcp`,
+   ESTABLISHED to `127.0.0.1:9223`** — and `76156` — **the Playwright driver from
+   `/Users/mini1/xg/venv`, ESTABLISHED to `127.0.0.1:9333`** — under the reason `private_only_egress`.
+   Both are control surfaces by every definition this contract has; the exclusion list is how the
+   Peekaboo defect survives a fix that names it.
+
+   **CDP attachment is derived, not matched.** Any pid appearing client-side in `cdp_sessions[]` is
+   `remote_control_candidate`, full stop — the row already proves a process is talking to a debug
+   port. Name patterns are a *supplement* for mechanisms that never touch CDP; they may add a row,
+   never subtract one. This is the structural answer to the pattern-vs-role question: the strongest
+   evidence of a control surface is a live connection to one, and it is already in the payload.
 
    **`sshd-session`-owned egress is a `relay` bucket**: it is this host's own forwarding and jump
    traffic, i.e. the census measuring itself. Three `ssh -W` jumps from the workstation inflate
@@ -237,24 +256,26 @@ guessing a pid.
 
 ## Accepted fixture
 
-**Pinned:** sweep **2026-11-08T10:14:25Z**, `script_sha256
-4d53d155812810f3d8883a3d1b96647ea15e00a12a9e4583b1d275b73dd1ca18`, manifest
-**`sweep-manifest-2026-11-08T101425.908899_0000.json`**, sha256
-**`0772569792dd6a53a4a4921fedb4d5866f70b4923877d41da7fc889fdeac9466`**,
+**Pinned:** sweep **2026-11-08T10:18:45Z**, `script_sha256
+2448881a890b1535451650140dd8838a054f2dbd8acf09cdb1db844df16d05c3`, manifest
+**`sweep-manifest-2026-11-08T101845.743503_0000.json`**, sha256
+**`dc2df0f37eea5015f1145fc45a730f71316331ebc70f2d035b7aa621f92334cd`**,
 `hosts_returned: ["mini1"]`. Supersedes `18524c3d…` (5 surfaces — **missing the Peekaboo bridge**)
 and `0d88c68a…` (no `remote_control_surfaces` at all).
 
 Read first-hand on the payload: `remote_control_surfaces[]` **6 rows, `declared_by: null` on all
-six**, incl. `17533` Peekaboo with peer `127.0.0.1:9223`, with `evidence{listener[], egress[]}` per row; `remote_control_surfaces_coverage
-{expected 5, enumerated 5}`; `unclassified_listeners: []`; `surface_union {total 27}` with
-`{unclassified_egress 10, relay 4, remote_control_candidate 4, loopback_service 4, cdp 3, forwarded 1, inbound_remote 1}`
-(sum 27 ✓), `listener_surface_histogram` 12 rows, `relay_egress` 5 rows of which 4 are bucketed
-`relay` and 1 promoted to `forwarded` by precedence; coverage `{rows 47, resolved 47, unresolved 0, public_rows 30, loopback_rows 17,
-unparseable_rows 0, declaration_histogram {undeclared: 47}, collected true, host_scope "mini1",
-ps_rows_captured 902, ps_truncated false}`;
-`listeners` 12 rows / **11 distinct pids**, `external_estab` 47 rows / **23 distinct pids**
-(17 if loopback peers are excluded) — so the v1.9 row-sum identity would have computed 29 against a true 26
-on this very pin. Chrome staleness unchanged (34493/35984 true, four false).
+six**; `surface_union {total 27, pids 27, sum(histogram) 27}` — **the identity is now reproducible**,
+and `declaration_histogram {axis, denominator, counts {undeclared: 43}}` can no longer be compared
+against a 27-pid union or a 12-row listener table by accident; `relay_egress` 4 rows with
+`promoted_to` on the promoted row (87248: relay → forwarded), so the array-vs-bucket gap is explained
+where it occurs; `remote_control_surfaces_coverage.identity` no longer contains the word that dropped
+Peekaboo; coverage `{rows 43, resolved 43, public 28, loopback 15, unparseable 0, ps 899, truncated
+false, collected true, host_scope "mini1"}`; link-local peer uniformity across every relay row holds
+in this run too.
+
+**This pin passes reproducibility and fails role:** the 27 is exactly `30 − 3`, and the three
+exclusions include two CDP-attached processes. Honest summary: an artifact that can be audited is not
+the same as an artifact that is right, and this one is now auditable enough to show its own error.
 
 **Gaps this pin does not close, and must not pretend to:** `remote_control_surfaces` is **absent**
 in every payload to date (`093059` and `094447` both lack the key), and the coverage block carries
@@ -293,10 +314,14 @@ no public/private split. This pin therefore satisfies items 12 and 15 and **does
     substance by the v2.1 pin (6/6, all null); still failing form**: the six surface rows carry no
     `surface_class` of their own, and `remote_control_surfaces_coverage.identity` still says
     "public egress owners", the wording that excluded Peekaboo.
-17. **Census-self-noise test:** with `relay` bucketed, `rows_total_egress` is stable across two
+17. **No-exclusions test:** no pid appears in an `excluded_pids`-shaped list. The broad union is
+    total; every member carries a class. Two named regression rows: `17665` (`chrome-devtools-mcp`
+    → 9223) and `76156` (Playwright, `xg/venv` → 9333) must both appear as
+    `remote_control_candidate`, derived from `cdp_sessions[]`.
+18. **Census-self-noise test:** with `relay` bucketed, `rows_total_egress` is stable across two
     consecutive runs taken with no workload change, and every `relay` row names its peers. This is a
     test of the census, not an invariant in the artifact — row counts remain workload facts.
-18. **Per-host coverage:** every coverage ratio names its `host_scope`; a multi-host ratio may not be
+19. **Per-host coverage:** every coverage ratio names its `host_scope`; a multi-host ratio may not be
     computed from a single-host block, and an unreachable host appears as
     `collected: false, reason: collection_incomplete`, never as zero.
 
