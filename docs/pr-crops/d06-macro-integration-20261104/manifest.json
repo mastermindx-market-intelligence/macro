@@ -1,14 +1,14 @@
 {
   "schema": "d06.artifact_inventory.v1",
-  "member_count": 94,
-  "aggregate_sha256": "104d614c3a00ffa2f087727b89c7093e7e1d8b176be2543da811227d2dbd86d1",
+  "member_count": 95,
+  "aggregate_sha256": "89793db8f3e19756ac52b3ccf9f55de12d9cf2b3feea6e95c0c1d8f6201062f4",
   "aggregate_rule": "SHA256 of path-sorted lines: sha256 + space + repository-relative path + LF",
   "manifest_self_excluded": true,
   "members": [
     {
       "path": "docs/d06-macro-integration-20261104.md",
-      "bytes": 8209,
-      "sha256": "fbc99f9788f9fe0d8bec2bcbcdbf7bade5df1da9218e65c588cb11fe9461e4ad"
+      "bytes": 19017,
+      "sha256": "4841f3a872aea50dd8535cb3827eb0e61e1028b042eb2fed9321e2d3cf915777"
     },
     {
       "path": "docs/pr-crops/d06-macro-integration-20261104/actual-browser.json",
@@ -131,6 +131,11 @@
       "sha256": "da657f6fb505429ba588668124efa294a4ad43a5d4e0016df18267389b11a9bc"
     },
     {
+      "path": "docs/pr-crops/d06-macro-integration-20261104/manifest.historical-20261104.json",
+      "bytes": 20695,
+      "sha256": "34069a8fea9cba7ff0a46a6bd327639bbbfea15824cf4df7f39df50259c7bda4"
+    },
+    {
       "path": "docs/pr-crops/d06-macro-integration-20261104/market-1440-dark-zh.png",
       "bytes": 179314,
       "sha256": "493d97ad0afe8f38ca44d5ccf8d18b365f7fc6954dab3146f5083c180d936de5"
@@ -186,7 +191,7 @@
       "sha256": "add496923c980ffee21945e61324c16e7562c50b7939cf7fea3f2e9ecd24d811"
     },
     {
-      "path": "docs/pr-crops/d06-macro-integration-20261104/market-locale-fix/color_probe.py",
+      "path": "docs/pr-crops/d06-macro-integration-20261104/market-locale-fix/color_probe.py.source.txt",
       "bytes": 4003,
       "sha256": "7c6fceeaea64e9b34e68411a2c386f4eb52d322207180d7918ab021556392d3c"
     },
@@ -281,7 +286,7 @@
       "sha256": "b7e562329659af5debcd034b2bc961d5d5fe7da66eefe44d6cd1d417981a40ec"
     },
     {
-      "path": "docs/pr-crops/d06-macro-integration-20261104/market-locale-fix/run_browser.py",
+      "path": "docs/pr-crops/d06-macro-integration-20261104/market-locale-fix/run_browser.py.source.txt",
       "bytes": 195,
       "sha256": "5169a4dc9e818cc1a5dcd76102107d744e132b1e09c232274730125ee799e219"
     },
@@ -306,7 +311,7 @@
       "sha256": "c8203a50100b871adc865db6a169457365d8fb8326647c2b707991d302deaf64"
     },
     {
-      "path": "docs/pr-crops/d06-macro-integration-20261104/run_browser.py",
+      "path": "docs/pr-crops/d06-macro-integration-20261104/run_browser.py.source.txt",
       "bytes": 216,
       "sha256": "80f78a7f5a2f6d12a3230f639c63c698adcf239525e0ff8c652a90d77d48331c"
     },
@@ -475,5 +480,43 @@
       "bytes": 3531,
       "sha256": "b10b2e3b610e1a6661ec7e1d42683d26ee1bd24e491969c3d9ce85045ff8b709"
     }
-  ]
+  ],
+  "source_archive": {
+    "historical_inventory": "docs/pr-crops/d06-macro-integration-20261104/manifest.historical-20261104.json",
+    "historical_inventory_sha256": "34069a8fea9cba7ff0a46a6bd327639bbbfea15824cf4df7f39df50259c7bda4",
+    "mappings": [
+      {
+        "historical_path": "docs/pr-crops/d06-macro-integration-20261104/market-locale-fix/color_probe.py",
+        "archived_path": "docs/pr-crops/d06-macro-integration-20261104/market-locale-fix/color_probe.py.source.txt",
+        "bytes": 4003,
+        "sha256": "7c6fceeaea64e9b34e68411a2c386f4eb52d322207180d7918ab021556392d3c",
+        "purpose": "Historical capture-driver source; not a maintained or runnable entrypoint"
+      },
+      {
+        "historical_path": "docs/pr-crops/d06-macro-integration-20261104/market-locale-fix/run_browser.py",
+        "archived_path": "docs/pr-crops/d06-macro-integration-20261104/market-locale-fix/run_browser.py.source.txt",
+        "bytes": 195,
+        "sha256": "5169a4dc9e818cc1a5dcd76102107d744e132b1e09c232274730125ee799e219",
+        "purpose": "Historical capture-driver source; not a maintained or runnable entrypoint"
+      },
+      {
+        "historical_path": "docs/pr-crops/d06-macro-integration-20261104/run_browser.py",
+        "archived_path": "docs/pr-crops/d06-macro-integration-20261104/run_browser.py.source.txt",
+        "bytes": 216,
+        "sha256": "80f78a7f5a2f6d12a3230f639c63c698adcf239525e0ff8c652a90d77d48331c",
+        "purpose": "Historical capture-driver source; not a maintained or runnable entrypoint"
+      }
+    ],
+    "inventory_only_updates": [
+      {
+        "path": "docs/d06-macro-integration-20261104.md",
+        "historical_sha256": "fbc99f9788f9fe0d8bec2bcbcdbf7bade5df1da9218e65c588cb11fe9461e4ad",
+        "current_sha256": "4841f3a872aea50dd8535cb3827eb0e61e1028b042eb2fed9321e2d3cf915777",
+        "historical_bytes": 8209,
+        "current_bytes": 19017,
+        "meaning": "Pre-existing documentation extension; byte inventory only, no historical proof recertification"
+      }
+    ],
+    "limits": "This current inventory changes packaging only. All capture scripts, PNGs and receipts retain exact bytes. Historical execution/source paths and old proof limitations remain facts of the retained receipts. No capture, obsolete helper restoration, import-audit exception or renewed runtime acceptance."
+  }
 }
