@@ -1,7 +1,13 @@
-# XG novelty observer — contract v2.2
+# XG novelty observer — contract v2.3
 
 Status: **specification, unbuilt**. Owning card: `t_2bb26bfe`. Author seat: engineering.
-v2.2 removes `excluded_pids` as a category. An exclusion list is where a banned predicate goes to
+v2.3 splits the class into two axes (`listener_class` / `egress_class`, with `surface_class` as the
+precedence winner) so a pid is never in two arrays' worth of disagreement; makes a surface a
+**process tree** rather than a pid, because the bridge now demonstrably grandparent an attached MCP
+session; and gives `owner_bridge` content-addressed provenance, since file mtime is a witness that
+any writer can reset.
+
+v2.2 removed `excluded_pids` as a category. An exclusion list is where a banned predicate goes to
 survive: the first run of it dropped two CDP-attached processes under the label
 `private_only_egress` — the loopback filter that dropped Peekaboo, renamed and applied to pids
 instead of rows. Classification is now total, and CDP attachment is derived, not pattern-matched.
@@ -85,6 +91,14 @@ declaration.
    Both are control surfaces by every definition this contract has; the exclusion list is how the
    Peekaboo defect survives a fix that names it.
 
+   **A surface is a process tree, not a pid.** The 9223 attach chain is
+   `17533 Peekaboo → 17650 npm exec node → 17665 chrome-devtools-mcp → CDP`, so the census and the
+   gate must both operate on the **descendant closure**: `tree_pids[]` on every surface row, resolved
+   by ppid closure from the same `ps` table. Killing the bridge pid is not evidence the surface is
+   gone — an npm-spawned child can be reparented to launchd and keep its CDP socket. `bootout_authority`
+   must therefore be authority over the **tree**, and the kill test asserts no surviving descendant
+   holds a CDP connection afterwards.
+
    **CDP attachment is derived, not matched.** Any pid appearing client-side in `cdp_sessions[]` is
    `remote_control_candidate`, full stop — the row already proves a process is talking to a debug
    port. Name patterns are a *supplement* for mechanisms that never touch CDP; they may add a row,
@@ -159,6 +173,12 @@ Pure input for the harness: no import from `tools/xguerrilla/`, no shared helper
 - **Every surface row carries `surface_class` as a field**, not inside a display string. The v2.0
   pin's rows encode it as `"*:3283 (inbound_remote)"`, which forces a consumer to regex human prose
   to recover a machine field — rule 7 one layer down, the same failure as `payload.get(k, [])`.
+- **Class per axis, then a winner.** `listener_class` and `egress_class` are recorded independently;
+  `surface_class` is the precedence winner and is what the union histogram counts. One pid can be
+  `listener_class: forwarded` and `egress_class: relay` at once — it then appears in `relay_egress[]`
+  *and* in `remote_control_surfaces[]` with `surface_class: forwarded`, and there is nothing to
+  reconcile because the two arrays answer different questions. `promoted_to` becomes unnecessary;
+  the field that caused the array-vs-bucket gap was one field doing two jobs.
 - `forwarded` surfaces carry `direction: "local" | "remote" | "unknown"` — and `unknown` is the only
   honest value for a session this host did not launch (see *Direction is not recoverable*).
 - `unclassified_egress[]` sits beside `unclassified_listeners[]`; both are counted rows, never
@@ -185,7 +205,7 @@ Pure input for the harness: no import from `tools/xguerrilla/`, no shared helper
 
 | gate | condition | meaning |
 |---|---|---|
-| `refused: unowned_bridge` | `bootout_authority` null, bridge `attached` or `armed` | nobody on record can stop the surface |
+| `refused: unowned_bridge` | `bootout_authority` null, **any pid in the surface's `tree_pids[]`** attached or armed | nobody on record can stop the tree, and the tree outlives its root |
 | `refused: stale_binary` | `mounted_framework != versions_current` | process executing a pre-update image |
 | `refused: endpoint_absent` | `bound_no_endpoint` on a bound port | socket without an identity |
 | `refused: enumeration_not_collected` | key missing | the collection never ran |
@@ -234,6 +254,14 @@ ingress to the **workstation's** loopback listener — trust inverted: the crede
 box can reach a service bound to the developer machine. Enumeration could never have said that;
 client-side observation did.
 
+**`owner_bridge` carries content, not just a path.** Required:
+`{label, plist_path, plist_sha256, plist_mtime, admitted_sha256, start_interval_s, bootout_authority}`.
+`admitted_sha256` is recorded at admission and re-compared on every sweep; `plist_mtime` is kept
+because today it is the only *time* witness, but mtime is resettable by any writer holding the file,
+so it never substitutes for the hash. The template that generates the plist should live in the repo,
+so drift is visible in git as well. Attribution and detection are different problems; the registry
+can only solve the second, and only if it stores the content it admitted.
+
 **Corollary that matters more than the field:** for a session this host did not launch, direction is
 unrecoverable *by construction*, so the control cannot be enumeration. It is configuration —
 `AllowTcpForwarding no` for the automation account — plus the discipline that any forward we create
@@ -256,7 +284,19 @@ guessing a pid.
 
 ## Accepted fixture
 
-**Pinned:** sweep **2026-11-08T10:18:45Z**, `script_sha256
+**v2.3 pin — sweep 2026-11-08T10:41:25Z**, `script_sha256
+a3152193499e12f3e3199df525ff5d7aee9fe8bec94c379ac13f01a4cc1ce329`, manifest
+**`sweep-manifest-2026-11-08T104125.672788_0000.json`**, sha256
+**`061abe0a0704d3b42c9831bd7b731ad8a0340e550a3f877a398123162dd07cd3`**: union 28 == 28 == 28,
+`excluded_pids` absent, **8/8 surfaces**, `cdp_sessions[]` carrying `ppid` / `parent_ppid` /
+`parent_owner_command` / `started_at`, and `launchd[]` naming `com.xg.proxyauth` at pid 76155 — so the
+`76156 → 76155 → launchd` chain recomputes from the artifact, and so does
+`17665.parent_ppid == 17533`. `local_service_pids[]` names Tailscale. **This pin is the first in the
+series whose attributions are entirely machine-readable.** Note for the next reader: `relay_egress[]`
+holds **one** row here (78700); the three jump pids from the previous pin are absent from every table,
+i.e. those sessions ended — workload churn, not reclassification. Do not pin a relay count.
+
+Previous pin — sweep **2026-11-08T10:18:45Z**, `script_sha256
 2448881a890b1535451650140dd8838a054f2dbd8acf09cdb1db844df16d05c3`, manifest
 **`sweep-manifest-2026-11-08T101845.743503_0000.json`**, sha256
 **`dc2df0f37eea5015f1145fc45a730f71316331ebc70f2d035b7aa621f92334cd`**,
@@ -321,7 +361,11 @@ no public/private split. This pin therefore satisfies items 12 and 15 and **does
 18. **Census-self-noise test:** with `relay` bucketed, `rows_total_egress` is stable across two
     consecutive runs taken with no workload change, and every `relay` row names its peers. This is a
     test of the census, not an invariant in the artifact — row counts remain workload facts.
-19. **Per-host coverage:** every coverage ratio names its `host_scope`; a multi-host ratio may not be
+19. **Tree test:** for each surface with a non-empty `tree_pids[]`, after the root is stopped no
+    descendant holds a CDP connection, and every descendant is covered by the same
+    `bootout_authority`. A row whose tree cannot be resolved from the same `ps` capture is
+    `refused: enumeration_incomplete`, not a pid-only surface.
+20. **Per-host coverage:** every coverage ratio names its `host_scope`; a multi-host ratio may not be
     computed from a single-host block, and an unreachable host appears as
     `collected: false, reason: collection_incomplete`, never as zero.
 
