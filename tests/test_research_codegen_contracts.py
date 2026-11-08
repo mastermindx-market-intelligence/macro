@@ -579,3 +579,98 @@ def test_refinement_cannot_name_itself_as_parent():
                                    refinement_generation=generation)
         errors = contracts.validate_manifest(manifest, trusted_protocol=trusted_protocol())
         assert errors, "a refinement self-edge cannot be a historical parent"
+
+
+# Proposed S01 fixtures are entirely invented and never authenticate an account.
+def role_declarations(manifest):
+    import hashlib
+    def digest(label):
+        return hashlib.sha256(label.encode("ascii")).hexdigest()
+    binding = {key: manifest[key] for key in (
+        "candidate_id", "source_sha256", "config_sha256", "protocol_sha256",
+        "input_policy_sha256", "runtime_sha256", "evaluator_sha256", "trial_family")}
+    binding.update(original_root_id=manifest["lineage"]["original_root_id"],
+                   manifest_sha256=contracts.canonical_json_sha256(manifest))
+    roles = {}
+    for role, caps in (("acquisition", ["contents:read", "data:read"]),
+                       ("execution", ["candidate:compute"]),
+                       ("evaluation", ["evaluation:compute"]),
+                       ("publication", ["contents:write", "pull_requests:write"])):
+        principal = digest(role + ".principal")
+        roles[role] = dict(role=role, principal_sha256=principal,
+            issuer_sha256=digest("shared-issuer"), subject_sha256=digest(role + ".subject"),
+            alias_sha256s=[digest(role + ".alias")],
+            credential_reference_sha256=None if role in ("execution", "evaluation") else digest(role + ".credential"),
+            capabilities=caps, provenance=dict(role=role, principal_sha256=principal,
+                binding_sha256=contracts.canonical_json_sha256(binding), reference_sha256=digest(role + ".reference")))
+    return dict(schema="research_codegen.role_declarations.v1", binding=binding, roles=roles)
+
+
+def assess_roles(declarations):
+    return admission.assess_prerequisites(valid_manifest(), trusted_protocol=trusted_protocol(),
+        owner_receipts=owner_receipts(), role_declarations=declarations)
+
+
+def test_role_declarations_remain_unattested_and_absent_is_unknown():
+    for declaration, expected in ((None, "UNKNOWN"),
+                                  (role_declarations(valid_manifest()), "DECLARED_SEPARATION_UNATTESTED")):
+        result = assess_roles(declaration)
+        assert result["status"] == "STRUCTURALLY_COMPLETE_DISABLED"
+        identity = result["identity_assessment"]
+        assert identity["status"] == expected
+        for key in ("authenticated_identity", "credential_observation", "effective_protection"):
+            assert identity[key] == "UNKNOWN"
+        for carrier in (result, identity):
+            for flag in ("generation_enabled", "execution_enabled", "evaluation_enabled", "authority_granted"):
+                assert carrier[flag] is False
+
+
+@pytest.mark.parametrize("key", ["candidate_id", "source_sha256", "config_sha256", "protocol_sha256",
+    "input_policy_sha256", "runtime_sha256", "evaluator_sha256", "trial_family", "original_root_id", "manifest_sha256"])
+def test_role_declarations_refuse_each_native_binding_substitution(key):
+    declaration = role_declarations(valid_manifest())
+    declaration["binding"][key] = "0" * 64
+    result = assess_roles(declaration)
+    assert result["status"] == "PREREQUISITES_INVALID"
+    assert "native identity binding mismatch" in joined(result["violations"])
+
+
+@pytest.mark.parametrize("damage", ["role", "principal", "subject", "alias", "credential", "provenance",
+    "provenance_role", "provenance_principal", "provenance_binding", "execution_credential",
+    "evaluation_credential", "publisher_capability", "execution_socket", "evaluation_mcp",
+    "verified", "pass", "credential_free", "effective_protection", "raw_secret", "missing_role"])
+def test_role_declarations_refuse_substitution_and_truth_claims(damage):
+    declaration = role_declarations(valid_manifest())
+    roles = declaration["roles"]
+    acq, pub = roles["acquisition"], roles["publication"]
+    if damage == "role": pub["role"] = "acquisition"
+    elif damage == "principal":
+        pub["principal_sha256"] = acq["principal_sha256"]
+        pub["provenance"]["principal_sha256"] = acq["principal_sha256"]
+    elif damage == "subject": pub["subject_sha256"] = acq["subject_sha256"]
+    elif damage == "alias": pub["alias_sha256s"] = [acq["subject_sha256"]]
+    elif damage == "credential": pub["credential_reference_sha256"] = acq["credential_reference_sha256"]
+    elif damage == "provenance": pub["provenance"]["reference_sha256"] = acq["provenance"]["reference_sha256"]
+    elif damage.startswith("provenance_"):
+        key = {"provenance_role": "role", "provenance_principal": "principal_sha256", "provenance_binding": "binding_sha256"}[damage]
+        pub["provenance"][key] = "0" * 64
+    elif damage in ("execution_credential", "evaluation_credential"):
+        roles[damage.split("_")[0]]["credential_reference_sha256"] = "0" * 64
+    elif damage == "publisher_capability": acq["capabilities"] = ["pull_requests:write"]
+    elif damage == "execution_socket": roles["execution"]["capabilities"] = ["host-socket:read"]
+    elif damage == "evaluation_mcp": roles["evaluation"]["capabilities"] = ["mcp:invoke"]
+    elif damage == "raw_secret": pub["credential_reference_sha256"] = "invented-plaintext-never-a-real-secret"
+    elif damage == "missing_role": del roles["evaluation"]
+    else: pub[damage] = True
+    result = assess_roles(declaration)
+    assert result["status"] == "PREREQUISITES_INVALID"
+    assert result["identity_assessment"]["status"] == "REFUSED"
+    assert result["authority_granted"] is False
+    if damage == "principal":
+        assert "identity or reference collision" in joined(result["violations"])
+        assert "provenance binding mismatch" not in joined(result["violations"])
+
+
+@pytest.mark.parametrize("value", [True, [], "raw", {"verified": True}])
+def test_role_declarations_refuse_non_schema_values(value):
+    assert assess_roles(value)["status"] == "PREREQUISITES_INVALID"

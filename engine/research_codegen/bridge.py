@@ -145,6 +145,9 @@ class SyntheticRun:
     outputs: tuple[BoundBytes, ...]
     paths: tuple[evaluation.SourcePath, ...]
     session_dates: tuple[str, ...]
+    # Optional private local declaration, never candidate input or authority.
+    role_declarations: BoundBytes | None = None
+    identity_assessment: BoundBytes | None = None
 
 
 @dataclass(frozen=True)
@@ -397,6 +400,23 @@ def _positions(value):
     return tuple(excluded), tuple(supplied)
 
 
+def _assess_owner_references(run, identity):
+    manifest, protocol = _bound(run.manifest), _bound(run.protocol)
+    _require(not contracts.validate_manifest(manifest, trusted_protocol=protocol), "MANIFEST_INVALID")
+    _require(all(manifest[k] == identity[k] for k in _IDENTITY if k in manifest)
+             and manifest["lineage"]["original_root_id"] == identity["original_root_id"], "MANIFEST_IDENTITY_MISMATCH")
+    return manifest, admission.assess_prerequisites(manifest, trusted_protocol=protocol,
+        owner_receipts=_bound(run.owner_references),
+        role_declarations=None if run.role_declarations is None else _bound(run.role_declarations, contracts.MAX_BYTES))
+
+
+def _check_private_assessment(run, assessment):
+    if run.role_declarations is not None or run.identity_assessment is not None:
+        _bound(run.identity_assessment, contracts.MAX_BYTES)
+        _require(run.identity_assessment.raw == _canonical_bytes(assessment),
+                 "IDENTITY_ASSESSMENT_MISMATCH")
+
+
 def _admission(run, *, commission):
     """Shared structural admission prologue for the evaluator and the preparer.
 
@@ -416,11 +436,7 @@ def _admission(run, *, commission):
                  and run.session_dates[anchor + 26 * p.calendar_index] == p.trigger_date
                  for p in run.positions), "FULL_SCHEDULE_ANCHOR_MISMATCH")
     coverage = dict(scheduled=len(run.positions), excluded=len(excluded), qualified=len(supplied))
-    manifest, protocol = _bound(run.manifest), _bound(run.protocol)
-    _require(not contracts.validate_manifest(manifest, trusted_protocol=protocol), "MANIFEST_INVALID")
-    _require(all(manifest[k] == identity[k] for k in _IDENTITY if k in manifest)
-             and manifest["lineage"]["original_root_id"] == identity["original_root_id"], "MANIFEST_IDENTITY_MISMATCH")
-    owner = admission.assess_prerequisites(manifest, trusted_protocol=protocol, owner_receipts=_bound(run.owner_references))
+    manifest, owner = _assess_owner_references(run, identity)
     expected, trial = _bound(run.expected_generation), _bound(run.trial_readback)
     account = accounting_contract.assess_accounting_references(expected, trial_readback=trial)
     accounting_bound = (type(expected) is dict and expected.get("original_root_id") == identity["original_root_id"]
@@ -432,7 +448,7 @@ def _admission(run, *, commission):
                                 for v in expected.get("variants", []) if type(v) is dict))
     admitted = bool(owner["status"] == account["status"] == "STRUCTURALLY_COMPLETE_DISABLED"
                     and accounting_bound)
-    return identity, supplied, coverage, admitted
+    return identity, supplied, coverage, admitted, owner["identity_assessment"]
 
 
 def compute_synthetic_diagnostic(run, *, commission=None):
@@ -441,7 +457,8 @@ def compute_synthetic_diagnostic(run, *, commission=None):
     Candidate failures yield whole-run refusal. Malformed owner bindings raise
     BridgeRefused. The method has no filesystem or candidate execution effect.
     """
-    identity, supplied, coverage, admitted = _admission(run, commission=commission)
+    identity, supplied, coverage, admitted, assessment = _admission(run, commission=commission)
+    _check_private_assessment(run, assessment)
     known_coverage = tuple(evaluation.CoveragePosition(p.calendar_index, p.trigger_date, len(p.eligible_nodes)) for p in supplied)
     result = evaluation.EvaluationResult("REFUSED", ("PREREQUISITES_INVALID",), known_coverage, ())
     if admitted:
@@ -537,6 +554,23 @@ def _canonical_bytes(value):
     return json.dumps(value, sort_keys=True, separators=(",", ":"), allow_nan=False).encode()
 
 
+def prepare_synthetic_identity_assessment(run, *, commission=None):
+    """Return private immutable declaration evidence, never a candidate payload.
+
+    Retain on SyntheticRun, separately from PreparedSyntheticInputs. This pure
+    declaration comparison does not consume or fabricate a trial readback; the
+    actual staging owner supplies that before prefix preparation. It authenticates
+    nothing and is not a reusable runtime admission receipt.
+    """
+    _require(type(run) is SyntheticRun, "EXACT_SYNTHETIC_RUN_REQUIRED")
+    identity = _identity(run.identity)
+    _commission(commission, identity["original_root_id"])
+    _, owner = _assess_owner_references(run, identity)
+    _require(owner["status"] == "STRUCTURALLY_COMPLETE_DISABLED", "PREREQUISITES_INVALID")
+    raw = _canonical_bytes(owner["identity_assessment"])
+    return BoundBytes(raw, hashlib.sha256(raw).hexdigest(), len(raw))
+
+
 def prepare_synthetic_inputs(run, *, commission=None):
     """Public preparation seam: exact per-decision causal prefixes, zero effects.
 
@@ -549,8 +583,12 @@ def prepare_synthetic_inputs(run, *, commission=None):
     """
     _require(type(run) is SyntheticRun, "EXACT_SYNTHETIC_RUN_REQUIRED")
     _require(type(run.schedules) is tuple, "IMMUTABLE_DECISIONS_REQUIRED")
-    identity, supplied, _, admitted = _admission(run, commission=commission)
+    identity, supplied, _, admitted, assessment = _admission(run, commission=commission)
     _require(admitted, "PREREQUISITES_INVALID")
+    # New declared runs retain a separate private assessment. Recompute from
+    # current bound bytes; a caller cannot substitute a stale or altered receipt.
+    # Legacy absent declarations remain UNKNOWN with unchanged preparation.
+    _check_private_assessment(run, assessment)
     requests, _, tasks = _prepare_decisions(run, supplied, identity)
     prepared = []
     for rid, decision, request, causal, cutoff, trailing, complete in tasks:

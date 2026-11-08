@@ -370,6 +370,65 @@ def _assert_ruling_graph_exact_base_contract(definition: dict[str, object]) -> N
     assert command.index("git merge-base --is-ancestor") < command.index("python scripts/check_ruling_conflicts.py")
 
 
+def _assert_design_canonical_fetch(definition: dict[str, object]) -> None:
+    """Both comparisons need exact canonical acquisition and complete scopes."""
+    contracts = (
+        ("forward-only design ratchet (new forbidden decisions on changed lines)",
+         "scripts/check_design_system.py", ("templates",), "/tmp/design.diff"),
+        ("visual evidence required for a material UI change",
+         "scripts/check_ui_visual_evidence.py", ("templates", "site"), "/tmp/ui.diff"),
+    )
+    for name, script, paths, output in contracts:
+        steps = [s for s in definition['steps'] if s.get('name') == name]
+        assert len(steps) == 1 and set(steps[0]) == {'name', 'run'}
+        command = steps[0]['run']
+        prefix, body = command.split("python - <<'PY_CANONICAL'\n", 1)
+        assert all(not line.strip() or line.lstrip().startswith('#') for line in prefix.splitlines())
+        python, tail = body.split('\nPY_CANONICAL\n', 1)
+        expected = '''import os
+from pathlib import Path
+from scripts.run_ci_pack import prepare_canonical_main
+prepare_canonical_main(
+    Path.cwd(),
+    tested_tree_sha=os.environ.get("CI_TESTED_TREE_SHA") or os.environ["TESTED_TREE_SHA"],
+    base_ref="${{ github.base_ref || 'main' }}",
+    frozen_paths=(SCRIPT,),
+    comparison_paths=PATHS,
+)
+'''.replace('SCRIPT', repr(script)).replace('PATHS', repr(paths))
+        assert ast.dump(ast.parse(python), include_attributes=False) == ast.dump(
+            ast.parse(expected), include_attributes=False)
+        assert tail.startswith('export GIT_NO_LAZY_FETCH=1 GIT_ALLOW_PROTOCOL=\n')
+        assert 'if ! mb=$(git merge-base "origin/${{ github.base_ref || \'main\' }}" HEAD); then' in tail
+        assert 'exit 1\nfi\n' in tail
+        assert f'git diff --unified=0 "$mb" HEAD -- {" ".join(paths)} > {output}' in tail
+        checker = f'python3 {script}' + (' --mode enforce-added' if 'design_system' in script else '')
+        assert tail.rstrip().endswith(checker + f' --diff-file {output}')
+        assert 'git fetch' not in command and '|| true' not in command
+
+
+@pytest.mark.parametrize('index,old,new', [
+    (0, 'comparison_paths=("templates",),', 'comparison_paths=("site",),'),
+    (1, 'comparison_paths=("templates", "site"),', 'comparison_paths=("templates",),'),
+    (0, 'frozen_paths=("scripts/check_design_system.py",),', 'frozen_paths=("templates/index.html",),'),
+    (1, 'export GIT_NO_LAZY_FETCH=1 GIT_ALLOW_PROTOCOL=', 'export GIT_NO_LAZY_FETCH=0 GIT_ALLOW_PROTOCOL=file'),
+    (0, 'exit 1', 'true'),
+    (0, 'tested_tree_sha=os.environ.get("CI_TESTED_TREE_SHA") or os.environ["TESTED_TREE_SHA"],',
+     'tested_tree_sha="1" * 40,'),
+    (1, '-- templates site > /tmp/ui.diff', '-- templates > /tmp/ui.diff'),
+    (0, '--mode enforce-added', '--mode report'),
+])
+def test_design_canonical_contract_rejects_guard_or_scope_weakening(index, old, new):
+    definition = copy.deepcopy(yaml.safe_load(MANIFEST.read_text())['jobs']['design-governance'])
+    names = ('forward-only design ratchet (new forbidden decisions on changed lines)',
+             'visual evidence required for a material UI change')
+    step = next(s for s in definition['steps'] if s.get('name') == names[index])
+    assert old in step['run']
+    step['run'] = step['run'].replace(old, new)
+    with pytest.raises(AssertionError):
+        _assert_design_canonical_fetch(definition)
+
+
 def test_fetch_depth_zero_consumers_own_the_narrow_history_contract() -> None:
     payload = yaml.safe_load(MANIFEST.read_text(encoding="utf-8"))
     consumers: dict[str, dict[str, object]] = {}
@@ -396,6 +455,8 @@ def test_fetch_depth_zero_consumers_own_the_narrow_history_contract() -> None:
                 definition, *_INTERNATIONAL_CANONICAL_JOBS[job_id])
         elif job_id == "ruling-graph":
             _assert_ruling_graph_exact_base_contract(definition)
+        elif job_id == "design-governance":
+            _assert_design_canonical_fetch(definition)
         else:
             assert any(
                 "git fetch origin " in run and "github.base_ref" in run for run in runs

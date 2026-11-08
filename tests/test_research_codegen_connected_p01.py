@@ -14,7 +14,7 @@ import os
 import pytest
 
 from engine import trial_ledger
-from engine.research_codegen import accounting_contract, contracts
+from engine.research_codegen import accounting_contract, contracts, plan_engine_provider
 from engine.research_codegen import bridge as b, prefix_driver as pd
 from engine.research_codegen import staging_accounting as sa
 from tests import test_research_codegen_prefix_driver as pf
@@ -289,3 +289,339 @@ def test_missing_original_history_blocks_driver_without_recreation(connected_cas
             spec=pf.spec(), config_sha256=run.identity.config_sha256)
     assert driver_calls == [] and not ledger.exists()
     assert not (case[0] / "renamed-after-missing").exists()
+
+
+# Exercise the application-owned cycle, rather than reconstructing its sequence
+# in this test. The old cases above remain independent component/oracle checks.
+from engine.research_factory import adapter_codegen as cycle
+from types import SimpleNamespace
+
+
+def _cycle_variants(case, *, second_expected="scripted_malformed_output"):
+    # Deliberately unusable caller readback: only the adapter's actual staging
+    # return may reach preparation, execution, evaluation or review.
+    placeholder = SimpleNamespace(expected_generation=case[3]["expected_generation"],
+                                  trial_readback=pf.bound({"not": "an accounting receipt"}))
+    return tuple(cycle.StagedVariant(descriptor["variant_id"], source,
+        _run_for(case, placeholder, index), pf.spec(),
+        "diagnostic" if index == 0 else second_expected)
+        for index, (descriptor, source) in enumerate(zip(case[2], case[1])))
+
+
+class ColdLedgerFakeEngine(pf.ScriptedFakeEngine):
+    def __init__(self, case, behaviour=None):
+        super().__init__(behaviour)
+        self.case = case
+
+    def run(self, argv, **kwargs):
+        rows = [json.loads(line) for line in
+                (self.case[0] / sa.LEDGER_BASENAME).read_bytes().splitlines()]
+        assert {row["config_hash"] for row in rows if "config" in row} == {
+            descriptor["incumbent_config_hash"] for descriptor in self.case[2]}
+        return super().run(argv, **kwargs)
+
+
+def _cycle_engines(case, first=None, second=None):
+    return (ColdLedgerFakeEngine(case, first),
+            ColdLedgerFakeEngine(case, second if second is not None else
+                                 {"workload": b'{"value":Infinity}'}))
+
+
+def _cycle(case, variants=None, engines=None, **overrides):
+    return cycle.run_staged_cycle(**{**case[3], "variants": variants or _cycle_variants(case),
+        "synthetic_test_engines": engines or _cycle_engines(case), **overrides})
+
+
+def test_application_cycle_plan_providers_join_real_consumers_without_activation(connected_case):
+    case = connected_case
+    engines, retained = [[], []], set()
+    def provider(index):
+        def factory(plan):
+            class Guarded(ColdLedgerFakeEngine):
+                def run(self, argv, **kwargs):
+                    if argv[1] == "start":
+                        assert (plan.operation_id, pf.CID) in retained
+                    return super().run(argv, **kwargs)
+            fake = Guarded(case, None if index == 0 else {"workload": b'{"value":Infinity}'})
+            engines[index].append(fake)
+            return fake
+        def receipt(plan, cid):
+            retained.add((plan.operation_id, cid))
+            return True
+        return plan_engine_provider.PlanBoundEngineProvider(executor_for_plan=factory, retain_container=receipt)
+    providers = tuple(provider(i) for i in range(2))
+    result = cycle.run_staged_cycle(**case[3], variants=_cycle_variants(case),
+                                     synthetic_test_providers=providers)
+    assert result.status == "DIAGNOSTIC_CYCLE_COMPLETE"
+    assert [len(group) for group in engines] == [6, 1]
+    assert all(fake.creates == 1 for group in engines for fake in group)
+    assert len(retained) == 7
+    assert all(row.review_packet is not None for row in result.variants)
+    assert not result.physical_acceptance and not result.authority_granted
+    assert result.scientific_acceptance == "UNQUALIFIED"
+    _assert_full_cold_accounting(case, result.staged)
+
+
+def test_application_cycle_provider_unknown_stops_selection_and_preserves_accounting(connected_case):
+    case = connected_case
+    selected = []
+    class Unknown(ColdLedgerFakeEngine):
+        def run(self, argv, **kwargs):
+            if argv[1] == "create":
+                return pf.tp.EngineCommandResult(None, b"", b"", kwargs["deadline_seconds"],
+                                                  kwargs["output_cap_bytes"])
+            raise AssertionError("no guessed lifecycle command")
+    def factory(plan):
+        selected.append(plan)
+        return Unknown(case)
+    provider = plan_engine_provider.PlanBoundEngineProvider(executor_for_plan=factory,
+                                            retain_container=lambda p, c: True)
+    result = cycle.run_staged_cycle(**case[3], variants=_cycle_variants(case),
+                                     synthetic_test_providers=(provider, provider))
+    assert result.status == "EFFECT_UNKNOWN" and len(selected) == 1
+    assert result.variants[1].status == "NOT_ATTEMPTED_AFTER_REFUSAL"
+    assert len(result.variants[0].outcome.attempts) == 1
+    with pytest.raises(pf.tp.TransportStateError): provider.engine_for(selected[0])
+    _assert_full_cold_accounting(case, result.staged)
+
+
+def test_application_cycle_provider_map_is_explicit_and_default_remains_dormant(connected_case):
+    case = connected_case
+    variants = _cycle_variants(case)
+    provider = plan_engine_provider.PlanBoundEngineProvider()
+    for sources in ({"synthetic_test_engines": _cycle_engines(case),
+                     "synthetic_test_providers": (provider, provider)},
+                    {"synthetic_test_providers": (provider, object())}):
+        with pytest.raises(cycle.StagedCycleRefused):
+            cycle.run_staged_cycle(**case[3], variants=variants, **sources)
+        assert (case[0] / sa.LEDGER_BASENAME).read_bytes() == b""
+    result = cycle.run_staged_cycle(**case[3], variants=variants,
+                                     synthetic_test_providers=(provider, provider))
+    assert result.status == "REFUSED" and result.variants[0].outcome.attempts == ()
+    assert result.variants[1].status == "NOT_ATTEMPTED_AFTER_REFUSAL"
+    assert not result.physical_acceptance
+    _assert_full_cold_accounting(case, result.staged)
+
+
+def test_application_cycle_accounts_once_and_reaches_review(connected_case, monkeypatch):
+    case = connected_case
+    engines = _cycle_engines(case)
+    original = sa.stage_synthetic_generation
+    stages = []
+
+    def stage(**kwargs):
+        result = original(**kwargs)
+        stages.append(result)
+        return result
+
+    monkeypatch.setattr(sa, "stage_synthetic_generation", stage)
+    result = _cycle(case, engines=engines)
+    assert len(stages) == 1 and result.staged is stages[0]
+    assert result.status == "DIAGNOSTIC_CYCLE_COMPLETE"
+    assert result.scope == "SYNTHETIC_ENGINEERING_ONLY"
+    assert not result.physical_acceptance and not result.authority_granted
+    assert result.scientific_acceptance == "UNQUALIFIED"
+    _assert_full_cold_accounting(case, result.staged)
+    assert [engine.creates for engine in engines] == [6, 1]
+    for row in result.variants:
+        assert row.status == "EXPECTED_ENGINEERING_RESULT"
+        assert row.run.trial_readback is result.staged.trial_readback
+        assert row.run.expected_generation is result.staged.expected_generation
+        assert row.review_packet["allowed_decisions"] == []
+        evidence = row.review_packet["engineering_evidence"]
+        assert evidence["accounting"]["trial_readback_sha256"] == result.staged.trial_readback.sha256
+        assert not evidence["physical_acceptance"]
+        # Scripted refusal is never claimed as observed temporal leakage detection.
+        assert evidence["controls"][2]["status"] == "NOT_RUN"
+        assert all(attempt.cleanup_confirmed for attempt in row.outcome.attempts)
+    good, bad = result.variants
+    assert good.review_packet["frozen_gate_metrics"]["paired_mean_improvement"] == pytest.approx(.175)
+    assert bad.review_packet["frozen_gate_metrics"]["paired_mean_improvement"] is None
+    assert bad.review_packet["diagnostic"]["status"] == "REFUSED"
+
+
+@pytest.mark.parametrize("mutation", ["variant_omitted", "config_omitted", "source_swapped"])
+def test_application_cycle_rejects_incomplete_set_before_effects(connected_case, mutation):
+    case = connected_case
+    variants, engines = _cycle_variants(case), _cycle_engines(case)
+    changes = {}
+    if mutation == "variant_omitted":
+        variants = variants[:1]
+    elif mutation == "config_omitted":
+        changes["configurations"] = case[3]["configurations"][:1]
+    else:
+        variants = (variants[0], replace(variants[1], source=variants[0].source))
+    with pytest.raises(cycle.StagedCycleRefused):
+        _cycle(case, variants, engines, **changes)
+    assert all(engine.calls == [] for engine in engines)
+    assert (case[0] / sa.LEDGER_BASENAME).read_bytes() == b""
+
+
+def test_application_cycle_preflights_later_inputs_before_first_attempt(connected_case):
+    case = connected_case
+    variants, engines = _cycle_variants(case), _cycle_engines(case)
+    variants = (variants[0], replace(variants[1], run=replace(variants[1].run, schedules=())))
+    result = _cycle(case, variants, engines)
+    assert result.status == "REFUSED"
+    assert {row.status for row in result.variants} == {"NOT_ATTEMPTED_INVALID_BATCH"}
+    assert all(engine.calls == [] for engine in engines)
+    # Generated choices remain charged even though no execution was attempted.
+    _assert_full_cold_accounting(case, result.staged)
+
+
+def test_application_cycle_unknown_stops_later_variants_and_retains_all_charges(connected_case):
+    case = connected_case
+    engines = _cycle_engines(case, first={"start_rc": 7})
+    result = _cycle(case, engines=engines)
+    assert result.status == "EFFECT_UNKNOWN"
+    first, second = result.variants
+    assert first.status == "EFFECT_UNKNOWN"
+    assert len(first.outcome.attempts) == 1 and first.outcome.attempts[0].execution_uncertain
+    assert first.review_packet["diagnostic"]["status"] == "REFUSED"
+    assert second.status == "NOT_ATTEMPTED_AFTER_REFUSAL" and second.outcome is None
+    assert engines[1].calls == []
+    _assert_full_cold_accounting(case, result.staged)
+
+
+def test_application_cycle_partial_output_is_not_salvaged(connected_case):
+    case = connected_case
+    variants = _cycle_variants(case)
+    variants = (replace(variants[0], spec=pf.spec(max_attempts=1)), variants[1])
+    engines = _cycle_engines(case)
+    result = _cycle(case, variants, engines)
+    assert result.status == "REFUSED"
+    first, second = result.variants
+    assert first.outcome.outputs == () and len(first.outcome.attempts) == 1
+    assert first.review_packet["frozen_gate_metrics"]["paired_mean_improvement"] is None
+    assert first.outcome.refusal_reasons == ("ATTEMPT_BUDGET_EXHAUSTED",)
+    assert second.outcome is None and engines[1].calls == []
+
+
+def test_transport_failure_does_not_pass_scripted_bad_control(connected_case):
+    case = connected_case
+    engines = _cycle_engines(case, second={"exit_state": {
+        "Running": False, "ExitCode": 7, "OOMKilled": False}})
+    result = _cycle(case, engines=engines)
+    assert result.status == "REFUSED" and result.variants[1].status == "REFUSED"
+    assert result.variants[1].outcome.refusal_reasons == ("TRANSPORT_ATTEMPT_NOT_CONFIRMED",)
+    assert result.variants[1].review_packet["engineering_evidence"]["controls"][2]["status"] == "NOT_RUN"
+
+
+def test_application_cycle_default_and_cli_refuse_without_effects(connected_case, capsys):
+    case = connected_case
+    with pytest.raises(cycle.StagedCycleRefused, match="RUNTIME_QUALIFICATION_UNAVAILABLE"):
+        cycle.run_staged_cycle(**case[3], variants=_cycle_variants(case))
+    from scripts.research_codegen_cycle import main
+    assert main([]) == 78
+    assert json.loads(capsys.readouterr().out)["execution_enabled"] is False
+    with pytest.raises(SystemExit) as rejected:
+        main(["--qualified"])
+    assert rejected.value.code == 2
+    assert (case[0] / sa.LEDGER_BASENAME).read_bytes() == b""
+
+
+def test_application_cycle_never_replays_existing_unknown_generation(connected_case):
+    case = connected_case
+    first = _cycle(case, engines=_cycle_engines(case, first={"start_rc": 7}))
+    assert first.status == "EFFECT_UNKNOWN"
+    before = (case[0] / sa.LEDGER_BASENAME).read_bytes()
+    engines = _cycle_engines(case)
+    second = _cycle(case, engines=engines, run_id="renamed-receipt-is-not-replay-authority")
+    assert second.status == "RECONCILIATION_REQUIRED"
+    assert all(row.status == "NOT_ATTEMPTED_EXISTING_GENERATION" for row in second.variants)
+    assert all(engine.calls == [] for engine in engines)
+    assert (case[0] / sa.LEDGER_BASENAME).read_bytes() == before
+
+
+def test_application_cycle_partial_existing_generation_does_not_replay(connected_case):
+    case = connected_case
+    expected = json.loads(case[3]["expected_generation"].raw)
+    expected["variants"] = expected["variants"][:1]
+    sa.stage_synthetic_generation(**{**case[3], "expected_generation": pf.bound(expected),
+                                   "configurations": case[3]["configurations"][:1]})
+    engines = _cycle_engines(case)
+    result = _cycle(case, engines=engines)
+    assert result.staged.newly_recorded_count == 1
+    assert result.status == "RECONCILIATION_REQUIRED"
+    assert all(engine.calls == [] for engine in engines)
+    _assert_full_cold_accounting(case, result.staged)
+
+
+def test_application_cycle_retains_attempt_if_review_consumer_refuses(connected_case, monkeypatch):
+    case = connected_case
+    engines = _cycle_engines(case)
+
+    def refuse(*args, **kwargs):
+        raise ValueError("fixture consumer failure")
+
+    monkeypatch.setattr(cycle, "diagnostic_review_packet", refuse)
+    result = _cycle(case, engines=engines)
+    assert result.status == "REFUSED"
+    first, later = result.variants
+    assert first.reason == "DIAGNOSTIC_COMPOSITION_REFUSED"
+    assert first.outcome.completed and len(first.outcome.attempts) == 6
+    assert first.diagnostic is not None and first.review_packet is None
+    assert later.outcome is None and engines[1].calls == []
+
+
+def _declared_variants(case):
+    from tests.test_research_codegen_contracts import role_declarations
+    variants = []
+    for variant in _cycle_variants(case):
+        declared = replace(variant.run,
+            role_declarations=pf.bound(role_declarations(json.loads(variant.run.manifest.raw))))
+        assessment = b.prepare_synthetic_identity_assessment(declared, commission=case[3]["commission"])
+        variants.append(replace(variant, run=replace(declared, identity_assessment=assessment)))
+    return tuple(variants)
+
+
+def test_declared_cycle_preserves_private_assessment_through_existing_consumers(connected_case):
+    from engine.research_factory.review_queue import diagnostic_review_packet
+    case = connected_case
+    variants = _declared_variants(case)
+    # The declaration helper requires no invented accounting receipt or effect.
+    assert (case[0] / sa.LEDGER_BASENAME).read_bytes() == b""
+    result = _cycle(case, variants=variants)
+    assert result.status == "DIAGNOSTIC_CYCLE_COMPLETE"
+    commission = case[3]["commission"]
+    for variant, row in zip(variants, result.variants):
+        assert row.run.identity_assessment is variant.run.identity_assessment
+        assert json.loads(row.run.identity_assessment.raw)["status"] == "DECLARED_SEPARATION_UNATTESTED"
+        # The exact same receipt crosses unchanged output/review consumers.
+        legacy = replace(row.run, role_declarations=None, identity_assessment=None)
+        raw = (pd.connect_prepared_outputs(legacy, row.outcome, commission=commission)
+               if row.outcome.completed else b.compute_synthetic_diagnostic(legacy, commission=commission))
+        assert raw == row.diagnostic
+        _, public = _decode_public(legacy, commission, raw)
+        packet = diagnostic_review_packet(public, engineering_receipts=dict(run=legacy,
+            commission=commission, source=variant.source, staged=result.staged, outcome=row.outcome))
+        assert packet == row.review_packet
+        prepared = b.prepare_synthetic_inputs(row.run, commission=commission)
+        assert not hasattr(prepared, "identity_assessment")
+        assert not hasattr(prepared, "role_declarations")
+        encoded = json.dumps(packet)
+        for role in json.loads(row.run.role_declarations.raw)["roles"].values():
+            assert role["principal_sha256"] not in encoded
+            assert all(role["principal_sha256"].encode() not in task.input_bytes.raw
+                       for task in prepared.decisions)
+        assert public["authority_granted"] is False
+
+
+@pytest.mark.parametrize("damage", ["missing", "stale", "invalid_roles"])
+def test_declared_cycle_invalid_later_assessment_prevents_all_transport(connected_case, damage):
+    case = connected_case
+    first, later = _declared_variants(case)
+    if damage == "missing":
+        later = replace(later, run=replace(later.run, identity_assessment=None))
+    elif damage == "stale":
+        later = replace(later, run=replace(later.run, identity_assessment=first.run.identity_assessment))
+    else:
+        declaration = json.loads(later.run.role_declarations.raw)
+        declaration["roles"]["execution"]["capabilities"] = ["contents:write"]
+        later = replace(later, run=replace(later.run, role_declarations=pf.bound(declaration)))
+    engines = _cycle_engines(case)
+    result = _cycle(case, variants=(first, later), engines=engines)
+    assert result.status == "REFUSED"
+    assert all(row.status == "NOT_ATTEMPTED_INVALID_BATCH" for row in result.variants)
+    assert all(engine.calls == [] for engine in engines)
+    _assert_full_cold_accounting(case, result.staged)
