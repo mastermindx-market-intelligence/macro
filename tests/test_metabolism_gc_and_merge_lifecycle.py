@@ -129,8 +129,8 @@ def test_reap_paused_gate():
     assert result["errors"] == []
 
 
-def test_reap_old_terminal_branch_deleted():
-    """Branch older than retention + terminal journal → deleted."""
+def test_reap_old_terminal_branch_not_deleted_without_live_proof():
+    """An old done journal is only a candidate; never enough to delete remotely."""
     from scripts.metabolism_gc import reap_propose_branches, _PROPOSE_BRANCH_RETENTION_DAYS
     root = _tmp_root()
     cycle_id = _make_cycle_id(_PROPOSE_BRANCH_RETENTION_DAYS + 5)
@@ -158,7 +158,8 @@ def test_reap_old_terminal_branch_deleted():
         with patch("subprocess.run", side_effect=fake_run):
             result = reap_propose_branches(root, dry_run=False)
 
-    assert f"metabolism/propose-{cycle_id}" in result["deleted"]
+    assert result["deleted"] == []
+    assert cycle_id in result["skipped"]
     assert result["errors"] == []
 
 
@@ -261,8 +262,8 @@ def test_reap_dry_run_no_push():
     assert push_calls == []
 
 
-def test_reap_push_failure_nonfatal():
-    """git push --delete failure is captured in errors but is non-fatal."""
+def test_reap_failed_journal_still_never_pushes():
+    """A failed stage must not trigger deletion or any push at all."""
     from scripts.metabolism_gc import reap_propose_branches, _PROPOSE_BRANCH_RETENTION_DAYS
     root = _tmp_root()
     cycle_id = _make_cycle_id(_PROPOSE_BRANCH_RETENTION_DAYS + 5)
@@ -281,8 +282,9 @@ def test_reap_push_failure_nonfatal():
         with patch("subprocess.run", side_effect=fake_run):
             result = reap_propose_branches(root, dry_run=False)
 
-    assert f"metabolism/propose-{cycle_id}" not in result["deleted"]
-    assert any("metabolism/propose-" in e for e in result["errors"])
+    assert result["deleted"] == []
+    assert cycle_id in result["skipped"]
+    assert result["errors"] == []
 
 
 # ── _delete_remote_propose_branch tests ──────────────────────────────────────

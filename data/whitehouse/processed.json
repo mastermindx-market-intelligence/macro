@@ -1913,6 +1913,72 @@
       "at": "2026-11-04T01:20:19.132740+00:00",
       "activated": false,
       "importance": 10
+    },
+    "https://www.whitehouse.gov/?p=54042": {
+      "id": "wh-2026-11-04-president-trump-will-again-defy-the-odds-the-fake-news-and-the-radical-left",
+      "at": "2026-11-04T23:39:30.454947+00:00",
+      "activated": false,
+      "importance": 5
+    },
+    "https://www.whitehouse.gov/?p=54039": {
+      "id": "wh-2026-11-04-first-lady-melania-trump-and-lsu-establish-5-million-fostering-the-future-endowm",
+      "at": "2026-11-04T23:39:31.678666+00:00",
+      "activated": false,
+      "importance": 5
+    },
+    "https://www.whitehouse.gov/?p=54063": {
+      "id": "wh-2026-11-05-first-lady-melania-trump-unites-russia-and-ukraine-at-the-white-house-following-",
+      "at": "2026-11-05T21:59:09.702604+00:00",
+      "activated": true,
+      "importance": 72
+    },
+    "https://www.whitehouse.gov/?p=54069": {
+      "id": "wh-2026-11-05-fact-sheet-president-donald-j-trump-establishes-the-oval-office-as-a-national-mo",
+      "at": "2026-11-06T02:24:52.191511+00:00",
+      "activated": false,
+      "importance": 5
+    },
+    "https://www.whitehouse.gov/?p=54071": {
+      "id": "wh-2026-11-05-establishment-of-the-oval-office-national-monument",
+      "at": "2026-11-06T02:24:53.792747+00:00",
+      "activated": false,
+      "importance": 5
+    },
+    "https://www.whitehouse.gov/?p=54117": {
+      "id": "wh-2026-11-06-president-trump-names-stephen-miller-as-33rd-white-house-chief-of-staff",
+      "at": "2026-11-06T23:07:04.211794+00:00",
+      "activated": false,
+      "importance": 15
+    },
+    "https://www.whitehouse.gov/?p=54101": {
+      "id": "wh-2026-11-06-what-they-are-saying-blowout-october-jobs-report-smashes-expectations",
+      "at": "2026-11-06T23:07:05.815601+00:00",
+      "activated": false,
+      "importance": 20
+    },
+    "https://www.whitehouse.gov/?p=54096": {
+      "id": "wh-2026-11-06-president-trump-was-right-tariffs-and-tax-cuts-are-reshoring-manufacturing-creat",
+      "at": "2026-11-06T23:07:17.972247+00:00",
+      "activated": true,
+      "importance": 72
+    },
+    "https://www.whitehouse.gov/?p=54252": {
+      "id": "wh-2026-11-07-first-lady-melania-trump-and-lsu-establish-7-2-million-fostering-the-future-endo",
+      "at": "2026-11-07T20:52:14.843747+00:00",
+      "activated": false,
+      "importance": 5
+    },
+    "https://www.whitehouse.gov/?p=54263": {
+      "id": "wh-2026-11-08-icymi-ag-todd-blanche-dismantles-democrats-oversight-charade-on-the-sunday-shows",
+      "at": "2026-11-08T19:43:31.426897+00:00",
+      "activated": false,
+      "importance": 5
+    },
+    "https://www.whitehouse.gov/?p=54260": {
+      "id": "wh-2026-11-08-presidential-message-on-diwali-1f71",
+      "at": "2026-11-08T19:43:32.843875+00:00",
+      "activated": false,
+      "importance": 5
     }
   },
   "_note": "W5 baseline \u2014 no items evaluated yet; provider absent in build env (no CLAUDE_CODE_OAUTH_TOKEN / ANTHROPIC_API_KEY / DEEPSEEK_API_KEY). Created 2026-07-02 to make dark-vs-quiet distinguishable: an empty seen={} here means the desk ran but had no provider, not that it was never invoked."

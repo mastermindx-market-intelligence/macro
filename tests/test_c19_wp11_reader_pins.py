@@ -2,7 +2,7 @@
 expectation read, exactly as already shipped. Hermetic: tmp_path fixtures, fixed
 `today`, no data/ reads, no network. No production code is exercised beyond
 engine.event_window._read_mri_surprise_dispersion and
-engine.release_market_context.compute_expectation_read.
+engine.release_market_context.compute_expectation_read and get_reaction_sensitivity.
 
 N1 legacy payloads are refused outright; N2 nearest-future element with an exact
 release-type match; N3 the mixed nowcast/market median is a labelled expectation
@@ -206,3 +206,172 @@ def test_n4_now_kwarg_sets_the_consumption_instant(tmp_path):
     r = ew._read_mri_surprise_dispersion("CPI", today=day, paths=[p], now=after)
     assert r is not None and r["asof_precision"] == "instant"
     assert ew._read_mri_surprise_dispersion("CPI", today=day, paths=[p], now=datetime(2026, 10, 12, 11, 0)) is None
+
+
+# ---------------------------------------------------------------------------
+# RIC #7965: hermetic pooled-regime reaction reader acceptance pins.
+# Keep the existing full release-market-context suite's nightly data-gate copy;
+# this exact nine-case block also executes in the incumbent MRI code gate.
+# ---------------------------------------------------------------------------
+
+from pathlib import Path
+from engine.release_market_context import _ERA_LABEL, get_reaction_sensitivity
+
+
+def _make_playbook(tmp_path: Path, cells: list[dict]) -> Path:
+    p = tmp_path / "research" / "release_playbook" / "results" / "playbook_v1.json"
+    p.parent.mkdir(parents=True, exist_ok=True)
+    p.write_text(json.dumps(cells))
+    return p
+
+
+def _base_cells() -> list[dict]:
+    """Minimal set of 2021plus h1 cells for cpi: hot/cold × dgs10_bp/spy_pct."""
+    return [
+        {"release": "cpi", "bucket": "hot",  "outcome": "dgs10_bp", "horizon": "h1",
+         "era": _ERA_LABEL, "regime": None, "n": 20, "mean": 3.2,  "median": 2.0, "ci_lo": -0.85, "ci_hi": 8.3},
+        {"release": "cpi", "bucket": "cold", "outcome": "dgs10_bp", "horizon": "h1",
+         "era": _ERA_LABEL, "regime": None, "n": 20, "mean": -4.1, "median": -3.0,"ci_lo": -9.0,  "ci_hi": 0.5},
+        {"release": "cpi", "bucket": "hot",  "outcome": "spy_pct",  "horizon": "h1",
+         "era": _ERA_LABEL, "regime": None, "n": 21, "mean": -0.40,"median": -0.05,"ci_lo": -1.28, "ci_hi": 0.29},
+        {"release": "cpi", "bucket": "cold", "outcome": "spy_pct",  "horizon": "h1",
+         "era": _ERA_LABEL, "regime": None, "n": 21, "mean": 0.55, "median": 0.4,  "ci_lo": -0.1,  "ci_hi": 1.4},
+    ]
+
+
+class TestReactionSensitivity:
+    def test_null_when_playbook_missing(self, tmp_path: Path):
+        """Returns None when playbook file doesn't exist."""
+        p = tmp_path / "research" / "release_playbook" / "results" / "playbook_v1.json"
+        result = get_reaction_sensitivity("cpi_headline", p, current_regime="Q1")
+        assert result is None
+
+    def test_null_for_claims_release(self, tmp_path: Path):
+        """Claims release type → None (no playbook family)."""
+        cells = _base_cells()
+        p = _make_playbook(tmp_path, cells)
+        result = get_reaction_sensitivity("claims", p, current_regime="Q1")
+        assert result is None
+
+    def test_picks_2021plus_cells(self, tmp_path: Path):
+        """Uses 2021plus era cells and returns correct mean values."""
+        cells = _base_cells()
+        p = _make_playbook(tmp_path, cells)
+        result = get_reaction_sensitivity("cpi_headline", p, current_regime=None)
+        assert result is not None
+        assert result["era_basis"] == _ERA_LABEL
+        assert result["dgs10_h1_hot_bp"] == pytest.approx(3.2, abs=1e-4)
+        assert result["dgs10_h1_cold_bp"] == pytest.approx(-4.1, abs=1e-4)
+        assert result["spy_h1_hot_pct"] == pytest.approx(-0.40, abs=1e-4)
+        assert result["spy_h1_cold_pct"] == pytest.approx(0.55, abs=1e-4)
+
+    def test_prefers_pooled_regime_cell_when_n_ge_threshold(self, tmp_path: Path):
+        """Preregistered regime cells are era=all and beat the era-level fallback."""
+        cells = _base_cells() + [
+            # Regime-conditioned Q1 table is pooled across eras by the frozen playbook.
+            {"release": "cpi", "bucket": "hot", "outcome": "dgs10_bp", "horizon": "h1",
+             "era": "all", "regime": "Q1", "n": 10, "mean": 7.77, "median": 6.0,
+             "ci_lo": 2.0, "ci_hi": 12.0},
+        ]
+        p = _make_playbook(tmp_path, cells)
+        result = get_reaction_sensitivity("cpi_headline", p, current_regime="Q1")
+        assert result is not None
+        assert result["regime_cells_used"] is True
+        assert result["regime_requested"] == "Q1"
+        assert result["regime_basis"] == "all"
+        assert result["regime_labels_revision_optimistic"] is True
+        # The pooled Q1-conditioned cell should be used for hot dgs10.
+        assert result["dgs10_h1_hot_bp"] == pytest.approx(7.77, abs=1e-4)
+        hot_evidence = result["evidence"]["dgs10_h1_hot"]
+        assert hot_evidence == {
+            "n": 10,
+            "mean": 7.77,
+            "median": 6.0,
+            "ci_lo": 2.0,
+            "ci_hi": 12.0,
+            "era": "all",
+            "regime": "Q1",
+            "revision_optimistic": True,
+        }
+        # Cold dgs10 falls back to 2021plus era-level (no qualified Q1 cold cell).
+        assert result["dgs10_h1_cold_bp"] == pytest.approx(-4.1, abs=1e-4)
+        cold_evidence = result["evidence"]["dgs10_h1_cold"]
+        assert cold_evidence["n"] == 20
+        assert cold_evidence["era"] == _ERA_LABEL
+        assert cold_evidence["regime"] is None
+        assert cold_evidence["revision_optimistic"] is False
+        assert "revision_optimistic" in result["note"]
+
+    def test_falls_back_when_regime_n_below_threshold(self, tmp_path: Path):
+        """Regime-conditioned cell with n<8 is NOT used; falls back to era-level."""
+        cells = _base_cells() + [
+            # n=5 < _REGIME_MIN_N — should be ignored
+            {"release": "cpi", "bucket": "hot", "outcome": "dgs10_bp", "horizon": "h1",
+             "era": "all", "regime": "Q1", "n": 5, "mean": 99.0, "median": 99.0,
+             "ci_lo": 0.0, "ci_hi": 99.0},
+        ]
+        p = _make_playbook(tmp_path, cells)
+        result = get_reaction_sensitivity("cpi_headline", p, current_regime="Q1")
+        assert result is not None
+        assert result["regime_cells_used"] is False
+        assert result["regime_requested"] == "Q1"
+        assert result["regime_basis"] is None
+        assert result["regime_labels_revision_optimistic"] is False
+        assert result["dgs10_h1_hot_bp"] == pytest.approx(3.2, abs=1e-4)  # era-level
+        assert result["evidence"]["dgs10_h1_hot"]["era"] == _ERA_LABEL
+        assert result["evidence"]["dgs10_h1_hot"]["regime"] is None
+        assert result["evidence"]["dgs10_h1_hot"]["revision_optimistic"] is False
+
+    def test_nfp_family_mapped_correctly(self, tmp_path: Path):
+        """nfp release type maps to 'nfp' playbook family."""
+        cells = [
+            {"release": "nfp", "bucket": "hot",  "outcome": "dgs10_bp", "horizon": "h1",
+             "era": _ERA_LABEL, "regime": None, "n": 15, "mean": 5.1, "median": 4.0, "ci_lo": 1.0, "ci_hi": 9.0},
+            {"release": "nfp", "bucket": "cold", "outcome": "dgs10_bp", "horizon": "h1",
+             "era": _ERA_LABEL, "regime": None, "n": 15, "mean": -3.2,"median": -2.0,"ci_lo": -7.0, "ci_hi": 0.5},
+            {"release": "nfp", "bucket": "hot",  "outcome": "spy_pct",  "horizon": "h1",
+             "era": _ERA_LABEL, "regime": None, "n": 15, "mean": 0.3,  "median": 0.2, "ci_lo": -0.5, "ci_hi": 1.2},
+            {"release": "nfp", "bucket": "cold", "outcome": "spy_pct",  "horizon": "h1",
+             "era": _ERA_LABEL, "regime": None, "n": 15, "mean": -0.8, "median": -0.7,"ci_lo": -2.0, "ci_hi": 0.3},
+        ]
+        p = _make_playbook(tmp_path, cells)
+        result = get_reaction_sensitivity("nfp", p, current_regime=None)
+        assert result is not None
+        assert result["dgs10_h1_hot_bp"] == pytest.approx(5.1, abs=1e-4)
+
+    def test_output_structure_complete(self, tmp_path: Path):
+        """Result has all required keys."""
+        cells = _base_cells()
+        p = _make_playbook(tmp_path, cells)
+        result = get_reaction_sensitivity("cpi_headline", p)
+        assert result is not None
+        required = {
+            "dgs10_h1_hot_bp", "dgs10_h1_cold_bp",
+            "spy_h1_hot_pct", "spy_h1_cold_pct",
+            "era_basis", "regime_requested", "regime_basis", "regime_cells_used",
+            "regime_labels_revision_optimistic", "evidence", "note",
+        }
+        assert required.issubset(result.keys())
+
+    def test_regime_cells_used_false_by_default(self, tmp_path: Path):
+        """Without regime-conditioned cells, regime_cells_used is False."""
+        cells = _base_cells()
+        p = _make_playbook(tmp_path, cells)
+        result = get_reaction_sensitivity("cpi_headline", p, current_regime="Q2")
+        assert result is not None
+        assert result["regime_cells_used"] is False
+        assert result["regime_requested"] == "Q2"
+        assert result["regime_basis"] is None
+        assert result["regime_labels_revision_optimistic"] is False
+        assert result["evidence"]["dgs10_h1_hot"]["n"] == 20
+        assert result["evidence"]["dgs10_h1_hot"]["era"] == _ERA_LABEL
+        assert result["evidence"]["dgs10_h1_hot"]["regime"] is None
+
+    def test_fail_open_on_bad_json(self, tmp_path: Path):
+        """Corrupt JSON → returns None without raising."""
+        p = tmp_path / "research" / "release_playbook" / "results" / "playbook_v1.json"
+        p.parent.mkdir(parents=True, exist_ok=True)
+        p.write_text("NOT VALID JSON {{{")
+        result = get_reaction_sensitivity("cpi_headline", p)
+        assert result is None
+
