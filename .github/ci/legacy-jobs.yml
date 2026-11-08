@@ -1519,7 +1519,7 @@ jobs:
       - name: install deterministic source-research test dependencies
         run: pip install pytest
       - name: point-in-time equity pressure and private pilot projection
-        run: PYTHONPATH=.:tests python -m pytest tests/test_equity_pressure_response.py tests/test_microstructure_pressure_response_pilot.py -q
+        run: PYTHONPATH=.:tests python -m pytest tests/test_equity_pressure_response.py tests/test_microstructure_pressure_response_pilot.py tests/test_tpb_historical_ruler.py -q
 
   yahoo-daily-archive-refresh:
     if: ${{ false }}
@@ -5963,6 +5963,8 @@ jobs:
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn
       - name: session + §7 anchor invariance (k=1..6 start drops, bucket/marker parity, era stamps)
         run: python -m pytest tests/test_session_anchor_invariance.py tests/test_sq_anchor_invariance.py tests/test_confluence_resample_runtime.py -q
+      - name: swing-confluence saved recipe (no market outcomes)
+        run: python -m pytest tests/test_toi_swing_plan.py -q
 
   trial-budgets:
     if: ${{ false }}
@@ -43265,15 +43267,26 @@ jobs:
         run: python -m pytest tests/test_winner_health_design_freeze.py -q
 
   options-nbbo-cohort:
-    # Frozen same-basis MomoEdge comparison infrastructure. The suite is fully
+    # Offline source qualification and frozen same-basis MomoEdge comparisons.
+    # The suites are fully
     # offline: source responses and authenticated producer rows are synthetic,
     # while raw production bytes remain host-private outside git.
     if: ${{ false }}  # executed inside ci-pack — NOT a disabled gate.
     gate: code
-    # Literal import/read closure of the four offline suites. Exclusive scope
+    # Literal import/read closure of the offline suites. Exclusive scope
     # prevents the CLI's dynamic file-module tests from widening unrelated probes.
     scope: exclusive
     paths:
+      - collectors/__init__.py
+      - collectors/options_free_samples.py
+      - collectors/options_free_tbt.py
+      - scripts/options_free_source_inventory.py
+      - scripts/qualify_options_free_samples.py
+      - scripts/qualify_options_free_tbt.py
+      - tests/__init__.py
+      - tests/test_options_free_samples.py
+      - tests/test_options_free_source_inventory.py
+      - tests/test_options_free_tbt.py
       - config/dag.yml
       - engine/__init__.py
       - lib/__init__.py
@@ -43318,6 +43331,8 @@ jobs:
           tests/test_options_alpha_exact_option_outcome_cli.py
           tests/test_options_occ_contract_terms.py
           tests/test_options_occ_contract_terms_native.py -q -rs
+      - name: private Cboe evaluation parsers, custody refusal and inventory contracts
+        run: python -m pytest tests/test_options_free_samples.py tests/test_options_free_source_inventory.py tests/test_options_free_tbt.py -q
 
   product-experience-registry:
     if: ${{ false }}
@@ -43954,6 +43969,14 @@ jobs:
       - tests/verification/test_journey_a01.py
       - tests/verification/test_journey_f01.py
       - tests/verification/test_oracle_q01.py
+      # Synthetic research-input qualification shares these existing Data OS
+      # verification seams and dependencies; the thin foundation stays unchanged.
+      - engine/systematic_inputs.py
+      - scripts/qualify_systematic_inputs.py
+      - tests/test_systematic_inputs.py
+      - research/systematic_inputs/README.md
+      - scripts/__init__.py
+      - tests/__init__.py
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
@@ -43971,6 +43994,10 @@ jobs:
           tests/verification/test_bench_q03_contract.py
           tests/verification/test_journey_f01.py
           tests/verification/test_journey_a01.py -q -rs
+      - name: systematic input qualification (synthetic rights, PIT and action refusals)
+        run: >-
+          PYTHONDONTWRITEBYTECODE=1 python -m pytest
+          tests/test_systematic_inputs.py -q -rs
 
   dataos-foundation:
     scope: exclusive
