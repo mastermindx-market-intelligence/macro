@@ -1,7 +1,7 @@
 {
   "translation": {
     "schema": "paper_localization_copy_map_v1",
-    "status": "PROPOSED_TRANSLATION_NOT_APPLIED",
+    "status": "APPLIED_AND_READ_BACK_BY_PRINCIPAL",
     "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
     "originalRootId": "M06-0",
     "destinationCloneIdReportedByOwner": "O39-0",
@@ -1589,7 +1589,9 @@
         "kind": "font",
         "note": "Retain layout, sizes and numbers. Ensure Chinese text uses existing PingFang SC/system-ui fallback. This is a visual localization variant, not proof of a working language switch."
       }
-    ]
+    ],
+    "originalAssessmentStatus": "PROPOSED_TRANSLATION_NOT_APPLIED",
+    "appliedByPrincipal": true
   },
   "sourceRoot": "M06-0",
   "cloneRoot": "O39-0",
@@ -2209,5 +2211,1257 @@
       "reason": "Compact control label to preserve31/34 and partial count."
     }
   ],
-  "runtimeNavigationVerified": false
+  "runtimeNavigationVerified": false,
+  "appliedTranslations": [
+    {
+      "originalNodeId": "M1D-0",
+      "parentId": "M1B-0",
+      "old": "United States",
+      "next": "美国",
+      "nodeId": "OJY-0"
+    },
+    {
+      "originalNodeId": "M1A-0",
+      "parentId": "M18-0",
+      "old": "China",
+      "next": "中国",
+      "nodeId": "OJV-0"
+    },
+    {
+      "originalNodeId": "M17-0",
+      "parentId": "M15-0",
+      "old": "Hong Kong",
+      "next": "香港",
+      "nodeId": "OJS-0"
+    },
+    {
+      "originalNodeId": "M14-0",
+      "parentId": "M12-0",
+      "old": "Canada",
+      "next": "加拿大",
+      "nodeId": "OJP-0"
+    },
+    {
+      "originalNodeId": "M11-0",
+      "parentId": "M0Z-0",
+      "old": "International",
+      "next": "国际市场",
+      "nodeId": "OJM-0"
+    },
+    {
+      "originalNodeId": "M0Y-0",
+      "parentId": "M0W-0",
+      "old": "Other Assets",
+      "next": "其他资产",
+      "nodeId": "OJJ-0"
+    },
+    {
+      "originalNodeId": "M0V-0",
+      "parentId": "M0T-0",
+      "old": "Research",
+      "next": "研究",
+      "nodeId": "OJG-0"
+    },
+    {
+      "originalNodeId": "M0O-0",
+      "parentId": "M0N-0",
+      "old": "Search",
+      "next": "搜索",
+      "nodeId": "OJ9-0"
+    },
+    {
+      "originalNodeId": "M0J-0",
+      "parentId": "M0I-0",
+      "old": "Terminal",
+      "next": "终端",
+      "nodeId": "OJ4-0"
+    },
+    {
+      "originalNodeId": "M2A-0",
+      "parentId": "M27-0",
+      "old": "International",
+      "next": "国际市场",
+      "nodeId": "OIT-0"
+    },
+    {
+      "originalNodeId": "M28-0",
+      "parentId": "M27-0",
+      "old": "Global surveillance",
+      "next": "全球监测",
+      "nodeId": "OIR-0"
+    },
+    {
+      "originalNodeId": "M26-0",
+      "parentId": "M25-0",
+      "old": "Scanner",
+      "next": "扫描",
+      "nodeId": "OIP-0"
+    },
+    {
+      "originalNodeId": "M24-0",
+      "parentId": "M23-0",
+      "old": "Dislocations",
+      "next": "异常偏离",
+      "nodeId": "OIN-0"
+    },
+    {
+      "originalNodeId": "M22-0",
+      "parentId": "M21-0",
+      "old": "Transmission",
+      "next": "传导",
+      "nodeId": "OIL-0"
+    },
+    {
+      "originalNodeId": "M20-0",
+      "parentId": "M1Z-0",
+      "old": "Dossiers",
+      "next": "研究档案",
+      "nodeId": "OIJ-0"
+    },
+    {
+      "originalNodeId": "M1Y-0",
+      "parentId": "M1X-0",
+      "old": "Scenario lab",
+      "next": "情景推演",
+      "nodeId": "OIH-0"
+    },
+    {
+      "originalNodeId": "M1W-0",
+      "parentId": "M1V-0",
+      "old": "Replay",
+      "next": "回放",
+      "nodeId": "OIF-0"
+    },
+    {
+      "originalNodeId": "M1U-0",
+      "parentId": "M1T-0",
+      "old": "Sources & method",
+      "oldJsx": "Sources &amp; method",
+      "next": "来源与方法",
+      "nodeId": "OID-0"
+    },
+    {
+      "originalNodeId": "M1R-0",
+      "parentId": "M1P-0",
+      "old": "Saved",
+      "next": "已保存",
+      "nodeId": "OIA-0"
+    },
+    {
+      "originalNodeId": "M1O-0",
+      "parentId": "M1M-0",
+      "old": "Watch conditions",
+      "next": "观察条件",
+      "nodeId": "OI7-0"
+    },
+    {
+      "originalNodeId": "M1N-0",
+      "parentId": "M1M-0",
+      "old": "2 armed",
+      "next": "2 项已启用",
+      "nodeId": "OI6-0"
+    },
+    {
+      "originalNodeId": "M3N-0",
+      "parentId": "M3K-0",
+      "old": "GLOBAL SURVEILLANCE · SOURCES",
+      "next": "全球监测 · 来源",
+      "nodeId": "OI2-0"
+    },
+    {
+      "originalNodeId": "M3M-0",
+      "parentId": "M3K-0",
+      "old": "Sources & method",
+      "oldJsx": "Sources &amp; method",
+      "next": "来源与方法",
+      "nodeId": "OI1-0"
+    },
+    {
+      "originalNodeId": "M3L-0",
+      "parentId": "M3K-0",
+      "old": "Source coverage, freshness and access",
+      "next": "来源覆盖、时效与访问权限",
+      "nodeId": "OI0-0"
+    },
+    {
+      "originalNodeId": "M3J-0",
+      "parentId": "M3I-0",
+      "old": "SPECIMEN VALUES · NOT LIVE",
+      "next": "示例数据 · 非实时",
+      "nodeId": "OHW-0"
+    },
+    {
+      "originalNodeId": "M3H-0",
+      "parentId": "M3F-0",
+      "old": "SNAPSHOT HEALTH",
+      "next": "快照可用性",
+      "nodeId": "OHU-0"
+    },
+    {
+      "originalNodeId": "M3G-0",
+      "parentId": "M3F-0",
+      "old": "Usable · 20 of 204 cells gapped",
+      "next": "可用 · 204 项中 20 项有缺口",
+      "nodeId": "OHT-0"
+    },
+    {
+      "originalNodeId": "M3A-0",
+      "parentId": "M38-0",
+      "old": "What changed globally?",
+      "next": "全球发生了什么变化？",
+      "nodeId": "OHN-0"
+    },
+    {
+      "originalNodeId": "M39-0",
+      "parentId": "M38-0",
+      "old": "31 of 34 answer · 3 partial",
+      "next": "31/34 可答 · 3 项部分可用",
+      "nodeId": "OHM-0"
+    },
+    {
+      "originalNodeId": "M34-0",
+      "parentId": "M32-0",
+      "old": "Local, FX, common or divergent?",
+      "next": "本地、汇率、共性或分化？",
+      "nodeId": "OHH-0"
+    },
+    {
+      "originalNodeId": "M33-0",
+      "parentId": "M32-0",
+      "old": "30 of 34 · Peru abstains",
+      "next": "30/34 · 秘鲁不作判断",
+      "nodeId": "OHG-0"
+    },
+    {
+      "originalNodeId": "M2Y-0",
+      "parentId": "M2W-0",
+      "old": "Credit, funding, liquidity?",
+      "next": "信用、融资、流动性如何？",
+      "nodeId": "OHB-0"
+    },
+    {
+      "originalNodeId": "M2X-0",
+      "parentId": "M2W-0",
+      "old": "29 of 34 · 5 CDS restricted",
+      "next": "29/34 · 5 项 CDS 权限受限",
+      "nodeId": "OHA-0"
+    },
+    {
+      "originalNodeId": "M2S-0",
+      "parentId": "M2Q-0",
+      "old": "Transmission into the US?",
+      "next": "如何传导至美国？",
+      "nodeId": "OH5-0"
+    },
+    {
+      "originalNodeId": "M2R-0",
+      "parentId": "M2Q-0",
+      "old": "34 edges typed · 21 evidenced",
+      "next": "34 条关系已分类 · 21 条有证据",
+      "nodeId": "OH4-0"
+    },
+    {
+      "originalNodeId": "M2M-0",
+      "parentId": "M2K-0",
+      "old": "Eligible US corroboration?",
+      "next": "美国市场有可用的印证吗？",
+      "nodeId": "OGZ-0"
+    },
+    {
+      "originalNodeId": "M2L-0",
+      "parentId": "M2K-0",
+      "old": "US window open to 20:00 UTC",
+      "next": "美国观察窗口至 20:00 UTC",
+      "nodeId": "OGY-0"
+    },
+    {
+      "originalNodeId": "M2G-0",
+      "parentId": "M2E-0",
+      "old": "What resolves the thesis?",
+      "next": "什么能确认或否定判断？",
+      "nodeId": "OGT-0"
+    },
+    {
+      "originalNodeId": "M2F-0",
+      "parentId": "M2E-0",
+      "old": "Each thesis on its own clock",
+      "next": "各项判断有各自的时间窗口",
+      "nodeId": "OGS-0"
+    },
+    {
+      "originalNodeId": "M59-0",
+      "parentId": "M57-0",
+      "old": "SNAPSHOT",
+      "next": "快照",
+      "nodeId": "OGN-0"
+    },
+    {
+      "originalNodeId": "M58-0",
+      "parentId": "M57-0",
+      "old": "Asia close · Tue 21 Oct",
+      "next": "亚洲收盘 · Tue 21 Oct",
+      "nodeId": "OGM-0"
+    },
+    {
+      "originalNodeId": "M56-0",
+      "parentId": "M54-0",
+      "old": "REFERENCE PERIOD",
+      "next": "参考时段",
+      "nodeId": "OGK-0"
+    },
+    {
+      "originalNodeId": "M55-0",
+      "parentId": "M54-0",
+      "old": "21 Oct session",
+      "next": "21 Oct 交易时段",
+      "nodeId": "OGJ-0"
+    },
+    {
+      "originalNodeId": "M53-0",
+      "parentId": "M51-0",
+      "old": "SOURCE AVAILABLE",
+      "next": "来源可用",
+      "nodeId": "OGH-0"
+    },
+    {
+      "originalNodeId": "M50-0",
+      "parentId": "M4Y-0",
+      "old": "ACQUIRED + QUALIFIED",
+      "next": "已获取并完成核验",
+      "nodeId": "OGE-0"
+    },
+    {
+      "originalNodeId": "M4X-0",
+      "parentId": "M4V-0",
+      "old": "PUBLISHED",
+      "next": "已发布",
+      "nodeId": "OGB-0"
+    },
+    {
+      "originalNodeId": "M4U-0",
+      "parentId": "M4S-0",
+      "old": "Since last visit",
+      "next": "自上次查看以来",
+      "nodeId": "OG8-0"
+    },
+    {
+      "originalNodeId": "M4T-0",
+      "parentId": "M4S-0",
+      "old": "6 changes",
+      "next": "6 项变化",
+      "nodeId": "OG7-0"
+    },
+    {
+      "originalNodeId": "M4R-0",
+      "parentId": "M4O-0",
+      "old": "Sources & method",
+      "oldJsx": "Sources &amp; method",
+      "next": "来源",
+      "nodeId": "OG5-0"
+    },
+    {
+      "originalNodeId": "M4P-0",
+      "parentId": "M4O-0",
+      "old": "3 partial",
+      "next": "3 项部分可用",
+      "nodeId": "OG3-0"
+    },
+    {
+      "originalNodeId": "M4K-0",
+      "parentId": "M4C-0",
+      "old": "Mode",
+      "next": "时间模式",
+      "nodeId": "OFY-0"
+    },
+    {
+      "originalNodeId": "M4J-0",
+      "parentId": "M4I-0",
+      "old": "Latest available",
+      "next": "最新可用",
+      "nodeId": "OFX-0"
+    },
+    {
+      "originalNodeId": "M4H-0",
+      "parentId": "M4G-0",
+      "old": "Aligned periods",
+      "next": "对齐时段",
+      "nodeId": "OFV-0"
+    },
+    {
+      "originalNodeId": "M4F-0",
+      "parentId": "M4E-0",
+      "old": "Event-time",
+      "next": "事件时点",
+      "nodeId": "OFT-0"
+    },
+    {
+      "originalNodeId": "M4B-0",
+      "parentId": "M43-0",
+      "old": "Basis",
+      "next": "计价口径",
+      "nodeId": "OFP-0"
+    },
+    {
+      "originalNodeId": "M4A-0",
+      "parentId": "M49-0",
+      "old": "Local",
+      "next": "本币",
+      "nodeId": "OFO-0"
+    },
+    {
+      "originalNodeId": "M46-0",
+      "parentId": "M45-0",
+      "old": "Hedged",
+      "next": "对冲后",
+      "nodeId": "OFK-0"
+    },
+    {
+      "originalNodeId": "M42-0",
+      "parentId": "M3S-0",
+      "old": "Horizon",
+      "next": "区间",
+      "nodeId": "OFG-0"
+    },
+    {
+      "originalNodeId": "M3R-0",
+      "parentId": "M3Q-0",
+      "old": "Latest completed local sessions · US response window ends 20:00 UTC",
+      "next": "各地最近已完成的交易时段 · 美国反应窗口截至 20:00 UTC",
+      "nodeId": "OF5-0"
+    },
+    {
+      "originalNodeId": "M5I-0",
+      "parentId": "M5H-0",
+      "old": "COVERAGE MATRIX · 34 MARKETS × 6 SOURCE FAMILIES · ASIA-CLOSE SNAPSHOT 21 OCT",
+      "next": "覆盖矩阵 · 34 个市场 × 6 类来源 · 亚洲收盘快照 21 OCT",
+      "nodeId": "OF1-0"
+    },
+    {
+      "originalNodeId": "M5M-0",
+      "parentId": "M5L-0",
+      "old": "Published 08:10 UTC",
+      "next": "发布于 08:10 UTC",
+      "nodeId": "OEZ-0"
+    },
+    {
+      "originalNodeId": "M5O-0",
+      "parentId": "M5N-0",
+      "old": "Specimen",
+      "next": "示例",
+      "nodeId": "OEX-0"
+    },
+    {
+      "originalNodeId": "M5Q-0",
+      "parentId": "M5P-0",
+      "old": "MARKET",
+      "next": "市场",
+      "nodeId": "OET-0"
+    },
+    {
+      "originalNodeId": "M5R-0",
+      "parentId": "M5P-0",
+      "old": "SESSION",
+      "next": "交易时段",
+      "nodeId": "OES-0"
+    },
+    {
+      "originalNodeId": "M5S-0",
+      "parentId": "M5P-0",
+      "old": "INDEX CLOSE",
+      "next": "指数收盘",
+      "nodeId": "OER-0"
+    },
+    {
+      "originalNodeId": "M5T-0",
+      "parentId": "M5P-0",
+      "old": "FX FIX",
+      "next": "FX 定盘汇率",
+      "nodeId": "OEQ-0"
+    },
+    {
+      "originalNodeId": "M5U-0",
+      "parentId": "M5P-0",
+      "old": "10Y YIELD",
+      "next": "10Y 收益率",
+      "nodeId": "OEP-0"
+    },
+    {
+      "originalNodeId": "M5W-0",
+      "parentId": "M5P-0",
+      "old": "USD FUNDING",
+      "next": "USD 融资",
+      "nodeId": "OEN-0"
+    },
+    {
+      "originalNodeId": "M5X-0",
+      "parentId": "M5P-0",
+      "old": "US PROXY",
+      "next": "美国代理指标",
+      "nodeId": "OEM-0"
+    },
+    {
+      "originalNodeId": "M5Y-0",
+      "parentId": "M5P-0",
+      "old": "WHAT THE ANSWER CAN USE",
+      "next": "可用于哪些判断",
+      "nodeId": "OEL-0"
+    },
+    {
+      "originalNodeId": "M60-0",
+      "parentId": "M5Z-0",
+      "old": "ASIA · SNAPSHOT SESSION 21 OCT · 9 MARKETS",
+      "next": "亚洲 · 快照时段 21 OCT · 9 个市场",
+      "nodeId": "OEJ-0"
+    },
+    {
+      "originalNodeId": "M62-0",
+      "parentId": "M61-0",
+      "old": "Japan",
+      "next": "日本",
+      "nodeId": "OEH-0"
+    },
+    {
+      "originalNodeId": "M63-0",
+      "parentId": "M61-0",
+      "old": "21 Oct · closed",
+      "next": "21 Oct · 已收盘",
+      "nodeId": "OEG-0"
+    },
+    {
+      "originalNodeId": "M6O-0",
+      "parentId": "M6N-0",
+      "old": "All six questions",
+      "next": "六项问题均可用",
+      "nodeId": "ODX-0"
+    },
+    {
+      "originalNodeId": "M6Q-0",
+      "parentId": "M6P-0",
+      "old": "China",
+      "next": "中国",
+      "nodeId": "ODT-0"
+    },
+    {
+      "originalNodeId": "M6R-0",
+      "parentId": "M6P-0",
+      "old": "21 Oct · closed",
+      "next": "21 Oct · 已收盘",
+      "nodeId": "ODS-0"
+    },
+    {
+      "originalNodeId": "M73-0",
+      "parentId": "M71-0",
+      "old": "Restricted",
+      "next": "权限受限",
+      "nodeId": "ODH-0"
+    },
+    {
+      "originalNodeId": "M7C-0",
+      "parentId": "M7B-0",
+      "old": "Q3 without CDS",
+      "next": "Q3 不含 CDS",
+      "nodeId": "OD9-0"
+    },
+    {
+      "originalNodeId": "M7E-0",
+      "parentId": "M7D-0",
+      "old": "Hong Kong",
+      "next": "香港",
+      "nodeId": "OD5-0"
+    },
+    {
+      "originalNodeId": "M7F-0",
+      "parentId": "M7D-0",
+      "old": "21 Oct · closed",
+      "next": "21 Oct · 已收盘",
+      "nodeId": "OD4-0"
+    },
+    {
+      "originalNodeId": "M80-0",
+      "parentId": "M7Z-0",
+      "old": "All six questions",
+      "next": "六项问题均可用",
+      "nodeId": "OCL-0"
+    },
+    {
+      "originalNodeId": "M82-0",
+      "parentId": "M81-0",
+      "old": "Taiwan",
+      "next": "台湾",
+      "nodeId": "OCH-0"
+    },
+    {
+      "originalNodeId": "M83-0",
+      "parentId": "M81-0",
+      "old": "21 Oct · closed",
+      "next": "21 Oct · 已收盘",
+      "nodeId": "OCG-0"
+    },
+    {
+      "originalNodeId": "M8I-0",
+      "parentId": "M8G-0",
+      "old": "Stale · 2d",
+      "next": "过期 · 2d",
+      "nodeId": "OC2-0"
+    },
+    {
+      "originalNodeId": "M8O-0",
+      "parentId": "M8N-0",
+      "old": "Q3 funding stale",
+      "next": "Q3 融资数据过期",
+      "nodeId": "OBX-0"
+    },
+    {
+      "originalNodeId": "M8Q-0",
+      "parentId": "M8P-0",
+      "old": "India",
+      "next": "印度",
+      "nodeId": "OBT-0"
+    },
+    {
+      "originalNodeId": "M8R-0",
+      "parentId": "M8P-0",
+      "old": "21 Oct · open",
+      "next": "21 Oct · 交易中",
+      "nodeId": "OBS-0"
+    },
+    {
+      "originalNodeId": "M8U-0",
+      "parentId": "M8S-0",
+      "old": "Partial · midday",
+      "next": "部分可用 · 盘中",
+      "nodeId": "OBQ-0"
+    },
+    {
+      "originalNodeId": "M93-0",
+      "parentId": "M91-0",
+      "old": "Restricted",
+      "next": "权限受限",
+      "nodeId": "OBH-0"
+    },
+    {
+      "originalNodeId": "M9C-0",
+      "parentId": "M9B-0",
+      "old": "Qualified · session open",
+      "next": "附条件 · 交易尚未结束",
+      "nodeId": "OB9-0"
+    },
+    {
+      "originalNodeId": "M9E-0",
+      "parentId": "M9D-0",
+      "old": "Indonesia",
+      "next": "印度尼西亚",
+      "nodeId": "OB5-0"
+    },
+    {
+      "originalNodeId": "M9F-0",
+      "parentId": "M9D-0",
+      "old": "Holiday · last 20 Oct",
+      "next": "假日 · 上次交易 20 Oct",
+      "nodeId": "OB4-0"
+    },
+    {
+      "originalNodeId": "M9I-0",
+      "parentId": "M9G-0",
+      "old": "Closed",
+      "next": "休市",
+      "nodeId": "OB2-0"
+    },
+    {
+      "originalNodeId": "M9O-0",
+      "parentId": "M9M-0",
+      "old": "Closed",
+      "next": "休市",
+      "nodeId": "OAW-0"
+    },
+    {
+      "originalNodeId": "MA0-0",
+      "parentId": "M9Z-0",
+      "old": "Prior session only",
+      "next": "仅可用上一交易时段",
+      "nodeId": "OAL-0"
+    },
+    {
+      "originalNodeId": "MA3-0",
+      "parentId": "MA2-0",
+      "old": "+ 3 more · expand",
+      "next": "+ 3 个 · 展开",
+      "nodeId": "OAH-0"
+    },
+    {
+      "originalNodeId": "MA4-0",
+      "parentId": "MA2-0",
+      "old": "Korea, Singapore, Australia — all six families complete for the 21 Oct session",
+      "next": "韩国、新加坡、澳大利亚：21 Oct 时段的六类来源均完整",
+      "nodeId": "OAG-0"
+    },
+    {
+      "originalNodeId": "MA6-0",
+      "parentId": "MA5-0",
+      "old": "EUROPE · MIDDLE EAST · AFRICA · LAST CLOSED SESSION 20 OCT · 13 MARKETS",
+      "next": "欧洲 · 中东 · 非洲 · 最近收盘时段 20 OCT · 13 个市场",
+      "nodeId": "OAE-0"
+    },
+    {
+      "originalNodeId": "MA8-0",
+      "parentId": "MA7-0",
+      "old": "Turkey",
+      "next": "土耳其",
+      "nodeId": "OAC-0"
+    },
+    {
+      "originalNodeId": "MA9-0",
+      "parentId": "MA7-0",
+      "old": "20 Oct · closed",
+      "next": "20 Oct · 已收盘",
+      "nodeId": "OAB-0"
+    },
+    {
+      "originalNodeId": "MAF-0",
+      "parentId": "MAD-0",
+      "old": "Stale · 3d",
+      "next": "过期 · 3d",
+      "nodeId": "OA6-0"
+    },
+    {
+      "originalNodeId": "MAO-0",
+      "parentId": "MAM-0",
+      "old": "Stale · 3d",
+      "next": "过期 · 3d",
+      "nodeId": "O9X-0"
+    },
+    {
+      "originalNodeId": "MAU-0",
+      "parentId": "MAT-0",
+      "old": "Qualified · USD basis unknown",
+      "next": "附条件 · USD 口径未知",
+      "nodeId": "O9S-0"
+    },
+    {
+      "originalNodeId": "MAW-0",
+      "parentId": "MAV-0",
+      "old": "Israel",
+      "next": "以色列",
+      "nodeId": "O9O-0"
+    },
+    {
+      "originalNodeId": "MAX-0",
+      "parentId": "MAV-0",
+      "old": "Holiday · last 16 Oct",
+      "next": "假日 · 上次交易 16 Oct",
+      "nodeId": "O9N-0"
+    },
+    {
+      "originalNodeId": "MB0-0",
+      "parentId": "MAY-0",
+      "old": "Closed",
+      "next": "休市",
+      "nodeId": "O9L-0"
+    },
+    {
+      "originalNodeId": "MB3-0",
+      "parentId": "MB1-0",
+      "old": "Closed",
+      "next": "休市",
+      "nodeId": "O9I-0"
+    },
+    {
+      "originalNodeId": "MB6-0",
+      "parentId": "MB4-0",
+      "old": "Closed",
+      "next": "休市",
+      "nodeId": "O9F-0"
+    },
+    {
+      "originalNodeId": "MB9-0",
+      "parentId": "MB7-0",
+      "old": "Restricted",
+      "next": "权限受限",
+      "nodeId": "O9C-0"
+    },
+    {
+      "originalNodeId": "MBC-0",
+      "parentId": "MBA-0",
+      "old": "Closed",
+      "next": "休市",
+      "nodeId": "O99-0"
+    },
+    {
+      "originalNodeId": "MBI-0",
+      "parentId": "MBH-0",
+      "old": "Not ranked · market closed",
+      "next": "不排名 · 市场休市",
+      "nodeId": "O94-0"
+    },
+    {
+      "originalNodeId": "MBK-0",
+      "parentId": "MBJ-0",
+      "old": "South Africa",
+      "next": "南非",
+      "nodeId": "O90-0"
+    },
+    {
+      "originalNodeId": "MBL-0",
+      "parentId": "MBJ-0",
+      "old": "20 Oct · closed",
+      "next": "20 Oct · 已收盘",
+      "nodeId": "O8Z-0"
+    },
+    {
+      "originalNodeId": "MC6-0",
+      "parentId": "MC5-0",
+      "old": "All six questions",
+      "next": "六项问题均可用",
+      "nodeId": "O8G-0"
+    },
+    {
+      "originalNodeId": "MC8-0",
+      "parentId": "MC7-0",
+      "old": "+ 10 more · expand",
+      "next": "+ 10 个 · 展开",
+      "nodeId": "O8C-0"
+    },
+    {
+      "originalNodeId": "MC9-0",
+      "parentId": "MC7-0",
+      "old": "UK, Euro area ×5, Switzerland, Poland, Saudi Arabia, UAE — complete except Saudi CDS (Restricted)",
+      "next": "英国、欧元区 ×5、瑞士、波兰、沙特阿拉伯、阿联酋：除沙特 CDS（权限受限）外均完整",
+      "nodeId": "O8B-0"
+    },
+    {
+      "originalNodeId": "MCC-0",
+      "parentId": "MCB-0",
+      "old": "AMERICAS EX-US · LAST CLOSED SESSION 20 OCT · 12 MARKETS",
+      "next": "美洲（不含美国）· 最近收盘时段 20 OCT · 12 个市场",
+      "nodeId": "O89-0"
+    },
+    {
+      "originalNodeId": "MCE-0",
+      "parentId": "MCD-0",
+      "old": "Brazil",
+      "next": "巴西",
+      "nodeId": "O87-0"
+    },
+    {
+      "originalNodeId": "MCF-0",
+      "parentId": "MCD-0",
+      "old": "20 Oct · closed",
+      "next": "20 Oct · 已收盘",
+      "nodeId": "O86-0"
+    },
+    {
+      "originalNodeId": "MCR-0",
+      "parentId": "MCP-0",
+      "old": "Corrected 06:44",
+      "next": "已更正 06:44",
+      "nodeId": "O7V-0"
+    },
+    {
+      "originalNodeId": "MD0-0",
+      "parentId": "MCZ-0",
+      "old": "All six · Q3 restated",
+      "next": "六项均可用 · Q3 已修订",
+      "nodeId": "O7N-0"
+    },
+    {
+      "originalNodeId": "MD2-0",
+      "parentId": "MD1-0",
+      "old": "Chile",
+      "next": "智利",
+      "nodeId": "O7J-0"
+    },
+    {
+      "originalNodeId": "MD3-0",
+      "parentId": "MD1-0",
+      "old": "20 Oct · closed",
+      "next": "20 Oct · 已收盘",
+      "nodeId": "O7I-0"
+    },
+    {
+      "originalNodeId": "MD9-0",
+      "parentId": "MD7-0",
+      "old": "Late fix · 21:40",
+      "next": "定盘延迟 · 21:40",
+      "nodeId": "O7D-0"
+    },
+    {
+      "originalNodeId": "MDO-0",
+      "parentId": "MDN-0",
+      "old": "Qualified · USD return late",
+      "next": "附条件 · USD 回报延迟",
+      "nodeId": "O6Z-0"
+    },
+    {
+      "originalNodeId": "MDQ-0",
+      "parentId": "MDP-0",
+      "old": "Peru",
+      "next": "秘鲁",
+      "nodeId": "O6V-0"
+    },
+    {
+      "originalNodeId": "MDR-0",
+      "parentId": "MDP-0",
+      "old": "20 Oct · closed",
+      "next": "20 Oct · 已收盘",
+      "nodeId": "O6U-0"
+    },
+    {
+      "originalNodeId": "MDU-0",
+      "parentId": "MDS-0",
+      "old": "Abstain · thin",
+      "next": "不作判断 · 交易稀疏",
+      "nodeId": "O6S-0"
+    },
+    {
+      "originalNodeId": "ME0-0",
+      "parentId": "MDY-0",
+      "old": "No print",
+      "next": "无报价",
+      "nodeId": "O6M-0"
+    },
+    {
+      "originalNodeId": "ME3-0",
+      "parentId": "ME1-0",
+      "old": "Restricted",
+      "next": "权限受限",
+      "nodeId": "O6J-0"
+    },
+    {
+      "originalNodeId": "MEC-0",
+      "parentId": "MEB-0",
+      "old": "Abstain · not ranked",
+      "next": "不作判断 · 不排名",
+      "nodeId": "O6B-0"
+    },
+    {
+      "originalNodeId": "MEE-0",
+      "parentId": "MED-0",
+      "old": "+ 9 more · expand",
+      "next": "+ 9 个 · 展开",
+      "nodeId": "O67-0"
+    },
+    {
+      "originalNodeId": "MEF-0",
+      "parentId": "MED-0",
+      "old": "Canada, Mexico, Colombia, Argentina and 5 frontier — complete except Argentina FX (Qualified · parallel rate)",
+      "next": "加拿大、墨西哥、哥伦比亚、阿根廷及 5 个前沿市场：除阿根廷 FX（附条件 · 平行汇率）外均完整",
+      "nodeId": "O66-0"
+    },
+    {
+      "originalNodeId": "MEJ-0",
+      "parentId": "MEI-0",
+      "old": "CELL STATES · 204 CELLS",
+      "next": "数据状态 · 204 项",
+      "nodeId": "O63-0"
+    },
+    {
+      "originalNodeId": "MEN-0",
+      "parentId": "MEK-0",
+      "old": "Complete",
+      "next": "完整",
+      "nodeId": "O60-0"
+    },
+    {
+      "originalNodeId": "MEO-0",
+      "parentId": "MEK-0",
+      "old": "Filled dot · clock shown",
+      "next": "实心圆点 · 显示时间",
+      "nodeId": "O5Z-0"
+    },
+    {
+      "originalNodeId": "MET-0",
+      "parentId": "MEQ-0",
+      "old": "Qualified",
+      "next": "附条件",
+      "nodeId": "O5U-0"
+    },
+    {
+      "originalNodeId": "MEU-0",
+      "parentId": "MEQ-0",
+      "old": "Dashed square · reason named",
+      "next": "虚线方框 · 说明原因",
+      "nodeId": "O5T-0"
+    },
+    {
+      "originalNodeId": "MEZ-0",
+      "parentId": "MEW-0",
+      "old": "Partial",
+      "next": "部分可用",
+      "nodeId": "O5O-0"
+    },
+    {
+      "originalNodeId": "MF0-0",
+      "parentId": "MEW-0",
+      "old": "Open ring · session not closed",
+      "next": "空心圆环 · 交易尚未结束",
+      "nodeId": "O5N-0"
+    },
+    {
+      "originalNodeId": "MF5-0",
+      "parentId": "MF2-0",
+      "old": "Stale",
+      "next": "过期",
+      "nodeId": "O5I-0"
+    },
+    {
+      "originalNodeId": "MF6-0",
+      "parentId": "MF2-0",
+      "old": "Filled square · age in sessions",
+      "next": "实心方块 · 按交易时段计龄",
+      "nodeId": "O5H-0"
+    },
+    {
+      "originalNodeId": "MFB-0",
+      "parentId": "MF8-0",
+      "old": "Abstain",
+      "next": "不作判断",
+      "nodeId": "O5C-0"
+    },
+    {
+      "originalNodeId": "MFC-0",
+      "parentId": "MF8-0",
+      "old": "Dash · no number drawn",
+      "next": "横线 · 不显示数值",
+      "nodeId": "O5B-0"
+    },
+    {
+      "originalNodeId": "MFH-0",
+      "parentId": "MFE-0",
+      "old": "Closed",
+      "next": "休市",
+      "nodeId": "O56-0"
+    },
+    {
+      "originalNodeId": "MFI-0",
+      "parentId": "MFE-0",
+      "old": "Grey ring · holiday calendar",
+      "next": "灰色圆环 · 按假日日历",
+      "nodeId": "O55-0"
+    },
+    {
+      "originalNodeId": "MFN-0",
+      "parentId": "MFK-0",
+      "old": "Restricted",
+      "next": "权限受限",
+      "nodeId": "O50-0"
+    },
+    {
+      "originalNodeId": "MFO-0",
+      "parentId": "MFK-0",
+      "old": "Outline square · not shown",
+      "next": "空心方框 · 不显示数据",
+      "nodeId": "O4Z-0"
+    },
+    {
+      "originalNodeId": "MFT-0",
+      "parentId": "MFQ-0",
+      "old": "Corrected",
+      "next": "已更正",
+      "nodeId": "O4U-0"
+    },
+    {
+      "originalNodeId": "MFU-0",
+      "parentId": "MFQ-0",
+      "old": "Blue ring · restatement time",
+      "next": "蓝色圆环 · 显示更正时间",
+      "nodeId": "O4T-0"
+    },
+    {
+      "originalNodeId": "MFW-0",
+      "parentId": "MEI-0",
+      "old": "Counts sum to 204 = 34 markets × 6 families. Specimen.",
+      "next": "合计 204 = 34 个市场 × 6 类来源。示例数据。",
+      "nodeId": "O4Q-0"
+    },
+    {
+      "originalNodeId": "MFY-0",
+      "parentId": "MFX-0",
+      "old": "WHAT A GAP DOES TO EACH QUESTION",
+      "next": "数据缺口如何影响各项问题",
+      "nodeId": "O4O-0"
+    },
+    {
+      "originalNodeId": "MG1-0",
+      "parentId": "MFZ-0",
+      "old": "Index close missing → market drops out of the move ranking. Never interpolated.",
+      "next": "缺少指数收盘值 → 该市场不进入涨跌排名，不作插值补齐。",
+      "nodeId": "O4M-0"
+    },
+    {
+      "originalNodeId": "MG4-0",
+      "parentId": "MG2-0",
+      "old": "FX fix late or missing → USD return is Qualified; local return still shown with its basis label.",
+      "next": "定盘汇率延迟或缺失 → USD 回报标为「附条件」；本币回报仍显示，并标明计价口径。",
+      "nodeId": "O4J-0"
+    },
+    {
+      "originalNodeId": "MG7-0",
+      "parentId": "MG5-0",
+      "old": "CDS restricted or funding stale → credit read uses the remaining families and names the omission.",
+      "next": "CDS 权限受限或融资数据过期 → 信用判断使用其余来源，并明确说明缺少哪一项。",
+      "nodeId": "O4G-0"
+    },
+    {
+      "originalNodeId": "MGA-0",
+      "parentId": "MG8-0",
+      "old": "No transmission path when required market readings are unscored.",
+      "next": "必要市场读数未评分时，不显示传导路径。",
+      "nodeId": "O4D-0"
+    },
+    {
+      "originalNodeId": "MGD-0",
+      "parentId": "MGB-0",
+      "old": "US proxy older than the snapshot session → corroboration reads Pending, not Absent.",
+      "next": "美国代理指标早于快照交易时段 → 印证状态为「待确认」，不能判为「未出现」。",
+      "nodeId": "O4A-0"
+    },
+    {
+      "originalNodeId": "MGG-0",
+      "parentId": "MGE-0",
+      "old": "Qualified, stale or partial inputs limit stance to Watch.",
+      "next": "输入含附条件、过期或部分可用数据时，判断状态仅限「观察」。",
+      "nodeId": "O47-0"
+    },
+    {
+      "originalNodeId": "MGI-0",
+      "parentId": "MGH-0",
+      "old": "CORRECTIONS AND RECOVERIES · LAST 24H",
+      "next": "更正与恢复 · 过去 24H",
+      "nodeId": "O44-0"
+    },
+    {
+      "originalNodeId": "MGN-0",
+      "parentId": "MGM-0",
+      "old": "Corrected",
+      "next": "已更正",
+      "nodeId": "O42-0"
+    },
+    {
+      "originalNodeId": "MGO-0",
+      "parentId": "MGJ-0",
+      "old": "Brazil CDS 5Y restated 156 → 142bp by vendor; Q3 re-read, stance unchanged.",
+      "next": "供应商将巴西 CDS 5Y 从 156 → 142bp 更正；Q3 重新评估，判断状态不变。",
+      "nodeId": "O3Z-0"
+    },
+    {
+      "originalNodeId": "MGT-0",
+      "parentId": "MGS-0",
+      "old": "Recovered",
+      "next": "已恢复",
+      "nodeId": "O3W-0"
+    },
+    {
+      "originalNodeId": "MGU-0",
+      "parentId": "MGP-0",
+      "old": "Korea FX fix back after 1 missed session; USD return no longer Qualified.",
+      "next": "韩国 FX 定盘汇率缺失 1 个交易时段后恢复；USD 回报不再标为「附条件」。",
+      "nodeId": "O3T-0"
+    },
+    {
+      "originalNodeId": "MGZ-0",
+      "parentId": "MGY-0",
+      "old": "Qualified",
+      "next": "附条件",
+      "nodeId": "O3Q-0"
+    },
+    {
+      "originalNodeId": "MH0-0",
+      "parentId": "MGV-0",
+      "old": "Chile FX fix published 1h40m after the window; USD return carries the late flag.",
+      "next": "智利 FX 定盘汇率在窗口结束 1h40m 后发布；USD 回报保留延迟标记。",
+      "nodeId": "O3N-0"
+    },
+    {
+      "originalNodeId": "MH5-0",
+      "parentId": "MH4-0",
+      "old": "Abstain",
+      "next": "不作判断",
+      "nodeId": "O3K-0"
+    },
+    {
+      "originalNodeId": "MH6-0",
+      "parentId": "MH1-0",
+      "old": "Peru index volume below floor (12% of 60-session median); market not ranked.",
+      "next": "秘鲁指数成交量低于门槛（仅为 60 个交易时段中位数的 12%）；该市场不参与排名。",
+      "nodeId": "O3H-0"
+    },
+    {
+      "originalNodeId": "M5D-0",
+      "parentId": "M5C-0",
+      "old": "Complete: published within the session window · UTC clocks, local session dates",
+      "next": "完整：在交易时段窗口内发布 · 时间使用 UTC，交易日期使用当地日期",
+      "nodeId": "O3D-0"
+    },
+    {
+      "originalNodeId": "O31-0",
+      "parentId": "O30-0",
+      "old": "Calculation methods →",
+      "next": "计算方法 →",
+      "nodeId": "OHZ-0"
+    }
+  ],
+  "localeSelection": [
+    {
+      "id": "OPF-0",
+      "name": "Language · 中文 selected",
+      "component": "Frame",
+      "worldX": null,
+      "worldY": null,
+      "x": null,
+      "y": null
+    },
+    {
+      "id": "OPG-0",
+      "name": "Language · EN",
+      "component": "Frame",
+      "worldX": null,
+      "worldY": null,
+      "x": null,
+      "y": null
+    },
+    {
+      "id": "OPH-0",
+      "name": "EN",
+      "component": "Text",
+      "worldX": null,
+      "worldY": null,
+      "x": null,
+      "y": null
+    },
+    {
+      "id": "OPI-0",
+      "name": "Language · 中文",
+      "component": "Frame",
+      "worldX": null,
+      "worldY": null,
+      "x": null,
+      "y": null
+    },
+    {
+      "id": "OPJ-0",
+      "name": "中文",
+      "component": "Text",
+      "worldX": null,
+      "worldY": null,
+      "x": null,
+      "y": null
+    }
+  ],
+  "finalLabelRepair": {
+    "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+    "nodeId": "OGT-0",
+    "parentId": "OGR-0",
+    "before": "什么能确认或否定判断？",
+    "after": "确认、否定或到期条件？",
+    "verified": true
+  },
+  "finalVisualQA": {
+    "result": "PASS_AFTER_EXPIRY_LABEL_REPAIR",
+    "alignedOriginalLeaves": 268,
+    "translatedAlignedLeaves": 168,
+    "newMethodEntry": 1,
+    "unchangedStrings": 100,
+    "numericTokenMultisetsEqual": true,
+    "liveNavigationVerified": false
+  }
 }
