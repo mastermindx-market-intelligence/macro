@@ -74,15 +74,32 @@ pins the two against each other whenever both are present.
 """
 from __future__ import annotations
 
+import functools
+import hashlib
+import io
+import math
 import os
-from dataclasses import dataclass, field
+import posixpath
+from collections.abc import Mapping
+from dataclasses import asdict, dataclass, field
+from fractions import Fraction
+from pathlib import Path
+from types import MappingProxyType
 
 import pandas as pd
 
+from lib.dataos.identity import IdentityError, parse_listing_key, venue_currency
+from lib.dataos.price import AdjustmentBasis
+from lib.dataos.price_views import RefusalReason
+from lib.dataos.read_contract import ReadMode, ReadRequest, RefusalCode, ViewContract
+from lib.dataos.registry import DatasetStatus, Registry, load_registry
+
 __all__ = [
     "ADJUSTED_SOURCES", "UNADJUSTED_SOURCES", "LADDER", "CACHE_GROUPS",
-    "Resolved", "resolve_close", "close_panel", "overlay_adjusted", "is_adjusted",
+    "PriceEvidence", "Resolved", "resolve_close", "close_panel", "overlay_adjusted", "is_adjusted",
     "default_data_dir", "make_books",
+    "CanonicalClose", "resolve_close_canonical", "terminal_daily_ohlc_contract_v1",
+    "CANONICAL_READOUT", "TERMINAL_DAILY_OHLC_MICS",
 ]
 
 # ladder order is the contract: adjusted rungs first, cache last, null after that.
@@ -135,6 +152,31 @@ def is_adjusted(source: str | None) -> bool | None:
     return None
 
 
+@dataclass(frozen=True)
+class PriceEvidence:
+    """Evidence that travels with the exact selected price read.
+
+    This is deliberately narrower than a market-data entitlement or historical
+    observation claim.  File SHA/bytes bind the encoded object actually decoded;
+    they do not establish rights, a source publication clock, a corporate-action
+    vintage, RTH/auction semantics, or primary/consolidated venue identity.  Those
+    fields stay null until their native owners attest them.
+    """
+
+    ticker: str
+    source: str | None
+    source_path: str | None
+    column: str | None
+    basis: str | None
+    receipt_state: str
+    content_sha256: str | None = None
+    content_bytes: int | None = None
+    adjustment_asof: str | None = None
+    session: str | None = None
+    venue_scope: str | None = None
+    observed_at: str | None = None
+
+
 @dataclass
 class Resolved:
     """One name's close series plus the disclosed provenance of how it was found."""
@@ -145,32 +187,65 @@ class Resolved:
     adjusted: bool | None
     tried: list[str] = field(default_factory=list)
     reason: str | None = None
+    evidence: PriceEvidence | None = None
 
     @property
     def ok(self) -> bool:
         return self.series is not None and not self.series.empty
 
 
-def _read_file_close(path: str) -> pd.Series | None:
-    """Close column from a per-name parquet, or None when unusable.
+def _basis_for_selected(source: str | None, column: str | None) -> str | None:
+    """Exact basis supported by the existing ladder/source contract.
 
-    Never raises on a bad file: one corrupt parquet must not take down a whole panel,
-    and the caller records the rung as tried-and-failed either way.
+    The Yahoo ``close_price`` exception matters: unlike the other adjusted-rung
+    ``close`` series it is split-adjusted only.  Never reduce this to the legacy
+    boolean ``adjusted`` flag.
+    """
+    if source is None:
+        return None
+    if source == "closes_cache_UNADJUSTED":
+        # The legacy fallback tag is not native basis evidence: breadth downloads
+        # adjusted Close and its cache may mix/rebase adjustment vintages.
+        return None
+    if source == "yahoo" and column == "close_price":
+        return AdjustmentBasis.SADJ.value
+    if source in ADJUSTED_SOURCES and (column == "close" or source == "baskets_extras"):
+        return AdjustmentBasis.TRADJ.value
+    return None
+
+
+def _read_file_close(path: str, *, capture_evidence: bool = False) -> tuple[pd.Series | None, dict | None]:
+    """Close column from one per-name parquet, optionally with SAME-read receipt.
+
+    In evidence mode the encoded object is read exactly once, hashed, and that same
+    byte string is decoded.  This avoids a later path re-read silently
+    authenticating different numbers.  Legacy mode keeps the original cheap path.
     """
     if not os.path.exists(path):
-        return None
+        return None, None
+    receipt = None
     try:
-        d = pd.read_parquet(path)
+        if capture_evidence:
+            raw = Path(path).read_bytes()
+            d = pd.read_parquet(io.BytesIO(raw))
+            receipt = {
+                "sha256": hashlib.sha256(raw).hexdigest(),
+                "bytes": len(raw),
+            }
+        else:
+            d = pd.read_parquet(path)
     except (OSError, ValueError, ImportError):
-        return None
+        return None, None
     col = next((c for c in _CLOSE_COLS if c in getattr(d, "columns", ())), None)
     if col is None:
-        return None
+        return None, None
     s = pd.to_numeric(d[col], errors="coerce").dropna()
     if s.empty:
-        return None
+        return None, None
     s.index = pd.to_datetime(s.index)
-    return s.sort_index()
+    if receipt is not None:
+        receipt["column"] = col
+    return s.sort_index(), receipt
 
 
 def _clip(s: pd.Series | None, asof, start) -> pd.Series | None:
@@ -184,70 +259,110 @@ def _clip(s: pd.Series | None, asof, start) -> pd.Series | None:
 
 
 class _WideBook:
-    """Lazily-loaded, memoized view over one or more wide [date x ticker] close frames.
-
-    These frames are ~700–1,500 columns; loading them per name would dominate a panel
-    build, and loading them at import time would make a run pay for a rung it never uses.
-    First frame carrying the ticker wins, in the order given.
-    """
+    """Lazily-loaded wide frames with optional exact encoded-object receipts."""
 
     def __init__(self, paths: tuple[str, ...],
-                 preloaded: "list[pd.DataFrame] | None" = None):
+                 preloaded: "list[pd.DataFrame] | None" = None, *,
+                 capture_evidence: bool = False):
         self._paths = paths
-        # A caller that already holds these frames (prophet_postmortem loads the caches
-        # for its own calendar) injects them rather than paying a second wide read — and,
-        # more importantly, so the ladder and the caller can never disagree about what
-        # "the cache" contains.
+        self._capture_evidence = bool(capture_evidence)
         self._frames: list[pd.DataFrame] | None = None
+        self._receipts: list[dict | None] | None = None
         if preloaded is not None:
             self._frames = [f for f in preloaded if f is not None and not f.empty]
+            # Caller-owned frames have no file/generation identity here.  Do not pair
+            # them positionally with configured paths and pretend provenance.
+            self._receipts = [None for _ in self._frames]
 
     def frames(self) -> list[pd.DataFrame]:
         if self._frames is None:
-            out = []
+            out: list[pd.DataFrame] = []
+            receipts: list[dict | None] = []
             for p in self._paths:
                 if not os.path.exists(p):
                     continue
                 try:
-                    c = pd.read_parquet(p)
+                    if self._capture_evidence:
+                        raw = Path(p).read_bytes()
+                        c = pd.read_parquet(io.BytesIO(raw))
+                        receipt = {
+                            "path": p,
+                            "sha256": hashlib.sha256(raw).hexdigest(),
+                            "bytes": len(raw),
+                        }
+                    else:
+                        c = pd.read_parquet(p)
+                        receipt = None
                 except (OSError, ValueError, ImportError):
                     continue
                 c.index = pd.to_datetime(c.index)
                 out.append(c.sort_index())
+                receipts.append(receipt)
             self._frames = out
+            self._receipts = receipts
         return self._frames
 
-    def get(self, ticker: str) -> pd.Series | None:
-        for c in self.frames():
+    def get_with_receipt(self, ticker: str) -> tuple[pd.Series | None, dict | None]:
+        frames = self.frames()
+        receipts = self._receipts or [None for _ in frames]
+        for idx, c in enumerate(frames):
             if ticker in c.columns:
                 s = pd.to_numeric(c[ticker], errors="coerce").dropna()
                 if not s.empty:
-                    return s
-        return None
+                    return s, receipts[idx] if idx < len(receipts) else None
+        return None, None
+
+    def get(self, ticker: str) -> pd.Series | None:
+        return self.get_with_receipt(ticker)[0]
 
 
 class _Books:
-    """The two wide-frame rungs a resolution may need, built lazily and shared across a
-    whole panel so the caches and the extras frame are each read at most once."""
+    """The two wide-frame rungs shared across a panel."""
 
     def __init__(self, data_dir: str, groups: tuple[str, ...],
-                 cache_frames: "list[pd.DataFrame] | None" = None):
-        self.extras = _WideBook((os.path.join(data_dir, "baskets", "extras.parquet"),))
+                 cache_frames: "list[pd.DataFrame] | None" = None, *,
+                 capture_evidence: bool = False):
+        self.extras = _WideBook(
+            (os.path.join(data_dir, "baskets", "extras.parquet"),),
+            capture_evidence=capture_evidence,
+        )
         self.cache = _WideBook(
             tuple(os.path.join(data_dir, g, "_closes_cache.parquet") for g in groups),
-            preloaded=cache_frames)
+            preloaded=cache_frames, capture_evidence=capture_evidence)
 
 
 def make_books(data_dir: str | None = None, *, groups: tuple[str, ...] = CACHE_GROUPS,
-               cache_frames: "list[pd.DataFrame] | None" = None) -> "_Books":
-    """Build a shared rung cache to hand to repeated ``resolve_close`` calls.
-
-    ``cache_frames`` injects an already-loaded breadth panel so a caller that needs the
-    caches for its own purposes does not read them twice — and so the ladder resolves the
-    SAME cache the caller is reasoning about.
-    """
+               cache_frames: "list[pd.DataFrame] | None" = None,
+               capture_evidence: bool = False) -> "_Books":
+    """Build a shared rung cache for repeated ``resolve_close`` calls."""
     dd = default_data_dir() if data_dir is None else data_dir
-    return _Books(dd, groups, cache_frames=cache_frames)
+    return _Books(dd, groups, cache_frames=cache_frames, capture_evidence=capture_evidence)
+
+
+def _relative_source_path(path: str | None, data_dir: str) -> str | None:
+    if path is None:
+        return None
+    try:
+        rel = os.path.relpath(path, data_dir)
+    except ValueError:
+        return None
+    return rel if rel != ".." and not rel.startswith("../") else None
+
+
+def _selected_evidence(ticker: str, source: str | None, data_dir: str,
+                       column: str | None, receipt: dict | None) -> PriceEvidence:
+    if source is None:
+        return PriceEvidence(ticker, None, None, None, None, "UNRESOLVED")
+    path = _relative_source_path(receipt.get("path") if receipt else None, data_dir)
+    state = "EXACT_ENCODED_OBJECT" if receipt and path else "SOURCE_OBJECT_UNATTESTED"
+    return PriceEvidence(
+        ticker=ticker, source=source, source_path=path, column=column,
+        basis=_basis_for_selected(source, column), receipt_state=state,
+        content_sha256=receipt.get("sha256") if receipt else None,
+        content_bytes=receipt.get("bytes") if receipt else None,
+        # These are intentionally typed unknowns. Source/provider tags do not prove them.
+        adjustment_asof=None, session=None, venue_scope=None, observed_at=None,
+    )
 
 
 def resolve_close(
@@ -259,6 +374,7 @@ def resolve_close(
     allow_unadjusted: bool = True,
     groups: tuple[str, ...] = CACHE_GROUPS,
     min_last: str | pd.Timestamp | None = None,
+    capture_evidence: bool = False,
     _book: "_Books | None" = None,
 ) -> Resolved:
     """Resolve one name's close series ADJUSTED-FIRST, with the ladder disclosed.
@@ -285,30 +401,40 @@ def resolve_close(
     dd = default_data_dir() if data_dir is None else data_dir
     t = str(ticker)
     tried: list[str] = []
-    books = _book if _book is not None else _Books(dd, groups)
+    books = _book if _book is not None else _Books(dd, groups, capture_evidence=capture_evidence)
     want = pd.Timestamp(min_last) if min_last is not None else None
     best: Resolved | None = None
 
-    def _consider(s: pd.Series | None, src: str) -> Resolved | None:
+    def _consider(s: pd.Series | None, src: str, column: str | None = None,
+                  receipt: dict | None = None) -> Resolved | None:
         """Return a Resolved to hand back now, or None to keep walking."""
         nonlocal best
         if s is None:
             return None
+        evidence = (
+            _selected_evidence(t, src, dd, column, receipt) if capture_evidence else None
+        )
         if want is None or s.index.max() >= want:
-            return Resolved(t, s, src, True, list(tried))
+            return Resolved(t, s, src, True, list(tried), evidence=evidence)
         if best is None or s.index.max() > best.series.index.max():
-            best = Resolved(t, s, src, True, list(tried))
+            best = Resolved(t, s, src, True, list(tried), evidence=evidence)
         return None
 
     for src, tmpl in _FILE_RUNGS:
         tried.append(src)
+        path = os.path.join(dd, tmpl.format(t=t))
+        file_series, receipt = _read_file_close(path, capture_evidence=capture_evidence)
+        if receipt is not None:
+            receipt["path"] = path
         hit = _consider(
-            _clip(_read_file_close(os.path.join(dd, tmpl.format(t=t))), asof, start), src)
+            _clip(file_series, asof, start), src,
+            receipt.get("column") if receipt else None, receipt)
         if hit is not None:
             return hit
 
     tried.append("baskets_extras")
-    hit = _consider(_clip(books.extras.get(t), asof, start), "baskets_extras")
+    extras_series, extras_receipt = books.extras.get_with_receipt(t)
+    hit = _consider(_clip(extras_series, asof, start), "baskets_extras", t, extras_receipt)
     if hit is not None:
         return hit
 
@@ -318,13 +444,16 @@ def resolve_close(
             best.reason = (f"every adjusted rung ends before {want.date()}; "
                            f"freshest is {best.series.index.max().date()}")
             return best
-        return Resolved(t, None, None, None, tried,
-                        reason=("absent from every ADJUSTED source "
-                                f"({', '.join(ADJUSTED_SOURCES)}) and "
-                                "allow_unadjusted=False"))
+        return Resolved(
+            t, None, None, None, tried,
+            reason=("absent from every ADJUSTED source "
+                    f"({', '.join(ADJUSTED_SOURCES)}) and allow_unadjusted=False"),
+            evidence=_selected_evidence(t, None, dd, None, None) if capture_evidence else None,
+        )
 
     tried.append("closes_cache_UNADJUSTED")
-    s = _clip(books.cache.get(t), asof, start)
+    cache_series, cache_receipt = books.cache.get_with_receipt(t)
+    s = _clip(cache_series, asof, start)
 
     # A stale adjusted rung is a MISS, not a winner. Returning a series that stops before
     # the caller's window LOSES REAL BARS to buy a basis guarantee that, for these names,
@@ -337,7 +466,13 @@ def resolve_close(
     # follows. The fallback is stamped `unadjusted` and its `reason` names the staleness,
     # so it is never silent.
     if s is not None and (want is None or best is None or s.index.max() >= want):
-        r = Resolved(t, s, "closes_cache_UNADJUSTED", False, tried)
+        r = Resolved(
+            t, s, "closes_cache_UNADJUSTED", False, tried,
+            evidence=(
+                _selected_evidence(t, "closes_cache_UNADJUSTED", dd, t, cache_receipt)
+                if capture_evidence else None
+            ),
+        )
         if best is not None:
             r.reason = (f"adjusted rungs all end before {want.date()} "
                         f"(freshest {best.price_source} @ "
@@ -353,10 +488,19 @@ def resolve_close(
         return best
 
     if s is not None:
-        return Resolved(t, s, "closes_cache_UNADJUSTED", False, tried)
+        return Resolved(
+            t, s, "closes_cache_UNADJUSTED", False, tried,
+            evidence=(
+                _selected_evidence(t, "closes_cache_UNADJUSTED", dd, t, cache_receipt)
+                if capture_evidence else None
+            ),
+        )
 
-    return Resolved(t, None, None, None, tried,
-                    reason=f"absent from every source on the ladder ({', '.join(LADDER)})")
+    return Resolved(
+        t, None, None, None, tried,
+        reason=f"absent from every source on the ladder ({', '.join(LADDER)})",
+        evidence=_selected_evidence(t, None, dd, None, None) if capture_evidence else None,
+    )
 
 
 def _provenance(stamp, counts, unadjusted, unresolved, *, asof, start, n_requested):
@@ -383,6 +527,7 @@ def close_panel(
     data_dir: str | None = None,
     allow_unadjusted: bool = True,
     groups: tuple[str, ...] = CACHE_GROUPS,
+    capture_evidence: bool = False,
 ) -> tuple[pd.DataFrame, dict]:
     """Wide close panel over ``tickers`` on the adjusted-first ladder.
 
@@ -392,19 +537,24 @@ def close_panel(
     result rests on a mixed basis.
     """
     dd = default_data_dir() if data_dir is None else data_dir
-    books = _Books(dd, groups)
+    books = _Books(dd, groups, capture_evidence=capture_evidence)
     cols: dict[str, pd.Series] = {}
     stamp: dict[str, str | None] = {}
     counts = {k: 0 for k in LADDER}
     counts["unresolved"] = 0
     unresolved: list[str] = []
     unadjusted: list[str] = []
+    evidence_stamp: dict[str, dict] = {}
 
     names = list(dict.fromkeys(map(str, tickers)))          # de-dupe, keep order
     for tk in names:
-        r = resolve_close(tk, asof=asof, start=start, data_dir=dd,
-                          allow_unadjusted=allow_unadjusted, groups=groups, _book=books)
+        r = resolve_close(
+            tk, asof=asof, start=start, data_dir=dd,
+            allow_unadjusted=allow_unadjusted, groups=groups,
+            capture_evidence=capture_evidence, _book=books)
         stamp[tk] = r.price_source
+        if capture_evidence and r.evidence is not None:
+            evidence_stamp[tk] = asdict(r.evidence)
         if not r.ok:
             counts["unresolved"] += 1
             unresolved.append(tk)
@@ -421,6 +571,8 @@ def close_panel(
     prov["panel_sessions"] = int(panel.shape[0]) if not panel.empty else 0
     if not panel.empty:
         prov["panel_range"] = [str(panel.index.min().date()), str(panel.index.max().date())]
+    if capture_evidence:
+        prov["price_evidence"] = evidence_stamp
     return panel, prov
 
 
@@ -497,3 +649,343 @@ def overlay_adjusted(
     prov["panel_names"] = int(out.shape[1]) if not getattr(out, "empty", True) else 0
     prov["panel_sessions"] = int(out.shape[0]) if not getattr(out, "empty", True) else 0
     return out, prov
+
+
+# ── C01 canonical read seam ──────────────────────────────────────────────────
+# Purely ADDITIVE seam beside resolve_close: the ladder above is byte-unchanged and
+# every existing caller keeps its behaviour.  The seam calls the unchanged ladder,
+# binds the served rung to its dataset-registry row, and either serves exact
+# Fraction values under a ViewContract the SEAM writes, or RETURNS a typed refusal
+# on that same contract shape — refusals are returned, never raised (only a view
+# that is not a ReadRequest, or a registry that is not a Registry, is a TypeError).
+# A path, a hash or an is_adjusted flag alone never qualifies a read.  The legacy
+# defect "yahoo close_price (split-only adjusted) reported as adjusted=True" is
+# named legacy_defect:S10 and flagged on the contract, never silently served as
+# tradj.
+
+_C01_REGISTRY_ROWS = {"data_stocks": "equity.bars.daily.stocks", "yahoo": "equity.bars.daily.yahoo"}
+CANONICAL_READOUT = "vendor-adjusted — not a printed price"
+VIEW_CONTRACT_V1_SCHEMA = "dataos.view_contract.v1"
+TERMINAL_DAILY_OHLC_PURPOSE = "terminal_daily_ohlc"
+TERMINAL_DAILY_OHLC_MICS = ("ARCX", "XASE", "XNAS", "XNYS")
+TERMINAL_DAILY_OHLC_STORE_VENDOR = "yahoo"
+IDENTITY_NAMESPACE_US_LISTING = "US-<MIC>-<CODE>[.N]"
+_C01_UNATTESTED = ("adjustment_asof", "session", "venue_scope", "observed_at", "code_version", "symbol_binding")
+
+
+def _c01_code(member) -> str:
+    """Render one refusal enum MEMBER as its namespaced code string.
+
+    Every refusal string this seam writes is built from an enum member through
+    this function — a hand-typed code string is how a vocabulary silently forks.
+    """
+    if isinstance(member, RefusalCode):
+        return f"read_contract.{member.name}"
+    return f"price_views.{member.name}"
+
+
+@functools.lru_cache(maxsize=1)
+def _default_registry() -> Registry:
+    """The dataset registry, loaded once per process — never per read."""
+    return load_registry()
+
+
+@dataclass(frozen=True)
+class CanonicalClose:
+    """One canonical close read: served Fractions under a seam-written contract, or
+    the same shape with a typed refusal and no values."""
+
+    ticker: str
+    mode: ReadMode
+    contract: ViewContract     # served or refused; refusal_reasons == (code,) when refused, () when served
+    evidence_mode: Mapping[str, object]    # MappingProxyType; ALWAYS the same key set
+    values: tuple[tuple[str, Fraction], ...] | None
+    legacy: Resolved | None
+
+    @property
+    def ok(self) -> bool:
+        return self.values is not None and not self.contract.refusal_reasons
+
+
+def _c01_bind(legacy: Resolved, registry: Registry) -> tuple[object, str | None]:
+    """Bind the served rung to its dataset-registry row — pure, registry-decided.
+
+    Returns ``(row, None)`` when bound, else ``(None, code)`` naming the exact
+    refusal.  A path, hash or ``is_adjusted`` flag alone never qualifies: the
+    served evidence must name a registry row that is PRODUCED, carry an
+    EXACT_ENCODED_OBJECT receipt with a content sha and a source path, and the
+    row's storage must actually be the directory and format the evidence read.
+    """
+    evidence = legacy.evidence
+    if evidence is None:
+        return None, _c01_code(RefusalCode.MISSING_CURRENT_EVIDENCE)
+    dataset_id = _C01_REGISTRY_ROWS.get(evidence.source)
+    if dataset_id is None:
+        return None, _c01_code(RefusalCode.UNBOUND_DEPENDENCY)
+    row = registry.get(dataset_id)
+    if row is None or row.status is not DatasetStatus.PRODUCED:
+        return None, _c01_code(RefusalCode.UNBOUND_DEPENDENCY)
+    if (evidence.receipt_state != "EXACT_ENCODED_OBJECT" or not evidence.content_sha256
+            or evidence.source_path is None):
+        return None, _c01_code(RefusalCode.MISSING_CURRENT_EVIDENCE)
+    if (posixpath.dirname(row.storage)
+            != posixpath.join("data", posixpath.dirname(evidence.source_path))
+            or posixpath.splitext(row.storage)[1] != posixpath.splitext(evidence.source_path)[1]):
+        return None, _c01_code(RefusalCode.UNBOUND_DEPENDENCY)
+    return row, None
+
+
+def _c01_values(series) -> tuple[tuple[tuple[str, Fraction], ...] | None, str | None]:
+    """Series -> exact ``Fraction`` values keyed by ISO date — pure, or a refusal.
+
+    A float is exact only through ``Fraction(float(x))`` of the value actually
+    served; no rounding, no re-basing, no silent coercion of a non-date index.
+    """
+    if series is None:
+        return None, _c01_code(RefusalReason.MISSING_PRICE)
+    try:
+        stamps = pd.to_datetime(pd.Index(series.index))
+    except (TypeError, ValueError):
+        return None, _c01_code(RefusalReason.UNKNOWN_ORDERING)
+    if bool(pd.isna(stamps).any()):
+        return None, _c01_code(RefusalReason.UNKNOWN_ORDERING)
+    if len(series) == 0:
+        return None, _c01_code(RefusalReason.MISSING_PRICE)
+    if bool(series.isna().any()):
+        return None, _c01_code(RefusalReason.MISSING_PRICE)
+    floats = [float(x) for x in series.tolist()]
+    if any(math.isinf(x) or x <= 0 for x in floats):
+        return None, _c01_code(RefusalReason.NON_POSITIVE_VALUE)
+    dates = [str(stamp.date()) for stamp in stamps]
+    if len(set(dates)) != len(dates):
+        return None, _c01_code(RefusalReason.DUPLICATE_ROW_DATE)
+    return tuple(sorted(zip(dates, (Fraction(x) for x in floats)))), None
+
+
+def resolve_close_canonical(
+    ticker: str,
+    *,
+    view: ReadRequest,
+    asof: str | pd.Timestamp | None = None,
+    start: str | pd.Timestamp | None = None,
+    data_dir: str | None = None,
+    registry: Registry | None = None,
+    _book: "_Books | None" = None,
+) -> CanonicalClose:
+    """Resolve one close series under a canonical read contract (C01).
+
+    Calls the UNCHANGED :func:`resolve_close` ladder, binds the served rung to
+    its dataset-registry row, and either serves exact ``Fraction`` values under
+    a ``ViewContract`` written HERE (never by the requester), or returns the
+    same shape carrying a typed refusal.  The requester cannot choose
+    authorization, clock or evidence status: those fields are overwritten or
+    dropped.  Fixed check order — the FIRST failure wins.
+    """
+    if not isinstance(view, ReadRequest):
+        raise TypeError(
+            f"view must be a lib.dataos.read_contract.ReadRequest, got {type(view).__name__}")
+    if registry is not None and not isinstance(registry, Registry):
+        raise TypeError(
+            f"registry must be a lib.dataos.registry.Registry or None, got {type(registry).__name__}")
+    reg = _default_registry() if registry is None else registry
+    t = str(ticker)
+    req_ident = view.contract.identity
+    mic: str | None = None
+    cur: str | None = None
+    legacy: Resolved | None = None
+    row = None
+    values: tuple[tuple[str, Fraction], ...] | None = None
+    code: str | None = None
+    coverage = "not read"
+
+    # 1 — mode: the ladder is NOT read for a mode this seam cannot serve.
+    if view.mode is ReadMode.RECONSTRUCT:
+        code = _c01_code(RefusalCode.MISSING_CLOCK_VALUE)
+    elif view.mode is ReadMode.REPLAY:
+        code = _c01_code(RefusalCode.NO_RETAINED_OUTPUT)
+
+    # 2 — venue (mirrors P06's rule): one listing, one mapped MIC, one currency.
+    if code is None:
+        try:
+            key_mic = parse_listing_key(req_ident["listing_id"]).mic
+        except IdentityError:
+            key_mic = None
+        raw = req_ident.get("mic")
+        id_mic: str | None = None
+        if raw is not None and not isinstance(raw, str):
+            code = _c01_code(RefusalReason.VENUE_CLOCK_UNKNOWN)
+        elif raw is not None:
+            id_mic = raw.strip().upper() or None
+        if code is None:
+            if key_mic is not None and id_mic is not None and key_mic != id_mic:
+                code = _c01_code(RefusalReason.VENUE_CLOCK_UNKNOWN)
+            elif key_mic is None and id_mic is None:
+                code = _c01_code(RefusalReason.VENUE_CLOCK_UNKNOWN)
+            else:
+                mic = key_mic or id_mic
+                try:
+                    cur = venue_currency(mic)
+                except IdentityError:
+                    code = _c01_code(RefusalReason.VENUE_CLOCK_UNKNOWN)
+
+    # 3 — currency: a known-and-different currency refuses, never assumes FX.
+    if code is None:
+        req_cur = view.contract.field_units.get("currency")
+        if req_cur is not None and (not isinstance(req_cur, str)
+                                    or req_cur.strip().upper() != cur):
+            code = _c01_code(RefusalReason.CURRENCY_MISMATCH)
+
+    # 4 — basis request: tradj or sadj, explicitly; anything else is ambiguous.
+    req_basis = view.contract.adjustment_reference.get("basis")
+    if code is None and req_basis not in ("tradj", "sadj"):
+        code = _c01_code(RefusalReason.AMBIGUOUS_BASIS)
+
+    # 5 — the read itself, through the UNCHANGED ladder.
+    if code is None:
+        legacy = resolve_close(t, asof=asof, start=start, data_dir=data_dir,
+                               allow_unadjusted=True, capture_evidence=True, _book=_book)
+        if not legacy.ok:
+            code = _c01_code(RefusalCode.UNBOUND_DEPENDENCY)
+            coverage = "none"
+
+    # 6 — bind the served rung to its dataset-registry row.
+    if code is None:
+        row, bind_code = _c01_bind(legacy, reg)
+        if bind_code is not None:
+            code = bind_code
+            coverage = "withheld"
+
+    # 7 — basis: the served column's registry basis must equal the request's.
+    if code is None:
+        evidence = legacy.evidence
+        if (evidence.basis is None
+                or evidence.column not in row.schema
+                or evidence.basis != row.schema[evidence.column].get("basis")
+                or evidence.basis != req_basis):
+            code = _c01_code(RefusalReason.AMBIGUOUS_BASIS)
+            coverage = "withheld"
+
+    # 8 — values: exact Fractions keyed by ISO date, or a typed refusal.
+    if code is None:
+        values, values_code = _c01_values(legacy.series)
+        if values_code is not None:
+            code = values_code
+            coverage = "withheld"
+
+    # S10 — the legacy defect, flagged even on refusal, never silently served.
+    legacy_defects: tuple[str, ...] = ()
+    if legacy is not None and legacy.adjusted is True and (
+            legacy.evidence is None or legacy.evidence.basis != "tradj"):
+        legacy_defects = ("S10",)
+
+    served = code is None
+    basis_out = (
+        legacy.evidence.basis
+        if served and legacy is not None and legacy.evidence is not None
+        else (req_basis if req_basis in ("tradj", "sadj") else None)
+    )
+    if served:
+        coverage = f"{values[0][0]}..{values[-1][0]} n={len(values)}"
+
+    identity: dict[str, str] = {
+        "security_id": req_ident["security_id"],
+        "listing_id": req_ident["listing_id"],
+        "vendor_symbol": t,
+    }
+    if mic is not None:
+        identity["mic"] = mic
+    if row is not None:
+        identity["registry_row"] = row.dataset_id
+        identity["vendor"] = row.vendor
+
+    adjustment_reference: dict[str, object] = {
+        "basis": basis_out,
+        "action_revision_set_id": None,   # requester values are overwritten, never copied
+        "as_at": None,
+        "vintage": "unattested",
+        "executable": False,
+        "readout": CANONICAL_READOUT,
+    }
+    if legacy_defects:
+        adjustment_reference["legacy_defect"] = "S10"
+
+    evidence = legacy.evidence if legacy is not None else None
+    generation_ids: tuple[str, ...] = ()
+    if (evidence is not None and evidence.receipt_state == "EXACT_ENCODED_OBJECT"
+            and evidence.content_sha256):
+        generation_ids = ("sha256:" + evidence.content_sha256,)
+    evidence_mode = MappingProxyType({
+        "mode": view.mode.value,
+        "clock": row.clocks[0] if row is not None and row.clocks else None,
+        "registry_row": row.dataset_id if row is not None else None,
+        "dependency_generation_ids": generation_ids,
+        "generation_attested": False,
+        "code_version": None,
+        "receipt_state": evidence.receipt_state if evidence is not None else None,
+        "source": evidence.source if evidence is not None else None,
+        "source_path": evidence.source_path if evidence is not None else None,
+        "column": evidence.column if evidence is not None else None,
+        "basis": evidence.basis if evidence is not None else None,
+        "unattested": _C01_UNATTESTED,
+        "legacy_defects": legacy_defects,
+        "refusal": code,
+    })
+
+    contract = ViewContract(
+        purpose=view.contract.purpose,
+        identity=identity,
+        field_units={
+            "currency": cur or None,
+            "close": f"{cur}/share" if cur else None,
+            "share_basis": basis_out,
+        },
+        adjustment_reference=adjustment_reference,
+        coverage=coverage,
+        refusal_reasons=(code,) if code is not None else (),
+    )
+    return CanonicalClose(
+        ticker=t, mode=view.mode, contract=contract, evidence_mode=evidence_mode,
+        values=values if served else None, legacy=legacy)
+
+
+def terminal_daily_ohlc_contract_v1() -> dict:
+    """The contract mapping a later lane emits beside the Terminal daily OHLC files.
+
+    Pure: no IO, no clock, no store read — a fresh JSON-native dict every call,
+    so a consumer mutating one return can never rewrite what the next caller
+    gets.  Every unattested field says so; nothing here authorizes a read.
+    """
+    return {
+        "schema": VIEW_CONTRACT_V1_SCHEMA,
+        "purpose": TERMINAL_DAILY_OHLC_PURPOSE,
+        "identity_namespace": IDENTITY_NAMESPACE_US_LISTING,
+        "venues": list(TERMINAL_DAILY_OHLC_MICS),
+        "field_units": {
+            "currency": "USD",
+            "open": "USD/share",
+            "high": "USD/share",
+            "low": "USD/share",
+            "close": "USD/share",
+            "volume": "shares",
+            "volume_convention": "vendor-reported, unattested",
+            "share_basis": "tradj",
+        },
+        "adjustment_reference": {
+            "basis": "tradj",
+            "action_revision_set_id": None,
+            "as_at": None,
+            "vintage": "unattested",
+            "executable": False,
+            "readout": CANONICAL_READOUT,
+        },
+        "evidence_mode": {
+            "mode": "CURRENT",
+            "clock": "ingested_at",
+            "registry_row": "equity.bars.daily.stocks",
+            "output_registry_row": "terminal.bars.daily.ohlc_json",
+            "dependency_generation_ids": [],
+            "generation_attested": False,
+            "code_version": None,
+        },
+        "store_vendor": TERMINAL_DAILY_OHLC_STORE_VENDOR,
+    }

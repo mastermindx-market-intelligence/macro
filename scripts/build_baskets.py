@@ -214,19 +214,43 @@ def _write_score_snapshot(ti: dict) -> None:
     p.write_text(json.dumps(slim, separators=(",", ":"), default=str))
 
 
-def main() -> int:
+def _focused_allocation_is_current(
+    allocation_path: Path,
+    *,
+    theme_as_of: object,
+    allocation_failed: bool,
+) -> bool:
+    """Prove the focused US allocation belongs to this basket generation.
+
+    A failed allocation build can leave last night's JSON in the checkout. Reading
+    that file would make the hero and action-board enrichment look freshly rebuilt
+    while actually composing a mixed generation. Broad lanes stay fail-soft; the
+    independent Sector Intelligence lane refuses that last-good fallback.
+    """
+    if allocation_failed or not isinstance(theme_as_of, str) or not theme_as_of:
+        return False
+    try:
+        payload = json.loads(allocation_path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeDecodeError, ValueError):
+        return False
+    return isinstance(payload, dict) and payload.get("as_of") == theme_as_of
+
+
+def main(*, sector_intelligence_only: bool | None = None) -> int:
     if "--snapshot" in sys.argv[1:]:
         return snapshot_membership()
+    if sector_intelligence_only is None:
+        sector_intelligence_only = "--sector-intelligence" in sys.argv[1:]
     site = config.ROOT / "site"
     try:
         from engine.baskets import compute_baskets
         data = compute_baskets()
-    except Exception as e:  # noqa: BLE001 — additive, never fatal
+    except Exception as e:  # noqa: BLE001 — additive in broad lanes; strict in focused lane
         log.error("baskets engine failed: %s", e)
-        return 0
+        return 1 if sector_intelligence_only else 0
     if not data:
         log.warning("no baskets (need data/baskets/membership.json + price caches) — skipping")
-        return 0
+        return 1 if sector_intelligence_only else 0
 
     # M7C-R8: basket-store staleness warning — fires when collect died upstream (e.g.
     # timeout-cancelled).  WARN ONLY; never fails the build (stale site > broken site).
@@ -525,15 +549,24 @@ def main() -> int:
     # copies are the fallback if a refresh fails; an absent file just hides that panel. Both
     # additive — never fatal. TODO: promote to dedicated daily.yml steps once a workflow-scoped
     # token is available.
-    try:
-        from scripts.thematic_rotation_phase0 import run_all as _phase0_all
-        _phase0_all()                                     # us, canada, china (HK skipped → US proxy)
-    except Exception as e:  # noqa: BLE001 — additive; falls back to the committed artifacts
-        log.error("thematic rotation Phase-0 refresh failed (using committed artifacts): %s", e)
+    if not sector_intelligence_only:
+        try:
+            from scripts.thematic_rotation_phase0 import run_all as _phase0_all
+            _phase0_all()                                 # us, canada, china (HK uses US proxy)
+        except Exception as e:  # noqa: BLE001 — additive; committed artifacts remain
+            log.error("thematic rotation Phase-0 refresh failed (using committed artifacts): %s", e)
     _alloc_stale = False
     try:
         from scripts.build_allocation import main as _build_allocation
-        _alloc_stale = _build_allocation()                # builds all four allocation pages
+        if sector_intelligence_only:
+            # The overview hero needs only the deterministic US allocation JSON.
+            # Do not launch multi-region pages, discovery, or model calls in the
+            # independent freshness-recovery lane.
+            _alloc_stale = _build_allocation(
+                ["us"], run_auxiliary=False, run_ai=False
+            )
+        else:
+            _alloc_stale = _build_allocation()            # full four-market publication
     except Exception as e:  # noqa: BLE001 — additive, never fatal
         _alloc_stale = True
         log.error("allocation pages (via build_baskets) failed: %s", e, exc_info=True)
@@ -553,6 +586,24 @@ def main() -> int:
                                 if _alloc_stale else "ok"),
                      "stamped_at": datetime.now(timezone.utc).isoformat(timespec="seconds")},
                     separators=(",", ":")))
+
+    if sector_intelligence_only:
+        _theme_as_of = (
+            (data.get("theme_intel") or {}).get("as_of")
+            if isinstance(data.get("theme_intel"), dict) else None
+        )
+        _focused_alloc = _fdir / "allocation.json"
+        if not _focused_allocation_is_current(
+            _focused_alloc,
+            theme_as_of=_theme_as_of,
+            allocation_failed=_alloc_stale,
+        ):
+            log.error(
+                "sector-intelligence focused build refused allocation generation: "
+                "allocation_failed=%s theme_as_of=%r allocation_path=%s",
+                _alloc_stale, _theme_as_of, _focused_alloc,
+            )
+            return 1
 
     # THEME CONTEXT (theme_context.v1) — wired HERE so that allocation.json has already been
     # written by build_allocation() above (PIT correctness: theme_context.as_of, the
@@ -628,6 +679,13 @@ def main() -> int:
         (site / "forming_narratives.js").write_text(ne.read_text())
     log.info("wrote %s/baskets.html (%d baskets, %d categories, %d KB)",
              site, len(data["baskets"]), len(data.get("categories", [])), len(html) // 1024)
+
+    if sector_intelligence_only:
+        log.info(
+            "sector-intelligence focused basket build complete — skipped anticipation, "
+            "freeze/ledger organs, per-name event atlases, notifications, and freshness tail"
+        )
+        return 0
 
     try:
         from scripts.build_anticipation import main as _build_anticipation

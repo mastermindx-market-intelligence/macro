@@ -1,0 +1,14 @@
+{
+  "schema": "risk_radar.exact_head_ci_observer.v1",
+  "run_id": 39113159863,
+  "expected_head": "f11fa0c66273ca1976f37e2f529fe9ff689ee439",
+  "pr": 9595,
+  "started_at_utc": "2026-10-18T08:56:23.664386+00:00",
+  "status": "COMPLETED",
+  "pid": 56023,
+  "interval_seconds": 120,
+  "watch_log": "/tmp/rr-evidence-ci-39113159863-watch.log",
+  "controller_mutations": false,
+  "exit_code": 1,
+  "completed_at_utc": "2026-10-18T09:16:58.345025+00:00"
+}

@@ -7,7 +7,8 @@ set -euo pipefail
 OPS_ROOT="${EARNINGS_OPS_ROOT:-/Users/chriswong/earnings-ops-wt}"
 VENV_ROOT="${EARNINGS_VENV_ROOT:-/Users/chriswong/earnings-venv}"
 REMOTE_URL="${EARNINGS_REMOTE_URL:-https://github.com/mastermindx-market-intelligence/macro.git}"
-ENV_FILE="${EARNINGS_ENV_FILE:-/Users/chriswong/hub-ops-wt/.env}"
+ENV_FILE="${EARNINGS_ENV_FILE:-}"
+ENV_PLACEHOLDER="__EARNINGS_ENV_FILE__"
 DEST_DIR="${EARNINGS_LAUNCHAGENT_DIR:-$HOME/Library/LaunchAgents}"
 LABEL="com.mastermind.earnings-worker"
 DEST_PLIST="$DEST_DIR/$LABEL.plist"
@@ -28,6 +29,10 @@ Usage: bootstrap_earnings_worker.sh [--check] [--run-now]
   --run-now                  install, then kick one forward-only run
   --bootstrap-since DATE     before install, score one explicit recent slice;
                              allowed only when no intake cursor exists
+
+Required install/check environment:
+  EARNINGS_ENV_FILE          absolute path to the approved earnings-worker
+                             secret source. No implicit cross-worktree default.
 EOF
 }
 
@@ -61,6 +66,21 @@ fi
 case "$OPS_ROOT:$VENV_ROOT" in
   *"$HOME/Documents"*)
     echo "ERROR: earnings clone and venv must live outside ~/Documents" >&2
+    exit 1
+    ;;
+esac
+
+if [ -z "$ENV_FILE" ]; then
+  echo "ERROR: EARNINGS_ENV_FILE is required; refusing an implicit credential source" >&2
+  exit 1
+fi
+case "$ENV_FILE" in
+  /*) ;;
+  *) echo "ERROR: EARNINGS_ENV_FILE must be an absolute path: $ENV_FILE" >&2; exit 1 ;;
+esac
+case "$ENV_FILE" in
+  "$HOME/Documents"|"$HOME/Documents"/*)
+    echo "ERROR: EARNINGS_ENV_FILE must live outside ~/Documents for launchd/TCC safety" >&2
     exit 1
     ;;
 esac
@@ -134,6 +154,42 @@ fi
 [ -x "$VENV_ROOT/bin/python" ] || { echo "ERROR: missing dedicated venv at $VENV_ROOT" >&2; exit 1; }
 "$VENV_ROOT/bin/python" -c 'import anthropic, boto3, pandas, pyarrow, requests, yaml'
 
+render_plist() {
+  local source="$1"
+  local destination="$2"
+  local env_file="$3"
+  "$VENV_ROOT/bin/python" - "$source" "$destination" "$env_file" "$ENV_PLACEHOLDER" <<'PY'
+import plistlib
+import sys
+from pathlib import Path
+
+source = Path(sys.argv[1])
+destination = Path(sys.argv[2])
+env_file = sys.argv[3]
+placeholder = sys.argv[4]
+
+with source.open("rb") as handle:
+    payload = plistlib.load(handle)
+
+args = payload.get("ProgramArguments")
+if not isinstance(args, list) or len(args) < 3:
+    raise SystemExit("ERROR: earnings LaunchAgent ProgramArguments contract is malformed")
+if args[1] != placeholder:
+    raise SystemExit(
+        "ERROR: earnings LaunchAgent template lost the explicit env placeholder"
+    )
+args[1] = env_file
+
+with destination.open("wb") as handle:
+    plistlib.dump(payload, handle, sort_keys=False)
+PY
+  /usr/bin/plutil -lint "$destination" >/dev/null
+}
+
+RENDERED_PLIST="$(/usr/bin/mktemp "${TMPDIR:-/tmp}/$LABEL.rendered.XXXXXX")"
+trap '/bin/rm -f "$RENDERED_PLIST"' EXIT
+render_plist "$PLIST" "$RENDERED_PLIST" "$ENV_FILE"
+
 # The wrapper is the only secret-loading seam. The runner reports only variable
 # names and presence/absence, never their contents.
 EARNINGS_PYTHON="$VENV_ROOT/bin/python" \
@@ -144,8 +200,8 @@ if [ "$CHECK_ONLY" -eq 1 ]; then
     echo "ERROR: installed LaunchAgent plist is missing: $DEST_PLIST" >&2
     exit 1
   }
-  /usr/bin/cmp -s "$PLIST" "$DEST_PLIST" || {
-    echo "ERROR: installed LaunchAgent plist differs from origin/main: $DEST_PLIST" >&2
+  /usr/bin/cmp -s "$RENDERED_PLIST" "$DEST_PLIST" || {
+    echo "ERROR: installed LaunchAgent plist differs from rendered origin/main + EARNINGS_ENV_FILE binding: $DEST_PLIST" >&2
     exit 1
   }
   "$LAUNCHCTL" print "$DOMAIN/$LABEL" >/dev/null 2>&1 || {
@@ -181,8 +237,7 @@ fi
 
 /bin/mkdir -p "$DEST_DIR"
 TMP_PLIST="$(/usr/bin/mktemp "$DEST_DIR/.$LABEL.XXXXXX")"
-trap '/bin/rm -f "$TMP_PLIST"' EXIT
-/usr/bin/install -m 0644 "$PLIST" "$TMP_PLIST"
+/usr/bin/install -m 0644 "$RENDERED_PLIST" "$TMP_PLIST"
 /bin/mv "$TMP_PLIST" "$DEST_PLIST"
 
 "$LAUNCHCTL" bootout "$DOMAIN/$LABEL" >/dev/null 2>&1 || true
@@ -192,7 +247,7 @@ if [ "$RUN_NOW" -eq 1 ]; then
   "$LAUNCHCTL" kickstart -k "$DOMAIN/$LABEL"
 fi
 
-echo "Installed $LABEL from $PLIST"
+echo "Installed $LABEL from rendered $PLIST template"
 echo "Code: $OPS_ROOT"
 echo "Python: $VENV_ROOT/bin/python"
 echo "State: $OPS_ROOT/data/earnings_calls/terminal_intake_state.json (gitignored)"
