@@ -85,3 +85,24 @@ The original wording below is retained verbatim for implementation review; punct
 | 01M5EX8RTPR7YEZD2A144XED2S | current page | 24Z-0 | 默认显示 MU（本期 EPS 变动最大）。本视图记录分析师发布的预期，并非价格预测。 | MU · 本期 EPS 修正最大 · 不预测价格 |
 | 01M5EX8RTPR7YEZD2A144XED2S | current page | 3NR-0 | 默认显示 MU（本期 EPS 变动最大）。本视图记录分析师发布的预期，并非价格预测。 | MU · 本期 EPS 修正最大 · 不预测价格 |
 | 01M5FNCKAND6CBSJNYM5FZWR8Y | 1-0 | 2T-0 | A watch is not an order. It records when the alerts owner observed a condition against its own quote; it does not act, size or trade. | Alerts record observed conditions. They do not place trades. |
+
+## Canonical Design System, Terminal and Ontology preservation
+
+Canonical file https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-9-0 now has the human-first law board 9X3-0. The mobile EPS fixture remains a design example. Unknown is not zero; do not derive EPS from an incompatible share count. Preserve FY2026 diluted-EPS field/period identity. Original interaction subtree 72O-0 is to move intact from dialog 70M-0 to Build: one named modal, inert background, contained Tab, active-owner Escape, trigger identity/fallback heading, preserving later focus, table scroll/drafts and no implicit save. Browser, keyboard and 400% runtime qualification remain implementation work.
+
+Terminal file https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-12-0: D08B notes 1RQ8-0 and alternative-state subtree 1RPZ-0 move to existing Build p-14-0. Preserve full original source ownership, validator, identity, unsupported and unresolved-term behavior. Keep exact-values access when chart drawing is capped at 20,000 marks. Preserve separate scenario, hedge-pressure model and observed-flow definitions. Text 1SDS-0 preserves label collision freedom with exact price ticks/leader anchors in Build. D06 script board 1WI8-0 moves appended reference/state subtree 1XVC-0 and standalone builder note 1WL6-0 into a dedicated D06 Build page; preserve the one-buffer/save-token/obsolete-result/focus and generation constraints. No save or runtime action is performed by this design cleanup. Held ZH research-watch board 189S-0 is excluded.
+
+Ontology file https://app.paper.design/file/01M3P1X4FR6BRTB13KA736Y1HT/p-2-0: preserve original builder subtrees HI-0, LX-0, ND-0, QW-0, TN-0, UX-0, 131-0, 26Y-0, 2PS-0 and mobile 2Q7-0 on existing Implementation p-6-0. The p2 interaction-system board 1HF-0 is itself a builder reference. Receipt card 2HD-0 is a return contract; retain product action 2PO-0 in product parent 2HB-0 before moving that contract. Do not move parent 2Q6-0 because it also holds real Monitor/history UI. Preserve exact before/after values, evidence scope, reviewed successors, no implicit saves/monitor mutations/notifications, focus/scroll/route return, and one owner for receipt/history. QA-held duplicate page p-5-0 remains untouched.
+
+| File | Board | Node | Original | Product replacement |
+|---|---|---|---|---|
+| 01M312VSDSZFVT45674GDVJVZN | 70C-0 | 70Y-0 | FY2026 value not supplied. Unknown is not zero. | FY2026 EPS is unavailable. |
+| 01M312VSDSZFVT45674GDVJVZN | 70C-0 | 71R-0 | A missing current value cannot yield a change. | Change unavailable |
+| 01M312VSDSZFVT45674GDVJVZN | 70C-0 | 71V-0 | f02.fixture.v2/company/EXM/diluted_eps/FY2022-FY2026 | Design example |
+| 01M312VSDSZFVT45674GDVJVZN | 70C-0 | 72J-0 | The source fixture contains no FY2026 diluted EPS. Earlier reported values remain visible. Do not derive EPS from an unrelated share count. | FY2026 diluted EPS is unavailable. Earlier reported values are shown. |
+| 01M3NSZGE8JWN2EZCSF0DT05RM | current page | 1RPQ-0 | The source row and owning validator establish these terms; display ticker alone does not. | Terms from the original source. |
+| 01M3NSZGE8JWN2EZCSF0DT05RM | current page | 1QWE-0 | Each row is a 48px selection target. | Select a row to inspect. |
+| 01M3NSZGE8JWN2EZCSF0DT05RM | current page | 1S0D-0 | Draw cap: 20,000 nonzero marks. Exact table retains all admitted rows. No fitted IV surface or automatic saved investigation. | Chart limit: 20,000 marks · All rows in Exact values |
+| 01M3NSZGE8JWN2EZCSF0DT05RM | current page | 1QKD-0 | Keep scenario, hedge-pressure model and observed flow definitions distinct. Preserved metrics remain subject to each source contract. | Scenario and hedge-pressure estimates are models. Flow is observed. |
+| 01M3P1X4FR6BRTB13KA736Y1HT | 2G8-0 | 2GX-0 | Equal-weight participation weakened from the saved observation to the current settled close. This receipt shows the exact values, calculation, source scope, exclusion and thesis impact without leaving the current conversation. | Equal-weight participation weakened from the saved reading. |
+| 01M3P1X4FR6BRTB13KA736Y1HT | 2G8-0 | 2OM-0 | Opening proof creates no save, no monitor mutation, no notification and no second history object. A reviewed successor is a separate explicit effect. | Read-only evidence · Your saved thesis is unchanged. |
