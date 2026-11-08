@@ -20813,6 +20813,7 @@ jobs:
       - engine/research_codegen/evaluation.py
       - engine/research_codegen/input_contract.py
       - engine/research_codegen/output_contract.py
+      - engine/research_codegen/prospective_contract.py
       - engine/theme_graph/capability.py
       - engine/theme_graph/change_report.py
       - engine/theme_graph/hierarchy_breadth_display.py
@@ -24770,6 +24771,7 @@ jobs:
       - "engine/research_codegen/evaluation.py"
       - "engine/research_codegen/input_contract.py"
       - "engine/research_codegen/output_contract.py"
+      - "engine/research_codegen/prospective_contract.py"
       - "engine/theme_graph/theme_state_owner_readers.py"
       - "research/signal_engine/confluence.py"
       - "scripts/oracle_reversion_screen.py"
@@ -26524,6 +26526,11 @@ jobs:
       - "lib/exchange_holidays.py"
       - "lib/nyse_calendar.py"
       - "lib/rotation_observation_notification.py"
+      - "lib/user_prefs.py"
+      - "scripts/deploy/rotation_notification_consent_v1.sql"
+      - "scripts/deploy/rotation_notification_consent_v1_rollback.sql"
+      - "tests/test_rotation_consent.py"
+      - "tests/test_rotation_consent_postgres.py"
       - "lib/us_cash_calendar.py"
       - "site/account.js"
       - "templates/account.js"
@@ -26543,7 +26550,7 @@ jobs:
       - name: install deps
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2
       - name: defensive observation contract and actual source-to-mail composition
-        run: python -m pytest tests/test_rotation_observation_notification.py tests/test_rotation_observation_integration.py -q
+        run: python -m pytest tests/test_rotation_observation_notification.py tests/test_rotation_observation_integration.py tests/test_rotation_consent.py tests/test_rotation_consent_postgres.py -q
 
   serving-observability:
     if: ${{ false }}
@@ -28416,6 +28423,7 @@ jobs:
       - "engine/research_codegen/evaluation.py"
       - "engine/research_codegen/input_contract.py"
       - "engine/research_codegen/output_contract.py"
+      - "engine/research_codegen/prospective_contract.py"
       - "research/signal_engine/confluence.py"
       - "scripts/oracle_reversion_screen.py"
       - "scripts/oracle_screen.py"
@@ -36185,6 +36193,7 @@ jobs:
       - "engine/research_codegen/evaluation.py"
       - "engine/research_codegen/input_contract.py"
       - "engine/research_codegen/output_contract.py"
+      - "engine/research_codegen/prospective_contract.py"
       - "engine/intl_performance_charts.py"
       - "lib/intl_chart_geometry.py"
       - "lib/intl_chart_mount.py"
@@ -37681,6 +37690,7 @@ jobs:
       - "engine/research_codegen/evaluation.py"
       - "engine/research_codegen/input_contract.py"
       - "engine/research_codegen/output_contract.py"
+      - "engine/research_codegen/prospective_contract.py"
       - "research/signal_engine/confluence.py"
       - "scripts/oracle_reversion_screen.py"
       - "scripts/oracle_screen.py"
@@ -47829,6 +47839,7 @@ jobs:
       - engine/research_codegen/evaluation.py
       - engine/research_codegen/input_contract.py
       - engine/research_codegen/output_contract.py
+      - engine/research_codegen/prospective_contract.py
       # Connected Research Factory import closure (PR9463).
       - research/signal_engine/confluence.py
       - scripts/oracle_reversion_screen.py
@@ -48133,6 +48144,7 @@ jobs:
       - engine/research_codegen/evaluation.py
       - engine/research_codegen/input_contract.py
       - engine/research_codegen/output_contract.py
+      - engine/research_codegen/prospective_contract.py
       - research/signal_engine/confluence.py
       - scripts/oracle_reversion_screen.py
       - scripts/oracle_screen.py
@@ -48494,8 +48506,11 @@ jobs:
       - .github/workflows/daily.yml
       - .github/workflows/weekly.yml
       - engine/recurring_briefs.py
+      - engine/brief_delivery_receipts.py
       - scripts/build_recurring_briefs.py
       - tests/test_recurring_briefs.py
+      - tests/test_brief_delivery_receipts.py
+      - tests/test_recurring_brief_observation_join.py
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -48506,7 +48521,7 @@ jobs:
       - name: install recurring-briefs test dependencies
         run: pip install pytest
       - name: recurring briefs producer — slot, body, classify, idempotency (F11 B-F11-7b)
-        run: python -m pytest tests/test_recurring_briefs.py -q
+        run: python -m pytest tests/test_recurring_briefs.py tests/test_brief_delivery_receipts.py tests/test_recurring_brief_observation_join.py -q
 
   skew-accrual-lane:
     # 2026-09-22 Meta-CEO A packet A-F03-W2-2 — store-host skew-accrual lane.
@@ -52696,6 +52711,7 @@ jobs:
       - "engine/research_codegen/evaluation.py"
       - "engine/research_codegen/input_contract.py"
       - "engine/research_codegen/output_contract.py"
+      - "engine/research_codegen/prospective_contract.py"
       - "engine/research_intelligence/__init__.py"
       - "engine/research_intelligence/extractor.py"
       - "engine/research_intelligence/schema.py"
