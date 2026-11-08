@@ -5610,9 +5610,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_922),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_943),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_680),
+    ("templates/index.html", 137, 5_925),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_946),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_683),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5620,6 +5620,39 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    PR #10727 composition with protected eef3d687 (2026-11-08):
+    Preserve all 395 current catalog owners and the accepted B-17 enrollment
+    measurement below. The only shared owner is ontology-explorer: retain its
+    TTI-D1 minute-reader paths and earnings-context suite, then add the two
+    original provider dependencies. Preserve the other 36 PR-owned postimages,
+    all 94 dependency additions and the Brain composition-suite argument.
+    The receiver's measured B-17 +3 and this PR's qualified Brain +2 are
+    independent: current 5923/5944/5681 becomes 5925/5946/5683. These combined
+    values are source-derived expectations, not fresh planner measurements.
+    Natural current-head contract-delta must qualify the combined tree.
+    Keep job ceilings 137/138/131, ten packs and every existing assertion,
+    command, selector, timeout and admission limit. Retain both histories below.
+
+    2026-11-08 (PR #10180, measured B-17 enrollment integration):
+    Fixed current c91d58b2413d plus the five unchanged recovery objects
+    preserves all 395 owners. Native paired production measurements on
+    the SAME exact candidate source universe compare only the existing
+    manifest and the accepted nine-line B-17 enrollment. The full path
+    inventory and all required source bytes are bound to that candidate.
+    Prophet Lab weight is 64 before and 67 after; it is already selected
+    by all three probes. Every selected job ID is unchanged, with no
+    entrants or exits. Index is 137 jobs, weight 5920 to 5923; free-content
+    is 137 jobs, weight 5941 to 5944; plan-book is 131 jobs, 5678 to 5681.
+    All six measured plans retain ten packs. Fund precisely those three
+    measured weight units per probe, preserving job caps 137, 138, 131,
+    the ten-pack ceiling, every command, selector and runtime limit.
+    This is an actual paired planning result, not a runtime or full-CI
+    result. It preserves the accepted #7352 contribution and imports no
+    unmerged sibling funding. Native receipt18660 ended at06:57:59 UTC;
+    proof SHA256 99135659f96ebf1182e8e843c1153d7a71347273bd2fcfb890626d70f6bfee0f.
+    Source: PR10180 issuecomment6718493720. Original historical and
+    scientific limitations remain; natural CI must qualify publication.
 
     PR #10727 composition with protected 067c3207 (2026-11-08):
     Preserve all 395 current catalog owners, including the accepted control-plane
