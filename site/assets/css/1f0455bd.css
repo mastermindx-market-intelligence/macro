@@ -141,6 +141,12 @@ html[data-theme="light"] .si-side {
    rail fill is needed for legibility. */
 .si-side { background:transparent; border-right:0;
   backdrop-filter:none; -webkit-backdrop-filter:none; }
+@media (max-width:767px) {
+  /* The narrow-screen switcher is an overlay when scrolling. */
+  .si-shell .si-side { padding:2px 0; background:var(--panel); }
+  .si-shell .si-view-btn { padding:7px 2px; }
+  #si-explore, #si-explore [id] { scroll-margin-top:5rem; }
+}
 .rvx-hero, .rvx-hocard, .si-view-read {
   background:var(--desk-tile, var(--panel));
   border:1px solid transparent;
