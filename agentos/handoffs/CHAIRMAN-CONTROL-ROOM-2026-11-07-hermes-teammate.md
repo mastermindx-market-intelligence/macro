@@ -3,136 +3,150 @@ workstream: WS:CHAIRMAN-CONTROL-ROOM
 session: sol/hermes-teammate-continuity-20261107-c3
 model: sol
 ended_because: ci_handoff
-mission: Implement the Chairman's Hermes always-on teammate directive through existing Mastermind owners.
-  This is an active source milestone, not mission completion, runtime admission, a writer transfer or
-  a new program.
-state_before: 'The researched plan was retained in Mastermind PR #2159 but not linked from Agent OS. The
-  native runtime remained on original PR #2134; recall, computer environment safety and learning measurement
-  had concrete implementation gaps.'
+mission: Implement the Chairman's full Hermes always-on teammate directive through existing Mastermind owners. Active source
+  milestone; mission incomplete, not runtime admission or writer transfer.
+state_before: 'The v4 correction source was qualified, while original tool-observation #2204 still needed current protected
+  composition and the malformed-backlink repair needed natural CI proof.'
 changed:
-- path: mastermind:integrations/hermes_harness/agentos_memory_provider.py
-  what: 'PR #2163 at 62c0d6397b671a201d151600bfa0083bdcbec3e2 implements scoped read-only owner recall,
-    repairs default native thread use and freshness/currentness, and permits explicit trusted-host rendered
-    capacity up to 128 KiB while retaining 32 KiB default.'
-- path: mastermind:integrations/hermes_qualification/computer_env_guard
-  what: 'PR #2165 at 1c8a4391cad243f860c25431e8adf849ecf5f6f7 qualifies the exact upstream environment
-    repair and collects its 18 tests in existing CI; it installs nothing.'
-- path: mastermind:scripts/agent_eval/hermes_memory_grounding.py
-  what: 'PR #2167 at 79133a7f6a17a26f77a580bdb2621dd22bdf9bf5 adds pure exact-output grounding measurement
-    through existing EVAL graph and scorer-pass owners, preserving invalid execution evidence.'
+- path: mastermind:integrations/hermes_harness
+  what: PR2217 head bbbbe6a02084f95230b1a2b314b7b4f9689a1fb5 adds explicit v4 current/original discovery reads and governed
+    prepare/read/submit/reconcile on the original ConsumerSlot, SDK connection and native leases; Ready, not deployed.
+- path: mastermind:integrations/mastermind_workspace_app
+  what: Current reads require the nominal canonical DATA owner and latest-data grant; original-note reads retain exact private/Event
+    custody. Signed COO forwarding uses the original independently authenticated Workspace pair and audited handlers.
+- path: macro:scripts/agentos.py
+  what: Original PR10831 head a9906c9d5aaf816048d6467fa39d895034180c87 validates malformed sibling correction markers before
+    set membership, preserving bounded Problems and degraded context.
+- path: mastermind:research/HERMES_TEAMMATE_EVOLUTION_MASTERPLAN_2026-11-06.md
+  what: Cumulative frontier is section37 at commit08fd22498f880c384bb33fd2db2e39e4fc4dfdf8, blob78cd64d49604d030d624d27dabb6d7ac628837fc.
+    Mission incomplete; original runtime access is the human gate.
+- path: mastermind:integrations/hermes_runtime/native_request_observation.py
+  what: Original PR2204 head7df8f907711a8ad4a8ac4ba927d8525f80b99b50 now preserves current protected source, original observation/memory
+    ownership and historical prompt-digest limits; Ready with one protected auto-merge request.
 verified:
-- claim: The final recall source passes all 69 focused tests including 9 actual upstream interface cases.
-  command: 'On original M1 worktree: /opt/homebrew/bin/python3.12 -m unittest -q integrations.hermes_harness.tests.test_agentos_memory_provider'
-  result: 69 passed, zero failures/skips, process 44579 terminal rc 0. Upstream 1c0cd667746d3395fe9e1b6c74f8f85952486f18;
-    MemoryProvider SHA256 ac81dcf489c698891f0edebfe26845a75c50d2bde77ec3be8d7938a85c79f1fc.
-- claim: The default native thread can deliver a real owner bundle verbatim under the explicit larger
-    envelope.
-  command: 'Original M1 process 45125: create_provider against actual upstream, actual read_context for
-    WS:CHAIRMAN-CONTROL-ROOM, prepare_context/readiness then prefetch; synthetic qualification binding
-    only.'
-  result: Macro local revision c3d7f1d4149176e35abf6077c18c96513abe6600; 59,933 raw / 61,065 rendered
-    bytes; 12.214 s; suffix match; 6 sections, 3 degraded, 24 excluded, 46 omitted. No runtime grant,
-    selected provider or model request.
-- claim: Computer fallback repair is source-qualified, and grounded scoring rejects unsupported success.
-  command: python -m unittest discover -v -s integrations/hermes_qualification/tests -p 'test_computer_env_guard.py';
-    python -m unittest -v tests.test_agent_eval_hermes_memory_grounding
-  result: '18 computer tests and 22 scorer tests passed separately. Exact code/readback evidence is in
-    Mastermind #2159 section 18 and the individual PRs. No live desktop or learning efficacy claim.'
-- claim: Original native runtime source is recovered and published on its original carrier.
-  command: 'Original M2 workspace exact-source checks, pending-merge reconciliation and typed exact-head
-    publication; GitHub PR #2134 readback.'
-  result: Head 7a3160fa76ceae58726eacd27d741872273d3828; tree 3ddb5de3275c798c1d5eebc2210f1c86d7349163.
-    Both protected and feature behaviors retained. 316 Python cases, TypeScript check, 67 UI cases, native
-    build and 16 native Rust cases passed; one existing signed-HTTP fixture ignored. Typed push APPLIED,
-    clean local=remote. New exact-head auto request enabled 2026-11-07T01:34:08Z; CI pending, no merge
-    claim.
-- claim: Recall and grounded scoring are merged into protected Mastermind source.
-  command: 'Original Studio process 96845: GitHub GraphQL state, mergedAt, mergeCommit, head and status
-    checks for PR #2163 and PR #2167.'
-  result: 'PR #2163 MERGED at 5ca25e561ffaeacb4ef94bb08f507617f80d0607; PR #2167 MERGED at 78d8cb693888579808f02de0934c18f4915fd042;
-    both 2026-11-07T01:17:19Z, head checks SUCCESS. These are source merges, not installed acceptance.'
+- claim: The native discovery source increment is published on its original carrier with exact postimages.
+  command: GitHub tree/commit/ref API; complete-tree readback C3 process32150; clean exact-head checkout and hash validation
+    process40154.
+  result: PR2217 head bbbbe6a02084f95230b1a2b314b7b4f9689a1fb5; tree97e29138cf58657ec0854443aeb8a3498a63a561;51 matching increment
+    postimages. No activation.
+- claim: Current/history/correction/signed/native boundaries and held source import execute under declared fixtures.
+  command: Combined local Python3.12 pytest and separate exact-head C3 pinned-native run40154, no Control sockets.
+  result: 190 local passes,4 skipped;23 C3 passes,zero skips,including real pinned PluginContext/registry/leases and finite
+    held import closure. JUnit SHA25678c22c565da7d8c41ab904f2682c0c81b017dcd8475d3e80e584315a9ebc73db. Overlapping groups
+    are not summed.
+- claim: Malformed sibling backlinks no longer escape canonical validation/context.
+  command: Actual Macro CLI validate/compile-context in tests/test_project_discovery_correction.py; exact two-postimage readback
+    at a9906c9.
+  result: 35 passed, including list/dict/null/scalar malformed markers; affected corrections excluded with a parseable context
+    bundle.
+- claim: Current context prerequisite is qualified and retains one active protected queue effect.
+  command: Exact e5280ec workflow reads, current GraphQL rules/review/hold/source checks, head-leased queue request2737 and
+    original readbacks3467/56106.
+  result: PR2207 head e5280ecdc7e021b5c8f8e9cd83f2b62329d4eb75;5 workflows SUCCESS;queue MQE_lQDOTotz3c8AAAABNfXFds4ABAiKzgPNdDc
+    AWAITING_CHECKS position4 at last read. OPEN/unmerged; do not rearm.
+- claim: Previously accepted source remains accepted without reimplementation.
+  command: Original merged PR receipts retained in the cumulative plan.
+  result: PR2195 native-memory merge3c3bfdf8a52a6972c05eb13a1c2b3b9859aefd27;PR2200 vault merge93861e9ab2e75176108bb357bd9e81b54307981d;
+    earlier vendor/receiver/transport/observation source accepted.
+- claim: Original tool observation is composed and source-qualified without altering accepted memory ownership.
+  command: Complete-tree11-postimage verification; local293 tests; clean full-head C3 process84600;2 targeted identity pin
+    tests; D8 scan; protected preflight/request5762/readback6585.
+  result: Head7df8f907711a8ad4a8ac4ba927d8525f80b99b50;treebbab5fb183cd8748058c4a56768dae692115ea39.293 passes in both overlapping
+    source groups; original2socket cases excluded. C3 JUnit2836888f1f60d6e95b67949620ce946799edca853d00d847716ebb3e56419105.
+    Auto-merge enabled2026-11-07T13:51:31Z; no queue entry or merge receipt.
+- claim: Macro's repaired correction source passed natural exact-head knowledge proof.
+  command: Original ci-pack-9 job128417377711 in run42376966339; actual agentos-knowledge-contracts logs.
+  result: 'Actual store2233records,0errors,107warnings; knowledge commands606/66/752passes,not an aggregate. Original review
+    finding''s requested natural proof resolved; #10831 nowReady, remaining required CI pending.'
 unverified:
-- claim: The full always-on Hermes teammate is installed and accepted.
-  what_would_verify: Authenticated native role/context/tool binding, original C26 result reconciliation,
-    admitted child START and parent consumption, restart/revocation/endurance and complete original journeys.
-- claim: Mastermind grants and safely uses a website vault account.
-  what_would_verify: Existing owner-issued backend/account/item/origin permission plus actual secret-safe
-    owned-page fill transport, disposable login proof, revocation and no secret-bearing action tokens.
-- claim: Memory or a changed skill improves held-out outcomes.
-  what_would_verify: Prospective technically valid matched native EVAL runs; separate memory and skill
-    comparisons; genuine holdout; suspected discovery and source-backed skill adoption/rollback.
+- claim: The full always-on teammate is installed and accepted.
+  what_would_verify: Original authorized runtime release/enrollment, actual v4 serving readback, one genuine correction publication
+    and current-context feedback, then original restart/revocation/endurance/fleet journeys.
+- claim: Vault fill proves account access or login.
+  what_would_verify: Existing owner-issued account/item/origin authority, actual supported browser journey and secret-safe
+    trace/revocation proof. APPLIED/FILLED alone is insufficient.
+- claim: The observed prompt dispatched to the identified provider/model.
+  what_would_verify: Original request/dispatch and served-model/process/session/workspace/policy evidence. Aggregate tool
+    observation and API-message assembly alone are insufficient.
+- claim: Memory or a skill improves held-out outcomes.
+  what_would_verify: Prospective matched technically valid EVAL with genuine seed/effort/model identities, holdout, cleanup
+    and source-backed promotion/rollback under existing owners.
 unresolved:
-- 'The computer guard PR #2165 remains OPEN with its original auto request enabled, no queue entry and
-  one existing CI shard still in progress at the last boundary. Recall #2163 and grounding #2167 are merged;
-  actual installation and production composition remain open.'
-- Original Ubuntu1 C26 journal read was denied under the present user connection. Its original authorized
-  root/admin connection must be restored; no alternate-carrier/account replay.
-- 'Native install admits only clean selected upstream source. Explicit qualified vendor derivation belongs
-  in the existing release/source-preparation/install owner on #2134, not another installer.'
-- Inspected Workbench browser composers supply no persistent-profile grants; credential readiness is not
-  website-account authority. Generic Hermes vault discovery/list/unlock is not enrolled.
-- Original paid memory repair published source but ended rc 1 on a provider session-title error; Fabric
-  acceptance remains unset. Parent separately verified and continued the same source worktree.
-- The distinct vendor-derivation Fabric child hermes-teammate-vendor-derive-20261107-c3-01 has original
-  controller 17269. Last status is ACTIVE_OR_WAITING with worker START/root lineage unproven; preserve
-  its original effect and do not create a replacement writer. Its scope is the existing recipe/source-preparation/installer;
-  not live installation.
+- 'PR2207''s original protected queue remains active; #2217 is stacked on it and its new exact-head CI is pending. No #2217
+  queue effect.'
+- 'Macro #10831 a9906c9 is Ready with its knowledge/actual-store proof and fences passed; remaining required packs/final ci-gate
+  still gate the original merge-on-green controller. No release request issued.'
+- 'Tool-observation #2204 at7df8f907711a8ad4a8ac4ba927d8525f80b99b50 is Ready with original auto-merge enabled2026-11-07T13:51:31Z,
+  no queue entry/merge at readback. Consume that effect; never rearm.'
+- Original Ubuntu1/root C26 PermissionError remains unretried. Restore the original authorized connection and reconcile the
+  retained operation; no alternate host/account/carrier.
+- The original local AF_UNIX denial and later two accidentally selected socket cases remain disclosed; that local Control
+  path is stopped and was not moved to C3.
+- Original paid Fabric failures/refusals remain unretried. Parent implemented; native agents supplied principal judgment only.
 next_actions:
-- 'Consume original PR #2134 release effects at head 7a3160fa76ceae58726eacd27d741872273d3828. Source
-  repair is complete; do not edit while armed without reconciling its release effect. Continue original
-  installed qualification only after the exact C26 authorization gate is restored.'
-- 'Consume the original protected release effect for Mastermind #2165; do not re-arm the already merged
-  #2163 or #2167. Integrate only qualified immutable source and read installed identity before any installation
-  claim.'
-- Compose real native role/context/tool bindings and explicit vendor derivation through existing owners.
-  At restored original C26 authorization, reconcile its retained result before installed continuation.
-- Implement existing-owner account/item permission plus one real secret-safe login fill, then execute
-  matched native memory/skill evaluation and original endurance acceptance.
+- 'The currently assigned session must consume PR2207''s original queue receipt without rearming, then qualify/retarget original
+  #2217 to accepted protected master, consume required CI and repair only concrete failures.'
+- 'Consume Macro #10831 remaining exact a9906c9 checks, then request the existing merge-on-green controller once after fresh
+  head/hold/check inspection. Its source finding and natural knowledge proof are resolved; no new review ceremony.'
+- 'Consume original #2204 auto-merge effect at7df8f907 without rearming; repair only concrete failed integrated gates. Preserve
+  actual observation versus durable flush/provider/model/publication distinctions.'
+- Prepare and prove installed v4 through the original operation only after original C26 authorization and retained-effect
+  reconciliation; continue independent source work while that gate remains.
+- Preserve all independent Control Room/R2 journeys and original M2 operation meta-ceo-byok-followon-parent-20261106-c35-01.
 do_not_redo:
-- 'Reuse the source research and original plan #2159; no new runtime, queue, memory store, authorization
-  owner, publisher or learning promotion service.'
-- Do not relabel source tests, CI, armed/queued PRs, compiler reads or synthetic qualification bindings
-  as production acceptance.
-- Preserve current M2 OMH and restore exact prior provider/configuration on rollback; do not blindly switch
-  to builtin.
-- Do not redispatch reconciled refused computer/grounding Fabric runs, repair the already-fixed native
-  shadowing bug again, or replay Ubuntu1's explicit denial.
-- Prior Control Room/R2 obligations and held source carriers remain controlling; these Hermes tests do
-  not satisfy the 48-obligation R2 declaration.
+- Reuse plan2159 and existing Executive/Agent OS/Workbench/EVAL/Harness2/Fabric/native owners. No duplicate memory, auth,
+  lifecycle, queue, publisher or learning-promotion service.
+- Do not replay the original C26/local AF_UNIX denials or Fabric refusals via new names, hosts, accounts or carriers.
+- Do not relabel source tests, green CI, queue admission, merges or fixture grants as installed acceptance; never fabricate
+  seed/model/provider/process evidence.
+- Outcome Learning398 and PR409 remain held; earlier accepted C69/C70 and source work remain accepted.
+- No Slack/email message, worker START, daemon, account grant, credential collection or automatic wake is authorized or claimed
+  by this record.
 danger_areas:
-- Actual owner bundles exceed the advisory compiler token budget. Preserve all bytes and accounting; model-window
-  fit and first-turn readiness are separate host obligations.
-- The M1 and M2 Macro copies were different revisions and produced different bundle sizes; a successful
-  local read is not fleet-wide source freshness.
-- Hermes has one external memory-provider slot. Browser page-backend false can trigger native CDP fallback.
-  HMAC action references are plaintext, not a place for passwords.
-- Native install rejects both dirty patched upstream source and unqualified derivative commits; merging
-  the computer patch bundle alone cannot install it.
+- V4 and v3/v2 catalogues and digests are explicit; the discovery profile remains disabled and raw MCP include stays empty.
+  Current DATA and retained original private bytes must not share invented provenance.
+- Timed-out SDK futures and uncertain cost refunds retain original custody. The future/result/uncertainty must publish atomically;
+  absent receipts do not prove no effect.
+- Actual registry leases own unload. An unreturned second registration lease remains uncertain; never remove it by name or
+  retry registration.
+- Current context compiler output must preserve exact bytes/accounting. READY, native delivery, prompt inclusion, dispatch
+  and held-out efficacy are separate facts.
+- C3 source validation at bbbbe6a against Hermes1c0 uses an isolated HERMES_HOME and declared host/credential edges. It is
+  not C26 runtime proof.
 ---
 
-
-# Hermes teammate implementation milestone
+# Hermes teammate implementation frontier
 
 ## §0 State — what is true right now
 
-**MISSION_COMPLETE: false. Overall capability: BUILT_NOT_PROVEN.** The assigned principal is continuing the original implementation. Three useful source components now have focused executable proof. Recall and grounded scoring are merged into protected source; the computer guard remains in its original release process. Authenticated production composition and the original outcome remain open. This record updates only the Hermes-related continuation. It does not close or replace prior Control Room/R2 waves or acceptance contracts.
+**MISSION_COMPLETE: false. Capability: BUILT_NOT_PROVEN. Runtime lane: EXACT_HUMAN_GATE; source release lanes: CI/queue gated.** This source milestone replaces the obsolete section27 pending-PR statements in this same handoff. It preserves independent Control Room/R2 obligations and creates no program, runtime admission, transfer or background runner.
 
-The complete source task tree and cumulative receipts are [Mastermind plan #2159, commit 594f3dcf](https://github.com/mastermindx-market-intelligence/Mastermind/blob/594f3dcff63a069270833d5bfc34624bd271b3cc/research/HERMES_TEAMMATE_EVOLUTION_MASTERPLAN_2026-11-06.md), particularly sections 17–19. That plan retains the researched mechanisms, adoption decisions and original staged acceptance.
+The cumulative task tree and immutable receipts are [plan #2159, section37 at 08fd224](https://github.com/mastermindx-market-intelligence/Mastermind/blob/08fd22498f880c384bb33fd2db2e39e4fc4dfdf8/research/HERMES_TEAMMATE_EVOLUTION_MASTERPLAN_2026-11-06.md). Historical plan sections remain evidence; section37 governs the current source frontier.
 
 ## §1 What is left — in order
 
-Consume the recovered original [native runtime #2134](https://github.com/mastermindx-market-intelligence/Mastermind/pull/2134) through operation `meta-ceo-byok-followon-parent-20261106-c35-01`, its original branch and M2 workspace `/Volumes/Mastermind 2/agent-workspaces/web/meta-ceo-byok-followon-parent-20261106-c35-01`. Its recovered head is `7a3160fa76ceae58726eacd27d741872273d3828`, with an original exact-head auto request enabled at `2026-11-07T01:34:08Z`. Source conflict repair is complete. Use its typed publisher; reconcile an armed/queued effect before editing. The original Ubuntu1 C26 admin denial separately gates installed continuation and cannot be bypassed.
+Consume the original #2207 protected queue and preserve its active effect. Its actual merge receipt allows qualification/retargeting of original #2217; green source checks and queue state do not establish deployment. Consume new #2217 CI on exact bbbbe6a and Macro #10831 CI on exact a9906c9, repairing only concrete gates. Macro uses its existing merge-on-green controller, never native auto-merge. Original #2204 is now composed at7df8f907 and armed for protected auto-merge since2026-11-07T13:51:31Z; consume its existing effect without rearming. No queue entry or merge is yet proved. Macro #10831 is Ready after natural actual-store/knowledge proof; remaining required checks still gate merge-on-green.
 
-The canonical source merge receipts are `5ca25e561ffaeacb4ef94bb08f507617f80d0607` for recall and `78d8cb693888579808f02de0934c18f4915fd042` for grounding. Consume the remaining original computer-guard release and use the existing source PRs: [recall #2163](https://github.com/mastermindx-market-intelligence/Mastermind/pull/2163), [computer guard #2165](https://github.com/mastermindx-market-intelligence/Mastermind/pull/2165), and [grounding #2167](https://github.com/mastermindx-market-intelligence/Mastermind/pull/2167). Then connect the native owners, prove the complete account-scoped browser/vault journey, and execute the prospective learning and endurance acceptance.
+Installed continuation remains original operation `meta-ceo-byok-followon-parent-20261106-c35-01`, M2 workspace `/Volumes/Mastermind 2/agent-workspaces/web/meta-ceo-byok-followon-parent-20261106-c35-01`. The original Ubuntu1/root C26 PermissionError requires restoration of that original authorized administrative connection and retained-operation reconciliation. Existing Chairman authorization does not repair the connection's access; do not retry while access is unchanged. The active assigned receiver owns safe source recovery; no archived author/chat is an approver or required handback.
+
+After genuine enrollment, prove serving v4, one original correction publication and current-context feedback, account/browser journeys, provider/model dispatch, technically valid held-out EVAL, and recovery/endurance/fleet behavior. No task buffer or source milestone closes those journeys.
 
 ## §2 What will bite the next receiver
 
-Source identity, actual runtime admission and user-visible success are distinct. Native source and M2's attended home use different Hermes revisions. The selected clean-vendor requirement blocks an unqualified patch installation. Neither a synthetic host binding nor a credential-readiness projection grants account use. Keep all original denied and unknown effects on their original carrier.
+Original current reads have a nominal canonical DATA view and separate live grant. Retained original reads use the exact eight-field correction lookup and original Event/private-input bytes; they do not compile/restore/publish or claim current provenance. Only the original INTENT may enter submission, and authenticated owner no-effect proof differs from absent receipts or adapter refusal.
+
+Actual PluginContext/registry leases and the incumbent SDK lock/future own native effects. The finalization race, pre-send/after-entry distinction and failed-refund custody were repaired and tested. Unknown original calls block replacement; matching canonical read/reconcile is the recovery path. No new queue, cancellation, reconnect or account change is implied.
+
+C3 source checkout initially inherited a sparse frontend-only view; process35402 ended before tests. The new isolated worktree alone was expanded, all51 hashes matched, and process40154 passed23 cases without Control/socket or installed-account operations. This was a source-shape correction, not a runtime-access workaround.
 
 ## §3 What was decided and found
 
-Agent OS remains the organizational memory owner; Hermes consumes its exact context. Host delivery capacity may be explicitly raised without rewriting the compiler. The existing release owner must prepare a frozen vendor derivation. The existing Workbench/Executive owner must supply real account/item permissions and the actual secret-safe page transport. Existing EVAL and Harness2 own measurement/refinement; Outcome Learning #398 remains held. Detailed rationale and falsifiers remain in the linked source plan, not a parallel knowledge store.
+Agent OS remains memory and Executive OS remains admission/authority. V4's two tools reuse the signed COO/Workspace pair, audited router, compiler/private-input/Event/publisher and native ConsumerSlot. The disabled profile and exact privacy derivation do not grant activation. Existing EVAL/Harness2 own improvement measurement and promotion; Outcome Learning398 and PR409 are not released.
+
+The finite secondary-worker source archive now includes the original COO descriptor/helper import closure; actual held-source imports pass. Macro validates malformed unrelated correction metadata before set membership, preserving bounded hard findings and degraded context rather than TypeError. The new full compiler fixture binds published a9906c9.
 
 ## §4 Not in scope for this record — do not adopt
 
-This handoff creates no program, execution commission, daemon, watcher, account grant, skill publication or acceptance. No Slack messages were sent and no post-turn wake is asserted. The source plan's component states do not alter independent Control Room/R2 obligations. Protected release and actual original host authorization remain binding.
+This record grants no credential, account, worker, watcher, daemon, trade, publisher, runtime action or acceptance. It sends no Slack/email and asserts no automatic wake. Preserve the original denial/effect fences and actual protected release rules.
+
+The #2204 full-source composition independently passed293 cases on C3, matching the local293-case group; the two original denied socket cases were excluded in both. Its current shared identity table is preserved, and the prompt digest retains historical value budgets. This source qualification adds no runtime or provider-dispatch proof.
