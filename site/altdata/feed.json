@@ -1,5 +1,5 @@
 {
-  "generated_utc": "2026-11-07T06:02:35.773831+00:00",
+  "generated_utc": "2026-11-07T23:18:35.022279+00:00",
   "as_of": "2026-11-07",
   "schema": "altdata.feed.v1",
   "source": "Quiver Quantitative (Trader plan)",
@@ -7824,14 +7824,6 @@
         "activist": false,
         "filer": null,
         "detail": "Divestitures"
-      },
-      {
-        "ticker": "KTB",
-        "category": "Acquisitions",
-        "confidence": "high",
-        "activist": false,
-        "filer": null,
-        "detail": "Acquisitions"
       },
       {
         "ticker": "LEG",
@@ -15930,14 +15922,6 @@
         "detail": "Strategic Reviews"
       },
       {
-        "ticker": "KHC",
-        "category": "Delistings",
-        "confidence": "high",
-        "activist": false,
-        "filer": null,
-        "detail": "Delistings"
-      },
-      {
         "ticker": "MLCO",
         "category": "Strategic Reviews",
         "confidence": "high",
@@ -17043,11 +17027,11 @@
       },
       {
         "ticker": "ROKU",
-        "category": "Acquisitions",
+        "category": "Delistings",
         "confidence": "high",
         "activist": false,
         "filer": null,
-        "detail": "Acquisitions"
+        "detail": "Delistings"
       },
       {
         "ticker": "VAST",
@@ -17523,11 +17507,11 @@
       },
       {
         "ticker": "VRNS",
-        "category": "Going-Private",
+        "category": "Acquisitions",
         "confidence": "high",
         "activist": false,
         "filer": null,
-        "detail": "Going-Private"
+        "detail": "Acquisitions"
       },
       {
         "ticker": "ZYME",
@@ -17626,14 +17610,6 @@
         "detail": "Acquisitions"
       },
       {
-        "ticker": "VCTR",
-        "category": "Acquisitions",
-        "confidence": "high",
-        "activist": false,
-        "filer": null,
-        "detail": "Acquisitions"
-      },
-      {
         "ticker": "APGE",
         "category": "Delistings",
         "confidence": "high",
@@ -17715,14 +17691,6 @@
       },
       {
         "ticker": "ADSK",
-        "category": "Acquisitions",
-        "confidence": "high",
-        "activist": false,
-        "filer": null,
-        "detail": "Acquisitions"
-      },
-      {
-        "ticker": "FOXA",
         "category": "Acquisitions",
         "confidence": "high",
         "activist": false,
@@ -17978,14 +17946,6 @@
         "detail": "Acquisitions"
       },
       {
-        "ticker": "NWE",
-        "category": "Acquisitions",
-        "confidence": "high",
-        "activist": false,
-        "filer": null,
-        "detail": "Acquisitions"
-      },
-      {
         "ticker": "LMND",
         "category": "Delistings",
         "confidence": "high",
@@ -18232,14 +18192,6 @@
         "activist": false,
         "filer": null,
         "detail": "Acquisitions"
-      },
-      {
-        "ticker": "NXXT",
-        "category": "Delistings",
-        "confidence": "high",
-        "activist": false,
-        "filer": null,
-        "detail": "Delistings"
       },
       {
         "ticker": "RMBI",
@@ -19298,14 +19250,6 @@
         "detail": "Acquisitions"
       },
       {
-        "ticker": "CNNE",
-        "category": "Divestitures",
-        "confidence": "high",
-        "activist": false,
-        "filer": null,
-        "detail": "Divestitures"
-      },
-      {
         "ticker": "IESC",
         "category": "Acquisitions",
         "confidence": "high",
@@ -19707,11 +19651,11 @@
       },
       {
         "ticker": "BWMN",
-        "category": "Acquisitions",
+        "category": "Delistings",
         "confidence": "high",
         "activist": false,
         "filer": null,
-        "detail": "Acquisitions"
+        "detail": "Delistings"
       },
       {
         "ticker": "PRDO",
@@ -20088,6 +20032,14 @@
         "activist": false,
         "filer": null,
         "detail": "Acquisitions"
+      },
+      {
+        "ticker": "ANDE",
+        "category": "Acquisitions",
+        "confidence": "high",
+        "activist": false,
+        "filer": null,
+        "detail": "Acquisitions"
       }
     ],
     "unusual_options": [
@@ -20279,7 +20231,7 @@
         "ticker": "OKTA",
         "net_up_30d": 33,
         "breadth": 0.81,
-        "est_chg_30d": 0.0,
+        "est_chg_30d": -0.01,
         "n_analysts": 41,
         "bull_ratio": 0.9,
         "rising": true,
@@ -20375,6 +20327,17 @@
         "hot": true
       },
       {
+        "ticker": "PYPL",
+        "net_up_30d": 20,
+        "breadth": 0.59,
+        "est_chg_30d": 1.95,
+        "n_analysts": 34,
+        "bull_ratio": 0.79,
+        "rising": true,
+        "revision_delta": 20,
+        "hot": true
+      },
+      {
         "ticker": "MU",
         "net_up_30d": 19,
         "breadth": 0.91,
@@ -20383,17 +20346,6 @@
         "bull_ratio": 0.95,
         "rising": true,
         "revision_delta": 19,
-        "hot": true
-      },
-      {
-        "ticker": "P",
-        "net_up_30d": 18,
-        "breadth": 1.0,
-        "est_chg_30d": 18.71,
-        "n_analysts": 18,
-        "bull_ratio": 1.0,
-        "rising": true,
-        "revision_delta": 18,
         "hot": true
       },
       {
@@ -20408,17 +20360,6 @@
         "hot": true
       },
       {
-        "ticker": "RL",
-        "net_up_30d": 17,
-        "breadth": 1.0,
-        "est_chg_30d": 0.0,
-        "n_analysts": 17,
-        "bull_ratio": 1.0,
-        "rising": true,
-        "revision_delta": 17,
-        "hot": true
-      },
-      {
         "ticker": "COP",
         "net_up_30d": 17,
         "breadth": 0.81,
@@ -20427,6 +20368,17 @@
         "bull_ratio": 0.91,
         "rising": true,
         "revision_delta": 17,
+        "hot": true
+      },
+      {
+        "ticker": "P",
+        "net_up_30d": 16,
+        "breadth": 1.0,
+        "est_chg_30d": -1.33,
+        "n_analysts": 16,
+        "bull_ratio": 1.0,
+        "rising": true,
+        "revision_delta": 16,
         "hot": true
       },
       {
@@ -20441,10 +20393,32 @@
         "hot": true
       },
       {
+        "ticker": "RTX",
+        "net_up_30d": 16,
+        "breadth": 0.89,
+        "est_chg_30d": 2.56,
+        "n_analysts": 18,
+        "bull_ratio": 0.94,
+        "rising": true,
+        "revision_delta": 16,
+        "hot": true
+      },
+      {
         "ticker": "CB",
         "net_up_30d": 16,
         "breadth": 0.8,
         "est_chg_30d": 1.02,
+        "n_analysts": 20,
+        "bull_ratio": 0.9,
+        "rising": true,
+        "revision_delta": 16,
+        "hot": true
+      },
+      {
+        "ticker": "PNFP",
+        "net_up_30d": 16,
+        "breadth": 0.8,
+        "est_chg_30d": 1.17,
         "n_analysts": 20,
         "bull_ratio": 0.9,
         "rising": true,
@@ -20474,6 +20448,17 @@
         "hot": true
       },
       {
+        "ticker": "PWR",
+        "net_up_30d": 15,
+        "breadth": 1.0,
+        "est_chg_30d": 9.43,
+        "n_analysts": 15,
+        "bull_ratio": 1.0,
+        "rising": true,
+        "revision_delta": 15,
+        "hot": true
+      },
+      {
         "ticker": "ELV",
         "net_up_30d": 15,
         "breadth": 0.88,
@@ -20493,39 +20478,6 @@
         "bull_ratio": 0.89,
         "rising": true,
         "revision_delta": 15,
-        "hot": true
-      },
-      {
-        "ticker": "GOOGL",
-        "net_up_30d": 15,
-        "breadth": 0.6,
-        "est_chg_30d": 0.03,
-        "n_analysts": 25,
-        "bull_ratio": 0.8,
-        "rising": true,
-        "revision_delta": 15,
-        "hot": true
-      },
-      {
-        "ticker": "WSM",
-        "net_up_30d": 14,
-        "breadth": 1.0,
-        "est_chg_30d": 0.0,
-        "n_analysts": 14,
-        "bull_ratio": 1.0,
-        "rising": true,
-        "revision_delta": 14,
-        "hot": true
-      },
-      {
-        "ticker": "BTSG",
-        "net_up_30d": 14,
-        "breadth": 1.0,
-        "est_chg_30d": 6.03,
-        "n_analysts": 14,
-        "bull_ratio": 1.0,
-        "rising": true,
-        "revision_delta": 14,
         "hot": true
       }
     ],
@@ -24714,13 +24666,6 @@
         "last_surprise_pct": 3.4
       },
       {
-        "ticker": "WSM",
-        "next_date": "2026-11-18",
-        "days_to": 11,
-        "eps_forecast": 2.16,
-        "last_surprise_pct": 2.4
-      },
-      {
         "ticker": "ESE",
         "next_date": "2026-11-19",
         "days_to": 12,
@@ -25052,18 +24997,6 @@
         "why": "app_demand: 4.75\u2605 \u00d7 7,568,616 reviews \u00b7 congress_cluster: 3 members net +2 \u00b7 stocktwits_bull: 89% bull \u00b7 523,485 watching"
       },
       {
-        "ticker": "GOOGL",
-        "score": 4,
-        "weighted_score": 1.3,
-        "channel_list": [
-          "analyst_upgrade_cluster",
-          "app_demand",
-          "cnbc_pick",
-          "lobbying"
-        ],
-        "why": "analyst_upgrade_cluster: net upgrades +15 revision delta \u00b7 app_demand: 4.7\u2605 \u00d7 27,195,535 reviews \u00b7 cnbc_pick: Karen Finerman \u00b7 lobbying: $4,420,000 lobbied"
-      },
-      {
         "ticker": "AMZN",
         "score": 4,
         "weighted_score": 1.25,
@@ -25192,6 +25125,16 @@
           "trump"
         ],
         "why": "analyst_upgrade_cluster: net upgrades +17 revision delta \u00b7 news_sentiment: 0.84 bullish news (50 art) \u00b7 trump: CONOCOPHILLIPS"
+      },
+      {
+        "ticker": "CEG",
+        "score": 2,
+        "weighted_score": 1.05,
+        "channel_list": [
+          "gov_grant",
+          "insider_mspr"
+        ],
+        "why": "gov_grant: $6,756,531 federal grant/loan \u00b7 insider_mspr: MSPR 100.0"
       }
     ]
   }

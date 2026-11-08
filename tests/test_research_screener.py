@@ -286,6 +286,50 @@ def test_mapping_key_can_be_one_listing_and_another_listings_ticker(identity, ex
     assert matches == ([expected_listing] if expected_listing else [])
 
 
+@pytest.mark.parametrize("production_dir_exists", [False, True])
+def test_missing_production_records_never_use_repository_examples(tmp_path, production_dir_exists):
+    from scripts.build_research_screener import build_payload
+
+    examples = tmp_path / "tests" / "fixtures" / "research_screener"
+    examples.mkdir(parents=True)
+    (examples / "DEMO.json").write_text(json.dumps({
+        "name": "Example company",
+        "security_state": _state("TEST-DEMO", "DEMO"),
+        "valuation_scenario": {"v1": _valuation("DEMO", price=20, per_share=40)},
+    }))
+    if production_dir_exists:
+        (tmp_path / "site" / "stockdata").mkdir(parents=True)
+
+    assert build_payload(tmp_path)["rows"] == []
+
+
+def test_render_without_production_records_publishes_empty_json_and_html(tmp_path, monkeypatch):
+    import sys
+    import types
+    from scripts import build_research_screener as builder
+
+    examples = tmp_path / "tests" / "fixtures" / "research_screener"
+    examples.mkdir(parents=True)
+    (examples / "DEMO.json").write_text(json.dumps({
+        "name": "Example company",
+        "security_state": _state("TEST-DEMO", "DEMO"),
+    }))
+    # Exercise the real publisher and template without the unrelated site-wide
+    # optimizer/shims or any repository site/data inputs.
+    pages = types.ModuleType("lib.pages")
+    pages.write_page = lambda path, html: path.write_text(html, encoding="utf-8")
+    monkeypatch.setitem(sys.modules, "lib.pages", pages)
+    monkeypatch.setattr(builder, "bake_html", lambda root, payload: builder.render_html(REPO, payload))
+
+    payload = builder.render(tmp_path)
+    published = json.loads((tmp_path / "site" / builder.JSON_NAME).read_text())
+    html = (tmp_path / "site" / builder.HTML_NAME).read_text()
+    assert payload["rows"] == published["rows"] == []
+    assert 'data-rs-empty' in html
+    assert 'data-listing-key="TEST-DEMO"' not in html
+    assert "Example company" not in html
+
+
 def test_stock_record_preserves_valuation_listing_identity(tmp_path):
     from scripts.build_research_screener import build_payload
 
