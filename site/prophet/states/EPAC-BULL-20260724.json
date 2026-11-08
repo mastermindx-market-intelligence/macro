@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "EPAC-BULL-20260724",
-  "asof": "2026-11-07",
+  "asof": "2026-11-08",
   "phase": "between_t1_t2",
   "detection_phase": "post_t1_failed_hold",
   "management_confidence": 57.6,
@@ -20,7 +20,7 @@
     "dist_to_stop_r": 1.545,
     "dist_to_t1_r": 0.955,
     "dist_to_t2_r": 2.455,
-    "horizon_pct_used": 222.2,
+    "horizon_pct_used": 224.4,
     "p1": 0.3632,
     "p2": 0.1816,
     "p3": null,
@@ -45,8 +45,8 @@
   "_first_trigger_ts": "2026-08-06",
   "_first_t1_ts": "2026-11-03",
   "_first_t2_ts": null,
-  "days_elapsed": 100,
-  "tau": 2.2222,
+  "days_elapsed": 101,
+  "tau": 2.2444,
   "closed": true,
   "outcome": "EXPIRED"
 }
