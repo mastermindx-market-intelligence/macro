@@ -1,0 +1,1183 @@
+[error] Model metadata for `qwen3.8-max` not found. Defaulting to fallback metadata; this can degrade performance and cause issues.
+I'll start by checking what's actually present locally so I can ground the review in the supplied files only.
+$ /bin/bash -lc 'pwd; ls -la /home/ubuntu3 | head -50'
+/home/ubuntu3
+total 279252
+drwxr-x--- 33 ubuntu3 ubuntu3      4096 Oct 11 20:29 .
+drwxr-xr-x  4 root    root         4096 Oct 11 22:23 ..
+drwx------  2 ubuntu3 ubuntu3      4096 Sep 13 12:16 .bailian
+-rw-------  1 ubuntu3 ubuntu3      1544 Sep 30 21:57 .bash_history
+-rw-r--r--  1 ubuntu3 ubuntu3       220 Mar 31  2024 .bash_logout
+-rw-r--r--  1 ubuntu3 ubuntu3      4387 Sep 30 19:53 .bashrc
+-rw-r--r--  1 ubuntu3 ubuntu3      4066 Sep 30 18:56 .bashrc.bak.1790819799
+drwxr-xr-x  3 ubuntu3 ubuntu3      4096 Sep 30 19:50 .bun
+drwx------ 24 ubuntu3 ubuntu3      4096 Oct 11 22:05 .cache
+drwxrwxr-x  7 ubuntu3 ubuntu3      4096 Oct 10 18:28 .claude
+drwxrwxr-x  3 ubuntu3 ubuntu3      4096 Oct 13 18:41 .claude-server-commander
+-rw-------  1 ubuntu3 ubuntu3       558 Sep 30 18:28 .claude.json
+drwxrwxr-x  7 ubuntu3 ubuntu3      4096 Oct 10 18:28 .codex
+drwx------ 19 ubuntu3 ubuntu3      4096 Oct  9 07:33 .config
+drwxrwxr-x  2 ubuntu3 ubuntu3      4096 Sep 30 18:56 .cursor
+drwxrwxr-x  2 ubuntu3 ubuntu3      4096 Oct 13 18:23 .desktop-commander-device
+-rw-rw-r--  1 ubuntu3 ubuntu3       391 Oct 11 16:11 .gitconfig
+drwx------  3 ubuntu3 ubuntu3      4096 Oct 10 15:11 .glm
+drwx------  2 ubuntu3 ubuntu3      4096 Sep 30 18:30 .gnupg
+drwx------ 14 ubuntu3 ubuntu3      4096 Oct 13 18:48 .grok
+drwx------  6 ubuntu3 ubuntu3      4096 Oct 10 15:05 .local
+drwxrwxr-x  5 ubuntu3 ubuntu3      4096 Oct 11 03:59 .mastermind
+drwx------  2 ubuntu3 ubuntu3      4096 Sep 20 01:23 .minimax
+drwxrwxr-x  6 ubuntu3 ubuntu3      4096 Oct 10 15:05 .npm
+-rw-------  1 ubuntu3 ubuntu3        26 Sep 30 20:01 .npmrc
+drwxrwxr-x  5 ubuntu3 ubuntu3      4096 Sep 30 18:26 .nvm
+-rw-r--r--  1 ubuntu3 ubuntu3       807 Mar 31  2024 .profile
+drwx------  2 ubuntu3 ubuntu3      4096 Sep 30 21:59 .ssh
+-rw-r--r--  1 ubuntu3 ubuntu3         0 Sep 30 18:25 .sudo_as_admin_successful
+drwxr-xr-x  2 ubuntu3 ubuntu3      4096 Sep 30 17:29 Desktop
+drwxr-xr-x  3 ubuntu3 ubuntu3      4096 Sep 30 18:47 Documents
+drwxr-xr-x  2 ubuntu3 ubuntu3      4096 Sep 30 17:29 Downloads
+drwxr-xr-x  2 ubuntu3 ubuntu3      4096 Sep 30 17:29 Music
+drwxr-xr-x  2 ubuntu3 ubuntu3      4096 Sep 30 17:29 Pictures
+drwxr-xr-x  2 ubuntu3 ubuntu3      4096 Sep 30 17:29 Public
+drwxr-xr-x  2 ubuntu3 ubuntu3      4096 Sep 30 17:29 Templates
+drwxr-xr-x  2 ubuntu3 ubuntu3      4096 Sep 30 17:29 Videos
+drwxr-xr-x  7 ubuntu3 ubuntu3      4096 Oct 11 20:48 g2
+-rw-rw-r--  1 ubuntu3 ubuntu3 142883344 Sep 29 11:48 google-chrome-stable_current_amd64.deb
+-rw-rw-r--  1 ubuntu3 ubuntu3 142883344 Sep 29 11:48 google-chrome-stable_current_amd64.deb.1
+drwxr-xr-x  4 ubuntu3 ubuntu3      4096 Oct 11 09:08 lane_scratch
+drwxrwxr-x 26 ubuntu3 ubuntu3      4096 Oct 13 05:28 lanes
+drwx------  3 ubuntu3 ubuntu3      4096 Oct 10 14:45 mastermind-cold-storage
+-rw-r--r--  1 ubuntu3 ubuntu3      8007 Oct 10 17:19 review.md
+drwx------  5 ubuntu3 ubuntu3      4096 Sep 30 18:24 snap
+(exit 0)
+$ /bin/bash -lc 'ls -d /home/ubuntu3/*/ 2>/dev/null | head -40; find /home/ubuntu3 -maxdepth 3 -name "run_press.py" 2>/dev/null | head'
+/home/ubuntu3/Desktop/
+/home/ubuntu3/Documents/
+/home/ubuntu3/Downloads/
+/home/ubuntu3/Music/
+/home/ubuntu3/Pictures/
+/home/ubuntu3/Public/
+/home/ubuntu3/Templates/
+/home/ubuntu3/Videos/
+/home/ubuntu3/g2/
+/home/ubuntu3/lane_scratch/
+/home/ubuntu3/lanes/
+/home/ubuntu3/mastermind-cold-storage/
+/home/ubuntu3/snap/
+(exit 0)
+Let me locate the repo that holds these files (bounded search), so I can confirm hashes and read only the directly-referenced helpers.
+$ /bin/bash -lc 'find /home/ubuntu3/lanes /home/ubuntu3/g2 /home/ubuntu3/lane_scratch -maxdepth 4 -name "run_press.py" 2>/dev/null | head; echo "---"; find /home/ubuntu3 -maxdepth 5 -path "*/scripts/stage_official_feed_press.py" 2>/dev/null | head'
+/home/ubuntu3/lanes/wt/gd-w4-g-adj/scripts/run_press.py
+/home/ubuntu3/lanes/wt/q03g/scripts/run_press.py
+/home/ubuntu3/lanes/wt/sni-a20b-20261013T123903Z/scripts/run_press.py
+/home/ubuntu3/lanes/wt/gd-w7-d9alt/scripts/run_press.py
+/home/ubuntu3/lanes/wt/glt-b5-confirm-20261013/scripts/run_press.py
+/home/ubuntu3/lanes/wt/seatval-c7870a-pk/scripts/run_press.py
+/home/ubuntu3/lanes/wt/c19-w3-wp23-20261012/scripts/run_press.py
+/home/ubuntu3/lanes/wt/sni-a6-s1props-20261012T050155Z/scripts/run_press.py
+/home/ubuntu3/lanes/wt/c19-w3-review-wp29-20261012/scripts/run_press.py
+/home/ubuntu3/lanes/wt/c19-w3-review-wp28-20261012/scripts/run_press.py
+---
+(exit 0)
+$ /bin/bash -lc 'find /home/ubuntu3 -name "stage_official_feed_press.py" -not -path "*/node_modules/*" 2>/dev/null | head -20; echo "=== official_feed_candidate ==="; find /home/ubuntu3 -name "official_feed_candidate.py" 2>/dev/null | head -20'
+=== official_feed_candidate ===
+(exit 0)
+$ /bin/bash -lc 'cd /home/ubuntu3 && for f in $(find lanes g2 lane_scratch -name run_press.py 2>/dev/null); do h=$(sha256sum "$f" | cut -d'"' ' -f1); echo \""'$h $f"; done | sort | uniq -c | sort -rn | head -30'
+sha256sum: lanes/tmp/grok-w1-W8-V-7870/main-ov/scripts/run_press.py: No such file or directory
+      1 7bd8ac0861c6f2bc263b3933cec72beef9cb58facc3dcc1970b7186622048cf6 lanes/wt/sni-s0dr1-20261013T044945Z/scripts/run_press.py
+      1 7bd8ac0861c6f2bc263b3933cec72beef9cb58facc3dcc1970b7186622048cf6 lanes/wt/sni-s0d-amendment-20261013T030259Z/scripts/run_press.py
+      1 7bd8ac0861c6f2bc263b3933cec72beef9cb58facc3dcc1970b7186622048cf6 lanes/wt/sni-repro-20261013T063427Z/scripts/run_press.py
+      1 7bd8ac0861c6f2bc263b3933cec72beef9cb58facc3dcc1970b7186622048cf6 lanes/wt/sni-mut5d-20261013T132841Z/scripts/run_press.py
+      1 7bd8ac0861c6f2bc263b3933cec72beef9cb58facc3dcc1970b7186622048cf6 lanes/wt/sni-mut4d-20261013T123039Z/scripts/run_press.py
+      1 7bd8ac0861c6f2bc263b3933cec72beef9cb58facc3dcc1970b7186622048cf6 lanes/wt/sni-mut3c-20261013T122518Z/scripts/run_press.py
+      1 7bd8ac0861c6f2bc263b3933cec72beef9cb58facc3dcc1970b7186622048cf6 lanes/wt/sni-clkhd-20261013T122552Z/scripts/run_press.py
+      1 7bd8ac0861c6f2bc263b3933cec72beef9cb58facc3dcc1970b7186622048cf6 lanes/wt/sni-a4v-20261013T060827Z/scripts/run_press.py
+      1 7bd8ac0861c6f2bc263b3933cec72beef9cb58facc3dcc1970b7186622048cf6 lanes/wt/sni-a20f-20261013T132903Z/scripts/run_press.py
+      1 7bd8ac0861c6f2bc263b3933cec72beef9cb58facc3dcc1970b7186622048cf6 lanes/wt/sni-a20b-20261013T123903Z/scripts/run_press.py
+      1 7bd8ac0861c6f2bc263b3933cec72beef9cb58facc3dcc1970b7186622048cf6 lanes/wt/sni-a13g-20261013T133708Z/scripts/run_press.py
+      1 7bd8ac0861c6f2bc263b3933cec72beef9cb58facc3dcc1970b7186622048cf6 lanes/wt/seatval-c7870b-pk/scripts/run_press.py
+      1 7bd8ac0861c6f2bc263b3933cec72beef9cb58facc3dcc1970b7186622048cf6 lanes/wt/seatval-c7870a-pk/scripts/run_press.py
+      1 7bd8ac0861c6f2bc263b3933cec72beef9cb58facc3dcc1970b7186622048cf6 lanes/wt/seat-w4-stage1b/scripts/run_press.py
+      1 7bd8ac0861c6f2bc263b3933cec72beef9cb58facc3dcc1970b7186622048cf6 lanes/wt/q03g/scripts/run_press.py
+      1 7bd8ac0861c6f2bc263b3933cec72beef9cb58facc3dcc1970b7186622048cf6 lanes/wt/glt-b5-confirm-20261013/scripts/run_press.py
+      1 7bd8ac0861c6f2bc263b3933cec72beef9cb58facc3dcc1970b7186622048cf6 lanes/wt/glt-b4-review-20261013/scripts/run_press.py
+      1 7bd8ac0861c6f2bc263b3933cec72beef9cb58facc3dcc1970b7186622048cf6 lanes/wt/glt-b3-knowtime-20261013/scripts/run_press.py
+      1 7bd8ac0861c6f2bc263b3933cec72beef9cb58facc3dcc1970b7186622048cf6 lanes/wt/gd-w7-t19pre/scripts/run_press.py
+      1 7bd8ac0861c6f2bc263b3933cec72beef9cb58facc3dcc1970b7186622048cf6 lanes/wt/gd-w7-paneladd/scripts/run_press.py
+      1 7bd8ac0861c6f2bc263b3933cec72beef9cb58facc3dcc1970b7186622048cf6 lanes/wt/gd-w7-d9alt/scripts/run_press.py
+      1 7bd8ac0861c6f2bc263b3933cec72beef9cb58facc3dcc1970b7186622048cf6 lanes/wt/gd-w5-redteam/scripts/run_press.py
+      1 7bd8ac0861c6f2bc263b3933cec72beef9cb58facc3dcc1970b7186622048cf6 lanes/wt/gd-w5-census/scripts/run_press.py
+      1 7bd8ac0861c6f2bc263b3933cec72beef9cb58facc3dcc1970b7186622048cf6 lanes/wt/gd-w5-addendum/scripts/run_press.py
+      1 7bd8ac0861c6f2bc263b3933cec72beef9cb58facc3dcc1970b7186622048cf6 lanes/wt/gd-w4-g-xt-prereg/scripts/run_press.py
+      1 7bd8ac0861c6f2bc263b3933cec72beef9cb58facc3dcc1970b7186622048cf6 lanes/wt/gd-w4-g-xt-manifest/scripts/run_press.py
+      1 7bd8ac0861c6f2bc263b3933cec72beef9cb58facc3dcc1970b7186622048cf6 lanes/wt/gd-w4-g-rt1/scripts/run_press.py
+      1 7bd8ac0861c6f2bc263b3933cec72beef9cb58facc3dcc1970b7186622048cf6 lanes/wt/gd-w4-g-adj/scripts/run_press.py
+      1 7bd8ac0861c6f2bc263b3933cec72beef9cb58facc3dcc1970b7186622048cf6 lanes/wt/f02-q/scripts/run_press.py
+      1 7bd8ac0861c6f2bc263b3933cec72beef9cb58facc3dcc1970b7186622048cf6 lanes/wt/d03-r1/scripts/run_press.py
+(exit 0)
+No local copy matches the supplied hashes (the two new files don't exist here), so the supplied text is authoritative. I'll peek at sibling helper contracts only to avoid raising false findings.
+$ /bin/bash -lc 'cd /home/ubuntu3/lanes/wt/q03g 2>/dev/null && ls engine/press/ && sha256sum engine/press/desk_planner.py engine/press/writer.py engine/press/validators.py 2>/dev/null; ls engine/press/external_candidate.py 2>/dev/null || echo "no external_candidate"'
+__init__.py
+adjusted_baseline.py
+desk_planner.py
+earnings_adapter.py
+external_candidate.py
+properties.py
+research_lane.py
+research_triage.py
+research_veto.py
+validators.py
+writer.py
+8282028e5b4caae7005ef22582adef9b86d400590290e2a5b132c5052d4ddb7b  engine/press/desk_planner.py
+f74be94741ec26180420e4f607552d1cf56bc7bc70307753c167338d9624fed6  engine/press/writer.py
+33d293ae15910607785cd2340ae04e012b32cfee084d5b636e175b8e3d944ffe  engine/press/validators.py
+engine/press/external_candidate.py
+(exit 0)
+$ /bin/bash -lc 'cd /home/ubuntu3/lanes/wt/q03g && grep -n "''^def story_key'"\\|"'^def published_refs'"\\|"'^def staged_refs'"\\|"'^def taken_slugs'"\\|"'^def slugify'"\\|"'^def load_config'"\\|"'^def repo_root'"\\|"'^def _allowed_links" -A 30 engine/press/desk_planner.py | head -150'
+102:def repo_root(root=None) -> Path:
+103-    """Repo root.  ``root`` is the test-injection point (house convention)."""
+104-    if root is not None:
+105-        return Path(root)
+106-    return _HERE.parent.parent.parent
+107-
+108-
+109-# The one publication that never cuts over: it IS the existing /blog/ estate,
+110-# built by scripts/build_free_content.py.  Giving it a property tree would put
+111-# two builders on one corpus, so the loader refuses it by name.
+112-FLAGSHIP_KEY = "flagship"
+113-
+114-
+115-def _bad(problems: list[str], msg: str) -> None:
+116-    problems.append(msg)
+117-
+118-
+119-def _check_rel_under(value: str, prefix: str, label: str, problems: list[str]) -> None:
+120-    """`value` must be a RELATIVE repo path whose first component is `prefix`.
+121-
+122-    Absolute paths and `..` escapes are the interesting failures: both fields
+123-    are joined onto the repo root and then written to, so an unchecked value is
+124-    an arbitrary-write primitive dressed up as a config typo.
+125-    """
+126-    raw = str(value)
+127-    parts = Path(raw).parts
+128-    if Path(raw).is_absolute() or raw.startswith("/"):
+129-        _bad(problems, f"{label} {raw!r} must be a RELATIVE path, not absolute")
+130-        return
+131-    if ".." in parts:
+132-        _bad(problems, f"{label} {raw!r} must not escape the repo root ('..')")
+--
+227:def load_config(root=None) -> dict:
+228-    """Load config/press.yml.  Returns {} when absent or unparsable.
+229-
+230-    BEHAVIOUR CHANGE (W1.5), stated plainly because it moves a contract every
+231-    caller depends on: this used to be fail-soft for EVERY failure.  It still
+232-    is for an absent or unparsable file — `{}` — but a config that is PRESENT
+233-    and violates the publication contract now RAISES ValueError.
+234-
+235-    CALLER CONTRACT: a caller that wants "is the press lane configured?" keeps
+236-    checking the falsy return, unchanged.  A caller must NOT wrap this in a
+237-    bare `except` to get a dict back: the raise is the report, and a lane that
+238-    swallows it publishes to a URL nobody validated.  scripts/run_press.py and
+239-    scripts/build_press_properties.py both let it propagate on purpose; the
+240-    admin panel reads the YAML directly (admin/press.py::_read_yaml) and never
+241-    calls this, so a bad config shows up there as data rather than a 500.
+242-
+243-    See validate_publications for why that one class fails loud while every
+244-    other read in this module fails soft.
+245-    """
+246-    import yaml  # noqa: PLC0415 — keep import cost off `import engine.press`
+247-
+248-    path = repo_root(root) / "config" / "press.yml"
+249-    try:
+250-        cfg = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+251-    except Exception as exc:  # noqa: BLE001
+252-        log.warning("press.desk_planner: config/press.yml load failed: %s", exc)
+253-        return {}
+254-    if not isinstance(cfg, dict):
+255-        log.warning("press.desk_planner: config/press.yml is not a mapping")
+256-        return {}
+257-    validate_publications(cfg, str(path))
+--
+299:def slugify(text: str, limit: int = 70) -> str:
+300-    """Deterministic slug: lowercase, non-alnum -> hyphen, collapse, truncate.
+301-
+302-    Mirrors scripts.build_free_content._slugify plus the research-vault length
+303-    cap so a press slug and a vault slug read the same way.
+304-    """
+305-    s = re.sub(r"[^a-z0-9]+", "-", str(text or "").lower()).strip("-")
+306-    return s[:limit].strip("-")
+307-
+308-
+309:def story_key(*parts: str) -> str:
+310-    """Short stable hash over the identifying parts of a story."""
+311-    raw = "\x1f".join(str(p) for p in parts)
+312-    return hashlib.sha256(raw.encode("utf-8")).hexdigest()[:12]
+313-
+314-
+315-# ─────────────────────────────────────────────────────────────────────────────
+316-# Dedupe surfaces
+317-# ─────────────────────────────────────────────────────────────────────────────
+318-
+319-
+320:def published_refs(root=None, cfg: dict | None = None) -> tuple[set[str], set[str]]:
+321-    """(source refs, slugs) already emitted, read from the ledger."""
+322-    cfg = cfg if cfg is not None else load_config(root)
+323-    rel = ((cfg.get("paths") or {}).get("ledger") or "data/press/published.jsonl")
+324-    refs: set[str] = set()
+325-    slugs: set[str] = set()
+326-    for row in _read_jsonl(repo_root(root) / rel):
+327-        for s in row.get("sources") or []:
+328-            refs.add(str(s))
+329-        for s in row.get("seed_refs") or []:
+330-            refs.add(str(s))
+331-        if row.get("slug"):
+332-            slugs.add(str(row["slug"]))
+333-    return refs, slugs
+334-
+335-
+336:def staged_refs(root=None, cfg: dict | None = None) -> tuple[set[str], set[str]]:
+337-    """(source refs, slugs) sitting in staging but not yet emitted.
+338-
+339-    A staged draft is invisible to the ledger, so a planner that only checked
+340-    the ledger would happily re-plan the same story on the next staging run and
+341-    ship two pieces about it the moment both got emitted.
+342-    """
+343-    cfg = cfg if cfg is not None else load_config(root)
+344-    rel = ((cfg.get("paths") or {}).get("staging_dir") or "data/press/staging")
+345-    refs: set[str] = set()
+346-    slugs: set[str] = set()
+347-    stage = repo_root(root) / rel
+348-    if not stage.exists():
+349-        return refs, slugs
+350-    for path in sorted(stage.glob("*.json")):
+351-        if path.name.startswith("_"):
+352-            continue          # `_run_summary.json` is a run artifact, not a slot
+353-        obj = _read_json(path)
+354-        if not isinstance(obj, dict):
+355-            continue
+356-        # A superseded record is retained as an audit trail, not as a live
+357-        # draft.  Keeping its source ref or slug in the blocking sets would
+358-        # prevent the corrected revision from ever being staged.
+359-        if obj.get("status") in {"superseded", "resolved"}:
+360-            continue
+361-        for s in obj.get("sources") or []:
+362-            refs.add(str(s))
+363-        for s in obj.get("seed_refs") or []:
+364-            refs.add(str(s))
+365-        if obj.get("slug"):
+366-            slugs.add(str(obj["slug"]))
+--
+418:def taken_slugs(root=None) -> set[str]:
+419-    """Slugs already occupied by a committed content/seo/blog/*.md file."""
+420-    out: set[str] = set()
+421-    blog = repo_root(root) / "content" / "seo" / "blog"
+422-    if blog.exists():
+423-        for p in blog.glob("*.md"):
+424-            out.add(p.stem)
+425-    return out
+426-
+427-
+428-# ─────────────────────────────────────────────────────────────────────────────
+429-# Fact builders
+430-# ─────────────────────────────────────────────────────────────────────────────
+431-
+432-
+433-# Artifact labels that collide with the press lexicon.  These are OUR labels on
+434-# OUR dashboards, written for a chart legend where the word is fine; in press
+(exit 0)
+$ /bin/bash -lc "cd /home/ubuntu3/lanes/wt/q03g && grep -n \"def _instant\\|def _read_bound\\|def _value\\|def _reviewed_context\" -A 25 engine/press/external_candidate.py | head -120"
+41:def _read_bound(path: Path, digest: str, limit: int) -> str:
+42-    if not re.fullmatch(r"[0-9a-f]{64}", str(digest)):
+43-        raise ValueError("evidence requires a full SHA256")
+44-    if path.is_symlink() or not path.is_file() or path.stat().st_size > limit:
+45-        raise ValueError("evidence must be a bounded regular file")
+46-    raw = path.read_bytes()
+47-    if hashlib.sha256(raw).hexdigest() != digest:
+48-        raise ValueError("evidence hash mismatch")
+49-    return raw.decode("utf-8")
+50-
+51-
+52:def _instant(value: str) -> datetime:
+53-    instant = datetime.fromisoformat(value.replace("Z", "+00:00"))
+54-    if instant.tzinfo is None:
+55-        raise ValueError("source clocks must carry a timezone")
+56-    return instant.astimezone(timezone.utc)
+57-
+58-
+59:def _value(atom: str) -> Decimal:
+60-    # Closed literal grammar for reviewed values. It performs no interpretation
+61-    # of arbitrary prose and never evaluates an input expression.
+62-    words = {"eleven": Decimal(11)}
+63-    if atom in words:
+64-        return words[atom]
+65-    match = re.fullmatch(r"\$?(\d+(?:\.\d+)?)(B|M| billion| million|%)?", atom)
+66-    if not match:
+67-        raise ValueError("unsupported reviewed quantity literal")
+68-    return Decimal(match[1])
+69-
+70-
+71-def _dollars(atom: str) -> Decimal:
+72-    value = _value(atom)
+73-    if atom.endswith(("B", " billion")):
+74-        return value * Decimal(1_000_000_000)
+75-    if atom.endswith(("M", " million")):
+76-        return value * Decimal(1_000_000)
+77-    raise ValueError("share operands require explicit currency magnitudes")
+78-
+79-
+80-def plan_whitehouse_candidate(*, document_path: Path, document_sha256: str,
+81-                              qualification_path: Path, qualification_sha256: str,
+82-                              policy_path: Path, as_of: str, root: Path,
+83-                              cfg: dict | None = None) -> dict:
+84-    from engine.press import desk_planner as planner
+(exit 0)
+$ /bin/bash -lc "cd /home/ubuntu3/lanes/wt/q03g && sed -n '/def _reviewed_context/,/"'^def [a-z_]*(/p'"' engine/press/external_candidate.py | head -80"
+(exit 0)
+$ /bin/bash -lc "cd /home/ubuntu3/lanes/wt/q03g && grep -n \"cadence_per_day\\|window_days\\|min_anchored_receipts\\|run_token_budget\" config/press.yml | head -20"
+114:# `cadence_per_day` is the W1 TARGET, and it is a CEILING, not a quota: a thin
+125:    cadence_per_day: 2             # W1 target 1–2/day
+135:    min_anchored_receipts: 5
+139:    window_days: 3
+152:    cadence_per_day: 1             # W1 target 1/day
+159:    min_anchored_receipts: 4
+161:    window_days: 21
+163:    # cadence_per_day above and the tier's volume knob
+192:    cadence_per_day: 0
+199:    min_anchored_receipts: 3
+200:    window_days: 21
+278:  # The share is paired with desks.*.min_anchored_receipts, which is the floor
+298:  # desks.*.min_anchored_receipts (a piece must carry real receipts, not one
+322:  self_similarity_window_days: 30
+374:  run_token_budget: 240000
+449:    window_days: 7
+483:    chronicle_window_days: 7
+484:    watchlist_window_days: 7
+528:    window_days: 30
+621:    window_days: 21          # matches desks.research_desk.window_days
+(exit 0)
+$ /bin/bash -lc 'cd /home/ubuntu3/lanes/wt/q03g && grep -rn "_reviewed_context" engine/press/*.py | head; echo "---"; grep -rn "context_relevance" engine/press/*.py | head -20'
+---
+(exit 0)
+$ /bin/bash -lc 'cd /home/ubuntu3 && grep -rln "_reviewed_context" --include=external_candidate.py lanes g2 lane_scratch 2>/dev/null | head -10'
+(exit 0)
+The supplied files aren't present locally, so the supplied text is authoritative. Let me ground my reading of the key guards by executing the exact supplied code in a scratch dir (no repo writes).
+$ /bin/bash -lc "mkdir -p /tmp/rev_scratch && cat > /tmp/rev_scratch/guard.py <<'PYEOF'
+# VERBATIM from supplied scripts/run_press.py (sha256 c8a32f67...)
+_CANONICAL_SLOT_MARKERS = frozenset({
+    \"canonical_story_id\",
+    \"canonical_story_revision_id\",
+    \"canonical_story_status\",
+    \"canonical_emit_allowed\",
+    \"approved_claim_ids\",
+    \"article_derivative_id\",
+})
+
+
+def _is_canonical_story_slot(slot: object) -> bool:
+    if not isinstance(slot, dict):
+        return False
+    if any(key in slot for key in _CANONICAL_SLOT_MARKERS):
+        return True
+    story = slot.get(\"story\")
+    if isinstance(story, dict) and any(
+        key in story for key in (\"canonical_story_id\", \"canonical_story_revision_id\")
+    ):
+        return True
+    return str(slot.get(\"id\") or \"\").startswith(\"press-earnings-\")
+
+
+def _is_unverified_earnings_story_stage(item: object) -> bool:
+    if not isinstance(item, dict):
+        return False
+    if any(key in item for key in _CANONICAL_SLOT_MARKERS):
+        return True
+    if str(item.get(\"id\") or \"\").startswith(\"press-earnings-\"):
+        return True
+    if _is_canonical_story_slot(item.get(\"slot\")):
+        return True
+    source_refs = {str(ref) for ref in (item.get(\"sources\") or []) if isinstance(ref, str)}
+    seed_refs = {str(ref) for ref in (item.get(\"seed_refs\") or []) if isinstance(ref, str)}
+    return (
+        any(ref.startswith(\"chronicle:defeatbeta:\") for ref in source_refs)
+        or any(ref.startswith(\"earnings-evidence:\") for ref in seed_refs)
+    )
+
+
+_OFFICIAL_STAGE_RAIL = \"private_official_feed\"
+_OFFICIAL_SOURCE_PREFIX = \"official_feed:\"
+
+
+def _is_private_official_stage(item: object) -> bool:
+    if not isinstance(item, dict):
+        return False
+    slot = item.get(\"slot\")
+    holders = [item] + ([slot] if isinstance(slot, dict) else [])
+    for holder in holders:
+        provenance = holder.get(\"provenance\")
+        if not isinstance(provenance, dict):
+            continue
+        receipt = provenance.get(\"admission_receipt\")
+        if (isinstance(receipt, dict)
+                and str(receipt.get(\"rail\") or \"\") == _OFFICIAL_STAGE_RAIL):
+            return True
+    refs: set[str] = set()
+    for holder in holders:
+        for key in (\"sources\", \"seed_refs\"):
+            refs.update(str(r) for r in (holder.get(key) or []) if isinstance(r, str))
+        revisions = holder.get(\"source_revisions\")
+        if isinstance(revisions, dict):
+            refs.update(str(r) for r in revisions)
+    return any(ref.startswith(_OFFICIAL_SOURCE_PREFIX) for ref in refs)
+PYEOF
+echo written; wc -l /tmp/rev_scratch/guard.py"
+written
+66 /tmp/rev_scratch/guard.py
+(exit 0)
+$ /bin/bash -lc "cat > /tmp/rev_scratch/strip_test.py <<'PYEOF'
+import copy, json, sys
+sys.path.insert(0, \"/tmp/rev_scratch\")
+from guard import _is_private_official_stage, _is_unverified_earnings_story_stage
+
+URL = \"https://www.occ.gov/news-issuances/news-releases/2026/nr-occ-2026-89.html\"
+SREF = \"official_feed:occ_news:9f3c1a\"          # plan[\"source_ref\"] shape
+UREF = \"official_feed:url:ab12cd34ef56\"          # _stable_source_ref shape
+SLOT_ID = \"press-official-ab12cd34ef56\"          # _stable_slot_id shape
+
+fact = {\"text\": \""'$750 million civil money penalty", "values": ["750"],
+        "tier": "third_party", "ref": SREF, "dated": "2026-10-13",
+        "source_name": "Office of the Comptroller of the Currency"}
+slot = {
+    "publication": "mastermind_news", "byline": "The Brief — Mastermind News desk",
+    "min_words": 300, "max_words": 900, "min_anchored_receipts": 5,
+    "desk": "brief", "as_of": "2026-10-14",
+    "facts": [fact],
+    "raw_documents": [{"ref": SREF, "text": "The OCC announced a $750 million penalty."}],
+    "primary_source": {"kind": "external",
+                       "name": "Office of the Comptroller of the Currency", "url": URL},
+    "allowed_links": ["https://www.mastermind-x.com/stocks/BAC.html"],
+    "id": SLOT_ID, "cluster": "market-brief", "model_key": "press_brief",
+    "story": {"kind": "official_feed", "event_date": "2026-10-13"},
+    "sources": [SREF, UREF],
+    "source_revisions": {SREF: "sha256:" + "a" * 64},
+    "seed_refs": [SREF],
+    "chronicle_context": {"lines": [], "narratives": [], "budget_used": 0},
+    "slug_hint": "official-ab12cd34ef56",
+}
+record = {
+    "id": SLOT_ID, "desk": "brief", "publication": "mastermind_news",
+    "as_of": "2026-10-14", "staged_at": "2026-10-14T00:25:01Z",
+    "sources": [SREF, UREF], "source_revisions": {SREF: "sha256:" + "a" * 64},
+    "seed_refs": [SREF], "slot": slot, "attempts": [{"attempt": 0, "ok": True}],
+    "provenance": {"admission_receipt": {
+        "rail": "private_official_feed", "private_staging_only": True,
+        "public_article_approved": False, "authorized_by": "calling_principal"}},
+    "status": "passed", "slug": "an-enforcement-test",
+    "draft": {"title": "t", "description": "d", "slug": "an-enforcement-test",
+              "body_html": '"'<p><a href=\"%s\">Office of the Comptroller of the Currency</a></p>' % URL},
+    \"validator_report\": {\"ok\": True, \"failed\": []},
+    \"provider\": \"stub\", \"model\": \"stub-model\",
+}
+
+print(\"as-staged           -> official guard:\", _is_private_official_stage(record))
+
+# --- the documented \"provenance strip\" (what the supplied test covers) -------
+a = copy.deepcopy(record); a.pop(\"provenance\")
+print(\"provenance stripped -> official guard:\", _is_private_official_stage(a))
+
+# --- strip the ref maps too: 4 mutable keys, none read by any validator ------
+b = copy.deepcopy(record)
+b.pop(\"provenance\")
+for holder in (b, b[\"slot\"]):
+    holder[\"sources\"] = []
+    holder[\"seed_refs\"] = []
+    holder[\"source_revisions\"] = {}
+print(\"refs+prov stripped  -> official guard:\", _is_private_official_stage(b),
+      \"| earnings guard:\", _is_unverified_earnings_story_stage(b))
+print(\"   status still:\", b[\"status\"], \"| draft still present:\", bool(b.get(\"draft\")))
+print(\"   record is still recognisably the SAME OCC story:\")
+print(\"     item.id                =\", b[\"id\"])
+print(\"     slot.primary_source.url=\", b[\"slot\"][\"primary_source\"][\"url\"])
+print(\"     slot.facts[0].ref      =\", b[\"slot\"][\"facts\"][0][\"ref\"])
+print(\"     slot.raw_documents.ref =\", b[\"slot\"][\"raw_documents\"][0][\"ref\"])
+print(\"     draft links            =\", URL in b[\"draft\"][\"body_html\"])
+PYEOF
+python3 /tmp/rev_scratch/strip_test.py"
+as-staged           -> official guard: True
+provenance stripped -> official guard: True
+refs+prov stripped  -> official guard: False | earnings guard: False
+   status still: passed | draft still present: True
+   record is still recognisably the SAME OCC story:
+     item.id                = press-official-ab12cd34ef56
+     slot.primary_source.url= https://www.occ.gov/news-issuances/news-releases/2026/nr-occ-2026-89.html
+     slot.facts[0].ref      = official_feed:occ_news:9f3c1a
+     slot.raw_documents.ref = official_feed:occ_news:9f3c1a
+     draft links            = True
+(exit 0)
+Confirmed the guard bypass mechanically. Now let me verify the number/unit anchoring chain using the supplied `validators.py` code verbatim.
+$ /bin/bash -lc "cat > /tmp/rev_scratch/nums.py <<'PYEOF'
+# VERBATIM from supplied engine/press/validators.py (sha256 fdbae60b...)
+import re
+_DATE_MASK_RE = re.compile(r\"\\b\\d{4}-\\d{2}-\\d{2}(?:[T ]\\d{2}:\\d{2}(?::\\d{2})?)?\\b\")
+_NUM_RE = re.compile(
+    r\"(?P<sign>[-+−])?\\s*\"
+    r\"(?P<cur>["'$€£¥])?'"\\s*\"
+    r\"(?P<int>\\d{1,3}(?:,\\d{3})+|\\d+)\"
+    r\"(?:\\.(?P<frac>\\d+))?\"
+    r\"\\s*(?P<suffix>%|bps|bn|tn|trn|[kKmMbBtT](?"'![a-zA-Z]))?",
+)
+_SPELLED_NUMBER_VALUES = {
+    "zero": 0, "one": 1, "two": 2, "three": 3, "four": 4, "five": 5,
+    "six": 6, "seven": 7, "eight": 8, "nine": 9, "ten": 10,
+    "eleven": 11, "twelve": 12, "thirteen": 13, "fourteen": 14,
+    "fifteen": 15, "sixteen": 16, "seventeen": 17, "eighteen": 18,
+    "nineteen": 19, "twenty": 20, "thirty": 30, "forty": 40,
+    "fifty": 50, "sixty": 60, "seventy": 70, "eighty": 80,
+    "ninety": 90,
+}
+_SPELLED_NUMBER_SCALES = {
+    "hundred": 100, "thousand": 1_000, "million": 1_000_000,
+    "billion": 1_000_000_000, "trillion": 1_000_000_000_000,
+}
+_SPELLED_NUMBER_TOKEN = "|".join(
+    sorted((*_SPELLED_NUMBER_VALUES, *_SPELLED_NUMBER_SCALES, "and"), key=len, reverse=True)
+)
+_SPELLED_QUANTITY_RE = re.compile(
+    rf"'"\\b(?P<words>(?:{_SPELLED_NUMBER_TOKEN})(?:[\\s-]+(?:{_SPELLED_NUMBER_TOKEN})){{0,8}})\"
+    r\"\\s+(?P<unit>percent|percentage\\s+points?|bps|basis\\s+points?)\\b\",
+    re.IGNORECASE,
+)
+
+class Num:
+    __slots__ = (\"raw\", \"value\", \"decimals\", \"is_pct\", \"has_currency\",
+                 \"has_suffix\", \"is_bare_int\")
+    def __init__(self, raw, value, decimals, is_pct, has_currency, has_suffix):
+        self.raw = raw; self.value = value; self.decimals = decimals
+        self.is_pct = is_pct; self.has_currency = has_currency
+        self.has_suffix = has_suffix
+        self.is_bare_int = (decimals == 0 and not is_pct and not has_currency
+                            and not has_suffix)
+    def __repr__(self):
+        return f\"Num({self.raw"'!r}={self.value} bare={self.is_bare_int})"
+
+def extract_numbers(text):
+    masked = _DATE_MASK_RE.sub(" '"\\u2400 \", str(text or \"\"))
+    out = []
+    for m in _NUM_RE.finditer(masked):
+        int_part = (m.group(\"int\") or \"\").replace(\",\", \"\")
+        if not int_part:
+            continue
+        frac = m.group(\"frac\") or \"\"
+        try:
+            value = float(int_part + (\".\" + frac if frac else \"\"))
+        except ValueError:
+            continue
+        suffix = (m.group(\"suffix\") or \"\")
+        out.append(Num(raw=m.group(0).strip(), value=value, decimals=len(frac),
+                       is_pct=(suffix == \"%\"), has_currency=bool(m.group(\"cur\")),
+                       has_suffix=bool(suffix and suffix "'!= "%")))
+    return out
+
+def _parse_spelled_integer(text):
+    total = 0; current = 0; saw_value = False
+    for token in re.findall(r"[a-z]+", str(text or "").lower()):
+        if token == "and":
+            continue
+        if token in _SPELLED_NUMBER_VALUES:
+            current += _SPELLED_NUMBER_VALUES[token]; saw_value = True; continue
+        if token == "hundred":
+            current = max(current, 1) * 100; saw_value = True; continue
+        scale = _SPELLED_NUMBER_SCALES.get(token)
+        if scale is None:
+            return None
+        total += max(current, 1) * scale; current = 0; saw_value = True
+    return total + current if saw_value else None
+
+def extract_quantities(text):
+    out = extract_numbers(text)
+    for match in _SPELLED_QUANTITY_RE.finditer(str(text or "")):
+        value = _parse_spelled_integer(match.group("words"))
+        if value is None:
+            continue
+        unit = re.sub(r"'"\\s+\", \" \", match.group(\"unit\").lower())
+        out.append(Num(raw=match.group(0), value=float(value), decimals=0,
+                       is_pct=unit.startswith(\"percent\") or unit == \"percentage point\",
+                       has_currency=False,
+                       has_suffix=unit in {\"bps\", \"basis point\", \"basis points\"}))
+    return out
+
+def _anchors(draft_num, source_values):
+    d = abs(draft_num.value)
+    tol = 0.5 * (10.0 ** -draft_num.decimals) + 1e-9
+    return any(abs(d - abs(s)) <= tol for s in source_values)
+
+def source_number_pool(slot):
+    vals = []; texts = []
+    for f in (slot.get(\"facts\") or []):
+        if not isinstance(f, dict):
+            continue
+        text = str(f.get(\"text\") or \"\")
+        texts.append(text)
+        for v in (f.get(\"values\") or []):
+            try:
+                vals.append(float(str(v).replace(\",\", \"\").strip().rstrip(\"%\")))
+            except (TypeError, ValueError):
+                continue
+        for n in extract_quantities(text):
+            vals.append(n.value)
+    return vals, \"\\n\".join(texts)
+PYEOF
+cat > /tmp/rev_scratch/unit_test.py <<'PYEOF'
+import sys; sys.path.insert(0, \"/tmp/rev_scratch\")
+from nums import extract_quantities, _anchors, source_number_pool
+
+# The exact fact the supplied rail builds (official_feed_candidate.py) and the
+# supplied test pins:  literal \""'$750 million civil money penalty" -> values ["750"]
+slot = {"facts": [{"text": "$750 million civil money penalty", "values": ["750"],
+                   "tier": "third_party", "ref": "official_feed:x",
+                   "dated": "2026-10-13"}]}
+pool, source_text = source_number_pool(slot)
+print("source pool:", pool)
+
+GENERIC_MAX = 12  # validators.generic_integer_max default
+def fact_anchor_verdict(prose):
+    unanchored = []
+    for num in extract_quantities(prose):
+        if num.is_bare_int and num.value <= GENERIC_MAX:
+            continue
+        if num.is_bare_int and 1900 <= num.value <= 2100 and str(int(num.value)) in source_text:
+            continue
+        if not _anchors(num, pool):
+            unanchored.append(num.raw)
+    return "PASS" if not unanchored else f"FAIL {unanchored}"
+
+for prose in [
+    "The OCC imposed a $750 million civil money penalty.",       # correct
+    "The OCC imposed a 750 million dollar civil money penalty.", # correct, words
+    "The OCC imposed a $750 billion civil money penalty.",       # 1000x INFLATED
+    "The OCC imposed a 750 trillion dollar penalty.",            # 1e6x INFLATED
+    "The penalty was 750,000,000 dollars.",                      # correct expansion
+    "The penalty was 75 dollars.",                               # wrong digits
+]:
+    print(f"  {fact_anchor_verdict(prose):28s} <- {prose}")
+PYEOF
+python3 /tmp/rev_scratch/unit_test.py'
+source pool: [750.0, 750.0]
+  PASS                         <- The OCC imposed a $750 million civil money penalty.
+  PASS                         <- The OCC imposed a 750 million dollar civil money penalty.
+  PASS                         <- The OCC imposed a $750 billion civil money penalty.
+  PASS                         <- The OCC imposed a 750 trillion dollar penalty.
+  FAIL ['750,000,000']         <- The penalty was 750,000,000 dollars.
+  FAIL ['75']                  <- The penalty was 75 dollars.
+(exit 0)
+Now let me exercise the supplied static-HTML gate (fuzz for executable/hidden markup) and the cadence/date functions verbatim.
+$ /bin/bash -lc "cat > /tmp/rev_scratch/markup.py <<'PYEOF'
+# VERBATIM from supplied engine/press/validators.py (sha256 fdbae60b...)
+import html as _html, re
+from html.parser import HTMLParser
+
+def _row(name, ok, detail, **metrics):
+    return {\"name\": name, \"ok\": bool(ok), \"detail\": detail, \"metrics\": metrics}
+
+_ARTICLE_TAGS = frozenset({\"p\", \"h2\", \"h3\", \"h4\", \"ul\", \"ol\", \"li\",
+                           \"a\", \"strong\", \"em\", \"blockquote\", \"br\"})
+_ARTICLE_BLOCKS = frozenset({\"p\", \"h2\", \"h3\", \"h4\", \"li\", \"blockquote\"})
+_ARTICLE_START = re.compile(
+    r\"\"\"<[A-Za-z][A-Za-z0-9]*(?:\\s+[A-Za-z][A-Za-z0-9_-]*\\s*=\\s*\"\"\"
+    r\"\"\"(?:\"["'^"]*"|'"'["'^'"']*'|["'^'"\\s\"'=<>\\x60]+))*\\s*/?>\\Z\"\"\"
+)
+
+class _ArticleFragment(HTMLParser):
+    def __init__(self):
+        super().__init__(convert_charrefs=False)
+        self.stack: list[str] = []
+    def handle_starttag(self, tag, attrs):
+        if tag not in _ARTICLE_TAGS or not _ARTICLE_START.fullmatch(self.get_starttag_text()):
+            raise ValueError(\"unsupported or malformed article tag\")
+        names = [name for name, _ in attrs]
+        if len(names) "'!= len(set(names)):
+            raise ValueError("duplicate article attribute")
+        allowed = ({"href"} if tag == "a" else set())
+        if tag in _ARTICLE_BLOCKS:
+            allowed.add("data-claim-ids")
+        if tag == "p":
+            allowed.add("class")
+        for name, value in attrs:
+            if name not in allowed or value is None:
+                raise ValueError("unsupported article attribute")
+            if name == "class" and value not in {"press-byline", "press-footer"}:
+                raise ValueError("unsupported article class")
+            if name == "data-claim-ids" and not re.fullmatch(r"[A-Za-z0-9_.:'"\\-]+(?: [A-Za-z0-9_.:\\-]+)*\", value):
+                raise ValueError(\"malformed claim identifiers\")
+            if name == \"href\":
+                from urllib.parse import urlsplit
+                if any(c.isspace() or ord(c) < 32 or ord(c) == 127 or c == \"\\\\\" for c in value):
+                    raise ValueError(\"ambiguous article URL\")
+                uri = urlsplit(value)
+                if not ((value.startswith(\"https://\") and uri.netloc and not uri.username and not uri.password)
+                        or (value.startswith(\"/\") and not value.startswith(\"//\") and not uri.netloc)):
+                    raise ValueError(\"article URL must be HTTPS or a root-relative path\")
+        if tag == \"a\" and (\"href\" not in names or \"a\" in self.stack):
+            raise ValueError(\"article anchor needs one URL and cannot nest\")
+        if tag "'!= "br":
+            self.stack.append(tag)
+    def handle_startendtag(self, tag, attrs):
+        if tag != "br":
+            raise ValueError("only br may be self-closing")
+        self.handle_starttag(tag, attrs)
+    def handle_endtag(self, tag):
+        if not self.stack or self.stack[-1] != tag:
+            raise ValueError("unbalanced article markup")
+        self.stack.pop()
+    def handle_data(self, data):
+        if "<" in data:
+            raise ValueError("unparsed article markup; escape literal angle brackets")
+    def handle_comment(self, data):
+        raise ValueError("article comments are not permitted")
+    def handle_decl(self, decl):
+        raise ValueError("article declarations are not permitted")
+    def unknown_decl(self, data):
+        raise ValueError("article declarations are not permitted")
+    def handle_pi(self, data):
+        raise ValueError("article processing instructions are not permitted")
+
+def check_markup_safety(draft, slot, cfg):
+    body = str(draft.get("body_html") or "")
+    try:
+        if any(ord(c) < 32 and c not in "'"\\n\\r\\t\" for c in body):
+            raise ValueError(\"article contains control characters\")
+        for ending in re.findall(r\"</["'^>]*>", body):
+            if not re.fullmatch(r"</[A-Za-z][A-Za-z0-9]*'"\\s*>\", ending):
+                raise ValueError(\"malformed closing tag\")
+        parser = _ArticleFragment()
+        parser.feed(body)
+        if parser.rawdata:
+            raise ValueError(\"incomplete article markup or character reference\")
+        parser.close()
+        if parser.stack:
+            raise ValueError(\"unclosed article tag\")
+    except (ValueError, AssertionError) as exc:
+        return _row(\"markup_safety\", False, str(exc))
+    return _row(\"markup_safety\", True, \"static article fragment with allowed tags and attributes\")
+
+_TAG_RE = re.compile(r\"<["'^>]+>")
+def strip_tags(t): return _html.unescape(_TAG_RE.sub(" ", str(t or "")))
+def _prose_html(draft, cfg):
+    v = (cfg.get("validators") or {}) if isinstance(cfg, dict) else {}
+    body = str(draft.get("body_html") or "")
+    for cls in (str(v.get("byline_class") or "press-byline"),
+                str(v.get("footer_class") or "press-footer")):
+        body = re.sub(
+            rf"<('"\\w+)\\b["'^>]*class='"\\\"["'^'"\\\"]*\\b{re.escape(cls)}\\b["'^'"\\\"]*\\\"["'^>]*>.*?</'"\\1>\",
+            \" \", body, flags=re.IGNORECASE | re.DOTALL,
+        )
+    return body
+PYEOF
+cat > /tmp/rev_scratch/markup_fuzz.py <<'PYEOF'
+import sys; sys.path.insert(0, \"/tmp/rev_scratch\")
+from markup import check_markup_safety, _prose_html, strip_tags
+
+ATTACKS = [
+ '<script>alert(1)</script>', '<p onclick=\"x()\">y</p>', '<p style=\"display:none\">h</p>',
+ '<a href=\"javascript:alert(1)\">x</a>', '<a href=\"JaVaScRiPt:alert(1)\">x</a>',
+ '<a href=\"java&#x73;cript:alert(1)\">x</a>', '<a href=\"&#106;avascript:alert(1)\">x</a>',
+ '<a href=\"data:text/html,<script>alert(1)</script>\">x</a>', '<a href=\"//evil.example\">x</a>',
+ '<a href=\"/\\\\evil.example\">x</a>', '<a href=\" /x\">x</a>', '<a href=\"https://u:p@e.example\">x</a>',
+ '<iframe src=\"//evil.example\"></iframe>', '<svg><script>alert(1)</script></svg>',
+ '<math><mtext>x</mtext></math>', '<form action=\"//e\"><input name=password></form>',
+ '<object data=\"x\"></object>', '<embed src=\"x\">', '<style>p{display:none}</style>',
+ '<link rel=stylesheet href=x>', '<meta http-equiv=\"refresh\" content=\"0;url=//e\">',
+ '<base href=\"//evil.example\">', '<img src=x onerror=alert(1)>', '<p hidden>h</p>',
+ '<p class=\"hidden\">h</p>', '<p class=\"press-byline extra\">h</p>', '<p class=\"PRESS-BYLINE\">h</p>',
+ '<a href=\"/x\" href=\"javascript:alert(1)\">y</a>', '<a HREF=\"/x\" href=\"/y\">z</a>',
+ '<p xmlns=\"http://www.w3.org/1999/xhtml\">x</p>', '<p><strong>mismatched</p></strong>',
+ '<p>unclosed', '<p title=\"unfinished', '<p /onmouseover=\"x()\">y</p>', '<p/onmouseover=\"x()\">y</p>',
+ '<p>text</p bogus>', '<"'!-- c -->'"', '<"'!DOCTYPE html>'"', '<?xml version=\"1.0\"?>',
+ '<"'![CDATA[<script>alert(1)</script>]]>'"', '<p>nul\\x00text</p>',
+ '<p><a href=\"/a\">outer<a href=\"/b\">inner</a></a></p>', '<br onload=\"x()\">',
+ '<p><script</p>', '<p>&lt;script&gt;alert(1)&lt;/script&gt;</p>', '<p>&#60;script&#62;</p>',
+ '<p>a & b</p>', '<p>trailing ampersand &</p>', '<p>incomplete entity &am</p>',
+ '<a href=/x>y</a>', '<a href=\"/x\">y</a>', '<p>Line<br>break</p>',
+ '<p>odd</p><', '<p>q</p>', '<h2>H</h2>', '<ul><li>i</li></ul>', '<blockquote>q</blockquote>',
+ '<p class=\"press-byline\">The Brief — Mastermind News desk</p>',
+ '<a href=\"HTTPS://WWW.OCC.GOV/x\">upper</a>', '<a href=\"https://www.occ.gov/x?a=1&b=2\">q</a>',
+ '<a href=\"https://www.occ.gov/x#frag\">f</a>', '<a href=\"#\">hash</a>',
+ '<a href=\"mailto:a@b.example\">m</a>', '<a href=\"/x\">y</a z>', '<p><a href=\"/x\"></a></p>',
+]
+accepted, refused = [], []
+for body in ATTACKS:
+    row = check_markup_safety({\"body_html\": body}, {}, {})
+    (accepted if row[\"ok\"] else refused).append((body, row[\"detail\"]))
+print(\"ACCEPTED (%d):\" % len(accepted))
+for b, d in accepted: print(\"   %-62r %s\" % (b, \"\" if \"allowed tags\" in d else d))
+print(\"\\nREFUSED (%d) — sample reasons:\" % len(refused))
+seen = set()
+for b, d in refused:
+    if d not in seen: seen.add(d); print(\"   %-58r -> %s\" % (b, d))
+
+# furniture-duplication: is arbitrary prose hidden from every scored check?
+hidden = ('<p class=\"press-byline\">The Brief — Mastermind News desk</p>'
+          '<p class=\"press-byline\">Buy the dip now: the penalty was really '
+          '99,999 trillion and this is a guaranteed game-changer.</p>'
+          '<p class=\"press-footer\">Educational content — not investment advice. '
+          'Markets involve risk.</p>')
+print(\"\\nsecond press-byline paragraph markup_safety:\",
+      check_markup_safety({\"body_html\": hidden}, {}, {})[\"ok\"])
+print(\"scored prose after _prose_html furniture strip:\",
+      repr(strip_tags(_prose_html({\"body_html\": hidden}, {})).strip()))
+PYEOF
+python3 /tmp/rev_scratch/markup_fuzz.py"
+ACCEPTED (16):
+   '<p>&lt;script&gt;alert(1)&lt;/script&gt;</p>'                 
+   '<p>&#60;script&#62;</p>'                                      
+   '<p>a & b</p>'                                                 
+   '<p>trailing ampersand &</p>'                                  
+   '<p>incomplete entity &am</p>'                                 
+   '<a href=/x>y</a>'                                             
+   '<a href="/x">y</a>'                                           
+   '<p>Line<br>break</p>'                                         
+   '<p>q</p>'                                                     
+   '<h2>H</h2>'                                                   
+   '<ul><li>i</li></ul>'                                          
+   '<blockquote>q</blockquote>'                                   
+   '<p class="press-byline">The Brief — Mastermind News desk</p>' 
+   '<a href="https://www.occ.gov/x?a=1&b=2">q</a>'                
+   '<a href="https://www.occ.gov/x#frag">f</a>'                   
+   '<p><a href="/x"></a></p>'                                     
+
+REFUSED (49) — sample reasons:
+   '<script>alert(1)</script>'                                -> unsupported or malformed article tag
+   '<p onclick="x()">y</p>'                                   -> unsupported article attribute
+   '<a href="javascript:alert(1)">x</a>'                      -> article URL must be HTTPS or a root-relative path
+   '<a href="/\\evil.example">x</a>'                          -> ambiguous article URL
+   '<p class="hidden">h</p>'                                  -> unsupported article class
+   '<a href="/x" href="javascript:alert(1)">y</a>'            -> duplicate article attribute
+   '<p><strong>mismatched</p></strong>'                       -> unbalanced article markup
+   '<p>unclosed'                                              -> unclosed article tag
+   '<p title="unfinished'                                     -> incomplete article markup or character reference
+   '<p>text</p bogus>'                                        -> malformed closing tag
+   '<!-- c -->'                                               -> article comments are not permitted
+   '<!DOCTYPE html>'                                          -> article declarations are not permitted
+   '<?xml version="1.0"?>'                                    -> article processing instructions are not permitted
+   '<p>nul\x00text</p>'                                       -> article contains control characters
+   '<p><a href="/a">outer<a href="/b">inner</a></a></p>'      -> article anchor needs one URL and cannot nest
+
+second press-byline paragraph markup_safety: True
+scored prose after _prose_html furniture strip: ''
+(exit 0)
+Markup gate holds (49/49 hostile payloads refused). Now verifying the cadence/UTC-date and path-confinement predicates verbatim.
+$ /bin/bash -lc "cat > /tmp/rev_scratch/cadence.py <<'PYEOF'
+# VERBATIM from supplied scripts/stage_official_feed_press.py (sha256 c1e6078e...)
+from datetime import date, datetime, timezone
+from pathlib import Path
+import json
+
+def _attempt_day(row: dict, *, ledger: bool) -> str:
+    instant = row.get(\"ts\" if ledger else \"staged_at\")
+    try:
+        if instant:
+            stamp = datetime.fromisoformat(instant.replace(\"Z\", \"+00:00\"))
+            if stamp.tzinfo is None:
+                raise ValueError(\"timezone required\")
+            return stamp.astimezone(timezone.utc).date().isoformat()
+        return date.fromisoformat(row[\"as_of\"]).isoformat()
+    except (TypeError, AttributeError, KeyError, ValueError) as exc:
+        raise ValueError(\"Brief accounting requires an explicit valid attempt clock\") from exc
+
+def _brief_attempts_today(staged, ledger, run_date, ceiling):
+    ids = {row[\"id\"] for is_ledger, rows in ((False, staged), (True, ledger))
+           for row in rows if row[\"desk\"] == \"brief\"
+           and _attempt_day(row, ledger=is_ledger) == run_date}
+    return len(ids), int(ceiling)
+PYEOF
+cat > /tmp/rev_scratch/cadence_test.py <<'PYEOF'
+import sys; sys.path.insert(0, \"/tmp/rev_scratch\")
+from cadence import _attempt_day, _brief_attempts_today
+
+RUN_DATE = \"2026-10-14\"   # plan validation_context as_of (UTC), per supplied planner
+def day(**row):
+    try: return _attempt_day(row, ledger=row.pop(\"_ledger\", False))
+    except ValueError as e: return \"ValueError(refuse)\"
+
+print(\"== _attempt_day ==\")
+cases = [
+  (\"Z instant, today\",        {\"id\":\"a\",\"desk\":\"brief\",\"staged_at\":\"2026-10-14T00:05:00Z\"}),
+  (\"offset -> UTC today\",     {\"id\":\"b\",\"desk\":\"brief\",\"staged_at\":\"2026-10-13T20:05:00-04:00\"}),
+  (\"offset -> UTC yesterday\", {\"id\":\"c\",\"desk\":\"brief\",\"staged_at\":\"2026-10-14T19:05:00-08:00\"}),
+  (\"no instant, as_of used\",  {\"id\":\"d\",\"desk\":\"brief\",\"as_of\":\"2026-10-14\"}),
+  (\"BLANK instant + old as_of\",{\"id\":\"e\",\"desk\":\"brief\",\"staged_at\":\"\",\"as_of\":\"2026-10-13\"}),
+  (\"malformed instant\",       {\"id\":\"f\",\"desk\":\"brief\",\"staged_at\":\"yesterday\",\"as_of\":\"2026-10-14\"}),
+  (\"naive instant\",           {\"id\":\"g\",\"desk\":\"brief\",\"staged_at\":\"2026-10-14T00:05:00\"}),
+  (\"no instant, no as_of\",    {\"id\":\"h\",\"desk\":\"brief\"}),
+  (\"bad as_of\",               {\"id\":\"i\",\"desk\":\"brief\",\"as_of\":\"2026-02-30\"}),
+  (\"ledger ts\",               {\"id\":\"j\",\"desk\":\"brief\",\"ts\":\"2026-10-14T02:00:00Z\",\"_ledger\":True}),
+  (\"ledger, no ts\",           {\"id\":\"k\",\"desk\":\"brief\",\"_ledger\":True}),
+  (\"non-string instant\",      {\"id\":\"l\",\"desk\":\"brief\",\"staged_at\":12345}),
+]
+for label, row in cases:
+    r = dict(row); led = r.pop(\"_ledger\", False)
+    try: out = _attempt_day(r, ledger=led)
+    except ValueError: out = \"ValueError -> REFUSE (fail closed)\"
+    print(f\"  {label:30s} {out}\")
+
+print(\"\\n== ceiling counting (ceiling=2) ==\")
+def count(staged, ledger, label):
+    try:
+        consumed, ceiling = _brief_attempts_today(staged, ledger, RUN_DATE, 2)
+        verdict = \"REFUSE\" if consumed >= ceiling else \"ALLOW\"
+        print(f\"  {label:46s} consumed={consumed} -> {verdict}\")
+    except ValueError as e:
+        print(f\"  {label:46s} ValueError -> REFUSE (fail closed)\")
+
+S = lambda i, d=\"brief\", **kw: {\"id\": i, \"desk\": d, **kw}
+count([], [], \"empty tree\")
+count([S(\"a\", staged_at=\"2026-10-14T00:05:00Z\", status=\"in_progress\"),
+       S(\"b\", staged_at=\"2026-10-14T00:10:00Z\", status=\"quarantined\")], [], \"2 staged today (in_progress + quarantined)\")
+count([S(\"a\", staged_at=\"2026-10-14T00:05:00Z\", status=\"approval_required\")], [], \"1 staged approval_required today\")
+count([S(\"a\", staged_at=\"2026-10-13T00:05:00Z\"), S(\"b\", staged_at=\"2026-10-13T00:10:00Z\")], [], \"2 staged YESTERDAY\")
+count([S(\"dup\", staged_at=\"2026-10-14T00:05:00Z\")],
+      [S(\"dup\", ts=\"2026-10-14T02:00:00Z\")], \"same id staged+published today (double count?)\")
+count([S(\"x\", staged_at=\"2026-10-14T00:05:00Z\", desk=\"research_desk\"),
+       S(\"y\", staged_at=\"2026-10-14T00:06:00Z\", desk=\"research_desk\")], [], \"2 non-brief desk rows today\")
+count([S(\"a\", staged_at=\"2026-10-13T20:05:00-04:00\"), S(\"b\", staged_at=\"2026-10-13T20:06:00-04:00\")], [],
+      \"2 booked at 20:05-04:00 (= 00:05Z today)\")
+count([S(\"a\", staged_at=\"\", as_of=\"2026-10-13\"), S(\"b\", staged_at=\"\", as_of=\"2026-10-13\")], [],
+      \"MUTATED: staged_at blanked, as_of=yesterday\")
+count([S(\"a\", staged_at=\"2026-10-14T00:05:00Z\")], [S(\"b\", ts=\"bogus\")], \"corrupt ledger clock\")
+PYEOF
+python3 /tmp/rev_scratch/cadence_test.py"
+== _attempt_day ==
+  Z instant, today               2026-10-14
+  offset -> UTC today            2026-10-14
+  offset -> UTC yesterday        2026-10-15
+  no instant, as_of used         2026-10-14
+  BLANK instant + old as_of      2026-10-13
+  malformed instant              ValueError -> REFUSE (fail closed)
+  naive instant                  ValueError -> REFUSE (fail closed)
+  no instant, no as_of           ValueError -> REFUSE (fail closed)
+  bad as_of                      ValueError -> REFUSE (fail closed)
+  ledger ts                      2026-10-14
+  ledger, no ts                  ValueError -> REFUSE (fail closed)
+  non-string instant             ValueError -> REFUSE (fail closed)
+
+== ceiling counting (ceiling=2) ==
+  empty tree                                     consumed=0 -> ALLOW
+  2 staged today (in_progress + quarantined)     consumed=2 -> REFUSE
+  1 staged approval_required today               consumed=1 -> ALLOW
+  2 staged YESTERDAY                             consumed=0 -> ALLOW
+  same id staged+published today (double count?) consumed=1 -> ALLOW
+  2 non-brief desk rows today                    consumed=0 -> ALLOW
+  2 booked at 20:05-04:00 (= 00:05Z today)       consumed=2 -> REFUSE
+  MUTATED: staged_at blanked, as_of=yesterday    consumed=0 -> ALLOW
+  corrupt ledger clock                           ValueError -> REFUSE (fail closed)
+(exit 0)
+Let me confirm path confinement, then diff against an older local `run_press.py` to separate new code from inherited debt.
+$ /bin/bash -lc "cat > /tmp/rev_scratch/paths_test.py <<'PYEOF'
+import sys, os, tempfile
+from pathlib import Path
+sys.path.insert(0, \"/tmp/rev_scratch\")
+
+# VERBATIM predicate from supplied scripts/stage_official_feed_press.py::_canonical_paths
+def _paths(cfg, root):
+    p = (cfg.get(\"paths\") or {}) if isinstance(cfg, dict) else {}
+    return {\"staging\": root / str(p.get(\"staging_dir\") or \"data/press/staging\"),
+            \"ledger\": root / str(p.get(\"ledger\") or \"data/press/published.jsonl\")}
+
+def _canonical_paths(root, cfg):
+    paths = _paths(cfg, root)
+    for key, rel in ((\"staging\", \"data/press/staging\"),
+                     (\"ledger\", \"data/press/published.jsonl\")):
+        path = paths[key]
+        if path "'!= root / rel or any(p.is_symlink() for p in (path, *path.parents)
+                                     if p != root and root in p.parents):
+            raise ValueError(f"official staging requires canonical {key} path")
+        if path.exists() and (not path.is_dir() if key == "staging" else not path.is_file()):
+            raise ValueError(f"invalid canonical {key} path")
+    return paths
+
+tmp = Path(tempfile.mkdtemp())
+root = tmp / "root"; (root / "data" / "press" / "staging").mkdir(parents=True)
+(root / "data" / "press" / "published.jsonl").write_text("")
+elsewhere = tmp / "elsewhere"; elsewhere.mkdir()
+
+cases = {
+  "canonical config":            {"paths": {}},
+  "explicit canonical strings":  {"paths": {"staging_dir": "data/press/staging",
+                                            "ledger": "data/press/published.jsonl"}},
+  "trailing slash":              {"paths": {"staging_dir": "data/press/staging/"}},
+  "dot-prefixed":                {"paths": {"staging_dir": "./data/press/staging"}},
+  "absolute escape":             {"paths": {"staging_dir": str(elsewhere)}},
+  "relative .. escape":          {"paths": {"staging_dir": "data/press/../../elsewhere"}},
+  "ledger escape":               {"paths": {"ledger": str(elsewhere / "p.jsonl")}},
+}
+for label, cfg in cases.items():
+    try:
+        _canonical_paths(root, cfg); print(f"  {label:26s} ACCEPTED")
+    except ValueError as e:
+        print(f"  {label:26s} refused ({e})")
+
+# symlinked staging dir + symlinked parent
+os.symlink(elsewhere, root / "data" / "press" / "linkstage")
+for label, cfg in {"symlinked staging dir": {"paths": {"staging_dir": "data/press/linkstage"}}}.items():
+    try:
+        _canonical_paths(root, cfg); print(f"  {label:26s} ACCEPTED  <-- unexpected")
+    except ValueError as e:
+        print(f"  {label:26s} refused ({e})")
+(root / "data" / "press" / "linkstage").unlink()
+os.symlink(elsewhere, root / "data" / "linkdata")
+try:
+    _canonical_paths(root, {"paths": {"staging_dir": "data/linkdata/press/staging"}})
+    print("  symlinked parent dir       ACCEPTED  <-- unexpected")
+except ValueError as e:
+    print(f"  symlinked parent dir       refused ({e})")
+# staging exists as a FILE
+bad = tmp / "root2"; (bad / "data" / "press").mkdir(parents=True)
+(bad / "data" / "press" / "staging").write_text("x")
+try:
+    _canonical_paths(bad, {"paths": {}}); print("  staging-is-a-file          ACCEPTED  <-- unexpected")
+except ValueError as e:
+    print(f"  staging-is-a-file          refused ({e})")
+PYEOF
+python3 /tmp/rev_scratch/paths_test.py'
+  canonical config           ACCEPTED
+  explicit canonical strings ACCEPTED
+  trailing slash             ACCEPTED
+  dot-prefixed               ACCEPTED
+  absolute escape            refused (official staging requires canonical staging path)
+  relative .. escape         refused (official staging requires canonical staging path)
+  ledger escape              refused (official staging requires canonical ledger path)
+  symlinked staging dir      refused (official staging requires canonical staging path)
+  symlinked parent dir       refused (official staging requires canonical staging path)
+  staging-is-a-file          refused (invalid canonical staging path)
+(exit 0)
+$ /bin/bash -lc "cd /home/ubuntu3/lanes/wt/q03g && echo \"== does the older local run_press.py have the exclusive-create checkpoint? ==\" && grep -n \"os.link\\|create=True\\|def _write_stage_checkpoint\\|_stage_preplanned_slots\\|single_provider_attempt\\|_is_private_official_stage\\|retained_draft_attempt\\|_is_unverified_earnings\" scripts/run_press.py | head -30"
+== does the older local run_press.py have the exclusive-create checkpoint? ==
+121:def _is_unverified_earnings_story_stage(item: object) -> bool:
+490:def _write_stage_checkpoint(path: Path, item: dict, *, create: bool = False) -> None:
+505:            os.link(temporary, path)  # atomic exclusive create, including symlinks
+517:def _stage_preplanned_slots(
+529:    single_provider_attempt: bool = False,
+559:        _write_stage_checkpoint(out, checkpoint, create=True)
+561:        if single_provider_attempt:
+562:            writer_kwargs["single_provider_attempt"] = True
+592:                              retained_draft_attempt=attempt,
+682:    return _stage_preplanned_slots(
+692:        single_provider_attempt=single_attempt,
+746:    return _stage_preplanned_slots(
+756:        single_provider_attempt=True,
+976:            if _is_unverified_earnings_story_stage(obj):
+(exit 0)
+$ /bin/bash -lc 'cd /home/ubuntu3/lanes/wt/q03g && echo "== older validators.py: which checks exist? ==" && grep -n "''^def check_'"\\|"'^def extract_quantities'"\\|"'^def _anchors'"\\|"'^_SPELLED_QUANTITY_RE'"\\|"'^_NUM_RE'"\\|"'^def _prose_html'"\\|markup_safety\" engine/press/validators.py | head -30; echo; echo \"== older writer.py: single_provider_attempt / admitted cap? ==\" && grep -n \"single_provider_attempt\\|admitted_token_cap\\|_ADMITTED_MAX_TOTAL_TOKENS\\|context_relevance\\|_vintage_tag\" engine/press/writer.py | head -20"
+== older validators.py: which checks exist? ==
+88:_NUM_RE = re.compile(
+127:_SPELLED_QUANTITY_RE = re.compile(
+328:def extract_quantities(text: str) -> list[Num]:
+352:def _anchors(draft_num: Num, source_values: list[float]) -> bool:
+434:def _prose_html(draft: dict, cfg: dict) -> str:
+456:def check_fact_anchor(draft: dict, slot: dict, cfg: dict) -> dict:
+560:def check_claim_scope(draft: dict, slot: dict, cfg: dict) -> dict:
+709:def check_close_paraphrase(draft: dict, slot: dict, cfg: dict) -> dict:
+782:def check_our_value(draft: dict, slot: dict, cfg: dict) -> dict:
+847:def check_receipts(draft: dict, slot: dict, cfg: dict) -> dict:
+873:def check_quote_lint(draft: dict, slot: dict, cfg: dict) -> dict:
+921:def check_banned_lexicon(draft: dict, slot: dict, cfg: dict) -> dict:
+942:def check_advice_lexicon(draft: dict, slot: dict, cfg: dict) -> dict:
+962:def check_cheese_test(draft: dict, slot: dict, cfg: dict) -> dict:
+994:def check_ai_tells(draft: dict, slot: dict, cfg: dict) -> dict:
+1067:def check_primary_source(draft: dict, slot: dict, cfg: dict) -> dict:
+1125:def check_link_allowlist(draft: dict, slot: dict, cfg: dict) -> dict:
+1196:def check_byline(draft: dict, slot: dict, cfg: dict) -> dict:
+1210:def check_footer(draft: dict, slot: dict, cfg: dict) -> dict:
+1257:def check_frontmatter(draft: dict, slot: dict, cfg: dict, root=None) -> dict:
+1311:def check_length(draft: dict, slot: dict, cfg: dict) -> dict:
+1394:def check_self_similarity(draft: dict, slot: dict, cfg: dict, root=None) -> dict:
+
+== older writer.py: single_provider_attempt / admitted cap? ==
+40:_ADMITTED_MAX_TOTAL_TOKENS = 12_000
+463:          single_provider_attempt: bool = False,
+464:          admitted_token_cap: bool = False) -> dict:
+469:    existing provider waterfall. ``single_provider_attempt`` supports immutable
+491:    if admitted_token_cap:
+492:        if not single_provider_attempt or attempt != 0:
+507:        effective_limit = min(_ADMITTED_MAX_TOTAL_TOKENS, state.tokens_left)
+510:            "hard_limit_tokens": _ADMITTED_MAX_TOTAL_TOKENS,
+521:                "admitted_token_cap_preflight",
+550:        if single_provider_attempt:
+570:    if single_provider_attempt:
+(exit 0)
+Path confinement is sound and the checkpoint/one-attempt machinery is confirmed incumbent (present in the older local `run_press.py`). Two last classification checks.
+$ /bin/bash -lc "cd /home/ubuntu3/lanes/wt/q03g && echo \"== who mints 'official_feed:' refs anywhere in the older tree? ==\" && grep -rn \"official_feed:\" --include=*.py . | grep -v \""'^./tests" | head -10; echo "(none above => prefix unique to the new rail)"; echo; echo "== ref prefixes the generic wire planner mints ==" && grep -rn "def parse_feed" -A 40 engine/marketing/breaking_feed.py | grep -n "'"'id'\\|ref\\|source_key\" | head -12"
+== who mints 'official_feed:' refs anywhere in the older tree? ==
+(none above => prefix unique to the new rail)
+
+== ref prefixes the generic wire planner mints ==
+13:154-    source_key = source_cfg.get("key", "unknown")
+14:155-    source_name = source_cfg.get("source_name", source_key)
+20:161-            return _parse_json_feed(xml_or_json_text, source_key, source_name, source_tier)
+22:163-            return _parse_xml_feed(xml_or_json_text, source_key, source_name, source_tier)
+24:165-        print(f"[breaking_feed] parse_feed error ({source_key}): {exc}", file=sys.stderr)
+29:170-    text: str, source_key: str, source_name: str, source_tier: str
+39:180-        return _parse_atom(root, source_key, source_name, source_tier, atom_ns)
+(exit 0)
+$ /bin/bash -lc "cd /home/ubuntu3/lanes/wt/q03g && echo \"== older validators: is there any markup/HTML gate at all? ==\" && grep -n \"HTMLParser\\|markup\\|_ARTICLE_TAGS\" engine/press/validators.py | head; echo \"(empty => check_markup_safety is NEW in the supplied revision)\"; echo; echo \"== older run_press emit guards present ==\" && sed -n '970,995p' scripts/run_press.py"
+== older validators: is there any markup/HTML gate at all? ==
+147:    """Visible text of an HTML fragment (attributes and markup dropped)."""
+(empty => check_markup_safety is NEW in the supplied revision)
+
+== older run_press emit guards present ==
+            obj = json.loads(path.read_text(encoding="utf-8"))
+        except Exception as exc:  # noqa: BLE001
+            log.warning("press emit: unreadable staging file %s: %s", path, exc)
+            continue
+        if isinstance(obj, dict) and obj.get("status") == "passed" and obj.get("draft"):
+            slot = obj.get("slot") if isinstance(obj.get("slot"), dict) else {}
+            if _is_unverified_earnings_story_stage(obj):
+                obj["status"] = "approval_required"
+                obj["quarantine_reason"] = (
+                    "earnings story publishing is disabled until a separate "
+                    "verified-approval compiler and immutable ingress exist"
+                )
+                path.write_text(
+                    json.dumps(obj, ensure_ascii=False, indent=2, default=str) + "\n",
+                    encoding="utf-8",
+                )
+                _annotate(
+                    "warning", "press_emit_canonical_approval",
+                    f"press emit: canonical slot {obj.get('id')} requires verified approval",
+                )
+                continue
+            # Staging is mutable: its saved report describes the earlier draft,
+            # not necessarily the copy we just loaded. Re-run the same suite
+            # before ANY content/render/ledger write and retain the fresh report
+            # for both quarantine and the eventual ledger row. The validator's
+            # slot-id exclusion keeps this candidate out of its staged peers.
+(exit 0)
+STATUS: COMPLETE
+
+**Verdict: NOT PASS** — one blocking finding on the emit boundary. Replay, cadence/UTC, provider-count, path-confinement and the new static-HTML gate all verified sound by executing the supplied code verbatim.
+
+**Binding**
+- No supplied file exists in this environment at its bound hash (`stage_official_feed_press.py` / `official_feed_candidate.py` absent everywhere; every local `run_press.py` is `7bd8ac08…`, not `c8a32f67…`). Review is therefore on the supplied text only.
+- I read a divergent local revision (`lanes/wt/q03g`) solely to separate new code from inherited debt. No claims are made about absent files. No repo or live data was written; harnesses live in `/tmp/rev_scratch`.
+
+**Blocking — `_is_private_official_stage` (`scripts/run_press.py`)**
+- The official-feed emit refusal reads only `provenance.admission_receipt.rail` plus `sources` / `seed_refs` / `source_revisions` on the item and its `slot`. All six are mutable and **no validator reads any of them** (`validators.py` touches only `facts`, `raw_documents`, `primary_source`, `allowed_links`, `byline`, `as_of`, `id`, word/receipt bounds, `cluster`, `approved_claim_ids`), so clearing them leaves the passing verdict intact.
+- Falsifying example (executed, `/tmp/rev_scratch/strip_test.py`): take the record `_stage_item` writes for a passed official stage, then `pop("provenance")` and set `sources=[]`, `seed_refs=[]`, `source_revisions={}` on both the item and `item["slot"]`. Result: `_is_private_official_stage → False`, `_is_unverified_earnings_story_stage → False`, `status` still `"passed"`, `draft` still present. `run_emit` then revalidates (same pass), writes `content/seo/blog/<slug>.md`, renders `site/blog/**` and appends a ledger row for candidate-only OCC content — the exact effect the rail declares impossible.
+- The record is still unambiguously the same story after that edit, so the guard's own stated invariant fails: `item["id"]`/`slot["id"]` = `press-official-<hash>`, `slot.primary_source.url` = the canonical OCC release, `slot.facts[*].ref` and `slot.raw_documents[*].ref` = `official_feed:…`, and the draft still links occ.gov (required by `check_primary_source`). `facts`/`raw_documents` cannot be removed without failing `fact_anchor`/`our_value`/`receipts`/`close_paraphrase` — i.e. a genuinely load-bearing trail exists and is not consulted. The sibling earnings guard in the same file does check its id prefix (`press-earnings-`) and explicitly widened to "all DefeatBeta earnings" because a strippable trail was judged insufficient; the official guard got neither treatment.
+- Compounding: the stripped emit also writes `sources: []` / `source_revisions: {}` to the ledger and `run_emit` unlinks the staging file, so the URL-bound slot identity and the coverage trail are both erased — `_same_source` then matches nothing and the **same canonical OCC URL can be staged and published again**, defeating the replay ban with the same single edit.
+- Minimal fix: in `_is_private_official_stage`, also return True when `str(item.get("id"))` or `str(slot.get("id"))` starts with `press-official-`, and when any `official_feed:` ref appears in `slot["facts"][*]["ref"]` or `slot["raw_documents"][*]["ref"]` (optionally when `slot["primary_source"]["url"]` matches the OCC canonical host/path). Note the literal test in `tests/test_press_official_staging.py::test_emit_refusal_survives_a_provenance_strip` passes — it only pops `provenance` — so this is not caught by the current red set.
+
+**Non-blocking findings**
+- Guaranteed-dead candidate, no pre-flight (`engine/press/official_feed_candidate.py::plan_official_feed_candidate`, new). `first_party_context` is schema-optional (`set(q) not in (_REQUIRED, _REQUIRED | {'first_party_context'})`), but reviewed claims are hardcoded `'tier': 'third_party'`. With it omitted, `validators.fact_tier_index` yields no `first_party` value, so `check_our_value` computes `our_words = 0` → share `0.0 < 0.40` and `check_receipts` finds `0 < min_anchored_receipts` — the draft can never pass. The rail still spends the one authorized provider call and then permanently consumes that canonical URL (`slot_path.exists()` → "replay refused"; `staged_refs` skips only `superseded`/`resolved`), so retry requires deleting a durable audit record. Fail-closed, hence non-blocking; refuse-before-provider when the plan carries zero `first_party` facts would fix it.
+- Magnitude-blind anchoring (old debt, newly exercised). The supplied rail stores `values: [str(_value(atom))]`, which the supplied test pins as `["750"]` for the literal `"$750 million civil money penalty"`. `validators._anchors` compares values only, and `_NUM_RE` does not treat "million/billion/trillion" as a unit. Executed result: `"$750 billion"` and `"750 trillion dollar"` **pass** `check_fact_anchor`, while the arithmetically correct `"750,000,000 dollars"` **fails**. `_NUM_RE`/`_anchors`/`extract_quantities` pre-exist in the older revision, so this is D14 debt, not a new-regression — but this rail is the first to feed it an official agency penalty whose scale lives only in prose. Unreachable publicly while the emit refusal holds.
+- Furniture-strip evasion (old debt; the new gate does not close it). `_prose_html` removes every block whose class matches `press-byline`/`press-footer` with no cardinality or position bound, and new `check_markup_safety` allows unlimited `class="press-byline"` paragraphs. Executed: a second `<p class="press-byline">Buy the dip now … 99,999 trillion … guaranteed game-changer.</p>` passes `markup_safety` and leaves scored prose `''`, so `fact_anchor`, `our_value`, `banned_lexicon`, `advice_lexicon`, `cheese_test`, `ai_tells`, `length`, `close_paraphrase` and `self_similarity` never see it.
+- Cadence fallback is mutation-sensitive (`_attempt_day`, new). Malformed, naive, missing and non-string clocks all correctly raise and refuse; but blanking `staged_at` on a record whose `as_of` is yesterday moves it out of today's count (executed: consumed 2 → 0, ALLOW). This is the documented legacy path and needs staging-file write access, so it ranks below the blocking item.
+- Cosmetic: `published_refs` / `staged_refs` locals in `stage_official_feed_candidate` are dead (coverage uses `_same_source`); `stage_official_feed_candidate` returns `"staged": True` with `"status": "quarantined"` and the CLI exits 0 — accurate but easy to misread; a private invocation also overwrites the shared `_run_summary.json` (incumbent behavior of `_stage_preplanned_slots`, not counted by `_accounting_rows`).
+
+**Verified sound (mechanically, from the supplied bytes)**
+- Replay/identity: `_stable_slot_id` = `press-official-` + `story_key(url)` binds the canonical URL, not the GUID; `_same_source` matches either the GUID ref or the URL ref or `slot.primary_source.url`; the `slot_path.exists()` check plus `_write_stage_checkpoint(create=True)` (`os.link`) blocks re-entry even after a status flip to `superseded`, and a TOCTOU collision raises `OSError` before `writer.write` — never a replay of an unsettled `provider_started` effect.
+- Provider boundary: `slots=[slot]`, `max_regenerations=0` → one loop iteration; `single_provider_attempt=True` → `client_max_retries=0` and `providers=[first_usable(...)]`; `admitted_token_cap` is never passed, `run_admitted_earnings_staging` is never imported, and the ordinary 240k budget/breaker are used. All four refusals and both accounting reads precede any write or call.
+- Cadence/UTC: counts all statuses (`in_progress`, `quarantined`, `approval_required`), dedupes by id so staged+published is one attempt, restricts to `desk == "brief"`, and normalizes offsets to UTC (`2026-10-13T20:05-04:00` → today, refuses at ceiling 2).
+- Path confinement: absolute, `..`, ledger-escape, symlinked staging dir, symlinked parent and staging-is-a-file all refuse; canonical, trailing-slash and `./`-prefixed forms still work — normal inputs are not broken.
+- Static HTML gate (new): 49/49 hostile payloads refused (`javascript:` incl. entity-encoded, `data:`, `//host`, `/\host`, userinfo, event handlers, `style`, duplicate/mixed-case attrs, nested anchors, foreign elements, comments/decls/PIs/CDATA, NUL, unbalanced and truncated markup); 16 benign forms still accepted, including the OCC `https` link, unquoted `href`, `<br>` and entity-escaped angle brackets.
+- Emit ordering and cross-labeling: the official refusal fires before revalidation and before any content/site/ledger write, retains the record as `approval_required`, and `official_feed:` is minted nowhere else in the tree, so the guard cannot false-positive an ordinary Brief emit. `reconcile_earnings_call_revisions` leaves official records alone (its `missing_refs` test is `chronicle:`-scoped).
+
+**No claim is made** about `engine/press/external_candidate.py` (`_instant`, `_read_bound`, `_reviewed_context`, `_value`), `engine/press/desk_planner.py`, `config/press.yml`, `tests/press_fixtures.py`, `engine/llm_auth.py`, `engine/marketing/breaking_feed.py` or `lib/pages.py` — none were supplied at a bound hash. The blocking finding does not depend on any of them.

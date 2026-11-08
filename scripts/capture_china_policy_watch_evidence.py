@@ -309,14 +309,15 @@ def render_before() -> str:
 
 
 def write_fixture_site(scratch: Path) -> None:
+    from lib.pages import write_unshimmed_html  # noqa: PLC0415
     scratch.mkdir(parents=True, exist_ok=True)
     for name in ("theme.css", "navigation-refresh.css", "theme.js",
                  "logo_config.js", "stock-logos.js", "live.js"):
         src = TEMPLATES_DIR / name
         if src.exists():
             shutil.copy(src, scratch / name)
-    (scratch / "china_policy_watch.html").write_text(render_after(), encoding="utf-8")
-    (scratch / "china_policy_watch_before.html").write_text(render_before(), encoding="utf-8")
+    write_unshimmed_html(scratch / "china_policy_watch.html", render_after(), encoding="utf-8")
+    write_unshimmed_html(scratch / "china_policy_watch_before.html", render_before(), encoding="utf-8")
 
 
 def _git_head() -> str | None:

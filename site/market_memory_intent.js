@@ -190,9 +190,31 @@
     return result;
   }
   restoreOAuthResume(); // Finish restoration before exposing the page API.
+  // An explicit page/return language outranks an asynchronously loaded profile.
+  // Keep this separate from the generated URL: boot may add a default language
+  // before the profile arrives, without the reader having chosen that default.
+  var selectedLanguage = null, applyingProfileLanguage = false;
+  function readSelectedLanguage() {
+    var current = read();
+    selectedLanguage = resume.ok && current.ok ? current.intent.language || null : null;
+  }
+  readSelectedLanguage();
+  if (typeof window.addEventListener === 'function') window.addEventListener('popstate', readSelectedLanguage);
+  function selectLanguage(language) {
+    if (!applyingProfileLanguage && (language === 'en' || language === 'zh')) selectedLanguage = language;
+  }
+  function applyProfileLanguage(language, apply) {
+    if ((language !== 'en' && language !== 'zh') || typeof apply !== 'function') return;
+    // Profile hydration does not become a new user selection or overwrite an
+    // explicit return selection. Its existing caller still owns save suppression.
+    if (selectedLanguage) return;
+    applyingProfileLanguage = true;
+    try { apply(language); } finally { applyingProfileLanguage = false; }
+  }
   window.MarketMemoryIntent = {
     read: read, replace: syncReturn, syncReturn: syncReturn, signinHref: signinHref,
     target: canonical,
+    selectLanguage: selectLanguage, applyProfileLanguage: applyProfileLanguage,
     resumeStatus: function () { return {ok:resume.ok, restored:resume.restored, active:resume.active, reason:resume.reason}; },
     oauthPreservation: function () { return {ok:preservation.ok, reason:preservation.reason}; },
     limits: { target: MAX_TARGET, current: MAX_CURRENT, issuer: MAX_ISSUER, value: MAX_VALUE }
