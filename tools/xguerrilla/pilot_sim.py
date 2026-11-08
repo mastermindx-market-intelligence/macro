@@ -471,7 +471,6 @@ def run_pilot(children=None, days: int = 14, *, seed: int = 7,
     leases = [SimulationLeaseStore(db, clock=lambda: clock.now().timestamp()) for _ in range(2)]
     drivers: dict[str, FakeDriver] = {}
     history: dict[str, list[Draft]] = {h: [] for h in handles}
-    links_used: dict[str, list[datetime]] = {h: [] for h in handles}
     intervals: dict[str, list[float]] = {h: [] for h in handles}
     day_posts: dict[tuple[str, int], int] = Counter()
     challenge_since: dict[str, int] = Counter()
@@ -604,11 +603,8 @@ def run_pilot(children=None, days: int = 14, *, seed: int = 7,
                     continue
 
                 # compose until the validators are quiet
-                used = [t for t in links_used[handle] if when - t <= timedelta(days=7)]
-                links_used[handle] = used
                 prev = history[handle][-1].text if history[handle] else ""
                 flat = not voice_seen[handle]
-                slot = getattr(persona, "link_slot", None)
                 is_bad = drafted < broken
                 draft: Draft | None = None
                 blocked_text = ""
@@ -616,13 +612,15 @@ def run_pilot(children=None, days: int = 14, *, seed: int = 7,
                 for _attempt in range(12):
                     rng = random.Random(f"{seed}:{handle}:{when.isoformat()}:{_attempt}")
                     text = _compose(persona, rng, prev, force_voice=flat)
-                    links = []
-                    if (slot and len(used) < persona.links_per_week
-                            and rng.random() < 0.15):
-                        links = [slot]
+                    # Zero URLs, every child, every kind (§26.4 as amended by
+                    # the bio policy BL-9): the simulator may not model a draft
+                    # the real validator would refuse, so it offers no links at
+                    # all and the bio carries the one destination.
+                    links: list[str] = []
                     candidate = Draft(text=text, kind="post", links=links)
-                    bad = validators.validate(candidate, persona, [d.text for d in history[handle]],
-                                              len(used), when)
+                    bad = validators.validate(candidate, persona,
+                                              [d.text for d in history[handle]],
+                                              now=when)
                     bad += validators.enforce_voice(history[handle] + [candidate], persona)
                     if is_bad and not blocked_text:
                         # one deliberate defect per broken draft: the validators
@@ -630,7 +628,7 @@ def run_pilot(children=None, days: int = 14, *, seed: int = 7,
                         stunted = Draft(text=_overlong(candidate.text, persona),
                                         kind="post", links=links)
                         why = validators.validate(
-                            stunted, persona, [d.text for d in history[handle]], len(used), when)
+                            stunted, persona, [d.text for d in history[handle]], now=when)
                         if why:
                             blocked_text, blocked_why = stunted.text, why[0]
                     if not bad:
@@ -647,7 +645,11 @@ def run_pilot(children=None, days: int = 14, *, seed: int = 7,
 
                 keys = typing_mod.plan(draft.text, persona)
                 gaps = [b.t - a.t for a, b in zip(keys, keys[1:])]
-                pasted = bool(draft.links) or random.Random(f"{seed}:{handle}:{when.isoformat()}:paste").random() < 0.2
+                # A paste is a typing-path fact on its own now: a link-bearing
+                # draft used to be routed through paste because the URL could
+                # not be typed, and no draft may carry one any more (BL-9).
+                pasted = random.Random(
+                    f"{seed}:{handle}:{when.isoformat()}:paste").random() < 0.2
 
                 before = drv.keystrokes
                 drv.click(COMPOSER)
@@ -688,8 +690,6 @@ def run_pilot(children=None, days: int = 14, *, seed: int = 7,
 
                 history[handle].append(draft)
                 history[handle] = history[handle][-HISTORY_N:]
-                if draft.links:
-                    links_used[handle].append(posted_at)
                 if any(p.lower() in draft.text.lower() for p in
                        list(persona.pet_phrases) + list(persona.opinions)):
                     voice_seen[handle] = True

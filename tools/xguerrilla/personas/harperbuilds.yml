@@ -13,7 +13,7 @@ hours: [6, 20]
 idle_day_p: 0.08
 casing: sentence
 max_chars: 180
-links_per_week: 1
+links_per_week: 0
 hashtags_max: 1
 actions_per_day: 16
 seed: 4102

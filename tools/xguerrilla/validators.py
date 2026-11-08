@@ -13,8 +13,15 @@ import re
 from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Iterable, Sequence
+from urllib.parse import urlsplit
 
 KINDS = ("post", "reply", "quote")
+
+#: Deterministic gates, in the order the policy settled them:
+#:   * every draft — the zero-URL rule (§26.4, bio policy BL-9), absolute for
+#:     posts, replies AND quotes, with no per-account exception;
+#:   * every profile bio — the one canonical destination (bio policy BL-1…BL-4,
+#:     BL-10), because the bio is the only URL surface in the network.
 
 #: Characters that may trail a sentence without being part of the last word.
 _TRAIL = " \t\n.,;:!?…\"'”’)]}—-–"
@@ -55,7 +62,36 @@ _SENTENCE_BREAK = re.compile(r"(?<=[.!?])(?:\s+|$)|\n+")
 _HASHTAG = re.compile(r"#([A-Za-z0-9_]+)")
 _WORD = re.compile(r"[A-Za-z][A-Za-z'’\-]*")
 _FIRST_WORD = re.compile(r"\s*([A-Za-z'’]+)")
-_URL = re.compile(r"^https?://", re.IGNORECASE)
+
+# ── URLs: the bio is the only surface (bio policy v1, BL-1…BL-10) ─────────────
+#: The one host a child's bio may point at. The apex is deliberately absent: it
+#: 301s to `www`, so a bio using it burns a hop and doubles the host strings a
+#: validator must know (BL-1).
+BIO_HOST = "www.mastermind-x.com"
+#: The path IS the attribution key (BL-2): the registry's immutable child id,
+#: never the handle, and never a campaign parameter.
+BIO_PATH_RE = re.compile(r"^/x/[a-z0-9]{4,32}$")
+#: Hosts that resolve to somebody else's estate. Refused even when they redirect
+#: to us: with posts and replies URL-free (BL-9) the bio is the single hop, so
+#: BL-3 requires that hop to be org-controlled end to end.
+SHORTENER_HOSTS = frozenset({
+    "t.co", "bit.ly", "buff.ly", "ow.ly", "is.gd", "goo.gl", "tinyurl.com",
+    "lnkd.in", "rebrand.ly", "cutt.ly", "shorturl.at", "trib.al",
+})
+_BARE_LINK_HOSTS = {
+    "mastermind-x.com", "www.mastermind-x.com", *SHORTENER_HOSTS,
+}
+#: X autolinks a bare host too, so a URL is not only `scheme://`: the token
+#: matcher also names the hosts that matter. Order matters — the scheme and
+#: `www.` alternatives win at any position they can match.
+_LINK_TOKEN = re.compile(
+    r"(?i)(?:https?://[^\s<>\"'`]+"
+    r"|www\.[^\s<>\"'`]+"
+    r"|(?<![\w.@/-])(?:%s)(?:/[^\s<>\"'`]*)?(?![\w-]))"
+    % "|".join(re.escape(h) for h in sorted(_BARE_LINK_HOSTS))
+)
+#: Sentence punctuation is not part of a link.
+_TRAILING = ".,;:!?)]}»’\"'"
 
 VOICE_WINDOW = 20
 DUPLICATE_RATIO = 0.82
@@ -103,14 +139,21 @@ def _tags_in_text(text: str) -> set[str]:
     return {t.lower() for t in _HASHTAG.findall(text or "")}
 
 
-def _slot_ok(link: str, slot: str | None) -> bool:
-    """A link is legal only if it is the persona's own slot."""
-    if not slot:
-        return True
-    if link.rstrip("/") == slot.rstrip("/"):
-        return True
-    host = re.sub(r"^https?://", "", slot.lower()).split("/")[0]
-    return bool(host) and host in link.lower()
+def links_in_text(text: str) -> list[str]:
+    """Every URL-shaped token in ``text``, in order, sentence punctuation trimmed.
+
+    One matcher for both gates: the post/reply rule refuses ANY token, and the
+    bio validator requires the single token to be the canonical destination.
+    ``.strip().rstrip(_TRAILING)`` is deliberate — a bio that ends "…/x/ab12cd34."
+    still carries the canonical link, while a trailing-slash variant does not
+    lose its slash to punctuation cleanup.
+    """
+    found: list[str] = []
+    for match in _LINK_TOKEN.finditer(text or ""):
+        token = match.group(0).strip().rstrip(_TRAILING).strip()
+        if token and token not in found:
+            found.append(token)
+    return found
 
 
 def validate(
@@ -123,8 +166,10 @@ def validate(
     """Return every violation on the draft; empty means it may be composed.
 
     ``history`` is the persona's recent posts, already scoped by the caller.
-    ``links_used_7d`` counts links posted in the seven days ending at ``now``
-    (the scheduler's clock, passed in so every gate in one run agrees).
+    ``links_used_7d`` is retained for callers that still count historical
+    links, but it is NO LONGER CONSULTED: the zero-URL rule has no budget, so a
+    count cannot make a link legal (bio policy BL-9 replaced the one-per-week
+    allowance and there is no per-account exception).
     """
     if now is not None and not isinstance(now, datetime):
         raise TypeError(f"now must be a datetime or None, got {type(now).__name__}")
@@ -165,20 +210,21 @@ def validate(
     for tag in missing:
         out.append(f"hashtag #{tag} is listed but not in the text")
 
-    # Links: one per draft, only the persona's own slot, inside the weekly budget.
-    if len(draft.links) > 1:
-        out.append(f"more than one link in a draft: {len(draft.links)}")
-    slot = getattr(persona, "link_slot", None)
-    for link in draft.links:
-        if not _URL.match(link or ""):
-            out.append(f"link is not an absolute http(s) url: {link!r}")
-        elif not _slot_ok(link, slot):
-            out.append(f"link {link} is not {persona.handle}'s own link slot ({slot})")
-    spent = links_used_7d + len(draft.links)
-    if spent > persona.links_per_week:
+    # URLs — ABSOLUTE (masterplan §26.4 "Zero URLs in child posts"; bio policy
+    # BL-9 "The no-URLs rule is absolute"). This replaces the one-link-per-week
+    # allowance §26.4 superseded: a budget made the rule advisory (a link was
+    # rationed, never refused), and it only inspected `draft.links`, so a URL
+    # typed straight into the text cleared every gate. There is no per-account
+    # exception and no budget left to spend on one.
+    for token in links_in_text(text):
         out.append(
-            f"link budget: {links_used_7d} used in the last 7 days + "
-            f"{len(draft.links)} here exceeds {persona.links_per_week}/week"
+            f"URL in {draft.kind} text: {token!r} — posts and replies carry no "
+            f"URLs at all (masterplan §26.4; bio policy BL-9)"
+        )
+    for link in draft.links:
+        out.append(
+            f"{draft.kind} declares link {link!r} — a declared link is still a "
+            f"link: posts and replies carry no URLs (bio policy BL-9)"
         )
 
     # Provenance: a reply or quote must name the read that produced it.
@@ -259,4 +305,142 @@ def enforce_voice(draft, persona) -> list[str]:
         if a and a == b:
             out.append(f"drafts {i - 1} and {i} both open with {a!r}")
 
+    return out
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# The bio — the only URL surface in the whole network (bio policy v1)
+# ─────────────────────────────────────────────────────────────────────────────
+
+def canonical_bio_link(child_id: str) -> str:
+    """The one destination shape the policy settles (BL-2).
+
+    The path segment is the registry's immutable child id, never the handle:
+    handles get renamed and a ref that rots is worse than no ref at all.
+    """
+    return f"https://{BIO_HOST}/x/{str(child_id or '').strip()}"
+
+
+def _bio_link_violations(
+    link: str,
+    *,
+    child_id: str | None,
+    known_ids: Iterable[str] | None,
+) -> list[str]:
+    """Every BL-1…BL-4 / BL-10 violation on ONE bio link, all reported."""
+    out: list[str] = []
+    if link != link.lower():
+        out.append(
+            f"bio link {link!r} carries uppercase — the destination is a "
+            f"case-sensitive attribution key (BL-10)"
+        )
+    if not link.lower().startswith("https://"):
+        out.append(f"bio link {link!r} must be absolute https:// (BL-10)")
+
+    parsed = urlsplit(link) if "://" in link else urlsplit("//" + link)
+    host = (parsed.hostname or "").lower()
+    if parsed.username or parsed.password or parsed.port:
+        out.append(
+            f"bio link {link!r} carries userinfo or a port — the host must be "
+            f"the bare {BIO_HOST!r} (BL-1)"
+        )
+    if host in SHORTENER_HOSTS:
+        out.append(
+            f"bio link {link!r} points at the shortener {host!r} — the host "
+            f"must be ours even when the shortener redirects to us (BL-3)"
+        )
+    elif host == "mastermind-x.com":
+        out.append(
+            f"bio link {link!r} uses the apex mastermind-x.com, which 301s to "
+            f"www — use https://{BIO_HOST} (BL-1)"
+        )
+    elif host != BIO_HOST:
+        out.append(f"bio link host {host!r} is not {BIO_HOST!r} (BL-1)")
+
+    path = parsed.path or ""
+    if parsed.query:
+        out.append(
+            f"bio link {link!r} carries a query string — attribution is the "
+            f"path segment, not a campaign parameter (BL-2)"
+        )
+    if parsed.fragment:
+        out.append(
+            f"bio link {link!r} carries a fragment — the destination ends at "
+            f"the child id (BL-2)"
+        )
+    if path != "/" and path.endswith("/"):
+        out.append(
+            f"bio link {link!r} has a trailing slash — the canonical form ends "
+            f"at the child id (BL-10)"
+        )
+    elif not BIO_PATH_RE.match(path):
+        out.append(
+            f"bio link path {path!r} is not the settled destination shape "
+            f"^/x/[a-z0-9]{{4,32}}$ (BL-2)"
+        )
+
+    if BIO_PATH_RE.match(path):
+        slug = path[len("/x/"):]
+        if child_id is not None:
+            wanted = str(child_id or "").strip()
+            if not re.fullmatch(r"[a-z0-9]{4,32}", wanted):
+                out.append(
+                    f"child_id {child_id!r} is not a valid attribution key "
+                    f"([a-z0-9]{{4,32}}) — the path cannot bind to it"
+                )
+            elif path != f"/x/{wanted}":
+                out.append(
+                    f"bio link path {path!r} is not this child's attribution "
+                    f"key /x/{wanted} (BL-2)"
+                )
+        if known_ids is not None and slug not in {str(k) for k in known_ids}:
+            out.append(
+                f"bio link names child id {slug!r}, which is not in the registry"
+            )
+    return out
+
+
+def validate_bio(
+    text: str,
+    *,
+    child_id: str | None = None,
+    known_ids: Iterable[str] | None = None,
+    display_name: str = "",
+) -> list[str]:
+    """Every violation on a profile bio; empty means it may be provisioned.
+
+    The bio is the ONLY URL surface in the network: posts, replies and quotes
+    carry none (``validate``), so this one link decides what every child can say
+    and where the reader's next request lands. Deterministic and complete —
+    the validator never rewrites, it refuses.
+
+    ``display_name`` is checked because BL-4 says nothing else in the profile is
+    linkable. ``child_id`` (when given) binds the path to THIS child's registry
+    id; ``known_ids`` (when given) refuses a path naming an id nobody registered.
+    BL-5's disclosure presence is deliberately NOT machine-judged: the wording is
+    the Chairman's, and "states organisation control" is a human reading.
+    """
+    out: list[str] = []
+
+    for token in links_in_text(display_name or ""):
+        out.append(
+            f"display name carries a URL: {token!r} — nothing else in the "
+            f"profile is linkable (BL-4)"
+        )
+
+    links = links_in_text(text or "")
+    if not links:
+        out.append(
+            "bio carries no URL — the bio is the only link surface, so it must "
+            f"carry exactly https://{BIO_HOST}/x/<child-id> (BL-1)"
+        )
+        return out
+    if len(links) > 1:
+        out.append(
+            f"{len(links)} URLs in the bio — exactly one is allowed, and it "
+            f"must be the child's own attribution link (BL-1)"
+        )
+    for link in links:
+        out.extend(_bio_link_violations(
+            link, child_id=child_id, known_ids=known_ids))
     return out

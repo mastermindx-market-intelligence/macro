@@ -34,7 +34,11 @@ class Persona:
     idle_day_p: float = 0.07
     casing: str = "sentence"
     max_chars: int = 240
-    links_per_week: int = 1
+    #: DEPRECATED (t_4f2e5457): the one-link-per-week budget is gone. §26.4 as
+    #: amended by the identity bio policy is absolute — posts and replies carry
+    #: no URLs — and `validators.validate` no longer reads this field. Kept so
+    #: the persona rows and the loader schema stay stable.
+    links_per_week: int = 0
     hashtags_max: int = 1
     pet_phrases: list = field(default_factory=list)
     opinions: list = field(default_factory=list)
