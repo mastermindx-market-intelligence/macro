@@ -2688,16 +2688,7 @@
       </div>
     </div>
     <p id="prophet-assistant-status" class="prophet-assistant-status" role="status" aria-live="polite" hidden></p>
-    <nav class="stk-header-links prophet-section-nav" aria-label="Prophet">
-      <a href="#us-standouts">{{ t('Opportunities', '机会') }}</a>
-      <a href="#prophet-market-context">{{ t('Market context', '市场背景') }}</a>
-      <a href="{{ '#sectors' if sector_setups else 'sector_central.html#actnow-section' }}">{{ t('Sector timing', '板块时机') }}</a>
-      <a href="us_track_record.html">{{ t('Track record', '历史表现') }} <span aria-hidden="true">↗</span></a>
-      <span class="prophet-nav-tools">
-        <a href="us_stocks_lab.html">{{ t('Pick Lab', '选股实验室') }} <span aria-hidden="true">↗</span></a>
-        <a href="alerts.html">{{ t('Alerts', '提醒') }} <span aria-hidden="true">↗</span></a>
-      </span>
-    </nav>
+
   </div>
   {# MEGA-CAP TAPE folded into #action-board header (S2 §1.3). Include lives in
      templates/_us_act_now_board.html.j2, mode-gated so sector_central does not leak it. #}
@@ -16624,6 +16615,20 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
     <a class="scx-more" href="macro.html#dlg-risk"><span class="l-en">Risk radar →</span><span class="l-zh">风险雷达 →</span></a>
   </div>
   {% endif %}{# /market_state B4 #}
+  {% if mode == 'stocks' %}
+  {# Paper R8: heading, risk brief, navigation, then opportunities. Navigation
+     survives when the optional market source is unavailable. #}
+  <nav id="prophet-workspace-nav" class="stk-header-links prophet-section-nav span12" aria-label="Prophet">
+      <a href="#us-standouts">{{ t('Opportunities', '机会') }}</a>
+      <a href="#prophet-market-context">{{ t('Market context', '市场背景') }}</a>
+      <a href="{{ '#sectors' if sector_setups else 'sector_central.html#actnow-section' }}">{{ t('Sector timing', '板块时机') }}</a>
+      <a href="us_track_record.html">{{ t('Track record', '历史表现') }} <span aria-hidden="true">↗</span></a>
+      <span class="prophet-nav-tools">
+        <a href="us_stocks_lab.html">{{ t('Pick Lab', '选股实验室') }} <span aria-hidden="true">↗</span></a>
+        <a href="alerts.html">{{ t('Alerts', '提醒') }} <span aria-hidden="true">↗</span></a>
+      </span>
+  </nav>
+  {% endif %}
   {# Regime — now & where it's headed: the two-axis base-effect forward path (MO-PAID-001).
      Until 2026-10-02 this include sat inside the macro-only block behind `mode != 'macro'`
      and therefore rendered on no page (MO-PAID-001_FIX_R1). Stocks mode is its host;
@@ -17317,7 +17322,6 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
           <span class="mx-sec-total"><span class="l-en"><b>{{ _today_visible|length }}</b> of <b>{{ _today_total }}</b> Featured</span><span class="l-zh">精选 <b>{{ _today_visible|length }}</b> / <b>{{ _today_total }}</b></span></span>
           <button type="button" class="mx-sec-link" onclick="if(window.USProphetSource){window.USProphetSource.set('candidates')}">{{ t('Open Screener', '打开筛选器') }}</button>
         </div>
-        <p class="mx-sec-note">{{ t('Compare price structure and key risks. Open a setup for the full picture.', '比较价格结构与主要风险，打开形态查看完整分析。') }}</p>
         {%- if _today_visible %}
         <div class="nbgrid" id="us-today-grid">
           {% with items=_today_visible, opportunity_prefix='today', sg_any=_sg.any, bs_adj=_bs_adj, xu_allfeat=_xu_allfeat, trg_map=_trg_map, rw_en=_rw_en, rw_zh=_rw_zh, plan_rel=plan_rel if plan_rel is defined else none %}{% include "_us_board_cards.html.j2" %}{% endwith %}

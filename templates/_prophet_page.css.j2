@@ -2,11 +2,11 @@
    No global navigation rules, palette root, data policy or runtime style injection. #}
 body.page-stocks { background: var(--bg); }
 body.page-stocks #stocks-header {
-  padding: var(--sp-6,24px) var(--sp-7,32px) 0;
-  border-radius: var(--r-panel,14px);
-  background: var(--panel);
-  border: 1px solid var(--line);
-  box-shadow: var(--card-shadow);
+  padding: var(--sp-3,12px) 0;
+  border-radius: 0;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
 }
 body.page-stocks #stocks-header .stk-headline {
   display: flex; align-items: center; justify-content: space-between;
@@ -64,18 +64,20 @@ body.page-stocks #stocks-header .stk-status strong {
   color: var(--text); font-weight: 650; font-variant-numeric: tabular-nums;
 }
 body.page-stocks #stocks-header .stk-fresh-dot { align-self: center; }
-body.page-stocks #stocks-header .prophet-section-nav {
-  display: flex; align-items: center; flex-wrap: wrap; gap: 0 24px;
-  margin: var(--sp-5,20px) 0 0; padding: 0; border-top: 1px solid var(--line);
+body.page-stocks .prophet-section-nav {
+  display: flex; align-items: center; flex-wrap: wrap; gap: 0 var(--sp-2,8px);
+  margin: 0; padding: 0; min-width: 0;
 }
-body.page-stocks #stocks-header .prophet-section-nav a {
-  display: inline-flex; align-items: center; gap: 6px; min-height: 48px;
+body.page-stocks .prophet-section-nav a {
+  display: inline-flex; align-items: center; gap: 6px; min-height: 44px;
+  padding: 0 var(--sp-3,12px); border-radius: var(--r-ctl,8px);
   color: var(--muted); font-size: var(--fs-sm,12.5px); font-weight: 550;
   text-decoration: none; white-space: nowrap;
 }
-body.page-stocks #stocks-header .prophet-section-nav a:hover { color: var(--ink-link,var(--link)); }
-body.page-stocks #stocks-header .prophet-section-nav > a:first-child { color: var(--text); font-weight: 700; }
-body.page-stocks .prophet-nav-tools { display: flex; gap: 20px; margin-inline-start: auto; }
+body.page-stocks .prophet-section-nav a:hover { color: var(--ink-link,var(--link)); background: var(--panel2); }
+body.page-stocks .prophet-section-nav a:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }
+body.page-stocks .prophet-section-nav > a:first-child { color: var(--text); font-weight: 700; background: var(--panel2); }
+body.page-stocks .prophet-nav-tools { display: flex; gap: var(--sp-2,8px); margin-inline-start: auto; }
 body.page-stocks #prophet-market-brief {
   display: flex; align-items: center; flex-wrap: wrap; gap: 8px 14px;
   padding: 14px 20px; margin: 0;
@@ -116,6 +118,14 @@ body.page-stocks #us-standouts #us-st-view-toggle button[aria-selected="true"] {
 body.page-stocks #us-standouts #us-board-sub { flex-basis: 100%; color: var(--muted); }
 body.page-stocks #us-standouts .pbs-note { margin: 10px 0; font-size: var(--fs-sm,12.5px); }
 body.page-stocks #us-standouts .mx-sec-hd { margin-top: 16px; gap: 10px; }
+/* The source toggle already names Today. Keep its heading in the accessibility
+   tree without duplicating a visible title and delaying the first card. */
+body.page-stocks #us-today .mx-sec-h2 {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0;
+}
+body.page-stocks #us-today .mx-sec-hd { align-items: center; margin-top: 0; }
+body.page-stocks #us-today .mx-sec-link { min-height: 44px; display: inline-flex; align-items: center; }
 body.page-stocks #us-standouts .mx-sec-note { font-size: var(--fs-sm,12.5px); line-height: 1.5; max-width: 85ch; }
 body.page-stocks #us-standouts .nb-grid-section { min-width: 0; }
 body.page-stocks #us-standouts .nb-stage-hd {
@@ -203,16 +213,16 @@ body.page-stocks #dash-mtf-heading:focus-visible {
 }
 body.page-stocks :is(.dash-mtf-retry,.mtf-skel)[hidden] { display: none !important; }
 @media (max-width: 959px) {
-  body.page-stocks #stocks-header { padding: 20px 20px 0; }
+  body.page-stocks #stocks-header { padding: 12px 0; }
   body.page-stocks #stocks-header .stk-headline { gap: 16px; }
   body.page-stocks #stocks-header .stk-head-meta { gap: 8px 18px; }
-  body.page-stocks #stocks-header .prophet-section-nav { gap: 0 20px; }
+  body.page-stocks .prophet-section-nav { gap: 0 8px; }
   body.page-stocks .prophet-nav-tools { margin-inline-start: 0; }
 }
 @media (max-width: 639px) {
   /* Put the first actionable name ahead of secondary explanations on a phone.
      Keep all clocks, warning text, source switches and 44px controls visible. */
-  body.page-stocks #stocks-header { padding: 14px 16px 0; }
+  body.page-stocks #stocks-header { padding: 8px 0; }
   body.page-stocks #stocks-header .stk-headline { gap: 10px; }
   body.page-stocks #stocks-header .prophet-heading {
     order: 0; flex: 1 1 min-content; min-width: min-content; max-width: 100%;
@@ -225,13 +235,13 @@ body.page-stocks :is(.dash-mtf-retry,.mtf-skel)[hidden] { display: none !importa
   body.page-stocks #stocks-header h1 > span { font-size: var(--fs-sm,12.5px); padding-inline-start: 12px; }
   body.page-stocks #stocks-header .stk-head-meta { gap: 5px 12px; }
   body.page-stocks #stocks-header .stk-status { font-size: var(--fs-label,11px); }
-  body.page-stocks #stocks-header .prophet-section-nav {
-    flex-wrap: nowrap; overflow-x: auto; gap: 20px; margin-top: 10px;
+  body.page-stocks .prophet-section-nav {
+    flex-wrap: nowrap; overflow-x: auto; gap: 4px; margin-top: 0;
     scrollbar-width: thin; overscroll-behavior-inline: contain;
   }
-  body.page-stocks #stocks-header .prophet-section-nav a { min-height: 44px; }
-  body.page-stocks #stocks-header .prophet-section-nav > a { flex: none; }
-  body.page-stocks .prophet-nav-tools { flex: none; gap: 20px; }
+  body.page-stocks .prophet-section-nav a { min-height: 44px; }
+  body.page-stocks .prophet-section-nav > a { flex: none; }
+  body.page-stocks .prophet-nav-tools { flex: none; gap: 4px; }
 
   /* The risk action stays on the first line. The stance remains readable below it,
      including red-state and overseas-risk warnings in both languages. */
@@ -261,14 +271,14 @@ body.page-stocks :is(.dash-mtf-retry,.mtf-skel)[hidden] { display: none !importa
   }
   body.page-stocks #us-standouts #us-today .mx-sec-hd {
     display: grid; grid-template-columns: minmax(0,1fr) auto;
-    align-items: center; gap: 2px 8px; margin-top: 8px;
+    align-items: center; gap: 2px 8px; margin-top: 0;
   }
   body.page-stocks #us-today .mx-sec-h2 { grid-column: 1; grid-row: 1; }
   body.page-stocks #us-today .mx-sec-total {
-    grid-column: 1; grid-row: 2; min-width: 0; font-size: var(--fs-label,11px);
+    grid-column: 1; grid-row: 1; min-width: 0; font-size: var(--fs-label,11px);
   }
   body.page-stocks #us-today .mx-sec-link {
-    grid-column: 2; grid-row: 1 / span 2; margin: 0; min-height: 44px;
+    grid-column: 2; grid-row: 1; margin: 0; min-height: 44px;
   }
   body.page-stocks #us-standouts #us-today .mx-sec-note { margin: 0 0 10px; }
   body.page-stocks .dash-mtf-scroll-hint { display: block; }

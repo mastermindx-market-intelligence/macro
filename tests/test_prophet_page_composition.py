@@ -16,6 +16,30 @@ def test_current_opportunities_precede_context_without_losing_source_controls():
     for link in doc.select(".prophet-section-nav a[href^='#']"):
         assert doc.find(id=link["href"][1:]), link["href"]
 
+
+def test_paper_page_sequence_keeps_brief_before_navigation_and_workspace():
+    vm = _base_vm()
+    vm["market_state"] = {"color": "red", "label_en": "Risk-off", "label_zh": "避险"}
+    doc = render(vm)
+    nodes = list(doc.find_all(True))
+    sequence = [doc.select_one(selector) for selector in (
+        "#stocks-header", "#prophet-market-brief", "#prophet-workspace-nav", "#us-standouts"
+    )]
+    assert all(sequence)
+    assert [nodes.index(node) for node in sequence] == sorted(nodes.index(node) for node in sequence)
+    assert not doc.select_one("#stocks-header .prophet-section-nav")
+    assert "defend capital" in doc.select_one("#prophet-market-brief").get_text()
+    assert doc.select_one("#prophet-market-brief a[href='macro.html#dlg-risk']")
+
+
+def test_workspace_navigation_survives_unavailable_market_brief():
+    vm = _base_vm()
+    vm["market_state"] = None
+    doc = render(vm)
+    assert not doc.select_one("#prophet-market-brief")
+    assert len(doc.select("#prophet-workspace-nav")) == 1
+    assert doc.select_one("#prophet-workspace-nav a[href='#us-standouts']")
+
 def test_stock_source_survives_independent_theme_source_failure():
     vm = _base_vm()
     expected = [c["data-ticker"] for c in render(vm).select("#us-cand-grid .po-card")]
