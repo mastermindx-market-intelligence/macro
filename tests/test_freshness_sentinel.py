@@ -2723,3 +2723,90 @@ def test_the_behind_budget_is_unchanged_by_the_ahead_fence():
     assert over["status"] == "stale" and over["asof_sessions_behind"] == 2
     assert "behind the calendar" in over["detail"]
     assert "pack_ahead_of_calendar" not in over["detail"]
+
+
+# --------------------------------------------------------------------------- #
+# The entry-radar INSTANT stamps — the 2026-11-06 blindness
+#
+# /live/entry_radar.json's ``asof`` is not a session date like every other
+# surface's: engine.entry_radar.live_eval serialises ``astimezone(utc)
+# .isoformat()`` and swaps ``+00:00`` for ``Z``, so the payload carries
+# microseconds and a trailing Z — ``2026-11-06T21:59:11.497903Z`` was served on
+# every pass from that day. ``sessions_behind`` read it with
+# ``date.fromisoformat``, the stdlib DATE parser, which raises on any string
+# that carries a time component; the surface therefore graded INDETERMINATE
+# ("the sentinel is blind") on every pass instead of a freshness verdict, and a
+# real freeze in that lane could not have paged. These cases pin that exact
+# string and the sibling shapes the same producer can emit.
+# --------------------------------------------------------------------------- #
+#: Saturday 2026-11-07 05:00Z. The last completed NYSE session is Friday
+#: 2026-11-06 — the session the served stamp names, so current is 0 behind.
+RADAR_NOW = datetime(2026, 11, 7, 5, 0, tzinfo=timezone.utc)
+#: The exact string the 2026-11-06T07:17Z pass could not measure, verbatim.
+RADAR_MICRO_Z_STAMP = "2026-11-06T21:59:11.497903Z"
+
+
+def _radar_surface() -> dict:
+    return next(s for s in fs.SURFACES if s["id"] == "entry_radar_live")
+
+
+def _radar_check(asof: str | None, now: datetime = RADAR_NOW) -> dict:
+    return fs.check_surface(_radar_surface(), _entry_radar(asof), now)
+
+
+@pytest.mark.parametrize("stamp", [
+    RADAR_MICRO_Z_STAMP,                  # the served stamp, verbatim
+    "2026-11-06T21:59:11Z",               # Z, whole seconds
+    "2026-11-06T21:59:11.497903+00:00",   # offset form, microseconds
+    "2026-11-06",                         # the bare session date the boards write
+])
+def test_every_stamp_shape_the_radar_producer_emits_is_measurable(stamp):
+    c = _radar_check(stamp)
+    assert c["status"] == "ok", c["detail"]
+    assert c["asof_sessions_behind"] == 0
+    # Disclosed verbatim: the sentinel reports the stamp it was given, it does
+    # not rewrite the producer's text into its own house form.
+    assert c["asof"] == stamp
+
+
+def test_the_exact_2026_11_06_stamp_no_longer_reads_as_blind():
+    """The pinned regression. Before the fix this pass read
+    ``indeterminate | cannot measure '2026-11-06T21:59:11.497903Z' against the
+    NYSE calendar (ValueError: Invalid isoformat string: ...)``."""
+    c = _radar_check(RADAR_MICRO_Z_STAMP)
+    assert c["status"] != "indeterminate"
+    assert "cannot measure" not in c["detail"]
+    # …and it counts the session it should: Friday 11-06, 0 completed sessions
+    # behind on Saturday 11-07.
+    assert c["asof_sessions_behind"] == 0
+    assert fs.sessions_behind(RADAR_MICRO_Z_STAMP, RADAR_NOW) == 0
+
+
+def test_a_frozen_radar_payload_pages_on_its_instant_stamp():
+    """Why the blindness mattered: a surface that cannot be measured can never
+    page. Four sessions back on the same instant shape must still breach — the
+    fix restores the page, it does not paper over one."""
+    c = _radar_check("2026-11-02T21:59:11.497903Z")
+    assert c["status"] == "stale"
+    assert c["asof_sessions_behind"] == 4
+    assert "behind the calendar" in c["detail"]
+
+
+def test_an_unparseable_stamp_is_still_indeterminate_not_a_crash():
+    """Widening the parser must not turn a garbage stamp into a verdict: a
+    surface that cannot vouch for its date still reads BLIND, not fresh."""
+    c = _radar_check("not-a-stamp")
+    assert c["status"] == "indeterminate"
+    assert "cannot measure" in c["detail"]
+
+
+def test_a_microsecond_instant_sits_on_its_own_session_at_the_ahead_fence():
+    """The D12 fence is the other ``date.fromisoformat`` on the same stamp, and
+    an instant there once raised UNCAUGHT (outside the guarded block, so the
+    whole pass died rather than grading one surface). 21:59Z on a Friday names
+    Friday — a date-part read is what keeps it from reading as Saturday and
+    paging every healthy evening."""
+    c = _armed_check(RADAR_MICRO_Z_STAMP, RADAR_NOW)
+    assert c["status"] == "ok", c["detail"]
+    assert c["asof_expected_session"] == "2026-11-06"
+    assert "pack_ahead_of_calendar" not in c["detail"]
