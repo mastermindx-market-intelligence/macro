@@ -1,0 +1,16 @@
+{
+  "_source": "Per-value production origins, grep-verified 2026-11-01 (SIC-V3-C07): 顶部/底部 templates/sector_cycles.js:1144; 板块 templates/sector_cycles.js:93; 篮子 templates/sector_cycles.js:736; 价格 templates/sector_cycles.js:592 (L(Price, 价格)); 向上 engine/cycle_ontology.py:291; 向下 engine/cycle_ontology.py:312; 一致 NEW deck copy (wave-2 proposal 已对齐 for the events/fragmentation status aligned, reworded in wave 6 — SIC-V6-C08, VTC-046: no 对齐 term in the page-level data-session family; no production ZH string for this status was found by grep of templates/ and engine/); 看涨/谨慎/看跌/中性/预期 NEW deck copy (wave-4 proposal, SIC-V4-C10 drawer tone gloss for engine/cycle_ontology.py STANCES tone bullish/caution/bearish/neutral/anticipatory :114-122; no production ZH tone string was found by grep of templates/ and engine/)",
+  "peak": "顶部",
+  "trough": "底部",
+  "sector": "板块",
+  "basket": "篮子",
+  "down": "向下",
+  "up": "向上",
+  "price": "价格",
+  "aligned": "一致",
+  "bullish": "看涨",
+  "caution": "谨慎",
+  "bearish": "看跌",
+  "neutral": "中性",
+  "anticipatory": "预期"
+}

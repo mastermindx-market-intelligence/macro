@@ -2071,6 +2071,33 @@ def partition_jobs(jobs: Iterable[LegacyJob], pack_count: int) -> list[list[Lega
     return packs
 
 
+def compact_scoped_packs(
+    jobs: Iterable[LegacyJob], pack_count: int
+) -> list[list[LegacyJob]]:
+    """Use fewer active bins without increasing the legacy modeled peak load.
+
+    Only build_plan's genuinely narrowed PR lane may use this compactor. The
+    ordinary partition_jobs function and main baseline pack names are unchanged.
+    Weights are planning estimates, not elapsed-time or speedup guarantees.
+    """
+    selected = list(jobs)
+    baseline = partition_jobs(selected, pack_count)
+    if any(job.weight < 0 for job in selected):
+        raise ValueError("scoped compaction requires nonnegative job weights")
+    peak = max((sum(job.weight for job in pack) for pack in baseline), default=0)
+    if not selected or peak == 0:
+        return baseline
+    total = sum(job.weight for job in selected)
+    # No packing below this bin count can retain the old peak. Search every
+    # feasible smaller greedy count; greedy feasibility need not be monotonic.
+    lower_bound = max(1, (total + peak - 1) // peak)
+    for active_count in range(lower_bound, min(pack_count, len(selected))):
+        candidate = partition_jobs(selected, active_count)
+        if max(sum(job.weight for job in pack) for pack in candidate) <= peak:
+            return candidate + [[] for _ in range(pack_count - active_count)]
+    return baseline
+
+
 # ---------------------------------------------------------------------------
 # Plan once, execute many (2026-08-11)
 #
@@ -2365,9 +2392,24 @@ def build_plan(
             f"{reason}"
         )
 
-    # Balance across the SELECTED set, not the full manifest — otherwise a
-    # scoped run would leave whole packs empty while one pack carried it all.
-    packs = partition_jobs(eligible, pack_count)
+    event = event or os.environ.get("GITHUB_EVENT_NAME") or (
+        "pull_request" if changed_from is not None else "workflow_dispatch"
+    )
+    role = role or os.environ.get("CI_SEMANTIC_ROLE") or (
+        "pr_head" if event == "pull_request" else "main"
+    )
+    # Main and full-suite plans retain every legacy baseline check name.
+    # Only a genuinely narrowed active PR selection may compact execution.
+    narrowed_pr = (
+        role == "pr_head"
+        and changed_from is not None
+        and changed is not None
+        and scope_mode == "active"
+        and not invalidated
+        and len(eligible) < len(jobs)
+    )
+    packs = (compact_scoped_packs(eligible, pack_count) if narrowed_pr
+             else partition_jobs(eligible, pack_count))
     pack_jobs = tuple(tuple(job.job_id for job in pack) for pack in packs)
     pack_weights = tuple(sum(job.weight for job in pack) for pack in packs)
     eligible_job_ids = tuple(job.job_id for job in eligible)
@@ -2396,12 +2438,6 @@ def build_plan(
         or os.environ.get("CI_BASE_SHA")
         or changed_from
         or tested_tree_sha
-    )
-    event = event or os.environ.get("GITHUB_EVENT_NAME") or (
-        "pull_request" if changed_from is not None else "workflow_dispatch"
-    )
-    role = role or os.environ.get("CI_SEMANTIC_ROLE") or (
-        "pr_head" if event == "pull_request" else "main"
     )
     # `workflow` is resolved HERE, before the role/event validation below, so
     # the narrow main-owned diagnostic admission can be evaluated in the same gate instead of
@@ -3509,10 +3545,28 @@ def _tested_tree_ancestry_ready(
     return merge_base.returncode == 0 and bool(re.fullmatch(r"[0-9a-f]{40}", value))
 
 
+# Exact paths compared by the international-workspace-browser frozen guard
+# (tests/test_intl_gs_foundation.py). The international-dislocation-explorer
+# job passes its own compared paths from its manifest step (F10) so that this
+# module's closure never names that guard's builder script.
+INTERNATIONAL_FOUNDATION_FROZEN_PATHS = (
+    "templates/theme.css",
+    "templates/_navlinks.html.j2",
+    "engine/intl_global_universe.py",
+    "engine/intl_global_observation.py",
+    "lib/intl_global_observation_adapter.py",
+)
+
+
 def prepare_canonical_main(
-    root: Path, *, tested_tree_sha: str, base_ref: str = "main"
+    root: Path, *, tested_tree_sha: str, base_ref: str = "main",
+    frozen_paths: tuple[str, ...] = INTERNATIONAL_FOUNDATION_FROZEN_PATHS,
 ) -> str:
     """Acquire actual main once, then deepen only its pinned history as needed.
+
+    ``frozen_paths`` are the exact repository paths the calling job's frozen
+    guard compares at the canonical base and the tested tree; every one must be
+    present offline at both before this returns.
 
     The International frozen-file guard reads origin/main and its merge base
     with HEAD. Its fetch-depth-0 preparation already establishes tested-tree
@@ -3523,7 +3577,10 @@ def prepare_canonical_main(
     The manifest runs each synchronous fetch under the logical job's existing
     deadline and process group. A failed/unknown fetch propagates immediately: only a completed
     acquisition with valid bindings but insufficient ancestry earns a deeper rung.
-    There is no transport retry, private timeout, workspace restoration, or replay.
+    Filter only this canonical acquisition, with child-only declarations so Git
+    does not persist a partial-clone policy on the fully materialized checkout.
+    Required guard objects must be present offline before returning. There is no
+    transport retry, private timeout, workspace restoration, or replay.
     """
     if base_ref != "main":
         raise RuntimeError("canonical-main preparation requires base_ref='main'")
@@ -3531,9 +3588,24 @@ def prepare_canonical_main(
         r"[0-9a-f]{40}", tested_tree_sha
     ):
         raise RuntimeError("canonical-main preparation requires an exact tested-tree SHA")
+    if (not isinstance(frozen_paths, tuple) or not frozen_paths or not all(
+            isinstance(path, str) and path and not path.startswith("/")
+            and ".." not in path.split("/") for path in frozen_paths)):
+        raise RuntimeError("canonical-main preparation requires exact relative frozen paths")
 
     root = root.resolve()
+    # Only the explicit acquisition may use transport. All readiness/object
+    # probes fail closed rather than silently repairing a missing promisor blob.
+    fetch_env = _trusted_git_environment(root)
+    fetch_env.update({
+        "GIT_CONFIG_COUNT": "2",
+        "GIT_CONFIG_KEY_0": "remote.origin.promisor",
+        "GIT_CONFIG_VALUE_0": "true",
+        "GIT_CONFIG_KEY_1": "remote.origin.partialclonefilter",
+        "GIT_CONFIG_VALUE_1": "blob:none",
+    })
     git_env = _trusted_git_environment(root)
+    git_env.update(GIT_NO_LAZY_FETCH="1", GIT_ALLOW_PROTOCOL="")
     canonical_sha: str | None = None
     previous_depth = 0
 
@@ -3556,9 +3628,39 @@ def prepare_canonical_main(
             raise RuntimeError("canonical-main preparation cannot determine shallow state")
         return result.stdout.strip() == "true"
 
+    def require_local_objects(canonical_base: str) -> None:
+        # ``frozen_paths`` are the exact paths compared by the caller's guard.
+
+        def required(*args: str) -> str:
+            result = _git_cmd(root, git_env, *args)
+            if result.returncode != 0:
+                raise RuntimeError("canonical-main required local object unavailable")
+            return result.stdout.strip()
+
+        raw = required("cat-file", "-p", tested_tree_sha)
+        parents = [line.split()[1] for line in raw.splitlines()
+                   if line.startswith("parent ")]
+        commits = {canonical_sha, tested_tree_sha, canonical_base, *parents}
+        if len(parents) == 2:
+            commits.add(required("merge-base", *parents))
+        for oid in commits:
+            if not isinstance(oid, str) or not re.fullmatch(r"[0-9a-f]{40}", oid):
+                raise RuntimeError("canonical-main required object identity unavailable")
+            required("cat-file", "-e", f"{oid}^{{commit}}")
+            required("cat-file", "-e", f"{oid}^{{tree}}")
+        for ref in (canonical_base, tested_tree_sha):
+            for path in frozen_paths:
+                entry = required("ls-tree", ref, "--", path)
+                fields = entry.split()
+                if (len(fields) != 4 or fields[1] != "blob" or fields[3] != path
+                        or not re.fullmatch(r"[0-9a-f]{40}", fields[2])):
+                    raise RuntimeError("canonical-main required frozen object unavailable")
+                required("cat-file", "-e", f"{fields[2]}^{{blob}}")
+
     for depth in _EXACT_TESTED_TREE_DEPTHS:
         check_bindings()
-        command = ["git", "fetch", "--no-recurse-submodules", "--no-tags"]
+        command = ["git", "fetch", "--no-recurse-submodules", "--no-tags",
+                   "--filter=blob:none"]
         # Absolute --depth can shorten already-qualified tested-tree history.
         # Reuse the existing finite ancestry ladder as *additional* generations.
         increment = depth - previous_depth
@@ -3575,7 +3677,7 @@ def prepare_canonical_main(
             f"additional ancestry limit {depth}",
             flush=True,
         )
-        subprocess.run(command, cwd=root, env=git_env, check=True)
+        subprocess.run(command, cwd=root, env=fetch_env, check=True)
         fetched_sha = commit("FETCH_HEAD")
         if canonical_sha is None:
             canonical_sha = commit("origin/main")
@@ -3592,6 +3694,7 @@ def prepare_canonical_main(
         if merge_base.returncode == 0 and _tested_tree_ancestry_ready(
             root, git_env, tested_tree_sha
         ):
+            require_local_objects(value)
             check_bindings()
             print(
                 "::notice title=international-workspace-browser::canonical main "
@@ -4165,6 +4268,23 @@ def _child_environment(
     if command_env.get("CI_CHANGED_FILES_FILE"):
         command_env.pop("CI_CHANGED_FILES_JSON", None)
     return _child_git_environment(command_env)
+
+
+def _export_tested_tree_sha(bound_tree_sha: str | None) -> bool:
+    """Publish the plan-bound tested tree to legacy steps as ``TESTED_TREE_SHA``.
+
+    The International canonical-main gates read ``CI_TESTED_TREE_SHA`` first and
+    ``TESTED_TREE_SHA`` second. ci.yml exports ``TESTED_TREE_SHA`` in the pack
+    step's ``env:``; the trusted and canary executors pass only CLI flags, so a
+    pack that knows its plan publishes the value once here, before either child
+    environment is assembled. An explicit value is never overridden (exact-base
+    replay sets ``CI_TESTED_TREE_SHA`` deliberately and keeps precedence).
+    Returns True only when this call set the variable.
+    """
+    if bound_tree_sha is None or os.environ.get("TESTED_TREE_SHA"):
+        return False
+    os.environ["TESTED_TREE_SHA"] = bound_tree_sha
+    return True
 
 
 def _child_git_environment(command_env: Mapping[str, str]) -> dict[str, str]:
@@ -5253,6 +5373,9 @@ def execute_pack(
         r"[0-9a-f]{40}", bound_tree_sha
     ):
         bound_tree_sha = None
+    # F10 review F1: both international legacy gates need the tested tree in the
+    # step environment on every executor, not only the ci.yml pack step.
+    _export_tested_tree_sha(bound_tree_sha)
     command_env = _child_environment(changed_files_file)
     if plan is not None:
         try:

@@ -5,25 +5,25 @@
       "watch": 0.08,
       "caution": 0.08,
       "elevated": 0.12,
-      "risk-off": 0.123
+      "risk-off": 0.12
     },
     "h10": {
       "calm": 0.13,
       "watch": 0.16,
-      "caution": 0.245,
-      "elevated": 0.245,
-      "risk-off": 0.245
+      "caution": 0.249,
+      "elevated": 0.249,
+      "risk-off": 0.249
     },
     "h21": {
       "calm": 0.27,
       "watch": 0.32,
-      "caution": 0.55,
-      "elevated": 0.55,
-      "risk-off": 0.55
+      "caution": 0.65,
+      "elevated": 0.65,
+      "risk-off": 0.65
     }
   },
-  "n_graded": 30,
-  "brier_before": 0.2303,
-  "brier_after": 0.2292,
-  "updated": "2026-10-23T12:02:08+00:00"
+  "n_graded": 38,
+  "brier_before": 0.2153,
+  "brier_after": 0.2151,
+  "updated": "2026-11-06T15:08:42+00:00"
 }

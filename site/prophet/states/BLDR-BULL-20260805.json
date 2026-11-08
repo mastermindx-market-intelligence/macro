@@ -1,30 +1,30 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "BLDR-BULL-20260805",
-  "asof": "2026-10-27",
+  "asof": "2026-11-07",
   "phase": "invalidated",
   "detection_phase": "invalidated",
-  "management_confidence": 11.5,
+  "management_confidence": 9.6,
   "raw_confidence": 8.0,
-  "delta_vs_base": -48.5,
+  "delta_vs_base": -50.4,
   "recommended_action": null,
   "human_state": "Closed",
   "components": {
     "validity": 0.0,
     "progress": 0.0,
     "pace": 0.0,
-    "retention": 33.3,
-    "overlay": 47.0
+    "retention": 39.0,
+    "overlay": 27.0
   },
   "geometry": {
-    "dist_to_stop_r": -0.753,
+    "dist_to_stop_r": -0.156,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 166.7,
-    "p1": -1.1689,
-    "p2": -0.5845,
+    "horizon_pct_used": 191.1,
+    "p1": -0.7709,
+    "p2": -0.3854,
     "p3": null,
-    "move_r": -1.753,
+    "move_r": -1.156,
     "mfe_r": 0.0,
     "mae_r": -2.418
   },
@@ -45,8 +45,8 @@
   "_first_trigger_ts": null,
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 75,
-  "tau": 1.6667,
+  "days_elapsed": 86,
+  "tau": 1.9111,
   "closed": true,
   "outcome": "NO_ENTRY"
 }
