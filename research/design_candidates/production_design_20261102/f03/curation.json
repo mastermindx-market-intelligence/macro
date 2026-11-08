@@ -352,6 +352,35 @@
         "qualification": "Observed source-return metadata, not a new native approval, canonical route admission or product implementation.",
         "readme_file_id": null
       }
+    },
+    "D05": {
+      "source_contract": "https://github.com/mastermindx-market-intelligence/macro/blob/235d60d912589e630988b67eee6ba63be37c5712/research/design_candidates/production_design_20261102/f03/evidence/d05-sector-reference-observation-20261108.md",
+      "source_contract_label": "D05 reference observation · provisional journey and comparison-return proposal",
+      "candidate_ref": "https://app.paper.design/file/01M6FAXA774QT1VRDMAG7DFQ2W/p-6-0",
+      "rig_state": "draft",
+      "rig_receipt": null,
+      "shell_version": null,
+      "system_version": null,
+      "status": "Bounded unqualified comparison-return proposal observed; current D05 journey remains provisional and acceptance held.",
+      "next_action": "Open the current D05 Readme, inspect the bounded proposal, and prove ordered selection and full comparison basis through the existing D05 owner before acceptance. Preserve all original references and release holds.",
+      "return_observation": {
+        "observed_at_utc": "2026-11-08T17:08:48Z",
+        "source_head": "235d60d912589e630988b67eee6ba63be37c5712",
+        "source_blob_sha": "3672f23a0d2bb4609469c3ec4ca88af56a17bf7d",
+        "observed_pr_head": null,
+        "evidence_urls": [
+          "https://github.com/mastermindx-market-intelligence/macro/blob/235d60d912589e630988b67eee6ba63be37c5712/research/design_candidates/production_design_20261102/f03/evidence/d05-sector-reference-observation-20261108.md",
+          "https://github.com/mastermindx-market-intelligence/Mastermind/blob/c966b03919c3bc161d23445a007ab75def0e4024/docs/design/PAPER_PORTFOLIO_AUDIT_20261108.md"
+        ],
+        "candidate_file_id": "01M6FAXA774QT1VRDMAG7DFQ2W",
+        "candidate_page_id": "p-6-0",
+        "readme_page_id": "p-3-0",
+        "readme_board_id": "BML-0",
+        "readme_url": "https://app.paper.design/file/01M6FAXA774QT1VRDMAG7DFQ2W/p-3-0",
+        "retained_reference_url": "https://app.paper.design/file/01M6FAXA774QT1VRDMAG7DFQ2W/p-1-0",
+        "qualification": "Observed reference metadata for a bounded proposed slice, not a complete D05 build return, approved candidate, foundation release, current runtime or refreshed census. Source integration and consumer proof remain open.",
+        "readme_file_id": "01M6FAXA774QT1VRDMAG7DFQ2W"
+      }
     }
   }
 }

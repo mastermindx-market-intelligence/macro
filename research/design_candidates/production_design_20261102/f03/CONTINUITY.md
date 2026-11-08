@@ -2,7 +2,19 @@
 
 F03 continues under original programme Draft [#10617](https://github.com/mastermindx-market-intelligence/macro/pull/10617) and existing Draft [#10631](https://github.com/mastermindx-market-intelligence/macro/pull/10631). This is not a new registry, workstream, runtime grant or file-wide lease. The current receiving session owns recovery; an archived chat is not a dependency.
 
-## Latest actionable frontier — CI repaired; source/publication distinction corrected, 2026-11-04
+## Latest actionable frontier — D05 reference discovery corrected, 2026-11-08
+
+The Chairman's continuing Paper portfolio audit now owns this bounded F03 source correction under Mastermind procedure pin `5c3d3885234358aefb97ecdbc59be0864df14f8b`. The previous branch head was `97856926b1a5ccd85780c67c5db45e6581bf5b3c`. This source-linked continuation preserves other canvas writers, the original F03 native ledger and all recorded release/physical-operation holds. An empty addressable-session response is not a proof that all writers are absent.
+
+- The [D05 observation](evidence/d05-sector-reference-observation-20261108.md) was committed and byte-read back at `235d60d912589e630988b67eee6ba63be37c5712`, note blob `3672f23a0d2bb4609469c3ec4ca88af56a17bf7d`, before the curation referred to it. [Exact Paper metadata responses](evidence/d05-sector-reference-readback-20261108.json) bind Sector file `01M6FAXA774QT1VRDMAG7DFQ2W`, provisional Readme `p-3-0 / BML-0`, bounded comparison-return proposal `p-6-0 / GPL-0`, and retained reference `p-1-0`.
+- Both curation mirrors now add only `assignment_returns.D05`; the existing `--refresh-returns` generator renders the D05 assignment and directory projections. Candidate p6 is explicitly an unqualified proposed slice. Readme p3 and retained p1 are separate. RIG remains draft with a null receipt; shell/system qualification and observed F03 PR head remain null.
+- The focused checks pass: **109 return/identity + 63 directory source-logic + 26 structural-evidence checks**. All nine frozen artifacts, 36 non-evidence assignment identities, prior eight observations, 348 routes, nine noncanonical deltas and 301 NOT_DISPATCHED actions are preserved. The historical census, root manifest and native ledger remain unchanged. See [actual verification receipt](evidence/d05-directory-verification-20261108.json).
+- The current package-wide manifest remains `paper/retention/artifact-manifest.json`; its 279 preexisting entries were checked against the source tree. The older root manifest is intentional history, not a stale current manifest. No Paper edit, clone/move/archive, runtime admission, production write or deployment was performed by this source correction.
+- Live metadata for F03 #10631 was not established by the available reads. Preserve its recorded Draft/HOLD and stacked `unsupported_base_ref` CI restrictions; do not infer current PR state, lift a hold, create a duplicate PR or claim hosted CI from local checks. No Ready/un-draft/enqueue/relabel/merge is authorized.
+
+**Next safe phase:** improve exact proposed-board discovery within the existing returned-observation and page-join model, using the observed p6/GPL-0 identity. Do not insert a new board into the frozen census or invent a Paper board URL. The warned original remains READ ONLY / NO MODIFY; native backup and all physical organization proposals remain held.
+
+## Prior actionable frontier — CI repaired; source/publication distinction corrected, 2026-11-04
 
 Mastermind Draft/HOLD [#2058](https://github.com/mastermindx-market-intelligence/Mastermind/pull/2058) is now at `97df1b5c15f9a08a82f4cf644aed96e79ca7d6bd`. [Hosted CI 41959383220](https://github.com/mastermindx-market-intelligence/Mastermind/actions/runs/41959383220) is **SUCCESS** on that exact head: PR test scope, PR fast checks (including bounded source-proximate tests) and the final test gate passed. The full pytest shard was deliberately skipped by the protected scope classifier; this is not a full-suite claim.
 

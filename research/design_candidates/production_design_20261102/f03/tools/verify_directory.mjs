@@ -36,7 +36,7 @@ const inventory=fs.readFileSync(root+'/inventory.html','utf8');const compact=JSO
 check('Default inventory row retains an explicit nonempty return fragment',()=>{assert.ok(inventory.includes("encodeURIComponent(p.toString()||'page=0')"));const s=run("detail(sessionById('D07'),{view:'routes',q:'',owner:'',session:'D07',page:'',board:'',inventory:'page=0'})");assert.match(s,/href="inventory.html#page=0"/);});
 check('Complete member index preserves included and excluded rows',()=>{assert.equal(compact.length,14025);assert.equal(compact.filter(x=>x[1]).length,14014);assert.equal(compact.filter(x=>x[2]==='included_legacy').length,13989);assert.equal(compact.filter(x=>x[2]==='unregistered').length,7);assert.equal(new Set(compact.map(x=>x[0])).size,14025);});
 
-check('Eight return observations preserve null native-approval receipts',()=>{assert.equal(run('data.sessions.filter(s=>s.return_observation).length'),8);assert.ok(run('data.sessions.filter(s=>s.return_observation).every(s=>s.rig_receipt===null&&s.rig_state==="draft")'));});
+check('Nine return observations preserve null native-approval receipts',()=>{assert.equal(run('data.sessions.filter(s=>s.return_observation).length'),9);assert.ok(run('data.sessions.filter(s=>s.return_observation).every(s=>s.rig_receipt===null&&s.rig_state==="draft")'));});
 check('D08B and D08C expose direct exact candidate, Read me and source links',()=>{for(const [id,candidate,readme,pin] of [['D08B','p-12-0','p-14-0','a3356474cebbdd88e6448e05ffc3d2e44faa5ca6'],['D08C','p-13-0','p-15-0','291f21aa8e9d757466412549a8d6537d889ab4d8']]){const s=run(`returnEvidence(sessionById('${id}'))`);assert.ok(s.includes('01M3NSZGE8JWN2EZCSF0DT05RM/'+candidate));assert.ok(s.includes('01M3NSZGE8JWN2EZCSF0DT05RM/'+readme));assert.ok(s.includes('/blob/'+pin+'/'));assert.ok(s.includes(id+' returned source/build contract'));assert.doesNotMatch(s,/Open F03 contract/);}});
 check('Source-only D08A and D08D remain without admitted native candidates',()=>{for(const id of ['D08A','D08D']){assert.equal(run(`sessionById('${id}').candidate_ref`),null);const s=run(`returnEvidence(sessionById('${id}'))`);assert.match(s,/not admitted/);assert.match(s,/Retained original reference/);assert.match(s,/No approved candidate established/);}});
 check('D08 entry provides all four owner contracts without a third directory choice',()=>{const s=run("sliceEvidence(sessionById('D08'))");for(const id of ['D08A','D08B','D08C','D08D'])assert.ok(s.includes(run(`sessionById('${id}').source_contract`)));assert.match(s,/Design packages are not route records/);});
@@ -130,8 +130,22 @@ check('New reference controls include narrow stacking and touch-target source ru
 
 check('All concrete returned Read me board IDs resolve only to their own page',()=>{
  const returns=run('data.sessions.filter(s=>s.return_observation?.readme_board_id)');
- assert.equal(returns.length,4);
+ assert.equal(returns.length,5);
  for(const s of returns){const o=s.return_observation;const rows=run(`referenceRows().filter(r=>r.claims.some(c=>c.board_id===${JSON.stringify(o.readme_board_id)}))`);assert.equal(rows.length,1);assert.equal(rows[0].key,o.readme_file_id+'/'+o.readme_page_id);}
+});
+check('D05 discovery separates provisional Read me, proposed page and retained reference',()=>{
+ const file='01M6FAXA774QT1VRDMAG7DFQ2W';
+ const s=run("sessionById('D05')"),o=s.return_observation;
+ assert.equal(o.readme_board_id,'BML-0');assert.equal(o.readme_page_id,'p-3-0');assert.equal(o.candidate_page_id,'p-6-0');
+ for(const [page,kind] of [['p-3-0','readme'],['p-6-0','candidate'],['p-1-0','retained']]){
+  const rows=run(`referenceRows().filter(r=>r.key==='${file}/${page}')`);
+  assert.equal(rows.length,1);assert.ok(rows[0].claims.some(c=>c.owner==='D05'&&c.kind===kind));
+ }
+ const readme=run("referenceView({view:'references',q:'BML-0',owner:'D05'},'bml-0')");
+ assert.equal(readme.n,1);assert.ok(readme.html.includes(file+'/p-3-0'));assert.ok(!readme.html.includes(file+'/p-6-0'));
+ const candidate=run(`referenceView({view:'references',q:'${file}/p-6-0',owner:'D05'},'${file.toLowerCase()}/p-6-0')`);
+ assert.equal(candidate.n,1);assert.match(candidate.html,/unqualified comparison-return proposal/);assert.match(candidate.html,/Approval not established/);
+ assert.ok(!run('data.artboards.some(b=>b.artboard_id==="BML-0"&&b.paper_file_id==="'+file+'")'));
 });
 check('Returned status and timestamp injection stays escaped and malicious contract stays inert',()=>{
  const c=run("JSON.parse(JSON.stringify(referenceRows().find(r=>r.claims.some(c=>c.owner==='D08B')).claims[0]))");

@@ -111,6 +111,11 @@
       "source_head": "32ea8d5b132ff8f65e9c66ed3224d4e0f6f0c68f"
     },
     {
+      "id": "D05",
+      "observed_at_utc": "2026-11-08T17:08:48Z",
+      "source_head": "235d60d912589e630988b67eee6ba63be37c5712"
+    },
+    {
       "id": "D07",
       "observed_at_utc": "2026-11-04T02:38:34Z",
       "source_head": "da8df94d647f06b34e5a7a743f147980e627e854"

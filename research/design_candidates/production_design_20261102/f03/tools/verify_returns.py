@@ -19,12 +19,19 @@ def main():
         check('frozen bytes '+path,hashlib.sha256(b).hexdigest()==expected['sha256'] and builder.git_blob(b)==expected['git_blob_sha'])
     sessions=read('data/assignment-directory.json'); curated=read('tools/curation.json'); returns=curated['assignment_returns']
     check('root and tool-local curation mirrors agree',curated==read('curation.json'))
-    check('36 unique assignments; exactly eight observed returns',len(sessions)==len({s['id'] for s in sessions})==36 and set(returns)=={'F01','F02','D07','D08','D08A','D08B','D08C','D08D'})
+    check('36 unique assignments; exactly nine observed returns',len(sessions)==len({s['id'] for s in sessions})==36 and set(returns)=={'F01','F02','D05','D07','D08','D08A','D08B','D08C','D08D'})
     for s in sessions:
         retained={k:v for k,v in s.items() if k not in builder.RETURN_FIELDS}
         digest=hashlib.sha256(json.dumps(retained,ensure_ascii=False,sort_keys=True,separators=(',',':')).encode()).hexdigest()
         check('retained assignment fields '+s['id'],digest==baseline['assignment_retained_field_sha256'][s['id']])
     by_id={s['id']:s for s in sessions}
+    d05=returns['D05']; obs=d05['return_observation']; sector='01M6FAXA774QT1VRDMAG7DFQ2W'
+    note='evidence/d05-sector-reference-observation-20261108.md'
+    check('D05 immutable observation source matches the published note',obs['source_head']=='235d60d912589e630988b67eee6ba63be37c5712' and obs['source_blob_sha']==builder.git_blob((root/note).read_bytes()) and d05['source_contract']=='https://github.com/mastermindx-market-intelligence/macro/blob/'+obs['source_head']+'/research/design_candidates/production_design_20261102/f03/'+note)
+    check('D05 proposed candidate and current Read me have separate exact identities',(obs['candidate_file_id'],obs['candidate_page_id'])==(sector,'p-6-0') and (obs['readme_file_id'],obs['readme_page_id'],obs['readme_board_id'])==(sector,'p-3-0','BML-0'))
+    check('D05 retained reference remains separate from both current destinations',obs['retained_reference_url']=='https://app.paper.design/file/'+sector+'/p-1-0' and len({d05['candidate_ref'],obs['readme_url'],obs['retained_reference_url']})==3)
+    check('D05 observation does not invent PR or foundation qualification',obs['observed_pr_head'] is None and d05['shell_version'] is None and d05['system_version'] is None and 'proposal' in d05['status'] and 'acceptance held' in d05['status'])
+    check('curation mirrors have identical bytes',(root/'curation.json').read_bytes()==(root/'tools/curation.json').read_bytes())
     for sid,row in returns.items():
         check('curated return rendered '+sid,all(by_id[sid][k]==v for k,v in row.items()))
         obs=row['return_observation']
