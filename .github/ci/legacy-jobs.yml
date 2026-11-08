@@ -20017,6 +20017,7 @@ jobs:
       - engine/qledger_evidence_clock.py
       - engine/qledger_falsifier.py
       - engine/qledger_store.py
+      - engine/qledger_store_import_preview.py
       - engine/qledger_store_native.py
       - engine/qledger_store_protocol.py
       - engine/qledger_store_sources.py
@@ -36673,6 +36674,7 @@ jobs:
       - "scripts/check_site_asset_refs.py"
       - "scripts/check_stretch_oracle_contract.py"
       - "scripts/check_vps_live_health.py"
+      - "scripts/ci/push_retry.sh"
       - "scripts/ci/daily_engine_commit_outputs.sh"
       - "scripts/ci/daily_engine_leader_checkpoint.sh"
       - "scripts/close_pass_publish.py"
