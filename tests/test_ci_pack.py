@@ -5606,9 +5606,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_937),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_956),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_695),
+    ("templates/index.html", 137, 5_940),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_959),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_698),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5617,7 +5617,8 @@ PACKING_PROBE_MAX_PACKS = 10
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
 
-    2026-11-07 (PR #10837, explicit synthetic harness enrollment): natural
+    2026-11-08 (PR #10837, explicit synthetic harness enrollment, recomposed on
+    current main 005baca8b092abe82acb4462eb6710af8f59a1c8): natural
     contract run 42423716907 / job 128557542513 measured exact head
     7921a9c1a6feedcf5209590b7c02012728ce7eec against base
     b626135f8987ee724cdb7e0c639734835a4afe67 on tested merge
@@ -5627,16 +5628,45 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     The measured shapes were index137/5914->5934, free137/5933->5953 and
     Prophet131/5672->5692, all ten packs. Existing suites remain enrolled.
 
-    Compose only this exact +20 into maind492ab036efb's incoming ceilings
-    5917/5936/5675:5937/5956/5695, preserving its independently accepted
-    three-unit increment and every earlier provenance paragraph below.
-    The current marketing owner block is byte-identical to the measured
-    base before this lane's enrollment. All current sibling jobs are preserved.
-    Keep job ceilings137/138/131, ten packs, assertions, selectors,
-    commands, packages, timeouts and admission/concurrency controls.
-    This is arithmetic composition of measured planner weights, not a
-    new full-tree measurement or execution-time claim. Natural successor
-    CI must qualify the newly composed tree; no padding is added.
+    Compose only this exact +20 onto the ceilings current main already
+    carries, 5920/5939/5678 (its own independently accepted +3 included):
+    5940/5959/5698, preserving every earlier provenance paragraph below,
+    including that +3 composition. The current marketing owner block is
+    byte-identical to the measured base before this lane's enrollment. All
+    current sibling jobs are preserved. Keep job ceilings137/138/131, ten
+    packs, assertions, selectors, commands, packages, timeouts and
+    admission/concurrency controls. This is arithmetic composition of
+    measured planner weights, not a new full-tree measurement or
+    execution-time claim. Natural successor CI must qualify the newly
+    composed tree; no padding is added.
+
+    2026-11-08 (PR #7694, current-main content-conflict composition):
+    preserve the accepted full Immune-suite enrollment below together with
+    current main cef4e3797c186d6da7adbaa9da450ca790b00f8b's landed QTUM
+    parser coverage and Options scenario owner registration. Current catalog
+    1d0e64e9304f080d22946aa78466d4dbe479b769 retains the exact original
+    metab-throttle-ux base block; restore only its accepted fourth test step.
+    All 393 owner IDs and every unrelated command remain unchanged.
+    Compose the independently measured +3 planning-weight contribution onto
+    current ceilings: index 5917 -> 5920, free-content 5936 -> 5939,
+    Prophet 5675 -> 5678. Keep job ceilings 137 / 138 / 131, ten packs,
+    every assertion, selector, timeout, suite and admission limit. This is
+    static composition arithmetic, not a new planner or pytest execution.
+    No unmerged sibling contribution is funded; new natural CI must qualify.
+
+    PR7694 (2026-11-07): its own hosted contract-delta run42402141866,
+    job128492021418, measured base33f418baa9ee552260c835ab200c09abce0c24b8
+    against head762c1101612903a7f33b6eba47a40caf104e1915. Adding the full
+    Immune suite as the fourth step of the existing metab-throttle-ux CODE
+    owner increases each already-selected probe by exactly three planning
+    weight units: index137/5914->5917, free-content137/5933->5936, and
+    Prophet131/5672->5675. Selected job identities and ten-pack counts are
+    unchanged; contract-delta reported newly selected: none on all probes.
+    Fund only this measured coverage increment. Preserve all job-count
+    ceilings, pack bounds, selectors, suites, timeouts and admission limits,
+    including the prior accepted GSC and gateway histories below. These
+    are planning weights, not elapsed-runtime measurements. No unmerged
+    sibling funding is included; successor natural CI remains required.
 
     2026-11-07 (PR #8869, current-main conflict composition): preserve the
     independently accepted QTUM enrollment increment below while retaining
