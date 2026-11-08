@@ -5343,8 +5343,486 @@
       "pageId": "p-J-0",
       "rootId": "O39-0"
     },
-    "topicBodies": "userVisibleSectionCopy and selectedLibraryToolCopy preserve per-topic copy for the reusable one-topic state; only return examples/indexes are rendered here.",
-    "runtimeNavigationVerified": false
+    "topicBodies": "Five formerly unrendered method topics now have native Paper destination designs in English/Chinese and light/dark. Existing return examples and index patterns remain authoritative.",
+    "runtimeNavigationVerified": false,
+    "topicPageId": "p-N-0",
+    "topicGalleryId": "RKV-0",
+    "topicNativeDestinations": [
+      {
+        "topic": "ranking",
+        "locale": "en",
+        "theme": "light",
+        "nodeId": "RL2-0",
+        "backControl": "RL3-0",
+        "originIndex": "O1H-0",
+        "originRow": "O1O-0",
+        "originText": "O1P-0",
+        "return": "Return to same Methods index, restore focus to selected topic row; preserve originating research context and active theme."
+      },
+      {
+        "topic": "ranking",
+        "locale": "zh",
+        "theme": "light",
+        "nodeId": "RLI-0",
+        "backControl": "RLJ-0",
+        "originIndex": "O2D-0",
+        "originRow": "O2K-0",
+        "originText": "O2L-0",
+        "return": "Return to same Methods index, restore focus to selected topic row; preserve originating research context and active theme."
+      },
+      {
+        "topic": "ranking",
+        "locale": "en",
+        "theme": "dark",
+        "nodeId": "RLY-0",
+        "backControl": "RLZ-0",
+        "originIndex": "O1H-0",
+        "originRow": "O1O-0",
+        "originText": "O1P-0",
+        "return": "Return to same Methods index, restore focus to selected topic row; preserve originating research context and active theme."
+      },
+      {
+        "topic": "ranking",
+        "locale": "zh",
+        "theme": "dark",
+        "nodeId": "RME-0",
+        "backControl": "RMF-0",
+        "originIndex": "O2D-0",
+        "originRow": "O2K-0",
+        "originText": "O2L-0",
+        "return": "Return to same Methods index, restore focus to selected topic row; preserve originating research context and active theme."
+      },
+      {
+        "topic": "clocks",
+        "locale": "en",
+        "theme": "light",
+        "nodeId": "RMW-0",
+        "backControl": "RMX-0",
+        "originIndex": "O1H-0",
+        "originRow": "O1R-0",
+        "originText": "O1S-0",
+        "return": "Return to same Methods index, restore focus to selected topic row; preserve originating research context and active theme."
+      },
+      {
+        "topic": "clocks",
+        "locale": "zh",
+        "theme": "light",
+        "nodeId": "RNG-0",
+        "backControl": "RNH-0",
+        "originIndex": "O2D-0",
+        "originRow": "O2N-0",
+        "originText": "O2O-0",
+        "return": "Return to same Methods index, restore focus to selected topic row; preserve originating research context and active theme."
+      },
+      {
+        "topic": "clocks",
+        "locale": "en",
+        "theme": "dark",
+        "nodeId": "RO0-0",
+        "backControl": "RO1-0",
+        "originIndex": "O1H-0",
+        "originRow": "O1R-0",
+        "originText": "O1S-0",
+        "return": "Return to same Methods index, restore focus to selected topic row; preserve originating research context and active theme."
+      },
+      {
+        "topic": "clocks",
+        "locale": "zh",
+        "theme": "dark",
+        "nodeId": "ROK-0",
+        "backControl": "ROL-0",
+        "originIndex": "O2D-0",
+        "originRow": "O2N-0",
+        "originText": "O2O-0",
+        "return": "Return to same Methods index, restore focus to selected topic row; preserve originating research context and active theme."
+      },
+      {
+        "topic": "eligibility",
+        "locale": "en",
+        "theme": "light",
+        "nodeId": "RP6-0",
+        "backControl": "RP7-0",
+        "originIndex": "O1H-0",
+        "originRow": "O1U-0",
+        "originText": "O1V-0",
+        "return": "Return to same Methods index, restore focus to selected topic row; preserve originating research context and active theme."
+      },
+      {
+        "topic": "eligibility",
+        "locale": "zh",
+        "theme": "light",
+        "nodeId": "RPQ-0",
+        "backControl": "RPR-0",
+        "originIndex": "O2D-0",
+        "originRow": "O2Q-0",
+        "originText": "O2R-0",
+        "return": "Return to same Methods index, restore focus to selected topic row; preserve originating research context and active theme."
+      },
+      {
+        "topic": "eligibility",
+        "locale": "en",
+        "theme": "dark",
+        "nodeId": "RQA-0",
+        "backControl": "RQB-0",
+        "originIndex": "O1H-0",
+        "originRow": "O1U-0",
+        "originText": "O1V-0",
+        "return": "Return to same Methods index, restore focus to selected topic row; preserve originating research context and active theme."
+      },
+      {
+        "topic": "eligibility",
+        "locale": "zh",
+        "theme": "dark",
+        "nodeId": "RQU-0",
+        "backControl": "RQV-0",
+        "originIndex": "O2D-0",
+        "originRow": "O2Q-0",
+        "originText": "O2R-0",
+        "return": "Return to same Methods index, restore focus to selected topic row; preserve originating research context and active theme."
+      },
+      {
+        "topic": "scenario",
+        "locale": "en",
+        "theme": "light",
+        "nodeId": "RRG-0",
+        "backControl": "RRH-0",
+        "originIndex": "O1H-0",
+        "originRow": "O1X-0",
+        "originText": "O1Y-0",
+        "return": "Return to same Methods index, restore focus to selected topic row; preserve originating research context and active theme."
+      },
+      {
+        "topic": "scenario",
+        "locale": "zh",
+        "theme": "light",
+        "nodeId": "RRW-0",
+        "backControl": "RRX-0",
+        "originIndex": "O2D-0",
+        "originRow": "O2T-0",
+        "originText": "O2U-0",
+        "return": "Return to same Methods index, restore focus to selected topic row; preserve originating research context and active theme."
+      },
+      {
+        "topic": "scenario",
+        "locale": "en",
+        "theme": "dark",
+        "nodeId": "RSC-0",
+        "backControl": "RSD-0",
+        "originIndex": "O1H-0",
+        "originRow": "O1X-0",
+        "originText": "O1Y-0",
+        "return": "Return to same Methods index, restore focus to selected topic row; preserve originating research context and active theme."
+      },
+      {
+        "topic": "scenario",
+        "locale": "zh",
+        "theme": "dark",
+        "nodeId": "RSS-0",
+        "backControl": "RST-0",
+        "originIndex": "O2D-0",
+        "originRow": "O2T-0",
+        "originText": "O2U-0",
+        "return": "Return to same Methods index, restore focus to selected topic row; preserve originating research context and active theme."
+      },
+      {
+        "topic": "transmission",
+        "locale": "en",
+        "theme": "light",
+        "nodeId": "RTA-0",
+        "backControl": "RTB-0",
+        "originIndex": "O1H-0",
+        "originRow": "O20-0",
+        "originText": "O21-0",
+        "return": "Return to same Methods index, restore focus to selected topic row; preserve originating research context and active theme."
+      },
+      {
+        "topic": "transmission",
+        "locale": "zh",
+        "theme": "light",
+        "nodeId": "RTU-0",
+        "backControl": "RTV-0",
+        "originIndex": "O2D-0",
+        "originRow": "O2W-0",
+        "originText": "O2X-0",
+        "return": "Return to same Methods index, restore focus to selected topic row; preserve originating research context and active theme."
+      },
+      {
+        "topic": "transmission",
+        "locale": "en",
+        "theme": "dark",
+        "nodeId": "RUE-0",
+        "backControl": "RUF-0",
+        "originIndex": "O1H-0",
+        "originRow": "O20-0",
+        "originText": "O21-0",
+        "return": "Return to same Methods index, restore focus to selected topic row; preserve originating research context and active theme."
+      },
+      {
+        "topic": "transmission",
+        "locale": "zh",
+        "theme": "dark",
+        "nodeId": "RUY-0",
+        "backControl": "RUZ-0",
+        "originIndex": "O2D-0",
+        "originRow": "O2W-0",
+        "originText": "O2X-0",
+        "return": "Return to same Methods index, restore focus to selected topic row; preserve originating research context and active theme."
+      }
+    ],
+    "topicCopy": [
+      {
+        "key": "ranking",
+        "title": [
+          "Attention ordering",
+          "关注排序"
+        ],
+        "rows": [
+          [
+            [
+              "Attention view",
+              "关注视图"
+            ],
+            [
+              "Combines standardized USD-move size and divergence, weighted by US exposure. Liquidity breaks ties.",
+              "将标准化的美元变动幅度与背离相乘，并按美国敞口加权。同分时按流动性排序。"
+            ]
+          ],
+          [
+            [
+              "Divergence view",
+              "背离视图"
+            ],
+            [
+              "Orders markets by the size of divergence, in either direction.",
+              "按背离幅度排序，不区分方向。"
+            ]
+          ],
+          [
+            [
+              "Before a score appears",
+              "评分所需历史"
+            ],
+            [
+              "This score needs 60 aligned sessions. Markets with less history stay visible without a score or rank.",
+              "此评分需要60个对齐交易日。历史不足的市场仍会显示，但不评分或排名。"
+            ]
+          ]
+        ]
+      },
+      {
+        "key": "clocks",
+        "title": [
+          "Dates & revisions",
+          "日期与修订"
+        ],
+        "rows": [
+          [
+            [
+              "Data period",
+              "数据期"
+            ],
+            [
+              "The period a reading describes. Market dates follow local sessions.",
+              "读数对应的期间。市场日期按当地交易时段记录。"
+            ]
+          ],
+          [
+            [
+              "Source released",
+              "来源发布时间"
+            ],
+            [
+              "When the provider released the source data.",
+              "数据提供方发布该项数据的时间。"
+            ]
+          ],
+          [
+            [
+              "Checked here",
+              "通过检查时间"
+            ],
+            [
+              "When the data passed collection checks.",
+              "数据通过采集检查的时间。"
+            ]
+          ],
+          [
+            [
+              "Snapshot available",
+              "快照发布时间"
+            ],
+            [
+              "When this snapshot became available. Times are in UTC; a new snapshot does not mean new source data.",
+              "此快照可用的时间。时间均为UTC；新快照不代表来源数据已更新。"
+            ]
+          ]
+        ]
+      },
+      {
+        "key": "eligibility",
+        "title": [
+          "Unavailable readings",
+          "不可用读数"
+        ],
+        "rows": [
+          [
+            [
+              "Missing",
+              "缺失"
+            ],
+            [
+              "No reading available for this selection.",
+              "当前选择没有可用读数。"
+            ]
+          ],
+          [
+            [
+              "Stale",
+              "过期"
+            ],
+            [
+              "Older than that source’s required freshness window.",
+              "已超出该来源要求的时效范围。"
+            ]
+          ],
+          [
+            [
+              "Restricted",
+              "受限"
+            ],
+            [
+              "The data is not permitted for this view.",
+              "此视图无权展示该数据。"
+            ]
+          ],
+          [
+            [
+              "Unscored",
+              "未评分"
+            ],
+            [
+              "Required inputs or history are missing. Local returns may remain visible when USD ranking is unavailable.",
+              "缺少所需输入或历史数据。美元排名不可用时，本币收益仍可能显示。"
+            ]
+          ]
+        ]
+      },
+      {
+        "key": "scenario",
+        "title": [
+          "Scenarios & replay",
+          "情景与回放"
+        ],
+        "rows": [
+          [
+            [
+              "Conditional estimates",
+              "条件估计"
+            ],
+            [
+              "Scenario results depend on their assumptions. A range crossing zero gets no directional score.",
+              "情景结果取决于其假设。区间跨越零时，不给出方向评分。"
+            ]
+          ],
+          [
+            [
+              "Stored replay",
+              "存档回放"
+            ],
+            [
+              "Replay shows the stored snapshot as it was available then. Later corrections do not rewrite that snapshot.",
+              "回放展示当时可用的存档快照。后续修订不会重写该快照。"
+            ]
+          ],
+          [
+            [
+              "Watches",
+              "关注提醒"
+            ],
+            [
+              "Watches recheck each new snapshot and send notifications only.",
+              "每个新快照都会重新检查关注条件，仅发送提醒。"
+            ]
+          ]
+        ]
+      },
+      {
+        "key": "transmission",
+        "title": [
+          "Transmission responses",
+          "传导响应"
+        ],
+        "rows": [
+          [
+            [
+              "Response windows",
+              "响应窗口"
+            ],
+            [
+              "Market-response channels have their own evidence and US response windows.",
+              "市场响应渠道各有对应证据及美国市场响应窗口。"
+            ]
+          ],
+          [
+            [
+              "Pending",
+              "待确认"
+            ],
+            [
+              "The window is unfinished or required observations are missing.",
+              "窗口尚未结束，或缺少所需观测数据。"
+            ]
+          ],
+          [
+            [
+              "No response",
+              "未观察到响应"
+            ],
+            [
+              "No response in a completed window with the required data. This does not disprove the channel.",
+              "窗口已结束且所需数据齐全，但未观察到响应。这不代表该渠道不存在。"
+            ]
+          ],
+          [
+            [
+              "Lending exposure",
+              "借贷敞口"
+            ],
+            [
+              "Structural exposure; no same-day response test applies.",
+              "属于结构性敞口，不适用当日响应检验。"
+            ]
+          ]
+        ]
+      }
+    ],
+    "topicVisualQA": [
+      {
+        "nodeId": "RL2-0",
+        "verdict": "PASS: 390px fit; consistent 24px group spacing, clear 28px title/body hierarchy, legible contrast, aligned back/title/body; no clipping or repeated decorative containers."
+      },
+      {
+        "nodeId": "RL0-0",
+        "verdict": "PASS after targeted repair: dark section labels now use text token, all text uses Inter/PingFang; 390px frames fit in EN/ZH and both themes; no clipping, consistent gaps and aligned controls."
+      },
+      {
+        "nodeId": "RMU-0",
+        "verdict": "PASS: all four timing views fit at390px; labels distinguish clocks, body text and links legible in both themes; aligned spacing, no clipped translation."
+      },
+      {
+        "nodeId": "RP4-0",
+        "verdict": "PASS: four unavailable meanings remain distinct; EN/ZH headings and bodies fit, dark contrast and alignment pass, no extra badges or footnotes."
+      },
+      {
+        "nodeId": "RRE-0",
+        "verdict": "PASS: concise conditional/replay/watch groups; EN/ZH and light/dark fit, 44px return target, no clipping or excess framing."
+      },
+      {
+        "nodeId": "RT8-0",
+        "verdict": "PASS: response-window / pending / no-response / structural lending remain visibly distinct; all language/theme frames fit at390px; spacing, type, contrast, alignment and clipping checks passed."
+      }
+    ],
+    "navigationProofBoundary": "Native rendered destinations and explicit control mappings are verified. Runtime/prototype navigation and focus execution are not implemented or verified by this design work. Existing index and return patterns are parametrized; only their recorded locale/theme variants have native proof."
   },
   "appliedCounts": {
     "existingDesignDestination": 46,
@@ -5353,6 +5831,8 @@
     "externalSourceURLUnverified": 2,
     "unrepresentedToolDestination": 7,
     "proseFalseMatches": 9,
-    "catalogueFilters": 7
+    "catalogueFilters": 7,
+    "additionalTopicDestinationFrames": 20,
+    "additionalMethodTopics": 5
   }
 }
