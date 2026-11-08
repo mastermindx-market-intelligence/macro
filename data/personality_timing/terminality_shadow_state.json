@@ -7,8 +7,8 @@
  "may_size": false,
  "may_gate": false,
  "may_alert": false,
- "as_of": "2026-11-07",
- "generated_utc": "2026-11-07T09:53:45.292626+00:00",
+ "as_of": "2026-11-08",
+ "generated_utc": "2026-11-08T06:17:52.455263+00:00",
  "gate_open": true,
  "artifact_ok": true,
  "train_end": "2022-12-31",
@@ -16,16 +16,16 @@
  "target_coverage": 0.2,
  "watch_horizon_sessions": 15,
  "ledger": {
-  "incumbent_events": 1774,
-  "selected": 536,
+  "incumbent_events": 1775,
+  "selected": 537,
   "not_selected": 1238,
-  "appended_today": 61,
-  "advanced_today": 70,
+  "appended_today": 1,
+  "advanced_today": 0,
   "score_failures_today": 0,
   "statuses": {
    "expired": 202,
    "rejection_observed": 258,
-   "watching": 76
+   "watching": 77
   }
  },
  "per_ticker": {
@@ -1373,6 +1373,21 @@
    "event_date": "2026-11-06",
    "prospective_from": "2026-11-06",
    "score": 0.7201951278,
+   "threshold": 0.6642405954734382,
+   "remaining_sessions": 15,
+   "action_date": null,
+   "action_delay_sessions": null,
+   "copy": "Research prioritization only. Waits for an observable fresh-low rejection; never changes entry, rank, or size."
+  },
+  "INBK": {
+   "schema": "personality_terminality_shadow.v1",
+   "model_id": "pss_f4h_orthogonal_dev2022_v1",
+   "authority": "shadow_only",
+   "display_only": true,
+   "status": "watching",
+   "event_date": "2026-11-06",
+   "prospective_from": "2026-11-06",
+   "score": 0.7200141656,
    "threshold": 0.6642405954734382,
    "remaining_sessions": 15,
    "action_date": null,
