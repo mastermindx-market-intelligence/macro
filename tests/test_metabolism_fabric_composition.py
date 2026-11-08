@@ -2,7 +2,7 @@
 
 Only qualified fixture grants/credentials, PostgREST rows and provider responses
 are synthetic. Shared factory/auth/client, HTTP, broker, usage and business
-writers are real. The existing twelve source pins remain enforced by native.
+writers are real. One complete paired source cohort remains enforced by native.
 """
 import copy
 from concurrent.futures import ThreadPoolExecutor
@@ -41,7 +41,7 @@ from engine import provider_health
 from lib import ai_costs
 from tests.test_fabric_application_binding import binding  # noqa: F401
 from tests.test_fabric_native_application_composition import native_fixture, selected, MODEL  # noqa: F401
-from tests.test_fabric_exact_scoped_model_composition import NATIVE_PINS
+from tests.test_fabric_exact_scoped_model_composition import native_source_pins
 from tests.test_trade_memory import _episode, _autopsy_json
 
 _USAGE_WRITER = ai_costs.record_usage
@@ -73,7 +73,7 @@ def native():
         pytest.skip("paired current Mastermind source required")
     # Reuse the current exact pin owner, retaining the fixed-Go/VPS fixture,
     # purpose-specific grants and actual broker/HTTP/accounting behavior.
-    yield from native_fixture(source_root, NATIVE_PINS,
+    yield from native_fixture(source_root, native_source_pins(source_root),
                               module_name="_metabolism_current_native_pair")
 
 

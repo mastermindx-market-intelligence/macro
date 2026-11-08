@@ -49,12 +49,66 @@ NATIVE_PINS = {
 }
 
 
+# Complete producer cohorts: original protected 0a59c93a and the GLMv4
+# source qualified at Mastermind 479d59766aa5edee1365139d80b963ffea81925c.
+# A file cannot independently choose a hash from the other cohort.
+GLM_NATIVE_PINS = {
+    **NATIVE_PINS,
+    "candidate/go_shim.py": "6a396f8fedc2f3d44604b07e5a09c3c3ba329579",
+    "candidate/lease_broker.py": "cbb135641aa9d9509714fdb3587f6f0088d5d65b",
+    "candidate/go_lease_gateway.py": "9666d2c10c6dd2044a0ea783c534b58b8fe52f34",
+    "candidate/go_lease_capability.py": "f6ffb1a43dd7a9a53f08e75dd410234a040ab50d",
+    "candidate/application_http_transports.py": "63e3d9820d205eac31e471a0e3ddc86c04524111",
+}
+
+
+def _require_native_source_cohort(observed):
+    assert observed == NATIVE_PINS or observed == GLM_NATIVE_PINS, (
+        "complete paired native source cohort required"
+    )
+
+
+def test_native_source_cohort_rejects_all_mixed_combinations():
+    _require_native_source_cohort(dict(NATIVE_PINS))
+    _require_native_source_cohort(dict(GLM_NATIVE_PINS))
+    changed = sorted(
+        key for key in NATIVE_PINS if NATIVE_PINS[key] != GLM_NATIVE_PINS[key]
+    )
+    assert len(NATIVE_PINS) == len(GLM_NATIVE_PINS) == 19
+    assert len(changed) == 5
+    for mask in range(1, (1 << len(changed)) - 1):
+        mixed = dict(NATIVE_PINS)
+        for index, key in enumerate(changed):
+            if mask & (1 << index):
+                mixed[key] = GLM_NATIVE_PINS[key]
+        with pytest.raises(AssertionError, match="complete paired native source cohort"):
+            _require_native_source_cohort(mixed)
+    incomplete = dict(GLM_NATIVE_PINS)
+    incomplete.pop(changed[0])
+    with pytest.raises(AssertionError, match="complete paired native source cohort"):
+        _require_native_source_cohort(incomplete)
+    drifted = dict(GLM_NATIVE_PINS)
+    drifted[changed[0]] = "0" * 40
+    with pytest.raises(AssertionError, match="complete paired native source cohort"):
+        _require_native_source_cohort(drifted)
+
+
+def native_source_pins(source_root):
+    root = Path(source_root).resolve() / "ops/native_fabric/quota_continuity"
+    observed = {}
+    for relative in NATIVE_PINS:
+        raw = (root / relative).read_bytes()
+        observed[relative] = hashlib.sha1(
+            b"blob " + str(len(raw)).encode() + b"\0" + raw
+        ).hexdigest()
+    _require_native_source_cohort(observed)
+    return observed
+
+
 @pytest.fixture
 def exact_native():
     root = Path(SOURCE_ROOT).resolve() / "ops/native_fabric/quota_continuity"
-    for relative, expected in NATIVE_PINS.items():
-        raw = (root / relative).read_bytes()
-        assert hashlib.sha1(b"blob " + str(len(raw)).encode() + b"\0" + raw).hexdigest() == expected, relative
+    native_source_pins(SOURCE_ROOT)
     previous_path = list(sys.path)
     sys.path[:0] = [str(root / "tests"), str(root / "candidate"), str(root / "source"),
                    str(Path(SOURCE_ROOT).resolve())]
