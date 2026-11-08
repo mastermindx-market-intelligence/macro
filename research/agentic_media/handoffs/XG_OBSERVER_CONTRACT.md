@@ -1,8 +1,11 @@
-# XG novelty observer — contract v1
+# XG novelty observer — contract v1.1
 
 Status: **specification, unbuilt**. Owning card: `t_2bb26bfe`. Author seat: engineering.
-This file is a contract, not an implementation. Nothing here grants permission, binds an
-account, or enables a runtime operation.
+v1.1 amends v1 with four collection-layer gaps raised by the board seat: no defined verdict for
+an unsupported schema, `baseline_allowlist` held to a lower standard than the snapshot, no
+representation of what collection failed to see, and no content-addressing of the snapshot at
+consumption. This file is a contract, not an implementation. Nothing here grants permission,
+binds an account, or enables a runtime operation.
 
 ## Purpose
 
@@ -40,7 +43,14 @@ tested and merged while the harness PR is still a draft.
   "provenance": {
     "ssh_target": "mini1",
     "commands": ["launchctl list", "lsof -nP -iTCP -sTCP:LISTEN", "ps axo pid,ppid,command"],
+    "tools": {"macos": "26.5", "lsof": "4.91"},   // tool identity
     "mutating": false
+  },
+  "collected": {                              // what the sweep could and could not see
+    "hosts_attempted": ["mini1","mini2","mini3","mini4"],
+    "hosts_returned": ["mini1","mini2"],
+    "commands_run": [{"cmd": "lsof -nP -iTCP -sTCP:LISTEN", "exit": 0}],
+    "command_failures": [{"host": "mini3", "cmd": "ssh", "error": "timeout"}]
   },
   "launchd":   [{"label": "com.xg.proxyauth", "plist_path": "...", "pid": 60367, "loaded_at": "..."}],
   "listeners": [{"port": 9333, "bind_addr": "127.0.0.1", "pid": 60112, "proc": "Google Chrome"}],
@@ -59,21 +69,66 @@ Requirements:
 - **Provenance is mandatory.** A snapshot without `observer` + `commands` + `taken_at` is
   rejected rather than trusted.
 - **`mutating: true` is a rejection condition**, not a warning.
+- **`collected` is mandatory.** A host that did not answer, a command that exited non-zero, or a
+  truncated listing must appear in `command_failures`. An empty array in a collection block means
+  *collection was complete and found nothing*, never *collection didn't happen*.
+- **Tool identity is recorded** (`macos`, `lsof`, and any other tool whose output the diff
+  depends on). Without it, a later "quiet" may only mean a different command produced
+  different output.
+
+## Verdicts
+
+Five outcomes. The rule refuses rather than guesses:
+
+| verdict | meaning | effect on launch |
+|---|---|---|
+| `declared` | observed and in the registry | pass |
+| `baseline` | observed and in `baseline_allowlist` | pass |
+| `undeclared` | observed in neither | **refuse** |
+| `refused: collection_incomplete` | `collected` shows a host or command that did not answer | **refuse** |
+| `refused: schema_unsupported` | `schema_version` unknown, or registry `registry_revision` newer than the consumer understands | **refuse** |
+
+`refused: schema_unsupported` is the anti-fail-open clause. Three verdicts with no home for an
+input the consumer does not understand leaves best-effort parsing as the only available
+behaviour — fail-open, the same defect in a new coat as "every gate asked about declared things".
+
+**Version discipline:** `schema_version` is 1 only because no consumer exists yet. Once the
+first consumer ships, any *required* field addition bumps to 2, and a v1 consumer meeting a v2
+snapshot refuses rather than tolerating unknown fields.
+
+## Content addressing at consumption
+
+`~/.hermes/reports/` is a mutable user directory. The harness therefore takes
+`{path, sha256, taken_at}` — never a bare path — and writes the sha256 into the **admission
+receipt**. "The sweep ran" is otherwise an assertion; a sha is a readback. A file whose sha no
+longer matches the receipt is evidence of tampering or staleness, not of a quieter box.
 
 ## Diff rule
 
-Inputs to the check: (a) the snapshot, (b) the identity registry, (c) the versioned
-`baseline_allowlist`.
+Inputs: (a) the snapshot, (b) the identity registry, (c) the versioned `baseline_allowlist`.
 
-- A resource observed and declared → `declared`.
-- A resource observed and in `baseline_allowlist` → `baseline` (stock OS; not ours, not novel).
-- A resource observed in **neither** → `undeclared` → **launch refuses.** Not a warning, not a
-  log line: refuse.
+- observed and declared → `declared`.
+- observed and in `baseline_allowlist` → `baseline` (stock OS; not ours, not novel).
+- observed in **neither** → `undeclared` → **launch refuses.**
+- collection incomplete or schema unsupported → **launch refuses.**
 
-`baseline_allowlist` is versioned separately from the registry and seeded from a known-clean
-host (on macOS: `ARDAgent` on `*:3283` and similar stock services). Without it a novelty check
-fails closed on the operating system itself, forever, and gets disabled by the first person
-who needs to ship.
+## `baseline_allowlist` — held to the snapshot's standard
+
+This is the one input that can turn `undeclared` into a pass, so it carries the same discipline
+as an admission receipt. Each entry:
+
+```yaml
+- match: "proc=ARDAgent, port=3283"
+  reason: "stock macOS Remote Desktop agent, pre-existing"
+  added_by: engineering
+  added_at: 2026-11-07
+  host_seed_sha: "<sha256 of the clean-host snapshot it was derived from>"
+```
+
+Rules: no entry without `reason` and `added_by`; an allowlist whose `host_seed_sha` does not
+match the clean-host snapshot it claims is **refused**, not trimmed. An allowlist that grows
+without those fields is an escape hatch, and escape hatches are how a novelty check becomes a
+formality.
 
 ## Binding by port, not by count
 
@@ -92,7 +147,17 @@ per Chrome instance, so the binding constraint on concurrency is often process c
 1. Unit tests for the diff rule, including the three-way `declared` / `baseline` / `undeclared`
    split and a fixture where a stock OS service is present.
 2. A rejection test: a snapshot missing `provenance` or carrying `mutating: true` is refused.
-3. A recorded fixture sweep from one real host, with the raw JSON stored in the test tree.
+3. **The first fleet sweep** recorded verbatim as the fixture — real ports, real helper counts,
+   four hosts — so the suite notices if the emitted shape has already drifted from this contract.
 4. A negative test proving the observer reports `undeclared` and never `known`.
+5. **Schema-refusal test:** a `schema_version: 2` snapshot, and a registry revision newer than
+   the consumer knows, both yield `refused: schema_unsupported`.
+6. **Collection-refusal test:** a snapshot with non-empty `collected.command_failures`, and one
+   from a host that did not answer, both yield `refused: collection_incomplete` — and *neither*
+   passes as "no findings".
+7. **Allowlist-refusal test:** an entry missing `reason`/`added_by`, and an allowlist whose
+   `host_seed_sha` mismatches, are both refused.
+8. **Content-addressing test:** a snapshot whose sha256 no longer matches the value recorded in
+   the admission receipt is refused.
 
-Absent those four, the observer is a document, not an artifact.
+Absent those eight, the observer is a document, not an artifact.
