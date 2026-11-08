@@ -31,6 +31,9 @@ verified:
   - claim: "ProjectKnowledge has one ordinary protected release request, without claiming merge."
     command: "C3: gh pr merge 2264 --repo mastermindx-market-intelligence/Mastermind --auto --squash --match-head-commit 579f2d116e2e79707ed5b655ba45073b01ed8502; process55266 exit0; native GraphQL process57207."
     result: "At unchanged579f,autoMergeRequest enabled2026-11-08T00:58:28Z by chriswong6031-creator; native queue selectsMERGE. Queueentry=null,mergedAt=null,mergeCommit=null. Original request must be consumed, not repeated."
+  - claim: "The original EVAL and CI repair merged, and AUTH2257 already incorporated both accepted dependencies."
+    command: "GitHub pullRequest2234/2260/2257 reads and immutable git commit d22a09f6d5a50b98d1031c741d735860ef941838 readback on2026-11-08; prior queue receipts above remain historical."
+    result: "2234 merged2026-11-08T01:31:42Z atf91eb6f7198e1a271510ecb755b4658207f0b154;2260 merged01:37:00Z at1988e464ee40b9f64fd94dbfc40d13536e844049.2257 was Ready/open at d22a09f6d5a50b98d1031c741d735860ef941838 at the source readback, tree676235edda5de70268372bae93efbad1596709cb, parents e1a2ef899c119e64fbff2e6c962b8153a2d46a80 and1988e464ee40b9f64fd94dbfc40d13536e844049, authored01:39:53Z. This proves source composition, not current CI, native admission or auth/runtime acceptance."
 unverified:
   - claim: "The complete always-on teammate is installed and accepted."
     what_would_verify: "Restore the original authorized Ubuntu1/root administrative connection, reconcile retained operationC26, then use the original admitted release/enrollment. Prove served native context/tools, one genuine publication/current read, restart/revocation, browser/account/provider and fleet journeys."
@@ -39,14 +42,14 @@ unverified:
   - claim: "Memory, notes or skills improve held-out outcomes."
     what_would_verify: "Prospective technically valid matched EVAL with real model/effort/seed identities, held-out tasks and cleanup; existing-owner promotion/rollback;30-50representative tasks and seven-day acceptance, not self-reported improvement."
 unresolved:
-  - "Mastermind2234 and2260 have original active native queue effects. Consume exact canonical results; never create a replacement effect because autoMergeRequest becomesnull."
+  - "Mastermind2234 and2260 original queue effects are settled by accepted merges f91eb6f7198e1a271510ecb755b4658207f0b154 and1988e464ee40b9f64fd94dbfc40d13536e844049. Preserve those terminal receipts; never recreate their release effects or infer unarmed state from autoMergeRequest=null."
   - "Mastermind2264 is Ready at579f2d116e2e79707ed5b655ba45073b01ed8502 with its original head-leased auto-merge request enabled2026-11-08T00:58:28Z. Queueentry=null and unmerged at readback. Runtime/harness matrices and OAuth passed; required mainCI remains the release gate. Do not rearm."
-  - "AUTH2257 remains Draft ate1a2ef899c119e64fbff2e6c962b8153a2d46a80. Its Python3.12 cancellation is an annotated ten-minute timeout; original2260 owns that repair. Compose only actually accepted prerequisites through the original2257 carrier."
+  - "AUTH2257 published accepted EVAL2234/CI2260 dependency composition at d22a09f6d5a50b98d1031c741d735860ef941838 through its original carrier; it was Ready/open at the source readback. The historical Python3.12 ten-minute cancellation diagnosis remains valid. Consume current CI and original release effects; do not repeat accepted dependency composition or claim auth/runtime acceptance."
   - "Original Ubuntu1/root C26 PermissionError remains unretried. The original administrative connection requires restoration and retained-effect reconciliation. C3 source validation grants no runtime failover."
   - "Primary APPLICATION2175/pairedMacro10740, OutcomeLearning398 and security-held409 retain separate writers and explicit obligations. FleetC3 source admission is unresolved;531 refusal remains closed."
   - "Paid Fabric and the original local AF_UNIX/socket denials remain closed. Native collaborators provided principal judgment only; root performed source implementation."
 next_actions:
-  - "Read current Mastermind2234/2260 native queue and merge fields once at a material transition. Consume their original effects; after actual accepted merges, compose own2257 with accepted current source and qualify only material changes."
+  - "Treat Mastermind2234/2260 merges and original2257 dependency composition d22a09f6d5a50b98d1031c741d735860ef941838 as completed source. At the next material transition, consume2257 current CI and both native effect fields before any control; preserve its original carrier and qualify only material remaining changes."
   - "Consume2264's original auto-merge request and any resulting native queue effect through canonical merge/readback. Preserve exacthead579f2d116e2e79707ed5b655ba45073b01ed8502; repair only material failed gates, with original effects reconciled before source mutation."
   - "Validate this exact existing Agent OS record with actual repository hosted checks. After all required checks conclude green, use Macro's existing merge-on-green controller once; no native auto-merge or manual bypass."
   - "Preserve2175/10740 and distinct2255 residual-EVAL composition. Same filenames require semantic integration, not duplication or takeover. Preserve398/409 holds and original fleet source/effect fences."
@@ -54,7 +57,7 @@ next_actions:
 do_not_redo:
   - "Accepted Mastermind2207 context,2204 tool observation,2217 discovery,2242 context and2254 fixture source;2195 memory3c3bfdf8a52a6972c05eb13a1c2b3b9859aefd27;2200 vault93861e9ab2e75176108bb357bd9e81b54307981d; earlier vendor/receiver/transport/auth source."
   - "Macro10831 and10836 are merged. Do not resume their obsolete pending-CI or arming instructions."
-  - "2262 is closed and its native effects cleared.2260 is the sole CI-timeout repair; preserve its original queue custody."
+  - "2262 is closed and its native effects cleared.2260 is the accepted original CI-timeout repair at1988e464ee40b9f64fd94dbfc40d13536e844049.2234 merged atf91eb6f7198e1a271510ecb755b4658207f0b154;2257 already composed both dependencies atd22a09f6d5a50b98d1031c741d735860ef941838. Do not rearm or repeat those completed source steps."
   - "Reuse existing Executive/Agent OS/Workbench/EVAL/Harness2/Fabric/native owners. No duplicate memory, credential, auth, lifecycle, queue, publisher or learning-promotion service."
   - "No replay of C26/local AF_UNIX/Fabric/fleet531 denials via another name, host, account or carrier. No administrative branch-protection GET replay after403."
   - "V5's successful source qualification is retained. Do not repeat all suites absent a material source or evidence change; source fixtures do not replace installed proof."
@@ -78,9 +81,9 @@ The cumulative source and acceptance frontier is [Mastermind plan §§56–60](h
 
 ## §1 What is left — in order
 
-1. Consume the original [EVAL2234](https://github.com/mastermindx-market-intelligence/Mastermind/pull/2234) and [CI2260](https://github.com/mastermindx-market-intelligence/Mastermind/pull/2260) native queue effects. The earlier ten-minute timeout is diagnosed;2260 changes that CI job budget only. Redundant2262 is closed. Do not rearm an active effect.
+1. Retain the completed original [EVAL2234](https://github.com/mastermindx-market-intelligence/Mastermind/pull/2234) merge **f91eb6f7198e1a271510ecb755b4658207f0b154** at2026-11-08T01:31:42Z and [CI2260](https://github.com/mastermindx-market-intelligence/Mastermind/pull/2260) merge **1988e464ee40b9f64fd94dbfc40d13536e844049** at01:37:00Z. The ten-minute timeout diagnosis and original CI budget repair remain attributed to2260. Redundant2262 stays closed. These release effects are settled; do not recreate them.
 2. Consume the original protected release request for [ProjectKnowledge2264](https://github.com/mastermindx-market-intelligence/Mastermind/pull/2264) at exact head 579f2d116e2e79707ed5b655ba45073b01ed8502, enabled 2026-11-08T00:58:28Z. No queue entry or merge was present at that readback; do not rearm. It supplies current notes/preferences and governed authoring through existing owners. Its disabled profile requires original installed admission.
-3. After accepted prerequisites are available, compose [AUTH2257](https://github.com/mastermindx-market-intelligence/Mastermind/pull/2257) on its original carrier, respecting the EVAL workflow-path fence. Keep distinct residual-EVAL2255 and primary2175/10740 under their existing source custody.
+3. [AUTH2257](https://github.com/mastermindx-market-intelligence/Mastermind/pull/2257) published accepted-dependency composition at [d22a09f6d5a50b98d1031c741d735860ef941838](https://github.com/mastermindx-market-intelligence/Mastermind/commit/d22a09f6d5a50b98d1031c741d735860ef941838) and was Ready/open at the source readback. Consume its current CI and original native effects before any control; do not repeat that composition or infer installed acceptance. Respect the EVAL workflow-path fence. Keep distinct residual-EVAL2255 and primary2175/10740 under existing source custody.
 4. Complete the ordinary record-only Macro release. Actual hosted Agent OS validation is owed; no local validator was claimed for this amendment. Macro uses only its existing merge-on-green controller after concluded checks.
 5. Resume installed work only through operation **meta-ceo-byok-followon-parent-20261106-c35-01**, M2 workspace **/Volumes/Mastermind 2/agent-workspaces/web/meta-ceo-byok-followon-parent-20261106-c35-01**. Restore the original Ubuntu1/root administrative connection and reconcile the retained C26 operation before its next dependent action. Current assignment owns safe recovery without returning work to an archived author.
 6. Prove real native serving, original note/correction publication and current feedback, browser/account/provider journeys, restart/revocation, host/fleet and valid held-out improvement/endurance acceptance. Source merges do not close those product obligations.
@@ -91,7 +94,7 @@ The original uncertain operation is the recovery unit. Knowledge authoring retai
 
 Current source must keep compiler CODE separate from canonical DATA. A 40-hex Git blob revision is neither a commit nor the 64-hex preference content preimage. Immutable snapshot coordinates must match without requiring separate observation timestamps to be equal. Full encoded request/result bounds must refuse rather than silently truncate.
 
-The original CI repair was initially missed and duplicate2262 was opened. It has now been visibly closed, and both native effect fields are empty;2260 remains the original active carrier. A null auto-merge request alone is insufficient to establish an unarmed PR. Read the queue entry too.
+The original CI repair was initially missed and duplicate2262 was opened. That duplicate was visibly closed with both native effect fields empty. Original2260 is now accepted at1988e464ee40b9f64fd94dbfc40d13536e844049; its earlier queue receipt is historical, not an active request. For still-open carriers, a null auto-merge request alone is insufficient to establish an unarmed PR. Read the queue entry too.
 
 C3 Personal provided isolated source qualification. It is not the installed M2/Ubuntu1 release path and not the separately scoped FleetC3 browser-profile census. Explicit denials remain final until the relevant access or authority materially changes.
 
