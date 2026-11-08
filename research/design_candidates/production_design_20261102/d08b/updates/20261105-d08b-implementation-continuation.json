@@ -1,0 +1,191 @@
+{
+  "schema": "d08b.implementation_continuation.v1",
+  "draft_prepared_at_utc": "2026-11-05T04:19:51Z",
+  "source_law_pin": "70187bb1660e8a7c3038271bb9f8924b5e525cb0",
+  "macro": {
+    "pr": 10686,
+    "base_head": "2e0d13635f8c3424b054594732f6de16894b37ca",
+    "path": "research/design_candidates/production_design_20261102/d08b",
+    "receiver_pr": 10649
+  },
+  "interface": {
+    "version": "D08-OPTIONS/1.0.0",
+    "ref": "d0516e1bad9cb5982d43d20c4167d0355cb70e2c"
+  },
+  "retention_unchanged": {
+    "total": 60,
+    "RETAIN": 27,
+    "IMPROVE": 25,
+    "RELOCATE": 3,
+    "BLOCKED_DATA": 5,
+    "REMOVE": 0,
+    "ledger_blob": "7a2d72ad9ce571966d202e0aa99371c7405936f0"
+  },
+  "accepted_history": {
+    "design_freeze": "a3356474cebbdd88e6448e05ffc3d2e44faa5ca6",
+    "boards": 18,
+    "b01_repair": "62f95141ce3bc56dbf96ab9b97ff5b3c8b806612",
+    "surface_volatility_terminal": "8d47a4557762e5d1d7e07617255b105cbc8a51a5",
+    "historical_receipts_modified": false
+  },
+  "terminal": {
+    "pr": 1266,
+    "operation_id": "d08b-surface-exact-values-20261104-c3",
+    "branch": "sol/web-d08b-surface-exact-values-20261104-c3",
+    "latest_completed_phase_head": "46782b0f767aae8400e320d9c57b85dbf16738e8",
+    "remote_readback": {
+      "head": "46782b0f767aae8400e320d9c57b85dbf16738e8",
+      "draft": true,
+      "auto_merge": null,
+      "clean_at_original_publisher": true,
+      "five_sign_source_test_blobs_match": true
+    }
+  },
+  "inspector": {
+    "head": "5903c07acf867366659cec689e6547b08c00ee87",
+    "proof_path": "terminal/docs/verification/d08b-exposure-change-exact-20261104/README.md",
+    "proof_blob": "2bd5a54ee492db1d101ca45eb22f3ec0db569846",
+    "unit_passed": 50,
+    "browser_passed": 14,
+    "intentional_skips": 7,
+    "final_css_browser_passed": 8,
+    "final_css_intentional_skips": 7,
+    "pngs": 59,
+    "capture_metadata": 59,
+    "contrast_records": 12,
+    "text_samples": 1664,
+    "text_min_contrast": 5.554996509050376,
+    "build": "Production build passed before final CSS-only reflow/EOF delta; final browser run compiled corrected CSS",
+    "strict_source_and_calculation_owners_unchanged": true
+  },
+  "profile": {
+    "head": "fd014cb9acbecd319ad7816a6514197f0f446e83",
+    "proof_path": "terminal/docs/verification/d08b-positioning-profile-exact-20261104/README.md",
+    "proof_blob": "c9ca2f0dd4c295b55da2ea25a468ca7943b38cdc",
+    "unit_passed": 13,
+    "browser_passed": 9,
+    "intentional_skips": 9,
+    "pngs": 48,
+    "capture_metadata": 48,
+    "contrast_records": 24,
+    "text_samples": 1216,
+    "text_min_contrast": 5.554996509050376,
+    "mark_samples": 72,
+    "mark_min_contrast": 5.028420134408705,
+    "calculation_bytes": 1980,
+    "calculation_sha256": "9ee4f947a4e9e73af89db53f9bf297f0b18c7128f0594524cc370efec7d84047",
+    "build": "Completed production build confirmed from original recovered log, including TypeScript,68 static pages and route footer",
+    "direct_build_exit_receipt": "NOT_RETAINED",
+    "blind_build_rerun": false
+  },
+  "sign": {
+    "status": "IMPLEMENTED_LOCAL_REAL_ROUTE_VERIFIED",
+    "published_head": "46782b0f767aae8400e320d9c57b85dbf16738e8",
+    "closeout": "The existing Sign card now distinguishes an unknown sensitivity basis from zero net Gamma, shows Unknown / \u672a\u77e5 and Not determined / \u672a\u786e\u5b9a, preserves the source convention, and withholds the unsupported flat curve. Known robust, fragile and put-only cases keep their calculations, critical weights and geometry. The robust explanation binds to the unchanged 12% tilt threshold and no longer promises one sign across every convention. Local card styles correct label, footer, zero-line and light-palette warning contrast without changing shared tokens or other cards.",
+    "new_unit_cases_passed": 14,
+    "focused_unit_total_passed": 91,
+    "existing_model_cases_passed": 64,
+    "profile_cases_passed": 13,
+    "browser_passed": 7,
+    "intentional_skips": 5,
+    "browser_exit_code": 0,
+    "lint_exit_code": 0,
+    "build_exit_code": 0,
+    "proof": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/46782b0f767aae8400e320d9c57b85dbf16738e8/terminal/docs/verification/d08b-positioning-sign-state-20261105/README.md",
+    "verification_blob": "ca92bc31b71fb0af7be3b07734c925c8c7510f22",
+    "pngs": 52,
+    "capture_metadata": 52,
+    "contrast_records": 40,
+    "state_inventories": 6,
+    "text_samples": 478,
+    "text_min_contrast": 4.8720061448799585,
+    "mark_samples": 102,
+    "mark_min_contrast": 3.6558670736197985,
+    "geometry_bytes": 958,
+    "geometry_sha256": "4e877271f35dd63ac63ad367889612069d95967e6df129a1a6ed993edcf7d0d7",
+    "raw_svg_byte_identical": false,
+    "intentional_warning_ink_and_zero_line_changes": true,
+    "calculation_model_unchanged": "b6718d3f162117af38d114ba691cd4b6b1894bd8",
+    "limits": "Fixture/local-route proof; controlled card light tokens; no production/provider/account, complete assistive-technology, alpha/ancestor-opacity or performance certification. The source input is hit-tested; the full date/stale label was visually checked in its 320px capture."
+  },
+  "levels": {
+    "status": "UNAPPLIED_NOT_RUNTIME_VERIFIED",
+    "packet": "updates/20261105-levels-owner-integration/OWNER_INTEGRATION.md",
+    "incumbent_pr": 1248,
+    "head": "98ffa891116ccc9e6be58a64148dbe45591e6ce8",
+    "path": "terminal/components/levels/LevelsView.tsx",
+    "blob": "03211be2aa72b3d602f20aa4f495fb84e129c7b3",
+    "patch_sha256": "1be5efe068ba19f76ce60ef86468af7bc961d539593b72b530ef8901a471dc44",
+    "live_writer_or_lease_inferred": false
+  },
+  "historical_ci": {
+    "terminal_head": "8d47a4557762e5d1d7e07617255b105cbc8a51a5",
+    "terminal_checks_successful": 21,
+    "terminal_checks_total": 21,
+    "macro_head": "2e0d13635f8c3424b054594732f6de16894b37ca",
+    "macro_applicable_workflows": "success",
+    "macro_authority": "ci-authority/main active",
+    "queue_context": "inactive; failure not current active authority",
+    "transfer_to_new_heads": false
+  },
+  "final_ci": {
+    "observed_at_utc": "2026-11-05T04:45:07Z",
+    "terminal_head": "46782b0f767aae8400e320d9c57b85dbf16738e8",
+    "ci_run": 41969354857,
+    "ci_status": "pending",
+    "codeql_run": 41969350343,
+    "codeql_status": "queued",
+    "analysis_checks_queued": 3,
+    "hosted_green_claimed": false,
+    "macro_new_head": "POST_PUBLICATION_OBSERVATION_REQUIRED_IN_D08_RETURN",
+    "no_circular_self_commit_ci_claim": true,
+    "next_action": "Natural current-head hosted runs remain pending/queued. No failure, hosted green, required-check eligibility or release permission is inferred from that state. Consume the existing run results for any later integration/release decision; no manual rerun, queue action or gate waiver was issued.",
+    "snapshot_receipt": "updates/20261105-d08b-final-terminal-ci.json"
+  },
+  "counts_are_not_additive_unique_tests": true,
+  "parent_mission_complete": false,
+  "production_state": "BUILT_NOT_PROVEN",
+  "product_or_reference_acceptance_claimed": false,
+  "ownership_preserved": [
+    "matrix/node coordinator",
+    "incumbent chain Lab/Levels/navigation",
+    "D08C source-row/contract admission,Plan/Save",
+    "D08D replay/cursor/availability",
+    "source/cache/auth/entitlements",
+    "D23 durable research"
+  ],
+  "held_actions": [
+    "merge",
+    "Ready",
+    "un-draft",
+    "enqueue",
+    "held relabel",
+    "uncertain-operation retry",
+    "production deployment"
+  ],
+  "prepared_for_publication_at_utc": "2026-11-05T04:45:07Z",
+  "final_full_tree_build": {
+    "head": "46782b0f767aae8400e320d9c57b85dbf16738e8",
+    "exit_code": 0,
+    "retained_inspector_profile_and_sign_included": true,
+    "original_phase_receipts_preserved": true
+  },
+  "d08c_consumption": {
+    "return_comment_id": 6648732064,
+    "terminal_pr": 1296,
+    "head": "e0d10f7d8bd35a4a7e4c3be48242552c343b08ab",
+    "source_manifest_blob": "c7f64d6a19aff44f0db7e2cbdb6fac0a6dc8d275",
+    "listed_paths": 17,
+    "current_d08b_non_docs_paths": 16,
+    "overlap": [],
+    "keep": [
+      "isScopeCurrent at every async boundary",
+      "OptionsPlanResearchBridge",
+      "existing D23/#804 persistence owner"
+    ],
+    "claim_limit": "Manifest path comparison only; not D08C runtime acceptance or whole-branch integration proof"
+  },
+  "finalization_classification": "PROVEN_OUTCOME",
+  "bounded_d08b_return_complete": true,
+  "native_helpers": "Explicit terminal STOP; no external watcher or background execution created"
+}
