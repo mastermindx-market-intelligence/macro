@@ -183,6 +183,9 @@ function harness({ id = 'A', synchronousInitial = false, hints = false, deferSes
       listener(user, event || (next ? 'SIGNED_IN' : 'SIGNED_OUT'));
     },
     silentIdentity(next) { user = next ? { id: next } : null; activeSession = session(next); },
+    nativeOnly(next) { user = next ? { id: next } : null; },
+    notify(next, event) { user = next ? { id: next } : null; listener(user, event); },
+    interimNull() { user = null; listener(null, 'INITIAL_SESSION'); },
     failLookup() { lookupFailure = true; },
     tier() { return window.MMXAccessPreview.tier(); },
     cap() { return window.MMXAccessPreview.cap(); }
@@ -250,6 +253,36 @@ test('signout invalidates pending session lookup before any entitlement fetch', 
 test('A to B clears prior paid before a failed B response', async () => {
   const h = harness(); await tick(); await reply(h.requests[0], 'pro'); h.change('B');
   expectBounded(h); await tick(); h.requests[1].reject(new Error('offline')); await tick(); expectBounded(h);
+});
+test('ambiguous initial auth event with cookie never renders guest access', async () => {
+  const h = harness(); await tick(); h.interimNull();
+  assert.equal(h.tier(), 'unknown');
+  assert.notEqual(h.attrs['data-access-resolution'], 'signed-out');
+  await reply(h.requests[0], 'pro'); expectBounded(h);
+  h.change('A', 'SIGNED_IN'); await tick();
+  await reply(h.requests[1], 'pro'); expectTier(h, 'pro', Infinity);
+});
+test('session reply before native owner callback remains neutral and grants no paid rows', async () => {
+  const h = harness(); h.nativeOnly(null); await tick();
+  assert.equal(h.requests.length, 0, 'session user cannot grant before native identity binds');
+  assert.equal(h.tier(), 'unknown');
+  assert.equal(h.attrs['data-access-resolution'], 'pending');
+  h.change('A', 'SIGNED_IN'); await tick(); await reply(h.requests[0], 'pro');
+  expectTier(h, 'pro', Infinity);
+});
+test('native owner disappears during pending HTTP: no failed-access banner or paid grant', async () => {
+  const h = harness(); await tick(); h.nativeOnly(null);
+  await reply(h.requests[0], 'pro');
+  assert.equal(h.tier(), 'unknown');
+  assert.equal(h.attrs['data-access-resolution'], 'pending');
+  expectBounded(h);
+});
+test('SDK failure with a persisted cookie offers a real retry instead of endless loading', async () => {
+  const h = harness(); await tick(); h.nativeOnly(null); h.failLookup();
+  h.notify(null, 'SDK_FAILED'); await tick();
+  assert.equal(h.tier(), 'unknown');
+  assert.equal(h.attrs['data-access-resolution'], 'unconfirmed');
+  expectBounded(h);
 });
 test('delayed A cannot overwrite B Free', async () => {
   const h = harness(); await tick(); h.change('B'); await tick();
@@ -358,11 +391,20 @@ vm.runInNewContext(source, { window, document, Promise, Date, JSON, Array, Strin
   fetch: () => new Promise(resolve => requests.push(resolve)), CustomEvent: function() {}, location: {},
   sessionStorage: {getItem: () => null}, localStorage: {getItem: () => null} });
 (async () => {
-  await tick(); requests[0]({ok:false,status:503}); await tick();
+  // Auth has a persisted cookie; while /api/me is pending we keep the limited
+  // rows protected but mount NO paywall. This asserts rendered DOM, not source text.
+  assert.equal(window.MMXAccessPreview.tier(),'unknown');
+  assert.equal(document.documentElement.attrs['data-access-resolution'],'pending');
+  assert.equal(gates.length,0,'no paywall while entitlement is pending');
+  assert.equal(root.children[1].attrs['aria-hidden'],'true','extra rows remain restricted');
+  await tick(); assert.equal(gates.length,0);
+  requests[0]({ok:false,status:503}); await tick();
   assert.equal(gates.length,1); assert.equal(window.MMXAccessPreview.tier(),'unknown');
   assert.match(gates[0].innerHTML, /Check access/); assert.match(gates[0].innerHTML, /检查访问权限/);
   assert.doesNotMatch(gates[0].innerHTML, /signup|Expand the Prophet shortlist|Unlock full Prophet/);
-  gates[0].button.listeners.click(); await tick(); assert.equal(requests.length,2);
+  gates[0].button.listeners.click();
+  assert.equal(gates.length,0,'retry restores neutral pending state before the HTTP reply');
+  await tick(); assert.equal(requests.length,2);
   console.log('PASS: unconfirmed native gate offers bilingual access retry without signup/upgrade or a paid grant');
 })().catch(e => { console.error(e); process.exitCode=1; });
 
@@ -386,3 +428,35 @@ def test_pricing_copy_matches_preview_limits_and_drops_china_pitch():
     assert "6 signals a day" not in combined
     assert "China special situations" not in plans
     assert "The China event desk" not in plans
+
+
+def test_pending_account_verification_does_not_render_paywall():
+    """Pending is a neutral, fail-closed render state, not a denied upsell.
+
+    Keep the summary-row cap in applyGroup even while the gate is hidden.
+    A confirmed/denied/degraded transition must repaint independently of a
+    tier change, while native dialogs only react to actual tier changes.
+    """
+    js = (ROOT / "templates" / "tier_preview.js").read_text()
+    assert 'var accessResolution = "initial";' in js
+    assert 'if (accessResolution !== "pending") placeSurfaceGates(surfaces);' in js
+    assert 'if (!applyGroup(group)) return;' in js
+    assert 'var presentationChanged = tierChanged || accessResolution !== resolution;' in js
+    assert 'if (!tierChanged) return;' in js
+    assert (ROOT / "site" / "tier_preview.js").read_text() == js
+
+
+def test_preview_controller_urls_are_stamped_from_current_asset_bytes():
+    """An immutable one-year asset cache must not trap restored admin sessions on old JS.
+
+    The generated public pages all load the preview controller at a stamped URL.
+    New controller bytes without new stamps would make the source patch invisible
+    to returning browsers until their old immutable entry expires.
+    """
+    import hashlib
+
+    expected = hashlib.sha256((ROOT / "site" / "tier_preview.js").read_bytes()).hexdigest()[:8]
+    for page in ("us_stocks.html", "macro.html", "fundamental_forensics.html"):
+        html = (ROOT / "site" / page).read_text()
+        assert html.count('src="tier_preview.js?v=') == 1, page
+        assert f'src="tier_preview.js?v={expected}"' in html, (page, expected)
