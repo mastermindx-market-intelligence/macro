@@ -1,0 +1,50 @@
+{
+  "status": "frozen first-pass advisory inputs; no approval implied",
+  "files": [
+    {
+      "file": "equity-1440-dark-en.png",
+      "sha256": "8a0fd65bd6713a57f23c17839117e6e05563369a94ac6d517f46f3678311de16",
+      "bytes": 160934
+    },
+    {
+      "file": "equity-390-light-en.png",
+      "sha256": "355c792006bc5529ed04d497cad8657934e6f09d78235c0983606f32093d048c",
+      "bytes": 63214
+    },
+    {
+      "file": "equity-evidence-1024-light-en.png",
+      "sha256": "633afa59468c85a2a03faa9dfaa1706f01bb0a30800b9037dcac576ffb5218b2",
+      "bytes": 147270
+    },
+    {
+      "file": "equity-evidence-390-light-en.png",
+      "sha256": "bd5e94b20d7665105db9146bad179182c3ee04e5e2b58614bc0f6cfee18e0f07",
+      "bytes": 54008
+    },
+    {
+      "file": "futures-1440-dark-en.png",
+      "sha256": "24e5cbe09e9289ff2a25d883baece5fdf19d85334a2d77d1345b160fd6316b1a",
+      "bytes": 154190
+    },
+    {
+      "file": "futures-320-dark-en.png",
+      "sha256": "d0d3103d19d26710385725f76517c16e64587d81cc3c3758a0001472c77fd139",
+      "bytes": 52371
+    },
+    {
+      "file": "futures-390-dark-en.png",
+      "sha256": "defe243fa82d47e27a3ac836f9dbc5116a78b83c84eabdb2e092c20a2561e5a9",
+      "bytes": 56708
+    },
+    {
+      "file": "futures-footprint-1440-light-en.png",
+      "sha256": "b9f8574f8d8bb7c20090ca8866fcc75ebb5b0b0ae72b01813085502e837adae2",
+      "bytes": 171326
+    },
+    {
+      "file": "state-atlas-1440-light-en.png",
+      "sha256": "b865d44ca2a80f1a2026c0e1cf24163a3842a87b046b7b6edbe093aeab5cb04a",
+      "bytes": 153227
+    }
+  ]
+}

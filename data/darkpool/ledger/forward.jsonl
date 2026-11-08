@@ -629,3 +629,16 @@
 {"asof":"2026-11-05","ticker":"PH","pattern":"heavy_into_weakness","participation":0.4536,"participation_z":1.5,"streak":2,"price_change_pct":-3.89,"ats_frac":0.5723,"short_trend_pp":-7.95}
 {"asof":"2026-11-05","ticker":"KTOS","pattern":"heavy_into_weakness","participation":0.5004,"participation_z":1.5,"streak":2,"price_change_pct":-23.4,"ats_frac":0.4512,"short_trend_pp":-6.67}
 {"asof":"2026-11-05","ticker":"CW","pattern":"heavy_into_weakness","participation":0.4347,"participation_z":1.53,"streak":2,"price_change_pct":-12.66,"ats_frac":0.6018,"short_trend_pp":2.0}
+{"asof":"2026-11-06","ticker":"APH","pattern":"heavy_into_weakness","participation":0.4007,"participation_z":6.26,"streak":12,"price_change_pct":-5.94,"ats_frac":0.5748,"short_trend_pp":0.36}
+{"asof":"2026-11-06","ticker":"UCTT","pattern":"heavy_into_weakness","participation":0.5603,"participation_z":2.58,"streak":2,"price_change_pct":-17.26,"ats_frac":0.6294,"short_trend_pp":7.5}
+{"asof":"2026-11-06","ticker":"NCLH","pattern":"heavy_into_strength","participation":0.525,"participation_z":2.48,"streak":1,"price_change_pct":1.99,"ats_frac":0.4607,"short_trend_pp":-7.14}
+{"asof":"2026-11-06","ticker":"DDOG","pattern":"heavy_into_weakness","participation":0.4963,"participation_z":2.0,"streak":2,"price_change_pct":-23.9,"ats_frac":0.5978,"short_trend_pp":-12.78}
+{"asof":"2026-11-06","ticker":"HSY","pattern":"heavy_into_strength","participation":0.5031,"participation_z":2.08,"streak":1,"price_change_pct":7.53,"ats_frac":0.5322,"short_trend_pp":-0.19}
+{"asof":"2026-11-06","ticker":"CGNX","pattern":"heavy_into_weakness","participation":0.4857,"participation_z":1.96,"streak":3,"price_change_pct":-14.91,"ats_frac":0.6072,"short_trend_pp":-0.17}
+{"asof":"2026-11-06","ticker":"SLB","pattern":"heavy_into_weakness","participation":0.4305,"participation_z":1.73,"streak":4,"price_change_pct":-7.11,"ats_frac":0.4466,"short_trend_pp":-12.41}
+{"asof":"2026-11-06","ticker":"BEN","pattern":"heavy_into_strength","participation":0.43,"participation_z":1.69,"streak":5,"price_change_pct":6.61,"ats_frac":0.5481,"short_trend_pp":5.79}
+{"asof":"2026-11-06","ticker":"TLN","pattern":"heavy_into_weakness","participation":0.5002,"participation_z":1.89,"streak":1,"price_change_pct":-1.31,"ats_frac":0.7775,"short_trend_pp":2.19}
+{"asof":"2026-11-06","ticker":"CI","pattern":"heavy_into_weakness","participation":0.4593,"participation_z":1.71,"streak":3,"price_change_pct":-1.56,"ats_frac":0.65,"short_trend_pp":-6.68}
+{"asof":"2026-11-06","ticker":"AEIS","pattern":"heavy_into_weakness","participation":0.5293,"participation_z":1.9,"streak":1,"price_change_pct":-11.28,"ats_frac":0.6092,"short_trend_pp":2.27}
+{"asof":"2026-11-06","ticker":"HUBB","pattern":"heavy_into_strength","participation":0.4697,"participation_z":1.68,"streak":3,"price_change_pct":1.66,"ats_frac":0.6381,"short_trend_pp":4.46}
+{"asof":"2026-11-06","ticker":"HL","pattern":"heavy_into_strength","participation":0.6703,"participation_z":1.66,"streak":0,"price_change_pct":8.94,"ats_frac":0.0994,"short_trend_pp":-8.26}
