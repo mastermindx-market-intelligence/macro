@@ -26,7 +26,7 @@ from engine.options_matrix_retention import (
     validate_root,
 )
 from engine.options_occ_contract_terms import _canonical as _canonical_decimal
-from lib.dataos.identity import _aware_utc
+from lib.dataos.identity import _aware_utc, _ob_clock
 from lib.live_flow_event_stage import parse_stage_bytes, strict_json_loads
 
 Side = Literal["call", "put"]
@@ -164,11 +164,12 @@ def select_retained_events(
     for item in records:
         # The incumbent parser canonicalizes to datetime microseconds. Retain
         # the exact validated availability line and spelling for downstream
-        # provenance, and use the shared conservative clock parser on that
-        # original spelling so nanoseconds cannot round behind read_at.
+        # provenance. Compare ORIGINAL instants via the incumbent nanosecond
+        # parser: two different instants may share a conservative microsecond
+        # ceiling. The normalized read/cutoff fields stay unchanged.
         receipt_line = lines[item["source_stage_prefix_records"] - 1]
         source_available = strict_json_loads(receipt_line)["available_at"]
-        if _aware_utc(source_available, "known_at") > observed:
+        if _ob_clock(source_available) > _ob_clock(capture.read_at):
             raise ValueError("durable availability is after captured read")
         item["source_available_at"] = source_available
         item["source_availability_receipt"] = receipt_line

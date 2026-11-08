@@ -93,8 +93,10 @@ The event `ts`, `observed_at`, `decision_at`, OI dates/values and other source
 fields remain separate. The incumbent parsed `available_at` is a normalized
 microsecond representation. `source_available_at` and
 `source_availability_receipt` additionally preserve the original availability
-spelling, nanoseconds and exact line bytes. The shared conservative clock parser
-checks the original availability against captured read time. `read_observed_at`
+spelling, nanoseconds and exact line bytes. The incumbent exact nanosecond clock
+parser compares the ORIGINAL availability and captured-read instants. Shared
+microsecond ceilings cannot authorize evidence that actually arrived later.
+The incumbent normalized read/cutoff fields remain unchanged. `read_observed_at`
 is never relabeled event receipt or durable availability.
 
 `population = individual_aggregate_events` and
@@ -219,6 +221,8 @@ Decoding is validation, not trust in the parsed metadata:
    constants, exact version/kind and tree bounds.
 2. Decode canonical base64, enforce captured byte length, then run the incumbent
    digest/read-clock/reference/session/coordinate or paired-stage validation.
+   Event availability must not exceed the original captured-read instant at
+   nanosecond precision, even when both share the same rounded microsecond.
 3. Rebuild the complete expected v1 projection from those captured bytes and the
    explicit selector/cutoff. Compare canonical JSON bytes for **all** fields,
    rejecting missing nulls, extra fields, decimal spelling changes, float values,

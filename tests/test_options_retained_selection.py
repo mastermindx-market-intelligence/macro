@@ -365,3 +365,39 @@ def test_extra_base64_padding_and_float_structural_count_refuse():
         if replacement == "padding": wire["capture"][field] += "="
         else: wire["capture"][field] = float(wire["capture"][field])
         with pytest.raises(ValueError): decode_retained_selection_wire(json.dumps(wire).encode())
+
+
+@pytest.mark.parametrize("available,read_at,allowed", [
+    ("2026-10-19T14:33:00.123456789Z", "2026-10-19T14:33:00.123456001Z", False),
+    ("2026-10-19T14:33:00.123456001Z", "2026-10-19T14:33:00.123456789Z", True),
+    ("2026-10-19T14:33:00.123456789Z", "2026-10-19T14:33:00.123456789Z", True),
+    ("2026-10-19T14:33:00.123457000Z", "2026-10-19T14:33:00.123456999Z", False),
+    ("2026-10-19T14:33:00.123456789Z", "2026-10-19T16:33:00.123456001+02:00", False),
+    ("2026-10-19T14:33:00.123456001Z", "2026-10-19T16:33:00.123456789+02:00", True),
+])
+def test_event_availability_compares_original_instants_not_shared_rounded_bucket(available, read_at, allowed):
+    from engine.options_retained_selection import select_retained_events, encode_retained_events
+    raw = stage(available=available)
+    read = captured(raw, read_at)
+    args = {"session": "2026-10-19", "root": "SPY", "decision_at": "2026-10-20T16:00:00Z"}
+    if not allowed:
+        with pytest.raises(ValueError): select_retained_events(read, **args)
+        with pytest.raises(ValueError): encode_retained_events(read, **args)
+    else:
+        selected = select_retained_events(read, **args)
+        assert len(selected.records) == 1
+        assert selected.records[0]["source_available_at"] == available
+        assert selected.read_observed_at.isoformat() == "2026-10-19T14:33:00.123457+00:00"
+        assert json.loads(encode_retained_events(read, **args))["capture"]["read_at"] == read_at
+
+
+def test_wire_decoder_refuses_later_evidence_even_when_normalized_clock_stays_identical():
+    from engine.options_retained_selection import encode_retained_events, decode_retained_selection_wire
+    raw = stage(available="2026-10-19T14:33:00.123456789Z")
+    wire = json.loads(encode_retained_events(captured(raw, "2026-10-19T14:33:00.123456999Z"),
+                      session="2026-10-19", root="SPY", decision_at="2026-10-20T16:00:00Z"))
+    assert wire["read_observed_at"] == "2026-10-19T14:33:00.123457+00:00"
+    wire["capture"]["read_at"] = "2026-10-19T14:33:00.123456001Z"
+    # All redundant normalized fields are unchanged. Only original nanosecond
+    # comparison can distinguish this invalid capture from the valid one above.
+    with pytest.raises(ValueError): decode_retained_selection_wire(json.dumps(wire).encode())
