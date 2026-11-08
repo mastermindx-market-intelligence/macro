@@ -1,0 +1,200 @@
+{
+  "fileId": "01M3NSZGE8JWN2EZCSF0DT05RM",
+  "pageId": "p-2-0",
+  "url": "https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-2-0",
+  "pageName": "Terminal · Options Structure Intelligence · R1 · 2026-09-27",
+  "artboards": [
+    {
+      "id": "KQ3-1",
+      "name": "00 · OPTIONS DIRECTORY · Journeys + Build References",
+      "width": 1440,
+      "height": 800,
+      "childCount": 3
+    },
+    {
+      "id": "BPN-0",
+      "name": "01 · R3 · Exposure map · Desktop · EN",
+      "width": 1440,
+      "height": 1024,
+      "childCount": 1
+    },
+    {
+      "id": "C60-0",
+      "name": "02 · R2 · Chart + map companion · EN · Axis QA owed",
+      "width": 1440,
+      "height": 1024,
+      "childCount": 1
+    },
+    {
+      "id": "CIL-0",
+      "name": "B01 · Release A · Chart + selection · 1440×900",
+      "width": 1440,
+      "height": 900,
+      "childCount": 1
+    },
+    {
+      "id": "F21-0",
+      "name": "11 · R5 · Exposure map · Tablet EN",
+      "width": 768,
+      "height": 1024,
+      "childCount": 1
+    },
+    {
+      "id": "F9T-0",
+      "name": "N01 · Discover · Evidence-first candidates · R1",
+      "width": 1440,
+      "height": 900,
+      "childCount": 2
+    },
+    {
+      "id": "FG2-0",
+      "name": "N02 · Investigate · One chart, linked evidence · R1",
+      "width": 1440,
+      "height": 900,
+      "childCount": 2
+    },
+    {
+      "id": "FKP-0",
+      "name": "N03 · Off-exchange evidence · Current and source-gated states",
+      "width": 1440,
+      "height": 1100,
+      "childCount": 2
+    },
+    {
+      "id": "F8Y-0",
+      "name": "B05 · Release A · Source-state components",
+      "width": 1440,
+      "height": 900,
+      "childCount": 2
+    },
+    {
+      "id": "EK1-0",
+      "name": "05 · R3 · Node inspector · Expiry + change",
+      "width": 520,
+      "height": 1240,
+      "childCount": 1
+    },
+    {
+      "id": "EO5-0",
+      "name": "06 · R3 · Scope & display · Desktop dialog",
+      "width": 520,
+      "height": 1000,
+      "childCount": 1
+    },
+    {
+      "id": "ERU-0",
+      "name": "B02 · Release A · Node + expiry evidence",
+      "width": 520,
+      "height": 1240,
+      "childCount": 1
+    },
+    {
+      "id": "EVY-0",
+      "name": "B03 · Release A · Staged scope + Cancel",
+      "width": 520,
+      "height": 1040,
+      "childCount": 1
+    },
+    {
+      "id": "EZP-0",
+      "name": "07 · R3 · Observe price level · Draft dialog",
+      "width": 520,
+      "height": 1080,
+      "childCount": 1
+    },
+    {
+      "id": "F81-0",
+      "name": "B04 · Release A · Stored history · Receipt gap",
+      "width": 640,
+      "height": 900,
+      "childCount": 5
+    },
+    {
+      "id": "CYI-0",
+      "name": "03 · R4 · Exposure map · Phone · 390×844 · EN",
+      "width": 390,
+      "height": 844,
+      "childCount": 1
+    },
+    {
+      "id": "DLC-0",
+      "name": "08 · R4 · Scope / Contracts · Phone sheet · EN",
+      "width": 390,
+      "height": 844,
+      "childCount": 2
+    },
+    {
+      "id": "DSQ-0",
+      "name": "09 · R4 · Scope / Display · Phone sheet · EN",
+      "width": 390,
+      "height": 844,
+      "childCount": 2
+    },
+    {
+      "id": "D86-0",
+      "name": "10 · R4 · Observe / Price draft · Phone sheet · EN",
+      "width": 390,
+      "height": 844,
+      "childCount": 2
+    },
+    {
+      "id": "D3C-0",
+      "name": "12 · R5 · Exposure map · Phone ZH",
+      "width": 390,
+      "height": 844,
+      "childCount": 1
+    },
+    {
+      "id": "EAC-0",
+      "name": "13 · R5 · Scope / Contracts · Phone ZH",
+      "width": 390,
+      "height": 844,
+      "childCount": 2
+    },
+    {
+      "id": "E1J-0",
+      "name": "14 · R5 · Scope / Display · Phone ZH",
+      "width": 390,
+      "height": 844,
+      "childCount": 2
+    },
+    {
+      "id": "DER-0",
+      "name": "15 · R5 · Observe / Price draft · Phone ZH",
+      "width": 390,
+      "height": 844,
+      "childCount": 2
+    },
+    {
+      "id": "1N2L-0",
+      "name": "D08 · Options Command · Desktop Dark · Integration V1 candidate",
+      "width": 1440,
+      "height": 900,
+      "childCount": 0
+    }
+  ],
+  "ownedD08DTargets": [],
+  "siblingPages": [
+    {
+      "type": "page",
+      "id": "p-13-0",
+      "name": "10 · D08C · Plan, Compare & Review · Candidate R1",
+      "icon": "design",
+      "isActive": false
+    },
+    {
+      "type": "page",
+      "id": "p-12-0",
+      "name": "D08B · Exposure & Volatility · Candidate R1",
+      "icon": "design",
+      "isActive": false
+    },
+    {
+      "type": "page",
+      "id": "p-11-0",
+      "name": "00 · Read me & Build contract · D07 Company",
+      "icon": "blueprint",
+      "isActive": false
+    }
+  ]
+}
