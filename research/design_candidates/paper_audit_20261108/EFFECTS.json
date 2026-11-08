@@ -1,0 +1,1605 @@
+{
+  "operation": "paper-audit-clarity-20261108-c3",
+  "carrier": "Studio Direct C3 Personal",
+  "no_unknown_effects": true,
+  "not_dispatched_events": [
+    "OS historical page rename: active file mismatch; original target prepared and then dispatched once.",
+    "OS finish indicator: active file changed to News after prepare; first call not dispatched; prepared OS and then dispatched once.",
+    "AI builder prose replacement: preimage no longer matched; not dispatched; preserved concurrent edit.",
+    "Terminal fourth admission row: no dispatch receipt existed; exact readback showed three rows; replaced the owned panel once with the complete four-row version."
+  ],
+  "effects": [
+    {
+      "operation_id": "paper-audit-20261108-c3-os-rename-source",
+      "file_id": "01M3NRCX55B452A12819WNE1RH",
+      "tool": "rename_nodes",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "targets": [
+        "TMP-0"
+      ],
+      "arguments": {
+        "updates": [
+          {
+            "nodeId": "TMP-0",
+            "name": "UX15 · Historical source snapshot · 8 Oct 2026"
+          }
+        ]
+      },
+      "note": "Observed and later superseded by an independent shared-canvas writer; current TMP-0 is preserved as the current owner map plus historical snapshot."
+    },
+    {
+      "operation_id": "paper-audit-20261108-c3-os-history-pages",
+      "file_id": "01M3NRCX55B452A12819WNE1RH",
+      "tool": "update_pages",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "targets": [
+        "p-2-0",
+        "p-3-0",
+        "p-4-0",
+        "p-5-0",
+        "p-6-0",
+        "p-7-0",
+        "p-8-0",
+        "p-9-0",
+        "p-A-0"
+      ],
+      "arguments": {
+        "updates": [
+          {
+            "pageId": "p-2-0",
+            "name": "REF · Noir experience + Build history",
+            "icon": "paper"
+          },
+          {
+            "pageId": "p-3-0",
+            "name": "REF · Conversations + Message states",
+            "icon": "paper"
+          },
+          {
+            "pageId": "p-4-0",
+            "name": "REF · Missions, Work + Fleet",
+            "icon": "paper"
+          },
+          {
+            "pageId": "p-5-0",
+            "name": "REF · Connected company journeys",
+            "icon": "paper"
+          },
+          {
+            "pageId": "p-6-0",
+            "name": "REF · Chairman daily journey",
+            "icon": "paper"
+          },
+          {
+            "pageId": "p-7-0",
+            "name": "REF · Access, Loading + Recovery",
+            "icon": "paper"
+          },
+          {
+            "pageId": "p-8-0",
+            "name": "REF · Global shell + Navigation",
+            "icon": "paper"
+          },
+          {
+            "pageId": "p-9-0",
+            "name": "REF · All tools + Research drawer",
+            "icon": "paper"
+          },
+          {
+            "pageId": "p-A-0",
+            "name": "REF · Global search + Recovery",
+            "icon": "paper"
+          }
+        ]
+      },
+      "created": [],
+      "receipt_kind": "APPLIED_RESPONSE_OBSERVED"
+    },
+    {
+      "operation_id": "paper-audit-20261108-c3-gmi-header-en-dark",
+      "file_id": "01M5H6EARN9YHQV17JC6ZG9BRY",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "targets": "6E9-0",
+      "arguments": {
+        "targetNodeId": "6E9-0",
+        "mode": "replace",
+        "html": "<div layer-name=\"Compact product header · en-dark\" style=\"display:flex;align-items:center;padding:16px 20px 12px;width:100%;\"><div style=\"font-family:Inter;font-size:17px;line-height:22px;font-weight:700;color:var(--color-gmi-night-text);\">GMI Explorer</div></div>"
+      },
+      "created": [
+        {
+          "id": "70Y-0",
+          "name": "Compact product header · en-dark"
+        },
+        {
+          "id": "70Z-0",
+          "name": "GMI Explorer"
+        }
+      ],
+      "receipt_kind": "APPLIED_RESPONSE_OBSERVED"
+    },
+    {
+      "operation_id": "paper-audit-20261108-c3-gmi-header-en-light",
+      "file_id": "01M5H6EARN9YHQV17JC6ZG9BRY",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "targets": "6HD-0",
+      "arguments": {
+        "targetNodeId": "6HD-0",
+        "mode": "replace",
+        "html": "<div layer-name=\"Compact product header · en-light\" style=\"display:flex;align-items:center;padding:16px 20px 12px;width:100%;\"><div style=\"font-family:Inter;font-size:17px;line-height:22px;font-weight:700;color:var(--color-gmi-day-text);\">GMI Explorer</div></div>"
+      },
+      "created": [
+        {
+          "id": "711-0",
+          "name": "Compact product header · en-light"
+        },
+        {
+          "id": "712-0",
+          "name": "GMI Explorer"
+        }
+      ],
+      "receipt_kind": "APPLIED_RESPONSE_OBSERVED"
+    },
+    {
+      "operation_id": "paper-audit-20261108-c3-gmi-header-zh-dark",
+      "file_id": "01M5H6EARN9YHQV17JC6ZG9BRY",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "targets": "6QP-0",
+      "arguments": {
+        "targetNodeId": "6QP-0",
+        "mode": "replace",
+        "html": "<div layer-name=\"Compact product header · zh-dark\" style=\"display:flex;align-items:center;padding:16px 20px 12px;width:100%;\"><div style=\"font-family:Inter;font-size:17px;line-height:22px;font-weight:700;color:var(--color-gmi-night-text);\">GMI Explorer</div></div>"
+      },
+      "created": [
+        {
+          "id": "714-0",
+          "name": "Compact product header · zh-dark"
+        },
+        {
+          "id": "715-0",
+          "name": "GMI Explorer"
+        }
+      ],
+      "receipt_kind": "APPLIED_RESPONSE_OBSERVED"
+    },
+    {
+      "operation_id": "paper-audit-20261108-c3-gmi-header-zh-light",
+      "file_id": "01M5H6EARN9YHQV17JC6ZG9BRY",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "targets": "6SM-0",
+      "arguments": {
+        "targetNodeId": "6SM-0",
+        "mode": "replace",
+        "html": "<div layer-name=\"Compact product header · zh-light\" style=\"display:flex;align-items:center;padding:16px 20px 12px;width:100%;\"><div style=\"font-family:Inter;font-size:17px;line-height:22px;font-weight:700;color:var(--color-gmi-day-text);\">GMI Explorer</div></div>"
+      },
+      "created": [
+        {
+          "id": "717-0",
+          "name": "Compact product header · zh-light"
+        },
+        {
+          "id": "718-0",
+          "name": "GMI Explorer"
+        }
+      ],
+      "receipt_kind": "APPLIED_RESPONSE_OBSERVED"
+    },
+    {
+      "operation_id": "paper-audit-20261108-c3-gmi-topic-copy",
+      "file_id": "01M5H6EARN9YHQV17JC6ZG9BRY",
+      "tool": "set_text_content",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "targets": [
+        "6EQ-0",
+        "6H3-0",
+        "6QF-0",
+        "6SC-0"
+      ],
+      "arguments": {
+        "updates": [
+          {
+            "nodeId": "6EQ-0",
+            "html": "Memory stacking and advanced chip packaging."
+          },
+          {
+            "nodeId": "6H3-0",
+            "html": "Memory stacking and advanced chip packaging."
+          },
+          {
+            "nodeId": "6QF-0",
+            "html": "高带宽内存堆叠与先进封装。"
+          },
+          {
+            "nodeId": "6SC-0",
+            "html": "高带宽内存堆叠与先进封装。"
+          }
+        ]
+      },
+      "created": [],
+      "receipt_kind": "APPLIED_RESPONSE_OBSERVED"
+    },
+    {
+      "operation_id": "paper-audit-20261108-c3-gmi-nav-en-dark",
+      "file_id": "01M5H6EARN9YHQV17JC6ZG9BRY",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "targets": "6ED-0",
+      "arguments": {
+        "targetNodeId": "6ED-0",
+        "mode": "replace",
+        "html": "<div layer-name=\"Task navigation · 44px targets · en-dark\" style=\"display:flex;align-items:center;gap:18px;padding:0 20px;width:100%;border-bottom:1px solid var(--color-gmi-night-line);\"><div layer-name=\"Theme research · 44px target\" style=\"display:flex;align-items:center;justify-content:center;height:44px;min-width:44px;flex-shrink:0;font-family:Inter;font-size:12px;line-height:16px;font-weight:600;color:var(--color-gmi-night-text);\">Theme research</div><div layer-name=\"Company evidence · 44px target\" style=\"display:flex;align-items:center;justify-content:center;height:44px;min-width:44px;flex-shrink:0;font-family:Inter;font-size:12px;line-height:16px;font-weight:400;color:var(--color-gmi-night-muted);\">Company evidence</div><div layer-name=\"Relationships · 44px target\" style=\"display:flex;align-items:center;justify-content:center;height:44px;min-width:44px;flex-shrink:0;font-family:Inter;font-size:12px;line-height:16px;font-weight:400;color:var(--color-gmi-night-muted);\">Relationships</div></div>"
+      },
+      "created": [
+        {
+          "id": "71A-0",
+          "name": "Task navigation · 44px targets · en-dark"
+        },
+        {
+          "id": "71B-0",
+          "name": "Theme research · 44px target"
+        },
+        {
+          "id": "71C-0",
+          "name": "Company evidence · 44px target"
+        },
+        {
+          "id": "71D-0",
+          "name": "Relationships · 44px target"
+        }
+      ],
+      "receipt_kind": "APPLIED_RESPONSE_OBSERVED"
+    },
+    {
+      "operation_id": "paper-audit-20261108-c3-gmi-nav-en-light",
+      "file_id": "01M5H6EARN9YHQV17JC6ZG9BRY",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "targets": "6H9-0",
+      "arguments": {
+        "targetNodeId": "6H9-0",
+        "mode": "replace",
+        "html": "<div layer-name=\"Task navigation · 44px targets · en-light\" style=\"display:flex;align-items:center;gap:18px;padding:0 20px;width:100%;border-bottom:1px solid var(--color-gmi-day-line);\"><div layer-name=\"Theme research · 44px target\" style=\"display:flex;align-items:center;justify-content:center;height:44px;min-width:44px;flex-shrink:0;font-family:Inter;font-size:12px;line-height:16px;font-weight:600;color:var(--color-gmi-day-text);\">Theme research</div><div layer-name=\"Company evidence · 44px target\" style=\"display:flex;align-items:center;justify-content:center;height:44px;min-width:44px;flex-shrink:0;font-family:Inter;font-size:12px;line-height:16px;font-weight:400;color:var(--color-gmi-day-muted);\">Company evidence</div><div layer-name=\"Relationships · 44px target\" style=\"display:flex;align-items:center;justify-content:center;height:44px;min-width:44px;flex-shrink:0;font-family:Inter;font-size:12px;line-height:16px;font-weight:400;color:var(--color-gmi-day-muted);\">Relationships</div></div>"
+      },
+      "created": [
+        {
+          "id": "71F-0",
+          "name": "Task navigation · 44px targets · en-light"
+        },
+        {
+          "id": "71G-0",
+          "name": "Theme research · 44px target"
+        },
+        {
+          "id": "71H-0",
+          "name": "Company evidence · 44px target"
+        },
+        {
+          "id": "71I-0",
+          "name": "Relationships · 44px target"
+        }
+      ],
+      "receipt_kind": "APPLIED_RESPONSE_OBSERVED"
+    },
+    {
+      "operation_id": "paper-audit-20261108-c3-gmi-nav-zh-dark",
+      "file_id": "01M5H6EARN9YHQV17JC6ZG9BRY",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "targets": "6QL-0",
+      "arguments": {
+        "targetNodeId": "6QL-0",
+        "mode": "replace",
+        "html": "<div layer-name=\"Task navigation · 44px targets · zh-dark\" style=\"display:flex;align-items:center;gap:18px;padding:0 20px;width:100%;border-bottom:1px solid var(--color-gmi-night-line);\"><div layer-name=\"主题研究 · 44px target\" style=\"display:flex;align-items:center;justify-content:center;height:44px;min-width:44px;flex-shrink:0;font-family:Inter;font-size:12px;line-height:16px;font-weight:600;color:var(--color-gmi-night-text);\">主题研究</div><div layer-name=\"公司证据 · 44px target\" style=\"display:flex;align-items:center;justify-content:center;height:44px;min-width:44px;flex-shrink:0;font-family:Inter;font-size:12px;line-height:16px;font-weight:400;color:var(--color-gmi-night-muted);\">公司证据</div><div layer-name=\"公司关系 · 44px target\" style=\"display:flex;align-items:center;justify-content:center;height:44px;min-width:44px;flex-shrink:0;font-family:Inter;font-size:12px;line-height:16px;font-weight:400;color:var(--color-gmi-night-muted);\">公司关系</div></div>"
+      },
+      "created": [
+        {
+          "id": "71K-0",
+          "name": "Task navigation · 44px targets · zh-dark"
+        },
+        {
+          "id": "71L-0",
+          "name": "主题研究 · 44px target"
+        },
+        {
+          "id": "71M-0",
+          "name": "公司证据 · 44px target"
+        },
+        {
+          "id": "71N-0",
+          "name": "公司关系 · 44px target"
+        }
+      ],
+      "receipt_kind": "APPLIED_RESPONSE_OBSERVED"
+    },
+    {
+      "operation_id": "paper-audit-20261108-c3-gmi-nav-zh-light",
+      "file_id": "01M5H6EARN9YHQV17JC6ZG9BRY",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "targets": "6SI-0",
+      "arguments": {
+        "targetNodeId": "6SI-0",
+        "mode": "replace",
+        "html": "<div layer-name=\"Task navigation · 44px targets · zh-light\" style=\"display:flex;align-items:center;gap:18px;padding:0 20px;width:100%;border-bottom:1px solid var(--color-gmi-day-line);\"><div layer-name=\"主题研究 · 44px target\" style=\"display:flex;align-items:center;justify-content:center;height:44px;min-width:44px;flex-shrink:0;font-family:Inter;font-size:12px;line-height:16px;font-weight:600;color:var(--color-gmi-day-text);\">主题研究</div><div layer-name=\"公司证据 · 44px target\" style=\"display:flex;align-items:center;justify-content:center;height:44px;min-width:44px;flex-shrink:0;font-family:Inter;font-size:12px;line-height:16px;font-weight:400;color:var(--color-gmi-day-muted);\">公司证据</div><div layer-name=\"公司关系 · 44px target\" style=\"display:flex;align-items:center;justify-content:center;height:44px;min-width:44px;flex-shrink:0;font-family:Inter;font-size:12px;line-height:16px;font-weight:400;color:var(--color-gmi-day-muted);\">公司关系</div></div>"
+      },
+      "created": [
+        {
+          "id": "71P-0",
+          "name": "Task navigation · 44px targets · zh-light"
+        },
+        {
+          "id": "71Q-0",
+          "name": "主题研究 · 44px target"
+        },
+        {
+          "id": "71R-0",
+          "name": "公司证据 · 44px target"
+        },
+        {
+          "id": "71S-0",
+          "name": "公司关系 · 44px target"
+        }
+      ],
+      "receipt_kind": "APPLIED_RESPONSE_OBSERVED"
+    },
+    {
+      "operation_id": "paper-audit-20261108-c3-ai-action-label",
+      "file_id": "01M3P1QEHS5XXQY85BJT6QR2E1",
+      "tool": "set_text_content",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "targets": [
+        "5VC-0",
+        "5VF-0"
+      ],
+      "arguments": {
+        "updates": [
+          {
+            "nodeId": "5VC-0",
+            "html": "Go deeper…"
+          },
+          {
+            "nodeId": "5VF-0",
+            "html": "Go deeper…"
+          }
+        ]
+      },
+      "created": [],
+      "receipt_kind": "APPLIED_RESPONSE_OBSERVED"
+    },
+    {
+      "operation_id": "paper-audit-20261108-c3-os-review-copy",
+      "file_id": "01M3NRCX55B452A12819WNE1RH",
+      "tool": "set_text_content",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "targets": [
+        "VN3-0",
+        "VOE-0",
+        "VN4-0",
+        "VOF-0",
+        "VNA-0",
+        "VOL-0"
+      ],
+      "arguments": {
+        "updates": [
+          {
+            "nodeId": "VN3-0",
+            "html": "Review the Terminal brief"
+          },
+          {
+            "nodeId": "VOE-0",
+            "html": "Review the Terminal brief"
+          },
+          {
+            "nodeId": "VN4-0",
+            "html": "Choose who can see this version."
+          },
+          {
+            "nodeId": "VOF-0",
+            "html": "Choose who can see this version."
+          },
+          {
+            "nodeId": "VNA-0",
+            "html": "Review recipients"
+          },
+          {
+            "nodeId": "VOL-0",
+            "html": "Review recipients"
+          }
+        ]
+      },
+      "created": [],
+      "receipt_kind": "APPLIED_RESPONSE_OBSERVED"
+    },
+    {
+      "operation_id": "paper-audit-20261108-c3-os-hidden-reference-labels",
+      "file_id": "01M3NRCX55B452A12819WNE1RH",
+      "tool": "rename_nodes",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "targets": [
+        "N4N-0",
+        "N4T-0",
+        "PNJ-0",
+        "N58-0",
+        "PM6-0",
+        "N6Z-0"
+      ],
+      "arguments": {
+        "updates": [
+          {
+            "nodeId": "N4N-0",
+            "name": "REF ONLY · Previous Today briefing"
+          },
+          {
+            "nodeId": "N4T-0",
+            "name": "REF ONLY · Previous baseline decision"
+          },
+          {
+            "nodeId": "PNJ-0",
+            "name": "REF ONLY · Previous Meta-CEO discussion"
+          },
+          {
+            "nodeId": "N58-0",
+            "name": "REF ONLY · Previous project progress"
+          },
+          {
+            "nodeId": "PM6-0",
+            "name": "REF ONLY · Previous briefing sources"
+          },
+          {
+            "nodeId": "N6Z-0",
+            "name": "REF ONLY · Previous source coverage"
+          }
+        ]
+      },
+      "created": [],
+      "receipt_kind": "APPLIED_RESPONSE_OBSERVED"
+    },
+    {
+      "operation_id": "paper-audit-20261108-c3-gmi-motion-header",
+      "file_id": "01M5H6EARN9YHQV17JC6ZG9BRY",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "targets": "6T4-0",
+      "arguments": {
+        "targetNodeId": "6T4-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"S04B · Evidence transition · 08 Nov 2026\" style=\"display:flex;flex-direction:column;gap:16px;width:100%;padding:28px 0 0;border-top:1px solid var(--color-gmi-night-line);\"><div style=\"font-family:Inter;font-size:12px;line-height:16px;letter-spacing:0.08em;color:var(--color-gmi-night-muted);\">S04B · MOTION &amp; EXACT RETURN · 08 NOV 2026</div><div style=\"font-family:Inter;font-size:28px;line-height:36px;font-weight:600;color:var(--color-gmi-night-text);\">Open the evidence. Keep the context.</div><div style=\"font-family:Inter;font-size:15px;line-height:23px;color:var(--color-gmi-night-muted);\">Implementation reference for the existing theme → company → theme journey. The 200 ms transition communicates navigation; the dated relationship stays settled.</div></div>"
+      },
+      "created": [
+        {
+          "id": "71U-0",
+          "name": "S04B · Evidence transition · 08 Nov 2026"
+        },
+        {
+          "id": "71V-0",
+          "name": "S04B · MOTION & EXAC…"
+        },
+        {
+          "id": "71W-0",
+          "name": "Open the evidence. K…"
+        },
+        {
+          "id": "71X-0",
+          "name": "Implementation refer…"
+        }
+      ],
+      "receipt_kind": "APPLIED_RESPONSE_OBSERVED"
+    },
+    {
+      "operation_id": "paper-audit-20261108-c3-gmi-motion-row",
+      "file_id": "01M5H6EARN9YHQV17JC6ZG9BRY",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "targets": "71U-0",
+      "arguments": {
+        "targetNodeId": "71U-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"Evidence journey storyboard\" style=\"display:flex;align-items:stretch;gap:20px;width:100%;\"></div>"
+      },
+      "created": [
+        {
+          "id": "71Z-0",
+          "name": "Evidence journey storyboard"
+        }
+      ],
+      "receipt_kind": "APPLIED_RESPONSE_OBSERVED"
+    },
+    {
+      "operation_id": "paper-audit-20261108-c3-gmi-motion-capture-header",
+      "file_id": "01M5H6EARN9YHQV17JC6ZG9BRY",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "targets": "71Z-0",
+      "arguments": {
+        "targetNodeId": "71Z-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"Motion stage · capture\" style=\"display:flex;flex-direction:column;flex:1;gap:16px;padding:24px;border:1px solid var(--color-gmi-night-line);border-radius:14px;background:var(--color-gmi-night-surface);\"><div style=\"font-family:Inter;font-size:20px;line-height:28px;font-weight:600;color:var(--color-gmi-night-text);\">01 · Capture the place</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;color:var(--color-gmi-night-muted);\">Before navigation</div></div>"
+      },
+      "created": [
+        {
+          "id": "721-0",
+          "name": "Motion stage · capture"
+        },
+        {
+          "id": "722-0",
+          "name": "01 · Capture the pla…"
+        },
+        {
+          "id": "723-0",
+          "name": "Before navigation"
+        }
+      ],
+      "receipt_kind": "APPLIED_RESPONSE_OBSERVED"
+    },
+    {
+      "operation_id": "paper-audit-20261108-c3-gmi-motion-reveal-header",
+      "file_id": "01M5H6EARN9YHQV17JC6ZG9BRY",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "targets": "71Z-0",
+      "arguments": {
+        "targetNodeId": "71Z-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"Motion stage · reveal\" style=\"display:flex;flex-direction:column;flex:1;gap:16px;padding:24px;border:1px solid var(--color-gmi-night-line);border-radius:14px;background:var(--color-gmi-night-surface);\"><div style=\"font-family:Inter;font-size:20px;line-height:28px;font-weight:600;color:var(--color-gmi-night-text);\">02 · Reveal the evidence</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;color:var(--color-gmi-night-muted);\">200 ms · opacity + 8 px</div></div>"
+      },
+      "created": [
+        {
+          "id": "725-0",
+          "name": "Motion stage · reveal"
+        },
+        {
+          "id": "726-0",
+          "name": "02 · Reveal the evid…"
+        },
+        {
+          "id": "727-0",
+          "name": "200 ms · opacity + 8…"
+        }
+      ],
+      "receipt_kind": "APPLIED_RESPONSE_OBSERVED"
+    },
+    {
+      "operation_id": "paper-audit-20261108-c3-gmi-motion-return-header",
+      "file_id": "01M5H6EARN9YHQV17JC6ZG9BRY",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "targets": "71Z-0",
+      "arguments": {
+        "targetNodeId": "71Z-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"Motion stage · return\" style=\"display:flex;flex-direction:column;flex:1;gap:16px;padding:24px;border:1px solid var(--color-gmi-night-line);border-radius:14px;background:var(--color-gmi-night-surface);\"><div style=\"font-family:Inter;font-size:20px;line-height:28px;font-weight:600;color:var(--color-gmi-night-text);\">03 · Restore the place</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;color:var(--color-gmi-night-muted);\">Back · focus + scroll</div></div>"
+      },
+      "created": [
+        {
+          "id": "729-0",
+          "name": "Motion stage · return"
+        },
+        {
+          "id": "72A-0",
+          "name": "03 · Restore the pla…"
+        },
+        {
+          "id": "72B-0",
+          "name": "Back · focus + scrol…"
+        }
+      ],
+      "receipt_kind": "APPLIED_RESPONSE_OBSERVED"
+    },
+    {
+      "operation_id": "paper-audit-20261108-c3-gmi-motion-capture-specimen",
+      "file_id": "01M5H6EARN9YHQV17JC6ZG9BRY",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "targets": "721-0",
+      "arguments": {
+        "targetNodeId": "721-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"Selected theme specimen\" style=\"display:flex;flex-direction:column;gap:12px;padding:18px;background:var(--color-gmi-night-canvas);border-radius:8px;\"><div style=\"font-family:Inter;font-size:18px;line-height:25px;font-weight:600;color:var(--color-gmi-night-text);\">HBM &amp; advanced packaging</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;color:var(--color-gmi-night-muted);\">Source · 26 Feb 2024</div><x-paper-clone node-id=\"6F2-0\" style=\"width:100%;\" /></div>"
+      },
+      "created": [
+        {
+          "id": "72D-0",
+          "name": "Selected theme specimen"
+        },
+        {
+          "id": "72E-0",
+          "name": "HBM & advanced packa…"
+        },
+        {
+          "id": "72F-0",
+          "name": "Source · 26 Feb 2024"
+        },
+        {
+          "id": "72G-0",
+          "name": "Frame"
+        },
+        {
+          "id": "72H-0",
+          "name": "Open company evidenc…"
+        }
+      ],
+      "receipt_kind": "APPLIED_RESPONSE_OBSERVED"
+    },
+    {
+      "operation_id": "paper-audit-20261108-c3-gmi-motion-reveal-specimen",
+      "file_id": "01M5H6EARN9YHQV17JC6ZG9BRY",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "targets": "725-0",
+      "arguments": {
+        "targetNodeId": "725-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"Evidence destination specimen\" style=\"display:flex;flex-direction:column;gap:12px;padding:18px;background:var(--color-gmi-night-canvas);border-radius:8px;\"><div style=\"font-family:Inter;font-size:12px;line-height:18px;color:var(--color-gmi-night-accent);\">← Back to theme research</div><div style=\"font-family:Inter;font-size:18px;line-height:25px;font-weight:600;color:var(--color-gmi-night-text);\">Micron Technology</div><div style=\"font-family:Inter;font-size:13px;line-height:20px;color:var(--color-gmi-night-muted);\">HBM3E → NVIDIA H200<br>Source · 26 Feb 2024</div></div>"
+      },
+      "created": [
+        {
+          "id": "72J-0",
+          "name": "Evidence destination specimen"
+        },
+        {
+          "id": "72K-0",
+          "name": "← Back to theme rese…"
+        },
+        {
+          "id": "72L-0",
+          "name": "Micron Technology"
+        },
+        {
+          "id": "72M-0",
+          "name": "HBM3E → NVIDIA H200\n…"
+        }
+      ],
+      "receipt_kind": "APPLIED_RESPONSE_OBSERVED"
+    },
+    {
+      "operation_id": "paper-audit-20261108-c3-gmi-motion-return-specimen",
+      "file_id": "01M5H6EARN9YHQV17JC6ZG9BRY",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "targets": "729-0",
+      "arguments": {
+        "targetNodeId": "729-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"Restored theme specimen\" style=\"display:flex;flex-direction:column;gap:12px;padding:18px;background:var(--color-gmi-night-canvas);border-radius:8px;\"><div style=\"font-family:Inter;font-size:18px;line-height:25px;font-weight:600;color:var(--color-gmi-night-text);\">HBM &amp; advanced packaging</div><div style=\"font-family:Inter;font-size:12px;line-height:18px;color:var(--color-gmi-night-muted);\">Same selection · Same source snapshot</div><x-paper-clone node-id=\"6F2-0\" style=\"width:100%;\" /></div>"
+      },
+      "created": [
+        {
+          "id": "72O-0",
+          "name": "Restored theme specimen"
+        },
+        {
+          "id": "72P-0",
+          "name": "HBM & advanced packa…"
+        },
+        {
+          "id": "72Q-0",
+          "name": "Same selection · Sam…"
+        },
+        {
+          "id": "72R-0",
+          "name": "Frame"
+        },
+        {
+          "id": "72S-0",
+          "name": "Open company evidenc…"
+        }
+      ],
+      "receipt_kind": "APPLIED_RESPONSE_OBSERVED"
+    },
+    {
+      "operation_id": "paper-audit-20261108-c3-gmi-motion-capture-contract",
+      "file_id": "01M5H6EARN9YHQV17JC6ZG9BRY",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "targets": "721-0",
+      "arguments": {
+        "targetNodeId": "721-0",
+        "mode": "insert-children",
+        "html": "<div style=\"font-family:Inter;font-size:14px;line-height:22px;color:var(--color-gmi-night-muted);\">Keep query, category, lens, page, selected ID, source snapshot, scroll and opener key. A direct link opens the named entity and offers a safe theme return.</div>"
+      },
+      "created": [
+        {
+          "id": "72U-0",
+          "name": "Keep query, category…"
+        }
+      ],
+      "receipt_kind": "APPLIED_RESPONSE_OBSERVED"
+    },
+    {
+      "operation_id": "paper-audit-20261108-c3-gmi-motion-reveal-contract",
+      "file_id": "01M5H6EARN9YHQV17JC6ZG9BRY",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "targets": "725-0",
+      "arguments": {
+        "targetNodeId": "725-0",
+        "mode": "insert-children",
+        "html": "<div style=\"font-family:Inter;font-size:14px;line-height:22px;color:var(--color-gmi-night-muted);\">Render heading, claim, date and limitation immediately. Move the ready panel at most 8 px over 200 ms. Focus the heading; a failed read preserves the dated usable answer.</div>"
+      },
+      "created": [
+        {
+          "id": "72W-0",
+          "name": "Render heading, clai…"
+        }
+      ],
+      "receipt_kind": "APPLIED_RESPONSE_OBSERVED"
+    },
+    {
+      "operation_id": "paper-audit-20261108-c3-gmi-motion-return-contract",
+      "file_id": "01M5H6EARN9YHQV17JC6ZG9BRY",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "targets": "729-0",
+      "arguments": {
+        "targetNodeId": "729-0",
+        "mode": "insert-children",
+        "html": "<div style=\"font-family:Inter;font-size:14px;line-height:22px;color:var(--color-gmi-night-muted);\">Restore selection and scroll, then focus the original control. Recheck access before showing cached evidence. If the opener disappeared, focus the result heading.</div>"
+      },
+      "created": [
+        {
+          "id": "72Y-0",
+          "name": "Restore selection an…"
+        }
+      ],
+      "receipt_kind": "APPLIED_RESPONSE_OBSERVED"
+    },
+    {
+      "operation_id": "paper-audit-20261108-c3-gmi-motion-acceptance",
+      "file_id": "01M5H6EARN9YHQV17JC6ZG9BRY",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "targets": "71U-0",
+      "arguments": {
+        "targetNodeId": "71U-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"Motion acceptance\" style=\"display:flex;gap:24px;padding:20px 0 0;border-top:1px solid var(--color-gmi-night-line);width:100%;\"><div style=\"width:260px;flex-shrink:0;font-family:Inter;font-size:16px;line-height:24px;font-weight:600;color:var(--color-gmi-night-text);\">Reduced motion = final state</div><div style=\"flex:1;font-family:Inter;font-size:14px;line-height:22px;color:var(--color-gmi-night-muted);\">No numeric count-up or live pulse. Keep the relationship illustration settled. Use the existing shared shell and Signal Ink owners for product integration. Verify keyboard, Back/Forward, direct link, refresh, access loss, 320–390 px, EN/中文 and both themes.</div></div>"
+      },
+      "created": [
+        {
+          "id": "730-0",
+          "name": "Motion acceptance"
+        },
+        {
+          "id": "731-0",
+          "name": "Reduced motion = fin…"
+        },
+        {
+          "id": "732-0",
+          "name": "No numeric count-up …"
+        }
+      ],
+      "receipt_kind": "APPLIED_RESPONSE_OBSERVED"
+    },
+    {
+      "operation_id": "paper-audit-20261108-c3-international-directory",
+      "file_id": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "tool": "set_text_content",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "targets": [
+        "41U-0",
+        "3TC-0",
+        "420-0"
+      ],
+      "arguments": {
+        "updates": [
+          {
+            "nodeId": "41U-0",
+            "html": "BUILD · R10 · Product pages 01–04B / Builder contracts · 80<br>01 · Overview + Compare → 01A · Country Inspector → 01B · Company Exposure<br>02 · Macro, Policy + Risk / 03 · History + Scenarios<br>04 · Research Library + Search → 04A · Saved Research → 04B · Comparison Review<br>REFERENCES · R12 · Country Intelligence / R14 · Global Surveillance / R13 · Earlier expansion<br>ELSEWHERE · China: Intelligence Hub R4, Start Here / Returns: Terminal, Returns Calendar"
+          },
+          {
+            "nodeId": "3TC-0",
+            "html": "China → Intelligence Hub · R4 Workspace · Returns → Terminal · Returns Calendar."
+          },
+          {
+            "nodeId": "420-0",
+            "html": "R10 pages 01–04B and contracts 80 define the build baseline. R12–R14 provide additional design references. Specimen screens do not establish working data, saving or monitoring."
+          }
+        ]
+      },
+      "created": [],
+      "receipt_kind": "APPLIED_RESPONSE_OBSERVED"
+    },
+    {
+      "operation_id": "paper-audit-20261108-c3-international-reference-pages",
+      "file_id": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "tool": "update_pages",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "targets": [
+        "p-G-0",
+        "p-H-0",
+        "p-I-0"
+      ],
+      "arguments": {
+        "updates": [
+          {
+            "pageId": "p-G-0",
+            "name": "REF · R12 · Country Intelligence",
+            "icon": "paper"
+          },
+          {
+            "pageId": "p-H-0",
+            "name": "REF · R13 · Global Surveillance · Expansion",
+            "icon": "paper"
+          },
+          {
+            "pageId": "p-I-0",
+            "name": "REF · R14 · Global Surveillance · Design Board",
+            "icon": "paper"
+          }
+        ]
+      },
+      "created": [],
+      "receipt_kind": "APPLIED_RESPONSE_OBSERVED"
+    },
+    {
+      "operation_id": "paper-audit-20261108-c3-international-page-order",
+      "file_id": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "tool": "arrange_pages",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "targets": null,
+      "arguments": {
+        "order": [
+          "p-1-0",
+          "p-2-0",
+          "p-E-0",
+          "p-F-0",
+          "p-3-0",
+          "p-4-0",
+          "p-5-0",
+          "p-C-0",
+          "p-D-0",
+          "p-B-0",
+          "p-G-0",
+          "p-I-0",
+          "p-H-0",
+          "p-6-0",
+          "p-7-0",
+          "p-A-0",
+          "p-9-0"
+        ]
+      },
+      "created": [],
+      "receipt_kind": "APPLIED_RESPONSE_OBSERVED"
+    },
+    {
+      "operation_id": "paper-audit-20261108-c3-ai-depth-parity",
+      "file_id": "01M3P1QEHS5XXQY85BJT6QR2E1",
+      "tool": "set_text_content",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "targets": [
+        "5VI-0",
+        "5VL-0",
+        "1ZE-0",
+        "1YQ-0"
+      ],
+      "arguments": {
+        "updates": [
+          {
+            "nodeId": "5VI-0",
+            "html": "Go deeper…"
+          },
+          {
+            "nodeId": "5VL-0",
+            "html": "Go deeper…"
+          },
+          {
+            "nodeId": "1ZE-0",
+            "html": "IMPLEMENTATION HOLD · Saved with Monitoring off cannot use current create-thesis: it creates an active thesis, which the monitor watches. The thesis content schema also lacks structured evidence/assumption receipts. Extend the existing thesis/version contract for a non-monitoring saved case. Do not create active then archive. Source: Macro 10cf7d6e / Terminal c35b9a1d; #7151 comment 5927298214.<br><br>First build slice: wire the server’s context_receipt into chat.html Sources, where it is currently ignored. Bind receipts to their answer; selected context is not a citation. Historical receipts are absent: show evidence unavailable. Keep draft, scroll and focus on close.<br><br>Case &amp; alerts retains notes/versions and R2 14 review. Bind this case’s universe/metric, never the sample threshold. Review condition, schedule, time zone, delivery, expiry, fresh-crossing and stale-data rules. Enable only after coverage/permission checks, explicit confirmation and a server receipt. Unknown activation uses R2 17 lookup for the original alert request, never another Enable call.<br><br>Go deeper… opens 67–68, the current R2 16 depth/usage review. Quick stays default; these boards show Investigate selected before confirmation. Preserve answer-bound sources, permissions, answer and draft. Render the service’s usage estimate or unknown; never invent balances or waive admission. Only Start research confirms the existing research request. Opening, selecting depth, closing or Cancel starts nothing and expands no source scope. Cancel restores trigger focus and reading position. Reuse the existing research lifecycle; do not create another quota, retry or run store.<br><br>Reference correction: R8 33 enumerates four URLs (3 issuer-family + 1 journal), not five. Keep two evidence families. Earlier studies support R10; archive pins and token hashes are historical."
+          },
+          {
+            "nodeId": "1YQ-0",
+            "html": "Reuse Brain, renderers, citations, stream/history, identity, permissions, cases and monitors. Keep R7/R8’s facts, calculations, assumptions and unknowns distinct. Go deeper… opens 67–68, the current R2 16 depth/usage review; it never grants source access."
+          }
+        ]
+      },
+      "created": [],
+      "receipt_kind": "APPLIED_RESPONSE_OBSERVED"
+    },
+    {
+      "operation_id": "paper-audit-20261108-c3-os-current-bridge-duplicate",
+      "file_id": "01M3NRCX55B452A12819WNE1RH",
+      "tool": "duplicate_nodes",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "targets": [
+        "TMP-0"
+      ],
+      "arguments": {
+        "nodes": [
+          {
+            "id": "TMP-0",
+            "parentId": "root_node_p-E-0"
+          }
+        ]
+      },
+      "created": [],
+      "receipt_kind": "APPLIED_RESPONSE_OBSERVED"
+    },
+    {
+      "operation_id": "paper-audit-20261108-c3-os-build-bridge-name",
+      "file_id": "01M3NRCX55B452A12819WNE1RH",
+      "tool": "rename_nodes",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "targets": [
+        "XGI-0"
+      ],
+      "arguments": {
+        "updates": [
+          {
+            "nodeId": "XGI-0",
+            "name": "UX18 · Build sequence + acceptance · 8 Nov"
+          }
+        ]
+      },
+      "created": [],
+      "receipt_kind": "APPLIED_RESPONSE_OBSERVED"
+    },
+    {
+      "operation_id": "paper-audit-20261108-c3-os-build-bridge-context",
+      "file_id": "01M3NRCX55B452A12819WNE1RH",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "targets": "XHU-0",
+      "arguments": {
+        "targetNodeId": "XHU-0",
+        "mode": "replace",
+        "html": "<div layer-name=\"Existing map reference\" style=\"display:flex;gap:16px;padding:16px 20px;width:1504px;border:1px solid var(--noir-selected);border-radius:12px;background:var(--noir-panel);\"><div style=\"font-family:Inter;font-size:14px;line-height:22px;color:var(--noir-text-secondary);\">READ WITH UX15 · The current owner map and historical snapshot remain on TMP-0. This board supplies the implementation order, extraction boundary and required product proof.</div></div>"
+      },
+      "created": [
+        {
+          "id": "XJW-0",
+          "name": "Existing map reference"
+        },
+        {
+          "id": "XJX-0",
+          "name": "READ WITH UX15 · The…"
+        }
+      ],
+      "receipt_kind": "APPLIED_RESPONSE_OBSERVED"
+    },
+    {
+      "operation_id": "paper-audit-20261108-c3-os-build-bridge-copy",
+      "file_id": "01M3NRCX55B452A12819WNE1RH",
+      "tool": "set_text_content",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "targets": [
+        "XHT-0",
+        "XHS-0",
+        "XHR-0",
+        "XHP-0",
+        "XHO-0",
+        "XHN-0",
+        "XHM-0",
+        "XHL-0",
+        "XHJ-0",
+        "XHI-0",
+        "XHH-0",
+        "XHG-0",
+        "XHF-0",
+        "XHD-0",
+        "XHC-0",
+        "XHB-0",
+        "XHA-0",
+        "XH9-0",
+        "XH5-0",
+        "XH4-0",
+        "XH2-0",
+        "XH1-0",
+        "XGZ-0",
+        "XGY-0",
+        "XGW-0",
+        "XGV-0",
+        "XGR-0",
+        "XGQ-0",
+        "XGO-0",
+        "XGN-0",
+        "XGJ-0"
+      ],
+      "arguments": {
+        "updates": [
+          {
+            "nodeId": "XHT-0",
+            "html": "UX18 · Implementation &amp; acceptance · 8 Nov 2026"
+          },
+          {
+            "nodeId": "XHS-0",
+            "html": "Build the journey. Prove each transition."
+          },
+          {
+            "nodeId": "XHR-0",
+            "html": "Compose the existing shell, project readers, Executive owner and selected-session host. Source presence, installed availability and accepted outcomes remain separate."
+          },
+          {
+            "nodeId": "XHP-0",
+            "html": "REUSE EXISTING OWNERS"
+          },
+          {
+            "nodeId": "XHO-0",
+            "html": "Five primary destinations"
+          },
+          {
+            "nodeId": "XHN-0",
+            "html": "Today · Projects · Inbox · Conversations · Knowledge. Keep Search and advanced destinations accessible through the existing shell; do not expand the daily rail."
+          },
+          {
+            "nodeId": "XHM-0",
+            "html": "Project tabs: Conversation · Overview · Plan · Work · Evidence · Journal · More. These are app views; App.tsx icon paths are not URL routes."
+          },
+          {
+            "nodeId": "XHL-0",
+            "html": "App.tsx composes qualified slots. ProjectWorkspace renders them without creating reads, sends, pauses or persistence."
+          },
+          {
+            "nodeId": "XHJ-0",
+            "html": "PRESERVE QUALIFICATION"
+          },
+          {
+            "nodeId": "XHI-0",
+            "html": "One exact target per action"
+          },
+          {
+            "nodeId": "XHH-0",
+            "html": "Resolve the current workRef and rootJobId through the existing catalogue. A transcript, role chart or project association does not qualify a Send target."
+          },
+          {
+            "nodeId": "XHG-0",
+            "html": "Use the independent Executive and selected-session hosts. Recheck principal, auth revision, binding generation, source and target before an effect."
+          },
+          {
+            "nodeId": "XHF-0",
+            "html": "Keep the mounted composer and unsent draft during Files or Project details. Owner change clears private content and invalidates cached authority."
+          },
+          {
+            "nodeId": "XHD-0",
+            "html": "PROVE THE PRODUCT"
+          },
+          {
+            "nodeId": "XHC-0",
+            "html": "Source present · Proof pending"
+          },
+          {
+            "nodeId": "XHB-0",
+            "html": "The 6 Nov candidate includes project create/open/Start work, goal and handoff, run history, completed-result follow-up and guarded native Send."
+          },
+          {
+            "nodeId": "XHA-0",
+            "html": "Configured capability, installed service, provider response, durable execution and product acceptance each need their own evidence."
+          },
+          {
+            "nodeId": "XH9-0",
+            "html": "Paper specifies composition and behavior. A screenshot, successful request, queued Job or completed run does not establish every later state."
+          },
+          {
+            "nodeId": "XH5-0",
+            "html": "1 · Create → Open → Start"
+          },
+          {
+            "nodeId": "XH4-0",
+            "html": "Confirm project creation. Open project refreshes Programs and resolves the exact saved record. Planning stays available. Start work is separate: a current effect-free preview supplies profile, model, repo/base and attended/durable mode. Keep the original operation if the record is missing or ambiguous."
+          },
+          {
+            "nodeId": "XH2-0",
+            "html": "2 · Read → Draft → Send"
+          },
+          {
+            "nodeId": "XH1-0",
+            "html": "Use incumbent source/result readers and exact owner + reference + revision. Add excerpt appends to the existing unaddressed draft: “Added to draft · Not sent.” Keep conditional Undo. Send appears only for the independently qualified selected session; a passive window never grants it."
+          },
+          {
+            "nodeId": "XGZ-0",
+            "html": "3 · Run → Result → Follow-up"
+          },
+          {
+            "nodeId": "XGY-0",
+            "html": "Keep execution, result, acknowledgement and acceptance separate. Read a result through its exact Job/Attempt association. An explicit follow-up creates one separately qualified successor run linked to validated completion; preserve the original root, input and evidence."
+          },
+          {
+            "nodeId": "XGW-0",
+            "html": "4 · Return → Access → Recover"
+          },
+          {
+            "nodeId": "XGV-0",
+            "html": "Restore the owned selection, draft, scroll and focus. Recheck access before displaying private content. Unavailable capability is not permission denial. An uncertain create/send/start keeps its original operation and offers status lookup; never create a second effect to recover the first."
+          },
+          {
+            "nodeId": "XGR-0",
+            "html": "Extract the current composition"
+          },
+          {
+            "nodeId": "XGQ-0",
+            "html": "Today mobile N27-0 uses visible VNZ-0. Exclude REF ONLY groups N4N / N4T / PNJ / N58 / PM6 / N6Z from implementation. Bind review cards to the actual artifact title and revision; “Review recipients” opens recipient review without sharing."
+          },
+          {
+            "nodeId": "XGO-0",
+            "html": "Verify the installed journey"
+          },
+          {
+            "nodeId": "XGN-0",
+            "html": "Prove create → exact open → preview → start; selected-session Send; source → draft → conditional Undo; Files/details return; original-effect recovery; completed-result follow-up. Check 320/390 px, keyboard, language, owner change and the exact installed build."
+          },
+          {
+            "nodeId": "XGJ-0",
+            "html": "Source pin: Mastermind 5c3d3885234358aefb97ecdbc59be0864df14f8b · app/mastermind_os/README.md · docs/project-team-execution.md · src/App.tsx · src/compose-mission-host.ts · src/projects/ProjectWorkspace.tsx. Full build plan: macro / research/design_candidates/paper_audit_20261108. No installed or provider proof claimed."
+          }
+        ]
+      },
+      "created": [],
+      "receipt_kind": "APPLIED_RESPONSE_OBSERVED"
+    },
+    {
+      "operation_id": "paper-audit-20261108-c3-terminal-admission-header",
+      "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "targets": "1S0S-0",
+      "arguments": {
+        "targetNodeId": "1S0S-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"08 Nov source and admission bridge\" style=\"display:flex;flex-direction:column;gap:16px;padding:24px;border:1px solid var(--noir-selected);border-radius:14px;background:var(--noir-panel);width:100%;\"><div style=\"font-family:Inter;font-size:12px;line-height:18px;letter-spacing:0.06em;color:var(--noir-text-tertiary);\">08 NOV 2026 · SOURCE &amp; ADMISSION BRIDGE</div><div style=\"font-family:Inter;font-size:24px;line-height:32px;font-weight:600;color:var(--noir-text-primary);\">Build the draft. Qualify the saved result.</div><div style=\"font-family:Inter;font-size:14px;line-height:22px;color:var(--noir-text-secondary);\">Terminal master d7a83d3348a4fcb762d93221f19c4e94cbe4505e · Macro main 338a10852dcefa5d2bd07e5c6be0955c2b1e83fd. Existing release holds and the original D08C qualification remain in force.</div></div>"
+      },
+      "created": [
+        {
+          "id": "1XWD-0",
+          "name": "08 Nov source and admission bridge"
+        },
+        {
+          "id": "1XWE-0",
+          "name": "08 NOV 2026 · SOURCE…"
+        },
+        {
+          "id": "1XWF-0",
+          "name": "Build the draft. Qua…"
+        },
+        {
+          "id": "1XWG-0",
+          "name": "Terminal master d7a8…"
+        }
+      ],
+      "receipt_kind": "APPLIED_RESPONSE_OBSERVED"
+    },
+    {
+      "operation_id": "paper-audit-20261108-c3-terminal-admission-navigation",
+      "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "targets": "1XWD-0",
+      "arguments": {
+        "targetNodeId": "1XWD-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"Build contract · navigation\" style=\"display:flex;gap:24px;padding:16px 0 0;border-top:1px solid var(--noir-selected);width:100%;\"><div style=\"width:300px;flex-shrink:0;font-family:Inter;font-size:16px;line-height:24px;font-weight:600;color:var(--noir-text-primary);\">Keep the installed navigation contract</div><div style=\"flex:1;font-family:Inter;font-size:15px;line-height:24px;color:var(--noir-text-secondary);\">Options uses Command, Flow, Exposure, Structure, Volatility, Statistics and Prophet. Preserve current panes and ?tab= aliases through optionsIa.ts and OptionsWorkspace.tsx. Plan is a design journey, not an established workspace route.</div></div>"
+      },
+      "created": [
+        {
+          "id": "1XWI-0",
+          "name": "Build contract · navigation"
+        },
+        {
+          "id": "1XWJ-0",
+          "name": "Keep the installed n…"
+        },
+        {
+          "id": "1XWK-0",
+          "name": "Options uses Command…"
+        }
+      ],
+      "receipt_kind": "APPLIED_RESPONSE_OBSERVED"
+    },
+    {
+      "operation_id": "paper-audit-20261108-c3-terminal-admission-schema",
+      "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "targets": "1XWD-0",
+      "arguments": {
+        "targetNodeId": "1XWD-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"Build contract · schema\" style=\"display:flex;gap:24px;padding:16px 0 0;border-top:1px solid var(--noir-selected);width:100%;\"><div style=\"width:300px;flex-shrink:0;font-family:Inter;font-size:16px;line-height:24px;font-weight:600;color:var(--noir-text-primary);\">Use the admitted manifest shape</div><div style=\"flex:1;font-family:Inter;font-size:15px;line-height:24px;color:var(--noir-text-secondary);\">investigationContracts.ts admits v1/v2 and a validated scenario_capture reference in v2. Its closed shape does not admit v3 or option_plan. A valid reference alone proves no persistence, entitlement or source availability.</div></div>"
+      },
+      "created": [
+        {
+          "id": "1XWR-0",
+          "name": "Build contract · schema"
+        },
+        {
+          "id": "1XWS-0",
+          "name": "Use the admitted man…"
+        },
+        {
+          "id": "1XWT-0",
+          "name": "investigationContrac…"
+        }
+      ],
+      "receipt_kind": "APPLIED_RESPONSE_OBSERVED"
+    },
+    {
+      "operation_id": "paper-audit-20261108-c3-terminal-admission-execution",
+      "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "targets": "1XWD-0",
+      "arguments": {
+        "targetNodeId": "1XWD-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"Build contract · execution\" style=\"display:flex;gap:24px;padding:16px 0 0;border-top:1px solid var(--noir-selected);width:100%;\"><div style=\"width:300px;flex-shrink:0;font-family:Inter;font-size:16px;line-height:24px;font-weight:600;color:var(--noir-text-primary);\">Separate local authoring from owner effects</div><div style=\"flex:1;font-family:Inter;font-size:15px;line-height:24px;color:var(--noir-text-secondary);\">Reuse the shortlist, local plan draft, editor and bounded calculation owners. Save requires the existing investigation revision operation, its exact receipt and revision readback. Watch preview and activation remain separate; unknown effects read the original operation.</div></div>"
+      },
+      "created": [
+        {
+          "id": "1XX2-0",
+          "name": "Build contract · execution"
+        },
+        {
+          "id": "1XX3-0",
+          "name": "Separate local autho…"
+        },
+        {
+          "id": "1XX4-0",
+          "name": "Reuse the shortlist,…"
+        }
+      ],
+      "receipt_kind": "APPLIED_RESPONSE_OBSERVED"
+    },
+    {
+      "operation_id": "paper-audit-20261108-c3-terminal-admission-qualified-panel",
+      "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "targets": "1XWD-0",
+      "arguments": {
+        "targetNodeId": "1XWD-0",
+        "mode": "replace",
+        "html": "<section style=\"display:flex;flex-direction:column;width:100%;padding:24px;gap:16px;background-color:#121212;border:1px solid #343434;border-radius:14px;font-family:Inter,sans-serif\">\n<div style=\"font-size:12px;line-height:18px;letter-spacing:0.06em;color:#B8B8B8\">08 NOV 2026 · SOURCE &amp; ADMISSION BRIDGE</div>\n<div style=\"font-size:24px;line-height:32px;font-weight:600;color:#F3F3F3\">Build the draft. Qualify the saved result.</div>\n<div style=\"font-size:14px;line-height:22px;color:#B8B8B8\">Terminal master d7a83d3348a4fcb762d93221f19c4e94cbe4505e · Macro main 338a10852dcefa5d2bd07e5c6be0955c2b1e83fd. Existing release holds and the original D08C qualification remain in force.</div>\n<div style=\"display:flex;width:100%;gap:24px;padding-top:16px;border-top:1px solid #343434\"><div style=\"width:300px;flex-shrink:0;font-size:16px;line-height:24px;font-weight:600;color:#F3F3F3\">Keep the existing navigation contract</div><div style=\"flex:1;font-size:15px;line-height:24px;color:#B8B8B8\">Options uses Command, Flow, Exposure, Structure, Volatility, Statistics and Prophet. Preserve current panes and ?tab= aliases through optionsIa.ts and OptionsWorkspace.tsx. Plan remains a design journey; it is not an established workspace route.</div></div><div style=\"display:flex;width:100%;gap:24px;padding-top:16px;border-top:1px solid #343434\"><div style=\"width:300px;flex-shrink:0;font-size:16px;line-height:24px;font-weight:600;color:#F3F3F3\">Use the admitted manifest shape</div><div style=\"flex:1;font-size:15px;line-height:24px;color:#B8B8B8\">investigationContracts.ts accepts v1/v2 and a validated scenario_capture reference in v2. Its closed shape does not accept v3 or option_plan. A valid reference alone proves no persistence, entitlement or source availability.</div></div><div style=\"display:flex;width:100%;gap:24px;padding-top:16px;border-top:1px solid #343434\"><div style=\"width:300px;flex-shrink:0;font-size:16px;line-height:24px;font-weight:600;color:#F3F3F3\">Separate drafts from saved effects</div><div style=\"flex:1;font-size:15px;line-height:24px;color:#B8B8B8\">Reuse the shortlist, local plan draft, editor and bounded calculation owners. Save needs the existing investigation revision operation, its exact receipt and revision readback. Watch preview and activation remain separate. Unknown effects read the original operation.</div></div><div style=\"display:flex;width:100%;gap:24px;padding-top:16px;border-top:1px solid #343434\"><div style=\"width:300px;flex-shrink:0;font-size:16px;line-height:24px;font-weight:600;color:#F3F3F3\">Prove admission before Save</div><div style=\"flex:1;font-size:15px;line-height:24px;color:#B8B8B8\">investigationApiAdmission accepts only INVESTIGATION_API_ADMISSION=open. All other values return unavailable before auth, body parsing or RPC. The deployed value is unprobed. Preserve the original D08C / Terminal #804 holds until their owner qualifies release.</div></div>\n</section>"
+      },
+      "created": [
+        {
+          "id": "1Y9G-0",
+          "name": "Frame"
+        },
+        {
+          "id": "1Y9H-0",
+          "name": "08 NOV 2026 · SOURCE…"
+        },
+        {
+          "id": "1Y9I-0",
+          "name": "Build the draft. Qua…"
+        },
+        {
+          "id": "1Y9J-0",
+          "name": "Terminal master d7a8…"
+        },
+        {
+          "id": "1Y9K-0",
+          "name": "Frame"
+        },
+        {
+          "id": "1Y9L-0",
+          "name": "Keep the existing na…"
+        },
+        {
+          "id": "1Y9M-0",
+          "name": "Options uses Command…"
+        },
+        {
+          "id": "1Y9N-0",
+          "name": "Frame"
+        },
+        {
+          "id": "1Y9O-0",
+          "name": "Use the admitted man…"
+        },
+        {
+          "id": "1Y9P-0",
+          "name": "investigationContrac…"
+        },
+        {
+          "id": "1Y9Q-0",
+          "name": "Frame"
+        },
+        {
+          "id": "1Y9R-0",
+          "name": "Separate drafts from…"
+        },
+        {
+          "id": "1Y9S-0",
+          "name": "Reuse the shortlist,…"
+        },
+        {
+          "id": "1Y9T-0",
+          "name": "Frame"
+        },
+        {
+          "id": "1Y9U-0",
+          "name": "Prove admission befo…"
+        },
+        {
+          "id": "1Y9V-0",
+          "name": "investigationApiAdmi…"
+        }
+      ],
+      "receipt_kind": "APPLIED_RESPONSE_OBSERVED"
+    },
+    {
+      "operation_id": "paper-audit-20261108-c3-terminal-plan-persistence-boundary",
+      "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "tool": "set_text_content",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "targets": [
+        "1Y9S-0"
+      ],
+      "arguments": {
+        "updates": [
+          {
+            "nodeId": "1Y9S-0",
+            "html": "D08C records shortlist, draft, editor and calculation reuse candidates; verify current compatibility. Native Plan persistence is held: the schema has no option_plan. Resolve incumbent contract/admission work and applicable #804 holds; require the exact revision receipt and readback. Never encode a Plan into scenario_capture. Watch needs separate confirmation; uncertain saves reconcile the original operation."
+          }
+        ]
+      },
+      "created": [],
+      "receipt_kind": "APPLIED_RESPONSE_OBSERVED"
+    },
+    {
+      "operation_id": "paper-audit-20261108-c3-international-source-freeze-directory",
+      "file_id": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "tool": "set_text_content",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "targets": [
+        "41U-0"
+      ],
+      "arguments": {
+        "updates": [
+          {
+            "nodeId": "41U-0",
+            "html": "CORE · R10 · Product pages 01–04B / Builder contracts · 80<br/>01 · Overview → 01A · Country → 01B · Company / 02 · Macro + Risk / 03 · History + Scenarios<br/>04 · Research Library + Search → 04A · Saved Research → 04B · Comparison Review<br/>GLOBAL SURVEILLANCE · R14 · Frozen for IM13–IM18; written spec and amendments govern.<br/>REFERENCES · R12 · Country Intelligence / R13 · Earlier Global Surveillance expansion<br/>ELSEWHERE · China: Intelligence Hub R4, Start Here / Returns: Terminal, Returns Calendar"
+          }
+        ]
+      },
+      "created": [],
+      "receipt_kind": "APPLIED_RESPONSE_OBSERVED"
+    },
+    {
+      "operation_id": "paper-audit-20261108-c3-international-source-freeze-page",
+      "file_id": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "tool": "update_pages",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "targets": [
+        "p-I-0"
+      ],
+      "arguments": {
+        "updates": [
+          {
+            "pageId": "p-I-0",
+            "name": "R14 · Global Surveillance · Frozen design",
+            "icon": "paper"
+          }
+        ]
+      },
+      "created": [],
+      "receipt_kind": "APPLIED_RESPONSE_OBSERVED"
+    },
+    {
+      "operation_id": "paper-audit-20261108-c3-international-source-freeze-order",
+      "file_id": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "tool": "arrange_pages",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "targets": null,
+      "arguments": {
+        "order": [
+          "p-1-0",
+          "p-2-0",
+          "p-E-0",
+          "p-F-0",
+          "p-3-0",
+          "p-4-0",
+          "p-5-0",
+          "p-C-0",
+          "p-D-0",
+          "p-B-0",
+          "p-I-0",
+          "p-G-0",
+          "p-H-0",
+          "p-6-0",
+          "p-7-0",
+          "p-A-0",
+          "p-9-0"
+        ]
+      },
+      "created": [],
+      "receipt_kind": "APPLIED_RESPONSE_OBSERVED"
+    },
+    {
+      "operation_id": "paper-audit-20261108-c3-finish-gmi",
+      "file_id": "01M5H6EARN9YHQV17JC6ZG9BRY",
+      "tool": "finish_working_on_nodes",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "targets": [
+        "6DR-0",
+        "6FY-0",
+        "6PA-0",
+        "6R7-0",
+        "6T4-0"
+      ],
+      "arguments": {
+        "nodeIds": [
+          "6DR-0",
+          "6FY-0",
+          "6PA-0",
+          "6R7-0",
+          "6T4-0"
+        ]
+      },
+      "created": [],
+      "receipt_kind": "APPLIED_RESPONSE_OBSERVED"
+    },
+    {
+      "operation_id": "paper-audit-20261108-c3-finish-ai",
+      "file_id": "01M3P1QEHS5XXQY85BJT6QR2E1",
+      "tool": "finish_working_on_nodes",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "targets": [
+        "1O7-0",
+        "1VE-0",
+        "1QN-0",
+        "5M1-0"
+      ],
+      "arguments": {
+        "nodeIds": [
+          "1O7-0",
+          "1VE-0",
+          "1QN-0",
+          "5M1-0"
+        ]
+      },
+      "created": [],
+      "receipt_kind": "APPLIED_RESPONSE_OBSERVED"
+    },
+    {
+      "operation_id": "paper-audit-20261108-c3-finish-international",
+      "file_id": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "tool": "finish_working_on_nodes",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "targets": [
+        "3RW-0",
+        "41M-0"
+      ],
+      "arguments": {
+        "nodeIds": [
+          "3RW-0",
+          "41M-0"
+        ]
+      },
+      "created": [],
+      "receipt_kind": "APPLIED_RESPONSE_OBSERVED"
+    },
+    {
+      "operation_id": "paper-audit-20261108-c3-finish-terminal",
+      "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "tool": "finish_working_on_nodes",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "targets": [
+        "1S0R-0"
+      ],
+      "arguments": {
+        "nodeIds": [
+          "1S0R-0"
+        ]
+      },
+      "created": [],
+      "receipt_kind": "APPLIED_RESPONSE_OBSERVED"
+    },
+    {
+      "operation_id": "paper-audit-20261108-c3-finish-os",
+      "file_id": "01M3NRCX55B452A12819WNE1RH",
+      "tool": "finish_working_on_nodes",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "targets": [
+        "LNV-0",
+        "N27-0",
+        "XGI-0"
+      ],
+      "arguments": {
+        "nodeIds": [
+          "LNV-0",
+          "N27-0",
+          "XGI-0"
+        ]
+      },
+      "created": [],
+      "receipt_kind": "APPLIED_RESPONSE_OBSERVED"
+    },
+    {
+      "operation_id": "paper-audit-20261108-c3-gmi-selected-evidence-source-bridge",
+      "file_id": "01M5H6EARN9YHQV17JC6ZG9BRY",
+      "tool": "write_html",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "targets": "71U-0",
+      "arguments": {
+        "targetNodeId": "71U-0",
+        "mode": "insert-children",
+        "html": "<section style=\"display:flex;flex-direction:column;width:100%;padding:24px;gap:12px;background-color:var(--color-gmi-night-surface);border:1px solid var(--color-gmi-night-line);border-radius:14px;font-family:Inter,sans-serif\">\n<div style=\"font-size:12px;line-height:18px;letter-spacing:0.06em;color:var(--color-gmi-night-muted)\">SOURCE BRIDGE · MACRO 338a10852dcefa5d2bd07e5c6be0955c2b1e83fd</div>\n<div style=\"font-size:22px;line-height:30px;font-weight:600;color:var(--color-gmi-night-text)\">Resolve the chosen relationship before rendering.</div>\n<div style=\"font-size:15px;line-height:24px;color:var(--color-gmi-night-muted)\">Build through scripts/build_gmi_explorer.py and scripts/gmi_explorer/model.py. Reuse _gmi_base, theme.js, gmi.js and the paired site assets.</div>\n<div style=\"font-size:15px;line-height:24px;color:var(--color-gmi-night-text)\">Current gap: issuer links open bare gmi-relationships.html; the detail selects model.edges[0]. Bind the requested issuer / edge and package identity. Missing or removed selections show their own state, never another company. Species filters need a real row-selection handler.</div>\n<div style=\"font-size:15px;line-height:24px;color:var(--color-gmi-night-muted)\">The lens has URL support. Search, expanded groups, selected IDs, focus and scroll still need explicit return binding and browser proof. Keep the existing access and shared-shell owners.</div>\n<div style=\"font-size:15px;line-height:24px;color:var(--color-gmi-night-muted)\">The 2024 source and 3 Nov research snapshot are dated examples. Current membership, coverage and relationship-package counts come from the current model; do not copy the older fixture totals.</div>\n</section>"
+      },
+      "created": [
+        {
+          "id": "73G-0",
+          "name": "Frame"
+        },
+        {
+          "id": "73H-0",
+          "name": "SOURCE BRIDGE · MACR…"
+        },
+        {
+          "id": "73I-0",
+          "name": "Resolve the chosen r…"
+        },
+        {
+          "id": "73J-0",
+          "name": "Build through script…"
+        },
+        {
+          "id": "73K-0",
+          "name": "Current gap: issuer …"
+        },
+        {
+          "id": "73L-0",
+          "name": "The lens has URL sup…"
+        },
+        {
+          "id": "73M-0",
+          "name": "The 2024 source and …"
+        }
+      ],
+      "receipt_kind": "APPLIED_RESPONSE_OBSERVED"
+    },
+    {
+      "operation_id": "paper-audit-20261108-c3-finish-gmi-source-bridge",
+      "file_id": "01M5H6EARN9YHQV17JC6ZG9BRY",
+      "tool": "finish_working_on_nodes",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "targets": [
+        "6T4-0"
+      ],
+      "arguments": {
+        "nodeIds": [
+          "6T4-0"
+        ]
+      },
+      "created": [],
+      "receipt_kind": "APPLIED_RESPONSE_OBSERVED"
+    },
+    {
+      "operation_id": "paper-audit-20261108-c3-gmi-relationship-key-contract",
+      "file_id": "01M5H6EARN9YHQV17JC6ZG9BRY",
+      "tool": "set_text_content",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "targets": [
+        "73K-0"
+      ],
+      "arguments": {
+        "updates": [
+          {
+            "nodeId": "73K-0",
+            "html": "Current gap: issuer links open bare gmi-relationships.html; the detail selects model.edges[0]. Resolve the requested relationship_key within package_id / package_sha256 and its issuer identity. Missing or removed keys show their own state, never another company. Species filters need a real row-selection handler."
+          }
+        ]
+      },
+      "created": [],
+      "receipt_kind": "APPLIED_RESPONSE_OBSERVED"
+    },
+    {
+      "operation_id": "paper-audit-20261108-c3-finish-gmi-relationship-key",
+      "file_id": "01M5H6EARN9YHQV17JC6ZG9BRY",
+      "tool": "finish_working_on_nodes",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "targets": [
+        "6T4-0"
+      ],
+      "arguments": {
+        "nodeIds": [
+          "6T4-0"
+        ]
+      },
+      "created": [],
+      "receipt_kind": "APPLIED_RESPONSE_OBSERVED"
+    }
+  ]
+}
