@@ -249,12 +249,12 @@
     "confidence": "low",
     "confidence_zh": "\u4f4e",
     "strength": 0.69,
-    "dominance_ratio": 1.05,
+    "dominance_ratio": 1.08,
     "agreement": 0.52,
-    "runner_up": "china_stimulus",
-    "runner_up_label": "Stimulus tape",
-    "runner_up_label_zh": "\u523a\u6fc0\u884c\u60c5",
-    "headline": "Mixed \u2014 Risk-off / washout + Stimulus tape jointly leading (breadth >50d +1.6\u03c3, CSI 300 +0.8\u03c3, QVIX (A-share vol) +0.0\u03c3); no single dominant driver.",
+    "runner_up": "inflation_commodities",
+    "runner_up_label": "Inflation / commodities",
+    "runner_up_label_zh": "\u901a\u80c0/\u5927\u5b97",
+    "headline": "Mixed \u2014 Risk-off / washout + Inflation / commodities jointly leading (breadth >50d +1.6\u03c3, CSI 300 +0.8\u03c3, QVIX (A-share vol) +0.0\u03c3); no single dominant driver.",
     "evidence": [
       "breadth >50d +1.6\u03c3",
       "CSI 300 +0.8\u03c3",
@@ -290,30 +290,30 @@
         "direction": "fear unwind \u2014 QVIX down, breadth recovering, limit-downs fade"
       },
       {
-        "driver": "china_stimulus",
-        "label": "Stimulus tape",
-        "label_zh": "\u523a\u6fc0\u884c\u60c5",
-        "family": "growth",
-        "projection": 0.66,
-        "strength": 0.66,
-        "direction": "stimulus-on \u2014 CSI300, brokers, property & copper/rebar lead up"
-      },
-      {
         "driver": "inflation_commodities",
         "label": "Inflation / commodities",
         "label_zh": "\u901a\u80c0/\u5927\u5b97",
         "family": "inflation",
-        "projection": -0.63,
-        "strength": 0.63,
+        "projection": -0.64,
+        "strength": 0.64,
         "direction": "upstream disinflation \u2014 PPI, coal, nonferrous & oil lead down"
+      },
+      {
+        "driver": "china_stimulus",
+        "label": "Stimulus tape",
+        "label_zh": "\u523a\u6fc0\u884c\u60c5",
+        "family": "growth",
+        "projection": 0.63,
+        "strength": 0.63,
+        "direction": "stimulus-on \u2014 CSI300, brokers, property & copper/rebar lead up"
       },
       {
         "driver": "cny_shock",
         "label": "Yuan (CNH) shock",
         "label_zh": "\u4eba\u6c11\u5e01(CNH)\u51b2\u51fb",
         "family": "fx",
-        "projection": 0.54,
-        "strength": 0.54,
+        "projection": 0.55,
+        "strength": 0.55,
         "direction": "yuan weakening \u2014 CNH up, capital-outflow stress, equities pressured"
       },
       {
@@ -357,10 +357,10 @@
   },
   "conditions": {
     "roro": {
-      "roro": -0.195,
-      "roro_raw": -0.197,
+      "roro": -0.201,
+      "roro_raw": -0.203,
       "roro_state": "neutral",
-      "china_roro_copper_gold": 1.052,
+      "china_roro_copper_gold": 0.998,
       "china_roro_breadth": 1.229,
       "china_roro_southbound": 0.068,
       "china_roro_m1_m2": -0.568,
@@ -374,7 +374,7 @@
           "key": "copper_gold",
           "name_en": "Copper / Gold",
           "name_zh": "\u94dc\uff0f\u91d1 \u6bd4",
-          "value": 1.052,
+          "value": 0.998,
           "lean": "risk-on"
         },
         {
@@ -2097,7 +2097,7 @@
           0.02,
           -0.181,
           -0.34,
-          -0.195
+          -0.201
         ]
       },
       "recession": {
@@ -6837,7 +6837,7 @@
           64.0,
           42.5,
           26.1,
-          41.0
+          39.8
         ]
       }
     },
@@ -6845,17 +6845,17 @@
     "note": "display-only conditioning lens \u2014 RORO + uncalibrated recession/drawdown gauges; never feeds china_axes / china_regime / china_playbook"
   },
   "fear_euphoria": {
-    "fe_score": 41,
+    "fe_score": 40,
     "band": "Neutral",
     "band_zh": "\u4e2d\u6027",
-    "roro": -0.195,
+    "roro": -0.201,
     "roro_state": "neutral",
     "legs": [
       {
         "key": "copper_gold",
         "name_en": "Copper / Gold",
         "name_zh": "\u94dc\uff0f\u91d1 \u6bd4",
-        "value": 1.052,
+        "value": 0.998,
         "pct": 88,
         "lean": "risk-on"
       },
