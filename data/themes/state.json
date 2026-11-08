@@ -37,7 +37,7 @@
     "label": "deteriorating",
     "name": "AI Infrastructure",
     "name_zh": "AI \u57fa\u7840\u8bbe\u65bd",
-    "rank": 37,
+    "rank": 36,
     "reco": "avoid",
     "score": 34
   },
@@ -53,15 +53,15 @@
     "label": "deteriorating",
     "name": "AI Semiconductors",
     "name_zh": "AI\u534a\u5bfc\u4f53",
-    "rank": 36,
+    "rank": 38,
     "reco": "avoid",
-    "score": 35
+    "score": 34
   },
   "ai_software": {
     "label": "deteriorating",
     "name": "AI Software & Platforms",
     "name_zh": "AI \u8f6f\u4ef6\u4e0e\u5e73\u53f0",
-    "rank": 38,
+    "rank": 37,
     "reco": "avoid",
     "score": 34
   },
@@ -69,9 +69,9 @@
     "label": "dominant",
     "name": "Big Pharma",
     "name_zh": "\u5927\u578b\u836f\u4f01",
-    "rank": 6,
+    "rank": 5,
     "reco": "hold",
-    "score": 68
+    "score": 69
   },
   "critical_minerals": {
     "label": "deteriorating",
@@ -87,7 +87,7 @@
     "name_zh": "\u52a0\u5bc6\u4e0e\u6570\u5b57\u8d44\u4ea7",
     "rank": 39,
     "reco": "avoid",
-    "score": 33
+    "score": 32
   },
   "crypto_rails": {
     "label": "deteriorating",
@@ -133,9 +133,9 @@
     "label": "deteriorating",
     "name": "US Energy Complex",
     "name_zh": "\u7f8e\u56fd\u80fd\u6e90\u7efc\u5408",
-    "rank": 30,
+    "rank": 31,
     "reco": "avoid",
-    "score": 40
+    "score": 39
   },
   "gold_miners": {
     "label": "emerging",
@@ -183,7 +183,7 @@
     "name_zh": "\u7ba1\u7406\u5f0f\u533b\u7597\u4e0e\u4fdd\u9669",
     "rank": 17,
     "reco": "enter",
-    "score": 54
+    "score": 55
   },
   "memory_storage": {
     "label": "deteriorating",
@@ -213,7 +213,7 @@
     "label": "deteriorating",
     "name": "Nuclear & SMR Power",
     "name_zh": "\u6838\u7535\u4e0e\u5c0f\u578b\u6a21\u5757\u5316\u53cd\u5e94\u5806",
-    "rank": 47,
+    "rank": 46,
     "reco": "avoid",
     "score": 29
   },
@@ -245,7 +245,7 @@
     "label": "deteriorating",
     "name": "Power & Grid Buildout",
     "name_zh": "\u7535\u529b\u4e0e\u7535\u7f51",
-    "rank": 48,
+    "rank": 47,
     "reco": "avoid",
     "score": 28
   },
@@ -269,9 +269,9 @@
     "label": "neutral",
     "name": "Reshoring & Industrial Capex",
     "name_zh": "\u56de\u6d41\u4e0e\u5de5\u4e1a\u8d44\u672c\u5f00\u652f",
-    "rank": 29,
+    "rank": 30,
     "reco": "hold",
-    "score": 40
+    "score": 39
   },
   "retail": {
     "label": "dominant",
@@ -293,15 +293,15 @@
     "label": "deteriorating",
     "name": "Semiconductor Equipment (WFE)",
     "name_zh": "\u534a\u5bfc\u4f53\u8bbe\u5907\uff08\u6676\u5706\u5382\u8bbe\u5907\uff09",
-    "rank": 46,
+    "rank": 48,
     "reco": "avoid",
-    "score": 29
+    "score": 28
   },
   "silver_miners": {
     "label": "deteriorating",
     "name": "Silver Miners",
     "name_zh": "\u767d\u94f6\u77ff\u4e1a",
-    "rank": 31,
+    "rank": 29,
     "reco": "avoid",
     "score": 40
   },
@@ -317,9 +317,9 @@
     "label": "emerging",
     "name": "Travel & Experiences",
     "name_zh": "\u65c5\u884c\u4e0e\u4f53\u9a8c",
-    "rank": 5,
+    "rank": 6,
     "reco": "enter",
-    "score": 68
+    "score": 67
   },
   "uranium_miners": {
     "label": "deteriorating",

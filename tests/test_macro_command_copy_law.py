@@ -527,9 +527,9 @@ def test_business_depth_breadth_caution_keeps_original_source() -> None:
     assert source == original == before
     assert original is not source
     assert reading is not None and reading != PLAIN_FALLBACK
-    assert "not deep enough to confirm recession risk" in reading["en"]
-    assert "Both breadth and depth must meet their thresholds" in reading["en"]
-    assert "广度与深度必须同时达到各自阈值" in reading["zh"]
+    assert "widespread but shallow" in reading["en"]
+    assert "Both conditions are required before this model can flag recession risk." in reading["en"]
+    assert "这两项条件须同时满足" in reading["zh"]
     assert guard.find_violations(
         f'<main><p>{reading["en"]}</p><p>{reading["zh"]}</p></main>') == []
 
@@ -557,8 +557,8 @@ def test_business_contradiction_diagnostic_uses_reviewed_pair_without_mutating_s
     context = macro_suite_view._context(snapshot, BUILT_AT)
     rendered = context["contradiction"]["text"]
     assert rendered == expected
-    assert "not deep enough to confirm recession risk" in rendered["en"]
-    assert "广度与深度必须同时达到各自阈值" in rendered["zh"]
+    assert "widespread but shallow" in rendered["en"]
+    assert "这两项条件须同时满足" in rendered["zh"]
     diagnostics = macro_suite_view._diagnostics(
         snapshot, context, {"comparable": True}, {})
     assert diagnostics[0]["title"]["en"] == "Contradictory signals"
@@ -4943,3 +4943,43 @@ def test_no_unlisted_identical_png_pairs() -> None:
         if not _crop_collision_ratified(uniq, probes, manifest["pages"]):
             illegal[sha] = uniq
     assert not illegal, illegal
+
+
+@pytest.mark.parametrize("token,en,zh", [
+    ("expansion", "Expansion", "扩张"),
+    ("slowdown", "Slowdown", "放缓"),
+    ("contraction", "Contraction", "收缩"),
+    ("recovery", "Recovery", "复苏"),
+])
+def test_business_cycle_owner_phases_have_translated_values(token, en, zh):
+    from lib.macro_suite_labels import value_pair
+    assert value_pair(token) == {"en": en, "zh": zh}
+
+
+def test_business_opposing_contradictions_keep_distinct_plain_meanings():
+    from copy import deepcopy
+    from engine.market_os.macro_workspaces.business_activity import _detect_contradiction
+    from lib.macro_suite_labels import PLAIN_FALLBACK, apply_plain_pair, machine_text_hits
+
+    readings = []
+    for depth, breadth in [(True, False), (False, True)]:
+        owner = _detect_contradiction({"recession_signal": {
+            "available": True, "conditions": {"depth": depth, "breadth": breadth}}})
+        before = deepcopy(owner)
+        pair = {"en": owner["en"], "zh": owner["zh"]}
+        reading, original = apply_plain_pair(pair)
+        assert owner == before
+        assert original == pair
+        assert reading is not None and reading != PLAIN_FALLBACK
+        assert not machine_text_hits(reading["en"]) and not machine_text_hits(reading["zh"])
+        assert "Both conditions are required before this model can flag recession risk." in reading["en"]
+        assert "这两项条件须同时满足" in reading["zh"]
+        readings.append(reading)
+    assert readings[0] != readings[1]
+    assert "concentrated rather than widespread" in readings[0]["en"]
+    assert "走弱集中，并未广泛扩散" in readings[0]["zh"]
+    assert "widespread but shallow" in readings[1]["en"]
+    assert "走弱范围广，但程度较浅" in readings[1]["zh"]
+    for same in (True, False):
+        assert _detect_contradiction({"recession_signal": {"available": True,
+            "conditions": {"depth": same, "breadth": same}}})["present"] is False
