@@ -21766,7 +21766,6 @@ jobs:
       - "mockups/refs/**"
       - "scripts/check_design_system.py"
       - "scripts/design_semantic_comparison.py"
-      - "scripts/run_ci_pack.py"
       - "scripts/check_runtime_style_injection.py"
       - "scripts/check_ui_visual_evidence.py"
       - "tests/test_check_design_system.py"

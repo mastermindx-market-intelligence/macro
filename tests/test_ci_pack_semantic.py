@@ -4297,9 +4297,7 @@ def design_plan_checkout(tmp_path: Path):
     _git(root, "init", "-b", "main")
     _git(root, "config", "user.email", "ci@example.test")
     _git(root, "config", "user.name", "CI Test")
-    for rel in ("scripts/ci_authority_paths.py", "scripts/ci_scope_dependencies.py",
-                "scripts/audit_unrun_tests.py", "scripts/workflow_run_source.py",
-                "scripts/run_ci_pack.py", "scripts/check_design_system.py",
+    for rel in ("scripts/run_ci_pack.py", "scripts/check_design_system.py",
                 "scripts/check_ui_visual_evidence.py", "scripts/design_semantic_comparison.py",
                 "scripts/ci_semantic_proof.py"):
         target = root / rel
@@ -4547,7 +4545,7 @@ def test_design_preparation_acquires_only_missing_exact_blobs_inside_comparison(
     Only a fresh test-owned file:// bare store serves the captured production
     fetch contract. No real origin/network/runner/old tuple is executed.
     """
-    from scripts import run_ci_pack as prep_owner
+    prep_owner = DESIGN
     root, _, plan, _, _, context = design_plan_checkout
     remote = tmp_path / "complete.git"
     real_run = subprocess.run
@@ -4597,11 +4595,11 @@ def test_design_preparation_acquires_only_missing_exact_blobs_inside_comparison(
     assert len(acquisitions) == 1
 
 
-@pytest.mark.parametrize("damage", ["plan", "context", "runner", "transitive", "origin", "rewrite_origin", "base", "denied", "partial"])
+@pytest.mark.parametrize("damage", ["plan", "context", "semantic_validator", "producer", "origin", "rewrite_origin", "base", "denied", "partial"])
 def test_design_preparation_never_fetches_unbound_source_or_retries_failure(
     design_plan_checkout, tmp_path, monkeypatch, damage,
 ):
-    from scripts import run_ci_pack as prep_owner
+    prep_owner = DESIGN
     root, _, plan, plan_path, _, context = design_plan_checkout
     _git(root, "remote", "add", "origin", "https://github.com/mastermindx-market-intelligence/macro.git")
     old = _git(root, "rev-parse", plan.base_sha + ":templates/case.html")
@@ -4614,10 +4612,10 @@ def test_design_preparation_never_fetches_unbound_source_or_retries_failure(
         plan_path.write_text(json.dumps(value))
     elif damage == "context":
         monkeypatch.setenv("GITHUB_RUN_ID", "foreign")
-    elif damage == "runner":
-        (root / "scripts/run_ci_pack.py").write_text("raise SystemExit(0)\n")
-    elif damage == "transitive":
-        (root / "scripts/ci_scope_dependencies.py").write_text("raise SystemExit(0)\n")
+    elif damage == "semantic_validator":
+        (root / "scripts/ci_semantic_proof.py").write_text("raise SystemExit(0)\n")
+    elif damage == "producer":
+        (root / "scripts/design_semantic_comparison.py").write_text("raise SystemExit(0)\n")
     elif damage == "origin":
         _git(root, "remote", "set-url", "origin", "https://foreign.example.test/macro.git")
     elif damage == "rewrite_origin":
@@ -4645,7 +4643,7 @@ def test_design_preparation_never_fetches_unbound_source_or_retries_failure(
 def test_design_preparation_refuses_malformed_or_foreign_object_inventory(
     design_plan_checkout, monkeypatch, damage,
 ):
-    from scripts import run_ci_pack as prep_owner
+    prep_owner = DESIGN
     root, _, plan, _, _, _ = design_plan_checkout
     real_run = subprocess.run
     fetches = []
@@ -4681,7 +4679,7 @@ def test_design_preparation_refuses_malformed_or_foreign_object_inventory(
 def test_design_preparation_refuses_acquisition_source_boundary_drift(
     design_plan_checkout, tmp_path, monkeypatch, damage,
 ):
-    from scripts import run_ci_pack as prep_owner
+    prep_owner = DESIGN
     root, _, plan, _, _, context = design_plan_checkout
     _git(root, "remote", "add", "origin", "https://github.com/mastermindx-market-intelligence/macro.git")
     old = _git(root, "rev-parse", plan.base_sha + ":templates/case.html")
@@ -4713,7 +4711,7 @@ def test_design_preparation_refuses_acquisition_source_boundary_drift(
 def test_design_preparation_complete_objects_need_no_origin_or_transport(
     design_plan_checkout, tmp_path, monkeypatch,
 ):
-    from scripts import run_ci_pack as prep_owner
+    prep_owner = DESIGN
     root, _, _, _, _, context = design_plan_checkout
     for key, value in context.items(): monkeypatch.setenv(key, value)
     monkeypatch.chdir(root)
@@ -4728,3 +4726,13 @@ def test_design_preparation_complete_objects_need_no_origin_or_transport(
     output = tmp_path / "comparison.diff"
     assert DESIGN.main(_design_diff_cli(design_plan_checkout, output) + ["--prepare-source"]) == 0
     assert "new template" in output.read_text()
+
+
+@pytest.mark.parametrize("hostile", [False, True])
+def test_design_preparation_keeps_incumbent_trusted_git_environment(monkeypatch, hostile):
+    if hostile:
+        for key in ("GIT_DIR", "GIT_WORK_TREE", "GIT_INDEX_FILE", "GIT_OBJECT_DIRECTORY",
+                    "GIT_ALTERNATE_OBJECT_DIRECTORIES", "GIT_CONFIG_PARAMETERS",
+                    "GIT_CONFIG_GLOBAL", "GIT_CONFIG_COUNT", "GIT_ALLOW_PROTOCOL"):
+            monkeypatch.setenv(key, "controlled-untrusted-value")
+    assert DESIGN._design_preparation_git_environment() == PACK._trusted_git_environment()
