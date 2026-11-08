@@ -91,7 +91,7 @@ scripts/build_options_flow.py	12	• data/options_flow/summary_<KEY>.parquet —
 scripts/build_options_hub_nightly.py	70	R2_PREFIX = "options_hub/"
 scripts/build_options_hub_nightly.py	345	_upload_r2(s3, bucket, oi_path,  f"{R2_PREFIX}oi_movers.json")
 scripts/build_options_hub_nightly.py	592	I/O per root is the prior OI year(s) needed for the 18-month oi_time window
-scripts/build_options_matrix.py	55	R2_PREFIX = "options_structure/matrix/"
+scripts/build_options_matrix.py	63	R2_PREFIX = "options_structure/matrix/"
 scripts/build_options_payoff_lab.py	7	Never open the store. Write site/options_payoff_lab/latest.json.
 scripts/build_options_prophet.py	1171	def _default_paths() -> dict[str, Path]:
 scripts/build_options_skew.py	223	"""Write site/options_skew/latest.json from the ledger. No chain provider.
@@ -158,4 +158,4 @@ scripts/seal_levels_ledger.py	44	R2_PREFIX = "levels_ledger/"
 templates/data_base.js	12	window.DATA_BASE = window.DATA_BASE || "https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev";  // R2 public data plane (flip: clear to revert to Pages)
 templates/data_base.js	16	// the per-ticker stores that live in R2 (mirror scripts/publish_r2.py DEFAULT_DIRS)
 templates/theme.js	667	{ key: 'us',   lib: 'stockdata/index.json',       target: 'stock.html',        flag: '🇺🇸', mkt: 'US',     mktZh: '美国',   examples: ['NVDA', 'AAPL', 'MSFT'] },
-scripts/build_ext_quotes.py	373	def public_boats_payload(payload: dict, now: datetime | None = None) -> dict:
+scripts/build_ext_quotes.py	403	def public_boats_payload(payload: dict, now: datetime | None = None) -> dict:

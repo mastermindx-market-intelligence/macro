@@ -3359,3 +3359,247 @@ def test_red_exact_decimal_arithmetic_100_contracts_at_0_65_fee() -> None:
     actual = Decimal(str(record["net_return_pct"]))
     # Tolerate the canonical 6-decimal rounding the record emits.
     assert abs(actual - expected) < Decimal("0.00001")
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# V04B — excluded identity and the training-label fence
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+def test_v04_nonstandard_deliverable_preserves_contract_identity() -> None:
+    """An excluded non-standard deliverable keeps the validated OCC identity."""
+
+    receipt = _expression(standard_deliverable=False)
+    raw = cohort.canonical_json_bytes(receipt)
+    upstream = sha256(
+        cohort.canonical_json_bytes(_canonical_fields_for_digest(receipt))
+    ).hexdigest()
+    expr = oa3.ExpressionReceipt(
+        raw_bytes=raw, parsed_payload=receipt, upstream_digest_sha256=upstream,
+    )
+    contract = _contract_for(_expression())
+    entry_ev = _evidence(
+        role="entry",
+        contract=contract,
+        boundary_at=ENTRY_AVAILABLE_UTC,
+        request_started_at=_request_clock(),
+        response_observed_at=_response_clock(),
+        retrieval_observed_at=RETRIEVAL_AT,
+        computed_at=COMPUTED_UTC,
+        rows=[],
+    )
+    exit_ev = _evidence(
+        role="exit",
+        contract=contract,
+        boundary_at=ENTRY_AVAILABLE_UTC + EXIT_HORIZON,
+        request_started_at=_request_clock(),
+        response_observed_at=_response_clock(),
+        retrieval_observed_at=RETRIEVAL_AT,
+        computed_at=COMPUTED_UTC,
+        rows=[],
+    )
+    record = oa3.evaluate(expr, entry_evidence=entry_ev, exit_evidence=exit_ev)
+    assert record["status"] == "excluded"
+    assert record["reason"] == "NON_STANDARD_DELIVERABLE"
+    assert record["contract"]["occ_symbol"] == "SOFI  261016C00016000"
+    assert dict(record["contract"]) == dict(_contract_for(receipt))
+    assert record["standard_deliverable"] is False
+    assert record["expression_digest_sha256"] == sha256(
+        cohort.canonical_json_bytes(_canonical_fields_for_digest(receipt))
+    ).hexdigest()
+
+
+def test_v04_invalid_identity_record_keeps_no_contract() -> None:
+    """An invalid OCC identity keeps contract None and an empty digest."""
+
+    receipt = _expression(occ_symbol="SOFI  261016C00099999")
+    raw = cohort.canonical_json_bytes(receipt)
+    upstream = sha256(
+        cohort.canonical_json_bytes(_canonical_fields_for_digest(receipt))
+    ).hexdigest()
+    expr = oa3.ExpressionReceipt(
+        raw_bytes=raw, parsed_payload=receipt, upstream_digest_sha256=upstream,
+    )
+    contract = _contract_for(_expression())
+    entry_ev = _evidence(
+        role="entry",
+        contract=contract,
+        boundary_at=ENTRY_AVAILABLE_UTC,
+        request_started_at=_request_clock(),
+        response_observed_at=_response_clock(),
+        retrieval_observed_at=RETRIEVAL_AT,
+        computed_at=COMPUTED_UTC,
+        rows=[],
+    )
+    exit_ev = _evidence(
+        role="exit",
+        contract=contract,
+        boundary_at=ENTRY_AVAILABLE_UTC + EXIT_HORIZON,
+        request_started_at=_request_clock(),
+        response_observed_at=_response_clock(),
+        retrieval_observed_at=RETRIEVAL_AT,
+        computed_at=COMPUTED_UTC,
+        rows=[],
+    )
+    record = oa3.evaluate(expr, entry_evidence=entry_ev, exit_evidence=exit_ev)
+    assert record["status"] == "invalid"
+    assert record["contract"] is None
+    assert record["expression_digest_sha256"] == ""
+
+
+def _v04_complete_record() -> dict:
+    """Same construction as test_complete_first_valid_ask_and_bid_inside_60s_windows."""
+
+    entry_event = ENTRY_AVAILABLE_UTC + timedelta(seconds=5)
+    exit_event = entry_event + timedelta(minutes=60, seconds=5)
+    entry_rows = [_row_at(entry_event, ask="2.30", ask_size=10, ask_exchange=11, ask_condition=50)]
+    exit_rows = [
+        _row_at(
+            exit_event,
+            bid="2.40",
+            bid_size=10,
+            bid_exchange=11,
+            bid_condition=50,
+            ask="2.50",
+            ask_size=12,
+        )
+    ]
+    contract = _contract_for(_expression())
+    entry_ev = _evidence(
+        role="entry",
+        contract=contract,
+        boundary_at=ENTRY_AVAILABLE_UTC,
+        request_started_at=_request_clock(),
+        response_observed_at=_response_clock(),
+        retrieval_observed_at=RETRIEVAL_AT,
+        computed_at=COMPUTED_UTC,
+        rows=entry_rows,
+    )
+    exit_ev = _evidence(
+        role="exit",
+        contract=contract,
+        boundary_at=entry_event + EXIT_HORIZON,
+        request_started_at=_request_clock(),
+        response_observed_at=_response_clock(),
+        retrieval_observed_at=RETRIEVAL_AT,
+        computed_at=COMPUTED_UTC,
+        rows=exit_rows,
+    )
+    return oa3.evaluate(_expression_receipt(), entry_evidence=entry_ev, exit_evidence=exit_ev)
+
+
+def _v04_pending_record() -> dict:
+    """Same construction as test_early_now_is_pending_before_entry_window_matures."""
+
+    contract = _contract_for(_expression())
+    retrieval = ENTRY_AVAILABLE_UTC + timedelta(seconds=5)
+    entry_ev = _evidence(
+        role="entry",
+        contract=contract,
+        boundary_at=ENTRY_AVAILABLE_UTC,
+        request_started_at=ENTRY_AVAILABLE_UTC + timedelta(milliseconds=10),
+        response_observed_at=ENTRY_AVAILABLE_UTC + timedelta(milliseconds=20),
+        retrieval_observed_at=retrieval,
+        computed_at=retrieval,
+        rows=[],
+    )
+    exit_ev = _evidence(
+        role="exit",
+        contract=contract,
+        boundary_at=ENTRY_AVAILABLE_UTC + EXIT_HORIZON,
+        request_started_at=ENTRY_AVAILABLE_UTC + timedelta(milliseconds=10),
+        response_observed_at=ENTRY_AVAILABLE_UTC + timedelta(milliseconds=20),
+        retrieval_observed_at=retrieval,
+        computed_at=retrieval,
+        rows=[],
+    )
+    return oa3.evaluate(_expression_receipt(), entry_evidence=entry_ev, exit_evidence=exit_ev)
+
+
+def test_v04_complete_and_pending_records_carry_standard_deliverable() -> None:
+    """Complete and pending fixtures both carry the canonical deliverable flag."""
+
+    complete = _v04_complete_record()
+    pending = _v04_pending_record()
+    assert complete["status"] == "complete"
+    assert pending["status"] == "pending"
+    assert complete["standard_deliverable"] is True
+    assert pending["standard_deliverable"] is True
+
+
+def test_v04_immature_pending_outcome_is_not_a_training_label() -> None:
+    """A pending outcome is not a training label."""
+
+    record = _v04_pending_record()
+    assert oa3.admitted_training_labels([record]) == []
+    assert record["net_return_pct"] is None
+    assert record["status"] == "pending"
+
+
+def test_v04_complete_outcome_is_not_admitted_while_authority_is_false() -> None:
+    """A complete outcome is refused while may_train_prophet is false."""
+
+    record = _v04_complete_record()
+    assert oa3.admitted_training_labels([record]) == []
+    assert record["authority"]["may_train_prophet"] is False
+
+
+def test_v04_training_fence_refuses_non_complete_even_if_authority_flips(monkeypatch) -> None:
+    """Non-complete rows and null returns stay refused if training authority flips."""
+
+    from types import MappingProxyType
+
+    pending = _v04_pending_record()
+    complete = _v04_complete_record()
+    nulled = dict(complete)
+    nulled["net_return_pct"] = None
+    monkeypatch.setattr(
+        oa3,
+        "ALL_FALSE_AUTHORITY",
+        MappingProxyType({**oa3.ALL_FALSE_AUTHORITY, "may_train_prophet": True}),
+    )
+    assert oa3.admitted_training_labels([pending]) == []
+    assert oa3.admitted_training_labels([nulled]) == []
+    admitted = oa3.admitted_training_labels([complete])
+    assert len(admitted) == 1
+    assert admitted[0]["status"] == "complete"
+    assert admitted[0]["net_return_pct"] == complete["net_return_pct"]
+    assert admitted[0]["net_return_pct"] is not None
+    assert admitted[0]["expression_id"] == complete["expression_id"]
+
+
+_V04B_R1_AUTHORITY_BASE = dict(oa3.ALL_FALSE_AUTHORITY)
+_V04B_R1_AUTHORITY_MISSING_KEY = {
+    key: value
+    for key, value in _V04B_R1_AUTHORITY_BASE.items()
+    if key != "may_train_prophet"
+}
+
+
+@pytest.mark.parametrize(
+    "case",
+    [
+        pytest.param(
+            {**_V04B_R1_AUTHORITY_BASE, "may_train_prophet": None},
+            id="none",
+        ),
+        pytest.param(
+            {**_V04B_R1_AUTHORITY_BASE, "may_train_prophet": 1},
+            id="one",
+        ),
+        pytest.param(
+            {**_V04B_R1_AUTHORITY_BASE, "may_train_prophet": "true"},
+            id="string_true",
+        ),
+        pytest.param(_V04B_R1_AUTHORITY_MISSING_KEY, id="missing_key"),
+    ],
+)
+def test_v04_training_fence_fails_closed_on_non_boolean_authority(
+    monkeypatch, case
+) -> None:
+    """The fence admits nothing unless may_train_prophet is exactly True."""
+
+    from types import MappingProxyType
+
+    monkeypatch.setattr(oa3, "ALL_FALSE_AUTHORITY", MappingProxyType(case))
+    assert oa3.admitted_training_labels([_v04_complete_record()]) == []
