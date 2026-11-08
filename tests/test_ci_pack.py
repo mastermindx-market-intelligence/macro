@@ -5610,9 +5610,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_923),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_944),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_681),
+    ("templates/index.html", 137, 5_927),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_948),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_685),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5620,6 +5620,24 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-08 (PR #10493, Policy Monitor current-main composition):
+    preserve the accepted display model, original render/build integration,
+    suites and immutable evidence objects. The existing unrun-macro-panels
+    DATA owner gains only its original two Policy Monitor suite arguments;
+    seven commands, 37->39 test tokens and 1520->1586 joined characters give
+    weight82->86 under the unchanged estimator. Own contract127712667712
+    observed exactly +4 weight on each ordinary probe, no additional jobs.
+    Compose only that feature delta with current main8251e41 ceilings:
+    index5923->5927, free-content5944->5948, plan-book5681->5685.
+    Keep job ceilings137/138/131, ten packs, every selection rule, timeout,
+    runtime and admission limit. Retain all current history below, including
+    landed #7352 and #10180; no unmerged sibling funding or older runner is imported.
+    The five other exclusive owners add one literal helper path each without
+    changing commands or ordinary-probe membership. No new logical owner.
+    This is static source arithmetic, not a fresh full-tree planner, pytest
+    or elapsed-time result. Natural CI must qualify the combined candidate.
+    Historical replay/refusal and served-product obligations remain separate.
 
     2026-11-08 (PR #10180, measured B-17 enrollment integration):
     Fixed current c91d58b2413d plus the five unchanged recovery objects
