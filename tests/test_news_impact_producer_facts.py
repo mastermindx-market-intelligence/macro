@@ -14,6 +14,7 @@ from pathlib import Path
 
 import pytest
 
+from engine.news_impact import producer as pr
 from engine.news_impact import producer_facts as pf
 from engine.news_impact import thesis
 from engine.news_impact.validate import validate_event
@@ -205,12 +206,28 @@ def row(event: dict, case: str = "case_001", shadow: bool = False) -> dict:
 
 
 def write_rows(path: Path, rows: list[dict]) -> Path:
-    path.write_text("".join(json.dumps(r, sort_keys=True) + "\n" for r in rows))
+    """Complete synthetic generation; inner events remain untouched for tests."""
+    assert path.name == "events.jsonl"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    raw = "".join(json.dumps(r, sort_keys=True) + "\n" for r in rows).encode()
+    path.write_bytes(raw)
+    report = {
+        "producer_version": pr.PRODUCER_VERSION,
+        "mode": "adjudicated",
+        "n_cases": len(rows),
+        "n_emitted": len(rows),
+        "emitted": {"synthetic": len(rows)} if rows else {},
+        "deferred": {},
+        "rejected": {},
+        "events_sha256": sha256(raw).hexdigest(),
+        "events_bytes": len(raw),
+    }
+    (path.parent / "events_report.json").write_text(json.dumps(report, sort_keys=True) + "\n")
     return path
 
 
 def run_rows(tmp_path: Path, rows: list[dict], name: str = "out", as_of: str | None = None):
-    events = write_rows(tmp_path / f"{name}_events.jsonl", rows)
+    events = write_rows(tmp_path / f"{name}_source" / "events.jsonl", rows)
     out = tmp_path / name
     report = pf.run([events], out, as_of)
     log = json.loads((out / "fact_log.json").read_text())
@@ -582,25 +599,32 @@ def test_out_under_the_shared_fact_log_directory_is_refused(tmp_path, monkeypatc
 # --------------------------------------------------------------------------- 12. row rejects
 
 
-def test_shadow_rows_propagate_shadow_mode(tmp_path):
+def test_shadow_rows_are_refused_before_outputs(tmp_path, no_consumer_processing):
     rows = [row(t1("s1", 1), "c1", shadow=True), row(t1("s2", 2, doc=DOC_B), "c2", shadow=True)]
-    report, _, views, evidence_rows = run_rows(tmp_path, rows)
-    assert report["mode"] == "shadow"
-    assert views and all(v["shadow"] is True for v in views)
-    assert evidence_rows and all(r["shadow"] is True for r in evidence_rows)
+    # Even a renamed canonical file and an adjudicated report cannot admit
+    # shadow rows into fact-log or Prophet processing.
+    with pytest.raises(pf.Reject) as exc:
+        run_rows(tmp_path, rows)
+    assert exc.value.code == "output_generation_unverified"
+    assert not (tmp_path / "out").exists()
 
 
-def test_mixed_shadow_duplicate_and_unsolicited_rows_are_rejected(tmp_path):
-    mixed, _, _, _ = run_rows(tmp_path, [row(t1("m1", 1), shadow=True), row(t1("m2", 2))], name="mixed")
-    assert mixed["rejected"] == {"shadow_mixed": 2} and mixed["n_records"] == {}
+def test_mixed_shadow_rows_are_refused_before_outputs(tmp_path, no_consumer_processing):
+    with pytest.raises(pf.Reject) as exc:
+        run_rows(tmp_path, [row(t1("m1", 1), shadow=True), row(t1("m2", 2))], name="mixed")
+    assert exc.value.code == "output_generation_unverified"
+    assert not (tmp_path / "mixed").exists()
 
+
+def test_duplicate_unsolicited_and_invalid_event_rows_are_rejected(tmp_path):
     dup = t1("d1", 1)
     flagged = t1("u1", 2)
     flagged["unsolicited_instruction_detected"] = True
     foreign = t1("x1", 3)
     foreign["authority"] = "authoritative"
     report, log, _, _ = run_rows(tmp_path, [
-        row(dup, "c1"), row(dict(dup), "c2"), row(flagged, "c3"), row(foreign, "c4"), {"case_id": "c5"},
+        row(dup, "c1"), row(dict(dup), "c2"), row(flagged, "c3"), row(foreign, "c4"),
+        {"case_id": "c5", "shadow": False, "novelty_source": "label_provisional"},
     ])
     assert report["rejected"] == {
         "authority_not_context_only": 1,
@@ -1022,3 +1046,183 @@ def test_r6_matching_concrete_quarter_can_qualify(tmp_path):
     views, _, _ = _r6_correction_projection(tmp_path, [first, later])
     assert _r6_condition(views[0])["armed"] is True
     assert _r6_condition(views[0])["evidence_fact_ids"] == [later["fact_id"]]
+
+
+# --------------------------------------------------------------------------- verified generation boundary
+
+def _forbid_consumer_processing(monkeypatch):
+    def forbidden(*_args, **_kwargs):
+        raise AssertionError("consumer processing reached before input verification")
+    monkeypatch.setattr(pf, "fact_slot", forbidden)
+    monkeypatch.setattr(thesis, "append_records", forbidden)
+    monkeypatch.setattr(thesis, "project", forbidden)
+    monkeypatch.setattr(pf, "adapt_batch", forbidden)
+
+
+@pytest.fixture
+def no_consumer_processing(monkeypatch):
+    _forbid_consumer_processing(monkeypatch)
+
+
+@pytest.mark.parametrize("fault", [
+    "missing_report", "missing_events", "malformed_report", "nonobject_report",
+    "wrong_version", "wrong_mode", "stale_events", "wrong_digest",
+    "wrong_byte_length", "wrong_emitted_count", "wrong_case_count",
+    "invalid_count_map", "negative_count", "boolean_category_count",
+    "boolean_total_count", "fractional_emitted_count", "fractional_byte_length",
+    "unverified_row_marker", "wrong_shadow_type",
+])
+def test_unverified_generation_refuses_before_processing(tmp_path, no_consumer_processing, fault):
+    events = write_rows(tmp_path / "source" / "events.jsonl", [row(t1())])
+    report_path = events.parent / "events_report.json"
+    report = json.loads(report_path.read_text())
+    if fault == "missing_report":
+        report_path.unlink()
+    elif fault == "missing_events":
+        events.unlink()
+    elif fault == "malformed_report":
+        report_path.write_text("{")
+    elif fault == "nonobject_report":
+        report_path.write_text("[]")
+    elif fault == "stale_events":
+        events.write_bytes(events.read_bytes() + b" ")
+    elif fault in {"unverified_row_marker", "wrong_shadow_type"}:
+        item = row(t1())
+        if fault == "unverified_row_marker":
+            item["novelty_source"] = "unverified"
+        else:
+            item["shadow"] = 0
+        write_rows(events, [item])
+    else:
+        if fault == "wrong_version":
+            report["producer_version"] = "unrecognised-producer"
+        elif fault == "wrong_mode":
+            report["mode"] = "shadow:fam_a"
+        elif fault == "wrong_digest":
+            report["events_sha256"] = "0" * 64
+        elif fault == "wrong_byte_length":
+            report["events_bytes"] += 1
+        elif fault == "wrong_emitted_count":
+            report["n_emitted"] += 1
+        elif fault == "wrong_case_count":
+            report["n_cases"] += 1
+        elif fault == "invalid_count_map":
+            report["deferred"] = []
+        elif fault == "negative_count":
+            report["rejected"] = {"bad": -1}
+        elif fault == "boolean_category_count":
+            report["emitted"] = {"synthetic": True}
+        elif fault == "boolean_total_count":
+            report["n_cases"] = True
+        elif fault == "fractional_emitted_count":
+            report["n_emitted"] = 1.0
+        elif fault == "fractional_byte_length":
+            report["events_bytes"] = float(report["events_bytes"])
+        report_path.write_text(json.dumps(report))
+    out = tmp_path / "consumer"
+    with pytest.raises(pf.Reject) as exc:
+        pf.run([events], out)
+    assert exc.value.code == "output_generation_unverified"
+    assert not out.exists()
+
+
+@pytest.mark.parametrize("filename", ["alias.jsonl", "events_shadow_fam_a.jsonl"])
+def test_noncanonical_input_is_not_substituted(tmp_path, no_consumer_processing, filename):
+    canonical = write_rows(tmp_path / "source" / "events.jsonl", [row(t1())])
+    selected = canonical.with_name(filename)
+    selected.write_bytes(canonical.read_bytes())
+    out = tmp_path / "consumer"
+    with pytest.raises(pf.Reject) as exc:
+        pf.run([selected], out)
+    assert exc.value.code == "events_path_not_canonical"
+    assert not out.exists()
+
+
+def test_every_generation_is_verified_before_processing(tmp_path, no_consumer_processing):
+    first = write_rows(tmp_path / "first" / "events.jsonl", [row(t1("first"))])
+    second = write_rows(tmp_path / "second" / "events.jsonl", [row(t1("second"))])
+    (second.parent / "events_report.json").unlink()
+    out = tmp_path / "consumer"
+    with pytest.raises(pf.Reject) as exc:
+        pf.run([first, second], out)
+    assert exc.value.code == "output_generation_unverified"
+    assert not out.exists()
+
+
+def test_absent_generation_list_is_not_a_completed_empty_generation(tmp_path, no_consumer_processing):
+    out = tmp_path / "consumer"
+    with pytest.raises(pf.Reject) as exc:
+        pf.run([], out)
+    assert exc.value.code == "events_generation_missing"
+    assert not out.exists()
+
+
+def test_completed_empty_generation_is_accepted(tmp_path):
+    report, log, views, evidence_rows = run_rows(tmp_path, [])
+    assert report["mode"] == "adjudicated"
+    assert report["n_rows"] == 0 and report["n_records"] == {}
+    assert log["records"] == [] and views == [] and evidence_rows == []
+
+
+def test_generation_refusal_preserves_existing_consumer_outputs(tmp_path, monkeypatch):
+    events = write_rows(tmp_path / "source" / "events.jsonl", [row(t1())])
+    out = tmp_path / "consumer"
+    pf.run([events], out)
+    before = {name: (out / name).read_bytes() for name in pf.OUTPUT_NAMES}
+    _forbid_consumer_processing(monkeypatch)
+    report_path = events.parent / "events_report.json"
+    report = json.loads(report_path.read_text())
+    report["n_cases"] += 1
+    report_path.write_text(json.dumps(report))
+    with pytest.raises(pf.Reject) as exc:
+        pf.run([events], out)
+    assert exc.value.code == "output_generation_unverified"
+    assert {name: (out / name).read_bytes() for name in pf.OUTPUT_NAMES} == before
+
+
+def test_generation_refusal_uses_existing_cli_result(tmp_path, no_consumer_processing, capsys):
+    events = write_rows(tmp_path / "source" / "events.jsonl", [row(t1())])
+    (events.parent / "events_report.json").unlink()
+    out = tmp_path / "consumer"
+    assert pf.main(["--events", str(events), "--out", str(out)]) == 2
+    assert json.loads(capsys.readouterr().out) == {"refused": "output_generation_unverified"}
+    assert not out.exists()
+
+
+def test_actual_producer_generation_flows_through_actual_consumer(tmp_path):
+    from tests.test_news_impact_producer import make_bundle, write_case, write_labels
+
+    bundles, labels, generation = tmp_path / "bundles", tmp_path / "labels", tmp_path / "generation"
+    bundle = make_bundle()
+    # Use synthetic SEC owner IDs, as required by the existing fact-log contract.
+    # Stage-one's generic doc_synth IDs deliberately test a broader input contract.
+    bundle["segments"] = [
+        {**segment, "document_id": f"sec:{segment['accession']}:{segment['document_id']}"}
+        for segment in bundle["segments"]
+    ]
+    write_case(bundles, bundle)
+    write_labels(labels, "case_synth_1", pr.FAMILIES)
+    stage_one = pr.run(bundles, labels, generation)
+    assert stage_one["producer_version"] == "ni-producer-2"
+    assert stage_one["n_emitted"] == 1
+    out = tmp_path / "consumer"
+    report = pf.run([generation / "events.jsonl"], out)
+    assert report["mode"] == "adjudicated"
+    assert report["rejected"] == {}
+    assert report["n_rows"] == 1 and report["n_records"] == {"fact_revision": 1}
+    assert json.loads((out / "fact_log.json").read_text())["records"]
+
+
+def test_actual_shadow_producer_output_cannot_enter_consumer(tmp_path, no_consumer_processing):
+    from tests.test_news_impact_producer import make_bundle, write_case, write_labels
+
+    bundles, labels, generation = tmp_path / "bundles", tmp_path / "labels", tmp_path / "generation"
+    write_case(bundles, make_bundle())
+    write_labels(labels, "case_synth_1", ("fam_a",))
+    report = pr.run(bundles, labels, generation, shadow_family="fam_a")
+    assert report["mode"] == "shadow:fam_a" and report["n_emitted"] == 1
+    out = tmp_path / "consumer"
+    with pytest.raises(pf.Reject) as exc:
+        pf.run([generation / "events_shadow_fam_a.jsonl"], out)
+    assert exc.value.code == "events_path_not_canonical"
+    assert not out.exists()
