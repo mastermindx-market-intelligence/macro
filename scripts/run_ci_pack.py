@@ -439,7 +439,12 @@ OBSERVED_COMMAND_SECONDS = {
     # nearest seconds. International includes its 77.841 s canonical-main
     # guard; exclude separate tested-tree ancestry, browser/Python installs,
     # checkout, queue and exact-base failure replay. Commands remain unchanged.
-    "international-workspace-browser": 852,
+    # Original42390957332 completed guard+builder/DOM/table ~669s and guard+IM13 ~455s.
+    # IM14 never settled:852 is its provisional OLD WHOLE-job planning estimate,
+    # not a completed IM14 duration. Runtime budgets and UNKNOWN are unchanged.
+    "international-workspace-browser": 669,
+    "international-workspace-browser-im13": 455,
+    "international-workspace-browser-im14": 852,
     "ontology-explorer": 350,
     "unrun-government-revenue-candidate-projection": 436,
     "earnings-economic-dossier": 1070,

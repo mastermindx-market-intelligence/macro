@@ -3170,7 +3170,8 @@ def test_measured_heavy_weights_rebalance_without_changing_execution_proofs(
     calibrated = _full_plan()
     for job_id in (
         *FIF_KERNEL_SIBLINGS, "earnings-economic-dossier",
-        "international-workspace-browser", "ontology-explorer",
+        "international-workspace-browser", "international-workspace-browser-im13",
+        "international-workspace-browser-im14", "ontology-explorer",
         "unrun-government-revenue-candidate-projection", "biocatalyst-serving",
     ):
         monkeypatch.delitem(PACK.OBSERVED_COMMAND_SECONDS, job_id, raising=False)
@@ -5054,6 +5055,8 @@ CURATED_EXCLUSIVE = {
     "international-gs-closure",
     # Actual macro template/controller with explicit supplied-frame browser fixture.
     "international-workspace-browser",
+    "international-workspace-browser-im13",
+    "international-workspace-browser-im14",
     # 2026-10-20 W28C-L29: the China Mechanics display suite renders its page
     # template and imports the builder (lib/config, lib/pages, lib/site_assets,
     # engine/i18n). As an ordinary job its inferred scope would widen the
@@ -9146,3 +9149,27 @@ def test_options_nbbo_cohort_keeps_exact_source_and_avoids_unrelated_code_probes
                   "engine/prophet/plan_book.py"):  # ci-trigger-closure: data — selector input name, never opened
         selected, _ = PACK.select_jobs([job], [probe])
         assert selected == [], probe
+
+
+def test_international_browser_partition_preserves_commands_guards_and_budget() -> None:
+    """Keep original proofs once and per-job setup/guard/budget unchanged."""
+    import hashlib
+    ids = ('international-workspace-browser', 'international-workspace-browser-im13', 'international-workspace-browser-im14')
+    jobs = _yaml(MANIFEST)["jobs"]
+    expected = {'Actual International builder and template contracts': 'b9102f5acac53df540ef541f9d61d2963110cd1dc11d6c6ce61e9a34401825f6', 'Actual DOM controller and page entry in Chromium': 'c5a2c66c08bd64a96ac4f036ffaba792600f808991d7a585c253759635b7e349', 'Generic table sort/filter in Chromium (templates/tablesort.js)': '83aec9d0d16c173b2c3823357e4a22b9ff124c87fe126cd881242e7b3aafa72d', 'IM13 global scanner + coverage tests (W2A)': 'a393484a514a9ebb948f6a1ac569bc49536a9ed62123e97bddb0d670698a5b38', 'IM13 scanner + coverage browser proof (W2A)': '6db4c14b98cd7696e8dee8e807b8a26e36cb55d6772e51809f6c4d4c0d0b853d', 'IM14 market dossier tests (W2B)': '7931d7cb2d7896f640a63955d6d01308cd14e3f9ff85c18801a03bb54c4f77ac', 'IM14 market dossier browser proof (W2B)': '510b5ee9ef1a30cdcdb95a036a7ba158ea5d7e496629efb89fc09ebf7be4e39c'}
+    digest = lambda value: hashlib.sha256(json.dumps(value, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+    actual = {}
+    for job_id in ids:
+        job = jobs[job_id]
+        assert job["timeout-minutes"] == 20
+        assert job["if"] == "${{ false }}"
+        assert job["gate"] == "code" and job["scope"] == "exclusive"
+        assert job["runs-on"] == "ubuntu-latest"
+        assert digest(job["paths"]) == 'e3d0818aa0ca9c9256117db3f3b83263428d7804fe60df48aec306b36752583f'
+        assert digest(job["steps"][:6]) == '837f572c82597fce7f0caab46c9f99aaed2caf2f00a0a7247aad93bad285ea2b'
+        for step in job["steps"][6:]:
+            assert step["name"] not in actual, step["name"]
+            actual[step["name"]] = hashlib.sha256(step["run"].encode()).hexdigest()
+    assert actual == expected
+    assert len(jobs[ids[0]]["steps"][6:]) == 3
+    assert all(len(jobs[job_id]["steps"][6:]) == 2 for job_id in ids[1:])
