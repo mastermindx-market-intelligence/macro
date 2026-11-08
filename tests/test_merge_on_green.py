@@ -5461,7 +5461,10 @@ def test_hosted_pool_census_with_no_mature_run_witnesses_nothing(monkeypatch):
         (_census(served_runs=3), 16, 0),
         (_census(sampled_runs=1, served_runs=1), 10, 2),
         (_census(refused_jobs=1, served_runs=2), 8, 0),
-        (_census(slow_jobs=1, served_runs=3), 8, 0),
+        # S9: a slow pickup collapses the adaptive cap to the flat 8 (unchanged) but
+        # is not refusal, so the saturation floor still admits one lease-serialized
+        # refresh while fewer than REFRESH_FLOOR_PROOF_CEILING proofs are in flight.
+        (_census(slow_jobs=1, served_runs=3), 8, 1),
         (_census(queued_runs=1), 8, 0),
         (_census(sampled_runs=0, served_runs=0), 8, 0),
         (None, 8, 0),
@@ -5472,7 +5475,7 @@ def test_hosted_pool_census_with_no_mature_run_witnesses_nothing(monkeypatch):
         "served-pool-full",
         "one-served-run-cap-12",
         "refused-job-flat-cap",
-        "slow-pickup-flat-cap",
+        "slow-pickup-flat-cap-floor-one",
         "queued-run-flat-cap",
         "no-witness-flat-cap",
         "census-unreadable-flat-cap",
@@ -5565,6 +5568,125 @@ def test_adaptive_census_exception_degrades_to_the_flat_cap_without_deferring(
     assert allowances == [1]
     out = capsys.readouterr().out
     assert "global cap 8 (census failed (core budget exhausted): flat cap)" in out
+    assert "Sweep deferred" not in out
+
+
+@pytest.mark.parametrize(
+    "census,active,expected,needle",
+    [
+        (None, 12, 0, "census not read"),
+        (_census(queued_runs=1, served_runs=0), 12, 0, "refused 1 queued run(s)"),
+        (_census(refused_jobs=2, served_runs=1), 12, 0, "2 waiting hosted job(s)"),
+        (_census(sampled_runs=0, served_runs=0), 12, 0, "no hosted pickup witnessed"),
+        # Sampled but neither served nor slow: no later-wave hosted job was seen
+        # starting, so there is no capacity witness either way -- floor closed.
+        (_census(sampled_runs=2, served_runs=0), 9, 0, "2 mature run(s) sampled, none served or slow"),
+        (_census(sampled_runs=1, served_runs=1), 9, 1, "saturation floor: 1 lease-serialized"),
+        (_census(slow_jobs=1, served_runs=2), 12, 0, "at or above the floor ceiling 12"),
+        (_census(slow_jobs=1, served_runs=2), 40, 0, "at or above the floor ceiling 12"),
+        (_census(slow_jobs=1, served_runs=2), 11, 1, "saturation floor: 1 lease-serialized"),
+        (_census(slow_jobs=3, served_runs=0), 9, 1, "3 slow pickup(s), no refusal in 3"),
+    ],
+)
+def test_s9_refresh_floor_is_one_slot_under_a_hard_ceiling_without_refusal(
+    census, active, expected, needle
+):
+    """The repealed 'fair refresh' clamp raised a negative allowance to eight at 49
+    proofs in flight. The floor is one, only below the half-headroom ceiling, and
+    never on refusal evidence (a queued run or a waiting hosted job)."""
+    slots, detail = MOG.refresh_floor_allowance(census, active)
+    assert (slots, needle in detail) == (expected, True), detail
+    assert MOG.REFRESH_FLOOR_PER_SWEEP == 1
+    assert MOG.REFRESH_FLOOR_PROOF_CEILING == 12
+
+
+@pytest.mark.parametrize(
+    "census,active,expected_allowance,needle",
+    [
+        # The overnight deadlock shape: slow pickups only, 12 proofs, flat cap 8 -> 0.
+        # 12 is AT the ceiling, so the floor stays closed; one proof fewer opens it.
+        (_census(slow_jobs=1, served_runs=2), 12, 0, "floor withheld: 12 proof(s)"),
+        (_census(slow_jobs=1, served_runs=2), 11, 1, "[saturation floor: 1"),
+        (_census(queued_runs=1, served_runs=0), 9, 0, "floor withheld: hosted pool refused"),
+        # Ordinary headroom is untouched: the floor only acts on a zero allowance.
+        (_census(served_runs=3), 9, 7, "global cap 16"),
+    ],
+    ids=("deadlock-at-ceiling", "deadlock-under-ceiling", "refusal", "headroom-untouched"),
+)
+def test_s9_floor_grants_one_lease_serialized_slot_when_the_census_zeroes_the_sweep(
+    monkeypatch, capsys, census, active, expected_allowance, needle
+):
+    _main_harness(monkeypatch, [_pull(1)])
+    monkeypatch.setattr(MOG, "in_flight_pr_proofs", lambda *_a: active)
+    monkeypatch.setattr(MOG, "hosted_pool_census", lambda *_a, **_k: census)
+    seen: list[tuple[int, bool]] = []
+
+    def inspect_budget(
+        _repo, _pull_payload, _read, _write, _fresh, _proof, budget, _blocked
+    ):
+        seen.append((budget.max_refreshes, budget.requires_refresh_lease))
+        return "pending"
+
+    monkeypatch.setattr(MOG, "sweep_pull", inspect_budget)
+    assert MOG.main() == 0
+    assert seen == [(expected_allowance, expected_allowance == 1)]
+    out = capsys.readouterr().out
+    assert needle in out, out
+    if expected_allowance == 1:
+        assert "(durable lease required)" in out
+
+
+def test_s9_floor_never_reads_a_second_census_and_stays_closed_past_the_widest_cap(
+    monkeypatch, capsys
+):
+    """At 16+ proofs the adaptive census is skipped; the floor must not open a new
+    read of its own and must stay closed (the ceiling is 12)."""
+    _main_harness(monkeypatch, [_pull(1)])
+    monkeypatch.setattr(MOG, "in_flight_pr_proofs", lambda *_a: 16)
+
+    def never(*_a, **_k):
+        raise AssertionError("census read although no headroom could be used")
+
+    monkeypatch.setattr(MOG, "hosted_pool_census", never)
+    seen: list[int] = []
+
+    def inspect_budget(
+        _repo, _pull_payload, _read, _write, _fresh, _proof, budget, _blocked
+    ):
+        seen.append(budget.max_refreshes)
+        return "pending"
+
+    monkeypatch.setattr(MOG, "sweep_pull", inspect_budget)
+    assert MOG.main() == 0
+    assert seen == [0]
+    assert "[floor withheld: hosted pool census not read]" in capsys.readouterr().out
+
+
+def test_s9_floor_stays_closed_when_the_census_read_itself_failed(monkeypatch, capsys):
+    """A RateLimited census degrades to the flat cap (unchanged); at 9 proofs that
+    is zero, and a floor without job-level evidence would be the repealed clamp.
+    9 is UNDER the floor ceiling, so only the missing census keeps it closed."""
+    _main_harness(monkeypatch, [_pull(1)])
+    monkeypatch.setattr(MOG, "in_flight_pr_proofs", lambda *_a: 9)
+
+    def rate_limited(*_a, **_k):
+        raise MOG.RateLimited("core budget exhausted")
+
+    monkeypatch.setattr(MOG, "hosted_pool_census", rate_limited)
+    seen: list[int] = []
+
+    def inspect_budget(
+        _repo, _pull_payload, _read, _write, _fresh, _proof, budget, _blocked
+    ):
+        seen.append(budget.max_refreshes)
+        return "pending"
+
+    monkeypatch.setattr(MOG, "sweep_pull", inspect_budget)
+    assert MOG.main() == 0
+    assert seen == [0]
+    out = capsys.readouterr().out
+    assert "census failed (core budget exhausted): flat cap" in out
+    assert "[floor withheld: hosted pool census not read]" in out
     assert "Sweep deferred" not in out
 
 
@@ -5828,6 +5950,125 @@ def test_ambiguous_lease_claim_never_updates_or_tries_a_second_owner(monkeypatch
     ) == "refresh-deferred"
     assert not [call for call in calls if call[0] == "PUT"]
     assert len([call for call in calls if call[0] == "PATCH"]) == 1
+
+
+def test_refused_generation_register_read_declines_the_claim_out_loud(
+    monkeypatch, capsys
+):
+    """A pre-write refusal must say why. Observed live: the tier-0 main-red-repair
+    pull request was deferred sweep after sweep at "0/1 effective CI workload
+    slot(s) in use" while the queue showed a free slot, because the register read
+    was refused and `claim()` returned a bare False."""
+    calls: list[tuple[str, str]] = []
+
+    def fake_request(method, url, token, payload=None):
+        calls.append((method, url))
+        if method == "GET" and url.endswith("/pulls/1"):
+            return 200, _pull(1)
+        if method == "GET" and "/labels/" in url:
+            return 403, {"message": "forbidden"}
+        raise AssertionError(f"unexpected {method} {url}")
+
+    monkeypatch.setattr(MOG, "_request", fake_request)
+    lease = MOG.RefreshLease("acme/widgets", "read", "write")
+    budget = MOG.SweepBudget("read", max_refreshes=1)
+    budget.refresh_authorized = True
+    budget.max_refreshes = 1
+    budget.requires_refresh_lease = True
+    budget.refresh_lease = lease
+    assert MOG.attempt_update_branch(
+        "acme/widgets", _pull(1), "write", budget, "stale"
+    ) == "refresh-deferred"
+    out = capsys.readouterr().out
+    assert (
+        "::notice title=merge-on-green refresh lease::PR #1: refresh lease not "
+        "claimed — the generation register read answered HTTP 403; no "
+        "update-branch write attempted." in out
+    )
+    assert "0/1 effective CI workload slot(s) in use" in out
+    assert not [call for call in calls if call[0] in {"PATCH", "POST", "PUT"}]
+    assert budget.refreshes_used == 0
+
+
+def test_spent_claim_latch_names_the_first_claimant(monkeypatch, capsys):
+    """The one-claim-per-sweep latch is correct and must stay; it must also be
+    visible, naming the pull request that consumed it."""
+    calls: list[tuple[str, str]] = []
+
+    def fake_request(method, url, token, payload=None):
+        calls.append((method, url))
+        if method == "GET" and url.endswith("/pulls/1"):
+            return 200, _pull(1)
+        if method == "GET" and url.endswith("/pulls/2"):
+            return 200, _pull(2)
+        if method == "GET" and "/labels/" in url:
+            return 200, {
+                "name": MOG.REFRESH_LEASE_LABEL,
+                "description": MOG.REFRESH_LEASE_DESCRIPTION,
+            }
+        if method == "PATCH" and "/labels/" in url:
+            return 500, None
+        raise AssertionError(f"unexpected {method} {url}")
+
+    monkeypatch.setattr(MOG, "_request", fake_request)
+    lease = MOG.RefreshLease("acme/widgets", "read", "write")
+    budget = MOG.SweepBudget("read", max_refreshes=1)
+    budget.refresh_authorized = True
+    budget.max_refreshes = 1
+    budget.requires_refresh_lease = True
+    budget.refresh_lease = lease
+    assert MOG.attempt_update_branch(
+        "acme/widgets", _pull(1), "write", budget, "stale"
+    ) == "refresh-deferred"
+    assert MOG.attempt_update_branch(
+        "acme/widgets", _pull(2), "write", budget, "stale"
+    ) == "refresh-deferred"
+    out = capsys.readouterr().out
+    assert (
+        "PR #1: refresh lease not claimed — a generation register write was "
+        "attempted but the read-back did not affirm the intended record (write "
+        "HTTP 500, read-back HTTP 200); the register's outcome is unknown" in out
+    )
+    assert (
+        "PR #2: refresh lease not claimed — this sweep already spent its single "
+        "lease claim on PR #1" in out
+    )
+    assert lease.claim_attempted_number == 1
+    assert not [call for call in calls if call[0] in {"POST", "PUT"}]
+    assert len([call for call in calls if call[0] == "PATCH"]) == 1
+
+
+def test_owner_with_refused_register_read_is_declined_as_a_refused_read(
+    monkeypatch, capsys
+):
+    """Heads match, but the register read is refused: the notice must say the
+    register no longer affirms the generation, not that an update was already
+    authorised (review finding on the S2a change)."""
+    head = "a" * 40
+
+    def fake_request(method, url, token, payload=None):
+        if method == "GET" and "/labels/" in url:
+            return 403, {"message": "forbidden"}
+        raise AssertionError(f"unexpected {method} {url}")
+
+    monkeypatch.setattr(MOG, "_request", fake_request)
+    lease = MOG.RefreshLease(
+        "acme/widgets",
+        "read",
+        "write",
+        owner_number=1,
+        owner_updated_at="2026-11-05T22:00:00Z",
+        generation_head_sha=head,
+        generation_id="gen",
+    )
+    pull = _pull(1, labels=(MOG.MERGE_ON_GREEN_LABEL, MOG.REFRESH_LEASE_LABEL))
+    assert lease.claim(pull) is False
+    out = capsys.readouterr().out
+    assert (
+        "PR #1: refresh lease not claimed — the generation register no longer "
+        "affirms its generation (read refused or record changed)" in out
+    )
+    assert "already authorised" not in out
 
 
 def test_affirmative_fresh_conflict_declines_before_lease_claim_or_write(monkeypatch):
@@ -10466,3 +10707,106 @@ def test_authority_lookup_cost_and_pagination_fit_the_admitted_budget():
             + admitted * MOG.MAX_REQUESTS_PER_PULL
             + MOG.MAX_REFRESHES_PER_SWEEP
             + MOG.RATE_LIMIT_RESERVE) <= MOG.RATE_LIMIT_FLOOR
+
+
+# --- live authorization diagnostics (Policy Monitor release recovery) ----------
+
+
+@pytest.mark.parametrize(
+    ("status", "payload", "headers", "expected"),
+    (
+        (
+            403,
+            {"message": "Resource not accessible by integration"},
+            {"x-ratelimit-remaining": "412"},
+            ("HTTP 403", "Resource not accessible by integration"),
+        ),
+        (
+            403,
+            {"message": "Forbidden"},
+            {
+                "x-ratelimit-remaining": "0",
+                "x-ratelimit-limit": "5000",
+                "x-ratelimit-reset": "1793928600",
+            },
+            ("primary API quota", "0 of 5000 requests left", "1793928600"),
+        ),
+        (
+            403,
+            {"message": "You have exceeded a secondary rate limit."},
+            {"retry-after": "60"},
+            ("secondary (burst) rate limit", "retry-after 60s"),
+        ),
+        (
+            403,
+            None,
+            {"x-ratelimit-remaining": "412"},
+            ("HTTP 403",),
+        ),
+        (429, None, {}, ("HTTP 429",)),
+        (500, {"message": "Server Error"}, {}, ("HTTP 500", "Server Error")),
+        (200, [], {}, ("HTTP 200",)),
+    ),
+    ids=(
+        "permission",
+        "primary-header-evidence",
+        "secondary-retry-after",
+        "unexplained-forbidden",
+        "unexplained-429",
+        "server-failure",
+        "malformed-success",
+    ),
+)
+def test_live_authorization_failure_reports_cause_without_changing_admission(
+    monkeypatch, capsys, status, payload, headers, expected
+):
+    calls = []
+
+    def fail_read(method, url, token, data=None):
+        calls.append((method, url, token, data))
+        return status, payload
+
+    monkeypatch.setattr(MOG, "_request", fail_read)
+    monkeypatch.setattr(MOG, "_LAST_RESPONSE_HEADERS", headers)
+    budget = _authorized_budget(max_refreshes=1)
+    assert MOG.attempt_update_branch(
+        "acme/widgets", _pull(1), "test-write-credential", budget, "stale"
+    ) == "authorization-unreadable"
+    assert calls == [
+        ("GET", f"{MOG.GITHUB_API}/repos/acme/widgets/pulls/1", "test-write-credential", None)
+    ], "the same credential and endpoint must fail closed before any write"
+    assert budget.refresh_attempts_used == 0
+    assert budget.refreshes_used == 0
+    out = capsys.readouterr().out
+    for fragment in expected:
+        assert fragment in out
+    if not headers.get("retry-after") and headers.get("x-ratelimit-remaining") != "0":
+        assert "API quota" not in out
+        assert "secondary (burst)" not in out
+
+
+@pytest.mark.parametrize("quota", (False, True), ids=("permission", "quota"))
+def test_live_authorization_diagnostic_redacts_and_bounds_untrusted_response(
+    monkeypatch, capsys, quota
+):
+    credential = "test-private-write-credential"
+    message = (
+        f"Forbidden {credential}\r\n::error title=injected::"
+        "\x1b[31m %0A forged " + ("x" * 2000)
+    )
+    monkeypatch.setattr(MOG, "_request", lambda *_a: (403, {"message": message}))
+    monkeypatch.setattr(
+        MOG, "_LAST_RESPONSE_HEADERS",
+        {"x-ratelimit-remaining": "0", "x-ratelimit-limit": "5000"} if quota else {},
+    )
+    assert MOG.live_authorized_pull(
+        "acme/widgets", _pull(1), credential
+    ) == (None, "authorization-unreadable")
+    out = capsys.readouterr().out
+    prefix = "::warning title=merge-on-green authorization::"
+    assert out.startswith(prefix)
+    assert len(out.splitlines()) == 1
+    assert credential not in out and "[redacted]" in out
+    assert "\r" not in out and "\x1b" not in out
+    assert "%250A" in out and "%0A" not in out
+    assert len(out.removeprefix(prefix).rstrip("\n")) <= 600

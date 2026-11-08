@@ -25,15 +25,19 @@ waves:
   - id: A1
     title: T7 per-engine evidence scorecard + T8 global CEO view
     status: in_progress
-    next_action: >
-      Publish the qualified nine-input tested-merge closure repair on original PR6651 under fresh
-      canonical capacity and source custody, then fresh binding checks, incumbent merge and production proof.
-next_action: >
-  Continue the existing PR #6651 under current Chairman assignment and root
-  01a1333d-b0c0-7f33-9259-dd718391d9e4. Complete qualified evidence, coherent selected-store
-  reads, dark/light EN/ZH experience, exact-head CI/review, Chairman-authorized governed merge and
-  authenticated normal-release proof. Historical receiver labels do not imply a live writer.
-  Natural accrual remains independent and must remain honestly qualified.
+    next_action: >-
+      Source PR #6651 merged on2026-10-24 as4579f45e2b3e5dd0c98125fd4d28f4a25a7b009e.
+      Reuse that accepted source and existing receipts. Reconcile current normal-release installation,
+      served identity and authenticated consumer/operator evidence on the existing owner before any
+      new action; do not republish or reopen the completed source repair.
+next_action: >-
+  Reuse merged PR #6651 and the accepted A32 synthetic eight-context/42-state browser evidence
+  and separate A39 pre-release natural-owner progression. The assigned owner should reconcile
+  current installed/served identity, authenticated selected-store API-to-paint, lawful dark/light
+  EN/ZH experience, post-release natural progression and operator comprehension against actual
+  existing receipts before new proof or effects. Preserve original experience UNKNOWN, lost CLI
+  review and any actual live writer/effect fences; do not reopen terminal source or recovery children.
+  Natural accrual remains independent and honestly qualified. Source merge does not complete A1.
 owns_paths:
   - admin/intelligence_os.py
   - tests/test_admin_intelligence_os.py
@@ -57,7 +61,20 @@ artifacts:
   - agentos/workstreams/WS-EVAL-OS-OUTPUT-HEALTH.md
   - agentos/workstreams/WS-EVAL-OS-T1-ENGINE-REGISTRY.md
   - research/EVAL_OS_CONTINUATION_2026-10-12.md
+  - agentos/handoffs/EVAL-OS-A1-RELEASE-VISUAL-PROOF-2026-08-30.md
+
 ---
+
+**2026-11-05 source-state supersession.** PR #6651 is merged as
+`4579f45e2b3e5dd0c98125fd4d28f4a25a7b009e` on October24. Its old unpublished,
+open/draft and future source-release instructions below retain their observation
+epochs and no longer govern the next source action. A1 remains in progress:
+reuse the accepted source, A32 synthetic browser evidence and separate A39
+pre-release natural-owner proof, then reconcile actual current consumer and
+post-release receipts. This update neither reruns accepted work nor establishes
+installation, authenticated/operator acceptance, a P1 START or resolution of the
+original experience/CLI-review effects.
+
 
 ## Current tested-merge dependency repair — 2026-10-15
 
