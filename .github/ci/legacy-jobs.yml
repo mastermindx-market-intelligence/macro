@@ -15763,6 +15763,7 @@ jobs:
       - "tests/test_ci_canary_tools.py"
       - "tests/test_ci_canary_workflows.py"
       - "tests/test_ci_gate_reliability_report.py"
+      - "tests/test_ci_main_heartbeat_header.py"
       - "tests/test_ci_pack.py"
       - "tests/test_ci_pack_fragments.py"
       - "tests/test_ci_pack_semantic.py"
@@ -15774,6 +15775,7 @@ jobs:
       - "tests/test_merge_on_green_semantic.py"
       - "tests/test_nightly_backstop.py"
       - "tests/test_release_hold_text.py"
+      - "tests/test_run_ci_pack_base_replay_env.py"
       - "tests/test_run_ci_pack_fetch_fallback.py"
       - "tests/test_runner_policy.py"
       - "tests/test_trusted_ci_executor_workflow.py"
@@ -15867,7 +15869,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest pyyaml
       - name: hosted-runner packing contract
-        run: python -m pytest tests/test_ci_pack.py tests/test_ci_pack_fragments.py tests/test_run_ci_pack_fetch_fallback.py tests/test_merge_on_green.py tests/test_merge_on_green_semantic.py tests/test_check_conflict_markers.py tests/test_release_hold_text.py -q
+        run: python -m pytest tests/test_ci_pack.py tests/test_ci_pack_fragments.py tests/test_run_ci_pack_base_replay_env.py tests/test_run_ci_pack_fetch_fallback.py tests/test_merge_on_green.py tests/test_merge_on_green_semantic.py tests/test_check_conflict_markers.py tests/test_release_hold_text.py -q
       # scripts/check_contract_delta.py (2026-08-19) is the differential PR-vs-base
       # gate that re-derives the two finding classes above (curated-exclusive
       # import-closure misses, unwired suites) UNCONDITIONALLY of ci-pack's path
@@ -15933,6 +15935,7 @@ jobs:
       - "tests/test_ci_canary_tools.py"
       - "tests/test_ci_canary_workflows.py"
       - "tests/test_ci_gate_reliability_report.py"
+      - "tests/test_ci_main_heartbeat_header.py"
       - "tests/test_ci_pack.py"
       - "tests/test_ci_pack_fragments.py"
       - "tests/test_ci_pack_semantic.py"
@@ -15944,6 +15947,7 @@ jobs:
       - "tests/test_merge_on_green_semantic.py"
       - "tests/test_nightly_backstop.py"
       - "tests/test_release_hold_text.py"
+      - "tests/test_run_ci_pack_base_replay_env.py"
       - "tests/test_run_ci_pack_fetch_fallback.py"
       - "tests/test_runner_policy.py"
       - "tests/test_trusted_ci_executor_workflow.py"
@@ -16058,6 +16062,12 @@ jobs:
       # it cannot skip its way to green on a pack runner with no `gh`.
       - name: merge-gate reliability report contract
         run: python -m pytest tests/test_ci_gate_reliability_report.py -q
+      # ci-main-heartbeat.yml names each of its jobs after a job in this manifest,
+      # and its header tells the reader what a green heartbeat means. This suite
+      # measures every heartbeat job's test files against its namesake here and
+      # holds the header's words to the difference, both ways. Pure stdlib + pyyaml.
+      - name: ci-main-heartbeat header matches what its jobs run
+        run: python -m pytest tests/test_ci_main_heartbeat_header.py -q
       - name: transitional self-hosted runner policy and canary contracts
         run: python scripts/check_runner_policy.py && python -m pytest tests/test_runner_policy.py tests/test_ci_canary_tools.py tests/test_ci_canary_workflows.py tests/test_trusted_ci_executor_workflow.py tests/test_trusted_ci_production_route.py -q
       # The US nightly's cron redundancy (2026-08-13), wired here for the same reason
@@ -16125,6 +16135,7 @@ jobs:
       - "tests/test_ci_canary_tools.py"
       - "tests/test_ci_canary_workflows.py"
       - "tests/test_ci_gate_reliability_report.py"
+      - "tests/test_ci_main_heartbeat_header.py"
       - "tests/test_ci_pack.py"
       - "tests/test_ci_pack_fragments.py"
       - "tests/test_ci_pack_semantic.py"
@@ -16136,6 +16147,7 @@ jobs:
       - "tests/test_merge_on_green_semantic.py"
       - "tests/test_nightly_backstop.py"
       - "tests/test_release_hold_text.py"
+      - "tests/test_run_ci_pack_base_replay_env.py"
       - "tests/test_run_ci_pack_fetch_fallback.py"
       - "tests/test_runner_policy.py"
       - "tests/test_trusted_ci_executor_workflow.py"
@@ -17084,6 +17096,10 @@ jobs:
       - "engine/provider_workload_policy.py"
       - config/provider_production_modes.v1.json
       - engine/provider_production_modes.py
+      # TTI-D1: bind the existing synthetic minute reader/resolver suite to
+      # its current CODE consumer owner; the older signal-contract copy is DATA.
+      - "engine/entry_radar/minute_resolution.py"
+      - "tests/test_entry_radar_w4_c3_reader.py"
       - "scripts/company_intelligence_publication_evidence.py"
       # Options Plan consumer: exact newly reachable import/read dependencies.
       - "app/options_plan.py"
@@ -18430,7 +18446,7 @@ jobs:
       - name: ontology research case — native evidence and existing live episode projection
         run: python -m pytest tests/test_opportunity_evidence_vector_contract.py tests/test_entry_radar_w4_live.py -k 'opportunity_case or research_case' -q
       - name: native earnings context, retained identity and published Radar read
-        run: python -m pytest tests/test_earnings_opportunity_qualification.py tests/test_earnings_opportunity_context.py tests/test_entry_radar_quote_context.py tests/test_entry_radar_research_read.py tests/test_entry_radar_earnings_context_producer.py tests/test_entry_radar_candidate_provenance.py tests/test_entry_radar_quote_lineage_read.py -q
+        run: python -m pytest tests/test_earnings_opportunity_qualification.py tests/test_earnings_opportunity_context.py tests/test_entry_radar_quote_context.py tests/test_entry_radar_research_read.py tests/test_entry_radar_earnings_context_producer.py tests/test_entry_radar_candidate_provenance.py tests/test_entry_radar_quote_lineage_read.py -q tests/test_entry_radar_w4_c3_reader.py
       - name: captured native DRL event and evidence composition
         run: python -m pytest tests/test_price_pressure_research.py tests/test_h20_supplier_conditional.py tests/test_gmi_native_disclosure_propagation.py -q
       - name: ontology explorer — real browser, selected context, responsive and failure states
