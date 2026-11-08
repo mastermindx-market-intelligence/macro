@@ -118,6 +118,53 @@
     if (!t) return "—"; var p = String(t).split("-"), m = (+p[1] || 6), yy = String(p[0]).slice(2);
     return curLang() === "zh" ? (p[0] + "年" + m + "月") : (MONTHS[m - 1] + " ’" + yy);
   }
+  // True only when the projected month is already behind the page's own month.
+  function projPast(p) {
+    var t, yr, doy, leap, md, mo, left, i, bits, cy, cm;
+    if (!p || p.overdue !== true || !p.central) return false;
+    if (typeof META === "undefined" || !META) return false;
+    t = META.today;
+    if (typeof t !== "number" || !isFinite(t)) return false;
+    yr = Math.floor(t);
+    // META.today is rounded to 3 decimals, so the nudge has to cover that rounding.
+    doy = Math.floor((t - yr) * 365.25 + 0.25) + 1;
+    leap = (yr % 4 === 0) && (yr % 100 !== 0 || yr % 400 === 0);
+    md = [31, leap ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+    mo = 1;
+    left = doy;
+    for (i = 0; i < 12; i++) {
+      if (left <= md[i]) { mo = i + 1; break; }
+      left -= md[i];
+    }
+    bits = String(p.central).split("-");
+    cy = +bits[0];
+    cm = +bits[1];
+    if (!(cy >= 1) || !(cm >= 1 && cm <= 12)) return false;
+    return (cy * 12 + cm) < (yr * 12 + mo);
+  }
+  function cardNextTxt(p) {
+    var mon, peak;
+    if (!p) return L("—", "—");
+    if (projPast(p)) {
+      mon = fmtMon(p.central);
+      peak = p.nextTurn === "peak";
+      return L(
+        "ref: " + (peak ? "Peak" : "Trough") + " was proj. " + mon + " \u2014 elapsed",
+        "参考：" + (peak ? "顶部" : "底部") + "原预计 " + mon + " \u2014 已过");
+    }
+    return L("Next ", "下次") + (p.nextTurn === "peak" ? "▲ " : "▼ ") + fmtMon(p.central);
+  }
+  function detailNextLabel(p) {
+    var peak = p && p.nextTurn === "peak";
+    if (projPast(p)) {
+      return L(
+        peak ? "Peak was projected" : "Trough was projected",
+        peak ? "顶部原预计" : "底部原预计");
+    }
+    return L(
+      "Next " + ((p || {}).nextTurn || "turn"),
+      "下次" + (peak ? "顶部" : "底部"));
+  }
   function phaseHue(ph) { return (PHASES[ph] || {}).hue || "var(--muted)"; }
   // bilingual phase label keyed by the phase bucket (engine sends English phaseLabel)
   var PHASE_LAB = {
@@ -473,7 +520,7 @@
                    x1: (hi != null ? Math.min(hi, META.xDomain[1]) : cx),
                    cx: cx, color: s.accent, opacity: 0.12, labelY: 11,
                    label: L("PROJ ", "推演 ") + ar + L(" · rhythm", " · 节奏"),
-                   title: L("Projected next turn ~", "推演下一拐点 ~") + fmtMon(p.central) + L(" — typical rhythm, not a backtested forecast", " — 典型节奏，非回测预测") });
+                   title: L("Projected next turn ~", "推演下一拐点 ~") + fmtMon(p.central) + L(" — typical rhythm, not a backtested prediction", " — 典型节奏，非回测预测") });
       }
     }
     return out;
@@ -941,12 +988,60 @@
       return pa !== pb ? pa - pb : a.now.pos - b.now.pos;
     });
   }
+  function turnRecordText(r) {
+    var nFunds = r.funds.length;
+    var nFalse = r["false"];
+    var en = "The turn record dated " + r.as_of
+      + " grades an earlier version of this method,"
+      + " run on a shorter price history."
+      + " It is not a record of the method behind this month's cards."
+      + " Across " + nFunds + " US sector funds it met " + r.met
+      + " of " + r.turns + " real turns. " + r.right
+      + " calls were right and " + nFalse + " were false;"
+      + " right means within " + r.tau_months
+      + " months of a real turn.";
+    var zh = "转折记录（日期 " + r.as_of
+      + "）检验的是本方法的早期版本，所用价格历史较短，"
+      + "并不是本月卡片所用方法的记录。在 " + nFunds
+      + " 只美国行业基金中，它命中了 " + r.turns
+      + " 个实际转折中的 " + r.met + " 个。判断正确 "
+      + r.right + " 次、错误 " + nFalse
+      + " 次；正确指与实际转折相差不超过 " + r.tau_months
+      + " 个月。";
+    return L(en, zh);
+  }
+  function mountTurnRecord(list) {
+    var grid = document.getElementById("sc-cards");
+    if (!grid) return;
+    var p = document.getElementById("sc-turnrec");
+    if (!p) {
+      p = el("p", "sc-prov-text");
+      p.id = "sc-turnrec";
+      grid.insertAdjacentElement("afterend", p);
+    }
+    var rec = DATA.turn_record;
+    var hit = false;
+    var i = 0;
+    if (!IS_CN && rec && rec.funds && list) {
+      for (i = 0; i < list.length; i++) {
+        if (rec.funds.indexOf(list[i].id) >= 0) hit = true;
+      }
+    }
+    if (!hit) {
+      p.hidden = true;
+      p.textContent = "";
+      return;
+    }
+    p.hidden = false;
+    p.textContent = turnRecordText(rec);
+  }
   function mountCards() {
     var grid = document.getElementById("sc-cards");
     if (!grid) return;
     Object.keys(sparks).forEach(function (k) { try { sparks[k].destroy(); } catch (e) {} });
     sparks = {};
     grid.innerHTML = "";
+    mountTurnRecord(sortedActive());
     sortedActive().forEach(function (s) {
       var nw = s.now, tilt = tiltOf(s);
       var card = el("article", "cyc-card");
@@ -956,7 +1051,7 @@
       if (isBasketRec(s) && basketShown[s.id]) card.classList.add("sel");
       var rs = nw.rs_21d != null ? nw.rs_21d : nw.rs_63d;   // fast lens when stamped (2026-07 audit)
       var rsTxt = rs == null ? "" : ('<span class="cc-tilt ' + (rs >= 0 ? "t-up" : "t-down") + '">RS #' + (nw.rs_21d_rank || nw.rs_rank || "—") + '</span>');
-      var nextTxt = s.proj ? (L("Next ", "下次") + (s.proj.nextTurn === "peak" ? "▲ " : "▼ ") + fmtMon(s.proj.central)) : L("—", "—");
+      var nextTxt = cardNextTxt(s.proj);
       var sigHTML = nw.signal === "BUY" ? '<span class="cc-sig buy">' + L("BUY", "买入") + '</span>'
         : nw.signal === "SELL" ? '<span class="cc-sig sell">' + L("SELL", "卖出") + '</span>' : "";
       // W3.6: the resolved stance is the only action-toned text (D1 §2.2); the amber
@@ -990,7 +1085,16 @@
 
   /* ---- focus orchestration ----------------------------------------------- */
   function toggleFocus(id) { setFocus(state.focus === id ? null : id); }
-  function setFocus(id) {
+  // RI09b finding 6: the traversal reader below dedupes on the last-handled href, but an
+  // in-app focus write moves the URL by replaceState without firing any event — a user
+  // hash-edit back to the previously handled href would then be eaten. The in-app write
+  // resets that dedupe (installed by the listener block; null when no listener is bound).
+  var _navDedupeReset = null;
+  // fromHistory (traversal path only): the URL already matches the traversed entry, so
+  // the closing replaceState below is skipped — rewriting it fragment-less would strip
+  // the entry's hash (RI09). In-app callers keep the write: it is what keeps the URL
+  // honest on a chip tap or the panel's back button.
+  function setFocus(id, fromHistory) {
     clearFirstHint();                              // any focus change = the user has engaged
     if (id && window.SC_LAZY_EXTRAS) _scheduleExtras();  // host deferred extras — load on first focus
     // focusing a basket-like record implies selecting it onto the chart
@@ -1015,7 +1119,7 @@
       if (isCnMobile()) { if (id) openSheet("half"); else closeSheet(); }   // hidden-at-rest detent sheet
       else if (id) expandSheet(true);                                       // US legacy peek sheet
     }
-    try { history.replaceState(null, "", id ? "#" + id : location.pathname + location.search); } catch (e) {}
+    if (!fromHistory) try { history.replaceState(null, "", id ? "#" + id : location.pathname + location.search); if (_navDedupeReset) _navDedupeReset(); } catch (e) {}
   }
 
   /* ---- detail panel ------------------------------------------------------ */
@@ -1159,11 +1263,52 @@
       '</div>';
   }
 
-  // prominent projected next-turn card (the user-requested "best-guess point", honestly framed).
-  // Gated on META.forecastPoint (China); without the flag (US) it renders the original compact
-  // regnote unchanged, so the US page is byte-identical to before.
+  // Next-turn card. A central month already behind the page month says so.
+  // Any other row keeps the wording it had before.
   function forecastCardHTML(s) {
     var p = s.proj; if (!p || !p.central) return "";
+    if (projPast(p)) {
+      var up = p.nextTurn === "peak";
+      var mon = fmtMon(p.central);
+      var lo = fmtMon(p.low);
+      var hi = fmtMon(p.high);
+      var nounE = up ? "peak" : "trough";
+      var nounZ = up ? "顶部" : "底部";
+      var lenVal = p.period_yrs ? (p.period_yrs.median + L(" yr", " 年")) : "\u2014";
+      var en, zh, ar, band, bandHTML, noteE, noteZ;
+      if (!META.forecastPoint) {
+        en = (up ? "Peak" : "Trough") + " was projected \u2248 " + mon;
+        en += " (" + lo + "\u2013" + hi + "), from this " + unitE();
+        en += "\u2019s own median half-cycle. ";
+        en += "That month has passed with no confirmed " + nounE + ".";
+        zh = nounZ + "原预计约在 " + mon + "（" + lo + "\u2013" + hi;
+        zh += "），基于该" + unitZ() + "自身的中位半周期。";
+        zh += "该月已过，尚无确认的" + nounZ + "。";
+        return '<div class="cyc-regnote">' + L(en, zh) + '</div>';
+      }
+      ar = up ? "\u25b2" : "\u25bc";
+      band = (p.low && p.high) ? (lo + " \u2013 " + hi) : "";
+      en = up ? "Peak was projected" : "Trough was projected";
+      zh = nounZ + "原预计";
+      noteE = "That month has passed with no confirmed " + nounE;
+      noteE += ". From this series\u2019 own median half-cycle (";
+      noteE += lenVal + ") \u2014 a timing RHYTHM, not a backtested prediction.";
+      noteZ = "该月已过，尚无确认的" + nounZ + "。";
+      noteZ += "基于该序列自身的中位半周期（" + lenVal + "）";
+      noteZ += "\u2014\u2014属时间节奏，并非回测预测。";
+      bandHTML = "";
+      if (band) {
+        bandHTML = '<div class="sc-fcast-band">';
+        bandHTML += L("typical range ", "典型区间 ") + band + '</div>';
+      }
+      return '<div class="sc-fcast ' + (up ? "pk" : "tr") + '">' +
+        '<div class="sc-fcast-hd"><span class="sc-fcast-ar">' + ar + '</span>' +
+        '<span class="sc-fcast-k">' + L(en, zh) + '</span></div>' +
+        '<div class="sc-fcast-date">' + mon + '</div>' +
+        bandHTML +
+        '<div class="sc-fcast-note">' + L(noteE, noteZ) + '</div>' +
+        '</div>';
+    }
     if (!META.forecastPoint) {
       return '<div class="cyc-regnote">' + L("Projected next " + p.nextTurn + " ≈ " + fmtMon(p.central) + " (" + fmtMon(p.low) + "–" + fmtMon(p.high) + "), from this " + unitE() + "’s own median half-cycle. A timing estimate, not a guarantee.",
         "预计下次" + (p.nextTurn === "peak" ? "顶部" : "底部") + "约在 " + fmtMon(p.central) + "（" + fmtMon(p.low) + "–" + fmtMon(p.high) + "），基于该" + unitZ() + "自身的中位半周期。仅为时间估计。") + '</div>';
@@ -1176,7 +1321,7 @@
         '<span class="sc-fcast-k">' + L("Projected next " + (up ? "peak" : "trough"), "推演下一" + (up ? "顶部" : "底部")) + '</span></div>' +
       '<div class="sc-fcast-date">' + fmtMon(p.central) + '</div>' +
       (band ? '<div class="sc-fcast-band">' + L("typical range ", "典型区间 ") + band + '</div>' : "") +
-      '<div class="sc-fcast-note">' + L("From this series’ own median half-cycle (" + lenVal + ") — a timing RHYTHM, not a backtested forecast.",
+      '<div class="sc-fcast-note">' + L("From this series’ own median half-cycle (" + lenVal + ") — a timing RHYTHM, not a backtested prediction.",
         "基于该序列自身的中位半周期（" + lenVal + "）——属时间节奏，并非回测预测。") + '</div>' +
     '</div>';
   }
@@ -1442,7 +1587,7 @@
         '<div class="cyc-facts" style="margin-top:12px">' +
           fact(L("Last trough", "上次底部"), fmtMon(nw.lastTrough)) +
           fact(L("Last peak", "上次顶部"), fmtMon(nw.lastPeak)) +
-          fact(L("Next " + ((s.proj || {}).nextTurn || "turn"), "下次" + ((s.proj || {}).nextTurn === "peak" ? "顶部" : "底部")), s.proj ? fmtMon(s.proj.central) : "—") +
+          fact(detailNextLabel(s.proj), s.proj ? fmtMon(s.proj.central) : "—") +
           fact(L("Typical ½-cycle", "典型半周期"), lenVal) +
           fact(L("RS vs ", "相对") + benchLabel(), rsVal) +
           fact(L(WIN_Y + "y change", WIN_Y + "年涨跌"), (nw.ret_win_pct >= 0 ? "+" : "") + nw.ret_win_pct + "%") +
@@ -2046,6 +2191,21 @@
     document.head.appendChild(s);
   }
 
+  /* ---- focus deep link (J-restore, masterplan §8/§10) ----------------------
+     The ONE reader for `#<entity-id>` focus hashes, shared by boot()'s delayed first
+     paint and the popstate/hashchange listeners below. Parse rules unchanged from the
+     pre-extraction boot block: strip '#', apply only when byId knows the id, switch
+     family first when the id belongs to a basket-like record. Returns whether a focus
+     was applied, so the listeners can clear focus when the hash no longer names one. */
+  function applyFocusHash() {
+    var h = (location.hash || "").replace("#", "");
+    if (!(h && byId[h])) return false;
+    var hs = byId[h];
+    if (isBasketRec(hs)) switchFamily(FAM[hs.kind] ? hs.kind : "baskets");
+    setFocus(h, true);   // RI09b finding 7: the URL already carries #h — no traversal-path write exists
+    return true;
+  }
+
   /* ---- boot -------------------------------------------------------------- */
   function boot() {
     // Basket-like families: chart only the STRONGEST few to start — overlaid lines are an
@@ -2065,12 +2225,35 @@
       if (e.key === "Escape") { var w = document.querySelector(".sc-chartwrap.sc-fs"); if (w) toggleChartFs(false); }
     });
     var h = (location.hash || "").replace("#", "");
-    if (h && byId[h]) setTimeout(function () {
-      var hs = byId[h];
-      if (isBasketRec(hs)) switchFamily(FAM[hs.kind] ? hs.kind : "baskets");
-      setFocus(h);
-    }, 350);
+    if (h && byId[h]) setTimeout(applyFocusHash, 350);
     else { guideEntry(); showFirstHint(); }   // novice entry: highlight one line + a tap hint
+    // J-restore (§8/§10): Back/Forward (popstate) or a same-page hash edit (hashchange)
+    // re-applies the focus deep link through the shared reader without a reload; a hash
+    // that no longer names an entity clears focus back to the default panel. Standalone
+    // page only (US + China) — inside a Sector Central shell the hash belongs to the
+    // shell's own view router, and a setFocus from here would replaceState-clobber the
+    // shell's #view entry. Two independent guards, either sufficient (RI09): the host
+    // loaders set SC_LAZY_EXTRAS before injecting this file (si_workspace.js /
+    // si_workspace_china.js loadCycles — the China hub once shipped without it), and the
+    // shell root itself is detectable — activate() in both routers owns the .si-view
+    // sections, so when one is present the hash is that router's, flag or no flag. The
+    // in-shell Cycles contract is SIC-I03/I09B's to build.
+    if (!window.SC_LAZY_EXTRAS && !document.querySelector(".si-view")) {
+      // one traversal fires BOTH popstate and hashchange — the second arrival is the same
+      // navigation and must not run the reader twice. Last-handled href dedupe; starts
+      // null, never the bind-time href, or the first Back onto it would be eaten.
+      var lastNavHref = null;
+      var syncFocusHash = function () {
+        if (location.href === lastNavHref) return;
+        lastNavHref = location.href;
+        // fromHistory=true: the traversed entry's URL is already where the browser put
+        // it — setFocus(null) must not replaceState it fragment-less
+        if (!applyFocusHash()) setFocus(null, true);
+      };
+      window.addEventListener("popstate", syncFocusHash);
+      window.addEventListener("hashchange", syncFocusHash);
+      _navDedupeReset = function () { lastNavHref = null; };
+    }
     if (!window.SC_LAZY_EXTRAS) _scheduleExtras();  // eager unless the host page defers to first focus
     _scheduleSeries();   // hydrate the heavy per-entity arrays after first paint (no-op if unsplit)
     loadRotation();

@@ -51,7 +51,9 @@ own refusal shape (``capacity_joint`` lines 302-309) is recorded alongside
 what the served body actually carried.  The served request needs an issuer
 with two active routes; a corpus with none records
 ``served_request.active_pair_found = False`` and names the gap instead of a
-served claim.
+served claim.  The fixture corpus carries such a pair (two effective S-3
+shelves for issuer one), and the same body is also posted at exactly the
+bound, where the joint solve must still run.
 """
 from __future__ import annotations
 
@@ -67,7 +69,7 @@ import sys
 import tempfile
 import threading
 import time
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Iterator, NamedTuple
 
@@ -80,6 +82,7 @@ RECORD_SCHEMA: dict[str, type] = {
     "mode": str,
     "hardware": dict,
     "corpus": dict,
+    "evaluate_outcome": dict,
     "load": dict,
     "proposal_targets": dict,
     "source_age": dict,
@@ -285,6 +288,9 @@ class ServingWorld(NamedTuple):
     evaluate_path: str
     evaluate_body: dict[str, Any]
     bundle: dict[str, Any]
+    #: Served issuers whose capacity inputs leave no family unavailable (a real
+    #: corpus only; ``None`` for the fixture, which is evaluable by construction).
+    evaluable_issuer_count: int | None = None
 
     def new_client(self) -> Any:
         """One entitled TestClient; each reader thread builds its own."""
@@ -299,15 +305,55 @@ class ServingWorld(NamedTuple):
         return TestClient(application)
 
 
+def _active_pair_rows() -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    """Two effective S-3 shelves for issuer one, each S-3 -> EFFECT.
+
+    The state-API rows give issuer one only a withdrawn S-1 and an S-3 with no
+    EFFECT notice, so no served issuer has two active routes and the served
+    branch-bound probe cannot reach the joint solve.  These two registration
+    paths are built with the registration suite's own event and edge helpers;
+    both resolve to conditional shelf-takedown routes.
+    """
+    from tests.test_capital_structure_registration_lifecycle import (  # noqa: PLC0415
+        _edge,
+        _event,
+    )
+
+    events: list[dict[str, Any]] = []
+    edges: list[dict[str, Any]] = []
+    for suffix, file_number in ((81, "333-501"), (91, "333-502")):
+        shelf = _event(
+            suffix,
+            "S-3",
+            accepted_at="2026-07-01T10:00:00Z",
+            seen_at="2026-07-01T18:00:00Z",
+            file_number=file_number,
+        )
+        effect = _event(
+            suffix + 1,
+            "EFFECT",
+            accepted_at="2026-07-10T10:00:00Z",
+            seen_at="2026-07-10T18:00:00Z",
+            file_number=file_number,
+        )
+        events += [shelf, effect]
+        edges.append(_edge(effect, shelf, "effectuates"))
+    return events, edges
+
+
 def _fixture_corpus(work: Path) -> dict[str, Any]:
     """Build the U1a fixture generation, projection, state bundle and inputs.
 
     Built through the state-API suite's own fixture helpers, imported by name
-    (never copied): the same event rows, the same builders, the same stamps.
+    (never copied): the same event rows, the same builders, the same stamps,
+    plus the two effective shelves of ``_active_pair_rows``.
     """
     import tests.test_capital_structure_state_api as state_suite  # noqa: PLC0415
 
     events, edges = state_suite._fixture_rows()
+    pair_events, pair_edges = _active_pair_rows()
+    events += pair_events
+    edges += pair_edges
     telemetry = state_suite._telemetry(events, edges)
     telemetry["counts"] = {
         "event_versions": len(events),
@@ -383,12 +429,37 @@ def _fixture_corpus(work: Path) -> dict[str, Any]:
     }
 
 
-def _real_corpus(work: Path, data_root: Path) -> dict[str, Any]:
-    """Build the state bundle over a COPY of a committed data root.
+def _evaluable_issuers(inputs_doc: dict[str, Any], issuer_rows: list[str]) -> list[str]:
+    """Served issuers whose capacity inputs leave no family unavailable.
 
-    The existing nightly builder does the whole job over the copy; the
-    repository's data tree is never written.
+    ``assemble_scenario_inputs`` refuses an issuer when any of its own families
+    or the bundle-level ``rules`` entry is unavailable, so both gate here.
     """
+    if (inputs_doc.get("rules") or {}).get("support") == "unavailable":
+        return []
+    inputs_issuers = inputs_doc.get("issuers") or {}
+    return [
+        issuer_id
+        for issuer_id in issuer_rows
+        if issuer_id in inputs_issuers
+        and all(
+            (family or {}).get("support") != "unavailable"
+            for family in inputs_issuers[issuer_id].values()
+        )
+    ]
+
+
+def _real_corpus(work: Path, data_root: Path) -> dict[str, Any]:
+    """Build the state bundle and its capacity inputs over a COPY of a data root.
+
+    The existing nightly builders do the whole job over the copy, in the
+    nightly order (state, then the inputs that bind it); the repository's data
+    tree is never written.  A copied inputs file binds the copied generation,
+    not the rebuilt one, so without the rebuild every evaluate request would
+    measure only the ``_INPUTS_NOT_BOUND`` refusal (V0).  A refused inputs
+    build stops the bench rather than silently measuring that refusal.
+    """
+    import scripts.build_capital_structure_capacity_inputs as inputs_builder  # noqa: PLC0415
     import scripts.build_capital_structure_state as state_builder  # noqa: PLC0415
     from engine.capital_structure.verified_projection_generation import (  # noqa: PLC0415
         read_verified_projection_generation,
@@ -397,6 +468,10 @@ def _real_corpus(work: Path, data_root: Path) -> dict[str, Any]:
     copy = work / "data-root-copy"
     shutil.copytree(data_root, copy)
     state_builder.build_from_disk(root=copy)
+    try:
+        inputs_builder.build_from_disk(root=copy)
+    except Exception as exc:  # noqa: BLE001 — named, never a silent 503 corpus
+        raise RuntimeError(f"the copied data root publishes no bound capacity inputs: {exc}") from exc
     bundle = json.loads((copy / "state_bundle.json").read_text(encoding="utf-8"))
     issuer_rows = tuple(
         str(state["request"]["issuer_id"]) for state in bundle["issuers"]
@@ -417,12 +492,40 @@ def _real_corpus(work: Path, data_root: Path) -> dict[str, Any]:
         )
     import tests.test_capital_structure_state_api as state_suite  # noqa: PLC0415
 
+    # Evaluate the first served issuer whose inputs leave no family unavailable,
+    # so the bench times an evaluation once the corpus can answer one.  Until
+    # then the first served issuer is evaluated, and the outcome probe records
+    # the typed refusal it answers (never a timed evaluation).
+    evaluable = _evaluable_issuers(
+        json.loads((copy / "capacity_inputs.json").read_text(encoding="utf-8")), issuer_rows
+    )
+    evaluate_issuer = evaluable[0] if evaluable else issuer_rows[0]
+    evaluate_state = next(
+        state for state in bundle["issuers"] if str(state["request"]["issuer_id"]) == evaluate_issuer
+    )
+
+    # The fixture scenario is dated for the fixture's cutoff; the route refuses
+    # any scenario whose as_of is not the served state's (422). Re-date it to the
+    # evaluated issuer's cutoff and keep the fixture's horizon length, so a real
+    # corpus measures the evaluation rather than that refusal.
+    cutoff = str(evaluate_state["request"]["as_of"])
+    start = datetime.fromisoformat(cutoff.replace("Z", "+00:00")).date()
+    fixture_days = (
+        datetime.fromisoformat(state_suite.HORIZON_END) - datetime.fromisoformat(state_suite.HORIZON_START)
+    ).days
+    scenario = state_suite._test_scenario(
+        as_of=cutoff,
+        horizon_start=start.isoformat(),
+        horizon_end=(start + timedelta(days=fixture_days)).isoformat(),
+    )
+
     return {
         "generation": None,
         "bundle": bundle,
         "issuer_ids": issuer_rows,
-        "issuer_id": issuer_rows[0],
-        "evaluate_body": state_suite._scenario_body(),
+        "issuer_id": evaluate_issuer,
+        "evaluable_issuer_count": len(evaluable),
+        "evaluate_body": state_suite._scenario_body(scenario),
         "event_count": event_count,
         "event_count_source": event_count_source,
         "state_path": copy / "state_bundle.json",
@@ -475,6 +578,7 @@ def serving_world(
         evaluate_path=f"{_PREFIX}/issuers/{built['issuer_id']}/scenarios/evaluate",
         evaluate_body=built["evaluate_body"],
         bundle=bundle,
+        evaluable_issuer_count=built.get("evaluable_issuer_count"),
     )
     try:
         yield world
@@ -594,6 +698,49 @@ def _request_route(world: ServingWorld, client: Any, route: str) -> Any:
     if route == "coverage":
         return client.get(f"{_PREFIX}/coverage")
     return client.post(world.evaluate_path, json=world.evaluate_body)
+
+
+#: The one refusal a corpus may legitimately answer evaluate with: the issuer's
+#: capacity inputs leave a required family unavailable.
+_TYPED_INPUTS_REFUSAL = "scenario_inputs_unavailable"
+
+
+def _evaluate_outcome(world: ServingWorld) -> dict[str, Any]:
+    """What the measured evaluate request answers, asked once before any wave.
+
+    A 200 evaluation and the typed ``scenario_inputs_unavailable`` refusal are
+    product answers, and the record names which one the waves timed.  Any other
+    answer (the 422 scenario-date refusal, the 503 unbound-inputs refusal, any
+    other conflict) means the bench asked the wrong question: it stops rather
+    than timing that refusal (V0).  The cold wave resets the caches after this.
+    """
+    with world.new_client() as client:
+        response = _request_route(world, client, "evaluate")
+    status = int(response.status_code)
+    try:
+        body = response.json()
+    except ValueError:
+        body = None
+    detail = body.get("detail") if isinstance(body, dict) else None
+    outcome: dict[str, Any] = {
+        "issuer_id": world.issuer_id,
+        "status": status,
+        "evaluable_issuer_count": world.evaluable_issuer_count,
+    }
+    if status == 200:
+        return {**outcome, "answer": "evaluated", "refusal_code": None, "components": {}}
+    if status == 409 and isinstance(detail, dict) and detail.get("code") == _TYPED_INPUTS_REFUSAL:
+        return {
+            **outcome,
+            "answer": "typed_refusal",
+            "refusal_code": _TYPED_INPUTS_REFUSAL,
+            "components": detail.get("components") or {},
+        }
+    raise RuntimeError(
+        f"the bench's evaluate request was refused with {status}: "
+        f"{json.dumps(detail, sort_keys=True, default=str)[:400]}; "
+        "fix the bench request rather than timing a refusal"
+    )
 
 
 def _run_wave(
@@ -824,6 +971,11 @@ def _strip_identity(node: Any) -> Any:
 #: the served blocker must carry the kernel's refusal text verbatim.
 _PROBE_BRANCH_LIMIT = 1
 
+#: The ``MAX_BRANCHES`` of the at-bound request: exactly the two branches of
+#: the probed pair.  ``solve_joint`` refuses only past the limit, so at it the
+#: joint solve must still run and the served body must carry no refusal.
+_AT_BOUND_BRANCH_LIMIT = 2
+
 
 def _branch_bound_probe(world: ServingWorld) -> dict[str, Any]:
     """One served evaluate request over the declared branch bound.
@@ -834,13 +986,17 @@ def _branch_bound_probe(world: ServingWorld) -> dict[str, Any]:
     recorded.  The served request needs an issuer with two ACTIVE routes, since
     the envelope drops inactive members of a declared group before the solve;
     the first such served issuer is used, and a corpus with none records that
-    gap instead of a served claim.  The SAME body is posted twice — once under
-    the declared bound, once over it — so the two served answers differ by
-    nothing but the bound.  The kernel's own refusal shape (``solve_joint``,
+    gap instead of a served claim.  The SAME body is posted three times — under
+    the declared bound, at exactly its branch count, and one past it — so the
+    served answers differ by nothing but the bound, and the boundary sits
+    between the last two.  The kernel's own refusal shape (``solve_joint``,
     lines 302-309) is recorded beside what the served body actually carried.
     """
     from engine.capital_structure import capacity_joint  # noqa: PLC0415
-    from engine.capital_structure.capacity import ACTIVE_ROUTE_STATUSES  # noqa: PLC0415
+    from engine.capital_structure.capacity import (  # noqa: PLC0415
+        ACTIVE_ROUTE_STATUSES,
+        JOINT_SOLVE_REFUSED_PREFIX,
+    )
 
     probe: dict[str, Any] = {
         "declared_limit": capacity_joint.MAX_BRANCHES,
@@ -928,6 +1084,16 @@ def _branch_bound_probe(world: ServingWorld) -> dict[str, Any]:
             under_bound_body = under_bound.json()
         except ValueError:
             under_bound_body = None
+        capacity_joint.MAX_BRANCHES = _AT_BOUND_BRANCH_LIMIT
+        try:
+            at_bound = client.post(evaluate_path, json=probe_body)
+        finally:
+            capacity_joint.MAX_BRANCHES = real
+        at_bound_status = int(at_bound.status_code)
+        try:
+            at_bound_body = at_bound.json()
+        except ValueError:
+            at_bound_body = None
         capacity_joint.MAX_BRANCHES = _PROBE_BRANCH_LIMIT
         probe["monkeypatched_limit"] = _PROBE_BRANCH_LIMIT
         try:
@@ -939,29 +1105,29 @@ def _branch_bound_probe(world: ServingWorld) -> dict[str, Any]:
             over_bound_body = over_bound.json()
         except ValueError:
             over_bound_body = None
-        over_text = (
-            json.dumps(over_bound_body, sort_keys=True, separators=(",", ":"))
-            if over_bound_body is not None
-            else ""
-        )
+        over_text = _body_text(over_bound_body)
         probe["served_request"] = {
             "active_pair_found": True,
             "issuers_scanned": scanned,
             "evaluate_path": evaluate_path,
             "exclusive_group": list(active_ids[:2]),
+            "at_bound_limit": _AT_BOUND_BRANCH_LIMIT,
             "plain_status": plain_status,
             "under_bound_status": under_bound_status,
+            "at_bound_status": at_bound_status,
             "over_bound_status": over_bound_status,
+            "under_bound_aggregate_status": _aggregate_status(under_bound_body),
+            "at_bound_aggregate_status": _aggregate_status(at_bound_body),
+            "under_bound_body_names_a_refusal": (
+                JOINT_SOLVE_REFUSED_PREFIX in _body_text(under_bound_body)
+            ),
+            "at_bound_body_names_a_refusal": (
+                JOINT_SOLVE_REFUSED_PREFIX in _body_text(at_bound_body)
+            ),
             "served_view_generation_id": ((over_bound_body or {}).get("view") or {}).get(
                 "generation_id"
             ),
-            "served_aggregate_status": (
-                (over_bound_body or {})
-                .get("result", {})
-                .get("capacity_envelope", {})
-                .get("aggregate_bound", {})
-                .get("status")
-            ),
+            "served_aggregate_status": _aggregate_status(over_bound_body),
             "served_joint_check_status": (over_bound_body or {}).get("result", {}).get(
                 "joint_check", {}
             ).get("status"),
@@ -969,6 +1135,10 @@ def _branch_bound_probe(world: ServingWorld) -> dict[str, Any]:
             "over_bound_canonical_sha256": _canonical_digest(over_bound_body),
             "over_bound_equals_under_bound_after_identity_strip": (
                 _strip_identity(under_bound_body) == _strip_identity(over_bound_body)
+            ),
+            "at_bound_equals_under_bound_after_identity_strip": (
+                under_bound_body is not None
+                and _strip_identity(under_bound_body) == _strip_identity(at_bound_body)
             ),
             "served_body_names_the_refusal": (
                 any(blocker in over_text for blocker in kernel_blockers)
@@ -980,12 +1150,30 @@ def _branch_bound_probe(world: ServingWorld) -> dict[str, Any]:
     return probe
 
 
+def _body_text(body: Any) -> str:
+    """A served body as canonical JSON text; empty when the body was not JSON."""
+    if body is None:
+        return ""
+    return json.dumps(body, sort_keys=True, separators=(",", ":"))
+
+
+def _aggregate_status(body: Any) -> Any:
+    """The served capacity envelope's aggregate-bound status, or None."""
+    return (
+        (body or {})
+        .get("result", {})
+        .get("capacity_envelope", {})
+        .get("aggregate_bound", {})
+        .get("status")
+    )
+
+
 def _probe_note() -> str:
     """The one sentence every branch-bound probe record carries."""
     return (
         f"MAX_BRANCHES was monkeypatched to {_PROBE_BRANCH_LIMIT} for the kernel probe "
-        "and the one over-bound request only; "
-        "the production constant 4096 is never edited"
+        f"and the one over-bound request, and to {_AT_BOUND_BRANCH_LIMIT} for the one "
+        "at-bound request, only; the production constant 4096 is never edited"
     )
 
 
@@ -1028,6 +1216,7 @@ def run_bench(
                     "python_version": platform.python_version(),
                 }
                 record["corpus"] = _corpus_statement(world)
+                record["evaluate_outcome"] = _evaluate_outcome(world)
                 cold = _run_wave(world, readers, requests_per_reader, cold=True)
                 warm = _run_wave(world, readers, requests_per_reader, cold=False)
                 for route, block in warm["routes"].items():
