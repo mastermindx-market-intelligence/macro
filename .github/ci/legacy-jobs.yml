@@ -20497,6 +20497,7 @@ jobs:
       - engine/research_codegen/evaluation.py
       - engine/research_codegen/input_contract.py
       - engine/research_codegen/output_contract.py
+      - engine/research_codegen/prospective_contract.py
       - engine/theme_graph/capability.py
       - engine/theme_graph/change_report.py
       - engine/theme_graph/hierarchy_breadth_display.py
@@ -24456,6 +24457,7 @@ jobs:
       - "engine/research_codegen/evaluation.py"
       - "engine/research_codegen/input_contract.py"
       - "engine/research_codegen/output_contract.py"
+      - "engine/research_codegen/prospective_contract.py"
       - "engine/theme_graph/theme_state_owner_readers.py"
       - "research/signal_engine/confluence.py"
       - "scripts/oracle_reversion_screen.py"
@@ -28102,6 +28104,7 @@ jobs:
       - "engine/research_codegen/evaluation.py"
       - "engine/research_codegen/input_contract.py"
       - "engine/research_codegen/output_contract.py"
+      - "engine/research_codegen/prospective_contract.py"
       - "research/signal_engine/confluence.py"
       - "scripts/oracle_reversion_screen.py"
       - "scripts/oracle_screen.py"
@@ -35887,6 +35890,7 @@ jobs:
       - "engine/research_codegen/evaluation.py"
       - "engine/research_codegen/input_contract.py"
       - "engine/research_codegen/output_contract.py"
+      - "engine/research_codegen/prospective_contract.py"
       - "engine/intl_performance_charts.py"
       - "lib/intl_chart_geometry.py"
       - "lib/intl_chart_mount.py"
@@ -36721,6 +36725,7 @@ jobs:
       - "scripts/check_site_asset_refs.py"
       - "scripts/check_stretch_oracle_contract.py"
       - "scripts/check_vps_live_health.py"
+      - "scripts/ci/push_retry.sh"
       - "scripts/ci/daily_engine_commit_outputs.sh"
       - "scripts/ci/daily_engine_leader_checkpoint.sh"
       - "scripts/close_pass_publish.py"
@@ -37382,6 +37387,7 @@ jobs:
       - "engine/research_codegen/evaluation.py"
       - "engine/research_codegen/input_contract.py"
       - "engine/research_codegen/output_contract.py"
+      - "engine/research_codegen/prospective_contract.py"
       - "research/signal_engine/confluence.py"
       - "scripts/oracle_reversion_screen.py"
       - "scripts/oracle_screen.py"
@@ -47547,6 +47553,7 @@ jobs:
       - engine/research_codegen/evaluation.py
       - engine/research_codegen/input_contract.py
       - engine/research_codegen/output_contract.py
+      - engine/research_codegen/prospective_contract.py
       # Connected Research Factory import closure (PR9463).
       - research/signal_engine/confluence.py
       - scripts/oracle_reversion_screen.py
@@ -47851,6 +47858,7 @@ jobs:
       - engine/research_codegen/evaluation.py
       - engine/research_codegen/input_contract.py
       - engine/research_codegen/output_contract.py
+      - engine/research_codegen/prospective_contract.py
       - research/signal_engine/confluence.py
       - scripts/oracle_reversion_screen.py
       - scripts/oracle_screen.py
@@ -48212,8 +48220,11 @@ jobs:
       - .github/workflows/daily.yml
       - .github/workflows/weekly.yml
       - engine/recurring_briefs.py
+      - engine/brief_delivery_receipts.py
       - scripts/build_recurring_briefs.py
       - tests/test_recurring_briefs.py
+      - tests/test_brief_delivery_receipts.py
+      - tests/test_recurring_brief_observation_join.py
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -48224,7 +48235,7 @@ jobs:
       - name: install recurring-briefs test dependencies
         run: pip install pytest
       - name: recurring briefs producer — slot, body, classify, idempotency (F11 B-F11-7b)
-        run: python -m pytest tests/test_recurring_briefs.py -q
+        run: python -m pytest tests/test_recurring_briefs.py tests/test_brief_delivery_receipts.py tests/test_recurring_brief_observation_join.py -q
 
   skew-accrual-lane:
     # 2026-09-22 Meta-CEO A packet A-F03-W2-2 — store-host skew-accrual lane.
@@ -52416,6 +52427,7 @@ jobs:
       - "engine/research_codegen/evaluation.py"
       - "engine/research_codegen/input_contract.py"
       - "engine/research_codegen/output_contract.py"
+      - "engine/research_codegen/prospective_contract.py"
       - "engine/research_intelligence/__init__.py"
       - "engine/research_intelligence/extractor.py"
       - "engine/research_intelligence/schema.py"
@@ -52870,3 +52882,41 @@ jobs:
         run: pip install pytest numpy scipy
       - name: conditional scenario and hedge-target contract regressions
         run: python -m pytest tests/test_options_scenario_surface.py -q
+  institutional-13f-ingestion-contracts:
+    # 13F census ingestion: the SEC source parser and the bounded rolling ingest.
+    # Both suites were grandfathered dark in config/unrun_test_baseline.json while
+    # they held the only proof that a Latest Filings <updated> clock disagreeing
+    # with the filing's own <ACCEPTANCE-DATETIME> is refused, never published.
+    # scope: exclusive — paths: is the measured import/read closure
+    # (run_ci_pack.inferred_as_if_not_exclusive) plus the ancestor package inits.
+    if: ${{ false }}  # executed inside ci-pack — NOT a disabled gate; see the ci-pack job.
+    gate: code
+    scope: exclusive
+    paths:
+      - config/institutional_13f.yml
+      - engine/__init__.py
+      - engine/institutional_census/__init__.py
+      - engine/institutional_census/catalog.py
+      - engine/institutional_census/models.py
+      - engine/institutional_census/rolling.py
+      - engine/institutional_census/sec_sources.py
+      - engine/institutional_census/storage.py
+      - engine/research_vault/__init__.py
+      - engine/research_vault/r2_store.py
+      - scripts/__init__.py
+      - scripts/run_institutional_13f_rolling.py
+      - tests/__init__.py
+      - tests/fixtures/institutional_13f/**
+      - tests/test_institutional_13f_rolling.py
+      - tests/test_institutional_13f_sec_sources.py
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml requests
+      - name: 13F SEC source parsing and rolling ingestion contracts
+        run: python -m pytest tests/test_institutional_13f_sec_sources.py tests/test_institutional_13f_rolling.py -q
