@@ -519,3 +519,86 @@ def test_attempt_retention_rejects_arbitrary_transport_values(transaction):
     r['public_delivery']['transport']['boto3']='private arbitrary error text'
     t.receipt.write_text(json.dumps(r))
     assert durable.metadata(t.receipt)=={'schema':'intl.durable_attempt_summary.v1','state':'unavailable'}
+
+
+def _actual_durable_workflow_argv(tmp_path, monkeypatch):
+    """Run the manual pick prefix and pass its real output into the real CLI."""
+    import re
+    import shlex
+    import yaml
+
+    workflow = yaml.safe_load(
+        (Path(__file__).resolve().parents[1] / ".github/workflows/render.yml").read_text()
+    )
+    steps = workflow["jobs"]["render"]["steps"]
+    pick = next(step["run"] for step in steps if step.get("id") == "pick")
+    marker = 'if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then'
+    end = pick.index("\nfi", pick.index(marker)) + len("\nfi")
+    prefix = pick[:end].replace("${{ github.event_name }}", "workflow_dispatch")
+    prefix = prefix.replace("${{ github.event.inputs.scope }}", "intl")
+    output = tmp_path / "workflow-output"
+    root = Path(durable.__file__).resolve().parents[1]
+    result = subprocess.run(
+        ["bash", "-c", prefix], cwd=root,
+        env={**os.environ, "GITHUB_OUTPUT": str(output)},
+        capture_output=True, text=True, timeout=15,
+    )
+    assert result.returncode == 0, result.stderr
+    values = dict(line.split("=", 1) for line in output.read_text().splitlines())
+    source = git(root, "rev-parse", "HEAD")
+    assert values["scope"] == "intl"
+    assert values["rendered_from"] == source[:12]  # historical display/watermark contract
+    build = next(step["run"] for step in steps
+                 if "python -m scripts.render_intl_durable build" in step.get("run", ""))
+    command = re.search(
+        r"python -m scripts\.render_intl_durable build\s+(.*?)\s*\|\| exit 1",
+        build, re.S,
+    ).group(0).split("||", 1)[0].replace("\\\n", " ")
+    command = re.sub(
+        r"\$\{\{ steps\.pick\.outputs\.([a-z_]+) \}\}",
+        lambda match: values[match.group(1)], command,
+    )
+    command = command.replace("$RUNNER_TEMP", str(tmp_path))
+    argv = shlex.split(command)
+    assert argv[:4] == ["python", "-m", "scripts.render_intl_durable", "build"]
+    monkeypatch.setenv("GITHUB_EVENT_NAME", "workflow_dispatch")
+    monkeypatch.setenv("GITHUB_RUN_ATTEMPT", "1")
+    monkeypatch.setenv("INTL_DURABLE_MODE", "true")
+    monkeypatch.setenv("INTL_RENDER_SCOPE", "intl")
+    monkeypatch.setenv("RENDER_NO_DRIP", "1")
+    monkeypatch.delenv("COLLECT_LANE", raising=False)
+    monkeypatch.delenv("US_LANE", raising=False)
+    return argv[3:], source
+
+
+def test_workflow_durable_cli_uses_full_checkout_identity(tmp_path, monkeypatch):
+    argv, source = _actual_durable_workflow_argv(tmp_path, monkeypatch)
+    observed = []
+
+    class SourceFenceReached(Exception):
+        pass
+
+    def stop_before_input_or_publisher_effect(root, receipt, ref):
+        observed.append(ref)
+        raise SourceFenceReached
+
+    monkeypatch.setattr(durable, "_check_source", stop_before_input_or_publisher_effect)
+    monkeypatch.setattr(sys, "argv", ["render_intl_durable", *argv])
+    with pytest.raises(SourceFenceReached):
+        durable.main()  # real argparse + build source equality, stopped before any input/publication
+    assert observed == [source]
+    assert argv[argv.index("--expected-source") + 1] == source
+    assert not (tmp_path / "intl-durable.json").exists()
+
+
+@pytest.mark.parametrize("changed_source", ["short", "different_full"])
+def test_workflow_durable_cli_rejects_source_drift(tmp_path, monkeypatch, changed_source):
+    argv, source = _actual_durable_workflow_argv(tmp_path, monkeypatch)
+    argv[argv.index("--expected-source") + 1] = (
+        source[:12] if changed_source == "short" else ("0" if source[0] != "0" else "1") + source[1:]
+    )
+    monkeypatch.setattr(durable, "_check_source", lambda *args: pytest.fail("source drift reached producer"))
+    monkeypatch.setattr(sys, "argv", ["render_intl_durable", *argv])
+    with pytest.raises(durable.DurablePublicationError, match="render source changed before build"):
+        durable.main()
+    assert not (tmp_path / "intl-durable.json").exists()

@@ -539,7 +539,9 @@ jobs:
         # to scope=all, so this step can only ever OVER-render.
         run: |
           set +e
-          FROM_SHA=$(git rev-parse HEAD 2>/dev/null | cut -c1-12)
+          RENDER_SOURCE_SHA=$(git rev-parse HEAD) || exit 1
+          FROM_SHA=$(printf '%s' "$RENDER_SOURCE_SHA" | cut -c1-12)
+          echo "render_source_sha=$RENDER_SOURCE_SHA" >> "$GITHUB_OUTPUT"
           echo "rendered_from=$FROM_SHA" >> "$GITHUB_OUTPUT"
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             echo "scope=${{ github.event.inputs.scope }}" >> "$GITHUB_OUTPUT"; exit 0
@@ -884,7 +886,7 @@ jobs:
             [ -n "$INTL_DONE" ] && return 0; INTL_DONE=1
             if [ "$INTL_DURABLE_MODE" = true ]; then
               python -m scripts.render_intl_durable build \
-                --expected-source "${{ steps.pick.outputs.rendered_from }}" \
+                --expected-source "${{ steps.pick.outputs.render_source_sha }}" \
                 --receipt "$RUNNER_TEMP/intl-durable.json" || exit 1
             else
               run_py "international macro dashboard (build_intl)" scripts.build_intl
