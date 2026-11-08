@@ -20,7 +20,7 @@
 {%- if v is string and v|trim -%}{{ t(names[v][0],names[v][1]) if v in names else t('Unmapped status','状态未映射') }}
 {%- else -%}{{ value(none) }}{%- endif -%}
 {%- endmacro %}
-{% macro body(row, kind, as_of=none, plan_rel={'state': 'none', 'plans': []}) -%}
+{% macro body(row, kind, as_of=none, plan_rel={'state': 'none', 'plans': []}, why_copy=none) -%}
 {% set es = row.get('entry_signal') if kind == 'board' and row.get('entry_signal') is mapping else {} %}
 {% set sig = row.get('signal') if kind == 'board' and row.get('signal') is mapping else {} %}
 {% set hold = row.get('hold') if kind == 'board' and row.get('hold') is mapping else {} %}
@@ -53,7 +53,18 @@
     </div>
     <div>
       <section class="pvs-section"><h3>{{ t('Why it is here','入选理由') }}</h3>
+        {#- A candidate row's headline_reason is an engine decision code. When the
+            pool's shared plain-language copy for that code is supplied, the detail
+            shows the SAME words the row shows (never the raw code); the code itself
+            stays machine-readable in data-reason ('unknown' mirrors the row's own
+          fallback for a missing code). Without supplied copy the R22 rule
+            holds: the untranslated original is labelled, never promoted or invented. -#}
+        {%- set _why_known = kind != 'board' and why_copy is sequence and why_copy is not string and why_copy|length >= 2 and why_copy[0] is string and why_copy[1] is string %}
+        {%- if _why_known %}
+        <p data-reason="{{ (row.get('headline_reason') or 'unknown')|e }}">{{ t(why_copy[0], why_copy[1]) }}</p>
+        {%- else %}
         <p>{{ original(sig.get('reason') if kind == 'board' else row.get('headline_reason')) }}</p>
+        {%- endif %}
       </section>
       {% if kind == 'board' %}
       <section class="pvs-section"><h3>{{ t('Technical context','技术背景') }}</h3><dl class="pvs-facts">

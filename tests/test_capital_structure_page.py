@@ -326,6 +326,62 @@ def test_full_site_builder_has_a_canonical_desk_render_hook() -> None:
     assert "_cs_page = _render_capital_structure(config.ROOT)" in source
 
 
+def _capital_structure_hook():
+    """The full-site builder's capital_structure try block, compiled on its own."""
+    import ast
+
+    source = (ROOT / "scripts" / "build_site.py").read_text(encoding="utf-8")
+    hook = next(
+        node for node in ast.walk(ast.parse(source))
+        if isinstance(node, ast.Try) and any(
+            isinstance(stmt, ast.ImportFrom)
+            and stmt.module == "scripts.build_capital_structure_page"
+            for stmt in node.body
+        )
+    )
+    return compile(ast.Module(body=[hook], type_ignores=[]), "build_site.py", "exec")
+
+
+def _run_hook(tmp_path, monkeypatch, render_fn) -> Path:
+    import logging
+    import os
+    import types
+
+    monkeypatch.setattr("scripts.build_capital_structure_page.render", render_fn)
+    summary = tmp_path / "step_summary.md"
+    monkeypatch.setenv("GITHUB_STEP_SUMMARY", str(summary))
+    exec(_capital_structure_hook(), {  # noqa: S102 — the hook's own source, nothing else
+        "config": types.SimpleNamespace(ROOT=tmp_path),
+        "log": logging.getLogger("build_site.capital_structure_hook"),
+        "os": os,
+    })
+    return summary
+
+
+def test_full_site_builder_annotates_a_withheld_desk(tmp_path, monkeypatch, capsys) -> None:
+    """A withheld page is an ::error line and a step-summary entry, not a log WARNING.
+
+    A WARNING never reaches the run's annotations, so the page sat stale behind
+    a green run from 2026-10-24. The build itself still continues.
+    """
+    def over_budget(root):
+        raise RuntimeError("policy-projection section over budget: 8218 > 8192")
+
+    summary = _run_hook(tmp_path, monkeypatch, over_budget)
+    lines = capsys.readouterr().out.splitlines()
+    errors = [line for line in lines if line.startswith("::error title=capital_structure::")]
+    assert len(errors) == 1, lines
+    assert "NOT rebuilt" in errors[0]
+    assert "RuntimeError: policy-projection section over budget: 8218 > 8192" in errors[0]
+    assert "8218 > 8192" in summary.read_text(encoding="utf-8")
+
+
+def test_full_site_builder_hook_is_quiet_when_the_desk_renders(tmp_path, monkeypatch, capsys) -> None:
+    summary = _run_hook(tmp_path, monkeypatch, lambda root: root / "site" / "capital_structure.html")
+    assert "::error" not in capsys.readouterr().out
+    assert not summary.exists()
+
+
 def test_research_navigation_exposes_the_premium_desk() -> None:
     nav = (TEMPLATES / "_navlinks.html.j2").read_text(encoding="utf-8")
     assert 'href="{{ NP }}capital_structure.html"' in nav

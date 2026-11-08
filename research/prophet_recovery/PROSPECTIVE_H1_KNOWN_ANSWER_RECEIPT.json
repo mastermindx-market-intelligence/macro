@@ -1,0 +1,103 @@
+{
+  "checks": [
+    {
+      "got": "True",
+      "name": "outcome-redacted accepted metadata",
+      "pass": true,
+      "want": "True"
+    },
+    {
+      "got": "True",
+      "name": "outcome field rejected",
+      "pass": true,
+      "want": "True"
+    },
+    {
+      "got": "1",
+      "name": "identical duplicate collapses",
+      "pass": true,
+      "want": "1"
+    },
+    {
+      "got": "True",
+      "name": "conflicting original key fails",
+      "pass": true,
+      "want": "True"
+    },
+    {
+      "got": "'C1_C2_PEER'",
+      "name": "q1 row uses peer arm",
+      "pass": true,
+      "want": "'C1_C2_PEER'"
+    },
+    {
+      "got": "'C0_FALLBACK'",
+      "name": "ambiguous group uses common fallback",
+      "pass": true,
+      "want": "'C0_FALLBACK'"
+    },
+    {
+      "got": "'C0_FALLBACK'",
+      "name": "focal issuer leak uses common fallback",
+      "pass": true,
+      "want": "'C0_FALLBACK'"
+    },
+    {
+      "got": "'C0_FALLBACK'",
+      "name": "missing prior peer window uses common fallback",
+      "pass": true,
+      "want": "'C0_FALLBACK'"
+    },
+    {
+      "got": "'SOURCE_READY_FOR_REGISTERED_BATCH'",
+      "name": "fully represented source is ready",
+      "pass": true,
+      "want": "'SOURCE_READY_FOR_REGISTERED_BATCH'"
+    },
+    {
+      "got": "'IDENTITY_UNRESOLVED'",
+      "name": "identity missing typed refusal",
+      "pass": true,
+      "want": "'IDENTITY_UNRESOLVED'"
+    },
+    {
+      "got": "'PRICE_EVIDENCE_UNAVAILABLE'",
+      "name": "price receipt missing typed refusal",
+      "pass": true,
+      "want": "'PRICE_EVIDENCE_UNAVAILABLE'"
+    },
+    {
+      "got": "'RIGHTS_UNVERIFIED'",
+      "name": "rights missing typed refusal",
+      "pass": true,
+      "want": "'RIGHTS_UNVERIFIED'"
+    },
+    {
+      "got": "'LABEL_USABLE_TIME_UNVERIFIED'",
+      "name": "feature/label clocks cannot collapse",
+      "pass": true,
+      "want": "'LABEL_USABLE_TIME_UNVERIFIED'"
+    },
+    {
+      "got": "0.5",
+      "name": "original denominator retained",
+      "pass": true,
+      "want": "0.5"
+    },
+    {
+      "got": "1.0",
+      "name": "q1 denominator is within base only",
+      "pass": true,
+      "want": "1.0"
+    }
+  ],
+  "failed": 0,
+  "kind": "OUTCOME_REDACTED_SYNTHETIC_SMOKE",
+  "market_data_read": false,
+  "model_fit_executed": false,
+  "passed": 15,
+  "protected_outcomes_read": false,
+  "ranking_changed": false,
+  "schema": "mastermind.prophet.h1.prospective_known_answer.v1",
+  "trading_authority": false
+}

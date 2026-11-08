@@ -162,9 +162,14 @@ def test_s5_noindex(live, held):
         assert '<meta name="robots" content="noindex">' in html
 
 
-def test_s5_deck_none_branch(live, held):
-    for model, site in (live, held):
-        assert model["deck"] is None
+def test_s5_deck_none_branch(live, held, tmp_path):
+    for name, (model, _) in (("live", live), ("held", held)):
+        site = tmp_path / name
+        # S5's no-deck branch, rendered without edges: the S3 present branch reads
+        # its sentences from the deck (as the edges variant's own fixture deck does),
+        # and the live model now carries the committed envelope's edges.
+        render_site(dict(model, deck=None, edges=[], edges_state="empty",
+                         edge_package=None, party_names={}), site)
         html = (site / "gmi-states.html").read_text(encoding="utf-8")
         assert "Condition as stated in the filing" in html
         assert "the filing says:" not in html  # G-UI-14: lead-in foot omitted without a deck
@@ -176,6 +181,84 @@ def test_s5_deck_present_branch(edges):
     html = (site / "gmi-states.html").read_text(encoding="utf-8")
     assert "If Apple reduces or stops its purchases" in html
     assert "the filing says:" in html
+
+
+# ------------------------------------------------ S3 envelope receipt (DEC:GMI-RELATIONSHIP-ENVELOPE-CONTRACT)
+RECEIPT_EN = ("Proposed — read from filings, not reviewed yet",
+              "Display only — never a rank, size or gate input")
+RECEIPT_ZH = ("拟议 · 来自披露文件，尚未审核", "仅供展示 — 绝不作为排序、仓位或准入依据")
+
+
+def _receipts(main: str) -> list[str]:
+    """The page-level envelope receipt rows (the gmi-ident row naming the package)."""
+    rows = re.findall(r'<div class="gmi-ident">.*?</div>', main, re.S)
+    return [r for r in rows if "数据包" in r]
+
+
+@pytest.mark.parametrize("fixture_name", ["live", "edges"])
+def test_s3_envelope_receipt(request, fixture_name):
+    model, site = request.getfixturevalue(fixture_name)
+    package = model["edge_package"]
+    assert model["edges_state"] == "present" and package is not None
+    assert not any(package["authority"].values())
+    main = _main(site / "gmi-relationships.html")
+    receipts = _receipts(main)
+    assert len(receipts) == 1, "exactly one page-level envelope receipt"
+    receipt = receipts[0]
+    for words in RECEIPT_EN + RECEIPT_ZH:
+        assert words in receipt
+    assert package["package_id"][:12] in receipt
+    counts = package["counts"]
+    assert f"{counts['edges']:,} documented" in receipt
+    assert f"已记录 {counts['edges']:,} 条" in receipt
+    assert f"{counts['non_edges']:,} other mentions checked" in receipt
+    assert f"另核对 {counts['non_edges']:,} 处提及" in receipt
+    assert "As of " in receipt and "截至 " in receipt
+    assert " title=" not in receipt
+
+
+def test_s3_live_receipt_names_the_committed_package(live):
+    model, site = live
+    receipt = _receipts(_main(site / "gmi-relationships.html"))[0]
+    assert model["edge_package"]["package_id"].startswith("pkg:")
+    assert model["edge_package"]["counts"]["edges"] == len(model["edges"])
+    assert f"{len(model['edges']):,} documented" in receipt
+
+
+def test_s3_receipt_drops_the_display_only_claim_if_any_authority_is_true(live, tmp_path):
+    model, _ = live
+    package = dict(model["edge_package"], authority=dict(model["edge_package"]["authority"], rank=True))
+    render_site(dict(model, edge_package=package), tmp_path)
+    receipt = _receipts(_main(tmp_path / "gmi-relationships.html"))[0]
+    assert RECEIPT_EN[1] not in receipt and RECEIPT_ZH[1] not in receipt
+
+
+def test_s3_no_receipt_without_a_package(live, tmp_path):
+    model, _ = live
+    for name, variant in (("bare", dict(model, edge_package=None)),
+                          ("empty", dict(model, edges=[], edges_state="empty",
+                                         edge_package=None, party_names={}))):
+        site = tmp_path / name
+        render_site(variant, site)
+        assert _receipts(_main(site / "gmi-relationships.html")) == []
+
+
+def test_s3_coverage_panel_counts_the_searched_companies(live, edges):
+    model, site = live
+    searched = {c["issuer_id"] for c in model["edge_package"]["coverage"]
+                if c["state"] in ("assessed", "no_supported_result")}
+    main = _main(site / "gmi-relationships.html")
+    assert f"Filings from {len(searched):,} companies have been read so far." in main
+    assert f"目前已读取 {len(searched):,} 家公司的披露文件。" in main
+    assert "Filings from one company" not in main
+    # the one-company fixture package keeps the one-company sentence
+    assert "Filings from one company have been read so far." in _main(edges[1] / "gmi-relationships.html")
+
+
+def test_s3_hero_possessive(live, edges):
+    for _, site in (live, edges):
+        main = _main(site / "gmi-relationships.html")
+        assert not re.search(r"[^s]’ revenue came from", main), "possessive of a name not ending in s"
 
 
 # --------------------------------------------------------------- templates

@@ -168,17 +168,30 @@ def test_v0_branch_bound_returns_the_typed_refusal(record: dict[str, Any]) -> No
 
     # (b) The served evaluate request driven over that bound must carry the
     # same typed refusal, never a silent approximation (SPEC_V0 §1).  The
-    # probe can only drive it when some served issuer carries two active
-    # routes; otherwise the record names the gap and the engine-path test
-    # below carries the proof.
+    # fixture corpus carries two effective shelves for issuer one, so the
+    # probe must find an active pair and drive the served request; the gap
+    # branch is reserved for a real-data corpus without one.
     served = probe["served_request"]
+    assert served["active_pair_found"] is True, served
     assert served["issuers_scanned"] >= 1, served
-    if served["active_pair_found"] is False:
-        assert served["served_body_names_the_refusal"] is None, served
-        assert "test_v0_engine_path_carries_the_joint_refusal" in served["gap"], served
-        return
+    group = served["exclusive_group"]
+    assert len(group) == 2 and len(set(group)) == 2, served
+    assert all(route_id.startswith("shelf_takedown:") for route_id in group), served
+    assert served["plain_status"] == 200, served
+    assert served["under_bound_status"] == 200, served
+    assert served["at_bound_status"] == 200, served
     assert served["over_bound_status"] == 200, served
     assert served["served_view_generation_id"] == record["corpus"]["generation_id"]
+
+    # (c) The boundary: the solver refuses only PAST the limit, so the same
+    # body at exactly its branch count (2) serves the very answer the
+    # production bound serves, and neither names a refusal.  Past the limit
+    # the body differs from that answer outside the identity mints.
+    assert served["at_bound_limit"] == 2, served
+    assert served["under_bound_body_names_a_refusal"] is False, served
+    assert served["at_bound_body_names_a_refusal"] is False, served
+    assert served["at_bound_equals_under_bound_after_identity_strip"] is True, served
+    assert served["over_bound_equals_under_bound_after_identity_strip"] is False, served
     assert served["served_body_names_the_refusal"] is True, (
         "the served evaluate response over the exceeded branch bound carries no "
         "typed refusal: the answer is byte-identical to the under-bound answer "
@@ -237,6 +250,75 @@ def test_v0_bench_record_validates_against_schema(record: dict[str, Any]) -> Non
         for block in record["load"][cache_state]["routes"].values():
             for field in ("p50_us", "p95_us", "max_us"):
                 assert isinstance(block[field], int), (cache_state, field)
+
+
+# ---------------------------------------------------------------------------
+# The record names what evaluate answered; a refused bench request stops it
+# ---------------------------------------------------------------------------
+
+
+def test_v0_bench_records_what_evaluate_answered(record: dict[str, Any]) -> None:
+    outcome = record["evaluate_outcome"]
+    assert (outcome["status"], outcome["answer"], outcome["refusal_code"]) == (200, "evaluated", None)
+
+
+def test_v0_bench_counts_an_issuer_evaluable_only_when_rules_are_too() -> None:
+    supported = {"support": "supported"}
+    inputs_doc = {
+        "rules": {"support": "supported"},
+        "issuers": {
+            "A": {"instruments": supported, "share_basis": supported, "financials": supported, "commitments": supported},
+            "B": {"instruments": supported, "share_basis": {"support": "unavailable"}},
+        },
+    }
+    assert bench._evaluable_issuers(inputs_doc, ["B", "A", "C"]) == ["A"]
+
+    inputs_doc["rules"] = {"support": "unavailable", "reason_codes": ["rules_unavailable"]}
+    assert bench._evaluable_issuers(inputs_doc, ["B", "A", "C"]) == []
+
+
+class _Answer:
+    """A served answer the outcome probe classifies (status and JSON body only)."""
+
+    def __init__(self, status: int, body: Any) -> None:
+        self.status_code = status
+        self._body = body
+
+    def json(self) -> Any:
+        return self._body
+
+
+@pytest.fixture
+def fixture_world(tmp_path: Path):
+    with bench.serving_world(data_root=None, fixture=True, work=tmp_path) as world:
+        yield world
+
+
+def test_v0_bench_stops_rather_than_timing_a_misdated_request(fixture_world: bench.ServingWorld) -> None:
+    from datetime import datetime, timedelta  # noqa: PLC0415
+
+    cutoff = datetime.fromisoformat(str(fixture_world.evaluate_body["as_of"]).replace("Z", "+00:00"))
+    misdated = dict(fixture_world.evaluate_body, as_of=(cutoff - timedelta(days=1)).strftime("%Y-%m-%dT%H:%M:%SZ"))
+    with pytest.raises(RuntimeError, match="refused with 422.*scenario.as_of must equal the state cutoff"):
+        bench._evaluate_outcome(fixture_world._replace(evaluate_body=misdated))
+
+
+def test_v0_bench_names_the_typed_inputs_refusal(
+    fixture_world: bench.ServingWorld, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    components = {"financials": {"support": "unavailable", "reason_codes": ["financials_not_admitted"]}}
+    typed = {"detail": {"code": "scenario_inputs_unavailable", "components": components, "available": []}}
+    monkeypatch.setattr(bench, "_request_route", lambda world, client, route: _Answer(409, typed))
+    outcome = bench._evaluate_outcome(fixture_world)
+    assert (outcome["answer"], outcome["refusal_code"], outcome["components"]) == (
+        "typed_refusal",
+        "scenario_inputs_unavailable",
+        components,
+    )
+    for status, body in ((409, {"detail": "stale binding"}), (503, {"detail": "capacity inputs do not bind served state"})):
+        monkeypatch.setattr(bench, "_request_route", lambda world, client, route, s=status, b=body: _Answer(s, b))
+        with pytest.raises(RuntimeError, match=f"refused with {status}"):
+            bench._evaluate_outcome(fixture_world)
 
 
 # ---------------------------------------------------------------------------
