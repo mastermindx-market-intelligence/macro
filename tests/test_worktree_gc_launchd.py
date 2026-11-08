@@ -207,7 +207,7 @@ def test_policy_unreadable_from_main_refuses_and_never_starts_the_sweep(monkeypa
     def git(args, kw):
         if "show" in args:
             return CP(args, 128, b"", b"fatal: path does not exist in 'origin/main'")
-        return CP(args, 0, b".git\n", b"")
+        return _git_ok(args, kw)
 
     seen = _install(monkeypatch, tmp_path, git=git)
     assert wrapper.main() == 1
