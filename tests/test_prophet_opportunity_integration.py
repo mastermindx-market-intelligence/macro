@@ -207,3 +207,31 @@ def test_native_missing_change_is_explained_without_disconnect_or_invention():
     assert change.select_one(".l-zh").get_text() == "涨跌暂缺"
     assert "%" not in change.get_text()
     assert card.select_one(".nb-px + .nb-chg") is change
+
+
+def test_published_entry_copy_does_not_claim_current_confirmation_from_other_clocks():
+    """A source's present-tense headline is retained as a dated-source claim,
+    never renewed by the quote, signal session or board publication clock."""
+    for prefix in ("today", "screener", "today-paid", "screener-paid"):
+        source = _source(entry_signal={
+            "status": "buy_now", "headline": "Buy zone — entry open now",
+            "headline_zh": "买点区间 — 入场窗口开放",
+            "buy_zone": {"low": 40, "high": 44},
+        })
+        card = _render([source], prefix).select_one(".po-card")
+        assert card["data-stance"] == "buy"
+        observation = card.select_one(".po-obs")
+        assert "Buy zone — entry open now" in observation.get_text()
+        assert "Published entry assessment" in observation.get_text()
+        clock = observation.select_one("[data-assessment-asof]")
+        assert clock["data-assessment-asof"] == ""
+        assert "Current entry unverified" in clock.get_text()
+        assert "当前入场状态未复核" in clock.get_text()
+        assert "2026-09-" not in clock.get_text()
+        detail = card.select_one(".pv-setup-body")
+        assert detail.select_one(".pvs-read")["data-entry-status"] == "buy_now"
+        assert "Published entry assessment" in detail.get_text()
+        assert "Current entry unverified" in detail.select_one(".pvs-assessment-clock").get_text()
+        assert "2026-09-24" in card.select_one(".po-quote").get_text()
+        assert "2026-09-21" in card.select_one(".po-signal-date").get_text()
+        assert "2026-09-23" in card.select_one(".po-terms").get_text()

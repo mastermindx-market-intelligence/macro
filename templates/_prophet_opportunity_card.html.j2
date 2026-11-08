@@ -313,7 +313,9 @@
       {%- endif -%}
   </div>
   {#- ── 4. observation + cautions ───────────────────────────────────────────── #}
-  <p class="po-obs" data-po-field="observation">{{ _po_text(v.get('observation'), 'Observation unavailable', '观察暂缺') }}</p>
+  {# The native board supplies an entry read but no assessment clock. Preserve
+     its words and enum; never renew them from the quote, signal or build date. #}
+  <p class="po-obs" data-po-field="observation">{% if native and _stance != 'unknown' %}<span class="po-assessment-label"><span class="l-en">Published entry assessment</span><span class="l-zh">已发布入场评估</span></span>{% endif %}{{ _po_text(v.get('observation'), 'Observation unavailable', '观察暂缺') }}{% if native and _stance != 'unknown' %}<span class="po-assessment-status" data-assessment-asof=""><span class="l-en">Assessment date unavailable · Current entry unverified</span><span class="l-zh">评估日期暂缺 · 当前入场状态未复核</span></span>{% endif %}</p>
   {%- if _cautions -%}
     {%- set _n_cau = _cautions|length -%}
     {%- if _n_cau > 1 -%}

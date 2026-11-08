@@ -39,8 +39,9 @@
       <section class="pvs-section">
         <h3>{{ t('Entry conditions','入场条件') if kind == 'board' else t('Research candidate','研究候选') }}</h3>
         {% if kind == 'board' %}
+        <p class="pvs-note pvs-published-assessment">{{ t('Published entry assessment','已发布入场评估') }}</p>
         <p class="pvs-read" data-entry-status="{{ (es.get('status') or '')|e }}"><span class="l-en">{{ es.get('headline')|e if es.get('headline') is string and es.get('headline')|trim else 'Entry read not supplied' }}</span><span class="l-zh">{% if es.get('headline_zh') is string and es.get('headline_zh')|trim %}{{ es.get('headline_zh')|e }}{% elif es.get('headline') is string and es.get('headline')|trim %}来源原文 · {{ es.get('headline')|e }}{% else %}未提供入场读数{% endif %}</span></p>
-        <p class="pvs-assessment-clock" data-assessment-asof="">{{ t('Entry read date not supplied','入场判读日期来源未提供') }} · {{ t('Quote time','报价时间') }} {{ value(row.get('price_as_of')) }}</p>
+        <p class="pvs-assessment-clock" data-assessment-asof="">{{ t('Entry read date not supplied','入场判读日期来源未提供') }} · {{ t('Current entry unverified','当前入场状态未复核') }} · {{ t('Quote time','报价时间') }} {{ value(row.get('price_as_of')) }}</p>
         {% if row.get('signal_asof') is string and row.get('signal_asof')|trim %}<p class="pvs-signal-clock" data-signal-asof="{{ row.get('signal_asof')|e }}">{{ t('Signal session','信号交易日') }} {{ row.get('signal_asof')|e }}</p>{% endif %}
         <p class="pvs-note">{{ t('The signal session is not the date of the entry assessment. A later quote inside the zone does not renew the entry read.','信号交易日不是入场评估日期。之后报价处于区间内并不会更新入场判读。') }}</p>
         {% if display %}<p class="pvs-chart-clock">{{ t('Daily closes','每日收盘') }} · {{ value((display.get('chart') or {}).get('asof')) }}</p>{% endif %}
