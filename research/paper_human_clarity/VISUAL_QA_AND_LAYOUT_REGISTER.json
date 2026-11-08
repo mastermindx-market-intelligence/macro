@@ -1,0 +1,676 @@
+{
+  "audit": "Primary variant post-change visual and semantic QA",
+  "date": "2026-11-08",
+  "readOnly": true,
+  "mutationsPerformed": false,
+  "scope": {
+    "rootScreenshots": [
+      {
+        "family": "GMI",
+        "fileId": "01M5H6EARN9YHQV17JC6ZG9BRY",
+        "nodeId": "61M-0",
+        "name": "01 · Explore a theme · Noir · EN · Desktop",
+        "screenshot": {
+          "nodeId": "61M-0",
+          "width": 1440,
+          "height": 1145,
+          "resized": false
+        }
+      },
+      {
+        "family": "GMI",
+        "fileId": "01M5H6EARN9YHQV17JC6ZG9BRY",
+        "nodeId": "6DR-0",
+        "name": "03 · Theme evidence · Noir · EN · Mobile",
+        "screenshot": {
+          "nodeId": "6DR-0",
+          "width": 390,
+          "height": 1265,
+          "resized": false
+        }
+      },
+      {
+        "family": "Hub",
+        "fileId": "01M2VWK62FA5S4VVF6G7SBPE5J",
+        "nodeId": "86-0",
+        "name": "40 · R4 CURRENT · US Command · Desktop EN",
+        "screenshot": {
+          "nodeId": "86-0",
+          "width": 1133,
+          "height": 2000,
+          "resized": true
+        }
+      },
+      {
+        "family": "Hub",
+        "fileId": "01M2VWK62FA5S4VVF6G7SBPE5J",
+        "nodeId": "2OW-0",
+        "name": "59 · R4 CURRENT · Research List · Mobile Light EN",
+        "screenshot": {
+          "nodeId": "2OW-0",
+          "width": 239,
+          "height": 2000,
+          "resized": true
+        }
+      },
+      {
+        "family": "Sector",
+        "fileId": "01M6FAXA774QT1VRDMAG7DFQ2W",
+        "nodeId": "DSJ-0",
+        "name": "R4 · Explore · Market map · desktop · dark · EN",
+        "screenshot": {
+          "nodeId": "DSJ-0",
+          "width": 1151,
+          "height": 2000,
+          "resized": true
+        }
+      },
+      {
+        "family": "Sector",
+        "fileId": "01M6FAXA774QT1VRDMAG7DFQ2W",
+        "nodeId": "FO0-0",
+        "name": "R4 · Explore · Rotation compare · mobile · dark · EN",
+        "screenshot": {
+          "nodeId": "FO0-0",
+          "width": 146,
+          "height": 2000,
+          "resized": true
+        }
+      },
+      {
+        "family": "Intl",
+        "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+        "nodeId": "IRV-0",
+        "name": "R14 · Scanner · Mobile · Dark · EN",
+        "screenshot": {
+          "nodeId": "IRV-0",
+          "width": 203,
+          "height": 2000,
+          "resized": true
+        }
+      },
+      {
+        "family": "Intl",
+        "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+        "nodeId": "G9J-0",
+        "name": "R14 · Scanner · Desktop · Dark · EN",
+        "screenshot": {
+          "nodeId": "G9J-0",
+          "width": 1440,
+          "height": 1990,
+          "resized": false
+        }
+      }
+    ],
+    "nativeDetailScreenshots": [
+      "FVC-0",
+      "FXN-0",
+      "J6F-0"
+    ],
+    "hubGeometryChildScreenshots": [
+      "8T-0",
+      "98-0",
+      "9Z-0",
+      "G6-0",
+      "AQ-0",
+      "GR-0",
+      "I5-0",
+      "9G-0",
+      "K7-0"
+    ],
+    "extraScope": "Exact-family matches for code footers, success-state samples and internal field keys on current pages only. Held SectorG4P andBML untouched."
+  },
+  "verdicts": [
+    {
+      "family": "GMI",
+      "roots": [
+        "61M-0",
+        "6DR-0"
+      ],
+      "result": "PASS",
+      "details": [
+        "No clipping or major empty tail.",
+        "Source date26Feb2024 and planned-in-source status remain explicit.",
+        "Current shipments/revenue exposure unconfirmed;1documented connection/incomplete coverage retained.",
+        "Taxonomy topic counts are kept distinct from company evidence."
+      ]
+    },
+    {
+      "family": "Hub",
+      "roots": [
+        "86-0",
+        "2OW-0"
+      ],
+      "result": "LAYOUT_REPAIR_ONE_ROOT",
+      "details": [
+        "86 has approximately228px fixed-height excess. Its entire direct-child stack is normal flow.",
+        "2OW content fits:123+3108+34=3265px versus3264px root;1px difference is rounding, not a meaningful blank tail.",
+        "Seven0.0 research indices appear in the price-unavailable group, but footer explicitly identifies0.0 as index rather than missing data; price absence is separately labelled.",
+        "Ranking correlation, observation counts and source-order research priority remain qualified, not recast as returns/entry readiness."
+      ]
+    },
+    {
+      "family": "Sector",
+      "roots": [
+        "DSJ-0",
+        "FO0-0"
+      ],
+      "result": "SEMANTICS_PASS_WITH_FIELD_KEY_CLEANUP",
+      "details": [
+        "No clipping or major tail in fit-content roots.",
+        "Observed current≤1month model cells show— withMODEL·Unavailable. DSJHealthCare remains unavailable at both horizons.",
+        "FO0historical3month priors33%/44% and6month Energy52% remain; Technology6monthunavailable remains.",
+        "Measured ETF21-session and member-basket20-session populations remain distinct, with respective values preserved.",
+        "Global fixture/stale-tape dates and no-live-readings qualification remain visible.",
+        "Parent reports32current model numbers suppressed acrossfamily; this audit visually checks the requested two roots, not a separateall32node count.",
+        "Eight visible internal field-label targets remain, enumerated below."
+      ]
+    },
+    {
+      "family": "Intl",
+      "roots": [
+        "G9J-0",
+        "IRV-0"
+      ],
+      "result": "LAYOUT_PASS_WITH_STATE_SAMPLE_CLEANUP_AND_FIXTURE_MISMATCH",
+      "details": [
+        "No clipping or major tail in fit-content roots.",
+        "Specimen/not-live qualification remains visible near headline.",
+        "Insufficient history uses—/unranked, pending response staysdistinct from noise/noresponse; proxy/delayed tiers remain explicit.",
+        "Four mobile variants still show success-state sample simultaneously with Arm alert; move sample toBuild.",
+        "Thirteen route/device/locale code footers belongBuild.",
+        "Desktop/mobile examplefixture consistency issue remains; see separate finding. Timing of introduction not established by this post-change audit."
+      ]
+    }
+  ],
+  "hubLayoutRepair": {
+    "fileId": "01M2VWK62FA5S4VVF6G7SBPE5J",
+    "productPageId": "p-3-0",
+    "preserveDestination": {
+      "fileId": "01M2VWK62FA5S4VVF6G7SBPE5J",
+      "pageId": "p-2-0",
+      "pageName": "00B · R4 contracts + Navigation",
+      "rootNodeId": "root_node_p-2-0",
+      "artboardCount": 7
+    },
+    "originalRoot": {
+      "id": "86-0",
+      "name": "40 · R4 CURRENT · US Command · Desktop EN",
+      "component": "Frame",
+      "width": 1440,
+      "height": 2542,
+      "worldX": 0,
+      "worldY": 0,
+      "x": 0,
+      "y": 0,
+      "isVisible": true,
+      "isLocked": false,
+      "parentId": "root_node_p-3-0",
+      "childIds": [
+        "87-0",
+        "8S-0"
+      ],
+      "childCount": 2,
+      "artboardId": null,
+      "textContent": null
+    },
+    "originalStyle": {
+      "display": "flex",
+      "overflow": "clip",
+      "width": "1440px",
+      "height": "2542px",
+      "flexDirection": "column",
+      "left": "0px",
+      "top": 0,
+      "position": "absolute",
+      "backgroundColor": "var(--mx-light-bg)"
+    },
+    "proposedStyle": {
+      "display": "flex",
+      "overflow": "clip",
+      "width": "1440px",
+      "height": "fit-content",
+      "flexDirection": "column",
+      "left": "0px",
+      "top": 0,
+      "position": "absolute",
+      "backgroundColor": "var(--mx-light-bg)"
+    },
+    "cloneDirectChildrenInOrder": [
+      "87-0",
+      "8S-0"
+    ],
+    "childStyles": {
+      "87-0": {
+        "alignItems": "center",
+        "display": "flex",
+        "flexShrink": "0",
+        "fontFamily": "var(--font-ui)",
+        "fontSynthesisWeight": "none",
+        "fontSynthesisStyle": "none",
+        "fontSynthesisSmallCaps": "none",
+        "height": "68px",
+        "justifyContent": "space-between",
+        "width": "1440px",
+        "paddingInline": "48px",
+        "backgroundColor": "var(--mx-light-panel)",
+        "borderBottomWidth": "1px",
+        "borderBottomStyle": "solid",
+        "borderBottomColor": "var(--mx-light-line)"
+      },
+      "8S-0": {
+        "display": "flex",
+        "flexDirection": "column",
+        "fontFamily": "var(--font-ui)",
+        "fontSynthesisWeight": "none",
+        "fontSynthesisStyle": "none",
+        "fontSynthesisSmallCaps": "none",
+        "width": "1440px",
+        "paddingTop": "28px",
+        "paddingBottom": "36px",
+        "gap": "18px",
+        "paddingInline": "48px"
+      },
+      "2OX-0": {
+        "display": "flex",
+        "flexDirection": "column",
+        "flexShrink": "0",
+        "fontFamily": "var(--font-ui)",
+        "fontSynthesisWeight": "none",
+        "fontSynthesisStyle": "none",
+        "fontSynthesisSmallCaps": "none",
+        "width": "390px",
+        "backgroundColor": "var(--mx-light-panel)"
+      },
+      "2PF-0": {
+        "display": "flex",
+        "flexDirection": "column",
+        "flexShrink": "0",
+        "fontSynthesisWeight": "none",
+        "fontSynthesisStyle": "none",
+        "fontSynthesisSmallCaps": "none",
+        "width": "390px",
+        "paddingBlock": "24px",
+        "paddingInline": "20px"
+      },
+      "2X4-0": {
+        "alignItems": "center",
+        "display": "flex",
+        "flexShrink": "0",
+        "height": "34px",
+        "justifyContent": "center",
+        "width": "390px",
+        "backgroundColor": "var(--mx-light-panel)"
+      }
+    },
+    "bodyChildDimensions": [
+      {
+        "nodeId": "8T-0",
+        "width": 1344,
+        "height": 86,
+        "resized": false
+      },
+      {
+        "nodeId": "98-0",
+        "width": 1344,
+        "height": 42,
+        "resized": false
+      },
+      {
+        "nodeId": "9Z-0",
+        "width": 1344,
+        "height": 33,
+        "resized": false
+      },
+      {
+        "nodeId": "G6-0",
+        "width": 1344,
+        "height": 237,
+        "resized": false
+      },
+      {
+        "nodeId": "AQ-0",
+        "width": 1344,
+        "height": 719,
+        "resized": false
+      },
+      {
+        "nodeId": "GR-0",
+        "width": 1344,
+        "height": 360,
+        "resized": false
+      },
+      {
+        "nodeId": "I5-0",
+        "width": 1344,
+        "height": 438,
+        "resized": false
+      },
+      {
+        "nodeId": "9G-0",
+        "width": 1344,
+        "height": 57,
+        "resized": false
+      },
+      {
+        "nodeId": "K7-0",
+        "width": 1344,
+        "height": 66,
+        "resized": false
+      }
+    ],
+    "bodyHeightEstimate": 2246,
+    "rootHeightEstimate": 2314,
+    "blankTailEstimate": 228,
+    "measurement": "9native scale1 child screenshot dimensions +8gaps18px+bodypadding28/36+nav68. Raster bounds may round individually; use fit-content rather than fixed estimate.",
+    "steps": [
+      "Preserve complete original86root in clearly named Build layout-reference slot.",
+      "Create new productroot at original0,0 with originalwidth1440/styles andheightfit-content.",
+      "Clone complete87+8S directchildren in original order; do not recast or remove numeric/state/source content.",
+      "Recordold→new rootID and updatecurrentdirectory references; screenshot newroot."
+    ]
+  },
+  "intlMoves": {
+    "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+    "productPageId": "p-I-0",
+    "destination": {
+      "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "pageId": "p-B-0",
+      "pageName": "80 · R10 · Builder Contracts & Reference States",
+      "rootNodeId": "root_node_p-B-0",
+      "artboardCount": 13
+    },
+    "rows": [
+      {
+        "nodeId": "GWE-0",
+        "expectedParentId": "GWA-0",
+        "productRoot": "G9J-0",
+        "kind": "MOVE_CODE_FOOTER_TEXT",
+        "oldText": "intl_workspace · scanner · 1440",
+        "why": "Workspace slug, route and viewport size are builder metadata. Preserve separate specimen/illustrative-values label in existing footer."
+      },
+      {
+        "nodeId": "HJ0-0",
+        "expectedParentId": "HIZ-0",
+        "productRoot": "HIX-0",
+        "kind": "MOVE_CODE_FOOTER_TEXT",
+        "oldText": "intl_workspace · scanner · 1440",
+        "why": "Workspace slug, route and viewport size are builder metadata. Preserve separate specimen/illustrative-values label in existing footer."
+      },
+      {
+        "nodeId": "I5H-0",
+        "expectedParentId": "I5G-0",
+        "productRoot": "I5E-0",
+        "kind": "MOVE_CODE_FOOTER_TEXT",
+        "oldText": "intl_workspace · scanner · 1440",
+        "why": "Workspace slug, route and viewport size are builder metadata. Preserve separate specimen/illustrative-values label in existing footer."
+      },
+      {
+        "nodeId": "GWJ-0",
+        "expectedParentId": "GWI-0",
+        "productRoot": "GWG-0",
+        "kind": "MOVE_CODE_FOOTER_TEXT",
+        "oldText": "intl_workspace · scanner · 1440",
+        "why": "Workspace slug, route and viewport size are builder metadata. Preserve separate specimen/illustrative-values label in existing footer."
+      },
+      {
+        "nodeId": "KTJ-0",
+        "expectedParentId": "KTH-0",
+        "productRoot": "KF1-0",
+        "kind": "MOVE_CODE_FOOTER_TEXT",
+        "oldText": "intl_workspace · dislocations · 1440",
+        "why": "Workspace slug, route and viewport size are builder metadata. Preserve separate specimen/illustrative-values label in existing footer."
+      },
+      {
+        "nodeId": "KUV-0",
+        "expectedParentId": "KUU-0",
+        "productRoot": "KUS-0",
+        "kind": "MOVE_CODE_FOOTER_TEXT",
+        "oldText": "intl_workspace · transmission · 1440",
+        "why": "Workspace slug, route and viewport size are builder metadata. Preserve separate specimen/illustrative-values label in existing footer."
+      },
+      {
+        "nodeId": "LQN-0",
+        "expectedParentId": "LQM-0",
+        "productRoot": "LLI-0",
+        "kind": "MOVE_CODE_FOOTER_TEXT",
+        "oldText": "intl_workspace · dossier · 1440",
+        "why": "Workspace slug, route and viewport size are builder metadata. Preserve separate specimen/illustrative-values label in existing footer."
+      },
+      {
+        "nodeId": "MHB-0",
+        "expectedParentId": "MHA-0",
+        "productRoot": "MH8-0",
+        "kind": "MOVE_CODE_FOOTER_TEXT",
+        "oldText": "intl_workspace · scenario · replay · watch · dark · 1440",
+        "why": "Workspace slug, route and viewport size are builder metadata. Preserve separate specimen/illustrative-values label in existing footer."
+      },
+      {
+        "nodeId": "M5B-0",
+        "expectedParentId": "M5A-0",
+        "productRoot": "M06-0",
+        "kind": "MOVE_CODE_FOOTER_TEXT",
+        "oldText": "intl_workspace · coverage · light · 1440",
+        "why": "Workspace slug, route and viewport size are builder metadata. Preserve separate specimen/illustrative-values label in existing footer."
+      },
+      {
+        "nodeId": "J70-0",
+        "expectedParentId": "J6F-0",
+        "productRoot": "IRV-0",
+        "kind": "MOVE_CODE_ONLY_FOOTER_FRAME",
+        "childIds": [
+          "J72-0"
+        ],
+        "oldText": "R14 · scanner · 390 · dark · EN",
+        "why": "Verified sole child is R14/route/device/theme/locale metadata. Moving whole footer avoids empty border/padding. Hero specimen/not-live marker remains."
+      },
+      {
+        "nodeId": "J77-0",
+        "expectedParentId": "J76-0",
+        "productRoot": "J74-0",
+        "kind": "MOVE_CODE_ONLY_FOOTER_FRAME",
+        "childIds": [
+          "J78-0"
+        ],
+        "oldText": "R14 · scanner · 390 · light · EN",
+        "why": "Verified sole child is R14/route/device/theme/locale metadata. Moving whole footer avoids empty border/padding. Hero specimen/not-live marker remains."
+      },
+      {
+        "nodeId": "JLU-0",
+        "expectedParentId": "JLT-0",
+        "productRoot": "JLR-0",
+        "kind": "MOVE_CODE_ONLY_FOOTER_FRAME",
+        "childIds": [
+          "JLV-0"
+        ],
+        "oldText": "R14 · scanner · 390 · dark · ZH",
+        "why": "Verified sole child is R14/route/device/theme/locale metadata. Moving whole footer avoids empty border/padding. Hero specimen/not-live marker remains."
+      },
+      {
+        "nodeId": "K0H-0",
+        "expectedParentId": "K0G-0",
+        "productRoot": "K0E-0",
+        "kind": "MOVE_CODE_ONLY_FOOTER_FRAME",
+        "childIds": [
+          "K0I-0"
+        ],
+        "oldText": "R14 · scanner · 390 · light · ZH",
+        "why": "Verified sole child is R14/route/device/theme/locale metadata. Moving whole footer avoids empty border/padding. Hero specimen/not-live marker remains."
+      },
+      {
+        "nodeId": "J6Y-0",
+        "expectedParentId": "J6V-0",
+        "productRoot": "IRV-0",
+        "kind": "MOVE_SUCCESS_STATE_SAMPLE",
+        "childIds": [
+          "J6Z-0"
+        ],
+        "oldText": "Armed ✓ (state)",
+        "why": "Success-state sample is currently simultaneous with Arm alert in one product condition card. Preserve it as state reference in Build. Keep the actual Arm alert control, whose flex-grow1 will fill the remaining row."
+      },
+      {
+        "nodeId": "J7C-0",
+        "expectedParentId": "J7B-0",
+        "productRoot": "J74-0",
+        "kind": "MOVE_SUCCESS_STATE_SAMPLE",
+        "childIds": [
+          "J7D-0"
+        ],
+        "oldText": "Armed ✓ (state)",
+        "why": "Success-state sample is currently simultaneous with Arm alert in one product condition card. Preserve it as state reference in Build. Keep the actual Arm alert control, whose flex-grow1 will fill the remaining row."
+      },
+      {
+        "nodeId": "JLZ-0",
+        "expectedParentId": "JLY-0",
+        "productRoot": "JLR-0",
+        "kind": "MOVE_SUCCESS_STATE_SAMPLE",
+        "childIds": [
+          "JM0-0"
+        ],
+        "oldText": "已启用 ✓（状态）",
+        "why": "Success-state sample is currently simultaneous with Arm alert in one product condition card. Preserve it as state reference in Build. Keep the actual Arm alert control, whose flex-grow1 will fill the remaining row."
+      },
+      {
+        "nodeId": "K0M-0",
+        "expectedParentId": "K0L-0",
+        "productRoot": "K0E-0",
+        "kind": "MOVE_SUCCESS_STATE_SAMPLE",
+        "childIds": [
+          "K0N-0"
+        ],
+        "oldText": "已启用 ✓（状态）",
+        "why": "Success-state sample is currently simultaneous with Arm alert in one product condition card. Preserve it as state reference in Build. Keep the actual Arm alert control, whose flex-grow1 will fill the remaining row."
+      }
+    ],
+    "counts": {
+      "desktopCodeText": 9,
+      "mobileCodeOnlyFooters": 4,
+      "successStateSamples": 4
+    },
+    "preserve": [
+      "Hero specimen/not-live markers",
+      "Actual Arm alert/启用提醒 action and focus state",
+      "Source clocks, delayed/proxy/qualified/licensed/insufficient-history badges",
+      "Existing accepted-source/release status; R14 frozen does not become productionaccepted"
+    ]
+  },
+  "sectorTextCleanup": {
+    "fileId": "01M6FAXA774QT1VRDMAG7DFQ2W",
+    "productPageId": "p-4-0",
+    "destination": {
+      "fileId": "01M6FAXA774QT1VRDMAG7DFQ2W",
+      "pageId": "p-5-0",
+      "pageName": "Build · Clarity, models & interaction",
+      "rootNodeId": "root_node_p-5-0",
+      "artboardCount": 2
+    },
+    "rows": [
+      {
+        "nodeId": "FFV-0",
+        "expectedParentId": "FFT-0",
+        "productRoot": "FB7-0",
+        "action": "REPLACE_TEXT",
+        "oldText": "rs_21d · 21 sessions vs S&P 500 · total return · as of 30 Oct 2026 close",
+        "newText": "21 sessions vs S&P 500 · total return · as of 30 Oct 2026 close"
+      },
+      {
+        "nodeId": "FRZ-0",
+        "expectedParentId": "FRX-0",
+        "productRoot": "FO0-0",
+        "action": "REPLACE_TEXT",
+        "oldText": "rs_21d · 21 sessions vs S&P 500 · total return · as of 30 Oct 2026 close",
+        "newText": "21 sessions vs S&P 500 · total return · as of 30 Oct 2026 close"
+      },
+      {
+        "nodeId": "FIG-0",
+        "expectedParentId": "FIE-0",
+        "productRoot": "FB7-0",
+        "action": "REPLACE_TEXT",
+        "oldText": "rs_21d · sector ETF · total return",
+        "newText": "Sector ETF · total return"
+      },
+      {
+        "nodeId": "FUK-0",
+        "expectedParentId": "FUI-0",
+        "productRoot": "FO0-0",
+        "action": "REPLACE_TEXT",
+        "oldText": "rs_21d · sector ETF · total return",
+        "newText": "Sector ETF · total return"
+      },
+      {
+        "nodeId": "FG5-0",
+        "expectedParentId": "FG0-0",
+        "productRoot": "FB7-0",
+        "action": "MOVE_FIELD_KEY_TO_BUILD",
+        "oldText": "rs_21d",
+        "why": "Standalone internal key duplicates the visible 21-session comparison heading and basis."
+      },
+      {
+        "nodeId": "FSB-0",
+        "expectedParentId": "FS8-0",
+        "productRoot": "FO0-0",
+        "action": "MOVE_FIELD_KEY_TO_BUILD",
+        "oldText": "rs_21d",
+        "why": "Standalone internal key duplicates the visible 21-session comparison heading and basis."
+      },
+      {
+        "nodeId": "FXR-0",
+        "expectedParentId": "FXO-0",
+        "productRoot": "FO0-0",
+        "action": "REPLACE_TEXT",
+        "oldText": "score · pulse_rank_delta_5d",
+        "newText": "Score · rank change over 5 sessions"
+      },
+      {
+        "nodeId": "G2T-0",
+        "expectedParentId": "G2S-0",
+        "productRoot": "FO0-0",
+        "action": "REPLACE_TEXT",
+        "oldText": "pulse_rank_delta_5d · as of 30 Oct 2026 close",
+        "newText": "5-session rank change · as of 30 Oct 2026 close"
+      }
+    ],
+    "preserve": "Store internal field names rs_21d andpulse_rank_delta_5d with exact currentnode/root lineage inBuild guide before replacing visiblelabels. Keep window, benchmark, ETFversusbasketpopulation, totalreturn basis andsnapshotclock."
+  },
+  "currentIntlFixtureMismatch": {
+    "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+    "pageId": "p-I-0",
+    "desktop": "G9J-0",
+    "mobile": "IRV-0",
+    "finding": "Responsive examples do not share a fully identical fixture. This audit does not establish whether that predates the clarity edits.",
+    "examples": [
+      {
+        "desktopNode": "GI0-0",
+        "desktopText": "B3 · BRL · close 21 Oct",
+        "mobileNode": "IYK-0",
+        "mobileText": "own close 20 Oct 20:07 UTC",
+        "reason": "SameBR−6.9%example has differing reference dates. Both top snapshots sayAsia closeTue21Oct."
+      },
+      {
+        "desktopNode": "GVP-0",
+        "desktopText": "USD/BRL closes above 5.80 and BR spread above 270 bp",
+        "desktopTimingNode": "GVQ-0",
+        "desktopTimingText": "by 23 Oct close · now 5.71 · 262 bp",
+        "mobileNode": "J6O-0",
+        "mobileText": "BR spread widens past +50 bp 5D and C·BAC lag below −1% by 24 Oct",
+        "reason": "Confirmconditions anddeadline differ acrossdesktop/mobile."
+      },
+      {
+        "desktopNode": "GW3-0",
+        "desktopText": "Neither by 28 Oct close (5 sessions): read expires and is logged",
+        "mobileNode": "J6U-0",
+        "mobileText": "Fri 24 Oct 20:00 UTC · auto-archive",
+        "reason": "Expiryconditions differ acrossdesktop/mobile."
+      }
+    ],
+    "recommendation": "Record this exact fixture mismatch in current R14 Build guide. If aligning within thismission, identify the canonicalR14fixture first and align source clock/conditions acrossvariants; do not guess or silently change financial thresholds. Otherwise keep it explicit as remaining designfixture inconsistency, not claimfullbehavioralequivalence."
+  },
+  "optionalPlainLanguage": {
+    "fileId": "01M6FAXA774QT1VRDMAG7DFQ2W",
+    "root": "DSJ-0",
+    "nodeId": "DYB-0",
+    "oldText": "Never drawn as zero. Quantum Computing has 12 sessions of history and needs 21, so it is not placed. Health Care has no turn reading at either horizon.",
+    "newText": "Unavailable does not mean zero. Quantum Computing has 12 of the 21 required sessions, so it is not placed. Health Care has no turn reading at either horizon.",
+    "reason": "Sameuser-facing absence/coverage meaning, without renderer imperative."
+  }
+}
