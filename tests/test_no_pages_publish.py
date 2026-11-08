@@ -127,5 +127,5 @@ def test_vps_main_sync_wake_reuses_pinned_host_and_locked_updater_only():
     assert "workflow_dispatch" not in command
     assert "|| true" not in command
     pin = (ROOT / "app" / "deploy" / "ohlc_origin_known_hosts").read_text()
-    assert pin == "146.190.142.17 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEc8ibhWOj35RC4FXjydG27GMxKfjiVXOw0s7hiCySkk\\n"
+    assert pin == "146.190.142.17 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEc8ibhWOj35RC4FXjydG27GMxKfjiVXOw0s7hiCySkk\n"
     assert "grep -qx '146.190.142.17 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEc8ibhWOj35RC4FXjydG27GMxKfjiVXOw0s7hiCySkk'" in command
