@@ -54,7 +54,32 @@ No external outreach is authorized by this record. No account, subscription, cre
 - Never retry EFFECT_UNKNOWN; inspect the original target through the original carrier.
 - Product risk and data limitations remain visible where they change interpretation; implementation details belong in builder documentation.
 
+## Verified milestone 1 — entry clarity and truthful state semantics
+
+All listed Paper effects returned APPLIED_RESPONSE_OBSERVED on the direct Paper carrier. Screenshots were inspected after the changes; source save is not production acceptance.
+
+| File / page | Exact target | Change and verification |
+|---|---|---|
+| [Intelligence Hub desktop](https://app.paper.design/file/01M2VWK62FA5S4VVF6G7SBPE5J/p-3-0) | 86-0 | Review setups moved immediately after the hero and before the long ranking. Command relabelled Research. Dated data/order retained. Neutral active navigation, card borders and selected-row fill replace decorative blue rails. Unavailable source is neutral text. Desktop screenshot read back. |
+| [Intelligence Hub mobile](https://app.paper.design/file/01M2VWK62FA5S4VVF6G7SBPE5J/p-4-0) | 1DO-0 | Same priority order; Inspect AXON separated from evidence availability. Six specialist desks moved below the main flow and fitted into two rows. A first visual read caught clipping; corrected and rechecked the complete bottom navigation. |
+| [Hub build map](https://app.paper.design/file/01M2VWK62FA5S4VVF6G7SBPE5J/p-2-0) | 2P-0 / new 6YK-0 | Added a dated implementation delta: ordering, anchor/focus/return behavior, route and data compatibility, missing evidence, localization and verification. Existing domain contracts and recorded holds preserved. |
+| [OS project workspace](https://app.paper.design/file/01M3NRCX55B452A12819WNE1RH/p-H-0) | MHD-0 / VJU-0 | Pause → Pause new work, matching the current admission owner. Running-work state remains separate. Screenshot inspected. |
+| OS new project | N8N-0 / VM0-0, VM1-0 | Start project → Create project; concise next-step copy makes planning a subsequent action. |
+| [OS team progress](https://app.paper.design/file/01M3NRCX55B452A12819WNE1RH/p-J-0) | QM6-0 / QP6-0 | Corrected five examples to six, consistent with the existing six-row fixture and its explicit non-total status. |
+| [OS current build map](https://app.paper.design/file/01M3NRCX55B452A12819WNE1RH/p-E-0) | TMP-0 / new XD4-0 | Added current source-to-owner map above the retained 8 October snapshot: project publication/planning/execution, admission pause, native Hermes recovery, organization qualification. Initial visual check caught inherited text color; explicit token colors corrected. |
+| [Shared system entry](https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-9-0) | 47Q-0 | Foundations, Components, Patterns, References and Utilities now precede the lengthy source/hold sections. Candidate status remains at the top; no review/release hold cleared. Screenshot inspected. |
+
+### Architecture findings driving the changes
+- Project publication, initial planning, plan retention/adoption and execution admission are different owner transitions; a successful create is not Working.
+- Admission pause affects new work. An unknown pause result must reconcile the original request; it is not proof of running-work cancellation.
+- Native Hermes has source implementation and recorded candidate proof. The installed release and per-action qualification remain separate; the generic Office composer was not enabled.
+- Organization detail is an advisory projection from a verified Mission observation. Role charters are not enrolled workers, and returned evidence is not acceptance.
+- Research priority and entry readiness stay distinct; no scoring, ranking engine, data fixture or trade authority was changed.
+
+Primary architecture evidence: protected Mastermind@5c3d3885234358aefb97ecdbc59be0864df14f8b, app/mastermind_os/src/{projects/ProjectPlanningJourney.tsx,admission/ProjectAdmissionPanel.tsx,admission/project-admission.ts,hermes-native/HermesNativePanel.tsx,hermes-native/contract.ts,organization/OrganizationWorkspace.tsx}; integrations/hermes_leadership/organization.py; docs/hermes/THIN_NATIVE_OS.md.
+
 ## Current frontier
-A1 scoping is in progress. Paper is connected and explicit file reads return write-qualified guards for compatible tools. No design mutation has occurred yet. No unresolved modifying effect.
-Next: inspect authoritative entry boards and representative journeys; apply the highest-value current-surface corrections; save verified milestones here.
+A1 census has identified 37 resource entries (35 files, 2 folders), including product, historical, QA and scratch material. Representative current journeys are under audit; this is not a claim to have visually reviewed all historical programme boards.
+A3 has concrete verified changes in Hub, OS and the shared system. A4 is in progress: add user-state specimens and a source-based motion/illustration contract; then consume market/sector reasoning findings and consolidate entry navigation.
+No unresolved modifying effect. No production code, deployment, runtime control or external message was sent.
 PLAN_NOT_ORG_LINKED: this source plan has not changed Agent OS organizational/runtime records.
