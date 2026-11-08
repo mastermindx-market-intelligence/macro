@@ -1854,17 +1854,46 @@
     })();
   }
 
-  /* deep link from a report landing page: research_vault.html?doc=<id> opens that
-     report's viewer (Pro → PDF, non-Pro → the upgrade gate). This is the SEO
-     funnel's landing → conversion hop. */
-  var DEEP_LINK_OPENED = false;
+  /* deep link from a report landing page: research_vault.html?doc=<id> selects
+     that exact catalog item in the existing gated viewer. IDs outside the
+     selected preview/catalog get feedback, never a metadata or PDF grant. */
+  var DEEP_LINK_OPENED_ID = '';
+  function showDeepLinkStatus(kind) {
+    var status = $('rv-selection-status'); if (!status) return;
+    var messages = {
+      preview: ['The requested report is not in this public preview. Sign in with Pro to try opening it.',
+                '所请求的报告不在本次公开预览中。登录 Pro 账户后可尝试打开。'],
+      missing: ['The requested report is not in this catalog. Browse other reports or return to the previous page.',
+                '所请求的报告不在此目录中。可浏览其他报告或返回上一页。'],
+      unavailable: ['The catalog is unavailable, so the requested report cannot be selected.',
+                    '研报目录暂不可用，无法选择所请求的报告。'],
+      invalid: ['This report link is invalid. Choose a report from this catalog or return to the previous page.',
+                '此报告链接无效。可从此目录选择报告或返回上一页。']
+    };
+    var message = messages[kind];
+    var en = $('rv-selection-en'), cn = $('rv-selection-zh');
+    if (en) en.textContent = message ? message[0] : '';
+    if (cn) cn.textContent = message ? message[1] : '';
+    status.hidden = !message;
+  }
   function openDeepLink() {
-    if (DEEP_LINK_OPENED) return;
     try {
-      var m = /[?&]doc=([^&]+)/.exec(location.search);
-      if (!m) return;
-      var id = decodeURIComponent(m[1]);
-      if (ITEMS.some(function (x) { return x.id === id; })) { DEEP_LINK_OPENED = true; openViewer(id); }
+      var m = /[?&]doc=([^&]*)/.exec(location.search);
+      if (!m) { showDeepLinkStatus(''); DEEP_LINK_OPENED_ID = ''; return; }
+      var id;
+      try { id = decodeURIComponent(m[1]); }
+      catch (e) { DEEP_LINK_OPENED_ID = ''; showDeepLinkStatus('invalid'); return; }
+      if (!id.trim()) { DEEP_LINK_OPENED_ID = ''; showDeepLinkStatus('invalid'); return; }
+      if (ITEMS.some(function (x) { return x.id === id; })) {
+        showDeepLinkStatus('');
+        if (DEEP_LINK_OPENED_ID === id) return;
+        DEEP_LINK_OPENED_ID = id;
+        openViewer(id);
+      } else {
+        if (DEEP_LINK_OPENED_ID !== id) DEEP_LINK_OPENED_ID = '';
+        showDeepLinkStatus(CATALOG_SOURCE === 'unavailable' ? 'unavailable'
+          : (CATALOG_PREVIEW ? 'preview' : 'missing'));
+      }
     } catch (e) {}
   }
 

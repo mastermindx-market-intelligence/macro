@@ -47,7 +47,8 @@ def test_both_languages_and_boundaries_are_visible_without_fake_revision_or_rank
 def test_no_prefilled_result_or_live_keystroke_number():
     nodes=Nodes(render()).nodes
     result=next(a for _,a in nodes if 'data-im-scenario-result' in a);assert 'hidden' in result
-    live=[a for _,a in nodes if 'aria-live' in a];assert len(live)==1 and live[0]['aria-live']=='polite'
+    live=[a for _,a in nodes if 'aria-live' in a];assert live and all(a['aria-live']=='polite' for a in live)
+    assert len([a for a in live if 'data-im-scenario-announcement' in a])==1
     assert next(a for _,a in nodes if 'data-im-scenario-fields' in a).get('disabled') is None
 
 def test_source_strings_are_always_escaped_in_non_autoescaping_owner_template():
@@ -89,3 +90,18 @@ def test_reset_and_context_confirmations_are_separate_hidden_actions():
         assert 'hidden' in next(a for _,a in nodes if attr in a)
     actions={a.get('data-im-scenario-action') for _,a in nodes}
     assert {'calculate','request_reset','confirm_reset','cancel_reset','confirm_context','cancel_context','set_tab'}<=actions
+
+
+def test_comparison_and_evidence_show_origin_limit_and_actual_universe():
+    from lib.intl_history_mount import attach_history
+    w, args = fixture()
+    section = attach_history(w, **args)['histories'][0]['sections'][0]
+    text = render()
+    assert 'Input origins across the full history have not been verified.' in text
+    assert '完整历史中的输入来源尚未经核实。' in text
+    assert 'Universe reference' in text and '范围引用' in text
+    assert section['identity']['universe'] in text
+    def denied(w, a):
+        a['sources']['JP']['history_read']['identity']['universe'] = 'PRIVATE-UNIVERSE'
+        a['sources']['JP']['capabilities']['history_source'] = dict(metadata='denied', value='denied')
+    assert 'PRIVATE-UNIVERSE' not in render(denied)

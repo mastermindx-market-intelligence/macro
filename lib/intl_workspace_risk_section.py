@@ -9,7 +9,7 @@ from lib.intl_workspace_macro import (
     _registry,
     _text,
 )
-from lib.intl_workspace_risk import qualify_us_transmission
+from lib.intl_workspace_risk import qualify_us_transmission, risk_summary_observations
 from lib.intl_workspace_risk_currency import build_currency_channel
 from lib.intl_workspace_risk_pressure import build_pressure_rows
 
@@ -157,6 +157,9 @@ def build_risk_section(
             }
             if key == "us_transmission":
                 panel["summary"] = deepcopy(summary)
+                observations = risk_summary_observations(risk_desk=risk_desk, support=eligibility)
+                if observations is not None:
+                    panel["observations"] = observations
             domain_panels[key] = panel
         deep_research = []
         for key in _DOMAIN_KEYS:

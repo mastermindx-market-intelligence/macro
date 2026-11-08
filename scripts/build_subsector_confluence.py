@@ -423,8 +423,11 @@ def render_index_pages(ns: str, site: Path, env=None, generated_utc: str | None 
             "as_of": g.get("as_of"), "ohlc_dir": d["ohlc"], "sig_dir": d["sig"],
             "back": "../subsectors.html", "stock_base": "../stock.html#",
             "generated_utc": generated_utc,
+            # Declared index-board basis, never inferred from the route.
+            "benchmark_meta": True, "benchmark": out.get("benchmark"),
+            "benchmark_label": out.get("benchmark_label"),
         }
-        html = tmpl.render(detail_json=json.dumps(_clean(detail), separators=(",", ":"), allow_nan=False),
+        html = tmpl.render(detail_json=json.dumps(_clean(detail), separators=(",", ":"), allow_nan=False).replace("<", "\\u003c"),
                            group_name=g.get("label", key), chart_key=g.get("chart_key"),
                            has_signals=bool(g.get("has_signals")), back_href="../subsectors.html",
                            generated_utc=generated_utc)

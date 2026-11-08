@@ -2050,3 +2050,49 @@ def test_reader_copy_in_sector_cycles_js_never_says_forecast():
     assert len(literals) > 1000
     assert [s for s in literals if "forecast" in s.lower()] == []
     assert sum("not a backtested prediction" in s for s in literals) == 3
+
+
+@pytest.mark.parametrize(
+    "lang,required,forbidden",
+    [
+        (
+            "en",
+            [
+                "country cards use the local-currency equity series where available",
+                "a native index or FX-adjusted ETF",
+                "with a secondary USD ETF view in the FX drawer",
+                "Regional blocs and countries without a local series stay USD-only",
+                "relative strength is measured on the USD ETF total-return series vs the US (SPY)",
+            ],
+            ["real USD price"],
+        ),
+        (
+            "zh",
+            [
+                "国家卡片在数据可用时以本地货币股票序列为主",
+                "原生指数或经汇率调整的 ETF",
+                "美元 ETF 作为汇率抽屉中的次要视图",
+                "区域板块及缺少本地序列的国家保持美元口径",
+                "相对强弱以美元 ETF 总回报序列对比美国（标普 SPY）衡量",
+            ],
+            ["真实美元价格"],
+        ),
+    ],
+)
+def test_country_cycles_intro_is_local_primary_with_usd_fallback(lang, required, forbidden):
+    # The country page leads with the local-currency equity series where one exists;
+    # USD ETFs are a secondary view, and blocs/regions without a local series stay
+    # USD-only. Relative strength stays on the USD ETF total-return series vs SPY.
+    import html
+    import re
+
+    text = _template_text("country_cycles.html.j2")
+    para = re.search(r'<p class="cyc-sub"[^>]*>(.*?)</p>', text, re.S)
+    assert para, "cyc-sub intro paragraph not found"
+    span = re.search(r'<span class="l-%s">(.*?)</span>' % lang, para.group(1), re.S)
+    assert span, "missing l-%s intro span" % lang
+    plain = re.sub(r"\s+", "", html.unescape(re.sub(r"<[^>]+>", " ", span.group(1))))
+    for phrase in required:
+        assert re.sub(r"\s+", "", phrase) in plain, (lang, phrase)
+    for phrase in forbidden:
+        assert re.sub(r"\s+", "", phrase) not in plain, (lang, phrase)
