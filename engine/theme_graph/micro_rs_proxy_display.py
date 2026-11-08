@@ -1,7 +1,9 @@
 """Micro-theme relative-strength PROXY display reader (display tier only).
 
-``sub_theme`` and ``micro_theme`` nodes carry no EXPRESSES/MEMBER_OF edges by law
-(SPEC §1 ``NEW_TIER_IN_EXPRESSES_MAP``), so any relative-strength VIEW of a
+``sub_theme`` and ``micro_theme`` nodes carry no EXPRESSES edges by law (SPEC §1
+``NEW_TIER_IN_EXPRESSES_MAP``); their only MEMBER_OF edges are company memberships
+from the curated activity-history fold, at display tier — never an instrument that
+expresses them. So any relative-strength VIEW of a
 micro theme can only be a PROXY read through its ancestor theme's expressing
 baskets/ETFs. This module names that proxy path — the nearest active
 ``theme``-tier ancestors and the open EXPRESSES instruments that point at them.
