@@ -439,9 +439,8 @@
         {% if v.dsr is not none %}<span class="mono">DSR {{ '%.2f'|format(v.dsr) }}</span>{% endif %}
         {% if v.note %}<span class="muted">— {{ t(v.note, v.note_zh or v.note) }}</span>{% endif %}
         {{ help(
-           (v.note or 'No standalone backtest for this alert family — the conviction is documented, not measured as a timing signal.') ~ (('  Validated as: ' ~ v.scorecard_name ~ '.') if v.scorecard_name else '') ~ '  See Signal Lab for the full battery.',
-           (v.note_zh or v.note or '该警报族无独立回测 — 信念有据可查，但未作为择时信号度量。') ~ (('  验证为：' ~ v.scorecard_name ~ '。') if v.scorecard_name else '') ~ '  详见信号实验室。') }}
-        <a class="lnk" href="{{ v.link }}">{{ t('Signal Lab','信号实验室') }} →</a>
+           (v.note or 'No standalone backtest for this alert family — the conviction is documented, not measured as a timing signal.') ~ (('  Measured as: ' ~ v.scorecard_name ~ '.') if v.scorecard_name else ''),
+           (v.note_zh or v.note or '该警报族无独立回测 — 信念有据可查，但未作为择时信号度量。') ~ (('  度量为：' ~ v.scorecard_name ~ '。') if v.scorecard_name else '')) }}
       </div>
     </div>
   </div>

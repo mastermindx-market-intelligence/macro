@@ -447,6 +447,36 @@ def test_request_budget_stays_under_the_edge_origin_pull_timeout():
     assert a._REQUEST_BUDGET_S <= 12.0
     assert a._QUERY_TIMEOUT_S <= a._REQUEST_BUDGET_S
 
+
+def test_pages_uses_null_safe_anti_membership_without_changing_classifiers(monkeypatch):
+    seen = _capture(monkeypatch)
+    a.pages(days=30, limit=500)
+    assert len(seen["all"]) == 1
+    sql = seen["sql"]
+    outer = sql.rsplit("select e.site", 1)[1]
+    assert "e.created_at > now() - interval '43200 minutes'" in outer
+    assert "not exists (select 1 from excluded x where x.visitor_id = e.visitor_id)" in outer
+    assert "not exists (select 1 from bots b where b.visitor_id = e.visitor_id)" in outer
+    assert "not in" not in outer and "left join" not in outer
+    assert "count(distinct e.visitor_id)" in outer
+    assert "avg(e.dwell_ms)" in outer
+    assert "group by 1,2 order by views desc nulls last, 1, 2 limit 500" in outer
+    # Pages now projects only classifier OUTPUT IDs. Historical seeds/anchors,
+    # customer protection and the unchanged bot block still classify those IDs.
+    assert sql.startswith(a._pages_cte(43200))
+    global_exclusions = a._excluded_cte()
+    focused_exclusions = a._excluded_cte(focus_visitors=True)
+    historical_prefix = global_exclusions.split("excl_link as (", 1)[0]
+    assert focused_exclusions.startswith(historical_prefix)
+    customer_guard = "where not exists (select 1 from public.analytics_events e3 "
+    assert focused_exclusions.split(customer_guard, 1)[1] == global_exclusions.split(customer_guard, 1)[1]
+    assert focused_exclusions.count("and e2.visitor_id in (select visitor_id from focus_visitors)") == 2
+    assert "excluded as (select visitor_id from excl_seed where visitor_id in (select visitor_id from focus_visitors)" in focused_exclusions
+    assert sql.count(a._bot_cte(43200)) == 1
+    assert "where e.visitor_id is not null" in a._excluded_cte()
+    assert "where e2.visitor_id is not null" in a._excluded_cte()
+    assert "where e.visitor_id is not null" in a._bot_cte(43200)
+
 def test_all_windowed_analytics_surfaces_bound_bot_history(monkeypatch):
     cases = [
         ("pages", lambda: a.pages(minutes=1440)),

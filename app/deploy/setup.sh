@@ -79,6 +79,10 @@ install -m 0755 "$APP_DIR/app/deploy/update.sh" /usr/local/bin/macro-update
 
 # Rotate the cron + Caddy logs so they can never fill the droplet disk.
 install -m 0644 "$APP_DIR/app/deploy/logrotate-macro-vps" /etc/logrotate.d/macro-vps 2>/dev/null || true
+# Same for the persistent journal (2026-10-19 root-disk incident). The Git store
+# maintenance timer is self-armed by macro-update on the macro-api box.
+install -D -m 0644 "$APP_DIR/app/deploy/journald-macro-vps.conf" /etc/systemd/journald.conf.d/10-macro-vps-cap.conf \
+	&& systemctl restart systemd-journald || log "journald cap not applied (non-fatal)"
 
 # Lock the web origin to Cloudflare IPs only (close the direct-to-origin bypass). Fail-open:
 # a CF-fetch failure leaves provisioning intact rather than blocking the deploy.
