@@ -1,7 +1,7 @@
 {
   "schema": "influence.graph.v1",
   "as_of": "2026-06-19",
-  "generated_utc": "2026-10-22T16:30:59.836332+00:00",
+  "generated_utc": "2026-11-08T00:43:14.770878+00:00",
   "note": "Curated multi-actor influence graph: important people and the investable names/themes they are affiliated with (control, holdings, public advocacy, partnerships). Public-record only. provenance = FACT (filing/widely-reported structural fact) | DISCLOSED (self-reported trade/holding) | INFERRED (analytical link). The LLM extractor grows candidate edges; a human promotes them here.",
   "n_actors": 22,
   "n_entities": 19,
@@ -798,12 +798,13 @@
       ],
       "n_actors": 4,
       "alt_corroborated": true,
-      "alt_score": 4,
-      "alt_weighted": 1.15,
+      "alt_score": 5,
+      "alt_weighted": 1.8,
       "alt_channels": [
         "affiliation",
         "github_momentum",
-        "special_situation",
+        "lobbying",
+        "material_8k",
         "stocktwits_bull"
       ],
       "top_holder": {
@@ -846,11 +847,14 @@
       ],
       "n_actors": 4,
       "alt_corroborated": true,
-      "alt_score": 2,
-      "alt_weighted": 0.7,
+      "alt_score": 5,
+      "alt_weighted": 1.75,
       "alt_channels": [
         "affiliation",
-        "special_situation"
+        "cnbc_pick",
+        "lobbying",
+        "special_situation",
+        "trump"
       ],
       "top_holder": {
         "owner": "BEZOS JEFFREY P",
@@ -933,13 +937,12 @@
       ],
       "n_actors": 3,
       "alt_corroborated": true,
-      "alt_score": 4,
-      "alt_weighted": 1.3,
+      "alt_score": 3,
+      "alt_weighted": 0.8,
       "alt_channels": [
         "affiliation",
         "retail_buzz",
-        "stocktwits_bull",
-        "trump"
+        "stocktwits_bull"
       ],
       "top_holder": {
         "owner": "Musk Elon",
@@ -995,13 +998,14 @@
       ],
       "n_actors": 2,
       "alt_corroborated": true,
-      "alt_score": 6,
-      "alt_weighted": 2.4,
+      "alt_score": 7,
+      "alt_weighted": 2.8,
       "alt_channels": [
         "affiliation",
+        "analyst_upgrade_cluster",
         "app_demand",
         "github_momentum",
-        "lobbying",
+        "hf_model_momentum",
         "patent_cluster",
         "trump"
       ],
@@ -1012,32 +1016,37 @@
       }
     },
     {
-      "ticker": "IEP",
+      "ticker": "ORCL",
       "actors": [
         {
-          "actor": "Carl Icahn",
-          "kind": "fund",
+          "actor": "Larry Ellison",
+          "kind": "exec",
           "rel": "CONTROLS",
           "provenance": "FACT",
           "qualitative": false
         },
         {
-          "actor": "Carl Icahn",
-          "kind": "fund",
-          "rel": "AFFILIATES_WITH",
-          "provenance": "DISCLOSED",
-          "qualitative": true
+          "actor": "Larry Ellison",
+          "kind": "exec",
+          "rel": "CONTROLS",
+          "provenance": "FACT",
+          "qualitative": false
         }
       ],
       "n_actors": 2,
       "alt_corroborated": true,
-      "alt_score": 2,
-      "alt_weighted": 0.7,
+      "alt_score": 3,
+      "alt_weighted": 1.3,
       "alt_channels": [
         "affiliation",
-        "special_situation"
+        "lobbying",
+        "trump"
       ],
-      "top_holder": null
+      "top_holder": {
+        "owner": "VANGUARD GROUP INC",
+        "title": "Institution",
+        "shares": 174802084
+      }
     },
     {
       "ticker": "GOOGL",
@@ -1059,11 +1068,12 @@
       ],
       "n_actors": 2,
       "alt_corroborated": true,
-      "alt_score": 3,
-      "alt_weighted": 1.2,
+      "alt_score": 4,
+      "alt_weighted": 1.45,
       "alt_channels": [
         "affiliation",
         "app_demand",
+        "cnbc_pick",
         "lobbying"
       ],
       "top_holder": {
@@ -1092,11 +1102,10 @@
       ],
       "n_actors": 2,
       "alt_corroborated": true,
-      "alt_score": 4,
-      "alt_weighted": 1.25,
+      "alt_score": 3,
+      "alt_weighted": 0.8,
       "alt_channels": [
         "affiliation",
-        "gov_contract",
         "retail_buzz",
         "stocktwits_bull"
       ],
@@ -1144,12 +1153,11 @@
       ],
       "n_actors": 1,
       "alt_corroborated": true,
-      "alt_score": 4,
-      "alt_weighted": 1.85,
+      "alt_score": 3,
+      "alt_weighted": 1.4,
       "alt_channels": [
         "13f_add",
         "affiliation",
-        "congress_buy",
         "trump"
       ],
       "top_holder": {
@@ -1172,11 +1180,11 @@
       "n_actors": 1,
       "alt_corroborated": true,
       "alt_score": 5,
-      "alt_weighted": 1.85,
+      "alt_weighted": 2.45,
       "alt_channels": [
         "affiliation",
-        "gov_grant",
-        "lobbying",
+        "gov_grant_accel",
+        "insider_mspr",
         "patent_cluster",
         "stocktwits_bull"
       ],
@@ -1199,13 +1207,12 @@
       ],
       "n_actors": 1,
       "alt_corroborated": true,
-      "alt_score": 4,
-      "alt_weighted": 1.6,
+      "alt_score": 3,
+      "alt_weighted": 1.1,
       "alt_channels": [
         "affiliation",
         "patent_cluster",
-        "special_situation",
-        "trump"
+        "special_situation"
       ],
       "top_holder": {
         "owner": "VANGUARD GROUP INC",
@@ -1226,12 +1233,14 @@
       ],
       "n_actors": 1,
       "alt_corroborated": true,
-      "alt_score": 6,
-      "alt_weighted": 2.45,
+      "alt_score": 8,
+      "alt_weighted": 3.65,
       "alt_channels": [
+        "13f_add",
         "affiliation",
         "analyst_upgrade_cluster",
-        "gov_grant",
+        "congress_buy",
+        "gov_grant_accel",
         "insider_mspr",
         "patent_cluster",
         "stocktwits_bull"
@@ -1255,10 +1264,11 @@
       ],
       "n_actors": 1,
       "alt_corroborated": true,
-      "alt_score": 2,
-      "alt_weighted": 1.0,
+      "alt_score": 3,
+      "alt_weighted": 1.15,
       "alt_channels": [
         "affiliation",
+        "stocktwits_bull",
         "trump"
       ],
       "top_holder": {
@@ -1326,12 +1336,13 @@
       ],
       "n_actors": 1,
       "alt_corroborated": true,
-      "alt_score": 3,
-      "alt_weighted": 1.45,
+      "alt_score": 4,
+      "alt_weighted": 1.6,
       "alt_channels": [
         "affiliation",
         "material_8k",
-        "patent_cluster"
+        "patent_cluster",
+        "stocktwits_bull"
       ],
       "top_holder": {
         "owner": "VANGUARD GROUP INC",
@@ -1364,6 +1375,27 @@
         "title": "Institution",
         "shares": 198470000
       }
+    },
+    {
+      "ticker": "CVI",
+      "actors": [
+        {
+          "actor": "Carl Icahn",
+          "kind": "fund",
+          "rel": "AFFILIATES_WITH",
+          "provenance": "DISCLOSED",
+          "qualitative": true
+        }
+      ],
+      "n_actors": 1,
+      "alt_corroborated": true,
+      "alt_score": 2,
+      "alt_weighted": 0.7,
+      "alt_channels": [
+        "affiliation",
+        "special_situation"
+      ],
+      "top_holder": null
     },
     {
       "ticker": "LULU",
@@ -1490,21 +1522,21 @@
       }
     },
     {
-      "ticker": "ORCL",
+      "ticker": "IEP",
       "actors": [
         {
-          "actor": "Larry Ellison",
-          "kind": "exec",
+          "actor": "Carl Icahn",
+          "kind": "fund",
           "rel": "CONTROLS",
           "provenance": "FACT",
           "qualitative": false
         },
         {
-          "actor": "Larry Ellison",
-          "kind": "exec",
-          "rel": "CONTROLS",
-          "provenance": "FACT",
-          "qualitative": false
+          "actor": "Carl Icahn",
+          "kind": "fund",
+          "rel": "AFFILIATES_WITH",
+          "provenance": "DISCLOSED",
+          "qualitative": true
         }
       ],
       "n_actors": 2,
@@ -1514,11 +1546,7 @@
       "alt_channels": [
         "affiliation"
       ],
-      "top_holder": {
-        "owner": "VANGUARD GROUP INC",
-        "title": "Institution",
-        "shares": 174802084
-      }
+      "top_holder": null
     },
     {
       "ticker": "ASML",
@@ -1608,26 +1636,6 @@
       "top_holder": null
     },
     {
-      "ticker": "CVI",
-      "actors": [
-        {
-          "actor": "Carl Icahn",
-          "kind": "fund",
-          "rel": "AFFILIATES_WITH",
-          "provenance": "DISCLOSED",
-          "qualitative": true
-        }
-      ],
-      "n_actors": 1,
-      "alt_corroborated": false,
-      "alt_score": 1,
-      "alt_weighted": 0.5,
-      "alt_channels": [
-        "affiliation"
-      ],
-      "top_holder": null
-    },
-    {
       "ticker": "COIN",
       "actors": [
         {
@@ -1676,100 +1684,100 @@
   "n_candidates": 0,
   "filings": [
     {
-      "date": "2026-10-19",
+      "date": "2026-11-06",
       "form": "8-K",
-      "company": "Curanex Pharmaceuticals Inc",
-      "ticker": "CURX",
+      "company": "HeartSciences Inc.",
+      "ticker": null,
       "items": "8.01",
-      "url": "https://www.sec.gov/Archives/edgar/data/2025942/000149315226047614/form8-k.htm"
+      "url": "https://www.sec.gov/Archives/edgar/data/1468492/000121390026116964/ea0311293-8k_heart.htm"
     },
     {
-      "date": "2026-10-16",
-      "form": "8-K",
-      "company": "Hawkeye Digital, Inc.",
-      "ticker": "HWKE",
-      "items": "7.01,9.01",
-      "url": "https://www.sec.gov/Archives/edgar/data/1750777/000168316826007929/hawkeye_ex9901.htm"
-    },
-    {
-      "date": "2026-10-15",
-      "form": "8-K",
-      "company": "New America Acquisition I Corp.",
-      "ticker": null,
-      "items": "1.01,1.02,9.01",
-      "url": "https://www.sec.gov/Archives/edgar/data/2074878/000149315226047248/ex10-1.htm"
-    },
-    {
-      "date": "2026-10-15",
-      "form": "8-K",
-      "company": "New America Acquisition I Corp.",
-      "ticker": null,
-      "items": "1.01,1.02,9.01",
-      "url": "https://www.sec.gov/Archives/edgar/data/2074878/000149315226047248/form8-k.htm"
-    },
-    {
-      "date": "2026-10-01",
-      "form": "425",
-      "company": "Trump Media & Technology Group Corp.",
-      "ticker": null,
-      "items": "",
-      "url": "https://www.sec.gov/Archives/edgar/data/1849635/000143774926031736/djt20261001_425.htm"
-    },
-    {
-      "date": "2026-09-30",
-      "form": "425",
-      "company": "Trump Media & Technology Group Corp.",
-      "ticker": null,
-      "items": "",
-      "url": "https://www.sec.gov/Archives/edgar/data/1849635/000143774926031536/djt20260930_425.htm"
-    },
-    {
-      "date": "2026-09-30",
+      "date": "2026-11-05",
       "form": "S-1/A",
-      "company": "Cryptex Digital Market Cap ETF",
-      "ticker": "BAGZ",
+      "company": "American Ventures Acquisition Corp. I",
+      "ticker": null,
       "items": "",
-      "url": "https://www.sec.gov/Archives/edgar/data/2115027/000121390026105231/ea0307021-s1a5_cryptex.htm"
+      "url": "https://www.sec.gov/Archives/edgar/data/2111009/000121390026116032/ea0307112-s1a1_american1.htm"
     },
     {
-      "date": "2026-09-30",
+      "date": "2026-11-05",
+      "form": "S-1/A",
+      "company": "American Ventures Acquisition Corp. I",
+      "ticker": null,
+      "items": "",
+      "url": "https://www.sec.gov/Archives/edgar/data/2111009/000121390026116032/ea030711201ex10-13.htm"
+    },
+    {
+      "date": "2026-11-05",
+      "form": "425",
+      "company": "Trump Media & Technology Group Corp.",
+      "ticker": null,
+      "items": "",
+      "url": "https://www.sec.gov/Archives/edgar/data/1849635/000143774926035284/djt20261105_425.htm"
+    },
+    {
+      "date": "2026-11-04",
       "form": "8-K",
-      "company": "Trump Media & Technology Group Corp.",
-      "ticker": null,
-      "items": "1.01,7.01,9.01",
-      "url": "https://www.sec.gov/Archives/edgar/data/1849635/000143774926031535/ex_1020869.htm"
+      "company": "Hut 8 Corp.",
+      "ticker": "HUT",
+      "items": "2.02,9.01",
+      "url": "https://www.sec.gov/Archives/edgar/data/1964789/000110465926122347/tm2628741d1_8k.htm"
     },
     {
-      "date": "2026-09-30",
+      "date": "2026-11-04",
+      "form": "8-K",
+      "company": "Hut 8 Corp.",
+      "ticker": "HUT",
+      "items": "2.02,9.01",
+      "url": "https://www.sec.gov/Archives/edgar/data/1964789/000110465926122347/tm2628741d1_ex99-1.htm"
+    },
+    {
+      "date": "2026-11-04",
+      "form": "8-K",
+      "company": "American Bitcoin Corp.",
+      "ticker": "ABTC",
+      "items": "2.02,9.01",
+      "url": "https://www.sec.gov/Archives/edgar/data/1755953/000119312526447441/abtc-20261104.htm"
+    },
+    {
+      "date": "2026-11-04",
+      "form": "8-K",
+      "company": "American Bitcoin Corp.",
+      "ticker": "ABTC",
+      "items": "2.02,9.01",
+      "url": "https://www.sec.gov/Archives/edgar/data/1755953/000119312526447441/abtc-ex99_1.htm"
+    },
+    {
+      "date": "2026-11-03",
       "form": "425",
       "company": "Trump Media & Technology Group Corp.",
       "ticker": null,
       "items": "",
-      "url": "https://www.sec.gov/Archives/edgar/data/1849635/000143774926031536/ex_1020866.htm"
+      "url": "https://www.sec.gov/Archives/edgar/data/1849635/000143774926034541/djt20261103_425.htm"
     },
     {
-      "date": "2026-09-30",
-      "form": "425",
-      "company": "Trump Media & Technology Group Corp.",
-      "ticker": null,
+      "date": "2026-10-28",
+      "form": "6-K",
+      "company": "SunScout Holding Ltd",
+      "ticker": "SNSC",
       "items": "",
-      "url": "https://www.sec.gov/Archives/edgar/data/1849635/000143774926031600/djt20260930c_425.htm"
+      "url": "https://www.sec.gov/Archives/edgar/data/2101240/000121390026113292/ea030983701ex99-1.htm"
     },
     {
-      "date": "2026-09-30",
-      "form": "S-4",
-      "company": "Trump Media & Technology Group Corp.",
+      "date": "2026-10-26",
+      "form": "8-K",
+      "company": "Praetorian Acquisition Corp.",
       "ticker": null,
-      "items": "",
-      "url": "https://www.sec.gov/Archives/edgar/data/1849635/000143774926031534/ex_1020083.htm"
+      "items": "5.02,7.01,9.01",
+      "url": "https://www.sec.gov/Archives/edgar/data/2093912/000121390026112505/ea030946801ex99-1.htm"
     },
     {
-      "date": "2026-09-30",
-      "form": "S-4",
-      "company": "Trump Media & Technology Group Corp.",
+      "date": "2026-10-26",
+      "form": "8-K",
+      "company": "Soren Acquisition Corp.",
       "ticker": null,
-      "items": "",
-      "url": "https://www.sec.gov/Archives/edgar/data/1849635/000143774926031534/ex_1020799.htm"
+      "items": "5.02,7.01,9.01",
+      "url": "https://www.sec.gov/Archives/edgar/data/2086263/000121390026112511/ea030946701ex99-1.htm"
     }
   ]
 }

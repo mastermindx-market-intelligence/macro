@@ -41,7 +41,9 @@ EXPECTED_FRAGMENTS = [
     "price basis 2026-03-10",
     "display-only",
     "entry status bounce_wait",
-    "no recorded confirmation",
+    "signal tier not recorded",
+    "signal provisional status not recorded",
+    "T1 marker confirmation date not recorded",
     "simulated close 2026-03-12",
     "not an executed trade or investor return",
 ]
@@ -50,7 +52,7 @@ LINK_MARKUP = '<a href="' + CANON + '">TEST plan dossier</a>'
 GOOD_BODY = (
     "<h2>TEST simulated paper plan</h2>"
     "<p>plan recorded 2026-03-10, price basis 2026-03-10, simulated close 2026-03-12.</p>"
-    "<p>display-only; entry status bounce_wait; no recorded confirmation.</p>"
+    "<p>display-only; entry status bounce_wait; signal tier not recorded; signal provisional status not recorded; T1 marker confirmation date not recorded.</p>"
     "<p>simulated paper plan; not an executed trade or investor return.</p>"
     "<p>Continuation: " + LINK_MARKUP + "</p>"
 )
@@ -249,7 +251,7 @@ class ScopeFragmentTests(unittest.TestCase):
                   close_date="2026-03-12", confirmed_date="2026-03-12")
         frags = nps.scope_fragments(make_slot(native_plan_scope=ok))
         self.assertIn("plan recorded 2026-03-12", frags)
-        self.assertIn("confirmation recorded 2026-03-12", frags)
+        self.assertIn("T1 marker confirmation date 2026-03-12", frags)
         bad = [
             dict(BASE_SCOPE, recorded_at="2026-03-13"),
             dict(BASE_SCOPE, price_basis_date="2026-03-13"),
@@ -291,8 +293,8 @@ class ScopeFragmentTests(unittest.TestCase):
     def test_confirmed_date_requires_confirmation_disclosure(self):
         scope = dict(BASE_SCOPE, confirmed_date="2026-03-11")
         frags = nps.scope_fragments(make_slot(native_plan_scope=scope))
-        self.assertIn("confirmation recorded 2026-03-11", frags)
-        self.assertNotIn("no recorded confirmation", frags)
+        self.assertIn("T1 marker confirmation date 2026-03-11", frags)
+        self.assertNotIn("T1 marker confirmation date not recorded", frags)
 
 
 class RequiredDossierTests(unittest.TestCase):
@@ -362,7 +364,7 @@ class ScopeProblemTests(unittest.TestCase):
         scope = dict(BASE_SCOPE, recorded_at="2026-03-10", price_basis_date="2026-03-11")
         body = (
             "<p>plan recorded 2026-03-11, price basis 2026-03-10, simulated close 2026-03-12.</p>"
-            "<p>display-only; entry status bounce_wait; no recorded confirmation.</p>"
+            "<p>display-only; entry status bounce_wait; signal tier not recorded; signal provisional status not recorded; T1 marker confirmation date not recorded.</p>"
             "<p>simulated paper plan; not an executed trade or investor return.</p>"
             "<p>" + LINK_MARKUP + "</p>"
         )
@@ -381,14 +383,14 @@ class ScopeProblemTests(unittest.TestCase):
         self.assertTrue(any("entry status bounce_wait" in p for p in problems))
 
     def test_missing_null_confirmation_disclosure_fails(self):
-        body = GOOD_BODY.replace("no recorded confirmation", "confirmation recorded 2026-03-12")
+        body = GOOD_BODY.replace("T1 marker confirmation date not recorded", "T1 marker confirmation date 2026-03-12")
         problems = nps.scope_problems(body, make_slot())
-        self.assertTrue(any("no recorded confirmation" in p for p in problems))
+        self.assertTrue(any("T1 marker confirmation date not recorded" in p for p in problems))
 
     def test_missing_mandatory_paper_plan_disclosures_fail(self):
         head = (
             "<p>plan recorded 2026-03-10, price basis 2026-03-10, simulated close 2026-03-12.</p>"
-            "<p>display-only; entry status bounce_wait; no recorded confirmation.</p>"
+            "<p>display-only; entry status bounce_wait; signal tier not recorded; signal provisional status not recorded; T1 marker confirmation date not recorded.</p>"
         )
         body_no_paper_plan = head + "<p>not an executed trade or investor return.</p>" + LINK_MARKUP
         self.assertEqual(

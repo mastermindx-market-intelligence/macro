@@ -1,0 +1,66 @@
+{
+  "benchmark_id": "boe_gilt_objective_2022-09-28",
+  "frozen": true,
+  "source": "research/POLICY_AND_CONTRACT_CASES_2020_2022.md",
+  "historical_case": {
+    "schema": "response_eval.historical_text_case.v1",
+    "replay_scope": "supplied_adjudication_text",
+    "doctrine_scope": "current_doctrine_replay",
+    "cutoff_date": "2022-09-28",
+    "session_label": "date only",
+    "adjudication_date": "2026-10-15",
+    "historical_source_availability": "unverified",
+    "dependence_group": "uk-gilt-dysfunction-september-2022",
+    "source": {
+      "path": "research/POLICY_AND_CONTRACT_CASES_2020_2022.md",
+      "sha256": "ddcde453e8c828904670f5a5b1017601dbfea7df23f99261285de559f8966113"
+    },
+    "input_facts": [
+      {
+        "event_date": "2022-09-28",
+        "source_lines": [
+          43,
+          45
+        ],
+        "text": "On September 28, 2022 the BOE announces temporary, targeted purchases of long-dated UK government bonds to restore market functioning, with HM Treasury indemnification.\nAuctions are planned from September 28 through October 14; purchases will be unwound once risks to market functioning have subsided. Scale is described as whatever is necessary for that objective.\nThe annual 80-billion-pound stock-reduction target remains unchanged, while the start of gilt sales is postponed to October 31. The MPC will assess developments at its next meeting and can change rates as needed for its inflation remit.",
+        "sha256": "dedaa3f20c7dedd4e576da4c0a8f6467c35c82ede2b4b09f5c18db4dcf9f8a9e"
+      }
+    ],
+    "adjudication_excerpt": {
+      "source_lines": [
+        49,
+        49
+      ],
+      "text": "Temporary financial-stability purchases and a postponed sales start do not by themselves announce a policy-rate cut or abandon the annual stock-reduction target. The open scale statement is constrained by purpose and the stated auction window, not perpetual buying. October 14 is the planned end of purchase auctions, not a promised date by which every holding is sold. The release supplies plans, not proof of subsequent execution, solved dysfunction or returns.",
+      "sha256": "54bd9848489d92011ca7b69f4b17e49bdbaef680d1a4ee7a68f5e5096a780ff8"
+    }
+  },
+  "question_en": "Explain how the purchase operation, sales timetable, annual stock target and interest-rate decision process relate, including the scope and timing of the announced commitments.",
+  "packet_digest_fixture": "FROZEN SUPPLIED HISTORICAL TEXT \u2014 cutoff date 2022-09-28 (date only). Historical source availability is unverified; this is not a live dashboard or a proved historically served snapshot.\n[2022-09-28] On September 28, 2022 the BOE announces temporary, targeted purchases of long-dated UK government bonds to restore market functioning, with HM Treasury indemnification.\nAuctions are planned from September 28 through October 14; purchases will be unwound once risks to market functioning have subsided. Scale is described as whatever is necessary for that objective.\nThe annual 80-billion-pound stock-reduction target remains unchanged, while the start of gilt sales is postponed to October 31. The MPC will assess developments at its next meeting and can change rates as needed for its inflation remit.",
+  "expected_properties": [
+    {
+      "tag": "instrument_objective",
+      "check": "The temporary, targeted long-dated gilt purchases are a financial-stability operation to restore market functioning with HM Treasury indemnification; these purchases and the postponed sales start do not by themselves announce a policy-rate cut or abandon the annual stock-reduction target."
+    },
+    {
+      "tag": "stock_flow",
+      "check": "The open whatever-is-necessary purchase scale is constrained by its stated purpose and the stated auction window, not perpetual buying, and the annual 80-billion-pound stock-reduction target remains unchanged."
+    },
+    {
+      "tag": "auction_unwind_clock",
+      "check": "Auctions are planned from September 28 through October 14 and purchases will be unwound once risks to market functioning have subsided; October 14 is the planned end of purchase auctions, not a promised date by which every holding is sold."
+    },
+    {
+      "tag": "execution_limits",
+      "check": "The release supplies plans, not proof of subsequent execution, solved dysfunction or returns, and the MPC's next-meeting assessment is a decision process statement, not an announced rate change."
+    }
+  ],
+  "known_failure_modes": [
+    "Reading the temporary financial-stability purchases or the postponed sales start as a policy-rate cut or as abandonment of the annual stock-reduction target.",
+    "Treating the whatever-is-necessary scale as perpetual buying unconstrained by its purpose and auction window, or as a change to the annual 80-billion-pound stock-reduction target.",
+    "Presenting October 14 as a promised date by which every holding is sold or the unwind as complete, rather than the planned end of purchase auctions with unwinding conditional on subsiding risks to market functioning.",
+    "Treating the release's plans as proof of subsequent execution, solved market dysfunction or realized returns, or as an announced interest-rate decision."
+  ],
+  "gold_standard_sentence": "Temporary financial-stability purchases and a postponed sales start do not by themselves announce a policy-rate cut or abandon the annual stock-reduction target. The open scale statement is constrained by purpose and the stated auction window, not perpetual buying. October 14 is the planned end of purchase auctions, not a promised date by which every holding is sold. The release supplies plans, not proof of subsequent execution, solved dysfunction or returns.",
+  "rubric_weights_ref": "existing response_eval RUBRIC; internal QA only"
+}
