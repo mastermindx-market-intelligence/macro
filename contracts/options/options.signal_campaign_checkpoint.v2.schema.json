@@ -1,0 +1,169 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "options.signal_campaign_checkpoint/v2",
+  "title": "Receipt-gated effective campaign outcome checkpoint",
+  "description": "An inactive-compatible checkpoint that reports the physical campaign ledger and its effective view separately after an eligible correction receipt. It grants no campaign authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "checkpoint_id",
+    "policy",
+    "sources",
+    "outputs",
+    "correction",
+    "training_eligible",
+    "authority"
+  ],
+  "properties": {
+    "schema": {"const": "options.signal_campaign_checkpoint/v2"},
+    "checkpoint_id": {"type": "string", "pattern": "^ocp_[a-f0-9]{24}$"},
+    "policy": {"const": "checkpoint-last-exact-prefix-with-effective-outcome-view/v1"},
+    "sources": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["episodes", "h60_outcomes", "session_outcomes"],
+      "properties": {
+        "episodes": {"$ref": "#/$defs/prefixReceipt"},
+        "h60_outcomes": {"$ref": "#/$defs/prefixReceipt"},
+        "session_outcomes": {"$ref": "#/$defs/prefixReceipt"}
+      }
+    },
+    "outputs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["campaigns", "outcomes"],
+      "properties": {
+        "campaigns": {"$ref": "#/$defs/prefixReceipt"},
+        "outcomes": {"$ref": "#/$defs/prefixReceipt"}
+      }
+    },
+    "correction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "policy",
+        "activation_receipt_id",
+        "activation_receipt_time",
+        "activation_receipt_sha256",
+        "lawful_prefix",
+        "incident_prefix",
+        "quarantine",
+        "reserved_keys",
+        "physical_raw_outcomes",
+        "effective_outcomes"
+      ],
+      "properties": {
+        "policy": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["policy_id", "policy_version", "path", "file_sha256"],
+          "properties": {
+            "policy_id": {"const": "sep03_mixed_generation_outcome_quarantine/v1"},
+            "policy_version": {"const": 1},
+            "path": {
+              "const": "research/options_estate/options_signal_campaign_outcome_correction_prereg_v1.json"
+            },
+            "file_sha256": {
+              "const": "7e6710c8b1ce65f1307f450e50829280548fcd62bd3521c2acf7a5b4ec6ef2ad"
+            }
+          }
+        },
+        "activation_receipt_id": {"type": "string", "minLength": 1, "maxLength": 200},
+        "activation_receipt_time": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]{1,6})?Z$"
+        },
+        "activation_receipt_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "lawful_prefix": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["path", "start_row", "end_row", "count", "prefix_sha256"],
+          "properties": {
+            "path": {"const": "data/options_signal_campaign/outcomes.jsonl"},
+            "start_row": {"const": 1},
+            "end_row": {"const": 24578},
+            "count": {"const": 24578},
+            "prefix_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+          }
+        },
+        "incident_prefix": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["path", "start_row", "end_row", "count", "prefix_sha256"],
+          "properties": {
+            "path": {"const": "data/options_signal_campaign/outcomes.jsonl"},
+            "start_row": {"const": 1},
+            "end_row": {"const": 28423},
+            "count": {"const": 28423},
+            "prefix_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+          }
+        },
+        "quarantine": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["path", "start_row", "end_row", "count", "reserved_key_count", "reserved_key_digest"],
+          "properties": {
+            "path": {"const": "data/options_signal_campaign/outcomes.jsonl"},
+            "start_row": {"const": 24579},
+            "end_row": {"const": 28423},
+            "count": {"const": 3845},
+            "reserved_key_count": {"type": "integer", "minimum": 0},
+            "reserved_key_digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+          }
+        },
+        "reserved_keys": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["count", "digest"],
+          "properties": {
+            "count": {"type": "integer", "minimum": 0},
+            "digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+          }
+        },
+        "physical_raw_outcomes": {"type": "integer", "minimum": 28423},
+        "effective_outcomes": {"type": "integer", "minimum": 0}
+      }
+    },
+    "training_eligible": {"const": false},
+    "authority": {"$ref": "#/$defs/falseAuthority"}
+  },
+  "$defs": {
+    "prefixReceipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "records", "prefix_sha256"],
+      "properties": {
+        "path": {
+          "enum": [
+            "data/options_signal_episode/episodes.jsonl",
+            "data/options_signal_episode/outcomes_h60.jsonl",
+            "data/options_signal_episode/outcomes_session.jsonl",
+            "data/options_signal_campaign/campaigns.jsonl",
+            "data/options_signal_campaign/outcomes.jsonl"
+          ]
+        },
+        "records": {"type": "integer", "minimum": 0},
+        "prefix_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+      }
+    },
+    "falseAuthority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "may_originate", "may_rank", "may_score", "may_gate", "may_size", "may_issue",
+        "may_trade", "may_publish_pick", "may_train_prophet", "may_feed_neural_web",
+        "may_select", "may_escalate", "may_compute_option_pnl"
+      ],
+      "properties": {
+        "may_originate": {"const": false}, "may_rank": {"const": false},
+        "may_score": {"const": false}, "may_gate": {"const": false},
+        "may_size": {"const": false}, "may_issue": {"const": false},
+        "may_trade": {"const": false}, "may_publish_pick": {"const": false},
+        "may_train_prophet": {"const": false}, "may_feed_neural_web": {"const": false},
+        "may_select": {"const": false}, "may_escalate": {"const": false},
+        "may_compute_option_pnl": {"const": false}
+      }
+    }
+  }
+}

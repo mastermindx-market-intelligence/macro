@@ -104,6 +104,22 @@ def test_template_respects_canonical_snapshot_timing(status, expected):
     assert "timing_state" in out and "timing_reason" in out
 
 
+@pytest.mark.parametrize("status", ["buy_soon", "buy_now", "hold", "blocked", None])
+@pytest.mark.parametrize("quote", [None, {}, {"price": None}, {"price": "unavailable"}])
+def test_missing_quote_keeps_current_no_read_priority_and_timing_metadata(status, quote):
+    case = _case(status, quote=quote, quotesStatus="live")
+    out = _run_js([case])[0]["stance"]
+    assert out["key"] == "degraded"
+    assert out["reason_en"] == "Prices aren't coming through — no read on this name right now"
+    assert out["reason_zh"] == "行情未送达——该标的暂无判断"
+    expected = engine.classify_entry_timing(
+        entry_status=status, current_price=case["leader"]["entry_signal"]["spot"],
+        chase_above=case["leader"]["entry_signal"]["chase_above"])
+    assert out["timing_state"] == expected["state"]
+    assert out["timing_reason"] == expected["reason"]
+    assert out["already_started"] == expected["already_started"]
+
+
 def test_asts_recorded_shape_cannot_manufacture_washout():
     # Recorded-shape fixture, NOT a live quote or an observed HOLD/anti-chase breach.
     case = _case("bounce_wait", quote=None, pulse=None, now="2026-09-05T02:30:26Z")

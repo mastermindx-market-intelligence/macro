@@ -71,6 +71,13 @@ from __future__ import annotations
 from hashlib import sha256
 from typing import Any, Mapping
 
+from engine.market_os.macro_workspaces.publication_prior import (
+    apply_headline_publication_fields,
+    attach_prior_publication,
+    no_earlier_publication,
+    resolve_publication_prior,
+)
+
 METHOD_VERSION = "inflation_system.compose.v1"
 DEFINITION_VERSION = "1.0.0"
 PRODUCER = "engine.market_os.macro_workspaces.inflation"
@@ -143,6 +150,18 @@ def _round(v: float | None, n: int = 2) -> float | None:
 
 def _bil(en: str, zh: str | None) -> dict:
     return {"en": en, "zh": zh}
+
+
+
+def _plain_axis_num(v, *, zh: bool = False) -> str:
+    """C-n3: format an axis score; None/non-numeric → plain-word null."""
+    if v is None:
+        return "暂无" if zh else "unavailable"
+    try:
+        return f"{float(v):.1f}"
+    except (TypeError, ValueError):
+        return "暂无" if zh else "unavailable"
+
 
 
 def _pct_to_100(value: float | None, *, center: float, scale: float) -> float | None:
@@ -365,11 +384,13 @@ def compose(inflation_intelligence: Mapping[str, Any], *, built_at: str,
         reasons.append(f"contradiction={contradiction['kind']}")
 
     # ---- quadrant + hysteresis -------------------------------------------- #
+    publication_prior = resolve_publication_prior(prior_snapshot, asof)
     headline = _headline(x_value, x_status, x_null, y_value, y_status, y_null,
-                         asof, prior_snapshot, contradiction)
+                         asof, publication_prior, contradiction)
+    apply_headline_publication_fields(headline, publication_prior, raw_prior=prior_snapshot)
 
     # ---- changes vs prior accepted print ----------------------------------- #
-    changes = _changes(x_value, y_value, prior_snapshot)
+    changes = _changes(x_value, y_value, prior_snapshot, asof)
 
     snapshot = {
         "schema": {"contract": "mastermind.macro_workspace_snapshot.v1", "version": "1.0.0"},
@@ -442,7 +463,7 @@ def compose(inflation_intelligence: Mapping[str, Any], *, built_at: str,
             "privacy_note": "Event definitions reuse the existing first-party analytics owner; no second analytics store, no user identity copied into the artifact.",
         },
     }
-    return snapshot
+    return attach_prior_publication(snapshot, publication_prior)
 
 
 # --------------------------------------------------------------------------- #
@@ -583,6 +604,8 @@ def _headline(x_value, x_status, x_null, y_value, y_status, y_null, asof,
             vec_null = "INSUFFICIENT_HISTORY"
         vec = {"dx": None, "dy": None, "status": "ABSENT", "null_reason": vec_null}
         transition_distance = None
+    vec["x_axis_id"] = "inflation_impulse"
+    vec["y_axis_id"] = "persistence_breadth"
 
     if not applied:
         note = "no comparable prior print; raw threshold classification, hysteresis not applied"
@@ -618,11 +641,14 @@ def _headline(x_value, x_status, x_null, y_value, y_status, y_null, asof,
     }
 
 
-def _changes(x_value, y_value, prior_snapshot) -> dict:
+def _changes(x_value, y_value, prior_snapshot, current_effective_date) -> dict:
     if prior_snapshot is None:
         return {"comparability": "NO_PRIOR", "prior_generation_id": None,
                 "prior_effective_date": None, "prior_method_version": None,
                 "deltas": [], "status": "ABSENT", "null_reason": "WARMUP"}
+    prior_snapshot = resolve_publication_prior(prior_snapshot, current_effective_date)
+    if prior_snapshot is None:
+        return no_earlier_publication()
     prior_method = _get(prior_snapshot, "headline", "method_version")
     prior_gen = _get(prior_snapshot, "generation", "generation_id")
     prior_eff = _get(prior_snapshot, "headline", "effective_date")
@@ -844,9 +870,9 @@ def _implications(headline, x_value, y_value, contradiction, worst_freshness,
         items.append({
             "implication_id": "state_descriptive",
             "text": _bil(
-                f"US inflation regime reads {state_id} - {label_en} (impulse x={x_value}, "
-                f"persistence/breadth y={y_value}, boundary 50).",
-                f"美国通胀体制读数为 {state_id} - {label_zh}（冲量 x={x_value}，持续性/广度 y={y_value}，分界 50）。"),
+                f"US inflation regime reads {state_id} - {label_en} (impulse {_plain_axis_num(x_value)}, "
+                f"persistence/breadth {_plain_axis_num(y_value)}, boundary 50).",
+                f"美国通胀体制读数为 {state_id} - {label_zh}（冲量 {_plain_axis_num(x_value, zh=True)}，持续性/广度 {_plain_axis_num(y_value, zh=True)}，分界 50）。"),
             "evidence_class": "DESCRIPTIVE",
             "confidence": conf,
             "horizon": "current",

@@ -118,6 +118,7 @@ body.cs-page.cs-modal-open { overflow: hidden; }
 
 .cs-status,
 .cs-unavailable,
+.cs-policy-active,
 .cs-rail,
 .cs-dossier,
 .cs-evidence-drawer {
@@ -171,6 +172,76 @@ body.cs-page.cs-modal-open { overflow: hidden; }
 .cs-unavailable-mark { color: var(--cs-gold); font-size: 17px; font-weight: 800; line-height: 1.2; }
 .cs-unavailable strong { display: block; margin-bottom: 1px; color: var(--cs-ink); font-size: 11px; }
 .cs-unavailable span { font-size: 11px; }
+
+/* Policy watch, `present` state (B-F09-6, MO-PAID-067): a dated public-record
+   step is normal desk activity, not degraded coverage — so it gets its own
+   calm/informational treatment (cyan) instead of borrowing `.cs-unavailable`'s
+   gold outage look. Same layout mechanics, distinct semantic color; dark/light
+   both resolve automatically because --cs-cyan/--cs-surface/--cs-line already
+   repaint per theme above. */
+.cs-policy-active {
+  display: flex;
+  align-items: flex-start;
+  margin: 12px 0 16px;
+  padding: 11px 14px;
+  border-color: color-mix(in srgb, var(--cs-cyan) 24%, var(--cs-line));
+  border-radius: var(--r-panel,13px);
+  color: var(--cs-muted);
+  background: color-mix(in srgb, var(--cs-cyan) 5%, var(--cs-surface));
+  box-shadow: none;
+  gap: 10px;
+}
+.cs-policy-mark { color: var(--cs-cyan); font-size: 17px; font-weight: 800; line-height: 1.2; }
+.cs-policy-active strong { display: block; margin-bottom: 1px; color: var(--cs-ink); font-size: 11px; }
+.cs-policy-active span { font-size: 11px; }
+
+/* Policy calendar rows (B-F09-6b): list geometry only; colour/type from the
+   existing .cs-policy / .cs-kicker material. Tokens, no hex, no font stack. */
+.cs-policy-windows {
+  display: grid;
+  margin: 10px 0 0;
+  gap: 10px;
+}
+.cs-policy-window {
+  padding: 8px 0 0;
+  border-top: 1px solid var(--cs-line);
+}
+.cs-prl {
+  display: grid;
+  margin: 6px 0 0;
+  padding: 0;
+  list-style: none;
+  gap: 8px;
+}
+.cs-pr {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 6px 12px;
+  align-items: start;
+}
+.cs-pr a {
+  color: var(--cs-cyan);
+  text-decoration: none;
+}
+.cs-pr time {
+  display: block;
+  color: var(--cs-muted);
+  font-family: var(--font-mono);
+  font-size: 10px;
+}
+#cs-policy-projection {
+  scroll-margin-top: 12px;
+  scroll-margin-bottom: 120px;
+}
+#cs-policy-projection > div {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+@media (max-width: 640px) {
+  #cs-policy-projection {
+    padding-bottom: 120px;
+  }
+}
 
 .cs-workspace { display: grid; min-width: 0; grid-template-columns: minmax(272px, 320px) minmax(0, 1fr); align-items: start; gap: 16px; }
 .cs-rail { position: sticky; top: 16px; min-width: 0; overflow: hidden; border-radius: var(--cs-radius); }
@@ -250,6 +321,8 @@ body.cs-page.cs-modal-open { overflow: hidden; }
 .cs-latest-grid > div + div { padding-left: 12px; border-left: 1px solid var(--cs-line); }
 .cs-latest-grid span { display: block; color: var(--cs-muted); font-size: 9px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; }
 .cs-latest-grid strong { display: block; margin-top: 4px; overflow: hidden; font-family: var(--font-mono); font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
+.cs-covenant-room .cs-latest-grid strong { overflow: visible; white-space: normal; overflow-wrap: anywhere; }
+.cs-covenant-room .cs-latest-grid strong > span { color: inherit; font: inherit; letter-spacing: normal; text-transform: none; }
 
 .cs-change-list { display: grid; gap: 7px; }
 .cs-change { display: grid; grid-template-columns: 8px minmax(0, 1fr) auto; align-items: center; padding: 8px 0; border-top: 1px solid var(--cs-line); gap: 9px; }
@@ -345,4 +418,33 @@ body.cs-page.cs-modal-open { overflow: hidden; }
 @media (prefers-reduced-motion: reduce) {
   .cs-evidence-drawer { transition: none; }
   .cs-loading-dot { animation: none; }
+}
+
+/* Agreement facts share the desk's dark raised panel and light research card. */
+.cs-ma-agreement .cs-latest-grid strong { overflow: visible; white-space: normal; overflow-wrap: anywhere; font-size: 13px; }
+.cs-ma-agreement details { margin-top: var(--sp-3,12px); padding-top: var(--sp-2,8px); border-top: 1px solid var(--cs-line); }
+.cs-ma-agreement summary { min-height: 36px; cursor: pointer; }
+.cs-ma-agreement p { line-height: 1.6; overflow-wrap: anywhere; }
+/* Filed issue terms reuse the desk's dark material and light hairline system. */
+.cs-bond-terms { margin-top: 14px; }
+.cs-bond-terms > p { max-width: 96ch; color: var(--cs-muted); }
+.cs-bond-terms h2 { margin: 0; font-size: 20px; line-height: 1.3; }
+.cs-bond-terms h3 { margin: 20px 0 9px; font-size: 14px; }
+.cs-bond-pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.cs-bond-issuer { min-width: 0; padding: 16px; border: 1px solid var(--cs-line); border-radius: var(--r-card, 12px); background: var(--cs-surface); }
+.cs-bond-issuer h4 { margin: 0; font-size: 16px; }
+.cs-bond-issuer p { color: var(--cs-muted); font-size: 11px; overflow-wrap: anywhere; }
+.cs-bond-issuer .cs-latest-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 0; }
+.cs-bond-issuer .cs-latest-grid > div { padding: 9px 0 0; border: 0; }
+.cs-bond-issuer .cs-latest-grid strong { overflow: visible; white-space: normal; }
+.cs-bond-issuer summary { padding: 15px 0 3px; color: var(--cs-cyan); cursor: pointer; }
+.cs-bond-issuer dl { margin: 10px 0; }
+.cs-bond-issuer dl > div { display: grid; grid-template-columns: 1fr 2fr; padding: 6px 0; border-bottom: 1px solid var(--cs-line); gap: 10px; }
+.cs-bond-issuer dt { color: var(--cs-muted); }
+.cs-bond-issuer dd { margin: 0; overflow-wrap: anywhere; }
+.cs-bond-scope { font-size: 11px; }
+@media (max-width: 700px) {
+  .cs-bond-pair { grid-template-columns: 1fr; gap: 10px; }
+  .cs-bond-issuer { padding: 13px; }
+  .cs-bond-issuer dl > div { grid-template-columns: 1fr; gap: 3px; }
 }

@@ -238,6 +238,75 @@ class _RedirectResponse:
         return iter(())
 
 
+@pytest.mark.parametrize("stage", ["sibling_marker", "immutable_generation_manifest", "immutable_workspace_body"])
+@pytest.mark.parametrize("category", ["http_error", "timeout", "connection_error", "request_error"])
+def test_p1_read_failure_retains_only_observed_safe_facts(monkeypatch, stage, category):
+    import socket
+    import requests
+    secret = "https://private.invalid/body?signature=DO_NOT_DISCLOSE authorization=SECRET body=SECRET"
+    response = requests.Response()
+    response.status_code = 503
+    response.url = BASE + "/body?signed=SECRET_URL"
+    response.headers["Authorization"] = "SECRET_HEADER"
+    response._content = b"SECRET_BODY"
+    errors = {
+        "http_error": requests.HTTPError("historical403 " + secret, response=response),
+        "timeout": requests.Timeout(secret, response=response),
+        "connection_error": requests.ConnectionError(secret, response=response),
+        "request_error": requests.RequestException(secret),
+    }
+    failure = errors[category]
+    def get(url, **kwargs):
+        if stage == "immutable_workspace_body" and url == f"{BASE}/event_workspaces/manifest.json":
+            ok = requests.Response()
+            ok.status_code, ok.url = 200, url
+            ok._content = json.dumps({"generation_id": "a" * 24}).encode()
+            ok._content_consumed = True
+            return ok
+        raise failure
+    monkeypatch.setattr(socket.socket, "connect", lambda *a, **k: pytest.fail("network forbidden"))
+    monkeypatch.setattr(reader.requests, "get", get)
+    calls = {
+        "sibling_marker": lambda: reader.fetch_current_workspace_marker_raw(base_url=BASE),
+        "immutable_generation_manifest": lambda: reader.fetch_generation_manifest("a" * 24, base_url=BASE),
+        "immutable_workspace_body": lambda: reader.load_current_workspace("evt_cik0000320193_2026q3_results", base_url=BASE),
+    }
+    with pytest.raises(reader.CompanyIntelligenceReadError) as caught:
+        calls[stage]()
+    assert getattr(caught.value, "request_stage", None) == stage
+    assert getattr(caught.value, "exception_category", None) == category
+    assert getattr(caught.value, "http_status", None) == (503 if category == "http_error" else None)
+    assert caught.value.__cause__ is failure
+    details = reader.read_failure_diagnostics(caught.value)
+    assert details == {"request_stage": stage, "exception_category": category,
+                       "http_status": 503 if category == "http_error" else None}
+    assert "SECRET" not in str(caught.value) + json.dumps(details)
+    assert "private.invalid" not in str(caught.value) + json.dumps(details)
+
+
+def test_p1_failure_diagnostics_are_closed_and_clean404_stays_absence(monkeypatch):
+    import requests
+    error = reader.CompanyIntelligenceReadError("SECRET")
+    error.request_stage = "SECRET_URL"
+    error.exception_category = "SECRET_HEADER"
+    error.http_status = True
+    assert reader.read_failure_diagnostics(error) == {
+        "request_stage": None, "exception_category": "unknown", "http_status": None}
+    error.exception_category = "http_error"
+    assert reader.read_failure_diagnostics(error)["http_status"] is None  # bool is not an observed HTTP integer
+    assert reader.CompanyIntelligenceReadError().args == ()
+    assert reader.CompanyIntelligenceReadError("one", "two").args == ("one", "two")
+    def get(url, **kwargs):
+        response = requests.Response()
+        response.status_code, response.url = 404, url
+        response._content, response._content_consumed = b"SECRET_BODY", True
+        return response
+    monkeypatch.setattr(reader.requests, "get", get)
+    assert reader.fetch_current_workspace_marker_raw(base_url=BASE) is None
+    with pytest.raises(reader.WorkspaceChainNotPublished):
+        reader.load_current_workspace("evt_cik0000320193_2026q3_results", base_url=BASE)
+
+
 def test_reader_refuses_redirects_and_pins_response_origin(monkeypatch) -> None:
     calls: list[dict] = []
 
