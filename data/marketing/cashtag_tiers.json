@@ -2,7 +2,7 @@
   "schema": "marketing.cashtag_tiers/v1",
   "schema_version": 1,
   "produced_by": "engine/marketing/radar_internal.py",
-  "produced_at": "2026-11-07T15:11:25Z",
+  "produced_at": "2026-11-08T11:12:37Z",
   "tier": "display",
   "as_of": "2026-11-06",
   "universe_n": 2723,
@@ -573,7 +573,6 @@
       "HIMS",
       "HL",
       "HLNE",
-      "HLT",
       "HMC",
       "HNGE",
       "HNI",
@@ -1907,6 +1906,7 @@
       "HIW",
       "HLI",
       "HLN",
+      "HLT",
       "HMY",
       "HOMB",
       "HON",
@@ -17404,7 +17404,7 @@
       ],
       "proxies": {
         "mcap_weight": 25780949261.538483,
-        "pct_1d": 4.56,
+        "pct_1d": 4.57,
         "pct_1w": -19.31,
         "earnings_in_days": 2,
         "dollar_vol_musd": 617.81272845,
@@ -20564,13 +20564,11 @@
       }
     },
     "HLT": {
-      "tier": "T2",
-      "reasons": [
-        "move_1d"
-      ],
+      "tier": "T3",
+      "reasons": [],
       "proxies": {
         "mcap_weight": 82426741025.86761,
-        "pct_1d": 3.49,
+        "pct_1d": 0.22,
         "pct_1w": 3.79,
         "earnings_in_days": 9,
         "dollar_vol_musd": 641.7305561462402,
@@ -30325,7 +30323,7 @@
       ],
       "proxies": {
         "mcap_weight": 11000000000.0,
-        "pct_1d": -0.36,
+        "pct_1d": -0.34,
         "pct_1w": -9.38,
         "earnings_in_days": 2,
         "dollar_vol_musd": 187.35843966674804,
@@ -40251,7 +40249,7 @@
       ],
       "proxies": {
         "mcap_weight": 34069543353.80197,
-        "pct_1d": 2.57,
+        "pct_1d": 2.58,
         "pct_1w": -20.47,
         "earnings_in_days": 10,
         "dollar_vol_musd": 1288.3585810999998,
