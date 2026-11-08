@@ -1,0 +1,136 @@
+{
+  "kind": "F03_bounded_portfolio_guide_reference_readback",
+  "observation_window_utc": {
+    "start": "2026-11-08T19:53:10Z",
+    "end": "2026-11-08T19:53:13Z"
+  },
+  "carrier": "Mastermind Paper paper_read/get_basic_info",
+  "native_mutations": 0,
+  "snapshots_are_document_revisions": false,
+  "qualification": "Observed reference metadata for proposed slices. This observation does not establish a complete domain return, approved candidate, foundation release, current implementation, refreshed census, or live writer custody.",
+  "observations": {
+    "D22-candidate": {
+      "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "page_id": "p-1F-0",
+      "page_name": "Proposed · Portfolio objects & comparison",
+      "page_url": "https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-1F-0",
+      "artboards": [
+        {
+          "id": "261Q-0",
+          "name": "PROPOSED · Portfolio objects & comparison · EN/ZH",
+          "width": 1440,
+          "height": null
+        }
+      ],
+      "read_only": true,
+      "snapshot_is_revision": false
+    },
+    "D22-supplement": {
+      "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "page_id": "p-X-0",
+      "page_name": "Terminal Portfolio · Builder + Acceptance References",
+      "page_url": "https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-X-0",
+      "artboards": [
+        {
+          "id": "1L19-0",
+          "name": "07 · Product blueprint · Source census & Market Ontology destination",
+          "width": 1440,
+          "height": 1120
+        },
+        {
+          "id": "1L4E-0",
+          "name": "08 · States & interactions · Builder acceptance specimens",
+          "width": 1440,
+          "height": 1160
+        },
+        {
+          "id": "216F-0",
+          "name": "09 · Current recovery references · 08 Nov 2026",
+          "width": 1440,
+          "height": null
+        },
+        {
+          "id": "26NL-0",
+          "name": "10 · Portfolio object & comparison references",
+          "width": 1440,
+          "height": null
+        }
+      ],
+      "read_only": true,
+      "snapshot_is_revision": false
+    },
+    "D25-candidate": {
+      "file_id": "01M32XYWDYSFTNDZVJKQ5QHT33",
+      "page_id": "p-8-0",
+      "page_name": "Proposed · Guide return clarity",
+      "page_url": "https://app.paper.design/file/01M32XYWDYSFTNDZVJKQ5QHT33/p-8-0",
+      "artboards": [
+        {
+          "id": "44J-0",
+          "name": "PROPOSED · Guide return choices · EN/ZH",
+          "width": 1440,
+          "height": null
+        }
+      ],
+      "read_only": true,
+      "snapshot_is_revision": false
+    },
+    "D25-directory": {
+      "file_id": "01M32XYWDYSFTNDZVJKQ5QHT33",
+      "page_id": "p-1-0",
+      "page_name": "00 · R14 · Market Guide · Start here",
+      "page_url": "https://app.paper.design/file/01M32XYWDYSFTNDZVJKQ5QHT33/p-1-0",
+      "artboards": [
+        {
+          "id": "37N-0",
+          "name": "00 · Workspace Directory · Guide + Help System",
+          "width": 1440,
+          "height": 900
+        },
+        {
+          "id": "1RQ-1",
+          "name": "R14 · Guide · Light · EN · Desktop",
+          "width": 1440,
+          "height": null
+        },
+        {
+          "id": "1UC-1",
+          "name": "R14 · Guide · Dark · EN · Desktop",
+          "width": 1440,
+          "height": null
+        },
+        {
+          "id": "1WO-1",
+          "name": "R14 · Guide · Light · EN · Mobile",
+          "width": 390,
+          "height": null
+        },
+        {
+          "id": "1Z0-1",
+          "name": "R14 · Guide · Light · ZH · Mobile",
+          "width": 390,
+          "height": null
+        }
+      ],
+      "read_only": true,
+      "snapshot_is_revision": false
+    }
+  },
+  "candidate_export_match": {
+    "D22": {
+      "node_id": "261Q-0",
+      "matches_completed_candidate": true,
+      "canonical_native_blob": "5708f455b20d2f7b2abbaefc62563bf06f2b6810",
+      "canonical_commit": "e48a633614f9e433568e86a9c7cc00fe4e13946f"
+    },
+    "D25": {
+      "node_id": "44J-0",
+      "matches_completed_candidate": true,
+      "export": "d25-guide-return-candidate-20261108.jsx"
+    }
+  },
+  "readme_role": {
+    "D22": "Supplementary p-X /26NL is a pointer to this slice; no complete D22 entry is admitted.",
+    "D25": "p-1 /37N is a Guide directory, not a complete account/help build entry."
+  }
+}

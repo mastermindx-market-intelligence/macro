@@ -1,0 +1,20 @@
+{
+  "kind": "immutable_prior_return_preservation_baseline",
+  "source_head": "b3012095c52a569412a85eaa186669f3ee402f53",
+  "curation_blob_sha": "49f62e990bb4042e14357bfd28ee490fbb382640",
+  "qualification": "The twelve previously published return objects are preserved exactly. This is not a refreshed native census, approval or product acceptance.",
+  "prior_assignment_return_sha256": {
+    "F01": "b7ca38cda85b45c3b713c8ac0189226ed273d4dd063d69b3d6e34dae3eecbb4f",
+    "F02": "c59dcaf9286d90be55dc63461ee1a8399b16c6f618e383e8789327f9a13e040b",
+    "D07": "dc402c21d1fb6a0328d4828d7ecbad6706e2689e8971c65ce4ae15c7d4b920a4",
+    "D08": "841065b02959859357a49c6ba9ebef6920b8a9505b2938d7372c51379437837c",
+    "D08A": "02ad815e56350d15a8bbbdbdf9bb651977093d4bf5f84dd6ec9bcb4c1a287851",
+    "D08B": "e9d371e340da7e4e98d7adecc7f82ea88310de695fda93835b30702acf34878d",
+    "D08C": "d0ce65b833c2b8d21edc0397df058d92f8cc87a2e290077ff95ac1eecba9073e",
+    "D08D": "6be75393b56c2978df6ed7182147363945a2f8ac626f05b89f7a7bb187879324",
+    "D05": "3e63545a61d8a857403bb7e420f0898dc5833a5b6576afeba8b2cfbffdaf3288",
+    "D04": "ef25a0aba4517a20b12e23a7319009d10302827b078d19e8ba540fe01622d513",
+    "D14": "4f1d90a8be051459703e5d4398d210ab112ab5f2fcaecbc1212166ef4a7aa925",
+    "D06": "89196000c0ee19be1913e25a45c969a2709369e142ac820967f02883c0a83b0f"
+  }
+}
