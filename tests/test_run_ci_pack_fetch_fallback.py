@@ -35,6 +35,8 @@ EXPECTED_FETCH_DEPTH_ZERO_CONSUMERS = {
     # W2F #9949 (2026-10-22): the frozen-file guard in tests/test_intl_gs_foundation.py
     # compares against origin/<base_ref>, which this job fetches in its own fail-closed step.
     "international-workspace-browser",
+    "international-workspace-browser-im13",
+    "international-workspace-browser-im14",
     # W3U: the frozen-seam guard in tests/test_intl_gs_dislocations_view.py
     # compares against origin/<base_ref>, fetched by this job's fail-closed step.
     "international-dislocation-explorer",
@@ -296,6 +298,10 @@ prepare_canonical_main(
 _INTERNATIONAL_CANONICAL_JOBS = {
     "international-workspace-browser": (
         "test_intl_gs_foundation.py", _INTERNATIONAL_CANONICAL_PYTHON),
+    "international-workspace-browser-im13": (
+        "test_intl_gs_scanner.py", _INTERNATIONAL_CANONICAL_PYTHON),
+    "international-workspace-browser-im14": (
+        "test_intl_gs_dossier.py", _INTERNATIONAL_CANONICAL_PYTHON),
     "international-dislocation-explorer": (
         "test_intl_gs_dislocations_view.py", _DISLOCATION_CANONICAL_PYTHON),
 }
