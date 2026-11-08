@@ -104,3 +104,6 @@
 {"run_date": "2026-11-05", "degraded": true, "produced_at": "2026-11-05T13:38:04.020616+00:00", "reasons_count": 16}
 {"run_date": "2026-11-06", "degraded": true, "produced_at": "2026-11-06T10:45:11.309039+00:00", "reasons_count": 12}
 {"run_date": "2026-11-06", "degraded": true, "produced_at": "2026-11-06T13:05:54.881581+00:00", "reasons_count": 14}
+{"run_date": "2026-11-07", "degraded": true, "produced_at": "2026-11-07T10:07:36.518362+00:00", "reasons_count": 12}
+{"run_date": "2026-11-07", "degraded": true, "produced_at": "2026-11-07T13:55:14.613980+00:00", "reasons_count": 14}
+{"run_date": "2026-11-08", "degraded": true, "produced_at": "2026-11-08T10:03:56.191649+00:00", "reasons_count": 14}
