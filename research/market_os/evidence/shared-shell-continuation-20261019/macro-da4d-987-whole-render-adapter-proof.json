@@ -1,0 +1,86 @@
+{
+  "at": "2026-10-20T16:25:37.013972+00:00",
+  "base": "3b49d6a5c8a6330652a926a8e5061e0dbb3d0387",
+  "head": "da4df7d1e1ac709055c6fa1d482304a875e81824",
+  "incoming": "9875169102cc6f36a64d465fe7c06f6bb8fb0220",
+  "read_only_merge_tree": "11ad3c513bc73c9f03a06363ea9b810e0308b574",
+  "scope": "Scratch-only four whole-render candidates; complete incoming generation plus exactly the already-owned source adapters, shared-shell block and canonical asset transformations. No three-way page text splice, payload/gating edit, W/index effect or publication.",
+  "rows": [
+    {
+      "path": "site/us_stocks.html",
+      "source_template": "templates/dashboard.html.j2",
+      "incoming_template_unchanged_from_base": true,
+      "merged_template_equals_H": true,
+      "source_template_blobs": {
+        "B": "b40d29a43bde8e4a06a6cc39046e857863d46ef7",
+        "H": "82c0d00ed32b2da676c7243c543a48a6ab6f1489",
+        "M": "b40d29a43bde8e4a06a6cc39046e857863d46ef7",
+        "T": "82c0d00ed32b2da676c7243c543a48a6ab6f1489"
+      },
+      "exact_existing_adapter_count": 3,
+      "existing_adapters_reproduce_complete_normalized_H_from_B": true,
+      "inverse_adapters_recover_complete_normalized_incoming_M": true,
+      "complete_incoming_generation_sha256": "c81f6108bee1cf085a21c21a3ce8e05dd73bf6b8e8cc80ca77e4402e629f9331",
+      "candidate_sha256": "8620c3066ced15661eab5dc851f0f1091816c9d34dfcc8312a123d79fcb50818",
+      "candidate_bytes": 742422,
+      "candidate_file": "/tmp/shared-shell-css-visual-20261019T1107/macro-da4d-987-whole-render-preview/us_stocks.html.incoming-generation-plus-existing-adapters.html"
+    },
+    {
+      "path": "site/etfs.html",
+      "source_template": "templates/etfs.html.j2",
+      "incoming_template_unchanged_from_base": true,
+      "merged_template_equals_H": true,
+      "source_template_blobs": {
+        "B": "72bec5029965f69de7636b465d84562f0cef7772",
+        "H": "a9ea0b649b17e3592ae6dcc083285c7bdc62ff16",
+        "M": "72bec5029965f69de7636b465d84562f0cef7772",
+        "T": "a9ea0b649b17e3592ae6dcc083285c7bdc62ff16"
+      },
+      "exact_existing_adapter_count": 1,
+      "existing_adapters_reproduce_complete_normalized_H_from_B": true,
+      "inverse_adapters_recover_complete_normalized_incoming_M": true,
+      "complete_incoming_generation_sha256": "a52f8474694469ccdf63262d5a45b8c2061da2b199ca2f5461221d67873839f1",
+      "candidate_sha256": "678f74d1dff26c61d238806ef89516e18f528b55da11823de968eec15a729d4c",
+      "candidate_bytes": 97337,
+      "candidate_file": "/tmp/shared-shell-css-visual-20261019T1107/macro-da4d-987-whole-render-preview/etfs.html.incoming-generation-plus-existing-adapters.html"
+    },
+    {
+      "path": "site/special_situations.html",
+      "source_template": "templates/special_situations.html.j2",
+      "incoming_template_unchanged_from_base": true,
+      "merged_template_equals_H": true,
+      "source_template_blobs": {
+        "B": "afa9d5e6abb620631b38e695798ad528382f55b9",
+        "H": "e40cf7040e25ca2ae9878bd0de0bec06a609d150",
+        "M": "afa9d5e6abb620631b38e695798ad528382f55b9",
+        "T": "e40cf7040e25ca2ae9878bd0de0bec06a609d150"
+      },
+      "exact_existing_adapter_count": 1,
+      "existing_adapters_reproduce_complete_normalized_H_from_B": true,
+      "inverse_adapters_recover_complete_normalized_incoming_M": true,
+      "complete_incoming_generation_sha256": "332012e1125737bba35cd00a01518b76258f63b4b37971491833445120f25322",
+      "candidate_sha256": "bb308c82f60f88c3c2eb480dfadc199fc24bd0caeea2b8c89e0471d1b11e4b0f",
+      "candidate_bytes": 114875,
+      "candidate_file": "/tmp/shared-shell-css-visual-20261019T1107/macro-da4d-987-whole-render-preview/special_situations.html.incoming-generation-plus-existing-adapters.html"
+    },
+    {
+      "path": "site/china_special_situations.html",
+      "source_template": "templates/china_special_situations.html.j2",
+      "incoming_template_unchanged_from_base": true,
+      "merged_template_equals_H": true,
+      "source_template_blobs": {
+        "B": "0e5a99145166c9dce7b098b7df2af50dd5a0a3c4",
+        "H": "277716a52d6859b9e3ff8a8715c5c074296424ad",
+        "M": "0e5a99145166c9dce7b098b7df2af50dd5a0a3c4",
+        "T": "277716a52d6859b9e3ff8a8715c5c074296424ad"
+      },
+      "exact_existing_adapter_count": 1,
+      "existing_adapters_reproduce_complete_normalized_H_from_B": true,
+      "inverse_adapters_recover_complete_normalized_incoming_M": true,
+      "complete_incoming_generation_sha256": "c9a30790c7b11f64b322ee0ed1892605a00b27379529d6e6d0de462152a35dc6",
+      "candidate_sha256": "d3e91bd1179c893cc3a68e62569f8b00dadb4980a6ece273925c33101670a732",
+      "candidate_bytes": 94354,
+      "candidate_file": "/tmp/shared-shell-css-visual-20261019T1107/macro-da4d-987-whole-render-preview/china_special_situations.html.incoming-generation-plus-existing-adapters.html"
+    }
+  ]
+}

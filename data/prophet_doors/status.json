@@ -1,15 +1,15 @@
 {
   "appended": 0,
-  "asof": "2026-10-14",
+  "asof": "2026-11-06",
   "candidates": {
-    "R": 3,
-    "T": 13,
-    "W": 9
+    "R": 0,
+    "T": 7,
+    "W": 31
   },
   "deduped": {
-    "R": 3,
-    "T": 13,
-    "W": 9
+    "R": 0,
+    "T": 7,
+    "W": 31
   },
   "dry_run": false,
   "feature_source": {
@@ -80,47 +80,47 @@
     "T": [],
     "W": []
   },
-  "n_universe": 1491,
+  "n_universe": 1489,
   "overflow": {
     "R": 0,
     "T": 0,
     "W": 0
   },
-  "run_utc": "2026-10-20 09:07:04",
-  "runtime_s": 130.4,
+  "run_utc": "2026-11-07 15:49:34",
+  "runtime_s": 121.9,
   "schema": "prophet_doors/v1",
   "theme_source": {
     "age_days": 0,
-    "asof": "2026-10-14",
-    "n_members": 115,
+    "asof": "2026-11-06",
+    "n_members": 205,
     "ok": true,
     "reason": null,
     "source": "site/marketdata/subsector_rotation.json",
     "top_themes": [
       {
-        "emerging_score": 3.343,
+        "emerging_score": 2.724,
         "rank": 1,
-        "theme": "Social Media"
+        "theme": "Commodities Metals"
       },
       {
-        "emerging_score": 2.761,
+        "emerging_score": 2.122,
         "rank": 2,
-        "theme": "Healthy Food & Nutrition"
+        "theme": "Digital Entertainment"
       },
       {
-        "emerging_score": 2.358,
+        "emerging_score": 1.872,
         "rank": 3,
         "theme": "Consumer Goods"
       },
       {
-        "emerging_score": 2.18,
+        "emerging_score": 1.537,
         "rank": 4,
-        "theme": "E-commerce"
+        "theme": "Electric Vehicles"
       },
       {
-        "emerging_score": 2.107,
+        "emerging_score": 1.505,
         "rank": 5,
-        "theme": "Biometrics"
+        "theme": "Energy Renewable"
       }
     ]
   },
@@ -129,17 +129,17 @@
       "2B",
       "3B"
     ],
-    "aligned": 9,
-    "asof_max": "2026-10-14",
+    "aligned": 31,
+    "asof_max": "2026-11-06",
     "asof_mismatch": 0,
-    "asof_run": "2026-10-14",
-    "evaluated": 712,
-    "fresh": 10,
+    "asof_run": "2026-11-06",
+    "evaluated": 713,
+    "fresh": 32,
     "fresh_weeks_max": 2,
     "ok": true,
     "reason": null,
-    "runtime_s": 22.0,
-    "skipped": 5,
+    "runtime_s": 22.3,
+    "skipped": 4,
     "source": "baskets/membership.json",
     "state_turn": 60,
     "universe_n": 717

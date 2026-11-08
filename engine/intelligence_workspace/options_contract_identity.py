@@ -190,11 +190,25 @@ def validate_dated_contract_identity(receipt, *, root, source_session, input_sha
     return frozenset(normalized)
 
 
-def resolve_observed_spy_contract_identity(greeks, oi, *, source_session, input_sha256,
+def _observed_target(root):
+    # Exact admitted listing profiles, never a ticker-derived canonical ID.
+    targets={'SPY':('SEC:US-ARCX-SPY','US-ARCX-SPY','P'),
+             'QQQ':('SEC:US-XNAS-QQQ','US-XNAS-QQQ','NASDAQ')}
+    if root not in targets:
+        raise IdentityResolutionError('Observed ETF root is not supported')
+    return targets[root]
+
+
+def resolve_observed_spy_contract_identity(greeks, oi, **kwargs):
+    """Compatibility entry point; the existing SPY-only call stays unchanged."""
+    return resolve_observed_etf_contract_identity(greeks, oi, root='SPY', **kwargs)
+
+
+def resolve_observed_etf_contract_identity(greeks, oi, *, root, source_session, input_sha256,
         reference: IdentityArtifactRead, security_master: IdentityArtifactRead,
         listing: IdentityArtifactRead, listing_receipt: IdentityArtifactRead, decision_at,
         retained_inputs=None):
-    """Bind an entire declared observed SPY population without minting an alias.
+    """Bind one supported observed ETF population without minting a root alias.
 
     Retained store reads establish possession now, never an original HTTP request,
     model/version, provider publication time or historical availability. Numerical
@@ -203,13 +217,16 @@ def resolve_observed_spy_contract_identity(greeks, oi, *, source_session, input_
     from engine.options_exposure_projection import exposure_input_digest
     try:
         cutoff=_aware_utc(decision_at,'decision_at');on=date.fromisoformat(source_session)
-        if exposure_input_digest(greeks,oi,source_session,'SPY') != input_sha256:
+        security_id,expected_listing,expected_exchange=_observed_target(root)
+        if root=='QQQ' and on<date(2026,10,20):
+            raise ValueError('QQQ observed identity predates native admission')
+        if exposure_input_digest(greeks,oi,source_session,root) != input_sha256:
             raise ValueError('Observed input digest mismatch')
         reads=[_identity_read(r,cutoff) for r in (reference,security_master,listing,listing_receipt)]
         if on>cutoff.date():raise ValueError('Future source session')
         obs=_strict_json(reference.body)
         if obs.get('source_session') != source_session:raise ValueError('Reference source session mismatch')
-        terms,pages=reference_population_terms(obs,'SPY')
+        terms,pages=reference_population_terms(obs,root)
         source_clocks=[_aware_utc(p['completed_at'],'page completed_at') for p in pages]
         if any(t>reads[0] for t in source_clocks):raise ValueError('Reference read before page capture')
         artifacts=[]
@@ -228,7 +245,7 @@ def resolve_observed_spy_contract_identity(greeks, oi, *, source_session, input_
                 frames.append(source)
                 artifacts.append(dict(kind=kind,sha256=read.sha256,read_at=at.isoformat()))
                 source_clocks.append(at)
-            if exposure_input_digest(*frames,source_session,'SPY') != input_sha256:
+            if exposure_input_digest(*frames,source_session,root) != input_sha256:
                 raise ValueError('Retained artifacts do not bind observed rows')
             basis='retained_native_store_read'
         else:
@@ -237,7 +254,7 @@ def resolve_observed_spy_contract_identity(greeks, oi, *, source_session, input_
         for frame,kind in ((greeks,'greeks'),(oi,'oi')):
             if len(frame)>100000:raise ValueError('Observed input exceeds bound')
             if retained_inputs is None:
-                captures=native_acquisitions(frame,'SPY',source_session,kind)
+                captures=native_acquisitions(frame,root,source_session,kind)
                 if not captures:raise ValueError('Native observed acquisition missing')
                 for capture in captures:
                     p=capture['parameters']
@@ -250,7 +267,7 @@ def resolve_observed_spy_contract_identity(greeks, oi, *, source_session, input_
             keys=[]
             for row in frame.to_dict('records'):
                 d=row.get('date');d=d.date().isoformat() if isinstance(d,datetime) else str(d)
-                if row.get('root')!='SPY' or d!=source_session:raise ValueError('Observed root/session mismatch')
+                if row.get('root')!=root or d!=source_session:raise ValueError('Observed root/session mismatch')
                 key=_key(row)
                 if date.fromisoformat(key[0])<on:raise ValueError('Expired observed contract')
                 keys.append(key)
@@ -263,7 +280,7 @@ def resolve_observed_spy_contract_identity(greeks, oi, *, source_session, input_
         # Reference omissions/ambiguity withhold their coordinates only. They do
         # not remove those contracts from the declared observed denominator.
         bound={k for k in observed if len(by_key.get(k,[]))==1}
-        listing_key,master_at=_captured_option_security_target('SEC:US-ARCX-SPY',on,
+        listing_key,master_at=_captured_option_security_target(security_id,on,
             decision_at=cutoff,security_master=security_master)
         receipt=validate_symbol_directory_completion_receipt_bytes(_strict_json(listing_receipt.body),
             listing_receipt.body,listing.body,expected_kind='listing_snapshot')
@@ -271,17 +288,17 @@ def resolve_observed_spy_contract_identity(greeks, oi, *, source_session, input_
         if (date.fromisoformat(receipt['observation_date'])>on or completed.date()>on
                 or completed>min(reads[2],reads[3]) or not receipt['authority']['listing_identity_observation_eligible']):
             raise ValueError('Listing observation does not support dated target')
-        listing_rows=pd.read_parquet(io.BytesIO(listing.body));rows=listing_rows.loc[listing_rows.symbol=='SPY']
-        if len(rows)!=1:raise ValueError('Listing SPY missing or ambiguous')
+        listing_rows=pd.read_parquet(io.BytesIO(listing.body));rows=listing_rows.loc[listing_rows.symbol==root]
+        if len(rows)!=1:raise ValueError('Listing ETF missing or ambiguous')
         row=rows.iloc[0]
-        if (listing_key!='US-ARCX-SPY' or row['exchange']!='P' or not bool(row['etf'])
+        if (listing_key!=expected_listing or row['exchange']!=expected_exchange or not bool(row['etf'])
                 or bool(row['test_issue']) or bool(row['is_preferred'])):
             raise ValueError('Listing/canonical target mismatch')
         known=max(*reads,*source_clocks,master_at,completed)
         if known>cutoff:raise ValueError('Identity evidence after decision')
-        out=dict(schema='options.dated_contract_identity/v2',scope='observed_contracts',root='SPY',
+        out=dict(schema='options.dated_contract_identity/v2',scope='observed_contracts',root=root,
             source_session=source_session,effective_from=source_session,effective_to=(on+timedelta(days=1)).isoformat(),
-            known_at=known.isoformat(),security_id='SEC:US-ARCX-SPY',listing_key=listing_key,input_sha256=input_sha256,
+            known_at=known.isoformat(),security_id=security_id,listing_key=listing_key,input_sha256=input_sha256,
             contract_keys=[list(k) for k in sorted(bound)],observed_contract_keys=[list(k) for k in sorted(observed)],
             reference_observation_sha256=reference.sha256,reference_pages=pages,security_master_sha256=security_master.sha256,
             listing_sha256=listing.sha256,listing_receipt_sha256=listing_receipt.sha256,
@@ -298,9 +315,14 @@ def _validate_observed_identity(receipt, *, root, source_session, input_sha256, 
     required=frozenset('schema scope root source_session effective_from effective_to known_at security_id listing_key input_sha256 contract_keys observed_contract_keys reference_observation_sha256 reference_pages security_master_sha256 listing_sha256 listing_receipt_sha256 source_evidence_representation source_evidence_basis source_input_artifacts historical_first_availability_established root_alias_created binding_sha256'.split())
     if set(receipt)!=required:raise IdentityResolutionError('Observed identity fields invalid')
     on=date.fromisoformat(source_session);known=_aware_utc(receipt['known_at'],'known_at')
-    if (root!='SPY' or receipt['root']!=root or receipt['source_session']!=source_session
-            or receipt['scope']!='observed_contracts' or receipt['security_id']!='SEC:US-ARCX-SPY'
-            or receipt['listing_key']!='US-ARCX-SPY' or receipt['effective_from']!=source_session
+    security_id,listing_key,_=_observed_target(root)
+    # The admitted native QQQ target starts Oct20. A self-consistent receipt
+    # cannot extend that current intake to older retained option populations.
+    if root=='QQQ' and on<date(2026,10,20):
+        raise IdentityResolutionError('QQQ observed identity predates native admission')
+    if (receipt['root']!=root or receipt['source_session']!=source_session
+            or receipt['scope']!='observed_contracts' or receipt['security_id']!=security_id
+            or receipt['listing_key']!=listing_key or receipt['effective_from']!=source_session
             or receipt['effective_to']!=(on+timedelta(days=1)).isoformat() or receipt['input_sha256']!=input_sha256
             or receipt['source_evidence_representation']!='captured_reference_population_observation'
             or receipt['historical_first_availability_established'] is not False or receipt['root_alias_created'] is not False

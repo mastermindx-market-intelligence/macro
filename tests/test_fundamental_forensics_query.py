@@ -1361,6 +1361,8 @@ def test_cutoff_projection_is_stable_under_unrelated_future_pack_extensions() ->
             rule_id="formula.future_ratio/v1",
             available_at=datetime(2026, 8, 7, tzinfo=timezone.utc),
         ),
+        # The copy must not re-claim gross_margin's immutable policy rule id.
+        not_presented_policy=None,
     )
     future_formula_contract = replace(
         gross_margin,

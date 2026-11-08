@@ -14,6 +14,7 @@ from pathlib import Path
 
 import pytest
 
+from engine.news_impact import producer as pr
 from engine.news_impact import producer_facts as pf
 from engine.news_impact import thesis
 from engine.news_impact.validate import validate_event
@@ -205,12 +206,28 @@ def row(event: dict, case: str = "case_001", shadow: bool = False) -> dict:
 
 
 def write_rows(path: Path, rows: list[dict]) -> Path:
-    path.write_text("".join(json.dumps(r, sort_keys=True) + "\n" for r in rows))
+    """Complete synthetic generation; inner events remain untouched for tests."""
+    assert path.name == "events.jsonl"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    raw = "".join(json.dumps(r, sort_keys=True) + "\n" for r in rows).encode()
+    path.write_bytes(raw)
+    report = {
+        "producer_version": pr.PRODUCER_VERSION,
+        "mode": "adjudicated",
+        "n_cases": len(rows),
+        "n_emitted": len(rows),
+        "emitted": {"synthetic": len(rows)} if rows else {},
+        "deferred": {},
+        "rejected": {},
+        "events_sha256": sha256(raw).hexdigest(),
+        "events_bytes": len(raw),
+    }
+    (path.parent / "events_report.json").write_text(json.dumps(report, sort_keys=True) + "\n")
     return path
 
 
 def run_rows(tmp_path: Path, rows: list[dict], name: str = "out", as_of: str | None = None):
-    events = write_rows(tmp_path / f"{name}_events.jsonl", rows)
+    events = write_rows(tmp_path / f"{name}_source" / "events.jsonl", rows)
     out = tmp_path / name
     report = pf.run([events], out, as_of)
     log = json.loads((out / "fact_log.json").read_text())
@@ -582,25 +599,32 @@ def test_out_under_the_shared_fact_log_directory_is_refused(tmp_path, monkeypatc
 # --------------------------------------------------------------------------- 12. row rejects
 
 
-def test_shadow_rows_propagate_shadow_mode(tmp_path):
+def test_shadow_rows_are_refused_before_outputs(tmp_path, no_consumer_processing):
     rows = [row(t1("s1", 1), "c1", shadow=True), row(t1("s2", 2, doc=DOC_B), "c2", shadow=True)]
-    report, _, views, evidence_rows = run_rows(tmp_path, rows)
-    assert report["mode"] == "shadow"
-    assert views and all(v["shadow"] is True for v in views)
-    assert evidence_rows and all(r["shadow"] is True for r in evidence_rows)
+    # Even a renamed canonical file and an adjudicated report cannot admit
+    # shadow rows into fact-log or Prophet processing.
+    with pytest.raises(pf.Reject) as exc:
+        run_rows(tmp_path, rows)
+    assert exc.value.code == "output_generation_unverified"
+    assert not (tmp_path / "out").exists()
 
 
-def test_mixed_shadow_duplicate_and_unsolicited_rows_are_rejected(tmp_path):
-    mixed, _, _, _ = run_rows(tmp_path, [row(t1("m1", 1), shadow=True), row(t1("m2", 2))], name="mixed")
-    assert mixed["rejected"] == {"shadow_mixed": 2} and mixed["n_records"] == {}
+def test_mixed_shadow_rows_are_refused_before_outputs(tmp_path, no_consumer_processing):
+    with pytest.raises(pf.Reject) as exc:
+        run_rows(tmp_path, [row(t1("m1", 1), shadow=True), row(t1("m2", 2))], name="mixed")
+    assert exc.value.code == "output_generation_unverified"
+    assert not (tmp_path / "mixed").exists()
 
+
+def test_duplicate_unsolicited_and_invalid_event_rows_are_rejected(tmp_path):
     dup = t1("d1", 1)
     flagged = t1("u1", 2)
     flagged["unsolicited_instruction_detected"] = True
     foreign = t1("x1", 3)
     foreign["authority"] = "authoritative"
     report, log, _, _ = run_rows(tmp_path, [
-        row(dup, "c1"), row(dict(dup), "c2"), row(flagged, "c3"), row(foreign, "c4"), {"case_id": "c5"},
+        row(dup, "c1"), row(dict(dup), "c2"), row(flagged, "c3"), row(foreign, "c4"),
+        {"case_id": "c5", "shadow": False, "novelty_source": "label_provisional"},
     ])
     assert report["rejected"] == {
         "authority_not_context_only": 1,
@@ -633,3 +657,572 @@ def test_two_runs_write_byte_identical_outputs(tmp_path):
     run_rows(tmp_path, list(reversed(rows)), name="two")
     for name in pf.OUTPUT_NAMES:
         assert (tmp_path / "one" / name).read_bytes() == (tmp_path / "two" / name).read_bytes(), name
+
+
+# --------------------------------------------------------------------------- R6 canonical amount terms / directional evidence
+# Explicit correction records below use the existing fact-log owner; stage-two
+# novelty assignment is not being claimed as a native correction acquisition path.
+
+
+def _r6_correction_projection(tmp_path, events, *, mutate_leaf=None, links=None):
+    import copy
+
+    for event in events:
+        assert_valid(event)
+    _, produced, _, _ = run_rows(tmp_path, [row(e, f"r6_{i}") for i, e in enumerate(events)])
+    records = by_fact(produced)
+    log = thesis.FactLog(records=()).to_dict()
+    leaves = {}
+    latest = {}
+    for event in events:
+        rec = copy.deepcopy(records[event["fact_id"]])
+        rec.pop("log_seq", None)
+        key = thesis.canonical_json(rec["fact_key"])
+        if key in latest:
+            rec.update(record_kind="fact_revision", cluster_grain="fact_revision",
+                       novelty="corrected_fact", supersedes_fact_id=latest[key],
+                       reports_fact_id=None)
+        if links and event["fact_id"] in links:
+            rec["linked_fact_ids"] = links[event["fact_id"]]
+        latest[key] = event["fact_id"]
+        log = thesis.append_records(log, [rec])
+        leaves[event["fact_id"]] = pf.leaf_payload(event, pf.fact_slot(event), Counter())
+    if mutate_leaf:
+        mutate_leaf(leaves)
+    owners = thesis.OwnerSnapshot(leaf_payloads=leaves)
+    views = thesis.project(log, owners, events[-1]["observed_at"],
+                           prior_as_of_utc=events[0]["observed_at"],
+                           prior_owners=thesis.OwnerSnapshot(leaf_payloads={
+                               events[0]["fact_id"]: leaves[events[0]["fact_id"]]
+                           }))
+    return views, log, leaves
+
+
+def _r6_condition(view):
+    return next(w for w in view["weakening_conditions"]
+                if w["code"] == "source_correction_reduces_magnitude")
+
+
+def test_r6_preserves_each_canonical_quantity_and_its_evidence_without_aliasing():
+    import copy
+
+    event = t1(remaining_authorization=qpoint(80_000_000, "total"))
+    event["remaining_authorization"]["unit"] = "EUR"
+    event["remaining_authorization"]["currency"] = "EUR"
+    assert_valid(event)
+    before = copy.deepcopy(event)
+    leaf = pf.leaf_payload(event, pf.fact_slot(event), Counter())
+    assert leaf["currency"] == "USD"  # legacy display field, not comparison authority
+    assert leaf["quantity_terms"] == {
+        "incremental": event["incremental_amount"],
+        "remaining": event["remaining_authorization"],
+    }
+    fingerprint_before = thesis.quantity_fingerprint(leaf, pf.T1)
+    leaf["quantity_terms"]["remaining"]["evidence"]["claimed_quote"] = "changed locally"
+    assert event == before
+    # Evidence is provenance, not meaning: mutating it never moves the fingerprint.
+    assert thesis.quantity_fingerprint(leaf, pf.T1) == fingerprint_before
+    # The EUR remaining authorization is part of what the numbers mean, so the
+    # term-aware fingerprint differs from a value-only payload's (F2 M05).
+    assert fingerprint_before != thesis.quantity_fingerprint(
+        {"incremental": 50_000_000, "remaining": 80_000_000}, pf.T1)
+
+
+# --------------------------------------------------------------------------- F2 M05 fingerprint terms
+
+
+def _t1_leaf(quantity: dict) -> dict:
+    event = t1(incremental_amount=quantity)
+    return pf.leaf_payload(event, pf.fact_slot(event), Counter())
+
+
+def _fp(quantity: dict) -> str:
+    return thesis.quantity_fingerprint(_t1_leaf(quantity), pf.T1)["canonical_sha256"]
+
+
+def _with(**changes) -> dict:
+    quantity = qpoint(5, "incremental")
+    quantity.update(changes)
+    return quantity
+
+
+def test_fingerprint_keeps_percent_and_percentage_points_apart():
+    percent = _fp(_with(unit="percent", currency="NA"))
+    assert percent != _fp(_with(unit="pp", currency="NA"))
+    assert _fp(_with(unit="pp", currency="NA")) == _fp(_with(unit="percentage points", currency="NA"))
+    assert _fp(_with(unit="pp", currency="NA")) == _fp(_with(unit=" PPT ", currency="NA"))
+    assert percent == _fp(_with(unit="%", currency="NA")) == _fp(_with(unit="pct", currency="NA"))
+    assert percent != _fp(_with(unit="bps", currency="NA"))
+    assert _fp(_with(unit="bps", currency="NA")) == _fp(_with(unit="basis points", currency="NA"))
+
+
+def test_fingerprint_unit_spelling_is_insensitive_but_meaning_is_not():
+    usd = _fp(_with())
+    assert usd == _fp(_with(unit="usd")) == _fp(_with(unit="$")) == _fp(_with(unit="  US$ "))
+    assert usd != _fp(_with(unit="EUR"))
+    # Two different unmapped units never share one UNKNOWN token.
+    assert _fp(_with(unit="tonnes")) != _fp(_with(unit="barrels"))
+    assert _fp(_with(unit="Tonnes")) == _fp(_with(unit="tonnes"))
+
+
+@pytest.mark.parametrize("term,value", [
+    ("currency", "EUR"),
+    ("bound", "at_least"),
+    ("basis", "total"),
+    ("period", {"year": 2028, "quarter": None, "calendar_end": None, "period_kind": "fiscal_year"}),
+    ("negated", True),
+    ("value", 6),
+])
+def test_fingerprint_moves_when_a_meaning_term_changes(term, value):
+    assert _fp(_with(**{term: value})) != _fp(_with())
+
+
+def test_fingerprint_ignores_evidence_and_basis_whitespace():
+    base = _fp(_with())
+    other_doc = qpoint(5, "incremental", text="A different sentence states the amount.", doc=DOC_B)
+    assert _fp(other_doc) == base
+    assert _fp(_with(basis=" incremental ")) == base
+
+
+def _period_absence(**changes) -> dict:
+    period = absence("period")
+    period.update(changes)
+    return period
+
+
+def test_fingerprint_ignores_period_absence_wording():
+    base = _fp(_with(period=_period_absence()))
+    assert _fp(_with(period=_period_absence(detail="The release names no fiscal period."))) == base
+    assert _fp(_with(period=_period_absence(subject="quantity period"))) == base
+    assert _fp(_with(period=_period_absence(missing_fields=["period", "calendar_end"]))) == base
+    assert _fp(_with(period=_period_absence(reason="not_applicable"))) == base
+    # Absent versus a stated period is still a change of meaning.
+    assert base != _fp(_with())
+
+
+def test_fingerprint_period_follows_the_fact_key_token():
+    q1 = {"year": 2025, "quarter": 1, "calendar_end": None, "period_kind": "quarter"}
+    q1_dated = dict(q1, calendar_end="2025-03-31")
+    q2 = dict(q1, quarter=2)
+    assert _fp(_with(period=q1)) == _fp(_with(period=q1_dated))
+    assert _fp(_with(period=q1)) != _fp(_with(period=q2))
+    assert _fp(_with(period=q1)) != _fp(_with(period=dict(q1, year=2026)))
+    assert _fp(_with(period=q1)) != _fp(_with(period=dict(FY27, year=2025)))
+
+
+def test_fingerprint_period_not_tokenizable_keeps_its_structure():
+    odd = {"year": 2025, "quarter": None, "calendar_end": None, "period_kind": "trailing"}
+    assert _fp(_with(period=odd)) != _fp(_with(period=dict(odd, year=2026)))
+    assert _fp(_with(period=odd)) != _fp(_with(period=_period_absence()))
+
+
+def test_fingerprint_unit_aliases_collapse_without_merging_meanings():
+    usd = _fp(_with())
+    for spelling in ("US dollars", "us dollar", "U.S. Dollars", " u.s. dollar "):
+        assert _fp(_with(unit=spelling)) == usd
+    assert _fp(_with(unit="euros", currency="EUR")) == _fp(_with(unit="EUR", currency="EUR"))
+    assert _fp(_with(unit="pounds sterling", currency="GBP")) == _fp(_with(unit="GBP", currency="GBP"))
+    percent = _fp(_with(unit="percent", currency="NA"))
+    assert _fp(_with(unit="per cent", currency="NA")) == percent
+    assert _fp(_with(unit="Percentage", currency="NA")) == percent
+    # An alias never reaches across a rate-unit boundary.
+    assert _fp(_with(unit="percentage points", currency="NA")) != percent
+
+
+def test_producer_treats_reworded_period_absence_as_a_repeat(tmp_path):
+    first = t1("a1", 1, incremental_amount=_with(period=_period_absence()))
+    repeat = t1("a2", 2, doc=DOC_B, incremental_amount=qpoint(5, "incremental", doc=DOC_B))
+    repeat["incremental_amount"]["period"] = _period_absence(detail="No fiscal period is named.")
+    for event in (first, repeat):
+        assert_valid(event)
+    report, log, _, _ = run_rows(tmp_path, [row(first, "c1"), row(repeat, "c2")])
+    records = by_fact(log)
+    assert records[first["fact_id"]]["record_kind"] == "fact_revision"
+    assert records[repeat["fact_id"]]["record_kind"] == "manifestation"
+    assert records[repeat["fact_id"]]["reports_fact_id"] == first["fact_id"]
+    assert report["n_records"] == {"fact_revision": 1, "manifestation": 1}
+
+
+def test_fingerprint_without_terms_is_the_unchanged_value_only_digest():
+    payload = {"incremental": 50_000_000, "remaining": 80_000_000}
+    expected = thesis.canonical_json_sha256(payload)
+    assert thesis.quantity_fingerprint(payload, pf.T1) == {"form": "present", "canonical_sha256": expected}
+    # quantity_terms that is not a mapping, or lacks the slot, keeps the value-only input.
+    assert thesis.quantity_fingerprint(dict(payload, quantity_terms=None), pf.T1)["canonical_sha256"] == expected
+    assert thesis.quantity_fingerprint(dict(payload, quantity_terms={}), pf.T1)["canonical_sha256"] == expected
+
+
+def test_producer_records_a_unit_change_as_a_fact_revision(tmp_path):
+    first = t1("u1", 1, incremental_amount=_with(unit="percent", currency="NA"))
+    later = t1("u2", 2, doc=DOC_B, incremental_amount=qpoint(5, "incremental", doc=DOC_B))
+    later["incremental_amount"].update(unit="pp", currency="NA")
+    repeat = t1("u3", 3, doc=DOC_B, incremental_amount=qpoint(5, "incremental", doc=DOC_B))
+    repeat["incremental_amount"].update(unit="percentage points", currency="NA")
+    for event in (first, later, repeat):
+        assert_valid(event)
+    report, log, _, _ = run_rows(tmp_path, [row(first, "c1"), row(later, "c2"), row(repeat, "c3")])
+    records = by_fact(log)
+    assert records[first["fact_id"]]["record_kind"] == "fact_revision"
+    assert records[later["fact_id"]]["record_kind"] == "fact_revision"
+    assert records[repeat["fact_id"]]["record_kind"] == "manifestation"
+    assert records[repeat["fact_id"]]["reports_fact_id"] == later["fact_id"]
+    assert report["n_records"] == {"fact_revision": 2, "manifestation": 1}
+
+
+@pytest.mark.parametrize("builder,field,basis", [
+    (t1, "incremental_amount", "incremental"),
+    (t1, "remaining_authorization", "total"),
+    (t1, "executed_amount", "total"),
+    (t2, "stated_amount", "total"),
+])
+def test_r6_exact_lower_amount_qualifies_through_real_leaf_adapter(tmp_path, builder, field, basis):
+    first = builder("r6_old", 1, **{field: qpoint(80_000_000, basis)})
+    later = builder("r6_new", 2, doc=DOC_B, **{field: qpoint(70_000_000, basis, doc=DOC_B)})
+    views, log, leaves = _r6_correction_projection(tmp_path, [first, later])
+    view = next(v for v in views if v["original_proposition_fact_id"] == first["fact_id"])
+    assert _r6_condition(view) == {
+        "code": "source_correction_reduces_magnitude", "armed": True,
+        "evidence_fact_ids": [later["fact_id"]],
+    }
+    assert {"source_correction", "changed_numeric_terms"} <= set(view["material_delta_triggers"])
+    assert view["prophet_flags"] == FLAGS and view["authority"] == "context_only"
+    assert "28 September" not in json.dumps(view["display"])
+    assert "remaining authorization" not in view["display"]["plain_status"]
+    assert "source correction" in view["display"]["plain_status"].lower()
+
+
+@pytest.mark.parametrize("value", [80_000_000, 90_000_000])
+def test_r6_equal_or_increased_amount_does_not_qualify(tmp_path, value):
+    first = t1("r6_old", 1, incremental_amount=qpoint(80_000_000, "incremental"))
+    later = t1("r6_new", 2, incremental_amount=qpoint(value, "incremental"))
+    views, _, _ = _r6_correction_projection(tmp_path, [first, later])
+    assert _r6_condition(views[0])["armed"] is False
+    assert _r6_condition(views[0])["evidence_fact_ids"] == []
+    assert "source_correction" in views[0]["material_delta_triggers"]
+
+
+@pytest.mark.parametrize("change", [
+    "legacy_only", "missing_current", "missing_prior", "wrong_predecessor",
+    "bool", "nan", "infinite", "negative", "string", "over_limit",
+    "leaf_conflict", "leaf_bool", "currency", "unit", "scaled_unit",
+    "basis", "period", "period_absent", "invalid_calendar", "reversed_period",
+    "bound", "negated", "leaf_negated", "range", "missing_evidence",
+    "missing_currency", "horizon", "basis_run_rate", "basis_per_share",
+    "basis_percent", "period_multi_year", "period_half_year",
+    "period_nine_months", "extra_period_end", "template_old",
+    "template_new", "template_absent",
+])
+def test_r6_unqualified_pairs_preserve_correction_without_direction(tmp_path, change):
+    import copy
+
+    first = t1("r6_old", 1, incremental_amount=qpoint(80_000_000, "incremental"))
+    later = t1("r6_new", 2, incremental_amount=qpoint(70_000_000, "incremental"))
+
+    def mutate(leaves):
+        old = leaves[first["fact_id"]]
+        current = leaves[later["fact_id"]]
+        quantity = current["quantity_terms"]["incremental"]
+        old_quantity = old["quantity_terms"]["incremental"]
+        if change == "legacy_only":
+            old.pop("quantity_terms"); current.pop("quantity_terms")
+        elif change == "missing_current":
+            leaves.pop(later["fact_id"])
+        elif change == "missing_prior":
+            # Preserve the first leaf for the comparison snapshot, but no terms.
+            old.clear()
+        elif change == "wrong_predecessor":
+            unrelated = copy.deepcopy(old)
+            leaves[fid("unrelated")] = unrelated
+            old.clear()
+        elif change in {"bool", "nan", "infinite", "negative", "string", "over_limit"}:
+            value = {"bool": True, "nan": float("nan"), "infinite": float("inf"),
+                     "negative": -1, "string": "70000000", "over_limit": 10**16}[change]
+            quantity["value"] = value
+            if change not in {"nan", "infinite"}:
+                current["incremental"] = value
+        elif change == "leaf_conflict":
+            current["incremental"] = 90_000_000
+        elif change == "leaf_bool":
+            current["incremental"] = True
+        elif change == "currency":
+            quantity["currency"] = "EUR"; quantity["unit"] = "EUR"
+        elif change == "unit":
+            quantity["unit"] = "USD millions"
+        elif change == "scaled_unit":
+            quantity["unit"] = old_quantity["unit"] = "USD millions"
+        elif change == "basis":
+            quantity["basis"] = "total"
+        elif change == "period":
+            quantity["period"]["year"] = 2028
+        elif change == "period_absent":
+            quantity["period"] = old_quantity["period"] = absence("period")
+        elif change == "invalid_calendar":
+            quantity["period"]["calendar_end"] = old_quantity["period"]["calendar_end"] = "2027-02-30"
+        elif change == "reversed_period":
+            quantity["period"]["end_year"] = old_quantity["period"]["end_year"] = 2026
+        elif change == "bound":
+            quantity["bound"] = old_quantity["bound"] = "up_to"
+        elif change == "negated":
+            quantity["negated"] = True
+        elif change == "leaf_negated":
+            current["negated"] = True
+        elif change == "range":
+            quantity.pop("value"); quantity.pop("bound")
+            quantity.update(form="range", low=60_000_000, high=70_000_000)
+            current["incremental"] = {"low": 60_000_000, "high": 70_000_000}
+        elif change == "missing_evidence":
+            quantity.pop("evidence")
+        elif change == "missing_currency":
+            quantity.pop("currency")
+        elif change == "horizon":
+            current["horizon_token"] = "FY2028"
+        elif change.startswith("basis_"):
+            quantity["basis"] = old_quantity["basis"] = change.removeprefix("basis_")
+        elif change.startswith("period_"):
+            quantity["period"]["period_kind"] = old_quantity["period"]["period_kind"] = change.removeprefix("period_")
+        elif change == "extra_period_end":
+            quantity["period"]["end_year"] = old_quantity["period"]["end_year"] = 2027
+        elif change == "template_old":
+            old["template"] = pf.T2
+        elif change == "template_new":
+            current["template"] = pf.T2
+        elif change == "template_absent":
+            current.pop("template")
+
+    if change in {"nan", "infinite"}:
+        with pytest.raises(ValueError, match="Out of range float values"):
+            _r6_correction_projection(tmp_path, [first, later], mutate_leaf=mutate)
+        return
+    views, _, _ = _r6_correction_projection(tmp_path, [first, later], mutate_leaf=mutate)
+    condition = _r6_condition(views[0])
+    assert condition["armed"] is False and condition["evidence_fact_ids"] == []
+    assert {"source_correction", "changed_numeric_terms"} <= set(views[0]["material_delta_triggers"])
+
+
+def test_r6_superseded_reduction_does_not_support_current_condition(tmp_path):
+    events = [
+        t1("r6_initial", 1, incremental_amount=qpoint(80_000_000, "incremental")),
+        t1("r6_lower", 2, incremental_amount=qpoint(60_000_000, "incremental")),
+        t1("r6_recovery", 3, incremental_amount=qpoint(70_000_000, "incremental")),
+    ]
+    views, _, _ = _r6_correction_projection(tmp_path, events)
+    assert _r6_condition(views[0]) == {
+        "code": "source_correction_reduces_magnitude", "armed": False, "evidence_fact_ids": [],
+    }
+    assert views[0]["live_fact_ids"] == [events[-1]["fact_id"]]
+    assert "source_correction" in views[0]["material_delta_triggers"]
+
+
+def test_r6_only_live_reducing_corrections_are_attributed(tmp_path):
+    first = t1("r6_auth", 1, incremental_amount=qpoint(80_000_000, "incremental"))
+    execution = t1("r6_exec", 2, primary_amount_role="executed",
+                   incremental_amount=qabsent("incremental_amount"),
+                   executed_amount=qpoint(20_000_000, "total"))
+    reduction = t1("r6_auth_lower", 3, incremental_amount=qpoint(70_000_000, "incremental"))
+    increase = t1("r6_exec_higher", 4, primary_amount_role="executed",
+                  incremental_amount=qabsent("incremental_amount"),
+                  executed_amount=qpoint(30_000_000, "total"))
+    links = {event["fact_id"]: [first["fact_id"]] for event in (execution, increase)}
+    views, _, _ = _r6_correction_projection(tmp_path, [first, execution, reduction, increase], links=links)
+    view = next(v for v in views if v["original_proposition_fact_id"] == first["fact_id"])
+    assert _r6_condition(view)["evidence_fact_ids"] == [reduction["fact_id"]]
+    assert _r6_condition(view)["armed"] is True
+
+
+def test_r6_nonmonetary_quantity_remains_direction_unqualified(tmp_path):
+    first = t3("r6_qold", 1, stated_quantity=qpoint(80, "total"))
+    later = t3("r6_qnew", 2, stated_quantity=qpoint(70, "total"))
+    views, _, _ = _r6_correction_projection(tmp_path, [first, later])
+    assert _r6_condition(views[0])["armed"] is False
+
+
+def test_r6_matching_concrete_quarter_can_qualify(tmp_path):
+    first = t2("r6_qtr_old", 1, stated_amount=qpoint(80_000_000, "total"))
+    later = t2("r6_qtr_new", 2, stated_amount=qpoint(70_000_000, "total"))
+    for event in (first, later):
+        period = {"year": 2027, "quarter": 1, "calendar_end": "2027-03-31", "period_kind": "quarter"}
+        event["fiscal_period"] = dict(period)
+        event["stated_amount"]["period"] = dict(period)
+    views, _, _ = _r6_correction_projection(tmp_path, [first, later])
+    assert _r6_condition(views[0])["armed"] is True
+    assert _r6_condition(views[0])["evidence_fact_ids"] == [later["fact_id"]]
+
+
+# --------------------------------------------------------------------------- verified generation boundary
+
+def _forbid_consumer_processing(monkeypatch):
+    def forbidden(*_args, **_kwargs):
+        raise AssertionError("consumer processing reached before input verification")
+    monkeypatch.setattr(pf, "fact_slot", forbidden)
+    monkeypatch.setattr(thesis, "append_records", forbidden)
+    monkeypatch.setattr(thesis, "project", forbidden)
+    monkeypatch.setattr(pf, "adapt_batch", forbidden)
+
+
+@pytest.fixture
+def no_consumer_processing(monkeypatch):
+    _forbid_consumer_processing(monkeypatch)
+
+
+@pytest.mark.parametrize("fault", [
+    "missing_report", "missing_events", "malformed_report", "nonobject_report",
+    "wrong_version", "wrong_mode", "stale_events", "wrong_digest",
+    "wrong_byte_length", "wrong_emitted_count", "wrong_case_count",
+    "invalid_count_map", "negative_count", "boolean_category_count",
+    "boolean_total_count", "fractional_emitted_count", "fractional_byte_length",
+    "unverified_row_marker", "wrong_shadow_type",
+])
+def test_unverified_generation_refuses_before_processing(tmp_path, no_consumer_processing, fault):
+    events = write_rows(tmp_path / "source" / "events.jsonl", [row(t1())])
+    report_path = events.parent / "events_report.json"
+    report = json.loads(report_path.read_text())
+    if fault == "missing_report":
+        report_path.unlink()
+    elif fault == "missing_events":
+        events.unlink()
+    elif fault == "malformed_report":
+        report_path.write_text("{")
+    elif fault == "nonobject_report":
+        report_path.write_text("[]")
+    elif fault == "stale_events":
+        events.write_bytes(events.read_bytes() + b" ")
+    elif fault in {"unverified_row_marker", "wrong_shadow_type"}:
+        item = row(t1())
+        if fault == "unverified_row_marker":
+            item["novelty_source"] = "unverified"
+        else:
+            item["shadow"] = 0
+        write_rows(events, [item])
+    else:
+        if fault == "wrong_version":
+            report["producer_version"] = "unrecognised-producer"
+        elif fault == "wrong_mode":
+            report["mode"] = "shadow:fam_a"
+        elif fault == "wrong_digest":
+            report["events_sha256"] = "0" * 64
+        elif fault == "wrong_byte_length":
+            report["events_bytes"] += 1
+        elif fault == "wrong_emitted_count":
+            report["n_emitted"] += 1
+        elif fault == "wrong_case_count":
+            report["n_cases"] += 1
+        elif fault == "invalid_count_map":
+            report["deferred"] = []
+        elif fault == "negative_count":
+            report["rejected"] = {"bad": -1}
+        elif fault == "boolean_category_count":
+            report["emitted"] = {"synthetic": True}
+        elif fault == "boolean_total_count":
+            report["n_cases"] = True
+        elif fault == "fractional_emitted_count":
+            report["n_emitted"] = 1.0
+        elif fault == "fractional_byte_length":
+            report["events_bytes"] = float(report["events_bytes"])
+        report_path.write_text(json.dumps(report))
+    out = tmp_path / "consumer"
+    with pytest.raises(pf.Reject) as exc:
+        pf.run([events], out)
+    assert exc.value.code == "output_generation_unverified"
+    assert not out.exists()
+
+
+@pytest.mark.parametrize("filename", ["alias.jsonl", "events_shadow_fam_a.jsonl"])
+def test_noncanonical_input_is_not_substituted(tmp_path, no_consumer_processing, filename):
+    canonical = write_rows(tmp_path / "source" / "events.jsonl", [row(t1())])
+    selected = canonical.with_name(filename)
+    selected.write_bytes(canonical.read_bytes())
+    out = tmp_path / "consumer"
+    with pytest.raises(pf.Reject) as exc:
+        pf.run([selected], out)
+    assert exc.value.code == "events_path_not_canonical"
+    assert not out.exists()
+
+
+def test_every_generation_is_verified_before_processing(tmp_path, no_consumer_processing):
+    first = write_rows(tmp_path / "first" / "events.jsonl", [row(t1("first"))])
+    second = write_rows(tmp_path / "second" / "events.jsonl", [row(t1("second"))])
+    (second.parent / "events_report.json").unlink()
+    out = tmp_path / "consumer"
+    with pytest.raises(pf.Reject) as exc:
+        pf.run([first, second], out)
+    assert exc.value.code == "output_generation_unverified"
+    assert not out.exists()
+
+
+def test_absent_generation_list_is_not_a_completed_empty_generation(tmp_path, no_consumer_processing):
+    out = tmp_path / "consumer"
+    with pytest.raises(pf.Reject) as exc:
+        pf.run([], out)
+    assert exc.value.code == "events_generation_missing"
+    assert not out.exists()
+
+
+def test_completed_empty_generation_is_accepted(tmp_path):
+    report, log, views, evidence_rows = run_rows(tmp_path, [])
+    assert report["mode"] == "adjudicated"
+    assert report["n_rows"] == 0 and report["n_records"] == {}
+    assert log["records"] == [] and views == [] and evidence_rows == []
+
+
+def test_generation_refusal_preserves_existing_consumer_outputs(tmp_path, monkeypatch):
+    events = write_rows(tmp_path / "source" / "events.jsonl", [row(t1())])
+    out = tmp_path / "consumer"
+    pf.run([events], out)
+    before = {name: (out / name).read_bytes() for name in pf.OUTPUT_NAMES}
+    _forbid_consumer_processing(monkeypatch)
+    report_path = events.parent / "events_report.json"
+    report = json.loads(report_path.read_text())
+    report["n_cases"] += 1
+    report_path.write_text(json.dumps(report))
+    with pytest.raises(pf.Reject) as exc:
+        pf.run([events], out)
+    assert exc.value.code == "output_generation_unverified"
+    assert {name: (out / name).read_bytes() for name in pf.OUTPUT_NAMES} == before
+
+
+def test_generation_refusal_uses_existing_cli_result(tmp_path, no_consumer_processing, capsys):
+    events = write_rows(tmp_path / "source" / "events.jsonl", [row(t1())])
+    (events.parent / "events_report.json").unlink()
+    out = tmp_path / "consumer"
+    assert pf.main(["--events", str(events), "--out", str(out)]) == 2
+    assert json.loads(capsys.readouterr().out) == {"refused": "output_generation_unverified"}
+    assert not out.exists()
+
+
+def test_actual_producer_generation_flows_through_actual_consumer(tmp_path):
+    from tests.test_news_impact_producer import make_bundle, write_case, write_labels
+
+    bundles, labels, generation = tmp_path / "bundles", tmp_path / "labels", tmp_path / "generation"
+    bundle = make_bundle()
+    # Use synthetic SEC owner IDs, as required by the existing fact-log contract.
+    # Stage-one's generic doc_synth IDs deliberately test a broader input contract.
+    bundle["segments"] = [
+        {**segment, "document_id": f"sec:{segment['accession']}:{segment['document_id']}"}
+        for segment in bundle["segments"]
+    ]
+    write_case(bundles, bundle)
+    write_labels(labels, "case_synth_1", pr.FAMILIES)
+    stage_one = pr.run(bundles, labels, generation)
+    assert stage_one["producer_version"] == "ni-producer-2"
+    assert stage_one["n_emitted"] == 1
+    out = tmp_path / "consumer"
+    report = pf.run([generation / "events.jsonl"], out)
+    assert report["mode"] == "adjudicated"
+    assert report["rejected"] == {}
+    assert report["n_rows"] == 1 and report["n_records"] == {"fact_revision": 1}
+    assert json.loads((out / "fact_log.json").read_text())["records"]
+
+
+def test_actual_shadow_producer_output_cannot_enter_consumer(tmp_path, no_consumer_processing):
+    from tests.test_news_impact_producer import make_bundle, write_case, write_labels
+
+    bundles, labels, generation = tmp_path / "bundles", tmp_path / "labels", tmp_path / "generation"
+    write_case(bundles, make_bundle())
+    write_labels(labels, "case_synth_1", ("fam_a",))
+    report = pr.run(bundles, labels, generation, shadow_family="fam_a")
+    assert report["mode"] == "shadow:fam_a" and report["n_emitted"] == 1
+    out = tmp_path / "consumer"
+    with pytest.raises(pf.Reject) as exc:
+        pf.run([generation / "events_shadow_fam_a.jsonl"], out)
+    assert exc.value.code == "events_path_not_canonical"
+    assert not out.exists()

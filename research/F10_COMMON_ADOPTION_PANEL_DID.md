@@ -3,7 +3,7 @@
 - **Component:** `engine/panel_did.py` (+ `tests/test_panel_did.py`)
 - **Engineering item:** MO-DELTA-015/016 (new F10 econometric family, research-only estimator + JSON CLI)
 - **Authority:** `research_only` / `descriptive_estimate`
-- **Status:** implemented and unit-tested; **not** an empirical study, **not** a completion claim for the F10 family, and **not** validated against any real dataset.
+- **Status:** implemented with focused regression coverage; **not** an empirical study, **not** a completion claim for the F10 family, and **not** validated against any real dataset.
 
 ## 1. What this is (and explicitly is not)
 
@@ -33,8 +33,8 @@ estimate_common_adoption_panel(outcomes, treatment, *, unit_ids, periods,
 
 | Field | Shape / type | Rules |
 | --- | --- | --- |
-| `outcomes` | `N x T` array-like | finite real numbers; booleans rejected; NaN/±inf rejected |
-| `treatment` | `N x T` array-like | entries exactly 0 or 1 (booleans accepted for the mask only) |
+| `outcomes` | `N x T` array-like | finite real numbers; masked observations, booleans and NaN/±inf rejected |
+| `treatment` | `N x T` array-like | entries exactly 0 or 1 (booleans accepted); masked observations rejected |
 | `unit_ids` | N strings | nonempty, unique |
 | `periods` | T strings | canonical ISO `YYYY-MM-DD`, strictly increasing, unique |
 | `cluster_ids` | N strings | nonempty; may group units; caller-supplied actual assignment/dependence unit |
@@ -52,6 +52,9 @@ holds. Nothing is dropped, padded, or imputed to make a borderline panel fit.
 - `boolean_outcomes`, `non_numeric_entries`, `nonfinite_outcomes`,
   `invalid_input`, `invalid_shape` — outcome matrices must be finite reals,
   rectangular `N x T`.
+- `masked_observations` — reject an actual NumPy mask before matrix coercion,
+  including masked rows/scalars within list/tuple inputs; finite hidden data is
+  never substituted. All-false/`nomask` wrappers retain the complete-panel result.
 - `shape_mismatch`, `length_mismatch` — outcomes/treatment must share shape;
   `unit_ids`/`cluster_ids` must have N entries; `periods` must have T entries.
 - `duplicate_unit_ids`, `invalid_label`, `invalid_periods` — identifier and
@@ -133,7 +136,7 @@ standing limitations.
 
 ## 4. Invariances and numerical validation
 
-Covered by `tests/test_panel_did.py` (22 focused tests):
+Covered by `tests/test_panel_did.py` (27 focused test functions):
 
 - **Planted-effect recovery** with unit effects, time effects and seeded noise;
   coefficient recovered near the planted value with finite p and CI.
@@ -159,7 +162,8 @@ Covered by `tests/test_panel_did.py` (22 focused tests):
 - **Exact fit**: a design with zero residual variation but ≥ 2 clusters per arm
   returns `degenerate_variance` with the coefficient intact and no SE/CI/p —
   no fake certainty from roundoff.
-- **Input hygiene**: NaN/inf/boolean outcomes, ragged/shape-mismatched input,
+- **Input hygiene**: masked outcomes/treatment (matrix and list/tuple rows),
+  all-false/`nomask` wrapper equivalence, NaN/inf/boolean outcomes, ragged/shape-mismatched input,
   fractional mask entries, staggered adoption, reversals, no pre-period,
   missing arms, mixed-treatment clusters, duplicate/short identifier lists,
   and five classes of invalid period lists all produce typed rejections.

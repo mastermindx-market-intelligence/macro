@@ -405,7 +405,12 @@ The optional dated identity v2 receipt (`options.dated_contract_identity/v2`,
 `scope: observed_contracts`) binds the entire Greek/OI coordinate union, with
 multiple expiries, through the existing native identity owner. The selected v1
 receipt and exposure v2 tuple arrays are unchanged. The v2 adapter currently
-supports SPY's captured canonical target; QQQ retains its native intake fence.
+supports SPY's captured canonical target and the admitted QQQ native target
+`SEC:US-XNAS-QQQ` / `US-XNAS-QQQ`. QQQ's completed listing uses normalized
+`exchange: NASDAQ`; its canonical effective date is October20,2026. That current
+intake cannot bind October16/19 option populations. Both roots require actual
+captured canonical/listing evidence, exact matching reference series and native
+acquisition/retained-input receipts. The SPY-only selected v1 path is unchanged.
 `observed_contract_keys` is the unique full pre-exclusion union (at most100000
 members/50000 expiry-strike cells). `contract_keys` is its uniquely exact-reference
 bound subset, possibly empty. Omitted or ambiguous reference series remain in the
@@ -458,3 +463,93 @@ The installed daily wrapper/service need not change scheduling or writer locks.
 Existing stored rows are not reacquired/upgraded by this option, and a previous
 unknown HTTP effect is not retried. Terms, canonical identity, actual receipt clocks
 and remaining qualification controls still apply independently.
+
+### Scoped archive-only projection repair
+
+The existing `scripts.repair_gex_history` owner accepts explicit `--roots`,
+`--date` and `--exposure-context` for an existing dated archive. Without `--apply`
+it is a dry run. The receipt must bind the exact full native-store Greek/OI rows;
+selected `source_inputs` are rejected. Expiration representation is retained as
+read by the native builder so the original semantic input digest remains valid.
+Wrong root/session/digest refuses before a replacement write.
+
+```sh
+python -m scripts.repair_gex_history --roots SPY --date 2026-10-16 \
+  --theta-store <incumbent-store> --exposure-context <owner-bundle>
+```
+
+The repaired archive retains `history`, updates the fields owned by `compute_gex`
+including the optional `exposure_projection`, and applies the existing whole-event
+8MiB transport budget. It never writes `gex/{ROOT}.json`, vol or current boards.
+A genuinely empty or over-budget legacy envelope retains its last-good archive.
+Maintenance without an explicit owner context also preserves existing dated/modeled
+projections, rather than erasing their qualification with an unavailable substitute.
+The explicit-context path rejects changed input digests instead of silently
+publishing a numerically unavailable substitute.
+
+Only after ordinary writer custody and actual distribution rights are established,
+`--apply --publish` uploads the changed exact dated keys. The existing
+`publish_gex_history_index` then lists the actual plane and updates `dates.json`
+with `heal_budget=0`; unsuccessful uploads do not create invented index members or
+trigger unrelated heals. This option is not a rights grant or service activation.
+The retained October16 SPY dry run and isolated evidence-copy application preserve
+13104 observed /12212 qualified /892 missing,6552 cells in a3994690-byte JSON
+artifact. No production archive or current book was changed for that verification.
+
+The QQQ observed-v2 extension uses the same field and tuple layout as SPY, with
+explicit root-specific policy `occ_standard_qqq_etf/v1`. It interprets only exact
+100-share American QQQ reference contracts with no additional deliverables reported,
+retaining raw omission and Massive/OCC citations. Currency/multiplier/deliverable
+interpretation does not establish an economic expiry instant, serving model build,
+dividend schedule, provider Greek units beyond the admitted dated Gamma class, or
+historical first availability. All existing instantaneous/joint/repricing/PIT guards
+remain in force. Synthetic QQQ producer output is a contract test, not actual QQQ
+market capture or publication.
+
+### Prospective native snapshot provenance
+
+The existing snapshot wrapper retains the same `thetadata.acquisition/v1`
+receipt column for first-order Greeks, second-order Greeks and OI snapshots.
+This is actual endpoint/parameters/raw-body hash/collector received time; no source
+session, provider publication instant, historical availability or rights is inferred.
+The history-only numerical receipt reader continues to refuse snapshot endpoints.
+`native_snapshot_acquisitions` validates every row's receipt, requested root/scope,
+endpoint and known-by cutoff, decoding identical repeated evidence once.
+
+The native snapshot normalizer now retains original `timestamp` and
+`underlying_timestamp` text alongside the existing parsed `snapshot_ts`. Missing
+underlying clocks remain absent. The existing exact contract-plus-snapshot-time
+join preserves first-order evidence and separately names second-order evidence:
+`second_order_timestamp`, `second_order_underlying_timestamp`,
+`_theta_second_acquisition`, `second_order_underlying_price`,
+`second_order_implied_vol`, `second_order_iv_error`, `second_order_bid`, and
+`second_order_ask`. Missing or mismatched second-order observations cannot acquire
+another row's provenance; first-order values are not overwritten.
+
+`snapshot_greeks(..., version=None)` preserves existing request defaults and records
+an omitted requested version as unknown. Explicit `version="1"` or `"latest"` is
+forwarded only when the caller supplies it. The source receipt's
+`calculation_provenance` labels its basis as requested parameters plus endpoint
+documentation, retains a null serving build, and discloses the corresponding
+0DTE0.15-day or latest minimum-one-hour floor. It never relabels either as
+`economic_expiry_no_floor`. Official source pages:
+[first order](https://www.thetadata.net/docs/operations/option_snapshot_greeks_first_order.html),
+[second order](https://www.thetadata.net/docs/operations/option_snapshot_greeks_second_order.html).
+The current code does not activate the optional version or make any source request.
+
+Provenance failure is lane-local: valid legacy CSV rows survive with the acquisition
+receipt omitted, including removal of any untrusted same-named response column.
+Unsupported Vanna/Charm units, serving model identity and economic/model horizon
+remain unavailable. Q02's American reference remains `RESEARCH_ONLY`; physical
+delivery, reference-close marking, last trade, exercise election and model horizon
+must not be conflated. This adapter does not qualify instantaneous exposure or
+change any projection capabilities, poller schedule, store or publication right.
+
+Admission hardening preserves any explicit conflicting currency, multiplier or
+deliverable rather than overwriting it with an ordinary-ETF interpretation. Rule
+interpretation accepts only mapped exact HTTPS reference origin/path/hash; source
+origin and coordinate provenance still come from the checked reference chain, not
+from a URL string alone. QQQ's Oct20 lower bound is enforced both when resolving and
+when validating a receipt. OI is not Greek algorithm-versioned: an explicit unsupported
+version parameter withholds its acquisition evidence; no version1 is invented for OI.
+These guards preserve observed denominators and do not change v2 tuple fields.

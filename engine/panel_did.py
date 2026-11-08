@@ -13,7 +13,8 @@ Authority and scope
   NOT VERIFIED; no real-data study is performed or claimed by this module.
 * Strict input gating: staggered adoption, unbalanced/ragged input, treatment
   reversals, already-treated-at-start designs, mixed-treatment assignment
-  clusters, nonfinite or boolean outcomes, and duplicate/invalid identifiers
+  clusters, masked observations, nonfinite or boolean outcomes, and
+  duplicate/invalid identifiers
   are rejected with a typed abstention.  Nothing is silently dropped, padded
   or imputed.
 * Inference is CR1 cluster-robust with a Student-t(G-1) reference distribution
@@ -94,6 +95,19 @@ def _short(value: Any, limit: int = 80) -> str:
 # ---------------------------------------------------------------------------
 
 
+def _masked_observation_count(raw: Any, *, _depth: int = 0) -> int:
+    """Count masks in supported matrix, row and scalar inputs before coercion."""
+    if np.ma.isMaskedArray(raw):
+        return int(np.count_nonzero(np.ma.getmaskarray(raw)))
+    # A 2-D array-like has at most two list/tuple levels. Bound inspection to
+    # those levels so cyclic/deeper inputs still reach normal shape validation.
+    # Numeric ndarrays need no element walk; object arrays are rejected below.
+    if isinstance(raw, (list, tuple)) and _depth < 2:
+        return sum(_masked_observation_count(value, _depth=_depth + 1)
+                   for value in raw)
+    return 0
+
+
 def _to_matrix(
     raw: Any, field: str, *, allow_bool: bool, nonfinite_code: str
 ) -> Tuple[Optional[np.ndarray], Optional[Dict[str, Any]]]:
@@ -104,6 +118,15 @@ def _to_matrix(
             "%s must be a rectangular N x T array-like (list of equal-length numeric rows)" % field,
         )
     try:
+        # np.asarray strips MaskedArray masks, including masked rows in a
+        # list/tuple. Refuse missing observations before hidden data can be used.
+        masked_count = _masked_observation_count(raw)
+        if masked_count:
+            return None, _abstain(
+                "masked_observations",
+                "%s must not contain masked observations" % field,
+                {"field": field, "masked_count": masked_count},
+            )
         # Preserve heterogeneous input types before NumPy can coerce True to 1.0.
         if not allow_bool and any(isinstance(v, (bool, np.bool_))
                                   for v in np.asarray(raw, dtype=object).flat):

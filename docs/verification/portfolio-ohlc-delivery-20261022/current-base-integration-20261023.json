@@ -1,0 +1,367 @@
+{
+  "schema": "portfolio.ohlc-current-base-validation.v1",
+  "recorded_at": "2026-10-23T11:33:10.540382+00:00",
+  "head_before": "c0aef9d74ca8306603b7c6ba928256b30a1410a5",
+  "merged_base": "f4c0634e561eaa423d2ca0c3e8060d5dc2e3597d",
+  "common_base": "7a8f690d35693976b2854575833eb2041618a005",
+  "composition_tree": "40792e9552e30aadbed5bab8defbf009feafa236",
+  "source_composition": {
+    "manifest_blob": "84524768f93c056b54cc4e2c4bb75e15fa44af7e",
+    "manifest_sha256": "0534336d2f6e4c7704d964854927b8a9fb7bfe3e2428f4feb6511ad3268f12b0",
+    "all_three_way_fields_verified": true,
+    "additive_combined_paths": [
+      "manifest.jobs.biocatalyst-serving.paths"
+    ],
+    "job_counts": {
+      "common": 349,
+      "ohlc": 350,
+      "accepted_main": 351,
+      "composed": 352
+    },
+    "complete_sibling_jobs_retained": [
+      "ohlc-origin-delivery",
+      "catalyst-opportunity"
+    ],
+    "manifest_delta": "73\t0\t.github/ci/legacy-jobs.yml\n",
+    "independently_predicted_blobs_verified": {
+      "app/deploy/update.sh": "9d84a6dc6dea30bb76214206a8a698bc407a749a",
+      "tests/test_deploy_update_self_heal.py": "0586aac96fa89714a63220e198ce98f526193392",
+      "tests/test_ci_pack.py": "c4697cc002d8422595e3ad478f0fbff011d4acd8",
+      ".github/workflows/ci.yml": "51ed931e7f5c576a1a51b3999733f3fbbe4c9386"
+    },
+    "accepted_94921_blobs_preserved": {
+      "scripts/run_ci_pack.py": "e871c4390f536307c5aebe212d07af6df9080c63",
+      "tests/test_ci_pack_semantic.py": "911b816937b789956606e6d8a789689efe65bfb1",
+      "tests/test_biocatalyst_deploy.py": "11024bcf0bff8cbfeeb44b12bc41bab01e21f9ac"
+    },
+    "inherited_main_timeout_changes": {
+      "international-workspace-browser": {
+        "common": 8,
+        "accepted_main": 12
+      },
+      "unrun-brain-gateway": {
+        "common": 10,
+        "accepted_main": 15
+      }
+    },
+    "packing_probes": [
+      [
+        "templates/index.html",
+        136,
+        5884
+      ],
+      [
+        "scripts/build_free_content.py",
+        136,
+        5856
+      ],
+      [
+        "engine/prophet/plan_book.py",
+        130,
+        5634
+      ]
+    ],
+    "packing_max_packs": 10
+  },
+  "formatting": {
+    "new_source_check": {
+      "args": [
+        "diff",
+        "--check",
+        "c0aef9d74ca8306603b7c6ba928256b30a1410a5",
+        "--",
+        ".github/ci/legacy-jobs.yml",
+        "app/deploy/update.sh",
+        "tests/test_deploy_update_self_heal.py",
+        "tests/test_ci_pack.py",
+        ".github/workflows/ci.yml"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "frozen_raw_evidence_diagnostics": {
+      "args": [
+        "diff",
+        "--check",
+        "f4c0634e561eaa423d2ca0c3e8060d5dc2e3597d",
+        "--",
+        ".github/ci/legacy-jobs.yml",
+        ".github/workflows/daily.yml",
+        ".gitignore",
+        "app/deploy/ohlc_origin_known_hosts",
+        "app/deploy/update.sh",
+        "config/dag.yml",
+        "docs/PORTFOLIO_OHLC_ORIGIN_DELIVERY.md",
+        "docs/verification/portfolio-ohlc-delivery-20261022/README.md",
+        "docs/verification/portfolio-ohlc-delivery-20261022/ci-scope-correction.diff",
+        "docs/verification/portfolio-ohlc-delivery-20261022/recovery-ci-repair-20261022.json",
+        "docs/verification/portfolio-ohlc-delivery-20261022/recovery-integration-20261022.json",
+        "docs/verification/portfolio-ohlc-delivery-20261022/recovery-integration-ci-coverage-packing.log.gz",
+        "docs/verification/portfolio-ohlc-delivery-20261022/recovery-integration-deployment.log.gz",
+        "docs/verification/portfolio-ohlc-delivery-20261022/recovery-integration-ohlc-fixture-restored.log.gz",
+        "docs/verification/portfolio-ohlc-delivery-20261022/recovery-integration-ohlc.log.gz",
+        "docs/verification/portfolio-ohlc-delivery-20261022/review.md",
+        "docs/verification/portfolio-ohlc-delivery-20261022/validation-output.txt",
+        "docs/verification/portfolio-ohlc-delivery-20261022/validation.json",
+        "scripts/build_chart_data.py",
+        "scripts/publish_ohlc.py",
+        "tests/test_ci_pack.py",
+        "tests/test_deploy_update_self_heal.py",
+        "tests/test_publish_ohlc.py",
+        "tests/test_push_retry.py"
+      ],
+      "exit": 2,
+      "stdout": "docs/verification/portfolio-ohlc-delivery-20261022/ci-scope-correction.diff:85: trailing whitespace.\n+ \ndocs/verification/portfolio-ohlc-delivery-20261022/ci-scope-correction.diff:144: trailing whitespace.\n+ \ndocs/verification/portfolio-ohlc-delivery-20261022/ci-scope-correction.diff:197: trailing whitespace.\n+ \ndocs/verification/portfolio-ohlc-delivery-20261022/ci-scope-correction.diff:198: trailing whitespace.\n+ \ndocs/verification/portfolio-ohlc-delivery-20261022/ci-scope-correction.diff:197: new blank line at EOF.\ndocs/verification/portfolio-ohlc-delivery-20261022/validation-output.txt:49: trailing whitespace.\n+E     \n",
+      "stderr": ""
+    },
+    "same_diagnostics_on_preintegration_head": true
+  },
+  "initial_checks": {
+    "started_at": "2026-10-23T11:11:09.279791+00:00",
+    "head": "c0aef9d74ca8306603b7c6ba928256b30a1410a5",
+    "merged_base": "f4c0634e561eaa423d2ca0c3e8060d5dc2e3597d",
+    "composition_tree": "40792e9552e30aadbed5bab8defbf009feafa236",
+    "before": {
+      ".github/ci/legacy-jobs.yml": "0534336d2f6e4c7704d964854927b8a9fb7bfe3e2428f4feb6511ad3268f12b0",
+      "app/deploy/update.sh": "ec63a0b61f2a856f5111d7b88783b8a52cea069e2e9da12eeaf3741cbdf36192",
+      "scripts/publish_ohlc.py": "ead2884ce3d462043ebffc55a71c6e6079b0eea363e13e75bbd14193bbcaa4c8",
+      "scripts/build_chart_data.py": "41d7cba6d3465cd6b707bab753623e53ee6c3531b14680c4cca99fbcf8629719",
+      "scripts/run_ci_pack.py": "2191b01eb22163a2fe7e8ccca92800c48238d3460652c9744e3e1fccabaad6bb",
+      "tests/test_ci_pack.py": "9271b2c787a86bd0e6c129dfe910f2fc6ad3dbb657b8681d94a6605c9a0a0946",
+      "tests/test_ci_pack_semantic.py": "2f05f1bf2246a25836ff76ede37fcd2e72cf68504bb0cf309c8195d2f56d19cf",
+      "tests/test_biocatalyst_deploy.py": "9a5d27355a40fae7c021d2c0c92a7de4cc0b5e3ba0292583013e8fa8dad1a5cf",
+      "tests/test_deploy_update_self_heal.py": "807be677f6bb14e5cfd7d96d9d466478b3d807d353b9ae2f4a4c554f00fdf7c7"
+    },
+    "fixture": {
+      "restored": true,
+      "blob": "3e3f538f9ca7fbeba24cd6f4ff2a8943f720ad1e",
+      "sha256": "a31b8e5aa13fafc13605047c05fc0bfb3656f70a9a56dc0e5b2f0bfa78858099"
+    },
+    "groups": [
+      {
+        "name": "deployment",
+        "started_at": "2026-10-23T11:11:09.334885+00:00",
+        "seconds": 30.16,
+        "command": [
+          "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "-m",
+          "pytest",
+          "tests/test_deploy_update_self_heal.py",
+          "tests/test_caddy_autosave_driver.py",
+          "tests/test_macro_caddy_overlay.py",
+          "tests/test_macro_caddy_publication.py",
+          "-q",
+          "--tb=short",
+          "--basetemp",
+          "/tmp/portfolio-ohlc-delivery-20261022/current-main-checks-20261023/deployment-pytest"
+        ],
+        "exit": 0,
+        "log_sha256": "c8fa06a364f442faf2b47a8a18c5e0f510826da37bf9d05bf9545b0aeba1327f",
+        "tail": [
+          "........................................................................ [ 17%]",
+          "........................................................................ [ 34%]",
+          "........................................................................ [ 51%]",
+          "........................................................................ [ 68%]",
+          "........................................................................ [ 85%]",
+          "..............................................................           [100%]",
+          "422 passed in 29.10s"
+        ]
+      },
+      {
+        "name": "biocatalyst-census",
+        "started_at": "2026-10-23T11:11:39.492734+00:00",
+        "seconds": 6.05,
+        "command": [
+          "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "-m",
+          "pytest",
+          "tests/test_biocatalyst_deploy.py",
+          "-q",
+          "--tb=short",
+          "--basetemp",
+          "/tmp/portfolio-ohlc-delivery-20261022/current-main-checks-20261023/biocatalyst-census-pytest"
+        ],
+        "exit": 1,
+        "log_sha256": "d75d605341bbb823d921ef2a0ec445bc8150985299475c6e3a79b2151d5fe71e",
+        "tail": [
+          "______ test_runtime_trust_verifier_rejects_writable_or_symlinked_targets _______",
+          "tests/test_biocatalyst_deploy.py:799: in test_runtime_trust_verifier_rejects_writable_or_symlinked_targets",
+          "    assert valid.returncode == 0, valid.stderr",
+          "E   AssertionError: biocatalyst-secure-paths: /private/tmp/portfolio-ohlc-delivery-20261022/current-main-checks-20261023/biocatalyst-census-pytest/test_runtime_trust_verifier_re0/runtime-root has unsafe ownership",
+          "E     ",
+          "E   assert 1 == 0",
+          "E    +  where 1 = CompletedProcess(args=['/opt/homebrew/opt/python@3.14/bin/python3.14', '/Volumes/Mastermind/agent-workspaces/macro/web...nt-main-checks-20261023/biocatalyst-census-pytest/test_runtime_trust_verifier_re0/runtime-root has unsafe ownership\\n').returncode",
+          "",
+          "NOTE: sparse worktree \u2014 data, mockups, site, verify_shots not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full",
+          "=========================== short test summary info ============================",
+          "FAILED tests/test_biocatalyst_deploy.py::test_runtime_trust_verifier_rejects_writable_or_symlinked_targets",
+          "1 failed, 44 passed in 5.53s"
+        ]
+      }
+    ],
+    "state": "FAILED",
+    "after": {
+      ".github/ci/legacy-jobs.yml": "0534336d2f6e4c7704d964854927b8a9fb7bfe3e2428f4feb6511ad3268f12b0",
+      "app/deploy/update.sh": "ec63a0b61f2a856f5111d7b88783b8a52cea069e2e9da12eeaf3741cbdf36192",
+      "scripts/publish_ohlc.py": "ead2884ce3d462043ebffc55a71c6e6079b0eea363e13e75bbd14193bbcaa4c8",
+      "scripts/build_chart_data.py": "41d7cba6d3465cd6b707bab753623e53ee6c3531b14680c4cca99fbcf8629719",
+      "scripts/run_ci_pack.py": "2191b01eb22163a2fe7e8ccca92800c48238d3460652c9744e3e1fccabaad6bb",
+      "tests/test_ci_pack.py": "9271b2c787a86bd0e6c129dfe910f2fc6ad3dbb657b8681d94a6605c9a0a0946",
+      "tests/test_ci_pack_semantic.py": "2f05f1bf2246a25836ff76ede37fcd2e72cf68504bb0cf309c8195d2f56d19cf",
+      "tests/test_biocatalyst_deploy.py": "9a5d27355a40fae7c021d2c0c92a7de4cc0b5e3ba0292583013e8fa8dad1a5cf",
+      "tests/test_deploy_update_self_heal.py": "807be677f6bb14e5cfd7d96d9d466478b3d807d353b9ae2f4a4c554f00fdf7c7"
+    },
+    "source_unchanged": true,
+    "finished_at": "2026-10-23T11:11:45.549196+00:00"
+  },
+  "remaining_checks": {
+    "started_at": "2026-10-23T11:23:03.243374+00:00",
+    "head": "c0aef9d74ca8306603b7c6ba928256b30a1410a5",
+    "merged_base": "f4c0634e561eaa423d2ca0c3e8060d5dc2e3597d",
+    "composition_tree": "40792e9552e30aadbed5bab8defbf009feafa236",
+    "before": {
+      ".github/ci/legacy-jobs.yml": "0534336d2f6e4c7704d964854927b8a9fb7bfe3e2428f4feb6511ad3268f12b0",
+      "app/deploy/update.sh": "ec63a0b61f2a856f5111d7b88783b8a52cea069e2e9da12eeaf3741cbdf36192",
+      "scripts/publish_ohlc.py": "ead2884ce3d462043ebffc55a71c6e6079b0eea363e13e75bbd14193bbcaa4c8",
+      "scripts/build_chart_data.py": "41d7cba6d3465cd6b707bab753623e53ee6c3531b14680c4cca99fbcf8629719",
+      "scripts/run_ci_pack.py": "2191b01eb22163a2fe7e8ccca92800c48238d3460652c9744e3e1fccabaad6bb",
+      "tests/test_ci_pack.py": "9271b2c787a86bd0e6c129dfe910f2fc6ad3dbb657b8681d94a6605c9a0a0946",
+      "tests/test_ci_pack_semantic.py": "2f05f1bf2246a25836ff76ede37fcd2e72cf68504bb0cf309c8195d2f56d19cf",
+      "tests/test_biocatalyst_deploy.py": "9a5d27355a40fae7c021d2c0c92a7de4cc0b5e3ba0292583013e8fa8dad1a5cf",
+      "tests/test_deploy_update_self_heal.py": "807be677f6bb14e5cfd7d96d9d466478b3d807d353b9ae2f4a4c554f00fdf7c7"
+    },
+    "environment_correction": {
+      "original_process_uid": 501,
+      "original_process_gid": 20,
+      "original_fixture_uid": 501,
+      "original_fixture_gid": 0,
+      "new_cache_uid": 501,
+      "new_cache_gid": 20,
+      "change": "Use the existing workspace-owned ignored pytest cache for fixtures; no source, assertion, identity or ownership change.",
+      "secure_helper_blob": "48d14c39ca3fa98f53f83afcc6be79d44c65ac28"
+    },
+    "groups": [
+      {
+        "name": "biocatalyst-census",
+        "started_at": "2026-10-23T11:23:03.268098+00:00",
+        "seconds": 6.28,
+        "command": [
+          "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "-m",
+          "pytest",
+          "tests/test_biocatalyst_deploy.py",
+          "-q",
+          "--tb=short",
+          "--basetemp",
+          "/Volumes/Mastermind/agent-workspaces/macro/web/portfolio-ohlc-delivery-20261022/.pytest_cache/portfolio-ohlc-current-main-20261023/biocatalyst-census"
+        ],
+        "exit": 0,
+        "log_sha256": "72067211fe0ac90fbd4912e8425615ba051adbf6c54115773584e1167c1fdc56",
+        "tail": [
+          ".............................................                            [100%]",
+          "45 passed in 5.50s"
+        ]
+      },
+      {
+        "name": "ohlc",
+        "started_at": "2026-10-23T11:23:09.553695+00:00",
+        "seconds": 2.65,
+        "command": [
+          "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "-m",
+          "pytest",
+          "tests/test_publish_ohlc.py",
+          "tests/test_build_chart_data.py",
+          "-q",
+          "--tb=short",
+          "--basetemp",
+          "/Volumes/Mastermind/agent-workspaces/macro/web/portfolio-ohlc-delivery-20261022/.pytest_cache/portfolio-ohlc-current-main-20261023/ohlc"
+        ],
+        "exit": 0,
+        "log_sha256": "7a485e5ac5b4bcfcc4d2e9634304d027e360eab8fd581f38f5612b029598fe32",
+        "tail": [
+          "........................................................................ [ 92%]",
+          "......                                                                   [100%]",
+          "78 passed in 2.05s"
+        ]
+      },
+      {
+        "name": "ci-coverage-packing",
+        "started_at": "2026-10-23T11:23:12.209064+00:00",
+        "seconds": 187.73,
+        "command": [
+          "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "-m",
+          "pytest",
+          "tests/test_ci_pack.py::test_every_declared_scope_in_the_real_manifest_is_covered",
+          "tests/test_ci_pack.py::test_the_curated_exclusive_set_is_actually_declared",
+          "tests/test_ci_pack.py::test_curated_exclusive_scopes_cover_their_own_import_closure",
+          "tests/test_ci_pack.py::test_curated_exclusivity_drops_only_the_opaque_fallback_tier",
+          "tests/test_ci_pack.py::test_exclusive_curation_narrows_ordinary_code_prs",
+          "tests/test_ci_pack.py::test_ancestor_init_census_does_not_grow",
+          "tests/test_ci_pack.py::test_autosave_adoption_contracts_execute_in_existing_code_job",
+          "tests/test_ci_pack.py::test_every_real_legacy_job_declares_its_gate",
+          "-q",
+          "--tb=short",
+          "--basetemp",
+          "/Volumes/Mastermind/agent-workspaces/macro/web/portfolio-ohlc-delivery-20261022/.pytest_cache/portfolio-ohlc-current-main-20261023/ci-coverage-packing"
+        ],
+        "exit": 0,
+        "log_sha256": "a63b012a4300f37dbed808b573ee4a635c75256d6f38f36b3164e54371f63779",
+        "tail": [
+          "........                                                                 [100%]",
+          "8 passed in 187.00s (0:03:07)"
+        ]
+      }
+    ],
+    "state": "PASSED",
+    "after": {
+      ".github/ci/legacy-jobs.yml": "0534336d2f6e4c7704d964854927b8a9fb7bfe3e2428f4feb6511ad3268f12b0",
+      "app/deploy/update.sh": "ec63a0b61f2a856f5111d7b88783b8a52cea069e2e9da12eeaf3741cbdf36192",
+      "scripts/publish_ohlc.py": "ead2884ce3d462043ebffc55a71c6e6079b0eea363e13e75bbd14193bbcaa4c8",
+      "scripts/build_chart_data.py": "41d7cba6d3465cd6b707bab753623e53ee6c3531b14680c4cca99fbcf8629719",
+      "scripts/run_ci_pack.py": "2191b01eb22163a2fe7e8ccca92800c48238d3460652c9744e3e1fccabaad6bb",
+      "tests/test_ci_pack.py": "9271b2c787a86bd0e6c129dfe910f2fc6ad3dbb657b8681d94a6605c9a0a0946",
+      "tests/test_ci_pack_semantic.py": "2f05f1bf2246a25836ff76ede37fcd2e72cf68504bb0cf309c8195d2f56d19cf",
+      "tests/test_biocatalyst_deploy.py": "9a5d27355a40fae7c021d2c0c92a7de4cc0b5e3ba0292583013e8fa8dad1a5cf",
+      "tests/test_deploy_update_self_heal.py": "807be677f6bb14e5cfd7d96d9d466478b3d807d353b9ae2f4a4c554f00fdf7c7"
+    },
+    "source_unchanged": true,
+    "finished_at": "2026-10-23T11:26:19.938122+00:00"
+  },
+  "local_required_groups_passed": true,
+  "source_unchanged_during_tests": true,
+  "review_limit": "Bounded independent CI and composition source judgments; actual local execution is recorded separately. The accepted runner retains a noted older-base per-job unknown-infrastructure qualification; this integration preserves upstream bytes and does not widen that claim.",
+  "hosted_ci_required": true,
+  "prior_failed_ci": {
+    "run": 39827098646,
+    "head": "c0aef9d74ca8306603b7c6ba928256b30a1410a5",
+    "tested_merge": "6ce7a10115900b4f3885eca6840354ffc7e24e6a",
+    "base": "9b5a047faec53ac7cf98ea22e056ff37331e0dc8",
+    "evidence_digest": "ff8497773af35607698b47db68292833f6213aa6892c2d34a4c3abb87a0e9875",
+    "status": "failed; not reused as passing proof"
+  },
+  "logs": {
+    "current-base-20261023-initial-deployment.log.gz": {
+      "uncompressed_sha256": "c8fa06a364f442faf2b47a8a18c5e0f510826da37bf9d05bf9545b0aeba1327f",
+      "compressed_sha256": "bc4a1f554dee6c75079df7346b8d64b2607d5fd7de11456336e41c57c2875706"
+    },
+    "current-base-20261023-initial-biocatalyst-census.log.gz": {
+      "uncompressed_sha256": "d75d605341bbb823d921ef2a0ec445bc8150985299475c6e3a79b2151d5fe71e",
+      "compressed_sha256": "8516c21fc02053056a4497a1202b84c016c5e93a20bac61bd8595699015a9ad3"
+    },
+    "current-base-20261023-remaining-biocatalyst-census.log.gz": {
+      "uncompressed_sha256": "72067211fe0ac90fbd4912e8425615ba051adbf6c54115773584e1167c1fdc56",
+      "compressed_sha256": "0482ba13db2b06b218e4670902a8d8abe28415d1c36a4da2b8767603d5f22af1"
+    },
+    "current-base-20261023-remaining-ohlc.log.gz": {
+      "uncompressed_sha256": "7a485e5ac5b4bcfcc4d2e9634304d027e360eab8fd581f38f5612b029598fe32",
+      "compressed_sha256": "f5c0d3634db39609bd69f591c56d6295c4af098e5ee320d6ace1d07c288c6415"
+    },
+    "current-base-20261023-remaining-ci-coverage-packing.log.gz": {
+      "uncompressed_sha256": "a63b012a4300f37dbed808b573ee4a635c75256d6f38f36b3164e54371f63779",
+      "compressed_sha256": "93145ffc772a39a6b1c96e6421d1996d3d7556aa991972fadd0cf50a723334cb"
+    }
+  }
+}

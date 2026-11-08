@@ -831,9 +831,11 @@ def _contract_members(contract: Mapping[str, Any]) -> list[dict[str, Any]]:
                 except ValueError:
                     continue
                 accession_periods[accession] = period
+        legal_name = issuer.get("legal_name")
         members.append({
             "ticker": ticker,
             "cik10": cik10,
+            "legal_name": legal_name.strip() if isinstance(legal_name, str) and legal_name.strip() else None,
             "sic": issuer.get("sic"),
             "accessions": accessions,
             "accession_periods": accession_periods,
@@ -1071,6 +1073,10 @@ def _duration_days(observation: MetricObservation) -> int | None:
 class _AdmittedPeer:
     member: Mapping[str, Any]
     issuer_id: str
+    # A14: the owner binding's identity — cik in canonical cik10 form and the
+    # binding's listing label (contract ticker only when the binding has none).
+    binding_cik: str
+    binding_ticker: str
     sic: str
     issuer_class: str
     observations: Mapping[str, MetricObservation]
@@ -1127,9 +1133,10 @@ def _compose_peer_cohort(
     Evaluation order is fixed: an unavailable store excludes every member
     (``production_dataset_absent``); otherwise per member, in contract order,
     identity (exact-CIK join) is resolved before the generation is read, the
-    generation before the SIC gate, and the SIC gate before any class
-    derivation — so a member without a pinned SIC never reaches an
-    applicability call. An excluded member never enters a CohortDefinition.
+    generation's owner identity binding before the SIC gate, and the SIC gate
+    before any class derivation — so a member without a pinned SIC never
+    reaches an applicability call. An excluded member never enters a
+    CohortDefinition.
     """
     contract = _read_coverage_contract(root)
     members = _contract_members(contract) if contract else []
@@ -1170,6 +1177,37 @@ def _compose_peer_cohort(
                 "no admitted production dataset generation for the issuer",
             ))
             continue
+        # A14: the identity authority is the generation's owner binding (the
+        # admission-time manifest issuer block), never the contract's local
+        # cik/ticker. A binding that cannot be read, or whose cik has no
+        # cik10 form, is an absent dataset identity; a cik that names a
+        # different issuer than the contract row is an identity disagreement
+        # — either way the member is excluded, never silently re-keyed.
+        try:
+            binding = generation.binding
+        except ProductionDatasetError:
+            binding = None
+        binding_cik = _cik10(binding.cik) if binding is not None else None
+        if binding_cik is None:
+            exclusions.append(_member_exclusion(
+                member, issuer_id, _PEER_EXCLUSION_DATASET,
+                "no owner identity binding on the admitted production dataset generation",
+            ))
+            continue
+        if binding_cik != member["cik10"]:
+            exclusions.append(_member_exclusion(
+                member, issuer_id, _PEER_EXCLUSION_IDENTITY,
+                # A14 review F1: the authority-side cik is carried in the
+                # reason so the disagreement is reconstructable from the row.
+                f"contract cik disagrees with owner binding cik {binding_cik}",
+            ))
+            continue
+        # the binding's listing label wins; the contract ticker survives only
+        # when the binding carries none (A14).
+        binding_ticker = (
+            str(binding.ticker).strip().upper()
+            if binding.ticker is not None else ""
+        ) or member["ticker"]
         sic = _pinned_sic(member["sic"])
         if sic is None:
             exclusions.append(_member_exclusion(
@@ -1198,6 +1236,8 @@ def _compose_peer_cohort(
         admitted.append(_AdmittedPeer(
             member=member,
             issuer_id=issuer_id,
+            binding_cik=binding_cik,
+            binding_ticker=binding_ticker,
             sic=sic,
             issuer_class=issuer_class,
             observations=observations,
@@ -1236,8 +1276,11 @@ def _compose_peer_cohort(
             members=tuple(
                 CohortMember(
                     issuer_id=peer.issuer_id,
-                    cik=peer.member["cik10"],
-                    tickers=(peer.member["ticker"],),
+                    # A14: the owner binding's identity is the only key the
+                    # kernel collapses on; the contract row's local cik/ticker
+                    # never reach the table.
+                    cik=peer.binding_cik,
+                    tickers=(peer.binding_ticker,),
                     issuer_class=peer.issuer_class,
                     sic=peer.sic,
                 )
@@ -1271,6 +1314,47 @@ def _peer_cohort_within_budget(state: dict[str, Any]) -> bool:
     if len(encoded) > MAX_DECOMPRESSED_BYTES:
         return False
     return len(gzip.compress(encoded, compresslevel=9)) <= MAX_COMPRESSED_BYTES
+
+
+def _contract_only_company(
+    member: Mapping[str, Any],
+    names: Mapping[str, str],
+    sectors: Mapping[str, str],
+    issuer_master: IssuerMasterIndex,
+) -> dict[str, Any]:
+    """A coverage-contract issuer the broad panel does not carry.
+
+    The panel only yields companies with a prior-year same quarter, so a
+    contract issuer can be absent from it while the admitted filing generation
+    still serves its statements. This row carries identity only: no findings,
+    no panel periods, and every check counted as not evaluable.
+    """
+    ticker = member["ticker"]
+    entity_id, entity_id_reason = issuer_master.join(member["cik10"])
+    return {
+        "symbol": ticker,
+        "name": names.get(ticker) or member.get("legal_name") or ticker,
+        "sector": sectors.get(ticker, "Unclassified"),
+        "cik": int(member["cik10"]),
+        "entity_id": entity_id,
+        "entity_id_reason": entity_id_reason,
+        "latest_period": "",
+        "latest_filed": "",
+        "action": {
+            "key": "limited",
+            "en": "Checks not run: not yet evaluable from the broad statements panel",
+            "zh": "未运行检查：尚无法从广覆盖报表面板评估",
+        },
+        "coverage": {
+            "periods": 0,
+            "metrics_pct": 0.0,
+            "detectors_evaluable": 0,
+            "detectors_total": len(DETECTORS),
+            "basis": "coverage_contract_catalog_only",
+        },
+        "findings": [],
+        "periods": [],
+    }
 
 
 def compose_state(root: Path, *, generated_at: str | None = None) -> dict[str, Any]:
@@ -1397,6 +1481,36 @@ def compose_state(root: Path, *, generated_at: str | None = None) -> dict[str, A
                 "latest_filed": latest_filed,
             })
 
+    # FIF (d): coverage-contract issuers the panel did not yield are still
+    # listed, after every panel company, so the page can open their
+    # generation-backed statements. They add no findings and no as-of date.
+    contract = _read_coverage_contract(root)
+    contract_only = 0
+    # One SEC registrant can reach the contract under a different ticker than
+    # the panel's (a share-class variant), so a member is a second listing of
+    # an already-listed issuer when its canonical CIK matches — a panel
+    # company's CIK or an earlier contract row's — not only when its ticker
+    # does. The first contract row for a CIK wins.
+    listed_cik10s = {
+        cik10
+        for cik10 in (_cik10(company["cik"]) for company in companies.values())
+        if cik10 is not None
+    }
+    for member in _contract_members(contract) if contract else []:
+        ticker = member["ticker"]
+        if ticker in companies or member["cik10"] in listed_cik10s:
+            continue
+        company = _contract_only_company(member, names, sectors, issuer_master)
+        disclosure = disclosure_projections.get(ticker)
+        if disclosure is not None:
+            company["disclosures"] = _state_disclosure_projection(disclosure)
+            disclosure_attached += 1
+            disclosure_tracks_ready += int(disclosure["coverage"].get("tracks_ready") or 0)
+            disclosure_tracks_not_evaluable += int(disclosure["coverage"].get("tracks_not_evaluable") or 0)
+        companies[ticker] = company
+        listed_cik10s.add(member["cik10"])
+        contract_only += 1
+
     ranked.sort(key=lambda row: (
         0 if row["priority"] == "high" else 1,
         -(int(row["latest_filed"].replace("-", "")[:8]) if row["latest_filed"][:10].replace("-", "").isdigit() else 0),
@@ -1443,6 +1557,7 @@ def compose_state(root: Path, *, generated_at: str | None = None) -> dict[str, A
         },
         "summary": {
             "companies": len(companies),
+            "contract_only_companies": contract_only,
             "findings": len(ranked),
             "high": high_n,
             "watch": len(ranked) - high_n,
@@ -1624,6 +1739,29 @@ def read_public_summary(root: Path, *, now: datetime | None = None) -> dict[str,
         return {}
 
 
+def _calendar_day(generated_at: object) -> str:
+    """YYYY-MM-DD of a parseable ISO stamp, in the stamp's own zone, else ""."""
+    if not isinstance(generated_at, str):
+        return ""
+    try:
+        return datetime.fromisoformat(generated_at).date().isoformat()
+    except ValueError:
+        return ""
+
+
+def public_summary_as_of(root: Path, *, now: datetime | None = None) -> str:
+    """Calendar day when read_public_summary would return counts, else ""."""
+    if not read_public_summary(root, now=now):
+        return ""
+    try:
+        raw = json.loads((root / PUBLIC_SUMMARY_RELATIVE).read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return ""
+    if not isinstance(raw, dict):
+        return ""
+    return _calendar_day(raw.get("generated_at"))
+
+
 def render_shell(root: Path, state_summary: dict[str, Any] | None = None) -> Path:
     """Render only the public workbench shell, versioned assets, and free counts.
 
@@ -1636,9 +1774,16 @@ def render_shell(root: Path, state_summary: dict[str, Any] | None = None) -> Pat
     site.mkdir(parents=True, exist_ok=True)
     env = Environment(loader=FileSystemLoader(str(root / "templates")), autoescape=True)
     counts = public_summary_projection(state_summary) if state_summary else read_public_summary(root)
+    # In-memory counts keep their own stamp. A missing stamp stays blank so a
+    # file written beside an unstamped summary cannot date the sentence.
+    if state_summary:
+        summary_as_of = _calendar_day(state_summary.get("generated_at"))
+    else:
+        summary_as_of = public_summary_as_of(root)
     html = env.get_template("fundamental_forensics.html.j2").render(
         generated_utc="private-state-runtime",
         state_summary=counts,
+        summary_as_of=summary_as_of,
         active_section="research",
         active_page="fundamental_forensics",
         holding_js_version=hashlib.sha256((root / "templates" / "institutional_holding_research.js").read_bytes()).hexdigest()[:8],

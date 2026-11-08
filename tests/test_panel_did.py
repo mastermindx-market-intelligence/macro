@@ -360,6 +360,69 @@ def test_nonfinite_and_boolean_outcomes_rejected():
     assert _reason(estimate_common_adoption_panel(**bool_study)) == "boolean_outcomes"
 
 
+def test_masked_outcomes_are_rejected_before_hidden_values_are_used():
+    for representation in ("matrix", "list", "tuple"):
+        study = _make_study(seed=137)
+        masked = np.ma.array(study["outcomes"], mask=False, copy=True)
+        masked.mask[2, 3] = True
+        original_data = masked.data.copy()
+        original_mask = np.ma.getmaskarray(masked).copy()
+        assert np.isfinite(original_data).all()
+        study["outcomes"] = (
+            list(masked) if representation == "list" else
+            tuple(masked) if representation == "tuple" else masked
+        )
+        res = estimate_common_adoption_panel(**study)
+        assert _reason(res) == "masked_observations"
+        assert res["details"] == {"field": "outcomes", "masked_count": 1}
+        assert res["research_only"] is True and "estimate" not in res
+        assert np.array_equal(masked.data, original_data)
+        assert np.array_equal(np.ma.getmaskarray(masked), original_mask)
+
+
+def test_masked_treatment_is_rejected_before_adoption_validation():
+    for representation in ("matrix", "list", "tuple"):
+        for fully_masked in (False, True):
+            study = _make_study(seed=139)
+            masked = np.ma.array(
+                study["treatment"], mask=fully_masked, copy=True
+            )
+            if not fully_masked:
+                masked.mask[2, 3] = True
+            original_data = masked.data.copy()
+            original_mask = np.ma.getmaskarray(masked).copy()
+            assert np.isfinite(original_data).all()
+            study["treatment"] = (
+                list(masked) if representation == "list" else
+                tuple(masked) if representation == "tuple" else masked
+            )
+            res = estimate_common_adoption_panel(**study)
+            assert _reason(res) == "masked_observations"
+            assert res["details"] == {
+                "field": "treatment",
+                "masked_count": int(masked.size) if fully_masked else 1,
+            }
+            assert res["research_only"] is True and "estimate" not in res
+            assert np.array_equal(masked.data, original_data)
+            assert np.array_equal(np.ma.getmaskarray(masked), original_mask)
+
+
+def test_unmasked_array_and_row_wrappers_preserve_complete_panel_results():
+    study = _make_study(seed=149)
+    baseline = estimate_common_adoption_panel(**study)
+    assert baseline["status"] == "ok"
+    for representation in ("matrix", "list", "tuple"):
+        for mask in (np.ma.nomask, False):
+            wrapped = dict(study)
+            for field in ("outcomes", "treatment"):
+                values = np.ma.array(study[field], mask=mask, copy=True)
+                wrapped[field] = (
+                    list(values) if representation == "list" else
+                    tuple(values) if representation == "tuple" else values
+                )
+            assert estimate_common_adoption_panel(**wrapped) == baseline
+
+
 def test_shape_and_ragged_input_rejected():
     study = _make_study(seed=29)
     short = copy.deepcopy(study)
