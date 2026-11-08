@@ -1,0 +1,74 @@
+{
+  "scope": "original R26 owner candidate plus current-base R4/tooltip compatibility; not production",
+  "base_sha": "16f7269bb72a08b65cda3a8075c498a748f1bf90",
+  "procedure_pin": "fd1159695b0491a1b2c8d3042dce1232ad8365b4",
+  "original_patch_sha256": "c60f72242ee503f84ac4112274359b318e567764c27dbc2cefbb22adaa338dff",
+  "pytest": {
+    "tests": 365,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "warnings": [
+    "two NumPy invalid-value warnings from constant-series correlation control"
+  ],
+  "test_command": "PYTHONPATH=. python3 -m pytest tests/test_forex_r4_contract.py tests/test_forex_r26_decision_contract.py tests/test_build_forex_stance.py tests/test_forex.py tests/test_cross_asset_confirm.py tests/test_forex_context_bus.py tests/test_b3_forex_consumer.py -q",
+  "source_sha256": {
+    ".github/ci/legacy-jobs.yml": "465ec50b6994683a26a8df99eff994cd621fc98c8100f640f76fb9b31d82f089",
+    "engine/forex_alerts.py": "c77b9cd6736cbe2b4aa519d87f4d63d7f88480270eab109170fa20a50f7923fd",
+    "engine/forex_dollar.py": "1982baa0a830331e203eabfa56bfeb4c5c85b2a15e56c5c46d7e14f1210cbd32",
+    "engine/forex_signals.py": "06cd124f3e9864e2685796332445c9925862bd2c73d869882a327035eefc5f65",
+    "engine/neuralweb/mastermind_context.py": "160d5161dc02b9c3fafaa63fce8bb0de2633a9d04c94dcaf7ab4c3796cd82ee8",
+    "scripts/build_forex.py": "0f23edf5c1007853cb05c90b2fc8beffde280a9c8a290e531f5d479da4df4fae",
+    "scripts/build_macro_context.py": "22f6d9d885be8c1c853485aecad83b43a1c01816e0a4d146ea58bc65749084b9",
+    "templates/forex.html.j2": "d69b53edfdfec3c665faadddd515eb3d660285c8ee70a3d79f0bb49161330e74",
+    "tests/test_build_forex_stance.py": "9bf74eb2ba5b0f92bc1124a2db6c923f47763c9fae61fb8be112159622bf01a1",
+    "tests/test_forex_context_bus.py": "e219073239f1432cc261bc7e849b464c5a4833a3e5d910bc21afdd6cffffe789",
+    "tests/test_forex_r26_decision_contract.py": "d320947483eee9e39f8b96e467e2af68b6d447576bca93eb687641648cb0b874",
+    "tests/test_forex_r4_contract.py": "020f944f6a9a340f1a233adb54c3af063ee2e06f28354097c74ce129489f9640"
+  },
+  "builder_parity": {
+    "status": "PASS",
+    "candidate_stable": true,
+    "scope": "actual main assembly + real Jinja + isolated snapshot write; market engines stubbed",
+    "production_io": false,
+    "native_page_writer_tested": false
+  },
+  "builder_cases": [
+    {
+      "case": "known_zero_risk",
+      "status": "PASS",
+      "snapshot_id": "2ee7e29d5fdb472bbd29f330573e0d812892006ff3955a7fc26de2b9b216695c",
+      "current_available": true,
+      "strict_json": true,
+      "shared_record_parity": true,
+      "known_market_date": "2026-10-16",
+      "controlled_build_time": "2026-10-17T09:05:00+00:00",
+      "ledger_writes": 0
+    },
+    {
+      "case": "missing_risk",
+      "status": "PASS",
+      "snapshot_id": "559cd7622b0d0830c5af64fccde6c488ac64c5aef106726f36a10fcdeaef71b7",
+      "current_available": false,
+      "strict_json": true,
+      "shared_record_parity": true,
+      "known_market_date": "2026-10-16",
+      "controlled_build_time": "2026-10-17T09:05:00+00:00",
+      "ledger_writes": 0
+    }
+  ],
+  "browser": {
+    "status": "PASS",
+    "scope": "local generated HTML, synthetic builder inputs, external requests blocked; not production/full-widget acceptance",
+    "case_count": 8,
+    "horizontal_overflow_cases": 0,
+    "live_io": false
+  },
+  "representative_image_sha256": {
+    "missing_risk-390-dark.png": "42840ae7a205ca00d5e3066207e2968ff8ead8b39ecc0e208a8f18571b828ef9",
+    "known_zero_risk-1440-light.png": "37a8265455394b9a935ddf106a9d20cc617e8e4fa87facb8822704fe2a533181"
+  },
+  "consumer_9828_acceptance": "HOLD",
+  "mission_complete": false
+}

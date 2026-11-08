@@ -187,7 +187,14 @@ def load_master_inputs(data_dir: Path | None = None) -> MasterInputs | None:
 
     records = []
     for r in aliases.to_dict("records"):
+        if r.get("alias_kind") == "occ_root":
+            records.append(r)  # preserve the exact forward relation and its clocks
+            continue
         records.append({
+            "alias_kind": r.get("alias_kind"),
+            "attempt_id": r.get("attempt_id"),
+            "alias_family_id": r.get("alias_family_id"),
+            "alias_revision_id": r.get("alias_revision_id"),
             "vendor": str(r["vendor"]),
             "vendor_symbol": str(r["vendor_symbol"]),
             "security_id": str(r["security_id"]),
@@ -640,3 +647,111 @@ def resolve_graph_node_identity(node_id: str, asof: str | date | None = None) ->
     return _resolve_node_row(node_id=nid, resolution_asof=today, inputs=inputs,
                              etf_symbols=etf_syms, computed_at=_utc_now_stamp(),
                              engine_version=store.ENGINE_VERSION)
+
+
+def adopt_etf_references(nodes, lifecycle, node_ids, sources, *, now: datetime) -> dict[str, dict]:
+    """Read-only current ETF adoption, separate from company-only sidecar v1.
+
+    Data OS vendor aliases supply canonical identity. A byte-qualified listing
+    observation supplies instrument TYPE only, never a listing/security binding.
+    Nothing is minted, persisted, retyped or resolved through ticker equality.
+    """
+    import hashlib
+    import io
+    from lib.dataos.identity import parse_id, parse_listing_key, security_id
+    from lib.symbol_directory_receipts import validate_symbol_directory_completion_receipt_bytes
+    from engine.theme_graph.ontology import _clock_instant, _json_object, _nodes_as_known
+    from scripts.build_security_master import EXCHANGE_MIC
+
+    ids = sorted(set(node_ids))
+    if len(ids) > 128:
+        raise ValueError('ETF identity reference bound')
+    result = {nid: dict(status='unavailable', reason='ETF_IDENTITY_INPUTS_UNAVAILABLE') for nid in ids}
+    try:
+        receipt = json.loads(sources['data/reference/_receipt.json'])
+        day = receipt['symbol_directory_snapshot']
+        observed = date.fromisoformat(day)
+        if day != observed.isoformat() or observed > now.date():
+            raise ValueError('listing clock')
+        listing_path = f'data/symbol_directory/snapshots/{day}.parquet'
+        listing_receipt_path = f'data/symbol_directory/receipts/snapshots/{day}.json'
+        listing_raw, lr_raw = sources[listing_path], sources[listing_receipt_path]
+        import pyarrow.parquet as parquet
+        for raw in (listing_raw, sources['data/reference/security_master.parquet'],
+                    sources['data/reference/vendor_aliases.parquet']):
+            if len(raw) > 32 * 1024 * 1024 or parquet.ParquetFile(io.BytesIO(raw)).metadata.num_rows > 250000:
+                raise ValueError('ETF identity source bound')
+        listing = validate_symbol_directory_completion_receipt_bytes(
+            json.loads(lr_raw), lr_raw, listing_raw, expected_kind='listing_snapshot')
+        master_raw = sources['data/reference/security_master.parquet']
+        aliases_raw = sources['data/reference/vendor_aliases.parquet']
+        if (receipt['producer'] != 'scripts/build_security_master.py'
+                or receipt['authority']['identity_authority'] != 'canonical_exact_identity'
+                or not {'reference.security_master','reference.vendor_aliases'} <= set(receipt['dataset_ids'])
+                or receipt['inputs']['data/symbol_directory/snapshots'] != hashlib.sha256(listing_raw).hexdigest()
+                or _clock_instant(receipt['generated_at'], 'generated_at') > now
+                or _clock_instant(listing['clocks']['collector_completed_at'], 'collector_completed_at') > now):
+            raise ValueError('owner binding')
+        master_rows = pd.read_parquet(io.BytesIO(master_raw)).to_dict('records')
+        alias_rows = pd.read_parquet(io.BytesIO(aliases_raw)).to_dict('records')
+        listings = pd.read_parquet(io.BytesIO(listing_raw)).to_dict('records')
+        if len(master_rows) != receipt['row_counts']['security_master']:
+            raise ValueError('master count')
+        by_id = {r['security_id']:r for r in master_rows}
+        if len(by_id) != len(master_rows):
+            raise ValueError('duplicate canonical identity')
+        table = VendorAliasTable.from_records(alias_rows)
+        if len(table.rows) != receipt['row_counts']['vendor_alias_rows_readable']:
+            raise ValueError('alias count')
+        visible = _nodes_as_known(nodes, lifecycle, asof=now.date(), knowledge_cutoff=now)
+        counts = {}
+        for row in nodes:
+            counts[row['node_id']] = counts.get(row['node_id'], 0) + 1
+        from engine.theme_graph.store import RETIRED_LIKE_STATUSES
+        for nid in ids:
+            node = visible.get(nid)
+            symbol = (_json_object(node.get('external_ids')) or {}).get('symbol') if node else None
+            if (not node or counts[nid] != 1 or node.get('kind') != 'etf'
+                    or node.get('market_scope') != 'us' or node.get('status') in RETIRED_LIKE_STATUSES
+                    or not isinstance(symbol, str) or not symbol
+                    or node.get('provenance') != 'membership_doc:baskets'):
+                result[nid] = dict(status='unavailable', reason='ETF_GRAPH_IDENTITY_UNQUALIFIED')
+                continue
+            wrappers = [r for r in visible.values() if r.get('kind') == 'company'
+                and (_json_object(r.get('external_ids')) or {}).get('symbol') == symbol
+                and r.get('status') not in RETIRED_LIKE_STATUSES]
+            if wrappers:
+                result[nid] = dict(status='unavailable', reason='AMBIGUOUS_ACTIVE_COMPANY_WRAPPER')
+                continue
+            # The node's membership-document namespace is explicit. No inception
+            # code or etf:<symbol> construction is used to obtain a security ID.
+            sid = table.resolve('membership', symbol, now.date(), decision_at=now)
+            answers = {x for vendor in {r.vendor for r in table.rows}
+                       if (x := table.resolve(vendor, symbol, now.date(), decision_at=now)) is not None}
+            if len(answers) > 1:
+                result[nid] = dict(status='unavailable', reason='AMBIGUOUS_CANONICAL_ALIAS')
+                continue
+            if not sid or answers != {sid} or table.vendor_symbol_for('membership',sid,now.date(),decision_at=now) != symbol:
+                result[nid] = dict(status='unavailable', reason='ETF_CANONICAL_ALIAS_UNAVAILABLE')
+                continue
+            row = by_id.get(sid)
+            if not row or (not pd.isna(row.get('security_state')) and str(row.get('security_state')).strip()):
+                result[nid] = dict(status='unavailable', reason='ETF_CANONICAL_SECURITY_UNAVAILABLE')
+                continue
+            kind, key = parse_id(sid)
+            if kind != 'security' or security_id(key) != sid or row['listing_key'] != key.render() or row['country'] != 'US' or row['mic'] != key.mic:
+                raise ValueError('canonical listing inconsistent')
+            typed = [r for r in listings if r['symbol'] == symbol]
+            if (len(typed) != 1 or typed[0].get('etf') is not True
+                    or typed[0].get('test_issue') is not False or typed[0].get('is_preferred') is not False
+                    or EXCHANGE_MIC.get(typed[0].get('exchange')) != key.mic):
+                result[nid] = dict(status='unavailable', reason='ETF_INSTRUMENT_TYPE_UNQUALIFIED')
+                continue
+            result[nid] = dict(status='available', reason=None, security_id=sid, listing_key=row['listing_key'],
+                identity_basis='LATEST_PUBLISHED_DATAOS_VENDOR_ALIAS', historical_identity_claim=False,
+                instrument_type='ETF', instrument_type_basis='NATIVE_LISTING_OBSERVATION_ONLY',
+                master_generated_at=receipt['generated_at'], listing_observed_on=day,
+                listing_known_at=listing['clocks']['collector_completed_at'])
+    except (OSError, ValueError, TypeError, KeyError, AttributeError):
+        return {nid: dict(status='unavailable', reason='ETF_IDENTITY_INPUTS_UNAVAILABLE') for nid in ids}
+    return result

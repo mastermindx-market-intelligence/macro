@@ -45,6 +45,12 @@ QUARANTINE = "QUARANTINE"
 
 
 def spec_hash(model: str, subject_security_id: str, factors: list[str], h: int) -> str:
+    """Canonical hash of a P03 spec.
+
+    Factor order is significant by design: `factors` are hashed in registered
+    order (the list is copied, never sorted), so a permutation of the same
+    names is a different spec.
+    """
     spec = {
         "model": model,
         "subject_security_id": subject_security_id,
@@ -93,7 +99,13 @@ def window_log_ret(closes: dict[date, float], fill: date, coverage: date) -> flo
 
 def beta_window_dates(subject_dates: list[date], d_cutoff: date,
                       window: int = WINDOW) -> list[date]:
-    """The last `window` subject bar dates on or before D(s)."""
+    """The last `window` subject bar dates on or before D(s).
+
+    `subject_dates` must be strictly increasing (chronological input).
+    """
+    for i in range(len(subject_dates) - 1):
+        if subject_dates[i] >= subject_dates[i + 1]:
+            raise ValueError("subject_dates must be strictly increasing")
     past = [d for d in subject_dates if d <= d_cutoff]
     return past[-window:]
 

@@ -1490,3 +1490,100 @@ def test_page_html_byte_identical_with_precomposed_ctx():
     ctx = sot.compose(REPO_ROOT)
     html_passed = sot.render(REPO_ROOT, ctx)
     assert html_internal == html_passed
+
+
+# ---------------------------------------------------------------------------
+# Theme card opens the one basket that is that theme (W39-W4)
+# ---------------------------------------------------------------------------
+
+def _nameline(html: str, theme_id: str) -> str:
+    """The name row of one card. Every lane prints the name through this row."""
+    pat = (
+        r'<article class="theme-row"\s+'
+        rf'data-theme-id="{theme_id}".*?'
+        r'<div class="tc-nameline">.*?</div>'
+    )
+    match = re.search(pat, html, re.S)
+    assert match, f"missing nameline for {theme_id}"
+    return match.group(0)
+
+
+def _two_theme_root(tmp_path: Path) -> Path:
+    """Real template plus two stub themes and the repo crosswalk. No site/ data."""
+    templates = tmp_path / "templates"
+    templates.mkdir(parents=True, exist_ok=True)
+    src = REPO_ROOT / "templates" / "state_of_themes.html.j2"
+    (templates / "state_of_themes.html.j2").write_bytes(src.read_bytes())
+    _copy_support_partials(templates)
+    nwd = tmp_path / "site" / "neuralwebdata"
+    nwd.mkdir(parents=True)
+    (nwd / "theme_state.json").write_text(json.dumps({
+        "as_of": "2026-07-17",
+        "n_themes": 2,
+        "stale_legs": [],
+        "themes": [
+            {
+                "theme_id": "grid_electrification",
+                "name_en": "Grid & Electrification",
+                "name_zh": "电网与电气化",
+                "foresight": {"stage": "BROADENING"},
+            },
+            {
+                "theme_id": "solar",
+                "name_en": "Solar",
+                "name_zh": "太阳能",
+                "foresight": {"stage": "WATCH"},
+            },
+        ],
+    }), encoding="utf-8")
+    cfg = tmp_path / "config"
+    cfg.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(
+        REPO_ROOT / "config" / "theme_crosswalk.yml",
+        cfg / "theme_crosswalk.yml",
+    )
+    return tmp_path
+
+
+def test_theme_card_links_primary_basket_in_both_languages(tmp_path):
+    """A mapped theme links to its basket in both languages. Null stays text."""
+    import scripts.build_state_of_themes as sot
+    html = sot.render(_two_theme_root(tmp_path))
+    grid = _nameline(html, "grid_electrification")
+    assert 'href="basket/power_grid.html"' in grid
+    assert 'href="basket/grid_electrification.html"' not in grid
+    assert '<a class="tc-name" href="basket/power_grid.html">' in grid
+    link = grid[grid.index('<a class="tc-name"'):grid.index("</a>")]
+    assert '<span class="l-en">Grid ' in link
+    assert '<span class="l-zh">电网与电气化</span>' in link
+    assert '<span class="l-en"> — See the companies</span>' in grid
+    assert '<span class="l-zh"> — 查看这些公司</span>' in grid
+    solar = _nameline(html, "solar")
+    assert 'href="basket/' not in solar
+    plain = (
+        '<span class="tc-name"><span class="l-en">Solar</span>'
+        '<span class="l-zh">太阳能</span></span>'
+    )
+    assert plain in solar
+    assert "if(e.target.closest('a'))return;" in html
+
+
+def test_load_primary_basket_ids_grid_present_solar_absent():
+    """Real crosswalk: grid_electrification is power_grid, and solar is absent."""
+    import scripts.build_state_of_themes as sot
+    primary = sot.load_primary_basket_ids(REPO_ROOT)
+    assert primary.get("grid_electrification") == "power_grid"
+    assert "solar" not in primary
+
+
+def test_compose_hands_template_primary_basket_id(tmp_path):
+    """Theme dicts carry basket_id from that map. An unmapped theme carries ""."""
+    import scripts.build_state_of_themes as sot
+    ctx = sot.compose(_two_theme_root(tmp_path))
+    by_id = {t["theme_id"]: t for t in ctx["themes"]}
+    assert by_id["grid_electrification"].get("basket_id") == "power_grid"
+    assert by_id["solar"].get("basket_id") == ""
+    handed = [t for lane in ctx["lanes"] for t in lane["themes"]]
+    assert {t["theme_id"] for t in handed} == set(by_id)
+    for theme in handed:
+        assert theme.get("basket_id") == by_id[theme["theme_id"]]["basket_id"]

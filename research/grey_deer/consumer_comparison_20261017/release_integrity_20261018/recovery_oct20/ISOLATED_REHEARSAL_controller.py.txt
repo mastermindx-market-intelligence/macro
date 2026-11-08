@@ -1,0 +1,98 @@
+
+import pathlib,subprocess,json,hashlib,tarfile,shutil,datetime,sys,os
+stage=pathlib.Path(sys.argv[1]);pin='a7553e0a18339c910eef9687c730b06605dd710e';old='732cf7be88e7159b4995a8885fbd381cd1484e3e'
+assert str(stage).startswith('/tmp/rr-a7553e0a-rehearsal-20261020-')
+arc=stage/'release.tar';assert hashlib.sha256(arc.read_bytes()).hexdigest()=='757f88ae472c356896b4ca1a6836e6f27e17dc12ae08a413c43ab1c0664eb7e3'
+assert pathlib.Path('/opt/mastermind/.deployed_git_sha').read_text().strip()==old
+source=stage/'source';receiver=stage/'receiver';backup=stage/'backup'
+for p in (source,receiver,backup):p.mkdir()
+with tarfile.open(arc) as tf:tf.extractall(source,filter='data')
+import shlex
+helper=(source/'scripts/deploy_code_to_vps.sh').read_text();exc=shlex.split(helper.split('EXC=(',1)[1].split('\n)',1)[0])
+def sync(src,dst,dry=False):
+ p=subprocess.run(['rsync','-acn' if dry else '-ac','--delete','--itemize-changes',*exc,str(src)+'/',str(dst)+'/'],capture_output=True,text=True,timeout=60)
+ return {'exit_code':p.returncode,'changes':p.stdout.splitlines(),'stderr':p.stderr}
+report={'schema':'grey_deer.full_archive_isolated_rehearsal.v1','stage':str(stage),'candidate':pin,'baseline':old,'started_at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'scope':'Real complete eligible-archive rsync copy/restore plus actual registered app startup using installed VPS Python/dependencies, an isolated data snapshot, network/PID/mount namespaces, read-only live code/data mounts and a Python write/process/network audit fence. The release shell helper/systemd/SSH orchestration is not invoked; its already accepted tests remain separate evidence.','production_service_mutated':False}
+report['baseline_copy']=sync(pathlib.Path('/opt/mastermind'),receiver);assert report['baseline_copy']['exit_code']==0
+report['backup_copy']=sync(receiver,backup);assert report['backup_copy']['exit_code']==0
+report['backup_verification']=sync(receiver,backup,True);assert report['backup_verification']['exit_code']==0 and not report['backup_verification']['changes']
+data=receiver/'data';data.mkdir()
+canonical=pathlib.Path('/opt/mastermind-live-data')
+wanted=[]
+for book in ('autonomous','china','hk'):
+ p=canonical/'portfolios'/book
+ for name in ('nav_history.jsonl','account.json','fills.jsonl'):
+  if (p/name).is_file():wanted.append(p/name)
+ for name in ('pending_target.json','paper_transaction.json','paper_transaction.wal.json'):
+  assert not (p/name).exists(),f'new pending/WAL state:{book}/{name}'
+ assert not list((p/'settlement_receipts').iterdir()),f'new settlement receipt:{book}'
+cohort=canonical/'portfolio_forward_evaluation/start.json';assert cohort.is_file();wanted.append(cohort)
+def identities():return {str(p.relative_to(canonical)):hashlib.sha256(p.read_bytes()).hexdigest() for p in wanted}
+before=identities()
+for p in wanted:
+ dest=data/p.relative_to(canonical);dest.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(p,dest)
+assert before==identities(),'canonical snapshot changed during bounded copy'
+report['data_snapshot']={'hashes':before,'canonical_unchanged_during_copy':True,'copy_scope':'NAV/account/fills for three active books plus immutable established cohort; unrelated production data and credentials excluded'}
+report['candidate_copy']=sync(source,receiver);assert report['candidate_copy']['exit_code']==0
+report['candidate_verification']=sync(source,receiver,True);assert report['candidate_verification']['exit_code']==0 and not report['candidate_verification']['changes']
+(receiver/'vendor').symlink_to('/opt/mastermind/vendor',target_is_directory=True)
+(receiver/'.deployed_git_sha').write_text(pin+'\n')
+startup=r"""
+import pathlib,sys,os,json,traceback,time,threading
+stage=pathlib.Path(sys.argv[1]).resolve();receiver=stage/'receiver'
+os.chdir(receiver);sys.path.insert(0,str(receiver))
+events=[];denied=[];writes=set()
+def inside(p):
+ if isinstance(p,int):return True
+ if isinstance(p,bytes):p=os.fsdecode(p)
+ return pathlib.Path(p).resolve().is_relative_to(stage)
+def allowwrite(p,event):
+ if not inside(p):
+  denied.append({'event':event,'path':str(p)});raise PermissionError('isolated rehearsal write fence')
+ writes.add(str(pathlib.Path(p).resolve().relative_to(stage)))
+def audit(event,args):
+ if event=='open':
+  p,mode,flags=args
+  if (mode and any(x in mode for x in ('w','a','x','+'))) or (isinstance(flags,int) and flags & (os.O_WRONLY|os.O_RDWR|os.O_CREAT|os.O_TRUNC|os.O_APPEND)):allowwrite(p,event)
+ elif event in ('os.mkdir','os.remove','os.rmdir','os.truncate'):allowwrite(args[0],event)
+ elif event in ('os.rename','os.link','os.symlink'):
+  allowwrite(args[0],event);allowwrite(args[1],event)
+ elif event in ('socket.connect','socket.connect_ex','subprocess.Popen','os.system','os.posix_spawn','os.exec'):
+  denied.append({'event':event});raise PermissionError('isolated rehearsal network/process fence')
+sys.addaudithook(audit)
+result={'registered_startup_called':False,'startup_completed':False}
+try:
+ from app import main
+ assert pathlib.Path(main.__file__).resolve().is_relative_to(receiver)
+ before_threads={t.name for t in threading.enumerate()}
+ main._start_scheduler();result['registered_startup_called']=True
+ sch=main.app.state.scheduler
+ result['startup_completed']=True;result['scheduler_running']=bool(sch and sch.running)
+ result['first_run_states']={k:getattr(main.app.state,k,None) for k in ('autonomous_first_run','china_first_run','hk_first_run','heavyweight_first_run','etf_first_run')}
+ result['threads_created']=sorted({t.name for t in threading.enumerate()}-before_threads)
+ if sch:
+  sch.pause()
+  result['jobs']=[{'id':j.id,'next_run_time':str(j.next_run_time)} for j in sch.get_jobs()]
+  sch.shutdown(wait=False)
+except BaseException as e:
+ result['exception_type']=type(e).__name__;result['exception']=str(e);result['traceback']=traceback.format_exc()
+result['denied_events']=denied;result['write_paths']=sorted(writes)
+(stage/'startup-result.json').write_text(json.dumps(result,indent=2)+'\n')
+print('RR_STARTUP_RESULT:'+json.dumps(result))
+"""
+(stage/'startup.py').write_text(startup)
+inner="set -e\nmount --make-rprivate /\nmount --bind /opt/mastermind /opt/mastermind\nmount -o remount,bind,ro /opt/mastermind\nmount --bind /opt/mastermind-live-data /opt/mastermind-live-data\nmount -o remount,bind,ro /opt/mastermind-live-data\nexec /opt/mastermind/.venv/bin/python "+shlex.quote(str(stage/'startup.py'))+" "+shlex.quote(str(stage))
+env={'PATH':'/usr/bin:/bin','MASTERMIND_VPS_AUTHORITATIVE':'1','MASTERMIND_SERVE_ONLY':'0','MASTERMIND_JOBSTORE':'memory','MASTERMIND_AUTH_TOKEN':'isolated-rehearsal-fixture-token'}
+p=subprocess.run(['unshare','--mount','--net','--pid','--fork','--mount-proc','/bin/bash','-c',inner],env=env,capture_output=True,text=True,timeout=40)
+(stage/'startup.stdout.txt').write_text(p.stdout);(stage/'startup.stderr.txt').write_text(p.stderr)
+report['startup_process']={'exit_code':p.returncode,'stdout_bytes':len(p.stdout),'stderr_bytes':len(p.stderr),'stderr_tail':p.stderr[-4000:]}
+report['startup']=json.loads((stage/'startup-result.json').read_text()) if (stage/'startup-result.json').exists() else {'result_missing':True,'stdout_tail':p.stdout[-1000:]}
+report['cohort_unchanged_by_startup']=hashlib.sha256((data/'portfolio_forward_evaluation/start.json').read_bytes()).hexdigest()==before['portfolio_forward_evaluation/start.json']
+report['restoration']=sync(backup,receiver)
+report['restoration_verification']=sync(backup,receiver,True)
+(receiver/'.deployed_git_sha').write_text(old+'\n')
+report['production_marker_after']=pathlib.Path('/opt/mastermind/.deployed_git_sha').read_text().strip()
+report['production_pid_after']=subprocess.check_output(['systemctl','show','mastermind.service','-p','MainPID','--value'],text=True).strip()
+report['completed_at']=datetime.datetime.now(datetime.timezone.utc).isoformat()
+(stage/'REHEARSAL_RESULT.json').write_text(json.dumps(report,indent=2)+'\n')
+print(json.dumps({'stage':str(stage),'startup':report['startup'],'startup_process':report['startup_process'],'restoration_exit':report['restoration']['exit_code'],'restoration_verification':report['restoration_verification'],'cohort_unchanged':report['cohort_unchanged_by_startup'],'production_marker_after':report['production_marker_after'],'production_pid_after':report['production_pid_after']}))

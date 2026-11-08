@@ -1,0 +1,33 @@
+{
+  "started_at": "2026-10-20T18:48:18.239719+00:00",
+  "source": "beta-loaded-unit-root-observer-v2.py",
+  "source_sha256": "09568929c4e580b9a40e71d1ef936c69beed0ac0feafb1b01bbaf4f953c8221c",
+  "command": [
+    "ssh",
+    "-i",
+    "/Users/chriswong/.ssh/macro_dashboard_deploy_v2",
+    "-o",
+    "BatchMode=yes",
+    "-o",
+    "IdentitiesOnly=yes",
+    "-o",
+    "IdentityAgent=none",
+    "-o",
+    "StrictHostKeyChecking=yes",
+    "-o",
+    "ConnectTimeout=8",
+    "root@146.190.142.17",
+    "python3 -I -B -"
+  ],
+  "scope": "Read-only action-boundary observation; no reservation or service effect",
+  "exit": 0,
+  "finished_at": "2026-10-20T18:48:19.339258+00:00",
+  "stdout": {
+    "bytes": 5905,
+    "sha256": "497ecd3ee1645e1d9db0ea0a16344a69ab9629729c600cf73c391695c0208023"
+  },
+  "stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

@@ -33,8 +33,8 @@ theme.js legitimately differs from its template by the baked-in public Supabase
 config and bundled Terminal overlay (lib.site_assets.emit_theme_js, deterministic
 from committed sources/config.yml). Where PyYAML is available the comparison is
 exact against the emitted output; in stdlib-only contexts (pages.yml publish) it
-degrades to a token-split check (the prefix/suffix around the placeholder plus
-the overlay suffix must match byte-for-byte).
+fails the theme pair closed with an actionable dependency error. Raw token
+segments cannot verify minified output.
 
 Usage:
     python -m scripts.check_template_site_sync             # report + exit 1 on divergence
@@ -78,7 +78,7 @@ _STAMP_RE = re.compile(r"""(?:href|src)=["']([^"'?#>]+)\?v=([0-9a-f]{8})["']""")
 
 
 def _bake_theme(tpl: Path) -> str | None:
-    """Emitted theme.js content, or None when the bake is unavailable (no PyYAML)."""
+    """Emitted theme.js content, or None when a build dependency is unavailable."""
     try:
         from lib import site_assets
         assert site_assets.SUPABASE_TOKEN == _THEME_TOKEN, "SUPABASE_TOKEN drifted"
@@ -86,8 +86,8 @@ def _bake_theme(tpl: Path) -> str | None:
         return site_assets.emit_theme_js(tpl)
     except AssertionError:
         raise
-    except Exception as e:  # noqa: BLE001 — stdlib-only context (pages.yml publish)
-        print(f"WARNING: theme.js bake unavailable ({e}) — using token-split compare")
+    except Exception as e:  # noqa: BLE001 — report unavailable build dependencies
+        print(f"WARNING: theme.js bake unavailable ({e}) — theme verification will fail closed")
         return None
 
 
@@ -113,11 +113,9 @@ def _token_segments(text: str, tokens: tuple[str, ...]) -> list[str]:
 def _matches_around_tokens(site_text: str, segs: list[str]) -> bool:
     """Whether ``site_text`` is ``segs`` in order with anything at the token slots.
 
-    The stdlib-only stand-in for a real bake comparison (pages.yml publish has no
-    PyYAML, so ``emit_theme_js`` cannot run there). Deliberately weaker than the
-    byte compare it replaces — it cannot know what the bake WOULD have produced,
-    only that everything the bake does not touch is untouched. It is a publish
-    backstop, never the PR gate; ci.yml runs the exact compare.
+    Historical token-segmentation utility retained for its regression tests.
+    This cannot validate a minified emitted bundle and is never a fallback for
+    the production theme check, which requires the exact canonical emitter.
     """
     if len(segs) == 1:
         return site_text == segs[0]
@@ -224,14 +222,11 @@ def check(root: Path, fix: bool = False) -> list[str]:
                 expected = baked.encode("utf-8")
                 ok = site_bytes == expected
             else:
-                # stdlib fallback: everything around the baked tokens must match.
-                expected = None  # cannot reproduce the bake here — report-only
-                site_text = site_bytes.decode("utf-8", errors="replace")
-                segs = _token_segments(tpl_text, _THEME_TOKENS)
-                overlay = tpl.with_name("terminal_overlay.js")
-                if overlay.is_file():
-                    segs[-1] = f"{segs[-1].rstrip()}\n\n{overlay.read_text().lstrip()}"
-                ok = _matches_around_tokens(site_text, segs)
+                expected = None
+                ok = False
+                print("::error title=theme emitter unavailable::Cannot verify site/theme.js "
+                      "without the canonical emitter; install PyYAML and rjsmin==1.2.5 "
+                      "(or requirements.txt), then rerun this guard.")
         else:
             ok = site_bytes == tpl_bytes
         if ok:

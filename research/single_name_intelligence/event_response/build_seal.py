@@ -30,8 +30,12 @@ from s2_seal import (AUTHORITY_FLAGS, BASE_COMMIT, BRANCH, GRADE_HORIZONS,
                      INPUT_MANIFEST, LABEL_HISTORICAL, LANE, NOT_SUPPORTED_LINE,
                      NOT_SUPPORTED_PROTOCOLS, PROTOCOL_TITLE, PROTOCOLS,
                      REG_CANONICAL_FAMILY, S0_BLOB_IDS, TRIAL_LEDGER_REL_PATH,
-                     build_prereg_spec, prereg_digest)  # noqa: E402
+                     build_prereg_spec, prereg_digest,
+                     refuse_nonfalse_authority)  # noqa: E402
+from s2_splits import enrich_membership_rows_with_graded  # noqa: E402
 from s2_state import PROTOCOL_FAMILY, compute_state  # noqa: E402
+
+STUDY_VERSION = "v1.1"
 
 
 def main() -> int:
@@ -60,7 +64,11 @@ def main() -> int:
         for h in GRADE_HORIZONS:
             (out / "manifests" / f"{pid}_h{h}.jsonl").write_text(
                 "".join(mem["lines_by_h"].get(h, [])), encoding="utf-8")
-        membership_rows.extend(mem["table_rows"])
+        # table_rows stay the v1 five-field shape (prereg digest); graded
+        # fields are seal-only and must not enter PREREG_SPEC.json.
+        membership_rows.extend(
+            enrich_membership_rows_with_graded(mem["table_rows"],
+                                               mem["lines_by_h"]))
 
     # -- prereg spec + digest ----------------------------------------------- #
     from run_s2 import full_spec_digest  # single spec construction, no drift
@@ -72,7 +80,9 @@ def main() -> int:
         "base_commit": BASE_COMMIT,
         "input_ref": args.input_ref,
         "branch": BRANCH,
-        "version": "v1",
+        "version": STUDY_VERSION,
+        "outcome_free": True,
+        "authority_flags": dict(AUTHORITY_FLAGS),
         "labels": {"status": LABEL_HISTORICAL,
                    "identity_view": IDENTITY_VIEW,
                    "authority_flags": dict(AUTHORITY_FLAGS)},
@@ -110,6 +120,7 @@ def main() -> int:
         },
         "collapse_counts": collapse["counts"],
     }
+    refuse_nonfalse_authority(seal)
     (out / "SEAL_AND_BUDGET.json").write_text(
         json.dumps(seal, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     (out / "PREREG_SPEC.json").write_text(
@@ -153,7 +164,9 @@ def render_seal_md(seal: dict, collapse: dict) -> str:
     a("")
     a(f"**Label.** {LABEL_HISTORICAL}")
     a("")
-    a(f"**Authority flags.** {json.dumps(AUTHORITY_FLAGS, sort_keys=True)} — all false.")
+    a(f"**Authority flags (top-level and labels).** {json.dumps(AUTHORITY_FLAGS, sort_keys=True)} — all false.")
+    a("")
+    a(f"**outcome_free.** `{seal.get('outcome_free')}`")
     a("")
     a("## Families, budgets, itemized grids, REG mapping")
     a("")
@@ -182,14 +195,16 @@ def render_seal_md(seal: dict, collapse: dict) -> str:
     for c in seal["graded_cohort"]["census_only"]:
         a(f"- CENSUS-ONLY: {c}.")
     a("")
-    a("## Membership table (protocol, h, split, count, membership_sha256)")
+    a("## Membership table (protocol, h, split, count, membership_sha256, graded)")
     a("")
-    a("| protocol | h | split | count | membership_sha256 |")
-    a("|---|---|---|---|---|")
+    a("| protocol | h | split | count | graded_n | census_only | membership_sha256 | graded_membership_sha256 |")
+    a("|---|---|---|---|---|---|---|---|")
     for r in seal["membership_table"]:
         sha = r["membership_sha256"] or ""
+        gsha = r.get("graded_membership_sha256") or ""
         a(f"| {r['protocol_id']} | {r['horizon']} | {r['split']} | "
-          f"{r['count']} | {sha} |")
+          f"{r['count']} | {r.get('graded_membership_count', '')} | "
+          f"{r.get('census_only_count', '')} | {sha} | {gsha} |")
     a("")
     a("## Collapse receipts (metadata only)")
     a("")

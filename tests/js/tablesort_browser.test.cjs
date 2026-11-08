@@ -810,3 +810,28 @@ test('S2-01 r5 (F2 consumer): macro MTF-tape cells (arrow + RSI with a data-sort
     assert.equal(await dirOf(page, 0, 1), 'asc');
   });
 });
+
+test('S2-05: late disclosure enhances only the newly mounted table and stays idempotent', async () => {
+  await withPage(doc('<section id="original">' + bigTable(12) + '</section><details id="health" open><summary>Data health</summary><div id="health-slot"></div></details>'), async page => {
+    assert.equal(await page.locator('#original .tbl-filter').count(), 1);
+    const health = '<div class="tbl-scroll">' + bigTable(15) + '</div>';
+    await page.evaluate(html => {
+      const root = document.getElementById('health');
+      root.querySelector('#health-slot').innerHTML = html;
+      document.dispatchEvent(new CustomEvent('mmx-tables-ready', {detail: {root}}));
+      // Replayed lifecycle notifications must never stack sort arrows or filter controls.
+      document.dispatchEvent(new CustomEvent('mmx-tables-ready', {detail: {root}}));
+    }, health);
+    assert.equal(await page.locator('#health table[data-tablesort="1"]').count(), 1);
+    assert.equal(await page.locator('#health .tbl-filter').count(), 1);
+    assert.equal(await page.locator('#original .tbl-filter').count(), 1);
+    assert.equal(await page.locator('#health .sarrow').count(), 2);
+    assert.equal(await page.locator('#health .tbl-scroll').count(), 1);
+    await page.locator('#health th').nth(1).click();
+    assert.equal(await page.locator('#health th').nth(1).getAttribute('aria-sort'), 'descending');
+    assert.equal(await page.locator('#health tbody tr').first().locator('td').first().textContent(), 'name15');
+    await page.locator('#health .tbl-filter input').fill('name14');
+    await page.waitForFunction(() => document.querySelector('#health .tbl-filter .cnt').textContent.trim() === '1 / 15');
+    assert.equal(await page.locator('#health tbody tr:not([data-tablesort-hidden])').count(), 1);
+  });
+});

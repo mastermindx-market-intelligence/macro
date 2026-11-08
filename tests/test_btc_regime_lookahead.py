@@ -182,7 +182,7 @@ def test_market_state_stance_at_t_requires_the_caller_to_withhold_later_rows():
     frames[("coinmetrics", "mcap_usd")].loc[idx[185]:, "mcap_usd"] = 40.0 * 1e6
     pinned = _stance(frames, as_of=t)
     endpoint = _stance(frames, as_of=None)
-    assert pinned == "Range-bound, waiting for participation"
+    assert pinned == "Market cap is little changed"
     assert endpoint != pinned
     assert _stance(
         {k: v.loc[:t] for k, v in frames.items()}, as_of=None

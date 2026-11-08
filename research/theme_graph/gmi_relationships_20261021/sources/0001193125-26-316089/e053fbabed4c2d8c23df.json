@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-07-24T20:11:07Z",
+ "accession": "0001193125-26-316089",
+ "cik": "0001058811",
+ "doc_byte_length": 4952183,
+ "doc_sha256": "b60bbed4da0988ebcd1239b0716b0573231bfed05825fa8289318415ab3a3f48",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-07-24",
+ "form": "10-K",
+ "period_of_report": "2026-04-30",
+ "primary_document": "immr-20260430.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 316594,
+  "byte_start": 316230,
+  "normalized": "Gaming and VR. We have licensed our patents directly to Microsoft, Sony and Nintendo for use in their console gaming products. We have also licensed our patents to Sony for use in virtual reality (“VR”) products.",
+  "normalized_sha256": "0c3c8433927233cb4f4cbd06f3b1f5c326d02fa52dd302f6fafea114473bda40",
+  "raw": "Gaming and VR. </span><span style=\"color:#000000;white-space:pre-wrap;font-size:10pt;font-family:Times New Roman;font-kerning:none;min-width:fit-content;\">We have licensed our patents directly to Microsoft, Sony and Nintendo for use in their console gaming products. We have also licensed our patents to Sony for use in virtual reality (&#8220;VR&#8221;) products.",
+  "raw_sha256": "e053fbabed4c2d8c23df8e1c0973b4e41d47aae27933b602e768c5208a5aa824"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1058811/000119312526316089/immr-20260430.htm",
+ "xbrl_contexts": []
+}

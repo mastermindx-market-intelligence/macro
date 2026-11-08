@@ -1,0 +1,31 @@
+{
+ "accepted_at": "2026-02-17T12:01:45Z",
+ "accession": "0001178913-26-000504",
+ "cik": "0001109345",
+ "doc_byte_length": 3144224,
+ "doc_sha256": "749f349673605418e7b65d47da5398ed2cddc6fc5e08f46df045d045c495b4d3",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-02-17",
+ "form": "20-F",
+ "period_of_report": "2025-12-31",
+ "primary_document": "zk2634307.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 3008454,
+  "byte_start": 3006515,
+  "normalized": "Customer B 10 14",
+  "normalized_sha256": "282241151f28ce35d742824cd8e1fd4a2616a7ba4f39370cecbfb025769da387",
+  "raw": "Customer B</span></span></div>\n                    </td>\n                    <td colspan=\"1\" style=\"vertical-align:bottom;width:1%;vertical-align:bottom\">&#160;</td>\n                    <td colspan=\"1\" style=\"vertical-align:bottom;width:1%;vertical-align:bottom\">&#160;</td>\n                    <td colspan=\"1\" style=\"vertical-align:bottom;text-align:right;width:9%;vertical-align:bottom\">\n                      <div style=\"line-height:1.25;font-size:12pt\"><span style=\"font-size:12pt\"><span style=\"font-family:Times New Roman,Times,serif\"><ix:nonFraction id=\"F20250212082135272_13\" name=\"us-gaap:ConcentrationRiskPercentage1\" contextRef=\"C_20250101to20251231_srtMajorCustomersAxis_nvmiCustomerBMember_usgaapConcentrationRiskByBenchmarkAxis_usgaapSalesMember_usgaapConcentrationRiskByTypeAxis_usgaapCustomerConcentrationRiskMember\" unitRef=\"Pure\" scale=\"-2\" decimals=\"2\" format=\"ixt:num-dot-decimal\">10</ix:nonFraction></span></span></div>\n                    </td>\n                    <td colspan=\"1\" style=\"vertical-align:bottom;width:1%;vertical-align:bottom;white-space:nowrap\">&#160;</td>\n                    <td colspan=\"1\" style=\"vertical-align:bottom;width:1%;vertical-align:bottom\">&#160;</td>\n                    <td colspan=\"1\" style=\"vertical-align:bottom;width:1%;vertical-align:bottom\">&#160;</td>\n                    <td colspan=\"1\" style=\"vertical-align:bottom;text-align:right;width:9%;vertical-align:bottom\">\n                      <div style=\"line-height:1.25;font-size:12pt\"><span style=\"font-size:12pt\"><span style=\"font-family:Times New Roman,Times,serif\"><ix:nonFraction id=\"F20250212082135272_12\" name=\"us-gaap:ConcentrationRiskPercentage1\" contextRef=\"C_20240101to20241231_srtMajorCustomersAxis_nvmiCustomerBMember_usgaapConcentrationRiskByBenchmarkAxis_usgaapSalesMember_usgaapConcentrationRiskByTypeAxis_usgaapCustomerConcentrationRiskMember\" unitRef=\"Pure\" scale=\"-2\" decimals=\"2\" format=\"ixt:num-dot-decimal\">14",
+  "raw_sha256": "732f5604e992b916410c019eca9750e0091a567c60828ffdac945728f38fb659"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1109345/000117891326000504/zk2634307.htm",
+ "xbrl_contexts": [
+  {
+   "byte_end": 179487,
+   "byte_start": 178616,
+   "context_ref": "C_20240101to20241231_srtMajorCustomersAxis_nvmiCustomerBMember_usgaapConcentrationRiskByBenchmarkAxis_usgaapSalesMember_usgaapConcentrationRiskByTypeAxis_usgaapCustomerConcentrationRiskMember",
+   "raw": "<xbrli:context id=\"C_20240101to20241231_srtMajorCustomersAxis_nvmiCustomerBMember_usgaapConcentrationRiskByBenchmarkAxis_usgaapSalesMember_usgaapConcentrationRiskByTypeAxis_usgaapCustomerConcentrationRiskMember\"><xbrli:entity>\n      <xbrli:identifier scheme=\"http://www.sec.gov/CIK\">0001109345</xbrli:identifier><xbrli:segment><xbrldi:explicitMember dimension=\"srt:MajorCustomersAxis\">nvmi:CustomerBMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByBenchmarkAxis\">us-gaap:SalesMember</xbrldi:explicitMember><xbrldi:explicitMember dimension=\"us-gaap:ConcentrationRiskByTypeAxis\">us-gaap:CustomerConcentrationRiskMember</xbrldi:explicitMember></xbrli:segment></xbrli:entity><xbrli:period>\n        <xbrli:startDate>2024-01-01</xbrli:startDate>\n        <xbrli:endDate>2024-12-31</xbrli:endDate>\n        </xbrli:period></xbrli:context>",
+   "raw_sha256": "9037a0f16f0107f4eba1e66e01c6603a8d184ae4aa3066f64fbde08132b6b464"
+  }
+ ]
+}
