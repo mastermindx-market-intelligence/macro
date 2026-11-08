@@ -108,3 +108,12 @@ Mastermind protected pin: 5c3d3885234358aefb97ecdbc59be0864df14f8b. Macro admiss
 Paper edits are observed applied effects on one C3 carrier. The GitHub branch owns the durable plan, full original wording, old/new targets, formulas, source contracts and verification. The personal Paper skill is separately committed and synchronized. No Slack handoff, deployment, trade, runtime save or background execution is implied.
 
 Repository acceptance is recorded by the exact PR/check/merge receipt; this design record itself does not assert that a branch has merged.
+
+## Organizational decision record
+
+[DEC-PAPER-HUMAN-CLARITY-LAW](../../agentos/decisions/DEC-PAPER-HUMAN-CLARITY-LAW.md)
+records the Chairman's ruling through the existing Agent OS decision schema,
+with path-scoped effects. It creates no workstream, program, accepted Direction
+or Executive root; workstream association remains NOT_ORG_LINKED. The incumbent
+record validator passed for this candidate: one decision, zero errors, zero
+warnings. Full-store CI and source publication are determined by the exact PR.
