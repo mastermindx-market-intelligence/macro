@@ -1,0 +1,13 @@
+{
+  "status": "Exploratory clock sensitivity added after the weekly-only exit results; no return-selected numerical parameters",
+  "reason": "User entry thesis is W+2W; a weekly-only harvest can truncate an unfinished2W recovery",
+  "added_policy": "SLOW_STAGE_ATR6",
+  "rule": "same structural+negative lower histogram failure and fixed6ATRstop; harvest only when a NEW completed2W K>=80 has occurred during trade and a completed W K/D bearish cross occurs; same decision close allowed; next-open execution",
+  "primary_comparisons": [
+    "STAGED_ATR6 same protection but weekly extension",
+    "STRUCTURE_MOMENTUM_ATR6 same protection but no harvest",
+    "ATR6 same hard stop"
+  ],
+  "remaining_limits": "same arm+126 endpoint; not a proven optimal full2W cycle length; chart parity and prospective efficacy unknown",
+  "frozen_utc": "2026-10-13T02:38:56.970102+00:00"
+}
