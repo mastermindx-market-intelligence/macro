@@ -5,13 +5,16 @@ owns the drip (``MACRO_REVISIONS_DRIP=collect_tail``), and collect_tail must run
 collector's CLI bare, step-bounded, after the budgeted scorers and before the commit — the
 same starvation defenses the earnings sweep carries (tests/test_earnings_sweep_entrypoint.py).
 
-stdlib + pyyaml only: reads the workflow text, imports no builder or collector.
+stdlib + pytest + pyyaml only: reads the workflow and tests its deadline shell; imports no builder or collector.
 """
 from __future__ import annotations
 
+import os
 import re
+import subprocess
 from pathlib import Path
 
+import pytest
 import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -136,3 +139,49 @@ def test_collect_tail_commit_covers_the_revisions_store():
     assert "git add data/" in (commit.get("run") or ""), (
         "data/revisions/ rides the broad `git add data/` — if that narrows, add the path"
     )
+
+
+@pytest.mark.parametrize(
+    ("stamp_value", "expected_deadline", "warns"),
+    [
+        pytest.param(None, 1700006900, True, id="missing"),
+        pytest.param("", 1700006900, True, id="empty"),
+        pytest.param("not-an-epoch", 1700006900, True, id="nonnumeric"),
+        pytest.param("1700000000", 1700006900, False, id="fresh"),
+        pytest.param("1699990400", 1700000600, False, id="160-minutes-old"),
+        pytest.param("1699988000", 1699998200, False, id="expired"),
+        pytest.param("0", 10200, False, id="zero-remains-expired"),
+        pytest.param("01700000000", 1700006900, False, id="decimal-leading-zero"),
+    ],
+)
+def test_deadline_shell_handles_stamps_without_refreshing_valid_old_starts(
+    tmp_path, stamp_value, expected_deadline, warns
+):
+    """Run only the real deadline prefix: no collector, provider or inherited credentials."""
+    _, drip = _step_index(_steps("collect_tail"), DRIP_STEP)
+    prefix, separator, _ = drip["run"].partition("python -m collectors.equity_revisions")
+    assert separator, "the deadline prefix must end before the collector invocation"
+    stamp = tmp_path / "nightly-timings-test-collect_tail-start"
+    if stamp_value is not None:
+        stamp.write_text(stamp_value, encoding="utf-8")
+    script = (
+        "date() { printf '%s\\n' 1700000000; }\n"
+        + prefix
+        + "\nprintf 'TEST_DEADLINE=%s\\n' \"$MACRO_REVISIONS_DEADLINE_EPOCH\"\n"
+    )
+    result = subprocess.run(
+        ["bash", "-e", "-c", script],
+        env={
+            "PATH": os.defpath,
+            "RUNNER_TEMP": str(tmp_path),
+            "GITHUB_RUN_ID": "test",
+            "GITHUB_JOB": "collect_tail",
+        },
+        capture_output=True,
+        text=True,
+        timeout=5,
+        check=False,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert f"TEST_DEADLINE={expected_deadline}" in result.stdout.splitlines()
+    assert ("::warning::" in result.stdout) is warns

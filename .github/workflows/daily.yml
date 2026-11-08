@@ -874,11 +874,15 @@ jobs:
       # COMMIT/PUSH SPLIT (2026-07-17, run 29542087837 postmortem): the local commit above
       # is atomic and integrity-complete (fully-staged tree, asia paths reset out, empty-
       # guarded) — everything below is pure network publish. It lives in a SEPARATE
-      # always()-guarded step so a job-timeout cancel during the push can never again
-      # discard an already-committed night of collections (a hung git push ate 57m and
-      # the 150m cap killed the step mid-publish; the commit existed only on the runner).
-      # Every git network op is alarm-bounded (macOS runners have no GNU timeout;
-      # perl alarm survives execve — SIGALRM kills a hung op, the loop retries).
+      # always()-guarded step so ordinary earlier-step failures/cancellation do not hide
+      # an already-committed night of collections. A JOB-LEVEL timeout hard-stops the
+      # running step and then gives the remaining tail only a bounded ~5-minute grace:
+      # run 35168062576 (2026-09-17) finished this very push 1:58 PAST its cap, while
+      # run 36078806272 (2026-09-25) entered the grace with the push still to do and
+      # lost it at cap+5:00. The grace is a belt, not a budget — which is why the job
+      # cap above must cover this bounded network-publish window. Every git network op
+      # is alarm-bounded (macOS runners have no GNU timeout; perl alarm survives execve
+      # — SIGALRM kills a hung op, the loop retries).
       # QLEDGER CARVE CUSTODY (#9556 review 5566188238), part 1. The carve-out in
       # `commit market data` leaves data/qledger + site/qledger DIRTY, and the push
       # below rebases with --autostash: a conflicted re-apply (e.g. a concurrent
@@ -917,7 +921,7 @@ jobs:
             fi
           fi
       # A carved night publishes only after a verified park (#9556 review 5570764032).
-      - name: push market data (survives a job-cap cancel; alarm-bounded git ops)
+      - name: push market data (commit already local; alarm-bounded git ops)
         id: pushdata
         if: always() && steps.commitdata.outputs.committed == 'true' && (steps.commitdata.outputs.qledger_carved != 'true' || steps.park.outputs.parked == 'true')
         run: |
@@ -978,8 +982,13 @@ jobs:
           done
           push_lost
           echo "::warning::could not push collected market data after $PUSH_ATTEMPT attempts ($PUSH_STOP) (non-fatal)"
-      # Last-ditch publish if the job was CANCELLED mid-push (cap timeout): one bounded
-      # attempt inside the post-cancel grace window. The commit already exists locally;
+      # Last-ditch publish for a CANCELLED mid-push path: one bounded attempt inside the
+      # post-cancel grace window. This DOES reach a job-cap night when grace remains —
+      # job 105033526139 ran it to success at 04:50:57Z, 2:02 past its 04:48:55Z cap
+      # (2026-09-17). But the grace is bounded at ~5 minutes and can be exhausted before
+      # this step is ever scheduled: on 2026-09-25 job 107895940199 burned it on a push
+      # that started at cap+2:32, and this step's started_at is null. A real belt with a
+      # hard ceiling, never a cap rescue to budget against. The commit already exists locally;
       # losing it costs the whole night's collections (2026-07-16 incident).
       # Same verified-park gate as the push above (#9556 review 5570764032).
       - name: salvage push (job cancelled mid-publish — one bounded attempt)
@@ -1216,11 +1225,21 @@ jobs:
           R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
           R2_BUCKET: ${{ secrets.R2_BUCKET }}
         run: python -m scripts.publish_r2 --dirs massive_stock_day || echo "::warning::massive_stock_day R2 publish failed (non-fatal — R2 copy goes stale; the engine job's strict audit_r2 anchor goes red within 26h)"
-      # W2: per-band timings row + >85%-of-cap tripwire. always() so a job-cap cancel
-      # still records the night in the grace window (elapsed ≈ cap → the warning fires).
+      # W2: per-band timings row + >85% creep tripwire. always() reaches failed and
+      # cancelled paths, including a job-cap night for as long as the ~5-minute grace
+      # lasts (job 105033526139 recorded its row at 04:51:42Z, 2:47 past its cap). It
+      # is NOT reachable once that grace is spent: run 36078806272 never scheduled it,
+      # so that RUN has no row (2026-09-25's other run, 36133476434, did record one at
+      # 229.4m/240). So the cap above must keep the normal path
+      # inside the measurable window rather than relying on post-timeout telemetry.
+      # SECOND ARG = the creep budget, deliberately BELOW the cap. The cap is 300 so a
+      # normal night clears the whole publish path, but the 85% alarm stays on the 240m
+      # workload that forced the raise; without the split, 226m nights would read 75% and say nothing — the cap
+      # raise would have disarmed the only detector of the creep that caused it. Lower
+      # the second number only when the collectors genuinely get faster, never to quiet it.
       - name: timings ledger + 85% budget tripwire (W2)
         if: always()
-        run: bash scripts/ci/nightly_timings_finish.sh 300
+        run: bash scripts/ci/nightly_timings_finish.sh 300 240
 
   # ── CAPITAL-STRUCTURE LANE (its own job since 2026-08-06) ─────────────────
   # WHY ITS OWN JOB. This is an all-or-nothing SEC publication protocol. Its
@@ -2222,31 +2241,20 @@ jobs:
       - name: timings band — revisions-drip (W2)
         run: python3 scripts/nightly_timings.py mark --band revisions-drip || echo "::warning::timings band mark failed (non-fatal)"
       - name: analyst revisions drip (collectors.equity_revisions; non-fatal)
-        # 2026-11-07 (#7646 root cause): moved here from scripts/build_stock_library.py, where
-        # it ran INSIDE build_site on the engine job's render path (102 of build_site's 143 min
-        # on 2026-11-06; engine-core 170 min — the step that carried the engine job past the
-        # runner kill, Mastermind #1632, six nights running). House law: accrual steps go in
-        # collect_tail. Drips the <=200 STALEST names (<6d-fresh skipped) with atomic 25-name
-        # checkpoints of data/revisions/* + the SRC-A1 stores, all under `git add data/` in
-        # "commit tail data". The engine job sets MACRO_REVISIONS_DRIP=collect_tail so
-        # build_site reads the committed parquet (one-night lag, inside the 6-day window).
-        # KEEP THE python LINE BARE: no argv = the config cap (equity_profile.per_build, 200).
-        # PLACEMENT: last before the commit so a blowout truncates only this step. BUDGET:
-        # 102 min measured at ~30 s/name → 120-min step bound (job 21-25 min + this ≈ 125-145
-        # of the 200-min cap, tripwire 170); if it hits the bound nightly fix the per-name cost.
-        # DEADLINE: the earlier bounds already sum past the job cap on paper and the cap
-        # comment says STEP bounds guarantee the commit — so the collector gets a wall-clock
-        # deadline = min(job start + cap − 30-min commit reserve [W2 stamp], now + 115 min
-        # [5 under this bound]). Past it the SRC-A1 pre-pass and the drip loop stop starting
-        # names, flush and exit 0: a stacked night keeps the commit reserve, an ordinary night
-        # ends by its own clock. GitHub's timeout signals bash, not python — the step bound
-        # and the atomic checkpoints are the backstop, never the design.
+        # #7646: collect_tail owns accrual; engine renders committed revisions (one-night lag).
+        # Keep the CLI bare for the configured 200-name cap and place it last before commit.
+        # Earlier deadline: job start + 200m - 30m commit reserve, or now + 115m.
+        # The collector flushes atomic checkpoints; the 120m step timeout is a backstop.
         timeout-minutes: 120
         continue-on-error: true
         run: |
           stamp="${RUNNER_TEMP}/nightly-timings-${GITHUB_RUN_ID}-${GITHUB_JOB}-start"
           now=$(date +%s)
           if [ -r "$stamp" ]; then start=$(cat "$stamp"); else echo "::warning::revisions drip: job-start stamp missing — job-cap deadline measured from now"; start=$now; fi
+          case "$start" in
+            ''|*[!0-9]*) echo "::warning::revisions drip: invalid job-start stamp — job-cap deadline measured from now"; start=$now ;;
+          esac
+          start=$((10#$start))
           job_deadline=$(( start + (200 - 30) * 60 ))
           step_deadline=$(( now + 115 * 60 ))
           export MACRO_REVISIONS_DEADLINE_EPOCH=$(( job_deadline < step_deadline ? job_deadline : step_deadline ))
@@ -2304,7 +2312,10 @@ jobs:
                      <(git ls-tree -r --name-only origin/main | LC_ALL=C sort) \
               | while IFS= read -r f; do rm -f -- "$f" || true; done
             if perl -e 'alarm 420; exec @ARGV or die' -- git pull --rebase --autostash -X theirs origin main && push_autostash_ok; then
-              if push_do; then echo "pushed tail data on attempt $PUSH_ATTEMPT"; push_won; exit 0; fi
+              # Bind the actual post-rebase source; never infer Git push defaults.
+              push_on_main_ok || exit 1
+              qledger_tail_push_candidate=$(git rev-parse --verify 'HEAD^{commit}') || exit 1
+              if push_do origin "$qledger_tail_push_candidate:refs/heads/main"; then echo "pushed tail data on attempt $PUSH_ATTEMPT"; push_won; exit 0; fi
             fi
             push_abort_rebase
             push_backoff
@@ -2327,15 +2338,7 @@ jobs:
                               # build_confluence_strength, archive_signals,
                               # archive_context_snapshots, build_thematic_state,
                               # grade_thematic) can advance their ledgers.
-      MACRO_REVISIONS_DRIP: collect_tail   # 2026-11-07 (#7646 root cause): the analyst-revision
-                              # yfinance drip (collectors.equity_revisions, ~100 min/night at the
-                              # 200-name cap) no longer runs inside build_site on this job's
-                              # render path — collect_tail's "analyst revisions drip" step owns
-                              # it and commits data/revisions/; build_site reads the committed
-                              # parquet. Evidence: engine-core band 170 min on 2026-11-06, of
-                              # which build_site 143 min and its `revisions` ledger line 102 min.
-                              # The "build_site ~24m" reading in the timeout comment above is
-                              # the 2026-08-08 measurement; by 2026-11 build_site was 143 min.
+      MACRO_REVISIONS_DRIP: collect_tail  # #7646: render committed revisions; collect_tail owns accrual.
     steps:
       - name: timings — job start mark (W2)
         run: date +%s > "${RUNNER_TEMP}/nightly-timings-${GITHUB_RUN_ID}-${GITHUB_JOB}-start"
