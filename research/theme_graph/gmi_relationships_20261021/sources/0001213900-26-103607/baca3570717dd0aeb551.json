@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-09-25T21:20:01Z",
+ "accession": "0001213900-26-103607",
+ "cik": "0001951089",
+ "doc_byte_length": 2850643,
+ "doc_sha256": "6b49884fb76ff3459c9ff7a501d855060ce7ff183a605ddb96109fadd30ebe88",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-09-25",
+ "form": "20-F",
+ "period_of_report": "2026-06-30",
+ "primary_document": "ea0302128-20f_critical.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 529371,
+  "byte_start": 528449,
+  "normalized": "We do not currently have any definitive off-take or sales agreements with customers in place, other than our agreement with REalloy executed in April 2026. On August 26, 2025, we entered into a letter of intent for an offtake agreement with Ucore Rare Metals Inc. (“Ucore”) for rare earth concentrate from the Tanbreez Project, but we have not yet entered into a binding agreement with Ucore and there is no guarantee that we will enter into a binding agreement on terms favorable to us or at all. If we are unable to negotiate, finalize and maintain such agreements and satisfy the conditions thereto in order to enter into definitive agreements, or are only able to do so on terms that are unfavorable to us, we will not be able to generate any revenue, which would have a material adverse effect on our business, prospects, operating results and financial condition.",
+  "normalized_sha256": "08317076f8d7220651bd2c37f7c2588a465f811974633e30a8b53a852f4c58bc",
+  "raw": " We do not currently have any definitive off-take or sales agreements with customers in place, other than our agreement with REalloy executed in April 2026. On August 26, 2025, we entered into a letter of intent for an offtake agreement with Ucore Rare Metals Inc. (&#8220;<span style=\"font-weight: bold;\">Ucore</span>&#8221;) for rare earth concentrate from the Tanbreez Project, but we have not yet entered into a binding agreement with Ucore and there is no guarantee that we will enter into a binding agreement on terms favorable to us or at all. If we are unable to negotiate, finalize and maintain such agreements and satisfy the conditions thereto in order to enter into definitive agreements, or are only able to do so on terms that are unfavorable to us, we will not be able to generate any revenue, which would have a material adverse effect on our business, prospects, operating results and financial condition.",
+  "raw_sha256": "baca3570717dd0aeb551bf5c0e20df62caf754fb48776984692b7b893c186856"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1951089/000121390026103607/ea0302128-20f_critical.htm",
+ "xbrl_contexts": []
+}

@@ -1,0 +1,50 @@
+{
+  "expected_html_sha256": {
+    "different_dates": "eea55eb6b5177d6b1e73c29bbc754f481c4c03e23944443d33b879cbfc37f14d",
+    "matched": "3a513b18a69b459140633e6bdc035ee051d90fcfb53834b2805a5e0537a1a48a",
+    "raw_fallback": "9a07aa64e135ddfb879a1c9940d9184e764a955508b5bbb52bc213df7cfc4419",
+    "unavailable": "8087b6051b44038884e10dce24750e0abe16e5f8487623f5948f319d7f547878"
+  },
+  "extra_shared_assets": [
+    "theme.css",
+    "theme.js",
+    "account.js",
+    "supabase.js",
+    "nav_market.js",
+    "landing.css",
+    "onboard.css",
+    "onboard.js",
+    "live.js",
+    "live_config.js",
+    "product-nav-icons.css",
+    "navigation-refresh.css",
+    "logo_config.js",
+    "stock-logos.js",
+    "mm_brain.js",
+    "terminal_overlay.js"
+  ],
+  "fixed_build_label": "SYNTHETIC REVIEW INPUT / \u5408\u6210\u5ba1\u9605\u8f93\u5165",
+  "fixture_clock_note": "Production builder uses datetime.now for the footer. The source input explicitly substitutes a synthetic marker instead of claiming a reproducible live build timestamp.",
+  "non_goals": [
+    "browser_navigation",
+    "production_deployment",
+    "vendor_data_collection",
+    "font_redistribution",
+    "passing_visual_evidence"
+  ],
+  "schema": "review_source_input.v1",
+  "source_commit": "ac79e07634ec3903167969d2922d411d3969817d",
+  "source_dependency_sha256": {
+    "config.yml": "78186dd7b079a0d49706bf76a5614327c0c00da51bc6644b11de30d37d86b75c",
+    "engine/forex_regime.py": "497b975a6bb800f7418b58e2e8970f91c1ce098503308afa05ad406b2a1fe3ed",
+    "engine/forex_signals.py": "f33f3b4fc4ef8ae7b6e940ed098ef8c2cf00acdabb9f0a13049c7be3b693811d",
+    "lib/forex_kinematics_view.py": "2f57d68e9fc93e0a5a944035168d850bfd2c1fe3038ef8172897555b72858f05",
+    "lib/pages.py": "2673025c9729d5665936dbe6cafd461e8dff200feacc3e0081f0f378df2fd28b",
+    "scripts/build_forex.py": "43c7a906891f2759f3387469bcefe912fac62509bbb184a28009470a201f6901",
+    "scripts/check_template_site_sync.py": "17a092383c66b18875e86de1116816a53b42cf2c784d6015abeb3b6986527ccd",
+    "scripts/externalize_css.py": "fa4fb1e4d7f141694143711f8886bb0add138d76b9dad19e083a2eb3a6f75b3c",
+    "templates/_forex_movement_evidence.html.j2": "61ea582a46175f0c5e159d123e15440bd3d15c23d3bddd9e36bf386713cb0813",
+    "templates/forex.html.j2": "75067cf42dcb76f1ce847167f89584c3b5b1db27c6eb662892d18b2200d0641a",
+    "tests/test_forex_context_bus.py": "5f920c1240e81d3d8fbff04accb4724d1f1d8c1946a0dfb039a79449f1c72e4b"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "schema": "tiingo.actual_attended_quota_binding_same_process_input_consumption/v1",
+  "recorded_at_utc": "2026-10-13T04:57:37.461766+00:00",
+  "root": "01a12ab6-92cb-7c42-a711-42673ebb6b50",
+  "run_id": "eod-wave15-original-unadmitted-continuation04-20261013-01a12ab6",
+  "original_tool_session": 81573,
+  "original_process_id": 27327,
+  "actual_READY_chunk_consumed": "6dda88",
+  "actual_single_input_tool_chunk": "aa263f",
+  "single_stdin_binding_sha256": "33cb934856f4049b2f976e49a0dbcd30ed69242eea4bb41580ef91d8c9a83676",
+  "ready_sha256": "67fd77c9e800bb6147508ddd4d58d08d1ff8b3a4ef36906b902e5113e4407bc0",
+  "actual_READY_parent_sha256": "19b0edc26a80852450c811bb299a2775d601d802a2f894ef24625f5ab30605d5",
+  "actual_after_READY_visible_quota_sha256": "b068c306397eae2fe377e152964d67d61a80ec9ebc8d0b568bd9efcb4554a033",
+  "process_terminal_exit_code": null,
+  "capture_scope_creation_not_yet_observed": true,
+  "no_capture_acceptance_or_completion_claim": true,
+  "original76884_terminal_exit_not_invented": true
+}
