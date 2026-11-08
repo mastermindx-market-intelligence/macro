@@ -1,15 +1,21 @@
 # News Intelligence — clarity implementation guide
 
-Commission: 8 November 2026. This guide preserves the systems detail removed from the product composition. It implements the presentation direction in DESIGN_DOCTRINE §8; source behavior and design proposals are distinguished below.
+Commission: 8 November 2026. This guide preserves the systems detail removed from the product composition. It implements the Chairman's presentation direction, recorded in DESIGN_DOCTRINE §8. The Paper changes are applied; application behavior and remaining implementation work are distinguished below.
 
-## Design destinations
+## Current design destinations
 
 Paper file: https://app.paper.design/file/01M5EXPMQTSBFBAM8KKG83FTZH
-- Product: p-2-0; research rail 27L-0; compact activity board 2G9-0.
-- States and user help: p-1-0.
-- Build and design rules: p-3-0. Original R3 tokens/row contract 27K-0, pre-clarity light specimen 1FM-0, row anatomy 1UF-0 and claim-comparison contract 2FG-0 are preserved with original IDs.
 
-The old specimen and architecture frames are references, not production-ready UI. A design-only control is not proof that the application implements it.
+| Surface | Page and current nodes | Purpose |
+|---|---|---|
+| Product | p-2-0, gallery 3GX-0; rail 27L-0; activity light 2G9-0 and dark 2JL-0 | Copy/extract the actual child product frames, not the gallery |
+| Count help | p-4-0, gallery 3H4-0; How counts work 2NG-0; Sources 2OM-0 | Separate EN/ZH explanations with named returns |
+| Legacy states | p-1-0; count detail roots 1-0, H3-0, M3-0 | Exact original charts/tables with concise Sources and How counts work controls |
+| Build | p-3-0, gallery 3H0-0; original 27K-0, 1UF-0, 2FG-0, 1FM-0; preserved detail 2QK-0 | Architecture, state contracts, original specimen and relocated paragraphs |
+| News rules | 2J5-0 inside Build 27K-0 | Human-first placement rule outside the product |
+| Canonical rule | Design System file 01M312VSDSZFVT45674GDVJVZN, p-9-0, law 9X3-0 inside 9ZX-0 | Portfolio-wide design law |
+
+The old specimen and architecture frames remain references. A design-only control is not proof that the application implements it. Canvas galleries arrange complete frames without merging their product and builder contents.
 
 ## User workflow
 
@@ -22,11 +28,13 @@ Keep partial coverage and missing comparisons visible. The neutral coverage metr
 ## Current source owners
 
 Macro pinned ad00e5676aa94d22918b3b92d8026bd45328536c:
+
 - engine/qbus_news_velocity.py — count, baseline and comparison calculation.
 - engine/qbus_news_store.py — source/report/cluster projection.
 - app/ticker_news.py — snapshot/error handling and flow inclusion.
 
 Terminal protected master pinned f0af84bbd6c28c2f6477bd8ffc031903979023bd:
+
 - terminal/components/news/NewsFlowStrip.tsx — count summary and disclosure.
 - terminal/components/news/NewsFlowTally.tsx — historical chart.
 - terminal/lib/newsFlowLex.ts — EN/ZH strings.
@@ -35,6 +43,7 @@ Terminal protected master pinned f0af84bbd6c28c2f6477bd8ffc031903979023bd:
 - terminal/components/news/useTickerNewsFeed.ts — snapshot and stream refresh.
 
 Existing Macro design specifications:
+
 - research/product_intelligence_local_delivery/NEWS_RAIL_R3_SPEC_2026-10-22.md governs headline rows, evidence ladders, clocks and review controls.
 - research/product_intelligence_local_delivery/WAVE_B_NEWS_FLOW_RAIL_SPEC_2026-10-12.md describes the count feature's original design. Current implementation supersedes stale behavioral statements identified below.
 - Existing docs/specimens/news-flow.html and news-flow.light.css in Terminal remain specimen tooling, not proof of a shipped light theme.
@@ -97,4 +106,17 @@ Reuse the existing components, parser, backend and state owners. Do not create a
 | 1FM-0 crowded light specimen and all L1–L6 details | Archive intact | Build p-3-0, same IDs |
 | 1UF-0 row anatomy / evidence details | Move | Build p-3-0, same IDs |
 | 2FG-0 claim comparison architecture | Move | Build p-3-0, same ID |
-| Count summary/history | Recompose | Product 2G9-0; cloned original chart semantics preserved |
+| Count summary/history | Recompose | Product 2G9-0 light and 2JL-0 dark; cloned original chart semantics preserved |
+| 8U-0, JG-0, JJ-0, OB-0, OD-0 | Move intact | Build 2QK-0; exact methods and counting caveats retained |
+| 6J-0, H6-0, M8-0 | Move shell/specimen annotations | Build 2QK-0 |
+| Legacy detail controls | Add named help entries | 2QO-0, 2QU-0, 2R0-0; minimum 40px control height in these specimens |
+| New EN/ZH methods | Separate user explanation | 2NH-0 / 2NK-0 inside 2NG-0 |
+| New EN/ZH source details | Separate user explanation | 2ON-0 / 2OR-0 inside 2OM-0 |
+
+## Applied verification
+
+The principal rendered the final light and dark compact activity references after their final placement. The 27 reports / 12 stories and 13 reports / 9 stories examples remain distinct; the limited-history gap and outlined rolling-24h mark remain visible. Count time is explicitly UTC. EN and ZH actions fit without footnote walls. The original count graphs were cloned, not redrawn from guessed numbers.
+
+Legacy details were checked after relocation: exact charts, counts, units and source data remain; implementation paragraphs are outside the product. Build text and new help contrast were inspected. Parent and row membership for the Product, Help and Build galleries were read back after arrangement.
+
+See APPLIED_EFFECTS.json for the applied node maps and FINAL_QA.json for scope and evidence. These are Paper design checks. The browser/keyboard/stream/permission cases above remain the application's delivery acceptance; this task did not implement or deploy them.
