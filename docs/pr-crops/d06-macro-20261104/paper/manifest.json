@@ -1,0 +1,152 @@
+{
+  "source_law_pin": "0f9043313069d90cc3e1629a04ff2455f0f0fe78",
+  "writer": "root D06",
+  "scope": "Six completed editable Macro boards, visually inspected actual screenshots; illustrative data and traces.",
+  "boards": [
+    {
+      "name": "market-desktop",
+      "board_id": "743I-0",
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "page_id": "p-29-0",
+      "mimeType": "image/jpeg",
+      "export_metadata": [
+        "{\n  \"file\": {\n    \"id\": \"01M2WGNCX9475G79JRKJTCM08P\",\n    \"name\": \"MASTERMIND PAGES\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"cfd3d65c\"\n  }\n}"
+      ],
+      "artifacts": [
+        {
+          "path": "docs/pr-crops/d06-macro-20261104/paper/market-desktop-743I-0.jpg",
+          "sha256": "ed76af89977e09a95ad1da5de4011f11e21557660a545628b1e16cab349bf635",
+          "bytes": 165929
+        },
+        {
+          "path": "docs/pr-crops/d06-macro-20261104/paper/market-desktop-743I-0.jsx",
+          "sha256": "32f70c1e636785b90d916f88a44bbdaadb191b7efff1f4554d89dd970db4786e",
+          "bytes": 23369
+        }
+      ],
+      "url": "https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-29-0"
+    },
+    {
+      "name": "market-phone",
+      "board_id": "743J-0",
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "page_id": "p-29-0",
+      "mimeType": "image/jpeg",
+      "export_metadata": [
+        "{\n  \"file\": {\n    \"id\": \"01M2WGNCX9475G79JRKJTCM08P\",\n    \"name\": \"MASTERMIND PAGES\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"cfd3d65c\"\n  }\n}"
+      ],
+      "artifacts": [
+        {
+          "path": "docs/pr-crops/d06-macro-20261104/paper/market-phone-743J-0.jpg",
+          "sha256": "b452d568acc9971ed3e319b7c9951d77e869557c5c32836930dc22644b14d1ed",
+          "bytes": 88770
+        },
+        {
+          "path": "docs/pr-crops/d06-macro-20261104/paper/market-phone-743J-0.jsx",
+          "sha256": "4b6b8db70fa37dc0b31dca788ec2688cbf7cf412b465286e9bced4d4cacc3cde",
+          "bytes": 26356
+        }
+      ],
+      "url": "https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-29-0"
+    },
+    {
+      "name": "stage-desktop",
+      "board_id": "743K-0",
+      "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+      "page_id": "p-29-0",
+      "mimeType": "image/jpeg",
+      "export_metadata": [
+        "{\n  \"file\": {\n    \"id\": \"01M2WGNCX9475G79JRKJTCM08P\",\n    \"name\": \"MASTERMIND PAGES\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"cfd3d65c\"\n  }\n}",
+        "Warning: Your file is too large. Further changes will result in data loss. Please start a new file."
+      ],
+      "artifacts": [
+        {
+          "path": "docs/pr-crops/d06-macro-20261104/paper/stage-desktop-743K-0.jpg",
+          "sha256": "2e572b414bd88834d17021b67b6bf512390b8386139d59f23c22b48d3ad65898",
+          "bytes": 152334
+        },
+        {
+          "path": "docs/pr-crops/d06-macro-20261104/paper/stage-desktop-743K-0.jsx",
+          "sha256": "8c441409b847a6aff99448ec468d825333fdb1cae58b05d4b1c8330388e7dd53",
+          "bytes": 39500
+        }
+      ],
+      "url": "https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-29-0"
+    },
+    {
+      "name": "stage-phone",
+      "board_id": "1XGS-0",
+      "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "page_id": "p-18-0",
+      "mimeType": "image/jpeg",
+      "export_metadata": [
+        "{\n  \"file\": {\n    \"id\": \"01M3NSZGE8JWN2EZCSF0DT05RM\",\n    \"name\": \"Terminal\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"55dd37b7\"\n  }\n}"
+      ],
+      "artifacts": [
+        {
+          "path": "docs/pr-crops/d06-macro-20261104/paper/stage-phone-1XGS-0.jpg",
+          "sha256": "3791668df5696b495eb1d9f4ea5f24d3e601d6dbb36f56ae17fca26d88fdd053",
+          "bytes": 84730
+        },
+        {
+          "path": "docs/pr-crops/d06-macro-20261104/paper/stage-phone-1XGS-0.jsx",
+          "sha256": "1993126da6d82a9090cdfc46d0c9f3c93506ac1fa2ac11184c2ce0f8b09f9b19",
+          "bytes": 19633
+        }
+      ],
+      "url": "https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-18-0"
+    },
+    {
+      "name": "spv-desktop",
+      "board_id": "1XGT-0",
+      "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "page_id": "p-18-0",
+      "mimeType": "image/jpeg",
+      "export_metadata": [
+        "{\n  \"file\": {\n    \"id\": \"01M3NSZGE8JWN2EZCSF0DT05RM\",\n    \"name\": \"Terminal\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"55dd37b7\"\n  }\n}"
+      ],
+      "artifacts": [
+        {
+          "path": "docs/pr-crops/d06-macro-20261104/paper/spv-desktop-1XGT-0.jpg",
+          "sha256": "9662f2972871212ae92b42fbd2ed9ac4fc4ff89b155c067be8a0067aa7a40918",
+          "bytes": 184493
+        },
+        {
+          "path": "docs/pr-crops/d06-macro-20261104/paper/spv-desktop-1XGT-0.jsx",
+          "sha256": "dcbd05f0007cccd65090c2636c73b99d1c95d1363bbb3313559f216f9de11994",
+          "bytes": 22270
+        }
+      ],
+      "url": "https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-18-0"
+    },
+    {
+      "name": "spv-phone",
+      "board_id": "1XGU-0",
+      "file_id": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "page_id": "p-18-0",
+      "mimeType": "image/jpeg",
+      "export_metadata": [
+        "{\n  \"file\": {\n    \"id\": \"01M3NSZGE8JWN2EZCSF0DT05RM\",\n    \"name\": \"Terminal\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"55dd37b7\"\n  }\n}"
+      ],
+      "artifacts": [
+        {
+          "path": "docs/pr-crops/d06-macro-20261104/paper/spv-phone-1XGU-0.jpg",
+          "sha256": "ae3bc0308eab4d2073030e5ba8e9772376115d69d0494149977e24d32f04fdbe",
+          "bytes": 91239
+        },
+        {
+          "path": "docs/pr-crops/d06-macro-20261104/paper/spv-phone-1XGU-0.jsx",
+          "sha256": "1e336d9dec268b085cbadb9572c126661feb33a8ae621f1481716ecb4932c2d3",
+          "bytes": 24939
+        }
+      ],
+      "url": "https://app.paper.design/file/01M3NSZGE8JWN2EZCSF0DT05RM/p-18-0"
+    }
+  ],
+  "supersession": {
+    "743L-0": "1XGS-0",
+    "743M-0": "1XGT-0",
+    "743N-0": "1XGU-0"
+  },
+  "capacity_recovery": "The original MASTERMIND PAGES file warned of capacity/data-loss risk. Further original-file mutations stopped. Three completion boards were created on a separate p-18-0 page of the already authorized Terminal file. No deletion or lossless migration is claimed."
+}

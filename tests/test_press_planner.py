@@ -307,7 +307,7 @@ def test_no_non_source_internal_url_survives_anywhere_in_the_press_config():
                   "/movers.html"):
         for key in ("public_link_prefixes",):
             assert not any(str(pre).startswith(gated) for pre in cfg[key]), gated
-    assert cfg["public_link_prefixes"] == ["/research/", "/blog/", "/stocks/"]
+    assert cfg["public_link_prefixes"] == ["/research/", "/blog/", "/stocks/", "/x/"]
 
 
 def test_research_slot_may_link_its_public_coverage_page(tmp_path):

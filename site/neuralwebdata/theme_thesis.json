@@ -1,7 +1,7 @@
 {
   "schema": "neuralweb.theme_thesis.v1",
-  "as_of": "2026-11-07",
-  "generated_at": "2026-11-07T13:53:53Z",
+  "as_of": "2026-11-08",
+  "generated_at": "2026-11-08T10:03:22Z",
   "authority": {
     "is_context_only": true,
     "may_rank": false,
@@ -28,10 +28,10 @@
   "theses": [
     {
       "schema": "neuralweb.theme_thesis.v1",
-      "as_of": "2026-11-07",
+      "as_of": "2026-11-08",
       "thesis_id": "ai_semiconductors.v1",
-      "content_hash": "sha256:32f36b1ae48a7ecba66c48ea63ca55b40aa3e55ee67ce38a74e02d0534db0aa1",
-      "prev_content_hash": "sha256:b7ffe9cf16db24985f22c269753fedffa32d2cfbf180facef9543327eb3df286",
+      "content_hash": "sha256:1800b5f7ec0a6173a75333f6445b1bda510e8024cb3a444b821993e81c655d37",
+      "prev_content_hash": "sha256:32f36b1ae48a7ecba66c48ea63ca55b40aa3e55ee67ce38a74e02d0534db0aa1",
       "authority": {
         "is_context_only": true,
         "may_rank": false,
@@ -106,8 +106,8 @@
                 "condition_met": false
               },
               {
-                "as_of": "2026-11-07",
-                "value": 0.403,
+                "as_of": "2026-11-08",
+                "value": 0.636,
                 "condition_met": false
               }
             ],
@@ -150,10 +150,10 @@
     },
     {
       "schema": "neuralweb.theme_thesis.v1",
-      "as_of": "2026-11-07",
+      "as_of": "2026-11-08",
       "thesis_id": "memory_storage.v1",
-      "content_hash": "sha256:f71075785f84c73c2d9d1b57386065a9be1455ae7539a981d60ea7046265e588",
-      "prev_content_hash": "sha256:52a7e04e15328de2fa1de1b61f43a89b85d96f148a44b9038939c0ce7b353994",
+      "content_hash": "sha256:8ce710b0401517e5d53ca9ce8e5449d8a6c38debf37f0f4e9e27e116fcadf982",
+      "prev_content_hash": "sha256:f71075785f84c73c2d9d1b57386065a9be1455ae7539a981d60ea7046265e588",
       "authority": {
         "is_context_only": true,
         "may_rank": false,
@@ -219,7 +219,7 @@
                 "condition_met": false
               },
               {
-                "as_of": "2026-11-07",
+                "as_of": "2026-11-08",
                 "value": 0.746,
                 "condition_met": false
               }
@@ -252,10 +252,10 @@
     },
     {
       "schema": "neuralweb.theme_thesis.v1",
-      "as_of": "2026-11-06",
+      "as_of": "2026-11-08",
       "thesis_id": "semicap_equipment.v1",
-      "content_hash": "sha256:47d4987d15551a258f2a8b8f59ac41d5c1eb86b0cd9ef2ac7cdbb2816d11b9e9",
-      "prev_content_hash": "sha256:aff8f7d463a74d619b6160dd867a95938a24cc73a28b7afb9481cb360bcf34f8",
+      "content_hash": "sha256:ad041f22dc9ddf6330c11cf97bfeaba7e8c4727ddb4cdd82a7c4c5d59ced5aef",
+      "prev_content_hash": "sha256:47d4987d15551a258f2a8b8f59ac41d5c1eb86b0cd9ef2ac7cdbb2816d11b9e9",
       "authority": {
         "is_context_only": true,
         "may_rank": false,
@@ -310,7 +310,7 @@
           "rule_en": "If revision_breadth for semicap_equipment turns negative, foundry capex guidance is being cut and WFE order book is deteriorating.\n",
           "state": "ARMED",
           "fired": false,
-          "detail": "threshold check: 'revision_breadth' lt -0.05 → value=0.591"
+          "detail": "threshold check: 'revision_breadth' lt -0.05 → value=0.448"
         },
         {
           "id": "wfe_f2",
@@ -337,10 +337,10 @@
     },
     {
       "schema": "neuralweb.theme_thesis.v1",
-      "as_of": "2026-11-07",
+      "as_of": "2026-11-08",
       "thesis_id": "data_center_power.v1",
-      "content_hash": "sha256:00d7f10d269615e8b0dd09b46e5a74d9d9ef49c273d62bcec8243b3a4b53bf35",
-      "prev_content_hash": "sha256:4f92126de516e4dcc74267bcfe7c458aac9d1ed98daf38a5d439cb5a8666bdb0",
+      "content_hash": "sha256:5f97520209155edd403665af2bc57b6c8ade7498627f237cd289d6a0c72e7717",
+      "prev_content_hash": "sha256:00d7f10d269615e8b0dd09b46e5a74d9d9ef49c273d62bcec8243b3a4b53bf35",
       "authority": {
         "is_context_only": true,
         "may_rank": false,
@@ -399,7 +399,7 @@
           "rule_en": "If revision_breadth for data_center_power falls below 0.2, earnings estimate broadening has peaked and the near-term trade is mature.\n",
           "state": "ARMED",
           "fired": false,
-          "detail": "threshold check: 'revision_breadth' lt 0.2 → value=0.485"
+          "detail": "threshold check: 'revision_breadth' lt 0.2 → value=0.571"
         },
         {
           "id": "dcp_f2",
@@ -930,10 +930,10 @@
     },
     {
       "schema": "neuralweb.theme_thesis.v1",
-      "as_of": "2026-11-07",
+      "as_of": "2026-11-08",
       "thesis_id": "defense_aerospace.v1",
-      "content_hash": "sha256:33eed1385ded62c588385540c6ef177193e31746364f34e4a3f6b871863ee75d",
-      "prev_content_hash": "sha256:792846b9fe0ddeb9550604934618bdfe918ad8aae946878f2f4a57adc4265325",
+      "content_hash": "sha256:34e804607e7ffa824eea0862f0719e5ea2a1dda6b6ca69d4b1cc4ca8b95df450",
+      "prev_content_hash": "sha256:33eed1385ded62c588385540c6ef177193e31746364f34e4a3f6b871863ee75d",
       "authority": {
         "is_context_only": true,
         "may_rank": false,
@@ -991,7 +991,7 @@
           "rule_en": "If revision_breadth for defense_aerospace falls below 0.0, budget headwinds or program cancellations are spreading through earnings revisions.\n",
           "state": "ARMED",
           "fired": false,
-          "detail": "threshold check: 'revision_breadth' lt 0.0 → value=0.197"
+          "detail": "threshold check: 'revision_breadth' lt 0.0 → value=0.246"
         },
         {
           "id": "def_f2",
@@ -1018,10 +1018,10 @@
     },
     {
       "schema": "neuralweb.theme_thesis.v1",
-      "as_of": "2026-11-07",
+      "as_of": "2026-11-08",
       "thesis_id": "glp1_obesity.v1",
-      "content_hash": "sha256:995a45e2f15df3fa4990b4fc936b51260c96b937340c60c88a66bd1272b87adb",
-      "prev_content_hash": "sha256:6b3ffd91620fdc0cc20e3f4b20decca16634fa7cbdbc9675b8dc5f34d3add266",
+      "content_hash": "sha256:70b04b4ea0c44ae7fea4b71c34854f390756140f9cb8cacbe9465bb3cbb99fcb",
+      "prev_content_hash": "sha256:995a45e2f15df3fa4990b4fc936b51260c96b937340c60c88a66bd1272b87adb",
       "authority": {
         "is_context_only": true,
         "may_rank": false,
@@ -1083,7 +1083,7 @@
           "rule_en": "If revision_breadth for glp1_obesity falls below 0.0, earnings estimates are being cut broadly — manufacturing ramp is not meeting demand curve.\n",
           "state": "ARMED",
           "fired": false,
-          "detail": "threshold check: 'revision_breadth' lt 0.0 → value=0.398"
+          "detail": "threshold check: 'revision_breadth' lt 0.0 → value=0.273"
         },
         {
           "id": "glp1_f2",
@@ -1418,10 +1418,10 @@
     },
     {
       "schema": "neuralweb.theme_thesis.v1",
-      "as_of": "2026-11-06",
+      "as_of": "2026-11-08",
       "thesis_id": "ag_fertilizer.v1",
-      "content_hash": "sha256:d7a1f608aedbc8c08f924bbaa6ffdd2c3b401819395af1469130718aa6a1e1a9",
-      "prev_content_hash": "sha256:750ab3f6a31d906a37d3de742ae90b23ceeabe838f5f591444431dc97f182b9e",
+      "content_hash": "sha256:1fe6185efca453eb69c629cc35e089e656921e848ffede75d9092b2d1c5821e1",
+      "prev_content_hash": "sha256:d7a1f608aedbc8c08f924bbaa6ffdd2c3b401819395af1469130718aa6a1e1a9",
       "authority": {
         "is_context_only": true,
         "may_rank": false,
@@ -1475,7 +1475,7 @@
           "rule_en": "If revision_breadth for ag_fertilizer falls negative, crop commodity prices are declining faster than fertilizer input cost savings — farmer economics are deteriorating.\n",
           "state": "FIRED",
           "fired": true,
-          "detail": "threshold check: 'revision_breadth' lt -0.05 → value=-0.181"
+          "detail": "threshold check: 'revision_breadth' lt -0.05 → value=-0.484"
         },
         {
           "id": "ag_f2",
@@ -1573,7 +1573,7 @@
   ],
   "schema_version": 1,
   "produced_by": "scripts/build_thematic_state.py",
-  "produced_at": "2026-11-07T13:53:53Z",
-  "inputs_hash": "sha256:b3bf7af831663518e4d7b3c7b3b42e4424a393638b690275680fdf9a6afd8297",
+  "produced_at": "2026-11-08T10:03:22Z",
+  "inputs_hash": "sha256:fe302d05a17b4d0c9c6c74c2c8c85f11cc623c4e613c35a7a84342f84ae30d8c",
   "tier": "display"
 }
