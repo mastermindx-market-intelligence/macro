@@ -1,0 +1,1214 @@
+{
+  "schema": "PAPER_CLARITY_RESIDUAL_QA_V1",
+  "status": "Planned exact changes; applied lineage recorded in final dispositions",
+  "copy": [
+    {
+      "family": "news",
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "boardId": "1-0",
+      "nodeId": "N-0",
+      "next": "Daily",
+      "old": "Daily · chart surface shown for context only — not part of this design",
+      "parentId": "L-0"
+    },
+    {
+      "family": "news",
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "boardId": "1-0",
+      "nodeId": "6L-0",
+      "next": "Illustrative news",
+      "old": "Headlines are fixture copy, not reporting.",
+      "parentId": "6I-0"
+    },
+    {
+      "family": "ontology",
+      "fileId": "01M3P1X4FR6BRTB13KA736Y1HT",
+      "boardId": "2G8-0",
+      "nodeId": "2N3-0",
+      "next": "Your saved thesis is unchanged.",
+      "old": "No automatic Thesis save, monitor mutation, notification delivery or history duplication.",
+      "parentId": "2N1-0"
+    },
+    {
+      "family": "ontology",
+      "fileId": "01M3P1X4FR6BRTB13KA736Y1HT",
+      "boardId": "2G8-0",
+      "nodeId": "2OK-0",
+      "next": "THS-001 · BRD-EW-042 · SRC-20260929",
+      "old": "THS-001 · BRD-EW-042 · SRC-20260929 · question revision q3 · selected card breadth-pressure",
+      "parentId": "2OH-0"
+    },
+    {
+      "family": "policy",
+      "fileId": "01M6Q4WK0EMPV1G2KDGGRQBC1B",
+      "boardId": "1-0",
+      "nodeId": "4T-0",
+      "next": "Repricing channels are unavailable in this snapshot.",
+      "old": "This snapshot does not report repricing channels — that is an absent field, not an empty channel list.",
+      "parentId": "4R-0"
+    }
+  ],
+  "newsMoves": [
+    {
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "boardId": "1-0",
+      "nodeId": "6J-0",
+      "parentId": "6I-0",
+      "old": "Shell context · not part of this design"
+    },
+    {
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "boardId": "H3-0",
+      "nodeId": "H6-0",
+      "parentId": "H5-0",
+      "old": "Shell context · chart scrolled above · not part of this design"
+    },
+    {
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "boardId": "M3-0",
+      "nodeId": "M8-0",
+      "parentId": "M5-0",
+      "old": "shell context · not this design"
+    }
+  ],
+  "popup": [
+    {
+      "root": "8VD-0",
+      "label": "8VY-0",
+      "separator": "8WU-0",
+      "unknown": [
+        "8WY-0",
+        "8X9-0",
+        "8XG-0"
+      ],
+      "theme": "Light",
+      "locale": "EN",
+      "fileId": "01M38EVF74SJWG1GANN5VP380Z",
+      "movesToBuild": [
+        {
+          "nodeId": "8VY-0",
+          "parentId": "8VX-0",
+          "old": "STATE 01 · REVIEW · SUPPORT UNVERIFIED"
+        },
+        {
+          "nodeId": "8WU-0",
+          "parentId": "8VD-0",
+          "old": "STATE 02 · FUTURE SUPPORTED SERVICE Separate example after an explicit save becomes supported. The gated review above cannot trigger this state now."
+        }
+      ],
+      "unknownNodes": [
+        {
+          "nodeId": "8WY-0",
+          "parentId": "8VD-0",
+          "originalText": "9:41"
+        },
+        {
+          "nodeId": "8X9-0",
+          "parentId": "8VD-0",
+          "originalText": "← Story Save status"
+        },
+        {
+          "nodeId": "8XG-0",
+          "parentId": "8VD-0",
+          "originalText": "LOST REPLY · OUTCOME UNCONFIRMED Save status unknown. We didn’t get a reply. The save may or may not have completed. YOUR DRAFT IS RETAINED NVDA · Buyback story Material facts + corrections In-app only · Email off Check the original request before sending another save. A lost reply is not a confirmed failure. No automatic resubmit. Check save status → Back to story →"
+        }
+      ],
+      "preserve": "Save unavailable in review; supported future unknown state is separate. Keep exact existing request, Check save status, named return, and unavailable versus pending distinctions. No new runtime capability is implied."
+    },
+    {
+      "root": "90C-0",
+      "label": "90V-0",
+      "separator": "91K-0",
+      "unknown": [
+        "91N-0",
+        "91X-0",
+        "923-0"
+      ],
+      "theme": "Dark",
+      "locale": "EN",
+      "fileId": "01M38EVF74SJWG1GANN5VP380Z",
+      "movesToBuild": [
+        {
+          "nodeId": "90V-0",
+          "parentId": "90U-0",
+          "old": "STATE 01 · REVIEW · SUPPORT UNVERIFIED"
+        },
+        {
+          "nodeId": "91K-0",
+          "parentId": "90C-0",
+          "old": "STATE 02 · FUTURE SUPPORTED SERVICE Separate example after an explicit save becomes supported. The gated review above cannot trigger this state now."
+        }
+      ],
+      "unknownNodes": [
+        {
+          "nodeId": "91N-0",
+          "parentId": "90C-0",
+          "originalText": "9:41"
+        },
+        {
+          "nodeId": "91X-0",
+          "parentId": "90C-0",
+          "originalText": "← Story Save status"
+        },
+        {
+          "nodeId": "923-0",
+          "parentId": "90C-0",
+          "originalText": "LOST REPLY · OUTCOME UNCONFIRMED Save status unknown. We didn’t get a reply. The save may or may not have completed. YOUR DRAFT IS RETAINED NVDA · Buyback story Material facts + corrections In-app only · Email off Check the original request before sending another save. A lost reply is not a confirmed failure. No automatic resubmit. Check save status → Back to story →"
+        }
+      ],
+      "preserve": "Save unavailable in review; supported future unknown state is separate. Keep exact existing request, Check save status, named return, and unavailable versus pending distinctions. No new runtime capability is implied."
+    },
+    {
+      "root": "92Q-0",
+      "label": "939-0",
+      "separator": "93Y-0",
+      "unknown": [
+        "941-0",
+        "94B-0",
+        "94H-0"
+      ],
+      "theme": "Light",
+      "locale": "ZH",
+      "fileId": "01M38EVF74SJWG1GANN5VP380Z",
+      "movesToBuild": [
+        {
+          "nodeId": "939-0",
+          "parentId": "938-0",
+          "old": "状态 01 · 复核 · 功能支持未核实"
+        },
+        {
+          "nodeId": "93Y-0",
+          "parentId": "92Q-0",
+          "old": "状态 02 · 未来服务支持后的示例 独立示例：仅适用于服务已支持且用户已提交保存请求的情况。上方不可用的保存确认目前不会触发此状态。"
+        }
+      ],
+      "unknownNodes": [
+        {
+          "nodeId": "941-0",
+          "parentId": "92Q-0",
+          "originalText": "9:41"
+        },
+        {
+          "nodeId": "94B-0",
+          "parentId": "92Q-0",
+          "originalText": "← 新闻 保存状态"
+        },
+        {
+          "nodeId": "94H-0",
+          "parentId": "92Q-0",
+          "originalText": "未收到回复 · 结果未确认 保存状态未知 尚未收到回复，可能已保存，也可能尚未保存。 草稿已保留 NVDA · 回购事件 重要事实 + 更正 仅应用内 · 邮件关闭 再次保存前，先核查原请求。未收到回复不代表保存失败。检查状态仅核查原请求，不会提交新请求或自动重试。 检查保存状态 → 返回新闻 →"
+        }
+      ],
+      "preserve": "Save unavailable in review; supported future unknown state is separate. Keep exact existing request, Check save status, named return, and unavailable versus pending distinctions. No new runtime capability is implied."
+    },
+    {
+      "root": "954-0",
+      "label": "95N-0",
+      "separator": "96C-0",
+      "unknown": [
+        "96F-0",
+        "96P-0",
+        "96V-0"
+      ],
+      "theme": "Dark",
+      "locale": "ZH",
+      "fileId": "01M38EVF74SJWG1GANN5VP380Z",
+      "movesToBuild": [
+        {
+          "nodeId": "95N-0",
+          "parentId": "95M-0",
+          "old": "状态 01 · 复核 · 功能支持未核实"
+        },
+        {
+          "nodeId": "96C-0",
+          "parentId": "954-0",
+          "old": "状态 02 · 未来服务支持后的示例 独立示例：仅适用于服务已支持且用户已提交保存请求的情况。上方不可用的保存确认目前不会触发此状态。"
+        }
+      ],
+      "unknownNodes": [
+        {
+          "nodeId": "96F-0",
+          "parentId": "954-0",
+          "originalText": "9:41"
+        },
+        {
+          "nodeId": "96P-0",
+          "parentId": "954-0",
+          "originalText": "← 新闻 保存状态"
+        },
+        {
+          "nodeId": "96V-0",
+          "parentId": "954-0",
+          "originalText": "未收到回复 · 结果未确认 保存状态未知 尚未收到回复，可能已保存，也可能尚未保存。 草稿已保留 NVDA · 回购事件 重要事实 + 更正 仅应用内 · 邮件关闭 再次保存前，先核查原请求。未收到回复不代表保存失败。检查状态仅核查原请求，不会提交新请求或自动重试。 检查保存状态 → 返回新闻 →"
+        }
+      ],
+      "preserve": "Save unavailable in review; supported future unknown state is separate. Keep exact existing request, Check save status, named return, and unavailable versus pending distinctions. No new runtime capability is implied."
+    }
+  ],
+  "contrast": {
+    "fileId": "01M38EVF74SJWG1GANN5VP380Z",
+    "rootId": "AHN-0",
+    "nodes": [
+      "92J-0",
+      "97B-0",
+      "5Q9-0",
+      "5WO-0",
+      "4M5-0"
+    ],
+    "repair": "Reparent intact transparent dark-theme notes into matching #101318 Build wrappers. Preserve text, borders and IDs. Keep9MC/9P2 unchanged."
+  },
+  "sector": {
+    "fileId": "01M6FAXA774QT1VRDMAG7DFQ2W",
+    "productPageId": "p-4-0",
+    "destination": {
+      "fileId": "01M6FAXA774QT1VRDMAG7DFQ2W",
+      "pageId": "p-5-0",
+      "pageName": "Build · Clarity, models & interaction",
+      "rootNodeId": "root_node_p-5-0",
+      "artboardCount": 2
+    },
+    "rows": [
+      {
+        "nodeId": "FFV-0",
+        "expectedParentId": "FFT-0",
+        "productRoot": "FB7-0",
+        "action": "REPLACE_TEXT",
+        "oldText": "rs_21d · 21 sessions vs S&P 500 · total return · as of 30 Oct 2026 close",
+        "newText": "21 sessions vs S&P 500 · total return · as of 30 Oct 2026 close"
+      },
+      {
+        "nodeId": "FRZ-0",
+        "expectedParentId": "FRX-0",
+        "productRoot": "FO0-0",
+        "action": "REPLACE_TEXT",
+        "oldText": "rs_21d · 21 sessions vs S&P 500 · total return · as of 30 Oct 2026 close",
+        "newText": "21 sessions vs S&P 500 · total return · as of 30 Oct 2026 close"
+      },
+      {
+        "nodeId": "FIG-0",
+        "expectedParentId": "FIE-0",
+        "productRoot": "FB7-0",
+        "action": "REPLACE_TEXT",
+        "oldText": "rs_21d · sector ETF · total return",
+        "newText": "Sector ETF · total return"
+      },
+      {
+        "nodeId": "FUK-0",
+        "expectedParentId": "FUI-0",
+        "productRoot": "FO0-0",
+        "action": "REPLACE_TEXT",
+        "oldText": "rs_21d · sector ETF · total return",
+        "newText": "Sector ETF · total return"
+      },
+      {
+        "nodeId": "FG5-0",
+        "expectedParentId": "FG0-0",
+        "productRoot": "FB7-0",
+        "action": "MOVE_FIELD_KEY_TO_BUILD",
+        "oldText": "rs_21d",
+        "why": "Standalone internal key duplicates the visible 21-session comparison heading and basis."
+      },
+      {
+        "nodeId": "FSB-0",
+        "expectedParentId": "FS8-0",
+        "productRoot": "FO0-0",
+        "action": "MOVE_FIELD_KEY_TO_BUILD",
+        "oldText": "rs_21d",
+        "why": "Standalone internal key duplicates the visible 21-session comparison heading and basis."
+      },
+      {
+        "nodeId": "FXR-0",
+        "expectedParentId": "FXO-0",
+        "productRoot": "FO0-0",
+        "action": "REPLACE_TEXT",
+        "oldText": "score · pulse_rank_delta_5d",
+        "newText": "Score · rank change over 5 sessions"
+      },
+      {
+        "nodeId": "G2T-0",
+        "expectedParentId": "G2S-0",
+        "productRoot": "FO0-0",
+        "action": "REPLACE_TEXT",
+        "oldText": "pulse_rank_delta_5d · as of 30 Oct 2026 close",
+        "newText": "5-session rank change · as of 30 Oct 2026 close"
+      }
+    ],
+    "preserve": "Store internal field names rs_21d andpulse_rank_delta_5d with exact currentnode/root lineage inBuild guide before replacing visiblelabels. Keep window, benchmark, ETFversusbasketpopulation, totalreturn basis andsnapshotclock."
+  },
+  "designSystem": {
+    "fileId": "01M312VSDSZFVT45674GDVJVZN",
+    "root": "7IS-0",
+    "nodeId": "7IU-0",
+    "oldText": "F02 / 390 CSS px / 中文 / 设计候选",
+    "newText": "示例数据",
+    "preserveMetadataInSlot": "9YT-0",
+    "why": "Matches the English Illustrative data label while moving viewport and design-candidate metadata out of the product."
+  },
+  "prophet": {
+    "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+    "productPageId": "p-1-0",
+    "buildPageId": "p-5-0",
+    "buildRootId": "146H-0",
+    "moves": [
+      {
+        "root": "DAZ-0",
+        "nodeId": "12WW-0",
+        "expectedParentId": "12WP-0",
+        "oldText": "Proposed routes · not click-wiring proof",
+        "destinationSlot": "146K-0"
+      },
+      {
+        "root": "DAZ-0",
+        "nodeId": "DMS-0",
+        "expectedParentId": "DMN-0",
+        "oldText": "PROPOSED ROUTES · NOT RUNTIME PROOF",
+        "destinationSlot": "146K-0"
+      },
+      {
+        "root": "DPQ-0",
+        "nodeId": "DU6-0",
+        "expectedParentId": "DTY-0",
+        "oldText": "Proposed routes · not click-wiring proof",
+        "destinationSlot": "146M-0"
+      },
+      {
+        "root": "DPQ-0",
+        "nodeId": "DZ4-0",
+        "expectedParentId": "DZ0-0",
+        "oldText": "PROPOSED ROUTES · NOT RUNTIME PROOF",
+        "destinationSlot": "146M-0"
+      },
+      {
+        "root": "DAZ-0",
+        "nodeId": "DDL-0",
+        "expectedParentId": "DDB-0",
+        "oldText": "UI-created rank · none",
+        "destinationSlot": "146K-0",
+        "moveCompleteFrame": true,
+        "why": "This is a no-new-ranker architecture assertion; it is not a user decision datum."
+      }
+    ],
+    "copyChanges": [
+      {
+        "root": "DAZ-0",
+        "nodeId": "DH9-0",
+        "expectedParentId": "DH6-0",
+        "oldText": "Same cards, same source-owned states. No UI promotion, probability or hidden re-ranking.",
+        "newText": "Candidates retain their source order and current assessment.",
+        "destinationSlot": "146K-0"
+      },
+      {
+        "root": "DPQ-0",
+        "nodeId": "DUD-0",
+        "expectedParentId": "DU8-0",
+        "oldText": "Same source-owned states. No UI promotion, probability or hidden re-ranking.",
+        "newText": "Candidates retain their source order and current assessment.",
+        "destinationSlot": "146M-0"
+      },
+      {
+        "root": "DAZ-0",
+        "nodeId": "DMH-0",
+        "expectedParentId": "DMF-0",
+        "oldText": "A change appears only when a canonical source object changes. The UI cannot infer a recommendation from price movement.",
+        "newText": "Updates reflect changed source records. Price movement alone is not a new recommendation.",
+        "destinationSlot": "146K-0"
+      },
+      {
+        "root": "DPQ-0",
+        "nodeId": "DYU-0",
+        "expectedParentId": "DYS-0",
+        "oldText": "A change appears only when a canonical candidate, quote, plan, assessment or evidence object changes. Price movement alone cannot become a recommendation.",
+        "newText": "Updates reflect changed source records. Price movement alone is not a new recommendation.",
+        "destinationSlot": "146M-0"
+      },
+      {
+        "root": "DAZ-0",
+        "nodeId": "DMR-0",
+        "expectedParentId": "DMO-0",
+        "oldText": "Every route keeps the candidate episode, source clocks, filters and return position intact.",
+        "newText": "Continue researching this candidate.",
+        "destinationSlot": "146K-0"
+      },
+      {
+        "root": "DPQ-0",
+        "nodeId": "DZ3-0",
+        "expectedParentId": "DZ0-0",
+        "oldText": "Every route keeps the episode, source clocks, filters, compare state, focus and return position intact.",
+        "newText": "Continue researching this candidate.",
+        "destinationSlot": "146M-0"
+      }
+    ],
+    "preservation": "Preserve each full old passage with its source product/node ID in the existing 146K / 146M Build slots or the canonical guide before changing product copy. Keep the actual route controls. Existing DO7 / DPC / E0E / E2J contracts remain unchanged.",
+    "semanticGuard": "Do not change plan values, source clocks, entry permission, quote availability, score meaning, priority semantics or accepted assessment states. This is inline-copy and annotation separation.",
+    "scope": "Exact residual targets were validated on DAZ / DPQ only. This QA pass does not claim an independent recheck of the other Daily Brief variants."
+  },
+  "visualQA": {
+    "audit": "Prophet/Canonical Design System/Sector separation — representative visual QA",
+    "date": "2026-11-08",
+    "readOnly": true,
+    "mutationsPerformed": false,
+    "coverage": [
+      {
+        "family": "DS",
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "nodeId": "7CM-0",
+        "info": {
+          "id": "7CM-0",
+          "name": "F02 · Macro comparison · EN · Dark · 390",
+          "component": "Frame",
+          "width": 390,
+          "height": 1289,
+          "worldX": 4820,
+          "worldY": -2275,
+          "x": 4820,
+          "y": -2275,
+          "isVisible": true,
+          "isLocked": false,
+          "parentId": "root_node_p-5-0",
+          "childIds": [
+            "7CN-0",
+            "7CQ-0",
+            "7CY-0"
+          ],
+          "childCount": 3,
+          "artboardId": null,
+          "textContent": null
+        },
+        "styles": {
+          "display": "flex",
+          "overflow": "clip",
+          "width": "390px",
+          "height": "fit-content",
+          "flexDirection": "column",
+          "left": "4820px",
+          "top": "-2275px",
+          "position": "absolute",
+          "backgroundColor": "var(--noir-canvas)"
+        },
+        "screenshot": {
+          "nodeId": "7CM-0",
+          "width": 390,
+          "height": 1289,
+          "resized": false
+        }
+      },
+      {
+        "family": "DS",
+        "fileId": "01M312VSDSZFVT45674GDVJVZN",
+        "nodeId": "7IS-0",
+        "info": {
+          "id": "7IS-0",
+          "name": "F02 · Macro comparison · 中文 · Light · 390",
+          "component": "Frame",
+          "width": 390,
+          "height": 1331,
+          "worldX": 5290,
+          "worldY": -2275,
+          "x": 5290,
+          "y": -2275,
+          "isVisible": true,
+          "isLocked": false,
+          "parentId": "root_node_p-5-0",
+          "childIds": [
+            "7IT-0",
+            "7IW-0",
+            "7J4-0"
+          ],
+          "childCount": 3,
+          "artboardId": null,
+          "textContent": null
+        },
+        "styles": {
+          "display": "flex",
+          "overflow": "clip",
+          "width": "390px",
+          "height": "fit-content",
+          "flexDirection": "column",
+          "left": "5290px",
+          "top": "-2275px",
+          "position": "absolute",
+          "backgroundColor": "#F6F6F3"
+        },
+        "screenshot": {
+          "nodeId": "7IS-0",
+          "width": 390,
+          "height": 1331,
+          "resized": false
+        }
+      },
+      {
+        "family": "Prophet",
+        "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+        "nodeId": "DAZ-0",
+        "info": {
+          "id": "DAZ-0",
+          "name": "103 · R4.5 · Prophet Daily Brief + Top Picks · Desktop · Light",
+          "component": "Frame",
+          "width": 1440,
+          "height": null,
+          "worldX": 0,
+          "worldY": 1400,
+          "x": 0,
+          "y": 1400,
+          "isVisible": true,
+          "isLocked": false,
+          "parentId": "root_node_p-1-0",
+          "childIds": [
+            "DB0-0",
+            "DC8-0",
+            "DBI-0",
+            "DBV-0",
+            "DCH-0"
+          ],
+          "childCount": 5,
+          "artboardId": null,
+          "textContent": null
+        },
+        "styles": {
+          "display": "flex",
+          "overflow": "clip",
+          "width": "1440px",
+          "height": "fit-content",
+          "fontFamily": "var(--font-ui)",
+          "left": "0px",
+          "top": "1400px",
+          "flexDirection": "column",
+          "position": "absolute",
+          "backgroundColor": "var(--mx-light-bg)"
+        },
+        "screenshot": {
+          "nodeId": "DAZ-0",
+          "width": 1013,
+          "height": 2000,
+          "resized": true
+        }
+      },
+      {
+        "family": "Prophet",
+        "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+        "nodeId": "DPQ-0",
+        "info": {
+          "id": "DPQ-0",
+          "name": "104 · R4.5 · Prophet Daily Brief + Top Picks · Mobile · Light",
+          "component": "Frame",
+          "width": 390,
+          "height": null,
+          "worldX": 1520,
+          "worldY": 1400,
+          "x": 1520,
+          "y": 1400,
+          "isVisible": true,
+          "isLocked": false,
+          "parentId": "root_node_p-1-0",
+          "childIds": [
+            "DPR-0",
+            "DQ1-0"
+          ],
+          "childCount": 2,
+          "artboardId": null,
+          "textContent": null
+        },
+        "styles": {
+          "display": "flex",
+          "overflow": "clip",
+          "width": "390px",
+          "height": "fit-content",
+          "flexDirection": "column",
+          "fontFamily": "var(--font-ui)",
+          "left": "1520px",
+          "top": "1400px",
+          "position": "absolute",
+          "backgroundColor": "var(--mx-light-bg)"
+        },
+        "screenshot": {
+          "nodeId": "DPQ-0",
+          "width": 153,
+          "height": 2000,
+          "resized": true
+        }
+      },
+      {
+        "family": "Sector",
+        "fileId": "01M6FAXA774QT1VRDMAG7DFQ2W",
+        "nodeId": "AOT-0",
+        "info": {
+          "id": "AOT-0",
+          "name": "D05 A04 · Canada sector · 1024 light · modal evidence",
+          "component": "Frame",
+          "width": 1024,
+          "height": 900,
+          "worldX": 2460,
+          "worldY": 0,
+          "x": 2460,
+          "y": 0,
+          "isVisible": true,
+          "isLocked": false,
+          "parentId": "root_node_p-3-0",
+          "childIds": [
+            "AOU-0",
+            "AP8-0",
+            "AQF-0"
+          ],
+          "childCount": 3,
+          "artboardId": null,
+          "textContent": null
+        },
+        "styles": {
+          "display": "flex",
+          "overflow": "clip",
+          "width": "1024px",
+          "height": "900px",
+          "left": "2460px",
+          "top": "0px",
+          "position": "absolute",
+          "backgroundColor": "#F6F6F3"
+        },
+        "screenshot": {
+          "nodeId": "AOT-0",
+          "width": 1024,
+          "height": 900,
+          "resized": false
+        }
+      },
+      {
+        "family": "Sector",
+        "fileId": "01M6FAXA774QT1VRDMAG7DFQ2W",
+        "nodeId": "ATF-0",
+        "info": {
+          "id": "ATF-0",
+          "name": "D05 A06 · Namespaced group to Company · 1440 light",
+          "component": "Frame",
+          "width": 1440,
+          "height": 960,
+          "worldX": 4412,
+          "worldY": 0,
+          "x": 4412,
+          "y": 0,
+          "isVisible": true,
+          "isLocked": false,
+          "parentId": "root_node_p-3-0",
+          "childIds": [
+            "ATG-0",
+            "ATU-0"
+          ],
+          "childCount": 2,
+          "artboardId": null,
+          "textContent": null
+        },
+        "styles": {
+          "display": "flex",
+          "overflow": "clip",
+          "width": "1440px",
+          "height": "960px",
+          "left": "4412px",
+          "top": "0px",
+          "position": "absolute",
+          "backgroundColor": "#F6F6F3"
+        },
+        "screenshot": {
+          "nodeId": "ATF-0",
+          "width": 1440,
+          "height": 960,
+          "resized": false
+        }
+      }
+    ],
+    "layoutVerdict": "No material new clipping or excess blanktail found in the six requested product representatives. No geometry reconstruction recommended for this sample.",
+    "products": [
+      {
+        "family": "DS",
+        "roots": [
+          "7CM-0",
+          "7IS-0"
+        ],
+        "pass": [
+          "Both roots fit content: 390 × 1289 for dark EN and 390 × 1331 for light ZH.",
+          "All ten sector rows, source actions, selected/focused row, sort/scroll affordance, history gap and View exact values action remain visible.",
+          "66.7%, 709/1063, +1.13 pp, the measured 0.00 Health Care change and unavailable Energy values remain distinct.",
+          "Historical 7/8 coverage and the missing-session gap remain visible. There is no blank tail."
+        ],
+        "residual": "The 7IS top strip still contains F02 / 390 CSS px / design-candidate metadata. Replace it with 示例数据."
+      },
+      {
+        "family": "Prophet",
+        "roots": [
+          "DAZ-0",
+          "DPQ-0"
+        ],
+        "pass": [
+          "Both roots fit their content, with no major empty tail or clipping after the builder contract and provenance sections were removed.",
+          "No entry cleared, WAIT pre-trigger and current quote unavailable / not connected remain prominent.",
+          "Dated plan levels, invalidation, reset band, trigger, T1/T2, the meaning of the 67.9 management score and separate source clocks remain.",
+          "Dated LFUS/PFE quotes and the no-price-history/data-gap card remain. Missing data has not become a flat line or zero.",
+          "Playbook, evidence, compare, all-candidate and six deeper research routes remain."
+        ],
+        "residual": "Several inline builder-proof and route-implementation phrases remain in the retained body. Exact targets are below; the architecture is already retained in Build slots."
+      },
+      {
+        "family": "Sector",
+        "roots": [
+          "AOT-0",
+          "ATF-0"
+        ],
+        "pass": [
+          "AOT intentionally remains a 1024 × 900 modal viewport. The Canadian Natural Resources dialog, close control, membership limitation and Open Company · CNQ.TO action are fully visible.",
+          "The exact Canadian listing, currency and calendar remain. The US listing is not substituted.",
+          "The current membership observation still does not assert historical membership.",
+          "ATF intentionally remains a 1440 × 960 desktop viewport. Its 4/4 histories, missing member-price dates, small-group qualification, below-200-day and unconfirmed group state, four constituent rows, percentage-point definition and Company action remain.",
+          "The space after Data coverage is ordinary viewport space. No oversized remnant of the notes or clipping was observed."
+        ],
+        "residual": "No additional issue was confirmed in the two requested Sector products."
+      }
+    ],
+    "buildPreservation": {
+      "counts": {
+        "Prophet": {
+          "slots": 7,
+          "preservedNodesFromSlotCounts": 14
+        },
+        "DS": {
+          "slots": 22,
+          "preservedNodesFromSlotCounts": 40
+        },
+        "Sector": {
+          "slots": 13,
+          "preservedNodesFromSlotCounts": 16
+        }
+      },
+      "expectedMovedNodes": {
+        "Prophet": 14,
+        "DS": 40,
+        "Sector": 16
+      },
+      "sampledSlots": [
+        {
+          "family": "DS",
+          "fileId": "01M312VSDSZFVT45674GDVJVZN",
+          "slotId": "9YR-0",
+          "style": {
+            "display": "flex",
+            "flexDirection": "column",
+            "width": "1624px",
+            "height": "fit-content",
+            "padding": "24px",
+            "gap": "16px",
+            "backgroundColor": "var(--noir-canvas)"
+          },
+          "screenshot": {
+            "nodeId": "9YR-0",
+            "width": 1624,
+            "height": 281,
+            "resized": false
+          },
+          "children": [
+            {
+              "id": "9YS-0",
+              "name": "Source product 7CM-0…"
+            },
+            {
+              "id": "7IN-0",
+              "name": "Adjacent mobile build contract"
+            }
+          ]
+        },
+        {
+          "family": "DS",
+          "fileId": "01M312VSDSZFVT45674GDVJVZN",
+          "slotId": "9YT-0",
+          "style": {
+            "display": "flex",
+            "flexDirection": "column",
+            "width": "1624px",
+            "height": "fit-content",
+            "padding": "24px",
+            "gap": "16px",
+            "backgroundColor": "#F6F6F3"
+          },
+          "screenshot": {
+            "nodeId": "9YT-0",
+            "width": 1624,
+            "height": 270,
+            "resized": false
+          },
+          "children": [
+            {
+              "id": "9YU-0",
+              "name": "Source product 7IS-0…"
+            },
+            {
+              "id": "9SM-0",
+              "name": "Adjacent mobile build contract"
+            }
+          ]
+        },
+        {
+          "family": "Prophet",
+          "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+          "slotId": "146K-0",
+          "style": {
+            "display": "flex",
+            "flexDirection": "column",
+            "width": "1624px",
+            "height": "fit-content",
+            "padding": "24px",
+            "gap": "16px",
+            "backgroundColor": "var(--mx-light-bg)"
+          },
+          "screenshot": {
+            "nodeId": "146K-0",
+            "width": 1624,
+            "height": 731,
+            "resized": false
+          },
+          "children": [
+            {
+              "id": "146L-0",
+              "name": "Source product DAZ-0…"
+            },
+            {
+              "id": "DO7-0",
+              "name": "Daily brief builder contract"
+            },
+            {
+              "id": "DPC-0",
+              "name": "Daily brief provenance"
+            }
+          ]
+        },
+        {
+          "family": "Prophet",
+          "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+          "slotId": "146M-0",
+          "style": {
+            "display": "flex",
+            "flexDirection": "column",
+            "width": "1624px",
+            "height": "fit-content",
+            "padding": "24px",
+            "gap": "16px",
+            "backgroundColor": "var(--mx-light-bg)"
+          },
+          "screenshot": {
+            "nodeId": "146M-0",
+            "width": 1624,
+            "height": 1467,
+            "resized": false
+          },
+          "children": [
+            {
+              "id": "146N-0",
+              "name": "Source product DPQ-0…"
+            },
+            {
+              "id": "E0E-0",
+              "name": "Mobile daily brief builder contract"
+            },
+            {
+              "id": "E2J-0",
+              "name": "Mobile daily brief provenance"
+            }
+          ]
+        },
+        {
+          "family": "Sector",
+          "fileId": "01M6FAXA774QT1VRDMAG7DFQ2W",
+          "slotId": "GOX-0",
+          "style": {
+            "display": "flex",
+            "flexDirection": "column",
+            "width": "1624px",
+            "height": "fit-content",
+            "padding": "24px",
+            "gap": "16px",
+            "backgroundColor": "#F6F6F3"
+          },
+          "screenshot": {
+            "nodeId": "GOX-0",
+            "width": 1624,
+            "height": 172,
+            "resized": false
+          },
+          "children": [
+            {
+              "id": "GOY-0",
+              "name": "Source product AOT-0…"
+            },
+            {
+              "id": "AR6-0",
+              "name": "Frame"
+            }
+          ]
+        },
+        {
+          "family": "Sector",
+          "fileId": "01M6FAXA774QT1VRDMAG7DFQ2W",
+          "slotId": "GP1-0",
+          "style": {
+            "display": "flex",
+            "flexDirection": "column",
+            "width": "1624px",
+            "height": "fit-content",
+            "padding": "24px",
+            "gap": "16px",
+            "backgroundColor": "#F6F6F3"
+          },
+          "screenshot": {
+            "nodeId": "GP1-0",
+            "width": 1624,
+            "height": 104,
+            "resized": false
+          },
+          "children": [
+            {
+              "id": "GP2-0",
+              "name": "Source product ATF-0…"
+            },
+            {
+              "id": "AWT-0",
+              "name": "Rotation detail reus…"
+            }
+          ]
+        }
+      ],
+      "verdict": "All six sampled Build slots render their full preserved content, with original source-product labels and matching light/noir backgrounds. No text clipping or overlap was observed. Some former mobile contracts occupy a narrow column within a wider preservation slot.",
+      "matchedThemes": [
+        {
+          "product": "7CM-0",
+          "slot": "9YR-0",
+          "background": "var(--noir-canvas)"
+        },
+        {
+          "product": "7IS-0",
+          "slot": "9YT-0",
+          "background": "#F6F6F3"
+        },
+        {
+          "product": "DAZ-0",
+          "slot": "146K-0",
+          "background": "var(--mx-light-bg)"
+        },
+        {
+          "product": "DPQ-0",
+          "slot": "146M-0",
+          "background": "var(--mx-light-bg)"
+        },
+        {
+          "product": "AOT-0",
+          "slot": "GOX-0",
+          "background": "#F6F6F3"
+        },
+        {
+          "product": "ATF-0",
+          "slot": "GP1-0",
+          "background": "#F6F6F3"
+        }
+      ]
+    },
+    "dsSmallCopy": {
+      "fileId": "01M312VSDSZFVT45674GDVJVZN",
+      "root": "7IS-0",
+      "nodeId": "7IU-0",
+      "oldText": "F02 / 390 CSS px / 中文 / 设计候选",
+      "newText": "示例数据",
+      "preserveMetadataInSlot": "9YT-0",
+      "why": "Matches the English Illustrative data label while moving viewport and design-candidate metadata out of the product."
+    },
+    "prophetResidual": {
+      "fileId": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
+      "productPageId": "p-1-0",
+      "buildPageId": "p-5-0",
+      "buildRootId": "146H-0",
+      "moves": [
+        {
+          "root": "DAZ-0",
+          "nodeId": "12WW-0",
+          "expectedParentId": "12WP-0",
+          "oldText": "Proposed routes · not click-wiring proof",
+          "destinationSlot": "146K-0"
+        },
+        {
+          "root": "DAZ-0",
+          "nodeId": "DMS-0",
+          "expectedParentId": "DMN-0",
+          "oldText": "PROPOSED ROUTES · NOT RUNTIME PROOF",
+          "destinationSlot": "146K-0"
+        },
+        {
+          "root": "DPQ-0",
+          "nodeId": "DU6-0",
+          "expectedParentId": "DTY-0",
+          "oldText": "Proposed routes · not click-wiring proof",
+          "destinationSlot": "146M-0"
+        },
+        {
+          "root": "DPQ-0",
+          "nodeId": "DZ4-0",
+          "expectedParentId": "DZ0-0",
+          "oldText": "PROPOSED ROUTES · NOT RUNTIME PROOF",
+          "destinationSlot": "146M-0"
+        },
+        {
+          "root": "DAZ-0",
+          "nodeId": "DDL-0",
+          "expectedParentId": "DDB-0",
+          "oldText": "UI-created rank · none",
+          "destinationSlot": "146K-0",
+          "moveCompleteFrame": true,
+          "why": "This is a no-new-ranker architecture assertion; it is not a user decision datum."
+        }
+      ],
+      "copyChanges": [
+        {
+          "root": "DAZ-0",
+          "nodeId": "DH9-0",
+          "expectedParentId": "DH6-0",
+          "oldText": "Same cards, same source-owned states. No UI promotion, probability or hidden re-ranking.",
+          "newText": "Candidates retain their source order and current assessment.",
+          "destinationSlot": "146K-0"
+        },
+        {
+          "root": "DPQ-0",
+          "nodeId": "DUD-0",
+          "expectedParentId": "DU8-0",
+          "oldText": "Same source-owned states. No UI promotion, probability or hidden re-ranking.",
+          "newText": "Candidates retain their source order and current assessment.",
+          "destinationSlot": "146M-0"
+        },
+        {
+          "root": "DAZ-0",
+          "nodeId": "DMH-0",
+          "expectedParentId": "DMF-0",
+          "oldText": "A change appears only when a canonical source object changes. The UI cannot infer a recommendation from price movement.",
+          "newText": "Updates reflect changed source records. Price movement alone is not a new recommendation.",
+          "destinationSlot": "146K-0"
+        },
+        {
+          "root": "DPQ-0",
+          "nodeId": "DYU-0",
+          "expectedParentId": "DYS-0",
+          "oldText": "A change appears only when a canonical candidate, quote, plan, assessment or evidence object changes. Price movement alone cannot become a recommendation.",
+          "newText": "Updates reflect changed source records. Price movement alone is not a new recommendation.",
+          "destinationSlot": "146M-0"
+        },
+        {
+          "root": "DAZ-0",
+          "nodeId": "DMR-0",
+          "expectedParentId": "DMO-0",
+          "oldText": "Every route keeps the candidate episode, source clocks, filters and return position intact.",
+          "newText": "Continue researching this candidate.",
+          "destinationSlot": "146K-0"
+        },
+        {
+          "root": "DPQ-0",
+          "nodeId": "DZ3-0",
+          "expectedParentId": "DZ0-0",
+          "oldText": "Every route keeps the episode, source clocks, filters, compare state, focus and return position intact.",
+          "newText": "Continue researching this candidate.",
+          "destinationSlot": "146M-0"
+        }
+      ],
+      "preservation": "Preserve each full old passage with its source product/node ID in the existing 146K / 146M Build slots or the canonical guide before changing product copy. Keep the actual route controls. Existing DO7 / DPC / E0E / E2J contracts remain unchanged.",
+      "semanticGuard": "Do not change plan values, source clocks, entry permission, quote availability, score meaning, priority semantics or accepted assessment states. This is inline-copy and annotation separation.",
+      "scope": "Exact residual targets were validated on DAZ / DPQ only. This QA pass does not claim an independent recheck of the other Daily Brief variants."
+    },
+    "relatedPrimaryQA": "The eight Sector field-key targets already have exact old/new/move mappings in primary-variant-visual-qa-2026-11-08.json. No edits were made here.",
+    "holds": "No held Sector BML/G4P, archive root, publication status or acceptance state was changed.",
+    "terminalBuildPreservationCheck": {
+      "fileId": "01M3NSZGE8JWN2EZCSF0DT05RM",
+      "pageId": "p-11-0",
+      "columnId": "1ZHS-0",
+      "sampleSlots": [
+        {
+          "slotId": "1ZHV-0",
+          "originalWrapperId": "8NK-0",
+          "railId": "8QL-0"
+        },
+        {
+          "slotId": "1ZHX-0",
+          "originalWrapperId": "8VX-0",
+          "railId": "93S-0"
+        }
+      ],
+      "verdict": "PASS — the sampled original wrappers are normal-flow children inside their Build slots. No overlap from old canvas offsets, clipping or lost text was observed.",
+      "currentStyles": {
+        "1ZHS-0": {
+          "display": "flex",
+          "flexDirection": "column",
+          "width": "2040px",
+          "padding": "20px",
+          "gap": "32px",
+          "position": "absolute",
+          "backgroundColor": "#E8EBF0"
+        },
+        "8NK-0": {
+          "display": "flex",
+          "overflow": "clip",
+          "width": "1960px",
+          "fontFamily": "var(--font-ui)",
+          "alignItems": "start",
+          "gap": "40px",
+          "minHeight": "1020px",
+          "backgroundColor": "var(--mx-light-panel)"
+        },
+        "8QL-0": {
+          "width": "480px",
+          "display": "flex",
+          "flexDirection": "column",
+          "flexShrink": "0",
+          "alignSelf": "start",
+          "fontFamily": "var(--font-ui)",
+          "padding": "32px",
+          "gap": "24px",
+          "backgroundColor": "var(--mx-light-panel2)",
+          "borderLeftWidth": "3px",
+          "borderLeftStyle": "solid",
+          "borderLeftColor": "var(--mx-light-link)"
+        },
+        "1ZHV-0": {
+          "display": "flex",
+          "flexDirection": "column",
+          "width": "2000px",
+          "padding": "20px",
+          "gap": "16px",
+          "backgroundColor": "var(--mx-light-panel)"
+        },
+        "1ZHX-0": {
+          "display": "flex",
+          "flexDirection": "column",
+          "width": "2000px",
+          "padding": "20px",
+          "gap": "16px",
+          "backgroundColor": "var(--mx-light-panel)"
+        },
+        "8VX-0": {
+          "display": "flex",
+          "overflow": "clip",
+          "width": "1960px",
+          "fontFamily": "var(--font-ui)",
+          "alignItems": "start",
+          "gap": "40px",
+          "minHeight": "960px",
+          "backgroundColor": "var(--mx-light-panel)"
+        }
+      },
+      "renderEvidence": [
+        {
+          "nodeId": "1ZHV-0",
+          "width": 2000,
+          "height": 1814,
+          "resized": false
+        },
+        {
+          "nodeId": "1ZHX-0",
+          "width": 1803,
+          "height": 2000,
+          "resized": true
+        }
+      ],
+      "jsxEvidence": "Current 1ZHV JSX shows 8NK as display:flex, width:1960px, min-height:1020px, with no position:absolute, left or top. The 480px rail is a normal-flow child. Computed styles show the same position removal on 8VX.",
+      "metadataCaveat": "get_node_info still returned old world coordinates for inactive-page 8NK. Current JSX, computed styles and the rendered slot agree that old offsets are not being applied.",
+      "preservedWidth": "The original 1960px wrappers leave unused width to the right of their 480px note rails. This is retained Build geometry, not a product-layout defect. No further rebuild is recommended for this bounded check.",
+      "mutationsPerformed": false
+    }
+  }
+}
