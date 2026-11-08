@@ -106,3 +106,25 @@ Ontology file https://app.paper.design/file/01M3P1X4FR6BRTB13KA736Y1HT/p-2-0: pr
 | 01M3NSZGE8JWN2EZCSF0DT05RM | current page | 1QKD-0 | Keep scenario, hedge-pressure model and observed flow definitions distinct. Preserved metrics remain subject to each source contract. | Scenario and hedge-pressure estimates are models. Flow is observed. |
 | 01M3P1X4FR6BRTB13KA736Y1HT | 2G8-0 | 2GX-0 | Equal-weight participation weakened from the saved observation to the current settled close. This receipt shows the exact values, calculation, source scope, exclusion and thesis impact without leaving the current conversation. | Equal-weight participation weakened from the saved reading. |
 | 01M3P1X4FR6BRTB13KA736Y1HT | 2G8-0 | 2OM-0 | Opening proof creates no save, no monitor mutation, no notification and no second history object. A reviewed successor is a separate explicit effect. | Read-only evidence · Your saved thesis is unchanged. |
+
+## News legacy details, Popups, Policy and Memory
+
+News legacy desktop/tablet/mobile count-detail frames retain their exact charts, counts, units and data tables. Original paragraph groups 8U-0, JG-0, JJ-0, OB-0 and OD-0 move intact to the News Build page, replaced by named Sources and How counts work entries. The calculation/source guide and dedicated EN/ZH help states retain the exact definitions. This is separate from current R3 headline review semantics and changes no count calculation.
+
+Popups file https://app.paper.design/file/01M38EVF74SJWG1GANN5VP380Z/p-4-0: return/static interaction blocks 8Y0-0, 92J-0, 94X-0 and 97B-0, plus future state atlases 9KT-0, 9MC-0, 9NP-0 and 9P2-0 move to Build p-8-0. Preserve same story/draft/row/filters/scroll/focus, correct modal trigger return, unknown and pending effect reconciliation, exact-request readback before retry, and separate saved-preference/monitoring/delivery states. Existing hold #8186 remains. Moving future states does not unlock save or claim runtime support. Current gated designs retain Saving unavailable and illustrative snapshot identity. China methodology nodes 4M5-0, 5Q9-0 and 5WO-0 contain implementation/source/crawler/testing notes; move only these to Build, preserving user method text and evidence actions 4M6-0/5QC-0/5WR-0.
+
+Policy file https://app.paper.design/file/01M6Q4WK0EMPV1G2KDGGRQBC1B/p-1-0: retain substantive conditions, market prices, source dates and unsupported comparisons. Condense only repeated meta-explanation; no administration-intent inference, causal attribution, forecast or timing call is introduced. MH-0 Evidence states/interaction contract belongs in a separate Build page.
+
+Market Memory file https://app.paper.design/file/01M6PXFEP1E1T59M2B3N673PMG/p-2-0: current revision evidence is already concise. Preserve original vs successor identity, exact record comparisons, disputed/missing source states and proposed status. V1-0 is the explicit record-state/build-contract board; separate it from the product comparison page without rewriting its requirements.
+
+| File | Node | Original | Product replacement |
+|---|---|---|---|
+| 01M38EVF74SJWG1GANN5VP380Z | 8UX-0 | Example snapshot · 29 Sep 2026 · 08:00 ET Return keeps row, scroll, focus and snapshot. Static design state · actions are not wired. | Example snapshot · 29 Sep 2026 · 08:00 ET |
+| 01M38EVF74SJWG1GANN5VP380Z | 8WS-0 | Nothing saved by this design. A saved preference would not prove monitoring or delivery. | Draft only · Saving unavailable |
+| 01M38EVF74SJWG1GANN5VP380Z | 91J-0 | Nothing saved by this design. A saved preference would not prove monitoring or delivery. | Draft only · Saving unavailable |
+| 01M38EVF74SJWG1GANN5VP380Z | 93X-0 | 此设计未保存任何内容。已保存偏好不代表监测已启用或更新已送达。 | 仅草稿 · 暂不可保存 |
+| 01M38EVF74SJWG1GANN5VP380Z | 96B-0 | 此设计未保存任何内容。已保存偏好不代表监测已启用或更新已送达。 | 仅草稿 · 暂不可保存 |
+| 01M6Q4WK0EMPV1G2KDGGRQBC1B | 57-0 | Context only — not a forecast: recorded conditions and market prices, no administration intent and no timing call. | Recorded conditions and prices · No intent or timing inference |
+| 01M6Q4WK0EMPV1G2KDGGRQBC1B | 5B-0 | Context only — not a forecast: recorded conditions and market prices, no administration intent and no timing call. | Recorded conditions and prices · No intent or timing inference |
+| 01M6Q4WK0EMPV1G2KDGGRQBC1B | AS-0 | Context only — not a forecast: recorded conditions and market prices, no administration intent and no timing call. | Recorded conditions and prices · No intent or timing inference |
+| 01M6Q4WK0EMPV1G2KDGGRQBC1B | GH-0 | 仅作背景，不构成预测：记录条件与市场价格，不推断政府意图，也不判断时点。 | 记录条件与价格 · 不推断政府意图或时点 |
