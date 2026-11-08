@@ -47878,6 +47878,7 @@ jobs:
       - "templates/si_workspace.js"
       - "research/evidence/ew_p4_descriptive_ui_20261031/**"
       - "research/evidence/ew_p4_descriptive_ui_20261107_r8main/**"
+      - "research/evidence/ew_p4_descriptive_ui_20261108_layout/**"
       - "tests/probe_ew_p4_descriptive_ui_browser.py"
       - "site/rotation_events.js"
       - "templates/_macro_sector_desk.html.j2"
