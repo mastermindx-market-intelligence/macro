@@ -8,6 +8,7 @@ from pathlib import Path
 from urllib.parse import parse_qs, urlsplit
 
 from engine.neuralweb.brain_gateway import _extract_citations_brain
+from engine.codex_provider import _ToolUseBlock
 
 
 def _messages():
@@ -33,6 +34,42 @@ def test_gateway_links_each_returned_original_source_to_exact_query():
         assert params["mm_source_context"] == [card["context_id"]]
         assert params["mm_context"] == [body["owner"]["context_id"]]
         assert params["mm_cutoff"] == [body["owner"]["query_cutoff"]]
+
+
+def _sdk_messages():
+    messages, body = _messages()
+    # Both gateway loops append resp.content directly. The installed Codex
+    # adapter returns these dataclass blocks, not the serialized test form.
+    messages[0]["content"] = [_ToolUseBlock(**messages[0]["content"][0])]
+    return messages, body
+
+
+def test_gateway_cites_actual_codex_sdk_blocks_without_serializing_the_conversation():
+    serialized, body = _messages()
+    messages, _ = _sdk_messages()
+    expected = _extract_citations_brain(serialized)
+    assert len(expected) == len(body["source_cards"])
+    assert _extract_citations_brain(messages) == expected
+
+
+@pytest.mark.parametrize("change", ["duplicate_sdk", "duplicate_dict", "wrong_name",
+                                   "wrong_input", "wrong_role", "unmatched_result"])
+def test_sdk_citations_preserve_exact_call_result_binding(change):
+    messages, _ = _sdk_messages()
+    block = messages[0]["content"][0]
+    if change == "duplicate_sdk":
+        messages[0]["content"].append(copy.deepcopy(block))
+    elif change == "duplicate_dict":
+        messages[0]["content"].append(vars(block).copy())
+    elif change == "wrong_name":
+        block.name = "get_market_analogues"
+    elif change == "wrong_input":
+        block.input["query_id"] = "mmquery_" + "0" * 64
+    elif change == "wrong_role":
+        messages[0]["role"] = "user"
+    else:
+        messages[1]["content"][0]["tool_use_id"] = "different_call"
+    assert _extract_citations_brain(messages) == []
 
 
 def test_gateway_does_not_promote_answer_prose_or_unmatched_result_to_citation():

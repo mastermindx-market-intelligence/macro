@@ -7,11 +7,12 @@ hypercube order. Deterministic. No network. No implicit now. No LLM.
 """
 from __future__ import annotations
 
+import calendar
 import hashlib
 import json
 import re
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from decimal import Decimal, InvalidOperation
 from html.parser import HTMLParser
 from pathlib import Path
@@ -30,6 +31,8 @@ LABEL_STANDARD = "http://www.xbrl.org/2003/role/label"
 LABEL_TERSE = "http://www.xbrl.org/2003/role/terseLabel"
 LABEL_PERIOD_START = "http://www.xbrl.org/2003/role/periodStartLabel"
 LABEL_PERIOD_END = "http://www.xbrl.org/2003/role/periodEndLabel"
+LABEL_NEGATED_PERIOD_START = "http://www.xbrl.org/2009/role/negatedPeriodStartLabel"
+_PERIOD_START_ROLES = frozenset({LABEL_PERIOD_START, LABEL_NEGATED_PERIOD_START})
 
 PRIMARY_STATEMENT_ROLES: dict[str, str] = {
     "income_statement": "http://www.apple.com/role/CONSOLIDATEDSTATEMENTSOFOPERATIONS",
@@ -67,8 +70,6 @@ _PREFIXES = (
     "dei_",
     "ecd_",
     "country_",
-    "apple_",
-    "aapl_",
     "iso4217_",
 )
 
@@ -105,6 +106,56 @@ _MONTH_DAY_RE = re.compile(
     re.I,
 )
 _YEAR_CELL_RE = re.compile(r"^\d{4}$")
+# Month, week and quarter words anywhere in a bare-year header region: a header
+# that prints them (including an N-months-ended group banner) names its own
+# periods, so the document period end never composes those columns.
+_BARE_YEAR_PERIOD_WORD_RE = re.compile(
+    r"\b(?:" + _MONTH_TOKEN + r"|months?|weeks?|quarters?)\b", re.IGNORECASE
+)
+_FULL_MONTH_TOKEN = (
+    "January|February|March|April|May|June|July|August|September|October|November|December"
+)
+# Some consolidated headers print the numeric day glued to the year ("June 302025")
+# with no space or comma. This is a whole-header-cell grammar only: narrative or
+# body text never passes it, cells at or below the first fact row are never
+# consulted, the day must be valid for that month (February 29 only in a leap
+# year) and the year is 1990..2100.
+_GLUED_DATE_CELL_RE = re.compile(
+    r"^(" + _FULL_MONTH_TOKEN + r") (\d{1,2})(\d{4})$", re.IGNORECASE
+)
+_GLUED_YEAR_MIN = 1990
+_GLUED_YEAR_MAX = 2100
+# Banner income/cash-flow column groups ("Three Months Ended June 30") each own
+# their own duration; composing one shared end-date row would erase the 3m/6m
+# distinction, so a banner row made only of these never takes the same-row or
+# the caption/blank-gap year-row composition. A trailing comma ("Three Months
+# Ended March 31,") and a glued "EndedJune 30" print the same banner.
+_GROUP_BANNER_RE = re.compile(
+    r"^(three|six|nine|twelve) months ended(?: |(?-i:(?<=[a-z])(?=[A-Z])))("
+    + _FULL_MONTH_TOKEN
+    + r") (\d{1,2}),?$",
+    re.IGNORECASE,
+)
+_GROUP_BANNER_MONTHS = {"three": 3, "six": 6, "nine": 9, "twelve": 12}
+_STATEMENT_UNIT_BANDS = (
+    "(Dollars in millions)",
+    "(Dollars in millions except per share data)",
+    "(Millions of dollars)",
+)
+_BARE_MONTH_DAY_RE = re.compile(r"^(" + _FULL_MONTH_TOKEN + r")\.? (\d{1,2})$", re.IGNORECASE)
+# A whole-cell unit caption printed in the leading cell of a year row ("(in
+# millions)", "In millions, except par value", "(Dollars in millions, except
+# per share data)", "(Millions of dollars)"). Consulted only in that leading
+# position of a factless year row under one month-day banner; a caption alone
+# on its row is never skipped here (only _STATEMENT_UNIT_BANDS may be).
+_UNIT_CAPTION_BODY = (
+    r"(?:(?:dollars|amounts)\s+in\s+|in\s+)?(?:millions|thousands|billions)"
+    r"(?:\s+of\s+dollars)?(?:(?:,\s*|\s+)except\s+[^()]+)?"
+)
+_UNIT_CAPTION_RE = re.compile(
+    r"^(?:\(" + _UNIT_CAPTION_BODY + r"\)|" + _UNIT_CAPTION_BODY + r")$", re.IGNORECASE
+)
+_R7_DISAGREEMENT = "displayed cell period disagrees with its column"
 _MONTHS = {
     "january": 1,
     "february": 2,
@@ -133,8 +184,23 @@ _MONTHS = {
 }
 
 
+STATEMENT_REFUSAL_CODES = (
+    "displayed_layout_unsupported",
+    "displayed_table_absent",
+    "displayed_columns_absent",
+    "statement_role_not_consolidated",
+    "displayed_cell_period_mismatch",
+    "displayed_column_period_unbound",
+    "statement_role_presentation_absent",
+)
+
+
 class StatementGraphError(ValueError):
     """The filing package cannot yield an as-reported statement tree."""
+
+    def __init__(self, message: str, *, refusal_code: str | None = None) -> None:
+        super().__init__(message)
+        self.refusal_code = refusal_code
 
 
 @dataclass(frozen=True)
@@ -419,7 +485,10 @@ def parse_presentation_tree(content: bytes, *, role_uri: str) -> list[dict[str, 
             link = el
             break
     if link is None:
-        raise StatementGraphError(f"presentation role is absent: {role_uri}")
+        raise StatementGraphError(
+            f"presentation role is absent: {role_uri}",
+            refusal_code="statement_role_presentation_absent",
+        )
     locs: dict[str, str] = {}
     for loc in link.findall(f"{{{LINK}}}loc"):
         label = _xlink(loc, "label")
@@ -562,10 +631,10 @@ def _month_day_pairs_from_text(text: str) -> list[tuple[int, int]]:
 
 def _compose_year_row_header(
     rows: list[list[dict[str, Any]]],
-) -> tuple[list[str], frozenset[int]] | None:
+) -> tuple[list[str], frozenset[int], str] | None:
     """Compose year-only header columns from a month-day banner over a year row.
 
-    Fiscal-year statements (the SNOW shape) print the period as
+    Fiscal-year statements print the period as
     "Fiscal Year Ended January 31," on one header row and bare 4-digit years on
     the next. When no row yields two full dates, the banner's single month-day
     phrase plus the year row's display order compose one ISO date per year
@@ -573,7 +642,17 @@ def _compose_year_row_header(
     facts. An ambiguous banner (two distinct month-days) or a year row that is
     not purely years (fewer than two, or any other non-empty cell besides "$")
     returns None so the caller keeps its existing refusal. Returns the composed
-    ISO dates and the consumed row indices.
+    ISO dates, the consumed row indices, and the composition source:
+    ``"composed_title_year_row"`` when a title banner reached its year row
+    across one exact unit band, otherwise ``"composed_year_row"``.
+
+    Three source-observed variants compose the same way (each column still
+    binds to its own facts' contexts downstream): a banner printed in the
+    leading cell of its own year row (``"composed_same_row"``); and, when the
+    exact shape above fails under a banner row with no N-months-ended
+    group-banner cell, fully blank rows before the year row
+    (``"composed_blank_gap_year_row"``) and/or one leading whole-cell unit
+    caption in the year row (``"composed_caption_year_row"``).
     """
     first_fact_row = next(
         (index for index, cells in enumerate(rows) if any(cell["facts"] for cell in cells)),
@@ -584,6 +663,9 @@ def _compose_year_row_header(
         banner_cells = rows[index]
         if any(cell["facts"] for cell in banner_cells):
             continue
+        same_row = _compose_same_row_banner(banner_cells)
+        if same_row is not None:
+            return same_row, frozenset({index}), "composed_same_row"
         month_days = _month_day_pairs_from_text(
             " ".join(cell["text"] for cell in banner_cells)
         )
@@ -593,22 +675,374 @@ def _compose_year_row_header(
         if len(distinct) != 1:
             return None
         month, day = distinct[0]
-        year_cells = rows[index + 1]
-        if any(cell["facts"] for cell in year_cells):
+        exact = _compose_exact_year_row(rows, index, header_limit, month, day)
+        if exact is not None or _has_group_banner_cell(banner_cells):
+            return exact
+        return _compose_gap_or_caption_year_row(rows, index, header_limit, month, day)
+    return None
+
+
+def _compose_exact_year_row(
+    rows: list[list[dict[str, Any]]], index: int, header_limit: int, month: int, day: int
+) -> tuple[list[str], frozenset[int], str] | None:
+    """The banner's immediate year row, or the year row after one exact unit band."""
+    year_row = index + 1
+    year_cells = rows[year_row]
+    # Some annual statements print a factless, unit-only band between the
+    # "at December 31," title and the bare-year comparative row.  This is
+    # a narrow, source-observed interstitial, not an invitation to skip any
+    # arbitrary narrative or extra header row.
+    units = [str(cell["text"]).strip() for cell in year_cells if str(cell["text"]).strip()]
+    skip_units = (
+        year_row + 1 < header_limit
+        and not any(cell["facts"] for cell in year_cells)
+        # Other observed annual headings use the same one-row
+        # position for different, but exact, statement-unit labels.
+        and len(units) == 1
+        and units[0] in _STATEMENT_UNIT_BANDS
+    )
+    if skip_units:
+        year_row += 1
+        year_cells = rows[year_row]
+    if any(cell["facts"] for cell in year_cells):
+        return None
+    years: list[str] = []
+    for cell in year_cells:
+        text = str(cell["text"]).strip()
+        if not text or text == "$":
+            continue
+        if not _YEAR_CELL_RE.match(text):
             return None
-        years: list[str] = []
-        for cell in year_cells:
+        years.append(text)
+    if len(years) < 2:
+        return None
+    composed = [f"{int(year):04d}-{month:02d}-{day:02d}" for year in years]
+    consumed = {index, year_row}
+    if skip_units:
+        consumed.add(index + 1)
+    source = "composed_title_year_row" if skip_units else "composed_year_row"
+    return composed, frozenset(consumed), source
+
+
+def _header_texts(cells: list[dict[str, Any]]) -> list[str]:
+    """A header row's non-empty cell texts besides "$", in display order."""
+    texts = [str(cell["text"]).strip() for cell in cells]
+    return [text for text in texts if text and text != "$"]
+
+
+def _has_group_banner_cell(cells: list[dict[str, Any]]) -> bool:
+    """True when any header cell is an N-months-ended group banner."""
+    texts = [str(cell["text"]).strip() for cell in cells]
+    return any(_GROUP_BANNER_RE.match(text) for text in texts)
+
+
+def _composed_year_dates(years: list[str], month: int, day: int) -> list[str] | None:
+    """One ISO date per bare year, or None when the month-day is not a real date that year."""
+    if len(years) < 2 or not all(_YEAR_CELL_RE.match(text) for text in years):
+        return None
+    if any(not 1 <= day <= calendar.monthrange(int(year), month)[1] for year in years):
+        return None
+    return [f"{int(year):04d}-{month:02d}-{day:02d}" for year in years]
+
+
+def _compose_same_row_banner(cells: list[dict[str, Any]]) -> list[str] | None:
+    """Composed dates when one factless header row prints the banner and its years.
+
+    The leading cell carries exactly one month-day phrase and no full date
+    ("years ended December 31 (in millions, except per share data)", "Year
+    Ended April 30,"); every other cell besides "$" is a bare 4-digit year, at
+    least two. An N-months-ended group banner keeps its own composer. Returns
+    None when the row is not this shape.
+    """
+    texts = _header_texts(cells)
+    if len(texts) < 3:
+        return None
+    banner, years = texts[0], texts[1:]
+    if _GROUP_BANNER_RE.match(banner) or _iso_dates_from_text(banner):
+        return None
+    month_days = _month_day_pairs_from_text(banner)
+    if len(month_days) != 1:
+        return None
+    month, day = month_days[0]
+    return _composed_year_dates(years, month, day)
+
+
+def _compose_gap_or_caption_year_row(
+    rows: list[list[dict[str, Any]]], index: int, header_limit: int, month: int, day: int
+) -> tuple[list[str], frozenset[int], str] | None:
+    """Composed dates across fully blank rows and/or a leading unit caption.
+
+    Observed annual shapes put fully blank rows between the month-day banner
+    and its year row ("December 31" / blank / "(Dollars in millions) 2025
+    2024"), or print the unit caption in the year row's leading cell ("In
+    millions, except par value 2024 2023"). Only rows with no text at all are
+    skipped; the first row with text must sit above the first fact row, may
+    lead with one whole-cell unit caption, and must otherwise print at least
+    two bare years. Returns None for anything else so the caller keeps its
+    refusal.
+    """
+    year_row = index + 1
+    while year_row < header_limit and not any(
+        str(cell["text"]).strip() for cell in rows[year_row]
+    ):
+        year_row += 1
+    if year_row >= header_limit:
+        return None
+    texts = _header_texts(rows[year_row])
+    caption = bool(texts) and _UNIT_CAPTION_RE.match(texts[0]) is not None
+    composed = _composed_year_dates(texts[1:] if caption else texts, month, day)
+    if composed is None:
+        return None
+    source = "composed_caption_year_row" if caption else "composed_blank_gap_year_row"
+    return composed, frozenset(range(index, year_row + 1)), source
+
+def _first_fact_row(rows: list[list[dict[str, Any]]]) -> int | None:
+    return next(
+        (index for index, cells in enumerate(rows) if any(cell["facts"] for cell in cells)),
+        None,
+    )
+
+
+def _compose_bare_year_row(
+    rows: list[list[dict[str, Any]]], period_end: str
+) -> tuple[list[str], frozenset[int], str] | None:
+    """Compose bare-year columns from the filing's document period end date.
+
+    Some annual statements print only bare years over their columns ("2025
+    2024") and name no month anywhere in the table. When exactly one factless
+    row above the first fact row prints two or more distinct bare years --
+    optionally after one leading whole-cell unit caption -- and the latest of
+    them is the document period end's year, each year takes that date's month
+    and day. Any header row naming a month, week, quarter or N-months group,
+    a second year row, a single year, a repeated year or a month-day that is
+    not a real date in some year returns None, so the caller keeps its
+    refusal. Every composed column must still bind exactly to its own facts'
+    contexts downstream, so a wrong composed date fails closed.
+    """
+    header_limit = _first_fact_row(rows)
+    if header_limit is None:
+        return None
+    try:
+        end = date.fromisoformat(period_end)
+    except ValueError:
+        return None
+    found: tuple[int, list[str]] | None = None
+    for index in range(header_limit):
+        cells = rows[index]
+        if _BARE_YEAR_PERIOD_WORD_RE.search(" ".join(str(cell["text"]) for cell in cells)):
+            return None
+        texts = _header_texts(cells)
+        if texts and _UNIT_CAPTION_RE.match(texts[0]):
+            texts = texts[1:]
+        if len(texts) < 2 or not all(_YEAR_CELL_RE.match(text) for text in texts):
+            continue
+        if found is not None:
+            return None
+        found = (index, texts)
+    if found is None:
+        return None
+    index, years = found
+    if len(set(years)) != len(years) or max(int(year) for year in years) != end.year:
+        return None
+    composed = _composed_year_dates(years, end.month, end.day)
+    if composed is None:
+        return None
+    return composed, frozenset({index}), "composed_bare_year_row"
+
+
+def _glued_header_cell_date(text: str) -> str | None:
+    """ISO date for a whole header cell like ``June 302025`` (day glued to the year)."""
+    match = _GLUED_DATE_CELL_RE.match(text.strip())
+    if match is None:
+        return None
+    month = _MONTHS[match.group(1).lower()]
+    day = int(match.group(2))
+    year = int(match.group(3))
+    if not _GLUED_YEAR_MIN <= year <= _GLUED_YEAR_MAX:
+        return None
+    if not 1 <= day <= calendar.monthrange(year, month)[1]:
+        return None
+    return f"{year:04d}-{month:02d}-{day:02d}"
+
+
+def _glued_header_columns(
+    rows: list[list[dict[str, Any]]],
+) -> tuple[list[str], frozenset[int]] | None:
+    """Direct glued-date header columns (the glued consolidated balance-sheet shape).
+
+    A row above the first fact row carrying two or more glued date cells is the
+    dated header; a rowspan carry repeats the same texts one row down, so every
+    such row is header chrome and consumed. Returns the ISO dates in cell order
+    plus the consumed row indices, or None when no row qualifies.
+    """
+    first_fact = _first_fact_row(rows)
+    header_limit = first_fact if first_fact is not None else len(rows)
+    dates: list[str] = []
+    consumed: set[int] = set()
+    for index in range(header_limit):
+        cells = rows[index]
+        if any(cell["facts"] for cell in cells):
+            continue
+        row_dates = [
+            iso
+            for cell in cells
+            if (iso := _glued_header_cell_date(str(cell["text"]))) is not None
+        ]
+        if len(row_dates) < 2:
+            continue
+        if not dates:
+            dates = row_dates
+        elif row_dates != dates:
+            return None
+        consumed.add(index)
+    if not dates:
+        return None
+    return dates, frozenset(consumed)
+
+
+def _is_bare_month_day_row(cells: list[dict[str, Any]]) -> bool:
+    """A factless header row whose only text cells are bare month-day phrases."""
+    texts = [str(cell["text"]).strip() for cell in cells if str(cell["text"]).strip()]
+    if not texts:
+        return False
+    return all(_BARE_MONTH_DAY_RE.match(text) for text in texts)
+
+
+def _shift_month_back(year: int, month: int, back: int) -> tuple[int, int]:
+    index = month - back
+    while index < 1:
+        index += 12
+        year -= 1
+    return year, index
+
+
+def _compose_grouped_duration_year_row(
+    rows: list[list[dict[str, Any]]],
+) -> tuple[list[dict[str, Any]], frozenset[int], list[int]] | None:
+    """Composed duration columns from N-months-ended group banners over a year row.
+
+    The banner consolidated income/cash-flow shape prints one banner per duration
+    ("Three Months Ended June 30", "Six Months Ended June 30") with the years
+    in a row beneath it; each group owns its own duration and end date, so a
+    single composed end-date row would erase the 3m/6m distinction. Fully blank
+    rows (and one exact statement unit band) may sit between a banner and its
+    year row. Raises a typed refusal when a group's span does not cover an
+    exact contiguous run of year cells, or when years within a group are not
+    strictly descending; returns None when the header is not this shape.
+    Returns the composed column periods, the consumed row indices, and the
+    year count per group.
+    """
+    first_fact = _first_fact_row(rows)
+    header_limit = first_fact if first_fact is not None else len(rows)
+    banner_row: int | None = None
+    groups: list[dict[str, Any]] = []
+    for index in range(header_limit):
+        cells = rows[index]
+        if any(cell["facts"] for cell in cells):
+            continue
+        row_groups: list[dict[str, Any]] = []
+        other_text = False
+        for column, cell in enumerate(cells):
+            text = str(cell["text"]).strip()
+            if not text:
+                continue
+            match = _GROUP_BANNER_RE.match(text)
+            if match is None:
+                other_text = True
+                break
+            row_groups.append(
+                {
+                    "column": column,
+                    "colspan": int(cell.get("colspan") or 1),
+                    "months": _GROUP_BANNER_MONTHS[match.group(1).lower()],
+                    "month": _MONTHS[match.group(2).lower()],
+                    "day": int(match.group(3)),
+                }
+            )
+        if row_groups and not other_text:
+            banner_row = index
+            groups = row_groups
+            break
+    if banner_row is None or not groups:
+        return None
+    year_row: int | None = None
+    consumed: set[int] = {banner_row}
+    unit_band_consumed = False
+    for index in range(banner_row + 1, header_limit):
+        cells = rows[index]
+        if any(cell["facts"] for cell in cells):
+            break
+        texts = [str(cell["text"]).strip() for cell in cells]
+        nonempty = [text for text in texts if text]
+        if not nonempty:
+            consumed.add(index)
+            continue
+        if len(nonempty) == 1 and nonempty[0] in _STATEMENT_UNIT_BANDS:
+            if unit_band_consumed:
+                return None
+            unit_band_consumed = True
+            consumed.add(index)
+            continue
+        year_row = index
+        break
+    if year_row is None:
+        return None
+    consumed.add(year_row)
+    year_cells: list[tuple[int, int, int]] = []
+    for column, cell in enumerate(rows[year_row]):
+        text = str(cell["text"]).strip()
+        if not text or text == "$":
+            continue
+        if _YEAR_CELL_RE.match(text):
+            year_cells.append((column, int(cell.get("colspan") or 1), int(text)))
+    if len(year_cells) < 2:
+        return None
+    spans = [(group["column"], group["column"] + group["colspan"]) for group in groups]
+    for low, high in spans:
+        for column, cell in enumerate(rows[year_row]):
             text = str(cell["text"]).strip()
             if not text or text == "$":
                 continue
-            if not _YEAR_CELL_RE.match(text):
+            if low <= column < high and not _YEAR_CELL_RE.match(text):
+                raise _layout_unsupported(
+                    "grouped duration banner does not cover an exact contiguous run of year cells",
+                    refusal_code="displayed_layout_unsupported",
+                )
+    per_group: list[list[int]] = [[] for _ in groups]
+    for start, colspan, year in year_cells:
+        covers = [
+            group_index
+            for group_index, (low, high) in enumerate(spans)
+            if low <= start and start + colspan <= high
+        ]
+        if len(covers) != 1:
+            raise _layout_unsupported(
+                "grouped duration banner does not cover an exact contiguous run of year cells",
+                refusal_code="displayed_layout_unsupported",
+            )
+        per_group[covers[0]].append(year)
+    for years in per_group:
+        if not years or years != sorted(years, reverse=True) or len(set(years)) != len(years):
+            raise _layout_unsupported(
+                "grouped duration years are not strictly descending",
+                refusal_code="displayed_layout_unsupported",
+            )
+    columns_periods: list[dict[str, Any]] = []
+    for group, years in zip(groups, per_group):
+        for year in years:
+            if group["day"] > calendar.monthrange(year, group["month"])[1]:
                 return None
-            years.append(text)
-        if len(years) < 2:
-            return None
-        composed = [f"{int(year):04d}-{month:02d}-{day:02d}" for year in years]
-        return composed, frozenset({index, index + 1})
-    return None
+            start_year, start_month = _shift_month_back(
+                year, group["month"], group["months"] - 1
+            )
+            columns_periods.append(
+                {
+                    "kind": "duration",
+                    "start": f"{start_year:04d}-{start_month:02d}-01",
+                    "end": f"{year:04d}-{group['month']:02d}-{group['day']:02d}",
+                }
+            )
+    return columns_periods, frozenset(consumed), [len(years) for years in per_group]
 
 
 def _is_ix_numeric(tag: str) -> bool:
@@ -619,8 +1053,11 @@ def _is_ix_numeric(tag: str) -> bool:
 _DISPLAYED_LAYOUT_UNSUPPORTED = "displayed statement layout unsupported:"
 
 
-def _layout_unsupported(detail: str) -> StatementGraphError:
-    return StatementGraphError(f"{_DISPLAYED_LAYOUT_UNSUPPORTED} {detail}")
+def _layout_unsupported(detail: str, *, refusal_code: str | None = None) -> StatementGraphError:
+    return StatementGraphError(
+        f"{_DISPLAYED_LAYOUT_UNSUPPORTED} {detail}",
+        refusal_code=refusal_code,
+    )
 
 
 def _grid_slot(*, text: str, facts: list[dict[str, Any]], colspan: int, rowspan: int, rowspan_carry: bool, colspan_carry: bool) -> dict[str, Any]:
@@ -653,26 +1090,38 @@ def _expand_displayed_statement_grid(raw_rows: list[list[dict[str, Any]]]) -> li
     def place(row: int, col: int, cell: dict[str, Any]) -> None:
         slot = occupied.setdefault(row, {})
         if col in slot:
-            raise _layout_unsupported(f"overlapping cell at row {row} column {col}")
+            raise _layout_unsupported(
+                f"overlapping cell at row {row} column {col}",
+                refusal_code="displayed_layout_unsupported",
+            )
         slot[col] = cell
 
     for row_index, raw in enumerate(raw_rows):
         column = 0
         for source in raw:
             if source.get("span_overflow"):
-                raise _layout_unsupported("span exceeds the supported bound")
+                raise _layout_unsupported(
+                    "span exceeds the supported bound",
+                    refusal_code="displayed_layout_unsupported",
+                )
             colspan = int(source.get("colspan") or 1)
             rowspan = int(source.get("rowspan") or 1)
             if rowspan == 0:
                 rowspan = row_count - row_index
             if colspan < 1 or rowspan < 1:
-                raise _layout_unsupported("span is not a positive occupancy")
+                raise _layout_unsupported(
+                    "span is not a positive occupancy",
+                    refusal_code="displayed_layout_unsupported",
+                )
             while column in occupied.get(row_index, {}):
                 column += 1
             for row_delta in range(rowspan):
                 target_row = row_index + row_delta
                 if target_row >= row_count:
-                    raise _layout_unsupported("rowspan overruns the table")
+                    raise _layout_unsupported(
+                        "rowspan overruns the table",
+                        refusal_code="displayed_layout_unsupported",
+                    )
                 for col_delta in range(colspan):
                     target_col = column + col_delta
                     if row_delta == 0 and col_delta == 0:
@@ -727,7 +1176,7 @@ def _expand_displayed_statement_grid(raw_rows: list[list[dict[str, Any]]]) -> li
         # k is one past this row's highest occupied column. A hole below k (or a
         # row with no occupied slot at all, k is None) is still unsupported;
         # missing slots from k to the table's right edge belong to a banner row
-        # narrower than the body (the GOOGL and SNOW income shape) and are
+        # narrower than the body (an observed income-statement shape) and are
         # padded fact-free so the row expands onto the body's grid. Only a
         # fact-free row is padded: a narrow row carrying a fact would bind it to
         # whichever column its left-packed position happens to land on.
@@ -736,7 +1185,10 @@ def _expand_displayed_statement_grid(raw_rows: list[list[dict[str, Any]]]) -> li
         for column in range(max_col):
             cell = row_map.get(column)
             if cell is None and (k is None or column < k or row_has_facts):
-                raise _layout_unsupported(f"ragged grid at row {row_index} column {column}")
+                raise _layout_unsupported(
+                    f"ragged grid at row {row_index} column {column}",
+                    refusal_code="displayed_layout_unsupported",
+                )
             if cell is None:
                 cell = _grid_slot(
                     text="",
@@ -752,17 +1204,95 @@ def _expand_displayed_statement_grid(raw_rows: list[list[dict[str, Any]]]) -> li
     return grid
 
 
+_TITLE_FOLD_DASH = re.compile("[\u2010\u2011\u2012\u2013\u2014\u2015\u2212]")
+_TITLE_FOLD_QUOTE = re.compile("[\u2018\u2019\u02bc\u2032]")
+# What may follow a folded title in a text node that arms the fold pass: an
+# optional plural "s" (never after a title that already ends in "s"), then
+# only these whole parenthesised qualifiers -- "(unaudited)", "(loss)", a
+# footnote marker 1-99, or a unit caption whose "except" (or "except for")
+# clause names only share, per-share, earnings-per-share, par-value,
+# stated-value, unit, ratio or percentage amounts -- shares may be counted
+# "in thousands" or "in millions" -- optionally closed by ", unaudited", such
+# as "(in thousands, except share data)" or "(in millions, except per share
+# data, unaudited)".  A sentence that merely names the statement ("We have
+# audited the accompanying consolidated balance sheets") never arms it, and
+# neither does an entity or continuation qualifier in the arming node
+# ("(parent company only)", "(guarantor subsidiaries)", "(continued)"):
+# those name a different table than the one the title declares.  A
+# continuation marker printed in a neighbouring node before the capture
+# holds any fact drops that capture (``_TITLE_FOLD_CONTINUED_RE``); an
+# entity qualifier printed in a neighbouring node is invisible here, and the
+# captured table's own contexts decide that case (``context_dimensions``).
+_TITLE_FOLD_EXCEPT_ITEM = (
+    r"(?:(?:earnings\s+)?per[\s-]share|shares?(?:\s+in\s+(?:thousands|millions))?"
+    r"|number\s+of\s+shares|par\s+value|stated\s+value|per[\s-]unit|units?|ratios?"
+    r"|percentages?)(?:\s+(?:data|amounts?|information|values?))?"
+)
+_TITLE_FOLD_UNIT_CAPTION = (
+    r"(?:(?:dollars|amounts)\s+in\s+|in\s+)?(?:millions|thousands|billions)(?:\s+of\s+dollars)?"
+    r"(?:(?:,\s*|\s+)except\s+(?:for\s+)?" + _TITLE_FOLD_EXCEPT_ITEM
+    + r"(?:(?:\s*,\s*and\s+|\s*,\s*|\s+and\s+)" + _TITLE_FOLD_EXCEPT_ITEM + r")*)?"
+    r"(?:\s*,\s*unaudited)?"
+)
+_TITLE_FOLD_QUALIFIER_RE = re.compile(
+    r"^s?(?:\s*\((?:unaudited|loss|[1-9][0-9]?|" + _TITLE_FOLD_UNIT_CAPTION + r")\))*$"
+)
+# A folded continuation marker, after any leading title is removed:
+# "(continued)", "continued", "- continued", ", continued:", the abbreviated
+# "(cont'd)", "(cont'd.)", "(contd.)", "(con't)", "cont." and "cont",
+# "continued from previous page" or "continued from page 45", or one after
+# whole parenthesised qualifiers ("(in millions) (continued)").  It never
+# matches "discontinued", "contingencies" or "(continued on next page)".
+_TITLE_FOLD_CONTINUED_RE = re.compile(
+    r"^s?(?:\s*\([^()]*\))*\s*[-,]?\s*\(?(?:continued|cont(?:'?d\.?|\.)?|con't\.?)"
+    r"(?:\s+from\s+(?:(?:the\s+)?(?:previous|prior|preceding)\s+page|page\s+[0-9]{1,4}))?"
+    r"\)?[.:]?$"
+)
+
+
+def _title_fold(text: str) -> str:
+    """Case, dash and quote fold for the second displayed-title pass."""
+    folded = re.sub(r"\s+", " ", text).strip().casefold()
+    folded = _TITLE_FOLD_QUOTE.sub("'", _TITLE_FOLD_DASH.sub("-", folded))
+    return re.sub(r"\s*-\s*", "-", folded)
+
+
+def _title_fold_suffix_arms(folded_title: str, suffix: str) -> bool:
+    """Whether ``suffix``, printed after a folded title, may arm the fold pass."""
+    if folded_title.endswith("s") and suffix.startswith("s"):
+        return False
+    return _TITLE_FOLD_QUALIFIER_RE.match(suffix) is not None
+
+
 class _StatementTableParser(HTMLParser):
     """Visible HTML table for one captured primary statement title.
 
     ``title`` is a single string (matched exactly as written -- the byte-pinned
     golden AAPL path) or a list of candidates tried in declared order
     case-insensitively over whitespace-normalised text; the first candidate
-    present in the filing locates the table.
+    present in the filing locates the table.  A single string is matched
+    exactly as written, and ``parse_displayed_primary_table`` retries a single
+    string once with ``fold=True`` (``_title_fold``: case, dashes, quotes)
+    when the exact search finds no table.  On that fold pass, when
+    ``context_dimensions`` maps the filing's context ids to their dimension
+    signatures, a capture is kept only if a strict majority of its value
+    facts sit in undimensioned contexts or it is an entity-grouped face
+    (``_capture_is_consolidated``), and a continuation marker seen before
+    the capture holds any fact drops that capture.
     """
 
-    def __init__(self, title: str | list[str]) -> None:
+    def __init__(
+        self,
+        title: str | list[str],
+        *,
+        fold: bool = False,
+        context_dimensions: Mapping[str, frozenset[tuple[str, str]]] | None = None,
+    ) -> None:
         super().__init__(convert_charrefs=True)
+        self._fold = fold
+        self._context_dimensions = (
+            None if context_dimensions is None else dict(context_dimensions)
+        )
         if isinstance(title, str):
             self._titles: tuple[str, ...] = (title,)
             self._folded_titles: tuple[str, ...] | None = None
@@ -794,9 +1324,23 @@ class _StatementTableParser(HTMLParser):
 
         After a factless capture has been discarded, a title only re-arms the
         capture when ``text`` is the title itself: a narrative sentence or a
-        note row that merely names the statement no longer qualifies.
+        note row that merely names the statement no longer qualifies.  The
+        fold pass never arms on containment, before or after a discard:
+        ``text`` must fold to the title, optionally followed by a plural "s"
+        and whole parenthesised qualifiers (``_TITLE_FOLD_QUALIFIER_RE``).
         """
         if self._folded_titles is None:
+            if self._fold:
+                folded_text = _title_fold(text)
+                for candidate in self._titles:
+                    folded_candidate = _title_fold(candidate)
+                    if not folded_candidate:
+                        continue
+                    if folded_text.startswith(folded_candidate) and _title_fold_suffix_arms(
+                        folded_candidate, folded_text[len(folded_candidate):]
+                    ):
+                        return candidate
+                return None
             stripped = re.sub(r"\s+", " ", text).strip()
             for candidate in self._titles:
                 if not candidate:
@@ -823,11 +1367,46 @@ class _StatementTableParser(HTMLParser):
         discard, any single cell whose whole text is the title."""
         if not self._discarded:
             return self._title_hit(" ".join(cell["text"] for cell in cells))
+        # Some annual balance sheets render the entire title in one cell with a
+        # terminal comma ("... December 31,").  After a discarded factless TOC,
+        # accept that precise punctuation variant only if the title is the
+        # row's sole nonblank text and the row carries no numeric facts.  The
+        # ordinary full-cell exact-title rule below remains unchanged; a note
+        # with neighboring text or any other suffix cannot exploit this seam.
+        nonblank = [cell for cell in cells if cell["text"].strip()]
+        if len(nonblank) == 1 and not any(cell.get("facts") for cell in cells):
+            title_text = nonblank[0]["text"].strip()
+            if title_text.endswith(","):
+                hit = self._title_hit(title_text[:-1].rstrip())
+                if hit is not None:
+                    return hit
         for cell in cells:
             hit = self._title_hit(cell["text"])
             if hit is not None:
                 return hit
         return None
+
+    def _continued(self, text: str) -> bool:
+        """Whether ``text`` folds to a continuation marker, with or without
+        a leading declared title ("(Continued)", "Balance Sheets - Continued")."""
+        folded = _title_fold(text)
+        for candidate in self._titles:
+            folded_candidate = _title_fold(candidate)
+            if folded_candidate and folded.startswith(folded_candidate):
+                folded = folded[len(folded_candidate):]
+                break
+        return _TITLE_FOLD_CONTINUED_RE.match(folded.strip()) is not None
+
+    def _continuation_before_facts(self, texts: list[str]) -> bool:
+        # Fold pass only: a "(Continued)" marker printed with or next to the
+        # title before the capture holds any fact marks a later part of a
+        # statement whose first part did not arm the fold.  Serving it would
+        # serve that part as the whole statement, so the capture is dropped
+        # like a factless one; once facts are captured a marker changes
+        # nothing.
+        if not self._fold or self._capture_has_facts():
+            return False
+        return any(self._continued(text) for text in texts)
 
     def _finalize_grid(self) -> None:
         if self._grid_finalized:
@@ -838,10 +1417,85 @@ class _StatementTableParser(HTMLParser):
     def _capture_has_facts(self) -> bool:
         return any(cell.get("facts") for cells in self.rows for cell in cells)
 
+    def _capture_is_consolidated(self) -> bool:
+        # Fold pass only: an entity qualifier printed in a node next to the
+        # title (a "(Parent Company Only)" paragraph, a "GUARANTOR
+        # SUBSIDIARIES" row, a heading above it) is invisible to the title
+        # match.  Such a table is tagged on an entity axis, so its facts sit
+        # mostly in dimensioned contexts, while the consolidated statement's
+        # facts sit mostly in undimensioned ones.  An entity-grouped
+        # consolidated face (manufacturing-group and finance-group lines on
+        # one legal-entity axis, consolidated totals undimensioned) is kept
+        # too: it carries undimensioned facts, every row's served facts sit
+        # on a single signature, every dimensioned signature is one member of
+        # the same axis, and two or more members appear.  A row's served facts
+        # are the ones the line builder reads: those in cells after its label
+        # cell, so a label that prints an inline amount ("less accumulated
+        # depreciation of $X") does not split the row.  A consolidating schedule
+        # mixes members within a row and a parent-only table names one
+        # member, so both stay dropped.  A fact whose context has no known
+        # signature only counts against the majority.  The exact pass and a
+        # caller that supplies no contexts are unchanged.  The check reads the
+        # grid the line builder reads, so a label carried down by rowspan is
+        # its row's label; a layout that cannot expand is judged on its raw
+        # rows, and _finalize_grid refuses it as before.
+        if not self._fold or self._context_dimensions is None:
+            return True
+        try:
+            rows = _expand_displayed_statement_grid(self.rows)
+        except StatementGraphError:
+            rows = self.rows
+        total = plain = 0
+        entity_grouped = True
+        members: set[tuple[str, str]] = set()
+        for cells in rows:
+            row_signatures: set[frozenset[tuple[str, str]] | None] = set()
+            label_cell = next(
+                (cell for cell in cells if cell.get("text") and cell.get("text") != "$"),
+                None,
+            )
+            seen_label = False
+            for cell in cells:
+                served = seen_label and cell.get("text") != "$"
+                if cell is label_cell:
+                    seen_label = True
+                for fact in cell.get("facts") or []:
+                    total += 1
+                    signature = self._context_dimensions.get(fact.get("context_ref"))
+                    if served:
+                        row_signatures.add(signature)
+                    if signature is None:
+                        entity_grouped = False
+                    elif not signature:
+                        plain += 1
+                    elif len(signature) == 1:
+                        members |= signature
+                    else:
+                        entity_grouped = False
+            if len(row_signatures) > 1:
+                entity_grouped = False
+        if 2 * plain > total:
+            return True
+        return (
+            entity_grouped
+            and plain > 0
+            and len(members) >= 2
+            and len({axis for axis, _ in members}) == 1
+        )
+
+    def _close_capture(self) -> None:
+        if self._capture_has_facts() and self._capture_is_consolidated():
+            self._ended = True
+            self._finalize_grid()
+        else:
+            self._discard_factless_capture()
+
     def _discard_factless_capture(self) -> None:
         # A capture with zero inline-XBRL numeric facts is not the statement
-        # (a table of contents naming it carries none): drop it and keep
-        # parsing, so the next title hit starts a fresh capture.
+        # (a table of contents naming it carries none), and neither is a fold
+        # capture that fails ``_capture_is_consolidated`` or that a
+        # continuation marker precedes: drop it and keep parsing, so the next
+        # title hit starts a fresh capture.
         self.rows = []
         self.chrome_row_indices = set()
         self._capturing = False
@@ -858,6 +1512,11 @@ class _StatementTableParser(HTMLParser):
         if self._hidden:
             return
         if tag == "table":
+            if not self._table_depth:
+                # A row left open before an outermost table belongs to no row;
+                # dropping it keeps handle_data from reading its facts.
+                self._in_row = False
+                self._row_cells = []
             self._table_depth += 1
             return
         if tag == "tr":
@@ -924,6 +1583,10 @@ class _StatementTableParser(HTMLParser):
             if self._row_cells:
                 joined = " ".join(cell["text"] for cell in self._row_cells)
                 hit = self._row_title_hit(self._row_cells)
+                if hit is not None and self._continuation_before_facts(
+                    [cell["text"] for cell in self._row_cells]
+                ):
+                    hit = None
                 if hit is not None:
                     self._seen_title = True
                     self._capturing = True
@@ -941,23 +1604,27 @@ class _StatementTableParser(HTMLParser):
                     self._capturing = True
                     if "see accompanying notes" in joined.lower():
                         self._row_cells = []
-                        if self._capture_has_facts():
-                            self._ended = True
-                            self._finalize_grid()
-                        else:
-                            self._discard_factless_capture()
+                        self._close_capture()
+                        return
+                    if not any(cell.get("facts") for cell in self._row_cells) and (
+                        self._continuation_before_facts(
+                            [cell["text"] for cell in self._row_cells]
+                        )
+                    ):
+                        self._row_cells = []
+                        self._discard_factless_capture()
                         return
                     self.rows.append(self._row_cells)
             self._row_cells = []
             return
         if tag == "table" and self._table_depth:
             self._table_depth -= 1
+            if not self._table_depth:
+                # A row whose </tr> never came ends with its outermost table.
+                self._in_row = False
+                self._row_cells = []
             if self._capturing and self._table_depth == 0:
-                if self._capture_has_facts():
-                    self._ended = True
-                    self._finalize_grid()
-                else:
-                    self._discard_factless_capture()
+                self._close_capture()
         if self._ix_open is not None and _is_ix_numeric(tag):
             self._cell_facts.append(self._ix_open)
             self._ix_open = None
@@ -976,17 +1643,48 @@ class _StatementTableParser(HTMLParser):
             self._cell_text.append(data)
         elif self._titles and self._title_hit(data) is not None:
             self._seen_title = True
+        elif (
+            (self._seen_title or self._capturing)
+            and not any(cell.get("facts") for cell in self._row_cells)
+            and self._continuation_before_facts([data])
+        ):
+            self._discard_factless_capture()
 
 
-def parse_displayed_primary_table(html: str, *, title: str | list[str]) -> dict[str, Any]:
+def parse_displayed_primary_table(
+    html: str,
+    *,
+    title: str | list[str],
+    context_dimensions: Mapping[str, frozenset[tuple[str, str]]] | None = None,
+    period_end: str | None = None,
+) -> dict[str, Any]:
     """Source-backed composition of one captured primary filing table.
 
     ``title`` follows ``_StatementTableParser``: a single string matched exactly
-    as written, or a list of candidates tried in order. Columns come from a
+    as written -- and retried once through ``_title_fold`` (case, dashes,
+    quotes) when the exact search finds no table -- or a list of candidates
+    tried in order.  ``context_dimensions`` (each filing context id's
+    dimension signature, from ``_context_dimension_sets``) is used only by that
+    fold retry, which keeps a captured table only when most of its value facts
+    are undimensioned or it is an entity-grouped face. Columns come from a
     header row printing two or more full dates; when no row does, a month-day
-    banner over a bare-year row (the fiscal-year SNOW shape) composes the
-    columns and the output carries ``"columns_source": "composed_year_row"``
-    (absent on the full-date path).
+    banner over a bare-year row (fiscal-year statements) composes the
+    columns and the output carries ``"columns_source": "composed_year_row"``;
+    a title banner composed across one exact unit band carries
+    ``"composed_title_year_row"``; a banner printed in the same row as its
+    years carries ``"composed_same_row"``; a banner reaching its year row
+    across fully blank rows carries ``"composed_blank_gap_year_row"``, or
+    ``"composed_caption_year_row"`` when that year row leads with a unit
+    caption. Duration groups ("Three Months Ended
+    June 30" over a year row) carry ``"composed_grouped_duration_year_row"``
+    plus each column's own period under ``"columns_periods"``; a glued-date
+    header row ("June 302025") composes plain dated columns like the full-date
+    path (both absent on the full-date path). When ``period_end`` (the
+    filing's single document period end date) is given and no other path
+    yields columns, one bare-year row whose latest year is that date's year
+    takes its month and day (``"composed_bare_year_row"``); a header naming
+    any month, week, quarter or N-months group never does. Without
+    ``period_end`` the output is unchanged.
     """
     title_label = title if isinstance(title, str) else ", ".join(str(item) for item in title)
     if not title_label.strip():
@@ -995,19 +1693,54 @@ def parse_displayed_primary_table(html: str, *, title: str | list[str]) -> dict[
     parser.feed(html)
     parser.close()
     parser._finalize_grid()
+    if not parser.rows and isinstance(title, str):
+        parser = _StatementTableParser(
+            title, fold=True, context_dimensions=context_dimensions
+        )
+        parser.feed(html)
+        parser.close()
+        parser._finalize_grid()
     if not parser.rows:
-        raise StatementGraphError(f"displayed statement table is absent: {title_label}")
-    composed: tuple[list[str], frozenset[int]] | None = None
+        raise StatementGraphError(
+            f"displayed statement table is absent: {title_label}",
+            refusal_code="displayed_table_absent",
+        )
+    composed: tuple[list[str], frozenset[int], str] | None = None
+    grouped: tuple[list[dict[str, Any]], frozenset[int], list[int]] | None = None
+    glued: tuple[list[str], frozenset[int]] | None = None
     if not any(
         len(_iso_dates_from_text(" ".join(cell["text"] for cell in cells))) >= 2
         for cells in parser.rows
     ):
         composed = _compose_year_row_header(parser.rows)
-    consumed = composed[1] if composed is not None else frozenset()
+        if composed is None:
+            grouped = _compose_grouped_duration_year_row(parser.rows)
+        if composed is None and grouped is None:
+            glued = _glued_header_columns(parser.rows)
+        if composed is None and grouped is None and glued is None and period_end is not None:
+            composed = _compose_bare_year_row(parser.rows, period_end)
+    if composed is not None:
+        consumed = composed[1]
+    elif grouped is not None:
+        consumed = grouped[1]
+    elif glued is not None:
+        consumed = glued[1]
+    else:
+        consumed = frozenset()
+    first_fact_row = _first_fact_row(parser.rows)
+    fact_row_limit = first_fact_row if first_fact_row is not None else len(parser.rows)
     header_dates: list[str] = []
     display_rows: list[dict[str, Any]] = []
     for index, cells in enumerate(parser.rows):
         if index in consumed:
+            continue
+        if (
+            glued is not None
+            and index < fact_row_limit
+            and not any(cell["facts"] for cell in cells)
+            and _is_bare_month_day_row(cells)
+        ):
+            # A bare "December 31" banner fragment above a glued-date header.
             continue
         joined = " ".join(cell["text"] for cell in cells)
         dates = _iso_dates_from_text(joined)
@@ -1046,8 +1779,27 @@ def parse_displayed_primary_table(html: str, *, title: str | list[str]) -> dict[
         )
     if composed is not None:
         header_dates = composed[0]
+    if glued is not None:
+        header_dates = glued[0]
+    if grouped is not None:
+        header_dates = [spec["end"] for spec in grouped[0]]
+        years_per_group = grouped[2]
+        fact_columns = max(
+            (len(spec["value_facts"]) for spec in display_rows), default=0
+        )
+        if fact_columns > 0 and (
+            len(set(years_per_group)) != 1
+            or years_per_group[0] * len(years_per_group) != fact_columns
+        ):
+            raise _layout_unsupported(
+                "grouped duration groups do not match the displayed fact columns",
+                refusal_code="displayed_layout_unsupported",
+            )
     if len(header_dates) < 2:
-        raise StatementGraphError(f"displayed statement columns are absent: {title_label}")
+        raise StatementGraphError(
+            f"displayed statement columns are absent: {title_label}",
+            refusal_code="displayed_columns_absent",
+        )
     # Values bind to columns by position, so a row carrying more values than the
     # table prints dated columns would silently lose its trailing values. The
     # right-edge pad lets a narrow banner row widen onto the body's grid; it must
@@ -1055,11 +1807,15 @@ def parse_displayed_primary_table(html: str, *, title: str | list[str]) -> dict[
     for spec in display_rows:
         if len(spec["value_facts"]) > len(header_dates):
             raise _layout_unsupported(
-                f"row {spec['order']} carries {len(spec['value_facts'])} values for {len(header_dates)} dated columns"
+                f"row {spec['order']} carries {len(spec['value_facts'])} values for {len(header_dates)} dated columns",
+                refusal_code="displayed_layout_unsupported",
             )
     output: dict[str, Any] = {"columns_iso": header_dates, "rows": display_rows}
     if composed is not None:
-        output["columns_source"] = "composed_year_row"
+        output["columns_source"] = composed[2]
+    if grouped is not None:
+        output["columns_source"] = "composed_grouped_duration_year_row"
+        output["columns_periods"] = grouped[0]
     return output
 
 
@@ -1073,6 +1829,70 @@ def resolve_label(labels: Mapping[tuple[str, str], str], concept: str, preferred
 def _undimensioned(context: Mapping[str, Any]) -> bool:
     dims = context.get("dimensions") or []
     return isinstance(dims, list) and len(dims) == 0
+
+
+def _document_date_value(fact: Mapping[str, Any]) -> str | None:
+    """One ISO date from a dei date fact: its ISO value, else one printed date."""
+    for value in (fact.get("normalized_value"), fact.get("raw_value")):
+        if value is None:
+            continue
+        try:
+            return date.fromisoformat(str(value).strip()).isoformat()
+        except ValueError:
+            continue
+    dates = set(_iso_dates_from_text(str(fact.get("raw_value") or "")))
+    return dates.pop() if len(dates) == 1 else None
+
+
+def _document_period_end(
+    facts: list[Mapping[str, Any]], contexts: Mapping[str, Mapping[str, Any]]
+) -> str | None:
+    """The filing's DocumentPeriodEndDate when its undimensioned facts agree.
+
+    Only nonnumeric dei DocumentPeriodEndDate facts in undimensioned contexts
+    count. Two distinct dates, or any value that is not one readable date,
+    return None.
+    """
+    values: set[str | None] = set()
+    for fact in facts:
+        qname = str(fact.get("concept_qname") or "")
+        if not qname.startswith("{http://xbrl.sec.gov/dei/"):
+            continue
+        if not qname.endswith("}DocumentPeriodEndDate") or fact.get("kind") != "nonnumeric":
+            continue
+        context = contexts.get(str(fact.get("context_ref") or ""))
+        if context is None or not _undimensioned(context):
+            continue
+        values.add(_document_date_value(fact))
+    return values.pop() if len(values) == 1 else None
+
+
+def _context_dimension_sets(
+    contexts: Mapping[str, Any],
+) -> dict[str, frozenset[tuple[str, str]]]:
+    """Each context id's dimension signature: its (axis, member) pairs, a
+    typed dimension contributing its typed value, empty when undimensioned.
+    A context whose dimensions are not a list of mappings is left out, so
+    its facts carry no known signature."""
+    signatures: dict[str, frozenset[tuple[str, str]]] = {}
+    for context_id, context in contexts.items():
+        if not isinstance(context, Mapping):
+            continue
+        dims = context.get("dimensions") or []
+        if not isinstance(dims, list) or not all(isinstance(dim, Mapping) for dim in dims):
+            continue
+        signatures[context_id] = frozenset(
+            (
+                str(dim.get("dimension_qname")),
+                str(
+                    dim.get("member_qname")
+                    if dim.get("member_qname") is not None
+                    else dim.get("typed_value_xml")
+                ),
+            )
+            for dim in dims
+        )
+    return signatures
 
 
 def _unit_label(units: Mapping[str, Any], unit_ref: str | None) -> str | None:
@@ -1104,6 +1924,7 @@ def _period_for_displayed_column(
     displayed_rows: list[dict[str, Any]],
     facts_by_id: Mapping[str, dict[str, Any]],
     contexts: Mapping[str, dict[str, Any]],
+    require_start: str | None = None,
 ) -> dict[str, Any] | None:
     """Bind one displayed column from same-column facts of the preferred period kind."""
     for spec in displayed_rows:
@@ -1122,6 +1943,8 @@ def _period_for_displayed_column(
         if prefer_kind == "instant" and period.get("instant_date") == iso:
             return period
         if prefer_kind == "duration" and period.get("end_date") == iso and period.get("start_date"):
+            if require_start is not None and period.get("start_date") != require_start:
+                continue
             return period
     return None
 
@@ -1133,10 +1956,53 @@ def _columns_from_display(
     displayed_rows: list[dict[str, Any]],
     facts_by_id: Mapping[str, dict[str, Any]],
     contexts: dict[str, dict[str, Any]],
+    explicit_periods: list[dict[str, Any]] | None = None,
 ) -> list[dict[str, Any]]:
-    """Columns are the dates printed on the captured table, bound to complete filing periods."""
+    """Columns are the dates printed on the captured table, bound to complete filing periods.
+
+    ``explicit_periods`` (the grouped-duration composition) carries each
+    column's own start and end from the display; every such column must still
+    bind to a same-column filing context with exactly that period.
+    """
+    if explicit_periods is not None:
+        if len(explicit_periods) < 2:
+            raise StatementGraphError(
+                "displayed statement columns are absent",
+                refusal_code="displayed_columns_absent",
+            )
+        columns: list[dict[str, Any]] = []
+        seen: set[tuple[str, str | None, str]] = set()
+        for index, spec in enumerate(explicit_periods):
+            iso = str(spec["end"])
+            start = str(spec["start"])
+            period = _period_for_displayed_column(
+                index=index,
+                iso=iso,
+                prefer_kind="duration",
+                displayed_rows=displayed_rows,
+                facts_by_id=facts_by_id,
+                contexts=contexts,
+                require_start=start,
+            )
+            if period is None or period.get("start_date") != start:
+                raise StatementGraphError(
+                    "displayed duration column is not bound to the filing period",
+                    refusal_code="displayed_column_period_unbound",
+                )
+            identity: tuple[str, str | None, str] = ("duration", start, iso)
+            if identity in seen:
+                raise StatementGraphError(
+                    "displayed statement columns collapse distinct filing periods",
+                    refusal_code="displayed_column_period_unbound",
+                )
+            seen.add(identity)
+            columns.append({"kind": "duration", "start": start, "end": iso, "label": iso})
+        return columns
     if len(iso_dates) < 2:
-        raise StatementGraphError("displayed statement columns are absent")
+        raise StatementGraphError(
+            "displayed statement columns are absent",
+            refusal_code="displayed_columns_absent",
+        )
     prefer_kind = "instant" if statement_type == "balance_sheet" else "duration"
     columns: list[dict[str, Any]] = []
     seen: set[tuple[str, str | None, str]] = set()
@@ -1151,19 +2017,180 @@ def _columns_from_display(
         )
         if prefer_kind == "instant":
             if not period:
-                raise StatementGraphError("displayed balance-sheet column is not bound to the filing date")
+                raise StatementGraphError(
+                    "displayed balance-sheet column is not bound to the filing date",
+                    refusal_code="displayed_column_period_unbound",
+                )
             identity: tuple[str, str | None, str] = ("instant", None, iso)
             columns.append({"kind": "instant", "start": None, "end": iso, "label": iso})
         else:
             if not period:
-                raise StatementGraphError("displayed duration column is not bound to the filing period")
+                raise StatementGraphError(
+                    "displayed duration column is not bound to the filing period",
+                    refusal_code="displayed_column_period_unbound",
+                )
             start = str(period.get("start_date"))
             identity = ("duration", start, iso)
             columns.append({"kind": "duration", "start": start, "end": iso, "label": iso})
         if identity in seen:
-            raise StatementGraphError("displayed statement columns collapse distinct filing periods")
+            raise StatementGraphError(
+                "displayed statement columns collapse distinct filing periods",
+                refusal_code="displayed_column_period_unbound",
+            )
         seen.add(identity)
     return columns
+
+
+def _period_label(period: Mapping[str, Any]) -> str:
+    if str(period.get("kind") or "") == "instant":
+        return f"instant {period.get('instant_date')}"
+    return f"duration {period.get('start_date')}..{period.get('end_date')}"
+
+
+def _column_label(column: Mapping[str, Any]) -> str:
+    if str(column.get("kind") or "") == "instant":
+        return f"instant {column.get('end')}"
+    return f"duration {column.get('start')}..{column.get('end')}"
+
+
+def _duration_days(start: str | None, end: str | None) -> int | None:
+    if not start or not end:
+        return None
+    try:
+        return (date.fromisoformat(end) - date.fromisoformat(start)).days
+    except ValueError:
+        return None
+
+
+def _cell_period_disagreement(
+    index: int,
+    label: str,
+    fact: Mapping[str, Any],
+    period: Mapping[str, Any],
+    column: Mapping[str, Any],
+    detail: str,
+) -> StatementGraphError:
+    return StatementGraphError(
+        f"{_R7_DISAGREEMENT} {index}: row {label!r} fact {fact.get('fact_id')} "
+        f"context {_period_label(period)} vs column {_column_label(column)}: {detail}",
+        refusal_code="displayed_cell_period_mismatch",
+    )
+
+
+# Cash-flow cash positions are tagged as instants: the balance at the column's
+# end date, or at the day before its start (the canonical beginning-of-period
+# instant). Those two instants agree with a duration column; none other does.
+_R7_LENGTH_TOLERANCE_DAYS = 7
+
+
+def _enforce_cell_period_agreement(
+    *,
+    columns: list[dict[str, Any]],
+    displayed_rows: list[dict[str, Any]],
+    facts_by_id: Mapping[str, dict[str, Any]],
+    contexts: Mapping[str, dict[str, Any]],
+    exact_starts: bool,
+    row_preferred_label_roles: list[str | None] | None = None,
+) -> None:
+    """R7: a displayed numeric cell never sits in a column its context contradicts.
+
+    Every value cell with a resolvable inline-XBRL context must agree with its
+    dated column: kind, end date, and — for grouped columns that print their
+    own duration — the exact start; annual/quarterly columns bound without a
+    printed start accept any context within 7 days of the column's own period
+    length. A cell without a context (chrome, subtotals rendered without ix
+    tags) is left as today. A contradiction refuses; a cell is never
+    reassigned, reordered or dropped.
+    """
+    for row_index, spec in enumerate(displayed_rows):
+        label = str(spec.get("label") or "")
+        preferred_role = (
+            row_preferred_label_roles[row_index]
+            if row_preferred_label_roles is not None and row_index < len(row_preferred_label_roles)
+            else None
+        )
+        for index, html_fact in enumerate(spec.get("value_facts") or []):
+            if index >= len(columns):
+                break
+            column = columns[index]
+            parsed = facts_by_id.get(str(html_fact.get("fact_id") or ""))
+            if parsed is None:
+                continue
+            context = contexts.get(str(parsed.get("context_ref") or ""))
+            if context is None:
+                continue
+            period = context.get("period") or {}
+            kind = str(period.get("kind") or "")
+            if str(column.get("kind") or "") == "instant":
+                if kind != "instant":
+                    raise _cell_period_disagreement(
+                        index, label, parsed, period, column, "period kind disagrees"
+                    )
+                if period.get("instant_date") != column.get("end"):
+                    raise _cell_period_disagreement(
+                        index, label, parsed, period, column, "instant date is not the column end"
+                    )
+                continue
+            if kind == "instant":
+                start = column.get("start")
+                day_before_start = None
+                if start:
+                    try:
+                        day_before_start = (date.fromisoformat(str(start)) - timedelta(days=1)).isoformat()
+                    except ValueError:
+                        day_before_start = None
+                instant_date = period.get("instant_date")
+                column_end = column.get("end")
+                # The anchor follows the row's presentation label role: a
+                # (negated) periodStartLabel row anchors to the day before the
+                # column start, every other row (periodEndLabel, any other
+                # role or none) to the column end. R7 does not read labels; a
+                # label can only choose among roles the filing declares, and
+                # only when the row maps to its presentation unambiguously.
+                if preferred_role in _PERIOD_START_ROLES:
+                    if instant_date == day_before_start:
+                        continue
+                elif instant_date == column_end:
+                    continue
+                raise _cell_period_disagreement(
+                    index,
+                    label,
+                    parsed,
+                    period,
+                    column,
+                    "instant is not the row's period anchor",
+                )
+            if kind != "duration":
+                continue
+            if period.get("end_date") != column.get("end"):
+                raise _cell_period_disagreement(
+                    index, label, parsed, period, column, "duration end is not the column end"
+                )
+            if exact_starts:
+                if period.get("start_date") != column.get("start"):
+                    raise _cell_period_disagreement(
+                        index, label, parsed, period, column, "duration start is not the grouped column start"
+                    )
+                continue
+            length = _duration_days(
+                str(period.get("start_date") or ""), str(period.get("end_date") or "")
+            )
+            column_length = _duration_days(
+                str(column.get("start") or ""), str(column.get("end") or "")
+            )
+            if (
+                length is None
+                or column_length is None
+                or abs(length - column_length) > _R7_LENGTH_TOLERANCE_DAYS
+            ):
+                raise _cell_period_disagreement(
+                    index,
+                    label,
+                    parsed,
+                    period,
+                    column,
+                    "duration length is outside the statement period semantics",
+                )
 
 
 def _values_agree(left: str, right: str) -> bool:
@@ -1230,6 +2257,7 @@ def _presentation_occurrences(presentation: list[dict[str, Any]]) -> dict[str, l
 def _select_presentation_row(
     spec: Mapping[str, Any],
     occurrences: list[dict[str, Any]],
+    ordinal: int = 0,
 ) -> dict[str, Any] | None:
     if not occurrences:
         return None
@@ -1244,6 +2272,11 @@ def _select_presentation_row(
         end = [row for row in occurrences if row.get("preferred_label_role") == LABEL_PERIOD_END]
         if end:
             return end[0]
+    # A concept presented more than once (a cash flow's beginning and ending
+    # cash) maps its k-th displayed row to its k-th presentation occurrence,
+    # so the ending row carries the ending role rather than the first one.
+    if ordinal < len(occurrences):
+        return occurrences[ordinal]
     return occurrences[0]
 
 
@@ -1425,6 +2458,105 @@ def map_standardized_metric(
     return {"metric_id": None, "mapping_state": "unmapped", "mapping_receipt": None}
 
 
+def _matched_alias_priority(taxonomy: str, concept: str, metric_id: str, registry: Any) -> int | None:
+    contracts = getattr(registry, "contracts", None)
+    if contracts is None:
+        return None
+    iterable = contracts.values() if isinstance(contracts, dict) else contracts
+    priorities = [
+        alias.priority
+        for contract in iterable
+        if getattr(contract, "metric_id", None) == metric_id
+        for alias in getattr(contract, "taxonomy_concept_aliases", ())
+        if alias.concept == concept and alias.taxonomy == taxonomy
+    ]
+    return min(priorities) if priorities else None
+
+
+def _is_total_label(row: dict[str, Any]) -> bool:
+    """Same total-line predicate ``_assign_display_depth`` keys on."""
+    label = str(row.get("as_reported_label") or "").strip().lower()
+    return label.startswith("total ")
+
+
+def _recoverable_columns(demoted: dict[str, Any], governing: dict[str, Any]) -> list[str]:
+    """Column keys a demoted row fills where the governing row holds null.
+
+    Demotion is row-level, so a value only the loser carries would otherwise
+    lose its standardized binding with no receipt letting a consumer find it
+    again. Keys are the cell's period label (falling back to the period end).
+    """
+    keys: list[str] = []
+    for demoted_cell, governing_cell in zip(
+        demoted.get("cells") or (), governing.get("cells") or ()
+    ):
+        if demoted_cell.get("value") is None or governing_cell.get("value") is not None:
+            continue
+        period = demoted_cell.get("period") or {}
+        keys.append(str(period.get("label") or period.get("end") or period))
+    return keys
+
+
+def _apply_alias_priority(rows: list[dict[str, Any]], registry: Any) -> None:
+    """Keep one governed alias per standardized metric within a statement.
+
+    The kernel resolves a metric through its alias with the lowest priority
+    number. A statement can present two concepts that alias the same metric
+    (``Assets`` at priority 10 and its ``LiabilitiesAndStockholdersEquity``
+    alias at 20 both map to ``total_assets``). Only the rows matched at the
+    lowest priority keep the standardized mapping; every lower-priority row
+    becomes ``unmapped`` with an ``alias_priority`` receipt that names the
+    governing concept. Rows tied at one priority are left unchanged.
+
+    A ``total_*`` metric whose contenders disagree on wearing a ``Total ...``
+    label first restricts the contest to the rows that do — a statement total
+    must not land on a component line — and marks those receipts with
+    ``reason_detail``. A demoted row that alone fills columns the governing
+    row leaves null lists them under ``recoverable_columns``.
+    """
+    by_metric: dict[str, list[tuple[int, dict[str, Any]]]] = {}
+    for row in rows:
+        metric_id = row.get("standardized_metric_id")
+        receipt = row.get("mapping_receipt")
+        if row.get("mapping_state") != "mapped" or not metric_id or not isinstance(receipt, dict):
+            continue
+        priority = _matched_alias_priority(receipt["taxonomy"], receipt["concept"], metric_id, registry)
+        if priority is not None:
+            by_metric.setdefault(metric_id, []).append((priority, row))
+    for metric_id, entries in by_metric.items():
+        contest = entries
+        label_preferred = False
+        if metric_id.startswith("total_"):
+            preferred = [entry for entry in entries if _is_total_label(entry[1])]
+            if preferred and len(preferred) < len(entries):
+                contest = preferred
+                label_preferred = True
+        best = min(priority for priority, _row in contest)
+        kept = [row for priority, row in contest if priority == best]
+        governing = kept[0]
+        for priority, row in entries:
+            if any(row is keeper for keeper in kept):
+                continue
+            receipt = row["mapping_receipt"]
+            demotion = {
+                "taxonomy": receipt["taxonomy"],
+                "concept": receipt["concept"],
+                "reason": "alias_priority",
+                "metric_id": metric_id,
+                "priority": priority,
+                "governing_concept": governing["mapping_receipt"]["concept"],
+                "governing_priority": best,
+            }
+            if label_preferred:
+                demotion["reason_detail"] = "total_label_preferred"
+            recoverable = _recoverable_columns(row, governing)
+            if recoverable:
+                demotion["recoverable_columns"] = recoverable
+            row["standardized_metric_id"] = None
+            row["mapping_state"] = "unmapped"
+            row["mapping_receipt"] = demotion
+
+
 def _assign_display_depth(rows: list[dict[str, Any]]) -> None:
     open_header = False
     for row in rows:
@@ -1455,6 +2587,15 @@ def reconstruct_statement(
     registry: Any,
 ) -> dict[str, Any]:
     role_uri, title, title_search = _statement_identity(package, statement_type)
+    if (
+        re.match(r"^\d+ - Disclosure - ", title)
+        or "parent company" in title.casefold()
+        or "parentcompany" in role_uri.casefold()
+    ):
+        raise StatementGraphError(
+            f"statement role is not the consolidated statement: {title}",
+            refusal_code="statement_role_not_consolidated",
+        )
     pre = _stored_member(package, "presentation")
     lab = _stored_member(package, "label")
     cal = _stored_member(package, "calculation")
@@ -1473,7 +2614,12 @@ def reconstruct_statement(
         if item.get("name") == primary and item.get("state") == "stored"
     )
     html = package.members[primary].decode("utf-8")
-    displayed = parse_displayed_primary_table(html, title=title_search)
+    displayed = parse_displayed_primary_table(
+        html,
+        title=title_search,
+        context_dimensions=_context_dimension_sets(contexts),
+        period_end=_document_period_end(facts, contexts),
+    )
     table_facts: list[dict[str, Any]] = []
     for spec in displayed["rows"]:
         for item in spec["value_facts"]:
@@ -1489,15 +2635,60 @@ def reconstruct_statement(
         displayed_rows=displayed["rows"],
         facts_by_id=facts_by_id,
         contexts=contexts,
+        explicit_periods=displayed.get("columns_periods"),
     )
-    out_rows: list[dict[str, Any]] = []
+    row_presentation: list[dict[str, Any] | None] = []
+    row_preferred_label_roles: list[str | None] = []
+    row_concepts: list[str] = []
     for spec in displayed["rows"]:
         value_facts = spec["value_facts"]
         concept = ""
         if value_facts:
             names = sorted({_prefixed_from_html_name(item.get("name")) for item in value_facts})
             concept = names[0]
-        presentation_row = _select_presentation_row(spec, by_concept.get(concept) or [])
+        row_concepts.append(concept)
+    displayed_counts: dict[str, int] = {}
+    for concept in row_concepts:
+        displayed_counts[concept] = displayed_counts.get(concept, 0) + 1
+    concept_seen: dict[str, int] = {}
+    for spec, concept in zip(displayed["rows"], row_concepts, strict=True):
+        ordinal = concept_seen.get(concept, 0)
+        concept_seen[concept] = ordinal + 1
+        occurrences = by_concept.get(concept) or []
+        presentation_row = _select_presentation_row(spec, occurrences, ordinal)
+        row_presentation.append(presentation_row)
+    selected_occurrences: dict[str, list[int]] = {}
+    for concept, presentation_row in zip(row_concepts, row_presentation, strict=True):
+        if presentation_row is not None:
+            selected_occurrences.setdefault(concept, []).append(id(presentation_row))
+    for concept, presentation_row in zip(row_concepts, row_presentation, strict=True):
+        role = presentation_row.get("preferred_label_role") if presentation_row else None
+        # R7 trusts a row's period role only when the concept is displayed
+        # exactly as many times as it is presented and each displayed row
+        # selects a different occurrence. An extra or missing displayed row
+        # has no defined occurrence, and two rows selecting the same one
+        # cannot both carry its role, so they anchor at the column end like
+        # role-less rows.
+        occurrences = by_concept.get(concept) or []
+        selected = selected_occurrences.get(concept, [])
+        if displayed_counts[concept] != len(occurrences) or len(set(selected)) != len(selected):
+            role = None
+        row_preferred_label_roles.append(role)
+    _enforce_cell_period_agreement(
+        columns=columns,
+        displayed_rows=displayed["rows"],
+        facts_by_id=facts_by_id,
+        contexts=contexts,
+        exact_starts=displayed.get("columns_periods") is not None,
+        row_preferred_label_roles=row_preferred_label_roles,
+    )
+    out_rows: list[dict[str, Any]] = []
+    for spec, presentation_row in zip(displayed["rows"], row_presentation, strict=True):
+        value_facts = spec["value_facts"]
+        concept = ""
+        if value_facts:
+            names = sorted({_prefixed_from_html_name(item.get("name")) for item in value_facts})
+            concept = names[0]
         preferred = presentation_row.get("preferred_label_role") if presentation_row else None
         path = list(presentation_row["presentation_path"]) if presentation_row else ([concept] if concept else [spec["label"]])
         first_fact = facts_by_id.get(str(value_facts[0].get("fact_id") or "")) if value_facts else None
@@ -1558,6 +2749,7 @@ def reconstruct_statement(
                 "cells": cells,
             }
         )
+    _apply_alias_priority(out_rows, registry)
     _assign_display_depth(out_rows)
     return {
         "statement_type": statement_type,
@@ -1583,16 +2775,36 @@ def reconstruct_primary_statements(
             entity_ids.append(str(ident))
     unique_entities = sorted(set(entity_ids))
     if unique_entities != [package.manifest["cik"]]:
-        raise StatementGraphError("XBRL entity identifier is not the source-native AAPL CIK")
-    statements = [
-        reconstruct_statement(
-            statement_type=kind,
-            package=package,
-            parsed_instance=parsed,
-            registry=registry,
-        )
-        for kind in ("income_statement", "balance_sheet", "cash_flow")
-    ]
+        raise StatementGraphError("XBRL entity identifier is not the package manifest CIK")
+    statements: list[dict[str, Any]] = []
+    for kind in ("income_statement", "balance_sheet", "cash_flow"):
+        try:
+            statements.append(
+                reconstruct_statement(
+                    statement_type=kind,
+                    package=package,
+                    parsed_instance=parsed,
+                    registry=registry,
+                )
+            )
+        except StatementGraphError as exc:
+            if exc.refusal_code in STATEMENT_REFUSAL_CODES:
+                role_uri = title = None
+                if exc.refusal_code != "statement_role_not_consolidated":
+                    role_uri, title, _ = _statement_identity(package, kind)
+                statements.append(
+                    {
+                        "statement_type": kind,
+                        "role_uri": role_uri,
+                        "title": title,
+                        "columns": [],
+                        "row_count": 0,
+                        "rows": [],
+                        "refusal": {"code": exc.refusal_code},
+                    }
+                )
+            else:
+                raise
     return {
         "parsed_document_kind": (parsed.get("document") or {}).get("kind"),
         "fact_count": len(parsed.get("facts") or []),
@@ -1607,6 +2819,7 @@ __all__ = [
     "LABEL_PERIOD_END",
     "LABEL_PERIOD_START",
     "PRIMARY_STATEMENT_ROLES",
+    "STATEMENT_REFUSAL_CODES",
     "STATEMENT_TITLES",
     "StatementGraphError",
     "admit_golden_aapl_package",

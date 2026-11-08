@@ -1,0 +1,56 @@
+{
+  "run": "39282678531",
+  "tested_tree_sha": "0e42e3232b0bc9b297ab8e6d7114df2ae6a30c4f",
+  "head": "aebcbe276560553b306ada6b467444cd2d446fe9",
+  "base": "2f1fd99a8ae295c4aeec2ca3726aa498a7545e97",
+  "plan_sha256": "4d7c321994a54dfda5ab05976e2f93b55b313109a3b0fe40fe9727fc06aa0419",
+  "eligible_jobs": 256,
+  "added": [
+    "research-codegen-runtime-qualification"
+  ],
+  "removed": [],
+  "changed_execution_definitions": [
+    "fif-kernel-guards",
+    "nw-lobe-unfreeze",
+    "global-liquidity-transmission-contracts",
+    "defense-rail-laws",
+    "healthcare-fda-supply",
+    "dataos-prospective-reference",
+    "dataos-identity-seams"
+  ],
+  "conclusion": "failure",
+  "failure_job": "defense-rail-laws",
+  "failure_signature": "timed out after 8 minutes",
+  "candidate_failure_at": "2026-10-19T16:26:24.5225138Z",
+  "base_failure_at": "2026-10-19T16:52:46.2749894Z",
+  "gate_failed_at": "2026-10-19T16:53:16Z",
+  "source_heal_pr": 9758,
+  "source_heal_merge": "bee22730967cf12d6aabbc18b79a37135f9b3c01",
+  "observer_session": 70423,
+  "observer_settled_rc": 1,
+  "measurement_limit": "Failed run includes isolated base replay; not a comparable successful throughput observation.",
+  "recovery": {
+    "run": 39290075936,
+    "head": "67377ec633cf3e797ebe61a0453ccd2b44b18b35",
+    "tested_tree": "2b12ec85550ac49c3e17f15627335cb22737d8dd",
+    "base": "aee0f40a6b40e8b9287d3ffee9cf988d2a641434",
+    "plan_sha256": "4bf52141b3d0106616678078ca620b7c498eab66bc10dadd3ec054161474f591",
+    "eligible_jobs": 257,
+    "failed_job": "research-price-panel",
+    "cause": "Missing $id in contracts/market_memory/e0_reviewer_plan.v1.schema.json introduced by PR9765; population schema registry failed on both candidate and base replay.",
+    "candidate_failures": 3,
+    "base_failures": 3,
+    "defense_repair_passed": true,
+    "observer": 57835,
+    "observer_settled_rc": 1,
+    "local_before": "3 failed in 4.33 seconds",
+    "local_after": "181 population/reviewer-plan tests passed in 10.13 seconds",
+    "scope": "Only adds canonical schema identifier; parsed schema after removing $id equals original.",
+    "full_owning_battery": {
+      "passed": 1345,
+      "subtests_passed": 429,
+      "warnings": 45,
+      "seconds": 116.29
+    }
+  }
+}

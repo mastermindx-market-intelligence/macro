@@ -1107,6 +1107,33 @@ def test_display_order_is_recency_then_ticker_never_magnitude():
     assert out.iloc[0]["resid_z"] != df["resid_z"].min()
 
 
+def test_event_view_preserves_native_session_and_engine_version():
+    row = {"ticker": "AAA", "date": "2026-01-02", "side": "down",
+           "harvested_asof": "2026-01-05", "engine_version": "historical-engine",
+           "generated_utc": "2026-01-06T12:00:00Z", "evaluated_through": "2026-01-06"}
+    view = pp_artifact.event_view(row)
+    assert view["date"] == "2026-01-02"
+    assert view["harvested_asof"] == "2026-01-05"
+    assert view["engine_version"] == "historical-engine"
+    assert view["engine_version"] != ENGINE_VERSION
+
+
+@pytest.mark.parametrize("native_fields", [
+    {},
+    {"harvested_asof": None, "engine_version": None},
+    {"harvested_asof": "", "engine_version": ""},
+    {"harvested_asof": np.nan, "engine_version": np.nan},
+])
+def test_event_view_never_invents_missing_native_provenance(native_fields):
+    view = pp_artifact.event_view({
+        "date": "2026-01-02", "era": "forward",
+        "generated_utc": "2026-01-06T12:00:00Z", "evaluated_through": "2026-01-06",
+        **native_fields,
+    })
+    assert view["harvested_asof"] is None
+    assert view["engine_version"] is None
+
+
 def test_artifact_shape_authority_and_ordering(tmp_path):
     data_dir = tmp_path / "data"
     data_dir.mkdir()
@@ -1156,6 +1183,15 @@ def test_artifact_shape_authority_and_ordering(tmp_path):
         # SPOKEN, and "peers" is never the word on a market-basis row.
         assert e["comparison"] == ("sector peers" if e["peer_basis"] == "sector"
                                    else "the market")
+
+    # Both open and resolved projections retain the frozen row provenance.
+    native = {(str(pd.Timestamp(r["date"]).date()), r["ticker"], r["side"]): r
+              for r in res["ledger"].to_dict("records")}
+    assert payload["recently_resolved"]
+    for event in payload["open_events"] + payload["recently_resolved"]:
+        row = native[(event["date"], event["ticker"], event["side"])]
+        assert event["harvested_asof"] == row["harvested_asof"]
+        assert event["engine_version"] == row["engine_version"]
 
     txt = json.dumps(payload, ensure_ascii=False).lower()
     assert "validated" not in txt

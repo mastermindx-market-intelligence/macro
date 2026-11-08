@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-08-20T20:11:16Z",
+ "accession": "0000895419-26-000054",
+ "cik": "0000895419",
+ "doc_byte_length": 3316615,
+ "doc_sha256": "4cc0119211a56ffa7fc1405c6f7f07e0a4231df127be9bd16db63f02d30ef144",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-08-20",
+ "form": "10-K",
+ "period_of_report": "2026-06-28",
+ "primary_document": "wolf-20260628.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 784809,
+  "byte_start": 784077,
+  "normalized": "Loss on Wafer Supply Agreement. In connection with the completed sale of our former LED Business to SMART Global Holdings, Inc (\"SGH\") and its wholly owned subsidiary CreeLED, Inc. (\"CreeLED\" and collectively with SGH, \"SMART\") in fiscal 2021, we entered into a Wafer Supply and Fabrication Services Agreement (the \"Wafer Supply Agreement\"), pursuant to which we supplied CreeLED with certain silicon carbide materials and fabrication services for up to four years. We recognized a supply agreement liability in connection with this agreement, which reached full amortization in the second quarter of fiscal 2023.",
+  "normalized_sha256": "2e836969b73bc6f36c0d93bc1a71fdb34aa2b29a5be65fff537c30f0797151be",
+  "raw": "Loss on Wafer Supply Agreement</span><span style=\"color:#000000;font-family:'Times New Roman',serif;font-size:10pt;font-weight:400;line-height:120%\">. In connection with the completed sale of our former LED Business to SMART Global Holdings, Inc (\"SGH\") and its wholly owned subsidiary CreeLED, Inc. (\"CreeLED\" and collectively with SGH, \"SMART\") in fiscal 2021, we entered into a Wafer Supply and Fabrication Services Agreement (the \"Wafer Supply Agreement\"), pursuant to which we supplied CreeLED with certain silicon carbide materials and fabrication services for up to four years. We recognized a supply agreement liability in connection with this agreement, which reached full amortization in the second quarter of fiscal 2023.",
+  "raw_sha256": "6845e4720d939eabc3df5cc4f878a64d4cd8bc20dbf0c0d5edb209bad2f6c4f0"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/895419/000089541926000054/wolf-20260628.htm",
+ "xbrl_contexts": []
+}

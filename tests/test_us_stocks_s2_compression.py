@@ -413,7 +413,9 @@ def test_sector_central_real_path_renders_landings_and_does_not_leak_tape():
     assert "#accumulation .help" in html
     assert "#accumulation .tbl-scroll" in html
     assert "#theme-tape .help" in html
-    assert "Refreshing the action board" in html or "正在刷新操作板" in html
+    assert "Action board unavailable until a coherent, source-verified snapshot" in html
+    assert "No current calls." in html
+    assert "check back after tonight" not in html.lower()
     assert "acb-tape" not in html
     assert "Mega-cap tape" not in html
     assert 'class="panel span12" id="megacap-tape"' not in html

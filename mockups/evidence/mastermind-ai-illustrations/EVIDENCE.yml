@@ -1,0 +1,10 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/mm_brain.js
+  - site/mm_brain.js
+  - templates/mm_brain_visuals.js
+  - site/mm_brain_visuals.js
+  - templates/mm_brain_visuals.css
+  - site/mm_brain_visuals.css
+  - site/theme.js
+manifest: mockups/evidence/mastermind-ai-illustrations/manifest.json

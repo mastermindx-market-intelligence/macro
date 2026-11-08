@@ -96,6 +96,29 @@ def test_legacy_public_snapshot_keeps_exact_bytes(invocation):
     assert (mirror / "catalog.json").read_bytes() == summary["catalog_bytes"]
 
 
+@pytest.mark.parametrize("name", ["rv%2Fprivate", "rv?private", "rv#private"])
+def test_excerpt_projection_reads_the_named_corpus_not_uri_decoy(invocation, monkeypatch, tmp_path, name):
+    import sqlite3
+    from urllib.parse import unquote, urlsplit
+    from engine.research_vault import excerpt
+
+    mirror, _, summary = invocation
+    named = tmp_path / name / "corpus.sqlite"
+    decoy = Path(unquote(urlsplit(f"file:{named}?mode=ro").path))
+    assert decoy != named
+    for path, marker in [(named, 7), (decoy, 9)]:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        connection = sqlite3.connect(path)
+        connection.execute(f"PRAGMA user_version={marker}")
+        connection.close()
+    summary["catalog_bytes"] = b'{"items":[{"id":"fixture"}]}'
+    monkeypatch.setattr(excerpt, "snapshot", lambda connection, ids: {
+        "fixture": [str(connection.execute("PRAGMA user_version").fetchone()[0])]})
+    monkeypatch.setattr(sys, "argv", ["ingest_research", "--corpus", str(named)])
+    assert cli.main() == 0
+    assert json.loads((mirror / "excerpts.json").read_bytes())["excerpts"] == {"fixture": ["7"]}
+
+
 @pytest.mark.parametrize("invalid", [b'{invalid', b'\xff'])
 def test_invalid_canonical_bytes_do_not_advance_existing_snapshot(invocation, invalid):
     mirror, _, summary = invocation

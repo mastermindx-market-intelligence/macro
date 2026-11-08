@@ -1,0 +1,19 @@
+{
+  "recorded_at": "2026-10-14T13:11:07.446984+00:00",
+  "head": "62c077fce23007fd69500b93fd7217cf8e2e9463",
+  "bounded_changed_jobs": [
+    "flow-surface",
+    "fif-kernel-guards",
+    "biocatalyst-serving",
+    "biocatalyst-history",
+    "crypto-assistant-context",
+    "unrun-government-revenue-candidate-projection",
+    "unrun-government-revenue-grader",
+    "research-price-panel",
+    "ticker-news-qbus"
+  ],
+  "pytest_exit": 0,
+  "selection_semantics": "_matches_any uses any over patterns; _job_diff_match chooses by changed-path order, which is unchanged. All314 jobs/order/path multisets and execution definitions preserved.",
+  "accepted_static_evidence_reused": "e2 closure zero/strict134-134-128 and fa9 runtime119; no executable or input change. No hosted proof claim.",
+  "diagnostic_correction": "Initial diagnostic used a nonexistent helper name and exited2 before testing. Corrected to the existing _classify_bounded_manifest_job_delta; no product defect inferred."
+}

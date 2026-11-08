@@ -269,9 +269,9 @@ def test_enumerate_empty_input_returns_empty_list() -> None:
     assert sources.enumerate_episodes([{"ticker": "AAPL"}]) == []
 
 
-# prereg §10 A2: the submissions-JSON acceptanceDateTime carries a "Z" suffix but is
-# Eastern wall-clock time read as UTC, so it runs |ET offset| ahead of true UTC.
-# Pins from non-universe filings (MSFT); the header <ACCEPTANCE-DATETIME> agrees.
+# prereg §10 A2: the registered correction U = J - |ET offset|, with DST hours
+# unresolvable.  It still binds every clock J before A5's E (2026-11-16T00:00Z); A5
+# withdraws its premise (the JSON clock is true UTC) for J >= E -- see the A5 block.
 
 
 def test_edgar_json_clock_edt_and_est_pins() -> None:
@@ -298,6 +298,76 @@ def test_enumerate_corrects_the_json_clock_to_true_utc() -> None:
     (episode,) = sources.enumerate_episodes(rows)
     assert episode["t_rel"] == "2026-10-29T16:05:00Z"  # EDT: 4h behind the raw value
     assert episode["status"] == "ELIGIBLE"
+
+
+# prereg §10 A5: the submissions-JSON clock is true UTC (checked against the SGML
+# header <ACCEPTANCE-DATETIME> on non-universe filers).  From E = 2026-11-16T00:00Z it
+# is t_rel as given; an earlier J keeps A2.
+
+
+def test_a5_effective_instant_is_registered() -> None:
+    assert sources.A5_EFFECTIVE == datetime(2026, 11, 16, 0, 0, tzinfo=UTC)
+
+
+def test_edgar_json_clock_a5_pins() -> None:
+    fix = sources._edgar_json_acceptance_utc
+    # one second before E: A2 still applies (EST, 5h)
+    assert fix("2026-11-15T23:59:59Z") == datetime(2026, 11, 15, 18, 59, 59, tzinfo=UTC)
+    assert fix("2026-11-16T00:00:00Z") == datetime(2026, 11, 16, 0, 0, tzinfo=UTC)
+    assert fix("2026-12-08T21:05:00.000Z") == datetime(2026, 12, 8, 21, 5, tzinfo=UTC)
+
+
+def test_edgar_json_clock_a5_dst_hours_resolve() -> None:
+    # Both are unresolvable under A2 (the NY offsets at J and J - o disagree); a true
+    # UTC clock has no DST case.
+    fix = sources._edgar_json_acceptance_utc
+    assert fix("2027-11-07T06:30:00Z") == datetime(2027, 11, 7, 6, 30, tzinfo=UTC)
+    assert fix("2027-03-14T07:30:00Z") == datetime(2027, 3, 14, 7, 30, tzinfo=UTC)
+
+
+def test_edgar_json_clock_a5_offsets_are_honoured() -> None:
+    fix = sources._edgar_json_acceptance_utc
+    assert fix("2026-12-08T16:05:00-05:00") == datetime(2026, 12, 8, 21, 5, tzinfo=UTC)
+    # E is compared as an instant, not as local text: 20:30 EST on 11-15 is
+    # 01:30Z on 11-16, at or after E, so it is returned as given.
+    assert fix("2026-11-15T20:30:00-05:00") == datetime(2026, 11, 16, 1, 30, tzinfo=UTC)
+
+
+def test_enumerate_after_a5_reads_the_clock_as_given() -> None:
+    # 21:05Z is 16:05 EST, after a regular close, so C(e) is that day's close.
+    day = date(2026, 12, 8)
+    assert is_session(day) and early_close("US", day) is None
+    rows = [_eightk("DHI", "0000000000-26-000144",
+                    "2026-12-08T21:05:00.000Z", "2026-12-08")]
+    (episode,) = sources.enumerate_episodes(rows)
+    assert episode["t_rel"] == "2026-12-08T21:05:00Z"
+    assert _dt(episode["cutoff"]) == _close_utc(day)
+    assert episode["status"] == "ELIGIBLE"
+
+
+def test_enumerate_at_exactly_e_reads_the_clock_as_given() -> None:
+    # J == E is 19:00 EST on Sunday 11-15.  A5 returns it as given (A2 would read
+    # 19:00Z, 14:00 EST); C(e) is Friday 11-13's close either way (§2).
+    day = date(2026, 11, 13)
+    assert is_session(day) and early_close("US", day) is None
+    assert not is_session(date(2026, 11, 14)) and not is_session(date(2026, 11, 15))
+    rows = [_eightk("DHI", "0000000000-26-000146",
+                    "2026-11-16T00:00:00.000Z", "2026-11-13")]
+    (episode,) = sources.enumerate_episodes(rows)
+    assert episode["t_rel"] == "2026-11-16T00:00:00Z"
+    assert _dt(episode["cutoff"]) == _close_utc(day)
+
+
+def test_enumerate_before_a5_keeps_the_a2_shift() -> None:
+    # The same after-close clock before E: A2 reads 16:05Z (11:05 EST, inside the
+    # session), so C(e) is the previous session's close (prereg §10 A5 "Reason").
+    day, prev = date(2026, 11, 13), date(2026, 11, 12)
+    assert is_session(day) and is_session(prev) and early_close("US", prev) is None
+    rows = [_eightk("DHI", "0000000000-26-000145",
+                    "2026-11-13T21:05:00.000Z", "2026-11-13")]
+    (episode,) = sources.enumerate_episodes(rows)
+    assert episode["t_rel"] == "2026-11-13T16:05:00Z"
+    assert _dt(episode["cutoff"]) == _close_utc(prev)
 
 
 def test_enumerate_unresolvable_clock_alone_mints_no_episode() -> None:
@@ -717,11 +787,547 @@ def test_leak_clean_episode_unchanged_and_non_eligible_preserved() -> None:
 
 
 # ---------------------------------------------------------------------------
-# s_from_workspace stub
+# wave 2 — S reader: fiscal-quarter helpers, identity, s_from_revisions
 # ---------------------------------------------------------------------------
 
 
-def test_s_from_workspace_raises_not_implemented_with_exact_message() -> None:
-    with pytest.raises(NotImplementedError) as excinfo:
-        sources.s_from_workspace("AAPL", cutoff=_CUT, anything=1)
-    assert str(excinfo.value) == "S reader: owner-bound; seat wave 2"
+_S_CUT = datetime(2026, 10, 20, 20, 0, tzinfo=UTC)
+
+
+def test_parse_fiscal_q_valid_labels() -> None:
+    assert sources.parse_fiscal_q("2026Q3") == (2026, 3)
+    assert sources.parse_fiscal_q("2025Q1") == (2025, 1)
+    assert sources.parse_fiscal_q("2024Q4") == (2024, 4)
+
+
+def test_parse_fiscal_q_invalid_labels_raise() -> None:
+    for bad in ("2026q3", "2026Q0", "2026Q5", "2026FY", "26Q3", "2026-Q3",
+                "2026Q03", " 2026Q3", "", "ZZWP", None, 20263):
+        with pytest.raises(ValueError):
+            sources.parse_fiscal_q(bad)
+
+
+def test_previous_fiscal_q_wraps_across_q1() -> None:
+    assert sources.previous_fiscal_q("2026Q1") == "2025Q4"
+    assert sources.previous_fiscal_q("2026Q3") == "2026Q2"
+    assert sources.previous_fiscal_q("2025Q2") == "2025Q1"
+    with pytest.raises(ValueError):
+        sources.previous_fiscal_q("2026Q5")
+
+
+def test_s_event_ids_pinned_strings() -> None:
+    assert sources.s_event_ids("cik:0009999991", "2026Q1") == (
+        "evt_cik0009999991_2025q4_results",
+        "evt_cik0009999991_2026q1_results",
+    )
+    # calendar_end is not part of the canonical id: same ids without it —
+    # and a bad quarter refuses.
+    with pytest.raises(ValueError):
+        sources.s_event_ids("cik:0009999991", "2026Q9")
+
+
+class _Resolution:
+    def __init__(self, company_id: str) -> None:
+        self.company_id = company_id
+
+
+def _resolver(table: dict[str, str | None]) -> Any:
+    calls: list[tuple[str, date]] = []
+
+    def resolve(ticker: str, *, asof: date) -> Any:
+        calls.append((ticker, asof))
+        company_id = table.get(ticker)
+        return _Resolution(company_id) if company_id else None
+
+    resolve.calls = calls
+    return resolve
+
+
+def test_resolve_company_id_success_passes_cutoff_date() -> None:
+    resolver = _resolver({"ZZWP": "cik:0009999991"})
+    out = sources.resolve_company_id("ZZWP", _S_CUT, resolve_ticker=resolver)
+    assert out == "cik:0009999991"
+    assert resolver.calls == [("ZZWP", _S_CUT.date())]
+
+
+def test_resolve_company_id_typed_absence_is_none() -> None:
+    resolver = _resolver({"ZZWP": None})
+    assert sources.resolve_company_id("ZZWP", _S_CUT, resolve_ticker=resolver) is None
+
+
+def test_resolve_company_id_identity_error_is_none() -> None:
+    from engine.company_intelligence.identity import IdentityError
+
+    def resolve(ticker: str, *, asof: date) -> Any:
+        raise IdentityError(f"unresolvable: {ticker}")
+
+    assert sources.resolve_company_id("ZZWP", _S_CUT, resolve_ticker=resolve) is None
+
+
+def test_resolve_company_id_any_exception_is_none() -> None:
+    def resolve(ticker: str, *, asof: date) -> Any:
+        raise RuntimeError("resolver bug")
+
+    assert sources.resolve_company_id("ZZWP", _S_CUT, resolve_ticker=resolve) is None
+
+
+def _rev(gen: str, *, sha: str = "b" * 64, lifecycle: str = "complete",
+         generated_at: str | None = None, observed_at: str | None = None,
+         source_available_at: str | None = None,
+         receipt_sha: str | None = None) -> dict:
+    workspace: dict = {}
+    if generated_at is not None:
+        workspace["generated_at"] = generated_at
+    return {
+        "generation_id": gen,
+        "source_sha256": sha,
+        "source_available_at": source_available_at,
+        "observed_at": observed_at,
+        "lifecycle_state": lifecycle,
+        "workspace_receipt": {"sha256": receipt_sha or f"rcpt-{gen}", "bytes": 128},
+        "workspace": workspace,
+    }
+
+
+def test_s_from_revisions_resolves_newest_candidate() -> None:
+    qm1 = [
+        _rev("gen-1", sha="s1" * 32, generated_at="2026-10-19T18:00:00Z"),
+        _rev("gen-2", sha="s2" * 32, generated_at="2026-10-20T10:00:00Z"),
+    ]
+    s = sources.s_from_revisions(qm1, [], _S_CUT)
+    assert s["q_minus_1_resolved"] is True
+    assert s["source_sha256"] == "s2" * 32  # the NEWEST candidate wins
+    assert s["generation_id"] == "gen-2"
+    assert s["lifecycle_state"] == "complete"
+    assert s["generated_at"] == "2026-10-20T10:00:00Z"
+    assert s["observed_at"] is None
+    assert s["record_ids"] == ["rcpt-gen-2"]
+    assert s["reason"] is None
+    assert s["pit_unrecoverable"] is False
+    assert s["q_release_before_cutoff"] is False
+
+
+def test_s_from_revisions_correction_after_cutoff_never_selected() -> None:
+    # prereg §2.1 last sentence: the reader keeps the generation that introduced
+    # each sha, so a correction generated after C is not the as-of-C version.
+    qm1 = [
+        _rev("gen-old", sha="old" * 21 + "a", generated_at="2026-10-19T18:00:00Z"),
+        _rev("gen-fix", sha="new" * 21 + "b", generated_at="2026-10-21T09:00:00Z"),
+    ]
+    s = sources.s_from_revisions(qm1, [], _S_CUT)
+    assert s["q_minus_1_resolved"] is True
+    assert s["source_sha256"] == "old" * 21 + "a"  # the OLDER sha is kept
+    assert s["generation_id"] == "gen-old"
+
+
+def test_s_from_revisions_observed_after_cutoff_excluded() -> None:
+    qm1 = [
+        _rev("gen-1", sha="s1" * 32, generated_at="2026-10-19T18:00:00Z",
+             observed_at="2026-10-19T18:00:00Z"),
+        _rev("gen-2", sha="s2" * 32, generated_at="2026-10-20T10:00:00Z",
+             observed_at="2026-10-21T05:00:00Z"),  # observed after C: not a candidate
+    ]
+    s = sources.s_from_revisions(qm1, [], _S_CUT)
+    assert s["source_sha256"] == "s1" * 32
+    assert s["generation_id"] == "gen-1"
+
+
+def test_s_from_revisions_no_candidate_abstains_not_unrecoverable() -> None:
+    qm1 = [_rev("gen-late", generated_at="2026-10-21T09:00:00Z")]
+    s = sources.s_from_revisions(qm1, [], _S_CUT)
+    assert s["q_minus_1_resolved"] is False
+    assert s["reason"] == "qm1_not_published_by_cutoff"
+    assert s["pit_unrecoverable"] is False
+    assert s["source_sha256"] is None and s["record_ids"] == []
+
+
+def test_s_from_revisions_partial_newest_abstains_without_fallback() -> None:
+    # prereg §2.5: a partial is never silent backing — and an older complete
+    # revision is NOT the as-of-C view, so no fallback happens.
+    qm1 = [
+        _rev("gen-old", sha="old" * 21 + "a", lifecycle="complete",
+             generated_at="2026-10-19T18:00:00Z"),
+        _rev("gen-part", sha="part" * 16, lifecycle="completed_partial",
+             generated_at="2026-10-20T10:00:00Z"),
+    ]
+    s = sources.s_from_revisions(qm1, [], _S_CUT)
+    assert s["q_minus_1_resolved"] is False
+    assert s["reason"] == "qm1_not_released"
+    assert s["source_sha256"] is None
+    assert s["pit_unrecoverable"] is False
+
+
+def test_s_from_revisions_empty_sha_abstains_missing() -> None:
+    qm1 = [_rev("gen-1", sha="", generated_at="2026-10-19T18:00:00Z")]
+    s = sources.s_from_revisions(qm1, [], _S_CUT)
+    assert s["q_minus_1_resolved"] is False
+    assert s["reason"] == "qm1_sha_missing"
+    assert s["pit_unrecoverable"] is False
+
+
+def test_s_from_revisions_unparseable_generated_at_unrecoverable() -> None:
+    qm1 = [
+        _rev("gen-ok", generated_at="2026-10-19T18:00:00Z"),
+        _rev("gen-bad", generated_at=None),  # any revision, not only release-bearing
+    ]
+    s = sources.s_from_revisions(qm1, [], _S_CUT)
+    assert s["q_minus_1_resolved"] is False
+    assert s["pit_unrecoverable"] is True
+    assert s["reason"] == "revision_time_unparseable"
+    assert s["source_sha256"] is None
+
+
+def test_s_from_revisions_q_precutoff_via_corrected_source_clock() -> None:
+    # prereg §10 A2 (a clock before A5's E): the registered correction lands the
+    # source clock exactly at C -> a pre-cutoff disclosure.
+    qm1 = [_rev("gen-1", generated_at="2026-10-19T18:00:00Z")]
+    q = [_rev("gen-q", sha="q" * 64,
+              source_available_at="2026-10-21T00:00:00Z")]  # -> 2026-10-20T20:00:00Z
+    s = sources.s_from_revisions(qm1, q, _S_CUT)
+    assert s["q_minus_1_resolved"] is True  # the q flag leaves the q-1 leg intact
+    assert s["q_release_before_cutoff"] is True
+    assert s["reason"] is None and s["pit_unrecoverable"] is False
+
+
+def test_s_from_revisions_q_after_cutoff_false() -> None:
+    qm1 = [_rev("gen-1", generated_at="2026-10-19T18:00:00Z")]
+    q = [_rev("gen-q", sha="q" * 64, generated_at="2026-10-21T02:00:00Z",
+              observed_at="2026-10-21T02:00:00Z",
+              source_available_at="2026-10-21T02:10:00Z")]  # corrected 22:10Z > C
+    s = sources.s_from_revisions(qm1, q, _S_CUT)
+    assert s["q_release_before_cutoff"] is False
+    assert s["pit_unrecoverable"] is False
+
+
+def test_s_from_revisions_q_scheduled_state_ignored() -> None:
+    # "scheduled" is an EVENT_STATES member but not release-bearing: its early
+    # clock proves nothing (prereg §2.5 — no silent backing from a non-release).
+    qm1 = [_rev("gen-1", generated_at="2026-10-19T18:00:00Z")]
+    q = [_rev("gen-q", sha="q" * 64, lifecycle="scheduled",
+              source_available_at="2026-10-01T00:00:00Z")]
+    s = sources.s_from_revisions(qm1, q, _S_CUT)
+    assert s["q_release_before_cutoff"] is False
+    assert s["pit_unrecoverable"] is False
+
+
+def test_s_from_revisions_q_uncorrectable_clock_unresolved() -> None:
+    # The fall-back hour is unresolvable (A2 pins) and no system clock flags it:
+    # the disclosure time cannot be ordered against C -> unrecoverable.
+    qm1 = [_rev("gen-1", generated_at="2026-10-19T18:00:00Z")]
+    q = [_rev("gen-q", sha="q" * 64, source_available_at="2026-11-01T08:00:00Z")]
+    s = sources.s_from_revisions(qm1, q, _S_CUT)
+    assert s["q_release_before_cutoff"] is False
+    assert s["pit_unrecoverable"] is True
+    assert s["reason"] == "q_release_time_unresolved"
+    assert s["q_minus_1_resolved"] is True  # q_minus_1_resolved unchanged
+
+
+def test_s_from_revisions_q_source_clock_after_a5_read_as_given() -> None:
+    # prereg §10 A5 applies value by value to the q revision's source clock.
+    cut = _close_utc(date(2026, 12, 8))  # 21:00Z (EST)
+    qm1 = [_rev("gen-1", generated_at="2026-12-07T18:00:00Z")]
+    at_c = [_rev("gen-q", sha="q" * 64, source_available_at="2026-12-08T21:00:00Z")]
+    s = sources.s_from_revisions(qm1, at_c, cut)
+    assert s["q_release_before_cutoff"] is True
+    # A2 would read 16:05Z <= C; A5 reads 21:05Z > C
+    after = [_rev("gen-q", sha="q" * 64, source_available_at="2026-12-08T21:05:00Z")]
+    s = sources.s_from_revisions(qm1, after, cut)
+    assert s["q_release_before_cutoff"] is False
+    assert s["pit_unrecoverable"] is False and s["reason"] is None
+
+
+def test_s_from_revisions_q_dst_hour_after_a5_resolves() -> None:
+    cut = _close_utc(date(2026, 12, 8))
+    qm1 = [_rev("gen-1", generated_at="2026-12-07T18:00:00Z")]
+    q = [_rev("gen-q", sha="q" * 64, source_available_at="2027-11-07T06:30:00Z")]
+    s = sources.s_from_revisions(qm1, q, cut)
+    assert s["q_release_before_cutoff"] is False
+    assert s["pit_unrecoverable"] is False and s["reason"] is None
+
+
+def test_s_from_revisions_copies_nothing_from_q_revisions() -> None:
+    qm1 = [_rev("gen-1", sha="s1" * 32, generated_at="2026-10-19T18:00:00Z")]
+    q = [_rev("gen-QBIG", sha="QBIG" * 12, generated_at="2026-10-21T02:00:00Z")]
+    s = sources.s_from_revisions(qm1, q, _S_CUT)
+    assert set(s) == {
+        "q_minus_1_resolved", "source_sha256", "generation_id", "generated_at",
+        "observed_at", "lifecycle_state", "record_ids", "pit_unrecoverable",
+        "q_release_before_cutoff", "reason",
+    }
+    assert s["source_sha256"] == "s1" * 32  # never the q sha
+    assert s["generation_id"] == "gen-1"  # never the q generation
+    assert s["record_ids"] == ["rcpt-gen-1"]  # never a q receipt
+    assert s["q_minus_1_resolved"] is True
+
+
+# ---------------------------------------------------------------------------
+# wave 2 — s_from_workspace and collect_s_legs (injected readers)
+# ---------------------------------------------------------------------------
+
+
+def test_s_from_workspace_identity_failure() -> None:
+    reader_calls: list[list[str]] = []
+
+    def reader(event_ids: list[str], *, max_hops: int = 500) -> dict:
+        reader_calls.append(list(event_ids))
+        return {}
+
+    s = sources.s_from_workspace(
+        "ZZWP", "2026Q3", _S_CUT,
+        resolve_ticker=_resolver({"ZZWP": None}), revisions_reader=reader)
+    assert s["pit_unrecoverable"] is True
+    assert s["reason"] == "identity_unresolved"
+    assert reader_calls == []  # no chain walk without an identity
+
+
+def test_s_from_workspace_reader_exception_chain_unreadable() -> None:
+    def reader(event_ids: list[str], *, max_hops: int = 500) -> dict:
+        raise RuntimeError("chain integrity")
+
+    s = sources.s_from_workspace(
+        "ZZWP", "2026Q3", _S_CUT,
+        resolve_ticker=_resolver({"ZZWP": "cik:0009999991"}),
+        revisions_reader=reader)
+    assert s["pit_unrecoverable"] is True
+    assert s["reason"] == "chain_unreadable"
+
+
+def test_s_from_workspace_revisions_map_skips_reader() -> None:
+    def reader(event_ids: list[str], *, max_hops: int = 500) -> dict:
+        raise AssertionError("the revisions= path must not call the reader")
+
+    qm1_id, q_id = sources.s_event_ids("cik:0009999991", "2026Q3")
+    revisions = {qm1_id: [_rev("gen-1", generated_at="2026-10-19T18:00:00Z")],
+                 q_id: []}
+    s = sources.s_from_workspace(
+        "ZZWP", "2026Q3", _S_CUT,
+        resolve_ticker=_resolver({"ZZWP": "cik:0009999991"}),
+        revisions_reader=reader, revisions=revisions)
+    assert s["q_minus_1_resolved"] is True
+    assert s["source_sha256"] == "b" * 64
+
+
+def test_collect_s_legs_single_reader_call_across_episodes() -> None:
+    rows = [
+        _eightk("AAPL", "0000000000-26-000301", "2026-10-29T20:05:00.000Z",
+                "2026-10-29"),
+        _eightk("AAPL", "0000000000-26-000302", "2026-08-06T00:10:00.000Z",
+                "2026-08-05"),  # before the prereg commit -> EXPOSED, still a leg
+        _eightk("DHI", "0000000000-26-000303", "2026-10-29T20:05:00.000Z",
+                "2026-10-29"),
+    ]
+    episodes = sources.enumerate_episodes(rows)
+    # ordered by t_rel: the August filing predates the prereg commit -> EXPOSED
+    assert [ep["status"] for ep in episodes] == ["EXPOSED", "ELIGIBLE", "ELIGIBLE"]
+    reader_calls: list[list[str]] = []
+
+    def reader(event_ids: list[str], *, max_hops: int = 500) -> dict:
+        reader_calls.append(list(event_ids))
+        return {event_id: [] for event_id in event_ids}
+
+    legs = sources.collect_s_legs(
+        episodes,
+        resolve_ticker=_resolver({"AAPL": "cik:0009999991",
+                                  "DHI": "cik:0009999992"}),
+        revisions_reader=reader,
+    )
+    assert len(reader_calls) == 1  # ONE call for all episodes — never per episode
+    # The union is 5 ids, not 6: AAPL 2026Q2 is both the q of the Q2 episode and
+    # the q-1 of the Q3 episode — the shared id is fetched once.
+    assert len(reader_calls[0]) == 5
+    assert len({event_id for event_id in reader_calls[0]}) == 5
+    assert set(legs) == {(ep["issuer"], ep["q"]) for ep in episodes}
+    for leg in legs.values():
+        assert set(leg) == set(sources._empty_s())
+        assert leg["reason"] == "qm1_not_published_by_cutoff"  # empty chain: real absence
+
+
+def test_collect_s_legs_reader_exception_marks_every_episode() -> None:
+    rows = [_eightk("AAPL", "0000000000-26-000311", "2026-10-29T20:05:00.000Z",
+                    "2026-10-29")]
+    episodes = sources.enumerate_episodes(rows)
+
+    def reader(event_ids: list[str], *, max_hops: int = 500) -> dict:
+        raise RuntimeError("refused")
+
+    legs = sources.collect_s_legs(
+        episodes,
+        resolve_ticker=_resolver({"AAPL": "cik:0009999991"}),
+        revisions_reader=reader,
+    )
+    assert len(legs) == 1
+    (leg,) = legs.values()
+    assert leg["reason"] == "chain_unreadable"
+    assert leg["pit_unrecoverable"] is True
+
+
+# ---------------------------------------------------------------------------
+# wave 2 — leak-rule extension (q_release_before_cutoff)
+# ---------------------------------------------------------------------------
+
+
+def test_leak_q_release_before_cutoff_is_pre_cutoff_leak() -> None:
+    episode = _eligible_episode()
+    episode["s"]["q_release_before_cutoff"] = True
+    out = sources.apply_leak_rules(episode)
+    assert out["status"] == "NOT_EVALUABLE"
+    assert out["not_evaluable_reason"] == "pre_cutoff_leak"
+    # the flag wins over pit_unrecoverable: it is checked first
+    episode["s"]["pit_unrecoverable"] = True
+    out = sources.apply_leak_rules(episode)
+    assert out["not_evaluable_reason"] == "pre_cutoff_leak"
+
+
+# ---------------------------------------------------------------------------
+# wave 2 — enrich_exhibits (SGML header manifest, types only)
+# ---------------------------------------------------------------------------
+
+
+def _sgml(*types: str, escaped: bool = False) -> str:
+    blocks = ""
+    for kind in types:
+        name = kind.lower().replace(".", "") + ".htm"
+        if escaped:
+            blocks += (
+                "&lt;DOCUMENT&gt;\n&lt;TYPE&gt;" + kind +
+                "&lt;/TYPE&gt;\n&lt;FILENAME&gt;" + name + "&lt;/FILENAME&gt;\n"
+            )
+        else:
+            blocks += f"<DOCUMENT>\n<TYPE>{kind}</TYPE>\n<FILENAME>{name}</FILENAME>\n"
+    return blocks
+
+
+def _enrichable_row(acc: str = "0000000000-26-000401", ticker: str = "AAPL",
+                    *, items: str = "2.02,9.01", form: str = "8-K") -> dict:
+    return {"ticker": ticker, "cik": 320193, "accession": acc, "form": form,
+            "filing_date": "2026-10-29", "acceptance_datetime":
+                "2026-10-29T20:05:00.000Z",
+            "report_date": "2026-10-29", "items": items}
+
+
+def test_enrich_sets_ex991_true() -> None:
+    rows = [_enrichable_row()]
+    enriched, failures = sources.enrich_exhibits(
+        rows, fetch_index_headers=lambda cik, acc: _sgml("EX-99.1", "10.1"))
+    assert failures == []
+    assert enriched[0]["exhibits"] == [{"type": "EX-99.1"}, {"type": "10.1"}]
+    assert enriched[0]["has_ex_99_1"] is True
+
+
+def test_enrich_without_ex991_false() -> None:
+    rows = [_enrichable_row()]
+    enriched, failures = sources.enrich_exhibits(
+        rows, fetch_index_headers=lambda cik, acc: _sgml("EX-99.2", "10.1"))
+    assert failures == []
+    assert enriched[0]["has_ex_99_1"] is False
+    assert enriched[0]["exhibits"] == [{"type": "EX-99.2"}, {"type": "10.1"}]
+
+
+def test_enrich_empty_manifest_gives_false() -> None:
+    enriched, failures = sources.enrich_exhibits(
+        [_enrichable_row()], fetch_index_headers=lambda cik, acc: "")
+    assert failures == []
+    assert enriched[0]["exhibits"] == []
+    assert enriched[0]["has_ex_99_1"] is False
+
+
+def test_enrich_fetcher_failure_records_and_skips() -> None:
+    def fetch(cik: object, acc: object) -> str:
+        raise RuntimeError("404")
+
+    rows = [_enrichable_row()]
+    enriched, failures = sources.enrich_exhibits(rows, fetch_index_headers=fetch)
+    assert failures == [{"ticker": "AAPL", "accession": "0000000000-26-000401",
+                         "reason": "index_headers_unavailable"}]
+    assert "exhibits" not in enriched[0] and "has_ex_99_1" not in enriched[0]
+    # a non-str return is the same failure
+    enriched, failures = sources.enrich_exhibits(
+        rows, fetch_index_headers=lambda cik, acc: None)
+    assert failures and "exhibits" not in enriched[0]
+
+
+def test_enrich_untouched_rows_fetcher_not_called() -> None:
+    calls: list[tuple[object, object]] = []
+
+    def fetch(cik: object, acc: object) -> str:
+        calls.append((cik, acc))
+        return _sgml("EX-99.1")
+
+    rows = [
+        _enrichable_row("0000000000-26-000410", items="9.01"),        # not Item 2.02
+        _enrichable_row("0000000000-26-000411", form="10-Q"),         # not an 8-K
+        _enrichable_row("0000000000-26-000412", ticker="ZZWP"),       # not in UNIVERSE
+        _enrichable_row("0000000000-26-000413"),                      # enriched
+    ]
+    enriched, failures = sources.enrich_exhibits(rows, fetch_index_headers=fetch)
+    assert failures == []
+    assert calls == [(320193, "0000000000-26-000413")]
+    for row in enriched[:3]:
+        assert "exhibits" not in row and "has_ex_99_1" not in row
+    assert enriched[3]["has_ex_99_1"] is True
+
+
+def test_enrich_escaped_sgml_parses() -> None:
+    enriched, failures = sources.enrich_exhibits(
+        [_enrichable_row()],
+        fetch_index_headers=lambda cik, acc: _sgml("EX-99.1", escaped=True))
+    assert failures == []
+    assert enriched[0]["has_ex_99_1"] is True
+    assert enriched[0]["exhibits"] == [{"type": "EX-99.1"}]
+
+
+# ---------------------------------------------------------------------------
+# wave 2 — prior_filings_from_submissions
+# ---------------------------------------------------------------------------
+
+
+def test_prior_filings_recent_and_older_pages() -> None:
+    recent = {
+        "filings": {"recent": {
+            "accessionNumber": ["0009999991-26-000001", "0009999991-26-000002",
+                                "0009999991-26-000003"],
+            "acceptanceDateTime": ["2026-04-30T20:30:00.000Z",
+                                   "2026-05-01T15:00:00.000Z",
+                                   "2026-01-29T02:04:38.000Z"],
+            "form": ["10-Q", "8-K", "10-K"],
+        }},
+    }
+    older = {
+        "accessionNumber": ["0009999991-25-000009", "0009999991-26-000001"],
+        "acceptanceDateTime": ["2025-10-30T20:30:00.000Z", "earlier-dup"],
+        "form": ["10-K", "10-Q"],
+    }
+    out = sources.prior_filings_from_submissions(recent, older)
+    assert out == [
+        {"accession": "0009999991-26-000001",
+         "accepted_at": "2026-04-30T20:30:00.000Z", "form": "10-Q"},
+        {"accession": "0009999991-26-000003",
+         "accepted_at": "2026-01-29T02:04:38.000Z", "form": "10-K"},
+        {"accession": "0009999991-25-000009",
+         "accepted_at": "2025-10-30T20:30:00.000Z", "form": "10-K"},
+    ]  # the 8-K is filtered; the duplicate keeps the FIRST acceptance as given
+
+
+def test_prior_filings_filters_duplicates_and_malformed() -> None:
+    good = {"filings": {"recent": {
+        "accessionNumber": ["0009999991-26-000010", "", "0009999991-26-000011"],
+        "acceptanceDateTime": ["2026-04-30T20:30:00.000Z", "2026-05-01T15:00:00Z",
+                               ""],
+        "form": ["10-Q", "10-Q", "10-Q"],
+    }}}
+    assert sources.prior_filings_from_submissions(good) == [
+        {"accession": "0009999991-26-000010",
+         "accepted_at": "2026-04-30T20:30:00.000Z", "form": "10-Q"},
+    ]
+    # unequal arrays zip to the shortest; malformed pages contribute nothing
+    unequal = {"accessionNumber": ["a-1", "a-2", "a-3"],
+               "acceptanceDateTime": ["2026-01-01T00:00:00Z"],
+               "form": ["10-Q", "10-Q", "10-Q"]}
+    assert sources.prior_filings_from_submissions(unequal) == [
+        {"accession": "a-1", "accepted_at": "2026-01-01T00:00:00Z", "form": "10-Q"},
+    ]
+    for malformed in (None, 42, "page", {"filings": {"recent": "nope"}},
+                      {"accessionNumber": "not-a-list", "acceptanceDateTime": [],
+                       "form": []}, {"filings": "nope"}):
+        assert sources.prior_filings_from_submissions(malformed) == []
+    assert sources.prior_filings_from_submissions() == []

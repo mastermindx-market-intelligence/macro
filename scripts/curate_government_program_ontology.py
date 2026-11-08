@@ -57,6 +57,7 @@ _TARGET_KIND_TO_COLLECTION = {
     "milestone": "milestones",
     "public_capacity_assertion": "public_capacity_assertions",
     "public_oversight_assertion": "public_oversight_assertions",
+    "public_agreement_assertion": "public_agreement_assertions",
     "program_capability_link": "program_capability_links",
     "program_event_link": "program_event_links",
     "conflict": "conflicts",
@@ -70,6 +71,7 @@ _COLLECTION_ID_KEY = {
     "milestones": "id",
     "public_capacity_assertions": "id",
     "public_oversight_assertions": "id",
+    "public_agreement_assertions": "id",
     "program_capability_links": "link_id",
     "program_event_links": "link_id",
     "conflicts": "conflict_id",
@@ -77,17 +79,18 @@ _COLLECTION_ID_KEY = {
 }
 #: Content-addressed kinds whose byte-identical resubmission is an idempotent
 #: no-op in the batch-apply loop rather than a duplicate append.
-_IDEMPOTENT_CONTENT_KINDS = {"public_capacity_assertion", "public_oversight_assertion"}
+_IDEMPOTENT_CONTENT_KINDS = {"public_capacity_assertion", "public_oversight_assertion", "public_agreement_assertion"}
 #: Coverage scopes whose re-import is idempotent: re-admitting the same
 #: worksheet must not mint a duplicate review_coverage row (the loader refuses
 #: duplicate ids). Other scopes keep their historical append behavior.
-_IDEMPOTENT_COVERAGE_SCOPES = {"public_capacity", "public_oversight"}
+_IDEMPOTENT_COVERAGE_SCOPES = {"public_capacity", "public_oversight", "public_agreement"}
 #: Explicit migration ladder for --schema-version (no downgrade from 1.3).
 _SCHEMA_VERSION_RANK = {
     "1.0.0": 0,
     "1.1.0": 1,
     po.PUBLIC_CAPACITY_VERSION: 2,
     po.PUBLIC_OVERSIGHT_VERSION: 3,
+    po.PUBLIC_AGREEMENT_VERSION: 4,
 }
 _LOGICAL_TARGET_KINDS = {"program", "capability", "platform"}
 _GRAPH_ID_RE = re.compile(
@@ -312,6 +315,7 @@ def _referencing_rows_current(trial: dict[str, Any], kind: str, target_id: str) 
             ("role_assertions", "id"), ("milestones", "id"),
             ("public_capacity_assertions", "id"),
             ("public_oversight_assertions", "id"),
+            ("public_agreement_assertions", "id"),
             ("program_capability_links", "link_id"), ("program_event_links", "link_id"),
         ):
             current_rows = po.current_content_addressed_rows(
@@ -500,6 +504,8 @@ def curate_worksheet(
             working.setdefault(po.PUBLIC_CAPACITY_COLLECTION, [])
         if _SCHEMA_VERSION_RANK[schema_version] >= _SCHEMA_VERSION_RANK[po.PUBLIC_OVERSIGHT_VERSION]:
             working.setdefault(po.PUBLIC_OVERSIGHT_COLLECTION, [])
+        if _SCHEMA_VERSION_RANK[schema_version] >= _SCHEMA_VERSION_RANK[po.PUBLIC_AGREEMENT_VERSION]:
+            working.setdefault(po.PUBLIC_AGREEMENT_COLLECTION, [])
     # freeze SS3.0: curate re-mints the graph_id's status segment to
     # `reviewed` on every admission -- a `candidate`-status graph_id must
     # never reach the canonical artifact.
@@ -545,14 +551,20 @@ def curate_worksheet(
         if target_kind not in _TARGET_KIND_TO_COLLECTION or not isinstance(candidate_row, dict):
             rejected.append({"row": row, "reason": "worksheet_inconsistent"})
             continue
-        if target_kind == "public_capacity_assertion" and working.get("schema_version") not in (po.PUBLIC_CAPACITY_VERSION, po.PUBLIC_OVERSIGHT_VERSION):
+        if target_kind == "public_capacity_assertion" and working.get("schema_version") not in (po.PUBLIC_CAPACITY_VERSION, po.PUBLIC_OVERSIGHT_VERSION, po.PUBLIC_AGREEMENT_VERSION):
             rejected.append({"row": row, "reason": "public_capacity_schema_migration_required"})
             continue
-        if target_kind == "public_oversight_assertion" and working.get("schema_version") != po.PUBLIC_OVERSIGHT_VERSION:
+        if target_kind == "public_oversight_assertion" and working.get("schema_version") not in (po.PUBLIC_OVERSIGHT_VERSION, po.PUBLIC_AGREEMENT_VERSION):
             rejected.append({"row": row, "reason": "public_oversight_schema_migration_required"})
             continue
         if _forbidden_keys_present(candidate_row):
             rejected.append({"row": row, "reason": "forbidden_provenance_key_present"})
+            continue
+        if target_kind == "public_agreement_assertion" and working.get("schema_version") != po.PUBLIC_AGREEMENT_VERSION:
+            rejected.append({"row": row, "reason": "public_agreement_schema_migration_required"})
+            continue
+        if target_kind == "public_agreement_assertion" and po.strict_datetime(candidate_row.get("known_at")) is not None and po.strict_datetime(candidate_row["known_at"]) > po.strict_datetime(reviewed_at):
+            rejected.append({"row": row, "reason": "public_agreement_review_clock_invalid"})
             continue
         if candidate_row.get("verification_state") not in po.REVIEW_STATES:
             rejected.append({"row": row, "reason": "worksheet_inconsistent"})
@@ -664,7 +676,7 @@ def curate_worksheet(
         scope = entry.get("scope")
         subject_type = entry.get("subject_type")
         subject_id = entry.get("subject_id")
-        if scope not in po.coverage_scopes_for(working) or subject_type not in po.COVERAGE_SUBJECT_TYPE_ENUM or not subject_id:
+        if scope not in po.coverage_scopes_for(working) or subject_type not in po.coverage_subject_types_for(working) or not subject_id:
             continue
         admitted_count = sum(
             1 for c in admitted
@@ -717,6 +729,8 @@ def _row_key(candidate: dict[str, Any]) -> str:
 def _covers(candidate: dict[str, Any], *, scope: str, subject_type: str, subject_id: str) -> bool:
     row = candidate["candidate_row"]
     target_kind = candidate["target_kind"]
+    if subject_type == "source_evidence" and scope == "public_agreement":
+        return target_kind == "public_agreement_assertion" and subject_id in row.get("evidence_refs", [])
     if subject_type == "program":
         if scope == "program_identity":
             if target_kind == "program":

@@ -572,3 +572,31 @@ def test_r3_list_title_after_discard_needs_the_whole_chunk() -> None:
     )
     parsed = parse_displayed_primary_table(whole, title=["synthetic statement of operations"])
     assert [row["label"] for row in parsed["rows"]] == ["Revenue"]
+
+
+def test_r3_single_exact_title_cell_beside_units_rearms_after_discards() -> None:
+    # After a discard only a cell whose whole text is the title re-arms; the
+    # joined row ("title (in millions)") is not an exact title and must not be
+    # the sole route back into capture.
+    html = """
+    <html><body>
+    <table><tr><td>SYNTHETIC STATEMENT OF OPERATIONS</td><td>45</td></tr></table>
+    <table><tr><td>SYNTHETIC STATEMENT OF OPERATIONS</td><td>45</td></tr></table>
+    <table>
+    <tr><td>SYNTHETIC STATEMENT OF OPERATIONS</td><td>(in millions)</td><td></td></tr>
+    <tr><td>Line</td><td>March 31, 2025</td><td>March 31, 2024</td></tr>
+    <tr>
+      <td>Revenue</td>
+      <td><ix:nonFraction name="us-gaap:Revenues" contextRef="c2025" id="syn-p5b-r3c-2025" unitRef="usd" decimals="-6" scale="6">10</ix:nonFraction></td>
+      <td><ix:nonFraction name="us-gaap:Revenues" contextRef="c2024" id="syn-p5b-r3c-2024" unitRef="usd" decimals="-6" scale="6">9</ix:nonFraction></td>
+    </tr>
+    </table>
+    </body></html>
+    """
+    parsed = parse_displayed_primary_table(html, title=TITLE)
+    assert parsed["columns_iso"] == ["2025-03-31", "2024-03-31"]
+    assert [row["label"] for row in parsed["rows"]] == ["Revenue"]
+    assert [item["fact_id"] for item in parsed["rows"][0]["value_facts"]] == [
+        "syn-p5b-r3c-2025",
+        "syn-p5b-r3c-2024",
+    ]

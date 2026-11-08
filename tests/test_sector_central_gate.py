@@ -437,8 +437,8 @@ def test_overview_hero_discloses_exact_source_generation():
 
 
 def test_hero_asof_is_bound_on_the_context_rich_render_too():
-    # The normal theme-context hero is a separate branch from the fallback
-    # used in the generation test above. Both must display the same baked date.
+    # The current single Brief hero accepts both rich and absent theme context.
+    # Its visible date must stay bound to the same validated source generation.
     ctx = {
         "leadership": {
             "state": "steady",
@@ -547,6 +547,7 @@ function run(server, basket, mc, language=false, keepNodes=false){
   renderInternals();
   return {
     verdict:nodeFor('mkt-breadth').textContent,
+    verdictColor:nodeFor('mkt-breadth').style.color,
     note:nodeFor('mkt-breadth-sub').innerHTML,
     ad:nodeFor('mkt-ad').innerHTML,
     hilo:nodeFor('mkt-hilo').innerHTML,
@@ -567,17 +568,20 @@ const observed=run('2026-10-16','2026-10-16',source);
 const emptyVerdict=run('2026-10-16','2026-10-16',{...source,verdict:null});
 const zhUnknown=run('2026-10-16','2026-10-16',{},true);
 for(const x of [absent,lag,badUniverse,noPageDate,staleBasket]){
-  if(x.verdict!=='—'||x.bar!=='0%'||!x.note.includes('Not measured')){
+  if(x.verdict!=='Not measured'||x.verdictColor!=='var(--muted)'||
+     x.bar!=='0%'||!x.note.includes('Not measured')){
     throw Error('unverified market got positive condition: '+JSON.stringify(x));
   }
 }
-if(observed.verdict!=='Broad'||!observed.ad.includes('200')||!observed.breadth200.includes('65%')){
+if(observed.verdict!=='Broad'||!observed.ad.includes('200')||observed.breadth200.replace(/<[^>]*>/g,'')!=='65%'){
   throw Error('legitimate same-date observation disappeared: '+JSON.stringify(observed));
 }
-if(emptyVerdict.verdict!=='—'||!emptyVerdict.note.includes('No measured breadth verdict')){
+if(emptyVerdict.verdict!=='Not measured'||emptyVerdict.verdictColor!=='var(--muted)'||
+   !emptyVerdict.note.includes('No measured breadth verdict')){
   throw Error('missing verdict silently minted mixed: '+JSON.stringify(emptyVerdict));
 }
-if(zhUnknown.verdict!=='—'||!zhUnknown.note.includes('未测')){
+if(zhUnknown.verdict!=='暂无实测'||zhUnknown.verdictColor!=='var(--muted)'||
+   !zhUnknown.note.includes('未测')){
   throw Error('Chinese missingness disclosure absent: '+JSON.stringify(zhUnknown));
 }
 // A same-vintage partial refresh must clear the previously displayed numbers,
@@ -587,12 +591,14 @@ const partial=run('2026-10-16','2026-10-16',
   {...source,adv:null,nl:null,pct_above_200:null},false,true);
 if(partial.ad!=='—'||partial.hilo!=='—'||partial.breadth200!=='—'||
    partial.bar!=='0%'||partial.hiloBar!=='0%'||partial.aboveBar!=='0%'||
-   partial.verdict!=='—'||!partial.note.includes('No measured breadth verdict')){
+   partial.verdict!=='Not measured'||partial.verdictColor!=='var(--muted)'||
+   !partial.note.includes('No measured breadth verdict')){
   throw Error('partial measured tape retained stale numeric cards: '+JSON.stringify(partial));
 }
 const invalid=run('2026-10-16','2026-10-16',
   {...source,adv:-1,nh:-2,pct_above_200:121});
-if(invalid.verdict!=='—'||invalid.ad!=='—'||invalid.hilo!=='—'||
+if(invalid.verdict!=='Not measured'||invalid.verdictColor!=='var(--muted)'||
+   invalid.ad!=='—'||invalid.hilo!=='—'||
    invalid.breadth200!=='—'){
   throw Error('physically invalid source counts qualified: '+JSON.stringify(invalid));
 }
@@ -614,8 +620,12 @@ def test_stale_snapshot_copy_has_no_current_clock_promises():
     assert "Only source-verified lanes carry graded calls." in fallback
 
     src = PAGE_TPL.read_text(encoding="utf-8")
-    assert "LAST RECORDED HANDOFF" in src
-    assert "awaiting a source-verified session" in src
+    assert "LAST RECORDED HANDOFF" not in src
+    assert "THIS WEEK\'S HANDOFF" not in src
+    assert "function fastLensNoRankCopy(fl)" in src
+    assert "no ranks since " in src
+    assert "not ranked on this lens" in src
+    assert "no ranks published" in src
     assert "No qualifying early reading in this snapshot." in src
     assert "acceleration over the measured session window ending at this snapshot" in src
     assert "check back after tonight" not in src.lower()

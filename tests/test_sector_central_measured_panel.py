@@ -23,6 +23,7 @@ import re
 import shutil
 import subprocess
 import textwrap
+from html.parser import HTMLParser
 from pathlib import Path
 
 import pytest
@@ -56,7 +57,9 @@ def _region(src: str, a: str, b: str) -> str:
 
 
 def _panel_js() -> str:
-    return _region(PAGE.read_text(encoding="utf-8"), START, END)
+    # The native page loads the shared identity contract before this region.
+    handoff = (ROOT / "templates" / "_sector_prophet_context.js.j2").read_text(encoding="utf-8")
+    return handoff + "\n" + _region(PAGE.read_text(encoding="utf-8"), START, END)
 
 
 def _fixture() -> dict:
@@ -571,7 +574,8 @@ def test_11_obs_history_for_xlk_and_its_failure_states():
 def test_12_early_box_watch_muted_broadening_clause_no_forecast():
     out = _run()
     e = out["early"]
-    assert "No early reading to show today." in e, e
+    assert "No qualifying early reading in this snapshot." in e, e
+    assert "No early reading to show today." not in e, e
     assert "mr-early-clause" not in out["early"], "state 'watch' must not render a clause"
     assert "Early observation — context only" in e and "2026-10-09" in e
     assert "Based on 2 of 2 checks" in e and "partial coverage" in e
@@ -819,6 +823,16 @@ def test_18_zh_failure_states_render_chinese(name, cfg, body, en_twin, zh_twin):
     blob = " ".join(str(out.get(k, "")) for k in
                     ("body", "sub", "status", "cov", "list", "un",
                      "detail", "hist", "early"))
+    # Link destinations are language-independent. Check visible copy, retaining
+    # every EN-twin assertion rather than mistaking si_sector in href for prose.
+    visible = []
+    class CopyParser(HTMLParser):
+        def handle_data(self, text):
+            visible.append(text)
+    parser = CopyParser()
+    parser.feed(blob)
+    parser.close()
+    blob = " ".join(visible)
     assert zh_twin in blob, f"{name}: expected Chinese copy {zh_twin!r} in {blob!r}"
     for en in re.findall(r"[A-Za-z]{4,}", en_twin):
         assert en not in blob, \
@@ -1054,3 +1068,12 @@ def test_22_series_hydration_wait_then_ready_and_failed():
     monolith = _run(cfg={"search": "?g=XLE", "cycles": CYC})
     assert "polyline" in monolith["hist"], monolith["hist"]
     assert "mr-skel-spark" not in monolith["hist"], monolith["hist"]
+
+
+@needs_node
+@pytest.mark.parametrize("ticker", RANKED + ["XLU", "XLRE"])
+def test_selected_measured_panel_links_its_exact_sector_to_macro_prophet(ticker):
+    out = _run(cfg={"search": "?g=" + ticker, "hash": "#map"})
+    assert f'href="us_stocks.html?si_sector={ticker}#sector-prophet-context"' in out["detail"]
+    assert "Compare in Prophet" in out["detail"]
+    assert [row[0] for row in out["rows"]][:len(RANKED)] == RANKED
