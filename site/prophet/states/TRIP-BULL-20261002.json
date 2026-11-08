@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "TRIP-BULL-20261002",
-  "asof": "2026-11-06",
+  "asof": "2026-11-08",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 18.4,
@@ -14,23 +14,23 @@
     "progress": 60.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 32.8
+    "overlay": 33.0
   },
   "geometry": {
-    "dist_to_stop_r": -3.049,
+    "dist_to_stop_r": -4.41,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 77.8,
-    "p1": -2.6988,
-    "p2": -1.3494,
+    "horizon_pct_used": 82.2,
+    "p1": -3.6064,
+    "p2": -1.8032,
     "p3": null,
-    "move_r": -4.049,
+    "move_r": -5.41,
     "mfe_r": 4.156,
-    "mae_r": -4.049
+    "mae_r": -5.41
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "Phase: at_t2 \u2192 invalidated",
+  "change_reason": "",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -40,13 +40,13 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 1.1600000762939455,
-  "_mae": -1.1299998855590818,
+  "_mae": -1.5099999999999998,
   "_max_p1": 2.770480239536535,
   "_first_trigger_ts": "2026-10-03",
   "_first_t1_ts": "2026-10-09",
   "_first_t2_ts": "2026-10-20",
-  "days_elapsed": 35,
-  "tau": 0.7778,
+  "days_elapsed": 37,
+  "tau": 0.8222,
   "closed": true,
   "outcome": "T1_HIT"
 }

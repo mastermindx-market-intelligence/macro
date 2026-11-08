@@ -1861,6 +1861,50 @@ def _seo_director_state() -> dict:
                 "note": "Couldn't reach GitHub to read director state — try again."}
 
 
+def _seo_gsc_observations(repo: Path, state: dict) -> dict:
+    """Project retained observations in memory; never fetch or rewrite artifacts."""
+    unavailable = {"available": False, "rows_observed": None, "clicks": None, "impressions": None}
+    if state.get("available") is not True or not state.get("window"):
+        return unavailable
+    try:
+        import io
+        import math
+        import pandas as pd
+        from engine.marketing.seo_search_console import (
+            _build_scorecard, _reporting_window_rows,
+        )
+
+        # A missing/corrupt parquet is not an observed empty result. Read one
+        # immutable byte snapshot, independently of older derived scorecards.
+        raw = (repo / "data/marketing/seo/search_console_daily.parquet").read_bytes()
+        frame = pd.read_parquet(io.BytesIO(raw))
+        required = {"date", "page", "clicks", "impressions", "ctr", "position"}
+        if not required.issubset(frame.columns):
+            return unavailable
+        window = _reporting_window_rows(frame, state["as_of"], state["window"])
+        if window.empty and (type(state.get("rows_fetched")) is not int or state["rows_fetched"] != 0):
+            return unavailable  # No matching rows cannot corroborate a positive collection.
+        for key in ("clicks", "impressions", "ctr", "position"):
+            for value in window[key]:
+                if isinstance(value, (bool, str)) or not math.isfinite(float(value)) or value < 0:
+                    return unavailable
+                if key in ("clicks", "impressions") and float(value) != int(value):
+                    return unavailable
+        if window["page"].isna().any() or not window["page"].map(lambda p: isinstance(p, str)).all():
+            return unavailable
+        card = _build_scorecard(frame, state["as_of"], state["window"])
+        if _read_json(repo / _SEO_GSC_STATE_REL) != state:
+            return unavailable  # Collection metadata moved during this read.
+        return {
+            "available": True,
+            "rows_observed": len(window),
+            "clicks": sum(f["clicks"] for f in card["families"].values()),
+            "impressions": sum(f["impressions"] for f in card["families"].values()),
+        }
+    except Exception:  # Missing dependencies/data must not break Beacon or invent zero.
+        return unavailable
+
+
 def _seo_search_console(repo: Path) -> dict:
     """Read the last result. Age is its reporting as_of, not a collection clock."""
     result = {
@@ -1870,6 +1914,7 @@ def _seo_search_console(repo: Path) -> dict:
                 "Current connection has not been checked.",
         "as_of": None, "age_days": None, "property": None, "window": None,
         "rows_fetched": None, "rows_may_be_incomplete": None, "reason": None,
+        "observations": {"available": False, "rows_observed": None, "clicks": None, "impressions": None},
     }
     state = _read_json(repo / _SEO_GSC_STATE_REL)
     if (not isinstance(state, dict) or state.get("schema") != "gsc_state.v1"
@@ -1905,6 +1950,8 @@ def _seo_search_console(repo: Path) -> dict:
                 result["window"] = {"start": start.isoformat(), "end": end.isoformat()}
         except (KeyError, TypeError, ValueError):
             pass
+    if result["window"] is not None:
+        result["observations"] = _seo_gsc_observations(repo, state)
     return result
 
 
