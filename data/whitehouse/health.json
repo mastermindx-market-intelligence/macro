@@ -1,29 +1,10 @@
 {
   "schema": "wh_health.v1",
-  "as_of": "2026-11-06T23:07:23.697099+00:00",
-  "posts_seen": 16,
-  "seen_total": 327,
-  "evaluated": 3,
-  "activated": 1,
+  "as_of": "2026-11-08T00:34:28.777165+00:00",
+  "posts_seen": 10,
+  "seen_total": 328,
+  "evaluated": 0,
+  "activated": 0,
   "provider": "Claude claude-opus-4-8 (subscription)",
-  "gate_scores": [
-    {
-      "id": "wh-2026-11-06-president-trump-names-stephen-miller-as-33rd-white-house-chief-of-staff",
-      "importance": 15,
-      "activated": false,
-      "degraded_reason": "served_by:deepseek"
-    },
-    {
-      "id": "wh-2026-11-06-what-they-are-saying-blowout-october-jobs-report-smashes-expectations",
-      "importance": 20,
-      "activated": false,
-      "degraded_reason": "served_by:deepseek"
-    },
-    {
-      "id": "wh-2026-11-06-president-trump-was-right-tariffs-and-tax-cuts-are-reshoring-manufacturing-creat",
-      "importance": 72,
-      "activated": true,
-      "degraded_reason": "served_by:deepseek"
-    }
-  ]
+  "gate_scores": []
 }
