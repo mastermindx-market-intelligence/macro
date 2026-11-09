@@ -77,6 +77,10 @@ def installed_checkout(
         capture.SELECTOR_RECEIPT_RELATIVE_PATH,
     ):
         (root / relative.parent).mkdir(parents=True, exist_ok=True)
+        # Establish the verifier's valid baseline before adversarial mutations.
+        for parent in relative.parents:
+            if parent != Path("."):
+                (root / parent).chmod(0o755)
     shutil.copyfile(Path(capture.__file__), root / capture.MODULE_RELATIVE_PATH)
     shutil.copyfile(
         capture.ENGINE_INIT_PATH,
@@ -1009,6 +1013,7 @@ def test_raw_tree_verifier_bypasses_clean_filter_and_attributes(
     (root / ".gitattributes").write_text(
         "filtered.txt filter=capture-mask\n", encoding="utf-8"
     )
+    (root / ".gitattributes").chmod(0o644)
     filtered = root / "filtered.txt"
     filtered.write_text("worktree\n", encoding="utf-8")
     filtered.chmod(0o644)
