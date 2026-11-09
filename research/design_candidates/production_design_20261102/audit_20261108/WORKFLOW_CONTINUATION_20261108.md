@@ -1156,3 +1156,55 @@ Native screenshots were inspected for both phones and the new copy-recovery Buil
 The exact three roots `10D-0`, `1HL-0`, `1I6-0` were finished with an observed applied response. Catalyst now has **seven new selection/recovery specimens, a nine-module Build sheet and nine unique affected roots** across §§20–21. The original source-bound discovery, separate Defense lane and concurrent p-4-0 manual-review work remain outside this phase's mutation set.
 
 Manual text selection, mobile context menus, actual URL construction, clipboard permission/pending/failure, keyboard focus and stale-completion handling in the existing React consumer remain unverified here. No runtime patch, account request, merge, deployment or production acceptance was claimed.
+
+## 22. Market Memory evidence workspace — precise inspection and mobile return
+
+**Applied and visually checked, 9 November 2026.** This is the **twenty-third existing Paper file** improved: [Market Memory · Evidence workspace](https://app.paper.design/file/01M6Y2V2M0J28M2PYAHWZ8SB98/p-1-0), separate from the revision-evidence Market Memory file amended earlier. A [compact four-module Build page](https://app.paper.design/file/01M6Y2V2M0J28M2PYAHWZ8SB98/p-2-0) records the interaction amendment.
+
+### The label now names the actual designed destination
+
+The historical-comparison specimens show a selected dated case and an adjacent or lower **What the output said / 原始输出写了什么** pane containing its five original fields. Their twelve actions said **Inspect source ↗ / 核对来源 ↗**, suggesting external navigation or verification. The exact source-reference disclosure is a separate control inside the inspection pane.
+
+The twelve labels now say **Inspect saved output / 查看原始输出**, without the external-link arrow. Four Chinese selected-state labels use **当前查看 / 正在查看** instead of **正在核对**, accurately describing reading the saved output without implying independent verification.
+
+| Root | Amended case-action text nodes | Other copy |
+|---|---|---|
+| `1-0` · desktop dark EN | `1B-0`, `1J-0`, `1R-0` | No other original copy changed. |
+| `2N-0` · desktop light EN | `3W-0`, `44-0`, `4C-0` | No other original copy changed. |
+| `58-0` · mobile light ZH | `6N-0`, `6V-0`, `73-0` | `6P-0` selected-row status; `G7-0` selected-pane date. |
+| `81-0` · mobile dark ZH | `9G-0`, `9O-0`, `9W-0` | `9I-0` selected-row status; `GB-0` selected-pane date. |
+
+This is a native-design interpretation supported by the selected-case pane and original-field labels. It does not assert a working runtime route or inspect a production source record.
+
+### A direct return from the long phone inspection
+
+Both 390px Chinese variants now end the saved-output pane with a **44px minimum-height 返回所选案例** control:
+
+- Light: frame `GE-0`, label `GF-0`, inside original inspection pane `7D-0`.
+- Dark: frame `GH-0`, label `GI-0`, inside original inspection pane `A6-0`.
+
+The action returns local scroll and focus to the exact still-present case action that opened the inspection. It preserves selected case, comparison cutoff, list order, tab and disclosure state. Its destination must follow the selected row identity, not a hardcoded example date. If an authorized refresh removes that row, return to the current comparison heading; do not silently select a replacement.
+
+This return is distinct from the existing later-outcome screen's **返回比较** action. The saved-output pane and later-observation review serve different reading steps. The original exact-source disclosure remains separate, and external-link cues belong only on actual external destinations.
+
+### Builder scope and proof
+
+Build root `GK-0` has modules `GP-0`, `GT-0`, `GX-0`, `H1-0`. It describes the reading order, atomic selected-output binding, preservation of comparison context, local mobile return and focused tests. It explicitly requires mapping the incumbent runtime component before implementation; this Paper pass established no endpoint, persisted schema or working runtime route.
+
+Use semantic buttons for local inspection and return, with non-overlapping 44px touch targets and visible keyboard focus. This phase adds native 44px return controls; it does **not** claim to have enlarged every original case-action hit region. Existing reduced-motion handling should govern any scroll. Background refreshes must not steal focus.
+
+Focused future proof: case A → inspect its exact fields → expand its source → return to A; then choose B; change the evidence cutoff; encounter a missing source reference; and remove the invoking row during an authorized refresh. No new fetch, cache, history, source or identity owner is needed.
+
+### Preservation and verification
+
+All **385 original parsed div nodes**, parents and styles across the four comparison roots are retained. Exactly the **16 specified original text nodes** changed. The two mobile panes gained two native nodes each for their return controls. Dates, scores, category comparisons, coverage/method disclosures, cutoff controls, source qualification and fixture labels are unchanged.
+
+The four later-outcome roots **AU-0, C4-0, DE-0 and EO-0** are byte-identical before/after. Native screenshots were inspected for both desktops, both full mobile themes, the Build sheet and the final precise return label. The longer action labels and new mobile controls fit without hiding the preserved content. Exact JSX/readback verifies identities and text. The five exact roots **1-0, 2N-0, 58-0, 81-0, GK-0** were finished with an observed applied response.
+
+This phase changed Paper, not application behavior. Browser focus/scroll, cold-reader comprehension and production acceptance remain untested.
+
+### Independent frontier decisions
+
+Read-only review found the Shared Research longread and outline already had coherent section destinations and a return to reading. The distinct Options Research Desk R1 mobile brief already distinguishes session identity, missing latest brief, earlier research and live Terminal continuation. Neither was rewritten.
+
+MedTech R14's two delivery choices are only 27px high against its own 44px minimum. The available Paper catalog still holds `update_styles` under `edit_held_schema`; no direct height edit or substitute recreation was attempted. The channel/schedule meaning of “In-app” versus “Daily digest” is also not established, so no email or delivery behavior was invented. This bounded layout issue does not block independent design work.
