@@ -112,6 +112,31 @@ def write_yaml(tmp_path, name, doc):
     return path
 
 
+def write_personas(tmp_path, handles, name="personas"):
+    """A minimal persona dir (handle + cell; every other field defaults)."""
+    d = tmp_path / name
+    d.mkdir(exist_ok=True)
+    for h in handles:
+        (d / f"{h.replace('.', '_')}.yml").write_text(
+            f"handle: {h}\ncell: CHI-99\n", encoding="utf-8")
+    return d
+
+
+def write_proxies(tmp_path, pool="us", hosts=("192.0.2.10", "192.0.2.11"),
+                  name="proxies.yml"):
+    """A proxy inventory whose slot names are ``{pool}-00``, ``{pool}-01``, …
+    (documentation addresses only; net.load never dials anything)."""
+    path = tmp_path / name
+    doc = {
+        "pool": pool,
+        "scheme": "http",
+        "inventory": [f"{h}:800{i}:user{i}:pass{i}"
+                      for i, h in enumerate(hosts)],
+    }
+    path.write_text(yaml.safe_dump(doc, sort_keys=True))
+    return path
+
+
 # ------------------------------------------------------------- document law
 
 
@@ -148,11 +173,15 @@ def test_state_enum_refused():
     assert_mention(registry.validate_document(doc), "not one of")
 
     doc = base_doc()
-    doc["entries"][0]["note"] = None  # key still unknown? no: fine
+    doc["entries"][0]["note"] = None  # unknown keys refuse even when null
     doc["domains"][0]["state"] = "proposed"
     del doc["domains"][0]["admission_receipt"]
     errors = registry.validate_document(doc)
-    assert not any("state 'proposed'" in e and "domain" in e for e in errors) or True
+    # a proposed domain needs no receipt: nothing here may refuse the domain's
+    # state — the only refusal is the unknown `note` key on the entry
+    assert not any("state 'proposed'" in e and "domain" in e for e in errors), errors
+    assert len(errors) == 1, errors
+    assert_mention(errors, "unknown key")
 
 
 def test_admitted_without_receipt_refused():
@@ -536,21 +565,65 @@ def test_check_revision_mismatch():
 
 
 def entry_with_link(entry, link, text=None):
+    """``(entry, text)`` for the bio gates: a deep copy of ``entry`` with the
+    child id the gates pin, and a bio text that actually carries ``link``.
+    ``text`` wraps the link in prose; the default text just names it."""
     entry = copy.deepcopy(entry)
     entry["child_id"] = "xg0001"
-    return entry
+    prose = "fit journal, more on" if text is None else text
+    return entry, f"{prose} {link}".strip()
 
 
 def test_links_outside_domain_reported():
     entry = base_entry(state="admitted", receipt=base_receipt(),
                        binding=base_binding("admitted"))
-    entry["child_id"] = "xg0001"
     inside = canonical_bio_link("xg0001")  # https://www.mastermind-x.com/x/xg0001
-    assert registry.links_outside_domain(f"see {inside}", entry) == []
+    bound, text = entry_with_link(entry, inside)
+    assert registry.links_outside_domain(text, bound) == []
 
     outside = "https://tracker.example.net/px/xg0001"
-    errors = registry.links_outside_domain(f"see {outside}", entry)
+    bound, text = entry_with_link(entry, outside)
+    errors = registry.links_outside_domain(text, bound)
     assert_mention(errors, "outside the declared domain")
+    assert_mention(errors, "tracker.example.net")
+
+
+def test_schemeless_www_link_outside_domain_refused():
+    entry = base_entry(state="admitted", receipt=base_receipt(),
+                       binding=base_binding("admitted"))
+    bound, text = entry_with_link(entry, "www.evil.example/x/ab12cd34")
+    errors = registry.links_outside_domain(text, bound)
+    assert errors, "a scheme-less www link must not escape the domain gate"
+    assert_mention(errors, "outside the declared domain")
+    assert_mention(errors, "www.evil.example")
+
+
+def test_bare_host_link_outside_domain_refused():
+    entry = base_entry(state="admitted", receipt=base_receipt(),
+                       binding=base_binding("admitted"))
+    bound, text = entry_with_link(entry, "evil.example/path")
+    errors = registry.links_outside_domain(text, bound)
+    assert errors, "a bare host with a path must not escape the domain gate"
+    assert_mention(errors, "outside the declared domain")
+    assert_mention(errors, "evil.example")
+
+
+def test_schemeless_link_inside_declared_domain_passes():
+    entry = base_entry(state="admitted", receipt=base_receipt(),
+                       binding=base_binding("admitted"))
+    # scheme-less, on the declared domain: passes, like the https:// form
+    bound, text = entry_with_link(entry, "www.mastermind-x.com/x/xg0001")
+    assert registry.links_outside_domain(text, bound) == []
+    bound, text = entry_with_link(entry, "https://www.mastermind-x.com/x/xg0001")
+    assert registry.links_outside_domain(text, bound) == []
+
+
+def test_prose_dots_are_not_flagged_as_links():
+    entry = base_entry(state="admitted", receipt=base_receipt(),
+                       binding=base_binding("admitted"))
+    for prose in ("as noted e.g. above", "shipped v1.2 today",
+                  "and then done. next topic", "the 2.0.1 release notes"):
+        assert registry.links_outside_domain(prose, entry) == [], prose
 
 
 def test_bio_link_refused_when_domain_not_admitted():
@@ -634,15 +707,18 @@ def test_validate_all_without_lock_refuses_fail_closed():
 def test_cli_registry_check_missing_lock_is_a_refusal(tmp_path, capsys):
     reg = tmp_path / "registry.yml"
     reg.write_text(yaml.safe_dump(base_doc(), sort_keys=True), encoding="utf-8")
+    personas = write_personas(tmp_path, ["example.persona"])
     # no --lock and no sibling registry.lock.yml on disk -> exit 2, fail closed
-    assert cli.main(["registry-check", "--registry", str(reg)]) == 2
+    assert cli.main(["registry-check", "--registry", str(reg),
+                     "--personas", str(personas)]) == 2
     out = capsys.readouterr().out
     assert "fail-closed" in out and "registry.lock.yml" in out
     # the re-lock ceremony writes the sibling default; the bare check then passes
     assert cli.main(["registry-lock", "--registry", str(reg),
                      "--lock", str(tmp_path / "registry.lock.yml")]) == 0
     capsys.readouterr()
-    assert cli.main(["registry-check", "--registry", str(reg)]) == 0
+    assert cli.main(["registry-check", "--registry", str(reg),
+                     "--personas", str(personas)]) == 0
 
 
 def test_default_lock_path_shapes():
@@ -681,23 +757,109 @@ def test_cli_registry_check_exit_codes(tmp_path):
                                      binding=base_binding("admitted"))
     reg = write_yaml(tmp_path, "registry.yml", clean)
     lock = write_yaml(tmp_path, "registry.lock.yml", registry.write_lock(clean))
-    assert cli.main(["registry-check", "--registry", str(reg),
-                     "--lock", str(lock)]) == 0
+    personas = write_personas(tmp_path, ["example.persona"])
+    proxies = write_proxies(tmp_path)
+    assert cli.main(["registry-check", "--registry", str(reg), "--lock", str(lock),
+                     "--personas", str(personas), "--proxies", str(proxies)]) == 0
 
     broken = base_doc()
     broken["entries"][0]["state"] = "musing"
     reg2 = write_yaml(tmp_path, "registry-broken.yml", broken)
-    assert cli.main(["registry-check", "--registry", str(reg2),
-                     "--lock", str(lock)]) == 2
+    assert cli.main(["registry-check", "--registry", str(reg2), "--lock", str(lock),
+                     "--personas", str(personas), "--proxies", str(proxies)]) == 2
 
     missing = tmp_path / "absent.yml"
-    assert cli.main(["registry-check", "--registry", str(missing)]) == 2
+    assert cli.main(["registry-check", "--registry", str(missing),
+                     "--personas", str(personas)]) == 2
 
     locked_drift = copy.deepcopy(clean)
     locked_drift["registry_revision"] = 9
     reg3 = write_yaml(tmp_path, "registry-drift.yml", locked_drift)
-    assert cli.main(["registry-check", "--registry", str(reg3),
+    assert cli.main(["registry-check", "--registry", str(reg3), "--lock", str(lock),
+                     "--personas", str(personas), "--proxies", str(proxies)]) == 2
+
+
+# The default `registry-check` invocation runs the persona↔entry binding check
+# (fail-closed): a missing or empty personas directory refuses instead of
+# silently skipping, and an unbound persona names its handle.
+
+
+def test_cli_default_check_missing_personas_dir_refuses(tmp_path, capsys,
+                                                        monkeypatch):
+    clean = base_doc()
+    clean["entries"][0] = base_entry(state="admitted", receipt=base_receipt(),
+                                     binding=base_binding("admitted"))
+    reg = write_yaml(tmp_path, "registry.yml", clean)
+    lock = write_yaml(tmp_path, "registry.lock.yml", registry.write_lock(clean))
+    monkeypatch.setattr(cli, "DEFAULT_PERSONAS", str(tmp_path / "absent-personas"))
+    assert cli.main(["registry-check", "--registry", str(reg),
                      "--lock", str(lock)]) == 2
+    out = capsys.readouterr().out
+    assert "binding check could not run" in out, out
+    assert "absent-personas" in out and "fail-closed" in out, out
+
+
+def test_cli_default_check_empty_personas_dir_refuses(tmp_path, capsys,
+                                                      monkeypatch):
+    clean = base_doc()
+    clean["entries"][0] = base_entry(state="admitted", receipt=base_receipt(),
+                                     binding=base_binding("admitted"))
+    reg = write_yaml(tmp_path, "registry.yml", clean)
+    lock = write_yaml(tmp_path, "registry.lock.yml", registry.write_lock(clean))
+    (tmp_path / "empty-personas").mkdir()
+    monkeypatch.setattr(cli, "DEFAULT_PERSONAS", str(tmp_path / "empty-personas"))
+    assert cli.main(["registry-check", "--registry", str(reg),
+                     "--lock", str(lock)]) == 2
+    out = capsys.readouterr().out
+    assert "binding check could not run" in out and "fail-closed" in out, out
+
+
+def test_cli_default_check_refuses_unbound_persona_by_handle(tmp_path, capsys,
+                                                             monkeypatch):
+    clean = base_doc()
+    clean["entries"][0] = base_entry(state="admitted", receipt=base_receipt(),
+                                     binding=base_binding("admitted"))
+    reg = write_yaml(tmp_path, "registry.yml", clean)
+    lock = write_yaml(tmp_path, "registry.lock.yml", registry.write_lock(clean))
+    personas = write_personas(tmp_path, ["example.persona", "ghost.persona"])
+    monkeypatch.setattr(cli, "DEFAULT_PERSONAS", str(personas))
+    assert cli.main(["registry-check", "--registry", str(reg),
+                     "--lock", str(lock)]) == 2
+    out = capsys.readouterr().out
+    assert "ghost.persona" in out and "no registry entry" in out, out
+
+
+def test_cli_default_check_happy_path_zero(tmp_path, capsys, monkeypatch):
+    clean = base_doc()
+    clean["entries"][0] = base_entry(state="admitted", receipt=base_receipt(),
+                                     binding=base_binding("admitted"))
+    reg = write_yaml(tmp_path, "registry.yml", clean)
+    lock = write_yaml(tmp_path, "registry.lock.yml", registry.write_lock(clean))
+    personas = write_personas(tmp_path, ["example.persona"])
+    proxies = write_proxies(tmp_path)  # resolvable proxy_slot for the admitted entry
+    monkeypatch.setattr(cli, "DEFAULT_PERSONAS", str(personas))
+    assert cli.main(["registry-check", "--registry", str(reg), "--lock", str(lock),
+                     "--proxies", str(proxies)]) == 0
+    assert capsys.readouterr().out.strip() == "", "the happy path prints nothing"
+
+
+def test_cli_skip_bindings_skips_loudly(tmp_path, capsys, monkeypatch):
+    clean = base_doc()
+    clean["entries"][0] = base_entry(state="admitted", receipt=base_receipt(),
+                                     binding=base_binding("admitted"))
+    reg = write_yaml(tmp_path, "registry.yml", clean)
+    lock = write_yaml(tmp_path, "registry.lock.yml", registry.write_lock(clean))
+    # the default invocation would refuse on the unbound persona...
+    personas = write_personas(tmp_path, ["ghost.persona"])
+    monkeypatch.setattr(cli, "DEFAULT_PERSONAS", str(personas))
+    assert cli.main(["registry-check", "--registry", str(reg),
+                     "--lock", str(lock)]) == 2
+    capsys.readouterr()
+    # ...and --skip-bindings passes the same fixture, saying loudly it skipped
+    assert cli.main(["registry-check", "--registry", str(reg), "--lock", str(lock),
+                     "--skip-bindings"]) == 0
+    out = capsys.readouterr().out
+    assert "bindings NOT checked" in out, out
 
 
 def test_cli_registry_lock_writes_matching_lock(tmp_path):
@@ -1008,8 +1170,10 @@ def test_registry_healing_read_only_check_requires_completed_relock(tmp_path):
     after["mail_domains"].append("second.mail.invalid")
     path = write_yaml(tmp_path, "registry.yml", after)
     target = write_yaml(tmp_path, "registry.lock.yml", registry.write_lock(before))
+    personas = write_personas(tmp_path, ["example.persona"])
     original = target.read_bytes()
-    args = ["registry-check", "--registry", str(path), "--lock", str(target)]
+    args = ["registry-check", "--registry", str(path), "--lock", str(target),
+            "--personas", str(personas)]
     assert cli.main(args) == 2
     assert target.read_bytes() == original
     assert cli.main(["registry-lock", "--registry", str(path), "--lock", str(target)]) == 0
