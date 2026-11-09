@@ -1,0 +1,11 @@
+{
+  "status": "failed",
+  "surface": "market",
+  "error": "NameError(\"name 'expect' is not defined\")",
+  "source_hashes": {
+    "scripts/verify_d06_macro.py": "b01268b63198b44e2a48882a1c146df6d7e620ea6ddee9a812aa03f110fe8f48",
+    "templates/market_structure.html.j2": "300c1b6865e9f519ca0fbd0fc3a95a17c96e0f1bce06c9ee59013350a7f8f056",
+    "templates/stage_analysis.html.j2": "fe8307c9ceb5b6f562ec3d51541f516c1f0a92ce00dba5611b9d98ef8fa2f72b",
+    "templates/spvector.html.j2": "8c6ea6ddfcd23fd4444230db9cecf65b60613338dbfac344a7641e1755d8c15f"
+  }
+}
