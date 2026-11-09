@@ -136,7 +136,7 @@ var iq='',isnap=null;
 /* Release focus immediately before this owner hides its active control. This also
    covers an excluded row inside a category that still has other matching rows. */
 function releaseIndexFocus(el){if(indexInput&&el.contains(document.activeElement))indexInput.focus();}
-function indexHidden(el,on){if(on)releaseIndexFocus(el);el.hidden=on;}
+function indexHidden(el,on){if(on)releaseIndexFocus(el);if(el.hidden!==on)el.hidden=on;}
 /* Totals come from generated markup; active-search counts come from the same
    matching rows this pass displays. Review status is not a core/extended tier. */
 function indexText(el,value){if(el&&el.textContent!==String(value))el.textContent=String(value);}

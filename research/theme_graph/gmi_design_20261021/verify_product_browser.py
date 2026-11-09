@@ -1654,6 +1654,144 @@ with sync_playwright() as pw:
     for language in ('en','zh'):
         check(f'tree-status-static-{language}',lambda l=language:tree_status_static(l))
 
+    def index_status_spacing(p, active):
+        """The persistent status keeps the search-to-key gap and original message layout."""
+        g=p.locator('[data-gmi-filter="index"]').evaluate("""n=>{
+          const search=n.closest('.gmi-search'),panel=search.parentElement;
+          const key=panel.querySelector('.gmi-key'),message=panel.querySelector('[data-gmi-index-feedback]');
+          const s=getComputedStyle(message);
+          return {gap:key.getBoundingClientRect().top-search.getBoundingClientRect().bottom,
+            parentGap:parseFloat(getComputedStyle(panel).gap),messageHeight:message.getBoundingClientRect().height,
+            messageMargins:parseFloat(s.marginTop)+parseFloat(s.marginBottom)};
+        }""")
+        expected=g['parentGap']*2+g['messageHeight']+g['messageMargins'] if active else g['parentGap']
+        assert abs(g['gap']-expected)<0.5,g
+        return g
+
+    def index_status_feedback(width, language):
+        """Persistent index feedback reuses counts, language spans, URL and disclosure owners."""
+        with context(width,'light',language,reduced_motion='reduce') as c:
+            returned='gmi.html#theme=theme:hbm_packaging&q=Micron'
+            p=page_for(c,'gmi-index.html?fixture=index-status#'+urlencode({'open':'all','lens':'chain','gmi_return':returned}))
+            search=p.locator('[data-gmi-filter="index"]')
+            feedback=p.locator('[data-gmi-index-feedback]')
+            status=p.locator('[data-gmi-index-status]')
+            initial=index_status_spacing(p,False)
+            report.setdefault('index_status_initial_geometry',[]).append({'width':width,'language':language,**initial})
+            assert status.count()==1,'Index feedback has no persistent status owner'
+            expect(status).to_have_attribute('role','status')
+            expect(status).to_have_attribute('aria-live','polite')
+            expect(status).to_have_attribute('aria-atomic','true')
+            assert status.locator('[role="status"]').count()==0
+            assert status.evaluate('(n)=>!n.closest("[hidden],[aria-hidden=true]")&&getComputedStyle(n).display!=="none"')
+            expect(feedback).not_to_be_visible()
+            assert not status.inner_text().strip()
+            p.locator('#energy_power').evaluate('(n)=>{n.open=false;}')
+            opened=p.locator('[data-gmi-index] > details').evaluate_all('(nodes)=>nodes.map(n=>n.open)')
+            history=p.evaluate('history.length')
+            p.evaluate("""()=>{
+              window.__indexStatusOwner=document.querySelector('[data-gmi-index-status]');
+              window.__indexStatusParagraph=document.querySelector('[data-gmi-index-feedback]');
+              window.__indexStatusChanges=[];
+              window.__indexStatusObserver=new MutationObserver(records=>window.__indexStatusChanges.push(...records.map(r=>({type:r.type,attribute:r.attributeName}))));
+              window.__indexStatusObserver.observe(window.__indexStatusOwner,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['hidden']});
+            }""")
+            def state(expected, count, current_language=language):
+                assert p.evaluate("""()=>window.__indexStatusOwner===document.querySelector('[data-gmi-index-status]')&&window.__indexStatusParagraph===document.querySelector('[data-gmi-index-feedback]')""")
+                assert status.evaluate('(n)=>!n.closest("[hidden],[aria-hidden=true]")')
+                assert status.inner_text().strip()==expected
+                ax=status.aria_snapshot()
+                assert 'status' in ax and expected in ax,ax
+                if expected:
+                    assert ('No micro-theme matches' not in ax if current_language=='zh' else '没有匹配' not in ax)
+                assert p.locator('a.gmi-irow-name:visible').count()==count
+                expect(search).to_be_focused()
+                assert p.evaluate('history.length')==history
+                params=parse_qs(urlsplit(p.url).fragment)
+                assert params['open']==['all'] and params['lens']==['chain'] and params['gmi_return']==[returned]
+                return index_status_spacing(p,bool(expected))
+
+            zero='No micro-theme matches that search.' if language=='en' else '没有匹配该搜索的细分主题。'
+            search.fill('zz-no-index-status-match')
+            no_match_geometry=state(zero,0)
+            mutations=p.evaluate('window.__indexStatusChanges.length')
+            search.fill('zz-another-no-index-status-match')
+            state(zero,0)
+            assert p.evaluate('window.__indexStatusChanges.length')==mutations
+
+            def locale(current, message, count):
+                before=p.url
+                rows=p.locator('a.gmi-irow-name:visible').evaluate_all('(nodes)=>nodes.map(n=>n.getAttribute("href"))')
+                disclosures=p.locator('[data-gmi-index] > details').evaluate_all('(nodes)=>nodes.map(n=>n.open)')
+                mutations=p.evaluate('window.__indexStatusChanges.length')
+                p.evaluate("""lang=>{
+                  document.documentElement.setAttribute('data-lang',lang);
+                  document.dispatchEvent(new Event('langchange'));
+                  document.dispatchEvent(new Event('langchange'));
+                }""",current)
+                state(message,count,current)
+                assert p.url==before
+                assert p.locator('a.gmi-irow-name:visible').evaluate_all('(nodes)=>nodes.map(n=>n.getAttribute("href"))')==rows
+                assert p.locator('[data-gmi-index] > details').evaluate_all('(nodes)=>nodes.map(n=>n.open)')==disclosures
+                assert p.evaluate('window.__indexStatusChanges.length')==mutations
+
+            other='zh' if language=='en' else 'en'
+            locale(other,'没有匹配该搜索的细分主题。' if other=='zh' else 'No micro-theme matches that search.',0)
+            locale(language,zero,0)
+            search.fill('HBM')
+            positive='2 results' if language=='en' else '2 个结果'
+            positive_geometry=state(positive,2)
+            mutations=p.evaluate('window.__indexStatusChanges.length')
+            search.fill('  HBM  ')
+            state(positive,2)
+            assert p.evaluate('window.__indexStatusChanges.length')==mutations
+            locale(other,'2 个结果' if other=='zh' else '2 results',2)
+            locale(language,positive,2)
+            search.fill('HBM & advanced packaging')
+            state('1 result' if language=='en' else '1 个结果',1)
+            search.fill('zz-no-index-status-match')
+            state(zero,0)
+            if (width,language) in ((390,'en'),(320,'zh')):
+                path=args.out/f'index-status-{width}-{language}.png'
+                p.locator('[data-gmi-filter="index"]').locator('xpath=..').locator('xpath=..').screenshot(path=str(path))
+                report['screenshots'].append(path.name)
+            search.press('Escape')
+            expect(search).to_have_value('')
+            expect(feedback).not_to_be_visible()
+            assert not status.inner_text().strip()
+            assert p.locator('[data-gmi-index] > details').evaluate_all('(nodes)=>nodes.map(n=>n.open)')==opened
+            expect(search).to_be_focused()
+            assert p.evaluate('history.length')==history
+            assert 'q' not in parse_qs(urlsplit(p.url).fragment)
+            cleared=index_status_spacing(p,False)
+            assert 'result' not in status.aria_snapshot() and '没有匹配' not in status.aria_snapshot()
+            gmi_navigation_fit(p,width,language)
+            report.setdefault('index_status',[]).append({'width':width,'language':language,'initial':initial,'positive':positive_geometry,'no_match':no_match_geometry,'cleared':cleared,'repeated_query_and_locale_mutations':0,'owner_identity_retained':True})
+            p.evaluate('window.__indexStatusObserver.disconnect()')
+
+    def index_status_static(language):
+        """Actually disabled scripts expose no false count while native links remain."""
+        with context(320,'light',language,java_script_enabled=False,reduced_motion='reduce') as c:
+            p=page_for(c,'gmi-index.html?fixture=index-status-static')
+            status=p.locator('[data-gmi-index-status]')
+            assert status.count()==1
+            expect(status).to_have_attribute('role','status')
+            assert status.evaluate('(n)=>!n.closest("[hidden],[aria-hidden=true]")')
+            expect(p.locator('[data-gmi-index-feedback]')).not_to_be_visible()
+            assert not status.inner_text().strip()
+            assert 'result' not in status.aria_snapshot() and '没有匹配' not in status.aria_snapshot()
+            links=p.locator('a.gmi-irow-name')
+            assert links.count()==371
+            assert links.evaluate_all('(nodes)=>nodes.every(n=>n.getAttribute("href"))')
+            geometry=index_status_spacing(p,False)
+            report.setdefault('index_status_static',[]).append({'language':language,'native_links':links.count(),'status_empty':True,'java_script_enabled':False,'geometry':geometry})
+
+    for width in (1440,390,320):
+        for language in ('en','zh'):
+            check(f'index-status-{width}-{language}',lambda w=width,l=language:index_status_feedback(w,l))
+    for language in ('en','zh'):
+        check(f'index-status-static-{language}',lambda l=language:index_status_static(l))
+
     browser.close()
 server.shutdown()
 report['pass'] = all(c['result']=='PASS' for c in report['cases']) and not report['page_errors']
