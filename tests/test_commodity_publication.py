@@ -9,6 +9,9 @@ import pytest
 
 from scripts import check_commodity_publication as guard
 
+# Freeze the accepted fixture contract before individual tests advance the guard.
+CURRENT_REVISION = guard.PROJECTION_REVISION
+
 
 def git(repo, *args):
     result = subprocess.run(
@@ -17,7 +20,7 @@ def git(repo, *args):
     return result.stdout.strip()
 
 
-def page(*, revision=6, schema="mmx.commodities.workspace.v1", stamp="accepted",
+def page(*, revision=CURRENT_REVISION, schema="mmx.commodities.workspace.v1", stamp="accepted",
          mount=True, payload=True, extra="", assets=""):
     value = {
         "schema": schema, "projection_revision": revision,
@@ -64,10 +67,10 @@ def test_valid_same_revision_keeps_candidate_without_claiming_freshness(repo):
 
 
 @pytest.mark.parametrize("broken", [
-    page(mount=False), page(payload=False), page(revision=5),
+    page(mount=False), page(payload=False), page(revision=CURRENT_REVISION - 1),
     page(extra='<script id="cw-data" type="application/json">{}</script>'),
     page().replace('id="commodity-workspace"', 'id="commodity-workspace"></section><section id="commodity-workspace"'),
-    page().replace('"projection_revision": 6', '"projection_revision": true'),
+    page(revision=True),
     page().replace('"display_only": true', '"display_only": false'),
     page().replace('"live": false', '"live": true'),
     page().replace('"monitoring_active": false', '"monitoring_active": true'),
@@ -126,7 +129,7 @@ def test_unreadable_accepted_ref_is_not_clean(repo):
 
 
 @pytest.mark.parametrize("candidate", [
-    page(revision=7), page(schema="mmx.commodities.workspace.v2")
+    page(revision=CURRENT_REVISION + 1), page(schema="mmx.commodities.workspace.v2")
 ])
 def test_unreviewed_contract_transition_is_not_silently_overwritten(repo, candidate):
     destination = repo / guard.PAGE
@@ -137,16 +140,16 @@ def test_unreviewed_contract_transition_is_not_silently_overwritten(repo, candid
 
 
 def test_explicitly_supported_revision_can_advance_without_restoration(repo, monkeypatch):
-    monkeypatch.setattr(guard, "PROJECTION_REVISION", 7)
+    monkeypatch.setattr(guard, "PROJECTION_REVISION", CURRENT_REVISION + 1)
     destination = repo / guard.PAGE
-    candidate = page(revision=7, stamp="reviewed successor")
+    candidate = page(revision=CURRENT_REVISION + 1, stamp="reviewed successor")
     destination.write_text(candidate)
     assert guard.verify_publication(repo, "main", heal=True)["action"] == "kept"
     assert destination.read_text() == candidate
 
 
 def test_older_accepted_page_cannot_heal_newer_required_contract(repo, monkeypatch):
-    monkeypatch.setattr(guard, "PROJECTION_REVISION", 7)
+    monkeypatch.setattr(guard, "PROJECTION_REVISION", CURRENT_REVISION + 1)
     destination = repo / guard.PAGE
     destination.write_text("legacy only")
     with pytest.raises(guard.PublicationError, match="revision"):
