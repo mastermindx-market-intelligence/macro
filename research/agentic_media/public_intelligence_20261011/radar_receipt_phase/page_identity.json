@@ -1,0 +1,9 @@
+{
+  "source_commit": "8eb467112b832101385f7256b83036f45ae5d759",
+  "all_three_unchanged": true,
+  "sha256": {
+    "blog/index.html": "2b5efaa610549f7d5f5e438e6eda5c91f4a97bcee32765aa55dd0b20ab2466f8",
+    "learn/index.html": "22120fc98543ce0465d8f2ebeb43d84b5ac249716000f7a3f56e5af26d8844b2",
+    "tools/calculators/position-size.html": "be34f6882a73ba104e45ddda631c0bb7225913dca5ae1f80acc08e2f53df8d46"
+  }
+}

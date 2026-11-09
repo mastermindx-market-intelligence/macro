@@ -1,0 +1,36 @@
+{
+  "source_commit": "1df73c1ac9289a21e192aeb50088a4f9119aee82",
+  "source_path": "data/flow_signals/ledger.parquet",
+  "source_blob": "9b322983866ffc42b274e495f5107c9c1364c06b",
+  "source_sha256": "c14b99cf92c29467d40a823a42e1b8974f018233c76b70d917b403f7a3898b62",
+  "rows": 92574,
+  "unique_event_ids": 92574,
+  "sessions": 44,
+  "first_session": "2026-07-13",
+  "last_session": "2026-09-25",
+  "measured_rows": 16052,
+  "source_clock_columns": {
+    "observed_at": {
+      "present": false,
+      "non_null": 0
+    },
+    "decision_at": {
+      "present": false,
+      "non_null": 0
+    },
+    "available_at": {
+      "present": false,
+      "non_null": 0
+    },
+    "published_at": {
+      "present": false,
+      "non_null": 0
+    },
+    "source_snapshot_asof": {
+      "present": false,
+      "non_null": 0
+    }
+  },
+  "source_rows_qualified_for_decision_time": null,
+  "limitation": "No outcome or price data read; source clock absence is not evidence the originating producer lacked these values."
+}
