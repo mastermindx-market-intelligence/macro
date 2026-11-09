@@ -1479,3 +1479,76 @@ All **27 node identities and parent relationships** are unchanged. All prior sty
 The separate Catalyst read at **04:23:15 UTC** shows six further responsive-shard successes: desktop-1/5, tablet-1/2 and mobile-1/3. Run42556255347 has **17 successful jobs and mobile-2 still running**, with no completed failure. PR1354 remains Ready/open at exact head **45472fcedad31292d660d54731d4da472ca04f1e**, mergeable but behind the advancing base. Its original native auto-merge request remains present; GraphQL reports **mergeQueueEntry null**, so enrollment must not be described as queue admission. No rerun, rearm, merge or deployment occurred.
 
 The next independent source lane is the accepted Shared Tools mobile chooser. Current Macro at **071ed19f** still has the original embedded controller, byte-identical within the two separately owned outer-navigation PRs7601/10261. The chooser patch must preserve those owners and the documented P0B capture/release hold. No release evidence may be substituted across that denied capture family.
+
+
+## 30. Shared Tools — implement the mobile category chooser inside its current owner
+
+**Implemented, source-tested, published and applied to the existing Paper Build on 9 November 2026.** New isolated [Draft PR10879](https://github.com/mastermindx-market-intelligence/Macro/pull/10879), branch `design/paper-tools-mobile-chooser-20261109`, head **3ce2e6090bc1e754f3201d13806b638c14f59bab**, is based on protected Macro **071ed19f5ce87927f078f94f3e126c24d8a0307e**. It remains explicitly held for existing loader and measured-receipt integration; source checks do not establish release.
+
+### Current ownership and preservation
+
+The All Tools embedded block at the base is still blob **37c7ac74301661d0bc4fe1997bb37d572a8573bb**. It was independently compared with the exact heads of incumbent PR7601 (**6eef673488bb8b643d6cbffb8a4787560729b4aa**, Draft, merge-blocked) and PR10261 (**1597c6bed44785af03ab489f556e571fc2266f8e**, Draft). Both retain the same embedded controller and own separate outer-navigation/loader changes. Those branches, effects and holds were not modified. Fresh prepublication reads kept protected main and both heads unchanged.
+
+The adoption README incorrectly described PR7949 as unmerged. A direct metadata read establishes its actual merge on **21 October 2026, 17:34:59 UTC**, commit **ccc3242ef52966877e24b5290a5883628664e707**. The candidate README now separates the current source candidate from the retained R41/R23 checks, old installation status and old native-session failure. This repairs misleading builder guidance without rewriting historical evidence as new acceptance.
+
+### User workflow and implementation
+
+At ≤600px the candidate enhances the existing category region with one disclosure button and a vertical list of the same source-driven buttons. Older generated pilot hosts still mount; no mandatory new host selector or static inventory is introduced. Desktop keeps its existing presentation.
+
+The label follows actual result scope: contextual **Start here**, an applied source category, **All categories** during normalized global search, or deliberate **All destinations**. Global query preserves the previous browsing group; Clear returns to it. Category selection clears the query, changes the local directory and focuses the collapsed button. Clear and empty-state recovery focus search; the mobile full-directory footer focuses the visible category button so focus does not remain below the newly reset scroll position.
+
+The mobile dialog is the sole scrollport. Header, category choices and destination rows share its height; category text wraps and controls have a 44px minimum. The small chevron transitions for 120ms and has no reduced-motion transition. Source-provided blueprint SVGs and the existing token system remain intact.
+
+The existing native dialog retains focus containment. A first Escape closes only the chooser; another fresh press can close All Tools. A per-press owner prevents held/repeated Escape from consuming both levels and preserves native IME cancellation through composition-end/input/cancel order. Locale repaint defers unfinished composition, then retains stable group identity and eligible focus. Breakpoint changes normalize the outgoing scroll offset and repair only newly hidden control focus; other focused content retains focus and requests nearest visibility. Explicit toggle collapse also repairs a focused category when pointer activation did not first focus the toggle.
+
+Source collection, exact destinations, target/new-tab semantics and the per-opening withdrawn map remain incumbent-owned. Category/locale redraw cannot revive a withdrawn href. No catalogue, router, storage, market preference, request, native dialog, focus trap, refresh/retry or publication owner was added.
+
+### Exact publication
+
+| Source / generated path | Published blob |
+| --- | --- |
+| `templates/nav_market.js` and identical `site/nav_market.js` | **1baf92ca4e17a0df6e33e6834047b8c559e30458** |
+| `templates/navigation-refresh.css` and identical `site/navigation-refresh.css` | **e3fe57442f60e1e20279f82516cce68cad668e98** |
+| Exact documentary `research/market_os/all_tools_adoption/src/all-tools.js` | **795e7e7ef092ea477ba89014590a1850c8fc387d** |
+| Existing `tests/controller.test.cjs` under the adoption directory | **222eced972acdc04ec097e5d734d8f9054540ee8** |
+| Existing `tests/dom.cjs` under the adoption directory | **a28afe19b17fcd9656fd7109701f0412e3c02ab0** |
+| `site/macro.html` | **2703c16eec17551ab6d653bbef56fdaa3d2993a6** |
+| `site/sector_central.html` | **896fbffdf5a3dc600cba75a7187644ff081a25cd** |
+| `site/reports.html` | **60788a26cfb62d860d9d49e7daf18f92f8d02663** |
+
+The existing `scripts.optimize_assets.make_optimizer` processed only these three current pilot pages. Its original-assets baseline reproduced each page byte-for-byte; candidate output changed only the stylesheet/preload pair `edfd821b → f7206632` on each page. No model or data builder ran, and the generated pages were not independently hand-edited. Outside the two marked All Tools blocks, original shared JS/CSS bytes remain exact. The header template and pilot admission ceiling remain unchanged.
+
+The single source commit contains **20 files**: ten implementation/test/generated files, the clarified parent README and nine detailed proof/documentation files. Every published text was read back exactly; all ten implementation/test/generated Git blobs match the executed validation manifest. The exact controller SHA256 is **7a8b1d37e7c98b3e7f0a886b30444d8eed4bdedda26d397d3da119aa3088fa77**.
+
+[The complete implementation and qualification record](https://github.com/mastermindx-market-intelligence/Macro/tree/3ce2e6090bc1e754f3201d13806b638c14f59bab/research/market_os/all_tools_adoption/mobile-chooser-20261109) includes readable decisions, VALIDATION.json (**079cc49b70d8d5b3f438b0e24a497227de28d994**), final TAP output, pytest output, the original-source falsifier, actual optimizer output, scope checks and both release-gate results.
+
+### Executed checks and their limits
+
+The original behavior suites passed **107 checks** before implementation. A missing-chooser falsifier then failed on that exact old controller. The final new source passes **138 Node checks** (31 added), exit0, Node **v24.22.1**, 213.727794ms. **All 11 existing All Tools integration contracts pass**, including the existing wrapper that extracts and executes the production controller. These counts overlap; they are not 149 browser cases. Full `nav_market.js` syntax also passes.
+
+The added cases cover source inventory, retained category/query/Clear, explicit full-directory versus empty-state recovery, two Escape levels, held-key repeats, IME event order, Process-keyup/lost-keyup cleanup, stable locale focus, breakpoint focus/scroll intent, one mount, exact source withdrawal across redraw/activation, and fresh close/reopen. Bounded read-only adversarial judgment exposed and the principal repaired the toggle-focus and repeated-Escape cases before publication; no formal external approval is claimed.
+
+Initial pytest collection lacked Jinja2 in the primary runtime. The existing system package was reused through that test process's PYTHONPATH, after which the exact suite passed. No package or browser installation, authorization change or denied action replay occurred. The oversized Dashboard template returned an empty content body from the first file API read; its exact Git blob was then retrieved and hash-verified before materialization. An unrelated broad historical-PR read returned Transport closed; a bounded metadata read reconciled the historical merge, and the original GitHub write carrier remained healthy.
+
+The DOM double records state, focus and scroll intent. It cannot prove runtime geometry, native event synthesis, OS IME, physical-device/zoom behavior, fonts, assistive technology, account/access or production acceptance. No browser or capture was launched for this lane.
+
+### Actual release boundaries
+
+Two existing gates are explicitly **not green**:
+
+1. The exact existing loader-key/payload function passes on the base and fails for the candidate: expected **472f1b07**, actual **1b594114**, with fixed key **20261101-expectation-surface-nav** unchanged. The named test and dependency/constants were executed from the unchanged AST with real template nav/account inputs; this is not a whole-navigation-module test claim. Incumbent PR7601/10261 already own overlapping loader work. Integration must reconcile their actual bytes, advance the existing account/theme loader chain and emit served theme through `lib.site_assets.emit_theme_js()`. CSS HTML stamping alone cannot update returning browsers' immutable JS URL.
+2. Unchanged `scripts/check_p0b_receipt_closure.py` ran against the candidate's paths and the exact committed receipts, returning exit1 with **four findings**: both receipts pin changed shared nav JS and CSS. [Comment6689771047](https://github.com/mastermindx-market-intelligence/macro/pull/7601#issuecomment-6689771047) preserves the previously denied pinned capture family. No alternative browser/host/worker, measured-receipt digest patch, validator weakening or CI replay was attempted. Legitimately authorized measurement or a separately authorized canonical gate-owner change is still required.
+
+PR10879 was created **Draft**, with no Ready, release label or native auto-merge. Its natural PR-triggered runs **42563123452 (ci)** and **42563123354 (fences)** were observed queued; none was manually triggered. A future green subset would not erase the explicit source/capture boundaries.
+
+### Applied Paper Build
+
+Existing file **01M6Y32A3E4XC51FQVJN98YRPH**, p2, Build **31M-0** now says **IMPLEMENTED SOURCE · RELEASE HELD** and points to PR10879 and its exact source. Existing text nodes **31O-0, 31Q-0, 37K-0, 37S-0, 37W-0, 383-0 and 384-0** were updated.
+
+A seventh release module was cloned from the existing style: frame **38K-0**, heading **38M-0**, body **38L-0**. All **23 original IDs, parent relationships and style declarations** remain exact; the root now has 26 nodes. The sixth and seventh layer names were aligned with their current headings. The full seven-module native screenshot was inspected, readable and unclipped, and the exact owned root finished. Earlier product boards, expanded EN/ZH chooser specimens and retained rails remain intact. Paper rendering is design evidence and does not bypass the separate browser-capture hold.
+
+### Parallel protected Catalyst delivery
+
+At **04:37:59 UTC**, the original PR1354 run42556255347 is fully **SUCCESS**, attempt1, all **19 jobs passed**, final aggregate completed04:33:25 and run concluded04:33:26. Actual queue entry **MQE_lQDOTOzwKM8AAAABNwehYc4ABTs-zgPTFFw** was observed: enqueued04:34:32, **AWAITING_CHECKS**, position2, generated head **9f13ad1226d785524e56a5e03bf5236b231242a6**, queue base **f57c6c7f4b601999a7e1c3dde29d6687bb473f10**. Candidate head stays **45472fcedad31292d660d54731d4da472ca04f1e**.
+
+The native auto-merge request is now null alongside that real queue entry; it must not be rearmed. The PR is still unmerged. The queue's generated integration, actual merge SHA and applicable deployment/live-account proof remain distinct obligations. The principal continues other authorized frontend work while the existing queue owns its checks.
