@@ -2551,3 +2551,43 @@ All **30** guarded Paper operations returned **APPLIED_RESPONSE_OBSERVED**. They
 The next source review identifies a concrete mismatch: ordinary topic selection preserves research filters/lens through the existing writer, while native new-tab/copy-link destinations advertise only a theme. Reproduce the real browser path, then integrate destination projection with the current journey/URL owners so one operation cannot restore stale hrefs over the other. Preserve existing modified-click semantics and all search node/label/count checks.
 
 Both PRs remain Draft/unmerged. Original model01 **EFFECT_UNKNOWN / ROOT_UNVERIFIED**, consumer-admission, protected-style, independent-writer and release holds remain. These fixtures do not establish full shared shell/fonts, physical IME, spoken AT, live account, current hosted CI or deployment.
+
+## 52. GMI native topic destinations preserve research context — 9 November 2026
+
+### Observed problem and implementation
+
+Ordinary topic selection retained the current query, category, scope, evidence filter and lens. The actual href used by browser-native activation did not: Browse and Related topics carried only the target theme, and taxonomy links also discarded the current query string. Six original-source browser cases reproduced the mismatch across all three families at EN1440 and ZH320.
+
+[Source PR10676](https://github.com/mastermindx-market-intelligence/Macro/pull/10676) now advances to **b3cb43f384c94d401977839d00e54d2c0689caed**, tree **9602e11aa1b504dbe51c05248983e8a994e4997d**. Two localized JS replacements extract pure `researchHash(targetTheme)` from the existing `writeURL()` serialization and reuse it inside `refreshJourney()`'s existing original-href loop. The projection applies only after initialization, to known primary-topic IDs whose cached destination is the same local research page. It preserves other existing fragment parameters and the current path/query. Cross-page return branches and their owner are unchanged.
+
+This adds no visible control, prose, selection owner, event listener, state storage or navigation lifecycle. The equality guard avoids unchanged destination writes. The existing post-answer refresh covers newly rendered Related links. Pre-payload and failed-data initialization retain their existing behavior.
+
+### Focused real-browser proof
+
+| Evidence | Exact result |
+|---|---|
+| Baseline | PID23165, exit1, 21.73 s; six cases / six contexts, six reproduced mismatches, zero page errors |
+| Final | PID28258, exit0, 46.73 s; **16 cases / 18 fresh anonymous contexts**, Chrome157.0.8103.39, zero page errors |
+| Actual modified activation | Six trusted new-tab activations match ordinary selection's URL and destination controls; every original tab remains unchanged |
+| State projection | **24 observations × 745 actual anchors**, zero mismatches after query/filter/lens changes and real Back/Forward |
+| No-op qualification | Six locale/independent-taxonomy phases make zero persistent href writes; two further native activations after state changes retain restored context |
+| Affected regressions | 20 search-match observations /14 geometry checks; native tree behavior; two script-disabled contexts preserving 371 original link attributes; two company-return and two failed-payload workflows |
+| Visual evidence | Twelve captures generated; the EN1440 and ZH320 originating Browse captures were inspected. Destination proof is supplied by actual popup URL/control records |
+
+The current JS blob is **505def7ed08f21b26e4bda4ba60c16aa084cb522**; both paired files match. Reverse the two replacements to recover the exact parent. **136/137 prior verifier definitions** are AST-exact. The one affected search assertion now compares the destination to current research context plus the target topic; original node/title/label/count/matching checks remain. Seven new qualified definitions bring the verifier to 144. Forty-seven other bound inputs, the accepted model, seven HTML outputs and CSS remain exact.
+
+All six changed source/evidence files read back exactly. [NATIVE_LINKS_VALIDATION_20261109.json](https://github.com/mastermindx-market-intelligence/Macro/blob/b3cb43f384c94d401977839d00e54d2c0689caed/research/theme_graph/gmi_design_20261021/NATIVE_LINKS_VALIDATION_20261109.json) and [DESIGN_RECORD §11.43](https://github.com/mastermindx-market-intelligence/Macro/blob/b3cb43f384c94d401977839d00e54d2c0689caed/research/theme_graph/gmi_design_20261021/DESIGN_RECORD.md) retain commands, source hashes, all cases, activation URLs, controls, projection mismatches and captures. The 217,950-byte native export has SHA256 **e2c1c30cd19399068a25006ccf6d9d7fcadaec8f2b246d69f5be91d46aef76e1**. It explicitly projects only repeated persistent-write ID arrays into counts, unique-target counts and ordered-array hashes; complete original report hashes remain recorded.
+
+### Paper and builder continuity
+
+[Build · Interaction & receipts](https://app.paper.design/file/01M5H6EARN9YHQV17JC6ZG9BRY/p-7-0), root **7M9-0**, remains **18 modules /57 div nodes**. Four text nodes (**7MV-0, 7MZ-0, 7NL-0, 7NF-0**) now bind current source identity, explain the single serializer/journey integration, and separate native activation proof from remaining limits. Every node ID, parent and style stays exact, as does all other text. Modules08/18 were visually inspected; the final 47,871-character JSX reads back exactly after finish.
+
+Browse **A1F-0**, 78,318 characters /279 div nodes, and empty-topic **AAM-0**, 26,540 characters /94 div nodes, remain byte-exact to the prior immutable receipt at **5fb903f8c394b40415ce314aa3001d94c8bc5e15**. No new artboard or product copy was needed for an invisible navigation correction.
+
+Both guarded operations—four-node text update and finish of exactly **7M9-0**—returned **APPLIED_RESPONSE_OBSERVED**. [PAPER_NATIVE_LINKS_20261109.json](PAPER_NATIVE_LINKS_20261109.json) contains full Build before/after JSX, structural checks, exact source readback, the logical operation results and an explicit bounded guard projection.
+
+### Continue across the portfolio
+
+The next source refresh identifies an existing Confluence availability implementation in [PR10705](https://github.com/mastermindx-market-intelligence/Macro/pull/10705), current **dce11e42c79da7bf45bdda930b473d3f6a97e54e**. Compare its current contract and newer Paper amendments before selecting any edit; do not duplicate the older §12 implementation plan. The incumbent delivery, its latest integration proof, source-generation requirements and protected hydration need separate qualification.
+
+This is a completed navigation phase within the continuing assignment. PR10676 and this audit remain Draft/unmerged. Original model01, source admission, independent-writer, protected-style and release holds remain. Native modified clicks do not establish native context-menu/system clipboard, physical IME, spoken AT, complete shared shell/fonts, live account/admission, hosted CI or deployment acceptance.
