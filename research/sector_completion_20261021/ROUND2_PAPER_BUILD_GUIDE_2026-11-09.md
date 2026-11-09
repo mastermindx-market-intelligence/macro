@@ -82,3 +82,13 @@ No older customer/build frame is deleted or rewritten in this milestone. Origina
 ## Implementation and acceptance boundary
 
 Existing B01–B12 / P01–P23 / J01–J15 / 134 capability rows remain binding. Paper buttons represent designed interactions, not wired capabilities. Round 3 resolves current PR heads, typed research registration, query/state contracts, access and consumer proofs. Round 4 freezes exact implementation/extraction targets and the Fable-led T3 packet. No dispatch, production deployment, destructive retirement or release is performed in Round 2.
+
+## Core desktop milestone
+
+Six unified core frames have been composed and visually inspected: Brief HDT-0, Explore HLG-0, dossier HTT-0, Research HZR-0, Watches I5T-0, Cycles IC8-0, all on p-B-0. These are editable root Frames (artboardId null); retain exact IDs rather than relying on get_basic_info.artboards. Frame names identify source snapshots or interaction specimens. States page p-C-0 and Build page p-D-0 are created for the remaining package.
+
+The first visual critique corrected unsupported concentration wording, made both Energy horizons explicit, clarified 5 displayed versus 11 measured sectors, and made the deeper-destination strip full width. Cycles reuses the existing historical SVG from H03-0 under BV-0, with the historical view explicitly pinned to 30 October 2026; no new series is fabricated. Its old fixture remains a design specimen, not current market evidence. Phase age (23 sessions) and open leg length (150) are distinct. Matching timing history and current model estimate are unavailable; no old parity-failed model cell is presented as current.
+
+Watches entries, saved research, and control outcomes are interaction specimens, not observations of the Chairman's personal account. Industry directory entries express the target design; only the semiconductor registration is connected in the pinned source. Builder must complete real registrations and access/consumer proof before exposing promised content.
+
+Next: responsive and locale/theme compositions; comparison/source/snapshot depth; complete material state atlas and accessible help destinations; exact node manifest and Round 2 closeout in the existing masterplan.
