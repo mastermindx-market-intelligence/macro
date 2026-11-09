@@ -1,0 +1,367 @@
+{
+  "source": {
+    "source_parent": "059b9a6acd6d84726e20781b52a66e0c2a5ec651",
+    "assets": "f15feec04ead",
+    "changed": {
+      "templates/crypto_intelligence_r4.js": {
+        "bytes": 67211,
+        "sha256": "ed1301921ebca77074becda5dc74f982e9d1c3ca317687f0675fb68192ebf5dc",
+        "blob": "60459763cebf95fb058a9f380a57cc5fdb0b1643"
+      },
+      "tests/test_crypto_intelligence_r4_browser.py": {
+        "bytes": 120911,
+        "sha256": "29c022d2c6f83d98adb7d013856047bd2c628f858a9543a3676653ce82038265",
+        "blob": "d77df90aec0c4087d68e90529329ffb1c344583f"
+      },
+      "site/crypto-r4.html": {
+        "bytes": 119151,
+        "sha256": "a00f465f72e8a77029505d99bea9bcab7782f1b54b972753a338c2f74bb2860c",
+        "blob": "c260e21df62defc37dc21d10f32d24d6c9308923"
+      },
+      "site/vector-r4.html": {
+        "bytes": 119150,
+        "sha256": "a3a2e26eb1bec566397d7bf9457941fc6ee94f794ae920e692a1a0c63dc9e71a",
+        "blob": "b7c7f18ad441da7cb7481e9c09f6c5c1ea02b5e9"
+      },
+      "site/crypto_intelligence_r4.js": {
+        "bytes": 67211,
+        "sha256": "ed1301921ebca77074becda5dc74f982e9d1c3ca317687f0675fb68192ebf5dc",
+        "blob": "60459763cebf95fb058a9f380a57cc5fdb0b1643"
+      }
+    },
+    "unchanged": {
+      "templates/crypto_intelligence_r4.html.j2": {
+        "bytes": 21725,
+        "sha256": "75319d5e25b1fd8ee7f1d63fe29f97eaec58624ed28b7a1108baa4256f7dad06",
+        "blob": "68a95067b3eb388422b52cd3daec412642fc7a49"
+      },
+      "site/crypto_intelligence_r4.css": {
+        "bytes": 22413,
+        "sha256": "ffe6037109c230c7b7a8e60b74626a9726042a27f40622ebf787af30f4411e14",
+        "blob": "808714199cca5f83ad40312b5ce771e69179d7db"
+      },
+      "templates/crypto_intelligence_r4.css": {
+        "bytes": 22413,
+        "sha256": "ffe6037109c230c7b7a8e60b74626a9726042a27f40622ebf787af30f4411e14",
+        "blob": "808714199cca5f83ad40312b5ce771e69179d7db"
+      },
+      "scripts/build_crypto_intelligence_r4.py": {
+        "bytes": 5326,
+        "sha256": "abf594e7c1cf34273f4017f6bfc28333df810eb2cff2f8ee30972335671888c0",
+        "blob": "f276092b8e72925c5d967a1f5066bd940392ceb5"
+      },
+      "tests/test_crypto_intelligence_r4.py": {
+        "bytes": 23038,
+        "sha256": "878131aea7d56e5de7f21641f60bdd2fc43cd345f738dd2b8f111c32c9219fa3",
+        "blob": "4ecf96b6707e474a34ca04437f3afd0e8c8ec8e0"
+      },
+      "lib/crypto_intelligence_view.py": {
+        "bytes": 22671,
+        "sha256": "3457d4a183444f6b4d2b8bbed1d5678d30f93e387cd9861f147d58211eb83f73",
+        "blob": "5c90c35c1307d425cb5979aa3ce609e408cfddc6"
+      },
+      "site/crypto_intelligence_r4.json": {
+        "bytes": 28027,
+        "sha256": "807839328e14080902df593408c9001d958b69be70d74d09fadbdc811d859401",
+        "blob": "024278d4143ee076f4253cd295230636818e97bd"
+      },
+      "site/theme.js": {
+        "bytes": 265200,
+        "sha256": "46939917d2e233cb0d8af828d97b1e3b7d18886fd829f88d0bc08c9f3b643455",
+        "blob": "937779ef5770fa92ef93a5e6b0f7e3415f6a7cf3"
+      },
+      "site/theme.css": {
+        "bytes": 221941,
+        "sha256": "2e8611477fd3499877721f9ce9386b1c3a55e00a2ed87c4187387845775ae64a",
+        "blob": "620895319be7e3f7808439ecbae8c33c2197389f"
+      },
+      "site/illus.js": {
+        "bytes": 2752,
+        "sha256": "8e0a3779784525f15bb4a1b20e50f39ef4d0ddf243827f5ab609cfb08a69c620",
+        "blob": "dfe818277c5068fe665337531f89d4fe7976565b"
+      },
+      "site/illus.css": {
+        "bytes": 14335,
+        "sha256": "cbe6a0b4f83095ed300ee49a5d9f4d03e88005170a4792a7a9f41805a67e5f07",
+        "blob": "cda4f3e53a34c5e996b49bdac5732357ed94b2d5"
+      },
+      "site/navigation-refresh.css": {
+        "bytes": 93481,
+        "sha256": "ef068fe19adab3779512462c40ab67b3e75a997a2dc6edfae2d5a36dd604eb5c",
+        "blob": "276c1986f2a728ca59e0f9e0bc7fe269869fdff0"
+      },
+      "site/logo_config.js": {
+        "bytes": 202,
+        "sha256": "b37d33d3194c191b1bb64db3f5c33d17c7dc06a74892e4aa8ea4d50320aae215",
+        "blob": "523923f9f424a144f4a0cf3e4814e2ea36392474"
+      },
+      "site/stock-logos.js": {
+        "bytes": 16539,
+        "sha256": "cc29be531bc08e655464b6c0d384e1a46041aeb31caf7d982e926681fda7cb49",
+        "blob": "759d78f4dfb11de591d8db5cec36a91ca372fe3c"
+      },
+      "site/live_config.js": {
+        "bytes": 367,
+        "sha256": "52943e92422103557d94066ceb65f4402816322281f95e8bd376293fe14d9c10",
+        "blob": "2ad84da9b70e83cd9825a684d3c846fc81e7366d"
+      },
+      "site/live.js": {
+        "bytes": 50731,
+        "sha256": "f8cda39dd4258a5778864b3b7e0bd8b9cc685bd1f926211a72268883a937a592",
+        "blob": "7e91599afb20a69c4010d5dc36c85439381d529f"
+      }
+    },
+    "retained_page_changes": "Only two asset-version references per page",
+    "retained_view_exact": true,
+    "served_assets_exact": true
+  },
+  "product_inverse_exact": {
+    "templates/crypto_intelligence_r4.js": true
+  },
+  "browser_test_inverse_exact": true,
+  "runs": {
+    "route-context-baseline": {
+      "result": {
+        "command": [
+          "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "-m",
+          "pytest",
+          "-q",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_native_route_destinations_match_ordinary_context",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_in_section_keyboard_route_keeps_a_visible_focus_owner",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_route_focus_handoff_yields_to_a_newer_choice",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_consumed_or_modified_route_click_is_not_replayed_by_app",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_horizon_deep_link_drawer_history_and_chart_window",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_missing_current_case_recovers_without_borrowing_review_context",
+          "--tb=short",
+          "--junitxml=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/route-context-baseline/junit.xml",
+          "--basetemp=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/route-context-baseline/pytest-temp"
+        ],
+        "exit_code": 1,
+        "seconds": 13.83,
+        "source_parent": "059b9a6acd6d84726e20781b52a66e0c2a5ec651",
+        "test_sha256": "6bedde77dc7b3ca68413fe49525db47a73d8084ce2a0e8652fb0aac65f352f02"
+      },
+      "tests": 21,
+      "failed": 10,
+      "passed": 11,
+      "observations": {
+        "contexts": 21,
+        "pages": 21,
+        "page_errors": [],
+        "blocked_external_requests": 0,
+        "blocked_websockets": 0,
+        "browser": "157.0.8103.39"
+      },
+      "files": {
+        "result.json": {
+          "bytes": 1255,
+          "sha256": "c778ea71d3ad4d69ad8db70ee5aa6da60e60bd2b6915c25729799772642c85d7",
+          "blob": "980e324296d5c2e731d7c342090d629b0b53926c"
+        },
+        "stdout.txt": {
+          "bytes": 6619,
+          "sha256": "4f441fe75ddadcb2d1673a0b704e679d9fc3f3163039e4e0659df202b906c969",
+          "blob": "f67894c5480e4a61656682886d8e00042a0d895e"
+        },
+        "stderr.txt": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+        },
+        "junit.xml": {
+          "bytes": 11185,
+          "sha256": "d1a084b39b346cecfa9418910d719848140ba9310ee9cabeb27fc792525b3eff",
+          "blob": "4fb5e3b726253a4e16c23ee91f7edc05febc8b90"
+        },
+        "observations.json": {
+          "bytes": 148,
+          "sha256": "c2fa7391685fb2ac1112e2814c03326cd5f080687d06e38c64d26e25b2512a27",
+          "blob": "f157a9a3c4f52d9333e2002a7554b6fd629f178f"
+        }
+      }
+    },
+    "route-context-history-baseline": {
+      "result": {
+        "command": [
+          "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "-m",
+          "pytest",
+          "-q",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_route_focus_handoff_yields_to_a_newer_choice[replace]",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_route_focus_handoff_yields_to_a_newer_choice[push]",
+          "--tb=short",
+          "--junitxml=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/route-context-history-baseline/junit.xml",
+          "--basetemp=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/route-context-history-baseline/pytest-temp"
+        ],
+        "exit_code": 1,
+        "seconds": 3.782,
+        "source_parent": "059b9a6acd6d84726e20781b52a66e0c2a5ec651",
+        "test_sha256": "29c022d2c6f83d98adb7d013856047bd2c628f858a9543a3676653ce82038265"
+      },
+      "tests": 2,
+      "failed": 2,
+      "passed": 0,
+      "observations": {
+        "contexts": 2,
+        "pages": 2,
+        "page_errors": [],
+        "blocked_external_requests": 0,
+        "blocked_websockets": 0,
+        "browser": "157.0.8103.39"
+      },
+      "files": {
+        "result.json": {
+          "bytes": 815,
+          "sha256": "953cac34aef4349b13cbdedcd1066ee486f3a39c423c87ea0f413346a5c26035",
+          "blob": "371a29aea39cc057bece3009c68ffbb260e50db1"
+        },
+        "stdout.txt": {
+          "bytes": 1379,
+          "sha256": "4621b5fd019ffd64e03740c3fe0621aaf161dba165ad08bbf84d4514845d0e8e",
+          "blob": "00c9741d367aed55135697100663af8abe66d875"
+        },
+        "stderr.txt": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+        },
+        "junit.xml": {
+          "bytes": 1815,
+          "sha256": "1c7af8174fc5e25ae744aba2a26cb86e56de8aa64646368607bce1dc00dc75e7",
+          "blob": "cac7b62ef8a825a2f617507adb5f56643b5095f7"
+        },
+        "observations.json": {
+          "bytes": 146,
+          "sha256": "0cca1259c16b02c18465ffc533ecdecab800de438836a4ab17cc902d10a403e8",
+          "blob": "2f231ece9567df133566961c95b282b2e5a3dee6"
+        }
+      }
+    },
+    "route-context-final": {
+      "result": {
+        "command": [
+          "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "-m",
+          "pytest",
+          "-q",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_native_route_destinations_match_ordinary_context",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_in_section_keyboard_route_keeps_a_visible_focus_owner",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_route_focus_handoff_yields_to_a_newer_choice",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_consumed_or_modified_route_click_is_not_replayed_by_app",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_horizon_deep_link_drawer_history_and_chart_window",
+          "tests/test_crypto_intelligence_r4_browser.py::test_r4_missing_current_case_recovers_without_borrowing_review_context",
+          "--tb=short",
+          "--junitxml=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/route-context-final/junit.xml",
+          "--basetemp=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/route-context-final/pytest-temp"
+        ],
+        "exit_code": 0,
+        "seconds": 13.408,
+        "source_parent": "059b9a6acd6d84726e20781b52a66e0c2a5ec651",
+        "runtime_asset_version": "f15feec04ead",
+        "candidate_inputs": {
+          "templates/crypto_intelligence_r4.js": {
+            "bytes": 67211,
+            "sha256": "ed1301921ebca77074becda5dc74f982e9d1c3ca317687f0675fb68192ebf5dc",
+            "blob": "60459763cebf95fb058a9f380a57cc5fdb0b1643"
+          },
+          "tests/test_crypto_intelligence_r4_browser.py": {
+            "bytes": 120911,
+            "sha256": "29c022d2c6f83d98adb7d013856047bd2c628f858a9543a3676653ce82038265",
+            "blob": "d77df90aec0c4087d68e90529329ffb1c344583f"
+          }
+        }
+      },
+      "tests": 23,
+      "failed": 0,
+      "passed": 23,
+      "observations": {
+        "contexts": 23,
+        "pages": 25,
+        "page_errors": [],
+        "blocked_external_requests": 0,
+        "blocked_websockets": 0,
+        "browser": "157.0.8103.39"
+      },
+      "files": {
+        "result.json": {
+          "bytes": 1676,
+          "sha256": "8d4464f921cbc22fe79466b876aea3157ca982f124753907abf0e2cedff8ecb7",
+          "blob": "7fcc8ae48d4ef9f09e4803e391a9e783870c4be9"
+        },
+        "stdout.txt": {
+          "bytes": 100,
+          "sha256": "68c3e754bee8e43603cd8020f41b33388ad510960487dac14915a87dbfc5123c",
+          "blob": "503a697c09998e1a343220f1472b717fbe3a548d"
+        },
+        "stderr.txt": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+        },
+        "junit.xml": {
+          "bytes": 3895,
+          "sha256": "4b05576fa6729ab3e922ec3703e080929b1a13693a4073f3eb64cdfc0df6a78f",
+          "blob": "972c5b451801db57054cffb8219320b5a1f5883d"
+        },
+        "observations.json": {
+          "bytes": 148,
+          "sha256": "4f6bbfb92611b1b16f8f30c1cccc69b54258ddd9a36fa689180c0389d1732509",
+          "blob": "63af1b7544e6a0bc925361cd3450093bbc84ae06"
+        }
+      }
+    }
+  },
+  "baseline_case_union_matches_final": true,
+  "captures": {
+    "route-context-en-390.png": {
+      "bytes": 110794,
+      "sha256": "1f99561c942e297a16d97f7df26b66be2966a9acea967f1d0ae95d2104768105",
+      "blob": "3e1b06849b9cbf76e0b7d4d59d1d20ff6b8a4fdf",
+      "width": 390,
+      "height": 844,
+      "prior_capture_exact": null
+    },
+    "route-context-zh-320.png": {
+      "bytes": 94091,
+      "sha256": "d879147a00f89978e5428cb0b1b2a8f8cae5953f22ca2ea5891865129b417d79",
+      "blob": "9735f67042467035c766f006b55faf08e85c532d",
+      "width": 320,
+      "height": 844,
+      "prior_capture_exact": null
+    },
+    "scenario-recovery-memory-en-390.png": {
+      "bytes": 16968,
+      "sha256": "9454c6c97044132c5d0d8d380b3295f1caa0ec20df022064e8e3762da76d9629",
+      "blob": "bf477db74ec17a8964ff3f8d11ee972becea78a0",
+      "width": 390,
+      "height": 764,
+      "prior_capture_exact": true
+    },
+    "scenario-recovery-memory-zh-320.png": {
+      "bytes": 15297,
+      "sha256": "6d2105669347f8e1609e65ff21e11344bf82abd9ef33c51b83f61bf33336147d",
+      "blob": "7e99702a9b80dd60b69e056197c238ff59daea75",
+      "width": 320,
+      "height": 764,
+      "prior_capture_exact": true
+    },
+    "scenario-recovery-scenario-en-390.png": {
+      "bytes": 16968,
+      "sha256": "9454c6c97044132c5d0d8d380b3295f1caa0ec20df022064e8e3762da76d9629",
+      "blob": "bf477db74ec17a8964ff3f8d11ee972becea78a0",
+      "width": 390,
+      "height": 764,
+      "prior_capture_exact": true
+    },
+    "scenario-recovery-scenario-zh-320.png": {
+      "bytes": 15297,
+      "sha256": "6d2105669347f8e1609e65ff21e11344bf82abd9ef33c51b83f61bf33336147d",
+      "blob": "7e99702a9b80dd60b69e056197c238ff59daea75",
+      "width": 320,
+      "height": 764,
+      "prior_capture_exact": true
+    }
+  },
+  "scope": "23 affected cases in one candidate run: native href/context/new-tab parity; in-section and persistent keyboard focus; six newer-choice callbacks; six consumed/modified click probes; existing horizon/drawer and six missing-case recovery paths. Native Meta-click opens two additional pages. No complete-suite claim."
+}

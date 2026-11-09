@@ -2007,3 +2007,144 @@ def test_r4_generic_and_valid_current_reviews_remain_distinct(snapshot_page, lan
     _wait_closed(page)
     assert page.locator("#scenarios-title").evaluate("n=>document.activeElement===n")
     assert _writes(page) == 0
+
+
+# Native links and owned route clicks must carry the same research context.
+@pytest.mark.parametrize("lang,width", [("en", 390), ("zh", 320)])
+def test_r4_native_route_destinations_match_ordinary_context(snapshot_page, lang, width):
+    from urllib.parse import parse_qs
+    start = "#overview?h=30&window=30&q=eth&filter=stressed&sort=return&extra=kept&panel=history"
+    page = snapshot_page(lang=lang, width=width, start=start)
+    _wait_drawer(page, "history", "Price data and levels" if lang == "en" else "价格数据与价位")
+    expected = {"h": "30", "window": "30", "q": "eth", "filter": "stressed", "sort": "return", "extra": "kept"}
+    locations = page.locator("#crypto-intelligence a[data-route]").evaluate_all(
+        "nodes=>nodes.map(n=>({view:n.dataset.route,href:n.href}))"
+    )
+    current = urlsplit(page.url)
+    assert len(locations) >= 4
+    for item in locations:
+        target = urlsplit(item["href"])
+        assert (target.scheme, target.netloc, target.path, target.query) == (current.scheme, current.netloc, current.path, current.query)
+        view, _, params = target.fragment.partition("?")
+        assert view == item["view"]
+        assert {key: value[0] for key, value in parse_qs(params).items()} == expected
+    assert "panel=history" in page.evaluate("location.hash")
+    page.keyboard.press("Escape")
+    _wait_closed(page)
+    origin = page.locator('[data-view="overview"] a[data-route="scenarios"]')
+    copied = origin.get_attribute("href")
+    before_url, before_history, before_raw = page.url, page.evaluate("history.length"), _raw(page)
+    with page.context.expect_page() as opened:
+        origin.click(modifiers=["Meta"])
+    peer = opened.value
+    peer.set_default_timeout(4500)
+    peer.wait_for_load_state("load")
+    peer.wait_for_function("document.getElementById('crypto-intelligence').dataset.renderedAddress===location.href")
+    assert peer.evaluate("location.hash") == copied
+    assert peer.locator('.cri-tabs [data-route="scenarios"][aria-current="page"]').is_visible()
+    assert peer.locator('[data-view="scenarios"] [data-horizon="30"][aria-pressed="true"]').is_visible()
+    assert page.url == before_url and page.evaluate("history.length") == before_history
+    peer.close()
+    origin.click()
+    page.wait_for_function("document.querySelector('[data-view=scenarios]').hidden===false")
+    assert page.evaluate("location.hash") == copied
+    assert page.evaluate("Object.fromEntries(new URLSearchParams(location.hash.split('?')[1]))") == expected
+    assert _raw(page) == before_raw and _writes(page) == 0
+
+
+@pytest.mark.parametrize("lang,width", [("en", 390), ("zh", 320)])
+def test_r4_in_section_keyboard_route_keeps_a_visible_focus_owner(snapshot_page, lang, width):
+    page = snapshot_page(lang=lang, width=width, start="#overview?h=30&window=30&q=eth&filter=stressed")
+    before_url, before_history = page.url, page.evaluate("history.length")
+    origin = page.locator('[data-view="overview"] a[data-route="markets"]')
+    target = page.locator('.cri-tabs [data-route="markets"]')
+    page.evaluate("""() => {
+      window.__routeFocus = [];
+      document.querySelector('.cri-tabs [data-route="markets"]').addEventListener('focus', () => {
+        window.__routeFocus.push({hidden:document.querySelector('[data-view="overview"]').hidden,url:location.href,history:history.length});
+      });
+    }""")
+    origin.focus()
+    origin.press("Enter")
+    page.wait_for_function("document.querySelector('[data-view=markets]').hidden===false")
+    assert target.evaluate("n=>document.activeElement===n")
+    assert page.evaluate("__routeFocus") == [{"hidden": False, "url": before_url, "history": before_history}]
+    assert page.locator("#crypto-intelligence [data-view]:visible").count() == 1
+    assert page.evaluate("new URLSearchParams(location.hash.split('?')[1]).get('h')") == "30"
+    if os.environ.get("MMX_CRYPTO_SNAPSHOT_CAPTURE_DIR"):
+        out = Path(os.environ["MMX_CRYPTO_SNAPSHOT_CAPTURE_DIR"])
+        out.mkdir(parents=True, exist_ok=True)
+        page.screenshot(path=str(out / ("route-context-" + lang + "-" + str(width) + ".png")))
+    persistent = page.locator('.cri-tabs [data-route="bitcoin"]')
+    persistent.focus()
+    persistent.press("Enter")
+    page.wait_for_function("document.querySelector('[data-view=bitcoin]').hidden===false")
+    assert persistent.evaluate("n=>document.activeElement===n")
+    assert page.locator("#crypto-intelligence [data-view]:visible").count() == 1
+    assert _writes(page) == 0
+
+
+@pytest.mark.parametrize("choice", ["view", "language", "focus", "detach", "replace", "push"])
+def test_r4_route_focus_handoff_yields_to_a_newer_choice(snapshot_page, choice):
+    page = snapshot_page(width=390, start="#overview?h=30&window=30&extra=kept")
+    before_url, before_history = page.url, page.evaluate("history.length")
+    page.evaluate("""choice => {
+      window.__routeChoiceRan = false;
+      const nav=document.querySelector('.cri-tabs [data-route="markets"]');
+      nav.addEventListener('focus', () => {
+        window.__routeChoiceRan = true;
+        if(choice==='view'){
+          const newer=document.querySelector('.cri-tabs [data-route="bitcoin"]');
+          newer.focus();newer.click();
+        } else if(choice==='language')document.documentElement.dataset.lang='zh';
+        else if(choice==='focus')document.querySelector('#crypto-intelligence [data-open="saved"]').focus();
+        else if(choice==='replace'||choice==='push')history[choice==='replace'?'replaceState':'pushState']({routeFocusOwner:choice},'',location.href);
+        else nav.remove();
+      },{once:true});
+    }""", choice)
+    origin = page.locator('[data-view="overview"] a[data-route="markets"]')
+    origin.focus()
+    origin.press("Enter")
+    assert page.evaluate("__routeChoiceRan")
+    if choice == "view":
+        page.wait_for_function("document.querySelector('[data-view=bitcoin]').hidden===false")
+        assert page.evaluate("location.hash") == "#bitcoin?h=30&window=30&extra=kept"
+        assert page.evaluate("history.length") == before_history + 1
+        assert page.locator('.cri-tabs [data-route="bitcoin"]').evaluate("n=>document.activeElement===n")
+    else:
+        if choice == "language":
+            page.wait_for_function("document.getElementById('crypto-intelligence').dataset.renderedLanguage==='true'")
+            assert page.locator('.cri-tabs [data-route="markets"]').evaluate("n=>document.activeElement===n")
+        elif choice == "focus":
+            assert page.locator('#crypto-intelligence [data-open="saved"]').evaluate("n=>document.activeElement===n")
+        elif choice in ("replace", "push"):
+            assert page.evaluate("history.state") == {"routeFocusOwner": choice}
+            assert page.locator('.cri-tabs [data-route="markets"]').evaluate("n=>document.activeElement===n")
+        else:
+            assert page.locator('.cri-tabs [data-route="markets"]').count() == 0
+        assert page.url == before_url and page.evaluate("history.length") == before_history + (1 if choice == "push" else 0)
+        assert page.locator('[data-view="overview"]').is_visible()
+    assert page.locator("#crypto-intelligence [data-view]:visible").count() == 1
+    assert _writes(page) == 0
+
+
+@pytest.mark.parametrize("kind", ["consumed", "meta", "control", "shift", "alt", "middle"])
+def test_r4_consumed_or_modified_route_click_is_not_replayed_by_app(snapshot_page, kind):
+    page = snapshot_page(width=390, start="#overview?h=30&window=30")
+    before_url, before_history = page.url, page.evaluate("history.length")
+    origin = page.locator('[data-view="overview"] a[data-route="markets"]')
+    origin.focus()
+    origin.evaluate("""(node,kind) => {
+      if(kind==='consumed')node.addEventListener('click',e=>e.preventDefault(),{once:true});
+      // Cancel native behavior after the application listener, so this bounded
+      // synthetic probe tests only whether the application incorrectly handles it.
+      document.addEventListener('click',e=>e.preventDefault(),{once:true});
+      node.dispatchEvent(new MouseEvent('click',{bubbles:true,cancelable:true,
+        button:kind==='middle'?1:0,metaKey:kind==='meta',ctrlKey:kind==='control',
+        shiftKey:kind==='shift',altKey:kind==='alt'}));
+    }""", kind)
+    assert page.url == before_url and page.evaluate("history.length") == before_history
+    assert page.locator('[data-view="overview"]').is_visible()
+    assert origin.evaluate("n=>document.activeElement===n")
+    assert len(page.context.pages) == 1
+    assert _writes(page) == 0

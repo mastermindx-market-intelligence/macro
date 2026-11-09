@@ -1,0 +1,44 @@
+{
+  "route-context-en-390.png": {
+    "path": "research/design_candidates/crypto_snapshot_safety_20261109/route-context/captures/route-context-en-390.png",
+    "blob": "3e1b06849b9cbf76e0b7d4d59d1d20ff6b8a4fdf",
+    "sha256": "1f99561c942e297a16d97f7df26b66be2966a9acea967f1d0ae95d2104768105",
+    "bytes": 110794,
+    "reused_exact_prior_capture": false
+  },
+  "route-context-zh-320.png": {
+    "path": "research/design_candidates/crypto_snapshot_safety_20261109/route-context/captures/route-context-zh-320.png",
+    "blob": "9735f67042467035c766f006b55faf08e85c532d",
+    "sha256": "d879147a00f89978e5428cb0b1b2a8f8cae5953f22ca2ea5891865129b417d79",
+    "bytes": 94091,
+    "reused_exact_prior_capture": false
+  },
+  "scenario-recovery-memory-en-390.png": {
+    "path": "research/design_candidates/crypto_snapshot_safety_20261109/scenario-recovery/captures/scenario-recovery-memory-en-390.png",
+    "blob": "bf477db74ec17a8964ff3f8d11ee972becea78a0",
+    "sha256": "9454c6c97044132c5d0d8d380b3295f1caa0ec20df022064e8e3762da76d9629",
+    "bytes": 16968,
+    "reused_exact_prior_capture": true
+  },
+  "scenario-recovery-memory-zh-320.png": {
+    "path": "research/design_candidates/crypto_snapshot_safety_20261109/scenario-recovery/captures/scenario-recovery-memory-zh-320.png",
+    "blob": "7e99702a9b80dd60b69e056197c238ff59daea75",
+    "sha256": "6d2105669347f8e1609e65ff21e11344bf82abd9ef33c51b83f61bf33336147d",
+    "bytes": 15297,
+    "reused_exact_prior_capture": true
+  },
+  "scenario-recovery-scenario-en-390.png": {
+    "path": "research/design_candidates/crypto_snapshot_safety_20261109/scenario-recovery/captures/scenario-recovery-scenario-en-390.png",
+    "blob": "bf477db74ec17a8964ff3f8d11ee972becea78a0",
+    "sha256": "9454c6c97044132c5d0d8d380b3295f1caa0ec20df022064e8e3762da76d9629",
+    "bytes": 16968,
+    "reused_exact_prior_capture": true
+  },
+  "scenario-recovery-scenario-zh-320.png": {
+    "path": "research/design_candidates/crypto_snapshot_safety_20261109/scenario-recovery/captures/scenario-recovery-scenario-zh-320.png",
+    "blob": "7e99702a9b80dd60b69e056197c238ff59daea75",
+    "sha256": "6d2105669347f8e1609e65ff21e11344bf82abd9ef33c51b83f61bf33336147d",
+    "bytes": 15297,
+    "reused_exact_prior_capture": true
+  }
+}

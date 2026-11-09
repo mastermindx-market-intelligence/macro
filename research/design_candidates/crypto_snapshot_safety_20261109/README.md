@@ -1,6 +1,20 @@
-# Crypto R4: safe saved cases and clear asset comparisons
+# Crypto R4: reliable cases, asset readings and navigation
 
-## Current phase — honest missing-case recovery
+## Current phase — native context and focus continuity
+
+Native route links now retain the same horizon, chart window, Markets filters and extra parameters as ordinary activation. Owned in-section navigation moves focus to the persistent destination tab before hiding the old view, while respecting newer choices made during focus.
+
+**23 affected browser cases pass in one run**, across 23 contexts and 25 pages with zero errors or outside traffic. Two real native new-tab journeys retain their originating context. Two new viewport captures were inspected; four recovery captures match their previously inspected bytes.
+
+Five source/served/test paths change; 16 inputs remain exact. The two candidate pages change only two asset-version references each. No new navigation owner or storage write.
+
+- [Native navigation and builder contract](NATIVE_NAVIGATION.md)
+- [Exact source and browser proof](route-context/PUBLICATION_RECEIPT.json)
+- [Capture references](route-context/CAPTURE_REFERENCES.json)
+
+Continue into expired current-card qualification and the same-case return from valid current review. Earlier acceptance scopes and release/model holds remain.
+
+## Prior phase — honest missing-case recovery
 
 Missing current-scenario and named-review links now show an explicit unavailable state. One **Browse scenarios** action retains the selected horizon and route context. Generic review remains generic; valid cases retain their identity; saved-case lookup and storage remain unchanged.
 

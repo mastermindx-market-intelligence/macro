@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="2" time="3.444" timestamp="2026-11-09T10:19:06.229955-07:00" hostname="m2studio"><testcase classname="tests.test_crypto_intelligence_r4_browser" name="test_r4_route_focus_handoff_yields_to_a_newer_choice[replace]" time="1.373"><failure message="AssertionError: assert False&#10; +  where False = evaluate('__routeChoiceRan')&#10; +    where evaluate = &lt;Page url='http://127.0.0.1:54654/crypto-r4.html?lang=en#markets?h=30&amp;window=30&amp;extra=kept'&gt;.evaluate">tests/test_crypto_intelligence_r4_browser.py:2108: in test_r4_route_focus_handoff_yields_to_a_newer_choice
+    assert page.evaluate("__routeChoiceRan")
+E   AssertionError: assert False
+E    +  where False = evaluate('__routeChoiceRan')
+E    +    where evaluate = &lt;Page url='http://127.0.0.1:54654/crypto-r4.html?lang=en#markets?h=30&amp;window=30&amp;extra=kept'&gt;.evaluate</failure></testcase><testcase classname="tests.test_crypto_intelligence_r4_browser" name="test_r4_route_focus_handoff_yields_to_a_newer_choice[push]" time="1.705"><failure message="AssertionError: assert False&#10; +  where False = evaluate('__routeChoiceRan')&#10; +    where evaluate = &lt;Page url='http://127.0.0.1:54654/crypto-r4.html?lang=en#markets?h=30&amp;window=30&amp;extra=kept'&gt;.evaluate">tests/test_crypto_intelligence_r4_browser.py:2108: in test_r4_route_focus_handoff_yields_to_a_newer_choice
+    assert page.evaluate("__routeChoiceRan")
+E   AssertionError: assert False
+E    +  where False = evaluate('__routeChoiceRan')
+E    +    where evaluate = &lt;Page url='http://127.0.0.1:54654/crypto-r4.html?lang=en#markets?h=30&amp;window=30&amp;extra=kept'&gt;.evaluate</failure></testcase></testsuite></testsuites>

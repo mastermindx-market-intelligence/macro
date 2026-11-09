@@ -782,7 +782,11 @@
       }
       var h = s.params.get("h") === "30" ? "30" : "7", windowSize = s.params.get("window") === "30" ? "30" : "90";
       root.querySelectorAll("[data-view]").forEach(function (p) { p.hidden = p.dataset.view !== s.view; });
-      root.querySelectorAll("[data-route]").forEach(function (a) { if (a.closest(".cri-tabs") && a.dataset.route === s.view) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current"); });
+      var routeParams = new URLSearchParams(s.params); routeParams.delete("panel");
+      root.querySelectorAll("[data-route]").forEach(function (a) {
+        if (a.tagName === "A" && views.indexOf(a.dataset.route) >= 0) a.setAttribute("href", address(a.dataset.route, routeParams));
+        if (a.closest(".cri-tabs") && a.dataset.route === s.view) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current");
+      });
       root.querySelectorAll("[data-chart-window]").forEach(function (b) { b.setAttribute("aria-pressed", String(b.dataset.chartWindow === windowSize)); });
       root.querySelectorAll("[data-chart-panel]").forEach(function (p) { p.hidden = p.dataset.chartPanel !== windowSize; });
       root.querySelectorAll("[data-horizon]").forEach(function (b) { b.setAttribute("aria-pressed", String(b.dataset.horizon === h)); });
@@ -856,8 +860,20 @@
   }
   root.addEventListener("click", function (event) {
     var route = event.target.closest("[data-route]"), openButton = event.target.closest("[data-open]");
-    if (route && !event.metaKey && !event.ctrlKey && !event.shiftKey && event.button === 0) { event.preventDefault(); update(route.dataset.route, { panel: null }); }
-    else if (openButton) { event.preventDefault(); var caseGroup = openButton.closest("[data-case-horizon]"); var scenarioHorizon = openButton.dataset.open.indexOf("scenario:") === 0 ? (caseGroup ? caseGroup.dataset.caseHorizon : horizon()) : null; open(openButton.dataset.open, openButton, scenarioHorizon); }
+    if (route) {
+      if (event.defaultPrevented || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) return;
+      event.preventDefault();
+      var routeView = route.dataset.route, activeSection = document.activeElement.closest("[data-view]");
+      if (activeSection && activeSection.dataset.view !== routeView) {
+        var routeAddress = location.href, routeLanguage = zh(), routeHistory = historySignature(), routeLength = history.length;
+        var destination = Array.from(root.querySelectorAll(".cri-tabs [data-route]")).find(function (a) { return a.dataset.route === routeView; });
+        if (!destination || !visibleInView(destination, state().view)) return;
+        destination.focus();
+        if (location.href !== routeAddress || zh() !== routeLanguage || historySignature() !== routeHistory || history.length !== routeLength ||
+            document.activeElement !== destination || !visibleInView(destination, state().view)) return;
+      }
+      update(routeView, { panel: null });
+    } else if (openButton) { event.preventDefault(); var caseGroup = openButton.closest("[data-case-horizon]"); var scenarioHorizon = openButton.dataset.open.indexOf("scenario:") === 0 ? (caseGroup ? caseGroup.dataset.caseHorizon : horizon()) : null; open(openButton.dataset.open, openButton, scenarioHorizon); }
     var windowButton = event.target.closest("[data-chart-window]");
     if (windowButton) update(null, { window: windowButton.dataset.chartWindow }, true);
     var horizonButton = event.target.closest("[data-horizon]");
