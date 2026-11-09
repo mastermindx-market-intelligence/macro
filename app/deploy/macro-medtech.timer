@@ -1,0 +1,14 @@
+[Unit]
+Description=Daily bounded MedTech FDA reference refresh
+
+[Timer]
+OnCalendar=*-*-* 06:10:00 UTC
+RandomizedDelaySec=20m
+AccuracySec=1m
+Persistent=true
+Unit=macro-medtech.service
+
+[Install]
+WantedBy=timers.target
+
+# Installed dark. Neither API setup/update nor medtech-setup.sh enables this.

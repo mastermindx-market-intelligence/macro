@@ -1,0 +1,10 @@
+{
+  "proof_class": "previously_skipped_exact_input_contract_and_owner_suite",
+  "input_source": "660324954e037d4f6e3fda565f0d51bcb3a998ed",
+  "input_path": "data/yahoo/SPY.parquet",
+  "input_sha256": "55c796806dd37f79a0f1786132c010bce9cce33faf6dc7357dbf069d86095776",
+  "input_unchanged": true,
+  "returncode": 0,
+  "summary": "65 passed in 2.07s",
+  "production": false
+}

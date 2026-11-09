@@ -263,6 +263,48 @@ def test_p3ba_policy_rejects_new_caller_supplied_inputs(tmp_path: Path) -> None:
     assert "R13" in result.stdout
 
 
+
+def test_p3ba_policy_rejects_legacy_hosted_compat_moved_to_pc(tmp_path: Path) -> None:
+    root, registry, workflows = fixture_tree(tmp_path)
+    path = workflows / "trusted-ci-executor.yml"
+    document = yaml.safe_load(path.read_text(encoding="utf-8"))
+    compat = document["jobs"]["legacy-hosted-pack"]
+    compat["runs-on"] = {"group": "macro-home-canary", "labels": "ci-linux"}
+    path.write_text(yaml.safe_dump(document, sort_keys=False), encoding="utf-8")
+    result = run_guard(root, registry, workflows)
+    assert result.returncode == 1
+    assert "R13" in result.stdout
+    assert "hosted compatibility pack" in result.stdout
+
+
+def test_p3ba_policy_rejects_legacy_hosted_compat_without_route_guard(
+    tmp_path: Path,
+) -> None:
+    root, registry, workflows = fixture_tree(tmp_path)
+    path = workflows / "trusted-ci-executor.yml"
+    document = yaml.safe_load(path.read_text(encoding="utf-8"))
+    document["jobs"]["legacy-hosted-pack"].pop("if")
+    path.write_text(yaml.safe_dump(document, sort_keys=False), encoding="utf-8")
+    result = run_guard(root, registry, workflows)
+    assert result.returncode == 1
+    assert "R13" in result.stdout
+    assert "hosted compatibility pack" in result.stdout
+
+
+def test_p3ba_policy_rejects_pc_pack_without_explicit_pc_route_guard(
+    tmp_path: Path,
+) -> None:
+    root, registry, workflows = fixture_tree(tmp_path)
+    path = workflows / "trusted-ci-executor.yml"
+    document = yaml.safe_load(path.read_text(encoding="utf-8"))
+    document["jobs"]["trusted-pack"].pop("if")
+    path.write_text(yaml.safe_dump(document, sort_keys=False), encoding="utf-8")
+    result = run_guard(root, registry, workflows)
+    assert result.returncode == 1
+    assert "R13" in result.stdout
+    assert "explicit PC route" in result.stdout
+
+
 def test_p3ba_policy_rejects_a_second_runner_group_consumer(tmp_path: Path) -> None:
     root, registry, workflows = fixture_tree(tmp_path)
     path = workflows / "trusted-ci-executor.yml"
@@ -885,3 +927,430 @@ def test_r14_requires_the_exact_pending_platform_label_list_without_traceback(
     assert result.returncode == 1
     assert "R14" in result.stdout
     assert "Traceback" not in result.stderr
+
+
+# ── AD-1T2 producer lane (R15) ──────────────────────────────────────────────────
+# Specialized route clause that MUST NOT piggyback on custom_routes/R5:
+# options-intel fires on workflow_dispatch AND workflow_run, and R5 expects
+# dispatch-only with a hosted trust-gate upstream — incompatible by design.
+# These tests pin the contract exactly.
+
+OPTIONS_INTEL_BASE = (
+    "on:\n"
+    "  workflow_dispatch:\n"
+    "    inputs:\n"
+    "      run_id:\n"
+    "        description: \"daily run id to source inputs from\"\n"
+    "        required: false\n"
+    "  workflow_run:\n"
+    "    workflows: [daily]\n"
+    "    types: [completed]\n"
+    "concurrency:\n"
+    "  group: options-intel\n"
+    "  cancel-in-progress: false\n"
+    "permissions:\n"
+    "  contents: write\n"
+    "jobs:\n"
+    "  options_intel:\n"
+    "    if: >-\n"
+    "      vars.AD1_M1_LANE == 'on' &&\n"
+    "      (github.event_name == 'workflow_dispatch' ||\n"
+    "       github.event.workflow_run.conclusion == 'success')\n"
+    "    runs-on: [self-hosted, m1-theta]\n"
+    "    timeout-minutes: 45\n"
+    "    steps:\n"
+    "      - run: echo ok\n"
+)
+
+
+def _options_intel_fixture(tmp_path: Path) -> tuple[Path, Path, Path]:
+    """Build a minimal fixture that includes the AD-1T2 options-intel
+    workflow alongside the standard runtime fleet so R15 + R6 have something
+    concrete to evaluate.
+    """
+
+    root, registry, workflows = fixture_tree(tmp_path)
+    write_synthetic_workflow(workflows, "options-intel.yml", OPTIONS_INTEL_BASE)
+    selected = (
+        "mastermindx-market-intelligence/macro/.github/workflows/"
+        "options-intel.yml@refs/heads/main"
+    )
+
+    def _add_selected(doc: dict) -> None:
+        existing = doc["runtime_runner_group"]["selected_workflows"]
+        if selected not in existing:
+            existing.append(selected)
+
+    mutate_registry(registry, _add_selected)
+    return root, registry, workflows
+
+
+def test_options_intel_route_satisfies_r15(tmp_path: Path) -> None:
+    root, registry, workflows = _options_intel_fixture(tmp_path)
+    result = run_guard(root, registry, workflows)
+    assert result.returncode == 0, result.stdout + result.stderr
+
+
+def test_options_intel_route_rejects_wrong_runs_on_label(tmp_path: Path) -> None:
+    root, registry, workflows = _options_intel_fixture(tmp_path)
+    path = workflows / "options-intel.yml"
+    document = yaml.safe_load(path.read_text(encoding="utf-8"))
+    document["jobs"]["options_intel"]["runs-on"] = ["self-hosted", "macstudio"]
+    path.write_text(yaml.safe_dump(document, sort_keys=False), encoding="utf-8")
+    result = run_guard(root, registry, workflows)
+    assert result.returncode == 1
+    assert "R15" in result.stdout
+    assert "exactly" in result.stdout
+
+
+def test_options_intel_route_rejects_broad_production_label_leak(tmp_path: Path) -> None:
+    root, registry, workflows = _options_intel_fixture(tmp_path)
+    path = workflows / "options-intel.yml"
+    document = yaml.safe_load(path.read_text(encoding="utf-8"))
+    document["jobs"]["options_intel"]["runs-on"] = ["self-hosted", "m1-theta", "theta-m1"]
+    path.write_text(yaml.safe_dump(document, sort_keys=False), encoding="utf-8")
+    result = run_guard(root, registry, workflows)
+    assert result.returncode == 1
+    assert "R15" in result.stdout
+    assert "leaked broad production" in result.stdout
+
+
+def test_options_intel_route_rejects_wrong_trigger_set(tmp_path: Path) -> None:
+    """`schedule:` (no waiver possible here), missing workflow_run, or an
+    extra event ALL fail R15 — the contract is the exact trigger pair.
+    Build the dicts directly: yaml.safe_load maps the bare key `on:` to the
+    boolean `True` under YAML 1.1, so a literal-string parse cannot address
+    the same key the runner-policy parser uses. Each scenario gets its own
+    fixture sub-tree so the file system does not collide between iterations.
+    """
+
+    scenarios = (
+        # adds schedule — would silently subscribe a heavy M1 job to cron
+        {
+            "workflow_dispatch": {},
+            "workflow_run": {"workflows": ["daily"], "types": ["completed"]},
+            "schedule": [{"cron": "5 5 * * *"}],
+        },
+        # drops workflow_run — the same-cycle inputs would never land
+        {"workflow_dispatch": {}},
+        # drops workflow_dispatch — W4 canary/measurement carrier would be lost
+        {"workflow_run": {"workflows": ["daily"], "types": ["completed"]}},
+    )
+    for index, bad_triggers in enumerate(scenarios):
+        case = tmp_path / f"case-{index}"
+        case.mkdir()
+        root, registry, workflows = _options_intel_fixture(case)
+        write_synthetic_workflow(workflows, "options-intel.yml", OPTIONS_INTEL_BASE)
+        path = workflows / "options-intel.yml"
+        document = yaml.safe_load(path.read_text(encoding="utf-8"))
+        document["on"] = bad_triggers
+        path.write_text(yaml.safe_dump(document, sort_keys=False), encoding="utf-8")
+        result = run_guard(root, registry, workflows)
+        assert result.returncode == 1, f"bad triggers {bad_triggers!r} must fail R15"
+        assert "R15" in result.stdout
+
+
+def test_options_intel_route_rejects_workflow_run_target_other_than_daily(tmp_path: Path) -> None:
+    root, registry, workflows = _options_intel_fixture(tmp_path)
+    path = workflows / "options-intel.yml"
+    document = yaml.safe_load(path.read_text(encoding="utf-8"))
+    on_section = document["on"] if "on" in document else document[True]
+    on_section["workflow_run"]["workflows"] = ["rogue"]
+    path.write_text(yaml.safe_dump(document, sort_keys=False), encoding="utf-8")
+    result = run_guard(root, registry, workflows)
+    assert result.returncode == 1
+    assert "R15" in result.stdout
+
+
+def test_options_intel_route_rejects_workflow_run_type_other_than_completed(tmp_path: Path) -> None:
+    root, registry, workflows = _options_intel_fixture(tmp_path)
+    path = workflows / "options-intel.yml"
+    document = yaml.safe_load(path.read_text(encoding="utf-8"))
+    on_section = document["on"] if "on" in document else document[True]
+    on_section["workflow_run"]["types"] = ["requested"]
+    path.write_text(yaml.safe_dump(document, sort_keys=False), encoding="utf-8")
+    result = run_guard(root, registry, workflows)
+    assert result.returncode == 1
+    assert "R15" in result.stdout
+
+
+def test_options_intel_route_requires_ad1_m1_lane_inactive_by_default(tmp_path: Path) -> None:
+    """Dropping the `vars.AD1_M1_LANE == 'on'` gate makes the lane LIVE by
+    default — the precise failure class this work exists to end. R15 refuses.
+    """
+
+    root, registry, workflows = _options_intel_fixture(tmp_path)
+    path = workflows / "options-intel.yml"
+    document = yaml.safe_load(path.read_text(encoding="utf-8"))
+    document["jobs"]["options_intel"]["if"] = (
+        "github.event_name == 'workflow_dispatch' || "
+        "github.event.workflow_run.conclusion == 'success'"
+    )
+    path.write_text(yaml.safe_dump(document, sort_keys=False), encoding="utf-8")
+    result = run_guard(root, registry, workflows)
+    assert result.returncode == 1
+    assert "R15" in result.stdout
+    assert "inactive-by-default" in result.stdout
+
+
+def test_options_intel_route_requires_workflow_run_success_conclusion(tmp_path: Path) -> None:
+    """A workflow_run path that does NOT require the daily run's `success`
+    conclusion would let the producer score on a half-broken nightly — R15
+    refuses.
+    """
+
+    root, registry, workflows = _options_intel_fixture(tmp_path)
+    path = workflows / "options-intel.yml"
+    document = yaml.safe_load(path.read_text(encoding="utf-8"))
+    document["jobs"]["options_intel"]["if"] = "vars.AD1_M1_LANE == 'on'"
+    path.write_text(yaml.safe_dump(document, sort_keys=False), encoding="utf-8")
+    result = run_guard(root, registry, workflows)
+    assert result.returncode == 1
+    assert "R15" in result.stdout
+    assert "conclusion" in result.stdout
+
+
+def test_options_intel_route_rejects_missing_options_intel_job(tmp_path: Path) -> None:
+    root, registry, workflows = _options_intel_fixture(tmp_path)
+    path = workflows / "options-intel.yml"
+    document = yaml.safe_load(path.read_text(encoding="utf-8"))
+    del document["jobs"]["options_intel"]
+    document["jobs"]["rogue_producer"] = {
+        "runs-on": ["self-hosted", "m1-theta"],
+        "if": "vars.AD1_M1_LANE == 'on'",
+        "steps": [{"run": "echo ok"}],
+    }
+    path.write_text(yaml.safe_dump(document, sort_keys=False), encoding="utf-8")
+    result = run_guard(root, registry, workflows)
+    assert result.returncode == 1
+    assert "R15" in result.stdout
+    assert "options_intel job is missing" in result.stdout
+
+
+def test_options_intel_route_rejects_unregistered_selected_workflow(tmp_path: Path) -> None:
+    """The runner-group `selected_workflows` set MUST list options-intel —
+    otherwise the runner-group would refuse to admit it at the GitHub side,
+    and the producer would never run. The runtime R1 clause names the
+    contract.
+    """
+
+    root, registry, workflows = _options_intel_fixture(tmp_path)
+    selected = (
+        "mastermindx-market-intelligence/macro/.github/workflows/"
+        "options-intel.yml@refs/heads/main"
+    )
+
+    def _drop(doc: dict) -> None:
+        existing = doc["runtime_runner_group"]["selected_workflows"]
+        if selected in existing:
+            existing.remove(selected)
+
+    mutate_registry(registry, _drop)
+    result = run_guard(root, registry, workflows)
+    assert result.returncode == 1
+    assert "R1" in result.stdout
+
+
+def test_options_intel_route_registered_in_r6_allowed_set_after_validations(
+    tmp_path: Path,
+) -> None:
+    """Once R15 is satisfied the route joins `allowed_custom` and the
+    m1-theta custom label no longer raises R6 — the R6 allowed-set only
+    opens AFTER the exact validations pass.
+    """
+
+    root, registry, workflows = _options_intel_fixture(tmp_path)
+    result = run_guard(root, registry, workflows)
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert "R6" not in result.stdout
+    assert "unregistered migration-label consumer" not in result.stdout
+
+
+def test_options_intel_route_falls_back_to_r6_when_r15_fails(tmp_path: Path) -> None:
+    """If the exact R15 contract is broken, the route is NOT registered in
+    the allowed-custom set — the m1-theta consumer then raises R6. The two
+    rules gate together; a broken route is reported under BOTH R15 and R6.
+
+    Drop the inactive-by-default AD1_M1_LANE gate so R15 fires on the
+    `if` contract while the m1-theta label is still used in runs-on — that
+    is exactly the case where R6's allowed-set registration is supposed to
+    close up.
+    """
+
+    root, registry, workflows = _options_intel_fixture(tmp_path)
+    path = workflows / "options-intel.yml"
+    document = yaml.safe_load(path.read_text(encoding="utf-8"))
+    document["jobs"]["options_intel"]["if"] = (
+        "github.event_name == 'workflow_dispatch' || "
+        "github.event.workflow_run.conclusion == 'success'"
+    )
+    path.write_text(yaml.safe_dump(document, sort_keys=False), encoding="utf-8")
+    result = run_guard(root, registry, workflows)
+    assert result.returncode == 1
+    assert "R15" in result.stdout
+    assert "R6" in result.stdout
+    assert "unregistered migration-label consumer" in result.stdout
+
+
+def test_options_intel_workflow_disk_guard_and_runner_name_assertion_precede_checkout(
+    tmp_path: Path,
+) -> None:
+    """The runner-name assertion + installed disk guard MUST be the first
+    substantive step — before `actions/checkout@v4` and before `pip install`
+    — so a mis-routed host or unhealthy disk is caught BEFORE a 14k-file
+    checkout + cold pip have run. The pytest source reads the workflow file
+    directly and asserts the structural order of the steps.
+    """
+
+    workflow = yaml.safe_load((ROOT / ".github" / "workflows" / "options-intel.yml").read_text())
+    job = workflow["jobs"]["options_intel"]
+    steps = job["steps"]
+
+    runner_guard_position = None
+    checkout_position = None
+    pip_position = None
+    for index, step in enumerate(steps):
+        if not isinstance(step, dict):
+            continue
+        run = str(step.get("run", ""))
+        if "${RUNNER_NAME:-}" in run and "m1-nightly-2" in run:
+            runner_guard_position = index
+        if step.get("uses") == "actions/checkout@v4":
+            checkout_position = index
+        if "pip install" in run and "requirements.txt" in run:
+            pip_position = index
+
+    assert runner_guard_position is not None, (
+        "options-intel.yml must carry the RUNNER_NAME=m1-nightly-2 + "
+        "runner_disk_guard --mode full assertion step"
+    )
+    assert checkout_position is not None, "options-intel.yml must still checkout"
+    assert pip_position is not None, "options-intel.yml must still pip install requirements"
+    assert runner_guard_position < checkout_position, (
+        "the runner-name + disk-guard step MUST come before actions/checkout"
+    )
+    assert runner_guard_position < pip_position, (
+        "the runner-name + disk-guard step MUST come before pip install"
+    )
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# R15 — unattended use of a dead label (2026-09-25 render-lane outage)
+#
+# R12 gated on `schedule:` alone. render.yml and engine-render.yml are push-only,
+# so the gate skipped them by TRIGGER before it ever looked at the label, and the
+# render lanes sat dark for three days while `render-linux` had zero carriers.
+# ─────────────────────────────────────────────────────────────────────────────
+def _orphan_label_registry(document: dict) -> None:
+    document["label_registry"]["dead-label"] = {"status": "orphaned", "carried_by": []}
+
+
+def _rogue(workflows: Path, trigger: str) -> None:
+    (workflows / "rogue.yml").write_text(
+        f"on:\n{trigger}jobs:\n  rogue:\n    runs-on: [self-hosted, dead-label]\n"
+        "    steps:\n      - run: true\n",
+        encoding="utf-8",
+    )
+
+
+@pytest.mark.parametrize(
+    ("trigger", "rule"),
+    [
+        ("  push:\n    branches: [main]\n", "R15"),
+        ("  repository_dispatch:\n", "R15"),
+        ("  schedule:\n    - cron: '0 8 * * *'\n", "R12"),
+    ],
+)
+def test_every_automatic_trigger_onto_an_orphaned_label_is_refused(
+    tmp_path: Path, trigger: str, rule: str
+) -> None:
+    """The whole point of R15: `push` is not a softer trigger than `schedule`.
+    Main takes ~25 pushes a day here against one cron line, so a push-only lane on
+    a dead label wedges harder — every firing behind the hostage is superseded."""
+    root, registry, workflows = fixture_tree(tmp_path)
+    mutate_registry(registry, _orphan_label_registry)
+    _rogue(workflows, trigger)
+    result = run_guard(root, registry, workflows)
+    assert result.returncode == 1, result.stdout + result.stderr
+    assert rule in result.stdout, result.stdout
+    assert "dead-label" in result.stdout
+
+
+def test_manual_only_use_of_an_orphaned_label_stays_allowed(tmp_path: Path) -> None:
+    """A dispatch-only lane on a dead label is an operator's own choice made with
+    their eyes open — it fires when someone asks, so it cannot wedge unattended.
+    selfhosted-ci-canary.yml's render-reservation-probe is exactly this shape."""
+    root, registry, workflows = fixture_tree(tmp_path)
+    mutate_registry(registry, _orphan_label_registry)
+    _rogue(workflows, "  workflow_dispatch:\n")
+    result = run_guard(root, registry, workflows)
+    assert result.returncode == 0, result.stdout + result.stderr
+
+
+@pytest.mark.parametrize("key", ["scheduled_use_waiver", "automatic_use_waiver"])
+def test_either_dated_waiver_key_satisfies_the_gate(tmp_path: Path, key: str) -> None:
+    """`scheduled_use_waiver` is the original R12 key and must keep working —
+    `codex` carries one — while `automatic_use_waiver` is its R15 spelling."""
+    root, registry, workflows = fixture_tree(tmp_path)
+
+    def waive(document: dict) -> None:
+        _orphan_label_registry(document)
+        document["label_registry"]["dead-label"][key] = {
+            "since": "2026-09-25",
+            "reason": "operator-gated restore",
+        }
+
+    mutate_registry(registry, waive)
+    _rogue(workflows, "  push:\n    branches: [main]\n")
+    assert run_guard(root, registry, workflows).returncode == 0
+
+
+def test_an_undated_waiver_does_not_satisfy_the_gate(tmp_path: Path) -> None:
+    """A waiver with no date is a silence, not a record. Both fields or neither."""
+    root, registry, workflows = fixture_tree(tmp_path)
+
+    def waive(document: dict) -> None:
+        _orphan_label_registry(document)
+        document["label_registry"]["dead-label"]["automatic_use_waiver"] = {
+            "reason": "we will get to it"
+        }
+
+    mutate_registry(registry, waive)
+    _rogue(workflows, "  push:\n    branches: [main]\n")
+    result = run_guard(root, registry, workflows)
+    assert result.returncode == 1
+    assert "R15" in result.stdout
+
+
+def test_render_linux_is_declared_orphaned_with_no_carriers() -> None:
+    """The 2026-09-25 receipt, pinned. `render-linux` had ZERO carriers: pc-render-1
+    was online and idle with its custom labels stripped to the read-only set, and
+    pc-render-2/3/4 had been absent from the live pool since 2026-08-17.
+
+    It was declared `offline` — "registered and returns" — which is what exempted it
+    from R12 while three lanes went dark. A label with no carriers is `orphaned`
+    whatever the reason; `offline` is for a pool that is powered down, not one that
+    no longer exists. Re-declaring it `offline` without restoring a carrier would
+    reopen the exemption, so this test refuses that edit.
+    """
+    entry = yaml.safe_load(REGISTRY.read_text(encoding="utf-8"))["label_registry"]["render-linux"]
+    assert entry["status"] == "orphaned", entry
+    assert entry["carried_by"] == [], entry
+    # Declared dead means the standing record must name the restore owner.
+    assert "operator" in entry["note"].lower(), entry["note"]
+
+
+def test_the_render_reservation_never_silently_claims_a_routable_slot() -> None:
+    """R7 requires the pc-render pool to reserve exactly one slot, and that is an
+    ARCHITECTURAL reservation, not a claim that the slot can route today. While
+    `render-linux` is orphaned the reservation must say so out loud, so the file
+    cannot read as healthy capacity again."""
+    topology = yaml.safe_load(REGISTRY.read_text(encoding="utf-8"))["pool_topology"]["pc-render"]
+    registry = yaml.safe_load(REGISTRY.read_text(encoding="utf-8"))["label_registry"]
+    assert topology["slots"] == 1, topology
+    for label in topology.get("labels") or []:
+        if registry.get(label, {}).get("status") == "orphaned":
+            assert label in (topology.get("missing_labels") or []), (
+                f"pc-render claims label {label!r} that no host carries; declare it "
+                "in missing_labels so the reservation cannot read as live capacity"
+            )

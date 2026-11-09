@@ -341,3 +341,126 @@ still requires a sanctioned real canary before production qualification.
 Because the aggregate receipt schema changed, the repaired immutable head requires
 another exact-head independent review and fresh hosted CI. Earlier PASS reviews are
 review history, not acceptance of the changed bytes.
+
+
+## 2026-11-09 — same-carrier security and architecture repair
+
+This section records prepared source, not an executed test, provider qualification
+or release. Historical September APIs, counts, review outcomes and provider claims
+above remain attributed to their original heads and dates. The three later source
+findings control this repair:
+
+- [response bound before JSON and finite arrays](https://github.com/mastermindx-market-intelligence/Macro/pull/7374#issuecomment-5740387306);
+- [provider-neutral core and closed public request](https://github.com/mastermindx-market-intelligence/Macro/pull/7374#issuecomment-5740501106);
+- [signed/auth query names](https://github.com/mastermindx-market-intelligence/Macro/pull/7374#issuecomment-5740761820).
+
+The current parent assignment and six-path brief are
+[6683360997](https://github.com/mastermindx-market-intelligence/Macro/pull/7374#issuecomment-6683360997).
+Original private controller61575 remains REQUEST_REFUSED_BEFORE_LAUNCH, with no
+START/result and no proven outer execution absence. Its failed transport diagnostic
+was not replayed. This root-authored public-source repair does not use or adopt any
+private worker output. The closed duplicate #7403 is not revived or cherry-picked.
+
+### Closed public request and explicit adapter
+
+The core owns exactly these fields: issuer, ticker, listing, evidence_need,
+start_date, end_date, information_cutoff and source_preference. Both a mapping and
+a directly constructed frozen PublicEvidenceRequest are validated at every public
+entry path. Raw strings, unknown/private/free-form fields, malformed types,
+non-enumerated needs/preferences and windows outside start <= end <= cutoff fail
+before adapter invocation. Identity lengths and the generated400-character query
+bound refuse excess instead of truncating listing, cutoff or source preference.
+
+The ten evidence needs implement the first-company slice from architecture blob
+6ecc355d97b13dbf4f3a17251fc8d1eaf4cde120. Source preference is explicit:
+primary_first, independent_first or balanced. Query construction retains issuer,
+ticker, listing, need, dates, cutoff and the selected preference. It does not accept
+caller query text. This validates structure only: identity truth, source-time
+admissibility and semantic privacy/minimization remain unverified. The existing
+public_minimal / caller_attested_unverified receipt and scope refusal remain.
+
+public_research.py has no vendor credential, endpoint, vendor option enum or
+default network client. The injected adapter has search and open_sources methods;
+the core requires explicit completed/action/executed envelopes and constructs its
+own receipts. A completed open/find action, truthy string or integer, snippet,
+prose or URL cannot satisfy a new search. Core normalization independently caps
+rows, snippets and content even for another backend. Requested-source membership,
+canonical URL identity, missing/failed/partial states and conservative extraction
+provenance remain enforced. full_document_reviewed always stays false. The schema
+identifiers remain v1 because the existing receipts are preserved additively;
+the public function input contract deliberately changes from raw query/vendor
+options to a structured request plus an explicit adapter.
+
+Only public_search_tavily.py owns TAVILY_API_KEY, the fixed Search/Extract endpoints,
+payloads, candidate-specific enums and default POST transport. It is a qualification
+adapter, not a provider winner. No alternate production adapter or arbitrary-page
+opener is implemented. Existing company_intelligence_reader.py remains unchanged:
+its immutable R2 GET/origin/no-query/DNS contract is not interchangeable with this
+fixed service POST or evidence URLs carrying ordinary public queries.
+
+### Transport and URL repair
+
+The default adapter requests stream=True with redirects disabled. It counts
+decoded chunks before appending excess bytes or calling json.loads:1MiB for Search,
+2MiB for Extract,16KiB requested chunks. Content-Length is not trusted; no whole-body
+Response.content or Response.json path is used. A finally block attempts response
+close on every returned-response path, with opaque cleanup failures. Invalid JSON,
+non-object JSON, nonfinite JSON constants, HTTP errors, oversized responses and
+read failures use typed opaque errors. Neither provider error body nor query/key/
+exception text enters normalized errors. Existing30/35-second requests timeouts
+remain; these are not advertised as a total wall-clock deadline.
+
+Extract successes and failures each have an independent64-row scan. The core also
+caps its own scans. Extra provider URLs cannot enter evidence; meaningful query
+strings remain part of requested URL identity. Huge/nonfinite score or credit
+metadata is unavailable rather than raising conversion errors.
+
+Evidence URLs must be HTTPS, credential-free and lexically public with conventional
+port443. Literal/obfuscated IP hosts, local/internal suffixes, malformed hostnames
+and unsafe URLs are refused. A bounded query-name check decodes case/percent
+variants and rejects high-confidence access/OAuth/token/signature/credential/
+security-token names before discovery receipts or Extract payloads. Ordinary q=1
+survives. A signed URL is refused as a whole; it is never silently stripped and
+relayed as a supposedly equivalent source. These lexical checks do not prove DNS
+destination safety. The selected remote extractor retains its network boundary;
+the later governed direct opener is a separately unbuilt/unqualified capability.
+
+### Operator path and authored regression coverage
+
+The operator CLI now requires eight explicit public-field flags. It constructs
+PublicEvidenceRequest, selects TavilyAdapter explicitly and calls the real core.
+An offline adapter can be injected by a Python caller for qualification; no provider
+fallback is added. Unknown/raw CLI arguments produce an opaque JSON invalid-request
+receipt without echoing argument values. Exit0/3/2/1 still distinguish available,
+partial, not-configured and other unavailable outcomes.
+
+All37 original test function names and case purposes remain; provider tests now
+construct the adapter explicitly, and raw-query/date tests exercise the closed
+request. The original numeric-host tests use HTTPS so they exercise host admission
+after the new scheme gate.28 additional test functions cover closed/private fields,
+direct dataclass bypasses, identity/preference retention, two-backend substitution,
+exact execution states, row/content/provenance caps, huge numeric metadata, sensitive
+query names, requested URL identity, exact/overflow response bytes, no/lying length,
+real requests/urllib3 gzip decoding, malformed/read/HTTP failures, finally-close
+errors, invalid bounds, and actual CLI parsing -> real core -> fake adapter.
+
+These65 test functions (including parameterized cases) are AUTHORED SOURCE, not a
+collected/pass count. No local Python parse, pytest, planner or network/provider call
+was available/performed by this repair. Historical40/916 counts and old reviews are
+not current-head proof. The only catalog change appends the full existing suite to
+the current unrun-brain-gateway command; all current suites, browser gate, installs,
+timeouts,400owner IDs/order and399other owner blocks remain intact. This owner’s
+static estimate grows110->112 (six commands,51->52 test references, same character
+bucket). Its presence on all three standard packing probes makes an attributable
++2 effect a known risk. No current planner execution or packing amendment is claimed;
+the six-path scope leaves tests/test_ci_pack.py untouched, and natural contract CI
+must establish the actual selected-set result.
+
+### Acceptance still owed
+
+Own natural exact-head binding CI, source/security disposition, provider identity/
+budget/rights, bounded live canary, provider comparison, safe direct opening, Brain
+task resolution/wiring and an evidence-dependent customer answer remain distinct.
+Keep this carrier Draft/HOLD. No provider activation, customer model call, runtime
+deployment, browser acceptance, signal/ranking/sizing/trading authority, stock-
+dashboard receipt repair or shared-reader/control-plane change is included.

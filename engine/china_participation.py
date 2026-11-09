@@ -143,6 +143,63 @@ REGIME_VALUES = (
     "unclear",
 )
 WHO_CONTROLS_VALUES = ("retail", "institutional", "margin", "state_proxy", "offshore", "mixed", "unclear")
+
+
+SOURCE_CONTRACT_SCHEMA = "china_participation.source_contract.v1"
+SOURCE_CONTRACTS = {
+    "turnover": {
+        "source": "data/china_margin/daily_trade.parquet",
+        "field": "turnover_total",
+        "unit": "亿 CNY",
+        "derivation": "margin_trade_amt / (trade_amt_ratio / 100)",
+        "refusals": ["margin_trade_amt alone is not total turnover", "zero/null trade_amt_ratio"],
+    },
+    "margin": {
+        "source": "data/china_margin/balance.parquet",
+        "fields": {
+            "margin_balance": "亿 CNY",
+            "margin_chg_5d": "percent change over 5 trading observations",
+            "margin_to_mcap": "percent of float market cap",
+        },
+        "scope": "market aggregate, not per-name beneficial-owner evidence",
+    },
+    "limit_breadth": {
+        "source": "data/china_microstructure/limit_tape.parquet",
+        "field": "zt_breadth",
+        "unit": "percent of A-share universe at limit-up",
+        "rule_ref": "CN-SYS-R4",
+        "refusals": [
+            "china_flows/limit_breadth.parquet seal_rate is incompatible units and never substitutes"
+        ],
+    },
+    "southbound": {
+        "source": "data/china_connect/southbound.parquet",
+        "field": "southbound_net",
+        "unit": "万 CNY",
+        "scope": "HK southbound flow only; not mainland northbound ownership",
+        "northbound_live_state": "forbidden_post_2024-08-16",
+        "rule_ref": "SLF-050",
+    },
+    "etf_flows": {
+        "source": "data/china_flows/etf_shares.parquet",
+        "field": "etf_share_chg",
+        "unit": "cross-fund median 5d share-change z-score",
+        "refusals": ["raw cross-fund share sum is unit-incommensurable"],
+    },
+    "qvix": {
+        "source": "data/china_qvix/qvix300.parquet",
+        "fields": {"qvix": "index level", "qvix_z": "60d own-history z-score"},
+    },
+    "broker_rs": {
+        "sources": [
+            "data/china_sectors/801780.parquet",
+            "data/china/510300.SS.parquet",
+        ],
+        "field": "broker_rs",
+        "unit": "20d cumulative log-return difference",
+        "scope": "broker-sector relative strength proxy, not named institutional actor evidence",
+    },
+}
 RISK_VALUES = ("low", "normal", "frothy", "fire_sale")
 
 _TURNOVER_Z_HOT = 1.0
@@ -860,7 +917,29 @@ def latest_snapshot(tape: pd.DataFrame) -> dict:
             pass
         return []
 
-    snap: dict = {"date": date_str, "authority": {"tier": "context_only"}}
+    snap: dict = {
+        "date": date_str,
+        "authority": {
+            "tier": "context_only",
+            "may_rank": False,
+            "may_trade": False,
+            "may_identify_actor": False,
+        },
+        # CIE-13: source/unit/access truth for every participation leg. This is
+        # provenance only; classifiers above continue to read the same values.
+        "source_contract": {
+            "schema": SOURCE_CONTRACT_SCHEMA,
+            "legs": SOURCE_CONTRACTS,
+            "clock_semantics": {
+                "snapshot_date": "aligned market-date index for the selected tape row",
+                "collection_clock": "not exposed by this owner; do not infer first-seen time",
+            },
+            "actor_semantics": (
+                "who_controls is a heuristic participation regime label, not beneficial-owner, "
+                "seat, fund, institution, or ultimate-actor identity"
+            ),
+        },
+    }
     for col in ["turnover_z20", "turnover_z60", "margin_balance", "margin_chg_5d",
                 "margin_to_mcap", "southbound_net", "southbound_z",
                 "etf_share_chg", "zt_breadth", "failed_seal_ratio",
