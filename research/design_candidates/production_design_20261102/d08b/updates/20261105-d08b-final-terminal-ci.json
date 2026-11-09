@@ -1,0 +1,55 @@
+{
+  "schema": "d08b.github_check_snapshot.v1",
+  "repository": "mastermindx-market-intelligence/mastermind-terminal",
+  "head": "46782b0f767aae8400e320d9c57b85dbf16738e8",
+  "observed_at_utc": "2026-11-05 04:45:07 UTC",
+  "checks_total": 3,
+  "checks": [
+    {
+      "id": 127053709288,
+      "name": "Analyze (python)",
+      "status": "queued",
+      "conclusion": null,
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/41969350343/job/127053709288"
+    },
+    {
+      "id": 127053709269,
+      "name": "Analyze (actions)",
+      "status": "queued",
+      "conclusion": null,
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/41969350343/job/127053709269"
+    },
+    {
+      "id": 127053709091,
+      "name": "Analyze (javascript-typescript)",
+      "status": "queued",
+      "conclusion": null,
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/41969350343/job/127053709091"
+    }
+  ],
+  "workflow_runs": [
+    {
+      "id": 41969354857,
+      "name": "CI",
+      "status": "pending",
+      "conclusion": null,
+      "event": "pull_request",
+      "head_sha": "46782b0f767aae8400e320d9c57b85dbf16738e8",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/41969354857"
+    },
+    {
+      "id": 41969350343,
+      "name": "PR #1266",
+      "status": "queued",
+      "conclusion": null,
+      "event": "dynamic",
+      "head_sha": "46782b0f767aae8400e320d9c57b85dbf16738e8",
+      "url": "https://github.com/mastermindx-market-intelligence/mastermind-terminal/actions/runs/41969350343"
+    }
+  ],
+  "hosted_green": false,
+  "manual_run_or_retry": false,
+  "release_eligibility_claimed": false,
+  "protection": "Prior403 remains an unverified formal gate; no retry or alternate privileged read",
+  "macro_new_head": "Read after documentation publication and record exact snapshot in D08 return; no circular self-commit CI claim"
+}

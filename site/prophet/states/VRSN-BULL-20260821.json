@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "VRSN-BULL-20260821",
-  "asof": "2026-11-06",
+  "asof": "2026-11-09",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 40.0,
@@ -11,20 +11,20 @@
   "human_state": "Closed",
   "components": {
     "validity": 100.0,
-    "progress": 21.2,
+    "progress": 18.0,
     "pace": 0.0,
-    "retention": 90.5,
-    "overlay": 32.8
+    "retention": 72.8,
+    "overlay": 33.0
   },
   "geometry": {
-    "dist_to_stop_r": 1.316,
-    "dist_to_t1_r": 1.184,
-    "dist_to_t2_r": 2.684,
-    "horizon_pct_used": 157.8,
-    "p1": 0.2108,
-    "p2": 0.1054,
+    "dist_to_stop_r": 1.254,
+    "dist_to_t1_r": 1.246,
+    "dist_to_t2_r": 2.746,
+    "horizon_pct_used": 164.4,
+    "p1": 0.1696,
+    "p2": 0.0848,
     "p3": null,
-    "move_r": 0.316,
+    "move_r": 0.254,
     "mfe_r": 0.349,
     "mae_r": -0.231
   },
@@ -45,8 +45,8 @@
   "_first_trigger_ts": "2026-09-15",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 71,
-  "tau": 1.5778,
+  "days_elapsed": 74,
+  "tau": 1.6444,
   "closed": true,
   "outcome": "EXPIRED"
 }
