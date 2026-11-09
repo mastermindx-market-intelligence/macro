@@ -1,0 +1,7461 @@
+[
+  {
+    "kind": "revenue",
+    "fileId": "01M6Y3397SE03G626MJ72N90PF",
+    "pageId": "p-2-0",
+    "observed": {
+      "fileName": "Government Revenue · R5 and Builder Contracts",
+      "pageName": "01 · Product · Signals & funding",
+      "pageId": "p-2-0",
+      "url": "https://app.paper.design/file/01M6Y3397SE03G626MJ72N90PF/p-2-0",
+      "rootNodeId": "root_node_p-2-0",
+      "nodeCount": 3670,
+      "artboardCount": 21,
+      "artboards": [
+        {
+          "id": "FP-0",
+          "name": "10 · R8 START · Gov Signals · Desktop Dark",
+          "childCount": 2,
+          "width": 1440,
+          "height": null,
+          "worldX": -2240,
+          "worldY": -6271.5
+        },
+        {
+          "id": "LQ-0",
+          "name": "11 · R8 · Gov Signals · Desktop Light",
+          "childCount": 2,
+          "width": 1440,
+          "height": null,
+          "worldX": -720,
+          "worldY": -6271.5
+        },
+        {
+          "id": "RR-0",
+          "name": "12 · R8 · Tablet · Gov Signals",
+          "childCount": 2,
+          "width": 768,
+          "height": null,
+          "worldX": 800,
+          "worldY": -6271.5
+        },
+        {
+          "id": "V1-0",
+          "name": "13 · R8 · Mobile · Signals + Funding Entry",
+          "childCount": 3,
+          "width": 390,
+          "height": null,
+          "worldX": -2240,
+          "worldY": -4751.5
+        },
+        {
+          "id": "XN-0",
+          "name": "14 · R8 · Mobile · Signals · Light EN",
+          "childCount": 3,
+          "width": 390,
+          "height": null,
+          "worldX": -1770,
+          "worldY": -4751.5
+        },
+        {
+          "id": "109-0",
+          "name": "15 · R8 · Signals · 320px Reflow",
+          "childCount": 3,
+          "width": 320,
+          "height": null,
+          "worldX": -1300.001,
+          "worldY": -4751.5
+        },
+        {
+          "id": "12V-0",
+          "name": "16 · R8 · Mobile · Signals · Light ZH",
+          "childCount": 3,
+          "width": 390,
+          "height": null,
+          "worldX": -900,
+          "worldY": -4751.5
+        },
+        {
+          "id": "15H-0",
+          "name": "20 · R10 · Desktop · Why This Stock · AVAV",
+          "childCount": 4,
+          "width": 1440,
+          "height": null,
+          "worldX": -2240,
+          "worldY": -3071.5
+        },
+        {
+          "id": "1DB-0",
+          "name": "21 · R12 · Since Last Close",
+          "childCount": 3,
+          "width": 1440,
+          "height": null,
+          "worldX": -720,
+          "worldY": -3071.5
+        },
+        {
+          "id": "1KL-0",
+          "name": "23 · R12 · Catalysts · Desktop",
+          "childCount": 2,
+          "width": 1440,
+          "height": null,
+          "worldX": 800,
+          "worldY": -3071.5
+        },
+        {
+          "id": "1TC-0",
+          "name": "22 · R10 · Desktop · Full Stock Radar",
+          "childCount": 4,
+          "width": 1440,
+          "height": null,
+          "worldX": -2240,
+          "worldY": -1631.5
+        },
+        {
+          "id": "2B8-0",
+          "name": "24A · R10 · Desktop · Price Watch Review",
+          "childCount": 4,
+          "width": 1440,
+          "height": null,
+          "worldX": 800,
+          "worldY": -1631.5
+        },
+        {
+          "id": "2IW-0",
+          "name": "25 · R10 · Desktop · Track Record",
+          "childCount": 4,
+          "width": 1440,
+          "height": null,
+          "worldX": -2240,
+          "worldY": -311.5
+        },
+        {
+          "id": "2Y3-0",
+          "name": "31 · R12 · Catalysts · Mobile",
+          "childCount": 4,
+          "width": 390,
+          "height": null,
+          "worldX": 800,
+          "worldY": -311.5
+        },
+        {
+          "id": "351-0",
+          "name": "60 · R6 · Funding Evidence · Desktop Dark",
+          "childCount": 2,
+          "width": 1440,
+          "height": null,
+          "worldX": -2240,
+          "worldY": 2048.5
+        },
+        {
+          "id": "3BK-0",
+          "name": "61 · R7 · Funding Bridge · Transactions + Company Link",
+          "childCount": 2,
+          "width": 1440,
+          "height": null,
+          "worldX": -720,
+          "worldY": 2048.5
+        },
+        {
+          "id": "3HD-0",
+          "name": "63 · R7 · Mobile · Funding Evidence",
+          "childCount": 3,
+          "width": 390,
+          "height": null,
+          "worldX": 800,
+          "worldY": 2048.5
+        },
+        {
+          "id": "3IZ-0",
+          "name": "64 · R7 · Mobile · Funding Bridge",
+          "childCount": 3,
+          "width": 390,
+          "height": null,
+          "worldX": 1270,
+          "worldY": 2048.5
+        },
+        {
+          "id": "3L1-0",
+          "name": "42 · R10 · Mobile · Why This Stock · AVAV",
+          "childCount": 3,
+          "width": 390,
+          "height": null,
+          "worldX": -2240,
+          "worldY": 4808.5
+        },
+        {
+          "id": "3NF-0",
+          "name": "43 · R10 · Mobile · Full Stock Radar",
+          "childCount": 3,
+          "width": 390,
+          "height": null,
+          "worldX": -1770,
+          "worldY": 4808.5
+        },
+        {
+          "id": "3Q5-0",
+          "name": "44 · R10 · Mobile · Track Record",
+          "childCount": 3,
+          "width": 390,
+          "height": null,
+          "worldX": -1300.001,
+          "worldY": 4808.5
+        }
+      ],
+      "pages": [
+        {
+          "type": "page",
+          "id": "p-2-0",
+          "name": "01 · Product · Signals & funding",
+          "icon": "design",
+          "isActive": false
+        },
+        {
+          "type": "page",
+          "id": "p-3-0",
+          "name": "02A · States · Prepared, saved & degraded",
+          "icon": "info",
+          "isActive": false
+        },
+        {
+          "type": "page",
+          "id": "p-4-0",
+          "name": "02B · Components · Funding & watches",
+          "icon": "vector",
+          "isActive": false
+        },
+        {
+          "type": "page",
+          "id": "p-1-0",
+          "name": "03 · Build · Routes & source contracts",
+          "icon": "blueprint",
+          "isActive": true
+        }
+      ],
+      "fontFamilies": [
+        "Inter",
+        "PingFang SC",
+        "System Sans-Serif"
+      ],
+      "tokens": {
+        "items": [
+          {
+            "name": "--mx-dark-bg",
+            "value": "#0F1115"
+          },
+          {
+            "name": "--mx-dark-panel",
+            "value": "#181B21"
+          },
+          {
+            "name": "--mx-dark-panel2",
+            "value": "#1E222A"
+          },
+          {
+            "name": "--mx-dark-text",
+            "value": "#D7DCE3"
+          },
+          {
+            "name": "--mx-dark-muted",
+            "value": "#8B93A1"
+          },
+          {
+            "name": "--mx-dark-line",
+            "value": "#3A4150"
+          },
+          {
+            "name": "--mx-dark-up",
+            "value": "#45B873"
+          },
+          {
+            "name": "--mx-dark-down",
+            "value": "#E06464"
+          },
+          {
+            "name": "--mx-dark-warn",
+            "value": "#E0A030"
+          },
+          {
+            "name": "--mx-dark-act",
+            "value": "#E05555"
+          },
+          {
+            "name": "--mx-dark-ok",
+            "value": "#3DA564"
+          },
+          {
+            "name": "--mx-dark-info",
+            "value": "#5B9BF0"
+          },
+          {
+            "name": "--mx-dark-link",
+            "value": "#7AA7E0"
+          },
+          {
+            "name": "--mx-dark-orange",
+            "value": "#E08B45"
+          },
+          {
+            "name": "--mx-light-bg",
+            "value": "#F7F8FA"
+          },
+          {
+            "name": "--mx-light-panel",
+            "value": "#FFFFFF"
+          },
+          {
+            "name": "--mx-light-panel2",
+            "value": "#EEF1F6"
+          },
+          {
+            "name": "--mx-light-text",
+            "value": "#1C2430"
+          },
+          {
+            "name": "--mx-light-muted",
+            "value": "#5D6B7E"
+          },
+          {
+            "name": "--mx-light-line",
+            "value": "#C9CCD1"
+          },
+          {
+            "name": "--mx-light-up",
+            "value": "#1F9A55"
+          },
+          {
+            "name": "--mx-light-down",
+            "value": "#CF4040"
+          },
+          {
+            "name": "--mx-light-warn",
+            "value": "#B9791A"
+          },
+          {
+            "name": "--mx-light-act",
+            "value": "#C43D3D"
+          },
+          {
+            "name": "--mx-light-ok",
+            "value": "#2F8A52"
+          },
+          {
+            "name": "--mx-light-info",
+            "value": "#285FFF"
+          },
+          {
+            "name": "--mx-light-link",
+            "value": "#285FFF"
+          },
+          {
+            "name": "--mx-light-orange",
+            "value": "#C4781F"
+          },
+          {
+            "name": "--mx-dark-prov",
+            "value": "#62A0E8"
+          },
+          {
+            "name": "--mx-dark-prov-ink",
+            "value": "#62A0E8"
+          },
+          {
+            "name": "--mx-dark-tier-accent",
+            "value": "#7C5CFF"
+          },
+          {
+            "name": "--mx-dark-tier-fill",
+            "value": "#6340D8"
+          },
+          {
+            "name": "--mx-dark-tier-ink",
+            "value": "#9B86FF"
+          },
+          {
+            "name": "--mx-dark-ser-1",
+            "value": "#5B9BF0"
+          },
+          {
+            "name": "--mx-dark-ser-2",
+            "value": "#D4A017"
+          },
+          {
+            "name": "--mx-dark-ser-3",
+            "value": "#0EA5E9"
+          },
+          {
+            "name": "--mx-dark-ser-4",
+            "value": "#E08B45"
+          },
+          {
+            "name": "--mx-light-prov",
+            "value": "#2F6FD0"
+          },
+          {
+            "name": "--mx-light-prov-ink",
+            "value": "#2C62B3"
+          },
+          {
+            "name": "--mx-light-tier-accent",
+            "value": "#7C5CFF"
+          },
+          {
+            "name": "--mx-light-tier-fill",
+            "value": "#6340D8"
+          },
+          {
+            "name": "--mx-light-tier-ink",
+            "value": "#5B3FC4"
+          },
+          {
+            "name": "--mx-light-ser-1",
+            "value": "#2F63C4"
+          },
+          {
+            "name": "--mx-light-ser-2",
+            "value": "#8F6A04"
+          },
+          {
+            "name": "--mx-light-ser-3",
+            "value": "#0284C7"
+          },
+          {
+            "name": "--mx-light-ser-4",
+            "value": "#B06A25"
+          },
+          {
+            "name": "--mx-light-ink-up",
+            "value": "#1E6D47"
+          },
+          {
+            "name": "--mx-light-ink-down",
+            "value": "#B23C3D"
+          },
+          {
+            "name": "--mx-light-ink-warn",
+            "value": "#7D5922"
+          },
+          {
+            "name": "--mx-light-ink-link",
+            "value": "#2758E6"
+          },
+          {
+            "name": "--noir-canvas",
+            "value": "#080808"
+          },
+          {
+            "name": "--noir-sidebar",
+            "value": "#0C0C0C"
+          },
+          {
+            "name": "--noir-panel",
+            "value": "#121212"
+          },
+          {
+            "name": "--noir-raised",
+            "value": "#191919"
+          },
+          {
+            "name": "--noir-hover",
+            "value": "#222222"
+          },
+          {
+            "name": "--noir-selected",
+            "value": "#292929"
+          },
+          {
+            "name": "--noir-text-primary",
+            "value": "#F3F3F3"
+          },
+          {
+            "name": "--noir-text-secondary",
+            "value": "#B8B8B8"
+          },
+          {
+            "name": "--noir-text-tertiary",
+            "value": "#949494"
+          },
+          {
+            "name": "--noir-champagne",
+            "value": "#C9B99B"
+          },
+          {
+            "name": "--noir-sage",
+            "value": "#A8C2AD"
+          },
+          {
+            "name": "--noir-rose",
+            "value": "#DEA4A5"
+          },
+          {
+            "name": "--noir-steel",
+            "value": "#A7B4C2"
+          },
+          {
+            "name": "--noir-lilac",
+            "value": "#BDB2CE"
+          },
+          {
+            "name": "--market-canvas",
+            "value": "#0A0B0D"
+          },
+          {
+            "name": "--market-panel",
+            "value": "#111318"
+          },
+          {
+            "name": "--market-raised",
+            "value": "#181B20"
+          },
+          {
+            "name": "--market-line",
+            "value": "#2B3038"
+          },
+          {
+            "name": "--mx-dark-up-soft",
+            "value": "rgb(69 184 115 / 12%)"
+          },
+          {
+            "name": "--mx-dark-down-soft",
+            "value": "rgb(224 100 100 / 12%)"
+          },
+          {
+            "name": "--mx-dark-warn-soft",
+            "value": "rgb(224 160 48 / 12%)"
+          },
+          {
+            "name": "--mx-dark-info-soft",
+            "value": "rgb(91 155 240 / 12%)"
+          },
+          {
+            "name": "--mx-light-up-soft",
+            "value": "#EAF7EF"
+          },
+          {
+            "name": "--mx-light-down-soft",
+            "value": "#FCECED"
+          },
+          {
+            "name": "--mx-light-warn-soft",
+            "value": "#FFF4E2"
+          },
+          {
+            "name": "--mx-light-info-soft",
+            "value": "#EAF2FC"
+          },
+          {
+            "name": "--mx-light-scrim",
+            "value": "#1C243029"
+          },
+          {
+            "name": "--font-ui",
+            "value": "\"Inter\""
+          },
+          {
+            "name": "--fs-micro",
+            "value": "10px"
+          },
+          {
+            "name": "--fs-label",
+            "value": "11px"
+          },
+          {
+            "name": "--fs-sm",
+            "value": "12.5px"
+          },
+          {
+            "name": "--fs-body",
+            "value": "14px"
+          },
+          {
+            "name": "--fs-h3",
+            "value": "14px"
+          },
+          {
+            "name": "--fs-md",
+            "value": "15px"
+          },
+          {
+            "name": "--fs-h2",
+            "value": "17px"
+          },
+          {
+            "name": "--fs-num-lg",
+            "value": "22px"
+          },
+          {
+            "name": "--fs-h1",
+            "value": "28px"
+          },
+          {
+            "name": "--fs-num-xl",
+            "value": "38px"
+          },
+          {
+            "name": "--fs-display",
+            "value": "46px"
+          },
+          {
+            "name": "--fw-regular",
+            "value": "400"
+          },
+          {
+            "name": "--fw-medium",
+            "value": "500"
+          },
+          {
+            "name": "--fw-semibold",
+            "value": "600"
+          },
+          {
+            "name": "--fw-bold",
+            "value": "700"
+          },
+          {
+            "name": "--fw-extrabold",
+            "value": "800"
+          },
+          {
+            "name": "--bp-mobile",
+            "value": "390px"
+          },
+          {
+            "name": "--bp-tablet",
+            "value": "768px"
+          },
+          {
+            "name": "--bp-desktop",
+            "value": "1440px"
+          },
+          {
+            "name": "--sp-1",
+            "value": "4px"
+          },
+          {
+            "name": "--sp-2",
+            "value": "8px"
+          },
+          {
+            "name": "--sp-3",
+            "value": "12px"
+          },
+          {
+            "name": "--sp-4",
+            "value": "16px"
+          },
+          {
+            "name": "--sp-5",
+            "value": "20px"
+          },
+          {
+            "name": "--sp-6",
+            "value": "24px"
+          },
+          {
+            "name": "--sp-7",
+            "value": "32px"
+          },
+          {
+            "name": "--sp-8",
+            "value": "44px"
+          },
+          {
+            "name": "--r-ctl",
+            "value": "8px"
+          },
+          {
+            "name": "--r-btn",
+            "value": "10px"
+          },
+          {
+            "name": "--r-card",
+            "value": "12px"
+          },
+          {
+            "name": "--r-panel",
+            "value": "14px"
+          },
+          {
+            "name": "--r-pill",
+            "value": "999px"
+          }
+        ]
+      }
+    },
+    "guard": "48ea99510c8fbc9a20ee2115f79756c8b3c640ba9c20585cbe9d31ef55e1f76a"
+  },
+  {
+    "kind": "revenue",
+    "fileId": "01M6Y3397SE03G626MJ72N90PF",
+    "pageId": "p-3-0",
+    "observed": {
+      "fileName": "Government Revenue · R5 and Builder Contracts",
+      "pageName": "02A · States · Prepared, saved & degraded",
+      "pageId": "p-3-0",
+      "url": "https://app.paper.design/file/01M6Y3397SE03G626MJ72N90PF/p-3-0",
+      "rootNodeId": "root_node_p-3-0",
+      "nodeCount": 678,
+      "artboardCount": 3,
+      "artboards": [
+        {
+          "id": "22U-0",
+          "name": "24 · R10 STATE · Desktop · Prepared Watches",
+          "childCount": 3,
+          "width": 1440,
+          "height": 960,
+          "worldX": -720,
+          "worldY": -1631.5
+        },
+        {
+          "id": "2QY-0",
+          "name": "30 · STATE · Dark · Degraded + Watch States",
+          "childCount": 4,
+          "width": 1440,
+          "height": 960,
+          "worldX": -720,
+          "worldY": -311.5
+        },
+        {
+          "id": "31R-0",
+          "name": "41 · R10 STATE · Mobile · Saved Price + Funding Watches",
+          "childCount": 4,
+          "width": 390,
+          "height": 910,
+          "worldX": 1270,
+          "worldY": -311.5
+        }
+      ],
+      "pages": [
+        {
+          "type": "page",
+          "id": "p-2-0",
+          "name": "01 · Product · Signals & funding",
+          "icon": "design",
+          "isActive": false
+        },
+        {
+          "type": "page",
+          "id": "p-3-0",
+          "name": "02A · States · Prepared, saved & degraded",
+          "icon": "info",
+          "isActive": false
+        },
+        {
+          "type": "page",
+          "id": "p-4-0",
+          "name": "02B · Components · Funding & watches",
+          "icon": "vector",
+          "isActive": false
+        },
+        {
+          "type": "page",
+          "id": "p-1-0",
+          "name": "03 · Build · Routes & source contracts",
+          "icon": "blueprint",
+          "isActive": true
+        }
+      ],
+      "fontFamilies": [
+        "Inter",
+        "PingFang SC",
+        "System Sans-Serif"
+      ],
+      "tokens": {
+        "items": [
+          {
+            "name": "--mx-dark-bg",
+            "value": "#0F1115"
+          },
+          {
+            "name": "--mx-dark-panel",
+            "value": "#181B21"
+          },
+          {
+            "name": "--mx-dark-panel2",
+            "value": "#1E222A"
+          },
+          {
+            "name": "--mx-dark-text",
+            "value": "#D7DCE3"
+          },
+          {
+            "name": "--mx-dark-muted",
+            "value": "#8B93A1"
+          },
+          {
+            "name": "--mx-dark-line",
+            "value": "#3A4150"
+          },
+          {
+            "name": "--mx-dark-up",
+            "value": "#45B873"
+          },
+          {
+            "name": "--mx-dark-down",
+            "value": "#E06464"
+          },
+          {
+            "name": "--mx-dark-warn",
+            "value": "#E0A030"
+          },
+          {
+            "name": "--mx-dark-act",
+            "value": "#E05555"
+          },
+          {
+            "name": "--mx-dark-ok",
+            "value": "#3DA564"
+          },
+          {
+            "name": "--mx-dark-info",
+            "value": "#5B9BF0"
+          },
+          {
+            "name": "--mx-dark-link",
+            "value": "#7AA7E0"
+          },
+          {
+            "name": "--mx-dark-orange",
+            "value": "#E08B45"
+          },
+          {
+            "name": "--mx-light-bg",
+            "value": "#F7F8FA"
+          },
+          {
+            "name": "--mx-light-panel",
+            "value": "#FFFFFF"
+          },
+          {
+            "name": "--mx-light-panel2",
+            "value": "#EEF1F6"
+          },
+          {
+            "name": "--mx-light-text",
+            "value": "#1C2430"
+          },
+          {
+            "name": "--mx-light-muted",
+            "value": "#5D6B7E"
+          },
+          {
+            "name": "--mx-light-line",
+            "value": "#C9CCD1"
+          },
+          {
+            "name": "--mx-light-up",
+            "value": "#1F9A55"
+          },
+          {
+            "name": "--mx-light-down",
+            "value": "#CF4040"
+          },
+          {
+            "name": "--mx-light-warn",
+            "value": "#B9791A"
+          },
+          {
+            "name": "--mx-light-act",
+            "value": "#C43D3D"
+          },
+          {
+            "name": "--mx-light-ok",
+            "value": "#2F8A52"
+          },
+          {
+            "name": "--mx-light-info",
+            "value": "#285FFF"
+          },
+          {
+            "name": "--mx-light-link",
+            "value": "#285FFF"
+          },
+          {
+            "name": "--mx-light-orange",
+            "value": "#C4781F"
+          },
+          {
+            "name": "--mx-dark-prov",
+            "value": "#62A0E8"
+          },
+          {
+            "name": "--mx-dark-prov-ink",
+            "value": "#62A0E8"
+          },
+          {
+            "name": "--mx-dark-tier-accent",
+            "value": "#7C5CFF"
+          },
+          {
+            "name": "--mx-dark-tier-fill",
+            "value": "#6340D8"
+          },
+          {
+            "name": "--mx-dark-tier-ink",
+            "value": "#9B86FF"
+          },
+          {
+            "name": "--mx-dark-ser-1",
+            "value": "#5B9BF0"
+          },
+          {
+            "name": "--mx-dark-ser-2",
+            "value": "#D4A017"
+          },
+          {
+            "name": "--mx-dark-ser-3",
+            "value": "#0EA5E9"
+          },
+          {
+            "name": "--mx-dark-ser-4",
+            "value": "#E08B45"
+          },
+          {
+            "name": "--mx-light-prov",
+            "value": "#2F6FD0"
+          },
+          {
+            "name": "--mx-light-prov-ink",
+            "value": "#2C62B3"
+          },
+          {
+            "name": "--mx-light-tier-accent",
+            "value": "#7C5CFF"
+          },
+          {
+            "name": "--mx-light-tier-fill",
+            "value": "#6340D8"
+          },
+          {
+            "name": "--mx-light-tier-ink",
+            "value": "#5B3FC4"
+          },
+          {
+            "name": "--mx-light-ser-1",
+            "value": "#2F63C4"
+          },
+          {
+            "name": "--mx-light-ser-2",
+            "value": "#8F6A04"
+          },
+          {
+            "name": "--mx-light-ser-3",
+            "value": "#0284C7"
+          },
+          {
+            "name": "--mx-light-ser-4",
+            "value": "#B06A25"
+          },
+          {
+            "name": "--mx-light-ink-up",
+            "value": "#1E6D47"
+          },
+          {
+            "name": "--mx-light-ink-down",
+            "value": "#B23C3D"
+          },
+          {
+            "name": "--mx-light-ink-warn",
+            "value": "#7D5922"
+          },
+          {
+            "name": "--mx-light-ink-link",
+            "value": "#2758E6"
+          },
+          {
+            "name": "--noir-canvas",
+            "value": "#080808"
+          },
+          {
+            "name": "--noir-sidebar",
+            "value": "#0C0C0C"
+          },
+          {
+            "name": "--noir-panel",
+            "value": "#121212"
+          },
+          {
+            "name": "--noir-raised",
+            "value": "#191919"
+          },
+          {
+            "name": "--noir-hover",
+            "value": "#222222"
+          },
+          {
+            "name": "--noir-selected",
+            "value": "#292929"
+          },
+          {
+            "name": "--noir-text-primary",
+            "value": "#F3F3F3"
+          },
+          {
+            "name": "--noir-text-secondary",
+            "value": "#B8B8B8"
+          },
+          {
+            "name": "--noir-text-tertiary",
+            "value": "#949494"
+          },
+          {
+            "name": "--noir-champagne",
+            "value": "#C9B99B"
+          },
+          {
+            "name": "--noir-sage",
+            "value": "#A8C2AD"
+          },
+          {
+            "name": "--noir-rose",
+            "value": "#DEA4A5"
+          },
+          {
+            "name": "--noir-steel",
+            "value": "#A7B4C2"
+          },
+          {
+            "name": "--noir-lilac",
+            "value": "#BDB2CE"
+          },
+          {
+            "name": "--market-canvas",
+            "value": "#0A0B0D"
+          },
+          {
+            "name": "--market-panel",
+            "value": "#111318"
+          },
+          {
+            "name": "--market-raised",
+            "value": "#181B20"
+          },
+          {
+            "name": "--market-line",
+            "value": "#2B3038"
+          },
+          {
+            "name": "--mx-dark-up-soft",
+            "value": "rgb(69 184 115 / 12%)"
+          },
+          {
+            "name": "--mx-dark-down-soft",
+            "value": "rgb(224 100 100 / 12%)"
+          },
+          {
+            "name": "--mx-dark-warn-soft",
+            "value": "rgb(224 160 48 / 12%)"
+          },
+          {
+            "name": "--mx-dark-info-soft",
+            "value": "rgb(91 155 240 / 12%)"
+          },
+          {
+            "name": "--mx-light-up-soft",
+            "value": "#EAF7EF"
+          },
+          {
+            "name": "--mx-light-down-soft",
+            "value": "#FCECED"
+          },
+          {
+            "name": "--mx-light-warn-soft",
+            "value": "#FFF4E2"
+          },
+          {
+            "name": "--mx-light-info-soft",
+            "value": "#EAF2FC"
+          },
+          {
+            "name": "--mx-light-scrim",
+            "value": "#1C243029"
+          },
+          {
+            "name": "--font-ui",
+            "value": "\"Inter\""
+          },
+          {
+            "name": "--fs-micro",
+            "value": "10px"
+          },
+          {
+            "name": "--fs-label",
+            "value": "11px"
+          },
+          {
+            "name": "--fs-sm",
+            "value": "12.5px"
+          },
+          {
+            "name": "--fs-body",
+            "value": "14px"
+          },
+          {
+            "name": "--fs-h3",
+            "value": "14px"
+          },
+          {
+            "name": "--fs-md",
+            "value": "15px"
+          },
+          {
+            "name": "--fs-h2",
+            "value": "17px"
+          },
+          {
+            "name": "--fs-num-lg",
+            "value": "22px"
+          },
+          {
+            "name": "--fs-h1",
+            "value": "28px"
+          },
+          {
+            "name": "--fs-num-xl",
+            "value": "38px"
+          },
+          {
+            "name": "--fs-display",
+            "value": "46px"
+          },
+          {
+            "name": "--fw-regular",
+            "value": "400"
+          },
+          {
+            "name": "--fw-medium",
+            "value": "500"
+          },
+          {
+            "name": "--fw-semibold",
+            "value": "600"
+          },
+          {
+            "name": "--fw-bold",
+            "value": "700"
+          },
+          {
+            "name": "--fw-extrabold",
+            "value": "800"
+          },
+          {
+            "name": "--bp-mobile",
+            "value": "390px"
+          },
+          {
+            "name": "--bp-tablet",
+            "value": "768px"
+          },
+          {
+            "name": "--bp-desktop",
+            "value": "1440px"
+          },
+          {
+            "name": "--sp-1",
+            "value": "4px"
+          },
+          {
+            "name": "--sp-2",
+            "value": "8px"
+          },
+          {
+            "name": "--sp-3",
+            "value": "12px"
+          },
+          {
+            "name": "--sp-4",
+            "value": "16px"
+          },
+          {
+            "name": "--sp-5",
+            "value": "20px"
+          },
+          {
+            "name": "--sp-6",
+            "value": "24px"
+          },
+          {
+            "name": "--sp-7",
+            "value": "32px"
+          },
+          {
+            "name": "--sp-8",
+            "value": "44px"
+          },
+          {
+            "name": "--r-ctl",
+            "value": "8px"
+          },
+          {
+            "name": "--r-btn",
+            "value": "10px"
+          },
+          {
+            "name": "--r-card",
+            "value": "12px"
+          },
+          {
+            "name": "--r-panel",
+            "value": "14px"
+          },
+          {
+            "name": "--r-pill",
+            "value": "999px"
+          }
+        ]
+      }
+    },
+    "guard": "48ea99510c8fbc9a20ee2115f79756c8b3c640ba9c20585cbe9d31ef55e1f76a"
+  },
+  {
+    "kind": "revenue",
+    "fileId": "01M6Y3397SE03G626MJ72N90PF",
+    "pageId": "p-4-0",
+    "observed": {
+      "fileName": "Government Revenue · R5 and Builder Contracts",
+      "pageName": "02B · Components · Funding & watches",
+      "pageId": "p-4-0",
+      "url": "https://app.paper.design/file/01M6Y3397SE03G626MJ72N90PF/p-4-0",
+      "rootNodeId": "root_node_p-4-0",
+      "nodeCount": 467,
+      "artboardCount": 1,
+      "artboards": [
+        {
+          "id": "2G-0",
+          "name": "62 · R11 COMPONENTS · Funding + Watch + Recovery",
+          "childCount": 10,
+          "width": 1440,
+          "height": 11543,
+          "worldX": 40,
+          "worldY": -5771.5
+        }
+      ],
+      "pages": [
+        {
+          "type": "page",
+          "id": "p-2-0",
+          "name": "01 · Product · Signals & funding",
+          "icon": "design",
+          "isActive": false
+        },
+        {
+          "type": "page",
+          "id": "p-3-0",
+          "name": "02A · States · Prepared, saved & degraded",
+          "icon": "info",
+          "isActive": false
+        },
+        {
+          "type": "page",
+          "id": "p-4-0",
+          "name": "02B · Components · Funding & watches",
+          "icon": "vector",
+          "isActive": false
+        },
+        {
+          "type": "page",
+          "id": "p-1-0",
+          "name": "03 · Build · Routes & source contracts",
+          "icon": "blueprint",
+          "isActive": true
+        }
+      ],
+      "fontFamilies": [
+        "Inter",
+        "PingFang SC",
+        "System Sans-Serif"
+      ],
+      "tokens": {
+        "items": [
+          {
+            "name": "--mx-dark-bg",
+            "value": "#0F1115"
+          },
+          {
+            "name": "--mx-dark-panel",
+            "value": "#181B21"
+          },
+          {
+            "name": "--mx-dark-panel2",
+            "value": "#1E222A"
+          },
+          {
+            "name": "--mx-dark-text",
+            "value": "#D7DCE3"
+          },
+          {
+            "name": "--mx-dark-muted",
+            "value": "#8B93A1"
+          },
+          {
+            "name": "--mx-dark-line",
+            "value": "#3A4150"
+          },
+          {
+            "name": "--mx-dark-up",
+            "value": "#45B873"
+          },
+          {
+            "name": "--mx-dark-down",
+            "value": "#E06464"
+          },
+          {
+            "name": "--mx-dark-warn",
+            "value": "#E0A030"
+          },
+          {
+            "name": "--mx-dark-act",
+            "value": "#E05555"
+          },
+          {
+            "name": "--mx-dark-ok",
+            "value": "#3DA564"
+          },
+          {
+            "name": "--mx-dark-info",
+            "value": "#5B9BF0"
+          },
+          {
+            "name": "--mx-dark-link",
+            "value": "#7AA7E0"
+          },
+          {
+            "name": "--mx-dark-orange",
+            "value": "#E08B45"
+          },
+          {
+            "name": "--mx-light-bg",
+            "value": "#F7F8FA"
+          },
+          {
+            "name": "--mx-light-panel",
+            "value": "#FFFFFF"
+          },
+          {
+            "name": "--mx-light-panel2",
+            "value": "#EEF1F6"
+          },
+          {
+            "name": "--mx-light-text",
+            "value": "#1C2430"
+          },
+          {
+            "name": "--mx-light-muted",
+            "value": "#5D6B7E"
+          },
+          {
+            "name": "--mx-light-line",
+            "value": "#C9CCD1"
+          },
+          {
+            "name": "--mx-light-up",
+            "value": "#1F9A55"
+          },
+          {
+            "name": "--mx-light-down",
+            "value": "#CF4040"
+          },
+          {
+            "name": "--mx-light-warn",
+            "value": "#B9791A"
+          },
+          {
+            "name": "--mx-light-act",
+            "value": "#C43D3D"
+          },
+          {
+            "name": "--mx-light-ok",
+            "value": "#2F8A52"
+          },
+          {
+            "name": "--mx-light-info",
+            "value": "#285FFF"
+          },
+          {
+            "name": "--mx-light-link",
+            "value": "#285FFF"
+          },
+          {
+            "name": "--mx-light-orange",
+            "value": "#C4781F"
+          },
+          {
+            "name": "--mx-dark-prov",
+            "value": "#62A0E8"
+          },
+          {
+            "name": "--mx-dark-prov-ink",
+            "value": "#62A0E8"
+          },
+          {
+            "name": "--mx-dark-tier-accent",
+            "value": "#7C5CFF"
+          },
+          {
+            "name": "--mx-dark-tier-fill",
+            "value": "#6340D8"
+          },
+          {
+            "name": "--mx-dark-tier-ink",
+            "value": "#9B86FF"
+          },
+          {
+            "name": "--mx-dark-ser-1",
+            "value": "#5B9BF0"
+          },
+          {
+            "name": "--mx-dark-ser-2",
+            "value": "#D4A017"
+          },
+          {
+            "name": "--mx-dark-ser-3",
+            "value": "#0EA5E9"
+          },
+          {
+            "name": "--mx-dark-ser-4",
+            "value": "#E08B45"
+          },
+          {
+            "name": "--mx-light-prov",
+            "value": "#2F6FD0"
+          },
+          {
+            "name": "--mx-light-prov-ink",
+            "value": "#2C62B3"
+          },
+          {
+            "name": "--mx-light-tier-accent",
+            "value": "#7C5CFF"
+          },
+          {
+            "name": "--mx-light-tier-fill",
+            "value": "#6340D8"
+          },
+          {
+            "name": "--mx-light-tier-ink",
+            "value": "#5B3FC4"
+          },
+          {
+            "name": "--mx-light-ser-1",
+            "value": "#2F63C4"
+          },
+          {
+            "name": "--mx-light-ser-2",
+            "value": "#8F6A04"
+          },
+          {
+            "name": "--mx-light-ser-3",
+            "value": "#0284C7"
+          },
+          {
+            "name": "--mx-light-ser-4",
+            "value": "#B06A25"
+          },
+          {
+            "name": "--mx-light-ink-up",
+            "value": "#1E6D47"
+          },
+          {
+            "name": "--mx-light-ink-down",
+            "value": "#B23C3D"
+          },
+          {
+            "name": "--mx-light-ink-warn",
+            "value": "#7D5922"
+          },
+          {
+            "name": "--mx-light-ink-link",
+            "value": "#2758E6"
+          },
+          {
+            "name": "--noir-canvas",
+            "value": "#080808"
+          },
+          {
+            "name": "--noir-sidebar",
+            "value": "#0C0C0C"
+          },
+          {
+            "name": "--noir-panel",
+            "value": "#121212"
+          },
+          {
+            "name": "--noir-raised",
+            "value": "#191919"
+          },
+          {
+            "name": "--noir-hover",
+            "value": "#222222"
+          },
+          {
+            "name": "--noir-selected",
+            "value": "#292929"
+          },
+          {
+            "name": "--noir-text-primary",
+            "value": "#F3F3F3"
+          },
+          {
+            "name": "--noir-text-secondary",
+            "value": "#B8B8B8"
+          },
+          {
+            "name": "--noir-text-tertiary",
+            "value": "#949494"
+          },
+          {
+            "name": "--noir-champagne",
+            "value": "#C9B99B"
+          },
+          {
+            "name": "--noir-sage",
+            "value": "#A8C2AD"
+          },
+          {
+            "name": "--noir-rose",
+            "value": "#DEA4A5"
+          },
+          {
+            "name": "--noir-steel",
+            "value": "#A7B4C2"
+          },
+          {
+            "name": "--noir-lilac",
+            "value": "#BDB2CE"
+          },
+          {
+            "name": "--market-canvas",
+            "value": "#0A0B0D"
+          },
+          {
+            "name": "--market-panel",
+            "value": "#111318"
+          },
+          {
+            "name": "--market-raised",
+            "value": "#181B20"
+          },
+          {
+            "name": "--market-line",
+            "value": "#2B3038"
+          },
+          {
+            "name": "--mx-dark-up-soft",
+            "value": "rgb(69 184 115 / 12%)"
+          },
+          {
+            "name": "--mx-dark-down-soft",
+            "value": "rgb(224 100 100 / 12%)"
+          },
+          {
+            "name": "--mx-dark-warn-soft",
+            "value": "rgb(224 160 48 / 12%)"
+          },
+          {
+            "name": "--mx-dark-info-soft",
+            "value": "rgb(91 155 240 / 12%)"
+          },
+          {
+            "name": "--mx-light-up-soft",
+            "value": "#EAF7EF"
+          },
+          {
+            "name": "--mx-light-down-soft",
+            "value": "#FCECED"
+          },
+          {
+            "name": "--mx-light-warn-soft",
+            "value": "#FFF4E2"
+          },
+          {
+            "name": "--mx-light-info-soft",
+            "value": "#EAF2FC"
+          },
+          {
+            "name": "--mx-light-scrim",
+            "value": "#1C243029"
+          },
+          {
+            "name": "--font-ui",
+            "value": "\"Inter\""
+          },
+          {
+            "name": "--fs-micro",
+            "value": "10px"
+          },
+          {
+            "name": "--fs-label",
+            "value": "11px"
+          },
+          {
+            "name": "--fs-sm",
+            "value": "12.5px"
+          },
+          {
+            "name": "--fs-body",
+            "value": "14px"
+          },
+          {
+            "name": "--fs-h3",
+            "value": "14px"
+          },
+          {
+            "name": "--fs-md",
+            "value": "15px"
+          },
+          {
+            "name": "--fs-h2",
+            "value": "17px"
+          },
+          {
+            "name": "--fs-num-lg",
+            "value": "22px"
+          },
+          {
+            "name": "--fs-h1",
+            "value": "28px"
+          },
+          {
+            "name": "--fs-num-xl",
+            "value": "38px"
+          },
+          {
+            "name": "--fs-display",
+            "value": "46px"
+          },
+          {
+            "name": "--fw-regular",
+            "value": "400"
+          },
+          {
+            "name": "--fw-medium",
+            "value": "500"
+          },
+          {
+            "name": "--fw-semibold",
+            "value": "600"
+          },
+          {
+            "name": "--fw-bold",
+            "value": "700"
+          },
+          {
+            "name": "--fw-extrabold",
+            "value": "800"
+          },
+          {
+            "name": "--bp-mobile",
+            "value": "390px"
+          },
+          {
+            "name": "--bp-tablet",
+            "value": "768px"
+          },
+          {
+            "name": "--bp-desktop",
+            "value": "1440px"
+          },
+          {
+            "name": "--sp-1",
+            "value": "4px"
+          },
+          {
+            "name": "--sp-2",
+            "value": "8px"
+          },
+          {
+            "name": "--sp-3",
+            "value": "12px"
+          },
+          {
+            "name": "--sp-4",
+            "value": "16px"
+          },
+          {
+            "name": "--sp-5",
+            "value": "20px"
+          },
+          {
+            "name": "--sp-6",
+            "value": "24px"
+          },
+          {
+            "name": "--sp-7",
+            "value": "32px"
+          },
+          {
+            "name": "--sp-8",
+            "value": "44px"
+          },
+          {
+            "name": "--r-ctl",
+            "value": "8px"
+          },
+          {
+            "name": "--r-btn",
+            "value": "10px"
+          },
+          {
+            "name": "--r-card",
+            "value": "12px"
+          },
+          {
+            "name": "--r-panel",
+            "value": "14px"
+          },
+          {
+            "name": "--r-pill",
+            "value": "999px"
+          }
+        ]
+      }
+    },
+    "guard": "48ea99510c8fbc9a20ee2115f79756c8b3c640ba9c20585cbe9d31ef55e1f76a"
+  },
+  {
+    "kind": "revenue",
+    "fileId": "01M6Y3397SE03G626MJ72N90PF",
+    "pageId": "p-1-0",
+    "observed": {
+      "fileName": "Government Revenue · R5 and Builder Contracts",
+      "pageName": "03 · Build · Routes & source contracts",
+      "pageId": "p-1-0",
+      "url": "https://app.paper.design/file/01M6Y3397SE03G626MJ72N90PF/p-1-0",
+      "rootNodeId": "root_node_p-1-0",
+      "nodeCount": 240,
+      "artboardCount": 3,
+      "artboards": [
+        {
+          "id": "FA-0",
+          "name": "00 · Read me · Routes, states & build",
+          "childCount": 4,
+          "width": 1440,
+          "height": 805,
+          "worldX": -2240,
+          "worldY": -7311.5
+        },
+        {
+          "id": "1-0",
+          "name": "00 · SPEC · Gov Revenue Builder Blueprint",
+          "childCount": 6,
+          "width": 1440,
+          "height": 1180,
+          "worldX": -1480,
+          "worldY": -5771.5
+        },
+        {
+          "id": "40P-0",
+          "name": "R13 Source joins and build acceptance",
+          "childCount": 6,
+          "width": 1440,
+          "height": 2082,
+          "worldX": -1480,
+          "worldY": -4512
+        }
+      ],
+      "pages": [
+        {
+          "type": "page",
+          "id": "p-2-0",
+          "name": "01 · Product · Signals & funding",
+          "icon": "design",
+          "isActive": false
+        },
+        {
+          "type": "page",
+          "id": "p-3-0",
+          "name": "02A · States · Prepared, saved & degraded",
+          "icon": "info",
+          "isActive": false
+        },
+        {
+          "type": "page",
+          "id": "p-4-0",
+          "name": "02B · Components · Funding & watches",
+          "icon": "vector",
+          "isActive": false
+        },
+        {
+          "type": "page",
+          "id": "p-1-0",
+          "name": "03 · Build · Routes & source contracts",
+          "icon": "blueprint",
+          "isActive": true
+        }
+      ],
+      "fontFamilies": [
+        "Inter",
+        "PingFang SC",
+        "System Sans-Serif"
+      ],
+      "tokens": {
+        "items": [
+          {
+            "name": "--mx-dark-bg",
+            "value": "#0F1115"
+          },
+          {
+            "name": "--mx-dark-panel",
+            "value": "#181B21"
+          },
+          {
+            "name": "--mx-dark-panel2",
+            "value": "#1E222A"
+          },
+          {
+            "name": "--mx-dark-text",
+            "value": "#D7DCE3"
+          },
+          {
+            "name": "--mx-dark-muted",
+            "value": "#8B93A1"
+          },
+          {
+            "name": "--mx-dark-line",
+            "value": "#3A4150"
+          },
+          {
+            "name": "--mx-dark-up",
+            "value": "#45B873"
+          },
+          {
+            "name": "--mx-dark-down",
+            "value": "#E06464"
+          },
+          {
+            "name": "--mx-dark-warn",
+            "value": "#E0A030"
+          },
+          {
+            "name": "--mx-dark-act",
+            "value": "#E05555"
+          },
+          {
+            "name": "--mx-dark-ok",
+            "value": "#3DA564"
+          },
+          {
+            "name": "--mx-dark-info",
+            "value": "#5B9BF0"
+          },
+          {
+            "name": "--mx-dark-link",
+            "value": "#7AA7E0"
+          },
+          {
+            "name": "--mx-dark-orange",
+            "value": "#E08B45"
+          },
+          {
+            "name": "--mx-light-bg",
+            "value": "#F7F8FA"
+          },
+          {
+            "name": "--mx-light-panel",
+            "value": "#FFFFFF"
+          },
+          {
+            "name": "--mx-light-panel2",
+            "value": "#EEF1F6"
+          },
+          {
+            "name": "--mx-light-text",
+            "value": "#1C2430"
+          },
+          {
+            "name": "--mx-light-muted",
+            "value": "#5D6B7E"
+          },
+          {
+            "name": "--mx-light-line",
+            "value": "#C9CCD1"
+          },
+          {
+            "name": "--mx-light-up",
+            "value": "#1F9A55"
+          },
+          {
+            "name": "--mx-light-down",
+            "value": "#CF4040"
+          },
+          {
+            "name": "--mx-light-warn",
+            "value": "#B9791A"
+          },
+          {
+            "name": "--mx-light-act",
+            "value": "#C43D3D"
+          },
+          {
+            "name": "--mx-light-ok",
+            "value": "#2F8A52"
+          },
+          {
+            "name": "--mx-light-info",
+            "value": "#285FFF"
+          },
+          {
+            "name": "--mx-light-link",
+            "value": "#285FFF"
+          },
+          {
+            "name": "--mx-light-orange",
+            "value": "#C4781F"
+          },
+          {
+            "name": "--mx-dark-prov",
+            "value": "#62A0E8"
+          },
+          {
+            "name": "--mx-dark-prov-ink",
+            "value": "#62A0E8"
+          },
+          {
+            "name": "--mx-dark-tier-accent",
+            "value": "#7C5CFF"
+          },
+          {
+            "name": "--mx-dark-tier-fill",
+            "value": "#6340D8"
+          },
+          {
+            "name": "--mx-dark-tier-ink",
+            "value": "#9B86FF"
+          },
+          {
+            "name": "--mx-dark-ser-1",
+            "value": "#5B9BF0"
+          },
+          {
+            "name": "--mx-dark-ser-2",
+            "value": "#D4A017"
+          },
+          {
+            "name": "--mx-dark-ser-3",
+            "value": "#0EA5E9"
+          },
+          {
+            "name": "--mx-dark-ser-4",
+            "value": "#E08B45"
+          },
+          {
+            "name": "--mx-light-prov",
+            "value": "#2F6FD0"
+          },
+          {
+            "name": "--mx-light-prov-ink",
+            "value": "#2C62B3"
+          },
+          {
+            "name": "--mx-light-tier-accent",
+            "value": "#7C5CFF"
+          },
+          {
+            "name": "--mx-light-tier-fill",
+            "value": "#6340D8"
+          },
+          {
+            "name": "--mx-light-tier-ink",
+            "value": "#5B3FC4"
+          },
+          {
+            "name": "--mx-light-ser-1",
+            "value": "#2F63C4"
+          },
+          {
+            "name": "--mx-light-ser-2",
+            "value": "#8F6A04"
+          },
+          {
+            "name": "--mx-light-ser-3",
+            "value": "#0284C7"
+          },
+          {
+            "name": "--mx-light-ser-4",
+            "value": "#B06A25"
+          },
+          {
+            "name": "--mx-light-ink-up",
+            "value": "#1E6D47"
+          },
+          {
+            "name": "--mx-light-ink-down",
+            "value": "#B23C3D"
+          },
+          {
+            "name": "--mx-light-ink-warn",
+            "value": "#7D5922"
+          },
+          {
+            "name": "--mx-light-ink-link",
+            "value": "#2758E6"
+          },
+          {
+            "name": "--noir-canvas",
+            "value": "#080808"
+          },
+          {
+            "name": "--noir-sidebar",
+            "value": "#0C0C0C"
+          },
+          {
+            "name": "--noir-panel",
+            "value": "#121212"
+          },
+          {
+            "name": "--noir-raised",
+            "value": "#191919"
+          },
+          {
+            "name": "--noir-hover",
+            "value": "#222222"
+          },
+          {
+            "name": "--noir-selected",
+            "value": "#292929"
+          },
+          {
+            "name": "--noir-text-primary",
+            "value": "#F3F3F3"
+          },
+          {
+            "name": "--noir-text-secondary",
+            "value": "#B8B8B8"
+          },
+          {
+            "name": "--noir-text-tertiary",
+            "value": "#949494"
+          },
+          {
+            "name": "--noir-champagne",
+            "value": "#C9B99B"
+          },
+          {
+            "name": "--noir-sage",
+            "value": "#A8C2AD"
+          },
+          {
+            "name": "--noir-rose",
+            "value": "#DEA4A5"
+          },
+          {
+            "name": "--noir-steel",
+            "value": "#A7B4C2"
+          },
+          {
+            "name": "--noir-lilac",
+            "value": "#BDB2CE"
+          },
+          {
+            "name": "--market-canvas",
+            "value": "#0A0B0D"
+          },
+          {
+            "name": "--market-panel",
+            "value": "#111318"
+          },
+          {
+            "name": "--market-raised",
+            "value": "#181B20"
+          },
+          {
+            "name": "--market-line",
+            "value": "#2B3038"
+          },
+          {
+            "name": "--mx-dark-up-soft",
+            "value": "rgb(69 184 115 / 12%)"
+          },
+          {
+            "name": "--mx-dark-down-soft",
+            "value": "rgb(224 100 100 / 12%)"
+          },
+          {
+            "name": "--mx-dark-warn-soft",
+            "value": "rgb(224 160 48 / 12%)"
+          },
+          {
+            "name": "--mx-dark-info-soft",
+            "value": "rgb(91 155 240 / 12%)"
+          },
+          {
+            "name": "--mx-light-up-soft",
+            "value": "#EAF7EF"
+          },
+          {
+            "name": "--mx-light-down-soft",
+            "value": "#FCECED"
+          },
+          {
+            "name": "--mx-light-warn-soft",
+            "value": "#FFF4E2"
+          },
+          {
+            "name": "--mx-light-info-soft",
+            "value": "#EAF2FC"
+          },
+          {
+            "name": "--mx-light-scrim",
+            "value": "#1C243029"
+          },
+          {
+            "name": "--font-ui",
+            "value": "\"Inter\""
+          },
+          {
+            "name": "--fs-micro",
+            "value": "10px"
+          },
+          {
+            "name": "--fs-label",
+            "value": "11px"
+          },
+          {
+            "name": "--fs-sm",
+            "value": "12.5px"
+          },
+          {
+            "name": "--fs-body",
+            "value": "14px"
+          },
+          {
+            "name": "--fs-h3",
+            "value": "14px"
+          },
+          {
+            "name": "--fs-md",
+            "value": "15px"
+          },
+          {
+            "name": "--fs-h2",
+            "value": "17px"
+          },
+          {
+            "name": "--fs-num-lg",
+            "value": "22px"
+          },
+          {
+            "name": "--fs-h1",
+            "value": "28px"
+          },
+          {
+            "name": "--fs-num-xl",
+            "value": "38px"
+          },
+          {
+            "name": "--fs-display",
+            "value": "46px"
+          },
+          {
+            "name": "--fw-regular",
+            "value": "400"
+          },
+          {
+            "name": "--fw-medium",
+            "value": "500"
+          },
+          {
+            "name": "--fw-semibold",
+            "value": "600"
+          },
+          {
+            "name": "--fw-bold",
+            "value": "700"
+          },
+          {
+            "name": "--fw-extrabold",
+            "value": "800"
+          },
+          {
+            "name": "--bp-mobile",
+            "value": "390px"
+          },
+          {
+            "name": "--bp-tablet",
+            "value": "768px"
+          },
+          {
+            "name": "--bp-desktop",
+            "value": "1440px"
+          },
+          {
+            "name": "--sp-1",
+            "value": "4px"
+          },
+          {
+            "name": "--sp-2",
+            "value": "8px"
+          },
+          {
+            "name": "--sp-3",
+            "value": "12px"
+          },
+          {
+            "name": "--sp-4",
+            "value": "16px"
+          },
+          {
+            "name": "--sp-5",
+            "value": "20px"
+          },
+          {
+            "name": "--sp-6",
+            "value": "24px"
+          },
+          {
+            "name": "--sp-7",
+            "value": "32px"
+          },
+          {
+            "name": "--sp-8",
+            "value": "44px"
+          },
+          {
+            "name": "--r-ctl",
+            "value": "8px"
+          },
+          {
+            "name": "--r-btn",
+            "value": "10px"
+          },
+          {
+            "name": "--r-card",
+            "value": "12px"
+          },
+          {
+            "name": "--r-panel",
+            "value": "14px"
+          },
+          {
+            "name": "--r-pill",
+            "value": "999px"
+          }
+        ]
+      }
+    },
+    "guard": "48ea99510c8fbc9a20ee2115f79756c8b3c640ba9c20585cbe9d31ef55e1f76a"
+  },
+  {
+    "kind": "os",
+    "fileId": "01M3NRCX55B452A12819WNE1RH",
+    "pageId": "p-D-0",
+    "observed": {
+      "fileName": "Mastermind OS",
+      "pageName": "12 · Canonical Atelier · Mastermind OS",
+      "pageId": "p-D-0",
+      "url": "https://app.paper.design/file/01M3NRCX55B452A12819WNE1RH/p-D-0",
+      "rootNodeId": "root_node_p-D-0",
+      "nodeCount": 2908,
+      "artboardCount": 23,
+      "artboards": [
+        {
+          "id": "KSB-0",
+          "name": "AT00 · Canonical Atelier · Design authority and index",
+          "childCount": 5,
+          "width": 1600,
+          "height": 1629,
+          "worldX": 0,
+          "worldY": 0
+        },
+        {
+          "id": "KSQ-0",
+          "name": "AT90 · Canonical Atelier · Shared desktop shell",
+          "childCount": 2,
+          "width": 1600,
+          "height": 1040,
+          "worldX": 2150,
+          "worldY": 0
+        },
+        {
+          "id": "NDE-0",
+          "name": "AT91 · Atelier · Meaningful states and controls",
+          "childCount": 4,
+          "width": 1600,
+          "height": 1040,
+          "worldX": 4300,
+          "worldY": 0
+        },
+        {
+          "id": "LNV-0",
+          "name": "AT01 · Today · Canonical Atelier",
+          "childCount": 2,
+          "width": 1600,
+          "height": 1040,
+          "worldX": 0,
+          "worldY": 1800
+        },
+        {
+          "id": "N27-0",
+          "name": "AT01M · Today · Atelier",
+          "childCount": 4,
+          "width": 390,
+          "height": 844,
+          "worldX": 1640,
+          "worldY": 1800
+        },
+        {
+          "id": "M4J-0",
+          "name": "AT02 · Projects · Canonical Atelier",
+          "childCount": 2,
+          "width": 1600,
+          "height": 1040,
+          "worldX": 2150,
+          "worldY": 1800
+        },
+        {
+          "id": "N28-0",
+          "name": "AT02M · Projects · Atelier",
+          "childCount": 4,
+          "width": 390,
+          "height": 844,
+          "worldX": 3790,
+          "worldY": 1800
+        },
+        {
+          "id": "KY5-0",
+          "name": "AT04 · Inbox · Canonical Atelier",
+          "childCount": 2,
+          "width": 1600,
+          "height": 1040,
+          "worldX": 4300,
+          "worldY": 1800
+        },
+        {
+          "id": "MNL-0",
+          "name": "AT04M · Inbox · Canonical Atelier mobile · Design preview",
+          "childCount": 4,
+          "width": 390,
+          "height": 844,
+          "worldX": 5940,
+          "worldY": 1800
+        },
+        {
+          "id": "L0Z-0",
+          "name": "AT05 · Knowledge · Canonical Atelier",
+          "childCount": 2,
+          "width": 1600,
+          "height": 1040,
+          "worldX": 0,
+          "worldY": 3080
+        },
+        {
+          "id": "MNM-0",
+          "name": "AT05M · Knowledge · Canonical Atelier mobile · Design preview",
+          "childCount": 4,
+          "width": 390,
+          "height": 844,
+          "worldX": 1640,
+          "worldY": 3080
+        },
+        {
+          "id": "L3N-0",
+          "name": "AT06 · Global Search · Canonical Atelier",
+          "childCount": 2,
+          "width": 1600,
+          "height": 1040,
+          "worldX": 2150,
+          "worldY": 3080
+        },
+        {
+          "id": "MNN-0",
+          "name": "AT06M · Search · Canonical Atelier mobile · Design preview",
+          "childCount": 4,
+          "width": 390,
+          "height": 898,
+          "worldX": 3790,
+          "worldY": 3080
+        },
+        {
+          "id": "L6N-0",
+          "name": "AT07 · Sources · diagnostic preview",
+          "childCount": 2,
+          "width": 1600,
+          "height": 1040,
+          "worldX": 4300,
+          "worldY": 3080
+        },
+        {
+          "id": "MNO-0",
+          "name": "AT07M · Sources · diagnostic preview",
+          "childCount": 4,
+          "width": 390,
+          "height": 935,
+          "worldX": 5940,
+          "worldY": 3080
+        },
+        {
+          "id": "LHV-0",
+          "name": "AT11 · Tools · Contextual capabilities",
+          "childCount": 2,
+          "width": 1600,
+          "height": 1040,
+          "worldX": 0,
+          "worldY": 4360
+        },
+        {
+          "id": "MP6-0",
+          "name": "AT11M · Tools",
+          "childCount": 4,
+          "width": 390,
+          "height": 863,
+          "worldX": 1640,
+          "worldY": 4360
+        },
+        {
+          "id": "SD8-0",
+          "name": "CV01 · Conversations · Canonical Atelier",
+          "childCount": 2,
+          "width": 1600,
+          "height": 1040,
+          "worldX": 2150,
+          "worldY": 4360
+        },
+        {
+          "id": "SI5-0",
+          "name": "CV01M · Conversations · Canonical Atelier mobile",
+          "childCount": 4,
+          "width": 390,
+          "height": 844,
+          "worldX": 3790,
+          "worldY": 4360
+        },
+        {
+          "id": "SPU-0",
+          "name": "KD01 · Source reader · Canonical Atelier",
+          "childCount": 2,
+          "width": 1600,
+          "height": 1040,
+          "worldX": 4300,
+          "worldY": 4360
+        },
+        {
+          "id": "STU-0",
+          "name": "KD01M · Source reader · Canonical Atelier mobile",
+          "childCount": 4,
+          "width": 390,
+          "height": 844,
+          "worldX": 5940,
+          "worldY": 4360
+        },
+        {
+          "id": "T0U-0",
+          "name": "SA01 · Source access · GitHub evidence · Atelier",
+          "childCount": 2,
+          "width": 1600,
+          "height": 1040,
+          "worldX": 0,
+          "worldY": 5640
+        },
+        {
+          "id": "T0V-0",
+          "name": "SA01M · Source access · GitHub evidence · Atelier mobile",
+          "childCount": 4,
+          "width": 390,
+          "height": 955,
+          "worldX": 1640,
+          "worldY": 5640
+        }
+      ],
+      "pages": [
+        {
+          "type": "page",
+          "id": "p-1-0",
+          "name": "00 · Start here · OS design map",
+          "icon": "arrow",
+          "isActive": false
+        },
+        {
+          "type": "page",
+          "id": "p-D-0",
+          "name": "12 · Canonical Atelier · Mastermind OS",
+          "icon": "design",
+          "isActive": true
+        },
+        {
+          "type": "page",
+          "id": "p-O-0",
+          "name": "15 · Team & Delivery · Product",
+          "icon": "design",
+          "isActive": false
+        },
+        {
+          "type": "page",
+          "id": "p-R-0",
+          "name": "16 · Team conversations · Product",
+          "icon": "design",
+          "isActive": false
+        },
+        {
+          "type": "page",
+          "id": "p-U-0",
+          "name": "17 · Code workspace · Product",
+          "icon": "design",
+          "isActive": false
+        },
+        {
+          "type": "page",
+          "id": "p-V-0",
+          "name": "18 · Unified settings · Product",
+          "icon": "design",
+          "isActive": false
+        },
+        {
+          "type": "page",
+          "id": "p-Q-0",
+          "name": "15B · Team & Delivery · Build",
+          "icon": "blueprint",
+          "isActive": false
+        },
+        {
+          "type": "page",
+          "id": "p-P-0",
+          "name": "15A · Team & Delivery · States",
+          "icon": "info",
+          "isActive": false
+        },
+        {
+          "type": "page",
+          "id": "p-H-0",
+          "name": "12A · Projects & Evidence · Canonical Atelier",
+          "icon": null,
+          "isActive": false
+        },
+        {
+          "type": "page",
+          "id": "p-I-0",
+          "name": "12B · Decisions & Plans · Canonical Atelier",
+          "icon": null,
+          "isActive": false
+        },
+        {
+          "type": "page",
+          "id": "p-J-0",
+          "name": "12C · Meta-CEO & Supervision · Canonical Atelier",
+          "icon": null,
+          "isActive": false
+        },
+        {
+          "type": "page",
+          "id": "p-K-0",
+          "name": "12D · Sessions & Access · Canonical Atelier",
+          "icon": null,
+          "isActive": false
+        },
+        {
+          "type": "page",
+          "id": "p-T-0",
+          "name": "16B · Team conversations · Build",
+          "icon": "blueprint",
+          "isActive": false
+        },
+        {
+          "type": "page",
+          "id": "p-S-0",
+          "name": "16A · Team conversations · States",
+          "icon": "info",
+          "isActive": false
+        },
+        {
+          "type": "page",
+          "id": "p-W-0",
+          "name": "17A · Code workspace · States",
+          "icon": "info",
+          "isActive": false
+        },
+        {
+          "type": "page",
+          "id": "p-X-0",
+          "name": "17B · Code integration · Build",
+          "icon": "blueprint",
+          "isActive": false
+        },
+        {
+          "type": "page",
+          "id": "p-E-0",
+          "name": "13 · Daily Experience · Flow + Builder Notes",
+          "icon": null,
+          "isActive": false
+        },
+        {
+          "type": "page",
+          "id": "p-N-0",
+          "name": "UX08 · Source availability",
+          "icon": "blueprint",
+          "isActive": false
+        },
+        {
+          "type": "divider",
+          "id": "p-L-0"
+        },
+        {
+          "type": "page",
+          "id": "p-C-0",
+          "name": "11 · Chat Atelier · Interaction references",
+          "icon": "info",
+          "isActive": false
+        },
+        {
+          "type": "page",
+          "id": "p-F-0",
+          "name": "14 · Market design redirects · Reference",
+          "icon": "info",
+          "isActive": false
+        },
+        {
+          "type": "page",
+          "id": "p-G-0",
+          "name": "ARCHIVE · Market Shell References · Not for OS Build",
+          "icon": null,
+          "isActive": false
+        },
+        {
+          "type": "divider",
+          "id": "p-M-0"
+        },
+        {
+          "type": "page",
+          "id": "p-2-0",
+          "name": "REF · Noir experience + Build history",
+          "icon": "paper",
+          "isActive": false
+        },
+        {
+          "type": "page",
+          "id": "p-3-0",
+          "name": "REF · Conversations + Message states",
+          "icon": "paper",
+          "isActive": false
+        },
+        {
+          "type": "page",
+          "id": "p-4-0",
+          "name": "REF · Missions, Work + Fleet",
+          "icon": "paper",
+          "isActive": false
+        },
+        {
+          "type": "page",
+          "id": "p-5-0",
+          "name": "REF · Connected company journeys",
+          "icon": "paper",
+          "isActive": false
+        },
+        {
+          "type": "page",
+          "id": "p-6-0",
+          "name": "REF · Chairman daily journey",
+          "icon": "paper",
+          "isActive": false
+        },
+        {
+          "type": "page",
+          "id": "p-7-0",
+          "name": "REF · Access, Loading + Recovery",
+          "icon": "paper",
+          "isActive": false
+        },
+        {
+          "type": "page",
+          "id": "p-8-0",
+          "name": "REF · Global shell + Navigation",
+          "icon": "paper",
+          "isActive": false
+        },
+        {
+          "type": "page",
+          "id": "p-9-0",
+          "name": "REF · All tools + Research drawer",
+          "icon": "paper",
+          "isActive": false
+        },
+        {
+          "type": "page",
+          "id": "p-A-0",
+          "name": "REF · Global search + Recovery",
+          "icon": "paper",
+          "isActive": false
+        },
+        {
+          "type": "page",
+          "id": "p-B-0",
+          "name": "10 · SOURCE ONLY · Signed-in Home Baseline",
+          "icon": null,
+          "isActive": false
+        }
+      ],
+      "fontFamilies": [
+        "Inter",
+        "SF Pro Text",
+        "Manrope",
+        "IBM Plex Mono",
+        "System Sans-Serif",
+        "Arial",
+        "System Monospace"
+      ],
+      "tokens": {
+        "items": [
+          {
+            "name": "--mx-dark-bg",
+            "value": "#0F1115"
+          },
+          {
+            "name": "--mx-dark-panel",
+            "value": "#181B21"
+          },
+          {
+            "name": "--mx-dark-panel2",
+            "value": "#1E222A"
+          },
+          {
+            "name": "--mx-dark-text",
+            "value": "#D7DCE3"
+          },
+          {
+            "name": "--mx-dark-muted",
+            "value": "#8B93A1"
+          },
+          {
+            "name": "--mx-dark-line",
+            "value": "#3A4150"
+          },
+          {
+            "name": "--mx-dark-up",
+            "value": "#45B873"
+          },
+          {
+            "name": "--mx-dark-down",
+            "value": "#E06464"
+          },
+          {
+            "name": "--mx-dark-warn",
+            "value": "#E0A030"
+          },
+          {
+            "name": "--mx-dark-act",
+            "value": "#E05555"
+          },
+          {
+            "name": "--mx-dark-ok",
+            "value": "#3DA564"
+          },
+          {
+            "name": "--mx-dark-info",
+            "value": "#5B9BF0"
+          },
+          {
+            "name": "--mx-dark-link",
+            "value": "#7AA7E0"
+          },
+          {
+            "name": "--mx-dark-orange",
+            "value": "#E08B45"
+          },
+          {
+            "name": "--mx-light-bg",
+            "value": "#F7F8FA"
+          },
+          {
+            "name": "--mx-light-panel",
+            "value": "#FFFFFF"
+          },
+          {
+            "name": "--mx-light-panel2",
+            "value": "#EEF1F6"
+          },
+          {
+            "name": "--mx-light-text",
+            "value": "#1C2430"
+          },
+          {
+            "name": "--mx-light-muted",
+            "value": "#5D6B7E"
+          },
+          {
+            "name": "--mx-light-line",
+            "value": "#C9CCD1"
+          },
+          {
+            "name": "--mx-light-up",
+            "value": "#1F9A55"
+          },
+          {
+            "name": "--mx-light-down",
+            "value": "#CF4040"
+          },
+          {
+            "name": "--mx-light-warn",
+            "value": "#B9791A"
+          },
+          {
+            "name": "--mx-light-act",
+            "value": "#C43D3D"
+          },
+          {
+            "name": "--mx-light-ok",
+            "value": "#2F8A52"
+          },
+          {
+            "name": "--mx-light-info",
+            "value": "#285FFF"
+          },
+          {
+            "name": "--mx-light-link",
+            "value": "#285FFF"
+          },
+          {
+            "name": "--mx-light-orange",
+            "value": "#C4781F"
+          },
+          {
+            "name": "--mx-dark-prov",
+            "value": "#62A0E8"
+          },
+          {
+            "name": "--mx-dark-prov-ink",
+            "value": "#62A0E8"
+          },
+          {
+            "name": "--mx-dark-tier-accent",
+            "value": "#7C5CFF"
+          },
+          {
+            "name": "--mx-dark-tier-fill",
+            "value": "#6340D8"
+          },
+          {
+            "name": "--mx-dark-tier-ink",
+            "value": "#9B86FF"
+          },
+          {
+            "name": "--mx-dark-ser-1",
+            "value": "#5B9BF0"
+          },
+          {
+            "name": "--mx-dark-ser-2",
+            "value": "#D4A017"
+          },
+          {
+            "name": "--mx-dark-ser-3",
+            "value": "#0EA5E9"
+          },
+          {
+            "name": "--mx-dark-ser-4",
+            "value": "#E08B45"
+          },
+          {
+            "name": "--mx-light-prov",
+            "value": "#2F6FD0"
+          },
+          {
+            "name": "--mx-light-prov-ink",
+            "value": "#2C62B3"
+          },
+          {
+            "name": "--mx-light-tier-accent",
+            "value": "#7C5CFF"
+          },
+          {
+            "name": "--mx-light-tier-fill",
+            "value": "#6340D8"
+          },
+          {
+            "name": "--mx-light-tier-ink",
+            "value": "#5B3FC4"
+          },
+          {
+            "name": "--mx-light-ser-1",
+            "value": "#2F63C4"
+          },
+          {
+            "name": "--mx-light-ser-2",
+            "value": "#8F6A04"
+          },
+          {
+            "name": "--mx-light-ser-3",
+            "value": "#0284C7"
+          },
+          {
+            "name": "--mx-light-ser-4",
+            "value": "#B06A25"
+          },
+          {
+            "name": "--mx-light-ink-up",
+            "value": "#1E6D47"
+          },
+          {
+            "name": "--mx-light-ink-down",
+            "value": "#B23C3D"
+          },
+          {
+            "name": "--mx-light-ink-warn",
+            "value": "#7D5922"
+          },
+          {
+            "name": "--mx-light-ink-link",
+            "value": "#2758E6"
+          },
+          {
+            "name": "--noir-canvas",
+            "value": "#080808"
+          },
+          {
+            "name": "--noir-sidebar",
+            "value": "#0C0C0C"
+          },
+          {
+            "name": "--noir-panel",
+            "value": "#121212"
+          },
+          {
+            "name": "--noir-raised",
+            "value": "#191919"
+          },
+          {
+            "name": "--noir-hover",
+            "value": "#222222"
+          },
+          {
+            "name": "--noir-selected",
+            "value": "#292929"
+          },
+          {
+            "name": "--noir-text-primary",
+            "value": "#F3F3F3"
+          },
+          {
+            "name": "--noir-text-secondary",
+            "value": "#B8B8B8"
+          },
+          {
+            "name": "--noir-text-tertiary",
+            "value": "#949494"
+          },
+          {
+            "name": "--noir-champagne",
+            "value": "#C9B99B"
+          },
+          {
+            "name": "--noir-sage",
+            "value": "#A8C2AD"
+          },
+          {
+            "name": "--noir-rose",
+            "value": "#DEA4A5"
+          },
+          {
+            "name": "--noir-steel",
+            "value": "#A7B4C2"
+          },
+          {
+            "name": "--noir-lilac",
+            "value": "#BDB2CE"
+          },
+          {
+            "name": "--font-ui",
+            "value": "\"Inter\""
+          },
+          {
+            "name": "--font-display",
+            "value": "\"Manrope\""
+          },
+          {
+            "name": "--fs-micro",
+            "value": "10px"
+          },
+          {
+            "name": "--fs-label",
+            "value": "11px"
+          },
+          {
+            "name": "--fs-sm",
+            "value": "12.5px"
+          },
+          {
+            "name": "--fs-body",
+            "value": "14px"
+          },
+          {
+            "name": "--fs-h3",
+            "value": "14px"
+          },
+          {
+            "name": "--fs-md",
+            "value": "15px"
+          },
+          {
+            "name": "--fs-h2",
+            "value": "17px"
+          },
+          {
+            "name": "--fs-num-lg",
+            "value": "22px"
+          },
+          {
+            "name": "--fs-h1",
+            "value": "28px"
+          },
+          {
+            "name": "--fs-num-xl",
+            "value": "38px"
+          },
+          {
+            "name": "--fs-display",
+            "value": "46px"
+          },
+          {
+            "name": "--text-support",
+            "value": "14px"
+          },
+          {
+            "name": "--text-body",
+            "value": "16px"
+          },
+          {
+            "name": "--text-subheading",
+            "value": "18px"
+          },
+          {
+            "name": "--text-section",
+            "value": "24px"
+          },
+          {
+            "name": "--text-title",
+            "value": "28px"
+          },
+          {
+            "name": "--text-display",
+            "value": "40px"
+          },
+          {
+            "name": "--fw-regular",
+            "value": "400"
+          },
+          {
+            "name": "--fw-medium",
+            "value": "500"
+          },
+          {
+            "name": "--fw-semibold",
+            "value": "600"
+          },
+          {
+            "name": "--fw-bold",
+            "value": "700"
+          },
+          {
+            "name": "--fw-extrabold",
+            "value": "800"
+          },
+          {
+            "name": "--leading-support",
+            "value": "20px"
+          },
+          {
+            "name": "--leading-body",
+            "value": "24px"
+          },
+          {
+            "name": "--leading-subheading",
+            "value": "28px"
+          },
+          {
+            "name": "--leading-section",
+            "value": "32px"
+          },
+          {
+            "name": "--leading-title",
+            "value": "36px"
+          },
+          {
+            "name": "--leading-display",
+            "value": "48px"
+          },
+          {
+            "name": "--bp-mobile",
+            "value": "390px"
+          },
+          {
+            "name": "--bp-tablet",
+            "value": "768px"
+          },
+          {
+            "name": "--bp-desktop",
+            "value": "1440px"
+          },
+          {
+            "name": "--sp-1",
+            "value": "4px"
+          },
+          {
+            "name": "--sp-2",
+            "value": "8px"
+          },
+          {
+            "name": "--sp-3",
+            "value": "12px"
+          },
+          {
+            "name": "--sp-4",
+            "value": "16px"
+          },
+          {
+            "name": "--sp-5",
+            "value": "20px"
+          },
+          {
+            "name": "--sp-6",
+            "value": "24px"
+          },
+          {
+            "name": "--sp-7",
+            "value": "32px"
+          },
+          {
+            "name": "--sp-8",
+            "value": "44px"
+          },
+          {
+            "name": "--r-ctl",
+            "value": "8px"
+          },
+          {
+            "name": "--r-btn",
+            "value": "10px"
+          },
+          {
+            "name": "--r-card",
+            "value": "12px"
+          },
+          {
+            "name": "--r-panel",
+            "value": "14px"
+          },
+          {
+            "name": "--r-pill",
+            "value": "999px"
+          }
+        ]
+      }
+    },
+    "guard": "84c25bb584d96822807cf2cec1c772d2dfe6f600870a89bb5f9ef8dfd55f2d96"
+  },
+  {
+    "kind": "breadth",
+    "fileId": "01M6Y3CRMC345RTB3ZDP3XSYRP",
+    "pageId": "p-1-0",
+    "observed": {
+      "fileName": "Market Breadth · Command Center R1",
+      "pageName": "01 · Product · Breadth overview",
+      "pageId": "p-1-0",
+      "url": "https://app.paper.design/file/01M6Y3CRMC345RTB3ZDP3XSYRP/p-1-0",
+      "rootNodeId": "root_node_p-1-0",
+      "nodeCount": 801,
+      "artboardCount": 2,
+      "artboards": [
+        {
+          "id": "1-0",
+          "name": "01 · R3 Product · Breadth overview · Desktop",
+          "childCount": 1,
+          "width": 1440,
+          "height": 2780,
+          "worldX": -1715,
+          "worldY": -1724
+        },
+        {
+          "id": "K6-0",
+          "name": "02 · R3 Product · Breadth overview · Mobile",
+          "childCount": 1,
+          "width": 390,
+          "height": 1486,
+          "worldX": -195,
+          "worldY": -1724
+        }
+      ],
+      "pages": [
+        {
+          "type": "page",
+          "id": "p-1-0",
+          "name": "01 · Product · Breadth overview",
+          "icon": "design",
+          "isActive": true
+        },
+        {
+          "type": "page",
+          "id": "p-4-0",
+          "name": "02A · Session choice & explanations",
+          "icon": "info",
+          "isActive": false
+        },
+        {
+          "type": "page",
+          "id": "p-5-0",
+          "name": "02B · Evidence · Desktop",
+          "icon": "design",
+          "isActive": false
+        },
+        {
+          "type": "page",
+          "id": "p-6-0",
+          "name": "02C · Evidence · Mobile",
+          "icon": "design",
+          "isActive": false
+        },
+        {
+          "type": "page",
+          "id": "p-8-0",
+          "name": "02D · Full breadth analysis · Mobile",
+          "icon": "line-chart",
+          "isActive": false
+        },
+        {
+          "type": "page",
+          "id": "p-2-0",
+          "name": "03A · Build · Source & interaction",
+          "icon": "blueprint",
+          "isActive": false
+        },
+        {
+          "type": "page",
+          "id": "p-7-0",
+          "name": "03B · Build · Session states",
+          "icon": "blueprint",
+          "isActive": false
+        },
+        {
+          "type": "page",
+          "id": "p-3-0",
+          "name": "90 · Retained R1 overview · Reference",
+          "icon": "paper",
+          "isActive": false
+        }
+      ],
+      "fontFamilies": [
+        "Inter",
+        "System Sans-Serif"
+      ],
+      "tokens": {
+        "items": [
+          {
+            "name": "--mx-dark-bg",
+            "value": "#0F1115"
+          },
+          {
+            "name": "--mx-dark-panel",
+            "value": "#181B21"
+          },
+          {
+            "name": "--mx-dark-panel2",
+            "value": "#1E222A"
+          },
+          {
+            "name": "--mx-dark-text",
+            "value": "#D7DCE3"
+          },
+          {
+            "name": "--mx-dark-muted",
+            "value": "#8B93A1"
+          },
+          {
+            "name": "--mx-dark-line",
+            "value": "#3A4150"
+          },
+          {
+            "name": "--mx-dark-up",
+            "value": "#45B873"
+          },
+          {
+            "name": "--mx-dark-down",
+            "value": "#E06464"
+          },
+          {
+            "name": "--mx-dark-warn",
+            "value": "#E0A030"
+          },
+          {
+            "name": "--mx-dark-act",
+            "value": "#E05555"
+          },
+          {
+            "name": "--mx-dark-ok",
+            "value": "#3DA564"
+          },
+          {
+            "name": "--mx-dark-info",
+            "value": "#5B9BF0"
+          },
+          {
+            "name": "--mx-dark-link",
+            "value": "#7AA7E0"
+          },
+          {
+            "name": "--mx-dark-orange",
+            "value": "#E08B45"
+          },
+          {
+            "name": "--mx-light-bg",
+            "value": "#F7F8FA"
+          },
+          {
+            "name": "--mx-light-panel",
+            "value": "#FFFFFF"
+          },
+          {
+            "name": "--mx-light-panel2",
+            "value": "#EEF1F6"
+          },
+          {
+            "name": "--mx-light-text",
+            "value": "#1C2430"
+          },
+          {
+            "name": "--mx-light-muted",
+            "value": "#5D6B7E"
+          },
+          {
+            "name": "--mx-light-line",
+            "value": "#C9CCD1"
+          },
+          {
+            "name": "--mx-light-up",
+            "value": "#1F9A55"
+          },
+          {
+            "name": "--mx-light-down",
+            "value": "#CF4040"
+          },
+          {
+            "name": "--mx-light-warn",
+            "value": "#B9791A"
+          },
+          {
+            "name": "--mx-light-act",
+            "value": "#C43D3D"
+          },
+          {
+            "name": "--mx-light-ok",
+            "value": "#2F8A52"
+          },
+          {
+            "name": "--mx-light-info",
+            "value": "#285FFF"
+          },
+          {
+            "name": "--mx-light-link",
+            "value": "#285FFF"
+          },
+          {
+            "name": "--mx-light-orange",
+            "value": "#C4781F"
+          },
+          {
+            "name": "--mx-dark-prov",
+            "value": "#62A0E8"
+          },
+          {
+            "name": "--mx-dark-prov-ink",
+            "value": "#62A0E8"
+          },
+          {
+            "name": "--mx-dark-tier-accent",
+            "value": "#7C5CFF"
+          },
+          {
+            "name": "--mx-dark-tier-fill",
+            "value": "#6340D8"
+          },
+          {
+            "name": "--mx-dark-tier-ink",
+            "value": "#9B86FF"
+          },
+          {
+            "name": "--mx-dark-ser-1",
+            "value": "#5B9BF0"
+          },
+          {
+            "name": "--mx-dark-ser-2",
+            "value": "#D4A017"
+          },
+          {
+            "name": "--mx-dark-ser-3",
+            "value": "#0EA5E9"
+          },
+          {
+            "name": "--mx-dark-ser-4",
+            "value": "#E08B45"
+          },
+          {
+            "name": "--mx-light-prov",
+            "value": "#2F6FD0"
+          },
+          {
+            "name": "--mx-light-prov-ink",
+            "value": "#2C62B3"
+          },
+          {
+            "name": "--mx-light-tier-accent",
+            "value": "#7C5CFF"
+          },
+          {
+            "name": "--mx-light-tier-fill",
+            "value": "#6340D8"
+          },
+          {
+            "name": "--mx-light-tier-ink",
+            "value": "#5B3FC4"
+          },
+          {
+            "name": "--mx-light-ser-1",
+            "value": "#2F63C4"
+          },
+          {
+            "name": "--mx-light-ser-2",
+            "value": "#8F6A04"
+          },
+          {
+            "name": "--mx-light-ser-3",
+            "value": "#0284C7"
+          },
+          {
+            "name": "--mx-light-ser-4",
+            "value": "#B06A25"
+          },
+          {
+            "name": "--mx-light-ink-up",
+            "value": "#1E6D47"
+          },
+          {
+            "name": "--mx-light-ink-down",
+            "value": "#B23C3D"
+          },
+          {
+            "name": "--mx-light-ink-warn",
+            "value": "#7D5922"
+          },
+          {
+            "name": "--mx-light-ink-link",
+            "value": "#2758E6"
+          },
+          {
+            "name": "--noir-canvas",
+            "value": "#080808"
+          },
+          {
+            "name": "--noir-sidebar",
+            "value": "#0C0C0C"
+          },
+          {
+            "name": "--noir-panel",
+            "value": "#121212"
+          },
+          {
+            "name": "--noir-raised",
+            "value": "#191919"
+          },
+          {
+            "name": "--noir-hover",
+            "value": "#222222"
+          },
+          {
+            "name": "--noir-selected",
+            "value": "#292929"
+          },
+          {
+            "name": "--noir-text-primary",
+            "value": "#F3F3F3"
+          },
+          {
+            "name": "--noir-text-secondary",
+            "value": "#B8B8B8"
+          },
+          {
+            "name": "--noir-text-tertiary",
+            "value": "#949494"
+          },
+          {
+            "name": "--noir-champagne",
+            "value": "#C9B99B"
+          },
+          {
+            "name": "--noir-sage",
+            "value": "#A8C2AD"
+          },
+          {
+            "name": "--noir-rose",
+            "value": "#DEA4A5"
+          },
+          {
+            "name": "--noir-steel",
+            "value": "#A7B4C2"
+          },
+          {
+            "name": "--noir-lilac",
+            "value": "#BDB2CE"
+          },
+          {
+            "name": "--market-canvas",
+            "value": "#0A0B0D"
+          },
+          {
+            "name": "--market-panel",
+            "value": "#111318"
+          },
+          {
+            "name": "--market-raised",
+            "value": "#181B20"
+          },
+          {
+            "name": "--market-line",
+            "value": "#2B3038"
+          },
+          {
+            "name": "--mx-dark-up-soft",
+            "value": "rgb(69 184 115 / 12%)"
+          },
+          {
+            "name": "--mx-dark-down-soft",
+            "value": "rgb(224 100 100 / 12%)"
+          },
+          {
+            "name": "--mx-dark-warn-soft",
+            "value": "rgb(224 160 48 / 12%)"
+          },
+          {
+            "name": "--mx-dark-info-soft",
+            "value": "rgb(91 155 240 / 12%)"
+          },
+          {
+            "name": "--mx-light-up-soft",
+            "value": "#EAF7EF"
+          },
+          {
+            "name": "--mx-light-down-soft",
+            "value": "#FCECED"
+          },
+          {
+            "name": "--mx-light-warn-soft",
+            "value": "#FFF4E2"
+          },
+          {
+            "name": "--mx-light-info-soft",
+            "value": "#EAF2FC"
+          },
+          {
+            "name": "--mx-light-scrim",
+            "value": "#1C243029"
+          },
+          {
+            "name": "--font-ui",
+            "value": "\"Inter\""
+          },
+          {
+            "name": "--fs-micro",
+            "value": "10px"
+          },
+          {
+            "name": "--fs-label",
+            "value": "11px"
+          },
+          {
+            "name": "--fs-sm",
+            "value": "12.5px"
+          },
+          {
+            "name": "--fs-body",
+            "value": "14px"
+          },
+          {
+            "name": "--fs-h3",
+            "value": "14px"
+          },
+          {
+            "name": "--fs-md",
+            "value": "15px"
+          },
+          {
+            "name": "--fs-h2",
+            "value": "17px"
+          },
+          {
+            "name": "--fs-num-lg",
+            "value": "22px"
+          },
+          {
+            "name": "--fs-h1",
+            "value": "28px"
+          },
+          {
+            "name": "--fs-num-xl",
+            "value": "38px"
+          },
+          {
+            "name": "--fs-display",
+            "value": "46px"
+          },
+          {
+            "name": "--fw-regular",
+            "value": "400"
+          },
+          {
+            "name": "--fw-medium",
+            "value": "500"
+          },
+          {
+            "name": "--fw-semibold",
+            "value": "600"
+          },
+          {
+            "name": "--fw-bold",
+            "value": "700"
+          },
+          {
+            "name": "--fw-extrabold",
+            "value": "800"
+          },
+          {
+            "name": "--bp-mobile",
+            "value": "390px"
+          },
+          {
+            "name": "--bp-tablet",
+            "value": "768px"
+          },
+          {
+            "name": "--bp-desktop",
+            "value": "1440px"
+          },
+          {
+            "name": "--sp-1",
+            "value": "4px"
+          },
+          {
+            "name": "--sp-2",
+            "value": "8px"
+          },
+          {
+            "name": "--sp-3",
+            "value": "12px"
+          },
+          {
+            "name": "--sp-4",
+            "value": "16px"
+          },
+          {
+            "name": "--sp-5",
+            "value": "20px"
+          },
+          {
+            "name": "--sp-6",
+            "value": "24px"
+          },
+          {
+            "name": "--sp-7",
+            "value": "32px"
+          },
+          {
+            "name": "--sp-8",
+            "value": "44px"
+          },
+          {
+            "name": "--r-ctl",
+            "value": "8px"
+          },
+          {
+            "name": "--r-btn",
+            "value": "10px"
+          },
+          {
+            "name": "--r-card",
+            "value": "12px"
+          },
+          {
+            "name": "--r-panel",
+            "value": "14px"
+          },
+          {
+            "name": "--r-pill",
+            "value": "999px"
+          }
+        ]
+      }
+    },
+    "guard": "d189aca813c8c0137e1356d5d77df0b32b54de399b14f62de6089d941625a536"
+  },
+  {
+    "kind": "breadth",
+    "fileId": "01M6Y3CRMC345RTB3ZDP3XSYRP",
+    "pageId": "p-4-0",
+    "observed": {
+      "fileName": "Market Breadth · Command Center R1",
+      "pageName": "02A · Session choice & explanations",
+      "pageId": "p-4-0",
+      "url": "https://app.paper.design/file/01M6Y3CRMC345RTB3ZDP3XSYRP/p-4-0",
+      "rootNodeId": "root_node_p-4-0",
+      "nodeCount": 63,
+      "artboardCount": 2,
+      "artboards": [
+        {
+          "id": "45R-0",
+          "name": "R3 State · Choose a session · Mobile",
+          "childCount": 1,
+          "width": 390,
+          "height": null,
+          "worldX": 745,
+          "worldY": -1724
+        },
+        {
+          "id": "47C-0",
+          "name": "R3 Help · Breadth explained · Mobile",
+          "childCount": 1,
+          "width": 390,
+          "height": null,
+          "worldX": 275,
+          "worldY": -744
+        }
+      ],
+      "pages": [
+        {
+          "type": "page",
+          "id": "p-1-0",
+          "name": "01 · Product · Breadth overview",
+          "icon": "design",
+          "isActive": true
+        },
+        {
+          "type": "page",
+          "id": "p-4-0",
+          "name": "02A · Session choice & explanations",
+          "icon": "info",
+          "isActive": false
+        },
+        {
+          "type": "page",
+          "id": "p-5-0",
+          "name": "02B · Evidence · Desktop",
+          "icon": "design",
+          "isActive": false
+        },
+        {
+          "type": "page",
+          "id": "p-6-0",
+          "name": "02C · Evidence · Mobile",
+          "icon": "design",
+          "isActive": false
+        },
+        {
+          "type": "page",
+          "id": "p-8-0",
+          "name": "02D · Full breadth analysis · Mobile",
+          "icon": "line-chart",
+          "isActive": false
+        },
+        {
+          "type": "page",
+          "id": "p-2-0",
+          "name": "03A · Build · Source & interaction",
+          "icon": "blueprint",
+          "isActive": false
+        },
+        {
+          "type": "page",
+          "id": "p-7-0",
+          "name": "03B · Build · Session states",
+          "icon": "blueprint",
+          "isActive": false
+        },
+        {
+          "type": "page",
+          "id": "p-3-0",
+          "name": "90 · Retained R1 overview · Reference",
+          "icon": "paper",
+          "isActive": false
+        }
+      ],
+      "fontFamilies": [
+        "Inter",
+        "System Sans-Serif"
+      ],
+      "tokens": {
+        "items": [
+          {
+            "name": "--mx-dark-bg",
+            "value": "#0F1115"
+          },
+          {
+            "name": "--mx-dark-panel",
+            "value": "#181B21"
+          },
+          {
+            "name": "--mx-dark-panel2",
+            "value": "#1E222A"
+          },
+          {
+            "name": "--mx-dark-text",
+            "value": "#D7DCE3"
+          },
+          {
+            "name": "--mx-dark-muted",
+            "value": "#8B93A1"
+          },
+          {
+            "name": "--mx-dark-line",
+            "value": "#3A4150"
+          },
+          {
+            "name": "--mx-dark-up",
+            "value": "#45B873"
+          },
+          {
+            "name": "--mx-dark-down",
+            "value": "#E06464"
+          },
+          {
+            "name": "--mx-dark-warn",
+            "value": "#E0A030"
+          },
+          {
+            "name": "--mx-dark-act",
+            "value": "#E05555"
+          },
+          {
+            "name": "--mx-dark-ok",
+            "value": "#3DA564"
+          },
+          {
+            "name": "--mx-dark-info",
+            "value": "#5B9BF0"
+          },
+          {
+            "name": "--mx-dark-link",
+            "value": "#7AA7E0"
+          },
+          {
+            "name": "--mx-dark-orange",
+            "value": "#E08B45"
+          },
+          {
+            "name": "--mx-light-bg",
+            "value": "#F7F8FA"
+          },
+          {
+            "name": "--mx-light-panel",
+            "value": "#FFFFFF"
+          },
+          {
+            "name": "--mx-light-panel2",
+            "value": "#EEF1F6"
+          },
+          {
+            "name": "--mx-light-text",
+            "value": "#1C2430"
+          },
+          {
+            "name": "--mx-light-muted",
+            "value": "#5D6B7E"
+          },
+          {
+            "name": "--mx-light-line",
+            "value": "#C9CCD1"
+          },
+          {
+            "name": "--mx-light-up",
+            "value": "#1F9A55"
+          },
+          {
+            "name": "--mx-light-down",
+            "value": "#CF4040"
+          },
+          {
+            "name": "--mx-light-warn",
+            "value": "#B9791A"
+          },
+          {
+            "name": "--mx-light-act",
+            "value": "#C43D3D"
+          },
+          {
+            "name": "--mx-light-ok",
+            "value": "#2F8A52"
+          },
+          {
+            "name": "--mx-light-info",
+            "value": "#285FFF"
+          },
+          {
+            "name": "--mx-light-link",
+            "value": "#285FFF"
+          },
+          {
+            "name": "--mx-light-orange",
+            "value": "#C4781F"
+          },
+          {
+            "name": "--mx-dark-prov",
+            "value": "#62A0E8"
+          },
+          {
+            "name": "--mx-dark-prov-ink",
+            "value": "#62A0E8"
+          },
+          {
+            "name": "--mx-dark-tier-accent",
+            "value": "#7C5CFF"
+          },
+          {
+            "name": "--mx-dark-tier-fill",
+            "value": "#6340D8"
+          },
+          {
+            "name": "--mx-dark-tier-ink",
+            "value": "#9B86FF"
+          },
+          {
+            "name": "--mx-dark-ser-1",
+            "value": "#5B9BF0"
+          },
+          {
+            "name": "--mx-dark-ser-2",
+            "value": "#D4A017"
+          },
+          {
+            "name": "--mx-dark-ser-3",
+            "value": "#0EA5E9"
+          },
+          {
+            "name": "--mx-dark-ser-4",
+            "value": "#E08B45"
+          },
+          {
+            "name": "--mx-light-prov",
+            "value": "#2F6FD0"
+          },
+          {
+            "name": "--mx-light-prov-ink",
+            "value": "#2C62B3"
+          },
+          {
+            "name": "--mx-light-tier-accent",
+            "value": "#7C5CFF"
+          },
+          {
+            "name": "--mx-light-tier-fill",
+            "value": "#6340D8"
+          },
+          {
+            "name": "--mx-light-tier-ink",
+            "value": "#5B3FC4"
+          },
+          {
+            "name": "--mx-light-ser-1",
+            "value": "#2F63C4"
+          },
+          {
+            "name": "--mx-light-ser-2",
+            "value": "#8F6A04"
+          },
+          {
+            "name": "--mx-light-ser-3",
+            "value": "#0284C7"
+          },
+          {
+            "name": "--mx-light-ser-4",
+            "value": "#B06A25"
+          },
+          {
+            "name": "--mx-light-ink-up",
+            "value": "#1E6D47"
+          },
+          {
+            "name": "--mx-light-ink-down",
+            "value": "#B23C3D"
+          },
+          {
+            "name": "--mx-light-ink-warn",
+            "value": "#7D5922"
+          },
+          {
+            "name": "--mx-light-ink-link",
+            "value": "#2758E6"
+          },
+          {
+            "name": "--noir-canvas",
+            "value": "#080808"
+          },
+          {
+            "name": "--noir-sidebar",
+            "value": "#0C0C0C"
+          },
+          {
+            "name": "--noir-panel",
+            "value": "#121212"
+          },
+          {
+            "name": "--noir-raised",
+            "value": "#191919"
+          },
+          {
+            "name": "--noir-hover",
+            "value": "#222222"
+          },
+          {
+            "name": "--noir-selected",
+            "value": "#292929"
+          },
+          {
+            "name": "--noir-text-primary",
+            "value": "#F3F3F3"
+          },
+          {
+            "name": "--noir-text-secondary",
+            "value": "#B8B8B8"
+          },
+          {
+            "name": "--noir-text-tertiary",
+            "value": "#949494"
+          },
+          {
+            "name": "--noir-champagne",
+            "value": "#C9B99B"
+          },
+          {
+            "name": "--noir-sage",
+            "value": "#A8C2AD"
+          },
+          {
+            "name": "--noir-rose",
+            "value": "#DEA4A5"
+          },
+          {
+            "name": "--noir-steel",
+            "value": "#A7B4C2"
+          },
+          {
+            "name": "--noir-lilac",
+            "value": "#BDB2CE"
+          },
+          {
+            "name": "--market-canvas",
+            "value": "#0A0B0D"
+          },
+          {
+            "name": "--market-panel",
+            "value": "#111318"
+          },
+          {
+            "name": "--market-raised",
+            "value": "#181B20"
+          },
+          {
+            "name": "--market-line",
+            "value": "#2B3038"
+          },
+          {
+            "name": "--mx-dark-up-soft",
+            "value": "rgb(69 184 115 / 12%)"
+          },
+          {
+            "name": "--mx-dark-down-soft",
+            "value": "rgb(224 100 100 / 12%)"
+          },
+          {
+            "name": "--mx-dark-warn-soft",
+            "value": "rgb(224 160 48 / 12%)"
+          },
+          {
+            "name": "--mx-dark-info-soft",
+            "value": "rgb(91 155 240 / 12%)"
+          },
+          {
+            "name": "--mx-light-up-soft",
+            "value": "#EAF7EF"
+          },
+          {
+            "name": "--mx-light-down-soft",
+            "value": "#FCECED"
+          },
+          {
+            "name": "--mx-light-warn-soft",
+            "value": "#FFF4E2"
+          },
+          {
+            "name": "--mx-light-info-soft",
+            "value": "#EAF2FC"
+          },
+          {
+            "name": "--mx-light-scrim",
+            "value": "#1C243029"
+          },
+          {
+            "name": "--font-ui",
+            "value": "\"Inter\""
+          },
+          {
+            "name": "--fs-micro",
+            "value": "10px"
+          },
+          {
+            "name": "--fs-label",
+            "value": "11px"
+          },
+          {
+            "name": "--fs-sm",
+            "value": "12.5px"
+          },
+          {
+            "name": "--fs-body",
+            "value": "14px"
+          },
+          {
+            "name": "--fs-h3",
+            "value": "14px"
+          },
+          {
+            "name": "--fs-md",
+            "value": "15px"
+          },
+          {
+            "name": "--fs-h2",
+            "value": "17px"
+          },
+          {
+            "name": "--fs-num-lg",
+            "value": "22px"
+          },
+          {
+            "name": "--fs-h1",
+            "value": "28px"
+          },
+          {
+            "name": "--fs-num-xl",
+            "value": "38px"
+          },
+          {
+            "name": "--fs-display",
+            "value": "46px"
+          },
+          {
+            "name": "--fw-regular",
+            "value": "400"
+          },
+          {
+            "name": "--fw-medium",
+            "value": "500"
+          },
+          {
+            "name": "--fw-semibold",
+            "value": "600"
+          },
+          {
+            "name": "--fw-bold",
+            "value": "700"
+          },
+          {
+            "name": "--fw-extrabold",
+            "value": "800"
+          },
+          {
+            "name": "--bp-mobile",
+            "value": "390px"
+          },
+          {
+            "name": "--bp-tablet",
+            "value": "768px"
+          },
+          {
+            "name": "--bp-desktop",
+            "value": "1440px"
+          },
+          {
+            "name": "--sp-1",
+            "value": "4px"
+          },
+          {
+            "name": "--sp-2",
+            "value": "8px"
+          },
+          {
+            "name": "--sp-3",
+            "value": "12px"
+          },
+          {
+            "name": "--sp-4",
+            "value": "16px"
+          },
+          {
+            "name": "--sp-5",
+            "value": "20px"
+          },
+          {
+            "name": "--sp-6",
+            "value": "24px"
+          },
+          {
+            "name": "--sp-7",
+            "value": "32px"
+          },
+          {
+            "name": "--sp-8",
+            "value": "44px"
+          },
+          {
+            "name": "--r-ctl",
+            "value": "8px"
+          },
+          {
+            "name": "--r-btn",
+            "value": "10px"
+          },
+          {
+            "name": "--r-card",
+            "value": "12px"
+          },
+          {
+            "name": "--r-panel",
+            "value": "14px"
+          },
+          {
+            "name": "--r-pill",
+            "value": "999px"
+          }
+        ]
+      }
+    },
+    "guard": "d189aca813c8c0137e1356d5d77df0b32b54de399b14f62de6089d941625a536"
+  },
+  {
+    "kind": "breadth",
+    "fileId": "01M6Y3CRMC345RTB3ZDP3XSYRP",
+    "pageId": "p-5-0",
+    "observed": {
+      "fileName": "Market Breadth · Command Center R1",
+      "pageName": "02B · Evidence · Desktop",
+      "pageId": "p-5-0",
+      "url": "https://app.paper.design/file/01M6Y3CRMC345RTB3ZDP3XSYRP/p-5-0",
+      "rootNodeId": "root_node_p-5-0",
+      "nodeCount": 635,
+      "artboardCount": 3,
+      "artboards": [
+        {
+          "id": "XZ-0",
+          "name": "03 · R1 STATE · Desktop · Breadth Evidence Inspector",
+          "childCount": 1,
+          "width": 1440,
+          "height": 960,
+          "worldX": 275,
+          "worldY": -1724
+        },
+        {
+          "id": "17W-0",
+          "name": "03B · R1 STATE · Breadth Evidence · Constituents",
+          "childCount": 1,
+          "width": 1440,
+          "height": 960,
+          "worldX": 275,
+          "worldY": -684
+        },
+        {
+          "id": "1HC-0",
+          "name": "03C · R1 STATE · Breadth Evidence · Receipts",
+          "childCount": 1,
+          "width": 1440,
+          "height": 960,
+          "worldX": 275,
+          "worldY": 356
+        }
+      ],
+      "pages": [
+        {
+          "type": "page",
+          "id": "p-1-0",
+          "name": "01 · Product · Breadth overview",
+          "icon": "design",
+          "isActive": true
+        },
+        {
+          "type": "page",
+          "id": "p-4-0",
+          "name": "02A · Session choice & explanations",
+          "icon": "info",
+          "isActive": false
+        },
+        {
+          "type": "page",
+          "id": "p-5-0",
+          "name": "02B · Evidence · Desktop",
+          "icon": "design",
+          "isActive": false
+        },
+        {
+          "type": "page",
+          "id": "p-6-0",
+          "name": "02C · Evidence · Mobile",
+          "icon": "design",
+          "isActive": false
+        },
+        {
+          "type": "page",
+          "id": "p-8-0",
+          "name": "02D · Full breadth analysis · Mobile",
+          "icon": "line-chart",
+          "isActive": false
+        },
+        {
+          "type": "page",
+          "id": "p-2-0",
+          "name": "03A · Build · Source & interaction",
+          "icon": "blueprint",
+          "isActive": false
+        },
+        {
+          "type": "page",
+          "id": "p-7-0",
+          "name": "03B · Build · Session states",
+          "icon": "blueprint",
+          "isActive": false
+        },
+        {
+          "type": "page",
+          "id": "p-3-0",
+          "name": "90 · Retained R1 overview · Reference",
+          "icon": "paper",
+          "isActive": false
+        }
+      ],
+      "fontFamilies": [
+        "Inter",
+        "System Sans-Serif"
+      ],
+      "tokens": {
+        "items": [
+          {
+            "name": "--mx-dark-bg",
+            "value": "#0F1115"
+          },
+          {
+            "name": "--mx-dark-panel",
+            "value": "#181B21"
+          },
+          {
+            "name": "--mx-dark-panel2",
+            "value": "#1E222A"
+          },
+          {
+            "name": "--mx-dark-text",
+            "value": "#D7DCE3"
+          },
+          {
+            "name": "--mx-dark-muted",
+            "value": "#8B93A1"
+          },
+          {
+            "name": "--mx-dark-line",
+            "value": "#3A4150"
+          },
+          {
+            "name": "--mx-dark-up",
+            "value": "#45B873"
+          },
+          {
+            "name": "--mx-dark-down",
+            "value": "#E06464"
+          },
+          {
+            "name": "--mx-dark-warn",
+            "value": "#E0A030"
+          },
+          {
+            "name": "--mx-dark-act",
+            "value": "#E05555"
+          },
+          {
+            "name": "--mx-dark-ok",
+            "value": "#3DA564"
+          },
+          {
+            "name": "--mx-dark-info",
+            "value": "#5B9BF0"
+          },
+          {
+            "name": "--mx-dark-link",
+            "value": "#7AA7E0"
+          },
+          {
+            "name": "--mx-dark-orange",
+            "value": "#E08B45"
+          },
+          {
+            "name": "--mx-light-bg",
+            "value": "#F7F8FA"
+          },
+          {
+            "name": "--mx-light-panel",
+            "value": "#FFFFFF"
+          },
+          {
+            "name": "--mx-light-panel2",
+            "value": "#EEF1F6"
+          },
+          {
+            "name": "--mx-light-text",
+            "value": "#1C2430"
+          },
+          {
+            "name": "--mx-light-muted",
+            "value": "#5D6B7E"
+          },
+          {
+            "name": "--mx-light-line",
+            "value": "#C9CCD1"
+          },
+          {
+            "name": "--mx-light-up",
+            "value": "#1F9A55"
+          },
+          {
+            "name": "--mx-light-down",
+            "value": "#CF4040"
+          },
+          {
+            "name": "--mx-light-warn",
+            "value": "#B9791A"
+          },
+          {
+            "name": "--mx-light-act",
+            "value": "#C43D3D"
+          },
+          {
+            "name": "--mx-light-ok",
+            "value": "#2F8A52"
+          },
+          {
+            "name": "--mx-light-info",
+            "value": "#285FFF"
+          },
+          {
+            "name": "--mx-light-link",
+            "value": "#285FFF"
+          },
+          {
+            "name": "--mx-light-orange",
+            "value": "#C4781F"
+          },
+          {
+            "name": "--mx-dark-prov",
+            "value": "#62A0E8"
+          },
+          {
+            "name": "--mx-dark-prov-ink",
+            "value": "#62A0E8"
+          },
+          {
+            "name": "--mx-dark-tier-accent",
+            "value": "#7C5CFF"
+          },
+          {
+            "name": "--mx-dark-tier-fill",
+            "value": "#6340D8"
+          },
+          {
+            "name": "--mx-dark-tier-ink",
+            "value": "#9B86FF"
+          },
+          {
+            "name": "--mx-dark-ser-1",
+            "value": "#5B9BF0"
+          },
+          {
+            "name": "--mx-dark-ser-2",
+            "value": "#D4A017"
+          },
+          {
+            "name": "--mx-dark-ser-3",
+            "value": "#0EA5E9"
+          },
+          {
+            "name": "--mx-dark-ser-4",
+            "value": "#E08B45"
+          },
+          {
+            "name": "--mx-light-prov",
+            "value": "#2F6FD0"
+          },
+          {
+            "name": "--mx-light-prov-ink",
+            "value": "#2C62B3"
+          },
+          {
+            "name": "--mx-light-tier-accent",
+            "value": "#7C5CFF"
+          },
+          {
+            "name": "--mx-light-tier-fill",
+            "value": "#6340D8"
+          },
+          {
+            "name": "--mx-light-tier-ink",
+            "value": "#5B3FC4"
+          },
+          {
+            "name": "--mx-light-ser-1",
+            "value": "#2F63C4"
+          },
+          {
+            "name": "--mx-light-ser-2",
+            "value": "#8F6A04"
+          },
+          {
+            "name": "--mx-light-ser-3",
+            "value": "#0284C7"
+          },
+          {
+            "name": "--mx-light-ser-4",
+            "value": "#B06A25"
+          },
+          {
+            "name": "--mx-light-ink-up",
+            "value": "#1E6D47"
+          },
+          {
+            "name": "--mx-light-ink-down",
+            "value": "#B23C3D"
+          },
+          {
+            "name": "--mx-light-ink-warn",
+            "value": "#7D5922"
+          },
+          {
+            "name": "--mx-light-ink-link",
+            "value": "#2758E6"
+          },
+          {
+            "name": "--noir-canvas",
+            "value": "#080808"
+          },
+          {
+            "name": "--noir-sidebar",
+            "value": "#0C0C0C"
+          },
+          {
+            "name": "--noir-panel",
+            "value": "#121212"
+          },
+          {
+            "name": "--noir-raised",
+            "value": "#191919"
+          },
+          {
+            "name": "--noir-hover",
+            "value": "#222222"
+          },
+          {
+            "name": "--noir-selected",
+            "value": "#292929"
+          },
+          {
+            "name": "--noir-text-primary",
+            "value": "#F3F3F3"
+          },
+          {
+            "name": "--noir-text-secondary",
+            "value": "#B8B8B8"
+          },
+          {
+            "name": "--noir-text-tertiary",
+            "value": "#949494"
+          },
+          {
+            "name": "--noir-champagne",
+            "value": "#C9B99B"
+          },
+          {
+            "name": "--noir-sage",
+            "value": "#A8C2AD"
+          },
+          {
+            "name": "--noir-rose",
+            "value": "#DEA4A5"
+          },
+          {
+            "name": "--noir-steel",
+            "value": "#A7B4C2"
+          },
+          {
+            "name": "--noir-lilac",
+            "value": "#BDB2CE"
+          },
+          {
+            "name": "--market-canvas",
+            "value": "#0A0B0D"
+          },
+          {
+            "name": "--market-panel",
+            "value": "#111318"
+          },
+          {
+            "name": "--market-raised",
+            "value": "#181B20"
+          },
+          {
+            "name": "--market-line",
+            "value": "#2B3038"
+          },
+          {
+            "name": "--mx-dark-up-soft",
+            "value": "rgb(69 184 115 / 12%)"
+          },
+          {
+            "name": "--mx-dark-down-soft",
+            "value": "rgb(224 100 100 / 12%)"
+          },
+          {
+            "name": "--mx-dark-warn-soft",
+            "value": "rgb(224 160 48 / 12%)"
+          },
+          {
+            "name": "--mx-dark-info-soft",
+            "value": "rgb(91 155 240 / 12%)"
+          },
+          {
+            "name": "--mx-light-up-soft",
+            "value": "#EAF7EF"
+          },
+          {
+            "name": "--mx-light-down-soft",
+            "value": "#FCECED"
+          },
+          {
+            "name": "--mx-light-warn-soft",
+            "value": "#FFF4E2"
+          },
+          {
+            "name": "--mx-light-info-soft",
+            "value": "#EAF2FC"
+          },
+          {
+            "name": "--mx-light-scrim",
+            "value": "#1C243029"
+          },
+          {
+            "name": "--font-ui",
+            "value": "\"Inter\""
+          },
+          {
+            "name": "--fs-micro",
+            "value": "10px"
+          },
+          {
+            "name": "--fs-label",
+            "value": "11px"
+          },
+          {
+            "name": "--fs-sm",
+            "value": "12.5px"
+          },
+          {
+            "name": "--fs-body",
+            "value": "14px"
+          },
+          {
+            "name": "--fs-h3",
+            "value": "14px"
+          },
+          {
+            "name": "--fs-md",
+            "value": "15px"
+          },
+          {
+            "name": "--fs-h2",
+            "value": "17px"
+          },
+          {
+            "name": "--fs-num-lg",
+            "value": "22px"
+          },
+          {
+            "name": "--fs-h1",
+            "value": "28px"
+          },
+          {
+            "name": "--fs-num-xl",
+            "value": "38px"
+          },
+          {
+            "name": "--fs-display",
+            "value": "46px"
+          },
+          {
+            "name": "--fw-regular",
+            "value": "400"
+          },
+          {
+            "name": "--fw-medium",
+            "value": "500"
+          },
+          {
+            "name": "--fw-semibold",
+            "value": "600"
+          },
+          {
+            "name": "--fw-bold",
+            "value": "700"
+          },
+          {
+            "name": "--fw-extrabold",
+            "value": "800"
+          },
+          {
+            "name": "--bp-mobile",
+            "value": "390px"
+          },
+          {
+            "name": "--bp-tablet",
+            "value": "768px"
+          },
+          {
+            "name": "--bp-desktop",
+            "value": "1440px"
+          },
+          {
+            "name": "--sp-1",
+            "value": "4px"
+          },
+          {
+            "name": "--sp-2",
+            "value": "8px"
+          },
+          {
+            "name": "--sp-3",
+            "value": "12px"
+          },
+          {
+            "name": "--sp-4",
+            "value": "16px"
+          },
+          {
+            "name": "--sp-5",
+            "value": "20px"
+          },
+          {
+            "name": "--sp-6",
+            "value": "24px"
+          },
+          {
+            "name": "--sp-7",
+            "value": "32px"
+          },
+          {
+            "name": "--sp-8",
+            "value": "44px"
+          },
+          {
+            "name": "--r-ctl",
+            "value": "8px"
+          },
+          {
+            "name": "--r-btn",
+            "value": "10px"
+          },
+          {
+            "name": "--r-card",
+            "value": "12px"
+          },
+          {
+            "name": "--r-panel",
+            "value": "14px"
+          },
+          {
+            "name": "--r-pill",
+            "value": "999px"
+          }
+        ]
+      }
+    },
+    "guard": "d189aca813c8c0137e1356d5d77df0b32b54de399b14f62de6089d941625a536"
+  },
+  {
+    "kind": "breadth",
+    "fileId": "01M6Y3CRMC345RTB3ZDP3XSYRP",
+    "pageId": "p-6-0",
+    "observed": {
+      "fileName": "Market Breadth · Command Center R1",
+      "pageName": "02C · Evidence · Mobile",
+      "pageId": "p-6-0",
+      "url": "https://app.paper.design/file/01M6Y3CRMC345RTB3ZDP3XSYRP/p-6-0",
+      "rootNodeId": "root_node_p-6-0",
+      "nodeCount": 58,
+      "artboardCount": 1,
+      "artboards": [
+        {
+          "id": "1RF-0",
+          "name": "R2 Mobile session evidence - proposed",
+          "childCount": 1,
+          "width": 390,
+          "height": null,
+          "worldX": 275,
+          "worldY": -1724
+        }
+      ],
+      "pages": [
+        {
+          "type": "page",
+          "id": "p-1-0",
+          "name": "01 · Product · Breadth overview",
+          "icon": "design",
+          "isActive": true
+        },
+        {
+          "type": "page",
+          "id": "p-4-0",
+          "name": "02A · Session choice & explanations",
+          "icon": "info",
+          "isActive": false
+        },
+        {
+          "type": "page",
+          "id": "p-5-0",
+          "name": "02B · Evidence · Desktop",
+          "icon": "design",
+          "isActive": false
+        },
+        {
+          "type": "page",
+          "id": "p-6-0",
+          "name": "02C · Evidence · Mobile",
+          "icon": "design",
+          "isActive": false
+        },
+        {
+          "type": "page",
+          "id": "p-8-0",
+          "name": "02D · Full breadth analysis · Mobile",
+          "icon": "line-chart",
+          "isActive": false
+        },
+        {
+          "type": "page",
+          "id": "p-2-0",
+          "name": "03A · Build · Source & interaction",
+          "icon": "blueprint",
+          "isActive": false
+        },
+        {
+          "type": "page",
+          "id": "p-7-0",
+          "name": "03B · Build · Session states",
+          "icon": "blueprint",
+          "isActive": false
+        },
+        {
+          "type": "page",
+          "id": "p-3-0",
+          "name": "90 · Retained R1 overview · Reference",
+          "icon": "paper",
+          "isActive": false
+        }
+      ],
+      "fontFamilies": [
+        "Inter",
+        "System Sans-Serif"
+      ],
+      "tokens": {
+        "items": [
+          {
+            "name": "--mx-dark-bg",
+            "value": "#0F1115"
+          },
+          {
+            "name": "--mx-dark-panel",
+            "value": "#181B21"
+          },
+          {
+            "name": "--mx-dark-panel2",
+            "value": "#1E222A"
+          },
+          {
+            "name": "--mx-dark-text",
+            "value": "#D7DCE3"
+          },
+          {
+            "name": "--mx-dark-muted",
+            "value": "#8B93A1"
+          },
+          {
+            "name": "--mx-dark-line",
+            "value": "#3A4150"
+          },
+          {
+            "name": "--mx-dark-up",
+            "value": "#45B873"
+          },
+          {
+            "name": "--mx-dark-down",
+            "value": "#E06464"
+          },
+          {
+            "name": "--mx-dark-warn",
+            "value": "#E0A030"
+          },
+          {
+            "name": "--mx-dark-act",
+            "value": "#E05555"
+          },
+          {
+            "name": "--mx-dark-ok",
+            "value": "#3DA564"
+          },
+          {
+            "name": "--mx-dark-info",
+            "value": "#5B9BF0"
+          },
+          {
+            "name": "--mx-dark-link",
+            "value": "#7AA7E0"
+          },
+          {
+            "name": "--mx-dark-orange",
+            "value": "#E08B45"
+          },
+          {
+            "name": "--mx-light-bg",
+            "value": "#F7F8FA"
+          },
+          {
+            "name": "--mx-light-panel",
+            "value": "#FFFFFF"
+          },
+          {
+            "name": "--mx-light-panel2",
+            "value": "#EEF1F6"
+          },
+          {
+            "name": "--mx-light-text",
+            "value": "#1C2430"
+          },
+          {
+            "name": "--mx-light-muted",
+            "value": "#5D6B7E"
+          },
+          {
+            "name": "--mx-light-line",
+            "value": "#C9CCD1"
+          },
+          {
+            "name": "--mx-light-up",
+            "value": "#1F9A55"
+          },
+          {
+            "name": "--mx-light-down",
+            "value": "#CF4040"
+          },
+          {
+            "name": "--mx-light-warn",
+            "value": "#B9791A"
+          },
+          {
+            "name": "--mx-light-act",
+            "value": "#C43D3D"
+          },
+          {
+            "name": "--mx-light-ok",
+            "value": "#2F8A52"
+          },
+          {
+            "name": "--mx-light-info",
+            "value": "#285FFF"
+          },
+          {
+            "name": "--mx-light-link",
+            "value": "#285FFF"
+          },
+          {
+            "name": "--mx-light-orange",
+            "value": "#C4781F"
+          },
+          {
+            "name": "--mx-dark-prov",
+            "value": "#62A0E8"
+          },
+          {
+            "name": "--mx-dark-prov-ink",
+            "value": "#62A0E8"
+          },
+          {
+            "name": "--mx-dark-tier-accent",
+            "value": "#7C5CFF"
+          },
+          {
+            "name": "--mx-dark-tier-fill",
+            "value": "#6340D8"
+          },
+          {
+            "name": "--mx-dark-tier-ink",
+            "value": "#9B86FF"
+          },
+          {
+            "name": "--mx-dark-ser-1",
+            "value": "#5B9BF0"
+          },
+          {
+            "name": "--mx-dark-ser-2",
+            "value": "#D4A017"
+          },
+          {
+            "name": "--mx-dark-ser-3",
+            "value": "#0EA5E9"
+          },
+          {
+            "name": "--mx-dark-ser-4",
+            "value": "#E08B45"
+          },
+          {
+            "name": "--mx-light-prov",
+            "value": "#2F6FD0"
+          },
+          {
+            "name": "--mx-light-prov-ink",
+            "value": "#2C62B3"
+          },
+          {
+            "name": "--mx-light-tier-accent",
+            "value": "#7C5CFF"
+          },
+          {
+            "name": "--mx-light-tier-fill",
+            "value": "#6340D8"
+          },
+          {
+            "name": "--mx-light-tier-ink",
+            "value": "#5B3FC4"
+          },
+          {
+            "name": "--mx-light-ser-1",
+            "value": "#2F63C4"
+          },
+          {
+            "name": "--mx-light-ser-2",
+            "value": "#8F6A04"
+          },
+          {
+            "name": "--mx-light-ser-3",
+            "value": "#0284C7"
+          },
+          {
+            "name": "--mx-light-ser-4",
+            "value": "#B06A25"
+          },
+          {
+            "name": "--mx-light-ink-up",
+            "value": "#1E6D47"
+          },
+          {
+            "name": "--mx-light-ink-down",
+            "value": "#B23C3D"
+          },
+          {
+            "name": "--mx-light-ink-warn",
+            "value": "#7D5922"
+          },
+          {
+            "name": "--mx-light-ink-link",
+            "value": "#2758E6"
+          },
+          {
+            "name": "--noir-canvas",
+            "value": "#080808"
+          },
+          {
+            "name": "--noir-sidebar",
+            "value": "#0C0C0C"
+          },
+          {
+            "name": "--noir-panel",
+            "value": "#121212"
+          },
+          {
+            "name": "--noir-raised",
+            "value": "#191919"
+          },
+          {
+            "name": "--noir-hover",
+            "value": "#222222"
+          },
+          {
+            "name": "--noir-selected",
+            "value": "#292929"
+          },
+          {
+            "name": "--noir-text-primary",
+            "value": "#F3F3F3"
+          },
+          {
+            "name": "--noir-text-secondary",
+            "value": "#B8B8B8"
+          },
+          {
+            "name": "--noir-text-tertiary",
+            "value": "#949494"
+          },
+          {
+            "name": "--noir-champagne",
+            "value": "#C9B99B"
+          },
+          {
+            "name": "--noir-sage",
+            "value": "#A8C2AD"
+          },
+          {
+            "name": "--noir-rose",
+            "value": "#DEA4A5"
+          },
+          {
+            "name": "--noir-steel",
+            "value": "#A7B4C2"
+          },
+          {
+            "name": "--noir-lilac",
+            "value": "#BDB2CE"
+          },
+          {
+            "name": "--market-canvas",
+            "value": "#0A0B0D"
+          },
+          {
+            "name": "--market-panel",
+            "value": "#111318"
+          },
+          {
+            "name": "--market-raised",
+            "value": "#181B20"
+          },
+          {
+            "name": "--market-line",
+            "value": "#2B3038"
+          },
+          {
+            "name": "--mx-dark-up-soft",
+            "value": "rgb(69 184 115 / 12%)"
+          },
+          {
+            "name": "--mx-dark-down-soft",
+            "value": "rgb(224 100 100 / 12%)"
+          },
+          {
+            "name": "--mx-dark-warn-soft",
+            "value": "rgb(224 160 48 / 12%)"
+          },
+          {
+            "name": "--mx-dark-info-soft",
+            "value": "rgb(91 155 240 / 12%)"
+          },
+          {
+            "name": "--mx-light-up-soft",
+            "value": "#EAF7EF"
+          },
+          {
+            "name": "--mx-light-down-soft",
+            "value": "#FCECED"
+          },
+          {
+            "name": "--mx-light-warn-soft",
+            "value": "#FFF4E2"
+          },
+          {
+            "name": "--mx-light-info-soft",
+            "value": "#EAF2FC"
+          },
+          {
+            "name": "--mx-light-scrim",
+            "value": "#1C243029"
+          },
+          {
+            "name": "--font-ui",
+            "value": "\"Inter\""
+          },
+          {
+            "name": "--fs-micro",
+            "value": "10px"
+          },
+          {
+            "name": "--fs-label",
+            "value": "11px"
+          },
+          {
+            "name": "--fs-sm",
+            "value": "12.5px"
+          },
+          {
+            "name": "--fs-body",
+            "value": "14px"
+          },
+          {
+            "name": "--fs-h3",
+            "value": "14px"
+          },
+          {
+            "name": "--fs-md",
+            "value": "15px"
+          },
+          {
+            "name": "--fs-h2",
+            "value": "17px"
+          },
+          {
+            "name": "--fs-num-lg",
+            "value": "22px"
+          },
+          {
+            "name": "--fs-h1",
+            "value": "28px"
+          },
+          {
+            "name": "--fs-num-xl",
+            "value": "38px"
+          },
+          {
+            "name": "--fs-display",
+            "value": "46px"
+          },
+          {
+            "name": "--fw-regular",
+            "value": "400"
+          },
+          {
+            "name": "--fw-medium",
+            "value": "500"
+          },
+          {
+            "name": "--fw-semibold",
+            "value": "600"
+          },
+          {
+            "name": "--fw-bold",
+            "value": "700"
+          },
+          {
+            "name": "--fw-extrabold",
+            "value": "800"
+          },
+          {
+            "name": "--bp-mobile",
+            "value": "390px"
+          },
+          {
+            "name": "--bp-tablet",
+            "value": "768px"
+          },
+          {
+            "name": "--bp-desktop",
+            "value": "1440px"
+          },
+          {
+            "name": "--sp-1",
+            "value": "4px"
+          },
+          {
+            "name": "--sp-2",
+            "value": "8px"
+          },
+          {
+            "name": "--sp-3",
+            "value": "12px"
+          },
+          {
+            "name": "--sp-4",
+            "value": "16px"
+          },
+          {
+            "name": "--sp-5",
+            "value": "20px"
+          },
+          {
+            "name": "--sp-6",
+            "value": "24px"
+          },
+          {
+            "name": "--sp-7",
+            "value": "32px"
+          },
+          {
+            "name": "--sp-8",
+            "value": "44px"
+          },
+          {
+            "name": "--r-ctl",
+            "value": "8px"
+          },
+          {
+            "name": "--r-btn",
+            "value": "10px"
+          },
+          {
+            "name": "--r-card",
+            "value": "12px"
+          },
+          {
+            "name": "--r-panel",
+            "value": "14px"
+          },
+          {
+            "name": "--r-pill",
+            "value": "999px"
+          }
+        ]
+      }
+    },
+    "guard": "d189aca813c8c0137e1356d5d77df0b32b54de399b14f62de6089d941625a536"
+  },
+  {
+    "kind": "breadth",
+    "fileId": "01M6Y3CRMC345RTB3ZDP3XSYRP",
+    "pageId": "p-8-0",
+    "observed": {
+      "fileName": "Market Breadth · Command Center R1",
+      "pageName": "02D · Full breadth analysis · Mobile",
+      "pageId": "p-8-0",
+      "url": "https://app.paper.design/file/01M6Y3CRMC345RTB3ZDP3XSYRP/p-8-0",
+      "rootNodeId": "root_node_p-8-0",
+      "nodeCount": 462,
+      "artboardCount": 1,
+      "artboards": [
+        {
+          "id": "4D9-0",
+          "name": "R3 Detail · Full breadth analysis · Mobile",
+          "childCount": 1,
+          "width": 390,
+          "height": null,
+          "worldX": 275,
+          "worldY": -1724
+        }
+      ],
+      "pages": [
+        {
+          "type": "page",
+          "id": "p-1-0",
+          "name": "01 · Product · Breadth overview",
+          "icon": "design",
+          "isActive": true
+        },
+        {
+          "type": "page",
+          "id": "p-4-0",
+          "name": "02A · Session choice & explanations",
+          "icon": "info",
+          "isActive": false
+        },
+        {
+          "type": "page",
+          "id": "p-5-0",
+          "name": "02B · Evidence · Desktop",
+          "icon": "design",
+          "isActive": false
+        },
+        {
+          "type": "page",
+          "id": "p-6-0",
+          "name": "02C · Evidence · Mobile",
+          "icon": "design",
+          "isActive": false
+        },
+        {
+          "type": "page",
+          "id": "p-8-0",
+          "name": "02D · Full breadth analysis · Mobile",
+          "icon": "line-chart",
+          "isActive": false
+        },
+        {
+          "type": "page",
+          "id": "p-2-0",
+          "name": "03A · Build · Source & interaction",
+          "icon": "blueprint",
+          "isActive": false
+        },
+        {
+          "type": "page",
+          "id": "p-7-0",
+          "name": "03B · Build · Session states",
+          "icon": "blueprint",
+          "isActive": false
+        },
+        {
+          "type": "page",
+          "id": "p-3-0",
+          "name": "90 · Retained R1 overview · Reference",
+          "icon": "paper",
+          "isActive": false
+        }
+      ],
+      "fontFamilies": [
+        "Inter",
+        "System Sans-Serif"
+      ],
+      "tokens": {
+        "items": [
+          {
+            "name": "--mx-dark-bg",
+            "value": "#0F1115"
+          },
+          {
+            "name": "--mx-dark-panel",
+            "value": "#181B21"
+          },
+          {
+            "name": "--mx-dark-panel2",
+            "value": "#1E222A"
+          },
+          {
+            "name": "--mx-dark-text",
+            "value": "#D7DCE3"
+          },
+          {
+            "name": "--mx-dark-muted",
+            "value": "#8B93A1"
+          },
+          {
+            "name": "--mx-dark-line",
+            "value": "#3A4150"
+          },
+          {
+            "name": "--mx-dark-up",
+            "value": "#45B873"
+          },
+          {
+            "name": "--mx-dark-down",
+            "value": "#E06464"
+          },
+          {
+            "name": "--mx-dark-warn",
+            "value": "#E0A030"
+          },
+          {
+            "name": "--mx-dark-act",
+            "value": "#E05555"
+          },
+          {
+            "name": "--mx-dark-ok",
+            "value": "#3DA564"
+          },
+          {
+            "name": "--mx-dark-info",
+            "value": "#5B9BF0"
+          },
+          {
+            "name": "--mx-dark-link",
+            "value": "#7AA7E0"
+          },
+          {
+            "name": "--mx-dark-orange",
+            "value": "#E08B45"
+          },
+          {
+            "name": "--mx-light-bg",
+            "value": "#F7F8FA"
+          },
+          {
+            "name": "--mx-light-panel",
+            "value": "#FFFFFF"
+          },
+          {
+            "name": "--mx-light-panel2",
+            "value": "#EEF1F6"
+          },
+          {
+            "name": "--mx-light-text",
+            "value": "#1C2430"
+          },
+          {
+            "name": "--mx-light-muted",
+            "value": "#5D6B7E"
+          },
+          {
+            "name": "--mx-light-line",
+            "value": "#C9CCD1"
+          },
+          {
+            "name": "--mx-light-up",
+            "value": "#1F9A55"
+          },
+          {
+            "name": "--mx-light-down",
+            "value": "#CF4040"
+          },
+          {
+            "name": "--mx-light-warn",
+            "value": "#B9791A"
+          },
+          {
+            "name": "--mx-light-act",
+            "value": "#C43D3D"
+          },
+          {
+            "name": "--mx-light-ok",
+            "value": "#2F8A52"
+          },
+          {
+            "name": "--mx-light-info",
+            "value": "#285FFF"
+          },
+          {
+            "name": "--mx-light-link",
+            "value": "#285FFF"
+          },
+          {
+            "name": "--mx-light-orange",
+            "value": "#C4781F"
+          },
+          {
+            "name": "--mx-dark-prov",
+            "value": "#62A0E8"
+          },
+          {
+            "name": "--mx-dark-prov-ink",
+            "value": "#62A0E8"
+          },
+          {
+            "name": "--mx-dark-tier-accent",
+            "value": "#7C5CFF"
+          },
+          {
+            "name": "--mx-dark-tier-fill",
+            "value": "#6340D8"
+          },
+          {
+            "name": "--mx-dark-tier-ink",
+            "value": "#9B86FF"
+          },
+          {
+            "name": "--mx-dark-ser-1",
+            "value": "#5B9BF0"
+          },
+          {
+            "name": "--mx-dark-ser-2",
+            "value": "#D4A017"
+          },
+          {
+            "name": "--mx-dark-ser-3",
+            "value": "#0EA5E9"
+          },
+          {
+            "name": "--mx-dark-ser-4",
+            "value": "#E08B45"
+          },
+          {
+            "name": "--mx-light-prov",
+            "value": "#2F6FD0"
+          },
+          {
+            "name": "--mx-light-prov-ink",
+            "value": "#2C62B3"
+          },
+          {
+            "name": "--mx-light-tier-accent",
+            "value": "#7C5CFF"
+          },
+          {
+            "name": "--mx-light-tier-fill",
+            "value": "#6340D8"
+          },
+          {
+            "name": "--mx-light-tier-ink",
+            "value": "#5B3FC4"
+          },
+          {
+            "name": "--mx-light-ser-1",
+            "value": "#2F63C4"
+          },
+          {
+            "name": "--mx-light-ser-2",
+            "value": "#8F6A04"
+          },
+          {
+            "name": "--mx-light-ser-3",
+            "value": "#0284C7"
+          },
+          {
+            "name": "--mx-light-ser-4",
+            "value": "#B06A25"
+          },
+          {
+            "name": "--mx-light-ink-up",
+            "value": "#1E6D47"
+          },
+          {
+            "name": "--mx-light-ink-down",
+            "value": "#B23C3D"
+          },
+          {
+            "name": "--mx-light-ink-warn",
+            "value": "#7D5922"
+          },
+          {
+            "name": "--mx-light-ink-link",
+            "value": "#2758E6"
+          },
+          {
+            "name": "--noir-canvas",
+            "value": "#080808"
+          },
+          {
+            "name": "--noir-sidebar",
+            "value": "#0C0C0C"
+          },
+          {
+            "name": "--noir-panel",
+            "value": "#121212"
+          },
+          {
+            "name": "--noir-raised",
+            "value": "#191919"
+          },
+          {
+            "name": "--noir-hover",
+            "value": "#222222"
+          },
+          {
+            "name": "--noir-selected",
+            "value": "#292929"
+          },
+          {
+            "name": "--noir-text-primary",
+            "value": "#F3F3F3"
+          },
+          {
+            "name": "--noir-text-secondary",
+            "value": "#B8B8B8"
+          },
+          {
+            "name": "--noir-text-tertiary",
+            "value": "#949494"
+          },
+          {
+            "name": "--noir-champagne",
+            "value": "#C9B99B"
+          },
+          {
+            "name": "--noir-sage",
+            "value": "#A8C2AD"
+          },
+          {
+            "name": "--noir-rose",
+            "value": "#DEA4A5"
+          },
+          {
+            "name": "--noir-steel",
+            "value": "#A7B4C2"
+          },
+          {
+            "name": "--noir-lilac",
+            "value": "#BDB2CE"
+          },
+          {
+            "name": "--market-canvas",
+            "value": "#0A0B0D"
+          },
+          {
+            "name": "--market-panel",
+            "value": "#111318"
+          },
+          {
+            "name": "--market-raised",
+            "value": "#181B20"
+          },
+          {
+            "name": "--market-line",
+            "value": "#2B3038"
+          },
+          {
+            "name": "--mx-dark-up-soft",
+            "value": "rgb(69 184 115 / 12%)"
+          },
+          {
+            "name": "--mx-dark-down-soft",
+            "value": "rgb(224 100 100 / 12%)"
+          },
+          {
+            "name": "--mx-dark-warn-soft",
+            "value": "rgb(224 160 48 / 12%)"
+          },
+          {
+            "name": "--mx-dark-info-soft",
+            "value": "rgb(91 155 240 / 12%)"
+          },
+          {
+            "name": "--mx-light-up-soft",
+            "value": "#EAF7EF"
+          },
+          {
+            "name": "--mx-light-down-soft",
+            "value": "#FCECED"
+          },
+          {
+            "name": "--mx-light-warn-soft",
+            "value": "#FFF4E2"
+          },
+          {
+            "name": "--mx-light-info-soft",
+            "value": "#EAF2FC"
+          },
+          {
+            "name": "--mx-light-scrim",
+            "value": "#1C243029"
+          },
+          {
+            "name": "--font-ui",
+            "value": "\"Inter\""
+          },
+          {
+            "name": "--fs-micro",
+            "value": "10px"
+          },
+          {
+            "name": "--fs-label",
+            "value": "11px"
+          },
+          {
+            "name": "--fs-sm",
+            "value": "12.5px"
+          },
+          {
+            "name": "--fs-body",
+            "value": "14px"
+          },
+          {
+            "name": "--fs-h3",
+            "value": "14px"
+          },
+          {
+            "name": "--fs-md",
+            "value": "15px"
+          },
+          {
+            "name": "--fs-h2",
+            "value": "17px"
+          },
+          {
+            "name": "--fs-num-lg",
+            "value": "22px"
+          },
+          {
+            "name": "--fs-h1",
+            "value": "28px"
+          },
+          {
+            "name": "--fs-num-xl",
+            "value": "38px"
+          },
+          {
+            "name": "--fs-display",
+            "value": "46px"
+          },
+          {
+            "name": "--fw-regular",
+            "value": "400"
+          },
+          {
+            "name": "--fw-medium",
+            "value": "500"
+          },
+          {
+            "name": "--fw-semibold",
+            "value": "600"
+          },
+          {
+            "name": "--fw-bold",
+            "value": "700"
+          },
+          {
+            "name": "--fw-extrabold",
+            "value": "800"
+          },
+          {
+            "name": "--bp-mobile",
+            "value": "390px"
+          },
+          {
+            "name": "--bp-tablet",
+            "value": "768px"
+          },
+          {
+            "name": "--bp-desktop",
+            "value": "1440px"
+          },
+          {
+            "name": "--sp-1",
+            "value": "4px"
+          },
+          {
+            "name": "--sp-2",
+            "value": "8px"
+          },
+          {
+            "name": "--sp-3",
+            "value": "12px"
+          },
+          {
+            "name": "--sp-4",
+            "value": "16px"
+          },
+          {
+            "name": "--sp-5",
+            "value": "20px"
+          },
+          {
+            "name": "--sp-6",
+            "value": "24px"
+          },
+          {
+            "name": "--sp-7",
+            "value": "32px"
+          },
+          {
+            "name": "--sp-8",
+            "value": "44px"
+          },
+          {
+            "name": "--r-ctl",
+            "value": "8px"
+          },
+          {
+            "name": "--r-btn",
+            "value": "10px"
+          },
+          {
+            "name": "--r-card",
+            "value": "12px"
+          },
+          {
+            "name": "--r-panel",
+            "value": "14px"
+          },
+          {
+            "name": "--r-pill",
+            "value": "999px"
+          }
+        ]
+      }
+    },
+    "guard": "d189aca813c8c0137e1356d5d77df0b32b54de399b14f62de6089d941625a536"
+  },
+  {
+    "kind": "breadth",
+    "fileId": "01M6Y3CRMC345RTB3ZDP3XSYRP",
+    "pageId": "p-2-0",
+    "observed": {
+      "fileName": "Market Breadth · Command Center R1",
+      "pageName": "03A · Build · Source & interaction",
+      "pageId": "p-2-0",
+      "url": "https://app.paper.design/file/01M6Y3CRMC345RTB3ZDP3XSYRP/p-2-0",
+      "rootNodeId": "root_node_p-2-0",
+      "nodeCount": 169,
+      "artboardCount": 3,
+      "artboards": [
+        {
+          "id": "48X-0",
+          "name": "R3 Build · Overview and evidence contract",
+          "childCount": 1,
+          "width": 1440,
+          "height": 960,
+          "worldX": 4835,
+          "worldY": -684
+        },
+        {
+          "id": "2TV-0",
+          "name": "04A · R1 BUILD · Accessible selected-session evidence",
+          "childCount": 1,
+          "width": 1440,
+          "height": 960,
+          "worldX": 1795,
+          "worldY": -684
+        },
+        {
+          "id": "32X-0",
+          "name": "04B · R1 BUILD · Source outcomes, routes & acceptance",
+          "childCount": 1,
+          "width": 1440,
+          "height": 960,
+          "worldX": 3315,
+          "worldY": -684
+        }
+      ],
+      "pages": [
+        {
+          "type": "page",
+          "id": "p-1-0",
+          "name": "01 · Product · Breadth overview",
+          "icon": "design",
+          "isActive": true
+        },
+        {
+          "type": "page",
+          "id": "p-4-0",
+          "name": "02A · Session choice & explanations",
+          "icon": "info",
+          "isActive": false
+        },
+        {
+          "type": "page",
+          "id": "p-5-0",
+          "name": "02B · Evidence · Desktop",
+          "icon": "design",
+          "isActive": false
+        },
+        {
+          "type": "page",
+          "id": "p-6-0",
+          "name": "02C · Evidence · Mobile",
+          "icon": "design",
+          "isActive": false
+        },
+        {
+          "type": "page",
+          "id": "p-8-0",
+          "name": "02D · Full breadth analysis · Mobile",
+          "icon": "line-chart",
+          "isActive": false
+        },
+        {
+          "type": "page",
+          "id": "p-2-0",
+          "name": "03A · Build · Source & interaction",
+          "icon": "blueprint",
+          "isActive": false
+        },
+        {
+          "type": "page",
+          "id": "p-7-0",
+          "name": "03B · Build · Session states",
+          "icon": "blueprint",
+          "isActive": false
+        },
+        {
+          "type": "page",
+          "id": "p-3-0",
+          "name": "90 · Retained R1 overview · Reference",
+          "icon": "paper",
+          "isActive": false
+        }
+      ],
+      "fontFamilies": [
+        "Inter",
+        "System Sans-Serif"
+      ],
+      "tokens": {
+        "items": [
+          {
+            "name": "--mx-dark-bg",
+            "value": "#0F1115"
+          },
+          {
+            "name": "--mx-dark-panel",
+            "value": "#181B21"
+          },
+          {
+            "name": "--mx-dark-panel2",
+            "value": "#1E222A"
+          },
+          {
+            "name": "--mx-dark-text",
+            "value": "#D7DCE3"
+          },
+          {
+            "name": "--mx-dark-muted",
+            "value": "#8B93A1"
+          },
+          {
+            "name": "--mx-dark-line",
+            "value": "#3A4150"
+          },
+          {
+            "name": "--mx-dark-up",
+            "value": "#45B873"
+          },
+          {
+            "name": "--mx-dark-down",
+            "value": "#E06464"
+          },
+          {
+            "name": "--mx-dark-warn",
+            "value": "#E0A030"
+          },
+          {
+            "name": "--mx-dark-act",
+            "value": "#E05555"
+          },
+          {
+            "name": "--mx-dark-ok",
+            "value": "#3DA564"
+          },
+          {
+            "name": "--mx-dark-info",
+            "value": "#5B9BF0"
+          },
+          {
+            "name": "--mx-dark-link",
+            "value": "#7AA7E0"
+          },
+          {
+            "name": "--mx-dark-orange",
+            "value": "#E08B45"
+          },
+          {
+            "name": "--mx-light-bg",
+            "value": "#F7F8FA"
+          },
+          {
+            "name": "--mx-light-panel",
+            "value": "#FFFFFF"
+          },
+          {
+            "name": "--mx-light-panel2",
+            "value": "#EEF1F6"
+          },
+          {
+            "name": "--mx-light-text",
+            "value": "#1C2430"
+          },
+          {
+            "name": "--mx-light-muted",
+            "value": "#5D6B7E"
+          },
+          {
+            "name": "--mx-light-line",
+            "value": "#C9CCD1"
+          },
+          {
+            "name": "--mx-light-up",
+            "value": "#1F9A55"
+          },
+          {
+            "name": "--mx-light-down",
+            "value": "#CF4040"
+          },
+          {
+            "name": "--mx-light-warn",
+            "value": "#B9791A"
+          },
+          {
+            "name": "--mx-light-act",
+            "value": "#C43D3D"
+          },
+          {
+            "name": "--mx-light-ok",
+            "value": "#2F8A52"
+          },
+          {
+            "name": "--mx-light-info",
+            "value": "#285FFF"
+          },
+          {
+            "name": "--mx-light-link",
+            "value": "#285FFF"
+          },
+          {
+            "name": "--mx-light-orange",
+            "value": "#C4781F"
+          },
+          {
+            "name": "--mx-dark-prov",
+            "value": "#62A0E8"
+          },
+          {
+            "name": "--mx-dark-prov-ink",
+            "value": "#62A0E8"
+          },
+          {
+            "name": "--mx-dark-tier-accent",
+            "value": "#7C5CFF"
+          },
+          {
+            "name": "--mx-dark-tier-fill",
+            "value": "#6340D8"
+          },
+          {
+            "name": "--mx-dark-tier-ink",
+            "value": "#9B86FF"
+          },
+          {
+            "name": "--mx-dark-ser-1",
+            "value": "#5B9BF0"
+          },
+          {
+            "name": "--mx-dark-ser-2",
+            "value": "#D4A017"
+          },
+          {
+            "name": "--mx-dark-ser-3",
+            "value": "#0EA5E9"
+          },
+          {
+            "name": "--mx-dark-ser-4",
+            "value": "#E08B45"
+          },
+          {
+            "name": "--mx-light-prov",
+            "value": "#2F6FD0"
+          },
+          {
+            "name": "--mx-light-prov-ink",
+            "value": "#2C62B3"
+          },
+          {
+            "name": "--mx-light-tier-accent",
+            "value": "#7C5CFF"
+          },
+          {
+            "name": "--mx-light-tier-fill",
+            "value": "#6340D8"
+          },
+          {
+            "name": "--mx-light-tier-ink",
+            "value": "#5B3FC4"
+          },
+          {
+            "name": "--mx-light-ser-1",
+            "value": "#2F63C4"
+          },
+          {
+            "name": "--mx-light-ser-2",
+            "value": "#8F6A04"
+          },
+          {
+            "name": "--mx-light-ser-3",
+            "value": "#0284C7"
+          },
+          {
+            "name": "--mx-light-ser-4",
+            "value": "#B06A25"
+          },
+          {
+            "name": "--mx-light-ink-up",
+            "value": "#1E6D47"
+          },
+          {
+            "name": "--mx-light-ink-down",
+            "value": "#B23C3D"
+          },
+          {
+            "name": "--mx-light-ink-warn",
+            "value": "#7D5922"
+          },
+          {
+            "name": "--mx-light-ink-link",
+            "value": "#2758E6"
+          },
+          {
+            "name": "--noir-canvas",
+            "value": "#080808"
+          },
+          {
+            "name": "--noir-sidebar",
+            "value": "#0C0C0C"
+          },
+          {
+            "name": "--noir-panel",
+            "value": "#121212"
+          },
+          {
+            "name": "--noir-raised",
+            "value": "#191919"
+          },
+          {
+            "name": "--noir-hover",
+            "value": "#222222"
+          },
+          {
+            "name": "--noir-selected",
+            "value": "#292929"
+          },
+          {
+            "name": "--noir-text-primary",
+            "value": "#F3F3F3"
+          },
+          {
+            "name": "--noir-text-secondary",
+            "value": "#B8B8B8"
+          },
+          {
+            "name": "--noir-text-tertiary",
+            "value": "#949494"
+          },
+          {
+            "name": "--noir-champagne",
+            "value": "#C9B99B"
+          },
+          {
+            "name": "--noir-sage",
+            "value": "#A8C2AD"
+          },
+          {
+            "name": "--noir-rose",
+            "value": "#DEA4A5"
+          },
+          {
+            "name": "--noir-steel",
+            "value": "#A7B4C2"
+          },
+          {
+            "name": "--noir-lilac",
+            "value": "#BDB2CE"
+          },
+          {
+            "name": "--market-canvas",
+            "value": "#0A0B0D"
+          },
+          {
+            "name": "--market-panel",
+            "value": "#111318"
+          },
+          {
+            "name": "--market-raised",
+            "value": "#181B20"
+          },
+          {
+            "name": "--market-line",
+            "value": "#2B3038"
+          },
+          {
+            "name": "--mx-dark-up-soft",
+            "value": "rgb(69 184 115 / 12%)"
+          },
+          {
+            "name": "--mx-dark-down-soft",
+            "value": "rgb(224 100 100 / 12%)"
+          },
+          {
+            "name": "--mx-dark-warn-soft",
+            "value": "rgb(224 160 48 / 12%)"
+          },
+          {
+            "name": "--mx-dark-info-soft",
+            "value": "rgb(91 155 240 / 12%)"
+          },
+          {
+            "name": "--mx-light-up-soft",
+            "value": "#EAF7EF"
+          },
+          {
+            "name": "--mx-light-down-soft",
+            "value": "#FCECED"
+          },
+          {
+            "name": "--mx-light-warn-soft",
+            "value": "#FFF4E2"
+          },
+          {
+            "name": "--mx-light-info-soft",
+            "value": "#EAF2FC"
+          },
+          {
+            "name": "--mx-light-scrim",
+            "value": "#1C243029"
+          },
+          {
+            "name": "--font-ui",
+            "value": "\"Inter\""
+          },
+          {
+            "name": "--fs-micro",
+            "value": "10px"
+          },
+          {
+            "name": "--fs-label",
+            "value": "11px"
+          },
+          {
+            "name": "--fs-sm",
+            "value": "12.5px"
+          },
+          {
+            "name": "--fs-body",
+            "value": "14px"
+          },
+          {
+            "name": "--fs-h3",
+            "value": "14px"
+          },
+          {
+            "name": "--fs-md",
+            "value": "15px"
+          },
+          {
+            "name": "--fs-h2",
+            "value": "17px"
+          },
+          {
+            "name": "--fs-num-lg",
+            "value": "22px"
+          },
+          {
+            "name": "--fs-h1",
+            "value": "28px"
+          },
+          {
+            "name": "--fs-num-xl",
+            "value": "38px"
+          },
+          {
+            "name": "--fs-display",
+            "value": "46px"
+          },
+          {
+            "name": "--fw-regular",
+            "value": "400"
+          },
+          {
+            "name": "--fw-medium",
+            "value": "500"
+          },
+          {
+            "name": "--fw-semibold",
+            "value": "600"
+          },
+          {
+            "name": "--fw-bold",
+            "value": "700"
+          },
+          {
+            "name": "--fw-extrabold",
+            "value": "800"
+          },
+          {
+            "name": "--bp-mobile",
+            "value": "390px"
+          },
+          {
+            "name": "--bp-tablet",
+            "value": "768px"
+          },
+          {
+            "name": "--bp-desktop",
+            "value": "1440px"
+          },
+          {
+            "name": "--sp-1",
+            "value": "4px"
+          },
+          {
+            "name": "--sp-2",
+            "value": "8px"
+          },
+          {
+            "name": "--sp-3",
+            "value": "12px"
+          },
+          {
+            "name": "--sp-4",
+            "value": "16px"
+          },
+          {
+            "name": "--sp-5",
+            "value": "20px"
+          },
+          {
+            "name": "--sp-6",
+            "value": "24px"
+          },
+          {
+            "name": "--sp-7",
+            "value": "32px"
+          },
+          {
+            "name": "--sp-8",
+            "value": "44px"
+          },
+          {
+            "name": "--r-ctl",
+            "value": "8px"
+          },
+          {
+            "name": "--r-btn",
+            "value": "10px"
+          },
+          {
+            "name": "--r-card",
+            "value": "12px"
+          },
+          {
+            "name": "--r-panel",
+            "value": "14px"
+          },
+          {
+            "name": "--r-pill",
+            "value": "999px"
+          }
+        ]
+      }
+    },
+    "guard": "d189aca813c8c0137e1356d5d77df0b32b54de399b14f62de6089d941625a536"
+  },
+  {
+    "kind": "breadth",
+    "fileId": "01M6Y3CRMC345RTB3ZDP3XSYRP",
+    "pageId": "p-7-0",
+    "observed": {
+      "fileName": "Market Breadth · Command Center R1",
+      "pageName": "03B · Build · Session states",
+      "pageId": "p-7-0",
+      "url": "https://app.paper.design/file/01M6Y3CRMC345RTB3ZDP3XSYRP/p-7-0",
+      "rootNodeId": "root_node_p-7-0",
+      "nodeCount": 112,
+      "artboardCount": 1,
+      "artboards": [
+        {
+          "id": "2KS-0",
+          "name": "R2 Session states and build contract",
+          "childCount": 1,
+          "width": 1440,
+          "height": null,
+          "worldX": 1795,
+          "worldY": -1724
+        }
+      ],
+      "pages": [
+        {
+          "type": "page",
+          "id": "p-1-0",
+          "name": "01 · Product · Breadth overview",
+          "icon": "design",
+          "isActive": true
+        },
+        {
+          "type": "page",
+          "id": "p-4-0",
+          "name": "02A · Session choice & explanations",
+          "icon": "info",
+          "isActive": false
+        },
+        {
+          "type": "page",
+          "id": "p-5-0",
+          "name": "02B · Evidence · Desktop",
+          "icon": "design",
+          "isActive": false
+        },
+        {
+          "type": "page",
+          "id": "p-6-0",
+          "name": "02C · Evidence · Mobile",
+          "icon": "design",
+          "isActive": false
+        },
+        {
+          "type": "page",
+          "id": "p-8-0",
+          "name": "02D · Full breadth analysis · Mobile",
+          "icon": "line-chart",
+          "isActive": false
+        },
+        {
+          "type": "page",
+          "id": "p-2-0",
+          "name": "03A · Build · Source & interaction",
+          "icon": "blueprint",
+          "isActive": false
+        },
+        {
+          "type": "page",
+          "id": "p-7-0",
+          "name": "03B · Build · Session states",
+          "icon": "blueprint",
+          "isActive": false
+        },
+        {
+          "type": "page",
+          "id": "p-3-0",
+          "name": "90 · Retained R1 overview · Reference",
+          "icon": "paper",
+          "isActive": false
+        }
+      ],
+      "fontFamilies": [
+        "Inter",
+        "System Sans-Serif"
+      ],
+      "tokens": {
+        "items": [
+          {
+            "name": "--mx-dark-bg",
+            "value": "#0F1115"
+          },
+          {
+            "name": "--mx-dark-panel",
+            "value": "#181B21"
+          },
+          {
+            "name": "--mx-dark-panel2",
+            "value": "#1E222A"
+          },
+          {
+            "name": "--mx-dark-text",
+            "value": "#D7DCE3"
+          },
+          {
+            "name": "--mx-dark-muted",
+            "value": "#8B93A1"
+          },
+          {
+            "name": "--mx-dark-line",
+            "value": "#3A4150"
+          },
+          {
+            "name": "--mx-dark-up",
+            "value": "#45B873"
+          },
+          {
+            "name": "--mx-dark-down",
+            "value": "#E06464"
+          },
+          {
+            "name": "--mx-dark-warn",
+            "value": "#E0A030"
+          },
+          {
+            "name": "--mx-dark-act",
+            "value": "#E05555"
+          },
+          {
+            "name": "--mx-dark-ok",
+            "value": "#3DA564"
+          },
+          {
+            "name": "--mx-dark-info",
+            "value": "#5B9BF0"
+          },
+          {
+            "name": "--mx-dark-link",
+            "value": "#7AA7E0"
+          },
+          {
+            "name": "--mx-dark-orange",
+            "value": "#E08B45"
+          },
+          {
+            "name": "--mx-light-bg",
+            "value": "#F7F8FA"
+          },
+          {
+            "name": "--mx-light-panel",
+            "value": "#FFFFFF"
+          },
+          {
+            "name": "--mx-light-panel2",
+            "value": "#EEF1F6"
+          },
+          {
+            "name": "--mx-light-text",
+            "value": "#1C2430"
+          },
+          {
+            "name": "--mx-light-muted",
+            "value": "#5D6B7E"
+          },
+          {
+            "name": "--mx-light-line",
+            "value": "#C9CCD1"
+          },
+          {
+            "name": "--mx-light-up",
+            "value": "#1F9A55"
+          },
+          {
+            "name": "--mx-light-down",
+            "value": "#CF4040"
+          },
+          {
+            "name": "--mx-light-warn",
+            "value": "#B9791A"
+          },
+          {
+            "name": "--mx-light-act",
+            "value": "#C43D3D"
+          },
+          {
+            "name": "--mx-light-ok",
+            "value": "#2F8A52"
+          },
+          {
+            "name": "--mx-light-info",
+            "value": "#285FFF"
+          },
+          {
+            "name": "--mx-light-link",
+            "value": "#285FFF"
+          },
+          {
+            "name": "--mx-light-orange",
+            "value": "#C4781F"
+          },
+          {
+            "name": "--mx-dark-prov",
+            "value": "#62A0E8"
+          },
+          {
+            "name": "--mx-dark-prov-ink",
+            "value": "#62A0E8"
+          },
+          {
+            "name": "--mx-dark-tier-accent",
+            "value": "#7C5CFF"
+          },
+          {
+            "name": "--mx-dark-tier-fill",
+            "value": "#6340D8"
+          },
+          {
+            "name": "--mx-dark-tier-ink",
+            "value": "#9B86FF"
+          },
+          {
+            "name": "--mx-dark-ser-1",
+            "value": "#5B9BF0"
+          },
+          {
+            "name": "--mx-dark-ser-2",
+            "value": "#D4A017"
+          },
+          {
+            "name": "--mx-dark-ser-3",
+            "value": "#0EA5E9"
+          },
+          {
+            "name": "--mx-dark-ser-4",
+            "value": "#E08B45"
+          },
+          {
+            "name": "--mx-light-prov",
+            "value": "#2F6FD0"
+          },
+          {
+            "name": "--mx-light-prov-ink",
+            "value": "#2C62B3"
+          },
+          {
+            "name": "--mx-light-tier-accent",
+            "value": "#7C5CFF"
+          },
+          {
+            "name": "--mx-light-tier-fill",
+            "value": "#6340D8"
+          },
+          {
+            "name": "--mx-light-tier-ink",
+            "value": "#5B3FC4"
+          },
+          {
+            "name": "--mx-light-ser-1",
+            "value": "#2F63C4"
+          },
+          {
+            "name": "--mx-light-ser-2",
+            "value": "#8F6A04"
+          },
+          {
+            "name": "--mx-light-ser-3",
+            "value": "#0284C7"
+          },
+          {
+            "name": "--mx-light-ser-4",
+            "value": "#B06A25"
+          },
+          {
+            "name": "--mx-light-ink-up",
+            "value": "#1E6D47"
+          },
+          {
+            "name": "--mx-light-ink-down",
+            "value": "#B23C3D"
+          },
+          {
+            "name": "--mx-light-ink-warn",
+            "value": "#7D5922"
+          },
+          {
+            "name": "--mx-light-ink-link",
+            "value": "#2758E6"
+          },
+          {
+            "name": "--noir-canvas",
+            "value": "#080808"
+          },
+          {
+            "name": "--noir-sidebar",
+            "value": "#0C0C0C"
+          },
+          {
+            "name": "--noir-panel",
+            "value": "#121212"
+          },
+          {
+            "name": "--noir-raised",
+            "value": "#191919"
+          },
+          {
+            "name": "--noir-hover",
+            "value": "#222222"
+          },
+          {
+            "name": "--noir-selected",
+            "value": "#292929"
+          },
+          {
+            "name": "--noir-text-primary",
+            "value": "#F3F3F3"
+          },
+          {
+            "name": "--noir-text-secondary",
+            "value": "#B8B8B8"
+          },
+          {
+            "name": "--noir-text-tertiary",
+            "value": "#949494"
+          },
+          {
+            "name": "--noir-champagne",
+            "value": "#C9B99B"
+          },
+          {
+            "name": "--noir-sage",
+            "value": "#A8C2AD"
+          },
+          {
+            "name": "--noir-rose",
+            "value": "#DEA4A5"
+          },
+          {
+            "name": "--noir-steel",
+            "value": "#A7B4C2"
+          },
+          {
+            "name": "--noir-lilac",
+            "value": "#BDB2CE"
+          },
+          {
+            "name": "--market-canvas",
+            "value": "#0A0B0D"
+          },
+          {
+            "name": "--market-panel",
+            "value": "#111318"
+          },
+          {
+            "name": "--market-raised",
+            "value": "#181B20"
+          },
+          {
+            "name": "--market-line",
+            "value": "#2B3038"
+          },
+          {
+            "name": "--mx-dark-up-soft",
+            "value": "rgb(69 184 115 / 12%)"
+          },
+          {
+            "name": "--mx-dark-down-soft",
+            "value": "rgb(224 100 100 / 12%)"
+          },
+          {
+            "name": "--mx-dark-warn-soft",
+            "value": "rgb(224 160 48 / 12%)"
+          },
+          {
+            "name": "--mx-dark-info-soft",
+            "value": "rgb(91 155 240 / 12%)"
+          },
+          {
+            "name": "--mx-light-up-soft",
+            "value": "#EAF7EF"
+          },
+          {
+            "name": "--mx-light-down-soft",
+            "value": "#FCECED"
+          },
+          {
+            "name": "--mx-light-warn-soft",
+            "value": "#FFF4E2"
+          },
+          {
+            "name": "--mx-light-info-soft",
+            "value": "#EAF2FC"
+          },
+          {
+            "name": "--mx-light-scrim",
+            "value": "#1C243029"
+          },
+          {
+            "name": "--font-ui",
+            "value": "\"Inter\""
+          },
+          {
+            "name": "--fs-micro",
+            "value": "10px"
+          },
+          {
+            "name": "--fs-label",
+            "value": "11px"
+          },
+          {
+            "name": "--fs-sm",
+            "value": "12.5px"
+          },
+          {
+            "name": "--fs-body",
+            "value": "14px"
+          },
+          {
+            "name": "--fs-h3",
+            "value": "14px"
+          },
+          {
+            "name": "--fs-md",
+            "value": "15px"
+          },
+          {
+            "name": "--fs-h2",
+            "value": "17px"
+          },
+          {
+            "name": "--fs-num-lg",
+            "value": "22px"
+          },
+          {
+            "name": "--fs-h1",
+            "value": "28px"
+          },
+          {
+            "name": "--fs-num-xl",
+            "value": "38px"
+          },
+          {
+            "name": "--fs-display",
+            "value": "46px"
+          },
+          {
+            "name": "--fw-regular",
+            "value": "400"
+          },
+          {
+            "name": "--fw-medium",
+            "value": "500"
+          },
+          {
+            "name": "--fw-semibold",
+            "value": "600"
+          },
+          {
+            "name": "--fw-bold",
+            "value": "700"
+          },
+          {
+            "name": "--fw-extrabold",
+            "value": "800"
+          },
+          {
+            "name": "--bp-mobile",
+            "value": "390px"
+          },
+          {
+            "name": "--bp-tablet",
+            "value": "768px"
+          },
+          {
+            "name": "--bp-desktop",
+            "value": "1440px"
+          },
+          {
+            "name": "--sp-1",
+            "value": "4px"
+          },
+          {
+            "name": "--sp-2",
+            "value": "8px"
+          },
+          {
+            "name": "--sp-3",
+            "value": "12px"
+          },
+          {
+            "name": "--sp-4",
+            "value": "16px"
+          },
+          {
+            "name": "--sp-5",
+            "value": "20px"
+          },
+          {
+            "name": "--sp-6",
+            "value": "24px"
+          },
+          {
+            "name": "--sp-7",
+            "value": "32px"
+          },
+          {
+            "name": "--sp-8",
+            "value": "44px"
+          },
+          {
+            "name": "--r-ctl",
+            "value": "8px"
+          },
+          {
+            "name": "--r-btn",
+            "value": "10px"
+          },
+          {
+            "name": "--r-card",
+            "value": "12px"
+          },
+          {
+            "name": "--r-panel",
+            "value": "14px"
+          },
+          {
+            "name": "--r-pill",
+            "value": "999px"
+          }
+        ]
+      }
+    },
+    "guard": "d189aca813c8c0137e1356d5d77df0b32b54de399b14f62de6089d941625a536"
+  },
+  {
+    "kind": "breadth",
+    "fileId": "01M6Y3CRMC345RTB3ZDP3XSYRP",
+    "pageId": "p-3-0",
+    "observed": {
+      "fileName": "Market Breadth · Command Center R1",
+      "pageName": "90 · Retained R1 overview · Reference",
+      "pageId": "p-3-0",
+      "url": "https://app.paper.design/file/01M6Y3CRMC345RTB3ZDP3XSYRP/p-3-0",
+      "rootNodeId": "root_node_p-3-0",
+      "nodeCount": 1185,
+      "artboardCount": 2,
+      "artboards": [
+        {
+          "id": "36G-0",
+          "name": "REFERENCE · R1 original overview · Desktop",
+          "childCount": 1,
+          "width": 1440,
+          "height": 2780,
+          "worldX": -1715,
+          "worldY": 1136
+        },
+        {
+          "id": "3PX-0",
+          "name": "REFERENCE · R1 original overview · Mobile",
+          "childCount": 1,
+          "width": 390,
+          "height": 3433,
+          "worldX": 1795,
+          "worldY": 356
+        }
+      ],
+      "pages": [
+        {
+          "type": "page",
+          "id": "p-1-0",
+          "name": "01 · Product · Breadth overview",
+          "icon": "design",
+          "isActive": true
+        },
+        {
+          "type": "page",
+          "id": "p-4-0",
+          "name": "02A · Session choice & explanations",
+          "icon": "info",
+          "isActive": false
+        },
+        {
+          "type": "page",
+          "id": "p-5-0",
+          "name": "02B · Evidence · Desktop",
+          "icon": "design",
+          "isActive": false
+        },
+        {
+          "type": "page",
+          "id": "p-6-0",
+          "name": "02C · Evidence · Mobile",
+          "icon": "design",
+          "isActive": false
+        },
+        {
+          "type": "page",
+          "id": "p-8-0",
+          "name": "02D · Full breadth analysis · Mobile",
+          "icon": "line-chart",
+          "isActive": false
+        },
+        {
+          "type": "page",
+          "id": "p-2-0",
+          "name": "03A · Build · Source & interaction",
+          "icon": "blueprint",
+          "isActive": false
+        },
+        {
+          "type": "page",
+          "id": "p-7-0",
+          "name": "03B · Build · Session states",
+          "icon": "blueprint",
+          "isActive": false
+        },
+        {
+          "type": "page",
+          "id": "p-3-0",
+          "name": "90 · Retained R1 overview · Reference",
+          "icon": "paper",
+          "isActive": false
+        }
+      ],
+      "fontFamilies": [
+        "Inter",
+        "System Sans-Serif"
+      ],
+      "tokens": {
+        "items": [
+          {
+            "name": "--mx-dark-bg",
+            "value": "#0F1115"
+          },
+          {
+            "name": "--mx-dark-panel",
+            "value": "#181B21"
+          },
+          {
+            "name": "--mx-dark-panel2",
+            "value": "#1E222A"
+          },
+          {
+            "name": "--mx-dark-text",
+            "value": "#D7DCE3"
+          },
+          {
+            "name": "--mx-dark-muted",
+            "value": "#8B93A1"
+          },
+          {
+            "name": "--mx-dark-line",
+            "value": "#3A4150"
+          },
+          {
+            "name": "--mx-dark-up",
+            "value": "#45B873"
+          },
+          {
+            "name": "--mx-dark-down",
+            "value": "#E06464"
+          },
+          {
+            "name": "--mx-dark-warn",
+            "value": "#E0A030"
+          },
+          {
+            "name": "--mx-dark-act",
+            "value": "#E05555"
+          },
+          {
+            "name": "--mx-dark-ok",
+            "value": "#3DA564"
+          },
+          {
+            "name": "--mx-dark-info",
+            "value": "#5B9BF0"
+          },
+          {
+            "name": "--mx-dark-link",
+            "value": "#7AA7E0"
+          },
+          {
+            "name": "--mx-dark-orange",
+            "value": "#E08B45"
+          },
+          {
+            "name": "--mx-light-bg",
+            "value": "#F7F8FA"
+          },
+          {
+            "name": "--mx-light-panel",
+            "value": "#FFFFFF"
+          },
+          {
+            "name": "--mx-light-panel2",
+            "value": "#EEF1F6"
+          },
+          {
+            "name": "--mx-light-text",
+            "value": "#1C2430"
+          },
+          {
+            "name": "--mx-light-muted",
+            "value": "#5D6B7E"
+          },
+          {
+            "name": "--mx-light-line",
+            "value": "#C9CCD1"
+          },
+          {
+            "name": "--mx-light-up",
+            "value": "#1F9A55"
+          },
+          {
+            "name": "--mx-light-down",
+            "value": "#CF4040"
+          },
+          {
+            "name": "--mx-light-warn",
+            "value": "#B9791A"
+          },
+          {
+            "name": "--mx-light-act",
+            "value": "#C43D3D"
+          },
+          {
+            "name": "--mx-light-ok",
+            "value": "#2F8A52"
+          },
+          {
+            "name": "--mx-light-info",
+            "value": "#285FFF"
+          },
+          {
+            "name": "--mx-light-link",
+            "value": "#285FFF"
+          },
+          {
+            "name": "--mx-light-orange",
+            "value": "#C4781F"
+          },
+          {
+            "name": "--mx-dark-prov",
+            "value": "#62A0E8"
+          },
+          {
+            "name": "--mx-dark-prov-ink",
+            "value": "#62A0E8"
+          },
+          {
+            "name": "--mx-dark-tier-accent",
+            "value": "#7C5CFF"
+          },
+          {
+            "name": "--mx-dark-tier-fill",
+            "value": "#6340D8"
+          },
+          {
+            "name": "--mx-dark-tier-ink",
+            "value": "#9B86FF"
+          },
+          {
+            "name": "--mx-dark-ser-1",
+            "value": "#5B9BF0"
+          },
+          {
+            "name": "--mx-dark-ser-2",
+            "value": "#D4A017"
+          },
+          {
+            "name": "--mx-dark-ser-3",
+            "value": "#0EA5E9"
+          },
+          {
+            "name": "--mx-dark-ser-4",
+            "value": "#E08B45"
+          },
+          {
+            "name": "--mx-light-prov",
+            "value": "#2F6FD0"
+          },
+          {
+            "name": "--mx-light-prov-ink",
+            "value": "#2C62B3"
+          },
+          {
+            "name": "--mx-light-tier-accent",
+            "value": "#7C5CFF"
+          },
+          {
+            "name": "--mx-light-tier-fill",
+            "value": "#6340D8"
+          },
+          {
+            "name": "--mx-light-tier-ink",
+            "value": "#5B3FC4"
+          },
+          {
+            "name": "--mx-light-ser-1",
+            "value": "#2F63C4"
+          },
+          {
+            "name": "--mx-light-ser-2",
+            "value": "#8F6A04"
+          },
+          {
+            "name": "--mx-light-ser-3",
+            "value": "#0284C7"
+          },
+          {
+            "name": "--mx-light-ser-4",
+            "value": "#B06A25"
+          },
+          {
+            "name": "--mx-light-ink-up",
+            "value": "#1E6D47"
+          },
+          {
+            "name": "--mx-light-ink-down",
+            "value": "#B23C3D"
+          },
+          {
+            "name": "--mx-light-ink-warn",
+            "value": "#7D5922"
+          },
+          {
+            "name": "--mx-light-ink-link",
+            "value": "#2758E6"
+          },
+          {
+            "name": "--noir-canvas",
+            "value": "#080808"
+          },
+          {
+            "name": "--noir-sidebar",
+            "value": "#0C0C0C"
+          },
+          {
+            "name": "--noir-panel",
+            "value": "#121212"
+          },
+          {
+            "name": "--noir-raised",
+            "value": "#191919"
+          },
+          {
+            "name": "--noir-hover",
+            "value": "#222222"
+          },
+          {
+            "name": "--noir-selected",
+            "value": "#292929"
+          },
+          {
+            "name": "--noir-text-primary",
+            "value": "#F3F3F3"
+          },
+          {
+            "name": "--noir-text-secondary",
+            "value": "#B8B8B8"
+          },
+          {
+            "name": "--noir-text-tertiary",
+            "value": "#949494"
+          },
+          {
+            "name": "--noir-champagne",
+            "value": "#C9B99B"
+          },
+          {
+            "name": "--noir-sage",
+            "value": "#A8C2AD"
+          },
+          {
+            "name": "--noir-rose",
+            "value": "#DEA4A5"
+          },
+          {
+            "name": "--noir-steel",
+            "value": "#A7B4C2"
+          },
+          {
+            "name": "--noir-lilac",
+            "value": "#BDB2CE"
+          },
+          {
+            "name": "--market-canvas",
+            "value": "#0A0B0D"
+          },
+          {
+            "name": "--market-panel",
+            "value": "#111318"
+          },
+          {
+            "name": "--market-raised",
+            "value": "#181B20"
+          },
+          {
+            "name": "--market-line",
+            "value": "#2B3038"
+          },
+          {
+            "name": "--mx-dark-up-soft",
+            "value": "rgb(69 184 115 / 12%)"
+          },
+          {
+            "name": "--mx-dark-down-soft",
+            "value": "rgb(224 100 100 / 12%)"
+          },
+          {
+            "name": "--mx-dark-warn-soft",
+            "value": "rgb(224 160 48 / 12%)"
+          },
+          {
+            "name": "--mx-dark-info-soft",
+            "value": "rgb(91 155 240 / 12%)"
+          },
+          {
+            "name": "--mx-light-up-soft",
+            "value": "#EAF7EF"
+          },
+          {
+            "name": "--mx-light-down-soft",
+            "value": "#FCECED"
+          },
+          {
+            "name": "--mx-light-warn-soft",
+            "value": "#FFF4E2"
+          },
+          {
+            "name": "--mx-light-info-soft",
+            "value": "#EAF2FC"
+          },
+          {
+            "name": "--mx-light-scrim",
+            "value": "#1C243029"
+          },
+          {
+            "name": "--font-ui",
+            "value": "\"Inter\""
+          },
+          {
+            "name": "--fs-micro",
+            "value": "10px"
+          },
+          {
+            "name": "--fs-label",
+            "value": "11px"
+          },
+          {
+            "name": "--fs-sm",
+            "value": "12.5px"
+          },
+          {
+            "name": "--fs-body",
+            "value": "14px"
+          },
+          {
+            "name": "--fs-h3",
+            "value": "14px"
+          },
+          {
+            "name": "--fs-md",
+            "value": "15px"
+          },
+          {
+            "name": "--fs-h2",
+            "value": "17px"
+          },
+          {
+            "name": "--fs-num-lg",
+            "value": "22px"
+          },
+          {
+            "name": "--fs-h1",
+            "value": "28px"
+          },
+          {
+            "name": "--fs-num-xl",
+            "value": "38px"
+          },
+          {
+            "name": "--fs-display",
+            "value": "46px"
+          },
+          {
+            "name": "--fw-regular",
+            "value": "400"
+          },
+          {
+            "name": "--fw-medium",
+            "value": "500"
+          },
+          {
+            "name": "--fw-semibold",
+            "value": "600"
+          },
+          {
+            "name": "--fw-bold",
+            "value": "700"
+          },
+          {
+            "name": "--fw-extrabold",
+            "value": "800"
+          },
+          {
+            "name": "--bp-mobile",
+            "value": "390px"
+          },
+          {
+            "name": "--bp-tablet",
+            "value": "768px"
+          },
+          {
+            "name": "--bp-desktop",
+            "value": "1440px"
+          },
+          {
+            "name": "--sp-1",
+            "value": "4px"
+          },
+          {
+            "name": "--sp-2",
+            "value": "8px"
+          },
+          {
+            "name": "--sp-3",
+            "value": "12px"
+          },
+          {
+            "name": "--sp-4",
+            "value": "16px"
+          },
+          {
+            "name": "--sp-5",
+            "value": "20px"
+          },
+          {
+            "name": "--sp-6",
+            "value": "24px"
+          },
+          {
+            "name": "--sp-7",
+            "value": "32px"
+          },
+          {
+            "name": "--sp-8",
+            "value": "44px"
+          },
+          {
+            "name": "--r-ctl",
+            "value": "8px"
+          },
+          {
+            "name": "--r-btn",
+            "value": "10px"
+          },
+          {
+            "name": "--r-card",
+            "value": "12px"
+          },
+          {
+            "name": "--r-panel",
+            "value": "14px"
+          },
+          {
+            "name": "--r-pill",
+            "value": "999px"
+          }
+        ]
+      }
+    },
+    "guard": "d189aca813c8c0137e1356d5d77df0b32b54de399b14f62de6089d941625a536"
+  }
+]

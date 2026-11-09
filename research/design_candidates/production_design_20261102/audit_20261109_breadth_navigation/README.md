@@ -48,4 +48,13 @@ The GitHub connector profile and source read returned account-suspended 403. Ind
 
 ## Current status
 
-Initial plan saved before substantial Paper effects. No Paper mutation has been performed by this amendment yet. No product code, provider call, alert, merge, approval, Ready change, deployment or measured user test is part of this design amendment.
+Native design work, visual readback and bounded static validation are complete. The phone overview is now 1,486 px tall rather than 3,433 px; full analysis remains available at 4D9-0. All 9 original Breadth boards and all 28 Government Revenue boards remain. Breadth has 15 boards after the retained references and new interaction/build/detail specimens.
+
+- [Audit, architecture comparison and build plan](AUDIT_AND_BUILD_PLAN.md)
+- [Verification and explicit limits](VERIFICATION.md)
+- [Continuation and ownership](CONTINUATION.md)
+- [Interaction specimen](interaction_specimen.html) — standalone source with static checks; browser interaction proof pending because Chrome reported an open extension UI.
+- [Native operation receipts](evidence/paper_operations.json), [page census](evidence/page_census.json) and [static validation](evidence/static_validation.json)
+- [Artifact manifest](MANIFEST.json)
+
+The evidence is a reviewable design amendment. No product installation, source integration, alert activation, merge, approval, deployment or production acceptance is claimed. The wider programme remains open under its existing source owners.

@@ -1,0 +1,184 @@
+{
+  "scope": "Paper breadth/navigation design amendment",
+  "procedure_pin": "494d095813dad415938800fa0e4d2719497738fa",
+  "source_pin": "b6a683a2334498fd7731e4869fb0d0d94c424664",
+  "native_carrier": "Mastermind Paper",
+  "files": [
+    {
+      "path": "AUDIT_AND_BUILD_PLAN.md",
+      "bytes": 20386,
+      "sha256": "b7c52be4b079f35494667cc382b861d18fee596c237072c02447264effc38402"
+    },
+    {
+      "path": "CONTINUATION.md",
+      "bytes": 3894,
+      "sha256": "5748083d458364307e10c7bf3eaacbad670b9341db762e0dd10f14642af00c43"
+    },
+    {
+      "path": "README.md",
+      "bytes": 6165,
+      "sha256": "a0c9037d9021bbf952d846486fe2885532046dab95148035ae9afbb19227618b"
+    },
+    {
+      "path": "VERIFICATION.md",
+      "bytes": 5955,
+      "sha256": "cacf2dc36637a5e6743afc97ec3338890fc71c2b1c13e353b564f9908e00b74b"
+    },
+    {
+      "path": "evidence/page_census.json",
+      "bytes": 179108,
+      "sha256": "b393bd07f68aebbaa8d324d7e4367e80dab1712be684fbcddd025e5487cbbcf7"
+    },
+    {
+      "path": "evidence/paper_operations.json",
+      "bytes": 183037,
+      "sha256": "dbce2002333f672e6207778e2754352260a05d5b33fa7c9a8e4ec67086d62670"
+    },
+    {
+      "path": "evidence/retention.json",
+      "bytes": 1118,
+      "sha256": "1b155c7d225b4da48aa89adfeb4a5b236f48d0fb70b371514b1c106296abcdaa"
+    },
+    {
+      "path": "evidence/source_consumer_reads.txt",
+      "bytes": 9285,
+      "sha256": "1ab9d3b71a3af492f0cfd138afec8a6d81400c1841c1a77932efdc15479a1a1d"
+    },
+    {
+      "path": "evidence/static_validation.json",
+      "bytes": 1020,
+      "sha256": "c0cfe47761c2730d96d9581cde361b9e67a8166b48cc5e2a04519e9a5e3f583c"
+    },
+    {
+      "path": "interaction_specimen.html",
+      "bytes": 25134,
+      "sha256": "57266bd90c3639dd83dc546ea88955f6a06582d01dc0415a660958d23b2cc863"
+    },
+    {
+      "path": "paper/breadth.before.desktop.jsx",
+      "bytes": 169397,
+      "sha256": "c34c16ee2c838181035cb538d710f99d8dcf3eac74ee5645399936b74b595c97"
+    },
+    {
+      "path": "paper/breadth.before.mobile.jsx",
+      "bytes": 112142,
+      "sha256": "b055227099d9ba28fdf59dfbc9a1c7e6f573e24d0a3cba89f4f2064ac58587ff"
+    },
+    {
+      "path": "paper/breadth.build.after.jsx",
+      "bytes": 11626,
+      "sha256": "98f106cec43f8f7d4622853f29ec694fe780594c8341fdcfe8c18d1cece93274"
+    },
+    {
+      "path": "paper/breadth.chooser.after.jsx",
+      "bytes": 5865,
+      "sha256": "0243fe871ccd31ca36aad1ccd2c2182dc78250b54845e8205fb9b05faed0e3bb"
+    },
+    {
+      "path": "paper/breadth.desktop.after.jsx",
+      "bytes": 165986,
+      "sha256": "37299f1f94c83b91743beaf40d33f6744916fa94b013de0cbb20c678e0caa9bc"
+    },
+    {
+      "path": "paper/breadth.full.analysis.after.jsx",
+      "bytes": 107338,
+      "sha256": "4224c5f66110fa664c6ac638ae6e1e7bd877235e5d706f8fb1f26feaaa13ad59"
+    },
+    {
+      "path": "paper/breadth.help.after.jsx",
+      "bytes": 7588,
+      "sha256": "6425fdc5d5f41972f1da9757b6b3fb71eaf1d5c9432de9f727b2900cc6ac70c2"
+    },
+    {
+      "path": "paper/breadth.mobile.after.jsx",
+      "bytes": 27001,
+      "sha256": "eca83b795f4aa56e3fad17007b53760f9234b32f4985c860f068c54df580dc0c"
+    },
+    {
+      "path": "paper/os.index.after.jsx",
+      "bytes": 44808,
+      "sha256": "670358e01a433a278030b2ddf4ad7bad37ed9e3a66493cd3cbedaa0d6bd7fb51"
+    },
+    {
+      "path": "paper/os.index.before.jsx",
+      "bytes": 44627,
+      "sha256": "f0777c8690923b009cfa49d975fc50d5340d78b39949dfdb729afed33bcd10d3"
+    },
+    {
+      "path": "paper/revenue.map.after.jsx",
+      "bytes": 6627,
+      "sha256": "f1da4c7458223b29b48ee4ab80deb0822a8c234e97ea2bef2ba963cedc9248a7"
+    },
+    {
+      "path": "paper/revenue.map.before.jsx",
+      "bytes": 6448,
+      "sha256": "145f3a47e9236b7631a86e89092f8353b6d8eb3ef51cf34a3924c114ee1a1b52"
+    },
+    {
+      "path": "paper/revenue.source.after.jsx",
+      "bytes": 38850,
+      "sha256": "597ea71d636f7549c3371294182cb5f277f43dc2bbb32acb7eebd85b399fd1e5"
+    },
+    {
+      "path": "screenshots/breadth_after_desktop.jpg",
+      "bytes": 230625,
+      "sha256": "f313bc1c2d7ed134a087e03e5414383a171e7e5393eedfe756374eb1fd659ef5"
+    },
+    {
+      "path": "screenshots/breadth_after_mobile.jpg",
+      "bytes": 82810,
+      "sha256": "b0f07919d69c0bf7bb2000cb71d0bf043e1908af01e41572ec73a018b114b04c"
+    },
+    {
+      "path": "screenshots/breadth_before_desktop.jpg",
+      "bytes": 244103,
+      "sha256": "f3b63bef311ee3714791d9397234fe01fad0936a9c174e0449b9456233710bb2"
+    },
+    {
+      "path": "screenshots/breadth_before_mobile.jpg",
+      "bytes": 98436,
+      "sha256": "47f89e895befc4f8c048b8fa598ba933ff2aed084603a5df3068905d4f0bfdfd"
+    },
+    {
+      "path": "screenshots/breadth_build.jpg",
+      "bytes": 250164,
+      "sha256": "c238924fe313a085427e2f4a8d36ac917886f54cb482b8dc831b4dd2395849cd"
+    },
+    {
+      "path": "screenshots/breadth_chooser.jpg",
+      "bytes": 38421,
+      "sha256": "f06b68c1751ffaf221e93e7ebd50e692a8ffad0613457697657f21d30c551f7d"
+    },
+    {
+      "path": "screenshots/breadth_comparison.jpg",
+      "bytes": 27457,
+      "sha256": "85cb5d3b6e619cb51061363be4035cffdafcebd47bf640baaac3068561c45ec2"
+    },
+    {
+      "path": "screenshots/breadth_full_analysis.jpg",
+      "bytes": 92700,
+      "sha256": "604be8608dde917749d127319dc3f4b6865c4efdfe35026b5f792749c03c4dfb"
+    },
+    {
+      "path": "screenshots/breadth_help.jpg",
+      "bytes": 74455,
+      "sha256": "6b4cae3856a3cb46043ba296299ac48fa438775b75633ac7aea026f92e7d345c"
+    },
+    {
+      "path": "screenshots/breadth_hero.jpg",
+      "bytes": 42192,
+      "sha256": "5a3e7eb7de686c2470f02054411a834df7360f63da681d453c5f1eee097c7308"
+    },
+    {
+      "path": "screenshots/os_index.jpg",
+      "bytes": 256655,
+      "sha256": "9ab46aadc8a87daa89f8c5697f0e64d4503f196501ba68ece1f87e01c90dc45d"
+    },
+    {
+      "path": "screenshots/revenue_map.jpg",
+      "bytes": 186808,
+      "sha256": "1acf8fc0a80a2fcd733ff7d5b9c71bce9d1b17a7474a1f0a16dc98f213cea423"
+    }
+  ],
+  "total_bytes": 2808231
+}
