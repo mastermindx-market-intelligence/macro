@@ -315,3 +315,203 @@ def describe_first_green_progress(bundle: Mapping[str, Any], candidate_id: str, 
         else:
             value["state"] = "EXPIRED"
     return finish()
+
+
+# Additive comparator. Existing formation/reference/progress functions above
+# retain their exact v0 behavior; no new detector or source owner is created.
+TWO_RED_SCHEMA = "mastermind.rs_pullback_launch.first_green_variant.v1"
+TWO_RED_DEFINITION_ID = "first-green-after-two-immediate-red30m-v1"
+
+
+def describe_first_green_variant(bundle: Mapping[str, Any], candidate_id: str, *,
+                                 variant: str = "one_red") -> dict[str, Any]:
+    """Return exact incumbent one-red output, or an additive two-red descriptor.
+
+    Two-red requires both immediately preceding complete same-session 30m
+    candles to be strictly red. It is not an all-day decline reconstruction.
+    Its formation schema is deliberately not accepted by the incumbent v0
+    reference freezer; confirmation integration requires a separate contract.
+    """
+    if not isinstance(variant, str) or variant not in {"one_red", "two_red"}:
+        raise InputContractError("variant must be one_red or two_red")
+    original = describe_first_green_candidate(bundle, candidate_id)
+    if variant == "one_red":
+        return original
+
+    value = copy.deepcopy(original)
+    value.pop("descriptor_sha256")
+    value.update(schema=TWO_RED_SCHEMA, definition_id=TWO_RED_DEFINITION_ID,
+                 variant="two_red", required_red_bars=2,
+                 reference_bars=[], prior_red_sequence=None)
+
+    def finish():
+        return _seal(value, "descriptor_sha256")
+
+    if original["state"] in {"UNAVAILABLE", "NOT_ELIGIBLE"}:
+        return finish()
+    candidate = _only_candidate(bundle, candidate_id)
+    cutoff = _clock(original["decision_at"])
+    _, law = _visible_session(bundle, cutoff, original["session"])
+    start = _clock(original["target_bar"]["start"])
+    first = start - 2 * BAR_WIDTH
+    if first < _clock(law["open"]):
+        value.update(state="UNAVAILABLE", condition_met=None, pivot=None,
+                     price_structure_known_at=None)
+        value["refusals"].append("NO_TWO_PREVIOUS_COMPLETED_SAME_SESSION_30M")
+        return finish()
+
+    stream = candidate["streams"]["stock"]
+    earlier = _aggregate(bundle.get("minutes", []), stream, bundle["streams"][stream],
+                         first, first + BAR_WIDTH, cutoff)
+    value["reference_bars"] = [copy.deepcopy(earlier), copy.deepcopy(original["previous_bar"])]
+    value["refusals"].extend("earlier:" + reason for reason in earlier["refusals"])
+    if value["refusals"]:
+        value.update(state="UNAVAILABLE", condition_met=None, pivot=None,
+                     price_structure_known_at=None)
+        return finish()
+    previous = earlier["ohlcv"]
+    red_sequence = original["previous_red"] and previous["close"] < previous["open"]
+    met = bool(red_sequence and original["current_green"])
+    value["prior_red_sequence"] = bool(red_sequence)
+    value["price_structure_known_at"] = _iso(max(
+        _clock(earlier["known_at"]), _clock(original["price_structure_known_at"])))
+    value["condition_met"] = met
+    value["state"] = "FIRST_GREEN_FORMED" if met else "NO_FIRST_GREEN"
+    if not met:
+        value["pivot"] = None
+    return finish()
+
+
+NEXT_CLOSE_REFERENCE_SCHEMA = "mastermind.rs_pullback_launch.first_green_next30m_reference.v1"
+NEXT_CLOSE_PROGRESS_SCHEMA = "mastermind.rs_pullback_launch.first_green_next30m_progress.v1"
+NEXT_CLOSE_DEFINITION_ID = "immediate-next-green30m-close-above-pivot-v1"
+
+
+def _next_close_reference_value(native_reference: Mapping[str, Any]) -> dict[str, Any]:
+    """Bind a true native one-red reference, never relabel a two-red record."""
+    ref = _checked_reference(native_reference)
+    start = _clock(ref["formation"]["pivot"]["bar_end"])
+    end = start + BAR_WIDTH
+    decision = _clock(ref["formation"]["decision_at"])
+    if (end > _clock(ref["session_close"]) or decision >= end
+            or _clock(ref["expires_at"]) != end
+            or _clock(ref["episode_expires_at"]) != end):
+        raise InputContractError("next complete same-session 30m window must be frozen before its end")
+    value = {
+        "schema": NEXT_CLOSE_REFERENCE_SCHEMA, "definition_id": NEXT_CLOSE_DEFINITION_ID,
+        "origin_definition_id": DEFINITION_ID,
+        "native_reference": copy.deepcopy(ref),
+        "window_start": _iso(start), "window_end": _iso(end),
+        "source_admitted": False, "actual_issuance_proven": False,
+        "detector_registered": False, "outcomes_computed": False,
+        "authority": dict(AUTHORITY_BLOCK), "issued_at": None,
+    }
+    value["reference_sha256"] = digest(value)
+    return value
+
+
+def freeze_first_green_next_close_reference(
+    bundle: Mapping[str, Any], candidate_id: str, *, buffer_size: float,
+) -> dict[str, Any]:
+    """Freeze the single next30m-close research window via the incumbent owner."""
+    formed = describe_first_green_candidate(bundle, candidate_id)
+    if formed["state"] != "FIRST_GREEN_FORMED":
+        raise InputContractError("complete eligible first-green formation required")
+    end = _clock(formed["pivot"]["bar_end"]) + BAR_WIDTH
+    native = freeze_first_green_reference(bundle, candidate_id, buffer_size=buffer_size,
+                                          episode_expires_at=_iso(end))
+    return _next_close_reference_value(native)
+
+
+def _checked_next_close_reference(reference: Mapping[str, Any]) -> dict[str, Any]:
+    if not isinstance(reference, Mapping):
+        raise InputContractError("frozen next30m-close reference required")
+    try:
+        expected = _next_close_reference_value(reference["native_reference"])
+    except (KeyError, TypeError, ValueError, OverflowError) as exc:
+        raise InputContractError("invalid frozen next30m-close reference") from exc
+    if dict(reference) != expected:
+        raise InputContractError("next30m-close reference changed after freeze")
+    return expected
+
+
+def describe_first_green_next_close(
+    bundle: Mapping[str, Any], candidate_id: str, *, reference: Mapping[str, Any],
+) -> dict[str, Any]:
+    """Observe the immediate next30m close, not an entry or eventual high break.
+
+    The native progress observer remains the sole minute-prefix risk/clock
+    implementation. Its earlier1m-close confirmation does not qualify this
+    different policy. Window-level lows also protect delayed-formation cases.
+    """
+    ref = _checked_next_close_reference(reference)
+    native = describe_first_green_progress(bundle, candidate_id, reference=ref["native_reference"])
+    cutoff = _clock(native["decision_at"])
+    start, end = _clock(ref["window_start"]), _clock(ref["window_end"])
+    value = {
+        "schema": NEXT_CLOSE_PROGRESS_SCHEMA, "definition_id": NEXT_CLOSE_DEFINITION_ID,
+        "origin_definition_id": DEFINITION_ID,
+        "reference_sha256": ref["reference_sha256"],
+        "native_reference_sha256": ref["native_reference"]["reference_sha256"],
+        "native_progress_sha256": native["progress_sha256"],
+        "candidate_id": candidate_id, "session": native["session"],
+        "decision_at": native["decision_at"], "input_kind": native["input_kind"],
+        "evidence_status": native["evidence_status"],
+        "state": "UNAVAILABLE", "condition_met": None,
+        "window_start": ref["window_start"], "window_end": ref["window_end"],
+        "window_closed": cutoff >= end, "target_bar": None,
+        "confirmation": None, "invalidation": copy.deepcopy(native["invalidation"]),
+        "price_structure_known_at": None,
+        "owner_snapshot_sha256": native["owner_snapshot_sha256"],
+        "current_context_availability": native["current_context_availability"],
+        "current_context_refusals": list(native["current_context_refusals"]),
+        "source_admitted": False, "actual_issuance_proven": False,
+        "detector_registered": False, "outcomes_computed": False,
+        "authority": dict(AUTHORITY_BLOCK), "issued_at": None,
+        "refusals": list(native["refusals"]),
+    }
+
+    def finish():
+        return _seal(value, "progress_sha256")
+
+    if native["state"] == "INVALIDATED":
+        value["state"] = "INVALIDATED"
+        return finish()
+    if native["state"] == "UNAVAILABLE":
+        return finish()
+    if cutoff < end:
+        value["state"] = "WAITING_CONFIRMATION"
+        return finish()
+
+    candidate = _only_candidate(bundle, candidate_id)
+    stream = candidate["streams"]["stock"]
+    target = _aggregate(bundle.get("minutes", []), stream, bundle["streams"][stream],
+                        start, end, cutoff)
+    value["target_bar"] = target
+    value["refusals"].extend("next30m:" + reason for reason in target["refusals"])
+    if value["refusals"]:
+        return finish()
+    prices = target["ohlcv"]
+    known = _iso(max(_clock(native["prefix_known_at"]), _clock(target["known_at"])))
+    value["price_structure_known_at"] = known
+    lower = Decimal(ref["native_reference"]["invalidation_level"])
+    upper = Decimal(ref["native_reference"]["confirmation_level"])
+    if Decimal(str(prices["low"])) < lower:
+        value["state"] = "INVALIDATED"
+        value["invalidation"] = {
+            "kind": "CONFIRMATION_WINDOW_LOW_BREACH",
+            "window_start": target["start"], "window_end": target["end"],
+            "known_at": known, "observed_low": prices["low"],
+            "input_revision_sha256": target["input_revision_sha256"],
+        }
+        return finish()
+    met = prices["close"] > prices["open"] and Decimal(str(prices["close"])) > upper
+    value["condition_met"] = bool(met)
+    value["state"] = "GREEN30M_CLOSE_CONFIRMED" if met else "EXPIRED_NOT_CONFIRMED"
+    if met:
+        value["confirmation"] = {
+            "bar_start": target["start"], "bar_end": target["end"],
+            "known_at": known, "observed_close": prices["close"],
+            "input_revision_sha256": target["input_revision_sha256"],
+        }
+    return finish()

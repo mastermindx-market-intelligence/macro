@@ -238,21 +238,20 @@ DISPLAY_BOARD_PAYLOAD_DIR = "premiumdata"
 # Polygon chunks, ~13s at ~37 symbols/s — still cheap for both producers; the
 # orchestrator gate above is unaffected for the same reason.
 #
-# 2026-11-05: the exact fed731de CI pack9 caught another observed growth edge:
-# current committed ten-board/premiumdata scrape = 415 unique symbols (including
-# the gated US board), or 86.5% of 480; the 15% headroom guard intentionally
-# failed. Source-faithful Git-object reconstruction parsed 15,079,438 input
-# bytes in 0.062s. The served /live/quotes.json read-only HTTP 200 receipt
-# was 82,247 bytes / 428 quotes (185B median item, 192.2B amortized) with
-# 2.05s public GET latency, not a producer/vendor timing measurement.
-# At 600 slots the observed leg uses 69.2% (185 spare); 600 * 192.2B is
-# ~115KB (<500KB client budget). The previously measured ~37 symbols/s
-# provider throughput projects ~16.2s for 600 symbols, NOT a new vendor SLA.
-# Existing Yahoo/Polygon request chunk caps, macro tile priority, per-symbol
-# filtering, strict no-truncation test and min-resolved quality gate are
-# unchanged. This is a bounded increase in the incumbent display producer,
-# not a fresh-data guarantee or license to add unmeasured board pages.
-DISPLAY_BOARD_CAP = 600
+# Cap raised 480 -> 640 (2026-11-05) after main's own proof went red again on
+# test_the_board_leg_has_headroom_over_the_cap (415 > 0.85 * 480 = 408), which
+# turned every CI-authority pull request red because an authority-changing PR may
+# not excuse an inherited red. Measured on main's committed site/ bytes at
+# 09f1c648 with this module's own board_display_symbols (pages plus the
+# premiumdata/us_stocks.json payload): uncapped board leg 415 (china_stocks 259,
+# us_stocks 51, hk_stocks 46, crypto 26, canada_stocks 10, macro 10, canada 6,
+# china/commodities/hk 4 each). The leg grew 342 -> 415 in four weeks, almost all
+# of it the China board; 640 puts it at 65% of the cap (~225 slots of swing, the
+# same ~1.5x margin 480 gave 342). Cost at the new ceiling: ~117KB serialized at
+# the same ~183B/symbol (vs the 500KB budget), <=32 Yahoo batch requests plus
+# <=7 Polygon chunks, ~17s at ~37 symbols/s — still cheap for both producers;
+# the orchestrator gate above is unaffected for the same reason.
+DISPLAY_BOARD_CAP = 640
 
 
 def payload_html(path: Path) -> str:
