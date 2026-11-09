@@ -1,16 +1,16 @@
 # Paper continuation package
 
-Start with [RESULTS.md](RESULTS.md) for the eight edited files and what changed. [BUILD_PLAN.md](BUILD_PLAN.md) contains ten implementation slices, their existing owners, dependencies and acceptance cases. [SOURCE_RULINGS.md](SOURCE_RULINGS.md) binds the important distinctions to exact source commits.
+Start with [RESULTS.md](RESULTS.md) for the ten edited files and what changed. [BUILD_PLAN.md](BUILD_PLAN.md) contains twelve implementation slices, their existing owners, dependencies and acceptance cases. [SOURCE_RULINGS.md](SOURCE_RULINGS.md) binds the important distinctions to exact source commits.
 
 | Artifact | Purpose |
 |---|---|
 | [RESULTS.md](RESULTS.md) | Implemented design delta, Paper links, preservation, verification and limits |
-| [BUILD_PLAN.md](BUILD_PLAN.md) | F01–F10 task tree for the existing producers, consumers and effect owners |
+| [BUILD_PLAN.md](BUILD_PLAN.md) | F01–F12 task tree for the existing producers, consumers and effect owners |
 | [SOURCE_RULINGS.md](SOURCE_RULINGS.md) | Exact source behavior, required extensions and illustration boundaries |
 | [NODE_MIGRATION.json](NODE_MIGRATION.json) | Current and retained node identities |
-| [VERIFICATION.json](VERIFICATION.json) | 115 text readbacks, surface snapshots, numeric check and proof limits |
-| [EFFECTS_CURRENT.json](EFFECTS_CURRENT.json) | 152 observed operations and two reconciled validation rejections |
-| [PROOF_MANIFEST.json](PROOF_MANIFEST.json) | 21 screenshot hashes and exact Paper targets |
+| [VERIFICATION.json](VERIFICATION.json) | 120 text readbacks, surface snapshots, numeric check and proof limits |
+| [EFFECTS_CURRENT.json](EFFECTS_CURRENT.json) | 156 observed operations and two reconciled validation rejections |
+| [PROOF_MANIFEST.json](PROOF_MANIFEST.json) | 26 screenshot hashes and exact Paper targets |
 | [before/](before/) | Committed complete semantic preimages |
 | [post/](post/) | Final JSX snapshots, including pre-existing and concurrent context |
 | [proof/](proof/) | Rendered Paper captures |

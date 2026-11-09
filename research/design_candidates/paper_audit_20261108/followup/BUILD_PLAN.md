@@ -1,6 +1,6 @@
 # Builder plan — Paper continuation
 
-This is the task tree for the design continuation, not a runtime queue or permission grant. IDs F01–F10 identify bounded implementation slices. Existing programme owners, source custody, admitted operations and release controls continue to govern execution.
+This is the task tree for the design continuation, not a runtime queue or permission grant. IDs F01–F12 identify bounded implementation slices. Existing programme owners, source custody, admitted operations and release controls continue to govern execution.
 
 ## Architecture and content placement
 
@@ -24,6 +24,8 @@ A read-only navigation is not a save, review, verification, watch or publication
 | F08 | PROPHET candidate, verification, research and Plan owners | 10TD-0 / 133D-0 / 13L8-0 | Exact per-subject record identity |
 | F09 | Investigation revision/RPC and operation readback | 16M-0 | Supported evidence admission |
 | F10 | Existing watch and assessment owners | TP-0 / mobile 1-0 | Qualified observations and supported effect |
+| F11 | Existing Guide destination and local search navigation | 26E-1 / 294-1 / 2BP-1 | D25 and R20 return contracts |
+| F12 | Existing MX/Freshness and evidence disclosure | 2U8-0 / 2WI-0 | Owner-qualified meaning of each clock |
 
 F03–F08 can be implemented independently after their own source binding is resolved. F09/F10 do not block the honest unavailable or read-only states.
 
@@ -150,6 +152,22 @@ The hero labels the conclusion Draft while revision 3 remains saved. Only the ex
 Re-arm retains 230.00 until an explicit supported edit changes it. Show the later 230→232.5 evidence beside the action. Five-minute cadence means a future evaluation, not guaranteed firing. A fresh qualifying observation is required. Keep current quote 21 Oct 16:30:04 ET, historical quote 15:40:01Z and receipt/firing 15:40:03Z distinct.
 
 **Acceptance:** no fresh quote, stale or missing quote, threshold still met, threshold no longer met, explicit threshold edit, manual re-arm, immutable receipt, correction as a new receipt, unsaved assessment, conflicting revision and uncertain effect reconciliation. Use the existing watch owner; no timer in the view, duplicate watch service or foreground polling loop.
+
+## F11 — Guide destination names and exact local return
+
+Use “Open Macro dashboard” for the three search/recovery headers. It is a named destination, not a promise to restore a prior Macro view. Preserve D25’s distinct Back one step and qualified Return to your view actions.
+
+Within a Guide search journey, R20 already owns query, filter, result scroll and opener-focus restoration. Open the same lesson, including when it lies outside the active filter. With no prior search, show Market Guide as the return destination and omit the saved-search message. Reuse that incumbent navigation state; add no global context store or parallel history service.
+
+**Acceptance:** direct entry, query→lesson→results, active filter excludes the opened lesson, browser Back, changed/missing origin and keyboard focus. Copy changes are verified in desktop and 390px Paper layouts; real route behavior remains a consumer proof obligation.
+
+## F12 — Primary clock and material second clock
+
+The existing MX/Freshness component names a panel’s primary clock. A second clock belongs beside the verdict or action whenever it changes what the user can infer or do: for example, a current quote with an older assessment, or an observation time with a later firing receipt. Other source timestamps may remain in the existing LENS disclosure.
+
+Do not choose the latest timestamp merely because it is latest. Preserve the source owner and semantic role of every clock. The shared rule changes presentation, not freshness computation, eligibility, assessment status or action admission. The source doctrine at Macro b5674d8ef898e503d6164922654f5ff89be9981c, docs/DESIGN_DOCTRINE.md:263, keeps freshness at its truthful scope and consequential limitations visible.
+
+**Acceptance:** current quote/older assessment, distinct observation/receipt times, missing one clock, same-generation times, source change and narrow/localized layouts. A recent quote must not make a stale assessment appear current; a receipt time must not become the market observation time.
 
 ## Visual and interaction completion
 

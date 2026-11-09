@@ -9869,5 +9869,163 @@
       },
       "result": "OK"
     }
+  },
+  {
+    "operation_id": "paper-audit-20261109-guide-named-destination-v1",
+    "tool": "set_text_content",
+    "arguments": {
+      "fileId": "01M32XYWDYSFTNDZVJKQ5QHT33",
+      "updates": [
+        {
+          "nodeId": "26E-1",
+          "html": "Open Macro dashboard"
+        },
+        {
+          "nodeId": "294-1",
+          "html": "Open Macro dashboard"
+        },
+        {
+          "nodeId": "2BP-1",
+          "html": "Open Macro dashboard"
+        }
+      ]
+    },
+    "receipt": {
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false,
+      "before": {
+        "identity": {
+          "kind": "file-id",
+          "id": "01M32XYWDYSFTNDZVJKQ5QHT33"
+        },
+        "snapshot_sha256": "1d9e7a4139acfdffea26bbb1479efa7ffcb2395a0278c7d3d0242c89460b2f76"
+      },
+      "after": {
+        "identity": {
+          "kind": "file-id",
+          "id": "01M32XYWDYSFTNDZVJKQ5QHT33"
+        },
+        "snapshot_sha256": "1d9e7a4139acfdffea26bbb1479efa7ffcb2395a0278c7d3d0242c89460b2f76"
+      },
+      "result": {
+        "updates": [
+          {
+            "nodeId": "26E-1"
+          },
+          {
+            "nodeId": "294-1"
+          },
+          {
+            "nodeId": "2BP-1"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "operation_id": "paper-audit-20261109-guide-named-destination-finish-v1",
+    "tool": "finish_working_on_nodes",
+    "arguments": {
+      "fileId": "01M32XYWDYSFTNDZVJKQ5QHT33",
+      "nodeIds": [
+        "244-1",
+        "26W-1",
+        "2AP-1"
+      ]
+    },
+    "receipt": {
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false,
+      "before": {
+        "identity": {
+          "kind": "file-id",
+          "id": "01M32XYWDYSFTNDZVJKQ5QHT33"
+        },
+        "snapshot_sha256": "1d9e7a4139acfdffea26bbb1479efa7ffcb2395a0278c7d3d0242c89460b2f76"
+      },
+      "after": {
+        "identity": {
+          "kind": "file-id",
+          "id": "01M32XYWDYSFTNDZVJKQ5QHT33"
+        },
+        "snapshot_sha256": "1d9e7a4139acfdffea26bbb1479efa7ffcb2395a0278c7d3d0242c89460b2f76"
+      },
+      "result": "OK"
+    }
+  },
+  {
+    "operation_id": "paper-audit-20261109-material-secondary-clock-v1",
+    "tool": "set_text_content",
+    "arguments": {
+      "fileId": "01M312VSDSZFVT45674GDVJVZN",
+      "updates": [
+        {
+          "nodeId": "2U8-0",
+          "html": "Use producer-specific score names. Plan conviction, management score and priority are different measures, never profit odds.<br /><br />Each panel names its primary clock. Keep a second clock beside the verdict or action when it changes meaning; other source times stay in LENS.<br /><br />Keep a material age or coverage caveat beside the verdict. Preserve the actual stance; UI copy creates no new gate."
+        },
+        {
+          "nodeId": "2WI-0",
+          "html": "Use producer-specific score names. Plan conviction, management score and priority are different measures, never profit odds.<br /><br />Each panel names its primary clock. Keep a second clock beside the verdict or action when it changes meaning; other source times stay in LENS.<br /><br />Keep a material age or coverage caveat beside the verdict. Preserve the actual stance; UI copy creates no new gate."
+        }
+      ]
+    },
+    "receipt": {
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false,
+      "before": {
+        "identity": {
+          "kind": "file-id",
+          "id": "01M312VSDSZFVT45674GDVJVZN"
+        },
+        "snapshot_sha256": "46680903782075e56ffc5bab0cdfeb618ddbc420e9e65670b979981b88b128f4"
+      },
+      "after": {
+        "identity": {
+          "kind": "file-id",
+          "id": "01M312VSDSZFVT45674GDVJVZN"
+        },
+        "snapshot_sha256": "46680903782075e56ffc5bab0cdfeb618ddbc420e9e65670b979981b88b128f4"
+      },
+      "result": {
+        "updates": [
+          {
+            "nodeId": "2U8-0"
+          },
+          {
+            "nodeId": "2WI-0"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "operation_id": "paper-audit-20261109-material-secondary-clock-finish-v1",
+    "tool": "finish_working_on_nodes",
+    "arguments": {
+      "fileId": "01M312VSDSZFVT45674GDVJVZN",
+      "nodeIds": [
+        "2S4-0",
+        "2UE-0"
+      ]
+    },
+    "receipt": {
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "retry_allowed": false,
+      "before": {
+        "identity": {
+          "kind": "file-id",
+          "id": "01M312VSDSZFVT45674GDVJVZN"
+        },
+        "snapshot_sha256": "46680903782075e56ffc5bab0cdfeb618ddbc420e9e65670b979981b88b128f4"
+      },
+      "after": {
+        "identity": {
+          "kind": "file-id",
+          "id": "01M312VSDSZFVT45674GDVJVZN"
+        },
+        "snapshot_sha256": "46680903782075e56ffc5bab0cdfeb618ddbc420e9e65670b979981b88b128f4"
+      },
+      "result": "OK"
+    }
   }
 ]

@@ -8,15 +8,15 @@
     "terminal": "d7a83d3348a4fcb762d93221f19c4e94cbe4505e"
   },
   "effects": {
-    "total": 154,
-    "applied_response_observed": 152,
+    "total": 158,
+    "applied_response_observed": 156,
     "invalid_argument_reconciled": 2,
     "partial_frame_target_errors_reconciled": 3,
     "unresolved": []
   },
   "text_readback": {
-    "count": 115,
-    "passed": 115,
+    "count": 120,
+    "passed": 120,
     "checks": [
       {
         "fileId": "01M5EX8RTPR7YEZD2A144XED2S",
@@ -1054,6 +1054,46 @@
         "status": "PASS",
         "surface": "prophet_compare_contract",
         "op": "paper-audit-c3-prophet-compare-build-contrast-20261109-v1"
+      },
+      {
+        "file_id": "01M32XYWDYSFTNDZVJKQ5QHT33",
+        "artboard_id": "244-1",
+        "node_id": "26E-1",
+        "expected": "Open Macro dashboard",
+        "actual": "Open Macro dashboard",
+        "passed": true
+      },
+      {
+        "file_id": "01M32XYWDYSFTNDZVJKQ5QHT33",
+        "artboard_id": "26W-1",
+        "node_id": "294-1",
+        "expected": "Open Macro dashboard",
+        "actual": "Open Macro dashboard",
+        "passed": true
+      },
+      {
+        "file_id": "01M32XYWDYSFTNDZVJKQ5QHT33",
+        "artboard_id": "2AP-1",
+        "node_id": "2BP-1",
+        "expected": "Open Macro dashboard",
+        "actual": "Open Macro dashboard",
+        "passed": true
+      },
+      {
+        "file_id": "01M312VSDSZFVT45674GDVJVZN",
+        "artboard_id": "2S4-0",
+        "node_id": "2U8-0",
+        "expected": "Use producer-specific score names. Plan conviction, management score and priority are different measures, never profit odds. Each panel names its primary clock. Keep a second clock beside the verdict or action when it changes meaning; other source times stay in LENS. Keep a material age or coverage caveat beside the verdict. Preserve the actual stance; UI copy creates no new gate.",
+        "actual": "Use producer-specific score names. Plan conviction, management score and priority are different measures, never profit odds. Each panel names its primary clock. Keep a second clock beside the verdict or action when it changes meaning; other source times stay in LENS. Keep a material age or coverage caveat beside the verdict. Preserve the actual stance; UI copy creates no new gate.",
+        "passed": true
+      },
+      {
+        "file_id": "01M312VSDSZFVT45674GDVJVZN",
+        "artboard_id": "2UE-0",
+        "node_id": "2WI-0",
+        "expected": "Use producer-specific score names. Plan conviction, management score and priority are different measures, never profit odds. Each panel names its primary clock. Keep a second clock beside the verdict or action when it changes meaning; other source times stay in LENS. Keep a material age or coverage caveat beside the verdict. Preserve the actual stance; UI copy creates no new gate.",
+        "actual": "Use producer-specific score names. Plan conviction, management score and priority are different measures, never profit odds. Each panel names its primary clock. Keep a second clock beside the verdict or action when it changes meaning; other source times stay in LENS. Keep a material age or coverage caveat beside the verdict. Preserve the actual stance; UI copy creates no new gate.",
+        "passed": true
       }
     ]
   },
@@ -1259,6 +1299,41 @@
       "fileId": "01M2VWK62FA5S4VVF6G7SBPE5J",
       "nodeId": "7FJ-0",
       "chars": 105049,
+      "state": "OBSERVED"
+    },
+    {
+      "key": "guide_search_desktop",
+      "fileId": "01M32XYWDYSFTNDZVJKQ5QHT33",
+      "nodeId": "244-1",
+      "chars": 12390,
+      "state": "OBSERVED"
+    },
+    {
+      "key": "guide_search_mobile",
+      "fileId": "01M32XYWDYSFTNDZVJKQ5QHT33",
+      "nodeId": "26W-1",
+      "chars": 9867,
+      "state": "OBSERVED"
+    },
+    {
+      "key": "guide_recovery_mobile",
+      "fileId": "01M32XYWDYSFTNDZVJKQ5QHT33",
+      "nodeId": "2AP-1",
+      "chars": 9187,
+      "state": "OBSERVED"
+    },
+    {
+      "key": "pattern_material_dark",
+      "fileId": "01M312VSDSZFVT45674GDVJVZN",
+      "nodeId": "2S4-0",
+      "chars": 23168,
+      "state": "OBSERVED"
+    },
+    {
+      "key": "pattern_material_light",
+      "fileId": "01M312VSDSZFVT45674GDVJVZN",
+      "nodeId": "2UE-0",
+      "chars": 23168,
       "state": "OBSERVED"
     }
   ],
@@ -1477,7 +1552,8 @@
     "81a03478b2787fab20723316512370de6f62d3da",
     "be18d26cd2471ac5d27869bf9dc1537a3ec54cee",
     "69570f33c31168c1c93f19c035591b805ff4bc09",
-    "a11cf1790bd921811a7242464483e27c5fa88510"
+    "a11cf1790bd921811a7242464483e27c5fa88510",
+    "7e8382d695b3568aa0c0c82c7245f80cb5c78fd5"
   ],
   "reconciliation": {
     "binding": [
@@ -1984,11 +2060,54 @@
       "path": "proof/prophet-verification-contract.jpg",
       "paper_file_id": "01M3NT5Y3G5HTJHVR0K5W2MDJM",
       "paper_node_id": "1CBT-0"
+    },
+    {
+      "key": "guide_search_desktop",
+      "path": "proof/guide_search_desktop.jpg",
+      "paper_file_id": "01M32XYWDYSFTNDZVJKQ5QHT33",
+      "paper_node_id": "244-1"
+    },
+    {
+      "key": "guide_search_mobile",
+      "path": "proof/guide_search_mobile.jpg",
+      "paper_file_id": "01M32XYWDYSFTNDZVJKQ5QHT33",
+      "paper_node_id": "26W-1"
+    },
+    {
+      "key": "guide_recovery_mobile",
+      "path": "proof/guide_recovery_mobile.jpg",
+      "paper_file_id": "01M32XYWDYSFTNDZVJKQ5QHT33",
+      "paper_node_id": "2AP-1"
+    },
+    {
+      "key": "pattern_material_dark",
+      "path": "proof/pattern_material_dark.jpg",
+      "paper_file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "paper_node_id": "2S4-0"
+    },
+    {
+      "key": "pattern_material_light",
+      "path": "proof/pattern_material_light.jpg",
+      "paper_file_id": "01M312VSDSZFVT45674GDVJVZN",
+      "paper_node_id": "2UE-0"
     }
   ],
   "local_artifact_check": {
     "json_files_valid": 11,
     "new_discovery_frontmatter_contracts": 3,
     "method": "Focused local JSON/frontmatter checks against the inspected discovery field contract; not the full repository validator or hosted CI."
+  },
+  "ci_repair": {
+    "original_head": "790a71c3460c04863b9bc3b193d24d938fdd44ab",
+    "failure": "Two discovery provenance fields lacked a recognized source token.",
+    "repair_head": "7e8382d695b3568aa0c0c82c7245f80cb5c78fd5",
+    "repair": "Real pinned source locations added; two records and manifest passed exact readback.",
+    "observed_checks": {
+      "fence_pack": "success",
+      "self_mod_fence": "success",
+      "capability_broker": "success",
+      "grader_manifest": "success"
+    },
+    "release": "Other required checks remain governed by the exact current PR head; this is not a merge receipt."
   }
 }

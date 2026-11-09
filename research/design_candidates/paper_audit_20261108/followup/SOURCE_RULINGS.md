@@ -108,3 +108,9 @@ The existing R3 contract already requires44px coarse-pointer controls. Current27
 ## Evidence use
 
 Post JSX snapshots can contain pre-existing and concurrent product content. Only EFFECTS_CURRENT.json identifies this session's actual mutations. A screenshot is evidence of what rendered at capture, not ownership of every visible element or a functioning runtime.
+
+## R11 — Material timestamps and Guide return naming
+
+At Macro b5674d8ef898e503d6164922654f5ff89be9981c, docs/DESIGN_DOCTRINE.md:263 places freshness at its truthful scope and :267 requires consequential limitations at the relevant decision. Paper’s shared Material UI State Contract was narrower than this: its blanket second-clock-in-LENS rule could conceal a time that changes the verdict or action. Nodes 2U8-0/2WI-0 now retain a consequential second clock beside that decision, reusing MX/Freshness and LENS.
+
+Guide D25 44J-0 distinguishes a named dashboard destination from history Back and qualified context return. Three search/recovery headers now inherit “Open Macro dashboard”. R20’s local saved-search return remains unchanged. These are source/design clarifications, not proof of an implemented route or timestamp policy.

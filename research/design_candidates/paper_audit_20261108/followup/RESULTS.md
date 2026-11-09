@@ -6,7 +6,7 @@ Date: 9 November 2026. This continues the original 8 November audit and its acce
 
 Before this continuation, several current Paper references mixed measurement contexts, buried the answer beneath controls, or presented actions whose exact persistence path was not established. Builders also had to infer loading, return and qualification rules from disconnected notes.
 
-After this continuation, eight Paper files contain concrete improvements to their current product references and nearby Build guidance. The work includes source-aligned Options figures, fiscal-period and loading contracts, explicit inconclusive research assessment, accessible touch-reference geometry, a bilingual research-order explanation, clearer comparison journeys, and faithful unavailable states.
+After this continuation, ten Paper files contain concrete improvements to their current product references and nearby Build guidance. The work includes source-aligned Options figures, fiscal-period and loading contracts, explicit inconclusive research assessment, accessible touch-reference geometry, a bilingual research-order explanation, clearer comparison journeys, and faithful unavailable states.
 
 **Evidence state: implemented and visually inspected in Paper; source comparisons and extracted JSX verified.** This is not a runtime release, browser interaction test, live-feed acceptance, completed save/watch operation, or model qualification. Existing integration and acceptance holds retain their original scope.
 
@@ -22,6 +22,8 @@ After this continuation, eight Paper files contain concrete improvements to thei
 | Risk Radar Popups | [Open design](https://app.paper.design/file/01M38EVF74SJWG1GANN5VP380Z) | Twenty EN/ZH nodes use trading-day labels and the native closing-observation definition. Dated probabilities and unmatched history retain their limits. |
 | PROPHET | [Open design](https://app.paper.design/file/01M3NT5Y3G5HTJHVR0K5W2MDJM/p-D-0) | 10TD-0 explains unavailable assessment in direct language. Comparison 133D-0 names unavailable evidence beside each INTC/MSFT read, without inventing a destination. |
 | Intelligence Hub | [Open design](https://app.paper.design/file/01M2VWK62FA5S4VVF6G7SBPE5J/p-3-0) | Alert activation and draft saving remain unavailable. Healthy-empty returns to published research. New section 854-0 explains ordering in English and Chinese with a clear return action. |
+| Market Guide | [Open design](https://app.paper.design/file/01M32XYWDYSFTNDZVJKQ5QHT33/p-4-0) | Three search/recovery headers name “Open Macro dashboard”; existing saved-search return and direct-entry rules remain intact. |
+| Product Design System | [Open design](https://app.paper.design/file/01M312VSDSZFVT45674GDVJVZN/p-5-0) | Dark/light material-state rules keep a consequential second clock beside the verdict or action, with other source times in LENS. |
 
 ## What changed and why
 
@@ -73,6 +75,14 @@ Risk Radar now describes the model's next 21 SPY closing observations faithfully
 
 PROPHET's unavailable state names the missing checks without repeating implementation terminology. Shell-freeze narration moved into Build, leaving a short illustrative-data footer. INTC and MSFT each show “Evidence record unavailable” directly beneath their read. The unrelated NVDA detail is not a substitute. No Plan link, exact record, saved comparison or verification result was fabricated.
 
+### Guide and shared patterns: navigation and time semantics agree
+
+Guide search and no-match recovery now say “Open Macro dashboard” at 26E-1, 294-1 and 2BP-1. This is a named destination, while the existing local search journey retains its explicit saved query/filter/scroll/focus restoration. D25 and R20 remain the navigation owners; no new return mechanism was introduced.
+
+The shared material-state contract at 2U8-0 and 2WI-0 now names each panel’s primary clock and keeps a second clock beside the verdict or action when that time changes its meaning. Other source times stay in LENS. This clarifies the existing MX/Freshness treatment and the source doctrine’s requirement to keep consequential limitations visible. It preserves progressive disclosure without making a newer quote appear to refresh an older assessment.
+
+The bounded MarketOntology sample was coherent. Current WTI conditions, retained thesis/company scope and unavailable comparison were preserved. Four newer destinations were not assessed because the adviser used an unsupported read argument; no defect or mutation was inferred from that adapter result.
+
 ## Preservation and supersession
 
 All pre-existing semantic text was retained in committed input captures before its rewrite. Initial preservation commits were 81a03478b2787fab20723316512370de6f62d3da and be18d26cd2471ac5d27869bf9dc1537a3ec54cee; the Hub trigger was preserved at 69570f33c31168c1c93f19c035591b805ff4bc09; later comparison/readout inputs were preserved at a11cf1790bd921811a7242464483e27c5fa88510. Each was read back.
@@ -81,16 +91,18 @@ Original motion, compact News controls, Options controls and selected former com
 
 ## Verification and limits
 
-- 152 edit operations returned APPLIED_RESPONSE_OBSERVED, including targeted release calls.
+- 156 edit operations returned APPLIED_RESPONSE_OBSERVED, including targeted release calls.
 - Two Options calls returned INVALID_ARGUMENT without an applied receipt. Exact original-target readback established unchanged text/children before a corrected same-carrier attempt. They are not unresolved effects.
 - One batch returned three per-node errors because the requested nodes were Frames. The successful nodes were retained; the actual Chinese Text nodes were read and corrected separately.
-- All 115 final edited Text nodes matched exact readback. Two hidden locale nodes required get_node_info because get_jsx omits hidden content.
-- 29 final JSX surface snapshots and 15 supplemental node captures are retained.
-- 21 rendered Paper screenshots show the inspected layouts. News's 44px styles are verified; actual hit testing remains a consumer proof obligation.
+- All 120 final edited Text nodes matched exact readback. Two hidden locale nodes required get_node_info because get_jsx omits hidden content.
+- 34 final JSX surface snapshots and 15 supplemental node captures are retained.
+- 26 rendered Paper screenshots show the inspected layouts. News's 44px styles are verified; actual hit testing remains a consumer proof obligation.
 - The old local file browser-preview attempt was security-policy denied. It was not replayed through another scheme or carrier. No browser, keyboard, screen-reader, animation-runtime, network, persistence, alert execution or production proof is claimed.
 - No new service, queue, retry owner, ranking owner, watcher, runtime state, trade or deployment was created.
 
 The exact snapshots and checks are in [VERIFICATION.json](VERIFICATION.json), operations in [EFFECTS_CURRENT.json](EFFECTS_CURRENT.json), and image hashes in [PROOF_MANIFEST.json](PROOF_MANIFEST.json).
+
+The initial repository fence rejected two new discovery provenance fields. They were corrected to actual pinned source locations, committed as 7e8382d695b3568aa0c0c82c7245f80cb5c78fd5, and read back exactly. The fence-pack and self-mod-fence then passed. Release status remains owned by the current PR’s exact-head checks.
 
 ## Existing boundaries retained
 

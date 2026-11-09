@@ -229,5 +229,60 @@
     "paper_node_id": "1CBT-0",
     "mime_type": "image/jpeg",
     "evidence": "Static Paper rendering; no runtime behavior inferred."
+  },
+  {
+    "key": "guide_search_desktop",
+    "path": "proof/guide_search_desktop.jpg",
+    "bytes": 62222,
+    "sha256": "7fe8e6676c4c4411543b4a507eebd700d79ef9ec538278bd6f69dda101a7c64a",
+    "git_blob_sha": "0ca95bd8095c4d8c9820ecaeb5073a3a1c176df3",
+    "paper_file_id": "01M32XYWDYSFTNDZVJKQ5QHT33",
+    "paper_node_id": "244-1",
+    "mime_type": "image/jpeg",
+    "evidence": "Static Paper rendering; no runtime behavior inferred."
+  },
+  {
+    "key": "guide_search_mobile",
+    "path": "proof/guide_search_mobile.jpg",
+    "bytes": 45391,
+    "sha256": "ea2028964e768b402f5b68f8ebe36d991c5b10bde02a8bf4b24349e7dc3d6aec",
+    "git_blob_sha": "7e16614465155f17fc1f2cbeb01d366371a7f3e9",
+    "paper_file_id": "01M32XYWDYSFTNDZVJKQ5QHT33",
+    "paper_node_id": "26W-1",
+    "mime_type": "image/jpeg",
+    "evidence": "Static Paper rendering; no runtime behavior inferred."
+  },
+  {
+    "key": "guide_recovery_mobile",
+    "path": "proof/guide_recovery_mobile.jpg",
+    "bytes": 41682,
+    "sha256": "7e2723627721be34f4a8998651929a874f0acb89ba837e78b6c6acc79892a117",
+    "git_blob_sha": "88b37845c8f95daafcc22732104111939d024b7a",
+    "paper_file_id": "01M32XYWDYSFTNDZVJKQ5QHT33",
+    "paper_node_id": "2AP-1",
+    "mime_type": "image/jpeg",
+    "evidence": "Static Paper rendering; no runtime behavior inferred."
+  },
+  {
+    "key": "pattern_material_dark",
+    "path": "proof/pattern_material_dark.jpg",
+    "bytes": 182572,
+    "sha256": "77249841eff1d5aaed2891a5c39c59773244ee93a4c6920897dfccc9174a8dc8",
+    "git_blob_sha": "c65ee9ba7872d9d24da0efd1b7a571004ecf53f4",
+    "paper_file_id": "01M312VSDSZFVT45674GDVJVZN",
+    "paper_node_id": "2S4-0",
+    "mime_type": "image/jpeg",
+    "evidence": "Static Paper rendering; no runtime behavior inferred."
+  },
+  {
+    "key": "pattern_material_light",
+    "path": "proof/pattern_material_light.jpg",
+    "bytes": 193356,
+    "sha256": "ae99be6a504eebabfcf505120961c6f361eecad5b105f140373970bc7a337b46",
+    "git_blob_sha": "9f142f533eb0bbf1e4fa49942acfa66cdefc7a7f",
+    "paper_file_id": "01M312VSDSZFVT45674GDVJVZN",
+    "paper_node_id": "2UE-0",
+    "mime_type": "image/jpeg",
+    "evidence": "Static Paper rendering; no runtime behavior inferred."
   }
 ]

@@ -212,5 +212,38 @@
       "852-0"
     ],
     "heldShell": "43"
+  },
+  "guide": {
+    "file": "01M32XYWDYSFTNDZVJKQ5QHT33",
+    "page": "p-4-0",
+    "artboards": [
+      "244-1",
+      "26W-1",
+      "2AP-1"
+    ],
+    "nodes": [
+      "26E-1",
+      "294-1",
+      "2BP-1"
+    ],
+    "change": "Open Macro dashboard names a destination without promising history restoration.",
+    "preserved_contracts": [
+      "D25 44J-0",
+      "R20 2Z4-1"
+    ]
+  },
+  "sharedFreshness": {
+    "file": "01M312VSDSZFVT45674GDVJVZN",
+    "page": "p-5-0",
+    "artboards": [
+      "2S4-0",
+      "2UE-0"
+    ],
+    "nodes": [
+      "2U8-0",
+      "2WI-0"
+    ],
+    "change": "Material second clock stays beside the verdict or action; other source times remain in LENS.",
+    "owner": "Existing MX/Freshness and evidence components"
   }
 }
