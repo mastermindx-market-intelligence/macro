@@ -3619,6 +3619,10 @@
       {
         "nodeId": "Y0-0 / 11C-0",
         "verdict": "PASS: corrected stream and history qualifications fit their reference state panels."
+      },
+      {
+        "nodeId": "40Y-0",
+        "verdict": "PASS: current rail and earlier count/help roots have distinct page/parent identities; original state boards retained intact. Reference pointer contrast corrected and natively checked on canvas."
       }
     ],
     "implementationGuide": "research/paper_human_clarity/WORKFLOW_ENHANCEMENTS.md",
@@ -3629,7 +3633,30 @@
       "headlinesAction": "restore valid reading anchor/scroll, otherwise feed heading",
       "review": "navigation never marks reviewed"
     },
-    "buildPointer": "40S-0"
+    "buildPointer": "40S-0",
+    "priorStateReference": {
+      "pageId": "p-4-0",
+      "pageName": "Reference · Count states & help",
+      "gallery": "3H4-0",
+      "activityGroup": "40Y-0",
+      "label": "411-0",
+      "movedIntact": [
+        "2G9-0",
+        "2JL-0"
+      ],
+      "retainedEarlierHelp": [
+        "2NG-0",
+        "2OM-0"
+      ],
+      "meaning": "Earlier compact layouts and distinct27/12 and13/9 fixture studies are explicit references; current composition/returns use p-5/3HH."
+    },
+    "independentRail": {
+      "pageId": "p-2-0",
+      "pageName": "Product · News rail",
+      "gallery": "3GX-0",
+      "root": "27L-0",
+      "preserved": true
+    }
   },
   "internationalResults": {
     "status": "NATIVE_RESULTS_AND_METHODS_VERIFIED",
@@ -35218,6 +35245,230 @@
         },
         "OK"
       ]
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "operationId": "clarity-depth-news-prior-state-reference",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": [
+        {
+          "file": {
+            "id": "01M5EXPMQTSBFBAM8KKG83FTZH",
+            "name": "News Intelligence · R3 Ledger + R2 States"
+          },
+          "contentHash": {
+            "tokens": "1a25e5be"
+          }
+        },
+        {
+          "createdNodes": [
+            {
+              "id": "40Y-0",
+              "name": "REFERENCE · Earlier compact Activity states",
+              "component": "Frame",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            },
+            {
+              "id": "40Z-0",
+              "name": "Earlier activity and…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tool": "move_nodes",
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "operationId": "clarity-depth-news-prior-state-move",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": [
+        {
+          "file": {
+            "id": "01M5EXPMQTSBFBAM8KKG83FTZH",
+            "name": "News Intelligence · R3 Ledger + R2 States"
+          },
+          "contentHash": {
+            "tokens": "1a25e5be"
+          }
+        },
+        {
+          "moves": [
+            {
+              "nodeId": "2G9-0",
+              "parentId": "40Y-0",
+              "index": 1
+            },
+            {
+              "nodeId": "2JL-0",
+              "parentId": "40Y-0",
+              "index": 2
+            }
+          ],
+          "affectedParents": [
+            {
+              "parentId": "40Y-0",
+              "childIds": [
+                "40Z-0",
+                "2G9-0",
+                "2JL-0"
+              ]
+            },
+            {
+              "parentId": "3GY-0",
+              "childIds": [
+                "27L-0"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tool": "rename_nodes",
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "operationId": "clarity-depth-news-current-reference-names",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": [
+        {
+          "file": {
+            "id": "01M5EXPMQTSBFBAM8KKG83FTZH",
+            "name": "News Intelligence · R3 Ledger + R2 States"
+          },
+          "contentHash": {
+            "tokens": "1a25e5be"
+          }
+        },
+        {
+          "updates": [
+            {
+              "nodeId": "3GX-0",
+              "name": "PRODUCT · Independent News rail"
+            },
+            {
+              "nodeId": "3GY-0",
+              "name": "Current independent rail"
+            },
+            {
+              "nodeId": "3H4-0",
+              "name": "REFERENCE · Earlier count states and help"
+            },
+            {
+              "nodeId": "2G9-0",
+              "name": "REFERENCE · Earlier compact Activity · Light EN ZH"
+            },
+            {
+              "nodeId": "2JL-0",
+              "name": "REFERENCE · Earlier compact Activity · Dark EN ZH"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tool": "update_pages",
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "operationId": "clarity-depth-news-current-reference-pages",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": [
+        {
+          "file": {
+            "id": "01M5EXPMQTSBFBAM8KKG83FTZH",
+            "name": "News Intelligence · R3 Ledger + R2 States"
+          },
+          "contentHash": {
+            "tokens": "1a25e5be"
+          }
+        },
+        {
+          "updates": [
+            {
+              "pageId": "p-2-0",
+              "name": "Product · News rail",
+              "icon": "arrow"
+            },
+            {
+              "pageId": "p-4-0",
+              "name": "Reference · Count states & help",
+              "icon": "question"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tool": "finish_working_on_nodes",
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "operationId": "clarity-depth-release-news-reference-authority",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": [
+        {
+          "file": {
+            "id": "01M5EXPMQTSBFBAM8KKG83FTZH",
+            "name": "News Intelligence · R3 Ledger + R2 States"
+          },
+          "contentHash": {
+            "tokens": "1a25e5be"
+          }
+        },
+        "OK"
+      ]
+    },
+    {
+      "tool": "write_html",
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "operationId": "clarity-depth-news-reference-label-contrast",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": [
+        {
+          "file": {
+            "id": "01M5EXPMQTSBFBAM8KKG83FTZH",
+            "name": "News Intelligence · R3 Ledger + R2 States"
+          },
+          "contentHash": {
+            "tokens": "1a25e5be"
+          }
+        },
+        {
+          "createdNodes": [
+            {
+              "id": "411-0",
+              "name": "Earlier activity and…",
+              "component": "Text",
+              "worldX": null,
+              "worldY": null,
+              "x": null,
+              "y": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tool": "finish_working_on_nodes",
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "operationId": "clarity-depth-release-news-reference-label",
+      "state": "APPLIED_RESPONSE_OBSERVED",
+      "result": [
+        {
+          "file": {
+            "id": "01M5EXPMQTSBFBAM8KKG83FTZH",
+            "name": "News Intelligence · R3 Ledger + R2 States"
+          },
+          "contentHash": {
+            "tokens": "1a25e5be"
+          }
+        },
+        "OK"
+      ]
     }
   ],
   "residualEntryScreenTriage": {
@@ -35807,10 +36058,102 @@
       "operationId": "clarity-depth-release-intl-history-final",
       "fileId": "01M3P1TW5Y3XWQC37ADDS8K5AG",
       "state": "APPLIED_RESPONSE_OBSERVED"
+    },
+    {
+      "operationId": "clarity-depth-release-news-reference-authority",
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "state": "APPLIED_RESPONSE_OBSERVED"
+    },
+    {
+      "operationId": "clarity-depth-release-news-reference-label",
+      "fileId": "01M5EXPMQTSBFBAM8KKG83FTZH",
+      "state": "APPLIED_RESPONSE_OBSERVED"
     }
   ],
   "sourceDelivery": {
     "branch": "sol/paper-workflow-depth-20261108-c3-2335",
-    "acceptance": "Exact GitHub PR/merge receipts govern protected-source acceptance; no runtime deployment follows from these design artifacts."
+    "acceptance": "Exact GitHub PR/merge receipts govern protected-source acceptance; no runtime deployment follows from these design artifacts.",
+    "baseCompatibility": {
+      "currentMainAtCheck": "c3c955d012d71e6c95ae99a46db27057c06e00b9",
+      "affectedExistingFiles": [
+        {
+          "path": "docs/DESIGN_DOCTRINE.md",
+          "unchanged": true,
+          "old": "2ef014e6ccb23c23922e22291d2cfe0904c60345",
+          "current": "2ef014e6ccb23c23922e22291d2cfe0904c60345"
+        },
+        {
+          "path": "research/paper_human_clarity/EXECUTION_PLAN_2026-11-08.md",
+          "unchanged": true,
+          "old": "830b6c636f3003b535e540a4fde8b119babcc93d",
+          "current": "830b6c636f3003b535e540a4fde8b119babcc93d"
+        },
+        {
+          "path": "research/paper_human_clarity/INTERNATIONAL_METHOD_BINDINGS.json",
+          "unchanged": true,
+          "old": "ea9cec4395eebc8154eea41354b2232c54d15e4c",
+          "current": "ea9cec4395eebc8154eea41354b2232c54d15e4c"
+        },
+        {
+          "path": "research/paper_human_clarity/PORTFOLIO_BUILD_GUIDE.md",
+          "unchanged": true,
+          "old": "0bc49391d56d0f7a7ffd7ed6f668afce36551c9f",
+          "current": "0bc49391d56d0f7a7ffd7ed6f668afce36551c9f"
+        },
+        {
+          "path": "research/paper_human_clarity/PORTFOLIO_DISPOSITIONS.md",
+          "unchanged": true,
+          "old": "b0572cffaed2bfb1c1f851b2a6b855a4d1a0388d",
+          "current": "b0572cffaed2bfb1c1f851b2a6b855a4d1a0388d"
+        },
+        {
+          "path": "research/paper_human_clarity/NEWS_INTELLIGENCE_BUILD_GUIDE.md",
+          "unchanged": true,
+          "old": "3650bcae9c28726160a03b75d5bdb35ed0df9cd4",
+          "current": "3650bcae9c28726160a03b75d5bdb35ed0df9cd4"
+        }
+      ],
+      "allUnchangedSincePinnedBase": true
+    },
+    "documentationChecks": [
+      "JSON parsed; current frame IDs unique",
+      "104 declared current frames read back in native gallery trees",
+      "24 calculation index actions resolve to same-locale/theme bodies",
+      "36 result Method links resolve to same-locale/theme tool help and exact return",
+      "Eight origin bindings include the actual EN/dark result and immediate return",
+      "News initial and continuation guides reconciled for failure/focus/fixture semantics",
+      "Current directory updated; historical maps retained as historical",
+      "No pending Paper effect; all recorded mutations observed applied"
+    ]
+  },
+  "finalConsistency": {
+    "frameMembership": {
+      "calc": {
+        "expected": 32,
+        "allObserved": true,
+        "unique": true
+      },
+      "results": {
+        "expected": 36,
+        "allObserved": true,
+        "unique": true
+      },
+      "toolHelp": {
+        "expected": 16,
+        "allObserved": true,
+        "unique": true
+      },
+      "news": {
+        "expected": 20,
+        "allObserved": true,
+        "unique": true
+      }
+    },
+    "indexActionCount": 24,
+    "resultMethodBindings": 36,
+    "resultOrigins": 8,
+    "allEffectStatesObserved": true,
+    "pendingPaperEffect": null,
+    "runtimeNavigationVerified": false
   }
 }
