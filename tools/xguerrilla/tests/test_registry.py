@@ -1018,6 +1018,35 @@ def test_registry_healing_read_only_check_requires_completed_relock(tmp_path):
     assert target.read_bytes() == committed
 
 
+@pytest.mark.parametrize("violation", [
+    "missing_handle_missing_predecessor",
+    "missing_handle_present_predecessor",
+    "malformed_receipt_url",
+])
+def test_registry_healing_malformed_document_refuses_without_exceptions_or_writes(tmp_path, violation):
+    before = base_doc()
+    after = copy.deepcopy(before)
+    if violation.startswith("missing_handle"):
+        del after["entries"][0]["handle"]
+        after["entries"][0]["retired_from"] = "missing"
+        if violation == "missing_handle_present_predecessor":
+            after["entries"].append(base_entry(handle="other.persona", child_id="xg0002"))
+            after["entries"][0]["retired_from"] = "other.persona"
+        expected = "handle"
+    else:
+        after["domains"][0]["admission_receipt"]["path"] = "https://["
+        expected = "malformed URL"
+    errors = registry.validate_document(after)
+    assert errors and all(isinstance(error, str) for error in errors)
+    assert_mention(errors, expected)
+    path = write_yaml(tmp_path, "registry.yml", after)
+    target = write_yaml(tmp_path, "registry.lock.yml", registry.write_lock(before))
+    original = target.read_bytes()
+    for command in ("registry-check", "registry-lock"):
+        assert cli.main([command, "--registry", str(path), "--lock", str(target)]) == 2
+        assert target.read_bytes() == original
+
+
 @pytest.mark.parametrize("domain", [[], {}])
 @pytest.mark.parametrize("policy", ["none", "single_canonical"])
 def test_registry_healing_malformed_domain_returns_refusal(tmp_path, domain, policy):

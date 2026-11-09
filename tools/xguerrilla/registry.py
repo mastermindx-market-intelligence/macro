@@ -146,7 +146,11 @@ def _validate_credentials(doc: Any, where: str, errors: list[str]) -> None:
             _validate_credentials(value, f"{where}[{i}]", errors)
     elif isinstance(doc, str):
         if "://" in doc:
-            parsed = urlsplit(doc)
+            try:
+                parsed = urlsplit(doc)
+            except ValueError:
+                errors.append(f"malformed URL at {where}")
+                return
             if parsed.username is not None or parsed.password is not None:
                 errors.append(f"credential-like URL with userinfo at {where} "
                               "— the registry carries keys, never material")
@@ -408,7 +412,8 @@ def _check_retired_from(entries: list, errors: list[str]) -> None:
         if isinstance(entry, dict) and isinstance(entry.get("handle"), str):
             by_handle.setdefault(entry["handle"], []).append(entry)
     for entry in entries:
-        if not isinstance(entry, dict):
+        if not isinstance(entry, dict) or not isinstance(entry.get("handle"), str):
+            # _validate_entry already refused this entry; keep returning refusals.
             continue
         predecessor = entry.get("retired_from")
         if predecessor is None or not isinstance(predecessor, str):
