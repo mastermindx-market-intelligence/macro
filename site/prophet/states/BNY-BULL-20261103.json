@@ -1,36 +1,36 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "BNY-BULL-20261103",
-  "asof": "2026-11-06",
+  "asof": "2026-11-09",
   "phase": "triggered_pre_t1",
   "detection_phase": "triggered_pre_t1",
-  "management_confidence": 59.8,
-  "raw_confidence": 56.9,
-  "delta_vs_base": -0.2,
+  "management_confidence": 56.9,
+  "raw_confidence": 56.2,
+  "delta_vs_base": -3.1,
   "recommended_action": "hold",
   "human_state": "Needs Follow-Through",
   "components": {
-    "validity": 85.4,
+    "validity": 87.2,
     "progress": 0.0,
-    "pace": 99.7,
+    "pace": 93.5,
     "retention": 50.0,
-    "overlay": 32.8
+    "overlay": 36.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.889,
+    "dist_to_stop_r": 0.903,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 6.7,
-    "p1": -0.0737,
-    "p2": -0.0369,
+    "horizon_pct_used": 13.3,
+    "p1": -0.0643,
+    "p2": -0.0322,
     "p3": null,
-    "move_r": -0.111,
+    "move_r": -0.097,
     "mfe_r": 0.001,
     "mae_r": -0.111
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "Moving Away from Stop",
+  "change_reason": "",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-11-04",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 3,
-  "tau": 0.0667
+  "days_elapsed": 6,
+  "tau": 0.1333
 }
