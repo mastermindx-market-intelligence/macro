@@ -102,7 +102,10 @@ a{color:var(--ink-link, var(--link));text-decoration:none}
   padding:20px 22px 18px;transition:border-color .16s,box-shadow .16s,transform .16s}
 .lc:hover{border-color:var(--line);background:var(--panel)}
 .lc.free{border-color:var(--line)}
-.lc-top{display:grid;grid-template-columns:auto 1fr auto;gap:16px;align-items:start}
+.lc-top{display:grid;grid-template-columns:auto minmax(0,1fr) auto;grid-template-rows:auto 1fr;
+  grid-template-areas:"rank title wr" ". legs wr";gap:16px;align-items:start}
+.lc-rank{grid-area:rank}.lc-title-wrap{grid-area:title}.lc-wr{grid-area:wr}
+.lc-top>.legs{grid-area:legs;margin:0;min-width:0}
 /* rank chip — rank_score IS a real ordering, so the numeral carries information */
 .lc-rank{font-family:var(--font-mono);font-size:13px;font-weight:700;color:var(--muted);
   border:1px solid var(--line);border-radius:9px;padding:5px 9px;line-height:1;letter-spacing:.02em;white-space:nowrap;margin-top:2px}
@@ -144,11 +147,12 @@ html[data-theme="light"] .confluence-access{background:var(--panel);box-shadow:v
 
 /* the line-up leg stack */
 .legs{display:flex;flex-direction:column;gap:7px;margin:16px 0 4px}
-.leg{display:grid;grid-template-columns:26px 1fr;gap:11px;align-items:center}
+.leg{display:grid;grid-template-columns:26px minmax(0,1fr);gap:11px;align-items:center}
 .leg-tf{font-family:var(--font-mono);font-size:10.5px;font-weight:700;text-align:center;border-radius:6px;padding:3px 0;line-height:1}
 .leg-tf.d{background:color-mix(in srgb,var(--muted) 20%,transparent);color:var(--muted)}
 .leg-tf.w{background:color-mix(in srgb,var(--info) 20%,transparent);color:var(--ink-info, var(--info))}
-.leg-txt{font-size:13px;color:var(--text);line-height:1.35;display:flex;align-items:center;gap:9px}
+.leg-txt{min-width:0;font-size:13px;color:var(--text);line-height:1.35;display:flex;align-items:center;gap:9px}
+.leg-txt>span{min-width:0;overflow-wrap:anywhere}
 .leg-txt::before{content:"";flex:none;width:6px;height:6px;border-radius:50%;background:color-mix(in srgb,var(--up) 70%,transparent);box-shadow:0 0 0 3px color-mix(in srgb,var(--up) 14%,transparent)}
 
 /* footer receipts row */
@@ -207,14 +211,17 @@ html[data-lang="zh"] .tkr{background:color-mix(in srgb,var(--down) 12%,transpare
 /* focus visibility */
 a:focus-visible,.btn:focus-visible,summary:focus-visible{outline:2px solid var(--info);outline-offset:2px;border-radius:8px}
 
+/* Card reading order stacks before the fixed evidence rail crowds the signal criteria. */
+@media(max-width:767px){
+  .lc-top{grid-template-columns:auto minmax(0,1fr);grid-template-rows:auto auto auto;
+    grid-template-areas:"rank title" "legs legs" "wr wr"}
+  .lc-wr{width:100%;gap:var(--sp-3,12px)}
+}
 /* responsive */
 @media(max-width:640px){
   .hero-inner{grid-template-columns:1fr}
   .hero-motif{display:none}
   .hero-state{font-size:26px}
-  .lc-top{grid-template-columns:auto 1fr;grid-template-areas:"rank title" "wr wr"}
-  .lc-rank{grid-area:rank}.lc-title-wrap{grid-area:title}.lc-wr{grid-area:wr;text-align:left;margin-top:6px}
-  .lc-wr{width:100%;gap:var(--sp-3,12px)}
   .lc{padding:var(--sp-4,16px)}
   .hero{padding:var(--sp-5,20px)}
   .hero-eyebrow{overflow-wrap:anywhere}
@@ -568,44 +575,6 @@ html[data-theme="light"] .cs-tipped:hover,html[data-theme="light"] .cs-tipped:fo
 
           </div>
         </div>
-        <div class="lc-wr">
-          <div class="lc-era">
-            <div class="lc-era-label"><span class="l-en">Recent (2018+)</span><span class="l-zh">近年（2018起）</span></div>
-            <div class="lc-wr-big mono">9.1<span class="lc-rate-denominator">/10</span></div>
-            <div class="lc-sample"><span class="l-en">14 months · 22 fires</span><span class="l-zh">14 个月 · 22 次触发</span></div>
-          </div>
-          <div class="lc-era">
-            <div class="lc-era-label"><span class="l-en">Older (before 2018)</span><span class="l-zh">更早（2018前）</span></div>
-            <div class="lc-wr-old">5.8<span class="lc-rate-denominator">/10</span></div>
-            <div class="lc-sample"><span class="l-en">57 months · 71 fires</span><span class="l-zh">57 个月 · 71 次触发</span></div>
-          </div>
-          <div class="lc-wr-unit"><span class="l-en">Monthly win average · 21 trading days</span><span class="l-zh">月均胜率 · 21 个交易日</span></div>
-          <div class="lc-baseline-heading" id="baseline-unit-1"><span class="l-en">Versus random entry · percentage points</span><span class="l-zh">较随机入场 · 个百分点</span></div>
-          <dl class="lc-baselines" aria-labelledby="baseline-unit-1">
-
-            <div>
-              <dt class="lc-comparison-period"><span class="l-en">Recent comparison</span><span class="l-zh">近年比较</span></dt>
-              <dd class="lc-baseline-value" data-period="recent" data-state="positive">+34.3</dd>
-            </div>
-
-            <div>
-              <dt class="lc-comparison-period"><span class="l-en">Older comparison</span><span class="l-zh">更早比较</span></dt>
-              <dd class="lc-baseline-value" data-period="older" data-state="positive">+1.7</dd>
-            </div>
-
-          </dl>
-        </div>
-      </div>
-
-      <details class="lc-method">
-        <summary><span class="l-en">How these readings are calculated</span><span class="l-zh">这些读数如何计算</span></summary>
-        <p><span class="l-en">Within each month, calculate the share of fires whose next-close entry finished higher after 21 trading days. Then average those monthly proportions equally. This is not the fraction of winning months or the pooled win rate.</span><span class="l-zh">先在每个月内计算触发后于下一收盘价入场、21 个交易日后上涨的比例，再对各月比例等权平均。这不是盈利月份占比，也不是所有触发次数合并后的胜率。</span></p>
-        <p><span class="l-en">Recent is the test period, with fire dates from 2018-01-01. Older is the training period, before that date. These recipes were searched historically; neither label establishes untouched prospective validation.</span><span class="l-zh">近年为测试期，触发日期自 2018-01-01 起；更早为该日期之前的训练期。组合由历史搜索得出，这些标签不代表未经查看的前瞻验证。</span></p>
-        <p><span class="l-en">Random-entry monthly win average · 21 trading days · recent: </span><span class="l-zh">随机入场月均胜率 · 21 个交易日 · 近年：</span>5.7/10<span class="l-en"> · older: </span><span class="l-zh"> · 更早：</span>5.6/10. <span class="l-en">The baseline enters the same stocks on random dates over the same period. Comparison points describe win-rate differences, not investment returns.</span><span class="l-zh">基准是在同一时期对相同股票随机选择日期入场。比较百分点指胜率差值，并非投资收益率。</span></p>
-        <p><span class="l-en">A sighting starts when the full combination changes from false to true. Consecutive days that remain true add no sightings. Yearly frequency averages sightings over the first-to-last span. D and W label daily and weekly bars; indicator lookback is separate.</span><span class="l-zh">完整组合由不成立变为成立时计为一次触发，连续成立的日期不重复计数。年均频率按首次至末次的时间跨度计算。D 和 W 分别表示日线与周线，指标回看窗口是另一属性。</span></p>
-        <p><span class="l-en">Source ordering uses a Wilson-based ranking heuristic on the recent monthly win average, minus the random-entry baseline. It is a ranking heuristic, not a statistical-significance result.</span><span class="l-zh">源数据排序使用近期月均胜率的 Wilson 近似值并减去随机入场基准。这是排序方法，不是统计显著性结果。</span></p>
-      </details>
-
 
       <div class="legs">
 
@@ -646,6 +615,44 @@ html[data-theme="light"] .cs-tipped:hover,html[data-theme="light"] .cs-tipped:fo
         </div>
 
       </div>
+
+        <div class="lc-wr">
+          <div class="lc-era">
+            <div class="lc-era-label"><span class="l-en">Recent (2018+)</span><span class="l-zh">近年（2018起）</span></div>
+            <div class="lc-wr-big mono">9.1<span class="lc-rate-denominator">/10</span></div>
+            <div class="lc-sample"><span class="l-en">14 months · 22 fires</span><span class="l-zh">14 个月 · 22 次触发</span></div>
+          </div>
+          <div class="lc-era">
+            <div class="lc-era-label"><span class="l-en">Older (before 2018)</span><span class="l-zh">更早（2018前）</span></div>
+            <div class="lc-wr-old">5.8<span class="lc-rate-denominator">/10</span></div>
+            <div class="lc-sample"><span class="l-en">57 months · 71 fires</span><span class="l-zh">57 个月 · 71 次触发</span></div>
+          </div>
+          <div class="lc-wr-unit"><span class="l-en">Monthly win average · 21 trading days</span><span class="l-zh">月均胜率 · 21 个交易日</span></div>
+          <div class="lc-baseline-heading" id="baseline-unit-1"><span class="l-en">Versus random entry · percentage points</span><span class="l-zh">较随机入场 · 个百分点</span></div>
+          <dl class="lc-baselines" aria-labelledby="baseline-unit-1">
+
+            <div>
+              <dt class="lc-comparison-period"><span class="l-en">Recent comparison</span><span class="l-zh">近年比较</span></dt>
+              <dd class="lc-baseline-value" data-period="recent" data-state="positive">+34.3</dd>
+            </div>
+
+            <div>
+              <dt class="lc-comparison-period"><span class="l-en">Older comparison</span><span class="l-zh">更早比较</span></dt>
+              <dd class="lc-baseline-value" data-period="older" data-state="positive">+1.7</dd>
+            </div>
+
+          </dl>
+        </div>
+      </div>
+
+      <details class="lc-method">
+        <summary><span class="l-en">How these readings are calculated</span><span class="l-zh">这些读数如何计算</span></summary>
+        <p><span class="l-en">Within each month, calculate the share of fires whose next-close entry finished higher after 21 trading days. Then average those monthly proportions equally. This is not the fraction of winning months or the pooled win rate.</span><span class="l-zh">先在每个月内计算触发后于下一收盘价入场、21 个交易日后上涨的比例，再对各月比例等权平均。这不是盈利月份占比，也不是所有触发次数合并后的胜率。</span></p>
+        <p><span class="l-en">Recent is the test period, with fire dates from 2018-01-01. Older is the training period, before that date. These recipes were searched historically; neither label establishes untouched prospective validation.</span><span class="l-zh">近年为测试期，触发日期自 2018-01-01 起；更早为该日期之前的训练期。组合由历史搜索得出，这些标签不代表未经查看的前瞻验证。</span></p>
+        <p><span class="l-en">Random-entry monthly win average · 21 trading days · recent: </span><span class="l-zh">随机入场月均胜率 · 21 个交易日 · 近年：</span>5.7/10<span class="l-en"> · older: </span><span class="l-zh"> · 更早：</span>5.6/10. <span class="l-en">The baseline enters the same stocks on random dates over the same period. Comparison points describe win-rate differences, not investment returns.</span><span class="l-zh">基准是在同一时期对相同股票随机选择日期入场。比较百分点指胜率差值，并非投资收益率。</span></p>
+        <p><span class="l-en">A sighting starts when the full combination changes from false to true. Consecutive days that remain true add no sightings. Yearly frequency averages sightings over the first-to-last span. D and W label daily and weekly bars; indicator lookback is separate.</span><span class="l-zh">完整组合由不成立变为成立时计为一次触发，连续成立的日期不重复计数。年均频率按首次至末次的时间跨度计算。D 和 W 分别表示日线与周线，指标回看窗口是另一属性。</span></p>
+        <p><span class="l-en">Source ordering uses a Wilson-based ranking heuristic on the recent monthly win average, minus the random-entry baseline. It is a ranking heuristic, not a statistical-significance result.</span><span class="l-zh">源数据排序使用近期月均胜率的 Wilson 近似值并减去随机入场基准。这是排序方法，不是统计显著性结果。</span></p>
+      </details>
 
       <div class="lc-foot">
 
@@ -690,44 +697,6 @@ html[data-theme="light"] .cs-tipped:hover,html[data-theme="light"] .cs-tipped:fo
 
           </div>
         </div>
-        <div class="lc-wr">
-          <div class="lc-era">
-            <div class="lc-era-label"><span class="l-en">Recent (2018+)</span><span class="l-zh">近年（2018起）</span></div>
-            <div class="lc-wr-big mono">8.4<span class="lc-rate-denominator">/10</span></div>
-            <div class="lc-sample"><span class="l-en">19 months · 28 fires</span><span class="l-zh">19 个月 · 28 次触发</span></div>
-          </div>
-          <div class="lc-era">
-            <div class="lc-era-label"><span class="l-en">Older (before 2018)</span><span class="l-zh">更早（2018前）</span></div>
-            <div class="lc-wr-old">6.3<span class="lc-rate-denominator">/10</span></div>
-            <div class="lc-sample"><span class="l-en">62 months · 86 fires</span><span class="l-zh">62 个月 · 86 次触发</span></div>
-          </div>
-          <div class="lc-wr-unit"><span class="l-en">Monthly win average · 21 trading days</span><span class="l-zh">月均胜率 · 21 个交易日</span></div>
-          <div class="lc-baseline-heading" id="baseline-unit-2"><span class="l-en">Versus random entry · percentage points</span><span class="l-zh">较随机入场 · 个百分点</span></div>
-          <dl class="lc-baselines" aria-labelledby="baseline-unit-2">
-
-            <div>
-              <dt class="lc-comparison-period"><span class="l-en">Recent comparison</span><span class="l-zh">近年比较</span></dt>
-              <dd class="lc-baseline-value" data-period="recent" data-state="positive">+27.5</dd>
-            </div>
-
-            <div>
-              <dt class="lc-comparison-period"><span class="l-en">Older comparison</span><span class="l-zh">更早比较</span></dt>
-              <dd class="lc-baseline-value" data-period="older" data-state="positive">+7.0</dd>
-            </div>
-
-          </dl>
-        </div>
-      </div>
-
-      <details class="lc-method">
-        <summary><span class="l-en">How these readings are calculated</span><span class="l-zh">这些读数如何计算</span></summary>
-        <p><span class="l-en">Within each month, calculate the share of fires whose next-close entry finished higher after 21 trading days. Then average those monthly proportions equally. This is not the fraction of winning months or the pooled win rate.</span><span class="l-zh">先在每个月内计算触发后于下一收盘价入场、21 个交易日后上涨的比例，再对各月比例等权平均。这不是盈利月份占比，也不是所有触发次数合并后的胜率。</span></p>
-        <p><span class="l-en">Recent is the test period, with fire dates from 2018-01-01. Older is the training period, before that date. These recipes were searched historically; neither label establishes untouched prospective validation.</span><span class="l-zh">近年为测试期，触发日期自 2018-01-01 起；更早为该日期之前的训练期。组合由历史搜索得出，这些标签不代表未经查看的前瞻验证。</span></p>
-        <p><span class="l-en">Random-entry monthly win average · 21 trading days · recent: </span><span class="l-zh">随机入场月均胜率 · 21 个交易日 · 近年：</span>5.7/10<span class="l-en"> · older: </span><span class="l-zh"> · 更早：</span>5.6/10. <span class="l-en">The baseline enters the same stocks on random dates over the same period. Comparison points describe win-rate differences, not investment returns.</span><span class="l-zh">基准是在同一时期对相同股票随机选择日期入场。比较百分点指胜率差值，并非投资收益率。</span></p>
-        <p><span class="l-en">A sighting starts when the full combination changes from false to true. Consecutive days that remain true add no sightings. Yearly frequency averages sightings over the first-to-last span. D and W label daily and weekly bars; indicator lookback is separate.</span><span class="l-zh">完整组合由不成立变为成立时计为一次触发，连续成立的日期不重复计数。年均频率按首次至末次的时间跨度计算。D 和 W 分别表示日线与周线，指标回看窗口是另一属性。</span></p>
-        <p><span class="l-en">Source ordering uses a Wilson-based ranking heuristic on the recent monthly win average, minus the random-entry baseline. It is a ranking heuristic, not a statistical-significance result.</span><span class="l-zh">源数据排序使用近期月均胜率的 Wilson 近似值并减去随机入场基准。这是排序方法，不是统计显著性结果。</span></p>
-      </details>
-
 
       <div class="legs">
 
@@ -768,6 +737,44 @@ html[data-theme="light"] .cs-tipped:hover,html[data-theme="light"] .cs-tipped:fo
         </div>
 
       </div>
+
+        <div class="lc-wr">
+          <div class="lc-era">
+            <div class="lc-era-label"><span class="l-en">Recent (2018+)</span><span class="l-zh">近年（2018起）</span></div>
+            <div class="lc-wr-big mono">8.4<span class="lc-rate-denominator">/10</span></div>
+            <div class="lc-sample"><span class="l-en">19 months · 28 fires</span><span class="l-zh">19 个月 · 28 次触发</span></div>
+          </div>
+          <div class="lc-era">
+            <div class="lc-era-label"><span class="l-en">Older (before 2018)</span><span class="l-zh">更早（2018前）</span></div>
+            <div class="lc-wr-old">6.3<span class="lc-rate-denominator">/10</span></div>
+            <div class="lc-sample"><span class="l-en">62 months · 86 fires</span><span class="l-zh">62 个月 · 86 次触发</span></div>
+          </div>
+          <div class="lc-wr-unit"><span class="l-en">Monthly win average · 21 trading days</span><span class="l-zh">月均胜率 · 21 个交易日</span></div>
+          <div class="lc-baseline-heading" id="baseline-unit-2"><span class="l-en">Versus random entry · percentage points</span><span class="l-zh">较随机入场 · 个百分点</span></div>
+          <dl class="lc-baselines" aria-labelledby="baseline-unit-2">
+
+            <div>
+              <dt class="lc-comparison-period"><span class="l-en">Recent comparison</span><span class="l-zh">近年比较</span></dt>
+              <dd class="lc-baseline-value" data-period="recent" data-state="positive">+27.5</dd>
+            </div>
+
+            <div>
+              <dt class="lc-comparison-period"><span class="l-en">Older comparison</span><span class="l-zh">更早比较</span></dt>
+              <dd class="lc-baseline-value" data-period="older" data-state="positive">+7.0</dd>
+            </div>
+
+          </dl>
+        </div>
+      </div>
+
+      <details class="lc-method">
+        <summary><span class="l-en">How these readings are calculated</span><span class="l-zh">这些读数如何计算</span></summary>
+        <p><span class="l-en">Within each month, calculate the share of fires whose next-close entry finished higher after 21 trading days. Then average those monthly proportions equally. This is not the fraction of winning months or the pooled win rate.</span><span class="l-zh">先在每个月内计算触发后于下一收盘价入场、21 个交易日后上涨的比例，再对各月比例等权平均。这不是盈利月份占比，也不是所有触发次数合并后的胜率。</span></p>
+        <p><span class="l-en">Recent is the test period, with fire dates from 2018-01-01. Older is the training period, before that date. These recipes were searched historically; neither label establishes untouched prospective validation.</span><span class="l-zh">近年为测试期，触发日期自 2018-01-01 起；更早为该日期之前的训练期。组合由历史搜索得出，这些标签不代表未经查看的前瞻验证。</span></p>
+        <p><span class="l-en">Random-entry monthly win average · 21 trading days · recent: </span><span class="l-zh">随机入场月均胜率 · 21 个交易日 · 近年：</span>5.7/10<span class="l-en"> · older: </span><span class="l-zh"> · 更早：</span>5.6/10. <span class="l-en">The baseline enters the same stocks on random dates over the same period. Comparison points describe win-rate differences, not investment returns.</span><span class="l-zh">基准是在同一时期对相同股票随机选择日期入场。比较百分点指胜率差值，并非投资收益率。</span></p>
+        <p><span class="l-en">A sighting starts when the full combination changes from false to true. Consecutive days that remain true add no sightings. Yearly frequency averages sightings over the first-to-last span. D and W label daily and weekly bars; indicator lookback is separate.</span><span class="l-zh">完整组合由不成立变为成立时计为一次触发，连续成立的日期不重复计数。年均频率按首次至末次的时间跨度计算。D 和 W 分别表示日线与周线，指标回看窗口是另一属性。</span></p>
+        <p><span class="l-en">Source ordering uses a Wilson-based ranking heuristic on the recent monthly win average, minus the random-entry baseline. It is a ranking heuristic, not a statistical-significance result.</span><span class="l-zh">源数据排序使用近期月均胜率的 Wilson 近似值并减去随机入场基准。这是排序方法，不是统计显著性结果。</span></p>
+      </details>
 
       <div class="lc-foot">
 
@@ -818,44 +825,6 @@ html[data-theme="light"] .cs-tipped:hover,html[data-theme="light"] .cs-tipped:fo
 
           </div>
         </div>
-        <div class="lc-wr">
-          <div class="lc-era">
-            <div class="lc-era-label"><span class="l-en">Recent (2018+)</span><span class="l-zh">近年（2018起）</span></div>
-            <div class="lc-wr-big mono">8.3<span class="lc-rate-denominator">/10</span></div>
-            <div class="lc-sample"><span class="l-en">18 months · 28 fires</span><span class="l-zh">18 个月 · 28 次触发</span></div>
-          </div>
-          <div class="lc-era">
-            <div class="lc-era-label"><span class="l-en">Older (before 2018)</span><span class="l-zh">更早（2018前）</span></div>
-            <div class="lc-wr-old">5.9<span class="lc-rate-denominator">/10</span></div>
-            <div class="lc-sample"><span class="l-en">56 months · 74 fires</span><span class="l-zh">56 个月 · 74 次触发</span></div>
-          </div>
-          <div class="lc-wr-unit"><span class="l-en">Monthly win average · 21 trading days</span><span class="l-zh">月均胜率 · 21 个交易日</span></div>
-          <div class="lc-baseline-heading" id="baseline-unit-3"><span class="l-en">Versus random entry · percentage points</span><span class="l-zh">较随机入场 · 个百分点</span></div>
-          <dl class="lc-baselines" aria-labelledby="baseline-unit-3">
-
-            <div>
-              <dt class="lc-comparison-period"><span class="l-en">Recent comparison</span><span class="l-zh">近年比较</span></dt>
-              <dd class="lc-baseline-value" data-period="recent" data-state="positive">+26.0</dd>
-            </div>
-
-            <div>
-              <dt class="lc-comparison-period"><span class="l-en">Older comparison</span><span class="l-zh">更早比较</span></dt>
-              <dd class="lc-baseline-value" data-period="older" data-state="positive">+3.0</dd>
-            </div>
-
-          </dl>
-        </div>
-      </div>
-
-      <details class="lc-method">
-        <summary><span class="l-en">How these readings are calculated</span><span class="l-zh">这些读数如何计算</span></summary>
-        <p><span class="l-en">Within each month, calculate the share of fires whose next-close entry finished higher after 21 trading days. Then average those monthly proportions equally. This is not the fraction of winning months or the pooled win rate.</span><span class="l-zh">先在每个月内计算触发后于下一收盘价入场、21 个交易日后上涨的比例，再对各月比例等权平均。这不是盈利月份占比，也不是所有触发次数合并后的胜率。</span></p>
-        <p><span class="l-en">Recent is the test period, with fire dates from 2018-01-01. Older is the training period, before that date. These recipes were searched historically; neither label establishes untouched prospective validation.</span><span class="l-zh">近年为测试期，触发日期自 2018-01-01 起；更早为该日期之前的训练期。组合由历史搜索得出，这些标签不代表未经查看的前瞻验证。</span></p>
-        <p><span class="l-en">Random-entry monthly win average · 21 trading days · recent: </span><span class="l-zh">随机入场月均胜率 · 21 个交易日 · 近年：</span>5.7/10<span class="l-en"> · older: </span><span class="l-zh"> · 更早：</span>5.6/10. <span class="l-en">The baseline enters the same stocks on random dates over the same period. Comparison points describe win-rate differences, not investment returns.</span><span class="l-zh">基准是在同一时期对相同股票随机选择日期入场。比较百分点指胜率差值，并非投资收益率。</span></p>
-        <p><span class="l-en">A sighting starts when the full combination changes from false to true. Consecutive days that remain true add no sightings. Yearly frequency averages sightings over the first-to-last span. D and W label daily and weekly bars; indicator lookback is separate.</span><span class="l-zh">完整组合由不成立变为成立时计为一次触发，连续成立的日期不重复计数。年均频率按首次至末次的时间跨度计算。D 和 W 分别表示日线与周线，指标回看窗口是另一属性。</span></p>
-        <p><span class="l-en">Source ordering uses a Wilson-based ranking heuristic on the recent monthly win average, minus the random-entry baseline. It is a ranking heuristic, not a statistical-significance result.</span><span class="l-zh">源数据排序使用近期月均胜率的 Wilson 近似值并减去随机入场基准。这是排序方法，不是统计显著性结果。</span></p>
-      </details>
-
 
       <div class="legs">
 
@@ -896,6 +865,44 @@ html[data-theme="light"] .cs-tipped:hover,html[data-theme="light"] .cs-tipped:fo
         </div>
 
       </div>
+
+        <div class="lc-wr">
+          <div class="lc-era">
+            <div class="lc-era-label"><span class="l-en">Recent (2018+)</span><span class="l-zh">近年（2018起）</span></div>
+            <div class="lc-wr-big mono">8.3<span class="lc-rate-denominator">/10</span></div>
+            <div class="lc-sample"><span class="l-en">18 months · 28 fires</span><span class="l-zh">18 个月 · 28 次触发</span></div>
+          </div>
+          <div class="lc-era">
+            <div class="lc-era-label"><span class="l-en">Older (before 2018)</span><span class="l-zh">更早（2018前）</span></div>
+            <div class="lc-wr-old">5.9<span class="lc-rate-denominator">/10</span></div>
+            <div class="lc-sample"><span class="l-en">56 months · 74 fires</span><span class="l-zh">56 个月 · 74 次触发</span></div>
+          </div>
+          <div class="lc-wr-unit"><span class="l-en">Monthly win average · 21 trading days</span><span class="l-zh">月均胜率 · 21 个交易日</span></div>
+          <div class="lc-baseline-heading" id="baseline-unit-3"><span class="l-en">Versus random entry · percentage points</span><span class="l-zh">较随机入场 · 个百分点</span></div>
+          <dl class="lc-baselines" aria-labelledby="baseline-unit-3">
+
+            <div>
+              <dt class="lc-comparison-period"><span class="l-en">Recent comparison</span><span class="l-zh">近年比较</span></dt>
+              <dd class="lc-baseline-value" data-period="recent" data-state="positive">+26.0</dd>
+            </div>
+
+            <div>
+              <dt class="lc-comparison-period"><span class="l-en">Older comparison</span><span class="l-zh">更早比较</span></dt>
+              <dd class="lc-baseline-value" data-period="older" data-state="positive">+3.0</dd>
+            </div>
+
+          </dl>
+        </div>
+      </div>
+
+      <details class="lc-method">
+        <summary><span class="l-en">How these readings are calculated</span><span class="l-zh">这些读数如何计算</span></summary>
+        <p><span class="l-en">Within each month, calculate the share of fires whose next-close entry finished higher after 21 trading days. Then average those monthly proportions equally. This is not the fraction of winning months or the pooled win rate.</span><span class="l-zh">先在每个月内计算触发后于下一收盘价入场、21 个交易日后上涨的比例，再对各月比例等权平均。这不是盈利月份占比，也不是所有触发次数合并后的胜率。</span></p>
+        <p><span class="l-en">Recent is the test period, with fire dates from 2018-01-01. Older is the training period, before that date. These recipes were searched historically; neither label establishes untouched prospective validation.</span><span class="l-zh">近年为测试期，触发日期自 2018-01-01 起；更早为该日期之前的训练期。组合由历史搜索得出，这些标签不代表未经查看的前瞻验证。</span></p>
+        <p><span class="l-en">Random-entry monthly win average · 21 trading days · recent: </span><span class="l-zh">随机入场月均胜率 · 21 个交易日 · 近年：</span>5.7/10<span class="l-en"> · older: </span><span class="l-zh"> · 更早：</span>5.6/10. <span class="l-en">The baseline enters the same stocks on random dates over the same period. Comparison points describe win-rate differences, not investment returns.</span><span class="l-zh">基准是在同一时期对相同股票随机选择日期入场。比较百分点指胜率差值，并非投资收益率。</span></p>
+        <p><span class="l-en">A sighting starts when the full combination changes from false to true. Consecutive days that remain true add no sightings. Yearly frequency averages sightings over the first-to-last span. D and W label daily and weekly bars; indicator lookback is separate.</span><span class="l-zh">完整组合由不成立变为成立时计为一次触发，连续成立的日期不重复计数。年均频率按首次至末次的时间跨度计算。D 和 W 分别表示日线与周线，指标回看窗口是另一属性。</span></p>
+        <p><span class="l-en">Source ordering uses a Wilson-based ranking heuristic on the recent monthly win average, minus the random-entry baseline. It is a ranking heuristic, not a statistical-significance result.</span><span class="l-zh">源数据排序使用近期月均胜率的 Wilson 近似值并减去随机入场基准。这是排序方法，不是统计显著性结果。</span></p>
+      </details>
 
       <div class="lc-foot">
 

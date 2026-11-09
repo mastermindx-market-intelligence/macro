@@ -97,7 +97,10 @@ a{color:var(--ink-link, var(--link));text-decoration:none}
   padding:20px 22px 18px;transition:border-color .16s,box-shadow .16s,transform .16s}
 .lc:hover{border-color:var(--line);background:var(--panel)}
 .lc.free{border-color:var(--line)}
-.lc-top{display:grid;grid-template-columns:auto 1fr auto;gap:16px;align-items:start}
+.lc-top{display:grid;grid-template-columns:auto minmax(0,1fr) auto;grid-template-rows:auto 1fr;
+  grid-template-areas:"rank title wr" ". legs wr";gap:16px;align-items:start}
+.lc-rank{grid-area:rank}.lc-title-wrap{grid-area:title}.lc-wr{grid-area:wr}
+.lc-top>.legs{grid-area:legs;margin:0;min-width:0}
 /* rank chip — rank_score IS a real ordering, so the numeral carries information */
 .lc-rank{font-family:var(--font-mono);font-size:13px;font-weight:700;color:var(--muted);
   border:1px solid var(--line);border-radius:9px;padding:5px 9px;line-height:1;letter-spacing:.02em;white-space:nowrap;margin-top:2px}
@@ -139,11 +142,12 @@ html[data-theme="light"] .confluence-access{background:var(--panel);box-shadow:v
 
 /* the line-up leg stack */
 .legs{display:flex;flex-direction:column;gap:7px;margin:16px 0 4px}
-.leg{display:grid;grid-template-columns:26px 1fr;gap:11px;align-items:center}
+.leg{display:grid;grid-template-columns:26px minmax(0,1fr);gap:11px;align-items:center}
 .leg-tf{font-family:var(--font-mono);font-size:10.5px;font-weight:700;text-align:center;border-radius:6px;padding:3px 0;line-height:1}
 .leg-tf.d{background:color-mix(in srgb,var(--muted) 20%,transparent);color:var(--muted)}
 .leg-tf.w{background:color-mix(in srgb,var(--info) 20%,transparent);color:var(--ink-info, var(--info))}
-.leg-txt{font-size:13px;color:var(--text);line-height:1.35;display:flex;align-items:center;gap:9px}
+.leg-txt{min-width:0;font-size:13px;color:var(--text);line-height:1.35;display:flex;align-items:center;gap:9px}
+.leg-txt>span{min-width:0;overflow-wrap:anywhere}
 .leg-txt::before{content:"";flex:none;width:6px;height:6px;border-radius:50%;background:color-mix(in srgb,var(--up) 70%,transparent);box-shadow:0 0 0 3px color-mix(in srgb,var(--up) 14%,transparent)}
 
 /* footer receipts row */
@@ -202,14 +206,17 @@ html[data-lang="zh"] .tkr{background:color-mix(in srgb,var(--down) 12%,transpare
 /* focus visibility */
 a:focus-visible,.btn:focus-visible,summary:focus-visible{outline:2px solid var(--info);outline-offset:2px;border-radius:8px}
 
+/* Card reading order stacks before the fixed evidence rail crowds the signal criteria. */
+@media(max-width:767px){
+  .lc-top{grid-template-columns:auto minmax(0,1fr);grid-template-rows:auto auto auto;
+    grid-template-areas:"rank title" "legs legs" "wr wr"}
+  .lc-wr{width:100%;gap:var(--sp-3,12px)}
+}
 /* responsive */
 @media(max-width:640px){
   .hero-inner{grid-template-columns:1fr}
   .hero-motif{display:none}
   .hero-state{font-size:26px}
-  .lc-top{grid-template-columns:auto 1fr;grid-template-areas:"rank title" "wr wr"}
-  .lc-rank{grid-area:rank}.lc-title-wrap{grid-area:title}.lc-wr{grid-area:wr;text-align:left;margin-top:6px}
-  .lc-wr{width:100%;gap:var(--sp-3,12px)}
   .lc{padding:var(--sp-4,16px)}
   .hero{padding:var(--sp-5,20px)}
   .hero-eyebrow{overflow-wrap:anywhere}
@@ -321,6 +328,24 @@ html[data-theme="light"] .cs-tipped:hover,html[data-theme="light"] .cs-tipped:fo
             {% endif %}
           </div>
         </div>
+      {# the line-up: each leg lined up, timeframe-tagged #}
+      <div class="legs">
+        {% for leg in c.legs %}
+        <div class="leg">
+          {% if leg.tf == 'W' %}
+          <span class="leg-tf w" tabindex="0"
+                data-tip-en="This leg is evaluated on weekly bars. Its indicator lookback and trigger frequency are separate properties."
+                data-tip-zh="此条件在周线数据上计算；指标回看窗口和触发频率是不同的属性。">W</span>
+          {% else %}
+          <span class="leg-tf d" tabindex="0"
+                data-tip-en="This leg is evaluated on daily bars. The indicator itself may use a longer lookback."
+                data-tip-zh="此条件在日线数据上计算；指标本身可能使用更长的回看窗口。">D</span>
+          {% endif %}
+          <span class="leg-txt"><span class="l-en">{{ leg.en }}</span><span class="l-zh">{{ leg.zh }}</span></span>
+        </div>
+        {% endfor %}
+      </div>
+
         <div class="lc-wr">
           <div class="lc-era">
             <div class="lc-era-label">{{ t('Recent (' ~ split_date[:4] ~ '+)', '近年（' ~ split_date[:4] ~ '起）') }}</div>
@@ -353,24 +378,6 @@ html[data-theme="light"] .cs-tipped:hover,html[data-theme="light"] .cs-tipped:fo
         <p>{{ t('A sighting starts when the full combination changes from false to true. Consecutive days that remain true add no sightings. Yearly frequency averages sightings over the first-to-last span. D and W label daily and weekly bars; indicator lookback is separate.', '完整组合由不成立变为成立时计为一次触发，连续成立的日期不重复计数。年均频率按首次至末次的时间跨度计算。D 和 W 分别表示日线与周线，指标回看窗口是另一属性。') }}</p>
         <p>{{ t('Source ordering uses a Wilson-based ranking heuristic on the recent monthly win average, minus the random-entry baseline. It is a ranking heuristic, not a statistical-significance result.', '源数据排序使用近期月均胜率的 Wilson 近似值并减去随机入场基准。这是排序方法，不是统计显著性结果。') }}</p>
       </details>
-
-      {# the line-up: each leg lined up, timeframe-tagged #}
-      <div class="legs">
-        {% for leg in c.legs %}
-        <div class="leg">
-          {% if leg.tf == 'W' %}
-          <span class="leg-tf w" tabindex="0"
-                data-tip-en="This leg is evaluated on weekly bars. Its indicator lookback and trigger frequency are separate properties."
-                data-tip-zh="此条件在周线数据上计算；指标回看窗口和触发频率是不同的属性。">W</span>
-          {% else %}
-          <span class="leg-tf d" tabindex="0"
-                data-tip-en="This leg is evaluated on daily bars. The indicator itself may use a longer lookback."
-                data-tip-zh="此条件在日线数据上计算；指标本身可能使用更长的回看窗口。">D</span>
-          {% endif %}
-          <span class="leg-txt"><span class="l-en">{{ leg.en }}</span><span class="l-zh">{{ leg.zh }}</span></span>
-        </div>
-        {% endfor %}
-      </div>
 
       <div class="lc-foot">
         {% if c.edge_test_pp is not none %}

@@ -1,8 +1,12 @@
 # Confluence compatibility and truthful actions
 
-## Current continuation: paired baseline comparisons
+## Current continuation: responsive card reading path
 
-The next source increment adds matched Recent/Older baseline differences, preserves unknown and signed-small values, and removes the repeated recent-rate meter. [PAIRED_COMPARISONS.md](PAIRED_COMPARISONS.md) contains the current contract and final 92-test / 16-browser proof. The compatibility-specific 82/14 evidence below belongs to parent f51b60de and remains historical for that increment.
+The existing criteria now share the desktop header grid with identity and paired evidence, stacking below 768px. [RESPONSIVE_LAYOUT.md](RESPONSIVE_LAYOUT.md) gives the exact layout/keyboard contract, before/after captures and **92 page tests /20 browser cases in 20 contexts**. Current saved 960/1440px cards bring company actions up 107.1875px without smaller text or controls. Two 960px cases retain an explicitly measured parent shared-navigation overflow; all card descendants remain contained.
+
+## Prior continuation: paired baseline comparisons
+
+The preceding source increment at `22fa830d` adds matched Recent/Older baseline differences, preserves unknown and signed-small values, and removes the repeated recent-rate meter. [PAIRED_COMPARISONS.md](PAIRED_COMPARISONS.md) contains the current contract and final 92-test / 16-browser proof. The compatibility-specific 82/14 evidence below belongs to parent f51b60de and remains historical for that increment.
 
 ## What this candidate fixes
 
