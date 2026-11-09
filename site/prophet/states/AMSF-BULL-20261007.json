@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "AMSF-BULL-20261007",
-  "asof": "2026-11-07",
+  "asof": "2026-11-09",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 19.2,
@@ -20,7 +20,7 @@
     "dist_to_stop_r": -8.975,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 68.9,
+    "horizon_pct_used": 73.3,
     "p1": -6.6497,
     "p2": -3.3246,
     "p3": null,
@@ -45,8 +45,8 @@
   "_first_trigger_ts": "2026-10-08",
   "_first_t1_ts": "2026-10-20",
   "_first_t2_ts": "2026-10-22",
-  "days_elapsed": 31,
-  "tau": 0.6889,
+  "days_elapsed": 33,
+  "tau": 0.7333,
   "closed": true,
   "outcome": "T1_HIT"
 }
