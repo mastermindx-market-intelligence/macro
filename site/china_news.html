@@ -317,18 +317,714 @@
   <header class="cn-hero">
     <p class="cn-eyebrow"><span class="cn-live"></span><span class="cn-brand">📡 <span class="gn"><span class="l-en">China Tape</span><span class="l-zh">中国快讯</span></span></span></p>
     
-      <p class="cn-lead"><span class="l-en">The China macro tape is quiet right now.</span><span class="l-zh">当前中国宏观新闻流较安静。</span></p>
+      
+      
+      
+      
+      <p class="cn-lead">
+        <span class="l-en"><b>24</b> stories cleared the macro filter; official policy tone steady. <b>9</b> rated high-impact, led by <b>equity market</b>.</span>
+        <span class="l-zh"><b>24</b> 条通过宏观筛选；官方政策基调平稳。其中 <b>9</b> 条高影响，主导<b>股票市场</b>。</span>
+      </p>
       <p class="cn-asof"><span class="l-en">As of</span><span class="l-zh">截至</span>  · <span class="l-en">context, not trade calls</span><span class="l-zh">仅供参考，非交易信号</span></p>
+      <div class="cn-glance">
+        
+        
+        <span class="cn-gchip st-steady"><span class="dot"></span><span class="l-en">Policy tone</span><span class="l-zh">政策基调</span> <b><span class="l-en">steady</span><span class="l-zh">平稳</span></b></span>
+        
+        <span class="cn-gchip hot"><span class="dot"></span><b>9</b> <span class="l-en">high-impact</span><span class="l-zh">高影响</span></span>
+        <span class="cn-gchip led th-markets"><span class="dot"></span><span class="l-en">Led by</span><span class="l-zh">主导</span> <b><span class="l-en">equity market</span><span class="l-zh">股票市场</span></b></span>
+        <span class="cn-gchip"><b>24</b> <span class="l-en">on the tape</span><span class="l-zh">条在流</span></span>
+        <span class="cn-gchip hidden" id="fresh"><span class="dot" style="background:var(--up)"></span><span id="fresh-t"></span></span>
+      </div>
     
   </header>
 
   
-  <!-- ===================== EMPTY STATE ===================== -->
-  <div class="cn-empty">
-    <h2><span class="l-en">No filtered China headlines on this pull.</span><span class="l-zh">本次抓取暂无筛选中国头条。</span></h2>
-    <p><span class="l-en">This can happen when official pages are quiet, the flash-wire fetch is unavailable, or no macro-relevant item cleared the gate. Policy tone and scheduled catalysts remain live.</span><span class="l-zh">当官方页面安静、快讯抓取不可用，或没有宏观相关条目通过筛选时会出现这种情况。政策基调与排定催化仍保持更新。</span></p>
-  </div>
-  <p class="cn-disc"><span class="l-en">Context only — not a signal. The policy-tone read is a z-score of a crude lexicon proxy on the CCTV 新闻联播 broadcast (relative, never an absolute sentiment); the headlines are deterministically filtered (macro themes only, each tagged) Eastmoney flash-wire items. Nothing here is an input to any score, signal, regime or allocation, and the mechanical model never sees it.</span><span class="l-zh">仅作背景，非信号。政策基调读数是对央视《新闻联播》文本的粗略词典代理的 z 标准化（相对值，并非绝对情绪）；头条为东方财富快讯经确定性筛选（仅宏观主题，逐条标注）的条目。这里没有任何内容会进入任何评分、信号、区制或配置，机械模型也从不读取它们。</span></p>
+  <!-- ===================== OVERVIEW 3-UP ===================== -->
+  <section class="cn-rail3">
+
+    <!-- policy tone -->
+    <article class="ov-card ov-tone st-steady" style="--ac:var(--muted)">
+      <p class="ov-h"><span class="ic">🏛️</span><span class="l-en">Policy tone</span><span class="l-zh">政策基调</span></p>
+      
+      
+      <div class="tg-top">
+        <div class="tg-state"><span class="l-en">steady</span><span class="l-zh">平稳</span></div>
+        <div class="tg-z">-0.1</div>
+      </div>
+      
+      
+      <div class="tg-track"><span class="mid"></span>
+        <span class="tg-fill" style="right:50%;width:1.0%"></span>
+      </div>
+      <div class="tg-scale"><span><span class="l-en">cautious</span><span class="l-zh">谨慎</span></span><span><span class="l-en">neutral</span><span class="l-zh">中性</span></span><span><span class="l-en">supportive</span><span class="l-zh">积极</span></span></div>
+      <p class="ov-foot"><span class="l-en">CCTV 新闻联播 tone · against the last</span><span class="l-zh">央视《新闻联播》基调 · 对比过去</span> 150<span class="l-en">d baseline</span><span class="l-zh">天基线</span> · 2026-11-09</p>
+      
+    </article>
+
+    <!-- what's on the tape -->
+    <article class="ov-card ov-mix">
+      <p class="ov-h"><span class="ic">🌡️</span><span class="l-en">What's on the tape</span><span class="l-zh">快讯结构</span></p>
+      
+        
+        
+        
+        
+        <div class="mx-row th-markets">
+          <span class="mx-name"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+          <span class="mx-bar"><i style="width:100%"></i></span>
+          <span class="mx-n">7</span>
+        </div>
+        
+        
+        <div class="mx-row th-monetary">
+          <span class="mx-name"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span></span>
+          <span class="mx-bar"><i style="width:86%"></i></span>
+          <span class="mx-n">6</span>
+        </div>
+        
+        
+        <div class="mx-row th-policy">
+          <span class="mx-name"><span class="l-en">Policy</span><span class="l-zh">政策</span></span>
+          <span class="mx-bar"><i style="width:57%"></i></span>
+          <span class="mx-n">4</span>
+        </div>
+        
+        
+        <div class="mx-row th-inflation">
+          <span class="mx-name"><span class="l-en">Inflation</span><span class="l-zh">物价</span></span>
+          <span class="mx-bar"><i style="width:43%"></i></span>
+          <span class="mx-n">3</span>
+        </div>
+        
+        
+        <div class="mx-row th-fiscal">
+          <span class="mx-name"><span class="l-en">Fiscal/Trade</span><span class="l-zh">财政/贸易</span></span>
+          <span class="mx-bar"><i style="width:29%"></i></span>
+          <span class="mx-n">2</span>
+        </div>
+        
+      
+      
+      <p class="ov-foot"><span class="l-en">Sources</span><span class="l-zh">来源</span>: <span class="l-en">Chinese financial press</span><span class="l-zh">中国财经媒体</span> 18 · <span class="l-en">global wire</span><span class="l-zh">国际通讯社</span> 4 · <span class="l-en">official releases</span><span class="l-zh">官方发布</span> 2</p>
+      
+    </article>
+
+    <!-- next catalyst -->
+    <article class="ov-card ov-next">
+      <p class="ov-h"><span class="ic">📅</span><span class="l-en">Next catalyst</span><span class="l-zh">下一催化</span></p>
+      
+      
+      <div class="nx-when">
+        
+          <span class="nx-days" style="color:#d0554f"><span class="l-en">Today</span><span class="l-zh">今日</span></span>
+          
+        
+      </div>
+      <p class="nx-name"><span class="l-en">Customs trade (exports/imports)</span><span class="l-zh">海关进出口数据</span></p>
+      <p class="nx-date"><span class="l-en">Nov 9</span><span class="l-zh">11月9日</span> · <span style="color:#d0554f;font-weight:700"><span class="l-en">high-impact print</span><span class="l-zh">高影响数据</span></span></p>
+      
+    </article>
+  </section>
+
+  <!-- ===================== THE TAPE + RAIL ===================== -->
+  <section class="cn-main">
+    <div class="cn-feed-col">
+      <div class="cn-toolbar">
+        <div class="cn-search"><span class="mag">⌕</span><input id="q" type="search" autocomplete="off" placeholder="Search headlines, channels or tickers…" data-ph-en="Search headlines, channels or tickers…" data-ph-zh="搜索头条、通道或标的…"></div>
+        <div class="cn-filters" id="filters">
+          <button class="fbtn on" data-theme="all"><span class="l-en">All</span><span class="l-zh">全部</span></button>
+          <button class="fbtn" data-importance="high"><span class="l-en">High impact</span><span class="l-zh">高影响</span></button>
+          <button class="fbtn" data-theme="monetary"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span><span class="fc" data-fc="monetary"></span></button><button class="fbtn" data-theme="inflation"><span class="l-en">Inflation</span><span class="l-zh">物价</span><span class="fc" data-fc="inflation"></span></button><button class="fbtn" data-theme="growth"><span class="l-en">Growth</span><span class="l-zh">增长</span><span class="fc" data-fc="growth"></span></button><button class="fbtn" data-theme="credit"><span class="l-en">Credit</span><span class="l-zh">信用</span><span class="fc" data-fc="credit"></span></button><button class="fbtn" data-theme="fiscal"><span class="l-en">Fiscal/Trade</span><span class="l-zh">财政/贸易</span><span class="fc" data-fc="fiscal"></span></button><button class="fbtn" data-theme="policy"><span class="l-en">Policy</span><span class="l-zh">政策</span><span class="fc" data-fc="policy"></span></button><button class="fbtn" data-theme="politics"><span class="l-en">Politics</span><span class="l-zh">政治/地缘</span><span class="fc" data-fc="politics"></span></button><button class="fbtn" data-theme="tech"><span class="l-en">Tech</span><span class="l-zh">科技</span><span class="fc" data-fc="tech"></span></button><button class="fbtn" data-theme="markets"><span class="l-en">Markets</span><span class="l-zh">市场</span><span class="fc" data-fc="markets"></span></button><button class="fbtn" data-theme="macro"><span class="l-en">Macro</span><span class="l-zh">宏观</span><span class="fc" data-fc="macro"></span></button>
+        </div>
+        <span class="cn-count" id="count"></span>
+      </div>
+
+      <div class="tp-feed" id="feed">
+        
+        
+        <a class="tp-item th-monetary lead" href="https://flash.jin10.com/detail/20261110000500000800" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="high"
+           data-search="今日重点关注的财经数据与事件：2026年11月10日 周二 key economic data and events to watch today: tuesday, november 10, 2026 今日重点关注的财经数据与事件：2026年11月10日 周二 <br/>① 待定 中国10月贸易帐<br/>② 待定 g7外长会议举行<br/>③ 待定 美国、俄罗斯、乌克兰举行会晤<br/>④ 01:00 美国总统特朗普会见卡塔尔首相<br/>⑤ 01:15 美联储巴尔金发表讲话<br/>⑥ 01:25 英国央行行长贝利发表讲话<br/>⑦ 07:50 日本9月贸易帐<br/>⑧ 07:50 日本央行公布审议委员意见摘要<br/>⑨ 14:30 法国第三季度ilo失业率<br/>⑩ 17:00 美联储理事沃勒发表讲话<br/>⑪ 19:00 美国10月nfib小型企业信心指数<br/>⑫ 21:15 美国至10月 <br/>① tbd china october trade balance<br/>② tbd g7 foreign ministers' meeting<br/>③ tbd meeting between the us, russia and ukraine<br/>④ 01:00 us president trump meets qatari prime minister<br/>⑤ 01:15 fed's barkin speaks<br/>⑥ 01:25 boe governor bailey speaks<br/>⑦ 07:50 japan september trade balance<br/>⑧ 07:50 boj releases summary of opinions from board members<br/>⑨ 14:30 france q3 ilo unemployment rate<br/>⑩ 17:00 fed governor waller speaks<br/>⑪ 19:00 us october nfib small business optimism index<br/>⑫ 21:15 us through october <br/>① 待定 中国10月贸易帐<br/>② 待定 g7外长会议举行<br/>③ 待定 美国、俄罗斯、乌克兰举行会晤<br/>④ 01:00 美国总统特朗普会见卡塔尔首相<br/>⑤ 01:15 美联储巴尔金发表讲话<br/>⑥ 01:25 英国央行行长贝利发表讲话<br/>⑦ 07:50 日本9月贸易帐<br/>⑧ 07:50 日本央行公布审议委员意见摘要<br/>⑨ 14:30 法国第三季度ilo失业率<br/>⑩ 17:00 美联储理事沃勒发表讲话<br/>⑪ 19:00 美国10月nfib小型企业信心指数<br/>⑫ 21:15 美国至10月 金十数据 pboc_liquidity pboc & liquidity 央行与流动性 ">
+          <time class="tp-when" data-t="2026-11-10T00:05:00+08:00" datetime="2026-11-10T00:05:00+08:00">11-10<br>00:05</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-11-10T00:05:00+08:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span></span>
+              <span class="cn-src">金十数据</span>
+              <span class="cn-imp imp-high"><b>76</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Key economic data and events to watch today: Tuesday, November 10, 2026</span><span class="l-zh">今日重点关注的财经数据与事件：2026年11月10日 周二</span></h2>
+            <p class="tp-sum"><span class="l-en"><br/>① TBD China October trade balance<br/>② TBD G7 foreign ministers' meeting<br/>③ TBD Meeting between the US, Russia and Ukraine<br/>④ 01:00 US President Trump meets Qatari Prime Minister<br/>⑤ 01:15 Fed's Barkin speaks<br/>⑥ 01:25 BoE Governor Bailey speaks<br/>⑦ 07:50 Japan September trade balance<br/>⑧ 07:50 BOJ releases summary of opinions from board members<br/>⑨ 14:30 France Q3 ILO unemployment rate<br/>⑩ 17:00 Fed Governor Waller speaks<br/>⑪ 19:00 US October NFIB small business optimism index<br/>⑫ 21:15 US through October</span><span class="l-zh"><br/>① 待定 中国10月贸易帐<br/>② 待定 G7外长会议举行<br/>③ 待定 美国、俄罗斯、乌克兰举行会晤<br/>④ 01:00 美国总统特朗普会见卡塔尔首相<br/>⑤ 01:15 美联储巴尔金发表讲话<br/>⑥ 01:25 英国央行行长贝利发表讲话<br/>⑦ 07:50 日本9月贸易帐<br/>⑧ 07:50 日本央行公布审议委员意见摘要<br/>⑨ 14:30 法国第三季度ILO失业率<br/>⑩ 17:00 美联储理事沃勒发表讲话<br/>⑪ 19:00 美国10月NFIB小型企业信心指数<br/>⑫ 21:15 美国至10月</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-monetary" href="https://www.scmp.com/business/china-business/article/3373166/pboc-pledges-support-stocks-chinas-market-slide-defies-rescue-efforts" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="high"
+           data-search="pboc pledges support for stocks as china’s market slide defies rescue efforts  中国人民银行承诺支持股市，中国市场下跌无视救市努力 china’s central bank governor has reaffirmed support for the country’s beleaguered stock market after a series of rescue measures failed to put a floor under plummeting share prices.
+pan gongsheng, governor of the people’s bank of china (pboc), pledged in a work report presented to the standing committee of the national people’s congress on tuesday that more actions would be taken to ease financial risks in key areas, including the capital market and the property sector.
+“monetary policy tools...  中国央行行长重申了对陷入困境的股市的支持，此前一系列救市措施未能为暴跌的股价托底。
+中国人民银行行长潘功胜周二向全国人大常委会作工作报告时承诺，将采取更多 scmp - china economy pboc_liquidity property markets pboc & liquidity 央行与流动性 property 房地产 equity market 股票市场 510300.ss 512200.ss">
+          <time class="tp-when" data-t="2026-11-03T12:50:16+00:00" datetime="2026-11-03T12:50:16+00:00">11-03<br>12:50</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-11-03T12:50:16+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span></span>
+              <span class="cn-src">SCMP - China Economy</span>
+              <span class="cn-imp imp-high"><b>90</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">PBOC pledges support for stocks as China’s market slide defies rescue efforts</span><span class="l-zh">中国人民银行承诺支持股市，中国市场下跌无视救市努力</span></h2>
+            <p class="tp-sum"><span class="l-en">China’s central bank governor has reaffirmed support for the country’s beleaguered stock market after a series of rescue measures failed to put a floor under plummeting share prices.
+Pan Gongsheng, governor of the People’s Bank of China (PBOC), pledged in a work report presented to the standing committee of the National People’s Congress on Tuesday that more actions would be taken to ease financial risks in key areas, including the capital market and the property sector.
+“Monetary policy tools...</span><span class="l-zh">中国央行行长重申了对陷入困境的股市的支持，此前一系列救市措施未能为暴跌的股价托底。
+中国人民银行行长潘功胜周二向全国人大常委会作工作报告时承诺，将采取更多</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span><span class="cn-cchip"><span class="l-en">property</span><span class="l-zh">房地产</span></span><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">510300.SS</span><span class="cn-tk">512200.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-inflation" href="https://www.yicai.com/news/103433122.html" target="_blank" rel="noopener"
+           data-theme="inflation" data-importance="high"
+           data-search="10月物价能源涨食品降，ppi和cpi剪刀差扩至5% 生产端价格涨势更多集中于部分上游行业，消费端价格仍受食品偏弱等因素牵制。 october prices: energy up, food down; ppi-cpi scissors gap widens to 5%. producer price gains are increasingly concentrated in some upstream industries, while consumer prices remain weighed down by factors such as weak food prices. 10月物价能源涨食品降，ppi和cpi剪刀差扩至5% 生产端价格涨势更多集中于部分上游行业，消费端价格仍受食品偏弱等因素牵制。    第一财经 consumer consumer 消费 ">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Inflation</span><span class="l-zh">物价</span></span>
+              <span class="cn-src">第一财经</span>
+              <span class="cn-imp imp-high"><b>88</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">October prices: energy up, food down; PPI-CPI scissors gap widens to 5%. Producer price gains are increasingly concentrated in some upstream industries, while consumer prices remain weighed down by factors such as weak food prices.</span><span class="l-zh">10月物价能源涨食品降，PPI和CPI剪刀差扩至5% 生产端价格涨势更多集中于部分上游行业，消费端价格仍受食品偏弱等因素牵制。</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">consumer</span><span class="l-zh">消费</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-inflation" href="https://www.cnstock.com/commonDetail/825914" target="_blank" rel="noopener"
+           data-theme="inflation" data-importance="high"
+           data-search="10月cpi同比上涨0.7%，ppi涨幅扩大 october cpi rose 0.7% year on year; ppi growth widened 10月cpi同比上涨0.7%，ppi涨幅扩大    上海证券报 consumer consumer 消费 512880.ss">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Inflation</span><span class="l-zh">物价</span></span>
+              <span class="cn-src">上海证券报</span>
+              <span class="cn-imp imp-high"><b>82</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">October CPI rose 0.7% year on year; PPI growth widened</span><span class="l-zh">10月CPI同比上涨0.7%，PPI涨幅扩大</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">consumer</span><span class="l-zh">消费</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-fiscal" href="https://wallstreetcn.com/livenews/3196971" target="_blank" rel="noopener"
+           data-theme="fiscal" data-importance="medium"
+           data-search="周一美股盘前你需要了解的全球要闻 global headlines to know before us markets open monday 周一美股盘前你需要了解的全球要闻 中国商务部新闻发言人就调整出口管制管控名单措施答记者问。 据澎湃，中方尚未批准约60万枚英伟达先进芯片进口，外交部：建议询问主管部门。 据澎湃，美官员称与黄仁勋婚外情女子为中国情报机构工作，外交部：纯属捕风捉影。 特朗普即将会见关键调解人，称无意升级伊朗战事，鲁比奥泼冷水：谈判远未突破。 布油跌超3%！伊朗被曝在霍尔木兹问题上松口，总统表态愿以谈判打破“不战不和”僵局。 马斯克terafab目标曝光：瞄准月产70万片存储芯片晶圆，接近三星dram总产能。 谷歌推出两款新tpu，挑战英伟达霸主地位！ 据彭博，ai担忧加剧市场波动之际，alphabet考虑发 china's ministry of commerce spokesperson answers reporters' questions on adjustments to the export control list measures. according to the paper, china has not yet approved the import of about 600,000 advanced nvidia chips; the foreign ministry: suggest asking the competent authorities. according to the paper, a us official said a woman involved in an extramarital affair with jensen huang works for a chinese intelligence agency; the foreign ministry: purely baseless. trump is set to meet a key mediator and says he has no intention of escalating the iran conflict; rubio pours cold water: talks are far from a breakthrough. brent crude falls over 3%! iran is reported to have softened its stance on the hormuz issue, and the president says he is willing to break the "neither war nor peace" deadlock through negotiations. musk's terafab target revealed: aiming for monthly production of 700,000 memory chip wafers, close to samsung's total dram capacity. google launches two new tpus to challenge nvidia's dominance! according to bloomberg, as ai concerns intensify market volatility, alphabet is considering issuing 中国商务部新闻发言人就调整出口管制管控名单措施答记者问。 据澎湃，中方尚未批准约60万枚英伟达先进芯片进口，外交部：建议询问主管部门。 据澎湃，美官员称与黄仁勋婚外情女子为中国情报机构工作，外交部：纯属捕风捉影。 特朗普即将会见关键调解人，称无意升级伊朗战事，鲁比奥泼冷水：谈判远未突破。 布油跌超3%！伊朗被曝在霍尔木兹问题上松口，总统表态愿以谈判打破“不战不和”僵局。 马斯克terafab目标曝光：瞄准月产70万片存储芯片晶圆，接近三星dram总产能。 谷歌推出两款新tpu，挑战英伟达霸主地位！ 据彭博，ai担忧加剧市场波动之际，alphabet考虑发 华尔街见闻 fiscal_trade tech_policy fiscal & trade 财政与贸易 tech policy 科技政策 ">
+          <time class="tp-when" data-t="2026-11-09T13:50:40+00:00" datetime="2026-11-09T13:50:40+00:00">11-09<br>13:50</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-11-09T13:50:40+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Fiscal/Trade</span><span class="l-zh">财政/贸易</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-medium"><b>66</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Global headlines to know before US markets open Monday</span><span class="l-zh">周一美股盘前你需要了解的全球要闻</span></h2>
+            <p class="tp-sum"><span class="l-en">China's Ministry of Commerce spokesperson answers reporters' questions on adjustments to the export control list measures. According to The Paper, China has not yet approved the import of about 600,000 advanced Nvidia chips; the Foreign Ministry: suggest asking the competent authorities. According to The Paper, a US official said a woman involved in an extramarital affair with Jensen Huang works for a Chinese intelligence agency; the Foreign Ministry: purely baseless. Trump is set to meet a key mediator and says he has no intention of escalating the Iran conflict; Rubio pours cold water: talks are far from a breakthrough. Brent crude falls over 3%! Iran is reported to have softened its stance on the Hormuz issue, and the president says he is willing to break the "neither war nor peace" deadlock through negotiations. Musk's Terafab target revealed: aiming for monthly production of 700,000 memory chip wafers, close to Samsung's total DRAM capacity. Google launches two new TPUs to challenge Nvidia's dominance! According to Bloomberg, as AI concerns intensify market volatility, Alphabet is considering issuing</span><span class="l-zh">中国商务部新闻发言人就调整出口管制管控名单措施答记者问。 据澎湃，中方尚未批准约60万枚英伟达先进芯片进口，外交部：建议询问主管部门。 据澎湃，美官员称与黄仁勋婚外情女子为中国情报机构工作，外交部：纯属捕风捉影。 特朗普即将会见关键调解人，称无意升级伊朗战事，鲁比奥泼冷水：谈判远未突破。 布油跌超3%！伊朗被曝在霍尔木兹问题上松口，总统表态愿以谈判打破“不战不和”僵局。 马斯克Terafab目标曝光：瞄准月产70万片存储芯片晶圆，接近三星DRAM总产能。 谷歌推出两款新TPU，挑战英伟达霸主地位！ 据彭博，AI担忧加剧市场波动之际，Alphabet考虑发</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">fiscal & trade</span><span class="l-zh">财政与贸易</span></span><span class="cn-cchip"><span class="l-en">tech policy</span><span class="l-zh">科技政策</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-monetary" href="https://www.pbc.gov.cn/en/3688110/3688172/2026/2026110516301442866/index.html" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="high"
+           data-search="pboc, nfra and csrc hold meetingsâ on two facilitiesâ to support the capital market  中国人民银行、国家金融监督管理总局、中国证监会就支持资本市场的两项工具召开会议    pboc pboc_liquidity markets pboc & liquidity 央行与流动性 equity market 股票市场 510300.ss">
+          <time class="tp-when" data-t="2026-11-02" datetime="2026-11-02">11-02</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-11-02"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span></span>
+              <span class="cn-src">PBoC</span>
+              <span class="cn-imp imp-high"><b>76</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">PBOC, NFRA and CSRC Hold MeetingsÂ on Two FacilitiesÂ to Support the Capital Market</span><span class="l-zh">中国人民银行、国家金融监督管理总局、中国证监会就支持资本市场的两项工具召开会议</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">510300.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-monetary" href="https://flash.jin10.com/detail/20261109234851431800" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="high"
+           data-search="乌兹别克斯坦央行：10月黄金及外汇储备为431.43亿美元（前值为411.39亿美元） uzbekistan central bank: october gold and foreign exchange reserves at $43.143 billion (previous: $41.139 billion) 乌兹别克斯坦央行：10月黄金及外汇储备为431.43亿美元（前值为411.39亿美元） 乌兹别克斯坦央行：10月黄金及外汇储备为431.43亿美元（前值为411.39亿美元）。 central bank of uzbekistan: october gold and foreign exchange reserves were $43.143 billion (previous value: $41.139 billion). 乌兹别克斯坦央行：10月黄金及外汇储备为431.43亿美元（前值为411.39亿美元）。 金十数据 pboc_liquidity pboc & liquidity 央行与流动性 ">
+          <time class="tp-when" data-t="2026-11-09T23:48:51+08:00" datetime="2026-11-09T23:48:51+08:00">11-09<br>23:48</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-11-09T23:48:51+08:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span></span>
+              <span class="cn-src">金十数据</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Uzbekistan central bank: October gold and foreign exchange reserves at $43.143 billion (previous: $41.139 billion)</span><span class="l-zh">乌兹别克斯坦央行：10月黄金及外汇储备为431.43亿美元（前值为411.39亿美元）</span></h2>
+            <p class="tp-sum"><span class="l-en">Central Bank of Uzbekistan: October gold and foreign exchange reserves were $43.143 billion (previous value: $41.139 billion).</span><span class="l-zh">乌兹别克斯坦央行：10月黄金及外汇储备为431.43亿美元（前值为411.39亿美元）。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-fiscal" href="https://www.cnstock.com/commonDetail/825900" target="_blank" rel="noopener"
+           data-theme="fiscal" data-importance="medium"
+           data-search="国务院关税税则委员会发布公告调整对原产于美国的进口商品加征关税措施 customs tariff commission of the state council issues announcement adjusting additional tariff measures on imports originating in the us 国务院关税税则委员会发布公告调整对原产于美国的进口商品加征关税措施    上海证券报 fiscal_trade fiscal & trade 财政与贸易 512880.ss">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Fiscal/Trade</span><span class="l-zh">财政/贸易</span></span>
+              <span class="cn-src">上海证券报</span>
+              <span class="cn-imp imp-medium"><b>66</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Customs Tariff Commission of the State Council issues announcement adjusting additional tariff measures on imports originating in the US</span><span class="l-zh">国务院关税税则委员会发布公告调整对原产于美国的进口商品加征关税措施</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">fiscal & trade</span><span class="l-zh">财政与贸易</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-growth" href="https://www.stats.gov.cn/english/PressRelease/202610/t20261021_1965671.html" target="_blank" rel="noopener"
+           data-theme="growth" data-importance="high"
+           data-search="preliminary accounting results of gdp for the third quarter of 2026  2026年第三季度gdp初步核算结果    nbs growth growth 增长 ">
+          <time class="tp-when" data-t="2026-10-21" datetime="2026-10-21">10-21</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-21"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Growth</span><span class="l-zh">增长</span></span>
+              <span class="cn-src">NBS</span>
+              <span class="cn-imp imp-high"><b>76</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Preliminary Accounting Results of GDP for the Third Quarter of 2026</span><span class="l-zh">2026年第三季度GDP初步核算结果</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">Growth</span><span class="l-zh">增长</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://www.yicai.com/news/103432797.html" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="high"
+           data-search="财报解读｜航运巨头前三季度营收超3100亿，利润大涨股价却跌了 资本市场为何“不买账”？ earnings analysis | shipping giant's first three quarters revenue exceeds rmb 310 billion, profits surge but shares fall; why is the capital market not buying it? 财报解读｜航运巨头前三季度营收超3100亿，利润大涨股价却跌了 资本市场为何“不买账”？    第一财经 markets equity market 股票市场 ">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">第一财经</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Earnings analysis | Shipping giant's first three quarters revenue exceeds RMB 310 billion, profits surge but shares fall; why is the capital market not buying it?</span><span class="l-zh">财报解读｜航运巨头前三季度营收超3100亿，利润大涨股价却跌了 资本市场为何“不买账”？</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://www.scmp.com/business/article/3373796/factory-owner-proposes-928-flats-sha-tin-site-industrial-demand-drops" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="medium"
+           data-search="factory owner proposes 928 flats at sha tin site as industrial demand drops  工厂业主因工业需求下降，提议在沙田地块兴建928套住宅单位 after 17 years of intermittent government-led initiatives to turn the siu lek yuen industrial area into residential housing, a company recently applied to convert two industrial buildings on the site into 928 residential flats.
+the move would offer a more viable and profitable path forward for developers because even though hong kong’s residential property market was cooling, industrial properties faced a sharp decline in demand, according to analysts.
+the industrial manufacturer chiaphua group...  在政府主导的间歇性举措推行17年后，旨在将小瀝源工业区改造为住宅区，一家公司近期申请将该地块上的两栋工业大厦改建为928个住宅单位。
+此举将为开发商提供一条更可行且更有利可图的路径，因为尽管香港住宅物业市 scmp - business property industrial property 房地产 industry & manufacturing 工业与制造业 512200.ss">
+          <time class="tp-when" data-t="2026-11-09T10:00:11+00:00" datetime="2026-11-09T10:00:11+00:00">11-09<br>10:00</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-11-09T10:00:11+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">SCMP - Business</span>
+              <span class="cn-imp imp-medium"><b>62</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Factory owner proposes 928 flats at Sha Tin site as industrial demand drops</span><span class="l-zh">工厂业主因工业需求下降，提议在沙田地块兴建928套住宅单位</span></h2>
+            <p class="tp-sum"><span class="l-en">After 17 years of intermittent government-led initiatives to turn the Siu Lek Yuen industrial area into residential housing, a company recently applied to convert two industrial buildings on the site into 928 residential flats.
+The move would offer a more viable and profitable path forward for developers because even though Hong Kong’s residential property market was cooling, industrial properties faced a sharp decline in demand, according to analysts.
+The industrial manufacturer Chiaphua Group...</span><span class="l-zh">在政府主导的间歇性举措推行17年后，旨在将小瀝源工业区改造为住宅区，一家公司近期申请将该地块上的两栋工业大厦改建为928个住宅单位。
+此举将为开发商提供一条更可行且更有利可图的路径，因为尽管香港住宅物业市</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">property</span><span class="l-zh">房地产</span></span><span class="cn-cchip"><span class="l-en">industry & manufacturing</span><span class="l-zh">工业与制造业</span></span><span class="cn-tk">512200.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-inflation" href="https://www.scmp.com/economy/economic-indicators/article/3373727/chinas-factory-gate-prices-continue-rise-ppi-most-2022-amid-iran-war" target="_blank" rel="noopener"
+           data-theme="inflation" data-importance="high"
+           data-search="china’s factory gate inflation accelerates in october with highest increase since 2022  中国10月工业生产者出厂价格通胀加速，创2022年以来最大涨幅 china’s factory-gate price growth continued to accelerate last month amid the ongoing us-iran conflict that is fuelling uncertainties in the global energy market, while consumer inflation remained subdued.
+the producer price index (ppi) rose 5.7 per cent year on year in october, according to data released by the national bureau of statistics on monday. it marked another record high since mid-2022, following a 5 per cent rise in september.
+the reading beat a projection of 5.37 per cent from...  上月，由于持续的美国-伊朗冲突加剧了全球能源市场的不确定性，中国工业品出厂价格涨势继续加速，而消费者通胀依然温和。
+国家统计局周一发布的数据显示，10月份生产者价格指数（ppi）同比上涨5.7%。它 scmp - china economy consumer consumer 消费 ">
+          <time class="tp-when" data-t="2026-11-09T02:05:49+00:00" datetime="2026-11-09T02:05:49+00:00">11-09<br>02:05</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-11-09T02:05:49+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Inflation</span><span class="l-zh">物价</span></span>
+              <span class="cn-src">SCMP - China Economy</span>
+              <span class="cn-imp imp-high"><b>70</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">China’s factory gate inflation accelerates in October with highest increase since 2022</span><span class="l-zh">中国10月工业生产者出厂价格通胀加速，创2022年以来最大涨幅</span></h2>
+            <p class="tp-sum"><span class="l-en">China’s factory-gate price growth continued to accelerate last month amid the ongoing US-Iran conflict that is fuelling uncertainties in the global energy market, while consumer inflation remained subdued.
+The producer price index (PPI) rose 5.7 per cent year on year in October, according to data released by the National Bureau of Statistics on Monday. It marked another record high since mid-2022, following a 5 per cent rise in September.
+The reading beat a projection of 5.37 per cent from...</span><span class="l-zh">上月，由于持续的美国-伊朗冲突加剧了全球能源市场的不确定性，中国工业品出厂价格涨势继续加速，而消费者通胀依然温和。
+国家统计局周一发布的数据显示，10月份生产者价格指数（PPI）同比上涨5.7%。它</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">consumer</span><span class="l-zh">消费</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-tech" href="https://www.yicai.com/news/103432974.html" target="_blank" rel="noopener"
+           data-theme="tech" data-importance="medium"
+           data-search="全球“大块头”集中亮相进博会，外资巨头押注中国智能制造 在进博会技术装备展区中，工业自动化、人工智能、精密制造、半导体装备和未来能源成为高频关键词。 global heavyweights gather at ciie as foreign giants bet on china's smart manufacturing. at the ciie technical equipment exhibition area, industrial automation, ai, precision manufacturing, semiconductor equipment and future energy became high-frequency keywords. 全球“大块头”集中亮相进博会，外资巨头押注中国智能制造 在进博会技术装备展区中，工业自动化、人工智能、精密制造、半导体装备和未来能源成为高频关键词。    第一财经 industrial tech_policy industry & manufacturing 工业与制造业 tech policy 科技政策 512760.ss">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Tech</span><span class="l-zh">科技</span></span>
+              <span class="cn-src">第一财经</span>
+              <span class="cn-imp imp-medium"><b>58</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Global heavyweights gather at CIIE as foreign giants bet on China's smart manufacturing. At the CIIE technical equipment exhibition area, industrial automation, AI, precision manufacturing, semiconductor equipment and future energy became high-frequency keywords.</span><span class="l-zh">全球“大块头”集中亮相进博会，外资巨头押注中国智能制造 在进博会技术装备展区中，工业自动化、人工智能、精密制造、半导体装备和未来能源成为高频关键词。</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">industry & manufacturing</span><span class="l-zh">工业与制造业</span></span><span class="cn-cchip"><span class="l-en">tech policy</span><span class="l-zh">科技政策</span></span><span class="cn-tk">512760.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-monetary" href="https://news.10jqka.com.cn/20261109/c681628810.shtml" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="medium"
+           data-search="超威半导体两个交易日涨近20% 美股短期有望阶段性企稳 advanced micro devices rose nearly 20% over two trading days; us stocks may see a short-term phased stabilization 超威半导体两个交易日涨近20% 美股短期有望阶段性企稳 北京时间11月9日晚，美股三大股指盘初集体上涨，半导体板块、大型科技股多数反弹。美股芯片巨头超威半导体连续两个交易日大幅反弹，累计涨幅接近20%。对于美股后市，业内机构研判，伴随着短期流动性压力快速出清以及市场对政治风险逐步理性定价，短期有望阶段性企稳。考虑到美国中期选举后，市场对美伊冲突升级的预期有所降温，油价进一步大幅上涨的空间受限，因此美联储12月或再度加息，但之后将转为观望状态。(中国证券报) on the evening of november 9 beijing time, the three major us stock indices rose collectively at the open, with the semiconductor sector and most large-cap tech stocks rebounding. us chip giant advanced micro devices rebounded sharply for two consecutive trading days, with a cumulative gain of nearly 20%. regarding the outlook for us stocks, industry institutions believe that with the rapid clearing of short-term liquidity pressure and the market's gradual rational pricing of political risks, a phased stabilization is expected in the short term. considering that after the us midterm elections, market expectations for an escalation of the us-iran conflict have cooled, limiting room for further sharp oil price increases, the federal reserve may raise rates again in december but will then shift to a wait-and-see stance. (china securities journal) 北京时间11月9日晚，美股三大股指盘初集体上涨，半导体板块、大型科技股多数反弹。美股芯片巨头超威半导体连续两个交易日大幅反弹，累计涨幅接近20%。对于美股后市，业内机构研判，伴随着短期流动性压力快速出清以及市场对政治风险逐步理性定价，短期有望阶段性企稳。考虑到美国中期选举后，市场对美伊冲突升级的预期有所降温，油价进一步大幅上涨的空间受限，因此美联储12月或再度加息，但之后将转为观望状态。(中国证券报) 同花顺 tech_policy tech policy 科技政策 512880.ss 512760.ss">
+          <time class="tp-when" data-t="2026-11-09T15:37:31+00:00" datetime="2026-11-09T15:37:31+00:00">11-09<br>15:37</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-11-09T15:37:31+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span></span>
+              <span class="cn-src">同花顺</span>
+              <span class="cn-imp imp-medium"><b>54</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Advanced Micro Devices rose nearly 20% over two trading days; US stocks may see a short-term phased stabilization</span><span class="l-zh">超威半导体两个交易日涨近20% 美股短期有望阶段性企稳</span></h2>
+            <p class="tp-sum"><span class="l-en">On the evening of November 9 Beijing time, the three major US stock indices rose collectively at the open, with the semiconductor sector and most large-cap tech stocks rebounding. US chip giant Advanced Micro Devices rebounded sharply for two consecutive trading days, with a cumulative gain of nearly 20%. Regarding the outlook for US stocks, industry institutions believe that with the rapid clearing of short-term liquidity pressure and the market's gradual rational pricing of political risks, a phased stabilization is expected in the short term. Considering that after the US midterm elections, market expectations for an escalation of the US-Iran conflict have cooled, limiting room for further sharp oil price increases, the Federal Reserve may raise rates again in December but will then shift to a wait-and-see stance. (China Securities Journal)</span><span class="l-zh">北京时间11月9日晚，美股三大股指盘初集体上涨，半导体板块、大型科技股多数反弹。美股芯片巨头超威半导体连续两个交易日大幅反弹，累计涨幅接近20%。对于美股后市，业内机构研判，伴随着短期流动性压力快速出清以及市场对政治风险逐步理性定价，短期有望阶段性企稳。考虑到美国中期选举后，市场对美伊冲突升级的预期有所降温，油价进一步大幅上涨的空间受限，因此美联储12月或再度加息，但之后将转为观望状态。(中国证券报)</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">tech policy</span><span class="l-zh">科技政策</span></span><span class="cn-tk">512880.SS</span><span class="cn-tk">512760.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-monetary" href="https://www.scmp.com/economy/policy/article/3373263/chinese-exporters-see-respite-beijing-curbs-yuan-rise-amid-looming-record-surplus" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="medium"
+           data-search="chinese exporters see respite as beijing curbs yuan rise amid looming record surplus  随着北京在创纪录顺差逼近之际遏制人民币升值，中国出口商获得喘息 the people’s bank of china’s (pboc) intervention to raise the foreign exchange reserve requirement ratio amid the yuan’s sustained rally has delivered a reprieve for china’s broader export sector, as the measure is expected to partly ease appreciation momentum driven by the country’s enormous trade surplus, analysts say.
+china’s goods trade surplus mounted to a record us$938.1 billion in the january-september period, rising from us$726.2 billion in the same period a year prior. with the full...  分析师表示，中国人民银行在人民币持续走强之际出手上调外汇存款准备金率，为中国更广泛的出口部门带来了喘息之机，因为该措施预计将部分缓解由中国巨额贸易顺差推动的升值势头。
+中国货物贸易顺差增至 scmp - china economy pboc_liquidity fiscal_trade yuan pboc & liquidity 央行与流动性 fiscal & trade 财政与贸易 yuan & fx 人民币与汇率 cny">
+          <time class="tp-when" data-t="2026-11-04T11:00:10+00:00" datetime="2026-11-04T11:00:10+00:00">11-04<br>11:00</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-11-04T11:00:10+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span></span>
+              <span class="cn-src">SCMP - China Economy</span>
+              <span class="cn-imp imp-medium"><b>62</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Chinese exporters see respite as Beijing curbs yuan rise amid looming record surplus</span><span class="l-zh">随着北京在创纪录顺差逼近之际遏制人民币升值，中国出口商获得喘息</span></h2>
+            <p class="tp-sum"><span class="l-en">The People’s Bank of China’s (PBOC) intervention to raise the foreign exchange reserve requirement ratio amid the yuan’s sustained rally has delivered a reprieve for China’s broader export sector, as the measure is expected to partly ease appreciation momentum driven by the country’s enormous trade surplus, analysts say.
+China’s goods trade surplus mounted to a record US$938.1 billion in the January-September period, rising from US$726.2 billion in the same period a year prior. With the full...</span><span class="l-zh">分析师表示，中国人民银行在人民币持续走强之际出手上调外汇存款准备金率，为中国更广泛的出口部门带来了喘息之机，因为该措施预计将部分缓解由中国巨额贸易顺差推动的升值势头。
+中国货物贸易顺差增至</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span><span class="cn-cchip"><span class="l-en">fiscal & trade</span><span class="l-zh">财政与贸易</span></span><span class="cn-cchip"><span class="l-en">yuan & FX</span><span class="l-zh">人民币与汇率</span></span><span class="cn-tk">CNY</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://finance.sina.com.cn/money/fund/etf/2026-11-09/doc-iniycwiw3237682.shtml" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="medium"
+           data-search="盈利可预期+分红可兑现+估值有安全边际，银行修复有望持续，中行、工行涨超2% earnings predictability + deliverable dividends + valuation safety margin; bank recovery is expected to continue, with bank of china and icbc up more than 2% 盈利可预期+分红可兑现+估值有安全边际，银行修复有望持续，中行、工行涨超2%    新浪财经股票 markets equity market 股票市场 512800.ss">
+          <time class="tp-when" data-t="2026-11-09" datetime="2026-11-09">11-09</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-11-09"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">新浪财经股票</span>
+              <span class="cn-imp imp-medium"><b>54</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Earnings predictability + deliverable dividends + valuation safety margin; bank recovery is expected to continue, with Bank of China and ICBC up more than 2%</span><span class="l-zh">盈利可预期+分红可兑现+估值有安全边际，银行修复有望持续，中行、工行涨超2%</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">512800.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://finance.sina.com.cn/money/fund/etf/2026-11-09/doc-iniycwiw3237391.shtml" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="medium"
+           data-search="中国资产步入超跌区间？“ai双子星”携手修复，589520标的指数上探4%！创新药催化密集，银行再走强 are chinese assets entering an oversold range? the "ai twin stars" recover together, with the 589520 underlying index up 4%! innovative drug catalysts are密集, and banks strengthen again 中国资产步入超跌区间？“ai双子星”携手修复，589520标的指数上探4%！创新药催化密集，银行再走强    新浪财经股票 tech_policy tech policy 科技政策 512800.ss">
+          <time class="tp-when" data-t="2026-11-09" datetime="2026-11-09">11-09</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-11-09"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">新浪财经股票</span>
+              <span class="cn-imp imp-medium"><b>54</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Are Chinese assets entering an oversold range? The "AI twin stars" recover together, with the 589520 underlying index up 4%! Innovative drug catalysts are密集, and banks strengthen again</span><span class="l-zh">中国资产步入超跌区间？“AI双子星”携手修复，589520标的指数上探4%！创新药催化密集，银行再走强</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">tech policy</span><span class="l-zh">科技政策</span></span><span class="cn-tk">512800.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://finance.sina.com.cn/stock/quanshang/qsyj/2026-11-09/doc-iniycwiy9947162.shtml" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="medium"
+           data-search="七年两轮“双罚”：中信证券吉林分公司的合规断层与区域盈利悖论 two rounds of "dual penalties" in seven years: citic securities jilin branch's compliance gap and regional profitability paradox 七年两轮“双罚”：中信证券吉林分公司的合规断层与区域盈利悖论    新浪财经股票 markets equity market 股票市场 512880.ss">
+          <time class="tp-when" data-t="2026-11-09" datetime="2026-11-09">11-09</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-11-09"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">新浪财经股票</span>
+              <span class="cn-imp imp-medium"><b>54</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Two rounds of "dual penalties" in seven years: CITIC Securities Jilin branch's compliance gap and regional profitability paradox</span><span class="l-zh">七年两轮“双罚”：中信证券吉林分公司的合规断层与区域盈利悖论</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://finance.sina.com.cn/jjxw/2026-11-09/doc-iniyauwe3106742.shtml" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="medium"
+           data-search="十大券商看后市｜a股已处于底部位置，进一步回调空间有限 top ten brokers on the outlook | a-shares are already at a bottom, with limited room for further correction 十大券商看后市｜a股已处于底部位置，进一步回调空间有限    新浪财经股票 markets equity market 股票市场 512880.ss">
+          <time class="tp-when" data-t="2026-11-09" datetime="2026-11-09">11-09</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-11-09"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">新浪财经股票</span>
+              <span class="cn-imp imp-medium"><b>54</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Top ten brokers on the outlook | A-shares are already at a bottom, with limited room for further correction</span><span class="l-zh">十大券商看后市｜A股已处于底部位置，进一步回调空间有限</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://finance.sina.com.cn/stock/marketresearch/2026-11-09/doc-iniyauwe3077085.shtml" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="medium"
+           data-search="十大券商周策略：转机将现！中国资产的吸引力正在加强 top ten brokers' weekly strategy: turning point will emerge! the appeal of chinese assets is strengthening 十大券商周策略：转机将现！中国资产的吸引力正在加强    新浪财经股票 markets equity market 股票市场 512880.ss">
+          <time class="tp-when" data-t="2026-11-09" datetime="2026-11-09">11-09</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-11-09"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">新浪财经股票</span>
+              <span class="cn-imp imp-medium"><b>54</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Top ten brokers' weekly strategy: turning point will emerge! The appeal of Chinese assets is strengthening</span><span class="l-zh">十大券商周策略：转机将现！中国资产的吸引力正在加强</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-policy" href="https://news.10jqka.com.cn/20261109/c681628821.shtml" target="_blank" rel="noopener"
+           data-theme="policy" data-importance="medium"
+           data-search="美国国务卿鲁比奥呼吁停止欧盟针对美国公司的优惠措施和过度监管 us secretary of state rubio calls for ending eu preferential measures and excessive regulation targeting us companies 美国国务卿鲁比奥呼吁停止欧盟针对美国公司的优惠措施和过度监管 美国国务院称，国务卿鲁比奥呼吁停止欧盟针对美国公司的优惠措施和过度监管。（财联社） the us state department said secretary of state rubio called for an end to eu preferential measures and excessive regulation targeting us companies. (cailian press) 美国国务院称，国务卿鲁比奥呼吁停止欧盟针对美国公司的优惠措施和过度监管。（财联社） 同花顺 policy policy 政策 ">
+          <time class="tp-when" data-t="2026-11-09T15:43:27+00:00" datetime="2026-11-09T15:43:27+00:00">11-09<br>15:43</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-11-09T15:43:27+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Policy</span><span class="l-zh">政策</span></span>
+              <span class="cn-src">同花顺</span>
+              <span class="cn-imp imp-medium"><b>54</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">US Secretary of State Rubio calls for ending EU preferential measures and excessive regulation targeting US companies</span><span class="l-zh">美国国务卿鲁比奥呼吁停止欧盟针对美国公司的优惠措施和过度监管</span></h2>
+            <p class="tp-sum"><span class="l-en">The US State Department said Secretary of State Rubio called for an end to EU preferential measures and excessive regulation targeting US companies. (Cailian Press)</span><span class="l-zh">美国国务院称，国务卿鲁比奥呼吁停止欧盟针对美国公司的优惠措施和过度监管。（财联社）</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">Policy</span><span class="l-zh">政策</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-policy" href="https://news.futunn.com/flash/1003906572/us-department-of-state-us-secretary-of-state-rubio-and" target="_blank" rel="noopener"
+           data-theme="policy" data-importance="medium"
+           data-search="美国国务院：美国国务卿鲁比奥与法国外长巴罗讨论了中东局势以及推动俄乌战争和平解决的努力 us state department: us secretary of state rubio and french foreign minister barrot discussed the middle east situation and efforts to promote a peaceful resolution of the russia-ukraine war 美国国务院：美国国务卿鲁比奥与法国外长巴罗讨论了中东局势以及推动俄乌战争和平解决的努力 美国国务院：美国国务卿鲁比奥与法国外长巴罗讨论了中东局势以及推动俄乌战争和平解决的努力。 us state department: us secretary of state rubio and french foreign minister barrot discussed the middle east situation and efforts to promote a peaceful resolution of the russia-ukraine war. 美国国务院：美国国务卿鲁比奥与法国外长巴罗讨论了中东局势以及推动俄乌战争和平解决的努力。 富途牛牛 policy policy 政策 ">
+          <time class="tp-when" data-t="2026-11-09T15:41:29+00:00" datetime="2026-11-09T15:41:29+00:00">11-09<br>15:41</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-11-09T15:41:29+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Policy</span><span class="l-zh">政策</span></span>
+              <span class="cn-src">富途牛牛</span>
+              <span class="cn-imp imp-medium"><b>54</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">US State Department: US Secretary of State Rubio and French Foreign Minister Barrot discussed the Middle East situation and efforts to promote a peaceful resolution of the Russia-Ukraine war</span><span class="l-zh">美国国务院：美国国务卿鲁比奥与法国外长巴罗讨论了中东局势以及推动俄乌战争和平解决的努力</span></h2>
+            <p class="tp-sum"><span class="l-en">US State Department: US Secretary of State Rubio and French Foreign Minister Barrot discussed the Middle East situation and efforts to promote a peaceful resolution of the Russia-Ukraine war.</span><span class="l-zh">美国国务院：美国国务卿鲁比奥与法国外长巴罗讨论了中东局势以及推动俄乌战争和平解决的努力。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">Policy</span><span class="l-zh">政策</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-policy" href="https://news.futunn.com/flash/1003906522/us-department-of-state-us-secretary-of-state-rubio-calls" target="_blank" rel="noopener"
+           data-theme="policy" data-importance="medium"
+           data-search="美国国务院：美国国务卿鲁比奥呼吁停止针对美国公司的欧盟优惠措施和过度监管 us state department: us secretary of state rubio calls for ending eu preferential measures and excessive regulation targeting us companies 美国国务院：美国国务卿鲁比奥呼吁停止针对美国公司的欧盟优惠措施和过度监管 美国国务院：美国国务卿鲁比奥呼吁停止针对美国公司的欧盟优惠措施和过度监管。 us state department: us secretary of state rubio called for an end to eu preferential measures and excessive regulation targeting us companies. 美国国务院：美国国务卿鲁比奥呼吁停止针对美国公司的欧盟优惠措施和过度监管。 富途牛牛 policy policy 政策 ">
+          <time class="tp-when" data-t="2026-11-09T15:41:11+00:00" datetime="2026-11-09T15:41:11+00:00">11-09<br>15:41</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-11-09T15:41:11+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Policy</span><span class="l-zh">政策</span></span>
+              <span class="cn-src">富途牛牛</span>
+              <span class="cn-imp imp-medium"><b>54</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">US State Department: US Secretary of State Rubio calls for ending EU preferential measures and excessive regulation targeting US companies</span><span class="l-zh">美国国务院：美国国务卿鲁比奥呼吁停止针对美国公司的欧盟优惠措施和过度监管</span></h2>
+            <p class="tp-sum"><span class="l-en">US State Department: US Secretary of State Rubio called for an end to EU preferential measures and excessive regulation targeting US companies.</span><span class="l-zh">美国国务院：美国国务卿鲁比奥呼吁停止针对美国公司的欧盟优惠措施和过度监管。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">Policy</span><span class="l-zh">政策</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-policy" href="https://news.futunn.com/flash/1003906275/us-department-of-state-us-secretary-of-state-rubio-and" target="_blank" rel="noopener"
+           data-theme="policy" data-importance="medium"
+           data-search="美国国务院：美国国务卿鲁比奥与法国外长巴罗讨论了乌克兰和平努力 us state department: us secretary of state rubio and french foreign minister barrot discussed ukraine peace efforts 美国国务院：美国国务卿鲁比奥与法国外长巴罗讨论了乌克兰和平努力 美国国务院：美国国务卿鲁比奥与法国外长巴罗讨论了乌克兰和平努力。 us state department: us secretary of state rubio and french foreign minister barrot discussed ukraine peace efforts. 美国国务院：美国国务卿鲁比奥与法国外长巴罗讨论了乌克兰和平努力。 富途牛牛 policy policy 政策 ">
+          <time class="tp-when" data-t="2026-11-09T15:39:37+00:00" datetime="2026-11-09T15:39:37+00:00">11-09<br>15:39</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-11-09T15:39:37+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Policy</span><span class="l-zh">政策</span></span>
+              <span class="cn-src">富途牛牛</span>
+              <span class="cn-imp imp-medium"><b>54</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">US State Department: US Secretary of State Rubio and French Foreign Minister Barrot discussed Ukraine peace efforts</span><span class="l-zh">美国国务院：美国国务卿鲁比奥与法国外长巴罗讨论了乌克兰和平努力</span></h2>
+            <p class="tp-sum"><span class="l-en">US State Department: US Secretary of State Rubio and French Foreign Minister Barrot discussed Ukraine peace efforts.</span><span class="l-zh">美国国务院：美国国务卿鲁比奥与法国外长巴罗讨论了乌克兰和平努力。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">Policy</span><span class="l-zh">政策</span></span></div>
+          </div>
+        </a>
+        
+      </div>
+      <div class="cn-none hidden" id="none"><h3><span class="l-en">No stories match that view.</span><span class="l-zh">没有符合当前视图的新闻。</span></h3><p><span class="l-en">Clear the search or switch back to All.</span><span class="l-zh">清空搜索或切回全部。</span></p></div>
+
+      <p class="cn-disc"><span class="l-en">Context only — not a signal. The policy-tone read is a z-score of a crude lexicon proxy on the CCTV 新闻联播 broadcast (relative, never an absolute sentiment); the headlines are deterministically filtered (macro themes only, each tagged) Eastmoney flash-wire items. Nothing here is an input to any score, signal, regime or allocation, and the mechanical model never sees it.</span><span class="l-zh">仅作背景，非信号。政策基调读数是对央视《新闻联播》文本的粗略词典代理的 z 标准化（相对值，并非绝对情绪）；头条为东方财富快讯经确定性筛选（仅宏观主题，逐条标注）的条目。这里没有任何内容会进入任何评分、信号、区制或配置，机械模型也从不读取它们。</span></p>
+    </div>
+
+    <aside class="cn-side">
+      <section class="side-card">
+        <h2 class="sc-h"><span class="l-en">Scheduled catalysts</span><span class="l-zh">排定催化</span></h2>
+        
+        
+        <div class="cal-row">
+          <div class="cal-when soon">
+            <span class="cd">·</span><span class="cu"><span class="l-en">today</span><span class="l-zh">今</span></span>
+          </div>
+          <div class="cal-name"><span class="cal-tag hi">TRADE</span><span class="l-en">Customs trade (exports/imports)</span><span class="l-zh">海关进出口数据</span></div>
+        </div>
+        
+        
+        <div class="cal-row">
+          <div class="cal-when soon">
+            <span class="cd">·</span><span class="cu"><span class="l-en">today</span><span class="l-zh">今</span></span>
+          </div>
+          <div class="cal-name"><span class="cal-tag ">FXRES</span><span class="l-en">FX reserves (SAFE)</span><span class="l-zh">外汇储备（外管局）</span></div>
+        </div>
+        
+        
+        <div class="cal-row">
+          <div class="cal-when soon">
+            <span class="cd">1</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
+          </div>
+          <div class="cal-name"><span class="cal-tag hi">CPI</span><span class="l-en">CPI (consumer prices)</span><span class="l-zh">CPI（居民消费价格）</span></div>
+        </div>
+        
+        
+        <div class="cal-row">
+          <div class="cal-when soon">
+            <span class="cd">1</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
+          </div>
+          <div class="cal-name"><span class="cal-tag hi">CREDIT</span><span class="l-en">Money supply, RMB loans & TSF</span><span class="l-zh">货币供应、人民币贷款与社融</span></div>
+        </div>
+        
+        
+        <div class="cal-row">
+          <div class="cal-when soon">
+            <span class="cd">1</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
+          </div>
+          <div class="cal-name"><span class="cal-tag hi">PPI</span><span class="l-en">PPI (producer prices)</span><span class="l-zh">PPI（工业生产者价格）</span></div>
+        </div>
+        
+        
+        <div class="cal-row">
+          <div class="cal-when ">
+            <span class="cd">7</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
+          </div>
+          <div class="cal-name"><span class="cal-tag hi">ACTIVITY</span><span class="l-en">IP, FAI & retail sales</span><span class="l-zh">工业增加值、固投与社零</span></div>
+        </div>
+        
+        
+        <div class="cal-row">
+          <div class="cal-when ">
+            <span class="cd">7</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
+          </div>
+          <div class="cal-name"><span class="cal-tag ">MLF</span><span class="l-en">MLF operation (PBoC)</span><span class="l-zh">MLF 操作（央行中期借贷便利）</span></div>
+        </div>
+        
+        
+        <div class="cal-row">
+          <div class="cal-when ">
+            <span class="cd">11</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
+          </div>
+          <div class="cal-name"><span class="cal-tag hi">LPR</span><span class="l-en">LPR fix (loan prime rate)</span><span class="l-zh">LPR 报价（贷款市场报价利率）</span></div>
+        </div>
+        
+      </section>
+
+      
+      <section class="side-card">
+        <h2 class="sc-h"><span class="l-en">Exposures on the tape</span><span class="l-zh">相关标的</span></h2>
+        <div class="exp-pills">
+          
+          
+          <span class="exp-pill"><span class="tk">512880.SS</span><span class="nm"><span class="l-en">brokers</span><span class="l-zh">券商</span></span><span class="ct">×6</span></span>
+          
+          
+          <span class="exp-pill"><span class="tk">510300.SS</span><span class="nm"><span class="l-en">CSI 300</span><span class="l-zh">沪深300</span></span><span class="ct">×2</span></span>
+          
+          
+          <span class="exp-pill"><span class="tk">512200.SS</span><span class="nm"><span class="l-en">property</span><span class="l-zh">房地产</span></span><span class="ct">×2</span></span>
+          
+          
+          <span class="exp-pill"><span class="tk">512760.SS</span><span class="nm"><span class="l-en">chips</span><span class="l-zh">半导体</span></span><span class="ct">×2</span></span>
+          
+          
+          <span class="exp-pill"><span class="tk">512800.SS</span><span class="nm"><span class="l-en">banks</span><span class="l-zh">银行</span></span><span class="ct">×2</span></span>
+          
+          
+          <span class="exp-pill"><span class="tk">CNY</span><span class="nm"><span class="l-en">yuan</span><span class="l-zh">人民币</span></span></span>
+          
+        </div>
+      </section>
+      
+    </aside>
+  </section>
+
   
 </main>
 
