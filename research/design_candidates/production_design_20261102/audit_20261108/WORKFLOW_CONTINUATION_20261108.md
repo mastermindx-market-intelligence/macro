@@ -4,14 +4,15 @@
 
 This is the canonical continuation of the [first audit and build plan](AUDIT_AND_BUILD_PLAN.md), on the existing [Macro programme PR #10617](https://github.com/mastermindx-market-intelligence/macro/pull/10617). The Chairman requested further autonomous implementation, correction and enhancement across Paper. The work continues in the foreground; this saved milestone is not a completion claim or a request to resume.
 
-Six additional files have received applied changes with native visual checks: Guide, Prophet, Market Memory, Policy Monitor, Market Ontology and Sector Intelligence. The next phase has begun with read-only comparison of the accepted Options journey and its current Terminal owners. The seven-file first pass remains accepted work for this mission and is not repeated here.
+Seven additional files have received applied changes with native visual checks: Guide, Prophet, Market Memory, Policy Monitor, Market Ontology, Sector Intelligence and the Options W3 mobile companion. Options Watch/review now has a source-checked six-state amendment and builder contract. The next phase compares the accepted Flow and Volatility journeys with their current Terminal owners. The seven-file first pass remains accepted work for this mission and is not repeated here.
 
-The root session is the single canvas writer. Read-only design, international-language and architecture advisers contributed bounded judgments. Mutations use fresh snapshot guards and distinct operation identities beginning `paper-estate-cont-20261108-`. Initial changes used the Mastermind Paper connector; after its transport repeatedly timed out on reads, new operations continued through the authorized Studio Direct Paper owner. Completed operations were read back, never replayed; the detailed transport ruling below preserves that boundary. No runtime release, merge, hold change, message to another person, or live-model qualification has been performed.
+The root session is the only canvas writer among this session’s agents; independent live writers retain their own targets. Read-only design, international-language and architecture advisers contributed bounded judgments. Mutations use fresh snapshot guards and distinct operation identities beginning `paper-estate-cont-20261108-`. Initial changes used the Mastermind Paper connector; after its transport repeatedly timed out on reads, new operations continued through the authorized Studio Direct Paper owner. Completed operations were read back, never replayed; the detailed transport ruling below preserves that boundary. No runtime release, merge, hold change, message to another person, or live-model qualification has been performed.
 
 ## Source and release references
 
 - Protected procedure: Mastermind `5c3d3885234358aefb97ecdbc59be0864df14f8b`.
 - Product source/doctrine: Macro `338a10852dcefa5d2bd07e5c6be0955c2b1e83fd`.
+- Current Options implementation source: Terminal `cfe14c49f2e0166c0ded5e6f23a274bb663d0fd3`.
 - Policy Monitor candidate: [PR10493](https://github.com/mastermindx-market-intelligence/macro/pull/10493), inspected source `c742039f32d3ae73b557b8b2b5f6ff4df36b23c2`.
 - Sector native candidate: [PR10703](https://github.com/mastermindx-market-intelligence/macro/pull/10703), inspected head `9fc460ff36345387c3a2c5435b079852e8488da0`; metadata read back as Draft/open/unmerged.
 - Dossier Cycle component: [PR10707](https://github.com/mastermindx-market-intelligence/macro/pull/10707), source `74930f6931773b23072f91590319dc39fe5a7d07`.
@@ -206,14 +207,64 @@ All 22 exact working indicators for Sector’s affected original and new root bo
 
 The Mastermind Paper connector developed repeated read/inspect transport timeouts. No failed mutation was replayed. Studio Direct’s owner ping reported an idle backend, and exact readback of H8Z-0 confirmed that only its header and first two contract rows existed. The third row had never been issued because its read preflight failed. The Studio Direct catalog matched Paper Desktop 0.5.18 / catalog `f200eaf725b38c7895ef2180b80e3e254957093a770582b795685fa5072759bb` and accepted the scoped write tools. New logical operations then used that authorized owner with fresh guards. No unknown or denied effect was moved to another carrier.
 
-## Active next phase: accepted Options journey versus current owners
+## 7. Options Watch/review — explicit firing selection and recovery
 
-Read-only inspection has begun for the [Options W3 desktop](https://app.paper.design/file/01M5EPQ16VBT7SBW2NQVX2RJG4/p-2-0) and [mobile study](https://app.paper.design/file/01M5FNCKAND6CBSJNYM5FZWR8Y/p-1-0). Current Terminal source is pinned at `cfe14c49f2e0166c0ded5e6f23a274bb663d0fd3`.
+[Review amendment](https://app.paper.design/file/01M5FNCKAND6CBSJNYM5FZWR8Y/p-2-0) · [Build contract](https://app.paper.design/file/01M5FNCKAND6CBSJNYM5FZWR8Y/p-3-0) · [Accepted original](https://app.paper.design/file/01M5FNCKAND6CBSJNYM5FZWR8Y/p-1-0)
 
-The [W3 freeze and amendments](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/cfe14c49f2e0166c0ded5e6f23a274bb663d0fd3/docs/OPTIONS_R1_W3_FREEZE.md) bind accepted U05/U06/U07 and companion U08. Preserve those originals and their implementation acceptance. Compare the actual designs with the current IA, reported-Gamma comparison, volatility basis, watch trigger and review-receipt owners before proposing a disjoint amendment. Do not apply a Macro nightly-flow limitation to an unrelated Terminal source path.
+The accepted main W3 file remains read-only. All writes in the mobile companion were scoped to new p-2-0 and p-3-0; the accepted p-1-0 boards were not edited by this session. A concurrent writer’s original updates were observed during readback and preserved. This is not a claim that the original file stayed byte-identical.
+
+The new amendment starts with the saved question and **Draft assessment: Inconclusive**, because “rotation fade” has no defined condition in this fixture. The watch, selected firing and assessment are separate concepts. A compact **View alert receipt** entry replaces the full receipt block on the primary review path; the full receipt has its own return and an explicit **Review without a firing** action. That second path saves an investigation assessment with the optional firing link omitted, not a new kind of watch-specific assessment.
+
+| Design state | Native root | Purpose |
+|---|---|---|
+| Review a recorded firing | 3A-0, candidate 3D-0 | Question, watch, draft conclusion, compact receipt entry, explicit binding immediately before Save assessment |
+| Receipt detail | 69-0 | Recorded condition, firing time, source clocks, delivery and identifier; return with the same draft |
+| Review without a firing | 77-0, assessment 7B-0 | Investigation assessment without the optional firing identifier |
+| Watch status unavailable | 86-0 | Saved condition retained; Retry status and View revision 3, without claiming not armed |
+| Save result unavailable | 8M-0 | Draft retained; Check save result observes the original operation |
+| Saved, reopen unavailable | 8Y-0 | Committed revision identified separately; Open revision 4 retries readback |
+| Implementation contract | 65-0 | Existing owners, source semantics, identity, state transitions, motion and proof |
+
+The page header 36-0 marks these as design candidates with illustrative data, tied to the current source pin. The pages were arranged after the original, without switching the user’s active page.
+
+### Correct the source and action meaning
+
+The recorded condition is **price > 230.00**, matching the strict `above` evaluator. The observed value remains 230.12. Re-arm retains the fixed threshold; a changed wall level does not silently update that threshold. The explanation reflects the incumbent five-minute check and hub-quote/EOD-close behavior, rather than claiming a fresh quote on every firing.
+
+The source clock is unavailable unless the specific receipt supplies it. Firing time is not relabeled as quote time. The current quote is **Not loaded** rather than an inferred historical value. Receipt delivery is **Unconfirmed** unless matching delivery evidence proves a stronger status. Neither an absent receipt identifier nor an unreadable queue establishes “not delivered.”
+
+The draft note now says the recorded price was 230.12 and the timing question remains inconclusive because rotation fade is undefined. It does not assert that the price event occurred two sessions after an unverified rotation event.
+
+The binding panel immediately above **Save assessment** names the selected watch, firing identifier/time and base investigation revision. The builder contract freezes that selection while editing; a newly arriving firing cannot silently replace it. An unlinked investigation review omits the optional firing identifier and retains the same existing investigation save owner.
+
+### Current code findings and implementation sequence
+
+All source links in this section use Terminal `cfe14c49f2e0166c0ded5e6f23a274bb663d0fd3`.
+
+1. **Fix status presentation through the current watch owner.** [investigationWatch.ts](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/cfe14c49f2e0166c0ded5e6f23a274bb663d0fd3/terminal/lib/investigationWatch.ts) distinguishes unknown from armed/fired. [InvestigationWatchPanel.tsx](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/cfe14c49f2e0166c0ded5e6f23a274bb663d0fd3/terminal/components/workspaces/InvestigationWatchPanel.tsx) currently maps the remaining branch to NOT ARMED. Preserve the unknown state in presentation and let Retry status use the existing reader.
+
+2. **Bind assessment to the user’s chosen firing.** [InvestigationReviewPanel.tsx](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/cfe14c49f2e0166c0ded5e6f23a274bb663d0fd3/terminal/components/workspaces/InvestigationReviewPanel.tsx) currently submits `review.fired?.fire_event_id`; [investigationReview.ts](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/cfe14c49f2e0166c0ded5e6f23a274bb663d0fd3/terminal/lib/investigationReview.ts) projects the latest firing across linked alerts. Add explicit local selection in the existing workspace/panel, preserving it with the draft and base revision. Do not create another alert or assessment persistence owner.
+
+3. **Keep per-firing evidence separate from current state.** The review owner reads a receipt’s own payload value. [alertsView.ts](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/cfe14c49f2e0166c0ded5e6f23a274bb663d0fd3/terminal/lib/alertsView.ts) chooses latest delivery by alert in its default path. An older selected firing needs its matching delivery row; do not borrow the newest alert delivery. Retain read/unavailable/absent queue distinctions.
+
+4. **Expose what the evaluator actually records.** [ingest/alerts_engine.py](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/cfe14c49f2e0166c0ded5e6f23a274bb663d0fd3/ingest/alerts_engine.py) checks strict `last > value` / `last < value`; its ordinary price source can fall back from hub quote to EOD close. The wall condition establishes an initial inside/outside observation and fires on an outside-to-inside transition. The ordinary firing payload does not populate the review reader’s optional `source_asof` and `corrects` fields. Do not fabricate those values or impose a universal stale-price pause absent from this owner.
+
+5. **Use the existing save protocol and separate commit from reopening.** [investigationSave.ts](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/cfe14c49f2e0166c0ded5e6f23a274bb663d0fd3/terminal/lib/investigationSave.ts) retains principal, original operation ID and expected revision through pending/uncertain outcomes. [InvestigationWorkspace.tsx](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/cfe14c49f2e0166c0ded5e6f23a274bb663d0fd3/terminal/components/workspaces/InvestigationWorkspace.tsx) already checks the original operation outcome and opens the exact returned revision. Validation/conflict retains the draft. Uncertain save performs the existing outcome read, not a new write. A known committed revision with failed readback remains saved.
+
+The reopening route remains `/analysis?view=investigations&investigation=<id>&revision=<n>`, with existing access and manifest validation. The [W3 freeze](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/cfe14c49f2e0166c0ded5e6f23a274bb663d0fd3/docs/OPTIONS_R1_W3_FREEZE.md) and [Options programme](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/cfe14c49f2e0166c0ded5e6f23a274bb663d0fd3/docs/OPTIONS_R1_PROGRAM.md) remain the acceptance context. W4C predictive admission and missing producer fields are separate held work; this amendment does not admit them.
+
+### Visual checks and required functional proof
+
+Native screenshots verified the main 390 px review, receipt, unlinked assessment, unavailable status, uncertain save, saved/readback failure and full Build contract. The final primary view shows the draft answer before the watch card and keeps the selected firing/revision immediately above Save. The receipt retains separate source and delivery fields and a clear return. All eight exact owned root working indicators were released; the independently edited original was not included.
+
+Build specifies ≥44 px actions, focus returning to the actual opener, retained draft and selected identity, one outcome announcement, ≤160 ms opacity/≤4 px translation, and instant reduced motion. Required implementation proof covers strict threshold equality, already-beyond arming, wall first observation, missing quotes, malformed watch state, old/new firing selection, unlinked review, unreadable versus absent delivery, original-operation uncertain recovery, conflicts, committed/readback failure, and current route access. EN/ZH, theme and 390/820/1440 px runtime checks remain acceptance work, not tests claimed by this native design pass.
+
+## Active next phase: Flow and Volatility source fit
+
+Read-only comparison is underway for ET-0 and KT-0 in the [accepted Options W3 desktop](https://app.paper.design/file/01M5EPQ16VBT7SBW2NQVX2RJG4/p-2-0). Compare observed design claims with the current contract-level Flow feed, producer freshness, tenor interpolation, fixed-moneyness support, expected-move basis and navigation owner. Preserve accepted original boards and add a disjoint amendment only for demonstrated gaps. Do not transfer a Macro nightly-flow limitation to an unrelated Terminal source path.
 
 ## Verification boundary and next actions
 
 This record proves applied native design changes, source inspection and scoped native visual checks. It does not establish functional browser navigation, runtime disclosure/keyboard behavior, real-account access, live data, model qualification, CI, merge or deployment.
 
-Continue the Options comparison, select a demonstrated gap, and implement a bounded amendment with exact owner and acceptance mapping. Save/read back useful milestones and continue the parent Paper improvement mission; a phase completion is not DONE_WHEN.
+Continue the Flow/Volatility comparison, select a demonstrated gap, and implement a bounded amendment with exact owner and acceptance mapping. Save/read back useful milestones and continue the parent Paper improvement mission; a phase completion is not DONE_WHEN.
