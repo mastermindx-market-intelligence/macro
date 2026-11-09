@@ -4,9 +4,9 @@
 
 This is the canonical continuation of the [first audit and build plan](AUDIT_AND_BUILD_PLAN.md), on the existing [Macro programme PR #10617](https://github.com/mastermindx-market-intelligence/macro/pull/10617). The Chairman requested further autonomous implementation, correction and enhancement across Paper. The work continues in the foreground; this saved milestone is not a completion claim or a request to resume.
 
-Five additional files have received applied changes with native visual checks: Guide, Prophet, Market Memory, Policy Monitor and Market Ontology. Sector Intelligence is the active next phase. The seven-file first pass remains accepted work for this mission and is not repeated here.
+Six additional files have received applied changes with native visual checks: Guide, Prophet, Market Memory, Policy Monitor, Market Ontology and Sector Intelligence. The next phase has begun with read-only comparison of the accepted Options journey and its current Terminal owners. The seven-file first pass remains accepted work for this mission and is not repeated here.
 
-The root session is the single canvas writer. Read-only design, international-language and architecture advisers contributed bounded judgments. All mutations in this continuation use the same native Paper carrier, fresh snapshot guards and distinct operation identities beginning `paper-estate-cont-20261108-`. No runtime release, merge, hold change, message to another person, or live-model qualification has been performed.
+The root session is the single canvas writer. Read-only design, international-language and architecture advisers contributed bounded judgments. Mutations use fresh snapshot guards and distinct operation identities beginning `paper-estate-cont-20261108-`. Initial changes used the Mastermind Paper connector; after its transport repeatedly timed out on reads, new operations continued through the authorized Studio Direct Paper owner. Completed operations were read back, never replayed; the detailed transport ruling below preserves that boundary. No runtime release, merge, hold change, message to another person, or live-model qualification has been performed.
 
 ## Source and release references
 
@@ -144,29 +144,76 @@ The new Build cards AUL/AUP/AUT specify exact state mapping and return, source/p
 
 Native main, source, answer, desktop source and complete Build views were inspected. All eight exact working indicators were released.
 
-## Active next phase: Sector Intelligence
+## 6. Sector Intelligence — qualified timing and a focused comparison
 
-[Current comparison](https://app.paper.design/file/01M6FAXA774QT1VRDMAG7DFQ2W/p-4-0) · [Cycles variants](https://app.paper.design/file/01M6FAXA774QT1VRDMAG7DFQ2W/p-2-0) · [Build](https://app.paper.design/file/01M6FAXA774QT1VRDMAG7DFQ2W/p-5-0)
+[Current comparison](https://app.paper.design/file/01M6FAXA774QT1VRDMAG7DFQ2W/p-4-0) · [Expanded context](https://app.paper.design/file/01M6FAXA774QT1VRDMAG7DFQ2W/p-8-0) · [Cycles variants](https://app.paper.design/file/01M6FAXA774QT1VRDMAG7DFQ2W/p-2-0) · [Unbound originals](https://app.paper.design/file/01M6FAXA774QT1VRDMAG7DFQ2W/p-7-0) · [Build](https://app.paper.design/file/01M6FAXA774QT1VRDMAG7DFQ2W/p-5-0)
 
-Applied so far:
+### Put the comparison actions and evidence first
 
-- FHS-0 and FTX-0 now describe the observed cycle phase without presenting a future timing range as “not a forecast.”
-- The original desktop FKT-0 and mobile FXB-0 dossier actions moved next to group/window selection, in FEQ-0 and FQO-0.
-- Their label is now “Inspect these sectors.”
+FHS-0 and FTX-0 now describe the observed cycle phase without presenting a future timing range as “not a forecast.” The original desktop FKT-0 and mobile FXB-0 dossier actions moved next to group/window selection, in FEQ-0 and FQO-0. Their label is “Inspect these sectors.”
 
-Verified source findings:
+The two-sector comparison no longer requires reading the full market map and a second whole-market movement list. A collapsed “Whole-market context” control keeps the selected pair’s falling-rank conclusion, five-session scope, 11/11 coverage and 30 October 2026 observation date visible. Its expanded design retains the complete original context:
 
-1. [project_next](https://github.com/mastermindx-market-intelligence/macro/blob/9fc460ff36345387c3a2c5435b079852e8488da0/engine/cycle_ontology.py) adds P25/median/P75 confirmed half-cycle spacing to the last confirmed turn. Its low/high dates are not earliest/latest bounds or a calibrated forecast interval.
-2. The next turn is the opposite of that confirmed anchor, not a consequence of the current phase label. Provisional turns are excluded and dates stay anchored when overdue.
-3. The rhythm projection is distinct from qualified current-model and historical-prior estimates. Hazard-model unavailability does not automatically invalidate a separately qualified rhythm.
-4. `proj` may use all swings while `rhythm` is stamped from a filtered history. Do not mix dates, status, counts or anchors across them without exact cohort/window parity.
-5. `period_yrs.median` is a full-cycle duration; the native forecast card's half-cycle label must not be copied.
-6. The specific Nov 2026 / Feb 2027 / Jun 2027 fixture is not bound to a precise publication/confirmed-anchor cohort in the inspected Paper trees. Generic batch date, phase age and current-leg caption do not supply that binding.
+| State | Desktop | Mobile |
+|---|---|---|
+| Default disclosure | HA7-0 in FB7-0 | HAG-0 in FO0-0 |
+| Expanded context | H9R-0 | H9Z-0 |
+| Original retained content | FL1-0 | FXN-0 and G1I-0 |
 
-The eight EN/ZH and theme/device Cycles variants still need coordinated treatment of the hero, timing state, rhythm strip and main-chart projection overlay. The original values and vector artwork will be retained as unbound reference material while the default presents the actual qualification state. Sector working indicators remain owned until that phase is verified.
+The full comparison table stays in the default view: price measures, source-population differences, phase, unavailable current model, historical priors and unavailable cells retain their meaning. Tag definitions and Methodology/Coverage/Snapshot record remain outside the disclosure. An orphan, unlabeled mobile legend ring G1C-0 moved into Build reference HB1-0; its meaning was not invented.
+
+Build HAP-0 specifies native details/summary behavior, a minimum 44 px target, keyboard operation, exclusion of closed links from the tab sequence, and return with the same pair/window/benchmark/snapshot, expanded state and originating row. Five-session rank history must not inherit the 21/63/126-session return selection. Missing rank observations produce incomplete history, not zero or a falling-rank conclusion. Motion is limited to 160 ms opacity and ≤4 px translation, with instant reduced-motion behavior; numeric meaning never animates.
+
+### Correct all eight timing variants together
+
+The specific Nov 2026 / Feb 2027 / Jun 2027 timing fixture was not bound to a precise publication, confirmed-turn anchor and historical cohort in the inspected design. A generic batch date, phase age or current-leg caption does not establish that binding.
+
+Across all eight EN/ZH, theme and device variants, the hero now leads with observed phase and age. Historical timing uses a compact unavailable state with an unverified-source explanation. The unbound future shading, boundary/median lines and future-window label were removed from the main price chart, while both historical series, confirmed-turn markers, axes, current-date marker, controls and values were preserved.
+
+The original vector chart, timing strip, date footnote and superseded qualifier were moved by ID into a clearly marked reference page. No original artwork or data was deleted.
+
+| Current Cycles board | Replacement historical SVG | Retained-original frame |
+|---|---|---|
+| BV-0 · desktop EN dark | H03-0 | GZ7-0 |
+| 2KT-0 · desktop EN light | H1D-0 | GZB-0 |
+| 35L-0 · desktop ZH dark | H2N-0 | GZF-0 |
+| 3OW-0 · desktop ZH light | H3X-0 | GZJ-0 |
+| 6DC-0 · mobile EN dark | H57-0 | GZN-0 |
+| 6YW-0 · mobile EN light | H65-0 | GZR-0 |
+| 7KW-0 · mobile ZH dark | H73-0 | GZV-0 |
+| 87M-0 · mobile ZH light | H81-0 | GZZ-0 |
+
+This is a design qualification state, not a finding that every possible live Sector publication is invalid. A separately qualified historical rhythm can be shown once its own evidence is established, even when a current hazard-model estimate remains unavailable.
+
+### Build from the actual source contract
+
+Build H8Z-0 contains the source binding, calculation, cohort boundary, elapsed states and real-consumer proof requirements:
+
+1. Use the incumbent [SectorCyclesEvidence receipt](https://github.com/mastermindx-market-intelligence/macro/blob/9fc460ff36345387c3a2c5435b079852e8488da0/templates/sector_cycles.js), requiring the active matching publication and relevant verified source part. Bind the exact subject, structure basis, confirmed turn and ordered historical cohort. Publication integrity alone does not expose missing calculation inputs.
+2. [project_next](https://github.com/mastermindx-market-intelligence/macro/blob/9fc460ff36345387c3a2c5435b079852e8488da0/engine/cycle_ontology.py) requires at least three confirmed turns and adds P25/median/P75 half-cycle spacing to the last confirmed turn. The next turn kind is opposite that anchor. These are typical historical quartiles, not earliest/latest bounds or a calibrated probability interval.
+3. The [producer](https://github.com/mastermindx-market-intelligence/macro/blob/9fc460ff36345387c3a2c5435b079852e8488da0/engine/sector_cycles.py) computes `proj` from all swings while stamping `rhythm` from filtered exported turns. Do not mix projection dates with rhythm status, counts or anchor without proving cohort/window parity. Extend the existing producer/disclosure contract when necessary; do not create a frontend projection owner.
+4. `period_yrs` values are full-cycle equivalents: twice the half-cycle durations. The native forecast card’s half-cycle label must not be copied onto these doubled values.
+5. [Rhythm states](https://github.com/mastermindx-market-intelligence/macro/blob/9fc460ff36345387c3a2c5435b079852e8488da0/engine/cycle_rhythm.py) remain anchored as the evaluation date passes the median and upper quartile. Missing inputs, insufficient history, source replacement and cohort mismatch yield truthful unavailable/changed-source outcomes.
+6. Prove one exact implementation head, publication, selected subject and anchor/cohort tuple in the real existing consumer. Reproduce the months; check provisional exclusion, insufficient history, mismatch, fixed-window elapsed states, source replacement and return. Synthetic fixtures establish behavior only. [Dossier](https://github.com/mastermindx-market-intelligence/macro/blob/74930f6931773b23072f91590319dc39fe5a7d07/templates/sector_dossier_cycle.js) continues opening the existing full Cycles evidence destination.
+
+The held p-3-0 work, BML acceptance, G4P review-only canary, GPL return proposal and PR10703/10707 release holds were preserved. These design repairs do not qualify a current model or admit a release.
+
+### Verification and connection reconciliation
+
+Native visual checks covered EN mobile price/timing, ZH desktop price, ZH mobile timing, both default comparisons, both expanded contexts, retained originals and both Build modules. Readback of all eight current Cycles boards found no remaining unbound fixture month claims. Readback of all eight replacement SVGs confirmed **exact equality of both historical path strings in every variant**—16 preserved series—and no future-window label.
+
+All 22 exact working indicators for Sector’s affected original and new root boards were released.
+
+The Mastermind Paper connector developed repeated read/inspect transport timeouts. No failed mutation was replayed. Studio Direct’s owner ping reported an idle backend, and exact readback of H8Z-0 confirmed that only its header and first two contract rows existed. The third row had never been issued because its read preflight failed. The Studio Direct catalog matched Paper Desktop 0.5.18 / catalog `f200eaf725b38c7895ef2180b80e3e254957093a770582b795685fa5072759bb` and accepted the scoped write tools. New logical operations then used that authorized owner with fresh guards. No unknown or denied effect was moved to another carrier.
+
+## Active next phase: accepted Options journey versus current owners
+
+Read-only inspection has begun for the [Options W3 desktop](https://app.paper.design/file/01M5EPQ16VBT7SBW2NQVX2RJG4/p-2-0) and [mobile study](https://app.paper.design/file/01M5FNCKAND6CBSJNYM5FZWR8Y/p-1-0). Current Terminal source is pinned at `cfe14c49f2e0166c0ded5e6f23a274bb663d0fd3`.
+
+The [W3 freeze and amendments](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/cfe14c49f2e0166c0ded5e6f23a274bb663d0fd3/docs/OPTIONS_R1_W3_FREEZE.md) bind accepted U05/U06/U07 and companion U08. Preserve those originals and their implementation acceptance. Compare the actual designs with the current IA, reported-Gamma comparison, volatility basis, watch trigger and review-receipt owners before proposing a disjoint amendment. Do not apply a Macro nightly-flow limitation to an unrelated Terminal source path.
 
 ## Verification boundary and next actions
 
 This record proves applied native design changes, source inspection and scoped native visual checks. It does not establish functional browser navigation, runtime disclosure/keyboard behavior, real-account access, live data, model qualification, CI, merge or deployment.
 
-Continue the current Sector phase, add its exact source-binding and cohort/unit hazards to the existing builder contract, verify the affected views, save/read back this record and refresh README coverage. Then reassess the parent Paper improvement mission and start the next useful authorized phase; do not treat this milestone as DONE_WHEN.
+Continue the Options comparison, select a demonstrated gap, and implement a bounded amendment with exact owner and acceptance mapping. Save/read back useful milestones and continue the parent Paper improvement mission; a phase completion is not DONE_WHEN.
