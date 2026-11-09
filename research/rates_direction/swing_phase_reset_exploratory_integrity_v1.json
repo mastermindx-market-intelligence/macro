@@ -1,0 +1,50 @@
+{
+  "schema": "ric.swing_phase_reset.exploratory_integrity.v1",
+  "same_author_verification": true,
+  "independent_review": false,
+  "freeze_commit": "8e6936cfa4218188cb366c848b1fa83005af5b07",
+  "freeze_sha256": "afed4a45cb58e8802885a23991999d03ec5eee249b8849ce22b8b76d17fd58fe",
+  "source_sha256": "1dc7e9121fd6aa36c5019beba303b629257eb1cab752ae937e4cef1aa8161b76",
+  "predictions_sha256": "3fd548c20debb2caf20283bc0b5fff08a5bcd4cd03e5f76febf5aca0de86e22a",
+  "summary_sha256": "95b57f6a04973b2ec7ef0b5ad4aeae759dbcb9ec768cf802855f0b99a745f98e",
+  "registration_sha256": "33d12b6726ebfa9b13fb9e478924ae3ef47c3cd1d6c51849c4c12ca470b9d02e",
+  "rows": 1870,
+  "unique_origins": 1870,
+  "probabilities_normalized_finite": true,
+  "purged_last_training_target_end_before_origin": true,
+  "brier_recomputed_exactly": true,
+  "ledger_prefix_preserved": true,
+  "family_suffix_rows": 7,
+  "family_literal_n": 7,
+  "partition_brier": {
+    "discovery": {
+      "unconditional": 0.6744125423680486,
+      "trend5_vol": 0.6655296786508901,
+      "phase_trend_vol": 0.66934956169289,
+      "M_EARLY": 0.6725518637498336,
+      "P_RESET": 0.6690236717671553,
+      "R_RESET": 0.6695815855345657,
+      "PR_RESET": 0.6691087436471027,
+      "MPR_RESET": 0.6694479507948705,
+      "SHALLOW_PR": 0.669418150812305,
+      "SHALLOW_MPR": 0.66934956169289
+    },
+    "seen_overlap": {
+      "unconditional": 0.6666008443295127,
+      "trend5_vol": 0.6199825674487979,
+      "phase_trend_vol": 0.6288999175119538,
+      "M_EARLY": 0.6320731791196359,
+      "P_RESET": 0.6281891212111801,
+      "R_RESET": 0.6294738090773367,
+      "PR_RESET": 0.6288856686974507,
+      "MPR_RESET": 0.6288999175119538,
+      "SHALLOW_PR": 0.6293323154128094,
+      "SHALLOW_MPR": 0.6288999175119538
+    }
+  },
+  "authority": false,
+  "notes": [
+    "Seen-history exploratory construction; not a prospective validation.",
+    "Native Pine/TVC parity remains unproven."
+  ]
+}

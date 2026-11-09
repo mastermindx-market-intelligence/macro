@@ -1,0 +1,3123 @@
+{
+  "schema": "ric.swing_phase_reset.exploratory_result.v1",
+  "spec": {
+    "warmup_bars": 80,
+    "minimum_training_labels": 40,
+    "horizon_bars": 12,
+    "delay_bars": 1,
+    "recency_bars": 3,
+    "volatility_bars": 24,
+    "trend_bars": 5,
+    "barrier_floor_bp": 5.0,
+    "bp_per_source_unit": 100.0,
+    "shrinkage": 12.0,
+    "minimum_active_episodes": 50,
+    "primary": "SHALLOW_MPR",
+    "capture_at": "2026-09-24T14:17:57Z",
+    "evidence_tier": "seen_history_phase_reset_exploratory_not_validation",
+    "phase_ema_bars": 20,
+    "phase_ema_slope_bars": 4,
+    "reset_lookback_bars": 4,
+    "curl_recency_bars": 3,
+    "range_bars": 12,
+    "strength_upper": 0.6,
+    "strength_lower": 0.4
+  },
+  "quality": {
+    "missing_expected_hourly_rows": 1,
+    "not_closed_hourly_rows": 6,
+    "not_closed_target_bars": 4,
+    "off_grid_rows": 1,
+    "invalid_ohlc_rows": 0,
+    "raw_rows": 3509,
+    "closed_hourly_rows": 3508,
+    "closed_target_bars": 2004,
+    "valid_target_bars": 2003,
+    "session_count": 502
+  },
+  "registration": {
+    "family": "ric_swing_phase_reset_v1",
+    "new_configs": 7,
+    "literal_n": 7,
+    "ledger_before_sha256": "be7f4529707f2132f34f3625910afae4543aae2171d1c9eb70790147b6623063",
+    "ledger_after_sha256": "c1167ac1e528c2a2022194b2aebf004a3f52120abedc8c9ae273d3515e5c1c60",
+    "freeze_sha256": "afed4a45cb58e8802885a23991999d03ec5eee249b8849ce22b8b76d17fd58fe"
+  },
+  "source_sha256": "1dc7e9121fd6aa36c5019beba303b629257eb1cab752ae937e4cef1aa8161b76",
+  "cutoff": "2026-06-24T00:00:00Z",
+  "prediction_sha256": "3fd548c20debb2caf20283bc0b5fff08a5bcd4cd03e5f76febf5aca0de86e22a",
+  "forecasts": 1870,
+  "eligible_feature_origins": 1923,
+  "primary_partition": "discovery",
+  "primary_candidate": "SHALLOW_MPR",
+  "boundary_origins": 13,
+  "partitions": {
+    "discovery": {
+      "forecast_origins": 1601,
+      "scored_origins": 1597,
+      "outcome_counts": {
+        "no_hit": 641,
+        "up": 473,
+        "down": 483,
+        "ambiguous": 4
+      },
+      "models": {
+        "unconditional": {
+          "n": 1597,
+          "brier": 0.6744125423680486,
+          "log_loss": 1.111025852885535,
+          "active_forecast_origins": 0,
+          "episodes": []
+        },
+        "trend5_vol": {
+          "n": 1597,
+          "brier": 0.6655296786508901,
+          "log_loss": 1.101049244999831,
+          "active_forecast_origins": 0,
+          "episodes": []
+        },
+        "phase_trend_vol": {
+          "n": 1597,
+          "brier": 0.66934956169289,
+          "log_loss": 1.1073591137608385,
+          "active_forecast_origins": 0,
+          "episodes": [],
+          "brier_improvement_vs_trend5_vol": -0.0038198830419999895,
+          "relative_brier_improvement_vs_trend5_vol": -0.005739613370426032
+        },
+        "M_EARLY": {
+          "n": 1597,
+          "brier": 0.6725518637498337,
+          "log_loss": 1.1121257072092698,
+          "active_forecast_origins": 115,
+          "episodes": [
+            {
+              "origin": "2024-12-04T17:20:00+00:00",
+              "direction": -1,
+              "outcome": "no_hit",
+              "barrier_bp": 8.699297563481057,
+              "up_excursion_bp": 3.699970245361328,
+              "down_excursion_bp": -6.2000274658203125
+            },
+            {
+              "origin": "2024-12-18T15:20:00+00:00",
+              "direction": 1,
+              "outcome": "up",
+              "barrier_bp": 5.0,
+              "up_excursion_bp": 19.299983978271484,
+              "down_excursion_bp": -1.7999649047851562
+            },
+            {
+              "origin": "2024-12-23T19:20:00+00:00",
+              "direction": 1,
+              "outcome": "no_hit",
+              "barrier_bp": 9.093288644975134,
+              "up_excursion_bp": 4.199981689453125,
+              "down_excursion_bp": -2.6000022888183594
+            },
+            {
+              "origin": "2025-01-02T17:20:00+00:00",
+              "direction": 1,
+              "outcome": "up",
+              "barrier_bp": 9.877256630365029,
+              "up_excursion_bp": 12.800025939941406,
+              "down_excursion_bp": -3.2000064849853516
+            },
+            {
+              "origin": "2025-01-29T20:00:00+00:00",
+              "direction": -1,
+              "outcome": "no_hit",
+              "barrier_bp": 9.337695139654413,
+              "up_excursion_bp": 8.800029754638672,
+              "down_excursion_bp": -4.799985885620117
+            },
+            {
+              "origin": "2025-02-28T15:20:00+00:00",
+              "direction": -1,
+              "outcome": "down",
+              "barrier_bp": 9.195240185294717,
+              "up_excursion_bp": 2.9999732971191406,
+              "down_excursion_bp": -13.500022888183594
+            },
+            {
+              "origin": "2025-03-14T14:20:00+00:00",
+              "direction": 1,
+              "outcome": "no_hit",
+              "barrier_bp": 11.805247734019488,
+              "up_excursion_bp": 4.399967193603516,
+              "down_excursion_bp": -3.699970245361328
+            },
+            {
+              "origin": "2025-04-23T16:20:00+00:00",
+              "direction": 1,
+              "outcome": "down",
+              "barrier_bp": 9.426661530585951,
+              "up_excursion_bp": 0.8000373840332031,
+              "down_excursion_bp": -17.499971389770508
+            },
+            {
+              "origin": "2025-05-20T14:20:00+00:00",
+              "direction": 1,
+              "outcome": "up",
+              "barrier_bp": 8.534752617390467,
+              "up_excursion_bp": 14.00003433227539,
+              "down_excursion_bp": -2.3999691009521484
+            },
+            {
+              "origin": "2025-06-20T16:20:00+00:00",
+              "direction": -1,
+              "outcome": "down",
+              "barrier_bp": 7.805322282472043,
+              "up_excursion_bp": 0.6000041961669922,
+              "down_excursion_bp": -8.599996566772461
+            },
+            {
+              "origin": "2025-06-25T19:00:00+00:00",
+              "direction": -1,
+              "outcome": "no_hit",
+              "barrier_bp": 7.761973542217814,
+              "up_excursion_bp": 1.399993896484375,
+              "down_excursion_bp": -7.400035858154297
+            },
+            {
+              "origin": "2025-07-01T19:00:00+00:00",
+              "direction": -1,
+              "outcome": "up",
+              "barrier_bp": 5.824665148064317,
+              "up_excursion_bp": 13.899993896484375,
+              "down_excursion_bp": -4.09998893737793
+            },
+            {
+              "origin": "2025-07-11T14:20:00+00:00",
+              "direction": 1,
+              "outcome": "no_hit",
+              "barrier_bp": 8.081217449521684,
+              "up_excursion_bp": 7.6000213623046875,
+              "down_excursion_bp": -1.9000053405761719
+            },
+            {
+              "origin": "2025-07-17T18:20:00+00:00",
+              "direction": 1,
+              "outcome": "down",
+              "barrier_bp": 7.398356002881248,
+              "up_excursion_bp": -2.100038528442383,
+              "down_excursion_bp": -13.500022888183594
+            },
+            {
+              "origin": "2025-08-06T19:00:00+00:00",
+              "direction": -1,
+              "outcome": "no_hit",
+              "barrier_bp": 9.929073283967035,
+              "up_excursion_bp": 8.699989318847656,
+              "down_excursion_bp": -1.0000228881835938
+            },
+            {
+              "origin": "2025-09-10T16:20:00+00:00",
+              "direction": -1,
+              "outcome": "no_hit",
+              "barrier_bp": 8.438800111396374,
+              "up_excursion_bp": 5.300045013427734,
+              "down_excursion_bp": -3.399991989135742
+            },
+            {
+              "origin": "2025-09-24T14:20:00+00:00",
+              "direction": 1,
+              "outcome": "no_hit",
+              "barrier_bp": 7.671488329068166,
+              "up_excursion_bp": 5.799961090087891,
+              "down_excursion_bp": -0.9999752044677734
+            },
+            {
+              "origin": "2025-10-16T16:20:00+00:00",
+              "direction": -1,
+              "outcome": "no_hit",
+              "barrier_bp": 5.640426740777894,
+              "up_excursion_bp": 4.199981689453125,
+              "down_excursion_bp": -2.79998779296875
+            },
+            {
+              "origin": "2025-10-22T18:20:00+00:00",
+              "direction": -1,
+              "outcome": "up",
+              "barrier_bp": 5.425862929041568,
+              "up_excursion_bp": 8.000016212463379,
+              "down_excursion_bp": 1.100015640258789
+            },
+            {
+              "origin": "2025-11-05T15:20:00+00:00",
+              "direction": 1,
+              "outcome": "down",
+              "barrier_bp": 5.553836807642544,
+              "up_excursion_bp": 0.0,
+              "down_excursion_bp": -9.50002670288086
+            },
+            {
+              "origin": "2025-11-18T17:20:00+00:00",
+              "direction": 1,
+              "outcome": "down",
+              "barrier_bp": 6.850177335257389,
+              "up_excursion_bp": 3.699970245361328,
+              "down_excursion_bp": -7.100009918212891
+            },
+            {
+              "origin": "2025-12-15T17:20:00+00:00",
+              "direction": 1,
+              "outcome": "down",
+              "barrier_bp": 7.39903903907878,
+              "up_excursion_bp": 1.399993896484375,
+              "down_excursion_bp": -7.399988174438477
+            },
+            {
+              "origin": "2026-01-23T17:20:00+00:00",
+              "direction": 1,
+              "outcome": "no_hit",
+              "barrier_bp": 5.0,
+              "up_excursion_bp": 1.9999980926513672,
+              "down_excursion_bp": -4.799985885620117
+            },
+            {
+              "origin": "2026-02-12T15:20:00+00:00",
+              "direction": -1,
+              "outcome": "down",
+              "barrier_bp": 6.471849793189302,
+              "up_excursion_bp": 0.7999897003173828,
+              "down_excursion_bp": -9.800004959106445
+            },
+            {
+              "origin": "2026-02-19T17:20:00+00:00",
+              "direction": -1,
+              "outcome": "no_hit",
+              "barrier_bp": 5.594945704644576,
+              "up_excursion_bp": 3.500032424926758,
+              "down_excursion_bp": -5.099964141845703
+            },
+            {
+              "origin": "2026-02-26T15:20:00+00:00",
+              "direction": -1,
+              "outcome": "down",
+              "barrier_bp": 5.0,
+              "up_excursion_bp": 9.199953079223633,
+              "down_excursion_bp": -6.90000057220459
+            },
+            {
+              "origin": "2026-03-09T14:20:00+00:00",
+              "direction": 1,
+              "outcome": "up",
+              "barrier_bp": 8.092405778678552,
+              "up_excursion_bp": 12.5,
+              "down_excursion_bp": -2.6000022888183594
+            },
+            {
+              "origin": "2026-03-24T14:20:00+00:00",
+              "direction": 1,
+              "outcome": "up",
+              "barrier_bp": 9.882897102042396,
+              "up_excursion_bp": 10.600042343139648,
+              "down_excursion_bp": -6.399965286254883
+            },
+            {
+              "origin": "2026-04-06T18:20:00+00:00",
+              "direction": -1,
+              "outcome": "down",
+              "barrier_bp": 8.151166081971834,
+              "up_excursion_bp": 4.500007629394531,
+              "down_excursion_bp": -10.099983215332031
+            },
+            {
+              "origin": "2026-04-17T14:20:00+00:00",
+              "direction": -1,
+              "outcome": "up",
+              "barrier_bp": 7.15298319914223,
+              "up_excursion_bp": 8.100032806396484,
+              "down_excursion_bp": -0.19998550415039062
+            },
+            {
+              "origin": "2026-05-01T18:20:00+00:00",
+              "direction": 1,
+              "outcome": "up",
+              "barrier_bp": 5.598623151652689,
+              "up_excursion_bp": 8.599996566772461,
+              "down_excursion_bp": -2.9999732971191406
+            },
+            {
+              "origin": "2026-05-21T14:20:00+00:00",
+              "direction": 1,
+              "outcome": "down",
+              "barrier_bp": 10.30490845658546,
+              "up_excursion_bp": 0.8000373840332031,
+              "down_excursion_bp": -15.199947357177734
+            },
+            {
+              "origin": "2026-06-01T18:20:00+00:00",
+              "direction": -1,
+              "outcome": "no_hit",
+              "barrier_bp": 7.878087868943128,
+              "up_excursion_bp": 2.79998779296875,
+              "down_excursion_bp": -4.699993133544922
+            },
+            {
+              "origin": "2026-06-10T18:20:00+00:00",
+              "direction": 1,
+              "outcome": "down",
+              "barrier_bp": 6.352232291211623,
+              "up_excursion_bp": 0.8000373840332031,
+              "down_excursion_bp": -10.099983215332031
+            }
+          ],
+          "nonoverlapping_episodes": 34,
+          "resolved_episodes": 34,
+          "wins": 11,
+          "hit_fraction": 0.3235294117647059,
+          "episode_counts": {
+            "no_hit": 13,
+            "up": 9,
+            "down": 12
+          },
+          "enough_for_ranking": false,
+          "brier_improvement_vs_phase_trend_vol": -0.0032023020569436314,
+          "relative_brier_improvement": -0.004784199826536836,
+          "date_count": 401,
+          "diagnostic_hac": {
+            "mean": -0.00315,
+            "se": 0.00176,
+            "t": -1.785,
+            "p": 0.0742,
+            "n": 401,
+            "lags": 3,
+            "lags_requested": 3
+          }
+        },
+        "P_RESET": {
+          "n": 1597,
+          "brier": 0.6690236717671553,
+          "log_loss": 1.1066080231036848,
+          "active_forecast_origins": 39,
+          "episodes": [
+            {
+              "origin": "2024-11-25T15:20:00+00:00",
+              "direction": -1,
+              "outcome": "no_hit",
+              "barrier_bp": 10.261869417021316,
+              "up_excursion_bp": 2.8000354766845703,
+              "down_excursion_bp": -9.999990463256836
+            },
+            {
+              "origin": "2024-12-31T20:00:00+00:00",
+              "direction": 1,
+              "outcome": "up",
+              "barrier_bp": 9.173392355052698,
+              "up_excursion_bp": 15.400028228759766,
+              "down_excursion_bp": -0.5999565124511719
+            },
+            {
+              "origin": "2025-01-15T17:20:00+00:00",
+              "direction": -1,
+              "outcome": "no_hit",
+              "barrier_bp": 12.300734165799406,
+              "up_excursion_bp": 3.900003433227539,
+              "down_excursion_bp": -10.299968719482422
+            },
+            {
+              "origin": "2025-02-18T20:00:00+00:00",
+              "direction": 1,
+              "outcome": "down",
+              "barrier_bp": 12.536646935401436,
+              "up_excursion_bp": 1.5999794006347656,
+              "down_excursion_bp": -14.400005340576172
+            },
+            {
+              "origin": "2025-03-11T19:00:00+00:00",
+              "direction": 1,
+              "outcome": "no_hit",
+              "barrier_bp": 13.89890001998344,
+              "up_excursion_bp": 4.199981689453125,
+              "down_excursion_bp": -5.200004577636719
+            },
+            {
+              "origin": "2025-03-28T16:20:00+00:00",
+              "direction": -1,
+              "outcome": "down",
+              "barrier_bp": 9.943250548654143,
+              "up_excursion_bp": 0.39997100830078125,
+              "down_excursion_bp": -15.30003547668457
+            },
+            {
+              "origin": "2025-04-24T16:20:00+00:00",
+              "direction": -1,
+              "outcome": "down",
+              "barrier_bp": 9.705741615471357,
+              "up_excursion_bp": 1.2000083923339844,
+              "down_excursion_bp": -14.099979400634766
+            },
+            {
+              "origin": "2025-06-13T19:00:00+00:00",
+              "direction": 1,
+              "outcome": "no_hit",
+              "barrier_bp": 8.160704045013196,
+              "up_excursion_bp": 3.900003433227539,
+              "down_excursion_bp": -6.9000244140625
+            },
+            {
+              "origin": "2025-07-09T19:00:00+00:00",
+              "direction": -1,
+              "outcome": "up",
+              "barrier_bp": 7.281905032091831,
+              "up_excursion_bp": 9.89999771118164,
+              "down_excursion_bp": -2.4000167846679688
+            },
+            {
+              "origin": "2025-08-13T16:20:00+00:00",
+              "direction": -1,
+              "outcome": "up",
+              "barrier_bp": 6.590514478162936,
+              "up_excursion_bp": 11.099958419799805,
+              "down_excursion_bp": -3.600025177001953
+            },
+            {
+              "origin": "2025-08-20T14:20:00+00:00",
+              "direction": -1,
+              "outcome": "up",
+              "barrier_bp": 5.948224172966196,
+              "up_excursion_bp": 6.599998474121094,
+              "down_excursion_bp": -3.9000511169433594
+            },
+            {
+              "origin": "2025-09-18T14:20:00+00:00",
+              "direction": 1,
+              "outcome": "no_hit",
+              "barrier_bp": 8.90351033113389,
+              "up_excursion_bp": 3.600025177001953,
+              "down_excursion_bp": -1.8999576568603516
+            },
+            {
+              "origin": "2025-09-29T18:20:00+00:00",
+              "direction": -1,
+              "outcome": "down",
+              "barrier_bp": 5.009536658500559,
+              "up_excursion_bp": 1.100015640258789,
+              "down_excursion_bp": -5.799961090087891
+            },
+            {
+              "origin": "2025-10-07T19:00:00+00:00",
+              "direction": -1,
+              "outcome": "down",
+              "barrier_bp": 5.199556658073876,
+              "up_excursion_bp": 3.500032424926758,
+              "down_excursion_bp": -7.299995422363281
+            },
+            {
+              "origin": "2025-11-10T17:20:00+00:00",
+              "direction": 1,
+              "outcome": "no_hit",
+              "barrier_bp": 6.9017952374726015,
+              "up_excursion_bp": 0.7999897003173828,
+              "down_excursion_bp": -5.5999755859375
+            },
+            {
+              "origin": "2025-12-16T19:20:00+00:00",
+              "direction": -1,
+              "outcome": "no_hit",
+              "barrier_bp": 6.681302035742948,
+              "up_excursion_bp": 2.0999908447265625,
+              "down_excursion_bp": -4.09998893737793
+            },
+            {
+              "origin": "2026-01-28T15:20:00+00:00",
+              "direction": 1,
+              "outcome": "no_hit",
+              "barrier_bp": 5.0,
+              "up_excursion_bp": 2.200031280517578,
+              "down_excursion_bp": -3.599977493286133
+            },
+            {
+              "origin": "2026-03-02T19:20:00+00:00",
+              "direction": 1,
+              "outcome": "up",
+              "barrier_bp": 7.725614598677566,
+              "up_excursion_bp": 9.999990463256836,
+              "down_excursion_bp": -0.7999897003173828
+            },
+            {
+              "origin": "2026-03-18T16:20:00+00:00",
+              "direction": 1,
+              "outcome": "up",
+              "barrier_bp": 8.320385793921535,
+              "up_excursion_bp": 17.599964141845703,
+              "down_excursion_bp": -0.8000373840332031
+            },
+            {
+              "origin": "2026-03-26T14:20:00+00:00",
+              "direction": 1,
+              "outcome": "no_hit",
+              "barrier_bp": 11.01233684752045,
+              "up_excursion_bp": 9.600019454956055,
+              "down_excursion_bp": -8.899974822998047
+            },
+            {
+              "origin": "2026-05-21T16:20:00+00:00",
+              "direction": 1,
+              "outcome": "down",
+              "barrier_bp": 10.345966653790382,
+              "up_excursion_bp": 2.6000022888183594,
+              "down_excursion_bp": -11.099958419799805
+            }
+          ],
+          "nonoverlapping_episodes": 21,
+          "resolved_episodes": 21,
+          "wins": 7,
+          "hit_fraction": 0.3333333333333333,
+          "episode_counts": {
+            "no_hit": 9,
+            "up": 6,
+            "down": 6
+          },
+          "enough_for_ranking": false,
+          "brier_improvement_vs_phase_trend_vol": 0.0003258899257347251,
+          "relative_brier_improvement": 0.00048687553467652745,
+          "date_count": 401,
+          "diagnostic_hac": {
+            "mean": 0.00032,
+            "se": 0.00086,
+            "t": 0.377,
+            "p": 0.7058,
+            "n": 401,
+            "lags": 3,
+            "lags_requested": 3
+          }
+        },
+        "R_RESET": {
+          "n": 1597,
+          "brier": 0.6695815855345657,
+          "log_loss": 1.1074265792297617,
+          "active_forecast_origins": 134,
+          "episodes": [
+            {
+              "origin": "2024-11-20T20:00:00+00:00",
+              "direction": 1,
+              "outcome": "down",
+              "barrier_bp": 8.030318931400256,
+              "up_excursion_bp": 5.40003776550293,
+              "down_excursion_bp": -12.299966812133789
+            },
+            {
+              "origin": "2024-12-04T17:20:00+00:00",
+              "direction": -1,
+              "outcome": "no_hit",
+              "barrier_bp": 8.699297563481057,
+              "up_excursion_bp": 3.699970245361328,
+              "down_excursion_bp": -6.2000274658203125
+            },
+            {
+              "origin": "2024-12-18T15:20:00+00:00",
+              "direction": 1,
+              "outcome": "up",
+              "barrier_bp": 5.0,
+              "up_excursion_bp": 19.299983978271484,
+              "down_excursion_bp": -1.7999649047851562
+            },
+            {
+              "origin": "2024-12-23T19:20:00+00:00",
+              "direction": 1,
+              "outcome": "no_hit",
+              "barrier_bp": 9.093288644975134,
+              "up_excursion_bp": 4.199981689453125,
+              "down_excursion_bp": -2.6000022888183594
+            },
+            {
+              "origin": "2024-12-31T20:00:00+00:00",
+              "direction": 1,
+              "outcome": "up",
+              "barrier_bp": 9.173392355052698,
+              "up_excursion_bp": 15.400028228759766,
+              "down_excursion_bp": -0.5999565124511719
+            },
+            {
+              "origin": "2025-01-24T20:00:00+00:00",
+              "direction": -1,
+              "outcome": "no_hit",
+              "barrier_bp": 6.423572509558762,
+              "up_excursion_bp": 5.100011825561523,
+              "down_excursion_bp": -5.200004577636719
+            },
+            {
+              "origin": "2025-02-04T19:20:00+00:00",
+              "direction": -1,
+              "outcome": "down",
+              "barrier_bp": 11.415536510015864,
+              "up_excursion_bp": 0.0,
+              "down_excursion_bp": -11.500024795532227
+            },
+            {
+              "origin": "2025-02-18T20:00:00+00:00",
+              "direction": 1,
+              "outcome": "down",
+              "barrier_bp": 12.536646935401436,
+              "up_excursion_bp": 1.5999794006347656,
+              "down_excursion_bp": -14.400005340576172
+            },
+            {
+              "origin": "2025-02-28T15:20:00+00:00",
+              "direction": -1,
+              "outcome": "down",
+              "barrier_bp": 9.195240185294717,
+              "up_excursion_bp": 2.9999732971191406,
+              "down_excursion_bp": -13.500022888183594
+            },
+            {
+              "origin": "2025-03-10T18:20:00+00:00",
+              "direction": -1,
+              "outcome": "no_hit",
+              "barrier_bp": 14.058452312525176,
+              "up_excursion_bp": 13.99993896484375,
+              "down_excursion_bp": -2.500009536743164
+            },
+            {
+              "origin": "2025-03-28T16:20:00+00:00",
+              "direction": -1,
+              "outcome": "down",
+              "barrier_bp": 9.943250548654143,
+              "up_excursion_bp": 0.39997100830078125,
+              "down_excursion_bp": -15.30003547668457
+            },
+            {
+              "origin": "2025-04-03T14:20:00+00:00",
+              "direction": -1,
+              "outcome": "down",
+              "barrier_bp": 16.484179377532858,
+              "up_excursion_bp": 19.4000244140625,
+              "down_excursion_bp": -18.199968338012695
+            },
+            {
+              "origin": "2025-05-08T18:20:00+00:00",
+              "direction": 1,
+              "outcome": "up",
+              "barrier_bp": 8.00689790452963,
+              "up_excursion_bp": 13.199996948242188,
+              "down_excursion_bp": -3.000020980834961
+            },
+            {
+              "origin": "2025-05-19T14:20:00+00:00",
+              "direction": 1,
+              "outcome": "up",
+              "barrier_bp": 9.241829620628371,
+              "up_excursion_bp": 13.199996948242188,
+              "down_excursion_bp": -2.6000499725341797
+            },
+            {
+              "origin": "2025-06-04T14:20:00+00:00",
+              "direction": -1,
+              "outcome": "up",
+              "barrier_bp": 8.642879331159303,
+              "up_excursion_bp": 16.100025177001953,
+              "down_excursion_bp": -3.900003433227539
+            },
+            {
+              "origin": "2025-06-17T18:20:00+00:00",
+              "direction": -1,
+              "outcome": "down",
+              "barrier_bp": 6.692863752439059,
+              "up_excursion_bp": 4.999971389770508,
+              "down_excursion_bp": -10.200023651123047
+            },
+            {
+              "origin": "2025-07-11T14:20:00+00:00",
+              "direction": 1,
+              "outcome": "no_hit",
+              "barrier_bp": 8.081217449521684,
+              "up_excursion_bp": 7.6000213623046875,
+              "down_excursion_bp": -1.9000053405761719
+            },
+            {
+              "origin": "2025-07-17T18:20:00+00:00",
+              "direction": 1,
+              "outcome": "down",
+              "barrier_bp": 7.398356002881248,
+              "up_excursion_bp": -2.100038528442383,
+              "down_excursion_bp": -13.500022888183594
+            },
+            {
+              "origin": "2025-07-29T16:20:00+00:00",
+              "direction": -1,
+              "outcome": "ambiguous",
+              "barrier_bp": 6.41295373111922,
+              "up_excursion_bp": 7.399988174438477,
+              "down_excursion_bp": -11.00001335144043
+            },
+            {
+              "origin": "2025-08-13T16:20:00+00:00",
+              "direction": -1,
+              "outcome": "up",
+              "barrier_bp": 6.590514478162936,
+              "up_excursion_bp": 11.099958419799805,
+              "down_excursion_bp": -3.600025177001953
+            },
+            {
+              "origin": "2025-08-21T16:20:00+00:00",
+              "direction": 1,
+              "outcome": "down",
+              "barrier_bp": 5.0,
+              "up_excursion_bp": 0.5000114440917969,
+              "down_excursion_bp": -8.600044250488281
+            },
+            {
+              "origin": "2025-09-03T16:20:00+00:00",
+              "direction": -1,
+              "outcome": "down",
+              "barrier_bp": 6.61373977006131,
+              "up_excursion_bp": 0.20003318786621094,
+              "down_excursion_bp": -16.499996185302734
+            },
+            {
+              "origin": "2025-09-10T16:20:00+00:00",
+              "direction": -1,
+              "outcome": "no_hit",
+              "barrier_bp": 8.438800111396374,
+              "up_excursion_bp": 5.300045013427734,
+              "down_excursion_bp": -3.399991989135742
+            },
+            {
+              "origin": "2025-09-24T14:20:00+00:00",
+              "direction": 1,
+              "outcome": "no_hit",
+              "barrier_bp": 7.671488329068166,
+              "up_excursion_bp": 5.799961090087891,
+              "down_excursion_bp": -0.9999752044677734
+            },
+            {
+              "origin": "2025-10-07T19:00:00+00:00",
+              "direction": -1,
+              "outcome": "down",
+              "barrier_bp": 5.199556658073876,
+              "up_excursion_bp": 3.500032424926758,
+              "down_excursion_bp": -7.299995422363281
+            },
+            {
+              "origin": "2025-10-16T16:20:00+00:00",
+              "direction": -1,
+              "outcome": "no_hit",
+              "barrier_bp": 5.640426740777894,
+              "up_excursion_bp": 4.199981689453125,
+              "down_excursion_bp": -2.79998779296875
+            },
+            {
+              "origin": "2025-10-28T16:20:00+00:00",
+              "direction": -1,
+              "outcome": "up",
+              "barrier_bp": 5.0,
+              "up_excursion_bp": 13.299989700317383,
+              "down_excursion_bp": -0.20000934600830078
+            },
+            {
+              "origin": "2025-11-05T15:20:00+00:00",
+              "direction": 1,
+              "outcome": "down",
+              "barrier_bp": 5.553836807642544,
+              "up_excursion_bp": 0.0,
+              "down_excursion_bp": -9.50002670288086
+            },
+            {
+              "origin": "2025-11-10T19:20:00+00:00",
+              "direction": 1,
+              "outcome": "no_hit",
+              "barrier_bp": 6.901794231147368,
+              "up_excursion_bp": 1.0000228881835938,
+              "down_excursion_bp": -5.399942398071289
+            },
+            {
+              "origin": "2025-12-12T15:20:00+00:00",
+              "direction": 1,
+              "outcome": "no_hit",
+              "barrier_bp": 6.6445183285847635,
+              "up_excursion_bp": 0.40001869201660156,
+              "down_excursion_bp": -4.8999786376953125
+            },
+            {
+              "origin": "2026-01-08T19:20:00+00:00",
+              "direction": 1,
+              "outcome": "no_hit",
+              "barrier_bp": 5.033245577279102,
+              "up_excursion_bp": 2.79998779296875,
+              "down_excursion_bp": -2.6999950408935547
+            },
+            {
+              "origin": "2026-01-23T17:20:00+00:00",
+              "direction": 1,
+              "outcome": "no_hit",
+              "barrier_bp": 5.0,
+              "up_excursion_bp": 1.9999980926513672,
+              "down_excursion_bp": -4.799985885620117
+            },
+            {
+              "origin": "2026-02-12T17:20:00+00:00",
+              "direction": -1,
+              "outcome": "down",
+              "barrier_bp": 6.589682953446433,
+              "up_excursion_bp": 0.9999752044677734,
+              "down_excursion_bp": -7.499980926513672
+            },
+            {
+              "origin": "2026-02-19T17:20:00+00:00",
+              "direction": -1,
+              "outcome": "no_hit",
+              "barrier_bp": 5.594945704644576,
+              "up_excursion_bp": 3.500032424926758,
+              "down_excursion_bp": -5.099964141845703
+            },
+            {
+              "origin": "2026-03-02T19:20:00+00:00",
+              "direction": 1,
+              "outcome": "up",
+              "barrier_bp": 7.725614598677566,
+              "up_excursion_bp": 9.999990463256836,
+              "down_excursion_bp": -0.7999897003173828
+            },
+            {
+              "origin": "2026-03-10T18:20:00+00:00",
+              "direction": 1,
+              "outcome": "up",
+              "barrier_bp": 7.0698364904172895,
+              "up_excursion_bp": 15.399980545043945,
+              "down_excursion_bp": 2.8999805450439453
+            },
+            {
+              "origin": "2026-03-18T16:20:00+00:00",
+              "direction": 1,
+              "outcome": "up",
+              "barrier_bp": 8.320385793921535,
+              "up_excursion_bp": 17.599964141845703,
+              "down_excursion_bp": -0.8000373840332031
+            },
+            {
+              "origin": "2026-03-26T14:20:00+00:00",
+              "direction": 1,
+              "outcome": "no_hit",
+              "barrier_bp": 11.01233684752045,
+              "up_excursion_bp": 9.600019454956055,
+              "down_excursion_bp": -8.899974822998047
+            },
+            {
+              "origin": "2026-04-08T14:20:00+00:00",
+              "direction": -1,
+              "outcome": "up",
+              "barrier_bp": 7.0038132581344925,
+              "up_excursion_bp": 7.399988174438477,
+              "down_excursion_bp": -1.7000198364257812
+            },
+            {
+              "origin": "2026-04-13T19:00:00+00:00",
+              "direction": -1,
+              "outcome": "no_hit",
+              "barrier_bp": 7.697097303944222,
+              "up_excursion_bp": 3.7999629974365234,
+              "down_excursion_bp": -5.100059509277344
+            },
+            {
+              "origin": "2026-04-17T16:20:00+00:00",
+              "direction": -1,
+              "outcome": "no_hit",
+              "barrier_bp": 6.514859008087466,
+              "up_excursion_bp": 6.300020217895508,
+              "down_excursion_bp": -0.40001869201660156
+            },
+            {
+              "origin": "2026-05-01T18:20:00+00:00",
+              "direction": 1,
+              "outcome": "up",
+              "barrier_bp": 5.598623151652689,
+              "up_excursion_bp": 8.599996566772461,
+              "down_excursion_bp": -2.9999732971191406
+            },
+            {
+              "origin": "2026-05-21T14:20:00+00:00",
+              "direction": 1,
+              "outcome": "down",
+              "barrier_bp": 10.30490845658546,
+              "up_excursion_bp": 0.8000373840332031,
+              "down_excursion_bp": -15.199947357177734
+            },
+            {
+              "origin": "2026-06-02T14:20:00+00:00",
+              "direction": -1,
+              "outcome": "up",
+              "barrier_bp": 7.6813684542258365,
+              "up_excursion_bp": 8.899974822998047,
+              "down_excursion_bp": -1.2000083923339844
+            }
+          ],
+          "nonoverlapping_episodes": 44,
+          "resolved_episodes": 43,
+          "wins": 16,
+          "hit_fraction": 0.37209302325581395,
+          "episode_counts": {
+            "down": 14,
+            "no_hit": 16,
+            "up": 13,
+            "ambiguous": 1
+          },
+          "enough_for_ranking": false,
+          "brier_improvement_vs_phase_trend_vol": -0.00023202384167572544,
+          "relative_brier_improvement": -0.0003466407613518126,
+          "date_count": 401,
+          "diagnostic_hac": {
+            "mean": -0.00022,
+            "se": 0.00166,
+            "t": -0.134,
+            "p": 0.8937,
+            "n": 401,
+            "lags": 3,
+            "lags_requested": 3
+          }
+        },
+        "PR_RESET": {
+          "n": 1597,
+          "brier": 0.6691087436471027,
+          "log_loss": 1.1068980598040714,
+          "active_forecast_origins": 26,
+          "episodes": [
+            {
+              "origin": "2024-12-31T20:00:00+00:00",
+              "direction": 1,
+              "outcome": "up",
+              "barrier_bp": 9.173392355052698,
+              "up_excursion_bp": 15.400028228759766,
+              "down_excursion_bp": -0.5999565124511719
+            },
+            {
+              "origin": "2025-02-18T20:00:00+00:00",
+              "direction": 1,
+              "outcome": "down",
+              "barrier_bp": 12.536646935401436,
+              "up_excursion_bp": 1.5999794006347656,
+              "down_excursion_bp": -14.400005340576172
+            },
+            {
+              "origin": "2025-03-11T19:00:00+00:00",
+              "direction": 1,
+              "outcome": "no_hit",
+              "barrier_bp": 13.89890001998344,
+              "up_excursion_bp": 4.199981689453125,
+              "down_excursion_bp": -5.200004577636719
+            },
+            {
+              "origin": "2025-03-28T16:20:00+00:00",
+              "direction": -1,
+              "outcome": "down",
+              "barrier_bp": 9.943250548654143,
+              "up_excursion_bp": 0.39997100830078125,
+              "down_excursion_bp": -15.30003547668457
+            },
+            {
+              "origin": "2025-06-17T18:20:00+00:00",
+              "direction": -1,
+              "outcome": "down",
+              "barrier_bp": 6.692863752439059,
+              "up_excursion_bp": 4.999971389770508,
+              "down_excursion_bp": -10.200023651123047
+            },
+            {
+              "origin": "2025-07-11T14:20:00+00:00",
+              "direction": 1,
+              "outcome": "no_hit",
+              "barrier_bp": 8.081217449521684,
+              "up_excursion_bp": 7.6000213623046875,
+              "down_excursion_bp": -1.9000053405761719
+            },
+            {
+              "origin": "2025-08-13T16:20:00+00:00",
+              "direction": -1,
+              "outcome": "up",
+              "barrier_bp": 6.590514478162936,
+              "up_excursion_bp": 11.099958419799805,
+              "down_excursion_bp": -3.600025177001953
+            },
+            {
+              "origin": "2025-08-21T16:20:00+00:00",
+              "direction": 1,
+              "outcome": "down",
+              "barrier_bp": 5.0,
+              "up_excursion_bp": 0.5000114440917969,
+              "down_excursion_bp": -8.600044250488281
+            },
+            {
+              "origin": "2025-10-07T19:00:00+00:00",
+              "direction": -1,
+              "outcome": "down",
+              "barrier_bp": 5.199556658073876,
+              "up_excursion_bp": 3.500032424926758,
+              "down_excursion_bp": -7.299995422363281
+            },
+            {
+              "origin": "2025-11-10T17:20:00+00:00",
+              "direction": 1,
+              "outcome": "no_hit",
+              "barrier_bp": 6.9017952374726015,
+              "up_excursion_bp": 0.7999897003173828,
+              "down_excursion_bp": -5.5999755859375
+            },
+            {
+              "origin": "2026-01-28T15:20:00+00:00",
+              "direction": 1,
+              "outcome": "no_hit",
+              "barrier_bp": 5.0,
+              "up_excursion_bp": 2.200031280517578,
+              "down_excursion_bp": -3.599977493286133
+            },
+            {
+              "origin": "2026-03-02T19:20:00+00:00",
+              "direction": 1,
+              "outcome": "up",
+              "barrier_bp": 7.725614598677566,
+              "up_excursion_bp": 9.999990463256836,
+              "down_excursion_bp": -0.7999897003173828
+            },
+            {
+              "origin": "2026-03-18T16:20:00+00:00",
+              "direction": 1,
+              "outcome": "up",
+              "barrier_bp": 8.320385793921535,
+              "up_excursion_bp": 17.599964141845703,
+              "down_excursion_bp": -0.8000373840332031
+            },
+            {
+              "origin": "2026-03-26T14:20:00+00:00",
+              "direction": 1,
+              "outcome": "no_hit",
+              "barrier_bp": 11.01233684752045,
+              "up_excursion_bp": 9.600019454956055,
+              "down_excursion_bp": -8.899974822998047
+            },
+            {
+              "origin": "2026-05-21T16:20:00+00:00",
+              "direction": 1,
+              "outcome": "down",
+              "barrier_bp": 10.345966653790382,
+              "up_excursion_bp": 2.6000022888183594,
+              "down_excursion_bp": -11.099958419799805
+            }
+          ],
+          "nonoverlapping_episodes": 15,
+          "resolved_episodes": 15,
+          "wins": 6,
+          "hit_fraction": 0.4,
+          "episode_counts": {
+            "up": 4,
+            "down": 6,
+            "no_hit": 5
+          },
+          "enough_for_ranking": false,
+          "brier_improvement_vs_phase_trend_vol": 0.00024081804578736585,
+          "relative_brier_improvement": 0.00035977919396600375,
+          "date_count": 401,
+          "diagnostic_hac": {
+            "mean": 0.00024,
+            "se": 0.00061,
+            "t": 0.394,
+            "p": 0.6936,
+            "n": 401,
+            "lags": 3,
+            "lags_requested": 3
+          }
+        },
+        "MPR_RESET": {
+          "n": 1597,
+          "brier": 0.6694479507948705,
+          "log_loss": 1.107498840467986,
+          "active_forecast_origins": 4,
+          "episodes": [
+            {
+              "origin": "2025-07-11T14:20:00+00:00",
+              "direction": 1,
+              "outcome": "no_hit",
+              "barrier_bp": 8.081217449521684,
+              "up_excursion_bp": 7.6000213623046875,
+              "down_excursion_bp": -1.9000053405761719
+            },
+            {
+              "origin": "2026-05-21T16:20:00+00:00",
+              "direction": 1,
+              "outcome": "down",
+              "barrier_bp": 10.345966653790382,
+              "up_excursion_bp": 2.6000022888183594,
+              "down_excursion_bp": -11.099958419799805
+            }
+          ],
+          "nonoverlapping_episodes": 2,
+          "resolved_episodes": 2,
+          "wins": 0,
+          "hit_fraction": 0.0,
+          "episode_counts": {
+            "no_hit": 1,
+            "down": 1
+          },
+          "enough_for_ranking": false,
+          "brier_improvement_vs_phase_trend_vol": -9.838910198056792e-05,
+          "relative_brier_improvement": -0.00014699210638418356,
+          "date_count": 401,
+          "diagnostic_hac": {
+            "mean": -0.0001,
+            "se": 0.0001,
+            "t": -1.005,
+            "p": 0.3149,
+            "n": 401,
+            "lags": 3,
+            "lags_requested": 3
+          }
+        },
+        "SHALLOW_PR": {
+          "n": 1597,
+          "brier": 0.6694181508123049,
+          "log_loss": 1.1073259873322785,
+          "active_forecast_origins": 19,
+          "episodes": [
+            {
+              "origin": "2025-02-18T20:00:00+00:00",
+              "direction": 1,
+              "outcome": "down",
+              "barrier_bp": 12.536646935401436,
+              "up_excursion_bp": 1.5999794006347656,
+              "down_excursion_bp": -14.400005340576172
+            },
+            {
+              "origin": "2025-03-11T19:00:00+00:00",
+              "direction": 1,
+              "outcome": "no_hit",
+              "barrier_bp": 13.89890001998344,
+              "up_excursion_bp": 4.199981689453125,
+              "down_excursion_bp": -5.200004577636719
+            },
+            {
+              "origin": "2025-03-28T16:20:00+00:00",
+              "direction": -1,
+              "outcome": "down",
+              "barrier_bp": 9.943250548654143,
+              "up_excursion_bp": 0.39997100830078125,
+              "down_excursion_bp": -15.30003547668457
+            },
+            {
+              "origin": "2025-06-17T18:20:00+00:00",
+              "direction": -1,
+              "outcome": "down",
+              "barrier_bp": 6.692863752439059,
+              "up_excursion_bp": 4.999971389770508,
+              "down_excursion_bp": -10.200023651123047
+            },
+            {
+              "origin": "2025-07-11T14:20:00+00:00",
+              "direction": 1,
+              "outcome": "no_hit",
+              "barrier_bp": 8.081217449521684,
+              "up_excursion_bp": 7.6000213623046875,
+              "down_excursion_bp": -1.9000053405761719
+            },
+            {
+              "origin": "2025-08-13T16:20:00+00:00",
+              "direction": -1,
+              "outcome": "up",
+              "barrier_bp": 6.590514478162936,
+              "up_excursion_bp": 11.099958419799805,
+              "down_excursion_bp": -3.600025177001953
+            },
+            {
+              "origin": "2025-08-21T16:20:00+00:00",
+              "direction": 1,
+              "outcome": "down",
+              "barrier_bp": 5.0,
+              "up_excursion_bp": 0.5000114440917969,
+              "down_excursion_bp": -8.600044250488281
+            },
+            {
+              "origin": "2025-10-07T19:00:00+00:00",
+              "direction": -1,
+              "outcome": "down",
+              "barrier_bp": 5.199556658073876,
+              "up_excursion_bp": 3.500032424926758,
+              "down_excursion_bp": -7.299995422363281
+            },
+            {
+              "origin": "2025-11-13T19:20:00+00:00",
+              "direction": 1,
+              "outcome": "no_hit",
+              "barrier_bp": 7.417712885065828,
+              "up_excursion_bp": 3.599977493286133,
+              "down_excursion_bp": -4.699993133544922
+            },
+            {
+              "origin": "2026-01-28T15:20:00+00:00",
+              "direction": 1,
+              "outcome": "no_hit",
+              "barrier_bp": 5.0,
+              "up_excursion_bp": 2.200031280517578,
+              "down_excursion_bp": -3.599977493286133
+            },
+            {
+              "origin": "2026-03-02T19:20:00+00:00",
+              "direction": 1,
+              "outcome": "up",
+              "barrier_bp": 7.725614598677566,
+              "up_excursion_bp": 9.999990463256836,
+              "down_excursion_bp": -0.7999897003173828
+            },
+            {
+              "origin": "2026-03-26T16:20:00+00:00",
+              "direction": 1,
+              "outcome": "down",
+              "barrier_bp": 11.144202322281561,
+              "up_excursion_bp": 6.599998474121094,
+              "down_excursion_bp": -13.100051879882812
+            }
+          ],
+          "nonoverlapping_episodes": 12,
+          "resolved_episodes": 12,
+          "wins": 4,
+          "hit_fraction": 0.3333333333333333,
+          "episode_counts": {
+            "down": 6,
+            "no_hit": 4,
+            "up": 2
+          },
+          "enough_for_ranking": false,
+          "brier_improvement_vs_phase_trend_vol": -6.858911941499733e-05,
+          "relative_brier_improvement": -0.00010247129951280569,
+          "date_count": 401,
+          "diagnostic_hac": {
+            "mean": -7e-05,
+            "se": 0.00044,
+            "t": -0.155,
+            "p": 0.8765,
+            "n": 401,
+            "lags": 3,
+            "lags_requested": 3
+          }
+        },
+        "SHALLOW_MPR": {
+          "n": 1597,
+          "brier": 0.66934956169289,
+          "log_loss": 1.1073591137608385,
+          "active_forecast_origins": 3,
+          "episodes": [
+            {
+              "origin": "2025-07-11T14:20:00+00:00",
+              "direction": 1,
+              "outcome": "no_hit",
+              "barrier_bp": 8.081217449521684,
+              "up_excursion_bp": 7.6000213623046875,
+              "down_excursion_bp": -1.9000053405761719
+            }
+          ],
+          "nonoverlapping_episodes": 1,
+          "resolved_episodes": 1,
+          "wins": 0,
+          "hit_fraction": 0.0,
+          "episode_counts": {
+            "no_hit": 1
+          },
+          "enough_for_ranking": false,
+          "brier_improvement_vs_phase_trend_vol": 0.0,
+          "relative_brier_improvement": 0.0,
+          "date_count": 401,
+          "diagnostic_hac": {
+            "mean": 0.0,
+            "se": 0.0,
+            "t": 0.0,
+            "p": 1.0,
+            "n": 401,
+            "lags": 3,
+            "lags_requested": 3
+          }
+        }
+      },
+      "primary": "SHALLOW_MPR",
+      "primary_promoted": false,
+      "score_convention": "three-class sum Brier, range 0 to 2",
+      "scope": "seen_history_phase_reset_exploratory_not_validation",
+      "authority": false,
+      "status": "SEEN_HISTORY_EXPLORATORY_NO_PROMOTION"
+    },
+    "seen_overlap": {
+      "forecast_origins": 256,
+      "scored_origins": 243,
+      "outcome_counts": {
+        "no_hit": 88,
+        "up": 103,
+        "down": 52,
+        "censored": 13
+      },
+      "models": {
+        "unconditional": {
+          "n": 243,
+          "brier": 0.6666008443295126,
+          "log_loss": 1.0981007340574243,
+          "active_forecast_origins": 0,
+          "episodes": []
+        },
+        "trend5_vol": {
+          "n": 243,
+          "brier": 0.6199825674487979,
+          "log_loss": 1.0319120740173733,
+          "active_forecast_origins": 0,
+          "episodes": []
+        },
+        "phase_trend_vol": {
+          "n": 243,
+          "brier": 0.6288999175119538,
+          "log_loss": 1.0435561877637707,
+          "active_forecast_origins": 0,
+          "episodes": [],
+          "brier_improvement_vs_trend5_vol": -0.008917350063156112,
+          "relative_brier_improvement_vs_trend5_vol": -0.01438322709596599
+        },
+        "M_EARLY": {
+          "n": 243,
+          "brier": 0.632073179119636,
+          "log_loss": 1.0480674506056766,
+          "active_forecast_origins": 11,
+          "episodes": [
+            {
+              "origin": "2026-07-10T14:20:00+00:00",
+              "direction": 1,
+              "outcome": "up",
+              "barrier_bp": 5.227337861888579,
+              "up_excursion_bp": 6.500005722045898,
+              "down_excursion_bp": -2.79998779296875
+            },
+            {
+              "origin": "2026-08-12T18:20:00+00:00",
+              "direction": 1,
+              "outcome": "down",
+              "barrier_bp": 5.209024633001976,
+              "up_excursion_bp": 4.599952697753906,
+              "down_excursion_bp": -6.9000244140625
+            },
+            {
+              "origin": "2026-09-15T14:20:00+00:00",
+              "direction": 1,
+              "outcome": "no_hit",
+              "barrier_bp": 8.419191648056614,
+              "up_excursion_bp": 1.399993896484375,
+              "down_excursion_bp": -6.2999725341796875
+            },
+            {
+              "origin": "2026-09-21T18:20:00+00:00",
+              "direction": 1,
+              "outcome": "censored",
+              "barrier_bp": null,
+              "up_excursion_bp": null,
+              "down_excursion_bp": null
+            }
+          ],
+          "nonoverlapping_episodes": 4,
+          "resolved_episodes": 3,
+          "wins": 1,
+          "hit_fraction": 0.3333333333333333,
+          "episode_counts": {
+            "up": 1,
+            "down": 1,
+            "no_hit": 1,
+            "censored": 1
+          },
+          "enough_for_ranking": false,
+          "brier_improvement_vs_phase_trend_vol": -0.003173261607682027,
+          "relative_brier_improvement": -0.0050457338589517476,
+          "date_count": 61,
+          "diagnostic_hac": {
+            "mean": -0.00316,
+            "se": 0.00337,
+            "t": -0.937,
+            "p": 0.3487,
+            "n": 61,
+            "lags": 3,
+            "lags_requested": 3
+          }
+        },
+        "P_RESET": {
+          "n": 243,
+          "brier": 0.6281891212111801,
+          "log_loss": 1.042560259821271,
+          "active_forecast_origins": 5,
+          "episodes": [
+            {
+              "origin": "2026-08-06T18:20:00+00:00",
+              "direction": 1,
+              "outcome": "no_hit",
+              "barrier_bp": 8.83765489475855,
+              "up_excursion_bp": 3.299999237060547,
+              "down_excursion_bp": -6.700038909912109
+            },
+            {
+              "origin": "2026-09-18T14:20:00+00:00",
+              "direction": 1,
+              "outcome": "no_hit",
+              "barrier_bp": 9.560058650935485,
+              "up_excursion_bp": 8.699989318847656,
+              "down_excursion_bp": -7.800054550170898
+            }
+          ],
+          "nonoverlapping_episodes": 2,
+          "resolved_episodes": 2,
+          "wins": 0,
+          "hit_fraction": 0.0,
+          "episode_counts": {
+            "no_hit": 2
+          },
+          "enough_for_ranking": false,
+          "brier_improvement_vs_phase_trend_vol": 0.0007107963007738289,
+          "relative_brier_improvement": 0.0011302216473264499,
+          "date_count": 61,
+          "diagnostic_hac": {
+            "mean": 0.0006,
+            "se": 0.00109,
+            "t": 0.555,
+            "p": 0.5789,
+            "n": 61,
+            "lags": 3,
+            "lags_requested": 3
+          }
+        },
+        "R_RESET": {
+          "n": 243,
+          "brier": 0.6294738090773367,
+          "log_loss": 1.0445310061504822,
+          "active_forecast_origins": 21,
+          "episodes": [
+            {
+              "origin": "2026-07-10T14:20:00+00:00",
+              "direction": 1,
+              "outcome": "up",
+              "barrier_bp": 5.227337861888579,
+              "up_excursion_bp": 6.500005722045898,
+              "down_excursion_bp": -2.79998779296875
+            },
+            {
+              "origin": "2026-08-06T18:20:00+00:00",
+              "direction": 1,
+              "outcome": "no_hit",
+              "barrier_bp": 8.83765489475855,
+              "up_excursion_bp": 3.299999237060547,
+              "down_excursion_bp": -6.700038909912109
+            },
+            {
+              "origin": "2026-08-20T18:20:00+00:00",
+              "direction": 1,
+              "outcome": "no_hit",
+              "barrier_bp": 8.274027962979947,
+              "up_excursion_bp": 4.799985885620117,
+              "down_excursion_bp": -5.900001525878906
+            },
+            {
+              "origin": "2026-09-04T14:20:00+00:00",
+              "direction": 1,
+              "outcome": "up",
+              "barrier_bp": 5.58848665513069,
+              "up_excursion_bp": 16.59998893737793,
+              "down_excursion_bp": -0.39997100830078125
+            },
+            {
+              "origin": "2026-09-15T14:20:00+00:00",
+              "direction": 1,
+              "outcome": "no_hit",
+              "barrier_bp": 8.419191648056614,
+              "up_excursion_bp": 1.399993896484375,
+              "down_excursion_bp": -6.2999725341796875
+            },
+            {
+              "origin": "2026-09-18T18:20:00+00:00",
+              "direction": 1,
+              "outcome": "up",
+              "barrier_bp": 9.445077065793713,
+              "up_excursion_bp": 13.699960708618164,
+              "down_excursion_bp": -7.200050354003906
+            }
+          ],
+          "nonoverlapping_episodes": 6,
+          "resolved_episodes": 6,
+          "wins": 3,
+          "hit_fraction": 0.5,
+          "episode_counts": {
+            "up": 3,
+            "no_hit": 3
+          },
+          "enough_for_ranking": false,
+          "brier_improvement_vs_phase_trend_vol": -0.0005738915653829039,
+          "relative_brier_improvement": -0.0009125324227316275,
+          "date_count": 61,
+          "diagnostic_hac": {
+            "mean": -0.00028,
+            "se": 0.0029,
+            "t": -0.096,
+            "p": 0.9234,
+            "n": 61,
+            "lags": 3,
+            "lags_requested": 3
+          }
+        },
+        "PR_RESET": {
+          "n": 243,
+          "brier": 0.6288856686974508,
+          "log_loss": 1.0435223973122947,
+          "active_forecast_origins": 5,
+          "episodes": [
+            {
+              "origin": "2026-08-06T18:20:00+00:00",
+              "direction": 1,
+              "outcome": "no_hit",
+              "barrier_bp": 8.83765489475855,
+              "up_excursion_bp": 3.299999237060547,
+              "down_excursion_bp": -6.700038909912109
+            },
+            {
+              "origin": "2026-09-18T14:20:00+00:00",
+              "direction": 1,
+              "outcome": "no_hit",
+              "barrier_bp": 9.560058650935485,
+              "up_excursion_bp": 8.699989318847656,
+              "down_excursion_bp": -7.800054550170898
+            }
+          ],
+          "nonoverlapping_episodes": 2,
+          "resolved_episodes": 2,
+          "wins": 0,
+          "hit_fraction": 0.0,
+          "episode_counts": {
+            "no_hit": 2
+          },
+          "enough_for_ranking": false,
+          "brier_improvement_vs_phase_trend_vol": 1.4248814503205592e-05,
+          "relative_brier_improvement": 2.265672821134494e-05,
+          "date_count": 61,
+          "diagnostic_hac": {
+            "mean": -0.0,
+            "se": 9e-05,
+            "t": -0.03,
+            "p": 0.9763,
+            "n": 61,
+            "lags": 3,
+            "lags_requested": 3
+          }
+        },
+        "MPR_RESET": {
+          "n": 243,
+          "brier": 0.6288999175119538,
+          "log_loss": 1.0435561877637707,
+          "active_forecast_origins": 0,
+          "episodes": [],
+          "nonoverlapping_episodes": 0,
+          "resolved_episodes": 0,
+          "wins": 0,
+          "hit_fraction": null,
+          "episode_counts": {},
+          "enough_for_ranking": false,
+          "brier_improvement_vs_phase_trend_vol": 0.0,
+          "relative_brier_improvement": 0.0,
+          "date_count": 61,
+          "diagnostic_hac": {
+            "mean": 0.0,
+            "se": 0.0,
+            "t": 0.0,
+            "p": 1.0,
+            "n": 61,
+            "lags": 3,
+            "lags_requested": 3
+          }
+        },
+        "SHALLOW_PR": {
+          "n": 243,
+          "brier": 0.6293323154128094,
+          "log_loss": 1.0445961479932402,
+          "active_forecast_origins": 5,
+          "episodes": [
+            {
+              "origin": "2026-08-06T18:20:00+00:00",
+              "direction": 1,
+              "outcome": "no_hit",
+              "barrier_bp": 8.83765489475855,
+              "up_excursion_bp": 3.299999237060547,
+              "down_excursion_bp": -6.700038909912109
+            },
+            {
+              "origin": "2026-09-18T14:20:00+00:00",
+              "direction": 1,
+              "outcome": "no_hit",
+              "barrier_bp": 9.560058650935485,
+              "up_excursion_bp": 8.699989318847656,
+              "down_excursion_bp": -7.800054550170898
+            }
+          ],
+          "nonoverlapping_episodes": 2,
+          "resolved_episodes": 2,
+          "wins": 0,
+          "hit_fraction": 0.0,
+          "episode_counts": {
+            "no_hit": 2
+          },
+          "enough_for_ranking": false,
+          "brier_improvement_vs_phase_trend_vol": -0.00043239790085550293,
+          "relative_brier_improvement": -0.0006875464423117596,
+          "date_count": 61,
+          "diagnostic_hac": {
+            "mean": -0.0008,
+            "se": 0.00164,
+            "t": -0.489,
+            "p": 0.6251,
+            "n": 61,
+            "lags": 3,
+            "lags_requested": 3
+          }
+        },
+        "SHALLOW_MPR": {
+          "n": 243,
+          "brier": 0.6288999175119538,
+          "log_loss": 1.0435561877637707,
+          "active_forecast_origins": 0,
+          "episodes": [],
+          "nonoverlapping_episodes": 0,
+          "resolved_episodes": 0,
+          "wins": 0,
+          "hit_fraction": null,
+          "episode_counts": {},
+          "enough_for_ranking": false,
+          "brier_improvement_vs_phase_trend_vol": 0.0,
+          "relative_brier_improvement": 0.0,
+          "date_count": 61,
+          "diagnostic_hac": {
+            "mean": 0.0,
+            "se": 0.0,
+            "t": 0.0,
+            "p": 1.0,
+            "n": 61,
+            "lags": 3,
+            "lags_requested": 3
+          }
+        }
+      },
+      "primary": "SHALLOW_MPR",
+      "primary_promoted": false,
+      "score_convention": "three-class sum Brier, range 0 to 2",
+      "scope": "seen_history_phase_reset_exploratory_not_validation",
+      "authority": false,
+      "status": "SEEN_HISTORY_EXPLORATORY_NO_PROMOTION"
+    }
+  },
+  "all_dates_diagnostic": {
+    "forecast_origins": 1870,
+    "scored_origins": 1853,
+    "outcome_counts": {
+      "no_hit": 732,
+      "up": 578,
+      "down": 543,
+      "ambiguous": 4,
+      "censored": 13
+    },
+    "models": {
+      "unconditional": {
+        "n": 1853,
+        "brier": 0.6735103903876466,
+        "log_loss": 1.1094968303060688,
+        "active_forecast_origins": 0,
+        "episodes": []
+      },
+      "trend5_vol": {
+        "n": 1853,
+        "brier": 0.6599166968727112,
+        "log_loss": 1.0924645041645036,
+        "active_forecast_origins": 0,
+        "episodes": []
+      },
+      "phase_trend_vol": {
+        "n": 1853,
+        "brier": 0.6642335839835909,
+        "log_loss": 1.0991955519882672,
+        "active_forecast_origins": 0,
+        "episodes": [],
+        "brier_improvement_vs_trend5_vol": -0.004316887110879743,
+        "relative_brier_improvement_vs_trend5_vol": -0.006541563702414414
+      },
+      "M_EARLY": {
+        "n": 1853,
+        "brier": 0.6674360921875037,
+        "log_loss": 1.1039409768668125,
+        "active_forecast_origins": 128,
+        "episodes": [
+          {
+            "origin": "2024-12-04T17:20:00+00:00",
+            "direction": -1,
+            "outcome": "no_hit",
+            "barrier_bp": 8.699297563481057,
+            "up_excursion_bp": 3.699970245361328,
+            "down_excursion_bp": -6.2000274658203125
+          },
+          {
+            "origin": "2024-12-18T15:20:00+00:00",
+            "direction": 1,
+            "outcome": "up",
+            "barrier_bp": 5.0,
+            "up_excursion_bp": 19.299983978271484,
+            "down_excursion_bp": -1.7999649047851562
+          },
+          {
+            "origin": "2024-12-23T19:20:00+00:00",
+            "direction": 1,
+            "outcome": "no_hit",
+            "barrier_bp": 9.093288644975134,
+            "up_excursion_bp": 4.199981689453125,
+            "down_excursion_bp": -2.6000022888183594
+          },
+          {
+            "origin": "2025-01-02T17:20:00+00:00",
+            "direction": 1,
+            "outcome": "up",
+            "barrier_bp": 9.877256630365029,
+            "up_excursion_bp": 12.800025939941406,
+            "down_excursion_bp": -3.2000064849853516
+          },
+          {
+            "origin": "2025-01-29T20:00:00+00:00",
+            "direction": -1,
+            "outcome": "no_hit",
+            "barrier_bp": 9.337695139654413,
+            "up_excursion_bp": 8.800029754638672,
+            "down_excursion_bp": -4.799985885620117
+          },
+          {
+            "origin": "2025-02-28T15:20:00+00:00",
+            "direction": -1,
+            "outcome": "down",
+            "barrier_bp": 9.195240185294717,
+            "up_excursion_bp": 2.9999732971191406,
+            "down_excursion_bp": -13.500022888183594
+          },
+          {
+            "origin": "2025-03-14T14:20:00+00:00",
+            "direction": 1,
+            "outcome": "no_hit",
+            "barrier_bp": 11.805247734019488,
+            "up_excursion_bp": 4.399967193603516,
+            "down_excursion_bp": -3.699970245361328
+          },
+          {
+            "origin": "2025-04-23T16:20:00+00:00",
+            "direction": 1,
+            "outcome": "down",
+            "barrier_bp": 9.426661530585951,
+            "up_excursion_bp": 0.8000373840332031,
+            "down_excursion_bp": -17.499971389770508
+          },
+          {
+            "origin": "2025-05-20T14:20:00+00:00",
+            "direction": 1,
+            "outcome": "up",
+            "barrier_bp": 8.534752617390467,
+            "up_excursion_bp": 14.00003433227539,
+            "down_excursion_bp": -2.3999691009521484
+          },
+          {
+            "origin": "2025-06-20T16:20:00+00:00",
+            "direction": -1,
+            "outcome": "down",
+            "barrier_bp": 7.805322282472043,
+            "up_excursion_bp": 0.6000041961669922,
+            "down_excursion_bp": -8.599996566772461
+          },
+          {
+            "origin": "2025-06-25T19:00:00+00:00",
+            "direction": -1,
+            "outcome": "no_hit",
+            "barrier_bp": 7.761973542217814,
+            "up_excursion_bp": 1.399993896484375,
+            "down_excursion_bp": -7.400035858154297
+          },
+          {
+            "origin": "2025-07-01T19:00:00+00:00",
+            "direction": -1,
+            "outcome": "up",
+            "barrier_bp": 5.824665148064317,
+            "up_excursion_bp": 13.899993896484375,
+            "down_excursion_bp": -4.09998893737793
+          },
+          {
+            "origin": "2025-07-11T14:20:00+00:00",
+            "direction": 1,
+            "outcome": "no_hit",
+            "barrier_bp": 8.081217449521684,
+            "up_excursion_bp": 7.6000213623046875,
+            "down_excursion_bp": -1.9000053405761719
+          },
+          {
+            "origin": "2025-07-17T18:20:00+00:00",
+            "direction": 1,
+            "outcome": "down",
+            "barrier_bp": 7.398356002881248,
+            "up_excursion_bp": -2.100038528442383,
+            "down_excursion_bp": -13.500022888183594
+          },
+          {
+            "origin": "2025-08-06T19:00:00+00:00",
+            "direction": -1,
+            "outcome": "no_hit",
+            "barrier_bp": 9.929073283967035,
+            "up_excursion_bp": 8.699989318847656,
+            "down_excursion_bp": -1.0000228881835938
+          },
+          {
+            "origin": "2025-09-10T16:20:00+00:00",
+            "direction": -1,
+            "outcome": "no_hit",
+            "barrier_bp": 8.438800111396374,
+            "up_excursion_bp": 5.300045013427734,
+            "down_excursion_bp": -3.399991989135742
+          },
+          {
+            "origin": "2025-09-24T14:20:00+00:00",
+            "direction": 1,
+            "outcome": "no_hit",
+            "barrier_bp": 7.671488329068166,
+            "up_excursion_bp": 5.799961090087891,
+            "down_excursion_bp": -0.9999752044677734
+          },
+          {
+            "origin": "2025-10-16T16:20:00+00:00",
+            "direction": -1,
+            "outcome": "no_hit",
+            "barrier_bp": 5.640426740777894,
+            "up_excursion_bp": 4.199981689453125,
+            "down_excursion_bp": -2.79998779296875
+          },
+          {
+            "origin": "2025-10-22T18:20:00+00:00",
+            "direction": -1,
+            "outcome": "up",
+            "barrier_bp": 5.425862929041568,
+            "up_excursion_bp": 8.000016212463379,
+            "down_excursion_bp": 1.100015640258789
+          },
+          {
+            "origin": "2025-11-05T15:20:00+00:00",
+            "direction": 1,
+            "outcome": "down",
+            "barrier_bp": 5.553836807642544,
+            "up_excursion_bp": 0.0,
+            "down_excursion_bp": -9.50002670288086
+          },
+          {
+            "origin": "2025-11-18T17:20:00+00:00",
+            "direction": 1,
+            "outcome": "down",
+            "barrier_bp": 6.850177335257389,
+            "up_excursion_bp": 3.699970245361328,
+            "down_excursion_bp": -7.100009918212891
+          },
+          {
+            "origin": "2025-12-15T17:20:00+00:00",
+            "direction": 1,
+            "outcome": "down",
+            "barrier_bp": 7.39903903907878,
+            "up_excursion_bp": 1.399993896484375,
+            "down_excursion_bp": -7.399988174438477
+          },
+          {
+            "origin": "2026-01-23T17:20:00+00:00",
+            "direction": 1,
+            "outcome": "no_hit",
+            "barrier_bp": 5.0,
+            "up_excursion_bp": 1.9999980926513672,
+            "down_excursion_bp": -4.799985885620117
+          },
+          {
+            "origin": "2026-02-12T15:20:00+00:00",
+            "direction": -1,
+            "outcome": "down",
+            "barrier_bp": 6.471849793189302,
+            "up_excursion_bp": 0.7999897003173828,
+            "down_excursion_bp": -9.800004959106445
+          },
+          {
+            "origin": "2026-02-19T17:20:00+00:00",
+            "direction": -1,
+            "outcome": "no_hit",
+            "barrier_bp": 5.594945704644576,
+            "up_excursion_bp": 3.500032424926758,
+            "down_excursion_bp": -5.099964141845703
+          },
+          {
+            "origin": "2026-02-26T15:20:00+00:00",
+            "direction": -1,
+            "outcome": "down",
+            "barrier_bp": 5.0,
+            "up_excursion_bp": 9.199953079223633,
+            "down_excursion_bp": -6.90000057220459
+          },
+          {
+            "origin": "2026-03-09T14:20:00+00:00",
+            "direction": 1,
+            "outcome": "up",
+            "barrier_bp": 8.092405778678552,
+            "up_excursion_bp": 12.5,
+            "down_excursion_bp": -2.6000022888183594
+          },
+          {
+            "origin": "2026-03-24T14:20:00+00:00",
+            "direction": 1,
+            "outcome": "up",
+            "barrier_bp": 9.882897102042396,
+            "up_excursion_bp": 10.600042343139648,
+            "down_excursion_bp": -6.399965286254883
+          },
+          {
+            "origin": "2026-04-06T18:20:00+00:00",
+            "direction": -1,
+            "outcome": "down",
+            "barrier_bp": 8.151166081971834,
+            "up_excursion_bp": 4.500007629394531,
+            "down_excursion_bp": -10.099983215332031
+          },
+          {
+            "origin": "2026-04-17T14:20:00+00:00",
+            "direction": -1,
+            "outcome": "up",
+            "barrier_bp": 7.15298319914223,
+            "up_excursion_bp": 8.100032806396484,
+            "down_excursion_bp": -0.19998550415039062
+          },
+          {
+            "origin": "2026-05-01T18:20:00+00:00",
+            "direction": 1,
+            "outcome": "up",
+            "barrier_bp": 5.598623151652689,
+            "up_excursion_bp": 8.599996566772461,
+            "down_excursion_bp": -2.9999732971191406
+          },
+          {
+            "origin": "2026-05-21T14:20:00+00:00",
+            "direction": 1,
+            "outcome": "down",
+            "barrier_bp": 10.30490845658546,
+            "up_excursion_bp": 0.8000373840332031,
+            "down_excursion_bp": -15.199947357177734
+          },
+          {
+            "origin": "2026-06-01T18:20:00+00:00",
+            "direction": -1,
+            "outcome": "no_hit",
+            "barrier_bp": 7.878087868943128,
+            "up_excursion_bp": 2.79998779296875,
+            "down_excursion_bp": -4.699993133544922
+          },
+          {
+            "origin": "2026-06-10T18:20:00+00:00",
+            "direction": 1,
+            "outcome": "down",
+            "barrier_bp": 6.352232291211623,
+            "up_excursion_bp": 0.8000373840332031,
+            "down_excursion_bp": -10.099983215332031
+          },
+          {
+            "origin": "2026-06-18T14:20:00+00:00",
+            "direction": -1,
+            "outcome": "no_hit",
+            "barrier_bp": 7.590150477850117,
+            "up_excursion_bp": 7.000017166137695,
+            "down_excursion_bp": -4.500007629394531
+          },
+          {
+            "origin": "2026-07-10T14:20:00+00:00",
+            "direction": 1,
+            "outcome": "up",
+            "barrier_bp": 5.227337861888579,
+            "up_excursion_bp": 6.500005722045898,
+            "down_excursion_bp": -2.79998779296875
+          },
+          {
+            "origin": "2026-08-12T18:20:00+00:00",
+            "direction": 1,
+            "outcome": "down",
+            "barrier_bp": 5.209024633001976,
+            "up_excursion_bp": 4.599952697753906,
+            "down_excursion_bp": -6.9000244140625
+          },
+          {
+            "origin": "2026-09-15T14:20:00+00:00",
+            "direction": 1,
+            "outcome": "no_hit",
+            "barrier_bp": 8.419191648056614,
+            "up_excursion_bp": 1.399993896484375,
+            "down_excursion_bp": -6.2999725341796875
+          },
+          {
+            "origin": "2026-09-21T18:20:00+00:00",
+            "direction": 1,
+            "outcome": "censored",
+            "barrier_bp": null,
+            "up_excursion_bp": null,
+            "down_excursion_bp": null
+          }
+        ],
+        "nonoverlapping_episodes": 39,
+        "resolved_episodes": 38,
+        "wins": 12,
+        "hit_fraction": 0.3157894736842105,
+        "episode_counts": {
+          "no_hit": 15,
+          "up": 10,
+          "down": 13,
+          "censored": 1
+        },
+        "enough_for_ranking": false,
+        "brier_improvement_vs_phase_trend_vol": -0.0032025082039127952,
+        "relative_brier_improvement": -0.00482135845150508,
+        "date_count": 465,
+        "diagnostic_hac": {
+          "mean": -0.00315,
+          "se": 0.00158,
+          "t": -1.993,
+          "p": 0.0463,
+          "n": 465,
+          "lags": 3,
+          "lags_requested": 3
+        }
+      },
+      "P_RESET": {
+        "n": 1853,
+        "brier": 0.6638595042682717,
+        "log_loss": 1.09841762307866,
+        "active_forecast_origins": 44,
+        "episodes": [
+          {
+            "origin": "2024-11-25T15:20:00+00:00",
+            "direction": -1,
+            "outcome": "no_hit",
+            "barrier_bp": 10.261869417021316,
+            "up_excursion_bp": 2.8000354766845703,
+            "down_excursion_bp": -9.999990463256836
+          },
+          {
+            "origin": "2024-12-31T20:00:00+00:00",
+            "direction": 1,
+            "outcome": "up",
+            "barrier_bp": 9.173392355052698,
+            "up_excursion_bp": 15.400028228759766,
+            "down_excursion_bp": -0.5999565124511719
+          },
+          {
+            "origin": "2025-01-15T17:20:00+00:00",
+            "direction": -1,
+            "outcome": "no_hit",
+            "barrier_bp": 12.300734165799406,
+            "up_excursion_bp": 3.900003433227539,
+            "down_excursion_bp": -10.299968719482422
+          },
+          {
+            "origin": "2025-02-18T20:00:00+00:00",
+            "direction": 1,
+            "outcome": "down",
+            "barrier_bp": 12.536646935401436,
+            "up_excursion_bp": 1.5999794006347656,
+            "down_excursion_bp": -14.400005340576172
+          },
+          {
+            "origin": "2025-03-11T19:00:00+00:00",
+            "direction": 1,
+            "outcome": "no_hit",
+            "barrier_bp": 13.89890001998344,
+            "up_excursion_bp": 4.199981689453125,
+            "down_excursion_bp": -5.200004577636719
+          },
+          {
+            "origin": "2025-03-28T16:20:00+00:00",
+            "direction": -1,
+            "outcome": "down",
+            "barrier_bp": 9.943250548654143,
+            "up_excursion_bp": 0.39997100830078125,
+            "down_excursion_bp": -15.30003547668457
+          },
+          {
+            "origin": "2025-04-24T16:20:00+00:00",
+            "direction": -1,
+            "outcome": "down",
+            "barrier_bp": 9.705741615471357,
+            "up_excursion_bp": 1.2000083923339844,
+            "down_excursion_bp": -14.099979400634766
+          },
+          {
+            "origin": "2025-06-13T19:00:00+00:00",
+            "direction": 1,
+            "outcome": "no_hit",
+            "barrier_bp": 8.160704045013196,
+            "up_excursion_bp": 3.900003433227539,
+            "down_excursion_bp": -6.9000244140625
+          },
+          {
+            "origin": "2025-07-09T19:00:00+00:00",
+            "direction": -1,
+            "outcome": "up",
+            "barrier_bp": 7.281905032091831,
+            "up_excursion_bp": 9.89999771118164,
+            "down_excursion_bp": -2.4000167846679688
+          },
+          {
+            "origin": "2025-08-13T16:20:00+00:00",
+            "direction": -1,
+            "outcome": "up",
+            "barrier_bp": 6.590514478162936,
+            "up_excursion_bp": 11.099958419799805,
+            "down_excursion_bp": -3.600025177001953
+          },
+          {
+            "origin": "2025-08-20T14:20:00+00:00",
+            "direction": -1,
+            "outcome": "up",
+            "barrier_bp": 5.948224172966196,
+            "up_excursion_bp": 6.599998474121094,
+            "down_excursion_bp": -3.9000511169433594
+          },
+          {
+            "origin": "2025-09-18T14:20:00+00:00",
+            "direction": 1,
+            "outcome": "no_hit",
+            "barrier_bp": 8.90351033113389,
+            "up_excursion_bp": 3.600025177001953,
+            "down_excursion_bp": -1.8999576568603516
+          },
+          {
+            "origin": "2025-09-29T18:20:00+00:00",
+            "direction": -1,
+            "outcome": "down",
+            "barrier_bp": 5.009536658500559,
+            "up_excursion_bp": 1.100015640258789,
+            "down_excursion_bp": -5.799961090087891
+          },
+          {
+            "origin": "2025-10-07T19:00:00+00:00",
+            "direction": -1,
+            "outcome": "down",
+            "barrier_bp": 5.199556658073876,
+            "up_excursion_bp": 3.500032424926758,
+            "down_excursion_bp": -7.299995422363281
+          },
+          {
+            "origin": "2025-11-10T17:20:00+00:00",
+            "direction": 1,
+            "outcome": "no_hit",
+            "barrier_bp": 6.9017952374726015,
+            "up_excursion_bp": 0.7999897003173828,
+            "down_excursion_bp": -5.5999755859375
+          },
+          {
+            "origin": "2025-12-16T19:20:00+00:00",
+            "direction": -1,
+            "outcome": "no_hit",
+            "barrier_bp": 6.681302035742948,
+            "up_excursion_bp": 2.0999908447265625,
+            "down_excursion_bp": -4.09998893737793
+          },
+          {
+            "origin": "2026-01-28T15:20:00+00:00",
+            "direction": 1,
+            "outcome": "no_hit",
+            "barrier_bp": 5.0,
+            "up_excursion_bp": 2.200031280517578,
+            "down_excursion_bp": -3.599977493286133
+          },
+          {
+            "origin": "2026-03-02T19:20:00+00:00",
+            "direction": 1,
+            "outcome": "up",
+            "barrier_bp": 7.725614598677566,
+            "up_excursion_bp": 9.999990463256836,
+            "down_excursion_bp": -0.7999897003173828
+          },
+          {
+            "origin": "2026-03-18T16:20:00+00:00",
+            "direction": 1,
+            "outcome": "up",
+            "barrier_bp": 8.320385793921535,
+            "up_excursion_bp": 17.599964141845703,
+            "down_excursion_bp": -0.8000373840332031
+          },
+          {
+            "origin": "2026-03-26T14:20:00+00:00",
+            "direction": 1,
+            "outcome": "no_hit",
+            "barrier_bp": 11.01233684752045,
+            "up_excursion_bp": 9.600019454956055,
+            "down_excursion_bp": -8.899974822998047
+          },
+          {
+            "origin": "2026-05-21T16:20:00+00:00",
+            "direction": 1,
+            "outcome": "down",
+            "barrier_bp": 10.345966653790382,
+            "up_excursion_bp": 2.6000022888183594,
+            "down_excursion_bp": -11.099958419799805
+          },
+          {
+            "origin": "2026-08-06T18:20:00+00:00",
+            "direction": 1,
+            "outcome": "no_hit",
+            "barrier_bp": 8.83765489475855,
+            "up_excursion_bp": 3.299999237060547,
+            "down_excursion_bp": -6.700038909912109
+          },
+          {
+            "origin": "2026-09-18T14:20:00+00:00",
+            "direction": 1,
+            "outcome": "no_hit",
+            "barrier_bp": 9.560058650935485,
+            "up_excursion_bp": 8.699989318847656,
+            "down_excursion_bp": -7.800054550170898
+          }
+        ],
+        "nonoverlapping_episodes": 23,
+        "resolved_episodes": 23,
+        "wins": 7,
+        "hit_fraction": 0.30434782608695654,
+        "episode_counts": {
+          "no_hit": 11,
+          "up": 6,
+          "down": 6
+        },
+        "enough_for_ranking": false,
+        "brier_improvement_vs_phase_trend_vol": 0.0003740797153191562,
+        "relative_brier_improvement": 0.0005631749498056054,
+        "date_count": 465,
+        "diagnostic_hac": {
+          "mean": 0.00036,
+          "se": 0.00076,
+          "t": 0.475,
+          "p": 0.6345,
+          "n": 465,
+          "lags": 3,
+          "lags_requested": 3
+        }
+      },
+      "R_RESET": {
+        "n": 1853,
+        "brier": 0.6645088121139439,
+        "log_loss": 1.099381533219698,
+        "active_forecast_origins": 155,
+        "episodes": [
+          {
+            "origin": "2024-11-20T20:00:00+00:00",
+            "direction": 1,
+            "outcome": "down",
+            "barrier_bp": 8.030318931400256,
+            "up_excursion_bp": 5.40003776550293,
+            "down_excursion_bp": -12.299966812133789
+          },
+          {
+            "origin": "2024-12-04T17:20:00+00:00",
+            "direction": -1,
+            "outcome": "no_hit",
+            "barrier_bp": 8.699297563481057,
+            "up_excursion_bp": 3.699970245361328,
+            "down_excursion_bp": -6.2000274658203125
+          },
+          {
+            "origin": "2024-12-18T15:20:00+00:00",
+            "direction": 1,
+            "outcome": "up",
+            "barrier_bp": 5.0,
+            "up_excursion_bp": 19.299983978271484,
+            "down_excursion_bp": -1.7999649047851562
+          },
+          {
+            "origin": "2024-12-23T19:20:00+00:00",
+            "direction": 1,
+            "outcome": "no_hit",
+            "barrier_bp": 9.093288644975134,
+            "up_excursion_bp": 4.199981689453125,
+            "down_excursion_bp": -2.6000022888183594
+          },
+          {
+            "origin": "2024-12-31T20:00:00+00:00",
+            "direction": 1,
+            "outcome": "up",
+            "barrier_bp": 9.173392355052698,
+            "up_excursion_bp": 15.400028228759766,
+            "down_excursion_bp": -0.5999565124511719
+          },
+          {
+            "origin": "2025-01-24T20:00:00+00:00",
+            "direction": -1,
+            "outcome": "no_hit",
+            "barrier_bp": 6.423572509558762,
+            "up_excursion_bp": 5.100011825561523,
+            "down_excursion_bp": -5.200004577636719
+          },
+          {
+            "origin": "2025-02-04T19:20:00+00:00",
+            "direction": -1,
+            "outcome": "down",
+            "barrier_bp": 11.415536510015864,
+            "up_excursion_bp": 0.0,
+            "down_excursion_bp": -11.500024795532227
+          },
+          {
+            "origin": "2025-02-18T20:00:00+00:00",
+            "direction": 1,
+            "outcome": "down",
+            "barrier_bp": 12.536646935401436,
+            "up_excursion_bp": 1.5999794006347656,
+            "down_excursion_bp": -14.400005340576172
+          },
+          {
+            "origin": "2025-02-28T15:20:00+00:00",
+            "direction": -1,
+            "outcome": "down",
+            "barrier_bp": 9.195240185294717,
+            "up_excursion_bp": 2.9999732971191406,
+            "down_excursion_bp": -13.500022888183594
+          },
+          {
+            "origin": "2025-03-10T18:20:00+00:00",
+            "direction": -1,
+            "outcome": "no_hit",
+            "barrier_bp": 14.058452312525176,
+            "up_excursion_bp": 13.99993896484375,
+            "down_excursion_bp": -2.500009536743164
+          },
+          {
+            "origin": "2025-03-28T16:20:00+00:00",
+            "direction": -1,
+            "outcome": "down",
+            "barrier_bp": 9.943250548654143,
+            "up_excursion_bp": 0.39997100830078125,
+            "down_excursion_bp": -15.30003547668457
+          },
+          {
+            "origin": "2025-04-03T14:20:00+00:00",
+            "direction": -1,
+            "outcome": "down",
+            "barrier_bp": 16.484179377532858,
+            "up_excursion_bp": 19.4000244140625,
+            "down_excursion_bp": -18.199968338012695
+          },
+          {
+            "origin": "2025-05-08T18:20:00+00:00",
+            "direction": 1,
+            "outcome": "up",
+            "barrier_bp": 8.00689790452963,
+            "up_excursion_bp": 13.199996948242188,
+            "down_excursion_bp": -3.000020980834961
+          },
+          {
+            "origin": "2025-05-19T14:20:00+00:00",
+            "direction": 1,
+            "outcome": "up",
+            "barrier_bp": 9.241829620628371,
+            "up_excursion_bp": 13.199996948242188,
+            "down_excursion_bp": -2.6000499725341797
+          },
+          {
+            "origin": "2025-06-04T14:20:00+00:00",
+            "direction": -1,
+            "outcome": "up",
+            "barrier_bp": 8.642879331159303,
+            "up_excursion_bp": 16.100025177001953,
+            "down_excursion_bp": -3.900003433227539
+          },
+          {
+            "origin": "2025-06-17T18:20:00+00:00",
+            "direction": -1,
+            "outcome": "down",
+            "barrier_bp": 6.692863752439059,
+            "up_excursion_bp": 4.999971389770508,
+            "down_excursion_bp": -10.200023651123047
+          },
+          {
+            "origin": "2025-07-11T14:20:00+00:00",
+            "direction": 1,
+            "outcome": "no_hit",
+            "barrier_bp": 8.081217449521684,
+            "up_excursion_bp": 7.6000213623046875,
+            "down_excursion_bp": -1.9000053405761719
+          },
+          {
+            "origin": "2025-07-17T18:20:00+00:00",
+            "direction": 1,
+            "outcome": "down",
+            "barrier_bp": 7.398356002881248,
+            "up_excursion_bp": -2.100038528442383,
+            "down_excursion_bp": -13.500022888183594
+          },
+          {
+            "origin": "2025-07-29T16:20:00+00:00",
+            "direction": -1,
+            "outcome": "ambiguous",
+            "barrier_bp": 6.41295373111922,
+            "up_excursion_bp": 7.399988174438477,
+            "down_excursion_bp": -11.00001335144043
+          },
+          {
+            "origin": "2025-08-13T16:20:00+00:00",
+            "direction": -1,
+            "outcome": "up",
+            "barrier_bp": 6.590514478162936,
+            "up_excursion_bp": 11.099958419799805,
+            "down_excursion_bp": -3.600025177001953
+          },
+          {
+            "origin": "2025-08-21T16:20:00+00:00",
+            "direction": 1,
+            "outcome": "down",
+            "barrier_bp": 5.0,
+            "up_excursion_bp": 0.5000114440917969,
+            "down_excursion_bp": -8.600044250488281
+          },
+          {
+            "origin": "2025-09-03T16:20:00+00:00",
+            "direction": -1,
+            "outcome": "down",
+            "barrier_bp": 6.61373977006131,
+            "up_excursion_bp": 0.20003318786621094,
+            "down_excursion_bp": -16.499996185302734
+          },
+          {
+            "origin": "2025-09-10T16:20:00+00:00",
+            "direction": -1,
+            "outcome": "no_hit",
+            "barrier_bp": 8.438800111396374,
+            "up_excursion_bp": 5.300045013427734,
+            "down_excursion_bp": -3.399991989135742
+          },
+          {
+            "origin": "2025-09-24T14:20:00+00:00",
+            "direction": 1,
+            "outcome": "no_hit",
+            "barrier_bp": 7.671488329068166,
+            "up_excursion_bp": 5.799961090087891,
+            "down_excursion_bp": -0.9999752044677734
+          },
+          {
+            "origin": "2025-10-07T19:00:00+00:00",
+            "direction": -1,
+            "outcome": "down",
+            "barrier_bp": 5.199556658073876,
+            "up_excursion_bp": 3.500032424926758,
+            "down_excursion_bp": -7.299995422363281
+          },
+          {
+            "origin": "2025-10-16T16:20:00+00:00",
+            "direction": -1,
+            "outcome": "no_hit",
+            "barrier_bp": 5.640426740777894,
+            "up_excursion_bp": 4.199981689453125,
+            "down_excursion_bp": -2.79998779296875
+          },
+          {
+            "origin": "2025-10-28T16:20:00+00:00",
+            "direction": -1,
+            "outcome": "up",
+            "barrier_bp": 5.0,
+            "up_excursion_bp": 13.299989700317383,
+            "down_excursion_bp": -0.20000934600830078
+          },
+          {
+            "origin": "2025-11-05T15:20:00+00:00",
+            "direction": 1,
+            "outcome": "down",
+            "barrier_bp": 5.553836807642544,
+            "up_excursion_bp": 0.0,
+            "down_excursion_bp": -9.50002670288086
+          },
+          {
+            "origin": "2025-11-10T19:20:00+00:00",
+            "direction": 1,
+            "outcome": "no_hit",
+            "barrier_bp": 6.901794231147368,
+            "up_excursion_bp": 1.0000228881835938,
+            "down_excursion_bp": -5.399942398071289
+          },
+          {
+            "origin": "2025-12-12T15:20:00+00:00",
+            "direction": 1,
+            "outcome": "no_hit",
+            "barrier_bp": 6.6445183285847635,
+            "up_excursion_bp": 0.40001869201660156,
+            "down_excursion_bp": -4.8999786376953125
+          },
+          {
+            "origin": "2026-01-08T19:20:00+00:00",
+            "direction": 1,
+            "outcome": "no_hit",
+            "barrier_bp": 5.033245577279102,
+            "up_excursion_bp": 2.79998779296875,
+            "down_excursion_bp": -2.6999950408935547
+          },
+          {
+            "origin": "2026-01-23T17:20:00+00:00",
+            "direction": 1,
+            "outcome": "no_hit",
+            "barrier_bp": 5.0,
+            "up_excursion_bp": 1.9999980926513672,
+            "down_excursion_bp": -4.799985885620117
+          },
+          {
+            "origin": "2026-02-12T17:20:00+00:00",
+            "direction": -1,
+            "outcome": "down",
+            "barrier_bp": 6.589682953446433,
+            "up_excursion_bp": 0.9999752044677734,
+            "down_excursion_bp": -7.499980926513672
+          },
+          {
+            "origin": "2026-02-19T17:20:00+00:00",
+            "direction": -1,
+            "outcome": "no_hit",
+            "barrier_bp": 5.594945704644576,
+            "up_excursion_bp": 3.500032424926758,
+            "down_excursion_bp": -5.099964141845703
+          },
+          {
+            "origin": "2026-03-02T19:20:00+00:00",
+            "direction": 1,
+            "outcome": "up",
+            "barrier_bp": 7.725614598677566,
+            "up_excursion_bp": 9.999990463256836,
+            "down_excursion_bp": -0.7999897003173828
+          },
+          {
+            "origin": "2026-03-10T18:20:00+00:00",
+            "direction": 1,
+            "outcome": "up",
+            "barrier_bp": 7.0698364904172895,
+            "up_excursion_bp": 15.399980545043945,
+            "down_excursion_bp": 2.8999805450439453
+          },
+          {
+            "origin": "2026-03-18T16:20:00+00:00",
+            "direction": 1,
+            "outcome": "up",
+            "barrier_bp": 8.320385793921535,
+            "up_excursion_bp": 17.599964141845703,
+            "down_excursion_bp": -0.8000373840332031
+          },
+          {
+            "origin": "2026-03-26T14:20:00+00:00",
+            "direction": 1,
+            "outcome": "no_hit",
+            "barrier_bp": 11.01233684752045,
+            "up_excursion_bp": 9.600019454956055,
+            "down_excursion_bp": -8.899974822998047
+          },
+          {
+            "origin": "2026-04-08T14:20:00+00:00",
+            "direction": -1,
+            "outcome": "up",
+            "barrier_bp": 7.0038132581344925,
+            "up_excursion_bp": 7.399988174438477,
+            "down_excursion_bp": -1.7000198364257812
+          },
+          {
+            "origin": "2026-04-13T19:00:00+00:00",
+            "direction": -1,
+            "outcome": "no_hit",
+            "barrier_bp": 7.697097303944222,
+            "up_excursion_bp": 3.7999629974365234,
+            "down_excursion_bp": -5.100059509277344
+          },
+          {
+            "origin": "2026-04-17T16:20:00+00:00",
+            "direction": -1,
+            "outcome": "no_hit",
+            "barrier_bp": 6.514859008087466,
+            "up_excursion_bp": 6.300020217895508,
+            "down_excursion_bp": -0.40001869201660156
+          },
+          {
+            "origin": "2026-05-01T18:20:00+00:00",
+            "direction": 1,
+            "outcome": "up",
+            "barrier_bp": 5.598623151652689,
+            "up_excursion_bp": 8.599996566772461,
+            "down_excursion_bp": -2.9999732971191406
+          },
+          {
+            "origin": "2026-05-21T14:20:00+00:00",
+            "direction": 1,
+            "outcome": "down",
+            "barrier_bp": 10.30490845658546,
+            "up_excursion_bp": 0.8000373840332031,
+            "down_excursion_bp": -15.199947357177734
+          },
+          {
+            "origin": "2026-06-02T14:20:00+00:00",
+            "direction": -1,
+            "outcome": "up",
+            "barrier_bp": 7.6813684542258365,
+            "up_excursion_bp": 8.899974822998047,
+            "down_excursion_bp": -1.2000083923339844
+          },
+          {
+            "origin": "2026-07-10T14:20:00+00:00",
+            "direction": 1,
+            "outcome": "up",
+            "barrier_bp": 5.227337861888579,
+            "up_excursion_bp": 6.500005722045898,
+            "down_excursion_bp": -2.79998779296875
+          },
+          {
+            "origin": "2026-08-06T18:20:00+00:00",
+            "direction": 1,
+            "outcome": "no_hit",
+            "barrier_bp": 8.83765489475855,
+            "up_excursion_bp": 3.299999237060547,
+            "down_excursion_bp": -6.700038909912109
+          },
+          {
+            "origin": "2026-08-20T18:20:00+00:00",
+            "direction": 1,
+            "outcome": "no_hit",
+            "barrier_bp": 8.274027962979947,
+            "up_excursion_bp": 4.799985885620117,
+            "down_excursion_bp": -5.900001525878906
+          },
+          {
+            "origin": "2026-09-04T14:20:00+00:00",
+            "direction": 1,
+            "outcome": "up",
+            "barrier_bp": 5.58848665513069,
+            "up_excursion_bp": 16.59998893737793,
+            "down_excursion_bp": -0.39997100830078125
+          },
+          {
+            "origin": "2026-09-15T14:20:00+00:00",
+            "direction": 1,
+            "outcome": "no_hit",
+            "barrier_bp": 8.419191648056614,
+            "up_excursion_bp": 1.399993896484375,
+            "down_excursion_bp": -6.2999725341796875
+          },
+          {
+            "origin": "2026-09-18T18:20:00+00:00",
+            "direction": 1,
+            "outcome": "up",
+            "barrier_bp": 9.445077065793713,
+            "up_excursion_bp": 13.699960708618164,
+            "down_excursion_bp": -7.200050354003906
+          }
+        ],
+        "nonoverlapping_episodes": 50,
+        "resolved_episodes": 49,
+        "wins": 19,
+        "hit_fraction": 0.3877551020408163,
+        "episode_counts": {
+          "down": 14,
+          "no_hit": 19,
+          "up": 16,
+          "ambiguous": 1
+        },
+        "enough_for_ranking": false,
+        "brier_improvement_vs_phase_trend_vol": -0.00027522813035303775,
+        "relative_brier_improvement": -0.0004143544334244878,
+        "date_count": 465,
+        "diagnostic_hac": {
+          "mean": -0.00023,
+          "se": 0.00148,
+          "t": -0.154,
+          "p": 0.8778,
+          "n": 465,
+          "lags": 3,
+          "lags_requested": 3
+        }
+      },
+      "PR_RESET": {
+        "n": 1853,
+        "brier": 0.6640241674260912,
+        "log_loss": 1.0987937634029104,
+        "active_forecast_origins": 31,
+        "episodes": [
+          {
+            "origin": "2024-12-31T20:00:00+00:00",
+            "direction": 1,
+            "outcome": "up",
+            "barrier_bp": 9.173392355052698,
+            "up_excursion_bp": 15.400028228759766,
+            "down_excursion_bp": -0.5999565124511719
+          },
+          {
+            "origin": "2025-02-18T20:00:00+00:00",
+            "direction": 1,
+            "outcome": "down",
+            "barrier_bp": 12.536646935401436,
+            "up_excursion_bp": 1.5999794006347656,
+            "down_excursion_bp": -14.400005340576172
+          },
+          {
+            "origin": "2025-03-11T19:00:00+00:00",
+            "direction": 1,
+            "outcome": "no_hit",
+            "barrier_bp": 13.89890001998344,
+            "up_excursion_bp": 4.199981689453125,
+            "down_excursion_bp": -5.200004577636719
+          },
+          {
+            "origin": "2025-03-28T16:20:00+00:00",
+            "direction": -1,
+            "outcome": "down",
+            "barrier_bp": 9.943250548654143,
+            "up_excursion_bp": 0.39997100830078125,
+            "down_excursion_bp": -15.30003547668457
+          },
+          {
+            "origin": "2025-06-17T18:20:00+00:00",
+            "direction": -1,
+            "outcome": "down",
+            "barrier_bp": 6.692863752439059,
+            "up_excursion_bp": 4.999971389770508,
+            "down_excursion_bp": -10.200023651123047
+          },
+          {
+            "origin": "2025-07-11T14:20:00+00:00",
+            "direction": 1,
+            "outcome": "no_hit",
+            "barrier_bp": 8.081217449521684,
+            "up_excursion_bp": 7.6000213623046875,
+            "down_excursion_bp": -1.9000053405761719
+          },
+          {
+            "origin": "2025-08-13T16:20:00+00:00",
+            "direction": -1,
+            "outcome": "up",
+            "barrier_bp": 6.590514478162936,
+            "up_excursion_bp": 11.099958419799805,
+            "down_excursion_bp": -3.600025177001953
+          },
+          {
+            "origin": "2025-08-21T16:20:00+00:00",
+            "direction": 1,
+            "outcome": "down",
+            "barrier_bp": 5.0,
+            "up_excursion_bp": 0.5000114440917969,
+            "down_excursion_bp": -8.600044250488281
+          },
+          {
+            "origin": "2025-10-07T19:00:00+00:00",
+            "direction": -1,
+            "outcome": "down",
+            "barrier_bp": 5.199556658073876,
+            "up_excursion_bp": 3.500032424926758,
+            "down_excursion_bp": -7.299995422363281
+          },
+          {
+            "origin": "2025-11-10T17:20:00+00:00",
+            "direction": 1,
+            "outcome": "no_hit",
+            "barrier_bp": 6.9017952374726015,
+            "up_excursion_bp": 0.7999897003173828,
+            "down_excursion_bp": -5.5999755859375
+          },
+          {
+            "origin": "2026-01-28T15:20:00+00:00",
+            "direction": 1,
+            "outcome": "no_hit",
+            "barrier_bp": 5.0,
+            "up_excursion_bp": 2.200031280517578,
+            "down_excursion_bp": -3.599977493286133
+          },
+          {
+            "origin": "2026-03-02T19:20:00+00:00",
+            "direction": 1,
+            "outcome": "up",
+            "barrier_bp": 7.725614598677566,
+            "up_excursion_bp": 9.999990463256836,
+            "down_excursion_bp": -0.7999897003173828
+          },
+          {
+            "origin": "2026-03-18T16:20:00+00:00",
+            "direction": 1,
+            "outcome": "up",
+            "barrier_bp": 8.320385793921535,
+            "up_excursion_bp": 17.599964141845703,
+            "down_excursion_bp": -0.8000373840332031
+          },
+          {
+            "origin": "2026-03-26T14:20:00+00:00",
+            "direction": 1,
+            "outcome": "no_hit",
+            "barrier_bp": 11.01233684752045,
+            "up_excursion_bp": 9.600019454956055,
+            "down_excursion_bp": -8.899974822998047
+          },
+          {
+            "origin": "2026-05-21T16:20:00+00:00",
+            "direction": 1,
+            "outcome": "down",
+            "barrier_bp": 10.345966653790382,
+            "up_excursion_bp": 2.6000022888183594,
+            "down_excursion_bp": -11.099958419799805
+          },
+          {
+            "origin": "2026-08-06T18:20:00+00:00",
+            "direction": 1,
+            "outcome": "no_hit",
+            "barrier_bp": 8.83765489475855,
+            "up_excursion_bp": 3.299999237060547,
+            "down_excursion_bp": -6.700038909912109
+          },
+          {
+            "origin": "2026-09-18T14:20:00+00:00",
+            "direction": 1,
+            "outcome": "no_hit",
+            "barrier_bp": 9.560058650935485,
+            "up_excursion_bp": 8.699989318847656,
+            "down_excursion_bp": -7.800054550170898
+          }
+        ],
+        "nonoverlapping_episodes": 17,
+        "resolved_episodes": 17,
+        "wins": 6,
+        "hit_fraction": 0.35294117647058826,
+        "episode_counts": {
+          "up": 4,
+          "down": 6,
+          "no_hit": 7
+        },
+        "enough_for_ranking": false,
+        "brier_improvement_vs_phase_trend_vol": 0.0002094165574995695,
+        "relative_brier_improvement": 0.0003152754731906824,
+        "date_count": 465,
+        "diagnostic_hac": {
+          "mean": 0.00021,
+          "se": 0.00053,
+          "t": 0.393,
+          "p": 0.6942,
+          "n": 465,
+          "lags": 3,
+          "lags_requested": 3
+        }
+      },
+      "MPR_RESET": {
+        "n": 1853,
+        "brier": 0.6643183802037004,
+        "log_loss": 1.0993159748438064,
+        "active_forecast_origins": 4,
+        "episodes": [
+          {
+            "origin": "2025-07-11T14:20:00+00:00",
+            "direction": 1,
+            "outcome": "no_hit",
+            "barrier_bp": 8.081217449521684,
+            "up_excursion_bp": 7.6000213623046875,
+            "down_excursion_bp": -1.9000053405761719
+          },
+          {
+            "origin": "2026-05-21T16:20:00+00:00",
+            "direction": 1,
+            "outcome": "down",
+            "barrier_bp": 10.345966653790382,
+            "up_excursion_bp": 2.6000022888183594,
+            "down_excursion_bp": -11.099958419799805
+          }
+        ],
+        "nonoverlapping_episodes": 2,
+        "resolved_episodes": 2,
+        "wins": 0,
+        "hit_fraction": 0.0,
+        "episode_counts": {
+          "no_hit": 1,
+          "down": 1
+        },
+        "enough_for_ranking": false,
+        "brier_improvement_vs_phase_trend_vol": -8.479622010953426e-05,
+        "relative_brier_improvement": -0.00012766024205067752,
+        "date_count": 465,
+        "diagnostic_hac": {
+          "mean": -8e-05,
+          "se": 8e-05,
+          "t": -1.004,
+          "p": 0.3152,
+          "n": 465,
+          "lags": 3,
+          "lags_requested": 3
+        }
+      },
+      "SHALLOW_PR": {
+        "n": 1853,
+        "brier": 0.6643494013141973,
+        "log_loss": 1.0993033811460384,
+        "active_forecast_origins": 24,
+        "episodes": [
+          {
+            "origin": "2025-02-18T20:00:00+00:00",
+            "direction": 1,
+            "outcome": "down",
+            "barrier_bp": 12.536646935401436,
+            "up_excursion_bp": 1.5999794006347656,
+            "down_excursion_bp": -14.400005340576172
+          },
+          {
+            "origin": "2025-03-11T19:00:00+00:00",
+            "direction": 1,
+            "outcome": "no_hit",
+            "barrier_bp": 13.89890001998344,
+            "up_excursion_bp": 4.199981689453125,
+            "down_excursion_bp": -5.200004577636719
+          },
+          {
+            "origin": "2025-03-28T16:20:00+00:00",
+            "direction": -1,
+            "outcome": "down",
+            "barrier_bp": 9.943250548654143,
+            "up_excursion_bp": 0.39997100830078125,
+            "down_excursion_bp": -15.30003547668457
+          },
+          {
+            "origin": "2025-06-17T18:20:00+00:00",
+            "direction": -1,
+            "outcome": "down",
+            "barrier_bp": 6.692863752439059,
+            "up_excursion_bp": 4.999971389770508,
+            "down_excursion_bp": -10.200023651123047
+          },
+          {
+            "origin": "2025-07-11T14:20:00+00:00",
+            "direction": 1,
+            "outcome": "no_hit",
+            "barrier_bp": 8.081217449521684,
+            "up_excursion_bp": 7.6000213623046875,
+            "down_excursion_bp": -1.9000053405761719
+          },
+          {
+            "origin": "2025-08-13T16:20:00+00:00",
+            "direction": -1,
+            "outcome": "up",
+            "barrier_bp": 6.590514478162936,
+            "up_excursion_bp": 11.099958419799805,
+            "down_excursion_bp": -3.600025177001953
+          },
+          {
+            "origin": "2025-08-21T16:20:00+00:00",
+            "direction": 1,
+            "outcome": "down",
+            "barrier_bp": 5.0,
+            "up_excursion_bp": 0.5000114440917969,
+            "down_excursion_bp": -8.600044250488281
+          },
+          {
+            "origin": "2025-10-07T19:00:00+00:00",
+            "direction": -1,
+            "outcome": "down",
+            "barrier_bp": 5.199556658073876,
+            "up_excursion_bp": 3.500032424926758,
+            "down_excursion_bp": -7.299995422363281
+          },
+          {
+            "origin": "2025-11-13T19:20:00+00:00",
+            "direction": 1,
+            "outcome": "no_hit",
+            "barrier_bp": 7.417712885065828,
+            "up_excursion_bp": 3.599977493286133,
+            "down_excursion_bp": -4.699993133544922
+          },
+          {
+            "origin": "2026-01-28T15:20:00+00:00",
+            "direction": 1,
+            "outcome": "no_hit",
+            "barrier_bp": 5.0,
+            "up_excursion_bp": 2.200031280517578,
+            "down_excursion_bp": -3.599977493286133
+          },
+          {
+            "origin": "2026-03-02T19:20:00+00:00",
+            "direction": 1,
+            "outcome": "up",
+            "barrier_bp": 7.725614598677566,
+            "up_excursion_bp": 9.999990463256836,
+            "down_excursion_bp": -0.7999897003173828
+          },
+          {
+            "origin": "2026-03-26T16:20:00+00:00",
+            "direction": 1,
+            "outcome": "down",
+            "barrier_bp": 11.144202322281561,
+            "up_excursion_bp": 6.599998474121094,
+            "down_excursion_bp": -13.100051879882812
+          },
+          {
+            "origin": "2026-08-06T18:20:00+00:00",
+            "direction": 1,
+            "outcome": "no_hit",
+            "barrier_bp": 8.83765489475855,
+            "up_excursion_bp": 3.299999237060547,
+            "down_excursion_bp": -6.700038909912109
+          },
+          {
+            "origin": "2026-09-18T14:20:00+00:00",
+            "direction": 1,
+            "outcome": "no_hit",
+            "barrier_bp": 9.560058650935485,
+            "up_excursion_bp": 8.699989318847656,
+            "down_excursion_bp": -7.800054550170898
+          }
+        ],
+        "nonoverlapping_episodes": 14,
+        "resolved_episodes": 14,
+        "wins": 4,
+        "hit_fraction": 0.2857142857142857,
+        "episode_counts": {
+          "down": 6,
+          "no_hit": 6,
+          "up": 2
+        },
+        "enough_for_ranking": false,
+        "brier_improvement_vs_phase_trend_vol": -0.00011581733060638853,
+        "relative_brier_improvement": -0.0001743623529418676,
+        "date_count": 465,
+        "diagnostic_hac": {
+          "mean": -0.00016,
+          "se": 0.00044,
+          "t": -0.377,
+          "p": 0.7062,
+          "n": 465,
+          "lags": 3,
+          "lags_requested": 3
+        }
+      },
+      "SHALLOW_MPR": {
+        "n": 1853,
+        "brier": 0.6642335839835909,
+        "log_loss": 1.0991955519882672,
+        "active_forecast_origins": 3,
+        "episodes": [
+          {
+            "origin": "2025-07-11T14:20:00+00:00",
+            "direction": 1,
+            "outcome": "no_hit",
+            "barrier_bp": 8.081217449521684,
+            "up_excursion_bp": 7.6000213623046875,
+            "down_excursion_bp": -1.9000053405761719
+          }
+        ],
+        "nonoverlapping_episodes": 1,
+        "resolved_episodes": 1,
+        "wins": 0,
+        "hit_fraction": 0.0,
+        "episode_counts": {
+          "no_hit": 1
+        },
+        "enough_for_ranking": false,
+        "brier_improvement_vs_phase_trend_vol": 0.0,
+        "relative_brier_improvement": 0.0,
+        "date_count": 465,
+        "diagnostic_hac": {
+          "mean": 0.0,
+          "se": 0.0,
+          "t": 0.0,
+          "p": 1.0,
+          "n": 465,
+          "lags": 3,
+          "lags_requested": 3
+        }
+      }
+    },
+    "primary": "SHALLOW_MPR",
+    "primary_promoted": false,
+    "score_convention": "three-class sum Brier, range 0 to 2",
+    "scope": "seen_history_phase_reset_exploratory_not_validation",
+    "authority": false,
+    "status": "SEEN_HISTORY_EXPLORATORY_NO_PROMOTION"
+  },
+  "seen_history_exploratory": true,
+  "native_pine_parity": false,
+  "historical_availability_qualified": false,
+  "authority": false
+}

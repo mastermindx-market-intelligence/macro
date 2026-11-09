@@ -1,0 +1,15 @@
+{
+  "schema": "ric.rates_direction.preoutcome_freeze.v1",
+  "operation": "rates-direction-20260924-sol-001",
+  "frozen_at": "2026-09-24T08:12:49.396245+00:00",
+  "primary_target_outcomes_opened": false,
+  "known_motivating_case_excluded": "2026-09-23",
+  "sha256": {
+    "engine/rates_direction_research.py": "9e60d0463157556d6467c30c43b43d03c183f17fd2dd070bfa727746274de774",
+    "scripts/research/ric_rates_direction.py": "e3c4770f6537d23cdb6a0d545519fd8250efa45fd5b91057df25233ff5416335",
+    "tests/test_rates_direction_research.py": "e3cf49a7ba986568d8d4b27df8dddd4c9f48752b5c1cf6ff53a487cfed55ba2d",
+    "research/rates_direction/prereg_v1.json": "0637717c8c238d88e3c75d8de13071c88b9700160c8e1c048e5155ad7e0b58d0"
+  },
+  "trial_ledger_before_sha256": "beb20607f5757d3a7dd169f0e88e274e8fa3e2dd952dd9bfad76c02edde6d03d",
+  "authority": false
+}

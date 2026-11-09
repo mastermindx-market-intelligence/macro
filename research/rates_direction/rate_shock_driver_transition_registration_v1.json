@@ -1,0 +1,8 @@
+{
+  "family": "ric_rate_shock_driver_transition_v1",
+  "registered": 5,
+  "literal_n": 5,
+  "ledger_before_sha256": "c1167ac1e528c2a2022194b2aebf004a3f52120abedc8c9ae273d3515e5c1c60",
+  "ledger_after_sha256": "14daaffde73125a52ffeac70a90e661c3d7716ae7221c390faed8b207680643d",
+  "freeze_sha256": "e40e976e8d774adf34564f71fe3ff969f8eaff759ad9e7975d3340a24c53d3d9"
+}

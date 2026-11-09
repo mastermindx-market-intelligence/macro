@@ -1,0 +1,590 @@
+{
+  "forecast_origins": 123,
+  "scored_origins": 110,
+  "outcome_counts": {
+    "down": 24,
+    "no_hit": 40,
+    "up": 46,
+    "censored": 13
+  },
+  "models": {
+    "unconditional": {
+      "n": 110,
+      "brier": 0.69485863136864,
+      "log_loss": 1.1372050365918407,
+      "active_forecast_origins": 0,
+      "episodes": []
+    },
+    "trend_vol": {
+      "n": 110,
+      "brier": 0.6851725181693491,
+      "log_loss": 1.125701803896803,
+      "active_forecast_origins": 0,
+      "episodes": []
+    },
+    "M": {
+      "n": 110,
+      "brier": 0.6860031039664247,
+      "log_loss": 1.1234074586049556,
+      "active_forecast_origins": 30,
+      "episodes": [
+        {
+          "origin": "2026-08-12T14:20:00+00:00",
+          "direction": -1,
+          "outcome": "down",
+          "barrier_bp": 5.373685789515947,
+          "up_excursion_bp": 4.799985885620117,
+          "down_excursion_bp": -5.700016021728516
+        },
+        {
+          "origin": "2026-08-19T14:20:00+00:00",
+          "direction": -1,
+          "outcome": "up",
+          "barrier_bp": 7.788295073511819,
+          "up_excursion_bp": 8.40001106262207,
+          "down_excursion_bp": -0.6999969482421875
+        },
+        {
+          "origin": "2026-08-24T18:20:00+00:00",
+          "direction": -1,
+          "outcome": "down",
+          "barrier_bp": 6.808122180291438,
+          "up_excursion_bp": -2.4000167846679688,
+          "down_excursion_bp": -8.300018310546875
+        },
+        {
+          "origin": "2026-08-28T14:20:00+00:00",
+          "direction": 1,
+          "outcome": "up",
+          "barrier_bp": 5.673746968634506,
+          "up_excursion_bp": 8.599996566772461,
+          "down_excursion_bp": -1.399993896484375
+        },
+        {
+          "origin": "2026-09-03T14:20:00+00:00",
+          "direction": -1,
+          "outcome": "up",
+          "barrier_bp": 5.448794266450621,
+          "up_excursion_bp": 11.500024795532227,
+          "down_excursion_bp": -0.1999378204345703
+        },
+        {
+          "origin": "2026-09-14T16:20:00+00:00",
+          "direction": -1,
+          "outcome": "no_hit",
+          "barrier_bp": 7.964475448266242,
+          "up_excursion_bp": 6.099987030029297,
+          "down_excursion_bp": -1.5999794006347656
+        },
+        {
+          "origin": "2026-09-23T14:20:00+00:00",
+          "direction": 1,
+          "outcome": "censored",
+          "barrier_bp": null,
+          "up_excursion_bp": null,
+          "down_excursion_bp": null
+        }
+      ],
+      "nonoverlapping_episodes": 7,
+      "resolved_episodes": 6,
+      "wins": 3,
+      "hit_fraction": 0.5,
+      "episode_counts": {
+        "down": 2,
+        "up": 3,
+        "no_hit": 1,
+        "censored": 1
+      },
+      "enough_for_ranking": false,
+      "brier_improvement_vs_trend_vol": -0.0008305857970756094,
+      "relative_brier_improvement": -0.0012122287089020689,
+      "date_count": 28,
+      "diagnostic_hac": {
+        "mean": -0.00082,
+        "se": 0.01188,
+        "t": -0.069,
+        "p": 0.9452,
+        "n": 28,
+        "lags": 3,
+        "lags_requested": 3
+      }
+    },
+    "P": {
+      "n": 110,
+      "brier": 0.6860258697386912,
+      "log_loss": 1.127699350271641,
+      "active_forecast_origins": 36,
+      "episodes": [
+        {
+          "origin": "2026-08-11T16:20:00+00:00",
+          "direction": -1,
+          "outcome": "down",
+          "barrier_bp": 6.19089874299371,
+          "up_excursion_bp": 1.399993896484375,
+          "down_excursion_bp": -7.299995422363281
+        },
+        {
+          "origin": "2026-08-17T16:20:00+00:00",
+          "direction": -1,
+          "outcome": "down",
+          "barrier_bp": 6.543785910296159,
+          "up_excursion_bp": 1.8000125885009766,
+          "down_excursion_bp": -9.099960327148438
+        },
+        {
+          "origin": "2026-08-24T14:20:00+00:00",
+          "direction": -1,
+          "outcome": "no_hit",
+          "barrier_bp": 6.979175237102752,
+          "up_excursion_bp": 1.399993896484375,
+          "down_excursion_bp": -6.9000244140625
+        },
+        {
+          "origin": "2026-08-31T16:20:00+00:00",
+          "direction": -1,
+          "outcome": "no_hit",
+          "barrier_bp": 6.334099297290212,
+          "up_excursion_bp": 4.799985885620117,
+          "down_excursion_bp": -2.6000499725341797
+        },
+        {
+          "origin": "2026-09-09T18:20:00+00:00",
+          "direction": -1,
+          "outcome": "up",
+          "barrier_bp": 5.3162395847883515,
+          "up_excursion_bp": 17.500019073486328,
+          "down_excursion_bp": 4.200029373168945
+        },
+        {
+          "origin": "2026-09-15T19:00:00+00:00",
+          "direction": -1,
+          "outcome": "no_hit",
+          "barrier_bp": 8.491857579024982,
+          "up_excursion_bp": 4.10003662109375,
+          "down_excursion_bp": -2.79998779296875
+        },
+        {
+          "origin": "2026-09-21T16:20:00+00:00",
+          "direction": -1,
+          "outcome": "censored",
+          "barrier_bp": null,
+          "up_excursion_bp": null,
+          "down_excursion_bp": null
+        }
+      ],
+      "nonoverlapping_episodes": 7,
+      "resolved_episodes": 6,
+      "wins": 2,
+      "hit_fraction": 0.3333333333333333,
+      "episode_counts": {
+        "down": 2,
+        "no_hit": 3,
+        "up": 1,
+        "censored": 1
+      },
+      "enough_for_ranking": false,
+      "brier_improvement_vs_trend_vol": -0.0008533515693423275,
+      "relative_brier_improvement": -0.001245455044843773,
+      "date_count": 28,
+      "diagnostic_hac": {
+        "mean": 0.00061,
+        "se": 0.01263,
+        "t": 0.048,
+        "p": 0.9614,
+        "n": 28,
+        "lags": 3,
+        "lags_requested": 3
+      }
+    },
+    "R": {
+      "n": 110,
+      "brier": 0.6791060935137396,
+      "log_loss": 1.120113858659881,
+      "active_forecast_origins": 70,
+      "episodes": [
+        {
+          "origin": "2026-08-11T16:20:00+00:00",
+          "direction": -1,
+          "outcome": "down",
+          "barrier_bp": 6.19089874299371,
+          "up_excursion_bp": 1.399993896484375,
+          "down_excursion_bp": -7.299995422363281
+        },
+        {
+          "origin": "2026-08-17T19:00:00+00:00",
+          "direction": -1,
+          "outcome": "down",
+          "barrier_bp": 6.740932926305223,
+          "up_excursion_bp": 0.7999897003173828,
+          "down_excursion_bp": -7.899999618530273
+        },
+        {
+          "origin": "2026-08-24T14:20:00+00:00",
+          "direction": -1,
+          "outcome": "no_hit",
+          "barrier_bp": 6.979175237102752,
+          "up_excursion_bp": 1.399993896484375,
+          "down_excursion_bp": -6.9000244140625
+        },
+        {
+          "origin": "2026-08-27T18:20:00+00:00",
+          "direction": 1,
+          "outcome": "up",
+          "barrier_bp": 6.183225735387508,
+          "up_excursion_bp": 12.800025939941406,
+          "down_excursion_bp": -1.7999649047851562
+        },
+        {
+          "origin": "2026-09-02T14:20:00+00:00",
+          "direction": -1,
+          "outcome": "down",
+          "barrier_bp": 5.0,
+          "up_excursion_bp": 0.7999897003173828,
+          "down_excursion_bp": -7.200002670288086
+        },
+        {
+          "origin": "2026-09-09T19:00:00+00:00",
+          "direction": -1,
+          "outcome": "up",
+          "barrier_bp": 5.3162395847883515,
+          "up_excursion_bp": 9.999990463256836,
+          "down_excursion_bp": -0.9999752044677734
+        },
+        {
+          "origin": "2026-09-15T16:20:00+00:00",
+          "direction": 1,
+          "outcome": "no_hit",
+          "barrier_bp": 8.39815340329487,
+          "up_excursion_bp": 0.7999897003173828,
+          "down_excursion_bp": -6.500005722045898
+        },
+        {
+          "origin": "2026-09-21T14:20:00+00:00",
+          "direction": -1,
+          "outcome": "censored",
+          "barrier_bp": null,
+          "up_excursion_bp": null,
+          "down_excursion_bp": null
+        }
+      ],
+      "nonoverlapping_episodes": 8,
+      "resolved_episodes": 7,
+      "wins": 4,
+      "hit_fraction": 0.5714285714285714,
+      "episode_counts": {
+        "down": 3,
+        "no_hit": 2,
+        "up": 2,
+        "censored": 1
+      },
+      "enough_for_ranking": false,
+      "brier_improvement_vs_trend_vol": 0.006066424655609311,
+      "relative_brier_improvement": 0.008853864530086008,
+      "date_count": 28,
+      "diagnostic_hac": {
+        "mean": 0.00692,
+        "se": 0.01393,
+        "t": 0.496,
+        "p": 0.6196,
+        "n": 28,
+        "lags": 3,
+        "lags_requested": 3
+      }
+    },
+    "MP": {
+      "n": 110,
+      "brier": 0.6851725181693491,
+      "log_loss": 1.125701803896803,
+      "active_forecast_origins": 5,
+      "episodes": [
+        {
+          "origin": "2026-08-24T16:20:00+00:00",
+          "direction": -1,
+          "outcome": "down",
+          "barrier_bp": 6.821713644201437,
+          "up_excursion_bp": 0.6000041961669922,
+          "down_excursion_bp": -7.700014114379883
+        },
+        {
+          "origin": "2026-09-14T16:20:00+00:00",
+          "direction": -1,
+          "outcome": "no_hit",
+          "barrier_bp": 7.964475448266242,
+          "up_excursion_bp": 6.099987030029297,
+          "down_excursion_bp": -1.5999794006347656
+        }
+      ],
+      "nonoverlapping_episodes": 2,
+      "resolved_episodes": 2,
+      "wins": 1,
+      "hit_fraction": 0.5,
+      "episode_counts": {
+        "down": 1,
+        "no_hit": 1
+      },
+      "enough_for_ranking": false,
+      "brier_improvement_vs_trend_vol": 0.0,
+      "relative_brier_improvement": 0.0,
+      "date_count": 28,
+      "diagnostic_hac": {
+        "mean": 0.0,
+        "se": 0.0,
+        "t": 0.0,
+        "p": 1.0,
+        "n": 28,
+        "lags": 3,
+        "lags_requested": 3
+      }
+    },
+    "MR": {
+      "n": 110,
+      "brier": 0.685536883125935,
+      "log_loss": 1.1271571258545037,
+      "active_forecast_origins": 9,
+      "episodes": [
+        {
+          "origin": "2026-08-14T16:20:00+00:00",
+          "direction": 1,
+          "outcome": "no_hit",
+          "barrier_bp": 7.041755129754278,
+          "up_excursion_bp": 4.999971389770508,
+          "down_excursion_bp": -5.900001525878906
+        },
+        {
+          "origin": "2026-08-20T18:20:00+00:00",
+          "direction": 1,
+          "outcome": "no_hit",
+          "barrier_bp": 8.274027962979929,
+          "up_excursion_bp": 4.799985885620117,
+          "down_excursion_bp": -5.900001525878906
+        },
+        {
+          "origin": "2026-08-27T18:20:00+00:00",
+          "direction": 1,
+          "outcome": "up",
+          "barrier_bp": 6.183225735387508,
+          "up_excursion_bp": 12.800025939941406,
+          "down_excursion_bp": -1.7999649047851562
+        },
+        {
+          "origin": "2026-09-14T16:20:00+00:00",
+          "direction": -1,
+          "outcome": "no_hit",
+          "barrier_bp": 7.964475448266242,
+          "up_excursion_bp": 6.099987030029297,
+          "down_excursion_bp": -1.5999794006347656
+        }
+      ],
+      "nonoverlapping_episodes": 4,
+      "resolved_episodes": 4,
+      "wins": 1,
+      "hit_fraction": 0.25,
+      "episode_counts": {
+        "no_hit": 3,
+        "up": 1
+      },
+      "enough_for_ranking": false,
+      "brier_improvement_vs_trend_vol": -0.0003643649565859507,
+      "relative_brier_improvement": -0.0005317857137053084,
+      "date_count": 28,
+      "diagnostic_hac": {
+        "mean": -0.00036,
+        "se": 0.00033,
+        "t": -1.084,
+        "p": 0.2783,
+        "n": 28,
+        "lags": 3,
+        "lags_requested": 3
+      }
+    },
+    "PR": {
+      "n": 110,
+      "brier": 0.6734379693102646,
+      "log_loss": 1.1089965436571456,
+      "active_forecast_origins": 30,
+      "episodes": [
+        {
+          "origin": "2026-08-11T16:20:00+00:00",
+          "direction": -1,
+          "outcome": "down",
+          "barrier_bp": 6.19089874299371,
+          "up_excursion_bp": 1.399993896484375,
+          "down_excursion_bp": -7.299995422363281
+        },
+        {
+          "origin": "2026-08-18T14:20:00+00:00",
+          "direction": -1,
+          "outcome": "down",
+          "barrier_bp": 6.55300708928141,
+          "up_excursion_bp": 2.9999732971191406,
+          "down_excursion_bp": -7.100009918212891
+        },
+        {
+          "origin": "2026-08-24T14:20:00+00:00",
+          "direction": -1,
+          "outcome": "no_hit",
+          "barrier_bp": 6.979175237102752,
+          "up_excursion_bp": 1.399993896484375,
+          "down_excursion_bp": -6.9000244140625
+        },
+        {
+          "origin": "2026-08-31T19:00:00+00:00",
+          "direction": -1,
+          "outcome": "no_hit",
+          "barrier_bp": 6.350342987832586,
+          "up_excursion_bp": 5.200004577636719,
+          "down_excursion_bp": -2.79998779296875
+        },
+        {
+          "origin": "2026-09-09T19:00:00+00:00",
+          "direction": -1,
+          "outcome": "up",
+          "barrier_bp": 5.3162395847883515,
+          "up_excursion_bp": 9.999990463256836,
+          "down_excursion_bp": -0.9999752044677734
+        },
+        {
+          "origin": "2026-09-15T19:00:00+00:00",
+          "direction": -1,
+          "outcome": "no_hit",
+          "barrier_bp": 8.491857579024982,
+          "up_excursion_bp": 4.10003662109375,
+          "down_excursion_bp": -2.79998779296875
+        },
+        {
+          "origin": "2026-09-21T16:20:00+00:00",
+          "direction": -1,
+          "outcome": "censored",
+          "barrier_bp": null,
+          "up_excursion_bp": null,
+          "down_excursion_bp": null
+        }
+      ],
+      "nonoverlapping_episodes": 7,
+      "resolved_episodes": 6,
+      "wins": 2,
+      "hit_fraction": 0.3333333333333333,
+      "episode_counts": {
+        "down": 2,
+        "no_hit": 3,
+        "up": 1,
+        "censored": 1
+      },
+      "enough_for_ranking": false,
+      "brier_improvement_vs_trend_vol": 0.011734548859084355,
+      "relative_brier_improvement": 0.017126414950846016,
+      "date_count": 28,
+      "diagnostic_hac": {
+        "mean": 0.01399,
+        "se": 0.01023,
+        "t": 1.368,
+        "p": 0.1713,
+        "n": 28,
+        "lags": 3,
+        "lags_requested": 3
+      }
+    },
+    "MPR": {
+      "n": 110,
+      "brier": 0.6851725181693491,
+      "log_loss": 1.125701803896803,
+      "active_forecast_origins": 5,
+      "episodes": [
+        {
+          "origin": "2026-08-24T16:20:00+00:00",
+          "direction": -1,
+          "outcome": "down",
+          "barrier_bp": 6.821713644201437,
+          "up_excursion_bp": 0.6000041961669922,
+          "down_excursion_bp": -7.700014114379883
+        },
+        {
+          "origin": "2026-09-14T16:20:00+00:00",
+          "direction": -1,
+          "outcome": "no_hit",
+          "barrier_bp": 7.964475448266242,
+          "up_excursion_bp": 6.099987030029297,
+          "down_excursion_bp": -1.5999794006347656
+        }
+      ],
+      "nonoverlapping_episodes": 2,
+      "resolved_episodes": 2,
+      "wins": 1,
+      "hit_fraction": 0.5,
+      "episode_counts": {
+        "down": 1,
+        "no_hit": 1
+      },
+      "enough_for_ranking": false,
+      "brier_improvement_vs_trend_vol": 0.0,
+      "relative_brier_improvement": 0.0,
+      "date_count": 28,
+      "diagnostic_hac": {
+        "mean": 0.0,
+        "se": 0.0,
+        "t": 0.0,
+        "p": 1.0,
+        "n": 28,
+        "lags": 3,
+        "lags_requested": 3
+      }
+    }
+  },
+  "primary": "MPR",
+  "primary_promoted": false,
+  "score_convention": "three-class sum Brier, range 0 to 2",
+  "scope": "corrected_history_proxy_feasibility_not_pine_parity",
+  "equity_test_run": false,
+  "authority": false,
+  "status": "FEASIBILITY_ONLY_NO_PROMOTION",
+  "registration": {
+    "family": "ric_swing_proxy_v1",
+    "registered": 9,
+    "literal_n": 9,
+    "ledger_before_sha256": "a9fc70ac22fcbca53b1d496b4262631095a4322886b49291a216c3f03a2de179",
+    "ledger_after_sha256": "0c6b93d02cf357a4d5af30df414d324f99552f17cf65c428305c1114ca77a39e",
+    "freeze_sha256": "d091689c51cd2b59f0545c116329d41f8564eed990f84035829dafb2c6bd18d0"
+  },
+  "quality": {
+    "not_closed_hourly_rows": 7,
+    "not_closed_target_bars": 4,
+    "off_grid_rows": 1,
+    "missing_expected_hourly_rows": 0,
+    "invalid_ohlc_rows": 0,
+    "raw_rows": 450,
+    "closed_hourly_rows": 448,
+    "closed_target_bars": 256,
+    "valid_target_bars": 256,
+    "session_count": 65
+  },
+  "spec": {
+    "warmup_bars": 80,
+    "minimum_training_labels": 40,
+    "horizon_bars": 12,
+    "delay_bars": 1,
+    "recency_bars": 3,
+    "volatility_bars": 24,
+    "trend_bars": 5,
+    "barrier_floor_bp": 5.0,
+    "bp_per_source_unit": 100.0,
+    "shrinkage": 12.0,
+    "minimum_active_episodes": 50,
+    "primary": "MPR",
+    "capture_at": "2026-09-24T12:51:03Z",
+    "evidence_tier": "corrected_history_proxy_feasibility_not_pine_parity"
+  },
+  "prediction_sha256": "527abd41223aca3982effc53a5ce66e35cc2d8b7441ec99693ac262e5c821c8f",
+  "source_sha256": "687b93d52beeb141dbfc3ea3eff787b67da7b36daa8effedc19568cbe544d070",
+  "first_bar": "2026-06-24T14:20:00+00:00",
+  "last_bar": "2026-09-23T19:00:00+00:00",
+  "scheduled_stub_bars": 64,
+  "eligible_feature_origins": 176,
+  "all_feature_origin_labels": {
+    "down": 38,
+    "no_hit": 67,
+    "up": 58,
+    "censored": 13
+  },
+  "native_pine_parity": false,
+  "historical_availability_qualified": false
+}

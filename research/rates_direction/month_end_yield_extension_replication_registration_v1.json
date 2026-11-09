@@ -1,0 +1,11 @@
+{
+  "schema": "ric.month_end_yield_extension_replication.registration.v1",
+  "family": "d2_rates_calendar_flows",
+  "prior_literal_n": 13,
+  "registered": 8,
+  "literal_n": 21,
+  "freeze_sha256": "e99d0788148c875768dfa755f2db5bdd94c4fb8c3181b4f107a2814d45fc5b0a",
+  "ledger_before_sha256": "8288759f9755a793530ecdc9a341d38daa64b6052fdb6d62a255cb69dabba509",
+  "ledger_after_sha256": "4f8af59b95a94d5d763827621aaf66369b0f1bf0e1a0ebbade881ee09edbcbf5",
+  "authority": false
+}

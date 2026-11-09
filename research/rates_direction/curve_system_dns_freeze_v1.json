@@ -1,0 +1,72 @@
+{
+  "schema": "ric.curve_system_dns.freeze.v1",
+  "frozen_at": "2026-09-25T00:04:18.258662+00:00",
+  "outcomes_opened_for_this_construction": false,
+  "company_history_previously_examined": true,
+  "spec": {
+    "lambda_per_month": 0.0609,
+    "tenors_years": [
+      "1",
+      "2",
+      "3",
+      "5",
+      "7",
+      "10"
+    ],
+    "maturities_months": [
+      12.0,
+      24.0,
+      36.0,
+      60.0,
+      84.0,
+      120.0
+    ],
+    "horizons_observed_dates": [
+      5,
+      20,
+      60
+    ],
+    "fit_min": 1260,
+    "fit_max": 2520,
+    "calibration_min": 126,
+    "calibration_max": 252,
+    "refit_every": 20,
+    "max_gap_days": 4,
+    "flat_band_bp": 2.0,
+    "primary_period": [
+      "2021-01-01",
+      "2025-12-31"
+    ],
+    "context_period": [
+      "2010-01-01",
+      "2020-12-31"
+    ],
+    "primary_model": "dns_var",
+    "primary_horizon": 20,
+    "evidence_tier": "corrected_history_chronological_curve_system_research_only"
+  },
+  "source_hashes": {
+    "data/fred/DGS1.parquet": "6b5e423be804de3da0f7380301fedbb9ce4f89f2d57cb307306c2eaa50054549",
+    "data/fred/DGS2.parquet": "0cb9aa029d0d435b013b25421ba8c9365b61dcda07deaea386061396760c4eec",
+    "data/fred/DGS3.parquet": "cb889793f79d91902537b944a217716f4b3e838faa255226419e7079c86996d9",
+    "data/fred/DGS5.parquet": "e32bbcf503b1bfc96dd7e7a1cf0523895b7ab19d9e9eeccc8a9661650ec51ca3",
+    "data/fred/DGS7.parquet": "97f8d99591f210b5ec0bb14aec90b679e5d5d88e74bd9e3c7170bf2a6cef774b",
+    "data/fred/DGS10.parquet": "7369b3a15097c9ff06e765ca76476f34263ad2ae3759827e878fdea44f6bfbf9"
+  },
+  "source_coverage": {
+    "rows": 12574,
+    "start": "1976-06-01",
+    "end": "2026-09-22"
+  },
+  "files": {
+    "research/rates_direction/curve_system_dns.py": "8a0a9cab52e20ec9004603f2852bdebec18e74862f9f865e4ac3d87950ba2bc4",
+    "research/rates_direction/CURVE_SYSTEM_DNS_V1.md": "5c4adcb2c30ce096026de28e5f4b39b9797e55d58c6d6d5a534a494ac4771e31",
+    "tests/test_curve_system_dns.py": "a4689b4396dd0ad92a54ab1a187ba36c75e213da02cd89c305905d7d4ca699f5",
+    "engine/validation.py": "9680d00241fa58ccb504b679d1ee19d64b52b6f46b6bf87a5149969bc7ec4e3b"
+  },
+  "trial_ledger_before_sha256": "49f755010a6c593b5b3b8181a183b9a7aacc8e81617e681549ef6b2b89abac37",
+  "prior_family_trials": 0,
+  "new_configs": 12,
+  "primary": "h20:dns_var_vs_no_change",
+  "authority": false
+}

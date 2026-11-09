@@ -1,0 +1,34 @@
+{
+  "schema": "ric.cpi_catalyst_rate_shadow.freeze.v1",
+  "frozen_at": "2026-09-24T23:49:47.727759+00:00",
+  "eligible_outcomes_opened": false,
+  "freeze_date": "2026-09-24",
+  "spec": {
+    "freeze_date": "2026-09-24",
+    "gap_threshold_pp": 0.05,
+    "move_floor_bp": 2.0,
+    "minimum_events": 12,
+    "minimum_active": 8,
+    "promotion_review_events": 24,
+    "model": "coherent_ridge_v1",
+    "target_epoch": "alfred_same_release_vintage_proxy_v1",
+    "primary_horizon": "h0",
+    "secondary_horizons": [
+      "h1",
+      "h5"
+    ],
+    "baseline": "prior_5_observation_dgs10_direction",
+    "evidence_tier": "prospective_rule_existing_forward_inputs_research_only"
+  },
+  "files": {
+    "research/rates_direction/cpi_catalyst_rate_shadow.py": "b992c5542bcaa1a7f7640a2fd364841b10cb32bd175e1baeb1097adfebd6ccd0",
+    "research/rates_direction/CPI_CATALYST_RATE_SHADOW_V1.md": "125b52f9bd08ff5684ff5eeaa97d5b9e941fa34c8d063dd263f07f06b7c05166",
+    "tests/test_cpi_catalyst_rate_shadow.py": "9fe4d66c75162bcaa3fef2817d717a022a041ae51f1fd536a7461fecbb98873e"
+  },
+  "release_ledger_sha256_at_freeze": "91feb939d87d569f28c2d634a0c07d02257ccea9d3517ec6342b1bfee6866a1f",
+  "dgs10_sha256_at_freeze": "7369b3a15097c9ff06e765ca76476f34263ad2ae3759827e878fdea44f6bfbf9",
+  "trial_ledger_before_sha256": "14daaffde73125a52ffeac70a90e661c3d7716ae7221c390faed8b207680643d",
+  "prior_family_trials": 0,
+  "new_configs": 1,
+  "authority": false
+}

@@ -1,0 +1,74 @@
+{
+  "schema": "ric.month_end_yield_extension_replication.freeze.v1",
+  "frozen_at": "2026-09-25T01:33:15.401908+00:00",
+  "outcomes_opened_for_this_construction": false,
+  "known_prior_evidence": "d2_rates_calendar_flows V3 TLT/IEF and D4 LQD month-end price-return extension already scored before this translation study",
+  "spec": {
+    "family": "d2_rates_calendar_flows",
+    "prior_family_trials": 13,
+    "primary_start": "2007-01-01",
+    "primary_end": "2026-09-22",
+    "historical_context_end_exclusive": "2002-07-30",
+    "tenors": {
+      "DGS2": {
+        "path": "data/fred/DGS2.parquet",
+        "column": "us2y"
+      },
+      "DGS5": {
+        "path": "data/fred/DGS5.parquet",
+        "column": "us5y"
+      },
+      "DGS10": {
+        "path": "data/fred/DGS10.parquet",
+        "column": "us10y"
+      },
+      "DGS30": {
+        "path": "data/fred/DGS30.parquet",
+        "column": "us30y"
+      }
+    },
+    "metrics": [
+      "raw",
+      "excess"
+    ],
+    "minimum_monthly_changes": 5,
+    "expected_sign": "negative",
+    "hac_lag_rule": "max(2,min(4,floor(sqrt(n))))",
+    "bh_alpha": 0.1,
+    "split_half_required": true,
+    "headline": "DGS10:raw",
+    "authority": false
+  },
+  "files": {
+    "research/rates_direction/month_end_yield_extension_replication.py": "4506bba15317bd6818d98c17c87d07789cf04acec12891b79a911a24b3452871",
+    "research/rates_direction/MONTH_END_YIELD_EXTENSION_REPLICATION_V1.md": "0c72db8db56948ab10cd62fdaeecda7a7896d65701708beb866532bd72ac47a9",
+    "tests/test_month_end_yield_extension_replication.py": "2d25408d47af6e88c385a9162d843347e99f790833fb19e44622b517c7875b46",
+    "engine/validation.py": "9680d00241fa58ccb504b679d1ee19d64b52b6f46b6bf87a5149969bc7ec4e3b"
+  },
+  "data": {
+    "DGS2": {
+      "path": "data/fred/DGS2.parquet",
+      "column": "us2y",
+      "sha256": "0cb9aa029d0d435b013b25421ba8c9365b61dcda07deaea386061396760c4eec"
+    },
+    "DGS5": {
+      "path": "data/fred/DGS5.parquet",
+      "column": "us5y",
+      "sha256": "e32bbcf503b1bfc96dd7e7a1cf0523895b7ab19d9e9eeccc8a9661650ec51ca3"
+    },
+    "DGS10": {
+      "path": "data/fred/DGS10.parquet",
+      "column": "us10y",
+      "sha256": "7369b3a15097c9ff06e765ca76476f34263ad2ae3759827e878fdea44f6bfbf9"
+    },
+    "DGS30": {
+      "path": "data/fred/DGS30.parquet",
+      "column": "us30y",
+      "sha256": "8370bbd6e35a5fe630121127b224cd0bc9b5a52fe238c3cbbc4d932dd479a7a9"
+    }
+  },
+  "trial_ledger_before_sha256": "8288759f9755a793530ecdc9a341d38daa64b6052fdb6d62a255cb69dabba509",
+  "prior_family_trials": 13,
+  "new_configs": 8,
+  "authority": false
+}

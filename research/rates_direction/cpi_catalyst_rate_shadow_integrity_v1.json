@@ -1,0 +1,16 @@
+{
+  "schema": "ric.cpi_catalyst_rate_shadow.integrity.v1",
+  "same_author_verification": true,
+  "independent_review": false,
+  "freeze_commit": "fed5da304400c6775a1c50734a35ef806b64e034",
+  "frozen_files_verified": true,
+  "trial_ledger_prefix_preserved": true,
+  "family_literal_n": 1,
+  "pre_freeze_joined_events": 2,
+  "prospective_events": 0,
+  "matured_primary": 0,
+  "descriptive_floor_met": false,
+  "promotion_review_sample_met": false,
+  "authority": false,
+  "note": "No post-freeze eligible CPI event exists at this checkpoint; pre-freeze rows are excluded from all metrics."
+}

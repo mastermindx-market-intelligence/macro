@@ -1,0 +1,615 @@
+{
+  "schema": "ric.curve_system_dns.result.v1",
+  "spec": {
+    "lambda_per_month": 0.0609,
+    "tenors_years": [
+      "1",
+      "2",
+      "3",
+      "5",
+      "7",
+      "10"
+    ],
+    "maturities_months": [
+      12.0,
+      24.0,
+      36.0,
+      60.0,
+      84.0,
+      120.0
+    ],
+    "horizons_observed_dates": [
+      5,
+      20,
+      60
+    ],
+    "fit_min": 1260,
+    "fit_max": 2520,
+    "calibration_min": 126,
+    "calibration_max": 252,
+    "refit_every": 20,
+    "max_gap_days": 4,
+    "flat_band_bp": 2.0,
+    "primary_period": [
+      "2021-01-01",
+      "2025-12-31"
+    ],
+    "context_period": [
+      "2010-01-01",
+      "2020-12-31"
+    ],
+    "primary_model": "dns_var",
+    "primary_horizon": 20,
+    "evidence_tier": "corrected_history_chronological_curve_system_research_only"
+  },
+  "source_hashes": {
+    "data/fred/DGS1.parquet": "6b5e423be804de3da0f7380301fedbb9ce4f89f2d57cb307306c2eaa50054549",
+    "data/fred/DGS2.parquet": "0cb9aa029d0d435b013b25421ba8c9365b61dcda07deaea386061396760c4eec",
+    "data/fred/DGS3.parquet": "cb889793f79d91902537b944a217716f4b3e838faa255226419e7079c86996d9",
+    "data/fred/DGS5.parquet": "e32bbcf503b1bfc96dd7e7a1cf0523895b7ab19d9e9eeccc8a9661650ec51ca3",
+    "data/fred/DGS7.parquet": "97f8d99591f210b5ec0bb14aec90b679e5d5d88e74bd9e3c7170bf2a6cef774b",
+    "data/fred/DGS10.parquet": "7369b3a15097c9ff06e765ca76476f34263ad2ae3759827e878fdea44f6bfbf9"
+  },
+  "registration": {
+    "family": "ric_curve_system_dns_v1",
+    "registered": 12,
+    "literal_n": 12,
+    "trial_ledger_before_sha256": "49f755010a6c593b5b3b8181a183b9a7aacc8e81617e681549ef6b2b89abac37",
+    "trial_ledger_after_sha256": "6b9ea3981b7fa17f66ec6c5c2342153bb2afad60ec9b9ca91c7ad7bc5c75baac",
+    "freeze_sha256": "d5cc51df97335fa4fa6993d7574925533da4e16186faae8f389137ec454eb8c1"
+  },
+  "factor_reconstruction_rmse_bp": {
+    "h5": 3.671614806064539,
+    "h20": 3.671614806064539,
+    "h60": 3.671614806064539
+  },
+  "coverage": {
+    "h5": {
+      "source_rows": 12574,
+      "qualified_targets": 12559,
+      "forecast_origins": 11042,
+      "start": "1976-06-01",
+      "end": "2026-09-22"
+    },
+    "h20": {
+      "source_rows": 12574,
+      "qualified_targets": 12514,
+      "forecast_origins": 10982,
+      "start": "1976-06-01",
+      "end": "2026-09-22"
+    },
+    "h60": {
+      "source_rows": 12574,
+      "qualified_targets": 12394,
+      "forecast_origins": 10842,
+      "start": "1976-06-01",
+      "end": "2026-09-22"
+    }
+  },
+  "primary": {
+    "period": [
+      "2021-01-01",
+      "2025-12-31"
+    ],
+    "models": {
+      "h5:no_change": {
+        "n": 1244,
+        "nonoverlapping_windows": 249,
+        "mse_bp2": 176.5313504823151,
+        "mae_bp": 10.312700964630226,
+        "direction_brier": 0.6015719158226306,
+        "direction_log_loss": 0.9795794144273258,
+        "direction_accuracy": 0.12057877813504823,
+        "span": [
+          "2021-01-04",
+          "2025-12-23"
+        ]
+      },
+      "h5:direct_ar10y": {
+        "n": 1244,
+        "nonoverlapping_windows": 249,
+        "mse_bp2": 179.08005382067716,
+        "mae_bp": 10.415517632704454,
+        "direction_brier": 0.6033694188853904,
+        "direction_log_loss": 0.9836037849944014,
+        "direction_accuracy": 0.18810289389067525,
+        "span": [
+          "2021-01-04",
+          "2025-12-23"
+        ],
+        "relative_mse_reduction_vs_no_change": -0.014437681077035622,
+        "paired_mse_hac": {
+          "mean": -2.5487,
+          "se": 2.52699,
+          "t": -1.009,
+          "p": 0.3132,
+          "n": 1244,
+          "lags": 10,
+          "lags_requested": 10
+        }
+      },
+      "h5:dns_diag": {
+        "n": 1244,
+        "nonoverlapping_windows": 249,
+        "mse_bp2": 188.7228055994932,
+        "mae_bp": 10.764397735014883,
+        "direction_brier": 0.6265664084182315,
+        "direction_log_loss": 1.0167915600126174,
+        "direction_accuracy": 0.30385852090032156,
+        "span": [
+          "2021-01-04",
+          "2025-12-23"
+        ],
+        "relative_mse_reduction_vs_no_change": -0.06906113324272907,
+        "paired_mse_hac": {
+          "mean": -12.19146,
+          "se": 4.31347,
+          "t": -2.826,
+          "p": 0.0047,
+          "n": 1244,
+          "lags": 10,
+          "lags_requested": 10
+        }
+      },
+      "h5:dns_var": {
+        "n": 1244,
+        "nonoverlapping_windows": 249,
+        "mse_bp2": 194.30988278403686,
+        "mae_bp": 10.96126612571747,
+        "direction_brier": 0.629219110631454,
+        "direction_log_loss": 1.0192288550455948,
+        "direction_accuracy": 0.2934083601286174,
+        "span": [
+          "2021-01-04",
+          "2025-12-23"
+        ],
+        "relative_mse_reduction_vs_no_change": -0.10071033985265299,
+        "paired_mse_hac": {
+          "mean": -17.77853,
+          "se": 5.07441,
+          "t": -3.504,
+          "p": 0.0005,
+          "n": 1244,
+          "lags": 10,
+          "lags_requested": 10
+        }
+      },
+      "h20:no_change": {
+        "n": 1229,
+        "nonoverlapping_windows": 62,
+        "mse_bp2": 740.1529698942229,
+        "mae_bp": 21.462978030919448,
+        "direction_brier": 0.5842423127613496,
+        "direction_log_loss": 0.9104096909444631,
+        "direction_accuracy": 0.05532953620829943,
+        "span": [
+          "2021-01-04",
+          "2025-12-02"
+        ]
+      },
+      "h20:direct_ar10y": {
+        "n": 1229,
+        "nonoverlapping_windows": 62,
+        "mse_bp2": 774.2343034906315,
+        "mae_bp": 21.73696998164709,
+        "direction_brier": 0.5711638354028572,
+        "direction_log_loss": 0.8964253501998624,
+        "direction_accuracy": 0.34662327095199347,
+        "span": [
+          "2021-01-04",
+          "2025-12-02"
+        ],
+        "relative_mse_reduction_vs_no_change": -0.04604633769324633,
+        "paired_mse_hac": {
+          "mean": -34.08133,
+          "se": 42.74131,
+          "t": -0.797,
+          "p": 0.4252,
+          "n": 1229,
+          "lags": 40,
+          "lags_requested": 40
+        }
+      },
+      "h20:dns_diag": {
+        "n": 1229,
+        "nonoverlapping_windows": 62,
+        "mse_bp2": 798.870467133391,
+        "mae_bp": 22.045733268387078,
+        "direction_brier": 0.5795932152276665,
+        "direction_log_loss": 0.9065391289031985,
+        "direction_accuracy": 0.4174125305126119,
+        "span": [
+          "2021-01-04",
+          "2025-12-02"
+        ],
+        "relative_mse_reduction_vs_no_change": -0.07933157013145457,
+        "paired_mse_hac": {
+          "mean": -58.7175,
+          "se": 44.63937,
+          "t": -1.315,
+          "p": 0.1884,
+          "n": 1229,
+          "lags": 40,
+          "lags_requested": 40
+        }
+      },
+      "h20:dns_var": {
+        "n": 1229,
+        "nonoverlapping_windows": 62,
+        "mse_bp2": 881.0139291841166,
+        "mae_bp": 23.310617883401974,
+        "direction_brier": 0.5904416433686862,
+        "direction_log_loss": 0.9231446456602308,
+        "direction_accuracy": 0.4247355573637103,
+        "span": [
+          "2021-01-04",
+          "2025-12-02"
+        ],
+        "relative_mse_reduction_vs_no_change": -0.19031330686955766,
+        "paired_mse_hac": {
+          "mean": -140.86096,
+          "se": 79.4741,
+          "t": -1.772,
+          "p": 0.0763,
+          "n": 1229,
+          "lags": 40,
+          "lags_requested": 40
+        }
+      },
+      "h60:no_change": {
+        "n": 1189,
+        "nonoverlapping_windows": 20,
+        "mse_bp2": 2329.999158957107,
+        "mae_bp": 38.29857022708158,
+        "direction_brier": 0.5394566946981962,
+        "direction_log_loss": 0.8506436584913938,
+        "direction_accuracy": 0.02943650126156434,
+        "span": [
+          "2021-01-04",
+          "2025-10-02"
+        ]
+      },
+      "h60:direct_ar10y": {
+        "n": 1189,
+        "nonoverlapping_windows": 20,
+        "mse_bp2": 2883.131721998713,
+        "mae_bp": 41.402214923212846,
+        "direction_brier": 0.5051476546026645,
+        "direction_log_loss": 0.7899253771049255,
+        "direction_accuracy": 0.46846089150546677,
+        "span": [
+          "2021-01-04",
+          "2025-10-02"
+        ],
+        "relative_mse_reduction_vs_no_change": -0.23739603549435814,
+        "paired_mse_hac": {
+          "mean": -553.13256,
+          "se": 315.94081,
+          "t": -1.751,
+          "p": 0.08,
+          "n": 1189,
+          "lags": 120,
+          "lags_requested": 120
+        }
+      },
+      "h60:dns_diag": {
+        "n": 1189,
+        "nonoverlapping_windows": 20,
+        "mse_bp2": 2751.072016565241,
+        "mae_bp": 40.93789129228113,
+        "direction_brier": 0.4903590616147182,
+        "direction_log_loss": 0.7687525271313324,
+        "direction_accuracy": 0.4760302775441548,
+        "span": [
+          "2021-01-04",
+          "2025-10-02"
+        ],
+        "relative_mse_reduction_vs_no_change": -0.18071802987113697,
+        "paired_mse_hac": {
+          "mean": -421.07286,
+          "se": 251.87302,
+          "t": -1.672,
+          "p": 0.0946,
+          "n": 1189,
+          "lags": 120,
+          "lags_requested": 120
+        }
+      },
+      "h60:dns_var": {
+        "n": 1189,
+        "nonoverlapping_windows": 20,
+        "mse_bp2": 4051.2691881836818,
+        "mae_bp": 48.89313411159006,
+        "direction_brier": 0.5269309565545245,
+        "direction_log_loss": 0.8096926870728988,
+        "direction_accuracy": 0.46509671993271656,
+        "span": [
+          "2021-01-04",
+          "2025-10-02"
+        ],
+        "relative_mse_reduction_vs_no_change": -0.7387427684725021,
+        "paired_mse_hac": {
+          "mean": -1721.27003,
+          "se": 700.61202,
+          "t": -2.457,
+          "p": 0.014,
+          "n": 1189,
+          "lags": 120,
+          "lags_requested": 120
+        }
+      }
+    },
+    "primary_model": "dns_var",
+    "primary_horizon": 20,
+    "authority": false,
+    "promotion": "withheld",
+    "inference_limit": "HAC is diagnostic; retrospective corrected-history result is not prospective validation.",
+    "primary_relative_mse_reduction": -0.19031330686955766,
+    "primary_passed_point_estimate": false
+  },
+  "pre_primary_context": {
+    "period": [
+      "2010-01-01",
+      "2020-12-31"
+    ],
+    "models": {
+      "h5:no_change": {
+        "n": 2747,
+        "nonoverlapping_windows": 550,
+        "mse_bp2": 114.54423006916636,
+        "mae_bp": 8.1605387695668,
+        "direction_brier": 0.610409611155968,
+        "direction_log_loss": 0.9962978364921707,
+        "direction_accuracy": 0.13214415726246814,
+        "span": [
+          "2010-01-04",
+          "2020-12-23"
+        ]
+      },
+      "h5:direct_ar10y": {
+        "n": 2747,
+        "nonoverlapping_windows": 550,
+        "mse_bp2": 119.01134016184753,
+        "mae_bp": 8.390118425594066,
+        "direction_brier": 0.6095970313005821,
+        "direction_log_loss": 0.9968210314340816,
+        "direction_accuracy": 0.20094648707681106,
+        "span": [
+          "2010-01-04",
+          "2020-12-23"
+        ],
+        "relative_mse_reduction_vs_no_change": -0.03899899706850152,
+        "paired_mse_hac": {
+          "mean": -4.46711,
+          "se": 1.71778,
+          "t": -2.601,
+          "p": 0.0093,
+          "n": 2747,
+          "lags": 10,
+          "lags_requested": 10
+        }
+      },
+      "h5:dns_diag": {
+        "n": 2747,
+        "nonoverlapping_windows": 550,
+        "mse_bp2": 124.60022167195572,
+        "mae_bp": 8.551375531409569,
+        "direction_brier": 0.6268998104534574,
+        "direction_log_loss": 1.021460616222634,
+        "direction_accuracy": 0.25955587914088096,
+        "span": [
+          "2010-01-04",
+          "2020-12-23"
+        ],
+        "relative_mse_reduction_vs_no_change": -0.08779134135972773,
+        "paired_mse_hac": {
+          "mean": -10.05599,
+          "se": 2.61508,
+          "t": -3.845,
+          "p": 0.0001,
+          "n": 2747,
+          "lags": 10,
+          "lags_requested": 10
+        }
+      },
+      "h5:dns_var": {
+        "n": 2747,
+        "nonoverlapping_windows": 550,
+        "mse_bp2": 130.4118787594751,
+        "mae_bp": 8.726160007872656,
+        "direction_brier": 0.6297049705197253,
+        "direction_log_loss": 1.0248746682471184,
+        "direction_accuracy": 0.3345467783036039,
+        "span": [
+          "2010-01-04",
+          "2020-12-23"
+        ],
+        "relative_mse_reduction_vs_no_change": -0.13852857259354942,
+        "paired_mse_hac": {
+          "mean": -15.86765,
+          "se": 4.12831,
+          "t": -3.844,
+          "p": 0.0001,
+          "n": 2747,
+          "lags": 10,
+          "lags_requested": 10
+        }
+      },
+      "h20:no_change": {
+        "n": 2732,
+        "nonoverlapping_windows": 137,
+        "mse_bp2": 442.92825768667643,
+        "mae_bp": 15.965592972181552,
+        "direction_brier": 0.5907536632773857,
+        "direction_log_loss": 0.9308916212549941,
+        "direction_accuracy": 0.0691800878477306,
+        "span": [
+          "2010-01-04",
+          "2020-12-02"
+        ]
+      },
+      "h20:direct_ar10y": {
+        "n": 2732,
+        "nonoverlapping_windows": 137,
+        "mse_bp2": 520.3217590646341,
+        "mae_bp": 17.25418513407873,
+        "direction_brier": 0.579237797378303,
+        "direction_log_loss": 0.9207963285118032,
+        "direction_accuracy": 0.3609077598828697,
+        "span": [
+          "2010-01-04",
+          "2020-12-02"
+        ],
+        "relative_mse_reduction_vs_no_change": -0.1747314605353201,
+        "paired_mse_hac": {
+          "mean": -77.3935,
+          "se": 31.52095,
+          "t": -2.455,
+          "p": 0.0141,
+          "n": 2732,
+          "lags": 40,
+          "lags_requested": 40
+        }
+      },
+      "h20:dns_diag": {
+        "n": 2732,
+        "nonoverlapping_windows": 137,
+        "mse_bp2": 586.911798163322,
+        "mae_bp": 18.562052615763246,
+        "direction_brier": 0.5859877859793762,
+        "direction_log_loss": 0.9268636603953158,
+        "direction_accuracy": 0.4084919472913616,
+        "span": [
+          "2010-01-04",
+          "2020-12-02"
+        ],
+        "relative_mse_reduction_vs_no_change": -0.3250719229986414,
+        "paired_mse_hac": {
+          "mean": -143.98354,
+          "se": 42.79877,
+          "t": -3.364,
+          "p": 0.0008,
+          "n": 2732,
+          "lags": 40,
+          "lags_requested": 40
+        }
+      },
+      "h20:dns_var": {
+        "n": 2732,
+        "nonoverlapping_windows": 137,
+        "mse_bp2": 598.3545670762427,
+        "mae_bp": 18.99551633906114,
+        "direction_brier": 0.6094886019173839,
+        "direction_log_loss": 0.9597973155848774,
+        "direction_accuracy": 0.4381405563689605,
+        "span": [
+          "2010-01-04",
+          "2020-12-02"
+        ],
+        "relative_mse_reduction_vs_no_change": -0.35090628491694364,
+        "paired_mse_hac": {
+          "mean": -155.42631,
+          "se": 41.55498,
+          "t": -3.74,
+          "p": 0.0002,
+          "n": 2732,
+          "lags": 40,
+          "lags_requested": 40
+        }
+      },
+      "h60:no_change": {
+        "n": 2692,
+        "nonoverlapping_windows": 45,
+        "mse_bp2": 1553.4803120356612,
+        "mae_bp": 29.688335809806834,
+        "direction_brier": 0.6449795112521016,
+        "direction_log_loss": 1.000868842220436,
+        "direction_accuracy": 0.04420505200594354,
+        "span": [
+          "2010-01-04",
+          "2020-10-02"
+        ]
+      },
+      "h60:direct_ar10y": {
+        "n": 2692,
+        "nonoverlapping_windows": 45,
+        "mse_bp2": 2133.108081688705,
+        "mae_bp": 36.30796271739557,
+        "direction_brier": 0.6056694276347021,
+        "direction_log_loss": 0.9354169149680001,
+        "direction_accuracy": 0.3885586924219911,
+        "span": [
+          "2010-01-04",
+          "2020-10-02"
+        ],
+        "relative_mse_reduction_vs_no_change": -0.3731156199163586,
+        "paired_mse_hac": {
+          "mean": -579.62777,
+          "se": 276.15378,
+          "t": -2.099,
+          "p": 0.0358,
+          "n": 2692,
+          "lags": 120,
+          "lags_requested": 120
+        }
+      },
+      "h60:dns_diag": {
+        "n": 2692,
+        "nonoverlapping_windows": 45,
+        "mse_bp2": 2836.0279426512398,
+        "mae_bp": 42.861302898037046,
+        "direction_brier": 0.6000390637273468,
+        "direction_log_loss": 0.921233559476511,
+        "direction_accuracy": 0.40973254086181277,
+        "span": [
+          "2010-01-04",
+          "2020-10-02"
+        ],
+        "relative_mse_reduction_vs_no_change": -0.825596321162863,
+        "paired_mse_hac": {
+          "mean": -1282.54763,
+          "se": 495.02358,
+          "t": -2.591,
+          "p": 0.0096,
+          "n": 2692,
+          "lags": 120,
+          "lags_requested": 120
+        }
+      },
+      "h60:dns_var": {
+        "n": 2692,
+        "nonoverlapping_windows": 45,
+        "mse_bp2": 2672.153338332702,
+        "mae_bp": 42.61642575175027,
+        "direction_brier": 0.6617595587021338,
+        "direction_log_loss": 1.0517577561886298,
+        "direction_accuracy": 0.4921991084695394,
+        "span": [
+          "2010-01-04",
+          "2020-10-02"
+        ],
+        "relative_mse_reduction_vs_no_change": -0.72010763035107,
+        "paired_mse_hac": {
+          "mean": -1118.67303,
+          "se": 408.46655,
+          "t": -2.739,
+          "p": 0.0062,
+          "n": 2692,
+          "lags": 120,
+          "lags_requested": 120
+        }
+      }
+    },
+    "primary_model": "dns_var",
+    "primary_horizon": 20,
+    "authority": false,
+    "promotion": "withheld",
+    "inference_limit": "HAC is diagnostic; retrospective corrected-history result is not prospective validation.",
+    "primary_relative_mse_reduction": -0.35090628491694364,
+    "primary_passed_point_estimate": false
+  },
+  "predictions_sha256": "29fd579355ff8d9b3424ecc5ef3e65822780ee7a5376b914483917ef65666594",
+  "historical_availability_qualified": false,
+  "prospective_validation": false,
+  "authority": false
+}

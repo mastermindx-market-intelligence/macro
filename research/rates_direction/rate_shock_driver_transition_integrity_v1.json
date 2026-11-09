@@ -1,0 +1,43 @@
+{
+  "schema": "ric.rate_shock_driver_transition.integrity.v1",
+  "same_author_verification": true,
+  "independent_review": false,
+  "freeze_commit": "cc3b56c1e5c30d1a323f114d460a20315003c599",
+  "freeze_sha256": "e40e976e8d774adf34564f71fe3ff969f8eaff759ad9e7975d3340a24c53d3d9",
+  "events_sha256": "e438f628b9013467af1129731fe11980982dca091ee48b3174da2da208c324c2",
+  "predictions_sha256": "6ba88d1e39c5bd281ceb24d59f8fa57368a0a4c13c7a6213f2586bbcc669052b",
+  "summary_sha256": "e1eab40ca21d956bd2e39ca28f583c1c9bd50a69234c7684e6f25df9acc24b3a",
+  "registration_sha256": "44b95cccccbf8f3c4cdf90c2b07b39fb7937ab8cadfc6718b53fe6cb2460e1d5",
+  "events": 89,
+  "forecast_rows": 59,
+  "unique_forecast_origins": 59,
+  "probabilities_normalized_finite": true,
+  "purged_last_training_target_end_before_origin": true,
+  "brier_recomputed_exactly": true,
+  "ledger_prefix_preserved": true,
+  "family_suffix_rows": 5,
+  "partition_brier": {
+    "development_2017_2021": {
+      "unconditional": 0.6785684781123599,
+      "impulse_direction": 0.7561579411517968,
+      "decomposition": 0.636224587744627,
+      "decomp_term": 0.5919943884134733,
+      "crossasset": 0.5919943884134733,
+      "full": 0.5919943884134733
+    },
+    "seen_primary_2022_2025": {
+      "unconditional": 0.6661189630674195,
+      "impulse_direction": 0.6651012437622512,
+      "decomposition": 0.6722077489061065,
+      "decomp_term": 0.6821224544611575,
+      "crossasset": 0.6919558410286384,
+      "full": 0.7003806610585154
+    }
+  },
+  "primary_floor_met": true,
+  "authority": false,
+  "notes": [
+    "Retrospective seen-history market-proxy study; not prospective validation.",
+    "Market-source corrections are not versioned; policy futures excluded because rolling-contract repricing is not yet qualified."
+  ]
+}
