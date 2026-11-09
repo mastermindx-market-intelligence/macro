@@ -1,6 +1,6 @@
 {
   "schema": "neuralweb.daily_brief.v1",
-  "produced_at": "2026-11-08T10:22:56.572940+00:00",
+  "produced_at": "2026-11-08T23:05:19.121456+00:00",
   "as_of": "2026-11-06",
   "status": "degraded",
   "phase": "final",
@@ -11,50 +11,7 @@
     "context_stale": false,
     "summary": "cortex degraded — model_unavailable"
   },
-  "what_changed": [
-    {
-      "kind": "lobe_row_count_changed",
-      "id": "spine-index",
-      "summary": "lobe spine-index row count changed: 532886 → 532913 (0%)",
-      "severity": "info",
-      "evidence_path": "data/neuralweb/health.json"
-    },
-    {
-      "kind": "lobe_row_count_changed",
-      "id": "ops-push-basket-freeze",
-      "summary": "lobe ops-push-basket-freeze row count changed: 69 → 70 (1%)",
-      "severity": "info",
-      "evidence_path": "data/neuralweb/health.json"
-    },
-    {
-      "kind": "lobe_row_count_changed",
-      "id": "governance-ledger",
-      "summary": "lobe governance-ledger row count changed: 391 → 395 (1%)",
-      "severity": "info",
-      "evidence_path": "data/neuralweb/health.json"
-    },
-    {
-      "kind": "lobe_row_count_changed",
-      "id": "mechanism-pathways-history",
-      "summary": "lobe mechanism-pathways-history row count changed: 90 → 91 (1%)",
-      "severity": "info",
-      "evidence_path": "data/neuralweb/health.json"
-    },
-    {
-      "kind": "lobe_row_count_changed",
-      "id": "theme-thesis-ledger",
-      "summary": "lobe theme-thesis-ledger row count changed: 600 → 607 (1%)",
-      "severity": "info",
-      "evidence_path": "data/neuralweb/health.json"
-    },
-    {
-      "kind": "lobe_row_count_changed",
-      "id": "covariance-spine-history",
-      "summary": "lobe covariance-spine-history row count changed: 83 → 84 (1%)",
-      "severity": "info",
-      "evidence_path": "data/neuralweb/health.json"
-    }
-  ],
+  "what_changed": [],
   "what_contradicted": [
     {
       "id": "",
@@ -637,7 +594,7 @@
   },
   "china_market_state": {
     "available": true,
-    "as_of": "2026-11-07",
+    "as_of": "2026-11-08",
     "phase": "REPAIR",
     "phase_confidence": 0.667,
     "who_controls": "mixed",
