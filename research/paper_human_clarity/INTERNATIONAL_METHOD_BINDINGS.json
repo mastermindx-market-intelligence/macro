@@ -1,6 +1,6 @@
 {
   "schema": "paper-international-method-consolidation/v1",
-  "status": "PAPER_DESIGN_BINDINGS_APPLIED_RUNTIME_UNVERIFIED",
+  "status": "PAPER_CALCULATION_AND_RESULT_BINDINGS_VERIFIED_RUNTIME_UNVERIFIED",
   "sourcePin": "ad00e5676aa94d22918b3b92d8026bd45328536c",
   "sourcePacket": "paper_remaining_international_delta.json",
   "scope": "Original 55-record / 88-label audit retained, with applied design destinations and unresolved runtime/source boundaries reconciled by the principal.",
@@ -1035,7 +1035,7 @@
       "parent": "P6-0",
       "currentStatus": "observed-current",
       "navigationVerified": false,
-      "kind": "unresolved_tool_destination",
+      "kind": "existing_design_destination",
       "topic": "risk-radar-track-record",
       "existingReference": {
         "file": "01M3P1TW5Y3XWQC37ADDS8K5AG",
@@ -1043,9 +1043,50 @@
         "board": "3NZ-0",
         "root": "3OT-0"
       },
-      "destination": null,
-      "qualification": "Only the research-entry card exists in the inspected current file; no outcome/track-record state is present. Its sample-size and false-alarm method remains in the selected-tool help; the product route remains unproven.",
-      "proposedDestinationKey": null
+      "destination": {
+        "file": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+        "page": "p-O-0",
+        "board": "SLS-0",
+        "root": "SLS-0",
+        "tool": "risk_track_record",
+        "title": "risk",
+        "availability": "native-design-only",
+        "locale": "EN",
+        "theme": "dark",
+        "variants": [
+          {
+            "locale": "en",
+            "theme": "light",
+            "frame": "S7N-0",
+            "backAction": "S7O-0"
+          },
+          {
+            "locale": "zh",
+            "theme": "dark",
+            "frame": "S7Y-0",
+            "backAction": "S7Z-0"
+          },
+          {
+            "locale": "en",
+            "theme": "dark",
+            "frame": "SLS-0",
+            "backAction": "SLT-0"
+          },
+          {
+            "locale": "zh",
+            "theme": "light",
+            "frame": "SM3-0",
+            "backAction": "SM4-0"
+          }
+        ]
+      },
+      "qualification": "Native result and tool-specific method destinations now exist. Preserve the selected source/state/locale/theme and return to History & scenarios. The incumbent runtime mount, adapter, source qualification and actual navigation remain unverified; do not substitute generic help or claim availability from Paper.",
+      "proposedDestinationKey": null,
+      "originalKind": "unresolved_tool_destination",
+      "originalQualification": "Only the research-entry card exists in the inspected current file; no outcome/track-record state is present. Its sample-size and false-alarm method remains in the selected-tool help; the product route remains unproven.",
+      "originalDestination": null,
+      "bindingStatus": "PAPER_RESULT_RENDERED_RUNTIME_UNVERIFIED",
+      "currentBindingRegister": "WORKFLOW_ENHANCEMENT_REGISTER.json#internationalResults"
     },
     {
       "mappingRecord": 21,
@@ -1102,7 +1143,7 @@
       "parent": "2Z1-0",
       "currentStatus": "observed-current",
       "navigationVerified": false,
-      "kind": "unresolved_tool_destination",
+      "kind": "existing_design_destination",
       "topic": "risk-radar-track-record",
       "existingReference": {
         "file": "01M3P1TW5Y3XWQC37ADDS8K5AG",
@@ -1110,9 +1151,50 @@
         "board": "3NZ-0",
         "root": "3OT-0"
       },
-      "destination": null,
-      "qualification": "Only the research-entry card exists in the inspected current file; no outcome/track-record state is present. Its sample-size and false-alarm method remains in the selected-tool help; the product route remains unproven.",
-      "proposedDestinationKey": null
+      "destination": {
+        "file": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+        "page": "p-O-0",
+        "board": "SLS-0",
+        "root": "SLS-0",
+        "tool": "risk_track_record",
+        "title": "risk",
+        "availability": "native-design-only",
+        "locale": "EN",
+        "theme": "dark",
+        "variants": [
+          {
+            "locale": "en",
+            "theme": "light",
+            "frame": "S7N-0",
+            "backAction": "S7O-0"
+          },
+          {
+            "locale": "zh",
+            "theme": "dark",
+            "frame": "S7Y-0",
+            "backAction": "S7Z-0"
+          },
+          {
+            "locale": "en",
+            "theme": "dark",
+            "frame": "SLS-0",
+            "backAction": "SLT-0"
+          },
+          {
+            "locale": "zh",
+            "theme": "light",
+            "frame": "SM3-0",
+            "backAction": "SM4-0"
+          }
+        ]
+      },
+      "qualification": "Native result and tool-specific method destinations now exist. Preserve the selected source/state/locale/theme and return to History & scenarios. The incumbent runtime mount, adapter, source qualification and actual navigation remain unverified; do not substitute generic help or claim availability from Paper.",
+      "proposedDestinationKey": null,
+      "originalKind": "unresolved_tool_destination",
+      "originalQualification": "Only the research-entry card exists in the inspected current file; no outcome/track-record state is present. Its sample-size and false-alarm method remains in the selected-tool help; the product route remains unproven.",
+      "originalDestination": null,
+      "bindingStatus": "PAPER_RESULT_RENDERED_RUNTIME_UNVERIFIED",
+      "currentBindingRegister": "WORKFLOW_ENHANCEMENT_REGISTER.json#internationalResults"
     },
     {
       "mappingRecord": 22,
@@ -1329,7 +1411,7 @@
       "parent": "39G-0",
       "currentStatus": "observed-current",
       "navigationVerified": false,
-      "kind": "unresolved_tool_destination",
+      "kind": "existing_design_destination",
       "topic": "economic-links-evidence",
       "existingReference": {
         "file": "01M3P1TW5Y3XWQC37ADDS8K5AG",
@@ -1337,9 +1419,50 @@
         "board": "38A-0",
         "root": "39B-0"
       },
-      "destination": null,
-      "qualification": "The economic-links entry exists. The company FX hypothesis is narrower than a general trade/supply/financing network; do not relabel it as the missing tool.",
-      "proposedDestinationKey": null
+      "destination": {
+        "file": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+        "page": "p-O-0",
+        "board": "S27-0",
+        "root": "S27-0",
+        "tool": "trade_supply_links",
+        "title": "links",
+        "availability": "native-design-only",
+        "locale": "EN",
+        "theme": "dark",
+        "variants": [
+          {
+            "locale": "en",
+            "theme": "light",
+            "frame": "S1J-0",
+            "backAction": "S1K-0"
+          },
+          {
+            "locale": "zh",
+            "theme": "light",
+            "frame": "S1V-0",
+            "backAction": "S1W-0"
+          },
+          {
+            "locale": "en",
+            "theme": "dark",
+            "frame": "S27-0",
+            "backAction": "S28-0"
+          },
+          {
+            "locale": "zh",
+            "theme": "dark",
+            "frame": "S2J-0",
+            "backAction": "S2K-0"
+          }
+        ]
+      },
+      "qualification": "Native result and tool-specific method destinations now exist. Preserve the selected source/state/locale/theme and return to Trace the pressure. The incumbent runtime mount, adapter, source qualification and actual navigation remain unverified; do not substitute generic help or claim availability from Paper.",
+      "proposedDestinationKey": null,
+      "originalKind": "unresolved_tool_destination",
+      "originalQualification": "The economic-links entry exists. The company FX hypothesis is narrower than a general trade/supply/financing network; do not relabel it as the missing tool.",
+      "originalDestination": null,
+      "bindingStatus": "PAPER_RESULT_RENDERED_RUNTIME_UNVERIFIED",
+      "currentBindingRegister": "WORKFLOW_ENHANCEMENT_REGISTER.json#internationalResults"
     },
     {
       "mappingRecord": 29,
@@ -1398,7 +1521,7 @@
       "parent": "3EN-0",
       "currentStatus": "observed-current",
       "navigationVerified": false,
-      "kind": "unresolved_tool_destination",
+      "kind": "existing_design_destination",
       "topic": "economic-links-evidence",
       "existingReference": {
         "file": "01M3P1TW5Y3XWQC37ADDS8K5AG",
@@ -1406,9 +1529,50 @@
         "board": "38A-0",
         "root": "39B-0"
       },
-      "destination": null,
-      "qualification": "The economic-links entry exists. The company FX hypothesis is narrower than a general trade/supply/financing network; do not relabel it as the missing tool.",
-      "proposedDestinationKey": null
+      "destination": {
+        "file": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+        "page": "p-O-0",
+        "board": "S27-0",
+        "root": "S27-0",
+        "tool": "trade_supply_links",
+        "title": "links",
+        "availability": "native-design-only",
+        "locale": "EN",
+        "theme": "dark",
+        "variants": [
+          {
+            "locale": "en",
+            "theme": "light",
+            "frame": "S1J-0",
+            "backAction": "S1K-0"
+          },
+          {
+            "locale": "zh",
+            "theme": "light",
+            "frame": "S1V-0",
+            "backAction": "S1W-0"
+          },
+          {
+            "locale": "en",
+            "theme": "dark",
+            "frame": "S27-0",
+            "backAction": "S28-0"
+          },
+          {
+            "locale": "zh",
+            "theme": "dark",
+            "frame": "S2J-0",
+            "backAction": "S2K-0"
+          }
+        ]
+      },
+      "qualification": "Native result and tool-specific method destinations now exist. Preserve the selected source/state/locale/theme and return to Trace the pressure. The incumbent runtime mount, adapter, source qualification and actual navigation remain unverified; do not substitute generic help or claim availability from Paper.",
+      "proposedDestinationKey": null,
+      "originalKind": "unresolved_tool_destination",
+      "originalQualification": "The economic-links entry exists. The company FX hypothesis is narrower than a general trade/supply/financing network; do not relabel it as the missing tool.",
+      "originalDestination": null,
+      "bindingStatus": "PAPER_RESULT_RENDERED_RUNTIME_UNVERIFIED",
+      "currentBindingRegister": "WORKFLOW_ENHANCEMENT_REGISTER.json#internationalResults"
     },
     {
       "mappingRecord": 30,
@@ -1510,7 +1674,7 @@
       "parent": "3KY-0",
       "currentStatus": "observed-current",
       "navigationVerified": false,
-      "kind": "unresolved_tool_destination",
+      "kind": "existing_design_destination",
       "topic": "recovery-evidence",
       "existingReference": {
         "file": "01M3P1TW5Y3XWQC37ADDS8K5AG",
@@ -1518,9 +1682,50 @@
         "board": "3JZ-0",
         "root": "3KT-0"
       },
-      "destination": null,
-      "qualification": "Recovery entry copy exists, but no recovery-results/evidence state was found in this file. Do not substitute an unrelated policy-rate drawer.",
-      "proposedDestinationKey": null
+      "destination": {
+        "file": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+        "page": "p-O-0",
+        "board": "RYH-0",
+        "root": "RYH-0",
+        "tool": "recovery_quality",
+        "title": "recovery",
+        "availability": "native-design-only",
+        "locale": "EN",
+        "theme": "dark",
+        "variants": [
+          {
+            "locale": "en",
+            "theme": "light",
+            "frame": "RX3-0",
+            "backAction": "RX4-0"
+          },
+          {
+            "locale": "zh",
+            "theme": "light",
+            "frame": "RXS-0",
+            "backAction": "RXT-0"
+          },
+          {
+            "locale": "en",
+            "theme": "dark",
+            "frame": "RYH-0",
+            "backAction": "RYI-0"
+          },
+          {
+            "locale": "zh",
+            "theme": "dark",
+            "frame": "RZ6-0",
+            "backAction": "RZ7-0"
+          }
+        ]
+      },
+      "qualification": "Native result and tool-specific method destinations now exist. Preserve the selected source/state/locale/theme and return to Check the recovery. The incumbent runtime mount, adapter, source qualification and actual navigation remain unverified; do not substitute generic help or claim availability from Paper.",
+      "proposedDestinationKey": null,
+      "originalKind": "unresolved_tool_destination",
+      "originalQualification": "Recovery entry copy exists, but no recovery-results/evidence state was found in this file. Do not substitute an unrelated policy-rate drawer.",
+      "originalDestination": null,
+      "bindingStatus": "PAPER_RESULT_RENDERED_RUNTIME_UNVERIFIED",
+      "currentBindingRegister": "WORKFLOW_ENHANCEMENT_REGISTER.json#internationalResults"
     },
     {
       "mappingRecord": 32,
@@ -1657,7 +1862,7 @@
       "parent": "3OR-0",
       "currentStatus": "observed-current",
       "navigationVerified": false,
-      "kind": "unresolved_tool_destination",
+      "kind": "existing_design_destination",
       "topic": "correlation-method",
       "existingReference": {
         "file": "01M3P1TW5Y3XWQC37ADDS8K5AG",
@@ -1665,9 +1870,50 @@
         "board": "3NZ-0",
         "root": "3OM-0"
       },
-      "destination": null,
-      "qualification": "A correlation research-entry card exists, but no actual correlation input/observation/results state was found. Generic method copy cannot prove that tool route.",
-      "proposedDestinationKey": null
+      "destination": {
+        "file": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+        "page": "p-O-0",
+        "board": "RWD-0",
+        "root": "RWD-0",
+        "tool": "cross_market_correlation",
+        "title": "correlation",
+        "availability": "native-design-only",
+        "locale": "EN",
+        "theme": "dark",
+        "variants": [
+          {
+            "locale": "en",
+            "theme": "light",
+            "frame": "RVP-0",
+            "backAction": "RVQ-0"
+          },
+          {
+            "locale": "zh",
+            "theme": "light",
+            "frame": "RW1-0",
+            "backAction": "RW2-0"
+          },
+          {
+            "locale": "en",
+            "theme": "dark",
+            "frame": "RWD-0",
+            "backAction": "RWE-0"
+          },
+          {
+            "locale": "zh",
+            "theme": "dark",
+            "frame": "RWP-0",
+            "backAction": "RWQ-0"
+          }
+        ]
+      },
+      "qualification": "Native result and tool-specific method destinations now exist. Preserve the selected source/state/locale/theme and return to Challenge the conclusion. The incumbent runtime mount, adapter, source qualification and actual navigation remain unverified; do not substitute generic help or claim availability from Paper.",
+      "proposedDestinationKey": null,
+      "originalKind": "unresolved_tool_destination",
+      "originalQualification": "A correlation research-entry card exists, but no actual correlation input/observation/results state was found. Generic method copy cannot prove that tool route.",
+      "originalDestination": null,
+      "bindingStatus": "PAPER_RESULT_RENDERED_RUNTIME_UNVERIFIED",
+      "currentBindingRegister": "WORKFLOW_ENHANCEMENT_REGISTER.json#internationalResults"
     },
     {
       "mappingRecord": 35,
@@ -1841,7 +2087,7 @@
       "parent": "3IH-0",
       "currentStatus": "observed-current",
       "navigationVerified": false,
-      "kind": "unresolved_tool_destination",
+      "kind": "existing_design_destination",
       "topic": "economic-links-evidence",
       "existingReference": {
         "file": "01M3P1TW5Y3XWQC37ADDS8K5AG",
@@ -1849,9 +2095,50 @@
         "board": "38A-0",
         "root": "39B-0"
       },
-      "destination": null,
-      "qualification": "The economic-links entry exists. The company FX hypothesis is narrower than a general trade/supply/financing network; do not relabel it as the missing tool.",
-      "proposedDestinationKey": null
+      "destination": {
+        "file": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+        "page": "p-O-0",
+        "board": "S27-0",
+        "root": "S27-0",
+        "tool": "trade_supply_links",
+        "title": "links",
+        "availability": "native-design-only",
+        "locale": "EN",
+        "theme": "dark",
+        "variants": [
+          {
+            "locale": "en",
+            "theme": "light",
+            "frame": "S1J-0",
+            "backAction": "S1K-0"
+          },
+          {
+            "locale": "zh",
+            "theme": "light",
+            "frame": "S1V-0",
+            "backAction": "S1W-0"
+          },
+          {
+            "locale": "en",
+            "theme": "dark",
+            "frame": "S27-0",
+            "backAction": "S28-0"
+          },
+          {
+            "locale": "zh",
+            "theme": "dark",
+            "frame": "S2J-0",
+            "backAction": "S2K-0"
+          }
+        ]
+      },
+      "qualification": "Native result and tool-specific method destinations now exist. Preserve the selected source/state/locale/theme and return to Trace the pressure. The incumbent runtime mount, adapter, source qualification and actual navigation remain unverified; do not substitute generic help or claim availability from Paper.",
+      "proposedDestinationKey": null,
+      "originalKind": "unresolved_tool_destination",
+      "originalQualification": "The economic-links entry exists. The company FX hypothesis is narrower than a general trade/supply/financing network; do not relabel it as the missing tool.",
+      "originalDestination": null,
+      "bindingStatus": "PAPER_RESULT_RENDERED_RUNTIME_UNVERIFIED",
+      "currentBindingRegister": "WORKFLOW_ENHANCEMENT_REGISTER.json#internationalResults"
     },
     {
       "mappingRecord": 41,
@@ -2597,6 +2884,64 @@
       "proposedDestinationKey": "intl_context_help_zh",
       "originalKind": "proposed_localized_help",
       "paperDesignBindingRecorded": true
+    },
+    {
+      "mappingRecord": 34,
+      "file": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "page": "p-5-0",
+      "board": "3NZ-0",
+      "id": "3OZ-0",
+      "originalLabel": "Open warning outcomes & limits →",
+      "currentLabel": "Open warning outcomes & limits →",
+      "parent": "3OY-0",
+      "currentStatus": "observed-current",
+      "navigationVerified": false,
+      "kind": "existing_design_destination",
+      "topic": "risk-radar-track-record",
+      "destination": {
+        "file": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+        "page": "p-O-0",
+        "board": "S0V-0",
+        "root": "S0V-0",
+        "tool": "risk_track_record",
+        "title": "risk",
+        "availability": "native-design-only",
+        "locale": "EN",
+        "theme": "dark",
+        "variants": [
+          {
+            "locale": "en",
+            "theme": "light",
+            "frame": "S09-0",
+            "backAction": "S0A-0"
+          },
+          {
+            "locale": "zh",
+            "theme": "light",
+            "frame": "S0K-0",
+            "backAction": "S0L-0"
+          },
+          {
+            "locale": "en",
+            "theme": "dark",
+            "frame": "S0V-0",
+            "backAction": "S0W-0"
+          },
+          {
+            "locale": "zh",
+            "theme": "dark",
+            "frame": "S16-0",
+            "backAction": "S17-0"
+          }
+        ]
+      },
+      "qualification": "Native result and tool-specific method destinations now exist. Preserve the selected source/state/locale/theme and return to Challenge the conclusion. The incumbent runtime mount, adapter, source qualification and actual navigation remain unverified; do not substitute generic help or claim availability from Paper.",
+      "discovery": "2026-11-08 continuation; original inventory retained as history.",
+      "originalKind": "unresolved_tool_destination",
+      "originalQualification": "Additional eighth result action discovered during source-bound workflow review.",
+      "originalDestination": null,
+      "bindingStatus": "PAPER_RESULT_RENDERED_RUNTIME_UNVERIFIED",
+      "currentBindingRegister": "WORKFLOW_ENHANCEMENT_REGISTER.json#internationalResults"
     }
   ],
   "mappingRecords": [
@@ -4409,10 +4754,10 @@
     {
       "key": "intl_context_help_en",
       "file": "01M3P1TW5Y3XWQC37ADDS8K5AG",
-      "page": "p-J-0",
+      "page": "p-N-0",
       "nodeId": "O17-0",
       "locale": "EN",
-      "status": "CREATED_REUSABLE_DESIGN_PATTERN",
+      "status": "CREATED_AND_NATIVE_VERIFIED_WITH_CONTEXT_RETURNS",
       "name": "User help · Contextual methods · EN",
       "title": "Sources & method",
       "backLabel": "Back",
@@ -4501,18 +4846,19 @@
           "scope": "Selected issuer and fiscal period. Fictional Source A is not a verified live source."
         }
       ],
-      "theme": "Use existing p-J token scheme; inherit current product theme.",
+      "theme": "Four native EN/ZH and light/dark variants are recorded in appliedDesignDestinations; preserve the invoking theme.",
       "note": "O17-0 is contextual method; O1H-0 is its index. Open only the selected source-defined topic.",
       "originalStatus": "PROPOSED_NOT_CREATED",
-      "indexNodeId": "O1H-0"
+      "indexNodeId": "O1H-0",
+      "previousPage": "p-J-0"
     },
     {
       "key": "intl_context_help_zh",
       "file": "01M3P1TW5Y3XWQC37ADDS8K5AG",
-      "page": "p-J-0",
+      "page": "p-N-0",
       "nodeId": "O23-0",
       "locale": "ZH",
-      "status": "CREATED_REUSABLE_DESIGN_PATTERN",
+      "status": "CREATED_AND_NATIVE_VERIFIED_WITH_CONTEXT_RETURNS",
       "name": "用户帮助 · 来源与方法 · ZH",
       "title": "来源与方法",
       "backLabel": "返回",
@@ -4551,10 +4897,11 @@
           "corrections": "MGH-0"
         }
       },
-      "theme": "Use the same theme tokens as the invoking view.",
+      "theme": "Four native EN/ZH and light/dark variants are recorded in appliedDesignDestinations; preserve the invoking theme.",
       "note": "O23-0 is contextual method; O2D-0 is its index; six ZH source-entry bindings instead use the complete matrix O39-0.",
       "originalStatus": "PROPOSED_NOT_CREATED",
-      "indexNodeId": "O2D-0"
+      "indexNodeId": "O2D-0",
+      "previousPage": "p-J-0"
     }
   ],
   "userVisibleSectionCopy": [
@@ -4943,7 +5290,7 @@
       "parent": "P6-0",
       "currentStatus": "observed-current",
       "navigationVerified": false,
-      "kind": "unresolved_tool_destination",
+      "kind": "existing_design_destination",
       "topic": "risk-radar-track-record",
       "existingReference": {
         "file": "01M3P1TW5Y3XWQC37ADDS8K5AG",
@@ -4951,9 +5298,50 @@
         "board": "3NZ-0",
         "root": "3OT-0"
       },
-      "destination": null,
-      "qualification": "Only the research-entry card exists in the inspected current file; no outcome/track-record state is present. Its sample-size and false-alarm method remains in the selected-tool help; the product route remains unproven.",
-      "proposedDestinationKey": null
+      "destination": {
+        "file": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+        "page": "p-O-0",
+        "board": "SLS-0",
+        "root": "SLS-0",
+        "tool": "risk_track_record",
+        "title": "risk",
+        "availability": "native-design-only",
+        "locale": "EN",
+        "theme": "dark",
+        "variants": [
+          {
+            "locale": "en",
+            "theme": "light",
+            "frame": "S7N-0",
+            "backAction": "S7O-0"
+          },
+          {
+            "locale": "zh",
+            "theme": "dark",
+            "frame": "S7Y-0",
+            "backAction": "S7Z-0"
+          },
+          {
+            "locale": "en",
+            "theme": "dark",
+            "frame": "SLS-0",
+            "backAction": "SLT-0"
+          },
+          {
+            "locale": "zh",
+            "theme": "light",
+            "frame": "SM3-0",
+            "backAction": "SM4-0"
+          }
+        ]
+      },
+      "qualification": "Native result and tool-specific method destinations now exist. Preserve the selected source/state/locale/theme and return to History & scenarios. The incumbent runtime mount, adapter, source qualification and actual navigation remain unverified; do not substitute generic help or claim availability from Paper.",
+      "proposedDestinationKey": null,
+      "originalKind": "unresolved_tool_destination",
+      "originalQualification": "Only the research-entry card exists in the inspected current file; no outcome/track-record state is present. Its sample-size and false-alarm method remains in the selected-tool help; the product route remains unproven.",
+      "originalDestination": null,
+      "bindingStatus": "PAPER_RESULT_RENDERED_RUNTIME_UNVERIFIED",
+      "currentBindingRegister": "WORKFLOW_ENHANCEMENT_REGISTER.json#internationalResults"
     },
     {
       "mappingRecord": 21,
@@ -4966,7 +5354,7 @@
       "parent": "2Z1-0",
       "currentStatus": "observed-current",
       "navigationVerified": false,
-      "kind": "unresolved_tool_destination",
+      "kind": "existing_design_destination",
       "topic": "risk-radar-track-record",
       "existingReference": {
         "file": "01M3P1TW5Y3XWQC37ADDS8K5AG",
@@ -4974,9 +5362,50 @@
         "board": "3NZ-0",
         "root": "3OT-0"
       },
-      "destination": null,
-      "qualification": "Only the research-entry card exists in the inspected current file; no outcome/track-record state is present. Its sample-size and false-alarm method remains in the selected-tool help; the product route remains unproven.",
-      "proposedDestinationKey": null
+      "destination": {
+        "file": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+        "page": "p-O-0",
+        "board": "SLS-0",
+        "root": "SLS-0",
+        "tool": "risk_track_record",
+        "title": "risk",
+        "availability": "native-design-only",
+        "locale": "EN",
+        "theme": "dark",
+        "variants": [
+          {
+            "locale": "en",
+            "theme": "light",
+            "frame": "S7N-0",
+            "backAction": "S7O-0"
+          },
+          {
+            "locale": "zh",
+            "theme": "dark",
+            "frame": "S7Y-0",
+            "backAction": "S7Z-0"
+          },
+          {
+            "locale": "en",
+            "theme": "dark",
+            "frame": "SLS-0",
+            "backAction": "SLT-0"
+          },
+          {
+            "locale": "zh",
+            "theme": "light",
+            "frame": "SM3-0",
+            "backAction": "SM4-0"
+          }
+        ]
+      },
+      "qualification": "Native result and tool-specific method destinations now exist. Preserve the selected source/state/locale/theme and return to History & scenarios. The incumbent runtime mount, adapter, source qualification and actual navigation remain unverified; do not substitute generic help or claim availability from Paper.",
+      "proposedDestinationKey": null,
+      "originalKind": "unresolved_tool_destination",
+      "originalQualification": "Only the research-entry card exists in the inspected current file; no outcome/track-record state is present. Its sample-size and false-alarm method remains in the selected-tool help; the product route remains unproven.",
+      "originalDestination": null,
+      "bindingStatus": "PAPER_RESULT_RENDERED_RUNTIME_UNVERIFIED",
+      "currentBindingRegister": "WORKFLOW_ENHANCEMENT_REGISTER.json#internationalResults"
     },
     {
       "mappingRecord": 28,
@@ -4989,7 +5418,7 @@
       "parent": "39G-0",
       "currentStatus": "observed-current",
       "navigationVerified": false,
-      "kind": "unresolved_tool_destination",
+      "kind": "existing_design_destination",
       "topic": "economic-links-evidence",
       "existingReference": {
         "file": "01M3P1TW5Y3XWQC37ADDS8K5AG",
@@ -4997,9 +5426,50 @@
         "board": "38A-0",
         "root": "39B-0"
       },
-      "destination": null,
-      "qualification": "The economic-links entry exists. The company FX hypothesis is narrower than a general trade/supply/financing network; do not relabel it as the missing tool.",
-      "proposedDestinationKey": null
+      "destination": {
+        "file": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+        "page": "p-O-0",
+        "board": "S27-0",
+        "root": "S27-0",
+        "tool": "trade_supply_links",
+        "title": "links",
+        "availability": "native-design-only",
+        "locale": "EN",
+        "theme": "dark",
+        "variants": [
+          {
+            "locale": "en",
+            "theme": "light",
+            "frame": "S1J-0",
+            "backAction": "S1K-0"
+          },
+          {
+            "locale": "zh",
+            "theme": "light",
+            "frame": "S1V-0",
+            "backAction": "S1W-0"
+          },
+          {
+            "locale": "en",
+            "theme": "dark",
+            "frame": "S27-0",
+            "backAction": "S28-0"
+          },
+          {
+            "locale": "zh",
+            "theme": "dark",
+            "frame": "S2J-0",
+            "backAction": "S2K-0"
+          }
+        ]
+      },
+      "qualification": "Native result and tool-specific method destinations now exist. Preserve the selected source/state/locale/theme and return to Trace the pressure. The incumbent runtime mount, adapter, source qualification and actual navigation remain unverified; do not substitute generic help or claim availability from Paper.",
+      "proposedDestinationKey": null,
+      "originalKind": "unresolved_tool_destination",
+      "originalQualification": "The economic-links entry exists. The company FX hypothesis is narrower than a general trade/supply/financing network; do not relabel it as the missing tool.",
+      "originalDestination": null,
+      "bindingStatus": "PAPER_RESULT_RENDERED_RUNTIME_UNVERIFIED",
+      "currentBindingRegister": "WORKFLOW_ENHANCEMENT_REGISTER.json#internationalResults"
     },
     {
       "mappingRecord": 29,
@@ -5012,7 +5482,7 @@
       "parent": "3EN-0",
       "currentStatus": "observed-current",
       "navigationVerified": false,
-      "kind": "unresolved_tool_destination",
+      "kind": "existing_design_destination",
       "topic": "economic-links-evidence",
       "existingReference": {
         "file": "01M3P1TW5Y3XWQC37ADDS8K5AG",
@@ -5020,9 +5490,50 @@
         "board": "38A-0",
         "root": "39B-0"
       },
-      "destination": null,
-      "qualification": "The economic-links entry exists. The company FX hypothesis is narrower than a general trade/supply/financing network; do not relabel it as the missing tool.",
-      "proposedDestinationKey": null
+      "destination": {
+        "file": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+        "page": "p-O-0",
+        "board": "S27-0",
+        "root": "S27-0",
+        "tool": "trade_supply_links",
+        "title": "links",
+        "availability": "native-design-only",
+        "locale": "EN",
+        "theme": "dark",
+        "variants": [
+          {
+            "locale": "en",
+            "theme": "light",
+            "frame": "S1J-0",
+            "backAction": "S1K-0"
+          },
+          {
+            "locale": "zh",
+            "theme": "light",
+            "frame": "S1V-0",
+            "backAction": "S1W-0"
+          },
+          {
+            "locale": "en",
+            "theme": "dark",
+            "frame": "S27-0",
+            "backAction": "S28-0"
+          },
+          {
+            "locale": "zh",
+            "theme": "dark",
+            "frame": "S2J-0",
+            "backAction": "S2K-0"
+          }
+        ]
+      },
+      "qualification": "Native result and tool-specific method destinations now exist. Preserve the selected source/state/locale/theme and return to Trace the pressure. The incumbent runtime mount, adapter, source qualification and actual navigation remain unverified; do not substitute generic help or claim availability from Paper.",
+      "proposedDestinationKey": null,
+      "originalKind": "unresolved_tool_destination",
+      "originalQualification": "The economic-links entry exists. The company FX hypothesis is narrower than a general trade/supply/financing network; do not relabel it as the missing tool.",
+      "originalDestination": null,
+      "bindingStatus": "PAPER_RESULT_RENDERED_RUNTIME_UNVERIFIED",
+      "currentBindingRegister": "WORKFLOW_ENHANCEMENT_REGISTER.json#internationalResults"
     },
     {
       "mappingRecord": 31,
@@ -5035,7 +5546,7 @@
       "parent": "3KY-0",
       "currentStatus": "observed-current",
       "navigationVerified": false,
-      "kind": "unresolved_tool_destination",
+      "kind": "existing_design_destination",
       "topic": "recovery-evidence",
       "existingReference": {
         "file": "01M3P1TW5Y3XWQC37ADDS8K5AG",
@@ -5043,9 +5554,50 @@
         "board": "3JZ-0",
         "root": "3KT-0"
       },
-      "destination": null,
-      "qualification": "Recovery entry copy exists, but no recovery-results/evidence state was found in this file. Do not substitute an unrelated policy-rate drawer.",
-      "proposedDestinationKey": null
+      "destination": {
+        "file": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+        "page": "p-O-0",
+        "board": "RYH-0",
+        "root": "RYH-0",
+        "tool": "recovery_quality",
+        "title": "recovery",
+        "availability": "native-design-only",
+        "locale": "EN",
+        "theme": "dark",
+        "variants": [
+          {
+            "locale": "en",
+            "theme": "light",
+            "frame": "RX3-0",
+            "backAction": "RX4-0"
+          },
+          {
+            "locale": "zh",
+            "theme": "light",
+            "frame": "RXS-0",
+            "backAction": "RXT-0"
+          },
+          {
+            "locale": "en",
+            "theme": "dark",
+            "frame": "RYH-0",
+            "backAction": "RYI-0"
+          },
+          {
+            "locale": "zh",
+            "theme": "dark",
+            "frame": "RZ6-0",
+            "backAction": "RZ7-0"
+          }
+        ]
+      },
+      "qualification": "Native result and tool-specific method destinations now exist. Preserve the selected source/state/locale/theme and return to Check the recovery. The incumbent runtime mount, adapter, source qualification and actual navigation remain unverified; do not substitute generic help or claim availability from Paper.",
+      "proposedDestinationKey": null,
+      "originalKind": "unresolved_tool_destination",
+      "originalQualification": "Recovery entry copy exists, but no recovery-results/evidence state was found in this file. Do not substitute an unrelated policy-rate drawer.",
+      "originalDestination": null,
+      "bindingStatus": "PAPER_RESULT_RENDERED_RUNTIME_UNVERIFIED",
+      "currentBindingRegister": "WORKFLOW_ENHANCEMENT_REGISTER.json#internationalResults"
     },
     {
       "mappingRecord": 34,
@@ -5058,7 +5610,7 @@
       "parent": "3OR-0",
       "currentStatus": "observed-current",
       "navigationVerified": false,
-      "kind": "unresolved_tool_destination",
+      "kind": "existing_design_destination",
       "topic": "correlation-method",
       "existingReference": {
         "file": "01M3P1TW5Y3XWQC37ADDS8K5AG",
@@ -5066,9 +5618,50 @@
         "board": "3NZ-0",
         "root": "3OM-0"
       },
-      "destination": null,
-      "qualification": "A correlation research-entry card exists, but no actual correlation input/observation/results state was found. Generic method copy cannot prove that tool route.",
-      "proposedDestinationKey": null
+      "destination": {
+        "file": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+        "page": "p-O-0",
+        "board": "RWD-0",
+        "root": "RWD-0",
+        "tool": "cross_market_correlation",
+        "title": "correlation",
+        "availability": "native-design-only",
+        "locale": "EN",
+        "theme": "dark",
+        "variants": [
+          {
+            "locale": "en",
+            "theme": "light",
+            "frame": "RVP-0",
+            "backAction": "RVQ-0"
+          },
+          {
+            "locale": "zh",
+            "theme": "light",
+            "frame": "RW1-0",
+            "backAction": "RW2-0"
+          },
+          {
+            "locale": "en",
+            "theme": "dark",
+            "frame": "RWD-0",
+            "backAction": "RWE-0"
+          },
+          {
+            "locale": "zh",
+            "theme": "dark",
+            "frame": "RWP-0",
+            "backAction": "RWQ-0"
+          }
+        ]
+      },
+      "qualification": "Native result and tool-specific method destinations now exist. Preserve the selected source/state/locale/theme and return to Challenge the conclusion. The incumbent runtime mount, adapter, source qualification and actual navigation remain unverified; do not substitute generic help or claim availability from Paper.",
+      "proposedDestinationKey": null,
+      "originalKind": "unresolved_tool_destination",
+      "originalQualification": "A correlation research-entry card exists, but no actual correlation input/observation/results state was found. Generic method copy cannot prove that tool route.",
+      "originalDestination": null,
+      "bindingStatus": "PAPER_RESULT_RENDERED_RUNTIME_UNVERIFIED",
+      "currentBindingRegister": "WORKFLOW_ENHANCEMENT_REGISTER.json#internationalResults"
     },
     {
       "mappingRecord": 40,
@@ -5081,7 +5674,7 @@
       "parent": "3IH-0",
       "currentStatus": "observed-current",
       "navigationVerified": false,
-      "kind": "unresolved_tool_destination",
+      "kind": "existing_design_destination",
       "topic": "economic-links-evidence",
       "existingReference": {
         "file": "01M3P1TW5Y3XWQC37ADDS8K5AG",
@@ -5089,9 +5682,108 @@
         "board": "38A-0",
         "root": "39B-0"
       },
-      "destination": null,
-      "qualification": "The economic-links entry exists. The company FX hypothesis is narrower than a general trade/supply/financing network; do not relabel it as the missing tool.",
-      "proposedDestinationKey": null
+      "destination": {
+        "file": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+        "page": "p-O-0",
+        "board": "S27-0",
+        "root": "S27-0",
+        "tool": "trade_supply_links",
+        "title": "links",
+        "availability": "native-design-only",
+        "locale": "EN",
+        "theme": "dark",
+        "variants": [
+          {
+            "locale": "en",
+            "theme": "light",
+            "frame": "S1J-0",
+            "backAction": "S1K-0"
+          },
+          {
+            "locale": "zh",
+            "theme": "light",
+            "frame": "S1V-0",
+            "backAction": "S1W-0"
+          },
+          {
+            "locale": "en",
+            "theme": "dark",
+            "frame": "S27-0",
+            "backAction": "S28-0"
+          },
+          {
+            "locale": "zh",
+            "theme": "dark",
+            "frame": "S2J-0",
+            "backAction": "S2K-0"
+          }
+        ]
+      },
+      "qualification": "Native result and tool-specific method destinations now exist. Preserve the selected source/state/locale/theme and return to Trace the pressure. The incumbent runtime mount, adapter, source qualification and actual navigation remain unverified; do not substitute generic help or claim availability from Paper.",
+      "proposedDestinationKey": null,
+      "originalKind": "unresolved_tool_destination",
+      "originalQualification": "The economic-links entry exists. The company FX hypothesis is narrower than a general trade/supply/financing network; do not relabel it as the missing tool.",
+      "originalDestination": null,
+      "bindingStatus": "PAPER_RESULT_RENDERED_RUNTIME_UNVERIFIED",
+      "currentBindingRegister": "WORKFLOW_ENHANCEMENT_REGISTER.json#internationalResults"
+    },
+    {
+      "mappingRecord": 34,
+      "file": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+      "page": "p-5-0",
+      "board": "3NZ-0",
+      "id": "3OZ-0",
+      "originalLabel": "Open warning outcomes & limits →",
+      "currentLabel": "Open warning outcomes & limits →",
+      "parent": "3OY-0",
+      "currentStatus": "observed-current",
+      "navigationVerified": false,
+      "kind": "existing_design_destination",
+      "topic": "risk-radar-track-record",
+      "destination": {
+        "file": "01M3P1TW5Y3XWQC37ADDS8K5AG",
+        "page": "p-O-0",
+        "board": "S0V-0",
+        "root": "S0V-0",
+        "tool": "risk_track_record",
+        "title": "risk",
+        "availability": "native-design-only",
+        "locale": "EN",
+        "theme": "dark",
+        "variants": [
+          {
+            "locale": "en",
+            "theme": "light",
+            "frame": "S09-0",
+            "backAction": "S0A-0"
+          },
+          {
+            "locale": "zh",
+            "theme": "light",
+            "frame": "S0K-0",
+            "backAction": "S0L-0"
+          },
+          {
+            "locale": "en",
+            "theme": "dark",
+            "frame": "S0V-0",
+            "backAction": "S0W-0"
+          },
+          {
+            "locale": "zh",
+            "theme": "dark",
+            "frame": "S16-0",
+            "backAction": "S17-0"
+          }
+        ]
+      },
+      "qualification": "Native result and tool-specific method destinations now exist. Preserve the selected source/state/locale/theme and return to Challenge the conclusion. The incumbent runtime mount, adapter, source qualification and actual navigation remain unverified; do not substitute generic help or claim availability from Paper.",
+      "discovery": "2026-11-08 continuation; original inventory retained as history.",
+      "originalKind": "unresolved_tool_destination",
+      "originalQualification": "Additional eighth result action discovered during source-bound workflow review.",
+      "originalDestination": null,
+      "bindingStatus": "PAPER_RESULT_RENDERED_RUNTIME_UNVERIFIED",
+      "currentBindingRegister": "WORKFLOW_ENHANCEMENT_REGISTER.json#internationalResults"
     }
   ],
   "preexistingFixtureFinding": {
@@ -5201,7 +5893,16 @@
     "missingLabelInterpretation": "Three false-positive prose nodes have since been moved out of product by root. They are removed from the help-entry register.",
     "navigationRuntimeProof": false,
     "paperMutations": 0,
-    "sourceMutations": 0
+    "sourceMutations": 0,
+    "originalReadOnlyAssessment": {
+      "paperMutations": 0,
+      "sourceMutations": 0
+    },
+    "currentAppliedProof": "Native edits and readback are recorded in WORKFLOW_ENHANCEMENT_REGISTER.json; the earlier zero-mutation fields describe the original advisory mapping assessment only.",
+    "nativeDesignOrigins": 8,
+    "nativeResultFrames": 36,
+    "nativeToolMethodFrames": 16,
+    "nativeCalculationHelpFrames": 32
   },
   "requiredMethodLaunchAdditions": [
     {
@@ -5329,8 +6030,8 @@
   },
   "originalAssessmentStatus": "READ_ONLY_PROPOSAL_NOT_APPLIED",
   "appliedDesignDestinations": {
-    "pageId": "p-J-0",
-    "galleryId": "OPL-0",
+    "pageId": "p-N-0",
+    "galleryId": "RKV-0",
     "contextualReturnEN": "O17-0",
     "contextualReturnZH": "O23-0",
     "methodIndexEN": "O1H-0",
@@ -5343,7 +6044,7 @@
       "pageId": "p-J-0",
       "rootId": "O39-0"
     },
-    "topicBodies": "Five formerly unrendered method topics now have native Paper destination designs in English/Chinese and light/dark. Existing return examples and index patterns remain authoritative.",
+    "topicBodies": "All six index topics have native bodies. Four index variants,20 bodies for five added topics,4 comparison-origin return bodies and4 Methods-index-origin return bodies total32 current calculation-help frames.",
     "runtimeNavigationVerified": false,
     "topicPageId": "p-N-0",
     "topicGalleryId": "RKV-0",
@@ -5822,17 +6523,493 @@
         "verdict": "PASS: response-window / pending / no-response / structural lending remain visibly distinct; all language/theme frames fit at390px; spacing, type, contrast, alignment and clipping checks passed."
       }
     ],
-    "navigationProofBoundary": "Native rendered destinations and explicit control mappings are verified. Runtime/prototype navigation and focus execution are not implemented or verified by this design work. Existing index and return patterns are parametrized; only their recorded locale/theme variants have native proof."
+    "navigationProofBoundary": "Native destinations, locale/theme cases and exact control/return mappings are verified in Paper. Runtime/prototype navigation, focus execution, data adapters and live source qualification are not implemented or verified by this design work.",
+    "originalHelpPageId": "p-J-0",
+    "originalGalleryId": "OPL-0",
+    "indexBindings": [
+      {
+        "frame": "O1H-0",
+        "back": "O1I-0",
+        "locale": "en",
+        "theme": "light",
+        "rows": [
+          {
+            "topic": "returns",
+            "rowId": "O1L-0",
+            "labelId": "O1M-0",
+            "destinationFrame": "SFW-0",
+            "destinationBack": "SFX-0",
+            "backRestores": {
+              "indexFrame": "O1H-0",
+              "focus": "O1L-0"
+            }
+          },
+          {
+            "topic": "ranking",
+            "rowId": "O1O-0",
+            "labelId": "O1P-0",
+            "destinationFrame": "RL2-0",
+            "destinationBack": "RL3-0",
+            "backRestores": {
+              "indexFrame": "O1H-0",
+              "focus": "O1O-0"
+            }
+          },
+          {
+            "topic": "clocks",
+            "rowId": "O1R-0",
+            "labelId": "O1S-0",
+            "destinationFrame": "RMW-0",
+            "destinationBack": "RMX-0",
+            "backRestores": {
+              "indexFrame": "O1H-0",
+              "focus": "O1R-0"
+            }
+          },
+          {
+            "topic": "eligibility",
+            "rowId": "O1U-0",
+            "labelId": "O1V-0",
+            "destinationFrame": "RP6-0",
+            "destinationBack": "RP7-0",
+            "backRestores": {
+              "indexFrame": "O1H-0",
+              "focus": "O1U-0"
+            }
+          },
+          {
+            "topic": "scenario",
+            "rowId": "O1X-0",
+            "labelId": "O1Y-0",
+            "destinationFrame": "RRG-0",
+            "destinationBack": "RRH-0",
+            "backRestores": {
+              "indexFrame": "O1H-0",
+              "focus": "O1X-0"
+            }
+          },
+          {
+            "topic": "transmission",
+            "rowId": "O20-0",
+            "labelId": "O21-0",
+            "destinationFrame": "RTA-0",
+            "destinationBack": "RTB-0",
+            "backRestores": {
+              "indexFrame": "O1H-0",
+              "focus": "O20-0"
+            }
+          }
+        ],
+        "labels": [
+          "O1M-0",
+          "O1P-0",
+          "O1S-0",
+          "O1V-0",
+          "O1Y-0",
+          "O21-0"
+        ]
+      },
+      {
+        "frame": "O2D-0",
+        "back": "O2E-0",
+        "locale": "zh",
+        "theme": "dark",
+        "rows": [
+          {
+            "topic": "returns",
+            "rowId": "O2H-0",
+            "labelId": "O2I-0",
+            "destinationFrame": "SG6-0",
+            "destinationBack": "SG7-0",
+            "backRestores": {
+              "indexFrame": "O2D-0",
+              "focus": "O2H-0"
+            }
+          },
+          {
+            "topic": "ranking",
+            "rowId": "O2K-0",
+            "labelId": "O2L-0",
+            "destinationFrame": "RME-0",
+            "destinationBack": "RMF-0",
+            "backRestores": {
+              "indexFrame": "O2D-0",
+              "focus": "O2K-0"
+            }
+          },
+          {
+            "topic": "clocks",
+            "rowId": "O2N-0",
+            "labelId": "O2O-0",
+            "destinationFrame": "ROK-0",
+            "destinationBack": "ROL-0",
+            "backRestores": {
+              "indexFrame": "O2D-0",
+              "focus": "O2N-0"
+            }
+          },
+          {
+            "topic": "eligibility",
+            "rowId": "O2Q-0",
+            "labelId": "O2R-0",
+            "destinationFrame": "RQU-0",
+            "destinationBack": "RQV-0",
+            "backRestores": {
+              "indexFrame": "O2D-0",
+              "focus": "O2Q-0"
+            }
+          },
+          {
+            "topic": "scenario",
+            "rowId": "O2T-0",
+            "labelId": "O2U-0",
+            "destinationFrame": "RSS-0",
+            "destinationBack": "RST-0",
+            "backRestores": {
+              "indexFrame": "O2D-0",
+              "focus": "O2T-0"
+            }
+          },
+          {
+            "topic": "transmission",
+            "rowId": "O2W-0",
+            "labelId": "O2X-0",
+            "destinationFrame": "RUY-0",
+            "destinationBack": "RUZ-0",
+            "backRestores": {
+              "indexFrame": "O2D-0",
+              "focus": "O2W-0"
+            }
+          }
+        ],
+        "labels": [
+          "O2I-0",
+          "O2L-0",
+          "O2O-0",
+          "O2R-0",
+          "O2U-0",
+          "O2X-0"
+        ]
+      },
+      {
+        "frame": "SDZ-0",
+        "back": "SE0-0",
+        "locale": "en",
+        "theme": "dark",
+        "rows": [
+          {
+            "topic": "returns",
+            "rowId": "SE3-0",
+            "labelId": "SE4-0",
+            "destinationFrame": "SL1-0",
+            "destinationBack": "SL2-0",
+            "backRestores": {
+              "indexFrame": "SDZ-0",
+              "focus": "SE3-0"
+            }
+          },
+          {
+            "topic": "ranking",
+            "rowId": "SE6-0",
+            "labelId": "SE7-0",
+            "destinationFrame": "RLY-0",
+            "destinationBack": "RLZ-0",
+            "backRestores": {
+              "indexFrame": "SDZ-0",
+              "focus": "SE6-0"
+            }
+          },
+          {
+            "topic": "clocks",
+            "rowId": "SE9-0",
+            "labelId": "SEA-0",
+            "destinationFrame": "RO0-0",
+            "destinationBack": "RO1-0",
+            "backRestores": {
+              "indexFrame": "SDZ-0",
+              "focus": "SE9-0"
+            }
+          },
+          {
+            "topic": "eligibility",
+            "rowId": "SEC-0",
+            "labelId": "SED-0",
+            "destinationFrame": "RQA-0",
+            "destinationBack": "RQB-0",
+            "backRestores": {
+              "indexFrame": "SDZ-0",
+              "focus": "SEC-0"
+            }
+          },
+          {
+            "topic": "scenario",
+            "rowId": "SEF-0",
+            "labelId": "SEG-0",
+            "destinationFrame": "RSC-0",
+            "destinationBack": "RSD-0",
+            "backRestores": {
+              "indexFrame": "SDZ-0",
+              "focus": "SEF-0"
+            }
+          },
+          {
+            "topic": "transmission",
+            "rowId": "SEI-0",
+            "labelId": "SEJ-0",
+            "destinationFrame": "RUE-0",
+            "destinationBack": "RUF-0",
+            "backRestores": {
+              "indexFrame": "SDZ-0",
+              "focus": "SEI-0"
+            }
+          }
+        ],
+        "labels": [
+          "SE4-0",
+          "SE7-0",
+          "SEA-0",
+          "SED-0",
+          "SEG-0",
+          "SEJ-0"
+        ]
+      },
+      {
+        "frame": "SEX-0",
+        "back": "SEY-0",
+        "locale": "zh",
+        "theme": "light",
+        "rows": [
+          {
+            "topic": "returns",
+            "rowId": "SF1-0",
+            "labelId": "SF2-0",
+            "destinationFrame": "SLB-0",
+            "destinationBack": "SLC-0",
+            "backRestores": {
+              "indexFrame": "SEX-0",
+              "focus": "SF1-0"
+            }
+          },
+          {
+            "topic": "ranking",
+            "rowId": "SF4-0",
+            "labelId": "SF5-0",
+            "destinationFrame": "RLI-0",
+            "destinationBack": "RLJ-0",
+            "backRestores": {
+              "indexFrame": "SEX-0",
+              "focus": "SF4-0"
+            }
+          },
+          {
+            "topic": "clocks",
+            "rowId": "SF7-0",
+            "labelId": "SF8-0",
+            "destinationFrame": "RNG-0",
+            "destinationBack": "RNH-0",
+            "backRestores": {
+              "indexFrame": "SEX-0",
+              "focus": "SF7-0"
+            }
+          },
+          {
+            "topic": "eligibility",
+            "rowId": "SFA-0",
+            "labelId": "SFB-0",
+            "destinationFrame": "RPQ-0",
+            "destinationBack": "RPR-0",
+            "backRestores": {
+              "indexFrame": "SEX-0",
+              "focus": "SFA-0"
+            }
+          },
+          {
+            "topic": "scenario",
+            "rowId": "SFD-0",
+            "labelId": "SFE-0",
+            "destinationFrame": "RRW-0",
+            "destinationBack": "RRX-0",
+            "backRestores": {
+              "indexFrame": "SEX-0",
+              "focus": "SFD-0"
+            }
+          },
+          {
+            "topic": "transmission",
+            "rowId": "SFG-0",
+            "labelId": "SFH-0",
+            "destinationFrame": "RTU-0",
+            "destinationBack": "RTV-0",
+            "backRestores": {
+              "indexFrame": "SEX-0",
+              "focus": "SFG-0"
+            }
+          }
+        ],
+        "labels": [
+          "SF2-0",
+          "SF5-0",
+          "SF8-0",
+          "SFB-0",
+          "SFE-0",
+          "SFH-0"
+        ]
+      }
+    ],
+    "comparisonOriginVariants": [
+      {
+        "frame": "O17-0",
+        "locale": "en",
+        "theme": "light",
+        "back": "O18-0",
+        "sourceDates": "O1F-0",
+        "methodIndexAction": "O1G-0"
+      },
+      {
+        "frame": "O23-0",
+        "locale": "zh",
+        "theme": "dark",
+        "back": "O24-0",
+        "sourceDates": "O2B-0",
+        "methodIndexAction": "O2C-0"
+      },
+      {
+        "frame": "SEM-0",
+        "locale": "en",
+        "theme": "dark",
+        "back": "SEN-0",
+        "sourceDates": "SEU-0",
+        "methodIndexAction": "SEV-0"
+      },
+      {
+        "frame": "SFK-0",
+        "locale": "zh",
+        "theme": "light",
+        "back": "SFL-0",
+        "sourceDates": "SFS-0",
+        "methodIndexAction": "SFT-0"
+      }
+    ],
+    "indexOriginReturnVariants": [
+      {
+        "locale": "en",
+        "theme": "light",
+        "frame": "SFW-0",
+        "back": "SFX-0",
+        "origin": "methods-index"
+      },
+      {
+        "locale": "zh",
+        "theme": "dark",
+        "frame": "SG6-0",
+        "back": "SG7-0",
+        "origin": "methods-index"
+      },
+      {
+        "locale": "en",
+        "theme": "dark",
+        "frame": "SL1-0",
+        "back": "SL2-0",
+        "origin": "methods-index"
+      },
+      {
+        "locale": "zh",
+        "theme": "light",
+        "frame": "SLB-0",
+        "back": "SLC-0",
+        "origin": "methods-index"
+      }
+    ],
+    "completeVisualQA": [
+      {
+        "nodeId": "SDV-0",
+        "verdict": "PASS: all four locale/theme index variants align; six concise destinations, 48px controls and readable contrast; no clipped translation."
+      },
+      {
+        "nodeId": "SDX-0",
+        "verdict": "PASS: return formula, compounding and basis stay identical across locales/themes; clear comparison back; legible formula wrap and no clipping."
+      },
+      {
+        "nodeId": "3NZ-0",
+        "verdict": "PASS: reduced slogans/questions leave concrete tool scopes and actions; current correlation and forward outcome claims align; no broken spacing."
+      },
+      {
+        "nodeId": "SFV-0",
+        "verdict": "PASS: returns from the Methods index are explicit in all four EN/ZH and light/dark variants; source-date action remains, duplicate index action omitted, values/formula/period limits unchanged and no clipping."
+      }
+    ],
+    "resultPageId": "p-O-0",
+    "resultGalleryId": "RVI-0",
+    "toolMethodPageId": "p-P-0",
+    "toolMethodGalleryId": "S89-0",
+    "resultBindingsReference": "WORKFLOW_ENHANCEMENT_REGISTER.json#internationalResults"
   },
   "appliedCounts": {
     "existingDesignDestination": 46,
     "contextDesignPattern": 11,
     "localizedDesignDestination": 6,
     "externalSourceURLUnverified": 2,
-    "unrepresentedToolDestination": 7,
+    "unrepresentedToolDestination": 0,
     "proseFalseMatches": 9,
     "catalogueFilters": 7,
     "additionalTopicDestinationFrames": 20,
-    "additionalMethodTopics": 5
-  }
+    "additionalMethodTopics": 5,
+    "nativeResultOrigins": 8,
+    "newlyDiscoveredResultOrigins": 1,
+    "calculationHelpFrames": 32,
+    "toolMethodFrames": 16,
+    "resultStateFrames": 36
+  },
+  "unresolvedRoutesScope": "Runtime/external-source qualification still unresolved. Native design gaps for all eight listed tool entries are closed; two provider URLs remain unverified. Historical qualifications are retained on each record.",
+  "originalCounts": {
+    "existing_design_destination": 46,
+    "proposed_context_help": 11,
+    "external_original_source": 2,
+    "prose_not_navigation": 9,
+    "unresolved_tool_destination": 7,
+    "catalogue_filter_not_help": 7,
+    "proposed_localized_help": 6
+  },
+  "countsScope": "Original captured audit inventory; see appliedCounts and incrementalInventory for subsequent native destination coverage.",
+  "incrementalInventory": {
+    "newEntryIds": [
+      "3OZ-0"
+    ],
+    "originalCapturedLabels": 88,
+    "currentCapturedLabels": 89,
+    "originalNavigationCandidates": 72,
+    "currentNavigationCandidates": 73,
+    "originalUnrepresentedToolOrigins": 7,
+    "currentNativeResultOrigins": 8
+  },
+  "currentNodeLocations": [
+    {
+      "nodeId": "O17-0",
+      "previousPage": "p-J-0",
+      "page": "p-N-0",
+      "gallery": "RKV-0",
+      "identityPreserved": true
+    },
+    {
+      "nodeId": "O23-0",
+      "previousPage": "p-J-0",
+      "page": "p-N-0",
+      "gallery": "RKV-0",
+      "identityPreserved": true
+    },
+    {
+      "nodeId": "O1H-0",
+      "previousPage": "p-J-0",
+      "page": "p-N-0",
+      "gallery": "RKV-0",
+      "identityPreserved": true
+    },
+    {
+      "nodeId": "O2D-0",
+      "previousPage": "p-J-0",
+      "page": "p-N-0",
+      "gallery": "RKV-0",
+      "identityPreserved": true
+    }
+  ]
 }
