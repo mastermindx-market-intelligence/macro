@@ -450,8 +450,98 @@ The [engine](https://github.com/mastermindx-market-intelligence/macro/blob/aec7f
 
 This phase changes editable Paper designs, source-linked build contracts and reproducible characterization artifacts. It does **not** patch the production hydrator, change entitlements, deploy a schema, establish browser animation playback or claim installed-runtime acceptance. Existing R3 source pin 338a10852dcefa5d2bd07e5c6be0955c2b1e83fd remains historical provenance; the R4 source review uses the newer explicit pin above.
 
+
+## Phase 8 — Bot Paper Portfolio: Today → Holdings with a bound valuation
+
+### Native product changes
+
+File [Bot Paper Portfolio](https://app.paper.design/file/01M6Y3AT0XJBWTM3AVCMBJQ8TE/p-1-0). The bounded product slice is Today desktop **2C-0**, Holdings desktop **77-0**, Today mobile **11E-0** and Holdings mobile **14D-0**. Operations 273–302 improve their controls, narrow layout and source contract.
+
+The existing numbers reconcile and were retained: stocks $357,000 + cash $663,000 = $1,020,000; held stocks/cash 35%/65%, accepted target 30%/70%; invested beta 1.12 × 35% = 0.392, displayed as 0.39. These remain labelled illustrative design values, not real account facts or achieved returns.
+
+- Mobile Today now has **Open holdings** after the target comparison, matching the desktop destination and retaining held mode.
+- The expanded mobile holding has separate **Open research** and **Decision history** actions. A single combined “Thesis, evidence & history” action no longer obscures the destination.
+- Compact holdings share one **Value / unrealized P&L** column caption. All monetary amounts remain unchanged.
+- The risk action says **View accepted target risk**. Its unavailable-report branch reuses existing Atlas S05 **1G9-0**, with no borrowed held beta.
+- **Method & sources** is now an actual visible action on mobile, and the desktop action/coverage text agree on that name and selected-report destination.
+- Existing primary wrappers and the changed desktop history/target/method links have 44px minimum targets. Holding detail close is a 44×44 control **22C-0**. Actual semantic buttons, keyboard behavior and focus restoration remain implementation requirements.
+- Five main cards use fluid widths. Two native 320px specimens resolve the narrow summary and navigation: Today **25X-0**, Holdings **28Q-0**. The first equal-width attempt split the final letter of Opportunities; the owned proof navigation was corrected to retain at least 76px for that label with flexible minimum-44px peers. Final native screenshots show all five destinations on one line without reduced type.
+- Original selected-navigation subtrees **1JT-0**, **1JY-0** and **1K3-0** are byte-for-byte unchanged in their JSX. The 320px examples use separate owned copies.
+
+The detailed contract is on **p-2-0, R4 · Account and navigation contract**, board **2EV-0**, body **25P-0**. It includes both native narrow proofs and an exact controlled-value diagram. The Start Here **1-0** remains a short index: only its pointer **8-0** changed; the other **55 original text IDs and values** were verified preserved.
+
+Protected recent decision-history boards **1KJ-0 / 1QU-0 / 1V6-0 / 1XM-0**, source notes **21G-0–21J-0**, the original state atlas and US S0 Draft/HOLD were not changed. No new product route or state atlas was created.
+
+### Source ownership and current-read verification
+
+Mastermind source pin **5c3d3885234358aefb97ecdbc59be0864df14f8b**:
+
+| Responsibility | Existing source |
+|---|---|
+| Actual account positions, cash, P&L and valuation | [portfolio/paper_account.py](https://github.com/mastermindx-market-intelligence/Mastermind/blob/5c3d3885234358aefb97ecdbc59be0864df14f8b/portfolio/paper_account.py) |
+| Per-symbol mark evidence | [portfolio/marks.py](https://github.com/mastermindx-market-intelligence/Mastermind/blob/5c3d3885234358aefb97ecdbc59be0864df14f8b/portfolio/marks.py) |
+| Consumed FX and its evidence | [portfolio/fx.py](https://github.com/mastermindx-market-intelligence/Mastermind/blob/5c3d3885234358aefb97ecdbc59be0864df14f8b/portfolio/fx.py), [portfolio/fx_evidence.py](https://github.com/mastermindx-market-intelligence/Mastermind/blob/5c3d3885234358aefb97ecdbc59be0864df14f8b/portfolio/fx_evidence.py) |
+| Current book-scoped dashboard projection | [app/web.py](https://github.com/mastermindx-market-intelligence/Mastermind/blob/5c3d3885234358aefb97ecdbc59be0864df14f8b/app/web.py) |
+| Candidate US S0 evidence inspector | [PR #673](https://github.com/mastermindx-market-intelligence/Mastermind/pull/673), [decision_snapshot_sources.py at 67aa483a3a5ac445b01a3dc2849889afa19ce057](https://github.com/mastermindx-market-intelligence/Mastermind/blob/67aa483a3a5ac445b01a3dc2849889afa19ce057/portfolio/decision_snapshot_sources.py) |
+
+A fresh read of paper_account.py at **master** returned the same Git blob as the pinned source, **73b18d9c5ecaaeee30492d02af2312db4c57efd0**. Its source SHA-256 is **cb87e10ce5817afd91bb4e84059fa740e045f33ad340e5c98ac77a698726cd9e**. The inspected app/web.py blob is **339bd4483abeb884d09d93e9800c8638c245689b**. PR #673 metadata was freshly observed open and draft at the exact candidate head above; no release or hold state was changed.
+
+Terminal's separately owned personal portfolio and ephemeral bookKey are not bot S0 identity. Macro engine/portfolio.py is a risk-budget reference, not the bot's account ledger. The implementation must join the incumbent account/mark/FX projection, not substitute one of those separate products.
+
+### Legacy numerical NAV versus qualified valuation
+
+api_portfolio stages an overlay from positions_pnl, but calls nav(prices, portfolio_id=portfolio) without strict=True. The legacy branch substitutes avg_cost for a missing symbol price. positions_pnl keeps that holding's current price, market value and P&L null. Therefore a numeric account_preview NAV does not demonstrate complete marked holdings.
+
+The full valuation result already classifies each nonzero held line as FRESH, CARRIED, UNATTESTED or UNPRICED and the account as QUALIFIED, PROVISIONAL or WITHHELD. WITHHELD keeps nav/invested null. Consumers must preserve these distinctions and every holding rather than silently fill the missing line at cost, zero or a newer snapshot.
+
+api_live_marks.pricing.complete only compares the count of non-null current prices with the held-identifier count. It does not establish explicit eligible-close evidence, a consistent account generation or qualified FX. The inspected projection also makes separate account/helper reads; the future valued-account consumer needs one bound selection.
+
+### Exact-source characterization
+
+**verify_bot_valuation_contract.py** AST-extracts only NavWithheld, _valuation_day, valuation, nav and positions_pnl. It does not execute source module initialization. _load_account returns a deep copy of the controlled fixture; portfolio.marks._stale_max_days resolves to a fixed stub of 30. Every call uses an explicit date. No account recovery, quote collection, FX, doctrine or endpoint path executes.
+
+Eight cases completed and are recorded in **BOT_VALUATION_CHARACTERIZATION.json**:
+
+| Controlled case | Legacy NAV | Full valuation | Meaning |
+|---|---:|---|---|
+| Cash 100; A = 2 × 60; B one share without a mark, cost 30 | 250 | WITHHELD, NAV null | Legacy preview includes B at cost; P&L retains B's nulls |
+| A/B both explicitly fresh, B price 35 | 255 | QUALIFIED, 255 | Positive control for the source helper |
+| Both prices present, B evidence absent | 255 | PROVISIONAL, B UNATTESTED | Numeric coverage is complete but evidence is not |
+| B explicitly close_qualified=False | 255 | PROVISIONAL | Usable price does not establish eligible close |
+| Both evidence entries are empty dictionaries | 255 | QUALIFIED, both FRESH | Legacy optional fields permit an unproven stronger classification |
+| B persisted at 35 on previous day | 250 | PROVISIONAL, 255, B CARRIED | Preserve carry basis and observed date |
+| B persisted only after selected asof | 250 | WITHHELD | Future mark cannot value the older selection |
+| Explicit empty book with cash 100 | 100 | QUALIFIED, 100 | Valid empty-account control |
+
+All values use one stipulated unit. No real balance, actual live defect occurrence or currency/FX compatibility was inferred.
+
+Two important limits follow from the exact source:
+- **strict=True alone is insufficient.** It rejects WITHHELD, but returns a numeric provisional value and accepts the empty-evidence-entry qualification.
+- **QUALIFIED alone is not explicit attestation.** An empty dictionary is still a dictionary; missing stale_days/observed_asof/close_qualified satisfy the compatibility branch. A missing dictionary entry instead becomes UNATTESTED.
+
+The minimal builder boundary is an evidence-availability projection alongside the incumbent valuation result. Preserve source nav_status and amounts, while requiring bound source, observation/session date, adjustment basis, explicit eligible-close evidence where claimed, known units and applicable consumed FX evidence for a fully attested UI claim. A usable known-unit amount with incomplete evidence is a **source-computed preview**. WITHHELD remains unavailable. This does not introduce another valuation enum, calculator, service or store.
+
+fx_evidence captures the consumed rate and arithmetic, but its source-convention qualification starts “not_established” and execution qualification “not_checked.” A captured receipt is not affirmative proof of either.
+
+### S0 scope and navigation contract
+
+The inspected S0 candidate projects account cash/starting NAV and position shares/average cost/identity/mark-source/weight. Its latest projection retains as_of and ticker/weight/identity/source labels. These particular projections do not retain per-holding current price, market value, P&L or a sealed FX valuation bundle. The US S0 inspector alone therefore does not satisfy the monetary Today/Holdings integration; its Draft/HOLD remains appropriate.
+
+**BOT_PORTFOLIO_BUILD_DELTA.json** records the required integration:
+
+1. Today → Holdings retains the same book, currency and valuation reference, plus selected S0 reference/cutoff where that evidence is in use. Do not quietly fetch a newer account and attach old totals.
+2. Preserve instrument/position, held-versus-target basis, selected accepted decision, row, scroll and focus. Late A/B responses cannot mix generations; a newer generation is an explicit choice.
+3. Keep selected-snapshot failure distinct from a latest/default-book fallback. A book switch cannot carry US S0 identity into another book.
+4. Filters change the visible subset, not account totals. Missing marks keep the holding and known cash while full NAV/weights remain unavailable.
+5. Open research and history from the actual selected instrument. Review target preserves the accepted decision. Target risk requires a matching report and otherwise uses existing S05; do not copy or simply rescale held beta.
+6. Method & sources opens the selected report's provenance. Close/Back restores the prior row/focus. Any selected-view export must retain the chosen reference and basis; export runtime integration was not proved here.
+7. Reuse existing S01/S02 account-switch/unavailable, S03 unpriced, S04 stale-held-risk and S05 target-risk states. Preserve the separate history/no-trade/unknown-submission rules.
+8. Prove keyboard activation, row selection, focus restoration, narrow reflow, concurrent updates, unpriced/provisional/empty evidence, FX gaps and unavailable selected snapshots through the actual consumer before release.
+
+The source helpers, native design layouts, source diagram and preservation checks were verified at their stated boundaries. Runtime integration, accounting/FX qualification and browser acceptance remain open. No production source or account state was changed.
+
 ## Next safe phase in progress
 
-Bot Paper Portfolio: audit Today → actual Holdings and return continuity in file 01M6Y3AT0XJBWTM3AVCMBJQ8TE, boards 2C-0 / 11E-0 / 77-0 / 14D-0. Preserve the separate selected-history/receipt work, the US S0 candidate's Draft/HOLD scope and the distinction between held positions, accepted targets and historical risk. Focus on the valued-account snapshot boundary and concrete navigation/narrow-layout gaps.
+BioCatalyst case → manual condition → return in Catalyst Intelligence file 01M6Y2VTQBVC9NA39HNG1DYWFH, p-1-0, boards 1-0 / 3F-0 / 9T-0 / AP-0 / BU-0 / HK-0. Preserve the already-correct manual-only local-save capability, Defense/Government integration, and current source-state distinctions. Focus on exact case/issuer/evidence identity, confirmed save versus failure, cancellation, editing and reopening from a quiet day.
 
 Phase completion is save-and-continue; this record does not terminate the continuing mission.

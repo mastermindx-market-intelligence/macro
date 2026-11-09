@@ -4367,5 +4367,690 @@
         }
       ]
     }
+  },
+  {
+    "operation_id": "paper-audit-next-271-confluence-evidence-link",
+    "fileId": "01M6Y3DCDDW541ZR38J1V52A9Y",
+    "tool": "set_text_content",
+    "targets": [
+      "2MF-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3DCDDW541ZR38J1V52A9Y\",\n    \"name\": \"Mastermind - Confluence Screener - R2 and Governed References\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"updates\": [\n    {\n      \"nodeId\": \"2MF-0\"\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-272-confluence-link-finish",
+    "fileId": "01M6Y3DCDDW541ZR38J1V52A9Y",
+    "tool": "finish_working_on_nodes",
+    "targets": [
+      "2AG-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3DCDDW541ZR38J1V52A9Y\",\n    \"name\": \"Mastermind - Confluence Screener - R2 and Governed References\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "OK"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-273-bot-action-copy",
+    "fileId": "01M6Y3AT0XJBWTM3AVCMBJQ8TE",
+    "tool": "set_text_content",
+    "targets": [
+      "16L-0",
+      "17T-0",
+      "BO-0",
+      "CH-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3AT0XJBWTM3AVCMBJQ8TE\",\n    \"name\": \"Mastermind - Bot Paper Portfolio - V3 Design\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"updates\": [\n    {\n      \"nodeId\": \"16L-0\"\n    },\n    {\n      \"nodeId\": \"17T-0\"\n    },\n    {\n      \"nodeId\": \"BO-0\"\n    },\n    {\n      \"nodeId\": \"CH-0\"\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-274-bot-holdings-entry",
+    "fileId": "01M6Y3AT0XJBWTM3AVCMBJQ8TE",
+    "tool": "write_html",
+    "targets": [
+      "13A-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3AT0XJBWTM3AVCMBJQ8TE\",\n    \"name\": \"Mastermind - Bot Paper Portfolio - V3 Design\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"21L-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"21M-0\",\n      \"name\": \"Open holdings →\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-275-bot-holding-history",
+    "fileId": "01M6Y3AT0XJBWTM3AVCMBJQ8TE",
+    "tool": "write_html",
+    "targets": [
+      "166-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3AT0XJBWTM3AVCMBJQ8TE\",\n    \"name\": \"Mastermind - Bot Paper Portfolio - V3 Design\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"21O-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"21P-0\",\n      \"name\": \"Decision history →\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-276-bot-risk-sources",
+    "fileId": "01M6Y3AT0XJBWTM3AVCMBJQ8TE",
+    "tool": "write_html",
+    "targets": [
+      "17F-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3AT0XJBWTM3AVCMBJQ8TE\",\n    \"name\": \"Mastermind - Bot Paper Portfolio - V3 Design\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"21R-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"21S-0\",\n      \"name\": \"Method & sources →\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-277-bot-pnl-caption",
+    "fileId": "01M6Y3AT0XJBWTM3AVCMBJQ8TE",
+    "tool": "write_html",
+    "targets": [
+      "16M-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3AT0XJBWTM3AVCMBJQ8TE\",\n    \"name\": \"Mastermind - Bot Paper Portfolio - V3 Design\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"21U-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"21V-0\",\n      \"name\": \"Value / unrealized P…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-278-bot-caption-order",
+    "fileId": "01M6Y3AT0XJBWTM3AVCMBJQ8TE",
+    "tool": "move_nodes",
+    "targets": [
+      "21U-0",
+      "16N-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3AT0XJBWTM3AVCMBJQ8TE\",\n    \"name\": \"Mastermind - Bot Paper Portfolio - V3 Design\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"moves\": [\n    {\n      \"nodeId\": \"21U-0\",\n      \"parentId\": \"16M-0\",\n      \"index\": 0\n    }\n  ],\n  \"affectedParents\": [\n    {\n      \"parentId\": \"16M-0\",\n      \"childIds\": [\n        \"21U-0\",\n        \"16N-0\",\n        \"16U-0\",\n        \"171-0\",\n        \"178-0\"\n      ]\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-279-bot-44px-control",
+    "fileId": "01M6Y3AT0XJBWTM3AVCMBJQ8TE",
+    "tool": "write_html",
+    "targets": [
+      "4L-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3AT0XJBWTM3AVCMBJQ8TE\",\n    \"name\": \"Mastermind - Bot Paper Portfolio - V3 Design\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"21X-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"21Y-0\",\n      \"name\": \"Review target & evid…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-280-bot-44px-control",
+    "fileId": "01M6Y3AT0XJBWTM3AVCMBJQ8TE",
+    "tool": "write_html",
+    "targets": [
+      "138-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3AT0XJBWTM3AVCMBJQ8TE\",\n    \"name\": \"Mastermind - Bot Paper Portfolio - V3 Design\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"220-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"221-0\",\n      \"name\": \"Review target & evid…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-281-bot-44px-control",
+    "fileId": "01M6Y3AT0XJBWTM3AVCMBJQ8TE",
+    "tool": "write_html",
+    "targets": [
+      "16K-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3AT0XJBWTM3AVCMBJQ8TE\",\n    \"name\": \"Mastermind - Bot Paper Portfolio - V3 Design\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"223-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"224-0\",\n      \"name\": \"Open research →\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-282-bot-44px-control",
+    "fileId": "01M6Y3AT0XJBWTM3AVCMBJQ8TE",
+    "tool": "write_html",
+    "targets": [
+      "17S-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3AT0XJBWTM3AVCMBJQ8TE\",\n    \"name\": \"Mastermind - Bot Paper Portfolio - V3 Design\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"226-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"227-0\",\n      \"name\": \"View accepted target…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-283-bot-44px-control",
+    "fileId": "01M6Y3AT0XJBWTM3AVCMBJQ8TE",
+    "tool": "write_html",
+    "targets": [
+      "BD-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3AT0XJBWTM3AVCMBJQ8TE\",\n    \"name\": \"Mastermind - Bot Paper Portfolio - V3 Design\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"229-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"22A-0\",\n      \"name\": \"Open research →\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-284-bot-detail-close",
+    "fileId": "01M6Y3AT0XJBWTM3AVCMBJQ8TE",
+    "tool": "write_html",
+    "targets": [
+      "AU-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3AT0XJBWTM3AVCMBJQ8TE\",\n    \"name\": \"Mastermind - Bot Paper Portfolio - V3 Design\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"22C-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"22D-0\",\n      \"name\": \"×\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-285-bot-fluid-card",
+    "fileId": "01M6Y3AT0XJBWTM3AVCMBJQ8TE",
+    "tool": "write_html",
+    "targets": [
+      "130-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3AT0XJBWTM3AVCMBJQ8TE\",\n    \"name\": \"Mastermind - Bot Paper Portfolio - V3 Design\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"22F-0\",\n      \"name\": \"Mobile accepted decision\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"22G-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"22H-0\",\n      \"name\": \"ACCEPTED TARGET\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"22I-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"22J-0\",\n      \"name\": \"QUEUED\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"22K-0\",\n      \"name\": \"Raise cash to 70%.\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"22L-0\",\n      \"name\": \"Trim four positions …\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"22M-0\",\n      \"name\": \"Next eligible sessio…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"22N-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"22O-0\",\n      \"name\": \"Review target & evid…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-286-bot-fluid-card",
+    "fileId": "01M6Y3AT0XJBWTM3AVCMBJQ8TE",
+    "tool": "write_html",
+    "targets": [
+      "13A-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3AT0XJBWTM3AVCMBJQ8TE\",\n    \"name\": \"Mastermind - Bot Paper Portfolio - V3 Design\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"22Q-0\",\n      \"name\": \"Mobile target comparison\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"22R-0\",\n      \"name\": \"What changes\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"22S-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"22T-0\",\n      \"name\": \"HELD → ACCEPTED\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"22U-0\",\n      \"name\": \"CHANGE\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"22V-0\",\n      \"name\": \"Mobile target MSFT\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"22W-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"22X-0\",\n      \"name\": \"MSFT\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"22Y-0\",\n      \"name\": \"5.0% → 10.0%\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"22Z-0\",\n      \"name\": \"+5.0 pp\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"230-0\",\n      \"name\": \"Mobile target NVDA\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"231-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"232-0\",\n      \"name\": \"NVDA\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"233-0\",\n      \"name\": \"6.0% → 4.0%\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"234-0\",\n      \"name\": \"−2.0 pp\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"235-0\",\n      \"name\": \"Mobile target GOOGL\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"236-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"237-0\",\n      \"name\": \"GOOGL\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"238-0\",\n      \"name\": \"8.0% → 6.0%\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"239-0\",\n      \"name\": \"−2.0 pp\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"23A-0\",\n      \"name\": \"Mobile target AMZN\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"23B-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"23C-0\",\n      \"name\": \"AMZN\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"23D-0\",\n      \"name\": \"10.0% → 6.0%\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"23E-0\",\n      \"name\": \"−4.0 pp\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"23F-0\",\n      \"name\": \"Mobile target JPM\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"23G-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"23H-0\",\n      \"name\": \"JPM\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"23I-0\",\n      \"name\": \"6.0% → 4.0%\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"23J-0\",\n      \"name\": \"−2.0 pp\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"23K-0\",\n      \"name\": \"Mobile target Cash\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"23L-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"23M-0\",\n      \"name\": \"Cash\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"23N-0\",\n      \"name\": \"65.0% → 70.0%\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"23O-0\",\n      \"name\": \"+5.0 pp\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"23P-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"23Q-0\",\n      \"name\": \"Open holdings →\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-287-bot-fluid-card",
+    "fileId": "01M6Y3AT0XJBWTM3AVCMBJQ8TE",
+    "tool": "write_html",
+    "targets": [
+      "166-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3AT0XJBWTM3AVCMBJQ8TE\",\n    \"name\": \"Mastermind - Bot Paper Portfolio - V3 Design\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"23S-0\",\n      \"name\": \"Mobile expanded holding\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"23T-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"23U-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"23V-0\",\n      \"name\": \"MSFT · Microsoft\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"23W-0\",\n      \"name\": \"100 shares × $510.00\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"23X-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"23Y-0\",\n      \"name\": \"$51,000\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"23Z-0\",\n      \"name\": \"Held 5.0%\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"240-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"241-0\",\n      \"name\": \"Unrealized P&L\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"242-0\",\n      \"name\": \"+$4,000\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"243-0\",\n      \"name\": \"Accepted 10.0% · +5.…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"244-0\",\n      \"name\": \"Thesis: enterprise d…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"245-0\",\n      \"name\": \"Countercase: heavy i…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"246-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"247-0\",\n      \"name\": \"Open research →\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"248-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"249-0\",\n      \"name\": \"Decision history →\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-288-bot-fluid-card",
+    "fileId": "01M6Y3AT0XJBWTM3AVCMBJQ8TE",
+    "tool": "write_html",
+    "targets": [
+      "16M-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3AT0XJBWTM3AVCMBJQ8TE\",\n    \"name\": \"Mastermind - Bot Paper Portfolio - V3 Design\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"24B-0\",\n      \"name\": \"Mobile other holdings\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"24C-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"24D-0\",\n      \"name\": \"Value / unrealized P…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"24E-0\",\n      \"name\": \"Mobile holding NVDA\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"24F-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"24G-0\",\n      \"name\": \"NVDA · NVIDIA\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"24H-0\",\n      \"name\": \"Held 6.0% · 400 shar…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"24I-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"24J-0\",\n      \"name\": \"$61,200\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"24K-0\",\n      \"name\": \"+$1,200\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"24L-0\",\n      \"name\": \"Mobile holding GOOGL\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"24M-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"24N-0\",\n      \"name\": \"GOOGL · Alphabet\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"24O-0\",\n      \"name\": \"Held 8.0% · 400 shar…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"24P-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"24Q-0\",\n      \"name\": \"$81,600\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"24R-0\",\n      \"name\": \"−$3,400\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"24S-0\",\n      \"name\": \"Mobile holding AMZN\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"24T-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"24U-0\",\n      \"name\": \"AMZN · Amazon\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"24V-0\",\n      \"name\": \"Held 10.0% · 400 sha…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"24W-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"24X-0\",\n      \"name\": \"$102,000\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"24Y-0\",\n      \"name\": \"+$5,000\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"24Z-0\",\n      \"name\": \"Mobile holding JPM\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"250-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"251-0\",\n      \"name\": \"JPM · JPMorgan Chase\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"252-0\",\n      \"name\": \"Held 6.0% · 200 shar…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"253-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"254-0\",\n      \"name\": \"$61,200\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"255-0\",\n      \"name\": \"+$200\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-289-bot-fluid-card",
+    "fileId": "01M6Y3AT0XJBWTM3AVCMBJQ8TE",
+    "tool": "write_html",
+    "targets": [
+      "17F-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3AT0XJBWTM3AVCMBJQ8TE\",\n    \"name\": \"Mastermind - Bot Paper Portfolio - V3 Design\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"257-0\",\n      \"name\": \"Mobile held risk\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"258-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"259-0\",\n      \"name\": \"Held risk\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"25A-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"25B-0\",\n      \"name\": \"8 Oct close\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"25C-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"25D-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"25E-0\",\n      \"name\": \"PORTFOLIO BETA\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"25F-0\",\n      \"name\": \"0.39\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"25G-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"25H-0\",\n      \"name\": \"CASH HELD\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"25I-0\",\n      \"name\": \"65.0%\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"25J-0\",\n      \"name\": \"5 / 5 histories · 10…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"25K-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"25L-0\",\n      \"name\": \"View accepted target…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"25M-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"25N-0\",\n      \"name\": \"Method & sources →\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-290-bot-valued-snapshot-contract",
+    "fileId": "01M6Y3AT0XJBWTM3AVCMBJQ8TE",
+    "tool": "write_html",
+    "targets": [
+      "1-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3AT0XJBWTM3AVCMBJQ8TE\",\n    \"name\": \"Mastermind - Bot Paper Portfolio - V3 Design\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"25P-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"25Q-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"25R-0\",\n      \"name\": \"R4 · TODAY → HOLDING…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"25S-0\",\n      \"name\": \"Keep the book attach…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"25T-0\",\n      \"name\": \"320px reflow and sou…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"25U-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"25V-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"25W-0\",\n      \"name\": \"Today · 320px\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"25X-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"25Y-0\",\n      \"name\": \"Mobile brand header\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"25Z-0\",\n      \"name\": \"Brand lockup\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"260-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"261-0\",\n      \"name\": \"M\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"262-0\",\n      \"name\": \"MASTERMIND\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"263-0\",\n      \"name\": \"EN / 中文\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"264-0\",\n      \"name\": \"Mobile account header\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"265-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"266-0\",\n      \"name\": \"US Autonomous ⌄\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"267-0\",\n      \"name\": \"USD · Active paper b…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"268-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"269-0\",\n      \"name\": \"Last eligible close\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"26A-0\",\n      \"name\": \"8 Oct · 16:00 ET\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"26B-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"26C-0\",\n      \"name\": \"Mobile nav Today\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"26D-0\",\n      \"name\": \"Today icon\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"26E-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"26F-0\",\n      \"name\": \"Today\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"26G-0\",\n      \"name\": \"Mobile nav Opportunities\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"26H-0\",\n      \"name\": \"Opportunities icon\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"26I-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"26J-0\",\n      \"name\": \"Opportunities\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"26K-0\",\n      \"name\": \"Mobile nav Research\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"26L-0\",\n      \"name\": \"Research icon\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"26M-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"26N-0\",\n      \"name\": \"Research\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"26O-0\",\n      \"name\": \"Mobile nav Portfolio\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"26P-0\",\n      \"name\": \"Portfolio icon\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"26Q-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"26R-0\",\n      \"name\": \"Portfolio\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"26S-0\",\n      \"name\": \"Mobile nav Learn\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"26T-0\",\n      \"name\": \"Learn icon\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"26U-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"26V-0\",\n      \"name\": \"Learn\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"26W-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"26X-0\",\n      \"name\": \"Mobile Today title\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"26Y-0\",\n      \"name\": \"DESIGN PREVIEW · ILL…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"26Z-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"270-0\",\n      \"name\": \"Today\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"271-0\",\n      \"name\": \"9 Oct · Premarket\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"272-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"273-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"274-0\",\n      \"name\": \"ACCOUNT VALUE · USD\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"275-0\",\n      \"name\": \"$1,020,000\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"276-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"277-0\",\n      \"name\": \"CASH HELD\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"278-0\",\n      \"name\": \"65.0%\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"279-0\",\n      \"name\": \"Mobile accepted decision\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"27A-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"27B-0\",\n      \"name\": \"ACCEPTED TARGET\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"27C-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"27D-0\",\n      \"name\": \"QUEUED\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"27E-0\",\n      \"name\": \"Raise cash to 70%.\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"27F-0\",\n      \"name\": \"Trim four positions …\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"27G-0\",\n      \"name\": \"Next eligible sessio…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"27H-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"27I-0\",\n      \"name\": \"Review target & evid…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"27J-0\",\n      \"name\": \"Mobile target comparison\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"27K-0\",\n      \"name\": \"What changes\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"27L-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"27M-0\",\n      \"name\": \"HELD → ACCEPTED\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"27N-0\",\n      \"name\": \"CHANGE\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"27O-0\",\n      \"name\": \"Mobile target MSFT\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"27P-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"27Q-0\",\n      \"name\": \"MSFT\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"27R-0\",\n      \"name\": \"5.0% → 10.0%\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"27S-0\",\n      \"name\": \"+5.0 pp\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"27T-0\",\n      \"name\": \"Mobile target NVDA\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"27U-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"27V-0\",\n      \"name\": \"NVDA\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"27W-0\",\n      \"name\": \"6.0% → 4.0%\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"27X-0\",\n      \"name\": \"−2.0 pp\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"27Y-0\",\n      \"name\": \"Mobile target GOOGL\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"27Z-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"280-0\",\n      \"name\": \"GOOGL\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"281-0\",\n      \"name\": \"8.0% → 6.0%\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"282-0\",\n      \"name\": \"−2.0 pp\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"283-0\",\n      \"name\": \"Mobile target AMZN\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"284-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"285-0\",\n      \"name\": \"AMZN\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"286-0\",\n      \"name\": \"10.0% → 6.0%\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"287-0\",\n      \"name\": \"−4.0 pp\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"288-0\",\n      \"name\": \"Mobile target JPM\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"289-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"28A-0\",\n      \"name\": \"JPM\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"28B-0\",\n      \"name\": \"6.0% → 4.0%\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"28C-0\",\n      \"name\": \"−2.0 pp\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"28D-0\",\n      \"name\": \"Mobile target Cash\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"28E-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"28F-0\",\n      \"name\": \"Cash\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"28G-0\",\n      \"name\": \"65.0% → 70.0%\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"28H-0\",\n      \"name\": \"+5.0 pp\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"28I-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"28J-0\",\n      \"name\": \"Open holdings →\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"28K-0\",\n      \"name\": \"Mobile waiting explanation\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"28L-0\",\n      \"name\": \"Why the bot is waiti…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"28M-0\",\n      \"name\": \"The target is queued…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"28N-0\",\n      \"name\": \"Read the full decisi…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"28O-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"28P-0\",\n      \"name\": \"Holdings · 320px\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"28Q-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"28R-0\",\n      \"name\": \"Mobile brand header\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"28S-0\",\n      \"name\": \"Brand lockup\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"28T-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"28U-0\",\n      \"name\": \"M\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"28V-0\",\n      \"name\": \"MASTERMIND\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"28W-0\",\n      \"name\": \"EN / 中文\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"28X-0\",\n      \"name\": \"Mobile account header\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"28Y-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"28Z-0\",\n      \"name\": \"US Autonomous ⌄\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"290-0\",\n      \"name\": \"USD · Active paper b…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"291-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"292-0\",\n      \"name\": \"Last eligible close\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"293-0\",\n      \"name\": \"8 Oct · 16:00 ET\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"294-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"295-0\",\n      \"name\": \"Mobile nav Today\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"296-0\",\n      \"name\": \"Today icon\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"297-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"298-0\",\n      \"name\": \"Today\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"299-0\",\n      \"name\": \"Mobile nav Opportunities\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"29A-0\",\n      \"name\": \"Opportunities icon\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"29B-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"29C-0\",\n      \"name\": \"Opportunities\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"29D-0\",\n      \"name\": \"Mobile nav Research\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"29E-0\",\n      \"name\": \"Research icon\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"29F-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"29G-0\",\n      \"name\": \"Research\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"29H-0\",\n      \"name\": \"Mobile nav Portfolio\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"29I-0\",\n      \"name\": \"Portfolio icon\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"29J-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"29K-0\",\n      \"name\": \"Portfolio\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"29L-0\",\n      \"name\": \"Mobile nav Learn\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"29M-0\",\n      \"name\": \"Learn icon\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"29N-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"29O-0\",\n      \"name\": \"Learn\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"29P-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"29Q-0\",\n      \"name\": \"Mobile Portfolio title\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"29R-0\",\n      \"name\": \"DESIGN PREVIEW · ILL…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"29S-0\",\n      \"name\": \"Portfolio\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"29T-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"29U-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"29V-0\",\n      \"name\": \"Holdings & Risk\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"29W-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"29X-0\",\n      \"name\": \"Performance\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"29Y-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"29Z-0\",\n      \"name\": \"Decisions & Orders\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2A0-0\",\n      \"name\": \"Mobile holding account value\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2A1-0\",\n      \"name\": \"ACCOUNT VALUE · USD\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2A2-0\",\n      \"name\": \"$1,020,000\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2A3-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2A4-0\",\n      \"name\": \"Stocks $357,000\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2A5-0\",\n      \"name\": \"Cash $663,000\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2A6-0\",\n      \"name\": \"Mobile holding list title\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2A7-0\",\n      \"name\": \"5 current holdings\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2A8-0\",\n      \"name\": \"All prices available\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2A9-0\",\n      \"name\": \"Mobile expanded holding\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2AA-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2AB-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2AC-0\",\n      \"name\": \"MSFT · Microsoft\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2AD-0\",\n      \"name\": \"100 shares × $510.00\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2AE-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2AF-0\",\n      \"name\": \"$51,000\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2AG-0\",\n      \"name\": \"Held 5.0%\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2AH-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2AI-0\",\n      \"name\": \"Unrealized P&L\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2AJ-0\",\n      \"name\": \"+$4,000\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2AK-0\",\n      \"name\": \"Accepted 10.0% · +5.…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2AL-0\",\n      \"name\": \"Thesis: enterprise d…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2AM-0\",\n      \"name\": \"Countercase: heavy i…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2AN-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2AO-0\",\n      \"name\": \"Open research →\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2AP-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2AQ-0\",\n      \"name\": \"Decision history →\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2AR-0\",\n      \"name\": \"Mobile other holdings\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2AS-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2AT-0\",\n      \"name\": \"Value / unrealized P…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2AU-0\",\n      \"name\": \"Mobile holding NVDA\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2AV-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2AW-0\",\n      \"name\": \"NVDA · NVIDIA\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2AX-0\",\n      \"name\": \"Held 6.0% · 400 shar…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2AY-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2AZ-0\",\n      \"name\": \"$61,200\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2B0-0\",\n      \"name\": \"+$1,200\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2B1-0\",\n      \"name\": \"Mobile holding GOOGL\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2B2-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2B3-0\",\n      \"name\": \"GOOGL · Alphabet\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2B4-0\",\n      \"name\": \"Held 8.0% · 400 shar…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2B5-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2B6-0\",\n      \"name\": \"$81,600\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2B7-0\",\n      \"name\": \"−$3,400\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2B8-0\",\n      \"name\": \"Mobile holding AMZN\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2B9-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2BA-0\",\n      \"name\": \"AMZN · Amazon\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2BB-0\",\n      \"name\": \"Held 10.0% · 400 sha…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2BC-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2BD-0\",\n      \"name\": \"$102,000\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2BE-0\",\n      \"name\": \"+$5,000\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2BF-0\",\n      \"name\": \"Mobile holding JPM\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2BG-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2BH-0\",\n      \"name\": \"JPM · JPMorgan Chase\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2BI-0\",\n      \"name\": \"Held 6.0% · 200 shar…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2BJ-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2BK-0\",\n      \"name\": \"$61,200\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2BL-0\",\n      \"name\": \"+$200\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2BM-0\",\n      \"name\": \"Mobile held risk\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2BN-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2BO-0\",\n      \"name\": \"Held risk\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2BP-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2BQ-0\",\n      \"name\": \"8 Oct close\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2BR-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2BS-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2BT-0\",\n      \"name\": \"PORTFOLIO BETA\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2BU-0\",\n      \"name\": \"0.39\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2BV-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2BW-0\",\n      \"name\": \"CASH HELD\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2BX-0\",\n      \"name\": \"65.0%\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2BY-0\",\n      \"name\": \"5 / 5 histories · 10…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2BZ-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2C0-0\",\n      \"name\": \"View accepted target…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2C1-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2C2-0\",\n      \"name\": \"Method & sources →\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2C3-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2C4-0\",\n      \"name\": \"SVG\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2C5-0\",\n      \"name\": \"Rect\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2C6-0\",\n      \"name\": \"Group\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2C7-0\",\n      \"name\": \"CONTROLLED FIXTURE ·…\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2C8-0\",\n      \"name\": \"Cash 100 · A: 2 × 60…\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2C9-0\",\n      \"name\": \"Rect\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2CA-0\",\n      \"name\": \"LEGACY NAV\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2CB-0\",\n      \"name\": \"250\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2CC-0\",\n      \"name\": \"includes B at cost 3…\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2CD-0\",\n      \"name\": \"Rect\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2CE-0\",\n      \"name\": \"EXISTING VALUATION O…\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2CF-0\",\n      \"name\": \"—\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2CG-0\",\n      \"name\": \"WITHHELD · keep the …\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2CH-0\",\n      \"name\": \"A numerical preview …\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2CI-0\",\n      \"name\": \"Exact source helpers…\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2CJ-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2CK-0\",\n      \"name\": \"01 · REUSE THE OWNER…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2CL-0\",\n      \"name\": \"Account values come …\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2CM-0\",\n      \"name\": \"portfolio/paper_acco…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2CN-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2CO-0\",\n      \"name\": \"02 · REPRODUCED LEGA…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2CP-0\",\n      \"name\": \"A cost fallback can …\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2CQ-0\",\n      \"name\": \"api_portfolio calls …\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2CR-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2CS-0\",\n      \"name\": \"03 · EVIDENCE IS A S…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2CT-0\",\n      \"name\": \"QUALIFIED does not p…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2CU-0\",\n      \"name\": \"At this pin, an empt…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2CV-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2CW-0\",\n      \"name\": \"04 · S0 CANDIDATE SC…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2CX-0\",\n      \"name\": \"The inspector is not…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2CY-0\",\n      \"name\": \"PR #673 remains open…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2CZ-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2D0-0\",\n      \"name\": \"05 · NAVIGATION CONT…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2D1-0\",\n      \"name\": \"Open Holdings with t…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2D2-0\",\n      \"name\": \"Retain book, currenc…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2D3-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2D4-0\",\n      \"name\": \"06 · EXISTING STATES…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2D5-0\",\n      \"name\": \"Research, history an…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2D6-0\",\n      \"name\": \"Today’s Open holding…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2D7-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2D8-0\",\n      \"name\": \"07 · RESPONSIVE AND …\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2D9-0\",\n      \"name\": \"Readable values, exp…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2DA-0\",\n      \"name\": \"The 390px cards are …\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2DB-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2DC-0\",\n      \"name\": \"08 · ACCEPTANCE BOUN…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2DD-0\",\n      \"name\": \"Prove the real consu…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2DE-0\",\n      \"name\": \"Eight exact-source f…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2DF-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2DG-0\",\n      \"name\": \"SOURCE · Mastermind …\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2DH-0\",\n      \"name\": \"https://github.com/m…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2DI-0\",\n      \"name\": \"https://github.com/m…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2DJ-0\",\n      \"name\": \"https://github.com/m…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2DK-0\",\n      \"name\": \"https://github.com/m…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2DL-0\",\n      \"name\": \"Evidence: BOT_VALUAT…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-291-bot-narrow-navigation",
+    "fileId": "01M6Y3AT0XJBWTM3AVCMBJQ8TE",
+    "tool": "write_html",
+    "targets": [
+      "26B-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3AT0XJBWTM3AVCMBJQ8TE\",\n    \"name\": \"Mastermind - Bot Paper Portfolio - V3 Design\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"2DN-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2DO-0\",\n      \"name\": \"Mobile nav Today\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2DP-0\",\n      \"name\": \"Today icon\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2DQ-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2DR-0\",\n      \"name\": \"Today\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2DS-0\",\n      \"name\": \"Mobile nav Opportunities\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2DT-0\",\n      \"name\": \"Opportunities icon\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2DU-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2DV-0\",\n      \"name\": \"Opportunities\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2DW-0\",\n      \"name\": \"Mobile nav Research\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2DX-0\",\n      \"name\": \"Research icon\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2DY-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2DZ-0\",\n      \"name\": \"Research\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2E0-0\",\n      \"name\": \"Mobile nav Portfolio\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2E1-0\",\n      \"name\": \"Portfolio icon\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2E2-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2E3-0\",\n      \"name\": \"Portfolio\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2E4-0\",\n      \"name\": \"Mobile nav Learn\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2E5-0\",\n      \"name\": \"Learn icon\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2E6-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2E7-0\",\n      \"name\": \"Learn\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-292-bot-narrow-navigation",
+    "fileId": "01M6Y3AT0XJBWTM3AVCMBJQ8TE",
+    "tool": "write_html",
+    "targets": [
+      "294-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3AT0XJBWTM3AVCMBJQ8TE\",\n    \"name\": \"Mastermind - Bot Paper Portfolio - V3 Design\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"2E9-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2EA-0\",\n      \"name\": \"Mobile nav Today\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2EB-0\",\n      \"name\": \"Today icon\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2EC-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2ED-0\",\n      \"name\": \"Today\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2EE-0\",\n      \"name\": \"Mobile nav Opportunities\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2EF-0\",\n      \"name\": \"Opportunities icon\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2EG-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2EH-0\",\n      \"name\": \"Opportunities\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2EI-0\",\n      \"name\": \"Mobile nav Research\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2EJ-0\",\n      \"name\": \"Research icon\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2EK-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2EL-0\",\n      \"name\": \"Research\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2EM-0\",\n      \"name\": \"Mobile nav Portfolio\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2EN-0\",\n      \"name\": \"Portfolio icon\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2EO-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2EP-0\",\n      \"name\": \"Portfolio\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2EQ-0\",\n      \"name\": \"Mobile nav Learn\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2ER-0\",\n      \"name\": \"Learn icon\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2ES-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2ET-0\",\n      \"name\": \"Learn\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-293-bot-build-page",
+    "fileId": "01M6Y3AT0XJBWTM3AVCMBJQ8TE",
+    "tool": "create_page",
+    "targets": [
+      "p-1-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3AT0XJBWTM3AVCMBJQ8TE\",\n    \"name\": \"Mastermind - Bot Paper Portfolio - V3 Design\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"pageId\": \"p-2-0\",\n  \"name\": \"R4 · Account and navigation contract\",\n  \"icon\": \"blueprint\"\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-294-bot-build-frame",
+    "fileId": "01M6Y3AT0XJBWTM3AVCMBJQ8TE",
+    "tool": "write_html",
+    "targets": [
+      "root_node_p-2-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3AT0XJBWTM3AVCMBJQ8TE\",\n    \"name\": \"Mastermind - Bot Paper Portfolio - V3 Design\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"2EV-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2EW-0\",\n      \"name\": \"IMPLEMENTATION REFER…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-295-bot-contract-placement",
+    "fileId": "01M6Y3AT0XJBWTM3AVCMBJQ8TE",
+    "tool": "move_nodes",
+    "targets": [
+      "25P-0",
+      "2EV-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3AT0XJBWTM3AVCMBJQ8TE\",\n    \"name\": \"Mastermind - Bot Paper Portfolio - V3 Design\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"moves\": [\n    {\n      \"nodeId\": \"25P-0\",\n      \"parentId\": \"2EV-0\",\n      \"index\": 1\n    }\n  ],\n  \"affectedParents\": [\n    {\n      \"parentId\": \"2EV-0\",\n      \"childIds\": [\n        \"2EW-0\",\n        \"25P-0\"\n      ]\n    },\n    {\n      \"parentId\": \"1-0\",\n      \"childIds\": [\n        \"2-0\",\n        \"9-0\",\n        \"P-0\",\n        \"1U-0\",\n        \"27-0\",\n        \"21F-0\"\n      ]\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-296-bot-build-pointer",
+    "fileId": "01M6Y3AT0XJBWTM3AVCMBJQ8TE",
+    "tool": "set_text_content",
+    "targets": [
+      "8-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3AT0XJBWTM3AVCMBJQ8TE\",\n    \"name\": \"Mastermind - Bot Paper Portfolio - V3 Design\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"updates\": [\n    {\n      \"nodeId\": \"8-0\"\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-297-bot-build-names",
+    "fileId": "01M6Y3AT0XJBWTM3AVCMBJQ8TE",
+    "tool": "rename_nodes",
+    "targets": [
+      "2EV-0",
+      "25P-0",
+      "25X-0",
+      "28Q-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3AT0XJBWTM3AVCMBJQ8TE\",\n    \"name\": \"Mastermind - Bot Paper Portfolio - V3 Design\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"updates\": [\n    {\n      \"nodeId\": \"2EV-0\",\n      \"name\": \"R4 · Valued account + navigation build\"\n    },\n    {\n      \"nodeId\": \"25P-0\",\n      \"name\": \"R4 · Valuation and return contract\"\n    },\n    {\n      \"nodeId\": \"25X-0\",\n      \"name\": \"320 Today · Same-book continuation\"\n    },\n    {\n      \"nodeId\": \"28Q-0\",\n      \"name\": \"320 Holdings · Selected valuation\"\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-298-bot-finish",
+    "fileId": "01M6Y3AT0XJBWTM3AVCMBJQ8TE",
+    "tool": "finish_working_on_nodes",
+    "targets": [
+      "1-0",
+      "2C-0",
+      "77-0",
+      "11E-0",
+      "14D-0",
+      "2EV-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3AT0XJBWTM3AVCMBJQ8TE\",\n    \"name\": \"Mastermind - Bot Paper Portfolio - V3 Design\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "OK"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-299-bot-desktop-links",
+    "fileId": "01M6Y3AT0XJBWTM3AVCMBJQ8TE",
+    "tool": "write_html",
+    "targets": [
+      "BF-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3AT0XJBWTM3AVCMBJQ8TE\",\n    \"name\": \"Mastermind - Bot Paper Portfolio - V3 Design\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"2EY-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2EZ-0\",\n      \"name\": \"Decision history →\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-300-bot-desktop-links",
+    "fileId": "01M6Y3AT0XJBWTM3AVCMBJQ8TE",
+    "tool": "write_html",
+    "targets": [
+      "BN-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3AT0XJBWTM3AVCMBJQ8TE\",\n    \"name\": \"Mastermind - Bot Paper Portfolio - V3 Design\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"2F1-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2F2-0\",\n      \"name\": \"Accepted target\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-301-bot-desktop-links",
+    "fileId": "01M6Y3AT0XJBWTM3AVCMBJQ8TE",
+    "tool": "write_html",
+    "targets": [
+      "BO-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3AT0XJBWTM3AVCMBJQ8TE\",\n    \"name\": \"Mastermind - Bot Paper Portfolio - V3 Design\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"2F4-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2F5-0\",\n      \"name\": \"Method & sources →\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-302-bot-desktop-finish",
+    "fileId": "01M6Y3AT0XJBWTM3AVCMBJQ8TE",
+    "tool": "finish_working_on_nodes",
+    "targets": [
+      "77-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3AT0XJBWTM3AVCMBJQ8TE\",\n    \"name\": \"Mastermind - Bot Paper Portfolio - V3 Design\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "OK"
+        }
+      ]
+    }
   }
 ]
