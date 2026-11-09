@@ -6,7 +6,8 @@ objective: >
   declared authority for every decision-bearing output and advisory evidence
   unable to silently override it. Each wave is complete only at its separately
   authorized acceptance boundary.
-status: done
+status: blocked
+# Current status belongs to R4; accepted P0A and P0B remain closed.
 program: crypto-intelligence
 repos: [macro]
 owner: ceo-sol
@@ -84,22 +85,38 @@ waves:
       files): pre-response collector failures (raise/skip) now reach
       source_capture_status through record_unavailable(), so the publication contract's
       stale/unavailable receipts cover the bgeo funding and okx taker paths.
+  - id: R4
+    title: Usable conditional crypto suite and replacement candidate
+    status: in_progress
+    pr: 9580
+    next_action: >
+      The existing draft PR #9580 already carries the recovered R4 source.
+      Retain the dated 44 local tests and eight Paper R4 boards as their
+      recorded proof. Complete the existing CI owner's R4 enrollment and
+      consume exact-head successor proof. Obtain authenticated hosted visual
+      and interaction acceptance before any production route cutover.
+      See DEC:CRYPTO-INTELLIGENCE-R4-20261018.
 next_action: >
-  Phase 2 of the program: the collector capture-gap build is DONE (#9151, ruling R9) and
-  glance-tier polish item 0 is DONE (#9162, squash e390119a8f19); the 14 pre-existing design
-  items in agentos/handoffs/CRYPTO-INTELLIGENCE-2026-10-13-phase1-integration.md remain as
-  Phase-2 polish lanes (lane/* DRAFT PR judged by artifact, merged by the seat on concluded
-  green); the 27 superseded lane PRs are CLOSED; wave-2 polish (items A–K) is PR #9164 (head
-  449a2c47cd3a), review PASS (R26), MERGED (squash 7fc0d068e03f); wave-3 polish (L / M / H' /
-  two sign nits) is PR #9166 (head 8f3be876a7d4), review PASS-WITH-NITS (R33), MERGED (squash
-  7e16897a6cac); wave 4 (TERMINAL: L' / M' / H'' / N3) is PR #9182 (head 40d72cd8dc8c), review
-  PASS-WITH-NITS (seat-accepted; 2 cosmetic nits → Phase-2) (R39), MERGED (squash 0b53c5df4617); the Phase-2 design frontier is
-  CLOSED. P0B ACCEPTED 2026-11-02: the nightly data lane resumed (daily collection 2026-10-31 on
-  origin/main) and the live /crypto hero carries "As of 2026-10-31" on the Phase-1/Phase-2
-  templates (handoff CRYPTO-INTELLIGENCE-2026-11-02-p0b-acceptance.md). No wave is open and no
-  next action remains for this workstream; any future crypto work is a new commission.
-blocked_by: []
+  Continue the existing October 18 R4 commission on PR #9580; its recovered
+  source is already published. Consume exact-head CI after the existing-owner
+  enrollment repair, then obtain authenticated hosted visual and interaction
+  acceptance and covering production compatibility before public route cutover.
+  P0A and P0B remain accepted and closed. Preserve canonical Bitcoin and H5
+  authority; no streaming, remote alerts or calibrated forecast skill is claimed.
+blocked_by:
+  - >
+    Existing private R4 hosted review still needs an authenticated browser
+    interaction/visual acceptance receipt. Local Chromium proof is not a hosted
+    or production result. The existing Paper target is readable and displays
+    eight R4 boards; no further Paper write is pending in this slice.
+  - >
+    Public replacement requires exact-head CI and a covering production render,
+    including explicit compatibility of the canonical Bitcoin model/H5 flows;
+    issue-time forecast validation, streaming and remote alerts are unbuilt.
 owns_paths:
+  - "lib/crypto_intelligence_view.py"
+  - "scripts/build_crypto_intelligence_r4.py"
+  - "templates/crypto_intelligence_r4.*"
   - "engine/btc_decision.py"
   - "contracts/btc_decision.schema.json"
   - "scripts/build_vector.py"
@@ -109,6 +126,7 @@ owns_paths:
   - "templates/crypto.html.j2"
   - "tests/test_crypto_wave2.py"
 decisions:
+  - "DEC:CRYPTO-INTELLIGENCE-R4-20261018"
   - "DEC:BTC-MIDTERM-BLACKOUT-AUTHORITY-RETIRED"
   - "DEC:CRYPTO-H5-BTC-BUDGET-AUTHORITY"
   - "DEC:CRYPTO-VECTOR-R2-20260926"
@@ -178,6 +196,10 @@ do_not_redo:
     GitHub branch/issue, Linear assignment, merged G7 code or another carrier as a
     runtime Job.
 artifacts:
+  - agentos/handoffs/CRYPTO-INTELLIGENCE-2026-10-18-r4-candidate.md
+  - research/CRYPTO_INTELLIGENCE_R4_BUILD_PACKET.md
+  - research/CRYPTO_INTELLIGENCE_R4_SCORECARD.json
+  - agentos/decisions/DEC-CRYPTO-INTELLIGENCE-R4-20261018.md
   - agentos/handoffs/CRYPTO-INTELLIGENCE-2026-08-23-p0a-btc-decision.md
   - agentos/handoffs/CRYPTO-INTELLIGENCE-2026-08-24-p0a-close-p0b-commission.md
   - agentos/handoffs/CRYPTO-INTELLIGENCE-2026-08-24-p0b-runtime-gate.md
@@ -418,3 +440,44 @@ Current continuation recovered already-published R13/R14 and committed R15 work 
 Two final source defects were repaired: house-font token compliance and a responsive SVG dash that stopped painting the historical line before the endpoint on wide screens. The latter fix is local to this page; shared chart code/data are unchanged. Final proof112browsercases/4assistantfailurecases/32canonicalstates, with end-of-trace paint assertions in all96historycases, and448existinghosttests passed10warnings. Text integration with mainda1f7730 and sibling7645 is clean at the inspected identities; no actual merge. Original failures/images, pre-fix evidence and same-session limits remain preserved.
 
 See research/CRYPTO_R15_DESK_INTEGRATION_RESULTS.md and research/crypto_science/r15/MANIFEST.json/verify_final.py. The cumulative authoritative continuation is the existing DEC-CRYPTO-VECTOR-R2-20260926.md. All57input/18gate/137priorartifact fences match. Local account/livequotes/overlay404limits, syntheticbudgetfixture, unboundindependentreview, heldretention/testactions and production-proof gaps remain explicit. No live collection/trade/alert/deploy/automaticwake. Parent mission remains incomplete; next release dependency is exact-headCI and independent product/source review, not another replay of the completed empirical studies.
+
+
+
+## 2026-10-18 R4 recommission
+
+The Chairman rejected the R3 density, black treatment and limited usefulness and
+commissioned a deeper four-view replacement. This is a new design and implementation
+wave, not a reopening of the completed October 13 polish items. The current live
+audit observed Crypto market context dated October 15 and Bitcoin/model context
+dated October 17; the historical statement that the visible product is still frozen
+on October 9 is no longer current. This does not certify every collector or close
+a separate authority acceptance boundary.
+
+R4 source and the owner-private review build exist. The candidate uses published
+contracts and retains btc.decision/v1 and H5 scope. Source validation, analytical
+qualification, Paper application, browser acceptance and production integration
+remain distinct. No new forecast probability, remote alert or scheduled collector
+is promoted by this record. The exact build and continuation contract is in
+research/CRYPTO_INTELLIGENCE_R4_BUILD_PACKET.md.
+
+## 2026-11-02 P0B completion receipt (retained)
+
+This dated P0B receipt remains accepted. The existing October 18 R4 commission
+retains its separate CI, hosted visual and production compatibility boundaries.
+
+```yaml
+next_action: >
+  Phase 2 of the program: the collector capture-gap build is DONE (#9151, ruling R9) and
+  glance-tier polish item 0 is DONE (#9162, squash e390119a8f19); the 14 pre-existing design
+  items in agentos/handoffs/CRYPTO-INTELLIGENCE-2026-10-13-phase1-integration.md remain as
+  Phase-2 polish lanes (lane/* DRAFT PR judged by artifact, merged by the seat on concluded
+  green); the 27 superseded lane PRs are CLOSED; wave-2 polish (items A–K) is PR #9164 (head
+  449a2c47cd3a), review PASS (R26), MERGED (squash 7fc0d068e03f); wave-3 polish (L / M / H' /
+  two sign nits) is PR #9166 (head 8f3be876a7d4), review PASS-WITH-NITS (R33), MERGED (squash
+  7e16897a6cac); wave 4 (TERMINAL: L' / M' / H'' / N3) is PR #9182 (head 40d72cd8dc8c), review
+  PASS-WITH-NITS (seat-accepted; 2 cosmetic nits → Phase-2) (R39), MERGED (squash 0b53c5df4617); the Phase-2 design frontier is
+  CLOSED. P0B ACCEPTED 2026-11-02: the nightly data lane resumed (daily collection 2026-10-31 on
+  origin/main) and the live /crypto hero carries "As of 2026-10-31" on the Phase-1/Phase-2
+  templates (handoff CRYPTO-INTELLIGENCE-2026-11-02-p0b-acceptance.md). No wave is open and no
+  next action remains for this workstream; any future crypto work is a new commission.
+```

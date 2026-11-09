@@ -50,6 +50,7 @@ affects:
   - site/vector_chart.js
   - tests/test_vector_r2_data_boundary.py
   - tests/test_vector_r2_frontdoor.py
+superseded_by: "DEC:CRYPTO-INTELLIGENCE-R4-20261018"
 confidence: high
 reversibility: easy
 decided_by: ceo-sol

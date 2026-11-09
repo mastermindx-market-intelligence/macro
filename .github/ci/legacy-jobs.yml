@@ -32389,6 +32389,30 @@ jobs:
     gate: code
     scope: exclusive
     paths:
+      # R4 shadow-candidate contracts, builder inputs and actual browser asset closure.
+      - "lib/crypto_intelligence_view.py"
+      - "research/CRYPTO_INTELLIGENCE_R4_SCORECARD.json"
+      - "scripts/build_crypto_intelligence_r4.py"
+      - "tests/test_crypto_intelligence_r4.py"
+      - "tests/test_crypto_intelligence_r4_browser.py"
+      - "templates/crypto_intelligence_r4.html.j2"
+      - "templates/crypto_intelligence_r4_scorecard.html.j2"
+      - "templates/crypto_intelligence_r4.css"
+      - "templates/crypto_intelligence_r4.js"
+      - "templates/_site_nav.html.j2"
+      - "templates/_navlinks.html.j2"
+      - "site/crypto-r4.html"
+      - "site/crypto_intelligence_r4.css"
+      - "site/crypto_intelligence_r4.js"
+      - "site/theme.css"
+      - "site/theme.js"
+      - "site/illus.css"
+      - "site/illus.js"
+      - "site/navigation-refresh.css"
+      - "site/logo_config.js"
+      - "site/stock-logos.js"
+      - "site/live_config.js"
+      - "site/live.js"
       - app/__init__.py
       - app/deploy/ohlc_origin_known_hosts
       - scripts/publish_ohlc.py
@@ -32822,13 +32846,29 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 markupsafe plotly requests scipy beautifulsoup4 lxml openpyxl scikit-learn fastapi httpx jsonschema
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 markupsafe plotly requests scipy beautifulsoup4 lxml openpyxl scikit-learn fastapi httpx jsonschema playwright
       - name: crypto engine contracts — market-state semantics, dated universe, budget truth, decision binding, consumer states
-        run: python -m pytest tests/test_crypto_market_state_semantics.py tests/test_crypto_universe_dated.py tests/test_crypto_budget_truth.py tests/test_crypto_decision_binding.py tests/test_crypto_consumer_states.py -q
+        run: python -m pytest tests/test_crypto_market_state_semantics.py tests/test_crypto_universe_dated.py tests/test_crypto_budget_truth.py tests/test_crypto_decision_binding.py tests/test_crypto_consumer_states.py tests/test_crypto_intelligence_r4.py -q
       - name: R2 organs — vector wave-1 / data boundary / front door, BTC signals / impulse / intraday CVD, crypto collectors
         run: python -m pytest tests/test_vector_wave1.py tests/test_vector_r2_data_boundary.py tests/test_vector_r2_frontdoor.py tests/test_btc_signals.py tests/test_btc_impulse_falsifier.py tests/test_btc_impulse_radar.py tests/test_btc_impulse_alerts.py tests/test_btc_intraday_cvd.py tests/test_crypto_collectors.py -q
       - name: crypto science contracts — causal integrity, look-ahead, prereg invariants, transfer, funding, scoring, eligibility, observations capture, on-chain families, rotation basis, T12/T15 scaffolds, scorecard gaps
         run: python -m pytest tests/test_btc_causal_integrity.py tests/test_btc_regime_lookahead.py tests/test_crypto_breadth_prereg_invariants.py tests/test_crypto_eth_sol_transfer.py tests/test_crypto_flow_funding_semantics.py tests/test_crypto_forecast_scoring_properties.py tests/test_crypto_input_eligibility.py tests/test_crypto_observations_capture.py tests/test_crypto_onchain_families.py tests/test_crypto_rotation_basis.py tests/test_crypto_t12_contract_invariants.py tests/test_crypto_t15_transition_scaffold.py tests/test_vector_scorecard_gap_semantics.py -q
+      - name: install Chromium for the R4 browser contracts
+        run: python -m playwright install --with-deps chromium
+      - name: R4 browser contracts require five executed cases without skips
+        run: |
+          r4_report=$(mktemp "${RUNNER_TEMP:-/tmp}/crypto-r4-browser.XXXXXX.xml")
+          python -m pytest -q tests/test_crypto_intelligence_r4_browser.py --junitxml="$r4_report" &&
+          python - "$r4_report" <<'PY'
+          import sys
+          import xml.etree.ElementTree as ET
+          
+          cases = list(ET.parse(sys.argv[1]).iter("testcase"))
+          bad = [case for case in cases
+                 if any(case.find(kind) is not None for kind in ("skipped", "failure", "error"))]
+          if len(cases) != 5 or bad:
+              raise SystemExit("R4 requires all five browser cases to execute and pass without skips")
+          PY
 
   unrun-oracle-desk:
     # oracle nightly + its gauntlet promotion gates.
