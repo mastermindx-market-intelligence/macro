@@ -2798,3 +2798,38 @@ The narrow Chinese source inspection exposes an existing flex-wrap issue: the lo
 Read-only design judgment also identifies a useful explanatory figure inside the existing card method disclosure: show a per-month share followed by an equal-weight average across months. It should replace the first prose paragraph, preserve the next-close/21-trading-day outcome definition and pooled-rate distinction, add no sample values and remain complete without motion or JavaScript. Keep the hero's abstract convergence motif static; animated activity would not explain a new fact and could make retained data seem live.
 
 PR10893 and the audit remain Draft/unmerged. Incumbent PR10705 admission, shared-navigation ownership and all wider source, model, programme and release boundaries remain.
+
+
+## 58. Confluence two-step method, motion and narrow access — 9 November 2026
+
+[Dependent Draft PR10893](https://github.com/mastermindx-market-intelligence/Macro/pull/10893) is at `a981425d32d9a26c520d2d4c267080178c477931`. The existing native method disclosure now begins with **within-month winning-fire share → equal average across months**. Its caption retains the next-close entry price, 21-trading-day outcome and distinction from winning-month incidence and pooled win rate. It replaces the first paragraph; the other four paragraphs remain exact. No fictional observations or numerical examples are introduced.
+
+A single 120ms ease-out opacity reveal runs on native opening, from .85 to 1, with no delay, looping or movement. Reduced motion computes to no animation and full opacity. The method remains usable with page JavaScript disabled. The hero stays static. The 8px figure gap clears the summary focus outline. Expanded methods gain approximately 40.5–67.8px in the checked cases; the default collapsed cards add no persistent explanation.
+
+At 320px, the icon now stays beside the access explanation and the unchanged trial action follows on its own row. Both locked cards are 46px shorter in English /29.90625px shorter in Chinese, with the action moving upward by the same amount. The 44px action, exact text and tagged destination survive. Regrouping applies only through 400px; checked 390/400/401/1440px group heights and relative action positions are unchanged.
+
+### Source and real browser proof
+
+**92 existing page tests pass**, PID 28226, 5.29 seconds pytest/5.77 seconds process. **13 browser cases in 13 contexts pass**, PID 28065, 11.54 seconds, 26 actual before/after saved-page snapshots, zero page errors, Chrome 157.0.8103.39. Ten reduced-motion EN/ZH cases cover 320/390/400/401/1440px, two ordinary-motion cases inspect the actual animation, and one case disables page JavaScript. Enter/Space opening, closing and reopening retain focus. Checks cover caption placement, bilingual visible steps, remaining paragraph/data conservation, focus clearance, containment, 44px actions and locally intercepted native trial navigation.
+
+The initial 12/13 attempt is retained. Its JavaScript-disabled case successfully opened the native disclosure, then timed out waiting for an injected event listener. That verifier mistake is corrected through direct native-state/CSS observation. The initial report's 26 page-observation field overcounts its 25 completed snapshots; final counting uses stored snapshots. Initial 640px regrouping also added unnecessary height, so the final rule stops at 400px and rejects checked height increases. Caption placement and timing-independent reduced-motion assertions were repaired before the final run.
+
+Three exact template substitutions reverse to parent d752f398. Restoring the original first paragraph makes each rendered card's full markup exact. Saved HTML changes only the style/ledger regions; every outside byte is conserved. Builder, page-test file, protected JSON, all scripts, public data/ranking, receipt, tagged CTA and hero SVG remain exact. Protected JSON matches the actual producer. Eight source/text files and twelve PNGs read back exactly.
+
+[Full contract and before/after captures](https://github.com/mastermindx-market-intelligence/Macro/blob/a981425d32d9a26c520d2d4c267080178c477931/research/design_candidates/confluence_compatibility_20261109/METHOD_AND_NARROW_LAYOUT.md) links the full initial/final reports, source conservation, process receipts and reproduction command. Prior layout/comparison/compatibility runs retain their own source identities. The earlier 960px hidden-navigation overflow remains outside this work; no live entitlement, deployment, full shared-shell/font or spoken-AT claim.
+
+### Actual editable Paper additions
+
+The existing [Build guide](https://app.paper.design/file/01M6Y3DCDDW541ZR38J1V52A9Y/p-3-0), root 2AG-0, now contains new example group 2SL-0 directly after the actions/method module. It shows editable EN-dark/ZH-light expanded method figures and two narrow access groups using the first gated card's saved count/copy. Paper examples are explicitly static; the source browser report owns the motion proof.
+
+Nine existing text nodes record the implementation contract, measured result, final proof and exact source links. All 171 original div identities, parents and styles remain exact. The group adds 56 div nodes and six SVG-tree nodes. R4 subtree 2I3-0 remains byte-exact at 39,643 characters; R2/R3 customer frames are untouched and tokens remain 6234666b. Final figures, lock icons and copy were visually inspected, then only the owned Build/example roots were finished.
+
+A double space introduced by paragraph concatenation caused a transient pre-wrap export; normalizing that text restored the original style. New lock SVGs initially lost inherited currentColor in Paper; only those newly created SVG fragments were replaced with explicit ink. No original design node was replaced. [Full Paper/source receipt](PAPER_CONFLUENCE_METHOD_NARROW_LAYOUT_20261109.json) contains before/after JSX, operation results, final node checks and exact readbacks.
+
+### Next recovery and clarity work
+
+Read-only source review identified a concrete focus transition gap: a keyboard user can trigger Check access and receive a generation mismatch, after which the focused retry is hidden and Reload latest page appears without a focus handoff. Reproduce that actual path, preserve newer unrelated focus, and guard synchronous existing-owner state changes during focus. Keep recovery inside the existing status/auth/epoch owners.
+
+The Chinese survivorship explanation also calls retained companies “winners,” adding a performance implication not established by survival. Correct that phrase without changing coverage or methodology.
+
+PR10893 and this audit remain Draft/unmerged. Incumbent PR10705 admission/calendar and all wider source, model, programme, browser and release holds remain. Continue the parent mission after this saved phase.

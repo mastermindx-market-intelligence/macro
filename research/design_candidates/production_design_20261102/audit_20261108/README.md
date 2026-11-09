@@ -1,14 +1,14 @@
 # Paper audit and upgrade — 8–9 November 2026
 
-## Latest implementation — Confluence access and snapshot clarity
+## Latest implementation — Confluence method and narrow access
 
-[Dependent Draft PR10893](https://github.com/mastermindx-market-intelligence/Macro/pull/10893) at `d752f398271dd444697e662a4dab29529dcb8a45` now states the existing eligible-plan requirement in locked cards. A retained empty-match fallback describes its snapshot without inferring today's market state or rarity. **92 existing page tests pass**, and two native EN/ZH visual inspections show the changed copy with intact 44px CTAs. These inspections are distinct from functional browser tests.
+[Dependent Draft PR10893](https://github.com/mastermindx-market-intelligence/Macro/pull/10893) at `a981425d32d9a26c520d2d4c267080178c477931` now explains monthly aggregation in two visible steps inside the existing native disclosure. The definition and four remaining paragraphs stay precise. A single 120ms opacity reveal disappears under reduced motion; native disclosure also works with page JavaScript disabled.
 
-Four template literals and four saved-page text nodes change; inverse checks restore their parent files exactly. Access, trial CTA, hrefs, source selection, layout, scripts and protected data are unchanged. The empty-card fallback is latent under current eligibility and is qualified only through an explicit render context.
+At 320px, keeping the lock icon beside its explanation makes each group **46px shorter EN /29.90625px shorter ZH**, with an unchanged 44px action and destination. The fix stops at 400px and preserves checked wider heights. **92 existing page tests /13 browser cases in 13 contexts** pass, with 26 actual saved-page observations and zero page errors. Twelve native before/after crops were inspected and read back exactly.
 
-Ten existing Paper Build text nodes now record these rules and the exact source/proof. All 171 IDs, parents and styles and the newer R4 subtree stay exact; customer anatomy needs no copy change. [§57](WORKFLOW_CONTINUATION_20261108.md) and [full Build receipt](PAPER_CONFLUENCE_COPY_CLARITY_20261109.json) retain the correction and limits.
+Paper's existing Build guide now includes editable bilingual method figures and narrow access examples. Nine existing text nodes align the source/proof; all 171 prior IDs, parents and styles and the complete R4 subtree remain exact. [§58](WORKFLOW_CONTINUATION_20261108.md) and [full Paper receipt](PAPER_CONFLUENCE_METHOD_NARROW_LAYOUT_20261109.json) retain the final design, initial verifier/layout diagnoses and measured tradeoff.
 
-The preceding [responsive-card receipt](PAPER_CONFLUENCE_RESPONSIVE_LAYOUT_20261109.json) retains its 20-case source-bound proof and measured 107.1875px desktop action improvement. Next: correct the narrow locked-icon grouping and add a precise monthly-calculation figure inside the existing method disclosure. Keep current admission, shared-navigation and release boundaries.
+[Source contract and captures](https://github.com/mastermindx-market-intelligence/Macro/blob/a981425d32d9a26c520d2d4c267080178c477931/research/design_candidates/confluence_compatibility_20261109/METHOD_AND_NARROW_LAYOUT.md). Next: repair keyboard focus when Check access resolves to a required reload, and remove a Chinese survivorship “winner” implication. Existing admission, shared-navigation and release boundaries remain.
 
 ## Applied design improvements
 
