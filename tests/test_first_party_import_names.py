@@ -60,6 +60,7 @@ Run:
 from __future__ import annotations
 
 import ast
+import hashlib
 import os
 from functools import lru_cache
 from pathlib import Path
@@ -94,6 +95,38 @@ _ALLOWED_UNRESOLVED: frozenset[tuple[str, str, str]] = frozenset({
         "cycles_page_ctx",
     ),
 })
+
+
+# PR #10862 (fca91c2be23250be5d85dc1f9e23b6b569305a59) preserves
+# historical D06 source at its original paths and bytes. These three archived
+# import sites depend on the unmerged D06 verifier; they are evidence, not
+# executable current-source claims. Bind only each original import and full
+# file content. Changed bytes, another name or another path remain guarded.
+_HISTORICAL_UNRESOLVED: dict[tuple[str, str, str], str] = {
+    (
+        "docs/pr-crops/d06-macro-integration-20261104/run_browser.py",
+        "scripts", "verify_d06_macro",
+    ): "80f78a7f5a2f6d12a3230f639c63c698adcf239525e0ff8c652a90d77d48331c",
+    (
+        "docs/pr-crops/d06-macro-integration-20261104/market-locale-fix/run_browser.py",
+        "scripts", "verify_d06_macro",
+    ): "5169a4dc9e818cc1a5dcd76102107d744e132b1e09c232274730125ee799e219",
+    (
+        "docs/pr-crops/d06-macro-integration-20261104/market-locale-fix/color_probe.py",
+        "scripts", "verify_d06_macro",
+    ): "7c6fceeaea64e9b34e68411a2c386f4eb52d322207180d7918ab021556392d3c",
+}
+
+
+def _historical_import_allowed(path: Path, rel: str, module: str, name: str) -> bool:
+    expected = _HISTORICAL_UNRESOLVED.get((rel, module, name))
+    if expected is None or not path.is_file() or path.is_symlink():
+        return False
+    try:
+        return hashlib.sha256(path.read_bytes()).hexdigest() == expected
+    except OSError:
+        return False
+
 
 
 # ---------------------------------------------------------------------------
@@ -269,7 +302,8 @@ def _sweep(root: Path) -> tuple[tuple[str, ...], tuple[str, ...], int]:
                         checked += 1
                         if _is_submodule(root, module, name):
                             continue
-                        if (rel, module, name) in _ALLOWED_UNRESOLVED:
+                        if ((rel, module, name) in _ALLOWED_UNRESOLVED
+                                or _historical_import_allowed(path, rel, module, name)):
                             continue
                         missing_names.append(
                             f"{rel}:{node.lineno} — `from {module} import {name}`: "
@@ -291,7 +325,8 @@ def _sweep(root: Path) -> tuple[tuple[str, ...], tuple[str, ...], int]:
                 checked += 1
                 if name in names or _is_submodule(root, module, name):
                     continue
-                if (rel, module, name) in _ALLOWED_UNRESOLVED:
+                if ((rel, module, name) in _ALLOWED_UNRESOLVED
+                                or _historical_import_allowed(path, rel, module, name)):
                     continue
                 missing_names.append(
                     f"{rel}:{node.lineno} — `from {module} import {name}`: "
@@ -411,6 +446,76 @@ def test_module_getattr_makes_a_module_opaque(tmp_path):
     (tmp_path / "user.py").write_text("from lib.cal import anything\n")
     _, missing_names, _ = _sweep(tmp_path)
     assert not missing_names
+
+
+@pytest.mark.parametrize("site,expected", sorted(_HISTORICAL_UNRESOLVED.items()))
+def test_exact_archived_import_remains_evidence_and_is_still_counted(tmp_path, site, expected):
+    relative, module, name = site
+    raw = (REPO / relative).read_bytes()
+    assert hashlib.sha256(raw).hexdigest() == expected
+    (tmp_path / "scripts").mkdir()
+    (tmp_path / "scripts/__init__.py").write_text("")
+    target = tmp_path / relative
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_bytes(raw)
+
+    missing_modules, missing_names, checked = _sweep(tmp_path)
+    assert not missing_modules
+    assert not missing_names
+    assert checked == 1
+    assert _historical_import_allowed(target, relative, module, name)
+
+
+@pytest.mark.parametrize("site", sorted(_HISTORICAL_UNRESOLVED))
+@pytest.mark.parametrize("change", ["bytes", "live_path", "neighbor_path", "name", "symlink"])
+def test_archival_exception_cannot_hide_changed_or_live_imports(tmp_path, site, change):
+    relative, module, name = site
+    raw = (REPO / relative).read_bytes()
+    (tmp_path / "scripts").mkdir()
+    (tmp_path / "scripts/__init__.py").write_text("")
+    if change == "bytes":
+        raw += b"\n# changed archived source\n"
+    elif change == "live_path":
+        relative = "scripts/copied_historical_probe.py"
+    elif change == "neighbor_path":
+        relative = str(Path(relative).with_name("neighbor_probe.py"))
+    elif change == "name":
+        raw = raw.replace(b"from scripts import verify_d06_macro",
+                          b"from scripts import missing_current_verifier")
+    target = tmp_path / relative
+    target.parent.mkdir(parents=True, exist_ok=True)
+    if change == "symlink":
+        retained = tmp_path / "retained-source"
+        retained.write_bytes(raw)
+        target.symlink_to(retained)
+    else:
+        target.write_bytes(raw)
+
+    missing_modules, missing_names, checked = _sweep(tmp_path)
+    assert not missing_modules
+    assert len(missing_names) == 1, missing_names
+    assert checked == 1
+    assert not _historical_import_allowed(target, relative, module, name)
+
+
+def test_content_bound_exception_keeps_other_import_names_guarded(tmp_path, monkeypatch):
+    relative, module, name = next(iter(_HISTORICAL_UNRESOLVED))
+    raw = b"from scripts import verify_d06_macro, missing_current_verifier\n"
+    (tmp_path / "scripts").mkdir()
+    (tmp_path / "scripts/__init__.py").write_text("")
+    target = tmp_path / relative
+    target.parent.mkdir(parents=True)
+    target.write_bytes(raw)
+    monkeypatch.setitem(
+        globals(), "_HISTORICAL_UNRESOLVED",
+        {(relative, module, name): hashlib.sha256(raw).hexdigest()},
+    )
+
+    missing_modules, missing_names, checked = _sweep(tmp_path)
+    assert not missing_modules
+    assert len(missing_names) == 1, missing_names
+    assert "missing_current_verifier" in missing_names[0]
+    assert checked == 2
 
 
 # ---------------------------------------------------------------------------
