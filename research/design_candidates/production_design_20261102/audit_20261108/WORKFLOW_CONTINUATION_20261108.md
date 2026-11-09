@@ -1270,3 +1270,50 @@ The design programme PR10617 stays Draft with its existing holds. This separatel
 The current Shared Market Search and Comparison file **01M6Y31C449F02KGRNPGK94Q8D** now has a newer **R42** compact Companies/Tools page, root **14V-0**, while p1 is explicitly Reference. Two bounded read-only reviews and the principal's exact JSX read confirmed that its existing contract already distinguishes current Companies/Tools delivery from the wider mixed-search proposal, cached results from refresh failure, Clear from Close, and selected destination from missing venue/currency metadata.
 
 The inspected EN/ZH mobile specimens, recovery action and source-bound Back/focus contract provide no justified competing correction. That family was preserved; its static-result clipping and virtual-keyboard behavior remain implementation proof points already named in its own Build. No new canvas page, duplicate search owner or extra recovery feature was added.
+
+
+## 24. Market Memory — bind the inspection amendment to its actual consumer
+
+The earlier §22 design amendment had deliberately left runtime ownership unqualified. A bounded source review now establishes **Macro /market_memory.html** as the matching existing retained-output consumer, with an active incumbent source PR. This phase upgrades the existing Paper Build contract rather than modifying that live candidate.
+
+### Exact source match and remaining gap
+
+At [Macro PR10796](https://github.com/mastermindx-market-intelligence/Macro/pull/10796), head **598040304bc5828188850a1f2be4dbfd125e0380**:
+
+- `templates/market_memory.html.j2`, blob **fca29e2efab9cf733e785d9643badbac5a909ae9**, includes `market_memory_retained.html.j2` and loads `market_memory_retained.js`.
+- `templates/market_memory_retained.html.j2`, blob **81f2029227ace6d87ba503ae661255d113b39b63**, supplies the exact “What the output said / 原始输出写了什么” pane, its saved-house-reading qualification and its source body. It exposes no local return control.
+- Both `templates/market_memory_retained.js` and `site/market_memory_retained.js` have blob **099f82e7d85ca44357890e50c0617fc0a1515378** and were independently read back byte-identical.
+
+The source still says **Inspect source / 核对来源** in `caseMarkup` and repeats that instruction for the empty comparison pane. The actual inspection selects the exact committed `sourceCards[contextId]`, renders its five saved fields and then the separate exact-source citation disclosure. The Paper wording **Inspect saved output / 查看原始输出** therefore has a concrete source counterpart.
+
+`onActionClick` already handles `data-mmr-action=inspect`. `openSourcePanel` remembers `document.activeElement`, opens the pane and requests smooth scrolling. `closeSourcePanel` can restore that remembered element, but no reader-facing return action is wired. Its existing callers concern degraded/reset/auth handling. A return control must capture the actual initiating case button, qualify its continued presence/context and avoid turning background cleanup into a focus-stealing action.
+
+`inspectCaseSource` already persists `sourceContext`/`sourceField` through the incumbent `MarketMemoryIntent.replace`. The local return must preserve that existing URL/state owner and exact capture/cutoff binding. It is distinct from the incumbent PR's navigation between separate saved readings and actual browser Back restoration.
+
+### Applied Paper change
+
+File **01M6Y2V2M0J28M2PYAHWZ8SB98**, p2, existing Build root **GK-0**:
+
+- Updated **GN-0** to state the now-established consumer/source pin and the remaining application/browser proof.
+- Updated **H3-0** to replace the obsolete “no runtime component established” statement with the concrete Macro route and source components.
+- Added **H5-0** / title **H6-0** / body **HE-0**: exact consumer, the two source-label sites and original carrier.
+- Added **H8-0** / title **H9-0** / body **HG-0**: actual click/panel owners, explicit return, connected eligible invoker, programmatically focusable heading fallback and no background focus theft.
+- Added **HB-0** / title **HC-0** / body **HI-0**: existing replace semantics, no new history/fetch owner, reduced-motion handling, mirrored asset/renderer delivery and required actual-user-path checks.
+
+The Build now has **seven modules**. All **16 pre-existing node IDs, parents and styles** remain unchanged; exactly **GN-0** and **H3-0** change original text. All three new module titles and full bodies match their native readback. The complete Build screenshot was inspected and the exact **GK-0** working indicator was finished with an observed applied response. No product specimen, saved metric, source citation or later-outcome target was edited in this phase.
+
+### Source custody and proof boundary
+
+PR10796 is an active, source-qualified incumbent for sibling-capture navigation, with original programme and installed entitled journey obligations. Its exact-head body and recent canonical source/CI dispositions were read. No new runtime branch, candidate modification, refresh/CI command, review request, lifecycle change or release action was issued for it.
+
+The concrete next implementation is now reviewable against that original consumer: align the two action/instruction labels and wire one local return through the existing panel owner, after current head/writer qualification. Preserve its separate sibling-navigation behavior and exact rights/capture bindings. Dark/light EN/ZH keyboard/pointer, removed-invoker, cutoff/account and stale-completion proof remain application work; static source inspection is not installed-browser acceptance.
+
+### Other preserved scope
+
+A bounded T47 host review did not establish an equivalent incumbent runtime for the combined primary/secondary search-disclosure transition. The existing Crypto Market Board has disclosure without that search; its R4 candidate has a different URL/filter/sort contract. The known Market Board label repair already has an incumbent PR. No T47 reference was transplanted into an unqualified host.
+
+### Durable architectural finding
+
+The Catalyst follow-up's reusable owner finding is saved as **DSC:CATALYST-COPY-CONTEXT-USES-EXISTING-READ-OWNER**, [exact record](https://github.com/mastermindx-market-intelligence/Macro/blob/4fb70d95843625b1884cb8e7254cc013690b6540/agentos/discoveries/DSC-CATALYST-COPY-CONTEXT-USES-EXISTING-READ-OWNER.md), blob **1a4df30a2ddf0e8616dcd30edc032892c2c8afdb**. It names a falsifier, future-builder consequence, source pin and explicit fixture/production distinction; it creates no runtime authority.
+
+The exact pinned canonical `scripts/agentos.py` was run with `validate --paths` against that one record: **exit 0, one discovery, zero record errors/warnings**. The temporary source-validation bundle lacked the programme-registry join, which the validator explicitly reported as a fail-open warning; this is scoped record validation, not validation of the entire store. The published record was read back exactly.
