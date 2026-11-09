@@ -1098,3 +1098,61 @@ The **seven exact affected roots** were released with an observed applied respon
 
 The existing consumer/test owner should cover Select Defense → Energy filter → copy → Clear → Back/Forward; zero-match query; missing eligible case with inventory retained; no-explicit-case default; coherent same-theme snapshot replacement; loading/access clearing; copy A then choose B; two copy attempts completing in reverse order; and refresh/access change during copy. Keyboard and responsive checks must keep filter focus stable, retain explicit Inspect heading focus, and move focus from a removed detail only when its focused control actually disappears.
 
+## 21. Catalyst executable selection reference and exact manual-copy recovery
+
+**Applied and verified on 9 November 2026.** This continues §20 in the same existing Catalyst file and existing programme branch. It adds two native phone states and a tested, isolated builder reference; it does not patch the runtime component.
+
+### Executable reference and exact saved evidence
+
+The [selection reference](catalyst-selection-state-reference.mjs) and [focused tests](catalyst-selection-state-reference.test.mjs) are saved together at Macro commit **`056abf0a324c7223cf0f5338684c024a3320a5d3`**, with exact content read back from that commit.
+
+| Artifact | Git blob | SHA-256 |
+|---|---|---|
+| `catalyst-selection-state-reference.mjs` · 5,606 bytes | `a5df962524b6b06f6457c99f2506c12876a5a2fe` | `4125d0c6f860cb86831d870b14e37ff4077f0033b5d2732eb4e21d5174d06c78` |
+| `catalyst-selection-state-reference.test.mjs` · 10,695 bytes | `7b3f745d1d7929d8c6b937a9d9ead4ee5d2d4732` | `3bd915e6b3f372e0b28e97b347ddcf58b1719326bf4aa52e23fe310635c12539` |
+
+Executed `node --test catalyst-selection-state-reference.test.mjs` on **Node v24.22.1**: **22 passed, 0 failed, 0 skipped**, exit 0. This is actual offline execution of the saved reference/test pair.
+
+`deriveCaseSelection` takes the existing owner's authorized eligible cases, already-filtered visible IDs, requested identity and read state. It does not sort, filter, fetch, clone rows, construct a URL or create an independent state owner. It preserves source row identity and caller ordering. The returned projection and array are frozen; caller-owned rows are not frozen, so the caller must supply immutable snapshots.
+
+Only explicit `null` means “no requested case” and permits the first visible default. Missing, empty or malformed requested identity is rejected. Resolved inputs reject duplicate identities and visible IDs outside the authorized eligible set. Pending, unavailable, authentication and access states return before inspecting stale payloads; they cannot produce stale detail, a misleading absence state or a copy identity. The URL's requested identity remains the existing owner's separate responsibility.
+
+An explicit eligible case survives filtering, zero matches, Clear and history restoration. An explicit absent case never falls back to another visible row. A same-theme replacement returns the new canonical row as a whole, preserving distinctions such as missing versus zero.
+
+`isCopyCompletionCurrent` accepts only live, matching owner-supplied attempt and read-context tokens plus a coherent selected/copy identity. The owner must retire these tokens when the attempt, selected theme, account/read revision, history or component lifetime changes. Returning A → B → A cannot revive A's old status; unchanged content generation does not make a new authorized read the old context. The predicate does not create or retire tokens, cancel an issued clipboard write, retry, navigate or prove the consumer is wired correctly.
+
+The 22 checks cover explicit selection outside and inside zero-result filters; Clear/history; missing eligible case; default order and no default; four non-resolved states; coherent snapshot replacement; invalid inputs; canonical object/value/order preservation; current copy completion; selection and account A → B → A; overlapping attempts; same-generation new reads; blocked/missing completion; uninitialized context; and disposal.
+
+### Exact current-expression characterization
+
+A separate offline characterization evaluated the extracted filtering, selected-row and missing-selection expressions from the §20 current component at Terminal `3e2f8db782b0ba2f98343edf5199a4b8ce921ec9`, blob `1f8cc491040ebbf11851bca2759316406a55276b`:
+
+| Input | Derived selected row | Missing-selection result |
+|---|---|---|
+| Requested `defense`; Energy filter | `energy_complex` | `false` |
+| Requested `defense`; Energy filter and query `solar` | `null` | `false` |
+
+This reproduces substitution and selected-detail loss in the exact extracted expressions. It did **not** mount React, exercise browser history or write to a clipboard. The application test owner and production browser proof remain as specified in §20.
+
+### Copy failure must expose the prepared destination
+
+The current `catalystOpportunityLex.ts` failure text directs the user to the address bar. That is incomplete when there is no explicit `case=` parameter: filtering can choose a default case without updating the address. The current copy handler constructs a case URL from that selected row, so the manual fallback must expose that same prepared URL rather than a potentially less specific address.
+
+| Root | New native state | Action |
+|---|---|---|
+| `1HL-0` | 06 · Copy failed · Exact manual link · 390 EN | Show a labeled selectable case URL and 44px **Select link** action. |
+| `1I6-0` | 07 · 复制失败 · 精确关注项链接 · 320 中文 | Same behavior with **选中链接** and readable wrapping. |
+| `1JJ-0` | Build module 08 | Code identity, executed result, API boundary and current-expression characterization. |
+| `1JN-0` | Build module 09 | Exact prepared-link recovery and the remaining host proof. |
+
+Both screens use the explicitly illustrative test URL `https://example.test/discover?tab=catalysts&case=defense`. This URL must never ship. The real owner must retain the same captured `url.toString()` for the eligible attempt, preserving the current origin, other query parameters and hash. **Select link** only focuses/selects the text; it is neither a new clipboard write nor navigation. **Copy case link** may retry only through a new explicit user action.
+
+Retire the displayed prepared URL and success/failure status together on selected-theme changes, including a default changed by filtering, as well as account/read/history changes and disposal. A late callback must not restore either. Existing Build module 04 now states this; module 07 distinguishes the newly executed offline proof from React/browser checks still owed.
+
+### Native readback and limits
+
+Native screenshots were inspected for both phones and the new copy-recovery Build module. Full URLs wrap without truncation; labels, failure explanation and 44px actions fit. Exact JSX readback confirms both URLs, all nine Build module identities and the updated lifecycle/proof wording. The existing fixture/source qualification remains visible. These are native layout and text checks, not interactive clipboard tests.
+
+The exact three roots `10D-0`, `1HL-0`, `1I6-0` were finished with an observed applied response. Catalyst now has **seven new selection/recovery specimens, a nine-module Build sheet and nine unique affected roots** across §§20–21. The original source-bound discovery, separate Defense lane and concurrent p-4-0 manual-review work remain outside this phase's mutation set.
+
+Manual text selection, mobile context menus, actual URL construction, clipboard permission/pending/failure, keyboard focus and stale-completion handling in the existing React consumer remain unverified here. No runtime patch, account request, merge, deployment or production acceptance was claimed.
