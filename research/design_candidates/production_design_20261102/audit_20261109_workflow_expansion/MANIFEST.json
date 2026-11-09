@@ -1,10 +1,15 @@
 {
-  "phase": "Catalyst native workflow complete; continue Intraday",
+  "phase": "Catalyst and Intraday native workflows; continue Search/Watchlists",
   "files": [
     {
       "path": "CATALYST_WORKFLOW.md",
       "bytes": 6916,
       "sha256": "2882462464b7073b8e393323b3e964c1986e5d99ed70e90ab90b2b23d102202e"
+    },
+    {
+      "path": "INTRADAY_WORKFLOW.md",
+      "bytes": 8308,
+      "sha256": "096cfe53b400af84cd0eea960c3530df049fab25498231537b6d05ca1a89c06a"
     },
     {
       "path": "PLAN.md",
@@ -17,9 +22,24 @@
       "sha256": "c29c0b8e5aea3ba9438994f503c4605be79bf3e98cb048930c516403e39f28e1"
     },
     {
+      "path": "evidence/intraday.native_census.json",
+      "bytes": 35835,
+      "sha256": "308914b43b71581151acfcd66e58c25cfb3f1c8d66275e0619b46caff9b83560"
+    },
+    {
+      "path": "evidence/intraday.source_functions.json",
+      "bytes": 12970,
+      "sha256": "bab5383e7da969b1f26563c9fe4cec75347ff8cf8beaae3f3c72039984b2f444"
+    },
+    {
+      "path": "evidence/page_navigation.json",
+      "bytes": 200,
+      "sha256": "9e17c4a63694c6c40bf950b6a95eea7820000c06f5cc5a7541e0b521521edd4a"
+    },
+    {
       "path": "evidence/paper_operations.json",
-      "bytes": 2205155,
-      "sha256": "0e048f12c96fd1fb3b236c838a986add9b6049097dd03d78e9a75e8d1c02ee3c"
+      "bytes": 4211791,
+      "sha256": "1ea3fee77a29e9c81a456f603d835d91bfdc6f9f3f81566f96ac0e1bb46ac579"
     },
     {
       "path": "evidence/source_characterization.json",
@@ -87,6 +107,46 @@
       "sha256": "98a0b809c70a881063754a772c0eca2a09531dd25e79ed2a353b33e16d9e246f"
     },
     {
+      "path": "paper/intraday.build.jsx",
+      "bytes": 15968,
+      "sha256": "d26b78058fc9cbc13f8efb8d954d3f34a2482b87dd50f166ca9d4233b5a4b603"
+    },
+    {
+      "path": "paper/intraday.classifications.jsx",
+      "bytes": 11884,
+      "sha256": "eaaeb521e77dd845cd67d379144f0208f804d303e2f754a26a57616eaec997e2"
+    },
+    {
+      "path": "paper/intraday.desktop_dark.jsx",
+      "bytes": 21470,
+      "sha256": "34cf15e14928fb9cab6096de2af408d14177afaed42727fa800f2cda384971f6"
+    },
+    {
+      "path": "paper/intraday.desktop_light.jsx",
+      "bytes": 21550,
+      "sha256": "465df4aa88058cfdaeeba798e39444ceab3055d5cc49e17d4bba49512f2b0819"
+    },
+    {
+      "path": "paper/intraday.evidence.jsx",
+      "bytes": 12927,
+      "sha256": "ccf40089a49ea194a040a23b16a4ecdcbc761ec8fe321599adeb6952f4827b56"
+    },
+    {
+      "path": "paper/intraday.no_read.jsx",
+      "bytes": 9517,
+      "sha256": "17efaa9356ec48aa89b63c0e7bcdbcfec54d2104d25074d8a1b557e2584e616a"
+    },
+    {
+      "path": "paper/intraday.phone_en.jsx",
+      "bytes": 11603,
+      "sha256": "d9fc822c60efe0d5d769fbe5feae6735e52790df2b6c50b3d8469db1691b50db"
+    },
+    {
+      "path": "paper/intraday.phone_zh.jsx",
+      "bytes": 14778,
+      "sha256": "c674e2da44e59484bd0ca498732b008ec640b5450cc98a8b89d669b468193f1b"
+    },
+    {
       "path": "screenshots/catalyst.aster.jpg",
       "bytes": 58296,
       "sha256": "84a80ccb22896f1eda750c39274a9b2a181e5306febb3659bcf07974834a033f"
@@ -145,6 +205,46 @@
       "path": "screenshots/catalyst.sources.jpg",
       "bytes": 55208,
       "sha256": "552836c9290658e6dce94bf6569ab927da39516b9ba7aa20c11b48aa2fd4051a"
+    },
+    {
+      "path": "screenshots/intraday.build.jpg",
+      "bytes": 472804,
+      "sha256": "695717e6ecf4adb96b96cd2b701ffd3f42d8ce09deac1cd435da7e8cb3d9dd1c"
+    },
+    {
+      "path": "screenshots/intraday.classifications.jpg",
+      "bytes": 39998,
+      "sha256": "a492575fbc64d2054264ac2e8b30c0af9f2b4108042d47bed45b21fdd892eead"
+    },
+    {
+      "path": "screenshots/intraday.desktop_dark.jpg",
+      "bytes": 97556,
+      "sha256": "c086e9751775fed41ccd73fa1b7f6c2b409cfa69ff4800af0f850382ae6ad11b"
+    },
+    {
+      "path": "screenshots/intraday.desktop_light.jpg",
+      "bytes": 100642,
+      "sha256": "d294b825e01065d4162b96ca7413ab14ea7ee72d0ef1545e32bad27a9a4d5c23"
+    },
+    {
+      "path": "screenshots/intraday.evidence.jpg",
+      "bytes": 45859,
+      "sha256": "930e64d9e89201fdfa4288896c413cfb89034b777229c09332e7a9baa0067f99"
+    },
+    {
+      "path": "screenshots/intraday.no_read.jpg",
+      "bytes": 30827,
+      "sha256": "60e185b67144f6fa60ce1db225c397c438783ec694889bc7cb9e9df578cbf743"
+    },
+    {
+      "path": "screenshots/intraday.phone_en.jpg",
+      "bytes": 39679,
+      "sha256": "5d20e3e1800de59e2ccab0656577934310ec08b65eaf763dd3aba7d83ac3b6c5"
+    },
+    {
+      "path": "screenshots/intraday.phone_zh.jpg",
+      "bytes": 34618,
+      "sha256": "f60b581fa77dea2d563aa4d988edd890ba386083365be28ea1674fb4a1933b0a"
     }
   ]
 }
