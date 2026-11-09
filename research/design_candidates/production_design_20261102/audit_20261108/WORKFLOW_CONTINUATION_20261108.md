@@ -4,7 +4,7 @@
 
 This is the canonical continuation of the [first audit and build plan](AUDIT_AND_BUILD_PLAN.md), on the existing [Macro programme PR #10617](https://github.com/mastermindx-market-intelligence/macro/pull/10617). The Chairman requested further autonomous implementation, correction and enhancement across Paper. The work continues in the foreground; this saved milestone is not a completion claim or a request to resume.
 
-Seven additional files have received applied changes with native visual checks: Guide, Prophet, Market Memory, Policy Monitor, Market Ontology, Sector Intelligence and the Options W3 mobile companion. Options Watch/review now has a source-checked six-state amendment and builder contract. The next phase compares the accepted Flow and Volatility journeys with their current Terminal owners. The seven-file first pass remains accepted work for this mission and is not repeated here.
+Seven additional files have received applied changes with native visual checks: Guide, Prophet, Market Memory, Policy Monitor, Market Ontology, Sector Intelligence and the Options W3 mobile companion. Options now has a six-state Watch/review amendment plus eleven source-matched Flow/Volatility screen and recovery states, with exact builder contracts. Bounded review is continuing on Risk Radar and GMI source-detail workflows. The seven-file first pass remains accepted work for this mission and is not repeated here.
 
 The root session is the only canvas writer among this session’s agents; independent live writers retain their own targets. Read-only design, international-language and architecture advisers contributed bounded judgments. Mutations use fresh snapshot guards and distinct operation identities beginning `paper-estate-cont-20261108-`. Initial changes used the Mastermind Paper connector; after its transport repeatedly timed out on reads, new operations continued through the authorized Studio Direct Paper owner. Completed operations were read back, never replayed; the detailed transport ruling below preserves that boundary. No runtime release, merge, hold change, message to another person, or live-model qualification has been performed.
 
@@ -259,12 +259,95 @@ Native screenshots verified the main 390 px review, receipt, unlinked assessment
 
 Build specifies ≥44 px actions, focus returning to the actual opener, retained draft and selected identity, one outcome announcement, ≤160 ms opacity/≤4 px translation, and instant reduced motion. Required implementation proof covers strict threshold equality, already-beyond arming, wall first observation, missing quotes, malformed watch state, old/new firing selection, unlinked review, unreadable versus absent delivery, original-operation uncertain recovery, conflicts, committed/readback failure, and current route access. EN/ZH, theme and 390/820/1440 px runtime checks remain acceptance work, not tests claimed by this native design pass.
 
-## Active next phase: Flow and Volatility source fit
+## 8. Options Flow → expiry context — a source-matched mobile journey
 
-Read-only comparison is underway for ET-0 and KT-0 in the [accepted Options W3 desktop](https://app.paper.design/file/01M5EPQ16VBT7SBW2NQVX2RJG4/p-2-0). Compare observed design claims with the current contract-level Flow feed, producer freshness, tenor interpolation, fixed-moneyness support, expected-move basis and navigation owner. Preserve accepted original boards and add a disjoint amendment only for demonstrated gaps. Do not transfer a Macro nightly-flow limitation to an unrelated Terminal source path.
+[Native amendment](https://app.paper.design/file/01M5FNCKAND6CBSJNYM5FZWR8Y/p-4-0) · [Implementation contract](https://app.paper.design/file/01M5FNCKAND6CBSJNYM5FZWR8Y/p-5-0)
+
+The accepted ET-0 and KT-0 boards in the full main file were inspected without modification. They remain useful design references. The dated W3 field-policy amendment and the current Terminal consumers establish a narrower, buildable default: contract-level activity, named-method side estimates, explicit missing evidence, and an expiry’s published ATM context.
+
+### Primary path and detail states
+
+| State | Native root | Result |
+|---|---|---|
+| Contract activity | AH-0 | Exact AAPL 230 Call / 23 Oct identity; 6,000 reported contracts, premium and average price; correctly scoped size/OI ratio; one primary Compare expiry IV action |
+| Expiry comparison | AU-0 | Published ATM IV, two useful differences, three aligned comparison bars, percent-only expected move and supplied earnings context |
+| Contract evidence | B7-0 | Record meaning, arithmetic, unavailable fields and source timing, with return to the actual contract |
+| Volatility details | BK-0 | Full curve, supplied/interpolated basis, explicit reference-strike ratios, calculation and separate published band |
+| Retained Flow after failed refresh | JG-0 | Earlier reading identified, Retry refresh reuses the existing owner |
+| Feed absent | JK-0 | Proven absence distinguished from unreadability |
+| Loaded feed with no filter matches | JO-0 | Filter scope retained; Clear filters changes filter state |
+| Exact expiry has no ATM IV | JS-0 | Other expiries remain available; explicit choice and return |
+| Volatility snapshot read failed | KL-0 | AAPL and the requested expiry retained during retry |
+| Later view date, past expiry | KX-0 | Historical reading retained; no future expected move |
+| Incomplete contract record | L9-0 | Unknown side, missing OI and unavailable ratio remain explicit; supported navigation stays available |
+
+Header AC-0 identifies the fixture and source pin. Build LL-0 maps every state, current owner, required adapter and acceptance case. New pages are ordered after the existing Watch/review and Build pages. All writes remain in the companion’s new pages; this phase did not touch its independently edited original page.
+
+The Flow first screen puts the observation and next action ahead of full evidence. The Volatility first screen preserves the correct 36.9% supplied value, +2.1 vol-point difference versus 7D and +7.5 versus 30D. Three bars share a declared 0–40% scale. Full curve, skew and calculations are available through a named detail entry rather than crowding the primary path.
+
+### Contract activity, ratio and missing evidence
+
+The [projector](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/cfe14c49f2e0166c0ded5e6f23a274bb663d0fd3/terminal/lib/flowPrintInspector.ts) treats the wire as contract-level activity, potentially combining prints. It preserves the owner premium and compares it with size × average price ×100. Receipt time, conditions, lineage, quote context and confidence are null; packages remain unadmitted. The new detail view states those absences rather than simulating exchange precision, related legs or correction/cancellation evidence.
+
+The ratio uses the **selected record’s size**, not an unrelated whole-session volume. For the explicit fixture, 6,000/32,000=0.1875, displayed **0.19×**. The [current InspectorPane mount](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/cfe14c49f2e0166c0ded5e6f23a274bb663d0fd3/terminal/components/flowdesk/InspectorPane.tsx) passes no `oiAsOf` to [PrintInspector](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/cfe14c49f2e0166c0ded5e6f23a274bb663d0fd3/terminal/components/flowdesk/PrintInspector.tsx), whose default is null. Accordingly, both the primary and detail view now say **OI date unavailable / Not supplied**. A prior-session date is not inferred.
+
+The same InspectorPane has an older `sideLean` fallback that maps unhandled values to sell, while the projector supports unknown. The Build contract calls for one unknown-safe presentation across both surfaces. It preserves a valid partial record and its supported actions; missing OI does not become zero or block unrelated navigation.
+
+### Transport and source status
+
+[flowStream.ts](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/cfe14c49f2e0166c0ded5e6f23a274bb663d0fd3/terminal/lib/flowStream.ts) explicitly separates connection from read status and producer freshness. A connected SSE transport can report absent or unavailable; failed reads can retain earlier data. Retry uses the existing same-key reader. The amendment gives each of retained failure, proven absence and filter-only emptiness a distinct title and action.
+
+[flowFreshness.ts](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/cfe14c49f2e0166c0ded5e6f23a274bb663d0fd3/terminal/lib/flowFreshness.ts) validates measured `live_flow.meta/v2` timing and accepts only `source_asof` for derived-artifact source age. Build time is not a substitute. Independently arriving metadata must not make an older selected record look refreshed, and source-response age is not exchange latency.
+
+[FlowFreshnessReceipt](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/cfe14c49f2e0166c0ded5e6f23a274bb663d0fd3/terminal/components/flowdesk/FlowFreshnessReceipt.tsx) currently renders Market closed for `last_session`, although the classifier can produce that state from an old or missing payload date. The builder correction is to distinguish the payload’s dated status from independently established exchange-open status. No new timing authority or refresh lifecycle is proposed.
+
+### The navigation adapter is required, not already wired
+
+[FlowDeskView](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/cfe14c49f2e0166c0ded5e6f23a274bb663d0fd3/terminal/components/flowdesk/FlowDeskView.tsx) owns local selected-event and filter state. [OptionsHubView](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/cfe14c49f2e0166c0ded5e6f23a274bb663d0fd3/terminal/components/OptionsHubView.tsx) currently mounts FlowDeskView and VolView without a root/expiry handoff. [VolView](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/cfe14c49f2e0166c0ded5e6f23a274bb663d0fd3/terminal/components/vol/VolView.tsx) initializes its own root and expiry choices. Merely changing tabs would not fulfill the AAPL/23 Oct promise.
+
+Build LL-0 specifies a bounded extension of the incumbent hub/child callbacks:
+
+1. Emit selected event identity and root/expiry/strike/right from Flow.
+2. Retain the origin in the existing hub and use its existing tab owner.
+3. Apply the requested root through VolView’s existing reset/read lifecycle; select the exact expiry only after that root’s inventory arrives.
+4. Show the missing-expiry state if that expiry is unavailable. Do not silently display SPY or a different expiry beneath the original breadcrumb.
+5. Return through the same owner to the actual origin control, with a proven same-instance selection/filter/scroll restoration.
+
+[OptionsWorkspace](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/cfe14c49f2e0166c0ded5e6f23a274bb663d0fd3/terminal/components/workspaces/OptionsWorkspace.tsx) remains the URL writer. `tab=volatility` is the Volatility destination; `tab=vol` is Screener. Its `replaceState` behavior does not supply a browser-Back restoration contract. Existing keep-alive mounts are useful, but they do not freeze a changing feed or prove full-reload recovery. No additional feed history or snapshot store is introduced.
+
+The [Largest/0DTE board](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/cfe14c49f2e0166c0ded5e6f23a274bb663d0fd3/terminal/components/options/OptionsFlowBoardView.tsx) emits contract context while its hub mount accepts only root and opens Tickers. Until a real contract handoff preserves that identity, its truthful action is **Open ticker activity**. This is recorded as a separate bounded adapter issue, not silently presented as a working contract permalink.
+
+### Volatility math and clocks remain explicit
+
+The correct existing formulas and fixtures were preserved:
+
+- Total-variance interpolation from 14D at 32.2% and 30D at 29.4% gives **30.480157…% at 21D**, displayed 30.5%.
+- The current 105% skew row at strike 248 is supplied under the incumbent less-than-0.5 percentage-point tolerance around reference 236.5. It is not replaced with a different historical test fixture. The table now explicitly says **% of reference strike**, with **100%=236.5**.
+- Unsupported 90%/110% wings stay blank, and the delta axis remains unsupported.
+- The IV approximation is **36.9%×√(2/252)=3.287313…%**, displayed ±3.3%, without a confidence level.
+
+These behaviors come from [volTenorComparison.ts](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/cfe14c49f2e0166c0ded5e6f23a274bb663d0fd3/terminal/lib/volTenorComparison.ts). [VolComparePanel](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/cfe14c49f2e0166c0ded5e6f23a274bb663d0fd3/terminal/components/vol/VolComparePanel.tsx) uses source-date calendar days for constant tenors, and viewer-ET-date weekdays for the expected-move horizon. Exchange holidays are not subtracted. The native illustration explicitly uses view date 21 Oct 2026; the later-view state uses 9 Nov and withholds a future move for the past 23 Oct expiry.
+
+The interpolated 11 Nov date is labeled as a constant-tenor date, not a supplied exchange expiry. The newer AC40 behavior remains the required implementation: absent source date yields no synthetic date; a synthetic date on/before the view date is qualified as coming from the earlier source read.
+
+The ordinary hub mount supplies no `liveSpot`, so the new default is **percent only**. A price range requires the existing qualified stamped-spot input. The current event join supplies at most root earnings from `fund.json`; it does not supply the accepted concept’s FOMC row, date-change history or announcement time. Calendar-window inclusion does not establish pre-settlement timing.
+
+The separate published one-day band retains its own multiplier, horizon, date and unstated method. It is not fused with the IV approximation.
+
+### Additional implementation risks and verification
+
+The current comparison should reuse [volShared](https://github.com/mastermindx-market-intelligence/mastermind-terminal/blob/cfe14c49f2e0166c0ded5e6f23a274bb663d0fd3/terminal/components/vol/volShared.tsx) duplicate-identity admission consistently across table, anchors and skew; passing raw arrays to helpers must not re-admit conflicting identities. Missing IV for the selected expiry must not imply no usable expiry globally. The existing fund/moves readers also need to preserve failed versus absent outcomes before a UI promises those distinctions.
+
+Native checks covered all eleven screen/state roots and the full Build sheet. An initial text-contrast import issue was repaired in place; final JSX readback across all screen/state roots found no remaining black text on the dark surfaces. Two final focused screenshots verified the corrected OI-date qualification. Independent arithmetic checks reproduced the displayed ratio, IV differences, 21D interpolation and expected move. All thirteen exact owned root working indicators were released.
+
+The Build contract specifies 160 ms opacity/≤4px translation, instant reduced motion, ≥44px actions, actual-opener focus restoration and one outcome announcement. Required runtime proof covers exact selection return, changing feeds, wrong-root responses, missing expiry, unknown side, zero/missing OI, mismatched arithmetic, retained failed reads, absence versus filtering, source/view clocks, holiday horizons, duplicate identities and optional-input outcomes at 390/820/1440 px in EN/ZH and both themes. These are future implementation gates; no runtime wiring, browser execution or release acceptance is claimed.
+
+## Active next phase: Risk Radar and GMI evidence workflows
+
+Source-backed identities and current native boards are being inspected for Dashboard Popups / Risk Radar and GMI source-detail expansion. The Mastermind OS review found substantial newer owner maps, recovery and acceptance work; preserve it rather than recreating historical gaps. Continue only demonstrated, disjoint design improvements and retain all active/held work.
 
 ## Verification boundary and next actions
 
 This record proves applied native design changes, source inspection and scoped native visual checks. It does not establish functional browser navigation, runtime disclosure/keyboard behavior, real-account access, live data, model qualification, CI, merge or deployment.
 
-Continue the Flow/Volatility comparison, select a demonstrated gap, and implement a bounded amendment with exact owner and acceptance mapping. Save/read back useful milestones and continue the parent Paper improvement mission; a phase completion is not DONE_WHEN.
+Continue the Risk Radar and GMI evidence workflow reviews, implementing only demonstrated gaps with exact owner and acceptance mapping. Save/read back useful milestones and continue the parent Paper improvement mission; a phase completion is not DONE_WHEN.
