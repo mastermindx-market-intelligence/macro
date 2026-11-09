@@ -83,7 +83,7 @@ The principal remains the only canvas writer among this session’s agents. Read
 
 ## Next bounded work
 
-Continue the same-case return from a valid current Historical review through the existing drawer/history and reading owners. Qualify the parent by case and horizon, retain the same publication’s reading state, and preserve whole-drawer Close, missing-case recovery and newer-choice safeguards. The source Build map names the affected contracts and proof requirements.
+Current same-case review return and confirmed Save/Remove reading continuity are implemented and locally verified. Next, align the current-case action area with Paper G5: 12px action separation with readable narrow wrapping, confirmation feedback that does not cover Inspect demand, and a visibly disabled Save. Reuse the existing action layout and status owner, preserving storage confirmation, reader continuity and newer-choice safeguards. The source Build map points to the affected contracts and proof.
 
 Other product work follows the recorded source ownership and unresolved boundaries above. A documentation cleanup does not clear any implementation, release or acceptance gate.
 
