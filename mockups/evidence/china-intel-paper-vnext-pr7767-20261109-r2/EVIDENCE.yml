@@ -1,0 +1,4 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/china_intel.html.j2
+manifest: mockups/evidence/china-intel-paper-vnext-pr7767-20261109-r2/manifest.json

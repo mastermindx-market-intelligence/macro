@@ -4531,6 +4531,8 @@ def test_workspace_runtime_contracts_can_start_the_ci_that_validates_them() -> N
 # ---------------------------------------------------------------------------
 
 CURATED_EXCLUSIVE = {
+    # China Paper renderer: complete import/read closure; ordinary probes excluded.
+    "china-intel-paper-vnext",
     "xguerrilla-identity-registry",
     "public-site-figma-baseline-contracts",
     "press-account-claim-consumer",
@@ -5339,6 +5341,40 @@ CURATED_EXCLUSIVE = {
     # with no ceiling moved.
     "xguerrilla-admission",
 }
+
+
+@pytest.mark.parametrize(
+    "dependency",
+    [
+        "tests/test_china_intel_paper_vnext.py",
+        "templates/china_intel.html.j2",
+        "scripts/build_china_intel.py",
+        "scripts/__init__.py",
+        "tests/__init__.py",
+        "engine/i18n.py",
+        "lib/config.py",
+    ],
+)
+def test_china_intel_paper_scope_keeps_renderer_dependencies(dependency: str) -> None:
+    """Edits to the renderer, its environment, or its contract select the suite."""
+    job = next(job for job in PACK.load_legacy_jobs(MANIFEST, gate="code")
+               if job.job_id == "china-intel-paper-vnext")
+    scoped, _ = PACK.infer_job_scopes([job])
+    selected, reason = PACK.select_jobs(scoped, [dependency])
+    assert [item.job_id for item in selected] == [job.job_id], (dependency, reason)
+
+
+@pytest.mark.parametrize(
+    "probe",
+    ["templates/index.html", "scripts/build_free_content.py", "engine/prophet/plan_book.py"],
+)
+def test_china_intel_paper_scope_does_not_select_packing_probes(probe: str) -> None:
+    """Paper enrollment must not add weight to unrelated ordinary code changes."""
+    job = next(job for job in PACK.load_legacy_jobs(MANIFEST, gate="code")
+               if job.job_id == "china-intel-paper-vnext")
+    scoped, _ = PACK.infer_job_scopes([job])
+    selected, reason = PACK.select_jobs(scoped, [probe])
+    assert not selected, reason
 
 
 def _inferred_as_if_not_exclusive() -> dict[str, PACK.LegacyJob]:
