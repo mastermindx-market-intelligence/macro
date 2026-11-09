@@ -336,6 +336,16 @@ html[data-theme="light"] .gmi-mini{ background:var(--panel2); }
   color:var(--text); font:inherit; text-overflow:ellipsis; }
 .gmi-search-in::placeholder{ color:var(--muted); opacity:1; }
 .gmi-search-in::-webkit-search-decoration{ -webkit-appearance:none; }
+/* Keep the field's footprint; the enhanced suffix is one 44px clear target. */
+.gmi-search--clearable{ position:relative; padding-right:58px; }
+.gmi-search--clearable > kbd{ position:absolute; right:14px; top:50%; transform:translateY(-50%); margin:0; }
+.gmi-search--clearable:has(> .gmi-search-clear:not([hidden])) > kbd{ display:none; }
+.gmi-search--clearable .gmi-search-in::-webkit-search-cancel-button{ -webkit-appearance:none; display:none; }
+.gmi-search-clear{ position:absolute; right:0; top:50%; transform:translateY(-50%); display:grid; place-items:center; width:44px; height:44px; min-width:44px; min-height:44px; padding:0; border:0; border-radius:var(--r-btn,10px); background:transparent; color:var(--muted); cursor:pointer; }
+.gmi-search-clear[hidden]{ display:none; }
+.gmi-search-clear:hover{ color:var(--text); background:var(--panel2); }
+.gmi-page .gmi-search-clear:focus-visible{ outline:2px solid var(--link); outline-offset:-5px; }
+
 .gmi-page .gmi-search-in:focus-visible{ outline:none; }
 .gmi-page .gmi-search:focus-within{ border-color:var(--link); box-shadow:var(--gmi-select); }
 /* shared W2 conversions of specimen inline styles (R7) */

@@ -961,3 +961,53 @@ Baseline PID76771 fails two cases for the missing persistent owner. Candidate PI
 Four native phone captures—both no-match panels and both complete filtered pages—were inspected. `INDEX_STATUS_VALIDATION_20261109.json` preserves exact inputs, commands, hashes and results; `verify_index_status_component.py` extracts five named functions from the canonical verifier. The anonymous loopback fixture uses actual generated main content with complete shared theme/GMI CSS and blocks external requests.
 
 This implements the persistent-container procedure described by [W3C ARIA22](https://www.w3.org/WAI/WCAG22/Techniques/aria/ARIA22); DOM and accessibility-tree observations do not prove spoken screen-reader output. Full shared shell/fonts, live account/public serving, clipboard and deployment remain separate. Original Draft/model01/release holds remain. No Tools, navigation, release or other incumbent owner was changed.
+
+## 11.27. Explicit Clear search on the tree and index — 9 November 2026
+
+### One visible action, one existing search owner
+
+At parent `472146a6532a7bd48db5cdc433ff4e36ecfee456`, tree and index searches lacked an authored, localized clear action. Their native search cancellation was browser-dependent, and Escape cleared even an already-consumed or composing keyboard event. Two baseline cases reproduce the missing control.
+
+The shared `search_box()` now contains one icon button named **Clear search / 清空搜索**, hidden by default. The original 44 px-high field keeps its footprint; a 44 × 44 px suffix replaces the slash hint only while the raw input value is nonempty. Raw whitespace remains clearable. The original search icon, placeholder, bilingual label and persistent result-status containers remain unchanged. The close mark is an original inline decorative SVG matching the existing icon stroke grammar; no presentation/icon registry or model file was edited.
+
+Successful enhancement binds the native button's click, adds the clearable class and synchronizes visibility. The stylesheet suppresses WebKit's native cancel affordance only under that class. Without JavaScript, the custom button stays hidden, the original slash hint remains, and all 371 native destinations stay usable. No inert custom action replaces native behavior.
+
+| Event or state | Result |
+| --- | --- |
+| Click, native Enter or native Space on the visible action | Focus the existing input, set its value to empty, dispatch its existing input event exactly once. |
+| Ordinary Escape in a nonempty input | Use that same clear path. |
+| Consumed Escape, composing event or legacy key code 229 | Leave the query untouched. |
+| Empty input | Hide the custom action; clearing is a no-op. |
+| Raw whitespace | Keep the action available even though the normalized filter may be empty. |
+| Index URL/history restores a query | Derive the action from the restored input, including initial loading. |
+| A restore is about to hide the focused clear button | Return focus to the input before hiding it; retain unrelated valid focus. |
+
+`clearSearch()` and `syncSearchClear()` are small helpers inside the current search IIFE. The existing input handler remains the sole query/render/URL owner. Tree clearing restores its existing expansion snapshot without changing the selected answer, primary Browse filters, evidence nodes or an open receipt. Index clearing preserves lens, qualified return context and unrelated hash keys, removes only its query through the existing replace-state path, and retains the existing disclosure/history behavior. Locale changes use the existing data-aria owner. There is no second state store, history writer, observer, announcement cycle or translated copy source.
+
+### Rendered source and focused proof
+
+Self-check reconstructs the parent by removing only the two new helpers, one restore sync and the input/keyboard/button binding delta; every other JavaScript byte is exact. The CSS diff contains only the suffix rules. Removing the default-hidden button from the macro reproduces the entire parent macro, including both status branches. Full JavaScript and Python syntax pass.
+
+| Current artifact | Git blob |
+| --- | --- |
+| Paired JavaScript | **7caa903eb1fd78bb6b4cdd611c1c69d2f0c09224** |
+| Paired stylesheet | **4225a93b50eaa668dbc3acf72a0d4c1b4b2d7e6a** |
+| Shared search macro | **2b90130394a11df2e4b10fa1ab65041727d18836** |
+| Generated explorer | **e765336c2b840108aff2dadb45543ea5524e6026** |
+| Generated index | **16be2eb38d020a753df418c0b0abcca1487bf0dc** |
+| Canonical browser verifier | **a2ca4d53c03e0e66935877b38a9c87cc45f2507a** |
+| Extracting component harness | **7e340af7a59976a186936d322620f6358326f738** |
+
+The current production renderer reproduced the parent explorer and index from 48 checked source inputs and accepted model SHA256 **e644fa48a2bb6e6affe8d1fda74556d9db5f82acadffdad839e1efe8f095359f**. Candidate output changes only the two search-box HTML lines and paired JS/CSS among nine outputs. The other five HTML outputs stay byte-identical. Actual generated spans were transported and verified against complete SHA-256 and Git-blob identities; the explorer is 972,780 bytes and index 262,667 bytes. No model was generated or fenced model01 artifact consumed.
+
+Final native PID33720 passes **36 cases / 42 fresh anonymous contexts**, Chrome **157.0.8103.39**, zero page errors, exit0 in 77.23 seconds. Twelve light-theme cases cover both searches in EN/ZH at 1440/390/320 px; two dark cases cover EN390 and ZH320. Four actually JavaScript-disabled cases retain native links and no custom focus stop. The affected existing tree roving, persistent tree status and filtered-index navigation/history suites also pass. Two existing Tab expectations were deliberately updated to traverse the newly visible clear action before the previous destination.
+
+The proof exercises exactly one input event per native activation, ordinary and guarded Escape, raw whitespace, initial/restored history, focus before hiding, language changes while focused, unchanged field geometry, 44 px targets, hint exclusion, native destinations, tree expansion and selected evidence retention. Six light/dark phone field captures were inspected for one clear mark, visible focus, no overlap and intact field geometry.
+
+### Retained fixture correction and limits
+
+The first candidate run was stopped after six failures: its test incorrectly requested the accessible name of the intentionally hidden button. A one-case diagnostic exposed the first assertion with improved logging. The final test checks the hidden aria-label attribute and checks the accessible name after the button becomes visible. Product source and rendered bytes were unchanged. Guarded termination and a process readback proved the original runner absent before the corrected matrix began. The harness now fails fast and requires all 36 expected cases, preventing a partial run from looking complete. Initial, diagnostic and final receipts remain in `SEARCH_CLEAR_VALIDATION_20261109.json`; the stopped run has no numeric exit-code claim.
+
+The renderer's recorded verifier hashes precede that test-only correction. The validation file separately binds the exact final verifier and harness hashes used by PID33720. `verify_search_clear_component.py` extracts the named canonical verifier functions and owns no product behavior.
+
+These results establish the anonymous component's rendered, DOM, accessibility-tree and interaction behavior. Synthetic composition events do not prove OS IME behavior. Spoken screen-reader output, full shared shell/fonts, live account/public serving and deployment remain separate. Original Draft/model01/release holds remain. No Tools, original Paper style hold, navigation, publication or release owner was changed.

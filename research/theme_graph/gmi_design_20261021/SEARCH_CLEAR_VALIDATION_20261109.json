@@ -1,0 +1,2827 @@
+{
+  "schema": "GMI_SEARCH_CLEAR_VALIDATION_V1",
+  "recorded_at": "2026-11-09",
+  "repository": "mastermindx-market-intelligence/Macro",
+  "pull_request": 10676,
+  "parent_head": "472146a6532a7bd48db5cdc433ff4e36ecfee456",
+  "source_law_pin": "5c3d3885234358aefb97ecdbc59be0864df14f8b",
+  "status": "SOURCE_AND_ANONYMOUS_COMPONENT_PROOF_COMPLETE; DRAFT_RELEASE_HOLDS_RETAINED",
+  "source_self_check": {
+    "js_change_boundary_exact": true,
+    "css_only_clear_suffix_rules": true,
+    "macro_only_default_hidden_button": true,
+    "status_branches_exact": true,
+    "python_syntax": true,
+    "javascript_syntax": "node --check exit 0",
+    "manifest": {
+      "candidate-gmi.js": {
+        "bytes": 49594,
+        "sha256": "91e2ec379257b9f866ee1e93ce7869e743c4c2667cc820cc55baaf0143ae1719",
+        "blob": "7caa903eb1fd78bb6b4cdd611c1c69d2f0c09224"
+      },
+      "candidate-gmi.css": {
+        "bytes": 69300,
+        "sha256": "e1431dd2580e8358945f77739a932522e643b5dc7667cf41b009d77b15594969",
+        "blob": "4225a93b50eaa668dbc3acf72a0d4c1b4b2d7e6a"
+      },
+      "candidate-gmi-macros.html.j2": {
+        "bytes": 7112,
+        "sha256": "49ae1f96453dd481007cac41a4a8951be8090836e93ff9fa94507166d744749e",
+        "blob": "2b90130394a11df2e4b10fa1ab65041727d18836"
+      },
+      "candidate-gmi.html": {
+        "bytes": 972780,
+        "sha256": "1db2af5f7c12a1e2e91a30dad2a12f6309efaf0261ca3289db15ea700a3da1f8",
+        "blob": "e765336c2b840108aff2dadb45543ea5524e6026"
+      },
+      "candidate-gmi-index.html": {
+        "bytes": 262667,
+        "sha256": "064f762e1f3330d47380b67c8c4d641ce763f3b73a4f04bb654c240b80753d74",
+        "blob": "16be2eb38d020a753df418c0b0abcca1487bf0dc"
+      },
+      "candidate-verify_product_browser.py": {
+        "bytes": 121875,
+        "sha256": "833522aba03bee3f1ce2793d4de106b1998d9bf0a2f4d144a5baf8f4c9a4de5e",
+        "blob": "a2ca4d53c03e0e66935877b38a9c87cc45f2507a"
+      },
+      "verify_search_clear_component.py": {
+        "bytes": 7783,
+        "sha256": "5954a233a53ac8a427b7d7c8075017c5c8e0d833a747a5a82876badcd9a32105",
+        "blob": "7e340af7a59976a186936d322620f6358326f738"
+      }
+    }
+  },
+  "changes": [
+    "One default-hidden, localized 44px authored clear button in existing search_box macro; existing tree and index status branches remain exact.",
+    "clearSearch focuses the input, clears its raw value and dispatches the existing input event once; click, native keyboard activation and guarded Escape share this path.",
+    "Existing index restore calls suffix visibility sync; native cancellation is suppressed only after successful enhancement. Empty/disabled-script controls remain hidden.",
+    "No new query, selection, URL, history, locale, observer, filter, announcement or navigation owner."
+  ],
+  "production_render": {
+    "root": "/Volumes/Mastermind/agent-workspaces/verify/gmi-search-clear-20261109-622i6r31",
+    "bindings": {
+      "source_root": "/Volumes/Mastermind/agent-workspaces/verify/gmi-index-status-20261109-34x_7l3e",
+      "inputs": [
+        {
+          "path": "config.yml",
+          "blob": "5be75249c98033d7ee0fbe55928713b1f50af627",
+          "sha256": "701229b33bbd6260c561023e2c2611a8fca24bc2c97e784cf97d55aa0357b402",
+          "bytes": 496073
+        },
+        {
+          "path": "scripts/build_gmi_explorer.py",
+          "blob": "900253d42a7b1d43ad41aa493e8032444c4570de",
+          "sha256": "7a2fd1287f20d1e5b166afa34587ad1da0cfad0191e2e8bd1fdb8ac232c77618",
+          "bytes": 15159
+        },
+        {
+          "path": "lib/shared_shell.py",
+          "blob": "cffbeba3f8fdcf7a9413d9428aec0154d97d9614",
+          "sha256": "eb1f06843b556968f15a0478d756e8312a3b6f4f4c8cb3daf047a6c438f79c1c",
+          "bytes": 5407
+        },
+        {
+          "path": "lib/config.py",
+          "blob": "b6fc888269876242597da354aaa726c20ed95802",
+          "sha256": "fa22ec934ec5294072b6bb4bf081d787f3f8ad5da4702ce3f4818b1674dbd53f",
+          "bytes": 1131
+        },
+        {
+          "path": "lib/pages.py",
+          "blob": "db175c463a31828263b57a3287afba661439a765",
+          "sha256": "9ec5d5ceeff55e5e269c5de26d1f54b9d72db1a755940f7029f47d98820014ba",
+          "bytes": 38933
+        },
+        {
+          "path": "lib/site_assets.py",
+          "blob": "03d7ce6137a30b990435cb1fee2090e61c2e95e3",
+          "sha256": "61ed68657b38b006962c653553bcd1d2e25f4ce918ce98ab30f99e7cdc09b275",
+          "bytes": 7180
+        },
+        {
+          "path": "templates/_site_nav.html.j2",
+          "blob": "d5c449e9ec498c49007c2de0ced1757a7f36b12d",
+          "sha256": "2a1f60a27bfdb2c86ab6aa60e6efd1b40515f94d1afc6d38692047f1de3d0376",
+          "bytes": 3684
+        },
+        {
+          "path": "templates/gmi_relationships.html.j2",
+          "blob": "53b8a697a17064367964b566788d553b7b27a4e0",
+          "sha256": "fa1a7e78f0ec60750a94e76b6b764331b995ecb1204fa3f6ffc62e1d1cf3ed3a",
+          "bytes": 2754
+        },
+        {
+          "path": "templates/_navlinks.html.j2",
+          "blob": "70fee6eabeb2cfe6d92590da42aa8c3e3733e837",
+          "sha256": "da495f935455e24d117bc556d82c634b0229c9604c8fb2ad711f9542a3f29a83",
+          "bytes": 54533
+        },
+        {
+          "path": "templates/_gmi_theme_data.html.j2",
+          "blob": "0520256ae0a2f61a33702070686be769d8640124",
+          "sha256": "ce5d5e782ad08972600619b52a509f37a4acd9b0a40f2a9f2e0ad2859254ff33",
+          "bytes": 2153
+        },
+        {
+          "path": "templates/theme.css",
+          "blob": "619436f58d37a222d1db7021ba9d52bb3a05a7fa",
+          "sha256": "9bd171a66b42712c54459c99a0104725e2369a96cd9f3a71ba3e60b7c683d757",
+          "bytes": 227583
+        },
+        {
+          "path": "templates/gmi.css",
+          "blob": "d12725489b7c8baad38ec53570c8f7e25f759606",
+          "sha256": "fcdae103ef4a425f28cad1dc8ad076398e4d26625d351c8c1127b80028c2654d",
+          "bytes": 68345
+        },
+        {
+          "path": "templates/_gmi_product_header.html.j2",
+          "blob": "c7b10dbfecc66deacfe9b8fbbb2ce72932299695",
+          "sha256": "1d57d38808dd046f932eea591293837cd2d92e02a7621e1b2b98d532103ecda9",
+          "bytes": 1680
+        },
+        {
+          "path": "templates/_interfonts.html.j2",
+          "blob": "f6e84eb856ce66f732aacafe883d5c26c5d1e27e",
+          "sha256": "40ba62a3d1efa51de70993bedd5fb7ec96fcc1190f58515d765b267b2afd32cd",
+          "bytes": 1587
+        },
+        {
+          "path": "templates/_gmi_taxonomy.html.j2",
+          "blob": "99ade053147ecb6f42a9b1119af4f522df5c05b7",
+          "sha256": "32b6aba86b7375c13ada8e25fa31689923b696c12358f7a28f1ab17e9e8a70ce",
+          "bytes": 12905
+        },
+        {
+          "path": "templates/_gmi_base.html.j2",
+          "blob": "1d76c899cb2ce05b66e7d37d19b53e212e814b4d",
+          "sha256": "134ae16113ea8e7a4e35b34ca3dfb3ac565c38fa6fb9f5ad24d88b784e30ffa2",
+          "bytes": 2852
+        },
+        {
+          "path": "templates/_gmi_macros.html.j2",
+          "blob": "9b876f4b543e6335e695991fbca689c8005fa653",
+          "sha256": "4535df59158eec588a080b15c248e34ac046671bff474d75576264932128a129",
+          "bytes": 6746
+        },
+        {
+          "path": "templates/shared_shell_bridge.js",
+          "blob": "00ee9b9fa4d1fba67359d3d6b95c7937aed150b7",
+          "sha256": "071ef7202d8886228342c00f0e7a3026eaba1d0103c4dcf1e6d204a7da77451b",
+          "bytes": 51296
+        },
+        {
+          "path": "templates/gmi.js",
+          "blob": "d578f494935c7c2dbc9e6f352d2669e885fef488",
+          "sha256": "e6af861e88580bb292c3149af8178fe84c4ed9fdf6c1832787558dc2468916a2",
+          "bytes": 48734
+        },
+        {
+          "path": "templates/_all_tools_menu.html.j2",
+          "blob": "3259b4e5c6305fd2f9a33bea65141efb0528680a",
+          "sha256": "d4427b10f930677a285269f20070f1140f451a86228aeb185b19f5820ab1bf17",
+          "bytes": 3436
+        },
+        {
+          "path": "templates/shared_shell.css",
+          "blob": "88a0fd9e836fbffac36722dac04189c6eb24af9b",
+          "sha256": "b1918ccaa2294f18c0fd5bca123e38267251c7e9d9a7c4fce1f296ef9e4c3c1e",
+          "bytes": 467
+        },
+        {
+          "path": "templates/gmi_map.html.j2",
+          "blob": "b4f2a69ce7588d1b51296329d54d38cbcbeab4a5",
+          "sha256": "aca5fdc0b4e5b796d0a0e3794cb09fd740b9a7277a5ad1f81c07b5a181df39da",
+          "bytes": 5998
+        },
+        {
+          "path": "templates/gmi_states.html.j2",
+          "blob": "2e2f66e8f9588403a58434ae6fa80bfa181845bf",
+          "sha256": "7f399348ed2b5a9b750c90b4268c7580329ec692c6f126b6231b6c650aad01d4",
+          "bytes": 3413
+        },
+        {
+          "path": "templates/theme.js",
+          "blob": "21a1fb1627ac34badc6078cff486f98486e9b773",
+          "sha256": "918e7acece23ab6df8211305a938e569f0de4184c0fd9c0b2f1e56c50e3cac4d",
+          "bytes": 400176
+        },
+        {
+          "path": "templates/_seo_head.html.j2",
+          "blob": "1a0f1a7cd3a8499e9d873171171d374424f9ddd8",
+          "sha256": "eda59eeb5f7cf0fb83a1a6430ff523939ee43cd214fe2b4aebba7ca4561bbbee",
+          "bytes": 2335
+        },
+        {
+          "path": "templates/gmi_companies.html.j2",
+          "blob": "afb542f5740a4147c5ef0d05aaae25481d8d6851",
+          "sha256": "1a278db0e7e9742f694e7a55606f917d5737b84d516ff7ea22e8270c4988fc04",
+          "bytes": 6829
+        },
+        {
+          "path": "templates/gmi_issuer.html.j2",
+          "blob": "35b06fd42b3ef485564b504fcacecacb89383c49",
+          "sha256": "79397fc32d29c6101b19f0e2c6638e19d1708bd5497be74b44dbd0764d28c375",
+          "bytes": 3124
+        },
+        {
+          "path": "templates/data_base.js",
+          "blob": "9e7cc392f0bad0e269d26903432faa39d94a1b62",
+          "sha256": "2aaceaf98a0f534aa342bdc6e64c831a2261a04fafebab4becf50f2d7c82620a",
+          "bytes": 2367
+        },
+        {
+          "path": "templates/gmi_coverage.html.j2",
+          "blob": "417a1e5ad85e66796201a1879e520db53bc9fbfc",
+          "sha256": "e06d5027e2254c11d71079c6c12d9c464d957b671992f9e163bc85fd5685a2e3",
+          "bytes": 8490
+        },
+        {
+          "path": "templates/_gmi_product_macros.html.j2",
+          "blob": "3e82a587bb0ad17f536d0513d85a1c0a66304999",
+          "sha256": "3315bd43243d52975eee75f42320528c5be69e40581c1b9e284e16e2b222b157",
+          "bytes": 7539
+        },
+        {
+          "path": "templates/_gmi_head.html.j2",
+          "blob": "5fe310cbe1a4a988f60f8b400e47a2de82ff06ef",
+          "sha256": "c0ad57713ab06c77beb85c70a898b2530d480caa24fc32da4c3b6a731c331589",
+          "bytes": 947
+        },
+        {
+          "path": "templates/gmi_index.html.j2",
+          "blob": "de23d434e99adac9665b36a50992b653b72e8c14",
+          "sha256": "4a505b97052c3c1519bdc206cd09d2cc01ba787466afb82c32961f25a5298b91",
+          "bytes": 3579
+        },
+        {
+          "path": "engine/theme_graph/store.py",
+          "blob": "853bc3bb557aaf32251de0eb053bcff55604e68c",
+          "sha256": "7e9488741f4fe58343fd7f9255a4d694a3bda1cb081a35239ecda277d8ee8221",
+          "bytes": 25211
+        },
+        {
+          "path": "engine/theme_graph/identity_resolution.py",
+          "blob": "e3510e69645a96872e7080efe028633ff6836324",
+          "sha256": "5672ccebaac97633482efe73a2ed8d0d87d579ef8f1d5f4ebcaf2840482814c7",
+          "bytes": 40467
+        },
+        {
+          "path": "engine/theme_graph/change_report.py",
+          "blob": "354a48be5a56416b941fecb9942401a7f0fb7f1c",
+          "sha256": "50620da7b694bb1c929b3d2dd93a26fc1e40dc7253c4f3aa1b23b307ab905bed",
+          "bytes": 10059
+        },
+        {
+          "path": "engine/theme_graph/membership_evidence.py",
+          "blob": "3785874c443ffcd4cde2db31b1f11cafc184d7d5",
+          "sha256": "47c28abc14a27e5e3550885a415527a7da466204b54ae620e540230cbf3b8c89",
+          "bytes": 80400
+        },
+        {
+          "path": "engine/theme_graph/rights.py",
+          "blob": "d801f2e231e8a0dbf05d30e96fd0024ae70bd63b",
+          "sha256": "0a18ac0c2f5b40048352625f608b208755c2500b1943df30b850d51092b44c15",
+          "bytes": 16362
+        },
+        {
+          "path": "engine/theme_graph/probation.py",
+          "blob": "eac18b9804411c10ee8cede2d5d6f9aae2a84f1f",
+          "sha256": "02cfbb4cf0d38923aa9f06d3c0a4e4699591137bd202e268dab2cda22807b6a6",
+          "bytes": 58797
+        },
+        {
+          "path": "engine/theme_graph/identity.py",
+          "blob": "c27fb161bf401ca05387c4f07ac8e0220b801b2a",
+          "sha256": "550ae9eb7975062f129340e47b6d70f26bd747ef59a546958768478090f6548f",
+          "bytes": 10722
+        },
+        {
+          "path": "lib/dataos/temporal.py",
+          "blob": "094b149a8b9158f19cb99c4005568c12db96ed41",
+          "sha256": "4415404186f0b0d2870f42d9e4a0b95be87937863adf30cf015ed34e8bf92b67",
+          "bytes": 12847
+        },
+        {
+          "path": "lib/dataos/registry.py",
+          "blob": "65b0d69036da97760f20241468f2549b21d9c686",
+          "sha256": "0d575b03848c59e98bdd320243f896b41b201047d0c0c23559467b99185fb404",
+          "bytes": 41942
+        },
+        {
+          "path": "lib/dataos/__init__.py",
+          "blob": "1ddadafd88a59dfc90a7d68c3ae0897da1aae661",
+          "sha256": "86afe285932523c2ee7a1cb25ed0a57b3e7010fbd661aa27ea622530cb82fa30",
+          "bytes": 11768
+        },
+        {
+          "path": "lib/dataos/nulls.py",
+          "blob": "8e7f09ac172f326bab1678ac626fa1d5dc5aa0ab",
+          "sha256": "2556e7d0b2ac609306e512a61071a024b7b0b7eb0ec4ef3efaf22ce9f4387d49",
+          "bytes": 7737
+        },
+        {
+          "path": "lib/dataos/quality.py",
+          "blob": "967b943443d9507c5c0078f62848c38c3d2af48a",
+          "sha256": "a462b3264a5ec05467331c0a224bfd37c26e66012c376ed28922e4e45fa5f877",
+          "bytes": 36845
+        },
+        {
+          "path": "lib/dataos/identity.py",
+          "blob": "fb99fd182ac506a158c63ab434f09374cdbbd4f8",
+          "sha256": "47914bca76cf80101c25fcbd7c29455dd99fbc697373e5183fca505376f6e507",
+          "bytes": 111096
+        },
+        {
+          "path": "lib/dataos/price.py",
+          "blob": "be127fa853a6aafbf0bcb33b58783316ac972faa",
+          "sha256": "40aad993988e03f3c9ff4c2a221cdaeecc3569054d4a93fc0565657fce109e15",
+          "bytes": 10509
+        },
+        {
+          "path": "scripts/gmi_explorer/present.py",
+          "blob": "c5ae61d80a484c07d583831577db52881843061b",
+          "sha256": "3c8b76894628c1a09234c059a9fccf31d52adc47eee03d6e16f580a07c452257",
+          "bytes": 3841
+        },
+        {
+          "path": "scripts/gmi_explorer/model.py",
+          "blob": "2614997dd87bf7d7e2d0b61b283c6b364801e1b1",
+          "sha256": "19a760f597f7a7d99b72c2c72073757ff3a94eac123af30c4a6d370d78952dfa",
+          "bytes": 29457
+        }
+      ],
+      "model_sha256": "e644fa48a2bb6e6affe8d1fda74556d9db5f82acadffdad839e1efe8f095359f",
+      "source_head": "472146a6532a7bd48db5cdc433ff4e36ecfee456"
+    },
+    "baseline": {
+      "source_head": "472146a6532a7bd48db5cdc433ff4e36ecfee456",
+      "input_count": 48,
+      "model_sha256": "e644fa48a2bb6e6affe8d1fda74556d9db5f82acadffdad839e1efe8f095359f",
+      "explorer_exact": true,
+      "index_exact": true,
+      "outputs": {
+        "gmi-companies.html": "014cd2e2660f353b2b90982b1cdf0e2c426fecf8939b3265834bffd6ebd960fc",
+        "gmi-coverage.html": "b9233025f8a8eb2c7963e84ffccffcdde3d0e18ca1a362480fa26b4c8d6a578c",
+        "gmi-index.html": "4efa77e8b588a3e5b6e668a46ebb7b70cd00955a1012ed39dbb4b9f320358833",
+        "gmi-issuer-mu.html": "22cc39aca77961584fad494ab0afa788b287636f7e3c5cfaecba7dbda2172bdd",
+        "gmi-relationships.html": "dfaa6cf417b30c3d0f7955f16e03b69c44c3bd072ccffb23dc54c82177c15ddf",
+        "gmi-states.html": "3b3c22bd3c57dc34586ac5b9d0800cab9d6c3259f56c9cdc5c2021117a65187e",
+        "gmi.css": "fcdae103ef4a425f28cad1dc8ad076398e4d26625d351c8c1127b80028c2654d",
+        "gmi.html": "7d41aa095742b2640bbe9eb0da456624e0408c9bc7584e4634d1511fcc7ee588",
+        "gmi.js": "e6af861e88580bb292c3149af8178fe84c4ed9fdf6c1832787558dc2468916a2"
+      }
+    },
+    "candidate": {
+      "source_head": "472146a6532a7bd48db5cdc433ff4e36ecfee456",
+      "model_sha256": "e644fa48a2bb6e6affe8d1fda74556d9db5f82acadffdad839e1efe8f095359f",
+      "changed": [
+        "gmi-index.html",
+        "gmi.css",
+        "gmi.html",
+        "gmi.js"
+      ],
+      "outputs": {
+        "gmi-companies.html": "014cd2e2660f353b2b90982b1cdf0e2c426fecf8939b3265834bffd6ebd960fc",
+        "gmi-coverage.html": "b9233025f8a8eb2c7963e84ffccffcdde3d0e18ca1a362480fa26b4c8d6a578c",
+        "gmi-index.html": "064f762e1f3330d47380b67c8c4d641ce763f3b73a4f04bb654c240b80753d74",
+        "gmi-issuer-mu.html": "22cc39aca77961584fad494ab0afa788b287636f7e3c5cfaecba7dbda2172bdd",
+        "gmi-relationships.html": "dfaa6cf417b30c3d0f7955f16e03b69c44c3bd072ccffb23dc54c82177c15ddf",
+        "gmi-states.html": "3b3c22bd3c57dc34586ac5b9d0800cab9d6c3259f56c9cdc5c2021117a65187e",
+        "gmi.css": "e1431dd2580e8358945f77739a932522e643b5dc7667cf41b009d77b15594969",
+        "gmi.html": "1db2af5f7c12a1e2e91a30dad2a12f6309efaf0261ca3289db15ea700a3da1f8",
+        "gmi.js": "91e2ec379257b9f866ee1e93ce7869e743c4c2667cc820cc55baaf0143ae1719"
+      },
+      "candidate_html_blobs": {
+        "gmi.html": "e765336c2b840108aff2dadb45543ea5524e6026",
+        "gmi-index.html": "16be2eb38d020a753df418c0b0abcca1487bf0dc"
+      },
+      "paired_assets_exact": true,
+      "all_other_outputs_unchanged": true,
+      "candidate_inputs": {
+        "templates/gmi.js": {
+          "sha256": "91e2ec379257b9f866ee1e93ce7869e743c4c2667cc820cc55baaf0143ae1719",
+          "blob": "7caa903eb1fd78bb6b4cdd611c1c69d2f0c09224"
+        },
+        "templates/gmi.css": {
+          "sha256": "e1431dd2580e8358945f77739a932522e643b5dc7667cf41b009d77b15594969",
+          "blob": "4225a93b50eaa668dbc3acf72a0d4c1b4b2d7e6a"
+        },
+        "templates/_gmi_macros.html.j2": {
+          "sha256": "49ae1f96453dd481007cac41a4a8951be8090836e93ff9fa94507166d744749e",
+          "blob": "2b90130394a11df2e4b10fa1ab65041727d18836"
+        },
+        "verify_product_browser.py": {
+          "sha256": "cb466cb3acf9503d2fd544b1b2b3adb823a83c18de3485852c8d920dc829b6e6",
+          "blob": "0b44e4a1c06e0a7a402647214322f8d9ff07a2a3"
+        },
+        "verify_search_clear_component.py": {
+          "sha256": "c80858f23a0a4366f5ca337ec3802937a3c1032c13c20d3476619bc34454864d",
+          "blob": "903a563f18aa555a88badc414f36a58ba669c865"
+        }
+      }
+    },
+    "generated_diffs": {
+      "gmi.html": "--- a/site/gmi.html\n+++ b/site/gmi.html\n@@ -531,7 +531,7 @@\n <div class=\"gmi-col-main\">\n <section class=\"gmi-panel\">\n <div class=\"mx-sec\"><h2><span class=\"l-en\">Browse the tree</span><span class=\"l-zh\">浏览主题树</span></h2></div>\n-<div class=\"gmi-search\" role=\"search\"><svg viewBox=\"0 0 24 24\" width=\"18\" height=\"18\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><circle cx=\"11\" cy=\"11\" r=\"6.5\"/><path d=\"M16 16l4.5 4.5\"/></svg><input class=\"gmi-search-in\" type=\"search\" data-gmi-filter=\"tree\" placeholder=\"Search 371 micro-themes\" aria-label=\"Search 371 micro-themes\" data-ph-en=\"Search 371 micro-themes\" data-ph-zh=\"搜索 371 个细分主题\" data-aria-en=\"Search 371 micro-themes\" data-aria-zh=\"搜索 371 个细分主题\" autocomplete=\"off\" spellcheck=\"false\"><kbd aria-hidden=\"true\">/</kbd></div>\n+<div class=\"gmi-search\" role=\"search\"><svg viewBox=\"0 0 24 24\" width=\"18\" height=\"18\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><circle cx=\"11\" cy=\"11\" r=\"6.5\"/><path d=\"M16 16l4.5 4.5\"/></svg><input class=\"gmi-search-in\" type=\"search\" data-gmi-filter=\"tree\" placeholder=\"Search 371 micro-themes\" aria-label=\"Search 371 micro-themes\" data-ph-en=\"Search 371 micro-themes\" data-ph-zh=\"搜索 371 个细分主题\" data-aria-en=\"Search 371 micro-themes\" data-aria-zh=\"搜索 371 个细分主题\" autocomplete=\"off\" spellcheck=\"false\"><button class=\"gmi-search-clear\" type=\"button\" data-gmi-search-clear aria-label=\"Clear search\" data-aria-en=\"Clear search\" data-aria-zh=\"清空搜索\" hidden><svg viewBox=\"0 0 24 24\" width=\"18\" height=\"18\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" aria-hidden=\"true\" focusable=\"false\"><path d=\"M6 6l12 12M18 6 6 18\"/></svg></button><kbd aria-hidden=\"true\">/</kbd></div>\n <div data-gmi-tree-status role=\"status\" aria-live=\"polite\" aria-atomic=\"true\"><p class=\"mx-empty gmi-empty-inline\" data-gmi-nomatch=\"tree\" hidden><span class=\"l-en\">No micro-theme matches that search.</span><span class=\"l-zh\">没有匹配该搜索的细分主题。</span></p></div>\n <div class=\"gmi-panel gmi-panel--flush gmi-panel--bare\">\n <div class=\"gmi-tree\" role=\"tree\">\n",
+      "gmi-index.html": "--- a/site/gmi-index.html\n+++ b/site/gmi-index.html\n@@ -349,7 +349,7 @@\n   <div class=\"gmi-head-side\"><span class=\"gmi-asof\"><span class=\"l-en\">Read as of 3 Nov 2026</span><span class=\"l-zh\">数据截至2026年11月3日</span></span></div>\n </header>\n <section class=\"gmi-panel\">\n-<div class=\"gmi-search\" role=\"search\"><svg viewBox=\"0 0 24 24\" width=\"18\" height=\"18\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><circle cx=\"11\" cy=\"11\" r=\"6.5\"/><path d=\"M16 16l4.5 4.5\"/></svg><input class=\"gmi-search-in\" type=\"search\" data-gmi-filter=\"index\" placeholder=\"Search 371 micro-themes\" aria-label=\"Search 371 micro-themes\" data-ph-en=\"Search 371 micro-themes\" data-ph-zh=\"搜索 371 个细分主题\" data-aria-en=\"Search 371 micro-themes\" data-aria-zh=\"搜索 371 个细分主题\" autocomplete=\"off\" spellcheck=\"false\"><kbd aria-hidden=\"true\">/</kbd></div>\n+<div class=\"gmi-search\" role=\"search\"><svg viewBox=\"0 0 24 24\" width=\"18\" height=\"18\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><circle cx=\"11\" cy=\"11\" r=\"6.5\"/><path d=\"M16 16l4.5 4.5\"/></svg><input class=\"gmi-search-in\" type=\"search\" data-gmi-filter=\"index\" placeholder=\"Search 371 micro-themes\" aria-label=\"Search 371 micro-themes\" data-ph-en=\"Search 371 micro-themes\" data-ph-zh=\"搜索 371 个细分主题\" data-aria-en=\"Search 371 micro-themes\" data-aria-zh=\"搜索 371 个细分主题\" autocomplete=\"off\" spellcheck=\"false\"><button class=\"gmi-search-clear\" type=\"button\" data-gmi-search-clear aria-label=\"Clear search\" data-aria-en=\"Clear search\" data-aria-zh=\"清空搜索\" hidden><svg viewBox=\"0 0 24 24\" width=\"18\" height=\"18\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" aria-hidden=\"true\" focusable=\"false\"><path d=\"M6 6l12 12M18 6 6 18\"/></svg></button><kbd aria-hidden=\"true\">/</kbd></div>\n <div data-gmi-index-status role=\"status\" aria-live=\"polite\" aria-atomic=\"true\"><p class=\"gmi-index-feedback\" data-gmi-index-feedback hidden><span data-gmi-index-count hidden><span class=\"l-en\" data-gmi-index-count-en></span><span class=\"l-zh\" data-gmi-index-count-zh></span></span><span data-gmi-nomatch=\"index\" hidden><span class=\"l-en\">No micro-theme matches that search.</span><span class=\"l-zh\">没有匹配该搜索的细分主题。</span></span></p></div>\n <div class=\"gmi-key\"><span><span class=\"gmi-sm gmi-sm--acc\" aria-hidden=\"true\"></span><span class=\"l-en\">Core set</span><span class=\"l-zh\">核心集</span></span><span><span class=\"gmi-sm gmi-sm--disp\" aria-hidden=\"true\"></span><span class=\"l-en\">Extended · not counted</span><span class=\"l-zh\">扩展 · 不计入</span></span><span><span class=\"gmi-sm gmi-sm--adm\" aria-hidden=\"true\"></span><span class=\"l-en\">Admitted</span><span class=\"l-zh\">已纳入</span></span><span><span class=\"gmi-sm gmi-sm--held\" aria-hidden=\"true\"></span><span class=\"l-en\">Held for review</span><span class=\"l-zh\">待审核</span></span></div>\n </section>\n"
+    },
+    "exact_byte_transport": {
+      "gmi.html": {
+        "baseline_sha256": "7d41aa095742b2640bbe9eb0da456624e0408c9bc7584e4634d1511fcc7ee588",
+        "candidate_sha256": "1db2af5f7c12a1e2e91a30dad2a12f6309efaf0261ca3289db15ea700a3da1f8",
+        "candidate_blob": "e765336c2b840108aff2dadb45543ea5524e6026",
+        "candidate_bytes": 972780,
+        "operations": [
+          {
+            "tag": "replace",
+            "start": 533,
+            "end": 534,
+            "old_sha256": "fb383f540de39dd84d8120dc16da7f9e46528d466b3768244a1721a5976af682",
+            "replacement_base64": "PGRpdiBjbGFzcz0iZ21pLXNlYXJjaCIgcm9sZT0ic2VhcmNoIj48c3ZnIHZpZXdCb3g9IjAgMCAyNCAyNCIgd2lkdGg9IjE4IiBoZWlnaHQ9IjE4IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIxLjgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgYXJpYS1oaWRkZW49InRydWUiPjxjaXJjbGUgY3g9IjExIiBjeT0iMTEiIHI9IjYuNSIvPjxwYXRoIGQ9Ik0xNiAxNmw0LjUgNC41Ii8+PC9zdmc+PGlucHV0IGNsYXNzPSJnbWktc2VhcmNoLWluIiB0eXBlPSJzZWFyY2giIGRhdGEtZ21pLWZpbHRlcj0idHJlZSIgcGxhY2Vob2xkZXI9IlNlYXJjaCAzNzEgbWljcm8tdGhlbWVzIiBhcmlhLWxhYmVsPSJTZWFyY2ggMzcxIG1pY3JvLXRoZW1lcyIgZGF0YS1waC1lbj0iU2VhcmNoIDM3MSBtaWNyby10aGVtZXMiIGRhdGEtcGgtemg9IuaQnOe0oiAzNzEg5Liq57uG5YiG5Li76aKYIiBkYXRhLWFyaWEtZW49IlNlYXJjaCAzNzEgbWljcm8tdGhlbWVzIiBkYXRhLWFyaWEtemg9IuaQnOe0oiAzNzEg5Liq57uG5YiG5Li76aKYIiBhdXRvY29tcGxldGU9Im9mZiIgc3BlbGxjaGVjaz0iZmFsc2UiPjxidXR0b24gY2xhc3M9ImdtaS1zZWFyY2gtY2xlYXIiIHR5cGU9ImJ1dHRvbiIgZGF0YS1nbWktc2VhcmNoLWNsZWFyIGFyaWEtbGFiZWw9IkNsZWFyIHNlYXJjaCIgZGF0YS1hcmlhLWVuPSJDbGVhciBzZWFyY2giIGRhdGEtYXJpYS16aD0i5riF56m65pCc57SiIiBoaWRkZW4+PHN2ZyB2aWV3Qm94PSIwIDAgMjQgMjQiIHdpZHRoPSIxOCIgaGVpZ2h0PSIxOCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJjdXJyZW50Q29sb3IiIHN0cm9rZS13aWR0aD0iMS44IiBzdHJva2UtbGluZWNhcD0icm91bmQiIGFyaWEtaGlkZGVuPSJ0cnVlIiBmb2N1c2FibGU9ImZhbHNlIj48cGF0aCBkPSJNNiA2bDEyIDEyTTE4IDYgNiAxOCIvPjwvc3ZnPjwvYnV0dG9uPjxrYmQgYXJpYS1oaWRkZW49InRydWUiPi88L2tiZD48L2Rpdj4K"
+          }
+        ]
+      },
+      "gmi-index.html": {
+        "baseline_sha256": "4efa77e8b588a3e5b6e668a46ebb7b70cd00955a1012ed39dbb4b9f320358833",
+        "candidate_sha256": "064f762e1f3330d47380b67c8c4d641ce763f3b73a4f04bb654c240b80753d74",
+        "candidate_blob": "16be2eb38d020a753df418c0b0abcca1487bf0dc",
+        "candidate_bytes": 262667,
+        "operations": [
+          {
+            "tag": "replace",
+            "start": 351,
+            "end": 352,
+            "old_sha256": "e19f80bb9acdf87c2bb7651f4cbcb52c04c4fab6659fcf8fd2e381db5ab920a3",
+            "replacement_base64": "PGRpdiBjbGFzcz0iZ21pLXNlYXJjaCIgcm9sZT0ic2VhcmNoIj48c3ZnIHZpZXdCb3g9IjAgMCAyNCAyNCIgd2lkdGg9IjE4IiBoZWlnaHQ9IjE4IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIxLjgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgYXJpYS1oaWRkZW49InRydWUiPjxjaXJjbGUgY3g9IjExIiBjeT0iMTEiIHI9IjYuNSIvPjxwYXRoIGQ9Ik0xNiAxNmw0LjUgNC41Ii8+PC9zdmc+PGlucHV0IGNsYXNzPSJnbWktc2VhcmNoLWluIiB0eXBlPSJzZWFyY2giIGRhdGEtZ21pLWZpbHRlcj0iaW5kZXgiIHBsYWNlaG9sZGVyPSJTZWFyY2ggMzcxIG1pY3JvLXRoZW1lcyIgYXJpYS1sYWJlbD0iU2VhcmNoIDM3MSBtaWNyby10aGVtZXMiIGRhdGEtcGgtZW49IlNlYXJjaCAzNzEgbWljcm8tdGhlbWVzIiBkYXRhLXBoLXpoPSLmkJzntKIgMzcxIOS4que7huWIhuS4u+mimCIgZGF0YS1hcmlhLWVuPSJTZWFyY2ggMzcxIG1pY3JvLXRoZW1lcyIgZGF0YS1hcmlhLXpoPSLmkJzntKIgMzcxIOS4que7huWIhuS4u+mimCIgYXV0b2NvbXBsZXRlPSJvZmYiIHNwZWxsY2hlY2s9ImZhbHNlIj48YnV0dG9uIGNsYXNzPSJnbWktc2VhcmNoLWNsZWFyIiB0eXBlPSJidXR0b24iIGRhdGEtZ21pLXNlYXJjaC1jbGVhciBhcmlhLWxhYmVsPSJDbGVhciBzZWFyY2giIGRhdGEtYXJpYS1lbj0iQ2xlYXIgc2VhcmNoIiBkYXRhLWFyaWEtemg9Iua4heepuuaQnOe0oiIgaGlkZGVuPjxzdmcgdmlld0JveD0iMCAwIDI0IDI0IiB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIGZpbGw9Im5vbmUiIHN0cm9rZT0iY3VycmVudENvbG9yIiBzdHJva2Utd2lkdGg9IjEuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBhcmlhLWhpZGRlbj0idHJ1ZSIgZm9jdXNhYmxlPSJmYWxzZSI+PHBhdGggZD0iTTYgNmwxMiAxMk0xOCA2IDYgMTgiLz48L3N2Zz48L2J1dHRvbj48a2JkIGFyaWEtaGlkZGVuPSJ0cnVlIj4vPC9rYmQ+PC9kaXY+Cg=="
+          }
+        ]
+      }
+    },
+    "baseline_process": {
+      "pid": 9314,
+      "exit_code": 0,
+      "seconds": 1.34
+    },
+    "candidate_process": {
+      "pid": 21183,
+      "exit_code": 0,
+      "seconds": 1.98
+    },
+    "qualification": "The renderer ran before test-only corrections. Its candidate_inputs verifier/harness hashes are historical; final_proof_inputs below bind the corrected tests used by the final browser run. Product inputs and rendered bytes did not change."
+  },
+  "browser": {
+    "scope": "Bounded GMI authored Clear search proof using exact generated HTML, JS and CSS inputs.\n\nThis harness uses an anonymous Chrome context and blocks every external request.\nIt extracts committed main content; it does not exercise the shared shell, login,\npublic admission, live serving or release. It observes persistent status semantics and actual focus/visibility transitions. No screen-reader speech or operating-system clipboard claim is made.",
+    "baseline": {
+      "pid": 21048,
+      "exit_code": 1,
+      "seconds": 6.12,
+      "report": {
+        "generated_at": "2026-11-09T06:13:03.283517+00:00",
+        "baseline": true,
+        "case_family": "all",
+        "scope": "Bounded GMI authored Clear search proof using exact generated HTML, JS and CSS inputs.\n\nThis harness uses an anonymous Chrome context and blocks every external request.\nIt extracts committed main content; it does not exercise the shared shell, login,\npublic admission, live serving or release. It observes persistent status semantics and actual focus/visibility transitions. No screen-reader speech or operating-system clipboard claim is made.",
+        "script_sha256": "e6af861e88580bb292c3149af8178fe84c4ed9fdf6c1832787558dc2468916a2",
+        "gmi_css_sha256": "fcdae103ef4a425f28cad1dc8ad076398e4d26625d351c8c1127b80028c2654d",
+        "verifier_sha256": "cb466cb3acf9503d2fd544b1b2b3adb823a83c18de3485852c8d920dc829b6e6",
+        "cases": [
+          {
+            "name": "search-clear-tree-390-en",
+            "result": "FAIL",
+            "error": "Traceback (most recent call last):\n  File \"/Volumes/Mastermind/agent-workspaces/verify/gmi-search-clear-20261109-622i6r31/verify_search_clear_component.py\", line 120, in <module>\n    action()\n    ~~~~~~^^\n  File \"/Volumes/Mastermind/agent-workspaces/verify/gmi-search-clear-20261109-622i6r31/verify_search_clear_component.py\", line 106, in <lambda>\n    actions.extend((f'search-clear-{s}-{w}-{l}',lambda s=s,w=w,l=l:search_clear_paths(s,w,l)) for s,w,l in clear_matrix)\n                                                                   ~~~~~~~~~~~~~~~~~~^^^^^^^\n  File \"/Volumes/Mastermind/agent-workspaces/verify/gmi-search-clear-20261109-622i6r31/verify_product_browser.py\", line 1836, in search_clear_paths\n    assert clear.count()==1,'Search has no authored clear action'\n           ^^^^^^^^^^^^^^^^\nAssertionError: Search has no authored clear action\n",
+            "contexts": 1
+          },
+          {
+            "name": "search-clear-index-320-zh",
+            "result": "FAIL",
+            "error": "Traceback (most recent call last):\n  File \"/Volumes/Mastermind/agent-workspaces/verify/gmi-search-clear-20261109-622i6r31/verify_search_clear_component.py\", line 120, in <module>\n    action()\n    ~~~~~~^^\n  File \"/Volumes/Mastermind/agent-workspaces/verify/gmi-search-clear-20261109-622i6r31/verify_search_clear_component.py\", line 106, in <lambda>\n    actions.extend((f'search-clear-{s}-{w}-{l}',lambda s=s,w=w,l=l:search_clear_paths(s,w,l)) for s,w,l in clear_matrix)\n                                                                   ~~~~~~~~~~~~~~~~~~^^^^^^^\n  File \"/Volumes/Mastermind/agent-workspaces/verify/gmi-search-clear-20261109-622i6r31/verify_product_browser.py\", line 1836, in search_clear_paths\n    assert clear.count()==1,'Search has no authored clear action'\n           ^^^^^^^^^^^^^^^^\nAssertionError: Search has no authored clear action\n",
+            "contexts": 1
+          }
+        ],
+        "contexts": 2,
+        "screenshots": [],
+        "page_errors": [],
+        "browser": "157.0.8103.39",
+        "pass": false
+      }
+    },
+    "initial_stopped": {
+      "pid": 22088,
+      "exit_code": null,
+      "seconds": 65.51,
+      "observed_failures": 6,
+      "reason": "Hidden button queried for an accessible name before it entered the accessibility tree. Original tail-only logging obscured the first assertion. No production-source change was required.",
+      "effect_reconciliation": "Guarded SIGINT left the exact owned process running; guarded SIGTERM followed by ps confirmed it absent. Original retained process output was read from the same receipt. No runner was rehomed.",
+      "retained_receipt": "[Reading 7 new lines (total: 7 lines)]\n\n{\"name\": \"search-clear-tree-1440-en\", \"result\": \"FAIL\", \"error\": \"ster interconnect silicon Core\\\" [level=3]:\\n        - link \\\"AI cluster interconnect silicon\\\":\\n          - /url: gmi.html#theme=theme%3Aai_interconnect_silicon\\n        - text: Core\\n      - treeitem \\\"2.5D/3D advanced packaging (AI logic) Extended\\\" [level=3]:\\n        - link \\\"2.5D/3D advanced packaging (AI logic)\\\":\\n          - /url: gmi.html#theme=theme%3Aadvanced_packaging_2_5d_3d\\n        - text: Extended\\n      - treeitem \\\"Advanced-node logic foundry Extended\\\" [level=3]:\\n        - link \\\"Advanced-node logic foundry\\\":\\n          - /url: gmi.html#theme=theme%3Aadvanced_node_foundry\\n        - text: Extended\\n      - treeitem \\\"AI power-delivery silicon Extended\\\" [level=3]:\\n        - link \\\"AI power-delivery silicon\\\":\\n          - /url: gmi.html#theme=theme%3Aai_power_delivery_silicon\\n        - text: Extended\\n      - treeitem \\\"AI server board & system integration Extended\\\" [level=3]:\\n        - link \\\"AI server board & system integration\\\":\\n          - /url: gmi.html#theme=theme%3Aai_server_board_integration\\n        - text: Extended\\n      - treeitem \\\"Edge inference processors (NPUs) Extended\\\" [level=3]:\\n        - link \\\"Edge inference processors (NPUs)\\\":\\n          - /url: gmi.html#theme=theme%3Aedge_inference_processors\\n        - text: Extended\\n      - treeitem \\\"Memory, HBM & Storage 20\\\" [level=2]\\n      - treeitem \\\"Semiconductor Equipment (WFE) 19\\\" [level=2]\\n      - treeitem \\\"Energy & power 79\\\" [level=1]\\n      - treeitem \\\"Materials & mining 36\\\" [level=1]\\n      - treeitem \\\"Industrials & defense 92\\\" [level=1]\\n      - treeitem \\\"Healthcare & life sciences 56\\\" [level=1]\\n      - treeitem \\\"Financial services 19\\\" [level=1]\\n      - treeitem \\\"Consumer cyclical None yet\\\" [level=1]\\n      - treeitem \\\"Consumer defensive None yet\\\" [level=1]\\n      - treeitem \\\"Crypto & digital assets None yet\\\" [level=1]\\n      - link \\\"See all 371 in the index\\\":\\n        - /url: http://127.0.0.1:49703/case-1/gmi-index.html#gmi_return=gmi.html%23theme%3Dtheme%253Ahbm_packaging%26lens%3Dchain%26q%3DMicron\\n    - heading \\\"Two kinds of micro-theme\\\" [level=2]\\n    - list:\\n      - listitem: 68 Core set — the original set. Coverage is measured here.\\n      - listitem: 303 Extended — added 21 Oct 2026 for orientation. Not counted in coverage.\\n    - link \\\"How coverage is measured\\\":\\n      - /url: http://127.0.0.1:49703/case-1/gmi-coverage.html#gmi_return=gmi.html%23theme%3Dtheme%253Ahbm_packaging%26lens%3Dchain%26q%3DMicron\\n\", \"contexts\": 1}\n{\"name\": \"search-clear-tree-1440-zh\", \"result\": \"FAIL\", \"error\": \"ng \\\"浏览主题树\\\" [level=2]\\n    - search:\\n      - searchbox \\\"搜索 371 个细分主题\\\"\\n    - status\\n    - tree \\\"浏览主题树\\\":\\n      - treeitem \\\"科技与软件 25\\\" [level=1]\\n      - treeitem \\\"半导体与硬件 64\\\" [expanded] [level=1]\\n      - treeitem \\\"AI半导体 25\\\" [expanded] [level=2]\\n      - treeitem \\\"AI算力芯片 2\\\" [level=3]\\n      - treeitem \\\"AI芯片设计链 3\\\" [level=3]\\n      - treeitem \\\"先进封装与集成 5\\\" [level=3]\\n      - treeitem \\\"半导体工艺材料 5\\\" [level=3]\\n      - treeitem \\\"AI 网络互连 3\\\" [level=3]\\n      - treeitem \\\"HBM 与先进封装 已纳入\\\" [level=3]:\\n        - link \\\"HBM 与先进封装\\\":\\n          - /url: gmi.html#theme=theme%3Ahbm_packaging\\n        - text: 已纳入\\n      - treeitem \\\"AI 集群互联芯片 核心\\\" [level=3]:\\n        - link \\\"AI 集群互联芯片\\\":\\n          - /url: gmi.html#theme=theme%3Aai_interconnect_silicon\\n        - text: 核心\\n      - treeitem \\\"2.5D/3D先进封装制造 扩展\\\" [level=3]:\\n        - link \\\"2.5D/3D先进封装制造\\\":\\n          - /url: gmi.html#theme=theme%3Aadvanced_packaging_2_5d_3d\\n        - text: 扩展\\n      - treeitem \\\"先进制程晶圆代工 扩展\\\" [level=3]:\\n        - link \\\"先进制程晶圆代工\\\":\\n          - /url: gmi.html#theme=theme%3Aadvanced_node_foundry\\n        - text: 扩展\\n      - treeitem \\\"AI 供电电源芯片 扩展\\\" [level=3]:\\n        - link \\\"AI 供电电源芯片\\\":\\n          - /url: gmi.html#theme=theme%3Aai_power_delivery_silicon\\n        - text: 扩展\\n      - treeitem \\\"AI 服务器板卡与整机 扩展\\\" [level=3]:\\n        - link \\\"AI 服务器板卡与整机\\\":\\n          - /url: gmi.html#theme=theme%3Aai_server_board_integration\\n        - text: 扩展\\n      - treeitem \\\"端侧 AI 推理芯片 扩展\\\" [level=3]:\\n        - link \\\"端侧 AI 推理芯片\\\":\\n          - /url: gmi.html#theme=theme%3Aedge_inference_processors\\n        - text: 扩展\\n      - treeitem \\\"存储与HBM 20\\\" [level=2]\\n      - treeitem \\\"半导体设备（WFE） 19\\\" [level=2]\\n      - treeitem \\\"能源与电力 79\\\" [level=1]\\n      - treeitem \\\"材料与矿业 36\\\" [level=1]\\n      - treeitem \\\"工业与国防 92\\\" [level=1]\\n      - treeitem \\\"医疗与生命科学 56\\\" [level=1]\\n      - treeitem \\\"金融服务 19\\\" [level=1]\\n      - treeitem \\\"可选消费 暂无\\\" [level=1]\\n      - treeitem \\\"必需消费 暂无\\\" [level=1]\\n      - treeitem \\\"加密与数字资产 暂无\\\" [level=1]\\n      - link \\\"在索引中查看全部 371 个\\\":\\n        - /url: http://127.0.0.1:49703/case-2/gmi-index.html#gmi_return=gmi.html%23theme%3Dtheme%253Ahbm_packaging%26lens%3Dchain%26q%3DMicron\\n    - heading \\\"两类细分主题\\\" [level=2]\\n    - list:\\n      - listitem: 68 核心集 —— 最初的集合，覆盖率在此衡量。\\n      - listitem: 303 扩展 —— 2026年10月21日新增，用于浏览，不计入覆盖率。\\n    - link \\\"覆盖率如何衡量\\\":\\n      - /url: http://127.0.0.1:49703/case-2/gmi-coverage.html#gmi_return=gmi.html%23theme%3Dtheme%253Ahbm_packaging%26lens%3Dchain%26q%3DMicron\\n\", \"contexts\": 1}\n{\"name\": \"search-clear-tree-390-en\", \"result\": \"FAIL\", \"error\": \"ster interconnect silicon Core\\\" [level=3]:\\n        - link \\\"AI cluster interconnect silicon\\\":\\n          - /url: gmi.html#theme=theme%3Aai_interconnect_silicon\\n        - text: Core\\n      - treeitem \\\"2.5D/3D advanced packaging (AI logic) Extended\\\" [level=3]:\\n        - link \\\"2.5D/3D advanced packaging (AI logic)\\\":\\n          - /url: gmi.html#theme=theme%3Aadvanced_packaging_2_5d_3d\\n        - text: Extended\\n      - treeitem \\\"Advanced-node logic foundry Extended\\\" [level=3]:\\n        - link \\\"Advanced-node logic foundry\\\":\\n          - /url: gmi.html#theme=theme%3Aadvanced_node_foundry\\n        - text: Extended\\n      - treeitem \\\"AI power-delivery silicon Extended\\\" [level=3]:\\n        - link \\\"AI power-delivery silicon\\\":\\n          - /url: gmi.html#theme=theme%3Aai_power_delivery_silicon\\n        - text: Extended\\n      - treeitem \\\"AI server board & system integration Extended\\\" [level=3]:\\n        - link \\\"AI server board & system integration\\\":\\n          - /url: gmi.html#theme=theme%3Aai_server_board_integration\\n        - text: Extended\\n      - treeitem \\\"Edge inference processors (NPUs) Extended\\\" [level=3]:\\n        - link \\\"Edge inference processors (NPUs)\\\":\\n          - /url: gmi.html#theme=theme%3Aedge_inference_processors\\n        - text: Extended\\n      - treeitem \\\"Memory, HBM & Storage 20\\\" [level=2]\\n      - treeitem \\\"Semiconductor Equipment (WFE) 19\\\" [level=2]\\n      - treeitem \\\"Energy & power 79\\\" [level=1]\\n      - treeitem \\\"Materials & mining 36\\\" [level=1]\\n      - treeitem \\\"Industrials & defense 92\\\" [level=1]\\n      - treeitem \\\"Healthcare & life sciences 56\\\" [level=1]\\n      - treeitem \\\"Financial services 19\\\" [level=1]\\n      - treeitem \\\"Consumer cyclical None yet\\\" [level=1]\\n      - treeitem \\\"Consumer defensive None yet\\\" [level=1]\\n      - treeitem \\\"Crypto & digital assets None yet\\\" [level=1]\\n      - link \\\"See all 371 in the index\\\":\\n        - /url: http://127.0.0.1:49703/case-3/gmi-index.html#gmi_return=gmi.html%23theme%3Dtheme%253Ahbm_packaging%26lens%3Dchain%26q%3DMicron\\n    - heading \\\"Two kinds of micro-theme\\\" [level=2]\\n    - list:\\n      - listitem: 68 Core set — the original set. Coverage is measured here.\\n      - listitem: 303 Extended — added 21 Oct 2026 for orientation. Not counted in coverage.\\n    - link \\\"How coverage is measured\\\":\\n      - /url: http://127.0.0.1:49703/case-3/gmi-coverage.html#gmi_return=gmi.html%23theme%3Dtheme%253Ahbm_packaging%26lens%3Dchain%26q%3DMicron\\n\", \"contexts\": 1}\n{\"name\": \"search-clear-tree-390-zh\", \"result\": \"FAIL\", \"error\": \"ng \\\"浏览主题树\\\" [level=2]\\n    - search:\\n      - searchbox \\\"搜索 371 个细分主题\\\"\\n    - status\\n    - tree \\\"浏览主题树\\\":\\n      - treeitem \\\"科技与软件 25\\\" [level=1]\\n      - treeitem \\\"半导体与硬件 64\\\" [expanded] [level=1]\\n      - treeitem \\\"AI半导体 25\\\" [expanded] [level=2]\\n      - treeitem \\\"AI算力芯片 2\\\" [level=3]\\n      - treeitem \\\"AI芯片设计链 3\\\" [level=3]\\n      - treeitem \\\"先进封装与集成 5\\\" [level=3]\\n      - treeitem \\\"半导体工艺材料 5\\\" [level=3]\\n      - treeitem \\\"AI 网络互连 3\\\" [level=3]\\n      - treeitem \\\"HBM 与先进封装 已纳入\\\" [level=3]:\\n        - link \\\"HBM 与先进封装\\\":\\n          - /url: gmi.html#theme=theme%3Ahbm_packaging\\n        - text: 已纳入\\n      - treeitem \\\"AI 集群互联芯片 核心\\\" [level=3]:\\n        - link \\\"AI 集群互联芯片\\\":\\n          - /url: gmi.html#theme=theme%3Aai_interconnect_silicon\\n        - text: 核心\\n      - treeitem \\\"2.5D/3D先进封装制造 扩展\\\" [level=3]:\\n        - link \\\"2.5D/3D先进封装制造\\\":\\n          - /url: gmi.html#theme=theme%3Aadvanced_packaging_2_5d_3d\\n        - text: 扩展\\n      - treeitem \\\"先进制程晶圆代工 扩展\\\" [level=3]:\\n        - link \\\"先进制程晶圆代工\\\":\\n          - /url: gmi.html#theme=theme%3Aadvanced_node_foundry\\n        - text: 扩展\\n      - treeitem \\\"AI 供电电源芯片 扩展\\\" [level=3]:\\n        - link \\\"AI 供电电源芯片\\\":\\n          - /url: gmi.html#theme=theme%3Aai_power_delivery_silicon\\n        - text: 扩展\\n      - treeitem \\\"AI 服务器板卡与整机 扩展\\\" [level=3]:\\n        - link \\\"AI 服务器板卡与整机\\\":\\n          - /url: gmi.html#theme=theme%3Aai_server_board_integration\\n        - text: 扩展\\n      - treeitem \\\"端侧 AI 推理芯片 扩展\\\" [level=3]:\\n        - link \\\"端侧 AI 推理芯片\\\":\\n          - /url: gmi.html#theme=theme%3Aedge_inference_processors\\n        - text: 扩展\\n      - treeitem \\\"存储与HBM 20\\\" [level=2]\\n      - treeitem \\\"半导体设备（WFE） 19\\\" [level=2]\\n      - treeitem \\\"能源与电力 79\\\" [level=1]\\n      - treeitem \\\"材料与矿业 36\\\" [level=1]\\n      - treeitem \\\"工业与国防 92\\\" [level=1]\\n      - treeitem \\\"医疗与生命科学 56\\\" [level=1]\\n      - treeitem \\\"金融服务 19\\\" [level=1]\\n      - treeitem \\\"可选消费 暂无\\\" [level=1]\\n      - treeitem \\\"必需消费 暂无\\\" [level=1]\\n      - treeitem \\\"加密与数字资产 暂无\\\" [level=1]\\n      - link \\\"在索引中查看全部 371 个\\\":\\n        - /url: http://127.0.0.1:49703/case-4/gmi-index.html#gmi_return=gmi.html%23theme%3Dtheme%253Ahbm_packaging%26lens%3Dchain%26q%3DMicron\\n    - heading \\\"两类细分主题\\\" [level=2]\\n    - list:\\n      - listitem: 68 核心集 —— 最初的集合，覆盖率在此衡量。\\n      - listitem: 303 扩展 —— 2026年10月21日新增，用于浏览，不计入覆盖率。\\n    - link \\\"覆盖率如何衡量\\\":\\n      - /url: http://127.0.0.1:49703/case-4/gmi-coverage.html#gmi_return=gmi.html%23theme%3Dtheme%253Ahbm_packaging%26lens%3Dchain%26q%3DMicron\\n\", \"contexts\": 1}\n{\"name\": \"search-clear-tree-320-en\", \"result\": \"FAIL\", \"error\": \"ster interconnect silicon Core\\\" [level=3]:\\n        - link \\\"AI cluster interconnect silicon\\\":\\n          - /url: gmi.html#theme=theme%3Aai_interconnect_silicon\\n        - text: Core\\n      - treeitem \\\"2.5D/3D advanced packaging (AI logic) Extended\\\" [level=3]:\\n        - link \\\"2.5D/3D advanced packaging (AI logic)\\\":\\n          - /url: gmi.html#theme=theme%3Aadvanced_packaging_2_5d_3d\\n        - text: Extended\\n      - treeitem \\\"Advanced-node logic foundry Extended\\\" [level=3]:\\n        - link \\\"Advanced-node logic foundry\\\":\\n          - /url: gmi.html#theme=theme%3Aadvanced_node_foundry\\n        - text: Extended\\n      - treeitem \\\"AI power-delivery silicon Extended\\\" [level=3]:\\n        - link \\\"AI power-delivery silicon\\\":\\n          - /url: gmi.html#theme=theme%3Aai_power_delivery_silicon\\n        - text: Extended\\n      - treeitem \\\"AI server board & system integration Extended\\\" [level=3]:\\n        - link \\\"AI server board & system integration\\\":\\n          - /url: gmi.html#theme=theme%3Aai_server_board_integration\\n        - text: Extended\\n      - treeitem \\\"Edge inference processors (NPUs) Extended\\\" [level=3]:\\n        - link \\\"Edge inference processors (NPUs)\\\":\\n          - /url: gmi.html#theme=theme%3Aedge_inference_processors\\n        - text: Extended\\n      - treeitem \\\"Memory, HBM & Storage 20\\\" [level=2]\\n      - treeitem \\\"Semiconductor Equipment (WFE) 19\\\" [level=2]\\n      - treeitem \\\"Energy & power 79\\\" [level=1]\\n      - treeitem \\\"Materials & mining 36\\\" [level=1]\\n      - treeitem \\\"Industrials & defense 92\\\" [level=1]\\n      - treeitem \\\"Healthcare & life sciences 56\\\" [level=1]\\n      - treeitem \\\"Financial services 19\\\" [level=1]\\n      - treeitem \\\"Consumer cyclical None yet\\\" [level=1]\\n      - treeitem \\\"Consumer defensive None yet\\\" [level=1]\\n      - treeitem \\\"Crypto & digital assets None yet\\\" [level=1]\\n      - link \\\"See all 371 in the index\\\":\\n        - /url: http://127.0.0.1:49703/case-5/gmi-index.html#gmi_return=gmi.html%23theme%3Dtheme%253Ahbm_packaging%26lens%3Dchain%26q%3DMicron\\n    - heading \\\"Two kinds of micro-theme\\\" [level=2]\\n    - list:\\n      - listitem: 68 Core set — the original set. Coverage is measured here.\\n      - listitem: 303 Extended — added 21 Oct 2026 for orientation. Not counted in coverage.\\n    - link \\\"How coverage is measured\\\":\\n      - /url: http://127.0.0.1:49703/case-5/gmi-coverage.html#gmi_return=gmi.html%23theme%3Dtheme%253Ahbm_packaging%26lens%3Dchain%26q%3DMicron\\n\", \"contexts\": 1}\n{\"name\": \"search-clear-tree-320-zh\", \"result\": \"FAIL\", \"error\": \"ng \\\"浏览主题树\\\" [level=2]\\n    - search:\\n      - searchbox \\\"搜索 371 个细分主题\\\"\\n    - status\\n    - tree \\\"浏览主题树\\\":\\n      - treeitem \\\"科技与软件 25\\\" [level=1]\\n      - treeitem \\\"半导体与硬件 64\\\" [expanded] [level=1]\\n      - treeitem \\\"AI半导体 25\\\" [expanded] [level=2]\\n      - treeitem \\\"AI算力芯片 2\\\" [level=3]\\n      - treeitem \\\"AI芯片设计链 3\\\" [level=3]\\n      - treeitem \\\"先进封装与集成 5\\\" [level=3]\\n      - treeitem \\\"半导体工艺材料 5\\\" [level=3]\\n      - treeitem \\\"AI 网络互连 3\\\" [level=3]\\n      - treeitem \\\"HBM 与先进封装 已纳入\\\" [level=3]:\\n        - link \\\"HBM 与先进封装\\\":\\n          - /url: gmi.html#theme=theme%3Ahbm_packaging\\n        - text: 已纳入\\n      - treeitem \\\"AI 集群互联芯片 核心\\\" [level=3]:\\n        - link \\\"AI 集群互联芯片\\\":\\n          - /url: gmi.html#theme=theme%3Aai_interconnect_silicon\\n        - text: 核心\\n      - treeitem \\\"2.5D/3D先进封装制造 扩展\\\" [level=3]:\\n        - link \\\"2.5D/3D先进封装制造\\\":\\n          - /url: gmi.html#theme=theme%3Aadvanced_packaging_2_5d_3d\\n        - text: 扩展\\n      - treeitem \\\"先进制程晶圆代工 扩展\\\" [level=3]:\\n        - link \\\"先进制程晶圆代工\\\":\\n          - /url: gmi.html#theme=theme%3Aadvanced_node_foundry\\n        - text: 扩展\\n      - treeitem \\\"AI 供电电源芯片 扩展\\\" [level=3]:\\n        - link \\\"AI 供电电源芯片\\\":\\n          - /url: gmi.html#theme=theme%3Aai_power_delivery_silicon\\n        - text: 扩展\\n      - treeitem \\\"AI 服务器板卡与整机 扩展\\\" [level=3]:\\n        - link \\\"AI 服务器板卡与整机\\\":\\n          - /url: gmi.html#theme=theme%3Aai_server_board_integration\\n        - text: 扩展\\n      - treeitem \\\"端侧 AI 推理芯片 扩展\\\" [level=3]:\\n        - link \\\"端侧 AI 推理芯片\\\":\\n          - /url: gmi.html#theme=theme%3Aedge_inference_processors\\n        - text: 扩展\\n      - treeitem \\\"存储与HBM 20\\\" [level=2]\\n      - treeitem \\\"半导体设备（WFE） 19\\\" [level=2]\\n      - treeitem \\\"能源与电力 79\\\" [level=1]\\n      - treeitem \\\"材料与矿业 36\\\" [level=1]\\n      - treeitem \\\"工业与国防 92\\\" [level=1]\\n      - treeitem \\\"医疗与生命科学 56\\\" [level=1]\\n      - treeitem \\\"金融服务 19\\\" [level=1]\\n      - treeitem \\\"可选消费 暂无\\\" [level=1]\\n      - treeitem \\\"必需消费 暂无\\\" [level=1]\\n      - treeitem \\\"加密与数字资产 暂无\\\" [level=1]\\n      - link \\\"在索引中查看全部 371 个\\\":\\n        - /url: http://127.0.0.1:49703/case-6/gmi-index.html#gmi_return=gmi.html%23theme%3Dtheme%253Ahbm_packaging%26lens%3Dchain%26q%3DMicron\\n    - heading \\\"两类细分主题\\\" [level=2]\\n    - list:\\n      - listitem: 68 核心集 —— 最初的集合，覆盖率在此衡量。\\n      - listitem: 303 扩展 —— 2026年10月21日新增，用于浏览，不计入覆盖率。\\n    - link \\\"覆盖率如何衡量\\\":\\n      - /url: http://127.0.0.1:49703/case-6/gmi-coverage.html#gmi_return=gmi.html%23theme%3Dtheme%253Ahbm_packaging%26lens%3Dchain%26q%3DMicron\\n\", \"contexts\": 1}\n\n✅ Process completed with exit code null (runtime: 65.51s)",
+      "preserved_source_dir": "/Volumes/Mastermind/agent-workspaces/verify/gmi-search-clear-20261109-622i6r31/initial-stopped-source",
+      "preserved_proof_dir": "/Volumes/Mastermind/agent-workspaces/verify/gmi-search-clear-20261109-622i6r31/initial-stopped-proof"
+    },
+    "diagnostic": {
+      "pid": 28196,
+      "exit_code": 1,
+      "seconds": 11.07,
+      "report": {
+        "generated_at": "2026-11-09T06:14:55.711217+00:00",
+        "baseline": false,
+        "case_family": "all",
+        "scope": "Bounded GMI authored Clear search proof using exact generated HTML, JS and CSS inputs.\n\nThis harness uses an anonymous Chrome context and blocks every external request.\nIt extracts committed main content; it does not exercise the shared shell, login,\npublic admission, live serving or release. It observes persistent status semantics and actual focus/visibility transitions. No screen-reader speech or operating-system clipboard claim is made.",
+        "script_sha256": "91e2ec379257b9f866ee1e93ce7869e743c4c2667cc820cc55baaf0143ae1719",
+        "gmi_css_sha256": "e1431dd2580e8358945f77739a932522e643b5dc7667cf41b009d77b15594969",
+        "verifier_sha256": "cb466cb3acf9503d2fd544b1b2b3adb823a83c18de3485852c8d920dc829b6e6",
+        "cases": [
+          {
+            "name": "search-clear-tree-390-en",
+            "result": "FAIL",
+            "error": "Traceback (most recent call last):\n  File \"/Volumes/Mastermind/agent-workspaces/verify/gmi-search-clear-20261109-622i6r31/verify_search_clear_component.py\", line 120, in <module>\n    action()\n    ~~~~~~^^\n  File \"/Volumes/Mastermind/agent-workspaces/verify/gmi-search-clear-20261109-622i6r31/verify_search_clear_component.py\", line 106, in <lambda>\n    actions.extend((f'search-clear-{s}-{w}-{l}',lambda s=s,w=w,l=l:search_clear_paths(s,w,l)) for s,w,l in clear_matrix)\n                                                                   ~~~~~~~~~~~~~~~~~~^^^^^^^\n  File \"/Volumes/Mastermind/agent-workspaces/verify/gmi-search-clear-20261109-622i6r31/verify_product_browser.py\", line 1838, in search_clear_paths\n    expect(clear).to_have_accessible_name('Clear search' if language=='en' else '清空搜索')\n    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/sync_api/_generated.py\", line 23589, in to_have_accessible_name\n    self._sync(\n    ~~~~~~~~~~^\n        self._impl_obj.to_have_accessible_name(\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n            name=name, ignoreCase=ignore_case, timeout=to_milliseconds(timeout)\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n        )\n        ^\n    )\n    ^\nAssertionError: Locator expected to have accessible name\nActual value:  \nCall log:\n  - Expect \"to_have_accessible_name\" with timeout 5000ms\n  - waiting for locator(\"[data-gmi-filter=\\\"tree\\\"]\").locator(\"..\").locator(\"[data-gmi-search-clear]\")\n    13 × locator resolved to <button hidden=\"\" type=\"button\" data-aria-zh=\"清空搜索\" class=\"gmi-search-clear\" data-gmi-search-clear=\"\" aria-label=\"Clear search\" data-aria-en=\"Clear search\">…</button>\n       - unexpected value \"\"\n\nAria snapshot:\n- main:\n  - link \"GMI Explorer\":\n    - /url: gmi.html\n  - paragraph: Understand themes, business connections, and the evidence behind them.\n  - text: Snapshot · 3 Nov 2026\n  - navigation \"GMI Explorer\":\n    - link \"Theme research\":\n      - /url: gmi.html\n    - link \"Company evidence\":\n      - /url: gmi-companies.html#q=memory\n    - link \"Relationships\":\n      - /url: http://127.0.0.1:51103/case-1/gmi-relationships.html#gmi_return=gmi.html%23theme%3Dtheme%253Ahbm_packaging%26lens%3Dchain%26q%3DMicron\n    - link \"Full index\":\n      - /url: http://127.0.0.1",
+            "contexts": 1
+          }
+        ],
+        "contexts": 1,
+        "screenshots": [],
+        "page_errors": [],
+        "browser": "157.0.8103.39",
+        "pass": false
+      }
+    },
+    "test_corrections": [
+      "Assert aria-label while the button is intentionally hidden, then assert the accessible name after it becomes visible.",
+      "Keep the first 2400 traceback characters, fail fast on a candidate failure, and require expected case count plus complete=true.",
+      "Account for the new visible clear button in two existing tree Tab sequences. Other accepted assertions stay intact.",
+      "Compare stable field x/width/height rather than viewport y affected by deliberate scrolling."
+    ],
+    "final": {
+      "pid": 33720,
+      "exit_code": 0,
+      "seconds": 77.23,
+      "report": {
+        "generated_at": "2026-11-09T06:16:21.470773+00:00",
+        "baseline": false,
+        "case_family": "all",
+        "scope": "Bounded GMI authored Clear search proof using exact generated HTML, JS and CSS inputs.\n\nThis harness uses an anonymous Chrome context and blocks every external request.\nIt extracts committed main content; it does not exercise the shared shell, login,\npublic admission, live serving or release. It observes persistent status semantics and actual focus/visibility transitions. No screen-reader speech or operating-system clipboard claim is made.",
+        "script_sha256": "91e2ec379257b9f866ee1e93ce7869e743c4c2667cc820cc55baaf0143ae1719",
+        "gmi_css_sha256": "e1431dd2580e8358945f77739a932522e643b5dc7667cf41b009d77b15594969",
+        "verifier_sha256": "833522aba03bee3f1ce2793d4de106b1998d9bf0a2f4d144a5baf8f4c9a4de5e",
+        "cases": [
+          {
+            "name": "search-clear-tree-1440-en",
+            "result": "PASS",
+            "contexts": 1
+          },
+          {
+            "name": "search-clear-tree-1440-zh",
+            "result": "PASS",
+            "contexts": 1
+          },
+          {
+            "name": "search-clear-tree-390-en",
+            "result": "PASS",
+            "contexts": 1
+          },
+          {
+            "name": "search-clear-tree-390-zh",
+            "result": "PASS",
+            "contexts": 1
+          },
+          {
+            "name": "search-clear-tree-320-en",
+            "result": "PASS",
+            "contexts": 1
+          },
+          {
+            "name": "search-clear-tree-320-zh",
+            "result": "PASS",
+            "contexts": 1
+          },
+          {
+            "name": "search-clear-index-1440-en",
+            "result": "PASS",
+            "contexts": 1
+          },
+          {
+            "name": "search-clear-index-1440-zh",
+            "result": "PASS",
+            "contexts": 1
+          },
+          {
+            "name": "search-clear-index-390-en",
+            "result": "PASS",
+            "contexts": 1
+          },
+          {
+            "name": "search-clear-index-390-zh",
+            "result": "PASS",
+            "contexts": 1
+          },
+          {
+            "name": "search-clear-index-320-en",
+            "result": "PASS",
+            "contexts": 1
+          },
+          {
+            "name": "search-clear-index-320-zh",
+            "result": "PASS",
+            "contexts": 1
+          },
+          {
+            "name": "search-clear-tree-390-en-dark",
+            "result": "PASS",
+            "contexts": 1
+          },
+          {
+            "name": "search-clear-index-320-zh-dark",
+            "result": "PASS",
+            "contexts": 1
+          },
+          {
+            "name": "search-clear-static-tree-en",
+            "result": "PASS",
+            "contexts": 1
+          },
+          {
+            "name": "search-clear-static-tree-zh",
+            "result": "PASS",
+            "contexts": 1
+          },
+          {
+            "name": "search-clear-static-index-en",
+            "result": "PASS",
+            "contexts": 1
+          },
+          {
+            "name": "search-clear-static-index-zh",
+            "result": "PASS",
+            "contexts": 1
+          },
+          {
+            "name": "tree-roving-1440-en",
+            "result": "PASS",
+            "contexts": 2
+          },
+          {
+            "name": "tree-roving-1440-zh",
+            "result": "PASS",
+            "contexts": 2
+          },
+          {
+            "name": "tree-roving-390-en",
+            "result": "PASS",
+            "contexts": 2
+          },
+          {
+            "name": "tree-roving-390-zh",
+            "result": "PASS",
+            "contexts": 2
+          },
+          {
+            "name": "tree-roving-320-en",
+            "result": "PASS",
+            "contexts": 2
+          },
+          {
+            "name": "tree-roving-320-zh",
+            "result": "PASS",
+            "contexts": 2
+          },
+          {
+            "name": "tree-status-1440-en",
+            "result": "PASS",
+            "contexts": 1
+          },
+          {
+            "name": "tree-status-1440-zh",
+            "result": "PASS",
+            "contexts": 1
+          },
+          {
+            "name": "tree-status-390-en",
+            "result": "PASS",
+            "contexts": 1
+          },
+          {
+            "name": "tree-status-390-zh",
+            "result": "PASS",
+            "contexts": 1
+          },
+          {
+            "name": "tree-status-320-en",
+            "result": "PASS",
+            "contexts": 1
+          },
+          {
+            "name": "tree-status-320-zh",
+            "result": "PASS",
+            "contexts": 1
+          },
+          {
+            "name": "index-shortcuts-1440-en",
+            "result": "PASS",
+            "contexts": 1
+          },
+          {
+            "name": "index-shortcuts-1440-zh",
+            "result": "PASS",
+            "contexts": 1
+          },
+          {
+            "name": "index-shortcuts-390-en",
+            "result": "PASS",
+            "contexts": 1
+          },
+          {
+            "name": "index-shortcuts-390-zh",
+            "result": "PASS",
+            "contexts": 1
+          },
+          {
+            "name": "index-shortcuts-320-en",
+            "result": "PASS",
+            "contexts": 1
+          },
+          {
+            "name": "index-shortcuts-320-zh",
+            "result": "PASS",
+            "contexts": 1
+          }
+        ],
+        "contexts": 42,
+        "screenshots": [
+          "search-clear-tree-390-en-light.png",
+          "search-clear-tree-320-zh-light.png",
+          "search-clear-index-390-en-light.png",
+          "search-clear-index-320-zh-light.png",
+          "search-clear-tree-390-en-dark.png",
+          "search-clear-index-320-zh-dark.png",
+          "tree-roving-390-en.png",
+          "tree-roving-320-zh.png",
+          "tree-status-390-en.png",
+          "tree-status-320-zh.png",
+          "index-filter-390-en.png",
+          "index-filter-320-zh.png"
+        ],
+        "page_errors": [],
+        "browser": "157.0.8103.39",
+        "expected_cases": 36,
+        "navigation_geometry": [
+          {
+            "width": 1440,
+            "language": "en",
+            "route": "/case-1/gmi.html",
+            "targets": [
+              {
+                "text": "Theme research",
+                "left": 32,
+                "right": 164.78125,
+                "height": 44
+              },
+              {
+                "text": "Company evidence",
+                "left": 168.78125,
+                "right": 318.953125,
+                "height": 44
+              },
+              {
+                "text": "Relationships",
+                "left": 322.953125,
+                "right": 439.4375,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "width": 1440,
+            "language": "zh",
+            "route": "/case-2/gmi.html",
+            "targets": [
+              {
+                "text": "主题研究",
+                "left": 32,
+                "right": 116,
+                "height": 44
+              },
+              {
+                "text": "公司证据",
+                "left": 120,
+                "right": 204,
+                "height": 44
+              },
+              {
+                "text": "公司关系",
+                "left": 208,
+                "right": 292,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "width": 390,
+            "language": "en",
+            "route": "/case-3/gmi.html",
+            "targets": [
+              {
+                "text": "Theme research",
+                "left": 16,
+                "right": 132.65625,
+                "height": 44
+              },
+              {
+                "text": "Company evidence",
+                "left": 136.65625,
+                "right": 253.328125,
+                "height": 55.5
+              },
+              {
+                "text": "Relationships",
+                "left": 257.328125,
+                "right": 374,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "width": 390,
+            "language": "zh",
+            "route": "/case-4/gmi.html",
+            "targets": [
+              {
+                "text": "主题研究",
+                "left": 16,
+                "right": 132.65625,
+                "height": 44
+              },
+              {
+                "text": "公司证据",
+                "left": 136.65625,
+                "right": 253.328125,
+                "height": 44
+              },
+              {
+                "text": "公司关系",
+                "left": 257.328125,
+                "right": 374,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "width": 320,
+            "language": "en",
+            "route": "/case-5/gmi.html",
+            "targets": [
+              {
+                "text": "Theme research",
+                "left": 16,
+                "right": 109.328125,
+                "height": 55.5
+              },
+              {
+                "text": "Company evidence",
+                "left": 113.328125,
+                "right": 206.671875,
+                "height": 55.5
+              },
+              {
+                "text": "Relationships",
+                "left": 210.671875,
+                "right": 304,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "width": 320,
+            "language": "zh",
+            "route": "/case-6/gmi.html",
+            "targets": [
+              {
+                "text": "主题研究",
+                "left": 16,
+                "right": 109.328125,
+                "height": 44
+              },
+              {
+                "text": "公司证据",
+                "left": 113.328125,
+                "right": 206.671875,
+                "height": 44
+              },
+              {
+                "text": "公司关系",
+                "left": 210.671875,
+                "right": 304,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "width": 1440,
+            "language": "en",
+            "route": "/case-7/gmi-index.html",
+            "targets": [
+              {
+                "text": "Theme research",
+                "left": 32,
+                "right": 164.78125,
+                "height": 44
+              },
+              {
+                "text": "Company evidence",
+                "left": 168.78125,
+                "right": 318.953125,
+                "height": 44
+              },
+              {
+                "text": "Relationships",
+                "left": 322.953125,
+                "right": 439.4375,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "width": 1440,
+            "language": "zh",
+            "route": "/case-8/gmi-index.html",
+            "targets": [
+              {
+                "text": "主题研究",
+                "left": 32,
+                "right": 116,
+                "height": 44
+              },
+              {
+                "text": "公司证据",
+                "left": 120,
+                "right": 204,
+                "height": 44
+              },
+              {
+                "text": "公司关系",
+                "left": 208,
+                "right": 292,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "width": 390,
+            "language": "en",
+            "route": "/case-9/gmi-index.html",
+            "targets": [
+              {
+                "text": "Theme research",
+                "left": 16,
+                "right": 132.65625,
+                "height": 44
+              },
+              {
+                "text": "Company evidence",
+                "left": 136.65625,
+                "right": 253.328125,
+                "height": 55.5
+              },
+              {
+                "text": "Relationships",
+                "left": 257.328125,
+                "right": 374,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "width": 390,
+            "language": "zh",
+            "route": "/case-10/gmi-index.html",
+            "targets": [
+              {
+                "text": "主题研究",
+                "left": 16,
+                "right": 132.65625,
+                "height": 44
+              },
+              {
+                "text": "公司证据",
+                "left": 136.65625,
+                "right": 253.328125,
+                "height": 44
+              },
+              {
+                "text": "公司关系",
+                "left": 257.328125,
+                "right": 374,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "width": 320,
+            "language": "en",
+            "route": "/case-11/gmi-index.html",
+            "targets": [
+              {
+                "text": "Theme research",
+                "left": 16,
+                "right": 109.328125,
+                "height": 55.5
+              },
+              {
+                "text": "Company evidence",
+                "left": 113.328125,
+                "right": 206.671875,
+                "height": 55.5
+              },
+              {
+                "text": "Relationships",
+                "left": 210.671875,
+                "right": 304,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "width": 320,
+            "language": "zh",
+            "route": "/case-12/gmi-index.html",
+            "targets": [
+              {
+                "text": "主题研究",
+                "left": 16,
+                "right": 109.328125,
+                "height": 44
+              },
+              {
+                "text": "公司证据",
+                "left": 113.328125,
+                "right": 206.671875,
+                "height": 44
+              },
+              {
+                "text": "公司关系",
+                "left": 210.671875,
+                "right": 304,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "width": 390,
+            "language": "en",
+            "route": "/case-13/gmi.html",
+            "targets": [
+              {
+                "text": "Theme research",
+                "left": 16,
+                "right": 132.65625,
+                "height": 44
+              },
+              {
+                "text": "Company evidence",
+                "left": 136.65625,
+                "right": 253.328125,
+                "height": 55.5
+              },
+              {
+                "text": "Relationships",
+                "left": 257.328125,
+                "right": 374,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "width": 320,
+            "language": "zh",
+            "route": "/case-14/gmi-index.html",
+            "targets": [
+              {
+                "text": "主题研究",
+                "left": 16,
+                "right": 109.328125,
+                "height": 44
+              },
+              {
+                "text": "公司证据",
+                "left": 113.328125,
+                "right": 206.671875,
+                "height": 44
+              },
+              {
+                "text": "公司关系",
+                "left": 210.671875,
+                "right": 304,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "width": 1440,
+            "language": "en",
+            "route": "/case-31/gmi.html",
+            "targets": [
+              {
+                "text": "Theme research",
+                "left": 32,
+                "right": 164.78125,
+                "height": 44
+              },
+              {
+                "text": "Company evidence",
+                "left": 168.78125,
+                "right": 318.953125,
+                "height": 44
+              },
+              {
+                "text": "Relationships",
+                "left": 322.953125,
+                "right": 439.4375,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "width": 1440,
+            "language": "zh",
+            "route": "/case-32/gmi.html",
+            "targets": [
+              {
+                "text": "主题研究",
+                "left": 32,
+                "right": 116,
+                "height": 44
+              },
+              {
+                "text": "公司证据",
+                "left": 120,
+                "right": 204,
+                "height": 44
+              },
+              {
+                "text": "公司关系",
+                "left": 208,
+                "right": 292,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "width": 390,
+            "language": "en",
+            "route": "/case-33/gmi.html",
+            "targets": [
+              {
+                "text": "Theme research",
+                "left": 16,
+                "right": 132.65625,
+                "height": 44
+              },
+              {
+                "text": "Company evidence",
+                "left": 136.65625,
+                "right": 253.328125,
+                "height": 55.5
+              },
+              {
+                "text": "Relationships",
+                "left": 257.328125,
+                "right": 374,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "width": 390,
+            "language": "zh",
+            "route": "/case-34/gmi.html",
+            "targets": [
+              {
+                "text": "主题研究",
+                "left": 16,
+                "right": 132.65625,
+                "height": 44
+              },
+              {
+                "text": "公司证据",
+                "left": 136.65625,
+                "right": 253.328125,
+                "height": 44
+              },
+              {
+                "text": "公司关系",
+                "left": 257.328125,
+                "right": 374,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "width": 320,
+            "language": "en",
+            "route": "/case-35/gmi.html",
+            "targets": [
+              {
+                "text": "Theme research",
+                "left": 16,
+                "right": 109.328125,
+                "height": 55.5
+              },
+              {
+                "text": "Company evidence",
+                "left": 113.328125,
+                "right": 206.671875,
+                "height": 55.5
+              },
+              {
+                "text": "Relationships",
+                "left": 210.671875,
+                "right": 304,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "width": 320,
+            "language": "zh",
+            "route": "/case-36/gmi.html",
+            "targets": [
+              {
+                "text": "主题研究",
+                "left": 16,
+                "right": 109.328125,
+                "height": 44
+              },
+              {
+                "text": "公司证据",
+                "left": 113.328125,
+                "right": 206.671875,
+                "height": 44
+              },
+              {
+                "text": "公司关系",
+                "left": 210.671875,
+                "right": 304,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "width": 1440,
+            "language": "en",
+            "route": "/case-37/gmi-index.html",
+            "targets": [
+              {
+                "text": "Theme research",
+                "left": 32,
+                "right": 164.78125,
+                "height": 44
+              },
+              {
+                "text": "Company evidence",
+                "left": 168.78125,
+                "right": 318.953125,
+                "height": 44
+              },
+              {
+                "text": "Relationships",
+                "left": 322.953125,
+                "right": 439.4375,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "width": 1440,
+            "language": "zh",
+            "route": "/case-38/gmi-index.html",
+            "targets": [
+              {
+                "text": "主题研究",
+                "left": 32,
+                "right": 116,
+                "height": 44
+              },
+              {
+                "text": "公司证据",
+                "left": 120,
+                "right": 204,
+                "height": 44
+              },
+              {
+                "text": "公司关系",
+                "left": 208,
+                "right": 292,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "width": 390,
+            "language": "en",
+            "route": "/case-39/gmi-index.html",
+            "targets": [
+              {
+                "text": "Theme research",
+                "left": 16,
+                "right": 132.65625,
+                "height": 44
+              },
+              {
+                "text": "Company evidence",
+                "left": 136.65625,
+                "right": 253.328125,
+                "height": 55.5
+              },
+              {
+                "text": "Relationships",
+                "left": 257.328125,
+                "right": 374,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "width": 390,
+            "language": "zh",
+            "route": "/case-40/gmi-index.html",
+            "targets": [
+              {
+                "text": "主题研究",
+                "left": 16,
+                "right": 132.65625,
+                "height": 44
+              },
+              {
+                "text": "公司证据",
+                "left": 136.65625,
+                "right": 253.328125,
+                "height": 44
+              },
+              {
+                "text": "公司关系",
+                "left": 257.328125,
+                "right": 374,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "width": 320,
+            "language": "en",
+            "route": "/case-41/gmi-index.html",
+            "targets": [
+              {
+                "text": "Theme research",
+                "left": 16,
+                "right": 109.328125,
+                "height": 55.5
+              },
+              {
+                "text": "Company evidence",
+                "left": 113.328125,
+                "right": 206.671875,
+                "height": 55.5
+              },
+              {
+                "text": "Relationships",
+                "left": 210.671875,
+                "right": 304,
+                "height": 44
+              }
+            ]
+          },
+          {
+            "width": 320,
+            "language": "zh",
+            "route": "/case-42/gmi-index.html",
+            "targets": [
+              {
+                "text": "主题研究",
+                "left": 16,
+                "right": 109.328125,
+                "height": 44
+              },
+              {
+                "text": "公司证据",
+                "left": 113.328125,
+                "right": 206.671875,
+                "height": 44
+              },
+              {
+                "text": "公司关系",
+                "left": 210.671875,
+                "right": 304,
+                "height": 44
+              }
+            ]
+          }
+        ],
+        "search_clear": [
+          {
+            "scope": "tree",
+            "width": 1440,
+            "language": "en",
+            "theme": "light",
+            "initial_geometry": {
+              "field": {
+                "left": 53,
+                "right": 1009,
+                "top": 1724.34375,
+                "bottom": 1768.34375,
+                "width": 956,
+                "height": 44
+              },
+              "input": {
+                "left": 96,
+                "right": 950,
+                "top": 1725.34375,
+                "bottom": 1767.34375,
+                "width": 854,
+                "height": 42
+              },
+              "button": {
+                "left": 0,
+                "right": 0,
+                "top": 0,
+                "bottom": 0,
+                "width": 0,
+                "height": 0
+              },
+              "hidden": true,
+              "hintVisible": true,
+              "ready": true
+            },
+            "active_geometry": {
+              "field": {
+                "left": 53,
+                "right": 1009,
+                "top": 955.59375,
+                "bottom": 999.59375,
+                "width": 956,
+                "height": 44
+              },
+              "input": {
+                "left": 96,
+                "right": 950,
+                "top": 956.59375,
+                "bottom": 998.59375,
+                "width": 854,
+                "height": 42
+              },
+              "button": {
+                "left": 964,
+                "right": 1008,
+                "top": 955.59375,
+                "bottom": 999.59375,
+                "width": 44,
+                "height": 44
+              },
+              "hidden": false,
+              "hintVisible": false,
+              "ready": true
+            },
+            "one_input_per_activation": true,
+            "guarded_escape": [
+              {
+                "value": "HBM",
+                "prevented": false
+              },
+              {
+                "value": "HBM",
+                "prevented": false
+              },
+              {
+                "value": "HBM",
+                "prevented": true
+              }
+            ],
+            "history_and_focus_verified": true
+          },
+          {
+            "scope": "tree",
+            "width": 1440,
+            "language": "zh",
+            "theme": "light",
+            "initial_geometry": {
+              "field": {
+                "left": 53,
+                "right": 1009,
+                "top": 1725.78125,
+                "bottom": 1769.78125,
+                "width": 956,
+                "height": 44
+              },
+              "input": {
+                "left": 96,
+                "right": 950,
+                "top": 1726.78125,
+                "bottom": 1768.78125,
+                "width": 854,
+                "height": 42
+              },
+              "button": {
+                "left": 0,
+                "right": 0,
+                "top": 0,
+                "bottom": 0,
+                "width": 0,
+                "height": 0
+              },
+              "hidden": true,
+              "hintVisible": true,
+              "ready": true
+            },
+            "active_geometry": {
+              "field": {
+                "left": 53,
+                "right": 1009,
+                "top": 956.03125,
+                "bottom": 1000.03125,
+                "width": 956,
+                "height": 44
+              },
+              "input": {
+                "left": 96,
+                "right": 950,
+                "top": 957.03125,
+                "bottom": 999.03125,
+                "width": 854,
+                "height": 42
+              },
+              "button": {
+                "left": 964,
+                "right": 1008,
+                "top": 956.03125,
+                "bottom": 1000.03125,
+                "width": 44,
+                "height": 44
+              },
+              "hidden": false,
+              "hintVisible": false,
+              "ready": true
+            },
+            "one_input_per_activation": true,
+            "guarded_escape": [
+              {
+                "value": "HBM",
+                "prevented": false
+              },
+              {
+                "value": "HBM",
+                "prevented": false
+              },
+              {
+                "value": "HBM",
+                "prevented": true
+              }
+            ],
+            "history_and_focus_verified": true
+          },
+          {
+            "scope": "tree",
+            "width": 390,
+            "language": "en",
+            "theme": "light",
+            "initial_geometry": {
+              "field": {
+                "left": 33,
+                "right": 357,
+                "top": 1950.96875,
+                "bottom": 1994.96875,
+                "width": 324,
+                "height": 44
+              },
+              "input": {
+                "left": 76,
+                "right": 298,
+                "top": 1951.96875,
+                "bottom": 1993.96875,
+                "width": 222,
+                "height": 42
+              },
+              "button": {
+                "left": 0,
+                "right": 0,
+                "top": 0,
+                "bottom": 0,
+                "width": 0,
+                "height": 0
+              },
+              "hidden": true,
+              "hintVisible": true,
+              "ready": true
+            },
+            "active_geometry": {
+              "field": {
+                "left": 33,
+                "right": 357,
+                "top": 800.21875,
+                "bottom": 844.21875,
+                "width": 324,
+                "height": 44
+              },
+              "input": {
+                "left": 76,
+                "right": 298,
+                "top": 801.21875,
+                "bottom": 843.21875,
+                "width": 222,
+                "height": 42
+              },
+              "button": {
+                "left": 312,
+                "right": 356,
+                "top": 800.21875,
+                "bottom": 844.21875,
+                "width": 44,
+                "height": 44
+              },
+              "hidden": false,
+              "hintVisible": false,
+              "ready": true
+            },
+            "one_input_per_activation": true,
+            "guarded_escape": [
+              {
+                "value": "HBM",
+                "prevented": false
+              },
+              {
+                "value": "HBM",
+                "prevented": false
+              },
+              {
+                "value": "HBM",
+                "prevented": true
+              }
+            ],
+            "history_and_focus_verified": true
+          },
+          {
+            "scope": "tree",
+            "width": 390,
+            "language": "zh",
+            "theme": "light",
+            "initial_geometry": {
+              "field": {
+                "left": 33,
+                "right": 357,
+                "top": 1911.125,
+                "bottom": 1955.125,
+                "width": 324,
+                "height": 44
+              },
+              "input": {
+                "left": 76,
+                "right": 298,
+                "top": 1912.125,
+                "bottom": 1954.125,
+                "width": 222,
+                "height": 42
+              },
+              "button": {
+                "left": 0,
+                "right": 0,
+                "top": 0,
+                "bottom": 0,
+                "width": 0,
+                "height": 0
+              },
+              "hidden": true,
+              "hintVisible": true,
+              "ready": true
+            },
+            "active_geometry": {
+              "field": {
+                "left": 33,
+                "right": 357,
+                "top": 800.375,
+                "bottom": 844.375,
+                "width": 324,
+                "height": 44
+              },
+              "input": {
+                "left": 76,
+                "right": 298,
+                "top": 801.375,
+                "bottom": 843.375,
+                "width": 222,
+                "height": 42
+              },
+              "button": {
+                "left": 312,
+                "right": 356,
+                "top": 800.375,
+                "bottom": 844.375,
+                "width": 44,
+                "height": 44
+              },
+              "hidden": false,
+              "hintVisible": false,
+              "ready": true
+            },
+            "one_input_per_activation": true,
+            "guarded_escape": [
+              {
+                "value": "HBM",
+                "prevented": false
+              },
+              {
+                "value": "HBM",
+                "prevented": false
+              },
+              {
+                "value": "HBM",
+                "prevented": true
+              }
+            ],
+            "history_and_focus_verified": true
+          },
+          {
+            "scope": "tree",
+            "width": 320,
+            "language": "en",
+            "theme": "light",
+            "initial_geometry": {
+              "field": {
+                "left": 33,
+                "right": 287,
+                "top": 2071.703125,
+                "bottom": 2115.703125,
+                "width": 254,
+                "height": 44
+              },
+              "input": {
+                "left": 76,
+                "right": 228,
+                "top": 2072.703125,
+                "bottom": 2114.703125,
+                "width": 152,
+                "height": 42
+              },
+              "button": {
+                "left": 0,
+                "right": 0,
+                "top": 0,
+                "bottom": 0,
+                "width": 0,
+                "height": 0
+              },
+              "hidden": true,
+              "hintVisible": true,
+              "ready": true
+            },
+            "active_geometry": {
+              "field": {
+                "left": 33,
+                "right": 287,
+                "top": 800.453125,
+                "bottom": 844.453125,
+                "width": 254,
+                "height": 44
+              },
+              "input": {
+                "left": 76,
+                "right": 228,
+                "top": 801.453125,
+                "bottom": 843.453125,
+                "width": 152,
+                "height": 42
+              },
+              "button": {
+                "left": 242,
+                "right": 286,
+                "top": 800.453125,
+                "bottom": 844.453125,
+                "width": 44,
+                "height": 44
+              },
+              "hidden": false,
+              "hintVisible": false,
+              "ready": true
+            },
+            "one_input_per_activation": true,
+            "guarded_escape": [
+              {
+                "value": "HBM",
+                "prevented": false
+              },
+              {
+                "value": "HBM",
+                "prevented": false
+              },
+              {
+                "value": "HBM",
+                "prevented": true
+              }
+            ],
+            "history_and_focus_verified": true
+          },
+          {
+            "scope": "tree",
+            "width": 320,
+            "language": "zh",
+            "theme": "light",
+            "initial_geometry": {
+              "field": {
+                "left": 33,
+                "right": 287,
+                "top": 1962.5625,
+                "bottom": 2006.5625,
+                "width": 254,
+                "height": 44
+              },
+              "input": {
+                "left": 76,
+                "right": 228,
+                "top": 1963.5625,
+                "bottom": 2005.5625,
+                "width": 152,
+                "height": 42
+              },
+              "button": {
+                "left": 0,
+                "right": 0,
+                "top": 0,
+                "bottom": 0,
+                "width": 0,
+                "height": 0
+              },
+              "hidden": true,
+              "hintVisible": true,
+              "ready": true
+            },
+            "active_geometry": {
+              "field": {
+                "left": 33,
+                "right": 287,
+                "top": 800.3125,
+                "bottom": 844.3125,
+                "width": 254,
+                "height": 44
+              },
+              "input": {
+                "left": 76,
+                "right": 228,
+                "top": 801.3125,
+                "bottom": 843.3125,
+                "width": 152,
+                "height": 42
+              },
+              "button": {
+                "left": 242,
+                "right": 286,
+                "top": 800.3125,
+                "bottom": 844.3125,
+                "width": 44,
+                "height": 44
+              },
+              "hidden": false,
+              "hintVisible": false,
+              "ready": true
+            },
+            "one_input_per_activation": true,
+            "guarded_escape": [
+              {
+                "value": "HBM",
+                "prevented": false
+              },
+              {
+                "value": "HBM",
+                "prevented": false
+              },
+              {
+                "value": "HBM",
+                "prevented": true
+              }
+            ],
+            "history_and_focus_verified": true
+          },
+          {
+            "scope": "index",
+            "width": 1440,
+            "language": "en",
+            "theme": "light",
+            "initial_geometry": {
+              "field": {
+                "left": 53,
+                "right": 1387,
+                "top": 432.78125,
+                "bottom": 476.78125,
+                "width": 1334,
+                "height": 44
+              },
+              "input": {
+                "left": 96,
+                "right": 1328,
+                "top": 433.78125,
+                "bottom": 475.78125,
+                "width": 1232,
+                "height": 42
+              },
+              "button": {
+                "left": 0,
+                "right": 0,
+                "top": 0,
+                "bottom": 0,
+                "width": 0,
+                "height": 0
+              },
+              "hidden": true,
+              "hintVisible": true,
+              "ready": true
+            },
+            "active_geometry": {
+              "field": {
+                "left": 53,
+                "right": 1387,
+                "top": 432.78125,
+                "bottom": 476.78125,
+                "width": 1334,
+                "height": 44
+              },
+              "input": {
+                "left": 96,
+                "right": 1328,
+                "top": 433.78125,
+                "bottom": 475.78125,
+                "width": 1232,
+                "height": 42
+              },
+              "button": {
+                "left": 1342,
+                "right": 1386,
+                "top": 432.78125,
+                "bottom": 476.78125,
+                "width": 44,
+                "height": 44
+              },
+              "hidden": false,
+              "hintVisible": false,
+              "ready": true
+            },
+            "one_input_per_activation": true,
+            "guarded_escape": [
+              {
+                "value": "HBM",
+                "prevented": false
+              },
+              {
+                "value": "HBM",
+                "prevented": false
+              },
+              {
+                "value": "HBM",
+                "prevented": true
+              }
+            ],
+            "history_and_focus_verified": true
+          },
+          {
+            "scope": "index",
+            "width": 1440,
+            "language": "zh",
+            "theme": "light",
+            "initial_geometry": {
+              "field": {
+                "left": 53,
+                "right": 1387,
+                "top": 432.78125,
+                "bottom": 476.78125,
+                "width": 1334,
+                "height": 44
+              },
+              "input": {
+                "left": 96,
+                "right": 1328,
+                "top": 433.78125,
+                "bottom": 475.78125,
+                "width": 1232,
+                "height": 42
+              },
+              "button": {
+                "left": 0,
+                "right": 0,
+                "top": 0,
+                "bottom": 0,
+                "width": 0,
+                "height": 0
+              },
+              "hidden": true,
+              "hintVisible": true,
+              "ready": true
+            },
+            "active_geometry": {
+              "field": {
+                "left": 53,
+                "right": 1387,
+                "top": 432.78125,
+                "bottom": 476.78125,
+                "width": 1334,
+                "height": 44
+              },
+              "input": {
+                "left": 96,
+                "right": 1328,
+                "top": 433.78125,
+                "bottom": 475.78125,
+                "width": 1232,
+                "height": 42
+              },
+              "button": {
+                "left": 1342,
+                "right": 1386,
+                "top": 432.78125,
+                "bottom": 476.78125,
+                "width": 44,
+                "height": 44
+              },
+              "hidden": false,
+              "hintVisible": false,
+              "ready": true
+            },
+            "one_input_per_activation": true,
+            "guarded_escape": [
+              {
+                "value": "HBM",
+                "prevented": false
+              },
+              {
+                "value": "HBM",
+                "prevented": false
+              },
+              {
+                "value": "HBM",
+                "prevented": true
+              }
+            ],
+            "history_and_focus_verified": true
+          },
+          {
+            "scope": "index",
+            "width": 390,
+            "language": "en",
+            "theme": "light",
+            "initial_geometry": {
+              "field": {
+                "left": 33,
+                "right": 357,
+                "top": 535.4375,
+                "bottom": 579.4375,
+                "width": 324,
+                "height": 44
+              },
+              "input": {
+                "left": 76,
+                "right": 298,
+                "top": 536.4375,
+                "bottom": 578.4375,
+                "width": 222,
+                "height": 42
+              },
+              "button": {
+                "left": 0,
+                "right": 0,
+                "top": 0,
+                "bottom": 0,
+                "width": 0,
+                "height": 0
+              },
+              "hidden": true,
+              "hintVisible": true,
+              "ready": true
+            },
+            "active_geometry": {
+              "field": {
+                "left": 33,
+                "right": 357,
+                "top": 535.4375,
+                "bottom": 579.4375,
+                "width": 324,
+                "height": 44
+              },
+              "input": {
+                "left": 76,
+                "right": 298,
+                "top": 536.4375,
+                "bottom": 578.4375,
+                "width": 222,
+                "height": 42
+              },
+              "button": {
+                "left": 312,
+                "right": 356,
+                "top": 535.4375,
+                "bottom": 579.4375,
+                "width": 44,
+                "height": 44
+              },
+              "hidden": false,
+              "hintVisible": false,
+              "ready": true
+            },
+            "one_input_per_activation": true,
+            "guarded_escape": [
+              {
+                "value": "HBM",
+                "prevented": false
+              },
+              {
+                "value": "HBM",
+                "prevented": false
+              },
+              {
+                "value": "HBM",
+                "prevented": true
+              }
+            ],
+            "history_and_focus_verified": true
+          },
+          {
+            "scope": "index",
+            "width": 390,
+            "language": "zh",
+            "theme": "light",
+            "initial_geometry": {
+              "field": {
+                "left": 33,
+                "right": 357,
+                "top": 505.1875,
+                "bottom": 549.1875,
+                "width": 324,
+                "height": 44
+              },
+              "input": {
+                "left": 76,
+                "right": 298,
+                "top": 506.1875,
+                "bottom": 548.1875,
+                "width": 222,
+                "height": 42
+              },
+              "button": {
+                "left": 0,
+                "right": 0,
+                "top": 0,
+                "bottom": 0,
+                "width": 0,
+                "height": 0
+              },
+              "hidden": true,
+              "hintVisible": true,
+              "ready": true
+            },
+            "active_geometry": {
+              "field": {
+                "left": 33,
+                "right": 357,
+                "top": 505.1875,
+                "bottom": 549.1875,
+                "width": 324,
+                "height": 44
+              },
+              "input": {
+                "left": 76,
+                "right": 298,
+                "top": 506.1875,
+                "bottom": 548.1875,
+                "width": 222,
+                "height": 42
+              },
+              "button": {
+                "left": 312,
+                "right": 356,
+                "top": 505.1875,
+                "bottom": 549.1875,
+                "width": 44,
+                "height": 44
+              },
+              "hidden": false,
+              "hintVisible": false,
+              "ready": true
+            },
+            "one_input_per_activation": true,
+            "guarded_escape": [
+              {
+                "value": "HBM",
+                "prevented": false
+              },
+              {
+                "value": "HBM",
+                "prevented": false
+              },
+              {
+                "value": "HBM",
+                "prevented": true
+              }
+            ],
+            "history_and_focus_verified": true
+          },
+          {
+            "scope": "index",
+            "width": 320,
+            "language": "en",
+            "theme": "light",
+            "initial_geometry": {
+              "field": {
+                "left": 33,
+                "right": 287,
+                "top": 576.6875,
+                "bottom": 620.6875,
+                "width": 254,
+                "height": 44
+              },
+              "input": {
+                "left": 76,
+                "right": 228,
+                "top": 577.6875,
+                "bottom": 619.6875,
+                "width": 152,
+                "height": 42
+              },
+              "button": {
+                "left": 0,
+                "right": 0,
+                "top": 0,
+                "bottom": 0,
+                "width": 0,
+                "height": 0
+              },
+              "hidden": true,
+              "hintVisible": true,
+              "ready": true
+            },
+            "active_geometry": {
+              "field": {
+                "left": 33,
+                "right": 287,
+                "top": 576.6875,
+                "bottom": 620.6875,
+                "width": 254,
+                "height": 44
+              },
+              "input": {
+                "left": 76,
+                "right": 228,
+                "top": 577.6875,
+                "bottom": 619.6875,
+                "width": 152,
+                "height": 42
+              },
+              "button": {
+                "left": 242,
+                "right": 286,
+                "top": 576.6875,
+                "bottom": 620.6875,
+                "width": 44,
+                "height": 44
+              },
+              "hidden": false,
+              "hintVisible": false,
+              "ready": true
+            },
+            "one_input_per_activation": true,
+            "guarded_escape": [
+              {
+                "value": "HBM",
+                "prevented": false
+              },
+              {
+                "value": "HBM",
+                "prevented": false
+              },
+              {
+                "value": "HBM",
+                "prevented": true
+              }
+            ],
+            "history_and_focus_verified": true
+          },
+          {
+            "scope": "index",
+            "width": 320,
+            "language": "zh",
+            "theme": "light",
+            "initial_geometry": {
+              "field": {
+                "left": 33,
+                "right": 287,
+                "top": 523.9375,
+                "bottom": 567.9375,
+                "width": 254,
+                "height": 44
+              },
+              "input": {
+                "left": 76,
+                "right": 228,
+                "top": 524.9375,
+                "bottom": 566.9375,
+                "width": 152,
+                "height": 42
+              },
+              "button": {
+                "left": 0,
+                "right": 0,
+                "top": 0,
+                "bottom": 0,
+                "width": 0,
+                "height": 0
+              },
+              "hidden": true,
+              "hintVisible": true,
+              "ready": true
+            },
+            "active_geometry": {
+              "field": {
+                "left": 33,
+                "right": 287,
+                "top": 523.9375,
+                "bottom": 567.9375,
+                "width": 254,
+                "height": 44
+              },
+              "input": {
+                "left": 76,
+                "right": 228,
+                "top": 524.9375,
+                "bottom": 566.9375,
+                "width": 152,
+                "height": 42
+              },
+              "button": {
+                "left": 242,
+                "right": 286,
+                "top": 523.9375,
+                "bottom": 567.9375,
+                "width": 44,
+                "height": 44
+              },
+              "hidden": false,
+              "hintVisible": false,
+              "ready": true
+            },
+            "one_input_per_activation": true,
+            "guarded_escape": [
+              {
+                "value": "HBM",
+                "prevented": false
+              },
+              {
+                "value": "HBM",
+                "prevented": false
+              },
+              {
+                "value": "HBM",
+                "prevented": true
+              }
+            ],
+            "history_and_focus_verified": true
+          },
+          {
+            "scope": "tree",
+            "width": 390,
+            "language": "en",
+            "theme": "dark",
+            "initial_geometry": {
+              "field": {
+                "left": 33,
+                "right": 357,
+                "top": 1946.96875,
+                "bottom": 1990.96875,
+                "width": 324,
+                "height": 44
+              },
+              "input": {
+                "left": 76,
+                "right": 298,
+                "top": 1947.96875,
+                "bottom": 1989.96875,
+                "width": 222,
+                "height": 42
+              },
+              "button": {
+                "left": 0,
+                "right": 0,
+                "top": 0,
+                "bottom": 0,
+                "width": 0,
+                "height": 0
+              },
+              "hidden": true,
+              "hintVisible": true,
+              "ready": true
+            },
+            "active_geometry": {
+              "field": {
+                "left": 33,
+                "right": 357,
+                "top": 800.21875,
+                "bottom": 844.21875,
+                "width": 324,
+                "height": 44
+              },
+              "input": {
+                "left": 76,
+                "right": 298,
+                "top": 801.21875,
+                "bottom": 843.21875,
+                "width": 222,
+                "height": 42
+              },
+              "button": {
+                "left": 312,
+                "right": 356,
+                "top": 800.21875,
+                "bottom": 844.21875,
+                "width": 44,
+                "height": 44
+              },
+              "hidden": false,
+              "hintVisible": false,
+              "ready": true
+            },
+            "one_input_per_activation": true,
+            "guarded_escape": [
+              {
+                "value": "HBM",
+                "prevented": false
+              },
+              {
+                "value": "HBM",
+                "prevented": false
+              },
+              {
+                "value": "HBM",
+                "prevented": true
+              }
+            ],
+            "history_and_focus_verified": true
+          },
+          {
+            "scope": "index",
+            "width": 320,
+            "language": "zh",
+            "theme": "dark",
+            "initial_geometry": {
+              "field": {
+                "left": 33,
+                "right": 287,
+                "top": 523.9375,
+                "bottom": 567.9375,
+                "width": 254,
+                "height": 44
+              },
+              "input": {
+                "left": 76,
+                "right": 228,
+                "top": 524.9375,
+                "bottom": 566.9375,
+                "width": 152,
+                "height": 42
+              },
+              "button": {
+                "left": 0,
+                "right": 0,
+                "top": 0,
+                "bottom": 0,
+                "width": 0,
+                "height": 0
+              },
+              "hidden": true,
+              "hintVisible": true,
+              "ready": true
+            },
+            "active_geometry": {
+              "field": {
+                "left": 33,
+                "right": 287,
+                "top": 523.9375,
+                "bottom": 567.9375,
+                "width": 254,
+                "height": 44
+              },
+              "input": {
+                "left": 76,
+                "right": 228,
+                "top": 524.9375,
+                "bottom": 566.9375,
+                "width": 152,
+                "height": 42
+              },
+              "button": {
+                "left": 242,
+                "right": 286,
+                "top": 523.9375,
+                "bottom": 567.9375,
+                "width": 44,
+                "height": 44
+              },
+              "hidden": false,
+              "hintVisible": false,
+              "ready": true
+            },
+            "one_input_per_activation": true,
+            "guarded_escape": [
+              {
+                "value": "HBM",
+                "prevented": false
+              },
+              {
+                "value": "HBM",
+                "prevented": false
+              },
+              {
+                "value": "HBM",
+                "prevented": true
+              }
+            ],
+            "history_and_focus_verified": true
+          }
+        ],
+        "search_clear_static": [
+          {
+            "scope": "tree",
+            "language": "en",
+            "native_links": 371,
+            "custom_button_hidden": true,
+            "enhancement_class_absent": true
+          },
+          {
+            "scope": "tree",
+            "language": "zh",
+            "native_links": 371,
+            "custom_button_hidden": true,
+            "enhancement_class_absent": true
+          },
+          {
+            "scope": "index",
+            "language": "en",
+            "native_links": 371,
+            "custom_button_hidden": true,
+            "enhancement_class_absent": true
+          },
+          {
+            "scope": "index",
+            "language": "zh",
+            "native_links": 371,
+            "custom_button_hidden": true,
+            "enhancement_class_absent": true
+          }
+        ],
+        "tree_status": [
+          {
+            "width": 1440,
+            "language": "en",
+            "hidden_mutations": 4,
+            "status_identity_retained": true,
+            "empty_accessibility_snapshot": "- status:\n  - paragraph: No micro-theme matches that search.",
+            "focus_and_url_retained": true,
+            "initial_geometry": {
+              "gap": 12,
+              "messageHeight": 0,
+              "parentGap": 12,
+              "messageMargins": 28
+            },
+            "empty_geometry": {
+              "gap": 89,
+              "messageHeight": 37,
+              "parentGap": 12,
+              "messageMargins": 28
+            }
+          },
+          {
+            "width": 1440,
+            "language": "zh",
+            "hidden_mutations": 4,
+            "status_identity_retained": true,
+            "empty_accessibility_snapshot": "- status:\n  - paragraph: 没有匹配该搜索的细分主题。",
+            "focus_and_url_retained": true,
+            "initial_geometry": {
+              "gap": 12,
+              "messageHeight": 0,
+              "parentGap": 12,
+              "messageMargins": 28
+            },
+            "empty_geometry": {
+              "gap": 89,
+              "messageHeight": 37,
+              "parentGap": 12,
+              "messageMargins": 28
+            }
+          },
+          {
+            "width": 390,
+            "language": "en",
+            "hidden_mutations": 4,
+            "status_identity_retained": true,
+            "empty_accessibility_snapshot": "- status:\n  - paragraph: No micro-theme matches that search.",
+            "focus_and_url_retained": true,
+            "initial_geometry": {
+              "gap": 12,
+              "messageHeight": 0,
+              "parentGap": 12,
+              "messageMargins": 28
+            },
+            "empty_geometry": {
+              "gap": 89,
+              "messageHeight": 37,
+              "parentGap": 12,
+              "messageMargins": 28
+            }
+          },
+          {
+            "width": 390,
+            "language": "zh",
+            "hidden_mutations": 4,
+            "status_identity_retained": true,
+            "empty_accessibility_snapshot": "- status:\n  - paragraph: 没有匹配该搜索的细分主题。",
+            "focus_and_url_retained": true,
+            "initial_geometry": {
+              "gap": 12,
+              "messageHeight": 0,
+              "parentGap": 12,
+              "messageMargins": 28
+            },
+            "empty_geometry": {
+              "gap": 89,
+              "messageHeight": 37,
+              "parentGap": 12,
+              "messageMargins": 28
+            }
+          },
+          {
+            "width": 320,
+            "language": "en",
+            "hidden_mutations": 4,
+            "status_identity_retained": true,
+            "empty_accessibility_snapshot": "- status:\n  - paragraph: No micro-theme matches that search.",
+            "focus_and_url_retained": true,
+            "initial_geometry": {
+              "gap": 12,
+              "messageHeight": 0,
+              "parentGap": 12,
+              "messageMargins": 28
+            },
+            "empty_geometry": {
+              "gap": 89,
+              "messageHeight": 37,
+              "parentGap": 12,
+              "messageMargins": 28
+            }
+          },
+          {
+            "width": 320,
+            "language": "zh",
+            "hidden_mutations": 4,
+            "status_identity_retained": true,
+            "empty_accessibility_snapshot": "- status:\n  - paragraph: 没有匹配该搜索的细分主题。",
+            "focus_and_url_retained": true,
+            "initial_geometry": {
+              "gap": 12,
+              "messageHeight": 0,
+              "parentGap": 12,
+              "messageMargins": 28
+            },
+            "empty_geometry": {
+              "gap": 89,
+              "messageHeight": 37,
+              "parentGap": 12,
+              "messageMargins": 28
+            }
+          }
+        ],
+        "sticky_geometry": [
+          {
+            "width": 390,
+            "language": "en",
+            "navTop": 0,
+            "navBottom": 61,
+            "headerTop": 61.9375,
+            "scrollMargin": "61px"
+          },
+          {
+            "width": 390,
+            "language": "zh",
+            "navTop": 0,
+            "navBottom": 61,
+            "headerTop": 61.6875,
+            "scrollMargin": "61px"
+          },
+          {
+            "width": 320,
+            "language": "en",
+            "navTop": 0,
+            "navBottom": 61,
+            "headerTop": 61.9375,
+            "scrollMargin": "61px"
+          },
+          {
+            "width": 320,
+            "language": "zh",
+            "navTop": 0,
+            "navBottom": 61,
+            "headerTop": 62.4375,
+            "scrollMargin": "61px"
+          }
+        ],
+        "complete": true,
+        "pass": true
+      },
+      "completion_receipt": "[Reading 38 new lines (total: 38 lines)]\n\n{\"name\": \"search-clear-tree-1440-en\", \"result\": \"PASS\", \"contexts\": 1}\n{\"name\": \"search-clear-tree-1440-zh\", \"result\": \"PASS\", \"contexts\": 1}\n{\"name\": \"search-clear-tree-390-en\", \"result\": \"PASS\", \"contexts\": 1}\n{\"name\": \"search-clear-tree-390-zh\", \"result\": \"PASS\", \"contexts\": 1}\n{\"name\": \"search-clear-tree-320-en\", \"result\": \"PASS\", \"contexts\": 1}\n{\"name\": \"search-clear-tree-320-zh\", \"result\": \"PASS\", \"contexts\": 1}\n{\"name\": \"search-clear-index-1440-en\", \"result\": \"PASS\", \"contexts\": 1}\n{\"name\": \"search-clear-index-1440-zh\", \"result\": \"PASS\", \"contexts\": 1}\n{\"name\": \"search-clear-index-390-en\", \"result\": \"PASS\", \"contexts\": 1}\n{\"name\": \"search-clear-index-390-zh\", \"result\": \"PASS\", \"contexts\": 1}\n{\"name\": \"search-clear-index-320-en\", \"result\": \"PASS\", \"contexts\": 1}\n{\"name\": \"search-clear-index-320-zh\", \"result\": \"PASS\", \"contexts\": 1}\n{\"name\": \"search-clear-tree-390-en-dark\", \"result\": \"PASS\", \"contexts\": 1}\n{\"name\": \"search-clear-index-320-zh-dark\", \"result\": \"PASS\", \"contexts\": 1}\n{\"name\": \"search-clear-static-tree-en\", \"result\": \"PASS\", \"contexts\": 1}\n{\"name\": \"search-clear-static-tree-zh\", \"result\": \"PASS\", \"contexts\": 1}\n{\"name\": \"search-clear-static-index-en\", \"result\": \"PASS\", \"contexts\": 1}\n{\"name\": \"search-clear-static-index-zh\", \"result\": \"PASS\", \"contexts\": 1}\n{\"name\": \"tree-roving-1440-en\", \"result\": \"PASS\", \"contexts\": 2}\n{\"name\": \"tree-roving-1440-zh\", \"result\": \"PASS\", \"contexts\": 2}\n{\"name\": \"tree-roving-390-en\", \"result\": \"PASS\", \"contexts\": 2}\n{\"name\": \"tree-roving-390-zh\", \"result\": \"PASS\", \"contexts\": 2}\n{\"name\": \"tree-roving-320-en\", \"result\": \"PASS\", \"contexts\": 2}\n{\"name\": \"tree-roving-320-zh\", \"result\": \"PASS\", \"contexts\": 2}\n{\"name\": \"tree-status-1440-en\", \"result\": \"PASS\", \"contexts\": 1}\n{\"name\": \"tree-status-1440-zh\", \"result\": \"PASS\", \"contexts\": 1}\n{\"name\": \"tree-status-390-en\", \"result\": \"PASS\", \"contexts\": 1}\n{\"name\": \"tree-status-390-zh\", \"result\": \"PASS\", \"contexts\": 1}\n{\"name\": \"tree-status-320-en\", \"result\": \"PASS\", \"contexts\": 1}\n{\"name\": \"tree-status-320-zh\", \"result\": \"PASS\", \"contexts\": 1}\n{\"name\": \"index-shortcuts-1440-en\", \"result\": \"PASS\", \"contexts\": 1}\n{\"name\": \"index-shortcuts-1440-zh\", \"result\": \"PASS\", \"contexts\": 1}\n{\"name\": \"index-shortcuts-390-en\", \"result\": \"PASS\", \"contexts\": 1}\n{\"name\": \"index-shortcuts-390-zh\", \"result\": \"PASS\", \"contexts\": 1}\n{\"name\": \"index-shortcuts-320-en\", \"result\": \"PASS\", \"contexts\": 1}\n{\"name\": \"index-shortcuts-320-zh\", \"result\": \"PASS\", \"contexts\": 1}\n{\"browser\": \"157.0.8103.39\", \"passed\": 36, \"total\": 36, \"contexts\": 42, \"page_errors\": [], \"report\": \"/Volumes/Mastermind/agent-workspaces/verify/gmi-search-clear-20261109-622i6r31/candidate-proof/browser-report.json\"}\n\n✅ Process completed with exit code 0 (runtime: 77.23s)",
+      "final_proof_inputs": {
+        "verify_product_browser.py": {
+          "sha256": "833522aba03bee3f1ce2793d4de106b1998d9bf0a2f4d144a5baf8f4c9a4de5e",
+          "blob": "a2ca4d53c03e0e66935877b38a9c87cc45f2507a"
+        },
+        "verify_search_clear_component.py": {
+          "sha256": "5954a233a53ac8a427b7d7c8075017c5c8e0d833a747a5a82876badcd9a32105",
+          "blob": "7e340af7a59976a186936d322620f6358326f738"
+        }
+      }
+    },
+    "captures": [
+      {
+        "name": "index-filter-320-zh.png",
+        "bytes": 114571,
+        "sha256": "a75d8a6b7cec65a6a63115bf286904477526e875c5f9a892661da42999760f30"
+      },
+      {
+        "name": "index-filter-390-en.png",
+        "bytes": 124491,
+        "sha256": "bc1a6f18da6e12b853f60719f2263f1cd2e0eb6fda63360fa0e76dc36bd8d4fd"
+      },
+      {
+        "name": "search-clear-index-320-zh-dark.png",
+        "bytes": 1668,
+        "sha256": "d26d305a93ac42fd3faf14b64448acff1a0f3a8e8361a0b5160c5d0ad83c0263"
+      },
+      {
+        "name": "search-clear-index-320-zh-light.png",
+        "bytes": 1672,
+        "sha256": "1d62eb7feaee66268356a8428332e1303192069650f47e784aeb45acb7db4423"
+      },
+      {
+        "name": "search-clear-index-390-en-light.png",
+        "bytes": 1671,
+        "sha256": "d027a35fb6bfdf1265b0c09dbe215af262325d5ddae2e0cf2d64012b7dc57f46"
+      },
+      {
+        "name": "search-clear-tree-320-zh-light.png",
+        "bytes": 1635,
+        "sha256": "efaab97057bf31f6d24c4e47f4820742b5e7c8eeb11638a985543146fd9765df"
+      },
+      {
+        "name": "search-clear-tree-390-en-dark.png",
+        "bytes": 1673,
+        "sha256": "8e795033e764743061a96e0c6b2a3510a3771c99830d24a459560c3e2476082b"
+      },
+      {
+        "name": "search-clear-tree-390-en-light.png",
+        "bytes": 1662,
+        "sha256": "4e67c440463b05538f2266c2e40d179bbaeb905273acfa7928c24b628cc7c5f4"
+      },
+      {
+        "name": "tree-roving-320-zh.png",
+        "bytes": 14880,
+        "sha256": "945b65ca1e5a118d7f394025c9d4e1019e858a6cd829574855572a7241785c37"
+      },
+      {
+        "name": "tree-roving-390-en.png",
+        "bytes": 18503,
+        "sha256": "1c71d35fcee976ffc4cea9fcfffb9834aafe3143366035d9a2566dbd90676ba7"
+      },
+      {
+        "name": "tree-status-320-zh.png",
+        "bytes": 99458,
+        "sha256": "2533ec442ece620ca08f2e5c377886654cbef63c4c9955f4c8a54be8527eb078"
+      },
+      {
+        "name": "tree-status-390-en.png",
+        "bytes": 97675,
+        "sha256": "43f8182629c9001fe3d435d8d3f9fac0ce689f29a9699396b8ab863368044252"
+      }
+    ],
+    "visual_review": {
+      "inspected": [
+        "search-clear-tree-390-en-light.png",
+        "search-clear-tree-320-zh-light.png",
+        "search-clear-index-390-en-light.png",
+        "search-clear-index-320-zh-light.png",
+        "search-clear-tree-390-en-dark.png",
+        "search-clear-index-320-zh-dark.png"
+      ],
+      "finding": "One clear icon, visible keyboard focus, intact rounded field, no suffix duplication or text overlap in inspected light/dark 390/320px fields."
+    },
+    "commands": {
+      "gmiSearchClearBaselineRenderCommand": "python3 - <<'PY'\nfrom pathlib import Path\nimport hashlib,json,os,sys\nr=Path('/Volumes/Mastermind/agent-workspaces/verify/gmi-search-clear-20261109-622i6r31');manifest=json.loads((r/'input-bindings.json').read_text())\nfor x in manifest['inputs']:\n raw=(r/x['path']).read_bytes();assert hashlib.sha1(b'blob '+str(len(raw)).encode()+b'\\0'+raw).hexdigest()==x['blob'],x['path']\nassert hashlib.sha256((r/'accepted-model.json').read_bytes()).hexdigest()==manifest['model_sha256']\nos.chdir(r);sys.path.insert(0,str(r));sys.dont_write_bytecode=True\nfrom scripts.build_gmi_explorer import render_site\nrender_site(json.loads((r/'accepted-model.json').read_text()),r/'baseline')\nassert (r/'baseline/gmi.html').read_bytes()==(r/'prior-generated/gmi.html').read_bytes()\nassert (r/'baseline/gmi-index.html').read_bytes()==(r/'prior-generated/gmi-index.html').read_bytes()\nrecord={'source_head':manifest['source_head'],'input_count':len(manifest['inputs']),'model_sha256':manifest['model_sha256'],'explorer_exact':True,'index_exact':True,'outputs':{p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted((r/'baseline').glob('*')) if p.is_file()}}\n(r/'baseline-render-receipt.json').write_text(json.dumps(record,indent=2)+'\\n');print(json.dumps(record),flush=True)\nPY",
+      "gmiSearchClearCandidateRenderCommand": "python3 - <<'PY'\nfrom pathlib import Path\nimport hashlib,json,os,sys,difflib,ast\nr=Path('/Volumes/Mastermind/agent-workspaces/verify/gmi-search-clear-20261109-622i6r31');base=json.loads((r/'baseline-render-receipt.json').read_text());manifest=json.loads((r/'input-bindings.json').read_text())\nassert base['explorer_exact'] and base['index_exact'];assert hashlib.sha256((r/'accepted-model.json').read_bytes()).hexdigest()==manifest['model_sha256']\nfor row in manifest['inputs']:\n if row['path'] in ('templates/gmi.js','templates/gmi.css','templates/_gmi_macros.html.j2'):continue\n raw=(r/row['path']).read_bytes();assert hashlib.sha1(b'blob '+str(len(raw)).encode()+b'\\0'+raw).hexdigest()==row['blob'],row['path']\nfor name in ['verify_product_browser.py','verify_search_clear_component.py']:ast.parse((r/name).read_text())\nos.chdir(r);sys.path.insert(0,str(r));sys.dont_write_bytecode=True\nfrom scripts.build_gmi_explorer import render_site\nrender_site(json.loads((r/'accepted-model.json').read_text()),r/'candidate')\nhashes={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted((r/'candidate').glob('*')) if p.is_file()}\nchanged=[n for n,h in hashes.items() if base['outputs'][n]!=h];assert set(changed)=={'gmi.html','gmi-index.html','gmi.js','gmi.css'},changed\nfor name in ('gmi.js','gmi.css'):assert (r/'candidate'/name).read_bytes()==(r/'templates'/name).read_bytes()\nblobs={}\nfor name in ('gmi.html','gmi-index.html'):\n raw=(r/'candidate'/name).read_bytes();blobs[name]=hashlib.sha1(b'blob '+str(len(raw)).encode()+b'\\0'+raw).hexdigest()\n (r/(name+'.diff')).write_text(''.join(difflib.unified_diff((r/'baseline'/name).read_text().splitlines(True),(r/'candidate'/name).read_text().splitlines(True),fromfile='a/site/'+name,tofile='b/site/'+name)))\nrecord={'source_head':manifest['source_head'],'model_sha256':manifest['model_sha256'],'changed':changed,'outputs':hashes,'candidate_html_blobs':blobs,'paired_assets_exact':True,'all_other_outputs_unchanged':True,'candidate_inputs':{n:{'sha256':hashlib.sha256((r/n).read_bytes()).hexdigest(),'blob':hashlib.sha1(b'blob '+str((r/n).stat().st_size).encode()+b'\\0'+(r/n).read_bytes()).hexdigest()} for n in ('templates/gmi.js','templates/gmi.css','templates/_gmi_macros.html.j2','verify_product_browser.py','verify_search_clear_component.py')}}\n(r/'candidate-render-receipt.json').write_text(json.dumps(record,indent=2)+'\\n');print(json.dumps(record),flush=True)\nPY",
+      "gmiSearchClearBaselineBrowserCommand": "python3 '/Volumes/Mastermind/agent-workspaces/verify/gmi-search-clear-20261109-622i6r31/verify_search_clear_component.py' --root '/Volumes/Mastermind/agent-workspaces/verify/gmi-search-clear-20261109-622i6r31' --executable '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' --baseline",
+      "gmiSearchClearDiagnosticCommand": "python3 '/Volumes/Mastermind/agent-workspaces/verify/gmi-search-clear-20261109-622i6r31/verify_search_clear_component.py' --root '/Volumes/Mastermind/agent-workspaces/verify/gmi-search-clear-20261109-622i6r31' --executable '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' --case search-clear-tree-390-en",
+      "gmiSearchClearInitialStopCommand": "python3 - <<'PY'\nimport subprocess,os,signal,json\npid=22088\nr=subprocess.run(['ps','-p',str(pid),'-o','command='],text=True,capture_output=True)\ncommand=r.stdout.strip()\nif r.returncode==0:\n assert '/Volumes/Mastermind/agent-workspaces/verify/gmi-search-clear-20261109-622i6r31/verify_search_clear_component.py' in command,command\n os.kill(pid,signal.SIGINT);print(json.dumps({'pid':pid,'signal':'SIGINT','owned_command_verified':True}),flush=True)\nelse:print(json.dumps({'pid':pid,'already_absent':True}),flush=True)\nPY",
+      "gmiSearchClearInitialTerminateCommand": "python3 - <<'PY'\nimport subprocess,os,signal,json\npid=22088;r=subprocess.run(['ps','-p',str(pid),'-o','command='],text=True,capture_output=True);command=r.stdout.strip()\nif r.returncode==0:\n assert '/Volumes/Mastermind/agent-workspaces/verify/gmi-search-clear-20261109-622i6r31/verify_search_clear_component.py' in command,command\n os.kill(pid,signal.SIGTERM);print(json.dumps({'pid':pid,'signal':'SIGTERM','owned_command_verified':True}),flush=True)\nelse:print(json.dumps({'pid':pid,'already_absent':True}),flush=True)\nPY"
+    }
+  },
+  "retained_boundaries": [
+    "Original model01 EFFECT_UNKNOWN / ROOT_UNVERIFIED remains; no fenced output was consumed.",
+    "Draft/no-merge/no-Ready/no-enqueue/no-relabel and public admission/release holds remain.",
+    "Anonymous loopback proof uses actual generated main content and complete shared theme/GMI CSS with external requests blocked; it is not full shared-shell/fonts, authenticated/live serving, deployment or spoken assistive-technology acceptance.",
+    "Composition guards were exercised with synthetic events; no OS IME acceptance is claimed.",
+    "No original Paper control/style hold, Tools P0B capture condition, navigation or release owner was changed."
+  ]
+}

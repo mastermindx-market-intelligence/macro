@@ -40,7 +40,7 @@
     gmi.js filters the page's [data-gmi-q] elements for this scope, swaps the
     placeholder/aria-label on language change, and un-hides the no-match line. -#}
 {% macro search_box(en, zh, scope) -%}
-<div class="gmi-search" role="search">{{ ic("search", 18) }}<input class="gmi-search-in" type="search" data-gmi-filter="{{ scope }}" placeholder="{{ en }}" aria-label="{{ en }}" data-ph-en="{{ en }}" data-ph-zh="{{ zh }}" data-aria-en="{{ en }}" data-aria-zh="{{ zh }}" autocomplete="off" spellcheck="false"><kbd aria-hidden="true">/</kbd></div>
+<div class="gmi-search" role="search">{{ ic("search", 18) }}<input class="gmi-search-in" type="search" data-gmi-filter="{{ scope }}" placeholder="{{ en }}" aria-label="{{ en }}" data-ph-en="{{ en }}" data-ph-zh="{{ zh }}" data-aria-en="{{ en }}" data-aria-zh="{{ zh }}" autocomplete="off" spellcheck="false"><button class="gmi-search-clear" type="button" data-gmi-search-clear aria-label="Clear search" data-aria-en="Clear search" data-aria-zh="清空搜索" hidden><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6 6 18"/></svg></button><kbd aria-hidden="true">/</kbd></div>
 {% if scope == 'index' -%}
 <div data-gmi-index-status role="status" aria-live="polite" aria-atomic="true"><p class="gmi-index-feedback" data-gmi-index-feedback hidden><span data-gmi-index-count hidden><span class="l-en" data-gmi-index-count-en></span><span class="l-zh" data-gmi-index-count-zh></span></span><span data-gmi-nomatch="{{ scope }}" hidden>{{ t("No micro-theme matches that search.", "没有匹配该搜索的细分主题。") }}</span></p></div>
 {%- else -%}

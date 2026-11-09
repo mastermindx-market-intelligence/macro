@@ -1215,7 +1215,11 @@ with sync_playwright() as pw:
                 return tree.locator('[role="treeitem"]').filter(has=p.locator('a[data-topic-select="'+identifier+'"]')).first
 
             def focus_leaf(identifier):
-                search.focus();p.keyboard.press('Tab');p.keyboard.press('Home')
+                search.focus();p.keyboard.press('Tab')
+                clear=p.locator('[data-gmi-search-clear]')
+                if clear.is_visible():
+                    expect(clear).to_be_focused();p.keyboard.press('Tab')
+                p.keyboard.press('Home')
                 target=row(identifier)
                 for _ in range(tree.locator('[role="treeitem"]:visible').count()):
                     if target.evaluate('(n)=>n===document.activeElement'):
@@ -1613,6 +1617,8 @@ with sync_playwright() as pw:
                 p.locator('.gmi-advanced').screenshot(path=str(path))
                 report['screenshots'].append(path.name)
             search.press('Tab')
+            expect(p.locator('[data-gmi-search-clear]')).to_be_focused()
+            p.keyboard.press('Tab')
             expect(p.locator('.gmi-trow--more')).to_be_focused()
             search.fill('')
             expect(message).not_to_be_visible()
@@ -1791,6 +1797,185 @@ with sync_playwright() as pw:
             check(f'index-status-{width}-{language}',lambda w=width,l=language:index_status_feedback(w,l))
     for language in ('en','zh'):
         check(f'index-status-static-{language}',lambda l=language:index_status_static(l))
+
+    def search_clear_geometry(p, scope):
+        field=p.locator('[data-gmi-filter="'+scope+'"]').locator('xpath=..')
+        value=field.evaluate("""n=>{
+          const input=n.querySelector('input'),button=n.querySelector('[data-gmi-search-clear]'),hint=n.querySelector('kbd');
+          const r=x=>{const b=x.getBoundingClientRect();return {left:b.left,right:b.right,top:b.top,bottom:b.bottom,width:b.width,height:b.height};};
+          return {field:r(n),input:r(input),button:r(button),hidden:button.hidden,hintVisible:getComputedStyle(hint).display!=='none',ready:n.classList.contains('gmi-search--clearable')};
+        }""")
+        assert abs(value['field']['height']-44)<0.5,value
+        assert value['field']['left']>=-0.5 and value['field']['right']<=p.viewport_size['width']+0.5,value
+        if not value['hidden']:
+            b=value['button'];f=value['field']
+            assert b['width']>=44 and b['height']>=44,value
+            assert b['left']>=f['left'] and b['right']<=f['right']+0.5,value
+            assert b['top']>=f['top']-0.5 and b['bottom']<=f['bottom']+0.5,value
+            assert value['input']['right']<=b['left']-4,value
+            assert not value['hintVisible'],value
+        else:
+            assert value['hintVisible'],value
+        return value
+
+    def search_clear_paths(scope, width, language, theme='light'):
+        """One native click/key action reuses input state, history, focus and language owners."""
+        with context(width,theme,language,reduced_motion='reduce') as c:
+            fragment={'lens':'chain','fixture_key':'retained'}
+            if scope=='tree':
+                fragment.update({'theme':'theme:hbm_packaging','q':'Micron','gmi_return':'gmi-companies.html#q=memory'})
+                route='gmi.html'
+            else:
+                fragment.update({'open':'all','gmi_return':'gmi.html#theme=theme:hbm_packaging&q=Micron'})
+                route='gmi-index.html'
+            p=page_for(c,route+'?fixture=search-clear#'+urlencode(fragment))
+            if scope=='tree':p.locator('.gmi-advanced > summary').click()
+            search=p.locator('[data-gmi-filter="'+scope+'"]')
+            field=search.locator('xpath=..')
+            clear=field.locator('[data-gmi-search-clear]')
+            assert clear.count()==1,'Search has no authored clear action'
+            expect(clear).not_to_be_visible()
+            expect(clear).to_have_attribute('aria-label','Clear search' if language=='en' else '清空搜索')
+            original=search_clear_geometry(p,scope)
+            if scope=='index':p.locator('#energy_power').evaluate('(n)=>{n.open=false;}')
+            snapshot=p.locator('.gmi-tree [aria-expanded]').evaluate_all('(nodes)=>nodes.map(n=>n.getAttribute("aria-expanded"))') if scope=='tree' else p.locator('[data-gmi-index] > details').evaluate_all('(nodes)=>nodes.map(n=>n.open)')
+            url_before=p.url
+            history=p.evaluate('history.length')
+            p.evaluate("""scope=>{
+              const input=document.querySelector('[data-gmi-filter="'+scope+'"]');
+              window.__searchClearEvents=0;window.__searchClearUnsafeHides=[];
+              input.addEventListener('input',()=>window.__searchClearEvents++);
+              const d=Object.getOwnPropertyDescriptor(HTMLElement.prototype,'hidden');
+              Object.defineProperty(HTMLElement.prototype,'hidden',{...d,set(v){
+                if(v&&this.matches('[data-gmi-search-clear]')&&this.contains(document.activeElement))window.__searchClearUnsafeHides.push(true);
+                d.set.call(this,v);
+              }});
+              const cards=document.querySelector('[data-topic-connections]');
+              window.__searchClearCards=cards?[...cards.children]:[];
+              const receipt=document.querySelector('.gmi-evidence-receipt');if(receipt)receipt.open=true;
+            }""",scope)
+
+            def retained():
+                expect(search).to_have_value('')
+                expect(search).to_be_focused()
+                expect(clear).not_to_be_visible()
+                g=search_clear_geometry(p,scope)
+                assert all(g['field'][key]==original['field'][key] for key in ('left','right','width','height')),g
+                assert p.evaluate('history.length')==history
+                assert not p.evaluate('window.__searchClearUnsafeHides.length')
+                params=parse_qs(urlsplit(p.url).fragment)
+                assert params['lens']==['chain'] and params['fixture_key']==['retained'] and params['gmi_return']==[fragment['gmi_return']]
+                if scope=='tree':
+                    assert p.url==url_before
+                    assert p.locator('.gmi-tree [aria-expanded]').evaluate_all('(nodes)=>nodes.map(n=>n.getAttribute("aria-expanded"))')==snapshot
+                    assert p.evaluate("""()=>window.__searchClearCards.every((n,i)=>document.querySelector('[data-topic-connections]').children[i]===n)""")
+                    expect(p.locator('.gmi-evidence-receipt')).to_have_attribute('open','')
+                else:
+                    assert 'q' not in params and params['open']==['all']
+                    assert p.locator('[data-gmi-index] > details').evaluate_all('(nodes)=>nodes.map(n=>n.open)')==snapshot
+
+            for action in ('click','Enter','Space'):
+                search.fill('HBM')
+                expect(clear).to_be_visible()
+                expect(clear).to_have_accessible_name('Clear search' if language=='en' else '清空搜索')
+                geometry=search_clear_geometry(p,scope)
+                search.press('Tab');expect(clear).to_be_focused()
+                p.keyboard.press('Shift+Tab');expect(search).to_be_focused()
+                before=p.evaluate('window.__searchClearEvents')
+                if action=='click':clear.click()
+                else:clear.focus();clear.press(action)
+                assert p.evaluate('window.__searchClearEvents')==before+1
+                retained()
+            search.fill('   ')
+            expect(clear).to_be_visible()
+            before=p.evaluate('window.__searchClearEvents')
+            clear.click();assert p.evaluate('window.__searchClearEvents')==before+1
+            retained()
+            # An already-empty authored action has no second input/history effect.
+            before=p.evaluate('window.__searchClearEvents')
+            clear.evaluate('(n)=>n.click()')
+            assert p.evaluate('window.__searchClearEvents')==before
+            retained()
+
+            search.fill('HBM')
+            guard=p.evaluate("""scope=>{
+              const n=document.querySelector('[data-gmi-filter="'+scope+'"]');
+              return [{isComposing:true},{keyCode:229},{consumed:true}].map(options=>{
+                const e=new KeyboardEvent('keydown',{key:'Escape',bubbles:true,cancelable:true,...options});
+                if(options.consumed)e.preventDefault();
+                n.dispatchEvent(e);return {value:n.value,prevented:e.defaultPrevented};
+              });
+            }""",scope)
+            assert all(x['value']=='HBM' for x in guard),guard
+            assert [x['prevented'] for x in guard]==[False,False,True]
+            before=p.evaluate('window.__searchClearEvents')
+            search.press('Escape')
+            assert p.evaluate('window.__searchClearEvents')==before+1
+            retained()
+
+            search.fill('HBM');clear.focus()
+            focused_url=p.url
+            other='zh' if language=='en' else 'en'
+            p.evaluate('(v)=>document.documentElement.setAttribute("data-lang",v)',other)
+            expect(clear).to_have_accessible_name('清空搜索' if other=='zh' else 'Clear search')
+            expect(clear).to_be_focused();expect(search).to_have_value('HBM')
+            assert p.url==focused_url
+            p.evaluate('(v)=>document.documentElement.setAttribute("data-lang",v)',language)
+            expect(clear).to_have_accessible_name('Clear search' if language=='en' else '清空搜索')
+            expect(clear).to_be_focused()
+            if (width,language) in ((390,'en'),(320,'zh')):
+                path=args.out/f'search-clear-{scope}-{width}-{language}-{theme}.png'
+                field.screenshot(path=str(path));report['screenshots'].append(path.name)
+            gmi_navigation_fit(p,width,language)
+
+            if scope=='index':
+                # Existing URL restoration may hide the focused suffix.
+                p.evaluate("""()=>{const q=new URLSearchParams(location.hash.slice(1));q.delete('q');history.pushState(null,'',location.pathname+location.search+'#'+q);dispatchEvent(new PopStateEvent('popstate'));}""")
+                expect(search).to_have_value('');expect(clear).not_to_be_visible();expect(search).to_be_focused()
+                assert not p.evaluate('window.__searchClearUnsafeHides.length')
+                p.go_back();expect(search).to_have_value('HBM');expect(clear).to_be_visible();expect(search).to_be_focused()
+                p.go_forward();expect(search).to_have_value('');expect(clear).not_to_be_visible();expect(search).to_be_focused()
+                brand=p.locator('.gmi-product-name');brand.focus()
+                p.evaluate("""()=>{const q=new URLSearchParams(location.hash.slice(1));q.set('q','HBM');history.replaceState(null,'',location.pathname+location.search+'#'+q);dispatchEvent(new PopStateEvent('popstate'));}""")
+                expect(clear).to_be_visible();expect(brand).to_be_focused()
+                p.evaluate("""()=>{const q=new URLSearchParams(location.hash.slice(1));q.delete('q');history.replaceState(null,'',location.pathname+location.search+'#'+q);dispatchEvent(new PopStateEvent('popstate'));}""")
+                expect(clear).not_to_be_visible();expect(brand).to_be_focused()
+                # Initial restoration precedes binding; raw whitespace must still expose Clear.
+                p.evaluate("""()=>{const q=new URLSearchParams(location.hash.slice(1));q.set('q','   ');history.replaceState(null,'',location.pathname+location.search+'#'+q);}""")
+                p.reload(wait_until='networkidle')
+                expect(search).to_have_value('   ');expect(clear).to_be_visible()
+                before_reload_clear=p.evaluate('history.length')
+                clear.click();expect(search).to_have_value('');expect(search).to_be_focused();expect(clear).not_to_be_visible()
+                assert p.evaluate('history.length')==before_reload_clear
+                params=parse_qs(urlsplit(p.url).fragment)
+                assert 'q' not in params and params['gmi_return']==[fragment['gmi_return']]
+            report.setdefault('search_clear',[]).append({'scope':scope,'width':width,'language':language,'theme':theme,'initial_geometry':original,'active_geometry':geometry,'one_input_per_activation':True,'guarded_escape':guard,'history_and_focus_verified':True})
+
+    def search_clear_static(scope, language):
+        with context(320,'light',language,java_script_enabled=False,reduced_motion='reduce') as c:
+            p=page_for(c,'gmi.html' if scope=='tree' else 'gmi-index.html')
+            if scope=='tree':p.locator('.gmi-advanced > summary').click()
+            search=p.locator('[data-gmi-filter="'+scope+'"]');field=search.locator('xpath=..')
+            clear=field.locator('[data-gmi-search-clear]')
+            assert clear.count()==1
+            expect(clear).not_to_be_visible()
+            assert not field.evaluate('(n)=>n.classList.contains("gmi-search--clearable")')
+            before=field.bounding_box()
+            search.fill('HBM');expect(clear).not_to_be_visible()
+            after=field.bounding_box()
+            assert after and before and all(after[key]==before[key] for key in ('x','width','height'))
+            links=p.locator('.gmi-tree a[data-topic-select]' if scope=='tree' else 'a.gmi-irow-name')
+            assert links.count()==371 and links.evaluate_all('(nodes)=>nodes.every(n=>n.getAttribute("href"))')
+            report.setdefault('search_clear_static',[]).append({'scope':scope,'language':language,'native_links':371,'custom_button_hidden':True,'enhancement_class_absent':True})
+
+    for scope in ('tree','index'):
+        for width in (1440,390,320):
+            for language in ('en','zh'):
+                check(f'search-clear-{scope}-{width}-{language}',lambda s=scope,w=width,l=language:search_clear_paths(s,w,l))
+        for language in ('en','zh'):
+            check(f'search-clear-static-{scope}-{language}',lambda s=scope,l=language:search_clear_static(s,l))
+    check('search-clear-tree-390-en-dark',lambda:search_clear_paths('tree',390,'en','dark'))
+    check('search-clear-index-320-zh-dark',lambda:search_clear_paths('index',320,'zh','dark'))
 
     browser.close()
 server.shutdown()

@@ -181,8 +181,20 @@ function setIndexQuery(value){
     if(active!==g&&(!summary||!summary.contains(active)))releaseIndexFocus(g);
     g.removeAttribute('open');}});isnap=null;}
 }
+/* One clear action reuses each search input's existing state and URL owner. */
+function syncSearchClear(inp){
+  var box=inp.parentElement,button=box.querySelector('[data-gmi-search-clear]');
+  if(!button||!box.classList.contains('gmi-search--clearable'))return;
+  var hidden=inp.value==='';
+  if(hidden&&button.contains(document.activeElement))inp.focus();
+  if(button.hidden!==hidden)button.hidden=hidden;
+}
+function clearSearch(inp){
+  if(!inp.value)return;
+  inp.focus();inp.value='';inp.dispatchEvent(new Event('input'));
+}
 var indexInput=document.querySelector('input[data-gmi-filter="index"]');
-function restoreIndex(){if(!indexInput)return;indexInput.value=(new URLSearchParams(location.hash.slice(1)).get('q')||'').slice(0,200);setIndexQuery(indexInput.value);}
+function restoreIndex(){if(!indexInput)return;indexInput.value=(new URLSearchParams(location.hash.slice(1)).get('q')||'').slice(0,200);setIndexQuery(indexInput.value);syncSearchClear(indexInput);}
 if(indexInput){indexInput.maxLength=200;restoreIndex();window.addEventListener('hashchange',restoreIndex);window.addEventListener('popstate',restoreIndex);}
 var inputs=[].slice.call(document.querySelectorAll('input[data-gmi-filter]'));
 inputs.forEach(function(inp){
@@ -199,9 +211,18 @@ inputs.forEach(function(inp){
       if(q){trows.forEach(function(r){if(!hit(r,q))return;for(var a=parent(r);a;a=parent(a))setOpen(a,true);});}
       else if(snap){trows.forEach(function(r,i){setOpen(r,snap[i]);});snap=null;}
       treeRender('search');
-    }});
-  inp.addEventListener('keydown',function(e){if(e.key==='Escape'&&inp.value){e.preventDefault();inp.value='';
-    inp.dispatchEvent(new Event('input'));}});
+    }
+    syncSearchClear(inp);
+  });
+  inp.addEventListener('keydown',function(e){
+    if(e.defaultPrevented||e.isComposing||e.keyCode===229)return;
+    if(e.key==='Escape'&&inp.value){e.preventDefault();clearSearch(inp);}
+  });
+  var clear=inp.parentElement.querySelector('[data-gmi-search-clear]');
+  if(clear){
+    clear.addEventListener('click',function(){clearSearch(inp);});
+    inp.parentElement.classList.add('gmi-search--clearable');syncSearchClear(inp);
+  }
 });
 /* "/" focuses the page's first search box unless the user is already typing somewhere. */
 if(inputs.length){document.addEventListener('keydown',function(e){
