@@ -18,7 +18,7 @@ related:
   live:
     - {href: /crypto.html, label: "Open the Crypto Cockpit"}
     - {href: /vector.html, label: "Open Bitcoin Vector"}
-cta: {href: "/crypto.html", label: "Open the Crypto Cockpit"}
+cta: {href: "/crypto.html", label: "Open the Crypto Cockpit", label_zh: "打开加密资产情报"}
 ---
 <p>The Crypto Intelligence Cockpit reads digital assets as a market class rather than reducing the category to one Bitcoin chart. It combines the total-market trend with a ranked asset board, capital-flow receipts, leverage, volatility, allocation and listed crypto equities.</p>
 
