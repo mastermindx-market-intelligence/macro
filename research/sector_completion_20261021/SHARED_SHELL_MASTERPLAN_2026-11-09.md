@@ -1,6 +1,6 @@
 # Sector Intelligence in Shared Shell — four-round masterplan
 
-**Revision:** 0.1 — Round 1 census and architecture amendment, 9 November 2026.  
+**Revision:** 0.2 — Rounds 1–2: source census, architecture amendment and reviewed Paper design baseline, 9 November 2026.  
 **Status:** proposed build contract under active development; not the final Fable/T3 execution packet.  
 **Parent:** Macro [#7646](https://github.com/mastermindx-market-intelligence/macro/issues/7646), operation sector-central-redesign-20260921-sol-001, WS:SECTOR-INTELLIGENCE-COMPLETION.  
 **Canonical plan family:** research/sector_completion_20261021/. This document amends the 21 October masterplan and its capability matrix; it does not create another program, lifecycle, task registry or analytical owner.
@@ -14,7 +14,7 @@ The current Chairman directive explicitly asks for four conversational rounds:
 3. Revisit and harden architecture against the designs and unresolved contracts.
 4. Freeze a final masterplan for a Fable-led team using T3 to implement end to end.
 
-This document is the persistent, progressively revised output of those rounds. The current round ends at a saved, source-linked census and actionable architecture/design brief. It does not dispatch the future Fable/T3 team, release existing held candidates, modify production code, delete a surface or claim that Paper work has already been performed.
+This document is the persistent, progressively revised output of those rounds. Round 1 established the source census and architecture/design brief. Round 2 has now produced and visually reviewed 47 editable Paper frames, their state contracts, a source-to-field map and an exact extraction manifest. The next requested turn is Round 3 architecture hardening. The planning amendment remains unmerged; design completion does not establish application production acceptance. The future Fable/T3 handoff remains Round 4.
 
 ### Amendment to the destination
 
@@ -41,7 +41,7 @@ The Chairman's current four-round boundary controls this planning session. No au
 | Mastermind protected procedure | master 3652d8907df1738de551dd3032b42aa2a2acb482; skillpack schema mastermind.sol_skillpack.v1, version 1.0.1, bootstrap major 1 |
 | Macro source and committed data | main 36ff39c98dfee8190d0a3f7aaaef9df86921226e |
 | Terminal / Shared Shell source | protected master 1377853d02fdb0295c0848d7127fdee4ca36714b |
-| Paper | Exact-file read-only census and three rendered screenshots on 9 November; identifiers in §7 |
+| Paper | Round 1: exact-file read-only census and three screenshots. Round 2: 47 new editable Frames across Product, States/help and Build in the existing R4 file; actual screenshot review and exact-root readback; §7.6 and the Round 2 guide contain the manifest. |
 | Live Beta | /sectors rendered the Shared Shell 404. Following visible Discover navigation reached /discover and a signup/sign-in gate in the unauthenticated inspection browser |
 | Verification not performed in Round 1 | No authenticated product journey, producer job, deployed source-identity proof, test rerun, release, destructive cleanup or Paper mutation |
 
@@ -399,9 +399,9 @@ These are candidate acceptance budgets, not measured claims:
 Do not optimize an unmeasured synthetic scenario at the expense of real data correctness. Use the current chart/rendering primitives before introducing dependencies.
 
 
-## 7. Paper census and the Round 2 design brief
+## 7. Paper census, design brief and completed Round 2 baseline
 
-### 7.1 Exact current file map
+### 7.1 Round 1 file map — preserved lineage
 
 | File | Identity / relevant pages | Census conclusion |
 |---|---|---|
@@ -432,7 +432,7 @@ The R4 native suite page has 35 artboards; D05 has 12; Explore/compare has 6, on
 - GMI current theme 61M-0, mobile 6DR-0, company 6VF-0 and Build 7M9-0.
 - Review-only R4 canary G4P-0 remains outside the planned editing target.
 
-### 7.3 Visual findings from actual screenshots
+### 7.3 Round 1 visual findings from actual screenshots
 
 Three screenshots were inspected: R4 Brief 19-0, R4 Market Map DSJ-0 and GMI Theme 61M-0.
 
@@ -463,11 +463,51 @@ Do not make eight near-identical variants before fixing the core reading/interac
 
 Before simplifying, capture the full original wording/semantics with file/page/node, disposition, destination and verified source readback. A screenshot or short summary alone is insufficient preservation.
 
-### 7.5 Tool readiness is narrow and current
+### 7.5 Paper carrier and target boundaries
 
 The direct Paper route returned CONNECTED, explicit target reads and screenshots. Its observed catalog accepted write_html, duplicate_nodes, text updates and several other reviewed operations; create_artboard and update_styles were marked incompatible. Round 2 must recheck affected capability before a needed mutation and use supported guarded edits. This is not a global Paper outage or permission to bypass the adapter.
 
 No Round 1 Paper modifications occurred. Re-read the exact target and relevant writers immediately before Round 2 edits; preserve disjoint target scope and any original uncertain effects. Historical “one designer per whole file” prose is not a new lease where current protected source and runtime advertise target-scoped collaboration.
+
+### 7.6 Completed Round 2 design baseline
+
+The full [Round 2 Paper build guide](https://github.com/mastermindx-market-intelligence/macro/blob/fd551b4b7dc2c0ca88b99ad47ea36bbd0c6d57a3/research/sector_completion_20261021/ROUND2_PAPER_BUILD_GUIDE_2026-11-09.md) is the exact source for extraction IDs, preservation ledger, twenty source-to-field contracts, fourteen common interaction contracts, action/return destinations, state semantics and the Round 3 evidence agenda. It was saved and read back exactly. This section records the material decisions; it does not replace that guide or the incumbent capability matrix.
+
+| New page in existing R4 file | Reviewed output | Entry |
+|---|---|---|
+| Product p-B-0 | 31 compositions: eleven desktop journeys, ten 390px mobile journeys, four Chinese/theme variants, one 768px tablet Brief and five 320px critical views | [Product](https://app.paper.design/file/01M6FAXA774QT1VRDMAG7DFQ2W/p-B-0) |
+| States/help p-C-0 | Eight state/help atlases plus five full regional, recovery and mobile-analysis views | [States/help](https://app.paper.design/file/01M6FAXA774QT1VRDMAG7DFQ2W/p-C-0) |
+| Build p-D-0 | Design map, source/interaction contracts, extraction guidance and remaining acceptance gates | [Build](https://app.paper.design/file/01M6FAXA774QT1VRDMAG7DFQ2W/p-D-0) |
+
+The new compositions are ordinary editable Frames, not artboards. Use the guide's exact node IDs rather than relying on the Paper artboards inventory. The file is still 01M6FAXA774QT1VRDMAG7DFQ2W. All previous R2/R3/R4/GMI files and nodes remain preserved, including the review-only G4P-0 canary. No separate Sector product file, token owner or lifecycle was introduced.
+
+#### Product and investigation decisions
+
+- **Brief → Explore → Research → Watches** is the four-workspace entrance. Dossiers, sector map, comparison, full Cycles, constituents, contribution, overlap and exact values remain reachable within the investigative path; simplifying the entrance does not remove their inherited obligations.
+- **Brief starts with measured context and a next action.** The dated 6 November source specimen uses Healthcare/staples leadership, 8/11 sectors ahead of SPY over 63 sessions, and Energy's different 21/63-session readings. The composition distinguishes five plotted sectors from all eleven measured. It does not turn descriptive observations into a new opportunity score or strategy.
+- **Explore supports scanning and exact comparison.** List, equal-area map, selected sector and dossier share subject context. Equal tiles do not imply market-cap weighting. Comparison discloses common return basis and scale; incompatible regional/taxonomy bases refuse only the dependent comparison.
+- **Research joins economic evidence to an exact company.** Theme/sector question, assertion, product/platform, company/listing, dated receipt and original context are connected. The retained Micron/H200 evidence is a dated planned assertion, not proof of current shipments or revenue. Missing research registration has a local unavailable state.
+- **Watches preserves the user's reasoning.** Watch membership, saved research, authored notes and condition alerts have distinct actions and outcomes. Saved capture time, market observation time and source revision differ. The pending save payload stays separate from later draft edits; status unknown cannot produce a duplicate retry.
+- **Cycles preserves analytical depth.** Price/cycle chart, confirmed turns, phase age, open leg, history, Cycle DNA, exact values, historical prior and timing remain distinguishable. Current qualification, insufficient evidence and a passed fixed window each have their own state. Historical 30 October chart data is labeled; it is not promoted to a current model.
+- **Recovery and rights are part of the product.** Partial watch/note success, unknown save, version conflict, source revision, loading, genuine zero, absence, denied access and account change have explicit compositions. Actor/access changes clear private content before recovery. Region, taxonomy, observation, basis and coverage remain local to the claim.
+
+#### Source truth that implementation must preserve
+
+The guide maps every introduced field class to an existing source or a visibly proposed contract. In particular, relative wealth uses the producer's multiplicative total-return definition; rising/priced uses advances divided by priced observations, whereas breadth percentage excludes unchanged observations. Financials has two missing one-month observations in the retained specimen. One incompatible rotation companion does not make all available rotation history stale.
+
+The measured leadership context carries display authority with may_rank=false, may_gate=false, may_size=false, may_trade=false and may_escalate=false. Paper reuses the existing descriptive source order; Round 3 must settle owner-approved display sorting versus these caps before an implementation treats the order as a ranking capability. No design label expands analytical or trading authority.
+
+The narrow cycle charts preserve the two original historical SVG series. Their re-layout is a visual transformation, not a generated time series. China/regional negative states and saved-account examples are design specimens, not observations of live service failure or real user data.
+
+#### Visual review and concrete limits
+
+All 47 compositions received actual Paper screenshot review. Page-root readbacks matched 31 Product, 13 States/help and three Build roots. Representative exact-root JSX extraction from KAP-0 succeeded with node IDs and formula intact. The exact 47 owned working indicators were released with APPLIED_RESPONSE_OBSERVED. The bounded visual and interaction critics performed reasoning only, received explicit closure, and did not act as source approvers.
+
+Rendered coverage includes 1440, 768, 390 and 320. The five 320px views are Brief MKK-0, Explore MP7-0, Compare MTE-0, Research MXQ-0 and historical cycle chart/exact values N1T-0. They use deliberate compact navigation, label/bar layouts, fitted metrics and readable value alternatives. English/Chinese and light/dark specimens are included as documented in the guide; this does not claim every language/theme/width permutation.
+
+Review corrected unsupported concentration wording, ambiguous Energy horizons, missing-data disclosure, mobile section menus, comparison legend/scale, capture versus observation date, save-recovery placement, chart-label collision and tablet active navigation. No interaction runtime, browser accessibility, authenticated route, CI, release or natural-time producer proof was claimed.
+
+**Acceptance conservation:** 47 frames is an inventory, not a completion percentage. The historical missing-state rows, 430px defects, SC-066/SC-092 source gaps, all B01–B12/P01–P23/J01–J15 obligations and all 134 capability rows still require exact evidence/disposition reconciliation. This round completes the expressly bounded design commission and creates a stronger implementation contract; it does not retire the incumbent acceptance matrix.
 
 ## 8. Shared Shell migration and retirement contract
 
@@ -578,12 +618,12 @@ Do not report completion percentages from blank fields or artboard counts. The f
 
 | Round | Output | Gate into next round |
 |---|---|---|
-| 1 — census and architecture | This 0.1 amendment, verified source frontier, route finding, Paper targets and preservation decisions | Source save/readback and a concrete Paper brief |
-| 2 — Paper design | Actual editable product/state changes, screenshots, content migration ledger and source-mapped field contract | Visual/interaction review with explicit backend mismatches; no screenshot-only completion |
+| 1 — census and architecture | Completed in revision 0.1; source frontier, route finding, Paper targets and preservation decisions retained | Exact source save/readback completed; census reused |
+| 2 — Paper design | Completed in revision 0.2: 47 editable frames, reviewed screenshots, preservation ledger, source-to-field and interaction contract, exact extraction manifest | Actual visual review and source save/readback; backend mismatches and full acceptance obligations remain explicit |
 | 3 — architecture hardening | Resolve exact query/generation/correction/entry-kind/save/alert seams, packet scopes and operational tests | No ambiguous implementation promises, no silent source/design contradictions |
 | 4 — final masterplan | Version 1.0 of this same document, resolved matrix amendments, final Paper IDs, ordered T3 packets and acceptance/release/rollback plan | Concrete source-linked Fable/T3 handoff; delivery and actual pickup/START remain distinct |
 
-**Next action for Round 2:** re-read current R4 scope HBU-0 and relevant target snapshots; inspect the existing source-mapped Build notes; begin with Brief/Explore and the selected-entity investigation in the R4 working file. Preserve R2/R3 depth, GMI evidence semantics, the review-only G4P canary and all release holds. Use the existing shell and tokens; keep implementation text in Build.
+**Next action for Round 3:** consume revision 0.2 and the exact Round 2 guide; refresh the affected route/exporter/generation candidates (Terminal #1244/#1339 and Macro #10777 with its supersession chain) and their live custody. Trace one coherent dated producer generation through the retained gateway/serializer into the intended Beta sector consumer before freezing the dependency graph. Then resolve research registration, save/revision/rights and scientific qualification against the new interaction states. Map every named destination and inherited capability to a real owner, design target, implementation action and falsifiable acceptance. Reuse the census and accepted work; do not repeat the design round or dispatch Fable before Round 4.
 
 ### Questions Round 3 must settle through evidence
 
@@ -594,31 +634,38 @@ Do not report completion percentages from blank fields or artboard counts. The f
 - What is the current native correction/supersession contract beyond none_native?
 - Which breadth/history source has genuine available-at/PIT membership, versus reconstructed current-cohort history?
 - What real data and owner-bundle witnesses admit each registry entry kind and vertical?
-- Which saved-research/watch/alert behaviors actually have durable owners and delivery receipts?
+- Which saved-research/watch/alert behaviors actually have durable owners and delivery receipts? What exact pending payload/version, request lookup and partial-success contract implements A01/A06/MS01 without duplicate effects?
+- Which source-owned descriptive sort is permissible while measured context has may_rank=false, and how does the consumer retain all authority caps?
+- How do priced, advancing, declining, unchanged and missing observations map to each distinct denominator without relabeling one as another?
+- How do correction identity, newer observations and membership changes preserve the immutable saved side without claiming unsupported causal decomposition?
+- Which actor/access generation clears private responses, drafts and thumbnails before any new-account frame appears?
+- What is the row-by-row disposition of the historical missing-state/430px defects and every new action destination, rather than a proxy based on frame counts?
 - Which scientific cells are currently qualified, prior-only, accruing, underpowered or explicitly stopped?
 - Which exact 24 anchors and public/native state encodings need compatibility proof?
 - What measured performance budget and supported population bound should be frozen?
 - Which authenticated Beta account/access path will supply the required acceptance without changing security scope?
 
-None of these questions prevents Round 2 from designing truthful available/partial/unavailable states. They prevent the final build packet from guessing.
+Round 2 supplies truthful available/partial/unavailable designs for these seams. Round 3 must resolve the contracts through source and consumer evidence so the final build packet does not guess.
 
 ## 12. Continuity and evidence disposition
 
-Round 1 is complete when this source amendment and its entrypoint are saved and read back. The four-round planning mission and product implementation remain incomplete by design. The next intended surface is the same session's Paper-design round.
+Rounds 1–2 are complete for the Chairman's expressly separated conversational scope after exact source save/readback. The four-round planning mission and product implementation remain incomplete. The next intended turn is architecture hardening (Round 3), followed by the final Fable/T3 masterplan (Round 4). Bounded Round 2 outcome: PROVEN_OUTCOME. Application production acceptance: not established.
 
 **DO_NOT_REDO:** accepted Central landing; merged Shared Shell foundation; merged research/private-publication foundation; Technology and Robotics source; accepted Leadership Rotation/replay repairs; existing native components/gateway/return owner. Do not revive Terminal [#1055](https://github.com/mastermindx-market-intelligence/mastermind-terminal/pull/1055) or Nuclear [#8002](https://github.com/mastermindx-market-intelligence/macro/pull/8002). Do not recreate the old masterplan, matrix, graph or routing registry.
 
-**Effects in this round:** source-document authoring only on the isolated plan branch; read-only GitHub/Paper and bounded public Beta navigation. No unresolved product mutation, active implementation worker, claimed release or autonomous background runner.
+**Effects across Rounds 1–2:** source-document authoring on sol/sector-shared-shell-masterplan-20261109-c3, the existing research entrypoint amendment, and new disjoint Paper pages/frames in the existing R4 file. Round 1 included bounded read-only public Beta navigation. Round 2 included no application code change, release, deployment, route deletion, Fable/Slack dispatch or autonomous background runner. All new Paper effects have observed receipts; the historical unrelated Paper operation paper-v21-current-app-board-20261103-sector-001 remains fenced to its original carrier and target.
 
 **Source custody:** current assigned session owns this new documentation amendment. Existing implementation PR writers, holds, review requirements and unknown effects retain their original owners. The plan does not retarget a STARTED worker.
 
-**Routing of this census:** principal synthesis and three reasoning specialists addressed conflicting cross-system architecture and domain semantics; they performed no source edits or runtime work. Future Fable/T3 execution is not launched.
+**Routing:** Round 1 used principal synthesis and three reasoning specialists for conflicting architecture/domain semantics. Round 2 used principal composition plus two bounded visual/interaction reasoning critics; neither child edited source or Paper, and both received explicit ACCEPTED / STOP. Future Fable/T3 execution is not launched.
 
-**Refresh policy:** preserve these pins for this census; refresh material source overlaps, candidate heads, exact Paper targets, release constraints and runtime evidence before the affected implementation. Unrelated repository movement is not a reason to repeat the entire audit.
+**Refresh policy:** preserve these pins and exact reviewed design targets as the evidence baseline. In Round 3 refresh the affected contracts, current candidate heads/custody and relevant release constraints before resolving their implementation promises. Later implementation must obtain actual served and natural-update proof. Unrelated repository movement is not a reason to repeat the entire audit.
+
+**Durable continuity:** the same branch carries the masterplan, Round 2 guide and launch-brief pointer. A dated Round 2 continuation record is proposed under the existing agentos/handoffs family; it does not change active workstream ownership, status, wave admission or an existing writer's custody. An unmerged documentation proposal is not protected-source or runtime adoption.
 
 ## Source index
 
-All blob links below are pinned. PR links are native status/implementation carriers observed during this census and must be refreshed before changing their work.
+All blob links below are pinned. PR links are native status/implementation carriers observed during Round 1 and must be refreshed before changing their work. New Round 2 design evidence is linked separately and does not refresh those PR status claims.
 
 [S01]: https://github.com/mastermindx-market-intelligence/macro/blob/36ff39c98dfee8190d0a3f7aaaef9df86921226e/research/sector_completion_20261021/MASTERPLAN_2026-10-21.md
 [S02]: https://github.com/mastermindx-market-intelligence/macro/blob/36ff39c98dfee8190d0a3f7aaaef9df86921226e/research/sector_completion_20261021/CAPABILITY_MATRIX_2026-10-21.csv
@@ -665,7 +712,14 @@ All blob links below are pinned. PR links are native status/implementation carri
 - [R4 implementation handoff](https://github.com/mastermindx-market-intelligence/macro/issues/7646#issuecomment-6618345341)
 - [Historical QA findings to reconcile](https://github.com/mastermindx-market-intelligence/macro/issues/7646#issuecomment-6656862983)
 
-### Editable design references
+### Round 2 design contract and new editable pages
+
+- [Round 2 Paper build guide — final 47-frame manifest](https://github.com/mastermindx-market-intelligence/macro/blob/fd551b4b7dc2c0ca88b99ad47ea36bbd0c6d57a3/research/sector_completion_20261021/ROUND2_PAPER_BUILD_GUIDE_2026-11-09.md)
+- [Round 2 Product](https://app.paper.design/file/01M6FAXA774QT1VRDMAG7DFQ2W/p-B-0)
+- [Round 2 States/help](https://app.paper.design/file/01M6FAXA774QT1VRDMAG7DFQ2W/p-C-0)
+- [Round 2 Build/extraction map](https://app.paper.design/file/01M6FAXA774QT1VRDMAG7DFQ2W/p-D-0)
+
+### Preserved editable design references
 
 - [R4 scope and preservation map](https://app.paper.design/file/01M6FAXA774QT1VRDMAG7DFQ2W/p-9-0)
 - [R4 native suite](https://app.paper.design/file/01M6FAXA774QT1VRDMAG7DFQ2W/p-2-0)
