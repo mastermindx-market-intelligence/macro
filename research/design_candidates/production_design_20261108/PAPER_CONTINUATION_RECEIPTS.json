@@ -3383,5 +3383,989 @@
         }
       ]
     }
+  },
+  {
+    "operation_id": "paper-audit-next-228-returns-evidence-link",
+    "fileId": "01M6Y39WH7QVTH07RTWHTSRP65",
+    "tool": "set_text_content",
+    "targets": [
+      "1CY-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y39WH7QVTH07RTWHTSRP65\",\n    \"name\": \"Mastermind - Returns Calendar - Terminal and Dossier\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"updates\": [\n    {\n      \"nodeId\": \"1CY-0\"\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-229-returns-finish-footer",
+    "fileId": "01M6Y39WH7QVTH07RTWHTSRP65",
+    "tool": "finish_working_on_nodes",
+    "targets": [
+      "1CY-0",
+      "1CV-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y39WH7QVTH07RTWHTSRP65\",\n    \"name\": \"Mastermind - Returns Calendar - Terminal and Dossier\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "OK"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-230-confluence-copy",
+    "fileId": "01M6Y3DCDDW541ZR38J1V52A9Y",
+    "tool": "set_text_content",
+    "targets": [
+      "Z1-0",
+      "Z2-0",
+      "Z4-0",
+      "Y1-0",
+      "YX-0",
+      "Z7-0",
+      "Z8-0",
+      "Z9-0",
+      "14F-0",
+      "14G-0",
+      "14I-0",
+      "13F-0",
+      "14B-0",
+      "14L-0",
+      "14M-0",
+      "14N-0",
+      "1J8-0",
+      "1J9-0",
+      "1JB-0",
+      "1I8-0",
+      "1J4-0",
+      "1JE-0",
+      "1JF-0",
+      "1JG-0",
+      "1O1-0",
+      "1O2-0",
+      "1O4-0",
+      "1N1-0",
+      "1NX-0",
+      "1O7-0",
+      "1O8-0",
+      "1O9-0",
+      "195-0",
+      "196-0",
+      "198-0",
+      "183-0",
+      "191-0",
+      "19B-0",
+      "19C-0",
+      "19D-0",
+      "1X9-0",
+      "1XA-0",
+      "1XC-0",
+      "1W7-0",
+      "1X5-0",
+      "1XF-0",
+      "1XG-0",
+      "1XH-0",
+      "1SF-0",
+      "1SG-0",
+      "1SI-0",
+      "1RD-0",
+      "1SB-0",
+      "1SL-0",
+      "1SM-0",
+      "1SN-0",
+      "1DZ-0",
+      "1E0-0",
+      "1E2-0",
+      "1CX-0",
+      "1DV-0",
+      "1E5-0",
+      "1E6-0",
+      "1E7-0",
+      "WX-0",
+      "12B-0",
+      "1Z6-0",
+      "1ZH-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3DCDDW541ZR38J1V52A9Y\",\n    \"name\": \"Mastermind - Confluence Screener - R2 and Governed References\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"updates\": [\n    {\n      \"nodeId\": \"Z1-0\"\n    },\n    {\n      \"nodeId\": \"Z2-0\"\n    },\n    {\n      \"nodeId\": \"Z4-0\"\n    },\n    {\n      \"nodeId\": \"Y1-0\"\n    },\n    {\n      \"nodeId\": \"YX-0\"\n    },\n    {\n      \"nodeId\": \"Z7-0\"\n    },\n    {\n      \"nodeId\": \"Z8-0\"\n    },\n    {\n      \"nodeId\": \"Z9-0\"\n    },\n    {\n      \"nodeId\": \"14F-0\"\n    },\n    {\n      \"nodeId\": \"14G-0\"\n    },\n    {\n      \"nodeId\": \"14I-0\"\n    },\n    {\n      \"nodeId\": \"13F-0\"\n    },\n    {\n      \"nodeId\": \"14B-0\"\n    },\n    {\n      \"nodeId\": \"14L-0\"\n    },\n    {\n      \"nodeId\": \"14M-0\"\n    },\n    {\n      \"nodeId\": \"14N-0\"\n    },\n    {\n      \"nodeId\": \"1J8-0\"\n    },\n    {\n      \"nodeId\": \"1J9-0\"\n    },\n    {\n      \"nodeId\": \"1JB-0\"\n    },\n    {\n      \"nodeId\": \"1I8-0\"\n    },\n    {\n      \"nodeId\": \"1J4-0\"\n    },\n    {\n      \"nodeId\": \"1JE-0\"\n    },\n    {\n      \"nodeId\": \"1JF-0\"\n    },\n    {\n      \"nodeId\": \"1JG-0\"\n    },\n    {\n      \"nodeId\": \"1O1-0\"\n    },\n    {\n      \"nodeId\": \"1O2-0\"\n    },\n    {\n      \"nodeId\": \"1O4-0\"\n    },\n    {\n      \"nodeId\": \"1N1-0\"\n    },\n    {\n      \"nodeId\": \"1NX-0\"\n    },\n    {\n      \"nodeId\": \"1O7-0\"\n    },\n    {\n      \"nodeId\": \"1O8-0\"\n    },\n    {\n      \"nodeId\": \"1O9-0\"\n    },\n    {\n      \"nodeId\": \"195-0\"\n    },\n    {\n      \"nodeId\": \"196-0\"\n    },\n    {\n      \"nodeId\": \"198-0\"\n    },\n    {\n      \"nodeId\": \"183-0\"\n    },\n    {\n      \"nodeId\": \"191-0\"\n    },\n    {\n      \"nodeId\": \"19B-0\"\n    },\n    {\n      \"nodeId\": \"19C-0\"\n    },\n    {\n      \"nodeId\": \"19D-0\"\n    },\n    {\n      \"nodeId\": \"1X9-0\"\n    },\n    {\n      \"nodeId\": \"1XA-0\"\n    },\n    {\n      \"nodeId\": \"1XC-0\"\n    },\n    {\n      \"nodeId\": \"1W7-0\"\n    },\n    {\n      \"nodeId\": \"1X5-0\"\n    },\n    {\n      \"nodeId\": \"1XF-0\"\n    },\n    {\n      \"nodeId\": \"1XG-0\"\n    },\n    {\n      \"nodeId\": \"1XH-0\"\n    },\n    {\n      \"nodeId\": \"1SF-0\"\n    },\n    {\n      \"nodeId\": \"1SG-0\"\n    },\n    {\n      \"nodeId\": \"1SI-0\"\n    },\n    {\n      \"nodeId\": \"1RD-0\"\n    },\n    {\n      \"nodeId\": \"1SB-0\"\n    },\n    {\n      \"nodeId\": \"1SL-0\"\n    },\n    {\n      \"nodeId\": \"1SM-0\"\n    },\n    {\n      \"nodeId\": \"1SN-0\"\n    },\n    {\n      \"nodeId\": \"1DZ-0\"\n    },\n    {\n      \"nodeId\": \"1E0-0\"\n    },\n    {\n      \"nodeId\": \"1E2-0\"\n    },\n    {\n      \"nodeId\": \"1CX-0\"\n    },\n    {\n      \"nodeId\": \"1DV-0\"\n    },\n    {\n      \"nodeId\": \"1E5-0\"\n    },\n    {\n      \"nodeId\": \"1E6-0\"\n    },\n    {\n      \"nodeId\": \"1E7-0\"\n    },\n    {\n      \"nodeId\": \"WX-0\"\n    },\n    {\n      \"nodeId\": \"12B-0\"\n    },\n    {\n      \"nodeId\": \"1Z6-0\"\n    },\n    {\n      \"nodeId\": \"1ZH-0\"\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-231-confluence-main-cta",
+    "fileId": "01M6Y3DCDDW541ZR38J1V52A9Y",
+    "tool": "write_html",
+    "targets": [
+      "YZ-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3DCDDW541ZR38J1V52A9Y\",\n    \"name\": \"Mastermind - Confluence Screener - R2 and Governed References\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"2BR-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2BS-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2BT-0\",\n      \"name\": \"Continue your resear…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2BU-0\",\n      \"name\": \"Open Mastermind; sto…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2BV-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2BW-0\",\n      \"name\": \"Open Mastermind →\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-232-confluence-main-cta",
+    "fileId": "01M6Y3DCDDW541ZR38J1V52A9Y",
+    "tool": "write_html",
+    "targets": [
+      "14D-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3DCDDW541ZR38J1V52A9Y\",\n    \"name\": \"Mastermind - Confluence Screener - R2 and Governed References\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"2BY-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2BZ-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2C0-0\",\n      \"name\": \"Continue your resear…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2C1-0\",\n      \"name\": \"Open Mastermind; sto…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2C2-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2C3-0\",\n      \"name\": \"Open Mastermind →\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-233-confluence-main-cta",
+    "fileId": "01M6Y3DCDDW541ZR38J1V52A9Y",
+    "tool": "write_html",
+    "targets": [
+      "1J6-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3DCDDW541ZR38J1V52A9Y\",\n    \"name\": \"Mastermind - Confluence Screener - R2 and Governed References\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"2C5-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2C6-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2C7-0\",\n      \"name\": \"继续研究\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2C8-0\",\n      \"name\": \"前往 Mastermind，股票访问权限…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2C9-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2CA-0\",\n      \"name\": \"打开 Mastermind →\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-234-confluence-main-cta",
+    "fileId": "01M6Y3DCDDW541ZR38J1V52A9Y",
+    "tool": "write_html",
+    "targets": [
+      "1NZ-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3DCDDW541ZR38J1V52A9Y\",\n    \"name\": \"Mastermind - Confluence Screener - R2 and Governed References\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"2CC-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2CD-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2CE-0\",\n      \"name\": \"继续研究\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2CF-0\",\n      \"name\": \"前往 Mastermind，股票访问权限…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2CG-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2CH-0\",\n      \"name\": \"打开 Mastermind →\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-235-confluence-main-cta",
+    "fileId": "01M6Y3DCDDW541ZR38J1V52A9Y",
+    "tool": "write_html",
+    "targets": [
+      "193-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3DCDDW541ZR38J1V52A9Y\",\n    \"name\": \"Mastermind - Confluence Screener - R2 and Governed References\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"2CJ-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2CK-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2CL-0\",\n      \"name\": \"Continue your resear…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2CM-0\",\n      \"name\": \"Open Mastermind; sto…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2CN-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2CO-0\",\n      \"name\": \"Open Mastermind →\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-236-confluence-main-cta",
+    "fileId": "01M6Y3DCDDW541ZR38J1V52A9Y",
+    "tool": "write_html",
+    "targets": [
+      "1X7-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3DCDDW541ZR38J1V52A9Y\",\n    \"name\": \"Mastermind - Confluence Screener - R2 and Governed References\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"2CQ-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2CR-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2CS-0\",\n      \"name\": \"Continue your resear…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2CT-0\",\n      \"name\": \"Open Mastermind; sto…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2CU-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2CV-0\",\n      \"name\": \"Open Mastermind →\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-237-confluence-main-cta",
+    "fileId": "01M6Y3DCDDW541ZR38J1V52A9Y",
+    "tool": "write_html",
+    "targets": [
+      "1SD-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3DCDDW541ZR38J1V52A9Y\",\n    \"name\": \"Mastermind - Confluence Screener - R2 and Governed References\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"2CX-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2CY-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2CZ-0\",\n      \"name\": \"继续研究\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2D0-0\",\n      \"name\": \"前往 Mastermind，股票访问权限…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2D1-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2D2-0\",\n      \"name\": \"打开 Mastermind →\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-238-confluence-main-cta",
+    "fileId": "01M6Y3DCDDW541ZR38J1V52A9Y",
+    "tool": "write_html",
+    "targets": [
+      "1DX-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3DCDDW541ZR38J1V52A9Y\",\n    \"name\": \"Mastermind - Confluence Screener - R2 and Governed References\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"2D4-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2D5-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2D6-0\",\n      \"name\": \"继续研究\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2D7-0\",\n      \"name\": \"前往 Mastermind，股票访问权限…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2D8-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2D9-0\",\n      \"name\": \"打开 Mastermind →\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-239-confluence-card-cta",
+    "fileId": "01M6Y3DCDDW541ZR38J1V52A9Y",
+    "tool": "write_html",
+    "targets": [
+      "Y0-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3DCDDW541ZR38J1V52A9Y\",\n    \"name\": \"Mastermind - Confluence Screener - R2 and Governed References\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"2DB-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2DC-0\",\n      \"name\": \"Open Mastermind →\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-240-confluence-card-cta",
+    "fileId": "01M6Y3DCDDW541ZR38J1V52A9Y",
+    "tool": "write_html",
+    "targets": [
+      "YW-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3DCDDW541ZR38J1V52A9Y\",\n    \"name\": \"Mastermind - Confluence Screener - R2 and Governed References\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"2DE-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2DF-0\",\n      \"name\": \"Open Mastermind →\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-241-confluence-card-cta",
+    "fileId": "01M6Y3DCDDW541ZR38J1V52A9Y",
+    "tool": "write_html",
+    "targets": [
+      "13E-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3DCDDW541ZR38J1V52A9Y\",\n    \"name\": \"Mastermind - Confluence Screener - R2 and Governed References\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"2DH-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2DI-0\",\n      \"name\": \"Open Mastermind →\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-242-confluence-card-cta",
+    "fileId": "01M6Y3DCDDW541ZR38J1V52A9Y",
+    "tool": "write_html",
+    "targets": [
+      "14A-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3DCDDW541ZR38J1V52A9Y\",\n    \"name\": \"Mastermind - Confluence Screener - R2 and Governed References\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"2DK-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2DL-0\",\n      \"name\": \"Open Mastermind →\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-243-confluence-card-cta",
+    "fileId": "01M6Y3DCDDW541ZR38J1V52A9Y",
+    "tool": "write_html",
+    "targets": [
+      "1I7-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3DCDDW541ZR38J1V52A9Y\",\n    \"name\": \"Mastermind - Confluence Screener - R2 and Governed References\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"2DN-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2DO-0\",\n      \"name\": \"打开 Mastermind →\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-244-confluence-card-cta",
+    "fileId": "01M6Y3DCDDW541ZR38J1V52A9Y",
+    "tool": "write_html",
+    "targets": [
+      "1J3-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3DCDDW541ZR38J1V52A9Y\",\n    \"name\": \"Mastermind - Confluence Screener - R2 and Governed References\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"2DQ-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2DR-0\",\n      \"name\": \"打开 Mastermind →\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-245-confluence-card-cta",
+    "fileId": "01M6Y3DCDDW541ZR38J1V52A9Y",
+    "tool": "write_html",
+    "targets": [
+      "1N0-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3DCDDW541ZR38J1V52A9Y\",\n    \"name\": \"Mastermind - Confluence Screener - R2 and Governed References\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"2DT-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2DU-0\",\n      \"name\": \"打开 Mastermind →\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-246-confluence-card-cta",
+    "fileId": "01M6Y3DCDDW541ZR38J1V52A9Y",
+    "tool": "write_html",
+    "targets": [
+      "1NW-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3DCDDW541ZR38J1V52A9Y\",\n    \"name\": \"Mastermind - Confluence Screener - R2 and Governed References\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"2DW-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2DX-0\",\n      \"name\": \"打开 Mastermind →\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-247-confluence-mobile-card-cta",
+    "fileId": "01M6Y3DCDDW541ZR38J1V52A9Y",
+    "tool": "write_html",
+    "targets": [
+      "180-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3DCDDW541ZR38J1V52A9Y\",\n    \"name\": \"Mastermind - Confluence Screener - R2 and Governed References\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"2DZ-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2E0-0\",\n      \"name\": \"Public match count n…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2E1-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2E2-0\",\n      \"name\": \"Open Mastermind →\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-248-confluence-mobile-card-cta",
+    "fileId": "01M6Y3DCDDW541ZR38J1V52A9Y",
+    "tool": "write_html",
+    "targets": [
+      "18Y-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3DCDDW541ZR38J1V52A9Y\",\n    \"name\": \"Mastermind - Confluence Screener - R2 and Governed References\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"2E4-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2E5-0\",\n      \"name\": \"Public match count n…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2E6-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2E7-0\",\n      \"name\": \"Open Mastermind →\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-249-confluence-mobile-card-cta",
+    "fileId": "01M6Y3DCDDW541ZR38J1V52A9Y",
+    "tool": "write_html",
+    "targets": [
+      "1W4-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3DCDDW541ZR38J1V52A9Y\",\n    \"name\": \"Mastermind - Confluence Screener - R2 and Governed References\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"2E9-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2EA-0\",\n      \"name\": \"Public match count n…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2EB-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2EC-0\",\n      \"name\": \"Open Mastermind →\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-250-confluence-mobile-card-cta",
+    "fileId": "01M6Y3DCDDW541ZR38J1V52A9Y",
+    "tool": "write_html",
+    "targets": [
+      "1X2-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3DCDDW541ZR38J1V52A9Y\",\n    \"name\": \"Mastermind - Confluence Screener - R2 and Governed References\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"2EE-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2EF-0\",\n      \"name\": \"Public match count n…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2EG-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2EH-0\",\n      \"name\": \"Open Mastermind →\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-251-confluence-mobile-card-cta",
+    "fileId": "01M6Y3DCDDW541ZR38J1V52A9Y",
+    "tool": "write_html",
+    "targets": [
+      "1RA-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3DCDDW541ZR38J1V52A9Y\",\n    \"name\": \"Mastermind - Confluence Screener - R2 and Governed References\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"2EJ-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2EK-0\",\n      \"name\": \"公开匹配数量未载入\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2EL-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2EM-0\",\n      \"name\": \"打开 Mastermind →\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-252-confluence-mobile-card-cta",
+    "fileId": "01M6Y3DCDDW541ZR38J1V52A9Y",
+    "tool": "write_html",
+    "targets": [
+      "1S8-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3DCDDW541ZR38J1V52A9Y\",\n    \"name\": \"Mastermind - Confluence Screener - R2 and Governed References\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"2EO-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2EP-0\",\n      \"name\": \"公开匹配数量未载入\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2EQ-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2ER-0\",\n      \"name\": \"打开 Mastermind →\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-253-confluence-mobile-card-cta",
+    "fileId": "01M6Y3DCDDW541ZR38J1V52A9Y",
+    "tool": "write_html",
+    "targets": [
+      "1CU-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3DCDDW541ZR38J1V52A9Y\",\n    \"name\": \"Mastermind - Confluence Screener - R2 and Governed References\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"2ET-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2EU-0\",\n      \"name\": \"公开匹配数量未载入\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2EV-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2EW-0\",\n      \"name\": \"打开 Mastermind →\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-254-confluence-mobile-card-cta",
+    "fileId": "01M6Y3DCDDW541ZR38J1V52A9Y",
+    "tool": "write_html",
+    "targets": [
+      "1DS-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3DCDDW541ZR38J1V52A9Y\",\n    \"name\": \"Mastermind - Confluence Screener - R2 and Governed References\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"2EY-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2EZ-0\",\n      \"name\": \"公开匹配数量未载入\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2F0-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2F1-0\",\n      \"name\": \"打开 Mastermind →\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-255-confluence-method-disclosure",
+    "fileId": "01M6Y3DCDDW541ZR38J1V52A9Y",
+    "tool": "write_html",
+    "targets": [
+      "Z5-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3DCDDW541ZR38J1V52A9Y\",\n    \"name\": \"Mastermind - Confluence Screener - R2 and Governed References\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"2F3-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2F4-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2F5-0\",\n      \"name\": \"How this shortlist w…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2F6-0\",\n      \"name\": \"Method, samples and …\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2F7-0\",\n      \"name\": \"⌄\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-256-confluence-method-disclosure",
+    "fileId": "01M6Y3DCDDW541ZR38J1V52A9Y",
+    "tool": "write_html",
+    "targets": [
+      "14J-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3DCDDW541ZR38J1V52A9Y\",\n    \"name\": \"Mastermind - Confluence Screener - R2 and Governed References\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"2F9-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2FA-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2FB-0\",\n      \"name\": \"How this shortlist w…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2FC-0\",\n      \"name\": \"Method, samples and …\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2FD-0\",\n      \"name\": \"⌄\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-257-confluence-method-disclosure",
+    "fileId": "01M6Y3DCDDW541ZR38J1V52A9Y",
+    "tool": "write_html",
+    "targets": [
+      "1JC-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3DCDDW541ZR38J1V52A9Y\",\n    \"name\": \"Mastermind - Confluence Screener - R2 and Governed References\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"2FF-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2FG-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2FH-0\",\n      \"name\": \"信号组合说明\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2FI-0\",\n      \"name\": \"方法、样本与局限\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2FJ-0\",\n      \"name\": \"⌄\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-258-confluence-method-disclosure",
+    "fileId": "01M6Y3DCDDW541ZR38J1V52A9Y",
+    "tool": "write_html",
+    "targets": [
+      "1O5-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3DCDDW541ZR38J1V52A9Y\",\n    \"name\": \"Mastermind - Confluence Screener - R2 and Governed References\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"2FL-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2FM-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2FN-0\",\n      \"name\": \"信号组合说明\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2FO-0\",\n      \"name\": \"方法、样本与局限\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2FP-0\",\n      \"name\": \"⌄\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-259-confluence-method-disclosure",
+    "fileId": "01M6Y3DCDDW541ZR38J1V52A9Y",
+    "tool": "write_html",
+    "targets": [
+      "199-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3DCDDW541ZR38J1V52A9Y\",\n    \"name\": \"Mastermind - Confluence Screener - R2 and Governed References\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"2FR-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2FS-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2FT-0\",\n      \"name\": \"How this shortlist w…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2FU-0\",\n      \"name\": \"Method, samples and …\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2FV-0\",\n      \"name\": \"⌄\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-260-confluence-method-disclosure",
+    "fileId": "01M6Y3DCDDW541ZR38J1V52A9Y",
+    "tool": "write_html",
+    "targets": [
+      "1XD-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3DCDDW541ZR38J1V52A9Y\",\n    \"name\": \"Mastermind - Confluence Screener - R2 and Governed References\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"2FX-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2FY-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2FZ-0\",\n      \"name\": \"How this shortlist w…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2G0-0\",\n      \"name\": \"Method, samples and …\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2G1-0\",\n      \"name\": \"⌄\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-261-confluence-method-disclosure",
+    "fileId": "01M6Y3DCDDW541ZR38J1V52A9Y",
+    "tool": "write_html",
+    "targets": [
+      "1SJ-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3DCDDW541ZR38J1V52A9Y\",\n    \"name\": \"Mastermind - Confluence Screener - R2 and Governed References\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"2G3-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2G4-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2G5-0\",\n      \"name\": \"信号组合说明\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2G6-0\",\n      \"name\": \"方法、样本与局限\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2G7-0\",\n      \"name\": \"⌄\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-262-confluence-method-disclosure",
+    "fileId": "01M6Y3DCDDW541ZR38J1V52A9Y",
+    "tool": "write_html",
+    "targets": [
+      "1E3-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3DCDDW541ZR38J1V52A9Y\",\n    \"name\": \"Mastermind - Confluence Screener - R2 and Governed References\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"2G9-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2GA-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2GB-0\",\n      \"name\": \"信号组合说明\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2GC-0\",\n      \"name\": \"方法、样本与局限\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2GD-0\",\n      \"name\": \"⌄\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-263-confluence-mobile-card-header",
+    "fileId": "01M6Y3DCDDW541ZR38J1V52A9Y",
+    "tool": "write_html",
+    "targets": [
+      "167-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3DCDDW541ZR38J1V52A9Y\",\n    \"name\": \"Mastermind - Confluence Screener - R2 and Governed References\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"2GF-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2GG-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2GH-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2GI-0\",\n      \"name\": \"#1\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2GJ-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2GK-0\",\n      \"name\": \"Representative combi…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2GL-0\",\n      \"name\": \"Signal label/date no…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2GM-0\",\n      \"name\": \"Rank 1 · Validation Pair\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2GN-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2GO-0\",\n      \"name\": \"—\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2GP-0\",\n      \"name\": \"Recent · sample not …\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2GQ-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2GR-0\",\n      \"name\": \"—\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2GS-0\",\n      \"name\": \"Older · sample not l…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-264-confluence-mobile-card-header",
+    "fileId": "01M6Y3DCDDW541ZR38J1V52A9Y",
+    "tool": "write_html",
+    "targets": [
+      "1UB-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3DCDDW541ZR38J1V52A9Y\",\n    \"name\": \"Mastermind - Confluence Screener - R2 and Governed References\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"2GU-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2GV-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2GW-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2GX-0\",\n      \"name\": \"#1\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2GY-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2GZ-0\",\n      \"name\": \"Representative combi…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2H0-0\",\n      \"name\": \"Signal label/date no…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2H1-0\",\n      \"name\": \"Rank 1 · Validation Pair\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2H2-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2H3-0\",\n      \"name\": \"—\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2H4-0\",\n      \"name\": \"Recent · sample not …\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2H5-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2H6-0\",\n      \"name\": \"—\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2H7-0\",\n      \"name\": \"Older · sample not l…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-265-confluence-mobile-card-header",
+    "fileId": "01M6Y3DCDDW541ZR38J1V52A9Y",
+    "tool": "write_html",
+    "targets": [
+      "1PH-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3DCDDW541ZR38J1V52A9Y\",\n    \"name\": \"Mastermind - Confluence Screener - R2 and Governed References\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"2H9-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2HA-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2HB-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2HC-0\",\n      \"name\": \"#1\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2HD-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2HE-0\",\n      \"name\": \"代表性信号组合\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2HF-0\",\n      \"name\": \"组合名称和日期须由已验证数据提供\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2HG-0\",\n      \"name\": \"第 1 名 · 验证对\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2HH-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2HI-0\",\n      \"name\": \"—\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2HJ-0\",\n      \"name\": \"近期 · 样本未载入\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2HK-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2HL-0\",\n      \"name\": \"—\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2HM-0\",\n      \"name\": \"较早时期 · 样本未载入\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-266-confluence-mobile-card-header",
+    "fileId": "01M6Y3DCDDW541ZR38J1V52A9Y",
+    "tool": "write_html",
+    "targets": [
+      "1B1-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3DCDDW541ZR38J1V52A9Y\",\n    \"name\": \"Mastermind - Confluence Screener - R2 and Governed References\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"2HO-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2HP-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2HQ-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2HR-0\",\n      \"name\": \"#1\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2HS-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2HT-0\",\n      \"name\": \"代表性信号组合\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2HU-0\",\n      \"name\": \"组合名称和日期须由已验证数据提供\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2HV-0\",\n      \"name\": \"第 1 名 · 验证对\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2HW-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2HX-0\",\n      \"name\": \"—\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2HY-0\",\n      \"name\": \"近期 · 样本未载入\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2HZ-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2I0-0\",\n      \"name\": \"—\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2I1-0\",\n      \"name\": \"较早时期 · 样本未载入\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-267-confluence-build-delta",
+    "fileId": "01M6Y3DCDDW541ZR38J1V52A9Y",
+    "tool": "write_html",
+    "targets": [
+      "2AG-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3DCDDW541ZR38J1V52A9Y\",\n    \"name\": \"Mastermind - Confluence Screener - R2 and Governed References\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"createdNodes\": [\n    {\n      \"id\": \"2I3-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2I4-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2I5-0\",\n      \"name\": \"R4 · CONTROLS + SNAP…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2I6-0\",\n      \"name\": \"Keep the evidence an…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2I7-0\",\n      \"name\": \"Extends the R3 contr…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2I8-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2I9-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2IA-0\",\n      \"name\": \"SVG\",\n      \"component\": \"SVG\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2IB-0\",\n      \"name\": \"Rect\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2IC-0\",\n      \"name\": \"Group\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2ID-0\",\n      \"name\": \"Rect\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2IE-0\",\n      \"name\": \"EXISTING ARTIFACT\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2IF-0\",\n      \"name\": \"One source snapshot\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2IG-0\",\n      \"name\": \"Fingerprint + resolv…\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2IH-0\",\n      \"name\": \"Display rank stays u…\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2II-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2IJ-0\",\n      \"name\": \"Rect\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2IK-0\",\n      \"name\": \"Public card + expect…\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2IL-0\",\n      \"name\": \"Evidence, counts and…\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2IM-0\",\n      \"name\": \"Rect\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2IN-0\",\n      \"name\": \"Protected ticker pay…\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2IO-0\",\n      \"name\": \"Same fingerprint and…\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2IP-0\",\n      \"name\": \"Path\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2IQ-0\",\n      \"name\": \"Rect\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2IR-0\",\n      \"name\": \"RECONCILE BEFORE REP…\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2IS-0\",\n      \"name\": \"Every expected row m…\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2IT-0\",\n      \"name\": \"Generation · recipe …\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2IU-0\",\n      \"name\": \"Mismatch → retain th…\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2IV-0\",\n      \"name\": \"Contract diagram • n…\",\n      \"component\": \"SVGVisualElement\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2IW-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2IX-0\",\n      \"name\": \"01 · REPRODUCED SOUR…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2IY-0\",\n      \"name\": \"An ordinal ID is not…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2IZ-0\",\n      \"name\": \"The miner assigns L0…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2J0-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2J1-0\",\n      \"name\": \"02 · ONE EXISTING BU…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2J2-0\",\n      \"name\": \"Bind both projection…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2J3-0\",\n      \"name\": \"In scripts/build_con…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2J4-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2J5-0\",\n      \"name\": \"03 · ONE EXISTING HY…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2J6-0\",\n      \"name\": \"Validate everything …\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2J7-0\",\n      \"name\": \"Require schema, fing…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2J8-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2J9-0\",\n      \"name\": \"04 · COMPATIBILITY I…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2JA-0\",\n      \"name\": \"Reject unbound versi…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2JB-0\",\n      \"name\": \"A new schema for thi…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2JC-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2JD-0\",\n      \"name\": \"05 · CONTROL CONTRAC…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2JE-0\",\n      \"name\": \"Open the app; disclo…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2JF-0\",\n      \"name\": \"All R2 app links say…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2JG-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2JH-0\",\n      \"name\": \"06 · ACCEPTANCE\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2JI-0\",\n      \"name\": \"Mixed generations mu…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2JJ-0\",\n      \"name\": \"Test matching contro…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2JK-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2JL-0\",\n      \"name\": \"320px · first-card r…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2JM-0\",\n      \"name\": \"Layout specimens onl…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2JN-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2JO-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2JP-0\",\n      \"name\": \"EN · 320PX\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2JQ-0\",\n      \"name\": \"Mobile Free Result\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2JR-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2JS-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2JT-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2JU-0\",\n      \"name\": \"#1\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2JV-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2JW-0\",\n      \"name\": \"Representative combi…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2JX-0\",\n      \"name\": \"Signal label/date no…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2JY-0\",\n      \"name\": \"Rank 1 · Validation Pair\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2JZ-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2K0-0\",\n      \"name\": \"—\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2K1-0\",\n      \"name\": \"Recent · sample not …\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2K2-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2K3-0\",\n      \"name\": \"—\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2K4-0\",\n      \"name\": \"Older · sample not l…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2K5-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2K6-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2K7-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2K8-0\",\n      \"name\": \"D\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2K9-0\",\n      \"name\": \"Daily leg · not load…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2KA-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2KB-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2KC-0\",\n      \"name\": \"W\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2KD-0\",\n      \"name\": \"Weekly leg · not loa…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2KE-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2KF-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2KG-0\",\n      \"name\": \"+\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2KH-0\",\n      \"name\": \"Additional leg · not…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2KI-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2KJ-0\",\n      \"name\": \"History, win rates a…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2KK-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2KL-0\",\n      \"name\": \"DEMO\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2KM-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2KN-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2KO-0\",\n      \"name\": \"Continue your resear…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2KP-0\",\n      \"name\": \"Open Mastermind; sto…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2KQ-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2KR-0\",\n      \"name\": \"Open Mastermind →\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2KS-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2KT-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2KU-0\",\n      \"name\": \"How this shortlist w…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2KV-0\",\n      \"name\": \"Method, samples and …\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2KW-0\",\n      \"name\": \"⌄\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2KX-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2KY-0\",\n      \"name\": \"中文 · 320PX\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2KZ-0\",\n      \"name\": \"Mobile Free Result\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2L0-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2L1-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2L2-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2L3-0\",\n      \"name\": \"#1\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2L4-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2L5-0\",\n      \"name\": \"代表性信号组合\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2L6-0\",\n      \"name\": \"组合名称和日期须由已验证数据提供\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2L7-0\",\n      \"name\": \"第 1 名 · 验证对\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2L8-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2L9-0\",\n      \"name\": \"—\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2LA-0\",\n      \"name\": \"近期 · 样本未载入\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2LB-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2LC-0\",\n      \"name\": \"—\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2LD-0\",\n      \"name\": \"较早时期 · 样本未载入\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2LE-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2LF-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2LG-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2LH-0\",\n      \"name\": \"D\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2LI-0\",\n      \"name\": \"日线条件 · 数据未载入\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2LJ-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2LK-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2LL-0\",\n      \"name\": \"W\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2LM-0\",\n      \"name\": \"周线条件 · 数据未载入\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2LN-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2LO-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2LP-0\",\n      \"name\": \"+\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2LQ-0\",\n      \"name\": \"其他条件 · 数据未载入\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2LR-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2LS-0\",\n      \"name\": \"历史频次、胜率和跨期证据：未载入\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2LT-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2LU-0\",\n      \"name\": \"DEMO\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2LV-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2LW-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2LX-0\",\n      \"name\": \"继续研究\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2LY-0\",\n      \"name\": \"前往 Mastermind，股票访问权限…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2LZ-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2M0-0\",\n      \"name\": \"打开 Mastermind →\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2M1-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2M2-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2M3-0\",\n      \"name\": \"信号组合说明\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2M4-0\",\n      \"name\": \"方法、样本与局限\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2M5-0\",\n      \"name\": \"⌄\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2M6-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2M7-0\",\n      \"name\": \"PROOF BOUNDARY\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2M8-0\",\n      \"name\": \"Source characterizat…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2M9-0\",\n      \"name\": \"verify_confluence_hy…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2MA-0\",\n      \"name\": \"Frame\",\n      \"component\": \"Frame\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2MB-0\",\n      \"name\": \"SOURCE · Macro aec7f…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2MC-0\",\n      \"name\": \"https://github.com/m…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2MD-0\",\n      \"name\": \"https://github.com/m…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2ME-0\",\n      \"name\": \"https://github.com/m…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    },\n    {\n      \"id\": \"2MF-0\",\n      \"name\": \"Evidence packet: res…\",\n      \"component\": \"Text\",\n      \"worldX\": null,\n      \"worldY\": null,\n      \"x\": null,\n      \"y\": null\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-268-confluence-builder-navigation",
+    "fileId": "01M6Y3DCDDW541ZR38J1V52A9Y",
+    "tool": "set_text_content",
+    "targets": [
+      "226-0",
+      "20Q-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3DCDDW541ZR38J1V52A9Y\",\n    \"name\": \"Mastermind - Confluence Screener - R2 and Governed References\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"updates\": [\n    {\n      \"nodeId\": \"226-0\"\n    },\n    {\n      \"nodeId\": \"20Q-0\"\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-269-confluence-names",
+    "fileId": "01M6Y3DCDDW541ZR38J1V52A9Y",
+    "tool": "rename_nodes",
+    "targets": [
+      "2I3-0",
+      "2JO-0",
+      "2KX-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3DCDDW541ZR38J1V52A9Y\",\n    \"name\": \"Mastermind - Confluence Screener - R2 and Governed References\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "{\n  \"updates\": [\n    {\n      \"nodeId\": \"2I3-0\",\n      \"name\": \"R4 · Hydration identity + controls\"\n    },\n    {\n      \"nodeId\": \"2JO-0\",\n      \"name\": \"320 EN · Confluence reflow\"\n    },\n    {\n      \"nodeId\": \"2KX-0\",\n      \"name\": \"320 ZH · Confluence reflow\"\n    }\n  ]\n}"
+        }
+      ]
+    }
+  },
+  {
+    "operation_id": "paper-audit-next-270-confluence-finish",
+    "fileId": "01M6Y3DCDDW541ZR38J1V52A9Y",
+    "tool": "finish_working_on_nodes",
+    "targets": [
+      "UM-0",
+      "100-0",
+      "1F2-0",
+      "1JV-0",
+      "15E-0",
+      "1TI-0",
+      "1OO-0",
+      "1A8-0",
+      "20R-0",
+      "20C-0",
+      "2AG-0"
+    ],
+    "state": "APPLIED_RESPONSE_OBSERVED",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"file\": {\n    \"id\": \"01M6Y3DCDDW541ZR38J1V52A9Y\",\n    \"name\": \"Mastermind - Confluence Screener - R2 and Governed References\"\n  },\n  \"contentHash\": {\n    \"tokens\": \"6234666b\"\n  }\n}"
+        },
+        {
+          "type": "text",
+          "text": "OK"
+        }
+      ]
+    }
   }
 ]

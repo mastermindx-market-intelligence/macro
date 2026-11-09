@@ -387,8 +387,71 @@ Focused acceptance:
 
 The native layouts, source bindings, helper behavior and geometric reflow are verified at their stated boundaries. Full route integration, live price/archived evidence availability, model qualification and production browser acceptance remain open.
 
+
+## Phase 7 — Confluence controls and public/protected snapshot identity
+
+### Native outcome and preservation
+
+File [Confluence Screener](https://app.paper.design/file/01M6Y3DCDDW541ZR38J1V52A9Y/p-2-0), R2 eight variants. Operations 230–270 improve all English/Chinese and light/dark desktop/mobile variants while retaining their source order and evidence anatomy.
+
+- Replaced “Start free trial,” “Unlock if matched” and “See every line-up’s matching stocks” promises with **Open Mastermind / 打开 Mastermind**. The existing CTA is a generic app entry; it does not itself start a trial, create a combination or grant stock access.
+- Main links have 48px targets and card links have at least 44px targets. Mobile card actions occupy a full row below the public count. Main CTA support text is concise and account-access dependent.
+- The four mobile first-card headers now place the title/rank above the equal-width evidence pair. The rank badge no longer competes with both evidence columns.
+- Method rows use **How this shortlist works / 信号组合说明**, with a concise subtitle and a single disclosure cue. The builder specifies the whole row as native details/summary using the existing local disclosure behavior.
+- “Matching now” was changed to “Matching stocks” in the applicable English anatomy and entitled examples. These snapshots do not prove synchronized current market sessions.
+- R4 addendum **2I3-0** extends existing builder **2AG-0** on p-3-0. Both 320px proof containers are within that addendum: **2JO-0** EN dark and **2KX-0** ZH light. No separate artboard family was created.
+- All 24 existing R3 builder text IDs and contents were read back unchanged. Governed p1, R3 availability/qualified-zero states, protected recovery states, retained filter studies and current non-filtering semantics remain intact.
+- The current authority and flow-map builder pointers now locate the R4 addendum directly.
+
+Eight-variant JSX readback found three correctly named app links per variant, 48px/44px target rules and no obsolete trial/unlock promises. Native screenshots verify EN dark desktop and mobile, ZH light mobile, the complete addendum and both 320px specimens. Native layout verification does not prove runtime keyboard behavior or browser animation.
+
+### Current source defect reproduced
+
+Exact source pin: [Macro aec7f387badcdf69c9a947fafbc73b4c68470c7d](https://github.com/mastermindx-market-intelligence/macro/tree/aec7f387badcdf69c9a947fafbc73b4c68470c7d).
+
+The [miner builder](https://github.com/mastermindx-market-intelligence/macro/blob/aec7f387badcdf69c9a947fafbc73b4c68470c7d/scripts/build_tech_confluence.py) assigns L000n IDs by selected-list position. An ID is artifact-local, and generated_utc has second precision. The [page builder](https://github.com/mastermindx-market-intelligence/macro/blob/aec7f387badcdf69c9a947fafbc73b4c68470c7d/scripts/build_confluence_screener.py) provides the protected payload's full artifact built timestamp but reduces the public asof display to a date; page generated_utc is a different render clock.
+
+The current [template hydration helpers](https://github.com/mastermindx-market-intelligence/macro/blob/aec7f387badcdf69c9a947fafbc73b4c68470c7d/templates/confluence_screener.html.j2) join protected rows using only combo_id. They do not inspect built or recipe identity. They silently skip unmatched IDs or invalid ticker links and then call showUnlockedCta and set hydrated=true.
+
+The isolated source harness **verify_confluence_hydration.js** extracts the exact contiguous bilingual, tickerLink, replaceLockedRow, showUnlockedCta and hydrate functions from template lines 482–585. It executes those unmodified functions in Node v24.22.1 with a minimal fake DOM; no auth, fetch, browser, production data or installed runtime is invoked. Template SHA-256: **a782c6288f2d24917511a182470d521993c567297a965dc7bba8a7e53de83e5b**; extracted helpers: **9ec01d09d3a9850e275e964ea04033e1777f0aaeb2da16e79bb6ff0ae01fe17a**.
+
+| Controlled case | Reproduced current behavior |
+|---|---|
+| Matching two-row control | Both rows replaced; success claimed |
+| Different generation, same ordinal IDs | Both wrong-generation lists attached; success claimed |
+| Same timestamp, changed fixture content | Both replacement lists attached; success claimed |
+| Empty payload with two expected rows | Neither row replaced; success still claimed |
+| Unmatched ID | Neither expected row replaced; success still claimed |
+| One of two expected rows | One row replaced; success still claimed |
+| Malformed ticker with positive count | Row becomes “No stock matches”; success still claimed |
+| No expected protected rows | Paid success still announced |
+| Different schema control | Current consumer rejects before replacement |
+
+The artifact and recipe contexts in these fixtures are test declarations; they are not fields the current consumer already reads. **CONFLUENCE_SOURCE_CHARACTERIZATION.json** records current hazards, not acceptance of a deployed repair.
+
+### Build contract and compatibility
+
+**CONFLUENCE_BUILD_DELTA.json** carries the full proposed owner and acceptance contract. Add one pure binding helper in the existing builder, used by public and protected projections:
+
+1. Compute artifact_sha256 over canonical JSON of the original parsed artifact: recursively sorted object keys, preserved array order, compact separators, UTF-8 and rejected non-finite values.
+2. Resolve each integer leg index against the artifact before display labels discard machine identity. Derive recipe_key from direction, sorted signal_id/timeframe/kind/direction tuples and applicable event-window parameters.
+3. Reject unresolved/duplicate legs, count mismatch, inconsistent direction and missing required parameters. Exclude display labels, ordinal indexes and rank from recipe identity.
+4. Preserve existing combo_id, rank, is_free, active_count and built. Add only non-secret expected identity/count metadata to the public shell.
+5. Before any DOM replacement, require matching bound schema, artifact fingerprint, full artifact built, exact expected protected-row set, recipe keys, valid unique tickers and consistent counts. Prepare the complete response first.
+6. Mark success only after all expected rows are applied. Zero expected rows need no paid-success announcement. Missing-source empty overwrite remains required but cannot mean hydration success.
+7. A bound version must reject legacy unbound responses, and old cached v1 consumers must reject the new asset schema. Adding ignored fields to v1 alone is insufficient. Test both rollout directions through existing generic consumption/auth paths before choosing the final schema literal.
+8. Preserve the existing protected endpoint, MDXAuth, inFlight, auth-settled and refresh owners. A mismatch preserves usable public evidence and existing protected-unavailable recovery. It does not establish no entitlement or zero matches.
+
+The canonical recipe key is a binding aid within this artifact contract, not a new recipe registry or proof that engine semantics are equivalent across versions. The browser compares metadata; it does not fetch the full artifact or reimplement the miner.
+
+The [engine](https://github.com/mastermindx-market-intelligence/macro/blob/aec7f387badcdf69c9a947fafbc73b4c68470c7d/engine/tech_confluence.py) still checks the final panel position separately per ticker. No synchronized latest-session claim was added. Terminal's separately sourced native technical screener and Smart Screens are not interchangeable owners for this Macro shortlist.
+
+### Delivery boundary
+
+This phase changes editable Paper designs, source-linked build contracts and reproducible characterization artifacts. It does **not** patch the production hydrator, change entitlements, deploy a schema, establish browser animation playback or claim installed-runtime acceptance. Existing R3 source pin 338a10852dcefa5d2bd07e5c6be0955c2b1e83fd remains historical provenance; the R4 source review uses the newer explicit pin above.
+
 ## Next safe phase in progress
 
-Confluence Screener: inspect remaining R2 clarity and layout gaps against the recent R3 public-availability and builder amendments. Preserve source ordering, the explicit absence of current filtering, governed filter studies and separately owned native Terminal screener behavior. Focus on stale CTA promises, snapshot clocks and the cramped mobile card header.
+Bot Paper Portfolio: audit Today → actual Holdings and return continuity in file 01M6Y3AT0XJBWTM3AVCMBJQ8TE, boards 2C-0 / 11E-0 / 77-0 / 14D-0. Preserve the separate selected-history/receipt work, the US S0 candidate's Draft/HOLD scope and the distinction between held positions, accepted targets and historical risk. Focus on the valued-account snapshot boundary and concrete navigation/narrow-layout gaps.
 
 Phase completion is save-and-continue; this record does not terminate the continuing mission.
