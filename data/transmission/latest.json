@@ -839,7 +839,7 @@
       "zh": "流动性/避险冲击——信用利差走阔＋波动率飙升＋名义债券获买盘。正在发生的清算，同步指标，并非领先预警（VIX已反映）。"
     },
     "costate": {
-      "oil_chg_20d_pct": -1.6,
+      "oil_chg_20d_pct": -1.1,
       "real10y_chg_20d_bp": -31.0,
       "nom10y_chg_20d_bp": -40.0,
       "hy_oas_z": 1.6,
@@ -3216,7 +3216,7 @@
     ]
   },
   "dollar_channel": {
-    "asof": "2026-11-07",
+    "asof": "2026-11-09",
     "usd_dir": "strengthening",
     "roc_pct": null,
     "state": {
@@ -3265,7 +3265,14 @@
       "HG=F": -0.17,
       "CL=F": -0.02
     },
-    "scenario": null,
+    "scenario": {
+      "key": "em_crisis_capital_flight",
+      "label": {
+        "en": "EM crisis / capital flight",
+        "zh": "新兴市场危机"
+      },
+      "n_active": 1
+    },
     "display_only": true
   },
   "hero": {

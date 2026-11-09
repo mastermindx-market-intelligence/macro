@@ -326,6 +326,10 @@ def build_detail_pages(data: dict, site: Path, env, region: str = "us",
             "bench_label": bench_label,
             "bench_label_zh": bench_label_zh,
         }
+        if region == "intl":
+            # Mixed-market prices have their own observation date; the optional
+            # theme clock does not establish when another session is due.
+            detail["price_panel_as_of"] = data.get("as_of")
         html = tmpl.render(detail_json=json.dumps(detail, separators=(",", ":"), default=str),
                            basket_name=b.get("name", bid), generated_utc=built,
                            theme_research_mount=_theme_research_mount(bid, region),

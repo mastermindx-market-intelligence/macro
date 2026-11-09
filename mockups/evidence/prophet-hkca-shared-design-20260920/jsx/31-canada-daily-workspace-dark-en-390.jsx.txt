@@ -1,0 +1,372 @@
+{
+  "file": {
+    "id": "01M2WGNCX9475G79JRKJTCM08P",
+    "name": "Mastermind Product Design System — Agentic Lab"
+  },
+  "contentHash": {
+    "tokens": "5ae876bc"
+  }
+}
+
+(
+    <div style={{ backgroundColor: 'var(--mx-dark-bg)', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', fontFamily: 'var(--font-ui)', fontSynthesis: 'none', gap: '18px', height: 'fit-content', MozOsxFontSmoothing: 'grayscale', overflow: 'clip', overflowWrap: 'anywhere', paddingBottom: '32px', paddingInline: '20px', paddingTop: '24px', WebkitFontSmoothing: 'antialiased', width: '390px' }}>
+      <div style={{ borderBottomColor: 'var(--mx-dark-line)', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', justifyContent: 'space-between', paddingBottom: '14px', width: '100%' }}>
+        <div style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '12px', justifyContent: 'space-between', width: '100%' }}>
+          <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-h2)', fontWeight: 'var(--fw-extrabold)', letterSpacing: '-0.02em', lineHeight: '22px' }}>
+            MASTERMIND
+          </div>
+          <div style={{ backgroundColor: 'var(--mx-dark-panel)', borderColor: 'var(--mx-dark-line)', borderRadius: 'var(--r-btn)', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '4px', padding: '4px' }}>
+            <div style={{ borderRadius: 'var(--r-ctl)', boxSizing: 'border-box', fontWeight: 'var(--fw-semibold)', paddingBlock: '8px', paddingInline: '12px' }}>
+              <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', fontWeight: 'var(--fw-semibold)', lineHeight: '16px' }}>
+                Hong Kong
+              </div>
+            </div>
+            <div style={{ backgroundColor: 'var(--mx-dark-panel2)', borderRadius: 'var(--r-ctl)', boxSizing: 'border-box', fontWeight: 'var(--fw-bold)', paddingBlock: '8px', paddingInline: '12px' }}>
+              <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', fontWeight: 'var(--fw-bold)', lineHeight: '16px' }}>
+                Canada
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '12px', justifyContent: 'space-between', width: '100%' }}>
+          <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', lineHeight: '16px' }}>
+            Current opportunities
+          </div>
+          <div style={{ borderColor: 'var(--mx-dark-line)', borderRadius: 'var(--r-pill)', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', fontWeight: 'var(--fw-bold)', paddingBlock: '7px', paddingInline: '10px' }}>
+            <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-bold)', lineHeight: '14px' }}>
+              EN
+            </div>
+          </div>
+          <div style={{ borderColor: 'var(--mx-dark-line)', borderRadius: 'var(--r-pill)', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', fontWeight: 'var(--fw-bold)', paddingBlock: '7px', paddingInline: '10px' }}>
+            <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-bold)', lineHeight: '14px' }}>
+              DARK
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '14px', justifyContent: 'space-between', paddingBottom: '8px', paddingTop: '14px', width: '100%' }}>
+        <div style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '10px', maxWidth: '820px', width: '100%' }}>
+          <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-link)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-bold)', letterSpacing: '0.12em', lineHeight: '14px' }}>
+            CANADA PROPHET · CURRENT SCREEN · AS OF 03 SEP 2026
+          </div>
+          <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', fontFamily: 'system-ui, sans-serif', fontSize: '32px', fontWeight: 'var(--fw-extrabold)', letterSpacing: '-0.03em', lineHeight: '35px' }}>
+            17 current names. No entry is confirmed.
+          </div>
+          <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: '14px', fontWeight: 'var(--fw-semibold)', lineHeight: '20px' }}>
+            Nine meet the screen; eight remain on watch. Watch — don’t chase.
+          </div>
+        </div>
+        <div style={{ alignItems: 'start', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '10px', minWidth: '280px', width: '100%' }}>
+          <div style={{ borderColor: 'var(--mx-dark-info)', borderRadius: 'var(--r-pill)', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', fontWeight: 'var(--fw-bold)', paddingBlock: '8px', paddingInline: '12px' }}>
+            <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-info)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-bold)', lineHeight: '14px' }}>
+              CURRENT · SCREEN
+            </div>
+          </div>
+          <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', lineHeight: '18px', whiteSpace: 'pre-wrap' }}>
+            Screening results only<br />Not official picks
+          </div>
+        </div>
+      </div>
+      <div style={{ backgroundColor: 'var(--mx-dark-panel)', borderColor: 'var(--mx-dark-line)', borderRadius: 'var(--r-card)', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '10px', justifyContent: 'space-between', padding: '10px', width: '100%' }}>
+        <div style={{ backgroundColor: 'var(--mx-dark-panel2)', borderRadius: 'var(--r-btn)', boxSizing: 'border-box', display: 'flex', flexWrap: 'wrap', gap: '4px', padding: '4px', width: '100%' }}>
+          <div style={{ borderRadius: 'var(--r-ctl)', boxSizing: 'border-box', fontWeight: 'var(--fw-semibold)', paddingBlock: '8px', paddingInline: '12px' }}>
+            <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', fontWeight: 'var(--fw-semibold)', lineHeight: '16px' }}>
+              Top Picks 0
+            </div>
+          </div>
+          <div style={{ backgroundColor: 'var(--mx-dark-link)', borderRadius: 'var(--r-ctl)', boxSizing: 'border-box', fontWeight: 'var(--fw-bold)', paddingBlock: '8px', paddingInline: '12px' }}>
+            <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-bg)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', fontWeight: 'var(--fw-bold)', lineHeight: '16px' }}>
+              All Candidates 17
+            </div>
+          </div>
+        </div>
+        <div style={{ borderColor: 'var(--mx-dark-line)', borderRadius: 'var(--r-btn)', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '4px', padding: '4px', width: '100%' }}>
+          <div style={{ backgroundColor: 'var(--mx-dark-panel2)', borderRadius: 'var(--r-ctl)', boxSizing: 'border-box', fontWeight: 'var(--fw-bold)', paddingBlock: '8px', paddingInline: '12px' }}>
+            <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', fontWeight: 'var(--fw-bold)', lineHeight: '16px' }}>
+              Grid
+            </div>
+          </div>
+          <div style={{ borderRadius: 'var(--r-ctl)', boxSizing: 'border-box', fontWeight: 'var(--fw-semibold)', paddingBlock: '8px', paddingInline: '12px' }}>
+            <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', fontWeight: 'var(--fw-semibold)', lineHeight: '16px' }}>
+              Table
+            </div>
+          </div>
+        </div>
+        <div style={{ alignItems: 'center', borderColor: 'var(--mx-dark-line)', borderRadius: 'var(--r-btn)', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexGrow: '1', minHeight: '40px', minWidth: '220px', paddingBlock: '10px', paddingInline: '14px', width: '100%' }}>
+          <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', display: 'flex', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', lineHeight: '16px' }}>
+            Search current names
+          </div>
+        </div>
+        <div style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', flexWrap: 'wrap', gap: '10px', justifyContent: 'space-between', width: '100%' }}>
+          <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-link)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', fontWeight: 'var(--fw-semibold)', lineHeight: '16px' }}>
+            Recently changed
+          </div>
+          <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-link)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', fontWeight: 'var(--fw-semibold)', lineHeight: '16px' }}>
+            Evidence and record
+          </div>
+        </div>
+      </div>
+      <div style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', flexWrap: 'wrap', gap: '8px', width: '100%' }}>
+        <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', flexShrink: '0', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-bold)', lineHeight: '14px', width: '100%' }}>
+          STAGE
+        </div>
+        <div style={{ backgroundColor: 'var(--mx-dark-panel2)', borderColor: 'var(--mx-dark-info)', borderRadius: 'var(--r-pill)', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', fontWeight: 'var(--fw-bold)', paddingBlock: '7px', paddingInline: '11px' }}>
+          <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-info)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-bold)', lineHeight: '14px' }}>
+            Meets screen 9
+          </div>
+        </div>
+        <div style={{ backgroundColor: 'var(--mx-dark-panel2)', borderColor: 'var(--mx-dark-warn)', borderRadius: 'var(--r-pill)', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', fontWeight: 'var(--fw-bold)', paddingBlock: '7px', paddingInline: '11px' }}>
+          <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-warn)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-bold)', lineHeight: '14px' }}>
+            Watch 8
+          </div>
+        </div>
+        <div style={{ backgroundColor: 'var(--mx-dark-panel2)', borderColor: 'var(--mx-dark-line)', borderRadius: 'var(--r-pill)', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', fontWeight: 'var(--fw-bold)', paddingBlock: '7px', paddingInline: '11px' }}>
+          <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-bold)', lineHeight: '14px' }}>
+            Entry confirmed 0
+          </div>
+        </div>
+        <div style={{ backgroundColor: 'var(--mx-dark-panel2)', borderColor: 'var(--mx-dark-line)', borderRadius: 'var(--r-pill)', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', fontWeight: 'var(--fw-bold)', paddingBlock: '7px', paddingInline: '11px' }}>
+          <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-bold)', lineHeight: '14px' }}>
+            Blocked 0
+          </div>
+        </div>
+        <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', flexBasis: '0%', flexGrow: '1', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', lineHeight: '16px', width: '100%' }}>
+          17 shown in All Candidates
+        </div>
+      </div>
+      <div style={{ alignItems: 'start', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '8px', justifyContent: 'space-between', paddingTop: '4px', width: '100%' }}>
+        <div style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '4px', width: '100%' }}>
+          <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-link)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-bold)', letterSpacing: '0.1em', lineHeight: '14px' }}>
+            CURRENT OPPORTUNITIES
+          </div>
+          <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-h1)', fontWeight: 'var(--fw-extrabold)', lineHeight: '34px' }}>
+            All Candidates
+          </div>
+        </div>
+        <div style={{ alignItems: 'start', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '3px', width: '100%' }}>
+          <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-body)', fontWeight: 'var(--fw-bold)', lineHeight: '18px' }}>
+            17 current candidates
+          </div>
+          <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', lineHeight: '16px' }}>
+            Nine screen; eight watch
+          </div>
+        </div>
+      </div>
+      <div style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '14px', width: '100%' }}>
+        <div style={{ backgroundColor: 'var(--mx-dark-panel)', borderColor: 'var(--mx-dark-line)', borderRadius: 'var(--r-panel)', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', minHeight: '0px', overflow: 'clip', width: '100%' }}>
+          <div style={{ alignItems: 'start', borderBottomColor: 'var(--mx-dark-line)', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '10px', justifyContent: 'space-between', paddingBlock: '20px', paddingInline: '22px' }}>
+            <div style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '5px' }}>
+              <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-bold)', letterSpacing: '0.08em', lineHeight: '14px' }}>
+                CANADA · PMZ-UN.TO
+              </div>
+              <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-h2)', fontWeight: 'var(--fw-bold)', lineHeight: '22px' }}>
+                Primaris REIT
+              </div>
+            </div>
+            <div style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+              <div style={{ borderColor: 'var(--mx-dark-info)', borderRadius: 'var(--r-pill)', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', fontWeight: 'var(--fw-bold)', paddingBlock: '6px', paddingInline: '10px' }}>
+                <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-info)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-bold)', lineHeight: '14px' }}>
+                  MEETS SCREEN
+                </div>
+              </div>
+              <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-micro)', lineHeight: '12px' }}>
+                Current candidate
+              </div>
+            </div>
+          </div>
+          <div style={{ boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexDirection: 'column', flexGrow: '1' }}>
+            <div style={{ borderBottomColor: 'var(--mx-dark-line)', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '8px', paddingBlock: '18px', paddingInline: '22px' }}>
+              <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', flexShrink: '0', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-bold)', lineHeight: '14px' }}>
+                WHY SHOWN
+              </div>
+              <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-body)', lineHeight: '20px' }}>
+                Meets the current screen; issuer evidence is intact, but entry is not confirmed.
+              </div>
+            </div>
+            <div style={{ borderBottomColor: 'var(--mx-dark-line)', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '8px', paddingBlock: '18px', paddingInline: '22px' }}>
+              <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', flexShrink: '0', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-bold)', lineHeight: '14px' }}>
+                TIMING
+              </div>
+              <div style={{ boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexDirection: 'column', flexGrow: '1', gap: '6px', width: '100%' }}>
+                <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-warn)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-body)', fontWeight: 'var(--fw-bold)', lineHeight: '20px' }}>
+                  Watch — don’t chase.
+                </div>
+                <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', lineHeight: '18px' }}>
+                  Next trigger: the entry condition is confirmed.
+                </div>
+              </div>
+              <div style={{ alignSelf: 'start', boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-h2)', fontWeight: 'var(--fw-semibold)', lineHeight: '22px' }}>
+                No current quote
+              </div>
+            </div>
+            <div style={{ alignItems: 'start', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', justifyContent: 'space-between', paddingBlock: '16px', paddingInline: '22px' }}>
+              <div style={{ boxSizing: 'border-box', display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                <div style={{ backgroundColor: 'var(--mx-dark-panel2)', borderRadius: 'var(--r-ctl)', boxSizing: 'border-box', fontWeight: 'var(--fw-semibold)', paddingBlock: '6px', paddingInline: '9px' }}>
+                  <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-semibold)', lineHeight: '14px' }}>
+                    Current screen
+                  </div>
+                </div>
+                <div style={{ backgroundColor: 'var(--mx-dark-panel2)', borderRadius: 'var(--r-ctl)', boxSizing: 'border-box', fontWeight: 'var(--fw-semibold)', paddingBlock: '6px', paddingInline: '9px' }}>
+                  <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-semibold)', lineHeight: '14px' }}>
+                    Sector context
+                  </div>
+                </div>
+                <div style={{ backgroundColor: 'var(--mx-dark-panel2)', borderRadius: 'var(--r-ctl)', boxSizing: 'border-box', fontWeight: 'var(--fw-semibold)', paddingBlock: '6px', paddingInline: '9px' }}>
+                  <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-semibold)', lineHeight: '14px' }}>
+                    Entry not confirmed
+                  </div>
+                </div>
+              </div>
+              <div style={{ alignSelf: 'start', boxSizing: 'border-box', color: 'var(--mx-dark-link)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', fontWeight: 'var(--fw-bold)', lineHeight: '16px' }}>
+                View evidence
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style={{ backgroundColor: 'var(--mx-dark-panel)', borderColor: 'var(--mx-dark-line)', borderRadius: 'var(--r-panel)', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', minHeight: '0px', overflow: 'clip', width: '100%' }}>
+          <div style={{ alignItems: 'start', borderBottomColor: 'var(--mx-dark-line)', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '10px', justifyContent: 'space-between', paddingBlock: '20px', paddingInline: '22px' }}>
+            <div style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '5px' }}>
+              <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-bold)', letterSpacing: '0.08em', lineHeight: '14px' }}>
+                CANADA · MTL.TO
+              </div>
+              <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-h2)', fontWeight: 'var(--fw-bold)', lineHeight: '22px' }}>
+                Mullen Group
+              </div>
+            </div>
+            <div style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+              <div style={{ borderColor: 'var(--mx-dark-warn)', borderRadius: 'var(--r-pill)', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', fontWeight: 'var(--fw-bold)', paddingBlock: '6px', paddingInline: '10px' }}>
+                <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-warn)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-bold)', lineHeight: '14px' }}>
+                  WATCH
+                </div>
+              </div>
+              <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-micro)', lineHeight: '12px' }}>
+                Current candidate
+              </div>
+            </div>
+          </div>
+          <div style={{ boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexDirection: 'column', flexGrow: '1' }}>
+            <div style={{ borderBottomColor: 'var(--mx-dark-line)', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '8px', paddingBlock: '18px', paddingInline: '22px' }}>
+              <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', flexShrink: '0', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-bold)', lineHeight: '14px' }}>
+                WHY SHOWN
+              </div>
+              <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-body)', lineHeight: '20px' }}>
+                Strong screen evidence remains, but alignment still blocks entry.
+              </div>
+            </div>
+            <div style={{ borderBottomColor: 'var(--mx-dark-line)', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '8px', paddingBlock: '18px', paddingInline: '22px' }}>
+              <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', flexShrink: '0', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-bold)', lineHeight: '14px' }}>
+                TIMING
+              </div>
+              <div style={{ boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexDirection: 'column', flexGrow: '1', gap: '6px', width: '100%' }}>
+                <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-warn)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-body)', fontWeight: 'var(--fw-bold)', lineHeight: '20px' }}>
+                  Watch — don’t chase.
+                </div>
+                <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', lineHeight: '18px' }}>
+                  Next trigger: alignment clears and timing becomes available.
+                </div>
+              </div>
+              <div style={{ alignSelf: 'start', boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-h2)', fontWeight: 'var(--fw-semibold)', lineHeight: '22px' }}>
+                No current quote
+              </div>
+            </div>
+            <div style={{ alignItems: 'start', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', justifyContent: 'space-between', paddingBlock: '16px', paddingInline: '22px' }}>
+              <div style={{ boxSizing: 'border-box', display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                <div style={{ backgroundColor: 'var(--mx-dark-panel2)', borderRadius: 'var(--r-ctl)', boxSizing: 'border-box', fontWeight: 'var(--fw-semibold)', paddingBlock: '6px', paddingInline: '9px' }}>
+                  <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-semibold)', lineHeight: '14px' }}>
+                    Watch
+                  </div>
+                </div>
+                <div style={{ backgroundColor: 'var(--mx-dark-panel2)', borderRadius: 'var(--r-ctl)', boxSizing: 'border-box', fontWeight: 'var(--fw-semibold)', paddingBlock: '6px', paddingInline: '9px' }}>
+                  <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-semibold)', lineHeight: '14px' }}>
+                    Alignment blocked
+                  </div>
+                </div>
+                <div style={{ backgroundColor: 'var(--mx-dark-panel2)', borderRadius: 'var(--r-ctl)', boxSizing: 'border-box', fontWeight: 'var(--fw-semibold)', paddingBlock: '6px', paddingInline: '9px' }}>
+                  <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-semibold)', lineHeight: '14px' }}>
+                    Issuer evidence
+                  </div>
+                </div>
+              </div>
+              <div style={{ alignSelf: 'start', boxSizing: 'border-box', color: 'var(--mx-dark-link)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', fontWeight: 'var(--fw-bold)', lineHeight: '16px' }}>
+                View evidence
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '14px', width: '100%' }}>
+        <div style={{ backgroundColor: 'var(--mx-dark-panel)', borderColor: 'var(--mx-dark-line)', borderRadius: 'var(--r-card)', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', padding: '18px', width: '100%' }}>
+          <div style={{ boxSizing: 'border-box', display: 'flex', gap: '12px', justifyContent: 'space-between' }}>
+            <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-link)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-bold)', letterSpacing: '0.08em', lineHeight: '14px' }}>
+              RESEARCH ATTENTION
+            </div>
+            <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-micro)', lineHeight: '12px' }}>
+              OPTIONAL
+            </div>
+          </div>
+          <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-h3)', fontWeight: 'var(--fw-bold)', lineHeight: '20px' }}>
+            Approved research sources
+          </div>
+          <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', lineHeight: '18px' }}>
+            Optional research can explain names; it never changes screen status, rank, or entry permission.
+          </div>
+          <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-link)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', fontWeight: 'var(--fw-bold)', lineHeight: '16px' }}>
+            Open research
+          </div>
+        </div>
+        <div style={{ backgroundColor: 'var(--mx-dark-panel)', borderColor: 'var(--mx-dark-line)', borderRadius: 'var(--r-card)', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', padding: '18px', width: '100%' }}>
+          <div style={{ boxSizing: 'border-box', display: 'flex', gap: '12px', justifyContent: 'space-between' }}>
+            <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-link)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-bold)', letterSpacing: '0.08em', lineHeight: '14px' }}>
+              RECENTLY CHANGED
+            </div>
+            <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-micro)', lineHeight: '12px' }}>
+              READ ONLY
+            </div>
+          </div>
+          <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-h3)', fontWeight: 'var(--fw-bold)', lineHeight: '20px' }}>
+            Prior comparable membership exists
+          </div>
+          <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', lineHeight: '18px' }}>
+            Earlier shelves may be missing. Exact exit time and continuous tenure can remain unknown; no stale action state is carried forward.
+          </div>
+          <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-link)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', fontWeight: 'var(--fw-bold)', lineHeight: '16px' }}>
+            Open transitions
+          </div>
+        </div>
+        <div style={{ backgroundColor: 'var(--mx-dark-panel)', borderColor: 'var(--mx-dark-line)', borderRadius: 'var(--r-card)', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '10px', padding: '18px', width: '100%' }}>
+          <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-link)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-bold)', letterSpacing: '0.08em', lineHeight: '14px' }}>
+            EVIDENCE AND RECORD
+          </div>
+          <div style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <div style={{ boxSizing: 'border-box', display: 'flex', gap: '16px', justifyContent: 'space-between' }}>
+              <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', lineHeight: '18px' }}>
+                Definition
+              </div>
+              <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', fontWeight: 'var(--fw-semibold)', lineHeight: '18px' }}>
+                Current screen
+              </div>
+            </div>
+            <div style={{ boxSizing: 'border-box', display: 'flex', gap: '16px', justifyContent: 'space-between' }}>
+              <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', lineHeight: '18px' }}>
+                History
+              </div>
+              <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-warn)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', fontWeight: 'var(--fw-semibold)', lineHeight: '18px' }}>
+                Coverage incomplete
+              </div>
+            </div>
+            <div style={{ boxSizing: 'border-box', display: 'flex', gap: '16px', justifyContent: 'space-between' }}>
+              <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', lineHeight: '18px' }}>
+                Plans
+              </div>
+              <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', fontWeight: 'var(--fw-semibold)', lineHeight: '18px' }}>
+                Not available here
+              </div>
+            </div>
+          </div>
+          <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-link)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', fontWeight: 'var(--fw-bold)', lineHeight: '16px' }}>
+            Open evidence
+          </div>
+        </div>
+      </div>
+    </div>
+  )
