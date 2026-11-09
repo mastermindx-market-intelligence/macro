@@ -1,0 +1,55 @@
+{
+  "schema": "mastermind.gmi.locale_receipt_validation.v1",
+  "verified_at": "2026-11-09",
+  "base_head": "80d6ff71b9913524c4a381b543ec7a53383f50dc",
+  "branch": "claude/gmi-product-upgrade-20261103",
+  "pr": 10676,
+  "source": {
+    "original_js_blob": "6f5ee7dbd70c71b6dec99094b860cfaf2d6e78a3",
+    "candidate_js_blob": "0a5a6b51f7c836e34523a476751fc3eca054302d",
+    "template_and_site_identical": true,
+    "original_browser_verifier_blob": "ff870011fa02a511599e2f77b7a9966cfe56ee5d",
+    "candidate_browser_verifier_blob": "d880b4aabd7f203bcbcd24e045e393067571b122",
+    "committed_markup_blob": "317db9c58873d1b67bb10771bd19cbed4b51b400",
+    "extracted_fixture_sha256": "0a45cce4fb7f9b21138158d7a3f0d59c49a165a8a7aebe2f74a2ff1bd0771101"
+  },
+  "checks": {
+    "javascript_syntax": "PASS",
+    "python_verifier_syntax": "PASS",
+    "baseline": {
+      "widths": [
+        1440,
+        390
+      ],
+      "result": "FAIL_AS_EXPECTED",
+      "assertion": "After locale change and record reorder, the exact two open receipts must remain open and the third closed.",
+      "page_errors": []
+    },
+    "candidate": {
+      "browser": "157.0.8103.39",
+      "widths": [
+        1440,
+        390
+      ],
+      "named_cases": 2,
+      "isolated_contexts": 32,
+      "result": "PASS",
+      "exit_code": 0,
+      "page_errors": [],
+      "runtime_seconds": 17.38
+    }
+  },
+  "scenario_groups": [
+    "two open / one closed receipt after reorder and EN→ZH→EN",
+    "ordinary theme/history transition discards locale capture",
+    "source-key/hash change, missing hash/receipt, withdrawal, introduced duplicate",
+    "initial duplicate IDs and missing source identity",
+    "same source/company destination retains role and focus",
+    "changed or removed destination falls back to matched summary",
+    "surviving control retains focus",
+    "another deliberate focus move during rendering is respected"
+  ],
+  "execution_scope": "Exact candidate gmi.js executed with the exact added locale_receipts function against extracted committed GMI component DOM. Test-only receipt clones and controlled presentation mutations; fresh anonymous Chrome on the already authorized M2; all external network blocked. No shared shell, actual account, CSS visual matrix, production data, source-admission or release acceptance is claimed.",
+  "existing_evidence": "Prior 92-case / 91-image / ten-board acceptance preserved as historical unchanged evidence; not rerun or promoted to proof of this new head.",
+  "release": "Draft; native auto-merge absent; no labels changed. Original model01 EFFECT_UNKNOWN/ROOT_UNVERIFIED and all no-merge/no-Ready/no-enqueue/no-relabel/no-deploy holds remain."
+}

@@ -499,6 +499,159 @@ with sync_playwright() as pw:
             assert not p.locator('[data-browse-open]').is_visible()
             assert p.locator('.gmi-product-tools a[href*="gmi-index.html"]').is_visible()
     check('server-answer-without-javascript', no_script)
+    def locale_receipts(width):
+        """Synthetic multi-record faults exercise the existing locale/render owner.
+    
+        These clones never enter generated product output or public admission. The
+        shared language controller is unchanged; its data-lang notification is the
+        explicit input under test. Fresh contexts prevent retained state between cases.
+        """
+        original = (args.site/'gmi.html').read_text()
+        pattern = r'(<script\b[^>]*id="gmi-topic-data"[^>]*>).*?(</script>)'
+        payload = json.loads(re.search(pattern, original, flags=re.S)[0].split('>', 1)[1].rsplit('</script>', 1)[0])
+        selected_id = re.search(r'data-default-theme="([^"]+)"', original)[1]
+        alternate_id = next(t['id'] for t in payload['topics'] if t['id'] != selected_id)
+        initial = next(t for t in payload['topics'] if t['id'] == selected_id)['connections'][0]
+    
+        def fixture(initial_fault=None):
+            data = json.loads(json.dumps(payload))
+            theme = next(t for t in data['topics'] if t['id'] == selected_id)
+            theme['connections'] = []
+            for i in range(3):
+                record = json.loads(json.dumps(initial))
+                record['receipt'] = 'fixture:receipt-'+str(i+1)
+                record['source']['key'] = 'fixture:source-'+str(i+1)
+                record['source']['sha256'] = str(i+1)*64
+                theme['connections'].append(record)
+            if initial_fault == 'duplicate':
+                theme['connections'][1]['receipt'] = theme['connections'][0]['receipt']
+            elif initial_fault == 'missing':
+                theme['connections'][0]['source']['sha256'] = None
+            return re.sub(pattern, lambda m: m[1]+json.dumps(data).replace('<', '\\u003c')+m[2], original, flags=re.S)
+    
+        def open_page(c, initial_fault=None):
+            body = fixture(initial_fault)
+            c.add_init_script('''const originalParse = JSON.parse;
+              JSON.parse = function(text, ...rest) {
+                const value = originalParse.call(this, text, ...rest);
+                if (value && Array.isArray(value.topics) && value.categories) window.__gmiReceiptFixture = value;
+                return value;
+              };''')
+            c.route('**/gmi.html', lambda route: route.fulfill(status=200, content_type='text/html', body=body))
+            p = page_for(c)
+            expect(p.locator('[data-gmi-ready]')).to_have_count(1)
+            expect(p.locator('[data-topic-connections] .gmi-evidence-card')).to_have_count(3)
+            return p
+    
+        def cards(p):
+            return p.locator('[data-topic-connections] .gmi-evidence-card')
+    
+        def opens(p):
+            return p.locator('[data-topic-connections] .gmi-evidence-receipt').evaluate_all('(nodes) => nodes.map(n => ({record:n.querySelector("dd").textContent, open:n.open}))')
+    
+        def change(p, mutation='', language='zh'):
+            p.evaluate('''([id, mutation, language]) => {
+              const theme = window.__gmiReceiptFixture.topics.find(t => t.id === id);
+              if (mutation) new Function('theme', mutation)(theme);
+              document.documentElement.setAttribute('data-lang', language);
+            }''', [selected_id, mutation, language])
+            # One animation frame observes the completed synchronous mutation handler.
+            p.evaluate('() => new Promise(resolve => requestAnimationFrame(() => resolve()))')
+    
+        with context(width) as c:
+            p = open_page(c)
+            cards(p).nth(0).locator('summary').click()
+            cards(p).nth(1).locator('summary').click()
+            cards(p).nth(1).locator('summary').focus()
+            before = p.url
+            change(p, 'theme.connections = [theme.connections[2], theme.connections[0], theme.connections[1]];')
+            assert opens(p) == [{'record':'fixture:receipt-3','open':False},{'record':'fixture:receipt-1','open':True},{'record':'fixture:receipt-2','open':True}]
+            expect(cards(p).nth(2).locator('summary')).to_be_focused()
+            expect(cards(p).nth(2).locator('summary')).to_contain_text('来源凭证')
+            change(p, language='en')
+            assert [x['open'] for x in opens(p)] == [False, True, True]
+            expect(cards(p).nth(2).locator('summary')).to_be_focused()
+            assert p.url == before
+            # A genuine theme/history transition does not reuse a locale capture.
+            p.evaluate('(id) => { const q=new URLSearchParams(location.hash.slice(1)); q.set("theme",id); location.hash=q.toString(); }', alternate_id)
+            expect(p.locator('#gmi-topic-title')).not_to_have_text('HBM & advanced packaging')
+            p.go_back()
+            expect(cards(p)).to_have_count(3)
+            assert all(not x['open'] for x in opens(p))
+    
+        mutations = {
+            'source-key': 'theme.connections[0].source.key += ":changed";',
+            'source-hash': 'theme.connections[0].source.sha256 = "d".repeat(64);',
+            'missing-hash': 'theme.connections[0].source.sha256 = null;',
+            'missing-receipt': 'theme.connections[0].receipt = null;',
+            'withdrawn': 'theme.connections.shift();',
+            'duplicate-record': 'theme.connections[1].receipt = theme.connections[0].receipt;',
+        }
+        for name, mutation in mutations.items():
+            with context(width) as c:
+                p = open_page(c)
+                cards(p).nth(0).locator('summary').click()
+                cards(p).nth(0).locator('summary').focus()
+                change(p, mutation)
+                assert all(not x['open'] for x in opens(p)), name
+                expect(p.locator('#gmi-topic-title')).to_be_focused()
+    
+        for fault in ('duplicate', 'missing'):
+            with context(width) as c:
+                p = open_page(c, fault)
+                cards(p).nth(0).locator('summary').click()
+                if fault == 'duplicate':
+                    cards(p).nth(1).locator('summary').click()
+                cards(p).nth(0).locator('summary').focus()
+                change(p)
+                assert all(not x['open'] for x in opens(p)), fault
+                expect(p.locator('#gmi-topic-title')).to_be_focused()
+    
+        for selector, mutation in (
+            ('.gmi-source-link a', ''),
+            ('.gmi-action-primary', ''),
+            ('.gmi-source-link a', 'theme.connections[0].source.url = "https://example.test/changed?x=1#receipt";'),
+            ('.gmi-source-link a', 'theme.connections[0].source.url = null;'),
+            ('.gmi-action-primary', 'theme.connections[0].href = "gmi-issuer-fixture.html";'),
+        ):
+            with context(width) as c:
+                p = open_page(c)
+                cards(p).nth(0).locator('summary').click()
+                action = cards(p).nth(0).locator(selector)
+                action.focus()
+                destination = action.get_attribute('href')
+                change(p, mutation)
+                assert opens(p)[0]['open']
+                if mutation:
+                    expect(cards(p).nth(0).locator('summary')).to_be_focused()
+                else:
+                    expect(cards(p).nth(0).locator(selector)).to_be_focused()
+                    assert cards(p).nth(0).locator(selector).get_attribute('href') == destination
+    
+        with context(width) as c:
+            p = open_page(c)
+            cards(p).nth(0).locator('summary').click()
+            # A surviving control keeps focus; language cannot steal it into a card.
+            p.locator('[data-gmi-copy]').focus()
+            change(p)
+            expect(p.locator('[data-gmi-copy]')).to_be_focused()
+            assert opens(p)[0]['open']
+    
+        with context(width) as c:
+            p = open_page(c)
+            cards(p).nth(0).locator('summary').focus()
+            # If another owner deliberately moves focus during rendering, respect it.
+            p.evaluate('''() => {
+              const node=document.querySelector('[data-topic-connections]');
+              const replace=node.replaceChildren.bind(node);
+              node.replaceChildren=(...children) => {replace(...children);document.querySelector('[data-gmi-copy]').focus();};
+            }''')
+            change(p)
+            expect(p.locator('[data-gmi-copy]')).to_be_focused()
+    
+    for width in (1440, 390):
+        check(f'locale-receipt-state-{width}', lambda w=width: locale_receipts(w))
+
     browser.close()
 server.shutdown()
 report['pass'] = all(c['result']=='PASS' for c in report['cases']) and not report['page_errors']
