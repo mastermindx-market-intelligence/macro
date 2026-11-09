@@ -72,3 +72,19 @@ PR #10867 merged at 6b25578ad1b7c10e724b25170e2d0ab46acbead1. All 19 owned blobs
 A visible control has a named designed destination and a specific return. Ticker/market, period, currency/basis, reference snapshot, filters and valid reading anchor survive according to the owning component's contract. Existing missing/stale/partial/restricted/zero and method-version distinctions stay truthful. Product/help text remains concise; backend details and exact navigation/acceptance contracts live in the linked builder record. Original source wording is preserved before corrections. Record actual Paper node IDs and native visual findings; static design is not runtime navigation proof.
 
 Implementation and applied evidence will be captured in WORKFLOW_ENHANCEMENTS.md and WORKFLOW_ENHANCEMENT_REGISTER.json in this same directory. These extend the existing plan and evidence owner; no parallel lifecycle, queue, registry or program is created.
+
+## Native enhancement results — 9 November 2026
+
+The continued commission produced the following verified design outcomes. These extend the prior merged clarity pass; they do not reopen accepted work without an evidenced defect.
+
+| Phase | Applied result | Proof owner |
+|---|---|---|
+| International methods |32 calculation-help frames, six topics, four locale/theme indexes and origin-specific return calculations | INTERNATIONAL_METHOD_BINDINGS.json |
+| News contextual workflow |20 EN/ZH dark product states; coherent Paper chart fixture; degraded and focus-return cases; current journey separated from earlier state studies | WORKFLOW_ENHANCEMENT_REGISTER.json / news |
+| International results |36 result/qualification/return frames, 16 tool-method frames, eight observed origins and 36 exact method/back bindings | WORKFLOW_ENHANCEMENT_REGISTER.json / internationalResults |
+| Portfolio refinements |Ontology evidence consolidated without losing precision/units; Prophet save claims corrected; OS architecture note moved; obsolete Popup forecasts preserved in Build | WORKFLOW_ENHANCEMENT_REGISTER.json / portfolioSecondPass |
+| Prevention |Canonical law9X3/AND and DESIGN_DOCTRINE §8 require current-variant/claim consistency; content-fit carrier ANF preserves all law children | DESIGN_DOCTRINE.md and current directory |
+
+All owned Paper mutations have observed applied responses on the original C3 carrier, native readback/visual checks and released edited roots. The current directory is PORTFOLIO_DISPOSITIONS.md. The source package preserves original text, fixtures, field mappings, architecture, negative-state qualifications and existing held boundaries. The synchronized personal Paper skill from the first pass remains in force; no additional skill fork or control plane was created.
+
+Runtime integration remains separately identified in WORKFLOW_ENHANCEMENTS.md: existing pane/resolver owners, missing result mounts/adapters, qualified source records, real keyboard/touch/focus return, and exact-head application proof. No live save, monitoring activation, market result, application deployment or production acceptance is claimed from Paper. The real PR/merge receipt governs source delivery; source writes and their readbacks are not substitutes for that receipt.
