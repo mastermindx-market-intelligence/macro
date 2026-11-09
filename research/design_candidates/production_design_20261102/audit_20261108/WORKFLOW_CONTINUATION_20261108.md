@@ -1841,3 +1841,71 @@ Both full native captures were inspected. The English board deliberately represe
 Next assessment concerns mobile category selection: the current 44 px horizontal rail is source-correct, but choosing a distant category may warrant a compact native selector through the existing validated jump owner. That feature is only under read-only evaluation here; no alternate navigation state or picker is claimed implemented.
 
 Full shared-Brain runtime, external fonts/shared shell, live accounts/public admission, spoken assistive technology and release remain separate. Catalyst's reconciled refusal and Tools' loader/P0B holds remain unchanged.
+
+## 38. GMI: explicit mobile category choice, preserved context and current build guidance
+
+### A distant category is now one native choice away
+
+The original [Draft PR10676](https://github.com/mastermindx-market-intelligence/Macro/pull/10676) advances from `20179e319a3f5219488fda4f1642a49e77ed8b13` to [**9bdc486c6b7622d9f306d29e9d12d572ed88415c**](https://github.com/mastermindx-market-intelligence/Macro/commit/9bdc486c6b7622d9f306d29e9d12d572ed88415c), tree **477514cccf090a03a1f9742bacb8f70167dcdadb**. All ten intended files read back exactly, the parent compare-and-swap succeeded, and the PR remains Draft/unmerged with its original holds.
+
+At the existing ≤640 px breakpoint, a native **Category / 类别** select and separate **Go / 前往** replace the horizontally concealed chip choices. The select is a pending destination, not a claim about the category currently in view. Typing/choosing causes no navigation. Go revalidates and invokes the original anchor owner, opens its group and scrolls through the established 61 px offset. Selection remains for repeat jumps.
+
+This two-step design follows actual keyboard observation. Disposable Chrome select probes produced intermediate change events during typeahead: eleven with immediate reset and two with retained choice while typing Category 10. An onchange jump would therefore move readers while they were still choosing. The product's real EN typeahead is now tested without scrolling or history effects; native Go click/Enter/Space each delegates once. OS popup arrow handling remains unproven and is not claimed.
+
+The select and Go retain 44 px heights, Go is 44 px wide, and an 8 px gap fits both languages at 320 px within the existing 61 px strip. The native arrow is free of the old track fade. No explanatory paragraph is added to the product.
+
+### Feature viability and state ownership
+
+The existing filtered groups and retained anchors supply available IDs, order and counts. Existing language spans supply labels. Available unfiltered zero-count categories remain destinations; filtered-out categories disappear. Valid pending IDs survive locale/count changes. When a chosen category disappears but others remain, focus moves from owned Go to the select before the button is disabled and the prompt restored. When all groups disappear, the existing index hide owner moves owned focus to search.
+
+Go rejects hidden, detached or reparented links and groups at activation. It cannot silently select the first remaining category or fall through to a native fragment. Query, lens, open=all, qualified return, unrelated hash keys and history remain with their current owners. Passive intersection updates only the existing anchor current-state marker. Equivalent filter/locale refreshes retain option-node identity.
+
+Read-only reasoning review identified two concrete responsive defects before acceptance: focus transfer could change the intended destination when shrinking from desktop, and default focus could scroll a reader back to the desktop rail after a jump. The implemented handoff now carries an owned focused link's ID into the pending select, reveals the incoming presentation before transferring focus with preventScroll, then hides the old one. An entirely stale destination inventory recovers to existing search. Unrelated focus is preserved.
+
+The enhancement initializes independently of IntersectionObserver. Its authored wrapper starts hidden; with scripts actually disabled, the original ten category links and 371 topic links remain useful, and native details/anchor behavior works. No new query, URL, storage, locale, observation, scroll or publication owner was introduced.
+
+### Exact source and proof
+
+| Artifact | Git blob |
+| --- | --- |
+| Paired JS | b6572ba96c76cf8ee2b1939d538027fe27dfd3e8 |
+| Paired CSS | 1869d4bb1dbcd3ee56756a98da77427dd732b03e |
+| Index template | 4556d16e03e06375a314c7278c4936dea36fd0e9 |
+| Generated index | d0cff23fec423c3480ea12ee200c272396fd53a0 |
+| Canonical browser verifier | 7c99a499f7e3508896175f47d74f3ddd6b294181 |
+| Extracting picker harness | 0fcfae4962d4553d711bb00015ba45ee6d59b4f1 |
+| DESIGN_RECORD through §11.29 | 9b4ee13c13a2c807cd8f6ad60c814709f4aac5a4 |
+| CATEGORY_PICKER_VALIDATION_20261109.json | b47ff79a0def23b0f186f8d4704532abf495a021 |
+
+The production renderer reproduces the parent exactly from 48 checked source inputs and the same accepted e644fa48… model. Only index HTML and paired CSS/JS change among nine outputs; all six other HTML pages remain byte-identical. The actual generated index is **262,285 bytes**, with a **488-byte added nav span**, SHA256 **3e6e6f4846598bc6240f3aa69c5523a5500e7f79f7838e655ea7ecd7800536d4**. Transport was verified against both full SHA-256 and Git-blob identities.
+
+Source self-check reconstructs all JavaScript outside the category controller and two sync calls, confirms prior CSS is an exact prefix and checks that the template changes only the nav prefix. Thirty-nine existing top-level verification definitions remain exact. The existing filtered-index suite now activates select+Go on mobile while preserving its target, count, focus, history, stale-observer and sticky-geometry checks.
+
+Baseline PID81615 records two expected missing-control failures, exit1/4.93s. Candidate PID81814 passes **24 named cases / 24 fresh anonymous contexts**, Chrome157.0.8103.39, zero page errors, exit0/**37.83s**:
+
+- Six 390/320 EN/ZH mobile states, including two dark states.
+- Two 640/641 px responsive focus paths and two cases without IntersectionObserver.
+- Four actual JavaScript-disabled cases at 1440/320 in both languages.
+- Six existing filtered-index, two Clear-search and two persistent-index-status cases.
+
+All native Go activations, repeated selection, the final empty category, six stale-link/group conditions, equivalent refresh identity, locale/count preservation, owned-focus recovery, 44 px targets, 61 px strip and absence of horizontal overflow pass. Six new phone viewport captures were inspected. The initial two harness launches stopped before any browser at a missing docstring/import newline; corrected syntax was checked before the real matrix. Those exit1 receipts remain explicit, and product source was unchanged by that fixture correction.
+
+[The structured validation](https://github.com/mastermindx-market-intelligence/Macro/blob/9bdc486c6b7622d9f306d29e9d12d572ed88415c/research/theme_graph/gmi_design_20261021/CATEGORY_PICKER_VALIDATION_20261109.json) and [DESIGN_RECORD §11.29](https://github.com/mastermindx-market-intelligence/Macro/blob/9bdc486c6b7622d9f306d29e9d12d572ed88415c/research/theme_graph/gmi_design_20261021/DESIGN_RECORD.md) retain commands, model/input hashes, the actual output span, baseline observations and final proof.
+
+### Applied Paper states and builder contract
+
+On [Index · Search and navigation](https://app.paper.design/file/01M5H6EARN9YHQV17JC6ZG9BRY/p-8-0), the existing **7YS-0 EN390 Day** view now shows Choose category and disabled Go. The existing **811-0 ZH320 Noir** view shows the pending 半导体与硬件 ·2 choice with enabled 前往, alongside the preserved HBM results, qualified return and older-snapshot state.
+
+Only the session-owned category subtrees were replaced: EN85E becomes **882-0**, ZH85T becomes **88A-0**. The remaining node IDs, parents, styles and text read back exact. The two views now contain 72 and 65 div nodes respectively; SVG descendants are counted separately from this structural check. English intentionally retains an 844 px viewport crop; the Chinese filtered state includes both rows and the full-index total.
+
+Build **7M9-0** on p7 now has **14 modules / 45 div nodes**. New module13 **88I-0** explains pending choice, Go, availability, locale/filter, responsive focus and native fallback. Proof becomes module14. All 42 previous nodes, parents and styles remain exact, with four intentional source/proof text updates. Both full view captures and the module/proof captures were inspected. The exact three roots were finished.
+
+**PAPER_CATEGORY_PICKER_20261109.json** binds editable JSX, operation outcomes, preservation checks, source readback and visual scope. Product source proof remains distinct from the editable Paper illustrations. Original Draft/model01/release holds, Catalyst's reconciled production refusal, Tools' loader/P0B limits and protected original Paper style surfaces remain unchanged.
+
+### Current PR description and dated history
+
+The PR body still called the November 4 `be851458…` revision its current head and described that day's hosted checks in present tense. Its current section now points to **9bdc486c…**, the actual 24-case category proof, earlier date-bound header/Clear results and the current Paper Index/Build pages. The November 4 verification and integration records remain intact under an explicitly historical collapsed section, with their observed-head wording corrected.
+
+The original release/model hold section is **verbatim preserved** and appears before the historical detail. The existing exact Micron specimen is identified by its 26 February 2024 source publication date; rendered-output comparison is distinguished from the ten-file publication. Readback confirms the body equals the intended text, the head is unchanged, the PR remains Draft and unmerged, and no base/state/reviewer/label/merge setting was changed. The structured Paper receipt includes that exact current body and checks.
+
+This closes the category implementation and builder-clarity phase without treating a saved phase as the parent mission's completion. Subsequent work must continue on qualified existing surfaces while respecting the independent release, capture, model and active-writer fences.
