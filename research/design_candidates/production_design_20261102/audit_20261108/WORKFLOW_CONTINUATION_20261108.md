@@ -2628,3 +2628,52 @@ The [scoped adoption receipt](https://github.com/mastermindx-market-intelligence
 Historical **138 tests /39 browser cases /24 captures** remain tied to their older source. They were read as evidence, not rerun or recertified. The current integration has a separate semantic-proof refusal; it does not prove a Confluence implementation failure or release permission.
 
 Continue by qualifying any already active compatibility repair and legitimate source custody before implementing the paired version change and actual-render proof. The Paper correction is complete; the broader mission continues.
+
+
+## 54. Confluence compatible readers, truthful actions and actual overwrite proof — 9 November 2026
+
+### Applied outcome and custody
+
+Published [dependent Draft PR10893](https://github.com/mastermindx-market-intelligence/Macro/pull/10893), head `f51b60de88474ff4e5df4359b6b94b6d7f6574a5`, on `claude/confluence-compatibility-paper-20261109`, targeting incumbent `sol/web-d04-confluence-evidence-20261104` at `dce11e42c79da7bf45bdda930b473d3f6a97e54e`. This closes the three source gaps identified in §53 without writing to the admitted incumbent branch. It is behavior/hunk-disjoint, not file-disjoint.
+
+Only the Confluence protected asset advances to `tier_payload.v2`, with one producer constant supplied to both available/unavailable page contexts and protected JSON. Cached older v1 readers reject the new response. Current v2 readers reject prior bound or unbound v1, retain public evidence, and use their existing access/reload recovery. The full `confluence_source.v1` artifact hash remains the recipe/source identity; auth, account, expiry and whole-response checks remain the existing owners.
+
+Qualified-zero navigation now says **Open Mastermind / 打开 Mastermind**. Public-unavailable recovery now says **Reload page / 重新加载页面**. The former opens the existing application URL without registering an alert; the latter reloads the document without starting a producer or guaranteeing newer data.
+
+The [builder contract](https://github.com/mastermindx-market-intelligence/Macro/blob/f51b60de88474ff4e5df4359b6b94b6d7f6574a5/research/design_candidates/confluence_compatibility_20261109/README.md) documents the old/new reader matrix, existing responsibilities, precise action effects, actual-I/O scope and adoption sequence. [Full validation](https://github.com/mastermindx-market-intelligence/Macro/blob/f51b60de88474ff4e5df4359b6b94b6d7f6574a5/research/design_candidates/confluence_compatibility_20261109/VALIDATION.json) retains baseline and final native reports, logs, exact source identities and harness history.
+
+### Actual focused proof
+
+- **82 page tests passed** on final reviewed files, including nine new parametrized actual `render()`/file-writer cases. Seeded prior public/protected artifacts are replaced for missing, malformed, non-object, unreadable, incomplete, invalid-clock, malformed-row and qualified-zero source inputs.
+- **14 browser workflows /14 fresh contexts passed**, zero page errors, Chrome **157.0.8103.39**, process **19.16 seconds**. These cover old/new compatibility, valid hydration/sign-out, source mismatch and the actual existing recovery controls, plus EN390/ZH320 action effects.
+- An unmatched `--case-prefix` produces **NO_CASES_SELECTED /exit2 /zero contexts**. It cannot report passing empty proof.
+- Four native action-card crops were visually inspected. Their four PNG blobs were independently read back, with exact base64 bytes and blob identities.
+- The current production-input protected JSON equals the actual producer. Reversing two HTML protocol projections and the one JSON schema field restores the parent served pair exactly. The actual positive render also reverses exactly when only its page-generation clock is fixed for comparison.
+- Of **33 bound inputs**, **28 remain byte-exact**. Nine prior builder function ASTs and 37 prior test function ASTs remain exact; two producer/context functions and four schema assertions change, with one new nine-case test definition.
+- Nine published source/text artifacts were read back byte-exact. PR10893's Draft state, exact head/base/body and the unchanged incumbent PR10705 head were observed after publication.
+
+Browser proof uses synthetic source rendered by actual template/controller, controlled auth/HTTP and an intercepted app destination. It does **not** browse the saved production-input pair; file hashes identify that pair only. The nine I/O cases prove successful render overwrite, not crash-atomic publication or cleanup after earlier HTML failure. The changed-generation fixture changes recipe legs and protected identity at the same clock; it does not isolate recipe-only mutation. The version fence prevents subsequent incompatible hydration, not identities already painted by an old reader before transition.
+
+### Review findings and honest baseline
+
+The initial browser baseline's ten failures comprised two genuine old-reader defects, two deliberately failing future-version expectations, four requested-copy failures and two harness errors. The latter selected a hidden access button where generation mismatch requires the existing Reload action. Correcting the harness yielded two passing parent recovery cases; that is not a product fix.
+
+The initial test environment lacked one bound `engine.tech_confluence` dependency; restoring that exact dependency gave 73 passing prior tests. Final review additionally restored the writer's process-global shim flag around temporary-root tests and made empty browser selection nonzero. The final reviewed source was then rerun for the counts above. Read-only adversarial judgment is recorded as judgment, not formal GitHub approval.
+
+The default-main consumer scan found 60 exact v1 references without truncation. The apparent generic liveness occurrence is a US-premium comment; that registry does not monitor Confluence. Other asset readers keep v1; no liveness or global-schema mutation is necessary.
+
+### Applied Paper
+
+[Public states and Build](https://app.paper.design/file/01M6Y3DCDDW541ZR38J1V52A9Y/p-3-0) now matches the source actions and separates unavailable from qualified zero.
+
+- **272-0 /274-0 /276-0:** short unavailable title, explicit unknown matching count and correct EN/ZH page-reload action. The 320px method-open treatment retains its disclosure.
+- **278-0:** retains qualified zero and its explicit test-fixture source clock; the app action matches source without an onward arrow.
+- **2AG-0:** ten builder text nodes now bind the dependent source, one version owner, exact action effects, real proof and remaining release limits. Detailed implementation remains outside customer frames.
+
+All **171 Build,18 EN,18 ZH,21 EN320 and20 zero-state div identities, parents and styles remain exact**. Only twenty intended text nodes changed. The complete newer **R4 subtree2I3-0 remains byte-exact (39,643 characters)**. Token hash remains `6234666b`. Native screenshots of ZH390, EN320, zero and two Build modules show complete text and unclipped 48px actions. Both guarded operations returned **APPLIED_RESPONSE_OBSERVED**; exact owned roots were finished. [Full before/after receipt](PAPER_CONFLUENCE_COMPATIBILITY_20261109.json).
+
+### Boundaries and next safe phase
+
+PR10893 remains Draft/unarmed. Its publication does not inherit PR10705's source adoption, bypass the incumbent calendar semantic-proof refusal, or claim production entitlement/deployment. Wider D04/F01/F02/programme acceptance and all other holds are unchanged. PR10617 remains Draft.
+
+The next supported design improvement replaces the card's repeated recent win-rate chip with a matched Recent/Older baseline-delta display using existing supplied fields. Preserve monthly-rate samples, method, horizon, ranking, free/gated identity and source protocol; distinguish positive/negative/exact-zero/unavailable comparisons without inventing a calculation owner. Continue in this healthy mission after durable readback.
