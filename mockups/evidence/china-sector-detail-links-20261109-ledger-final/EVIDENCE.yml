@@ -1,0 +1,5 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/china.html.j2
+  - site/china.html
+manifest: mockups/evidence/china-sector-detail-links-20261109-ledger-final/capture-manifest.json

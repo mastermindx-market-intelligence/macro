@@ -1,0 +1,469 @@
+{
+  "completed_journeys": 8,
+  "css_blob": "99feca51197fd2006c1857e9fab7d46b2f170a77",
+  "duration_seconds": 18.59146809577942,
+  "external_network": "External origins blocked explicitly; current pinned local snapshot only",
+  "journeys": [
+    {
+      "activation": {
+        "bubbled": 0,
+        "sector_open_calls": 0,
+        "trusted_clicks": 1
+      },
+      "anchor_tabs": 38,
+      "applied_state": {
+        "locale": "en",
+        "theme": "dark"
+      },
+      "destination_heading": "Media (512980.SS)",
+      "destination_status": 200,
+      "destination_title": "Media (512980.SS) — cycle & constituents",
+      "destination_url": "http://127.0.0.1:52921/sectors/512980.SS.html",
+      "dialog_open": "cnx-dlg-markets",
+      "dialog_tabs": 123,
+      "expected_localized_heading": "Media",
+      "external_requests_blocked": [
+        "https://s3.tradingview.com/tv.js"
+      ],
+      "failed_responses": [],
+      "family": "markets",
+      "focus_ring": {
+        "color": "rgb(122, 167, 224)",
+        "focused": true,
+        "offset": "2px",
+        "semantic": "#7aa7e0",
+        "style": "solid",
+        "visible": true,
+        "width": "2px"
+      },
+      "focus_trace": [
+        {
+          "href": "#cnx-dlg-policy",
+          "id": "",
+          "tag": "A"
+        },
+        {
+          "href": "sectors/512690.SS.html",
+          "id": "",
+          "tag": "A"
+        }
+      ],
+      "height": 900,
+      "href": "sectors/512980.SS.html",
+      "locale": "en",
+      "name": "Media",
+      "page_errors": [
+        "TradingView is not defined"
+      ],
+      "status": "passed",
+      "theme": "dark",
+      "ticker": "512980.SS",
+      "viewport": "desktop",
+      "width": 1440
+    },
+    {
+      "activation": {
+        "bubbled": 0,
+        "sector_open_calls": 0,
+        "trusted_clicks": 1
+      },
+      "anchor_tabs": 38,
+      "applied_state": {
+        "locale": "en",
+        "theme": "light"
+      },
+      "destination_heading": "Media (512980.SS)",
+      "destination_status": 200,
+      "destination_title": "Media (512980.SS) — cycle & constituents",
+      "destination_url": "http://127.0.0.1:52921/sectors/512980.SS.html",
+      "dialog_open": "cnx-dlg-markets",
+      "dialog_tabs": 123,
+      "expected_localized_heading": "Media",
+      "external_requests_blocked": [
+        "https://s3.tradingview.com/tv.js"
+      ],
+      "failed_responses": [],
+      "family": "markets",
+      "focus_ring": {
+        "color": "rgb(40, 95, 255)",
+        "focused": true,
+        "offset": "2px",
+        "semantic": "#285fff",
+        "style": "solid",
+        "visible": true,
+        "width": "2px"
+      },
+      "focus_trace": [
+        {
+          "href": "#cnx-dlg-policy",
+          "id": "",
+          "tag": "A"
+        },
+        {
+          "href": "sectors/512690.SS.html",
+          "id": "",
+          "tag": "A"
+        }
+      ],
+      "height": 900,
+      "href": "sectors/512980.SS.html",
+      "locale": "en",
+      "name": "Media",
+      "page_errors": [
+        "TradingView is not defined"
+      ],
+      "status": "passed",
+      "theme": "light",
+      "ticker": "512980.SS",
+      "viewport": "desktop",
+      "width": 1440
+    },
+    {
+      "activation": {
+        "bubbled": 0,
+        "sector_open_calls": 0,
+        "trusted_clicks": 1
+      },
+      "anchor_tabs": 38,
+      "applied_state": {
+        "locale": "zh",
+        "theme": "dark"
+      },
+      "destination_heading": "传媒 (512980.SS)",
+      "destination_status": 200,
+      "destination_title": "Media (512980.SS) — cycle & constituents",
+      "destination_url": "http://127.0.0.1:52921/sectors/512980.SS.html",
+      "dialog_open": "cnx-dlg-markets",
+      "dialog_tabs": 123,
+      "expected_localized_heading": "传媒",
+      "external_requests_blocked": [
+        "https://s3.tradingview.com/tv.js"
+      ],
+      "failed_responses": [],
+      "family": "markets",
+      "focus_ring": {
+        "color": "rgb(122, 167, 224)",
+        "focused": true,
+        "offset": "2px",
+        "semantic": "#7aa7e0",
+        "style": "solid",
+        "visible": true,
+        "width": "2px"
+      },
+      "focus_trace": [
+        {
+          "href": "#cnx-dlg-policy",
+          "id": "",
+          "tag": "A"
+        },
+        {
+          "href": "sectors/512690.SS.html",
+          "id": "",
+          "tag": "A"
+        }
+      ],
+      "height": 900,
+      "href": "sectors/512980.SS.html",
+      "locale": "zh",
+      "name": "Media",
+      "page_errors": [
+        "TradingView is not defined"
+      ],
+      "status": "passed",
+      "theme": "dark",
+      "ticker": "512980.SS",
+      "viewport": "desktop",
+      "width": 1440
+    },
+    {
+      "activation": {
+        "bubbled": 0,
+        "sector_open_calls": 0,
+        "trusted_clicks": 1
+      },
+      "anchor_tabs": 38,
+      "applied_state": {
+        "locale": "zh",
+        "theme": "light"
+      },
+      "destination_heading": "传媒 (512980.SS)",
+      "destination_status": 200,
+      "destination_title": "Media (512980.SS) — cycle & constituents",
+      "destination_url": "http://127.0.0.1:52921/sectors/512980.SS.html",
+      "dialog_open": "cnx-dlg-markets",
+      "dialog_tabs": 123,
+      "expected_localized_heading": "传媒",
+      "external_requests_blocked": [
+        "https://s3.tradingview.com/tv.js"
+      ],
+      "failed_responses": [],
+      "family": "markets",
+      "focus_ring": {
+        "color": "rgb(40, 95, 255)",
+        "focused": true,
+        "offset": "2px",
+        "semantic": "#285fff",
+        "style": "solid",
+        "visible": true,
+        "width": "2px"
+      },
+      "focus_trace": [
+        {
+          "href": "#cnx-dlg-policy",
+          "id": "",
+          "tag": "A"
+        },
+        {
+          "href": "sectors/512690.SS.html",
+          "id": "",
+          "tag": "A"
+        }
+      ],
+      "height": 900,
+      "href": "sectors/512980.SS.html",
+      "locale": "zh",
+      "name": "Media",
+      "page_errors": [
+        "TradingView is not defined"
+      ],
+      "status": "passed",
+      "theme": "light",
+      "ticker": "512980.SS",
+      "viewport": "desktop",
+      "width": 1440
+    },
+    {
+      "activation": {
+        "bubbled": 0,
+        "sector_open_calls": 0,
+        "trusted_clicks": 1
+      },
+      "anchor_tabs": 39,
+      "applied_state": {
+        "locale": "en",
+        "theme": "dark"
+      },
+      "destination_heading": "Media (512980.SS)",
+      "destination_status": 200,
+      "destination_title": "Media (512980.SS) — cycle & constituents",
+      "destination_url": "http://127.0.0.1:52921/sectors/512980.SS.html",
+      "dialog_open": "cnx-dlg-markets",
+      "dialog_tabs": 14,
+      "expected_localized_heading": "Media",
+      "external_requests_blocked": [
+        "https://s3.tradingview.com/tv.js"
+      ],
+      "failed_responses": [],
+      "family": "markets",
+      "focus_ring": {
+        "color": "rgb(122, 167, 224)",
+        "focused": true,
+        "offset": "2px",
+        "semantic": "#7aa7e0",
+        "style": "solid",
+        "visible": true,
+        "width": "2px"
+      },
+      "focus_trace": [
+        {
+          "href": "#cnx-dlg-policy",
+          "id": "",
+          "tag": "A"
+        },
+        {
+          "href": "sectors/159928.SZ.html",
+          "id": "",
+          "tag": "A"
+        }
+      ],
+      "height": 844,
+      "href": "sectors/512980.SS.html",
+      "locale": "en",
+      "name": "Media",
+      "page_errors": [
+        "TradingView is not defined"
+      ],
+      "status": "passed",
+      "theme": "dark",
+      "ticker": "512980.SS",
+      "viewport": "mobile",
+      "width": 390
+    },
+    {
+      "activation": {
+        "bubbled": 0,
+        "sector_open_calls": 0,
+        "trusted_clicks": 1
+      },
+      "anchor_tabs": 39,
+      "applied_state": {
+        "locale": "en",
+        "theme": "light"
+      },
+      "destination_heading": "Media (512980.SS)",
+      "destination_status": 200,
+      "destination_title": "Media (512980.SS) — cycle & constituents",
+      "destination_url": "http://127.0.0.1:52921/sectors/512980.SS.html",
+      "dialog_open": "cnx-dlg-markets",
+      "dialog_tabs": 14,
+      "expected_localized_heading": "Media",
+      "external_requests_blocked": [
+        "https://s3.tradingview.com/tv.js"
+      ],
+      "failed_responses": [],
+      "family": "markets",
+      "focus_ring": {
+        "color": "rgb(40, 95, 255)",
+        "focused": true,
+        "offset": "2px",
+        "semantic": "#285fff",
+        "style": "solid",
+        "visible": true,
+        "width": "2px"
+      },
+      "focus_trace": [
+        {
+          "href": "#cnx-dlg-policy",
+          "id": "",
+          "tag": "A"
+        },
+        {
+          "href": "sectors/159928.SZ.html",
+          "id": "",
+          "tag": "A"
+        }
+      ],
+      "height": 844,
+      "href": "sectors/512980.SS.html",
+      "locale": "en",
+      "name": "Media",
+      "page_errors": [
+        "TradingView is not defined"
+      ],
+      "status": "passed",
+      "theme": "light",
+      "ticker": "512980.SS",
+      "viewport": "mobile",
+      "width": 390
+    },
+    {
+      "activation": {
+        "bubbled": 0,
+        "sector_open_calls": 0,
+        "trusted_clicks": 1
+      },
+      "anchor_tabs": 39,
+      "applied_state": {
+        "locale": "zh",
+        "theme": "dark"
+      },
+      "destination_heading": "传媒 (512980.SS)",
+      "destination_status": 200,
+      "destination_title": "Media (512980.SS) — cycle & constituents",
+      "destination_url": "http://127.0.0.1:52921/sectors/512980.SS.html",
+      "dialog_open": "cnx-dlg-markets",
+      "dialog_tabs": 14,
+      "expected_localized_heading": "传媒",
+      "external_requests_blocked": [
+        "https://s3.tradingview.com/tv.js"
+      ],
+      "failed_responses": [],
+      "family": "markets",
+      "focus_ring": {
+        "color": "rgb(122, 167, 224)",
+        "focused": true,
+        "offset": "2px",
+        "semantic": "#7aa7e0",
+        "style": "solid",
+        "visible": true,
+        "width": "2px"
+      },
+      "focus_trace": [
+        {
+          "href": "#cnx-dlg-policy",
+          "id": "",
+          "tag": "A"
+        },
+        {
+          "href": "sectors/159928.SZ.html",
+          "id": "",
+          "tag": "A"
+        }
+      ],
+      "height": 844,
+      "href": "sectors/512980.SS.html",
+      "locale": "zh",
+      "name": "Media",
+      "page_errors": [
+        "TradingView is not defined"
+      ],
+      "status": "passed",
+      "theme": "dark",
+      "ticker": "512980.SS",
+      "viewport": "mobile",
+      "width": 390
+    },
+    {
+      "activation": {
+        "bubbled": 0,
+        "sector_open_calls": 0,
+        "trusted_clicks": 1
+      },
+      "anchor_tabs": 39,
+      "applied_state": {
+        "locale": "zh",
+        "theme": "light"
+      },
+      "destination_heading": "传媒 (512980.SS)",
+      "destination_status": 200,
+      "destination_title": "Media (512980.SS) — cycle & constituents",
+      "destination_url": "http://127.0.0.1:52921/sectors/512980.SS.html",
+      "dialog_open": "cnx-dlg-markets",
+      "dialog_tabs": 14,
+      "expected_localized_heading": "传媒",
+      "external_requests_blocked": [
+        "https://s3.tradingview.com/tv.js"
+      ],
+      "failed_responses": [],
+      "family": "markets",
+      "focus_ring": {
+        "color": "rgb(40, 95, 255)",
+        "focused": true,
+        "offset": "2px",
+        "semantic": "#285fff",
+        "style": "solid",
+        "visible": true,
+        "width": "2px"
+      },
+      "focus_trace": [
+        {
+          "href": "#cnx-dlg-policy",
+          "id": "",
+          "tag": "A"
+        },
+        {
+          "href": "sectors/159928.SZ.html",
+          "id": "",
+          "tag": "A"
+        }
+      ],
+      "height": 844,
+      "href": "sectors/512980.SS.html",
+      "locale": "zh",
+      "name": "Media",
+      "page_errors": [
+        "TradingView is not defined"
+      ],
+      "status": "passed",
+      "theme": "light",
+      "ticker": "512980.SS",
+      "viewport": "mobile",
+      "width": 390
+    }
+  ],
+  "page_blob": "d8434b45ed3ef08a990f3f8d0404cb2b19d716b9",
+  "passed_journeys": 8,
+  "planned_journeys": 8,
+  "receiving_main": "b84bd66ab8313db879f68f97995486cf0aa7f782",
+  "schema": "mastermind.china_sector_keyboard_proof.v1"
+}

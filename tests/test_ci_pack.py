@@ -5703,9 +5703,9 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
 # all ten packs. Protected ceilings already cover this tree: no extra funding.
 # Keep every job/pack/runtime limit and selection rule unchanged.
 PACKING_PROBES = (
-    ("templates/index.html", 137, 5_948),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("scripts/build_free_content.py", 138, 5_969),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-    ("engine/prophet/plan_book.py", 131, 5_706),
+    ("templates/index.html", 137, 5_951),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 138, 5_972),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 131, 5_709),
 )
 # Twelve packs per shape was the pre-curation measurement.
 PACKING_PROBE_MAX_PACKS = 10
@@ -5713,6 +5713,40 @@ PACKING_PROBE_MAX_PACKS = 10
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
+
+    2026-11-09 (PR #8184, compose landed ledger and sector-link coverage):
+    Receiving main75e018ac retains the independent data-base-shim ledger.
+    Keep all46 ledger-history lines and all23 subject-history lines below.
+    The unchanged unrun-template-chips preimage gains the original suite:
+    commands9->10, test tokens11->12, weight31->34; current marginal+3.
+    Current5948/5969/5706 therefore composes as5951/5972/5709.
+    Keep all400 owners, all197 curated owners, every assertion and history,
+    job ceilings137/138/131 and ten packs. No runtime/admission change.
+    These are source-accounting limits; old paired/browser measurements
+    remain bound to their recorded generation and do not prove this page.
+
+    2026-11-09 (PR #8184, current China sector-link source composition):
+    Preserve current main's independently landed coverage and complete history.
+    The unchanged unrun-template-chips owner gains only this accepted suite:
+    nine to ten commands, eleven to twelve test tokens, weight31 to34.
+    Compose its own+3 with current5945/5966/5703 as5948/5969/5706.
+    Keep selected-job ceilings137/138/131, ten packs, all197 curated owners,
+    every assertion and execution/admission control. The original twelve-line
+    history below remains exact; its free137 prose is historical, while the
+    actual preserved free-content job ceiling is138. Current natural CI and
+    the separately recorded current-universe paired proof qualify this source.
+
+    2026-11-06 China sector navigation (#8184): actual canonical source pair
+    against main731a1a0f, with the new suite included in Git's candidate index.
+    Existing unrun-template-chips weighs31->34; every selected ID is unchanged:
+    index137jobs/5912->5915, free137/5927->5930, Prophet131/5668->5671,
+    all ten packs and two unscoped always-on jobs before/after. Comparison
+    SHA256 e85a6efdbdcfcfa063bb2c926df15d11e9fcd25acfbcb589e80ac961a03a48e5.
+    The first candidate measurement omitted the untracked suite from discovery;
+    that inventory error was corrected, not hidden by an exclusive scope.
+    Record only the three measured coverage-cost estimates. Assertions,
+    job-count/pack bounds, runner timeouts and admission capacity stay fixed.
+    These are planner estimates, not measured execution times.
 
     2026-11-09 (PR #10226, reconcile the actual #10192 landing):
     #10192 merged as7bdfb249486d409ee8634501842c31f51af74c7c.

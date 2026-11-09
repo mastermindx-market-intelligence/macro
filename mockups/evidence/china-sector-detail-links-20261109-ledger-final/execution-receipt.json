@@ -1,0 +1,47 @@
+{
+  "page_blob": "05a89adbcbeadb9840b74d84394d8421cef9fd58",
+  "steps": [
+    {
+      "name": "capture",
+      "exit_code": 0,
+      "seconds": 40.90277099609375,
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/capture_page_evidence.py",
+        "--site-dir",
+        "site",
+        "--registry",
+        "data/product_experience/page_registry.json",
+        "--routes",
+        "/china.html",
+        "--output-dir",
+        "mockups/evidence/china-sector-detail-links-20261109-ledger-final",
+        "--manifest",
+        "mockups/evidence/china-sector-detail-links-20261109-ledger-final/capture-manifest.json",
+        "--smells",
+        "mockups/evidence/china-sector-detail-links-20261109-ledger-final/ux-smells.json",
+        "--emit-md",
+        "mockups/evidence/china-sector-detail-links-20261109-ledger-final/REPORT.md",
+        "--viewports",
+        "desktop,mobile",
+        "--locales",
+        "en,zh",
+        "--themes",
+        "dark,light",
+        "--max-pages",
+        "1",
+        "--settle-ms",
+        "1400"
+      ]
+    },
+    {
+      "name": "keyboard",
+      "exit_code": 0,
+      "seconds": 52.2248809337616,
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "run_complete_keyboard.py"
+      ]
+    }
+  ]
+}
