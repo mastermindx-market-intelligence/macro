@@ -2497,3 +2497,57 @@ One guarded text update and one finish of **7M9-0** both returned **APPLIED_RESP
 The next source/design pass consolidates generic topic instructions and duplicate absence prose. Keep actual parent classification, canonical HBM identity, the distinction between no published evidence and no real-world participation, the existing company catalogue action, related topics and Theme details. Bring the company-evidence action into the phone viewport through clearer copy, not smaller type or targets, then add matching editable Paper states.
 
 PR10676 and this audit PR remain Draft/unmerged. Model01 **EFFECT_UNKNOWN / ROOT_UNVERIFIED** and original release, consumer-admission, protected-style and independent-writer holds remain. This work makes no full-shell/font, physical IME/keyboard-layout, spoken-AT, live-account, current-hosted-CI or deployment claim.
+
+
+## 51. GMI empty-topic clarity and the company-evidence route — 9 November 2026
+
+### Applied source and visible improvement
+
+[Draft source PR10676](https://github.com/mastermindx-market-intelligence/Macro/pull/10676) advances from **ce523870476f250e456eb3c481f4f89bf619866d** to **6a90aa1345ad2e61f25699bb51db56c91aca3aee**. Eight source/evidence files read back exactly.
+
+The empty topic now provides one classification label, one absence explanation and **Browse company evidence / 浏览公司证据**. Both renderers use the actual parent label for generic topics; the canonical HBM description remains specialized. The paragraph explicitly distinguishes absent published, reviewed connections from absent real-world participation. Redundant coverage decoration and mapped-topic prose are removed.
+
+Hide only the duplicate zero-connection count. Positive counts return when switching to an evidenced topic. Related topics, native Theme details and the separate completeness/revenue qualification remain. The existing company catalogue route and qualified return carry the selected research context; there is no new navigation or state owner.
+
+| Initial 844 px phone viewport | Before CTA bottom | After CTA bottom | Gain |
+|---|---:|---:|---:|
+| EN390 | 871.77 px | 772.47 px | 99.30 px |
+| EN320 | 959.81 px | 836.72 px | 123.09 px |
+| ZH320 | 815.22 px | 737.17 px | 78.05 px |
+| ZH390 | 796.47 px | 718.42 px | 78.05 px |
+
+All four final actions fit at scroll zero with no horizontal overflow. Their **44 px** height and **12.5 px** type remain unchanged. The four baseline cases captured measurements; PASS means capture completed, not that the proposed wording already passed. Both English baselines put the full action below the viewport.
+
+### Exact consumer and renderer proof
+
+Final browser PID **67635**, exit0, **17.98 s**, Chrome **157.0.8103.39**: **10 cases / 10 fresh anonymous contexts**, zero page errors.
+
+Six complete EN/ZH desktop/phone workflows cover native CTA activation, company return, locale changes, empty → HBM → empty, positive evidence/count restoration and Theme details. They produce **24 empty-state observations** and **six positive controls**. Two prior description-identity workflows and two controlled no-JS macro components also pass.
+
+Candidate production-macro PID **66293**, exit0, **2.22 s**, passes **742 language checks across 371 topics**, validating all **370 empty cards**. Every region outside the explicit generic-description/empty-card/coverage-hidden edits remains exact; HBM's entire markup remains exact. The no-JS fixture proves the production macro component, not a new served route or no-JS deep-linked empty state. The seven generated default HTML pages remain byte-exact.
+
+Three JS replacements and three macro replacements reverse to the exact parents. Of **135** prior verifier definitions, **133** remain AST-exact; two contain only the changed generic-copy expectation. The accepted model, **46 other bound inputs**, seven generated HTML pages and CSS are unchanged. Two final native phone captures were inspected.
+
+See [EMPTY_TOPIC_VALIDATION_20261109.json](https://github.com/mastermindx-market-intelligence/Macro/blob/6a90aa1345ad2e61f25699bb51db56c91aca3aee/research/theme_graph/gmi_design_20261021/EMPTY_TOPIC_VALIDATION_20261109.json) and [DESIGN_RECORD §11.42](https://github.com/mastermindx-market-intelligence/Macro/blob/6a90aa1345ad2e61f25699bb51db56c91aca3aee/research/theme_graph/gmi_design_20261021/DESIGN_RECORD.md). Full browser observations and all371 server before/after hashes are retained; repeated server prose is explicitly projected with complete original report hashes.
+
+### Editable Paper state and builder fit
+
+New [Research · Empty topics](https://app.paper.design/file/01M5H6EARN9YHQV17JC6ZG9BRY/p-E-0), root **AAM-0**, contains **94 editable div nodes**:
+
+- **E01 / AAV-0:** EN390 Noir, classification, one evidence paragraph and a visible company-evidence action.
+- **E02 / AAY-0:** ZH320 Day with the same meaning and hierarchy.
+- Existing canonical palette and Inter/PingFang tokens; the phone specimens describe product main content, not a claim of full hosted-shell/browser fidelity.
+
+The initial editable English nav wrapped a split Company/evidence flex label poorly. Before acceptance, the newly owned sections were corrected to explicit font inheritance and one natural text label; the active tab was sized to keep Theme research readable. The lower related-topic wording matches the existing source. Final individual phones and full comparison were visually inspected.
+
+Current [Build guide](https://app.paper.design/file/01M5H6EARN9YHQV17JC6ZG9BRY/p-7-0), **7M9-0**, remains **18 modules / 57 nodes**. Module02 now specifies the actual parent-label branch, module10 defines the empty-state/count/return contract, module03 carries current source identity, and module18 separates this phase's proof and limitations. These four text changes preserve every node ID, parent and style.
+
+[Browse Q01–Q06](https://app.paper.design/file/01M5H6EARN9YHQV17JC6ZG9BRY/p-D-0), **A1F-0**, retains all **279** node IDs, parents and styles. Only empty backdrop paragraphs **A7M-0** and **A9B-0** change to the new copy. The original EN mobile seed **6DR-0** remains byte-exact.
+
+All **30** guarded Paper operations returned **APPLIED_RESPONSE_OBSERVED**. They include incremental owned-component construction, visual corrections, the existing-text amendments and final release of exactly **AAM-0 / 7M9-0 / A1F-0**. All three final JSX roots read back exactly after finish. [PAPER_EMPTY_TOPIC_20261109.json](PAPER_EMPTY_TOPIC_20261109.json) retains their full relevant JSX, exact structural checks, source readback, meaningful operation results and explicit guard projection.
+
+### Continue with native topic links
+
+The next source review identifies a concrete mismatch: ordinary topic selection preserves research filters/lens through the existing writer, while native new-tab/copy-link destinations advertise only a theme. Reproduce the real browser path, then integrate destination projection with the current journey/URL owners so one operation cannot restore stale hrefs over the other. Preserve existing modified-click semantics and all search node/label/count checks.
+
+Both PRs remain Draft/unmerged. Original model01 **EFFECT_UNKNOWN / ROOT_UNVERIFIED**, consumer-admission, protected-style, independent-writer and release holds remain. These fixtures do not establish full shared shell/fonts, physical IME, spoken AT, live account, current hosted CI or deployment.
