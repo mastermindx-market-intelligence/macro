@@ -155,6 +155,8 @@ html body::before{display:none}
 .wrap .range-controls button:disabled{opacity:.55;cursor:default}
 .wrap :is(button,a,summary,[tabindex]):focus-visible{outline:2px solid var(--blue);outline-offset:3px}
 .wrap .js-plotly-plot{max-width:100%}
+.wrap #spv-study > .spv-plot > .section-title,.wrap #spv-study > .spv-plot > .card > .sub{display:none}
+.wrap #spv-study > .spv-plot > .card{padding:0;border:0;border-radius:0;box-shadow:none;background:transparent}
 .wrap blockquote{margin:12px 0;padding:12px 16px;border:1px solid var(--grid);border-radius:var(--r-ctl,8px);font-size:13px;color:var(--muted);overflow-wrap:anywhere}
 .wrap .shadow-state{font-weight:600;color:var(--ink)}
 .wrap .study-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
@@ -205,7 +207,12 @@ html body::before{display:none}
     <div class="range-controls" role="group" aria-label="{{ 'Model study range' }}">
       {% for label in ['1Y','5Y','10Y','All'] %}<button type="button" data-spv-range="{{ loop.index0 }}" aria-pressed="{{ 'true' if label == '5Y' else 'false' }}" disabled>{{ t(label, {'1Y':'1年','5Y':'5年','10Y':'10年','All':'全部'}[label]) }}</button>{% endfor %}
     </div>
-    <div class="spv-plot">{{ charts.strategy|safe }}</div>
+    <div class="spv-plot">
+  <div class="section-title">{{ t('The strategy in action · S&P 500 with the model on top','策略实战 · 标普500 叠加模型') }}</div>
+  <div class="card">{{ charts.strategy|safe }}
+    <div class="sub" style="margin-top:8px">{{ t('Green = fully invested, amber = trimmed, clear = defensive. ▲/▼ mark every allocation change. The strategy equity (blue) is rescaled onto the price axis so you can read protection vs participation directly. Use the range buttons to zoom.','绿色 = 满仓，琥珀 = 减仓，空白 = 防守。▲/▼ 标注每次仓位变动。策略净值（蓝）已缩放至价格轴，可直接对比保护与参与度。用范围按钮缩放。') }}</div>
+  </div>
+    </div>
     <p class="sub">{{ t('Green = fully invested; amber = trimmed; clear = defensive. Triangles mark model weight changes, not executed trades. Strategy equity is rescaled onto the price axis. Range controls update all three panels together. Older line samples may be thinned or rounded; change markers retain model dates.','绿色 = 满仓；琥珀色 = 减仓；无色 = 防守。三角标记表示模型权重变化，并非已执行交易。策略净值缩放至价格轴。范围控件同步更新三个面板。较早的折线样本可能抽稀或取整；变化标记保留模型日期。') }}</p>
   </section>
 
@@ -269,7 +276,10 @@ html body::before{display:none}
   <!-- ===== growth + drawdown ===== -->
   <details class="spv-details" id="spv-history">
     <summary>{{ t('Historical growth and drawdown','历史增长与回撤') }}</summary>
-    <div class="grid cols-2"><section class="card"><h3>{{ t('Growth of $1 (log) — vs buy & hold','1美元增长（对数）— 对比买入持有') }}</h3>{{ charts.growth|safe }}</section><section class="card"><h3>{{ t('Underwater (drawdown) — vs buy & hold','水下回撤 — 对比买入持有') }}</h3>{{ charts.dd|safe }}</section></div>
+  <div class="grid cols-2">
+    <div class="card"><h3>{{ t('Growth of $1 (log) — vs buy & hold','1美元增长（对数）— 对比买入持有') }}</h3>{{ charts.growth|safe }}</div>
+    <div class="card"><h3>{{ t('Underwater (drawdown) — vs buy & hold','水下回撤 — 对比买入持有') }}</h3>{{ charts.dd|safe }}</div>
+  </div>
     <div class="note b">{{ t('Historical results depend on this sample, inputs and assumptions. Headline CAGR includes T-bill carry on the defensive sleeve; ex-carry results are shown separately. Relative returns and drawdown protection can change across periods.','历史结果取决于样本、输入及假设。标题年化收益包含防守部分的短债利息；扣息结果另列。不同区间的相对收益和回撤保护可能变化。') }}</div>
   </details>
 
