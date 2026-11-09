@@ -729,17 +729,18 @@ def _matches(path: str, patterns: list[str]) -> bool:
     )
 
 
-def _served_stamps() -> dict[str, str]:
-    """Root-relative asset path -> the ?v= stamp site/ actually serves for it."""
+def _served_stamps() -> dict[str, set[str]]:
+    """Root-relative asset path -> every ?v= stamp served by its consumers."""
     ref = re.compile(r'(?:src|href)="([^"]+\.(?:js|css))\?v=([0-9a-zA-Z]+)"')
-    out: dict[str, str] = {}
+    out: dict[str, set[str]] = {}
     for page in SITE.rglob("*.html"):
         parent = page.parent
         for url, stamp in ref.findall(page.read_text(encoding="utf-8", errors="replace")):
             if url.startswith(("http://", "https://", "//")):
                 continue
             try:
-                out["/" + str((parent / url).resolve().relative_to(SITE.resolve()))] = stamp
+                path = "/" + str((parent / url).resolve().relative_to(SITE.resolve()))
+                out.setdefault(path, set()).add(stamp)
             except ValueError:
                 continue
     return out
@@ -788,8 +789,9 @@ def test_every_stamped_public_asset_is_on_the_immutable_matcher():
 
 def test_hand_stamp_carve_out_holds_only_hand_stamped_paths():
     """@watchlist_shell_versioned exists ONLY for hand-authored ?v=N integers,
-    which must not be cached for a year. A path whose served stamp equals its own
-    sha256[:8] is content-addressed and belongs on the immutable matcher instead
+    which must not be cached for a year. A path belongs on the immutable
+    matcher only when every served stamp equals its own sha256[:8]. Fully
+    migrated assets should no longer be held at a short lifetime
     — that is exactly how mtf.js and mm_brain.js sat at 300s after they became
     content-hashed, paying a revalidation on every navigation."""
     if not SITE.is_dir():
@@ -803,12 +805,44 @@ def test_hand_stamp_carve_out_holds_only_hand_stamped_paths():
         body = SITE / path.lstrip("/")
         if not body.is_file():
             continue
-        if served == hashlib.sha256(body.read_bytes()).hexdigest()[:8]:
-            wrong.append(f"{path}?v={served}")
+        digest = hashlib.sha256(body.read_bytes()).hexdigest()[:8]
+        if served == {digest}:
+            wrong.append(f"{path}?v={digest}")
     assert not wrong, (
         "these are content-hash stamped, so the 300s carve-out is wrong for them "
         f"— move them to @public_versioned: {wrong}"
     )
+
+
+@pytest.mark.parametrize("reverse_order", [False, True])
+def test_stamp_census_keeps_mixed_consumers_before_immutable_migration(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, reverse_order: bool
+):
+    asset = tmp_path / "watchstore.js"
+    asset.write_text("window.fixture = true;\n", encoding="utf-8")
+    digest = hashlib.sha256(asset.read_bytes()).hexdigest()[:8]
+    manual, hashed = tmp_path / "watchlist.html", tmp_path / "ontology.html"
+    manual.write_text('<script src="watchstore.js?v=12"></script>', encoding="utf-8")
+    hashed.write_text(f'<script src="watchstore.js?v={digest}"></script>', encoding="utf-8")
+    pages = [manual, hashed]
+    if reverse_order:
+        pages.reverse()
+    monkeypatch.setitem(globals(), "SITE", tmp_path)
+    monkeypatch.setitem(
+        globals(), "CADDY",
+        "@watchlist_shell_versioned {\n path /watchstore.js\n query v=*\n}\n",
+    )
+    monkeypatch.setattr(Path, "rglob", lambda _root, _pattern: iter(pages))
+
+    assert _served_stamps() == {"/watchstore.js": {"12", digest}}
+    test_hand_stamp_carve_out_holds_only_hand_stamped_paths()
+
+    # Once every consumer uses the content hash, the same guard must reject
+    # leaving the asset in the short-cache carve-out.
+    manual.write_text(f'<script src="watchstore.js?v={digest}"></script>', encoding="utf-8")
+    assert _served_stamps() == {"/watchstore.js": {digest}}
+    with pytest.raises(AssertionError, match="content-hash stamped"):
+        test_hand_stamp_carve_out_holds_only_hand_stamped_paths()
 
 
 # ── R1A-M Intelligence Hub Market Pulse controller (freeze §10) ────────────
