@@ -58,49 +58,68 @@ All phase contracts, source transformations, harness diagnostics, receipts and c
 <details>
 <summary>Earlier section destinations</summary>
 
+<a id="crypto-r4-reliable-cases-asset-readings-and-navigation"></a>
+
+- [Crypto R4: reliable cases, asset readings and navigation](README_PHASE_HISTORY_20261109.md#crypto-r4-reliable-cases-asset-readings-and-navigation)
+
 <a id="current-phase--native-context-and-focus-continuity"></a>
+
 - [Current phase — native context and focus continuity](README_PHASE_HISTORY_20261109.md#current-phase--native-context-and-focus-continuity)
 
 <a id="prior-phase--honest-missing-case-recovery"></a>
+
 - [Prior phase — honest missing-case recovery](README_PHASE_HISTORY_20261109.md#prior-phase--honest-missing-case-recovery)
 
 <a id="prior-phase--clear-asset-identity-and-quote-hierarchy"></a>
+
 - [Prior phase — clear asset identity and quote hierarchy](README_PHASE_HISTORY_20261109.md#prior-phase--clear-asset-identity-and-quote-hierarchy)
 
 <a id="prior-phase--honest-quote-availability-and-useful-small-prices"></a>
+
 - [Prior phase — honest quote availability and useful small prices](README_PHASE_HISTORY_20261109.md#prior-phase--honest-quote-availability-and-useful-small-prices)
 
 <a id="prior-phase--footer-actions-clear-the-shared-launcher"></a>
+
 - [Prior phase — footer actions clear the shared launcher](README_PHASE_HISTORY_20261109.md#prior-phase--footer-actions-clear-the-shared-launcher)
 
 <a id="prior-phase--clear-overview-fields-and-aligned-section-headings"></a>
+
 - [Prior phase — clear Overview fields and aligned section headings](README_PHASE_HISTORY_20261109.md#prior-phase--clear-overview-fields-and-aligned-section-headings)
 
 <a id="prior-phase--qualified-relative-values-and-bilingual-states"></a>
+
 - [Prior phase — qualified relative values and bilingual states](README_PHASE_HISTORY_20261109.md#prior-phase--qualified-relative-values-and-bilingual-states)
 
 <a id="prior-phase--complete-comparison-readings-on-narrow-screens"></a>
+
 - [Prior phase — complete comparison readings on narrow screens](README_PHASE_HISTORY_20261109.md#prior-phase--complete-comparison-readings-on-narrow-screens)
 
 <a id="prior-phase--honest-comparison-basis-and-usable-asset-workflows"></a>
+
 - [Prior phase — honest comparison basis and usable asset workflows](README_PHASE_HISTORY_20261109.md#prior-phase--honest-comparison-basis-and-usable-asset-workflows)
 
 <a id="prior-phase--original-condition-first-saved-cases"></a>
+
 - [Prior phase — original-condition-first saved cases](README_PHASE_HISTORY_20261109.md#prior-phase--original-condition-first-saved-cases)
 
 <a id="prior-phase--saved-case-navigation-verified"></a>
+
 - [Prior phase — saved-case navigation verified](README_PHASE_HISTORY_20261109.md#prior-phase--saved-case-navigation-verified)
 
 <a id="prior-completed-phase--storage-safety"></a>
+
 - [Prior completed phase — storage safety](README_PHASE_HISTORY_20261109.md#prior-completed-phase--storage-safety)
 
 <a id="implemented"></a>
+
 - [Implemented](README_PHASE_HISTORY_20261109.md#implemented)
 
 <a id="verification"></a>
+
 - [Verification](README_PHASE_HISTORY_20261109.md#verification)
 
 <a id="build-contract-and-evidence"></a>
+
 - [Build contract and evidence](README_PHASE_HISTORY_20261109.md#build-contract-and-evidence)
 
 </details>

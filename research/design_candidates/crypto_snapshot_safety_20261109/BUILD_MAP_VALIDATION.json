@@ -18,16 +18,18 @@
     "exact_bytes": "Existing Git blob reused without alteration; relative links retain the same directory."
   },
   "landing": {
-    "characters": 9707,
+    "characters": 9942,
     "workflow_rows": 12,
-    "legacy_heading_anchors": 15
+    "legacy_heading_anchors": 16
   },
   "checks": {
     "parent_readback_exact": true,
     "old_heading_anchors_retained": true,
     "all_contract_and_proof_targets_preexist_in_before_image": true,
     "archive_content_exact": true,
-    "runtime_test_and_paper_changes": 0
+    "runtime_test_and_paper_changes": 0,
+    "archive_absent_at_parent": true
   },
-  "verification_scope": "Documentation structure and before-image comparison only. No runtime, native browser or Paper rerun; accepted implementation evidence is linked with its original scope."
+  "verification_scope": "Documentation structure and before-image comparison only. No runtime, native browser or Paper rerun; accepted implementation evidence is linked with its original scope.",
+  "documentation_revision": "Original H1 destination included in addition to all H2 destinations; no archive or runtime change."
 }
