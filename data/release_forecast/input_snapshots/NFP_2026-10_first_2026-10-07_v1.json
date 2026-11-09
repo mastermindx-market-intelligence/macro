@@ -1,0 +1,25 @@
+{
+  "prediction_id": "NFP:2026-10:first:2026-10-07:v1",
+  "asof": "2026-10-07",
+  "features": {
+    "nfp_change_lag1": -31.0,
+    "nfp_change_lag2": 217.0,
+    "nfp_change_lag3": -126.0,
+    "claims_survey_week_icsa": null,
+    "claims_survey_week_ccsa": null,
+    "withheld_tax_yoy": -7.8488958105229045,
+    "awhman_mom": 0.20000000000000284,
+    "adp_change": null
+  },
+  "legs": {
+    "adp_change": "absent",
+    "awhman_mom": "revision_optimistic",
+    "claims_survey_week_ccsa": "absent",
+    "claims_survey_week_icsa": "absent",
+    "nfp_change_lag1": "present",
+    "nfp_change_lag2": "present",
+    "nfp_change_lag3": "present",
+    "withheld_tax_yoy": "unrevised"
+  },
+  "inputs_hash": "ec04ab24b20bc224b357688fae98b6681eca375107c2917039d48d1faf634f8a"
+}

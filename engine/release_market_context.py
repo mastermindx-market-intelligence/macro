@@ -106,7 +106,8 @@ log = logging.getLogger(__name__)
 # ── constants ─────────────────────────────────────────────────────────────────
 _INLINE_HALF_WIDTH_SIGMA = 0.35   # ±σ band per MRI §3.4
 _TAIL_SIGMA_CAP = 4.0             # cap tail extension beyond ±4σ from benchmark
-_ERA_LABEL = "2021plus"           # exact string used in playbook_v1.json
+_ERA_LABEL = "2021plus"           # modern-era fallback cells in playbook_v1.json
+_REGIME_ERA_LABEL = "all"          # preregistered regime cells are pooled across eras
 _REGIME_MIN_N = 8                 # prefer regime cell only if n >= this
 
 # MRI-R33 STALE-ENRICH-1/2: TTL staleness gates for enrichment sources.
@@ -480,9 +481,11 @@ def get_reaction_sensitivity(
 ) -> dict | None:
     """Return h1 reaction-sensitivity means plus source-bound descriptive evidence.
 
-    The four legacy compact mean fields remain unchanged for existing clients. The
-    additive evidence block is built from the same selected cells so sample size,
-    interval, regime, target and horizon metadata cannot drift from displayed means.
+    The four compact means and current direct evidence entries remain available.
+    Both direct entries and additive details come from the same selected cell.
+    Regime-conditioned cells use the preregistered pooled era="all"; unmatched
+    fields fall back to the 2021plus era-level cell. Valid legacy evidence keeps
+    four-decimal rounding, while malformed optional metadata remains unavailable.
 
     h1 is the next trading-session close versus the pre-event prior close. It is not
     a one-hour horizon. CPI playbook surprises retain the frozen v1 legacy CPIAUCSL
@@ -516,11 +519,12 @@ def get_reaction_sensitivity(
             return None
 
         def _finite_number(value: object) -> bool:
-            return (
-                isinstance(value, (int, float))
-                and not isinstance(value, bool)
-                and math.isfinite(float(value))
-            )
+            if not isinstance(value, (int, float)) or isinstance(value, bool):
+                return False
+            try:
+                return math.isfinite(float(value))
+            except (OverflowError, ValueError):
+                return False
 
         def _valid_regime_n(value: object) -> bool:
             return (
@@ -546,11 +550,12 @@ def get_reaction_sensitivity(
             if regime is not None:
                 conditioned = [
                     c for c in source_cells
-                    if c.get("release") == release
+                    if isinstance(c, dict)
+                    and c.get("release") == release
                     and c.get("bucket") == bucket
                     and c.get("outcome") == outcome
                     and c.get("horizon") == "h1"
-                    and c.get("era") == era
+                    and c.get("era") == _REGIME_ERA_LABEL
                     and c.get("regime") == regime
                     and _valid_regime_n(c.get("n"))
                     and _finite_number(c.get("mean"))
@@ -561,7 +566,8 @@ def get_reaction_sensitivity(
 
             era_level = [
                 c for c in source_cells
-                if c.get("release") == release
+                if isinstance(c, dict)
+                and c.get("release") == release
                 and c.get("bucket") == bucket
                 and c.get("outcome") == outcome
                 and c.get("horizon") == "h1"
@@ -614,6 +620,7 @@ def get_reaction_sensitivity(
 
         regime_cells_used = False
         fields: dict[str, float | None] = {}
+        legacy_evidence: dict[str, dict[str, Any] | None] = {}
         evidence_cells: dict[str, dict] = {}
 
         for bucket in ("hot", "cold"):
@@ -631,6 +638,7 @@ def get_reaction_sensitivity(
                 )
                 if cell is None:
                     fields[field_prefix] = None
+                    legacy_evidence[field_prefix] = None
                     continue
 
                 cell_regime = cell.get("regime")
@@ -659,7 +667,7 @@ def get_reaction_sensitivity(
                     "release": release_family,
                     "outcome": outcome_key,
                     "bucket": bucket,
-                    "era": _ERA_LABEL,
+                    "era": cell.get("era"),
                     "regime": cell_regime,
                     "horizon": "h1",
                     "mean": mean_value,
@@ -711,10 +719,31 @@ def get_reaction_sensitivity(
                         "hi": float(ci_hi),
                     }
 
+                # Keep the current direct evidence interface alongside the
+                # additive descriptive map, with both bound to this same cell.
+                # Legacy n=0 for an absent count remains its old sentinel;
+                # malformed counts are not coerced into genuine observations.
+                interval = detail.get("interval")
+                median_value = cell.get("median")
+                legacy_evidence[field_prefix] = {
+                    "n": 0 if n_value is None else detail.get("n"),
+                    "mean": mean_value,
+                    "median": (
+                        round(float(median_value), 4)
+                        if _finite_number(median_value) else None
+                    ),
+                    "ci_lo": round(interval["lo"], 4) if interval is not None else None,
+                    "ci_hi": round(interval["hi"], 4) if interval is not None else None,
+                    "era": cell.get("era"),
+                    "regime": cell_regime,
+                    "revision_optimistic": cell_regime is not None,
+                }
                 evidence_cells[legacy_field] = detail
 
         note = (
-            "Historical means from playbook_v1 2021plus era; regime-conditioned cells used."
+            "Historical means from playbook_v1 pooled regime cells (era=all) where "
+            "available, with unmatched fields falling back to 2021plus era-level "
+            "cells; regime labels are revision_optimistic."
             if regime_cells_used
             else "Historical means from playbook_v1 2021plus era; regime=null cells."
         )
@@ -739,9 +768,13 @@ def get_reaction_sensitivity(
             "spy_h1_hot_pct": fields.get("spy_h1_hot"),
             "spy_h1_cold_pct": fields.get("spy_h1_cold"),
             "era_basis": _ERA_LABEL,
+            "regime_requested": current_regime,
+            "regime_basis": _REGIME_ERA_LABEL if regime_cells_used else None,
             "regime_cells_used": regime_cells_used,
+            "regime_labels_revision_optimistic": bool(regime_cells_used),
             "note": note,
             "evidence": {
+                **legacy_evidence,
                 "schema": "reaction_evidence.v1",
                 "display_only": True,
                 "authority": False,

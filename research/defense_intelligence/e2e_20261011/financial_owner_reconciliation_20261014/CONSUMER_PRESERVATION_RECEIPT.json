@@ -1,0 +1,22 @@
+{
+  "state": "CONSUMER_IDENTICAL_EXCEPT_DERIVED_GENERATION_RECEIPTS_ALL43_APPROVALS_PRESERVED",
+  "old_generation": "260310c59f4c5ba6b7afc231",
+  "new_generation": "8a27d8b450ab547be676fadc",
+  "comparison_clock": "2026-10-14T03:05:26.075302+00:00",
+  "identical_root_market_government_participation_inputs": true,
+  "all_projected_defense_fact_value_unit_period_basis_class_span_document_clocks_unchanged": true,
+  "normalization_only": [
+    "derived content_id",
+    "generation_id in owner references and binding keys",
+    "workspace sha256 derived from generation stamp",
+    "derived market context envelope sha256/content_id/reference keys whose financial generation/manifest/workspace receipts changed; all other binding fields and market values/clocks exact"
+  ],
+  "all43_theme_fingerprints_match_accepted_config": true,
+  "accepted_config_sha256": "6d00ae51d964cfae955647c3c526b78f0b2e3da0514f97eae0647869b660027b",
+  "all10_old_and_new_declared_lengths_verified": true,
+  "root_mutations": 0,
+  "network_reads": 0,
+  "upstream_writes": 0,
+  "preview_sha256": "c8cd82ef46cd51e522b5205ed54700557d8ac65f8a5e4269779e3f722901634f",
+  "initial_staging_preview_note": "Initial stage-only preview and CONSUMER_DIFF omit nonfinancial root mirrors; use this identical-other-input comparison for integration."
+}

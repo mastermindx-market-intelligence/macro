@@ -28,7 +28,13 @@ fetch_rate_limits normalized shape:
         "secondary": {"used_percent": float, "resets_at": str | None, "window_mins": int | None} | None,
         "plan_type": str | None,
         "fetched_at": str,                 # ISO 8601 UTC
+        "ordinary_usage_allowed": bool | None,  # optional newer-protocol field
     } | None
+
+If the provider supplies ordinaryUsageAllowed but quota fields are incomplete,
+fetch_rate_limits returns only ordinary_usage_allowed and fetched_at. Missing
+window keys remain unknown, not N/A. The existing budget consumer denies this
+partial packet and cannot silently retain an older healthy cache.
 
 NEVER-RAISE: every public function catches all exceptions internally.
 Auth hygiene: ~/.codex/auth.json is never read; token values are never logged.
@@ -37,6 +43,7 @@ from __future__ import annotations
 
 import json
 import logging
+import math
 import os
 import shutil
 import subprocess
@@ -451,18 +458,27 @@ def _normalize_rl_entry_from_appserver(entry: Any) -> dict | None:
     """
     if not isinstance(entry, dict):
         return None
-    pct = entry.get("usedPercent")
-    if pct is None:
+    try:
+        pct = entry.get("usedPercent")
+        if type(pct) not in (int, float) or not math.isfinite(pct) or pct < 0:
+            return None
+        resets_epoch = entry.get("resetsAt")
+        if resets_epoch is not None and (type(resets_epoch) not in (int, float)
+                or not math.isfinite(resets_epoch) or resets_epoch <= 0):
+            return None
+        resets_at = _epoch_to_iso(resets_epoch) if resets_epoch is not None else None
+        if resets_epoch is not None and resets_at is None:
+            return None
+        window_mins = entry.get("windowDurationMins")
+        if window_mins is not None and (type(window_mins) is not int or window_mins <= 0):
+            return None
+        return {
+            "used_percent": float(pct),
+            "resets_at": resets_at,
+            "window_mins": window_mins,
+        }
+    except (OverflowError, TypeError, ValueError):
         return None
-    resets_epoch = entry.get("resetsAt")
-    resets_at = _epoch_to_iso(resets_epoch) if resets_epoch is not None else None
-    window_mins_raw = entry.get("windowDurationMins")
-    window_mins = int(window_mins_raw) if window_mins_raw is not None else None
-    return {
-        "used_percent": float(pct),
-        "resets_at": resets_at,
-        "window_mins": window_mins,
-    }
 
 
 def _readline_with_deadline(stdout: Any, deadline: float) -> str:
@@ -610,21 +626,50 @@ def fetch_rate_limits(timeout_s: int = 30) -> dict | None:
             log.debug("codex_lane.runner.fetch_rate_limits: result not a dict")
             return None
 
-        # Real shape: result["rateLimits"]["primary"] / ["secondary"]
-        rl_root = result.get("rateLimits") or result
-        if not isinstance(rl_root, dict):
-            return None
+        # Preserve permission independently of optional quota measurements.
+        # Dropping an explicit denial because another field is malformed would
+        # leave a previously healthy cache authoritative in the caller.
+        permission_only = None
+        if "ordinaryUsageAllowed" in result:
+            allowed = result["ordinaryUsageAllowed"]
+            if allowed is not None and type(allowed) is not bool:
+                return None
+            permission_only = {"ordinary_usage_allowed": allowed, "fetched_at": fetched_at}
 
-        primary = _normalize_rl_entry_from_appserver(rl_root.get("primary"))
-        secondary = _normalize_rl_entry_from_appserver(rl_root.get("secondary"))
+        # An explicitly supplied bucket map is authoritative: a missing Codex
+        # bucket cannot borrow another product's or the legacy bucket's quota.
+        if "rateLimitsByLimitId" in result:
+            buckets = result["rateLimitsByLimitId"]
+            rl_root = buckets.get("codex") if isinstance(buckets, dict) else None
+        elif "rateLimits" in result:
+            rl_root = result["rateLimits"]
+        else:
+            rl_root = result
+        if not isinstance(rl_root, dict) or any(k not in rl_root for k in ("primary", "secondary")):
+            return permission_only
+
+        primary = _normalize_rl_entry_from_appserver(rl_root["primary"])
+        secondary = _normalize_rl_entry_from_appserver(rl_root["secondary"])
+        # Only an explicit provider null means N/A. Incomplete/invalid reads
+        # cannot manufacture healthy capacity by silently dropping a constraint.
+        if any(rl_root[k] is not None and value is None
+               for k, value in (("primary", primary), ("secondary", secondary))):
+            return permission_only
+        if primary is None and secondary is None:
+            return permission_only
         plan_type = result.get("planType") or rl_root.get("planType")
 
-        return {
+        normalized = {
             "primary": primary,
             "secondary": secondary,
             "plan_type": plan_type,
             "fetched_at": fetched_at,
         }
+        if permission_only is not None:
+            # Native account validation owns this signal. Do not infer it from
+            # percentages, or export the private accountId associated with it.
+            normalized["ordinary_usage_allowed"] = permission_only["ordinary_usage_allowed"]
+        return normalized
 
     except Exception as exc:  # noqa: BLE001
         log.debug("codex_lane.runner.fetch_rate_limits: error: %s", exc)

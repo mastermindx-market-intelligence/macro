@@ -1,0 +1,23 @@
+{
+ "accepted_at": "2026-05-26T20:35:23Z",
+ "accession": "0001973239-26-000097",
+ "cik": "0001973239",
+ "doc_byte_length": 3137018,
+ "doc_sha256": "8ab052cc035f9cc93429c0bfd76edf2bc11a686a80f0cc7b568fbd456b2ec815",
+ "excerpt_note": "Verbatim byte excerpt of a public SEC EDGAR filing for research provenance; the full document is identified by doc_sha256 and re-verifiable by replay. public_display: unknown (F03 A7).",
+ "filed_at": "2026-05-26",
+ "form": "20-F",
+ "period_of_report": "2026-03-31",
+ "primary_document": "arm-20260331.htm",
+ "schema": "company_intelligence.relationship_source_excerpt/v1",
+ "span": {
+  "byte_end": 492243,
+  "byte_start": 492061,
+  "normalized": "related tort and anti-competition claims. In 2025, Qualcomm amended its complaint again to add claims relating to an alleged breach of Qualcomm’s Technology License Agreement.",
+  "normalized_sha256": "a808d6bac0ec2b94cda98c9bc37f88d1e62ed7aa736492e35e76572852e6089a",
+  "raw": "related tort and anti-competition claims. In 2025, Qualcomm amended its complaint again to add claims relating to an alleged breach of Qualcomm&#8217;s Technology License Agreement. ",
+  "raw_sha256": "9c962e5cd5511b3693f8ebab8497bb6e302f0ec9b882be05d6128ee4c312c54c"
+ },
+ "url": "https://www.sec.gov/Archives/edgar/data/1973239/000197323926000097/arm-20260331.htm",
+ "xbrl_contexts": []
+}

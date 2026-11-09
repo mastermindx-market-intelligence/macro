@@ -3,7 +3,29 @@
   "version": "1.0.0",
   "object_classes": ["world_observation", "derived_view", "system_belief", "forward_claim", "instrument_state"],
   "clock_classes": ["world_valid", "source_published", "knowable", "observed", "system_recorded", "belief_or_build", "review_due"],
-  "subject_key_types": ["cik", "issuer_id", "security_id", "listing_key", "award_key", "notice_id", "nct", "theme_node", "chain_id", "claim_id", "accession", "mm_subject", "institutional_manager_cik", "cusip", "theme_evidence_id", "fif_occurrence_id", "fif_packet_id", "institutional_catalog_generation_id", "govrev_event_id", "mm_outcome_record_id"],
+  "subject_key_types": [
+    "cik",
+    "issuer_id",
+    "security_id",
+    "listing_key",
+    "award_key",
+    "notice_id",
+    "nct",
+    "theme_node",
+    "chain_id",
+    "claim_id",
+    "accession",
+    "mm_subject",
+    "institutional_manager_cik",
+    "cusip",
+    "theme_evidence_id",
+    "fif_occurrence_id",
+    "fif_packet_id",
+    "institutional_catalog_generation_id",
+    "govrev_event_id",
+    "mm_outcome_record_id",
+    "drl_event_key"
+  ],
   "subject_key_grammars": {
     "cik": {"kind": "regex", "pattern": "^[0-9]{10}$"},
     "issuer_id": {"kind": "dataos_identity", "identity_kind": "issuer"},
@@ -24,7 +46,11 @@
     "fif_packet_id": {"kind": "regex", "pattern": "^fip_[a-f0-9]{24}$"},
     "institutional_catalog_generation_id": {"kind": "regex", "pattern": "^i13fgen_[a-f0-9]{64}$"},
     "govrev_event_id": {"kind": "regex", "pattern": "^gov(?:ws|opp|awd)-[a-zA-Z0-9_-]+$"},
-    "mm_outcome_record_id": {"kind": "regex", "pattern": "^mmoutcome_[a-f0-9]{64}$"}
+    "mm_outcome_record_id": {"kind": "regex", "pattern": "^mmoutcome_[a-f0-9]{64}$"},
+    "drl_event_key": {
+      "kind": "regex",
+      "pattern": "^\\[\"[0-9]{4}-[0-9]{2}-[0-9]{2}\",\"[A-Z0-9][A-Z0-9.-]{0,14}\",\"(?:up|down)\"\\]$"
+    }
   },
   "owner_stores": {
     "theme_graph.evidence": {
@@ -46,6 +72,16 @@
       "clock_bindings": {"valid_from": {"class": "world_valid", "grains": ["date"]}, "valid_to": {"class": "world_valid", "grains": ["date"]}, "evidence_time": {"class": "source_published", "grains": ["date"]}, "belief_time": {"class": "belief_or_build", "grains": ["date"]}, "computed_at": {"class": "belief_or_build", "grains": ["datetime"]}},
       "synapse_asof_field": "computed_at", "reader": "engine.theme_graph.store.read_edges", "reader_kind": "collection",
       "pointer_template": "data/theme_graph/edges.parquet#edge_id={edge_id}&belief_time={belief_time}"
+    },
+    "theme_graph.curation_assertion": {
+      "native_identity_fields": ["evidence_id", "curation_revision"], "native_identity_types": {"evidence_id": "string", "curation_revision": "string"}, "native_schemas": ["theme_graph.curation_assertion.v1"],
+      "native_identity_grammars": {"evidence_id": {"kind": "regex", "pattern": "^ev:[a-f0-9]{16}$"}, "curation_revision": {"kind": "regex", "pattern": "^gmirca_[0-9a-f]{32}$"}},
+      "object_classes": ["world_observation", "forward_claim", "derived_view"], "subject_key_types": ["theme_evidence_id"],
+      "subject_native_parity": {"theme_evidence_id": {"kind": "native_field_equal", "field": "evidence_id"}},
+      "coverage_classes": ["append_only_bitemporal"], "replay_capabilities": {"live": ["owner_native"], "historical_replay": ["owner_native"]},
+      "clock_bindings": {"source.published_at": {"class": "source_published", "grains": ["date", "datetime"]}, "source.observed_at": {"class": "observed", "grains": ["datetime"]}, "source.retained_at": {"class": "system_recorded", "grains": ["datetime"]}, "source.available_at": {"class": "knowable", "grains": ["datetime"]}, "review.reviewed_at": {"class": "belief_or_build", "grains": ["datetime"]}, "temporal.business_valid_from": {"class": "world_valid", "grains": ["date"]}, "temporal.business_valid_to": {"class": "world_valid", "grains": ["date"]}, "computed_at": {"class": "belief_or_build", "grains": ["datetime"]}},
+      "synapse_asof_field": "computed_at", "reader": "engine.theme_graph.curation_assertion.decode_assertion", "reader_kind": "parser",
+      "pointer_template": "data/theme_graph/evidence.parquet#evidence_id={evidence_id}&curation_revision={curation_revision}"
     },
     "fif.raw_occurrence": {
       "native_identity_fields": ["occurrence_id"], "native_identity_types": {"occurrence_id": "string"}, "native_schemas": ["fundamental_forensics.raw_ledger/v1#RawFactOccurrence"],
@@ -156,6 +192,83 @@
       "clock_bindings": {"effective_at": {"class": "world_valid", "grains": ["datetime"]}, "source_available_at": {"class": "knowable", "grains": ["datetime"]}, "known_at": {"class": "knowable", "grains": ["datetime"]}, "observed_at": {"class": "observed", "grains": ["datetime"]}, "recorded_at": {"class": "system_recorded", "grains": ["datetime"]}},
       "synapse_asof_field": null, "reader": "engine.neuralweb.market_memory_forward_store.load_record", "reader_kind": "direct",
       "pointer_template": "market-memory-forward://outcome/{outcome_record_id}"
+    },
+    "price_pressure.event": {
+      "native_identity_fields": [
+        "date",
+        "ticker",
+        "side"
+      ],
+      "native_identity_types": {
+        "date": "string",
+        "ticker": "string",
+        "side": "string"
+      },
+      "native_schemas": [
+        "price_pressure.captured_event.v1"
+      ],
+      "native_identity_grammars": {
+        "date": {
+          "kind": "date"
+        },
+        "ticker": {
+          "kind": "regex",
+          "pattern": "^[A-Z0-9][A-Z0-9.-]{0,14}$"
+        },
+        "side": {
+          "kind": "enum",
+          "values": [
+            "up",
+            "down"
+          ]
+        }
+      },
+      "object_classes": [
+        "derived_view"
+      ],
+      "subject_key_types": [
+        "drl_event_key"
+      ],
+      "subject_native_parity": {
+        "drl_event_key": {
+          "kind": "drl_event_tuple"
+        }
+      },
+      "coverage_classes": [
+        "source_release_snapshot_only"
+      ],
+      "replay_capabilities": {
+        "live": [
+          "unavailable"
+        ],
+        "retrospective_research": [
+          "owner_native"
+        ]
+      },
+      "clock_bindings": {
+        "native_identity.date": {
+          "class": "world_valid",
+          "grains": [
+            "date"
+          ]
+        },
+        "source.generated_utc": {
+          "class": "belief_or_build",
+          "grains": [
+            "datetime"
+          ]
+        },
+        "capture.captured_at": {
+          "class": "system_recorded",
+          "grains": [
+            "datetime"
+          ]
+        }
+      },
+      "synapse_asof_field": null,
+      "reader": "engine.price_pressure.research.capture_event",
+      "reader_kind": "direct",
+      "pointer_template": "data/price_pressure/latest.json#date={date}&ticker={ticker}&side={side}"
     }
   },
   "identity_join_rules": [

@@ -1,0 +1,47 @@
+{
+  "authority_ref": "https://github.com/mastermindx-market-intelligence/macro/blob/a815e54f50e012fd693c9a1ec311f5e814f330bd/research/licenses/MASSIVE_ENTITLEMENT_RECORD.md",
+  "body_or_image_admission": false,
+  "expiry_basis": "30-day operational revalidation; not contractual expiration",
+  "issued_at": "2026-10-20T13:41:32.940484+00:00",
+  "publication_authorized": false,
+  "schema": "shared_news.activation_preparation.v1",
+  "sources": [
+    {
+      "audiences_qualified": [
+        "site_full",
+        "internal_research",
+        "blog_draft",
+        "marketing_draft"
+      ],
+      "receipt_file": "massive-zacks-com-rights.json",
+      "sha256": "1f31c4e95b31eb2c4826f0e733747140088525eaf8d6d114a195a2b6ac436c32",
+      "source": "massive:zacks.com",
+      "target_path": "/etc/macro-ticker-news-massive-zacks-com-rights.json"
+    },
+    {
+      "audiences_qualified": [
+        "site_full",
+        "internal_research",
+        "blog_draft",
+        "marketing_draft"
+      ],
+      "receipt_file": "massive-fool-com-rights.json",
+      "sha256": "7066a98da3620ad2aed05e57dd9927331ed939d8a2bb1601b77ec182c24c6803",
+      "source": "massive:fool.com",
+      "target_path": "/etc/macro-ticker-news-massive-fool-com-rights.json"
+    },
+    {
+      "audiences_qualified": [
+        "site_full",
+        "internal_research",
+        "blog_draft",
+        "marketing_draft"
+      ],
+      "receipt_file": "massive-globenewswire-com-rights.json",
+      "sha256": "f14ca7c87d9650f68c3c26ae6017a5b146d914b7ca6100a8ae88c2274ac0dc82",
+      "source": "massive:globenewswire.com",
+      "target_path": "/etc/macro-ticker-news-massive-globenewswire-com-rights.json"
+    }
+  ],
+  "state": "prepared_not_installed"
+}

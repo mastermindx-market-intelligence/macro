@@ -1,0 +1,15 @@
+{
+  "schema": "tiingo.actual_bounded_independent_source_review/v1",
+  "recorded_at_utc": "2026-10-12T23:13:20.183285+00:00",
+  "reviewer": "/root/tiingo_contract_adjudication",
+  "actual_received_conclusion": "PASS",
+  "source_path": "/private/tmp/tiingo-boats-20261013-owned-qualified-01a12ab6.py",
+  "source_sha256": "e13773e6374fe3f39f92b8ab3b31eb6403a543204a7c7250dad0c67f487dd0b9",
+  "reviewer_executed_effects": false,
+  "prior_source_sha256": "85643f37cb1de56ecd377594104158167389c7d49aeb0feb07af1bbd300a88a8",
+  "actual_offline_selection_checks_sha256": "e4587f2aa3bce72474288d5738c993ebf2d635b7241045b1eae32caffb17e27a",
+  "all_raw_receipts_reconciled": true,
+  "market_only_tape_references": true,
+  "control_only_reader_not_applicable": true,
+  "capture_unstarted": true
+}
