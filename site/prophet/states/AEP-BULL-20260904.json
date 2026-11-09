@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "AEP-BULL-20260904",
-  "asof": "2026-11-07",
+  "asof": "2026-11-09",
   "phase": "at_t1",
   "detection_phase": "at_t1",
   "management_confidence": 54.5,
@@ -20,7 +20,7 @@
     "dist_to_stop_r": 2.399,
     "dist_to_t1_r": 0.101,
     "dist_to_t2_r": 1.601,
-    "horizon_pct_used": 142.2,
+    "horizon_pct_used": 146.7,
     "p1": 0.9324,
     "p2": 0.4662,
     "p3": null,
@@ -30,7 +30,7 @@
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "Phase: between_t1_t2 \u2192 at_t1",
+  "change_reason": "",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -45,8 +45,8 @@
   "_first_trigger_ts": "2026-09-04",
   "_first_t1_ts": "2026-10-20",
   "_first_t2_ts": "2026-10-22",
-  "days_elapsed": 64,
-  "tau": 1.4222,
+  "days_elapsed": 66,
+  "tau": 1.4667,
   "closed": true,
   "outcome": "INVALIDATED"
 }

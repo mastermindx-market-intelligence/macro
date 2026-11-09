@@ -1,0 +1,31 @@
+{
+  "diff_base": "a8a5d3523614777d88eb2579d6efab52cd862e33",
+  "runs": [
+    {
+      "name": "design-ratchet",
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/check_design_system.py",
+        "--mode",
+        "enforce-added",
+        "--diff-file",
+        "/tmp/d06-macro-c4-11l44i0i/macro-integration-final-ui.diff"
+      ],
+      "exit_code": 0,
+      "seconds": 6.06,
+      "log": "design-ratchet.log"
+    },
+    {
+      "name": "visual-evidence",
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/check_ui_visual_evidence.py",
+        "--diff-file",
+        "/tmp/d06-macro-c4-11l44i0i/macro-integration-final-ui.diff"
+      ],
+      "exit_code": 0,
+      "seconds": 2.05,
+      "log": "visual-evidence.log"
+    }
+  ]
+}
