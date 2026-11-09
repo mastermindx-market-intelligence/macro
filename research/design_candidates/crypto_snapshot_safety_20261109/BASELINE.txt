@@ -1,0 +1,282 @@
+FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF.FF                                      [100%]
+=================================== FAILURES ===================================
+_ test_r4_snapshot_buttons_keep_their_visible_intent_across_tabs[en-1440-save] _
+tests/test_crypto_intelligence_r4_browser.py:342: in test_r4_snapshot_buttons_keep_their_visible_intent_across_tabs
+    assert _writes(page) == 0, "A stale explicit intent must complete without another write"
+E   AssertionError: A stale explicit intent must complete without another write
+E   assert 1 == 0
+E    +  where 1 = _writes(<Page url='http://127.0.0.1:59637/crypto-r4.html?lang=en#scenarios?h=30&panel=scenario%3Acontinuation'>)
+_ test_r4_snapshot_buttons_keep_their_visible_intent_across_tabs[en-1440-remove] _
+tests/test_crypto_intelligence_r4_browser.py:342: in test_r4_snapshot_buttons_keep_their_visible_intent_across_tabs
+    assert _writes(page) == 0, "A stale explicit intent must complete without another write"
+E   AssertionError: A stale explicit intent must complete without another write
+E   assert 1 == 0
+E    +  where 1 = _writes(<Page url='http://127.0.0.1:59637/crypto-r4.html?lang=en#scenarios?h=30&panel=saved-item%3Ar4-display%3A2026-10-17%3A30%3Acontinuation'>)
+_ test_r4_snapshot_buttons_keep_their_visible_intent_across_tabs[en-1440-remove_expired] _
+tests/test_crypto_intelligence_r4_browser.py:349: in test_r4_snapshot_buttons_keep_their_visible_intent_across_tabs
+    assert ("no longer saved" if lang == "en" else "已无此快照") in message
+E   AssertionError: assert 'no longer saved' in 'This scenario cannot be saved with the available evidence.'
+_ test_r4_snapshot_buttons_keep_their_visible_intent_across_tabs[zh-390-save] __
+tests/test_crypto_intelligence_r4_browser.py:342: in test_r4_snapshot_buttons_keep_their_visible_intent_across_tabs
+    assert _writes(page) == 0, "A stale explicit intent must complete without another write"
+E   AssertionError: A stale explicit intent must complete without another write
+E   assert 1 == 0
+E    +  where 1 = _writes(<Page url='http://127.0.0.1:59637/crypto-r4.html?lang=zh#scenarios?h=30&panel=scenario%3Acontinuation'>)
+_ test_r4_snapshot_buttons_keep_their_visible_intent_across_tabs[zh-390-remove] _
+tests/test_crypto_intelligence_r4_browser.py:342: in test_r4_snapshot_buttons_keep_their_visible_intent_across_tabs
+    assert _writes(page) == 0, "A stale explicit intent must complete without another write"
+E   AssertionError: A stale explicit intent must complete without another write
+E   assert 1 == 0
+E    +  where 1 = _writes(<Page url='http://127.0.0.1:59637/crypto-r4.html?lang=zh#scenarios?h=30&panel=saved-item%3Ar4-display%3A2026-10-17%3A30%3Acontinuation'>)
+_ test_r4_snapshot_buttons_keep_their_visible_intent_across_tabs[zh-390-remove_expired] _
+tests/test_crypto_intelligence_r4_browser.py:349: in test_r4_snapshot_buttons_keep_their_visible_intent_across_tabs
+    assert ("no longer saved" if lang == "en" else "已无此快照") in message
+E   AssertionError: assert '已无此快照' in '现有证据不足，无法保存此情景。'
+___ test_r4_remove_all_exact_matches_preserves_the_full_collection[en-1440] ____
+tests/test_crypto_intelligence_r4_browser.py:367: in test_r4_remove_all_exact_matches_preserves_the_full_collection
+    assert _entries(page) == [opaque[0]] + unrelated[:50] + [opaque[1]] + unrelated[50:] + [opaque[2]]
+E   AssertionError: assert [{'as_of': '2....', ...}, ...] == [None, {'as_o....', ...}, ...]
+E     
+E     At index 0 diff: {'as_of': '2026-10-17', 'asset': 'BTC', 'authority': 'conditional_research_only', 'condition_en': 'A daily close above $86,595.00, followed by stronger spot demand.', 'condition_zh': '日收盘突破$86,595.00，随后现货需求增强。', 'counter_en': 'This path needs current demand evidence.', 'counter_zh': '此路径需要最新需求证据。', 'evidence_strength_en': 'Evidence incomplete', 'evidence_strength_zh': '证据不完整', 'expires': '2026-11-16', 'horizon_days': 30, 'id': 'continuation', 'invalidation_en': 'A return inside the range weakens the breakout; losing its low invalidates this path.', 'inv...
+E     
+E     ...Full output truncated (3 lines hidden), use '-vv' to show
+____ test_r4_remove_all_exact_matches_preserves_the_full_collection[zh-390] ____
+tests/test_crypto_intelligence_r4_browser.py:367: in test_r4_remove_all_exact_matches_preserves_the_full_collection
+    assert _entries(page) == [opaque[0]] + unrelated[:50] + [opaque[1]] + unrelated[50:] + [opaque[2]]
+E   AssertionError: assert [{'as_of': '2....', ...}, ...] == [None, {'as_o....', ...}, ...]
+E     
+E     At index 0 diff: {'as_of': '2026-10-17', 'asset': 'BTC', 'authority': 'conditional_research_only', 'condition_en': 'A daily close above $86,595.00, followed by stronger spot demand.', 'condition_zh': '日收盘突破$86,595.00，随后现货需求增强。', 'counter_en': 'This path needs current demand evidence.', 'counter_zh': '此路径需要最新需求证据。', 'evidence_strength_en': 'Evidence incomplete', 'evidence_strength_zh': '证据不完整', 'expires': '2026-11-16', 'horizon_days': 30, 'id': 'continuation', 'invalidation_en': 'A return inside the range weakens the breakout; losing its low invalidates this path.', 'inv...
+E     
+E     ...Full output truncated (3 lines hidden), use '-vv' to show
+_ test_r4_unreadable_collection_is_not_empty_and_retry_only_reads[malformed-en-1440] _
+tests/test_crypto_intelligence_r4_browser.py:390: in test_r4_unreadable_collection_is_not_empty_and_retry_only_reads
+    assert ("couldn’t be read" if lang == "en" else "无法读取") in page.locator("#cri-dialog-body").inner_text()
+E   AssertionError: assert 'couldn’t be read' in 'Saved in this browser. Each snapshot preserves its original evidence cutoff.\n\nNothing saved yet. Open a scenario and save its dated conditions.'
+E    +  where 'Saved in this browser. Each snapshot preserves its original evidence cutoff.\n\nNothing saved yet. Open a scenario and save its dated conditions.' = inner_text()
+E    +    where inner_text = <Locator frame=<Frame name= url='http://127.0.0.1:59637/crypto-r4.html?lang=en#scenarios?h=30&panel=saved'> selector='#cri-dialog-body'>.inner_text
+E    +      where <Locator frame=<Frame name= url='http://127.0.0.1:59637/crypto-r4.html?lang=en#scenarios?h=30&panel=saved'> selector='#cri-dialog-body'> = locator('#cri-dialog-body')
+E    +        where locator = <Page url='http://127.0.0.1:59637/crypto-r4.html?lang=en#scenarios?h=30&panel=saved'>.locator
+_ test_r4_unreadable_collection_is_not_empty_and_retry_only_reads[object-en-1440] _
+tests/test_crypto_intelligence_r4_browser.py:390: in test_r4_unreadable_collection_is_not_empty_and_retry_only_reads
+    assert ("couldn’t be read" if lang == "en" else "无法读取") in page.locator("#cri-dialog-body").inner_text()
+E   AssertionError: assert 'couldn’t be read' in 'Saved in this browser. Each snapshot preserves its original evidence cutoff.\n\nNothing saved yet. Open a scenario and save its dated conditions.'
+E    +  where 'Saved in this browser. Each snapshot preserves its original evidence cutoff.\n\nNothing saved yet. Open a scenario and save its dated conditions.' = inner_text()
+E    +    where inner_text = <Locator frame=<Frame name= url='http://127.0.0.1:59637/crypto-r4.html?lang=en#scenarios?h=30&panel=saved'> selector='#cri-dialog-body'>.inner_text
+E    +      where <Locator frame=<Frame name= url='http://127.0.0.1:59637/crypto-r4.html?lang=en#scenarios?h=30&panel=saved'> selector='#cri-dialog-body'> = locator('#cri-dialog-body')
+E    +        where locator = <Page url='http://127.0.0.1:59637/crypto-r4.html?lang=en#scenarios?h=30&panel=saved'>.locator
+_ test_r4_unreadable_collection_is_not_empty_and_retry_only_reads[null-en-1440] _
+tests/test_crypto_intelligence_r4_browser.py:390: in test_r4_unreadable_collection_is_not_empty_and_retry_only_reads
+    assert ("couldn’t be read" if lang == "en" else "无法读取") in page.locator("#cri-dialog-body").inner_text()
+E   AssertionError: assert 'couldn’t be read' in 'Saved in this browser. Each snapshot preserves its original evidence cutoff.\n\nNothing saved yet. Open a scenario and save its dated conditions.'
+E    +  where 'Saved in this browser. Each snapshot preserves its original evidence cutoff.\n\nNothing saved yet. Open a scenario and save its dated conditions.' = inner_text()
+E    +    where inner_text = <Locator frame=<Frame name= url='http://127.0.0.1:59637/crypto-r4.html?lang=en#scenarios?h=30&panel=saved'> selector='#cri-dialog-body'>.inner_text
+E    +      where <Locator frame=<Frame name= url='http://127.0.0.1:59637/crypto-r4.html?lang=en#scenarios?h=30&panel=saved'> selector='#cri-dialog-body'> = locator('#cri-dialog-body')
+E    +        where locator = <Page url='http://127.0.0.1:59637/crypto-r4.html?lang=en#scenarios?h=30&panel=saved'>.locator
+_ test_r4_unreadable_collection_is_not_empty_and_retry_only_reads[empty-en-1440] _
+tests/test_crypto_intelligence_r4_browser.py:390: in test_r4_unreadable_collection_is_not_empty_and_retry_only_reads
+    assert ("couldn’t be read" if lang == "en" else "无法读取") in page.locator("#cri-dialog-body").inner_text()
+E   AssertionError: assert 'couldn’t be read' in 'Saved in this browser. Each snapshot preserves its original evidence cutoff.\n\nNothing saved yet. Open a scenario and save its dated conditions.'
+E    +  where 'Saved in this browser. Each snapshot preserves its original evidence cutoff.\n\nNothing saved yet. Open a scenario and save its dated conditions.' = inner_text()
+E    +    where inner_text = <Locator frame=<Frame name= url='http://127.0.0.1:59637/crypto-r4.html?lang=en#scenarios?h=30&panel=saved'> selector='#cri-dialog-body'>.inner_text
+E    +      where <Locator frame=<Frame name= url='http://127.0.0.1:59637/crypto-r4.html?lang=en#scenarios?h=30&panel=saved'> selector='#cri-dialog-body'> = locator('#cri-dialog-body')
+E    +        where locator = <Page url='http://127.0.0.1:59637/crypto-r4.html?lang=en#scenarios?h=30&panel=saved'>.locator
+_ test_r4_unreadable_collection_is_not_empty_and_retry_only_reads[access-en-1440] _
+tests/test_crypto_intelligence_r4_browser.py:390: in test_r4_unreadable_collection_is_not_empty_and_retry_only_reads
+    assert ("couldn’t be read" if lang == "en" else "无法读取") in page.locator("#cri-dialog-body").inner_text()
+E   AssertionError: assert 'couldn’t be read' in 'Saved in this browser. Each snapshot preserves its original evidence cutoff.\n\nNothing saved yet. Open a scenario and save its dated conditions.'
+E    +  where 'Saved in this browser. Each snapshot preserves its original evidence cutoff.\n\nNothing saved yet. Open a scenario and save its dated conditions.' = inner_text()
+E    +    where inner_text = <Locator frame=<Frame name= url='http://127.0.0.1:59637/crypto-r4.html?lang=en#scenarios?h=30&panel=saved'> selector='#cri-dialog-body'>.inner_text
+E    +      where <Locator frame=<Frame name= url='http://127.0.0.1:59637/crypto-r4.html?lang=en#scenarios?h=30&panel=saved'> selector='#cri-dialog-body'> = locator('#cri-dialog-body')
+E    +        where locator = <Page url='http://127.0.0.1:59637/crypto-r4.html?lang=en#scenarios?h=30&panel=saved'>.locator
+_ test_r4_unreadable_collection_is_not_empty_and_retry_only_reads[nonfinite-en-1440] _
+tests/test_crypto_intelligence_r4_browser.py:390: in test_r4_unreadable_collection_is_not_empty_and_retry_only_reads
+    assert ("couldn’t be read" if lang == "en" else "无法读取") in page.locator("#cri-dialog-body").inner_text()
+E   AssertionError: assert 'couldn’t be read' in 'Saved in this browser. Each snapshot preserves its original evidence cutoff.\n\nNothing saved yet. Open a scenario and save its dated conditions.'
+E    +  where 'Saved in this browser. Each snapshot preserves its original evidence cutoff.\n\nNothing saved yet. Open a scenario and save its dated conditions.' = inner_text()
+E    +    where inner_text = <Locator frame=<Frame name= url='http://127.0.0.1:59637/crypto-r4.html?lang=en#scenarios?h=30&panel=saved'> selector='#cri-dialog-body'>.inner_text
+E    +      where <Locator frame=<Frame name= url='http://127.0.0.1:59637/crypto-r4.html?lang=en#scenarios?h=30&panel=saved'> selector='#cri-dialog-body'> = locator('#cri-dialog-body')
+E    +        where locator = <Page url='http://127.0.0.1:59637/crypto-r4.html?lang=en#scenarios?h=30&panel=saved'>.locator
+_ test_r4_unreadable_collection_is_not_empty_and_retry_only_reads[malformed-zh-390] _
+tests/test_crypto_intelligence_r4_browser.py:390: in test_r4_unreadable_collection_is_not_empty_and_retry_only_reads
+    assert ("couldn’t be read" if lang == "en" else "无法读取") in page.locator("#cri-dialog-body").inner_text()
+E   AssertionError: assert '无法读取' in '保存在此浏览器中，每份快照保留原始证据截止日期。\n\n尚未保存。打开一个情景，保存其带日期的条件。'
+E    +  where '保存在此浏览器中，每份快照保留原始证据截止日期。\n\n尚未保存。打开一个情景，保存其带日期的条件。' = inner_text()
+E    +    where inner_text = <Locator frame=<Frame name= url='http://127.0.0.1:59637/crypto-r4.html?lang=zh#scenarios?h=30&panel=saved'> selector='#cri-dialog-body'>.inner_text
+E    +      where <Locator frame=<Frame name= url='http://127.0.0.1:59637/crypto-r4.html?lang=zh#scenarios?h=30&panel=saved'> selector='#cri-dialog-body'> = locator('#cri-dialog-body')
+E    +        where locator = <Page url='http://127.0.0.1:59637/crypto-r4.html?lang=zh#scenarios?h=30&panel=saved'>.locator
+_ test_r4_uncertain_write_is_not_success_or_an_automatic_retry[throw_before-en-1440] _
+tests/test_crypto_intelligence_r4_browser.py:436: in test_r4_uncertain_write_is_not_success_or_an_automatic_retry
+    _assert_uncertain(page, lang)
+tests/test_crypto_intelligence_r4_browser.py:195: in _assert_uncertain
+    assert ("couldn’t be confirmed" if lang == "en" else "无法确认更改结果") in text
+E   AssertionError: assert 'couldn’t be confirmed' in 'This browser could not save the scenario. The current view still works.'
+_ test_r4_uncertain_write_is_not_success_or_an_automatic_retry[write_then_throw-en-1440] _
+tests/test_crypto_intelligence_r4_browser.py:436: in test_r4_uncertain_write_is_not_success_or_an_automatic_retry
+    _assert_uncertain(page, lang)
+tests/test_crypto_intelligence_r4_browser.py:195: in _assert_uncertain
+    assert ("couldn’t be confirmed" if lang == "en" else "无法确认更改结果") in text
+E   AssertionError: assert 'couldn’t be confirmed' in 'This browser could not save the scenario. The current view still works.'
+__ test_r4_uncertain_write_is_not_success_or_an_automatic_retry[drop-en-1440] __
+tests/test_crypto_intelligence_r4_browser.py:436: in test_r4_uncertain_write_is_not_success_or_an_automatic_retry
+    _assert_uncertain(page, lang)
+tests/test_crypto_intelligence_r4_browser.py:195: in _assert_uncertain
+    assert ("couldn’t be confirmed" if lang == "en" else "无法确认更改结果") in text
+E   AssertionError: assert 'couldn’t be confirmed' in 'Removed from this device.'
+_ test_r4_uncertain_write_is_not_success_or_an_automatic_retry[readback_throw-en-1440] _
+tests/test_crypto_intelligence_r4_browser.py:436: in test_r4_uncertain_write_is_not_success_or_an_automatic_retry
+    _assert_uncertain(page, lang)
+tests/test_crypto_intelligence_r4_browser.py:195: in _assert_uncertain
+    assert ("couldn’t be confirmed" if lang == "en" else "无法确认更改结果") in text
+E   AssertionError: assert 'couldn’t be confirmed' in 'Removed from this device.'
+_ test_r4_uncertain_write_is_not_success_or_an_automatic_retry[mismatch-en-1440] _
+tests/test_crypto_intelligence_r4_browser.py:436: in test_r4_uncertain_write_is_not_success_or_an_automatic_retry
+    _assert_uncertain(page, lang)
+tests/test_crypto_intelligence_r4_browser.py:195: in _assert_uncertain
+    assert ("couldn’t be confirmed" if lang == "en" else "无法确认更改结果") in text
+E   AssertionError: assert 'couldn’t be confirmed' in 'Removed from this device.'
+_ test_r4_uncertain_write_is_not_success_or_an_automatic_retry[write_then_throw-zh-390] _
+tests/test_crypto_intelligence_r4_browser.py:436: in test_r4_uncertain_write_is_not_success_or_an_automatic_retry
+    _assert_uncertain(page, lang)
+tests/test_crypto_intelligence_r4_browser.py:195: in _assert_uncertain
+    assert ("couldn’t be confirmed" if lang == "en" else "无法确认更改结果") in text
+E   AssertionError: assert '无法确认更改结果' in '浏览器无法保存情景，当前页面仍可使用。'
+________ test_r4_confirmed_remove_can_be_followed_by_an_unreadable_list ________
+tests/test_crypto_intelligence_r4_browser.py:458: in test_r4_confirmed_remove_can_be_followed_by_an_unreadable_list
+    assert "couldn’t be read" in page.locator("#cri-dialog-body").inner_text()
+E   AssertionError: assert 'couldn’t be read' in 'Saved in this browser. Each snapshot preserves its original evidence cutoff.\n\nNothing saved yet. Open a scenario and save its dated conditions.'
+E    +  where 'Saved in this browser. Each snapshot preserves its original evidence cutoff.\n\nNothing saved yet. Open a scenario and save its dated conditions.' = inner_text()
+E    +    where inner_text = <Locator frame=<Frame name= url='http://127.0.0.1:59637/crypto-r4.html?lang=en#scenarios?h=30&panel=saved'> selector='#cri-dialog-body'>.inner_text
+E    +      where <Locator frame=<Frame name= url='http://127.0.0.1:59637/crypto-r4.html?lang=en#scenarios?h=30&panel=saved'> selector='#cri-dialog-body'> = locator('#cri-dialog-body')
+E    +        where locator = <Page url='http://127.0.0.1:59637/crypto-r4.html?lang=en#scenarios?h=30&panel=saved'>.locator
+_______ test_r4_new_save_alone_applies_capacity_and_keeps_opaque_entries _______
+tests/test_crypto_intelligence_r4_browser.py:473: in test_r4_new_save_alone_applies_capacity_and_keeps_opaque_entries
+    assert _writes(page) == 1 and len(after) == 52
+E   AssertionError: assert (1 == 1 and 50 == 52)
+E    +  where 1 = _writes(<Page url='http://127.0.0.1:59637/crypto-r4.html?lang=en#scenarios?h=30&panel=scenario%3Acontinuation'>)
+E    +  and   50 = len([{'as_of': '2026-10-17', 'asset': 'BTC', 'authority': 'conditional_research_only', 'condition_en': 'A daily close abov...itional_research_only', 'condition_en': 'A daily close above $86,595.00, followed by stronger spot demand.', ...}, ...])
+____ test_r4_unusable_saved_version_never_borrows_current_context[missing] _____
+tests/test_crypto_intelligence_r4_browser.py:502: in test_r4_unusable_saved_version_never_borrows_current_context
+    assert page.locator("#cri-dialog-title").inner_text() == "Scenario unavailable"
+E   AssertionError: assert 'Historical review' == 'Scenario unavailable'
+E     
+E     - Scenario unavailable
+E     + Historical review
+___ test_r4_unusable_saved_version_never_borrows_current_context[duplicates] ___
+tests/test_crypto_intelligence_r4_browser.py:502: in test_r4_unusable_saved_version_never_borrows_current_context
+    assert page.locator("#cri-dialog-title").inner_text() == "Scenario unavailable"
+E   AssertionError: assert 'Upside test' == 'Scenario unavailable'
+E     
+E     - Scenario unavailable
+E     + Upside test
+__ test_r4_unusable_saved_version_never_borrows_current_context[bad_horizon] ___
+tests/test_crypto_intelligence_r4_browser.py:502: in test_r4_unusable_saved_version_never_borrows_current_context
+    assert page.locator("#cri-dialog-title").inner_text() == "Scenario unavailable"
+E   AssertionError: assert 'Upside test' == 'Scenario unavailable'
+E     
+E     - Scenario unavailable
+E     + Upside test
+____ test_r4_unusable_saved_version_never_borrows_current_context[bad_date] ____
+tests/test_crypto_intelligence_r4_browser.py:502: in test_r4_unusable_saved_version_never_borrows_current_context
+    assert page.locator("#cri-dialog-title").inner_text() == "Scenario unavailable"
+E   AssertionError: assert 'Upside test' == 'Scenario unavailable'
+E     
+E     - Scenario unavailable
+E     + Upside test
+_ test_r4_unusable_saved_version_never_borrows_current_context[missing_condition] _
+tests/test_crypto_intelligence_r4_browser.py:502: in test_r4_unusable_saved_version_never_borrows_current_context
+    assert page.locator("#cri-dialog-title").inner_text() == "Scenario unavailable"
+E   AssertionError: assert 'Upside test' == 'Scenario unavailable'
+E     
+E     - Scenario unavailable
+E     + Upside test
+_ test_r4_unusable_saved_version_never_borrows_current_context[wrong_authority] _
+tests/test_crypto_intelligence_r4_browser.py:502: in test_r4_unusable_saved_version_never_borrows_current_context
+    assert page.locator("#cri-dialog-title").inner_text() == "Scenario unavailable"
+E   AssertionError: assert 'Historical review' == 'Scenario unavailable'
+E     
+E     - Scenario unavailable
+E     + Historical review
+____________ test_r4_newer_focus_during_confirmation_survives[save] ____________
+tests/test_crypto_intelligence_r4_browser.py:538: in test_r4_newer_focus_during_confirmation_survives
+    assert page.evaluate("__newerFocus.isConnected && document.activeElement === __newerFocus")
+E   AssertionError: assert False
+E    +  where False = evaluate('__newerFocus.isConnected && document.activeElement === __newerFocus')
+E    +    where evaluate = <Page url='http://127.0.0.1:59637/crypto-r4.html?lang=en#scenarios?h=30&panel=scenario%3Acontinuation'>.evaluate
+___________ test_r4_newer_focus_during_confirmation_survives[remove] ___________
+tests/test_crypto_intelligence_r4_browser.py:537: in test_r4_newer_focus_during_confirmation_survives
+    assert page.url == before_url
+E   AssertionError: assert 'http://127.0...0&panel=saved' == 'http://127.0...Acontinuation'
+E     
+E     Skipping 61 identical leading characters in diff, use -v to show
+E     - panel=saved-item%3Ar4-display%3A2026-10-17%3A30%3Acontinuation
+E     + panel=saved
+____ test_r4_completion_focus_callbacks_keep_their_new_panel[frozen-remove] ____
+tests/test_crypto_intelligence_r4_browser.py:568: in test_r4_completion_focus_callbacks_keep_their_new_panel
+    assert page.evaluate("Boolean(window.__callbackFocus) && __callbackFocus.isConnected && document.activeElement === __callbackFocus")
+E   AssertionError: assert False
+E    +  where False = evaluate('Boolean(window.__callbackFocus) && __callbackFocus.isConnected && document.activeElement === __callbackFocus')
+E    +    where evaluate = <Page url='http://127.0.0.1:59637/crypto-r4.html?lang=en#scenarios?h=30&panel=evidence%3Aliquidity_flows'>.evaluate
+_ test_r4_programmatic_save_preserves_unrelated_focus_and_stale_save_stays_safe _
+tests/test_crypto_intelligence_r4_browser.py:575: in test_r4_programmatic_save_preserves_unrelated_focus_and_stale_save_stays_safe
+    review.focus()
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/sync_api/_generated.py:19082: in focus
+    self._sync(self._impl_obj.focus(timeout=to_milliseconds(timeout)))
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_locator.py:405: in focus
+    return await self._frame.focus(self._selector, strict=True, **params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_frame.py:731: in focus
+    await self._channel.send("focus", self._timeout, locals_to_params(locals()))
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_connection.py:76: in send
+    return await self._connection.wrap_api_call(
+/Users/chriswong/Library/Python/3.14/lib/python/site-packages/playwright/_impl/_connection.py:632: in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+E   playwright._impl._errors.Error: Locator.focus: Error: strict mode violation: get_by_role("button", name="Historical review", exact=True) resolved to 2 elements:
+E       1) <button class="cri-btn" data-open="memory">…</button> aka get_by_text("Historical review历史检验")
+E       2) <button type="button" class="cri-btn">Historical review</button> aka get_by_label("Upside test").get_by_role("button", name="Historical review")
+E   
+E   Call log:
+E     - waiting for get_by_role("button", name="Historical review", exact=True)
+__ test_r4_removing_last_usable_snapshot_does_not_claim_collection_unchanged ___
+tests/test_crypto_intelligence_r4_browser.py:592: in test_r4_removing_last_usable_snapshot_does_not_claim_collection_unchanged
+    assert _writes(page) == 1 and _entries(page) == [opaque]
+E   AssertionError: assert (1 == 1 and [] == [{'future': [0, False, None]}]
+E    +  where 1 = _writes(<Page url='http://127.0.0.1:59637/crypto-r4.html?lang=en#scenarios?h=30&panel=saved'>)
+E     
+E     Right contains one more item: {'future': [0, False, None]}
+E     Use -v to get more diff)
+=========================== short test summary info ============================
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_snapshot_buttons_keep_their_visible_intent_across_tabs[en-1440-save]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_snapshot_buttons_keep_their_visible_intent_across_tabs[en-1440-remove]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_snapshot_buttons_keep_their_visible_intent_across_tabs[en-1440-remove_expired]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_snapshot_buttons_keep_their_visible_intent_across_tabs[zh-390-save]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_snapshot_buttons_keep_their_visible_intent_across_tabs[zh-390-remove]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_snapshot_buttons_keep_their_visible_intent_across_tabs[zh-390-remove_expired]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_remove_all_exact_matches_preserves_the_full_collection[en-1440]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_remove_all_exact_matches_preserves_the_full_collection[zh-390]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_unreadable_collection_is_not_empty_and_retry_only_reads[malformed-en-1440]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_unreadable_collection_is_not_empty_and_retry_only_reads[object-en-1440]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_unreadable_collection_is_not_empty_and_retry_only_reads[null-en-1440]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_unreadable_collection_is_not_empty_and_retry_only_reads[empty-en-1440]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_unreadable_collection_is_not_empty_and_retry_only_reads[access-en-1440]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_unreadable_collection_is_not_empty_and_retry_only_reads[nonfinite-en-1440]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_unreadable_collection_is_not_empty_and_retry_only_reads[malformed-zh-390]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_uncertain_write_is_not_success_or_an_automatic_retry[throw_before-en-1440]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_uncertain_write_is_not_success_or_an_automatic_retry[write_then_throw-en-1440]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_uncertain_write_is_not_success_or_an_automatic_retry[drop-en-1440]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_uncertain_write_is_not_success_or_an_automatic_retry[readback_throw-en-1440]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_uncertain_write_is_not_success_or_an_automatic_retry[mismatch-en-1440]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_uncertain_write_is_not_success_or_an_automatic_retry[write_then_throw-zh-390]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_confirmed_remove_can_be_followed_by_an_unreadable_list
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_new_save_alone_applies_capacity_and_keeps_opaque_entries
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_unusable_saved_version_never_borrows_current_context[missing]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_unusable_saved_version_never_borrows_current_context[duplicates]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_unusable_saved_version_never_borrows_current_context[bad_horizon]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_unusable_saved_version_never_borrows_current_context[bad_date]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_unusable_saved_version_never_borrows_current_context[missing_condition]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_unusable_saved_version_never_borrows_current_context[wrong_authority]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_newer_focus_during_confirmation_survives[save]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_newer_focus_during_confirmation_survives[remove]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_completion_focus_callbacks_keep_their_new_panel[frozen-remove]
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_programmatic_save_preserves_unrelated_focus_and_stale_save_stays_safe
+FAILED tests/test_crypto_intelligence_r4_browser.py::test_r4_removing_last_usable_snapshot_does_not_claim_collection_unchanged
+34 failed, 1 passed, 5 deselected in 34.66s

@@ -63,11 +63,51 @@
     clearTimeout(toastTimer); el.textContent = message; el.hidden = false;
     toastTimer = setTimeout(function () { el.hidden = true; }, 5000);
   }
+  function storedSnapshot(s) {
+    return !!s && typeof s === "object" && !Array.isArray(s) &&
+      typeof s.revision === "string" && s.revision.length > 0 &&
+      s.authority === "conditional_research_only";
+  }
+  function savedDay(value) {
+    if (typeof value !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+    var day = new Date(value + "T00:00:00Z");
+    return isFinite(day.getTime()) && day.toISOString().slice(0, 10) === value;
+  }
+  function usableSnapshot(s) {
+    return storedSnapshot(s) && (s.horizon_days === 7 || s.horizon_days === 30) &&
+      savedDay(s.as_of) && savedDay(s.expires) && s.expires >= s.as_of &&
+      ["id", "asset", "title_en", "title_zh", "condition_en", "condition_zh",
+        "sequence_en", "sequence_zh", "invalidation_en", "invalidation_zh",
+        "counter_en", "counter_zh"].every(function (key) {
+        return typeof s[key] === "string" && s[key].trim().length > 0;
+      });
+  }
   function stored() {
     try {
-      var entries = JSON.parse(localStorage.getItem(storageKey) || "[]");
-      return Array.isArray(entries) ? entries.filter(function (s) { return s && typeof s.revision === "string" && s.authority === "conditional_research_only"; }).slice(0, 50) : [];
-    } catch (error) { return []; }
+      var serialized = localStorage.getItem(storageKey);
+      var entries = serialized === null ? [] : JSON.parse(serialized, function (key, value) {
+        if (typeof value === "number" && !isFinite(value)) throw new Error("Unsupported saved number");
+        return value;
+      });
+      if (!Array.isArray(entries)) return { ready: false };
+      return { ready: true, serialized: serialized, entries: entries,
+        items: entries.filter(usableSnapshot).slice(0, 50) };
+    } catch (error) { return { ready: false }; }
+  }
+  function savedMatches(collection, revision) {
+    return collection.entries.filter(function (entry) {
+      return entry && typeof entry === "object" && entry.revision === revision;
+    });
+  }
+  function savedVersion(collection, revision) {
+    var matches = savedMatches(collection, revision);
+    return matches.length === 1 && usableSnapshot(matches[0]) ? matches[0] : null;
+  }
+  function savedUnavailable() {
+    title.textContent = t("Saved snapshots unavailable", "已存快照暂不可用");
+    paragraph(t("Saved snapshots couldn’t be read.", "无法读取已存快照。")).className = "cri-warning";
+    button(t("Try reading again", "重试读取"), function () { apply(); });
+    button(t("Open current outlook", "查看当前展望"), function () { update("overview", { panel: null }, true); });
   }
   function expired(s) { return !s.expires || s.expires < new Date().toISOString().slice(0, 10); }
   function snapshotEvidence() {
@@ -83,20 +123,83 @@
       })
     };
   }
-  function save(s) {
-    if (!s) return;
-    var items = stored(), index = items.findIndex(function (item) { return item.revision === s.revision; });
-    if (index < 0 && (expired(s) || s.state === "insufficient" || s.progress_state === "unavailable")) { toast(t("This scenario cannot be saved with the available evidence.", "现有证据不足，无法保存此情景。")); return; }
-    if (index >= 0) items.splice(index, 1);
-    else items.push(Object.assign({}, s, { saved_at: new Date().toISOString(), issue_evidence: snapshotEvidence() }));
-    try {
-      localStorage.setItem(storageKey, JSON.stringify(items.slice(-50)));
-      toast(index >= 0 ? t("Removed from this device.", "已从本设备移除。") : t("Saved on this device.", "已保存至本设备。"));
-      if (index >= 0 && (state().params.get("panel") || "").indexOf("saved-item:") === 0) update(null, { panel: "saved" }, true);
-      else renderDrawer(state().params.get("panel"));
-      var restoredAction = body.querySelector("[data-snapshot-action]");
-      (restoredAction || document.getElementById("cri-dialog-close")).focus();
-    } catch (error) { toast(t("This browser could not save the scenario. The current view still works.", "浏览器无法保存情景，当前页面仍可使用。")); }
+  function save(s, intent, trigger) {
+    if (!s || typeof s.revision !== "string" || !s.revision ||
+        (intent !== "save" && intent !== "remove")) return;
+    var actionUrl = location.href, actionLang = zh(), panel = state().params.get("panel");
+    var ownedFocus = document.activeElement === trigger;
+    function ownsAction() {
+      return location.href === actionUrl && zh() === actionLang &&
+        trigger && trigger.isConnected && body.contains(trigger);
+    }
+    function report(message) { if (ownsAction()) toast(message); }
+    var collection = stored();
+    if (!collection.ready) {
+      report(t("Saved snapshots couldn’t be read. No changes were made.", "无法读取已存快照，未作任何更改。"));
+      return;
+    }
+    var matches = savedMatches(collection, s.revision), next, outcome;
+    if (intent === "save" && matches.length) {
+      if (matches.length !== 1 || !usableSnapshot(matches[0])) {
+        report(t("This saved version couldn’t be read reliably. No changes were made.", "无法可靠读取此已存版本，未作任何更改。"));
+        return;
+      }
+      outcome = "present";
+    } else if (intent === "remove" && !matches.length) {
+      outcome = "absent";
+    } else if (intent === "remove") {
+      next = collection.entries.filter(function (entry) {
+        return !(entry && typeof entry === "object" && entry.revision === s.revision);
+      });
+      outcome = "removed";
+    } else {
+      if (!usableSnapshot(s) || expired(s) || s.state === "insufficient" || s.progress_state === "unavailable") {
+        report(t("This scenario cannot be saved with the available evidence.", "现有证据不足，无法保存此情景。"));
+        return;
+      }
+      // Only a genuinely new save applies the existing 50-snapshot capacity.
+      // Opaque entries survive; retained array order defines oldest, not dates.
+      var excess = Math.max(0, collection.entries.filter(storedSnapshot).length - 49);
+      next = collection.entries.filter(function (entry) {
+        if (storedSnapshot(entry) && excess > 0) { excess -= 1; return false; }
+        return true;
+      });
+      next.push(Object.assign({}, s, { saved_at: new Date().toISOString(), issue_evidence: snapshotEvidence() }));
+      outcome = "saved";
+    }
+    if (next) {
+      var serialized;
+      try { serialized = JSON.stringify(next); }
+      catch (error) {
+        report(t("The saved collection couldn’t be prepared. No changes were made.", "无法准备已存快照数据，未作任何更改。"));
+        return;
+      }
+      try {
+        localStorage.setItem(storageKey, serialized);
+        collection = stored();
+        if (!collection.ready || collection.serialized !== serialized) throw new Error("Unconfirmed saved collection");
+      } catch (error) {
+        report(t("The change couldn’t be confirmed. Check Saved snapshots before trying again.", "无法确认更改结果。请先查看已存快照，再决定是否重试。"));
+        return;
+      }
+    }
+    if (!ownsAction()) return;
+    toast(outcome === "saved" ? t("Saved on this device.", "已保存至本设备。") :
+      outcome === "removed" ? t("Removed from this device.", "已从本设备移除。") :
+      outcome === "present" ? t("Already saved on this device.", "本设备已保存此快照。") :
+      t("This snapshot is no longer saved on this device.", "本设备已无此快照。"));
+    // A programmatic activation must not replace an unrelated focused control.
+    if (!ownedFocus || document.activeElement !== trigger) return;
+    if (intent === "remove" && panel === "saved-item:" + s.revision) {
+      update(null, { panel: "saved" }, true);
+      return; // apply() owns displaced focus; no late focus after its callbacks.
+    }
+    renderDrawer(panel, collection);
+    if (location.href !== actionUrl || zh() !== actionLang) return;
+    if (document.activeElement !== document.body && document.activeElement !== trigger &&
+        document.activeElement !== dialog) return;
+    var restoredAction = body.querySelector("[data-snapshot-action]") || document.getElementById("cri-dialog-close");
+    if (restoredAction && restoredAction.isConnected) restoredAction.focus();
   }
   function status(s) {
     if (expired(s)) return t("Expired · historical context only", "已到期 · 仅供历史参考");
@@ -124,7 +227,7 @@
     details.appendChild(node("p", t("Related readings are not independent votes, and this is not a forecast probability.", "相关读数不是独立投票，也不代表预测概率。")));
     body.appendChild(details);
   }
-  function scenario(s, frozen) {
+  function scenario(s, frozen, collection) {
     if (!s) { title.textContent = t("Scenario unavailable", "情景暂不可用"); paragraph(t("This scenario is unavailable. The source may have changed or the saved item was removed.", "该情景不可用，原始来源可能已经变化或快照已经移除。")); return; }
     title.textContent = field(s, "title");
     paragraph(status(s)).className = "cri-warning";
@@ -161,17 +264,23 @@
       } else paragraph(t("Evidence digest was not preserved in this older snapshot. Its original conditions and cutoff remain visible, but source quality cannot be reconstructed.", "旧快照未保存原始证据摘要。原始条件与时间仍可查看，但无法恢复当时的来源质量。")).className = "cri-warning";
     }
     if (!frozen) {
-      var saved = stored().some(function (item) { return item.revision === s.revision; });
-      var saveButton = button(saved ? t("Remove snapshot", "移除快照") : t("Save snapshot", "保存快照"), function () { save(s); });
-      saveButton.dataset.snapshotAction = "toggle";
-      saveButton.disabled = !saved && (expired(s) || s.state === "insufficient" || s.progress_state === "unavailable");
+      collection = collection === undefined ? stored() : collection;
+      if (!collection.ready) {
+        paragraph(t("Saved snapshots couldn’t be read.", "无法读取已存快照。")).className = "cri-warning";
+        button(t("Try reading again", "重试读取"), function () { apply(); });
+      } else {
+        var saved = savedMatches(collection, s.revision).length > 0, intent = saved ? "remove" : "save";
+        var saveButton = button(saved ? t("Remove snapshot", "移除快照") : t("Save snapshot", "保存快照"), function (event) { save(s, intent, event.currentTarget); });
+        saveButton.dataset.snapshotAction = intent;
+        saveButton.disabled = !saved && (expired(s) || s.state === "insufficient" || s.progress_state === "unavailable");
+      }
       button(t("Inspect demand evidence", "查看需求证据"), function () { open("evidence:liquidity_flows"); });
     } else {
       paragraph(t("This saved version preserves its original conditions and cutoff.", "该保存版本保留原始条件与证据日期。"));
-      button(t("Remove from this device", "从本设备移除"), function () { save(s); }).dataset.snapshotAction = "remove";
+      button(t("Remove from this device", "从本设备移除"), function (event) { save(s, "remove", event.currentTarget); }).dataset.snapshotAction = "remove";
     }
   }
-  function renderDrawer(key) {
+  function renderDrawer(key, collection) {
     if (!key) return;
     body.replaceChildren(); dialog.classList.toggle("cri-dialog-wide", key === "comparison"); kicker.textContent = t("CRYPTO INTELLIGENCE", "加密资产情报");
     var parts = key.split(":"), category = parts[0], id = parts.slice(1).join(":");
@@ -187,9 +296,11 @@
         });
       } else rows.forEach(evidence);
     } else if (category === "scenario") {
-      scenario(activeScenario(id), false);
+      scenario(activeScenario(id), false, collection);
     } else if (category === "saved-item") {
-      scenario(stored().find(function (s) { return s.revision === id; }), true);
+      collection = collection === undefined ? stored() : collection;
+      if (!collection.ready) { savedUnavailable(); return; }
+      scenario(savedVersion(collection, id), true);
     } else if (category === "asset") {
       var asset = data.assets.find(function (a) { return a.symbol === id; });
       title.textContent = asset ? asset.name + " · " + asset.symbol : t("Asset unavailable", "资产暂不可用");
@@ -246,14 +357,24 @@
       paragraph(t("The scenario workspace does not change the model. Crypto budget splitting retains its existing separate governed projection.", "情景研究不会改变模型。加密预算拆分继续遵循既有约定。"));
       link(t("Open the existing model record", "查看现有模型记录"), "https://www.mastermind-x.com/vector.html");
     } else if (category === "saved") {
+      collection = collection === undefined ? stored() : collection;
+      if (!collection.ready) { savedUnavailable(); return; }
       title.textContent = t("Saved snapshots", "已存快照");
       paragraph(t("Saved in this browser. Each snapshot preserves its original evidence cutoff.", "保存在此浏览器中，每份快照保留原始证据截止日期。"));
-      var items = stored();
-      if (!items.length) paragraph(t("Nothing saved yet. Open a scenario and save its dated conditions.", "尚未保存。打开一个情景，保存其带日期的条件。"));
+      var items = collection.items;
+      if (!items.length) paragraph(collection.entries.length ?
+        t("No supported snapshots can be opened here.", "此处无法打开这些已存快照。") :
+        t("Nothing saved yet. Open a scenario and save its dated conditions.", "尚未保存。打开一个情景，保存其带日期的条件。"));
       items.forEach(function (s) { button(field(s, "title") + " · " + s.horizon_days + t(" days", "天") + " · " + s.as_of, function () { open("saved-item:" + s.revision); }); });
     } else if (category === "memory" || category === "memory-saved") {
       title.textContent = t("Historical review", "历史检验");
-      var historicalContext = category === "memory-saved" ? stored().find(function (s) { return s.revision === id; }) : (id ? activeScenario(id) : null);
+      var historicalContext;
+      if (category === "memory-saved") {
+        collection = collection === undefined ? stored() : collection;
+        if (!collection.ready) { savedUnavailable(); return; }
+        historicalContext = savedVersion(collection, id);
+        if (!historicalContext) { scenario(null, true); return; }
+      } else historicalContext = id ? activeScenario(id) : null;
       paragraph(historicalContext ? field(historicalContext, "title") + " · BTC · " + historicalContext.horizon_days + t(" days · evidence at ", "天 · 证据日期 ") + historicalContext.as_of : "BTC · " + horizon() + t(" days · evidence at ", "天 · 证据日期 ") + (data.as_of || t("Unavailable", "暂无")));
       paragraph(t("No qualified comparison yet", "暂无合格的历史比较")).className = "cri-warning";
       paragraph(t("A historical match must preserve the scenario's issue-time evidence, horizon and eligible universe. Similar-looking charts alone do not establish predictive value.", "历史匹配必须保留情景发布时的证据、周期与合格样本。图形相似本身不能证明预测价值。"));

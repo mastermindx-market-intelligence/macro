@@ -1,0 +1,325 @@
+{
+  "schema": "mastermind.crypto_snapshot_safety_validation/v1",
+  "source_parent": "5e496c24c962e85a4f7f514dd43dc61443b95cab",
+  "branch": "design/crypto-snapshot-safety-20261109",
+  "source_receipt": {
+    "source_parent": "5e496c24c962e85a4f7f514dd43dc61443b95cab",
+    "branch": "design/crypto-snapshot-safety-20261109",
+    "old_version": "be2ec2a278c4",
+    "version": "3786626cb4d5",
+    "js_transforms": 10,
+    "js_inverse_exact": true,
+    "template_site_js_exact": true,
+    "saved_html_version_references_only": true,
+    "unchanged_inputs": [
+      "site/crypto_intelligence_r4.css",
+      "site/crypto_intelligence_r4.json",
+      "templates/crypto_intelligence_r4.html.j2",
+      "templates/crypto_intelligence_r4.css",
+      "scripts/build_crypto_intelligence_r4.py",
+      "tests/test_crypto_intelligence_r4.py",
+      "lib/crypto_intelligence_view.py",
+      "site/theme.js",
+      "site/theme.css",
+      "site/illus.js",
+      "site/illus.css",
+      "site/navigation-refresh.css",
+      "site/logo_config.js",
+      "site/stock-logos.js",
+      "site/live_config.js",
+      "site/live.js"
+    ],
+    "candidate_files": {
+      "templates/crypto_intelligence_r4.js": {
+        "bytes": 41254,
+        "sha256": "2f28f8f5982c28b01e7599f924e70f3a1cb9249573ddcbd0752241f9168e5244",
+        "blob": "e0dd8e3cd11368dc666c48e3f9c1f74e0d15db96"
+      },
+      "site/crypto_intelligence_r4.js": {
+        "bytes": 41254,
+        "sha256": "2f28f8f5982c28b01e7599f924e70f3a1cb9249573ddcbd0752241f9168e5244",
+        "blob": "e0dd8e3cd11368dc666c48e3f9c1f74e0d15db96"
+      },
+      "site/crypto-r4.html": {
+        "bytes": 117388,
+        "sha256": "22a9dabbab2806e3cec7bcac64a3a2dbf13e0d2e9c598919a2e5a8837ee4040f",
+        "blob": "f779e58458d8cf801f5c592f1d47f1f6498b1f5d"
+      },
+      "site/vector-r4.html": {
+        "bytes": 117387,
+        "sha256": "333abc79bf1271a2f45a50000df761275ff26ce52f998da21793e9e8d83c73da",
+        "blob": "1cc167dc2aae7bda3420ae99984737c523895152"
+      },
+      "tests/test_crypto_intelligence_r4_browser.py": {
+        "bytes": 28752,
+        "sha256": "daf449229b8111a92809bd57080734dfbfce8f0508dbd669ccb279f947a2242d",
+        "blob": "a5777e6ce4758e90a1bd528afb2951c50e2d55bd"
+      }
+    },
+    "node_check": {
+      "exit_code": 0,
+      "stderr": ""
+    },
+    "preserved_source_clock": true,
+    "model_refresh": false,
+    "public_route_cutover": false
+  },
+  "baseline": {
+    "raw": {
+      "failed": 34,
+      "passed": 1,
+      "deselected": 5,
+      "seconds": 34.66,
+      "process_seconds": 35.58,
+      "contexts": 35,
+      "pages": 41,
+      "page_errors": 0
+    },
+    "harness_issue": "Programmatic Save test used an unscoped Historical review locator matching both underlying view and dialog. Corrected to #cri-dialog-body; exact parent-source rerun is owed for this one case.",
+    "true_failing_cases": 33,
+    "independent_bug_count": "Not asserted; multiple cases qualify shared defects.",
+    "network_harness_change": "Final fixture routes allow only its exact ephemeral HTTP origin; baseline allowed 127.0.0.1 host at any port. No external requests or WebSockets were observed in baseline.",
+    "programmatic_corrections": {
+      "first_rerun": "Unscoped locator fixed; run exposed nonexistent Locator.is_focused API. One harness failure, not product evidence.",
+      "final_rerun": {
+        "failed": 1,
+        "deselected": 39,
+        "seconds": 9.26,
+        "process_seconds": 11.164,
+        "focus_lost": true,
+        "test_sha256": "daf449229b8111a92809bd57080734dfbfce8f0508dbd669ccb279f947a2242d"
+      }
+    },
+    "qualified_failing_cases": 34
+  },
+  "coverage": {
+    "browser": 40,
+    "contract": 39,
+    "combined_cases": 79,
+    "initial_run": {
+      "passed": 76,
+      "failed": 3,
+      "reason": "Missing lib.illus dependency blocked three unchanged existing Python integration tests",
+      "seconds": 46.99,
+      "process_seconds": 47.652
+    },
+    "dependency_recovery": {
+      "passed": 3,
+      "deselected": 36,
+      "seconds": 2.19,
+      "process_seconds": 3.131,
+      "exact_dependency_files": 20
+    },
+    "contexts": 41,
+    "pages": 47,
+    "page_errors": 0,
+    "browser_version": "157.0.8103.39",
+    "single_run_79_pass_claim": false
+  },
+  "final_browser_observations": {
+    "contexts": 41,
+    "pages": 47,
+    "page_errors": [],
+    "blocked_external_requests": 0,
+    "blocked_websockets": 0,
+    "browser": "157.0.8103.39"
+  },
+  "baseline_result": {
+    "command": [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "-m",
+      "pytest",
+      "-q",
+      "tests/test_crypto_intelligence_r4_browser.py",
+      "-k",
+      "not (four_views or horizon_deep_link or saved_snapshot_retains or deep_link_and_older or long_evidence)",
+      "--tb=short",
+      "--junitxml=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/baseline/junit.xml",
+      "--basetemp=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/baseline/pytest-temp"
+    ],
+    "exit_code": 1,
+    "seconds": 35.58,
+    "source_parent": "5e496c24c962e85a4f7f514dd43dc61443b95cab",
+    "test_sha256": "d6eca6727fd6c54bbf0d4273c29e809b75a3a3dc87e9d9efd62f8f652e712dac"
+  },
+  "corrected_programmatic_baseline_result": {
+    "command": [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "-m",
+      "pytest",
+      "-q",
+      "tests/test_crypto_intelligence_r4_browser.py",
+      "-k",
+      "programmatic_save",
+      "--tb=short",
+      "--junitxml=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/baseline-programmatic-final/junit.xml",
+      "--basetemp=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/baseline-programmatic-final/pytest-temp"
+    ],
+    "exit_code": 1,
+    "seconds": 11.164,
+    "source_parent": "5e496c24c962e85a4f7f514dd43dc61443b95cab",
+    "test_sha256": "daf449229b8111a92809bd57080734dfbfce8f0508dbd669ccb279f947a2242d"
+  },
+  "final_result": {
+    "command": [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "-m",
+      "pytest",
+      "-q",
+      "tests/test_crypto_intelligence_r4.py",
+      "tests/test_crypto_intelligence_r4_browser.py",
+      "--tb=short",
+      "--junitxml=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/final/junit.xml",
+      "--basetemp=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/final/pytest-temp"
+    ],
+    "exit_code": 1,
+    "seconds": 47.652,
+    "source_parent": "5e496c24c962e85a4f7f514dd43dc61443b95cab",
+    "candidate_version": "3786626cb4d5",
+    "test_sha256": "daf449229b8111a92809bd57080734dfbfce8f0508dbd669ccb279f947a2242d",
+    "js_sha256": "2f28f8f5982c28b01e7599f924e70f3a1cb9249573ddcbd0752241f9168e5244"
+  },
+  "dependency_recovery_result": {
+    "command": [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "-m",
+      "pytest",
+      "-q",
+      "tests/test_crypto_intelligence_r4.py",
+      "-k",
+      "preview_builder_never_overwrites or shadow_hook_refreshes or shadow_failure",
+      "--tb=short",
+      "--junitxml=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/final-dependency-recovery/junit.xml",
+      "--basetemp=/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm/final-dependency-recovery/pytest-temp"
+    ],
+    "exit_code": 0,
+    "seconds": 3.131,
+    "source_parent": "5e496c24c962e85a4f7f514dd43dc61443b95cab",
+    "exact_dependency_files": 20,
+    "scope": "Only the three existing tests previously blocked by missing imports; synthetic temporary output and monkeypatched shadow build."
+  },
+  "dependency_manifest": {
+    "source_parent": "5e496c24c962e85a4f7f514dd43dc61443b95cab",
+    "blobs": {
+      "lib/illus.py": "28ad3deaf442d4556326cd60a45b4ff62362492e",
+      "scripts/build_crypto.py": "35056155b79c2956e1441f525f583da6e6eb697f",
+      "templates/crypto_intelligence_r4_scorecard.html.j2": "1e29d95413f00030f8a3a685d6fba833f685cc90",
+      "engine/alt_cycle.py": "5ce7d3c819f0f1e2de4a56efbea9e15093bebbb0",
+      "engine/btc_mtf.py": "0c17233996dc68568d45947c6dc18ffb9daf67a6",
+      "engine/btc_options.py": "f66456d43e1b77672bb686b754fa58b9c6da47c3",
+      "engine/crypto_market_state.py": "75f5fb94cd7cc131bb9484670dc1da49bcb2ebf8",
+      "engine/crypto_universe.py": "eac80120959a6a3132322562acb999fb9b5a0d35",
+      "engine/eth_state.py": "481c04ad243c11abd8482a22b1845be1cd2a518d",
+      "engine/event_calendar.py": "8c611c96a8b3157f5be659215df8b1b38e7894a1",
+      "lib/config.py": "b6fc888269876242597da354aaa726c20ed95802",
+      "lib/store.py": "709203a336c874d74076312e128c130d598f7876",
+      "lib/pages.py": "d14191bc58837eeeaca657f283ee0ad2539f03fc",
+      "templates/_site_nav.html.j2": "ef099f86ae57adcbf4e485c7b442c4e965ec6b3e",
+      "engine/cycles.py": "9c682f1251ffd48abf4f78238df74ae3d5879479",
+      "lib/nyse_calendar.py": "0ece6439ffe4b081ee7a268fe99b69e1de1216a3",
+      "engine/btc_signals.py": "1465f5455af768265e29c86746242d8517d8874e",
+      "templates/_navlinks.html.j2": "68d890fcd4b0b9044bbd2ceeee23caf435f6c078",
+      "engine/session_anchor.py": "0cfc9857cd240788542f1dc6d94eb55d4a68a513",
+      "engine/technicals.py": "8e18b1fe3d5aa3df2de5583feacc1595c0242877"
+    },
+    "reused_exact_from_owned_verify_root": [
+      "lib/config.py"
+    ]
+  },
+  "commands": {
+    "baseline": "python3 - <<'PY'\nfrom pathlib import Path\nimport hashlib,json,os,subprocess,sys,time\nr=Path(\"/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm\");manifest=json.loads((r/'source-input-manifest.json').read_text())\nfor path,item in manifest['files'].items():\n if path.startswith('tests/'): continue\n b=(r/path).read_bytes();assert hashlib.sha256(b).hexdigest()==item['sha256'],path\nout=r/'baseline';out.mkdir(exist_ok=True)\nenv=dict(os.environ,MMX_CHROMIUM_EXECUTABLE='/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',MMX_CRYPTO_SNAPSHOT_REPORT=str(out/'observations.json'),MMX_CRYPTO_SNAPSHOT_CAPTURE_DIR=str(out/'captures'),PYTHONPATH=str(r))\nargs=[sys.executable,'-m','pytest','-q','tests/test_crypto_intelligence_r4_browser.py','-k','not (four_views or horizon_deep_link or saved_snapshot_retains or deep_link_and_older or long_evidence)','--tb=short','--junitxml='+str(out/'junit.xml'),'--basetemp='+str(out/'pytest-temp')]\nstart=time.monotonic()\ntry:\n result=subprocess.run(args,cwd=r,env=env,text=True,capture_output=True,timeout=300)\n receipt={'command':args,'exit_code':result.returncode,'seconds':round(time.monotonic()-start,3),'source_parent':'5e496c24c962e85a4f7f514dd43dc61443b95cab','test_sha256':hashlib.sha256((r/'tests/test_crypto_intelligence_r4_browser.py').read_bytes()).hexdigest()}\n (out/'stdout.txt').write_text(result.stdout);(out/'stderr.txt').write_text(result.stderr)\n (out/'result.json').write_text(json.dumps(receipt,indent=2)+'\\n')\n print(json.dumps(receipt));print(result.stdout[-9000:]);print(result.stderr[-2000:])\nexcept subprocess.TimeoutExpired as exc:\n (out/'timeout.json').write_text(json.dumps({'seconds':round(time.monotonic()-start,3),'timeout':300})+'\\n');raise\nPY",
+    "corrected_programmatic_baseline": "python3 - <<'PY'\nfrom pathlib import Path\nimport hashlib,json,os,subprocess,sys,time\nr=Path(\"/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm\");manifest=json.loads((r/'source-input-manifest.json').read_text())\nfor path,item in manifest['files'].items():\n if path.startswith('tests/'): continue\n b=(r/path).read_bytes();assert hashlib.sha256(b).hexdigest()==item['sha256'],path\nout=r/'baseline-programmatic-final';out.mkdir(exist_ok=True)\nenv=dict(os.environ,MMX_CHROMIUM_EXECUTABLE='/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',MMX_CRYPTO_SNAPSHOT_REPORT=str(out/'observations.json'),MMX_CRYPTO_SNAPSHOT_CAPTURE_DIR=str(out/'captures'),PYTHONPATH=str(r))\nargs=[sys.executable,'-m','pytest','-q','tests/test_crypto_intelligence_r4_browser.py','-k','programmatic_save','--tb=short','--junitxml='+str(out/'junit.xml'),'--basetemp='+str(out/'pytest-temp')]\nstart=time.monotonic()\ntry:\n result=subprocess.run(args,cwd=r,env=env,text=True,capture_output=True,timeout=300)\n receipt={'command':args,'exit_code':result.returncode,'seconds':round(time.monotonic()-start,3),'source_parent':'5e496c24c962e85a4f7f514dd43dc61443b95cab','test_sha256':hashlib.sha256((r/'tests/test_crypto_intelligence_r4_browser.py').read_bytes()).hexdigest()}\n (out/'stdout.txt').write_text(result.stdout);(out/'stderr.txt').write_text(result.stderr)\n (out/'result.json').write_text(json.dumps(receipt,indent=2)+'\\n')\n print(json.dumps(receipt));print(result.stdout[-9000:]);print(result.stderr[-2000:])\nexcept subprocess.TimeoutExpired as exc:\n (out/'timeout.json').write_text(json.dumps({'seconds':round(time.monotonic()-start,3),'timeout':300})+'\\n');raise\nPY",
+    "source_projection": "python3 - <<'PY'\nfrom pathlib import Path\nimport hashlib,json,re,subprocess\nr=Path(\"/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm\");p=r/'parent'\nexpected=json.loads(\"{\\\"version\\\":\\\"3786626cb4d5\\\",\\\"files\\\":{\\\"templates/crypto_intelligence_r4.js\\\":{\\\"bytes\\\":41254,\\\"sha256\\\":\\\"2f28f8f5982c28b01e7599f924e70f3a1cb9249573ddcbd0752241f9168e5244\\\",\\\"blob\\\":\\\"e0dd8e3cd11368dc666c48e3f9c1f74e0d15db96\\\"},\\\"site/crypto_intelligence_r4.js\\\":{\\\"bytes\\\":41254,\\\"sha256\\\":\\\"2f28f8f5982c28b01e7599f924e70f3a1cb9249573ddcbd0752241f9168e5244\\\",\\\"blob\\\":\\\"e0dd8e3cd11368dc666c48e3f9c1f74e0d15db96\\\"},\\\"site/crypto-r4.html\\\":{\\\"bytes\\\":117388,\\\"sha256\\\":\\\"22a9dabbab2806e3cec7bcac64a3a2dbf13e0d2e9c598919a2e5a8837ee4040f\\\",\\\"blob\\\":\\\"f779e58458d8cf801f5c592f1d47f1f6498b1f5d\\\"},\\\"site/vector-r4.html\\\":{\\\"bytes\\\":117387,\\\"sha256\\\":\\\"333abc79bf1271a2f45a50000df761275ff26ce52f998da21793e9e8d83c73da\\\",\\\"blob\\\":\\\"1cc167dc2aae7bda3420ae99984737c523895152\\\"},\\\"tests/test_crypto_intelligence_r4_browser.py\\\":{\\\"bytes\\\":28752,\\\"sha256\\\":\\\"daf449229b8111a92809bd57080734dfbfce8f0508dbd669ccb279f947a2242d\\\",\\\"blob\\\":\\\"a5777e6ce4758e90a1bd528afb2951c50e2d55bd\\\"}}}\")\nsource_names=('crypto_intelligence_r4.html.j2','crypto_intelligence_r4.css','crypto_intelligence_r4.js')\nold_version=hashlib.sha256(b''.join((p/'templates'/n).read_bytes() for n in source_names)).hexdigest()[:12]\nversion=hashlib.sha256(b''.join((r/'templates'/n).read_bytes() for n in source_names)).hexdigest()[:12]\nassert old_version=='be2ec2a278c4' and version==expected['version']\ncurrent=(r/'templates/crypto_intelligence_r4.js').read_text()\ninverse=current\ntransforms=json.loads((r/'snapshot-source-transforms.json').read_text())\nfor before,after in reversed(transforms):\n assert inverse.count(after)==1,(after[:70],inverse.count(after))\n inverse=inverse.replace(after,before,1)\nassert inverse==(p/'templates/crypto_intelligence_r4.js').read_text()\nassert (r/'site/crypto_intelligence_r4.js').read_bytes()==(r/'templates/crypto_intelligence_r4.js').read_bytes()\nfor path in ('site/crypto-r4.html','site/vector-r4.html'):\n original=(p/path).read_text();assert (r/path).read_text()==original,path\n assert re.findall(r'crypto_intelligence_r4\\.(?:css|js)\\?v=([a-f0-9]+)',original)==[old_version,old_version]\n result=original.replace('?v='+old_version,'?v='+version)\n assert result.replace('?v='+version,'?v='+old_version)==original\n (r/path).write_text(result)\nunchanged=[]\ninputs=json.loads((r/'source-input-manifest.json').read_text())['files']\nfor path,item in inputs.items():\n if path in expected['files']: continue\n assert (r/path).read_bytes()==(p/path).read_bytes(),path\n unchanged.append(path)\nfor path,item in expected['files'].items():\n b=(r/path).read_bytes()\n assert len(b)==item['bytes'] and hashlib.sha256(b).hexdigest()==item['sha256'],path\nnode=subprocess.run(['/opt/homebrew/bin/node','--check',str(r/'templates/crypto_intelligence_r4.js')],text=True,capture_output=True)\nassert node.returncode==0,node.stderr\nreceipt={'source_parent':'5e496c24c962e85a4f7f514dd43dc61443b95cab','branch':'design/crypto-snapshot-safety-20261109','old_version':old_version,'version':version,'js_transforms':len(transforms),'js_inverse_exact':True,'template_site_js_exact':True,'saved_html_version_references_only':True,'unchanged_inputs':unchanged,'candidate_files':expected['files'],'node_check':{'exit_code':node.returncode,'stderr':node.stderr},'preserved_source_clock':True,'model_refresh':False,'public_route_cutover':False}\n(r/'snapshot-source-receipt.json').write_text(json.dumps(receipt,ensure_ascii=False,indent=2)+'\\n')\nprint(json.dumps(receipt))\nPY",
+    "final": "python3 - <<'PY'\nfrom pathlib import Path\nimport hashlib,json,os,subprocess,sys,time\nr=Path(\"/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm\");receipt=json.loads((r/'snapshot-source-receipt.json').read_text())\nfor path,item in receipt['candidate_files'].items():\n assert hashlib.sha256((r/path).read_bytes()).hexdigest()==item['sha256'],path\nout=r/'final';out.mkdir(exist_ok=True)\nenv=dict(os.environ,MMX_CHROMIUM_EXECUTABLE='/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',MMX_CRYPTO_SNAPSHOT_REPORT=str(out/'observations.json'),MMX_CRYPTO_SNAPSHOT_CAPTURE_DIR=str(out/'captures'),PYTHONPATH=str(r))\nargs=[sys.executable,'-m','pytest','-q','tests/test_crypto_intelligence_r4.py','tests/test_crypto_intelligence_r4_browser.py','--tb=short','--junitxml='+str(out/'junit.xml'),'--basetemp='+str(out/'pytest-temp')]\nstart=time.monotonic()\nresult=subprocess.run(args,cwd=r,env=env,text=True,capture_output=True,timeout=300)\nresult_receipt={'command':args,'exit_code':result.returncode,'seconds':round(time.monotonic()-start,3),'source_parent':receipt['source_parent'],'candidate_version':receipt['version'],'test_sha256':hashlib.sha256((r/'tests/test_crypto_intelligence_r4_browser.py').read_bytes()).hexdigest(),'js_sha256':hashlib.sha256((r/'site/crypto_intelligence_r4.js').read_bytes()).hexdigest()}\n(out/'stdout.txt').write_text(result.stdout);(out/'stderr.txt').write_text(result.stderr)\n(out/'result.json').write_text(json.dumps(result_receipt,indent=2)+'\\n')\nprint(json.dumps(result_receipt));print(result.stdout[-15000:]);print(result.stderr[-2000:])\nPY",
+    "dependency_recovery": "python3 - <<'PY'\nfrom pathlib import Path\nimport hashlib,json,os,subprocess,sys,time\nr=Path(\"/Volumes/Mastermind/agent-workspaces/verify/crypto-snapshot-20261109-0cfg9psm\");manifest=json.loads((r/'dependency-input-manifest.json').read_text())\nfor path,expected in manifest['blobs'].items():\n b=(r/path).read_bytes();blob=hashlib.sha1(b'blob '+str(len(b)).encode()+b'\\0'+b).hexdigest();assert blob==expected,(path,blob)\nassert not (r/'.env').exists()\nout=r/'final-dependency-recovery';out.mkdir(exist_ok=True)\nargs=[sys.executable,'-m','pytest','-q','tests/test_crypto_intelligence_r4.py','-k','preview_builder_never_overwrites or shadow_hook_refreshes or shadow_failure','--tb=short','--junitxml='+str(out/'junit.xml'),'--basetemp='+str(out/'pytest-temp')]\nstart=time.monotonic()\nresult=subprocess.run(args,cwd=r,env=dict(os.environ,PYTHONPATH=str(r)),text=True,capture_output=True,timeout=120)\nreceipt={'command':args,'exit_code':result.returncode,'seconds':round(time.monotonic()-start,3),'source_parent':manifest['source_parent'],'exact_dependency_files':len(manifest['blobs']),'scope':'Only the three existing tests previously blocked by missing imports; synthetic temporary output and monkeypatched shadow build.'}\n(out/'stdout.txt').write_text(result.stdout);(out/'stderr.txt').write_text(result.stderr);(out/'result.json').write_text(json.dumps(receipt,indent=2)+'\\n')\nprint(json.dumps(receipt));print(result.stdout[-12000:]);print(result.stderr[-2000:])\nPY"
+  },
+  "captures": {
+    "baseline/captures/stale-remove-1440-en.png": {
+      "bytes": 72729,
+      "sha256": "49eab70359bb668a7e0015cccf43d8fea85e4b6bb189331242bf31c5ff121584",
+      "blob": "1247fd0de362fdb9a9f332af97f0c258ec5e81ff",
+      "kind": "Native dialog-element crop",
+      "visually_inspected": false,
+      "scope": "Local synthetic storage only; no hosted/independent visual acceptance; desktop viewport-centered toast can extend beyond this crop."
+    },
+    "baseline/captures/stale-remove-390-zh.png": {
+      "bytes": 74281,
+      "sha256": "0be219a9fbc9c70e34dac56ae30ae3b6bcfacda4733203d2124bf22fcc9e7eac",
+      "blob": "eea178d173feb4dcd1949feaa6187f6cb9ac816a",
+      "kind": "Native dialog-element crop",
+      "visually_inspected": false,
+      "scope": "Local synthetic storage only; no hosted/independent visual acceptance; desktop viewport-centered toast can extend beyond this crop."
+    },
+    "final/captures/removed-preserved-opaque-390-en.png": {
+      "bytes": 24782,
+      "sha256": "43b074519da69e0ba39492547eae3da4e8b4be2a47654640f0db3326ee098ab5",
+      "blob": "19706adc01545e68f2fc4e5a5271f0392c52c6a0",
+      "kind": "Native dialog-element crop",
+      "visually_inspected": true,
+      "scope": "Local synthetic storage only; no hosted/independent visual acceptance; desktop viewport-centered toast can extend beyond this crop."
+    },
+    "final/captures/stale-remove-1440-en.png": {
+      "bytes": 22390,
+      "sha256": "39da0ef9da80232cc37970509db64aea8981b83e05c0b90fe3a873045a994aa0",
+      "blob": "f3ede2146ee2066abfcf08a6209beea1bb32e725",
+      "kind": "Native dialog-element crop",
+      "visually_inspected": true,
+      "scope": "Local synthetic storage only; no hosted/independent visual acceptance; desktop viewport-centered toast can extend beyond this crop."
+    },
+    "final/captures/stale-remove-390-zh.png": {
+      "bytes": 25232,
+      "sha256": "643d977460ac2a34e8f6fb04a7d04ce895c81d71c94c5953dc9ec94697f1850e",
+      "blob": "1a988fcb7e3f63f7197968f461dd8b5cfbf14474",
+      "kind": "Native dialog-element crop",
+      "visually_inspected": true,
+      "scope": "Local synthetic storage only; no hosted/independent visual acceptance; desktop viewport-centered toast can extend beyond this crop."
+    },
+    "final/captures/unconfirmed-throw_before-1440-en.png": {
+      "bytes": 73881,
+      "sha256": "cb47e3f80ca95b475a75a6db134cb6043f6c1a631ff028ee4089f4ba1d7a233e",
+      "blob": "b9472d3bea507a73d06a77e8e9e26387d95a70db",
+      "kind": "Native dialog-element crop",
+      "visually_inspected": true,
+      "scope": "Local synthetic storage only; no hosted/independent visual acceptance; desktop viewport-centered toast can extend beyond this crop."
+    },
+    "final/captures/unconfirmed-write_then_throw-1440-en.png": {
+      "bytes": 73881,
+      "sha256": "cb47e3f80ca95b475a75a6db134cb6043f6c1a631ff028ee4089f4ba1d7a233e",
+      "blob": "b9472d3bea507a73d06a77e8e9e26387d95a70db",
+      "kind": "Native dialog-element crop",
+      "visually_inspected": true,
+      "scope": "Local synthetic storage only; no hosted/independent visual acceptance; desktop viewport-centered toast can extend beyond this crop."
+    },
+    "final/captures/unconfirmed-write_then_throw-390-zh.png": {
+      "bytes": 79637,
+      "sha256": "5962b02ae917df556c16fb4a9de55004108374e963d0647b1c0e5a39ca375e7f",
+      "blob": "d3ff82a29a8c242a0b511e08267cd26a08755c75",
+      "kind": "Native dialog-element crop",
+      "visually_inspected": true,
+      "scope": "Local synthetic storage only; no hosted/independent visual acceptance; desktop viewport-centered toast can extend beyond this crop."
+    },
+    "final/captures/unreadable-1440-en.png": {
+      "bytes": 21388,
+      "sha256": "b12808f16a44f29cd842405e3166115dd23041bdf4e167608eea3561c9fed540",
+      "blob": "d1ac43a674598d9a709423ad13e3e878197992b9",
+      "kind": "Native dialog-element crop",
+      "visually_inspected": true,
+      "scope": "Local synthetic storage only; no hosted/independent visual acceptance; desktop viewport-centered toast can extend beyond this crop."
+    },
+    "final/captures/unreadable-390-zh.png": {
+      "bytes": 18186,
+      "sha256": "099d99c557eb2bd7acad6ab2fb0247f43c4afb0264ff8d116d7e9ed92a323c7a",
+      "blob": "cddcd8d008084c26c40ef1a58721d0949edb8de6",
+      "kind": "Native dialog-element crop",
+      "visually_inspected": true,
+      "scope": "Local synthetic storage only; no hosted/independent visual acceptance; desktop viewport-centered toast can extend beyond this crop."
+    }
+  },
+  "limitations": [
+    "No simultaneous cross-tab compare-and-swap guarantee from Web Storage read/write/readback.",
+    "No parent-return, saved-horizon route repair, same-revision disclosure/locale/scroll restoration, or frozen-case content redesign in this source diff.",
+    "No H5/model calculation, collector, alert, public-route replacement, deployment, release admission or independent visual sign-off.",
+    "The original baseline's one ambiguous Historical review locator and the first corrected programmatic baseline's unsupported Locator.is_focused API are harness failures, not product evidence.",
+    "The initial candidate run's three missing-import failures are preserved; only those three existing cases were rerun after exact-parent dependency hydration."
+  ]
+}
