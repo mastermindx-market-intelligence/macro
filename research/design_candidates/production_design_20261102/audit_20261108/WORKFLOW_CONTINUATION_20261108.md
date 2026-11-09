@@ -1317,3 +1317,18 @@ A bounded T47 host review did not establish an equivalent incumbent runtime for 
 The Catalyst follow-up's reusable owner finding is saved as **DSC:CATALYST-COPY-CONTEXT-USES-EXISTING-READ-OWNER**, [exact record](https://github.com/mastermindx-market-intelligence/Macro/blob/4fb70d95843625b1884cb8e7254cc013690b6540/agentos/discoveries/DSC-CATALYST-COPY-CONTEXT-USES-EXISTING-READ-OWNER.md), blob **1a4df30a2ddf0e8616dcd30edc032892c2c8afdb**. It names a falsifier, future-builder consequence, source pin and explicit fixture/production distinction; it creates no runtime authority.
 
 The exact pinned canonical `scripts/agentos.py` was run with `validate --paths` against that one record: **exit 0, one discovery, zero record errors/warnings**. The temporary source-validation bundle lacked the programme-registry join, which the validator explicitly reported as a fail-open warning; this is scoped record validation, not validation of the entire store. The published record was read back exactly.
+
+
+## 25. Catalyst — synchronize Paper with the implemented source
+
+The existing Catalyst Build sheet, file **01M6Y2VTQBVC9NA39HNG1DYWFH**, p3, root **10D-0**, still described the §23 repair as unimplemented. It now identifies Terminal PR1354 at exact candidate **45472fcedad31292d660d54731d4da472ca04f1e**, explains the existing Workspace result object used as opaque read context, and documents committed selection, clipboard-attempt and focus behavior.
+
+Exactly eleven text nodes changed: **10H-0, 1ER-0, 1ES-0, 1EV-0, 1EW-0, 1F4-0, 1FG-0, 1FJ-0, 1FK-0, 1JL-0, 1JP-0**. All **32 original node IDs, parents and styles** were retained; the sheet remains nine modules. The original defect and 22 pure-reference checks are now explicitly historical evidence, while module 07 records the 46 actual-component checks, passing TypeScript, 18 synthetic browser cases and seven captures with their exact Terminal verification directory. No public product screen, source value or unrelated p4 work changed. The complete native screenshot was inspected and the exact owned root was finished with an applied response.
+
+### Release preflight observation
+
+The same authorized M2 carrier was verified by its actual hardware family. Its existing configured Terminal SSH identity was resolved from the current source target and local configuration using metadata only; noninteractive strict-host-key authentication succeeded. No private key content was read or copied. The live Terminal service was active, the canonical checkout clean, deployed marker and canonical head agreed at **db06eacd8938cf44588d3906bca95bfd7122b74b**, and the installed release owner matched that generation. No shared build lock was held at observation. These are read-only access/state facts, not a release or clean W2A receipt.
+
+The actual current release owner requires `--target-sha` and a clean source-audit entrance gate; the older introductory DEPLOY text must not be treated as permission to build a moving branch. PR1354 remains open at its original candidate with native auto-merge enabled and required CI still running, with no completed failure observed. No deployment was issued.
+
+The connected Chrome automation attempt was blocked by an open extension UI before a new Catalyst tab was created. That page/user-presence boundary was not bypassed through another browser or carrier. Real-account browser proof remains owed after the control is available and the candidate is actually served. This blocks that proof lane only; independent source/design work continues.
